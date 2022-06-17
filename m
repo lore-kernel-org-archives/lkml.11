@@ -2,127 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8FF7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 03:03:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96B90C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 03:04:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379706AbiFQDD0 (ORCPT
+        id S1379913AbiFQDEM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 23:03:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43900 "EHLO
+        Thu, 16 Jun 2022 23:04:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379532AbiFQDDT (ORCPT
+        with ESMTP id S1379532AbiFQDEJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 23:03:19 -0400
-Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 264342A73D
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 20:03:16 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id BE8415C0172;
-        Thu, 16 Jun 2022 23:03:13 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Thu, 16 Jun 2022 23:03:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
-        cc:cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm3; t=1655434993; x=
-        1655521393; bh=jEzCc3JeLlFHDgfBc5h9JcPzQeM03k0MCLfDjduKd98=; b=s
-        7O+jdOSp5HZdN/Gfr43zbiLuNmzjh53xJZ6o7vavlksDRFj135MmToZ5sIfMoYR8
-        RHbzXs6O49GNhjGLjYc9FPlcDG08L51NMs5hCDt7ZegJEBMqaqZmx99mqzs6FqVL
-        R8Z6jFr08sMoZZMkSJN27Y8EO2oHu5qG6cV523LIsokgAWLZQOxITIS0NuCrYoUM
-        vP2FV3g8c6zvD+VBpm8XVcGmRrmQde0RffVo9jQkMNFLoSUDLq0ijfd5og2bd1bB
-        n2kPuAsamHibqWwbBg+Xv7rX83XSRIOYNrYb9aVLPwZr2zE6I8bztJ06dmmNsR3x
-        5tm7h8OdcsDYqC+dVXq/Q==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:feedback-id:feedback-id:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1655434993; x=
-        1655521393; bh=jEzCc3JeLlFHDgfBc5h9JcPzQeM03k0MCLfDjduKd98=; b=m
-        x6coN2S29eeKnGin+7uziw3IkxvCwzwfE9qNCB20bhN1KdrYNXI2kG5FvxM1m/6e
-        XV/VehkYqAlndUfKztK1fKF/YJIEg4Xbvl2PmDwYG0Wi/JKxxkmJEY2vrZ3oBui1
-        SvBk1hpsw3tTGM+OyezRzyP/K3Juji8SpWjMeHF6G8XBc164mmpoktCCNtgvX6c0
-        IuN9z2GFFeLyoSkXfVClkwrguMH1VWtqgEwRYDU+Saz2K3uPVrNllAtqOF/cNJBq
-        XYtMLwcakKQp+NYC18LQHw+HDo3fJgEwRbCksfmpkbiiL3fXxQZheztIHZG9fLOk
-        /e8I6gCm9TVY6PokcDBtw==
-X-ME-Sender: <xms:8e6rYtL64OQpoPBLC-BLYsw9Clcriwst7y7Ps7xPcPh03P6KzVa_dw>
-    <xme:8e6rYpKTsTJX0pknfRXaGRRR7shaiLwcaupu3GFLr7JKeXw9zHVhO-LIFBC03Uh6g
-    N3QqWDCU7p1QX0fnA>
-X-ME-Received: <xmr:8e6rYltZKb45MelRcq5dHpS7TfDwlpqYnxKf3CsraAELRzsCOFxN0yRVEHtyqbjhYovI6--F4JlqVpoGJpvjMNirH0n3Hb0rSN9AKFq7qhVbgYuYe4Sfh8GJYw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedruddvgedgieehucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepuffvvehfhffkffgfgggjtgfgsehtjeertddtfeejnecuhfhrohhmpefurghm
-    uhgvlhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenuc
-    ggtffrrghtthgvrhhnpefftdevkedvgeekueeutefgteffieelvedukeeuhfehledvhfei
-    tdehudfhudehhfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfh
-    hrohhmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
-X-ME-Proxy: <xmx:8e6rYuY5qqwNlaYswIuBtDYjC0oA6sHQdfHRgGlcX9fSWRdnB7wRGg>
-    <xmx:8e6rYkYPy4QT3vpmriOsOHBTJ8-sELwIyJsQF_7TvB6WenJ-RhNlcg>
-    <xmx:8e6rYiABnUOfWM50Z_cuxeAOmRxL9w6jfDXIIn82Qf_wQV5XLxDcXA>
-    <xmx:8e6rYk4mz9LqVHcYyvLFOKjwvsHOnuce1jpnRE0OhpWTtMVpJn7Cbg>
-Feedback-ID: i0ad843c9:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 16 Jun 2022 23:03:12 -0400 (EDT)
-Subject: Re: [PATCH] drm/sun4i: Add DMA mask and segment size
-To:     Jernej Skrabec <jernej.skrabec@gmail.com>, mripard@kernel.org,
-        wens@csie.org
-Cc:     airlied@linux.ie, daniel@ffwll.ch, dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-References: <20220616213240.392041-1-jernej.skrabec@gmail.com>
-From:   Samuel Holland <samuel@sholland.org>
-Message-ID: <e4a73a0f-c725-fad2-021b-5b5ee5ead1b3@sholland.org>
-Date:   Thu, 16 Jun 2022 22:03:11 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        Thu, 16 Jun 2022 23:04:09 -0400
+Received: from p3plwbeout12-05.prod.phx3.secureserver.net (p3plsmtp12-05-2.prod.phx3.secureserver.net [173.201.192.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4AF066229
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 20:04:05 -0700 (PDT)
+Received: from mailex.mailcore.me ([94.136.40.142])
+        by :WBEOUT: with ESMTP
+        id 22HEoNdiiOWGS22HEogv9B; Thu, 16 Jun 2022 20:04:05 -0700
+X-CMAE-Analysis: v=2.4 cv=EsoXEQQA c=1 sm=1 tr=0 ts=62abef25
+ a=s1hRAmXuQnGNrIj+3lWWVA==:117 a=84ok6UeoqCVsigPHarzEiQ==:17
+ a=ggZhUymU-5wA:10 a=JPEYwPQDsx4A:10 a=FXvPX3liAAAA:8 a=Lo680ACL7Cit5IcG_IsA:9
+ a=UObqyxdv-6Yh2QiB9mM_:22
+X-SECURESERVER-ACCT: phillip@squashfs.org.uk  
+X-SID:  22HEoNdiiOWGS
+Received: from 82-69-79-175.dsl.in-addr.zen.co.uk ([82.69.79.175] helo=localhost.localdomain)
+        by smtp11.mailcore.me with esmtpa (Exim 4.94.2)
+        (envelope-from <phillip@squashfs.org.uk>)
+        id 1o22HD-0005dm-Ey; Fri, 17 Jun 2022 04:04:03 +0100
+From:   Phillip Lougher <phillip@squashfs.org.uk>
+To:     hsinyi@chromium.org
+Cc:     Xiongwei.Song@windriver.com, akpm@linux-foundation.org,
+        houtao1@huawei.com, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, m.szyprowski@samsung.com, miaoxie@huawei.com,
+        phillip@squashfs.org.uk, squashfs-devel@lists.sourceforge.net,
+        willy@infradead.org, yi.zhang@huawei.com, zhengliang6@huawei.com
+Subject: [PATCH 4/3] squashfs: support reading fragments in readahead call
+Date:   Fri, 17 Jun 2022 04:03:45 +0100
+Message-Id: <20220617030345.24712-1-phillip@squashfs.org.uk>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220613082802.1301238-4-hsinyi@chromium.org>
+References: <20220613082802.1301238-4-hsinyi@chromium.org>
 MIME-Version: 1.0
-In-Reply-To: <20220616213240.392041-1-jernej.skrabec@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Mailcore-Auth: 439999529
+X-Mailcore-Domain: 1394945
+X-123-reg-Authenticated:  phillip@squashfs.org.uk  
+X-Originating-IP: 82.69.79.175
+X-CMAE-Envelope: MS4xfPiCow8nZGMKKRlPN9OwHQz0KMzh7h8PcNhfepBHfmiPhQLHMBxsruJkRyHbwga5WDPzKqxreM5NLdlZNkI3Vh6XtkqMWdXxIkF+2uLfxN9iygTzveD1
+ 6V5GcNXYWk/gbEmuX4sc7jY0U3Qj+AmjuELXv24LY87a7bQy75zODR3dYX0Hb1GKW+gdCmksOkTFLiHTA9xgqYIxYKF2mfwmzaE=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jernej,
+This patch adds a function which can be used to read fragments in the
+readahead call.
 
-On 6/16/22 4:32 PM, Jernej Skrabec wrote:
-> Kernel occasionally complains that there is mismatch in segment size
-> when trying to render HW decoded videos and rendering them directly with
-> sun4i DRM driver.
-> 
-> Fix that by setting DMA mask and segment size.
-> 
-> Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-> ---
->  drivers/gpu/drm/sun4i/sun4i_drv.c | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/drivers/gpu/drm/sun4i/sun4i_drv.c b/drivers/gpu/drm/sun4i/sun4i_drv.c
-> index 275f7e4a03ae..83f4e87f77f6 100644
-> --- a/drivers/gpu/drm/sun4i/sun4i_drv.c
-> +++ b/drivers/gpu/drm/sun4i/sun4i_drv.c
-> @@ -7,6 +7,7 @@
->   */
->  
->  #include <linux/component.h>
-> +#include <linux/dma-mapping.h>
->  #include <linux/kfifo.h>
->  #include <linux/module.h>
->  #include <linux/of_graph.h>
-> @@ -367,6 +368,9 @@ static int sun4i_drv_probe(struct platform_device *pdev)
->  
->  	INIT_KFIFO(list.fifo);
->  
-> +	dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
+This function is necessary because filesystems built with the -tailends
+(or -always-use-fragments) option may have fragments present which
+cannot be currently handled.
 
-Isn't this already the default, from of_dma_configure_id or setup_pdev_dma_masks?
+Signed-off-by: Phillip Lougher <phillip@squashfs.org.uk>
+---
+ fs/squashfs/file.c | 35 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 35 insertions(+)
 
-> +	dma_set_max_seg_size(&pdev->dev, DMA_BIT_MASK(32));
+diff --git a/fs/squashfs/file.c b/fs/squashfs/file.c
+index f0c64ee272d5..3a4cce16d7da 100644
+--- a/fs/squashfs/file.c
++++ b/fs/squashfs/file.c
+@@ -497,6 +497,41 @@ static int squashfs_read_folio(struct file *file, struct folio *folio)
+ 	return res;
+ }
+ 
++static unsigned int squashfs_readahead_fragment(struct page **page,
++	unsigned int pages, unsigned int expected)
++{
++	struct inode *inode = page[0]->mapping->host;
++	struct squashfs_cache_entry *buffer = squashfs_get_fragment(inode->i_sb,
++		squashfs_i(inode)->fragment_block,
++		squashfs_i(inode)->fragment_size);
++	struct squashfs_sb_info *msblk = inode->i_sb->s_fs_info;
++	unsigned int n, mask = (1 << (msblk->block_log - PAGE_SHIFT)) - 1;
++
++	if (buffer->error)
++		goto out;
++
++	expected += squashfs_i(inode)->fragment_offset;
++
++	for (n = 0; n < pages; n++) {
++		unsigned int base = (page[n]->index & mask) << PAGE_SHIFT;
++		unsigned int offset = base + squashfs_i(inode)->fragment_offset;
++
++		if (expected > offset) {
++			unsigned int avail = min_t(unsigned int, expected -
++				offset, PAGE_SIZE);
++
++			squashfs_fill_page(page[n], buffer, offset, avail);
++		}
++
++		unlock_page(page[n]);
++		put_page(page[n]);
++	}
++
++out:
++	squashfs_cache_put(buffer);
++	return buffer->error;
++}
++
+ static void squashfs_readahead(struct readahead_control *ractl)
+ {
+ 	struct inode *inode = ractl->mapping->host;
+-- 
+2.34.1
 
-This looks like a good change. In fact, I think we need a similar change in some
-other drivers.
-
-Regards,
-Samuel
