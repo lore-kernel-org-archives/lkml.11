@@ -2,92 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BA60C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 23:18:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17C4AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 23:18:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355685AbiFQXSp (ORCPT
+        id S1382099AbiFQXSx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 19:18:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51390 "EHLO
+        Fri, 17 Jun 2022 19:18:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236486AbiFQXSm (ORCPT
+        with ESMTP id S1358481AbiFQXSv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 19:18:42 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 680C65A5BA
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 16:18:41 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id f18so4366pfq.9
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 16:18:41 -0700 (PDT)
+        Fri, 17 Jun 2022 19:18:51 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 290CA64BCE
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 16:18:48 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id h34-20020a17090a29a500b001eb01527d9eso4508075pjd.3
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 16:18:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=dnlvDERG8oowX1HgALJdegPeU3FrNxjdXcUUPk217Kc=;
-        b=dYgOoOJ+N1WQxKWgcZXmEa3c1hdI0FiUiq4kjgxMtELC1+LGpzl7e3X18OpxsPSLM6
-         Z/Md1Q8QQHTehEao5xTscQMo7T5Lz4/pzDY3ntkLraiKoKzWL7ROaL2cao0FuDoT9stK
-         Y6P4ABr9fN3CpUeRy0JOTZbpI9REGz0+47sTJIsSUOPeGNaoMlC+f+NCcpS6t8dOO/i0
-         k26TzfWBvaDMUogUbaw/ePh4I1gdsJWFEU4PXk4hYL0DfC4g6chOMd3nJE1h86wiO1et
-         1I9ZkUSlHIQ81Yj27Bv60tr/T2MsJF/eku397IM1VZwlVgBppgapkFlTfY5NfCWNSsqt
-         MDnw==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=L5VJMQFQuBE4SqSUMrFo93pnwhbO/r/KnkFGijwP654=;
+        b=D9q5XhwKGuBXqDdFf4ZKxhqj4jBTqavmRDHyVTtRdFWOhsLsspGOmpTOlKlqOzDs6D
+         IQOQ1RLxN8PQOhd4BlDfXvdzqEJUuYesp7Edis7uc/i8I7CYL9Yg9e/xFz57lmGgHl2V
+         Z2yxAlWYAey7MW2Hy3EnIjBHPQhrMUjJkAf2A=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=dnlvDERG8oowX1HgALJdegPeU3FrNxjdXcUUPk217Kc=;
-        b=y7hgBQDmLlBBjg7Fm6j4a6IA89ubBpSSa9dzNtV6Q8mFSS7InigqVoIGfuc8qRezQi
-         ta3eud4XpBfPlDl7+2MXZ5g01+2JUGq31wmlsSEMDOOq+SNy4JutUbUbudgEkLUg5ZGY
-         01FVNjPwGINlu/EmW/ZM0GNhewqQxwcpsDHbOjDpEQaqoiTB3+8cNcWmNb3IEt+AjCUl
-         GHFV2fD/VCTZQi8xYG62kJuwCTOVFJqT1hh8Dpjtz1Jwg+JdlPLIwMBbovcflWI2d8r/
-         7HUsbaTKA24/eXXD50hXsu/Wnju4XMmlg5JeuRlscINr4mCqDzLMUI0vYkIWNQ8SjXuF
-         DUJA==
-X-Gm-Message-State: AJIora/EkThPACskRlCsocU9OwWgxv5nRWk9NEjc/T5j4FDm7XHL9Cin
-        uKDGZC0Fzj3Tv0US3Fe5hQl1cA==
-X-Google-Smtp-Source: AGRyM1u/txoKu7R37NfERg5G/UkpHCJc9k3H5j4ALGDpTt/qdkZUdeh8lUa7533JzX4jdxzHyO1UDw==
-X-Received: by 2002:a05:6a00:2410:b0:522:9837:581f with SMTP id z16-20020a056a00241000b005229837581fmr12316295pfh.11.1655507920906;
-        Fri, 17 Jun 2022 16:18:40 -0700 (PDT)
-Received: from [172.31.235.92] ([216.9.110.6])
-        by smtp.gmail.com with ESMTPSA id l4-20020a170903120400b001620eb3a2d6sm4088846plh.203.2022.06.17.16.18.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 17 Jun 2022 16:18:40 -0700 (PDT)
-Message-ID: <542f4f86-7bf9-b5fb-16d2-849121b6ee6d@linaro.org>
-Date:   Fri, 17 Jun 2022 16:18:37 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v3 17/40] arm64: dts: mediatek: mt7622-rfb1: correct
- gpio-keys properties
-Content-Language: en-US
-To:     Matthias Brugger <matthias.bgg@gmail.com>, arm@kernel.org,
-        soc@kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Olof Johansson <olof@lixom.net>,
-        Rob Herring <robh+dt@kernel.org>,
+        bh=L5VJMQFQuBE4SqSUMrFo93pnwhbO/r/KnkFGijwP654=;
+        b=aSHyXMAGT0POhE5Xd61e3YRHLOqzvPLKBsOQWgYlsvmTbRKacCZiCOR0rzJmcfbfAc
+         ZqZ3nC+/TKDYMAq5HX87EiB6FaYkqIL4HS4qz7ew9ycmFyEk5fSIDZT1AbM387MeLH57
+         /vucveb0BYoNRiIj/LQAdo9X+Gy2N/KNyjuqjIXtb7D2S3eN2U6hzZZ+p4VOktaNsF2t
+         yqBJqmneaMWkPKoLfU1jVMEIac7uG3RhzJUsYyCpWTKCP+h2FDZ47B0tdJa5q09zJqu9
+         pOmcnqokDoTgbijmzgsNVIAW+IrdR5xVMNob8Yx3eb/C0TlJKdgS8SnULsDCH7D/1brJ
+         gvSA==
+X-Gm-Message-State: AJIora+hb+vu4rudNvBRhIstPG/2FA3SlF+MBqP9G/prgHHdfuUNLYKI
+        n/5BRBZKney4kCYfWPsdFJffP09fUOMh/A==
+X-Google-Smtp-Source: AGRyM1tstSkK9CnQf36BBjmq5jsms4lDlAdI0SFFDUaoecgEE/QEyvASJqJ6KqLiZQESKnT20Zz5zw==
+X-Received: by 2002:a17:902:d2c9:b0:163:bdee:b2df with SMTP id n9-20020a170902d2c900b00163bdeeb2dfmr12210994plc.98.1655507927420;
+        Fri, 17 Jun 2022 16:18:47 -0700 (PDT)
+Received: from joebar-glaptop.roam.corp.google.com (c-71-202-34-56.hsd1.ca.comcast.net. [71.202.34.56])
+        by smtp.gmail.com with ESMTPSA id l8-20020a170903244800b001689e31ff9dsm2276749pls.9.2022.06.17.16.18.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Jun 2022 16:18:46 -0700 (PDT)
+From:   "Joseph S. Barrera III" <joebar@chromium.org>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Douglas Anderson <dianders@chromium.org>,
+        Alexandru M Stan <amstan@chromium.org>,
+        "Joseph S. Barrera III" <joebar@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220616005224.18391-1-krzysztof.kozlowski@linaro.org>
- <20220616005333.18491-17-krzysztof.kozlowski@linaro.org>
- <fcc5f00b-0776-9511-845a-5eac5d4c7876@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <fcc5f00b-0776-9511-845a-5eac5d4c7876@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org
+Subject: [PATCH v6 1/6] Simple version of Stephen's patch.
+Date:   Fri, 17 Jun 2022 16:16:40 -0700
+Message-Id: <20220617161622.v6.1.I4deaec603e855815b517a68f8dbc77b150886c42@changeid>
+X-Mailer: git-send-email 2.31.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 17/06/2022 03:41, Matthias Brugger wrote:
-> On 16/06/2022 02:53, Krzysztof Kozlowski wrote:
->> gpio-keys children do not use unit addresses.
->>
-> 
-> Is it me or doesn't the commit message match the actual commit? Change looks 
-> good, but message puzzles me.
-> 
+Signed-off-by: Joseph S. Barrera III <joebar@chromium.org>
+---
 
-Indeed, wrong commit msg. Thanks for spotting it, I will send a v4 of
-this patch alone.
+(no changes since v1)
 
+ arch/arm64/boot/dts/qcom/sc7180-trogdor-homestar.dtsi | 2 +-
+ arch/arm64/boot/dts/qcom/sc7180-trogdor-lazor.dtsi    | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-Best regards,
-Krzysztof
+diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-homestar.dtsi b/arch/arm64/boot/dts/qcom/sc7180-trogdor-homestar.dtsi
+index 9b3e3d13c165..d1e2df5164ea 100644
+--- a/arch/arm64/boot/dts/qcom/sc7180-trogdor-homestar.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-homestar.dtsi
+@@ -5,7 +5,7 @@
+  * Copyright 2021 Google LLC.
+  */
+ 
+-#include "sc7180-trogdor.dtsi"
++/* This file must be included after sc7180-trogdor.dtsi */
+ 
+ / {
+ 	/* BOARD-SPECIFIC TOP LEVEL NODES */
+diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-lazor.dtsi b/arch/arm64/boot/dts/qcom/sc7180-trogdor-lazor.dtsi
+index fe2369c29aad..88f6a7d4d020 100644
+--- a/arch/arm64/boot/dts/qcom/sc7180-trogdor-lazor.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-lazor.dtsi
+@@ -5,7 +5,7 @@
+  * Copyright 2020 Google LLC.
+  */
+ 
+-#include "sc7180-trogdor.dtsi"
++/* This file must be included after sc7180-trogdor.dtsi */
+ 
+ &ap_sar_sensor {
+ 	semtech,cs0-ground;
+-- 
+2.31.0
+
