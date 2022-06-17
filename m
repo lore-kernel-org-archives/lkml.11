@@ -2,65 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 004CCC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 15:15:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B73FC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 15:17:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383103AbiFQPPm (ORCPT
+        id S1383089AbiFQPRY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 11:15:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46622 "EHLO
+        Fri, 17 Jun 2022 11:17:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383088AbiFQPPh (ORCPT
+        with ESMTP id S1383075AbiFQPRW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 11:15:37 -0400
-Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 451683614A
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 08:15:36 -0700 (PDT)
-Received: (qmail 769005 invoked by uid 1000); 17 Jun 2022 11:15:35 -0400
-Date:   Fri, 17 Jun 2022 11:15:35 -0400
-From:   Alan Stern <stern@rowland.harvard.edu>
-To:     Liang He <windhl@126.com>
-Cc:     gregkh@linuxfoundation.org, linux-usb@vger.kernel.org,
+        Fri, 17 Jun 2022 11:17:22 -0400
+Received: from m15113.mail.126.com (m15113.mail.126.com [220.181.15.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 64B133D4B6
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 08:17:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=vy1/z
+        mDGugMG37ryPH+Tv9++kz/jYiS+PNBOnKejF74=; b=BLYii+CdmmgloV+8qoUs6
+        5D5Gkl9KEhdNq39k35e9sspeBUc+UlYSxr5/X/izQ+2caoRxwtj+O/d83Mofx1Q6
+        0gcIIFxsOv5nRugHhtamRuw7BUJAtW+FJ6BVr+4LjOv1ZdggYQWzd6w5NVIycomT
+        uZTMn5PBwkRbyz5rv0p+9U=
+Received: from localhost.localdomain (unknown [124.16.139.61])
+        by smtp3 (Coremail) with SMTP id DcmowADHZZf0maxiKDiLDg--.37809S2;
+        Fri, 17 Jun 2022 23:12:53 +0800 (CST)
+From:   Liang He <windhl@126.com>
+To:     mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org,
+        christophe.leroy@csgroup.eu, joel@jms.id.au
+Cc:     windhl@126.com, linuxppc-dev@lists.ozlabs.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] usb: host: ohci-ppc-of: Fix refcount leak bug
-Message-ID: <Yqyal2aXvZRebui+@rowland.harvard.edu>
-References: <20220617034637.4003115-1-windhl@126.com>
+Subject: [PATCH] powerpc: sysdev: Fix refcount leak bug in mpic_msgr
+Date:   Fri, 17 Jun 2022 23:12:52 +0800
+Message-Id: <20220617151252.4051291-1-windhl@126.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220617034637.4003115-1-windhl@126.com>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: DcmowADHZZf0maxiKDiLDg--.37809S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrKr1kKr1UGr1ftF1kWF13CFg_yoWfZrcEk3
+        Z2g34kAFWkJr48ZFsxZrWrX3Z5A3WfWrn8Jrn2qa17Aw1aqa17Xw47X395AryqgFsFy3yr
+        AFn3Wrnaga40yjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUjnYwUUUUUU==
+X-Originating-IP: [124.16.139.61]
+X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbiuBYjF2JVj6in2AAAs1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 17, 2022 at 11:46:37AM +0800, Liang He wrote:
-> In ohci_hcd_ppc_of_probe(), of_find_compatible_node() will return
-> a node pointer with refcount incremented. We should use of_node_put()
-> when it is not used anymore.
-> 
-> Signed-off-by: Liang He <windhl@126.com>
-> ---
+In mpic_msgr_number_of_blocks() and mpic_msgr_block_number(),
+of_find_node_by_name() will return a node pointer with refcount
+incremented. We should use of_node_put() when it is not used
+anymore.
 
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
+Signed-off-by: Liang He <windhl@126.com>
+---
+ arch/powerpc/sysdev/mpic_msgr.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-This seems to be the last one; ehci-ppc-of.c was already fixed by an 
-earlier patch.
+diff --git a/arch/powerpc/sysdev/mpic_msgr.c b/arch/powerpc/sysdev/mpic_msgr.c
+index 698fefaaa6dd..c2a235d9eb09 100644
+--- a/arch/powerpc/sysdev/mpic_msgr.c
++++ b/arch/powerpc/sysdev/mpic_msgr.c
+@@ -122,6 +122,7 @@ static unsigned int mpic_msgr_number_of_blocks(void)
+ 			count += 1;
+ 		}
+ 	}
++	of_node_put(aliases);
+ 
+ 	return count;
+ }
+@@ -150,6 +151,7 @@ static int mpic_msgr_block_number(struct device_node *node)
+ 		if (node == of_find_node_by_path(prop->value))
+ 			break;
+ 	}
++	of_node_put(aliases);
+ 
+ 	return index == number_of_blocks ? -1 : index;
+ }
+-- 
+2.25.1
 
->  drivers/usb/host/ohci-ppc-of.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/usb/host/ohci-ppc-of.c b/drivers/usb/host/ohci-ppc-of.c
-> index 1960b8dfdba5..591f675cc930 100644
-> --- a/drivers/usb/host/ohci-ppc-of.c
-> +++ b/drivers/usb/host/ohci-ppc-of.c
-> @@ -166,6 +166,7 @@ static int ohci_hcd_ppc_of_probe(struct platform_device *op)
->  				release_mem_region(res.start, 0x4);
->  		} else
->  			pr_debug("%s: cannot get ehci offset from fdt\n", __FILE__);
-> +		of_node_put(np);
->  	}
->  
->  	irq_dispose_mapping(irq);
-> -- 
-> 2.25.1
-> 
