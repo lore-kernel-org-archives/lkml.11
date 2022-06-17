@@ -2,98 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABF8AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 14:03:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6BB1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 14:04:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382602AbiFQODO (ORCPT
+        id S1382604AbiFQOEh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 10:03:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41852 "EHLO
+        Fri, 17 Jun 2022 10:04:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382603AbiFQODI (ORCPT
+        with ESMTP id S233854AbiFQOEg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 10:03:08 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B018D275F4;
-        Fri, 17 Jun 2022 07:02:51 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 25HE2e5K103349;
-        Fri, 17 Jun 2022 09:02:40 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1655474560;
-        bh=LoE7Q35wiMGDSUG73hBQuRCgbs5XNjx0rxkm5JJxwl8=;
-        h=From:To:CC:Subject:Date;
-        b=zWHLzuJ6WX4/BikSrsf2dUCSfPF3ZgD9Fyk3fv3Fci1GgfIG/K6qiOmtzL/6sJWz3
-         44tVTlhS54a+G9yVumA1vzRVauPHvDmlglGZEUKiFNyR7qFEChihxsHJDIKG+y07D5
-         ZyBwx+Mw1MJf/YMKov6KDb/jdgkCzR0G0TVC8wYo=
-Received: from DLEE107.ent.ti.com (dlee107.ent.ti.com [157.170.170.37])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 25HE2e9F074042
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 17 Jun 2022 09:02:40 -0500
-Received: from DLEE111.ent.ti.com (157.170.170.22) by DLEE107.ent.ti.com
- (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 17
- Jun 2022 09:02:40 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE111.ent.ti.com
- (157.170.170.22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Fri, 17 Jun 2022 09:02:40 -0500
-Received: from ubuntu.ent.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 25HE2XED041511;
-        Fri, 17 Jun 2022 09:02:35 -0500
-From:   Matt Ranostay <mranostay@ti.com>
-To:     <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     Matt Ranostay <mranostay@ti.com>, Marc Zyngier <maz@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, Nishanth Menon <nm@ti.com>
-Subject: [PATCH v2] arm64: dts: ti: k3-j721s2: fix overlapping GICD memory region
-Date:   Fri, 17 Jun 2022 07:02:07 -0700
-Message-ID: <20220617140207.444298-1-mranostay@ti.com>
-X-Mailer: git-send-email 2.36.1
+        Fri, 17 Jun 2022 10:04:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5FC513FAD;
+        Fri, 17 Jun 2022 07:04:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9F55EB82A3F;
+        Fri, 17 Jun 2022 14:04:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBC5EC3411B;
+        Fri, 17 Jun 2022 14:04:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655474673;
+        bh=Zf8c2aIaTSHv0y2u4YrMfalwNIOLPu62kHzTrv8BfLo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=D3goTISFFxCpOY5iYC/ordW7UlIOvY9urCbEEOprR/4LCahHN8jtoro6U4wZxqFTh
+         xcmONjiHAnx63AYv0LGZG16Q9xCD4r0OEWAC1H8A9kfD9xxF12uauuUi37HdTrOvMw
+         ByNhhPGLZt2Ju51CVoe1picmbdQBX0g642dtfZ0gYq65RDd0peNyx5zMCDEUYD/mxG
+         yZY/uzwTPCAVaBu7oLuDOZbDxrmqzl5UjKSmneFidmQ+zwPzEG4UrOnUha4apZ8OaW
+         LI9+gniXcaXMDLMP2iO0L5B/hZG049xzePxUSIlzoo3vAhvg7JJ2BuRemde0Xh76/S
+         94YDIMzRQNwKg==
+Date:   Fri, 17 Jun 2022 08:04:29 -0600
+From:   Keith Busch <kbusch@kernel.org>
+To:     Yu Kuai <yukuai3@huawei.com>
+Cc:     axboe@kernel.dk, ming.lei@redhat.com, jack@suse.cz,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yi.zhang@huawei.com
+Subject: Re: [PATCH RFC -next] sbitmap: fix possible io hung due to lost
+ wakeups
+Message-ID: <YqyJ7dwUB0z0puNc@kbusch-mbp.dhcp.thefacebook.com>
+References: <20220617141125.3024491-1-yukuai3@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220617141125.3024491-1-yukuai3@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-GICD region was overlapping with GICR causing the latter to not map
-successfully, and in turn the gic-v3 driver would fail to initialize.
+On Fri, Jun 17, 2022 at 10:11:25PM +0800, Yu Kuai wrote:
+> 
+> What's worse, io hung is possible in theory because wakeups might be
+> missed. For example, 2 * wake_batch tags are put, while only wake_batch
+> threads are worken:
 
-This issue was hidden till commit 2b2cd74a06c3 ("irqchip/gic-v3: Claim iomem resources")
-replaced of_iomap() calls with of_io_request_and_map() that internally
-called request_mem_region().
+Not just in theory, io hanging sounds like the problem reported here:
 
-Respective console output before this patchset:
+  https://bugzilla.kernel.org/show_bug.cgi?id=215679
 
-[    0.000000] GICv3: /bus@100000/interrupt-controller@1800000: couldn't map region 0
-
-Fixes: 2b2cd74a06c3 ("irqchip/gic-v3: Claim iomem resources")
-Cc: Marc Zyngier <maz@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: Nishanth Menon <nm@ti.com>
-Signed-off-by: Matt Ranostay <mranostay@ti.com>
----
- arch/arm64/boot/dts/ti/k3-j721s2-main.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-Changes from v1:
-* Add missing Fixes: in commit messages
-
-diff --git a/arch/arm64/boot/dts/ti/k3-j721s2-main.dtsi b/arch/arm64/boot/dts/ti/k3-j721s2-main.dtsi
-index be7f39299894..19966f72c5b3 100644
---- a/arch/arm64/boot/dts/ti/k3-j721s2-main.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-j721s2-main.dtsi
-@@ -33,7 +33,7 @@ gic500: interrupt-controller@1800000 {
- 		ranges;
- 		#interrupt-cells = <3>;
- 		interrupt-controller;
--		reg = <0x00 0x01800000 0x00 0x200000>, /* GICD */
-+		reg = <0x00 0x01800000 0x00 0x100000>, /* GICD */
- 		      <0x00 0x01900000 0x00 0x100000>, /* GICR */
- 		      <0x00 0x6f000000 0x00 0x2000>,   /* GICC */
- 		      <0x00 0x6f010000 0x00 0x1000>,   /* GICH */
--- 
-2.36.1
-
+I only knew that it had nothing to do with the nvme driver, though, but they
+closed the bug after it stopped happening with different hardware.
