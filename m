@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCBAAC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 10:06:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B745C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 10:06:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381566AbiFQKG1 (ORCPT
+        id S1381552AbiFQKGg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 06:06:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50730 "EHLO
+        Fri, 17 Jun 2022 06:06:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381548AbiFQKGM (ORCPT
+        with ESMTP id S1381568AbiFQKG3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 06:06:12 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E73EC69CDA;
-        Fri, 17 Jun 2022 03:06:08 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id d129so3658191pgc.9;
-        Fri, 17 Jun 2022 03:06:08 -0700 (PDT)
+        Fri, 17 Jun 2022 06:06:29 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23F5069B49;
+        Fri, 17 Jun 2022 03:06:18 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id y6so3750599pfr.13;
+        Fri, 17 Jun 2022 03:06:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=GmjrKEQYPgZPTRJ4jJxsOeeTsxk0UvR5BruchnIbbJc=;
-        b=Enz4V2596oes7IbJYm70KLIeo5JzCNIU54ba9Nm1Z4dJzp+wClwJBdffn+wj9gRuCm
-         nC2tpQEcignXLDOXxgR3t+ohF7jTjzy4KQROJ3V3owzYe8SE4i46+w9SGubMow5mqDJ3
-         ntLrJY+Bz6FzRGt8RTMJJvJ0YOZ2aKhYXkGscIjYQ+kRfEB0wjEqAvDrxfyuO6e2yBVb
-         zvHcYBxsvkpVnQXJqVzI1fseh4CR0JlvzzNLcxYbbRHcGYPwSebvbZ30DPxnK3516iQG
-         mB1JXJhXDDB+i7lnqTGh5gUUIjpHCiSdZKWrB0ziMmhwu1zqZ6FGzVQpGG/ch9FNO11A
-         NM+g==
+        bh=bWwL0xApFdW9J/7uAC+LHaUOfa9kdtXxTtubM/dGCJc=;
+        b=qi6tIbhVzacrdhQ/G/+Z0vNCd8nGylfKWbEvipScXbrkSUsHpKs7wOvC7JqBsXSclW
+         0vaby8AEz3l+5zRg6QzC/vzlfUF04rE9Ym7DekFST7lZLwL2tsdYqSsbscVEJGPF6wSU
+         jTh0hW67crLHb6nQ47mFaQBT4oAu0zLj+YA6KGxP6/uauzOh6fiJqmXCbVv65xRoNn+E
+         QHzKmwNHGWLKV879xPeqmQbMLz7IHn06qeBySpDdmmpyvQhmZZV+GHSuHh9PKFvCPryb
+         AmYzI9SUhESbHOoHTCrFM9h9r525JKNq+yJTD6p8Ly/ECIkYwFBnCZnEd45AVtbifcaH
+         zY/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=GmjrKEQYPgZPTRJ4jJxsOeeTsxk0UvR5BruchnIbbJc=;
-        b=NEBhVY//0xLLTm1O6MLq+ljveSn0bx0X7goNGmZOVKZve+G1LnoeDk7RiOuR2TerW1
-         sMlTbPn8ARETrjm63+uEYY9/BhN3E4Ka258ZM4OQwLos4w9w3swDEyObTu9RyjRwh+Hn
-         65W1EsZBqZXcb9V4CWAuhjNqeWfSvnApqexnjfgaYWnTa8YmXc4Yq6kXymfZMUepWtiq
-         SUH0sbbAj32xKt4BN1sWyRiZhZCzmPycFzv38eFlazwkxShtoMKk/MQnrqZL5WisnYks
-         kaN9xt4zk6Es4uz+LTNzwNDq927bgLvjaMqku679Gj4OPwkFnzs/ZrfoZvSnhYZlXP9B
-         GbNw==
-X-Gm-Message-State: AJIora8Wdll8pzGHQbtqrvBiTNnNcTQRvIXRRnq5sx7dn7T0m+LMe+ZE
-        6D7XlHTTs2XEMBngfpNJP/A=
-X-Google-Smtp-Source: AGRyM1slAtqEO/HbfBYWwj2l3NgjEhIZniAjvVXkYVrnISCJ1/u+NqE5wWeluDl1GyZxAxNz9hVI1A==
-X-Received: by 2002:a05:6a00:9a1:b0:51b:c452:34a9 with SMTP id u33-20020a056a0009a100b0051bc45234a9mr9332454pfg.34.1655460368357;
-        Fri, 17 Jun 2022 03:06:08 -0700 (PDT)
+        bh=bWwL0xApFdW9J/7uAC+LHaUOfa9kdtXxTtubM/dGCJc=;
+        b=emlvyIMX2TNyZQ2Sr3imxq7ygulWhHx12fch5UuBKjLwoZjiltT+bL7aUcurTC2tDG
+         e2mE0kDex5fy3TiZtW6gK7j7yhBboq00wkeOKMAm2obX8fGDcR79G/5+y/ZJEuwUXEkL
+         MXsFJNu15vmgsCLowqfKRNn7dNHgOy3OBwQs9+tCfxFwuH5GgMtZcCgogoLsCEwXB4F6
+         fm8zDTEnIaqO2aCxaHJP4T3s4IlzQR7uZMDq+DOvDnnGtGBdDElCSmSg9hk3VRAoUnQ+
+         3aeoBdcccazE0scDJQ2lx3q/GoYBFYxna0+Dm+W3su1MzmdDf4bBDMsG5ZINe96ugQng
+         M87w==
+X-Gm-Message-State: AJIora8ar2mL6SRmJlvB7hsAILmCbe9R8WlmQVlUPMjy3GuYgUktMWB6
+        xNudwVozb4vS7P8rVVe9gSc=
+X-Google-Smtp-Source: AGRyM1vPZxaAun2vTDvGKVE09SNfRQIfFp45aS52G15Af0Ue98ofYzWbJ6Z0ndQzMcyrVbEVHh4w8g==
+X-Received: by 2002:a63:e344:0:b0:3fe:7f8:c644 with SMTP id o4-20020a63e344000000b003fe07f8c644mr8247525pgj.382.1655460377150;
+        Fri, 17 Jun 2022 03:06:17 -0700 (PDT)
 Received: from localhost.localdomain ([203.205.141.10])
-        by smtp.gmail.com with ESMTPSA id h10-20020a170902f7ca00b001621ce92196sm3126210plw.86.2022.06.17.03.06.04
+        by smtp.gmail.com with ESMTPSA id h10-20020a170902f7ca00b001621ce92196sm3126210plw.86.2022.06.17.03.06.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jun 2022 03:06:07 -0700 (PDT)
+        Fri, 17 Jun 2022 03:06:16 -0700 (PDT)
 From:   menglong8.dong@gmail.com
 X-Google-Original-From: imagedong@tencent.com
 To:     edumazet@google.com
@@ -58,10 +58,11 @@ Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
         talalahmad@google.com, keescook@chromium.org,
         dongli.zhang@oracle.com, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, Jiang Biao <benbjiang@tencent.com>,
-        Hao Peng <flyingpeng@tencent.com>
-Subject: [PATCH net-next v4 3/8] net: sock: introduce sk_stream_kill_queues_reason()
-Date:   Fri, 17 Jun 2022 18:05:09 +0800
-Message-Id: <20220617100514.7230-4-imagedong@tencent.com>
+        Hao Peng <flyingpeng@tencent.com>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH net-next v4 5/8] net: tcp: add skb drop reasons to tcp connect requesting
+Date:   Fri, 17 Jun 2022 18:05:11 +0800
+Message-Id: <20220617100514.7230-6-imagedong@tencent.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220617100514.7230-1-imagedong@tencent.com>
 References: <20220617100514.7230-1-imagedong@tencent.com>
@@ -73,65 +74,354 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Menglong Dong <imagedong@tencent.com>
 
-Introduce the function sk_stream_kill_queues_reason() and make the
-origin sk_stream_kill_queues() an inline call to it.
+In order to get skb drop reasons during tcp connect requesting code path,
+we have to pass the pointer of the 'reason' as a new function argument of
+conn_request() in 'struct inet_connection_sock_af_ops'. As the return
+value of conn_request() can be positive or negative or 0, it's not
+flexible to make it return drop reasons.
+
+As the return value of tcp_conn_request() is 0, so we can treat it as bool
+and make it return the skb drop reasons.
+
+The new drop reasons 'LISTENOVERFLOWS' and 'TCP_REQQFULLDROP' are added,
+which are used for 'accept queue' and 'request queue' full.
 
 Reviewed-by: Jiang Biao <benbjiang@tencent.com>
 Reviewed-by: Hao Peng <flyingpeng@tencent.com>
 Signed-off-by: Menglong Dong <imagedong@tencent.com>
+Reported-by: kernel test robot <lkp@intel.com>
+--
+v2:
+- fix compile error reported by kernel test rebot
 ---
- include/net/sock.h | 8 +++++++-
- net/core/stream.c  | 7 ++++---
- 2 files changed, 11 insertions(+), 4 deletions(-)
+ include/net/dropreason.h           | 10 ++++++++++
+ include/net/inet_connection_sock.h |  3 ++-
+ include/net/tcp.h                  |  9 +++++----
+ net/dccp/dccp.h                    |  3 ++-
+ net/dccp/input.c                   |  3 ++-
+ net/dccp/ipv4.c                    |  3 ++-
+ net/dccp/ipv6.c                    |  5 +++--
+ net/ipv4/tcp_input.c               | 22 ++++++++++++++--------
+ net/ipv4/tcp_ipv4.c                |  9 ++++++---
+ net/ipv6/tcp_ipv6.c                | 12 ++++++++----
+ net/mptcp/subflow.c                |  8 +++++---
+ 11 files changed, 59 insertions(+), 28 deletions(-)
 
-diff --git a/include/net/sock.h b/include/net/sock.h
-index 657873e2d90f..208c87807f23 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -1139,12 +1139,18 @@ int sk_stream_wait_connect(struct sock *sk, long *timeo_p);
- int sk_stream_wait_memory(struct sock *sk, long *timeo_p);
- void sk_stream_wait_close(struct sock *sk, long timeo_p);
- int sk_stream_error(struct sock *sk, int flags, int err);
--void sk_stream_kill_queues(struct sock *sk);
-+void sk_stream_kill_queues_reason(struct sock *sk,
-+				  enum skb_drop_reason reason);
- void sk_set_memalloc(struct sock *sk);
- void sk_clear_memalloc(struct sock *sk);
- 
- void __sk_flush_backlog(struct sock *sk);
- 
-+static inline void sk_stream_kill_queues(struct sock *sk)
-+{
-+	sk_stream_kill_queues_reason(sk, SKB_DROP_REASON_NOT_SPECIFIED);
-+}
-+
- static inline bool sk_flush_backlog(struct sock *sk)
- {
- 	if (unlikely(READ_ONCE(sk->sk_backlog.tail))) {
-diff --git a/net/core/stream.c b/net/core/stream.c
-index 06b36c730ce8..a562b23a1a6e 100644
---- a/net/core/stream.c
-+++ b/net/core/stream.c
-@@ -190,10 +190,11 @@ int sk_stream_error(struct sock *sk, int flags, int err)
- }
- EXPORT_SYMBOL(sk_stream_error);
- 
--void sk_stream_kill_queues(struct sock *sk)
-+void sk_stream_kill_queues_reason(struct sock *sk,
-+				  enum skb_drop_reason reason)
- {
- 	/* First the read buffer. */
--	__skb_queue_purge(&sk->sk_receive_queue);
-+	__skb_queue_purge_reason(&sk->sk_receive_queue, reason);
- 
- 	/* Next, the write queue. */
- 	WARN_ON(!skb_queue_empty(&sk->sk_write_queue));
-@@ -209,4 +210,4 @@ void sk_stream_kill_queues(struct sock *sk)
- 	 * have gone away, only the net layer knows can touch it.
+diff --git a/include/net/dropreason.h b/include/net/dropreason.h
+index 3c6f1e299c35..74512e60ab12 100644
+--- a/include/net/dropreason.h
++++ b/include/net/dropreason.h
+@@ -236,6 +236,16 @@ enum skb_drop_reason {
+ 	 * skb in its receive or send queue are all dropped
  	 */
+ 	SKB_DROP_REASON_SOCKET_DESTROYED,
++	/**
++	 * @SKB_DROP_REASON_LISTENOVERFLOWS: accept queue of the listen
++	 * socket is full, corresponding to LINUX_MIB_LISTENOVERFLOWS
++	 */
++	SKB_DROP_REASON_LISTENOVERFLOWS,
++	/**
++	 * @SKB_DROP_REASON_TCP_REQQFULLDROP: request queue of the listen
++	 * socket is full, corresponding to LINUX_MIB_TCPREQQFULLDROP
++	 */
++	SKB_DROP_REASON_TCP_REQQFULLDROP,
+ 	/**
+ 	 * @SKB_DROP_REASON_MAX: the maximum of drop reason, which shouldn't be
+ 	 * used as a real 'reason'
+diff --git a/include/net/inet_connection_sock.h b/include/net/inet_connection_sock.h
+index 077cd730ce2f..7717c59ab3d7 100644
+--- a/include/net/inet_connection_sock.h
++++ b/include/net/inet_connection_sock.h
+@@ -37,7 +37,8 @@ struct inet_connection_sock_af_ops {
+ 	void	    (*send_check)(struct sock *sk, struct sk_buff *skb);
+ 	int	    (*rebuild_header)(struct sock *sk);
+ 	void	    (*sk_rx_dst_set)(struct sock *sk, const struct sk_buff *skb);
+-	int	    (*conn_request)(struct sock *sk, struct sk_buff *skb);
++	int	    (*conn_request)(struct sock *sk, struct sk_buff *skb,
++				    enum skb_drop_reason *reason);
+ 	struct sock *(*syn_recv_sock)(const struct sock *sk, struct sk_buff *skb,
+ 				      struct request_sock *req,
+ 				      struct dst_entry *dst,
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index 1e99f5c61f84..16da150150c3 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -443,7 +443,8 @@ void tcp_v4_send_check(struct sock *sk, struct sk_buff *skb);
+ void tcp_v4_mtu_reduced(struct sock *sk);
+ void tcp_req_err(struct sock *sk, u32 seq, bool abort);
+ void tcp_ld_RTO_revert(struct sock *sk, u32 seq);
+-int tcp_v4_conn_request(struct sock *sk, struct sk_buff *skb);
++int tcp_v4_conn_request(struct sock *sk, struct sk_buff *skb,
++			enum skb_drop_reason *reason);
+ struct sock *tcp_create_openreq_child(const struct sock *sk,
+ 				      struct request_sock *req,
+ 				      struct sk_buff *skb);
+@@ -2034,9 +2035,9 @@ void tcp4_proc_exit(void);
+ #endif
+ 
+ int tcp_rtx_synack(const struct sock *sk, struct request_sock *req);
+-int tcp_conn_request(struct request_sock_ops *rsk_ops,
+-		     const struct tcp_request_sock_ops *af_ops,
+-		     struct sock *sk, struct sk_buff *skb);
++enum skb_drop_reason tcp_conn_request(struct request_sock_ops *rsk_ops,
++				      const struct tcp_request_sock_ops *af_ops,
++				      struct sock *sk, struct sk_buff *skb);
+ 
+ /* TCP af-specific functions */
+ struct tcp_sock_af_ops {
+diff --git a/net/dccp/dccp.h b/net/dccp/dccp.h
+index 7dfc00c9fb32..8c1241ae8449 100644
+--- a/net/dccp/dccp.h
++++ b/net/dccp/dccp.h
+@@ -255,7 +255,8 @@ void dccp_done(struct sock *sk);
+ int dccp_reqsk_init(struct request_sock *rq, struct dccp_sock const *dp,
+ 		    struct sk_buff const *skb);
+ 
+-int dccp_v4_conn_request(struct sock *sk, struct sk_buff *skb);
++int dccp_v4_conn_request(struct sock *sk, struct sk_buff *skb,
++			 enum skb_drop_reason *reason);
+ 
+ struct sock *dccp_create_openreq_child(const struct sock *sk,
+ 				       const struct request_sock *req,
+diff --git a/net/dccp/input.c b/net/dccp/input.c
+index 2cbb757a894f..e12baa56ca59 100644
+--- a/net/dccp/input.c
++++ b/net/dccp/input.c
+@@ -576,6 +576,7 @@ int dccp_rcv_state_process(struct sock *sk, struct sk_buff *skb,
+ 	const int old_state = sk->sk_state;
+ 	bool acceptable;
+ 	int queued = 0;
++	SKB_DR(reason);
+ 
+ 	/*
+ 	 *  Step 3: Process LISTEN state
+@@ -606,7 +607,7 @@ int dccp_rcv_state_process(struct sock *sk, struct sk_buff *skb,
+ 			 */
+ 			rcu_read_lock();
+ 			local_bh_disable();
+-			acceptable = inet_csk(sk)->icsk_af_ops->conn_request(sk, skb) >= 0;
++			acceptable = inet_csk(sk)->icsk_af_ops->conn_request(sk, skb, &reason) >= 0;
+ 			local_bh_enable();
+ 			rcu_read_unlock();
+ 			if (!acceptable)
+diff --git a/net/dccp/ipv4.c b/net/dccp/ipv4.c
+index da6e3b20cd75..b0e8fcabf93b 100644
+--- a/net/dccp/ipv4.c
++++ b/net/dccp/ipv4.c
+@@ -581,7 +581,8 @@ static struct request_sock_ops dccp_request_sock_ops __read_mostly = {
+ 	.syn_ack_timeout = dccp_syn_ack_timeout,
+ };
+ 
+-int dccp_v4_conn_request(struct sock *sk, struct sk_buff *skb)
++int dccp_v4_conn_request(struct sock *sk, struct sk_buff *skb,
++			 enum skb_drop_reason *reason)
+ {
+ 	struct inet_request_sock *ireq;
+ 	struct request_sock *req;
+diff --git a/net/dccp/ipv6.c b/net/dccp/ipv6.c
+index fd44638ec16b..f01d6a05c7bf 100644
+--- a/net/dccp/ipv6.c
++++ b/net/dccp/ipv6.c
+@@ -314,7 +314,8 @@ static struct request_sock_ops dccp6_request_sock_ops = {
+ 	.syn_ack_timeout = dccp_syn_ack_timeout,
+ };
+ 
+-static int dccp_v6_conn_request(struct sock *sk, struct sk_buff *skb)
++static int dccp_v6_conn_request(struct sock *sk, struct sk_buff *skb,
++				enum skb_drop_reason *reason)
+ {
+ 	struct request_sock *req;
+ 	struct dccp_request_sock *dreq;
+@@ -324,7 +325,7 @@ static int dccp_v6_conn_request(struct sock *sk, struct sk_buff *skb)
+ 	struct dccp_skb_cb *dcb = DCCP_SKB_CB(skb);
+ 
+ 	if (skb->protocol == htons(ETH_P_IP))
+-		return dccp_v4_conn_request(sk, skb);
++		return dccp_v4_conn_request(sk, skb, reason);
+ 
+ 	if (!ipv6_unicast_destination(skb))
+ 		return 0;	/* discard, don't send a reset here */
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 2e2a9ece9af2..8617e7a8f841 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -6453,13 +6453,14 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+ 			 */
+ 			rcu_read_lock();
+ 			local_bh_disable();
+-			acceptable = icsk->icsk_af_ops->conn_request(sk, skb) >= 0;
++			reason = SKB_NOT_DROPPED_YET;
++			acceptable = icsk->icsk_af_ops->conn_request(sk, skb, &reason) >= 0;
+ 			local_bh_enable();
+ 			rcu_read_unlock();
+ 
+ 			if (!acceptable)
+ 				return 1;
+-			consume_skb(skb);
++			kfree_skb_reason(skb, reason);
+ 			return 0;
+ 		}
+ 		SKB_DR_SET(reason, TCP_FLAGS);
+@@ -6879,9 +6880,9 @@ u16 tcp_get_syncookie_mss(struct request_sock_ops *rsk_ops,
  }
--EXPORT_SYMBOL(sk_stream_kill_queues);
-+EXPORT_SYMBOL(sk_stream_kill_queues_reason);
+ EXPORT_SYMBOL_GPL(tcp_get_syncookie_mss);
+ 
+-int tcp_conn_request(struct request_sock_ops *rsk_ops,
+-		     const struct tcp_request_sock_ops *af_ops,
+-		     struct sock *sk, struct sk_buff *skb)
++enum skb_drop_reason tcp_conn_request(struct request_sock_ops *rsk_ops,
++				      const struct tcp_request_sock_ops *af_ops,
++				      struct sock *sk, struct sk_buff *skb)
+ {
+ 	struct tcp_fastopen_cookie foc = { .len = -1 };
+ 	__u32 isn = TCP_SKB_CB(skb)->tcp_tw_isn;
+@@ -6893,6 +6894,7 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
+ 	bool want_cookie = false;
+ 	struct dst_entry *dst;
+ 	struct flowi fl;
++	SKB_DR(reason);
+ 
+ 	/* TW buckets are converted to open requests without
+ 	 * limitations, they conserve resources and peer is
+@@ -6901,12 +6903,15 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
+ 	if ((net->ipv4.sysctl_tcp_syncookies == 2 ||
+ 	     inet_csk_reqsk_queue_is_full(sk)) && !isn) {
+ 		want_cookie = tcp_syn_flood_action(sk, rsk_ops->slab_name);
+-		if (!want_cookie)
++		if (!want_cookie) {
++			SKB_DR_SET(reason, TCP_REQQFULLDROP);
+ 			goto drop;
++		}
+ 	}
+ 
+ 	if (sk_acceptq_is_full(sk)) {
+ 		NET_INC_STATS(sock_net(sk), LINUX_MIB_LISTENOVERFLOWS);
++		SKB_DR_SET(reason, LISTENOVERFLOWS);
+ 		goto drop;
+ 	}
+ 
+@@ -6962,6 +6967,7 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
+ 			 */
+ 			pr_drop_req(req, ntohs(tcp_hdr(skb)->source),
+ 				    rsk_ops->family);
++			SKB_DR_SET(reason, TCP_REQQFULLDROP);
+ 			goto drop_and_release;
+ 		}
+ 
+@@ -7014,7 +7020,7 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
+ 		}
+ 	}
+ 	reqsk_put(req);
+-	return 0;
++	return SKB_NOT_DROPPED_YET;
+ 
+ drop_and_release:
+ 	dst_release(dst);
+@@ -7022,6 +7028,6 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
+ 	__reqsk_free(req);
+ drop:
+ 	tcp_listendrop(sk);
+-	return 0;
++	return reason;
+ }
+ EXPORT_SYMBOL(tcp_conn_request);
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index fe8f23b95d32..e1064273062a 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -1458,17 +1458,20 @@ const struct tcp_request_sock_ops tcp_request_sock_ipv4_ops = {
+ 	.send_synack	=	tcp_v4_send_synack,
+ };
+ 
+-int tcp_v4_conn_request(struct sock *sk, struct sk_buff *skb)
++int tcp_v4_conn_request(struct sock *sk, struct sk_buff *skb,
++			enum skb_drop_reason *reason)
+ {
+ 	/* Never answer to SYNs send to broadcast or multicast */
+ 	if (skb_rtable(skb)->rt_flags & (RTCF_BROADCAST | RTCF_MULTICAST))
+ 		goto drop;
+ 
+-	return tcp_conn_request(&tcp_request_sock_ops,
+-				&tcp_request_sock_ipv4_ops, sk, skb);
++	*reason = tcp_conn_request(&tcp_request_sock_ops,
++				   &tcp_request_sock_ipv4_ops, sk, skb);
++	return *reason;
+ 
+ drop:
+ 	tcp_listendrop(sk);
++	*reason = SKB_DROP_REASON_IP_INADDRERRORS;
+ 	return 0;
+ }
+ EXPORT_SYMBOL(tcp_v4_conn_request);
+diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+index f37dd4aa91c6..dbe356a166c5 100644
+--- a/net/ipv6/tcp_ipv6.c
++++ b/net/ipv6/tcp_ipv6.c
+@@ -1148,24 +1148,28 @@ u16 tcp_v6_get_syncookie(struct sock *sk, struct ipv6hdr *iph,
+ 	return mss;
+ }
+ 
+-static int tcp_v6_conn_request(struct sock *sk, struct sk_buff *skb)
++static int tcp_v6_conn_request(struct sock *sk, struct sk_buff *skb,
++			       enum skb_drop_reason *reason)
+ {
+ 	if (skb->protocol == htons(ETH_P_IP))
+-		return tcp_v4_conn_request(sk, skb);
++		return tcp_v4_conn_request(sk, skb, reason);
+ 
+ 	if (!ipv6_unicast_destination(skb))
+ 		goto drop;
+ 
+ 	if (ipv6_addr_v4mapped(&ipv6_hdr(skb)->saddr)) {
+ 		__IP6_INC_STATS(sock_net(sk), NULL, IPSTATS_MIB_INHDRERRORS);
++		*reason = SKB_DROP_REASON_IP_INADDRERRORS;
+ 		return 0;
+ 	}
+ 
+-	return tcp_conn_request(&tcp6_request_sock_ops,
+-				&tcp_request_sock_ipv6_ops, sk, skb);
++	*reason = tcp_conn_request(&tcp6_request_sock_ops,
++				   &tcp_request_sock_ipv6_ops, sk, skb);
++	return *reason;
+ 
+ drop:
+ 	tcp_listendrop(sk);
++	*reason = SKB_DROP_REASON_IP_INADDRERRORS;
+ 	return 0; /* don't send reset */
+ }
+ 
+diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+index 8841e8cd9ad8..5a1d05c3a1ef 100644
+--- a/net/mptcp/subflow.c
++++ b/net/mptcp/subflow.c
+@@ -532,7 +532,8 @@ static int subflow_v6_rebuild_header(struct sock *sk)
+ struct request_sock_ops mptcp_subflow_request_sock_ops;
+ static struct tcp_request_sock_ops subflow_request_sock_ipv4_ops __ro_after_init;
+ 
+-static int subflow_v4_conn_request(struct sock *sk, struct sk_buff *skb)
++static int subflow_v4_conn_request(struct sock *sk, struct sk_buff *skb,
++				   enum skb_drop_reason *reason)
+ {
+ 	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(sk);
+ 
+@@ -556,14 +557,15 @@ static struct inet_connection_sock_af_ops subflow_v6_specific __ro_after_init;
+ static struct inet_connection_sock_af_ops subflow_v6m_specific __ro_after_init;
+ static struct proto tcpv6_prot_override;
+ 
+-static int subflow_v6_conn_request(struct sock *sk, struct sk_buff *skb)
++static int subflow_v6_conn_request(struct sock *sk, struct sk_buff *skb,
++				   enum skb_drop_reason *reason)
+ {
+ 	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(sk);
+ 
+ 	pr_debug("subflow=%p", subflow);
+ 
+ 	if (skb->protocol == htons(ETH_P_IP))
+-		return subflow_v4_conn_request(sk, skb);
++		return subflow_v4_conn_request(sk, skb, reason);
+ 
+ 	if (!ipv6_unicast_destination(skb))
+ 		goto drop;
 -- 
 2.36.1
 
