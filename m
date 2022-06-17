@@ -2,116 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A31C0C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 05:04:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29404C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 05:06:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380032AbiFQFEy (ORCPT
+        id S1380052AbiFQFGC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 01:04:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40612 "EHLO
+        Fri, 17 Jun 2022 01:06:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233127AbiFQFEt (ORCPT
+        with ESMTP id S237181AbiFQFGA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 01:04:49 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95650666BD;
-        Thu, 16 Jun 2022 22:04:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655442288; x=1686978288;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=KlkNvpHU3FLlFN/0ZiH/YdtckeEa9++ioBrEqdPOl1k=;
-  b=jmGdZedNcosBL8oDwbVkJCQ3fVhMifHbrIv4xl/0h7D0nZXl7ONQWRtM
-   JGuwEhhteQeHQ7Gzt8L52UBCsxtdWLHit51w1A3M2cr6gvRfq3H9M9Ybi
-   6khxR4xkD/g+1YC8Ml2GFBJ6EU0hWnP5kdO5DfZ+16C6LFGA0pX0/lahk
-   0rVsjCUmzVLP8QnmNoovIwgeX1JtZjrgm/F3BNJ+VBriPmiCpJi/3OA00
-   oAnLcHn2ymyfmWATho6WL+Muaevv1VzuKE6a6+PbJMmm5+BMPjYlcGkZ9
-   8aJjCHkJbomTiWjP4F2lyw1WSGtXrzIrvQKhxeEtTh6DWVaPvd21dkA+/
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="280453126"
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="280453126"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 22:04:47 -0700
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="619145570"
-Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 22:04:43 -0700
-Received: by lahna (sSMTP sendmail emulation); Fri, 17 Jun 2022 08:04:40 +0300
-Date:   Fri, 17 Jun 2022 08:04:40 +0300
-From:   Mika Westerberg <mika.westerberg@linux.intel.com>
-To:     "Oleksandr Ocheretnyi -X (oocheret - GLOBALLOGIC INC at Cisco)" 
-        <oocheret@cisco.com>
-Cc:     "tudor.ambarus@microchip.com" <tudor.ambarus@microchip.com>,
-        "miquel.raynal@bootlin.com" <miquel.raynal@bootlin.com>,
-        "p.yadav@ti.com" <p.yadav@ti.com>,
-        "michael@walle.cc" <michael@walle.cc>,
-        "richard@nod.at" <richard@nod.at>,
-        "vigneshr@ti.com" <vigneshr@ti.com>,
-        "broonie@kernel.org" <broonie@kernel.org>,
-        "linux-mtd@lists.infradead.org" <linux-mtd@lists.infradead.org>,
-        "linux-spi@vger.kernel.org" <linux-spi@vger.kernel.org>,
-        "mauro.lima@eclypsium.com" <mauro.lima@eclypsium.com>,
-        "lee.jones@linaro.org" <lee.jones@linaro.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "xe-linux-external(mailer list)" <xe-linux-external@cisco.com>
-Subject: Re: [PATCH v2] mtd: spi-nor: handle unsupported FSR opcodes properly
-Message-ID: <YqwLaIvjdRBsNRuU@lahna>
-References: <YqsHcL5NPcZ4De77@lahna>
- <20220616121446.293408-1-oocheret@cisco.com>
- <YqsjGx54+Gd8Aws/@lahna>
- <BYAPR11MB2757CEBE99C3A0861928CD43CDAC9@BYAPR11MB2757.namprd11.prod.outlook.com>
- <YqspM2Sw+Fu9y56Z@lahna>
- <BYAPR11MB2757BD90C63B9F6A31E0600ACDAC9@BYAPR11MB2757.namprd11.prod.outlook.com>
+        Fri, 17 Jun 2022 01:06:00 -0400
+X-Greylist: delayed 1016 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 16 Jun 2022 22:05:59 PDT
+Received: from mx0b-00256a01.pphosted.com (mx0b-00256a01.pphosted.com [67.231.153.242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9975E66AC1
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 22:05:59 -0700 (PDT)
+Received: from pps.filterd (m0119692.ppops.net [127.0.0.1])
+        by mx0b-00256a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25H4VHeF017372
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 01:05:58 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nyu.edu; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding;
+ s=20180315; bh=3kogNl48Igq0sjUSHZ2cHxkX5GFxsC19iw2HB9fEgUg=;
+ b=OY/juXmnpHNv/r4NdIN0U6Grcc/7h/Qcne4sUSimbvAbcsruYLErq9FUEdyAP6xlzouK
+ QO23OZ2l7daDTbZupxoQctZ8f81pLXGCGAeCSGU/QebV72S/WLAs5+CYUbIaG4atng1W
+ YGdLQ1KgTrpnePJHrscHrUOqBMzH9PSWpl8S8PxeYN9dkCjjX0yUgUZ2n4mPr60v+i6+
+ 7GUnoKDypBEbR720z1cvgikW03dIx0M1fhXObryfN/YCTGDYuhb4/NcsSvSyXJJjFScF
+ Rfe5YSgjMHwPAIrBjoqMdAeOE8wuoi9ZbWPd9kOFyznEi0DN6eh6cq6TIw/Y+0Kv3kL6 1A== 
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com [209.85.222.197])
+        by mx0b-00256a01.pphosted.com (PPS) with ESMTPS id 3grjnm88mn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 01:05:58 -0400
+Received: by mail-qk1-f197.google.com with SMTP id i10-20020a05620a404a00b006a7609f54c6so3931124qko.7
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 22:05:58 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3kogNl48Igq0sjUSHZ2cHxkX5GFxsC19iw2HB9fEgUg=;
+        b=EG3TaQiPmCZSHlh8/QZoCt5bNMCDU2jNK9vOpnPu27yoescqKuBRH+vTEOPIbPwpDO
+         qAvJLvr+WT7cgRiySWH+acaKHlytcsGmgKumjPJk4bav1mwWonBjG6iRQYOvS8j9xsoC
+         5NiMyE0byNzuP6u0v8cJtoJxfZ8p8+/rzWSoUYmvic5i1T+DV9cWBRTGnwmtlMtdqFtm
+         ZiG2dogAplc1xKrrCQ5n+EpdJXTW6hOv1mqlsLD2KfwCRy48qMafDyEgxOUFZN48FjAB
+         5MU5xzc1ESQ/35JrfLTsD4wZD+nfZEs0i1B2vERdWjvQ9APdn8PPU7PuumI1tpWBs7Ry
+         KEAQ==
+X-Gm-Message-State: AJIora+YyJw9ajhKnvFAEedGwMNFZB/gYyKRQCnL/hLuwFdVlhYXJfTj
+        O2ENvxucxGfuCHnpPMpyN4yjMnouPrKITZWFmBNDggeFmjP4yRUCGFNqBIm6UaH+KEE+t8xCW9r
+        5bsl83AWWqijgHYNI2p2aZH0=
+X-Received: by 2002:a05:6214:d0f:b0:46b:af12:e20b with SMTP id 15-20020a0562140d0f00b0046baf12e20bmr7039993qvh.104.1655442358174;
+        Thu, 16 Jun 2022 22:05:58 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sg8jFqi+Qebx+it8uDmKa1ceXVEsfXzuiBZhdtgpT5p68GMEjUwmDg3+v/NFZJQvLREOm+ZA==
+X-Received: by 2002:a05:6214:d0f:b0:46b:af12:e20b with SMTP id 15-20020a0562140d0f00b0046baf12e20bmr7039985qvh.104.1655442357941;
+        Thu, 16 Jun 2022 22:05:57 -0700 (PDT)
+Received: from localhost.localdomain (cpe-66-65-49-54.nyc.res.rr.com. [66.65.49.54])
+        by smtp.gmail.com with ESMTPSA id h22-20020ac85856000000b00304e95ec0fbsm3556530qth.89.2022.06.16.22.05.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jun 2022 22:05:57 -0700 (PDT)
+From:   HighW4y2H3ll <huzh@nyu.edu>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     HighW4y2H3ll <huzh@nyu.edu>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] Fix buffer overflow in hinic_devlink.c:hinic_flash_fw
+Date:   Fri, 17 Jun 2022 01:01:02 -0400
+Message-Id: <20220617050101.37620-1-huzh@nyu.edu>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <BYAPR11MB2757BD90C63B9F6A31E0600ACDAC9@BYAPR11MB2757.namprd11.prod.outlook.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Proofpoint-GUID: H2F68lZii1It7rK680HeFkfyb68Ztqe6
+X-Proofpoint-ORIG-GUID: H2F68lZii1It7rK680HeFkfyb68Ztqe6
+X-Orig-IP: 209.85.222.197
+X-Proofpoint-Spam-Details: rule=outbound_bp_notspam policy=outbound_bp score=0 phishscore=0
+ adultscore=0 clxscore=1015 suspectscore=0 malwarescore=0
+ priorityscore=1501 spamscore=0 mlxlogscore=917 mlxscore=0
+ lowpriorityscore=0 impostorscore=0 bulkscore=0 classifier=spam adjust=0
+ reason=mlx scancount=1 engine=8.12.0-2204290000
+ definitions=main-2206170023
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Signed-off-by: zhenghao hu <huzh@nyu.edu>
+---
+ drivers/net/ethernet/huawei/hinic/hinic_port.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-On Thu, Jun 16, 2022 at 08:26:33PM +0000, Oleksandr Ocheretnyi -X (oocheret - GLOBALLOGIC INC at Cisco) wrote:
->    Hi Mika,
-> 
->    >    ​However I remember you caught situation where
->    micron_st_nor_read_fsr()
->    >    returns -EOPNOTSUPP
->    >    (intel_spi_exec_mem_op callback returns -EOPNOTSUPP), according to
->    your
->    >    patch
->    >
->    [3]https://lore.kernel.org/linux-mtd/20220506105158.43613-1-mika.wester
->    >    berg@linux.intel.com/ I've noted in description body. So I think I
->    have
->    >    to cover both errorcodes, haven't I?
->    I was thinking that you change the both functions in Intel SPI to
->    return
-> 
->    -ENOTSUPP, not just one.
-> 
->    ​you know 'drivers/mtd/spi-nor' sources use -EOPNOTSUPP errorcode only,
->    however
-> 
->    'drivers/spi' modules (where intel driver is located as well as
->    spi-mem.c) use both errorcodes many times
-> 
->    (-EOPNOTSUPP and -ENOTSUPP).
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_port.h b/drivers/net/ethernet/huawei/hinic/hinic_port.h
+index c9ae3d4dc547..4a50e75a2424 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_port.h
++++ b/drivers/net/ethernet/huawei/hinic/hinic_port.h
+@@ -13,6 +13,7 @@
+ #include <linux/bitops.h>
+ 
+ #include "hinic_dev.h"
++#include "hinic_devlink.h"
+ 
+ #define HINIC_RSS_KEY_SIZE	40
+ #define HINIC_RSS_INDIR_SIZE	256
+@@ -751,7 +752,7 @@ struct hinic_cmd_update_fw {
+ 	u32 setion_total_len;
+ 	u32 fw_section_version;
+ 	u32 section_offset;
+-	u32 data[384];
++	u32 data[MAX_FW_FRAGMENT_LEN];
+ };
+ 
+ int hinic_port_add_mac(struct hinic_dev *nic_dev, const u8 *addr,
+-- 
+2.35.1
 
-Oh, indeed. I remembered that SPI-NOR core was using ENOTSUP but it was
-SPI-MEM instead.
-
->    So maybe it is better to use -EOPNOTSUPP for intel driver file (what
->    uses -EOPNOTSUPP everywhere) and
-> 
->    update the spi-mem.c with -EOPNOTSUPP as return value, how do you
->    think?
-
-Yes, I think this is the correct approach. You need to be careful though
-to make sure the callers of SPI-MEM functions do not get unexpected
-values.
