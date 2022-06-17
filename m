@@ -2,519 +2,609 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71354CCA481
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 11:02:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E29A7CCA47C
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 11:02:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382312AbiFQLCO (ORCPT
+        id S1382332AbiFQLC1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 07:02:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57054 "EHLO
+        Fri, 17 Jun 2022 07:02:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382294AbiFQLCB (ORCPT
+        with ESMTP id S1382302AbiFQLCK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 07:02:01 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A30676C0D5;
-        Fri, 17 Jun 2022 04:01:57 -0700 (PDT)
-Received: from fraeml707-chm.china.huawei.com (unknown [172.18.147.201])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LPbcL2GBFz687SQ;
-        Fri, 17 Jun 2022 18:58:10 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml707-chm.china.huawei.com (10.206.15.35) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 17 Jun 2022 13:01:55 +0200
-Received: from localhost.localdomain (10.69.192.58) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 17 Jun 2022 12:01:51 +0100
-From:   John Garry <john.garry@huawei.com>
-To:     <axboe@kernel.dk>, <damien.lemoal@opensource.wdc.com>,
-        <bvanassche@acm.org>, <hch@lst.de>, <jejb@linux.ibm.com>,
-        <martin.petersen@oracle.com>, <hare@suse.de>, <satishkh@cisco.com>,
-        <sebaddel@cisco.com>, <kartilak@cisco.com>
-CC:     <linux-rdma@vger.kernel.org>, <linux-mmc@vger.kernel.org>,
-        <linux-nvme@lists.infradead.org>, <linux-s390@vger.kernel.org>,
-        <linux-scsi@vger.kernel.org>, <mpi3mr-linuxdrv.pdl@broadcom.com>,
-        <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <nbd@other.debian.org>, John Garry <john.garry@huawei.com>
-Subject: [PATCH 5/5] blk-mq: Drop 'reserved' member of busy_tag_iter_fn
-Date:   Fri, 17 Jun 2022 18:55:20 +0800
-Message-ID: <1655463320-241202-6-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1655463320-241202-1-git-send-email-john.garry@huawei.com>
-References: <1655463320-241202-1-git-send-email-john.garry@huawei.com>
+        Fri, 17 Jun 2022 07:02:10 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FBC46C0E7;
+        Fri, 17 Jun 2022 04:02:00 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id u12so8065985eja.8;
+        Fri, 17 Jun 2022 04:02:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vqnlYEcIy8IO0gz3tES3DwTO59rmOHSNzLoHDnG+gN0=;
+        b=QN0wt4HfbVCumD7Ny/kiOXtRjL26/2y1M76av1Lk7D8/jH3yAKohOm/Q2r72/NvZ46
+         qWlC2YnYc4o+PtwVmHIz81QF+J2LglmuOG0R3x2m4cTJZb5xq8bB6TQm3GLJGCTR1gBo
+         Zt8oozrTSt9t/kfWKrnENSEs0nCQKniOUuCX2YEniYjxPeTBvUNi0iLFsGS7SQWn+U1A
+         jI5BvJb5RGQ+G7TghMSAR1UPhsV4fEwVKHEv4VEiM2yzCLMs4dm6uYhXZ8inyKJjvb7G
+         aHvYRw1A9+Ix9+H5QemB21leXJUs61AvHNIIIji81p5tDm0Yq32Dt5YKHw75VdRyMd+f
+         M5bw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vqnlYEcIy8IO0gz3tES3DwTO59rmOHSNzLoHDnG+gN0=;
+        b=xQc4BbUW48qCvpakbzr2saw8irxJeH4Bdn4z0psL18mN/db3DYCPrfW9ntxHLFJ3OF
+         l5WIrQk/oS8qrIdSz+SPb6kffYcW7yvGzObb8/6egBQjGVAbq25KemnKQw6TgpD0AGh3
+         PM7GyEk4hGGDv9yls/9Kk5G89cuPojtWY5ru5N82s7Vy4gTogennNsPkTg5IcmKo3FHb
+         jnoozlUT07M5mz/zt4jxfc5HvURB+tz12rGlSIf9gY7okvgMmC+ux1LGUOvrvp3x4dEJ
+         dnid4pmdTI5z15duxfSTVs156tbyuv1rWE3XUDCJabkOe0ARQsAZ1z5Uk0Y8ab93Bj3i
+         EesA==
+X-Gm-Message-State: AJIora9U6e9zOYI5cT/ZL28OXqiuEhSHNt8XVG/FeAn/zYhK3Jb7ZVZQ
+        SS51yRLVDUkfEICyl5nedT2OxZGtDHuiwocw
+X-Google-Smtp-Source: AGRyM1uWtJnr6xfHEJ+buAbAHucC3w+kTOKYaERD0/XLcWjxf+43KfxTbd+OaZY5h6GpAaVfliCepg==
+X-Received: by 2002:a17:906:b15:b0:715:bf2e:df92 with SMTP id u21-20020a1709060b1500b00715bf2edf92mr8437332ejg.576.1655463718831;
+        Fri, 17 Jun 2022 04:01:58 -0700 (PDT)
+Received: from localhost.localdomain ([46.216.6.174])
+        by smtp.googlemail.com with ESMTPSA id b2-20020a1709063ca200b00704fa2748ffsm830177ejh.99.2022.06.17.04.01.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Jun 2022 04:01:58 -0700 (PDT)
+From:   Dzmitry Sankouski <dsankouski@gmail.com>
+Cc:     dsankouski@gmail.com, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Kees Cook <keescook@chromium.org>,
+        Anton Vorontsov <anton@enomsg.org>,
+        Colin Cross <ccross@android.com>,
+        Tony Luck <tony.luck@intel.com>, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] arm64: dts: qcom: starqltechn: add initial device tree for starqltechn
+Date:   Fri, 17 Jun 2022 14:01:28 +0300
+Message-Id: <20220617110130.2300438-1-dsankouski@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We no longer use the 'reserved' member in for any iter function so it
-may be dropped.
+New device support - Samsung S9 (SM-G9600) phone
+What works:
+- simple framebuffer
+- storage (both main and sdcard)
+- ramoops
 
-Signed-off-by: John Garry <john.garry@huawei.com>
+Signed-off-by: Dzmitry Sankouski <dsankouski@gmail.com>
 ---
- block/blk-mq-debugfs.c              |  2 +-
- block/blk-mq-tag.c                  | 13 +++++--------
- block/blk-mq.c                      | 10 ++++------
- drivers/block/mtip32xx/mtip32xx.c   |  6 +++---
- drivers/block/nbd.c                 |  2 +-
- drivers/infiniband/ulp/srp/ib_srp.c |  3 +--
- drivers/nvme/host/core.c            |  2 +-
- drivers/nvme/host/fc.c              |  3 +--
- drivers/nvme/host/nvme.h            |  2 +-
- drivers/scsi/aacraid/comminit.c     |  2 +-
- drivers/scsi/aacraid/linit.c        |  2 +-
- drivers/scsi/fnic/fnic_scsi.c       | 12 ++++--------
- drivers/scsi/hosts.c                | 14 ++++++--------
- drivers/scsi/mpi3mr/mpi3mr_os.c     | 16 ++++------------
- include/linux/blk-mq.h              |  2 +-
- include/scsi/scsi_host.h            |  2 +-
- 16 files changed, 36 insertions(+), 57 deletions(-)
+Changes for v2:
+- rebase on Linus's master branch
 
-diff --git a/block/blk-mq-debugfs.c b/block/blk-mq-debugfs.c
-index 7e4136a60e1c..d976920d4331 100644
---- a/block/blk-mq-debugfs.c
-+++ b/block/blk-mq-debugfs.c
-@@ -377,7 +377,7 @@ struct show_busy_params {
-  * e.g. due to a concurrent blk_mq_finish_request() call. Returns true to
-  * keep iterating requests.
-  */
--static bool hctx_show_busy_rq(struct request *rq, void *data, bool reserved)
-+static bool hctx_show_busy_rq(struct request *rq, void *data)
- {
- 	const struct show_busy_params *params = data;
- 
-diff --git a/block/blk-mq-tag.c b/block/blk-mq-tag.c
-index 2dcd738c6952..b8cc8b41553f 100644
---- a/block/blk-mq-tag.c
-+++ b/block/blk-mq-tag.c
-@@ -266,7 +266,6 @@ static bool bt_iter(struct sbitmap *bitmap, unsigned int bitnr, void *data)
- 	struct blk_mq_hw_ctx *hctx = iter_data->hctx;
- 	struct request_queue *q = iter_data->q;
- 	struct blk_mq_tag_set *set = q->tag_set;
--	bool reserved = iter_data->reserved;
- 	struct blk_mq_tags *tags;
- 	struct request *rq;
- 	bool ret = true;
-@@ -276,7 +275,7 @@ static bool bt_iter(struct sbitmap *bitmap, unsigned int bitnr, void *data)
- 	else
- 		tags = hctx->tags;
- 
--	if (!reserved)
-+	if (!iter_data->reserved)
- 		bitnr += tags->nr_reserved_tags;
- 	/*
- 	 * We can hit rq == NULL here, because the tagging functions
-@@ -287,7 +286,7 @@ static bool bt_iter(struct sbitmap *bitmap, unsigned int bitnr, void *data)
- 		return true;
- 
- 	if (rq->q == q && (!hctx || rq->mq_hctx == hctx))
--		ret = iter_data->fn(rq, iter_data->data, reserved);
-+		ret = iter_data->fn(rq, iter_data->data);
- 	blk_mq_put_rq_ref(rq);
- 	return ret;
- }
-@@ -337,12 +336,11 @@ static bool bt_tags_iter(struct sbitmap *bitmap, unsigned int bitnr, void *data)
- {
- 	struct bt_tags_iter_data *iter_data = data;
- 	struct blk_mq_tags *tags = iter_data->tags;
--	bool reserved = iter_data->flags & BT_TAG_ITER_RESERVED;
- 	struct request *rq;
- 	bool ret = true;
- 	bool iter_static_rqs = !!(iter_data->flags & BT_TAG_ITER_STATIC_RQS);
- 
--	if (!reserved)
-+	if (!(iter_data->flags & BT_TAG_ITER_RESERVED))
- 		bitnr += tags->nr_reserved_tags;
- 
- 	/*
-@@ -358,7 +356,7 @@ static bool bt_tags_iter(struct sbitmap *bitmap, unsigned int bitnr, void *data)
- 
- 	if (!(iter_data->flags & BT_TAG_ITER_STARTED) ||
- 	    blk_mq_request_started(rq))
--		ret = iter_data->fn(rq, iter_data->data, reserved);
-+		ret = iter_data->fn(rq, iter_data->data);
- 	if (!iter_static_rqs)
- 		blk_mq_put_rq_ref(rq);
- 	return ret;
-@@ -448,8 +446,7 @@ void blk_mq_tagset_busy_iter(struct blk_mq_tag_set *tagset,
- }
- EXPORT_SYMBOL(blk_mq_tagset_busy_iter);
- 
--static bool blk_mq_tagset_count_completed_rqs(struct request *rq,
--		void *data, bool reserved)
-+static bool blk_mq_tagset_count_completed_rqs(struct request *rq, void *data)
- {
- 	unsigned *count = data;
- 
-diff --git a/block/blk-mq.c b/block/blk-mq.c
-index 12b8350a66d5..1f2aa1da3938 100644
---- a/block/blk-mq.c
-+++ b/block/blk-mq.c
-@@ -128,8 +128,7 @@ struct mq_inflight {
- 	unsigned int inflight[2];
- };
- 
--static bool blk_mq_check_inflight(struct request *rq, void *priv,
--				  bool reserved)
-+static bool blk_mq_check_inflight(struct request *rq, void *priv)
- {
- 	struct mq_inflight *mi = priv;
- 
-@@ -1397,8 +1396,7 @@ void blk_mq_delay_kick_requeue_list(struct request_queue *q,
- }
- EXPORT_SYMBOL(blk_mq_delay_kick_requeue_list);
- 
--static bool blk_mq_rq_inflight(struct request *rq, void *priv,
--			       bool reserved)
-+static bool blk_mq_rq_inflight(struct request *rq, void *priv)
- {
- 	/*
- 	 * If we find a request that isn't idle we know the queue is busy
-@@ -1467,7 +1465,7 @@ void blk_mq_put_rq_ref(struct request *rq)
- 		__blk_mq_free_request(rq);
- }
- 
--static bool blk_mq_check_expired(struct request *rq, void *priv, bool reserved)
-+static bool blk_mq_check_expired(struct request *rq, void *priv)
- {
- 	unsigned long *next = priv;
- 
-@@ -3289,7 +3287,7 @@ struct rq_iter_data {
- 	bool has_rq;
- };
- 
--static bool blk_mq_has_request(struct request *rq, void *data, bool reserved)
-+static bool blk_mq_has_request(struct request *rq, void *data)
- {
- 	struct rq_iter_data *iter_data = data;
- 
-diff --git a/drivers/block/mtip32xx/mtip32xx.c b/drivers/block/mtip32xx/mtip32xx.c
-index d5767215840c..5ae0e9bb08be 100644
---- a/drivers/block/mtip32xx/mtip32xx.c
-+++ b/drivers/block/mtip32xx/mtip32xx.c
-@@ -2556,7 +2556,7 @@ static void mtip_softirq_done_fn(struct request *rq)
- 	blk_mq_end_request(rq, cmd->status);
- }
- 
--static bool mtip_abort_cmd(struct request *req, void *data, bool reserved)
-+static bool mtip_abort_cmd(struct request *req, void *data)
- {
- 	struct mtip_cmd *cmd = blk_mq_rq_to_pdu(req);
- 	struct driver_data *dd = data;
-@@ -2569,7 +2569,7 @@ static bool mtip_abort_cmd(struct request *req, void *data, bool reserved)
- 	return true;
- }
- 
--static bool mtip_queue_cmd(struct request *req, void *data, bool reserved)
-+static bool mtip_queue_cmd(struct request *req, void *data)
- {
- 	struct driver_data *dd = data;
- 
-@@ -3672,7 +3672,7 @@ static int mtip_block_initialize(struct driver_data *dd)
- 	return rv;
- }
- 
--static bool mtip_no_dev_cleanup(struct request *rq, void *data, bool reserv)
-+static bool mtip_no_dev_cleanup(struct request *rq, void *data)
- {
- 	struct mtip_cmd *cmd = blk_mq_rq_to_pdu(rq);
- 
-diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
-index 166303716560..a8f81a1618f8 100644
---- a/drivers/block/nbd.c
-+++ b/drivers/block/nbd.c
-@@ -879,7 +879,7 @@ static void recv_work(struct work_struct *work)
- 	kfree(args);
- }
- 
--static bool nbd_clear_req(struct request *req, void *data, bool reserved)
-+static bool nbd_clear_req(struct request *req, void *data)
- {
- 	struct nbd_cmd *cmd = blk_mq_rq_to_pdu(req);
- 
-diff --git a/drivers/infiniband/ulp/srp/ib_srp.c b/drivers/infiniband/ulp/srp/ib_srp.c
-index 6058abf42ba7..7720ea270ed8 100644
---- a/drivers/infiniband/ulp/srp/ib_srp.c
-+++ b/drivers/infiniband/ulp/srp/ib_srp.c
-@@ -1282,8 +1282,7 @@ struct srp_terminate_context {
- 	int scsi_result;
- };
- 
--static bool srp_terminate_cmd(struct scsi_cmnd *scmnd, void *context_ptr,
--			      bool reserved)
-+static bool srp_terminate_cmd(struct scsi_cmnd *scmnd, void *context_ptr)
- {
- 	struct srp_terminate_context *context = context_ptr;
- 	struct srp_target_port *target = context->srp_target;
-diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 24165daee3c8..7e692b81859d 100644
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -418,7 +418,7 @@ blk_status_t nvme_host_path_error(struct request *req)
- }
- EXPORT_SYMBOL_GPL(nvme_host_path_error);
- 
--bool nvme_cancel_request(struct request *req, void *data, bool reserved)
-+bool nvme_cancel_request(struct request *req, void *data)
- {
- 	dev_dbg_ratelimited(((struct nvme_ctrl *) data)->device,
- 				"Cancelling I/O %d", req->tag);
-diff --git a/drivers/nvme/host/fc.c b/drivers/nvme/host/fc.c
-index a166c0b1cc33..4b74f2267bb3 100644
---- a/drivers/nvme/host/fc.c
-+++ b/drivers/nvme/host/fc.c
-@@ -2456,8 +2456,7 @@ nvme_fc_nvme_ctrl_freed(struct nvme_ctrl *nctrl)
-  * status. The done path will return the io request back to the block
-  * layer with an error status.
-  */
--static bool
--nvme_fc_terminate_exchange(struct request *req, void *data, bool reserved)
-+static bool nvme_fc_terminate_exchange(struct request *req, void *data)
- {
- 	struct nvme_ctrl *nctrl = data;
- 	struct nvme_fc_ctrl *ctrl = to_fc_ctrl(nctrl);
-diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index 9b72b6ecf33c..5bcbe6edb54c 100644
---- a/drivers/nvme/host/nvme.h
-+++ b/drivers/nvme/host/nvme.h
-@@ -669,7 +669,7 @@ static __always_inline void nvme_complete_batch(struct io_comp_batch *iob,
- }
- 
- blk_status_t nvme_host_path_error(struct request *req);
--bool nvme_cancel_request(struct request *req, void *data, bool reserved);
-+bool nvme_cancel_request(struct request *req, void *data);
- void nvme_cancel_tagset(struct nvme_ctrl *ctrl);
- void nvme_cancel_admin_tagset(struct nvme_ctrl *ctrl);
- bool nvme_change_ctrl_state(struct nvme_ctrl *ctrl,
-diff --git a/drivers/scsi/aacraid/comminit.c b/drivers/scsi/aacraid/comminit.c
-index 940a6deab38f..bd99c5492b7d 100644
---- a/drivers/scsi/aacraid/comminit.c
-+++ b/drivers/scsi/aacraid/comminit.c
-@@ -272,7 +272,7 @@ static void aac_queue_init(struct aac_dev * dev, struct aac_queue * q, u32 *mem,
- 	q->entries = qsize;
- }
- 
--static bool wait_for_io_iter(struct scsi_cmnd *cmd, void *data, bool rsvd)
-+static bool wait_for_io_iter(struct scsi_cmnd *cmd, void *data)
- {
- 	int *active = data;
- 
-diff --git a/drivers/scsi/aacraid/linit.c b/drivers/scsi/aacraid/linit.c
-index 9c27bc37e5de..5ba5c18b77b4 100644
---- a/drivers/scsi/aacraid/linit.c
-+++ b/drivers/scsi/aacraid/linit.c
-@@ -633,7 +633,7 @@ struct fib_count_data {
- 	int krlcnt;
- };
- 
--static bool fib_count_iter(struct scsi_cmnd *scmnd, void *data, bool reserved)
-+static bool fib_count_iter(struct scsi_cmnd *scmnd, void *data)
- {
- 	struct fib_count_data *fib_count = data;
- 
-diff --git a/drivers/scsi/fnic/fnic_scsi.c b/drivers/scsi/fnic/fnic_scsi.c
-index e7b7f6d73429..77a4d9f8aa83 100644
---- a/drivers/scsi/fnic/fnic_scsi.c
-+++ b/drivers/scsi/fnic/fnic_scsi.c
-@@ -1350,8 +1350,7 @@ int fnic_wq_copy_cmpl_handler(struct fnic *fnic, int copy_work_to_do)
- 	return wq_work_done;
- }
- 
--static bool fnic_cleanup_io_iter(struct scsi_cmnd *sc, void *data,
--				 bool reserved)
-+static bool fnic_cleanup_io_iter(struct scsi_cmnd *sc, void *data)
- {
- 	const int tag = scsi_cmd_to_rq(sc)->tag;
- 	struct fnic *fnic = data;
-@@ -1548,8 +1547,7 @@ struct fnic_rport_abort_io_iter_data {
- 	int term_cnt;
- };
- 
--static bool fnic_rport_abort_io_iter(struct scsi_cmnd *sc, void *data,
--				     bool reserved)
-+static bool fnic_rport_abort_io_iter(struct scsi_cmnd *sc, void *data)
- {
- 	struct fnic_rport_abort_io_iter_data *iter_data = data;
- 	struct fnic *fnic = iter_data->fnic;
-@@ -2003,8 +2001,7 @@ struct fnic_pending_aborts_iter_data {
- 	int ret;
- };
- 
--static bool fnic_pending_aborts_iter(struct scsi_cmnd *sc,
--				     void *data, bool reserved)
-+static bool fnic_pending_aborts_iter(struct scsi_cmnd *sc, void *data)
- {
- 	struct fnic_pending_aborts_iter_data *iter_data = data;
- 	struct fnic *fnic = iter_data->fnic;
-@@ -2668,8 +2665,7 @@ void fnic_exch_mgr_reset(struct fc_lport *lp, u32 sid, u32 did)
- 
- }
- 
--static bool fnic_abts_pending_iter(struct scsi_cmnd *sc, void *data,
--				   bool reserved)
-+static bool fnic_abts_pending_iter(struct scsi_cmnd *sc, void *data)
- {
- 	struct fnic_pending_aborts_iter_data *iter_data = data;
- 	struct fnic *fnic = iter_data->fnic;
-diff --git a/drivers/scsi/hosts.c b/drivers/scsi/hosts.c
-index 8352f90d997d..315c7ac730e9 100644
---- a/drivers/scsi/hosts.c
-+++ b/drivers/scsi/hosts.c
-@@ -566,8 +566,7 @@ struct Scsi_Host *scsi_host_get(struct Scsi_Host *shost)
- }
- EXPORT_SYMBOL(scsi_host_get);
- 
--static bool scsi_host_check_in_flight(struct request *rq, void *data,
--				      bool reserved)
-+static bool scsi_host_check_in_flight(struct request *rq, void *data)
- {
- 	int *count = data;
- 	struct scsi_cmnd *cmd = blk_mq_rq_to_pdu(rq);
-@@ -662,7 +661,7 @@ void scsi_flush_work(struct Scsi_Host *shost)
- }
- EXPORT_SYMBOL_GPL(scsi_flush_work);
- 
--static bool complete_all_cmds_iter(struct request *rq, void *data, bool rsvd)
-+static bool complete_all_cmds_iter(struct request *rq, void *data)
- {
- 	struct scsi_cmnd *scmd = blk_mq_rq_to_pdu(rq);
- 	enum scsi_host_status status = *(enum scsi_host_status *)data;
-@@ -693,17 +692,16 @@ void scsi_host_complete_all_commands(struct Scsi_Host *shost,
- EXPORT_SYMBOL_GPL(scsi_host_complete_all_commands);
- 
- struct scsi_host_busy_iter_data {
--	bool (*fn)(struct scsi_cmnd *, void *, bool);
-+	bool (*fn)(struct scsi_cmnd *, void *);
- 	void *priv;
- };
- 
--static bool __scsi_host_busy_iter_fn(struct request *req, void *priv,
--				   bool reserved)
-+static bool __scsi_host_busy_iter_fn(struct request *req, void *priv)
- {
- 	struct scsi_host_busy_iter_data *iter_data = priv;
- 	struct scsi_cmnd *sc = blk_mq_rq_to_pdu(req);
- 
--	return iter_data->fn(sc, iter_data->priv, reserved);
-+	return iter_data->fn(sc, iter_data->priv);
- }
- 
- /**
-@@ -716,7 +714,7 @@ static bool __scsi_host_busy_iter_fn(struct request *req, void *priv,
-  * ithas to be provided by the caller
-  **/
- void scsi_host_busy_iter(struct Scsi_Host *shost,
--			 bool (*fn)(struct scsi_cmnd *, void *, bool),
-+			 bool (*fn)(struct scsi_cmnd *, void *),
- 			 void *priv)
- {
- 	struct scsi_host_busy_iter_data iter_data = {
-diff --git a/drivers/scsi/mpi3mr/mpi3mr_os.c b/drivers/scsi/mpi3mr/mpi3mr_os.c
-index d8c195b7ca57..59a18769a4fe 100644
---- a/drivers/scsi/mpi3mr/mpi3mr_os.c
-+++ b/drivers/scsi/mpi3mr/mpi3mr_os.c
-@@ -381,14 +381,12 @@ void mpi3mr_invalidate_devhandles(struct mpi3mr_ioc *mrioc)
-  * mpi3mr_print_scmd - print individual SCSI command
-  * @rq: Block request
-  * @data: Adapter instance reference
-- * @reserved: N/A. Currently not used
-  *
-  * Print the SCSI command details if it is in LLD scope.
-  *
-  * Return: true always.
-  */
--static bool mpi3mr_print_scmd(struct request *rq,
--	void *data, bool reserved)
-+static bool mpi3mr_print_scmd(struct request *rq, void *data)
- {
- 	struct mpi3mr_ioc *mrioc = (struct mpi3mr_ioc *)data;
- 	struct scsi_cmnd *scmd = blk_mq_rq_to_pdu(rq);
-@@ -412,7 +410,6 @@ static bool mpi3mr_print_scmd(struct request *rq,
-  * mpi3mr_flush_scmd - Flush individual SCSI command
-  * @rq: Block request
-  * @data: Adapter instance reference
-- * @reserved: N/A. Currently not used
-  *
-  * Return the SCSI command to the upper layers if it is in LLD
-  * scope.
-@@ -420,8 +417,7 @@ static bool mpi3mr_print_scmd(struct request *rq,
-  * Return: true always.
-  */
- 
--static bool mpi3mr_flush_scmd(struct request *rq,
--	void *data, bool reserved)
-+static bool mpi3mr_flush_scmd(struct request *rq, void *data)
- {
- 	struct mpi3mr_ioc *mrioc = (struct mpi3mr_ioc *)data;
- 	struct scsi_cmnd *scmd = blk_mq_rq_to_pdu(rq);
-@@ -451,7 +447,6 @@ static bool mpi3mr_flush_scmd(struct request *rq,
-  * mpi3mr_count_dev_pending - Count commands pending for a lun
-  * @rq: Block request
-  * @data: SCSI device reference
-- * @reserved: Unused
-  *
-  * This is an iterator function called for each SCSI command in
-  * a host and if the command is pending in the LLD for the
-@@ -461,8 +456,7 @@ static bool mpi3mr_flush_scmd(struct request *rq,
-  * Return: true always.
-  */
- 
--static bool mpi3mr_count_dev_pending(struct request *rq,
--	void *data, bool reserved)
-+static bool mpi3mr_count_dev_pending(struct request *rq, void *data)
- {
- 	struct scsi_device *sdev = (struct scsi_device *)data;
- 	struct mpi3mr_sdev_priv_data *sdev_priv_data = sdev->hostdata;
-@@ -485,7 +479,6 @@ static bool mpi3mr_count_dev_pending(struct request *rq,
-  * mpi3mr_count_tgt_pending - Count commands pending for target
-  * @rq: Block request
-  * @data: SCSI target reference
-- * @reserved: Unused
-  *
-  * This is an iterator function called for each SCSI command in
-  * a host and if the command is pending in the LLD for the
-@@ -495,8 +488,7 @@ static bool mpi3mr_count_dev_pending(struct request *rq,
-  * Return: true always.
-  */
- 
--static bool mpi3mr_count_tgt_pending(struct request *rq,
--	void *data, bool reserved)
-+static bool mpi3mr_count_tgt_pending(struct request *rq, void *data)
- {
- 	struct scsi_target *starget = (struct scsi_target *)data;
- 	struct mpi3mr_stgt_priv_data *stgt_priv_data = starget->hostdata;
-diff --git a/include/linux/blk-mq.h b/include/linux/blk-mq.h
-index fbb08bdd4618..811f77e32b7f 100644
---- a/include/linux/blk-mq.h
-+++ b/include/linux/blk-mq.h
-@@ -520,7 +520,7 @@ struct blk_mq_queue_data {
- 	bool last;
- };
- 
--typedef bool (busy_tag_iter_fn)(struct request *, void *, bool);
-+typedef bool (busy_tag_iter_fn)(struct request *, void *);
- 
- /**
-  * struct blk_mq_ops - Callback functions that implements block driver
-diff --git a/include/scsi/scsi_host.h b/include/scsi/scsi_host.h
-index 667d889b92b5..65082ecdd557 100644
---- a/include/scsi/scsi_host.h
-+++ b/include/scsi/scsi_host.h
-@@ -786,7 +786,7 @@ extern int scsi_host_block(struct Scsi_Host *shost);
- extern int scsi_host_unblock(struct Scsi_Host *shost, int new_state);
- 
- void scsi_host_busy_iter(struct Scsi_Host *,
--			 bool (*fn)(struct scsi_cmnd *, void *, bool), void *priv);
-+			 bool (*fn)(struct scsi_cmnd *, void *), void *priv);
- 
- struct class_container;
- 
+ arch/arm64/boot/dts/qcom/Makefile             |   1 +
+ .../dts/qcom/sdm845-samsung-starqltechn.dts   |  45 ++
+ .../dts/qcom/sdm845-samsung-starqltechn.dtsi  | 448 ++++++++++++++++++
+ 3 files changed, 494 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/qcom/sdm845-samsung-starqltechn.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sdm845-samsung-starqltechn.dtsi
+
+diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
+index 2f8aec2cc6db..85140db507b6 100644
+--- a/arch/arm64/boot/dts/qcom/Makefile
++++ b/arch/arm64/boot/dts/qcom/Makefile
+@@ -103,6 +103,7 @@ dtb-$(CONFIG_ARCH_QCOM)	+= sdm845-db845c.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sdm845-mtp.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sdm845-oneplus-enchilada.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sdm845-oneplus-fajita.dtb
++dtb-$(CONFIG_ARCH_QCOM)	+= sdm845-samsung-starqltechn.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sdm845-sony-xperia-tama-akari.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sdm845-sony-xperia-tama-akatsuki.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sdm845-sony-xperia-tama-apollo.dtb
+diff --git a/arch/arm64/boot/dts/qcom/sdm845-samsung-starqltechn.dts b/arch/arm64/boot/dts/qcom/sdm845-samsung-starqltechn.dts
+new file mode 100644
+index 000000000000..53bb2ebf0061
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sdm845-samsung-starqltechn.dts
+@@ -0,0 +1,45 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * SDM845 Samsung S9 (SM-G9600) (starqltechn) specific device tree
++ *
++ * Copyright (c) 2020, The Linux Foundation. All rights reserved.
++ */
++
++#include "sdm845-samsung-starqltechn.dtsi"
++
++/ {
++	model = "Samsung S9 SM-G9600";
++	compatible = "samsung,starqltechn", "qcom,sdm845";
++
++	chosen {
++		#address-cells = <2>;
++		#size-cells = <2>;
++		ranges;
++		bootargs = "console=tty1 loglevel=15 clk_ignore_unused PMOS_NO_OUTPUT_REDIRECT";
++		framebuffer: framebuffer@9D400000 {
++			compatible = "simple-framebuffer";
++			reg = <0 0x9D400000 0 (2960 * 1440 * 4)>;//2400000
++			width = <1440>;
++			height = <2960>;
++			stride = <(1440 * 4)>;
++			format = "a8r8g8b8";
++		};
++	};
++
++
++	reserved-memory {
++		framebuffer_region@9d400000 {
++			reg = <0x0 0x9d400000 0x0 0x02400000>;
++			no-map;
++		};
++
++		ramoops@A1300000 {
++			compatible = "ramoops";
++			reg = <0x0 0xa1300000 0x0 0x100000>;
++			record-size = <0x40000>;
++			console-size = <0x40000>;
++			ftrace-size = <0x40000>;
++			pmsg-size = <0x40000>;
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/qcom/sdm845-samsung-starqltechn.dtsi b/arch/arm64/boot/dts/qcom/sdm845-samsung-starqltechn.dtsi
+new file mode 100644
+index 000000000000..1d640d88c61a
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sdm845-samsung-starqltechn.dtsi
+@@ -0,0 +1,448 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * SDM845 Samsung S9 (SM-G9600) (starqltechn / star2qltechn) common device tree source
++ *
++ * Copyright (c) 2020, The Linux Foundation. All rights reserved.
++ */
++
++/dts-v1/;
++
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/regulator/qcom,rpmh-regulator.h>
++#include "sdm845.dtsi"
++
++/ {
++	chassis-type = "handset";
++
++	vph_pwr: vph-pwr-regulator {
++		compatible = "regulator-fixed";
++		regulator-name = "vph_pwr";
++		regulator-min-microvolt = <3700000>;
++		regulator-max-microvolt = <3700000>;
++	};
++
++	/*
++	 * Apparently RPMh does not provide support for PM8998 S4 because it
++	 * is always-on; model it as a fixed regulator.
++	 */
++	vreg_s4a_1p8: pm8998-smps4 {
++		compatible = "regulator-fixed";
++		regulator-name = "vreg_s4a_1p8";
++
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
++
++		regulator-always-on;
++		regulator-boot-on;
++
++		vin-supply = <&vph_pwr>;
++	};
++};
++
++
++&apps_rsc {
++	pm8998-rpmh-regulators {
++		compatible = "qcom,pm8998-rpmh-regulators";
++		qcom,pmic-id = "a";
++
++		vdd-s1-supply = <&vph_pwr>;
++		vdd-s2-supply = <&vph_pwr>;
++		vdd-s3-supply = <&vph_pwr>;
++		vdd-s4-supply = <&vph_pwr>;
++		vdd-s5-supply = <&vph_pwr>;
++		vdd-s6-supply = <&vph_pwr>;
++		vdd-s7-supply = <&vph_pwr>;
++		vdd-s8-supply = <&vph_pwr>;
++		vdd-s9-supply = <&vph_pwr>;
++		vdd-s10-supply = <&vph_pwr>;
++		vdd-s11-supply = <&vph_pwr>;
++		vdd-s12-supply = <&vph_pwr>;
++		vdd-s13-supply = <&vph_pwr>;
++		vdd-l1-l27-supply = <&vreg_s7a_1p025>;
++		vdd-l2-l8-l17-supply = <&vreg_s3a_1p35>;
++		vdd-l3-l11-supply = <&vreg_s7a_1p025>;
++		vdd-l4-l5-supply = <&vreg_s7a_1p025>;
++		vdd-l6-supply = <&vph_pwr>;
++		vdd-l7-l12-l14-l15-supply = <&vreg_s5a_2p04>;
++		vdd-l26-supply = <&vreg_s3a_1p35>;
++		vin-lvs-1-2-supply = <&vreg_s4a_1p8>;
++
++		vreg_s2a_1p125: smps2 {
++			regulator-min-microvolt = <1100000>;
++			regulator-max-microvolt = <1100000>;
++		};
++
++		vreg_s3a_1p35: smps3 {
++			regulator-min-microvolt = <1352000>;
++			regulator-max-microvolt = <1352000>;
++		};
++
++		vreg_s5a_2p04: smps5 {
++			regulator-min-microvolt = <1904000>;
++			regulator-max-microvolt = <2040000>;
++		};
++
++		vreg_s7a_1p025: smps7 {
++			regulator-min-microvolt = <900000>;
++			regulator-max-microvolt = <1028000>;
++		};
++
++		vdd_qusb_hs0:
++		vdda_hp_pcie_core:
++		vdda_mipi_csi0_0p9:
++		vdda_mipi_csi1_0p9:
++		vdda_mipi_csi2_0p9:
++		vdda_mipi_dsi0_pll:
++		vdda_mipi_dsi1_pll:
++		vdda_qlink_lv:
++		vdda_qlink_lv_ck:
++		vdda_qrefs_0p875:
++		vdda_pcie_core:
++		vdda_pll_cc_ebi01:
++		vdda_pll_cc_ebi23:
++		vdda_sp_sensor:
++		vdda_ufs1_core:
++		vdda_ufs2_core:
++		vdda_usb1_ss_core:
++		vdda_usb2_ss_core:
++		vreg_l1a_0p875: ldo1 {
++			regulator-min-microvolt = <880000>;
++			regulator-max-microvolt = <880000>;
++			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
++		};
++
++		vddpx_10:
++		vreg_l2a_1p2: ldo2 {
++			regulator-min-microvolt = <1200000>;
++			regulator-max-microvolt = <1200000>;
++			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
++			regulator-always-on;
++		};
++
++		vreg_l3a_1p0: ldo3 {
++			regulator-min-microvolt = <1000000>;
++			regulator-max-microvolt = <1000000>;
++			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
++		};
++
++		vdd_wcss_cx:
++		vdd_wcss_mx:
++		vdda_wcss_pll:
++		vreg_l5a_0p8: ldo5 {
++			regulator-min-microvolt = <800000>;
++			regulator-max-microvolt = <800000>;
++			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
++		};
++
++		vddpx_13:
++		vreg_l6a_1p8: ldo6 {
++			regulator-min-microvolt = <1856000>;
++			regulator-max-microvolt = <1856000>;
++			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
++		};
++
++		vreg_l7a_1p8: ldo7 {
++			regulator-min-microvolt = <1800000>;
++			regulator-max-microvolt = <1800000>;
++			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
++		};
++
++		vreg_l8a_1p2: ldo8 {
++			regulator-min-microvolt = <1200000>;
++			regulator-max-microvolt = <1248000>;
++			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
++		};
++
++		vreg_l9a_1p8: ldo9 {
++			regulator-min-microvolt = <1704000>;
++			regulator-max-microvolt = <2928000>;
++			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
++		};
++
++		vreg_l10a_1p8: ldo10 {
++			regulator-min-microvolt = <1704000>;
++			regulator-max-microvolt = <2928000>;
++			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
++		};
++
++		vreg_l11a_1p0: ldo11 {
++			regulator-min-microvolt = <1000000>;
++			regulator-max-microvolt = <1048000>;
++			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
++		};
++
++		vdd_qfprom:
++		vdd_qfprom_sp:
++		vdda_apc1_cs_1p8:
++		vdda_gfx_cs_1p8:
++		vdda_qrefs_1p8:
++		vdda_qusb_hs0_1p8:
++		vddpx_11:
++		vreg_l12a_1p8: ldo12 {
++			regulator-min-microvolt = <1800000>;
++			regulator-max-microvolt = <1800000>;
++			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
++		};
++
++		vddpx_2:
++		vreg_l13a_2p95: ldo13 {
++			regulator-min-microvolt = <1800000>;
++			regulator-max-microvolt = <2960000>;
++			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
++		};
++
++		vreg_l14a_1p88: ldo14 {
++			regulator-min-microvolt = <1800000>;
++			regulator-max-microvolt = <1800000>;
++			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
++		};
++
++		vreg_l15a_1p8: ldo15 {
++			regulator-min-microvolt = <1800000>;
++			regulator-max-microvolt = <1800000>;
++			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
++		};
++
++		vreg_l16a_2p7: ldo16 {
++			regulator-min-microvolt = <2704000>;
++			regulator-max-microvolt = <2704000>;
++			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
++		};
++
++		vreg_l17a_1p3: ldo17 {
++			regulator-min-microvolt = <1304000>;
++			regulator-max-microvolt = <1304000>;
++			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
++		};
++
++		vreg_l18a_2p7: ldo18 {
++			regulator-min-microvolt = <2704000>;
++			regulator-max-microvolt = <2960000>;
++			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
++		};
++
++		vreg_l19a_3p0: ldo19 {
++			regulator-min-microvolt = <2856000>;
++			regulator-max-microvolt = <3104000>;
++			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
++		};
++
++		vreg_l20a_2p95: ldo20 {
++			regulator-min-microvolt = <2704000>;
++			regulator-max-microvolt = <2960000>;
++			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
++		};
++
++		vreg_l21a_2p95: ldo21 {
++			regulator-min-microvolt = <2704000>;
++			regulator-max-microvolt = <2960000>;
++			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
++		};
++
++		vreg_l22a_2p85: ldo22 {
++			regulator-min-microvolt = <2864000>;
++			regulator-max-microvolt = <3312000>;
++			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
++		};
++
++		vreg_l23a_3p3: ldo23 {
++			regulator-min-microvolt = <3000000>;
++			regulator-max-microvolt = <3312000>;
++			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
++		};
++
++		vdda_qusb_hs0_3p1:
++		vreg_l24a_3p075: ldo24 {
++			regulator-min-microvolt = <3088000>;
++			regulator-max-microvolt = <3088000>;
++			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
++		};
++
++		vreg_l25a_3p3: ldo25 {
++			regulator-min-microvolt = <3300000>;
++			regulator-max-microvolt = <3312000>;
++			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
++		};
++
++		vdda_hp_pcie_1p2:
++		vdda_hv_ebi0:
++		vdda_hv_ebi1:
++		vdda_hv_ebi2:
++		vdda_hv_ebi3:
++		vdda_mipi_csi_1p25:
++		vdda_mipi_dsi0_1p2:
++		vdda_mipi_dsi1_1p2:
++		vdda_pcie_1p2:
++		vdda_ufs1_1p2:
++		vdda_ufs2_1p2:
++		vdda_usb1_ss_1p2:
++		vdda_usb2_ss_1p2:
++		vreg_l26a_1p2: ldo26 {
++			regulator-min-microvolt = <1200000>;
++			regulator-max-microvolt = <1200000>;
++			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
++		};
++
++		vreg_l28a_3p0: ldo28 {
++			regulator-min-microvolt = <2856000>;
++			regulator-max-microvolt = <3008000>;
++			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
++		};
++
++		vreg_lvs1a_1p8: lvs1 {
++			regulator-min-microvolt = <1800000>;
++			regulator-max-microvolt = <1800000>;
++		};
++
++		vreg_lvs2a_1p8: lvs2 {
++			regulator-min-microvolt = <1800000>;
++			regulator-max-microvolt = <1800000>;
++		};
++	};
++
++	pm8005-rpmh-regulators {
++		compatible = "qcom,pm8005-rpmh-regulators";
++		qcom,pmic-id = "c";
++
++		vdd-s1-supply = <&vph_pwr>;
++		vdd-s2-supply = <&vph_pwr>;
++		vdd-s3-supply = <&vph_pwr>;
++		vdd-s4-supply = <&vph_pwr>;
++
++		vreg_s3c_0p6: smps3 {
++			regulator-min-microvolt = <600000>;
++			regulator-max-microvolt = <600000>;
++		};
++	};
++};
++
++&gcc {
++	protected-clocks = <GCC_QSPI_CORE_CLK>,
++			   <GCC_QSPI_CORE_CLK_SRC>,
++			   <GCC_QSPI_CNOC_PERIPH_AHB_CLK>,
++			   <GCC_LPASS_Q6_AXI_CLK>,
++			   <GCC_LPASS_SWAY_CLK>;
++};
++
++&i2c10 {
++	status = "okay";
++	clock-frequency = <400000>;
++};
++
++&qupv3_id_1 {
++	status = "okay";
++};
++
++&uart9 {
++	status = "okay";
++};
++
++&ufs_mem_hc {
++	status = "okay";
++
++	reset-gpios = <&tlmm 150 GPIO_ACTIVE_LOW>;
++
++	vcc-supply = <&vreg_l20a_2p95>;
++	vcc-max-microamp = <600000>;
++};
++
++&ufs_mem_phy {
++	status = "okay";
++
++	vdda-phy-supply = <&vdda_ufs1_core>;
++	vdda-pll-supply = <&vdda_ufs1_1p2>;
++};
++
++&sdhc_2 {
++	status = "okay";
++
++	pinctrl-names = "default";
++	pinctrl-0 = <&sdc2_clk &sdc2_cmd &sdc2_data &sd_card_det_n>;
++
++	vmmc-supply = <&vreg_l21a_2p95>;
++	vqmmc-supply = <&vddpx_2>;
++
++	cd-gpios = <&tlmm 126 GPIO_ACTIVE_LOW>;
++};
++
++&usb_1 {
++	status = "okay";
++};
++
++&usb_1_dwc3 {
++	/* Until we have Type C hooked up we'll force this as peripheral. */
++	dr_mode = "peripheral";
++};
++
++&usb_1_hsphy {
++	status = "okay";
++
++	vdd-supply = <&vdda_usb1_ss_core>;
++	vdda-pll-supply = <&vdda_qusb_hs0_1p8>;
++	vdda-phy-dpdm-supply = <&vdda_qusb_hs0_3p1>;
++
++	qcom,imp-res-offset-value = <8>;
++	qcom,hstx-trim-value = <QUSB2_V2_HSTX_TRIM_21_6_MA>;
++	qcom,preemphasis-level = <QUSB2_V2_PREEMPHASIS_5_PERCENT>;
++	qcom,preemphasis-width = <QUSB2_V2_PREEMPHASIS_WIDTH_HALF_BIT>;
++};
++
++&usb_1_qmpphy {
++	status = "okay";
++
++	vdda-phy-supply = <&vdda_usb1_ss_1p2>;
++	vdda-pll-supply = <&vdda_usb1_ss_core>;
++};
++
++&wifi {
++	status = "okay";
++	vdd-0.8-cx-mx-supply = <&vreg_l5a_0p8>;
++	vdd-1.8-xo-supply = <&vreg_l7a_1p8>;
++	vdd-1.3-rfa-supply = <&vreg_l17a_1p3>;
++	vdd-3.3-ch0-supply = <&vreg_l25a_3p3>;
++};
++
++&tlmm {
++	gpio-reserved-ranges = <0 4>, <27 4>, <81 4>, <85 4>;
++
++	sdc2_clk: sdc2-clk {
++		pinconf {
++			pins = "sdc2_clk";
++			bias-disable;
++
++			/*
++			 * It seems that mmc_test reports errors if drive
++			 * strength is not 16 on clk, cmd, and data pins.
++			 */
++			drive-strength = <16>;
++		};
++	};
++
++	sdc2_cmd: sdc2-cmd {
++		pinconf {
++			pins = "sdc2_cmd";
++			bias-pull-up;
++			drive-strength = <16>;
++		};
++	};
++
++	sdc2_data: sdc2-data {
++		pinconf {
++			pins = "sdc2_data";
++			bias-pull-up;
++			drive-strength = <16>;
++		};
++	};
++
++	sd_card_det_n: sd-card-det-n {
++		pinmux {
++			pins = "gpio126";
++			function = "gpio";
++		};
++
++		pinconf {
++			pins = "gpio126";
++			bias-pull-up;
++		};
++	};
++};
 -- 
-2.35.3
+2.30.2
 
