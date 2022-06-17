@@ -2,77 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78348C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 11:29:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57747C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 11:29:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380407AbiFQL3P (ORCPT
+        id S1381516AbiFQL3b (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 07:29:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57506 "EHLO
+        Fri, 17 Jun 2022 07:29:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235810AbiFQL3L (ORCPT
+        with ESMTP id S1381321AbiFQL30 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 07:29:11 -0400
-Received: from m15114.mail.126.com (m15114.mail.126.com [220.181.15.114])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 315036CA81
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 04:29:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=O/gfj
-        iM+/dFXgLyDX8wONUfp/rIAwYsakkpB/GaAurk=; b=Vr3o8xiieKrrrlgnddW/w
-        s9lxmQXAdM8azHPs8X4zP73tsYyzzomAKFUaoodb8Koskz0K52ppxEOXFj7WjG3s
-        gj/Bmh67ql+61IR+ujsnV7CXfostj9RwIDUyOm4NdpUn7UlVV80Y1PAnLYLzxZV2
-        PVenFWunVvRjV+M2z4PweA=
-Received: from localhost.localdomain (unknown [124.16.139.61])
-        by smtp7 (Coremail) with SMTP id DsmowACn5_bsZKximyZLDg--.20485S2;
-        Fri, 17 Jun 2022 19:26:38 +0800 (CST)
-From:   Liang He <windhl@126.com>
-To:     mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org,
-        akpm@linux-foundation.org, rppt@kernel.org,
-        christophe.leroy@csgroup.eu, wangkefeng.wang@huawei.com,
-        gpiccoli@igalia.com, aneesh.kumar@linux.ibm.com,
-        dmitry.osipenko@collabora.com
-Cc:     windhl@126.com, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] powerpc: kernel: Change the order of of_node_put()
-Date:   Fri, 17 Jun 2022 19:26:36 +0800
-Message-Id: <20220617112636.4041671-1-windhl@126.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 17 Jun 2022 07:29:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85D466CA9F;
+        Fri, 17 Jun 2022 04:29:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 25F7B61F17;
+        Fri, 17 Jun 2022 11:29:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FC99C3411B;
+        Fri, 17 Jun 2022 11:29:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655465364;
+        bh=9wuCQMmf4p3CO/lJPhcLoBAMVeXWYbFbN0sfWQQnDQk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=H25MPIFra+fAN55+BKYFZ4qRV0crICkaD+vebhgb34i5Z2BJMHHmOmIHEKfYxYSoD
+         N+wn0p3XckwdBF+8BpdmB7Ti1dBLWJZzdeknxF8nhP0K8Fh8aZPwGhZLcn8FL8BBCi
+         bkPKcAqBsv4K+9LIsNZyBy92pHwQ2NkK2nFWAykbBDJRkngnMLlX84dTZWVuNlelDW
+         qTEDzpDElreRE3YcTPrh5Zq9KRWPwfVAxjBHXC/lBpyZQ2Jfn2YEniaSsOG0taJyEp
+         hziypQnY7SMFgsKucBvsyasYxMrKKUwkUrkzLau1cnWDuQRzIiBZ3PYwnZgSzdy894
+         IHoCfblca6xxA==
+Date:   Fri, 17 Jun 2022 06:29:22 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Serge Semin <fancer.lancer@gmail.com>
+Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Rob Herring <robh@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Frank Li <Frank.Li@nxp.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 00/18] PCI: dwc: Various fixes and cleanups
+Message-ID: <20220617112922.GA1176883@bhelgaas>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DsmowACn5_bsZKximyZLDg--.20485S2
-X-Coremail-Antispam: 1Uf129KBjvdXoW7GF48Jw1UWw1UAFWUur1fXrb_yoWxKrX_t3
-        yxX3ZI9r4vyrsa9rsrAF4fXr1Dtw4kXr1Fk3Wv9w47t3Z8Xw4UAr98Z3WkJr9xuryUt39F
-        934Dtws8tF40vjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xRM-eo7UUUUU==
-X-Originating-IP: [124.16.139.61]
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi3A4jF1pEDvX86gAAsV
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220617104143.yj2mlnj4twoxoeld@mobilestation>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In add_pcspkr(), it is better to call of_node_put() after the
-'if(!np)' check.
+On Fri, Jun 17, 2022 at 01:41:43PM +0300, Serge Semin wrote:
+> On Thu, Jun 16, 2022 at 03:03:16PM -0500, Bjorn Helgaas wrote:
+> > On Fri, Jun 10, 2022 at 11:25:16AM +0300, Serge Semin wrote:
+> > > This patchset is a first one in the series created in the framework of
+> > > my Baikal-T1 PCIe/eDMA-related work:
+> > > ...
 
-Signed-off-by: Liang He <windhl@126.com>
----
- arch/powerpc/kernel/setup-common.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> > This doesn't apply cleanly on v5.19-rc1 (my "main" branch).  v5.19-rc1
+> > was tagged June 5, but apparently v4 was rebased to v5.18 and posted
+> > June 10?  That's just a non-starter because many of these files were
+> > changed during the merge window between v5.18 and v5.19-rc1.
+> 
+> Ok. I'll rebase it on top of v5.19-rcX on the next cycle.
 
-diff --git a/arch/powerpc/kernel/setup-common.c b/arch/powerpc/kernel/setup-common.c
-index eb0077b302e2..761817d1f4db 100644
---- a/arch/powerpc/kernel/setup-common.c
-+++ b/arch/powerpc/kernel/setup-common.c
-@@ -563,9 +563,9 @@ static __init int add_pcspkr(void)
- 	int ret;
- 
- 	np = of_find_compatible_node(NULL, NULL, "pnpPNP,100");
--	of_node_put(np);
- 	if (!np)
- 		return -ENODEV;
-+	of_node_put(np);
- 
- 	pd = platform_device_alloc("pcspkr", -1);
- 	if (!pd)
--- 
-2.25.1
+I merge things on topic branches based on -rc1, so there's no benefit
+to rebasing to anything past that (at least for me).  Normally it
+doesn't matter because very little will change between -rc1 and -rcX.
 
+> > I'll be looking for an ack from Jingoo and/or Gustavo, maintainers of
+> > pcie-designware.c and related files.
+> 
+> Alas this will be very unluckily to happen. They have been inactive
+> for more than four months on this and the rest of the patchsets
+> (that's how long the patchsets have been hanging out on review).
+> The last commit authored by Gustavo was the commit ce31ff786ddf
+> ("PCI: dwc: Fix 'cast truncates bits from constant value'") posted
+> in Sep 22, 2020 and no review activity afterwards. Jingoo' last
+> ack was in Jun 25, 2019. So two and three years of silence accordingly
+> doesn't give any hope on the sooner reaction from them.
+
+Ok, thanks for the update.  I hadn't noticed that.
+
+Bjorn
