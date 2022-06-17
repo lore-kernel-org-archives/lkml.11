@@ -2,90 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92CEDCCA479
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 18:01:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F206FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 18:02:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383412AbiFQSBO (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 14:01:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36664 "EHLO
+        id S232603AbiFQSCf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 17 Jun 2022 14:02:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231433AbiFQSBN (ORCPT
+        with ESMTP id S231433AbiFQSCc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 14:01:13 -0400
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 530C050B21
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 11:01:12 -0700 (PDT)
-Received: by mail-yb1-xb2f.google.com with SMTP id r3so8486054ybr.6
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 11:01:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fJfafNFGMHYiA8EwtUDEDFiN9A8iVgpbljvHPjVk9+0=;
-        b=CZrgaSYRE689Ko864tH3HNiFvBgadMCz3IiapO5WtexRaRXz1UUIsfsBCnPPX2LQA5
-         wEnPeflhEZa22JL6JR24D9m9LPcAi3aOu/YxsR5XFJdculsKXHxpxIyHMK+N2ngBQLTj
-         hxnyBbkWxlbHu+hwmiv5GkfBOvX64KEoOVzh+f1pCpjWv3Q/9jfKahd1iwKjuocUlp/J
-         IXjWsMr2IHfhv7cOcBASQ/ZBQWxmeI2NRoFT1v9qNZYk44Mm+cE2FmvVjgExc1dHA7ib
-         vt45d/LYYd1OFxUh7LO7kvRelustZcRTl5C4adMz0mHVv5dMe75Isiku4JvHU4OHUL/S
-         l6Zg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fJfafNFGMHYiA8EwtUDEDFiN9A8iVgpbljvHPjVk9+0=;
-        b=yjPXYzezJ/YLJTiz1xnUd3+1wtKKtFmcq0vGR39j2pYgHNEPX1JWbDVwMEDzN0Z8YP
-         lizajqvqpXJc2CynxOsQG8pn/sFjYl3bALw70rdAdsMxeVl3OsVrkLZJTt8Gf0vY7xrk
-         5hRNzCLH6DZuxMlFGx5wczKNGT74d8+IFfdozAYsVaavICYa3PRjz1sZvHYrgkBxJ+zC
-         Ej075Tt/+0uBg8uxhecXBbY8tdrnTuUncuUsBL4+/AWj8krtU+y4ujeHlJpuo93LHRc/
-         j89aXEkaJs5vCltXEheBWrhra7xAVgcA5igdVSNoGps7CgrIDxKi8iuWK4dqBa2UKrUm
-         l3mg==
-X-Gm-Message-State: AJIora97wwDjeugRcz7o+TXlODlnwKmFXho07QCL1JeuOF6MfKf0mZXd
-        PII+JE7OKaIYU1bKUBvITX+Ou9CYtI7KVmKYAAciuw==
-X-Google-Smtp-Source: AGRyM1vqgEVQiRdQBqYV1ExEWY74oDgB8uPun0J/r/LzMJt+lL/rC3Ytps1OBspe1/xkmsUBVdPG8lEg1V8uO/8FFi8=
-X-Received: by 2002:a05:6902:10c1:b0:668:b4e5:57c8 with SMTP id
- w1-20020a05690210c100b00668b4e557c8mr5061472ybu.530.1655488871285; Fri, 17
- Jun 2022 11:01:11 -0700 (PDT)
+        Fri, 17 Jun 2022 14:02:32 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4790650E34;
+        Fri, 17 Jun 2022 11:02:31 -0700 (PDT)
+Received: from x64host.home (unknown [47.189.24.195])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 4250520C3485;
+        Fri, 17 Jun 2022 11:02:30 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 4250520C3485
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1655488951;
+        bh=B6JQW5syKKdwir3NNZtlekEMoQqCcowRgtQfTpInk0w=;
+        h=From:To:Subject:Date:In-Reply-To:References:From;
+        b=ksoyPAkw3LGpTdDkmOps8iqAPDDD+Eot4jXL22DnxuAUYWXgCqG6eRk4m/qHpggXS
+         Bma/h2bi3mf14gy7o/U60H50AnX54cxB/O2OwkJWnHMDzsOEnF9aHk93YusbqQtswN
+         2dvFsQX9dA1Zgc4OrJoIXXfhzLUHGvAnpzn1NjYI=
+From:   madvenka@linux.microsoft.com
+To:     broonie@kernel.org, mark.rutland@arm.com, jpoimboe@redhat.com,
+        ardb@kernel.org, nobuta.keiya@fujitsu.com,
+        sjitindarsingh@gmail.com, catalin.marinas@arm.com, will@kernel.org,
+        jamorris@linux.microsoft.com, linux-arm-kernel@lists.infradead.org,
+        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+        madvenka@linux.microsoft.com
+Subject: [RFC PATCH v15 1/6] arm64: Split unwind_init()
+Date:   Fri, 17 Jun 2022 13:02:14 -0500
+Message-Id: <20220617180219.20352-2-madvenka@linux.microsoft.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220617180219.20352-1-madvenka@linux.microsoft.com>
+References: <ff68fb850d42e1adaa6a0a6c9c258acabb898b24>
+ <20220617180219.20352-1-madvenka@linux.microsoft.com>
 MIME-Version: 1.0
-References: <CAGETcx8z4dn1j05Za6nfDeC3v4r1yo30Nqu=1K2BEsvLcqqybQ@mail.gmail.com>
- <CACRpkdaXJh_Qc-DuD7SFsZPM9GBMUgnoufcFKsy3BPUYFHMHWQ@mail.gmail.com>
-In-Reply-To: <CACRpkdaXJh_Qc-DuD7SFsZPM9GBMUgnoufcFKsy3BPUYFHMHWQ@mail.gmail.com>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Fri, 17 Jun 2022 11:00:35 -0700
-Message-ID: <CAGETcx-io_5tVbRBfuB-qOwm4tV0A5FR82Q21Z1dJcLbAOkd=A@mail.gmail.com>
-Subject: Re: Default async probing for DT based systems
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Kevin Hilman <khilman@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Marc Zyngier <maz@kernel.org>, Will Deacon <will@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Android Kernel Team <kernel-team@android.com>,
-        Linux PM <linux-pm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 17, 2022 at 1:21 AM Linus Walleij <linus.walleij@linaro.org> wrote:
->
-> On Thu, Jun 16, 2022 at 5:25 AM Saravana Kannan <saravanak@google.com> wrote:
->
-> > Since fw_devlink=on is the default behavior and fw_devlink understands
-> > approximately 24 DT bindings,
->
-> How can I see which these are, in the kernel tree?
+From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
 
-device/of/property.c has an array of these binding handling functions
-in of_supplier_bindings[].
+unwind_init() is currently a single function that initializes all of the
+unwind state. Split it into the following functions and call them
+appropriately:
 
-Most of the functions there are created using DEFINE_SIMPLE_PROP() or
-DEFINE_SUFFIX_PROP() that's also in the same file.
+	- unwind_init_from_regs() - initialize from regs passed by caller.
 
--Saravana
+	- unwind_init_from_caller() - initialize for the current task
+	  from the caller of arch_stack_walk().
+
+	- unwind_init_from_task() - initialize from the saved state of a
+	  task other than the current task. In this case, the other
+	  task must not be running.
+
+This is done for two reasons:
+
+	- the different ways of initializing are clear
+
+	- specialized code can be added to each initializer in the future.
+
+Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
+Reviewed-by: Mark Brown <broonie@kernel.org>
+---
+ arch/arm64/kernel/stacktrace.c | 66 ++++++++++++++++++++++++++++------
+ 1 file changed, 55 insertions(+), 11 deletions(-)
+
+diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
+index 0467cb79f080..e44f93ff25f0 100644
+--- a/arch/arm64/kernel/stacktrace.c
++++ b/arch/arm64/kernel/stacktrace.c
+@@ -50,11 +50,8 @@ struct unwind_state {
+ #endif
+ };
+ 
+-static notrace void unwind_init(struct unwind_state *state, unsigned long fp,
+-				unsigned long pc)
++static void unwind_init_common(struct unwind_state *state)
+ {
+-	state->fp = fp;
+-	state->pc = pc;
+ #ifdef CONFIG_KRETPROBES
+ 	state->kr_cur = NULL;
+ #endif
+@@ -72,7 +69,57 @@ static notrace void unwind_init(struct unwind_state *state, unsigned long fp,
+ 	state->prev_fp = 0;
+ 	state->prev_type = STACK_TYPE_UNKNOWN;
+ }
+-NOKPROBE_SYMBOL(unwind_init);
++
++/*
++ * Start an unwind from a pt_regs.
++ *
++ * The unwind will begin at the PC within the regs.
++ *
++ * The regs must be on a stack currently owned by the calling task.
++ */
++static inline void unwind_init_from_regs(struct unwind_state *state,
++					 struct pt_regs *regs)
++{
++	unwind_init_common(state);
++
++	state->fp = regs->regs[29];
++	state->pc = regs->pc;
++}
++
++/*
++ * Start an unwind from a caller.
++ *
++ * The unwind will begin at the caller of whichever function this is inlined
++ * into.
++ *
++ * The function which invokes this must be noinline.
++ */
++static __always_inline void unwind_init_from_caller(struct unwind_state *state)
++{
++	unwind_init_common(state);
++
++	state->fp = (unsigned long)__builtin_frame_address(1);
++	state->pc = (unsigned long)__builtin_return_address(0);
++}
++
++/*
++ * Start an unwind from a blocked task.
++ *
++ * The unwind will begin at the blocked tasks saved PC (i.e. the caller of
++ * cpu_switch_to()).
++ *
++ * The caller should ensure the task is blocked in cpu_switch_to() for the
++ * duration of the unwind, or the unwind will be bogus. It is never valid to
++ * call this for the current task.
++ */
++static inline void unwind_init_from_task(struct unwind_state *state,
++					 struct task_struct *task)
++{
++	unwind_init_common(state);
++
++	state->fp = thread_saved_fp(task);
++	state->pc = thread_saved_pc(task);
++}
+ 
+ /*
+  * Unwind from one frame record (A) to the next frame record (B).
+@@ -213,14 +260,11 @@ noinline notrace void arch_stack_walk(stack_trace_consume_fn consume_entry,
+ 	struct unwind_state state;
+ 
+ 	if (regs)
+-		unwind_init(&state, regs->regs[29], regs->pc);
++		unwind_init_from_regs(&state, regs);
+ 	else if (task == current)
+-		unwind_init(&state,
+-				(unsigned long)__builtin_frame_address(1),
+-				(unsigned long)__builtin_return_address(0));
++		unwind_init_from_caller(&state);
+ 	else
+-		unwind_init(&state, thread_saved_fp(task),
+-				thread_saved_pc(task));
++		unwind_init_from_task(&state, task);
+ 
+ 	unwind(task, &state, consume_entry, cookie);
+ }
+-- 
+2.25.1
+
