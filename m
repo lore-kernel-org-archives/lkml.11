@@ -2,120 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5914C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 02:56:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52B10C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 03:00:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379871AbiFQC4Z (ORCPT
+        id S1379885AbiFQDAv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 22:56:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37738 "EHLO
+        Thu, 16 Jun 2022 23:00:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379728AbiFQC4X (ORCPT
+        with ESMTP id S232810AbiFQDAs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 22:56:23 -0400
-Received: from m15111.mail.126.com (m15111.mail.126.com [220.181.15.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1EDF6E0BC
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 19:56:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=aTdIn
-        RxfYkL/Bf5dwKSX31T/KQuPHI8eY4IcEkq32c0=; b=VpXeBlUCkhJHeIM2UKbYy
-        wTyuLZ1ioa2FRgveEu1GuCa1oUxfjpfHuiawM7hrZHyAkEg80OwvEzVPqVTV6cUl
-        wXKasa4D01DiBBEvVsNZZIx7RPq5UGDetKhh2BFePb07iQYE+RPg7s0wW92Bl/pL
-        F/2gvA7trHZvyhCswqdDHY=
-Received: from localhost.localdomain (unknown [124.16.139.61])
-        by smtp1 (Coremail) with SMTP id C8mowAB3U9wL7atieDncEg--.18233S2;
-        Fri, 17 Jun 2022 10:55:13 +0800 (CST)
-From:   Liang He <windhl@126.com>
-To:     lpieralisi@kernel.org, pali@kernel.org,
-        christophe.jaillet@wanadoo.fr
-Cc:     linux-kernel@vger.kernel.org, windhl@126.com
-Subject: [PATCH v3] bus: mvebu-mbus: Add missing of_node_put()
-Date:   Fri, 17 Jun 2022 10:55:07 +0800
-Message-Id: <20220617025507.4002557-1-windhl@126.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 16 Jun 2022 23:00:48 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CC256620C
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 20:00:46 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LPNxd0nk6zSgxd;
+        Fri, 17 Jun 2022 10:57:25 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 17 Jun 2022 11:00:44 +0800
+Subject: Re: [PATCH v2 0/3] A few cleanup and fixup patches for swap
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        David Hildenbrand <david@redhat.com>,
+        Hugh Dickins <hughd@google.com>,
+        Huang Ying <ying.huang@intel.com>
+CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>
+References: <20220608144031.829-1-linmiaohe@huawei.com>
+ <20220616193713.7ca68b49a0dabc749c495a0f@linux-foundation.org>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <8884b075-aa73-a77f-884e-2dcda0f83a25@huawei.com>
+Date:   Fri, 17 Jun 2022 11:00:44 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: C8mowAB3U9wL7atieDncEg--.18233S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7Kr18Cw47AFyDtr4kWFW7Jwb_yoW8ZFy7pF
-        W7Wr43try0qrWfJFZaka4xua4YkFn7WFWUXa9rCwn3AF13AayYvrWFyFyrZFZ8AFW09w1Y
-        yw1jy3WxuasrAaUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pENtxnUUUUU=
-X-Originating-IP: [124.16.139.61]
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi3BIjF1pEDvLfOgAAs9
+In-Reply-To: <20220616193713.7ca68b49a0dabc749c495a0f@linux-foundation.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In mvebu_mbus_dt_init(), of_find_matching_node_and_match() and
-of_find_node_by_phandle() will both return node pointers with
-refcount incremented. We should use of_node_put() in fail path
-or when it is not used anymore.
+On 2022/6/17 10:37, Andrew Morton wrote:
+> On Wed, 8 Jun 2022 22:40:28 +0800 Miaohe Lin <linmiaohe@huawei.com> wrote:
+> 
+>> This series contains a cleaup patch to remove unneeded swap_cache_info
+>> statistics, and two bugfix patches to avoid possible data races of
+>> inuse_pages and so on. More details can be found in the respective
+>> changelogs. 
+> 
+> It would be nice to get [1/3] reviewed please.
 
-Signed-off-by: Liang He <windhl@126.com>
----
- changelog:
- v3: (1) use goto-label patch style (2) fix v2 error reported by CJ 
- v2: (1) use real name (2) add of_node_put when not used anymore
- v1: add of_node_put in fail path
+I'd like too.
 
- drivers/bus/mvebu-mbus.c | 23 +++++++++++++++++------
- 1 file changed, 17 insertions(+), 6 deletions(-)
+Hi David & Hugh & Huang, Ying,
+It's very kind of you if you can help review this patch!
 
-diff --git a/drivers/bus/mvebu-mbus.c b/drivers/bus/mvebu-mbus.c
-index db612045616f..739f850cfcf1 100644
---- a/drivers/bus/mvebu-mbus.c
-+++ b/drivers/bus/mvebu-mbus.c
-@@ -1328,23 +1328,27 @@ int __init mvebu_mbus_dt_init(bool is_coherent)
- 	prop = of_get_property(np, "controller", NULL);
- 	if (!prop) {
- 		pr_err("required 'controller' property missing\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto err_np_put;
- 	}
- 
- 	controller = of_find_node_by_phandle(be32_to_cpup(prop));
- 	if (!controller) {
- 		pr_err("could not find an 'mbus-controller' node\n");
--		return -ENODEV;
-+		ret = -ENODEV;
-+		goto err_np_put;
- 	}
- 
- 	if (of_address_to_resource(controller, 0, &mbuswins_res)) {
- 		pr_err("cannot get MBUS register address\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto err_controller_put;
- 	}
- 
- 	if (of_address_to_resource(controller, 1, &sdramwins_res)) {
- 		pr_err("cannot get SDRAM register address\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto err_controller_put;
- 	}
- 
- 	/*
-@@ -1375,9 +1379,16 @@ int __init mvebu_mbus_dt_init(bool is_coherent)
- 				     resource_size(&mbusbridge_res),
- 				     is_coherent);
- 	if (ret)
--		return ret;
-+		goto err_controller_put;
- 
- 	/* Setup statically declared windows in the DT */
--	return mbus_dt_setup(&mbus_state, np);
-+	ret = mbus_dt_setup(&mbus_state, np);
-+
-+err_controller_put:
-+	of_node_put(controller);
-+err_np_put:
-+	of_node_put(np);
-+
-+	return ret;
- }
- #endif
--- 
-2.25.1
+Thanks!
+
+BTW: It should be convenient if there are mm/swap reviewers. ;)
+
+> 
+> 
+> .
+> 
 
