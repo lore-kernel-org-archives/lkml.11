@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52FEFC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 17:37:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DEE6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 17:37:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382880AbiFQRhA (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 13:37:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43228 "EHLO
+        id S229834AbiFQRhO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 17 Jun 2022 13:37:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346881AbiFQRg5 (ORCPT
+        with ESMTP id S1382854AbiFQRhD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 13:36:57 -0400
+        Fri, 17 Jun 2022 13:37:03 -0400
 Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 429D039688
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 10:36:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B28BC381B5
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 10:37:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655487416; x=1687023416;
+  t=1655487421; x=1687023421;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=bMtLzQOljOUCZPzV5ltNBGcTCTrefOOBNqtGBtob8NQ=;
-  b=AaEzMVouO3yKnnYxT1k1Hr99PpynHCZh7zPMxyp8Zv35moi/la75f/Pr
-   GiT1DtMbcin8lBl03+bwa270aV1iZX9M/ObgK6EWCte2p1VZ0mr1ntGNT
-   1BBdvxjznBI5HmXOus8F5JaNTdZLv9Fji8tskTZbmPZgXr3iOMDbCeZXE
-   /sIs7B1UIJRh3AqQcYcXeyjItyWLx4oV74Vrkf3UE+6PMyiLc3RGuNJBF
-   o1NvGDMsAUpyBaXNPEs5fhJ8VS2CxhhFfzLrUOGHlG1j3LadSGW/MMb87
-   luyCKZWDUL1ApXo6lUTUaXq1XhjF7dAtSIj6HljZhxGiifEIZTvViyAsq
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="278274004"
+  bh=A0mH88Eu9d8YJdtFruQngDThFuGnpYD5jAp7cMyF/ck=;
+  b=NNXx5GMFo418Wi+CMmyE6Z821RYOxna6vz3m/gfW+gF8xjrkscMataNT
+   pY3gShjQxyW4b8vuEANBkp4eZHA5G7CRM7O61xZiYsYDx9mfxaJFqGsQf
+   Zg7fEPg0Lv1CD8Lis9Q6K+BYR4wCuMpKj4LpAV5SnkW6I5VQie6G9x/fR
+   jj0K7UXuGCRN2nwt8lZVlFV7q9MVQEXevb614qylbM3lDHseKeQTGDJs9
+   ICdz1rU0/Khr56Zbs8U5/doMx+2fpfOuKOybK5ftoQXgk38qTwvyOIUoW
+   M+3ww0FmtWWk4HDBvVXrxepcJ1WDIfHm3NRDYkI244ipgeJv7rtvkcjho
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="278276986"
 X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="278274004"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2022 04:26:41 -0700
+   d="scan'208";a="278276986"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2022 06:41:44 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="653592160"
+   d="scan'208";a="536825754"
 Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 17 Jun 2022 04:26:40 -0700
+  by orsmga003.jf.intel.com with ESMTP; 17 Jun 2022 06:41:43 -0700
 Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1o2A7b-000PP7-VJ;
-        Fri, 17 Jun 2022 11:26:39 +0000
-Date:   Fri, 17 Jun 2022 19:26:23 +0800
+        id 1o2CEI-000PTv-L5;
+        Fri, 17 Jun 2022 13:41:42 +0000
+Date:   Fri, 17 Jun 2022 21:40:52 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Arnd Bergmann <arnd@arndb.de>
+To:     James Morse <james.morse@arm.com>
 Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: arch/arm/mach-omap2/board-generic.c:44:6: warning: no previous
- prototype for 'tick_broadcast'
-Message-ID: <202206171947.lN5ZaG2s-lkp@intel.com>
+Subject: [morse:mpam/snapshot/v5.18 113/146]
+ drivers/platform/mpam/mpam_devices.c:1823:34: warning: variable 'mbwu_state'
+ set but not used
+Message-ID: <202206172134.hLhEJMjm-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -56,49 +56,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   47700948a4abb4a5ae13ef943ff682a7f327547a
-commit: 09f6b27d5ddd9ad0ec096d1b0f8decdacc70f0f8 ARM: dove: multiplatform support
-date:   2 months ago
-config: arm-buildonly-randconfig-r004-20220616 (https://download.01.org/0day-ci/archive/20220617/202206171947.lN5ZaG2s-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.3.0
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/morse/linux.git mpam/snapshot/v5.18
+head:   bac90d25cbdee0fc233b9b1c47d5b6f44101a384
+commit: b14b450aa8048b7f426d01386d754ab6a398fa96 [113/146] arm_mpam: Track bandwidth counter state for overflow and power management
+config: arm64-allyesconfig (https://download.01.org/0day-ci/archive/20220617/202206172134.hLhEJMjm-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 11.3.0
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=09f6b27d5ddd9ad0ec096d1b0f8decdacc70f0f8
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 09f6b27d5ddd9ad0ec096d1b0f8decdacc70f0f8
+        # https://git.kernel.org/pub/scm/linux/kernel/git/morse/linux.git/commit/?id=b14b450aa8048b7f426d01386d754ab6a398fa96
+        git remote add morse https://git.kernel.org/pub/scm/linux/kernel/git/morse/linux.git
+        git fetch --no-tags morse mpam/snapshot/v5.18
+        git checkout b14b450aa8048b7f426d01386d754ab6a398fa96
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/platform/mpam/
 
 If you fix the issue, kindly add following tag where applicable
 Reported-by: kernel test robot <lkp@intel.com>
 
 All warnings (new ones prefixed by >>):
 
->> arch/arm/mach-omap2/board-generic.c:44:6: warning: no previous prototype for 'tick_broadcast' [-Wmissing-prototypes]
-      44 | void tick_broadcast(const struct cpumask *mask)
-         |      ^~~~~~~~~~~~~~
+   drivers/platform/mpam/mpam_devices.c: In function '__destroy_component_cfg':
+>> drivers/platform/mpam/mpam_devices.c:1823:34: warning: variable 'mbwu_state' set but not used [-Wunused-but-set-variable]
+    1823 |         struct msmon_mbwu_state *mbwu_state;
+         |                                  ^~~~~~~~~~
 
 
-vim +/tick_broadcast +44 arch/arm/mach-omap2/board-generic.c
+vim +/mbwu_state +1823 drivers/platform/mpam/mpam_devices.c
 
-e69b4e1a7577c1 Tony Lindgren 2020-05-07  41  
-d86ad463d6706d Tony Lindgren 2020-05-28  42  /* Used by am437x for ARM timer in non-SMP configurations */
-d86ad463d6706d Tony Lindgren 2020-05-28  43  #if !defined(CONFIG_SMP) && defined(CONFIG_GENERIC_CLOCKEVENTS_BROADCAST)
-d86ad463d6706d Tony Lindgren 2020-05-28 @44  void tick_broadcast(const struct cpumask *mask)
-d86ad463d6706d Tony Lindgren 2020-05-28  45  {
-d86ad463d6706d Tony Lindgren 2020-05-28  46  }
-d86ad463d6706d Tony Lindgren 2020-05-28  47  #endif
-d86ad463d6706d Tony Lindgren 2020-05-28  48  
-
-:::::: The code at line 44 was first introduced by commit
-:::::: d86ad463d6706d35167418660ae3293207ee9d1c ARM: OMAP2+: Fix regression for using local timer on non-SMP SoCs
-
-:::::: TO: Tony Lindgren <tony@atomide.com>
-:::::: CC: Arnd Bergmann <arnd@arndb.de>
+  1818	
+  1819	static void __destroy_component_cfg(struct mpam_component *comp)
+  1820	{
+  1821		unsigned long flags;
+  1822		struct mpam_msc_ris *ris;
+> 1823		struct msmon_mbwu_state *mbwu_state;
+  1824	
+  1825		kfree(comp->cfg);
+  1826		list_for_each_entry(ris, &comp->ris, comp_list) {
+  1827			spin_lock(&ris->msc->lock);
+  1828			spin_lock_irqsave(&ris->msc->mon_sel_lock, flags);
+  1829			mbwu_state = ris->mbwu_state;
+  1830			ris->mbwu_state = NULL;
+  1831			spin_unlock_irqrestore(&ris->msc->mon_sel_lock, flags);
+  1832			spin_unlock(&ris->msc->lock);
+  1833	
+  1834			kfree(ris->mbwu_state);
+  1835		}
+  1836	}
+  1837	
 
 -- 
 0-DAY CI Kernel Test Service
