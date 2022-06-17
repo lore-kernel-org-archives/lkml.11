@@ -2,148 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 831D1C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 03:59:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC376C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 04:02:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232383AbiFQD7Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 16 Jun 2022 23:59:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54138 "EHLO
+        id S233029AbiFQECc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 17 Jun 2022 00:02:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379395AbiFQD7N (ORCPT
+        with ESMTP id S231776AbiFQEC3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 16 Jun 2022 23:59:13 -0400
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25E8D66688;
-        Thu, 16 Jun 2022 20:59:12 -0700 (PDT)
-Received: by mail-pg1-x52e.google.com with SMTP id 184so2996666pga.12;
-        Thu, 16 Jun 2022 20:59:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=0W/HagJonywK7ZJ69fI6hX0gZNSYy1J0766XYUBnWpk=;
-        b=Nvg1C8j395PzqVMZnx7Pj7fKKRISIC9UVVzrpnpRJTkWrg/GeiXEoHYLleP8PgtdO3
-         ue0ZDjtp9W4ASVbp+E2+uL8kpw9jDv6oT5cqQDt1HQfKY8QUNNC1pA3xeCMjGRQKJv/a
-         xMgxd7N9YDtp65T23zwrOpasD8RV3eunaCc5Iunf7nFnnnuCZjivH01djAnKKCyM3Mmm
-         mZbSZ2BqtLWnSIApdds3cMEMtK+pXGWVM3uZyOQmVoOlRJ9x84nYFC1GrkSd2fB+DaUg
-         6Z0cpc8VJete8mRvSkx4IQH+xf7V15Ec1TI2DQ5mUpb8MKF5OP3nl2BIaT+CK7MLAtCU
-         RHLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=0W/HagJonywK7ZJ69fI6hX0gZNSYy1J0766XYUBnWpk=;
-        b=oteqYV5z5Bx7N1fMbLiYDGcN6Ltm3yl2rBocursT6I7ixBS6YrHqISJ6++Gefv3GS6
-         47NyvQKYX58IIVn93NzXFbkKsShXxnqHG4R54GNvQa2KnHnxbl0QmiFZwQdqY4J0jJmy
-         P/g2cN07kTgI7BTiFjAEw7DtYUGCckFm6GEXnjmCeCdOas7MVjJwIKjPl4DeXT/2xlSu
-         i0gRFcoFR1Ay/l0wWzkObG07I1kshDKlENvNJj72q4rYVhMN+SXcnrsY11fCrM6k0bXN
-         n/WVHkw9wbUlbRVHw/Kz0K3YMEldOfGCOAZXtCBSTeFBteqydtBViVImLCz2biabGFZx
-         Lgfg==
-X-Gm-Message-State: AJIora8f5wOP0DWwIbL1GiAQDfm3Tq1iW34K7s/qLJPDEsy6IUatJ+vX
-        99vEGB7U7z4PGzWhgup4+H8=
-X-Google-Smtp-Source: AGRyM1vVl/dKUvpt/f8eeQsaxDmxmSSgcVkCHsMH8j6ipARrJnfgTrUyJ/gnAnfCrqd0Dt9fJRq5nw==
-X-Received: by 2002:a63:3e0b:0:b0:40c:42db:6601 with SMTP id l11-20020a633e0b000000b0040c42db6601mr3050057pga.586.1655438351515;
-        Thu, 16 Jun 2022 20:59:11 -0700 (PDT)
-Received: from MacBook-Pro-3.local ([2620:10d:c090:400::5:29cb])
-        by smtp.gmail.com with ESMTPSA id u11-20020a170902e80b00b0016a0858b25dsm39168plg.152.2022.06.16.20.59.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jun 2022 20:59:11 -0700 (PDT)
-Date:   Thu, 16 Jun 2022 20:59:08 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Roberto Sassu <roberto.sassu@huawei.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kpsingh@kernel.org, john.fastabend@gmail.com,
-        songliubraving@fb.com, kafai@fb.com, yhs@fb.com,
-        bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RESEND][PATCH v4 4/4] selftests/bpf: Add test for
- bpf_verify_pkcs7_signature() helper
-Message-ID: <20220617035908.iw4426f3h4ecpvvp@MacBook-Pro-3.local>
-References: <20220614130621.1976089-1-roberto.sassu@huawei.com>
- <20220614130621.1976089-5-roberto.sassu@huawei.com>
+        Fri, 17 Jun 2022 00:02:29 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D9AB666A2;
+        Thu, 16 Jun 2022 21:02:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655438548; x=1686974548;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=j5wLzy77/z/grAkh6Tlx6HTEGbcHtSNLg/CF7fdBZo0=;
+  b=ONiALVnUtAYfmdJ7qX9T5xAnW1mljVUHU1yhlWwOtfMbzgkyhKRKW9le
+   FqWyAq4bcvVpAOHzaVmBz8bjyuiZkvc1uCyqI7HZu8cZvqWagoeU4jOkZ
+   SkrI0jnHxtDsMZT//BaUfpr7J4RM92jP2YiaroXnylY7Q8JAfTahkCR8Y
+   liMp0JesEAb6h55jpLowa25qmdtnVoSKVBSqoAX01mYqQJA5rtDuayJY7
+   QlO4Ae9oNIT3Et47zcW77zdeq/gLXPZVDzlJINack/Yxp4e13FI7ujeT7
+   StQ9zSjSOw6LC0vaTusgDwQo6HcJNAdaGD2fPpw2ch3pWkNp0T7rxlOnM
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="304863528"
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="304863528"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 21:02:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="831868406"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga006.fm.intel.com with ESMTP; 16 Jun 2022 21:02:26 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o23Bh-000P33-SK;
+        Fri, 17 Jun 2022 04:02:25 +0000
+Date:   Fri, 17 Jun 2022 12:01:50 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ignat Korchagin <ignat@cloudflare.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, kernel-team@cloudflare.com,
+        Ignat Korchagin <ignat@cloudflare.com>
+Subject: Re: [PATCH] crypto: rsa - implement Chinese Remainder Theorem for
+ faster private key operations
+Message-ID: <202206171143.kiPGMh0V-lkp@intel.com>
+References: <20220616201550.1827-1-ignat@cloudflare.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220614130621.1976089-5-roberto.sassu@huawei.com>
+In-Reply-To: <20220616201550.1827-1-ignat@cloudflare.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 03:06:21PM +0200, Roberto Sassu wrote:
-> +
-> +	if (child_pid == 0) {
-> +		snprintf(path, sizeof(path), "%s/signing_key.pem", tmp_dir);
-> +
-> +		return execlp("./sign-file", "./sign-file", "sha256",
-> +			      path, path, signed_file_template, NULL);
+Hi Ignat,
 
-Please use sign_only option,
-so it saves the signature and doesn't do 'struct module_signature' append.
-Parsing of that is unnecessary for the purpose of the helper.
-Checking MODULE_SIG_STRING is unnecessary, etc, etc.
-Long term we won't be following mod sig approach anyway.
-bpf maps and progs will have a different format.
+Thank you for the patch! Yet something to improve:
 
-> +	}
-> +
-> +	waitpid(child_pid, &child_status, 0);
-> +
-> +	ret = WEXITSTATUS(child_status);
-> +	if (ret)
-> +		goto out;
-> +
-> +	ret = stat(signed_file_template, &st);
-> +	if (ret == -1) {
-> +		ret = -errno;
-> +		goto out;
-> +	}
-> +
-> +	if (st.st_size > sizeof(data_item->payload) - sizeof(u32)) {
-> +		ret = -EINVAL;
-> +		goto out;
-> +	}
-> +
-> +	*(u32 *)data_item->payload = __cpu_to_be32(st.st_size);
-> +
-> +	fd = open(signed_file_template, O_RDONLY);
-> +	if (fd == -1) {
-> +		ret = -errno;
-> +		goto out;
-> +	}
-> +
-> +	ret = read(fd, data_item->payload + sizeof(u32), st.st_size);
-> +
-> +	close(fd);
-> +
-> +	if (ret != st.st_size) {
-> +		ret = -EIO;
-> +		goto out;
-> +	}
-> +
-> +	ret = 0;
-> +out:
-> +	unlink(signed_file_template);
-> +	return ret;
-> +}
-> +
-> +void test_verify_pkcs7_sig(void)
-> +{
-> +	char tmp_dir_template[] = "/tmp/verify_sigXXXXXX";
-> +	char *tmp_dir;
-> +	char *buf = NULL;
-> +	struct test_verify_pkcs7_sig *skel = NULL;
-> +	struct bpf_map *map;
-> +	struct data data;
-> +	u32 saved_len;
-> +	int ret, zero = 0;
-> +
-> +	LIBBPF_OPTS(bpf_object_open_opts, opts);
-> +
-> +	/* Trigger creation of session keyring. */
-> +	syscall(__NR_request_key, "keyring", "_uid.0", NULL,
-> +		KEY_SPEC_SESSION_KEYRING);
+[auto build test ERROR on herbert-cryptodev-2.6/master]
+[also build test ERROR on herbert-crypto-2.6/master linus/master v5.19-rc2 next-20220616]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-My understanding that user space can receive a specific id here.
-It should pass it to bpf prog via global variable and prog
-should use that id instead of max_ulong hack.
+url:    https://github.com/intel-lab-lkp/linux/commits/Ignat-Korchagin/crypto-rsa-implement-Chinese-Remainder-Theorem-for-faster-private-key-operations/20220617-041735
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/herbert/cryptodev-2.6.git master
+config: m68k-defconfig (https://download.01.org/0day-ci/archive/20220617/202206171143.kiPGMh0V-lkp@intel.com/config)
+compiler: m68k-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/a81c4debaedb63c8b5af51564fdf596d560a23af
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Ignat-Korchagin/crypto-rsa-implement-Chinese-Remainder-Theorem-for-faster-private-key-operations/20220617-041735
+        git checkout a81c4debaedb63c8b5af51564fdf596d560a23af
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash
 
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>, old ones prefixed by <<):
+
+>> ERROR: modpost: "mpi_sub" [crypto/rsa_generic.ko] undefined!
+>> ERROR: modpost: "mpi_mul" [crypto/rsa_generic.ko] undefined!
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
