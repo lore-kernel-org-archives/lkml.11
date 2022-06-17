@@ -2,164 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09310C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 17:35:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16F65C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 17:36:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240325AbiFQRft (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 13:35:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42206 "EHLO
+        id S1382675AbiFQRgK (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 17 Jun 2022 13:36:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230253AbiFQRfr (ORCPT
+        with ESMTP id S234564AbiFQRgH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 13:35:47 -0400
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C39DC30F41;
-        Fri, 17 Jun 2022 10:35:46 -0700 (PDT)
-Received: by mail-wm1-x332.google.com with SMTP id c130-20020a1c3588000000b0039c6fd897b4so4704754wma.4;
-        Fri, 17 Jun 2022 10:35:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=JG77Ksbzsb/soeJQl99bCmVn0dTePRvjgtOFZMKADWs=;
-        b=K0EEoUiVJhGlmmb8ZIN/qFl3TgrxIXsVx4kyMEdM9q0/VQW83XmFrf7+OdvUu135wY
-         eFsO1+7DMrn0a+2k8ZY5T/CHzQA+f7zSElUXunY3yZMZnrIzx1ey9KcdLQGgU97VWHY4
-         iu+w3eBm5zF3ZzcF06ZADuSHMNQ/PpbE1z1/GGsH3ur993sQzepFitZX99CdevdNFRys
-         atiG+yinZe00Uw3IPJHUywFsD4gQRJfobQ28X54S9liwHdQBax9E1YnTpQbSrpZe6gRl
-         swf1aNDXYom8nhe+LrLnqUeJ/0qekOow3NFkEZoyR0Gq6ppP+9u758evRvBDITILXApY
-         Xuow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=JG77Ksbzsb/soeJQl99bCmVn0dTePRvjgtOFZMKADWs=;
-        b=HFEGXAcGO50vqiMMt5loRecEVvZEZZEE+vXHAAn4Z6TgUZvSEEHn17lNEV3RlLAtZT
-         nttNDDa8GBUNlJd+Nh+byqwxLIpldZ+EXvPK09vGPZLu4mrJFq2ZEWk3hWizMG5YZhIz
-         +8XcYn/1ozpPfKOiZAkjn5GIatAHZgiy3f/L1VZ+qI4P8ROYpRF72SBHdZBpM09uX2ti
-         mjHDZ7MriJ2yk9/+5z/pxrTnseqjW6GVWAJ/4fd85YLNrMbixgfLff8FNOnuKVFMj/m0
-         PllRonHm2StgmPM584YJA8+/mM834h8rjZvL3SyluTnuZWTHdnESESjGxMW06Hqsdp72
-         +K6A==
-X-Gm-Message-State: AJIora+Ec0lgAew/Mvka8Hwp0yvSmbIN2E8ba+1L9rbCLoeFeTcHNZkD
-        f8cgQuc/GtxiB31KTGZafEw=
-X-Google-Smtp-Source: AGRyM1tcRXSihy2cVSX0Bv7/8meK7ya5nROrEvlxxw49JC0IujTSpp9Vomy3YWuKr/tr6C146pptxg==
-X-Received: by 2002:a05:600c:4982:b0:39c:3c0d:437c with SMTP id h2-20020a05600c498200b0039c3c0d437cmr11308649wmp.38.1655487345146;
-        Fri, 17 Jun 2022 10:35:45 -0700 (PDT)
-Received: from opensuse.localnet (host-87-6-98-182.retail.telecomitalia.it. [87.6.98.182])
-        by smtp.gmail.com with ESMTPSA id p19-20020a05600c359300b0039c54bb28f2sm6572999wmq.36.2022.06.17.10.35.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jun 2022 10:35:43 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Nick Terrell <terrelln@fb.com>,
-        Chris Down <chris@chrisdown.name>,
-        Filipe Manana <fdmanana@suse.com>, Qu Wenruo <wqu@suse.com>,
-        Nikolay Borisov <nborisov@suse.com>,
-        Gabriel Niebler <gniebler@suse.com>,
-        Ira Weiny <ira.weiny@intel.com>, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Qu Wenruo <quwenruo.btrfs@gmx.com>
-Subject: Re: [RFC PATCH v2 1/3] btrfs: Convert zlib_decompress_bio() to use kmap_local_page()
-Date:   Fri, 17 Jun 2022 19:35:42 +0200
-Message-ID: <13038994.uLZWGnKmhe@opensuse>
-In-Reply-To: <f1e0383b-b68e-2044-8e1c-22ea4950c3c6@gmx.com>
-References: <20220617120538.18091-1-fmdefrancesco@gmail.com> <20220617120538.18091-2-fmdefrancesco@gmail.com> <f1e0383b-b68e-2044-8e1c-22ea4950c3c6@gmx.com>
+        Fri, 17 Jun 2022 13:36:07 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2134338B0
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 10:36:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655487365; x=1687023365;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=lA5mdH0BpFlRdgsECKtZzk+FKp3pXBuHL20fQbsJFYM=;
+  b=kJjc2p0Zl8l7gGu0gAmefm5zGW9t0HsrEGn6HhOZ2mOdrHLKmJtWY+GB
+   cRE0f4utOOjKdcL3FZr2AQNmGEkZoE0GPSA1fiwe+LqBKsAkV+4zWbqEm
+   Pt4wC54tFXm6FG+usasOyQxzhTnVsqHY9E4jsDJqSqdnqX7IafWVEq7wh
+   7ur1FJKq5f9tS3xYcP462joFzkCM101FVHLdzA46jOIrVLLGz3AwdOzmb
+   0eyKPH0D1yTo8Vuhxgcd9qiIxw6vjktKcNIDwbDzuUo3213G0Fg8p5XFd
+   hLLxhh3s41FAHknUXELsnEvO2/YUzpTRx/tPHmUQtt7VT3s066KKwe4oD
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="280249940"
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="280249940"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2022 08:55:48 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="584057467"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga007.jf.intel.com with ESMTP; 17 Jun 2022 08:55:46 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o2EK1-000PZB-Hi;
+        Fri, 17 Jun 2022 15:55:45 +0000
+Date:   Fri, 17 Jun 2022 23:55:20 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Brian Norris <briannorris@chromium.org>,
+        Grant Grundler <grundler@chromium.org>
+Subject: [jsarha:topic/cros-sof-v4.14 8447/9354] kernel/panic.c:591:6:
+ warning: no previous declaration for '__warn_printk'
+Message-ID: <202206172352.f6AzDAj9-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On venerd=C3=AC 17 giugno 2022 14:51:03 CEST Qu Wenruo wrote:
->=20
-> On 2022/6/17 20:05, Fabio M. De Francesco wrote:
-> > The use of kmap() is being deprecated in favor of kmap_local_page().=20
-With
-> > kmap_local_page(), the mapping is per thread, CPU local and not=20
-globally
-> > visible.
-> >
-> > Therefore, use kmap_local_page() / kunmap_local() in=20
-zlib_decompress_bio()
-> > because in this function the mappings are per thread and are not=20
-visible
-> > in other contexts.
-> >
-> > Tested with xfstests on QEMU + KVM 32 bits VM with 4GB of RAM and
-> > HIGHMEM64G enabled. This patch passes 26/26 tests of group "compress".
-> >
-> > Suggested-by: Ira Weiny <ira.weiny@intel.com>
-> > Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
->=20
-> Reviewed-by: Qu Wenruo <wqu@suse.com>
->=20
+tree:   https://github.com/jsarha/linux topic/cros-sof-v4.14
+head:   6f750b16c322c9191168a3a97c427c90581d9144
+commit: c4256ec7a28ebcf4371230422dceae6befc40836 [8447/9354] UPSTREAM: bug: fix "cut here" location for __WARN_TAINT architectures
+config: i386-tinyconfig (https://download.01.org/0day-ci/archive/20220617/202206172352.f6AzDAj9-lkp@intel.com/config)
+compiler: gcc-7 (Ubuntu 7.5.0-6ubuntu2) 7.5.0
+reproduce (this is a W=1 build):
+        # https://github.com/jsarha/linux/commit/c4256ec7a28ebcf4371230422dceae6befc40836
+        git remote add jsarha https://github.com/jsarha/linux
+        git fetch --no-tags jsarha topic/cros-sof-v4.14
+        git checkout c4256ec7a28ebcf4371230422dceae6befc40836
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
 
-Thanks for your review.
-I'll forward your tag on to the "real" patch.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-=46abio
+All warnings (new ones prefixed by >>):
 
-> Thanks,
-> Qu
-> > ---
-> >   fs/btrfs/zlib.c | 10 +++++-----
-> >   1 file changed, 5 insertions(+), 5 deletions(-)
-> >
-> > diff --git a/fs/btrfs/zlib.c b/fs/btrfs/zlib.c
-> > index 767a0c6c9694..770c4c6bbaef 100644
-> > --- a/fs/btrfs/zlib.c
-> > +++ b/fs/btrfs/zlib.c
-> > @@ -287,7 +287,7 @@ int zlib_decompress_bio(struct list_head *ws,=20
-struct compressed_bio *cb)
-> >   	unsigned long buf_start;
-> >   	struct page **pages_in =3D cb->compressed_pages;
-> >
-> > -	data_in =3D kmap(pages_in[page_in_index]);
-> > +	data_in =3D kmap_local_page(pages_in[page_in_index]);
-> >   	workspace->strm.next_in =3D data_in;
-> >   	workspace->strm.avail_in =3D min_t(size_t, srclen, PAGE_SIZE);
-> >   	workspace->strm.total_in =3D 0;
-> > @@ -309,7 +309,7 @@ int zlib_decompress_bio(struct list_head *ws,=20
-struct compressed_bio *cb)
-> >
-> >   	if (Z_OK !=3D zlib_inflateInit2(&workspace->strm, wbits)) {
-> >   		pr_warn("BTRFS: inflateInit failed\n");
-> > -		kunmap(pages_in[page_in_index]);
-> > +		kunmap_local(data_in);
-> >   		return -EIO;
-> >   	}
-> >   	while (workspace->strm.total_in < srclen) {
-> > @@ -336,13 +336,13 @@ int zlib_decompress_bio(struct list_head *ws,=20
-struct compressed_bio *cb)
-> >
-> >   		if (workspace->strm.avail_in =3D=3D 0) {
-> >   			unsigned long tmp;
-> > -			kunmap(pages_in[page_in_index]);
-> > +			kunmap_local(data_in);
-> >   			page_in_index++;
-> >   			if (page_in_index >=3D total_pages_in) {
-> >   				data_in =3D NULL;
-> >   				break;
-> >   			}
-> > -			data_in =3D kmap(pages_in[page_in_index]);
-> > +			data_in =3D=20
-kmap_local_page(pages_in[page_in_index]);
-> >   			workspace->strm.next_in =3D data_in;
-> >   			tmp =3D srclen - workspace->strm.total_in;
-> >   			workspace->strm.avail_in =3D min(tmp,=20
-PAGE_SIZE);
-> > @@ -355,7 +355,7 @@ int zlib_decompress_bio(struct list_head *ws,=20
-struct compressed_bio *cb)
-> >   done:
-> >   	zlib_inflateEnd(&workspace->strm);
-> >   	if (data_in)
-> > -		kunmap(pages_in[page_in_index]);
-> > +		kunmap_local(data_in);
-> >   	if (!ret)
-> >   		zero_fill_bio(cb->orig_bio);
-> >   	return ret;
->=20
+   kernel/panic.c:61:13: warning: no previous declaration for 'panic_smp_self_stop' [-Wmissing-declarations]
+    void __weak panic_smp_self_stop(void)
+                ^~~~~~~~~~~~~~~~~~~
+   kernel/panic.c:71:13: warning: no previous declaration for 'nmi_panic_self_stop' [-Wmissing-declarations]
+    void __weak nmi_panic_self_stop(struct pt_regs *regs)
+                ^~~~~~~~~~~~~~~~~~~
+   kernel/panic.c:82:13: warning: no previous declaration for 'crash_smp_send_stop' [-Wmissing-declarations]
+    void __weak crash_smp_send_stop(void)
+                ^~~~~~~~~~~~~~~~~~~
+   kernel/panic.c:516:6: warning: no previous declaration for '__warn' [-Wmissing-declarations]
+    void __warn(const char *file, int line, void *caller, unsigned taint,
+         ^~~~~~
+   kernel/panic.c: In function '__warn':
+   kernel/panic.c:533:3: warning: function '__warn' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
+      vprintk(args->fmt, args->args);
+      ^~~~~~~
+   kernel/panic.c: At top level:
+>> kernel/panic.c:591:6: warning: no previous declaration for '__warn_printk' [-Wmissing-declarations]
+    void __warn_printk(const char *fmt, ...)
+         ^~~~~~~~~~~~~
+   kernel/panic.c: In function '__warn_printk':
+   kernel/panic.c:598:2: warning: function '__warn_printk' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
+     vprintk(fmt, args);
+     ^~~~~~~
 
 
+vim +/__warn_printk +591 kernel/panic.c
 
+   583	
+   584	void warn_slowpath_null(const char *file, int line)
+   585	{
+   586		pr_warn(CUT_HERE);
+   587		__warn(file, line, __builtin_return_address(0), TAINT_WARN, NULL, NULL);
+   588	}
+   589	EXPORT_SYMBOL(warn_slowpath_null);
+   590	#else
+ > 591	void __warn_printk(const char *fmt, ...)
+   592	{
+   593		va_list args;
+   594	
+   595		pr_warn(CUT_HERE);
+   596	
+   597		va_start(args, fmt);
+   598		vprintk(fmt, args);
+   599		va_end(args);
+   600	}
+   601	EXPORT_SYMBOL(__warn_printk);
+   602	#endif
+   603	
 
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
