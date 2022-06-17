@@ -2,74 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A77DDC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 04:14:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D416DCCA47E
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 04:16:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379904AbiFQEOP (ORCPT
+        id S1379960AbiFQEQq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 00:14:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36722 "EHLO
+        Fri, 17 Jun 2022 00:16:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379911AbiFQEOD (ORCPT
+        with ESMTP id S1379940AbiFQEQo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 00:14:03 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5D7565D21
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 21:14:02 -0700 (PDT)
-Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LPQZ873BBzSgpN;
-        Fri, 17 Jun 2022 12:10:40 +0800 (CST)
-Received: from dggpeml500018.china.huawei.com (7.185.36.186) by
- dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 17 Jun 2022 12:14:00 +0800
-Received: from huawei.com (10.67.174.191) by dggpeml500018.china.huawei.com
- (7.185.36.186) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 17 Jun
- 2022 12:14:00 +0800
-From:   Zhang Qiao <zhangqiao22@huawei.com>
-To:     <mingo@redhat.com>, <peterz@infradead.org>,
-        <juri.lelli@redhat.com>, <vincent.guittot@linaro.org>
-CC:     <dietmar.eggemann@arm.com>, <rostedt@goodmis.org>,
-        <bsegall@google.com>, <mgorman@suse.de>, <bristot@redhat.com>,
-        <vschneid@redhat.com>, <linux-kernel@vger.kernel.org>,
-        <zhangqiao22@huawei.com>
-Subject: [PATCH 1/2] sched/fair: Remove redundant word " *"
-Date:   Sat, 18 Jun 2022 02:11:50 +0800
-Message-ID: <20220617181151.29980-2-zhangqiao22@huawei.com>
-X-Mailer: git-send-email 2.18.0.huawei.25
-In-Reply-To: <20220617181151.29980-1-zhangqiao22@huawei.com>
-References: <20220617181151.29980-1-zhangqiao22@huawei.com>
+        Fri, 17 Jun 2022 00:16:44 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DFAA566696
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 21:16:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655439403;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Rv0vNXKXyCH9T82Y1Ot9urO7/UnO0DqQajZUCOmTg8E=;
+        b=bjp4DPpxhd9zPgJ0k+q8uFwxd/QHVAbGalHmWgrWWcFE+gSL9iz2oEKYpfiugViKH8I3om
+        Qd5H6+OKVHq2PN4g/UMmVwMbv8SefGTKc4GQLDu/O1nQVJaiMSTtXUdAg6ptNjxz4JGK9o
+        YMblMbwQFWXH+e9UFvm08dmntdpaOD8=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-81-NCX5GbcZNReCBVP6NcqkMg-1; Fri, 17 Jun 2022 00:16:39 -0400
+X-MC-Unique: NCX5GbcZNReCBVP6NcqkMg-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6386F185A79C;
+        Fri, 17 Jun 2022 04:16:38 +0000 (UTC)
+Received: from localhost (ovpn-12-144.pek2.redhat.com [10.72.12.144])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 43DDE1121314;
+        Fri, 17 Jun 2022 04:16:37 +0000 (UTC)
+Date:   Fri, 17 Jun 2022 12:16:33 +0800
+From:   Baoquan He <bhe@redhat.com>
+To:     Zhen Lei <thunder.leizhen@huawei.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Eric Biederman <ebiederm@xmission.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        devicetree@vger.kernel.org, Dave Young <dyoung@redhat.com>,
+        Vivek Goyal <vgoyal@redhat.com>, kexec@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Feng Zhou <zhoufeng.zf@bytedance.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Chen Zhou <dingguo.cz@antgroup.com>,
+        John Donnelly <John.p.donnelly@oracle.com>,
+        Dave Kleikamp <dave.kleikamp@oracle.com>
+Subject: Re: [PATCH 2/5] arm64: kdump: Support crashkernel=X fall back to
+ reserve region above DMA zones
+Message-ID: <20220617041633.GD234358@MiWiFi-R3L-srv>
+References: <20220613080932.663-1-thunder.leizhen@huawei.com>
+ <20220613080932.663-3-thunder.leizhen@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.174.191]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpeml500018.china.huawei.com (7.185.36.186)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220613080932.663-3-thunder.leizhen@huawei.com>
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-" *" is redundant. so remove it.
+On 06/13/22 at 04:09pm, Zhen Lei wrote:
+> For crashkernel=X without '@offset', select a region within DMA zones
+> first, and fall back to reserve region above DMA zones. This allows
+> users to use the same configuration on multiple platforms.
 
-Signed-off-by: Zhang Qiao <zhangqiao22@huawei.com>
----
- kernel/sched/fair.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+LGTM,
 
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 77b2048a9326..0598679a7f2a 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -8500,7 +8500,7 @@ static inline int sg_imbalanced(struct sched_group *group)
- /*
-  * group_has_capacity returns true if the group has spare capacity that could
-  * be used by some tasks.
-- * We consider that a group has spare capacity if the  * number of task is
-+ * We consider that a group has spare capacity if the number of task is
-  * smaller than the number of CPUs or if the utilization is lower than the
-  * available capacity for CFS tasks.
-  * For the latter, we use a threshold to stabilize the state, to take into
--- 
-2.18.0
+Acked-by: Baoquan He <bhe@redhat.com>
+
+> 
+> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+> ---
+>  Documentation/admin-guide/kernel-parameters.txt |  2 +-
+>  arch/arm64/mm/init.c                            | 16 +++++++++++++++-
+>  2 files changed, 16 insertions(+), 2 deletions(-)
+> 
+> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+> index 61b179232b68001..fdac18beba5624e 100644
+> --- a/Documentation/admin-guide/kernel-parameters.txt
+> +++ b/Documentation/admin-guide/kernel-parameters.txt
+> @@ -823,7 +823,7 @@
+>  			memory region [offset, offset + size] for that kernel
+>  			image. If '@offset' is omitted, then a suitable offset
+>  			is selected automatically.
+> -			[KNL, X86-64] Select a region under 4G first, and
+> +			[KNL, X86-64, ARM64] Select a region under 4G first, and
+>  			fall back to reserve region above 4G when '@offset'
+>  			hasn't been specified.
+>  			See Documentation/admin-guide/kdump/kdump.rst for further details.
+> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+> index 5390f361208ccf7..8539598f9e58b4d 100644
+> --- a/arch/arm64/mm/init.c
+> +++ b/arch/arm64/mm/init.c
+> @@ -138,6 +138,7 @@ static void __init reserve_crashkernel(void)
+>  	unsigned long long crash_max = CRASH_ADDR_LOW_MAX;
+>  	char *cmdline = boot_command_line;
+>  	int ret;
+> +	bool fixed_base;
+>  
+>  	if (!IS_ENABLED(CONFIG_KEXEC_CORE))
+>  		return;
+> @@ -166,15 +167,28 @@ static void __init reserve_crashkernel(void)
+>  		return;
+>  	}
+>  
+> +	fixed_base = !!crash_base;
+>  	crash_size = PAGE_ALIGN(crash_size);
+>  
+>  	/* User specifies base address explicitly. */
+> -	if (crash_base)
+> +	if (fixed_base)
+>  		crash_max = crash_base + crash_size;
+>  
+> +retry:
+>  	crash_base = memblock_phys_alloc_range(crash_size, CRASH_ALIGN,
+>  					       crash_base, crash_max);
+>  	if (!crash_base) {
+> +		/*
+> +		 * Attempt to fully allocate low memory failed, fall back
+> +		 * to high memory, the minimum required low memory will be
+> +		 * reserved later.
+> +		 */
+> +		if (!fixed_base && (crash_max == CRASH_ADDR_LOW_MAX)) {
+> +			crash_max = CRASH_ADDR_HIGH_MAX;
+> +			crash_low_size = DEFAULT_CRASH_KERNEL_LOW_SIZE;
+> +			goto retry;
+> +		}
+> +
+>  		pr_warn("cannot allocate crashkernel (size:0x%llx)\n",
+>  			crash_size);
+>  		return;
+> -- 
+> 2.25.1
+> 
 
