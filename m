@@ -2,148 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCDD3CCA479
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 14:25:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9CD1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 14:25:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382717AbiFQOZF (ORCPT
+        id S1382730AbiFQOZm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 10:25:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60878 "EHLO
+        Fri, 17 Jun 2022 10:25:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382476AbiFQOZC (ORCPT
+        with ESMTP id S1381599AbiFQOZj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 10:25:02 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADC0B515AC;
-        Fri, 17 Jun 2022 07:25:00 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 6919B21E44;
-        Fri, 17 Jun 2022 14:24:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1655475899;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=a9HpK8AQFCPpZGHqOflUkPRS+AfBo7nezyoDwo5EOxw=;
-        b=wON5Z+a8PY3NERVTywme/dw6SGBNU5E2zNjD+c2ZeDbwICsTtnV4w3RAuhibm88j/JmuGV
-        g8S70bLRewWvY75g9gCfu0RHBB3T3Sf3WShC3IdZZkTlLGIayCG9St8vhwG72ocTa25VmL
-        58dVm1pmwlVNQvWdEfcu/8XDtCq1DVU=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1655475899;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=a9HpK8AQFCPpZGHqOflUkPRS+AfBo7nezyoDwo5EOxw=;
-        b=Se/2b5X2lpR6pFkWpn6Hvd2pjIbTelvpE8uXqCZExx4u46Ub1zvNv6NMEnN8Wgx/B0w+D7
-        GeGj8iyXGisMmABA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 08E481348E;
-        Fri, 17 Jun 2022 14:24:59 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id +29EAbuOrGIdLgAAMHmgww
-        (envelope-from <dsterba@suse.cz>); Fri, 17 Jun 2022 14:24:59 +0000
-Date:   Fri, 17 Jun 2022 16:20:24 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     Qu Wenruo <quwenruo.btrfs@gmx.com>
-Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Nick Terrell <terrelln@fb.com>,
-        Chris Down <chris@chrisdown.name>,
-        Filipe Manana <fdmanana@suse.com>, Qu Wenruo <wqu@suse.com>,
-        Nikolay Borisov <nborisov@suse.com>,
-        Gabriel Niebler <gniebler@suse.com>,
-        Ira Weiny <ira.weiny@intel.com>, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v2 3/3] btrfs: Use kmap_local_page() on "in_page" in
- zlib_compress_pages()
-Message-ID: <20220617142024.GL20633@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, Qu Wenruo <quwenruo.btrfs@gmx.com>,
-        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>, Nick Terrell <terrelln@fb.com>,
-        Chris Down <chris@chrisdown.name>,
-        Filipe Manana <fdmanana@suse.com>, Qu Wenruo <wqu@suse.com>,
-        Nikolay Borisov <nborisov@suse.com>,
-        Gabriel Niebler <gniebler@suse.com>,
-        Ira Weiny <ira.weiny@intel.com>, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220617120538.18091-1-fmdefrancesco@gmail.com>
- <20220617120538.18091-4-fmdefrancesco@gmail.com>
- <8cbfc1ff-f86d-f2cc-d37e-ef874f4600bc@gmx.com>
+        Fri, 17 Jun 2022 10:25:39 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F607517F4
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 07:25:38 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id gl15so9114058ejb.4
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 07:25:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=83FZWiL0crF525APjinz8Kw//Gs5G6caFf4d0M9B9Ak=;
+        b=GHJIHuMigTU+g9hI8iabwpQIuDSL7XyuMpSYvmlYhgfC1CIFWEIm1BQ+hSd4bjDOG5
+         Rskzt+EOb8aIo94mQFzPQAjullV8lRQ1JR2nEa9GsHHd/BrpeGa8jCWJ9d2l0VXwLBgm
+         ZSXjCJoEKsrynHrhheJbBED0jjesuT6+bcpTQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=83FZWiL0crF525APjinz8Kw//Gs5G6caFf4d0M9B9Ak=;
+        b=4PwX547r2wT/Xp7zm1DkhigNwJn9VerTxS3/QcIZxWUr/c9Bxtpl+rihIT4EFXJQZ/
+         C8eJoMCH02qGxFXtvtmxeDyX0ayTUM6GiO14dvZJU8RL4N3Y6Rql0CkRKtgkADYs92Sm
+         bYKiqiuUHPbE3diJknBvDqoaoERBs165Oq4B3Ca23Id6t8hdr6X9gE0dxDJ2YltqjREB
+         lzOt2bNf4FC2ydcESeVvE6F5G1ESAlHNi+7u41WDH9+jTxCkpI3NOZ292f6pOpgP83xs
+         8LKpg49aYPIn30NYCox47LpFoxGbQ/ZJ+apiXF6BMj9RNiIgSBJx/DY0nU9wFN9jsP9K
+         1cGw==
+X-Gm-Message-State: AJIora8qb6j6uzIjVdtkbuwCfRBXDXPaLgH13vgDDPD9rtUT4NSyR5O6
+        o5HbkOyNGdTqmlqR9GUkz5F1f1k/7lj4EUCM8PFE/g==
+X-Google-Smtp-Source: AGRyM1sHQWP15zLPj2yCwvO447y117lYiVJu4mAWBp6EFASZb6mVwG/jc+KGYlyL13Wi6k2yq/6HTYn7xjYL2VjVjco=
+X-Received: by 2002:a17:906:ced1:b0:710:f654:87ef with SMTP id
+ si17-20020a170906ced100b00710f65487efmr9824783ejb.194.1655475937079; Fri, 17
+ Jun 2022 07:25:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8cbfc1ff-f86d-f2cc-d37e-ef874f4600bc@gmx.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+References: <20220530113033.124072-1-hsinyi@chromium.org> <20220530113033.124072-2-hsinyi@chromium.org>
+ <CAJMQK-jw+sgunEwgEQAw-V8DAbybZ7WVnZJ6vwOdzQ+-SX_bQg@mail.gmail.com> <c3286fc9-06ed-d1e1-a731-94cdefdf7fab@gmail.com>
+In-Reply-To: <c3286fc9-06ed-d1e1-a731-94cdefdf7fab@gmail.com>
+From:   Hsin-Yi Wang <hsinyi@chromium.org>
+Date:   Fri, 17 Jun 2022 22:25:11 +0800
+Message-ID: <CAJMQK-gJ4AoNQtLeKoOO=GLLtjDRhCdVnYuPJSBD4ZnFWJ5qrw@mail.gmail.com>
+Subject: Re: [PATCH 2/2] arm64: dts: mt8183: Add panel rotation
+To:     Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel@lists.freedesktop.org,
+        linux-mediatek@lists.infradead.org,
+        Rob Clark <robdclark@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 17, 2022 at 09:09:47PM +0800, Qu Wenruo wrote:
-> On 2022/6/17 20:05, Fabio M. De Francesco wrote:
-> > @@ -126,6 +128,8 @@ int zlib_compress_pages(struct list_head *ws, struct address_space *mapping,
-> >   		ret = -ENOMEM;
-> >   		goto out;
-> >   	}
-> > +	mstack[sind] = 'A';
-> > +	sind++;
-> >   	cpage_out = kmap_local_page(out_page);
-> >   	pages[0] = out_page;
-> >   	nr_pages = 1;
-> > @@ -148,26 +152,32 @@ int zlib_compress_pages(struct list_head *ws, struct address_space *mapping,
-> >   				int i;
+On Fri, Jun 17, 2022 at 10:10 PM Matthias Brugger
+<matthias.bgg@gmail.com> wrote:
+>
+> Hi Hsin-Yi Wang,
+>
+> On 06/06/2022 17:29, Hsin-Yi Wang wrote:
+> > On Mon, May 30, 2022 at 7:30 PM Hsin-Yi Wang <hsinyi@chromium.org> wrote:
+> >>
+> >> krane, kakadu, and kodama boards have a default panel rotation.
+> >>
+> >> Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
+> >> Reviewed-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+> >> Tested-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+> >> ---
 > >
-> >   				for (i = 0; i < in_buf_pages; i++) {
-> > -					if (in_page) {
-> > -						kunmap(in_page);
-> 
-> I don't think we really need to keep @in_page mapped for that long.
-> 
-> We only need the input pages (pages from inode page cache) when we run
-> out of input.
-> 
-> So what we really need is just to map the input, copy the data to
-> buffer, unmap the page.
-> 
-> > +					if (data_in) {
-> > +						sind--;
-> > +						kunmap_local(data_in);
-> >   						put_page(in_page);
-> >   					}
-> >   					in_page = find_get_page(mapping,
-> >   								start >> PAGE_SHIFT);
-> > -					data_in = kmap(in_page);
-> > +					mstack[sind] = 'B';
-> > +					sind++;
-> > +					data_in = kmap_local_page(in_page);
-> >   					memcpy(workspace->buf + i * PAGE_SIZE,
-> >   					       data_in, PAGE_SIZE);
-> >   					start += PAGE_SIZE;
-> >   				}
-> >   				workspace->strm.next_in = workspace->buf;
-> >   			} else {
-> 
-> I think we can clean up the code.
-> 
-> In fact the for loop can handle both case, I didn't see any special
-> reason to do different handling, we can always use workspace->buf,
-> instead of manually dancing using different paths.
-> 
-> I believe with all these cleanup, it should be much simpler to convert
-> to kmap_local_page().
-> 
-> I'm pretty happy to provide help on this refactor if you don't feel
-> confident enough on this part of btrfs.
+> > Hi Matthias,
+> >
+> > The series ("Add a panel API to return panel orientation") might land
+> > in drm-misc. With this series applied, we can add this patch to give
+> > the correct default orientation for mt8183 kukui devices.
+> > I didn't send this patch again with the series, since they might land
+> > in different trees.
+> >
+>
+> I had a look on Linux next (next-20220617) and wasn't able to find the mtk_dsi.c
+> changes. What is the status of this?
+>
+The mtk_dsi change got dropped. The latest is this series:
+https://lore.kernel.org/lkml/20220609072722.3488207-1-hsinyi@chromium.org/,
+still waiting to be picked or others' comments.
 
-My first thought was "why to clean up zlib loop if we want to just
-replace kmap" but after seeing the whole stack and fiddling with the
-indexes I agree that a simplification should be done first.
+If the dts patch is picked without the drm series, there will be a
+WARN, but won't affect boot or display up.
+
+
+> Regards,
+> Matthias
+>
+> > Thanks.
+> >
+> >>   arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi | 1 +
+> >>   1 file changed, 1 insertion(+)
+> >>
+> >> diff --git a/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi b/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi
+> >> index 8d5bf73a9099..f0dd5a06629d 100644
+> >> --- a/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi
+> >> +++ b/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi
+> >> @@ -276,6 +276,7 @@ panel: panel@0 {
+> >>                  avee-supply = <&ppvarp_lcd>;
+> >>                  pp1800-supply = <&pp1800_lcd>;
+> >>                  backlight = <&backlight_lcd0>;
+> >> +               rotation = <270>;
+> >>                  port {
+> >>                          panel_in: endpoint {
+> >>                                  remote-endpoint = <&dsi_out>;
+> >> --
+> >> 2.36.1.124.g0e6072fb45-goog
+> >>
