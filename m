@@ -2,133 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE47DC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 16:41:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA441CCA47F
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 16:42:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383357AbiFQQlU (ORCPT
+        id S1383382AbiFQQmr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 12:41:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51346 "EHLO
+        Fri, 17 Jun 2022 12:42:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383354AbiFQQlO (ORCPT
+        with ESMTP id S1382699AbiFQQmm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 12:41:14 -0400
-Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94BD649B71
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 09:41:13 -0700 (PDT)
-Received: by mail-qv1-xf2e.google.com with SMTP id p31so7200779qvp.5
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 09:41:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ICFZ/PbGc0+5fagTJPsSgzABld3cNYKFZAZogQ8d6KE=;
-        b=ICtoZJmNHccJ5Kb9uPkCDvMV7vNVJ0X4gmJBwqYRlBRYsHGBVYe0hs0sTepZTC98Az
-         d4UB0NsMX2sZzgaxUtxmN1VQrV0Ls3/5yPpBTWZsoXPEh1qLvL1aw1qQkpi5OxnbxMH1
-         fLUEo66SPBQJXQIJm+gwjoN7J/YEgQGH+91/AKJNE80p9nodSf7zzw6pBQA+dTtjBRdH
-         bCgWbAp9FkVsyC7S/ccEi+XLC0WDvJJS64uEaFssDGB9jOr6hUTIZFzWsD0Ibdq3LNJW
-         op+V/JrdOpJoJioFKR2zK6YUFzF3SQf6kz7YNn/UZ4fReQfQtv/+L0mXYMEfLMkp7t17
-         GkAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ICFZ/PbGc0+5fagTJPsSgzABld3cNYKFZAZogQ8d6KE=;
-        b=3I2mUWtGC7YbNOc/cQxWZmpMw2l2u0rh0Y6VC1+waj6wzP1epX5wAH9AMJCKKho8+B
-         Kl4HcaG4YbRObrIs7Rwl1c7JdogU02UGHe3t2TpG4uo/wPpUUIwD4Cbn4n7Brw9kcTZu
-         pZ1LSuoxfNS40lak77FcnXRgtbIbG4prmxOM17OeybEUaXK3SvsxDHEV1u5gyyl7YCY7
-         fqeeyrZXjIHtILPrRj32xQAEClhKAEn5zZiNiuNrdn6B+Rk5c99JvSMfcACv5NmKYYl/
-         upRrfShVYbPJ7cjcL3IPLM3BkhQcvBTm8TxslQePGz3wLYA/mKfg8AmNT56oEidunFRG
-         RaqQ==
-X-Gm-Message-State: AJIora9/Fq29txEOQysHtD0qh4hOSx/ZcCBK4rWaxHrahvg8aluvJV7l
-        MBy65lqkGIruQkhE5gH9okej2cf7E6htgKcclw==
-X-Google-Smtp-Source: AGRyM1uMa/VGc21wZOnWL0laNFhFMnGtz9S3xBOSazDWvMdn/L3NSLXjMKp6dZwcAHk972n0yWyiXg==
-X-Received: by 2002:a05:6214:2a8e:b0:464:5b2f:76bf with SMTP id jr14-20020a0562142a8e00b004645b2f76bfmr9152409qvb.60.1655484072736;
-        Fri, 17 Jun 2022 09:41:12 -0700 (PDT)
-Received: from [192.168.1.210] (c-73-219-103-14.hsd1.vt.comcast.net. [73.219.103.14])
-        by smtp.gmail.com with ESMTPSA id s3-20020a05620a0bc300b006a67d257499sm5368395qki.56.2022.06.17.09.41.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 17 Jun 2022 09:41:11 -0700 (PDT)
-Message-ID: <1856d213-6119-74f1-f768-6ff05ba8f03b@gmail.com>
-Date:   Fri, 17 Jun 2022 12:41:11 -0400
+        Fri, 17 Jun 2022 12:42:42 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64B7462FB;
+        Fri, 17 Jun 2022 09:42:41 -0700 (PDT)
+Received: from fraeml705-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LPlCq5xZPz67PvV;
+        Sat, 18 Jun 2022 00:40:55 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml705-chm.china.huawei.com (10.206.15.54) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.24; Fri, 17 Jun 2022 18:42:38 +0200
+Received: from [10.195.32.202] (10.195.32.202) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 17 Jun 2022 17:42:37 +0100
+Message-ID: <a18fa379-5a9b-ff45-3be4-b253efd96a50@huawei.com>
+Date:   Fri, 17 Jun 2022 17:42:36 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH RFCv4 3/4] lib/test_printf.c: split write-beyond-buffer
- check in two
-Content-Language: en-US
-To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Petr Mladek <pmladek@suse.com>, Jia He <justin.he@arm.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-kernel@vger.kernel.org
-References: <20210615154952.2744-1-justin.he@arm.com>
- <20210615154952.2744-4-justin.he@arm.com> <YMtZcVy4gvmMtYv+@alley>
- <d0798b26-9c77-7209-8c16-0d067ea5720c@rasmusvillemoes.dk>
-From:   Kent Overstreet <kent.overstreet@gmail.com>
-In-Reply-To: <d0798b26-9c77-7209-8c16-0d067ea5720c@rasmusvillemoes.dk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH 5/5] blk-mq: Drop 'reserved' member of busy_tag_iter_fn
+To:     Bart Van Assche <bvanassche@acm.org>, <axboe@kernel.dk>,
+        <damien.lemoal@opensource.wdc.com>, <hch@lst.de>,
+        <jejb@linux.ibm.com>, <martin.petersen@oracle.com>, <hare@suse.de>,
+        <satishkh@cisco.com>, <sebaddel@cisco.com>, <kartilak@cisco.com>
+CC:     <linux-rdma@vger.kernel.org>, <linux-mmc@vger.kernel.org>,
+        <linux-nvme@lists.infradead.org>, <linux-s390@vger.kernel.org>,
+        <linux-scsi@vger.kernel.org>, <mpi3mr-linuxdrv.pdl@broadcom.com>,
+        <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <nbd@other.debian.org>
+References: <1655463320-241202-1-git-send-email-john.garry@huawei.com>
+ <1655463320-241202-6-git-send-email-john.garry@huawei.com>
+ <017cae1e-b45f-04fd-d34c-22ae736b28e5@acm.org>
+From:   John Garry <john.garry@huawei.com>
+In-Reply-To: <017cae1e-b45f-04fd-d34c-22ae736b28e5@acm.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.195.32.202]
+X-ClientProxiedBy: lhreml740-chm.china.huawei.com (10.201.108.190) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/17/22 03:15, Rasmus Villemoes wrote:
-> On 17/06/2021 16.17, Petr Mladek wrote:
->> On Tue 2021-06-15 23:49:51, Jia He wrote:
->>> From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
->>>
->>> Before each invocation of vsnprintf(), do_test() memsets the entire
->>> allocated buffer to a sentinel value. That buffer includes leading and
->>> trailing padding which is never included in the buffer area handed to
->>> vsnprintf (spaces merely for clarity):
->>>
->>>    pad  test_buffer      pad
->>>    **** **************** ****
->>>
->>> Then vsnprintf() is invoked with a bufsize argument <=
->>> BUF_SIZE. Suppose bufsize=10, then we'd have e.g.
->>>
->>>   |pad |   test_buffer    |pad |
->>>    **** pizza0 **** ****** ****
->>>   A    B      C    D           E
->>>
->>> where vsnprintf() was given the area from B to D.
->>>
->>> It is obviously a bug for vsnprintf to touch anything between A and B
->>> or between D and E. The former is checked for as one would expect. But
->>> for the latter, we are actually a little stricter in that we check the
->>> area between C and E.
->>>
->>> Split that check in two, providing a clearer error message in case it
->>> was a genuine buffer overrun and not merely a write within the
->>> provided buffer, but after the end of the generated string.
->>>
->>> So far, no part of the vsnprintf() implementation has had any use for
->>> using the whole buffer as scratch space, but it's not unreasonable to
->>> allow that, as long as the result is properly nul-terminated and the
->>> return value is the right one. However, it is somewhat unusual, and
->>> most %<something> won't need this, so keep the [C,D] check, but make
->>> it easy for a later patch to make that part opt-out for certain tests.
->>
->> Excellent commit message.
->>
->>> Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
->>> Tested-by: Jia He <justin.he@arm.com>
->>> Signed-off-by: Jia He <justin.he@arm.com>
->>
->> Reviewed-by: Petr Mladek <pmladek@suse.com>
-> 
-> Hi Petr
-> 
-> It seems Justin's series got stalled, but I still think this patch makes
-> sense on its own (especially since another series in flight mucks about
-> in this area), so can you please pick it up directly?
-> 
-> The lore link for the above is
-> https://lore.kernel.org/lkml/20210615154952.2744-4-justin.he@arm.com/ ,
-> while my original submission is at
-> https://lore.kernel.org/lkml/20210615085044.1923788-1-linux@rasmusvillemoes.dk/
+On 17/06/2022 17:33, Bart Van Assche wrote:
+> On 6/17/22 03:55, John Garry wrote:
+>> We no longer use the 'reserved' member in for any iter function so it
+>                                           ^^^^^^
+> One of these two words probably should be removed.
 
-That patch definitely clarifies things, feel free to add my reviewed-by tag
+Yeah, it's a typo - I can fix it.
 
+> 
+>> diff --git a/block/blk-mq-tag.c b/block/blk-mq-tag.c
+>> index 2dcd738c6952..b8cc8b41553f 100644
+>> --- a/block/blk-mq-tag.c
+>> +++ b/block/blk-mq-tag.c
+>> @@ -266,7 +266,6 @@ static bool bt_iter(struct sbitmap *bitmap, 
+>> unsigned int bitnr, void *data)
+>>       struct blk_mq_hw_ctx *hctx = iter_data->hctx;
+>>       struct request_queue *q = iter_data->q;
+>>       struct blk_mq_tag_set *set = q->tag_set;
+>> -    bool reserved = iter_data->reserved;
+>>       struct blk_mq_tags *tags;
+>>       struct request *rq;
+>>       bool ret = true;
+>> @@ -276,7 +275,7 @@ static bool bt_iter(struct sbitmap *bitmap, 
+>> unsigned int bitnr, void *data)
+>>       else
+>>           tags = hctx->tags;
+>> -    if (!reserved)
+>> +    if (!iter_data->reserved)
+>>           bitnr += tags->nr_reserved_tags;
+>>       /*
+>>        * We can hit rq == NULL here, because the tagging functions
+> 
+> Is the above change really necessary?
+
+It's not totally necessary. Since local variable 'reserved' would now 
+only be used once I thought it was better to get rid of it.
+
+I can keep it if you really think that is better.
+
+>> @@ -337,12 +336,11 @@ static bool bt_tags_iter(struct sbitmap *bitmap, 
+>> unsigned int bitnr, void *data)
+>>   {
+>>       struct bt_tags_iter_data *iter_data = data;
+>>       struct blk_mq_tags *tags = iter_data->tags;
+>> -    bool reserved = iter_data->flags & BT_TAG_ITER_RESERVED;
+>>       struct request *rq;
+>>       bool ret = true;
+>>       bool iter_static_rqs = !!(iter_data->flags & 
+>> BT_TAG_ITER_STATIC_RQS);
+>> -    if (!reserved)
+>> +    if (!(iter_data->flags & BT_TAG_ITER_RESERVED))
+>>           bitnr += tags->nr_reserved_tags;
+>>       /*
+> 
+> Same question here: is the above change really necessary?
+
+As above.
+
+Thanks,
+john
