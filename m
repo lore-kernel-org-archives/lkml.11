@@ -2,147 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C7C0C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 09:18:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCB17C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 09:19:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235530AbiFQJSb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 05:18:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36144 "EHLO
+        id S243818AbiFQJTO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 17 Jun 2022 05:19:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235678AbiFQJS2 (ORCPT
+        with ESMTP id S235549AbiFQJTM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 05:18:28 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E4755677A;
-        Fri, 17 Jun 2022 02:18:26 -0700 (PDT)
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LPYLv5d4Qz1K9xM;
-        Fri, 17 Jun 2022 17:16:23 +0800 (CST)
-Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 17 Jun 2022 17:18:16 +0800
-Received: from localhost.localdomain (10.175.112.70) by
- kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 17 Jun 2022 17:18:15 +0800
-From:   Xu Jia <xujia39@huawei.com>
-To:     <linux-hams@vger.kernel.org>, <pabeni@redhat.com>,
-        <ajk@comnets.uni-bremen.de>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <xujia39@huawei.com>
-Subject: [PATCH v2] hamradio: 6pack: fix array-index-out-of-bounds in decode_std_command()
-Date:   Fri, 17 Jun 2022 17:31:06 +0800
-Message-ID: <1655458266-27879-1-git-send-email-xujia39@huawei.com>
-X-Mailer: git-send-email 1.8.3.1
+        Fri, 17 Jun 2022 05:19:12 -0400
+Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9AF05AEF6;
+        Fri, 17 Jun 2022 02:19:10 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R361e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=tianjia.zhang@linux.alibaba.com;NM=1;PH=DS;RN=15;SR=0;TI=SMTPD_---0VGeEoR._1655457543;
+Received: from 30.240.100.35(mailfrom:tianjia.zhang@linux.alibaba.com fp:SMTPD_---0VGeEoR._1655457543)
+          by smtp.aliyun-inc.com;
+          Fri, 17 Jun 2022 17:19:06 +0800
+Message-ID: <ea7d5934-01f4-bd2e-09d5-0916eb72e8d8@linux.alibaba.com>
+Date:   Fri, 17 Jun 2022 17:19:03 +0800
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.70]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemm600017.china.huawei.com (7.193.23.234)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.0
+Subject: Re: [PATCH v4 0/2] pkcs7: support SM2/SM3 and EC-RDSA/streebog
+ algorithms
+Content-Language: en-US
+To:     Jarkko Sakkinen <jarkko@kernel.org>
+References: <20210918080737.17252-1-tianjia.zhang@linux.alibaba.com>
+Cc:     David Howells <dhowells@redhat.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Elvira Khabirova <e.khabirova@omp.ru>,
+        Vitaly Chikunov <vt@altlinux.org>,
+        Stefan Berger <stefanb@linux.ibm.com>,
+        Eric Biggers <ebiggers@google.com>,
+        Eric Biggers <ebiggers@kernel.org>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        Gilad Ben-Yossef <gilad@benyossef.com>,
+        Pascal van Leeuwen <pvanleeuwen@rambus.com>,
+        keyrings@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+From:   Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
+In-Reply-To: <20210918080737.17252-1-tianjia.zhang@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hulk Robot reports incorrect sp->rx_count_cooked value in decode_std_command().
-This should be caused by the subtracting from sp->rx_count_cooked before.
-It seems that sp->rx_count_cooked value is changed to 0, which bypassed the
-previous judgment.
+Hi Jarkko,
 
-The situation is shown below:
+On 9/18/21 4:07 PM, Tianjia Zhang wrote:
+> This series of patches integrates the two patches sended separately,
+> resolves the conflict, and rebases on the latest code.
+> 
+> The two patches respectively support the SM2/SM3 and EC-RDSA/streebog
+> algorithm combinations for the pkcs7 parser.
+> 
+> Elvira Khabirova (1):
+>    pkcs7: support EC-RDSA/streebog in SignerInfo
+> 
+> Tianjia Zhang (1):
+>    pkcs7: parser support SM2 and SM3 algorithms combination
+> 
+>   crypto/asymmetric_keys/pkcs7_parser.c | 18 ++++++++++++++++++
+>   1 file changed, 18 insertions(+)
+> 
 
-         (Thread 1)			|  (Thread 2)
-decode_std_command()		| resync_tnc()
-...					|
-if (rest == 2)			|
-	sp->rx_count_cooked -= 2;	|
-else if (rest == 3)			| ...
-					| sp->rx_count_cooked = 0;
-	sp->rx_count_cooked -= 1;	|
-for (i = 0; i < sp->rx_count_cooked; i++) // report error
-	checksum += sp->cooked_buf[i];
+No response from David, can you pick this?
 
-sp->rx_count_cooked is a shared variable but is not protected by a lock.
-The same applies to sp->rx_count. This patch adds a lock to fix the bug.
-
-The fail log is shown below:
-=======================================================================
-UBSAN: array-index-out-of-bounds in drivers/net/hamradio/6pack.c:925:31
-index 400 is out of range for type 'unsigned char [400]'
-CPU: 3 PID: 7433 Comm: kworker/u10:1 Not tainted 5.18.0-rc5-00163-g4b97bac0756a #2
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
-Workqueue: events_unbound flush_to_ldisc
-Call Trace:
- <TASK>
- dump_stack_lvl+0xcd/0x134
- ubsan_epilogue+0xb/0x50
- __ubsan_handle_out_of_bounds.cold+0x62/0x6c
- sixpack_receive_buf+0xfda/0x1330
- tty_ldisc_receive_buf+0x13e/0x180
- tty_port_default_receive_buf+0x6d/0xa0
- flush_to_ldisc+0x213/0x3f0
- process_one_work+0x98f/0x1620
- worker_thread+0x665/0x1080
- kthread+0x2e9/0x3a0
- ret_from_fork+0x1f/0x30
- ...
-
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Xu Jia <xujia39@huawei.com>
----
- drivers/net/hamradio/6pack.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/hamradio/6pack.c b/drivers/net/hamradio/6pack.c
-index ff2bb3d..833dcc7 100644
---- a/drivers/net/hamradio/6pack.c
-+++ b/drivers/net/hamradio/6pack.c
-@@ -99,6 +99,7 @@ struct sixpack {
- 
- 	unsigned int		rx_count;
- 	unsigned int		rx_count_cooked;
-+	spinlock_t		rxlock;
- 
- 	int			mtu;		/* Our mtu (to spot changes!) */
- 	int			buffsize;       /* Max buffers sizes */
-@@ -565,6 +566,7 @@ static int sixpack_open(struct tty_struct *tty)
- 	sp->dev = dev;
- 
- 	spin_lock_init(&sp->lock);
-+	spin_lock_init(&sp->rxlock);
- 	refcount_set(&sp->refcnt, 1);
- 	init_completion(&sp->dead);
- 
-@@ -913,6 +915,7 @@ static void decode_std_command(struct sixpack *sp, unsigned char cmd)
- 			sp->led_state = 0x60;
- 			/* fill trailing bytes with zeroes */
- 			sp->tty->ops->write(sp->tty, &sp->led_state, 1);
-+			spin_lock_bh(&sp->rxlock);
- 			rest = sp->rx_count;
- 			if (rest != 0)
- 				 for (i = rest; i <= 3; i++)
-@@ -930,6 +933,7 @@ static void decode_std_command(struct sixpack *sp, unsigned char cmd)
- 				sp_bump(sp, 0);
- 			}
- 			sp->rx_count_cooked = 0;
-+			spin_unlock_bh(&sp->rxlock);
- 		}
- 		break;
- 	case SIXP_TX_URUN: printk(KERN_DEBUG "6pack: TX underrun\n");
-@@ -959,8 +963,11 @@ static void decode_std_command(struct sixpack *sp, unsigned char cmd)
- 			decode_prio_command(sp, inbyte);
- 		else if ((inbyte & SIXP_STD_CMD_MASK) != 0)
- 			decode_std_command(sp, inbyte);
--		else if ((sp->status & SIXP_RX_DCD_MASK) == SIXP_RX_DCD_MASK)
-+		else if ((sp->status & SIXP_RX_DCD_MASK) == SIXP_RX_DCD_MASK) {
-+			spin_lock_bh(&sp->rxlock);
- 			decode_data(sp, inbyte);
-+			spin_unlock_bh(&sp->rxlock);
-+		}
- 	}
- }
- 
--- 
-1.8.3.1
-
+Best regards,
+Tianjia
