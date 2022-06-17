@@ -2,79 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 293A7C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 12:42:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 591CFC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 12:43:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382394AbiFQMmY (ORCPT
+        id S1382399AbiFQMnA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 08:42:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33516 "EHLO
+        Fri, 17 Jun 2022 08:43:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245358AbiFQMmU (ORCPT
+        with ESMTP id S234937AbiFQMm7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 08:42:20 -0400
-Received: from m15111.mail.126.com (m15111.mail.126.com [220.181.15.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4FE206622C
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 05:42:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=TU2B9
-        l3UgYA6rfXiP8LSC5IMRVHoUDGy3g/V+/PidVk=; b=VHIIQ7hmoYv8Cd80eUAvj
-        4K/6vJW4qa/N7Nd6aHk2gH75i9iKFqFtA3l1IwqmRTsvggeSGIdEV8jaKpDxja0H
-        u3QiqSf3INUpAGru3BzteqItFA1djU7NUWuw6CKL6A55Jbhz6WaaCVpWYrmSe9h/
-        KO0dhs6Z4vByn3HKmzcYkw=
-Received: from localhost.localdomain (unknown [124.16.139.61])
-        by smtp1 (Coremail) with SMTP id C8mowAAnKiY6bqxiHzkiEw--.31307S2;
-        Fri, 17 Jun 2022 20:06:19 +0800 (CST)
-From:   Liang He <windhl@126.com>
-To:     dinguyen@kernel.org, linux@armlinux.org.uk
-Cc:     windhl@126.com, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] arm: mach-socfpga: Fix refcount leak bug in socfpga
-Date:   Fri, 17 Jun 2022 20:06:18 +0800
-Message-Id: <20220617120618.4047441-1-windhl@126.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: C8mowAAnKiY6bqxiHzkiEw--.31307S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWruFyfGr18WFyxAryfuF4DJwb_yoWDWFc_XF
-        9agay7XryrAa9YgrW7ua1agan7C393Cwn0qr10vr1qkw4YqF47Ar9IkF92qryUWr4akFWf
-        XanrJF1Yv392yjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUUIztUUUUUU==
-X-Originating-IP: [124.16.139.61]
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi2hwjF1uwMOTj7gAAsA
+        Fri, 17 Jun 2022 08:42:59 -0400
+Received: from mail-m12736.qiye.163.com (mail-m12736.qiye.163.com [115.236.127.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FAFD5FFA;
+        Fri, 17 Jun 2022 05:42:55 -0700 (PDT)
+Received: from localhost.localdomain (unknown [58.22.7.114])
+        by mail-m12736.qiye.163.com (Hmail) with ESMTPA id EC3797E01CA;
+        Fri, 17 Jun 2022 20:42:53 +0800 (CST)
+From:   Jon Lin <jon.lin@rock-chips.com>
+To:     broonie@kernel.org
+Cc:     heiko@sntech.de, linux-spi@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Jon Lin <jon.lin@rock-chips.com>
+Subject: [PATCH] spi: rockchip: Unmask IRQ at the final to avoid preemption
+Date:   Fri, 17 Jun 2022 20:42:51 +0800
+Message-Id: <20220617124251.5051-1-jon.lin@rock-chips.com>
+X-Mailer: git-send-email 2.17.1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+        tZV1koWUFJSktLSjdXWS1ZQUlXWQ8JGhUIEh9ZQVkaTkkYVkoZHkJPHhhNTkNJTVUTARMWGhIXJB
+        QOD1lXWRgSC1lBWU5DVUlJVUxVSkpPWVdZFhoPEhUdFFlBWU9LSFVKSktITkhVS1kG
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6OhQ6EBw5MT09VkkSARY#Exg1
+        Pk0wChlVSlVKTU5OT01CTExPT0NDVTMWGhIXVREUFVUXEhU7CRQYEFYYExILCFUYFBZFWVdZEgtZ
+        QVlOQ1VJSVVMVUpKT1lXWQgBWUFJS0xMNwY+
+X-HM-Tid: 0a8171b01537b20fkuuuec3797e01ca
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In socfpga_sysmgr_init(), of_find_compatible_node() will return a
-node pointer with refcount incremented. We should use of_node_put()
-when it is not used anymore.
+Avoid pio_write process is preempted, resulting in abnormal state.
 
-Signed-off-by: Liang He <windhl@126.com>
+Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
+Signed-off-by: Jon <jon.lin@rock-chips.com>
 ---
- arch/arm/mach-socfpga/socfpga.c | 3 +++
- 1 file changed, 3 insertions(+)
 
-diff --git a/arch/arm/mach-socfpga/socfpga.c b/arch/arm/mach-socfpga/socfpga.c
-index 9e4cb2ffd580..c561b3b7a9ee 100644
---- a/arch/arm/mach-socfpga/socfpga.c
-+++ b/arch/arm/mach-socfpga/socfpga.c
-@@ -36,12 +36,15 @@ static void __init socfpga_sysmgr_init(void)
- 	sync_cache_w(&socfpga_cpu1start_addr);
+ drivers/spi/spi-rockchip.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/spi/spi-rockchip.c b/drivers/spi/spi-rockchip.c
+index a08215eb9e14..79242dc5272d 100644
+--- a/drivers/spi/spi-rockchip.c
++++ b/drivers/spi/spi-rockchip.c
+@@ -381,15 +381,18 @@ static int rockchip_spi_prepare_irq(struct rockchip_spi *rs,
+ 	rs->tx_left = rs->tx ? xfer->len / rs->n_bytes : 0;
+ 	rs->rx_left = xfer->len / rs->n_bytes;
  
- 	sys_manager_base_addr = of_iomap(np, 0);
-+	of_node_put(np);
+-	if (rs->cs_inactive)
+-		writel_relaxed(INT_RF_FULL | INT_CS_INACTIVE, rs->regs + ROCKCHIP_SPI_IMR);
+-	else
+-		writel_relaxed(INT_RF_FULL, rs->regs + ROCKCHIP_SPI_IMR);
++	writel_relaxed(0xffffffff, rs->regs + ROCKCHIP_SPI_ICR);
++
+ 	spi_enable_chip(rs, true);
  
- 	np = of_find_compatible_node(NULL, NULL, "altr,rst-mgr");
- 	rst_manager_base_addr = of_iomap(np, 0);
-+	of_node_put(np);
+ 	if (rs->tx_left)
+ 		rockchip_spi_pio_writer(rs);
  
- 	np = of_find_compatible_node(NULL, NULL, "altr,sdr-ctl");
- 	sdr_ctl_base_addr = of_iomap(np, 0);
-+	of_node_put(np);
++	if (rs->cs_inactive)
++		writel_relaxed(INT_RF_FULL | INT_CS_INACTIVE, rs->regs + ROCKCHIP_SPI_IMR);
++	else
++		writel_relaxed(INT_RF_FULL, rs->regs + ROCKCHIP_SPI_IMR);
++
+ 	/* 1 means the transfer is in progress */
+ 	return 1;
  }
- 
- static void __init socfpga_init_irq(void)
 -- 
-2.25.1
+2.17.1
 
