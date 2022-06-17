@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13F01CCA47C
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 10:06:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03549C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 10:06:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381541AbiFQKGP (ORCPT
+        id S1381523AbiFQKGU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 06:06:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50584 "EHLO
+        Fri, 17 Jun 2022 06:06:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381527AbiFQKGF (ORCPT
+        with ESMTP id S1381525AbiFQKGN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 06:06:05 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A368169B49;
-        Fri, 17 Jun 2022 03:06:04 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id z14so3703315pgh.0;
-        Fri, 17 Jun 2022 03:06:04 -0700 (PDT)
+        Fri, 17 Jun 2022 06:06:13 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19A8369B49;
+        Fri, 17 Jun 2022 03:06:13 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id x138so3757309pfc.12;
+        Fri, 17 Jun 2022 03:06:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=toFzfxDcNAOLYWQB4b127Zf224IUbbcInL430hwlC3I=;
-        b=m/K/ZcQRryr4Xlr0v5REGMR30LJwzC3O2GyiCJp08cqaWP1Y0T54zISfmUVzBjRJt3
-         /SKm2oKX5hi5JnVgpK+7azQzzFgG60oXsGQEUZhUnE8urkg+1yhq5B+eYXkz/9ZxhD2U
-         FzRuGLTOMRZOpYBRXXuZKqNcFpLkZLcfEHN/gvo8iRWkXvTy6+vKye74zXOpSuDyQu9k
-         BCsOgO+tQgAiba0xv2X/n9sl85XQKDHv+Le578OWBwZmeglM+ZoSue9RpdOwCxXv6VWF
-         lRLopjiaCiPqFZCBU9fG9YLshapwxMU/2OWVOJLFhSl/QbzSkL89LNf55qFsq8n7I077
-         Ba8g==
+        bh=nLTpWfEYARxnaBZe2tmsRz6wbhK6fZ6IiWkByiKDceA=;
+        b=MTh/VJ/tPqf9Tn4PdIuUuCnQnJbjOY07iXIBuJxeLqPfIaaxEh6MwuhScJYveVC7uV
+         cIOLCVe59Y+XxUsWlvf7slHWxaODld9L4nZWZY2BnM3RPOZsHSmXMa+tJP8ZTCQdiAMt
+         bl5qG8AuyRIpuO24OuNHvFS/KjtRziOh17bEpyTRddNV2Z2xAtW7uacdicJZapDhkDgg
+         nacnAKz12TzUTzkvp3BDfI91N1LNwn5ABKLSV9jZ0SCXCMKZRiTAkEsFXS1SRIH3RYAb
+         3I0uK7GAyHQQh1RyLO6/EUFb85Ugy1OtYw2obxQDE9FQGulaJ9G88lonyC690YyTmozu
+         aiPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=toFzfxDcNAOLYWQB4b127Zf224IUbbcInL430hwlC3I=;
-        b=cnTHTL/33UKnnzAjgtJ2zG7eL/veQonwyh5BQL8riI219Yt8H0SqLwX/TcORuPyZXP
-         +/0i9eLqlV1C4rigSphGOew9HgbWx4WW/kYkwb2KAJU0aqfxwgO72hXPZ0t+ghvIrQeR
-         ft6rpGGtNSC4g0bP0J9jVM0aEAEUVCLpMl0uD335wh5oKvmvYzX7nmx7Pdu98NXfzFIn
-         GX6L1IEg/zLNRXkQaJPGX4kQJsj5FTpMdXD+DYXHEHHPRQRoY4+VkXg25EEcuMmCFrxm
-         RZYXuuT9E2lhXMRmj6vBzrgN/xoiAmrjFbOBFw8vLiK1c5FBiIAVJFuRBojeN/xayBEB
-         jQhQ==
-X-Gm-Message-State: AJIora+v+S6CjbFx54wOTdnKLv1En61O2etwonhIigyzi1OyCwfRUG1t
-        WNdOs4suZA2wdQashJ4ibA4=
-X-Google-Smtp-Source: AGRyM1uYaxI5XhllOVt2OFUzd4dcRE3gABnJZUQV1e5tLsQ+Kf6ppgHA+qzSuAuFslUsZq+R1101sQ==
-X-Received: by 2002:a63:a749:0:b0:40c:57e0:86c0 with SMTP id w9-20020a63a749000000b0040c57e086c0mr1422414pgo.265.1655460364127;
-        Fri, 17 Jun 2022 03:06:04 -0700 (PDT)
+        bh=nLTpWfEYARxnaBZe2tmsRz6wbhK6fZ6IiWkByiKDceA=;
+        b=1iid+DgEvVxwnSM6r1gglBpOcgjIFHvmJWvR75L+8oTn5HBLaw6XIWjMpTPwzdFfD+
+         4v4DBluOQSIa/kZvPKQRo/2n8hWafirXkMLMiZqs6nG0HQ7eYQwtLQv7VjBJGAPc1zGa
+         3CUmWBtiFY7kedD6CyP8IXeUHtipVE6ai39gINbHs1nllXwYwbUIle1+b15Sbq498pow
+         Z/OPOT/y6EIWhXCbeN5Je/rXCLtxM022xzQvD8wXi4gB9ZJYwqX1xyN+ma46SMy9H/T4
+         gnDON5Wk8IfY2IxiujciavWh6Qrwdb1UTOAP0i61uozHN6Bfcr9HtHupefbutTdVJ8j6
+         3BHg==
+X-Gm-Message-State: AJIora+DVF1BZqUcoXuISFykPO2LnCEmLwkU8tGYySeiEBjJdpJEz1qE
+        mA/yJA0oChH06eNs7ifeLUw=
+X-Google-Smtp-Source: AGRyM1svebNa295jU6OfIPgr5/df3AH5N3J7cq6DaBlh3kkmtgQRigFEocIov36fxPtUPtGMsUmcGA==
+X-Received: by 2002:a63:dd56:0:b0:405:34ac:9bc9 with SMTP id g22-20020a63dd56000000b0040534ac9bc9mr8489797pgj.324.1655460372657;
+        Fri, 17 Jun 2022 03:06:12 -0700 (PDT)
 Received: from localhost.localdomain ([203.205.141.10])
-        by smtp.gmail.com with ESMTPSA id h10-20020a170902f7ca00b001621ce92196sm3126210plw.86.2022.06.17.03.06.00
+        by smtp.gmail.com with ESMTPSA id h10-20020a170902f7ca00b001621ce92196sm3126210plw.86.2022.06.17.03.06.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jun 2022 03:06:03 -0700 (PDT)
+        Fri, 17 Jun 2022 03:06:12 -0700 (PDT)
 From:   menglong8.dong@gmail.com
 X-Google-Original-From: imagedong@tencent.com
 To:     edumazet@google.com
@@ -59,9 +59,9 @@ Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
         dongli.zhang@oracle.com, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, Jiang Biao <benbjiang@tencent.com>,
         Hao Peng <flyingpeng@tencent.com>
-Subject: [PATCH net-next v4 2/8] net: skb: introduce __skb_queue_purge_reason()
-Date:   Fri, 17 Jun 2022 18:05:08 +0800
-Message-Id: <20220617100514.7230-3-imagedong@tencent.com>
+Subject: [PATCH net-next v4 4/8] net: inet: add skb drop reason to inet_csk_destroy_sock()
+Date:   Fri, 17 Jun 2022 18:05:10 +0800
+Message-Id: <20220617100514.7230-5-imagedong@tencent.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220617100514.7230-1-imagedong@tencent.com>
 References: <20220617100514.7230-1-imagedong@tencent.com>
@@ -73,47 +73,46 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Menglong Dong <imagedong@tencent.com>
 
-Introduce __skb_queue_purge_reason() to empty a skb list with drop
-reason and make __skb_queue_purge() an inline call to it.
+skb dropping in inet_csk_destroy_sock() seems to be a common case. Add
+the new drop reason 'SKB_DROP_REASON_SOCKET_DESTROIED' and apply it to
+inet_csk_destroy_sock() to stop confusing users with 'NOT_SPECIFIED'.
 
 Reviewed-by: Jiang Biao <benbjiang@tencent.com>
 Reviewed-by: Hao Peng <flyingpeng@tencent.com>
 Signed-off-by: Menglong Dong <imagedong@tencent.com>
 ---
- include/linux/skbuff.h | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+ include/net/dropreason.h        | 5 +++++
+ net/ipv4/inet_connection_sock.c | 2 +-
+ 2 files changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 82edf0359ab3..8d5445c3d3e7 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -3020,18 +3020,24 @@ static inline int skb_orphan_frags_rx(struct sk_buff *skb, gfp_t gfp_mask)
- }
+diff --git a/include/net/dropreason.h b/include/net/dropreason.h
+index fae9b40e54fa..3c6f1e299c35 100644
+--- a/include/net/dropreason.h
++++ b/include/net/dropreason.h
+@@ -231,6 +231,11 @@ enum skb_drop_reason {
+ 	 * MTU)
+ 	 */
+ 	SKB_DROP_REASON_PKT_TOO_BIG,
++	/**
++	 * @SKB_DROP_REASON_SOCKET_DESTROYED: socket is destroyed and the
++	 * skb in its receive or send queue are all dropped
++	 */
++	SKB_DROP_REASON_SOCKET_DESTROYED,
+ 	/**
+ 	 * @SKB_DROP_REASON_MAX: the maximum of drop reason, which shouldn't be
+ 	 * used as a real 'reason'
+diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+index c0b7e6c21360..1812060f24cb 100644
+--- a/net/ipv4/inet_connection_sock.c
++++ b/net/ipv4/inet_connection_sock.c
+@@ -1129,7 +1129,7 @@ void inet_csk_destroy_sock(struct sock *sk)
  
- /**
-- *	__skb_queue_purge - empty a list
-+ *	__skb_queue_purge_reason - empty a list with specific drop reason
-  *	@list: list to empty
-+ *	@reason: drop reason
-  *
-  *	Delete all buffers on an &sk_buff list. Each buffer is removed from
-  *	the list and one reference dropped. This function does not take the
-  *	list lock and the caller must hold the relevant locks to use it.
-  */
--static inline void __skb_queue_purge(struct sk_buff_head *list)
-+static inline void __skb_queue_purge_reason(struct sk_buff_head *list,
-+					    enum skb_drop_reason reason)
- {
- 	struct sk_buff *skb;
- 	while ((skb = __skb_dequeue(list)) != NULL)
--		kfree_skb(skb);
-+		kfree_skb_reason(skb, reason);
-+}
-+static inline void __skb_queue_purge(struct sk_buff_head *list)
-+{
-+	__skb_queue_purge_reason(list, SKB_DROP_REASON_NOT_SPECIFIED);
- }
- void skb_queue_purge(struct sk_buff_head *list);
+ 	sk->sk_prot->destroy(sk);
+ 
+-	sk_stream_kill_queues(sk);
++	sk_stream_kill_queues_reason(sk, SKB_DROP_REASON_SOCKET_DESTROYED);
+ 
+ 	xfrm_sk_free_policy(sk);
  
 -- 
 2.36.1
