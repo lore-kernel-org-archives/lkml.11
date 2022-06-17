@@ -2,128 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0E88C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 10:00:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73E9CC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 10:02:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381493AbiFQJ77 (ORCPT
+        id S1381248AbiFQKCG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 05:59:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45634 "EHLO
+        Fri, 17 Jun 2022 06:02:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380804AbiFQJ7v (ORCPT
+        with ESMTP id S1380595AbiFQKCD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 05:59:51 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 010D4522FE;
-        Fri, 17 Jun 2022 02:59:51 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D1A111474;
-        Fri, 17 Jun 2022 02:59:50 -0700 (PDT)
-Received: from ampere-altra-2-1.usa.Arm.com (ampere-altra-2-1.usa.arm.com [10.118.91.158])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 93B5E3F73B;
-        Fri, 17 Jun 2022 02:59:50 -0700 (PDT)
-From:   Yoan Picchi <yoan.picchi@arm.com>
-To:     Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>, qat-linux@intel.com,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Andre Przywara <andre.przywara@arm.com>,
-        Ard Biesheuvel <ardb@kernel.org>
-Subject: [PATCH v3 1/2] crypto: qat - replace get_current_node() with numa_node_id()
-Date:   Fri, 17 Jun 2022 09:59:44 +0000
-Message-Id: <20220617095945.437601-2-yoan.picchi@arm.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220617095945.437601-1-yoan.picchi@arm.com>
-References: <20220617095945.437601-1-yoan.picchi@arm.com>
+        Fri, 17 Jun 2022 06:02:03 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3762669292
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 03:02:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655460122;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=TSVh7yijYlapN8vzLiNc0otlLUAAzEtnNLfWmNY1vGE=;
+        b=OqzU6p60v1Z6g4f/TlNJI3sAgEmv/5atDHajTGl8TEC3U/BSKtwVCQstSLGxkaVA+lwtb5
+        gezyFNwJeMuz+7cDwmKKs7uMV7pGhK4l5rru1eM2t+pd0PZveHUvq+33aqGyLYLcoNoTkN
+        7ARab/97TnXCcUEcDnJG5O+AE8KuAwk=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-211-SJFlonKnMj20AdhdJeneug-1; Fri, 17 Jun 2022 06:01:51 -0400
+X-MC-Unique: SJFlonKnMj20AdhdJeneug-1
+Received: by mail-wm1-f70.google.com with SMTP id v184-20020a1cacc1000000b0039c7efa3e95so1410364wme.3
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 03:01:51 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=TSVh7yijYlapN8vzLiNc0otlLUAAzEtnNLfWmNY1vGE=;
+        b=LP9rO11ExmzODz75J1ad3EoU+K5qxN97iLgV6POQ31PF1mcWZTk1jIiRVTAetbl/5v
+         N2qLFxrBkex9i5GsQANsfFeDDDE25wf+UsSiyPbXbRpxyLvhdVY9axCe/CRFLmC0Vkra
+         eFzbVFxDOyQFmlBkgPMMyRTOrkVM21JPSPOJLVD9f336pmDpuF4MaztcPVCS6ub+we1z
+         rSRFI2k4wyoL10P1Isu5KU+DWwXAiKyTOtrKsFl3xO2ItwMNrjKBBZwxtZQ/E/OOzXG9
+         OFt6bDAjXnlaqxh1j9o9hFxR8htmsN276wDiwyKx/AU/CdZ5d2IIq0gxKO35JPUQ9bUO
+         cXhw==
+X-Gm-Message-State: AJIora9teiXGjgJX0z9RGummK8wo+tdZNTxVmZVnENdMWeyojjMte03G
+        zJneWoFpZs1RiLuwWBKECTLcXTx8McokTh6H07U8TokdJ5wTaLVSFbFiUfGurbg+1CVTUgf53zK
+        RYxrV0MYWuYdiLXUbhvNMAuJA
+X-Received: by 2002:a05:6000:1111:b0:212:d9ea:8609 with SMTP id z17-20020a056000111100b00212d9ea8609mr8689018wrw.522.1655460110685;
+        Fri, 17 Jun 2022 03:01:50 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1v8oTtQKSi5Cmw+jxp4WuOkWmcH0i3GQ/fJ95cJqHwaeCaQcWr0LlRvF1z+hNcGMxe0/fHbBw==
+X-Received: by 2002:a05:6000:1111:b0:212:d9ea:8609 with SMTP id z17-20020a056000111100b00212d9ea8609mr8689000wrw.522.1655460110368;
+        Fri, 17 Jun 2022 03:01:50 -0700 (PDT)
+Received: from redhat.com ([2.54.189.19])
+        by smtp.gmail.com with ESMTPSA id n8-20020a5d4c48000000b0021b8213fa3bsm411504wrt.19.2022.06.17.03.01.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Jun 2022 03:01:49 -0700 (PDT)
+Date:   Fri, 17 Jun 2022 06:01:46 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] virtio: disable notification hardening by default
+Message-ID: <20220617060111-mutt-send-email-mst@kernel.org>
+References: <20220617072626.30503-1-jasowang@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220617072626.30503-1-jasowang@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andre Przywara <andre.przywara@arm.com>
+On Fri, Jun 17, 2022 at 03:26:26PM +0800, Jason Wang wrote:
+> We try to harden virtio device notifications in 8b4ec69d7e09 ("virtio:
+> harden vring IRQ"). It works with the assumption that the driver or
+> core can properly call virtio_device_ready() at the right
+> place. Unfortunately, this seems to be not true and uncover various
+> bugs of the existing drivers, mainly the issue of using
+> virtio_device_ready() incorrectly.
+> 
+> So let's having a Kconfig option and disable it by default. It gives
+> us a breath to fix the drivers and then we can consider to enable it
+> by default.
+> 
+> Signed-off-by: Jason Wang <jasowang@redhat.com>
 
-Currently the QAT driver code uses a self-defined wrapper function
-called get_current_node() when it wants to learn the current NUMA node.
-This implementation references the topology_physical_package_id[] array,
-which more or less coincidentally contains the NUMA node id, at least
-on x86.
 
-Because this is not universal, and Linux offers a direct function to
-learn the NUMA node ID, replace that function with a call to
-numa_node_id(), which would work everywhere.
+Do you want to drop irq_lock lock/unlock in ccw too?
 
-This fixes the QAT driver operation on arm64 machines.
-
-Reported-by: Yoan Picchi <Yoan.Picchi@arm.com>
-Signed-off-by: Andre Przywara <andre.przywara@arm.com>
-Signed-off-by: Yoan Picchi <yoan.picchi@arm.com>
----
- drivers/crypto/qat/qat_common/adf_common_drv.h | 5 -----
- drivers/crypto/qat/qat_common/qat_algs.c       | 4 ++--
- drivers/crypto/qat/qat_common/qat_asym_algs.c  | 4 ++--
- 3 files changed, 4 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/crypto/qat/qat_common/adf_common_drv.h b/drivers/crypto/qat/qat_common/adf_common_drv.h
-index e8c9b77c0d66..b582107db67b 100644
---- a/drivers/crypto/qat/qat_common/adf_common_drv.h
-+++ b/drivers/crypto/qat/qat_common/adf_common_drv.h
-@@ -49,11 +49,6 @@ struct service_hndl {
- 	struct list_head list;
- };
- 
--static inline int get_current_node(void)
--{
--	return topology_physical_package_id(raw_smp_processor_id());
--}
--
- int adf_service_register(struct service_hndl *service);
- int adf_service_unregister(struct service_hndl *service);
- 
-diff --git a/drivers/crypto/qat/qat_common/qat_algs.c b/drivers/crypto/qat/qat_common/qat_algs.c
-index f998ed58457c..c0ffaebcc8b8 100644
---- a/drivers/crypto/qat/qat_common/qat_algs.c
-+++ b/drivers/crypto/qat/qat_common/qat_algs.c
-@@ -618,7 +618,7 @@ static int qat_alg_aead_newkey(struct crypto_aead *tfm, const u8 *key,
- {
- 	struct qat_alg_aead_ctx *ctx = crypto_aead_ctx(tfm);
- 	struct qat_crypto_instance *inst = NULL;
--	int node = get_current_node();
-+	int node = numa_node_id();
- 	struct device *dev;
- 	int ret;
- 
-@@ -1042,7 +1042,7 @@ static int qat_alg_skcipher_newkey(struct qat_alg_skcipher_ctx *ctx,
- {
- 	struct qat_crypto_instance *inst = NULL;
- 	struct device *dev;
--	int node = get_current_node();
-+	int node = numa_node_id();
- 	int ret;
- 
- 	inst = qat_crypto_get_instance_node(node);
-diff --git a/drivers/crypto/qat/qat_common/qat_asym_algs.c b/drivers/crypto/qat/qat_common/qat_asym_algs.c
-index b0b78445418b..3701eac10bce 100644
---- a/drivers/crypto/qat/qat_common/qat_asym_algs.c
-+++ b/drivers/crypto/qat/qat_common/qat_asym_algs.c
-@@ -480,7 +480,7 @@ static int qat_dh_init_tfm(struct crypto_kpp *tfm)
- {
- 	struct qat_dh_ctx *ctx = kpp_tfm_ctx(tfm);
- 	struct qat_crypto_instance *inst =
--			qat_crypto_get_instance_node(get_current_node());
-+			qat_crypto_get_instance_node(numa_node_id());
- 
- 	if (!inst)
- 		return -EINVAL;
-@@ -1218,7 +1218,7 @@ static int qat_rsa_init_tfm(struct crypto_akcipher *tfm)
- {
- 	struct qat_rsa_ctx *ctx = akcipher_tfm_ctx(tfm);
- 	struct qat_crypto_instance *inst =
--			qat_crypto_get_instance_node(get_current_node());
-+			qat_crypto_get_instance_node(numa_node_id());
- 
- 	if (!inst)
- 		return -EINVAL;
--- 
-2.25.1
+> ---
+>  drivers/virtio/Kconfig        |  6 ++++++
+>  drivers/virtio/virtio.c       |  2 ++
+>  drivers/virtio/virtio_ring.c  | 12 ++++++++++++
+>  include/linux/virtio_config.h |  2 ++
+>  4 files changed, 22 insertions(+)
+> 
+> diff --git a/drivers/virtio/Kconfig b/drivers/virtio/Kconfig
+> index b5adf6abd241..b059c39af3d4 100644
+> --- a/drivers/virtio/Kconfig
+> +++ b/drivers/virtio/Kconfig
+> @@ -35,6 +35,12 @@ menuconfig VIRTIO_MENU
+>  
+>  if VIRTIO_MENU
+>  
+> +config VIRTIO_HARDEN_NOTIFICATION
+> +        bool "Harden virtio notification"
+> +        help
+> +          Enable to this to harden the device notifications and
+> +          supress the ones that are illegal.
+> +
+>  config VIRTIO_PCI
+>  	tristate "PCI driver for virtio devices"
+>  	depends on PCI
+> diff --git a/drivers/virtio/virtio.c b/drivers/virtio/virtio.c
+> index ef04a96942bf..21dc08d2f32d 100644
+> --- a/drivers/virtio/virtio.c
+> +++ b/drivers/virtio/virtio.c
+> @@ -220,6 +220,7 @@ static int virtio_features_ok(struct virtio_device *dev)
+>   * */
+>  void virtio_reset_device(struct virtio_device *dev)
+>  {
+> +#ifdef CONFIG_VIRTIO_HARDEN_NOTIFICATION
+>  	/*
+>  	 * The below virtio_synchronize_cbs() guarantees that any
+>  	 * interrupt for this line arriving after
+> @@ -228,6 +229,7 @@ void virtio_reset_device(struct virtio_device *dev)
+>  	 */
+>  	virtio_break_device(dev);
+>  	virtio_synchronize_cbs(dev);
+> +#endif
+>  
+>  	dev->config->reset(dev);
+>  }
+> diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+> index 13a7348cedff..d9d3b6e201fb 100644
+> --- a/drivers/virtio/virtio_ring.c
+> +++ b/drivers/virtio/virtio_ring.c
+> @@ -1688,7 +1688,11 @@ static struct virtqueue *vring_create_virtqueue_packed(
+>  	vq->we_own_ring = true;
+>  	vq->notify = notify;
+>  	vq->weak_barriers = weak_barriers;
+> +#ifdef CONFIG_VIRTIO_HARDEN_NOTIFICATION
+>  	vq->broken = true;
+> +#else
+> +	vq->broken = false;
+> +#endif
+>  	vq->last_used_idx = 0;
+>  	vq->event_triggered = false;
+>  	vq->num_added = 0;
+> @@ -2135,9 +2139,13 @@ irqreturn_t vring_interrupt(int irq, void *_vq)
+>  	}
+>  
+>  	if (unlikely(vq->broken)) {
+> +#ifdef CONFIG_VIRTIO_HARDEN_NOTIFICATION
+>  		dev_warn_once(&vq->vq.vdev->dev,
+>  			      "virtio vring IRQ raised before DRIVER_OK");
+>  		return IRQ_NONE;
+> +#else
+> +		return IRQ_HANDLED;
+> +#endif
+>  	}
+>  
+>  	/* Just a hint for performance: so it's ok that this can be racy! */
+> @@ -2180,7 +2188,11 @@ struct virtqueue *__vring_new_virtqueue(unsigned int index,
+>  	vq->we_own_ring = false;
+>  	vq->notify = notify;
+>  	vq->weak_barriers = weak_barriers;
+> +#ifdef CONFIG_VIRTIO_HARDEN_NOTIFICATION
+>  	vq->broken = true;
+> +#else
+> +	vq->broken = false;
+> +#endif
+>  	vq->last_used_idx = 0;
+>  	vq->event_triggered = false;
+>  	vq->num_added = 0;
+> diff --git a/include/linux/virtio_config.h b/include/linux/virtio_config.h
+> index 9a36051ceb76..d15c3cdda2d2 100644
+> --- a/include/linux/virtio_config.h
+> +++ b/include/linux/virtio_config.h
+> @@ -257,6 +257,7 @@ void virtio_device_ready(struct virtio_device *dev)
+>  
+>  	WARN_ON(status & VIRTIO_CONFIG_S_DRIVER_OK);
+>  
+> +#ifdef CONFIG_VIRTIO_HARDEN_NOTIFICATION
+>  	/*
+>  	 * The virtio_synchronize_cbs() makes sure vring_interrupt()
+>  	 * will see the driver specific setup if it sees vq->broken
+> @@ -264,6 +265,7 @@ void virtio_device_ready(struct virtio_device *dev)
+>  	 */
+>  	virtio_synchronize_cbs(dev);
+>  	__virtio_unbreak_device(dev);
+> +#endif
+>  	/*
+>  	 * The transport should ensure the visibility of vq->broken
+>  	 * before setting DRIVER_OK. See the comments for the transport
+> -- 
+> 2.25.1
 
