@@ -2,77 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20AF1CCA47C
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 07:36:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE5B9C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 07:36:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380578AbiFQHg2 (ORCPT
+        id S1380617AbiFQHgq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 03:36:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48072 "EHLO
+        Fri, 17 Jun 2022 03:36:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380565AbiFQHgZ (ORCPT
+        with ESMTP id S1380565AbiFQHgp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 03:36:25 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8394A66F8D
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 00:36:22 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id h23so7120794ejj.12
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 00:36:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=szeredi.hu; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lFSvXWnMhV0ta+uOardT419nO7q6Hq5t2QYuh46TUv4=;
-        b=Qhai7TiOMAImwxaojs6g3DzfizpP400kQjj8YnEIFYKPoCiq9tH26r2InFHJYazbAe
-         2oUD5p1gCgYD90nQMBltPqFO8vSZJpa0QS8TdcCLl5gCsPhDyIliBidIxA4v+yMC7nDa
-         omc1Sj/QY/mrcAB6OAcCPHxzhRX76dsnKSbRk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lFSvXWnMhV0ta+uOardT419nO7q6Hq5t2QYuh46TUv4=;
-        b=xk3nsaRLmKKaspJ58h8TyiQdFZCuKCtbVbWoBOWOSmzRq66T8YFis0cplrAekXiIaP
-         9JiubbXjgyNVxXS0TYqhUGBJe8w4T5+MJwe0Q3+weYky8cKACADW63Ohn+jtFsZ7v5Ww
-         UobUOLfGdXjHUnsZtOWDgaqfdf7ARuVxQ68K2zae8hOY9Dw9uls/IRhFYt4a4tvH3+AE
-         RBL+Z9WHxpX4gX7FtKuIL6nvlNDpdTzLeTCVEjfmTaE4brcrclu/nxdQCQAceKfC4qbE
-         2XXHTg61IypCDNn7GUB79Lt2wp5h7aHlpxDGB8l8PK9Me5/Rdvf6Q9vN7ujlq5oZafby
-         CXng==
-X-Gm-Message-State: AJIora+qIfplFRNZQuWAGPIXhVWl6cKGitR0MgGKiGccZ3YhhqRSlWJe
-        RYwB2vW7CQ++qyQ/mQCWi6mpRi5ti1NaCc4W0kGuEA==
-X-Google-Smtp-Source: AGRyM1sERXFFpBnekMT3mnfespNrQpWUCBUpQ9UlcR5Dk5VAfBFoM/6wYxONe8v6LCIYyG2jO7xBoNvAEx0S9+oPo5s=
-X-Received: by 2002:a17:906:b788:b0:711:fc54:e55e with SMTP id
- dt8-20020a170906b78800b00711fc54e55emr7843526ejb.270.1655451381149; Fri, 17
- Jun 2022 00:36:21 -0700 (PDT)
+        Fri, 17 Jun 2022 03:36:45 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E05B266FAB;
+        Fri, 17 Jun 2022 00:36:43 -0700 (PDT)
+Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LPW7L1R8YzDrCs;
+        Fri, 17 Jun 2022 15:36:14 +0800 (CST)
+Received: from huawei.com (10.175.112.208) by dggpeml500022.china.huawei.com
+ (7.185.36.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 17 Jun
+ 2022 15:36:41 +0800
+From:   Zhang Zekun <zhangzekun11@huawei.com>
+To:     <ezequiel@vanguardiasur.com.ar>, <mchehab@kernel.org>,
+        <gregkh@linuxfoundation.org>, <andrzej.p@collabora.com>,
+        <hverkuil-cisco@xs4all.nl>
+CC:     <linux-media@vger.kernel.org>,
+        <linux-rockchip@lists.infradead.org>,
+        <linux-staging@lists.linux.dev>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH -next] media: rkvdec: Fix memset size error
+Date:   Fri, 17 Jun 2022 07:31:01 +0000
+Message-ID: <20220617073101.101234-1-zhangzekun11@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-References: <20220617071027.6569-1-dharamhans87@gmail.com> <20220617071027.6569-2-dharamhans87@gmail.com>
-In-Reply-To: <20220617071027.6569-2-dharamhans87@gmail.com>
-From:   Miklos Szeredi <miklos@szeredi.hu>
-Date:   Fri, 17 Jun 2022 09:36:10 +0200
-Message-ID: <CAJfpegtRzDbcayn7MYKpgO1MBFeBihyfRB402JHtJkbXg1dvLg@mail.gmail.com>
-Subject: Re: [PATCH v5 1/1] Allow non-extending parallel direct writes on the
- same file.
-To:     Dharmendra Singh <dharamhans87@gmail.com>
-Cc:     Vivek Goyal <vgoyal@redhat.com>, linux-fsdevel@vger.kernel.org,
-        fuse-devel <fuse-devel@lists.sourceforge.net>,
-        linux-kernel@vger.kernel.org, Bernd Schubert <bschubert@ddn.com>,
-        Dharmendra Singh <dsingh@ddn.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.208]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpeml500022.china.huawei.com (7.185.36.66)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 17 Jun 2022 at 09:10, Dharmendra Singh <dharamhans87@gmail.com> wrote:
+'dma_alloc_coherent()' alloc a 'RKVDEC_VP9_COUNT_SIZE' size area to
+'unsigned char *count_tbl', however, the memset() bellow only set
+'sizeof(*count_tbl)', which equals to 1, bytes to zero. This can
+ cause unexpected error.
 
-> This patch relaxes the exclusive lock for direct non-extending writes
-> only. File size extending writes might not need the lock either,
-> but we are not entirely sure if there is a risk to introduce any
-> kind of regression. Furthermore, benchmarking with fio does not
-> show a difference between patch versions that take on file size
-> extension a) an exclusive lock and b) a shared lock.
+Fixes: f25709c4ff15 ("media: rkvdec: Add the VP9 backend")
+Signed-off-by: Zhang Zekun <zhangzekun11@huawei.com>
+---
+ drivers/staging/media/rkvdec/rkvdec-vp9.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I'm okay with this, but ISTR Bernd noted a real-life scenario where
-this is not sufficient.  Maybe that should be mentioned in the patch
-header?
+diff --git a/drivers/staging/media/rkvdec/rkvdec-vp9.c b/drivers/staging/media/rkvdec/rkvdec-vp9.c
+index 311a12656072..3ad303a3de48 100644
+--- a/drivers/staging/media/rkvdec/rkvdec-vp9.c
++++ b/drivers/staging/media/rkvdec/rkvdec-vp9.c
+@@ -1026,7 +1026,7 @@ static int rkvdec_vp9_start(struct rkvdec_ctx *ctx)
+ 
+ 	vp9_ctx->count_tbl.size = RKVDEC_VP9_COUNT_SIZE;
+ 	vp9_ctx->count_tbl.cpu = count_tbl;
+-	memset(count_tbl, 0, sizeof(*count_tbl));
++	memset(count_tbl, 0, RKVDEC_VP9_COUNT_SIZE);
+ 	rkvdec_init_v4l2_vp9_count_tbl(ctx);
+ 
+ 	return 0;
+-- 
+2.17.1
 
-Thanks,
-Miklos
