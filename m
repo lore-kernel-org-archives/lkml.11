@@ -2,97 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A57FC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 14:23:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCDD3CCA479
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 14:25:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381939AbiFQOXj (ORCPT
+        id S1382717AbiFQOZF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 10:23:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59268 "EHLO
+        Fri, 17 Jun 2022 10:25:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382716AbiFQOXf (ORCPT
+        with ESMTP id S1382476AbiFQOZC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 10:23:35 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04EE04AE02
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 07:23:33 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id l4so4167730pgh.13
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 07:23:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=s48+XZroV3EtTjiSKpn6ew2kCrik7JfCW2Vjzd0vaYU=;
-        b=PDlfWJH2HoLU4NwlzMU+rq5k7uiuf05iH+c2Tb3fbzMPk47sse9YLNWJPcd4+ej2wS
-         7DLtSvHG5HqW4/beX7rieAZtpFsvMPcBtsElEJ4FCX24Ih3gZeD2fZH1AsXvBfemscGQ
-         HwXWdwUQnch/yx1uiHGGR+x+gitM73Vjgx8aEKearnR9mFMOhJ42rAE76fEsQ4XRURrU
-         XNWCB+Q/WK++XC0AnbQe+WBVEV/ZnvCNECY1rGhenup0i9woxAtEcyxDkZglA8Cq9KzO
-         ifNTNQNb/u+O5mu353zEflSTv3BZ32Bw2bwTqyi6N2SMb5qBk0WKdRTAP5mPUTYdbPM1
-         54jQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=s48+XZroV3EtTjiSKpn6ew2kCrik7JfCW2Vjzd0vaYU=;
-        b=qzZqEsc03XVVFuSf/Zq6lwQTIjZi/0o/MWkJj5Eh0UCtB2HQZoX99VGtp4GtOFcenJ
-         za2g793L03gn3Y2dYU/tkO4ZTThAU+XNxm1VSXmESBJiiUO4xSTWElstVSmbp2QL3g90
-         gWvi1re6gJncaU3hbItQfjCoiNfW7Byrg1HMjbeB3diRMSJReglubSTvWsiNo/6kPPJ3
-         +DMhrMi8+XqQoaZaV8SOu70zsIyy5/jAtj07Qst8J4FJ8+ZOwWAkKtX/SRMlaVBNl0bw
-         CRyisnsBr/5sE6zZ6ubr2wkgULzyPYzE5gH3xC+p2gwV0usBWwcIF3+TJ+mDWaM1E09O
-         5xBw==
-X-Gm-Message-State: AJIora92dlJaXwv2oijbzxTUh49anHRpm2yCAG49V3v/7ha9fcnrw48o
-        Ql3wNDlBYZ085oE/HiaiRIl6hRdHTWoAeDv68Q8=
-X-Google-Smtp-Source: AGRyM1ugYmqpUzTFbrQMpFzAvmG4jf2sABMC9YKb4GmNa0H0riR5gaWaeCsXeeUwFUevyvXjlZa10u/72X5mlz+kt/c=
-X-Received: by 2002:a63:5522:0:b0:405:1ff7:33dd with SMTP id
- j34-20020a635522000000b004051ff733ddmr9429179pgb.86.1655475813003; Fri, 17
- Jun 2022 07:23:33 -0700 (PDT)
+        Fri, 17 Jun 2022 10:25:02 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADC0B515AC;
+        Fri, 17 Jun 2022 07:25:00 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 6919B21E44;
+        Fri, 17 Jun 2022 14:24:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1655475899;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=a9HpK8AQFCPpZGHqOflUkPRS+AfBo7nezyoDwo5EOxw=;
+        b=wON5Z+a8PY3NERVTywme/dw6SGBNU5E2zNjD+c2ZeDbwICsTtnV4w3RAuhibm88j/JmuGV
+        g8S70bLRewWvY75g9gCfu0RHBB3T3Sf3WShC3IdZZkTlLGIayCG9St8vhwG72ocTa25VmL
+        58dVm1pmwlVNQvWdEfcu/8XDtCq1DVU=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1655475899;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=a9HpK8AQFCPpZGHqOflUkPRS+AfBo7nezyoDwo5EOxw=;
+        b=Se/2b5X2lpR6pFkWpn6Hvd2pjIbTelvpE8uXqCZExx4u46Ub1zvNv6NMEnN8Wgx/B0w+D7
+        GeGj8iyXGisMmABA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 08E481348E;
+        Fri, 17 Jun 2022 14:24:59 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id +29EAbuOrGIdLgAAMHmgww
+        (envelope-from <dsterba@suse.cz>); Fri, 17 Jun 2022 14:24:59 +0000
+Date:   Fri, 17 Jun 2022 16:20:24 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     Qu Wenruo <quwenruo.btrfs@gmx.com>
+Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
+        Nick Terrell <terrelln@fb.com>,
+        Chris Down <chris@chrisdown.name>,
+        Filipe Manana <fdmanana@suse.com>, Qu Wenruo <wqu@suse.com>,
+        Nikolay Borisov <nborisov@suse.com>,
+        Gabriel Niebler <gniebler@suse.com>,
+        Ira Weiny <ira.weiny@intel.com>, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH v2 3/3] btrfs: Use kmap_local_page() on "in_page" in
+ zlib_compress_pages()
+Message-ID: <20220617142024.GL20633@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz, Qu Wenruo <quwenruo.btrfs@gmx.com>,
+        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>, Nick Terrell <terrelln@fb.com>,
+        Chris Down <chris@chrisdown.name>,
+        Filipe Manana <fdmanana@suse.com>, Qu Wenruo <wqu@suse.com>,
+        Nikolay Borisov <nborisov@suse.com>,
+        Gabriel Niebler <gniebler@suse.com>,
+        Ira Weiny <ira.weiny@intel.com>, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220617120538.18091-1-fmdefrancesco@gmail.com>
+ <20220617120538.18091-4-fmdefrancesco@gmail.com>
+ <8cbfc1ff-f86d-f2cc-d37e-ef874f4600bc@gmx.com>
 MIME-Version: 1.0
-References: <20220610143527.22974-1-kirill.shutemov@linux.intel.com>
- <20220610143527.22974-6-kirill.shutemov@linux.intel.com> <c7e2f8fb44da067e7565d091edeac300977b65ed.camel@intel.com>
- <Yqr4SVMyHRTkc+LN@hirez.programming.kicks-ass.net> <20220616164440.vw7sqnof6grrmnvl@black.fi.intel.com>
- <YqxnMbMhvWO9rEy4@worktop.programming.kicks-ass.net>
-In-Reply-To: <YqxnMbMhvWO9rEy4@worktop.programming.kicks-ass.net>
-From:   "H.J. Lu" <hjl.tools@gmail.com>
-Date:   Fri, 17 Jun 2022 07:22:57 -0700
-Message-ID: <CAMe9rOq_WT-dxS3xthGtagn=aHruHyUJDR_=RDvMi9vX5PCmnA@mail.gmail.com>
-Subject: Re: [PATCHv3 5/8] x86/uaccess: Provide untagged_addr() and remove
- tags before address check
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
-        "Lutomirski, Andy" <luto@kernel.org>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "kcc@google.com" <kcc@google.com>,
-        "andreyknvl@gmail.com" <andreyknvl@gmail.com>,
-        "ak@linux.intel.com" <ak@linux.intel.com>,
-        "dvyukov@google.com" <dvyukov@google.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "ryabinin.a.a@gmail.com" <ryabinin.a.a@gmail.com>,
-        "glider@google.com" <glider@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8cbfc1ff-f86d-f2cc-d37e-ef874f4600bc@gmx.com>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 17, 2022 at 4:36 AM Peter Zijlstra <peterz@infradead.org> wrote:
->
-> On Thu, Jun 16, 2022 at 07:44:40PM +0300, Kirill A. Shutemov wrote:
-> > Any objection against this variant (was posted in the thread):
+On Fri, Jun 17, 2022 at 09:09:47PM +0800, Qu Wenruo wrote:
+> On 2022/6/17 20:05, Fabio M. De Francesco wrote:
+> > @@ -126,6 +128,8 @@ int zlib_compress_pages(struct list_head *ws, struct address_space *mapping,
+> >   		ret = -ENOMEM;
+> >   		goto out;
+> >   	}
+> > +	mstack[sind] = 'A';
+> > +	sind++;
+> >   	cpage_out = kmap_local_page(out_page);
+> >   	pages[0] = out_page;
+> >   	nr_pages = 1;
+> > @@ -148,26 +152,32 @@ int zlib_compress_pages(struct list_head *ws, struct address_space *mapping,
+> >   				int i;
 > >
-> >               #define untagged_addr(mm, addr) ({                                      \
-> >                       u64 __addr = (__force u64)(addr);                               \
-> >                       s64 sign = (s64)__addr >> 63;                                   \
-> >                       __addr &= (mm)->context.untag_mask | sign;                      \
-> >                       (__force __typeof__(addr))__addr;                               \
-> >               })
-> >
-> > ?
->
-> Yeah, I suppose that should work fine.
+> >   				for (i = 0; i < in_buf_pages; i++) {
+> > -					if (in_page) {
+> > -						kunmap(in_page);
+> 
+> I don't think we really need to keep @in_page mapped for that long.
+> 
+> We only need the input pages (pages from inode page cache) when we run
+> out of input.
+> 
+> So what we really need is just to map the input, copy the data to
+> buffer, unmap the page.
+> 
+> > +					if (data_in) {
+> > +						sind--;
+> > +						kunmap_local(data_in);
+> >   						put_page(in_page);
+> >   					}
+> >   					in_page = find_get_page(mapping,
+> >   								start >> PAGE_SHIFT);
+> > -					data_in = kmap(in_page);
+> > +					mstack[sind] = 'B';
+> > +					sind++;
+> > +					data_in = kmap_local_page(in_page);
+> >   					memcpy(workspace->buf + i * PAGE_SIZE,
+> >   					       data_in, PAGE_SIZE);
+> >   					start += PAGE_SIZE;
+> >   				}
+> >   				workspace->strm.next_in = workspace->buf;
+> >   			} else {
+> 
+> I think we can clean up the code.
+> 
+> In fact the for loop can handle both case, I didn't see any special
+> reason to do different handling, we can always use workspace->buf,
+> instead of manually dancing using different paths.
+> 
+> I believe with all these cleanup, it should be much simpler to convert
+> to kmap_local_page().
+> 
+> I'm pretty happy to provide help on this refactor if you don't feel
+> confident enough on this part of btrfs.
 
-Won't the sign bit be put at the wrong place?
-
--- 
-H.J.
+My first thought was "why to clean up zlib loop if we want to just
+replace kmap" but after seeing the whole stack and fiddling with the
+indexes I agree that a simplification should be done first.
