@@ -2,113 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29404C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 05:06:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA418C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 05:10:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380052AbiFQFGC (ORCPT
+        id S1379837AbiFQFKR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 01:06:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41178 "EHLO
+        Fri, 17 Jun 2022 01:10:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237181AbiFQFGA (ORCPT
+        with ESMTP id S232386AbiFQFKP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 01:06:00 -0400
-X-Greylist: delayed 1016 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 16 Jun 2022 22:05:59 PDT
-Received: from mx0b-00256a01.pphosted.com (mx0b-00256a01.pphosted.com [67.231.153.242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9975E66AC1
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 22:05:59 -0700 (PDT)
-Received: from pps.filterd (m0119692.ppops.net [127.0.0.1])
-        by mx0b-00256a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25H4VHeF017372
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 01:05:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nyu.edu; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding;
- s=20180315; bh=3kogNl48Igq0sjUSHZ2cHxkX5GFxsC19iw2HB9fEgUg=;
- b=OY/juXmnpHNv/r4NdIN0U6Grcc/7h/Qcne4sUSimbvAbcsruYLErq9FUEdyAP6xlzouK
- QO23OZ2l7daDTbZupxoQctZ8f81pLXGCGAeCSGU/QebV72S/WLAs5+CYUbIaG4atng1W
- YGdLQ1KgTrpnePJHrscHrUOqBMzH9PSWpl8S8PxeYN9dkCjjX0yUgUZ2n4mPr60v+i6+
- 7GUnoKDypBEbR720z1cvgikW03dIx0M1fhXObryfN/YCTGDYuhb4/NcsSvSyXJJjFScF
- Rfe5YSgjMHwPAIrBjoqMdAeOE8wuoi9ZbWPd9kOFyznEi0DN6eh6cq6TIw/Y+0Kv3kL6 1A== 
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com [209.85.222.197])
-        by mx0b-00256a01.pphosted.com (PPS) with ESMTPS id 3grjnm88mn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 01:05:58 -0400
-Received: by mail-qk1-f197.google.com with SMTP id i10-20020a05620a404a00b006a7609f54c6so3931124qko.7
-        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 22:05:58 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3kogNl48Igq0sjUSHZ2cHxkX5GFxsC19iw2HB9fEgUg=;
-        b=EG3TaQiPmCZSHlh8/QZoCt5bNMCDU2jNK9vOpnPu27yoescqKuBRH+vTEOPIbPwpDO
-         qAvJLvr+WT7cgRiySWH+acaKHlytcsGmgKumjPJk4bav1mwWonBjG6iRQYOvS8j9xsoC
-         5NiMyE0byNzuP6u0v8cJtoJxfZ8p8+/rzWSoUYmvic5i1T+DV9cWBRTGnwmtlMtdqFtm
-         ZiG2dogAplc1xKrrCQ5n+EpdJXTW6hOv1mqlsLD2KfwCRy48qMafDyEgxOUFZN48FjAB
-         5MU5xzc1ESQ/35JrfLTsD4wZD+nfZEs0i1B2vERdWjvQ9APdn8PPU7PuumI1tpWBs7Ry
-         KEAQ==
-X-Gm-Message-State: AJIora+YyJw9ajhKnvFAEedGwMNFZB/gYyKRQCnL/hLuwFdVlhYXJfTj
-        O2ENvxucxGfuCHnpPMpyN4yjMnouPrKITZWFmBNDggeFmjP4yRUCGFNqBIm6UaH+KEE+t8xCW9r
-        5bsl83AWWqijgHYNI2p2aZH0=
-X-Received: by 2002:a05:6214:d0f:b0:46b:af12:e20b with SMTP id 15-20020a0562140d0f00b0046baf12e20bmr7039993qvh.104.1655442358174;
-        Thu, 16 Jun 2022 22:05:58 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1sg8jFqi+Qebx+it8uDmKa1ceXVEsfXzuiBZhdtgpT5p68GMEjUwmDg3+v/NFZJQvLREOm+ZA==
-X-Received: by 2002:a05:6214:d0f:b0:46b:af12:e20b with SMTP id 15-20020a0562140d0f00b0046baf12e20bmr7039985qvh.104.1655442357941;
-        Thu, 16 Jun 2022 22:05:57 -0700 (PDT)
-Received: from localhost.localdomain (cpe-66-65-49-54.nyc.res.rr.com. [66.65.49.54])
-        by smtp.gmail.com with ESMTPSA id h22-20020ac85856000000b00304e95ec0fbsm3556530qth.89.2022.06.16.22.05.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jun 2022 22:05:57 -0700 (PDT)
-From:   HighW4y2H3ll <huzh@nyu.edu>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     HighW4y2H3ll <huzh@nyu.edu>, netdev@vger.kernel.org,
+        Fri, 17 Jun 2022 01:10:15 -0400
+Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E488666BE
+        for <linux-kernel@vger.kernel.org>; Thu, 16 Jun 2022 22:10:14 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id CF14E5C013E;
+        Fri, 17 Jun 2022 01:10:13 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Fri, 17 Jun 2022 01:10:13 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+        cc:cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm3; t=1655442613; x=
+        1655529013; bh=06SXRPZNOocNXWxGRqH7I0OqfFWahXsedY1b35/Z7kg=; b=m
+        QpCBOk+A3bZ7Tj+yITJ9PcO2R0EOx2TzLK9A0kssJSnLhJdbh8SYQ3XUTcUTY7mA
+        PuLdmTvkIpC0iHh6/WRK1ocg50Q+Wnfmn3aGwJX9MaJ4LMmnRx3KxGLuoaSgVsDS
+        BEWcLvATdWINOhNiwKn79y5CrqIQpVedIK2czNc16SNx2WDr/a0tbddplJHzeAly
+        ptRCAvjj1IjLF5/PQO6f5qJ78CAnZyFpKHbwXgt9h1+rZdXqTuBGx8DrrL0uFRBu
+        RGV5cPWsEKSegCPr2vkTmQikDFxDvfdwY88TD9lo4pcKiQhS2Vkf6ds27zKxBTGc
+        1kCs767MQot9CzOWqCotA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1655442613; x=
+        1655529013; bh=06SXRPZNOocNXWxGRqH7I0OqfFWahXsedY1b35/Z7kg=; b=H
+        eDa6XUadrlVUi+qPuOSMQ6F7qJbaSJKkDRAq4waHFO2Wf4EuRMipr+VZD3drxqIZ
+        FQiGxgPfZNlV/nXtrYY5l9AmfbKQcatQo7xFzD/ZQhoej+XdpcdkKSX0MRbRsKKc
+        cFWMa0O2ziyCCVoD1UShA6YWCAEsfFstJjHojEpxMUnxzk2Nl2U5jinmtpEpgGbT
+        qcCCaDhdK5RaAlSLCoTpFJRU1bvzGDTCl5HgKF8AZqZlKADfdkbCQWDo81idca0t
+        SKbeHz4WOFygQO+VPtJAd/D6ymPUnk61ICTMYiKZU2Tqv8pkNj8boZIpQ0qKqu2Y
+        RYEynEKJBze6sRCHO4rlg==
+X-ME-Sender: <xms:tQysYusCyoW36daozlmhwR4dmRRr_rjLiTEOJmYl4nxXwaqRe45mQA>
+    <xme:tQysYjd8PDjO5tOirRIll1GTabLSasIKRMH7l-NyEModTcCAl9WnF4zpabzrMAWCa
+    KZRI1OuQVDRjvc1Dg>
+X-ME-Received: <xmr:tQysYpylbnXpTJ7PARkCV19BEcC4Rctf3xoqUTcdmJEKSFI8KVrmD2pN88Ph3mqsjB-a9HnzNjK09bhvhGmBftQGvul9U-m_rVgQio6STBUKDaNFimGRU1P2ow>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedruddvgedgledtucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepuffvvehfhffkffgfgggjtgfgsehtkeertddtfeejnecuhfhrohhmpefurghm
+    uhgvlhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenuc
+    ggtffrrghtthgvrhhnpedtvefhheehgfdvkeetffeludeuudehudeuvddtveelleekvedv
+    uedviefhkeeuheenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfh
+    hrohhmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
+X-ME-Proxy: <xmx:tQysYpMXmqEh2krUGY75xpV2MmG_3NXL2pwfNwxgKdMRfDw4Dp0U6Q>
+    <xmx:tQysYu_fkbHfkcKYu4CIQm1VZIKovrvXs6RoN3q0fHIvre7bntFunw>
+    <xmx:tQysYhWvh92esinX1dQs5GXe0rbPKg9nAg9Unw0JtyYm-mMYGIanNQ>
+    <xmx:tQysYjOCqZuk0xchhj3WIBzBDtqeoU5MCaL9o-fj3iaE0EXbIGalxw>
+Feedback-ID: i0ad843c9:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 17 Jun 2022 01:10:12 -0400 (EDT)
+Subject: Re: [PATCH] drm/sun4i: Add DMA mask and segment size
+To:     =?UTF-8?Q?Jernej_=c5=a0krabec?= <jernej.skrabec@gmail.com>,
+        mripard@kernel.org, wens@csie.org
+Cc:     airlied@linux.ie, daniel@ffwll.ch, dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2] Fix buffer overflow in hinic_devlink.c:hinic_flash_fw
-Date:   Fri, 17 Jun 2022 01:01:02 -0400
-Message-Id: <20220617050101.37620-1-huzh@nyu.edu>
-X-Mailer: git-send-email 2.35.1
+References: <20220616213240.392041-1-jernej.skrabec@gmail.com>
+ <e4a73a0f-c725-fad2-021b-5b5ee5ead1b3@sholland.org>
+ <10094862.nUPlyArG6x@jernej-laptop>
+From:   Samuel Holland <samuel@sholland.org>
+Message-ID: <8a805401-457d-41c1-1be2-be1076bb02c9@sholland.org>
+Date:   Fri, 17 Jun 2022 00:10:12 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
+In-Reply-To: <10094862.nUPlyArG6x@jernej-laptop>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: H2F68lZii1It7rK680HeFkfyb68Ztqe6
-X-Proofpoint-ORIG-GUID: H2F68lZii1It7rK680HeFkfyb68Ztqe6
-X-Orig-IP: 209.85.222.197
-X-Proofpoint-Spam-Details: rule=outbound_bp_notspam policy=outbound_bp score=0 phishscore=0
- adultscore=0 clxscore=1015 suspectscore=0 malwarescore=0
- priorityscore=1501 spamscore=0 mlxlogscore=917 mlxscore=0
- lowpriorityscore=0 impostorscore=0 bulkscore=0 classifier=spam adjust=0
- reason=mlx scancount=1 engine=8.12.0-2204290000
- definitions=main-2206170023
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Signed-off-by: zhenghao hu <huzh@nyu.edu>
----
- drivers/net/ethernet/huawei/hinic/hinic_port.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+On 6/16/22 11:13 PM, Jernej Škrabec wrote:
+> Dne petek, 17. junij 2022 ob 05:03:11 CEST je Samuel Holland napisal(a):
+>> Hi Jernej,
+>>
+>> On 6/16/22 4:32 PM, Jernej Skrabec wrote:
+>>> Kernel occasionally complains that there is mismatch in segment size
+>>> when trying to render HW decoded videos and rendering them directly with
+>>> sun4i DRM driver.
+>>>
+>>> Fix that by setting DMA mask and segment size.
+>>>
+>>> Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+>>> ---
+>>>
+>>>  drivers/gpu/drm/sun4i/sun4i_drv.c | 4 ++++
+>>>  1 file changed, 4 insertions(+)
+>>>
+>>> diff --git a/drivers/gpu/drm/sun4i/sun4i_drv.c
+>>> b/drivers/gpu/drm/sun4i/sun4i_drv.c index 275f7e4a03ae..83f4e87f77f6
+>>> 100644
+>>> --- a/drivers/gpu/drm/sun4i/sun4i_drv.c
+>>> +++ b/drivers/gpu/drm/sun4i/sun4i_drv.c
+>>> @@ -7,6 +7,7 @@
+>>>
+>>>   */
+>>>  
+>>>  #include <linux/component.h>
+>>>
+>>> +#include <linux/dma-mapping.h>
+>>>
+>>>  #include <linux/kfifo.h>
+>>>  #include <linux/module.h>
+>>>  #include <linux/of_graph.h>
+>>>
+>>> @@ -367,6 +368,9 @@ static int sun4i_drv_probe(struct platform_device
+>>> *pdev)> 
+>>>  	INIT_KFIFO(list.fifo);
+>>>
+>>> +	dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
+>>
+>> Isn't this already the default, from of_dma_configure_id or
+>> setup_pdev_dma_masks?
+> 
+> Not sure, I need to check.
 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_port.h b/drivers/net/ethernet/huawei/hinic/hinic_port.h
-index c9ae3d4dc547..4a50e75a2424 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_port.h
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_port.h
-@@ -13,6 +13,7 @@
- #include <linux/bitops.h>
- 
- #include "hinic_dev.h"
-+#include "hinic_devlink.h"
- 
- #define HINIC_RSS_KEY_SIZE	40
- #define HINIC_RSS_INDIR_SIZE	256
-@@ -751,7 +752,7 @@ struct hinic_cmd_update_fw {
- 	u32 setion_total_len;
- 	u32 fw_section_version;
- 	u32 section_offset;
--	u32 data[384];
-+	u32 data[MAX_FW_FRAGMENT_LEN];
- };
- 
- int hinic_port_add_mac(struct hinic_dev *nic_dev, const u8 *addr,
--- 
-2.35.1
+Looking at the DE2 and DE3 spec to answer your question, I noticed that all of
+the address fields have a corresponding 8-bit "high address" field, so from a
+hardware perspective, the DMA mask should be 40 bits.
 
+However, currently we do not use these fields, so we are limited to 32 bits. I
+would suggest we comment that, so I am fine with setting the mask even if
+redundant, as it provides a good place to add the comment.
+
+>>> +	dma_set_max_seg_size(&pdev->dev, DMA_BIT_MASK(32));
+>>
+>> This looks like a good change. In fact, I think we need a similar change in
+>> some other drivers.
+> 
+> Should be DMA_BIT_MASK(25) as in your other patch?
+
+No, that limit is specific to the other DMA engine. I do not see any limit for
+the display engine. BSP uses sg_tables only for dma-buf, and then it puts the
+entire framebuffer in one segment. So I think DMA_BIT_MASK(32) (the maximum
+possible value) is correct.
+
+Regards,
+Samuel
