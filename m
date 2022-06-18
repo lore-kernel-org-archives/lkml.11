@@ -2,69 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8B0DC43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 07:29:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD7C1C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 07:29:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232631AbiFRH26 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 18 Jun 2022 03:28:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49030 "EHLO
+        id S234234AbiFRH3t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 18 Jun 2022 03:29:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234735AbiFRH2u (ORCPT
+        with ESMTP id S232690AbiFRH3r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 18 Jun 2022 03:28:50 -0400
-Received: from mail-m965.mail.126.com (mail-m965.mail.126.com [123.126.96.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2FAAF27CC9
-        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 00:28:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=HY7SL
-        91Dp2dwcjkDk2PgKRD2uPG9gAKpA9WqpsRDXao=; b=notICbNhFCVNQJ0z2cl5e
-        XW1JCcxFY5dvE2TUNPIPc3h+HJQvvFtf+pSYLmv1lVca0tPxvvl+59QiNqwA81IL
-        6e4KMz2g/zyrN60htNL/J0sdx/eHTwGiXT9WnZWtZXBvHBwMdZ75sSARPZu0QpcU
-        59sDqQCn+z10Yes2yDW8gA=
-Received: from localhost.localdomain (unknown [124.16.139.61])
-        by smtp10 (Coremail) with SMTP id NuRpCgCH3HCVfq1iWx2cEw--.30404S2;
-        Sat, 18 Jun 2022 15:28:22 +0800 (CST)
-From:   Liang He <windhl@126.com>
-To:     tglx@linutronix.de, maz@kernel.org
-Cc:     windhl@126.com, linux-kernel@vger.kernel.org
-Subject: [PATCH] irqchip: Fix refcount leak bug in irq-ls-extirq.c
-Date:   Sat, 18 Jun 2022 15:28:20 +0800
-Message-Id: <20220618072820.4059291-1-windhl@126.com>
+        Sat, 18 Jun 2022 03:29:47 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 793B128E1D;
+        Sat, 18 Jun 2022 00:29:42 -0700 (PDT)
+X-UUID: 16e10fa87bcd43128c7520044efe22a3-20220618
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.6,REQID:d0bb85f2-a5d7-49cd-86c3-f168342688c9,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,AC
+        TION:release,TS:90
+X-CID-INFO: VERSION:1.1.6,REQID:d0bb85f2-a5d7-49cd-86c3-f168342688c9,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,AC
+        TION:quarantine,TS:90
+X-CID-META: VersionHash:b14ad71,CLOUDID:e99cfc48-4c92-421c-ad91-b806c0f58b2a,C
+        OID:b3d8fe10dc9c,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:0,File:nil,QS:nil,BEC:nil,COL:0
+X-UUID: 16e10fa87bcd43128c7520044efe22a3-20220618
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+        (envelope-from <yunfei.dong@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1221594928; Sat, 18 Jun 2022 15:29:34 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Sat, 18 Jun 2022 15:29:32 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Sat, 18 Jun 2022 15:29:30 +0800
+From:   Yunfei Dong <yunfei.dong@mediatek.com>
+To:     Yunfei Dong <yunfei.dong@mediatek.com>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Nicolas Dufresne <nicolas@ndufresne.ca>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        Tiffany Lin <tiffany.lin@mediatek.com>,
+        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Tomasz Figa <tfiga@google.com>
+CC:     George Sun <george.sun@mediatek.com>,
+        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Fritz Koenig <frkoenig@chromium.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Irui Wang <irui.wang@mediatek.com>,
+        "Steve Cho" <stevecho@chromium.org>, <linux-media@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Subject: [PATCH] media: mediatek: vcodec: Initialize decoder parameters after getting dec_capability
+Date:   Sat, 18 Jun 2022 15:29:29 +0800
+Message-ID: <20220618072929.28783-1-yunfei.dong@mediatek.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: NuRpCgCH3HCVfq1iWx2cEw--.30404S2
-X-Coremail-Antispam: 1Uf129KBjvdXoW7Wr15Kr17ZFy3try5CrWxZwb_yoW3Crg_Cr
-        4IgFsrJF10vrsxGrsrXr9xXFyqyrykursY9rnavF98Xa48Jw1DGr1Y93y5Gw4kWF4jyFWk
-        Cw4qvw18Aw13ZjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUUS1vDUUUUU==
-X-Originating-IP: [124.16.139.61]
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi2hYkF1uwMOnVyAAAsQ
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In ls_extirq_parse_map(), we need to keep refcount balance in the
-'while' loop. For each of_find_node_by_phandle(), we need a paired
-of_node_put().
+Need to get dec_capability from scp first, then initialize decoder
+supported format and other parameters according to dec_capability value.
 
-Signed-off-by: Liang He <windhl@126.com>
+Signed-off-by: Yunfei Dong <yunfei.dong@mediatek.com>
 ---
- drivers/irqchip/irq-ls-extirq.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c     | 2 --
+ drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c | 2 ++
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/irqchip/irq-ls-extirq.c b/drivers/irqchip/irq-ls-extirq.c
-index 853b3972dbe7..82fffa37ee86 100644
---- a/drivers/irqchip/irq-ls-extirq.c
-+++ b/drivers/irqchip/irq-ls-extirq.c
-@@ -126,6 +126,7 @@ ls_extirq_parse_map(struct ls_extirq_data *priv, struct device_node *node)
- 			return -EINVAL;
- 		priv->map[hwirq].fwnode = &ipar->fwnode;
- 		ret = of_property_read_u32(ipar, "#interrupt-cells", &intsize);
-+		of_node_put(ipar);
- 		if (ret)
- 			return ret;
+diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
+index 1465ddff1c6b..41589470da32 100644
+--- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
++++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec.c
+@@ -112,8 +112,6 @@ void mtk_vcodec_dec_set_default_params(struct mtk_vcodec_ctx *ctx)
+ {
+ 	struct mtk_q_data *q_data;
+ 
+-	ctx->dev->vdec_pdata->init_vdec_params(ctx);
+-
+ 	ctx->m2m_ctx->q_lock = &ctx->dev->dev_mutex;
+ 	ctx->fh.m2m_ctx = ctx->m2m_ctx;
+ 	ctx->fh.ctrl_handler = &ctx->ctrl_hdl;
+diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c
+index 4103d7c1b638..99d7b15f2b9d 100644
+--- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c
++++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c
+@@ -208,6 +208,8 @@ static int fops_vcodec_open(struct file *file)
+ 
+ 		dev->dec_capability =
+ 			mtk_vcodec_fw_get_vdec_capa(dev->fw_handler);
++		ctx->dev->vdec_pdata->init_vdec_params(ctx);
++
+ 		mtk_v4l2_debug(0, "decoder capability %x", dev->dec_capability);
+ 	}
  
 -- 
-2.25.1
+2.18.0
 
