@@ -2,145 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4746FC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 11:35:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD057C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 11:37:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232262AbiFRLf4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 18 Jun 2022 07:35:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50216 "EHLO
+        id S232855AbiFRLhQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 18 Jun 2022 07:37:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230203AbiFRLfz (ORCPT
+        with ESMTP id S230203AbiFRLhI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 18 Jun 2022 07:35:55 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 02B4D19FA8
-        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 04:35:53 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A0510113E;
-        Sat, 18 Jun 2022 04:35:53 -0700 (PDT)
-Received: from FVFF77S0Q05N (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E864F3F7D8;
-        Sat, 18 Jun 2022 04:35:49 -0700 (PDT)
-Date:   Sat, 18 Jun 2022 12:35:35 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Tong Tiangen <tongtiangen@huawei.com>
-Cc:     James Morse <james.morse@arm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>, x86@kernel.org,
-        "H . Peter Anvin" <hpa@zytor.com>, linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Xie XiuQi <xiexiuqi@huawei.com>,
-        Guohanjun <guohanjun@huawei.com>
-Subject: Re: [PATCH -next v5 7/8] arm64: add uaccess to machine check safe
-Message-ID: <Yq24TSpZK+3/86Pj@FVFF77S0Q05N>
-References: <20220528065056.1034168-1-tongtiangen@huawei.com>
- <20220528065056.1034168-8-tongtiangen@huawei.com>
- <YqxELtYkqQNibHaX@FVFF77S0Q05N>
- <a26c74eb-76c2-570a-2f82-503c812dc0f0@huawei.com>
+        Sat, 18 Jun 2022 07:37:08 -0400
+Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4D721A041;
+        Sat, 18 Jun 2022 04:37:05 -0700 (PDT)
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id 4F29F1C0B8F; Sat, 18 Jun 2022 13:37:04 +0200 (CEST)
+Date:   Sat, 18 Jun 2022 13:37:03 +0200
+From:   Pavel Machek <pavel@ucw.cz>
+To:     Coly Li <colyli@suse.de>
+Cc:     Pavel Machek <pavel@denx.de>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>,
+        baijiaju1990@gmail.com, oslab@tsinghua.edu.cn,
+        Jens Axboe <axboe@kernel.dk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com, Daniel Latypov <dlatypov@google.com>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        kunit-dev@googlegroups.com,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>
+Subject: Re: [PATCH 5.17 000/772] 5.17.14-rc1 review
+Message-ID: <20220618113703.GA10888@duo.ucw.cz>
+References: <20220607164948.980838585@linuxfoundation.org>
+ <CA+G9fYui20CoDeqa6OrCYB+CGpgoFkhXtkdMDFJd1H55efCm6Q@mail.gmail.com>
+ <CA+G9fYt47PBfbOK77eiH3qP2QH0iWQ=p12NELpL+R_k7O678=g@mail.gmail.com>
+ <20220618104925.GA3644@duo.ucw.cz>
+ <6497730E-D4D2-4FB3-B95B-E1DAB2C2B287@suse.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="pWyiEgJYm5f9v55/"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <a26c74eb-76c2-570a-2f82-503c812dc0f0@huawei.com>
+In-Reply-To: <6497730E-D4D2-4FB3-B95B-E1DAB2C2B287@suse.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jun 18, 2022 at 05:27:45PM +0800, Tong Tiangen wrote:
-> 
-> 
-> 在 2022/6/17 17:06, Mark Rutland 写道:
-> > On Sat, May 28, 2022 at 06:50:55AM +0000, Tong Tiangen wrote:
-> > > If user access fail due to hardware memory error, only the relevant
-> > > processes are affected, so killing the user process and isolate the
-> > > error page with hardware memory errors is a more reasonable choice
-> > > than kernel panic.
-> > > 
-> > > Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
-> > 
-> > > ---
-> > >   arch/arm64/lib/copy_from_user.S | 8 ++++----
-> > >   arch/arm64/lib/copy_to_user.S   | 8 ++++----
-> > 
-> > All of these changes are to the *kernel* accesses performed as part of copy
-> > to/from user, and have nothing to do with userspace, so it does not make sense
-> > to mark these as UACCESS.
-> 
-> You have a point. so there is no need to modify copy_from/to_user.S in this
-> patch set.
 
-Cool, thanks. If this patch just has the extable change, that's fine by me.
+--pWyiEgJYm5f9v55/
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> > Do we *actually* need to recover from failues on these accesses? Looking at
-> > _copy_from_user(), the kernel will immediately follow this up with a memset()
-> > to the same address which will be fatal anyway, so this is only punting the
-> > failure for a few instructions.
-> 
-> If recovery success, The task will be killed and there will be no subsequent
-> memset().
+Hi!
 
-I don't think that's true.
+> >>    Fixes: bc082a55d25c ("bcache: fix inaccurate io state for detached
+> > ...
+> >=20
+> >> +++ b/drivers/md/bcache/request.c
+> >> @@ -1107,6 +1107,12 @@ static void detached_dev_do_request(struct
+> >> bcache_device *d, struct bio *bio,
+> >>         * which would call closure_get(&dc->disk.cl)
+> >>         */
+> >>        ddip =3D kzalloc(sizeof(struct detached_dev_io_private), GFP_NO=
+IO);
+> >> +       if (!ddip) {
+> >> +               bio->bi_status =3D BLK_STS_RESOURCE;
+> >> +               bio->bi_end_io(bio);
+> >> +               return;
+> >> +       }
+> >> +
+> >>        ddip->d =3D d;
+> >>        /* Count on the bcache device */
+> >>        ddip->orig_bdev =3D orig_bdev;
+> >>=20
+> >=20
+> > So... for patch to make any difference, memory allocation has to fail
+> > and ddip has to be NULL.
+> >=20
+> > Before the patch, it would oops in "ddip->d =3D d;". With the patch, you
+> > do some kind of error handling. Even if it is buggy, it should not do
+> > more harm than immediate oops.
+>=20
+> I just receive this single email and don=E2=80=99t have any idea for the =
+context and what the problem is. Where can I see the whole conversation?
+>=20
 
-IIUC per the last patch, in the exception handler we'll apply the fixup then
-force a signal. That doesn't kill the task immediately, and we'll return from
-the exception handler back into the original context (with the fixup applied).
+Discussion happened on stable@vger.kernel.org mailing lists, archives
+should be easily available. Copy went to lkml, too.
 
-The structure of copy_from_user() is 
+Best regards,
+								Pavel
+--=20
+People of Russia, stop Putin before his war on Ukraine escalates.
 
-	copy_from_user(to, from, n) {
-		_copy_from_user(to, from, n) {
-			res = n;
-			res = raw_copy_from_user(to, from, n);
-			if (res) 
-				memset(to + (n - res), 0, res);
-		}
-	}
+--pWyiEgJYm5f9v55/
+Content-Type: application/pgp-signature; name="signature.asc"
 
-So when the fixup is applied and res indicates that the copy terminated early,
-there is an unconditinal memset() before the fatal signal is handled in the
-return to userspace path.
+-----BEGIN PGP SIGNATURE-----
 
-> > If we really need to recover from certain accesses to kernel memory we should
-> > add a new EX_TYPE_KACCESS_ERR_ZERO_MC or similar, but we need a strong
-> > rationale as to why that's useful. As things stand I do not beleive it makes
-> > sense for copy to/from user specifically.
+iFwEABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYq243wAKCRAw5/Bqldv6
+8i+2AJdGM7sgIlX9Cpj2tjxtHjOUGbD0AKC/EHB1Dm/JmiCnatyPGyqNLzQmGQ==
+=p/eF
+-----END PGP SIGNATURE-----
 
-[...]
-
-> > > diff --git a/arch/arm64/mm/extable.c b/arch/arm64/mm/extable.c
-> > > index c301dcf6335f..8ca8d9639f9f 100644
-> > > --- a/arch/arm64/mm/extable.c
-> > > +++ b/arch/arm64/mm/extable.c
-> > > @@ -86,10 +86,10 @@ bool fixup_exception_mc(struct pt_regs *regs)
-> > >   	if (!ex)
-> > >   		return false;
-> > > -	/*
-> > > -	 * This is not complete, More Machine check safe extable type can
-> > > -	 * be processed here.
-> > > -	 */
-> > > +	switch (ex->type) {
-> > > +	case EX_TYPE_UACCESS_ERR_ZERO:
-> > > +		return ex_handler_uaccess_err_zero(ex, regs);
-> > > +	}
-> > 
-> > This addition specifically makes sense to me, so can you split this into a separate patch?
-> 
-> According to my understanding of the above, only the modification of
-> extable.c is retained.
-> 
-> So what do you mean which part is made into a separate patch?
-
-As above, if you just retain the extable.c changes, that's fine by me.
-
-Thanks,
-Mark.
+--pWyiEgJYm5f9v55/--
