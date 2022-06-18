@@ -2,39 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0178C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 13:22:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F2BFCCA473
+	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 13:24:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232559AbiFRNWF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 18 Jun 2022 09:22:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59470 "EHLO
+        id S233153AbiFRNYX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 18 Jun 2022 09:24:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiFRNWE (ORCPT
+        with ESMTP id S229449AbiFRNYU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 18 Jun 2022 09:22:04 -0400
+        Sat, 18 Jun 2022 09:24:20 -0400
 Received: from smtpbg.qq.com (smtpbg138.qq.com [106.55.201.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 723C413F08;
-        Sat, 18 Jun 2022 06:21:58 -0700 (PDT)
-X-QQ-mid: bizesmtp77t1655558199t25n54gy
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1041E140D3;
+        Sat, 18 Jun 2022 06:24:15 -0700 (PDT)
+X-QQ-mid: bizesmtp80t1655558570tjkc0f6g
 Received: from localhost.localdomain ( [125.70.163.206])
         by bizesmtp.qq.com (ESMTP) with 
-        id ; Sat, 18 Jun 2022 21:16:33 +0800 (CST)
+        id ; Sat, 18 Jun 2022 21:22:47 +0800 (CST)
 X-QQ-SSF: 01000000002000D0I000B00A0000000
-X-QQ-FEAT: CGxwVt8GOWGFEeW73tj4RczCShawCiIIyxtelmzc6swLpayI+7CWhrazB0Nne
-        S6a2ynQ6uTLg7sbxo/TxM8cr3LEvqo1acl1woyLJSmfxDQOI1qpz+yd4MBo7cAy+OoT+M3h
-        FuvyxWwqQ5THNly2vr8XgIlIuFpIT+ZPeFDSc/BHTmlITSBe+WHOPjcZmnFN00wMX9GIZvU
-        aehGAytTSxvkM7Y4yPXCn+6hGVsTcWw+puvEU6PddJb4OVBtOUA3A/XGf0EOAqRffGJjNL7
-        xbsX3tDeTFc9MbuShZMn/Qf/O0X5a1n9iSN5w/CSqqb+00/PWptqBznhjC4X1S88z6ohh7h
-        1xgh9lLO0vgVaPPQAw7syOnHC8IxQ==
+X-QQ-FEAT: F3yR32iATbgOjg0qmhZ3EhjfVBRB7HlbMiwwprrbO5kNKrgdobTIyr8egc30n
+        7DLVgKAorFXRTQrBHnC6bCqzn82GDgG2vT/EqQyzUxLbHQ+Y+EWaC/XRvxYNp92G1XaDhj1
+        gR6tcQf5QzuFWc4rFIRnNviHCxMPYXtfdi5X/P5GGb+1qR0e0+SXMJGshz2uOuRf6N4nJ3L
+        /LnME37p+eVruWtmsPBf50azqbB1rxSChSH/211yC4IZjiCVwRwUUg72JDZ7A8OGTHrMYGf
+        qDu+MuLvfhwZ6Vvpe+Tzogi3duujK8+5EWyMYDLrIPlMQghxK28x5fHMdPTfIucCUceH7w3
+        TRhdP9bWybgHPMaxgE=
 X-QQ-GoodBg: 0
 From:   Xiang wangx <wangxiang@cdjrlc.com>
-To:     timur@kernel.org
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Xiang wangx <wangxiang@cdjrlc.com>
-Subject: [PATCH] net: emac: Fix typo in a comment
-Date:   Sat, 18 Jun 2022 21:16:26 +0800
-Message-Id: <20220618131626.13811-1-wangxiang@cdjrlc.com>
+To:     davem@davemloft.net
+Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xiang wangx <wangxiang@cdjrlc.com>
+Subject: [PATCH] sfc/siena: Fix typo in comment
+Date:   Sat, 18 Jun 2022 21:22:41 +0800
+Message-Id: <20220618132241.15288-1-wangxiang@cdjrlc.com>
 X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -48,23 +49,22 @@ Delete the redundant word 'and'.
 
 Signed-off-by: Xiang wangx <wangxiang@cdjrlc.com>
 ---
- drivers/net/ethernet/qualcomm/emac/emac-mac.c | 2 +-
+ drivers/net/ethernet/sfc/siena/mcdi.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/qualcomm/emac/emac-mac.c b/drivers/net/ethernet/qualcomm/emac/emac-mac.c
-index 06104d2ff5b3..80c95c331c82 100644
---- a/drivers/net/ethernet/qualcomm/emac/emac-mac.c
-+++ b/drivers/net/ethernet/qualcomm/emac/emac-mac.c
-@@ -1465,7 +1465,7 @@ netdev_tx_t emac_mac_tx_buf_send(struct emac_adapter *adpt,
- 	/* Make sure the are enough free descriptors to hold one
- 	 * maximum-sized SKB.  We need one desc for each fragment,
- 	 * one for the checksum (emac_tso_csum), one for TSO, and
--	 * and one for the SKB header.
-+	 * one for the SKB header.
- 	 */
- 	if (emac_tpd_num_free_descs(tx_q) < (MAX_SKB_FRAGS + 3))
- 		netif_stop_queue(adpt->netdev);
+diff --git a/drivers/net/ethernet/sfc/siena/mcdi.c b/drivers/net/ethernet/sfc/siena/mcdi.c
+index 3df0f0eca3b7..3f7899daa86a 100644
+--- a/drivers/net/ethernet/sfc/siena/mcdi.c
++++ b/drivers/net/ethernet/sfc/siena/mcdi.c
+@@ -1264,7 +1264,7 @@ static void efx_mcdi_ev_death(struct efx_nic *efx, int rc)
+ }
+ 
+ /* The MC is going down in to BIST mode. set the BIST flag to block
+- * new MCDI, cancel any outstanding MCDI and and schedule a BIST-type reset
++ * new MCDI, cancel any outstanding MCDI and schedule a BIST-type reset
+  * (which doesn't actually execute a reset, it waits for the controlling
+  * function to reset it).
+  */
 -- 
 2.36.1
-
 
