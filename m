@@ -2,69 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8FFEC43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 13:10:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FA8EC43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 13:17:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229654AbiFRNKs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 18 Jun 2022 09:10:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52586 "EHLO
+        id S230512AbiFRNRz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 18 Jun 2022 09:17:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiFRNKr (ORCPT
+        with ESMTP id S229456AbiFRNRv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 18 Jun 2022 09:10:47 -0400
-Received: from smtpbg.qq.com (smtpbg138.qq.com [106.55.201.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 225E517048;
-        Sat, 18 Jun 2022 06:10:41 -0700 (PDT)
-X-QQ-mid: bizesmtp78t1655557745taoefuin
-Received: from localhost.localdomain ( [125.70.163.206])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Sat, 18 Jun 2022 21:09:01 +0800 (CST)
-X-QQ-SSF: 01000000002000D0I000B00A0000000
-X-QQ-FEAT: mp05QlZ6er31q1MrCHV1u0rzmqaMNdwuu85emdj4nemWnmenvIbukvyKp3Ayx
-        9vIsiLGSMyz+7BzxjsSRiTUW/uBTcKFOpJq0OuX6DowBSqayWbdP4mDNpsgh3H+tLNSbLt3
-        iN4JQsIc4fY62m5iaz8kvQ7MSXqtO6vAY9UqX6+gXa84X3RCRdzg+uiIoIK6RyPGooVW+56
-        W1hUJzI+tHBjlJRkYHLCnnJllUTcf5LFL9Ka0sICt8npjubbVMYjCHQJVZr/1zqjSuelemA
-        p+4T7MBBZETzvho73jWovfaGdeenUx7b6r0u8dXa0YzxeDpQxPoqPNytYodzgldmq12qGSi
-        xRC/O5G
-X-QQ-GoodBg: 0
-From:   Xiang wangx <wangxiang@cdjrlc.com>
-To:     andrew@aj.id.au
-Cc:     linus.walleij@linaro.org, joel@jms.id.au,
-        linux-aspeed@lists.ozlabs.org, openbmc@lists.ozlabs.org,
-        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Xiang wangx <wangxiang@cdjrlc.com>
-Subject: [PATCH] pinctrl: aspeed: Fix typo in comment
-Date:   Sat, 18 Jun 2022 21:08:54 +0800
-Message-Id: <20220618130854.12321-1-wangxiang@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Sat, 18 Jun 2022 09:17:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDF4DDEAD;
+        Sat, 18 Jun 2022 06:17:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 84AD2B808C4;
+        Sat, 18 Jun 2022 13:17:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8485C3411A;
+        Sat, 18 Jun 2022 13:17:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655558266;
+        bh=nmSfIhwdXVYqsSz7pkv5v/OV6Q1kNMZACzI7k2REBNE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=X9WZ5W+ZW7pwMHbImv9vGPOaNO35V2FJwW4oKyGykyl8Bl5XhD9EmSb1Qb3w24IGD
+         2s066vZSBfUpdj9V1Pal35iYmJ2a5w2E6CxxwhtXOfuj7B6inP2AFGwpwrqZwqZmV1
+         ddhFfP/ws8ryZA3Y2AHqCfoIK4KBhBDulkWCiM65y/B9BGJ2VW77j4ot/06wjGOt4G
+         JndllYTvwkukXxp39k235DibSxYOUYwSOaDRNkTN+oradidKhmGd07CJjli/6kGGT5
+         0avyy31vvmneyE3bchsEemIT4bu9pj3M7R+jaBKHT0yYRFKz1yVhZUOs2ezV9vTW14
+         TzTQJGkw2V0mQ==
+Date:   Sat, 18 Jun 2022 14:27:03 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Dmitry Rokosov <DDRokosov@sberdevices.ru>
+Cc:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
+        "noname.nuno@gmail.com" <noname.nuno@gmail.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "rockosov@gmail.com" <rockosov@gmail.com>
+Subject: Re: [PATCH v3] iio: trigger: warn about non-registered iio trigger
+ getting attempt
+Message-ID: <20220618142703.75025659@jic23-huawei>
+In-Reply-To: <20220616091308.miwqkdfc77mm72hz@CAB-WSD-L081021.sigma.sbrf.ru>
+References: <20220607183907.20017-1-ddrokosov@sberdevices.ru>
+        <20220616091308.miwqkdfc77mm72hz@CAB-WSD-L081021.sigma.sbrf.ru>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam10
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Delete the redundant word 'and'.
+On Thu, 16 Jun 2022 09:13:00 +0000
+Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
 
-Signed-off-by: Xiang wangx <wangxiang@cdjrlc.com>
----
- drivers/pinctrl/aspeed/pinmux-aspeed.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> Hello Jonathan,
+> 
+> I notice the patchset from 
+> https://lore.kernel.org/all/20220524181150.9240-1-ddrokosov@sberdevices.ru/
+> is not merged to stable yet.
+> I think if this WARN() patch is okay for you, maybe it's better to merge
+> it together with the previous one. It will notify developers about this
+> problem as you suggested before, and the previous patchset resolves the issue
+> in the all IIO drivers.
+> 
+> What do you think about it?
 
-diff --git a/drivers/pinctrl/aspeed/pinmux-aspeed.h b/drivers/pinctrl/aspeed/pinmux-aspeed.h
-index 4d7548686f39..aaa78a613196 100644
---- a/drivers/pinctrl/aspeed/pinmux-aspeed.h
-+++ b/drivers/pinctrl/aspeed/pinmux-aspeed.h
-@@ -632,7 +632,7 @@ struct aspeed_pin_desc {
- 	SIG_EXPR_LIST_ALIAS(pin, sig, group)
- 
- /**
-- * Similar to the above, but for pins with a dual expressions (DE) and
-+ * Similar to the above, but for pins with a dual expressions (DE)
-  * and a single group (SG) of pins.
-  *
-  * @pin: The pin the signal will be routed to
--- 
-2.36.1
+It would be a stretch to take a defensive measure like this into stable,
+so I'll just queue this up for the next merge window.  We might have
+some exciting intermediate times where anyone actually using the togreg
+branch directly will get drivers that will spit out the warning.
+That should only be people active on the list though who will find
+this quickly enough and understand what is gong on.
+
+I'm fine with this and it's been on list long enough for anyone else to comment.
+It'll be in a branch I'm happy to rebase for at few days anyway if there
+are any last minute comments or tags.
+
+Applied to the togreg branch of iio.git and pushed out as testing.
+
+Hopefully I'll get a pull request out for the fixes-togreg branch
+sometime this weekend.
+
+Thanks for adding this protection btw.
+
+Jonathan
+
+
+> 
+> On Tue, Jun 07, 2022 at 06:39:18PM +0000, Dmitry Rokosov wrote:
+> > As a part of patch series about wrong trigger register() and get()
+> > calls order in the some IIO drivers trigger initialization path:
+> > 
+> > https://lore.kernel.org/all/20220524181150.9240-1-ddrokosov@sberdevices.ru/
+> > 
+> > runtime WARN_ONCE() is added to alarm IIO driver authors who make such
+> > a mistake.
+> > 
+> > When an IIO driver allocates a new IIO trigger, it should register it
+> > before calling the get() operation. In other words, each IIO driver
+> > must abide by IIO trigger alloc()/register()/get() calls order.
+> > 
+> > Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
+> > ---
+> > Changes:
+> > v1 -> v2: totally reworked the patch, used trig->list entry instead of
+> >           trig->owner as driver registration indicator.
+> >           It works perfectly for both builtin and built as a module
+> >           drivers.
+> > 
+> > v2 -> v3: changed WARN() call to WARN_ONCE() to avoid warn spamming
+> >           during deferred probe() as Andy suggested.
+> > ---
+> >  drivers/iio/industrialio-trigger.c | 2 ++
+> >  include/linux/iio/trigger.h        | 5 +++++
+> >  2 files changed, 7 insertions(+)
+> > 
+> > diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+> > index f504ed351b3e..d6277e72d515 100644
+> > --- a/drivers/iio/industrialio-trigger.c
+> > +++ b/drivers/iio/industrialio-trigger.c
+> > @@ -581,6 +581,8 @@ struct iio_trigger *viio_trigger_alloc(struct device *parent,
+> >  	if (trig->name == NULL)
+> >  		goto free_descs;
+> >  
+> > +	INIT_LIST_HEAD(&trig->list);
+> > +
+> >  	trig->subirq_chip.name = trig->name;
+> >  	trig->subirq_chip.irq_mask = &iio_trig_subirqmask;
+> >  	trig->subirq_chip.irq_unmask = &iio_trig_subirqunmask;
+> > diff --git a/include/linux/iio/trigger.h b/include/linux/iio/trigger.h
+> > index 4c69b144677b..03b1d6863436 100644
+> > --- a/include/linux/iio/trigger.h
+> > +++ b/include/linux/iio/trigger.h
+> > @@ -93,6 +93,11 @@ static inline void iio_trigger_put(struct iio_trigger *trig)
+> >  static inline struct iio_trigger *iio_trigger_get(struct iio_trigger *trig)
+> >  {
+> >  	get_device(&trig->dev);
+> > +
+> > +	WARN_ONCE(list_empty(&trig->list),
+> > +		  "Getting non-registered iio trigger %s is prohibited\n",
+> > +		  trig->name);
+> > +
+> >  	__module_get(trig->owner);
+> >  
+> >  	return trig;
+> > -- 
+> > 2.36.0  
+> 
 
