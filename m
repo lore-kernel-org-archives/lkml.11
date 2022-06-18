@@ -2,139 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B393C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 14:48:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0732CC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 14:49:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234271AbiFROsk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 18 Jun 2022 10:48:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47352 "EHLO
+        id S234268AbiFROth (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 18 Jun 2022 10:49:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233452AbiFROs3 (ORCPT
+        with ESMTP id S229449AbiFROte (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 18 Jun 2022 10:48:29 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8233617A97;
-        Sat, 18 Jun 2022 07:48:28 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id hj18so12979536ejb.0;
-        Sat, 18 Jun 2022 07:48:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=TAka2U091hq1pTYLfbpSkbHxbEYvHoamK2SIJoLud0w=;
-        b=OQOlMC+R31QKJmoU9wJB5Kv0I9fftYkXsmLoHLx0SiHNiFUeur0jFaDF1tKUqtmQ90
-         Ovoq3IcTav4PWmsvpCm0ue5oTuMT4WVoTiZlr3UZuqzqmITVLmfXBrRdmKl0mlsP4OwA
-         y1TuGGFqfxBUgh3VGNicAb+mXY2UF2xSiMz7dzDSY0HgKM50LyXeOjGDsjdCT373lCqf
-         XpVV458qFjUzCzFl2eMNnL6q7xhZ+BG9718qg4rFMgM1R+2fNgExDDFCur8aVG3a48M1
-         neDiPizURSwJoGdryAmyb8JoBxtEzNQMgChfIUgUhtKqfnNZyEfjEsa0Dr5lWO/iicrW
-         Delw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=TAka2U091hq1pTYLfbpSkbHxbEYvHoamK2SIJoLud0w=;
-        b=J//BvxETzbUTGFojMPHYrZwcDeMIGOuV2fqjUFZGFMZX7MJ3kBZnGouOcti+MidjiZ
-         QzfTrZsBq9EEi6QkSXV+FvvmaR0XVKCk8qzgwsHijvM6Tg6DZ3KT01ywRkYWirTY7s2i
-         V4vFVne2qfMoF8XoEItG8mkg4f3xY34EChVXoohH+Cp/wUF7N11gzjTlKOBrHo3bYn6B
-         jy1JZeLi6U3puFfMvHrrrssuQCyYMcr4R+L4PPJEoA0teTOTF0z2+MUEAHBGQ85yXu75
-         7ao4d4Q/LK2yF5hCilrNi3/DTFeDeXZsdf/ZECM4MpjULLgzjfMhTSScan1BCRh1a9sO
-         +ynA==
-X-Gm-Message-State: AJIora97CqXDt5caja6HWB/Tu6ddI0w5w/nLMzmYJpOYW79bKS0jNUoT
-        /nWK0UlJE+BktmrjhGTMeKzR8QFkMMQ=
-X-Google-Smtp-Source: AGRyM1sf0gIEM9qnmpruEfunYcY2rJWY18yBnCyQJQEU9Q+xSQymS9j87O1VpY7q8V9XBCX0VlE3pA==
-X-Received: by 2002:a17:906:99c5:b0:6ff:4c8f:6376 with SMTP id s5-20020a17090699c500b006ff4c8f6376mr13831933ejn.328.1655563706838;
-        Sat, 18 Jun 2022 07:48:26 -0700 (PDT)
-Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.googlemail.com with ESMTPSA id h20-20020a1709070b1400b006fe7d269db8sm3450296ejl.104.2022.06.18.07.48.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 18 Jun 2022 07:48:26 -0700 (PDT)
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jonathan McDowell <noodles@earth.li>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Christian Marangi <ansuelsmth@gmail.com>
-Subject: [PATCH 3/3] net: dsa: qca8k: reset cpu port on MTU change
-Date:   Sat, 18 Jun 2022 08:23:00 +0200
-Message-Id: <20220618062300.28541-3-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220618062300.28541-1-ansuelsmth@gmail.com>
-References: <20220618062300.28541-1-ansuelsmth@gmail.com>
+        Sat, 18 Jun 2022 10:49:34 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E900D17AA5;
+        Sat, 18 Jun 2022 07:49:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655563774; x=1687099774;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=w5tzZ7RrqHkJr3FpjfrwlqfOP6Ec32jd0b8PId2bAqg=;
+  b=fsbrNLt0H+zjiBlcIhoypCJQYu2Pt1QEdgXVxDk11ZihhHWxwAQZSFig
+   BSfgRdMHhuE2kAZJT37KRHNY21C9Rej0bG6gMEqr/aY0Q3MUj5d2At8ae
+   naIuAf9so67I5paw2h75iq1F0etN35jqiYm2XpS0sH5uRzLTsdFsW1nDD
+   qiRZ62RzxKBH1q/ZvyZgvt9CgbfGgUMykxpvaLz5CR45Lz3iRZQ/WZl+R
+   wuytPK94fnDuVMzXM0QU/cvdqVk885AVmcIEm9gPep4NRocpHCbsT6dQ7
+   Mj/cFESYpL4pvIp2Y1aumXcRHTqAIccuU8YnxfFLe7nfuOMwXlYCwSHWD
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="365985672"
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="365985672"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jun 2022 07:49:33 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="688737041"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga002.fm.intel.com with ESMTP; 18 Jun 2022 07:49:20 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o2ZlG-000QNA-KA;
+        Sat, 18 Jun 2022 14:49:18 +0000
+Date:   Sat, 18 Jun 2022 22:49:16 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     David Gow <davidgow@google.com>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Jeremy Kerr <jk@codeconstruct.com.au>,
+        Daniel Latypov <dlatypov@google.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Longpeng <longpeng2@huawei.com>
+Cc:     kbuild-all@lists.01.org, kunit-dev@googlegroups.com,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        =?iso-8859-1?Q?Ma=EDra?= Canal <maira.canal@usp.br>,
+        linux-mmc@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
+        openbmc@lists.ozlabs.org, linux-usb@vger.kernel.org,
+        linux-modules@vger.kernel.org,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        David Gow <davidgow@google.com>
+Subject: Re: [PATCH 2/5] kunit: flatten kunit_suite*** to kunit_suite** in
+ .kunit_test_suites
+Message-ID: <202206182258.EahbTrAv-lkp@intel.com>
+References: <20220618090310.1174932-3-davidgow@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220618090310.1174932-3-davidgow@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It was discovered that the Documentation lacks of a fundamental detail
-on how to correctly change the MAX_FRAME_SIZE of the switch.
+Hi David,
 
-In fact if the MAX_FRAME_SIZE is changed while the cpu port is on, the
-switch panics and cease to send any packet. This cause the mgmt ethernet
-system to not receive any packet (the slow fallback still works) and
-makes the device not reachable. To recover from this a switch reset is
-required.
+Thank you for the patch! Yet something to improve:
 
-To correctly handle this, turn off the cpu ports before changing the
-MAX_FRAME_SIZE and turn on again after the value is applied.
+[auto build test ERROR on linus/master]
+[also build test ERROR on v5.19-rc2 next-20220617]
+[cannot apply to mcgrof/modules-next joel-aspeed/for-next ulf-hansson-mmc-mirror/next]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Fixes: f58d2598cf70 ("net: dsa: qca8k: implement the port MTU callbacks")
-Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
----
- drivers/net/dsa/qca8k.c | 26 +++++++++++++++++++++++---
- 1 file changed, 23 insertions(+), 3 deletions(-)
+url:    https://github.com/intel-lab-lkp/linux/commits/David-Gow/Rework-KUnit-test-execution-in-modules/20220618-170653
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 4b35035bcf80ddb47c0112c4fbd84a63a2836a18
+config: xtensa-allyesconfig (https://download.01.org/0day-ci/archive/20220618/202206182258.EahbTrAv-lkp@intel.com/config)
+compiler: xtensa-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/c2386c54cc9fd471e5353f375ff71734214ed3c6
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review David-Gow/Rework-KUnit-test-execution-in-modules/20220618-170653
+        git checkout c2386c54cc9fd471e5353f375ff71734214ed3c6
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=xtensa SHELL=/bin/bash
 
-diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index eaaf80f96fa9..0b92b9d5954a 100644
---- a/drivers/net/dsa/qca8k.c
-+++ b/drivers/net/dsa/qca8k.c
-@@ -2334,6 +2334,7 @@ static int
- qca8k_port_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
- {
- 	struct qca8k_priv *priv = ds->priv;
-+	int ret;
- 
- 	/* We have only have a general MTU setting.
- 	 * DSA always set the CPU port's MTU to the largest MTU of the slave
-@@ -2344,10 +2345,29 @@ qca8k_port_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
- 	if (!dsa_is_cpu_port(ds, port))
- 		return 0;
- 
-+	/* To change the MAX_FRAME_SIZE the cpu ports must be off or
-+	 * the switch panics.
-+	 * Turn off both cpu ports before applying the new value to prevent
-+	 * this.
-+	 */
-+	if (priv->port_enabled_map & BIT(0))
-+		qca8k_port_set_status(priv, 0, 0);
-+
-+	if (priv->port_enabled_map & BIT(6))
-+		qca8k_port_set_status(priv, 6, 0);
-+
- 	/* Include L2 header / FCS length */
--	return regmap_update_bits(priv->regmap, QCA8K_MAX_FRAME_SIZE_REG,
--				  QCA8K_MAX_FRAME_SIZE_MASK,
--				  new_mtu + ETH_HLEN + ETH_FCS_LEN);
-+	ret = regmap_update_bits(priv->regmap, QCA8K_MAX_FRAME_SIZE_REG,
-+				 QCA8K_MAX_FRAME_SIZE_MASK,
-+				 new_mtu + ETH_HLEN + ETH_FCS_LEN);
-+
-+	if (priv->port_enabled_map & BIT(0))
-+		qca8k_port_set_status(priv, 0, 1);
-+
-+	if (priv->port_enabled_map & BIT(6))
-+		qca8k_port_set_status(priv, 6, 1);
-+
-+	return ret;
- }
- 
- static int
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+Note: the linux-review/David-Gow/Rework-KUnit-test-execution-in-modules/20220618-170653 HEAD fddb3ea0ed5627098eabc542fdba5a8b4b769066 builds fine.
+      It only hurts bisectability.
+
+All errors (new ones prefixed by >>):
+
+   drivers/thunderbolt/test.c: In function 'tb_test_init':
+>> drivers/thunderbolt/test.c:2824:16: error: too few arguments to function '__kunit_test_suites_init'
+    2824 |         return __kunit_test_suites_init(tb_test_suites);
+         |                ^~~~~~~~~~~~~~~~~~~~~~~~
+   In file included from drivers/thunderbolt/test.c:9:
+   include/kunit/test.h:240:5: note: declared here
+     240 | int __kunit_test_suites_init(struct kunit_suite * const * const suites, int num_suites);
+         |     ^~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/thunderbolt/test.c: In function 'tb_test_exit':
+>> drivers/thunderbolt/test.c:2829:16: error: too few arguments to function '__kunit_test_suites_exit'
+    2829 |         return __kunit_test_suites_exit(tb_test_suites);
+         |                ^~~~~~~~~~~~~~~~~~~~~~~~
+   In file included from drivers/thunderbolt/test.c:9:
+   include/kunit/test.h:242:6: note: declared here
+     242 | void __kunit_test_suites_exit(struct kunit_suite **suites, int num_suites);
+         |      ^~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/thunderbolt/test.c:2829:16: error: 'return' with a value, in function returning void [-Werror=return-type]
+    2829 |         return __kunit_test_suites_exit(tb_test_suites);
+         |                ^~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/thunderbolt/test.c:2827:6: note: declared here
+    2827 | void tb_test_exit(void)
+         |      ^~~~~~~~~~~~
+   drivers/thunderbolt/test.c: In function 'tb_test_init':
+   drivers/thunderbolt/test.c:2825:1: error: control reaches end of non-void function [-Werror=return-type]
+    2825 | }
+         | ^
+   cc1: some warnings being treated as errors
+
+
+vim +/__kunit_test_suites_init +2824 drivers/thunderbolt/test.c
+
+2c6ea4e2cefe2e Mika Westerberg 2020-08-24  2821  
+2c6ea4e2cefe2e Mika Westerberg 2020-08-24  2822  int tb_test_init(void)
+2c6ea4e2cefe2e Mika Westerberg 2020-08-24  2823  {
+2c6ea4e2cefe2e Mika Westerberg 2020-08-24 @2824  	return __kunit_test_suites_init(tb_test_suites);
+2c6ea4e2cefe2e Mika Westerberg 2020-08-24  2825  }
+2c6ea4e2cefe2e Mika Westerberg 2020-08-24  2826  
+2c6ea4e2cefe2e Mika Westerberg 2020-08-24  2827  void tb_test_exit(void)
+2c6ea4e2cefe2e Mika Westerberg 2020-08-24  2828  {
+2c6ea4e2cefe2e Mika Westerberg 2020-08-24 @2829  	return __kunit_test_suites_exit(tb_test_suites);
+
 -- 
-2.36.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
