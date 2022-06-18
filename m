@@ -2,97 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D0A4C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 02:58:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EF50C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 02:59:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234391AbiFRC6q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 22:58:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34666 "EHLO
+        id S238139AbiFRC7Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 17 Jun 2022 22:59:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237911AbiFRC6V (ORCPT
+        with ESMTP id S238004AbiFRC7R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 22:58:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1917B38DA9;
-        Fri, 17 Jun 2022 19:58:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C7A0661F5D;
-        Sat, 18 Jun 2022 02:58:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A81BCC3411B;
-        Sat, 18 Jun 2022 02:58:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655521098;
-        bh=te/1XpkUNmq6MV9BQThN7XRjwLAPokCR7ABtjmsHLyI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=uZUuup+U1ZMaEej/wdCOMPftyUvTw9k+De0Cv1SbNdXgd7oNZpnBaEmvXcPjNsVxU
-         7URtzG1KUDLCsru2yB4oY+vYt32Sseg2s5qYAQGwuiOFdi9WdZVggcoq0JIo5nmNYk
-         ELL4c/0HBun5HmnrxCFHZmdNHkrRBAswUsxJXrpUDyILrXODC5DZrfiuc9uvMDrqgq
-         KHMU6onBxjlK9hOxkhrudZ/m9QL1jKP+Erzco3roJZM/07gdvFX6m/7oRgRRu19VIs
-         DKhXJFVJI+DmVHOnFkdVv+M9ApOg1+WPGo6S6tEf/Jy74XQtgtLpX3XLPJt7y3ZnG6
-         G98Nyh0ELTf5g==
-Date:   Fri, 17 Jun 2022 19:58:16 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Riccardo Paolo Bestetti" <pbl@bestov.io>
-Cc:     <davem@davemloft.net>, <cmllamas@google.com>,
-        <yoshfuji@linux-ipv6.org>, <dsahern@kernel.org>,
-        <edumazet@google.com>, <pabeni@redhat.com>,
-        <kernel-team@android.com>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linmiaohe@huawei.com>
-Subject: Re: NEEDS FIXING - Was: Re: [PATCH v2] ipv4: ping: fix bind address
- validity check
-Message-ID: <20220617195816.53a2f2cf@kernel.org>
-In-Reply-To: <CKSU5Q2M1IE3.39AS0HDHTZPN@enhorning>
-References: <20220617085435.193319-1-pbl@bestov.io>
-        <165546541315.12170.9716012665055247467.git-patchwork-notify@kernel.org>
-        <CKSU5Q2M1IE3.39AS0HDHTZPN@enhorning>
+        Fri, 17 Jun 2022 22:59:17 -0400
+Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22EC26C0EF;
+        Fri, 17 Jun 2022 19:59:16 -0700 (PDT)
+Received: from cwcc.thunk.org (pool-173-48-118-63.bstnma.fios.verizon.net [173.48.118.63])
+        (authenticated bits=0)
+        (User authenticated as tytso@ATHENA.MIT.EDU)
+        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 25I2x6BT024034
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 17 Jun 2022 22:59:08 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mit.edu; s=outgoing;
+        t=1655521148; bh=BRqgLdHljqKpZjJgp3EqbU/vGhT+05lRwXWHMn2SqUI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=OIDsf4GJgl4nSDq+tmMnEda6VPwuEf2cpcwMXLtgq5JBXeWufkz/mAKO/L+PoCaL4
+         NkN1ZpDP0hmTMzYvxiEXk+HLxO/OK0iMyeFRwAz3pfRsfeXzTUht1MJ0qRDsGvm3x8
+         y2yXHtFttOTR4xkJRf5TS/3EMSvIYx3Sh6b2bsBFRGDJhdqslI7axnW0dnshxVOVlE
+         PsIEwau6kaWD8Ce9qpsgFVQQiPDW0XAmCarKXhWtjh2WQ7t9ryCnqvqq+qMZe4D5cn
+         5PvWYujp51m6t4TePMuwVC9hwHejycwJhxcLrcQqeAuBlR5LbFLdz8qCaSB9N8LZzs
+         ICcQpKoh0oaLA==
+Received: by cwcc.thunk.org (Postfix, from userid 15806)
+        id 4B9E515C42F4; Fri, 17 Jun 2022 22:59:06 -0400 (EDT)
+From:   "Theodore Ts'o" <tytso@mit.edu>
+To:     Xiang wangx <wangxiang@cdjrlc.com>
+Cc:     "Theodore Ts'o" <tytso@mit.edu>, linux-ext4@vger.kernel.org,
+        adilger.kernel@dilger.ca, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] fs/ext4: Fix syntax errors in comments
+Date:   Fri, 17 Jun 2022 22:59:02 -0400
+Message-Id: <165552108974.634564.10372518530279275547.b4-ty@mit.edu>
+X-Mailer: git-send-email 2.31.0
+In-Reply-To: <20220605091503.12513-1-wangxiang@cdjrlc.com>
+References: <20220605091503.12513-1-wangxiang@cdjrlc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 18 Jun 2022 02:32:55 +0200 Riccardo Paolo Bestetti wrote:
-> I receompiled the kernel from the net tree to do some more manual testing
-> on the patch and I have two things to disclose. Sorry for the caps in
-> the subject.
+On Sun, 5 Jun 2022 17:15:03 +0800, Xiang wangx wrote:
+> Delete the redundant word 'need'.
 > 
-> TL;DR: I noticed that one of the regressions tests is (correctly)
-> failing, but for the wrong reasons; and the patch I sent contains a
-> mistake, and unfortunately it has already been applied to the tree as
-> commit b4a028c4d0.
 > 
-> Long version below.
-> 
-> 1) If you run regression tests with -v, the (correct -- see below) ICMP
-> tests for broadcast and multicast binding do not fail with
-> EADDRNOTAVAIL, but with ACCES, but only when run through fcnal-test.sh.
-> This is also true for one of the additional (commented out) tests you
-> can find in my patch following this email. I'm not sure why this
-> happens; however I'm reasonably convinced it is a quirk or a consequence
-> of the testing methodology/setup. Can anyone offer any insights?
-> 
-> 2) My patch is faulty. I had a complete and tested patch, including code
-> fixing the regression. Instead of sending it, however, I decided to
-> adapt it to preserve Carlos Llamas' version of ping.c, since they posted
-> their patch first. In doing so I used a work branch which contained a
-> faulty version (wrong flags) of the regression tests. The resulting
-> faulty patch is, unfortunately, currently in the tree.
-> 
-> At this point, due to the unfortunate combination of (1) and (2), it
-> might be worth reverting the patch altogether and just applying the v1
-> (i.e. without the regression tests) to the tree and to the relevant LTS
-> versions.
 
-IIUC only the test is faulty / unreliable, correct?
+Applied, thanks!
 
-We have until Thursday before this patch hits Linus's tree so should 
-be plenty of time to figure the problem out and apply an incremental
-fix. I see you posted an RFC already, thanks!
+[1/1] fs/ext4: Fix syntax errors in comments
+      commit: 729e657ab8d41efc2eadbb686193e888660b6253
 
-> After that, a more proper discussion can be had about (1), and the
-> regression tests can be fixed. I'm sending a demonstrative patch for
-> that as a response to this message.
-
+Best regards,
+-- 
+Theodore Ts'o <tytso@mit.edu>
