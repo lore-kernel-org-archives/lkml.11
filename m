@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4937DC43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 12:33:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03D87C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 12:33:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235438AbiFRMdu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 18 Jun 2022 08:33:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52638 "EHLO
+        id S236538AbiFRMd4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 18 Jun 2022 08:33:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234641AbiFRMcq (ORCPT
+        with ESMTP id S235217AbiFRMcn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 18 Jun 2022 08:32:46 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A6F01DA76
-        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 05:32:25 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id e25so4939360wrc.13
-        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 05:32:25 -0700 (PDT)
+        Sat, 18 Jun 2022 08:32:43 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 095901EC40
+        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 05:32:24 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id x6-20020a1c7c06000000b003972dfca96cso3548916wmc.4
+        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 05:32:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=conchuod.ie; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=hvr7KGApLNCGFBglHD3dnfCRd3yjQwODkG+M5NRKmQI=;
-        b=DDJ6xBBbhzIGoPiqSpo5MnWPGVLzU4ERv8vLSiBnnPAynNwKjWM49EcnFIFQEkgm/l
-         doK52smtoMBCAMnt3+oFGMyw4xhf6W+5pMee3IBtco7DlzBypqqFxGPePkxlqPEw5tri
-         SDLBm2agXeKviAcJotwY5RL1uBwFcjHga0K6SkH6mQCE6NwwTJxpZV0bQ6udBQCQ8t5X
-         /ugUETlZEHQBi+kUxi5RSWCIVIQtoVjqwtn8FqK1wrZYFA5exI/WKKix1Zp5xujFsjOq
-         WhKYuvAAICTLiFyGacSvPtjx9GD78ZZmFV4S8UwSg41UB0EBKvQ+vCEP9thO5HxmtSKW
-         MnvQ==
+        bh=Pg5EtL0V3UHrid7YbhvB+3zhrduzQGisX4A0SVhhM0E=;
+        b=Pu1M106xN55HI9pfnOZNoRrDpjX1i4VH9bR0a4BhQ0DJdKnxN33JrDSsp8oMDBO6jp
+         LVQ1VI+4atrButRPKUPNqCrIEigfT0IM8RSE/TM7b+yFCd8/4+xiDRZ3O7NsK9REtRLv
+         84xM29eeccO+uGrixFZq0EZFXZEdycBvA0ECOB3ZQETpwQOJCmoI57SPRa91RH4Ybiwn
+         DHwH4ld25Q7R0o4T9qzfzLsKmjYB53l8b9saZnSz3GnJD24tqYxXVFcv/kp23HP9PpCH
+         I+j/f4rZISdty/aA/Vg0TKDsifyuWEt2DZv8kvr86VvPeWNfHBmzINiITLTKs1DLpX1a
+         cUAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=hvr7KGApLNCGFBglHD3dnfCRd3yjQwODkG+M5NRKmQI=;
-        b=1vQaD2leVYcsghX4LnzskCDKPhPzUsi7WKs0h7jaq5sscYTUemRFxP0uPckHCqpqvQ
-         uBdBuryVGGo1xy9YGMp9kfPFWP+4mRTPoRKGr9PdN64O61hAeAjdOGuNRxXFK/tL4VJV
-         IU/7UQ2Dz3xEZ/SOQAGO86+M7NB+cAOOlOxbAF7Gxos8KAzSB8CtBehVPzkgBT6tAegu
-         ffmHcoXCSeRa3lyl1kU9LmKv1eVrj/F4ZnQXEr4a10jPDJ70KBMNUh9uWWBVsV7NxsiD
-         Mf5qo8Z5vX5DNU6AwfscEcDq8zWZbMWxKM+myeYP36D04BPbRTimOW9oZRWFcuJXRe5W
-         4HlA==
-X-Gm-Message-State: AJIora/17qtKFbhe+x9NrSjiMYsoYbS+rRlvcl7gxiQRdmc5CnvVaHUm
-        m/g0KFYsW/gaeHrSxZm7zNvFwQ==
-X-Google-Smtp-Source: AGRyM1sRT/G1/Zc62fYFm4YsukPkHZCuylsLgzzu2NtDF1otkPHXpMjCG/oHMIlIy5/3wMzfMLCUWA==
-X-Received: by 2002:a05:6000:147:b0:214:7d6e:cb1d with SMTP id r7-20020a056000014700b002147d6ecb1dmr13471356wrx.650.1655555545465;
-        Sat, 18 Jun 2022 05:32:25 -0700 (PDT)
+        bh=Pg5EtL0V3UHrid7YbhvB+3zhrduzQGisX4A0SVhhM0E=;
+        b=efxV0iMXaKQh1nDPaJA+UDDn7CqhdCHlxXXzx7S6aQQ+KyYVaV90ew9SogWzQsmrbD
+         nekKCoEDf/EGGGGYMiGvx+p0ozczBd8kPvZjveRomOfuF/NeOqp97pwV3HZxTyJquK7L
+         VPFNtFlUGHIvI83Z37bnSZBOtPo429Rb54vgzoYHPl2QtnSTK23hlfH7pVjMbPm0TZQK
+         XGaYZflNsvKLd4VqIXbB/8wAZIb7fm824gqRiaso7uhXFAhIM9MURpaz3XFb3IoLMFBO
+         63nZ3w19Df3l7WTR2IZLAeDN62Fj0nn9OjKSmHlOwDr0Qa8Eu9pMMW9IKOTv+iUySzOg
+         PpoA==
+X-Gm-Message-State: AJIora/u4FllZ//VAw6+bxgH6w0d/u1aAt3QtWjKMcXehGw1Jk1MqQKD
+        BolGNBVCmQVSuR0K6y8E8H+EWw==
+X-Google-Smtp-Source: AGRyM1t+D1hSYvVv2lyhJXTM8fnBYLleL1Z3z4M3dP8UVmVZwbcohvWxMo8SxFiBx5Zo6H6ulo6zQw==
+X-Received: by 2002:a05:600c:3553:b0:39c:63a3:f54a with SMTP id i19-20020a05600c355300b0039c63a3f54amr15447271wmq.61.1655555543356;
+        Sat, 18 Jun 2022 05:32:23 -0700 (PDT)
 Received: from henark71.. ([51.37.234.167])
-        by smtp.gmail.com with ESMTPSA id az10-20020adfe18a000000b00210396b2eaesm9292305wrb.45.2022.06.18.05.32.23
+        by smtp.gmail.com with ESMTPSA id az10-20020adfe18a000000b00210396b2eaesm9292305wrb.45.2022.06.18.05.32.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 18 Jun 2022 05:32:24 -0700 (PDT)
+        Sat, 18 Jun 2022 05:32:22 -0700 (PDT)
 From:   Conor Dooley <mail@conchuod.ie>
 To:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
         Rob Herring <robh+dt@kernel.org>,
@@ -77,9 +77,9 @@ Cc:     Thomas Gleixner <tglx@linutronix.de>,
         linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org,
         alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
         linux-riscv@lists.infradead.org
-Subject: [PATCH 14/14] riscv: dts: canaan: build all devicetress if SOC_CANAAN
-Date:   Sat, 18 Jun 2022 13:30:36 +0100
-Message-Id: <20220618123035.563070-15-mail@conchuod.ie>
+Subject: [PATCH 13/14] riscv: dts: canaan: remove spi-max-frequency from controllers
+Date:   Sat, 18 Jun 2022 13:30:35 +0100
+Message-Id: <20220618123035.563070-14-mail@conchuod.ie>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220618123035.563070-1-mail@conchuod.ie>
 References: <20220618123035.563070-1-mail@conchuod.ie>
@@ -91,37 +91,45 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Conor Dooley <conor.dooley@microchip.com>
 
-Testing & checking the Canaan devicetrees is inconvenient as only the
-devicetree corresponding to SOC_CANAAN_K210_DTB_BUILTIN will be built.
-Change the Makefile so that all devicetrees are built by default if
-SOC_CANAAN but only the one specified by SOC_CANAAN_K210_DTB_BUILTIN
-gets built as an object.
+spi-max-frequency is a device, not a controller  property and should be
+removed.
 
+Link: https://lore.kernel.org/lkml/20220526014141.2872567-1-robh@kernel.org/
 Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
 ---
-I don't have any Canaan hardware, but I build tested it and the log
-looked correct with arch/riscv/boot/dts/canaan/k210_generic.dtb.o
-getting successfully built.
----
- arch/riscv/boot/dts/canaan/Makefile | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ arch/riscv/boot/dts/canaan/k210.dtsi | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/arch/riscv/boot/dts/canaan/Makefile b/arch/riscv/boot/dts/canaan/Makefile
-index c61b08ac8554..befe4eb7527b 100644
---- a/arch/riscv/boot/dts/canaan/Makefile
-+++ b/arch/riscv/boot/dts/canaan/Makefile
-@@ -1,3 +1,9 @@
- # SPDX-License-Identifier: GPL-2.0
--dtb-$(CONFIG_SOC_CANAAN_K210_DTB_BUILTIN) += $(addsuffix .dtb, $(CONFIG_SOC_CANAAN_K210_DTB_SOURCE))
--obj-$(CONFIG_SOC_CANAAN_K210_DTB_BUILTIN) += $(addsuffix .o, $(dtb-y))
-+dtb-$(CONFIG_SOC_CANAAN) += canaan_kd233.dtb
-+dtb-$(CONFIG_SOC_CANAAN) += k210_generic.dtb
-+dtb-$(CONFIG_SOC_CANAAN) += sipeed_maix_bit.dtb
-+dtb-$(CONFIG_SOC_CANAAN) += sipeed_maix_dock.dtb
-+dtb-$(CONFIG_SOC_CANAAN) += sipeed_maix_go.dtb
-+dtb-$(CONFIG_SOC_CANAAN) += sipeed_maixduino.dtb
+diff --git a/arch/riscv/boot/dts/canaan/k210.dtsi b/arch/riscv/boot/dts/canaan/k210.dtsi
+index 5eb6b69c1170..ec290db4705c 100644
+--- a/arch/riscv/boot/dts/canaan/k210.dtsi
++++ b/arch/riscv/boot/dts/canaan/k210.dtsi
+@@ -413,7 +413,6 @@ spi0: spi@52000000 {
+ 				clock-names = "ssi_clk", "pclk";
+ 				resets = <&sysrst K210_RST_SPI0>;
+ 				reset-names = "spi";
+-				spi-max-frequency = <25000000>;
+ 				num-cs = <4>;
+ 				reg-io-width = <4>;
+ 			};
+@@ -429,7 +428,6 @@ spi1: spi@53000000 {
+ 				clock-names = "ssi_clk", "pclk";
+ 				resets = <&sysrst K210_RST_SPI1>;
+ 				reset-names = "spi";
+-				spi-max-frequency = <25000000>;
+ 				num-cs = <4>;
+ 				reg-io-width = <4>;
+ 			};
+@@ -445,8 +443,7 @@ spi3: spi@54000000 {
+ 				clock-names = "ssi_clk", "pclk";
+ 				resets = <&sysrst K210_RST_SPI3>;
+ 				reset-names = "spi";
+-				/* Could possibly go up to 200 MHz */
+-				spi-max-frequency = <100000000>;
 +
-+obj-$(CONFIG_SOC_CANAAN_K210_DTB_BUILTIN) += $(addsuffix .dtb.o, $(CONFIG_SOC_CANAAN_K210_DTB_SOURCE))
+ 				num-cs = <4>;
+ 				reg-io-width = <4>;
+ 			};
 -- 
 2.36.1
 
