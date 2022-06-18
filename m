@@ -2,156 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A74B3CCA473
-	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 14:03:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1077BC43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 14:03:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236908AbiFRODL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 18 Jun 2022 10:03:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51902 "EHLO
+        id S236812AbiFRODF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 18 Jun 2022 10:03:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346954AbiFRN7Z (ORCPT
+        with ESMTP id S240717AbiFRNzu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 18 Jun 2022 09:59:25 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A896815724;
-        Sat, 18 Jun 2022 06:59:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655560763; x=1687096763;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=KhvgxqN/MU+pbySf6/r74IVdKy4xbfE7RP+iY5t+B5U=;
-  b=B9iOExdJf08mDFLNaM+bv9WGAXEMgla2TUGbq/LaNmcNc3qr/bbMh3jv
-   ZC/N6bc5M+lLYPGgl/lSQZX5ZBi8GjgQLgz5f3J5JNZLQQJO6XnD45VWf
-   hFoU3FwFc46j2y2qUHDi3LfIWNHzX28Rb19uK/i44IH7KQ/AqIfX12nYm
-   AWQmy78erfYYLRjOM+VFJSye8DyoQ9XzrJsweaNmJc7L4j5I1pk/5zhfv
-   4gW3o1RssPRlkMuirvn47DfuxV2VUYXXI7aXdP0o6kH6ugR4L+DZFFKe2
-   8IqVhkX5aHjoIIGUmBf63lFJqJlylerTgc3T/TR/oX89963KRROlh0Vbt
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="280717413"
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="280717413"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jun 2022 06:59:23 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="584348783"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 18 Jun 2022 06:59:18 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o2Yyr-000QLv-Sb;
-        Sat, 18 Jun 2022 13:59:17 +0000
-Date:   Sat, 18 Jun 2022 21:58:28 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     David Gow <davidgow@google.com>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Jeremy Kerr <jk@codeconstruct.com.au>,
-        Daniel Latypov <dlatypov@google.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Longpeng <longpeng2@huawei.com>
-Cc:     kbuild-all@lists.01.org, kunit-dev@googlegroups.com,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?iso-8859-1?Q?Ma=EDra?= Canal <maira.canal@usp.br>,
-        linux-mmc@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
-        openbmc@lists.ozlabs.org, linux-usb@vger.kernel.org,
-        linux-modules@vger.kernel.org,
-        Matt Johnston <matt@codeconstruct.com.au>,
-        David Gow <davidgow@google.com>
-Subject: Re: [PATCH 2/5] kunit: flatten kunit_suite*** to kunit_suite** in
- .kunit_test_suites
-Message-ID: <202206182117.58z5vWxq-lkp@intel.com>
-References: <20220618090310.1174932-3-davidgow@google.com>
+        Sat, 18 Jun 2022 09:55:50 -0400
+Received: from mail.boiledscript.com (unknown [192.151.158.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69A1AE6B;
+        Sat, 18 Jun 2022 06:55:48 -0700 (PDT)
+Date:   Sat, 18 Jun 2022 21:51:24 +0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ultrarare.space;
+        s=dkim; t=1655560545;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6Kv5mC6jQ5gTh6n1bufpeX0V6kjPD+1etBWuVflNyfk=;
+        b=bnkkphdtYtVlXd+hDZKYOaxkpj17lDM+3nS4y49ALbXsVLb/LGd+ayIFXcSWD5UF06vpz2
+        YqfQU6G3MhQGQQrlo3+9rh5CKktamrPOkhvDtyLmg8Q26bLRBF64859g73GJvdz/oxkZUh
+        znRLLZeI0JoenhC7g4E1urxvn+eJmhqoXPO/SkS8Hz9/i6c5W0tPR23+0aKRdXBFiFRHhI
+        mX0krbeDYp8u1YCsrlP+9WkwvSmgm58nOpe9sAuOHnSZ3Czt69MYk42lKXhUFTSWhqOTVl
+        +jDgtQmOJV+YpbbyiNRbX23CUVoxOavw+cBsQf8PnnzgMVAngqrDE6q80fEpIA==
+From:   Hilton Chain <hako@ultrarare.space>
+To:     Jiri Kosina <jikos@kernel.org>
+Cc:     =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        Bryan Cain <bryancain3@gmail.com>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Subject: [PATCH v6] HID: apple: Properly handle function keys on non-Apple 
+ keyboard
+Message-ID: <20220618214603.24bf8828@dorphine>
+In-Reply-To: <nycvar.YFH.7.76.2206081154160.10851@cbobk.fhfr.pm>
+References: <20220529182036.10226-1-jose.exposito89@gmail.com>
+ <20220530083752.1973a905@ultrarare.space>
+ <20220530061812.GA10391@elementary>
+ <20220531221102.7bd7da7d@ultrarare.space>
+ <20220531223330.3d63e2fe@ultrarare.space>
+ <20220531172053.GA10651@elementary>
+ <CAPnXWxG8gbe1arQK9kBtwM1Xcta+wreTN742kgtBBr1v0ewKug@mail.gmail.com>
+ <7f67ac07b8bd37d5817cd151674cc6b0@ultrarare.space>
+ <20220601072651.242ce08a@ultrarare.space>
+ <20220601121737.1226ffea@ultrarare.space>
+ <20220601174956.GA10418@elementary>
+ <20220602161219.152be32d@ultrarare.space>
+ <nycvar.YFH.7.76.2206081154160.10851@cbobk.fhfr.pm>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220618090310.1174932-3-davidgow@google.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spamd-Bar: +
+Authentication-Results: mail.boiledscript.com;
+        auth=pass smtp.mailfrom=hako@ultrarare.space
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi David,
+This commit extends fa33382c7f74 ("HID: apple: Properly handle function
+keys on Keychron keyboards") by adding an array of known non-Apple
+keyboards' device names, and the function apple_is_non_apple_keyboard()
+to identify and create exception for them.
 
-Thank you for the patch! Yet something to improve:
+Signed-off-by: Hilton Chain <hako@ultrarare.space>
+---
 
-[auto build test ERROR on linus/master]
-[also build test ERROR on v5.19-rc2 next-20220617]
-[cannot apply to mcgrof/modules-next]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+V5 -> V6: Add "GANSS" to the exception list.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/David-Gow/Rework-KUnit-test-execution-in-modules/20220618-170653
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 4b35035bcf80ddb47c0112c4fbd84a63a2836a18
-config: parisc-allyesconfig (https://download.01.org/0day-ci/archive/20220618/202206182117.58z5vWxq-lkp@intel.com/config)
-compiler: hppa-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/c2386c54cc9fd471e5353f375ff71734214ed3c6
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review David-Gow/Rework-KUnit-test-execution-in-modules/20220618-170653
-        git checkout c2386c54cc9fd471e5353f375ff71734214ed3c6
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=parisc SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-Note: the linux-review/David-Gow/Rework-KUnit-test-execution-in-modules/20220618-170653 HEAD fddb3ea0ed5627098eabc542fdba5a8b4b769066 builds fine.
-      It only hurts bisectability.
-
-All errors (new ones prefixed by >>):
-
-   drivers/mmc/host/sdhci-of-aspeed.c: In function 'aspeed_sdc_tests_init':
->> drivers/mmc/host/sdhci-of-aspeed.c:612:16: error: too few arguments to function '__kunit_test_suites_init'
-     612 |         return __kunit_test_suites_init(aspeed_sdc_test_suites);
-         |                ^~~~~~~~~~~~~~~~~~~~~~~~
-   In file included from drivers/mmc/host/sdhci-of-aspeed-test.c:4,
-                    from drivers/mmc/host/sdhci-of-aspeed.c:608:
-   include/kunit/test.h:240:5: note: declared here
-     240 | int __kunit_test_suites_init(struct kunit_suite * const * const suites, int num_suites);
-         |     ^~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/mmc/host/sdhci-of-aspeed.c: In function 'aspeed_sdc_tests_exit':
->> drivers/mmc/host/sdhci-of-aspeed.c:617:9: error: too few arguments to function '__kunit_test_suites_exit'
-     617 |         __kunit_test_suites_exit(aspeed_sdc_test_suites);
-         |         ^~~~~~~~~~~~~~~~~~~~~~~~
-   In file included from drivers/mmc/host/sdhci-of-aspeed-test.c:4,
-                    from drivers/mmc/host/sdhci-of-aspeed.c:608:
-   include/kunit/test.h:242:6: note: declared here
-     242 | void __kunit_test_suites_exit(struct kunit_suite **suites, int num_suites);
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/mmc/host/sdhci-of-aspeed.c: In function 'aspeed_sdc_tests_init':
-   drivers/mmc/host/sdhci-of-aspeed.c:613:1: error: control reaches end of non-void function [-Werror=return-type]
-     613 | }
-         | ^
-   cc1: some warnings being treated as errors
+I just found out my keyboard would use another name in bluetooth mode, as I
+forgot to test this scenario... Sorry for the inconvenience!
 
 
-vim +/__kunit_test_suites_init +612 drivers/mmc/host/sdhci-of-aspeed.c
+drivers/hid/hid-apple.c | 35 ++++++++++++++++++++++++++++++-----
+ 1 file changed, 30 insertions(+), 5 deletions(-)
 
-4af307f574260c Andrew Jeffery 2021-01-22  609  
-4af307f574260c Andrew Jeffery 2021-01-22  610  static inline int aspeed_sdc_tests_init(void)
-4af307f574260c Andrew Jeffery 2021-01-22  611  {
-4af307f574260c Andrew Jeffery 2021-01-22 @612  	return __kunit_test_suites_init(aspeed_sdc_test_suites);
-4af307f574260c Andrew Jeffery 2021-01-22  613  }
-4af307f574260c Andrew Jeffery 2021-01-22  614  
-4af307f574260c Andrew Jeffery 2021-01-22  615  static inline void aspeed_sdc_tests_exit(void)
-4af307f574260c Andrew Jeffery 2021-01-22  616  {
-4af307f574260c Andrew Jeffery 2021-01-22 @617  	__kunit_test_suites_exit(aspeed_sdc_test_suites);
-4af307f574260c Andrew Jeffery 2021-01-22  618  }
-4af307f574260c Andrew Jeffery 2021-01-22  619  #else
-4af307f574260c Andrew Jeffery 2021-01-22  620  static inline int aspeed_sdc_tests_init(void)
-4af307f574260c Andrew Jeffery 2021-01-22  621  {
-4af307f574260c Andrew Jeffery 2021-01-22  622  	return 0;
-4af307f574260c Andrew Jeffery 2021-01-22  623  }
-4af307f574260c Andrew Jeffery 2021-01-22  624  
+diff --git a/drivers/hid/hid-apple.c b/drivers/hid/hid-apple.c
+index 42a568902f492..3cf8eafe00b7b 100644
+--- a/drivers/hid/hid-apple.c
++++ b/drivers/hid/hid-apple.c
+@@ -36,7 +36,7 @@
+ #define APPLE_NUMLOCK_EMULATION	BIT(8)
+ #define APPLE_RDESC_BATTERY	BIT(9)
+ #define APPLE_BACKLIGHT_CTL	BIT(10)
+-#define APPLE_IS_KEYCHRON	BIT(11)
++#define APPLE_IS_NON_APPLE	BIT(11)
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+ #define APPLE_FLAG_FKEY		0x01
+
+@@ -65,6 +65,10 @@ MODULE_PARM_DESC(swap_fn_leftctrl, "Swap the Fn and left Control keys. "
+ 		"(For people who want to keep PC keyboard muscle memory. "
+ 		"[0] = as-is, Mac layout, 1 = swapped, PC layout)");
+
++struct apple_non_apple_keyboard {
++	char *name;
++};
++
+ struct apple_sc_backlight {
+ 	struct led_classdev cdev;
+ 	struct hid_device *hdev;
+@@ -313,6 +317,27 @@ static const struct apple_key_translation swapped_fn_leftctrl_keys[] = {
+ 	{ }
+ };
+
++static const struct apple_non_apple_keyboard non_apple_keyboards[] = {
++	{ "SONiX USB DEVICE" },
++	{ "GANSS" },
++	{ "Keychron" },
++	{ "AONE" }
++};
++
++static bool apple_is_non_apple_keyboard(struct hid_device *hdev)
++{
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(non_apple_keyboards); i++) {
++		char *non_apple = non_apple_keyboards[i].name;
++
++		if (strncmp(hdev->name, non_apple, strlen(non_apple)) == 0)
++			return true;
++	}
++
++	return false;
++}
++
+ static inline void apple_setup_key_translation(struct input_dev *input,
+ 		const struct apple_key_translation *table)
+ {
+@@ -363,7 +388,7 @@ static int hidinput_apple_event(struct hid_device *hid, struct input_dev *input,
+ 	}
+
+ 	if (fnmode == 3) {
+-		real_fnmode = (asc->quirks & APPLE_IS_KEYCHRON) ? 2 : 1;
++		real_fnmode = (asc->quirks & APPLE_IS_NON_APPLE) ? 2 : 1;
+ 	} else {
+ 		real_fnmode = fnmode;
+ 	}
+@@ -669,9 +694,9 @@ static int apple_input_configured(struct hid_device *hdev,
+ 		asc->quirks &= ~APPLE_HAS_FN;
+ 	}
+
+-	if (strncmp(hdev->name, "Keychron", 8) == 0) {
+-		hid_info(hdev, "Keychron keyboard detected; function keys will default to fnmode=2 behavior\n");
+-		asc->quirks |= APPLE_IS_KEYCHRON;
++	if (apple_is_non_apple_keyboard(hdev)) {
++		hid_info(hdev, "Non-apple keyboard detected; function keys will default to fnmode=2 behavior\n");
++		asc->quirks |= APPLE_IS_NON_APPLE;
+ 	}
+
+ 	return 0;
+
+base-commit: 4b35035bcf80ddb47c0112c4fbd84a63a2836a18
+--
+2.36.1
