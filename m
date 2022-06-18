@@ -2,85 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCC6AC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 22:49:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCFE1C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 23:00:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233006AbiFRWtr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 18 Jun 2022 18:49:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51184 "EHLO
+        id S232462AbiFRXAy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 18 Jun 2022 19:00:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229504AbiFRWtp (ORCPT
+        with ESMTP id S229446AbiFRXAw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 18 Jun 2022 18:49:45 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A171CE0BC
-        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 15:49:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
-        :Cc:Subject:From:To:MIME-Version:Date:Message-ID:Sender:Reply-To:Content-ID:
-        Content-Description:In-Reply-To:References;
-        bh=9uVMbhApZ0Mp+uHyuGaV5a384mogiHoFmbvbVDjUQR4=; b=jgnwz6ic5j3QKWJvttvfVbZbe0
-        +Pd3auhSnl9cDI6Z8D2ITvZ8QlwcXo+SII4YxFayFDZE4480VKlCW8ZjMkkE6Wefug1UOimdcWKnd
-        i24+5ukj7T/ZcxKjBpBWihZUEBm2zuWNaw0QzjjNwX7JFx6bY0H4Uw4Ziw3GW1AledMCWSWgb0C7P
-        vWZCed46kdE7UEsjY1ZPcN4/QNiy4+YFVWoqnb3MNCO9pY36IWWNKbGuZp6l33w+nXAZnEGG27Xy/
-        Rgr1ZDjqje5grFmRecYtgmUusNtKm3dSEM7vBMl3rD/RPtHvbIK0xPaD8ictJlcKc13dVmbhJ3ZO+
-        t+o+GPpA==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o2hG6-00930S-Jf; Sat, 18 Jun 2022 22:49:39 +0000
-Message-ID: <9a0ed0bb-34c7-bacb-16a8-fdb158535ab2@infradead.org>
-Date:   Sat, 18 Jun 2022 15:49:31 -0700
+        Sat, 18 Jun 2022 19:00:52 -0400
+Received: from conssluserg-06.nifty.com (conssluserg-06.nifty.com [210.131.2.91])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2255FD3C;
+        Sat, 18 Jun 2022 16:00:51 -0700 (PDT)
+Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42]) (authenticated)
+        by conssluserg-06.nifty.com with ESMTP id 25IN0U4M020802;
+        Sun, 19 Jun 2022 08:00:31 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-06.nifty.com 25IN0U4M020802
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1655593232;
+        bh=OPafFCN8j6/Th3TYQPVTAZ/0OBtsya/p0tqu/GJE6Tw=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Wfj8c0Xv4Vypn9wH5hNN3yxI1i14Gphn2bb7EZtURjTNwc2bOjjPwtfwf0Q9RBye0
+         iqTfMUs0+kvrBeGlZAbkyJoMc84j60Q5XMu5UeF/BZ3jwL8Gk/b4LcQIzGMH750z9r
+         1yn7L/7Pt+CYOGrX3yxQ5I2jowbvmPnNtliCKivei0w9staXod7zDbkbuzsku7JOeR
+         iAHz/XpA/rWEi0AQBxUJk1fvl1gMOdQoj7shN6Nsm+vAZ+2Roc8ojKTKKzB6iR+End
+         SlS0RvWHeL6KNHjwCdTv9wev47W0dzcl1ngJuFkgorBmIE2+G4kJ7ypwo6g6mZ0NsV
+         A3lpkKJMK8Psg==
+X-Nifty-SrcIP: [209.85.221.42]
+Received: by mail-wr1-f42.google.com with SMTP id g27so3277041wrb.10;
+        Sat, 18 Jun 2022 16:00:31 -0700 (PDT)
+X-Gm-Message-State: AJIora8rEA5XUv4vNTTyBZ1z8vv26fkLMih2rv2Sl3fufnRFXXMMKtf5
+        e7ResmPfLHRye+yijRZ75Y7mdM1stksSzM3VuxE=
+X-Google-Smtp-Source: AGRyM1uhD22NFFPkUhQ5XGaigVBR/j7MXgiMhah0d2kWo210TD4RGX89dnUFCNeCcwmUk8oFnRzZb1Epvf+P9tdoqbE=
+X-Received: by 2002:a5d:638b:0:b0:218:54a2:71ec with SMTP id
+ p11-20020a5d638b000000b0021854a271ecmr15449262wru.477.1655593230127; Sat, 18
+ Jun 2022 16:00:30 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Content-Language: en-US
-To:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Subject: [DRM/hisilicon/hibmc] kernel robot reports build errors, patch(es)
- available but not merged
-Cc:     RongrongZou <zourongrong@huawei.com>,
-        Xinliang Liu <xinliang.liu@linaro.org>,
-        Tian Tao <tiantao6@hisilicon.com>,
-        John Stultz <jstultz@google.com>,
-        Xinwei Kong <kong.kongxinwei@hisilicon.com>,
-        Chen Feng <puck.chen@hisilicon.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220616195759.3214538-1-samitolvanen@google.com>
+In-Reply-To: <20220616195759.3214538-1-samitolvanen@google.com>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Sun, 19 Jun 2022 07:59:53 +0900
+X-Gmail-Original-Message-ID: <CAK7LNARAAdWPxaMWawQf5Y4kYJ065OMtvrnUaHkjCquL_BZYYQ@mail.gmail.com>
+Message-ID: <CAK7LNARAAdWPxaMWawQf5Y4kYJ065OMtvrnUaHkjCquL_BZYYQ@mail.gmail.com>
+Subject: Re: [PATCH] kbuild: Ignore __this_module in gen_autoksyms.sh
+To:     Sami Tolvanen <samitolvanen@google.com>
+Cc:     Nicolas Schier <nicolas@fjasle.eu>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Steve Muckle <smuckle@google.com>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, Jun 17, 2022 at 4:58 AM Sami Tolvanen <samitolvanen@google.com> wrote:
+>
+> Module object files can contain an undefined reference to __this_module,
+> which isn't resolved until we link the final .ko. The kernel doesn't
+> export this symbol, so ignore it in gen_autoksyms.sh.
 
-kernel robot reports today:
+OK, I understand these two sentences.
 
-* riscv64-linux-ld: ttm_bo_vm.c:undefined reference to `vmf_insert_pfn_prot'
-  https://lore.kernel.org/lkml/202206190651.smtms3Ay-lkp@intel.com/T/#u
+> This avoids an
+> unnecessary vmlinux rebuild with UNUSED_KSYMS_WHITELIST when we have a
+> symbol list that already contains all the module dependencies.
+>
 
-* ttm_bo_vm.c:undefined reference to `vmf_insert_pfn_prot'
-  https://lore.kernel.org/lkml/202206190523.0Ar6yQF7-lkp@intel.com/T/#u
-
-
-and earlier:
-
-* ld.lld: error: undefined symbol: vmf_insert_pfn_prot
-https://lore.kernel.org/lkml/202203281125.Jp08egXu-lkp@intel.com/
-
-* ttm_bo_vm.c:undefined reference to `vmf_insert_pfn_prot'
-https://lore.kernel.org/lkml/202204081648.gV63Gt0t-lkp@intel.com/
+I do not understand how this can happen.
 
 
-I sent a patch for this on 2022-04-08 and again on 2022-05-30 (UTC).
+Can you provide me steps to reproduce it?
 
-https://lore.kernel.org/all/20220409030504.16089-1-rdunlap@infradead.org/
-https://lore.kernel.org/all/20220531025557.29593-1-rdunlap@infradead.org/
 
-Neither one has been applied or even had a comment.  :(
+
+
+
+
+
+> Signed-off-by: Sami Tolvanen <samitolvanen@google.com>
+> ---
+>  scripts/gen_autoksyms.sh | 3 +++
+>  1 file changed, 3 insertions(+)
+>
+> diff --git a/scripts/gen_autoksyms.sh b/scripts/gen_autoksyms.sh
+> index faacf7062122..653fadbad302 100755
+> --- a/scripts/gen_autoksyms.sh
+> +++ b/scripts/gen_autoksyms.sh
+> @@ -56,4 +56,7 @@ EOT
+>  # point addresses.
+>  sed -e 's/^\.//' |
+>  sort -u |
+> +# Ignore __this_module. It's not an exported symbol, and will be resolved
+> +# when the final .ko's are linked.
+> +grep -v '^__this_module$' |
+>  sed -e 's/\(.*\)/#define __KSYM_\1 1/' >> "$output_file"
+> --
+> 2.36.1.476.g0c4daa206d-goog
+>
+
 
 -- 
-~Randy
+Best Regards
+Masahiro Yamada
