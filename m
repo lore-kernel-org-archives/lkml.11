@@ -2,67 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34295C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FDC6CCA480
 	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 17:06:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237081AbiFRRF4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 18 Jun 2022 13:05:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34510 "EHLO
+        id S237183AbiFRRF6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 18 Jun 2022 13:05:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235146AbiFRRFw (ORCPT
+        with ESMTP id S236749AbiFRRFw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 18 Jun 2022 13:05:52 -0400
-X-Greylist: delayed 474 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 18 Jun 2022 10:05:50 PDT
 Received: from wnew2-smtp.messagingengine.com (wnew2-smtp.messagingengine.com [64.147.123.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D9F313CC9;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D85D13CC7;
         Sat, 18 Jun 2022 10:05:50 -0700 (PDT)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailnew.west.internal (Postfix) with ESMTP id 2A0382B04FE1;
-        Sat, 18 Jun 2022 12:58:08 -0400 (EDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.west.internal (Postfix) with ESMTP id 1451D2B04FD3;
+        Sat, 18 Jun 2022 12:57:55 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute1.internal (MEProxy); Sat, 18 Jun 2022 12:58:10 -0400
+  by compute3.internal (MEProxy); Sat, 18 Jun 2022 12:57:58 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
         cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
         :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm3; t=1655571487; x=1655578687; bh=9L
-        3nOLIP2wnDF3yh647i8HoUyhJh7T1SGaF8cyhW3i8=; b=kMqhbG5O1YT1vNLiKN
-        CpFINUOZyyk7c9rud9wThSXauKdGW6DZELCKi4Sy2ed3/ZHamjfc8PU3OWQCNMAJ
-        rvlBSathSYJUFqGzNOI2zK7ulWHNWbQD6DmVS/VO+ztYddSXlYyen4hKd+GH3r9S
-        qlEWqbkGi8fy518cWlZKwdOwrgXBnSs0nlJz3fkXDBcM/t7fz0z0dHhExoowZ58/
-        kYMaBcvgUY61zI0GleKSIyeOeL/TbahGMhtSLxjpoGvFqiPUS1GSKnOyHo+JcRcs
-        Y4A8uypIY8fl7Aod2XyALVTolW89V67/6HjvGM53N/Tvpu6V4pdhwuKHPx9BXDt6
-        bmnA==
+        :subject:subject:to:to; s=fm3; t=1655571475; x=1655578675; bh=Lu
+        uTEOR7u8NT8qYDU7Co2XhnytDZp9bAeyNqtTvivAI=; b=I+NKbH2UzJQD7LwNbu
+        48/kHbp+OJfJzlFvpxrna3+TNwvimC0bxK8GS5+ZlugvePSNbqNZ42AbVrI9D6Mp
+        KAEnUYE9j2Q3D0wM7UpEsBgk1runnXjwKgUCFkN/ATEMiwgN+uoAIQ1OdvZBZWtz
+        C1z8q2IJqmtjO1AIwKlmx/nDTLZm0Fpbb79M0Re6/CN0JDi3U1vpGBOkHid+YF1B
+        UWCqPNREwGowLnqPLiXmg7yoIH86wAKPadtjmAjAiO2LyDOdjhWff1fG8IgVjRWH
+        LhCdY/7SJZkwddKACo3kt5pDtkJ9Ssyd6K3Os7yVEg++HHm9YyGq85uyW65xN+ef
+        ipzA==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
         :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
         :message-id:mime-version:references:reply-to:sender:subject
         :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm2; t=1655571487; x=1655578687; bh=9L3nOLIP2wnDF
-        3yh647i8HoUyhJh7T1SGaF8cyhW3i8=; b=WvYschwOCfWwxaRI9poMPaD+j9R06
-        MhASiBhUshkqdhiV2vnRaIjymIpYlHV81STpE7szNEiqjRLMCab4fxWATkS0RBsH
-        9jnR9S6wllMRcqEl1yI00rRm+FFcCXFDSn7js4qN73ul9kg9nVXP0fZoGVXtkQXE
-        ELInEw5AMQ9xc/PZ5TPo5IUIPIRv/s7MFYpkKd3TGvZPitB2lw9JSOMzr+TwVoZA
-        uaH85opmiGoCfvNEX9opvENDq2EH9kH+jqS+UmuzOkI/Wt1t73gAj1xFS/2zvBwo
-        O78/tqkA7wEaFQAJdEtAcw7WGGSem9+VdqUch6FFD+gIG4VhJZ+RwSNvg==
-X-ME-Sender: <xms:HwSuYigJzljSkhvMzExB-cNiscsC3CXUcMoHRHrc9wpFiPsIIbqltg>
-    <xme:HwSuYjDyyVQC247nlS7O0HwyxwguDQl4Lztu4WTMGluLUmHImOwqyNUNE7W6bFw4Y
-    Xa9MMPYtPLrGE6VHg>
-X-ME-Received: <xmr:HwSuYqGWM2WM1Y4wlfT9OxhHavBHA96rn-9C4lfDtom2aaVDPisw-8NaSFpF9nUkgcACfTE_9B7s_eW6m2r9U7bbI0WC0kqtjLrM8pxl6Eq8vRpKdS3DfAgStd0e4TmUZeO8Nw>
+        :x-sasl-enc; s=fm2; t=1655571475; x=1655578675; bh=LuuTEOR7u8NT8
+        qYDU7Co2XhnytDZp9bAeyNqtTvivAI=; b=V3ooU6RxgAIaaHHt8r9oOpumS88aq
+        +JFpq2fSMlb7BmLTBWphYLDy/1BaGV3oXDNje9+tIStvpLKmzMl122zIxFOO/asK
+        ZY4US6rCoF+CZ8liKhDVoP79VOKwyvuyh1oRZUt3sQ4zsbHfY1jMvbkd5e4ZOJe+
+        oza0f5ZMH2F1sRZXJKCr4JAqcGmK8jhhbDa5zIkicyzl4OwFLypDfCXBcDsN99wV
+        qnsqx31yqPSjh6yhzeNzwl2slqLvRz84k3qd+ComPeho5pL8qQ6ILsYNwC6wd2oG
+        luas6shGVTwtSQ+dfz5tfuh/vLJ17OY2oPrqyABkopqhbMwJAbonO86ww==
+X-ME-Sender: <xms:EgSuYmM2eowiuCaHX0YA5bAGlcA7w4ZZTXYbfbydTA3VIADhexul9Q>
+    <xme:EgSuYk82IOKJlJLwwNxxvHi76_iDwgltsz3MhgGUUXWTIiVc0tJVQS3BqWguDP2lD
+    ngSEisZifPkYJF9yQ>
+X-ME-Received: <xmr:EgSuYtRxtsK3ibbTl8yQ4bNs9Qam0FEJQOYkfgs8r24KWjE89erjigd-SVXNAVBCoiXj6urV4qvs1lKza5DDpldyH0Jf5AuhcnZEhe_hHX4DupyrHMzQKP4KTNNh9NxL0A8h5g>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedruddvjedguddutdcutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
     necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
     enucfjughrpefhvfevufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefurghm
     uhgvlhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenuc
-    ggtffrrghtthgvrhhnpedukeetueduhedtleetvefguddvvdejhfefudelgfduveeggeeh
-    gfdufeeitdevteenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfh
-    hrohhmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
-X-ME-Proxy: <xmx:HwSuYrQ0my8Ri9IhWZMPIpBH_M0cC5kfKnMb02jyu61OpAVQjf4frw>
-    <xmx:HwSuYvzsoqC7LrnxLfDPLqBGcDttWcAzgbvhhT5MWp8UC02Kw0dWxg>
-    <xmx:HwSuYp7rf0cyXz1yLlfoDYtK7CkJttWV-bC1W6CM8SD11k3byoXGGA>
-    <xmx:HwSuYgER_ARs0fjcJ_Zrya0-b_3IBtzlZo5RdA3bJ7qYWx63aBHtk-Je9wc>
+    ggtffrrghtthgvrhhnpefghfevhffgheejhefgkeehueffgeehffejgeehueduueeffffh
+    hfeuiefhueffhfenucffohhmrghinhepuggvvhhitggvthhrvggvrdhorhhgnecuvehluh
+    hsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepshgrmhhuvghlsehs
+    hhholhhlrghnugdrohhrgh
+X-ME-Proxy: <xmx:EgSuYmtbRt6nURH8oqyvdNGXjo8KN1E7bvi6JP7zyBw89dYiPnavhg>
+    <xmx:EgSuYufS_iY_hnMPj4ht_bMO8c3KqzLS_I80YR9AtrV_HubgPW2OBA>
+    <xmx:EgSuYq3y1cv-y9cfLq57qu-spKzucbLDDwSh9eFAzEiBp4Dmb7n0Gw>
+    <xmx:EwSuYs-M6Pk_9yPIXItjnT3k_s-PxHmL-C7XqQQtVhL5pBT8IuanqM3Rd9Y>
 Feedback-ID: i0ad843c9:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sat,
- 18 Jun 2022 12:58:06 -0400 (EDT)
+ 18 Jun 2022 12:57:53 -0400 (EDT)
 From:   Samuel Holland <samuel@sholland.org>
 To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
         linux-input@vger.kernel.org
@@ -81,10 +81,11 @@ Cc:     linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
         Stephen Boyd <swboyd@chromium.org>,
         Yassine Oudjana <y.oudjana@protonmail.com>,
         "fengping.yu" <fengping.yu@mediatek.com>,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
-Subject: [PATCH v4 4/4] [DO NOT MERGE] arm64: dts: allwinner: pinephone: Add keyboard
-Date:   Sat, 18 Jun 2022 11:57:47 -0500
-Message-Id: <20220618165747.55709-5-samuel@sholland.org>
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v4 1/4] dt-bindings: input: Add the PinePhone keyboard binding
+Date:   Sat, 18 Jun 2022 11:57:44 -0500
+Message-Id: <20220618165747.55709-2-samuel@sholland.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220618165747.55709-1-samuel@sholland.org>
 References: <20220618165747.55709-1-samuel@sholland.org>
@@ -94,50 +95,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The official PinePhone keyboard accessory connects to the phone's POGO
-pins for I2C and interrupts. It has an Injoinic IP5209 power bank IC
-connected to the keyboard's internal I2C bus.
+Add devicetree support for the PinePhone keyboard case, which provides a
+matrix keyboard interface and a proxied I2C bus.
 
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Samuel Holland <samuel@sholland.org>
 ---
 
 (no changes since v3)
 
 Changes in v3:
+ - Replace unevaluatedProperties with additionalProperties
  - Rename i2c-bus to i2c
 
- .../dts/allwinner/sun50i-a64-pinephone.dtsi    | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+Changes in v2:
+ - Drop keymap DT properties
+ - Add vbat-supply property
 
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
-index 87847116ab6d..1d757cce246a 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
-@@ -208,6 +208,24 @@ accelerometer@68 {
- /* Connected to pogo pins (external spring based pinheader for user addons) */
- &i2c2 {
- 	status = "okay";
+ .../input/pine64,pinephone-keyboard.yaml      | 66 +++++++++++++++++++
+ 1 file changed, 66 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/input/pine64,pinephone-keyboard.yaml
+
+diff --git a/Documentation/devicetree/bindings/input/pine64,pinephone-keyboard.yaml b/Documentation/devicetree/bindings/input/pine64,pinephone-keyboard.yaml
+new file mode 100644
+index 000000000000..e4a0ac0fff9a
+--- /dev/null
++++ b/Documentation/devicetree/bindings/input/pine64,pinephone-keyboard.yaml
+@@ -0,0 +1,66 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/input/pine64,pinephone-keyboard.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+	keyboard@15 {
-+		compatible = "pine64,pinephone-keyboard";
-+		reg = <0x15>;
-+		interrupt-parent = <&r_pio>;
-+		interrupts = <0 12 IRQ_TYPE_EDGE_FALLING>; /* PL12 */
-+		wakeup-source;
++title: Pine64 PinePhone keyboard device tree bindings
 +
-+		i2c {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
++maintainers:
++  - Samuel Holland <samuel@sholland.org>
 +
-+			charger@75 {
-+				compatible = "injoinic,ip5209";
-+				reg = <0x75>;
-+			};
-+		};
-+	};
- };
- 
- &lradc {
++description:
++  A keyboard accessory is available for the Pine64 PinePhone and PinePhone Pro.
++  It connects via I2C, providing a raw scan matrix, a flashing interface, and a
++  subordinate I2C bus for communication with a battery charger IC.
++
++properties:
++  compatible:
++    const: pine64,pinephone-keyboard
++
++  reg:
++    const: 0x15
++
++  interrupts:
++    maxItems: 1
++
++  vbat-supply:
++    description: Supply for the keyboard MCU
++
++  wakeup-source: true
++
++  i2c:
++    $ref: /schemas/i2c/i2c-controller.yaml#
++
++required:
++  - compatible
++  - reg
++  - interrupts
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/input/input.h>
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    i2c {
++      #address-cells = <1>;
++      #size-cells = <0>;
++
++      keyboard@15 {
++        compatible = "pine64,pinephone-keyboard";
++        reg = <0x15>;
++        interrupt-parent = <&r_pio>;
++        interrupts = <0 12 IRQ_TYPE_EDGE_FALLING>; /* PL12 */
++
++        i2c {
++          #address-cells = <1>;
++          #size-cells = <0>;
++
++          charger@75 {
++            reg = <0x75>;
++          };
++        };
++      };
++    };
 -- 
 2.35.1
 
