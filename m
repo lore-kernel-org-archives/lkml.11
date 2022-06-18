@@ -2,72 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36EA2C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 23:21:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38785C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 23:27:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231966AbiFRXVm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 18 Jun 2022 19:21:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35714 "EHLO
+        id S229776AbiFRX1p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 18 Jun 2022 19:27:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229837AbiFRXVe (ORCPT
+        with ESMTP id S229504AbiFRX1m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 18 Jun 2022 19:21:34 -0400
-Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2102FDFE8
-        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 16:21:34 -0700 (PDT)
-Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: marex@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id 541DB84287;
-        Sun, 19 Jun 2022 01:21:32 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1655594492;
-        bh=ECixVEIXYDf/N355Xq804C3+wlcxnnlAleX9d7xrpJ4=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=ZpVxtyUH9SpnmIBt6Sqc+j7sOeAEEdGbJbl3VY1/aohByJsDj695TLvTzlrcoA6Fj
-         WsOHLYZjtQpOxYRSZXGzoHauISLD+Csybz+ge0N83MMizHX2nBjXwqghdLVQSkpQmB
-         75U3E24Ub0iwt7TdSQrX9zgZfJ+CrZScktiV10V+ANKJiykPh40PIuAIet7C6L46qg
-         qHep6DaZgQzobnUtbZnIAZ2b3GW5r37J4+Ui1iKeutMMPylR1LfkcvsUdUfMiRIO8c
-         054C9NXUiFgfl68wPlnhBQj84PE+yJKeztC7MTkG3A1trqMF4DwXG40JFi1mH/nhmd
-         PukxOAxHV0/KA==
-Message-ID: <5b6e5103-8ca8-87d6-27fc-243b4a6d5689@denx.de>
-Date:   Sun, 19 Jun 2022 01:02:03 +0200
+        Sat, 18 Jun 2022 19:27:42 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5609325DA
+        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 16:27:41 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id l4so7064369pgh.13
+        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 16:27:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eyOniFzGkggN/BNR4fP33bSiUm/C5vv+vYb/J1FSUS4=;
+        b=Ttg3wdyzeiKJB847h7nBdgl63ewqXqb81I4QWBIPaMTFfJmyE+YCT26WXMSL8xq/XD
+         rGaUsrDNU0KcaAnhuiZOIWdyl3ZqZMUIuhzVxfAR92mXkesEu3JgtkNXe3hFy1NUB6yv
+         kxw5tIXIqjprqmL+s1CklztKAoVKkszrbuVfJ4D79IKVSRBZzG8z8xPRFDa9LSpF7rw+
+         Et5JzFIOmDogBuwG6vr3sadNoDvn2UW0qCGiAEvo/Wr2cn2BMqrCxHcFp1BaqQfj3pNs
+         1MZsw7DALTAAS5ix9rGIu0zi9jZHoZjFTMR08ucY/2Gv04UL/MaNveP0y7UiZBCmndzL
+         o+fw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=eyOniFzGkggN/BNR4fP33bSiUm/C5vv+vYb/J1FSUS4=;
+        b=GJfN6VIwm72lrn/KI7r9X5D1sbubviU+cEs+yEs21kwhxqRPKAdc/LWWB8ZHg23V8k
+         FwdUsfjOQygMV2VQa9PVJAxe4nV4KKxJJcCEE6p0tc1YaR8ZAMA1jVItohvB7Xqxj8WJ
+         TigHcRHW0hPvjFnpUxOkPr5mNqTw4CIF3ZhTPK/MXBOHG7iimLmcJ20jstavLXm7TFDJ
+         5Iw0MhGbc9qVFXYP+z7gqiEEDhKXh7PoquhH7TSHcM5/Ok9D0Tduv/jODgdWb97rCVTN
+         LC446mQt9DVP/zF8hiPhOFAm1Redxmkzcx5UUOgFTs0voQlizdVP5fLUdgbz4PkZa9aD
+         5+3Q==
+X-Gm-Message-State: AJIora800+E9Jzb265myl7eg1m+JPolKDnPppNK+7B0QSLPVDNs020Wi
+        RqFsLF9sDx0WNMosyaKvI51COEXoCg8=
+X-Google-Smtp-Source: AGRyM1u62PBcm5Y40nQHnj8D6xkwCDaulpOuvJfCK9cwHwss7CDToxb5H9oHXGRGs95dI8vjU3pbzA==
+X-Received: by 2002:a05:6a00:278e:b0:525:1aeb:d5a with SMTP id bd14-20020a056a00278e00b005251aeb0d5amr1204939pfb.61.1655594860400;
+        Sat, 18 Jun 2022 16:27:40 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id ik10-20020a170902ab0a00b001617541c94fsm5838954plb.60.2022.06.18.16.27.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 18 Jun 2022 16:27:39 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Harry Wentland <harry.wentland@amd.com>
+Cc:     Leo Li <sunpeng.li@amd.com>,
+        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Guenter Roeck <linux@roeck-us.net>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Daniel Axtens <dja@axtens.net>
+Subject: [PATCH] drm/amd/display: Add missing hard-float compile flags for PPC64 builds
+Date:   Sat, 18 Jun 2022 16:27:37 -0700
+Message-Id: <20220618232737.2036722-1-linux@roeck-us.net>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 3/3] regmap: Wire up regmap_config provided bulk write in
- missed functions
-Content-Language: en-US
-To:     Javier Martinez Canillas <javierm@redhat.com>,
-        linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Brown <broonie@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-References: <20220616073435.1988219-1-javierm@redhat.com>
- <20220616073435.1988219-4-javierm@redhat.com>
-From:   Marek Vasut <marex@denx.de>
-In-Reply-To: <20220616073435.1988219-4-javierm@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Virus-Scanned: clamav-milter 0.103.5 at phobos.denx.de
-X-Virus-Status: Clean
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/16/22 09:34, Javier Martinez Canillas wrote:
-> There are some functions that were missed by commit d77e74561368 ("regmap:
-> Add bulk read/write callbacks into regmap_config") when support to define
-> bulk read/write callbacks in regmap_config was introduced.
-> 
-> The regmap_bulk_write() and regmap_noinc_write() functions weren't changed
-> to use the added map->write instead of the map->bus->write handler.
-> 
-> Also, the regmap_can_raw_write() was not modified to take map->write into
-> account. So will only return true if a bus with a .write callback is set.
-> 
-> Fixes: d77e74561368 ("regmap: Add bulk read/write callbacks into regmap_config")
-> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+ppc:allmodconfig builds fail with the following error.
 
-Reviewed-by: Marek Vasut <marex@denx.de>
+powerpc64-linux-ld:
+	drivers/gpu/drm/amd/amdgpu/../display/dc/dml/display_mode_lib.o
+		uses hard float,
+	drivers/gpu/drm/amd/amdgpu/../display/dc/dcn31/dcn31_resource.o
+		uses soft float
+powerpc64-linux-ld:
+	failed to merge target specific data of file
+	drivers/gpu/drm/amd/amdgpu/../display/dc/dcn31/dcn31_resource.o
+powerpc64-linux-ld:
+	drivers/gpu/drm/amd/amdgpu/../display/dc/dml/display_mode_lib.o
+		uses hard float,
+	drivers/gpu/drm/amd/amdgpu/../display/dc/dcn315/dcn315_resource.o
+		uses soft float
+powerpc64-linux-ld:
+	failed to merge target specific data of
+	file drivers/gpu/drm/amd/amdgpu/../display/dc/dcn315/dcn315_resource.o
+powerpc64-linux-ld:
+	drivers/gpu/drm/amd/amdgpu/../display/dc/dml/display_mode_lib.o
+		uses hard float,
+	drivers/gpu/drm/amd/amdgpu/../display/dc/dcn316/dcn316_resource.o
+		uses soft float
+powerpc64-linux-ld:
+	failed to merge target specific data of file
+	drivers/gpu/drm/amd/amdgpu/../display/dc/dcn316/dcn316_resource.o
+
+The problem was introduced with commit 41b7a347bf14 ("powerpc: Book3S
+64-bit outline-only KASAN support") which adds support for KASAN. This
+commit in turn enables DRM_AMD_DC_DCN because KCOV_INSTRUMENT_ALL and
+KCOV_ENABLE_COMPARISONS are no longer enabled. As result, new files are
+compiled which lack the selection of hard-float.
+
+Fixes: 41b7a347bf14 ("powerpc: Book3S 64-bit outline-only KASAN support")
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Daniel Axtens <dja@axtens.net>
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+---
+ drivers/gpu/drm/amd/display/dc/dcn31/Makefile  | 4 ++++
+ drivers/gpu/drm/amd/display/dc/dcn315/Makefile | 4 ++++
+ drivers/gpu/drm/amd/display/dc/dcn316/Makefile | 4 ++++
+ 3 files changed, 12 insertions(+)
+
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn31/Makefile b/drivers/gpu/drm/amd/display/dc/dcn31/Makefile
+index ec041e3cda30..74be02114ae4 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn31/Makefile
++++ b/drivers/gpu/drm/amd/display/dc/dcn31/Makefile
+@@ -15,6 +15,10 @@ DCN31 = dcn31_resource.o dcn31_hubbub.o dcn31_hwseq.o dcn31_init.o dcn31_hubp.o
+ 	dcn31_apg.o dcn31_hpo_dp_stream_encoder.o dcn31_hpo_dp_link_encoder.o \
+ 	dcn31_afmt.o dcn31_vpg.o
+ 
++ifdef CONFIG_PPC64
++CFLAGS_$(AMDDALPATH)/dc/dcn31/dcn31_resource.o := -mhard-float -maltivec
++endif
++
+ AMD_DAL_DCN31 = $(addprefix $(AMDDALPATH)/dc/dcn31/,$(DCN31))
+ 
+ AMD_DISPLAY_FILES += $(AMD_DAL_DCN31)
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn315/Makefile b/drivers/gpu/drm/amd/display/dc/dcn315/Makefile
+index 59381d24800b..1395c1ced8c5 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn315/Makefile
++++ b/drivers/gpu/drm/amd/display/dc/dcn315/Makefile
+@@ -25,6 +25,10 @@
+ 
+ DCN315 = dcn315_resource.o
+ 
++ifdef CONFIG_PPC64
++CFLAGS_$(AMDDALPATH)/dc/dcn315/dcn315_resource.o := -mhard-float -maltivec
++endif
++
+ AMD_DAL_DCN315 = $(addprefix $(AMDDALPATH)/dc/dcn315/,$(DCN315))
+ 
+ AMD_DISPLAY_FILES += $(AMD_DAL_DCN315)
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn316/Makefile b/drivers/gpu/drm/amd/display/dc/dcn316/Makefile
+index 819d44a9439b..c3d2dd78f1e2 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn316/Makefile
++++ b/drivers/gpu/drm/amd/display/dc/dcn316/Makefile
+@@ -25,6 +25,10 @@
+ 
+ DCN316 = dcn316_resource.o
+ 
++ifdef CONFIG_PPC64
++CFLAGS_$(AMDDALPATH)/dc/dcn316/dcn316_resource.o := -mhard-float -maltivec
++endif
++
+ AMD_DAL_DCN316 = $(addprefix $(AMDDALPATH)/dc/dcn316/,$(DCN316))
+ 
+ AMD_DISPLAY_FILES += $(AMD_DAL_DCN316)
+-- 
+2.35.1
+
