@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B976C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 23:21:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36EA2C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 23:21:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234075AbiFRXVj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 18 Jun 2022 19:21:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35706 "EHLO
+        id S231966AbiFRXVm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 18 Jun 2022 19:21:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229496AbiFRXVe (ORCPT
+        with ESMTP id S229837AbiFRXVe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 18 Jun 2022 19:21:34 -0400
 Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DAD7B4B1
-        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 16:21:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2102FDFE8
+        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 16:21:34 -0700 (PDT)
 Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
         (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
         (No client certificate requested)
         (Authenticated sender: marex@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id 7CDA483F22;
-        Sun, 19 Jun 2022 01:21:31 +0200 (CEST)
+        by phobos.denx.de (Postfix) with ESMTPSA id 541DB84287;
+        Sun, 19 Jun 2022 01:21:32 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1655594491;
-        bh=dmmCpk6maTBunXVd1RMmiK9EcOL3EPybx4/p7OuPx0k=;
+        s=phobos-20191101; t=1655594492;
+        bh=ECixVEIXYDf/N355Xq804C3+wlcxnnlAleX9d7xrpJ4=;
         h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=snN9aXggYPoN0HPbL0pnm6GsPpBDHwy88PYo++Q3PhVKDgbxn9k6za3rVdfvD2wY5
-         WKSGyOtfVq7tyXYdrrDY/Jz2al/27OBxQm6xzsTPw+fP2hIqimpKZtlUAv45SaMcZX
-         7LagEU9m7iIFaVX+QMjIiYeGM9k/9W+e6irnld3rQPxWYNQDgbze9A7f00cj4gbMmr
-         3mg5i+ZBBXNUlZkMW5CDTlYakpBnaiqEzSq2ATgJ+S0TsAZYmYiTdQ9ndgYthYlvSI
-         Xlj915I9DnlIjWfOURA4DEbSUQBVBzrEmljDBKaRYzTR5KZzy3qKhKpb2ibgKzkWcq
-         Pg/07VqF/y/wQ==
-Message-ID: <6f3f2995-0352-be7f-d7dd-3ee617bf0576@denx.de>
-Date:   Sun, 19 Jun 2022 00:58:43 +0200
+        b=ZpVxtyUH9SpnmIBt6Sqc+j7sOeAEEdGbJbl3VY1/aohByJsDj695TLvTzlrcoA6Fj
+         WsOHLYZjtQpOxYRSZXGzoHauISLD+Csybz+ge0N83MMizHX2nBjXwqghdLVQSkpQmB
+         75U3E24Ub0iwt7TdSQrX9zgZfJ+CrZScktiV10V+ANKJiykPh40PIuAIet7C6L46qg
+         qHep6DaZgQzobnUtbZnIAZ2b3GW5r37J4+Ui1iKeutMMPylR1LfkcvsUdUfMiRIO8c
+         054C9NXUiFgfl68wPlnhBQj84PE+yJKeztC7MTkG3A1trqMF4DwXG40JFi1mH/nhmd
+         PukxOAxHV0/KA==
+Message-ID: <5b6e5103-8ca8-87d6-27fc-243b4a6d5689@denx.de>
+Date:   Sun, 19 Jun 2022 01:02:03 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.10.0
-Subject: Re: [PATCH 2/3] regmap: Make regmap_noinc_read() return -ENOTSUPP if
- map->read isn't set
+Subject: Re: [PATCH 3/3] regmap: Wire up regmap_config provided bulk write in
+ missed functions
 Content-Language: en-US
 To:     Javier Martinez Canillas <javierm@redhat.com>,
         linux-kernel@vger.kernel.org
@@ -45,9 +45,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Mark Brown <broonie@kernel.org>,
         "Rafael J. Wysocki" <rafael@kernel.org>
 References: <20220616073435.1988219-1-javierm@redhat.com>
- <20220616073435.1988219-3-javierm@redhat.com>
+ <20220616073435.1988219-4-javierm@redhat.com>
 From:   Marek Vasut <marex@denx.de>
-In-Reply-To: <20220616073435.1988219-3-javierm@redhat.com>
+In-Reply-To: <20220616073435.1988219-4-javierm@redhat.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Virus-Scanned: clamav-milter 0.103.5 at phobos.denx.de
@@ -57,17 +57,15 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 On 6/16/22 09:34, Javier Martinez Canillas wrote:
-> Before adding support to define bulk read/write callbacks in regmap_config
-> by the commit d77e74561368 ("regmap: Add bulk read/write callbacks into
-> regmap_config"), the regmap_noinc_read() function returned an errno early
-> a map->bus->read callback wasn't set.
+> There are some functions that were missed by commit d77e74561368 ("regmap:
+> Add bulk read/write callbacks into regmap_config") when support to define
+> bulk read/write callbacks in regmap_config was introduced.
 > 
-> But that commit dropped the check and now a call to _regmap_raw_read() is
-> attempted even when bulk read operations are not supported. That function
-> checks for map->read anyways but there's no point to continue if the read
-> can't succeed.
+> The regmap_bulk_write() and regmap_noinc_write() functions weren't changed
+> to use the added map->write instead of the map->bus->write handler.
 > 
-> Also is a fragile assumption to make so is better to make it fail earlier.
+> Also, the regmap_can_raw_write() was not modified to take map->write into
+> account. So will only return true if a bus with a .write callback is set.
 > 
 > Fixes: d77e74561368 ("regmap: Add bulk read/write callbacks into regmap_config")
 > Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
