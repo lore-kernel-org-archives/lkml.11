@@ -2,321 +2,244 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FA31C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 17:17:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D8F1C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 17:22:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236137AbiFRRRJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 18 Jun 2022 13:17:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43030 "EHLO
+        id S236273AbiFRRWP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 18 Jun 2022 13:22:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233373AbiFRRRH (ORCPT
+        with ESMTP id S231142AbiFRRWM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 18 Jun 2022 13:17:07 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8A0813D66;
-        Sat, 18 Jun 2022 10:17:05 -0700 (PDT)
+        Sat, 18 Jun 2022 13:22:12 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A8DD140CF
+        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 10:22:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 33438CE0986;
-        Sat, 18 Jun 2022 17:17:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 670B6C3411A;
-        Sat, 18 Jun 2022 17:16:59 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id CBBE5CE02C5
+        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 17:22:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19120C3411A;
+        Sat, 18 Jun 2022 17:22:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655572622;
-        bh=7XCDDYfV83xMFA1Nq8ZlvM/SnMA5iCTP9CKgyrzuITY=;
+        s=k20201202; t=1655572928;
+        bh=jhTcRmVj6BvTv+laefnZT4jEHAzQmvt5bGfy9OB8ugg=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ua5hSurVhYvagLVmj4e5BG3ry/6fhC+ZrheQkl4FbCNmZk+ecO4eTg3E4ZKp1SaZb
-         zhaCcdzdHpzMOqgk8aMLtzhpuN8Qe8QQSy1rC3ZlwLFEJU9pisF4Z9j3Kxw+wx3zqj
-         H6ioOzG2BKQZIkZyadTnQRZlBdeXbgfXNmE/I9aQKZwXh1Dera6ryH4+805xh6dnse
-         eOyL32HehyDn7ULyg/k5KG7ZHGxAztVpROqnG80SiOSvipmOcXV8vYm4CId5P+UPP3
-         Vu/GZmhhKcEAeSwKS4v8q0j9IFMFtQLXE/OVaLKPfqR1kOX3Q6eWHp1oc1yZi+A7qS
-         SbG/2WjFklQCA==
-Date:   Sat, 18 Jun 2022 18:26:18 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     <andrea.merello@iit.it>
-Cc:     <mchehab+huawei@kernel.org>, <linux-iio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <lars@metafoo.de>, <robh+dt@kernel.org>,
-        <andy.shevchenko@gmail.com>, <matt.ranostay@konsulko.com>,
-        <ardeleanalex@gmail.com>, <jacopo@jmondi.org>
-Subject: Re: [v6 08/14] iio: imu: add Bosch Sensortec BNO055 core driver
-Message-ID: <20220618182618.4da1df69@jic23-huawei>
-In-Reply-To: <20220613120534.36991-9-andrea.merello@iit.it>
-References: <20220613120534.36991-1-andrea.merello@iit.it>
-        <20220613120534.36991-9-andrea.merello@iit.it>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
+        b=AEbQM4oIogvyPY8KDUlGb7J+kpZOdzMHXN9laD3GgkC3Jx6xSplXnm7hgiDkNcLTE
+         DpW9IDv2oiQnsHmSANM328O0W5ObtBrxWhvmIOQqWxEZ38emSQMm5JhPm3ZId2m7Es
+         vi3INLOOSYF22/WT9ZuNlOf+6auTv53gZ26b9PnIh13DaYuRdsAv0hGFMcUcTWmRKq
+         jf5N2fw0QkPL1HG+tYhiqpnqo55djqgAcCdIvIzQqDizg2y1QI4FZygYNPJRlM0YNO
+         mLSSvJWo3KDjh7EqAclabWyV9Ez5Avlqfn6zIFoCq5twB8YIMJP2O8sju+kPUU/893
+         f6yMjOZvIrEVw==
+Received: from 82-132-215-29.dab.02.net ([82.132.215.29] helo=wait-a-minute.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <maz@kernel.org>)
+        id 1o2c97-001VtI-MU;
+        Sat, 18 Jun 2022 18:22:05 +0100
+Date:   Sat, 18 Jun 2022 18:22:03 +0100
+Message-ID: <877d5dga4k.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Jianmin Lv <lvjianmin@loongson.cn>
+Cc:     Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+        Hanjun Guo <guohanjun@huawei.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Huacai Chen <chenhuacai@loongson.cn>
+Subject: Re: [PATCH V12 04/10] irqchip: create library file for LoongArch irqchip driver
+In-Reply-To: <1655273250-23495-5-git-send-email-lvjianmin@loongson.cn>
+References: <1655273250-23495-1-git-send-email-lvjianmin@loongson.cn>
+        <1655273250-23495-5-git-send-email-lvjianmin@loongson.cn>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
 Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 82.132.215.29
+X-SA-Exim-Rcpt-To: lvjianmin@loongson.cn, tglx@linutronix.de, linux-kernel@vger.kernel.org, guohanjun@huawei.com, lorenzo.pieralisi@arm.com, jiaxun.yang@flygoat.com, chenhuacai@loongson.cn
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 13 Jun 2022 14:05:28 +0200
-<andrea.merello@iit.it> wrote:
-
-> From: Andrea Merello <andrea.merello@iit.it>
+On Wed, 15 Jun 2022 07:07:24 +0100,
+Jianmin Lv <lvjianmin@loongson.cn> wrote:
 > 
-> Add the core driver for the BNO055 IMU from Bosch. This IMU can be
-> connected via both serial and I2C busses; separate patches will add support
-> for them.
+> The library file contains following content:
+> - Implement acpi_get_gsi_domain_id callback.
+> - Implement initialization of vector group entries and APIs
+>   for building hierachy irqdomains.
 > 
-> The driver supports "AMG" (Accelerometer, Magnetometer, Gyroscope) mode,
-> that provides raw data from the said internal sensors, and a couple of
-> "fusion" modes (i.e. the IMU also does calculations in order to provide
-> euler angles, quaternions, linear acceleration and gravity measurements).
-> 
-> In fusion modes the AMG data is still available (with some calibration
-> refinements done by the IMU), but certain settings such as low pass filters
-> cut-off frequency and sensors' ranges are fixed, while in AMG mode they can
-> be customized; this is why AMG mode can still be interesting.
-> 
-> Signed-off-by: Andrea Merello <andrea.merello@iit.it>
+> Signed-off-by: Jianmin Lv <lvjianmin@loongson.cn>
 > ---
-Hi Andrea,
+>  drivers/irqchip/Makefile                   |   2 +-
+>  drivers/irqchip/irq-loongarch-pic-common.c | 122 +++++++++++++++++++++++++++++
+>  drivers/irqchip/irq-loongarch-pic-common.h |  39 +++++++++
+>  3 files changed, 162 insertions(+), 1 deletion(-)
+>  create mode 100644 drivers/irqchip/irq-loongarch-pic-common.c
+>  create mode 100644 drivers/irqchip/irq-loongarch-pic-common.h
+> 
+> diff --git a/drivers/irqchip/Makefile b/drivers/irqchip/Makefile
+> index 6894a13..2d0d871 100644
+> --- a/drivers/irqchip/Makefile
+> +++ b/drivers/irqchip/Makefile
+> @@ -103,7 +103,7 @@ obj-$(CONFIG_LS1X_IRQ)			+= irq-ls1x.o
+>  obj-$(CONFIG_TI_SCI_INTR_IRQCHIP)	+= irq-ti-sci-intr.o
+>  obj-$(CONFIG_TI_SCI_INTA_IRQCHIP)	+= irq-ti-sci-inta.o
+>  obj-$(CONFIG_TI_PRUSS_INTC)		+= irq-pruss-intc.o
+> -obj-$(CONFIG_IRQ_LOONGARCH_CPU)		+= irq-loongarch-cpu.o
+> +obj-$(CONFIG_IRQ_LOONGARCH_CPU)		+= irq-loongarch-cpu.o irq-loongarch-pic-common.o
+>  obj-$(CONFIG_LOONGSON_LIOINTC)		+= irq-loongson-liointc.o
+>  obj-$(CONFIG_LOONGSON_HTPIC)		+= irq-loongson-htpic.o
+>  obj-$(CONFIG_LOONGSON_HTVEC)		+= irq-loongson-htvec.o
+> diff --git a/drivers/irqchip/irq-loongarch-pic-common.c b/drivers/irqchip/irq-loongarch-pic-common.c
+> new file mode 100644
+> index 0000000..2f75362
+> --- /dev/null
+> +++ b/drivers/irqchip/irq-loongarch-pic-common.c
+> @@ -0,0 +1,122 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Copyright (C) 2022 Loongson Limited, All Rights Reserved.
+> + */
+> +
+> +#include <linux/irq.h>
+> +#include <linux/pci.h>
+> +#include <linux/acpi.h>
+> +#include "irq-loongarch-pic-common.h"
+> +
+> +static struct acpi_vector_group vector_group[MAX_IO_PICS];
+> +
+> +struct acpi_madt_bio_pic *acpi_pchpic[MAX_IO_PICS];
+> +
+> +struct fwnode_handle *liointc_handle;
+> +struct fwnode_handle *pch_lpc_handle;
+> +struct fwnode_handle *pch_msi_handle[MAX_IO_PICS];
+> +struct fwnode_handle *pch_pic_handle[MAX_IO_PICS];
 
-A few trivial things from me this time seeing as you are going to be doing a v7.
-
-Thanks,
-
-Jonathan
-
-
+Why aren't these in individual drivers, and then have accessors to
+retrieve them?
 
 > +
-> +static ssize_t bno055_get_calib_status(struct device *dev, char *buf, int which)
+> +static int find_pch_pic(u32 gsi)
 > +{
-> +	struct bno055_priv *priv = iio_priv(dev_to_iio_dev(dev));
-> +	int calib;
-> +	int ret;
-> +	int val;
+> +	int i, start, end;
 > +
-> +	if (priv->operation_mode == BNO055_OPR_MODE_AMG ||
-> +	    (priv->operation_mode == BNO055_OPR_MODE_FUSION_FMC_OFF &&
-> +	     which == BNO055_CALIB_STAT_MAGN_SHIFT)) {
-> +		calib = 0;
-> +	} else {
-> +		mutex_lock(&priv->lock);
-> +		ret = regmap_read(priv->regmap, BNO055_CALIB_STAT_REG, &val);
-> +		mutex_unlock(&priv->lock);
+> +	/* Find the PCH_PIC that manages this GSI. */
+> +	for (i = 0; i < MAX_IO_PICS; i++) {
+> +		struct acpi_madt_bio_pic *irq_cfg = acpi_pchpic[i];
 > +
-> +		if (ret)
-> +			return -EIO;
+> +		if (!irq_cfg)
+> +			return -1;
 > +
-> +		calib = ((val >> which) & BNO055_CALIB_STAT_MASK) + 1;
-Hmm. This is an unsual field get.  I wonder if it is good idea to
-have what looks like a field mask in BNO055_CALIB_STAT_MASK but isn't
-really because we are applying it to a shifted value.  Maybe we 
-are better off just encoding it directly here as  GENMASK(1, 0)
-
+> +		start = irq_cfg->gsi_base;
+> +		end   = irq_cfg->gsi_base + irq_cfg->size;
+> +		if (gsi >= start && gsi < end)
+> +			return i;
 > +	}
 > +
-> +	return sysfs_emit(buf, "%d\n", calib);
+> +	pr_err("ERROR: Unable to locate PCH_PIC for GSI %d\n", gsi);
+> +	return -1;
 > +}
-> +
 
-> +#ifdef CONFIG_DEBUG_FS
+Same thing. This really should be in the PCH driver, and be called by
+lpic_get_gsi_domain().
 
-I'm not particularly keen on ifdef fun in c files. How bad is it if we
-just don't bother and use __maybe_unused.  debug_fs_createfile is visible to
-the compiler in !CONFIG_DEBUG_FS so it should manage to remove everything
-except *_debugfs_reg_access() but that is trivial in size anyway.
-
-> +static int bno055_debugfs_reg_access(struct iio_dev *iio_dev, unsigned int reg,
-> +				     unsigned int writeval, unsigned int *readval)
-> +{
-> +	struct bno055_priv *priv = iio_priv(iio_dev);
 > +
-> +	if (readval)
-> +		return regmap_read(priv->regmap, reg, readval);
-> +	else
-> +		return regmap_write(priv->regmap, reg, writeval);
+> +struct fwnode_handle *lpic_get_gsi_domain_id(u32 gsi)
+> +{
+> +	int id;
+> +	struct fwnode_handle *domain_handle = NULL;
+> +
+> +	switch (gsi) {
+> +	case GSI_MIN_CPU_IRQ ... GSI_MAX_CPU_IRQ:
+> +		if (liointc_handle)
+> +			domain_handle = liointc_handle;
+> +		break;
+> +
+> +	case GSI_MIN_LPC_IRQ ... GSI_MAX_LPC_IRQ:
+> +		if (pch_lpc_handle)
+> +			domain_handle = pch_lpc_handle;
+> +		break;
+> +
+> +	case GSI_MIN_PCH_IRQ ... GSI_MAX_PCH_IRQ:
+> +		id = find_pch_pic(gsi);
+> +		if (id >= 0 && pch_pic_handle[id])
+> +			domain_handle = pch_pic_handle[id];
+> +
+> +		break;
+> +	}
+> +
+> +	return domain_handle;
 > +}
 > +
-> +static ssize_t bno055_show_fw_version(struct file *file, char __user *userbuf,
-> +				      size_t count, loff_t *ppos)
+> +static int pci_mcfg_parse(struct acpi_table_header *header)
 > +{
-> +	struct bno055_priv *priv = file->private_data;
-> +	int rev, ver;
-> +	char *buf;
-> +	int ret;
+> +	struct acpi_table_mcfg *mcfg;
+> +	struct acpi_mcfg_allocation *mptr;
+> +	int i, n;
 > +
-> +	ret = regmap_read(priv->regmap, BNO055_SW_REV_LSB_REG, &rev);
-> +	if (ret)
-> +		return ret;
+> +	if (header->length < sizeof(struct acpi_table_mcfg))
+> +		return -EINVAL;
 > +
-> +	ret = regmap_read(priv->regmap, BNO055_SW_REV_MSB_REG, &ver);
-> +	if (ret)
-> +		return ret;
+> +	n = (header->length - sizeof(struct acpi_table_mcfg)) /
+> +					sizeof(struct acpi_mcfg_allocation);
+> +	mcfg = (struct acpi_table_mcfg *)header;
+> +	mptr = (struct acpi_mcfg_allocation *) &mcfg[1];
 > +
-> +	buf = kasprintf(GFP_KERNEL, "ver: 0x%x, rev: 0x%x\n", ver, rev);
-> +	if (!buf)
-> +		return -ENOMEM;
+> +	for (i = 0; i < n; i++, mptr++)
+> +		vector_group[mptr->pci_segment].node = (mptr->address >> 44) & 0xf;
 > +
-> +	ret = simple_read_from_buffer(userbuf, count, ppos, buf, strlen(buf));
-> +	kfree(buf);
-> +
-> +	return ret;
-> +}
-> +
-> +static const struct file_operations bno055_fw_version_ops = {
-> +	.open = simple_open,
-> +	.read = bno055_show_fw_version,
-> +	.llseek = default_llseek,
-> +	.owner = THIS_MODULE,
-> +};
-> +
-> +static void bno055_debugfs_remove(void *debugfs)
-> +{
-> +	debugfs_remove((struct dentry *)debugfs);
-> +}
-> +
-> +static void bno055_debugfs_init(struct iio_dev *iio_dev)
-> +{
-> +	struct bno055_priv *priv = iio_priv(iio_dev);
-> +
-> +	priv->debugfs = debugfs_create_file("firmware_version", 0400,
-> +					    iio_get_debugfs_dentry(iio_dev),
-> +					    priv, &bno055_fw_version_ops);
-> +
-> +	devm_add_action_or_reset(priv->dev, bno055_debugfs_remove, priv->debugfs);
-> +}
-> +#else
-> +static void bno055_debugfs_init(struct iio_dev *iio_dev)
-> +{
-> +}
-> +
-> +static int bno055_debugfs_reg_access(struct iio_dev *iio_dev, unsigned int reg,
-> +				     unsigned int writeval, unsigned int *readval)
-> +{
 > +	return 0;
 > +}
-> +#endif
 > +
-
-...
-
-
-> +
-> +static irqreturn_t bno055_trigger_handler(int irq, void *p)
+> +void __init init_vector_parent_group(void)
 > +{
-> +	struct iio_poll_func *pf = p;
-> +	struct iio_dev *iio_dev = pf->indio_dev;
-> +	struct bno055_priv *priv = iio_priv(iio_dev);
-> +	int xfer_start, start, end, prev_end;
-> +	unsigned long mask;
-> +	int quat_extra_len;
-> +	bool first = true;
-> +	int buf_idx = 0;
-> +	bool thr_hit;
-> +	int ret;
-> +
-> +	mutex_lock(&priv->lock);
-> +
-> +	/*
-> +	 * Walk the bitmap and eventually perform several transfers.
-> +	 * Bitmap ones-fields that are separated by gaps <= xfer_burst_break_thr
-> +	 * will be included in same transfer.
-> +	 * Every time the bitmap contains a gap wider than xfer_burst_break_thr
-> +	 * then we split the transfer, skipping the gap.
-> +	 */
-> +	for_each_set_bitrange(start, end, iio_dev->active_scan_mask,
-> +			      iio_dev->masklength) {
-> +		/*
-> +		 * First transfer will start from the beginning of the first
-> +		 * ones-field in the bitmap
-> +		 */
-> +		if (first) {
-> +			xfer_start = start;
-> +		} else {
-> +			/*
-> +			 * We found the next ones-field; check whether to
-> +			 * include it in * the current transfer or not (i.e.
-> +			 * let's perform the current * transfer and prepare for
-> +			 * another one).
-> +			 */
-> +
-> +			/*
-> +			 * In case the zeros-gap contains the quaternion bit,
-> +			 * then its length is actually 4 words instead of 1
-> +			 * (i.e. +3 wrt other channels).
-> +			 */
-> +			quat_extra_len = ((start > BNO055_SCAN_QUATERNION) &&
+> +	acpi_table_parse(ACPI_SIG_MCFG, pci_mcfg_parse);
+> +}
 
-you could reduce the scope of quat_extra_len and thr_hit, perhaps
-to just within the for loop.  Perhaps it's not worth bothering though. Up to you.
+I really don't think the PCI code should be anywhere near
+this. Frankly, this file looks like a dumping ground for totally
+unrelated stuff.
 
-
-> +					  (prev_end <= BNO055_SCAN_QUATERNION)) ? 3 : 0;
 > +
-> +			/* If the gap is wider than xfer_burst_break_thr then.. */
-> +			thr_hit = (start - prev_end + quat_extra_len) >
-> +				priv->xfer_burst_break_thr;
+> +void acpi_set_vector_parent(int node, struct irq_domain *parent)
+> +{
+> +	int i;
 > +
-> +			/*
-> +			 * .. transfer all the data up to the gap. Then set the
-> +			 * next transfer start index at right after the gap
-> +			 * (i.e. at the start of this ones-field).
-> +			 */
-> +			if (thr_hit) {
-> +				mask = *iio_dev->active_scan_mask >> xfer_start;
-> +				ret = bno055_scan_xfer(priv, xfer_start,
-> +						       prev_end - xfer_start,
-> +						       mask, priv->buf.chans, &buf_idx);
-> +				if (ret)
-> +					goto done;
-> +				xfer_start = start;
-> +			}
+> +	if (cpu_has_flatmode)
+> +		node = cpu_to_node(node * CORES_PER_EIO_NODE);
+> +
+> +	for (i = 0; i < MAX_IO_PICS; i++) {
+> +		if (node == vector_group[i].node) {
+> +			vector_group[i].parent = parent;
+> +			return;
 > +		}
-> +		first = false;
-> +		prev_end = end;
 > +	}
-> +
-> +	/*
-> +	 * We finished walking the bitmap; no more gaps to check for. Just
-> +	 * perform the current transfer.
-> +	 */
-> +	mask = *iio_dev->active_scan_mask >> xfer_start;
-> +	ret = bno055_scan_xfer(priv, xfer_start,
-> +			       prev_end - xfer_start,
-> +			       mask, priv->buf.chans, &buf_idx);
-
-Check ret and if it's an error don't push the data.
-
-> +
-> +	iio_push_to_buffers_with_timestamp(iio_dev, &priv->buf, pf->timestamp);
-> +done:
-> +	mutex_unlock(&priv->lock);
-> +	iio_trigger_notify_done(iio_dev->trig);
-> +	return IRQ_HANDLED;
 > +}
 > +
-
-> +int bno055_probe(struct device *dev, struct regmap *regmap,
-> +		 int xfer_burst_break_thr, bool sw_reset)
+> +struct irq_domain *acpi_get_msi_parent(int index)
 > +{
-...
+> +	return vector_group[index].parent;
+> +}
+> +
+> +struct irq_domain *acpi_get_pch_parent(int node)
+> +{
+> +	int i;
+> +
+> +	for (i = 0; i < MAX_IO_PICS; i++) {
+> +		if (node == vector_group[i].node)
+> +			return vector_group[i].parent;
+> +	}
+> +	return NULL;
+> +}
 
-> +
-> +	/*
-> +	 * The stock FW version contains a bug (see comment at the beginning of
-> +	 * this file) that causes the anglvel scale to be changed depending on
-> +	 * the chip range setting. We workaround this, but we don't know what
-> +	 * other FW versions might do.
-> +	 */
-> +	if (ver != 0x3 || rev != 0x11)
-> +		dev_warn(dev, "Untested firmware version. Anglvel scale may not work as expected\n");
-> +
-> +	ret = regmap_bulk_read(priv->regmap, BNO055_UID_LOWER_REG,
-> +			       priv->uid, BNO055_UID_LEN);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* Sensor calibration data */
-> +	fw_name_buf = kasprintf(GFP_KERNEL,
-> +				BNO055_FW_UID_FMT,
-> +				BNO055_UID_LEN, priv->uid);
+Same thing. There is nothing "common" here. All this should be split
+in the various drivers, where they belong.
 
-No need to break this into so many lines.  Can get it on two without
-passing 80 chars.
+	M.
+
+-- 
+Without deviation from the norm, progress is not possible.
