@@ -2,102 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A120C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 15:29:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9284C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 15:30:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235024AbiFRP30 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 18 Jun 2022 11:29:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40092 "EHLO
+        id S230229AbiFRPaH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 18 Jun 2022 11:30:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235449AbiFRP2N (ORCPT
+        with ESMTP id S235293AbiFRPaE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 18 Jun 2022 11:28:13 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0461DB4BF;
-        Sat, 18 Jun 2022 08:28:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 2C26DCE02BE;
-        Sat, 18 Jun 2022 15:28:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B478C3411A;
-        Sat, 18 Jun 2022 15:28:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655566084;
-        bh=BVsNfMePkIkcRLJKxWnrPVHIGrWk4Pmg3MuN5L6XZTI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=YEdkot7sy/W+8Tns+DaPXCCEzI2fvdOGx22Bzu01XVJf8iNNbwtA36CP5KFedCT2A
-         vVTeEbf4JQusT+4Q4NRqHAq+XE03j7Tw+129AY6547iNY6UlS3VKqQWGchghwPYtvZ
-         BRVotCHJzS6k2YEJIlWppzi9XTEFpgcmp3hPdmyrVwJCKui6AXYrVbv2nquswlAeFK
-         a9V1KPwMnsDbXiGicHxl9048UsoFRB+Dq6OjP4Sb0+1RFjaU0yJW2pxEw22pqYkV2t
-         y80531VDnHD8aHXVWFE1aJRiFovycfJgh5G2Re1QIGj60TjuS5YXYCOJ26Z9e6XuOC
-         ffXOolx148r3Q==
-Date:   Sat, 18 Jun 2022 16:37:21 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-iio@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Subject: Re: [PATCH v1 1/1] iio: dac: stm32-dac: Replace open coded
- str_enable_disable()
-Message-ID: <20220618163721.1cef64c9@jic23-huawei>
-In-Reply-To: <20220616220023.9894-1-andriy.shevchenko@linux.intel.com>
-References: <20220616220023.9894-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Sat, 18 Jun 2022 11:30:04 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B4B310FD2
+        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 08:30:03 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id c2so11077154lfk.0
+        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 08:30:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language
+         :from:to:cc:references:in-reply-to:content-transfer-encoding;
+        bh=1/e1mvC387Kg6krxrVdOK9bDUmZD/rSMjrmBoVChUyY=;
+        b=Y6VCMxYgNgyNPMj9zsdsppQoeYQwMpNdVVxdTH+8Wpo+3GjeF3AxYzywaHrQVhf4zb
+         19in/R4gVpRDUjzMjunejVzUb8hOvn3teiZsRMiBn5iJDl+14pD2w6cCBWTcWm/qeoai
+         fv/OHOcSJ+7AhdkgrXNTwvhqbJtF98snKZKjLEJK3lKgNKHwImezsz4rBuDhhanMzi8w
+         GfVjBU/Cl+6ODiKsaabsRg+TgY0E5WZHT5rL6EcbTFh+oHEVRAXLmVYo5hdmtqm4hCLz
+         MmnEZDgSBPiigVlx8jvAv6ID84L3mQyXwnAO+mBczGM99ERk46lyHncxt7MKNTkMczWi
+         AZcA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=1/e1mvC387Kg6krxrVdOK9bDUmZD/rSMjrmBoVChUyY=;
+        b=n34aUDTi+og3OuSS91DjeHzj3rNeAKADwmkL0NllVbGSivmuoZjm4guLuf9hcrjUQ0
+         UEEMYl8TM5RZ0tokGMAdG3HfDa0URLvhdbAF0hjbJJZoW5C4HXhbN4Yjji+xVAFhkqmJ
+         dBNoRJP4lQTGqifpjrSBBTXZGEgZQwMHhS+7D1IvtrfOsOCizJbSPYzhVb2LazudF4sS
+         gWTEyyPOtGp+JwF0fNe5tQfcvaV4dRWM9GVvRMjuOQVkw5pJJsTbFNzO43RUaaqK2mgq
+         rHnfqYpC/UJwINiS1HOSFw4vjocLHlyxaiuXtfsuTRCt5Ut0EMmko7M19pQEhIaU+nca
+         1DFQ==
+X-Gm-Message-State: AJIora8tvl/HZT+eIUy0Av2XK+2ltj8lkYl+1TeQ1PLcjLxwSuK1S5AA
+        jWhq+a5wh1Xw2Pc8i6wRdxnrCQ==
+X-Google-Smtp-Source: AGRyM1vsx6BcY+vFiaMfP9N84rL3oHIMRfiZTZnNSPFSz6sBhlqco/EbWtj99hbdbLhtparSH3ujEQ==
+X-Received: by 2002:a05:6512:238d:b0:479:2116:8598 with SMTP id c13-20020a056512238d00b0047921168598mr8709693lfv.322.1655566201316;
+        Sat, 18 Jun 2022 08:30:01 -0700 (PDT)
+Received: from [192.168.43.7] ([188.162.65.10])
+        by smtp.gmail.com with ESMTPSA id t7-20020a2e9d07000000b002556cf330e8sm956719lji.99.2022.06.18.08.29.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 18 Jun 2022 08:30:00 -0700 (PDT)
+Message-ID: <4f1ae43c-0f22-19fe-0794-3cc268104396@linaro.org>
+Date:   Sat, 18 Jun 2022 18:29:58 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v3 0/2] spmi: pmic-arb: Add support for PMIC v7
+Content-Language: en-GB
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+To:     Stephen Boyd <sboyd@kernel.org>, Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        David Collins <quic_collinsd@quicinc.com>
+Cc:     linux-arm-msm@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        David Dai <daidavid1@codeaurora.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220201134108.2677578-1-vkoul@kernel.org>
+ <YhUVAwtfjuIdKrRQ@matsya> <1c66890b-6736-61ef-7d16-619f90ced4a0@linaro.org>
+In-Reply-To: <1c66890b-6736-61ef-7d16-619f90ced4a0@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 17 Jun 2022 01:00:23 +0300
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-
-> Replace open coded str_enable_disable() in error message in
-> stm32_dac_set_enable_state().
+On 01/05/2022 22:41, Dmitry Baryshkov wrote:
+> On 22/02/2022 19:53, Vinod Koul wrote:
+>> On 01-02-22, 19:11, Vinod Koul wrote:
+>>> Hello,
+>>>
+>>> The is version 3 of support for PMIC v7. I have added a new property
+>>> qcom,bus-id for supporting v7 and then add driver changes for v7
+>>>
+>>> This depends on yaml conversion patch:
+>>> https://lore.kernel.org/linux-arm-msm/20211227170151.73116-1-david@ixit.cz/ 
+>>>
+>>
+>> Any feedback on this...
 > 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-+CC Fabrice.
+> Another gracious reminder about these patches. At this moment this is 
+> one of the important pieces lacking for the full SM8450 support in the 
+> upstream kernel.
 
-Looks good + harmless to me, so I'll pick it up now, but still time
-for any additional feedback as I'll only push it out for 0-day to poke
-at initially.
+Stephen, yet another ping. This is the blocking point for the further 
+SM8450 progress.
 
-Applied to the togreg branch of iio.git.
-
-Thanks,
-
-Jonathan
-
-> ---
->  drivers/iio/dac/stm32-dac.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>>> Changes since v2:
+>>>   - Drop yaml conversion patch
+>>>   - Fix author for spmi patch
+>>> Changes since v1:
+>>>   - Add yaml conversion patch and new binding
+>>>   - fix driver bug report by Jonathan
+>>>
+>>> David Collins (1):
+>>>    spmi: pmic-arb: Add support for PMIC v7
+>>>
+>>> Vinod Koul (1):
+>>>    dt-bindings: spmi: Add qcom,bus-id
+>>>
+>>>   .../bindings/spmi/qcom,spmi-pmic-arb.yaml     |  11 +
+>>>   drivers/spmi/spmi-pmic-arb.c                  | 233 ++++++++++++++++--
+>>>   2 files changed, 225 insertions(+), 19 deletions(-)
+>>>
+>>> -- 
+>>> 2.31.1
+>>
 > 
-> diff --git a/drivers/iio/dac/stm32-dac.c b/drivers/iio/dac/stm32-dac.c
-> index e842c15c674d..315d66648210 100644
-> --- a/drivers/iio/dac/stm32-dac.c
-> +++ b/drivers/iio/dac/stm32-dac.c
-> @@ -14,6 +14,7 @@
->  #include <linux/module.h>
->  #include <linux/platform_device.h>
->  #include <linux/pm_runtime.h>
-> +#include <linux/string_helpers.h>
->  
->  #include "stm32-dac-core.h"
->  
-> @@ -79,8 +80,7 @@ static int stm32_dac_set_enable_state(struct iio_dev *indio_dev, int ch,
->  	ret = regmap_update_bits(dac->common->regmap, STM32_DAC_CR, msk, en);
->  	mutex_unlock(&dac->lock);
->  	if (ret < 0) {
-> -		dev_err(&indio_dev->dev, "%s failed\n", en ?
-> -			"Enable" : "Disable");
-> +		dev_err(&indio_dev->dev, "%s failed\n", str_enable_disable(en));
->  		goto err_put_pm;
->  	}
->  
+> 
 
+
+-- 
+With best wishes
+Dmitry
