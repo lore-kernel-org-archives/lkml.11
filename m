@@ -2,125 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A149FC43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 14:21:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8833C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 14:48:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232712AbiFROTf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 18 Jun 2022 10:19:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33262 "EHLO
+        id S233293AbiFROs3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 18 Jun 2022 10:48:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233376AbiFROSL (ORCPT
+        with ESMTP id S229510AbiFROs1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 18 Jun 2022 10:18:11 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08A62DF19;
-        Sat, 18 Jun 2022 07:18:08 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id f65so6396013pgc.7;
-        Sat, 18 Jun 2022 07:18:08 -0700 (PDT)
+        Sat, 18 Jun 2022 10:48:27 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6987217A97;
+        Sat, 18 Jun 2022 07:48:26 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id n20so6799898ejz.10;
+        Sat, 18 Jun 2022 07:48:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=QiBFbh7JSAwKD6sJ1nf5U4eu547oJ+ADx+EKgoymxCI=;
-        b=ViprWoK4uqnklWzTQk+fvnLaUqne0Zd90H9MixB7tRue3RXJ8Lq9n5syAfKrS3dKEA
-         HT9z787Xt3UAxhy1S57GgN8644M/bc8r4HbbCn0alGy0UzCj3DFJA1T/Ib9R/pOANPpD
-         JEsZ9EU88xvA6ikZqDoFXIXdh9FSFoCuW2IvlKMA3sH/8/OtpizRHSwwmGCZD40FJel+
-         yPC0/gi37K8AK2vvZ9a4XDCnlRfqukBCue2IC14lDDNquYrNeKvjLkY6IeQ6lZRcNUCn
-         kBjUOoESkgxJ2s2k7cHQTPgYxvOaK1XAtlHrK415aY/0iBlK8oX853OJJXj/Judkpbfd
-         yk3Q==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WlLbgDasKJ1im1j+lOloRZZaui0VTdPP0RSuLZMaCi8=;
+        b=UY1TU11K1ASSWh4jo62ivRwnhP5NHZoa/nSs5/KgycrfEqO9AQfhSlUy3uykE+riVo
+         sOUSmVBtabe48idsgp5ypyOnTRloIX6v+BLsu5rUILoEK1mtNcTnbo0fzhKbZL6kQDjw
+         PPAkTSZVwG4cC5MH05FKkMLlmBpOJ3XPhy4jm4xOysveDIsBTknOhIAkJ8WocQALdjIR
+         Erd5clNJ4esQBKqVSfQ2l9g4zfC8rhTvELIySz6yy9gXOsvkS5FdPi6lz7iZtaz1N3iy
+         91CQE0azAYJ5HEU44QzWeaITA7I2YHgufi/YlqIEGSFbXIj/27hH+fAs2Oa++uNVK1io
+         9oAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=QiBFbh7JSAwKD6sJ1nf5U4eu547oJ+ADx+EKgoymxCI=;
-        b=VRHAsyu8zMJ0vr1+F+smH2ZCaiiSFd6siwTQrapNIA9cXkqAAORULsYyveg1FHvcew
-         RTkW/kYftnheI/u1OU4wH7RLJBvyVWUdOZ9ykCjRZzr5m8fH9NEfscvA8BvxbpFNhmzY
-         oCkIkpiwZgRpwySWM/uW29X5Y6HFnAvpuM1EhIqOToWiE1CuJ9t/MCFrDmU0XQ+mDHgt
-         hjqLHmqlqCD89ppCMRTDVjOz0AoaP8BUED5bGzjXJ8avffsMdQfp7Mfe/COtla/cKHSj
-         J+R0Xf1NWaNGoaEZCERgOOvYXKlu/6kjWfYN3JvlTo6u2d7k1VwPVZCqiOviXlaz60sY
-         wQCQ==
-X-Gm-Message-State: AJIora+2v3Mn2xnnHCedznRn9kqC4neNwKLrdZrqOF0CRwxndssRacOi
-        AeDQ984hWP0m6Yv4Wq5riZE=
-X-Google-Smtp-Source: AGRyM1u2mGmi1JJfkT6ExmYQ2dFty+U+or8nDWjHbWZLfPVYWKM8Lx0xSixycdUe6IskWv1L1zV22Q==
-X-Received: by 2002:a05:6a00:7d3:b0:51e:740f:8d10 with SMTP id n19-20020a056a0007d300b0051e740f8d10mr15348069pfu.4.1655561887511;
-        Sat, 18 Jun 2022 07:18:07 -0700 (PDT)
-Received: from [172.30.1.37] ([14.32.163.5])
-        by smtp.gmail.com with ESMTPSA id b9-20020a170902650900b00168ba5ac8adsm5425678plk.163.2022.06.18.07.18.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 18 Jun 2022 07:18:07 -0700 (PDT)
-Message-ID: <7bffaa3c-dda8-44f5-8190-9fb5142925bc@gmail.com>
-Date:   Sat, 18 Jun 2022 23:18:02 +0900
+        bh=WlLbgDasKJ1im1j+lOloRZZaui0VTdPP0RSuLZMaCi8=;
+        b=mfDFYRXzIFadPVJRmm3uWpnAu5lYsAhFsQxRcDVT06qYtVMZmbC0Hgg5CSbyQlWV2D
+         NkEzh+2wrM/KQiEx8a8PNZPUVLS8lhnP/nvdEq+j/94jnh3FatDhQydAXS5oULXiOZtY
+         p6NW05vsAyJtWNFvYbsoVWucUWEVnCjpR5XdsF833muMwKHiL5edDfW4a2NVVhi+1Mbe
+         gIbXsobJ8ZsrNV9ZgcQqynRR+IpAUUnbM4FPm66wwAS/oXjODv28j00i3JEMUPzzEcNm
+         QLpDUSRRVhmZhW++hktiVo3I8IlcE14FZWSE1XQW7q00zJJtah5oONmbVX8vJwqWkRIN
+         3UPw==
+X-Gm-Message-State: AJIora/hFdTBJgApYDVBwwFEypgzodejrM9wD1k74IpXWbnOWxVSOuWV
+        McExJbNv/OtDOLc2VcpL/VxWyFe6ySE=
+X-Google-Smtp-Source: AGRyM1t+IwA+CvOfT/inbDO1uhckKDbqX+arxd1vk83uvy6IWXxT8iH40dsykJZez36LpryYEbJcvQ==
+X-Received: by 2002:a17:907:1b1e:b0:6d7:31b0:e821 with SMTP id mp30-20020a1709071b1e00b006d731b0e821mr13798089ejc.334.1655563704707;
+        Sat, 18 Jun 2022 07:48:24 -0700 (PDT)
+Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.googlemail.com with ESMTPSA id h20-20020a1709070b1400b006fe7d269db8sm3450296ejl.104.2022.06.18.07.48.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 18 Jun 2022 07:48:24 -0700 (PDT)
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan McDowell <noodles@earth.li>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Christian Marangi <ansuelsmth@gmail.com>
+Subject: [PATCH 1/3] net: dsa: qca8k: reduce mgmt ethernet timeout
+Date:   Sat, 18 Jun 2022 08:22:58 +0200
+Message-Id: <20220618062300.28541-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] devfreq: exynos-ppmu: Fix refcount leak in
- of_get_devfreq_events
-Content-Language: en-US
-To:     Miaoqian Lin <linmq006@gmail.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Kyungmin Park <kyungmin.park@samsung.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220526082856.37594-1-linmq006@gmail.com>
-From:   Chanwoo Choi <cwchoi00@gmail.com>
-In-Reply-To: <20220526082856.37594-1-linmq006@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22. 5. 26. 17:28, Miaoqian Lin wrote:
-> of_get_child_by_name() returns a node pointer with refcount
-> incremented, we should use of_node_put() on it when done.
-> This function only calls of_node_put() in normal path,
-> missing it in error paths.
-> Add missing of_node_put() to avoid refcount leak.
-> 
-> Fixes: f262f28c1470 ("PM / devfreq: event: Add devfreq_event class")
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-> ---
->  drivers/devfreq/event/exynos-ppmu.c | 8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/devfreq/event/exynos-ppmu.c b/drivers/devfreq/event/exynos-ppmu.c
-> index 9b849d781116..a443e7c42daf 100644
-> --- a/drivers/devfreq/event/exynos-ppmu.c
-> +++ b/drivers/devfreq/event/exynos-ppmu.c
-> @@ -519,15 +519,19 @@ static int of_get_devfreq_events(struct device_node *np,
->  
->  	count = of_get_child_count(events_np);
->  	desc = devm_kcalloc(dev, count, sizeof(*desc), GFP_KERNEL);
-> -	if (!desc)
-> +	if (!desc) {
-> +		of_node_put(events_np);
->  		return -ENOMEM;
-> +	}
->  	info->num_events = count;
->  
->  	of_id = of_match_device(exynos_ppmu_id_match, dev);
->  	if (of_id)
->  		info->ppmu_type = (enum exynos_ppmu_type)of_id->data;
-> -	else
-> +	else {
-> +		of_node_put(events_np);
->  		return -EINVAL;
-> +	}
->  
->  	j = 0;
->  	for_each_child_of_node(events_np, node) {
+The current mgmt ethernet timeout is set to 100ms. This value is too
+big and would slow down any mdio command in case the mgmt ethernet
+packet have some problems on the receiving part.
+Reduce it to just 5ms to handle case when some operation are done on the
+master port that would cause the mgmt ethernet to not work temporarily.
 
-I edited the patch title with 'PM / ' prefix 
-in order to keep the consistent style of title as following:
+Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+---
+ drivers/net/dsa/qca8k.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-PM / devfreq: exynos-ppmu: Fix refcount leak in of_get_devfreq_events
-
-
+diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
+index 04408e11402a..ec58d0e80a70 100644
+--- a/drivers/net/dsa/qca8k.h
++++ b/drivers/net/dsa/qca8k.h
+@@ -15,7 +15,7 @@
+ 
+ #define QCA8K_ETHERNET_MDIO_PRIORITY			7
+ #define QCA8K_ETHERNET_PHY_PRIORITY			6
+-#define QCA8K_ETHERNET_TIMEOUT				100
++#define QCA8K_ETHERNET_TIMEOUT				5
+ 
+ #define QCA8K_NUM_PORTS					7
+ #define QCA8K_NUM_CPU_PORTS				2
 -- 
-Best Regards,
-Samsung Electronics
-Chanwoo Choi
+2.36.1
+
