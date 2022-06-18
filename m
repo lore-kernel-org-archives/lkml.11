@@ -2,160 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FC21C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 07:01:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3A6CC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 07:09:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233722AbiFRHBP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 18 Jun 2022 03:01:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33910 "EHLO
+        id S232261AbiFRHJF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 18 Jun 2022 03:09:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231241AbiFRHBK (ORCPT
+        with ESMTP id S229755AbiFRHJC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 18 Jun 2022 03:01:10 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB45249FA6
-        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 00:01:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655535669; x=1687071669;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=a5KWv3E6CKzwzMbDpwTVKKaSpCmfaOdt+jeW0HaBjB4=;
-  b=d4K0OsUD6KkqxWRxbEC5fS0SEa5yyZJx3YLvnd99bdUQkRDH+0MrEfpz
-   en4gQxmPMd/MGXaQ1P80EOC0u62UFVkLoffsRHP4AZj0K83t9yFA8cPUF
-   3quHRQzMKlX0hB9RCfAVJvMXmxXi3OEvM6epwQcP6Z6okKKjsjteggeG5
-   KDRy4Yh6wsUC4dQ9fJdKZ5n84CTS5wPWDFb+WZfjTT9EwnP6PcQx1ZD1X
-   GvZ7UlCwyMJCLvcRVc8yB5496pmOd13gKRen9NYGY/aDNTpde2MoAtpSC
-   WzNUu8orJjtPrWgkm+O7eytk0qhEjENn9vkcJAL9xVvZ0EwIohaz+2Ttb
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="259458274"
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="259458274"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jun 2022 00:01:09 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="714014498"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 18 Jun 2022 00:01:08 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o2SSB-000Q6p-C5;
-        Sat, 18 Jun 2022 07:01:07 +0000
-Date:   Sat, 18 Jun 2022 15:00:58 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>
-Subject: [akpm-mm:mm-unstable 255/261] include/linux/mm.h:1556:29: error:
- conflicting types for 'page_to_section'; have 'long unsigned int(const
- struct page *)'
-Message-ID: <202206181437.AwvGIkuq-lkp@intel.com>
+        Sat, 18 Jun 2022 03:09:02 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE28A19F99;
+        Sat, 18 Jun 2022 00:09:00 -0700 (PDT)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LQ6PY29KbzBsHg;
+        Sat, 18 Jun 2022 15:05:37 +0800 (CST)
+Received: from CHINA (10.175.102.38) by canpemm500009.china.huawei.com
+ (7.192.105.203) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 18 Jun
+ 2022 15:08:55 +0800
+From:   Wei Yongjun <weiyongjun1@huawei.com>
+To:     <weiyongjun1@huawei.com>, Hector Martin <marcan@marcan.st>,
+        Sven Peter <sven@svenpeter.dev>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <kernel-janitors@vger.kernel.org>,
+        Hulk Robot <hulkci@huawei.com>
+Subject: [PATCH -next] irqchip/apple-aic: Make symbol 'use_fast_ipi' static
+Date:   Sat, 18 Jun 2022 07:28:24 +0000
+Message-ID: <20220618072824.562350-1-weiyongjun1@huawei.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type:   text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+X-Originating-IP: [10.175.102.38]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500009.china.huawei.com (7.192.105.203)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git mm-unstable
-head:   882be1ed6b1b5073fc88552181b99bd2b9c0031f
-commit: d3b90b76e1013bb7e201bcccf5f5433f322f2123 [255/261] mm: convert destroy_compound_page() to destroy_large_folio()
-config: parisc64-defconfig (https://download.01.org/0day-ci/archive/20220618/202206181437.AwvGIkuq-lkp@intel.com/config)
-compiler: hppa64-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git/commit/?id=d3b90b76e1013bb7e201bcccf5f5433f322f2123
-        git remote add akpm-mm https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git
-        git fetch --no-tags akpm-mm mm-unstable
-        git checkout d3b90b76e1013bb7e201bcccf5f5433f322f2123
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=parisc64 prepare
+The sparse tool complains as follows:
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+drivers/irqchip/irq-apple-aic.c:231:1: warning:
+ symbol 'use_fast_ipi' was not declared. Should it be static?
 
-All errors (new ones prefixed by >>):
+This symbol is not used outside of irq-apple-aic.c, so marks it static.
 
-   In file included from arch/parisc/include/asm/page.h:185,
-                    from include/linux/shm.h:6,
-                    from include/linux/sched.h:16,
-                    from arch/parisc/kernel/asm-offsets.c:18:
-   include/linux/mm.h: In function 'destroy_large_folio':
->> include/asm-generic/memory_model.h:35:21: error: implicit declaration of function 'page_to_section'; did you mean 'present_section'? [-Werror=implicit-function-declaration]
-      35 |         int __sec = page_to_section(__pg);                      \
-         |                     ^~~~~~~~~~~~~~~
-   include/asm-generic/memory_model.h:40:32: note: in definition of macro '__pfn_to_page'
-      40 | ({      unsigned long __pfn = (pfn);                    \
-         |                                ^~~
-   include/asm-generic/memory_model.h:52:21: note: in expansion of macro '__page_to_pfn'
-      52 | #define page_to_pfn __page_to_pfn
-         |                     ^~~~~~~~~~~~~
-   include/linux/mm.h:214:38: note: in expansion of macro 'page_to_pfn'
-     214 | #define nth_page(page,n) pfn_to_page(page_to_pfn((page)) + (n))
-         |                                      ^~~~~~~~~~~
-   include/linux/page-flags.h:307:33: note: in expansion of macro 'nth_page'
-     307 | #define folio_page(folio, n)    nth_page(&(folio)->page, n)
-         |                                 ^~~~~~~~
-   include/linux/mm.h:928:38: note: in expansion of macro 'folio_page'
-     928 |         enum compound_dtor_id dtor = folio_page(folio, 1)->compound_dtor;
-         |                                      ^~~~~~~~~~
-   In file included from include/linux/pid_namespace.h:7,
-                    from include/linux/ptrace.h:10,
-                    from arch/parisc/kernel/asm-offsets.c:20:
-   include/linux/mm.h: At top level:
->> include/linux/mm.h:1556:29: error: conflicting types for 'page_to_section'; have 'long unsigned int(const struct page *)'
-    1556 | static inline unsigned long page_to_section(const struct page *page)
-         |                             ^~~~~~~~~~~~~~~
-   In file included from arch/parisc/include/asm/page.h:185,
-                    from include/linux/shm.h:6,
-                    from include/linux/sched.h:16,
-                    from arch/parisc/kernel/asm-offsets.c:18:
-   include/asm-generic/memory_model.h:35:21: note: previous implicit declaration of 'page_to_section' with type 'int()'
-      35 |         int __sec = page_to_section(__pg);                      \
-         |                     ^~~~~~~~~~~~~~~
-   include/asm-generic/memory_model.h:40:32: note: in definition of macro '__pfn_to_page'
-      40 | ({      unsigned long __pfn = (pfn);                    \
-         |                                ^~~
-   include/asm-generic/memory_model.h:52:21: note: in expansion of macro '__page_to_pfn'
-      52 | #define page_to_pfn __page_to_pfn
-         |                     ^~~~~~~~~~~~~
-   include/linux/mm.h:214:38: note: in expansion of macro 'page_to_pfn'
-     214 | #define nth_page(page,n) pfn_to_page(page_to_pfn((page)) + (n))
-         |                                      ^~~~~~~~~~~
-   include/linux/page-flags.h:307:33: note: in expansion of macro 'nth_page'
-     307 | #define folio_page(folio, n)    nth_page(&(folio)->page, n)
-         |                                 ^~~~~~~~
-   include/linux/mm.h:928:38: note: in expansion of macro 'folio_page'
-     928 |         enum compound_dtor_id dtor = folio_page(folio, 1)->compound_dtor;
-         |                                      ^~~~~~~~~~
-   cc1: some warnings being treated as errors
-   make[2]: *** [scripts/Makefile.build:117: arch/parisc/kernel/asm-offsets.s] Error 1
-   make[2]: Target '__build' not remade because of errors.
-   make[1]: *** [Makefile:1200: prepare0] Error 2
-   make[1]: Target 'prepare' not remade because of errors.
-   make: *** [Makefile:219: __sub-make] Error 2
-   make: Target 'prepare' not remade because of errors.
+Fixes: 2cf68211664a ("irqchip/apple-aic: Add Fast IPI support")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+---
+ drivers/irqchip/irq-apple-aic.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/irqchip/irq-apple-aic.c b/drivers/irqchip/irq-apple-aic.c
+index 5ac83185ff47..1c2813ad8bbe 100644
+--- a/drivers/irqchip/irq-apple-aic.c
++++ b/drivers/irqchip/irq-apple-aic.c
+@@ -228,7 +228,7 @@
+ #define AIC_TMR_EL02_PHYS	AIC_TMR_GUEST_PHYS
+ #define AIC_TMR_EL02_VIRT	AIC_TMR_GUEST_VIRT
+ 
+-DEFINE_STATIC_KEY_TRUE(use_fast_ipi);
++static DEFINE_STATIC_KEY_TRUE(use_fast_ipi);
+ 
+ struct aic_info {
+ 	int version;
 
-vim +1556 include/linux/mm.h
-
-bf4e8902ee5080 Daniel Kiper      2011-05-24  1555  
-aa462abe8aaf21 Ian Campbell      2011-08-17 @1556  static inline unsigned long page_to_section(const struct page *page)
-d41dee369bff3b Andy Whitcroft    2005-06-23  1557  {
-d41dee369bff3b Andy Whitcroft    2005-06-23  1558  	return (page->flags >> SECTIONS_PGSHIFT) & SECTIONS_MASK;
-d41dee369bff3b Andy Whitcroft    2005-06-23  1559  }
-308c05e35e3517 Christoph Lameter 2008-04-28  1560  #endif
-d41dee369bff3b Andy Whitcroft    2005-06-23  1561  
-
-:::::: The code at line 1556 was first introduced by commit
-:::::: aa462abe8aaf2198d6aef97da20c874ac694a39f mm: fix __page_to_pfn for a const struct page argument
-
-:::::: TO: Ian Campbell <ian.campbell@citrix.com>
-:::::: CC: Linus Torvalds <torvalds@linux-foundation.org>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
