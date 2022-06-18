@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 198D2C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 12:32:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DB4BC43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 12:33:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235638AbiFRMcz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 18 Jun 2022 08:32:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52998 "EHLO
+        id S236195AbiFRMc7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 18 Jun 2022 08:32:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234375AbiFRMcU (ORCPT
+        with ESMTP id S235398AbiFRMcX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 18 Jun 2022 08:32:20 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A28D1DA51
-        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 05:32:12 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id o8so8815224wro.3
-        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 05:32:12 -0700 (PDT)
+        Sat, 18 Jun 2022 08:32:23 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB8F21E3D4
+        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 05:32:15 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id n1so8558800wrg.12
+        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 05:32:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=conchuod.ie; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=qmSWtWUd+mMy8ZYoZTgQjYDztLIGNDdvta+tk149+dY=;
-        b=dM4LDKg5XtY0Inv2LgZSsQ50IPuzGfCzEsvHlFQ/2NLIm/6++fbLLGSB9koJgwMTjp
-         07IF9XMy4P4HaeMA1yfSnaPY3CYXQ+u0Kv6ZrDa4GjATk93Wx2p5DeaQw29BenmArCiz
-         I6simFjZ6ZTWhMpFS4z5vR9LZUvOOE+DqLAunuoSePBDY5dNABj/iCXgooJ7JUM1Gx2w
-         oJTVRWFtg+XkkdFP3+9IwXZt69jucggKlNwGuChB7WxmXKdl5k9lj8f8ITLIpfckoFQS
-         YaBPUVjvUVp7mpO9D9wZzFoEi6tceysbIOAoKo4R7lpk7QqiW4+Bkh5CqE2X/nDML5P4
-         Wj6Q==
+        bh=ANXJKxbxI6u0tRhbN1AR4RFN+HN2j5iiePXGo5syCSs=;
+        b=ErRXmSLorMjbdC5xWyP7urzRERR22/20eLl2XT0de71YUvLq9olsxJGpQ3PYt53udC
+         MVVWn2OjFLzgo73dqk3/65ggchSO1J6/nfMBeW38N005pku7I4zSrpTv/zuaPfLKqJXk
+         qjB07OxZX64wGSSlEDl91/abWVL2GYNDo4+scSLK83C9i4JROcieRdmp2gRhc8Fbnv7b
+         b+9kOPXlfRJAEYkP1FzaLttvE+ReKggwoO5cB1Sf7ynv7N/LnmCtOMTXn+ccH3yxMsLw
+         zDc7cjrPkXazBBOkKzNLuqxuVA3FOYoudEVTiel9Zmf2Ygdp7uXNnHjAvJ2fnRfqPbuk
+         SpFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=qmSWtWUd+mMy8ZYoZTgQjYDztLIGNDdvta+tk149+dY=;
-        b=fllj/Z9iB4Nelkd9Q3tsZb0vfY2mQS84uLJ7nDZIHWjQW2F16j+wREKcJxZAMmbmsn
-         E1MgY9BycYBZNFvmc1i47seaPHh1qql5ZPvJOCxdTvySl3eSE9a523zGbPb9kCZDdgF1
-         GbndGzqJwnZ/MI8BtwZbG0TBP5xXgATyEu3PhE1Y/Dz5nm0hZPKrbQ28XDDa6HEj/mpr
-         t3Mhp81i+/H8wddPJh5HBFRaIUs9Bt3PN2Cuie5DehL16Cg1FsLN7HW7CzgAlzZbSXKh
-         65s2RgOPhcn8ThjwTlobXIw+dVLnMF2bniqmzn6bwzc68Wfe+aT1SQs4eS1l0WgPjBw7
-         WjnQ==
-X-Gm-Message-State: AJIora8TKUJKziftGIrlJZoHiJ9KKdctLbLhTSALYHYrBJ2UJdCIXJww
-        S5p9fTZMUrkiuiSJuUiupJVkWA==
-X-Google-Smtp-Source: AGRyM1sfPQ5XTH8REWSlcNVbh+KVLu6pjXz8b6gchhSbSGxDuCamFh0CMH0mba5q/rzWCUN22eIJUA==
-X-Received: by 2002:a05:6000:1b03:b0:210:3372:2bd9 with SMTP id f3-20020a0560001b0300b0021033722bd9mr14215037wrz.704.1655555531747;
-        Sat, 18 Jun 2022 05:32:11 -0700 (PDT)
+        bh=ANXJKxbxI6u0tRhbN1AR4RFN+HN2j5iiePXGo5syCSs=;
+        b=yi+8qC4tAvDgX2s38+Lu9XLS+NZSWtTLmNxCFE9x6OPJdoVuXsjUgs8pOuHd1jSE5c
+         aIu8wBbvYmX0DECJ8oJLsX/nEy2JiO2hG8DsnZYTQL+f5ncvLSDCLRrPfn3GIOnBD7Hd
+         tQCxyHjQSesci3jHBVvieAwlqqqHTmE/QJ1rw66SlDk+SKrzGQPGr/AOHccpuS35GN0W
+         An7eRdQhj1GMrZCg/nK1QEjNuJbXJgsxsmBWXW1JI/tsQCJhnfDkPUs2HOlp7SOYg8rB
+         mC4cja8wdhLpVK+TlMB5B/0+WYix2kuWSkS9Jvx6QLBswrCzlXZ4SkedTlxnMwnA23Qy
+         tFbg==
+X-Gm-Message-State: AJIora/sOi7Zwl6fOrMGk74LHzZktkvYCssQ8/zM9/vXRxAD+bDd9DlY
+        3Bu3oPNo7cg92cQqMuXeiuHJDA==
+X-Google-Smtp-Source: AGRyM1tbrkXYGfjWsBsEjmtzpjiA7Ap83fqu9IJcwCnfQzpYaSuFuxLt2MogvQUzBnMlTPtFn6izqg==
+X-Received: by 2002:a5d:584d:0:b0:216:a2a9:5f2c with SMTP id i13-20020a5d584d000000b00216a2a95f2cmr14168978wrf.184.1655555535278;
+        Sat, 18 Jun 2022 05:32:15 -0700 (PDT)
 Received: from henark71.. ([51.37.234.167])
-        by smtp.gmail.com with ESMTPSA id az10-20020adfe18a000000b00210396b2eaesm9292305wrb.45.2022.06.18.05.32.09
+        by smtp.gmail.com with ESMTPSA id az10-20020adfe18a000000b00210396b2eaesm9292305wrb.45.2022.06.18.05.32.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 18 Jun 2022 05:32:11 -0700 (PDT)
+        Sat, 18 Jun 2022 05:32:14 -0700 (PDT)
 From:   Conor Dooley <mail@conchuod.ie>
 To:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
         Rob Herring <robh+dt@kernel.org>,
@@ -77,9 +77,9 @@ Cc:     Thomas Gleixner <tglx@linutronix.de>,
         linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org,
         alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
         linux-riscv@lists.infradead.org
-Subject: [PATCH 07/14] riscv: dts: canaan: fix the k210's memory node
-Date:   Sat, 18 Jun 2022 13:30:29 +0100
-Message-Id: <20220618123035.563070-8-mail@conchuod.ie>
+Subject: [PATCH 09/14] riscv: dts: canaan: add a specific compatible for k210's timers
+Date:   Sat, 18 Jun 2022 13:30:31 +0100
+Message-Id: <20220618123035.563070-10-mail@conchuod.ie>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220618123035.563070-1-mail@conchuod.ie>
 References: <20220618123035.563070-1-mail@conchuod.ie>
@@ -91,36 +91,51 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Conor Dooley <conor.dooley@microchip.com>
 
-The k210 memory node has a compatible string that does not match with
-any driver or dt-binding & has several non standard properties.
-Replace the reg names with a comment and delete the rest.
+The timers on the k210 have non standard interrupt configurations,
+which leads to dtbs_check warnings:
+
+k210_generic.dtb: timer@502d0000: interrupts: [[14], [15]] is too long
+From schema: Documentation/devicetree/bindings/timer/snps,dw-apb-timer.yaml
+
+Change to using the newly added canaan k210 specific binding to avoid
+the warning.
 
 Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
 ---
----
- arch/riscv/boot/dts/canaan/k210.dtsi | 6 ------
- 1 file changed, 6 deletions(-)
+ arch/riscv/boot/dts/canaan/k210.dtsi | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/arch/riscv/boot/dts/canaan/k210.dtsi b/arch/riscv/boot/dts/canaan/k210.dtsi
-index 44d338514761..287ea6eebe47 100644
+index 314f6da5d7f6..ef46ddf3c00c 100644
 --- a/arch/riscv/boot/dts/canaan/k210.dtsi
 +++ b/arch/riscv/boot/dts/canaan/k210.dtsi
-@@ -69,15 +69,9 @@ cpu1_intc: interrupt-controller {
+@@ -310,7 +310,7 @@ fpioa: pinmux@502b0000 {
+ 			};
  
- 	sram: memory@80000000 {
- 		device_type = "memory";
--		compatible = "canaan,k210-sram";
- 		reg = <0x80000000 0x400000>,
- 		      <0x80400000 0x200000>,
- 		      <0x80600000 0x200000>;
--		reg-names = "sram0", "sram1", "aisram";
--		clocks = <&sysclk K210_CLK_SRAM0>,
--			 <&sysclk K210_CLK_SRAM1>,
--			 <&sysclk K210_CLK_AI>;
--		clock-names = "sram0", "sram1", "aisram";
- 	};
+ 			timer0: timer@502d0000 {
+-				compatible = "snps,dw-apb-timer";
++				compatible = "canaan,k210-apb-timer", "snps,dw-apb-timer";
+ 				reg = <0x502D0000 0x100>;
+ 				interrupts = <14>, <15>;
+ 				clocks = <&sysclk K210_CLK_TIMER0>,
+@@ -320,7 +320,7 @@ timer0: timer@502d0000 {
+ 			};
  
- 	clocks {
+ 			timer1: timer@502e0000 {
+-				compatible = "snps,dw-apb-timer";
++				compatible = "canaan,k210-apb-timer", "snps,dw-apb-timer";
+ 				reg = <0x502E0000 0x100>;
+ 				interrupts = <16>, <17>;
+ 				clocks = <&sysclk K210_CLK_TIMER1>,
+@@ -330,7 +330,7 @@ timer1: timer@502e0000 {
+ 			};
+ 
+ 			timer2: timer@502f0000 {
+-				compatible = "snps,dw-apb-timer";
++				compatible = "canaan,k210-apb-timer", "snps,dw-apb-timer";
+ 				reg = <0x502F0000 0x100>;
+ 				interrupts = <18>, <19>;
+ 				clocks = <&sysclk K210_CLK_TIMER2>,
 -- 
 2.36.1
 
