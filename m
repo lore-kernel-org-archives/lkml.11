@@ -2,67 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4558BC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 13:27:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A36E0C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 13:37:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233696AbiFRN1X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 18 Jun 2022 09:27:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34774 "EHLO
+        id S233708AbiFRNh2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 18 Jun 2022 09:37:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiFRN1V (ORCPT
+        with ESMTP id S229449AbiFRNhY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 18 Jun 2022 09:27:21 -0400
-Received: from smtpbg.qq.com (smtpbg123.qq.com [175.27.65.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C09914D34;
-        Sat, 18 Jun 2022 06:27:15 -0700 (PDT)
-X-QQ-mid: bizesmtp82t1655558831tav3mpq4
-Received: from localhost.localdomain ( [125.70.163.206])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Sat, 18 Jun 2022 21:27:06 +0800 (CST)
-X-QQ-SSF: 01000000002000D0I000B00A0000000
-X-QQ-FEAT: ZHWZeLXy+8cHtKI1jYaZtodi5tfaA4MDUnvHxkg97ek1Kneskc370Gz5uZ0k6
-        2iX1TKiTLCsmo/RMCMy86b5G6PgA/IrVcQocmtG8gjdnIZU/Aze8s4m+koRDHBsReN7bvgO
-        htzI4HHOrk6T5nrDgHK2SF1VKQrpDpQU1p70XXMuHACKK1/D10n0kR1eT0mP2bWIHiJRXKX
-        TXuZuCNMcjxE7kpMGUELiMTE/kWTFyfNWWXEdd2CDO1EtRhc111FAaNNHZwFRtr5QkKeCO0
-        67/oIENAworu/Hp/Nk+XczCq3K9ybokXe6FKQY1dDpwk+K77e3uAbnb53FwOwgNx1aTh+iQ
-        9sb7Ww4wteINqY+0K5bp2/EHpAXrA==
-X-QQ-GoodBg: 0
-From:   Xiang wangx <wangxiang@cdjrlc.com>
-To:     wim@linux-watchdog.org, linux@roeck-us.net,
-        linux-watchdog@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Xiang wangx <wangxiang@cdjrlc.com>
-Subject: [PATCH] watchdog: booke_wdt: Fix typo in comment
-Date:   Sat, 18 Jun 2022 21:26:59 +0800
-Message-Id: <20220618132659.17100-1-wangxiang@cdjrlc.com>
+        Sat, 18 Jun 2022 09:37:24 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78AD217ABC;
+        Sat, 18 Jun 2022 06:37:23 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id t2so6045846pld.4;
+        Sat, 18 Jun 2022 06:37:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wGZn6FgCwazjQXz0vpa56+s306nfaS2CZ0bzi8dbZZg=;
+        b=IW9icgEbNXH5VLqNWoTl2VsDFsxe4egTcAoSDRsgkjuMUMxlwMBC+YpYnp7ilhT/IL
+         Mj8IcOf2beu1xe6PFC1D7OrBh4g3HKLrvlPIS1hkQfq27xl0gUuWv990ciET5hhDxzG7
+         athbbbEOd90RUDX0XYVzBFLMSkcOFKKBQBnrFUI/iWxJiphyPrRUYqpBNCVUY0Eyq8+V
+         eCKCdmJPTVx7rzNlGF73k0qquMWdBOGYphCsOrMJb60tmah51TIbz/328sbsfaTHxbKu
+         cEEmEqWyCRzTt46wZCuOwtgPwPLZXnIjsahpNnmKOH3l1rvfXZ2TPACT3ahAc5tqn/G6
+         CzUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wGZn6FgCwazjQXz0vpa56+s306nfaS2CZ0bzi8dbZZg=;
+        b=O52Yb0LHB+VMfd0ZgEeyqwxDwP5PPCkdwBSa4tXjZFLmzEXJUqWUq5YztyvS+jy45J
+         pTlvpXVWQzNJG9n+WdRh0EC6MCSCKXV6r018dbqbyxJf6if8qyouDJYErOyyL98J9la6
+         tPD6NYizPr8frGYskIN30GhF+EFW/ctjBGXTUbO22N7PLOev+WmJaPwIMpoTs+SSDkVb
+         XAvwNQHdSYhaxyy8Ev5JD8tQz8yYdpHc58rEZMpXHYOxrC9UwiHA5rlk8VicL+2cH8uP
+         XDfKW8iru5r5jwY4ZWcZIOgtyxJRo76qLO6RasdQTeqnNuUfQ9LwfEGlIqIm3pkqgBst
+         q0Ng==
+X-Gm-Message-State: AJIora+kmpZASfL6gtIjRsVjCOjUbUOc0P1/p/e8OcMAgX0x6AvuKUXa
+        TIa6CtT79symudT+2pM1Ugh1JMv2m/z2zw==
+X-Google-Smtp-Source: AGRyM1vK8OYzov2v6wh9nIzlwQWTPyJlW91AXhZwHliy5cnNHSvekMY8hxCtR6SByGlPk7N+IACMTA==
+X-Received: by 2002:a17:902:cccf:b0:168:e13c:5cd9 with SMTP id z15-20020a170902cccf00b00168e13c5cd9mr14702567ple.53.1655559442595;
+        Sat, 18 Jun 2022 06:37:22 -0700 (PDT)
+Received: from guoguo-omen.lan ([2401:c080:1400:4da2:b701:47d5:9291:4cf9])
+        by smtp.gmail.com with ESMTPSA id t29-20020a62d15d000000b0050dc7628150sm5668258pfl.42.2022.06.18.06.37.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 18 Jun 2022 06:37:21 -0700 (PDT)
+From:   Chuanhong Guo <gch981213@gmail.com>
+To:     linux-acpi@vger.kernel.org
+Cc:     Chuanhong Guo <gch981213@gmail.com>, stable@vger.kernel.org,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH] ACPI: skip IRQ1 override on Lenovo ThinkBook 14G4+ ARA
+Date:   Sat, 18 Jun 2022 21:37:12 +0800
+Message-Id: <20220618133712.8788-1-gch981213@gmail.com>
 X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Delete the redundant word 'and'.
+The IRQ is described as (Edge, ActiveLow, Shared, ) in ACPI DSDT and
+it's correct. The override makes the keyboard interrupt polarity
+inverted, resulting in non-functional keyboard.
+Add an entry for skipping the override.
 
-Signed-off-by: Xiang wangx <wangxiang@cdjrlc.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Chuanhong Guo <gch981213@gmail.com>
 ---
- drivers/watchdog/booke_wdt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+It seems that this issue present on several other Ryzen 6000 laptops.
+The dmi table is named genericly because I'm expecting this list to
+get filled with laptops from other vendors.
 
-diff --git a/drivers/watchdog/booke_wdt.c b/drivers/watchdog/booke_wdt.c
-index 5e4dc1a0f2c6..af4b79ff93c3 100644
---- a/drivers/watchdog/booke_wdt.c
-+++ b/drivers/watchdog/booke_wdt.c
-@@ -73,7 +73,7 @@ static unsigned long long period_to_sec(unsigned int period)
+ drivers/acpi/resource.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/drivers/acpi/resource.c b/drivers/acpi/resource.c
+index c2d494784425..3f6a290a1060 100644
+--- a/drivers/acpi/resource.c
++++ b/drivers/acpi/resource.c
+@@ -399,6 +399,17 @@ static const struct dmi_system_id medion_laptop[] = {
+ 	{ }
+ };
  
- /*
-  * This procedure will find the highest period which will give a timeout
-- * greater than the one required. e.g. for a bus speed of 66666666 and
-+ * greater than the one required. e.g. for a bus speed of 66666666
-  * and a parameter of 2 secs, then this procedure will return a value of 38.
-  */
- static unsigned int sec_to_period(unsigned int secs)
++static const struct dmi_system_id irq1_edge_low_shared[] = {
++	{
++		.ident = "Lenovo ThinkBook 14 G4+ ARA",
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
++			DMI_MATCH(DMI_BOARD_NAME, "LNVNB161216"),
++		},
++	},
++	{ }
++};
++
+ struct irq_override_cmp {
+ 	const struct dmi_system_id *system;
+ 	unsigned char irq;
+@@ -409,6 +420,7 @@ struct irq_override_cmp {
+ 
+ static const struct irq_override_cmp skip_override_table[] = {
+ 	{ medion_laptop, 1, ACPI_LEVEL_SENSITIVE, ACPI_ACTIVE_LOW, 0 },
++	{ irq1_edge_low_shared, 1, ACPI_EDGE_SENSITIVE, ACPI_ACTIVE_LOW, 1 },
+ };
+ 
+ static bool acpi_dev_irq_override(u32 gsi, u8 triggering, u8 polarity,
 -- 
 2.36.1
 
