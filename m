@@ -2,142 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D02DDC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 00:17:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 787C6C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 00:20:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383655AbiFRARN (ORCPT
+        id S1348242AbiFRAUO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 20:17:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39380 "EHLO
+        Fri, 17 Jun 2022 20:20:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383601AbiFRARH (ORCPT
+        with ESMTP id S236705AbiFRAUN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 20:17:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C4FF53B69
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 17:17:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D591B61E07
-        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 00:17:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1C15C3411B;
-        Sat, 18 Jun 2022 00:17:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1655511426;
-        bh=mQ6sCeUy6FOxrVE8mYNbTCeTuer33JTZLJebEZ49xK8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=b59T14ApR4yPmtESwEsMKV/lYIqzOfXArbuSQVeoJA1NNQyREWmZZGRGaeKC8iqPF
-         GKgUglCP64qgl3QTA6dcrJctv95VkB4SZvKJ5r+1ulsI0P6im2W2vniEQWQsQ0Rrih
-         w8W64k1K08SUumYzG/bNoh7K9dCnwFe2MVzOD6/4=
-Date:   Fri, 17 Jun 2022 17:17:05 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     syzbot <syzbot+0bce0ec817c084f98c56@syzkaller.appspotmail.com>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        syzkaller-bugs@googlegroups.com,
-        "Uladzislau Rezki (Sony)" <urezki@gmail.com>,
+        Fri, 17 Jun 2022 20:20:13 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 689DF590B4
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 17:20:12 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id y29so6277707ljd.7
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 17:20:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=shutemov-name.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=UrOYsC1ew/w6p73+nsWTtgf6LHyGTERsTIG20+T+qIA=;
+        b=bWeTqjlmkUrmkwzI2B0BHdb/N/1umG3v250Prir35ImXG/+7Kc4GXIoLBzUiI8ngcH
+         P0FKVfhaobo5HBD0tlJ/ZPBxPcHY9wChnOSGVnuUg95vJjia3SgK2yo/LBtG/koNQDEd
+         Wk1ZjPRD4toLKKfVofO+e+1dl64Dvs0MN/bes+90C/KkJnzvkFV32WMI+86FSRkwNxBS
+         r/d1ci66ssdEuvretCbaeHf+UCBdmLcWSt2gCFv5uyy7UqJYrnBY4M7WxHZIIDnd656h
+         PDBf4Z0bMhVtD9cQuNCPHLRjhMXDfeI9mxAwdHMRP8aijs/Jx09kZDoMB1M+IurYve1Y
+         FVUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=UrOYsC1ew/w6p73+nsWTtgf6LHyGTERsTIG20+T+qIA=;
+        b=UgFdgU+lGAmboS7eYAQq0+nSjh0XIkM5aEkgvicDG4/u7AzRPTtxTO33ABmWaMTVcM
+         oA3luuKiJOXYPwkT+Ee4iL6oxOo3KQac7myicm8TDRh5YtGF14AKpbpDmxmOs5llEyAt
+         KHzzm2QqA+lkKjMgwh3GzXT7/mWbujAZPTQhcAkhW/mHf6V4fvrK8F3tY3OQhPMLU577
+         /KYlYhNwWptbaDNHk/Cx14fOl46KMuM1KwGpjan8tM02hjqCYAVN6xHrtlIhszIGt95Q
+         yAcyTcyFbZsrlP/I0cmW1SbUVbrezgLxPdmC2d9f+ZKKI5K4UvsZ4p+In5cAKqWeeHGe
+         eXLw==
+X-Gm-Message-State: AJIora8RIFKYtn9lNnmqdUKgfjKnhEemWch6tiul2RTRt7MG+LpL/lAe
+        VI7MNmk7Yjiyxee73nWOAzpQFA==
+X-Google-Smtp-Source: AGRyM1vZKK06Vz3WHdkkW8uYsXOtVXEDAj6OJMrTQM4yDdBXS/6lLvWRJMndiWTqY04XpQfxGxRg6g==
+X-Received: by 2002:a2e:a549:0:b0:25a:44ab:5aa with SMTP id e9-20020a2ea549000000b0025a44ab05aamr6535706ljn.248.1655511610719;
+        Fri, 17 Jun 2022 17:20:10 -0700 (PDT)
+Received: from box.localdomain ([86.57.175.117])
+        by smtp.gmail.com with ESMTPSA id o4-20020ac25e24000000b00479471cda69sm815354lfg.156.2022.06.17.17.20.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Jun 2022 17:20:10 -0700 (PDT)
+Received: by box.localdomain (Postfix, from userid 1000)
+        id 6DC4D103719; Sat, 18 Jun 2022 03:22:20 +0300 (+03)
+Date:   Sat, 18 Jun 2022 03:22:20 +0300
+From:   "Kirill A. Shutemov" <kirill@shutemov.name>
+To:     Yuntao Wang <ytcoode@gmail.com>
+Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
         Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [syzbot] BUG: sleeping function called from invalid context in
- __purge_vmap_area_lazy
-Message-Id: <20220617171705.d669e05c87081dc767191e23@linux-foundation.org>
-In-Reply-To: <000000000000da07e205e19e94cf@google.com>
-References: <000000000000da07e205e19e94cf@google.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>, Baoquan He <bhe@redhat.com>,
+        x86@kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH] x86/mm: Fix possible index overflow when creating page
+ table mapping
+Message-ID: <20220618002220.panwk4zwnigayboy@box.shutemov.name>
+References: <20220616135510.1784995-1-ytcoode@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220616135510.1784995-1-ytcoode@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 16 Jun 2022 23:08:21 -0700 syzbot <syzbot+0bce0ec817c084f98c56@syzkaller.appspotmail.com> wrote:
+On Thu, Jun 16, 2022 at 09:55:10PM +0800, Yuntao Wang wrote:
+> There are two issues in phys_p4d_init():
+> 
+> - The __kernel_physical_mapping_init() does not do boundary-checking for
+>   paddr_end and passes it directly to phys_p4d_init(), phys_p4d_init() does
+>   not do bounds checking either, so if the physical memory to be mapped is
+>   large enough, 'p4d_page + p4d_index(vaddr)' will wrap around to the
+>   beginning entry of the P4D table and its data will be overwritten.
+> 
+> - The for loop body will be executed only when 'vaddr < vaddr_end'
+>   evaluates to true, but if that condition is true, 'paddr >= paddr_end'
+>   will evaluate to false, thus the 'if (paddr >= paddr_end) {}' block will
+>   never be executed and become dead code.
+> 
+> To fix these issues, use 'i < PTRS_PER_P4D' instead of 'vaddr < vaddr_end'
+> as the for loop condition, this also make it more consistent with the logic
+> of the phys_{pud,pmt,pte}_init() functions.
 
-> Hello,
-> 
-> syzbot found the following issue on:
-> 
-> HEAD commit:    6012273897fe Add linux-next specific files for 20220615
-> git tree:       linux-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=16d2f608080000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=b4154677977b1776
-> dashboard link: https://syzkaller.appspot.com/bug?extid=0bce0ec817c084f98c56
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> 
-> Unfortunately, I don't have any reproducer for this issue yet.
+Hm. I don't see why you changed phys_p4d_init(), but not
+__kernel_physical_mapping_init(). It does exactly the same thing, just
+pgd_index() is hidden a bit deeper than p4d_index().
 
-I don't get this.  __purge_vmap_area_lazy() seems to be doing
-everything right wrt its use of free_vmap_area_lock and the
-cond_resched_lock().
-
-It's a shame that the "Preemption disabled at:" thing isn't working. 
-Peter, Thomas: any ideas why this would happen?
-
-Thanks.
-
-
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+0bce0ec817c084f98c56@syzkaller.appspotmail.com
-> 
-> BUG: sleeping function called from invalid context at mm/vmalloc.c:1759
-> BUG: sleeping function called from invalid context at mm/vmalloc.c:1759
-> in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 1795, name: kworker/1:2
-> preempt_count: 2, expected: 1
-> RCU nest depth: 0, expected: 0
-> 4 locks held by kworker/1:2/1795:
->  #0: ffff888011864d38 ((wq_completion)events){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
->  #0: ffff888011864d38 ((wq_completion)events){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
->  #0: ffff888011864d38 ((wq_completion)events){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
->  #0: ffff888011864d38 ((wq_completion)events){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
->  #0: ffff888011864d38 ((wq_completion)events){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
->  #0: ffff888011864d38 ((wq_completion)events){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
->  #1: ffffc90006c07da8 (drain_vmap_work){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
->  #2: ffffffff8bebb028 (vmap_purge_lock){+.+.}-{3:3}, at: drain_vmap_area_work+0x44/0xe0 mm/vmalloc.c:1781
->  #3: ffffffff8bebb2f8 (free_vmap_area_lock){+.+.}-{2:2}, at: spin_lock include/linux/spinlock.h:360 [inline]
->  #3: ffffffff8bebb2f8 (free_vmap_area_lock){+.+.}-{2:2}, at: __cond_resched_lock+0xa6/0xe0 kernel/sched/core.c:8306
-> Preemption disabled at:
-> [<0000000000000000>] 0x0
-> CPU: 1 PID: 1795 Comm: kworker/1:2 Not tainted 5.19.0-rc2-next-20220615-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> Workqueue: events drain_vmap_area_work
-> Call Trace:
->  <TASK>
->  __dump_stack lib/dump_stack.c:88 [inline]
->  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
->  __might_resched.cold+0x222/0x26b kernel/sched/core.c:9823
->  __purge_vmap_area_lazy+0x95c/0x1c50 mm/vmalloc.c:1759
->  drain_vmap_area_work+0x52/0xe0 mm/vmalloc.c:1782
->  process_one_work+0x996/0x1610 kernel/workqueue.c:2289
->  worker_thread+0x665/0x1080 kernel/workqueue.c:2436
->  kthread+0x2e9/0x3a0 kernel/kthread.c:376
->  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:302
->  </TASK>
-> BUG: workqueue leaked lock or atomic: kworker/1:2/0x00000001/1795
->      last function: drain_vmap_area_work
-> no locks held by kworker/1:2/1795.
-> CPU: 1 PID: 1795 Comm: kworker/1:2 Tainted: G        W         5.19.0-rc2-next-20220615-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> Workqueue: events drain_vmap_area_work
-> Call Trace:
->  <TASK>
->  __dump_stack lib/dump_stack.c:88 [inline]
->  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
->  process_one_work.cold+0x96/0xb8 kernel/workqueue.c:2304
->  worker_thread+0x665/0x1080 kernel/workqueue.c:2436
->  kthread+0x2e9/0x3a0 kernel/kthread.c:376
->  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:302
->  </TASK>
-> BUG: scheduling while atomic: kworker/1:2/1795/0x00000002
-> no locks held by kworker/1:2/1795.
-> Modules linked in:
-> Preemption disabled at:
-> [<0000000000000000>] 0x0
-> 
-> 
-> ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
-> 
-> syzbot will keep track of this issue. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+-- 
+ Kirill A. Shutemov
