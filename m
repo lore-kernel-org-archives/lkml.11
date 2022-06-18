@@ -2,137 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A11FC43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 17:06:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64E8BC43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 17:07:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236423AbiFRRGG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 18 Jun 2022 13:06:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34526 "EHLO
+        id S231359AbiFRRHr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 18 Jun 2022 13:07:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236755AbiFRRFw (ORCPT
+        with ESMTP id S231342AbiFRRHo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 18 Jun 2022 13:05:52 -0400
-X-Greylist: delayed 475 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 18 Jun 2022 10:05:50 PDT
-Received: from wnew2-smtp.messagingengine.com (wnew2-smtp.messagingengine.com [64.147.123.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 698C912D3E;
-        Sat, 18 Jun 2022 10:05:50 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailnew.west.internal (Postfix) with ESMTP id 5635A2B04FD2;
-        Sat, 18 Jun 2022 12:57:51 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute5.internal (MEProxy); Sat, 18 Jun 2022 12:57:53 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
-        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
-         s=fm3; t=1655571470; x=1655578670; bh=cvEieaf7Gq9QmyebRGX2GIRjl
-        EvOg4D81jsok9/7HPE=; b=Mh1l4/NK7BX5XIAKTgqdJVANXXHR6SyC6ZlP/UhDz
-        aFr3md6b37WNKAFDLKCnmlikLkqfmTVueEJocB5LqsYLX++fX/NHs+EULJ3CRUm0
-        xp904h5nSJqXtcn0a73KGcIAlmNgYH1o+VoeuxRTmB8oxjnC19/XmTDpnUV0gDpf
-        XQYoWssyqpVRPKq7vLKrzmFT53iVYzQjo3Re/3y0FfMDOqn9QkOApvj2MfJ4dVb4
-        90KyjbNAFQCr3VxnjROMnQEUevcujNCTulCCDd+GDkrq5nJ8vNeKub3GWNHdAybx
-        rraGrO8dCqQz2/sM5OLLcqBrYQrpX9KVRDRir5a99UnTg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:message-id
-        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=
-        1655571470; x=1655578670; bh=cvEieaf7Gq9QmyebRGX2GIRjlEvOg4D81js
-        ok9/7HPE=; b=Py1g5YtIkfjwlDhcmmh1Sm5HXgtZ79vRaL1DXa4yVfht0v/+q0o
-        jY/C5TxyQy3czRQghGcsiKOJksyPLxtp5RJ69OntqUarlQ4kZF0P0teLicFCpS3j
-        /sCCkZufUIZLZF1APP2hWeNgsJuQZhKFwCSvxRFYGmeugAvH6DiVbWF9J7LCnTC4
-        f9hw/QptH40f2cg1tyW7Wt71ZeqA9UQYPtfcOZ7gKdeO/gef0wBOKH63kD4PD7R0
-        offRmO6PIkKiqGqpL96TMBna1mPeuy2vZkCojvrwTiSR7T23soC6z9TbCyPm1Zzy
-        bN6pdzyuk+Pe2V2onMa8ZymB9q1qE5F9/rg==
-X-ME-Sender: <xms:DQSuYr0wjc9Ay-LFfRLI5gpuX_IcjNyJep9l4waXbuJyU2Psrs6A0Q>
-    <xme:DQSuYqGqGVUrGOfQ_rIWWtKt_Z8pBJB0awaaMSUboXpKK01FuBRZW-cq5efFRl4UE
-    7JpQwzWVTflRGMwcQ>
-X-ME-Received: <xmr:DQSuYr6kBi2wrLpTA4RJeIcL0Nu_xJRPqPQviHkMyZhSA_AWWBFPd62c0SLvjy3J0-iE05vzJUhYbiWxniPWghDTz5eKOds2KJnfdCx-T_9YUpAA4Xlk9zyAc16LHmtjUtPxVQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedruddvjedguddutdcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefurghmuhgv
-    lhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenucggtf
-    frrghtthgvrhhnpeevudeigeekledvgfevlefgueelkeduieelveejfffhjefggeelfefh
-    teejgfegvdenucffohhmrghinhepmhgvghhouhhsrdgtohhmnecuvehluhhsthgvrhfuih
-    iivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepshgrmhhuvghlsehshhholhhlrghn
-    ugdrohhrgh
-X-ME-Proxy: <xmx:DQSuYg1F4gvWB7rYdPVEAnw9Ph8oxtlkcIRl2xR-S-5R-TAHGJsseQ>
-    <xmx:DQSuYuHYoIPpmLlS0kulI8jWxC3uMmz4JtDKIVPDAorIQ6CU3yEoSA>
-    <xmx:DQSuYh8aqRwPULljo9XUul_eQ25NEpGwqpLnd94eNeRIAtjLWZpUvg>
-    <xmx:DgSuYuLYiNlYu-Yby_2fOLqZeYeAgHthOGPCdjhu-rwfyr-uows0myvPDl4>
-Feedback-ID: i0ad843c9:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sat,
- 18 Jun 2022 12:57:48 -0400 (EDT)
-From:   Samuel Holland <samuel@sholland.org>
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        linux-input@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Ondrej Jirman <x@xff.cz>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        devicetree@vger.kernel.org, Samuel Holland <samuel@sholland.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Colin Ian King <colin.king@intel.com>,
-        David Gow <davidgow@google.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Marco Felsch <m.felsch@pengutronix.de>,
-        Mattijs Korpershoek <mkorpershoek@baylibre.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Yassine Oudjana <y.oudjana@protonmail.com>,
-        "fengping.yu" <fengping.yu@mediatek.com>,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
-Subject: [PATCH v4 0/4] Pine64 PinePhone keyboard support
-Date:   Sat, 18 Jun 2022 11:57:43 -0500
-Message-Id: <20220618165747.55709-1-samuel@sholland.org>
-X-Mailer: git-send-email 2.35.1
+        Sat, 18 Jun 2022 13:07:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 541CB558E;
+        Sat, 18 Jun 2022 10:07:43 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E41DF60F08;
+        Sat, 18 Jun 2022 17:07:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51D13C3411D;
+        Sat, 18 Jun 2022 17:07:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655572062;
+        bh=KqmNordb+QHA2ZI4oQIWOsfJ2gjxU8YjcD2HdXlvMzs=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=ELooSgG/KSJ7yFrax/Y2UJqiGNJlBJKaVV3AuacAx8foXpCJ/x7LCblKOywfWoUDy
+         t1Z7NFEOPotYx1Hhg9GHWUolRA2LiruJX6MjwGIbbu82G1uaw+pdulwYSDtxR1A8fs
+         KuqAiSJsHBPijwOK7EEH1jtX+1NXbPNcY0md992sI5ZzDvHTkGziZ4EDjSDitVd/Qr
+         DQ6WIywLeZ2m/TmIcwWzj3sAxUKXOQKf3OWVcvLGbO+1kzTTH65miHIQGIdFmlNPkg
+         xqCeLTqnELDuiZN3jglByq9zDhbV2HyUC2SCXvV7M9+NW9lZ35iCoyljjVIeFfrEDP
+         43tMXCXxdowWA==
+Received: by mail-pl1-f175.google.com with SMTP id k7so6319597plg.7;
+        Sat, 18 Jun 2022 10:07:42 -0700 (PDT)
+X-Gm-Message-State: AJIora+oc25Lu/Oe6NKsPppx8NRDAaLVZcAZ5S7KNueZAlF2p1sRX+7K
+        aaU/CPchQvN447dum33fn+iB27p04HBxC425Eh4=
+X-Google-Smtp-Source: AGRyM1sNRZu0x7H3Y0OO0426x3Ze9/v/FHGS+rQpIQqiGzcKpJfW9zzE6W7AVtBlMKAfJLfQm+5wy2fo5G+EVxxh0I8=
+X-Received: by 2002:a17:903:1c5:b0:167:71bd:462f with SMTP id
+ e5-20020a17090301c500b0016771bd462fmr15669728plh.65.1655572061950; Sat, 18
+ Jun 2022 10:07:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220618060850.4058525-1-windhl@126.com>
+In-Reply-To: <20220618060850.4058525-1-windhl@126.com>
+From:   Timur Tabi <timur@kernel.org>
+Date:   Sat, 18 Jun 2022 12:07:05 -0500
+X-Gmail-Original-Message-ID: <CAOZdJXU6R1wma8VXwfPYzq6eSkT84DiXb+3eQCEVanLZC2LQ3w@mail.gmail.com>
+Message-ID: <CAOZdJXU6R1wma8VXwfPYzq6eSkT84DiXb+3eQCEVanLZC2LQ3w@mail.gmail.com>
+Subject: Re: [PATCH] tty: serial: Fix refcount leak bug in ucc_uart.c
+To:     Liang He <windhl@126.com>
+Cc:     Timur Tabi <timur@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        jirislaby@kernel.org,
+        PowerPC Mailing List <linuxppc-dev@lists.ozlabs.org>,
+        linux-serial@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series adds support for the official keyboard case for the Pine64
-PinePhone and PinePhone Pro. This accessory contains a keyboard MCU and
-an IP5209 power bank IC. The keyboard MCU firmware[0] is free software.
-It exposes the keyboard scan matrix over I2C, and also provides commands
-for SMBus access to the IP5209. In order to keep the IP5209 driver
-(CONFIG_IP5XXX_POWER) generic, this is modeled as a child I2C bus.
+On Sat, Jun 18, 2022 at 1:09 AM Liang He <windhl@126.com> wrote:
+>
+> In soc_info(), of_find_node_by_type() will return a node pointer
+> with refcount incremented. We should use of_node_put() when it is
+> not used anymore.
+>
+> Signed-off-by: Liang He <windhl@126.com>
 
-[0]: https://megous.com/git/pinephone-keyboard/about/
-
-Changes in v4:
- - Rebase to resolve MAINTAINERS merge conflict
- - Add missing newlines in error messages
-
-Changes in v3:
- - Replace unevaluatedProperties with additionalProperties
- - Rename i2c-bus to i2c
- - Rename i2c-bus to i2c
-
-Changes in v2:
- - Drop keymap DT properties
- - Add vbat-supply property
- - Fix missing key release events when FN state changes
- - Add VBAT consumer to ensure enough power is available for the MCU
- - Use a single fixed-size, fixed-contents keymap for both layers
-
-Samuel Holland (4):
-  dt-bindings: input: Add the PinePhone keyboard binding
-  Input: pinephone-keyboard - Add PinePhone keyboard driver
-  Input: pinephone-keyboard - Support the proxied I2C bus
-  [DO NOT MERGE] arm64: dts: allwinner: pinephone: Add keyboard
-
- .../input/pine64,pinephone-keyboard.yaml      |  66 +++
- MAINTAINERS                                   |   6 +
- .../dts/allwinner/sun50i-a64-pinephone.dtsi   |  18 +
- drivers/input/keyboard/Kconfig                |  10 +
- drivers/input/keyboard/Makefile               |   1 +
- drivers/input/keyboard/pinephone-keyboard.c   | 438 ++++++++++++++++++
- 6 files changed, 539 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/input/pine64,pinephone-keyboard.yaml
- create mode 100644 drivers/input/keyboard/pinephone-keyboard.c
-
--- 
-2.35.1
-
+Acked-by: Timur Tabi <timur@kernel.org>
