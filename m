@@ -2,97 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69DC4C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 16:39:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78214C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 16:43:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236038AbiFRQje (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 18 Jun 2022 12:39:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50566 "EHLO
+        id S236626AbiFRQnr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 18 Jun 2022 12:43:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231359AbiFRQjd (ORCPT
+        with ESMTP id S236690AbiFRQna (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 18 Jun 2022 12:39:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D279FD05;
-        Sat, 18 Jun 2022 09:39:32 -0700 (PDT)
+        Sat, 18 Jun 2022 12:43:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87301A1AC;
+        Sat, 18 Jun 2022 09:43:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E46F160F0C;
-        Sat, 18 Jun 2022 16:39:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4D46C3411A;
-        Sat, 18 Jun 2022 16:39:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0A0E2B80ABD;
+        Sat, 18 Jun 2022 16:43:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A139DC3411F;
+        Sat, 18 Jun 2022 16:43:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655570371;
-        bh=twtOJw4hn7qZLSBUAVevuQy1fZO2I0MokLlWvf+gzSk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=hMdaUPsw3/cbyiWgPOcGrS9hHTWIQ+Qn5AGuEpdDUp9Y5H9AIstV+rZNWuA0bgZNz
-         TRChA22h4bsD+HviGfmZIcdkXG6xxK+wTTHk/5gpLDhvhy/ew2WRdNx16QO3vnytvk
-         f7et/tC1OFuDP4TZdjiw0M9Lf74uP9ki0TN9KPv99sHZAWswaBvGdGURN69KwZUOBQ
-         HEWta4E2WVOA4WrwTEymBEXpTnj+GWKb2QmuLJuY0s4BZPX6t5OxQwBJskEOwz+a9H
-         xHsL6+lmq6gDB2vCc8qEBPDurdm0sEGjA8xnGQwm1kfRgArahopr2N0Z2wrywdjBtx
-         45IW84wnZ66sg==
-Date:   Sat, 18 Jun 2022 11:39:27 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     ira.weiny@intel.com
-Cc:     Dan Williams <dan.j.williams@intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Ben Widawsky <bwidawsk@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-cxl@vger.kernel.org,
-        linux-pci@vger.kernel.org
-Subject: Re: [PATCH V11 3/8] PCI: Create PCI library functions in support of
- DOE mailboxes.
-Message-ID: <20220618163927.GA1235355@bhelgaas>
+        s=k20201202; t=1655570605;
+        bh=XLxsCUvmHdKAGIc4CWlWZtwdR71VaEBXPO7MJuu8wks=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=NQxAjNrUMfibFqPq05roTlVkKwsOz2wGfsVfjDyuGB2MB4MveC7o2OeSG4s6u8XIB
+         43goSMPaJI/SCCH+eNyuDaS8a/Zs38b01BwNTkgfc2I/kdFGZKOdtOBCflOTyfYqJh
+         q1sLPJt7gaqWMbU2SRSZAPJwegn+uLySfnOaKw5kdrlkjx2xiJobaxNmSFD6IZFpSE
+         PpMIGZKdss9Y0rXOYcfLNL0DbOaUr8BDjjVPktomcOSlpujAzYS6JTeAuY8s6CgTlY
+         MDEqJiS4ZWhDFJKNFpdeAsXJ+ChtNHS0E++ch8bZ0ca2709F1tA3EgtJLSzi5bEi6R
+         ANzv9apVdLfeg==
+Date:   Sat, 18 Jun 2022 17:52:42 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Gwendal Grignou <gwendal@chromium.org>
+Cc:     Stephen Boyd <swboyd@chromium.org>,
+        Aashish Sharma <shraash@google.com>,
+        linux-kernel@vger.kernel.org, patches@lists.linux.dev,
+        linux-iio@vger.kernel.org, kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH] iio:proximity:sx9324: Check ret value of
+ device_property_read_u32_array()
+Message-ID: <20220618175242.56fd125c@jic23-huawei>
+In-Reply-To: <CAPUE2usiMSi-njO5G9wELOdRuL428Vw9BtS4NfbKX1wtVCMaWA@mail.gmail.com>
+References: <20220613232224.2466278-1-swboyd@chromium.org>
+        <CAPUE2usiMSi-njO5G9wELOdRuL428Vw9BtS4NfbKX1wtVCMaWA@mail.gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220617224019.GA1208614@bhelgaas>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 17, 2022 at 05:40:19PM -0500, Bjorn Helgaas wrote:
-> On Fri, Jun 10, 2022 at 01:22:54PM -0700, ira.weiny@intel.com wrote:
-> > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> > 
-> > Introduced in a PCI r6.0, sec 6.30, DOE provides a config space based
-> > mailbox with standard protocol discovery.  Each mailbox is accessed
-> > through a DOE Extended Capability.
+On Mon, 13 Jun 2022 16:25:55 -0700
+Gwendal Grignou <gwendal@chromium.org> wrote:
 
-> > + * pci_doe_get_irq_num() - Return the irq number for the mailbox at offset
-> > + *
-> > + * @pdev: The PCI device
-> > + * @offset: Offset of the DOE mailbox
-> > + *
-> > + * Returns: irq number on success
-> > + *	    -errno if irqs are not supported on this mailbox
-> > + */
-> > +int pci_doe_get_irq_num(struct pci_dev *pdev, int offset)
-> > +{
-> > +	u32 val;
+> On Mon, Jun 13, 2022 at 4:22 PM Stephen Boyd <swboyd@chromium.org> wrote:
+> >
+> > From: Aashish Sharma <shraash@google.com>
+> >
+> > 0-day reports:
+> >
+> > drivers/iio/proximity/sx9324.c:868:3: warning: Value stored
+> > to 'ret' is never read [clang-analyzer-deadcode.DeadStores]
+> >
+> > Put an if condition to break out of switch if ret is non-zero.
+> >
+> > Signed-off-by: Aashish Sharma <shraash@google.com>
+> > Fixes: a8ee3b32f5da ("iio:proximity:sx9324: Add dt_binding support")
+> > Reported-by: kernel test robot <lkp@intel.com>
+> > [swboyd@chromium.org: Reword commit subject, add fixes tag]
+> > Signed-off-by: Stephen Boyd <swboyd@chromium.org>  
+> Reviewed-by: Gwendal Grignou <gwendal@chromium.org>
+Applied to the fixes-togreg branch of iio.git and marked for stable.
+
+Thanks,
+
+Jonathan
+
+> > ---
+> >  drivers/iio/proximity/sx9324.c | 3 +++
+> >  1 file changed, 3 insertions(+)
+> >
+> > diff --git a/drivers/iio/proximity/sx9324.c b/drivers/iio/proximity/sx9324.c
+> > index 70c37f664f6d..63fbcaa4cac8 100644
+> > --- a/drivers/iio/proximity/sx9324.c
+> > +++ b/drivers/iio/proximity/sx9324.c
+> > @@ -885,6 +885,9 @@ sx9324_get_default_reg(struct device *dev, int idx,
+> >                         break;
+> >                 ret = device_property_read_u32_array(dev, prop, pin_defs,
+> >                                                      ARRAY_SIZE(pin_defs));
+> > +               if (ret)
+> > +                       break;
 > > +
-> > +	pci_read_config_dword(pdev, offset + PCI_DOE_CAP, &val);
-> > +	if (!FIELD_GET(PCI_DOE_CAP_INT, val))
-> > +		return -EOPNOTSUPP;
-> > +
-> > +	return FIELD_GET(PCI_DOE_CAP_IRQ, val);
-> > +}
-> > +EXPORT_SYMBOL_GPL(pci_doe_get_irq_num);
-> 
-> Confusing function name (and comment) since PCI_DOE_CAP_IRQ is an
-> Interrupt Message Number that has nothing to do with Linux IRQ
-> numbers.
-> 
-> I see we already have PCI_EXP_FLAGS_IRQ, PCI_ERR_ROOT_AER_IRQ,
-> PCI_EXP_DPC_IRQ, so I guess you're in good company.
+> >                 for (pin = 0; pin < SX9324_NUM_PINS; pin++)
+> >                         raw |= (pin_defs[pin] << (2 * pin)) &
+> >                                SX9324_REG_AFE_PH0_PIN_MASK(pin);
+> >
+> > base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
+> > --
+> > https://chromeos.dev
+> >  
 
-Should have been more clear about this: I think we should rename the
-new one to be PCI_DOE_CAP_INT_MSG_NUM or similar, and rename the
-function as well.  It's too confusing to use "irq" for both Linux IRQs
-and what the spec calls "Interupt Message Numbers".
-
-Bjorn
