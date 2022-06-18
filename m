@@ -2,192 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B29D7CCA473
-	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 15:17:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8345C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 15:24:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234886AbiFRPRS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 18 Jun 2022 11:17:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34374 "EHLO
+        id S234968AbiFRPYt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 18 Jun 2022 11:24:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234708AbiFRPRR (ORCPT
+        with ESMTP id S230082AbiFRPYs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 18 Jun 2022 11:17:17 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B5F7BC29
-        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 08:17:15 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id n10so13678333ejk.5
-        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 08:17:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=r3bsZ5PtgloBu+ce8z+3L4x+sg128A5Sp6K47kwhsvQ=;
-        b=YT25ALkZgQzYOT2SRVos+zCEngrlf1XIizM6ljJnKz8vnC+3/gThfZzLJvjs9adJ5l
-         2CpkqnXIzY9KLoYkBjn3Q/wkonDFTEZn2M1E9hOEyPlUkzq5tEYdQ1wETAcq/M0JVq2X
-         3lnGAD9LzRNa11xZrYyIOTIrgCKcgLn94KZw8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=r3bsZ5PtgloBu+ce8z+3L4x+sg128A5Sp6K47kwhsvQ=;
-        b=3cEBJ1k38+RmhBXcwYo8g7eTKwRenULGSioi31X5siOw9r4du4yqjv8Wtr3UTeXwO7
-         HJdSprUh7Cs5qvkt4+YFBOyAdSqC/SVuLQ7qYT/qayVdQY5S4IEJiybw6x+QvCJTX652
-         N25gab3R/VfY1bgSgspmE+LPmMFfrJNNKm+SGCi/cJJPjZ6WHuZwMLckmu3+CkdTg8A3
-         V9w4EL24Zc+SWCMlN+cCFTu0SoOSF+wr3JLHhb84w6LZ2XaolHm+wLUppaw7eS8sQgqh
-         sU4d6eyWCLws4wx1thQuCsa6DMlNW7M7AZC/Pn/iiqAFKGqywQDzLekk8xiEsSvJNZhy
-         2O2Q==
-X-Gm-Message-State: AJIora941jdmAGllCsVkhGAE//62SFaRWEzYUk7Cm7j6z92494/e/x4R
-        /zJ25QGskr5uTX7igHCm0PLgSql3dyt/+UEo
-X-Google-Smtp-Source: AGRyM1vTIo43azWyY6e5o89teq3mg+eXe9Mp7zWjD+yBzLEo1KKEicxOfgGqISzkK0O94E0aCPTdqA==
-X-Received: by 2002:a17:906:6545:b0:722:7c99:1ad7 with SMTP id u5-20020a170906654500b007227c991ad7mr1061086ejn.325.1655565433507;
-        Sat, 18 Jun 2022 08:17:13 -0700 (PDT)
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com. [209.85.128.52])
-        by smtp.gmail.com with ESMTPSA id e1-20020a056402148100b004357171dcccsm1093973edv.12.2022.06.18.08.17.12
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 18 Jun 2022 08:17:12 -0700 (PDT)
-Received: by mail-wm1-f52.google.com with SMTP id i81-20020a1c3b54000000b0039c76434147so5702763wma.1
-        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 08:17:12 -0700 (PDT)
-X-Received: by 2002:a05:600c:202:b0:39c:40de:ec19 with SMTP id
- 2-20020a05600c020200b0039c40deec19mr26024244wmi.29.1655565431641; Sat, 18 Jun
- 2022 08:17:11 -0700 (PDT)
+        Sat, 18 Jun 2022 11:24:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2040860C7;
+        Sat, 18 Jun 2022 08:24:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9BE64B801B8;
+        Sat, 18 Jun 2022 15:24:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FBC7C3411A;
+        Sat, 18 Jun 2022 15:24:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655565884;
+        bh=Z+Twh7SwZ6hXrHT+LtD17vA7anfjZRx7HRgnzaj2hcc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=W10YYF/j5Fblb6/DQIT2vu2EzpS+MIBRDckLUPsmILaMIKfjSiqrg6gpAIFYJs+1L
+         4VDrcKi85+UoNs7tbx3sJYXxxpaaIy+fQlAW3rzwFtMV152PRQrh/YnpJwF/KFJVYA
+         0yVQDbeWzD3MH/7cN1wsGojhTyJOGW6Slyt0cEnLnRr4fwzhXErdaLq1dX3VgqZmGI
+         DVpw+jY4YKV8kSn7sWGv4hQXqLxyOrTrAMIFHTuo38hOY/xGsaR9OVCSmKvzHzeDAL
+         3vNxUB1bpJrmi73dLJTkBc9G1HSLDKKrE0A0R1THX3VRGBVIV1TbyQe/Sb4/qEU+Gv
+         EZnCemqWDdJBA==
+Date:   Sat, 18 Jun 2022 16:34:01 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH v1 1/1] iio: accel: mma7660: Drop wrong use of
+ ACPI_PTR()
+Message-ID: <20220618163401.0c603cc5@jic23-huawei>
+In-Reply-To: <20220616142451.10322-1-andriy.shevchenko@linux.intel.com>
+References: <20220616142451.10322-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220617164000.v8.1.Id769ddc5dbf570ccb511db96da59f97d08f75a9c@changeid>
- <a664b2a9-3cfa-9e8d-039a-bdd3b7448170@linaro.org>
-In-Reply-To: <a664b2a9-3cfa-9e8d-039a-bdd3b7448170@linaro.org>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Sat, 18 Jun 2022 08:16:59 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=VXEuOycHibuYgKhFoqUf6cH7-zHBDuSssEtScq1502nA@mail.gmail.com>
-Message-ID: <CAD=FV=VXEuOycHibuYgKhFoqUf6cH7-zHBDuSssEtScq1502nA@mail.gmail.com>
-Subject: Re: [PATCH v8 1/5] arm64: dts: qcom: sc7180: Add wormdingler dts files
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     "Joseph S. Barrera III" <joebar@chromium.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Alexandru M Stan <amstan@chromium.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Thu, 16 Jun 2022 17:24:51 +0300
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-On Fri, Jun 17, 2022 at 5:32 PM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> On 17/06/2022 16:40, Joseph S. Barrera III wrote:
-> > Wormdingler is a trogdor-based board, shipping to customers as the
-> > Lenovo IdeaPad Chromebook Duet 3. These dts files are copies from
-> > the downstream Chrome OS 5.4 kernel, but with the camera
-> > (sc7180-trogdor-mipi-camera.dtsi) #include removed.
-> >
-> > Signed-off-by: Joseph S. Barrera III <joebar@chromium.org>
-> >
-> > ---
-> >
-> > (no changes since v7)
-> >
-> > Changes in v7:
-> > - Incorporated changes from Stephen's "Simplify!" series.
-> >
-> > Changes in v5:
-> > - Replaced _ in node name with -
-> > - Ordered nodes by name
-> >
-> > Changes in v4:
-> > - Cleaned up rt5682s files
-> > - Restored camcc definition
-> > - Added missing version history
-> >
-> > Changes in v3:
-> > - Removed camcc definition
-> >
-> > Changes in v2:
-> > - Word wrapped patch description.
-> > - Removed "Author" from patch description.
-> > - Fixed whitespace around "en_pp3300_dx_edp"
-> >
-> >  arch/arm64/boot/dts/qcom/Makefile             |   6 +
-> >  .../sc7180-trogdor-wormdingler-rev0-boe.dts   |  22 +
-> >  .../sc7180-trogdor-wormdingler-rev0-inx.dts   |  22 +
-> >  .../qcom/sc7180-trogdor-wormdingler-rev0.dtsi |  53 +++
-> >  ...0-trogdor-wormdingler-rev1-boe-rt5682s.dts |  29 ++
-> >  .../sc7180-trogdor-wormdingler-rev1-boe.dts   |  28 ++
-> >  ...0-trogdor-wormdingler-rev1-inx-rt5682s.dts |  29 ++
-> >  .../sc7180-trogdor-wormdingler-rev1-inx.dts   |  22 +
-> >  .../dts/qcom/sc7180-trogdor-wormdingler.dtsi  | 408 ++++++++++++++++++
-> >  9 files changed, 619 insertions(+)
-> >  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev0-boe.dts
-> >  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev0-inx.dts
-> >  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev0.dtsi
-> >  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev1-boe-rt5682s.dts
-> >  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev1-boe.dts
-> >  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev1-inx-rt5682s.dts
-> >  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev1-inx.dts
-> >  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler.dtsi
-> >
-> > diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
-> > index 2f8aec2cc6db..e4114e22548a 100644
-> > --- a/arch/arm64/boot/dts/qcom/Makefile
-> > +++ b/arch/arm64/boot/dts/qcom/Makefile
-> > @@ -81,6 +81,12 @@ dtb-$(CONFIG_ARCH_QCOM)    += sc7180-trogdor-pompom-r2.dtb
-> >  dtb-$(CONFIG_ARCH_QCOM)      += sc7180-trogdor-pompom-r2-lte.dtb
-> >  dtb-$(CONFIG_ARCH_QCOM)      += sc7180-trogdor-pompom-r3.dtb
-> >  dtb-$(CONFIG_ARCH_QCOM)      += sc7180-trogdor-pompom-r3-lte.dtb
-> > +dtb-$(CONFIG_ARCH_QCOM)      += sc7180-trogdor-wormdingler-rev0-boe.dtb
-> > +dtb-$(CONFIG_ARCH_QCOM)      += sc7180-trogdor-wormdingler-rev0-inx.dtb
-> > +dtb-$(CONFIG_ARCH_QCOM)      += sc7180-trogdor-wormdingler-rev1-boe.dtb
-> > +dtb-$(CONFIG_ARCH_QCOM)      += sc7180-trogdor-wormdingler-rev1-inx.dtb
-> > +dtb-$(CONFIG_ARCH_QCOM)      += sc7180-trogdor-wormdingler-rev1-inx-rt5682s.dtb
-> > +dtb-$(CONFIG_ARCH_QCOM)      += sc7180-trogdor-wormdingler-rev1-boe-rt5682s.dtb
-> >  dtb-$(CONFIG_ARCH_QCOM)      += sc7180-trogdor-r1.dtb
-> >  dtb-$(CONFIG_ARCH_QCOM)      += sc7180-trogdor-r1-lte.dtb
-> >  dtb-$(CONFIG_ARCH_QCOM)      += sc7280-herobrine-crd.dtb
-> > diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev0-boe.dts b/arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev0-boe.dts
-> > new file mode 100644
-> > index 000000000000..d6ed7d0afe4a
-> > --- /dev/null
-> > +++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-wormdingler-rev0-boe.dts
-> > @@ -0,0 +1,22 @@
-> > +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-> > +/*
-> > + * Google Wormdingler board device tree source
-> > + *
-> > + * Copyright 2021 Google LLC.
-> > + *
-> > + * SKU: 0x10 => 16
-> > + *  - bits 7..4: Panel ID: 0x1 (BOE)
-> > + */
-> > +
-> > +/dts-v1/;
-> > +
-> > +#include "sc7180-trogdor-wormdingler-rev0.dtsi"
-> > +
-> > +/ {
-> > +     model = "Google Wormdingler rev0 BOE panel board";
-> > +     compatible = "google,wormdingler-rev0-sku16", "qcom,sc7180";
->
-> There was a v6 a second ago, now it is v8... It's confusing. Don't send
-> too often, especially without incorporating actual review.
+> ACPI_PTR() is more harmful than helpful. For example, in this case
+> if CONFIG_ACPI=n, the ID table left unused which is not what we want.
+> 
+> Instead of making linker to drop a section, drop ACPI_PTR().
+> 
+> As a side effect this makes driver ACPI and OF clean.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Applied.
 
-I think the problem was that the v6 sent a second ago was supposed to
-be v7 but Joe forgot to increment the version number so there are two
-v6 sets. I guess he decided to just send a v8 out to fix things...
+Thanks,
 
+Jonathan
 
-> You need to document the compatibles. Please base on Doug's patches
-> adding the compatibles for existing boards.
+> ---
+>  drivers/iio/accel/mma7660.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/mma7660.c b/drivers/iio/accel/mma7660.c
+> index 112a5a33c29f..794f2f383303 100644
+> --- a/drivers/iio/accel/mma7660.c
+> +++ b/drivers/iio/accel/mma7660.c
+> @@ -7,8 +7,8 @@
+>   * IIO driver for Freescale MMA7660FC; 7-bit I2C address: 0x4c.
+>   */
+>  
+> -#include <linux/acpi.h>
+>  #include <linux/i2c.h>
+> +#include <linux/mod_devicetable.h>
+>  #include <linux/module.h>
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/sysfs.h>
+> @@ -255,7 +255,7 @@ static const struct of_device_id mma7660_of_match[] = {
+>  };
+>  MODULE_DEVICE_TABLE(of, mma7660_of_match);
+>  
+> -static const struct acpi_device_id __maybe_unused mma7660_acpi_id[] = {
+> +static const struct acpi_device_id mma7660_acpi_id[] = {
+>  	{"MMA7660", 0},
+>  	{}
+>  };
+> @@ -267,7 +267,7 @@ static struct i2c_driver mma7660_driver = {
+>  		.name = "mma7660",
+>  		.pm = pm_sleep_ptr(&mma7660_pm_ops),
+>  		.of_match_table = mma7660_of_match,
+> -		.acpi_match_table = ACPI_PTR(mma7660_acpi_id),
+> +		.acpi_match_table = mma7660_acpi_id,
+>  	},
+>  	.probe		= mma7660_probe,
+>  	.remove		= mma7660_remove,
 
-I think all of the compatibles here are documented by my series, but
-that could be mentioned in the cover letter that I've asked Joe to
-write for v9. Basically point to:
-
-https://lore.kernel.org/r/20220520143502.v4.5.Ie8713bc0377672ed8dd71189e66fc0b77226fb85@changeid
-
--Doug
