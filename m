@@ -2,129 +2,321 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4963C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 17:11:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FA31C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 17:17:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235326AbiFRRLq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 18 Jun 2022 13:11:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39676 "EHLO
+        id S236137AbiFRRRJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 18 Jun 2022 13:17:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236137AbiFRRLm (ORCPT
+        with ESMTP id S233373AbiFRRRH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 18 Jun 2022 13:11:42 -0400
-Received: from mail-oa1-x30.google.com (mail-oa1-x30.google.com [IPv6:2001:4860:4864:20::30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6AAB13DCA
-        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 10:11:37 -0700 (PDT)
-Received: by mail-oa1-x30.google.com with SMTP id 586e51a60fabf-1014b2752c1so9140147fac.11
-        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 10:11:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp.br; s=usp-google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=B8CXs8G7SKCeidkQWd9kAuICsm7Sw1h76v8hv8CR6wQ=;
-        b=cuXb7N4G9pIbYvpYCa6o9PQHUD2DfcKP/+gFugpXKusIPZ8udyvtuH7DJPmo+JUAOL
-         8eagpNlDgynjnq8Gd81Y/eopVQYnjECp8OsqpfuRnKA9HNyn++ZH7HNNZ9TIjsRXeSeG
-         BvdjwgCJNtORrqw8bW9YNyv+ik/h87ruk6IhWF/Ulomb3roDpockEzXUsaUcJnWsLKey
-         JlqmKq38sV0x3yb+kEcSWDJ7IjC7ODgIlcJzGQ3llXc0MXXhANbar/PuhU229R0QH9qT
-         lz3fsVlqpE6nT/3L7c8FVrsr8AgyflhOszSQr4SlJOROtqKz5LZwEe2tkhcIJNa2UAy5
-         H5YA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=B8CXs8G7SKCeidkQWd9kAuICsm7Sw1h76v8hv8CR6wQ=;
-        b=fBFBeEXsjIKZBSbLu/Eg8ntmwnVeUNuOssaGdTHvBS04NQ0/0gOHaQj3Widk4hrz63
-         LOAPNr1bqYC3qrgecUZ42/PrMGPr0KVtexvH9OmKYIgnlBsAe3XWQXdUjRgl3k0okZd3
-         gbr+3U9XimIKXmQc/jYQzKsdt7sHd68u99rZ/0zNj6eREOJJ5XKR69N08VJeY7d230a4
-         aPQmxa3I6+Y1Z2NDXwJC1aJkRghG1nxhn5GLlm7WPWB9f3WZQrEUk4gDtHf0oj/a6ey2
-         D94FlyhvBMXpVEBhVY1INin1kO1rzwWbVSfCbwHtMSrBIJ7UM2ZfBulx7OlOmD99p5fa
-         ncQQ==
-X-Gm-Message-State: AJIora85aPUQ7spkN/zPKdikEwsBTVZZbbtIyAl/jKtkCf+/R8r03gNr
-        vngGRdGuz92H95QoAOi6yo4q3g==
-X-Google-Smtp-Source: AGRyM1tDVmXtipYu/LaRH32Cww8VlWl/7+4pR6EaOfqHWjwGaKiJnIATqU0fJ7tQTyGNrbOvR86wqw==
-X-Received: by 2002:a05:6870:538b:b0:101:17f2:d6e with SMTP id h11-20020a056870538b00b0010117f20d6emr13782917oan.200.1655572295844;
-        Sat, 18 Jun 2022 10:11:35 -0700 (PDT)
-Received: from ?IPV6:2804:14d:8084:84c6:fe26:c42d:aab9:fa8a? ([2804:14d:8084:84c6:fe26:c42d:aab9:fa8a])
-        by smtp.gmail.com with ESMTPSA id o5-20020a4a2c05000000b0035eb4e5a6b3sm4677268ooo.9.2022.06.18.10.11.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 18 Jun 2022 10:11:35 -0700 (PDT)
-Message-ID: <3358b97e-021a-82b7-9ae2-2113aea2c2d9@usp.br>
-Date:   Sat, 18 Jun 2022 14:11:29 -0300
+        Sat, 18 Jun 2022 13:17:07 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8A0813D66;
+        Sat, 18 Jun 2022 10:17:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 33438CE0986;
+        Sat, 18 Jun 2022 17:17:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 670B6C3411A;
+        Sat, 18 Jun 2022 17:16:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655572622;
+        bh=7XCDDYfV83xMFA1Nq8ZlvM/SnMA5iCTP9CKgyrzuITY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ua5hSurVhYvagLVmj4e5BG3ry/6fhC+ZrheQkl4FbCNmZk+ecO4eTg3E4ZKp1SaZb
+         zhaCcdzdHpzMOqgk8aMLtzhpuN8Qe8QQSy1rC3ZlwLFEJU9pisF4Z9j3Kxw+wx3zqj
+         H6ioOzG2BKQZIkZyadTnQRZlBdeXbgfXNmE/I9aQKZwXh1Dera6ryH4+805xh6dnse
+         eOyL32HehyDn7ULyg/k5KG7ZHGxAztVpROqnG80SiOSvipmOcXV8vYm4CId5P+UPP3
+         Vu/GZmhhKcEAeSwKS4v8q0j9IFMFtQLXE/OVaLKPfqR1kOX3Q6eWHp1oc1yZi+A7qS
+         SbG/2WjFklQCA==
+Date:   Sat, 18 Jun 2022 18:26:18 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     <andrea.merello@iit.it>
+Cc:     <mchehab+huawei@kernel.org>, <linux-iio@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <lars@metafoo.de>, <robh+dt@kernel.org>,
+        <andy.shevchenko@gmail.com>, <matt.ranostay@konsulko.com>,
+        <ardeleanalex@gmail.com>, <jacopo@jmondi.org>
+Subject: Re: [v6 08/14] iio: imu: add Bosch Sensortec BNO055 core driver
+Message-ID: <20220618182618.4da1df69@jic23-huawei>
+In-Reply-To: <20220613120534.36991-9-andrea.merello@iit.it>
+References: <20220613120534.36991-1-andrea.merello@iit.it>
+        <20220613120534.36991-9-andrea.merello@iit.it>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 0/5] Rework KUnit test execution in modules
-Content-Language: en-US
-To:     David Gow <davidgow@google.com>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Jeremy Kerr <jk@codeconstruct.com.au>,
-        Daniel Latypov <dlatypov@google.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Longpeng <longpeng2@huawei.com>
-Cc:     kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-aspeed@lists.ozlabs.org, openbmc@lists.ozlabs.org,
-        linux-usb@vger.kernel.org, linux-modules@vger.kernel.org,
-        Matt Johnston <matt@codeconstruct.com.au>
-References: <20220618090310.1174932-1-davidgow@google.com>
-From:   =?UTF-8?Q?Ma=c3=adra_Canal?= <maira.canal@usp.br>
-In-Reply-To: <20220618090310.1174932-1-davidgow@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/18/22 06:03, David Gow wrote:
-> This patch series makes two changes to how KUnit test suites are stored
-> and executed:
-> - The .kunit_test_suites section is now used for tests in modules (in
->   lieu of a module_init funciton), as well as for built-in tests. The
->   module loader will now trigger test execution. This frees up the
->   module_init function for other uses.
-> - Instead of storing an array of arrays of suites, have the
->   kunit_test_suite() and kunit_test_suites() macros append to one global
->   (or per-module) list of test suites. This removes a needless layer of
->   indirection.
-> 
-> The upshot of this is that it should now be possible to use the
-> kunit_test_suite() and kunit_test_suites() macros to register test
-> suites even from within modules which otherwise had module_init
-> functions. This was proving to be quite a common issue, resulting in
-> several modules calling into KUnit's private suite execution functions
-> to run their tests (often introducing incompatibilities with the KUnit
-> tooling).
-> 
-> This series also fixes the thunderbolt, nitro_enclaves, and
-> sdhci-of-aspeed tests to use kunit_test_suite() now that it works.
-> 
-> Huge thanks to Jeremy Kerr, who designed and implemented the module
-> loader changes, and to Daniel Latypov for pushing the simplification of
-> the nested arrays in .kunit_test_suites.
-> 
-> I've tested this series both with builtin tests, and with modules on
-> x86_64, but there's always the possibility that there's something subtle
-> and nasty on another architecture, so please test!
-> 
-> Cheers,
-> -- David
-> 
+On Mon, 13 Jun 2022 14:05:28 +0200
+<andrea.merello@iit.it> wrote:
 
-I've tested the modules on x86_64 machines, and everything looks fine.
-Also, I applied the AMDGPU KUnit tests [1] on top of these patches,
-tried out compiling as a module, and it runs pretty well!
+> From: Andrea Merello <andrea.merello@iit.it>
+> 
+> Add the core driver for the BNO055 IMU from Bosch. This IMU can be
+> connected via both serial and I2C busses; separate patches will add support
+> for them.
+> 
+> The driver supports "AMG" (Accelerometer, Magnetometer, Gyroscope) mode,
+> that provides raw data from the said internal sensors, and a couple of
+> "fusion" modes (i.e. the IMU also does calculations in order to provide
+> euler angles, quaternions, linear acceleration and gravity measurements).
+> 
+> In fusion modes the AMG data is still available (with some calibration
+> refinements done by the IMU), but certain settings such as low pass filters
+> cut-off frequency and sensors' ranges are fixed, while in AMG mode they can
+> be customized; this is why AMG mode can still be interesting.
+> 
+> Signed-off-by: Andrea Merello <andrea.merello@iit.it>
+> ---
+Hi Andrea,
 
-Great to see this feature on KUnit!
+A few trivial things from me this time seeing as you are going to be doing a v7.
 
-Tested-by: Maíra Canal <maira.canal@usp.br>
+Thanks,
 
-[1] https://lore.kernel.org/dri-devel/20220608010709.272962-1
-maira.canal@usp.br/
+Jonathan
 
-Best Regards,
-- Maíra Canal
+
+
+> +
+> +static ssize_t bno055_get_calib_status(struct device *dev, char *buf, int which)
+> +{
+> +	struct bno055_priv *priv = iio_priv(dev_to_iio_dev(dev));
+> +	int calib;
+> +	int ret;
+> +	int val;
+> +
+> +	if (priv->operation_mode == BNO055_OPR_MODE_AMG ||
+> +	    (priv->operation_mode == BNO055_OPR_MODE_FUSION_FMC_OFF &&
+> +	     which == BNO055_CALIB_STAT_MAGN_SHIFT)) {
+> +		calib = 0;
+> +	} else {
+> +		mutex_lock(&priv->lock);
+> +		ret = regmap_read(priv->regmap, BNO055_CALIB_STAT_REG, &val);
+> +		mutex_unlock(&priv->lock);
+> +
+> +		if (ret)
+> +			return -EIO;
+> +
+> +		calib = ((val >> which) & BNO055_CALIB_STAT_MASK) + 1;
+Hmm. This is an unsual field get.  I wonder if it is good idea to
+have what looks like a field mask in BNO055_CALIB_STAT_MASK but isn't
+really because we are applying it to a shifted value.  Maybe we 
+are better off just encoding it directly here as  GENMASK(1, 0)
+
+> +	}
+> +
+> +	return sysfs_emit(buf, "%d\n", calib);
+> +}
+> +
+
+> +#ifdef CONFIG_DEBUG_FS
+
+I'm not particularly keen on ifdef fun in c files. How bad is it if we
+just don't bother and use __maybe_unused.  debug_fs_createfile is visible to
+the compiler in !CONFIG_DEBUG_FS so it should manage to remove everything
+except *_debugfs_reg_access() but that is trivial in size anyway.
+
+> +static int bno055_debugfs_reg_access(struct iio_dev *iio_dev, unsigned int reg,
+> +				     unsigned int writeval, unsigned int *readval)
+> +{
+> +	struct bno055_priv *priv = iio_priv(iio_dev);
+> +
+> +	if (readval)
+> +		return regmap_read(priv->regmap, reg, readval);
+> +	else
+> +		return regmap_write(priv->regmap, reg, writeval);
+> +}
+> +
+> +static ssize_t bno055_show_fw_version(struct file *file, char __user *userbuf,
+> +				      size_t count, loff_t *ppos)
+> +{
+> +	struct bno055_priv *priv = file->private_data;
+> +	int rev, ver;
+> +	char *buf;
+> +	int ret;
+> +
+> +	ret = regmap_read(priv->regmap, BNO055_SW_REV_LSB_REG, &rev);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_read(priv->regmap, BNO055_SW_REV_MSB_REG, &ver);
+> +	if (ret)
+> +		return ret;
+> +
+> +	buf = kasprintf(GFP_KERNEL, "ver: 0x%x, rev: 0x%x\n", ver, rev);
+> +	if (!buf)
+> +		return -ENOMEM;
+> +
+> +	ret = simple_read_from_buffer(userbuf, count, ppos, buf, strlen(buf));
+> +	kfree(buf);
+> +
+> +	return ret;
+> +}
+> +
+> +static const struct file_operations bno055_fw_version_ops = {
+> +	.open = simple_open,
+> +	.read = bno055_show_fw_version,
+> +	.llseek = default_llseek,
+> +	.owner = THIS_MODULE,
+> +};
+> +
+> +static void bno055_debugfs_remove(void *debugfs)
+> +{
+> +	debugfs_remove((struct dentry *)debugfs);
+> +}
+> +
+> +static void bno055_debugfs_init(struct iio_dev *iio_dev)
+> +{
+> +	struct bno055_priv *priv = iio_priv(iio_dev);
+> +
+> +	priv->debugfs = debugfs_create_file("firmware_version", 0400,
+> +					    iio_get_debugfs_dentry(iio_dev),
+> +					    priv, &bno055_fw_version_ops);
+> +
+> +	devm_add_action_or_reset(priv->dev, bno055_debugfs_remove, priv->debugfs);
+> +}
+> +#else
+> +static void bno055_debugfs_init(struct iio_dev *iio_dev)
+> +{
+> +}
+> +
+> +static int bno055_debugfs_reg_access(struct iio_dev *iio_dev, unsigned int reg,
+> +				     unsigned int writeval, unsigned int *readval)
+> +{
+> +	return 0;
+> +}
+> +#endif
+> +
+
+...
+
+
+> +
+> +static irqreturn_t bno055_trigger_handler(int irq, void *p)
+> +{
+> +	struct iio_poll_func *pf = p;
+> +	struct iio_dev *iio_dev = pf->indio_dev;
+> +	struct bno055_priv *priv = iio_priv(iio_dev);
+> +	int xfer_start, start, end, prev_end;
+> +	unsigned long mask;
+> +	int quat_extra_len;
+> +	bool first = true;
+> +	int buf_idx = 0;
+> +	bool thr_hit;
+> +	int ret;
+> +
+> +	mutex_lock(&priv->lock);
+> +
+> +	/*
+> +	 * Walk the bitmap and eventually perform several transfers.
+> +	 * Bitmap ones-fields that are separated by gaps <= xfer_burst_break_thr
+> +	 * will be included in same transfer.
+> +	 * Every time the bitmap contains a gap wider than xfer_burst_break_thr
+> +	 * then we split the transfer, skipping the gap.
+> +	 */
+> +	for_each_set_bitrange(start, end, iio_dev->active_scan_mask,
+> +			      iio_dev->masklength) {
+> +		/*
+> +		 * First transfer will start from the beginning of the first
+> +		 * ones-field in the bitmap
+> +		 */
+> +		if (first) {
+> +			xfer_start = start;
+> +		} else {
+> +			/*
+> +			 * We found the next ones-field; check whether to
+> +			 * include it in * the current transfer or not (i.e.
+> +			 * let's perform the current * transfer and prepare for
+> +			 * another one).
+> +			 */
+> +
+> +			/*
+> +			 * In case the zeros-gap contains the quaternion bit,
+> +			 * then its length is actually 4 words instead of 1
+> +			 * (i.e. +3 wrt other channels).
+> +			 */
+> +			quat_extra_len = ((start > BNO055_SCAN_QUATERNION) &&
+
+you could reduce the scope of quat_extra_len and thr_hit, perhaps
+to just within the for loop.  Perhaps it's not worth bothering though. Up to you.
+
+
+> +					  (prev_end <= BNO055_SCAN_QUATERNION)) ? 3 : 0;
+> +
+> +			/* If the gap is wider than xfer_burst_break_thr then.. */
+> +			thr_hit = (start - prev_end + quat_extra_len) >
+> +				priv->xfer_burst_break_thr;
+> +
+> +			/*
+> +			 * .. transfer all the data up to the gap. Then set the
+> +			 * next transfer start index at right after the gap
+> +			 * (i.e. at the start of this ones-field).
+> +			 */
+> +			if (thr_hit) {
+> +				mask = *iio_dev->active_scan_mask >> xfer_start;
+> +				ret = bno055_scan_xfer(priv, xfer_start,
+> +						       prev_end - xfer_start,
+> +						       mask, priv->buf.chans, &buf_idx);
+> +				if (ret)
+> +					goto done;
+> +				xfer_start = start;
+> +			}
+> +		}
+> +		first = false;
+> +		prev_end = end;
+> +	}
+> +
+> +	/*
+> +	 * We finished walking the bitmap; no more gaps to check for. Just
+> +	 * perform the current transfer.
+> +	 */
+> +	mask = *iio_dev->active_scan_mask >> xfer_start;
+> +	ret = bno055_scan_xfer(priv, xfer_start,
+> +			       prev_end - xfer_start,
+> +			       mask, priv->buf.chans, &buf_idx);
+
+Check ret and if it's an error don't push the data.
+
+> +
+> +	iio_push_to_buffers_with_timestamp(iio_dev, &priv->buf, pf->timestamp);
+> +done:
+> +	mutex_unlock(&priv->lock);
+> +	iio_trigger_notify_done(iio_dev->trig);
+> +	return IRQ_HANDLED;
+> +}
+> +
+
+> +int bno055_probe(struct device *dev, struct regmap *regmap,
+> +		 int xfer_burst_break_thr, bool sw_reset)
+> +{
+...
+
+> +
+> +	/*
+> +	 * The stock FW version contains a bug (see comment at the beginning of
+> +	 * this file) that causes the anglvel scale to be changed depending on
+> +	 * the chip range setting. We workaround this, but we don't know what
+> +	 * other FW versions might do.
+> +	 */
+> +	if (ver != 0x3 || rev != 0x11)
+> +		dev_warn(dev, "Untested firmware version. Anglvel scale may not work as expected\n");
+> +
+> +	ret = regmap_bulk_read(priv->regmap, BNO055_UID_LOWER_REG,
+> +			       priv->uid, BNO055_UID_LEN);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Sensor calibration data */
+> +	fw_name_buf = kasprintf(GFP_KERNEL,
+> +				BNO055_FW_UID_FMT,
+> +				BNO055_UID_LEN, priv->uid);
+
+No need to break this into so many lines.  Can get it on two without
+passing 80 chars.
