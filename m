@@ -2,112 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD057C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 11:37:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EA18C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 11:37:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232855AbiFRLhQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 18 Jun 2022 07:37:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50754 "EHLO
+        id S233613AbiFRLhn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 18 Jun 2022 07:37:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230203AbiFRLhI (ORCPT
+        with ESMTP id S233195AbiFRLhT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 18 Jun 2022 07:37:08 -0400
-Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4D721A041;
-        Sat, 18 Jun 2022 04:37:05 -0700 (PDT)
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 4F29F1C0B8F; Sat, 18 Jun 2022 13:37:04 +0200 (CEST)
-Date:   Sat, 18 Jun 2022 13:37:03 +0200
-From:   Pavel Machek <pavel@ucw.cz>
-To:     Coly Li <colyli@suse.de>
-Cc:     Pavel Machek <pavel@denx.de>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>,
-        baijiaju1990@gmail.com, oslab@tsinghua.edu.cn,
-        Jens Axboe <axboe@kernel.dk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com, Daniel Latypov <dlatypov@google.com>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        kunit-dev@googlegroups.com,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>
-Subject: Re: [PATCH 5.17 000/772] 5.17.14-rc1 review
-Message-ID: <20220618113703.GA10888@duo.ucw.cz>
-References: <20220607164948.980838585@linuxfoundation.org>
- <CA+G9fYui20CoDeqa6OrCYB+CGpgoFkhXtkdMDFJd1H55efCm6Q@mail.gmail.com>
- <CA+G9fYt47PBfbOK77eiH3qP2QH0iWQ=p12NELpL+R_k7O678=g@mail.gmail.com>
- <20220618104925.GA3644@duo.ucw.cz>
- <6497730E-D4D2-4FB3-B95B-E1DAB2C2B287@suse.de>
+        Sat, 18 Jun 2022 07:37:19 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21EC11A386
+        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 04:37:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655552238; x=1687088238;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=aOYo46dpjPADJUZif/M9VCCs/cdqw1jhFQJdCWKAs90=;
+  b=jYplqyboqo4PaY+z4EyMbHo3ywZBfxQlwrr8Lz5VXK53Adc6Cer6p/Ay
+   qLcRnfCQr2+cdCXn/a+RgeAODSWbJlmNxs7G03ASrYcMbYL/GIp41wPxG
+   1tGGAm8Fw1F2yFv/4Gaun3m+AksvzCDkO5iiZfc4PfIG5EjAQ2lrqgPaJ
+   NrfV7ckNn3BXPzzpqi5eA2RuIrXYiYvSECI7zbFnYAUxp+G34Nz1mISFU
+   bRYp5g0HIRLTXIw45Bf2l0URF1eUiZpwxKoDkylnkLmleUq9mnVEuSpXq
+   CgtrTJ67RjyFt4O41tJijTOyGHJmtItUlRcrNSrUDD3UxR4zp+SpK/K0T
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="278422459"
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="278422459"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jun 2022 04:37:17 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="763557267"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 18 Jun 2022 04:37:16 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o2WlP-000QHx-DQ;
+        Sat, 18 Jun 2022 11:37:15 +0000
+Date:   Sat, 18 Jun 2022 19:36:16 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Liang He <windhl@126.com>, linux@armlinux.org.uk
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, windhl@126.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] arm: mm: (cache-feroceon-l2) Add missing of_node_put()
+Message-ID: <202206181916.KzyEh57x-lkp@intel.com>
+References: <20220616030232.3974254-1-windhl@126.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="pWyiEgJYm5f9v55/"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <6497730E-D4D2-4FB3-B95B-E1DAB2C2B287@suse.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220616030232.3974254-1-windhl@126.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Liang,
 
---pWyiEgJYm5f9v55/
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Thank you for the patch! Yet something to improve:
 
-Hi!
+[auto build test ERROR on arm/for-next]
+[also build test ERROR on arm64/for-next/core clk/clk-next kvmarm/next rockchip/for-next shawnguo/for-next soc/for-next xilinx-xlnx/master linus/master keystone/next v5.19-rc2 next-20220617]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-> >>    Fixes: bc082a55d25c ("bcache: fix inaccurate io state for detached
-> > ...
-> >=20
-> >> +++ b/drivers/md/bcache/request.c
-> >> @@ -1107,6 +1107,12 @@ static void detached_dev_do_request(struct
-> >> bcache_device *d, struct bio *bio,
-> >>         * which would call closure_get(&dc->disk.cl)
-> >>         */
-> >>        ddip =3D kzalloc(sizeof(struct detached_dev_io_private), GFP_NO=
-IO);
-> >> +       if (!ddip) {
-> >> +               bio->bi_status =3D BLK_STS_RESOURCE;
-> >> +               bio->bi_end_io(bio);
-> >> +               return;
-> >> +       }
-> >> +
-> >>        ddip->d =3D d;
-> >>        /* Count on the bcache device */
-> >>        ddip->orig_bdev =3D orig_bdev;
-> >>=20
-> >=20
-> > So... for patch to make any difference, memory allocation has to fail
-> > and ddip has to be NULL.
-> >=20
-> > Before the patch, it would oops in "ddip->d =3D d;". With the patch, you
-> > do some kind of error handling. Even if it is buggy, it should not do
-> > more harm than immediate oops.
->=20
-> I just receive this single email and don=E2=80=99t have any idea for the =
-context and what the problem is. Where can I see the whole conversation?
->=20
+url:    https://github.com/intel-lab-lkp/linux/commits/Liang-He/arm-mm-cache-feroceon-l2-Add-missing-of_node_put/20220616-110418
+base:   git://git.armlinux.org.uk/~rmk/linux-arm.git for-next
+config: arm-mv78xx0_defconfig (https://download.01.org/0day-ci/archive/20220618/202206181916.KzyEh57x-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 91688716ba49942051dccdf7b9c4f81a7ec8feaf)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm cross compiling tool for clang build
+        # apt-get install binutils-arm-linux-gnueabi
+        # https://github.com/intel-lab-lkp/linux/commit/bfe3f64dcc525721223aeb2d18594832ac9273c5
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Liang-He/arm-mm-cache-feroceon-l2-Add-missing-of_node_put/20220616-110418
+        git checkout bfe3f64dcc525721223aeb2d18594832ac9273c5
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
 
-Discussion happened on stable@vger.kernel.org mailing lists, archives
-should be easily available. Copy went to lkml, too.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Best regards,
-								Pavel
---=20
-People of Russia, stop Putin before his war on Ukraine escalates.
+All errors (new ones prefixed by >>):
 
---pWyiEgJYm5f9v55/
-Content-Type: application/pgp-signature; name="signature.asc"
+>> arch/arm/mm/cache-feroceon-l2.c:382:9: error: use of undeclared label 'out_put'
+                           goto out_put;
+                                ^
+   1 error generated.
 
------BEGIN PGP SIGNATURE-----
 
-iFwEABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYq243wAKCRAw5/Bqldv6
-8i+2AJdGM7sgIlX9Cpj2tjxtHjOUGbD0AKC/EHB1Dm/JmiCnatyPGyqNLzQmGQ==
-=p/eF
------END PGP SIGNATURE-----
+vim +/out_put +382 arch/arm/mm/cache-feroceon-l2.c
 
---pWyiEgJYm5f9v55/--
+   376	
+   377		node = of_find_matching_node(NULL, feroceon_ids);
+   378		if (node && of_device_is_compatible(node, "marvell,kirkwood-cache")) {
+   379			base = of_iomap(node, 0);
+   380			if (!base) {
+   381				ret = -ENOMEM;
+ > 382				goto out_put;
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
