@@ -2,124 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFACDC43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 03:03:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F414BCCA47F
+	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 03:05:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384004AbiFRDDp (ORCPT
+        id S1384010AbiFRDFL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 23:03:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39832 "EHLO
+        Fri, 17 Jun 2022 23:05:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383900AbiFRDDl (ORCPT
+        with ESMTP id S1383943AbiFRDFI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 23:03:41 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 520BA6CAA7;
-        Fri, 17 Jun 2022 20:03:40 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 25I32Nt4004650;
-        Fri, 17 Jun 2022 22:02:23 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1655521343;
-        bh=v9iLe16OQzDjus8PgEyzt81ju785zygpn75Qb7cPKDk=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=ubm9+IAhGGTk3kdTt5x7vdcv21zn8SduavN1QPsDFtatpMEQLnnpq14kmxzjhSdoM
-         EhSYzwprF+3qoaWgxqEa7tkCA7AfNzT0CIUyyPN2V1vMiSYZKDtU+T7Pvq2yIkEfs4
-         7jCtmDUFYShPMx+ispwTz24Ou/91SMS8cN3blxkI=
-Received: from DLEE103.ent.ti.com (dlee103.ent.ti.com [157.170.170.33])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 25I32NTI008896
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 17 Jun 2022 22:02:23 -0500
-Received: from DLEE108.ent.ti.com (157.170.170.38) by DLEE103.ent.ti.com
- (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 17
- Jun 2022 22:02:22 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE108.ent.ti.com
- (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Fri, 17 Jun 2022 22:02:22 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 25I32MBg024730;
-        Fri, 17 Jun 2022 22:02:22 -0500
-From:   Nishanth Menon <nm@ti.com>
-To:     <krzysztof.kozlowski@linaro.org>, <olof@lixom.net>,
-        <soc@kernel.org>, Arnd Bergmann <arnd@arndb.de>, <arm@kernel.org>
-CC:     Nishanth Menon <nm@ti.com>, <linux-input@vger.kernel.org>,
-        <khuong@os.amperecomputing.com>, <heiko@sntech.de>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <jonathanh@nvidia.com>, <sebastian.hesselbarth@gmail.com>,
-        <agross@kernel.org>, <linux-omap@vger.kernel.org>,
-        <linux-gpio@vger.kernel.org>, <tony@atomide.com>,
-        <nicolas.ferre@microchip.com>, <joel@jms.id.au>,
-        <linux-arm-msm@vger.kernel.org>, <robh+dt@kernel.org>,
-        <bcousson@baylibre.com>, <thierry.reding@gmail.com>,
-        <claudiu.beznea@microchip.com>, <vigneshr@ti.com>,
-        <bjorn.andersson@linaro.org>, <openbmc@lists.ozlabs.org>,
-        <peda@axentia.se>, <andrew@lunn.ch>,
-        <linux-aspeed@lists.ozlabs.org>, <linus.walleij@linaro.org>,
-        <festevam@gmail.com>, <xuwei5@hisilicon.com>,
-        <alexandre.belloni@bootlin.com>, <leoyang.li@nxp.com>,
-        <michal.simek@xilinx.com>, <andrew@aj.id.au>, <kristo@kernel.org>,
-        <linux-imx@nxp.com>, <krzysztof.kozlowski+dt@linaro.org>,
-        <shawnguo@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>,
-        <linux-arm-kernel@lists.infradead.org>, <matthias.bgg@gmail.com>,
-        <j.neuschaefer@gmx.net>, <gregory.clement@bootlin.com>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-rockchip@lists.infradead.org>, <linux@armlinux.org.uk>,
-        <kernel@pengutronix.de>, <dmitry.torokhov@gmail.com>,
-        <linux-tegra@vger.kernel.org>
-Subject: Re: (subset) [PATCH v3 00/40] dt-bindings: input: gpio-keys: rework matching children
-Date:   Fri, 17 Jun 2022 22:02:21 -0500
-Message-ID: <165552126299.28422.3856100388848453087.b4-ty@ti.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220616005224.18391-1-krzysztof.kozlowski@linaro.org>
-References: <20220616005224.18391-1-krzysztof.kozlowski@linaro.org>
+        Fri, 17 Jun 2022 23:05:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 745B96CAAA;
+        Fri, 17 Jun 2022 20:05:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 095D361F7C;
+        Sat, 18 Jun 2022 03:05:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDFD5C3411C;
+        Sat, 18 Jun 2022 03:05:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655521506;
+        bh=Z2xIoPA5yC3Q85E7Ikorw1miHTExfmuiClGfAhd9tKc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=UZYm4Jms+HU+qkczGsb6+A59uGJ/Sg0+VOKUINsCQC/lpjfD8XSHfw4DMW+bTZXWK
+         d/jH0oJ7KTnqG108HiZvs2DN+JdMfjdSLrl0VZeHpM8E89FUhXX5xBHa2Igm6Noruz
+         55Vr5SWZTkEPv4gXDDExjyxR5JMY6gINREjvEL3/Cja6aZkSjvVGMP6WZ112BTz/Bn
+         SZZ+2VzGKZ8DTsvyW7NFRF+eKPbuKvXTatVc4agOsiDds7mZAU7s2/2C63aj4LHk4L
+         y7AuKM0hTkMbOXIPNZ8b8asXCHwEOqsmD5grEpiY6TaAyYmtFKNhh9tcAHIVMhwL3y
+         p1cjpao6kH4IA==
+Date:   Fri, 17 Jun 2022 20:05:04 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     menglong8.dong@gmail.com
+Cc:     edumazet@google.com, rostedt@goodmis.org, mingo@redhat.com,
+        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        pabeni@redhat.com, imagedong@tencent.com, kafai@fb.com,
+        talalahmad@google.com, keescook@chromium.org,
+        dongli.zhang@oracle.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v4 0/8] net: tcp: add skb drop reasons to tcp
+ state change
+Message-ID: <20220617200504.25d85ee4@kernel.org>
+In-Reply-To: <20220617100514.7230-1-imagedong@tencent.com>
+References: <20220617100514.7230-1-imagedong@tencent.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzysztof Kozlowski,
-
-On Wed, 15 Jun 2022 17:52:24 -0700, Krzysztof Kozlowski wrote:
-> Merging
-> =======
-> 1. dt-bindings: rebased on top of Rob's:
->    https://lore.kernel.org/all/20220608211207.2058487-1-robh@kernel.org/
+On Fri, 17 Jun 2022 18:05:06 +0800 menglong8.dong@gmail.com wrote:
+> From: Menglong Dong <imagedong@tencent.com>
 > 
-> 2. DTS patches are independent. They can be picked up directly by sub-arch
->    maintainers, by Arnd or Olof, or eventually by me (if you wish).
-> 
-> [...]
+> In this series patches, skb drop reasons are add to code path of TCP
+> state change, which we have not done before. It is hard to pass these
+> reasons from the function to its caller, where skb is dropped. In order
+> to do this, we have to make some functions return skb drop reasons, or
+> pass the pointer of 'reason' to these function as an new function
+> argument.
 
-I have applied the following to branch ti-k3-dts-next on [1].
-Thank you!
-
-[29/40] arm64: dts: ti: align gpio-key node names with dtschema
-        commit: 85423386c9763fb20159892631eccc481a2d9b71
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent up the chain during
-the next merge window (or sooner if it is a relevant bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-[1] git://git.kernel.org/pub/scm/linux/kernel/git/ti/linux.git
--- 
-Regards,
-Nishanth Menon
-Key (0xDDB5849D1736249D) / Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5 849D 1736 249D
-
+Does not cleanly apply to net-next, reportedly.
