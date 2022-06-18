@@ -2,61 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D362FC43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 00:54:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C68DC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 00:55:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232490AbiFSAy4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 18 Jun 2022 20:54:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49130 "EHLO
+        id S233330AbiFSAzq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 18 Jun 2022 20:55:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbiFSAyv (ORCPT
+        with ESMTP id S229446AbiFSAzo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 18 Jun 2022 20:54:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A00E636F
-        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 17:54:49 -0700 (PDT)
+        Sat, 18 Jun 2022 20:55:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34FB5BE07
+        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 17:55:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BF60160DEB
-        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 00:54:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 874FDC3411A;
-        Sun, 19 Jun 2022 00:54:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F3A88B80B3F
+        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 00:55:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCB3DC3411A;
+        Sun, 19 Jun 2022 00:55:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655600088;
-        bh=x7abiCbuk7wG6GSu3AHKJhPYVCZGlCbAAv7OGXYdF0Q=;
-        h=Date:Subject:To:References:From:In-Reply-To:From;
-        b=OvAsvxp4psgzvMUwuYyixp1E0jUGsrpfqQdfTEpsNMOb2VVMK3uqwwX0JYwd4Siar
-         UE52grnjeBe4P3Dcb4oxQJvfqwQEzowGcVjmUBHL8mWglQfqddmIkDJq6PLdO6Czti
-         oLcckR0w90VYQ4+VAJsFNbxG3LNS/H0CsEYMEgkXj9aQFhhlESgOz43CHai469QzFC
-         2qNi05aEpVR/+m0imTv76+GAGzDBfcBPVyJGK/v/sljnfJU/FKYHrEJYH9uX1HZl5I
-         To/8NFGYJ7Bq3CCNjtw5NWLOwHBifm7beUYk/aRjjkMqQEAtMRONWdCZmpskOiEAOm
-         jNizIGX7J2Scw==
-Message-ID: <d826a043-0e2e-889c-4bae-63738867a3b4@kernel.org>
-Date:   Sun, 19 Jun 2022 08:54:46 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [f2fs-dev] [PATCH 3/3] f2fs: do not skip updating inode when
- retrying to flush node page
-Content-Language: en-US
-To:     Jaegeuk Kim <jaegeuk@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net
-References: <20220617223106.3517374-1-jaegeuk@kernel.org>
- <20220617223106.3517374-3-jaegeuk@kernel.org>
+        s=k20201202; t=1655600141;
+        bh=Y1pY1dTeemIGkfSVJrQX+Eq3dkLnscBf5JndGotxl+w=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ZddnPrdb25S2Mxs6xdlu3Tfh/9GngPK2LG2wF6CBGjRq8U6gaWJy8/xhLCratMnqa
+         U3NS6ZraMnDoa2RroNZRXYiOi2NyKtHi8jsvTbcWGV29kKDHqkAtU+FTg1MrdgT8BC
+         cpy7+LjAO5gL79p3ram6orvA97R3fjYnGsyjMJErJ+ByvH3O2siKNHjTzYXHw7jUxD
+         eOJyS+Wwz76L+6Jj5unDe/frWDVIRAOCgUIeqM5Sj+4IV4Ml9mF6RG58LNxTEDl1+U
+         9k8m6O2xWQFdddSiGbiXdDwhzytcnSBoEm25wX+r4u2z52aw+lprlHOAYPZZ9vKp0W
+         xEtmHkH3307Og==
 From:   Chao Yu <chao@kernel.org>
-In-Reply-To: <20220617223106.3517374-3-jaegeuk@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+To:     jaegeuk@kernel.org
+Cc:     linux-f2fs-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, Chao Yu <chao@kernel.org>,
+        Chao Yu <chao.yu@oppo.com>
+Subject: [PATCH] f2fs: initialize page_array_entry slab only if compression feature is on
+Date:   Sun, 19 Jun 2022 01:51:55 +0800
+Message-Id: <20220618175155.3908-1-chao@kernel.org>
+X-Mailer: git-send-email 2.36.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/6/18 6:31, Jaegeuk Kim wrote:
-> Let's try to flush dirty inode again to improve subtle i_blocks mismatch.
-> 
-> Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Otherwise, in image which doesn't support compression feature,
+page_array_entry will be initialized w/o use.
 
-Reviewed-by: Chao Yu <chao@kernel.org>
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+---
+ fs/f2fs/compress.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Thanks,
+diff --git a/fs/f2fs/compress.c b/fs/f2fs/compress.c
+index 24824cd96f36..fa237e5c7173 100644
+--- a/fs/f2fs/compress.c
++++ b/fs/f2fs/compress.c
+@@ -1908,6 +1908,9 @@ int f2fs_init_page_array_cache(struct f2fs_sb_info *sbi)
+ 	dev_t dev = sbi->sb->s_bdev->bd_dev;
+ 	char slab_name[32];
+ 
++	if (!f2fs_sb_has_compression(sbi))
++		return 0;
++
+ 	sprintf(slab_name, "f2fs_page_array_entry-%u:%u", MAJOR(dev), MINOR(dev));
+ 
+ 	sbi->page_array_slab_size = sizeof(struct page *) <<
+-- 
+2.36.1
+
