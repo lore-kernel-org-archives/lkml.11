@@ -2,130 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C775C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 02:45:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C72DC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 02:49:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383960AbiFRCp0 (ORCPT
+        id S1383957AbiFRCts (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 22:45:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53508 "EHLO
+        Fri, 17 Jun 2022 22:49:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383935AbiFRCpT (ORCPT
+        with ESMTP id S231473AbiFRCtr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 22:45:19 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2044.outbound.protection.outlook.com [40.107.243.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A50C76A00E;
-        Fri, 17 Jun 2022 19:45:18 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eAUSmPFqgsxVnU2k7eUeRJLI7dkq2IkcNECu3YtAPsfUZn5hhW5eShkVg6zB/RRSYaLP2FTt/Pk2ke5FHSiaVpIh7W8F9iBrTgmuUiRTwRtqPiZE0yNSV0j7qmHYGLCF9YFrPZilQPQ1iK0wXtKs806xGep6UUL70QNMALpnu5A2dQtJkE7LkcUYKg64JdJsfSVgQFsTjf3g6vqX7+ZFINicEgLa4B2zFB67NFvyuVVBAQD96m8BvhvsfQf1dk7DDfk7hJiraClP8sOQ9kCBSOMoyZRf1doJDDUykMXktZyiiOjXueWLe+FT/fzcmGG5dOxSV+K26jtW7/idpQ8izw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ZNenaDrZYEkFAQHcjYIh7L2D9Wouh6uO2jzRMK+XK/A=;
- b=R+dmGjLG8lbBGCnHOyOQpV8Tz1VgxEx/2yRV7/l72gXUtXa+AnGwtLG15cm1N4UtywmysH2IwMZysCaWFbKUZ4D17BvPOGi7MR5CcwXTow1MLffWWmlmm1SVe9ZnpStXCu01FvEVvgFNVkBKRSEfWj6CzyQsIz+YW6QuVcLcemaUxNTUC1hX7lTij0LzDP8Lcw6CXTpsBeTII+9D7YIszxfWxQf4zId0RQNZLvAbkQtNLElLen8/JaQGaPR087x8pcAvCtiqu5i0iRfRVlzxWCqjr1c0+snUMZ4zarnDPvk05EA64GUQUkCZWGhqAtmnr3m8gVQIN+4jatHdmepYEg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.62.198) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=xilinx.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZNenaDrZYEkFAQHcjYIh7L2D9Wouh6uO2jzRMK+XK/A=;
- b=VgmzpB3NQdsp2FWjxZt0xJbg+gTEw4FBaqW6G7Bh6Mj4BBvROgJ3Ofa8rywByezaORqsvXSkCOHADRexkJ/aDUHZ5doYG/j2uu69CqKb3VGc14mKMo4bSXqKsJXQXdik9hjGaFil0Us05D1EnyNJtTwTMiuB7QpFPBtL4NnCr10=
-Received: from BN7PR06CA0037.namprd06.prod.outlook.com (2603:10b6:408:34::14)
- by BYAPR02MB4581.namprd02.prod.outlook.com (2603:10b6:a03:55::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.16; Sat, 18 Jun
- 2022 02:45:16 +0000
-Received: from BN1NAM02FT021.eop-nam02.prod.protection.outlook.com
- (2603:10b6:408:34:cafe::d8) by BN7PR06CA0037.outlook.office365.com
- (2603:10b6:408:34::14) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.13 via Frontend
- Transport; Sat, 18 Jun 2022 02:45:16 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
- smtp.mailfrom=xilinx.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
- 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com; pr=C
-Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
- BN1NAM02FT021.mail.protection.outlook.com (10.13.2.73) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5353.14 via Frontend Transport; Sat, 18 Jun 2022 02:45:16 +0000
-Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
+        Fri, 17 Jun 2022 22:49:47 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 216B259BB4
+        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 19:49:47 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LQ0j12rG4zjXyX;
+        Sat, 18 Jun 2022 10:48:37 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Fri, 17 Jun 2022 19:45:13 -0700
-Received: from smtp.xilinx.com (172.19.127.95) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Fri, 17 Jun 2022 19:45:13 -0700
-Envelope-to: linux-pci@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- devicetree@vger.kernel.org,
- lorenzo.pieralisi@arm.com,
- bhelgaas@google.com,
- robh@kernel.org
-Received: from [10.140.9.2] (port=44908 helo=xhdbharatku40.xilinx.com)
-        by smtp.xilinx.com with esmtp (Exim 4.90)
-        (envelope-from <bharat.kumar.gogada@xilinx.com>)
-        id 1o2OSN-000FZO-38; Fri, 17 Jun 2022 19:45:03 -0700
-From:   Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
-To:     <linux-pci@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>
-CC:     <lorenzo.pieralisi@arm.com>, <bhelgaas@google.com>,
-        <michals@xilinx.com>, <robh@kernel.org>,
-        Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
-Subject: [PATCH v5 0/2] Add support for Xilinx Versal CPM5 Root Port
-Date:   Sat, 18 Jun 2022 08:14:57 +0530
-Message-ID: <20220618024459.7554-1-bharat.kumar.gogada@xilinx.com>
-X-Mailer: git-send-email 2.17.1
+ 15.1.2375.24; Sat, 18 Jun 2022 10:49:44 +0800
+Subject: Re: [PATCH v4 1/4] mm: reduce the rcu lock duration
+To:     Andrew Morton <akpm@linux-foundation.org>
+CC:     "Eric W. Biederman" <ebiederm@xmission.com>,
+        Ying Huang <ying.huang@intel.com>, <peterx@redhat.com>,
+        <apopple@nvidia.com>, <osalvador@suse.de>,
+        <mike.kravetz@oracle.com>, <songmuchun@bytedance.com>,
+        <hch@lst.de>, <dhowells@redhat.com>, <cl@linux.com>,
+        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
+        <naoya.horiguchi@nec.com>
+References: <20220530113016.16663-1-linmiaohe@huawei.com>
+ <20220530113016.16663-2-linmiaohe@huawei.com>
+ <bbc060ca6e967790423e0a3ca940d1e700447554.camel@intel.com>
+ <b2ddcd64-2779-ede9-3615-ad5bc90a3bc1@huawei.com>
+ <87bkvdfzvm.fsf@email.froward.int.ebiederm.org>
+ <e10023d7-3d19-1edf-86af-4cb79071b78f@huawei.com>
+ <87y1yga1r2.fsf@email.froward.int.ebiederm.org>
+ <cb17bad6-dbfa-013c-f879-c1883575f72b@huawei.com>
+ <87ilph90dx.fsf@email.froward.int.ebiederm.org>
+ <a836d04a-d26b-3eea-3e0e-27af0d2d9651@huawei.com>
+ <20220617172316.de2d41877e86be344052b9f5@linux-foundation.org>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <5abc85bc-fec7-afbf-4ec4-90c1385195d2@huawei.com>
+Date:   Sat, 18 Jun 2022 10:49:44 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: fa8497b8-82e7-49e4-8e73-08da50d4935f
-X-MS-TrafficTypeDiagnostic: BYAPR02MB4581:EE_
-X-Microsoft-Antispam-PRVS: <BYAPR02MB45817DFA67789C0E2A4B3958A5AE9@BYAPR02MB4581.namprd02.prod.outlook.com>
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: BbYmFfhG871z9I+TvTar09SbaAje+2Er8pOJcmrAmHdSV30jrH48d3rI7VB+6VwoanT/CA0SzUAy9UR3pQGgGV0LUF801bNtCWvd36KDR7wVlJ4wdAyVu9A3TEwu7Qs1aXK9ikz1zlje6xEMm7wmPXWENjwiZPF9pAfHJGO9afncIimzIQ+DvgOg2HvW6hfh7HtrNoGFEmolV/4L758BCqGebJPx0JBKmrCFmtY5YDQjSVhzaboA1sKiicntFwlduPcq9d3UbpEa9ID8RsaAwunXZ+XNeQlsjiPhTzlDsvVJdakk8faLkUFHtAMv6YEeXUlwMF6RFeBl6HIXsRdg1pAPWUywjthA4xB9+T3IACO/WDQOvn0ehXogIhIaIuB0tmmXDyMQ7BM9sTNISSKjm7Zn3iuvY80LgNDFtaNLnCbI8P6huI52qnP3gyfXkHKvQyfj3A6fzKb5c1XvECwlf7b831GDTYYEWY0vbIkj3ajBAdTjMkrNNyORSvpvZ+gM3w70uuyP/3/9pQf7JZ3n/3dyyk+hmGCpKnYz/Nz+ZwIP5Vhkqar6qM/t1he5ViOD81Jr8jlzIfmICPEI2D5QBANhK0Ukactp4dNPABQ9gNpbRApZoHoETM+hOaPoBdVjmXgtbH3+rXGrvKVIbwemd43TZmv8YyUWt2RaexhlqhK55GlQed9y/nDXSm57W4yIVRmk3XXHgl+F9ZXou7aA5A==
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230016)(4636009)(36840700001)(40470700004)(46966006)(47076005)(186003)(426003)(336012)(7696005)(36860700001)(1076003)(316002)(54906003)(40460700003)(110136005)(36756003)(70586007)(107886003)(8676002)(2616005)(70206006)(4326008)(103116003)(6666004)(2906002)(8936002)(5660300002)(9786002)(83380400001)(82310400005)(356005)(26005)(7636003)(498600001)(4744005)(102446001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jun 2022 02:45:16.0742
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: fa8497b8-82e7-49e4-8e73-08da50d4935f
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN1NAM02FT021.eop-nam02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR02MB4581
+In-Reply-To: <20220617172316.de2d41877e86be344052b9f5@linux-foundation.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Xilinx Versal Premium series has CPM5 block which supports Root Port
-functioning at Gen5 speed.
+On 2022/6/18 8:23, Andrew Morton wrote:
+> On Tue, 7 Jun 2022 17:19:53 +0800 Miaohe Lin <linmiaohe@huawei.com> wrote:
+> 
+>>>
+>>>
+>>> If the checks are not made to guarantee they are all checking against
+>>> the same mm, the code needs a comment to say that there is a tiny race.
+>>> The comment should say we don't care about the tiny race because
+>>> the worst that can happen is that a page is migrated to a different
+>>> numa node.  And so we don't care.
+>>>
+>>>
+>>
+>> I tend to do this one. To make sure, is the below code change what you suggest?
+> 
+> Eric went quiet.
+> 
+> As I understand it, any changes arising from this discussion can be
+> done as a followup patch.  So I'm planning on moving this 4-patch
+> series into the non-rebasing mm-stable branch late next week.
 
-Xilinx Versal CPM5 has few changes with existing CPM block.
-- CPM5 has dedicated register space for control and status registers.
-- CPM5 legacy interrupt handling needs additonal register bit
-  to enable and handle legacy interrupts.
+I will send a followup patch when discussion is done. Thanks.
 
-Changes in v5:
-- Added of_device_get_match_data to identify CPM version.
-
-
-Bharat Kumar Gogada (2):
-  dt-bindings: PCI: xilinx-cpm: Add Versal CPM5 Root Port
-  PCI: xilinx-cpm: Add support for Versal CPM5 Root Port
-
- .../bindings/pci/xilinx-versal-cpm.yaml       | 48 ++++++++++++--
- drivers/pci/controller/pcie-xilinx-cpm.c      | 62 ++++++++++++++++++-
- 2 files changed, 103 insertions(+), 7 deletions(-)
-
--- 
-2.17.1
+> 
+> 
+> .
+> 
 
