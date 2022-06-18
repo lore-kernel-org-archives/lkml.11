@@ -2,40 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71916C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 13:25:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4558BC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 13:27:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233430AbiFRNZw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 18 Jun 2022 09:25:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34078 "EHLO
+        id S233696AbiFRN1X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 18 Jun 2022 09:27:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiFRNZu (ORCPT
+        with ESMTP id S229449AbiFRN1V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 18 Jun 2022 09:25:50 -0400
+        Sat, 18 Jun 2022 09:27:21 -0400
 Received: from smtpbg.qq.com (smtpbg123.qq.com [175.27.65.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F3F2140D3;
-        Sat, 18 Jun 2022 06:25:46 -0700 (PDT)
-X-QQ-mid: bizesmtp83t1655558365tg1dsuxv
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C09914D34;
+        Sat, 18 Jun 2022 06:27:15 -0700 (PDT)
+X-QQ-mid: bizesmtp82t1655558831tav3mpq4
 Received: from localhost.localdomain ( [125.70.163.206])
         by bizesmtp.qq.com (ESMTP) with 
-        id ; Sat, 18 Jun 2022 21:19:21 +0800 (CST)
+        id ; Sat, 18 Jun 2022 21:27:06 +0800 (CST)
 X-QQ-SSF: 01000000002000D0I000B00A0000000
-X-QQ-FEAT: Mzskoac49Og1pKkwi0Uw9KBm5Fj1PumroRIkYeuk3XTUDQBxv7NrUYkg3WW0P
-        4OIkMxlCjpaJYUZbJwZEr7gUIZCsbNHQGpH7qEbFkdstCq7GVjExwgV9DwyfVe9SJSmb8so
-        HAqs15a+tJdTGPNtwncDvUOkRyXOP0SZ3Xp5aFdCAkRblHZIuIC1x54Bs6ialJaHXRB0uqT
-        HD8EA4qaZS9uKxfna1naMSHybS1brWg2etkIXrG6hb5V6h1Fm0NgYh8KEsHmr1keT9KbNY+
-        RaXMltxoHKAbrONujOkGYVrPl96/qrJZ40DBQNZGb7JHMt86R+nEIvKZeiTn9z2EjR2ttd/
-        pcgAP1z45nykPqldPe508RgdSIaDg==
+X-QQ-FEAT: ZHWZeLXy+8cHtKI1jYaZtodi5tfaA4MDUnvHxkg97ek1Kneskc370Gz5uZ0k6
+        2iX1TKiTLCsmo/RMCMy86b5G6PgA/IrVcQocmtG8gjdnIZU/Aze8s4m+koRDHBsReN7bvgO
+        htzI4HHOrk6T5nrDgHK2SF1VKQrpDpQU1p70XXMuHACKK1/D10n0kR1eT0mP2bWIHiJRXKX
+        TXuZuCNMcjxE7kpMGUELiMTE/kWTFyfNWWXEdd2CDO1EtRhc111FAaNNHZwFRtr5QkKeCO0
+        67/oIENAworu/Hp/Nk+XczCq3K9ybokXe6FKQY1dDpwk+K77e3uAbnb53FwOwgNx1aTh+iQ
+        9sb7Ww4wteINqY+0K5bp2/EHpAXrA==
 X-QQ-GoodBg: 0
 From:   Xiang wangx <wangxiang@cdjrlc.com>
-To:     davem@davemloft.net
-Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Xiang wangx <wangxiang@cdjrlc.com>
-Subject: [PATCH] sfc: Fix typo in comment
-Date:   Sat, 18 Jun 2022 21:19:14 +0800
-Message-Id: <20220618131914.14470-1-wangxiang@cdjrlc.com>
+To:     wim@linux-watchdog.org, linux@roeck-us.net,
+        linux-watchdog@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Xiang wangx <wangxiang@cdjrlc.com>
+Subject: [PATCH] watchdog: booke_wdt: Fix typo in comment
+Date:   Sat, 18 Jun 2022 21:26:59 +0800
+Message-Id: <20220618132659.17100-1-wangxiang@cdjrlc.com>
 X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -49,22 +47,22 @@ Delete the redundant word 'and'.
 
 Signed-off-by: Xiang wangx <wangxiang@cdjrlc.com>
 ---
- drivers/net/ethernet/sfc/mcdi.c | 2 +-
+ drivers/watchdog/booke_wdt.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/sfc/mcdi.c b/drivers/net/ethernet/sfc/mcdi.c
-index 50baf62b2cbc..a3425b6be3f7 100644
---- a/drivers/net/ethernet/sfc/mcdi.c
-+++ b/drivers/net/ethernet/sfc/mcdi.c
-@@ -1261,7 +1261,7 @@ static void efx_mcdi_ev_death(struct efx_nic *efx, int rc)
- }
+diff --git a/drivers/watchdog/booke_wdt.c b/drivers/watchdog/booke_wdt.c
+index 5e4dc1a0f2c6..af4b79ff93c3 100644
+--- a/drivers/watchdog/booke_wdt.c
++++ b/drivers/watchdog/booke_wdt.c
+@@ -73,7 +73,7 @@ static unsigned long long period_to_sec(unsigned int period)
  
- /* The MC is going down in to BIST mode. set the BIST flag to block
-- * new MCDI, cancel any outstanding MCDI and and schedule a BIST-type reset
-+ * new MCDI, cancel any outstanding MCDI and schedule a BIST-type reset
-  * (which doesn't actually execute a reset, it waits for the controlling
-  * function to reset it).
+ /*
+  * This procedure will find the highest period which will give a timeout
+- * greater than the one required. e.g. for a bus speed of 66666666 and
++ * greater than the one required. e.g. for a bus speed of 66666666
+  * and a parameter of 2 secs, then this procedure will return a value of 38.
   */
+ static unsigned int sec_to_period(unsigned int secs)
 -- 
 2.36.1
 
