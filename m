@@ -2,99 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85F23C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 15:26:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A120C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 18 Jun 2022 15:29:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235115AbiFRP0R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 18 Jun 2022 11:26:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39118 "EHLO
+        id S235024AbiFRP30 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 18 Jun 2022 11:29:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233894AbiFRP0N (ORCPT
+        with ESMTP id S235449AbiFRP2N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 18 Jun 2022 11:26:13 -0400
-Received: from smtp.smtpout.orange.fr (smtp02.smtpout.orange.fr [80.12.242.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4A7060F0
-        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 08:26:12 -0700 (PDT)
-Received: from pop-os.home ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id 2aKvolTjCEMbD2aKvouZnU; Sat, 18 Jun 2022 17:26:11 +0200
-X-ME-Helo: pop-os.home
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Sat, 18 Jun 2022 17:26:11 +0200
-X-ME-IP: 90.11.190.129
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     Gerd Hoffmann <kraxel@redhat.com>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        virtualization@lists.linux-foundation.org,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH] drm/bochs: Fix some error handling paths in bochs_pci_probe()
-Date:   Sat, 18 Jun 2022 17:26:08 +0200
-Message-Id: <0e676e4d56ab5b10fcf22860081414445611dfa7.1655565953.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.34.1
+        Sat, 18 Jun 2022 11:28:13 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0461DB4BF;
+        Sat, 18 Jun 2022 08:28:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 2C26DCE02BE;
+        Sat, 18 Jun 2022 15:28:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B478C3411A;
+        Sat, 18 Jun 2022 15:28:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655566084;
+        bh=BVsNfMePkIkcRLJKxWnrPVHIGrWk4Pmg3MuN5L6XZTI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=YEdkot7sy/W+8Tns+DaPXCCEzI2fvdOGx22Bzu01XVJf8iNNbwtA36CP5KFedCT2A
+         vVTeEbf4JQusT+4Q4NRqHAq+XE03j7Tw+129AY6547iNY6UlS3VKqQWGchghwPYtvZ
+         BRVotCHJzS6k2YEJIlWppzi9XTEFpgcmp3hPdmyrVwJCKui6AXYrVbv2nquswlAeFK
+         a9V1KPwMnsDbXiGicHxl9048UsoFRB+Dq6OjP4Sb0+1RFjaU0yJW2pxEw22pqYkV2t
+         y80531VDnHD8aHXVWFE1aJRiFovycfJgh5G2Re1QIGj60TjuS5YXYCOJ26Z9e6XuOC
+         ffXOolx148r3Q==
+Date:   Sat, 18 Jun 2022 16:37:21 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-iio@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Subject: Re: [PATCH v1 1/1] iio: dac: stm32-dac: Replace open coded
+ str_enable_disable()
+Message-ID: <20220618163721.1cef64c9@jic23-huawei>
+In-Reply-To: <20220616220023.9894-1-andriy.shevchenko@linux.intel.com>
+References: <20220616220023.9894-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The remove() function calls bochs_hw_fini() but this function is not called
-in the error handling of the probe.
+On Fri, 17 Jun 2022 01:00:23 +0300
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-This call releases the resources allocated by bochs_hw_init() used in
-bochs_load().
+> Replace open coded str_enable_disable() in error message in
+> stm32_dac_set_enable_state().
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
++CC Fabrice.
 
-Update the probe and bochs_load() to call bochs_hw_fini() if an error
-occurs after a successful bochs_hw_init() call.
+Looks good + harmless to me, so I'll pick it up now, but still time
+for any additional feedback as I'll only push it out for 0-day to poke
+at initially.
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-I've not been able to find a Fixes: tag because of code re-arrangement
-done in 796c3e35ac16.
----
- drivers/gpu/drm/tiny/bochs.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+Applied to the togreg branch of iio.git.
 
-diff --git a/drivers/gpu/drm/tiny/bochs.c b/drivers/gpu/drm/tiny/bochs.c
-index 4f8bf86633df..d7a34ed4be3e 100644
---- a/drivers/gpu/drm/tiny/bochs.c
-+++ b/drivers/gpu/drm/tiny/bochs.c
-@@ -581,13 +581,17 @@ static int bochs_load(struct drm_device *dev)
- 
- 	ret = drmm_vram_helper_init(dev, bochs->fb_base, bochs->fb_size);
- 	if (ret)
--		return ret;
-+		goto err_hw_fini;
- 
- 	ret = bochs_kms_init(bochs);
- 	if (ret)
--		return ret;
-+		goto err_hw_fini;
- 
- 	return 0;
-+
-+err_hw_fini:
-+	bochs_hw_fini(dev);
-+	return ret;
- }
- 
- DEFINE_DRM_GEM_FOPS(bochs_fops);
-@@ -662,11 +666,13 @@ static int bochs_pci_probe(struct pci_dev *pdev, const struct pci_device_id *ent
- 
- 	ret = drm_dev_register(dev, 0);
- 	if (ret)
--		goto err_free_dev;
-+		goto err_hw_fini;
- 
- 	drm_fbdev_generic_setup(dev, 32);
- 	return ret;
- 
-+err_hw_fini:
-+	bochs_hw_fini(dev);
- err_free_dev:
- 	drm_dev_put(dev);
- 	return ret;
--- 
-2.34.1
+Thanks,
+
+Jonathan
+
+> ---
+>  drivers/iio/dac/stm32-dac.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/dac/stm32-dac.c b/drivers/iio/dac/stm32-dac.c
+> index e842c15c674d..315d66648210 100644
+> --- a/drivers/iio/dac/stm32-dac.c
+> +++ b/drivers/iio/dac/stm32-dac.c
+> @@ -14,6 +14,7 @@
+>  #include <linux/module.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/pm_runtime.h>
+> +#include <linux/string_helpers.h>
+>  
+>  #include "stm32-dac-core.h"
+>  
+> @@ -79,8 +80,7 @@ static int stm32_dac_set_enable_state(struct iio_dev *indio_dev, int ch,
+>  	ret = regmap_update_bits(dac->common->regmap, STM32_DAC_CR, msk, en);
+>  	mutex_unlock(&dac->lock);
+>  	if (ret < 0) {
+> -		dev_err(&indio_dev->dev, "%s failed\n", en ?
+> -			"Enable" : "Disable");
+> +		dev_err(&indio_dev->dev, "%s failed\n", str_enable_disable(en));
+>  		goto err_put_pm;
+>  	}
+>  
 
