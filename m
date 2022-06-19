@@ -2,63 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C98BC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 12:37:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D002C43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 12:38:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236076AbiFSMhn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 19 Jun 2022 08:37:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34218 "EHLO
+        id S236415AbiFSMiE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 19 Jun 2022 08:38:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229472AbiFSMhm (ORCPT
+        with ESMTP id S229472AbiFSMiC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 19 Jun 2022 08:37:42 -0400
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8FE162EE;
-        Sun, 19 Jun 2022 05:37:41 -0700 (PDT)
-Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1o2uBQ-0005Md-E4; Sun, 19 Jun 2022 14:37:40 +0200
-Message-ID: <2c6bd8f9-e466-50d0-0d24-0ec334db37cb@leemhuis.info>
-Date:   Sun, 19 Jun 2022 14:37:40 +0200
+        Sun, 19 Jun 2022 08:38:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1C006477;
+        Sun, 19 Jun 2022 05:38:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 618C961038;
+        Sun, 19 Jun 2022 12:38:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98ADFC34114;
+        Sun, 19 Jun 2022 12:37:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655642280;
+        bh=UOBD3aWs3HXE75mbm1TrKnLQKoWVpswWnOcTLV2NNVA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=lXsCtDriOQvPHoYjTkm7jflYt0G7QYg0euE17ssujQoJyia/Sd6MiidhMM1yoTI74
+         ymBH7KR9CG1AYfQukUZUn6Q1KMVBb94bohrRZQBx4tzT1jK/HEaO2r3Xra73hDoGVg
+         dvqVl3LajdGiiE/rvVAScLOWrdjsDV6b4vg9RLiWuXkrFdZ5DGDmJzUJX1jV2e0tnN
+         O7Wywl/5D3VGw4l6+3Yp7zfvQ++NuIGFxaO83gatRkJBFO945WXUp1nfMzgE2WrXKM
+         6eXgAVd+odf0eqmEyd/S6jC0hoZBf2mxTuhh+FdQ7AKtsbG88vL3DA+XFm+9HtEfEz
+         QWYoEIAmJbbVQ==
+Date:   Sun, 19 Jun 2022 13:47:16 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Jagath Jog J <jagathjog1996@gmail.com>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1 2/2] iio: accel: bma400: Add support for single and
+ double tap events
+Message-ID: <20220619134716.64292039@jic23-huawei>
+In-Reply-To: <CAM+2EuJAyTL=JcESt8fteSy7q09nSShQKF0AMkiwdJOtHe5uPA@mail.gmail.com>
+References: <20220613191706.31239-1-jagathjog1996@gmail.com>
+        <20220613191706.31239-3-jagathjog1996@gmail.com>
+        <CAHp75VdJ7z+GnEGEe2obd8Df5mJtNGQASf1c7WWXJVQ1Db8U4A@mail.gmail.com>
+        <CAM+2EuJAyTL=JcESt8fteSy7q09nSShQKF0AMkiwdJOtHe5uPA@mail.gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [bugzilla-daemon@kernel.org: [Bug 216109] New: Steam Deck fails
- to boot when E820 entries clipped out of _CRS] #forregzbot
-Content-Language: en-US
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-To:     linux-pci@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
-References: <20220609224339.GA543225@bhelgaas>
- <d4ea2dd2-2e89-d3a2-ee5c-f64bb1b8f576@leemhuis.info>
-In-Reply-To: <d4ea2dd2-2e89-d3a2-ee5c-f64bb1b8f576@leemhuis.info>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1655642261;3cec31bc;
-X-HE-SMSGID: 1o2uBQ-0005Md-E4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-TWIMC: this mail is primarily send for documentation purposes and for
-regzbot, my Linux kernel regression tracking bot. These mails usually
-contain '#forregzbot' in the subject, to make them easy to spot and filter.
 
-On 12.06.22 13:11, Thorsten Leemhuis wrote:
+> >
+> > ...
+> >  
+> > >         bool step_event_en;
+> > >         bool activity_event_en;
+> > >         unsigned int generic_event_en;
+> > > +       unsigned int tap_event_en;  
+> >
+> > Should it be boolean? Or i.o.w. why does it need to be an unsigned int?  
+> 
+> tap_event_en is used as a bitmask. Bit 2 and 3 of tap_event_en
+> are used to tell the state of the single and double tap events.
+> For example bit 2 is used to indicate single tap is enabled or not.
+> 
+> set_mask_bits() and FIELD_GET()  is used to set and retrieve the
+> required bit value so I used unsigned int.
 
->> Subject: [Bug 216109] New: Steam Deck fails to boot when E820 entries clipped
->> 	out of _CRS
->>
->> https://bugzilla.kernel.org/show_bug.cgi?id=216109
+Perhaps make that obvious by calling it
 
-#regzbot fixed-by: a2b36ffbf5b6
-
-Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
-
-P.S.: As the Linux kernel's regression tracker I deal with a lot of
-reports and sometimes miss something important when writing mails like
-this. If that's the case here, don't hesitate to tell me in a public
-reply, it's in everyone's interest to set the public record straight.
-
+tap_event_en_bitmask ?
 
