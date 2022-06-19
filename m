@@ -2,109 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 910C5C43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 11:46:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06D88C43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 11:49:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236820AbiFSLqg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 19 Jun 2022 07:46:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35392 "EHLO
+        id S236846AbiFSLtd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 19 Jun 2022 07:49:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236808AbiFSLqa (ORCPT
+        with ESMTP id S232931AbiFSLtJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 19 Jun 2022 07:46:30 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1C77511C33
-        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 04:46:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655639189;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=AGhx+KJSkA3X8m8hF6CnNDDwe/d6YcrHu41h3pNbdsg=;
-        b=KAo6K29F3EE53wreftIP+I0mtxCAU6XZU+JRYLI4bhpufIHkev3lIGDaIeuSNWlZZHdsju
-        Q/Y2YqqLjBuA8vC5ZLpq+x0ypVN6VSO27rH8+VmTNgK62cmo3Wb/Yc1Uz/tG2Bj83YrZNh
-        1EyNA43PIDWmaaQRmKpu3OUreyWgJ/M=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-444-MEsddkbxOSiEzw_4RUOgMg-1; Sun, 19 Jun 2022 07:46:27 -0400
-X-MC-Unique: MEsddkbxOSiEzw_4RUOgMg-1
-Received: by mail-wr1-f69.google.com with SMTP id v8-20020adfa1c8000000b0021b81a553fbso1096762wrv.18
-        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 04:46:27 -0700 (PDT)
+        Sun, 19 Jun 2022 07:49:09 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3700311C3B
+        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 04:49:08 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id fd6so8814875edb.5
+        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 04:49:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Yp4bmUkucrfn0YoCb3947aiyNMhaiNjLfndCRiuztxU=;
+        b=yr+bG3jG4+68iQNvAiVbY3Z1gBJqsRvJGx5qiy0JF4mCyAGs2+gQW+U/llayv2QvZa
+         JObgwL6nY/In7vN0HgMJyKOHcXvcqtzdmIISyxAbBNQcLPd/7bs5WSSXoP1BF4CC0oSj
+         cOA/+WUR3Mjc/ZGuFAcYgKsUk8uEOUyOsnHY2Kdcj/KV2McZ7G5VwDWc+oYaFweytQiE
+         3DWEEJAHPlikXDtlaqwLSmEuovXWj4PGrR2gjXnxInhsq+/pVhYHn++AcQqqzmdENG9M
+         mGqPzpp9dyG8QRwIRiVCBK/yzkGrKuwNwcUEZGSzbCoak4I6gm0aJOkIY6vumz7Ed2+i
+         k4Hw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=AGhx+KJSkA3X8m8hF6CnNDDwe/d6YcrHu41h3pNbdsg=;
-        b=5iP3VeRQdtORoct5T0IJ0ydvPa12zJfR7JnRs4OKNFXhKOgjJVBdaA8qmoCx/OmG9g
-         2s0i5mJk34ptLDXpSXt3umiiUF1TdZXhPUMBvKkdXy8bvez2nKnZsQ8KCJxIzEL2PC0N
-         raJMhbldb4Y3F8fjvTk4QETkzrKQXhGPyyK2fdEgsWsNfVCofFoWjxqM7KIvzQBV5iNO
-         f9uRL+TPYoGcMmTWtQZlo6AuHuktm80vgiIKebkYNPaVbKyt0yJhIrJwC3HJQSUynFQb
-         RVYPH2HEB3uVGbS8zhib3K36asmKBGPX0tiT6ULkeh9uvyRQ0Jv32cZBNecypBqq0i1+
-         PaRQ==
-X-Gm-Message-State: AJIora+2YXli3Eoc6WUwY8ygpK5p4D21eWnpGo7b45PI71zMGng82nSI
-        I4v9LS1XRWiNMc3tr4Z+K4zVFzDOYIQ7N3KYRiiUQO/wWAMCzFGqpiXPmkRunvnBIH2XEwgX/7C
-        jx3aJ4IGaxCj7XOALTX7iYXXR
-X-Received: by 2002:adf:fd88:0:b0:21a:a547:38b3 with SMTP id d8-20020adffd88000000b0021aa54738b3mr11837143wrr.431.1655639186062;
-        Sun, 19 Jun 2022 04:46:26 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tA0kjOoP2A9a9UPTNHd18aAPgeQQmXbADdDDkoDrdbNEN7EBtMxlFH7WBKyui90LADamvjEg==
-X-Received: by 2002:adf:fd88:0:b0:21a:a547:38b3 with SMTP id d8-20020adffd88000000b0021aa54738b3mr11837131wrr.431.1655639185812;
-        Sun, 19 Jun 2022 04:46:25 -0700 (PDT)
-Received: from [192.168.1.129] (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id n8-20020a5d4208000000b00219e758ff4fsm10076208wrq.59.2022.06.19.04.46.24
+        bh=Yp4bmUkucrfn0YoCb3947aiyNMhaiNjLfndCRiuztxU=;
+        b=p7A66gRSQCEnwAZX/SknxzUDA9r6neZ8hvWLuJtwuV4v7QpLLZi01H4XzuQGamF50j
+         U5dPacvYVewYb9/DbURKVZSpb7ByaLq0EzjsQUwSo+hVG4m4VALH/7JgtH85sSN21+Ap
+         HKuv7b/yfN5h30RtCHkyN2GSu8T6sMPUbR6wrS/1lT8ClJLfeKkuiP945Ag8n0Zo6uhz
+         5xHV3tNUzxCn+HwLZr8lefHjOOK9/pHqQD1mS3zcygrqYz/v2+s2xIW/x8aKkSWcVhXT
+         Sy0lN1P0LeSA0LjiLb8WjOb/X7+hLqaiHmFFOhWzMaHEilgNkNLyWyHpnlo9B/MxKnYJ
+         B2Vw==
+X-Gm-Message-State: AJIora+SX6HvS7czZ8T5JFWIsG0oP8ZB94jrqp8QyE6XcwPTpX/tHWKm
+        NhfTIwmdIg1oHYeCZZ+QBOsSnriEW5SnNg==
+X-Google-Smtp-Source: AGRyM1uf/0HgCvqeSezyCxo06xRPdiDZsKSIjIh9ayuMCVtMgx1owUBRCkmcqmcT3JXy2reZyX/UXQ==
+X-Received: by 2002:aa7:cb13:0:b0:433:4985:1b54 with SMTP id s19-20020aa7cb13000000b0043349851b54mr22955689edt.182.1655639346743;
+        Sun, 19 Jun 2022 04:49:06 -0700 (PDT)
+Received: from [192.168.0.206] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id fd18-20020a056402389200b0043570d96d25sm2987288edb.95.2022.06.19.04.49.05
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 19 Jun 2022 04:46:24 -0700 (PDT)
-Message-ID: <cea478bf-ac29-dbdc-e156-5291da4f0318@redhat.com>
-Date:   Sun, 19 Jun 2022 13:46:23 +0200
+        Sun, 19 Jun 2022 04:49:06 -0700 (PDT)
+Message-ID: <5c7a1763-01fb-249d-a301-9164e2139ac6@linaro.org>
+Date:   Sun, 19 Jun 2022 13:49:04 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.10.0
-Subject: Re: [PATCH v2] drm: panel-orientation-quirks: Add quirk for Aya Neo
- Next
+Subject: Re: [PATCH 2/3] dt-bindings: usb: mtk-xhci: Allow middle optional
+ clocks to be missing
 Content-Language: en-US
-To:     Maccraft123 <maccraft123mc@gmail.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     Hans de Goede <hdegoede@redhat.com>, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org
-References: <20220619111952.8487-1-maccraft123mc@gmail.com>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <20220619111952.8487-1-maccraft123mc@gmail.com>
+To:     Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
+        <nfraprado@collabora.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>, kernel@collabora.com,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-usb@vger.kernel.org
+References: <20220617222916.2435618-1-nfraprado@collabora.com>
+ <20220617222916.2435618-3-nfraprado@collabora.com>
+ <d95e046262751a7f746fabc5f1d9a39e675730b3.camel@mediatek.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <d95e046262751a7f746fabc5f1d9a39e675730b3.camel@mediatek.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Maya,
-
-On 6/19/22 13:19, Maccraft123 wrote:
-> From: Maya Matuszczyk <maccraft123mc@gmail.com>
-> 
-> The device is identified by "NEXT" in board name, however there are
-> different versions of it, "Next Advance" and "Next Pro", that have
-> different DMI board names.
-> Due to a production error a batch or two have their board names prefixed
-> by "AYANEO", this makes it 6 different DMI board names. To save some
-> space in final kernel image DMI_MATCH is used instead of
-> DMI_EXACT_MATCH.
-> 
-> Signed-off-by: Maya Matuszczyk <maccraft123mc@gmail.com>
+On 19/06/2022 09:40, Chunfeng Yun wrote:
+> On Fri, 2022-06-17 at 18:29 -0400, Nícolas F. R. A. Prado wrote:
+>> The current clock list in the binding doesn't allow for one of the
+>> optional clocks to be missing and a subsequent clock to be present.
+>> An
+>> example where this is an issue is in mt8192.dtsi, which has "sys_ck",
+>> "ref_ck", "xhci_ck" and would cause dtbs_check warnings.
+> How about using fixed clock instead to fix the check warning?
+> Using enum way seems make it more complex.
 > 
 
-Patch looks good to me.
+That would mean the clock is not actually optional. The DTS should
+reflect the hardware so either you have the clock there or not. Either
+it is an input or not. Of course there are some exceptions (like
+non-controllable clock or regulator which not always has to be modeled).
 
-Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
-
--- 
 Best regards,
-
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
-
+Krzysztof
