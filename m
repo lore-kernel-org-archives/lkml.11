@@ -2,128 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36837C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 18:21:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 481ABC43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 18:28:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236048AbiFSSVO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 19 Jun 2022 14:21:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44300 "EHLO
+        id S232786AbiFSS1f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 19 Jun 2022 14:27:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232786AbiFSSVL (ORCPT
+        with ESMTP id S229902AbiFSS1d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 19 Jun 2022 14:21:11 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2192A1A9
-        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 11:21:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655662869; x=1687198869;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=LokuTxrf7FEz6z3UVnL1sqws76EIAjh154NaohlIX24=;
-  b=GQm0+Ta9lUUtQIVV965/X9odEtYQMvWEgo/Y2BQeERPLTM3o0Ei8K/sM
-   1qeIAGzt2zy2iu1R8nJmE9u654MtUqpGgrYVNQP2E+hdYeuRvrMOKgZIo
-   R6aq+395QdLbwnBXVjvzwlzBmLMuvZXdmMSIzMPu1uTcQhkbj+IhCM9V5
-   37uAgAXwDDK/i+t6EvbH57pNvV2ojJHBs2EcJptFt6TmF1PIhxRbydK/i
-   Zb6WK8pX//eze9AISGwZr1mnLYWquscCprscklf8+XFH0GxwqNJoBS9cy
-   yZqS8FYGUK9+BuemMVnEQ33KBWhduARGa2cyfgkW2sf4GOD0vfnXdUNCw
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="279801849"
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="279801849"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2022 11:21:09 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="614138524"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 19 Jun 2022 11:21:07 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o2zXm-000RSD-OB;
-        Sun, 19 Jun 2022 18:21:06 +0000
-Date:   Mon, 20 Jun 2022 02:20:57 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        Daniel Mack <daniel@zonque.org>,
-        Haojian Zhuang <haojian.zhuang@gmail.com>,
-        Robert Jarzmik <robert.jarzmik@free.fr>
-Cc:     kbuild-all@lists.01.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, kernel@pengutronix.de
-Subject: Re: [PATCH v2] mfd: tc6393xb: Make disable callback return void
-Message-ID: <202206200102.cUbYiyCL-lkp@intel.com>
-References: <20220619082655.53728-1-u.kleine-koenig@pengutronix.de>
+        Sun, 19 Jun 2022 14:27:33 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 165AF5FDC
+        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 11:27:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=HqhUHLnn9zw43ykXrHZYC2UIAN9zAPBi5wljpUp4B+Q=; b=e44/ZDxh85JPkfu8AoyO9/r/ia
+        HLA0w5CohluzAwJF8+mXvceE++6maHem6M/najnOm5WRhYrackqEFnKFSMfYQXCC7MxyTJh7s+ZZc
+        XgWVcMGgsJG8Xa9jQNLLY223oPyBykc5JeMuBZxQ4A/nV5rGT/XdLWG2Tenxt1P+zX4HzuLUFMPNO
+        a8PmfuKd2lXl7KyXv+v8mveHewMKHKCBE/3UaEdMas/tq1E7ONHHLM4yZLQLxmqOY8YlEcIY3DR+k
+        GNiJlWlP1053tcObpHrcxECrmQuttUdRB409fZQSdepizR313OSJJWJqoxnrAdt1kKDoXV1hZSPVj
+        QfUmZ+6w==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o2zdt-004XKY-Iz; Sun, 19 Jun 2022 18:27:27 +0000
+Message-ID: <59cb24c1-1a4b-5472-e4f8-d87b309ad134@infradead.org>
+Date:   Sun, 19 Jun 2022 11:27:18 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220619082655.53728-1-u.kleine-koenig@pengutronix.de>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [DRM/hisilicon/hibmc] kernel robot reports build errors,
+ patch(es) available but not merged
+Content-Language: en-US
+To:     Javier Martinez Canillas <javierm@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     Xinliang Liu <xinliang.liu@linaro.org>,
+        Chen Feng <puck.chen@hisilicon.com>,
+        Xinwei Kong <kong.kongxinwei@hisilicon.com>,
+        John Stultz <jstultz@google.com>,
+        Tian Tao <tiantao6@hisilicon.com>,
+        RongrongZou <zourongrong@huawei.com>
+References: <9a0ed0bb-34c7-bacb-16a8-fdb158535ab2@infradead.org>
+ <5eabd169-b8a0-fb8f-d70b-4495d3790f05@redhat.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <5eabd169-b8a0-fb8f-d70b-4495d3790f05@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi "Uwe,
-
-I love your patch! Yet something to improve:
-
-[auto build test ERROR on f2906aa863381afb0015a9eb7fefad885d4e5a56]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Uwe-Kleine-K-nig/mfd-tc6393xb-Make-disable-callback-return-void/20220619-162855
-base:   f2906aa863381afb0015a9eb7fefad885d4e5a56
-config: arm-pxa_defconfig (https://download.01.org/0day-ci/archive/20220620/202206200102.cUbYiyCL-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/e2b80b7c107cdbbff99189431a614f791435ebfd
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Uwe-Kleine-K-nig/mfd-tc6393xb-Make-disable-callback-return-void/20220619-162855
-        git checkout e2b80b7c107cdbbff99189431a614f791435ebfd
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   arch/arm/mach-pxa/eseries.c:47:13: warning: no previous prototype for 'eseries_fixup' [-Wmissing-prototypes]
-      47 | void __init eseries_fixup(struct tag *tags, char **cmdline)
-         |             ^~~~~~~~~~~~~
-   arch/arm/mach-pxa/eseries.c:76:5: warning: no previous prototype for 'eseries_tmio_enable' [-Wmissing-prototypes]
-      76 | int eseries_tmio_enable(struct platform_device *dev)
-         |     ^~~~~~~~~~~~~~~~~~~
-   arch/arm/mach-pxa/eseries.c:89:6: warning: no previous prototype for 'eseries_tmio_disable' [-Wmissing-prototypes]
-      89 | void eseries_tmio_disable(struct platform_device *dev)
-         |      ^~~~~~~~~~~~~~~~~~~~
-   arch/arm/mach-pxa/eseries.c:95:5: warning: no previous prototype for 'eseries_tmio_suspend' [-Wmissing-prototypes]
-      95 | int eseries_tmio_suspend(struct platform_device *dev)
-         |     ^~~~~~~~~~~~~~~~~~~~
-   arch/arm/mach-pxa/eseries.c:101:5: warning: no previous prototype for 'eseries_tmio_resume' [-Wmissing-prototypes]
-     101 | int eseries_tmio_resume(struct platform_device *dev)
-         |     ^~~~~~~~~~~~~~~~~~~
-   arch/arm/mach-pxa/eseries.c:108:6: warning: no previous prototype for 'eseries_get_tmio_gpios' [-Wmissing-prototypes]
-     108 | void eseries_get_tmio_gpios(void)
-         |      ^~~~~~~~~~~~~~~~~~~~~~
->> arch/arm/mach-pxa/eseries.c:141:21: error: initialization of 'int (*)(struct platform_device *)' from incompatible pointer type 'void (*)(struct platform_device *)' [-Werror=incompatible-pointer-types]
-     141 |         .disable  = &eseries_tmio_disable,
-         |                     ^
-   arch/arm/mach-pxa/eseries.c:141:21: note: (near initialization for 'e330_tc6387xb_info.disable')
-   cc1: some warnings being treated as errors
 
 
-vim +141 arch/arm/mach-pxa/eseries.c
+On 6/19/22 07:27, Javier Martinez Canillas wrote:
+> Hello Randy,
+> 
+> On 6/19/22 00:49, Randy Dunlap wrote:
+>>
+>> kernel robot reports today:
+>>
+>> * riscv64-linux-ld: ttm_bo_vm.c:undefined reference to `vmf_insert_pfn_prot'
+>>   https://lore.kernel.org/lkml/202206190651.smtms3Ay-lkp@intel.com/T/#u
+>>
+>> * ttm_bo_vm.c:undefined reference to `vmf_insert_pfn_prot'
+>>   https://lore.kernel.org/lkml/202206190523.0Ar6yQF7-lkp@intel.com/T/#u
+>>
+>>
+>> and earlier:
+>>
+>> * ld.lld: error: undefined symbol: vmf_insert_pfn_prot
+>> https://lore.kernel.org/lkml/202203281125.Jp08egXu-lkp@intel.com/
+>>
+>> * ttm_bo_vm.c:undefined reference to `vmf_insert_pfn_prot'
+>> https://lore.kernel.org/lkml/202204081648.gV63Gt0t-lkp@intel.com/
+>>
+>>
+>> I sent a patch for this on 2022-04-08 and again on 2022-05-30 (UTC).
+>>
+>> https://lore.kernel.org/all/20220409030504.16089-1-rdunlap@infradead.org/
+>> https://lore.kernel.org/all/20220531025557.29593-1-rdunlap@infradead.org/
+>>
+>> Neither one has been applied or even had a comment.  :(
+>>
+> 
+> Sorry that these fell into the cracks. Thanks for the patch, I think the
+> change is correct but gave some comments about the Fixes: tag and commit
+> description. There's no need to resend though, I can do it when pushing.
 
-e478fe4cd50b86 Eric Miao 2010-06-20  138  
-e478fe4cd50b86 Eric Miao 2010-06-20  139  static struct tc6387xb_platform_data e330_tc6387xb_info = {
-e478fe4cd50b86 Eric Miao 2010-06-20  140  	.enable   = &eseries_tmio_enable,
-e478fe4cd50b86 Eric Miao 2010-06-20 @141  	.disable  = &eseries_tmio_disable,
-e478fe4cd50b86 Eric Miao 2010-06-20  142  	.suspend  = &eseries_tmio_suspend,
-e478fe4cd50b86 Eric Miao 2010-06-20  143  	.resume   = &eseries_tmio_resume,
-e478fe4cd50b86 Eric Miao 2010-06-20  144  };
-e478fe4cd50b86 Eric Miao 2010-06-20  145  
+OK, thank you.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+~Randy
