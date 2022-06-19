@@ -2,172 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50DBDC43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 11:31:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 740E6C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 11:32:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236187AbiFSLbH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 19 Jun 2022 07:31:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55202 "EHLO
+        id S236544AbiFSLc0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 19 Jun 2022 07:32:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233282AbiFSLa4 (ORCPT
+        with ESMTP id S236239AbiFSLcT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 19 Jun 2022 07:30:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 147E365F6;
-        Sun, 19 Jun 2022 04:30:55 -0700 (PDT)
+        Sun, 19 Jun 2022 07:32:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C86211174
+        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 04:32:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C1FE5B80CFE;
-        Sun, 19 Jun 2022 11:30:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1CA1C3411D;
-        Sun, 19 Jun 2022 11:30:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655638252;
-        bh=M4FK7HUp/K1RW0AhfhWOuHD0fUg2fTC1IQ6P6Bs9+vU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=pMgcolAP5FJaAf+vJwXmXF0k196/rK/GjR9CrIN/CB+pN5INLsLktAnAfWlpTBAUa
-         b6zZNhQYGnIrA8RMzXWDATN71HWHgkR5UuRLOXHEc42pGpv7hnB3QbcIwS19F1Up44
-         FJo36uP+KCzv20hzFhhFIFJOIQCqNdZAQW9IaJyL+JsxVb9BhaZYMSufQEk57AuBxj
-         9rEedyS7s91SGOz+QheEcCo8Bx6VqzoIGFqEGJzim5iXJHiBTMCD9khoEL3q4akAOe
-         L2W416lS55o9cBsi04/IiUy3MOxUiRo1JGfKX2Pdodu6DWVJXFD/obhoc7mYQIUuBT
-         wmWci2YRZS+bg==
-Date:   Sun, 19 Jun 2022 12:40:09 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Dmitry Rokosov <DDRokosov@sberdevices.ru>
-Cc:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
-        "stephan@gerhold.net" <stephan@gerhold.net>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 3/3] dt-bindings: iio: accel: add dt-binding schema
- for msa311 accel driver
-Message-ID: <20220619124009.65bb16f4@jic23-huawei>
-In-Reply-To: <20220616104211.9257-4-ddrokosov@sberdevices.ru>
-References: <20220616104211.9257-1-ddrokosov@sberdevices.ru>
-        <20220616104211.9257-4-ddrokosov@sberdevices.ru>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AB07F61044
+        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 11:32:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C13FC34114;
+        Sun, 19 Jun 2022 11:32:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655638336;
+        bh=RAcrtsGTP2vqUzZO+x2hAmoE3XoTsFd+mMtVqXqJRAQ=;
+        h=Date:From:To:Cc:Subject:From;
+        b=h94SRTMGitoW5RKBsw4vwp4AVZfYFkxHaunelNo/mDKPpa210loVvjSQikYjOvAnP
+         1/fMqyDqiRWG0Tg3Wu7lqHc9HXHWyDwrR1YpvswWASSaAhAA5ym1Aox3cIqDdEW5h+
+         mu6rqdstYjsi9kSsAgJh5zJoBe5ntoAF1TPkoJ+M=
+Date:   Sun, 19 Jun 2022 13:32:11 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
+Subject: [GIT PULL] Char/Misc driver fixes 5.19-rc3 - take 2
+Message-ID: <Yq8JO6i5zqhZLqa2@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 16 Jun 2022 10:42:17 +0000
-Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
+Let's tag the proper branch this time...
 
-> Introduce devicetree binding json-schema for MSA311 tri-axial,
-> low-g accelerometer driver.
-> 
-> Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
-Hi Dmitry,
+---------------------
 
-A few trivial suggestions to drop description entries that don't
-useful information.
+The following changes since commit f2906aa863381afb0015a9eb7fefad885d4e5a56:
 
-One thing we often end up adding very soon after new bindings are
-introduced is power supplies.  If sensible to do so, it's better
-to introduce them at the start and save on the noise.
-Looks like this one just needs a property entry of
+  Linux 5.19-rc1 (2022-06-05 17:18:54 -0700)
 
-  vdd-supply: true
+are available in the Git repository at:
 
-Obviously you then need to get it in the driver and turn it on
-(+ off via a devm_add_action_or_reset() call) as minimal support.
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/char-misc.git tags/char-misc-5.19-rc3-take2
 
-Thanks,
+for you to fetch changes up to 928ea98252ad75118950941683893cf904541da9:
 
-Jonathan
+  bus: fsl-mc-bus: fix KASAN use-after-free in fsl_mc_bus_remove() (2022-06-10 15:53:12 +0200)
 
-> ---
->  .../bindings/iio/accel/memsensing,msa311.yaml | 52 +++++++++++++++++++
->  MAINTAINERS                                   |  1 +
->  2 files changed, 53 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/accel/memsensing,msa311.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/accel/memsensing,msa311.yaml b/Documentation/devicetree/bindings/iio/accel/memsensing,msa311.yaml
-> new file mode 100644
-> index 000000000000..072632708d42
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/accel/memsensing,msa311.yaml
-> @@ -0,0 +1,52 @@
-> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> +
-> +%YAML 1.2
-> +---
-> +$id: "http://devicetree.org/schemas/iio/accel/memsensing,msa311.yaml#"
-> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-> +
-> +title: MEMSensing digital 3-Axis accelerometer
-> +
-> +maintainers:
-> +  - Dmitry Rokosov <ddrokosov@sberdevices.ru>
-> +
-> +description: |
-> +  MSA311 is a tri-axial, low-g accelerometer with I2C digital output for
-> +  sensitivity consumer applications. It has dynamical user selectable full
-> +  scales range of +-2g/+-4g/+-8g/+-16g and allows acceleration measurements
-> +  with output data rates from 1Hz to 1000Hz.
-> +  Datasheet can be found at following URL
-> +  https://cdn-shop.adafruit.com/product-files/5309/MSA311-V1.1-ENG.pdf
-> +
-> +properties:
-> +  compatible:
-> +    const: memsensing,msa311
-> +
-> +  reg:
-> +    maxItems: 1
-> +    description: I2C registers address
+----------------------------------------------------------------
+Char/Misc driver fixes for 5.19-rc3 - take 2
 
-No need for description. It always means that for i2c devices.
+Here are some small char/misc driver fixes for 5.19-rc3 that resolve
+some reported issues.
 
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +    description: optional I2C int pin can be freely mapped to specific func
+They include:
+        - mei driver fixes
+        - comedi driver fix
+        - rtsx build warning fix
+        - fsl-mc-bus driver fix
 
-Why I2C int?  Is there anything associating it with i2c specifically?
+All of these have been in linux-next for a while with no reported
+issues.
 
-I'm not sure the description adds anything useful for this so I'd
-drop it.
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +    i2c {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        accelerometer@62 {
-> +            compatible = "memsensing,msa311";
-> +            reg = <0x62>;
-> +            interrupt-parent = <&gpio_intc>;
-> +            interrupts = <29 IRQ_TYPE_EDGE_RISING>;
-> +        };
-> +    };
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 55aeb25c004c..be39e5c214fe 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -12482,6 +12482,7 @@ MEMSENSING MICROSYSTEMS MSA311 ACCELEROMETER DRIVER
->  M:	Dmitry Rokosov <ddrokosov@sberdevices.ru>
->  L:	linux-iio@vger.kernel.org
->  S:	Maintained
-> +F:	Documentation/devicetree/bindings/iio/accel/memsensing,msa311.yaml
->  F:	drivers/iio/accel/msa311.c
->  
->  MEN A21 WATCHDOG DRIVER
+----------------------------------------------------------------
+Alexander Usyskin (3):
+      mei: me: set internal pg flag to off on hardware reset
+      mei: hbm: drop capability response on early shutdown
+      mei: me: add raptor lake point S DID
 
+Ian Abbott (1):
+      comedi: vmk80xx: fix expression for tx buffer size
+
+Nathan Chancellor (1):
+      misc: rtsx: Fix clang -Wsometimes-uninitialized in rts5261_init_from_hw()
+
+Shin'ichiro Kawasaki (1):
+      bus: fsl-mc-bus: fix KASAN use-after-free in fsl_mc_bus_remove()
+
+ drivers/bus/fsl-mc/fsl-mc-bus.c   | 6 +++---
+ drivers/comedi/drivers/vmk80xx.c  | 2 +-
+ drivers/misc/cardreader/rts5261.c | 2 ++
+ drivers/misc/mei/hbm.c            | 3 ++-
+ drivers/misc/mei/hw-me-regs.h     | 2 ++
+ drivers/misc/mei/hw-me.c          | 2 ++
+ drivers/misc/mei/pci-me.c         | 2 ++
+ 7 files changed, 14 insertions(+), 5 deletions(-)
