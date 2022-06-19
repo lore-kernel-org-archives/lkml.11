@@ -2,143 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69E7AC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 00:12:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2B08C43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 00:26:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231910AbiFSALA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 18 Jun 2022 20:11:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56990 "EHLO
+        id S232211AbiFSA0T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 18 Jun 2022 20:26:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbiFSAK7 (ORCPT
+        with ESMTP id S229446AbiFSA0R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 18 Jun 2022 20:10:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEF7EFD26
-        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 17:10:57 -0700 (PDT)
+        Sat, 18 Jun 2022 20:26:17 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72E4DFD1B
+        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 17:26:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 309B1B80B43
-        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 00:10:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA1FAC3411A;
-        Sun, 19 Jun 2022 00:10:53 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 92E31CE0A29
+        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 00:26:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABB21C3411A;
+        Sun, 19 Jun 2022 00:26:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655597454;
-        bh=pJavzBOpBup2L2XFujyF+W4cOF5r98O8lnH39scpEWM=;
+        s=k20201202; t=1655598370;
+        bh=OmLMvTn5518xox6YbAQjosrjlDz9Ma6BDwAloqU3OyM=;
         h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=PyhtF9Wwm/fzM9VqL4TSKYSYMr/ZpGzFqS8u1mazEehsHuuuOTISzzWLBeXibwTrd
-         cMv2p9TdV7k5UUOnxyBnhfVzMuX0UuERo/UrTaPJ9mpGd0Er+KDeMeEpdRTzrU7WI1
-         6X5qFY5P0dULAPEnlBU+kBtsu6DV+Lu0/zYaqN97GiNL5dzaelMLTW0MY8NW8CwWH1
-         yLrP+R+0sCQAHLAME/C/E1OxBj33bdL5gcNyp5UACwWxoLkqctZ6xozqgO0r1M/7R3
-         WXdM+Ait16ErrahcTmz3+jrEbrdNeVRTRXtI1FTDItaR3kcx9AxYUfLp2zHJPorAbi
-         DSiStkGAIsYuw==
-Message-ID: <f3fd41e1-ea76-a7d7-4890-ff66ea87b7ab@kernel.org>
-Date:   Sun, 19 Jun 2022 08:10:52 +0800
+        b=GjDarHiwN1sDarP0dxzRYvNSW2rOg8o/KQOTK0HcBU4GyNqcGqwsWGw5TLsO8Uc6U
+         HYMw6DT9SDOvfCTDRmg/NYbNak1Vigtr10H5fVM1UGZIdj20SbBUZ9xQDs4Ivc/ytY
+         n+GQDYmrLU741P/AEtRoq8cxlYyCbq2sqE56CevUIIRhAsmT8qsnO2Kl3KIqBJvjdj
+         9NJdJmybVqQJm1l8NuhTTw9d8OWT0kcFwKyV7ruYFi9Z7hntxMTrojFxJ0kfK2HmxI
+         SoGNqWXSpEM3DFY1YBfHe1R2QNmKZIOSiOacX+CwfMlLS41B2phBJr6rRxGWKynt0V
+         efsh2I79IK1Lg==
+Message-ID: <44383112-3c81-fbe4-53fa-275e42d9adb3@kernel.org>
+Date:   Sun, 19 Jun 2022 08:26:07 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.10.0
-Subject: Re: [PATCH 2/2] f2fs-tools: fix to check free space before grow
+Subject: Re: [f2fs-dev] [PATCH] f2fs: fix iostat related lock protection
 Content-Language: en-US
-To:     qixiaoyu1 <qxy65535@gmail.com>, jaegeuk@kernel.org
-Cc:     linux-f2fs-devel@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, qixiaoyu1 <qixiaoyu1@xiaomi.com>
-References: <20220614114929.6897-1-qixiaoyu1@xiaomi.com>
- <20220614114929.6897-2-qixiaoyu1@xiaomi.com>
+To:     Jaegeuk Kim <jaegeuk@kernel.org>
+Cc:     Daeho Jeong <daeho43@gmail.com>, linux-kernel@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net, kernel-team@android.com,
+        Daeho Jeong <daehojeong@google.com>
+References: <20220610183240.2269085-1-daeho43@gmail.com>
+ <1815f3c2-0802-5b3f-7e98-9f89c5b9e07d@kernel.org>
+ <YqoOzdxeG78RniEK@google.com>
 From:   Chao Yu <chao@kernel.org>
-In-Reply-To: <20220614114929.6897-2-qixiaoyu1@xiaomi.com>
+In-Reply-To: <YqoOzdxeG78RniEK@google.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/6/14 19:49, qixiaoyu1 wrote:
-> Otherwise, after grow, kernel may report below error message
-> when we mount the image if -o parameter is specified during resize:
+On 2022/6/16 0:54, Jaegeuk Kim wrote:
+> On 06/15, Chao Yu wrote:
+>> On 2022/6/11 2:32, Daeho Jeong wrote:
+>>> From: Daeho Jeong <daehojeong@google.com>
+>>>
+>>> Made iostat related locks safe to be called from irq context again.
+>>>
+>>
+>> Will be better to add a 'Fixes' line?
 > 
-> F2FS-fs (loop0): invalid crc_offset: 0
-> F2FS-fs (loop0): Wrong valid_user_blocks: 16404, user_block_count: 13312
-> F2FS-fs (loop0): Failed to get valid F2FS checkpoint
-> mount(2) system call failed: Structure needs cleaning.
+> Added some tags. Thanks,
 > 
-> Signed-off-by: qixiaoyu1 <qixiaoyu1@xiaomi.com>
+> https://git.kernel.org/pub/scm/linux/kernel/git/jaegeuk/f2fs.git/commit/?h=dev&id=f8ed39ad779fbc5d37d08e83643384fc06e4bae4
 
-It looks this patch should be merged into previous one, otherwise
--o option support is broken for resize.f2fs.
+Reviewed-by: Chao Yu <chao@kernel.org>
 
 Thanks,
 
-> ---
->   fsck/resize.c | 36 ++++++++++++++++++++++++------------
->   1 file changed, 24 insertions(+), 12 deletions(-)
 > 
-> diff --git a/fsck/resize.c b/fsck/resize.c
-> index d19c6fa..e135b66 100644
-> --- a/fsck/resize.c
-> +++ b/fsck/resize.c
-> @@ -599,6 +599,26 @@ static void rebuild_checkpoint(struct f2fs_sb_info *sbi,
->   	DBG(0, "Info: Done to rebuild checkpoint blocks\n");
->   }
->   
-> +static int f2fs_resize_check(struct f2fs_sb_info *sbi, struct f2fs_super_block *new_sb)
-> +{
-> +	struct f2fs_checkpoint *cp = F2FS_CKPT(sbi);
-> +	block_t user_block_count;
-> +	unsigned int overprov_segment_count;
-> +
-> +	overprov_segment_count = (get_newsb(segment_count_main) -
-> +			c.new_reserved_segments) *
-> +			c.new_overprovision / 100;
-> +	overprov_segment_count += c.new_reserved_segments;
-> +
-> +	user_block_count = (get_newsb(segment_count_main) -
-> +			overprov_segment_count) * c.blks_per_seg;
-> +
-> +	if (get_cp(valid_block_count) > user_block_count)
-> +		return -1;
-> +
-> +	return 0;
-> +}
-> +
->   static int f2fs_resize_grow(struct f2fs_sb_info *sbi)
->   {
->   	struct f2fs_super_block *sb = F2FS_RAW_SUPER(sbi);
-> @@ -616,6 +636,9 @@ static int f2fs_resize_grow(struct f2fs_sb_info *sbi)
->   	if (get_new_sb(new_sb))
->   		return -1;
->   
-> +	if (f2fs_resize_check(sbi, new_sb) < 0)
-> +		return -1;
-> +
->   	/* check nat availability */
->   	if (get_sb(segment_count_nat) > get_newsb(segment_count_nat)) {
->   		err = shrink_nats(sbi, new_sb);
-> @@ -659,11 +682,8 @@ static int f2fs_resize_shrink(struct f2fs_sb_info *sbi)
->   	struct f2fs_super_block *sb = F2FS_RAW_SUPER(sbi);
->   	struct f2fs_super_block new_sb_raw;
->   	struct f2fs_super_block *new_sb = &new_sb_raw;
-> -	struct f2fs_checkpoint *cp = F2FS_CKPT(sbi);
->   	block_t old_end_blkaddr, old_main_blkaddr;
->   	block_t new_end_blkaddr, new_main_blkaddr, tmp_end_blkaddr;
-> -	block_t user_block_count;
-> -	unsigned int overprov_segment_count;
->   	unsigned int offset;
->   	int err = -1;
->   
-> @@ -674,15 +694,7 @@ static int f2fs_resize_shrink(struct f2fs_sb_info *sbi)
->   	if (get_new_sb(new_sb))
->   		return -1;
->   
-> -	overprov_segment_count = (get_newsb(segment_count_main) -
-> -			c.new_reserved_segments) *
-> -			c.new_overprovision / 100;
-> -	overprov_segment_count += c.new_reserved_segments;
-> -
-> -	user_block_count = (get_newsb(segment_count_main) -
-> -			overprov_segment_count) * c.blks_per_seg;
-> -
-> -	if (get_cp(valid_block_count) > user_block_count)
-> +	if (f2fs_resize_check(sbi, new_sb) < 0)
->   		return -1;
->   
->   	/* check nat availability */
+> 
+>>
+>> Thanks,
+>>
+>>> Signed-off-by: Daeho Jeong <daehojeong@google.com>
+>>> ---
+>>>    fs/f2fs/iostat.c | 31 ++++++++++++++++++-------------
+>>>    1 file changed, 18 insertions(+), 13 deletions(-)
+>>>
+>>> diff --git a/fs/f2fs/iostat.c b/fs/f2fs/iostat.c
+>>> index be599f31d3c4..d84c5f6cc09d 100644
+>>> --- a/fs/f2fs/iostat.c
+>>> +++ b/fs/f2fs/iostat.c
+>>> @@ -91,8 +91,9 @@ static inline void __record_iostat_latency(struct f2fs_sb_info *sbi)
+>>>    	unsigned int cnt;
+>>>    	struct f2fs_iostat_latency iostat_lat[MAX_IO_TYPE][NR_PAGE_TYPE];
+>>>    	struct iostat_lat_info *io_lat = sbi->iostat_io_lat;
+>>> +	unsigned long flags;
+>>> -	spin_lock_bh(&sbi->iostat_lat_lock);
+>>> +	spin_lock_irqsave(&sbi->iostat_lat_lock, flags);
+>>>    	for (idx = 0; idx < MAX_IO_TYPE; idx++) {
+>>>    		for (io = 0; io < NR_PAGE_TYPE; io++) {
+>>>    			cnt = io_lat->bio_cnt[idx][io];
+>>> @@ -106,7 +107,7 @@ static inline void __record_iostat_latency(struct f2fs_sb_info *sbi)
+>>>    			io_lat->bio_cnt[idx][io] = 0;
+>>>    		}
+>>>    	}
+>>> -	spin_unlock_bh(&sbi->iostat_lat_lock);
+>>> +	spin_unlock_irqrestore(&sbi->iostat_lat_lock, flags);
+>>>    	trace_f2fs_iostat_latency(sbi, iostat_lat);
+>>>    }
+>>> @@ -115,14 +116,15 @@ static inline void f2fs_record_iostat(struct f2fs_sb_info *sbi)
+>>>    {
+>>>    	unsigned long long iostat_diff[NR_IO_TYPE];
+>>>    	int i;
+>>> +	unsigned long flags;
+>>>    	if (time_is_after_jiffies(sbi->iostat_next_period))
+>>>    		return;
+>>>    	/* Need double check under the lock */
+>>> -	spin_lock_bh(&sbi->iostat_lock);
+>>> +	spin_lock_irqsave(&sbi->iostat_lock, flags);
+>>>    	if (time_is_after_jiffies(sbi->iostat_next_period)) {
+>>> -		spin_unlock_bh(&sbi->iostat_lock);
+>>> +		spin_unlock_irqrestore(&sbi->iostat_lock, flags);
+>>>    		return;
+>>>    	}
+>>>    	sbi->iostat_next_period = jiffies +
+>>> @@ -133,7 +135,7 @@ static inline void f2fs_record_iostat(struct f2fs_sb_info *sbi)
+>>>    				sbi->prev_rw_iostat[i];
+>>>    		sbi->prev_rw_iostat[i] = sbi->rw_iostat[i];
+>>>    	}
+>>> -	spin_unlock_bh(&sbi->iostat_lock);
+>>> +	spin_unlock_irqrestore(&sbi->iostat_lock, flags);
+>>>    	trace_f2fs_iostat(sbi, iostat_diff);
+>>> @@ -145,25 +147,27 @@ void f2fs_reset_iostat(struct f2fs_sb_info *sbi)
+>>>    	struct iostat_lat_info *io_lat = sbi->iostat_io_lat;
+>>>    	int i;
+>>> -	spin_lock_bh(&sbi->iostat_lock);
+>>> +	spin_lock_irq(&sbi->iostat_lock);
+>>>    	for (i = 0; i < NR_IO_TYPE; i++) {
+>>>    		sbi->rw_iostat[i] = 0;
+>>>    		sbi->prev_rw_iostat[i] = 0;
+>>>    	}
+>>> -	spin_unlock_bh(&sbi->iostat_lock);
+>>> +	spin_unlock_irq(&sbi->iostat_lock);
+>>> -	spin_lock_bh(&sbi->iostat_lat_lock);
+>>> +	spin_lock_irq(&sbi->iostat_lat_lock);
+>>>    	memset(io_lat, 0, sizeof(struct iostat_lat_info));
+>>> -	spin_unlock_bh(&sbi->iostat_lat_lock);
+>>> +	spin_unlock_irq(&sbi->iostat_lat_lock);
+>>>    }
+>>>    void f2fs_update_iostat(struct f2fs_sb_info *sbi,
+>>>    			enum iostat_type type, unsigned long long io_bytes)
+>>>    {
+>>> +	unsigned long flags;
+>>> +
+>>>    	if (!sbi->iostat_enable)
+>>>    		return;
+>>> -	spin_lock_bh(&sbi->iostat_lock);
+>>> +	spin_lock_irqsave(&sbi->iostat_lock, flags);
+>>>    	sbi->rw_iostat[type] += io_bytes;
+>>>    	if (type == APP_BUFFERED_IO || type == APP_DIRECT_IO)
+>>> @@ -172,7 +176,7 @@ void f2fs_update_iostat(struct f2fs_sb_info *sbi,
+>>>    	if (type == APP_BUFFERED_READ_IO || type == APP_DIRECT_READ_IO)
+>>>    		sbi->rw_iostat[APP_READ_IO] += io_bytes;
+>>> -	spin_unlock_bh(&sbi->iostat_lock);
+>>> +	spin_unlock_irqrestore(&sbi->iostat_lock, flags);
+>>>    	f2fs_record_iostat(sbi);
+>>>    }
+>>> @@ -185,6 +189,7 @@ static inline void __update_iostat_latency(struct bio_iostat_ctx *iostat_ctx,
+>>>    	struct f2fs_sb_info *sbi = iostat_ctx->sbi;
+>>>    	struct iostat_lat_info *io_lat = sbi->iostat_io_lat;
+>>>    	int idx;
+>>> +	unsigned long flags;
+>>>    	if (!sbi->iostat_enable)
+>>>    		return;
+>>> @@ -202,12 +207,12 @@ static inline void __update_iostat_latency(struct bio_iostat_ctx *iostat_ctx,
+>>>    			idx = WRITE_ASYNC_IO;
+>>>    	}
+>>> -	spin_lock_bh(&sbi->iostat_lat_lock);
+>>> +	spin_lock_irqsave(&sbi->iostat_lat_lock, flags);
+>>>    	io_lat->sum_lat[idx][iotype] += ts_diff;
+>>>    	io_lat->bio_cnt[idx][iotype]++;
+>>>    	if (ts_diff > io_lat->peak_lat[idx][iotype])
+>>>    		io_lat->peak_lat[idx][iotype] = ts_diff;
+>>> -	spin_unlock_bh(&sbi->iostat_lat_lock);
+>>> +	spin_unlock_irqrestore(&sbi->iostat_lat_lock, flags);
+>>>    }
+>>>    void iostat_update_and_unbind_ctx(struct bio *bio, int rw)
+>>
+>>
+>> _______________________________________________
+>> Linux-f2fs-devel mailing list
+>> Linux-f2fs-devel@lists.sourceforge.net
+>> https://lists.sourceforge.net/lists/listinfo/linux-f2fs-devel
