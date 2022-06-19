@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDC2ACCA480
-	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 13:37:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2930C43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 13:37:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236192AbiFSNhi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 19 Jun 2022 09:37:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34232 "EHLO
+        id S236968AbiFSNhu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 19 Jun 2022 09:37:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232806AbiFSNhe (ORCPT
+        with ESMTP id S236830AbiFSNhq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 19 Jun 2022 09:37:34 -0400
+        Sun, 19 Jun 2022 09:37:46 -0400
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C328117E
-        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 06:37:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8102FC5
+        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 06:37:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655645854; x=1687181854;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=+ou3an6gEc0Lbtr4nWBTrEfpo+PKHFa7ZrN7AXhOvYQ=;
-  b=EvLLee5wb59rSrOx0w7hVaVmanM/5MJy7puiECOEVpNkSie/v8U+NxLO
-   rFTvrQZm4TYfN4REVAtai+Kt5Ib8V5QXvrH4UHz1gnErbGKIndYpJZkuc
-   ugynMIlsrkvrdvNsdDjb19Fc+zD2SxGcCE8PB1iVRAjxqV+yn3KlpRkbd
-   NY7SYGuHT1h3U/Ps9z8PYcvAgrXAtBf1qZrI7j5fgJAy/D4In6e5zreq6
-   yR+tH2pGPsK3SDwGvM4s8vvljTv8mULCx0KIX41UJMp0t/B8qjgp0R9ys
-   frCvAslMF+T/9OglCyQTBN8c6Q5uFklF9aJWmNGu7I2CPJNq9JAezMNzI
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="305164659"
+  t=1655645865; x=1687181865;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=WIOdvRXs3F6Uqx0OZDzS9V+TAi03ig5lUw0omN1iKg0=;
+  b=djTf1jPJcSrX9ohBg+g5iLrEIQVEs+A+Wn/n2XiDo+J5cwo+N5ZXSNDd
+   ygVAxdghonkbHUu715D9IuEsbYUzPFBHfKnwjPUBS14YG5EddqX8mpZTx
+   V4fv/U9caZUJx8XVBfjL1b5Rutg9zreJtabk0zUXyZf5R89KduV0ErUdL
+   1kYlUNDWsWymgHyfV29Nw/xDFodsJ+R+G66ugFSl1c6uya9BOTXc6Wzyk
+   j23O/gEAfXJFk3kBhGSSIBgJD9aK/sRqi0JROCf1TRFmjJ7QDFFt0ZM9w
+   vofCq/1tnanRisikOtwWvH16rs8CTXsPLclmca5rwHF3Us224GQrDAcll
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="305164678"
 X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="305164659"
+   d="scan'208";a="305164678"
 Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2022 06:37:34 -0700
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2022 06:37:45 -0700
 X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="676158454"
+   d="scan'208";a="676158491"
 Received: from sannilnx.jer.intel.com ([10.12.26.157])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2022 06:37:31 -0700
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2022 06:37:41 -0700
 From:   Alexander Usyskin <alexander.usyskin@intel.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jani Nikula <jani.nikula@linux.intel.com>,
@@ -48,81 +48,43 @@ To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 Cc:     Tomas Winkler <tomas.winkler@intel.com>,
         Alexander Usyskin <alexander.usyskin@intel.com>,
         Vitaly Lubart <vitaly.lubart@intel.com>,
-        intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 00/14] GSC support for XeHP SDV and DG2 platforms
-Date:   Sun, 19 Jun 2022 16:37:07 +0300
-Message-Id: <20220619133721.523546-1-alexander.usyskin@intel.com>
+        intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>
+Subject: [PATCH v3 03/14] drm/i915/gsc: add slow_fw flag to the mei auxiliary device
+Date:   Sun, 19 Jun 2022 16:37:10 +0300
+Message-Id: <20220619133721.523546-4-alexander.usyskin@intel.com>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220619133721.523546-1-alexander.usyskin@intel.com>
+References: <20220619133721.523546-1-alexander.usyskin@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add GSC support for XeHP SDV and DG2 platforms.
+Add slow_fw flag to the mei auxiliary device info
+to inform the mei driver about slow underlying firmware.
+Such firmware will require to use larger operation timeouts.
 
-The series includes changes for the mei driver:
-- add ability to use polling instead of interrupts
-- add ability to use extended timeouts
-- setup extended operational memory for GSC
+Signed-off-by: Alexander Usyskin <alexander.usyskin@intel.com>
+Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
+Reviewed-by: Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>
+---
+ include/linux/mei_aux.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-The series includes changes for the i915 driver:
-- allocate extended operational memory for GSC
-- GSC on XeHP SDV offsets and definitions
-
-Greg KH, please review and ACK the MEI patches.
-We are pushing these patches through gfx tree as
-the auxiliary device belongs there.
-
-V2: rebase over merged DG1 series and DG2 enablement patch,
-    fix commit messages
-
-V3: rebase over latest tip
-
-Alexander Usyskin (5):
-  drm/i915/gsc: add slow_fw flag to the mei auxiliary device
-  drm/i915/gsc: add slow_fw flag to the gsc device definition
-  drm/i915/gsc: add GSC XeHP SDV platform definition
-  mei: gsc: wait for reset thread on stop
-  mei: extend timeouts on slow devices.
-
-Daniele Ceraolo Spurio (1):
-  HAX: drm/i915: force INTEL_MEI_GSC on for CI
-
-Tomas Winkler (5):
-  mei: gsc: use polling instead of interrupts
-  mei: mkhi: add memory ready command
-  mei: gsc: setup gsc extended operational memory
-  mei: debugfs: add pxp mode to devstate in debugfs
-  drm/i915/gsc: allocate extended operational memory in LMEM
-
-Vitaly Lubart (3):
-  drm/i915/gsc: skip irq initialization if using polling
-  mei: bus: export common mkhi definitions into a separate header
-  mei: gsc: add transition to PXP mode in resume flow
-
- drivers/gpu/drm/i915/Kconfig.debug  |   1 +
- drivers/gpu/drm/i915/gt/intel_gsc.c | 119 +++++++++++++++++++++++++---
- drivers/gpu/drm/i915/gt/intel_gsc.h |   3 +
- drivers/misc/mei/bus-fixup.c        | 105 ++++++++++++++++--------
- drivers/misc/mei/client.c           |  14 ++--
- drivers/misc/mei/debugfs.c          |  17 ++++
- drivers/misc/mei/gsc-me.c           |  77 +++++++++++++++---
- drivers/misc/mei/hbm.c              |  12 +--
- drivers/misc/mei/hw-me-regs.h       |   7 ++
- drivers/misc/mei/hw-me.c            | 116 ++++++++++++++++++++++-----
- drivers/misc/mei/hw-me.h            |  14 +++-
- drivers/misc/mei/hw-txe.c           |   2 +-
- drivers/misc/mei/hw.h               |   5 ++
- drivers/misc/mei/init.c             |  21 ++++-
- drivers/misc/mei/main.c             |   2 +-
- drivers/misc/mei/mei_dev.h          |  26 ++++++
- drivers/misc/mei/mkhi.h             |  57 +++++++++++++
- drivers/misc/mei/pci-me.c           |   2 +-
- include/linux/mei_aux.h             |   2 +
- 19 files changed, 511 insertions(+), 91 deletions(-)
- create mode 100644 drivers/misc/mei/mkhi.h
-
+diff --git a/include/linux/mei_aux.h b/include/linux/mei_aux.h
+index 587f25128848..a29f4064b9c0 100644
+--- a/include/linux/mei_aux.h
++++ b/include/linux/mei_aux.h
+@@ -11,6 +11,7 @@ struct mei_aux_device {
+ 	struct auxiliary_device aux_dev;
+ 	int irq;
+ 	struct resource bar;
++	bool slow_fw;
+ };
+ 
+ #define auxiliary_dev_to_mei_aux_dev(auxiliary_dev) \
 -- 
 2.32.0
 
