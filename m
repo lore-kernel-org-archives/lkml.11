@@ -2,87 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63CCFC43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 08:43:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95628C43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 09:00:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234959AbiFSIm5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 19 Jun 2022 04:42:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57930 "EHLO
+        id S233349AbiFSJAR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 19 Jun 2022 05:00:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229777AbiFSIm4 (ORCPT
+        with ESMTP id S229441AbiFSJAO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 19 Jun 2022 04:42:56 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E42632620;
-        Sun, 19 Jun 2022 01:42:51 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id m32-20020a05600c3b2000b0039756bb41f2so4290294wms.3;
-        Sun, 19 Jun 2022 01:42:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Wazsq8UhIUaOIBwX2Yb5mTAKaqwBYkzu0w6I7zPYq3g=;
-        b=ghAKWzl+zepMk4HZrdDECE9IzXZo476DxjSpgMBqosbL7CHiWc9Yf2Ny3+s3MWOed3
-         8IR4JtEouizcsIMFh7h6fTlthvus+HCBbhnAGV3hdC1ucJKt36TVZnwJphc9eilPyRLQ
-         JX1Fk8TXGXd54Sglyo/zNlP8jwFJVSUAgj8JqQvFOkUd7MvZQHX4YR+fb7+HCeFTkWgf
-         hzgrcXD9RhJ+eHHej/UfWU0ZugX5doXMLztEJnamVvl14IAOlK8XxVRPmZT+il65BNTM
-         Whl0f3wui4pP8Vq7qiOYqzyuvWxDD5PpkODlTzYxFihz3OQwQC41mNd3lVkkWkmFAoNS
-         iQtA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Wazsq8UhIUaOIBwX2Yb5mTAKaqwBYkzu0w6I7zPYq3g=;
-        b=qYC51roBR9XXvou2BhvC2sTyoMOki8cRXBpOwXWHPqxB2bDUC0Kinlx1NNlMpl/aCu
-         rAr9H6nFReN8HmD17nvvXMMC667fWdSWWKZqXvb3kPr5CGSDdM5ii0v98NOmyDfueGrE
-         oez+jupapidsW2wsqmaMNL6afYtwxsHkDtu79ZaWA1yADbpqPF3WPAu5bpSeHSPX0YTv
-         2GYGGXTqIqpGCqv0Ds5JHVmxvvQbJo0ATs837GYVQhTwTwLEQ75eP5cHe+VvX5RPReZJ
-         BKiriU8SL/AgeWqiYX4rR5KFWNhhimU7cwn2O7LeeKbgVj9V+auqUhihUGzhU11ld3mr
-         2Vjw==
-X-Gm-Message-State: AJIora/2SwDDsW+lpT77ipOsdKPQYwHXrOG4QDziQ6C0ZD2Ke3cRagb9
-        aIvRQ918SZW6hjSrRlmfX+0=
-X-Google-Smtp-Source: AGRyM1uTFK+e/sNCprJ9slSi3YLU6OTHKl8MT6d2ssqS4zkz3AGmbjs/BOrpAlt/AyqK0ajA8wHamw==
-X-Received: by 2002:a1c:4409:0:b0:39e:f584:e2ad with SMTP id r9-20020a1c4409000000b0039ef584e2admr7733299wma.84.1655628170367;
-        Sun, 19 Jun 2022 01:42:50 -0700 (PDT)
-Received: from localhost (226.100-195-80.static.virginmediabusiness.co.uk. [80.195.100.226])
-        by smtp.gmail.com with ESMTPSA id r184-20020a1c2bc1000000b0039749b01ea7sm13712308wmr.32.2022.06.19.01.42.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 19 Jun 2022 01:42:49 -0700 (PDT)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] extconn: remove extraneous space before a debug message
-Date:   Sun, 19 Jun 2022 09:42:48 +0100
-Message-Id: <20220619084248.21395-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.35.3
-MIME-Version: 1.0
+        Sun, 19 Jun 2022 05:00:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C42FF2613;
+        Sun, 19 Jun 2022 02:00:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E39760FD6;
+        Sun, 19 Jun 2022 09:00:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A3723C341C5;
+        Sun, 19 Jun 2022 09:00:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655629212;
+        bh=0RSX/TxmErEaxscUFd0XIrpAiXT+uc/A13G1miIGl7Y=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=KZceZvpTvOyANXN/s2cAMCgEpeqL6LMUDaP0qA8paP9uEokgHUUgeo7xGPOhNGFhr
+         XhZWr/nErL/1By0PxYNtnYzAX5VeVqzEDq3vnpSi09UgYJLhyfU0/+BC4V4xGCIVdh
+         YeLoeA+F+7HNV8EWhYkwXGTVf2/jVXmXU6wZKfS4N3oGJ7yLgG4K/AtNXqgC+bEClm
+         a/GRY3cCipAYfVjHf7CQkIaWNP5FFOM4b98LXsdypoNANyWfpfKpcOI16fWcSCUhni
+         +OpktepM+cvX+XXCQ7yQ6IcsO8LXvBm23Bz/xQElruWQPlYBVktikknMWpv9nw8dVM
+         S2gGkky0m+SXA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 88C58FD99FB;
+        Sun, 19 Jun 2022 09:00:12 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 net-next] net: dsa: felix: update base time of time-aware
+ shaper when adjusting PTP time
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165562921255.21034.3210903703466134264.git-patchwork-notify@kernel.org>
+Date:   Sun, 19 Jun 2022 09:00:12 +0000
+References: <20220617032423.13852-1-xiaoliang.yang_1@nxp.com>
+In-Reply-To: <20220617032423.13852-1-xiaoliang.yang_1@nxp.com>
+To:     Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, allan.nielsen@microchip.com,
+        joergen.andreasen@microchip.com, horatiu.vultur@microchip.com,
+        UNGLinuxDriver@microchip.com, alexandre.belloni@bootlin.com,
+        fido_max@inbox.ru, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        pabeni@redhat.com, kuba@kernel.org, edumazet@google.com,
+        andrew@lunn.ch, alexandru.marginean@nxp.com,
+        claudiu.manoil@nxp.com, vladimir.oltean@nxp.com,
+        leoyang.li@nxp.com, yangbo.lu@nxp.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is an extreneous space before a dev_dbg message, remove it.
+Hello:
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
----
- drivers/extcon/extcon-palmas.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-diff --git a/drivers/extcon/extcon-palmas.c b/drivers/extcon/extcon-palmas.c
-index d2c1a8b89c08..32f8b541770b 100644
---- a/drivers/extcon/extcon-palmas.c
-+++ b/drivers/extcon/extcon-palmas.c
-@@ -107,7 +107,7 @@ static irqreturn_t palmas_id_irq_handler(int irq, void *_palmas_usb)
- 				(id_src & PALMAS_USB_ID_INT_SRC_ID_GND)) {
- 		palmas_usb->linkstat = PALMAS_USB_STATE_ID;
- 		extcon_set_state_sync(edev, EXTCON_USB_HOST, true);
--		dev_dbg(palmas_usb->dev, " USB-HOST cable is attached\n");
-+		dev_dbg(palmas_usb->dev, "USB-HOST cable is attached\n");
- 	}
- 
- 	return IRQ_HANDLED;
+On Fri, 17 Jun 2022 11:24:23 +0800 you wrote:
+> When adjusting the PTP clock, the base time of the TAS configuration
+> will become unreliable. We need reset the TAS configuration by using a
+> new base time.
+> 
+> For example, if the driver gets a base time 0 of Qbv configuration from
+> user, and current time is 20000. The driver will set the TAS base time
+> to be 20000. After the PTP clock adjustment, the current time becomes
+> 10000. If the TAS base time is still 20000, it will be a future time,
+> and TAS entry list will stop running. Another example, if the current
+> time becomes to be 10000000 after PTP clock adjust, a large time offset
+> can cause the hardware to hang.
+> 
+> [...]
+
+Here is the summary with links:
+  - [v2,net-next] net: dsa: felix: update base time of time-aware shaper when adjusting PTP time
+    https://git.kernel.org/netdev/net-next/c/8670dc33f48b
+
+You are awesome, thank you!
 -- 
-2.35.3
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
