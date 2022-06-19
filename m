@@ -2,240 +2,222 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85CBCC43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 14:18:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 248CCC43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 14:21:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232087AbiFSOSN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 19 Jun 2022 10:18:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54644 "EHLO
+        id S233004AbiFSOVE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 19 Jun 2022 10:21:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbiFSOSK (ORCPT
+        with ESMTP id S229447AbiFSOVB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 19 Jun 2022 10:18:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A2452635;
-        Sun, 19 Jun 2022 07:18:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 171C460F61;
-        Sun, 19 Jun 2022 14:18:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA72AC34114;
-        Sun, 19 Jun 2022 14:18:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655648288;
-        bh=m0J4H+mG6jDWlaC62PywH35uXmKJtmGHeOSShrPjBiE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=pYQ2xPcyrIjVRdaQPCb4PCqqJ9XqOmXUpA3hCZUTzpYEI5hq/Osu+vdTEUP3ggRQZ
-         ru1z16PnKsOPDPcwVjbF5fB1g/dlynShf3dSK8g4nrHXOB2It/pWB1MmsurEXPIQHD
-         zhiOGApzzX95VjMi62LaG6UfqUc2lBYauP13FQcqIFhT3lr458vzY85dGNzt7BVJA7
-         2cJ23ND/w5wPTkzFpxdPU7BcK0nF7ewQXpTv5h3VF2xFvcv25NPsL+wsuluDpnStJg
-         5U7Zy0sgiUKGFdjOWRIhBCPDkc6AtPpibEktTz8T9gw4cSxwS5odYTftaJXKIMedvV
-         4ByORBrXUpCjA==
-Date:   Sun, 19 Jun 2022 15:27:26 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Quentin Schulz <foss+kernel@0leil.net>
-Cc:     lars@metafoo.de, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Quentin Schulz <quentin.schulz@theobroma-systems.com>
-Subject: Re: [PATCH] iio: accel: mxc4005: report orientation of
- accelerometer
-Message-ID: <20220619152726.030f8e27@jic23-huawei>
-In-Reply-To: <20220615110240.684744-1-foss+kernel@0leil.net>
-References: <20220615110240.684744-1-foss+kernel@0leil.net>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Sun, 19 Jun 2022 10:21:01 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F13ABC8C
+        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 07:21:00 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id p3-20020a17090a428300b001ec865eb4a2so3421870pjg.3
+        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 07:21:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SxSyMDIE+M8LTJ/59DR+83z8FrdAj2WmQ9DtCi+Dp8c=;
+        b=pWjB4O7I4x9jE9a/NB/amln9h2crE+YrLi/S4rt9RVJHAPV1g6adntco58HSbDD/u5
+         dbZtxEjsT9iiVy/8KrDMJzG9Zdm2ErTz7OYhZJJxzo+0FU7Jbtm4tBMYPiVuy7ZkKE+K
+         SwhU43zdOw6P4tM4l4PDpnJrlqIQu9RqVkLiC5WuucgMrbrJpQc0CtVlxUjDGJUk41we
+         HLhp83/rANfThcYU9IyCkN4vsweyMfbECr9EpOy9MKyYWZs4ZQMB3XWLZrcqVoq6SiMx
+         7LGQF8IWfNFehd7/DlsKiTOaNBpkhgVu0rAXIWGGUUqXdhJD/645eLcH7gQqtrSVV9Ac
+         3reA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SxSyMDIE+M8LTJ/59DR+83z8FrdAj2WmQ9DtCi+Dp8c=;
+        b=Un3/6Jd32gBh4rX1qOedGUuuFIO0IBvlE/YqVwoYROZI9z19UD6Ly5Y02fIClofoyV
+         a0jRXv+ThPWrFo4E96d0Z8UJGpyn4iXW58UyjhuDc/ETVwExQ9Kmw9W+rSWQq9xotyh5
+         90NPhSl0yxnsztbnv6mvjQ7Ako1Y1tMzYCyUkrwXx4b3pFSUSLpsFxH1cpcS7ESRwTZD
+         A/SMKvaYfZs/3yp0xLtccjJ2UnTrQOfydjRkgXd2ds/4KfS6nKECxK3uQRg5LUEy4rKw
+         XET4XjAnopzXAP76XfOcFiq2WpSU6pYJ091X0sCZzJQNseoQ4LsalT9ZfpwdJJqCXe5h
+         cMRg==
+X-Gm-Message-State: AJIora8u7L7R1hk97D3Jwq9MXuHBL/GvTID/NvNj//HlCAkaLnmPOQq1
+        0H0wgdklXuNguBsnKC7soNM=
+X-Google-Smtp-Source: AGRyM1v+hOHk3VVPIUjNR7IFZdqTuIK5M4ci6xG2mC7IXB3PBj0gFUNs3lnFfbVCZs4aC1GNLP5oFw==
+X-Received: by 2002:a17:90b:1646:b0:1e3:15ef:2871 with SMTP id il6-20020a17090b164600b001e315ef2871mr32463990pjb.105.1655648459552;
+        Sun, 19 Jun 2022 07:20:59 -0700 (PDT)
+Received: from DESKTOP-IM4PCEA.localdomain ([49.207.215.19])
+        by smtp.googlemail.com with ESMTPSA id f6-20020a170902684600b0015e8d4eb1f9sm4531325pln.67.2022.06.19.07.20.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 19 Jun 2022 07:20:59 -0700 (PDT)
+From:   Mintu Patel <mintupatel89@gmail.com>
+To:     mintupatel89@gmail.com
+Cc:     Chinmoy Ghosh <chinmoyghosh2001@gmail.com>,
+        Vishal Badole <badolevishal1116@gmail.com>,
+        Vimal Kumar <vimal.kumar32@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org
+Subject: [PATCH] rt_spin_lock: To list the correct owner of rt_spin_lock
+Date:   Sun, 19 Jun 2022 19:50:38 +0530
+Message-Id: <20220619142038.1274-1-mintupatel89@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 15 Jun 2022 13:02:40 +0200
-Quentin Schulz <foss+kernel@0leil.net> wrote:
+   rt_spin_lock is actually mutex on RT Kernel so it goes for contention
+   for lock. Currently owners of rt_spin_lock are decided before actual
+   acquiring of lock. This patch would depict the correct owner of
+   rt_spin_lock. The patch would help in solving crashes and deadlock
+   due to race condition of lock
 
-> From: Quentin Schulz <quentin.schulz@theobroma-systems.com>
->=20
-Hi Quentin,
+acquiring rt_spin_lock        acquired the lock       released the lock
+                    <-------->                <------->
+                    contention period         Held period
 
-Interesting / horribly ill defined little feature ;)
+Thread1                             Thread2
+_try_to_take_rt_mutex+0x95c+0x74    enqueue_task_dl+0x8cc/0x8dc
+rt_spin_lock_slowlock_locked+0xac+2 rt_mutex_setprio+0x28c/0x574
+rt_spin_lock_slowlock+0x5c/0x90     task_blocks_rt_mutex+0x240/0x310
+rt_spin_lock+0x58/0x5c              rt_spin_lock_slowlock_locked+0xac/0x2
+driverA_acquire_lock+0x28/0x56      rt_spin_lock_slowlock+0x5c/0x90
+				    rt_spin_lock+0x58/0x5c
+                                    driverB_acquire_lock+0x48/0x6c
 
-> The accelerometer can report precise values for x, y and z accelerations
-> but it can also simply report its orientation on XY plane and Z axis.
->=20
-> Since the orientation of the device may be enough information for
-> userspace and allows to avoid expensive fusion algorithms, let's add
-> support for it.
->=20
-> The orientation register stores a 2b value for XY plane orientation:
-> between 225=C2=B0 and 315=C2=B0, returns 0, between 315=C2=B0 and 45=C2=
-=B0, 1, between 45=C2=B0
-> and 135=C2=B0, 2 and between 135=C2=B0 and 225=C2=B0, 3. We "round" those=
- to 270=C2=B0,
-> 0=C2=B0, 90=C2=B0 and 180=C2=B0 degrees.
+As per above call traces sample, Thread1 acquired the rt_spin_lock and
+went to critical section on the other hand Thread2 kept trying to acquire
+the same rt_spin_lock held by Thread1 ie contention period is too high.
+Finally Thread2 entered to dl queue due to high held time of the lock by
+Thread1. The below patch would help us to know the correct owner of
+rt_spin_lock and point us the driver's critical section. Respective
+driver need to be debugged for longer held period of lock.
 
-Wow. The datasheet description of this very confusing...
-One key thing is we need to be careful of is that tilt (x/y is
-not always available - but rather shows the last, and probably
-now garbage, value)
->=20
-> For Z axis, the register bit returns 0 if facing the user, 1 otherwise,
-> which the driver translates to 0=C2=B0 and 180=C2=B0 respectively.
+   ex: cat /sys/kernel/debug/tracing/trace
 
-I assume facing up vs facing down?  User might be lying on their
-back in which case this description doesn't work.  The datasheet
-also talks about the case where g lies near the XY plane and hence
-the z axis is horizontal.
+   kworker/u13:0-150   [003] .....11   202.761025: rt_spinlock_acquire:
+Process: kworker/u13:0 is acquiring lock: &kbdev->hwaccess_lock
+   kworker/u13:0-150   [003] .....11   202.761039: rt_spinlock_acquired:
+Process: kworker/u13:0 has acquired lock: &kbdev->hwaccess_lock
+   kworker/u13:0-150   [003] .....11   202.761042: rt_spinlock_released:
+Process: kworker/u13:0 has released lock: &kbdev->hwaccess_lock
 
+Signed-off-by: Mintu Patel <mintupatel89@gmail.com>
+Signed-off-by: Chinmoy Ghosh <chinmoyghosh2001@gmail.com>
+Signed-off-by: Vishal Badole <badolevishal1116@gmail.com>
+Signed-off-by: Vimal Kumar <vimal.kumar32@gmail.com>
+---
+ include/trace/events/lock.h | 59 +++++++++++++++++++++++++++++++++++++
+ kernel/locking/rtmutex.c    | 10 +++++++
+ 2 files changed, 69 insertions(+)
 
->=20
-> Those values are proper if the accelerometer is mounted such that the
-> XYZ axes are as follows when the device is facing the user in portrait
-> mode (respecting the right-hand rule):
->=20
->      y
->      ^
->      |
->      |
->      |
->      +----------> x
->     /
->    /
->   /
->  L
-> z
->=20
-> Since this information is very basic, imprecise (only 4 values for XY
-> plane and 2 for Z axis) and can be extrapolated from the actual,
-> precise, x, y and z acceleration values, it is not made available
-> through buffers.
->=20
-> A change in XY plane or Z axis orientation can also trigger an interrupt
-> but this feature is not added in this commit.
->=20
-> Signed-off-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
-> ---
->  drivers/iio/accel/mxc4005.c | 39 +++++++++++++++++++++++++++++++++++++
->  1 file changed, 39 insertions(+)
->=20
-> diff --git a/drivers/iio/accel/mxc4005.c b/drivers/iio/accel/mxc4005.c
-> index b3afbf064915..61f24058d239 100644
-> --- a/drivers/iio/accel/mxc4005.c
-> +++ b/drivers/iio/accel/mxc4005.c
-> @@ -20,6 +20,11 @@
->  #define MXC4005_IRQ_NAME		"mxc4005_event"
->  #define MXC4005_REGMAP_NAME		"mxc4005_regmap"
-> =20
-> +#define MXC4005_REG_TILT_ORIENT		0x01
-> +#define MXC4005_REG_TILT_ORIENT_Z_MASK		BIT(6)
-
-I think you need to deal with BIT(7) as well.
-
-> +#define MXC4005_REG_TILT_ORIENT_XY_MASK		GENMASK(5, 4)
-> +#define MXC4005_REG_TILT_ORIENT_XY_SHIFT	4
-
-Don't define the shift, you can use FIELD_GET(MASK, val)
-
-> +
->  #define MXC4005_REG_XOUT_UPPER		0x03
->  #define MXC4005_REG_XOUT_LOWER		0x04
->  #define MXC4005_REG_YOUT_UPPER		0x05
-> @@ -96,6 +101,7 @@ static const struct attribute_group mxc4005_attrs_grou=
-p =3D {
->  static bool mxc4005_is_readable_reg(struct device *dev, unsigned int reg)
->  {
->  	switch (reg) {
-> +	case MXC4005_REG_TILT_ORIENT:
->  	case MXC4005_REG_XOUT_UPPER:
->  	case MXC4005_REG_XOUT_LOWER:
->  	case MXC4005_REG_YOUT_UPPER:
-> @@ -214,6 +220,28 @@ static int mxc4005_read_raw(struct iio_dev *indio_de=
-v,
->  	int ret;
-> =20
->  	switch (mask) {
-> +	case IIO_CHAN_INFO_PROCESSED:
-> +		switch (chan->type) {
-> +		case IIO_ROT:
-> +			ret =3D regmap_read(data->regmap, chan->address, val);
-> +			if (ret < 0) {
-> +				dev_err(data->dev, "failed to read rotation\n");
-> +				return ret;
-> +			}
-> +
-> +			if (chan->channel2 =3D=3D IIO_MOD_X_AND_Y) {
-> +				*val &=3D MXC4005_REG_TILT_ORIENT_XY_MASK;
-> +				*val >>=3D MXC4005_REG_TILT_ORIENT_XY_SHIFT;
-FIELD_GET()
-
-> +				/* 00 =3D 270=C2=B0; 01 =3D 0=C2=B0; 10 =3D 90=C2=B0; 11 =3D 180=C2=
-=B0 */
-> +				*val =3D (360 + (*val - 1) * 90) % 360;
-
-In event of tilt not being set (BIT (7)) I think you should return an error
-code here.  -EBUSY perhaps? To reflect the fact we don't have valid data.
-
-> +			} else {
-> +				*val &=3D MXC4005_REG_TILT_ORIENT_Z_MASK;
-> +				*val =3D *val ? 180 : 0;
-Documentation for this is really confusing, as it refers to a circumstance
-when it can be assumed to be horizontal, but then doesn't define it.
-
-It might be a simple as tilt being set and thus indicating significant
-acceleration due to gravity in the xy plane.
-However, the Z orientation is still updated in that case...
-
-> +			}
-> +			return IIO_VAL_INT;
-> +		default:
-> +			return -EINVAL;
-> +		}
->  	case IIO_CHAN_INFO_RAW:
->  		switch (chan->type) {
->  		case IIO_ACCEL:
-> @@ -287,11 +315,22 @@ static const unsigned long mxc4005_scan_masks[] =3D=
+diff --git a/include/trace/events/lock.h b/include/trace/events/lock.h
+index d7512129a324..c250a83ed995 100644
+--- a/include/trace/events/lock.h
++++ b/include/trace/events/lock.h
+@@ -35,6 +35,65 @@ TRACE_EVENT(lock_acquire,
+ 		  (__entry->flags & 2) ? "read " : "",
+ 		  __get_str(name))
+ );
++TRACE_EVENT(rt_spinlock_acquire,
++
++	TP_PROTO(struct lockdep_map *lock, struct task_struct *pname),
++
++	TP_ARGS(lock, pname),
++
++	TP_STRUCT__entry(
++		__string(name, lock->name)
++		__string(process_name, pname->comm)
++	),
++
++	TP_fast_assign(
++		__assign_str(name, lock->name);
++		__assign_str(process_name, pname->comm);
++	),
++
++	TP_printk("Process: %s is acquiring lock: %s",  __get_str(process_name),
++		__get_str(name))
++);
++
++TRACE_EVENT(rt_spinlock_acquired,
++
++	TP_PROTO(struct lockdep_map *lock, struct task_struct *pname),
++
++	TP_ARGS(lock, pname),
++
++	TP_STRUCT__entry(
++		__string(name, lock->name)
++		__string(process_name, pname->comm)
++	),
++
++	TP_fast_assign(
++		__assign_str(name, lock->name);
++		__assign_str(process_name, pname->comm);
++	),
++
++	TP_printk("Process: %s has acquired lock: %s", __get_str(process_name),
++		__get_str(name))
++);
++
++TRACE_EVENT(rt_spinlock_released,
++
++	TP_PROTO(struct lockdep_map *lock, struct task_struct *pname),
++
++	TP_ARGS(lock, pname),
++
++	TP_STRUCT__entry(
++		__string(name, lock->name)
++		__string(process_name, pname->comm)
++	),
++
++	TP_fast_assign(
++		__assign_str(name, lock->name);
++		__assign_str(process_name, pname->comm);
++	),
++
++	TP_printk("Process: %s has released lock: %s", __get_str(process_name),
++		__get_str(name))
++);
+ 
+ DECLARE_EVENT_CLASS(lock,
+ 
+diff --git a/kernel/locking/rtmutex.c b/kernel/locking/rtmutex.c
+index 602eb7821a1b..f7cba05fbe74 100644
+--- a/kernel/locking/rtmutex.c
++++ b/kernel/locking/rtmutex.c
+@@ -26,6 +26,7 @@
+ #include <linux/timer.h>
+ #include <linux/ww_mutex.h>
+ #include <linux/blkdev.h>
++#include <trace/events/lock.h>
+ 
+ #include "rtmutex_common.h"
+ 
+@@ -1144,7 +1145,13 @@ void __lockfunc rt_spin_lock(spinlock_t *lock)
+ 	rcu_read_lock();
+ 	migrate_disable();
+ 	spin_acquire(&lock->dep_map, 0, 0, _RET_IP_);
++#ifdef CONFIG_RT_SPIN_LOCK_TRACING
++	trace_rt_spinlock_acquire(&lock->dep_map, current);
++#endif
+ 	rt_spin_lock_fastlock(&lock->lock, rt_spin_lock_slowlock);
++#ifdef CONFIG_RT_SPIN_LOCK_TRACING
++	trace_rt_spinlock_acquired(&lock->dep_map, current);
++#endif
+ }
+ EXPORT_SYMBOL(rt_spin_lock);
+ 
+@@ -1169,6 +1176,9 @@ void __lockfunc rt_spin_unlock(spinlock_t *lock)
  {
->  	},							\
->  }
-> =20
-> +#define MXC4005_CHANNEL_ORIENTATION(_axis) {			\
-> +	.type =3D IIO_ROT,					\
-
-Hmm.  Should this be rotation or inclination (so referenced
-to gravity).  Inclination is not particularly tightly defined but the
-point is that it is relative to gravity - kind of a special case of
-rot.
-
-For the adis16209 we handled inclination and rotation.  I think rotation
-in that device corresponds to XY here. (though it's oddly defined for
-X axis, whereas I'm fairly sure it should be Z - as rotation 'about'
-z axis). The Z one here should I think be an inclination because it's not
-about any particular axis.
-
-We also have angle to confuse matters. In that case intent was 'between'
-two things. Arguably all the uses of rot are as well, just that one of those
-things is gravity or magnetic north.  With hindsight I think we could have
-gotten away with one of them, but hard to tidy up now.
-
-In conclusion, what you have here I think is best described as
-IIO_ROT about Z axis (the XY one)
-and IIO_INCL for the Z axis (the Z one).
-
-> +	.modified =3D 1,						\
-> +	.channel2 =3D IIO_MOD_##_axis,				\
-> +	.address =3D MXC4005_REG_TILT_ORIENT,			\
-> +	.info_mask_separate =3D BIT(IIO_CHAN_INFO_PROCESSED),	\
-> +	.scan_index =3D -1,					\
-> +}
-> +
->  static const struct iio_chan_spec mxc4005_channels[] =3D {
->  	MXC4005_CHANNEL(X, MXC4005_REG_XOUT_UPPER),
->  	MXC4005_CHANNEL(Y, MXC4005_REG_YOUT_UPPER),
->  	MXC4005_CHANNEL(Z, MXC4005_REG_ZOUT_UPPER),
->  	IIO_CHAN_SOFT_TIMESTAMP(3),
-> +	MXC4005_CHANNEL_ORIENTATION(X_AND_Y),
-> +	MXC4005_CHANNEL_ORIENTATION(Z),
->  };
-> =20
->  static irqreturn_t mxc4005_trigger_handler(int irq, void *private)
+ 	/* NOTE: we always pass in '1' for nested, for simplicity */
+ 	spin_release(&lock->dep_map, 1, _RET_IP_);
++#ifdef CONFIG_RT_SPIN_LOCK_TRACING
++	trace_rt_spinlock_released(&lock->dep_map, current);
++#endif
+ 	rt_spin_lock_fastunlock(&lock->lock, rt_spin_lock_slowunlock);
+ 	migrate_enable();
+ 	rcu_read_unlock();
+-- 
+2.25.1
 
