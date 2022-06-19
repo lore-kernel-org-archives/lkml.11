@@ -2,106 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 677A4CCA47A
-	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 11:34:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C3EEC43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 11:40:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236536AbiFSLex (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 19 Jun 2022 07:34:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58612 "EHLO
+        id S236677AbiFSLkd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 19 Jun 2022 07:40:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232931AbiFSLev (ORCPT
+        with ESMTP id S229993AbiFSLkb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 19 Jun 2022 07:34:51 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8974611A2B;
-        Sun, 19 Jun 2022 04:34:50 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id v1so16189728ejg.13;
-        Sun, 19 Jun 2022 04:34:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=utuT6cM/eVUrce22kFa8LNAWsGwMTCB+s3XUZ2ZFqjM=;
-        b=mXgpt+1B6pqO42lHUT4jA1tBiM52Ug3Jpsxo+tK8ynedBHMa0VbC/QlOY/k4MQWMIL
-         sZ09fZTms2b0ER5ORbUV+AX0NpK9/vcWO6oxJlfxH6/poht8DdvaFuHJGhHEaQtJsE1P
-         OcwbY/e+e2vNcoQeajDAVuJh4IYmXG2JL0WOvgETVXPqR7IcYrGQzerGpV/X0B9bhIw+
-         iMuN8X4ElDnEYoEBQUr5TUkYPfadYvNEmbfNJL/1SzKuJSSRoLDx2bl3NNAk6ghs/cRs
-         7HoejQdHbldmsGCRLJrfObwS8N7DKAUIfrzn1imoD3QRQbik5i3O0P4KqtqbfhZvYM5j
-         d/8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=utuT6cM/eVUrce22kFa8LNAWsGwMTCB+s3XUZ2ZFqjM=;
-        b=QZ0GGwh21avu0JOI3p725dk20yUNXQqF3Pa8F8YeVTcQPfxHLL3w9tdW4wSwMGrMCn
-         EcWrWsDHn/KaLN7T9tXbkMwhzX6VdIP5NQnbSyq502Tx6cWqcP7MFd2sfTdvE7E580ff
-         hEPslnXJIw5GV8Qe29l5QfKMqqnnievSN4kNzUJKGW8C9IO0PMgroCLKnZ+RPjwIK7QU
-         r+vxjgL1D4kLOsXdHlw6DCdXC5vu5Wa423lvTWd2oBfXja+ZhJ6L362mV45RouJEOSbH
-         IHnBKLHfZVOB8DXrn9TGYlmjDBMzvwK+t/25zyYAkmcCth9TcMKuOoa+PeAB7Y7LNii7
-         eJZw==
-X-Gm-Message-State: AJIora+iqQspd3763niDHp5gbpXzZFYlPJum66k6DmMS8P3oDyEhZfCc
-        ElnNSUCwaN3J0kWAf/RSTPV9p+MFCz1eYFS1exs=
-X-Google-Smtp-Source: AGRyM1tCsOw9ij3ODqUgP7h7NTNnUNkfZS+idLN4MZUsf44yfptBhZ7vjHap3gjfMwCJ8VWkccJjC7/adSSxTpLE/88=
-X-Received: by 2002:a17:906:149:b0:711:fca6:bc2f with SMTP id
- 9-20020a170906014900b00711fca6bc2fmr16875033ejh.497.1655638489111; Sun, 19
- Jun 2022 04:34:49 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220618165747.55709-1-samuel@sholland.org> <20220618165747.55709-4-samuel@sholland.org>
-In-Reply-To: <20220618165747.55709-4-samuel@sholland.org>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Sun, 19 Jun 2022 13:34:12 +0200
-Message-ID: <CAHp75VfM3L-bKOLoXTz67JCWq8UX6d-LvuYDxXMtTBznGOTgSA@mail.gmail.com>
-Subject: Re: [PATCH v4 3/4] Input: pinephone-keyboard - Support the proxied
- I2C bus
-To:     Samuel Holland <samuel@sholland.org>
-Cc:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        linux-input <linux-input@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, Ondrej Jirman <x@xff.cz>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Colin Ian King <colin.king@intel.com>,
-        David Gow <davidgow@google.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Sun, 19 Jun 2022 07:40:31 -0400
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E31211A25;
+        Sun, 19 Jun 2022 04:40:29 -0700 (PDT)
+Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id BCC3925E;
+        Sun, 19 Jun 2022 13:40:26 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1655638826;
+        bh=F985BgbPk6OEp+5ogkDCv/89Z7ithnzpRugLwEVYEp8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=JUHkgqIQ4eCmyE3s1Ug0PS5cPnbkHC1bVg5u4Kzwc9F7zsf4U4y7zVpSYYhXRdz3D
+         W0psvcSnd25rEngNNlURd57Ohq3pRoND2QH76OMOuuaz98Q82wDLZ7w4Q3fiJe8boX
+         fxZERRMUkJZzKAfXZlMeBapvfLj/GVg+N0MPpeyk=
+Date:   Sun, 19 Jun 2022 14:40:12 +0300
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Marco Felsch <m.felsch@pengutronix.de>,
-        Mattijs Korpershoek <mkorpershoek@baylibre.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Yassine Oudjana <y.oudjana@protonmail.com>,
-        "fengping.yu" <fengping.yu@mediatek.com>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        linux-sunxi@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+        Anurag Kumar Vulisha <anurag.kumar.vulisha@xilinx.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-phy@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Sean Anderson <sean.anderson@seco.com>
+Subject: Re: [PATCH] dt-bindings: phy: make phy-cells description a text
+Message-ID: <Yq8LHN+WGVpXDwiM@pendragon.ideasonboard.com>
+References: <20220619113325.21396-1-krzysztof.kozlowski@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220619113325.21396-1-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jun 18, 2022 at 7:12 PM Samuel Holland <samuel@sholland.org> wrote:
->
-> The PinePhone keyboard case contains a battery managed by an integrated
-> power bank IC. The power bank IC communicates over I2C, and the keyboard
-> MCU firmware provides an interface to read and write its registers.
-> Let's use this interface to implement a SMBus adapter, so we can reuse
-> the driver for the power bank IC.
+Hi Krzysztof,
 
-...
+Thank you for the patch.
 
-> +       /* Read back the command status until it passes or fails. */
-> +       do {
-> +               usleep_range(300, 500);
-> +               ret = i2c_smbus_read_byte_data(client, PPKB_SYS_COMMAND);
-> +       } while (ret == buf[2]);
-> +       if (ret < 0)
-> +               return ret;
-> +       /* Commands return 0x00 on success and 0xff on failure. */
-> +       if (ret)
-> +               return -EIO;
+On Sun, Jun 19, 2022 at 01:33:25PM +0200, Krzysztof Kozlowski wrote:
+> The description field is a string, so using YAML inside phy-cells
+> description is not actually helpful.
 
-Something to use from iopoll.h ?
+Does it hurt though ? For xlnx,zynqmp-psgtr.yaml I wrote it that way to
+prepare for a future where it could be described using a YAML schema
+(but such future may never come).
 
+> Make it a proper text.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>  .../bindings/phy/mediatek,tphy.yaml           | 14 ++++----
+>  .../bindings/phy/mediatek,xsphy.yaml          | 10 +++---
+>  .../bindings/phy/xlnx,zynqmp-psgtr.yaml       | 32 ++++++++-----------
+>  3 files changed, 23 insertions(+), 33 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/phy/mediatek,tphy.yaml b/Documentation/devicetree/bindings/phy/mediatek,tphy.yaml
+> index 4b638c1d4221..bd0e4c4915ed 100644
+> --- a/Documentation/devicetree/bindings/phy/mediatek,tphy.yaml
+> +++ b/Documentation/devicetree/bindings/phy/mediatek,tphy.yaml
+> @@ -154,14 +154,12 @@ patternProperties:
+>        "#phy-cells":
+>          const: 1
+>          description: |
+> -          The cells contain the following arguments.
+> -
+> -          - description: The PHY type
+> -              enum:
+> -                - PHY_TYPE_USB2
+> -                - PHY_TYPE_USB3
+> -                - PHY_TYPE_PCIE
+> -                - PHY_TYPE_SATA
+> +          The cells contain the following arguments::
+> +            - The PHY type::
+> +              - PHY_TYPE_USB2
+> +              - PHY_TYPE_USB3
+> +              - PHY_TYPE_PCIE
+> +              - PHY_TYPE_SATA
+>  
+>        nvmem-cells:
+>          items:
+> diff --git a/Documentation/devicetree/bindings/phy/mediatek,xsphy.yaml b/Documentation/devicetree/bindings/phy/mediatek,xsphy.yaml
+> index 598fd2b95c29..7262b8e184e2 100644
+> --- a/Documentation/devicetree/bindings/phy/mediatek,xsphy.yaml
+> +++ b/Documentation/devicetree/bindings/phy/mediatek,xsphy.yaml
+> @@ -100,12 +100,10 @@ patternProperties:
+>        "#phy-cells":
+>          const: 1
+>          description: |
+> -          The cells contain the following arguments.
+> -
+> -          - description: The PHY type
+> -              enum:
+> -                - PHY_TYPE_USB2
+> -                - PHY_TYPE_USB3
+> +          The cells contain the following arguments::
+> +            - The PHY type::
+> +              - PHY_TYPE_USB2
+> +              - PHY_TYPE_USB3
+>  
+>        # The following optional vendor properties are only for debug or HQA test
+>        mediatek,eye-src:
+> diff --git a/Documentation/devicetree/bindings/phy/xlnx,zynqmp-psgtr.yaml b/Documentation/devicetree/bindings/phy/xlnx,zynqmp-psgtr.yaml
+> index 79906519c652..7083eddb467c 100644
+> --- a/Documentation/devicetree/bindings/phy/xlnx,zynqmp-psgtr.yaml
+> +++ b/Documentation/devicetree/bindings/phy/xlnx,zynqmp-psgtr.yaml
+> @@ -18,25 +18,19 @@ properties:
+>    "#phy-cells":
+>      const: 4
+>      description: |
+> -      The cells contain the following arguments.
+> -
+> -      - description: The GTR lane
+> -        minimum: 0
+> -        maximum: 3
+> -      - description: The PHY type
+> -        enum:
+> -          - PHY_TYPE_DP
+> -          - PHY_TYPE_PCIE
+> -          - PHY_TYPE_SATA
+> -          - PHY_TYPE_SGMII
+> -          - PHY_TYPE_USB3
+> -      - description: The PHY instance
+> -        minimum: 0
+> -        maximum: 1 # for DP, SATA or USB
+> -        maximum: 3 # for PCIE or SGMII
+> -      - description: The reference clock number
+> -        minimum: 0
+> -        maximum: 3
+> +      The cells contain the following arguments::
+> +        - The GTR lane (minimum:: 0, maximum:: 3)
+> +        - The PHY type::
+> +            - PHY_TYPE_DP
+> +            - PHY_TYPE_PCIE
+> +            - PHY_TYPE_SATA
+> +            - PHY_TYPE_SGMII
+> +            - PHY_TYPE_USB3
+> +      - The PHY instance::
+> +          minimum:: 0
+> +          maximum:: 1 # for DP, SATA or USB
+> +          maximum:: 3 # for PCIE or SGMII
+> +      - The reference clock number (minimum:: 0, maximum:: 3)
+>  
+>    compatible:
+>      enum:
+> -- 
+> 2.34.1
+> 
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Regards,
+
+Laurent Pinchart
