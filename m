@@ -2,34 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23E0CC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42994CCA47A
 	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 08:26:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235018AbiFSI0Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 19 Jun 2022 04:26:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48642 "EHLO
+        id S235155AbiFSI01 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 19 Jun 2022 04:26:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229809AbiFSI0V (ORCPT
+        with ESMTP id S231183AbiFSI0V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 19 Jun 2022 04:26:21 -0400
 Received: from mxout4.routing.net (mxout4.routing.net [IPv6:2a03:2900:1:a::9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E21BBEE0E;
-        Sun, 19 Jun 2022 01:26:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B222AEE0D;
+        Sun, 19 Jun 2022 01:26:19 -0700 (PDT)
 Received: from mxbox2.masterlogin.de (unknown [192.168.10.89])
-        by mxout4.routing.net (Postfix) with ESMTP id 1B9861005EE;
-        Sun, 19 Jun 2022 08:26:16 +0000 (UTC)
+        by mxout4.routing.net (Postfix) with ESMTP id 16505101294;
+        Sun, 19 Jun 2022 08:26:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailerdienst.de;
-        s=20200217; t=1655627176;
+        s=20200217; t=1655627178;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=El3eiqyJe3YtA9IE7kBZL0i2kK4Uj0j7O55/zFr8ZLU=;
-        b=ADrErCZhcAqvjuy8n/SQ/YGx6mGDEZEwIkwvwI7RZsGRwXOegwn4Mm9CQs5zFrdzDkWw0d
-        W82WX7cZIk9v6foxd0gvYJQ7rPyuVkGIX9I/uMPX5nLYWzYkHPDhUerM0AwCwgdtAJ1hga
-        IaMww8wfvino7oIxLfb3stHTi2pq61s=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=MgcSu/bZTjky7t6qN/ZaauuAgwOYV51FTF/OPnptHgI=;
+        b=V6/kqZMK1osbUAGBkeFFjrg5dRAARQNas58FVCI4qRndkb38a6EHvdAEV/aLOMhouEWz/q
+        LejXWwk/2sPy+jDMUP1N+8QGvamW9vYJK+S3X/d82GDMzG5ofe/EUICg9bi2gqBCt03ZNt
+        Lu70UDU7W6ytiAZu07Poq4q0kD5SAu4=
 Received: from frank-G5.. (fttx-pool-157.180.227.195.bambit.de [157.180.227.195])
-        by mxbox2.masterlogin.de (Postfix) with ESMTPSA id DF4AA10054D;
-        Sun, 19 Jun 2022 08:26:14 +0000 (UTC)
+        by mxbox2.masterlogin.de (Postfix) with ESMTPSA id 1633710054D;
+        Sun, 19 Jun 2022 08:26:17 +0000 (UTC)
 From:   Frank Wunderlich <linux@fw-web.de>
 To:     linux-rockchip@lists.infradead.org
 Cc:     Frank Wunderlich <frank-w@public-files.de>,
@@ -46,47 +47,58 @@ Cc:     Frank Wunderlich <frank-w@public-files.de>,
         Liang Chen <cl@rock-chips.com>, Simon Xue <xxm@rock-chips.com>,
         Shawn Lin <shawn.lin@rock-chips.com>,
         linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 0/5] RK3568 PCIe V3 support
-Date:   Sun, 19 Jun 2022 10:26:00 +0200
-Message-Id: <20220619082605.7935-1-linux@fw-web.de>
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v4 2/5] dt-bindings: soc: grf: add pcie30-{phy,pipe}-grf
+Date:   Sun, 19 Jun 2022 10:26:02 +0200
+Message-Id: <20220619082605.7935-3-linux@fw-web.de>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220619082605.7935-1-linux@fw-web.de>
+References: <20220619082605.7935-1-linux@fw-web.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Mail-ID: 43d1a18b-a719-4417-955d-f644080d9cf4
+X-Mail-ID: 1f4313a6-4642-4c5d-9b5c-1584b150b7b3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Frank Wunderlich <frank-w@public-files.de>
 
-This series adds Rockchip PCIe V3 support found on rk3568 SOC.
+Add compatibles for PCIe v3 General Register Files.
 
-Compared to PCIeV2 which uses the Naneng combphy, PCIe v3 uses a dedicated
-PCI-phy.
+Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+v4:
+- rebase on 5.19-rc1
+- add acked-by
 
-Frank Wunderlich (4):
-  dt-bindings: phy: rockchip: add PCIe v3 phy
-  dt-bindings: soc: grf: add pcie30-{phy,pipe}-grf
-  arm64: dts: rockchip: rk3568: Add PCIe v3 nodes
-  arm64: dts: rockchip: Add PCIe v3 nodes to BPI-R2-Pro
+v3:
+- fix order of grf-bindings
 
-Shawn Lin (1):
-  phy: rockchip: Support PCIe v3
+v2:
+- add soc-part to pcie3-phy-grf
+---
+ Documentation/devicetree/bindings/soc/rockchip/grf.yaml | 3 +++
+ 1 file changed, 3 insertions(+)
 
- .../bindings/phy/rockchip,pcie3-phy.yaml      |  80 +++++
- .../devicetree/bindings/soc/rockchip/grf.yaml |   3 +
- .../boot/dts/rockchip/rk3568-bpi-r2-pro.dts   |  90 +++++
- arch/arm64/boot/dts/rockchip/rk3568.dtsi      | 122 +++++++
- drivers/phy/rockchip/Kconfig                  |   9 +
- drivers/phy/rockchip/Makefile                 |   1 +
- .../phy/rockchip/phy-rockchip-snps-pcie3.c    | 317 ++++++++++++++++++
- include/linux/phy/pcie.h                      |  12 +
- 8 files changed, 634 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/phy/rockchip,pcie3-phy.yaml
- create mode 100644 drivers/phy/rockchip/phy-rockchip-snps-pcie3.c
- create mode 100644 include/linux/phy/pcie.h
-
+diff --git a/Documentation/devicetree/bindings/soc/rockchip/grf.yaml b/Documentation/devicetree/bindings/soc/rockchip/grf.yaml
+index 75a2b8bb25fb..97301c470173 100644
+--- a/Documentation/devicetree/bindings/soc/rockchip/grf.yaml
++++ b/Documentation/devicetree/bindings/soc/rockchip/grf.yaml
+@@ -16,9 +16,12 @@ properties:
+           - enum:
+               - rockchip,rk3288-sgrf
+               - rockchip,rk3566-pipe-grf
++              - rockchip,rk3568-pcie3-phy-grf
+               - rockchip,rk3568-pipe-grf
+               - rockchip,rk3568-pipe-phy-grf
+               - rockchip,rk3568-usb2phy-grf
++              - rockchip,rk3588-pcie3-phy-grf
++              - rockchip,rk3588-pcie3-pipe-grf
+               - rockchip,rv1108-usbgrf
+           - const: syscon
+       - items:
 -- 
 2.34.1
 
