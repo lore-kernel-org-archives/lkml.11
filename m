@@ -2,131 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B32A7CCA473
-	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 00:26:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 531E5C43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 00:31:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232069AbiFSATd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 18 Jun 2022 20:19:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60886 "EHLO
+        id S232716AbiFSAa5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 18 Jun 2022 20:30:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbiFSATc (ORCPT
+        with ESMTP id S232520AbiFSAa4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 18 Jun 2022 20:19:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40D2F1261A
-        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 17:19:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EFF34B80B47
-        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 00:19:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C371BC3411A;
-        Sun, 19 Jun 2022 00:19:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655597967;
-        bh=O+ZM0Cqi3Uuf67Id2quo+Fg1yOGML3ldASAxDhGo5Rc=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=lpwSoKfTLpwYlyWtUcBvaxcEx57QevVx86/RiKuwR1uZKMNsxCAmAL29HhlNP9N2G
-         VsI9bWwIRCOmgKYr8uYXIUI5Q0HDTlkPCoDN9w4XTW1NrMqTWk8NA24g1y1ymIuq0Z
-         x5L8FGe6Hb5qmNrbOXcBbSXGCKbsT2ElamEty7/wsSt9aQKWahwwDQsUiJH1l4z+AI
-         zgmTyaEdqkrkhmBO3I2nsXteph/IDSj4BErcMC4VArtJryvHB30fPWEAhQtQ4kbhCW
-         ioyyLa8xOHr5GzkIEdEk9zjtYJ87uePMP6zNtNbbS78MGNmeChQxU/ub2dwixVCBdi
-         Sy+FUECcrDfSw==
-Message-ID: <0c139517-e976-5017-8e7a-d34c38f0f6bb@kernel.org>
-Date:   Sun, 19 Jun 2022 08:19:25 +0800
+        Sat, 18 Jun 2022 20:30:56 -0400
+Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 401C6B482;
+        Sat, 18 Jun 2022 17:30:54 -0700 (PDT)
+Received: from cwcc.thunk.org (pool-173-48-118-63.bstnma.fios.verizon.net [173.48.118.63])
+        (authenticated bits=0)
+        (User authenticated as tytso@ATHENA.MIT.EDU)
+        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 25J0UnXF012112
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sat, 18 Jun 2022 20:30:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mit.edu; s=outgoing;
+        t=1655598651; bh=OpWQhaxI18E55DXpbcycgp3dTrJ631pLL69VZtGcPhc=;
+        h=Date:From:To:Cc:Subject;
+        b=NPX44t24cHMaAendlviGOKsNBvJ6YHwkF7lfXr9tzV4XEckWK1/jXUcszcXSGQbX5
+         +SPqQO40+oeaOhVaJ+krz6Cau+unq6lC7weGUsjBZrz5UFp8H7srN0gvXQeu5+oqC6
+         59/orNGQJi871SWC1aY5FM0InzUJZLjMV709Tf/pXPYZwrEZ7vPIjN048BJh/pFVCu
+         Be1XaHyUahI+f3bmoAplfsTM7J8jS2DhYgvSlSuAq9A/Ke0NuMQYIwtqVZBcpbIKPk
+         25KpNkYTEk5BGe3la9OfZGacNjXu7VTgrDd73HYL/qxNCgOk552V+DP98SuM6wfWTE
+         R+Lh7aw4EaqJA==
+Received: by cwcc.thunk.org (Postfix, from userid 15806)
+        id 64A3B15C430A; Sat, 18 Jun 2022 20:30:49 -0400 (EDT)
+Date:   Sat, 18 Jun 2022 20:30:49 -0400
+From:   "Theodore Ts'o" <tytso@mit.edu>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-ext4@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [GIT PULL] ext4 fixes for 5.19-rc3
+Message-ID: <Yq5uOVSUci3fv+Mw@mit.edu>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2] erofs: update ctx->pos for every emitted dirent
-Content-Language: en-US
-To:     Hongnan Li <hongnan.li@linux.alibaba.com>,
-        linux-erofs@lists.ozlabs.org, xiang@kernel.org
-Cc:     linux-kernel@vger.kernel.org
-References: <20220527072536.68516-1-hongnan.li@linux.alibaba.com>
- <20220609034006.76649-1-hongnan.li@linux.alibaba.com>
-From:   Chao Yu <chao@kernel.org>
-In-Reply-To: <20220609034006.76649-1-hongnan.li@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/6/9 11:40, Hongnan Li wrote:
-> erofs_readdir update ctx->pos after filling a batch of dentries
-> and it may cause dir/files duplication for NFS readdirplus which
-> depends on ctx->pos to fill dir correctly. So update ctx->pos for
-> every emitted dirent in erofs_fill_dentries to fix it.
-> 
-> Fixes: 3e917cc305c6 ("erofs: make filesystem exportable")
-> Signed-off-by: Hongnan Li <hongnan.li@linux.alibaba.com>
-> ---
->   fs/erofs/dir.c | 20 ++++++++++----------
->   1 file changed, 10 insertions(+), 10 deletions(-)
-> 
-> diff --git a/fs/erofs/dir.c b/fs/erofs/dir.c
-> index 18e59821c597..94ef5287237a 100644
-> --- a/fs/erofs/dir.c
-> +++ b/fs/erofs/dir.c
-> @@ -22,10 +22,9 @@ static void debug_one_dentry(unsigned char d_type, const char *de_name,
->   }
->   
->   static int erofs_fill_dentries(struct inode *dir, struct dir_context *ctx,
-> -			       void *dentry_blk, unsigned int *ofs,
-> +			       void *dentry_blk, struct erofs_dirent *de,
->   			       unsigned int nameoff, unsigned int maxsize)
->   {
-> -	struct erofs_dirent *de = dentry_blk + *ofs;
->   	const struct erofs_dirent *end = dentry_blk + nameoff;
->   
->   	while (de < end) {
-> @@ -59,9 +58,8 @@ static int erofs_fill_dentries(struct inode *dir, struct dir_context *ctx,
->   			/* stopped by some reason */
->   			return 1;
->   		++de;
-> -		*ofs += sizeof(struct erofs_dirent);
-> +		ctx->pos += sizeof(struct erofs_dirent);
->   	}
-> -	*ofs = maxsize;
->   	return 0;
->   }
->   
-> @@ -95,7 +93,7 @@ static int erofs_readdir(struct file *f, struct dir_context *ctx)
->   				  "invalid de[0].nameoff %u @ nid %llu",
->   				  nameoff, EROFS_I(dir)->nid);
->   			err = -EFSCORRUPTED;
-> -			goto skip_this;
-> +			break;
->   		}
->   
->   		maxsize = min_t(unsigned int,
-> @@ -106,17 +104,19 @@ static int erofs_readdir(struct file *f, struct dir_context *ctx)
->   			initial = false;
->   
->   			ofs = roundup(ofs, sizeof(struct erofs_dirent));
-> -			if (ofs >= nameoff)
-> +			if (ofs >= nameoff) {
-> +				ctx->pos = blknr_to_addr(i) + ofs;
->   				goto skip_this;
-> +			}
->   		}
->   
-> -		err = erofs_fill_dentries(dir, ctx, de, &ofs,
-> -					  nameoff, maxsize);
-> -skip_this:
->   		ctx->pos = blknr_to_addr(i) + ofs;
+The following changes since commit b13baccc3850ca8b8cccbf8ed9912dbaa0fdf7f3:
 
-Why updating ctx->pos before erofs_fill_dentries()?
+  Linux 5.19-rc2 (2022-06-12 16:11:37 -0700)
 
-Thanks,
+are available in the Git repository at:
 
-> -
-> +		err = erofs_fill_dentries(dir, ctx, de, (void *)de + ofs,
-> +					  nameoff, maxsize);
->   		if (err)
->   			break;
-> +		ctx->pos = blknr_to_addr(i) + maxsize;
-> +skip_this:
->   		++i;
->   		ofs = 0;
->   	}
+  https://git.kernel.org/pub/scm/linux/kernel/git/tytso/ext4.git tags/ext4_for_linus_stable
+
+for you to fetch changes up to 1f3ddff3755915a2b38de92d53508594de432d3d:
+
+  ext4: fix a doubled word "need" in a comment (2022-06-18 19:36:20 -0400)
+
+----------------------------------------------------------------
+Fix a variety of bugs, many of which were found by folks using fuzzing
+or error injection.  Also fix up how test_dummy_encryption mount
+option is handled for the new mount API.  Finally, fix/cleanup a
+number of comments and ext4 Documentation files.
+
+----------------------------------------------------------------
+Baokun Li (2):
+      ext4: fix bug_on ext4_mb_use_inode_pa
+      ext4: correct the judgment of BUG in ext4_mb_normalize_request
+
+Ding Xiang (1):
+      ext4: make variable "count" signed
+
+Eric Biggers (1):
+      ext4: fix up test_dummy_encryption handling for new mount API
+
+Jan Kara (1):
+      ext4: improve write performance with disabled delalloc
+
+Shuqi Zhang (1):
+      ext4: use kmemdup() to replace kmalloc + memcpy
+
+Wang Jianjian (2):
+      ext4: fix incorrect comment in ext4_bio_write_page()
+      ext4, doc: remove unnecessary escaping
+
+Xiang wangx (1):
+      ext4: fix a doubled word "need" in a comment
+
+Yang Li (1):
+      fs: fix jbd2_journal_try_to_free_buffers() kernel-doc comment
+
+Ye Bin (1):
+      ext4: fix super block checksum incorrect after mount
+
+Zhang Yi (2):
+      ext4: fix warning when submitting superblock in ext4_commit_super()
+      ext4: add reserved GDT blocks check
+
+ Documentation/filesystems/ext4/attributes.rst     |  68 +++---
+ Documentation/filesystems/ext4/bigalloc.rst       |   2 +-
+ Documentation/filesystems/ext4/bitmaps.rst        |   6 +-
+ Documentation/filesystems/ext4/blockgroup.rst     |  30 +--
+ Documentation/filesystems/ext4/blockmap.rst       |   2 +-
+ Documentation/filesystems/ext4/checksums.rst      |  26 +--
+ Documentation/filesystems/ext4/directory.rst      | 166 +++++++-------
+ Documentation/filesystems/ext4/eainode.rst        |  10 +-
+ Documentation/filesystems/ext4/group_descr.rst    | 126 +++++------
+ Documentation/filesystems/ext4/ifork.rst          |  60 +++---
+ Documentation/filesystems/ext4/inlinedata.rst     |   8 +-
+ Documentation/filesystems/ext4/inodes.rst         | 306 +++++++++++++-------------
+ Documentation/filesystems/ext4/journal.rst        | 214 +++++++++---------
+ Documentation/filesystems/ext4/mmp.rst            |  36 ++--
+ Documentation/filesystems/ext4/overview.rst       |   2 +-
+ Documentation/filesystems/ext4/special_inodes.rst |   8 +-
+ Documentation/filesystems/ext4/super.rst          | 550 +++++++++++++++++++++++------------------------
+ fs/ext4/inode.c                                   |   2 +-
+ fs/ext4/mballoc.c                                 |  26 ++-
+ fs/ext4/migrate.c                                 |   2 +-
+ fs/ext4/namei.c                                   |   3 +-
+ fs/ext4/page-io.c                                 |   2 +-
+ fs/ext4/resize.c                                  |  10 +
+ fs/ext4/super.c                                   | 172 ++++++++-------
+ fs/ext4/xattr.c                                   |   3 +-
+ fs/jbd2/transaction.c                             |   2 +-
+ 26 files changed, 947 insertions(+), 895 deletions(-)
