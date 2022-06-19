@@ -2,455 +2,280 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1669BC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 11:21:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E3B1C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 11:23:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236394AbiFSLVL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 19 Jun 2022 07:21:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48696 "EHLO
+        id S236436AbiFSLXX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 19 Jun 2022 07:23:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233799AbiFSLVI (ORCPT
+        with ESMTP id S233799AbiFSLXI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 19 Jun 2022 07:21:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0E21811174
-        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 04:21:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655637666;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ua3Ce0UiwO9CYupYNLzjnGgQoqCOGhVi5u239CGdNHo=;
-        b=SL25sXjccihY3cXqwAS9qzNTtSu9ivVRM0ttMj6JQ3ohTodlHv1hCu36QBlqNKRVTyLTqP
-        /bPgR6GAQRnuFABUJRnZyQpYmYPAF4naFWfQDscy+txwaxts5ljVs+A2mX3xF+EOK05Ziw
-        2NZ3LCtds9+tzbe+C0DDlkU7uszMgWk=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-70-vjxfnwjQMJeGiHhLcEFWDw-1; Sun, 19 Jun 2022 07:21:04 -0400
-X-MC-Unique: vjxfnwjQMJeGiHhLcEFWDw-1
-Received: by mail-ej1-f69.google.com with SMTP id q5-20020a17090676c500b00704ffb95131so2795065ejn.8
-        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 04:21:04 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ua3Ce0UiwO9CYupYNLzjnGgQoqCOGhVi5u239CGdNHo=;
-        b=qH53BAZm353dXH8SEegQTHgILr0BQxe3H2I6cDNDEs7zbMQG13/Qm2l9/D8DYO9BiY
-         D9nUoV/Hyxe/Wc2jBgp2AvQIWUvwWsnpbSQFqcM85kzYYNp2LjX1Bzpu7j8F36aHycUy
-         xJM8enT0yKGZmnUSLil7CSfvNO0e0S21eZpl+YNutDKtjMt/rUkXmYrqhHBxv5wKfXLT
-         OQFNrwiWhL1WRtgAGqf9KG2YqUTNPZLVv+ajXG+QG6k3OGJ25fSMcR6ps8UkixPzQ7Yf
-         MkLdTjQi6wza+jnhiyeO/i0zYEgP1O94AmrLdxcX6oV9HhNMJk3ZaL6yIEupYbpW6XnV
-         ou9g==
-X-Gm-Message-State: AJIora+O7vQg+O25ibH/MsQQPzDZXBwU4UpuV3fA8srO+KE8ES/dzGHD
-        ZmISR1ZiMw0L4Ig+c9sjdFEUFWE9s4a+wrkhV++8gr1gPczYTheOY+NoPv2QICwc0NvJ6o5LhcD
-        PgIYPwK3QrjTZRF4fN0fDlBAOI96WqW4NQArIGMWb
-X-Received: by 2002:a05:6402:1509:b0:435:6e97:2e51 with SMTP id f9-20020a056402150900b004356e972e51mr8012073edw.354.1655637663515;
-        Sun, 19 Jun 2022 04:21:03 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uZpO8Q6GRS8ArTE9iT4l2vbajKofBwEp5gyt8gQ5Q2M8PEVKk/BWB7sWh4rwMyoE4L/P1P2XNGMw1FbSKm7tw=
-X-Received: by 2002:a05:6402:1509:b0:435:6e97:2e51 with SMTP id
- f9-20020a056402150900b004356e972e51mr8012048edw.354.1655637663234; Sun, 19
- Jun 2022 04:21:03 -0700 (PDT)
+        Sun, 19 Jun 2022 07:23:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98E3B218B;
+        Sun, 19 Jun 2022 04:23:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3395061008;
+        Sun, 19 Jun 2022 11:23:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70964C3411D;
+        Sun, 19 Jun 2022 11:23:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655637783;
+        bh=Ga08aNWEm/9YKJKYn977YCoDC642zSlRjrKCmmG2dr4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=hgCPWRz7NonQqi9E5oyzdRA7Fgr7xkxVv6vUQscGxN/AcQ8a+pljM/aGoGaCGWci9
+         73o/J3GgOWvedfTJ8qM+jZ4Io2z317cTmcS0ip7ho/dEn+OlMtJsX2EvRQlA8WVpqx
+         GB4Qy2Uzr3OmY9g3wEeFSwMF1x3G3xRfN6TcBwlplLSacuXEWA1vYwMrpxb69MCgcq
+         HNpyMRlxYUmkZIyohx44PTKFCFUpCfm8g3r1M1aD5CXO0nVBF53E5ubcqiAa6MJW/q
+         gys/sc/zrgTVtRXtCbqNXp1UwVHuxSq0j0aybkwPyQLW/TMiWCDK1DRKQWOh3fV8sJ
+         eZTp9EpzhhDJw==
+Date:   Sun, 19 Jun 2022 12:32:21 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     ChiYuan Huang <u0084500@gmail.com>
+Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        cy_huang <cy_huang@richtek.com>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>
+Subject: Re: [PATCH 2/2] iio: adc: Add rtq6056 support
+Message-ID: <20220619123221.6c2bbf69@jic23-huawei>
+In-Reply-To: <CADiBU3_LSwDcCrVFTHb8sLBEQWmyUpz94k=yQ=QQ+mC73sGx_w@mail.gmail.com>
+References: <1655458375-30478-1-git-send-email-u0084500@gmail.com>
+        <1655458375-30478-3-git-send-email-u0084500@gmail.com>
+        <20220617181027.000074a8@Huawei.com>
+        <CADiBU3_LSwDcCrVFTHb8sLBEQWmyUpz94k=yQ=QQ+mC73sGx_w@mail.gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220610002046.3243874-1-jsavitz@redhat.com>
-In-Reply-To: <20220610002046.3243874-1-jsavitz@redhat.com>
-From:   Nico Pache <npache@redhat.com>
-Date:   Sun, 19 Jun 2022 07:20:36 -0400
-Message-ID: <CAA1CXcDJChvO+7XUPyf==yvHU-E3GDs8Q7+_ZQRdyjqm+XwjZw@mail.gmail.com>
-Subject: Re: [RFC PATCH] selftests/vm: enable running select groups of tests
-To:     Joel Savitz <jsavitz@redhat.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, Linux MM <linux-mm@kvack.org>,
-        linux-kselftest@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey Joel,
+On Sat, 18 Jun 2022 23:49:27 +0800
+ChiYuan Huang <u0084500@gmail.com> wrote:
 
-good work on this! I dont see anything wrong with this and the added
-functionality is very nice.
+> Jonathan Cameron <Jonathan.Cameron@huawei.com> =E6=96=BC 2022=E5=B9=B46=
+=E6=9C=8818=E6=97=A5 =E9=80=B1=E5=85=AD =E5=87=8C=E6=99=A81:10=E5=AF=AB=E9=
+=81=93=EF=BC=9A
+> >
+> > On Fri, 17 Jun 2022 17:32:55 +0800
+> > cy_huang <u0084500@gmail.com> wrote:
+> > =20
+> > > From: ChiYuan Huang <cy_huang@richtek.com>
+> > >
+> > > Add Richtek RTQ6056 supporting.
+> > >
+> > > It can be used for the system to monitor load current and power with =
+16bit
+> > > resolution.
+> > >
+> > > Signed-off-by: ChiYuan Huang <cy_huang@richtek.com> =20
+> >
+> > Hi ChiYuan,
+> >
+> > Comments inline.
+> >
+> > It would be nice to consider how to take advantage of the fact we know =
+which
+> > channels are of interest in buffered mode, and change the operating mod=
+e to
+> > suite.
+> > =20
+> I implement the  buffered mode is for the debugging or continuous
+> tracking purpose.
+>=20
+> BUS channel is for input power source voltage
+> Shunt channel is for the cross voltage difference for Rshunt.
+> Current channel is calculated by Vshunt/Rshunt and the value converted by=
+ HW.
+> Power channel is calculated by BUS voltage multiple Current channel,
+> and also the value converted by HW.
+>=20
+> For the opmode question, this IC already designed for low quiescent.
+> If IC's in continuous mode, the typical quiescent current is still around=
+ 550uA.
+> 'Shutdown' mode only use typical 3.5uA.
+>=20
+> Like as you said, I may consider to use pm_runtime plus autosuspend to
+> minimize the wait time for the first new sample ready.
+Ok.
 
-I reviewed the code changes and everything seems to be correct.
+>=20
+> > > ---
+> > >  .../ABI/testing/sysfs-bus-iio-adc-rtq6056          |  58 +++
+> > >  drivers/iio/adc/Kconfig                            |  15 +
+> > >  drivers/iio/adc/Makefile                           |   1 +
+> > >  drivers/iio/adc/rtq6056-adc.c                      | 548 +++++++++++=
+++++++++++
+> > >  4 files changed, 622 insertions(+)
+> > >  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-adc-rtq60=
+56
+> > >  create mode 100644 drivers/iio/adc/rtq6056-adc.c
+> > >
+> > > diff --git a/Documentation/ABI/testing/sysfs-bus-iio-adc-rtq6056 b/Do=
+cumentation/ABI/testing/sysfs-bus-iio-adc-rtq6056
+> > > new file mode 100644
+> > > index 00000000..0516429
+> > > --- /dev/null
+> > > +++ b/Documentation/ABI/testing/sysfs-bus-iio-adc-rtq6056
+> > > @@ -0,0 +1,58 @@
+> > > +What:                /sys/bus/iio/devices/iio:deviceX/in_voltage0_ra=
+w =20
+> >
+> > Documentation can't be duplicated in mulitple files so these standard
+> > attributes should rely only on the main docs.  If we duplicate it breaks
+> > building the html docs unfortunately.
+> > =20
+> Does it mean there's no need to explain it here and covert this
+> voltage to millivolt?
 
-I also ran the code with a few examples, including correct and
-incorrect examples, and was not able to break it.
-
-Cheers,
--- Nico
-
-Tested-by: Nico Pache <npache@redhat.com>
-Acked-by: Nico Pache <npache@redhat.com>
+Yes, in_voltage0_raw * in_voltage0_scale must be in millivolts
+and you can't have extra documentation here without breaking the
+docs build.
 
 
-On Thu, Jun 9, 2022 at 8:20 PM Joel Savitz <jsavitz@redhat.com> wrote:
->
-> Add the ability to run one or more groups of vm tests (specified
-> by the environment variable TEST_ITEMS). Preserve existing default
-> behavior of running all tests when TEST_ITEMS is empty or "default".
->
-> Documentation of test groups is included in the patch as follows:
->
->     # ./run_vmtests.sh [ -h || --help ]
->
->     usage: ./tools/testing/selftests/vm/run_vmtests.sh [ -h ]
->       -h: display this message
->
->     The default behavior is to run all tests.
->
->     Alternatively, specific groups tests can be run by defining
->     the TEST_ITEMS shell variable with a space-separated string
->     of one or more of the following:
->     - mmap
->             tests for mmap(2)
->     - gup_test
->             tests for gup using gup_test interface
->     - userfaultfd
->             tests for  userfaultfd(2)
->     - compaction
->             a test for the patch "Allow compaction of unevictable pages"
->     - mlock
->             tests for mlock(2)
->     - mremap
->             tests for mremap(2)
->     - hugevm
->             tests for very large virtual address space
->     - vmalloc
->             vmalloc smoke tests
->     - hmm
->             hmm smoke tests
->     - madv_populate
->             test memadvise(2) MADV_POPULATE_{READ,WRITE} options
->     - memfd_secret
->             test memfd_secret(2)
->     - process_mrelease
->             test process_mrelease(2)
->     - ksm
->             ksm tests that do not require >=2 NUMA nodes
->     - ksm_numa
->             ksm tests that require >=2 NUMA nodes
->     example: TEST_ITEMS="hmm mmap ksm" ./run_vmtests.sh
->
-> Signed-off-by: Joel Savitz <jsavitz@redhat.com>
-> ---
->  tools/testing/selftests/vm/run_vmtests.sh | 224 +++++++++++++++-------
->  1 file changed, 150 insertions(+), 74 deletions(-)
->
-> diff --git a/tools/testing/selftests/vm/run_vmtests.sh b/tools/testing/selftests/vm/run_vmtests.sh
-> index 41fce8bea929..d31fc66205f8 100755
-> --- a/tools/testing/selftests/vm/run_vmtests.sh
-> +++ b/tools/testing/selftests/vm/run_vmtests.sh
-> @@ -1,22 +1,74 @@
->  #!/bin/bash
->  # SPDX-License-Identifier: GPL-2.0
-> -#please run as root
-> +# Please run as root
->
->  # Kselftest framework requirement - SKIP code is 4.
->  ksft_skip=4
->
->  mnt=./huge
->  exitcode=0
-> -
-> -#get huge pagesize and freepages from /proc/meminfo
-> -while read -r name size unit; do
-> -       if [ "$name" = "HugePages_Free:" ]; then
-> -               freepgs="$size"
-> -       fi
-> -       if [ "$name" = "Hugepagesize:" ]; then
-> -               hpgsize_KB="$size"
-> +nr_tests_ran=0
-> +
-> +if [ ${1:-0} == "-h" ] || [ ${1:-0} == "--help" ]
-> +then
-> +       cat <<EOF
-> +usage: ${BASH_SOURCE[0]:-$0} [ -h ]
-> +  -h: display this message
-> +
-> +The default behavior is to run all tests.
-> +
-> +Alternatively, specific groups tests can be run by defining
-> +the TEST_ITEMS shell variable with a space-separated string
-> +of one or more of the following:
-> +- mmap
-> +       tests for mmap(2)
-> +- gup_test
-> +       tests for gup using gup_test interface
-> +- userfaultfd
-> +       tests for  userfaultfd(2)
-> +- compaction
-> +       a test for the patch "Allow compaction of unevictable pages"
-> +- mlock
-> +       tests for mlock(2)
-> +- mremap
-> +       tests for mremap(2)
-> +- hugevm
-> +       tests for very large virtual address space
-> +- vmalloc
-> +       vmalloc smoke tests
-> +- hmm
-> +       hmm smoke tests
-> +- madv_populate
-> +       test memadvise(2) MADV_POPULATE_{READ,WRITE} options
-> +- memfd_secret
-> +       test memfd_secret(2)
-> +- process_mrelease
-> +       test process_mrelease(2)
-> +- ksm
-> +       ksm tests that do not require >=2 NUMA nodes
-> +- ksm_numa
-> +       ksm tests that require >=2 NUMA nodes
-> +example: TEST_ITEMS="hmm mmap ksm" ./run_vmtests.sh
-> +EOF
-> +       exit 0
-> +fi # $1 == -h || $1 == --help
-> +
-> +# default behavior: run all tests
-> +TEST_ITEMS=${TEST_ITEMS:-default}
-> +
-> +echo "Selected test items: ${TEST_ITEMS}"
-> +
-> +test_selected() {
-> +       if [ "$TEST_ITEMS" == "default" ]; then
-> +               # If no TEST_ITEMS are specified, run all tests
-> +               return 0
->         fi
-> -done < /proc/meminfo
-> +       echo ${TEST_ITEMS} | grep ${1} 2>&1 >/dev/null
-> +       return ${?}
-> +}
-> +
-> +# Hugepage setup only needed for hugetlb tests
-> +if test_selected "hugetlb"; then
->
->  # Simple hugetlbfs tests have a hardcoded minimum requirement of
->  # huge pages totaling 256MB (262144KB) in size.  The userfaultfd
-> @@ -28,7 +80,17 @@ hpgsize_MB=$((hpgsize_KB / 1024))
->  half_ufd_size_MB=$((((nr_cpus * hpgsize_MB + 127) / 128) * 128))
->  needmem_KB=$((half_ufd_size_MB * 2 * 1024))
->
-> -#set proper nr_hugepages
-> +# get huge pagesize and freepages from /proc/meminfo
-> +while read -r name size unit; do
-> +       if [ "$name" = "HugePages_Free:" ]; then
-> +               freepgs="$size"
-> +       fi
-> +       if [ "$name" = "Hugepagesize:" ]; then
-> +               hpgsize_KB="$size"
-> +       fi
-> +done < /proc/meminfo
-> +
-> +# set proper nr_hugepages
->  if [ -n "$freepgs" ] && [ -n "$hpgsize_KB" ]; then
->         nr_hugepgs=$(cat /proc/sys/vm/nr_hugepages)
->         needpgs=$((needmem_KB / hpgsize_KB))
-> @@ -57,126 +119,140 @@ else
->         exit 1
->  fi
->
-> -#filter 64bit architectures
-> +fi # test_selected "hugetlb"
-> +
-> +# filter 64bit architectures
->  ARCH64STR="arm64 ia64 mips64 parisc64 ppc64 ppc64le riscv64 s390x sh64 sparc64 x86_64"
->  if [ -z "$ARCH" ]; then
->         ARCH=$(uname -m 2>/dev/null | sed -e 's/aarch64.*/arm64/')
->  fi
->  VADDR64=0
-> -echo "$ARCH64STR" | grep "$ARCH" && VADDR64=1
-> +echo "$ARCH64STR" | grep "$ARCH" &>/dev/null && VADDR64=1
->
->  # Usage: run_test [test binary] [arbitrary test arguments...]
->  run_test() {
-> -       local title="running $*"
-> -       local sep=$(echo -n "$title" | tr "[:graph:][:space:]" -)
-> -       printf "%s\n%s\n%s\n" "$sep" "$title" "$sep"
-> -
-> -       "$@"
-> -       local ret=$?
-> -       if [ $ret -eq 0 ]; then
-> -               echo "[PASS]"
-> -       elif [ $ret -eq $ksft_skip ]; then
-> -               echo "[SKIP]"
-> -               exitcode=$ksft_skip
-> -       else
-> -               echo "[FAIL]"
-> -               exitcode=1
-> -       fi
-> +       if test_selected ${CATEGORY}; then
-> +               local title="running $*"
-> +               local sep=$(echo -n "$title" | tr "[:graph:][:space:]" -)
-> +               printf "%s\n%s\n%s\n" "$sep" "$title" "$sep"
-> +
-> +               "$@"
-> +               local ret=$?
-> +               if [ $ret -eq 0 ]; then
-> +                       echo "[PASS]"
-> +               elif [ $ret -eq $ksft_skip ]; then
-> +                       echo "[SKIP]"
-> +                       exitcode=$ksft_skip
-> +               else
-> +                       echo "[FAIL]"
-> +                       exitcode=1
-> +               fi
-> +               nr_tests_ran=$((nr_tests_ran + 1))
-> +       fi # test_selected
->  }
->
-> -mkdir "$mnt"
-> -mount -t hugetlbfs none "$mnt"
-> +# setup only needed for hugetlb tests
-> +if test_selected "hugetlb"; then
-> +       mkdir "$mnt"
-> +       mount -t hugetlbfs none "$mnt"
-> +fi
->
-> -run_test ./hugepage-mmap
-> +CATEGORY="hugetlb" run_test ./hugepage-mmap
->
->  shmmax=$(cat /proc/sys/kernel/shmmax)
->  shmall=$(cat /proc/sys/kernel/shmall)
->  echo 268435456 > /proc/sys/kernel/shmmax
->  echo 4194304 > /proc/sys/kernel/shmall
-> -run_test ./hugepage-shm
-> +CATEGORY="hugetlb" run_test ./hugepage-shm
->  echo "$shmmax" > /proc/sys/kernel/shmmax
->  echo "$shmall" > /proc/sys/kernel/shmall
->
-> -run_test ./map_hugetlb
-> +CATEGORY="hugetlb" run_test ./map_hugetlb
->
-> -run_test ./hugepage-mremap "$mnt"/huge_mremap
-> -rm -f "$mnt"/huge_mremap
-> +CATEGORY="hugetlb" run_test ./hugepage-mremap "$mnt"/huge_mremap
-> +test_selected "hugetlb" && rm -f "$mnt"/huge_mremap
->
-> -run_test ./hugepage-vmemmap
-> +CATEGORY="hugetlb" run_test ./hugepage-vmemmap
->
-> -run_test ./hugetlb-madvise "$mnt"/madvise-test
-> -rm -f "$mnt"/madvise-test
-> +CATEGORY="hugetlb" run_test ./hugetlb-madvise "$mnt"/madvise-test
-> +test_selected "hugetlb" && rm -f "$mnt"/madvise-test
->
-> -echo "NOTE: The above hugetlb tests provide minimal coverage.  Use"
-> -echo "      https://github.com/libhugetlbfs/libhugetlbfs.git for"
-> -echo "      hugetlb regression testing."
-> +if test_selected "hugetlb"; then
-> +       echo "NOTE: These hugetlb tests provide minimal coverage.  Use"
-> +       echo "      https://github.com/libhugetlbfs/libhugetlbfs.git for"
-> +       echo "      hugetlb regression testing."
-> +fi
->
-> -run_test ./map_fixed_noreplace
-> +CATEGORY="mmap" run_test ./map_fixed_noreplace
->
->  # get_user_pages_fast() benchmark
-> -run_test ./gup_test -u
-> +CATEGORY="gup_test" run_test ./gup_test -u
->  # pin_user_pages_fast() benchmark
-> -run_test ./gup_test -a
-> +CATEGORY="gup_test" run_test ./gup_test -a
->  # Dump pages 0, 19, and 4096, using pin_user_pages:
-> -run_test ./gup_test -ct -F 0x1 0 19 0x1000
-> +CATEGORY="gup_test" run_test ./gup_test -ct -F 0x1 0 19 0x1000
->
-> -run_test ./userfaultfd anon 20 16
-> +CATEGORY="userfaultfd" run_test ./userfaultfd anon 20 16
->  # Test requires source and destination huge pages.  Size of source
->  # (half_ufd_size_MB) is passed as argument to test.
-> -run_test ./userfaultfd hugetlb "$half_ufd_size_MB" 32
-> -run_test ./userfaultfd shmem 20 16
-> -
-> -#cleanup
-> -umount "$mnt"
-> -rm -rf "$mnt"
-> -echo "$nr_hugepgs" > /proc/sys/vm/nr_hugepages
-> +CATEGORY="userfaultfd" run_test ./userfaultfd hugetlb "$half_ufd_size_MB" 32
-> +CATEGORY="userfaultfd" run_test ./userfaultfd shmem 20 16
-> +
-> +# cleanup (only needed when running hugetlb tests)
-> +if test_selected "hugetlb"; then
-> +       umount "$mnt"
-> +       rm -rf "$mnt"
-> +       echo "$nr_hugepgs" > /proc/sys/vm/nr_hugepages
-> +fi
->
-> -run_test ./compaction_test
-> +CATEGORY="compaction" run_test ./compaction_test
->
-> -run_test sudo -u nobody ./on-fault-limit
-> +CATEGORY="mlock" run_test sudo -u nobody ./on-fault-limit
->
-> -run_test ./map_populate
-> +CATEGORY="mmap" run_test ./map_populate
->
-> -run_test ./mlock-random-test
-> +CATEGORY="mlock" run_test ./mlock-random-test
->
-> -run_test ./mlock2-tests
-> +CATEGORY="mlock" run_test ./mlock2-tests
->
-> -run_test ./mrelease_test
-> +CATEGORY="process_mrelease" run_test ./mrelease_test
->
-> -run_test ./mremap_test
-> +CATEGORY="mremap" run_test ./mremap_test
->
-> -run_test ./thuge-gen
-> +CATEGORY="hugetlb" run_test ./thuge-gen
->
->  if [ $VADDR64 -ne 0 ]; then
-> -       run_test ./virtual_address_range
-> +       CATEGORY="hugevm" run_test ./virtual_address_range
->
->         # virtual address 128TB switch test
-> -       run_test ./va_128TBswitch
-> +       CATEGORY="hugevm" run_test ./va_128TBswitch
->  fi # VADDR64
->
->  # vmalloc stability smoke test
-> -run_test ./test_vmalloc.sh smoke
-> +CATEGORY="vmalloc" run_test ./test_vmalloc.sh smoke
->
-> -run_test ./mremap_dontunmap
-> +CATEGORY="mremap" run_test ./mremap_dontunmap
->
-> -run_test ./test_hmm.sh smoke
-> +CATEGORY="hmm" run_test ./test_hmm.sh smoke
->
->  # MADV_POPULATE_READ and MADV_POPULATE_WRITE tests
-> -run_test ./madv_populate
-> +CATEGORY="madv_populate" run_test ./madv_populate
->
-> -run_test ./memfd_secret
-> +CATEGORY="memfd_secret" run_test ./memfd_secret
->
->  # KSM MADV_MERGEABLE test with 10 identical pages
-> -run_test ./ksm_tests -M -p 10
-> +CATEGORY="ksm" run_test ./ksm_tests -M -p 10
->  # KSM unmerge test
-> -run_test ./ksm_tests -U
-> +CATEGORY="ksm" run_test ./ksm_tests -U
->  # KSM test with 10 zero pages and use_zero_pages = 0
-> -run_test ./ksm_tests -Z -p 10 -z 0
-> +CATEGORY="ksm" run_test ./ksm_tests -Z -p 10 -z 0
->  # KSM test with 10 zero pages and use_zero_pages = 1
-> -run_test ./ksm_tests -Z -p 10 -z 1
-> +CATEGORY="ksm" run_test ./ksm_tests -Z -p 10 -z 1
->  # KSM test with 2 NUMA nodes and merge_across_nodes = 1
-> -run_test ./ksm_tests -N -m 1
-> +CATEGORY="ksm_numa" run_test ./ksm_tests -N -m 1
->  # KSM test with 2 NUMA nodes and merge_across_nodes = 0
-> -run_test ./ksm_tests -N -m 0
-> +CATEGORY="ksm_numa" run_test ./ksm_tests -N -m 0
-> +
-> +echo "Ran $nr_tests_ran tests"
->
->  exit $exitcode
-> --
-> 2.31.1
->
+> > > diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> > > index 48ace74..0b2d17c 100644
+> > > diff --git a/drivers/iio/adc/rtq6056-adc.c b/drivers/iio/adc/rtq6056-=
+adc.c
+> > > new file mode 100644
+> > > index 00000000..8374fce
+> > > --- /dev/null
+> > > +++ b/drivers/iio/adc/rtq6056-adc.c
+> > > @@ -0,0 +1,548 @@
 
+> > > +
+> > > +#define RTQ6056_VENDOR_ID    0x1214
+> > > +#define RTQ6056_DEFAULT_CONFIG       0x4127 =20
+> >
+> > This is not defined in terms of the field provided below
+> > so it's not obvious what the initial state is.
+> > =20
+> To leave a comment about the default state?
+> Or use the macro to define the all field?
+
+Macro to define all fields means we don't have to check the
+comment matches the code, so I would prefer that approach.
+If hard to use macros for some reason, comment would be acceptable.
+
+
+
+
+> > > +
+> > > +static const char *rtq6056_channel_labels[RTQ6056_MAX_CHANNEL] =3D {
+> > > +     [RTQ6056_CH_VSHUNT] =3D "Vshunt(uV)", =20
+> >
+> > Units must be the standard ones for the IIO channel types.
+> > Hence documenting them here is misleading.
+> > =20
+> Can I use the "extend_name' and remove all the 'read_label' and
+> channel_label variable?
+
+No.  We very very rarely use extend name these days.  It was a bad
+design decision and makes it harder to write userspace code.  Label
+is the preferred way to provide this information today.
+
+static const char *rtq6056_channel_labels[RTQ6056_MAX_CHANNEL] =3D {
+     [RTQ6056_CH_VSHUNT] =3D "Vshunt", =20
+     [RTQ6056_CH_VBUS] =3D "Vbus",
+     [RTQ6056_CH_POWER] =3D "Power",
+     [RTQ6056_CH_CURRENT] =3D "Current",
+};
+
+would be my suggestion for the labels.  Power and Current are a bit
+redundant but we need to provide something alongside the useful
+Vshunt and Vbus.
+
+
+
+
+> And also , the unit will be removed. Thx.
+> > > +     [RTQ6056_CH_VBUS] =3D "Vbus(mV)",
+> > > +     [RTQ6056_CH_POWER] =3D "Power(mW)",
+> > > +     [RTQ6056_CH_CURRENT] =3D "Current(mA)",
+> > > +};
+> > ... =20
+> > > +static int rtq6056_probe(struct i2c_client *i2c)
+> > > +{
+> > > +     struct iio_dev *indio_dev;
+> > > +     struct rtq6056_priv *priv;
+> > > +     unsigned int vendor_id, shunt_resistor_uohm;
+> > > +     int ret;
+> > > +
+> > > +     if (!i2c_check_functionality(i2c->adapter, I2C_FUNC_SMBUS_WORD_=
+DATA))
+> > > +             return -EOPNOTSUPP;
+> > > +
+> > > +     indio_dev =3D devm_iio_device_alloc(&i2c->dev, sizeof(*priv));
+> > > +     if (!indio_dev)
+> > > +             return -ENOMEM;
+> > > +
+> > > +     priv =3D iio_priv(indio_dev);
+> > > +     priv->dev =3D &i2c->dev;
+> > > +     priv->vshuntct =3D priv->vbusct =3D RTQ6056_DEFAULT_CONVT;
+> > > +     priv->avg_sample =3D RTQ6056_DEFAULT_AVG;
+> > > +     i2c_set_clientdata(i2c, priv);
+> > > +
+> > > +     priv->regmap =3D devm_regmap_init_i2c(i2c, &rtq6056_regmap_conf=
+ig); =20
+> > You make a lot of use of regmap in this function. I would suggest
+> > first allocating into a local variable, then using that to set
+> > priv->regmap.  The local variable can then be used avoid having
+> > priv->regmap everywhere.
+> > =20
+> dev_get_regmap(), instead?
+
+You could use that, but I was thinking just
+
+	struct regmap *regmap;
+	...
+	regmap =3D devm_regmap_init_i2c(i2c, &...)
+	if (IS_ERR(regmap))
+		return ...
+
+	priv->regmap =3D regmap;
+
+	ret =3D regmap_read(regmap, ....
+etc.=09
+
+
+...
+
+> > > +static void rtq6056_shutdown(struct i2c_client *i2c)
+> > > +{
+> > > +     struct rtq6056_priv *priv =3D i2c_get_clientdata(i2c);
+> > > +
+> > > +     /* Config opmode to 'shutdown' mode to minimize quiescient curr=
+ent */
+> > > +     regmap_field_write(priv->rm_fields[F_OPMODE], 0); =20
+> >
+> > Unusual to provide a shutdown for a device as simple as an ADC.  I'd ex=
+pect
+> > the overall system to power down if we hit this and hence also cover
+> > the ADC.  If that's not the case, then perhaps add a comment explaining
+> > that.
+> > =20
+> That's because some application use VBAT as the VDD source.
+> Not all applcation use the PMIC buck or ldo as the supply for RTQ6056.
+> If use VBAT, then the shutdown quiescent current is important.
+
+Ok. Add that information as a comment so we know why this is done
+when looking back at the driver in future.
+
+Btw, to save on long emails that need scrolling through it's fine
+to just crop out any sections where you are accepting the feedback
+and no additional discussion is needed.  Makes the whole process
+more efficient as if you don't reply to some feedback I'll assume
+you are accepting it.
+
+Thanks,
+
+Jonathan
