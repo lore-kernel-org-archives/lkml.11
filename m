@@ -2,59 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3107ACCA47A
-	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 15:11:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A025FC43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 15:11:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231723AbiFSPLx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 19 Jun 2022 11:11:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50324 "EHLO
+        id S232417AbiFSPL6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 19 Jun 2022 11:11:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229909AbiFSPLv (ORCPT
+        with ESMTP id S231159AbiFSPLv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 19 Jun 2022 11:11:51 -0400
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33CC4AE50;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34352AE52;
         Sun, 19 Jun 2022 08:11:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:In-Reply-To:References;
-        bh=GpbBghc2KUTT+YonqGGQ/ud3qNGpEps0gpZxehyGdwc=; b=vbFQO/gLXhdG8+OLUzl+HNpsd4
-        f67IaNDMpjESyWpvAxSSZc8EO960nphUATLBGwXVx+lbSpHhlaiw2UUIX6qa/K4YRSCdleJC3Blj6
-        Wx2ngsULRRTJy0XksSSu5gNxw6E4vyC37vGefDuFY5Sf7H3FW6RDBdxYjzuPYj+xLoE9+3GfWJW3U
-        X5pNdAM0JNSx7D1+Z6sdItZpmFvFNUf7QIRmAkIHlfQrUwLlWdKrsqtn888s+IwhsXmKNp5Nqp9yw
-        p31WJVVs4+747C0BFwT4IlZwZljIGDA/cUXMytgPLnS7vgrLE6dKMUpgHP1zw2o2PLeaZ1SMM3gT7
-        1QmY1fCw==;
+        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
+        Content-Type:Content-ID:Content-Description;
+        bh=rkDLWdA9qK6dJptJf/M5HrXtYhb5ttvBn9HErKKNMDI=; b=tmmoPedVacsHoBJuv77FbS1OIE
+        7SC30HkfVjoJBDeZpX3j7OGOSuyv1LGvOS/awWV3auug2b3c7I/ens/EYBToPmtCdz0zIoLOHXJ39
+        IiuJtdrJGFnx+KkF5jQywbM61r/8FFO2ymoz76cwqrNek1jICCAwHYhdwMnftyKJIx6WhCWFXO6X4
+        UPqS0jgn1qeU7fRXgM4aAHBpgepX3EKHVoptrxqr2klZDX2Kb23EgkmjmnC1f5JOkXehYnd5JqR/U
+        HvvcFM5kV8inFsizinujjrGoSQKLwq8X5M6qOWFW7PT2j3uJI6D7kHzUvq6OtHqlfo271eisrXDZI
+        sYqmpVPQ==;
 Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o2waZ-004QOo-0t; Sun, 19 Jun 2022 15:11:47 +0000
+        id 1o2waZ-004QOu-7l; Sun, 19 Jun 2022 15:11:47 +0000
 From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
 To:     linux-mm@kvack.org, linux-fsdevel@vger.kernel.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 0/3] Fixes for 5.19b
-Date:   Sun, 19 Jun 2022 16:11:40 +0100
-Message-Id: <20220619151143.1054746-1-willy@infradead.org>
+        linux-kernel@vger.kernel.org, Xiubo Li <xiubli@redhat.com>
+Subject: [PATCH 3/3] mm: Clear page->private when splitting or migrating a page
+Date:   Sun, 19 Jun 2022 16:11:43 +0100
+Message-Id: <20220619151143.1054746-4-willy@infradead.org>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220619151143.1054746-1-willy@infradead.org>
+References: <20220619151143.1054746-1-willy@infradead.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I intend to send these three fixes for 5.19 during the next week.
-They're also at the top of the for-next branch.  I'll fold in any
-reviewed-by tags I get by Tuesday.
+In our efforts to remove uses of PG_private, we have found folios with
+the private flag clear and folio->private not-NULL.  That is the root
+cause behind 642d51fb0775 ("ceph: check folio PG_private bit instead
+of folio->private").  It can also affect a few other filesystems that
+haven't yet reported a problem.
 
-Matthew Wilcox (Oracle) (3):
-  filemap: Correct the conditions for marking a folio as accessed
-  filemap: Handle sibling entries in filemap_get_read_batch()
-  mm: Clear page->private when splitting or migrating a page
+compaction_alloc() can return a page with uninitialised page->private,
+and rather than checking all the callers of migrate_pages(), just zero
+page->private after calling get_new_page().  Similarly, the tail pages
+from split_huge_page() may also have an uninitialised page->private.
 
- mm/filemap.c     | 15 ++++++++++++---
- mm/huge_memory.c |  1 +
- mm/migrate.c     |  1 +
- 3 files changed, 14 insertions(+), 3 deletions(-)
+Reported-by: Xiubo Li <xiubli@redhat.com>
+Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+---
+ mm/huge_memory.c | 1 +
+ mm/migrate.c     | 1 +
+ 2 files changed, 2 insertions(+)
 
+diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+index f7248002dad9..9b31a50217b5 100644
+--- a/mm/huge_memory.c
++++ b/mm/huge_memory.c
+@@ -2377,6 +2377,7 @@ static void __split_huge_page_tail(struct page *head, int tail,
+ 			page_tail);
+ 	page_tail->mapping = head->mapping;
+ 	page_tail->index = head->index + tail;
++	page_tail->private = NULL;
+ 
+ 	/* Page flags must be visible before we make the page non-compound. */
+ 	smp_wmb();
+diff --git a/mm/migrate.c b/mm/migrate.c
+index e51588e95f57..6c1ea61f39d8 100644
+--- a/mm/migrate.c
++++ b/mm/migrate.c
+@@ -1106,6 +1106,7 @@ static int unmap_and_move(new_page_t get_new_page,
+ 	if (!newpage)
+ 		return -ENOMEM;
+ 
++	newpage->private = 0;
+ 	rc = __unmap_and_move(page, newpage, force, mode);
+ 	if (rc == MIGRATEPAGE_SUCCESS)
+ 		set_page_owner_migrate_reason(newpage, reason);
 -- 
 2.35.1
 
