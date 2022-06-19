@@ -2,105 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9F40C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 13:17:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF741C43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 13:20:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236652AbiFSNRv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 19 Jun 2022 09:17:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54302 "EHLO
+        id S236569AbiFSNUs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 19 Jun 2022 09:20:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234547AbiFSNRm (ORCPT
+        with ESMTP id S234547AbiFSNUp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 19 Jun 2022 09:17:42 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 726F4E70;
-        Sun, 19 Jun 2022 06:17:40 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id y13-20020a17090a154d00b001eaaa3b9b8dso7962210pja.2;
-        Sun, 19 Jun 2022 06:17:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Y4ZAlYmM9NAh7Jy0y3cENEFi8vBtUGBTB65jZWB6h3U=;
-        b=OZsHniZMtdGjvsLZPZjk70X2jr5ejROLKEYS5vnH5YtqShPVDPMR1S6ArEWQYpabqg
-         pyTycf0FHIvLGxzN5Tvn0qy8DwnvCdi2KKaw6+p2c6m5BZFRRmyUO7WJ66EWINNrEg/w
-         Pqr5JuJAEtVxTID63AxUZZPqeq2H0fs0wkb67Ur2k2BN1SMr/Fgwz/Xufuw64YLtwAzy
-         Sp3KZ4cGB7XpQeV+eZTydwSXLryL6AcM2fdkRCZ5JgTjJ+JFeXN6LjvOAJXr9ArW1KG6
-         EfBEz1h26p2heOT6oFSYKQvsyia1iuBrZabO3UJXUTTDFo1qoJL3EeHHNPNQ95437vvu
-         kN1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Y4ZAlYmM9NAh7Jy0y3cENEFi8vBtUGBTB65jZWB6h3U=;
-        b=SnTr5VqCqk1V7AP9PdWcwweysRemwmn49SBQ3q4r7Olufs3klYGDYC4DD67YK3EEB3
-         H/RpTfPbRhbYxiTwVNWcZK42+H8J27dwY1Z0u+ewabs3Qvi9yz+L00meZsSSc5ARb5Xa
-         6R2h30ItP+BOrJAw0uRUBGvCoVlR9bQ1Wvn9j67K2yjFM/OMW26E4fi586TWxr/zEHzI
-         WVAP/a8ug10xr+ixbPCXI8BqNUOwI0Ilf/F5tvvYmw9QOluBCyKqxI1NG+JLtWBuA3EG
-         8c6fW/kXXByyNx+DMvdfESFEGHsLdHGAac/Jj1UGOw/NPRoC8JJDS4fLRhqgaqlYwEUH
-         vTDA==
-X-Gm-Message-State: AJIora8iExUlnZXDtY0Q4cnBZjwi7NXgTMjOl87v4u9hX/aGKeknE8BD
-        L7t6R/dH9ODMV//hjVr+Wy9d9mQ8kieCtw==
-X-Google-Smtp-Source: AGRyM1u7CzSJW3yJ78YxHDUNN5NfBxasYkkYQxLo01XtsDUQsdfe4dFutwGF5AJdsTMbmZUSUpn6Gw==
-X-Received: by 2002:a17:90a:e503:b0:1ec:84b2:6404 with SMTP id t3-20020a17090ae50300b001ec84b26404mr10237512pjy.169.1655644659738;
-        Sun, 19 Jun 2022 06:17:39 -0700 (PDT)
-Received: from guoguo-omen.lan ([2401:c080:1400:4da2:b701:47d5:9291:4cf9])
-        by smtp.gmail.com with ESMTPSA id g1-20020a1709026b4100b001635f7a54e8sm6771857plt.1.2022.06.19.06.17.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 19 Jun 2022 06:17:39 -0700 (PDT)
-From:   Chuanhong Guo <gch981213@gmail.com>
-To:     linux-acpi@vger.kernel.org
-Cc:     Chuanhong Guo <gch981213@gmail.com>, stable@vger.kernel.org,
-        Tighe Donnelly <tighe.donnelly@protonmail.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v2 2/2] ACPI: skip IRQ1 override on Redmi Book Pro 15 2022
-Date:   Sun, 19 Jun 2022 21:16:57 +0800
-Message-Id: <20220619131657.37067-3-gch981213@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220619131657.37067-1-gch981213@gmail.com>
-References: <20220619131657.37067-1-gch981213@gmail.com>
+        Sun, 19 Jun 2022 09:20:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DEACBD4;
+        Sun, 19 Jun 2022 06:20:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3B6F3B80D33;
+        Sun, 19 Jun 2022 13:20:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAA2DC34114;
+        Sun, 19 Jun 2022 13:20:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655644842;
+        bh=/2u5fntWSZiEpUCmtTS07g312l9PpA2KzIK3S5qIcno=;
+        h=Date:From:To:Cc:Subject:From;
+        b=E25XDRZZuiPhSrj3BRycG3Yhmd2uoLb65l/lXVT7SHCzjzj0jeLHFLwzv9IDPVW2c
+         rM6uErDiqbEVLGQoAq4HeF5wgsNui6yAPV/aDHxx9KKK0YwDcx8z/GZuTIHGUVWwaD
+         d+BQqmuyILdomSEJUcavWX1GlkN4vrEYIC70GOnMZmSTWWt5bwjSG+wXZPhnnRWsCI
+         UQqGX6CF1tB7B80maW2dkOuvqj4gbKSBVh1xASbtXSQwiR5RtZq0NwoWwCzZuUn2sJ
+         Dy1LoqCCfcFnJAr8jGscFa2EFlCW4cFhefFAoJ4fN9q6RygY569qLQHdyOzqJLtR+r
+         Mi6AO4KCjyZ6A==
+Date:   Sun, 19 Jun 2022 08:20:39 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>
+Cc:     Leo Savernik <l.savernik@aon.at>, linux-nvme@lists.infradead.org,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [bugzilla-daemon@kernel.org: [Bug 216147] New: NVMe quirk needed for
+ multiple Micron MTFDKBA2T0TFH SSDs]
+Message-ID: <20220619132039.GA1243474@bhelgaas>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tighe Donnelly <tighe.donnelly@protonmail.com>
+Thanks very much for the testing and report, Leo!  I'm forwarding it
+to the NVMe folks who would take care of this.  I checked current
+upstream (v5.19-rc1), and indeed this quirk does not appear there.
 
-The IRQ is described as (Edge, ActiveLow, Shared, ) in ACPI DSDT and
-it's correct. The override makes the keyboard interrupt polarity
-inverted, resulting in non-functional keyboard.
-Add an entry for skipping the override.
+----- Forwarded message from bugzilla-daemon@kernel.org -----
 
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Tighe Donnelly <tighe.donnelly@protonmail.com>
-Signed-off-by: Chuanhong Guo <gch981213@gmail.com>
----
-Change since v1: new patch
+Date: Sun, 19 Jun 2022 08:58:10 +0000
+From: bugzilla-daemon@kernel.org
+To: bjorn@helgaas.com
+Subject: [Bug 216147] New: NVMe quirk needed for multiple Micron MTFDKBA2T0TFH SSDs
+Message-ID: <bug-216147-41252@https.bugzilla.kernel.org/>
 
- drivers/acpi/resource.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+https://bugzilla.kernel.org/show_bug.cgi?id=216147
 
-diff --git a/drivers/acpi/resource.c b/drivers/acpi/resource.c
-index b69c229b23dd..d9d8d546f340 100644
---- a/drivers/acpi/resource.c
-+++ b/drivers/acpi/resource.c
-@@ -407,6 +407,13 @@ static const struct dmi_system_id irq1_edge_low_shared[] = {
- 			DMI_MATCH(DMI_PRODUCT_NAME, "21D0"),
- 		},
- 	},
-+	{
-+		.ident = "Redmi Book Pro 15 2022",
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "TIMI"),
-+			DMI_MATCH(DMI_BOARD_NAME, "TM2113"),
-+		},
-+	},
- 	{ }
+            Bug ID: 216147
+           Summary: NVMe quirk needed for multiple Micron MTFDKBA2T0TFH
+                    SSDs
+           Product: Drivers
+           Version: 2.5
+    Kernel Version: 5.15.48
+          Hardware: AMD
+                OS: Linux
+              Tree: Mainline
+            Status: NEW
+          Severity: normal
+          Priority: P1
+         Component: PCI
+          Assignee: drivers_pci@kernel-bugs.osdl.org
+          Reporter: l.savernik@aon.at
+        Regression: No
+
+Created attachment 301221
+  --> https://bugzilla.kernel.org/attachment.cgi?id=301221&action=edit
+Adding NVME_QUIRK_IGNORE_DEV_SUBNQN for Micron MTFDKBA2T0TFH
+
+Even though first noticed on an Ubuntu kernel, I dare to report this against
+upstream as this hardware combination malfunction seems not to be known yet (I
+did not find distribution-specific patches for this issue). Therefore, IMHO,
+the fix should be included upstream to make these devices work on every kernel
+deployment.
+
+My brand new Lenovo Notebook contains three NVMe 2T disks. When booting with
+Kernel 5.15.0, I receive the following dmesg output:
+
+...
+Jun 09 03:33:08 kubuntu kernel: nvme 0000:04:00.0: platform quirk: setting
+simple suspend
+Jun 09 03:33:08 kubuntu kernel: nvme nvme0: pci function 0000:04:00.0
+Jun 09 03:33:08 kubuntu kernel: nvme 0000:06:00.0: platform quirk: setting
+simple suspend
+Jun 09 03:33:08 kubuntu kernel: nvme nvme1: pci function 0000:06:00.0
+Jun 09 03:33:08 kubuntu kernel: nvme 0000:05:00.0: platform quirk: setting
+simple suspend
+Jun 09 03:33:08 kubuntu kernel: nvme nvme2: pci function 0000:05:00.0
+...
+Jun 09 03:33:08 kubuntu kernel: nvme nvme1: Duplicate cntlid 0 with nvme0,
+rejecting
+Jun 09 03:33:08 kubuntu kernel: nvme nvme1: Removing after probe failure
+status: -22
+Jun 09 03:33:08 kubuntu kernel: nvme nvme2: Duplicate cntlid 0 with nvme0,
+rejecting
+Jun 09 03:33:08 kubuntu kernel: nvme nvme2: Removing after probe failure
+status: -22
+Jun 09 03:33:08 kubuntu kernel: pps pps0: new PPS source ptp0
+Jun 09 03:33:08 kubuntu kernel: igc 0000:0b:00.0 (unnamed net_device)
+(uninitialized): PHC added
+Jun 09 03:33:08 kubuntu kernel: nvme nvme0: 16/0/0 default/read/poll queues
+Jun 09 03:33:08 kubuntu kernel:  nvme0n1: p1 p2 p3
+...
+
+nvme0 is properly detected, however nvme1 and nvme2 are both rejected with
+"Duplicate cntlid 0 with nvme0" error message.
+
+lspci properly enumerates all of the 3 devices:
+04:00.0 Non-Volatile memory controller: Micron Technology Inc Device 5407
+05:00.0 Non-Volatile memory controller: Micron Technology Inc Device 5407
+06:00.0 Non-Volatile memory controller: Micron Technology Inc Device 5407
+
+Consequentially, I cannot make use of nvme1 and nvme2. A quirk setting was
+proposed for a Samsung device [1] which was finally applied to the kernel [2].
+
+[1] https://lkml.kernel.org/lkml/20210118113356.833556252@linuxfoundation.org/
+[2] https://lkml.org/lkml/2021/1/18/1172
+
+I wrote up a modified patch for Micron MTFDKBA2T0TFH devices, tested the patch
+and could make all three NVMe devices work flawlessly under Linux 5.15.0.
+
+I also checked this patch against 5.15.48, it applies cleanly.
+
+I suggest this patch be applied to latest longterm 5.15.x as well as latest
+Mainline as only one device has been added to the quirk table since, and the
+format of the quirktable was not changed in the meantime.
+
+The proposed patch itself (also see attachment):
+
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index b925a5f4afc3..2e5c33f3b868 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -3372,5 +3372,7 @@ static const struct pci_device_id nvme_id_table[] = {
+NVME_QUIRK_128_BYTES_SQES |
+                                NVME_QUIRK_NO_DEEPEST_PS |
+                                NVME_QUIRK_IGNORE_DEV_SUBNQN, },
++       { PCI_DEVICE(0x1344, 0x5407), /* Micron Technology Inc NVMe SSD */
++               .driver_data = NVME_QUIRK_IGNORE_DEV_SUBNQN },
+        { PCI_DEVICE_CLASS(PCI_CLASS_STORAGE_EXPRESS, 0xffffff) },
+        { 0, }
  };
- 
--- 
-2.36.1
 
+-- 
+You may reply to this email to add a comment.
+
+You are receiving this mail because:
+You are watching the assignee of the bug.
+
+----- End forwarded message -----
