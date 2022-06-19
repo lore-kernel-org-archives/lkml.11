@@ -2,194 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AFCFC43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 20:43:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2398FC43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 21:04:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237027AbiFSUnw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 19 Jun 2022 16:43:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42276 "EHLO
+        id S236278AbiFSVDx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 19 Jun 2022 17:03:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237414AbiFSUnm (ORCPT
+        with ESMTP id S229965AbiFSVDv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 19 Jun 2022 16:43:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDDB75FA3
-        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 13:43:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6AD8961291
-        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 20:43:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59C50C34114;
-        Sun, 19 Jun 2022 20:43:38 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="mndrBOb3"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1655671416;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=QqJKD6zg80rBX8SlDSTLLX0THmaiPu1I0aoLaI/MT+0=;
-        b=mndrBOb3yGaFbzWLVLWMtuuskGO4+qlGc8Z7ojrxAWw/TeCqqisQ0mFrGWKs8FwQ1TS2y7
-        H87ZNHUmbl3DMyQMsZPRxIM4gSecyh6waLaP+mHD3dnsdMN6/4m80Dd9yaIGANX8HeyYa7
-        WpQfQIQvDShv8cC00FzL34ZX6YrvGC8=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 21cd46c7 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Sun, 19 Jun 2022 20:43:36 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     John Ogness <john.ogness@linutronix.de>,
-        Petr Mladek <pmladek@suse.com>, Marco Elver <elver@google.com>,
-        linux-kernel@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH v2] printk: allow direct console printing to be enabled always
-Date:   Sun, 19 Jun 2022 22:43:26 +0200
-Message-Id: <20220619204326.556923-1-Jason@zx2c4.com>
-In-Reply-To: <Yq+Jjoyn/wj7yzeQ@zx2c4.com>
-References: <Yq+Jjoyn/wj7yzeQ@zx2c4.com>
+        Sun, 19 Jun 2022 17:03:51 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DDC9658C
+        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 14:03:50 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id t25so14348490lfg.7
+        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 14:03:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=stFDvED2lOpvuI58rxdqCsj7yH4mZGe0nB/hKuOE8cw=;
+        b=Q3d1CzB2/awpEEBbKHzPtDLoIR98Fyv8QWVxmR+hsCJ7TKVDW+QOg+7HP/Q0ZaBXXx
+         BY7/FAi+1v2fUrmMSazSwZSUdkRoRnlZ/ROtVMhUFRzqnwoP568hHLCevS1Pb5suCOCS
+         6uL36A8fHBzMVomC5hwsY7J8fmuk8XTwF+qr4eacEl1EBKtI/ryW6zycP89IruAQXnmr
+         Qp9XRICc/Ql9OWsQ8BB//nY+5QCqmAtyCgewYPC3Upit/jejTA0W0TYwTIgIs9SHYx/3
+         /cC8v82VCmXB5Phbeq0xe3wh57d/vmD9enqhFmCZ4JXFR9rVMyVXEoiBQ8X/1ETbg0Kr
+         /M3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=stFDvED2lOpvuI58rxdqCsj7yH4mZGe0nB/hKuOE8cw=;
+        b=f8Psy3H+XQn/uhbt3mQmP/RQZd4LCtx76WQgp3dpkw1owJHbJ3P52Q7Aqxfra59CfM
+         O3P8hOfydzn8UcPGyrjHTzi0jYpfh5+OHsZXx1pwccFPuQX9lhW5uDw+Sp80LEelaye6
+         jWC1ZbztfA6fZv86X1jfo2hLrxaz1kL06fOXgeGU4Or14E3JHd7J4nChiVNUVAQNP9iJ
+         hbnDlpZKmnGTJehkK0GbZwSZcvwfXhlIfPolP5afEvAVDFGoC67bV5MpecQE+FuSle6l
+         yKXH8o+E2EbTtDklIz5yZA43RitHSxY5CA0pBrCNYnLI4OSPuzj9MwM702U2kOYERYXe
+         jFjw==
+X-Gm-Message-State: AJIora/uOt07Q3h6/esJk3aECQxZmGCi2GDqeoFi5lCkivqlyhPIuBvG
+        95CUuaMjDOGa72CC54hO8Ks78G4/4ZPy3mbSaFI=
+X-Google-Smtp-Source: AGRyM1u/bJkWel/g/09LJ7hvw2H/TeoMFA0EHDnebY1qMFMIVO2d5rinjOmJYO2lPqYQ97iSc1KEqg==
+X-Received: by 2002:a05:6512:238f:b0:47f:6fc3:f268 with SMTP id c15-20020a056512238f00b0047f6fc3f268mr1026393lfv.148.1655672628464;
+        Sun, 19 Jun 2022 14:03:48 -0700 (PDT)
+Received: from pc638.lan ([155.137.26.201])
+        by smtp.gmail.com with ESMTPSA id s9-20020a056512214900b004790b5a0b22sm1490923lfr.239.2022.06.19.14.03.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 19 Jun 2022 14:03:47 -0700 (PDT)
+From:   Uladzislau Rezki <urezki@gmail.com>
+X-Google-Original-From: Uladzislau Rezki <urezki@pc638.lan>
+Date:   Sun, 19 Jun 2022 23:03:45 +0200
+To:     "zhaoyang.huang" <zhaoyang.huang@unisoc.com>
+Cc:     "zhaoyang.huang" <zhaoyang.huang@unisoc.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Zhaoyang Huang <huangzhaoyang@gmail.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, ke.wang@unisoc.com, hch@lst.de
+Subject: Re: [PATCH] mm: fix racing of vb->va when kasan enabled
+Message-ID: <Yq+PMWlARgDhv8uL@pc638.lan>
+References: <1653447164-15017-1-git-send-email-zhaoyang.huang@unisoc.com>
+ <CAB8ipk9cAoP6yV_-Gn8bwbn5ezCZujLeMpioa0TiNU5=akBaug@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAB8ipk9cAoP6yV_-Gn8bwbn5ezCZujLeMpioa0TiNU5=akBaug@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In 5.19, there are some changes in printk message ordering /
-interleaving which leads to confusion. The most obvious (and benign)
-example appears on system boot, in which the "Run /init as init process"
-message gets intermixed with the messages that init actually writes() to
-stdout. For example, here's a snippet from build.wireguard.com:
+> On Thu, May 26, 2022 at 10:18 AM zhaoyang.huang
+> <zhaoyang.huang@unisoc.com> wrote:
+> >
+> > From: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
+> >
+> > Accessing to vb->va could be deemed as use after free when KASAN is
+> > enabled like bellowing. Fix it by expanding the mutex's range.
+> >
+> > [   20.232335] ==================================================================
+> > [   20.232365] BUG: KASAN: use-after-free in _vm_unmap_aliases+0x164/0x364
+> > [   20.232376] Read of size 8 at addr ffffff80d84af780 by task modprobe/300
+> > [   20.232380]
+> > [   20.232395] CPU: 5 PID: 300 Comm: modprobe Tainted: G S       C O      5.4.161-android12-9-03238-gd43329d103de-ab20547 #1
+> > [   20.232401] Hardware name: Spreadtrum UMS512-1H10 SoC (DT)
+> > [   20.232407] Call trace:
+> > [   20.232419]  dump_backtrace+0x0/0x2b4
+> > [   20.232428]  show_stack+0x24/0x30
+> > [   20.232443]  dump_stack+0x15c/0x1f4
+> > [   20.232455]  print_address_description+0x88/0x568
+> > [   20.232465]  __kasan_report+0x1b8/0x1dc
+> > [   20.232474]  kasan_report+0x10/0x18
+> > [   20.232486]  __asan_report_load8_noabort+0x1c/0x24
+> > [   20.232495]  _vm_unmap_aliases+0x164/0x364
+> > [   20.232505]  vm_unmap_aliases+0x20/0x28
+> > [   20.232516]  change_memory_common+0x2c4/0x3ec
+> > [   20.232524]  set_memory_ro+0x30/0x3c
+> > [   20.232539]  module_enable_ro+0x144/0x3f0
+> > [   20.232547]  load_module+0x54c0/0x8248
+> > [   20.232555]  __se_sys_finit_module+0x174/0x1b0
+> > [   20.232564]  __arm64_sys_finit_module+0x78/0x88
+> > [   20.232573]  el0_svc_common+0x19c/0x354
+> > [   20.232581]  el0_svc_handler+0x48/0x54
+> > [   20.232591]  el0_svc+0x8/0xc
+> > [   20.232595]
+> > [   20.232602] Allocated by task 297:
+> > [   20.232615]  __kasan_kmalloc+0x130/0x1f8
+> > [   20.232625]  kasan_slab_alloc+0x14/0x1c
+> > [   20.232638]  kmem_cache_alloc+0x1dc/0x394
+> > [   20.232648]  alloc_vmap_area+0xb4/0x1630
+> > [   20.232657]  vm_map_ram+0x3ac/0x768
+> > [   20.232671]  z_erofs_decompress_generic+0x2f0/0x844
+> > [   20.232681]  z_erofs_decompress+0xa8/0x594
+> > [   20.232692]  z_erofs_decompress_pcluster+0xeb4/0x1458
+> > [   20.232702]  z_erofs_vle_unzip_wq+0xe4/0x140
+> > [   20.232715]  process_one_work+0x5c0/0x10ac
+> > [   20.232724]  worker_thread+0x888/0x1128
+> > [   20.232733]  kthread+0x290/0x304
+> > [   20.232744]  ret_from_fork+0x10/0x18
+> > [   20.232747]
+> > [   20.232752] Freed by task 51:
+> > [   20.232762]  __kasan_slab_free+0x1a0/0x270
+> > [   20.232772]  kasan_slab_free+0x10/0x1c
+> > [   20.232781]  slab_free_freelist_hook+0xd0/0x1ac
+> > [   20.232792]  kmem_cache_free+0x110/0x368
+> > [   20.232803]  __purge_vmap_area_lazy+0x524/0x13e4
+> > [   20.232813]  _vm_unmap_aliases+0x290/0x364
+> > [   20.232822]  __vunmap+0x45c/0x5c4
+> > [   20.232831]  vfree+0x74/0x16c
+> > [   20.232841]  module_memfree+0x44/0x7c
+> > [   20.232850]  do_free_init+0x5c/0xac
+> > [   20.232860]  process_one_work+0x5c0/0x10ac
+> > [   20.232869]  worker_thread+0xb3c/0x1128
+> > [   20.232877]  kthread+0x290/0x304
+> > [   20.232887]  ret_from_fork+0x10/0x18
+> >
+> > Signed-off-by: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
+> > ---
+> >  mm/vmalloc.c | 3 +--
+> >  1 file changed, 1 insertion(+), 2 deletions(-)
+> >
+> > diff --git a/mm/vmalloc.c b/mm/vmalloc.c
+> > index d2a00ad..028d65a 100644
+> > --- a/mm/vmalloc.c
+> > +++ b/mm/vmalloc.c
+> > @@ -2081,7 +2081,7 @@ static void _vm_unmap_aliases(unsigned long start, unsigned long end, int flush)
+> >                 return;
+> >
+> >         might_sleep();
+> > -
+> > +       mutex_lock(&vmap_purge_lock);
+> >         for_each_possible_cpu(cpu) {
+> >                 struct vmap_block_queue *vbq = &per_cpu(vmap_block_queue, cpu);
+> >                 struct vmap_block *vb;
+> > @@ -2106,7 +2106,6 @@ static void _vm_unmap_aliases(unsigned long start, unsigned long end, int flush)
+> >                 rcu_read_unlock();
+> >         }
+> >
+> > -       mutex_lock(&vmap_purge_lock);
+> >         purge_fragmented_blocks_allcpus();
+> >         if (!__purge_vmap_area_lazy(start, end) && flush)
+> >                 flush_tlb_kernel_range(start, end);
+> > --
+> > 1.9.1
+> >
+>
+Is it easy to reproduce? If so could you please describe the steps? As i see
+the freeing of the "vb" is RCU safe whereas vb->va is not. But from the first
+glance i do not see how it can accessed twice. Hm..
 
-    [    0.469732] Freeing unused kernel image (initmem) memory: 4576K
-    [    0.469738] Write protecting the kernel read-only data: 10240k
-    [    0.473823] Freeing unused kernel image (text/rodata gap) memory: 2044K
-    [    0.475228] Freeing unused kernel image (rodata/data gap) memory: 1136K
-    [    0.475236] Run /init as init process
-
-        WireGuard Test Suite on Linux 5.19.0-rc2+ x86_64
-
-    [+] Mounting filesystems...
-    [+] Module self-tests:
-     *  allowedips self-tests: pass
-     *  nonce counter self-tests: pass
-     *  ratelimiter self-tests: pass
-    [+] Enabling logging...
-    [+] Launching tests...
-    [    0.475237]   with arguments:
-    [    0.475238]     /init
-    [    0.475238]   with environment:
-    [    0.475239]     HOME=/
-    [    0.475240]     TERM=linux
-    [+] ip netns add wg-test-46-0
-    [+] ip netns add wg-test-46-1
-
-Before the "with arguments:" and such would print prior to the
-"wireguard test suite on linux 5.19" banner. Now it shows after.
-
-I see the same thing with "Freeing unused kernel image (text/rodata gap)
-memory" printing interwoven into the console of my initramfs on my
-laptop. And so forth.
-
-But the bigger issue for me is that it makes it very confusing to
-interpret CI results later on. Prior, I would nice a nice correlation
-of:
-
-[+] some userspace command
-[    1.2345 ] some kernel log output
-[+] some userspace command
-[    1.2346 ] some kernel log output
-[+] some userspace command
-[    1.2347 ] some kernel log output
-
-Now, the kernel log outputs are all over the place and out of order with
-the sequence of commands. This makes debugging issues somewhat tricky,
-because post hoc ergo propter hoc winds up being a good intuition to
-follow when tracking down bugs, and now the post hoc part is muddled.
-
-This is caused by threaded printk. In order to restore this in debugging
-sessions and in CI, this commit adds the ability to always use direct
-printk, either set by default at compile time, or overridden with a
-runtime command line switch.
-
-Cc: John Ogness <john.ogness@linutronix.de>
-Cc: Petr Mladek <pmladek@suse.com>
-Cc: Marco Elver <elver@google.com>
-Fixes: 09c5ba0aa2fc ("printk: add kthread console printers")
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
- Documentation/admin-guide/kernel-parameters.txt |  7 +++++++
- init/Kconfig                                    | 12 ++++++++++++
- kernel/printk/printk.c                          | 11 +++++++++++
- 3 files changed, 30 insertions(+)
-
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 8090130b544b..96e910a4e12b 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -4389,6 +4389,13 @@
- 	printk.time=	Show timing data prefixed to each printk message line
- 			Format: <bool>  (1/Y/y=enable, 0/N/n=disable)
- 
-+	printk.direct=	Rather than using kthreads for printk output, always
-+			attempt to write to the console immediately. This has
-+			performance implications, but will result in a more
-+			faithful ordering and interleaving with other
-+			processes writing to the console.
-+			Format: <bool>  (1/Y/y=enable, 0/N/n=disable)
-+
- 	processor.max_cstate=	[HW,ACPI]
- 			Limit processor to maximum C-state
- 			max_cstate=9 overrides any DMI blacklist limit.
-diff --git a/init/Kconfig b/init/Kconfig
-index c7900e8975f1..47466aa2b0e8 100644
---- a/init/Kconfig
-+++ b/init/Kconfig
-@@ -798,6 +798,18 @@ config PRINTK_INDEX
- 
- 	  There is no additional runtime cost to printk with this enabled.
- 
-+config PRINTK_DIRECT
-+	bool "Attempt to flush printk output immediately"
-+	depends on PRINTK
-+	help
-+	  Rather than using kthreads for printk output, always attempt to write
-+	  to the console immediately. This has performance implications, but
-+	  will result in a more faithful ordering and interleaving with other
-+	  processes writing to the console.
-+
-+	  Say N here unless you really need this. This may also be controlled
-+	  at boot time with printk.direct=0/1.
-+
- #
- # Architectures with an unreliable sched_clock() should select this:
- #
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index ea3dd55709e7..43f8a0074ed6 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -178,6 +178,14 @@ static int __init control_devkmsg(char *str)
- }
- __setup("printk.devkmsg=", control_devkmsg);
- 
-+static bool printk_direct = IS_ENABLED(CONFIG_PRINTK_DIRECT);
-+
-+static int __init control_printk_direct(char *str)
-+{
-+	return kstrtobool(str, &printk_direct);
-+}
-+__setup("printk.direct=", control_printk_direct);
-+
- char devkmsg_log_str[DEVKMSG_STR_MAX_SIZE] = "ratelimit";
- #if defined(CONFIG_PRINTK) && defined(CONFIG_SYSCTL)
- int devkmsg_sysctl_set_loglvl(struct ctl_table *table, int write,
-@@ -3602,6 +3610,9 @@ static int __init printk_activate_kthreads(void)
- {
- 	struct console *con;
- 
-+	if (printk_direct)
-+		return 0;
-+
- 	console_lock();
- 	printk_kthreads_available = true;
- 	for_each_console(con)
--- 
-2.35.1
-
+--
+Uladzislau Rezki
