@@ -2,75 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AC71C43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 13:12:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B284DC43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 13:12:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235690AbiFSNMw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 19 Jun 2022 09:12:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51298 "EHLO
+        id S236045AbiFSNM4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 19 Jun 2022 09:12:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234542AbiFSNMn (ORCPT
+        with ESMTP id S234409AbiFSNMn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 19 Jun 2022 09:12:43 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D98362DE4
-        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 06:12:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC63E1168
+        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 06:12:38 -0700 (PDT)
 From:   Thomas Gleixner <tglx@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1655644360;
+        s=2020; t=1655644357;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=iup7jqj4HKk8NAHRLdcZUmwZbJJqOWQTBSlxI3PY8FI=;
-        b=4FfJnHRwtVDPty0CHnz3OKRTR2RUIzzvNM/Nw3nkN10fIu7PO312AFS0EHl9MkS9PfCRrz
-        g7Cc9q4QXueqWmhgLCTSsdGE5LOwe7ZW5AgIGRR8Y4pPsiPNAoJj49nUyvzBcXR+ri113b
-        bZWnaSl3jpC7zIpHnKpwcgxGb9ASw8cXUHIe0B0cox0J2VgKuFw2zPHDph6+QkNx8j8Cf+
-        /uHiqN74hVokdmrryGQRRG3/kdCjPHsEuNoClFqlo/4/tn5bR6gIyqjSLW6XNIrdPa2Tq8
-        8zdiT/XkFtlET1KVDaE3iYMoGbhSqiFdGFCQ1y9QrInem+V4/16eCpjM+IuOGw==
+        bh=nyISx9IVm0jNpApGwb32at4wOseRuI6uIpmm7wxu+5k=;
+        b=CMCKDefbGxMHvuy0w7pmSbavKOFoEHQm4pUHIYVVMVpWk9uw63VZm5hSSQOisNiWlR0GjN
+        PjPhO1tvIwnTqPIyTZTLRUs51io4leykqNNhOsMb2l5mEAmUbLRf4lYi9KTl3T3zqKEwsK
+        EeRlJU5u83da93VQGIgZcUnEFyQeQ1pkwvvf3GW+OJzk0ndfWlGGgO3gQLyFMyZubbVbMh
+        cmdXc62HBpu3UJ3evS/3xfMmEJEpoerPrmyRzlQa2nKG/Qk0R55ifxjondbPhi1fvONEA5
+        oBwwlCSt7aN5RjYdF6nYkHrCVh89d5v52SxnBM+UFCuoxHvmbvWNWamZ8CvGgQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1655644360;
+        s=2020e; t=1655644357;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:  references:references;
-        bh=iup7jqj4HKk8NAHRLdcZUmwZbJJqOWQTBSlxI3PY8FI=;
-        b=zflDCboh1geZFfgzjyngIdw8CLPlit4FNnqt3XE/BZZLiaO/2f5BED9UAv9jPfX0Z2twvd
-        BrfcPEfGsJHh/7DA==
+        bh=nyISx9IVm0jNpApGwb32at4wOseRuI6uIpmm7wxu+5k=;
+        b=SyU+3LXbegeE3KQQfLLSek802W7Di5ECh9cCBfmH5Qa8l+hefZDzWfZKBPTHiiqn82fHDB
+        jAkxSTzWFywTHKAQ==
 To:     Linus Torvalds <torvalds@linux-foundation.org>
 Cc:     linux-kernel@vger.kernel.org, x86@kernel.org
-Subject: [GIT pull] x86/urgent for 5.19-rc3
+Subject: [GIT pull] objtool/urgent for 5.19-rc3
 References: <165564429738.1413209.17302088152547038708.tglx@xen13>
-Message-ID: <165564430323.1413209.8199754494182196241.tglx@xen13>
+Message-ID: <165564430032.1413209.11657608098401674700.tglx@xen13>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Date:   Sun, 19 Jun 2022 15:12:39 +0200 (CEST)
+Date:   Sun, 19 Jun 2022 15:12:36 +0200 (CEST)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Linus,
 
-please pull the latest x86/urgent branch from:
+please pull the latest objtool/urgent branch from:
 
-   git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86-urgent-2022-=
-06-19
+   git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git objtool-urgent-2=
+022-06-19
 
-up to:  1e7769653b06: x86/tdx: Handle load_unaligned_zeropad() page-cross to =
-a shared page
+up to:  7b6c7a877cc6: x86/ftrace: Remove OBJECT_FILES_NON_STANDARD usage
 
 
-X86 updates:
+Build tool updates:
 
- - Make RESERVE_BRK() work again with older binutils. The recent
-   'simplification' broke that.
+ - Remove obsolete CONFIG_X86_SMAP reference from objtool
 
- - Make early #VE handling increment RIP when successful.
+ - Fix overlapping text section failures in faddr2line for real
 
- - Make the #VE code consistent vs. the RIP adjustments and add comments.
-
- - Handle load_unaligned_zeropad() across page boundaries correctly in #VE
-   when the second page is shared.
-
+ - Remove OBJECT_FILES_NON_STANDARD usage from x86 ftrace and replace it
+   with finegrained annotations so objtool can validate that code
+   correctly.
 
 
 Thanks,
@@ -78,517 +74,239 @@ Thanks,
 	tglx
 
 ------------------>
-Josh Poimboeuf (1):
-      x86/mm: Fix RESERVE_BRK() for older binutils
-
-Kirill A. Shutemov (3):
-      x86/tdx: Fix early #VE handling
-      x86/tdx: Clarify RIP adjustments in #VE handler
-      x86/tdx: Handle load_unaligned_zeropad() page-cross to a shared page
+Josh Poimboeuf (3):
+      objtool: Fix obsolete reference to CONFIG_X86_SMAP
+      faddr2line: Fix overlapping text section failures, the sequel
+      x86/ftrace: Remove OBJECT_FILES_NON_STANDARD usage
 
 
- arch/x86/coco/tdx/tdx.c       | 187 ++++++++++++++++++++++++++++++----------=
+ arch/x86/kernel/Makefile      |  4 ----
+ arch/x86/kernel/ftrace_64.S   | 11 ++++++++---
+ include/linux/objtool.h       |  6 ++++++
+ lib/Kconfig.ubsan             |  2 +-
+ scripts/faddr2line            | 45 ++++++++++++++++++++++++++++++++---------=
 --
- arch/x86/include/asm/setup.h  |  38 +++++----
- arch/x86/kernel/setup.c       |   5 --
- arch/x86/kernel/vmlinux.lds.S |   4 +-
- 4 files changed, 159 insertions(+), 75 deletions(-)
+ tools/include/linux/objtool.h |  6 ++++++
+ 6 files changed, 55 insertions(+), 19 deletions(-)
 
-diff --git a/arch/x86/coco/tdx/tdx.c b/arch/x86/coco/tdx/tdx.c
-index 03deb4d6920d..928dcf7a20d9 100644
---- a/arch/x86/coco/tdx/tdx.c
-+++ b/arch/x86/coco/tdx/tdx.c
-@@ -124,6 +124,51 @@ static u64 get_cc_mask(void)
- 	return BIT_ULL(gpa_width - 1);
- }
+diff --git a/arch/x86/kernel/Makefile b/arch/x86/kernel/Makefile
+index 03364dc40d8d..4c8b6ae802ac 100644
+--- a/arch/x86/kernel/Makefile
++++ b/arch/x86/kernel/Makefile
+@@ -36,10 +36,6 @@ KCSAN_SANITIZE :=3D n
 =20
-+/*
-+ * The TDX module spec states that #VE may be injected for a limited set of
-+ * reasons:
-+ *
-+ *  - Emulation of the architectural #VE injection on EPT violation;
-+ *
-+ *  - As a result of guest TD execution of a disallowed instruction,
-+ *    a disallowed MSR access, or CPUID virtualization;
-+ *
-+ *  - A notification to the guest TD about anomalous behavior;
-+ *
-+ * The last one is opt-in and is not used by the kernel.
-+ *
-+ * The Intel Software Developer's Manual describes cases when instruction
-+ * length field can be used in section "Information for VM Exits Due to
-+ * Instruction Execution".
-+ *
-+ * For TDX, it ultimately means GET_VEINFO provides reliable instruction len=
-gth
-+ * information if #VE occurred due to instruction execution, but not for EPT
-+ * violations.
-+ */
-+static int ve_instr_len(struct ve_info *ve)
-+{
-+	switch (ve->exit_reason) {
-+	case EXIT_REASON_HLT:
-+	case EXIT_REASON_MSR_READ:
-+	case EXIT_REASON_MSR_WRITE:
-+	case EXIT_REASON_CPUID:
-+	case EXIT_REASON_IO_INSTRUCTION:
-+		/* It is safe to use ve->instr_len for #VE due instructions */
-+		return ve->instr_len;
-+	case EXIT_REASON_EPT_VIOLATION:
-+		/*
-+		 * For EPT violations, ve->insn_len is not defined. For those,
-+		 * the kernel must decode instructions manually and should not
-+		 * be using this function.
-+		 */
-+		WARN_ONCE(1, "ve->instr_len is not defined for EPT violations");
-+		return 0;
-+	default:
-+		WARN_ONCE(1, "Unexpected #VE-type: %lld\n", ve->exit_reason);
-+		return ve->instr_len;
-+	}
-+}
-+
- static u64 __cpuidle __halt(const bool irq_disabled, const bool do_sti)
- {
- 	struct tdx_hypercall_args args =3D {
-@@ -147,7 +192,7 @@ static u64 __cpuidle __halt(const bool irq_disabled, cons=
-t bool do_sti)
- 	return __tdx_hypercall(&args, do_sti ? TDX_HCALL_ISSUE_STI : 0);
- }
+ OBJECT_FILES_NON_STANDARD_test_nx.o			:=3D y
 =20
--static bool handle_halt(void)
-+static int handle_halt(struct ve_info *ve)
- {
- 	/*
- 	 * Since non safe halt is mainly used in CPU offlining
-@@ -158,9 +203,9 @@ static bool handle_halt(void)
- 	const bool do_sti =3D false;
+-ifdef CONFIG_FRAME_POINTER
+-OBJECT_FILES_NON_STANDARD_ftrace_$(BITS).o		:=3D y
+-endif
+-
+ # If instrumentation of this dir is enabled, boot hangs during first second.
+ # Probably could be more selective here, but note that files related to irqs,
+ # boot, dumpstack/stacktrace, etc are either non-interesting or can lead to
+diff --git a/arch/x86/kernel/ftrace_64.S b/arch/x86/kernel/ftrace_64.S
+index 4ec13608d3c6..dfeb227de561 100644
+--- a/arch/x86/kernel/ftrace_64.S
++++ b/arch/x86/kernel/ftrace_64.S
+@@ -175,6 +175,7 @@ SYM_INNER_LABEL(ftrace_caller_end, SYM_L_GLOBAL)
 =20
- 	if (__halt(irq_disabled, do_sti))
--		return false;
-+		return -EIO;
+ 	jmp ftrace_epilogue
+ SYM_FUNC_END(ftrace_caller);
++STACK_FRAME_NON_STANDARD_FP(ftrace_caller)
 =20
--	return true;
-+	return ve_instr_len(ve);
- }
-=20
- void __cpuidle tdx_safe_halt(void)
-@@ -180,7 +225,7 @@ void __cpuidle tdx_safe_halt(void)
- 		WARN_ONCE(1, "HLT instruction emulation failed\n");
- }
-=20
--static bool read_msr(struct pt_regs *regs)
-+static int read_msr(struct pt_regs *regs, struct ve_info *ve)
- {
- 	struct tdx_hypercall_args args =3D {
- 		.r10 =3D TDX_HYPERCALL_STANDARD,
-@@ -194,14 +239,14 @@ static bool read_msr(struct pt_regs *regs)
- 	 * (GHCI), section titled "TDG.VP.VMCALL<Instruction.RDMSR>".
- 	 */
- 	if (__tdx_hypercall(&args, TDX_HCALL_HAS_OUTPUT))
--		return false;
-+		return -EIO;
-=20
- 	regs->ax =3D lower_32_bits(args.r11);
- 	regs->dx =3D upper_32_bits(args.r11);
--	return true;
-+	return ve_instr_len(ve);
- }
-=20
--static bool write_msr(struct pt_regs *regs)
-+static int write_msr(struct pt_regs *regs, struct ve_info *ve)
- {
- 	struct tdx_hypercall_args args =3D {
- 		.r10 =3D TDX_HYPERCALL_STANDARD,
-@@ -215,10 +260,13 @@ static bool write_msr(struct pt_regs *regs)
- 	 * can be found in TDX Guest-Host-Communication Interface
- 	 * (GHCI) section titled "TDG.VP.VMCALL<Instruction.WRMSR>".
- 	 */
--	return !__tdx_hypercall(&args, 0);
-+	if (__tdx_hypercall(&args, 0))
-+		return -EIO;
-+
-+	return ve_instr_len(ve);
- }
-=20
--static bool handle_cpuid(struct pt_regs *regs)
-+static int handle_cpuid(struct pt_regs *regs, struct ve_info *ve)
- {
- 	struct tdx_hypercall_args args =3D {
- 		.r10 =3D TDX_HYPERCALL_STANDARD,
-@@ -236,7 +284,7 @@ static bool handle_cpuid(struct pt_regs *regs)
- 	 */
- 	if (regs->ax < 0x40000000 || regs->ax > 0x4FFFFFFF) {
- 		regs->ax =3D regs->bx =3D regs->cx =3D regs->dx =3D 0;
--		return true;
-+		return ve_instr_len(ve);
- 	}
-=20
- 	/*
-@@ -245,7 +293,7 @@ static bool handle_cpuid(struct pt_regs *regs)
- 	 * (GHCI), section titled "VP.VMCALL<Instruction.CPUID>".
- 	 */
- 	if (__tdx_hypercall(&args, TDX_HCALL_HAS_OUTPUT))
--		return false;
-+		return -EIO;
-=20
- 	/*
- 	 * As per TDX GHCI CPUID ABI, r12-r15 registers contain contents of
-@@ -257,7 +305,7 @@ static bool handle_cpuid(struct pt_regs *regs)
- 	regs->cx =3D args.r14;
- 	regs->dx =3D args.r15;
-=20
--	return true;
-+	return ve_instr_len(ve);
- }
-=20
- static bool mmio_read(int size, unsigned long addr, unsigned long *val)
-@@ -283,10 +331,10 @@ static bool mmio_write(int size, unsigned long addr, un=
-signed long val)
- 			       EPT_WRITE, addr, val);
- }
-=20
--static bool handle_mmio(struct pt_regs *regs, struct ve_info *ve)
-+static int handle_mmio(struct pt_regs *regs, struct ve_info *ve)
- {
-+	unsigned long *reg, val, vaddr;
- 	char buffer[MAX_INSN_SIZE];
--	unsigned long *reg, val;
- 	struct insn insn =3D {};
- 	enum mmio_type mmio;
- 	int size, extend_size;
-@@ -294,34 +342,49 @@ static bool handle_mmio(struct pt_regs *regs, struct ve=
-_info *ve)
-=20
- 	/* Only in-kernel MMIO is supported */
- 	if (WARN_ON_ONCE(user_mode(regs)))
--		return false;
-+		return -EFAULT;
-=20
- 	if (copy_from_kernel_nofault(buffer, (void *)regs->ip, MAX_INSN_SIZE))
--		return false;
-+		return -EFAULT;
-=20
- 	if (insn_decode(&insn, buffer, MAX_INSN_SIZE, INSN_MODE_64))
--		return false;
-+		return -EINVAL;
-=20
- 	mmio =3D insn_decode_mmio(&insn, &size);
- 	if (WARN_ON_ONCE(mmio =3D=3D MMIO_DECODE_FAILED))
--		return false;
-+		return -EINVAL;
-=20
- 	if (mmio !=3D MMIO_WRITE_IMM && mmio !=3D MMIO_MOVS) {
- 		reg =3D insn_get_modrm_reg_ptr(&insn, regs);
- 		if (!reg)
--			return false;
-+			return -EINVAL;
- 	}
-=20
--	ve->instr_len =3D insn.length;
-+	/*
-+	 * Reject EPT violation #VEs that split pages.
-+	 *
-+	 * MMIO accesses are supposed to be naturally aligned and therefore
-+	 * never cross page boundaries. Seeing split page accesses indicates
-+	 * a bug or a load_unaligned_zeropad() that stepped into an MMIO page.
-+	 *
-+	 * load_unaligned_zeropad() will recover using exception fixups.
-+	 */
-+	vaddr =3D (unsigned long)insn_get_addr_ref(&insn, regs);
-+	if (vaddr / PAGE_SIZE !=3D (vaddr + size - 1) / PAGE_SIZE)
-+		return -EFAULT;
-=20
- 	/* Handle writes first */
- 	switch (mmio) {
- 	case MMIO_WRITE:
- 		memcpy(&val, reg, size);
--		return mmio_write(size, ve->gpa, val);
-+		if (!mmio_write(size, ve->gpa, val))
-+			return -EIO;
-+		return insn.length;
- 	case MMIO_WRITE_IMM:
- 		val =3D insn.immediate.value;
--		return mmio_write(size, ve->gpa, val);
-+		if (!mmio_write(size, ve->gpa, val))
-+			return -EIO;
-+		return insn.length;
- 	case MMIO_READ:
- 	case MMIO_READ_ZERO_EXTEND:
- 	case MMIO_READ_SIGN_EXTEND:
-@@ -334,15 +397,15 @@ static bool handle_mmio(struct pt_regs *regs, struct ve=
-_info *ve)
- 		 * decoded or handled properly. It was likely not using io.h
- 		 * helpers or accessed MMIO accidentally.
- 		 */
--		return false;
-+		return -EINVAL;
- 	default:
- 		WARN_ONCE(1, "Unknown insn_decode_mmio() decode value?");
--		return false;
-+		return -EINVAL;
- 	}
-=20
- 	/* Handle reads */
- 	if (!mmio_read(size, ve->gpa, &val))
--		return false;
-+		return -EIO;
-=20
- 	switch (mmio) {
- 	case MMIO_READ:
-@@ -364,13 +427,13 @@ static bool handle_mmio(struct pt_regs *regs, struct ve=
-_info *ve)
- 	default:
- 		/* All other cases has to be covered with the first switch() */
- 		WARN_ON_ONCE(1);
--		return false;
-+		return -EINVAL;
- 	}
-=20
- 	if (extend_size)
- 		memset(reg, extend_val, extend_size);
- 	memcpy(reg, &val, size);
--	return true;
-+	return insn.length;
- }
-=20
- static bool handle_in(struct pt_regs *regs, int size, int port)
-@@ -421,13 +484,14 @@ static bool handle_out(struct pt_regs *regs, int size, =
-int port)
-  *
-  * Return True on success or False on failure.
-  */
--static bool handle_io(struct pt_regs *regs, u32 exit_qual)
-+static int handle_io(struct pt_regs *regs, struct ve_info *ve)
- {
-+	u32 exit_qual =3D ve->exit_qual;
- 	int size, port;
--	bool in;
-+	bool in, ret;
-=20
- 	if (VE_IS_IO_STRING(exit_qual))
--		return false;
-+		return -EIO;
-=20
- 	in   =3D VE_IS_IO_IN(exit_qual);
- 	size =3D VE_GET_IO_SIZE(exit_qual);
-@@ -435,9 +499,13 @@ static bool handle_io(struct pt_regs *regs, u32 exit_qua=
-l)
-=20
-=20
- 	if (in)
--		return handle_in(regs, size, port);
-+		ret =3D handle_in(regs, size, port);
- 	else
--		return handle_out(regs, size, port);
-+		ret =3D handle_out(regs, size, port);
-+	if (!ret)
-+		return -EIO;
-+
-+	return ve_instr_len(ve);
- }
-=20
+ SYM_FUNC_START(ftrace_epilogue)
  /*
-@@ -447,13 +515,19 @@ static bool handle_io(struct pt_regs *regs, u32 exit_qu=
-al)
- __init bool tdx_early_handle_ve(struct pt_regs *regs)
- {
- 	struct ve_info ve;
-+	int insn_len;
+@@ -282,6 +283,7 @@ SYM_INNER_LABEL(ftrace_regs_caller_end, SYM_L_GLOBAL)
+ 	jmp	ftrace_epilogue
 =20
- 	tdx_get_ve_info(&ve);
+ SYM_FUNC_END(ftrace_regs_caller)
++STACK_FRAME_NON_STANDARD_FP(ftrace_regs_caller)
 =20
- 	if (ve.exit_reason !=3D EXIT_REASON_IO_INSTRUCTION)
- 		return false;
 =20
--	return handle_io(regs, ve.exit_qual);
-+	insn_len =3D handle_io(regs, &ve);
-+	if (insn_len < 0)
-+		return false;
+ #else /* ! CONFIG_DYNAMIC_FTRACE */
+@@ -311,10 +313,14 @@ trace:
+ 	jmp ftrace_stub
+ SYM_FUNC_END(__fentry__)
+ EXPORT_SYMBOL(__fentry__)
++STACK_FRAME_NON_STANDARD_FP(__fentry__)
 +
-+	regs->ip +=3D insn_len;
-+	return true;
- }
+ #endif /* CONFIG_DYNAMIC_FTRACE */
 =20
- void tdx_get_ve_info(struct ve_info *ve)
-@@ -486,54 +560,65 @@ void tdx_get_ve_info(struct ve_info *ve)
- 	ve->instr_info  =3D upper_32_bits(out.r10);
- }
+ #ifdef CONFIG_FUNCTION_GRAPH_TRACER
+-SYM_FUNC_START(return_to_handler)
++SYM_CODE_START(return_to_handler)
++	UNWIND_HINT_EMPTY
++	ANNOTATE_NOENDBR
+ 	subq  $16, %rsp
 =20
--/* Handle the user initiated #VE */
--static bool virt_exception_user(struct pt_regs *regs, struct ve_info *ve)
-+/*
-+ * Handle the user initiated #VE.
-+ *
-+ * On success, returns the number of bytes RIP should be incremented (>=3D0)
-+ * or -errno on error.
-+ */
-+static int virt_exception_user(struct pt_regs *regs, struct ve_info *ve)
- {
- 	switch (ve->exit_reason) {
- 	case EXIT_REASON_CPUID:
--		return handle_cpuid(regs);
-+		return handle_cpuid(regs, ve);
- 	default:
- 		pr_warn("Unexpected #VE: %lld\n", ve->exit_reason);
--		return false;
-+		return -EIO;
- 	}
- }
-=20
--/* Handle the kernel #VE */
--static bool virt_exception_kernel(struct pt_regs *regs, struct ve_info *ve)
-+/*
-+ * Handle the kernel #VE.
-+ *
-+ * On success, returns the number of bytes RIP should be incremented (>=3D0)
-+ * or -errno on error.
-+ */
-+static int virt_exception_kernel(struct pt_regs *regs, struct ve_info *ve)
- {
- 	switch (ve->exit_reason) {
- 	case EXIT_REASON_HLT:
--		return handle_halt();
-+		return handle_halt(ve);
- 	case EXIT_REASON_MSR_READ:
--		return read_msr(regs);
-+		return read_msr(regs, ve);
- 	case EXIT_REASON_MSR_WRITE:
--		return write_msr(regs);
-+		return write_msr(regs, ve);
- 	case EXIT_REASON_CPUID:
--		return handle_cpuid(regs);
-+		return handle_cpuid(regs, ve);
- 	case EXIT_REASON_EPT_VIOLATION:
- 		return handle_mmio(regs, ve);
- 	case EXIT_REASON_IO_INSTRUCTION:
--		return handle_io(regs, ve->exit_qual);
-+		return handle_io(regs, ve);
- 	default:
- 		pr_warn("Unexpected #VE: %lld\n", ve->exit_reason);
--		return false;
-+		return -EIO;
- 	}
- }
-=20
- bool tdx_handle_virt_exception(struct pt_regs *regs, struct ve_info *ve)
- {
--	bool ret;
-+	int insn_len;
-=20
- 	if (user_mode(regs))
--		ret =3D virt_exception_user(regs, ve);
-+		insn_len =3D virt_exception_user(regs, ve);
- 	else
--		ret =3D virt_exception_kernel(regs, ve);
-+		insn_len =3D virt_exception_kernel(regs, ve);
-+	if (insn_len < 0)
-+		return false;
-=20
- 	/* After successful #VE handling, move the IP */
--	if (ret)
--		regs->ip +=3D ve->instr_len;
-+	regs->ip +=3D insn_len;
-=20
--	return ret;
-+	return true;
- }
-=20
- static bool tdx_tlb_flush_required(bool private)
-diff --git a/arch/x86/include/asm/setup.h b/arch/x86/include/asm/setup.h
-index 7590ac2570b9..f8b9ee97a891 100644
---- a/arch/x86/include/asm/setup.h
-+++ b/arch/x86/include/asm/setup.h
-@@ -108,19 +108,16 @@ extern unsigned long _brk_end;
- void *extend_brk(size_t size, size_t align);
-=20
- /*
-- * Reserve space in the brk section.  The name must be unique within the fil=
-e,
-- * and somewhat descriptive.  The size is in bytes.
-+ * Reserve space in the .brk section, which is a block of memory from which =
-the
-+ * caller is allowed to allocate very early (before even memblock is availab=
-le)
-+ * by calling extend_brk().  All allocated memory will be eventually convert=
-ed
-+ * to memblock.  Any leftover unallocated memory will be freed.
-  *
-- * The allocation is done using inline asm (rather than using a section
-- * attribute on a normal variable) in order to allow the use of @nobits, so
-- * that it doesn't take up any space in the vmlinux file.
-+ * The size is in bytes.
-  */
--#define RESERVE_BRK(name, size)						\
--	asm(".pushsection .brk_reservation,\"aw\",@nobits\n\t"		\
--	    ".brk." #name ":\n\t"					\
--	    ".skip " __stringify(size) "\n\t"				\
--	    ".size .brk." #name ", " __stringify(size) "\n\t"		\
--	    ".popsection\n\t")
-+#define RESERVE_BRK(name, size)					\
-+	__section(".bss..brk") __aligned(1) __used	\
-+	static char __brk_##name[size]
-=20
- extern void probe_roms(void);
- #ifdef __i386__
-@@ -133,12 +130,19 @@ asmlinkage void __init x86_64_start_reservations(char *=
-real_mode_data);
-=20
- #endif /* __i386__ */
- #endif /* _SETUP */
--#else
--#define RESERVE_BRK(name,sz)				\
--	.pushsection .brk_reservation,"aw",@nobits;	\
--.brk.name:						\
--1:	.skip sz;					\
--	.size .brk.name,.-1b;				\
-+
-+#else  /* __ASSEMBLY */
-+
-+.macro __RESERVE_BRK name, size
-+	.pushsection .bss..brk, "aw"
-+SYM_DATA_START(__brk_\name)
-+	.skip \size
-+SYM_DATA_END(__brk_\name)
+ 	/* Save the return values */
+@@ -339,7 +345,6 @@ SYM_FUNC_START(return_to_handler)
+ 	int3
+ .Ldo_rop:
+ 	mov %rdi, (%rsp)
+-	UNWIND_HINT_FUNC
+ 	RET
+-SYM_FUNC_END(return_to_handler)
++SYM_CODE_END(return_to_handler)
+ #endif
+diff --git a/include/linux/objtool.h b/include/linux/objtool.h
+index 6491fa8fba6d..15b940ec1eac 100644
+--- a/include/linux/objtool.h
++++ b/include/linux/objtool.h
+@@ -143,6 +143,12 @@ struct unwind_hint {
  	.popsection
+ .endm
+=20
++.macro STACK_FRAME_NON_STANDARD_FP func:req
++#ifdef CONFIG_FRAME_POINTER
++	STACK_FRAME_NON_STANDARD \func
++#endif
 +.endm
 +
-+#define RESERVE_BRK(name, size) __RESERVE_BRK name, size
+ .macro ANNOTATE_NOENDBR
+ .Lhere_\@:
+ 	.pushsection .discard.noendbr
+diff --git a/lib/Kconfig.ubsan b/lib/Kconfig.ubsan
+index c4fe15d38b60..a9f7eb047768 100644
+--- a/lib/Kconfig.ubsan
++++ b/lib/Kconfig.ubsan
+@@ -94,7 +94,7 @@ config UBSAN_UNREACHABLE
+ 	bool "Perform checking for unreachable code"
+ 	# objtool already handles unreachable checking and gets angry about
+ 	# seeing UBSan instrumentation located in unreachable places.
+-	depends on !(OBJTOOL && (STACK_VALIDATION || UNWINDER_ORC || X86_SMAP))
++	depends on !(OBJTOOL && (STACK_VALIDATION || UNWINDER_ORC || HAVE_UACCESS_V=
+ALIDATION))
+ 	depends on $(cc-option,-fsanitize=3Dunreachable)
+ 	help
+ 	  This option enables -fsanitize=3Dunreachable which checks for control
+diff --git a/scripts/faddr2line b/scripts/faddr2line
+index 0e6268d59883..94ed98dd899f 100755
+--- a/scripts/faddr2line
++++ b/scripts/faddr2line
+@@ -95,17 +95,25 @@ __faddr2line() {
+ 	local print_warnings=3D$4
+=20
+ 	local sym_name=3D${func_addr%+*}
+-	local offset=3D${func_addr#*+}
+-	offset=3D${offset%/*}
++	local func_offset=3D${func_addr#*+}
++	func_offset=3D${func_offset%/*}
+ 	local user_size=3D
++	local file_type
++	local is_vmlinux=3D0
+ 	[[ $func_addr =3D~ "/" ]] && user_size=3D${func_addr#*/}
+=20
+-	if [[ -z $sym_name ]] || [[ -z $offset ]] || [[ $sym_name =3D $func_addr ]]=
+; then
++	if [[ -z $sym_name ]] || [[ -z $func_offset ]] || [[ $sym_name =3D $func_ad=
+dr ]]; then
+ 		warn "bad func+offset $func_addr"
+ 		DONE=3D1
+ 		return
+ 	fi
+=20
++	# vmlinux uses absolute addresses in the section table rather than
++	# section offsets.
++	local file_type=3D$(${READELF} --file-header $objfile |
++		${AWK} '$1 =3D=3D "Type:" { print $2; exit }')
++	[[ $file_type =3D "EXEC" ]] && is_vmlinux=3D1
 +
- #endif /* __ASSEMBLY__ */
+ 	# Go through each of the object's symbols which match the func name.
+ 	# In rare cases there might be duplicates, in which case we print all
+ 	# matches.
+@@ -114,9 +122,11 @@ __faddr2line() {
+ 		local sym_addr=3D0x${fields[1]}
+ 		local sym_elf_size=3D${fields[2]}
+ 		local sym_sec=3D${fields[6]}
++		local sec_size
++		local sec_name
+=20
+ 		# Get the section size:
+-		local sec_size=3D$(${READELF} --section-headers --wide $objfile |
++		sec_size=3D$(${READELF} --section-headers --wide $objfile |
+ 			sed 's/\[ /\[/' |
+ 			${AWK} -v sec=3D$sym_sec '$1 =3D=3D "[" sec "]" { print "0x" $6; exit }')
+=20
+@@ -126,6 +136,17 @@ __faddr2line() {
+ 			return
+ 		fi
+=20
++		# Get the section name:
++		sec_name=3D$(${READELF} --section-headers --wide $objfile |
++			sed 's/\[ /\[/' |
++			${AWK} -v sec=3D$sym_sec '$1 =3D=3D "[" sec "]" { print $2; exit }')
 +
- #endif /* _ASM_X86_SETUP_H */
-diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 3ebb85327edb..bd6c6fd373ae 100644
---- a/arch/x86/kernel/setup.c
-+++ b/arch/x86/kernel/setup.c
-@@ -67,11 +67,6 @@ RESERVE_BRK(dmi_alloc, 65536);
- #endif
++		if [[ -z $sec_name ]]; then
++			warn "bad section name: section: $sym_sec"
++			DONE=3D1
++			return
++		fi
++
+ 		# Calculate the symbol size.
+ 		#
+ 		# Unfortunately we can't use the ELF size, because kallsyms
+@@ -174,10 +195,10 @@ __faddr2line() {
 =20
+ 		sym_size=3D0x$(printf %x $sym_size)
 =20
--/*
-- * Range of the BSS area. The size of the BSS area is determined
-- * at link time, with RESERVE_BRK() facility reserving additional
-- * chunks.
-- */
- unsigned long _brk_start =3D (unsigned long)__brk_base;
- unsigned long _brk_end   =3D (unsigned long)__brk_base;
+-		# Calculate the section address from user-supplied offset:
+-		local addr=3D$(($sym_addr + $offset))
++		# Calculate the address from user-supplied offset:
++		local addr=3D$(($sym_addr + $func_offset))
+ 		if [[ -z $addr ]] || [[ $addr =3D 0 ]]; then
+-			warn "bad address: $sym_addr + $offset"
++			warn "bad address: $sym_addr + $func_offset"
+ 			DONE=3D1
+ 			return
+ 		fi
+@@ -191,9 +212,9 @@ __faddr2line() {
+ 		fi
 =20
-diff --git a/arch/x86/kernel/vmlinux.lds.S b/arch/x86/kernel/vmlinux.lds.S
-index f5f6dc2e8007..81aba718ecd5 100644
---- a/arch/x86/kernel/vmlinux.lds.S
-+++ b/arch/x86/kernel/vmlinux.lds.S
-@@ -385,10 +385,10 @@ SECTIONS
- 	__end_of_kernel_reserve =3D .;
+ 		# Make sure the provided offset is within the symbol's range:
+-		if [[ $offset -gt $sym_size ]]; then
++		if [[ $func_offset -gt $sym_size ]]; then
+ 			[[ $print_warnings =3D 1 ]] &&
+-				echo "skipping $sym_name address at $addr due to size mismatch ($offset =
+> $sym_size)"
++				echo "skipping $sym_name address at $addr due to size mismatch ($func_of=
+fset > $sym_size)"
+ 			continue
+ 		fi
 =20
- 	. =3D ALIGN(PAGE_SIZE);
--	.brk : AT(ADDR(.brk) - LOAD_OFFSET) {
-+	.brk (NOLOAD) : AT(ADDR(.brk) - LOAD_OFFSET) {
- 		__brk_base =3D .;
- 		. +=3D 64 * 1024;		/* 64k alignment slop space */
--		*(.brk_reservation)	/* areas brk users have reserved */
-+		*(.bss..brk)		/* areas brk users have reserved */
- 		__brk_limit =3D .;
- 	}
+@@ -202,11 +223,13 @@ __faddr2line() {
+ 		[[ $FIRST =3D 0 ]] && echo
+ 		FIRST=3D0
 =20
+-		echo "$sym_name+$offset/$sym_size:"
++		echo "$sym_name+$func_offset/$sym_size:"
+=20
+ 		# Pass section address to addr2line and strip absolute paths
+ 		# from the output:
+-		local output=3D$(${ADDR2LINE} -fpie $objfile $addr | sed "s; $dir_prefix\(=
+\./\)*; ;")
++		local args=3D"--functions --pretty-print --inlines --exe=3D$objfile"
++		[[ $is_vmlinux =3D 0 ]] && args=3D"$args --section=3D$sec_name"
++		local output=3D$(${ADDR2LINE} $args $addr | sed "s; $dir_prefix\(\./\)*; ;=
+")
+ 		[[ -z $output ]] && continue
+=20
+ 		# Default output (non --list):
+diff --git a/tools/include/linux/objtool.h b/tools/include/linux/objtool.h
+index 6491fa8fba6d..15b940ec1eac 100644
+--- a/tools/include/linux/objtool.h
++++ b/tools/include/linux/objtool.h
+@@ -143,6 +143,12 @@ struct unwind_hint {
+ 	.popsection
+ .endm
+=20
++.macro STACK_FRAME_NON_STANDARD_FP func:req
++#ifdef CONFIG_FRAME_POINTER
++	STACK_FRAME_NON_STANDARD \func
++#endif
++.endm
++
+ .macro ANNOTATE_NOENDBR
+ .Lhere_\@:
+ 	.pushsection .discard.noendbr
 
