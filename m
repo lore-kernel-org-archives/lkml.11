@@ -2,127 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F944CCA47A
-	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 23:34:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3501C43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 23:38:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235582AbiFSXei (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 19 Jun 2022 19:34:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44444 "EHLO
+        id S235649AbiFSXiW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 19 Jun 2022 19:38:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231539AbiFSXeh (ORCPT
+        with ESMTP id S231539AbiFSXiV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 19 Jun 2022 19:34:37 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30B1165B9;
-        Sun, 19 Jun 2022 16:34:32 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LR8J25MDpz4xD3;
-        Mon, 20 Jun 2022 09:34:25 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1655681667;
-        bh=XCmoHAJGKCFrPOl+19AKGJEOmMMNLQ7mtdF3GYoctpc=;
-        h=Date:From:To:Cc:Subject:From;
-        b=LrAXmYNMKJQFE6xc/ROjRyS2fEKsVGVfQn1Ww90Fj9MoDIq9bqjbYJOkfNY2xounT
-         wqiQySykp675Y66viCFq7OgjRUCVhTcqUAKCdwxXfQSaSFUO6a4jRPSI18pFpxg9SP
-         6dMfJObonep3pQo+RBb09NYg+EC7GEhamdKTszRm4FgEhYTEkbjNffB6YiUcxdDAp2
-         gq/9J88gm3osvH7HLSC6Us5hsOw08QEXfP6WOsxV3G/w5bbJfErrtkoSArVGmiHbIh
-         QLUue1cTwZEut61Q78nF8av9Cs4kleGh4dLRWZFH/c/2W3MariC22yN3oNKyOB+2Aw
-         AL6LpOEFrJa9w==
-Date:   Mon, 20 Jun 2022 09:34:24 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>
-Cc:     Networking <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build failure after merge of the net-next tree
-Message-ID: <20220620093424.0615a374@canb.auug.org.au>
+        Sun, 19 Jun 2022 19:38:21 -0400
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A32E42635
+        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 16:38:19 -0700 (PDT)
+Received: by mail-lj1-x234.google.com with SMTP id w9so1103044lji.4
+        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 16:38:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=shutemov-name.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=5wbxuLf0qXQzSxMY2PUkol4aa/X/GJBgeigo9VpDstk=;
+        b=V6VYfk+wZY/WdtyFDvQGT+uCsNvT25Ac7QoIU62efffylc24tJrjFQWL/7KlTFeKtM
+         VvWs2+c6CVUiq6V6zvNtNRJQ+WXY7ltdlNe7gAspvm62mG+RZVOwSxgL1bg7H23MkRcE
+         NrVjkBGoVC4LeGBgLKeDuRnN8NLXFr0lcLKtHm/KiFBhtew0/IXJXz2AVJr7zAUl1vHU
+         Q60UUj+4lZz6oMlDq/+es8PUXhh0TqCY0gF+ud/ZL8o++HjIrL9A97TEmc+aaWZnr/ng
+         5wdS4DoqGBUyqASoMw5FgWpSV80xp4mMRZsTVxOpzCXaReYkm0BFfwfEF2kSycXMTAP0
+         LwKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=5wbxuLf0qXQzSxMY2PUkol4aa/X/GJBgeigo9VpDstk=;
+        b=rWHn2qGHx1uC1eA0pPl2eARabA30oaZX1xL0/oDxdQuHkS2ZC/8IBjYnJAhmtqjRzk
+         yWdQlHpjTsG3WvOMrvQ7zkSgs+dmUrDCUE4Blkn7tbTCjcwIdhzdCTY817rVTFi4LD0O
+         1JdHfAjQjJpp8xH0cyBadCepw6ExBipTvnayuxlXpDg/TR568tWsN5Fq6NkFwzvnnHeB
+         wUlfJgvhLRqFVyEbylJ84gwxSdQZgl88zoc7MBlqqXm1SirAb1iYiu6VNgqan9n1iSGL
+         LD87bXYacfs2MIuYmwliuhSZbUR4SBqAgvipbK09jpRyIbAs/+Es4Y8NhQQWw6YwjbMU
+         jltQ==
+X-Gm-Message-State: AJIora9mtdwoC9SfSeaGUJf/Jav7d4QflIPAGsslSDq7fww1hDl7wpNL
+        ldjSDrM4Txuseg1pPyMetfwOMA==
+X-Google-Smtp-Source: AGRyM1vFaOZ4Zgxq+10xBD3dM5r/wv1lezKMOYgUJVmLzU+ORJIC9B7O/RcxcdgF/Zn/FWwFO6oYXg==
+X-Received: by 2002:a2e:a807:0:b0:25a:673b:5ae8 with SMTP id l7-20020a2ea807000000b0025a673b5ae8mr3263062ljq.68.1655681897980;
+        Sun, 19 Jun 2022 16:38:17 -0700 (PDT)
+Received: from box.localdomain ([86.57.175.117])
+        by smtp.gmail.com with ESMTPSA id m3-20020a05651202e300b0047f647414eesm624555lfq.229.2022.06.19.16.38.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 19 Jun 2022 16:38:16 -0700 (PDT)
+Received: by box.localdomain (Postfix, from userid 1000)
+        id CA5F61036C1; Mon, 20 Jun 2022 02:40:27 +0300 (+03)
+Date:   Mon, 20 Jun 2022 02:40:27 +0300
+From:   "Kirill A. Shutemov" <kirill@shutemov.name>
+To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Cc:     Michal Hocko <mhocko@suse.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
+        Kostya Serebryany <kcc@google.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "H . J . Lu" <hjl.tools@gmail.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Rick Edgecombe <rick.p.edgecombe@intel.com>,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCHv3 6/8] x86/mm: Provide ARCH_GET_UNTAG_MASK and
+ ARCH_ENABLE_TAGGED_ADDR
+Message-ID: <20220619234027.4irpbqxcygauvrso@box.shutemov.name>
+References: <20220610143527.22974-1-kirill.shutemov@linux.intel.com>
+ <20220610143527.22974-7-kirill.shutemov@linux.intel.com>
+ <YqdM8ZIi0/35IhzF@dhcp22.suse.cz>
+ <20220616170510.gpm5pjd4yzk7hfsx@black.fi.intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/4DCfUCSlQH8GtJ8aX_cx.qX";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220616170510.gpm5pjd4yzk7hfsx@black.fi.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/4DCfUCSlQH8GtJ8aX_cx.qX
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Thu, Jun 16, 2022 at 08:05:10PM +0300, Kirill A. Shutemov wrote:
+> On Mon, Jun 13, 2022 at 04:42:57PM +0200, Michal Hocko wrote:
+> > On Fri 10-06-22 17:35:25, Kirill A. Shutemov wrote:
+> > [...]
+> > > diff --git a/arch/x86/kernel/process_64.c b/arch/x86/kernel/process_64.c
+> > > index 1962008fe743..93c8eba1a66d 100644
+> > > --- a/arch/x86/kernel/process_64.c
+> > > +++ b/arch/x86/kernel/process_64.c
+> > > @@ -742,6 +742,32 @@ static long prctl_map_vdso(const struct vdso_image *image, unsigned long addr)
+> > >  }
+> > >  #endif
+> > >  
+> > > +static int prctl_enable_tagged_addr(unsigned long nr_bits)
+> > > +{
+> > > +	struct mm_struct *mm = current->mm;
+> > > +
+> > > +	/* Already enabled? */
+> > > +	if (mm->context.lam_cr3_mask)
+> > > +		return -EBUSY;
+> > > +
+> > > +	/* LAM has to be enabled before spawning threads */
+> > > +	if (get_nr_threads(current) > 1)
+> > > +		return -EBUSY;
+> > 
+> > This will not be sufficient in general. You can have mm shared with a
+> > process without CLONE_THREAD. So you would also need to check also
+> > MMF_MULTIPROCESS. But I do remember that general get_nr_threads is quite
+> > tricky to use properly. Make sure to CC Oleg Nesterov for more details.
+> > 
+> > Also how does this work when the mm is shared with a kernel thread?
+> 
+> It seems we need to check mm_count to exclude kernel threads that use the
+> mm. But I expect it to produce bunch of false-positives.
+> 
+> Or we can make all CPUs to do
+> 
+> 	switch_mm(current->mm, current->mm, current);
+> 
+> and get LAM bits updated regardless what mm it runs. It would also remove
+> limitation that LAM can only be enabled when there's no threads.
+> 
+> But I feel that is a bad idea, but I have no clue why. :P
 
-Hi all,
+Below is what I meant. Maybe it's not that bad. I donno.
 
-After merging the net-next tree, today's linux-next build (powerpc
-ppc64_defconfig) failed like this:
+Any opinions?
 
-net/ipv4/raw.c: In function 'raw_icmp_error':
-net/ipv4/raw.c:266:9: error: ISO C90 forbids mixed declarations and code [-=
-Werror=3Ddeclaration-after-statement]
-  266 |         struct hlist_nulls_head *hlist;
-      |         ^~~~~~
-cc1: all warnings being treated as errors
-
-Introduced by commit
-
-  ba44f8182ec2 ("raw: use more conventional iterators")
-
-I have applied the following patch for today.
-
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Date: Mon, 20 Jun 2022 09:21:01 +1000
-Subject: [PATCH] raw: fix build error
-
-The linux-next x86_64 allmodconfig build produced this error:
-
-net/ipv4/raw.c: In function 'raw_icmp_error':
-net/ipv4/raw.c:266:9: error: ISO C90 forbids mixed declarations and code [-=
-Werror=3Ddeclaration-after-statement]
-  266 |         struct hlist_nulls_head *hlist;
-      |         ^~~~~~
-cc1: all warnings being treated as errors
-
-Fixes: ba44f8182ec2 ("raw: use more conventional iterators")
-Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
----
- net/ipv4/raw.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/ipv4/raw.c b/net/ipv4/raw.c
-index d28bf0b901a2..b3b255db9021 100644
---- a/net/ipv4/raw.c
-+++ b/net/ipv4/raw.c
-@@ -262,7 +262,7 @@ static void raw_err(struct sock *sk, struct sk_buff *sk=
-b, u32 info)
-=20
- void raw_icmp_error(struct sk_buff *skb, int protocol, u32 info)
+diff --git a/arch/x86/kernel/process_64.c b/arch/x86/kernel/process_64.c
+index 56822d313b96..69e6b11efa62 100644
+--- a/arch/x86/kernel/process_64.c
++++ b/arch/x86/kernel/process_64.c
+@@ -752,6 +752,16 @@ static bool lam_u48_allowed(void)
+ 	return find_vma(mm, DEFAULT_MAP_WINDOW) == NULL;
+ }
+ 
++static void enable_lam_func(void *mm)
++{
++	struct mm_struct *loaded_mm = this_cpu_read(cpu_tlbstate.loaded_mm);
++
++	if (loaded_mm != mm)
++		return;
++
++	switch_mm(loaded_mm, loaded_mm, current);
++}
++
+ static int prctl_enable_tagged_addr(unsigned long nr_bits)
  {
--	struct net *net =3D dev_net(skb->dev);;
-+	struct net *net =3D dev_net(skb->dev);
- 	struct hlist_nulls_head *hlist;
- 	struct hlist_nulls_node *hnode;
- 	int dif =3D skb->dev->ifindex;
---=20
-2.35.1
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/4DCfUCSlQH8GtJ8aX_cx.qX
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKvsoAACgkQAVBC80lX
-0GwhXQgAgW6VnNxSLdSjFSsZxN2oozgsu0RTviMHE7u2sKOO72cj8BOOiSen6QyO
-UF9a0iHDjIJoJ9QuhPiqeUfsVdQge4HlzKdIkOOI9/lkbDPscZowD23UEKnjhmP6
-+nlOSGQ1kusToP+RfGh+ust+0Jza9B5BWYaNoaCSpnXE6V12nfXt43rhvdRV9FE4
-SqUztSK+YZuwRGUg/axsFbsxaPWjyEQyZ0eHFD/4r2koWhbtFPSrU+uWKCE9CDfo
-pf/EtnvwK90mMStRjx5Q9Ko4kwzDpQ7CvNP0D2g1X7k3SvjE5KSJ504s92KFqdEb
-InH/tFb8SzNKNr/Ss/24xSW43ajZUQ==
-=Whmj
------END PGP SIGNATURE-----
-
---Sig_/4DCfUCSlQH8GtJ8aX_cx.qX--
+ 	struct mm_struct *mm = current->mm;
+@@ -760,10 +770,6 @@ static int prctl_enable_tagged_addr(unsigned long nr_bits)
+ 	if (mm->context.lam_cr3_mask)
+ 		return -EBUSY;
+ 
+-	/* LAM has to be enabled before spawning threads */
+-	if (get_nr_threads(current) > 1)
+-		return -EBUSY;
+-
+ 	if (!nr_bits) {
+ 		return -EINVAL;
+ 	} else if (nr_bits <= 6) {
+@@ -785,8 +791,8 @@ static int prctl_enable_tagged_addr(unsigned long nr_bits)
+ 		return -EINVAL;
+ 	}
+ 
+-	/* Update CR3 to get LAM active */
+-	switch_mm(current->mm, current->mm, current);
++	on_each_cpu_mask(mm_cpumask(mm), enable_lam_func, mm, true);
++
+ 	return 0;
+ }
+ 
+-- 
+ Kirill A. Shutemov
