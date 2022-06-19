@@ -2,206 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31003C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 11:31:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50DBDC43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 11:31:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236602AbiFSLbC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 19 Jun 2022 07:31:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55194 "EHLO
+        id S236187AbiFSLbH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 19 Jun 2022 07:31:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236415AbiFSLa4 (ORCPT
+        with ESMTP id S233282AbiFSLa4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 19 Jun 2022 07:30:56 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8A8E766E
-        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 04:30:52 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id h14-20020a1ccc0e000000b0039eff745c53so267546wmb.5
-        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 04:30:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=scylladb.com; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=O2I45PoOglfUqWYYLgh36wUEI38mqN5c3WyJELiYVrQ=;
-        b=CMDX7ziQVP/ELJCQ2uYixvE/VDY4gI0qJRyGZ6YhB69FGdgWsPUtuQ4ujKYUJOLfr3
-         JecC5hxwQzEatbQfmcHzd4sjCyNFkj1eXcQa2IbP+NPsmH3iuu5a83ukp1hWLtrn+SDp
-         8gvphAot6Kf3zSzGxxzeUfJ6pluXb1axlJWDmuKfXjXHgxmIa3Ne9GsgU811Ua2tYlrE
-         OA1WN8N/jwauET/7+Xk91P+RwrybwSq+T3UMITLjpWa85tfQOfL/LK5uULCiFGPNytHq
-         /qfUyy4cM4U38c3lRisTyxMFzdqTuYbve/Ij7FcakHP7u3lqBMOhVDG5RpW9uGnPMM9A
-         3j5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=O2I45PoOglfUqWYYLgh36wUEI38mqN5c3WyJELiYVrQ=;
-        b=JrfPbRjqmrq6RBhnJNJJd8zJglRE5jBjcfr9BFc3rbVZChDMpqOjYLhENRpwcOAyve
-         Hkgm6vii+cfFbcALFOrIBlYA/Xg+U8M5rFun2t/HSdjwEcrOqW3S8sFN/kwjkT8MFpul
-         uU3XL+KyjGr4YbBrPhBuMZPCrT0UmIxgpXUcVCw0w1qcmdPaBGBkPqFMUn0SvwRVwahD
-         5GG6WJbJ4nwMugNwMd30V4z5AXV68kukpV+fxz1aHVnodF+HrI6peBNksv9CirR+BPSh
-         XZulXWNpk+qU8sHfiPfaXcEvM9lZDTuCJptVuIAvxGnHHfmwu1Gu/1ws3FcvQJcRkPH8
-         c6nA==
-X-Gm-Message-State: AJIora80x6M6ejIbPhF1HGQGinNF9NEEF3ooipBGbxlnXKnEkco+1FVi
-        myDcRGI8rPaQ/4lwYJ2Q/WhAyw==
-X-Google-Smtp-Source: AGRyM1sQr/+BlLCjFYp7YIL2rW66A6O7S/z7a9tjlAuS/44BkYWT2Uw8taLHxSnMG2oypjiTMj2wcg==
-X-Received: by 2002:a05:600c:17cf:b0:39c:4b79:78c9 with SMTP id y15-20020a05600c17cf00b0039c4b7978c9mr19415525wmo.96.1655638251293;
-        Sun, 19 Jun 2022 04:30:51 -0700 (PDT)
-Received: from [10.0.0.1] (system.cloudius-systems.com. [199.203.229.89])
-        by smtp.gmail.com with ESMTPSA id x1-20020adff0c1000000b002103cfd2fbasm10156755wro.65.2022.06.19.04.30.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 19 Jun 2022 04:30:50 -0700 (PDT)
-Message-ID: <6c06b2d4-2d96-c4a6-7aca-5147a91e7cf2@scylladb.com>
-Date:   Sun, 19 Jun 2022 14:30:47 +0300
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 147E365F6;
+        Sun, 19 Jun 2022 04:30:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C1FE5B80CFE;
+        Sun, 19 Jun 2022 11:30:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1CA1C3411D;
+        Sun, 19 Jun 2022 11:30:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655638252;
+        bh=M4FK7HUp/K1RW0AhfhWOuHD0fUg2fTC1IQ6P6Bs9+vU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=pMgcolAP5FJaAf+vJwXmXF0k196/rK/GjR9CrIN/CB+pN5INLsLktAnAfWlpTBAUa
+         b6zZNhQYGnIrA8RMzXWDATN71HWHgkR5UuRLOXHEc42pGpv7hnB3QbcIwS19F1Up44
+         FJo36uP+KCzv20hzFhhFIFJOIQCqNdZAQW9IaJyL+JsxVb9BhaZYMSufQEk57AuBxj
+         9rEedyS7s91SGOz+QheEcCo8Bx6VqzoIGFqEGJzim5iXJHiBTMCD9khoEL3q4akAOe
+         L2W416lS55o9cBsi04/IiUy3MOxUiRo1JGfKX2Pdodu6DWVJXFD/obhoc7mYQIUuBT
+         wmWci2YRZS+bg==
+Date:   Sun, 19 Jun 2022 12:40:09 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Dmitry Rokosov <DDRokosov@sberdevices.ru>
+Cc:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
+        "stephan@gerhold.net" <stephan@gerhold.net>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 3/3] dt-bindings: iio: accel: add dt-binding schema
+ for msa311 accel driver
+Message-ID: <20220619124009.65bb16f4@jic23-huawei>
+In-Reply-To: <20220616104211.9257-4-ddrokosov@sberdevices.ru>
+References: <20220616104211.9257-1-ddrokosov@sberdevices.ru>
+        <20220616104211.9257-4-ddrokosov@sberdevices.ru>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v3 1/8] statx: add direct I/O alignment information
-Content-Language: en-US
-To:     Eric Biggers <ebiggers@kernel.org>, linux-fsdevel@vger.kernel.org
-Cc:     linux-ext4@vger.kernel.org, linux-f2fs-devel@lists.sourceforge.net,
-        linux-xfs@vger.kernel.org, linux-api@vger.kernel.org,
-        linux-fscrypt@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Keith Busch <kbusch@kernel.org>
-References: <20220616201506.124209-1-ebiggers@kernel.org>
- <20220616201506.124209-2-ebiggers@kernel.org>
-From:   Avi Kivity <avi@scylladb.com>
-Organization: ScyllaDB
-In-Reply-To: <20220616201506.124209-2-ebiggers@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, 16 Jun 2022 10:42:17 +0000
+Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
 
-On 16/06/2022 23.14, Eric Biggers wrote:
-> From: Eric Biggers <ebiggers@google.com>
->
-> Traditionally, the conditions for when DIO (direct I/O) is supported
-> were fairly simple.  For both block devices and regular files, DIO had
-> to be aligned to the logical block size of the block device.
->
-> However, due to filesystem features that have been added over time (e.g.
-> multi-device support, data journalling, inline data, encryption, verity,
-> compression, checkpoint disabling, log-structured mode), the conditions
-> for when DIO is allowed on a regular file have gotten increasingly
-> complex.  Whether a particular regular file supports DIO, and with what
-> alignment, can depend on various file attributes and filesystem mount
-> options, as well as which block device(s) the file's data is located on.
->
-> Moreover, the general rule of DIO needing to be aligned to the block
-> device's logical block size is being relaxed to allow user buffers (but
-> not file offsets) aligned to the DMA alignment instead
-> (https://lore.kernel.org/linux-block/20220610195830.3574005-1-kbusch@fb.com/T/#u).
->
-> XFS has an ioctl XFS_IOC_DIOINFO that exposes DIO alignment information.
-> Uplifting this to the VFS is one possibility.  However, as discussed
-> (https://lore.kernel.org/linux-fsdevel/20220120071215.123274-1-ebiggers@kernel.org/T/#u),
-> this ioctl is rarely used and not known to be used outside of
-> XFS-specific code.  It was also never intended to indicate when a file
-> doesn't support DIO at all, nor was it intended for block devices.
->
-> Therefore, let's expose this information via statx().  Add the
-> STATX_DIOALIGN flag and two new statx fields associated with it:
->
-> * stx_dio_mem_align: the alignment (in bytes) required for user memory
->    buffers for DIO, or 0 if DIO is not supported on the file.
->
-> * stx_dio_offset_align: the alignment (in bytes) required for file
->    offsets and I/O segment lengths for DIO, or 0 if DIO is not supported
->    on the file.  This will only be nonzero if stx_dio_mem_align is
->    nonzero, and vice versa.
+> Introduce devicetree binding json-schema for MSA311 tri-axial,
+> low-g accelerometer driver.
+> 
+> Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
+Hi Dmitry,
 
+A few trivial suggestions to drop description entries that don't
+useful information.
 
-If you consider AIO, this is actually three alignments:
+One thing we often end up adding very soon after new bindings are
+introduced is power supplies.  If sensible to do so, it's better
+to introduce them at the start and save on the noise.
+Looks like this one just needs a property entry of
 
-1. offset alignment for reads (sector size in XFS)
+  vdd-supply: true
 
-2. offset alignment for overwrites (sector size in XFS since 
-ed1128c2d0c87e, block size earlier)
+Obviously you then need to get it in the driver and turn it on
+(+ off via a devm_add_action_or_reset() call) as minimal support.
 
-3. offset alignment for appending writes (block size)
+Thanks,
 
+Jonathan
 
-This is critical for linux-aio since violation of these alignments will 
-stall the io_submit system call. Perhaps io_uring handles it better by 
-bouncing to a workqueue, but there is a significant performance and 
-latency penalty for that.
-
-
-Small appending writes are important for database commit logs (and so 
-it's better to overwrite a pre-formatted file to avoid aligning to block 
-size).
-
-
-It would be good to expose these differences.
-
-
->
-> Note that as with other statx() extensions, if STATX_DIOALIGN isn't set
-> in the returned statx struct, then these new fields won't be filled in.
-> This will happen if the file is neither a regular file nor a block
-> device, or if the file is a regular file and the filesystem doesn't
-> support STATX_DIOALIGN.  It might also happen if the caller didn't
-> include STATX_DIOALIGN in the request mask, since statx() isn't required
-> to return unrequested information.
->
-> This commit only adds the VFS-level plumbing for STATX_DIOALIGN.  For
-> regular files, individual filesystems will still need to add code to
-> support it.  For block devices, a separate commit will wire it up too.
->
-> Signed-off-by: Eric Biggers <ebiggers@google.com>
 > ---
->   fs/stat.c                 | 2 ++
->   include/linux/stat.h      | 2 ++
->   include/uapi/linux/stat.h | 4 +++-
->   3 files changed, 7 insertions(+), 1 deletion(-)
->
-> diff --git a/fs/stat.c b/fs/stat.c
-> index 9ced8860e0f35..a7930d7444830 100644
-> --- a/fs/stat.c
-> +++ b/fs/stat.c
-> @@ -611,6 +611,8 @@ cp_statx(const struct kstat *stat, struct statx __user *buffer)
->   	tmp.stx_dev_major = MAJOR(stat->dev);
->   	tmp.stx_dev_minor = MINOR(stat->dev);
->   	tmp.stx_mnt_id = stat->mnt_id;
-> +	tmp.stx_dio_mem_align = stat->dio_mem_align;
-> +	tmp.stx_dio_offset_align = stat->dio_offset_align;
->   
->   	return copy_to_user(buffer, &tmp, sizeof(tmp)) ? -EFAULT : 0;
->   }
-> diff --git a/include/linux/stat.h b/include/linux/stat.h
-> index 7df06931f25d8..ff277ced50e9f 100644
-> --- a/include/linux/stat.h
-> +++ b/include/linux/stat.h
-> @@ -50,6 +50,8 @@ struct kstat {
->   	struct timespec64 btime;			/* File creation time */
->   	u64		blocks;
->   	u64		mnt_id;
-> +	u32		dio_mem_align;
-> +	u32		dio_offset_align;
->   };
->   
->   #endif
-> diff --git a/include/uapi/linux/stat.h b/include/uapi/linux/stat.h
-> index 1500a0f58041a..7cab2c65d3d7f 100644
-> --- a/include/uapi/linux/stat.h
-> +++ b/include/uapi/linux/stat.h
-> @@ -124,7 +124,8 @@ struct statx {
->   	__u32	stx_dev_minor;
->   	/* 0x90 */
->   	__u64	stx_mnt_id;
-> -	__u64	__spare2;
-> +	__u32	stx_dio_mem_align;	/* Memory buffer alignment for direct I/O */
-> +	__u32	stx_dio_offset_align;	/* File offset alignment for direct I/O */
->   	/* 0xa0 */
->   	__u64	__spare3[12];	/* Spare space for future expansion */
->   	/* 0x100 */
-> @@ -152,6 +153,7 @@ struct statx {
->   #define STATX_BASIC_STATS	0x000007ffU	/* The stuff in the normal stat struct */
->   #define STATX_BTIME		0x00000800U	/* Want/got stx_btime */
->   #define STATX_MNT_ID		0x00001000U	/* Got stx_mnt_id */
-> +#define STATX_DIOALIGN		0x00002000U	/* Want/got direct I/O alignment info */
->   
->   #define STATX__RESERVED		0x80000000U	/* Reserved for future struct statx expansion */
->   
+>  .../bindings/iio/accel/memsensing,msa311.yaml | 52 +++++++++++++++++++
+>  MAINTAINERS                                   |  1 +
+>  2 files changed, 53 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/accel/memsensing,msa311.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/accel/memsensing,msa311.yaml b/Documentation/devicetree/bindings/iio/accel/memsensing,msa311.yaml
+> new file mode 100644
+> index 000000000000..072632708d42
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/accel/memsensing,msa311.yaml
+> @@ -0,0 +1,52 @@
+> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> +
+> +%YAML 1.2
+> +---
+> +$id: "http://devicetree.org/schemas/iio/accel/memsensing,msa311.yaml#"
+> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
+> +
+> +title: MEMSensing digital 3-Axis accelerometer
+> +
+> +maintainers:
+> +  - Dmitry Rokosov <ddrokosov@sberdevices.ru>
+> +
+> +description: |
+> +  MSA311 is a tri-axial, low-g accelerometer with I2C digital output for
+> +  sensitivity consumer applications. It has dynamical user selectable full
+> +  scales range of +-2g/+-4g/+-8g/+-16g and allows acceleration measurements
+> +  with output data rates from 1Hz to 1000Hz.
+> +  Datasheet can be found at following URL
+> +  https://cdn-shop.adafruit.com/product-files/5309/MSA311-V1.1-ENG.pdf
+> +
+> +properties:
+> +  compatible:
+> +    const: memsensing,msa311
+> +
+> +  reg:
+> +    maxItems: 1
+> +    description: I2C registers address
+
+No need for description. It always means that for i2c devices.
+
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +    description: optional I2C int pin can be freely mapped to specific func
+
+Why I2C int?  Is there anything associating it with i2c specifically?
+
+I'm not sure the description adds anything useful for this so I'd
+drop it.
+
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +    i2c {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        accelerometer@62 {
+> +            compatible = "memsensing,msa311";
+> +            reg = <0x62>;
+> +            interrupt-parent = <&gpio_intc>;
+> +            interrupts = <29 IRQ_TYPE_EDGE_RISING>;
+> +        };
+> +    };
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 55aeb25c004c..be39e5c214fe 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -12482,6 +12482,7 @@ MEMSENSING MICROSYSTEMS MSA311 ACCELEROMETER DRIVER
+>  M:	Dmitry Rokosov <ddrokosov@sberdevices.ru>
+>  L:	linux-iio@vger.kernel.org
+>  S:	Maintained
+> +F:	Documentation/devicetree/bindings/iio/accel/memsensing,msa311.yaml
+>  F:	drivers/iio/accel/msa311.c
+>  
+>  MEN A21 WATCHDOG DRIVER
+
