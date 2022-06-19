@@ -2,106 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F01F0C43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 05:44:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21D8CCCA47A
+	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 06:18:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233792AbiFSFoH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 19 Jun 2022 01:44:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60298 "EHLO
+        id S234056AbiFSGQZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 19 Jun 2022 02:16:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229611AbiFSFoF (ORCPT
+        with ESMTP id S230137AbiFSGQU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 19 Jun 2022 01:44:05 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85166B843
-        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 22:44:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=cgaYumtYbqc1jS524wk3xxBH4a5y3RzjEQYyweJst40=; b=S3KI0WkL83yv/Z7AU7TAN/Xf+l
-        PZUVpOK0EFc6yWVCaZ5WUD8cGKimi/PGRnHBHEWd97mb6WFid496ZgMzrnoXh3JGLIkP04N+bJy+T
-        NMdU3r0tk9BR8bI5jxr1lqjOEXh90Sp7AUJt1ClO+Q/7adsSo+88yy5Qz3mXqKTx6TanRvET9qcC+
-        /FlHLc0rcT8GhhctAwGq6/pNrmDDDeCl4Y66snxd8GNfM0rxM0cGOrcKW/VrpzYaDjkLFnT4R2XUz
-        a2XKOMezfCvP+R+yxYzYHxBKGBGIBz+cyIc03wSHaPkH23y4twsr0hfXRipOKHHEKw4Mz2gkp3rIF
-        eGRcZ8VA==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o2niE-0049NX-MD; Sun, 19 Jun 2022 05:43:06 +0000
-Message-ID: <48034eb1-3f37-f4fd-24b3-0eb7e517b35e@infradead.org>
-Date:   Sat, 18 Jun 2022 22:42:59 -0700
+        Sun, 19 Jun 2022 02:16:20 -0400
+Received: from m12-16.163.com (m12-16.163.com [220.181.12.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 99528B7FF;
+        Sat, 18 Jun 2022 23:16:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=tBft+
+        6OhZ/b2Qz4O56w3YCLVWjSYnEQHApx3Jpz4vhU=; b=eLoLrXhfGF/cBC8N151fQ
+        53rH1aV4aeNyDEAXu3vAwBsmMvq4SX6RNBvXeXdrWE1Uh5KHoxvxZLDoCs8qnvLj
+        REidQXoLwLKsyb8UFMgVSGOFn1r/ap/YNYBf4BspOoASYX/Lu0JzBwtMCeq+LmKU
+        mqpboG/wOaHnFomRNnWAoQ=
+Received: from localhost.localdomain (unknown [113.200.174.72])
+        by smtp12 (Coremail) with SMTP id EMCowACHEVTovq5iaELZBA--.44288S4;
+        Sun, 19 Jun 2022 14:15:32 +0800 (CST)
+From:   Wentao_Liang <Wentao_Liang_g@163.com>
+To:     jdmason@kudzu.us, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Wentao_Liang <Wentao_Liang_g@163.com>
+Subject: [PATCH] drivers/net/ethernet/neterion/vxge: Fix a use-after-free bug in vxge-main.c
+Date:   Sun, 19 Jun 2022 22:14:54 +0800
+Message-Id: <20220619141454.3881-1-Wentao_Liang_g@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] powerpc/interrupt: Put braces around empty body in an
- 'if' statement
-Content-Language: en-US
-To:     Souptick Joarder <jrdr.linux@gmail.com>, mpe@ellerman.id.au,
-        benh@kernel.crashing.org, paulus@samba.org, npiggin@gmail.com,
-        christophe.leroy@csgroup.eu, tglx@linutronix.de,
-        mark.rutland@arm.com
-Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        Kernel test robot <lkp@intel.com>,
-        Frederic Weisbecker <frederic@kernel.org>
-References: <20220619031114.92060-1-jrdr.linux@gmail.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220619031114.92060-1-jrdr.linux@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: EMCowACHEVTovq5iaELZBA--.44288S4
+X-Coremail-Antispam: 1Uf129KBjvJXoW3Gry3ZF4kWF1xXrykGF1rJFb_yoWxArW7pr
+        yktFyxW3y8tryUJr18Arn8ZFs8tryDua1DJrn7Gr15JF15Cw1Utr1UJryDXr98CrWjyF43
+        Jrn5Xw4Fvr1UJaUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zROeOdUUUUU=
+X-Originating-IP: [113.200.174.72]
+X-CM-SenderInfo: xzhq3t5rboxtpqjbwqqrwthudrp/xtbB0QUlL1zIBch9OQAAsD
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The pointer vdev points to a memory region adjacent to a net_device
+structure ndev, which is a field of hldev. At line 4740, the invocation
+to vxge_device_unregister unregisters device hldev, and it also releases
+the memory region pointed by vdev->bar0. At line 4743, the freed memory
+region is referenced (i.e., iounmap(vdev->bar0)), resulting in a
+use-after-free vulnerability. We can fix the bug by calling iounmap
+before vxge_device_unregister.
 
+4721.      static void vxge_remove(struct pci_dev *pdev)
+4722.      {
+4723.             struct __vxge_hw_device *hldev;
+4724.             struct vxgedev *vdev;
+…
+4731.             vdev = netdev_priv(hldev->ndev);
+…
+4740.             vxge_device_unregister(hldev);
+4741.             /* Do not call pci_disable_sriov here, as it
+						will break child devices */
+4742.             vxge_hw_device_terminate(hldev);
+4743.             iounmap(vdev->bar0);
+…
+4749              vxge_debug_init(vdev->level_trace, "%s:%d
+								Device unregistered",
+4750                            __func__, __LINE__);
+4751              vxge_debug_entryexit(vdev->level_trace, "%s:%d
+								Exiting...", __func__,
+4752                          __LINE__);
+4753.      }
 
-On 6/18/22 20:11, Souptick Joarder wrote:
-> From: "Souptick Joarder (HPE)" <jrdr.linux@gmail.com>
-> 
-> Kernel test robot throws warning ->
-> 
-> arch/powerpc/kernel/interrupt.c:
-> In function 'interrupt_exit_kernel_prepare':
-> 
->>> arch/powerpc/kernel/interrupt.c:542:55: warning: suggest
-> braces around empty body in an 'if' statement [-Wempty-body]
->      542 |                 CT_WARN_ON(ct_state() == CONTEXT_USER);
+This is the screenshot when the vulnerability is triggered by using
+KASAN. We can see that there is a use-after-free reported by KASAN.
 
-That must be when CONFIG_CONTEXT_TRACKING_USER is not set/enabled.
-Can you confirm that?
+/***************************start**************************/
 
-Then the preferable fix would be in <linux/context_tracking.h>:
+root@kernel:~# echo 1 > /sys/bus/pci/devices/0000:00:03.0/remove
+[  178.296316] vxge_remove
+[  182.057081]
+ ==================================================================
+[  182.057548] BUG: KASAN: use-after-free in vxge_remove+0xe0/0x15c
+[  182.057760] Read of size 8 at addr ffff888006c76598 by task bash/119
+[  182.057983]
+[  182.058747] CPU: 0 PID: 119 Comm: bash Not tainted 5.18.0 #5
+[  182.058919] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS
+rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
+[  182.059463] Call Trace:
+[  182.059726]  <TASK>
+[  182.060017]  dump_stack_lvl+0x34/0x44
+[  182.060316]  print_report.cold+0xb2/0x6b7
+[  182.060401]  ? kfree+0x89/0x290
+[  182.060478]  ? vxge_remove+0xe0/0x15c
+[  182.060545]  kasan_report+0xa9/0x120
+[  182.060629]  ? vxge_remove+0xe0/0x15c
+[  182.060706]  vxge_remove+0xe0/0x15c
+[  182.060793]  pci_device_remove+0x5d/0xe0
+[  182.060968]  device_release_driver_internal+0xf1/0x180
+[  182.061063]  pci_stop_bus_device+0xae/0xe0
+[  182.061150]  pci_stop_and_remove_bus_device_locked+0x11/0x20
+[  182.061236]  remove_store+0xc6/0xe0
+[  182.061297]  ? subordinate_bus_number_show+0xc0/0xc0
+[  182.061359]  ? __mutex_lock_slowpath+0x10/0x10
+[  182.061438]  ? sysfs_kf_write+0x6d/0xa0
+[  182.061525]  kernfs_fop_write_iter+0x1b0/0x260
+[  182.061610]  ? sysfs_kf_bin_read+0xf0/0xf0
+[  182.061695]  new_sync_write+0x209/0x310
+[  182.061789]  ? new_sync_read+0x310/0x310
+[  182.061865]  ? cgroup_rstat_updated+0x5c/0x170
+[  182.061937]  ? preempt_count_sub+0xf/0xb0
+[  182.061995]  ? pick_next_entity+0x13a/0x220
+[  182.062063]  ? __inode_security_revalidate+0x44/0x80
+[  182.062155]  ? security_file_permission+0x46/0x2a0
+[  182.062230]  vfs_write+0x33f/0x3e0
+[  182.062303]  ksys_write+0xb4/0x150
+[  182.062369]  ? __ia32_sys_read+0x40/0x40
+[  182.062451]  do_syscall_64+0x3b/0x90
+[  182.062531]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+[  182.062894] RIP: 0033:0x7f3f37d17274
+[  182.063558] Code: 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b3 0f 1f
+80 00 00 00 00 48 8d 05 89 54 0d 00 8b 00 85 c0 75 13 b8 01 00 00 00 0f
+05 <48> 3d 00 f0 ff ff 77 54 c3 0f 1f 00 41 54 49 89 d4 55 48 89 f5 53
+[  182.063797] RSP: 002b:00007ffd5ba9e178 EFLAGS: 00000246
+ORIG_RAX: 0000000000000001
+[  182.064117] RAX: ffffffffffffffda RBX: 0000000000000002
+RCX: 00007f3f37d17274
+[  182.064219] RDX: 0000000000000002 RSI: 000055bbec327180
+RDI: 0000000000000001
+[  182.064315] RBP: 000055bbec327180 R08: 000000000000000a
+R09: 00007f3f37de7cf0
+[  182.064414] R10: 000000000000000a R11: 0000000000000246
+R12: 00007f3f37de8760
+[  182.064513] R13: 0000000000000002 R14: 00007f3f37de3760
+R15: 0000000000000002
+[  182.064691]  </TASK>
+[  182.064916]
+[  182.065224] The buggy address belongs to the physical page:
+[  182.065804] page:00000000ef31e4f4 refcount:0 mapcount:0
+mapping:0000000000000000 index:0x0 pfn:0x6c76
+[  182.067419] flags: 0x100000000000000(node=0|zone=1)
+[  182.068997] raw: 0100000000000000 0000000000000000
+ffffea00001b1d88 0000000000000000
+[  182.069118] raw: 0000000000000000 0000000000000000
+00000000ffffffff 0000000000000000
+[  182.069294] page dumped because: kasan: bad access detected
+[  182.069331]
+[  182.069360] Memory state around the buggy address:
+[  182.070006]  ffff888006c76480: ff ff ff ff ff ff ff ff ff ff ff
+ ff ff ff ff ff
+[  182.070136]  ffff888006c76500: ff ff ff ff ff ff ff ff ff ff ff
+ ff ff ff ff ff
+[  182.070230] >ffff888006c76580: ff ff ff ff ff ff ff ff ff ff ff
+ ff ff ff ff ff
+[  182.070305]                             ^
+[  182.070456]  ffff888006c76600: ff ff ff ff ff ff ff ff ff ff ff
+ ff ff ff ff ff
+[  182.070505]  ffff888006c76680: ff ff ff ff ff ff ff ff ff ff ff
+ ff ff ff ff ff
+[  182.070606]
+==================================================================
+[  182.071374] Disabling lock debugging due to kernel taint
 
-change
-#define CT_WARN_ON(cond)
+/*****************************end*****************************/
 
-to either an empty do-while loop or a static inline function.
+After fixing the bug as done in the patch, we can find KASAN do not report
+ the bug and the device(00:03.0) has been successfully removed.
 
-(adding Frederic to Cc:)
+/*****************************start***************************/
 
-> 
-> Fix it by adding braces.
-> 
-> Reported-by: Kernel test robot <lkp@intel.com>
-> Signed-off-by: Souptick Joarder (HPE) <jrdr.linux@gmail.com>
-> ---
->  arch/powerpc/kernel/interrupt.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/arch/powerpc/kernel/interrupt.c b/arch/powerpc/kernel/interrupt.c
-> index 784ea3289c84..b8a918bab48f 100644
-> --- a/arch/powerpc/kernel/interrupt.c
-> +++ b/arch/powerpc/kernel/interrupt.c
-> @@ -538,8 +538,9 @@ notrace unsigned long interrupt_exit_kernel_prepare(struct pt_regs *regs)
->  	 * CT_WARN_ON comes here via program_check_exception,
->  	 * so avoid recursion.
->  	 */
-> -	if (TRAP(regs) != INTERRUPT_PROGRAM)
-> +	if (TRAP(regs) != INTERRUPT_PROGRAM) {
->  		CT_WARN_ON(ct_state() == CONTEXT_USER);
-> +	}
->  
->  	kuap = kuap_get_and_assert_locked();
->  
+root@kernel:~# echo 1 > /sys/bus/pci/devices/0000:00:03.0/remove
+root@kernel:~#
 
+/******************************end****************************/
+
+Signed-off-by: Wentao_Liang <Wentao_Liang_g@163.com>
+---
+ drivers/net/ethernet/neterion/vxge/vxge-main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/neterion/vxge/vxge-main.c b/drivers/net/ethernet/neterion/vxge/vxge-main.c
+index fa5d4ddf429b..092fd0ae5831 100644
+--- a/drivers/net/ethernet/neterion/vxge/vxge-main.c
++++ b/drivers/net/ethernet/neterion/vxge/vxge-main.c
+@@ -4736,10 +4736,10 @@ static void vxge_remove(struct pci_dev *pdev)
+ 	for (i = 0; i < vdev->no_of_vpath; i++)
+ 		vxge_free_mac_add_list(&vdev->vpaths[i]);
+ 
++	iounmap(vdev->bar0);
+ 	vxge_device_unregister(hldev);
+ 	/* Do not call pci_disable_sriov here, as it will break child devices */
+ 	vxge_hw_device_terminate(hldev);
+-	iounmap(vdev->bar0);
+ 	pci_release_region(pdev, 0);
+ 	pci_disable_device(pdev);
+ 	driver_config->config_dev_cnt--;
 -- 
-~Randy
+2.25.1
+
