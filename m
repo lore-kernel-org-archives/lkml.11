@@ -2,104 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED8D5C43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 04:54:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06360C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 05:03:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231726AbiFSEyu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 19 Jun 2022 00:54:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38874 "EHLO
+        id S232536AbiFSFDv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 19 Jun 2022 01:03:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229639AbiFSEys (ORCPT
+        with ESMTP id S229611AbiFSFDs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 19 Jun 2022 00:54:48 -0400
-Received: from m15114.mail.126.com (m15114.mail.126.com [220.181.15.114])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8DDB2F5B4;
-        Sat, 18 Jun 2022 21:54:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=Z9bpe
-        gj2PLCMxSrP9Wmvpb4Z13yyZp3UPvP7FlEHtbg=; b=RyXw7Aldjg2gSNAakGJjp
-        kebNmGK0xU7ZM8CVex3uriI0AYPZUPg1BLfLMwVQE4C59UTsqDw5Mk81++cT8kax
-        LaSACtSflhG9OOBZgA0jf5uARmWO9uibmLbUU3F4mp7g/OiLNjDryNgxrPbRG/oR
-        AbmxH8lKZoCEqjRYQHAAQs=
-Received: from localhost.localdomain (unknown [124.16.139.61])
-        by smtp7 (Coremail) with SMTP id DsmowAAna_oFrK5ik2fCDg--.45446S2;
-        Sun, 19 Jun 2022 12:54:31 +0800 (CST)
-From:   Liang He <windhl@126.com>
-To:     tsbogend@alpha.franken.de, yangtiezhu@loongson.cn
-Cc:     windhl@126.com, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] mips/pic32/pic32mzda: Fix refcount leak bugs
-Date:   Sun, 19 Jun 2022 12:54:27 +0800
-Message-Id: <20220619045427.4064946-1-windhl@126.com>
-X-Mailer: git-send-email 2.25.1
+        Sun, 19 Jun 2022 01:03:48 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0B8211A31
+        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 22:03:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655615027; x=1687151027;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=xus0gcBhrotcKIzzH8g1rAdL587paFQCC6J4Uc93kag=;
+  b=AtKH9nE0sZXEs0pqKeBUm7D8Yabivn/ZCZ4H4dwTjtqZSk4IUIWwMCs9
+   W2PQSoxvXPuFyYNI2DB6tssrZwLve/QvZi2cDhLod4l6xPtr7UFkxZhlX
+   it9JTtMwKcp5QhjfHz4mH/+izmawU2cwGVUIPbK0IakjCp4CX+MTujS6q
+   Pk+Sw6jP9WIqWhI14GTyvBG5H3Qydslc5ruAZ36SW5LGy3EkK68vixrF1
+   6C7uMAzSDgizTwMDLKneTav4MVJ8PnhLa9f46EqzPLVVbFnSBYGGPdqoW
+   Q7zsC0I0dgE1QEvvnTb4n5LrJr532Oq05lp6t5w61IrRYPzk4sEDgwHwL
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="260131551"
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="260131551"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jun 2022 22:03:47 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="688942807"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga002.fm.intel.com with ESMTP; 18 Jun 2022 22:03:45 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o2n69-000Qt1-Ak;
+        Sun, 19 Jun 2022 05:03:45 +0000
+Date:   Sun, 19 Jun 2022 13:03:28 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Kuogee Hsieh <quic_khsieh@quicinc.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Stephen Boyd <swboyd@chromium.org>
+Subject: drivers/gpu/drm/msm/dp/dp_link.c:969
+ dp_link_process_link_status_update() warn: inconsistent indenting
+Message-ID: <202206191259.gkN6i5Oe-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DsmowAAna_oFrK5ik2fCDg--.45446S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7WrWUKF4DZFy7Zr4UtFW5Wrg_yoW8WFyDp3
-        y5CFyfJFy8ur17tF9ayFyDXrs0qFykXrWUZay0kFy3A3WDXFn5Zr4xtrn8J3WDAFWfW3Wr
-        Xr4FvFW5WF4vya7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zi4CJdUUUUU=
-X-Originating-IP: [124.16.139.61]
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbizgclF18RPUvQFQAAsG
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-of_find_matching_node(), of_find_compatible_node() and
-of_find_node_by_path() will return node pointers with refcout
-incremented. We should call of_node_put() when they are not
-used anymore.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   4b35035bcf80ddb47c0112c4fbd84a63a2836a18
+commit: 202aceac8bb3ae12d41dcd3ac9e6c3395963032b drm/msm/dp: replace DRM_DEBUG_DP marco with drm_dbg_dp
+date:   7 weeks ago
+config: ia64-randconfig-m031-20220616 (https://download.01.org/0day-ci/archive/20220619/202206191259.gkN6i5Oe-lkp@intel.com/config)
+compiler: ia64-linux-gcc (GCC) 11.3.0
 
-Signed-off-by: Liang He <windhl@126.com>
----
- changelog: 
- 
- v2: (1) merge pic32/pic32mzda bugs into one patch
-     (2) fix leak bug related to of_find_node_by_path.
- v1: use two patch for intit.c and time.c
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
- arch/mips/pic32/pic32mzda/init.c | 7 ++++++-
- arch/mips/pic32/pic32mzda/time.c | 3 +++
- 2 files changed, 9 insertions(+), 1 deletion(-)
+smatch warnings:
+drivers/gpu/drm/msm/dp/dp_link.c:969 dp_link_process_link_status_update() warn: inconsistent indenting
 
-diff --git a/arch/mips/pic32/pic32mzda/init.c b/arch/mips/pic32/pic32mzda/init.c
-index 129915616763..d9c8c4e46aff 100644
---- a/arch/mips/pic32/pic32mzda/init.c
-+++ b/arch/mips/pic32/pic32mzda/init.c
-@@ -98,13 +98,18 @@ static int __init pic32_of_prepare_platform_data(struct of_dev_auxdata *lookup)
- 		np = of_find_compatible_node(NULL, NULL, lookup->compatible);
- 		if (np) {
- 			lookup->name = (char *)np->name;
--			if (lookup->phys_addr)
-+			if (lookup->phys_addr) {
-+				of_node_put(np);
- 				continue;
-+			}
- 			if (!of_address_to_resource(np, 0, &res))
- 				lookup->phys_addr = res.start;
-+			of_node_put(np);
- 		}
- 	}
- 
-+	of_node_put(root);
-+
- 	return 0;
- }
- 
-diff --git a/arch/mips/pic32/pic32mzda/time.c b/arch/mips/pic32/pic32mzda/time.c
-index 7174e9abbb1b..777b515c52c8 100644
---- a/arch/mips/pic32/pic32mzda/time.c
-+++ b/arch/mips/pic32/pic32mzda/time.c
-@@ -32,6 +32,9 @@ static unsigned int pic32_xlate_core_timer_irq(void)
- 		goto default_map;
- 
- 	irq = irq_of_parse_and_map(node, 0);
-+
-+	of_node_put(node);
-+
- 	if (!irq)
- 		goto default_map;
- 
+vim +969 drivers/gpu/drm/msm/dp/dp_link.c
+
+c943b4948b5848 Chandan Uddaraju 2020-08-27  941  
+c943b4948b5848 Chandan Uddaraju 2020-08-27  942  /**
+c943b4948b5848 Chandan Uddaraju 2020-08-27  943   * dp_link_process_link_status_update() - processes link status updates
+c943b4948b5848 Chandan Uddaraju 2020-08-27  944   * @link: Display Port link module data
+c943b4948b5848 Chandan Uddaraju 2020-08-27  945   *
+c943b4948b5848 Chandan Uddaraju 2020-08-27  946   * This function will check for changes in the link status, e.g. clock
+c943b4948b5848 Chandan Uddaraju 2020-08-27  947   * recovery done on all lanes, and trigger link training if there is a
+c943b4948b5848 Chandan Uddaraju 2020-08-27  948   * failure/error on the link.
+c943b4948b5848 Chandan Uddaraju 2020-08-27  949   *
+c943b4948b5848 Chandan Uddaraju 2020-08-27  950   * The function will return 0 if the a link status update has been processed,
+c943b4948b5848 Chandan Uddaraju 2020-08-27  951   * otherwise it will return -EINVAL.
+c943b4948b5848 Chandan Uddaraju 2020-08-27  952   */
+c943b4948b5848 Chandan Uddaraju 2020-08-27  953  static int dp_link_process_link_status_update(struct dp_link_private *link)
+c943b4948b5848 Chandan Uddaraju 2020-08-27  954  {
+ea530388e64bd5 Kuogee Hsieh     2020-11-03  955  	bool channel_eq_done = drm_dp_channel_eq_ok(link->link_status,
+ea530388e64bd5 Kuogee Hsieh     2020-11-03  956  			link->dp_link.link_params.num_lanes);
+ea530388e64bd5 Kuogee Hsieh     2020-11-03  957  
+ea530388e64bd5 Kuogee Hsieh     2020-11-03  958  	bool clock_recovery_done = drm_dp_clock_recovery_ok(link->link_status,
+ea530388e64bd5 Kuogee Hsieh     2020-11-03  959  			link->dp_link.link_params.num_lanes);
+c943b4948b5848 Chandan Uddaraju 2020-08-27  960  
+202aceac8bb3ae Kuogee Hsieh     2022-02-17  961  	drm_dbg_dp(link->drm_dev,
+202aceac8bb3ae Kuogee Hsieh     2022-02-17  962  		       "channel_eq_done = %d, clock_recovery_done = %d\n",
+ea530388e64bd5 Kuogee Hsieh     2020-11-03  963                          channel_eq_done, clock_recovery_done);
+ea530388e64bd5 Kuogee Hsieh     2020-11-03  964  
+ea530388e64bd5 Kuogee Hsieh     2020-11-03  965  	if (channel_eq_done && clock_recovery_done)
+ea530388e64bd5 Kuogee Hsieh     2020-11-03  966  		return -EINVAL;
+ea530388e64bd5 Kuogee Hsieh     2020-11-03  967  
+c943b4948b5848 Chandan Uddaraju 2020-08-27  968  
+c943b4948b5848 Chandan Uddaraju 2020-08-27 @969         return 0;
+c943b4948b5848 Chandan Uddaraju 2020-08-27  970  }
+c943b4948b5848 Chandan Uddaraju 2020-08-27  971  
+
+:::::: The code at line 969 was first introduced by commit
+:::::: c943b4948b5848fc0e07f875edbd35a973879e22 drm/msm/dp: add displayPort driver support
+
+:::::: TO: Chandan Uddaraju <chandanu@codeaurora.org>
+:::::: CC: Rob Clark <robdclark@chromium.org>
+
 -- 
-2.25.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
