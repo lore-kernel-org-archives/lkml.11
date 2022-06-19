@@ -2,102 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 127C6C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 17:20:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C686C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 17:20:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237024AbiFSRUF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 19 Jun 2022 13:20:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50778 "EHLO
+        id S237050AbiFSRUV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 19 Jun 2022 13:20:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232786AbiFSRUC (ORCPT
+        with ESMTP id S231955AbiFSRUT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 19 Jun 2022 13:20:02 -0400
-Received: from smtp.smtpout.orange.fr (smtp01.smtpout.orange.fr [80.12.242.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EDD2638A
-        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 10:20:01 -0700 (PDT)
-Received: from [192.168.1.18] ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id 2yabog1Yxk3IC2yaboxGxL; Sun, 19 Jun 2022 19:19:59 +0200
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Sun, 19 Jun 2022 19:19:59 +0200
-X-ME-IP: 90.11.190.129
-Message-ID: <19bcf5cb-e291-2c18-b006-f4e9e7adac92@wanadoo.fr>
-Date:   Sun, 19 Jun 2022 19:19:57 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [RFC 3/6] clk: microchip: mpfs: add reset controller
-Content-Language: fr
-To:     Conor Dooley <mail@conchuod.ie>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Daire McNamara <daire.mcnamara@microchip.com>,
-        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org
-References: <20220619164935.1492823-1-mail@conchuod.ie>
- <20220619164935.1492823-4-mail@conchuod.ie>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <20220619164935.1492823-4-mail@conchuod.ie>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        Sun, 19 Jun 2022 13:20:19 -0400
+Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com [209.85.167.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23B2F63D6;
+        Sun, 19 Jun 2022 10:20:18 -0700 (PDT)
+Received: by mail-oi1-f170.google.com with SMTP id l81so11157157oif.9;
+        Sun, 19 Jun 2022 10:20:18 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=cvcofqYVEQjCaj+AkeCKgXWxJh7cQwGp0V6JPFxdw0U=;
+        b=66Fz+hARvPXMT0IOaeECggjPZf/Af5tP3K4r72OwzL6rvWm0wl/jjIZor0YGrTTMLp
+         or8Yh9VOlb29FM/iIrErRFSoS0e46buzojXU7zqjy0i5TdsEJJc/dzTzdZESCLxkBpFb
+         ONtjRwdE8aMIHN5OqopWEHYWYsplak4YIMoFeXuilWQQNrVI8CCNnpanDCTqmcYJGOOx
+         d3xP/Jf1COY/AGrLXcaFa+fy7yOyUic5EDqRw3pLad/bnUia0a633kOH2MVWKAg+BwzT
+         vSzcOFX3xQBwmSZWuYt1bgEXti37hAAYgUJXzv9fRnttejdbBoHeBs1tSz2xHJrlGec8
+         0mkQ==
+X-Gm-Message-State: AJIora+d6EpsYmbPXiEWX/hooBcMExlK1AViHZhl8+LDMXd46S5wAzMn
+        YnC3TYu46ksrOYK8VRXplkLgCLWTpQ==
+X-Google-Smtp-Source: AGRyM1t4tv/5kd90UFjFUm8xqek2f0yIoId8FFpWPvSKMDeM5k+UARzGxxo+/61ii0CM8eNGdjOrJA==
+X-Received: by 2002:a05:6808:14c5:b0:32e:f7b9:99a2 with SMTP id f5-20020a05680814c500b0032ef7b999a2mr9751321oiw.174.1655659217362;
+        Sun, 19 Jun 2022 10:20:17 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.255])
+        by smtp.gmail.com with ESMTPSA id d1-20020a056870540100b000f342119f41sm5899475oan.42.2022.06.19.10.20.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 19 Jun 2022 10:20:16 -0700 (PDT)
+Received: (nullmailer pid 1922480 invoked by uid 1000);
+        Sun, 19 Jun 2022 17:20:15 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
+Cc:     devicetree@vger.kernel.org, lorenzo.pieralisi@arm.com,
+        bhelgaas@google.com, linux-kernel@vger.kernel.org,
+        michals@xilinx.com, linux-pci@vger.kernel.org
+In-Reply-To: <20220618024459.7554-2-bharat.kumar.gogada@xilinx.com>
+References: <20220618024459.7554-1-bharat.kumar.gogada@xilinx.com> <20220618024459.7554-2-bharat.kumar.gogada@xilinx.com>
+Subject: Re: [PATCH v5 1/2] dt-bindings: PCI: xilinx-cpm: Add Versal CPM5 Root Port
+Date:   Sun, 19 Jun 2022 11:20:15 -0600
+Message-Id: <1655659215.212817.1922479.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le 19/06/2022 à 18:49, Conor Dooley a écrit :
-> From: Conor Dooley <conor.dooley@microchip.com>
+On Sat, 18 Jun 2022 08:14:58 +0530, Bharat Kumar Gogada wrote:
+> Xilinx Versal Premium series has CPM5 block which supports Root Port
+> functionality at Gen5 speed.
 > 
-> Add a reset controller to PolarFire SoC's clock driver. This reset
-> controller is registered as an aux device and read/write functions
-> exported to the drivers namespace so that the reset controller can
-> access the peripheral device reset register.
+> Add support for YAML schemas documentation for Versal CPM5 Root Port driver.
 > 
-> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+> Signed-off-by: Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
+> ---
+>  .../bindings/pci/xilinx-versal-cpm.yaml       | 38 ++++++++++++++++++-
+>  1 file changed, 37 insertions(+), 1 deletion(-)
+> 
 
-[...]
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-> +static void mpfs_reset_adev_release(struct device *dev)
-> +{
-> +	struct auxiliary_device *adev = to_auxiliary_dev(dev);
-> +
-> +	auxiliary_device_uninit(adev);
-> +
-> +	kfree(adev->name);
+yamllint warnings/errors:
+./Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml:17:7: [warning] wrong indentation: expected 4 but found 6 (indentation)
 
-?
+dtschema/dtc warnings/errors:
 
-Below we have:
-	adev->name = "reset-mpfs";
+doc reference errors (make refcheckdocs):
 
+See https://patchwork.ozlabs.org/patch/
 
-> +	kfree(adev);
-> +}
-> +
-> +static struct auxiliary_device *mpfs_reset_adev_alloc(struct mpfs_clock_data *clk_data)
-> +{
-> +	struct auxiliary_device *adev;
-> +	int ret;
-> +
-> +	adev = kzalloc(sizeof(*adev), GFP_KERNEL);
-> +	if (!adev)
-> +		return ERR_PTR(-ENOMEM);
-> +
-> +	adev->name = "reset-mpfs";
-> +	adev->dev.parent = clk_data->dev;
-> +	adev->dev.release = mpfs_reset_adev_release;
-> +	adev->id = 666u;
-> +
-> +	ret = auxiliary_device_init(adev);
-> +	if (ret) {
-> +		kfree(adev);
-> +		return ERR_PTR(ret);
-> +	}
-> +
-> +	return adev;
-> +}
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
 
-[...]
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
