@@ -2,98 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64C0DC43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 15:12:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AA1EC43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 15:12:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233498AbiFSPMF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 19 Jun 2022 11:12:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50336 "EHLO
+        id S235238AbiFSPMh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 19 Jun 2022 11:12:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231438AbiFSPLv (ORCPT
+        with ESMTP id S233953AbiFSPMU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 19 Jun 2022 11:11:51 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E86B6AE56;
-        Sun, 19 Jun 2022 08:11:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
-        Content-Type:Content-ID:Content-Description;
-        bh=bindIO2lTFDesoOeQ2oViKfEfCZlyJ8TfNVBigsijEU=; b=LFYmATCu1fX3l78jDNbK+xhNAo
-        DcgucQf7ONWKGyPqRpVHlCUmhmynjxiGS9VGyA6neq2L8jTOMjkb8NmhEArLoabLJyWsGC/xSVtED
-        xy+pBQ314fj/6ws20wk/YlffE786PNkPua4pe8DEjyJZ9tnsH9+7u7aeI5n/RU5fi3XX14U8m8nm4
-        vEZTIuOjcuFbBJ2gYgAGkq0Z7nv2OnusSgNwE5KLogbSvK26zxBKPyr7N+Gi29o2dOlu+YI9Wh+da
-        umaqTxE5cd3nfTrioNl1gqhwSBpRuJQ/I1gnYIgkaB6BL0re7iafEHA8ZSMPizsETgpK4pM3L2LJz
-        W5Bd5m+w==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o2waZ-004QOq-3d; Sun, 19 Jun 2022 15:11:47 +0000
-From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
-To:     linux-mm@kvack.org, linux-fsdevel@vger.kernel.org
-Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        linux-kernel@vger.kernel.org, Yu Kuai <yukuai3@huawei.com>,
-        Kent Overstreet <kent.overstreet@gmail.com>
-Subject: [PATCH 1/3] filemap: Correct the conditions for marking a folio as accessed
-Date:   Sun, 19 Jun 2022 16:11:41 +0100
-Message-Id: <20220619151143.1054746-2-willy@infradead.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220619151143.1054746-1-willy@infradead.org>
-References: <20220619151143.1054746-1-willy@infradead.org>
+        Sun, 19 Jun 2022 11:12:20 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EE64BF67;
+        Sun, 19 Jun 2022 08:12:19 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id es26so10233063edb.4;
+        Sun, 19 Jun 2022 08:12:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=references:from:to:cc:subject:date:in-reply-to:message-id
+         :mime-version;
+        bh=RJzDkPFskjglyxjdgSbQuGOhzURnWkxTtKrsQq5BUFw=;
+        b=ca4jxDqIoJXxrf5ao9yeMdnG7Zs8YtOPO2bL90eFOVvJcPdEMXBbRuHOzH5iOgCUzC
+         tQmFWpqka7TJ75fR+1njsa2Js3GGIUmLws8YSHlexEcY0TG11XDNQKlLcSDhTU+GG8/S
+         8OEMmYbtLUPGEzNbDe39T4s6s72ygDrbJOOnIanByNoN31t+7XBVg+rdEl4cgrI/BfAU
+         mfuQOnQuykbMheyYOJJHEGu0/hSM4+eM4lCiU76x2vT5abBthJOIPCuOvAIBkxQkhlDq
+         doDldvUsFegQotL89sv83eyjt+FKla4TpKr+hW3uc/iO9uGqYR/CTAf/JBa51Egmms0H
+         Uufg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:references:from:to:cc:subject:date:in-reply-to
+         :message-id:mime-version;
+        bh=RJzDkPFskjglyxjdgSbQuGOhzURnWkxTtKrsQq5BUFw=;
+        b=UwKZ5+q7aD2QD4WrhX6XeAi9Lu4nz1kTCjclhsNly63fFngcrpnCFkqwXkyxZj23NE
+         XUQaFODPryMvfrnf0IMD8hAfquTlcEp/UknugY6T0T1knanokRQbUPvxYXnAnNg6h66m
+         SZG3NTCZx1MKUHkBUe4EAgyzEqfxzwzyb8PImllXSD4AphWLwuptQn56Rc1iqgcpQnfl
+         SnInP7TohpEhgQB4Z49Wj7Iqlirm3NP6aebzPY0FVrLeh5AWAvSQ4Ox+wjJzVI09FJk/
+         vSuanQxUPfxeiPxcknJ//d+8wpWXRbTDfDyiYOkUGR0oPP1MbC1sig4wTwilr0JQyRbb
+         /Qng==
+X-Gm-Message-State: AJIora8RbdUMJmiKxicmMHXMotDffLGBSiLXtSMWUJ5dI3T59mCHCzJp
+        JTLVbM1I0wgFHfP8wPHDfZ8=
+X-Google-Smtp-Source: AGRyM1v/1/odC+BbzOn8+WAbHaAy9Eq6BUjjD43Ft9rWd9fgvmQsnW9Ih/bLdq+yXZTkZLFHjarapg==
+X-Received: by 2002:a05:6402:3482:b0:42d:e063:7c1d with SMTP id v2-20020a056402348200b0042de0637c1dmr24456140edc.40.1655651537531;
+        Sun, 19 Jun 2022 08:12:17 -0700 (PDT)
+Received: from localhost (92.40.168.204.threembb.co.uk. [92.40.168.204])
+        by smtp.gmail.com with ESMTPSA id a14-20020a170906368e00b00705f6dab05bsm4637837ejc.183.2022.06.19.08.12.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 19 Jun 2022 08:12:17 -0700 (PDT)
+References: <20220618214009.2178567-1-aidanmacdonald.0x0@gmail.com>
+ <20220618214009.2178567-12-aidanmacdonald.0x0@gmail.com>
+ <20220619121315.203a709b@jic23-huawei>
+From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linus.walleij@linaro.org, brgl@bgdev.pl, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, wens@csie.org,
+        lee.jones@linaro.org, sre@kernel.org, broonie@kernel.org,
+        gregkh@linuxfoundation.org, lgirdwood@gmail.com, lars@metafoo.de,
+        rafael@kernel.org, quic_gurus@quicinc.com,
+        sebastian.reichel@collabora.com, andy.shevchenko@gmail.com,
+        michael@walle.cc, linux-gpio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-pm@vger.kernel.org
+Subject: Re: [PATCH v3 11/16] iio: adc: axp20x_adc: Add support for AXP192
+Date:   Sun, 19 Jun 2022 16:11:51 +0100
+In-reply-to: <20220619121315.203a709b@jic23-huawei>
+Message-ID: <9VAa62XhSlCMAJF7vdE7bHGSg95FKyr6@localhost>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We had an off-by-one error which meant that we never marked the first page
-in a read as accessed.  This was visible as a slowdown when re-reading
-a file as pages were being evicted from cache too soon.  In reviewing
-this code, we noticed a second bug where a multi-page folio would be
-marked as accessed multiple times when doing reads that were less than
-the size of the folio.
 
-Abstract the comparison of whether two file positions are in the same
-folio into a new function, fixing both of these bugs.
+Jonathan Cameron <jic23@kernel.org> writes:
 
-Reported-by: Yu Kuai <yukuai3@huawei.com>
-Reviewed-by: Kent Overstreet <kent.overstreet@gmail.com>
-Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
----
- mm/filemap.c | 13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+> On Sat, 18 Jun 2022 22:40:04 +0100
+> Aidan MacDonald <aidanmacdonald.0x0@gmail.com> wrote:
+>
+>> The AXP192 is identical to the AXP20x, except for the addition of
+>> two more GPIO ADC channels.
+>> 
+>> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+> Hi Aidan,
+>
+> Looking at this again, I'd have a slight preference for doing the switch to
+> adc_en2_mask as a precursor patch.
 
-diff --git a/mm/filemap.c b/mm/filemap.c
-index ac3775c1ce4c..577068868449 100644
---- a/mm/filemap.c
-+++ b/mm/filemap.c
-@@ -2629,6 +2629,13 @@ static int filemap_get_pages(struct kiocb *iocb, struct iov_iter *iter,
- 	return err;
- }
- 
-+static inline bool pos_same_folio(loff_t pos1, loff_t pos2, struct folio *folio)
-+{
-+	unsigned int shift = folio_shift(folio);
-+
-+	return (pos1 >> shift == pos2 >> shift);
-+}
-+
- /**
-  * filemap_read - Read data from the page cache.
-  * @iocb: The iocb to read.
-@@ -2700,11 +2707,11 @@ ssize_t filemap_read(struct kiocb *iocb, struct iov_iter *iter,
- 		writably_mapped = mapping_writably_mapped(mapping);
- 
- 		/*
--		 * When a sequential read accesses a page several times, only
-+		 * When a read accesses the same folio several times, only
- 		 * mark it as accessed the first time.
- 		 */
--		if (iocb->ki_pos >> PAGE_SHIFT !=
--		    ra->prev_pos >> PAGE_SHIFT)
-+		if (!pos_same_folio(iocb->ki_pos, ra->prev_pos - 1,
-+							fbatch.folios[0]))
- 			folio_mark_accessed(fbatch.folios[0]);
- 
- 		for (i = 0; i < folio_batch_count(&fbatch); i++) {
--- 
-2.35.1
+I might as well, it's a bit cleaner that way.
+
+>
+> Still, not a big thing (and I should have raised it earlier!) so up to you.
+> Either way
+>
+> Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+>
+> Thanks,
+>
+> Jonathan
 
