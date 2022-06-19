@@ -2,100 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AA1EC43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 15:12:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64BF7CCA47A
+	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 15:12:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235238AbiFSPMh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 19 Jun 2022 11:12:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50902 "EHLO
+        id S237149AbiFSPM5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 19 Jun 2022 11:12:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233953AbiFSPMU (ORCPT
+        with ESMTP id S230057AbiFSPMr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 19 Jun 2022 11:12:20 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EE64BF67;
-        Sun, 19 Jun 2022 08:12:19 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id es26so10233063edb.4;
-        Sun, 19 Jun 2022 08:12:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=references:from:to:cc:subject:date:in-reply-to:message-id
-         :mime-version;
-        bh=RJzDkPFskjglyxjdgSbQuGOhzURnWkxTtKrsQq5BUFw=;
-        b=ca4jxDqIoJXxrf5ao9yeMdnG7Zs8YtOPO2bL90eFOVvJcPdEMXBbRuHOzH5iOgCUzC
-         tQmFWpqka7TJ75fR+1njsa2Js3GGIUmLws8YSHlexEcY0TG11XDNQKlLcSDhTU+GG8/S
-         8OEMmYbtLUPGEzNbDe39T4s6s72ygDrbJOOnIanByNoN31t+7XBVg+rdEl4cgrI/BfAU
-         mfuQOnQuykbMheyYOJJHEGu0/hSM4+eM4lCiU76x2vT5abBthJOIPCuOvAIBkxQkhlDq
-         doDldvUsFegQotL89sv83eyjt+FKla4TpKr+hW3uc/iO9uGqYR/CTAf/JBa51Egmms0H
-         Uufg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version;
-        bh=RJzDkPFskjglyxjdgSbQuGOhzURnWkxTtKrsQq5BUFw=;
-        b=UwKZ5+q7aD2QD4WrhX6XeAi9Lu4nz1kTCjclhsNly63fFngcrpnCFkqwXkyxZj23NE
-         XUQaFODPryMvfrnf0IMD8hAfquTlcEp/UknugY6T0T1knanokRQbUPvxYXnAnNg6h66m
-         SZG3NTCZx1MKUHkBUe4EAgyzEqfxzwzyb8PImllXSD4AphWLwuptQn56Rc1iqgcpQnfl
-         SnInP7TohpEhgQB4Z49Wj7Iqlirm3NP6aebzPY0FVrLeh5AWAvSQ4Ox+wjJzVI09FJk/
-         vSuanQxUPfxeiPxcknJ//d+8wpWXRbTDfDyiYOkUGR0oPP1MbC1sig4wTwilr0JQyRbb
-         /Qng==
-X-Gm-Message-State: AJIora8RbdUMJmiKxicmMHXMotDffLGBSiLXtSMWUJ5dI3T59mCHCzJp
-        JTLVbM1I0wgFHfP8wPHDfZ8=
-X-Google-Smtp-Source: AGRyM1v/1/odC+BbzOn8+WAbHaAy9Eq6BUjjD43Ft9rWd9fgvmQsnW9Ih/bLdq+yXZTkZLFHjarapg==
-X-Received: by 2002:a05:6402:3482:b0:42d:e063:7c1d with SMTP id v2-20020a056402348200b0042de0637c1dmr24456140edc.40.1655651537531;
-        Sun, 19 Jun 2022 08:12:17 -0700 (PDT)
-Received: from localhost (92.40.168.204.threembb.co.uk. [92.40.168.204])
-        by smtp.gmail.com with ESMTPSA id a14-20020a170906368e00b00705f6dab05bsm4637837ejc.183.2022.06.19.08.12.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 19 Jun 2022 08:12:17 -0700 (PDT)
-References: <20220618214009.2178567-1-aidanmacdonald.0x0@gmail.com>
- <20220618214009.2178567-12-aidanmacdonald.0x0@gmail.com>
- <20220619121315.203a709b@jic23-huawei>
-From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linus.walleij@linaro.org, brgl@bgdev.pl, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, wens@csie.org,
-        lee.jones@linaro.org, sre@kernel.org, broonie@kernel.org,
-        gregkh@linuxfoundation.org, lgirdwood@gmail.com, lars@metafoo.de,
-        rafael@kernel.org, quic_gurus@quicinc.com,
-        sebastian.reichel@collabora.com, andy.shevchenko@gmail.com,
-        michael@walle.cc, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-pm@vger.kernel.org
-Subject: Re: [PATCH v3 11/16] iio: adc: axp20x_adc: Add support for AXP192
-Date:   Sun, 19 Jun 2022 16:11:51 +0100
-In-reply-to: <20220619121315.203a709b@jic23-huawei>
-Message-ID: <9VAa62XhSlCMAJF7vdE7bHGSg95FKyr6@localhost>
+        Sun, 19 Jun 2022 11:12:47 -0400
+Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9F8B7DF64;
+        Sun, 19 Jun 2022 08:12:35 -0700 (PDT)
+Received: from NTHCCAS04.nuvoton.com (NTHCCAS04.nuvoton.com [10.1.8.29])
+        by maillog.nuvoton.com (Postfix) with ESMTP id 7C0FC1C811FF;
+        Sun, 19 Jun 2022 23:12:28 +0800 (CST)
+Received: from NTHCCAS03.nuvoton.com (10.1.20.28) by NTHCCAS04.nuvoton.com
+ (10.1.8.29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Sun, 19
+ Jun 2022 23:12:28 +0800
+Received: from NTHCCAS04.nuvoton.com (10.1.8.29) by NTHCCAS03.nuvoton.com
+ (10.1.20.28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1847.3; Sun, 19 Jun
+ 2022 23:12:28 +0800
+Received: from taln60.nuvoton.co.il (10.191.1.180) by NTHCCAS04.nuvoton.com
+ (10.1.12.25) with Microsoft SMTP Server id 15.1.2176.2 via Frontend
+ Transport; Sun, 19 Jun 2022 23:12:27 +0800
+Received: by taln60.nuvoton.co.il (Postfix, from userid 10070)
+        id 31A0463A17; Sun, 19 Jun 2022 18:12:27 +0300 (IDT)
+From:   Tomer Maimon <tmaimon77@gmail.com>
+To:     <avifishman70@gmail.com>, <tali.perry1@gmail.com>,
+        <joel@jms.id.au>, <venture@google.com>, <yuenn@google.com>,
+        <benjaminfair@google.com>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <mturquette@baylibre.com>,
+        <sboyd@kernel.org>, <p.zabel@pengutronix.de>,
+        <gregkh@linuxfoundation.org>, <daniel.lezcano@linaro.org>,
+        <tglx@linutronix.de>, <wim@linux-watchdog.org>,
+        <linux@roeck-us.net>, <catalin.marinas@arm.com>, <will@kernel.org>,
+        <arnd@arndb.de>, <olof@lixom.net>, <jirislaby@kernel.org>,
+        <shawnguo@kernel.org>, <bjorn.andersson@linaro.org>,
+        <geert+renesas@glider.be>, <marcel.ziswiler@toradex.com>,
+        <vkoul@kernel.org>, <biju.das.jz@bp.renesas.com>,
+        <nobuhiro1.iwamatsu@toshiba.co.jp>, <robert.hancock@calian.com>,
+        <j.neuschaefer@gmx.net>, <lkundrak@v3.sk>
+CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-clk@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+        <linux-watchdog@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v3 04/18] dt-bindings: watchdog: npcm: Add npcm845 compatible string
+Date:   Sun, 19 Jun 2022 18:12:11 +0300
+Message-ID: <20220619151225.209029-5-tmaimon77@gmail.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220619151225.209029-1-tmaimon77@gmail.com>
+References: <20220619151225.209029-1-tmaimon77@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Add a compatible string for Nuvoton BMC NPCM845 watchdog.
 
-Jonathan Cameron <jic23@kernel.org> writes:
+Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ .../devicetree/bindings/watchdog/nuvoton,npcm-wdt.txt          | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-> On Sat, 18 Jun 2022 22:40:04 +0100
-> Aidan MacDonald <aidanmacdonald.0x0@gmail.com> wrote:
->
->> The AXP192 is identical to the AXP20x, except for the addition of
->> two more GPIO ADC channels.
->> 
->> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-> Hi Aidan,
->
-> Looking at this again, I'd have a slight preference for doing the switch to
-> adc_en2_mask as a precursor patch.
-
-I might as well, it's a bit cleaner that way.
-
->
-> Still, not a big thing (and I should have raised it earlier!) so up to you.
-> Either way
->
-> Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
->
-> Thanks,
->
-> Jonathan
+diff --git a/Documentation/devicetree/bindings/watchdog/nuvoton,npcm-wdt.txt b/Documentation/devicetree/bindings/watchdog/nuvoton,npcm-wdt.txt
+index 9059f54dc023..866a958b8a2b 100644
+--- a/Documentation/devicetree/bindings/watchdog/nuvoton,npcm-wdt.txt
++++ b/Documentation/devicetree/bindings/watchdog/nuvoton,npcm-wdt.txt
+@@ -6,7 +6,8 @@ expiry.
+ 
+ Required properties:
+ - compatible      : "nuvoton,npcm750-wdt" for NPCM750 (Poleg), or
+-                    "nuvoton,wpcm450-wdt" for WPCM450 (Hermon).
++                    "nuvoton,wpcm450-wdt" for WPCM450 (Hermon), or
++                    "nuvoton,npcm845-wdt" for NPCM845 (Arbel).
+ - reg             : Offset and length of the register set for the device.
+ - interrupts      : Contain the timer interrupt with flags for
+                     falling edge.
+-- 
+2.33.0
 
