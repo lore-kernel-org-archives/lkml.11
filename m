@@ -2,76 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28AA6C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 00:31:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76670C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 00:35:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232800AbiFSAbA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 18 Jun 2022 20:31:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37614 "EHLO
+        id S233221AbiFSAf2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 18 Jun 2022 20:35:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230223AbiFSAa6 (ORCPT
+        with ESMTP id S231978AbiFSAfZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 18 Jun 2022 20:30:58 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 270C2B1D9
-        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 17:30:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
-        :In-Reply-To:From:References:To:Subject:MIME-Version:Date:Message-ID:Sender:
-        Reply-To:Cc:Content-ID:Content-Description;
-        bh=lLxnm06YU/KD4+hvWKrGE9860wPKXqoTSVyTdvAai+g=; b=KR6KabbISHDmsGDqgJ2jeL/RIZ
-        oQhAD+S77lfaHzFIWOs9hFugqWcvT/TGlb6l42Xb+hpLfSp+Y0qmegUSLaUbYQTRxJb2jKv11fQyK
-        cCkNu8rO8C2JkIz/69A748GJrbqFSw7DK18ByC2k2bhGfuHVoX/15MYZDvjlb9/C1lAMOEUec2IC5
-        9CrlwKVeDYHnHV4T8MhZgAVy930gzie483Qa6sofH6dX5f6SPtwCg3TafhGH0x1eGM9L3PDRLf9K4
-        CAPJK6T9JU+Jw7wi2ne2vHgzoGH7Lz/P1S4w35rB+GMRxNartTw74zY9hA3tiF+gj6VQKzWCz16WW
-        pm5cVgmw==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o2iq0-0094OU-J5; Sun, 19 Jun 2022 00:30:49 +0000
-Message-ID: <f1eb20d1-6762-dc82-058a-cf27936bc0c6@infradead.org>
-Date:   Sat, 18 Jun 2022 17:30:44 -0700
+        Sat, 18 Jun 2022 20:35:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21866101F3;
+        Sat, 18 Jun 2022 17:35:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B066060E04;
+        Sun, 19 Jun 2022 00:35:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61531C3411A;
+        Sun, 19 Jun 2022 00:35:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655598923;
+        bh=JvhSdmaU8CkX1kionMrJZINyzM9zc4yNPpJWqKS7g2k=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=eQe20mOTH5uO8hNt8ucEZ04Pr7OO8kSatvZvQVMv5xXhnDC34BaZQm9Ff3o6/mu0r
+         OgCJcWw6RwM5R0Chvvp3Y0Pq9sv+ekNMZJyBiA2LSJrv0h7Q8JvoON6pS26K8bPdQm
+         UU0X7doUX6lXlPRJ/znUo7tGUsOaR63WKjb7ICN9MAxrUYjagsJ8PpBODkjNMrfZvg
+         4AnTIccESlQtlSl+xDn2Fu8E1RYd7oukB1HU5+hA5Ij4PRqbfpVvZU/Lg8DTzkCofe
+         fzFv0Uo9WeM5lvvM+s9I9fIOuyEArEByZVor8TlRTqGkVzqJYTkDlEOKwjULqNniuy
+         +PZYqUyC22yvg==
+Message-ID: <ae324c70-8671-8878-5854-c0910c744379@kernel.org>
+Date:   Sun, 19 Jun 2022 08:35:21 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] printk: allow direct console printing to be enabled
- always
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [f2fs-dev] [PATCH 1/3] f2fs: attach inline_data after setting
+ compression
 Content-Language: en-US
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Petr Mladek <pmladek@suse.com>, Marco Elver <elver@google.com>,
-        linux-kernel@vger.kernel.org
-References: <YqyDqMAPHIxjA/xZ@zx2c4.com>
- <20220617133847.27517-1-Jason@zx2c4.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220617133847.27517-1-Jason@zx2c4.com>
-Content-Type: text/plain; charset=UTF-8
+To:     Jaegeuk Kim <jaegeuk@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net
+Cc:     stable@vger.kernel.org
+References: <20220617223106.3517374-1-jaegeuk@kernel.org>
+From:   Chao Yu <chao@kernel.org>
+In-Reply-To: <20220617223106.3517374-1-jaegeuk@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 2022/6/18 6:31, Jaegeuk Kim wrote:
+> This fixes the below corruption.
+> 
+> [345393.335389] F2FS-fs (vdb): sanity_check_inode: inode (ino=6d0, mode=33206) should not have inline_data, run fsck to fix
+> 
+> Cc: <stable@vger.kernel.org>
+> Fixes: 677a82b44ebf ("f2fs: fix to do sanity check for inline inode")
+> Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+> ---
+>   fs/f2fs/namei.c | 16 ++++++++++------
+>   1 file changed, 10 insertions(+), 6 deletions(-)
+> 
+> diff --git a/fs/f2fs/namei.c b/fs/f2fs/namei.c
+> index c549acb52ac4..a841abe6a071 100644
+> --- a/fs/f2fs/namei.c
+> +++ b/fs/f2fs/namei.c
+> @@ -89,8 +89,6 @@ static struct inode *f2fs_new_inode(struct user_namespace *mnt_userns,
+>   	if (test_opt(sbi, INLINE_XATTR))
+>   		set_inode_flag(inode, FI_INLINE_XATTR);
+>   
+> -	if (test_opt(sbi, INLINE_DATA) && f2fs_may_inline_data(inode))
+> -		set_inode_flag(inode, FI_INLINE_DATA);
+>   	if (f2fs_may_inline_dentry(inode))
+>   		set_inode_flag(inode, FI_INLINE_DENTRY);
+>   
+> @@ -107,10 +105,6 @@ static struct inode *f2fs_new_inode(struct user_namespace *mnt_userns,
+>   
+>   	f2fs_init_extent_tree(inode, NULL);
+>   
+> -	stat_inc_inline_xattr(inode);
+> -	stat_inc_inline_inode(inode);
+> -	stat_inc_inline_dir(inode);
+> -
+>   	F2FS_I(inode)->i_flags =
+>   		f2fs_mask_flags(mode, F2FS_I(dir)->i_flags & F2FS_FL_INHERITED);
+>   
+> @@ -127,6 +121,14 @@ static struct inode *f2fs_new_inode(struct user_namespace *mnt_userns,
+>   			set_compress_context(inode);
+>   	}
+>   
+> +	/* Should enable inline_data after compression set */
+> +	if (test_opt(sbi, INLINE_DATA) && f2fs_may_inline_data(inode))
+> +		set_inode_flag(inode, FI_INLINE_DATA);
+> +
+> +	stat_inc_inline_xattr(inode);
+> +	stat_inc_inline_inode(inode);
+> +	stat_inc_inline_dir(inode);
+> +
+>   	f2fs_set_inode_flags(inode);
+>   
+>   	trace_f2fs_new_inode(inode, 0);
+> @@ -325,6 +327,8 @@ static void set_compress_inode(struct f2fs_sb_info *sbi, struct inode *inode,
+>   		if (!is_extension_exist(name, ext[i], false))
+>   			continue;
+>   
+> +		/* Do not use inline_data with compression */
+> +		clear_inode_flag(inode, FI_INLINE_DATA);
 
+if (is_inode_set_flag()) {
+	clear_inode_flag();
+	stat_dec_inline_inode();
+}
 
-On 6/17/22 06:38, Jason A. Donenfeld wrote:
-> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-> index 8090130b544b..a960c47a2002 100644
-> --- a/Documentation/admin-guide/kernel-parameters.txt
-> +++ b/Documentation/admin-guide/kernel-parameters.txt
-> @@ -4389,6 +4389,14 @@
->  	printk.time=	Show timing data prefixed to each printk message line
->  			Format: <bool>  (1/Y/y=enable, 0/N/n=disable)
->  
-> +	printk.always_direct=
-> +			Rather than using kthreads for printk output, always
-> +			write to the console immediately. This has performance
-> +			implications, but will result in a more faithful
-> +			ordering and interleaving with other processes writing
-> +			to the console.
-> +			Format: <bool>  (1/Y/y=enable, 0/N/n=disable)
+Thanks,
 
-or:
-
-+			Format: <bool>  (1/Y/y/T/t/on=enable, 0/N/n/F/f/off=disable)
-
--- 
-~Randy
+>   		set_compress_context(inode);
+>   		return;
+>   	}
