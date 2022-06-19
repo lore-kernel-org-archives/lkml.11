@@ -2,85 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 670F4C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 13:27:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 935DDC43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 13:37:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236802AbiFSN12 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 19 Jun 2022 09:27:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58646 "EHLO
+        id S236951AbiFSNhs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 19 Jun 2022 09:37:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236587AbiFSN11 (ORCPT
+        with ESMTP id S236703AbiFSNhl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 19 Jun 2022 09:27:27 -0400
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72238A1A1
-        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 06:27:24 -0700 (PDT)
-Received: by mail-lj1-x22e.google.com with SMTP id g12so3191839ljk.11
-        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 06:27:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=USwIgojHd+4gk/AHbWFfWMNbK7HorsIidQTsMQSbCVU=;
-        b=Q/hemLjSDMFkO9Tg2NsP1VHpDtRMriHHdj38JIvhf5xuu2VMIEranCy3wePWG/sOwL
-         g2ipGRj5Q0JlVqylTQuFi0DqLS2hhbkikTIR7XdWkuSsI+a3dwVSNgDxdvo1N6K1V/qN
-         Lp6d0mKXIdday0bhE4F+C3tGVeu/fel5UujWfGf8p4bU23F7xBV1FYGwOMj4/pqdN9Zn
-         aJe844J0GEwbElzCJ4fypWgjAqWuLH9QpXDveA7IarAw4aTFj22h9jb2kdC7SHpIpUEV
-         xe/jmnXzFAcVUToTNmklLXjQ4a5XUP5HybuECVzsYV+sAD3qwxxr7OIgTS5ivumn81lX
-         FQHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=USwIgojHd+4gk/AHbWFfWMNbK7HorsIidQTsMQSbCVU=;
-        b=oROa8xSxFYAtNxZNHTwIID9a8CwZpUBKKdzgLAbnuZOdk2GIM9q5ub5l00Bb9bVIqz
-         bfNv8JzABChv6hOimNdgoInslkxNaneeOZTqQ4Gkca/N6+0CHbxl2Vs0cSE2VR9PxkDL
-         wZFRCcPBH49nWODgjTqW4fHeb+rWlxvsa71rOBQJrrg+nH97YwWdNHHe7LJAb2E4mh8a
-         ucOBTj3wvSEYLK3+0jxzLK5E3sv6s1qeUXnl+29Egt4TBAk+/s9D+zlx4r5XjCZqJdto
-         CJu9w8qmXhNq3UX0zCSkIFre/nwP5RXbs5Mxj81py5QtdZM2uY0w5MRjAgp0y115X+J6
-         eYTQ==
-X-Gm-Message-State: AJIora/WtGfq4D9etc9StPuGjS7IiuNufo4Dy6vnh4DWlmGxd+p6uegH
-        HL0bFZm/k94XrSi/0VdK3ftJUs/IWzZaig==
-X-Google-Smtp-Source: AGRyM1u0JcyUxScgBS8laLu9CqwZlVR9LIrBtuS8pvs986OuPSuedixO1Df3jfGCZsSe8Y02oyijgA==
-X-Received: by 2002:a2e:b0c6:0:b0:255:7c46:16b7 with SMTP id g6-20020a2eb0c6000000b002557c4616b7mr9577251ljl.383.1655645242642;
-        Sun, 19 Jun 2022 06:27:22 -0700 (PDT)
-Received: from [192.168.1.11] ([94.103.229.27])
-        by smtp.gmail.com with ESMTPSA id d18-20020a193852000000b0047f5f292485sm594946lfj.68.2022.06.19.06.27.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 19 Jun 2022 06:27:22 -0700 (PDT)
-Message-ID: <91c9a0de-76f8-37fb-31b4-4401a6e35d48@gmail.com>
-Date:   Sun, 19 Jun 2022 16:27:21 +0300
+        Sun, 19 Jun 2022 09:37:41 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DDF16319
+        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 06:37:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655645860; x=1687181860;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=hK7yiUXp498V4zt6tzB6Sd6pGY/AmK3IGLLegWnAMsM=;
+  b=gGr4WYIFIq9ocxvFcds7Z+GZuct52En74bG7A3kE2QRl2VdjNp0UbAT3
+   IlqHyPZS2aDm9ZzXKDd/naX8rHFC6A/YadLi00HTZ8cPymx9Eixv4DatB
+   sBnUN48VCyLBjUvz/yQkoTCnMh6Dxq/XtAX/GI4ch5moLYRx9l7RD/933
+   PoPxqUTnqMq6duaB4cEbBVUhLytAYDSrmMH9GNiPanqQyzFmBrpqRWVpn
+   l6Q+5eR7KHHOXD/ABhvhKEwxhbBiqadVWmWA/XewRkI0kpbDU4QHdqraV
+   neJDvqUMyySpCoomuzFRWSPm/DzKfftq+1TIOUDzxnXOlrKcZ8Z/1j0da
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="305164672"
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="305164672"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2022 06:37:40 -0700
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="676158473"
+Received: from sannilnx.jer.intel.com ([10.12.26.157])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2022 06:37:37 -0700
+From:   Alexander Usyskin <alexander.usyskin@intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
+Cc:     Tomas Winkler <tomas.winkler@intel.com>,
+        Alexander Usyskin <alexander.usyskin@intel.com>,
+        Vitaly Lubart <vitaly.lubart@intel.com>,
+        intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>
+Subject: [PATCH v3 02/14] drm/i915/gsc: skip irq initialization if using polling
+Date:   Sun, 19 Jun 2022 16:37:09 +0300
+Message-Id: <20220619133721.523546-3-alexander.usyskin@intel.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220619133721.523546-1-alexander.usyskin@intel.com>
+References: <20220619133721.523546-1-alexander.usyskin@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH] Staging: r8188eu: core: rtw_xmit: Fixed a few coding
- style issues
-Content-Language: en-US
-To:     Chang Yu <marcus.yu.56@gmail.com>, Larry.Finger@lwfinger.net
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20220618204454.16071-1-marcus.yu.56@gmail.com>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <20220618204454.16071-1-marcus.yu.56@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Chang,
+From: Vitaly Lubart <vitaly.lubart@intel.com>
 
-On 6/18/22 23:44, Chang Yu wrote:
-> Fixed a few coding style issues and spelling errors in the comments.
-> 
-> Signed-off-by: Chang Yu <marcus.yu.56@gmail.com>
-> ---
+Some platforms require the host to poll on the
+GSC registers instead of relaying on the interrupts.
+For those platforms, irq initialization should be skipped
 
-You are doing a lot of different changes in one patch. Please, separate 
-each clean up into its own patch
+Signed-off-by: Vitaly Lubart <vitaly.lubart@intel.com>
+Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
+Signed-off-by: Alexander Usyskin <alexander.usyskin@intel.com>
+Reviewed-by: Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>
+---
+ drivers/gpu/drm/i915/gt/intel_gsc.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
+diff --git a/drivers/gpu/drm/i915/gt/intel_gsc.c b/drivers/gpu/drm/i915/gt/intel_gsc.c
+index 0e494028b81d..e0236ff1d072 100644
+--- a/drivers/gpu/drm/i915/gt/intel_gsc.c
++++ b/drivers/gpu/drm/i915/gt/intel_gsc.c
+@@ -40,6 +40,7 @@ struct gsc_def {
+ 	const char *name;
+ 	unsigned long bar;
+ 	size_t bar_size;
++	bool use_polling;
+ };
+ 
+ /* gsc resources and definitions (HECI1 and HECI2) */
+@@ -117,6 +118,10 @@ static void gsc_init_one(struct drm_i915_private *i915,
+ 		return;
+ 	}
+ 
++	/* skip irq initialization */
++	if (def->use_polling)
++		goto add_device;
++
+ 	intf->irq = irq_alloc_desc(0);
+ 	if (intf->irq < 0) {
+ 		drm_err(&i915->drm, "gsc irq error %d\n", intf->irq);
+@@ -129,6 +134,7 @@ static void gsc_init_one(struct drm_i915_private *i915,
+ 		goto fail;
+ 	}
+ 
++add_device:
+ 	adev = kzalloc(sizeof(*adev), GFP_KERNEL);
+ 	if (!adev)
+ 		goto fail;
+@@ -182,10 +188,8 @@ static void gsc_irq_handler(struct intel_gt *gt, unsigned int intf_id)
+ 		return;
+ 	}
+ 
+-	if (gt->gsc.intf[intf_id].irq < 0) {
+-		drm_err_ratelimited(&gt->i915->drm, "GSC irq: irq not set");
++	if (gt->gsc.intf[intf_id].irq < 0)
+ 		return;
+-	}
+ 
+ 	ret = generic_handle_irq(gt->gsc.intf[intf_id].irq);
+ 	if (ret)
+-- 
+2.32.0
 
-
-
-Thanks,
---Pavel Skripkin
