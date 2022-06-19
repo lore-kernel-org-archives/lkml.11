@@ -2,73 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C68DC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 00:55:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22570C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 19 Jun 2022 01:35:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233330AbiFSAzq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 18 Jun 2022 20:55:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49560 "EHLO
+        id S233460AbiFSB01 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 18 Jun 2022 21:26:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbiFSAzo (ORCPT
+        with ESMTP id S229446AbiFSB00 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 18 Jun 2022 20:55:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34FB5BE07
-        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 17:55:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F3A88B80B3F
-        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 00:55:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCB3DC3411A;
-        Sun, 19 Jun 2022 00:55:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655600141;
-        bh=Y1pY1dTeemIGkfSVJrQX+Eq3dkLnscBf5JndGotxl+w=;
-        h=From:To:Cc:Subject:Date:From;
-        b=ZddnPrdb25S2Mxs6xdlu3Tfh/9GngPK2LG2wF6CBGjRq8U6gaWJy8/xhLCratMnqa
-         U3NS6ZraMnDoa2RroNZRXYiOi2NyKtHi8jsvTbcWGV29kKDHqkAtU+FTg1MrdgT8BC
-         cpy7+LjAO5gL79p3ram6orvA97R3fjYnGsyjMJErJ+ByvH3O2siKNHjTzYXHw7jUxD
-         eOJyS+Wwz76L+6Jj5unDe/frWDVIRAOCgUIeqM5Sj+4IV4Ml9mF6RG58LNxTEDl1+U
-         9k8m6O2xWQFdddSiGbiXdDwhzytcnSBoEm25wX+r4u2z52aw+lprlHOAYPZZ9vKp0W
-         xEtmHkH3307Og==
-From:   Chao Yu <chao@kernel.org>
-To:     jaegeuk@kernel.org
-Cc:     linux-f2fs-devel@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, Chao Yu <chao@kernel.org>,
-        Chao Yu <chao.yu@oppo.com>
-Subject: [PATCH] f2fs: initialize page_array_entry slab only if compression feature is on
-Date:   Sun, 19 Jun 2022 01:51:55 +0800
-Message-Id: <20220618175155.3908-1-chao@kernel.org>
-X-Mailer: git-send-email 2.36.1
+        Sat, 18 Jun 2022 21:26:26 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7172E1056C
+        for <linux-kernel@vger.kernel.org>; Sat, 18 Jun 2022 18:26:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
+        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=euKIZ9IgbDaC+OfkObqzZINVrsFI0co0qLhenN8WQMM=; b=YmLpcdJFaQqpzF8D1nuv/08xLy
+        YALZWykuWb1sZaPUCN80w+vc/2mh0iBq6Gy2mZh2qfq9qDYWbC4lta9zDFJeiDjPxUT7HvF4SrBC9
+        sb0FqqDMyMEzcDf+wUTY+GdsJ+ih18q8v+KaQ1CrACU3GWdFI8pD0JW67Nt7Ep8qUm0jAq2VY5MFK
+        aiot1RhxcBWRCav+IZWb7kbazwpK9D+XjK9Bnm4PRVZt8TaFHFRh6RCcEwtd7UgsmozsCkzCXI8H/
+        N9v1UE6qNP8WtJ5wfo1biYnvKRJA5JXUHNhFf+6ItS+0V5xoaxt6TI2UHUmjGoVqEwTNjhAv5x7WG
+        Sjlk74Ig==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o2jhj-00954T-Sm; Sun, 19 Jun 2022 01:26:20 +0000
+Message-ID: <3e720964-6f71-b325-8929-874e61666892@infradead.org>
+Date:   Sat, 18 Jun 2022 18:26:12 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v2 5/5] rslib: Fix integer overflow on large fcr or prim
+Content-Language: en-US
+To:     Zhang Boyang <zhangboyang.id@gmail.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Ferdinand Blomqvist <ferdinand.blomqvist@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Kees Cook <keescook@chromium.org>,
+        Ivan Djelic <ivan.djelic@parrot.com>,
+        Boris Brezillon <boris.brezillon@bootlin.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+References: <20220617144624.158973-1-zhangboyang.id@gmail.com>
+ <20220617144624.158973-6-zhangboyang.id@gmail.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20220617144624.158973-6-zhangboyang.id@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Otherwise, in image which doesn't support compression feature,
-page_array_entry will be initialized w/o use.
+Hi--
 
-Signed-off-by: Chao Yu <chao.yu@oppo.com>
----
- fs/f2fs/compress.c | 3 +++
- 1 file changed, 3 insertions(+)
 
-diff --git a/fs/f2fs/compress.c b/fs/f2fs/compress.c
-index 24824cd96f36..fa237e5c7173 100644
---- a/fs/f2fs/compress.c
-+++ b/fs/f2fs/compress.c
-@@ -1908,6 +1908,9 @@ int f2fs_init_page_array_cache(struct f2fs_sb_info *sbi)
- 	dev_t dev = sbi->sb->s_bdev->bd_dev;
- 	char slab_name[32];
- 
-+	if (!f2fs_sb_has_compression(sbi))
-+		return 0;
-+
- 	sprintf(slab_name, "f2fs_page_array_entry-%u:%u", MAJOR(dev), MINOR(dev));
- 
- 	sbi->page_array_slab_size = sizeof(struct page *) <<
+Somehow some of the kernel-doc notation in these files has been
+entered incorrectly and you are propagating that mistake...
+Please see below for more.
+
+
+On 6/17/22 07:46, Zhang Boyang wrote:
+
+> Signed-off-by: Zhang Boyang <zhangboyang.id@gmail.com>
+> ---
+>  include/linux/rslib.h           | 22 ++++++++++++
+>  lib/reed_solomon/decode_rs.c    | 60 +++++++++++++++++++--------------
+>  lib/reed_solomon/reed_solomon.c | 30 ++++++++++++-----
+>  lib/reed_solomon/test_rslib.c   |  8 ++---
+>  4 files changed, 82 insertions(+), 38 deletions(-)
+> 
+> diff --git a/include/linux/rslib.h b/include/linux/rslib.h
+> index 44ec7c6f24b2..29abfb2de257 100644
+> --- a/include/linux/rslib.h
+> +++ b/include/linux/rslib.h
+
+> @@ -127,6 +129,26 @@ static inline int rs_modnn(struct rs_codec *rs, int x)
+>  	return x;
+>  }
+>  
+> +/** modulo replacement for galois field arithmetics
+
+/**
+ * rs_modnn_mul() - modulo replacement for galois field arithmetics
+
+> + *
+> + *  @rs:	Pointer to the RS codec
+> + *  @a:		0 <= a <= nn ; a*b is the value to reduce
+> + *  @b:		0 <= b <= nn ; a*b is the value to reduce
+> + *
+> + *  Same as rs_modnn(a*b), but avoid interger overflow when calculating a*b
+
+                                        integer                            a * b
+
+
+> +*/
+> +static inline int rs_modnn_mul(struct rs_codec *rs, int a, int b)
+> +{
+> +	/* nn <= 0xFFFF, so (a * b) will not overflow uint32_t */
+> +	uint32_t x = (uint32_t)a * (uint32_t)b;
+> +	uint32_t nn = (uint32_t)rs->nn;
+> +	while (x >= nn) {
+> +		x -= nn;
+> +		x = (x >> rs->mm) + (x & nn);
+> +	}
+> +	return (int)x;
+> +}
+> +
+>  /** modulo replacement for galois field arithmetics
+
+/**
+ * rs_modnn() - modulo replacement for galois field arithmetics
+
+>   *
+>   *  @rs:	Pointer to the RS codec
+
+
+
 -- 
-2.36.1
-
+~Randy
