@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F5C4C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:12:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEE99C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:12:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343532AbiFTNMP (ORCPT
+        id S1343548AbiFTNMT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:12:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51478 "EHLO
+        Mon, 20 Jun 2022 09:12:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245682AbiFTNJV (ORCPT
+        with ESMTP id S245686AbiFTNJV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 20 Jun 2022 09:09:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65062263F;
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4DBC5F9D;
         Mon, 20 Jun 2022 06:03:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8FD4FB811A2;
-        Mon, 20 Jun 2022 13:02:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D280FC3411B;
-        Mon, 20 Jun 2022 13:02:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5EA86B811B9;
+        Mon, 20 Jun 2022 13:01:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5403C3411B;
+        Mon, 20 Jun 2022 13:01:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730150;
-        bh=O1OHMBqUZvchCY9nx0LeY5KaecCnKrJUpkJ5Xf1RCl8=;
+        s=korg; t=1655730069;
+        bh=DwlLbd8GKUT6Ycqzy2yQZei1Q/LJ1eFQP4Yg2Ok8Y7s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fuicsGkDKKby+4w4YWj7hpvdmIGTuwRYtXLDuXQd5arpRyC/TJyfZDOtCc0fM6z9y
-         n3BEt47gknT+e6WFQLd7ysIzCCDrHGBs0dksVIdffbf0wKH4cxE1RdBf3JS2TtHBLg
-         1I3DLFnVrwSbOcN4LmvcDd8FEs90ISYDDeFHUeLw=
+        b=eyYqHwo6nJi9A1usGy2Rc7QA8KUVv0V0Kgof4x/S846YIBACkkp3vrUiJCapg9sG1
+         R0xpOMnaX/Sbpk2mZ66d1vr7wAPmVc+LhYE3hLZRkgzdoCnj/5OQ/ayd3Brl7OHlbC
+         OVShvt95g4+IycXbpje1aiqgSY3PGwlEd549RIAY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 37/84] clocksource: hyper-v: unexport __init-annotated hv_init_clocksource()
-Date:   Mon, 20 Jun 2022 14:51:00 +0200
-Message-Id: <20220620124721.989633894@linuxfoundation.org>
+        stable@vger.kernel.org, David Lin <ctlin0@nuvoton.com>,
+        John Hsu <kchsu0@nuvoton.com>, Seven Li <wtli@nuvoton.com>,
+        Hui Wang <hui.wang@canonical.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 06/84] ASoC: nau8822: Add operation for internal PLL off and on
+Date:   Mon, 20 Jun 2022 14:50:29 +0200
+Message-Id: <20220620124721.074506001@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124720.882450983@linuxfoundation.org>
 References: <20220620124720.882450983@linuxfoundation.org>
@@ -52,50 +52,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masahiro Yamada <masahiroy@kernel.org>
+From: Hui Wang <hui.wang@canonical.com>
 
-[ Upstream commit 245b993d8f6c4e25f19191edfbd8080b645e12b1 ]
+[ Upstream commit aeca8a3295022bcec46697f16e098140423d8463 ]
 
-EXPORT_SYMBOL and __init is a bad combination because the .init.text
-section is freed up after the initialization. Hence, modules cannot
-use symbols annotated __init. The access to a freed symbol may end up
-with kernel panic.
+We tried to enable the audio on an imx6sx EVB with the codec nau8822,
+after setting the internal PLL fractional parameters, the audio still
+couldn't work and the there was no sdma irq at all.
 
-modpost used to detect it, but it has been broken for a decade.
+After checking with the section "8.1.1 Phase Locked Loop (PLL) Design
+Example" of "NAU88C22 Datasheet Rev 0.6", we found we need to
+turn off the PLL before programming fractional parameters and turn on
+the PLL after programming.
 
-Recently, I fixed modpost so it started to warn it again, then this
-showed up in linux-next builds.
+After this change, the audio driver could record and play sound and
+the sdma's irq is triggered when playing or recording.
 
-There are two ways to fix it:
-
-  - Remove __init
-  - Remove EXPORT_SYMBOL
-
-I chose the latter for this case because the only in-tree call-site,
-arch/x86/kernel/cpu/mshyperv.c is never compiled as modular.
-(CONFIG_HYPERVISOR_GUEST is boolean)
-
-Fixes: dd2cb348613b ("clocksource/drivers: Continue making Hyper-V clocksource ISA agnostic")
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Reviewed-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
-Link: https://lore.kernel.org/r/20220606050238.4162200-1-masahiroy@kernel.org
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Cc: David Lin <ctlin0@nuvoton.com>
+Cc: John Hsu <kchsu0@nuvoton.com>
+Cc: Seven Li <wtli@nuvoton.com>
+Signed-off-by: Hui Wang <hui.wang@canonical.com>
+Link: https://lore.kernel.org/r/20220530040151.95221-2-hui.wang@canonical.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clocksource/hyperv_timer.c | 1 -
- 1 file changed, 1 deletion(-)
+ sound/soc/codecs/nau8822.c | 4 ++++
+ sound/soc/codecs/nau8822.h | 3 +++
+ 2 files changed, 7 insertions(+)
 
-diff --git a/drivers/clocksource/hyperv_timer.c b/drivers/clocksource/hyperv_timer.c
-index ba04cb381cd3..7c617d8dff3f 100644
---- a/drivers/clocksource/hyperv_timer.c
-+++ b/drivers/clocksource/hyperv_timer.c
-@@ -472,4 +472,3 @@ void __init hv_init_clocksource(void)
- 	hv_sched_clock_offset = hv_read_reference_counter();
- 	hv_setup_sched_clock(read_hv_sched_clock_msr);
+diff --git a/sound/soc/codecs/nau8822.c b/sound/soc/codecs/nau8822.c
+index 609aeeb27818..d831959d8ff7 100644
+--- a/sound/soc/codecs/nau8822.c
++++ b/sound/soc/codecs/nau8822.c
+@@ -740,6 +740,8 @@ static int nau8822_set_pll(struct snd_soc_dai *dai, int pll_id, int source,
+ 		pll_param->pll_int, pll_param->pll_frac,
+ 		pll_param->mclk_scaler, pll_param->pre_factor);
+ 
++	snd_soc_component_update_bits(component,
++		NAU8822_REG_POWER_MANAGEMENT_1, NAU8822_PLL_EN_MASK, NAU8822_PLL_OFF);
+ 	snd_soc_component_update_bits(component,
+ 		NAU8822_REG_PLL_N, NAU8822_PLLMCLK_DIV2 | NAU8822_PLLN_MASK,
+ 		(pll_param->pre_factor ? NAU8822_PLLMCLK_DIV2 : 0) |
+@@ -757,6 +759,8 @@ static int nau8822_set_pll(struct snd_soc_dai *dai, int pll_id, int source,
+ 		pll_param->mclk_scaler << NAU8822_MCLKSEL_SFT);
+ 	snd_soc_component_update_bits(component,
+ 		NAU8822_REG_CLOCKING, NAU8822_CLKM_MASK, NAU8822_CLKM_PLL);
++	snd_soc_component_update_bits(component,
++		NAU8822_REG_POWER_MANAGEMENT_1, NAU8822_PLL_EN_MASK, NAU8822_PLL_ON);
+ 
+ 	return 0;
  }
--EXPORT_SYMBOL_GPL(hv_init_clocksource);
+diff --git a/sound/soc/codecs/nau8822.h b/sound/soc/codecs/nau8822.h
+index 489191ff187e..b45d42c15de6 100644
+--- a/sound/soc/codecs/nau8822.h
++++ b/sound/soc/codecs/nau8822.h
+@@ -90,6 +90,9 @@
+ #define NAU8822_REFIMP_3K			0x3
+ #define NAU8822_IOBUF_EN			(0x1 << 2)
+ #define NAU8822_ABIAS_EN			(0x1 << 3)
++#define NAU8822_PLL_EN_MASK			(0x1 << 5)
++#define NAU8822_PLL_ON				(0x1 << 5)
++#define NAU8822_PLL_OFF				(0x0 << 5)
+ 
+ /* NAU8822_REG_AUDIO_INTERFACE (0x4) */
+ #define NAU8822_AIFMT_MASK			(0x3 << 3)
 -- 
 2.35.1
 
