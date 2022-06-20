@@ -2,227 +2,215 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 029B8C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:20:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5466CC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:20:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352579AbiFTOUN (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:20:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48856 "EHLO
+        id S243913AbiFTOUV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 10:20:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244225AbiFTOSK (ORCPT
+        with ESMTP id S1350608AbiFTOSW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 10:18:10 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7522625C5C
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 06:32:38 -0700 (PDT)
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LRVtX61X4zDqq3;
-        Mon, 20 Jun 2022 21:32:04 +0800 (CST)
-Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 20 Jun 2022 21:32:36 +0800
-Received: from [10.174.179.234] (10.174.179.234) by
- kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 20 Jun 2022 21:32:34 +0800
-Message-ID: <09c8f2ce-7cfb-6653-6e44-c509d588bdc1@huawei.com>
-Date:   Mon, 20 Jun 2022 21:32:33 +0800
+        Mon, 20 Jun 2022 10:18:22 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61F326455;
+        Mon, 20 Jun 2022 06:33:00 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 0998F1F9DB;
+        Mon, 20 Jun 2022 13:19:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1655731176; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=rKZZMpkhatWAwsf4c5mQXHZM6KStBRfdpbKIoOzCjNo=;
+        b=XUGGVD06djaqIk0wf2BqotBUNOdYGy3zLVs480Zb5gxOSoCYeWs96BM8sBnoYC3Lumcxef
+        FRMLO0iS10W7pzm035bWr8qA15R2So00DdpPC9vNtcFsKHVd3d9Klm4fSQWy80fNhNvx4a
+        yDhr9az7W/2329yZ+bfccf6GFKyJXX8=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1655731176;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=rKZZMpkhatWAwsf4c5mQXHZM6KStBRfdpbKIoOzCjNo=;
+        b=UsuD+8zEjzbab09OqIpifsvUIMlX7T4enyXE00gR71/1P9juGvQ8M+rMdNqEVg3M15C8Ra
+        J8S2OmNMI+7BcoAA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5FB7E13638;
+        Mon, 20 Jun 2022 13:19:35 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id f8GjFOdzsGJ6OwAAMHmgww
+        (envelope-from <osalvador@suse.de>); Mon, 20 Jun 2022 13:19:35 +0000
+Date:   Mon, 20 Jun 2022 15:19:33 +0200
+From:   Oscar Salvador <osalvador@suse.de>
+To:     Muchun Song <songmuchun@bytedance.com>
+Cc:     akpm@linux-foundation.org, corbet@lwn.net, david@redhat.com,
+        mike.kravetz@oracle.com, paulmck@kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, duanxiongchun@bytedance.com, smuchun@gmail.com
+Subject: Re: [PATCH v5 2/2] mm: memory_hotplug: make hugetlb_optimize_vmemmap
+ compatible with memmap_on_memory
+Message-ID: <YrBz5dBpb3XTZm5c@localhost.localdomain>
+References: <20220620110616.12056-1-songmuchun@bytedance.com>
+ <20220620110616.12056-3-songmuchun@bytedance.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH -next v5 2/8] arm64: extable: make uaaccess helper use
- extable type EX_TYPE_UACCESS_ERR_ZERO
-To:     Mark Rutland <mark.rutland@arm.com>
-CC:     James Morse <james.morse@arm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "Ingo Molnar" <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "Catalin Marinas" <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        "Alexander Viro" <viro@zeniv.linux.org.uk>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>, <x86@kernel.org>,
-        "H . Peter Anvin" <hpa@zytor.com>, <linuxppc-dev@lists.ozlabs.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Xie XiuQi <xiexiuqi@huawei.com>,
-        Guohanjun <guohanjun@huawei.com>
-References: <20220528065056.1034168-1-tongtiangen@huawei.com>
- <20220528065056.1034168-3-tongtiangen@huawei.com>
- <Yqw6TP3MhEqnQ+2o@FVFF77S0Q05N>
- <4371a7c9-8766-9fee-2558-e6f43f06ad19@huawei.com>
- <0da734f3-5743-3df3-3f90-d92e5bd585ce@huawei.com>
- <Yq3HoUyEcnKKk1AY@FVFF77S0Q05N>
- <684f0362-6e58-753d-32e1-112c6ffe6d12@huawei.com>
- <YrA5f44hySky8v5g@FVFF77S0Q05N>
-From:   Tong Tiangen <tongtiangen@huawei.com>
-In-Reply-To: <YrA5f44hySky8v5g@FVFF77S0Q05N>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.179.234]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemm600017.china.huawei.com (7.193.23.234)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220620110616.12056-3-songmuchun@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, Jun 20, 2022 at 07:06:16PM +0800, Muchun Song wrote:
+> +		/*
+> +		 * The READ_ONCE() is used to stabilize *pmdp in a register or
+> +		 * on the stack so that it will stop changing under the code.
+> +		 * The only concurrent operation where it can be changed is
+> +		 * split_vmemmap_huge_pmd() (*pmdp will be stable after this
+> +		 * operation).
+> +		 */
+> +		pmd = READ_ONCE(*pmdp);
+> +		if (pmd_leaf(pmd))
+> +			vmemmap_page = pmd_page(pmd) + pte_index(vaddr);
+> +		else
+> +			vmemmap_page = pte_page(*pte_offset_kernel(pmdp, vaddr));
+
+I was about to suggest to get rid of the else branch because on x86_64
+we can only allocate PMD_SIZE chunks when using an alternative allocator,
+meaning that anything which is not a pmd_leaf can't be a PageVmemmapSelfHosted.
+
+But then I went to check the other platform that supports memmap_on_memory (arm64),
+and in there I can see that we fallback to populate basepages with altmap should
+we fail to allocate a PMD_SIZE chunk.
 
 
-在 2022/6/20 17:10, Mark Rutland 写道:
-> On Mon, Jun 20, 2022 at 10:59:12AM +0800, Tong Tiangen wrote:
->> 在 2022/6/18 20:40, Mark Rutland 写道:
->>> On Sat, Jun 18, 2022 at 04:42:06PM +0800, Tong Tiangen wrote:
->>>>>>> diff --git a/arch/arm64/include/asm/asm-extable.h
->>>>>>> b/arch/arm64/include/asm/asm-extable.h
->>>>>>> index 56ebe183e78b..9c94ac1f082c 100644
->>>>>>> --- a/arch/arm64/include/asm/asm-extable.h
->>>>>>> +++ b/arch/arm64/include/asm/asm-extable.h
->>>>>>> @@ -28,6 +28,14 @@
->>>>>>>         __ASM_EXTABLE_RAW(\insn, \fixup, EX_TYPE_FIXUP, 0)
->>>>>>>         .endm
->>>>>>> +/*
->>>>>>> + * Create an exception table entry for uaccess `insn`, which
->>>>>>> will branch to `fixup`
->>>>>>> + * when an unhandled fault is taken.
->>>>>>> + * ex->data = ~0 means both reg_err and reg_zero is set to wzr(x31).
->>>>>>> + */
->>>>>>> +    .macro          _asm_extable_uaccess, insn, fixup
->>>>>>> +    __ASM_EXTABLE_RAW(\insn, \fixup, EX_TYPE_UACCESS_ERR_ZERO, ~0)
->>>>>>> +    .endm
->>>>>>
->>>>>> I'm not too keen on using `~0` here, since that also sets other bits
->>>>>> in the
->>>>>> data field, and its somewhat opaque.
->>>>>>
->>>>>> How painful is it to generate the data fields as with the C version
->>>>>> of this
->>>>>> macro, so that we can pass in wzr explciitly for the two sub-fields?
->>>>>>
->>>>>> Other than that, this looks good to me.
->>>>>>
->>>>>> Thanks,
->>>>>> Mark.
->>>>>
->>>>> ok, will fix next version.
->>>>>
->>>>> Thanks,
->>>>> Tong.
->>>>
->>>> I tried to using data filelds as with C version, but here assembly code we
->>>> can not using operator such as << and |, if we use lsl and orr instructions,
->>>> the gpr will be occupied.
->>>>
->>>> So how about using 0x3ff directly here? it means err register and zero
->>>> register both set to x31.
->>>
->>> I had a go at implementing this, and it seems simple enough. Please see:
->>>
->>>     https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git/log/?h=arm64/extable/asm-uaccess
->>>
->>
->> I made the following modifications, and the other parts are based on your
->> implementation:
->>
->> arch/arm64/include/asm/asm-extable.h
->> [...]
->> .macro          _asm_extable_uaccess, insn, fixup
->> _ASM_EXTABLE_UACCESS(\insn, \fixup)
->> .endm
->> [...]
-> 
-> I also made this same change locally when testing, and building with GCC 11.1.0
-> or LLVM 14.0.0 I am not seeing any problem when building, and the result is as
-> expected:
-> 
-> | [mark@lakrids:~/src/linux]% usekorg 11.1.0 make ARCH=arm64 CROSS_COMPILE=aarch64-linux- defconfig
-> | *** Default configuration is based on 'defconfig'
-> | #
-> | # No change to .config
-> | #
-> | [mark@lakrids:~/src/linux]% usekorg 11.1.0 make ARCH=arm64 CROSS_COMPILE=aarch64-linux- -j50 arch/arm64/lib/
-> |   CALL    scripts/atomic/check-atomics.sh
-> |   CC      arch/arm64/kernel/asm-offsets.s
-> |   CALL    scripts/checksyscalls.sh
-> |   AS      arch/arm64/kernel/vdso/note.o
-> |   AS      arch/arm64/kernel/vdso/sigreturn.o
-> |   LD      arch/arm64/kernel/vdso/vdso.so.dbg
-> |   VDSOSYM include/generated/vdso-offsets.h
-> |   OBJCOPY arch/arm64/kernel/vdso/vdso.so
-> | make[2]: Nothing to be done for 'arch/arm64/lib/'.
-> |   AS      arch/arm64/lib/clear_page.o
-> |   AS      arch/arm64/lib/clear_user.o
-> |   AS      arch/arm64/lib/copy_from_user.o
-> |   AS      arch/arm64/lib/copy_page.o
-> |   AS      arch/arm64/lib/copy_to_user.o
-> |   CC      arch/arm64/lib/csum.o
-> |   CC      arch/arm64/lib/delay.o
-> |   AS      arch/arm64/lib/memchr.o
-> |   AS      arch/arm64/lib/memcmp.o
-> |   AS      arch/arm64/lib/memcpy.o
-> |   AS      arch/arm64/lib/memset.o
-> |   AS      arch/arm64/lib/strchr.o
-> |   AS      arch/arm64/lib/strcmp.o
-> |   AS      arch/arm64/lib/strlen.o
-> |   AS      arch/arm64/lib/strncmp.o
-> |   AS      arch/arm64/lib/strnlen.o
-> |   AS      arch/arm64/lib/strrchr.o
-> |   AS      arch/arm64/lib/tishift.o
-> |   AS      arch/arm64/lib/crc32.o
-> |   AS      arch/arm64/lib/mte.o
-> |   CC [M]  arch/arm64/lib/xor-neon.o
-> |   AR      arch/arm64/lib/built-in.a
-> |   AR      arch/arm64/lib/lib.a
-> | [mark@lakrids:~/src/linux]% usekorg 12.1.0 aarch64-linux-objdump -j __ex_table -D arch/arm64/lib/clear_user.o
-> |
-> | arch/arm64/lib/clear_user.o:     file format elf64-littleaarch64
-> |
-> |
-> | Disassembly of section __ex_table:
-> |
-> | 0000000000000000 <__ex_table>:
-> |         ...
-> |    8:   03ff0003        .inst   0x03ff0003 ; undefined
-> |         ...
-> |   14:   03ff0003        .inst   0x03ff0003 ; undefined
-> |         ...
-> |   20:   03ff0003        .inst   0x03ff0003 ; undefined
-> |         ...
-> |   2c:   03ff0003        .inst   0x03ff0003 ; undefined
-> |         ...
-> |   38:   03ff0003        .inst   0x03ff0003 ; undefined
-> |         ...
-> |   44:   03ff0003        .inst   0x03ff0003 ; undefined
-> 
->> The following errors are reported during compilation:
->> [...]
->> arch/arm64/lib/clear_user.S:45: Error: invalid operands (*ABS* and *UND*
->> sections) for `<<'
->> [...]
-> 
-> As above, I'm not seeing this.
-> 
-> This suggests that the EX_DATA_REG() macro is going wrong somehow. Assuming the
-> operand types correspond to the LHS and RHS of the expression, this would mean
-> the GPR number is defined, but the REG value is not, and I can't currently see
-> how that can happen.
-> 
->> "<<" is invalid operands in assembly, is there something wrong with me?
-> 
-> At the moment I can only assume there is a local problem. I'd suspect a typo
-> somewhere, but maybe you have a toolchain which behaves differently?
-> 
-> Thanks,
-> Mark.
 
-My gcc version is 9.4.0, let me try your gcc version first.
+> +		/*
+> +		 * Due to HugeTLB alignment requirements and the vmemmap pages
+> +		 * being at the start of the hotplugged memory region in
+> +		 * memory_hotplug.memmap_on_memory case. Checking any vmemmap
+> +		 * page's vmemmap page if it is marked as VmemmapSelfHosted is
+> +		 * sufficient.
+> +		 *
+> +		 * [                  hotplugged memory                  ]
+> +		 * [        section        ][...][        section        ]
+> +		 * [ vmemmap ][              usable memory               ]
+> +		 *   ^   |     |                                        |
+> +		 *   +---+     |                                        |
+> +		 *     ^       |                                        |
+> +		 *     +-------+                                        |
+> +		 *          ^                                           |
+> +		 *          +-------------------------------------------+
+> +		 */
+> +		if (PageVmemmapSelfHosted(vmemmap_page))
+> +			return 0;
+> +	}
+> +
+> +	return hugetlb_optimize_vmemmap_pages(h);
+> +}
+> +
+>  void hugetlb_vmemmap_free(struct hstate *h, struct page *head)
+>  {
+>  	unsigned long vmemmap_addr = (unsigned long)head;
+>  	unsigned long vmemmap_end, vmemmap_reuse, vmemmap_pages;
+>  
+> -	vmemmap_pages = hugetlb_optimize_vmemmap_pages(h);
+> +	vmemmap_pages = vmemmap_optimizable_pages(h, head);
+>  	if (!vmemmap_pages)
+>  		return;
+>  
+> -	if (READ_ONCE(vmemmap_optimize_mode) == VMEMMAP_OPTIMIZE_OFF)
+> -		return;
+> -
+>  	static_branch_inc(&hugetlb_optimize_vmemmap_key);
+>  
+>  	vmemmap_addr	+= RESERVE_VMEMMAP_SIZE;
+> @@ -199,10 +249,10 @@ static struct ctl_table hugetlb_vmemmap_sysctls[] = {
+>  static __init int hugetlb_vmemmap_sysctls_init(void)
+>  {
+>  	/*
+> -	 * If "memory_hotplug.memmap_on_memory" is enabled or "struct page"
+> -	 * crosses page boundaries, the vmemmap pages cannot be optimized.
+> +	 * If "struct page" crosses page boundaries, the vmemmap pages cannot
+> +	 * be optimized.
+>  	 */
+> -	if (!mhp_memmap_on_memory() && is_power_of_2(sizeof(struct page)))
+> +	if (is_power_of_2(sizeof(struct page)))
+>  		register_sysctl_init("vm", hugetlb_vmemmap_sysctls);
+>  
+>  	return 0;
+> diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
+> index 6662b86e9e64..3a59d4e97c03 100644
+> --- a/mm/memory_hotplug.c
+> +++ b/mm/memory_hotplug.c
+> @@ -43,30 +43,22 @@
+>  #include "shuffle.h"
+>  
+>  #ifdef CONFIG_MHP_MEMMAP_ON_MEMORY
+> -static int memmap_on_memory_set(const char *val, const struct kernel_param *kp)
+> -{
+> -	if (hugetlb_optimize_vmemmap_enabled())
+> -		return 0;
+> -	return param_set_bool(val, kp);
+> -}
+> -
+> -static const struct kernel_param_ops memmap_on_memory_ops = {
+> -	.flags	= KERNEL_PARAM_OPS_FL_NOARG,
+> -	.set	= memmap_on_memory_set,
+> -	.get	= param_get_bool,
+> -};
+> -
+>  /*
+>   * memory_hotplug.memmap_on_memory parameter
+>   */
+>  static bool memmap_on_memory __ro_after_init;
+> -module_param_cb(memmap_on_memory, &memmap_on_memory_ops, &memmap_on_memory, 0444);
+> +module_param(memmap_on_memory, bool, 0444);
+>  MODULE_PARM_DESC(memmap_on_memory, "Enable memmap on memory for memory hotplug");
+>  
+> -bool mhp_memmap_on_memory(void)
+> +static inline bool mhp_memmap_on_memory(void)
+>  {
+>  	return memmap_on_memory;
+>  }
+> +#else
+> +static inline bool mhp_memmap_on_memory(void)
+> +{
+> +	return false;
+> +}
+>  #endif
+>  
+>  enum {
+> @@ -1035,7 +1027,7 @@ int mhp_init_memmap_on_memory(unsigned long pfn, unsigned long nr_pages,
+>  			      struct zone *zone)
+>  {
+>  	unsigned long end_pfn = pfn + nr_pages;
+> -	int ret;
+> +	int ret, i;
+>  
+>  	ret = kasan_add_zero_shadow(__va(PFN_PHYS(pfn)), PFN_PHYS(nr_pages));
+>  	if (ret)
+> @@ -1043,6 +1035,9 @@ int mhp_init_memmap_on_memory(unsigned long pfn, unsigned long nr_pages,
+>  
+>  	move_pfn_range_to_zone(zone, pfn, nr_pages, NULL, MIGRATE_UNMOVABLE);
+>  
+> +	for (i = 0; i < nr_pages; i++)
+> +		SetPageVmemmapSelfHosted(pfn_to_page(pfn + i));
+> +
+>  	/*
+>  	 * It might be that the vmemmap_pages fully span sections. If that is
+>  	 * the case, mark those sections online here as otherwise they will be
+> -- 
+> 2.11.0
+> 
+> 
 
-Thanks,
-Tong.
-> .
+-- 
+Oscar Salvador
+SUSE Labs
