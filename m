@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 093FAC43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71923CCA487
 	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:10:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351187AbiFTOJH (ORCPT
+        id S1351381AbiFTOJW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:09:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41852 "EHLO
+        Mon, 20 Jun 2022 10:09:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351697AbiFTNzL (ORCPT
+        with ESMTP id S1351654AbiFTNzH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:55:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F64A33E29;
-        Mon, 20 Jun 2022 06:21:27 -0700 (PDT)
+        Mon, 20 Jun 2022 09:55:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3525333A0F;
+        Mon, 20 Jun 2022 06:21:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 32D2D60FF1;
-        Mon, 20 Jun 2022 13:21:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 267AEC3411B;
-        Mon, 20 Jun 2022 13:21:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DB110B811E0;
+        Mon, 20 Jun 2022 13:16:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1877FC3411B;
+        Mon, 20 Jun 2022 13:16:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731286;
-        bh=AlClyu+GjL/SoVXz6DUGT+j8OYRuamyCPoBUwuhZJGw=;
+        s=korg; t=1655730972;
+        bh=zvNJAXoilwDxTtaE7iGov4VsUnmsvHqf6cJHqz+4f5k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zQc9ONZP0eWUH/f6QS2yL9ibOEcnEhtajqeUWwC5edRS1i/2iuaxXVul8Dygjs+e7
-         oOdi7ibegqTMFLY2tVm8HNGicqEMc/7ZLP/cWxavuW/d+yjNKFzxiSo13R2Shyr0po
-         5U9wfMIWzJ3FV5ZfXT0W+a538aD71toFzU96dTMU=
+        b=D+5zDv7hdGmJtcT2YMJqGGN57iFHm2eMqmUsJZga2QuSDNTOecFr2Z1srwdjj/mUz
+         c38Hlt/YLBGLMhau4EZ2taWCVC/JY1Sswr+M0LsMkaxe2fpnH/9uKkxMwxxpL+ZaKJ
+         PgtyEFkJ9gp+NVvn6gjUJG4rlajIYACDjQJbnd40=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 213/240] net: bgmac: Fix an erroneous kfree() in bgmac_remove()
-Date:   Mon, 20 Jun 2022 14:51:54 +0200
-Message-Id: <20220620124745.147018699@linuxfoundation.org>
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        Eric Biggers <ebiggers@google.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.4 073/240] random: use RDSEED instead of RDRAND in entropy extraction
+Date:   Mon, 20 Jun 2022 14:49:34 +0200
+Message-Id: <20220620124740.606486562@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -52,39 +51,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-[ Upstream commit d7dd6eccfbc95ac47a12396f84e7e1b361db654b ]
+commit 28f425e573e906a4c15f8392cc2b1561ef448595 upstream.
 
-'bgmac' is part of a managed resource allocated with bgmac_alloc(). It
-should not be freed explicitly.
+When /dev/random was directly connected with entropy extraction, without
+any expansion stage, extract_buf() was called for every 10 bytes of data
+read from /dev/random. For that reason, RDRAND was used rather than
+RDSEED. At the same time, crng_reseed() was still only called every 5
+minutes, so there RDSEED made sense.
 
-Remove the erroneous kfree() from the .remove() function.
+Those olden days were also a time when the entropy collector did not use
+a cryptographic hash function, which meant most bets were off in terms
+of real preimage resistance. For that reason too it didn't matter
+_that_ much whether RDSEED was mixed in before or after entropy
+extraction; both choices were sort of bad.
 
-Fixes: 34a5102c3235 ("net: bgmac: allocate struct bgmac just once & don't copy it")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/a026153108dd21239036a032b95c25b5cece253b.1655153616.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+But now we have a cryptographic hash function at work, and with that we
+get real preimage resistance. We also now only call extract_entropy()
+every 5 minutes, rather than every 10 bytes. This allows us to do two
+important things.
+
+First, we can switch to using RDSEED in extract_entropy(), as Dominik
+suggested. Second, we can ensure that RDSEED input always goes into the
+cryptographic hash function with other things before being used
+directly. This eliminates a category of attacks in which the CPU knows
+the current state of the crng and knows that we're going to xor RDSEED
+into it, and so it computes a malicious RDSEED. By going through our
+hash function, it would require the CPU to compute a preimage on the
+fly, which isn't going to happen.
+
+Cc: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Suggested-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/broadcom/bgmac-bcma.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/char/random.c |   22 +++++++++-------------
+ 1 file changed, 9 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bgmac-bcma.c b/drivers/net/ethernet/broadcom/bgmac-bcma.c
-index 34d18302b1a3..2d52754afc33 100644
---- a/drivers/net/ethernet/broadcom/bgmac-bcma.c
-+++ b/drivers/net/ethernet/broadcom/bgmac-bcma.c
-@@ -323,7 +323,6 @@ static void bgmac_remove(struct bcma_device *core)
- 	bcma_mdio_mii_unregister(bgmac->mii_bus);
- 	bgmac_enet_remove(bgmac);
- 	bcma_set_drvdata(core, NULL);
--	kfree(bgmac);
- }
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -727,13 +727,8 @@ static void crng_reseed(struct crng_stat
+ 					CHACHA_KEY_SIZE);
+ 	}
+ 	spin_lock_irqsave(&crng->lock, flags);
+-	for (i = 0; i < 8; i++) {
+-		unsigned long rv;
+-		if (!arch_get_random_seed_long(&rv) &&
+-		    !arch_get_random_long(&rv))
+-			rv = random_get_entropy();
+-		crng->state[i + 4] ^= buf.key[i] ^ rv;
+-	}
++	for (i = 0; i < 8; i++)
++		crng->state[i + 4] ^= buf.key[i];
+ 	memzero_explicit(&buf, sizeof(buf));
+ 	WRITE_ONCE(crng->init_time, jiffies);
+ 	spin_unlock_irqrestore(&crng->lock, flags);
+@@ -1054,16 +1049,17 @@ static void extract_entropy(void *buf, s
+ 	unsigned long flags;
+ 	u8 seed[BLAKE2S_HASH_SIZE], next_key[BLAKE2S_HASH_SIZE];
+ 	struct {
+-		unsigned long rdrand[32 / sizeof(long)];
++		unsigned long rdseed[32 / sizeof(long)];
+ 		size_t counter;
+ 	} block;
+ 	size_t i;
  
- static struct bcma_driver bgmac_bcma_driver = {
--- 
-2.35.1
-
+ 	trace_extract_entropy(nbytes, input_pool.entropy_count);
+ 
+-	for (i = 0; i < ARRAY_SIZE(block.rdrand); ++i) {
+-		if (!arch_get_random_long(&block.rdrand[i]))
+-			block.rdrand[i] = random_get_entropy();
++	for (i = 0; i < ARRAY_SIZE(block.rdseed); ++i) {
++		if (!arch_get_random_seed_long(&block.rdseed[i]) &&
++		    !arch_get_random_long(&block.rdseed[i]))
++			block.rdseed[i] = random_get_entropy();
+ 	}
+ 
+ 	spin_lock_irqsave(&input_pool.lock, flags);
+@@ -1071,7 +1067,7 @@ static void extract_entropy(void *buf, s
+ 	/* seed = HASHPRF(last_key, entropy_input) */
+ 	blake2s_final(&input_pool.hash, seed);
+ 
+-	/* next_key = HASHPRF(seed, RDRAND || 0) */
++	/* next_key = HASHPRF(seed, RDSEED || 0) */
+ 	block.counter = 0;
+ 	blake2s(next_key, (u8 *)&block, seed, sizeof(next_key), sizeof(block), sizeof(seed));
+ 	blake2s_init_key(&input_pool.hash, BLAKE2S_HASH_SIZE, next_key, sizeof(next_key));
+@@ -1081,7 +1077,7 @@ static void extract_entropy(void *buf, s
+ 
+ 	while (nbytes) {
+ 		i = min_t(size_t, nbytes, BLAKE2S_HASH_SIZE);
+-		/* output = HASHPRF(seed, RDRAND || ++counter) */
++		/* output = HASHPRF(seed, RDSEED || ++counter) */
+ 		++block.counter;
+ 		blake2s(buf, (u8 *)&block, seed, i, sizeof(block), sizeof(seed));
+ 		nbytes -= i;
 
 
