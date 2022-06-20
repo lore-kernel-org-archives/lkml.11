@@ -2,63 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09399C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 15:16:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91F3EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 15:16:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243872AbiFTPQr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 11:16:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44380 "EHLO
+        id S243176AbiFTPQy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 11:16:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243473AbiFTPQe (ORCPT
+        with ESMTP id S243066AbiFTPQe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 20 Jun 2022 11:16:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F1C6C6475
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 08:05:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655737555;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cyh9GNwkSeiWX8VVWJet6cmrStrv1Y1BhHYKMAKCy08=;
-        b=YRDNsZ6Ov4l3rhvaY02XV/Ao7EuJPd6taCz/1C8z1pbgoaf1IXBQlQlHLmNmp3l0I2mqfp
-        jhliBUMvLsMqhhrZS9PNcayr7t69R7Y/5aU2guqX0HSklOt4fkUKW7DjJnxva5kolsw064
-        sgDwo694Jonh1087BT5x2uLBsqeeLHo=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-339-80fRCCZ7M6elJ2XJHtpcvw-1; Mon, 20 Jun 2022 11:05:53 -0400
-X-MC-Unique: 80fRCCZ7M6elJ2XJHtpcvw-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16ECA65BF
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 08:06:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7C1F9101E989;
-        Mon, 20 Jun 2022 15:05:52 +0000 (UTC)
-Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 399C940314B;
-        Mon, 20 Jun 2022 15:05:52 +0000 (UTC)
-From:   Paolo Bonzini <pbonzini@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/5] KVM: x86: Quirk "MWAIT never faults" behavior
-Date:   Mon, 20 Jun 2022 11:00:26 -0400
-Message-Id: <20220620150026.2300063-1-pbonzini@redhat.com>
-In-Reply-To: <20220608224516.3788274-1-seanjc@google.com>
-References: 
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8614860F85
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 15:06:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4341DC3411B;
+        Mon, 20 Jun 2022 15:05:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655737559;
+        bh=30bUgYkE58y/tfhWoWExyJKJwkRteOnIMFUM7GJATck=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mUKULYIoKfzav1Mowvjal+nJKHco9Kht5rLuuBy6WhmEA0607is7HGcJODV7syg0S
+         eGPVptRNHnD/ZI+bwpiOG6CwgJM5RxJD7QSGYcXvBeMmgl7haGSG87GBka6+l3WFTB
+         HVCFsLrfBbV3ut+tHImgwhG+MmDgV4oO7bfi7H6GyHo2B8A6r6joSEqRPs3dLmY5lG
+         BCkUatAoITWZV76MH6Jr0UjPKpFqi00DBsnduFfIxmlpYUxgMYI3cssBftHD/eOXwk
+         VMxASv+oSgsrSTFFiPzwUVjiD4H5YaF3D6U7q//vw+K6Sq+jsdtXOoUPV54i804Ww6
+         Fj5wYAkcZwynA==
+Date:   Mon, 20 Jun 2022 16:05:54 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Dong Aisheng <aisheng.dong@nxp.com>
+Cc:     linux-kernel@vger.kernel.org, dongas86@gmail.com,
+        l.stach@pengutronix.de, peng.fan@nxp.com, shawnguo@kernel.org
+Subject: Re: [PATCH RFC 1/2] regmap: add option to disable debugfs
+Message-ID: <YrCM0reni+x/KWsG@sirena.org.uk>
+References: <20220620134758.1286480-1-aisheng.dong@nxp.com>
+ <20220620134758.1286480-2-aisheng.dong@nxp.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="w6/RnThi4AoDAs3H"
+Content-Disposition: inline
+In-Reply-To: <20220620134758.1286480-2-aisheng.dong@nxp.com>
+X-Cookie: Good day to avoid cops.  Crawl to work.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Queued, thanks.
 
-Paolo
+--w6/RnThi4AoDAs3H
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+On Mon, Jun 20, 2022 at 09:47:57PM +0800, Dong Aisheng wrote:
+> The regmap core will create debugfs by default for each instance.
+> However, it's fairly possible that some devices may not work properly
+> with regmap registers dump via debugfs due to it may be in suspend
+> state (e.g. Power domain is off).
+>=20
+> Current regmap core does not support runtime pm for MMIO bus.
+> Although there have been several retries [1] in community but finally
+> didn't get accepted.
+>=20
+> This patch adds an option to allow drivers to claim no debugfs support
+> due to possible platform limitations.
+>=20
+> 1. Link: https://lkml.iu.edu/hypermail/linux/kernel/1204.0/01646.html
 
+As indicated in the message you're linking to here if the device can't
+be accessed it should be being put in cache only mode which will ensure
+that nothing can do any physical accesses.
+
+--w6/RnThi4AoDAs3H
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKwjNEACgkQJNaLcl1U
+h9BZSwf/Xa5fqERKUAqb0rz8NlQCQTHcgSDHZZIRuRgZ8jiSwihmf122nGNvSGD1
+GOm2MJEvT4KZBhCf7oihtXnc3uraecq2a2pk3m2oRV1UN3zzKrT9EG+Io4sQkI8Q
+1JbrKOVbeU0sv/DU5fqh1kQEvPIOq1py+Cbhnjds/e5dvz29XI0lHx9vsQcyASto
+ki+8VVP1kbd1xAzsFP0SnZVoTa7u0HQVw+Nxh5+BBT8VJzjBX/xG4bNQF729lDfL
+c4PmI8FKpq33EozUj1kRfSlLfY06XKpyfXc4pSvM1EAeglFijD2QN9QiCwwAEnoF
+9N2dGv6Vlz2kT9Hf3GGdwYKtS30acA==
+=ahj6
+-----END PGP SIGNATURE-----
+
+--w6/RnThi4AoDAs3H--
