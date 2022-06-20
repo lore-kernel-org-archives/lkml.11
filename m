@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E325C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:23:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EBCAC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:24:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344527AbiFTNXO (ORCPT
+        id S1343699AbiFTNYo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:23:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56754 "EHLO
+        Mon, 20 Jun 2022 09:24:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245570AbiFTNUm (ORCPT
+        with ESMTP id S1346102AbiFTNYW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:20:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E7DE22523;
-        Mon, 20 Jun 2022 06:08:50 -0700 (PDT)
+        Mon, 20 Jun 2022 09:24:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1963C237E0;
+        Mon, 20 Jun 2022 06:09:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D68A61537;
-        Mon, 20 Jun 2022 13:07:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79633C3411B;
-        Mon, 20 Jun 2022 13:07:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3890A60A5F;
+        Mon, 20 Jun 2022 13:08:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E24BC3411B;
+        Mon, 20 Jun 2022 13:08:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730430;
-        bh=vFdejECll6k6STgIMzyhcUkU/wxsO+FwIvlIlIPfv3Q=;
+        s=korg; t=1655730532;
+        bh=4n0Wzlr6YB1MgU7Df3hf9T2VUmmmf5Q3AuPkSwfTp6g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qpzVOGXI+D3PuUd92gCtK8X1KjeliZbvIGOq44wRAOi+ufjtZoPWRPO+lpWb25mQN
-         NHWg7j1ITOneuovoyqsSrB6L7l3zH2OXdflKd2wpkWeOz31f1vEq91+GqALDAPYENy
-         brJTblKOTV5tFAC87aLe/sttWj18M52KPk7I+VLc=
+        b=qz7kYYx1vGK5RJuaeUS5oymcJx4Bg4yf7k3t49fo7TnLbyLqTft/0srWhSXGR0Gzn
+         RK763bKuodyLA46XLdyssucsPloydoPeldkEmPJ66WJj/FJVfytClCXh+1CKvS08Wm
+         +oswDtRlH4OOxT7bgMdBIwG3H6b/hLut/5ZfQmNA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Grzegorz Szczurek <grzegorzx.szczurek@intel.com>,
-        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
-        Bharathi Sreenivas <bharathi.sreenivas@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 051/106] i40e: Fix adding ADQ filter to TC0
-Date:   Mon, 20 Jun 2022 14:51:10 +0200
-Message-Id: <20220620124725.900194880@linuxfoundation.org>
+        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        Ian Abbott <abbotti@mev.co.uk>
+Subject: [PATCH 5.15 083/106] comedi: vmk80xx: fix expression for tx buffer size
+Date:   Mon, 20 Jun 2022 14:51:42 +0200
+Message-Id: <20220620124726.847387907@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
 References: <20220620124724.380838401@linuxfoundation.org>
@@ -53,45 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Grzegorz Szczurek <grzegorzx.szczurek@intel.com>
+From: Ian Abbott <abbotti@mev.co.uk>
 
-[ Upstream commit c3238d36c3a2be0a29a9d848d6c51e1b14be6692 ]
+commit 242439f7e279d86b3f73b5de724bc67b2f8aeb07 upstream.
 
-Procedure of configure tc flower filters erroneously allows to create
-filters on TC0 where unfiltered packets are also directed by default.
-Issue was caused by insufficient checks of hw_tc parameter specifying
-the hardware traffic class to pass matching packets to.
+The expression for setting the size of the allocated bulk TX buffer
+(`devpriv->usb_tx_buf`) is calling `usb_endpoint_maxp(devpriv->ep_rx)`,
+which is using the wrong endpoint (should be `devpriv->ep_tx`).  Fix it.
 
-Fix checking hw_tc parameter which blocks creation of filters on TC0.
-
-Fixes: 2f4b411a3d67 ("i40e: Enable cloud filters via tc-flower")
-Signed-off-by: Grzegorz Szczurek <grzegorzx.szczurek@intel.com>
-Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
-Tested-by: Bharathi Sreenivas <bharathi.sreenivas@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: a23461c47482 ("comedi: vmk80xx: fix transfer-buffer overflow")
+Cc: Johan Hovold <johan@kernel.org>
+Cc: stable@vger.kernel.org # 4.9+
+Reviewed-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Ian Abbott <abbotti@mev.co.uk>
+Link: https://lore.kernel.org/r/20220607171819.4121-1-abbotti@mev.co.uk
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/i40e/i40e_main.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/comedi/drivers/vmk80xx.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index 29387f0814e9..9bc05d671ad5 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -8523,6 +8523,11 @@ static int i40e_configure_clsflower(struct i40e_vsi *vsi,
- 		return -EOPNOTSUPP;
- 	}
+--- a/drivers/comedi/drivers/vmk80xx.c
++++ b/drivers/comedi/drivers/vmk80xx.c
+@@ -685,7 +685,7 @@ static int vmk80xx_alloc_usb_buffers(str
+ 	if (!devpriv->usb_rx_buf)
+ 		return -ENOMEM;
  
-+	if (!tc) {
-+		dev_err(&pf->pdev->dev, "Unable to add filter because of invalid destination");
-+		return -EINVAL;
-+	}
-+
- 	if (test_bit(__I40E_RESET_RECOVERY_PENDING, pf->state) ||
- 	    test_bit(__I40E_RESET_INTR_RECEIVED, pf->state))
- 		return -EBUSY;
--- 
-2.35.1
-
+-	size = max(usb_endpoint_maxp(devpriv->ep_rx), MIN_BUF_SIZE);
++	size = max(usb_endpoint_maxp(devpriv->ep_tx), MIN_BUF_SIZE);
+ 	devpriv->usb_tx_buf = kzalloc(size, GFP_KERNEL);
+ 	if (!devpriv->usb_tx_buf)
+ 		return -ENOMEM;
 
 
