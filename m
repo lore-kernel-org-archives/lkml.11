@@ -2,146 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B51EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 08:30:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D5ACC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 08:31:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238771AbiFTIat (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 04:30:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47176 "EHLO
+        id S239196AbiFTIbi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 04:31:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234950AbiFTIap (ORCPT
+        with ESMTP id S234950AbiFTIbh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 04:30:45 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37A7B120B2
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 01:30:44 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1o3Cnr-0003dz-2w; Mon, 20 Jun 2022 10:30:35 +0200
-Received: from mfe by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1o3Cnq-0002if-Ek; Mon, 20 Jun 2022 10:30:34 +0200
-Date:   Mon, 20 Jun 2022 10:30:34 +0200
-From:   Marco Felsch <m.felsch@pengutronix.de>
-To:     Shengjiu Wang <shengjiu.wang@nxp.com>
-Cc:     robh+dt@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
-        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, shengjiu.wang@gmail.com
-Subject: Re: [PATCH v2 1/3] arm64: dts: imx8mm-evk: add bt-sco sound card
- support
-Message-ID: <20220620083034.hy5qtfpl3hdr5van@pengutronix.de>
-References: <1655691813-19878-1-git-send-email-shengjiu.wang@nxp.com>
- <1655691813-19878-2-git-send-email-shengjiu.wang@nxp.com>
+        Mon, 20 Jun 2022 04:31:37 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37AD511C10
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 01:31:36 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id s1so13554286wra.9
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 01:31:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=f8h+p6YNabNl4RKgR2y8XH455u0zXJFLFjZrTjaNW6Y=;
+        b=j9QEpmpJqMvtTAXlLrYmuHUVqn46fAvmLSYg0MY6u2/kQ3wIpaE2yW06TGF/hyCCI8
+         /EPNkrpFsNGoqu/SI/yIq5BxXO+9S3lMgGxVjhwa1JEh3MBFUxLsRmP8ER5/BznBN5sd
+         a36Pwusy29znmIpPLzaNR0J1eUc5v5IK//daHW8nksqnhZSm3V8yR59diYCSE6bs67v7
+         AZvcew69CmRHFikKWxMRUUWREXYWpRAbiAKDW5sdvcXRiOn7Q3OqGmxhUTz58j5CaHmd
+         i4bOAtENKlldKFvXKn9HdJwuuzsxfzDsT66a18Hm4dUlJSSer6FFbd3UlzMDQkmgutyk
+         4bqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=f8h+p6YNabNl4RKgR2y8XH455u0zXJFLFjZrTjaNW6Y=;
+        b=wDEkgUwolIHFMg4+TNoLbbAY8ZDnOsCs/V1SCGavbPD9ToEctsS0IiGeUFRcU9Oav5
+         yC0NTZRUW84KvyfQmWcbPX6ZfhRPnx3Um5UZ4ma2dWFa+n+omOFLK3VXiHeXCTAfQ6ci
+         TDSKlIejMCJ0l6/Q5NATXcp7fD09vvQ1cEMH8eqUvBHQ2jntL6UK64ANcnzx1NJbOdcY
+         9SdBWLdBGDOET/kb6+hzxeT3YS2NnTOBhgbB5IN6Vqzpmv/C9772Xfhi7sGFXvhHADAS
+         77v07f8UVHgMBWx3in/4nNj+tfxVx6UjT+ARw4dPCQXj0U8hm/ahSOIJUFe6ouW8eUbT
+         XThw==
+X-Gm-Message-State: AJIora+iJY+ctewpf+2ehTW1hY5Db981ceIqIXiOX+ds2qngB9hzbfSm
+        gfmxj3+y2czubMNY41WhTkt6cg==
+X-Google-Smtp-Source: AGRyM1vgi2PEv+AIClSqdl50GS4qE0AexzUlDZyI0AZ8wGbk700yI+nFCzqi+9d9u8VeT56jFUx/GQ==
+X-Received: by 2002:adf:9d82:0:b0:21a:3906:59cc with SMTP id p2-20020adf9d82000000b0021a390659ccmr19017891wre.289.1655713894785;
+        Mon, 20 Jun 2022 01:31:34 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id k190-20020a1ca1c7000000b0039c587342d8sm17856456wme.3.2022.06.20.01.31.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Jun 2022 01:31:34 -0700 (PDT)
+Date:   Mon, 20 Jun 2022 09:31:32 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     linux-kernel@vger.kernel.org,
+        Haojian Zhuang <haojian.zhuang@gmail.com>,
+        Daniel Mack <daniel@zonque.org>, kernel@pengutronix.de,
+        Robert Jarzmik <robert.jarzmik@free.fr>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 3/4] mfd: tc6387xb: Drop disable callback that is never
+ called
+Message-ID: <YrAwZCGjN+1NZ0ua@google.com>
+References: <20220530192430.2108217-1-u.kleine-koenig@pengutronix.de>
+ <20220530192430.2108217-4-u.kleine-koenig@pengutronix.de>
+ <YqpJ+GDjsMsILL4P@google.com>
+ <20220619083200.gx3ardiogbarlvzs@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <1655691813-19878-2-git-send-email-shengjiu.wang@nxp.com>
-User-Agent: NeoMutt/20180716
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: mfe@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220619083200.gx3ardiogbarlvzs@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Shengjiu,
+On Sun, 19 Jun 2022, Uwe Kleine-König wrote:
 
-On 22-06-20, Shengjiu Wang wrote:
-> Add bt-sco sound card, which supports wb profile as default
+> Hello Lee,
 > 
-> Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
-> ---
->  arch/arm64/boot/dts/freescale/imx8mm-evk.dtsi | 43 +++++++++++++++++++
->  1 file changed, 43 insertions(+)
+> On Wed, Jun 15, 2022 at 10:07:04PM +0100, Lee Jones wrote:
+> > On Mon, 30 May 2022, Uwe Kleine-König wrote:
+> > 
+> > > The driver never calls the disable callback, so drop the member from
+> > > the platform struct and all callbacks from the actual platform datas.
+> > > 
+> > > Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+> > > ---
+> > >  arch/arm/mach-pxa/eseries.c  | 1 -
+> > >  include/linux/mfd/tc6387xb.h | 1 -
+> > >  2 files changed, 2 deletions(-)
+> > 
+> > Applied, thanks.
 > 
-> diff --git a/arch/arm64/boot/dts/freescale/imx8mm-evk.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-evk.dtsi
-> index c42b966f7a64..cf734d2a94be 100644
-> --- a/arch/arm64/boot/dts/freescale/imx8mm-evk.dtsi
-> +++ b/arch/arm64/boot/dts/freescale/imx8mm-evk.dtsi
-> @@ -75,6 +75,11 @@
->  		linux,autosuspend-period = <125>;
->  	};
->  
-> +	audio_codec_bt_sco: audio-codec-bt-sco {
-> +		#sound-dai-cells = <1>;
-> +		compatible = "linux,bt-sco";
+> Are these already in a public tree? They are not in next and
+> git://git.kernel.org/pub/scm/linux/kernel/git/lee/mfd.git#for-mfd-next
+> doesn't contain commits that are not in v5.19-rc1.
+> 
+> I assume they are still in an internal tree and I just need some
+> patience until they are pushed out?
 
-The compatible property should always be the first property. This
-apply to your other patches as well.
+Correct.  Patience is a virtue.
 
-Regards,
-  Marco
+I'm back at my desk today after a week of travel.
 
-> +	};
-> +
->  	wm8524: audio-codec {
->  		#sound-dai-cells = <0>;
->  		compatible = "wlf,wm8524";
-> @@ -107,6 +112,25 @@
->  			clocks = <&clk IMX8MM_CLK_SAI3_ROOT>;
->  		};
->  	};
-> +
-> +	sound-bt-sco {
-> +		compatible = "simple-audio-card";
-> +		simple-audio-card,name = "bt-sco-audio";
-> +		simple-audio-card,format = "dsp_a";
-> +		simple-audio-card,bitclock-inversion;
-> +		simple-audio-card,frame-master = <&btcpu>;
-> +		simple-audio-card,bitclock-master = <&btcpu>;
-> +
-> +		btcpu: simple-audio-card,cpu {
-> +			sound-dai = <&sai2>;
-> +			dai-tdm-slot-num = <2>;
-> +			dai-tdm-slot-width = <16>;
-> +		};
-> +
-> +		simple-audio-card,codec {
-> +			sound-dai = <&audio_codec_bt_sco 1>;
-> +		};
-> +	};
->  };
->  
->  &A53_0 {
-> @@ -346,6 +370,16 @@
->  	status = "okay";
->  };
->  
-> +&sai2 {
-> +	#sound-dai-cells = <0>;
-> +	pinctrl-names = "default";
-> +	pinctrl-0 = <&pinctrl_sai2>;
-> +	assigned-clocks = <&clk IMX8MM_CLK_SAI2>;
-> +	assigned-clock-parents = <&clk IMX8MM_AUDIO_PLL1_OUT>;
-> +	assigned-clock-rates = <24576000>;
-> +	status = "okay";
-> +};
-> +
->  &sai3 {
->  	pinctrl-names = "default";
->  	pinctrl-0 = <&pinctrl_sai3>;
-> @@ -494,6 +528,15 @@
->  		>;
->  	};
->  
-> +	pinctrl_sai2: sai2grp {
-> +		fsl,pins = <
-> +			MX8MM_IOMUXC_SAI2_TXC_SAI2_TX_BCLK      0xd6
-> +			MX8MM_IOMUXC_SAI2_TXFS_SAI2_TX_SYNC     0xd6
-> +			MX8MM_IOMUXC_SAI2_TXD0_SAI2_TX_DATA0    0xd6
-> +			MX8MM_IOMUXC_SAI2_RXD0_SAI2_RX_DATA0    0xd6
-> +		>;
-> +	};
-> +
->  	pinctrl_sai3: sai3grp {
->  		fsl,pins = <
->  			MX8MM_IOMUXC_SAI3_TXFS_SAI3_TX_SYNC     0xd6
-> -- 
-> 2.17.1
-> 
-> 
-> 
+Check -next tomorrow.
+
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
