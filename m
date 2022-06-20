@@ -2,189 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73AB1C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 11:07:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95923C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 11:07:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241253AbiFTLHe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 07:07:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56488 "EHLO
+        id S241277AbiFTLHg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 07:07:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241236AbiFTLHY (ORCPT
+        with ESMTP id S241243AbiFTLH3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 07:07:24 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8B5815807
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 04:07:22 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id l6so1261221plg.11
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 04:07:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=mM7s3v4b97sYa4DNCsb4b4pY8OOrPntnEzMKTxkrZCM=;
-        b=gIu6W0ZIr/zYXLZR0jiYfFo6E18oWdKoXjARFWXS+zZf7fY/UQtXQsa0q11G5ojxlh
-         QPaT79UFh/2Be873OwRYKLBoDMkwtiApXCRGrvc9Qu1E40kH4y9DOZ1Wlkt3mbSVY4f4
-         AJZeBzIYxFP2CPQ3ucPs8G377XblLDiz1tZ2bV9v2/CMkAcEY7wGx5AN82RVvaoz18nZ
-         mv9nljhR8AXVEmfjx2gbRaPS3SF3IoVSwH3UwVA0lPUBiiiP8kjxlkY5iFcPdlv8Pf9h
-         I0oGIkmib6iaVtMoK9CVeiRgrZnLV2u5xwvz72yAlNeUQAdANv09B3o3ZkNysai1sQxM
-         Bmhg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=mM7s3v4b97sYa4DNCsb4b4pY8OOrPntnEzMKTxkrZCM=;
-        b=xgWw/f85jO+faVRsNn+rHnnOmZu7+/BPhcKS62h0sEl2ASNUPvVvUJ5AqHNHIeJR3q
-         fNbiLsosRWzle3H1I0NwakIVdbGEFueyrmkJz/1d/EEobNL0J+mbWKa2zISQvp1aQ04U
-         HUh3o3V0g9uHFssp6kfWdkkWRYXYVQ0gZLGNZiCQkcc9gfcT0gMXBjdtIQddgxZU7dbZ
-         +f25+BtJrRZjLvGjE70o0oIvFCbhIHqo9z87gLjmL4vT3Eg7uTmycmuoQEjf08A3jVZC
-         PKXazOa1OxTAvejofg4Iaj+EYc8777oSMM2zLOIroTbiXJo03ARm1yEUjJwBxOcBILiH
-         Vu3g==
-X-Gm-Message-State: AJIora8J7lWZMw+YaqYJrcSOACkNQAxKnjQMwNqJxYad6RZzkpX/MY+y
-        dr/PAPncXuTS4aTJyA5TSAh60w==
-X-Google-Smtp-Source: AGRyM1uFiRFO3G72OlGQJs4sGnpULsAK3KSRtJN9Fgt8rFs5zX6qpNiEZwdJU5OUBW4nsQpQGLcK2A==
-X-Received: by 2002:a17:902:7042:b0:16a:2156:c325 with SMTP id h2-20020a170902704200b0016a2156c325mr5882728plt.166.1655723242390;
-        Mon, 20 Jun 2022 04:07:22 -0700 (PDT)
-Received: from FVFYT0MHHV2J.bytedance.net ([139.177.225.255])
-        by smtp.gmail.com with ESMTPSA id iw10-20020a170903044a00b0016a214e4afasm2385962plb.125.2022.06.20.04.07.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jun 2022 04:07:22 -0700 (PDT)
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     akpm@linux-foundation.org, corbet@lwn.net, david@redhat.com,
-        mike.kravetz@oracle.com, osalvador@suse.de, paulmck@kernel.org
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, duanxiongchun@bytedance.com, smuchun@gmail.com,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: [PATCH v5 1/2] mm: memory_hotplug: enumerate all supported section flags
-Date:   Mon, 20 Jun 2022 19:06:15 +0800
-Message-Id: <20220620110616.12056-2-songmuchun@bytedance.com>
-X-Mailer: git-send-email 2.32.1 (Apple Git-133)
-In-Reply-To: <20220620110616.12056-1-songmuchun@bytedance.com>
-References: <20220620110616.12056-1-songmuchun@bytedance.com>
+        Mon, 20 Jun 2022 07:07:29 -0400
+Received: from esa2.hgst.iphmx.com (esa2.hgst.iphmx.com [68.232.143.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EC531572F
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 04:07:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1655723248; x=1687259248;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=DI/6yxqzgLJ7+71SzU2YZCO8XokVBsshUTTTNfGswXM=;
+  b=eaLwXizdz9AdBUXXA3N/qlBOB+H6kMKCeMsRdjuOXy88D9CmcLTSqtE+
+   YkDEjh65mY2CrEMInXH/alXWE+tWj6jXHvpZlz2uO+yrVFGdVpiuWgoq/
+   bh5JgHrGccoJhyImZwLb82JwKhhwlIeMavEw8H2Bg+irHoc1Wn9dQilV9
+   y+nRXo8VmO00Cup0V+CBFOelVyUpdvGpKvDz0OTG1Eb5ntjYLWcGaxIQX
+   LoQAidaRWZGs8dseFpEPzcKPRsOPIoQ252Pt02glqXkB0dwbVmpn4y4gu
+   x9SLbJ3wyXj15q3/+8OPHISoRRgWZ8e9f3beOh4j6Q8k3yvZ6tiaK+Jqy
+   A==;
+X-IronPort-AV: E=Sophos;i="5.92,306,1650902400"; 
+   d="scan'208";a="307934421"
+Received: from uls-op-cesaip01.wdc.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
+  by ob1.hgst.iphmx.com with ESMTP; 20 Jun 2022 19:07:26 +0800
+IronPort-SDR: CT0VqATWlbiGZNAIg+u7pkdul2JuSf976Pk7TnOMgQvgOFM1lKkwG/mbFQhaNFz6E0WuS9EAsx
+ gPduXD3kkUQRvqe85ldhg73uXtQEaDJahXRu3oXIRXSZTShbeb2c7qNoQSRFARI8NjkVeJuitN
+ w0F1UXS9V1wbwzCNC4m0zG8hLUm5bc0OhpBD3sA0ghpIpRVPTViEwjpWhH9GOD88dxn1Tyr5h4
+ +al3XQOG8AvTQT8XyUUrWwc2uaz1Um6DgXT07PK50eayiJW5344QrDUMYU/jnIIwoLTPaOcNVp
+ +87wa29jylv2iY8Bcs57laF/
+Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
+  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 20 Jun 2022 03:29:58 -0700
+IronPort-SDR: 1kxxRZmiPR74U0twh4V7F/Ij0ehuOkaRyCqlTYNjWcReZvzox7KJ543slPqfbFZAbJsrXBjl4u
+ exuXiMTMMMGc/0Zh0cLjCN5wzyQXi7Wa3+D0AVwLrfRPy2ZdQHz9x0JQ2Id2bQG++ExVzUirxL
+ njksuh9aR/3VHwpC4H0S95qVy0rD0eKuzcHMu4LhbDkukbV3kWirFs7GHrRLK97UmNd4N6Bs4/
+ myGEaC0fy5u3B3nvJbFC1o88qUKNdLyuQwUczvrylWuHLyEaGCb9RSspPtHnCndJlUVL7QXUNT
+ iQ8=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 20 Jun 2022 04:07:27 -0700
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4LRRgf2RYjz1Rwrw
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 04:07:26 -0700 (PDT)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1655723245; x=1658315246; bh=DI/6yxqzgLJ7+71SzU2YZCO8XokVBsshUTT
+        TNfGswXM=; b=CxTzptCxPOgl9XzZOKveMRZha9TMjozFp8IO5vF7ozke/w6qXg1
+        81BhZJpwRuzDNVa9/1abe9ewVJzj+HsuiZQOoJ7jseQSdfILfUbVMzibvdd1lZk8
+        Whjy8KXjjre3VqcI3peaZJO8T515Q2EyiZwx5W2dV6/zFoEH79B8jrwmF8sMTLIM
+        x+VIM4Ts+cvJtt7sjClbJZPgjnLocODBwB7waw25616u7wLk1Br9i5CQr+zRqzFA
+        UbQqa/JfzvH/nmKknXtEdVcRWNhdoY+1j+ASKgAzOL8Z+9wB6ACh7AYqpMYOcvdq
+        CDPVRjMC/KBqbhjH7khOigvjXBk7bNMMWwA==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id zhIBEYHoFtW0 for <linux-kernel@vger.kernel.org>;
+        Mon, 20 Jun 2022 04:07:25 -0700 (PDT)
+Received: from [10.225.163.87] (unknown [10.225.163.87])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4LRRgd1lLyz1Rvlc;
+        Mon, 20 Jun 2022 04:07:25 -0700 (PDT)
+Message-ID: <71cca7ed-6409-3066-8878-cdc647b17057@opensource.wdc.com>
+Date:   Mon, 20 Jun 2022 20:07:23 +0900
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: linux-next: build warning after merge of the libata tree
+Content-Language: en-US
+To:     Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+References: <20220620103400.6b03f8d9@canb.auug.org.au>
+ <20220620182108.5efb3107@canb.auug.org.au>
+ <387885f0-999f-3746-0238-77052f10b25c@opensource.wdc.com>
+ <8e0717c2-d3c0-c81c-3a33-afdc045d123c@omp.ru>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <8e0717c2-d3c0-c81c-3a33-afdc045d123c@omp.ru>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We are almost running out of section flags, only one bit is available in
-the worst case (powerpc with 256k pages).  However, there are still some
-free bits (in ->section_mem_map) on other architectures (e.g. x86_64 has
-10 bits available, arm64 has 8 bits available with worst case of 64K
-pages).  We have hard coded those numbers in code, it is inconvenient to
-use those bits on other architectures except powerpc.  So transfer those
-section flags to enumeration to make it easy to add new section flags in
-the future. Also, move SECTION_TAINT_ZONE_DEVICE into the scope of
-CONFIG_ZONE_DEVICE to save a bit on non-zone-device case.
+On 6/20/22 19:57, Sergey Shtylyov wrote:
+> Hello!
+> 
+> On 6/20/22 11:53 AM, Damien Le Moal wrote:
+> 
+> [...]
+>>>> After merging the libata tree, today's linux-next build (powercp
+>>>> ppc64_defconfig) produced this warning:
+>>>>
+>>>> In file included from include/linux/device.h:15,
+>>>>                  from arch/powerpc/include/asm/io.h:27,
+>>>>                  from include/linux/io.h:13,
+>>>>                  from include/linux/irq.h:20,
+>>>>                  from arch/powerpc/include/asm/hardirq.h:6,
+>>>>                  from include/linux/hardirq.h:11,
+>>>>                  from include/linux/highmem.h:11,
+>>>>                  from include/linux/bvec.h:10,
+>>>>                  from include/linux/blk_types.h:10,
+>>>>                  from include/linux/blkdev.h:9,
+>>>>                  from drivers/ata/pata_macio.c:18:
+>>>> drivers/ata/pata_macio.c: In function 'pmac_macio_calc_timing_masks':
+>>>> drivers/ata/pata_macio.c:1031:28: warning: format '%lx' expects argument of type 'long unsigned int', but argument 4 has type 'unsigned int' [-Wformat=]
+>>>>  1031 |         dev_dbg(priv->dev, "Supported masks: PIO=%lx, MWDMA=%lx, UDMA=%lx\n",
+>>>
+>>> 	.
+>>> 	.
+>>> 	.
+>>>
+>>>> Introduced by commit
+>>>>
+>>>>   f0a6d77b351c ("ata: make transfer mode masks *unsigned int*")
+> 
+>    Oops, sorry about that!>
+>>> This turned into a build failure in my powerpc allyesconfig build, so I
+>>> reverted the above commit for today.
+>>
+>> I pushed the fix already. It is in ata for-next branch.
+> 
+>    Thank you!
+>    Note that your Fixes: tag doesn't look right -- the asterisks are missing
+> in the summary...
 
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
----
- include/linux/mmzone.h | 41 ++++++++++++++++++++++++++++++++---------
- mm/memory_hotplug.c    |  6 ++++++
- mm/sparse.c            |  2 +-
- 3 files changed, 39 insertions(+), 10 deletions(-)
+Fixed. Copy-paste from the mailer (build failure report email), the
+asterisks are gone and "unsigned int" shown with bold font. Please stop
+with the markdown style emphasis. That creates problems.
 
-diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
-index aab70355d64f..2b5757752333 100644
---- a/include/linux/mmzone.h
-+++ b/include/linux/mmzone.h
-@@ -1418,16 +1418,32 @@ extern size_t mem_section_usage_size(void);
-  *      (equal SECTION_SIZE_BITS - PAGE_SHIFT), and the
-  *      worst combination is powerpc with 256k pages,
-  *      which results in PFN_SECTION_SHIFT equal 6.
-- * To sum it up, at least 6 bits are available.
-+ * To sum it up, at least 6 bits are available on all architectures.
-+ * However, we can exceed 6 bits on some other architectures except
-+ * powerpc (e.g. 15 bits are available on x86_64, 13 bits are available
-+ * with the worst case of 64K pages on arm64) if we make sure the
-+ * exceeded bit is not applicable to powerpc.
-  */
--#define SECTION_MARKED_PRESENT		(1UL<<0)
--#define SECTION_HAS_MEM_MAP		(1UL<<1)
--#define SECTION_IS_ONLINE		(1UL<<2)
--#define SECTION_IS_EARLY		(1UL<<3)
--#define SECTION_TAINT_ZONE_DEVICE	(1UL<<4)
--#define SECTION_MAP_LAST_BIT		(1UL<<5)
--#define SECTION_MAP_MASK		(~(SECTION_MAP_LAST_BIT-1))
--#define SECTION_NID_SHIFT		6
-+enum {
-+	SECTION_MARKED_PRESENT_BIT,
-+	SECTION_HAS_MEM_MAP_BIT,
-+	SECTION_IS_ONLINE_BIT,
-+	SECTION_IS_EARLY_BIT,
-+#ifdef CONFIG_ZONE_DEVICE
-+	SECTION_TAINT_ZONE_DEVICE_BIT,
-+#endif
-+	SECTION_MAP_LAST_BIT,
-+};
-+
-+#define SECTION_MARKED_PRESENT		BIT(SECTION_MARKED_PRESENT_BIT)
-+#define SECTION_HAS_MEM_MAP		BIT(SECTION_HAS_MEM_MAP_BIT)
-+#define SECTION_IS_ONLINE		BIT(SECTION_IS_ONLINE_BIT)
-+#define SECTION_IS_EARLY		BIT(SECTION_IS_EARLY_BIT)
-+#ifdef CONFIG_ZONE_DEVICE
-+#define SECTION_TAINT_ZONE_DEVICE	BIT(SECTION_TAINT_ZONE_DEVICE_BIT)
-+#endif
-+#define SECTION_MAP_MASK		(~(BIT(SECTION_MAP_LAST_BIT) - 1))
-+#define SECTION_NID_SHIFT		SECTION_MAP_LAST_BIT
- 
- static inline struct page *__section_mem_map_addr(struct mem_section *section)
- {
-@@ -1466,12 +1482,19 @@ static inline int online_section(struct mem_section *section)
- 	return (section && (section->section_mem_map & SECTION_IS_ONLINE));
- }
- 
-+#ifdef CONFIG_ZONE_DEVICE
- static inline int online_device_section(struct mem_section *section)
- {
- 	unsigned long flags = SECTION_IS_ONLINE | SECTION_TAINT_ZONE_DEVICE;
- 
- 	return section && ((section->section_mem_map & flags) == flags);
- }
-+#else
-+static inline int online_device_section(struct mem_section *section)
-+{
-+	return 0;
-+}
-+#endif
- 
- static inline int online_section_nr(unsigned long nr)
- {
-diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
-index 1f1a730c4499..6662b86e9e64 100644
---- a/mm/memory_hotplug.c
-+++ b/mm/memory_hotplug.c
-@@ -670,12 +670,18 @@ static void __meminit resize_pgdat_range(struct pglist_data *pgdat, unsigned lon
- 
- }
- 
-+#ifdef CONFIG_ZONE_DEVICE
- static void section_taint_zone_device(unsigned long pfn)
- {
- 	struct mem_section *ms = __pfn_to_section(pfn);
- 
- 	ms->section_mem_map |= SECTION_TAINT_ZONE_DEVICE;
- }
-+#else
-+static inline void section_taint_zone_device(unsigned long pfn)
-+{
-+}
-+#endif
- 
- /*
-  * Associate the pfn range with the given zone, initializing the memmaps
-diff --git a/mm/sparse.c b/mm/sparse.c
-index cb3bfae64036..e5a8a3a0edd7 100644
---- a/mm/sparse.c
-+++ b/mm/sparse.c
-@@ -281,7 +281,7 @@ static unsigned long sparse_encode_mem_map(struct page *mem_map, unsigned long p
- {
- 	unsigned long coded_mem_map =
- 		(unsigned long)(mem_map - (section_nr_to_pfn(pnum)));
--	BUILD_BUG_ON(SECTION_MAP_LAST_BIT > (1UL<<PFN_SECTION_SHIFT));
-+	BUILD_BUG_ON(SECTION_MAP_LAST_BIT > PFN_SECTION_SHIFT);
- 	BUG_ON(coded_mem_map & ~SECTION_MAP_MASK);
- 	return coded_mem_map;
- }
+> 
+> MBR, Sergey
+
+
 -- 
-2.11.0
-
+Damien Le Moal
+Western Digital Research
