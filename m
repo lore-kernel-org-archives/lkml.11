@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06BA2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 12:56:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5F3DCCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 12:57:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243171AbiFTM4r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 08:56:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37634 "EHLO
+        id S243325AbiFTM5A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 08:57:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243138AbiFTM4S (ORCPT
+        with ESMTP id S243224AbiFTM4j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 08:56:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EA3F1A061;
-        Mon, 20 Jun 2022 05:54:56 -0700 (PDT)
+        Mon, 20 Jun 2022 08:56:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9385A1A07F;
+        Mon, 20 Jun 2022 05:54:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 61864B811B3;
-        Mon, 20 Jun 2022 12:54:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2B16C3411B;
-        Mon, 20 Jun 2022 12:54:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AF11261476;
+        Mon, 20 Jun 2022 12:54:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6789C3411B;
+        Mon, 20 Jun 2022 12:54:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655729693;
-        bh=cvSQdQ9FeCMsC6QFqLTFFI5N56fpaeXWKG9aKZ8paYk=;
+        s=korg; t=1655729696;
+        bh=wH1jD07RcbhORAYwFh0vGkqjoepRYwCcbcsNy0Z1jkA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YDTyiDUp4xA5OHquJmeaSMxS2uwFSFWvRJLCFtC3hy6iBN4rRI+I3CmN/QDlx+Bww
-         sdCHqRgMOPruzcDtsadj/KPbjqOEgs4wft8E0TNGiW4Kv9C71Mzq1SpshXLNhbZKF/
-         ErjGDg45UOWgGDfoHV73rNDT4IqZWD8IwjVXP+yI=
+        b=DMKJmg78Jdfgvq51UfVww2MGbdOIqHp2DxMVZKQPwVFnkjKJA35AkJSz7gBKBl0u/
+         AWjdOBYy4S6VQ6THev04XFU2gR5kRmgB/s6S88LGz8Z/7U63Kd7tJ2maZ7Q6T9FSoz
+         Ri7n+vq23tY0Z8xwXSCjJu/1xed/FnuYnRm4tQJs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
+        James Smart <jsmart2021@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 045/141] random: credit cpu and bootloader seeds by default
-Date:   Mon, 20 Jun 2022 14:49:43 +0200
-Message-Id: <20220620124730.866527770@linuxfoundation.org>
+Subject: [PATCH 5.18 028/141] scsi: lpfc: Resolve NULL ptr dereference after an ELS LOGO is aborted
+Date:   Mon, 20 Jun 2022 14:49:26 +0200
+Message-Id: <20220620124730.362008601@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 References: <20220620124729.509745706@linuxfoundation.org>
@@ -50,198 +50,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason A. Donenfeld <Jason@zx2c4.com>
+From: James Smart <jsmart2021@gmail.com>
 
-[ Upstream commit 846bb97e131d7938847963cca00657c995b1fce1 ]
+[ Upstream commit b1b3440f437b75fb2a9b0cfe58df461e40eca474 ]
 
-This commit changes the default Kconfig values of RANDOM_TRUST_CPU and
-RANDOM_TRUST_BOOTLOADER to be Y by default. It does not change any
-existing configs or change any kernel behavior. The reason for this is
-several fold.
+A use-after-free crash can occur after an ELS LOGO is aborted.
 
-As background, I recently had an email thread with the kernel
-maintainers of Fedora/RHEL, Debian, Ubuntu, Gentoo, Arch, NixOS, Alpine,
-SUSE, and Void as recipients. I noted that some distros trust RDRAND,
-some trust EFI, and some trust both, and I asked why or why not. There
-wasn't really much of a "debate" but rather an interesting discussion of
-what the historical reasons have been for this, and it came up that some
-distros just missed the introduction of the bootloader Kconfig knob,
-while another didn't want to enable it until there was a boot time
-switch to turn it off for more concerned users (which has since been
-added). The result of the rather uneventful discussion is that every
-major Linux distro enables these two options by default.
+Specifically, a nodelist structure is freed and then
+ndlp->vport->cfg_log_verbose is dereferenced in lpfc_nlp_get() when the
+discovery state machine is mistakenly called a second time with
+NLP_EVT_DEVICE_RM argument.
 
-While I didn't have really too strong of an opinion going into this
-thread -- and I mostly wanted to learn what the distros' thinking was
-one way or another -- ultimately I think their choice was a decent
-enough one for a default option (which can be disabled at boot time).
-I'll try to summarize the pros and cons:
+Rework lpfc_cmpl_els_logo() to prevent the duplicate calls to release a
+nodelist structure.
 
-Pros:
-
-- The RNG machinery gets initialized super quickly, and there's no
-  messing around with subsequent blocking behavior.
-
-- The bootloader mechanism is used by kexec in order for the prior
-  kernel to initialize the RNG of the next kernel, which increases
-  the entropy available to early boot daemons of the next kernel.
-
-- Previous objections related to backdoors centered around
-  Dual_EC_DRBG-like kleptographic systems, in which observing some
-  amount of the output stream enables an adversary holding the right key
-  to determine the entire output stream.
-
-  This used to be a partially justified concern, because RDRAND output
-  was mixed into the output stream in varying ways, some of which may
-  have lacked pre-image resistance (e.g. XOR or an LFSR).
-
-  But this is no longer the case. Now, all usage of RDRAND and
-  bootloader seeds go through a cryptographic hash function. This means
-  that the CPU would have to compute a hash pre-image, which is not
-  considered to be feasible (otherwise the hash function would be
-  terribly broken).
-
-- More generally, if the CPU is backdoored, the RNG is probably not the
-  realistic vector of choice for an attacker.
-
-- These CPU or bootloader seeds are far from being the only source of
-  entropy. Rather, there is generally a pretty huge amount of entropy,
-  not all of which is credited, especially on CPUs that support
-  instructions like RDRAND. In other words, assuming RDRAND outputs all
-  zeros, an attacker would *still* have to accurately model every single
-  other entropy source also in use.
-
-- The RNG now reseeds itself quite rapidly during boot, starting at 2
-  seconds, then 4, then 8, then 16, and so forth, so that other sources
-  of entropy get used without much delay.
-
-- Paranoid users can set random.trust_{cpu,bootloader}=no in the kernel
-  command line, and paranoid system builders can set the Kconfig options
-  to N, so there's no reduction or restriction of optionality.
-
-- It's a practical default.
-
-- All the distros have it set this way. Microsoft and Apple trust it
-  too. Bandwagon.
-
-Cons:
-
-- RDRAND *could* still be backdoored with something like a fixed key or
-  limited space serial number seed or another indexable scheme like
-  that. (However, it's hard to imagine threat models where the CPU is
-  backdoored like this, yet people are still okay making *any*
-  computations with it or connecting it to networks, etc.)
-
-- RDRAND *could* be defective, rather than backdoored, and produce
-  garbage that is in one way or another insufficient for crypto.
-
-- Suggesting a *reduction* in paranoia, as this commit effectively does,
-  may cause some to question my personal integrity as a "security
-  person".
-
-- Bootloader seeds and RDRAND are generally very difficult if not all
-  together impossible to audit.
-
-Keep in mind that this doesn't actually change any behavior. This
-is just a change in the default Kconfig value. The distros already are
-shipping kernels that set things this way.
-
-Ard made an additional argument in [1]:
-
-    We're at the mercy of firmware and micro-architecture anyway, given
-    that we are also relying on it to ensure that every instruction in
-    the kernel's executable image has been faithfully copied to memory,
-    and that the CPU implements those instructions as documented. So I
-    don't think firmware or ISA bugs related to RNGs deserve special
-    treatment - if they are broken, we should quirk around them like we
-    usually do. So enabling these by default is a step in the right
-    direction IMHO.
-
-In [2], Phil pointed out that having this disabled masked a bug that CI
-otherwise would have caught:
-
-    A clean 5.15.45 boots cleanly, whereas a downstream kernel shows the
-    static key warning (but it does go on to boot). The significant
-    difference is that our defconfigs set CONFIG_RANDOM_TRUST_BOOTLOADER=y
-    defining that on top of multi_v7_defconfig demonstrates the issue on
-    a clean 5.15.45. Conversely, not setting that option in a
-    downstream kernel build avoids the warning
-
-[1] https://lore.kernel.org/lkml/CAMj1kXGi+ieviFjXv9zQBSaGyyzeGW_VpMpTLJK8PJb2QHEQ-w@mail.gmail.com/
-[2] https://lore.kernel.org/lkml/c47c42e3-1d56-5859-a6ad-976a1a3381c6@raspberrypi.com/
-
-Cc: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Link: https://lore.kernel.org/r/20220603174329.63777-6-jsmart2021@gmail.com
+Co-developed-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/Kconfig | 50 +++++++++++++++++++++++++++-----------------
- 1 file changed, 31 insertions(+), 19 deletions(-)
+ drivers/scsi/lpfc/lpfc_els.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/char/Kconfig b/drivers/char/Kconfig
-index 55f48375e3fe..d454428f4981 100644
---- a/drivers/char/Kconfig
-+++ b/drivers/char/Kconfig
-@@ -428,28 +428,40 @@ config ADI
- 	  driver include crash and makedumpfile.
+diff --git a/drivers/scsi/lpfc/lpfc_els.c b/drivers/scsi/lpfc/lpfc_els.c
+index 892b3da1ba45..9e3899580039 100644
+--- a/drivers/scsi/lpfc/lpfc_els.c
++++ b/drivers/scsi/lpfc/lpfc_els.c
+@@ -3035,18 +3035,10 @@ lpfc_cmpl_els_logo(struct lpfc_hba *phba, struct lpfc_iocbq *cmdiocb,
+ 		spin_unlock_irq(&ndlp->lock);
+ 		lpfc_disc_state_machine(vport, ndlp, cmdiocb,
+ 					NLP_EVT_DEVICE_RM);
+-		lpfc_els_free_iocb(phba, cmdiocb);
+-		lpfc_nlp_put(ndlp);
+-
+-		/* Presume the node was released. */
+-		return;
++		goto out_rsrc_free;
+ 	}
  
- config RANDOM_TRUST_CPU
--	bool "Trust the CPU manufacturer to initialize Linux's CRNG"
-+	bool "Initialize RNG using CPU RNG instructions"
-+	default y
- 	depends on ARCH_RANDOM
--	default n
- 	help
--	Assume that CPU manufacturer (e.g., Intel or AMD for RDSEED or
--	RDRAND, IBM for the S390 and Power PC architectures) is trustworthy
--	for the purposes of initializing Linux's CRNG.  Since this is not
--	something that can be independently audited, this amounts to trusting
--	that CPU manufacturer (perhaps with the insistence or mandate
--	of a Nation State's intelligence or law enforcement agencies)
--	has not installed a hidden back door to compromise the CPU's
--	random number generation facilities. This can also be configured
--	at boot with "random.trust_cpu=on/off".
-+	  Initialize the RNG using random numbers supplied by the CPU's
-+	  RNG instructions (e.g. RDRAND), if supported and available. These
-+	  random numbers are never used directly, but are rather hashed into
-+	  the main input pool, and this happens regardless of whether or not
-+	  this option is enabled. Instead, this option controls whether the
-+	  they are credited and hence can initialize the RNG. Additionally,
-+	  other sources of randomness are always used, regardless of this
-+	  setting.  Enabling this implies trusting that the CPU can supply high
-+	  quality and non-backdoored random numbers.
+ out:
+-	/* Driver is done with the IO.  */
+-	lpfc_els_free_iocb(phba, cmdiocb);
+-	lpfc_nlp_put(ndlp);
+-
+ 	/* At this point, the LOGO processing is complete. NOTE: For a
+ 	 * pt2pt topology, we are assuming the NPortID will only change
+ 	 * on link up processing. For a LOGO / PLOGI initiated by the
+@@ -3073,6 +3065,10 @@ lpfc_cmpl_els_logo(struct lpfc_hba *phba, struct lpfc_iocbq *cmdiocb,
+ 				 ndlp->nlp_DID, ulp_status,
+ 				 ulp_word4, tmo,
+ 				 vport->num_disc_nodes);
 +
-+	  Say Y here unless you have reason to mistrust your CPU or believe
-+	  its RNG facilities may be faulty. This may also be configured at
-+	  boot time with "random.trust_cpu=on/off".
- 
- config RANDOM_TRUST_BOOTLOADER
--	bool "Trust the bootloader to initialize Linux's CRNG"
--	help
--	Some bootloaders can provide entropy to increase the kernel's initial
--	device randomness. Say Y here to assume the entropy provided by the
--	booloader is trustworthy so it will be added to the kernel's entropy
--	pool. Otherwise, say N here so it will be regarded as device input that
--	only mixes the entropy pool. This can also be configured at boot with
--	"random.trust_bootloader=on/off".
-+	bool "Initialize RNG using bootloader-supplied seed"
-+	default y
-+	help
-+	  Initialize the RNG using a seed supplied by the bootloader or boot
-+	  environment (e.g. EFI or a bootloader-generated device tree). This
-+	  seed is not used directly, but is rather hashed into the main input
-+	  pool, and this happens regardless of whether or not this option is
-+	  enabled. Instead, this option controls whether the seed is credited
-+	  and hence can initialize the RNG. Additionally, other sources of
-+	  randomness are always used, regardless of this setting. Enabling
-+	  this implies trusting that the bootloader can supply high quality and
-+	  non-backdoored seeds.
++		lpfc_els_free_iocb(phba, cmdiocb);
++		lpfc_nlp_put(ndlp);
 +
-+	  Say Y here unless you have reason to mistrust your bootloader or
-+	  believe its RNG facilities may be faulty. This may also be configured
-+	  at boot time with "random.trust_bootloader=on/off".
+ 		lpfc_disc_start(vport);
+ 		return;
+ 	}
+@@ -3089,6 +3085,10 @@ lpfc_cmpl_els_logo(struct lpfc_hba *phba, struct lpfc_iocbq *cmdiocb,
+ 		lpfc_disc_state_machine(vport, ndlp, cmdiocb,
+ 					NLP_EVT_DEVICE_RM);
+ 	}
++out_rsrc_free:
++	/* Driver is done with the I/O. */
++	lpfc_els_free_iocb(phba, cmdiocb);
++	lpfc_nlp_put(ndlp);
+ }
  
- endmenu
+ /**
 -- 
 2.35.1
 
