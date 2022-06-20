@@ -2,108 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31BFBCCA48F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D3C0C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:14:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345519AbiFTNOb (ORCPT
+        id S1345626AbiFTNOl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:14:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34978 "EHLO
+        Mon, 20 Jun 2022 09:14:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344147AbiFTNJ7 (ORCPT
+        with ESMTP id S1344215AbiFTNKB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:09:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BE241C139;
-        Mon, 20 Jun 2022 06:05:07 -0700 (PDT)
+        Mon, 20 Jun 2022 09:10:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D8511C913
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 06:05:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 31F1BB811B9;
-        Mon, 20 Jun 2022 13:05:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 591E2C341C6;
-        Mon, 20 Jun 2022 13:05:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730305;
-        bh=OeVBfzjrN+Okk5tVPGJUb3SZYwRtI0f6xEJ5aPPDBug=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BD16161585
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 13:04:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66743C3411C;
+        Mon, 20 Jun 2022 13:04:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655730288;
+        bh=DQ0T25vKkcmro9h8yx7UFxooO1yM3WIBu6PbXpNRccg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k5ziBy70SGE51WZZvJ/kVTNQ/zmV83hM/+GDejIFiUQcgNpa2lpXTmdPLqRbBuvm4
-         qi9jwpilCv/EWRo6hJV/+CO4Lxg+xMs4YhXfoxwqSB1TSD0WLzV/2Dv5s8Skw8Td1K
-         9NrLRNlwyRkgfL5L+kmaERcOdis/TPT3k+zny+rI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+        b=r6FrsOUz58RPF3bIjB897iCF+E6ieQa2HkYdK/9ZBcSbTHlTjTR+O1qx8fPuUTOfa
+         VLQC2PYFvkI0VUtQpCxqKdu+CMJc2zjgyUWghfQPA44hQaBqdMLddjR6NuQNhTydx8
+         0dWZEVr5wcQmnn7vrvI5CtVx6ihy272kDb54cz0OMEDoHNXi9vZfr5DYVs0uTDg3+a
+         05NbPBR0jP1zNy2jZ5DVFqp+9b4XqyDM70yiZHZBy10Jb8s2MgqF4KsPPmYiDMRtpw
+         sTaO0OMEVDgK3Bf56hDoPbdccOoMBfMSpvcdsdo1J7Fb6+6kAoNM3QdxR85YJk3mkF
+         MoGKmZGs2HBrw==
+From:   Oded Gabbay <ogabbay@kernel.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Rhodes <david.rhodes@cirrus.com>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 012/106] ASoC: cs53l30: Correct number of volume levels on SX controls
-Date:   Mon, 20 Jun 2022 14:50:31 +0200
-Message-Id: <20220620124724.751586767@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
-References: <20220620124724.380838401@linuxfoundation.org>
-User-Agent: quilt/0.66
+Cc:     farah kassabri <fkassabri@habana.ai>
+Subject: [PATCH 08/17] habanalabs: add validity check for cq counter offset
+Date:   Mon, 20 Jun 2022 16:04:23 +0300
+Message-Id: <20220620130432.1180451-8-ogabbay@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220620130432.1180451-1-ogabbay@kernel.org>
+References: <20220620130432.1180451-1-ogabbay@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: farah kassabri <fkassabri@habana.ai>
 
-[ Upstream commit 7fbd6dd68127927e844912a16741016d432a0737 ]
+Driver performs no validity check for the user cq counter offset
+used in both wait_for_interrupt and register_for_timestamp APIs.
 
-This driver specified the maximum value rather than the number of volume
-levels on the SX controls, this is incorrect, so correct them.
-
-Reported-by: David Rhodes <david.rhodes@cirrus.com>
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220602162119.3393857-4-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: farah kassabri <fkassabri@habana.ai>
+Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
+Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
 ---
- sound/soc/codecs/cs53l30.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ drivers/misc/habanalabs/common/command_submission.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/cs53l30.c b/sound/soc/codecs/cs53l30.c
-index f2087bd38dbc..c2912ad3851b 100644
---- a/sound/soc/codecs/cs53l30.c
-+++ b/sound/soc/codecs/cs53l30.c
-@@ -348,22 +348,22 @@ static const struct snd_kcontrol_new cs53l30_snd_controls[] = {
- 	SOC_ENUM("ADC2 NG Delay", adc2_ng_delay_enum),
+diff --git a/drivers/misc/habanalabs/common/command_submission.c b/drivers/misc/habanalabs/common/command_submission.c
+index cbb7c29966ff..72a557b83a7d 100644
+--- a/drivers/misc/habanalabs/common/command_submission.c
++++ b/drivers/misc/habanalabs/common/command_submission.c
+@@ -2979,7 +2979,7 @@ static int ts_buff_get_kernel_ts_record(struct hl_mmap_mem_buf *buf,
+ 	u64 current_cq_counter;
  
- 	SOC_SINGLE_SX_TLV("ADC1A PGA Volume",
--		    CS53L30_ADC1A_AFE_CTL, 0, 0x34, 0x18, pga_tlv),
-+		    CS53L30_ADC1A_AFE_CTL, 0, 0x34, 0x24, pga_tlv),
- 	SOC_SINGLE_SX_TLV("ADC1B PGA Volume",
--		    CS53L30_ADC1B_AFE_CTL, 0, 0x34, 0x18, pga_tlv),
-+		    CS53L30_ADC1B_AFE_CTL, 0, 0x34, 0x24, pga_tlv),
- 	SOC_SINGLE_SX_TLV("ADC2A PGA Volume",
--		    CS53L30_ADC2A_AFE_CTL, 0, 0x34, 0x18, pga_tlv),
-+		    CS53L30_ADC2A_AFE_CTL, 0, 0x34, 0x24, pga_tlv),
- 	SOC_SINGLE_SX_TLV("ADC2B PGA Volume",
--		    CS53L30_ADC2B_AFE_CTL, 0, 0x34, 0x18, pga_tlv),
-+		    CS53L30_ADC2B_AFE_CTL, 0, 0x34, 0x24, pga_tlv),
+ 	/* Validate ts_offset not exceeding last max */
+-	if (requested_offset_record > cb_last) {
++	if (requested_offset_record >= cb_last) {
+ 		dev_err(buf->mmg->dev, "Ts offset exceeds max CB offset(0x%llx)\n",
+ 								(u64)(uintptr_t)cb_last);
+ 		return -EINVAL;
+@@ -3064,6 +3064,13 @@ static int _hl_interrupt_wait_ioctl(struct hl_device *hdev, struct hl_ctx *ctx,
+ 		goto put_ctx;
+ 	}
  
- 	SOC_SINGLE_SX_TLV("ADC1A Digital Volume",
--		    CS53L30_ADC1A_DIG_VOL, 0, 0xA0, 0x0C, dig_tlv),
-+		    CS53L30_ADC1A_DIG_VOL, 0, 0xA0, 0x6C, dig_tlv),
- 	SOC_SINGLE_SX_TLV("ADC1B Digital Volume",
--		    CS53L30_ADC1B_DIG_VOL, 0, 0xA0, 0x0C, dig_tlv),
-+		    CS53L30_ADC1B_DIG_VOL, 0, 0xA0, 0x6C, dig_tlv),
- 	SOC_SINGLE_SX_TLV("ADC2A Digital Volume",
--		    CS53L30_ADC2A_DIG_VOL, 0, 0xA0, 0x0C, dig_tlv),
-+		    CS53L30_ADC2A_DIG_VOL, 0, 0xA0, 0x6C, dig_tlv),
- 	SOC_SINGLE_SX_TLV("ADC2B Digital Volume",
--		    CS53L30_ADC2B_DIG_VOL, 0, 0xA0, 0x0C, dig_tlv),
-+		    CS53L30_ADC2B_DIG_VOL, 0, 0xA0, 0x6C, dig_tlv),
- };
- 
- static const struct snd_soc_dapm_widget cs53l30_dapm_widgets[] = {
++	/* Validate the cq offset */
++	if (((u64 *) cq_cb->kernel_address + cq_counters_offset) >=
++			((u64 *) cq_cb->kernel_address + (cq_cb->size / sizeof(u64)))) {
++		rc = -EINVAL;
++		goto put_cq_cb;
++	}
++
+ 	if (register_ts_record) {
+ 		dev_dbg(hdev->dev, "Timestamp registration: interrupt id: %u, ts offset: %llu, cq_offset: %llu\n",
+ 					interrupt->interrupt_id, ts_offset, cq_counters_offset);
 -- 
-2.35.1
-
-
+2.25.1
 
