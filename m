@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA4EDC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:01:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96F47CCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:01:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243703AbiFTNBA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:01:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39426 "EHLO
+        id S243759AbiFTNBE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:01:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244489AbiFTM7k (ORCPT
+        with ESMTP id S244424AbiFTM7f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 08:59:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59C5819F8F;
-        Mon, 20 Jun 2022 05:56:33 -0700 (PDT)
+        Mon, 20 Jun 2022 08:59:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 513BB1CB10;
+        Mon, 20 Jun 2022 05:56:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5654D614DA;
-        Mon, 20 Jun 2022 12:56:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A2B7C3411B;
-        Mon, 20 Jun 2022 12:56:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C9B1614CA;
+        Mon, 20 Jun 2022 12:56:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C061C3411B;
+        Mon, 20 Jun 2022 12:56:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655729791;
-        bh=EN2LSdwrHyUj4sryCNoBl23CVmDro7Q1flq5/ck1sI4=;
+        s=korg; t=1655729785;
+        bh=jnvaKL2ylP9hoy1It4rGwhTXwZO5J+36jAw+FL5Cfcs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pmkslvr3fc1SH4fIqRk15ejGN0eZReHnUXhWTZDIo9qq+5YQUmVDNNZxjYQCGXCp+
-         OXSDZFWSvEKtyoOqymgg6AuL+OGAAez31bA+eCLOH+CDhqvsELvoc5PfZWdnKb9JBO
-         4w72LbMQT8K8ucAYD3NWX2D3ihYXG+xU6qsWgkF8=
+        b=KzfYTxNbt2tVhybMSFjta95oT6HtqzPp/1mCzMAn9JaiEKZu6zzJ/kxx7zo45sIwk
+         Nm3RSOjC4OFiX1HMyogITIYE1q1wAa/9u2hBDPLal0iJ4Vj+H97TADqTeMC5i7Mk7J
+         QH/pxsD7CqpYZVA4L/OLUrHyEy5XuGLwmNX1iWYs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, chengkaitao <pilgrimtao@gmail.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Chengguang Xu <cgxu519@mykernel.net>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 035/141] virtio-mmio: fix missing put_device() when vm_cmdline_parent registration failed
-Date:   Mon, 20 Jun 2022 14:49:33 +0200
-Message-Id: <20220620124730.573184308@linuxfoundation.org>
+Subject: [PATCH 5.18 033/141] scsi: pmcraid: Fix missing resource cleanup in error case
+Date:   Mon, 20 Jun 2022 14:49:31 +0200
+Message-Id: <20220620124730.511907555@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 References: <20220620124729.509745706@linuxfoundation.org>
@@ -50,34 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: chengkaitao <pilgrimtao@gmail.com>
+From: Chengguang Xu <cgxu519@mykernel.net>
 
-[ Upstream commit a58a7f97ba11391d2d0d408e0b24f38d86ae748e ]
+[ Upstream commit ec1e8adcbdf661c57c395bca342945f4f815add7 ]
 
-The reference must be released when device_register(&vm_cmdline_parent)
-failed. Add the corresponding 'put_device()' in the error handling path.
+Fix missing resource cleanup (when '(--i) == 0') for error case in
+pmcraid_register_interrupt_handler().
 
-Signed-off-by: chengkaitao <pilgrimtao@gmail.com>
-Message-Id: <20220602005542.16489-1-chengkaitao@didiglobal.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
+Link: https://lore.kernel.org/r/20220529153456.4183738-6-cgxu519@mykernel.net
+Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Chengguang Xu <cgxu519@mykernel.net>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/virtio/virtio_mmio.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/scsi/pmcraid.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/virtio/virtio_mmio.c b/drivers/virtio/virtio_mmio.c
-index 56128b9c46eb..1dd396d4bebb 100644
---- a/drivers/virtio/virtio_mmio.c
-+++ b/drivers/virtio/virtio_mmio.c
-@@ -688,6 +688,7 @@ static int vm_cmdline_set(const char *device,
- 	if (!vm_cmdline_parent_registered) {
- 		err = device_register(&vm_cmdline_parent);
- 		if (err) {
-+			put_device(&vm_cmdline_parent);
- 			pr_err("Failed to register parent device!\n");
- 			return err;
- 		}
+diff --git a/drivers/scsi/pmcraid.c b/drivers/scsi/pmcraid.c
+index fd674ed1febe..6d94837c9049 100644
+--- a/drivers/scsi/pmcraid.c
++++ b/drivers/scsi/pmcraid.c
+@@ -4031,7 +4031,7 @@ pmcraid_register_interrupt_handler(struct pmcraid_instance *pinstance)
+ 	return 0;
+ 
+ out_unwind:
+-	while (--i > 0)
++	while (--i >= 0)
+ 		free_irq(pci_irq_vector(pdev, i), &pinstance->hrrq_vector[i]);
+ 	pci_free_irq_vectors(pdev);
+ 	return rc;
 -- 
 2.35.1
 
