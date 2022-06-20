@@ -2,174 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC534C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 09:37:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17D41CCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 09:38:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239143AbiFTJhe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 05:37:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43390 "EHLO
+        id S240032AbiFTJiK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 05:38:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233591AbiFTJhY (ORCPT
+        with ESMTP id S240247AbiFTJiB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 05:37:24 -0400
+        Mon, 20 Jun 2022 05:38:01 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3545D13D6F
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 02:37:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 557821007
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 02:37:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655717842;
+        s=mimecast20190719; t=1655717878;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=VQ+wxgfxoQfff153/vfAo2kcjYPMXeSYBFIlenJ41tM=;
-        b=HMQyYN+Cg/n04ftlgHF72xElan9Ki39vONrlxFrkeMIii3PEflsV+Wg5/VBs0WUbupaPBK
-        MHb/aUBHBA/elr1hFne4K0Gx0b+AObGY/qF/tDI77TN6EiptlnmTqdXJajIPPU+z9t1fwR
-        TPPnhKZGRf1+moQxMs40tBowYgi9vDE=
-Received: from mail-yw1-f199.google.com (mail-yw1-f199.google.com
- [209.85.128.199]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=mVJ4Pc7idX3cRmZ7fOi1Ns6MbMDwBjisN2g0tryFY6w=;
+        b=VNoHXUA0DL40Zi+bDVAE6jIYIhn4fWCiQZa8Rl/r5v6jmgUdvxMC3lECUl+oA59n31dhK0
+        +MHtrEKUpUeb63AII4lkI+q3GCDfIo4QKsWOBTkNPKDXEsby8ZfPF7jjblmBfQLh1QbQd4
+        RHEdTtraQCdfxYKt7ITrv16xgtMzTf0=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-494-O4D51inKMMSY2WEARHivVg-1; Mon, 20 Jun 2022 05:37:20 -0400
-X-MC-Unique: O4D51inKMMSY2WEARHivVg-1
-Received: by mail-yw1-f199.google.com with SMTP id 00721157ae682-317bfb7aaacso22692267b3.1
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 02:37:20 -0700 (PDT)
+ us-mta-634-1O_-_gYdMQGPNp9pVI4E0w-1; Mon, 20 Jun 2022 05:37:56 -0400
+X-MC-Unique: 1O_-_gYdMQGPNp9pVI4E0w-1
+Received: by mail-wr1-f71.google.com with SMTP id m7-20020adfa3c7000000b0021b94088ba2so205341wrb.9
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 02:37:56 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VQ+wxgfxoQfff153/vfAo2kcjYPMXeSYBFIlenJ41tM=;
-        b=yE3SyOvmQDjSaqLMPKpiTmCt89gsDs3woo4DnjV0EU77ERdjl8cxRymOCfuWRThOG2
-         CobboqPxnamyOnoR8IwXmRu2M55ZZd7C+PdW0Yvk/j0YhYb1JBY9ZsYUf/qLRxix65Hk
-         W6zc/6c7zD+75Bgiy7Sznb2Jhcg9YbtpoO0EDJhJO81wSNMxxnjnbTwwwy4b/eGBTbkv
-         Xig28J1+U888rd5BmTgyplToqrO4XUhQ02eYSVBAbhsacWiUcTeEaETUouSp5pKo4iFD
-         jeeVoWWmOW+8BGdOE3CarUBmM1ZTzG6hA3riOdQ8LMVfkVP1oEgYoOSKa7tNku7BKPOn
-         jCEw==
-X-Gm-Message-State: AJIora9An3HmBPI4b7vrZfMmNU4Ef1s0QArHKRktyCm8FLFn+hFS7Ne5
-        Hfj2do6F+LvsMGEbOODRzLoVZYXq51NRsWUi7BQEVbUg+qOwZB38URslp7KwATYv5VZziHwgFPM
-        l37yq5blWpiJFCY7OIufo+HUIQMGnQ36uhNK6KhB/
-X-Received: by 2002:a0d:db11:0:b0:317:bb2f:c0b5 with SMTP id d17-20020a0ddb11000000b00317bb2fc0b5mr6574726ywe.353.1655717840355;
-        Mon, 20 Jun 2022 02:37:20 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vrPu6/K/TANEgGnpYuHrIsHuTgK8u6Yev4N3pR40RwsAtj2AcGxEnAUHpyOEoTPgV5V3+odIq4XFdTWxSjiCY=
-X-Received: by 2002:a0d:db11:0:b0:317:bb2f:c0b5 with SMTP id
- d17-20020a0ddb11000000b00317bb2fc0b5mr6574712ywe.353.1655717840048; Mon, 20
- Jun 2022 02:37:20 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=mVJ4Pc7idX3cRmZ7fOi1Ns6MbMDwBjisN2g0tryFY6w=;
+        b=GMNYhzZH9DZ8MUXDkeynzHpO88efJ6sXwKEYCohB0XnNqJLGZxgbrE6fS0EcspWigI
+         5QSvx55o99d1/TaPELQRCCObkykL21/3h98W/VlQlPQ4XX6zHqcDlRg7J6TZMM/qVpiR
+         rD3zNRXRu64d+bnHzkmc3mCiPokZeRPc1DjcNSp4a05RjtJ6m5t4KzDuiXeT4ZU7v/SB
+         GAbM5PknXbfScL6uT5e8BGanvJVpaw73Lrq/EMLy1wsp/PDNoyog32EGyT/DQR8ZVfqk
+         A6+Ftst5KEhgVQvMjKHkOmRWU88KHYzc31qM3dbkqIsidR152a+r5yLBo/Gu7qx24pnD
+         SKjw==
+X-Gm-Message-State: AJIora8H3Yk1d3nsHpA9LTpQi2O/Rzi8YDBId3z7SS0iffTYmGlZ5AEd
+        5A3ajkrGDdUz3Xuq4k7SdNwandjwq9j0MkE5tDWSz3oFhNyYuDV1TKXByADiAC+loSqjYxlfrck
+        s7p7BJhA7ro2t44qLMmL10v5O
+X-Received: by 2002:a05:6000:2a4:b0:213:bb34:7ff6 with SMTP id l4-20020a05600002a400b00213bb347ff6mr22791895wry.292.1655717875392;
+        Mon, 20 Jun 2022 02:37:55 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1tkrLOZNzUhdaLZd1T7cZrm18QpT/h/SI9PyK8jG4W9Tt/2oH4zMfDzBTXmcISzHSSxAUXX6A==
+X-Received: by 2002:a05:6000:2a4:b0:213:bb34:7ff6 with SMTP id l4-20020a05600002a400b00213bb347ff6mr22791874wry.292.1655717875163;
+        Mon, 20 Jun 2022 02:37:55 -0700 (PDT)
+Received: from sgarzare-redhat (host-79-46-200-40.retail.telecomitalia.it. [79.46.200.40])
+        by smtp.gmail.com with ESMTPSA id h8-20020a05600c350800b0039c50d2d28csm18574590wmq.44.2022.06.20.02.37.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Jun 2022 02:37:54 -0700 (PDT)
+Date:   Mon, 20 Jun 2022 11:37:50 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Bo Liu =?utf-8?B?KOWImOazoikt5rWq5r2u5L+h5oGv?= 
+        <liubo03@inspur.com>
+Cc:     "mst@redhat.com" <mst@redhat.com>,
+        "jasowang@redhat.com" <jasowang@redhat.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] virtio: Remove unnecessary variable assignments
+Message-ID: <20220620093750.ug6g7vzrninakd3x@sgarzare-redhat>
+References: <d6527c0690634815820c1c7c04b31551@inspur.com>
 MIME-Version: 1.0
-References: <20220620085413.948265-1-hpa@redhat.com> <a1decfb3-fd32-a8d1-e627-23430099565a@redhat.com>
-In-Reply-To: <a1decfb3-fd32-a8d1-e627-23430099565a@redhat.com>
-From:   Kate Hsuan <hpa@redhat.com>
-Date:   Mon, 20 Jun 2022 17:37:09 +0800
-Message-ID: <CAEth8oGg3U27fHpnvtHXsT8GLsfxk3ZNshGLN5e4P_5Ksx7tsA@mail.gmail.com>
-Subject: Re: [PATCH v1] staging: r8188eu: an incorrect return value made the
- function always return fail
-To:     Hans de Goede <hdegoede@redhat.com>
-Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Michael Straube <straube.linux@gmail.com>,
-        "Fabio M . De Francesco" <fmdefrancesco@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <d6527c0690634815820c1c7c04b31551@inspur.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 20, 2022 at 5:02 PM Hans de Goede <hdegoede@redhat.com> wrote:
->
-> Hi Kate,
->
-> Good catch!
->
-> On 6/20/22 10:54, Kate Hsuan wrote:
-> > Since _SUCCESS (1) and _FAIL (0) are used to indicate the status of the
-> > functions. The previous commit 8ae7bf782eacad803f752c83a183393b0a67127b
->
-> This is the commit hash from one of the stable series backports, you
-> should always use the commit hash from Linus' master branch which is
-> f94b47c6bde6 and the format for referencing commits in a commit-message is:
->
-> commit <12 char hash> ("commit subject")
->
-> so in this case this should have been:
->
-> commit f94b47c6bde6 ("staging: r8188eu: add check for kzalloc")
->
-> Note that checkpatch.pl would have complained about the wrong format
-> (but not the wrong hash)
+Hi Bo,
 
-Thanks for this. I'll improve my commit message.
+On Mon, Jun 20, 2022 at 09:32:28AM +0000, Bo Liu (刘波)-浪潮信息 wrote:
+>Hi
+>
+>>On Fri, Jun 17, 2022 at 01:59:52AM -0400, Bo Liu wrote:
+>>>In function vp_modern_probe(), "mdev->pci_dev" is assigned to 
+>>>variable
+>>>"pci_dev", variable "pci_dev" and "mdev->pci_dev" have the same 
+>>>value.
+>>>There is no need to assign variable "pci_dev" to "mdev->pci_dev". So
+>>>remove it.
+>>>
+>>
+>>I suggest rephrasing the description a bit.
+>>Maybe into something like this:
+>>
+>>     In function vp_modern_probe(), "pci_dev" is initialized with the
+>>     value of "mdev->pci_dev", so assigning "pci_dev" to 
+>>     "mdev->pci_dev"
+>>     is unnecessary since they store the same value.
+>>
+>>Anyway, the patch LGTM:
+>>
+>>Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+>>
+>The new patch is:
+>
+>In function vp_modern_probe(), "pci_dev" is initialized with the
+>value of "mdev->pci_dev", so assigning "pci_dev" to "mdev->pci_dev"
+>is unnecessary since they store the same value.
+>
+>Signed-off-by: Bo Liu <liubo03@inspur.com>
+>---
+> drivers/virtio/virtio_pci_modern_dev.c | 2 --
+> 1 file changed, 2 deletions(-)
 
->
-> > fixed and prevented dereferencing a NULL pointer through checking the
-> > return pointer. The NULL pointer check work properly but the return
-> > values (-ENOMEM on fail and 0 on success). This work fixed the return
-> > values to make sure the caller function will return the correct status.
-> >
-> > BugLink: https://bugzilla.redhat.com/show_bug.cgi?id=2097526
-> > Signed-off-by: Kate Hsuan <hpa@redhat.com>
->
-> This should have a fixes tag:
->
-> Fixes: f94b47c6bde6 ("staging: r8188eu: add check for kzalloc")
->
-> But while looking up the torvalds/master branch hash I noticed
-> someone alreayd beat you to it. Linus' master already has
-> a fix for this:
->
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/drivers/staging/r8188eu?id=5b7419ae1d208cab1e2826d473d8dab045aa75c7
->
-> So this patch can be dropped since it is a duplicate.
+It looks good, but I think it is better to send a proper v2.
 
-Ah~ I have to check before starting to fix it.
+You can also add my R-b just before your S-o-b
 
-Thank you :)
-
->
-> Regards,
->
-> hans
->
->
->
-> > ---
-> >  drivers/staging/r8188eu/core/rtw_xmit.c | 8 +++-----
-> >  1 file changed, 3 insertions(+), 5 deletions(-)
-> >
-> > diff --git a/drivers/staging/r8188eu/core/rtw_xmit.c b/drivers/staging/r8188eu/core/rtw_xmit.c
-> > index f4e9f6102539..2f8720db21d9 100644
-> > --- a/drivers/staging/r8188eu/core/rtw_xmit.c
-> > +++ b/drivers/staging/r8188eu/core/rtw_xmit.c
-> > @@ -180,10 +180,8 @@ s32      _rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, struct adapter *padapter)
-> >       pxmitpriv->free_xmit_extbuf_cnt = num_xmit_extbuf;
-> >
-> >       res = rtw_alloc_hwxmits(padapter);
-> > -     if (res) {
-> > -             res = _FAIL;
-> > +     if (res == _FAIL)
-> >               goto exit;
-> > -     }
-> >
-> >       rtw_init_hwxmits(pxmitpriv->hwxmits, pxmitpriv->hwxmit_entry);
-> >
-> > @@ -1510,7 +1508,7 @@ int rtw_alloc_hwxmits(struct adapter *padapter)
-> >
-> >       pxmitpriv->hwxmits = kzalloc(sizeof(struct hw_xmit) * pxmitpriv->hwxmit_entry, GFP_KERNEL);
-> >       if (!pxmitpriv->hwxmits)
-> > -             return -ENOMEM;
-> > +             return _FAIL;
-> >
-> >       hwxmits = pxmitpriv->hwxmits;
-> >
-> > @@ -1528,7 +1526,7 @@ int rtw_alloc_hwxmits(struct adapter *padapter)
-> >       } else {
-> >       }
-> >
-> > -     return 0;
-> > +     return _SUCCESS;
-> >  }
-> >
-> >  void rtw_free_hwxmits(struct adapter *padapter)
->
-
-
--- 
-BR,
-Kate
+Thanks,
+Stefano
 
