@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DDBCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:52:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13ACEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:52:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349613AbiFTNwG (ORCPT
+        id S1349675AbiFTNwK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:52:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36862 "EHLO
+        Mon, 20 Jun 2022 09:52:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350844AbiFTNt4 (ORCPT
+        with ESMTP id S1350950AbiFTNuD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:49:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B55530F49;
-        Mon, 20 Jun 2022 06:18:22 -0700 (PDT)
+        Mon, 20 Jun 2022 09:50:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD52E30F45;
+        Mon, 20 Jun 2022 06:18:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 630B660AC0;
-        Mon, 20 Jun 2022 13:12:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C7AEC3411B;
-        Mon, 20 Jun 2022 13:12:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8AD2DB811FC;
+        Mon, 20 Jun 2022 13:17:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D998EC341C0;
+        Mon, 20 Jun 2022 13:17:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730749;
-        bh=i3hMr2zvbLMfhNtdbaivhSFl4gNmB97jXjyHRJ9vF78=;
+        s=korg; t=1655731036;
+        bh=3Ln4hEtHTP/Iye9VV536yRYzaH7q597arnp1pdMkgQI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OuyRd5/J2meuuyILZQZdRzUcynzoTfu0kpFhzoa14Yn2WzMWrt95QkzuDB3C+E6HO
-         8NEqkDEqn+IR0JvAWlR/4l2SxIvlq0NKRBFRbb5exFH+Fd6DTLbfrapwnobRVlmqd5
-         EoyFVdYmzcxd29D4pG3ebCuqbAUWvzMoGvXTOYGA=
+        b=QC4M9Ts+fY88mbUJga1U1XazkxOae+KetWFJT84ag3vvjv79VPqQx3AFyjl3VYoqk
+         mhEEHQ1ZqjtfvcOO9Cp2n3MfFS4eYgKsMmy8d/eOWcEN0Hw9wMOHxjQ1tb3zYO194X
+         EwqPOFIFUU41zCIPiO6NjPHo5U8K1TOenckioyqY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>, Helge Deller <deller@gmx.de>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 044/240] random: use IS_ENABLED(CONFIG_NUMA) instead of ifdefs
-Date:   Mon, 20 Jun 2022 14:49:05 +0200
-Message-Id: <20220620124739.317913384@linuxfoundation.org>
+Subject: [PATCH 5.4 133/240] parisc: define get_cycles macro for arch-override
+Date:   Mon, 20 Jun 2022 14:50:34 +0200
+Message-Id: <20220620124742.864923302@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -52,98 +52,37 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 7b87324112df2e1f9b395217361626362dcfb9fb upstream.
+commit 8865bbe6ba1120e67f72201b7003a16202cd42be upstream.
 
-Rather than an awkward combination of ifdefs and __maybe_unused, we can
-ensure more source gets parsed, regardless of the configuration, by
-using IS_ENABLED for the CONFIG_NUMA conditional code. This makes things
-cleaner and easier to follow.
+PA-RISC defines a get_cycles() function, but it does not do the usual
+`#define get_cycles get_cycles` dance, making it impossible for generic
+code to see if an arch-specific function was defined. While the
+get_cycles() ifdef is not currently used, the following timekeeping
+patch in this series will depend on the macro existing (or not existing)
+when defining random_get_entropy().
 
-I've confirmed that on !CONFIG_NUMA, we don't wind up with excess code
-by accident; the generated object file is the same.
-
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Acked-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   32 ++++++++++++--------------------
- 1 file changed, 12 insertions(+), 20 deletions(-)
+ arch/parisc/include/asm/timex.h |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -760,7 +760,6 @@ static int credit_entropy_bits_safe(stru
+--- a/arch/parisc/include/asm/timex.h
++++ b/arch/parisc/include/asm/timex.h
+@@ -12,9 +12,10 @@
  
- static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
+ typedef unsigned long cycles_t;
  
--#ifdef CONFIG_NUMA
- /*
-  * Hack to deal with crazy userspace progams when they are all trying
-  * to access /dev/urandom in parallel.  The programs are almost
-@@ -768,7 +767,6 @@ static DECLARE_WAIT_QUEUE_HEAD(crng_init
-  * their brain damage.
-  */
- static struct crng_state **crng_node_pool __read_mostly;
--#endif
- 
- static void invalidate_batched_entropy(void);
- static void numa_crng_init(void);
-@@ -816,7 +814,7 @@ static bool __init crng_init_try_arch_ea
- 	return arch_init;
- }
- 
--static void __maybe_unused crng_initialize_secondary(struct crng_state *crng)
-+static void crng_initialize_secondary(struct crng_state *crng)
+-static inline cycles_t get_cycles (void)
++static inline cycles_t get_cycles(void)
  {
- 	memcpy(&crng->state[0], "expand 32-byte k", 16);
- 	_get_random_bytes(&crng->state[4], sizeof(__u32) * 12);
-@@ -867,7 +865,6 @@ static void crng_finalize_init(struct cr
- 	}
+ 	return mfctl(16);
  }
++#define get_cycles get_cycles
  
--#ifdef CONFIG_NUMA
- static void do_numa_crng_init(struct work_struct *work)
- {
- 	int i;
-@@ -894,29 +891,24 @@ static DECLARE_WORK(numa_crng_init_work,
- 
- static void numa_crng_init(void)
- {
--	schedule_work(&numa_crng_init_work);
-+	if (IS_ENABLED(CONFIG_NUMA))
-+		schedule_work(&numa_crng_init_work);
- }
- 
- static struct crng_state *select_crng(void)
- {
--	struct crng_state **pool;
--	int nid = numa_node_id();
--
--	/* pairs with cmpxchg_release() in do_numa_crng_init() */
--	pool = READ_ONCE(crng_node_pool);
--	if (pool && pool[nid])
--		return pool[nid];
--
--	return &primary_crng;
--}
--#else
--static void numa_crng_init(void) {}
-+	if (IS_ENABLED(CONFIG_NUMA)) {
-+		struct crng_state **pool;
-+		int nid = numa_node_id();
-+
-+		/* pairs with cmpxchg_release() in do_numa_crng_init() */
-+		pool = READ_ONCE(crng_node_pool);
-+		if (pool && pool[nid])
-+			return pool[nid];
-+	}
- 
--static struct crng_state *select_crng(void)
--{
- 	return &primary_crng;
- }
--#endif
- 
- /*
-  * crng_fast_load() can be called by code in the interrupt service
+ #endif
 
 
