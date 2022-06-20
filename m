@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED091C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:25:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08083C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:25:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344539AbiFTNZD (ORCPT
+        id S1344696AbiFTNZJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:25:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35034 "EHLO
+        Mon, 20 Jun 2022 09:25:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346037AbiFTNYT (ORCPT
+        with ESMTP id S1345991AbiFTNYQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:24:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 249EB19294;
+        Mon, 20 Jun 2022 09:24:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AA2319C2C;
         Mon, 20 Jun 2022 06:09:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 58E37B811D7;
-        Mon, 20 Jun 2022 13:08:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 971A8C3411B;
-        Mon, 20 Jun 2022 13:08:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 80D4560A6D;
+        Mon, 20 Jun 2022 13:09:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 718CEC3411C;
+        Mon, 20 Jun 2022 13:09:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730517;
-        bh=KRnyYm02/M04mY5xe4aX4sVWRy2Xqe+5jAymsdFwhho=;
+        s=korg; t=1655730548;
+        bh=/5STY4As5xDCMvpwXO6rE/4s0dKYkRo+K5FsrP4My5E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0Hx6Q5D8YXxjh+ZDyWZOrllW4wnBx7Wywg0bGrhmv0UFKmspkQkWFcR8emCIpV39c
-         NJlDvjChvIv6Z2ZfZXhY8CWR2jLbyRaj8mu/knjYdHDi3QcJx3gL+bz3NCl5sHrA5d
-         Cez/yBu+JY1ix/rWboGC6Ek4rr6UpkNKdvV2ZMAM=
+        b=pv8VIR0qebwxZV3chopcWV9RFPzZc1b6JHDQ6IWBcD25Q5p8Wr7vbwodIL/hPeUQs
+         WDN/Sp/Q6xD97gJmaCW4GQji9YWf/ZvOeQgmtYYR6JPZoiQo8yHFB/HBHGszaABTzz
+         sqDW0+lNd8Wh03BRwgJFZ9ghDbZOrGxxAE7oHstk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@linux.microsoft.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 070/106] certs/blacklist_hashes.c: fix const confusion in certs blacklist
-Date:   Mon, 20 Jun 2022 14:51:29 +0200
-Message-Id: <20220620124726.473560315@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 074/106] i2c: npcm7xx: Add check for platform_driver_register
+Date:   Mon, 20 Jun 2022 14:51:33 +0200
+Message-Id: <20220620124726.590844761@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
 References: <20220620124724.380838401@linuxfoundation.org>
@@ -51,47 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masahiro Yamada <masahiroy@kernel.org>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 6a1c3767d82ed8233de1263aa7da81595e176087 ]
+[ Upstream commit 6ba12b56b9b844b83ed54fb7ed59fb0eb41e4045 ]
 
-This file fails to compile as follows:
+As platform_driver_register() could fail, it should be better
+to deal with the return value in order to maintain the code
+consisitency.
 
-  CC      certs/blacklist_hashes.o
-certs/blacklist_hashes.c:4:1: error: ignoring attribute ‘section (".init.data")’ because it conflicts with previous ‘section (".init.rodata")’ [-Werror=attributes]
-    4 | const char __initdata *const blacklist_hashes[] = {
-      | ^~~~~
-In file included from certs/blacklist_hashes.c:2:
-certs/blacklist.h:5:38: note: previous declaration here
-    5 | extern const char __initconst *const blacklist_hashes[];
-      |                                      ^~~~~~~~~~~~~~~~
-
-Apply the same fix as commit 2be04df5668d ("certs/blacklist_nohashes.c:
-fix const confusion in certs blacklist").
-
-Fixes: 734114f8782f ("KEYS: Add a system blacklist keyring")
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Reviewed-by: Mickaël Salaün <mic@linux.microsoft.com>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+Fixes: 56a1485b102e ("i2c: npcm7xx: Add Nuvoton NPCM I2C controller driver")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Acked-by: Tali Perry <tali.perry1@gmail.com>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- certs/blacklist_hashes.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/i2c/busses/i2c-npcm7xx.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/certs/blacklist_hashes.c b/certs/blacklist_hashes.c
-index 344892337be0..d5961aa3d338 100644
---- a/certs/blacklist_hashes.c
-+++ b/certs/blacklist_hashes.c
-@@ -1,7 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
- #include "blacklist.h"
+diff --git a/drivers/i2c/busses/i2c-npcm7xx.c b/drivers/i2c/busses/i2c-npcm7xx.c
+index 20a2f903b7f6..d9ac62c1ac25 100644
+--- a/drivers/i2c/busses/i2c-npcm7xx.c
++++ b/drivers/i2c/busses/i2c-npcm7xx.c
+@@ -2369,8 +2369,7 @@ static struct platform_driver npcm_i2c_bus_driver = {
+ static int __init npcm_i2c_init(void)
+ {
+ 	npcm_i2c_debugfs_dir = debugfs_create_dir("npcm_i2c", NULL);
+-	platform_driver_register(&npcm_i2c_bus_driver);
+-	return 0;
++	return platform_driver_register(&npcm_i2c_bus_driver);
+ }
+ module_init(npcm_i2c_init);
  
--const char __initdata *const blacklist_hashes[] = {
-+const char __initconst *const blacklist_hashes[] = {
- #include CONFIG_SYSTEM_BLACKLIST_HASH_LIST
- 	, NULL
- };
 -- 
 2.35.1
 
