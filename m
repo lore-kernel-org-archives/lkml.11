@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 827F9C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:27:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D36F4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:27:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345307AbiFTN1D (ORCPT
+        id S1344926AbiFTN1O (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:27:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42982 "EHLO
+        Mon, 20 Jun 2022 09:27:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346279AbiFTNY3 (ORCPT
+        with ESMTP id S1346346AbiFTNYa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:24:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AB8963D5;
-        Mon, 20 Jun 2022 06:09:51 -0700 (PDT)
+        Mon, 20 Jun 2022 09:24:30 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F32EA1A832;
+        Mon, 20 Jun 2022 06:09:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 14AD5B811DD;
-        Mon, 20 Jun 2022 13:09:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64BD1C3411B;
-        Mon, 20 Jun 2022 13:09:05 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B765ECE138F;
+        Mon, 20 Jun 2022 13:09:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A33F1C3411B;
+        Mon, 20 Jun 2022 13:09:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730545;
-        bh=ytZ1+hFyV2RqybENQgs4g/BucLFJXxFLio4+veEmxzc=;
+        s=korg; t=1655730580;
+        bh=Xe+h4iyc1g7IGzQn4fral4hbvm2IbRAE0ps/UrG4ouI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nsr07WNqrTmJPwOoqIpjV2Fu9Wjz6Q7FN6++MRejfNtgau70ODv2vMLFr/f+kUa90
-         r2tgwgYzlwJTHJFXxPJ6GLDwX3n+eFeAj95RBc805aYRX05SnT8kX4x2pnI7WF3SEJ
-         ZTFJ5jA0FcbcRqCcizHBEj36AKxMPtwLvRTTugtc=
+        b=vF45/hZ0NUJ/RTZ2yXguUWKAPvBc1nub7McXAsnVQU3SyQ6aRFh6KTh6MpP/yg9uj
+         gP6VrE4arwIkgz4ri2aKejNqFVIL6t467nX4XksAqLIB/lw90J7U8nCUMoaFGL5edd
+         c6foZ5VPpa7Ff1ELYsaOMKzUYdd49XcvUKCRab80=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 073/106] faddr2line: Fix overlapping text section failures, the sequel
-Date:   Mon, 20 Jun 2022 14:51:32 +0200
-Message-Id: <20220620124726.562116465@linuxfoundation.org>
+        stable@vger.kernel.org, Ye Bin <yebin10@huawei.com>,
+        stable@kernel.org, Jan Kara <jack@suse.cz>,
+        Ritesh Harjani <ritesh.list@gmail.com>,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 5.15 098/106] ext4: fix super block checksum incorrect after mount
+Date:   Mon, 20 Jun 2022 14:51:57 +0200
+Message-Id: <20220620124727.289134263@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
 References: <20220620124724.380838401@linuxfoundation.org>
@@ -50,139 +51,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@kernel.org>
+From: Ye Bin <yebin10@huawei.com>
 
-[ Upstream commit dcea997beed694cbd8705100ca1a6eb0d886de69 ]
+commit 9b6641dd95a0c441b277dd72ba22fed8d61f76ad upstream.
 
-If a function lives in a section other than .text, but .text also exists
-in the object, faddr2line may wrongly assume .text.  This can result in
-comically wrong output.  For example:
+We got issue as follows:
+[home]# mount  /dev/sda  test
+EXT4-fs (sda): warning: mounting fs with errors, running e2fsck is recommended
+[home]# dmesg
+EXT4-fs (sda): warning: mounting fs with errors, running e2fsck is recommended
+EXT4-fs (sda): Errors on filesystem, clearing orphan list.
+EXT4-fs (sda): recovery complete
+EXT4-fs (sda): mounted filesystem with ordered data mode. Quota mode: none.
+[home]# debugfs /dev/sda
+debugfs 1.46.5 (30-Dec-2021)
+Checksum errors in superblock!  Retrying...
 
-  $ scripts/faddr2line vmlinux.o enter_from_user_mode+0x1c
-  enter_from_user_mode+0x1c/0x30:
-  find_next_bit at /home/jpoimboe/git/linux/./include/linux/find.h:40
-  (inlined by) perf_clear_dirty_counters at /home/jpoimboe/git/linux/arch/x86/events/core.c:2504
+Reason is ext4_orphan_cleanup will reset ‘s_last_orphan’ but not update
+super block checksum.
 
-Fix it by passing the section name to addr2line, unless the object file
-is vmlinux, in which case the symbol table uses absolute addresses.
+To solve above issue, defer update super block checksum after
+ext4_orphan_cleanup.
 
-Fixes: 1d1a0e7c5100 ("scripts/faddr2line: Fix overlapping text section failures")
-Reported-by: Peter Zijlstra <peterz@infradead.org>
-Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
-Link: https://lore.kernel.org/r/7d25bc1408bd3a750ac26e60d2f2815a5f4a8363.1654130536.git.jpoimboe@kernel.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Ye Bin <yebin10@huawei.com>
+Cc: stable@kernel.org
+Reviewed-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Ritesh Harjani <ritesh.list@gmail.com>
+Link: https://lore.kernel.org/r/20220525012904.1604737-1-yebin10@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- scripts/faddr2line | 45 ++++++++++++++++++++++++++++++++++-----------
- 1 file changed, 34 insertions(+), 11 deletions(-)
+ fs/ext4/super.c |   16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/scripts/faddr2line b/scripts/faddr2line
-index 0e6268d59883..94ed98dd899f 100755
---- a/scripts/faddr2line
-+++ b/scripts/faddr2line
-@@ -95,17 +95,25 @@ __faddr2line() {
- 	local print_warnings=$4
- 
- 	local sym_name=${func_addr%+*}
--	local offset=${func_addr#*+}
--	offset=${offset%/*}
-+	local func_offset=${func_addr#*+}
-+	func_offset=${func_offset%/*}
- 	local user_size=
-+	local file_type
-+	local is_vmlinux=0
- 	[[ $func_addr =~ "/" ]] && user_size=${func_addr#*/}
- 
--	if [[ -z $sym_name ]] || [[ -z $offset ]] || [[ $sym_name = $func_addr ]]; then
-+	if [[ -z $sym_name ]] || [[ -z $func_offset ]] || [[ $sym_name = $func_addr ]]; then
- 		warn "bad func+offset $func_addr"
- 		DONE=1
- 		return
- 	fi
- 
-+	# vmlinux uses absolute addresses in the section table rather than
-+	# section offsets.
-+	local file_type=$(${READELF} --file-header $objfile |
-+		${AWK} '$1 == "Type:" { print $2; exit }')
-+	[[ $file_type = "EXEC" ]] && is_vmlinux=1
-+
- 	# Go through each of the object's symbols which match the func name.
- 	# In rare cases there might be duplicates, in which case we print all
- 	# matches.
-@@ -114,9 +122,11 @@ __faddr2line() {
- 		local sym_addr=0x${fields[1]}
- 		local sym_elf_size=${fields[2]}
- 		local sym_sec=${fields[6]}
-+		local sec_size
-+		local sec_name
- 
- 		# Get the section size:
--		local sec_size=$(${READELF} --section-headers --wide $objfile |
-+		sec_size=$(${READELF} --section-headers --wide $objfile |
- 			sed 's/\[ /\[/' |
- 			${AWK} -v sec=$sym_sec '$1 == "[" sec "]" { print "0x" $6; exit }')
- 
-@@ -126,6 +136,17 @@ __faddr2line() {
- 			return
- 		fi
- 
-+		# Get the section name:
-+		sec_name=$(${READELF} --section-headers --wide $objfile |
-+			sed 's/\[ /\[/' |
-+			${AWK} -v sec=$sym_sec '$1 == "[" sec "]" { print $2; exit }')
-+
-+		if [[ -z $sec_name ]]; then
-+			warn "bad section name: section: $sym_sec"
-+			DONE=1
-+			return
-+		fi
-+
- 		# Calculate the symbol size.
- 		#
- 		# Unfortunately we can't use the ELF size, because kallsyms
-@@ -174,10 +195,10 @@ __faddr2line() {
- 
- 		sym_size=0x$(printf %x $sym_size)
- 
--		# Calculate the section address from user-supplied offset:
--		local addr=$(($sym_addr + $offset))
-+		# Calculate the address from user-supplied offset:
-+		local addr=$(($sym_addr + $func_offset))
- 		if [[ -z $addr ]] || [[ $addr = 0 ]]; then
--			warn "bad address: $sym_addr + $offset"
-+			warn "bad address: $sym_addr + $func_offset"
- 			DONE=1
- 			return
- 		fi
-@@ -191,9 +212,9 @@ __faddr2line() {
- 		fi
- 
- 		# Make sure the provided offset is within the symbol's range:
--		if [[ $offset -gt $sym_size ]]; then
-+		if [[ $func_offset -gt $sym_size ]]; then
- 			[[ $print_warnings = 1 ]] &&
--				echo "skipping $sym_name address at $addr due to size mismatch ($offset > $sym_size)"
-+				echo "skipping $sym_name address at $addr due to size mismatch ($func_offset > $sym_size)"
- 			continue
- 		fi
- 
-@@ -202,11 +223,13 @@ __faddr2line() {
- 		[[ $FIRST = 0 ]] && echo
- 		FIRST=0
- 
--		echo "$sym_name+$offset/$sym_size:"
-+		echo "$sym_name+$func_offset/$sym_size:"
- 
- 		# Pass section address to addr2line and strip absolute paths
- 		# from the output:
--		local output=$(${ADDR2LINE} -fpie $objfile $addr | sed "s; $dir_prefix\(\./\)*; ;")
-+		local args="--functions --pretty-print --inlines --exe=$objfile"
-+		[[ $is_vmlinux = 0 ]] && args="$args --section=$sec_name"
-+		local output=$(${ADDR2LINE} $args $addr | sed "s; $dir_prefix\(\./\)*; ;")
- 		[[ -z $output ]] && continue
- 
- 		# Default output (non --list):
--- 
-2.35.1
-
+--- a/fs/ext4/super.c
++++ b/fs/ext4/super.c
+@@ -4909,14 +4909,6 @@ no_journal:
+ 		err = percpu_counter_init(&sbi->s_freeinodes_counter, freei,
+ 					  GFP_KERNEL);
+ 	}
+-	/*
+-	 * Update the checksum after updating free space/inode
+-	 * counters.  Otherwise the superblock can have an incorrect
+-	 * checksum in the buffer cache until it is written out and
+-	 * e2fsprogs programs trying to open a file system immediately
+-	 * after it is mounted can fail.
+-	 */
+-	ext4_superblock_csum_set(sb);
+ 	if (!err)
+ 		err = percpu_counter_init(&sbi->s_dirs_counter,
+ 					  ext4_count_dirs(sb), GFP_KERNEL);
+@@ -4974,6 +4966,14 @@ no_journal:
+ 	EXT4_SB(sb)->s_mount_state |= EXT4_ORPHAN_FS;
+ 	ext4_orphan_cleanup(sb, es);
+ 	EXT4_SB(sb)->s_mount_state &= ~EXT4_ORPHAN_FS;
++	/*
++	 * Update the checksum after updating free space/inode counters and
++	 * ext4_orphan_cleanup. Otherwise the superblock can have an incorrect
++	 * checksum in the buffer cache until it is written out and
++	 * e2fsprogs programs trying to open a file system immediately
++	 * after it is mounted can fail.
++	 */
++	ext4_superblock_csum_set(sb);
+ 	if (needs_recovery) {
+ 		ext4_msg(sb, KERN_INFO, "recovery complete");
+ 		err = ext4_mark_recovery_complete(sb, es);
 
 
