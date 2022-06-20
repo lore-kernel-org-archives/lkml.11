@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79E31C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:22:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9B08C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:22:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245625AbiFTNWs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:22:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55458 "EHLO
+        id S1343713AbiFTNWy (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:22:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346149AbiFTNUV (ORCPT
+        with ESMTP id S1346214AbiFTNUX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:20:21 -0400
+        Mon, 20 Jun 2022 09:20:23 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2941222507;
-        Mon, 20 Jun 2022 06:08:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 088632A1;
+        Mon, 20 Jun 2022 06:08:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 20D3B61589;
-        Mon, 20 Jun 2022 13:07:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1303FC3411B;
-        Mon, 20 Jun 2022 13:07:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1316F615C3;
+        Mon, 20 Jun 2022 13:07:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06000C341C8;
+        Mon, 20 Jun 2022 13:07:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730421;
-        bh=r8XnFs77UWEw8tdx9AYeZYY87hyU7AdHg/IfaytmtIk=;
+        s=korg; t=1655730440;
+        bh=v+1O8n4EHE6XlM6AtNFoQ+Jtk79q239zVi5gqrD+RAk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G0eSH96EiCoAflrCwTn2bjWWA40VWGluZzYKbF+xtJjooFInEsQRAM5UDnLrRE8TD
-         7VPIruPw6+OUQSmb159cfFDewzCMgVi48tNo3uVFKqdNUH5FqGeVj1VKQdBfFXqNIe
-         lKpZvZxkyfflw4qK6/T3W0vZnCTbW47XxsPMpulM=
+        b=AJWUPVXy3dNdYwyRhxslPq9VNE6Yl+2UlIc1KYrsOiCPDPN3CPvNEA0VC3kigyHcO
+         aqRw07BKUkuz7356ecoGzWYHxZaITEpn5Z+19qGcLpfN3DcjhSvMY81nz3dWo8rZhS
+         tVqPvG9O59VzMDRfoninwBIzN5ivpC4qyfuGtvi0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 048/106] pNFS: Avoid a live lock condition in pnfs_update_layout()
-Date:   Mon, 20 Jun 2022 14:51:07 +0200
-Message-Id: <20220620124725.811625811@linuxfoundation.org>
+        stable@vger.kernel.org, Michal Jaron <michalx.jaron@intel.com>,
+        Aleksandr Loktionov <aleksandr.loktionov@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Gurucharan <gurucharanx.g@intel.com>
+Subject: [PATCH 5.15 053/106] i40e: Fix call trace in setup_tx_descriptors
+Date:   Mon, 20 Jun 2022 14:51:12 +0200
+Message-Id: <20220620124725.964612780@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
 References: <20220620124724.380838401@linuxfoundation.org>
@@ -50,104 +52,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
 
-[ Upstream commit 880265c77ac415090090d1fe72a188fee71cb458 ]
+[ Upstream commit fd5855e6b1358e816710afee68a1d2bc685176ca ]
 
-If we're about to send the first layoutget for an empty layout, we want
-to make sure that we drain out the existing pending layoutget calls
-first. The reason is that these layouts may have been already implicitly
-returned to the server by a recall to which the client gave a
-NFS4ERR_NOMATCHING_LAYOUT response.
+After PF reset and ethtool -t there was call trace in dmesg
+sometimes leading to panic. When there was some time, around 5
+seconds, between reset and test there were no errors.
 
-The problem is that wait_var_event_killable() could in principle see the
-plh_outstanding count go back to '1' when the first process to wake up
-starts sending a new layoutget. If it fails to get a layout, then this
-loop can continue ad infinitum...
+Problem was that pf reset calls i40e_vsi_close in prep_for_reset
+and ethtool -t calls i40e_vsi_close in diag_test. If there was not
+enough time between those commands the second i40e_vsi_close starts
+before previous i40e_vsi_close was done which leads to crash.
 
-Fixes: 0b77f97a7e42 ("NFSv4/pnfs: Fix layoutget behaviour after invalidation")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Add check to diag_test if pf is in reset and don't start offline
+tests if it is true.
+Add netif_info("testing failed") into unhappy path of i40e_diag_test()
+
+Fixes: e17bc411aea8 ("i40e: Disable offline diagnostics if VFs are enabled")
+Fixes: 510efb2682b3 ("i40e: Fix ethtool offline diagnostic with netqueues")
+Signed-off-by: Michal Jaron <michalx.jaron@intel.com>
+Signed-off-by: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
+Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/callback_proc.c |  1 +
- fs/nfs/pnfs.c          | 15 +++++++++------
- fs/nfs/pnfs.h          |  1 +
- 3 files changed, 11 insertions(+), 6 deletions(-)
+ .../net/ethernet/intel/i40e/i40e_ethtool.c    | 25 +++++++++++++------
+ 1 file changed, 17 insertions(+), 8 deletions(-)
 
-diff --git a/fs/nfs/callback_proc.c b/fs/nfs/callback_proc.c
-index a30dd35ec1c2..ccf313238441 100644
---- a/fs/nfs/callback_proc.c
-+++ b/fs/nfs/callback_proc.c
-@@ -288,6 +288,7 @@ static u32 initiate_file_draining(struct nfs_client *clp,
- 		rv = NFS4_OK;
- 		break;
- 	case -ENOENT:
-+		set_bit(NFS_LAYOUT_DRAIN, &lo->plh_flags);
- 		/* Embrace your forgetfulness! */
- 		rv = NFS4ERR_NOMATCHING_LAYOUT;
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
+index 513ba6974355..0e13ce9b4d00 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
+@@ -2576,15 +2576,16 @@ static void i40e_diag_test(struct net_device *netdev,
  
-diff --git a/fs/nfs/pnfs.c b/fs/nfs/pnfs.c
-index 9b2549222391..7217f3eeb069 100644
---- a/fs/nfs/pnfs.c
-+++ b/fs/nfs/pnfs.c
-@@ -469,6 +469,7 @@ pnfs_mark_layout_stateid_invalid(struct pnfs_layout_hdr *lo,
- 		pnfs_clear_lseg_state(lseg, lseg_list);
- 	pnfs_clear_layoutreturn_info(lo);
- 	pnfs_free_returned_lsegs(lo, lseg_list, &range, 0);
-+	set_bit(NFS_LAYOUT_DRAIN, &lo->plh_flags);
- 	if (test_bit(NFS_LAYOUT_RETURN, &lo->plh_flags) &&
- 	    !test_and_set_bit(NFS_LAYOUT_RETURN_LOCK, &lo->plh_flags))
- 		pnfs_clear_layoutreturn_waitbit(lo);
-@@ -1917,8 +1918,9 @@ static void nfs_layoutget_begin(struct pnfs_layout_hdr *lo)
+ 		set_bit(__I40E_TESTING, pf->state);
  
- static void nfs_layoutget_end(struct pnfs_layout_hdr *lo)
- {
--	if (atomic_dec_and_test(&lo->plh_outstanding))
--		wake_up_var(&lo->plh_outstanding);
-+	if (atomic_dec_and_test(&lo->plh_outstanding) &&
-+	    test_and_clear_bit(NFS_LAYOUT_DRAIN, &lo->plh_flags))
-+		wake_up_bit(&lo->plh_flags, NFS_LAYOUT_DRAIN);
- }
++		if (test_bit(__I40E_RESET_RECOVERY_PENDING, pf->state) ||
++		    test_bit(__I40E_RESET_INTR_RECEIVED, pf->state)) {
++			dev_warn(&pf->pdev->dev,
++				 "Cannot start offline testing when PF is in reset state.\n");
++			goto skip_ol_tests;
++		}
++
+ 		if (i40e_active_vfs(pf) || i40e_active_vmdqs(pf)) {
+ 			dev_warn(&pf->pdev->dev,
+ 				 "Please take active VFs and Netqueues offline and restart the adapter before running NIC diagnostics\n");
+-			data[I40E_ETH_TEST_REG]		= 1;
+-			data[I40E_ETH_TEST_EEPROM]	= 1;
+-			data[I40E_ETH_TEST_INTR]	= 1;
+-			data[I40E_ETH_TEST_LINK]	= 1;
+-			eth_test->flags |= ETH_TEST_FL_FAILED;
+-			clear_bit(__I40E_TESTING, pf->state);
+ 			goto skip_ol_tests;
+ 		}
  
- static bool pnfs_is_first_layoutget(struct pnfs_layout_hdr *lo)
-@@ -2025,11 +2027,11 @@ pnfs_update_layout(struct inode *ino,
- 	 * If the layout segment list is empty, but there are outstanding
- 	 * layoutget calls, then they might be subject to a layoutrecall.
- 	 */
--	if ((list_empty(&lo->plh_segs) || !pnfs_layout_is_valid(lo)) &&
-+	if (test_bit(NFS_LAYOUT_DRAIN, &lo->plh_flags) &&
- 	    atomic_read(&lo->plh_outstanding) != 0) {
- 		spin_unlock(&ino->i_lock);
--		lseg = ERR_PTR(wait_var_event_killable(&lo->plh_outstanding,
--					!atomic_read(&lo->plh_outstanding)));
-+		lseg = ERR_PTR(wait_on_bit(&lo->plh_flags, NFS_LAYOUT_DRAIN,
-+					   TASK_KILLABLE));
- 		if (IS_ERR(lseg))
- 			goto out_put_layout_hdr;
- 		pnfs_put_layout_hdr(lo);
-@@ -2413,7 +2415,8 @@ pnfs_layout_process(struct nfs4_layoutget *lgp)
- 		goto out_forget;
+@@ -2631,9 +2632,17 @@ static void i40e_diag_test(struct net_device *netdev,
+ 		data[I40E_ETH_TEST_INTR] = 0;
  	}
  
--	if (!pnfs_layout_is_valid(lo) && !pnfs_is_first_layoutget(lo))
-+	if (test_bit(NFS_LAYOUT_DRAIN, &lo->plh_flags) &&
-+	    !pnfs_is_first_layoutget(lo))
- 		goto out_forget;
+-skip_ol_tests:
+-
+ 	netif_info(pf, drv, netdev, "testing finished\n");
++	return;
++
++skip_ol_tests:
++	data[I40E_ETH_TEST_REG]		= 1;
++	data[I40E_ETH_TEST_EEPROM]	= 1;
++	data[I40E_ETH_TEST_INTR]	= 1;
++	data[I40E_ETH_TEST_LINK]	= 1;
++	eth_test->flags |= ETH_TEST_FL_FAILED;
++	clear_bit(__I40E_TESTING, pf->state);
++	netif_info(pf, drv, netdev, "testing failed\n");
+ }
  
- 	if (nfs4_stateid_match_other(&lo->plh_stateid, &res->stateid)) {
-diff --git a/fs/nfs/pnfs.h b/fs/nfs/pnfs.h
-index 5a54cf8ac6f3..3307361c7956 100644
---- a/fs/nfs/pnfs.h
-+++ b/fs/nfs/pnfs.h
-@@ -109,6 +109,7 @@ enum {
- 	NFS_LAYOUT_FIRST_LAYOUTGET,	/* Serialize first layoutget */
- 	NFS_LAYOUT_INODE_FREEING,	/* The inode is being freed */
- 	NFS_LAYOUT_HASHED,		/* The layout visible */
-+	NFS_LAYOUT_DRAIN,
- };
- 
- enum layoutdriver_policy_flags {
+ static void i40e_get_wol(struct net_device *netdev,
 -- 
 2.35.1
 
