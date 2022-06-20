@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B6F1C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:02:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1D2EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:02:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243812AbiFTNCK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:02:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38644 "EHLO
+        id S243910AbiFTNCP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:02:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243942AbiFTM7H (ORCPT
+        with ESMTP id S244659AbiFTM7r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 08:59:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC04719C06;
-        Mon, 20 Jun 2022 05:56:07 -0700 (PDT)
+        Mon, 20 Jun 2022 08:59:47 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BFB61A052;
+        Mon, 20 Jun 2022 05:56:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 43835614EE;
-        Mon, 20 Jun 2022 12:56:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16D10C3411B;
-        Mon, 20 Jun 2022 12:56:02 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 533C4CE138A;
+        Mon, 20 Jun 2022 12:56:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0338BC3411B;
+        Mon, 20 Jun 2022 12:56:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655729763;
-        bh=Kk6o3/zjhbF2uiw5hY13A16AYGT/zqgM3J+eArhmefA=;
+        s=korg; t=1655729798;
+        bh=WvDC5wxXqXnNA8e+WNw8hqCRYkEqfWusLnMux/2jvUI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XzfF+v6Kv8T19VTpAqvpMzP0zMa3FqSt/CQsuTjuDbLbLipYWBy4vC+JgS0/MHpma
-         sKplBt2XWfKnWKYlUbTDT2Xi/1LeSXiNHmPMq/AE/fsxcTRmu1J9LQpCSZnpwMJJFy
-         QmlKKgiQ65TZ+W3bNGpuqz6ZY5S7r8AvlSXPFTG8=
+        b=s1oeeo1Hp30SzjqTNIhqf9QkFwEn0oOEOLCBL8rFQVNQgfOJ9TZlcMK7JegSuTpfh
+         L8W8Tj4j+v9xEx8zmeuc6lkYO9ReSn2VvqRbBA6Db6GrujK44n+PXxqgZbu/vGJS5Q
+         KStCc/BbSO1DGzyG0RKUVX06o0G6k8bqaBvgEuVE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
-        James Smart <jsmart2021@gmail.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Guangbin Huang <huangguangbin2@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 030/141] scsi: lpfc: Allow reduced polling rate for nvme_admin_async_event cmd completion
-Date:   Mon, 20 Jun 2022 14:49:28 +0200
-Message-Id: <20220620124730.421249120@linuxfoundation.org>
+Subject: [PATCH 5.18 071/141] net: hns3: restore tm priority/qset to default settings when tc disabled
+Date:   Mon, 20 Jun 2022 14:50:09 +0200
+Message-Id: <20220620124731.634745023@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 References: <20220620124729.509745706@linuxfoundation.org>
@@ -50,71 +49,245 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: Guangbin Huang <huangguangbin2@huawei.com>
 
-[ Upstream commit 2e7e9c0c1ec05f18d320ecc8a31eec59d2af1af9 ]
+[ Upstream commit e93530ae0e5d8fcf2d908933d206e0c93bc3c09b ]
 
-NVMe Asynchronous Event Request commands have no command timeout value per
-specifications.
+Currently, settings parameters of schedule mode, dwrr, shaper of tm
+priority or qset of one tc are only be set when tc is enabled, they are
+not restored to the default settings when tc is disabled. It confuses
+users when they cat tm_priority or tm_qset files of debugfs. So this
+patch fixes it.
 
-Set WQE option to allow a reduced FLUSH polling rate for I/O error
-detection specifically for nvme_admin_async_event commands.
-
-Link: https://lore.kernel.org/r/20220603174329.63777-9-jsmart2021@gmail.com
-Co-developed-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: 848440544b41 ("net: hns3: Add support of TX Scheduler & Shaper to HNS3 driver")
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/lpfc/lpfc_hw4.h  |  3 +++
- drivers/scsi/lpfc/lpfc_nvme.c | 11 +++++++++--
- 2 files changed, 12 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h   |  1 +
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_tm.c | 95 +++++++++++++------
+ 2 files changed, 65 insertions(+), 31 deletions(-)
 
-diff --git a/drivers/scsi/lpfc/lpfc_hw4.h b/drivers/scsi/lpfc/lpfc_hw4.h
-index 02e230ed6280..e7daef550095 100644
---- a/drivers/scsi/lpfc/lpfc_hw4.h
-+++ b/drivers/scsi/lpfc/lpfc_hw4.h
-@@ -4488,6 +4488,9 @@ struct wqe_common {
- #define wqe_sup_SHIFT         6
- #define wqe_sup_MASK          0x00000001
- #define wqe_sup_WORD          word11
-+#define wqe_ffrq_SHIFT         6
-+#define wqe_ffrq_MASK          0x00000001
-+#define wqe_ffrq_WORD          word11
- #define wqe_wqec_SHIFT        7
- #define wqe_wqec_MASK         0x00000001
- #define wqe_wqec_WORD         word11
-diff --git a/drivers/scsi/lpfc/lpfc_nvme.c b/drivers/scsi/lpfc/lpfc_nvme.c
-index d3a542466e98..49f44d9d04ea 100644
---- a/drivers/scsi/lpfc/lpfc_nvme.c
-+++ b/drivers/scsi/lpfc/lpfc_nvme.c
-@@ -1194,7 +1194,8 @@ lpfc_nvme_prep_io_cmd(struct lpfc_vport *vport,
- {
- 	struct lpfc_hba *phba = vport->phba;
- 	struct nvmefc_fcp_req *nCmd = lpfc_ncmd->nvmeCmd;
--	struct lpfc_iocbq *pwqeq = &(lpfc_ncmd->cur_iocbq);
-+	struct nvme_common_command *sqe;
-+	struct lpfc_iocbq *pwqeq = &lpfc_ncmd->cur_iocbq;
- 	union lpfc_wqe128 *wqe = &pwqeq->wqe;
- 	uint32_t req_len;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+index 79c64f4e67d2..3affcdb34c91 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+@@ -765,6 +765,7 @@ struct hnae3_tc_info {
+ 	u8 prio_tc[HNAE3_MAX_USER_PRIO]; /* TC indexed by prio */
+ 	u16 tqp_count[HNAE3_MAX_TC];
+ 	u16 tqp_offset[HNAE3_MAX_TC];
++	u8 max_tc; /* Total number of TCs */
+ 	u8 num_tc; /* Total number of enabled TCs */
+ 	bool mqprio_active;
+ };
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
+index 1f87a8a3fe32..ad53a3447322 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
+@@ -282,8 +282,8 @@ static int hclge_tm_pg_to_pri_map_cfg(struct hclge_dev *hdev,
+ 	return hclge_cmd_send(&hdev->hw, &desc, 1);
+ }
  
-@@ -1251,8 +1252,14 @@ lpfc_nvme_prep_io_cmd(struct lpfc_vport *vport,
- 		cstat->control_requests++;
+-static int hclge_tm_qs_to_pri_map_cfg(struct hclge_dev *hdev,
+-				      u16 qs_id, u8 pri)
++static int hclge_tm_qs_to_pri_map_cfg(struct hclge_dev *hdev, u16 qs_id, u8 pri,
++				      bool link_vld)
+ {
+ 	struct hclge_qs_to_pri_link_cmd *map;
+ 	struct hclge_desc desc;
+@@ -294,7 +294,7 @@ static int hclge_tm_qs_to_pri_map_cfg(struct hclge_dev *hdev,
+ 
+ 	map->qs_id = cpu_to_le16(qs_id);
+ 	map->priority = pri;
+-	map->link_vld = HCLGE_TM_QS_PRI_LINK_VLD_MSK;
++	map->link_vld = link_vld ? HCLGE_TM_QS_PRI_LINK_VLD_MSK : 0;
+ 
+ 	return hclge_cmd_send(&hdev->hw, &desc, 1);
+ }
+@@ -642,11 +642,13 @@ static void hclge_tm_update_kinfo_rss_size(struct hclge_vport *vport)
+ 	 * one tc for VF for simplicity. VF's vport_id is non zero.
+ 	 */
+ 	if (vport->vport_id) {
++		kinfo->tc_info.max_tc = 1;
+ 		kinfo->tc_info.num_tc = 1;
+ 		vport->qs_offset = HNAE3_MAX_TC +
+ 				   vport->vport_id - HCLGE_VF_VPORT_START_NUM;
+ 		vport_max_rss_size = hdev->vf_rss_size_max;
+ 	} else {
++		kinfo->tc_info.max_tc = hdev->tc_max;
+ 		kinfo->tc_info.num_tc =
+ 			min_t(u16, vport->alloc_tqps, hdev->tm_info.num_tc);
+ 		vport->qs_offset = 0;
+@@ -714,14 +716,22 @@ static void hclge_tm_vport_info_update(struct hclge_dev *hdev)
+ 
+ static void hclge_tm_tc_info_init(struct hclge_dev *hdev)
+ {
+-	u8 i;
++	u8 i, tc_sch_mode;
++	u32 bw_limit;
++
++	for (i = 0; i < hdev->tc_max; i++) {
++		if (i < hdev->tm_info.num_tc) {
++			tc_sch_mode = HCLGE_SCH_MODE_DWRR;
++			bw_limit = hdev->tm_info.pg_info[0].bw_limit;
++		} else {
++			tc_sch_mode = HCLGE_SCH_MODE_SP;
++			bw_limit = 0;
++		}
+ 
+-	for (i = 0; i < hdev->tm_info.num_tc; i++) {
+ 		hdev->tm_info.tc_info[i].tc_id = i;
+-		hdev->tm_info.tc_info[i].tc_sch_mode = HCLGE_SCH_MODE_DWRR;
++		hdev->tm_info.tc_info[i].tc_sch_mode = tc_sch_mode;
+ 		hdev->tm_info.tc_info[i].pgid = 0;
+-		hdev->tm_info.tc_info[i].bw_limit =
+-			hdev->tm_info.pg_info[0].bw_limit;
++		hdev->tm_info.tc_info[i].bw_limit = bw_limit;
  	}
  
--	if (pnode->nlp_nvme_info & NLP_NVME_NSLER)
-+	if (pnode->nlp_nvme_info & NLP_NVME_NSLER) {
- 		bf_set(wqe_erp, &wqe->generic.wqe_com, 1);
-+		sqe = &((struct nvme_fc_cmd_iu *)
-+			nCmd->cmdaddr)->sqe.common;
-+		if (sqe->opcode == nvme_admin_async_event)
-+			bf_set(wqe_ffrq, &wqe->generic.wqe_com, 1);
-+	}
+ 	for (i = 0; i < HNAE3_MAX_USER_PRIO; i++)
+@@ -926,10 +936,13 @@ static int hclge_tm_pri_q_qs_cfg_tc_base(struct hclge_dev *hdev)
+ 	for (k = 0; k < hdev->num_alloc_vport; k++) {
+ 		struct hnae3_knic_private_info *kinfo = &vport[k].nic.kinfo;
+ 
+-		for (i = 0; i < kinfo->tc_info.num_tc; i++) {
++		for (i = 0; i < kinfo->tc_info.max_tc; i++) {
++			u8 pri = i < kinfo->tc_info.num_tc ? i : 0;
++			bool link_vld = i < kinfo->tc_info.num_tc;
 +
- 	/*
- 	 * Finish initializing those WQE fields that are independent
- 	 * of the nvme_cmnd request_buffer
+ 			ret = hclge_tm_qs_to_pri_map_cfg(hdev,
+ 							 vport[k].qs_offset + i,
+-							 i);
++							 pri, link_vld);
+ 			if (ret)
+ 				return ret;
+ 		}
+@@ -949,7 +962,7 @@ static int hclge_tm_pri_q_qs_cfg_vnet_base(struct hclge_dev *hdev)
+ 		for (i = 0; i < HNAE3_MAX_TC; i++) {
+ 			ret = hclge_tm_qs_to_pri_map_cfg(hdev,
+ 							 vport[k].qs_offset + i,
+-							 k);
++							 k, true);
+ 			if (ret)
+ 				return ret;
+ 		}
+@@ -989,33 +1002,39 @@ static int hclge_tm_pri_tc_base_shaper_cfg(struct hclge_dev *hdev)
+ {
+ 	u32 max_tm_rate = hdev->ae_dev->dev_specs.max_tm_rate;
+ 	struct hclge_shaper_ir_para ir_para;
+-	u32 shaper_para;
++	u32 shaper_para_c, shaper_para_p;
+ 	int ret;
+ 	u32 i;
+ 
+-	for (i = 0; i < hdev->tm_info.num_tc; i++) {
++	for (i = 0; i < hdev->tc_max; i++) {
+ 		u32 rate = hdev->tm_info.tc_info[i].bw_limit;
+ 
+-		ret = hclge_shaper_para_calc(rate, HCLGE_SHAPER_LVL_PRI,
+-					     &ir_para, max_tm_rate);
+-		if (ret)
+-			return ret;
++		if (rate) {
++			ret = hclge_shaper_para_calc(rate, HCLGE_SHAPER_LVL_PRI,
++						     &ir_para, max_tm_rate);
++			if (ret)
++				return ret;
++
++			shaper_para_c = hclge_tm_get_shapping_para(0, 0, 0,
++								   HCLGE_SHAPER_BS_U_DEF,
++								   HCLGE_SHAPER_BS_S_DEF);
++			shaper_para_p = hclge_tm_get_shapping_para(ir_para.ir_b,
++								   ir_para.ir_u,
++								   ir_para.ir_s,
++								   HCLGE_SHAPER_BS_U_DEF,
++								   HCLGE_SHAPER_BS_S_DEF);
++		} else {
++			shaper_para_c = 0;
++			shaper_para_p = 0;
++		}
+ 
+-		shaper_para = hclge_tm_get_shapping_para(0, 0, 0,
+-							 HCLGE_SHAPER_BS_U_DEF,
+-							 HCLGE_SHAPER_BS_S_DEF);
+ 		ret = hclge_tm_pri_shapping_cfg(hdev, HCLGE_TM_SHAP_C_BUCKET, i,
+-						shaper_para, rate);
++						shaper_para_c, rate);
+ 		if (ret)
+ 			return ret;
+ 
+-		shaper_para = hclge_tm_get_shapping_para(ir_para.ir_b,
+-							 ir_para.ir_u,
+-							 ir_para.ir_s,
+-							 HCLGE_SHAPER_BS_U_DEF,
+-							 HCLGE_SHAPER_BS_S_DEF);
+ 		ret = hclge_tm_pri_shapping_cfg(hdev, HCLGE_TM_SHAP_P_BUCKET, i,
+-						shaper_para, rate);
++						shaper_para_p, rate);
+ 		if (ret)
+ 			return ret;
+ 	}
+@@ -1125,7 +1144,7 @@ static int hclge_tm_pri_tc_base_dwrr_cfg(struct hclge_dev *hdev)
+ 	int ret;
+ 	u32 i, k;
+ 
+-	for (i = 0; i < hdev->tm_info.num_tc; i++) {
++	for (i = 0; i < hdev->tc_max; i++) {
+ 		pg_info =
+ 			&hdev->tm_info.pg_info[hdev->tm_info.tc_info[i].pgid];
+ 		dwrr = pg_info->tc_dwrr[i];
+@@ -1135,9 +1154,15 @@ static int hclge_tm_pri_tc_base_dwrr_cfg(struct hclge_dev *hdev)
+ 			return ret;
+ 
+ 		for (k = 0; k < hdev->num_alloc_vport; k++) {
++			struct hnae3_knic_private_info *kinfo = &vport[k].nic.kinfo;
++
++			if (i >= kinfo->tc_info.max_tc)
++				continue;
++
++			dwrr = i < kinfo->tc_info.num_tc ? vport[k].dwrr : 0;
+ 			ret = hclge_tm_qs_weight_cfg(
+ 				hdev, vport[k].qs_offset + i,
+-				vport[k].dwrr);
++				dwrr);
+ 			if (ret)
+ 				return ret;
+ 		}
+@@ -1303,6 +1328,7 @@ static int hclge_tm_schd_mode_tc_base_cfg(struct hclge_dev *hdev, u8 pri_id)
+ {
+ 	struct hclge_vport *vport = hdev->vport;
+ 	int ret;
++	u8 mode;
+ 	u16 i;
+ 
+ 	ret = hclge_tm_pri_schd_mode_cfg(hdev, pri_id);
+@@ -1310,9 +1336,16 @@ static int hclge_tm_schd_mode_tc_base_cfg(struct hclge_dev *hdev, u8 pri_id)
+ 		return ret;
+ 
+ 	for (i = 0; i < hdev->num_alloc_vport; i++) {
++		struct hnae3_knic_private_info *kinfo = &vport[i].nic.kinfo;
++
++		if (pri_id >= kinfo->tc_info.max_tc)
++			continue;
++
++		mode = pri_id < kinfo->tc_info.num_tc ? HCLGE_SCH_MODE_DWRR :
++		       HCLGE_SCH_MODE_SP;
+ 		ret = hclge_tm_qs_schd_mode_cfg(hdev,
+ 						vport[i].qs_offset + pri_id,
+-						HCLGE_SCH_MODE_DWRR);
++						mode);
+ 		if (ret)
+ 			return ret;
+ 	}
+@@ -1353,7 +1386,7 @@ static int hclge_tm_lvl34_schd_mode_cfg(struct hclge_dev *hdev)
+ 	u8 i;
+ 
+ 	if (hdev->tx_sch_mode == HCLGE_FLAG_TC_BASE_SCH_MODE) {
+-		for (i = 0; i < hdev->tm_info.num_tc; i++) {
++		for (i = 0; i < hdev->tc_max; i++) {
+ 			ret = hclge_tm_schd_mode_tc_base_cfg(hdev, i);
+ 			if (ret)
+ 				return ret;
 -- 
 2.35.1
 
