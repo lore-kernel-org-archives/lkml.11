@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65516C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:08:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0570EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:08:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245025AbiFTNIL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:08:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51432 "EHLO
+        id S244456AbiFTNIO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:08:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244166AbiFTNEk (ORCPT
+        with ESMTP id S244194AbiFTNEm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:04:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CC35193F0;
-        Mon, 20 Jun 2022 06:00:03 -0700 (PDT)
+        Mon, 20 Jun 2022 09:04:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACDB1193F4;
+        Mon, 20 Jun 2022 06:00:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A05A61541;
-        Mon, 20 Jun 2022 13:00:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21664C3411B;
-        Mon, 20 Jun 2022 13:00:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A1516153E;
+        Mon, 20 Jun 2022 13:00:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5067FC3411C;
+        Mon, 20 Jun 2022 13:00:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730002;
-        bh=KnvmfHGYjEmIeJj0HwTROEOQWU54zeoo8U8eu5ebRCw=;
+        s=korg; t=1655730005;
+        bh=pSRUrrJVSkmqn3e99bE13Jtw6ybKL9gmtfLgF359Uqg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p/t5gkOZ97NTRtOD9yDznNmGc7R9PZq9Vd8bfyGGUGVX+LsqMnyzKHVrBNP8fdLKZ
-         O2EwQcb40DTtR37rAugPHuI2oYgSFMVo1RoP/buaJsz3q6VvmhGM3cincrI6R0lQoD
-         2EpIQiu2jlN037BeDwnRGWvaZ7wxiKbUoRhckVsI=
+        b=yBjg27uku6aTBxmhfz3UkgfyfwxYcjCqEM3ODMona/WDj2ASTs1rekzLsVKJW8hqB
+         l+12x3B+Ce9xZuO07nZFvkT/ZBmsWn36zXCG8011ppeRF/eduBTF1Tm5v2Kh+M1h5F
+         L0QRatGImbJXKvBnyQkU9fSFHdJzXS5svKKku9pM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Hamza Mahfooz <hamza.mahfooz@amd.com>,
-        Roman Li <roman.li@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.18 122/141] drm/amd/display: Cap OLED brightness per max frame-average luminance
-Date:   Mon, 20 Jun 2022 14:51:00 +0200
-Message-Id: <20220620124733.158396954@linuxfoundation.org>
+        =?UTF-8?q?Christian=20G=C3=B6ttsche?= <cgzones@googlemail.com>,
+        Paul Moore <paul@paul-moore.com>
+Subject: [PATCH 5.18 123/141] audit: free module name
+Date:   Mon, 20 Jun 2022 14:51:01 +0200
+Message-Id: <20220620124733.188036063@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 References: <20220620124729.509745706@linuxfoundation.org>
@@ -52,63 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Roman Li <roman.li@amd.com>
+From: Christian Göttsche <cgzones@googlemail.com>
 
-commit 4fd17f2ac0aa4e48823ac2ede5b050fb70300bf4 upstream.
+commit ef79c396c664be99d0c5660dc75fe863c1e20315 upstream.
 
-[Why]
-For OLED eDP the Display Manager uses max_cll value as a limit
-for brightness control.
-max_cll defines the content light luminance for individual pixel.
-Whereas max_fall defines frame-average level luminance.
-The user may not observe the difference in brightness in between
-max_fall and max_cll.
-That negatively impacts the user experience.
+Reset the type of the record last as the helper `audit_free_module()`
+depends on it.
 
-[How]
-Use max_fall value instead of max_cll as a limit for brightness control.
+    unreferenced object 0xffff888153b707f0 (size 16):
+      comm "modprobe", pid 1319, jiffies 4295110033 (age 1083.016s)
+      hex dump (first 16 bytes):
+        62 69 6e 66 6d 74 5f 6d 69 73 63 00 6b 6b 6b a5  binfmt_misc.kkk.
+      backtrace:
+        [<ffffffffa07dbf9b>] kstrdup+0x2b/0x50
+        [<ffffffffa04b0a9d>] __audit_log_kern_module+0x4d/0xf0
+        [<ffffffffa03b6664>] load_module+0x9d4/0x2e10
+        [<ffffffffa03b8f44>] __do_sys_finit_module+0x114/0x1b0
+        [<ffffffffa1f47124>] do_syscall_64+0x34/0x80
+        [<ffffffffa200007e>] entry_SYSCALL_64_after_hwframe+0x46/0xb0
 
-Reviewed-by: Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>
-Acked-by: Hamza Mahfooz <hamza.mahfooz@amd.com>
-Signed-off-by: Roman Li <roman.li@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Cc: stable@vger.kernel.org
+Fixes: 12c5e81d3fd0 ("audit: prepare audit_context for use in calling contexts beyond syscalls")
+Signed-off-by: Christian Göttsche <cgzones@googlemail.com>
+Signed-off-by: Paul Moore <paul@paul-moore.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ kernel/auditsc.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-@@ -2835,7 +2835,7 @@ static struct drm_mode_config_helper_fun
+--- a/kernel/auditsc.c
++++ b/kernel/auditsc.c
+@@ -1014,10 +1014,10 @@ static void audit_reset_context(struct a
+ 	ctx->target_comm[0] = '\0';
+ 	unroll_tree_refs(ctx, NULL, 0);
+ 	WARN_ON(!list_empty(&ctx->killed_trees));
+-	ctx->type = 0;
+ 	audit_free_module(ctx);
+ 	ctx->fds[0] = -1;
+ 	audit_proctitle_free(ctx);
++	ctx->type = 0; /* reset last for audit_free_*() */
+ }
  
- static void update_connector_ext_caps(struct amdgpu_dm_connector *aconnector)
- {
--	u32 max_cll, min_cll, max, min, q, r;
-+	u32 max_avg, min_cll, max, min, q, r;
- 	struct amdgpu_dm_backlight_caps *caps;
- 	struct amdgpu_display_manager *dm;
- 	struct drm_connector *conn_base;
-@@ -2865,7 +2865,7 @@ static void update_connector_ext_caps(st
- 	caps = &dm->backlight_caps[i];
- 	caps->ext_caps = &aconnector->dc_link->dpcd_sink_ext_caps;
- 	caps->aux_support = false;
--	max_cll = conn_base->hdr_sink_metadata.hdmi_type1.max_cll;
-+	max_avg = conn_base->hdr_sink_metadata.hdmi_type1.max_fall;
- 	min_cll = conn_base->hdr_sink_metadata.hdmi_type1.min_cll;
- 
- 	if (caps->ext_caps->bits.oled == 1 /*||
-@@ -2893,8 +2893,8 @@ static void update_connector_ext_caps(st
- 	 * The results of the above expressions can be verified at
- 	 * pre_computed_values.
- 	 */
--	q = max_cll >> 5;
--	r = max_cll % 32;
-+	q = max_avg >> 5;
-+	r = max_avg % 32;
- 	max = (1 << q) * pre_computed_values[r];
- 
- 	// min luminance: maxLum * (CV/255)^2 / 100
+ static inline struct audit_context *audit_alloc_context(enum audit_state state)
 
 
