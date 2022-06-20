@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52043C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:11:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E3F8CCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:11:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245249AbiFTNLD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:11:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53610 "EHLO
+        id S245320AbiFTNLI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:11:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244476AbiFTNHF (ORCPT
+        with ESMTP id S244685AbiFTNH0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:07:05 -0400
+        Mon, 20 Jun 2022 09:07:26 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AB931B788;
-        Mon, 20 Jun 2022 06:00:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 470E51B7A7;
+        Mon, 20 Jun 2022 06:01:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ABBB761542;
-        Mon, 20 Jun 2022 13:00:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A23D1C341C4;
-        Mon, 20 Jun 2022 13:00:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D2EB61530;
+        Mon, 20 Jun 2022 13:00:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92EE8C36AF2;
+        Mon, 20 Jun 2022 13:00:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730037;
-        bh=m++Hn3Fk2NwdqAxL7YXJgjX3tvqr/94r7cEDTL6dAr8=;
+        s=korg; t=1655730043;
+        bh=OYZepqnZF5ehymvjwu9IgTMcBX0/iTdvqxfft0sm+Io=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xcCJsoFnEkYBOMiaers5lppmu81xqABjbc9VI4pCwjLeUrnyrHnF7+Hg5aIE2uGIG
-         gzZQwtAi+2hMHtacXDWOEAD3mFfcYp4rGKxWZvf44ok4RrSSPd/LrgrgbG9opOhqis
-         XkX7cIT76OGm+ASegVUeXf/f6KWSwsSw7yCzsMDg=
+        b=cgfV04eKwEEgOJbi0XgvSumZX5OFc7XHk269eEhw5zJ1wKv9o6136mnTyJKUjY4pW
+         T9IxaWSqt33WDopX9T3ZTEMQKp5LlBD2Ih235Qs+vSGDUc9wolQf46dC9GfTjwtgRT
+         GXWs/P/jbqjiyk3udMfm4JT2t0ulxtZa7F6riA6w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 13/84] ASoC: cs42l51: Correct minimum value for SX volume control
-Date:   Mon, 20 Jun 2022 14:50:36 +0200
-Message-Id: <20220620124721.282891966@linuxfoundation.org>
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Jan Kara <jack@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 15/84] quota: Prevent memory allocation recursion while holding dq_lock
+Date:   Mon, 20 Jun 2022 14:50:38 +0200
+Message-Id: <20220620124721.342085455@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124720.882450983@linuxfoundation.org>
 References: <20220620124720.882450983@linuxfoundation.org>
@@ -50,37 +49,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Matthew Wilcox (Oracle) <willy@infradead.org>
 
-[ Upstream commit fcb3b5a58926d16d9a338841b74af06d4c29be15 ]
+[ Upstream commit 537e11cdc7a6b3ce94fa25ed41306193df9677b7 ]
 
-The minimum value for the PGA Volume is given as 0x1A, however the
-values from there to 0x19 are all the same volume and this is not
-represented in the TLV structure. The number of volumes given is correct
-so this leads to all the volumes being shifted. Move the minimum value
-up to 0x19 to fix this.
+As described in commit 02117b8ae9c0 ("f2fs: Set GF_NOFS in
+read_cache_page_gfp while doing f2fs_quota_read"), we must not enter
+filesystem reclaim while holding the dq_lock.  Prevent this more generally
+by using memalloc_nofs_save() while holding the lock.
 
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220602162119.3393857-7-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20220605143815.2330891-2-willy@infradead.org
+Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+Signed-off-by: Jan Kara <jack@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/cs42l51.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/quota/dquot.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/sound/soc/codecs/cs42l51.c b/sound/soc/codecs/cs42l51.c
-index c61b17dc2af8..fc6a2bc311b4 100644
---- a/sound/soc/codecs/cs42l51.c
-+++ b/sound/soc/codecs/cs42l51.c
-@@ -146,7 +146,7 @@ static const struct snd_kcontrol_new cs42l51_snd_controls[] = {
- 			0, 0xA0, 96, adc_att_tlv),
- 	SOC_DOUBLE_R_SX_TLV("PGA Volume",
- 			CS42L51_ALC_PGA_CTL, CS42L51_ALC_PGB_CTL,
--			0, 0x1A, 30, pga_tlv),
-+			0, 0x19, 30, pga_tlv),
- 	SOC_SINGLE("Playback Deemphasis Switch", CS42L51_DAC_CTL, 3, 1, 0),
- 	SOC_SINGLE("Auto-Mute Switch", CS42L51_DAC_CTL, 2, 1, 0),
- 	SOC_SINGLE("Soft Ramp Switch", CS42L51_DAC_CTL, 1, 1, 0),
+diff --git a/fs/quota/dquot.c b/fs/quota/dquot.c
+index 09fb8459bb5c..65f123d5809b 100644
+--- a/fs/quota/dquot.c
++++ b/fs/quota/dquot.c
+@@ -79,6 +79,7 @@
+ #include <linux/capability.h>
+ #include <linux/quotaops.h>
+ #include <linux/blkdev.h>
++#include <linux/sched/mm.h>
+ #include "../internal.h" /* ugh */
+ 
+ #include <linux/uaccess.h>
+@@ -427,9 +428,11 @@ EXPORT_SYMBOL(mark_info_dirty);
+ int dquot_acquire(struct dquot *dquot)
+ {
+ 	int ret = 0, ret2 = 0;
++	unsigned int memalloc;
+ 	struct quota_info *dqopt = sb_dqopt(dquot->dq_sb);
+ 
+ 	mutex_lock(&dquot->dq_lock);
++	memalloc = memalloc_nofs_save();
+ 	if (!test_bit(DQ_READ_B, &dquot->dq_flags)) {
+ 		ret = dqopt->ops[dquot->dq_id.type]->read_dqblk(dquot);
+ 		if (ret < 0)
+@@ -460,6 +463,7 @@ int dquot_acquire(struct dquot *dquot)
+ 	smp_mb__before_atomic();
+ 	set_bit(DQ_ACTIVE_B, &dquot->dq_flags);
+ out_iolock:
++	memalloc_nofs_restore(memalloc);
+ 	mutex_unlock(&dquot->dq_lock);
+ 	return ret;
+ }
+@@ -471,9 +475,11 @@ EXPORT_SYMBOL(dquot_acquire);
+ int dquot_commit(struct dquot *dquot)
+ {
+ 	int ret = 0;
++	unsigned int memalloc;
+ 	struct quota_info *dqopt = sb_dqopt(dquot->dq_sb);
+ 
+ 	mutex_lock(&dquot->dq_lock);
++	memalloc = memalloc_nofs_save();
+ 	if (!clear_dquot_dirty(dquot))
+ 		goto out_lock;
+ 	/* Inactive dquot can be only if there was error during read/init
+@@ -483,6 +489,7 @@ int dquot_commit(struct dquot *dquot)
+ 	else
+ 		ret = -EIO;
+ out_lock:
++	memalloc_nofs_restore(memalloc);
+ 	mutex_unlock(&dquot->dq_lock);
+ 	return ret;
+ }
+@@ -494,9 +501,11 @@ EXPORT_SYMBOL(dquot_commit);
+ int dquot_release(struct dquot *dquot)
+ {
+ 	int ret = 0, ret2 = 0;
++	unsigned int memalloc;
+ 	struct quota_info *dqopt = sb_dqopt(dquot->dq_sb);
+ 
+ 	mutex_lock(&dquot->dq_lock);
++	memalloc = memalloc_nofs_save();
+ 	/* Check whether we are not racing with some other dqget() */
+ 	if (dquot_is_busy(dquot))
+ 		goto out_dqlock;
+@@ -512,6 +521,7 @@ int dquot_release(struct dquot *dquot)
+ 	}
+ 	clear_bit(DQ_ACTIVE_B, &dquot->dq_flags);
+ out_dqlock:
++	memalloc_nofs_restore(memalloc);
+ 	mutex_unlock(&dquot->dq_lock);
+ 	return ret;
+ }
 -- 
 2.35.1
 
