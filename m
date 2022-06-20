@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC3C1CCA487
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:10:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A6A8C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:10:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244063AbiFTOK1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:10:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44212 "EHLO
+        id S1350017AbiFTOKe (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 10:10:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352926AbiFTN5R (ORCPT
+        with ESMTP id S1350874AbiFTNxy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:57:17 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C46C736E1D;
-        Mon, 20 Jun 2022 06:23:03 -0700 (PDT)
+        Mon, 20 Jun 2022 09:53:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB34D20F78;
+        Mon, 20 Jun 2022 06:20:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 72CC9CE0FF0;
-        Mon, 20 Jun 2022 13:22:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E993C36AE3;
-        Mon, 20 Jun 2022 13:22:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 632B3B811A9;
+        Mon, 20 Jun 2022 13:19:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEA0EC3411B;
+        Mon, 20 Jun 2022 13:19:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731361;
-        bh=SjXAoznO5JPsYpcWKUijlKX7Px6pqsQqLLa1A/Kne20=;
+        s=korg; t=1655731178;
+        bh=ZIGf3OIICc/ZkZtAiW0hV2LGkW+W99wy51TwniPPSIY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L2ZDxbYvXdEAbU9dv3mJSCClHkQ6xmghvTCeVbl3inYaHJ9zcz++WmaLXkbvI5oND
-         m/ngdaIQc7Y31nXyGlaZzYnt0IsXhF/hQEVu993eJiK3ibO056aH7IHqYH5QOkhR+/
-         3kaS8QRRaYspCDONr8jER7jNslctYqT0FBVAYn4Y=
+        b=YPRLamQgDJ7BMByzYpGbP8xbdRambB6NScElYjgMuQX5S+tp3FfaTPK2eVbC+RzI1
+         udTws95uBXrBjLX1J1cqKf1B2Im9KDO0dhIvrdHTdBiLRS3+ISv/rcLK87gdTTZRe3
+         +Wj7scdyPI7bx0snlDEHm+aCZ0pcj+t0EVqpVXXw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Murilo Opsfelder Araujo <muriloo@linux.ibm.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Christophe de Dinechin <dinechin@redhat.com>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH 5.4 233/240] virtio-pci: Remove wrong address verification in vp_del_vqs()
-Date:   Mon, 20 Jun 2022 14:52:14 +0200
-Message-Id: <20220620124745.707271865@linuxfoundation.org>
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.4 178/240] random: avoid checking crng_ready() twice in random_init()
+Date:   Mon, 20 Jun 2022 14:51:19 +0200
+Message-Id: <20220620124744.154108727@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -51,49 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Murilo Opsfelder Araujo <muriloo@linux.ibm.com>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 7e415282b41bf0d15c6e0fe268f822d9b083f2f7 upstream.
+commit 9b29b6b20376ab64e1b043df6301d8a92378e631 upstream.
 
-GCC 12 enhanced -Waddress when comparing array address to null [0],
-which warns:
+The current flow expands to:
 
-    drivers/virtio/virtio_pci_common.c: In function ‘vp_del_vqs’:
-    drivers/virtio/virtio_pci_common.c:257:29: warning: the comparison will always evaluate as ‘true’ for the pointer operand in ‘vp_dev->msix_affinity_masks + (sizetype)((long unsigned int)i * 256)’ must not be NULL [-Waddress]
-      257 |                         if (vp_dev->msix_affinity_masks[i])
-          |                             ^~~~~~
+    if (crng_ready())
+       ...
+    else if (...)
+        if (!crng_ready())
+            ...
 
-In fact, the verification is comparing the result of a pointer
-arithmetic, the address "msix_affinity_masks + i", which will always
-evaluate to true.
+The second crng_ready() call is redundant, but can't so easily be
+optimized out by the compiler.
 
-Under the hood, free_cpumask_var() calls kfree(), which is safe to pass
-NULL, not requiring non-null verification.  So remove the verification
-to make compiler happy (happy compiler, happy life).
+This commit simplifies that to:
 
-[0] https://gcc.gnu.org/bugzilla/show_bug.cgi?id=102103
+    if (crng_ready()
+        ...
+    else if (...)
+        ...
 
-Signed-off-by: Murilo Opsfelder Araujo <muriloo@linux.ibm.com>
-Message-Id: <20220415023002.49805-1-muriloo@linux.ibm.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Acked-by: Christophe de Dinechin <dinechin@redhat.com>
-Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Fixes: 560181c27b58 ("random: move initialization functions out of hot pages")
+Cc: stable@vger.kernel.org
+Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/virtio/virtio_pci_common.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/char/random.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/virtio/virtio_pci_common.c
-+++ b/drivers/virtio/virtio_pci_common.c
-@@ -254,8 +254,7 @@ void vp_del_vqs(struct virtio_device *vd
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -834,7 +834,7 @@ int __init random_init(const char *comma
+ 	if (crng_ready())
+ 		crng_reseed();
+ 	else if (trust_cpu)
+-		credit_init_bits(arch_bytes * 8);
++		_credit_init_bits(arch_bytes * 8);
  
- 	if (vp_dev->msix_affinity_masks) {
- 		for (i = 0; i < vp_dev->msix_vectors; i++)
--			if (vp_dev->msix_affinity_masks[i])
--				free_cpumask_var(vp_dev->msix_affinity_masks[i]);
-+			free_cpumask_var(vp_dev->msix_affinity_masks[i]);
- 	}
- 
- 	if (vp_dev->msix_enabled) {
+ 	return 0;
+ }
 
 
