@@ -2,60 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4A5DC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 04:54:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0980FC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 05:05:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238048AbiFTEy5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 00:54:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37870 "EHLO
+        id S238083AbiFTFF4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 01:05:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233817AbiFTEyz (ORCPT
+        with ESMTP id S229517AbiFTFFy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 00:54:55 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72A7FDEB5
-        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 21:54:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=j30w33pgKvnkmiJ8DHGQfIQa6b/GR+VvA+wwmWWYK7E=; b=O2Mz1eTEa1YyqV2pwYjciVC6Ar
-        OPnfdVrsHZk+V0zKt7DQys+D5CF+U4oJ3lXxZIokHK6DTDVMCruAg9U4hdqtq6fb2kR7X7C7HhiIC
-        qW6gEEie9tDL1Xqk9au/p6lSkP546hglKd8ESKyEN2cgk7qL8mrlUICPzWldciRfQqWxOctuxKNSH
-        kndVFTo93k9kRQ1iLyD0s3ZNs9YLjeiJyN0SKGXvKSw6tjTydG6LqM6Z0mUu7S/Y1FZEUne+usQM7
-        thjX8lz0NebgrIrbyhE3+uHjR+KiTTTxOvDfKlV16di0qyb7OopMtQ5JVRah8sfxstCNWXNh5HLJG
-        PkAQ6DbQ==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o39R2-004sEZ-P9; Mon, 20 Jun 2022 04:54:48 +0000
-Date:   Mon, 20 Jun 2022 05:54:48 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     David Laight <David.Laight@aculab.com>
-Cc:     'Kent Overstreet' <kent.overstreet@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "pmladek@suse.com" <pmladek@suse.com>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "enozhatsky@chromium.org" <enozhatsky@chromium.org>,
-        "linux@rasmusvillemoes.dk" <linux@rasmusvillemoes.dk>
-Subject: Re: [PATCH v4 00/34] Printbufs - new data structure for building
- strings
-Message-ID: <Yq/9mHZ4opmz+df9@casper.infradead.org>
-References: <20220620004233.3805-1-kent.overstreet@gmail.com>
- <0a5901f8460f452a89c9b0cda32fb833@AcuMS.aculab.com>
+        Mon, 20 Jun 2022 01:05:54 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAA9BD133;
+        Sun, 19 Jun 2022 22:05:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655701553; x=1687237553;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=0CFFG2LTJ/49RkrrvRheatNkvjYQNThXwuBHWnmvnA4=;
+  b=j1YcI0skDtK2A7CEIZoPrId9RIgqi6vnXRAOTw88fG7e7Tt1uzb83OEJ
+   9APB0pJEvUXAwdg57/9RDcbPQMzGrmlKI2JoJx/TLZuYbYsYtvYusVKoC
+   7j2OADh6wtW/EoyoGXt6k2FjAoSYGTXt+JYEU88QWaHQz0jjdSSFXfJdn
+   WC6Y831OHB07LXIcOfMV5mvPl5M1SqLqCF10UYY5a2enkefSEwLqQvCuh
+   AFpzl+s8zxgidTJikevPxXTt9ZfXeNkRbOiafBpxUM1KLPQaLLXWrh+nm
+   1KbUxoOTmYaNU45VgYsanYpLvZnht9VIsnGazMhaY7OqN7+ftT0AETtWW
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="259624220"
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="259624220"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2022 22:05:53 -0700
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="654500483"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2022 22:05:48 -0700
+Received: by lahna (sSMTP sendmail emulation); Mon, 20 Jun 2022 08:05:46 +0300
+Date:   Mon, 20 Jun 2022 08:05:46 +0300
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     David Gow <davidgow@google.com>
+Cc:     Brendan Higgins <brendanhiggins@google.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Jeremy Kerr <jk@codeconstruct.com.au>,
+        Daniel Latypov <dlatypov@google.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Longpeng <longpeng2@huawei.com>, kunit-dev@googlegroups.com,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        =?iso-8859-1?Q?Ma=EDra?= Canal <maira.canal@usp.br>,
+        linux-mmc@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
+        openbmc@lists.ozlabs.org, linux-usb@vger.kernel.org,
+        linux-modules@vger.kernel.org,
+        Matt Johnston <matt@codeconstruct.com.au>
+Subject: Re: [PATCH 3/5] thunderbolt: test: Use kunit_test_suite() macro
+Message-ID: <YrAAKqdiG3GAGh1r@lahna>
+References: <20220618090310.1174932-1-davidgow@google.com>
+ <20220618090310.1174932-4-davidgow@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <0a5901f8460f452a89c9b0cda32fb833@AcuMS.aculab.com>
+In-Reply-To: <20220618090310.1174932-4-davidgow@google.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 20, 2022 at 04:19:31AM +0000, David Laight wrote:
-> I really think that is a bad idea.
-> printk() already uses a lot of stack, anything doing a recursive
-> call is just making that worse.
-> Especially since these calls can often be in error paths
-> which are not often tested and can already be on deep stacks.
+On Sat, Jun 18, 2022 at 05:03:08PM +0800, David Gow wrote:
+> The new implementation of kunit_test_suite() for modules no longer
+> conflicts with module_init, so can now be used by the thunderbolt tests.
+> 
+> Also update the Kconfig entry to enable the test when KUNIT_ALL_TESTS is
+> enabled.
+> 
+> This means that kunit_tool can now successfully run and parse the test
+> results with, for example:
+> 	./tools/testing/kunit/kunit.py run --arch=x86_64 \
+> 	--kconfig_add CONFIG_PCI=y --kconfig_add CONFIG_USB4=y \
+> 	'thunderbolt'
+> 
+> Signed-off-by: David Gow <davidgow@google.com>
 
-You made this complaint last time and I challenged you to provide data.
-You have not, as yet, provided data.
+Acked-by: Mika Westerberg <mika.westerberg@linux.intel.com>
