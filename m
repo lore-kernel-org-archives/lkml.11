@@ -2,254 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D67BC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 08:56:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67686C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 08:58:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240382AbiFTI4h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 04:56:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40428 "EHLO
+        id S239981AbiFTI6R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 04:58:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240385AbiFTI4e (ORCPT
+        with ESMTP id S239295AbiFTI6I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 04:56:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D9241AE7B
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 01:56:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655715386;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=xrcQNn+Ra/Wmk9UclwpSlnyoXDjxFRvBSfAIpCmWbBM=;
-        b=Y6nouvtcP0p1VKlrmTzcM2KjrvjXh3b06bw5AYBi37UPDonVRrxQ2NuFY2+HNq3qxFhs+y
-        WQEdHl4j6r9Du8WSZhG6wnYpPdw7IE0cu3dQRKKLs3sDU3c1coYpt4FudE9jiWoPYT2/8L
-        cokOo7gHtro+HwNIt5/Cn3xdkcNssws=
-Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
- [209.85.167.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-55--ygmmNmXNtKB8U38H1iYlg-1; Mon, 20 Jun 2022 04:56:25 -0400
-X-MC-Unique: -ygmmNmXNtKB8U38H1iYlg-1
-Received: by mail-lf1-f71.google.com with SMTP id l12-20020a056512110c00b0047961681d22so5203043lfg.9
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 01:56:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xrcQNn+Ra/Wmk9UclwpSlnyoXDjxFRvBSfAIpCmWbBM=;
-        b=HmTLKHvGrTcF6FkcQ3ox/PZfv1xYqjcerfu73/C6y1dKL2dGrrq0Qk3lLJW51s16v4
-         D1dlQGvCuPx0FWAknbV3Sowq7F1v1RQBSXdAhzt9r7d+9T3Sy1eBcpw/sJPK/xTj1gZv
-         dqCHKHzQjFRxoyQDYxCAzvAYT1q/Z/mKyEHHiu0f/GKgM7p4EvIA4YEusBGJlfDFYgtJ
-         DXjtr0kSCHbXUXK0cVGHTejOo1HL0JAYfVzdOMF+74le0NXZ7Lh8wIaEKV3ft2ye5PU8
-         j7nGpOQ9x2taU/ST+sNdGTT6XTTcAPYPFkAWD+pAarrk6bX/rlyiqWDi0OkZkIXmfUuJ
-         vddg==
-X-Gm-Message-State: AJIora/zY9/YfNqEAeBm9YAsF6slDtnrNN7tazDwNOu3JR+yFvfbAcCh
-        YeCmSfuvcrunsVZAUy2nlAGsyUxCPxeS/V+k56NtDxVlH0cL5ARQSaplg7F7Y0B1/01zQaw6jNY
-        fr1f1umsVkE86LzCjHHfSWjXwplCEwbxwtWX/jhor
-X-Received: by 2002:a2e:3c11:0:b0:25a:7397:94ea with SMTP id j17-20020a2e3c11000000b0025a739794eamr317514lja.323.1655715383661;
-        Mon, 20 Jun 2022 01:56:23 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tpjJXgF3f2rNJJAuO7/ogDPQq7NS3aWvyPEEYwA0wIcZC8D9ot1Ib/elCPZiMD9rO8Q7lLni5edQHYV0gYp1s=
-X-Received: by 2002:a2e:3c11:0:b0:25a:7397:94ea with SMTP id
- j17-20020a2e3c11000000b0025a739794eamr317504lja.323.1655715383436; Mon, 20
- Jun 2022 01:56:23 -0700 (PDT)
+        Mon, 20 Jun 2022 04:58:08 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3685B223;
+        Mon, 20 Jun 2022 01:57:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655715475; x=1687251475;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=27Tz/dNkwLMoj/0Mc6AnPbKP/6tdnuKXsgwtLD/28Fk=;
+  b=PWDF40cFVfW8eH8ywitl8lI0j3iRzW7cWjWJGxqzyspSKRyRXBhNg3TU
+   DTc8W+EGNcs6cuMRrY8H6ConFVTnesKLwUwnnTZ0OaV5UcGx7k90L9Udm
+   HMvOsSYhqGzSX8pn7nJG4b+3xs33AadcYxgnufAYKTRRRclWPDTeBn8rp
+   arR2EdduyJGErpku+vQ4mEKB0UBHkBKlp4tsrjipOn/3JJbxAsqYVxyYX
+   p88Qrqiuc/aqYPve6ruNuZ69gVMly6q/kXhSAt4ilyjire3qw1lIVfxML
+   vJsgyKMoRwwrEAxJdPaOutAxzGxw0yc6yxd3Uasy0W/7Ja0G5bG5aavxU
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="260275239"
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="260275239"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 01:57:55 -0700
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="643019952"
+Received: from lgao7-mobl2.ccr.corp.intel.com (HELO [10.255.31.74]) ([10.255.31.74])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 01:57:52 -0700
+Message-ID: <868f515e-a4ea-8c34-7317-5aba18f8d5f0@linux.intel.com>
+Date:   Mon, 20 Jun 2022 16:57:51 +0800
 MIME-Version: 1.0
-References: <20220616132725.50599-1-elic@nvidia.com> <20220616132725.50599-2-elic@nvidia.com>
-In-Reply-To: <20220616132725.50599-2-elic@nvidia.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Mon, 20 Jun 2022 16:56:12 +0800
-Message-ID: <CACGkMEue-X8-u0Z=EwUbBSV6vmomwNy52Tot3Zf+0pu4Pztutg@mail.gmail.com>
-Subject: Re: [PATCH RFC 1/3] vdpa/mlx5: Implement susupend virtqueue callback
-To:     Eli Cohen <elic@nvidia.com>
-Cc:     eperezma <eperezma@redhat.com>, mst <mst@redhat.com>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Si-Wei Liu <si-wei.liu@oracle.com>,
-        Parav Pandit <parav@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Cc:     baolu.lu@linux.intel.com, Chenyi Qiang <chenyi.qiang@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH 1/1] iommu/vt-d: Fix RID2PASID setup failure
+Content-Language: en-US
+To:     Yi Liu <yi.l.liu@intel.com>, Joerg Roedel <joro@8bytes.org>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>
+References: <20220620081729.4610-1-baolu.lu@linux.intel.com>
+ <03e70268-aadc-7ad2-276b-bf029487a5de@intel.com>
+From:   Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <03e70268-aadc-7ad2-276b-bf029487a5de@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 16, 2022 at 9:27 PM Eli Cohen <elic@nvidia.com> wrote:
->
-> Implement the suspend callback allowing to suspend the virtqueues so
-> they stop processing descriptors. This is required to allow the shadow
-> virtqueue to kick in.
->
-> Signed-off-by: Eli Cohen <elic@nvidia.com>
-> ---
->  drivers/vdpa/mlx5/net/mlx5_vnet.c  | 68 +++++++++++++++++++++++++++++-
->  include/linux/mlx5/mlx5_ifc_vdpa.h |  8 ++++
->  2 files changed, 75 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> index fb0b23e71383..ea4bc8a0cd25 100644
-> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> @@ -895,6 +895,7 @@ static int create_virtqueue(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtque
->         if (err)
->                 goto err_cmd;
->
-> +       mvq->fw_state = MLX5_VIRTIO_NET_Q_OBJECT_STATE_INIT;
->         kfree(in);
->         mvq->virtq_id = MLX5_GET(general_obj_out_cmd_hdr, out, obj_id);
->
-> @@ -922,6 +923,7 @@ static void destroy_virtqueue(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtq
->                 mlx5_vdpa_warn(&ndev->mvdev, "destroy virtqueue 0x%x\n", mvq->virtq_id);
->                 return;
->         }
-> +       mvq->fw_state = MLX5_VIRTIO_NET_Q_OBJECT_NONE;
->         umems_destroy(ndev, mvq);
->  }
->
-> @@ -1121,6 +1123,20 @@ static int query_virtqueue(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueu
->         return err;
->  }
->
-> +static bool is_valid_state_change(int oldstate, int newstate)
-> +{
-> +       switch (oldstate) {
-> +       case MLX5_VIRTIO_NET_Q_OBJECT_STATE_INIT:
-> +               return newstate == MLX5_VIRTIO_NET_Q_OBJECT_STATE_RDY;
-> +       case MLX5_VIRTIO_NET_Q_OBJECT_STATE_RDY:
-> +               return newstate == MLX5_VIRTIO_NET_Q_OBJECT_STATE_SUSPEND;
-> +       case MLX5_VIRTIO_NET_Q_OBJECT_STATE_SUSPEND:
-> +       case MLX5_VIRTIO_NET_Q_OBJECT_STATE_ERR:
-> +       default:
-> +               return false;
-> +       }
-> +}
-> +
->  static int modify_virtqueue(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *mvq, int state)
->  {
->         int inlen = MLX5_ST_SZ_BYTES(modify_virtio_net_q_in);
-> @@ -1130,6 +1146,12 @@ static int modify_virtqueue(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtque
->         void *in;
->         int err;
->
-> +       if (mvq->fw_state == MLX5_VIRTIO_NET_Q_OBJECT_NONE)
-> +               return 0;
-> +
-> +       if (!is_valid_state_change(mvq->fw_state, state))
-> +               return -EINVAL;
-> +
->         in = kzalloc(inlen, GFP_KERNEL);
->         if (!in)
->                 return -ENOMEM;
-> @@ -1991,6 +2013,7 @@ static void mlx5_vdpa_set_vq_ready(struct vdpa_device *vdev, u16 idx, bool ready
->         struct mlx5_vdpa_dev *mvdev = to_mvdev(vdev);
->         struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
->         struct mlx5_vdpa_virtqueue *mvq;
-> +       int err;
->
->         if (!mvdev->actual_features)
->                 return;
-> @@ -2004,8 +2027,16 @@ static void mlx5_vdpa_set_vq_ready(struct vdpa_device *vdev, u16 idx, bool ready
->         }
->
->         mvq = &ndev->vqs[idx];
-> -       if (!ready)
-> +       if (!ready) {
->                 suspend_vq(ndev, mvq);
-> +       } else {
-> +               err = modify_virtqueue(ndev, mvq, MLX5_VIRTIO_NET_Q_OBJECT_STATE_RDY);
-> +               if (err) {
-> +                       mlx5_vdpa_warn(mvdev, "modify VQ %d to ready failed (%d)\n", idx, err);
-> +                       ready = false;
-> +               }
-> +       }
-> +
->
->         mvq->ready = ready;
->  }
-> @@ -2732,6 +2763,39 @@ static int mlx5_vdpa_get_vendor_vq_stats(struct vdpa_device *vdev, u16 idx,
->         return err;
->  }
->
-> +static void mlx5_vdpa_cvq_suspend(struct mlx5_vdpa_dev *mvdev, bool suspend)
-> +{
-> +       struct mlx5_control_vq *cvq;
-> +
-> +       if (!(mvdev->actual_features & BIT_ULL(VIRTIO_NET_F_CTRL_VQ)))
-> +               return;
-> +
-> +       cvq = &mvdev->cvq;
-> +       cvq->ready = !suspend;
-> +}
+On 2022/6/20 16:31, Yi Liu wrote:
+> Hi Baolu,
+> 
+> On 2022/6/20 16:17, Lu Baolu wrote:
+>> The IOMMU driver shares the pasid table for PCI alias devices. When the
+>> RID2PASID entry of the shared pasid table has been filled by the first
+>> device, the subsequent devices will encounter the "DMAR: Setup RID2PASID
+>> failed" failure as the pasid entry has already been marke as present. As
+> 
+> s/marke/marked/
 
-It looks to me we need to synchronize this with reslock. And this
-probably deserve a dedicated fix.
+Updated. Thanks!
 
-> +
-> +static int mlx5_vdpa_suspend(struct vdpa_device *vdev, bool suspend)
-> +{
-> +       struct mlx5_vdpa_dev *mvdev = to_mvdev(vdev);
-> +       struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
-> +       struct mlx5_vdpa_virtqueue *mvq;
-> +       int i;
-> +
-> +       if (!suspend) {
-> +               mlx5_vdpa_warn(mvdev, "Resume of virtqueues is not supported\n");
-> +               return -EOPNOTSUPP;
-> +       }
-> +
-> +       down_write(&ndev->reslock);
-> +       for (i = 0; i < ndev->cur_num_vqs; i++) {
-> +               mvq = &ndev->vqs[i];
-> +               suspend_vq(ndev, mvq);
-> +       }
-> +       mlx5_vdpa_cvq_suspend(mvdev, suspend);
+>> the result, the IOMMU probing process will be aborted.
+>>
+>> This fixes it by skipping RID2PASID setting if the pasid entry has been
+>> populated. This works because the IOMMU core ensures that only the same
+>> IOMMU domain can be attached to all PCI alias devices at the same time.
+> 
+> nit. this sentence is a little bit to interpret. :-) I guess what you want
+> to describe is the PCI alias devices should be attached to the same domain
+> instead of different domain. right?
 
-Do we need to synchronize with the carrier work here? Otherwise we may
-get config notification after suspending.
+Yes.
 
-> +       up_write(&ndev->reslock);
-> +       return 0;
-> +}
-> +
->  static const struct vdpa_config_ops mlx5_vdpa_ops = {
->         .set_vq_address = mlx5_vdpa_set_vq_address,
->         .set_vq_num = mlx5_vdpa_set_vq_num,
-> @@ -2762,6 +2826,7 @@ static const struct vdpa_config_ops mlx5_vdpa_ops = {
->         .get_generation = mlx5_vdpa_get_generation,
->         .set_map = mlx5_vdpa_set_map,
->         .free = mlx5_vdpa_free,
-> +       .suspend = mlx5_vdpa_suspend,
+> 
+> also, does it apply to all domain types? e.g. the SVA domains introduced 
+> in "iommu: SVA and IOPF refactoring"
 
-I don't see the vDPA bus patch to enable this method. Or anything I missed here?
+No. Only about the RID2PASID.
 
-Thanks
+> 
+>> Therefore the subsequent devices just try to setup the RID2PASID entry
+>> with the same domain, which is negligible.
+>>
+>> Fixes: ef848b7e5a6a0 ("iommu/vt-d: Setup pasid entry for RID2PASID 
+>> support")
+>> Reported-by: Chenyi Qiang <chenyi.qiang@intel.com>
+>> Cc: stable@vger.kernel.org
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> ---
+>>   drivers/iommu/intel/iommu.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+>> index 44016594831d..b9966c01a2a2 100644
+>> --- a/drivers/iommu/intel/iommu.c
+>> +++ b/drivers/iommu/intel/iommu.c
+>> @@ -2564,7 +2564,7 @@ static int domain_add_dev_info(struct 
+>> dmar_domain *domain, struct device *dev)
+>>               ret = intel_pasid_setup_second_level(iommu, domain,
+>>                       dev, PASID_RID2PASID);
+>>           spin_unlock_irqrestore(&iommu->lock, flags);
+>> -        if (ret) {
+>> +        if (ret && ret != -EBUSY) {
+>>               dev_err(dev, "Setup RID2PASID failed\n");
+>>               dmar_remove_one_dev_info(dev);
+>>               return ret;
+> 
 
->  };
->
->  static int query_mtu(struct mlx5_core_dev *mdev, u16 *mtu)
-> @@ -2827,6 +2892,7 @@ static void init_mvqs(struct mlx5_vdpa_net *ndev)
->                 mvq->index = i;
->                 mvq->ndev = ndev;
->                 mvq->fwqp.fw = true;
-> +               mvq->fw_state = MLX5_VIRTIO_NET_Q_OBJECT_NONE;
->         }
->         for (; i < ndev->mvdev.max_vqs; i++) {
->                 mvq = &ndev->vqs[i];
-> diff --git a/include/linux/mlx5/mlx5_ifc_vdpa.h b/include/linux/mlx5/mlx5_ifc_vdpa.h
-> index 4414ed5b6ed2..423562f39d3c 100644
-> --- a/include/linux/mlx5/mlx5_ifc_vdpa.h
-> +++ b/include/linux/mlx5/mlx5_ifc_vdpa.h
-> @@ -150,6 +150,14 @@ enum {
->         MLX5_VIRTIO_NET_Q_OBJECT_STATE_ERR      = 0x3,
->  };
->
-> +/* This indicates that the object was not created or has alreadyi
-> + * been desroyed. It is very safe to assume that this object will never
-> + * have so many states
-> + */
-> +enum {
-> +       MLX5_VIRTIO_NET_Q_OBJECT_NONE = 0xffffffff
-> +};
-> +
->  enum {
->         MLX5_RQTC_LIST_Q_TYPE_RQ            = 0x0,
->         MLX5_RQTC_LIST_Q_TYPE_VIRTIO_NET_Q  = 0x1,
-> --
-> 2.35.1
->
-
+--
+Best regards,
+baolu
