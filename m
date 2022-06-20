@@ -2,164 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D598CCA481
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 21:34:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A37D8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 21:34:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241677AbiFTVeC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 17:34:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41888 "EHLO
+        id S243450AbiFTVeW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 17:34:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239653AbiFTVeB (ORCPT
+        with ESMTP id S230160AbiFTVeO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 17:34:01 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10BD71570A;
-        Mon, 20 Jun 2022 14:34:00 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id c2so19273884lfk.0;
-        Mon, 20 Jun 2022 14:33:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=s0R5mmM05lsGfWIfbL6p8eqpR6CxHgnjZf4kJe++K6A=;
-        b=XarjFldC0uD5OUmY2R2d+LkYVknWoBbcxLhDnPZZ5rj5CZfCZ89pqO75sRGhNRWJ67
-         QV6w6lX46zpW6uSgZp/gfYo9LhcajmzJvclYf48zdADp6EvTttBxURmfVcYEqjDnWeLj
-         ZkOkjtzfsONBTWvhTBpch1iXDkHYc3Dyqh+j+XNbL6jWYdrPIixDjopoYknYRaI0R27g
-         IoZ6XjQJyZRYCWuI6+O2VcZQ/ZqP0KLaAVGfCNxyD9OjcME7rgD8JS+Sb2T1WlZq+HA1
-         LiTv6dlmIG8blmjIjMKee+lIEVu1rwbt2ut7h26zb4Ezu5Oc1qo4o+W96nfBmiLDVzOh
-         rCGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=s0R5mmM05lsGfWIfbL6p8eqpR6CxHgnjZf4kJe++K6A=;
-        b=r716l8DpJBuLIxrBCSTNCTN3kVzPp80bKPf14VWkPLG57b6YEapNrLV5OnNtqLFsps
-         Uas76h2Wc7k8m1t4BXDRyVYBBnuboQ7cLVoeKJKdlBELp2lX4fCr6ncAg1ivgbjm07ar
-         mgiGTjYwsq4y2QbQ+ren0g+3sVhM8fHi5twoklSHPlZRmZQZ7ImJUR3yva84XQGtNfas
-         cCCKJ9dCDakjD/him+Ke8doj7qgnz/Ezj2Wdv5jH4/pjJOcvplxvuuEm5+ny9OHW6/k/
-         twW2ptmmo5upbW9RURSmlewiAsaWBptGLYVzsPSaTFcviHoUT0Xc6I88+w0GtnSyJqmB
-         +85g==
-X-Gm-Message-State: AJIora/Yqf6CWP4p+MWZ8HFJ9GoV94HGsc77rsRy/3zYQcq3Y6omTo5s
-        1zf34qeY2XZMm6mR7/B0E5I=
-X-Google-Smtp-Source: AGRyM1tB6Drp/umy1VSMi2cffqS7UB8ehavkbrFBMG3EU0JZUloawCq0vJ3PgIQDSYEZMZgYjILLkg==
-X-Received: by 2002:a05:6512:238a:b0:47f:6a9a:ea39 with SMTP id c10-20020a056512238a00b0047f6a9aea39mr5283214lfv.215.1655760838354;
-        Mon, 20 Jun 2022 14:33:58 -0700 (PDT)
-Received: from mobilestation ([95.79.189.214])
-        by smtp.gmail.com with ESMTPSA id o7-20020a198c07000000b0047255d211e9sm1889833lfd.280.2022.06.20.14.33.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jun 2022 14:33:57 -0700 (PDT)
-Date:   Tue, 21 Jun 2022 00:33:55 +0300
-From:   Serge Semin <fancer.lancer@gmail.com>
-To:     Philipp Zabel <p.zabel@pengutronix.de>,
-        Stephen Boyd <sboyd@kernel.org>
-Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-clk@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 0/8] clk/resets: baikal-t1: Add DDR/PCIe resets and
- xGMAC/SATA fixes
-Message-ID: <20220620213355.q6qlpiy2orninq3g@mobilestation>
-References: <20220610072124.8714-1-Sergey.Semin@baikalelectronics.ru>
+        Mon, 20 Jun 2022 17:34:14 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CC2815707
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 14:34:13 -0700 (PDT)
+Received: from hermes-devbox.fritz.box (82-71-8-225.dsl.in-addr.zen.co.uk [82.71.8.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: bbeckett)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id D2A7A6601704;
+        Mon, 20 Jun 2022 22:34:10 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1655760851;
+        bh=KHg3eOnYqUoUcg57EXhLlpoQHXoJLlQC7w8GyVbN4OU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=d2AswAi9i9pgqblOU7nhiYvSBdnsIFsZAZTH7JNKtTnMBUcSNhPO30faYVLbr4NZO
+         qy+fYfPcD4BQvxwDMUt6g1E5Zmpz7apIMD8/WaEZ2iIoQ/KwC5+3fNek3dK8Vg00xq
+         0PWktKoJWxpBvEGUb9sRn0nBbED29oRVbi7Hd2z6yhk4eMw5Q9gx1PlpBixrj18ay0
+         nWGk/TCAg6XLSWtYCSwzw9ytIlBd1IGnkQcN7OV8btt3bMr4IFs7vXXlMdXt3DzgX9
+         96/AU+KW/aKt3QS6OA4Ryua8bCY0TjREudlQCClUCnLE1vchLSfxE2yx47GCeAqU2c
+         mDWA+bTdKa+RQ==
+From:   Robert Beckett <bob.beckett@collabora.com>
+To:     dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     kernel@collabora.com, Robert Beckett <bob.beckett@collabora.com>,
+        Matthew Auld <matthew.auld@intel.com>,
+        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
+        <thomas.hellstrom@linux.intel.com>, linux-kernel@vger.kernel.org
+Subject: [PATCH v7 01/10] drm/i915/ttm: dont trample cache_level overrides during ttm move
+Date:   Mon, 20 Jun 2022 21:33:31 +0000
+Message-Id: <20220620213340.3199605-2-bob.beckett@collabora.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220620213340.3199605-1-bob.beckett@collabora.com>
+References: <20220620213340.3199605-1-bob.beckett@collabora.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220610072124.8714-1-Sergey.Semin@baikalelectronics.ru>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi @Philipp,
-Could you have a look at the reset-related patches of series? One of
-them is a fix and another one concerns the reset-part of the Clock/Reset
-controller embedded into our SoC.
+Various places within the driver override the default chosen cache_level.
+Before ttm, these overrides were permanent until explicitly changed again
+or for the lifetime of the buffer.
 
-Hi @Stephen,
-The series has been here for about four months now. Can we speed the
-review up somehow?
+TTM movement code came along and decided that it could make that
+decision at that time, which is usually well after object creation, so
+overrode the cache_level decision and reverted it back to its default
+decision.
 
--Sergey
+Add logic to indicate whether the caching mode has been set by anything
+other than the move logic. If so, assume that the code that overrode the
+defaults knows best and keep it.
 
-On Fri, Jun 10, 2022 at 10:21:16AM +0300, Serge Semin wrote:
-> Short summary regarding this patchset. The series starts from fixing a
-> wrong semantic of the device managed optional exclusive bulk reset control
-> getter. Then we suggest a fix of the clocks glitching cause by the Renesas
-> 5P49V6901 chip in some circumstances. Afterwards a few more modifications
-> are introduced to finally finish the Baikal-T1 CCU unit support up and
-> prepare the code before adding the Baikal-T1 PCIe/xGMAC support. First of
-> all it turned out I specified wrong DW xGMAC PTP reference clock divider
-> in my initial patches. It must be 8, not 10. Secondly I was wrong to add a
-> joint xGMAC Ref and PTP clock instead of having them separately defined.
-> The SoC manual describes these clocks as separate fixed clock wrappers.
-> Finally in order to close the SoC clock/reset support up we need to add
-> the DDR and PCIe interfaces reset controls support. It's done in two
-> steps. First I've moved the reset-controls-related code into a dedicated
-> module. Then the DDR/PCIe reset-control functionality is added. As the
-> series finalization we've decided to convert the Baikal-T1 clock/reset
-> source drivers to mainly being the platform device driver and
-> pre-initialize the basic clocks only at the early kernel boot stages.
-> 
-> Link: https://lore.kernel.org/linux-pci/20220324010905.15589-1-Sergey.Semin@baikalelectronics.ru/
-> Changelog v2:
-> - Resubmit the series with adding @Philipp to the list of the recipients.
-> 
-> Link: https://lore.kernel.org/linux-pci/20220330144320.27039-1-Sergey.Semin@baikalelectronics.ru/
-> Changelog v3:
-> - No comments. Just resend the series.
-> - Rebased from v5.17 onto v5.18-rc3.
-> 
-> Link: https://lore.kernel.org/linux-clk/20220503205722.24755-1-Sergey.Semin@baikalelectronics.ru/
-> Changelog v4:
-> - Completely split the CCU Dividers and Resets functionality up. (@Stephen)
-> - Add a new fixes patch: "clk: baikal-t1: Actually enable SATA internal
->   ref clock".
-> - Add a new fixes patch: "reset: Fix devm bulk optional exclusive control
->   getter".
-> - Add a new fixes patch: "clk: vc5: Fix 5P49V6901 outputs disabling when
->   enabling FOD".
-> - Add a new feagure patch: "clk: baikal-t1: Convert to platform device
->   driver".
-> - Change the internal clock ID to the XGMAC-referred name.
-> - Rebase onto the kernel v5.18.
-> 
-> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> Cc: Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>
-> Cc: Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>
-> Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-> Cc: linux-clk@vger.kernel.org
-> Cc: linux-mips@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> 
-> Serge Semin (8):
->   reset: Fix devm bulk optional exclusive control getter
->   clk: vc5: Fix 5P49V6901 outputs disabling when enabling FOD
->   clk: baikal-t1: Fix invalid xGMAC PTP clock divider
->   clk: baikal-t1: Add shared xGMAC ref/ptp clocks internal parent
->   clk: baikal-t1: Add SATA internal ref clock buffer
->   clk: baikal-t1: Move reset-controls code into a dedicated module
->   clk: baikal-t1: Add DDR/PCIe directly controlled resets support
->   clk: baikal-t1: Convert to platform device driver
-> 
->  drivers/clk/baikal-t1/Kconfig       |  12 +-
->  drivers/clk/baikal-t1/Makefile      |   1 +
->  drivers/clk/baikal-t1/ccu-div.c     |  84 +++++++--
->  drivers/clk/baikal-t1/ccu-div.h     |  17 +-
->  drivers/clk/baikal-t1/ccu-pll.h     |   8 +
->  drivers/clk/baikal-t1/ccu-rst.c     |  99 ++++++++++
->  drivers/clk/baikal-t1/ccu-rst.h     |  79 ++++++++
->  drivers/clk/baikal-t1/clk-ccu-div.c | 272 +++++++++++++++++-----------
->  drivers/clk/baikal-t1/clk-ccu-pll.c | 128 ++++++++++---
->  drivers/clk/baikal-t1/clk-ccu-rst.c | 257 ++++++++++++++++++++++++++
->  drivers/clk/clk-versaclock5.c       |   2 +-
->  include/dt-bindings/reset/bt1-ccu.h |   9 +
->  include/linux/reset.h               |   2 +-
->  13 files changed, 814 insertions(+), 156 deletions(-)
->  create mode 100644 drivers/clk/baikal-t1/ccu-rst.c
->  create mode 100644 drivers/clk/baikal-t1/ccu-rst.h
->  create mode 100644 drivers/clk/baikal-t1/clk-ccu-rst.c
-> 
-> -- 
-> 2.35.1
-> 
+Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
+---
+ drivers/gpu/drm/i915/gem/i915_gem_object.c       | 1 +
+ drivers/gpu/drm/i915/gem/i915_gem_object_types.h | 1 +
+ drivers/gpu/drm/i915/gem/i915_gem_ttm.c          | 1 +
+ drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c     | 9 ++++++---
+ 4 files changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_object.c b/drivers/gpu/drm/i915/gem/i915_gem_object.c
+index 06b1b188ce5a..519887769c08 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_object.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_object.c
+@@ -125,6 +125,7 @@ void i915_gem_object_set_cache_coherency(struct drm_i915_gem_object *obj,
+ 	struct drm_i915_private *i915 = to_i915(obj->base.dev);
+ 
+ 	obj->cache_level = cache_level;
++	obj->ttm.cache_level_override = true;
+ 
+ 	if (cache_level != I915_CACHE_NONE)
+ 		obj->cache_coherent = (I915_BO_CACHE_COHERENT_FOR_READ |
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_object_types.h b/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
+index 2c88bdb8ff7c..6632ed52e919 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
++++ b/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
+@@ -605,6 +605,7 @@ struct drm_i915_gem_object {
+ 		struct i915_gem_object_page_iter get_io_page;
+ 		struct drm_i915_gem_object *backup;
+ 		bool created:1;
++		bool cache_level_override:1;
+ 	} ttm;
+ 
+ 	/*
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
+index 4c25d9b2f138..27d59639177f 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
+@@ -1241,6 +1241,7 @@ int __i915_gem_ttm_object_init(struct intel_memory_region *mem,
+ 	i915_gem_object_init_memory_region(obj, mem);
+ 	i915_ttm_adjust_domains_after_move(obj);
+ 	i915_ttm_adjust_gem_after_move(obj);
++	obj->ttm.cache_level_override = false;
+ 	i915_gem_object_unlock(obj);
+ 
+ 	return 0;
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
+index a10716f4e717..4c1de0b4a10f 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
+@@ -123,9 +123,12 @@ void i915_ttm_adjust_gem_after_move(struct drm_i915_gem_object *obj)
+ 	obj->mem_flags |= i915_ttm_cpu_maps_iomem(bo->resource) ? I915_BO_FLAG_IOMEM :
+ 		I915_BO_FLAG_STRUCT_PAGE;
+ 
+-	cache_level = i915_ttm_cache_level(to_i915(bo->base.dev), bo->resource,
+-					   bo->ttm);
+-	i915_gem_object_set_cache_coherency(obj, cache_level);
++	if (!obj->ttm.cache_level_override) {
++		cache_level = i915_ttm_cache_level(to_i915(bo->base.dev),
++						   bo->resource, bo->ttm);
++		i915_gem_object_set_cache_coherency(obj, cache_level);
++		obj->ttm.cache_level_override = false;
++	}
+ }
+ 
+ /**
+-- 
+2.25.1
+
