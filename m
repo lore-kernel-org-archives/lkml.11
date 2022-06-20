@@ -2,138 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B3DCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 15:49:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C118EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 15:49:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242508AbiFTPtR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 11:49:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48230 "EHLO
+        id S237029AbiFTPtZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 11:49:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229814AbiFTPtG (ORCPT
+        with ESMTP id S244332AbiFTPsk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 11:49:06 -0400
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16B101BE9F
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 08:49:05 -0700 (PDT)
-Received: by mail-lj1-x234.google.com with SMTP id n15so751770ljg.8
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 08:49:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=rlaK5EBLGtLc0krm/NL8VjdXnXIvfVQErc2uihOdLNA=;
-        b=apvgpzqNUstKOMcGs47PvJ/CJGiFo3SYPo3oiXc1rEQh2ny24O/ZaJoNVHjnfHcBhL
-         sE1/1NG3Vs/kIMo8gj3Dk2c1z7sWI1F6EdHVU5RcPgXfz+Rrfks6uLTuEu55gw1yM27b
-         nh85POmnWW1OCbeaOgCJ1XfYEXGuLwKCpDlvM5NdDcpG18XiV34MmfpYzn/qxxS3SZdR
-         3w/I/cMlbXoVrCAObEEAHpvGvc4hR6QkugR/gTlGww4Geap1+ZxIUXXzj/4cE8cyHnkL
-         cIeYuaL8KGwLApG0jMafBYFesH5ABExrJ9c2WvNvoIXzvQwm7mV8bNGgDjR8bq5WUCJ8
-         Dg7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=rlaK5EBLGtLc0krm/NL8VjdXnXIvfVQErc2uihOdLNA=;
-        b=ZE3Q8HO0fSdJ4PRYwEhH39IAGYkf08YYUyWhrKcIzxXNWe/CmheJTC05w+6gG/JiPE
-         rsfyXP3U8Db6QCan5ElujgEf2dNIxDRZDo3KKwGRVlfCKMSmZ9dozm7yTLhXwqvERulA
-         kUkxmx7tidKyuhA9T5DaCOxzj/bhT+RxXwMjIYQke777+ClaQS5LRqzXJwdyM/5Aw5EY
-         gO7er1HcF4B5Lh5ToEavjw8KoG67HOvowmoNOslrONmfP4YHEp4jkN1hSDJpg2t9xGvo
-         QAoxAsmo3ovBPhnshJ8RvD7qGPt9prz0WRSmfvNIcV8mF+8bQK66pgJmC0s8U3z648oc
-         WMYA==
-X-Gm-Message-State: AJIora8FMfQqw+2OxSr18e8jzFIuYShG7d3p3ku0/ME8nkI20c7Q2nWQ
-        drGlCKQ7smEmsiT4jQHMM9I=
-X-Google-Smtp-Source: AGRyM1t8jZIIoIQOefBZwbkKIP31jN1TS68e69Tx5q0PTW0PQDRQ78ifLWRGU9zxegOfnvyNtEbWjQ==
-X-Received: by 2002:a05:651c:8f:b0:255:8e6e:1980 with SMTP id 15-20020a05651c008f00b002558e6e1980mr11944050ljq.462.1655740143445;
-        Mon, 20 Jun 2022 08:49:03 -0700 (PDT)
-Received: from otyshchenko.router ([212.22.223.21])
-        by smtp.gmail.com with ESMTPSA id m9-20020a2e9349000000b0024f3d1dae94sm1690149ljh.28.2022.06.20.08.49.02
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 20 Jun 2022 08:49:02 -0700 (PDT)
-From:   Oleksandr Tyshchenko <olekstysh@gmail.com>
-To:     xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org
-Cc:     Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Juergen Gross <jgross@suse.com>, Julien Grall <julien@xen.org>
-Subject: [PATCH V1 2/2] xen/grant-table: Use unpopulated contiguous pages instead of real RAM ones
-Date:   Mon, 20 Jun 2022 18:48:56 +0300
-Message-Id: <1655740136-3974-3-git-send-email-olekstysh@gmail.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1655740136-3974-1-git-send-email-olekstysh@gmail.com>
-References: <1655740136-3974-1-git-send-email-olekstysh@gmail.com>
+        Mon, 20 Jun 2022 11:48:40 -0400
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EC451B786;
+        Mon, 20 Jun 2022 08:48:39 -0700 (PDT)
+Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25KEiC4t002735;
+        Mon, 20 Jun 2022 17:48:13 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=selector1;
+ bh=Xzx/tv6bJhRXsHs2EJ2uFBylLwfelibhKq16XkROMIU=;
+ b=E/35fsXZ4RjYXbP8T40Q9onMSyQ6nQ4Mf2K/j56UtyXf1ihPaBxVigkBACgVgiXe5rWW
+ DxtOgkeSznwxUY4dkb/CMLSlPkHvFu4KeeRy/8ys5/T6j6NR6t8QKEGQJXgAgjKQtj7J
+ iguMLXsBUPKeSnI7iRnfSRdkVMkQ/zmMJZQVX/YHRs9v52V8TFAisTpRq9KCGgbk2oYG
+ DFoNsWZZv7BeD/eU+FW01jSeZboudjHAmwALNMYZj/DIBgY+dSIBERAb3bTwTToi8gmK
+ Ei4KIOA9NmuUdKQiQbwbjmPGg1NfsofubVTzpyNg82csj256TrIbiaLOLF5nMWzZNrdg 7A== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3gs71tmch6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 20 Jun 2022 17:48:13 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 7F23910002A;
+        Mon, 20 Jun 2022 17:48:12 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 622E122ECEF;
+        Mon, 20 Jun 2022 17:48:12 +0200 (CEST)
+Received: from localhost (10.75.127.117) by SHFDAG1NODE1.st.com (10.75.129.69)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Mon, 20 Jun
+ 2022 17:48:12 +0200
+From:   Olivier Moysan <olivier.moysan@foss.st.com>
+To:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Olivier Moysan <olivier.moysan@foss.st.com>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Wan Jiabing <wanjiabing@vivo.com>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>
+Subject: [PATCH 0/2] iio: adc: stm32-adc: add checks on adc state
+Date:   Mon, 20 Jun 2022 17:47:36 +0200
+Message-ID: <20220620154738.801706-1-olivier.moysan@foss.st.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.117]
+X-ClientProxiedBy: GPXDAG2NODE5.st.com (10.75.127.69) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-20_05,2022-06-17_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+On ADC startup a calibration is launched.
+A prerequisite for ADC calibration is to have ADC in disabled state.
+After kernel boot, the ADC state may be unknown as the ADC may have been left enabled by boot stage.
 
-Depends on CONFIG_XEN_UNPOPULATED_ALLOC. If enabled then unpopulated
-contiguous pages will be allocated for grant mapping into instead of
-ballooning out real RAM pages.
+Call ADC disable routine systematically before launching calibration.
+Adapt ADC disable routine to perform disabling sequence according to current ADC state.
 
-Also fallback to allocate DMAable pages (balloon out real RAM pages)
-if we failed to allocate unpopulated contiguous pages. Use recently
-introduced is_xen_unpopulated_page() in gnttab_dma_free_pages() to know
-what API to use for freeing pages.
+Olivier Moysan (2):
+  iio: adc: stm32-adc: make safe adc disable
+  iio: adc: stm32-adc: disable adc before calibration
 
-Signed-off-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
----
-Please note, I haven't re-checked yet the use-case where the xen-swiotlb
-is involved (proposed by Stefano):
-https://lore.kernel.org/xen-devel/alpine.DEB.2.22.394.2206031348230.2783803@ubuntu-linux-20-04-desktop/
-I will re-check that for next version and add corresponding comment
-in the code.
+ drivers/iio/adc/stm32-adc.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-Changes RFC -> V1:
-   - update commit subject/description
-   - rework to avoid introducing alternative implementation
-     of gnttab_dma_alloc(free)_pages(), use IS_ENABLED()
-   - implement a fallback to real RAM pages if we failed to allocate
-     unpopulated contiguous pages (resolve initial TODO)
-   - update according to the API renaming (s/dma/contiguous)
----
- drivers/xen/grant-table.c | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
-
-diff --git a/drivers/xen/grant-table.c b/drivers/xen/grant-table.c
-index 738029d..15e426b 100644
---- a/drivers/xen/grant-table.c
-+++ b/drivers/xen/grant-table.c
-@@ -1047,6 +1047,23 @@ int gnttab_dma_alloc_pages(struct gnttab_dma_alloc_args *args)
- 	size_t size;
- 	int i, ret;
- 
-+	if (IS_ENABLED(CONFIG_XEN_UNPOPULATED_ALLOC)) {
-+		ret = xen_alloc_unpopulated_contiguous_pages(args->dev, args->nr_pages,
-+				args->pages);
-+		if (ret < 0)
-+			goto fallback;
-+
-+		ret = gnttab_pages_set_private(args->nr_pages, args->pages);
-+		if (ret < 0)
-+			goto fail;
-+
-+		args->vaddr = page_to_virt(args->pages[0]);
-+		args->dev_bus_addr = page_to_phys(args->pages[0]);
-+
-+		return ret;
-+	}
-+
-+fallback:
- 	size = args->nr_pages << PAGE_SHIFT;
- 	if (args->coherent)
- 		args->vaddr = dma_alloc_coherent(args->dev, size,
-@@ -1103,6 +1120,13 @@ int gnttab_dma_free_pages(struct gnttab_dma_alloc_args *args)
- 
- 	gnttab_pages_clear_private(args->nr_pages, args->pages);
- 
-+	if (IS_ENABLED(CONFIG_XEN_UNPOPULATED_ALLOC) &&
-+			is_xen_unpopulated_page(args->pages[0])) {
-+		xen_free_unpopulated_contiguous_pages(args->dev, args->nr_pages,
-+				args->pages);
-+		return 0;
-+	}
-+
- 	for (i = 0; i < args->nr_pages; i++)
- 		args->frames[i] = page_to_xen_pfn(args->pages[i]);
- 
 -- 
-2.7.4
+2.25.1
 
