@@ -2,127 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A6DAC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 08:33:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45917CCA47E
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 08:35:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239929AbiFTIdq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 04:33:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49520 "EHLO
+        id S239951AbiFTIfi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 04:35:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239923AbiFTIdm (ORCPT
+        with ESMTP id S239937AbiFTIfc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 04:33:42 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D5DCC12AAB
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 01:33:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655714020;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=s95qKuu92bSeKH0aZ3/xELPzDRZOedRegx+aREtihuc=;
-        b=Xut8mA8TtDeYRKGwhYt2RXtzggxMdoykXa9BCRZnoL3J6w7Qfkkt9xHB006ANqLbYJV7l7
-        J1dzvxZjbBKPcscmfk/csejLyQhSL+fiCBV6E/bHTY5fi3KpLbIVkrX4y8j9J0W2DCrqGd
-        o4snC3+n7vkCIGIz3rWAJndln8AQow0=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-168-xl25lJiYPrKKyhg8iUagcw-1; Mon, 20 Jun 2022 04:33:39 -0400
-X-MC-Unique: xl25lJiYPrKKyhg8iUagcw-1
-Received: by mail-ed1-f71.google.com with SMTP id v7-20020a056402348700b004351fb80abaso8133846edc.14
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 01:33:39 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=s95qKuu92bSeKH0aZ3/xELPzDRZOedRegx+aREtihuc=;
-        b=SiuGiuUtiICzlqghxUPF2E5ZHcXzJk1+qjwkfDo2EdQa29dOc/Cl80aXK1WQjZVoHW
-         fI9Hzy4db2Z7sxwlC1ob1rpjUl30UXrfDHe5/gH0h6Ze8e+cXAHpto0kiT+y/laaRW08
-         bljI6u+BlnO9h2txeoMNFrsmgxYWt1YC0+NjtEqPciykG++h5WTJYcB6s/lyDxDuNIln
-         9HL8vTknVlXL0MzT0qlZJYePgWvES6pcPaPY/lHPvoAMVGdIyHIwAYIGKADh9XrVKeu0
-         NgIWv2ChrBLMjiJMjJJFVeGJXDcB6J9sjWCdf8pX4IZ4+h66+3LmrG9040sJKtXGH7kh
-         Hpfg==
-X-Gm-Message-State: AJIora/eIBeey6CQZMr4pGIX4+qBd8Klk+xuz5VQGZeu5Qt+U5CIlyLn
-        OGDSKTubf8OU1ahvCDwvFvNTs0HpsPZ6L6tYQk7EeuFz2OVOGUF3zLsJz2lhqFl8koa/r45tyFh
-        z6E85sSBFCa6d8aoA7tBYGsl4
-X-Received: by 2002:a17:906:739d:b0:712:302b:78e9 with SMTP id f29-20020a170906739d00b00712302b78e9mr19873761ejl.569.1655714018257;
-        Mon, 20 Jun 2022 01:33:38 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uyrfJgH0+gpIxQpeX3a3HZYLY1xLEZIV+pxlL5GmSIFXUoGfbyVquYWqAyVmpegV8CQ4sa+g==
-X-Received: by 2002:a17:906:739d:b0:712:302b:78e9 with SMTP id f29-20020a170906739d00b00712302b78e9mr19873751ejl.569.1655714018072;
-        Mon, 20 Jun 2022 01:33:38 -0700 (PDT)
-Received: from [10.87.1.19] ([145.15.244.207])
-        by smtp.gmail.com with ESMTPSA id j17-20020a17090623f100b00711d5baae0esm5592487ejg.145.2022.06.20.01.33.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Jun 2022 01:33:37 -0700 (PDT)
-Message-ID: <1a8e3e3a-1008-b52b-b7e9-117fd43e77d4@redhat.com>
-Date:   Mon, 20 Jun 2022 10:33:36 +0200
+        Mon, 20 Jun 2022 04:35:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28DF012ABA;
+        Mon, 20 Jun 2022 01:35:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B7B5961312;
+        Mon, 20 Jun 2022 08:35:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63960C341C4;
+        Mon, 20 Jun 2022 08:35:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655714129;
+        bh=13hg9vAkkqd9KUoEdzPHfQiVrLh+Dwj/Z4m2brBRv/E=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=Wt+Hw/L1fCzUcxbpNqWYqN7YvWq3lC2gopJ/YTr0pvKv5ePS0hf6ox+9pLrR9aITY
+         C1vqDTMKGnMOtLPSjMrCQrjgcghuqnfKSTuO0QqRky7mwXK+5WC+1ddnQB8TveAXQD
+         P6MR/B5fVAYSr0e4bmc9p0kLYd1BE6ulJAeMed/fj5stiNuQhqNCO5IO4FdFH61+4v
+         izmuPnWbF1E0mhqvCA5ziag9h2ALMkYp+RmQuZvCTBdS4VvPz1wt6sgQYiLLr8a92p
+         ZPybJjNFOUxq1s6JLDLCnAkQzH+ORNu9izrifoBC70Do0114sBeMuhrs6Ad5thN1Tb
+         NKot9bhO4uzRQ==
+Message-ID: <e3411d6c-ec64-f20e-4c58-13245fe255b5@kernel.org>
+Date:   Mon, 20 Jun 2022 10:35:20 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v1 1/2] mfd: intel_soc_pmic_chtwc: Use dev_err_probe()
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v3 3/5] PCI: axis: Add ARTPEC-8 PCIe controller driver
 Content-Language: en-US
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-kernel@vger.kernel.org
-Cc:     Andy Shevchenko <andy@kernel.org>, Lee Jones <lee.jones@linaro.org>
-References: <20220616171009.43524-1-andriy.shevchenko@linux.intel.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <20220616171009.43524-1-andriy.shevchenko@linux.intel.com>
+To:     wangseok.lee@samsung.com,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
+        "kishon@ti.com" <kishon@ti.com>,
+        "vkoul@kernel.org" <vkoul@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "jesper.nilsson@axis.com" <jesper.nilsson@axis.com>,
+        "lars.persson@axis.com" <lars.persson@axis.com>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "linux-phy@lists.infradead.org" <linux-phy@lists.infradead.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>,
+        "kw@linux.com" <kw@linux.com>,
+        "linux-arm-kernel@axis.com" <linux-arm-kernel@axis.com>,
+        "kernel@axis.com" <kernel@axis.com>
+Cc:     Moon-Ki Jun <moonki.jun@samsung.com>,
+        Sang Min Kim <hypmean.kim@samsung.com>,
+        Dongjin Yang <dj76.yang@samsung.com>,
+        Yeeun Kim <yeeun119.kim@samsung.com>
+References: <20220614011616epcms2p7dcaa67c53b7df5802dd7a697e2d472d7@epcms2p7>
+ <CGME20220614011616epcms2p7dcaa67c53b7df5802dd7a697e2d472d7@epcms2p3>
+ <20220614013042epcms2p36f88b7eb7f879fefb2f3fbd4548ad705@epcms2p3>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <20220614013042epcms2p36f88b7eb7f879fefb2f3fbd4548ad705@epcms2p3>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-On 6/16/22 19:10, Andy Shevchenko wrote:
-> Simplify the mux error path a bit by using dev_err_probe().
+On 14/06/2022 03:30, Wangseok Lee wrote:
+> Add support Axis, ARTPEC-8 SoC.
+> ARTPEC-8 is the SoC platform of Axis Communications.
 > 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Thanks, patch looks good to me:
+(...)
 
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-
-Regards,
-
-Hans
-
-
-> ---
->  drivers/mfd/intel_soc_pmic_chtwc.c | 19 +++++++------------
->  1 file changed, 7 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/mfd/intel_soc_pmic_chtwc.c b/drivers/mfd/intel_soc_pmic_chtwc.c
-> index 4eab191e053a..1cbe2bcce530 100644
-> --- a/drivers/mfd/intel_soc_pmic_chtwc.c
-> +++ b/drivers/mfd/intel_soc_pmic_chtwc.c
-> @@ -179,18 +179,13 @@ static int cht_wc_probe(struct i2c_client *client)
->  	int ret;
->  
->  	status = acpi_evaluate_integer(ACPI_HANDLE(dev), "_HRV", NULL, &hrv);
-> -	if (ACPI_FAILURE(status)) {
-> -		dev_err(dev, "Failed to get PMIC hardware revision\n");
-> -		return -ENODEV;
-> -	}
-> -	if (hrv != CHT_WC_HRV) {
-> -		dev_err(dev, "Invalid PMIC hardware revision: %llu\n", hrv);
-> -		return -ENODEV;
-> -	}
-> -	if (client->irq < 0) {
-> -		dev_err(dev, "Invalid IRQ\n");
-> -		return -EINVAL;
-> -	}
-> +	if (ACPI_FAILURE(status))
-> +		return dev_err_probe(dev, -ENODEV, "Failed to get PMIC hardware revision\n");
-> +	if (hrv != CHT_WC_HRV)
-> +		return dev_err_probe(dev, -ENODEV, "Invalid PMIC hardware revision: %llu\n", hrv);
 > +
-> +	if (client->irq < 0)
-> +		return dev_err_probe(dev, -EINVAL, "Invalid IRQ\n");
->  
->  	pmic = devm_kzalloc(dev, sizeof(*pmic), GFP_KERNEL);
->  	if (!pmic)
+> +enum artpec8_pcie_isolation {
+> +	PCIE_CLEAR_ISOLATION = 0,
+> +	PCIE_SET_ISOLATION = 1
+> +};
+> +
+> +enum artpec8_pcie_reg_bit {
+> +	PCIE_REG_BIT_LOW = 0,
+> +	PCIE_REG_BIT_HIGH = 1
+> +};
 
+Remove this enum. This is redefinition of true/false or 1/0.
+
+Best regards,
+Krzysztof
