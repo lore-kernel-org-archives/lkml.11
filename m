@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AAF8C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:21:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 442E6CCA480
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:21:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343781AbiFTNVB (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:21:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36244 "EHLO
+        id S243472AbiFTNVS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:21:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343789AbiFTNO6 (ORCPT
+        with ESMTP id S245521AbiFTNPT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:14:58 -0400
+        Mon, 20 Jun 2022 09:15:19 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DDCE1FCF3;
-        Mon, 20 Jun 2022 06:07:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A40F1205DB;
+        Mon, 20 Jun 2022 06:07:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0E9D7B811C0;
-        Mon, 20 Jun 2022 13:07:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 600B9C3411C;
-        Mon, 20 Jun 2022 13:07:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D6C33B811E4;
+        Mon, 20 Jun 2022 13:07:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30CACC341C4;
+        Mon, 20 Jun 2022 13:07:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730427;
-        bh=ZDUqt44bbeOu9tG6SfC5lmwbRy4fFSZTfMu/NpoAug8=;
+        s=korg; t=1655730443;
+        bh=ewSc+jsaxjM97OMqH/o18M9kZ/tKjUODyLRSXvYtIVU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bU1dXaUsV3sxDtJOAtF4ygOoDDk56O3pXTMRAvic+Aza5ZzETQ7Envd7g706qWl1v
-         8SOfuGqbYffNCUFL/dFcUza9EkrgvNtASbolpVPatBqFK77XBq4LriXcsvxfuvXA81
-         CglMxo6yliUsKpIxWI8172If1j/kT34Oo3AZ4wV0=
+        b=DJ7FsYxz6LZm/sU3CvNU/SfXQI2tvqZl7glifLoHKnuvMW7hl97D4kttubXo5shLG
+         C7yMQiiS9QLgLBvQRUK7AgUtRGGYKxzCpjTb+MAGSiLlYoizHTVPsWjnUBhEzLkOxd
+         2foXjHMtRT0a8EJ/m5obISN2F+NPPQ9Wle01Gqx8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        stable@vger.kernel.org,
+        Saurabh Sengar <ssengar@linux.microsoft.com>,
         Michael Kelley <mikelley@microsoft.com>,
         Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 050/106] clocksource: hyper-v: unexport __init-annotated hv_init_clocksource()
-Date:   Mon, 20 Jun 2022 14:51:09 +0200
-Message-Id: <20220620124725.870459142@linuxfoundation.org>
+Subject: [PATCH 5.15 054/106] Drivers: hv: vmbus: Release cpu lock in error case
+Date:   Mon, 20 Jun 2022 14:51:13 +0200
+Message-Id: <20220620124725.998075971@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
 References: <20220620124724.380838401@linuxfoundation.org>
@@ -52,50 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masahiro Yamada <masahiroy@kernel.org>
+From: Saurabh Sengar <ssengar@linux.microsoft.com>
 
-[ Upstream commit 245b993d8f6c4e25f19191edfbd8080b645e12b1 ]
+[ Upstream commit 656c5ba50b7172a0ea25dc1b37606bd51d01fe8d ]
 
-EXPORT_SYMBOL and __init is a bad combination because the .init.text
-section is freed up after the initialization. Hence, modules cannot
-use symbols annotated __init. The access to a freed symbol may end up
-with kernel panic.
+In case of invalid sub channel, release cpu lock before returning.
 
-modpost used to detect it, but it has been broken for a decade.
-
-Recently, I fixed modpost so it started to warn it again, then this
-showed up in linux-next builds.
-
-There are two ways to fix it:
-
-  - Remove __init
-  - Remove EXPORT_SYMBOL
-
-I chose the latter for this case because the only in-tree call-site,
-arch/x86/kernel/cpu/mshyperv.c is never compiled as modular.
-(CONFIG_HYPERVISOR_GUEST is boolean)
-
-Fixes: dd2cb348613b ("clocksource/drivers: Continue making Hyper-V clocksource ISA agnostic")
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Reviewed-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Fixes: a949e86c0d780 ("Drivers: hv: vmbus: Resolve race between init_vp_index() and CPU hotplug")
+Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
 Reviewed-by: Michael Kelley <mikelley@microsoft.com>
-Link: https://lore.kernel.org/r/20220606050238.4162200-1-masahiroy@kernel.org
+Link: https://lore.kernel.org/r/1654794996-13244-1-git-send-email-ssengar@linux.microsoft.com
 Signed-off-by: Wei Liu <wei.liu@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clocksource/hyperv_timer.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/hv/channel_mgmt.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/clocksource/hyperv_timer.c b/drivers/clocksource/hyperv_timer.c
-index ff188ab68496..bb47610bbd1c 100644
---- a/drivers/clocksource/hyperv_timer.c
-+++ b/drivers/clocksource/hyperv_timer.c
-@@ -565,4 +565,3 @@ void __init hv_init_clocksource(void)
- 	hv_sched_clock_offset = hv_read_reference_counter();
- 	hv_setup_sched_clock(read_hv_sched_clock_msr);
- }
--EXPORT_SYMBOL_GPL(hv_init_clocksource);
+diff --git a/drivers/hv/channel_mgmt.c b/drivers/hv/channel_mgmt.c
+index ce76fc382799..07003019263a 100644
+--- a/drivers/hv/channel_mgmt.c
++++ b/drivers/hv/channel_mgmt.c
+@@ -637,6 +637,7 @@ static void vmbus_process_offer(struct vmbus_channel *newchannel)
+ 		 */
+ 		if (newchannel->offermsg.offer.sub_channel_index == 0) {
+ 			mutex_unlock(&vmbus_connection.channel_mutex);
++			cpus_read_unlock();
+ 			/*
+ 			 * Don't call free_channel(), because newchannel->kobj
+ 			 * is not initialized yet.
 -- 
 2.35.1
 
