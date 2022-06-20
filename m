@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BF13C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:05:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46F8EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:05:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244392AbiFTNFO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:05:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47424 "EHLO
+        id S244406AbiFTNFQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:05:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244481AbiFTNDk (ORCPT
+        with ESMTP id S244553AbiFTNDn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:03:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 788331EAE1;
-        Mon, 20 Jun 2022 05:58:20 -0700 (PDT)
+        Mon, 20 Jun 2022 09:03:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AA041E3DB;
+        Mon, 20 Jun 2022 05:58:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D16661543;
-        Mon, 20 Jun 2022 12:58:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9984DC3411C;
-        Mon, 20 Jun 2022 12:58:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B7AB061449;
+        Mon, 20 Jun 2022 12:58:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C508EC341C6;
+        Mon, 20 Jun 2022 12:58:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655729899;
-        bh=9CXotcOEN4LmqbhAxjjPOPUo1jo6/xqjSYmfQc5Ijsw=;
+        s=korg; t=1655729890;
+        bh=KJ2SapzxlRMwj2wOaVCg3xVM4XQkTl/+A3xCbWmz0Ww=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TU8MGXy5KSDhNWdC2eaJok8xWA9ji7Q977kT2ttvjhXy4coRT/f9kQxU5jBt2r6IQ
-         H3b9TADl3ylTw1tw3Eaz+8yKlNjpvQFHanU0n+1M77kRH1jOd8x5EutvVeCpYNTVhP
-         gUxg5zfOVJIQSKQuYj1IRKPy6thlCMTEnjwRgNCk=
+        b=zwq3XoJsTtp50Jks7sEpSIi/toPXX7nGAUAiNuyAAsOP3jUp1TSmktnyDZAfRGRFQ
+         gwL5V/eDfCrlfyEZdy5mqNJpj10m5aldQgqlZSqrF4i7EzJ5WtxM0J0jS5LTpkETFt
+         ijYG5DoavehZLo2jZ2SW/ucOxbsY1Tlj3cB7qR5o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephan Gerhold <stephan@gerhold.net>
-Subject: [PATCH 5.18 110/141] usb: dwc3: pci: Restore line lost in merge conflict resolution
-Date:   Mon, 20 Jun 2022 14:50:48 +0200
-Message-Id: <20220620124732.793486825@linuxfoundation.org>
+        stable@vger.kernel.org, stable <stable@kernel.org>,
+        Minas Harutyunyan <hminas@synopsys.com>,
+        Miaoqian Lin <linmq006@gmail.com>
+Subject: [PATCH 5.18 107/141] usb: dwc2: Fix memory leak in dwc2_hcd_init
+Date:   Mon, 20 Jun 2022 14:50:45 +0200
+Message-Id: <20220620124732.706983940@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 References: <20220620124729.509745706@linuxfoundation.org>
@@ -47,41 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephan Gerhold <stephan@gerhold.net>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 7ddda2614d62ef7fdef7fd85f5151cdf665b22d8 upstream.
+commit 3755278f078460b021cd0384562977bf2039a57a upstream.
 
-Commit 582ab24e096f ("usb: dwc3: pci: Set "linux,phy_charger_detect"
-property on some Bay Trail boards") added a new swnode similar to the
-existing ones for boards where the PHY handles charger detection.
+usb_create_hcd will alloc memory for hcd, and we should
+call usb_put_hcd to free it when platform_get_resource()
+fails to prevent memory leak.
+goto error2 label instead error1 to fix this.
 
-Unfortunately, the "linux,sysdev_is_parent" property got lost in the
-merge conflict resolution of commit ca9400ef7f67 ("Merge 5.17-rc6 into
-usb-next"). Now dwc3_pci_intel_phy_charger_detect_properties is the
-only swnode in dwc3-pci that is missing "linux,sysdev_is_parent".
-
-It does not seem to cause any obvious functional issues, but it's
-certainly unintended so restore the line to make the properties
-consistent again.
-
-Fixes: ca9400ef7f67 ("Merge 5.17-rc6 into usb-next")
-Cc: stable@vger.kernel.org
-Signed-off-by: Stephan Gerhold <stephan@gerhold.net>
-Link: https://lore.kernel.org/r/20220528170913.9240-1-stephan@gerhold.net
+Fixes: 856e6e8e0f93 ("usb: dwc2: check return value after calling platform_get_resource()")
+Cc: stable <stable@kernel.org>
+Acked-by: Minas Harutyunyan <hminas@synopsys.com>
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220530085413.44068-1-linmq006@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/dwc3/dwc3-pci.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/usb/dwc2/hcd.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/usb/dwc3/dwc3-pci.c
-+++ b/drivers/usb/dwc3/dwc3-pci.c
-@@ -127,6 +127,7 @@ static const struct property_entry dwc3_
- 	PROPERTY_ENTRY_STRING("dr_mode", "peripheral"),
- 	PROPERTY_ENTRY_BOOL("snps,dis_u2_susphy_quirk"),
- 	PROPERTY_ENTRY_BOOL("linux,phy_charger_detect"),
-+	PROPERTY_ENTRY_BOOL("linux,sysdev_is_parent"),
- 	{}
- };
- 
+--- a/drivers/usb/dwc2/hcd.c
++++ b/drivers/usb/dwc2/hcd.c
+@@ -5190,7 +5190,7 @@ int dwc2_hcd_init(struct dwc2_hsotg *hso
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	if (!res) {
+ 		retval = -EINVAL;
+-		goto error1;
++		goto error2;
+ 	}
+ 	hcd->rsrc_start = res->start;
+ 	hcd->rsrc_len = resource_size(res);
 
 
