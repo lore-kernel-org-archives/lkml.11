@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDDEBC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 00:43:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF2EFCCA47A
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 00:43:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237965AbiFTAnX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 19 Jun 2022 20:43:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43722 "EHLO
+        id S237439AbiFTAn0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 19 Jun 2022 20:43:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237747AbiFTAnI (ORCPT
+        with ESMTP id S237816AbiFTAnL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 19 Jun 2022 20:43:08 -0400
-Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F1466585
-        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 17:42:54 -0700 (PDT)
-Received: by mail-qk1-x72e.google.com with SMTP id d128so6880176qkg.8
-        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 17:42:54 -0700 (PDT)
+        Sun, 19 Jun 2022 20:43:11 -0400
+Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69880B4B4
+        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 17:42:58 -0700 (PDT)
+Received: by mail-qv1-xf2a.google.com with SMTP id p31so13998603qvp.5
+        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 17:42:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=fmnZsBS7ICfhtPbFVJE00Af049vTUvEMSfkA9G33Z+Y=;
-        b=FS+p1cBlMgrvZr0p4b+tva3wEIao0KwdEJw4GNGD0MkRDG+Q78eE9bMbYmNKtz1DFW
-         GYcGcOEivpoUJV4yz/3AMofzVI9M8D5IHkPwmR43g0hZNzL2RqObGCtM+s3hyXdZq783
-         xLNOzqLaOM6J7c3kv6aoM5vBqMw0zgVGzD2LoWbaO7xkjPaZXtnuAlFvKDfkD8uYtTZd
-         ZRCJVXDTZy/0Ev8v0CWU9Eb7XNDiYE0PjEzKuUhKWCrILL/AKr1H5WNdMMggHtDpzHM/
-         clj7iSjtJR+pHdqJp9SNzOJ7LOOnh768E6/lULh9I5d3iDT6/zzudxsdIJHoxuM45QLq
-         OktA==
+        bh=4+doRSndIqb/FisTLPVe5Bh/ofBw5aQUkb0tO+s0zbQ=;
+        b=WRsAgh5sLiSXnUWsFWUdKfv3snQ371BnO978e4fY372IVVti8PHQr4mdmPcHCoZIfl
+         cWczSiCcC50anmfaWm5q+8+IS6sHDTgs3xufm0GoK1c6bn3oMXlKLNMszpjs0bDm7H9b
+         VJm2O7Ylezs9ZcWjgYT74IdKN+FJ+ItstRUT58jSjskNJXfCspOSSunzLuskncp+UTom
+         ETzU9mOWaaMZ0IN7+jLeqWPNOuFYTit5m4dagIJPviypEkq0hnRkrDJ4tK9AgOtHougZ
+         o2L9q/1OmXm/Y7ZyrFN6uDiZMnY883rXN8+npJm2rHrMai7cWfip3CRSNksw6aBnugVH
+         J6wg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=fmnZsBS7ICfhtPbFVJE00Af049vTUvEMSfkA9G33Z+Y=;
-        b=tttIGVoLdvN6moR2cU9O/Uyey8/Vx9xnmIBxY5KMiAWYszEfOq7TmUereCavKq0c5V
-         HbZMPMTRY2uZTO/BjBdz2VqjhASSIRgfqS4pzF1Acw8rLr+sC/TFRCf2LXnWKjDYLpu3
-         Fpi20Yzo1mMBHQCL2XwPj2qN7HXEPfY6SUSibUy2idxk8C+V6PRRBJSl88bmTxLoJZQr
-         DnxtPS/B3FRNO3gUp70bKPUKs1rEoJIutiNojNBsANnjlntw3TEv2I6eGnBkMa5n61jt
-         UMl8UUNjulT4vJTTLsw+/DZWOGXAwHc4/tyGuUsmAAnbwgIOg4i8Gjxq5DGOeVsNhxb+
-         oHQg==
-X-Gm-Message-State: AJIora/wMfd6uOj+IEwhJMxMnBE/rqLV+7rZoaSwk5tkhREARFaI/wYx
-        YKPAe+5ohGCu93wPdRVnjJCt9tYmMZ3Vae8=
-X-Google-Smtp-Source: AGRyM1tBmrxf1indi/uvJgmAPcm0cBP3mfXeFK9mluLQyQy1jfh9ZCHnRGgEBFB8u9JlPE8+z6ipmw==
-X-Received: by 2002:a05:620a:d94:b0:6a6:6c9c:c7ec with SMTP id q20-20020a05620a0d9400b006a66c9cc7ecmr14807435qkl.221.1655685772861;
-        Sun, 19 Jun 2022 17:42:52 -0700 (PDT)
+        bh=4+doRSndIqb/FisTLPVe5Bh/ofBw5aQUkb0tO+s0zbQ=;
+        b=u4k/HewOLoewD/82d+CP7BMxlOunqfQi8GAi/xjRK/gA/uxs8u71Lvu3aofnjkMnNL
+         e9uXIfV7V0Dn9cVJizoXo50kTznVYS/dqIa8yI7QEfMBJ61uCTfHZA+iuxLOKocX0BrY
+         NqDqUnPt1Ohwv4ZuVHE48/KL7Say8O2Zyqw/ysv0OY8Qi4ufFp0FAM5qypbtqruR2lpQ
+         BPbHqRyArJTcqKUseVwFRA0wKppw/Sv/XsEfzQZQvXpNTaRcHR40sI+XXD+4SjfAHfHP
+         OPpk/q1v9S2AbbHLUmLV/8G5wdK3hT4N6SJubTVoLHUkAn0QR6EXuwSrNubxP+VfBwyi
+         zhPA==
+X-Gm-Message-State: AJIora/1i1qlXlaryHKk09+5vCrun/HmV69VKHhQFjWQhHHYz9TjRZ2W
+        Xe6NXH/T/n3Roe3/0LysD61MiqzXk745HAY=
+X-Google-Smtp-Source: AGRyM1vA0V9RjbIKZsYA7zZoD0L520hpVBmC/QV5Y4Fl5nCasrnrNz3TXtyGGqCBHjwmSFxKxKwLGQ==
+X-Received: by 2002:a05:6214:c82:b0:46a:b677:e284 with SMTP id r2-20020a0562140c8200b0046ab677e284mr16988331qvr.28.1655685777230;
+        Sun, 19 Jun 2022 17:42:57 -0700 (PDT)
 Received: from localhost (c-73-219-103-14.hsd1.vt.comcast.net. [73.219.103.14])
-        by smtp.gmail.com with ESMTPSA id i21-20020a05620a405500b0069fe1dfbeffsm11316870qko.92.2022.06.19.17.42.52
+        by smtp.gmail.com with ESMTPSA id l16-20020a05620a28d000b006a6cadd89efsm11521487qkp.82.2022.06.19.17.42.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 19 Jun 2022 17:42:52 -0700 (PDT)
+        Sun, 19 Jun 2022 17:42:55 -0700 (PDT)
 From:   Kent Overstreet <kent.overstreet@gmail.com>
 To:     linux-kernel@vger.kernel.org, linux-mm@kvack.org, pmladek@suse.com
 Cc:     Kent Overstreet <kent.overstreet@gmail.com>, rostedt@goodmis.org,
         enozhatsky@chromium.org, linux@rasmusvillemoes.dk,
         willy@infradead.org
-Subject: [PATCH v4 09/34] lib/printbuf: Unit specifiers
-Date:   Sun, 19 Jun 2022 20:42:08 -0400
-Message-Id: <20220620004233.3805-10-kent.overstreet@gmail.com>
+Subject: [PATCH v4 11/34] vsprintf: Improve number()
+Date:   Sun, 19 Jun 2022 20:42:10 -0400
+Message-Id: <20220620004233.3805-12-kent.overstreet@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620004233.3805-1-kent.overstreet@gmail.com>
 References: <20220620004233.3805-1-kent.overstreet@gmail.com>
@@ -65,143 +65,154 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This adds options to printbuf for specifying whether units should be
-printed raw (default) or with human readable units, and for controlling
-whether human-readable units should be base 2 (default), or base 10.
-
-This also adds new helpers that obey these options:
-
- - pr_human_readable_u64
- - pr_human_readable_s64
-These obey printbuf->si_units
-
- - pr_units_u64
- - pr_units_s64
-These obey both printbuf-human_readable_units and printbuf->si_units
+This patch refactors number() to make it a bit clearer, and it also
+changes it to call printbuf_make_room() only once at the start, instead
+of in the printbuf output helpers.
 
 Signed-off-by: Kent Overstreet <kent.overstreet@gmail.com>
 ---
- include/linux/printbuf.h | 15 +++++++++++
- lib/printbuf.c           | 57 ++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 72 insertions(+)
+ lib/vsprintf.c | 83 +++++++++++++++++++++++++-------------------------
+ 1 file changed, 41 insertions(+), 42 deletions(-)
 
-diff --git a/include/linux/printbuf.h b/include/linux/printbuf.h
-index 1e43c47891..5100287eed 100644
---- a/include/linux/printbuf.h
-+++ b/include/linux/printbuf.h
-@@ -53,11 +53,20 @@
-  *
-  * Make sure you use prt_newline() instead of \n in the format string for indent
-  * level and tabstops to work corretly.
-+ *
-+ * Output units: printbuf->units exists to tell pretty-printers how to output
-+ * numbers: a raw value (e.g. directly from a superblock field), as bytes, or as
-+ * human readable bytes. prt_units() obeys it.
-  */
+diff --git a/lib/vsprintf.c b/lib/vsprintf.c
+index 5afa74dda5..7d20406deb 100644
+--- a/lib/vsprintf.c
++++ b/lib/vsprintf.c
+@@ -458,93 +458,92 @@ void number(struct printbuf *out, unsigned long long num,
+ {
+ 	/* put_dec requires 2-byte alignment of the buffer. */
+ 	char tmp[3 * sizeof(num)] __aligned(2);
+-	char sign;
+-	char locase;
++	char sign = 0;
++	/* locase = 0 or 0x20. ORing digits or letters with 'locase'
++	 * produces same digits or (maybe lowercased) letters */
++	char locase = (spec.flags & SMALL);
+ 	int need_pfx = ((spec.flags & SPECIAL) && spec.base != 10);
+-	int i;
+ 	bool is_zero = num == 0LL;
+ 	int field_width = spec.field_width;
+ 	int precision = spec.precision;
++	int nr_digits = 0;
++	int output_bytes = 0;
  
- #include <linux/kernel.h>
- #include <linux/string.h>
+-	/* locase = 0 or 0x20. ORing digits or letters with 'locase'
+-	 * produces same digits or (maybe lowercased) letters */
+-	locase = (spec.flags & SMALL);
+ 	if (spec.flags & LEFT)
+ 		spec.flags &= ~ZEROPAD;
+-	sign = 0;
+ 	if (spec.flags & SIGN) {
+ 		if ((signed long long)num < 0) {
+ 			sign = '-';
+ 			num = -(signed long long)num;
+-			field_width--;
++			output_bytes++;
+ 		} else if (spec.flags & PLUS) {
+ 			sign = '+';
+-			field_width--;
++			output_bytes++;
+ 		} else if (spec.flags & SPACE) {
+ 			sign = ' ';
+-			field_width--;
++			output_bytes++;
+ 		}
+ 	}
+ 	if (need_pfx) {
+ 		if (spec.base == 16)
+-			field_width -= 2;
++			output_bytes += 2;
+ 		else if (!is_zero)
+-			field_width--;
++			output_bytes++;
+ 	}
  
-+enum printbuf_si {
-+	PRINTBUF_UNITS_2,	/* use binary powers of 2^10 */
-+	PRINTBUF_UNITS_10,	/* use powers of 10^3 (standard SI) */
-+};
+ 	/* generate full string in tmp[], in reverse order */
+-	i = 0;
+-	if (num < spec.base)
+-		tmp[i++] = hex_asc_upper[num] | locase;
+-	else if (spec.base != 10) { /* 8 or 16 */
++	if (spec.base == 10) {
++		nr_digits = put_dec(tmp, num) - tmp;
++	} else { /* 8 or 16 */
+ 		int mask = spec.base - 1;
+-		int shift = 3;
++		int shift = ilog2((unsigned) spec.base);
+ 
+-		if (spec.base == 16)
+-			shift = 4;
+ 		do {
+-			tmp[i++] = (hex_asc_upper[((unsigned char)num) & mask] | locase);
++			tmp[nr_digits++] = (hex_asc_upper[((unsigned char)num) & mask] | locase);
+ 			num >>= shift;
+ 		} while (num);
+-	} else { /* base 10 */
+-		i = put_dec(tmp, num) - tmp;
+ 	}
+ 
+ 	/* printing 100 using %2d gives "100", not "00" */
+-	if (i > precision)
+-		precision = i;
++	precision = max(nr_digits, precision);
++	output_bytes += precision;
++	field_width = max(0, field_width - output_bytes);
 +
- struct printbuf {
- 	char			*buf;
- 	unsigned		size;
-@@ -71,6 +80,8 @@ struct printbuf {
- 	u8			atomic;
- 	bool			allocation_failure:1;
- 	bool			heap_allocated:1;
-+	enum printbuf_si	si_units:1;
-+	bool			human_readable_units:1;
- 	u8			tabstop;
- 	u8			tabstops[4];
- };
-@@ -84,6 +95,10 @@ void printbuf_indent_add(struct printbuf *, unsigned);
- void printbuf_indent_sub(struct printbuf *, unsigned);
- void prt_tab(struct printbuf *);
- void prt_tab_rjust(struct printbuf *);
-+void prt_human_readable_u64(struct printbuf *, u64);
-+void prt_human_readable_s64(struct printbuf *, s64);
-+void prt_units_u64(struct printbuf *, u64);
-+void prt_units_s64(struct printbuf *, s64);
++	printbuf_make_room(out, field_width + output_bytes);
++
+ 	/* leading space padding */
+-	field_width = max(0, field_width - precision);
+ 	if (!(spec.flags & (ZEROPAD | LEFT)) && field_width) {
+-		__prt_chars(out, ' ', field_width);
++		__prt_chars_reserved(out, ' ', field_width);
+ 		field_width = 0;
+ 	}
++
+ 	/* sign */
+ 	if (sign)
+-		__prt_char(out, sign);
++		__prt_char_reserved(out, sign);
++
+ 	/* "0x" / "0" prefix */
+ 	if (need_pfx) {
+ 		if (spec.base == 16 || !is_zero)
+-			__prt_char(out, '0');
++			__prt_char_reserved(out, '0');
+ 		if (spec.base == 16)
+-			__prt_char(out, 'X' | locase);
++			__prt_char_reserved(out, 'X' | locase);
+ 	}
+-	/* zero or space padding */
+-	if (!(spec.flags & LEFT) && field_width) {
+-		char c = ' ' + (spec.flags & ZEROPAD);
  
- /* Initializer for a heap allocated printbuf: */
- #define PRINTBUF ((struct printbuf) { .heap_allocated = true })
-diff --git a/lib/printbuf.c b/lib/printbuf.c
-index a7f80f63ca..553f89ebc1 100644
---- a/lib/printbuf.c
-+++ b/lib/printbuf.c
-@@ -10,6 +10,7 @@
+-		__prt_chars(out, c, field_width);
+-		field_width = 0;
+-	}
+-	/* hmm even more zero padding? */
+-	if (precision > i)
+-		__prt_chars(out, '0', precision - i);
++	/* zero padding */
++	if (!(spec.flags & LEFT) && field_width)
++		__prt_chars_reserved(out, '0', field_width);
++
++	/* zero padding from precision */
++	if (precision > nr_digits)
++		__prt_chars_reserved(out, '0', precision - nr_digits);
++
+ 	/* actual digits of result */
+-	while (--i >= 0)
+-		__prt_char(out, tmp[i]);
++	while (--nr_digits >= 0)
++		__prt_char_reserved(out, tmp[nr_digits]);
++
+ 	/* trailing space padding */
+-	if (field_width)
+-		__prt_chars(out, ' ', field_width);
++	if ((spec.flags & LEFT) && field_width)
++		__prt_chars_reserved(out, ' ', field_width);
  
- #include <linux/err.h>
- #include <linux/slab.h>
-+#include <linux/string_helpers.h>
- #include <linux/printbuf.h>
- 
- static inline size_t printbuf_linelen(struct printbuf *buf)
-@@ -194,3 +195,59 @@ void prt_tab_rjust(struct printbuf *buf)
- 	buf->tabstop++;
+ 	printbuf_nul_terminate(out);
  }
- EXPORT_SYMBOL(prt_tab_rjust);
-+
-+/**
-+ * prt_human_readable_u64 - Print out a u64 in human readable units
-+ *
-+ * Units of 2^10 (default) or 10^3 are controlled via @buf->si_units
-+ */
-+void prt_human_readable_u64(struct printbuf *buf, u64 v)
-+{
-+	printbuf_make_room(buf, 10);
-+	buf->pos += string_get_size(v, 1, !buf->si_units,
-+				    buf->buf + buf->pos,
-+				    printbuf_remaining_size(buf));
-+}
-+EXPORT_SYMBOL(prt_human_readable_u64);
-+
-+/**
-+ * prt_human_readable_s64 - Print out a s64 in human readable units
-+ *
-+ * Units of 2^10 (default) or 10^3 are controlled via @buf->si_units
-+ */
-+void prt_human_readable_s64(struct printbuf *buf, s64 v)
-+{
-+	if (v < 0)
-+		prt_char(buf, '-');
-+	prt_human_readable_u64(buf, abs(v));
-+}
-+EXPORT_SYMBOL(prt_human_readable_s64);
-+
-+/**
-+ * prt_units_u64 - Print out a u64 according to printbuf unit options
-+ *
-+ * Units are either raw (default), or human reabable units (controlled via
-+ * @buf->human_readable_units)
-+ */
-+void prt_units_u64(struct printbuf *out, u64 v)
-+{
-+	if (out->human_readable_units)
-+		prt_human_readable_u64(out, v);
-+	else
-+		prt_printf(out, "%llu", v);
-+}
-+EXPORT_SYMBOL(prt_units_u64);
-+
-+/**
-+ * prt_units_s64 - Print out a s64 according to printbuf unit options
-+ *
-+ * Units are either raw (default), or human reabable units (controlled via
-+ * @buf->human_readable_units)
-+ */
-+void prt_units_s64(struct printbuf *out, s64 v)
-+{
-+	if (v < 0)
-+		prt_char(out, '-');
-+	prt_units_u64(out, abs(v));
-+}
-+EXPORT_SYMBOL(prt_units_s64);
 -- 
 2.36.1
 
