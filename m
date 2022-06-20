@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80F60C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:07:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3EC3C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:07:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244789AbiFTNHt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:07:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47734 "EHLO
+        id S244826AbiFTNH4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:07:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244054AbiFTNEd (ORCPT
+        with ESMTP id S244090AbiFTNEe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:04:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C4EC18B14;
-        Mon, 20 Jun 2022 05:59:48 -0700 (PDT)
+        Mon, 20 Jun 2022 09:04:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 575AA193E1;
+        Mon, 20 Jun 2022 05:59:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3832061541;
-        Mon, 20 Jun 2022 12:59:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 333A7C341C4;
-        Mon, 20 Jun 2022 12:59:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3873E6153E;
+        Mon, 20 Jun 2022 12:59:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4388DC3411C;
+        Mon, 20 Jun 2022 12:59:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655729987;
-        bh=qndDqOAs9+3WFGICbDRUpXG2O5z0sRvlr66TBVrcpZU=;
+        s=korg; t=1655729990;
+        bh=aSD1zz0+mNqeznv6haUaGQ071TTWhczN1/kvaqFFRsI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GygTjxk4MuPa9voJGXgNJ3p7jjKc3HLxxePuKalL4tyVSR+QGp2oOHL7z33rLrCsA
-         KvhCEmRZF3CnhHLBBiNW7zsain2tKo0fpYAt3+yJowWEC+ihVqfVHlbPF3gdHUVlq+
-         fmW3a8H+dJKC7524xzhrsgu/w0Y8AlLK6ioXITjw=
+        b=uyxZxVS95C9+kvGt/Jk6ry3g1DxDZLSlZIJOy1F3tiVtHlUTd8vwRO+K2++S0pUIB
+         Uc8tC9+KhJpMNkzBO33xI5SdhSkisJH8SIKEJzgkRWiZtrJde2RS0BmmzHe9q9wt0B
+         Iwj5WoYO6u+CSJLg0Gg0uOm6iAubNvfrK+HLT3TM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Mauro Carvalho Chehab <mchehab@kernel.org>,
         Rob Herring <robh@kernel.org>
-Subject: [PATCH 5.18 138/141] dt-bindings: mfd: bd9571mwv: update rohm,bd9571mwv.yaml reference
-Date:   Mon, 20 Jun 2022 14:51:16 +0200
-Message-Id: <20220620124733.638428436@linuxfoundation.org>
+Subject: [PATCH 5.18 139/141] dt-bindings: interrupt-controller: update brcm,l2-intc.yaml reference
+Date:   Mon, 20 Jun 2022 14:51:17 +0200
+Message-Id: <20220620124733.667779397@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 References: <20220620124729.509745706@linuxfoundation.org>
@@ -50,37 +50,33 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Mauro Carvalho Chehab <mchehab@kernel.org>
 
-commit e0b5c5984d4810733b7c24a3d16c904fffc086d2 upstream.
+commit 7e40381d8a33e41e347cea5bdd000091653000c6 upstream.
 
-Changeset 983b62975e90 ("dt-bindings: mfd: bd9571mwv: Convert to json-schema")
-renamed: Documentation/devicetree/bindings/mfd/bd9571mwv.txt
-to: Documentation/devicetree/bindings/mfd/rohm,bd9571mwv.yaml.
+Changeset 539d25b21fe8 ("dt-bindings: interrupt-controller: Convert Broadcom STB L2 to YAML")
+renamed: Documentation/devicetree/bindings/interrupt-controller/brcm,l2-intc.txt
+to: Documentation/devicetree/bindings/interrupt-controller/brcm,l2-intc.yaml.
 
 Update its cross-reference accordingly.
 
-Fixes: 983b62975e90 ("dt-bindings: mfd: bd9571mwv: Convert to json-schema")
+Fixes: 539d25b21fe8 ("dt-bindings: interrupt-controller: Convert Broadcom STB L2 to YAML")
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/r/1906a4d935eab57c10ce09358eae02175ce4abb7.1654529011.git.mchehab@kernel.org
+Link: https://lore.kernel.org/r/a40c02a7aaea91ea7b6ce24b6bc574ae5bcf4cf6.1654529011.git.mchehab@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/ABI/testing/sysfs-driver-bd9571mwv-regulator | 2 +-
+ Documentation/devicetree/bindings/cpufreq/brcm,stb-avs-cpu-freq.txt |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-driver-bd9571mwv-regulator b/Documentation/ABI/testing/sysfs-driver-bd9571mwv-regulator
-index 42214b4ff14a..90596d8bb51c 100644
---- a/Documentation/ABI/testing/sysfs-driver-bd9571mwv-regulator
-+++ b/Documentation/ABI/testing/sysfs-driver-bd9571mwv-regulator
-@@ -26,6 +26,6 @@ Description:	Read/write the current state of DDR Backup Mode, which controls
- 		     DDR Backup Mode must be explicitly enabled by the user,
- 		     to invoke step 1.
+--- a/Documentation/devicetree/bindings/cpufreq/brcm,stb-avs-cpu-freq.txt
++++ b/Documentation/devicetree/bindings/cpufreq/brcm,stb-avs-cpu-freq.txt
+@@ -16,7 +16,7 @@ has been processed. See [2] for more inf
+ firmware. On some SoCs, this firmware supports DFS and DVFS in addition to
+ Adaptive Voltage Scaling.
  
--		See also Documentation/devicetree/bindings/mfd/bd9571mwv.txt.
-+		See also Documentation/devicetree/bindings/mfd/rohm,bd9571mwv.yaml.
- Users:		User space applications for embedded boards equipped with a
- 		BD9571MWV PMIC.
--- 
-2.36.1
-
+-[2] Documentation/devicetree/bindings/interrupt-controller/brcm,l2-intc.txt
++[2] Documentation/devicetree/bindings/interrupt-controller/brcm,l2-intc.yaml
+ 
+ 
+ Node brcm,avs-cpu-data-mem
 
 
