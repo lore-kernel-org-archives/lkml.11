@@ -2,177 +2,295 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DAB3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 22:52:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A3B2C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 22:53:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344610AbiFTWwQ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 18:52:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54764 "EHLO
+        id S243654AbiFTWxq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 18:53:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344329AbiFTWve (ORCPT
+        with ESMTP id S1344951AbiFTWxl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 18:51:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A10A01A80D;
-        Mon, 20 Jun 2022 15:51:32 -0700 (PDT)
+        Mon, 20 Jun 2022 18:53:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 206901B7;
+        Mon, 20 Jun 2022 15:53:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 44AE6B811EC;
-        Mon, 20 Jun 2022 22:51:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED933C341C7;
-        Mon, 20 Jun 2022 22:51:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A36C361355;
+        Mon, 20 Jun 2022 22:53:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 114A2C341CB;
+        Mon, 20 Jun 2022 22:53:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655765490;
-        bh=uwVUEbn1BjyEoK1jDk5Unz9mOIc6Tdakf4qOEcADLk4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mONd/Seg/uHV2XAfrneucCGVpsJAWG3Fw0a0/TRF8eDZSB0O7MpJ6GJn+rbaopVEA
-         yuMPH07Wdyhcfr/I+5Z8eJs8F2Dt60auYwI4jds+A8HvWBXXeQEjg9KGCePv1mNU/1
-         MVcij0DFgk9b/9w3WDnRURKT5nEKSSHyGMPHe1qtpSO4aVD/SyXlIuqA+18/0Wy7r2
-         pnGcVQEEtkJwjfaAfMj0ZFLzpvNJJIFu61QYUG6M91bSLJuu9BAerfF+TRd9hfy/JY
-         fuwb0Z0zDYW0b/MtSYxWAYi/iXT0cE8KpxX5QK/WfbVoGn68t0zT+1ac+VkBlp5NQS
-         xS8Ml37Oj40AA==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 9B29E5C0ADC; Mon, 20 Jun 2022 15:51:29 -0700 (PDT)
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     rcu@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
-        rostedt@goodmis.org, "Paul E. McKenney" <paulmck@kernel.org>,
-        Brian Foster <bfoster@redhat.com>,
-        Dave Chinner <david@fromorbit.com>,
-        Al Viro <viro@zeniv.linux.org.uk>, Ian Kent <raven@themaw.net>
-Subject: [PATCH rcu 05/12] rcu: Make polled grace-period API account for expedited grace periods
-Date:   Mon, 20 Jun 2022 15:51:21 -0700
-Message-Id: <20220620225128.3842050-5-paulmck@kernel.org>
-X-Mailer: git-send-email 2.31.1.189.g2e36527f23
-In-Reply-To: <20220620224943.GA3841634@paulmck-ThinkPad-P17-Gen-1>
-References: <20220620224943.GA3841634@paulmck-ThinkPad-P17-Gen-1>
+        s=k20201202; t=1655765619;
+        bh=6G+6q4zHYBGjnmMtsdzXowzp8gLzUye2gO6TAFTUuVg=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=RlurRfthBbHG0QKrSaqkDnFxNTulZgDBa3HW8F5uMjAi6DL5lQbfN/673BZZW14Rr
+         ZlfXZ6Q84lQMKbox6qv8IcEEMPqEeNXvT7+avZ3DpFcwzLzClV7LosUMeUSdhEo8K1
+         d8wlQ7I5DtDJhk+HIyCZv+G3g1//eaQixcGq+ShKvyv5ritAc6Z2RUzsL3JW5Yahfa
+         nPA5QJBZCyof/RLKoRDP8pqZjaEAUMSAbIZiQsNH6LHBJAFoYFlDrYx5GDUFUgIsgO
+         uK+jGCxRBDn+C6WFKoI9kevf7qoMxjdZvjQnkRB+zcWehFKjJS1IehWKubRqQlxflm
+         HavOy+ouAZdAA==
+Received: by mail-vs1-f42.google.com with SMTP id h38so3901474vsv.7;
+        Mon, 20 Jun 2022 15:53:38 -0700 (PDT)
+X-Gm-Message-State: AJIora/MZ103gwKPuQUIlmAykzFnTQY1u1cME7tWXG4tsScXqnLJpT12
+        H1v1y8GR2JKFyRzSxYR4IgICQ09KhCiIk6kKv3M=
+X-Google-Smtp-Source: AGRyM1u0f0NVLjA/l56D/lpGr6oa55BZUDUWetp5N07H9ytLdmyD5b1ysI6OYN7x/d64Xg9hd4PNkTsKrw918AcrBr4=
+X-Received: by 2002:a67:f958:0:b0:354:3f56:8a2d with SMTP id
+ u24-20020a67f958000000b003543f568a2dmr1586127vsq.59.1655765617887; Mon, 20
+ Jun 2022 15:53:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220620155404.1968739-1-guoren@kernel.org> <202206210303.Vjl4rpPv-lkp@intel.com>
+In-Reply-To: <202206210303.Vjl4rpPv-lkp@intel.com>
+From:   Guo Ren <guoren@kernel.org>
+Date:   Tue, 21 Jun 2022 06:53:26 +0800
+X-Gmail-Original-Message-ID: <CAJF2gTT_uicsJM66a+31d1DUvt=iLq2WDJjnD=2DNzBTFiu9kg@mail.gmail.com>
+Message-ID: <CAJF2gTT_uicsJM66a+31d1DUvt=iLq2WDJjnD=2DNzBTFiu9kg@mail.gmail.com>
+Subject: Re: [PATCH V5] riscv: Add qspinlock support
+To:     kernel test robot <lkp@intel.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>,
+        Arnd Bergmann <arnd@arndb.de>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>, llvm@lists.linux.dev,
+        kbuild-all@lists.01.org,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Guo Ren <guoren@linux.alibaba.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, this code could splat:
+Is it a clang problem? GCC is okay. I would appreciate any help on the problem.
 
-	oldstate = get_state_synchronize_rcu();
-	synchronize_rcu_expedited();
-	WARN_ON_ONCE(!poll_state_synchronize_rcu(oldstate));
+On Tue, Jun 21, 2022 at 3:58 AM kernel test robot <lkp@intel.com> wrote:
+>
+> Hi,
+>
+> I love your patch! Yet something to improve:
+>
+> [auto build test ERROR on soc/for-next]
+> [also build test ERROR on linus/master v5.19-rc2 next-20220617]
+> [cannot apply to tip/locking/core]
+> [If your patch is applied to the wrong git tree, kindly drop us a note.
+> And when submitting patch, we suggest to use '--base' as documented in
+> https://git-scm.com/docs/git-format-patch]
+>
+> url:    https://github.com/intel-lab-lkp/linux/commits/guoren-kernel-org/riscv-Add-qspinlock-support/20220620-235653
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/soc/soc.git for-next
+> config: riscv-rv32_defconfig (https://download.01.org/0day-ci/archive/20220621/202206210303.Vjl4rpPv-lkp@intel.com/config)
+> compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project af6d2a0b6825e71965f3e2701a63c239fa0ad70f)
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # install riscv cross compiling tool for clang build
+>         # apt-get install binutils-riscv-linux-gnu
+>         # https://github.com/intel-lab-lkp/linux/commit/326f4a13941845b6ef1c4f4eaba049fe265f52bf
+>         git remote add linux-review https://github.com/intel-lab-lkp/linux
+>         git fetch --no-tags linux-review guoren-kernel-org/riscv-Add-qspinlock-support/20220620-235653
+>         git checkout 326f4a13941845b6ef1c4f4eaba049fe265f52bf
+>         # save the config file
+>         mkdir build_dir && cp config build_dir/.config
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv prepare
+>
+> If you fix the issue, kindly add following tag where applicable
+> Reported-by: kernel test robot <lkp@intel.com>
+>
+> All error/warnings (new ones prefixed by >>):
+>
+>    In file included from arch/riscv/kernel/asm-offsets.c:10:
+>    In file included from include/linux/mm.h:7:
+>    In file included from include/linux/gfp.h:6:
+>    In file included from include/linux/mmzone.h:8:
+>    In file included from include/linux/spinlock.h:62:
+>    In file included from include/linux/lockdep.h:14:
+>    In file included from include/linux/smp.h:13:
+>    In file included from include/linux/cpumask.h:13:
+>    In file included from include/linux/atomic.h:7:
+> >> arch/riscv/include/asm/atomic.h:299:1: error: expected expression
+>    ATOMIC_OPS()
+>    ^
+>    arch/riscv/include/asm/atomic.h:292:2: note: expanded from macro 'ATOMIC_OPS'
+>            ATOMIC_OP(int,   , 4)
+>            ^
+>    arch/riscv/include/asm/atomic.h:249:9: note: expanded from macro 'ATOMIC_OP'
+>            return __xchg_relaxed(&(v->counter), n, size);                  \
+>                   ^
+>    arch/riscv/include/asm/cmpxchg.h:21:3: note: expanded from macro '__xchg_relaxed'
+>                    u32 temp;                                               \
+>                    ^
+>    In file included from arch/riscv/kernel/asm-offsets.c:10:
+>    In file included from include/linux/mm.h:7:
+>    In file included from include/linux/gfp.h:6:
+>    In file included from include/linux/mmzone.h:8:
+>    In file included from include/linux/spinlock.h:62:
+>    In file included from include/linux/lockdep.h:14:
+>    In file included from include/linux/smp.h:13:
+>    In file included from include/linux/cpumask.h:13:
+>    In file included from include/linux/atomic.h:7:
+> >> arch/riscv/include/asm/atomic.h:299:1: error: use of undeclared identifier 'temp'; did you mean 'bcmp'?
+>    arch/riscv/include/asm/atomic.h:292:2: note: expanded from macro 'ATOMIC_OPS'
+>            ATOMIC_OP(int,   , 4)
+>            ^
+>    arch/riscv/include/asm/atomic.h:249:9: note: expanded from macro 'ATOMIC_OP'
+>            return __xchg_relaxed(&(v->counter), n, size);                  \
+>                   ^
+>    arch/riscv/include/asm/cmpxchg.h:31:28: note: expanded from macro '__xchg_relaxed'
+>                            : "=&r" (__ret), "=&r" (temp), "+A" (*__ptr)    \
+>                                                    ^
+>    include/linux/string.h:159:12: note: 'bcmp' declared here
+>    extern int bcmp(const void *,const void *,__kernel_size_t);
+>               ^
+>    In file included from arch/riscv/kernel/asm-offsets.c:10:
+>    In file included from include/linux/mm.h:7:
+>    In file included from include/linux/gfp.h:6:
+>    In file included from include/linux/mmzone.h:8:
+>    In file included from include/linux/spinlock.h:62:
+>    In file included from include/linux/lockdep.h:14:
+>    In file included from include/linux/smp.h:13:
+>    In file included from include/linux/cpumask.h:13:
+>    In file included from include/linux/atomic.h:7:
+> >> arch/riscv/include/asm/atomic.h:299:1: error: invalid lvalue in asm output
+>    ATOMIC_OPS()
+>    ^~~~~~~~~~~~
+>    arch/riscv/include/asm/atomic.h:292:2: note: expanded from macro 'ATOMIC_OPS'
+>            ATOMIC_OP(int,   , 4)
+>            ^~~~~~~~~~~~~~~~~~~~~
+>    arch/riscv/include/asm/atomic.h:249:9: note: expanded from macro 'ATOMIC_OP'
+>            return __xchg_relaxed(&(v->counter), n, size);                  \
+>                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    arch/riscv/include/asm/cmpxchg.h:31:28: note: expanded from macro '__xchg_relaxed'
+>                            : "=&r" (__ret), "=&r" (temp), "+A" (*__ptr)    \
+>                                                    ^~~~
+>    In file included from arch/riscv/kernel/asm-offsets.c:10:
+>    In file included from include/linux/mm.h:7:
+>    In file included from include/linux/gfp.h:6:
+>    In file included from include/linux/mmzone.h:8:
+>    In file included from include/linux/spinlock.h:62:
+>    In file included from include/linux/lockdep.h:14:
+>    In file included from include/linux/smp.h:13:
+>    In file included from include/linux/cpumask.h:13:
+>    In file included from include/linux/atomic.h:7:
+> >> arch/riscv/include/asm/atomic.h:299:1: warning: mixing declarations and code is incompatible with standards before C99 [-Wdeclaration-after-statement]
+>    arch/riscv/include/asm/atomic.h:292:2: note: expanded from macro 'ATOMIC_OPS'
+>            ATOMIC_OP(int,   , 4)
+>            ^
+>    arch/riscv/include/asm/atomic.h:249:9: note: expanded from macro 'ATOMIC_OP'
+>            return __xchg_relaxed(&(v->counter), n, size);                  \
+>                   ^
+>    arch/riscv/include/asm/cmpxchg.h:22:7: note: expanded from macro '__xchg_relaxed'
+>                    u32 shif = ((ulong)__ptr & 2) ? 16 : 0;                 \
+>                        ^
+>    In file included from arch/riscv/kernel/asm-offsets.c:10:
+>    In file included from include/linux/mm.h:700:
+>    In file included from include/linux/huge_mm.h:8:
+>    In file included from include/linux/fs.h:33:
+>    In file included from include/linux/percpu-rwsem.h:7:
+>    In file included from include/linux/rcuwait.h:6:
+>    In file included from include/linux/sched/signal.h:6:
+>    include/linux/signal.h:97:11: warning: array index 3 is past the end of the array (which contains 2 elements) [-Warray-bounds]
+>                    return (set->sig[3] | set->sig[2] |
+>                            ^        ~
+>    include/uapi/asm-generic/signal.h:62:2: note: array 'sig' declared here
+>            unsigned long sig[_NSIG_WORDS];
+>            ^
+>    In file included from arch/riscv/kernel/asm-offsets.c:10:
+>    In file included from include/linux/mm.h:700:
+>    In file included from include/linux/huge_mm.h:8:
+>    In file included from include/linux/fs.h:33:
+>    In file included from include/linux/percpu-rwsem.h:7:
+>    In file included from include/linux/rcuwait.h:6:
+>    In file included from include/linux/sched/signal.h:6:
+>    include/linux/signal.h:97:25: warning: array index 2 is past the end of the array (which contains 2 elements) [-Warray-bounds]
+>                    return (set->sig[3] | set->sig[2] |
+>                                          ^        ~
+>    include/uapi/asm-generic/signal.h:62:2: note: array 'sig' declared here
+>            unsigned long sig[_NSIG_WORDS];
+>            ^
+>    In file included from arch/riscv/kernel/asm-offsets.c:10:
+>    In file included from include/linux/mm.h:700:
+>    In file included from include/linux/huge_mm.h:8:
+>    In file included from include/linux/fs.h:33:
+>    In file included from include/linux/percpu-rwsem.h:7:
+>    In file included from include/linux/rcuwait.h:6:
+>    In file included from include/linux/sched/signal.h:6:
+>    include/linux/signal.h:113:11: warning: array index 3 is past the end of the array (which contains 2 elements) [-Warray-bounds]
+>                    return  (set1->sig[3] == set2->sig[3]) &&
+>                             ^         ~
+>    include/uapi/asm-generic/signal.h:62:2: note: array 'sig' declared here
+>            unsigned long sig[_NSIG_WORDS];
+>            ^
+>    In file included from arch/riscv/kernel/asm-offsets.c:10:
+>    In file included from include/linux/mm.h:700:
+>    In file included from include/linux/huge_mm.h:8:
+>    In file included from include/linux/fs.h:33:
+>    In file included from include/linux/percpu-rwsem.h:7:
+>    In file included from include/linux/rcuwait.h:6:
+>    In file included from include/linux/sched/signal.h:6:
+>    include/linux/signal.h:113:27: warning: array index 3 is past the end of the array (which contains 2 elements) [-Warray-bounds]
+>                    return  (set1->sig[3] == set2->sig[3]) &&
+>                                             ^         ~
+>    include/uapi/asm-generic/signal.h:62:2: note: array 'sig' declared here
+>            unsigned long sig[_NSIG_WORDS];
+>            ^
+>    In file included from arch/riscv/kernel/asm-offsets.c:10:
+>    In file included from include/linux/mm.h:700:
+>    In file included from include/linux/huge_mm.h:8:
+>    In file included from include/linux/fs.h:33:
+>    In file included from include/linux/percpu-rwsem.h:7:
+>    In file included from include/linux/rcuwait.h:6:
+>    In file included from include/linux/sched/signal.h:6:
+>    include/linux/signal.h:114:5: warning: array index 2 is past the end of the array (which contains 2 elements) [-Warray-bounds]
+>                            (set1->sig[2] == set2->sig[2]) &&
+>                             ^         ~
+>    include/uapi/asm-generic/signal.h:62:2: note: array 'sig' declared here
+>            unsigned long sig[_NSIG_WORDS];
+>            ^
+>    In file included from arch/riscv/kernel/asm-offsets.c:10:
+>    In file included from include/linux/mm.h:700:
+>    In file included from include/linux/huge_mm.h:8:
+>    In file included from include/linux/fs.h:33:
+>    In file included from include/linux/percpu-rwsem.h:7:
+>    In file included from include/linux/rcuwait.h:6:
+>    In file included from include/linux/sched/signal.h:6:
+>    include/linux/signal.h:114:21: warning: array index 2 is past the end of the array (which contains 2 elements) [-Warray-bounds]
+>                            (set1->sig[2] == set2->sig[2]) &&
+>                                             ^         ~
+>    include/uapi/asm-generic/signal.h:62:2: note: array 'sig' declared here
+>            unsigned long sig[_NSIG_WORDS];
+>            ^
+>    In file included from arch/riscv/kernel/asm-offsets.c:10:
+>    In file included from include/linux/mm.h:700:
+>    In file included from include/linux/huge_mm.h:8:
+>    In file included from include/linux/fs.h:33:
+>    In file included from include/linux/percpu-rwsem.h:7:
+>    In file included from include/linux/rcuwait.h:6:
+>    In file included from include/linux/sched/signal.h:6:
+>    include/linux/signal.h:156:1: warning: array index 3 is past the end of the array (which contains 2 elements) [-Warray-bounds]
+>    _SIG_SET_BINOP(sigorsets, _sig_or)
+>    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/signal.h:137:8: note: expanded from macro '_SIG_SET_BINOP'
+>                    a3 = a->sig[3]; a2 = a->sig[2];                         \
+>                         ^      ~
+>
+>
+> vim +299 arch/riscv/include/asm/atomic.h
+>
+> fab957c11efe2f Palmer Dabbelt 2017-07-10  298
+> 5ce6c1f3535fa8 Andrea Parri   2018-03-09 @299  ATOMIC_OPS()
+> fab957c11efe2f Palmer Dabbelt 2017-07-10  300
+>
+> --
+> 0-DAY CI Kernel Test Service
+> https://01.org/lkp
 
-This situation is counter-intuitive and user-unfriendly.  After all, there
-really was a perfectly valid full grace period right after the call to
-get_state_synchronize_rcu(), so why shouldn't poll_state_synchronize_rcu()
-know about it?
 
-This commit therefore makes the polled grace-period API aware of expedited
-grace periods in addition to the normal grace periods that it is already
-aware of.  With this change, the above code is guaranteed not to splat.
 
-Please note that the above code can still splat due to counter wrap on the
-one hand and situations involving partially overlapping normal/expedited
-grace periods on the other.  On 64-bit systems, the second is of course
-much more likely than the first.  It is possible to modify this approach
-to prevent overlapping grace periods from causing splats, but only at
-the expense of greatly increasing the probability of counter wrap, as
-in within milliseconds on 32-bit systems and within minutes on 64-bit
-systems.
+--
+Best Regards
+ Guo Ren
 
-This commit is in preparation for polled expedited grace periods.
-
-Link: https://lore.kernel.org/all/20220121142454.1994916-1-bfoster@redhat.com/
-Link: https://docs.google.com/document/d/1RNKWW9jQyfjxw2E8dsXVTdvZYh0HnYeSHDKog9jhdN8/edit?usp=sharing
-Cc: Brian Foster <bfoster@redhat.com>
-Cc: Dave Chinner <david@fromorbit.com>
-Cc: Al Viro <viro@zeniv.linux.org.uk>
-Cc: Ian Kent <raven@themaw.net>
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
----
- kernel/rcu/tree.c     |  9 +++++----
- kernel/rcu/tree.h     |  1 +
- kernel/rcu/tree_exp.h | 16 ++++++++++++++--
- 3 files changed, 20 insertions(+), 6 deletions(-)
-
-diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
-index 637e8f9454573..251eb9a8cd925 100644
---- a/kernel/rcu/tree.c
-+++ b/kernel/rcu/tree.c
-@@ -1812,6 +1812,7 @@ static void rcu_poll_gp_seq_end(unsigned long *snap)
- 	if (*snap && *snap == rcu_state.gp_seq_polled) {
- 		rcu_seq_end(&rcu_state.gp_seq_polled);
- 		rcu_state.gp_seq_polled_snap = 0;
-+		rcu_state.gp_seq_polled_exp_snap = 0;
- 	} else {
- 		*snap = 0;
- 	}
-@@ -3913,10 +3914,10 @@ void synchronize_rcu(void)
- 			 "Illegal synchronize_rcu() in RCU read-side critical section");
- 	if (rcu_blocking_is_gp()) {
- 		// Note well that this code runs with !PREEMPT && !SMP.
--		// In addition, all code that advances grace periods runs
--		// at process level.  Therefore, this GP overlaps with other
--		// GPs only by being fully nested within them, which allows
--		// reuse of ->gp_seq_polled_snap.
-+		// In addition, all code that advances grace periods runs at
-+		// process level.  Therefore, this normal GP overlaps with
-+		// other normal GPs only by being fully nested within them,
-+		// which allows reuse of ->gp_seq_polled_snap.
- 		rcu_poll_gp_seq_start_unlocked(&rcu_state.gp_seq_polled_snap);
- 		rcu_poll_gp_seq_end_unlocked(&rcu_state.gp_seq_polled_snap);
- 		if (rcu_init_invoked())
-diff --git a/kernel/rcu/tree.h b/kernel/rcu/tree.h
-index 9c853033f159d..5634e76106c48 100644
---- a/kernel/rcu/tree.h
-+++ b/kernel/rcu/tree.h
-@@ -325,6 +325,7 @@ struct rcu_state {
- 	unsigned long gp_wake_seq;		/* ->gp_seq at ^^^. */
- 	unsigned long gp_seq_polled;		/* GP seq for polled API. */
- 	unsigned long gp_seq_polled_snap;	/* ->gp_seq_polled at normal GP start. */
-+	unsigned long gp_seq_polled_exp_snap;	/* ->gp_seq_polled at expedited GP start. */
- 
- 	/* End of fields guarded by root rcu_node's lock. */
- 
-diff --git a/kernel/rcu/tree_exp.h b/kernel/rcu/tree_exp.h
-index 0f70f62039a90..e0258066b881e 100644
---- a/kernel/rcu/tree_exp.h
-+++ b/kernel/rcu/tree_exp.h
-@@ -18,6 +18,7 @@ static int rcu_print_task_exp_stall(struct rcu_node *rnp);
- static void rcu_exp_gp_seq_start(void)
- {
- 	rcu_seq_start(&rcu_state.expedited_sequence);
-+	rcu_poll_gp_seq_start_unlocked(&rcu_state.gp_seq_polled_exp_snap);
- }
- 
- /*
-@@ -34,6 +35,7 @@ static __maybe_unused unsigned long rcu_exp_gp_seq_endval(void)
-  */
- static void rcu_exp_gp_seq_end(void)
- {
-+	rcu_poll_gp_seq_end_unlocked(&rcu_state.gp_seq_polled_exp_snap);
- 	rcu_seq_end(&rcu_state.expedited_sequence);
- 	smp_mb(); /* Ensure that consecutive grace periods serialize. */
- }
-@@ -913,8 +915,18 @@ void synchronize_rcu_expedited(void)
- 			 "Illegal synchronize_rcu_expedited() in RCU read-side critical section");
- 
- 	/* Is the state is such that the call is a grace period? */
--	if (rcu_blocking_is_gp())
--		return;
-+	if (rcu_blocking_is_gp()) {
-+		// Note well that this code runs with !PREEMPT && !SMP.
-+		// In addition, all code that advances grace periods runs
-+		// at process level.  Therefore, this expedited GP overlaps
-+		// with other expedited GPs only by being fully nested within
-+		// them, which allows reuse of ->gp_seq_polled_exp_snap.
-+		rcu_poll_gp_seq_start_unlocked(&rcu_state.gp_seq_polled_exp_snap);
-+		rcu_poll_gp_seq_end_unlocked(&rcu_state.gp_seq_polled_exp_snap);
-+		if (rcu_init_invoked())
-+			cond_resched();
-+		return;  // Context allows vacuous grace periods.
-+	}
- 
- 	/* If expedited grace periods are prohibited, fall back to normal. */
- 	if (rcu_gp_is_normal()) {
--- 
-2.31.1.189.g2e36527f23
-
+ML: https://lore.kernel.org/linux-csky/
