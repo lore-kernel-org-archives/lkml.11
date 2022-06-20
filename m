@@ -2,99 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4716BCCA490
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9361BCCA491
 	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:14:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345573AbiFTNOh (ORCPT
+        id S1345680AbiFTNOo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:14:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54218 "EHLO
+        Mon, 20 Jun 2022 09:14:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344149AbiFTNJ7 (ORCPT
+        with ESMTP id S1344203AbiFTNKB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:09:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57D2E1C902;
-        Mon, 20 Jun 2022 06:05:08 -0700 (PDT)
+        Mon, 20 Jun 2022 09:10:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 047CC1C90C
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 06:05:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5F91CB811A0;
-        Mon, 20 Jun 2022 13:01:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1A20C3411B;
-        Mon, 20 Jun 2022 13:01:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730112;
-        bh=STcHVfGlkdlIUxt4dFjTPdJR8pkhbJtec94GCXE1ClE=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 344F161531
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 13:04:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE253C385A2;
+        Mon, 20 Jun 2022 13:04:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655730285;
+        bh=XrEBOe9xjcJ/LnVKgGjK9+wCo3I/byuEwEXiFATHKAo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xtqf33D3AB/L2xw5+fa9dVbMQ92MUnh7Ba4Bv8Mkk93Jktlzpo0DelBCE+v6XjwzK
-         pnF4+NWYltHAtsUCPu3ZYn8Zx95nZ3bl38NDKUhLe+F+lPhmhtSjL1fMn2gZ7TECEj
-         dwyOLBdNIM8QnpML04pc0h6NtyQN8fxDEcxYZTIw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+        b=OKaBPRsy8/Ki7ltaoJSLt0bYTQBfRMaLgY+rk5Mf7uFx67N2jvXTGRhsnoJHYTCbt
+         0SS1osABRjzr/ngGS8TFUikjozkiUQGAWl3yJ6Uf4+GDlURQQXh2ZhtVGUnRsmiWg3
+         ooGNWDcPOgGYW6pZRXLAvv+UHqiWWDjs+HSrs6+wrKyxWfT7Mkp2+xObo6TspsJF+B
+         kCdM2r2NqIFdfH1Baeo2+Inwtcu9lB+Oq7IFNNTp5VXIMMGC8xF7ygwClG5/ec/rdx
+         RPbTYuE1CkKcjEhKZrns/bFw6UdlrIZ+y0yIky8wK8Of0vlzU43Jgny9/sjs7apgOC
+         GwUj2LDXYKlpQ==
+From:   Oded Gabbay <ogabbay@kernel.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Brian King <brking@linux.vnet.ibm.com>,
-        Chengguang Xu <cgxu519@mykernel.net>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 23/84] scsi: ipr: Fix missing/incorrect resource cleanup in error case
-Date:   Mon, 20 Jun 2022 14:50:46 +0200
-Message-Id: <20220620124721.578985087@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124720.882450983@linuxfoundation.org>
-References: <20220620124720.882450983@linuxfoundation.org>
-User-Agent: quilt/0.66
+Cc:     Dani Liberman <dliberman@habana.ai>
+Subject: [PATCH 06/17] habanalabs: avoid unnecessary error print
+Date:   Mon, 20 Jun 2022 16:04:21 +0300
+Message-Id: <20220620130432.1180451-6-ogabbay@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220620130432.1180451-1-ogabbay@kernel.org>
+References: <20220620130432.1180451-1-ogabbay@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chengguang Xu <cgxu519@mykernel.net>
+From: Dani Liberman <dliberman@habana.ai>
 
-[ Upstream commit d64c491911322af1dcada98e5b9ee0d87e8c8fee ]
+When sending a packet to FW right after it made reset, we will get
+packet timeout. Since it is expected behavior, we don't need to
+print an error in such case.
+Hence, when driver is in hard reset it will avoid from printing error
+messages about packet timeout.
 
-Fix missing resource cleanup (when '(--i) == 0') for error case in
-ipr_alloc_mem() and skip incorrect resource cleanup (when '(--i) == 0') for
-error case in ipr_request_other_msi_irqs() because variable i started from
-1.
-
-Link: https://lore.kernel.org/r/20220529153456.4183738-4-cgxu519@mykernel.net
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-Acked-by: Brian King <brking@linux.vnet.ibm.com>
-Signed-off-by: Chengguang Xu <cgxu519@mykernel.net>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Dani Liberman <dliberman@habana.ai>
+Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
+Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
 ---
- drivers/scsi/ipr.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/misc/habanalabs/common/firmware_if.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/ipr.c b/drivers/scsi/ipr.c
-index b0aa58d117cc..90e8a538b078 100644
---- a/drivers/scsi/ipr.c
-+++ b/drivers/scsi/ipr.c
-@@ -9792,7 +9792,7 @@ static int ipr_alloc_mem(struct ipr_ioa_cfg *ioa_cfg)
- 					GFP_KERNEL);
+diff --git a/drivers/misc/habanalabs/common/firmware_if.c b/drivers/misc/habanalabs/common/firmware_if.c
+index 828a36af5b14..bd66e4f84156 100644
+--- a/drivers/misc/habanalabs/common/firmware_if.c
++++ b/drivers/misc/habanalabs/common/firmware_if.c
+@@ -267,7 +267,14 @@ int hl_fw_send_cpu_message(struct hl_device *hdev, u32 hw_queue_id, u32 *msg,
+ 	hl_hw_queue_inc_ci_kernel(hdev, hw_queue_id);
  
- 		if (!ioa_cfg->hrrq[i].host_rrq)  {
--			while (--i > 0)
-+			while (--i >= 0)
- 				dma_free_coherent(&pdev->dev,
- 					sizeof(u32) * ioa_cfg->hrrq[i].size,
- 					ioa_cfg->hrrq[i].host_rrq,
-@@ -10065,7 +10065,7 @@ static int ipr_request_other_msi_irqs(struct ipr_ioa_cfg *ioa_cfg,
- 			ioa_cfg->vectors_info[i].desc,
- 			&ioa_cfg->hrrq[i]);
- 		if (rc) {
--			while (--i >= 0)
-+			while (--i > 0)
- 				free_irq(pci_irq_vector(pdev, i),
- 					&ioa_cfg->hrrq[i]);
- 			return rc;
+ 	if (rc == -ETIMEDOUT) {
+-		dev_err(hdev->dev, "Device CPU packet timeout (0x%x)\n", tmp);
++		/* If FW performed reset just before sending it a packet, we will get a timeout.
++		 * This is expected behavior, hence no need for error message.
++		 */
++		if (!hl_device_operational(hdev, NULL) && !hdev->reset_info.is_in_soft_reset)
++			dev_dbg(hdev->dev, "Device CPU packet timeout (0x%x) due to FW reset\n",
++					tmp);
++		else
++			dev_err(hdev->dev, "Device CPU packet timeout (0x%x)\n", tmp);
+ 		hdev->device_cpu_disabled = true;
+ 		goto out;
+ 	}
 -- 
-2.35.1
-
-
+2.25.1
 
