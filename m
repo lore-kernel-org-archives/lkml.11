@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE6E3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:14:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72705C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:14:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244617AbiFTNNO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:13:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33748 "EHLO
+        id S1343879AbiFTNNW (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:13:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343773AbiFTNJh (ORCPT
+        with ESMTP id S1343845AbiFTNJk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:09:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2122918E33;
-        Mon, 20 Jun 2022 06:04:49 -0700 (PDT)
+        Mon, 20 Jun 2022 09:09:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 958331ADB5;
+        Mon, 20 Jun 2022 06:04:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 93CB46157C;
-        Mon, 20 Jun 2022 13:03:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A02DCC3411C;
-        Mon, 20 Jun 2022 13:03:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0EFDFB811D9;
+        Mon, 20 Jun 2022 13:04:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56997C341C5;
+        Mon, 20 Jun 2022 13:04:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730207;
-        bh=GIiPyNlf1hqKd/SxVZ63zAuQT1d8ca2jgkCXe8pRiQA=;
+        s=korg; t=1655730279;
+        bh=rRpiFbuKDk+vkean6JxPT9H2dF4jUq+4oRaQZQ0nxP4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ONM45szG9aEvi/V6IC7sqsq0OGj+x2fhv5FWuCWVywK0+mcg9smTq/DfNYpYsx0WV
-         0dsi+l6z4Faw9Yl6vWjntICTdwZiLmqsWjD6LBvhoEkntz5qC8W+uoE0nF/XN2QjD/
-         wrjiyR/HOh1//5RQVwjr7ihfZ4PeEV5hz5g2WCCk=
+        b=LqrQbFMbUtOUWDP+je1dRw2ItyBX7MzpfV/C76YXKBhdnpvvLo9xuwbNDgEEpxsy/
+         37HqyMlTeySJAcWAX8fZx5OJwR2J5XCc50vRJ/bFvROEJQdh4Gvu6UuN8OlEUuQ8Is
+         Hi+YhSwoEgAVWb6HHnuHijsLPw8bQlGhKp/7d44o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 57/84] irqchip/gic-v3: Fix error handling in gic_populate_ppi_partitions
-Date:   Mon, 20 Jun 2022 14:51:20 +0200
-Message-Id: <20220620124722.578637812@linuxfoundation.org>
+        stable@vger.kernel.org, stable <stable@kernel.org>,
+        Miaoqian Lin <linmq006@gmail.com>
+Subject: [PATCH 5.10 66/84] usb: gadget: lpc32xx_udc: Fix refcount leak in lpc32xx_udc_probe
+Date:   Mon, 20 Jun 2022 14:51:29 +0200
+Message-Id: <20220620124722.841423062@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124720.882450983@linuxfoundation.org>
 References: <20220620124720.882450983@linuxfoundation.org>
@@ -50,37 +51,31 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit ec8401a429ffee34ccf38cebf3443f8d5ae6cb0d ]
+commit 4757c9ade34178b351580133771f510b5ffcf9c8 upstream.
 
-of_get_child_by_name() returns a node pointer with refcount
+of_parse_phandle() returns a node pointer with refcount
 incremented, we should use of_node_put() on it when not need anymore.
-When kcalloc fails, it missing of_node_put() and results in refcount
-leak. Fix this by goto out_put_node label.
+Add missing of_node_put() to avoid refcount leak.
+of_node_put() will check NULL pointer.
 
-Fixes: 52085d3f2028 ("irqchip/gic-v3: Dynamically allocate PPI partition descriptors")
+Fixes: 24a28e428351 ("USB: gadget driver for LPC32xx")
+Cc: stable <stable@kernel.org>
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220601080930.31005-5-linmq006@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220603140246.64529-1-linmq006@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/irqchip/irq-gic-v3.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/gadget/udc/lpc32xx_udc.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
-index e5e3fd6b9554..8d62028a0e04 100644
---- a/drivers/irqchip/irq-gic-v3.c
-+++ b/drivers/irqchip/irq-gic-v3.c
-@@ -1831,7 +1831,7 @@ static void __init gic_populate_ppi_partitions(struct device_node *gic_node)
+--- a/drivers/usb/gadget/udc/lpc32xx_udc.c
++++ b/drivers/usb/gadget/udc/lpc32xx_udc.c
+@@ -3015,6 +3015,7 @@ static int lpc32xx_udc_probe(struct plat
+ 	}
  
- 	gic_data.ppi_descs = kcalloc(gic_data.ppi_nr, sizeof(*gic_data.ppi_descs), GFP_KERNEL);
- 	if (!gic_data.ppi_descs)
--		return;
-+		goto out_put_node;
- 
- 	nr_parts = of_get_child_count(parts_node);
- 
--- 
-2.35.1
-
+ 	udc->isp1301_i2c_client = isp1301_get_client(isp1301_node);
++	of_node_put(isp1301_node);
+ 	if (!udc->isp1301_i2c_client) {
+ 		return -EPROBE_DEFER;
+ 	}
 
 
