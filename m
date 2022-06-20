@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FF21CCA480
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:04:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29744CCA47C
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:04:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242829AbiFTOD6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:03:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45366 "EHLO
+        id S1344675AbiFTOEO (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 10:04:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351570AbiFTNy6 (ORCPT
+        with ESMTP id S1353466AbiFTN6N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:54:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48CC43388E;
-        Mon, 20 Jun 2022 06:21:14 -0700 (PDT)
+        Mon, 20 Jun 2022 09:58:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA7D838D81;
+        Mon, 20 Jun 2022 06:23:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 039B460FF3;
-        Mon, 20 Jun 2022 13:21:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 028A2C341C0;
-        Mon, 20 Jun 2022 13:21:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5F245B811D3;
+        Mon, 20 Jun 2022 13:18:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4B5AC3411C;
+        Mon, 20 Jun 2022 13:18:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731273;
-        bh=WsxOkHCIW3lXfeuqwtzagvB+trQaVc4EDA36IF965Ng=;
+        s=korg; t=1655731125;
+        bh=JHeNvVQv+nXpZEwiZAVU/EY4i1gnNMnF72ZktDobAGA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bXFDxznu5ZWnFmBgc8HDAoO1+YiXUytciyM7iGaWihVxfw+jtFdyy7hHDqsjtyDXf
-         EhjmmySAPVMMTe33w4vEzWuy4FnaSh5WCO5O4d5l/eed/jEJfwW5l9Lr0VYpjdQKfu
-         jLCW9Ye/KPxhuBP6eFOP9ANNXXhCMkDV8cgVBYVs=
+        b=lCMCELqwO0fUVA2yVcuc9AP3Ycm3sQCkpn/rWxKe0CPtqmGrR0NnjYTbAm82I6P4U
+         3s0dmJqFLNvQ8E9kiwQuoypH0x+v/3ThO0GyBnEbrFvEjvHJ8zolMoYH1gpo2jtK1b
+         c/U0PkYuta8nQa9K7UznIqNv0eKlO9o+WxiQAm1U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michal Jaron <michalx.jaron@intel.com>,
-        Aleksandr Loktionov <aleksandr.loktionov@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH 5.4 209/240] i40e: Fix call trace in setup_tx_descriptors
-Date:   Mon, 20 Jun 2022 14:51:50 +0200
-Message-Id: <20220620124745.035294642@linuxfoundation.org>
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.4 162/240] random: use proper return types on get_random_{int,long}_wait()
+Date:   Mon, 20 Jun 2022 14:51:03 +0200
+Message-Id: <20220620124743.700290908@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -51,83 +48,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-[ Upstream commit fd5855e6b1358e816710afee68a1d2bc685176ca ]
+commit 7c3a8a1db5e03d02cc0abb3357a84b8b326dfac3 upstream.
 
-After PF reset and ethtool -t there was call trace in dmesg
-sometimes leading to panic. When there was some time, around 5
-seconds, between reset and test there were no errors.
+Before these were returning signed values, but the API is intended to be
+used with unsigned values.
 
-Problem was that pf reset calls i40e_vsi_close in prep_for_reset
-and ethtool -t calls i40e_vsi_close in diag_test. If there was not
-enough time between those commands the second i40e_vsi_close starts
-before previous i40e_vsi_close was done which leads to crash.
-
-Add check to diag_test if pf is in reset and don't start offline
-tests if it is true.
-Add netif_info("testing failed") into unhappy path of i40e_diag_test()
-
-Fixes: e17bc411aea8 ("i40e: Disable offline diagnostics if VFs are enabled")
-Fixes: 510efb2682b3 ("i40e: Fix ethtool offline diagnostic with netqueues")
-Signed-off-by: Michal Jaron <michalx.jaron@intel.com>
-Signed-off-by: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../net/ethernet/intel/i40e/i40e_ethtool.c    | 25 +++++++++++++------
- 1 file changed, 17 insertions(+), 8 deletions(-)
+ include/linux/random.h |   14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
-index 2cc4f63b1e91..689deecb4e1a 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
-@@ -2578,15 +2578,16 @@ static void i40e_diag_test(struct net_device *netdev,
- 
- 		set_bit(__I40E_TESTING, pf->state);
- 
-+		if (test_bit(__I40E_RESET_RECOVERY_PENDING, pf->state) ||
-+		    test_bit(__I40E_RESET_INTR_RECEIVED, pf->state)) {
-+			dev_warn(&pf->pdev->dev,
-+				 "Cannot start offline testing when PF is in reset state.\n");
-+			goto skip_ol_tests;
-+		}
-+
- 		if (i40e_active_vfs(pf) || i40e_active_vmdqs(pf)) {
- 			dev_warn(&pf->pdev->dev,
- 				 "Please take active VFs and Netqueues offline and restart the adapter before running NIC diagnostics\n");
--			data[I40E_ETH_TEST_REG]		= 1;
--			data[I40E_ETH_TEST_EEPROM]	= 1;
--			data[I40E_ETH_TEST_INTR]	= 1;
--			data[I40E_ETH_TEST_LINK]	= 1;
--			eth_test->flags |= ETH_TEST_FL_FAILED;
--			clear_bit(__I40E_TESTING, pf->state);
- 			goto skip_ol_tests;
- 		}
- 
-@@ -2633,9 +2634,17 @@ static void i40e_diag_test(struct net_device *netdev,
- 		data[I40E_ETH_TEST_INTR] = 0;
- 	}
- 
--skip_ol_tests:
--
- 	netif_info(pf, drv, netdev, "testing finished\n");
-+	return;
-+
-+skip_ol_tests:
-+	data[I40E_ETH_TEST_REG]		= 1;
-+	data[I40E_ETH_TEST_EEPROM]	= 1;
-+	data[I40E_ETH_TEST_INTR]	= 1;
-+	data[I40E_ETH_TEST_LINK]	= 1;
-+	eth_test->flags |= ETH_TEST_FL_FAILED;
-+	clear_bit(__I40E_TESTING, pf->state);
-+	netif_info(pf, drv, netdev, "testing failed\n");
+--- a/include/linux/random.h
++++ b/include/linux/random.h
+@@ -81,18 +81,18 @@ static inline int get_random_bytes_wait(
+ 	return ret;
  }
  
- static void i40e_get_wol(struct net_device *netdev,
--- 
-2.35.1
-
+-#define declare_get_random_var_wait(var) \
+-	static inline int get_random_ ## var ## _wait(var *out) { \
++#define declare_get_random_var_wait(name, ret_type) \
++	static inline int get_random_ ## name ## _wait(ret_type *out) { \
+ 		int ret = wait_for_random_bytes(); \
+ 		if (unlikely(ret)) \
+ 			return ret; \
+-		*out = get_random_ ## var(); \
++		*out = get_random_ ## name(); \
+ 		return 0; \
+ 	}
+-declare_get_random_var_wait(u32)
+-declare_get_random_var_wait(u64)
+-declare_get_random_var_wait(int)
+-declare_get_random_var_wait(long)
++declare_get_random_var_wait(u32, u32)
++declare_get_random_var_wait(u64, u32)
++declare_get_random_var_wait(int, unsigned int)
++declare_get_random_var_wait(long, unsigned long)
+ #undef declare_get_random_var
+ 
+ /*
 
 
