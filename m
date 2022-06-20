@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACC64CCA47C
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:20:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FA4AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:20:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344244AbiFTNSi (ORCPT
+        id S1344425AbiFTNS7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:18:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35854 "EHLO
+        Mon, 20 Jun 2022 09:18:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345204AbiFTNOQ (ORCPT
+        with ESMTP id S1345444AbiFTNO1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:14:16 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 442081FA7F;
-        Mon, 20 Jun 2022 06:06:47 -0700 (PDT)
+        Mon, 20 Jun 2022 09:14:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 044BC1FCFB;
+        Mon, 20 Jun 2022 06:07:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 6D807CE1391;
-        Mon, 20 Jun 2022 13:05:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 346F9C3411B;
-        Mon, 20 Jun 2022 13:05:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C127FB811A2;
+        Mon, 20 Jun 2022 13:05:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DC80C3411B;
+        Mon, 20 Jun 2022 13:05:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730328;
-        bh=35ASCPnS8+xGT0L0LVS2NYvX5iXNUglTyS4P5OUQwgg=;
+        s=korg; t=1655730312;
+        bh=Hk15Ko+XriFcMJvHOag9fZWU72/YW9YpHBaQUG75oCY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XuS2mHAgv0omWgoJbTwlh4OouWfZx6nrIKQDmIVBuVQU0dZWhZeBQRliXixtpVfr+
-         9lM8NaGubXRKlLeBkeFGXBjmeD3dCt9r7o3FpQHbW2Gw01hhn0g2AJbSn7PDxcS+2u
-         LcxKUeEU4Zf95QfEDX5VKL6bzlN2XG9tCwW34dSA=
+        b=2XPNW966hMPjfBpErZ5EiRNZGkxVRVCFbuA/PvhC7ZY9qKB4/7lltnHItE/BX/j68
+         pS7/u1oPpOj99Xk7QQERI5s8GzB188iVUi5UyBiO0YH9whlKUrzbaWwIIoZhRbURnI
+         kCWupU5pu45+SCPikv3KNyc4y/q2FKzzbzRKdMKk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adam Ford <aford173@gmail.com>,
+        stable@vger.kernel.org,
         Charles Keepax <ckeepax@opensource.cirrus.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 019/106] ASoC: wm8962: Fix suspend while playing music
-Date:   Mon, 20 Jun 2022 14:50:38 +0200
-Message-Id: <20220620124724.953424961@linuxfoundation.org>
+Subject: [PATCH 5.15 014/106] ASoC: cs42l56: Correct typo in minimum level for SX volume controls
+Date:   Mon, 20 Jun 2022 14:50:33 +0200
+Message-Id: <20220620124724.809173837@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
 References: <20220620124724.380838401@linuxfoundation.org>
@@ -51,40 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adam Ford <aford173@gmail.com>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit d1f5272c0f7d2e53c6f2480f46725442776f5f78 ]
+[ Upstream commit a8928ada9b96944cadd8b65d191e33199fd38782 ]
 
-If the audio CODEC is playing sound when the system is suspended,
-it can be left in a state which throws the following error:
+A couple of the SX volume controls specify 0x84 as the lowest volume
+value, however the correct value from the datasheet is 0x44. The
+datasheet don't include spaces in the value it displays as binary so
+this was almost certainly just a typo reading 1000100.
 
-wm8962 3-001a: ASoC: error at soc_component_read_no_lock on wm8962.3-001a: -16
-
-Once this error has occurred, the audio will not work again until rebooted.
-
-Fix this by configuring SET_SYSTEM_SLEEP_PM_OPS.
-
-Signed-off-by: Adam Ford <aford173@gmail.com>
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220526182129.538472-1-aford173@gmail.com
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220602162119.3393857-6-ckeepax@opensource.cirrus.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/wm8962.c | 1 +
- 1 file changed, 1 insertion(+)
+ sound/soc/codecs/cs42l56.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/codecs/wm8962.c b/sound/soc/codecs/wm8962.c
-index ba16bdf9e478..a5a4ae4440cc 100644
---- a/sound/soc/codecs/wm8962.c
-+++ b/sound/soc/codecs/wm8962.c
-@@ -3867,6 +3867,7 @@ static int wm8962_runtime_suspend(struct device *dev)
- #endif
+diff --git a/sound/soc/codecs/cs42l56.c b/sound/soc/codecs/cs42l56.c
+index 3cf8a0b4478c..b39c25409c23 100644
+--- a/sound/soc/codecs/cs42l56.c
++++ b/sound/soc/codecs/cs42l56.c
+@@ -391,9 +391,9 @@ static const struct snd_kcontrol_new cs42l56_snd_controls[] = {
+ 	SOC_DOUBLE("ADC Boost Switch", CS42L56_GAIN_BIAS_CTL, 3, 2, 1, 1),
  
- static const struct dev_pm_ops wm8962_pm = {
-+	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend, pm_runtime_force_resume)
- 	SET_RUNTIME_PM_OPS(wm8962_runtime_suspend, wm8962_runtime_resume, NULL)
- };
+ 	SOC_DOUBLE_R_SX_TLV("Headphone Volume", CS42L56_HPA_VOLUME,
+-			      CS42L56_HPB_VOLUME, 0, 0x84, 0x48, hl_tlv),
++			      CS42L56_HPB_VOLUME, 0, 0x44, 0x48, hl_tlv),
+ 	SOC_DOUBLE_R_SX_TLV("LineOut Volume", CS42L56_LOA_VOLUME,
+-			      CS42L56_LOB_VOLUME, 0, 0x84, 0x48, hl_tlv),
++			      CS42L56_LOB_VOLUME, 0, 0x44, 0x48, hl_tlv),
  
+ 	SOC_SINGLE_TLV("Bass Shelving Volume", CS42L56_TONE_CTL,
+ 			0, 0x00, 1, tone_tlv),
 -- 
 2.35.1
 
