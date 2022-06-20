@@ -2,37 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ABE3CCA480
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 21:34:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59114CCA480
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 21:34:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343761AbiFTVen (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 17:34:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42110 "EHLO
+        id S245000AbiFTVer (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 17:34:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243518AbiFTVeS (ORCPT
+        with ESMTP id S242629AbiFTVeR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 17:34:18 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1E2F15816
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 14:34:16 -0700 (PDT)
+        Mon, 20 Jun 2022 17:34:17 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 001871571B
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 14:34:14 -0700 (PDT)
 Received: from hermes-devbox.fritz.box (82-71-8-225.dsl.in-addr.zen.co.uk [82.71.8.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: bbeckett)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id D3DDB6601863;
-        Mon, 20 Jun 2022 22:34:14 +0100 (BST)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 8F64A6601833;
+        Mon, 20 Jun 2022 22:34:13 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1655760855;
-        bh=vcV9d53cSiZS9S6xUBuwTwjcLWVgxyTlm1c7ldt4HDk=;
+        s=mail; t=1655760853;
+        bh=4aLhOjNbnMWEd5TE2kdvFPY0DN2hydFT2IvNHlkBa+w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dV7iU+eeCyEGjHaVik+qAf4KmsRPhz/eLYpKoWACkbstkzDRobOwv1zX963CchJ0F
-         0zXQv5I7yWaPnMSlxGBlbFBLCIIFZ8ZnbtkAWi/3JMIGV6FpSABax1CZGrS0JILHUH
-         +eeUWzaVvtLysN4qV5bkDFf/iViZNIGim5mJeP4BRHFWJFaFQkUNa9oqddIQcVvHrr
-         h0oHuWWVO3ni/qsj4CPJMF314gEwLMwHSCNTx2bALPV9/q1bffWoiNnnGQd/Qlayzp
-         c96WvB4VNbykcVhOSYYZpw8V+/f2Jk/pu6L7fP+GJ8LMSRHUi3GO/M9o8u2v5MBYrL
-         oFJRGKGuuT2mg==
+        b=K2ZDneeO7pOb2hrqANqb8n4XGvVHoS64fz2moMdd1Ro22xDDCXKJSOnX1kQkqhBvm
+         JIQYwQh4cY6+Kla0lu4GFpCFiz6Cz19IwEMqB4grqz/ZLEl180gCcZoiSeJ/WnVZW7
+         XtnuFoV6EV5LAokkDZIBttSg8VvJwcooskReiGcLjKd51MEfhmI6GXrzLAjJ1Nn5pe
+         smrscnE57Lb6NFnxoj6foNLttA0p7vywraV1ktiX1gqNpseAf+QdY15+GY2EBTVsLv
+         iaHUBFuR9yk3IfRVeukJ0zRqpthSNXODAMyfEROYgdRZYnAXsOp864g3IilL9tPLyR
+         2Pq9jXdmLB1EA==
 From:   Robert Beckett <bob.beckett@collabora.com>
 To:     dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
         Jani Nikula <jani.nikula@linux.intel.com>,
@@ -45,9 +44,9 @@ Cc:     kernel@collabora.com, Robert Beckett <bob.beckett@collabora.com>,
         Matthew Auld <matthew.auld@intel.com>,
         =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
         <thomas.hellstrom@linux.intel.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH v7 07/10] drm/i915: ttm move/clear logic fix
-Date:   Mon, 20 Jun 2022 21:33:37 +0000
-Message-Id: <20220620213340.3199605-8-bob.beckett@collabora.com>
+Subject: [PATCH v7 05/10] drm/i915: instantiate ttm ranger manager for stolen memory
+Date:   Mon, 20 Jun 2022 21:33:35 +0000
+Message-Id: <20220620213340.3199605-6-bob.beckett@collabora.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220620213340.3199605-1-bob.beckett@collabora.com>
 References: <20220620213340.3199605-1-bob.beckett@collabora.com>
@@ -58,68 +57,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ttm managed buffers start off with system resource definitions and ttm_tt
-tracking structures allocated (though unpopulated).
-currently this prevents clearing of buffers on first move to desired
-placements.
-
-The desired behaviour is to clear user allocated buffers and any kernel
-buffers that specifically requests it only.
-Make the logic match the desired behaviour.
+prepare for ttm based stolen region by using ttm range manager
+as the resource manager for stolen region.
 
 Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
 Reviewed-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
 ---
- drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c | 22 +++++++++++++++++++-
- 1 file changed, 21 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c |  6 ++--
+ drivers/gpu/drm/i915/intel_region_ttm.c      | 31 +++++++++++++++-----
+ 2 files changed, 27 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
-index 81c67ca9edda..a3f8fc056dbc 100644
+index 40249fa28a7a..675e9ab30396 100644
 --- a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
 +++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
-@@ -3,6 +3,7 @@
-  * Copyright © 2021 Intel Corporation
+@@ -60,11 +60,13 @@ i915_ttm_region(struct ttm_device *bdev, int ttm_mem_type)
+ 	struct drm_i915_private *i915 = container_of(bdev, typeof(*i915), bdev);
+ 
+ 	/* There's some room for optimization here... */
+-	GEM_BUG_ON(ttm_mem_type != I915_PL_SYSTEM &&
+-		   ttm_mem_type < I915_PL_LMEM0);
++	GEM_BUG_ON(ttm_mem_type == I915_PL_GGTT);
++
+ 	if (ttm_mem_type == I915_PL_SYSTEM)
+ 		return intel_memory_region_lookup(i915, INTEL_MEMORY_SYSTEM,
+ 						  0);
++	if (ttm_mem_type == I915_PL_STOLEN)
++		return i915->mm.stolen_region;
+ 
+ 	return intel_memory_region_lookup(i915, INTEL_MEMORY_LOCAL,
+ 					  ttm_mem_type - I915_PL_LMEM0);
+diff --git a/drivers/gpu/drm/i915/intel_region_ttm.c b/drivers/gpu/drm/i915/intel_region_ttm.c
+index fd2ecfdd8fa1..694e9acb69e2 100644
+--- a/drivers/gpu/drm/i915/intel_region_ttm.c
++++ b/drivers/gpu/drm/i915/intel_region_ttm.c
+@@ -54,7 +54,7 @@ void intel_region_ttm_device_fini(struct drm_i915_private *dev_priv)
+ 
+ /*
+  * Map the i915 memory regions to TTM memory types. We use the
+- * driver-private types for now, reserving TTM_PL_VRAM for stolen
++ * driver-private types for now, reserving I915_PL_STOLEN for stolen
+  * memory and TTM_PL_TT for GGTT use if decided to implement this.
   */
+ int intel_region_to_ttm_type(const struct intel_memory_region *mem)
+@@ -63,11 +63,17 @@ int intel_region_to_ttm_type(const struct intel_memory_region *mem)
  
-+#include "drm/ttm/ttm_tt.h"
- #include <drm/ttm/ttm_bo_driver.h>
+ 	GEM_BUG_ON(mem->type != INTEL_MEMORY_LOCAL &&
+ 		   mem->type != INTEL_MEMORY_MOCK &&
+-		   mem->type != INTEL_MEMORY_SYSTEM);
++		   mem->type != INTEL_MEMORY_SYSTEM &&
++		   mem->type != INTEL_MEMORY_STOLEN_SYSTEM &&
++		   mem->type != INTEL_MEMORY_STOLEN_LOCAL);
  
- #include "i915_deps.h"
-@@ -476,6 +477,25 @@ __i915_ttm_move(struct ttm_buffer_object *bo,
- 	return fence;
- }
+ 	if (mem->type == INTEL_MEMORY_SYSTEM)
+ 		return TTM_PL_SYSTEM;
  
-+static bool
-+allow_clear(struct drm_i915_gem_object *obj, struct ttm_tt *ttm, struct ttm_resource *dst_mem)
-+{
-+	/* never clear stolen */
-+	if (dst_mem->mem_type == I915_PL_STOLEN)
-+		return false;
-+	/*
-+	 * we want to clear user buffers and any kernel buffers
-+	 * that specifically request clearing.
-+	 */
-+	if (obj->flags & I915_BO_ALLOC_USER)
-+		return true;
++	if (mem->type == INTEL_MEMORY_STOLEN_SYSTEM ||
++	    mem->type == INTEL_MEMORY_STOLEN_LOCAL)
++		return I915_PL_STOLEN;
 +
-+	if (ttm && ttm->page_flags & TTM_TT_FLAG_ZERO_ALLOC)
-+		return true;
-+
-+	return false;
-+}
-+
- /**
-  * i915_ttm_move - The TTM move callback used by i915.
-  * @bo: The buffer object.
-@@ -526,7 +546,7 @@ int i915_ttm_move(struct ttm_buffer_object *bo, bool evict,
- 		return PTR_ERR(dst_rsgt);
+ 	type = mem->instance + TTM_PL_PRIV;
+ 	GEM_BUG_ON(type >= TTM_NUM_MEM_TYPES);
  
- 	clear = !i915_ttm_cpu_maps_iomem(bo->resource) && (!ttm || !ttm_tt_is_populated(ttm));
--	if (!(clear && ttm && !(ttm->page_flags & TTM_TT_FLAG_ZERO_ALLOC))) {
-+	if (!clear || allow_clear(obj, ttm, dst_mem)) {
- 		struct i915_deps deps;
+@@ -91,10 +97,16 @@ int intel_region_ttm_init(struct intel_memory_region *mem)
+ 	int mem_type = intel_region_to_ttm_type(mem);
+ 	int ret;
  
- 		i915_deps_init(&deps, GFP_KERNEL | __GFP_NORETRY | __GFP_NOWARN);
+-	ret = i915_ttm_buddy_man_init(bdev, mem_type, false,
+-				      resource_size(&mem->region),
+-				      mem->io_size,
+-				      mem->min_page_size, PAGE_SIZE);
++	if (mem_type == I915_PL_STOLEN) {
++		ret = ttm_range_man_init(bdev, mem_type, false,
++					 resource_size(&mem->region) >> PAGE_SHIFT);
++		mem->is_range_manager = true;
++	} else {
++		ret = i915_ttm_buddy_man_init(bdev, mem_type, false,
++					      resource_size(&mem->region),
++					      mem->io_size,
++					      mem->min_page_size, PAGE_SIZE);
++	}
+ 	if (ret)
+ 		return ret;
+ 
+@@ -114,6 +126,7 @@ int intel_region_ttm_init(struct intel_memory_region *mem)
+ int intel_region_ttm_fini(struct intel_memory_region *mem)
+ {
+ 	struct ttm_resource_manager *man = mem->region_private;
++	int mem_type = intel_region_to_ttm_type(mem);
+ 	int ret = -EBUSY;
+ 	int count;
+ 
+@@ -144,8 +157,10 @@ int intel_region_ttm_fini(struct intel_memory_region *mem)
+ 	if (ret || !man)
+ 		return ret;
+ 
+-	ret = i915_ttm_buddy_man_fini(&mem->i915->bdev,
+-				      intel_region_to_ttm_type(mem));
++	if (mem_type == I915_PL_STOLEN)
++		ret = ttm_range_man_fini(&mem->i915->bdev, mem_type);
++	else
++		ret = i915_ttm_buddy_man_fini(&mem->i915->bdev, mem_type);
+ 	GEM_WARN_ON(ret);
+ 	mem->region_private = NULL;
+ 
 -- 
 2.25.1
 
