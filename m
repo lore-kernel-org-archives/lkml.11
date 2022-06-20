@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D02BBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:10:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86B5DCCA481
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:10:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351760AbiFTOKB (ORCPT
+        id S1351995AbiFTOKQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:10:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44188 "EHLO
+        Mon, 20 Jun 2022 10:10:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350194AbiFTNxH (ORCPT
+        with ESMTP id S1351436AbiFTNyt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:53:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7138B262E;
-        Mon, 20 Jun 2022 06:19:35 -0700 (PDT)
+        Mon, 20 Jun 2022 09:54:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECB1F32EE5;
+        Mon, 20 Jun 2022 06:21:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 585B860C98;
-        Mon, 20 Jun 2022 13:18:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48B5FC3411B;
-        Mon, 20 Jun 2022 13:18:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E5ED60EC7;
+        Mon, 20 Jun 2022 13:20:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EC7AC3411B;
+        Mon, 20 Jun 2022 13:20:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731134;
-        bh=PlquIHmEkLUenrV0b8mftduqSX2W2iNXx8TVoXvh7V8=;
+        s=korg; t=1655731250;
+        bh=IVqg8u+gF0ORv3w81IDPWbZ8HpMy12YNLIg3Mycg8fk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K9cp1QiT90CgREapiteN/HgV6Qt+p/ddzIMphKY9h9ZL0ZHcvmxX8lOX4Z4uiVYZ7
-         BRll6NM4IaJucTIDjqFGbCsDz4dXcMEYubmkmj5GLxilOs9NHCw/mrtBiHErau1dPS
-         Qbx6DR8xJfVmUur1evqJ06+chPpJ8Y/PFJ0j/JGo=
+        b=12sMEThxRaQh+OfGsECgrsCr0dl57K5AxG8icJcf4Dk0vkx5e/2Pd6iUdA8zds1Kl
+         hQFlDpQw1ebDxo0U26LsQhmFMnaWrAsZjBT6zSwKapRcEPqDd1QXL5w+pHnn12JQvC
+         AhwY3h0yLg7QnzolJVj94h2RkIjZldfOspyFogCs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>,
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 165/240] random: move randomize_page() into mm where it belongs
-Date:   Mon, 20 Jun 2022 14:51:06 +0200
-Message-Id: <20220620124743.785623693@linuxfoundation.org>
+Subject: [PATCH 5.4 159/240] random: credit architectural init the exact amount
+Date:   Mon, 20 Jun 2022 14:51:00 +0200
+Message-Id: <20220620124743.615043254@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -51,132 +52,59 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 5ad7dd882e45d7fe432c32e896e2aaa0b21746ea upstream.
+commit 12e45a2a6308105469968951e6d563e8f4fea187 upstream.
 
-randomize_page is an mm function. It is documented like one. It contains
-the history of one. It has the naming convention of one. It looks
-just like another very similar function in mm, randomize_stack_top().
-And it has always been maintained and updated by mm people. There is no
-need for it to be in random.c. In the "which shape does not look like
-the other ones" test, pointing to randomize_page() is correct.
+RDRAND and RDSEED can fail sometimes, which is fine. We currently
+initialize the RNG with 512 bits of RDRAND/RDSEED. We only need 256 bits
+of those to succeed in order to initialize the RNG. Instead of the
+current "all or nothing" approach, actually credit these contributions
+the amount that is actually contributed.
 
-So move randomize_page() into mm/util.c, right next to the similar
-randomize_stack_top() function.
-
-This commit contains no actual code changes.
-
-Cc: Andrew Morton <akpm@linux-foundation.org>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c  |   32 --------------------------------
- include/linux/mm.h     |    1 +
- include/linux/random.h |    2 --
- mm/util.c              |   32 ++++++++++++++++++++++++++++++++
- 4 files changed, 33 insertions(+), 34 deletions(-)
+ drivers/char/random.c |   12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -619,38 +619,6 @@ int __cold random_prepare_cpu(unsigned i
- }
- #endif
- 
--/**
-- * randomize_page - Generate a random, page aligned address
-- * @start:	The smallest acceptable address the caller will take.
-- * @range:	The size of the area, starting at @start, within which the
-- *		random address must fall.
-- *
-- * If @start + @range would overflow, @range is capped.
-- *
-- * NOTE: Historical use of randomize_range, which this replaces, presumed that
-- * @start was already page aligned.  We now align it regardless.
-- *
-- * Return: A page aligned address within [start, start + range).  On error,
-- * @start is returned.
-- */
--unsigned long randomize_page(unsigned long start, unsigned long range)
--{
--	if (!PAGE_ALIGNED(start)) {
--		range -= PAGE_ALIGN(start) - start;
--		start = PAGE_ALIGN(start);
--	}
--
--	if (start > ULONG_MAX - range)
--		range = ULONG_MAX - start;
--
--	range >>= PAGE_SHIFT;
--
--	if (range == 0)
--		return start;
--
--	return start + (get_random_long() % range << PAGE_SHIFT);
--}
--
- /*
-  * This function will use the architecture-specific hardware random
-  * number generator if it is available. It is not recommended for
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -2354,6 +2354,7 @@ extern int install_special_mapping(struc
- 				   unsigned long flags, struct page **pages);
- 
- unsigned long randomize_stack_top(unsigned long stack_top);
-+unsigned long randomize_page(unsigned long start, unsigned long range);
- 
- extern unsigned long get_unmapped_area(struct file *, unsigned long, unsigned long, unsigned long, unsigned long);
- 
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -64,8 +64,6 @@ static inline unsigned long get_random_c
- 	return get_random_long() & CANARY_MASK;
- }
- 
--unsigned long randomize_page(unsigned long start, unsigned long range);
--
- int __init random_init(const char *command_line);
- bool rng_is_initialized(void);
- int wait_for_random_bytes(void);
---- a/mm/util.c
-+++ b/mm/util.c
-@@ -320,6 +320,38 @@ unsigned long randomize_stack_top(unsign
- #endif
- }
- 
-+/**
-+ * randomize_page - Generate a random, page aligned address
-+ * @start:	The smallest acceptable address the caller will take.
-+ * @range:	The size of the area, starting at @start, within which the
-+ *		random address must fall.
-+ *
-+ * If @start + @range would overflow, @range is capped.
-+ *
-+ * NOTE: Historical use of randomize_range, which this replaces, presumed that
-+ * @start was already page aligned.  We now align it regardless.
-+ *
-+ * Return: A page aligned address within [start, start + range).  On error,
-+ * @start is returned.
-+ */
-+unsigned long randomize_page(unsigned long start, unsigned long range)
-+{
-+	if (!PAGE_ALIGNED(start)) {
-+		range -= PAGE_ALIGN(start) - start;
-+		start = PAGE_ALIGN(start);
-+	}
-+
-+	if (start > ULONG_MAX - range)
-+		range = ULONG_MAX - start;
-+
-+	range >>= PAGE_SHIFT;
-+
-+	if (range == 0)
-+		return start;
-+
-+	return start + (get_random_long() % range << PAGE_SHIFT);
-+}
-+
- #ifdef CONFIG_ARCH_WANT_DEFAULT_TOPDOWN_MMAP_LAYOUT
- unsigned long arch_randomize_brk(struct mm_struct *mm)
+@@ -891,9 +891,8 @@ early_param("random.trust_bootloader", p
+  */
+ int __init random_init(const char *command_line)
  {
+-	size_t i;
+ 	ktime_t now = ktime_get_real();
+-	bool arch_init = true;
++	unsigned int i, arch_bytes;
+ 	unsigned long rv;
+ 
+ #if defined(LATENT_ENTROPY_PLUGIN)
+@@ -901,11 +900,12 @@ int __init random_init(const char *comma
+ 	_mix_pool_bytes(compiletime_seed, sizeof(compiletime_seed));
+ #endif
+ 
+-	for (i = 0; i < BLAKE2S_BLOCK_SIZE; i += sizeof(rv)) {
++	for (i = 0, arch_bytes = BLAKE2S_BLOCK_SIZE;
++	     i < BLAKE2S_BLOCK_SIZE; i += sizeof(rv)) {
+ 		if (!arch_get_random_seed_long_early(&rv) &&
+ 		    !arch_get_random_long_early(&rv)) {
+ 			rv = random_get_entropy();
+-			arch_init = false;
++			arch_bytes -= sizeof(rv);
+ 		}
+ 		_mix_pool_bytes(&rv, sizeof(rv));
+ 	}
+@@ -916,8 +916,8 @@ int __init random_init(const char *comma
+ 
+ 	if (crng_ready())
+ 		crng_reseed();
+-	else if (arch_init && trust_cpu)
+-		credit_init_bits(BLAKE2S_BLOCK_SIZE * 8);
++	else if (trust_cpu)
++		credit_init_bits(arch_bytes * 8);
+ 
+ 	return 0;
+ }
 
 
