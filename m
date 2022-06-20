@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59598C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:07:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A44C6C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:08:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343850AbiFTOHy (ORCPT
+        id S1350099AbiFTOIA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:07:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44236 "EHLO
+        Mon, 20 Jun 2022 10:08:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352818AbiFTN5H (ORCPT
+        with ESMTP id S1351974AbiFTNzr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:57:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78BE736B76;
-        Mon, 20 Jun 2022 06:23:01 -0700 (PDT)
+        Mon, 20 Jun 2022 09:55:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B56B34671;
+        Mon, 20 Jun 2022 06:21:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8048360FAD;
-        Mon, 20 Jun 2022 13:23:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 754DDC341C0;
-        Mon, 20 Jun 2022 13:23:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7680C60FAD;
+        Mon, 20 Jun 2022 13:21:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38322C3411B;
+        Mon, 20 Jun 2022 13:21:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731380;
-        bh=XaQf1WtlNVXvORkpGmBBusqXihg7/XyyCNcKtkHJsc4=;
+        s=korg; t=1655731289;
+        bh=RNqOf6SIw5tUJZWNqP2f+//vSwejOEjAPwK+TUZbi6w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IJPMpN6TvW5MuBdwtEJVACuX14OSQF4VNf7yVo0b2v1tVQArBaGO6X6Rm6op2ESb7
-         IT4z5T/8EGG654qwQIoe0Y9WhooE4Wt3ul4lBXujzO5vEfbwvLjh6xb3N+XdaJ8zTC
-         O08yxPbYECeVLNpUWbypoUc/hgtrFqCyEFZej4pc=
+        b=0T6N9FVGWMQZig3jjcor4qwtHRuLNZTPxmy/qc1zssxx1nRESRnFjkOpl/2EFmbQr
+         oVfzCxkGdFRrbgwK4Hxe2NhATfwijvMLvSRg+DwXQswDgCiiD4osw/cXsseEw97h39
+         QGJxV+AwXNrVgoBlQpnQmKAgKZKYxw6A0v4JD350=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andreas Schwab <schwab@linux-m68k.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Arvind Sankar <nivedita@alum.mit.edu>,
-        Palmer Dabbelt <palmerdabbelt@google.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH 5.4 238/240] RISC-V: fix barrier() use in <vdso/processor.h>
-Date:   Mon, 20 Jun 2022 14:52:19 +0200
-Message-Id: <20220620124745.846319559@linuxfoundation.org>
+        stable@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Will Deacon <will@kernel.org>,
+        "Ivan T. Ivanov" <iivanov@suse.de>,
+        Chengming Zhou <zhouchengming@bytedance.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 214/240] arm64: ftrace: fix branch range checks
+Date:   Mon, 20 Jun 2022 14:51:55 +0200
+Message-Id: <20220620124745.174675923@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -53,55 +54,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Mark Rutland <mark.rutland@arm.com>
 
-commit 30aca1bacb398dec6c1ed5eeca33f355bd7b6203 upstream.
+[ Upstream commit 3eefdf9d1e406f3da47470b2854347009ffcb6fa ]
 
-riscv's <vdso/processor.h> uses barrier() so it should include
-<asm/barrier.h>
+The branch range checks in ftrace_make_call() and ftrace_make_nop() are
+incorrect, erroneously permitting a forwards branch of 128M and
+erroneously rejecting a backwards branch of 128M.
 
-Fixes this build error:
-  CC [M]  drivers/net/ethernet/emulex/benet/be_main.o
-In file included from ./include/vdso/processor.h:10,
-                 from ./arch/riscv/include/asm/processor.h:11,
-                 from ./include/linux/prefetch.h:15,
-                 from drivers/net/ethernet/emulex/benet/be_main.c:14:
-./arch/riscv/include/asm/vdso/processor.h: In function 'cpu_relax':
-./arch/riscv/include/asm/vdso/processor.h:14:2: error: implicit declaration of function 'barrier' [-Werror=implicit-function-declaration]
-   14 |  barrier();
+This is because both functions calculate the offset backwards,
+calculating the offset *from* the target *to* the branch, rather than
+the other way around as the later comparisons expect.
 
-This happens with a total of 5 networking drivers -- they all use
-<linux/prefetch.h>.
+If an out-of-range branch were erroeously permitted, this would later be
+rejected by aarch64_insn_gen_branch_imm() as branch_imm_common() checks
+the bounds correctly, resulting in warnings and the placement of a BRK
+instruction. Note that this can only happen for a forwards branch of
+exactly 128M, and so the caller would need to be exactly 128M bytes
+below the relevant ftrace trampoline.
 
-rv64 allmodconfig now builds cleanly after this patch.
+If an in-range branch were erroeously rejected, then:
 
-Fixes fallout from:
-815f0ddb346c ("include/linux/compiler*.h: make compiler-*.h mutually exclusive")
+* For modules when CONFIG_ARM64_MODULE_PLTS=y, this would result in the
+  use of a PLT entry, which is benign.
 
-Fixes: ad5d1122b82f ("riscv: use vDSO common flow to reduce the latency of the time-related functions")
-Reported-by: Andreas Schwab <schwab@linux-m68k.org>
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Acked-by: Arvind Sankar <nivedita@alum.mit.edu>
-Signed-off-by: Palmer Dabbelt <palmerdabbelt@google.com>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-Signed-off-by: Palmer Dabbelt <palmerdabbelt@google.com>
-[sudip: change in old path]
-Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+  Note that this is the common case, as this is selected by
+  CONFIG_RANDOMIZE_BASE (and therefore RANDOMIZE_MODULE_REGION_FULL),
+  which distributions typically seelct. This is also selected by
+  CONFIG_ARM64_ERRATUM_843419.
+
+* For modules when CONFIG_ARM64_MODULE_PLTS=n, this would result in
+  internal ftrace failures.
+
+* For core kernel text, this would result in internal ftrace failues.
+
+  Note that for this to happen, the kernel text would need to be at
+  least 128M bytes in size, and typical configurations are smaller tha
+  this.
+
+Fix this by calculating the offset *from* the branch *to* the target in
+both functions.
+
+Fixes: f8af0b364e24 ("arm64: ftrace: don't validate branch via PLT in ftrace_make_nop()")
+Fixes: e71a4e1bebaf ("arm64: ftrace: add support for far branches to dynamic ftrace")
+Signed-off-by: Mark Rutland <mark.rutland@arm.com>
+Cc: Ard Biesheuvel <ardb@kernel.org>
+Cc: Will Deacon <will@kernel.org>
+Tested-by: "Ivan T. Ivanov" <iivanov@suse.de>
+Reviewed-by: Chengming Zhou <zhouchengming@bytedance.com>
+Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
+Link: https://lore.kernel.org/r/20220614080944.1349146-2-mark.rutland@arm.com
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/riscv/include/asm/processor.h |    2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm64/kernel/ftrace.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/arch/riscv/include/asm/processor.h
-+++ b/arch/riscv/include/asm/processor.h
-@@ -22,6 +22,8 @@
+diff --git a/arch/arm64/kernel/ftrace.c b/arch/arm64/kernel/ftrace.c
+index 822718eafdb4..d4a4be02d309 100644
+--- a/arch/arm64/kernel/ftrace.c
++++ b/arch/arm64/kernel/ftrace.c
+@@ -69,7 +69,7 @@ int ftrace_make_call(struct dyn_ftrace *rec, unsigned long addr)
+ {
+ 	unsigned long pc = rec->ip;
+ 	u32 old, new;
+-	long offset = (long)pc - (long)addr;
++	long offset = (long)addr - (long)pc;
  
- #ifndef __ASSEMBLY__
+ 	if (offset < -SZ_128M || offset >= SZ_128M) {
+ #ifdef CONFIG_ARM64_MODULE_PLTS
+@@ -126,7 +126,7 @@ int ftrace_make_nop(struct module *mod, struct dyn_ftrace *rec,
+ 	unsigned long pc = rec->ip;
+ 	bool validate = true;
+ 	u32 old = 0, new;
+-	long offset = (long)pc - (long)addr;
++	long offset = (long)addr - (long)pc;
  
-+#include <asm/barrier.h>
-+
- struct task_struct;
- struct pt_regs;
- 
+ 	if (offset < -SZ_128M || offset >= SZ_128M) {
+ #ifdef CONFIG_ARM64_MODULE_PLTS
+-- 
+2.35.1
+
 
 
