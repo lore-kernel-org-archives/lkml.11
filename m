@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC3CFC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:04:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13520C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:05:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348383AbiFTOEw (ORCPT
+        id S1348678AbiFTOFD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:04:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43816 "EHLO
+        Mon, 20 Jun 2022 10:05:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350610AbiFTNxp (ORCPT
+        with ESMTP id S1345720AbiFTNy6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:53:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07F001A3B0;
-        Mon, 20 Jun 2022 06:20:12 -0700 (PDT)
+        Mon, 20 Jun 2022 09:54:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5324E33377;
+        Mon, 20 Jun 2022 06:21:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CBAEC60C8B;
-        Mon, 20 Jun 2022 13:10:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BECFEC3411B;
-        Mon, 20 Jun 2022 13:10:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F025260FAD;
+        Mon, 20 Jun 2022 13:21:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B567C3411C;
+        Mon, 20 Jun 2022 13:21:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730639;
-        bh=uWs2zUwT/SVjM5aswnIC6LTcAQBCGhcDUTFAe2cHKu0=;
+        s=korg; t=1655731270;
+        bh=pHNUnVvFxgMHHtqeEJJweemAidY0jWCuaaOGMSlY6nc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2lfG7Gss2cBf55fKGmPxS6rcKud2kh+73BW5dgVGq01JY7ZXtQPoBt0lBWkk6nah/
-         B77tB0TuR8kbB3kqQplfCzqaDjmA6ba4FiZKXLLuoFUkd8t2fDoiN4CgmcnGE3mUVJ
-         9QpXmcHE4IBYuqjfs6NEkGHo7NYRIuT2M5az0QRQ=
+        b=dHOcrgUkLM412kNSseX+x2U9boFmdJvJC5HhuUnyC2peWUXkEXeIkLXpp9aB479T1
+         2dwcajL6pVZSRTaNass4Hy77x5pJYFJ5mNUOCis1FMZYqY5GWqR/5JP00VZ6w+Eskc
+         Qlc6V8uK8PkLADISKJYUfFGH56GN5V3s93CResOs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andy Lutomirski <luto@kernel.org>,
-        Theodore Tso <tytso@mit.edu>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 010/240] random: Add a urandom_read_nowait() for random APIs that dont warn
-Date:   Mon, 20 Jun 2022 14:48:31 +0200
-Message-Id: <20220620124738.106403104@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Grzegorz Szczurek <grzegorzx.szczurek@intel.com>,
+        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
+        Bharathi Sreenivas <bharathi.sreenivas@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 208/240] i40e: Fix calculating the number of queue pairs
+Date:   Mon, 20 Jun 2022 14:51:49 +0200
+Message-Id: <20220620124745.007503488@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -50,74 +53,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Lutomirski <luto@kernel.org>
+From: Grzegorz Szczurek <grzegorzx.szczurek@intel.com>
 
-commit c6f1deb158789abba02a7eba600747843eeb3a57 upstream.
+[ Upstream commit 0bb050670ac90a167ecfa3f9590f92966c9a3677 ]
 
-/dev/random and getrandom() never warn.  Split the meat of
-urandom_read() into urandom_read_nowarn() and leave the warning code
-in urandom_read().
+If ADQ is enabled for a VF, then actual number of queue pair
+is a number of currently available traffic classes for this VF.
 
-This has no effect on kernel behavior, but it makes subsequent
-patches more straightforward.  It also makes the fact that
-getrandom() never warns more obvious.
+Without this change the configuration of the Rx/Tx queues
+fails with error.
 
-Signed-off-by: Andy Lutomirski <luto@kernel.org>
-Link: https://lore.kernel.org/r/c87ab200588de746431d9f916501ef11e5242b13.1577088521.git.luto@kernel.org
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: d29e0d233e0d ("i40e: missing input validation on VF message handling by the PF")
+Signed-off-by: Grzegorz Szczurek <grzegorzx.szczurek@intel.com>
+Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
+Tested-by: Bharathi Sreenivas <bharathi.sreenivas@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/random.c |   21 +++++++++++++++------
- 1 file changed, 15 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -2043,11 +2043,22 @@ random_read(struct file *file, char __us
- }
- 
- static ssize_t
-+urandom_read_nowarn(struct file *file, char __user *buf, size_t nbytes,
-+		    loff_t *ppos)
-+{
-+	int ret;
-+
-+	nbytes = min_t(size_t, nbytes, INT_MAX >> (ENTROPY_SHIFT + 3));
-+	ret = extract_crng_user(buf, nbytes);
-+	trace_urandom_read(8 * nbytes, 0, ENTROPY_BITS(&input_pool));
-+	return ret;
-+}
-+
-+static ssize_t
- urandom_read(struct file *file, char __user *buf, size_t nbytes, loff_t *ppos)
- {
- 	unsigned long flags;
- 	static int maxwarn = 10;
--	int ret;
- 
- 	if (!crng_ready() && maxwarn > 0) {
- 		maxwarn--;
-@@ -2059,10 +2070,8 @@ urandom_read(struct file *file, char __u
- 		crng_init_cnt = 0;
- 		spin_unlock_irqrestore(&primary_crng.lock, flags);
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
+index 4962e6193eec..4080fdacca4c 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
+@@ -2149,7 +2149,7 @@ static int i40e_vc_config_queues_msg(struct i40e_vf *vf, u8 *msg)
  	}
--	nbytes = min_t(size_t, nbytes, INT_MAX >> (ENTROPY_SHIFT + 3));
--	ret = extract_crng_user(buf, nbytes);
--	trace_urandom_read(8 * nbytes, 0, ENTROPY_BITS(&input_pool));
--	return ret;
-+
-+	return urandom_read_nowarn(file, buf, nbytes, ppos);
- }
  
- static __poll_t
-@@ -2224,7 +2233,7 @@ SYSCALL_DEFINE3(getrandom, char __user *
- 		if (unlikely(ret))
- 			return ret;
- 	}
--	return urandom_read(NULL, buf, count, NULL);
-+	return urandom_read_nowarn(NULL, buf, count, NULL);
- }
- 
- /********************************************************************
+ 	if (vf->adq_enabled) {
+-		for (i = 0; i < I40E_MAX_VF_VSI; i++)
++		for (i = 0; i < vf->num_tc; i++)
+ 			num_qps_all += vf->ch[i].num_qps;
+ 		if (num_qps_all != qci->num_queue_pairs) {
+ 			aq_ret = I40E_ERR_PARAM;
+-- 
+2.35.1
+
 
 
