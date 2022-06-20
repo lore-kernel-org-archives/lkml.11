@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 074F8C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:11:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D09CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:11:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244906AbiFTNLr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:11:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54168 "EHLO
+        id S245138AbiFTNLt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:11:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245422AbiFTNIr (ORCPT
+        with ESMTP id S245430AbiFTNIr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 20 Jun 2022 09:08:47 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AFF81BEBD;
-        Mon, 20 Jun 2022 06:02:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D0771C101;
+        Mon, 20 Jun 2022 06:02:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9FBC3B811C2;
-        Mon, 20 Jun 2022 13:01:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDAC0C3411B;
-        Mon, 20 Jun 2022 13:01:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DB75CB811C5;
+        Mon, 20 Jun 2022 13:02:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 226D5C3411B;
+        Mon, 20 Jun 2022 13:02:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730084;
-        bh=gwmf6peLKhueY78cBZXQsHDQ+B2rOr5tX1pQlxSjuXc=;
+        s=korg; t=1655730125;
+        bh=2aLdP/aNbtKqn9jTpTpT0xifj7OJXFEgTqbU/YlfGfc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rTfE3ooK3lgFFIpbhMKLhCk6Wsi9hs/BFIxRx7ExK1jl4L+ZML/WOI2RRGRDHk7Py
-         xvNa5FeGZ94E27w+ebbjKDKZGy1+UD59gQU4Pbr8qv9kLqmifsXUh2bYCgCrPS8h0d
-         PIserqsrOhtwhBxSyfcnT8X2UzuML3W1mUBC+mrY=
+        b=dKxUuKIAZ3JIx8HVJAnWrQ7m30Q95Ga8jZCUX2wldw9sz+2HLJgKJ+R88kpokoLHt
+         2Bs1hkYFGawk5vAZkO9aH7Gq3rd+bxPytBt6t0y+x9TQtt7TElCI3+Bv1jQ3SeXiU7
+         p7F4jmxUIKLvc6Ws/QVY/tG1ezRC/caoCBHMrS3g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wentao Wang <wwentao@vmware.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 20/84] scsi: vmw_pvscsi: Expand vcpuHint to 16 bits
-Date:   Mon, 20 Jun 2022 14:50:43 +0200
-Message-Id: <20220620124721.490465538@linuxfoundation.org>
+Subject: [PATCH 5.10 27/84] nfc: nfcmrvl: Fix memory leak in nfcmrvl_play_deferred
+Date:   Mon, 20 Jun 2022 14:50:50 +0200
+Message-Id: <20220620124721.698311618@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124720.882450983@linuxfoundation.org>
 References: <20220620124720.882450983@linuxfoundation.org>
@@ -49,38 +50,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wentao Wang <wwentao@vmware.com>
+From: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
 
-[ Upstream commit cf71d59c2eceadfcde0fb52e237990a0909880d7 ]
+[ Upstream commit 8a4d480702b71184fabcf379b80bf7539716752e ]
 
-vcpuHint has been expanded to 16 bit on host to enable routing to more
-CPUs. Guest side should align with the change. This change has been tested
-with hosts with 8-bit and 16-bit vcpuHint, on both platforms host side can
-get correct value.
+Similar to the handling of play_deferred in commit 19cfe912c37b
+("Bluetooth: btusb: Fix memory leak in play_deferred"), we thought
+a patch might be needed here as well.
 
-Link: https://lore.kernel.org/r/EF35F4D5-5DCC-42C5-BCC4-29DF1729B24C@vmware.com
-Signed-off-by: Wentao Wang <wwentao@vmware.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Currently usb_submit_urb is called directly to submit deferred tx
+urbs after unanchor them.
+
+So the usb_giveback_urb_bh would failed to unref it in usb_unanchor_urb
+and cause memory leak.
+
+Put those urbs in tx_anchor to avoid the leak, and also fix the error
+handling.
+
+Signed-off-by: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Link: https://lore.kernel.org/r/20220607083230.6182-1-xiaohuizhang@ruc.edu.cn
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/vmw_pvscsi.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/nfc/nfcmrvl/usb.c | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/vmw_pvscsi.h b/drivers/scsi/vmw_pvscsi.h
-index 75966d3f326e..d87c12324c03 100644
---- a/drivers/scsi/vmw_pvscsi.h
-+++ b/drivers/scsi/vmw_pvscsi.h
-@@ -333,8 +333,8 @@ struct PVSCSIRingReqDesc {
- 	u8	tag;
- 	u8	bus;
- 	u8	target;
--	u8	vcpuHint;
--	u8	unused[59];
-+	u16	vcpuHint;
-+	u8	unused[58];
- } __packed;
+diff --git a/drivers/nfc/nfcmrvl/usb.c b/drivers/nfc/nfcmrvl/usb.c
+index 888e298f610b..f26986eb53f1 100644
+--- a/drivers/nfc/nfcmrvl/usb.c
++++ b/drivers/nfc/nfcmrvl/usb.c
+@@ -401,13 +401,25 @@ static void nfcmrvl_play_deferred(struct nfcmrvl_usb_drv_data *drv_data)
+ 	int err;
  
- /*
+ 	while ((urb = usb_get_from_anchor(&drv_data->deferred))) {
++		usb_anchor_urb(urb, &drv_data->tx_anchor);
++
+ 		err = usb_submit_urb(urb, GFP_ATOMIC);
+-		if (err)
++		if (err) {
++			kfree(urb->setup_packet);
++			usb_unanchor_urb(urb);
++			usb_free_urb(urb);
+ 			break;
++		}
+ 
+ 		drv_data->tx_in_flight++;
++		usb_free_urb(urb);
++	}
++
++	/* Cleanup the rest deferred urbs. */
++	while ((urb = usb_get_from_anchor(&drv_data->deferred))) {
++		kfree(urb->setup_packet);
++		usb_free_urb(urb);
+ 	}
+-	usb_scuttle_anchored_urbs(&drv_data->deferred);
+ }
+ 
+ static int nfcmrvl_resume(struct usb_interface *intf)
 -- 
 2.35.1
 
