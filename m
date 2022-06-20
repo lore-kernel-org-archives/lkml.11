@@ -2,46 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9693C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:04:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C77E6C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:04:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347149AbiFTOEX (ORCPT
+        id S1347668AbiFTOEn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:04:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45254 "EHLO
+        Mon, 20 Jun 2022 10:04:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352558AbiFTN4l (ORCPT
+        with ESMTP id S1350819AbiFTNxw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:56:41 -0400
+        Mon, 20 Jun 2022 09:53:52 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12D1F369DF;
-        Mon, 20 Jun 2022 06:22:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 911FE20BF0;
+        Mon, 20 Jun 2022 06:20:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3CC9F61269;
-        Mon, 20 Jun 2022 13:22:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 317A6C3411B;
-        Mon, 20 Jun 2022 13:22:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B39461209;
+        Mon, 20 Jun 2022 13:19:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1202DC3411B;
+        Mon, 20 Jun 2022 13:19:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731339;
-        bh=JC6W6XnK7ZNDePhaaZYdL11m++UwjbTsfrvwW5u4p+Q=;
+        s=korg; t=1655731184;
+        bh=YEOkS9rYWaYZ21ChQDwOws+yUKUG4JodqoNMAASmEAg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nXfoMeA1cOzI++1LWJHxrAxzTpagm2HgRbkcrkK38LVuUxlkWbPaFNKuT0+KXJ/4q
-         pcmihRWp3tHPM08gxmTJNWQhW7jpkpHLrfe7MGUzdWZBltVj8wv7UcY87x6gaqmtrC
-         B+1jWtAIyohyDPUHohnd0GhCWFuTNqoXoZWU2M4k=
+        b=nHfK00kACUpV3nRpl7pk1V/TUqnDgEeO/G7qKDtBS3EHxbaeqkRzGIG8Tzf6keOcN
+         xyt6HnE0b/+8cv2icTjIMW4LEOeXlkbBid2244Htw1eOy/MY3YlJ+Q23ygr0g0sxm5
+         6tcpXijcHsOHpjj7wOPZNBSMbZNTHCbCBASg6Bdc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@penugtronix.de>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 5.4 226/240] serial: 8250: Store to lsr_save_flags after lsr read
-Date:   Mon, 20 Jun 2022 14:52:07 +0200
-Message-Id: <20220620124745.509106471@linuxfoundation.org>
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.4 180/240] random: account for arch randomness in bits
+Date:   Mon, 20 Jun 2022 14:51:21 +0200
+Message-Id: <20220620124744.210464077@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -53,43 +48,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit be03b0651ffd8bab69dfd574c6818b446c0753ce upstream.
+commit 77fc95f8c0dc9e1f8e620ec14d2fb65028fb7adc upstream.
 
-Not all LSR register flags are preserved across reads. Therefore, LSR
-readers must store the non-preserved bits into lsr_save_flags.
+Rather than accounting in bytes and multiplying (shifting), we can just
+account in bits and avoid the shift. The main motivation for this is
+there are other patches in flux that expand this code a bit, and
+avoiding the duplication of "* 8" everywhere makes things a bit clearer.
 
-This fix was initially mixed into feature commit f6f586102add ("serial:
-8250: Handle UART without interrupt on TEMT using em485"). However,
-that feature change had a flaw and it was reverted to make room for
-simpler approach providing the same feature. The embedded fix got
-reverted with the feature change.
-
-Re-add the lsr_save_flags fix and properly mark it's a fix.
-
-Link: https://lore.kernel.org/all/1d6c31d-d194-9e6a-ddf9-5f29af829f3@linux.intel.com/T/#m1737eef986bd20cf19593e344cebd7b0244945fc
-Fixes: e490c9144cfa ("tty: Add software emulated RS485 support for 8250")
-Cc: stable <stable@kernel.org>
-Acked-by: Uwe Kleine-König <u.kleine-koenig@penugtronix.de>
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Link: https://lore.kernel.org/r/f4d774be-1437-a550-8334-19d8722ab98c@linux.intel.com
+Cc: stable@vger.kernel.org
+Fixes: 12e45a2a6308 ("random: credit architectural init the exact amount")
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/8250/8250_port.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/char/random.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1476,6 +1476,8 @@ static inline void __stop_tx(struct uart
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -809,7 +809,7 @@ early_param("random.trust_bootloader", p
+ int __init random_init(const char *command_line)
+ {
+ 	ktime_t now = ktime_get_real();
+-	unsigned int i, arch_bytes;
++	unsigned int i, arch_bits;
+ 	unsigned long entropy;
  
- 	if (em485) {
- 		unsigned char lsr = serial_in(p, UART_LSR);
-+		p->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
-+
- 		/*
- 		 * To provide required timeing and allow FIFO transfer,
- 		 * __stop_tx_rs485() must be called only when both FIFO and
+ #if defined(LATENT_ENTROPY_PLUGIN)
+@@ -817,12 +817,12 @@ int __init random_init(const char *comma
+ 	_mix_pool_bytes(compiletime_seed, sizeof(compiletime_seed));
+ #endif
+ 
+-	for (i = 0, arch_bytes = BLAKE2S_BLOCK_SIZE;
++	for (i = 0, arch_bits = BLAKE2S_BLOCK_SIZE * 8;
+ 	     i < BLAKE2S_BLOCK_SIZE; i += sizeof(entropy)) {
+ 		if (!arch_get_random_seed_long_early(&entropy) &&
+ 		    !arch_get_random_long_early(&entropy)) {
+ 			entropy = random_get_entropy();
+-			arch_bytes -= sizeof(entropy);
++			arch_bits -= sizeof(entropy) * 8;
+ 		}
+ 		_mix_pool_bytes(&entropy, sizeof(entropy));
+ 	}
+@@ -834,7 +834,7 @@ int __init random_init(const char *comma
+ 	if (crng_ready())
+ 		crng_reseed();
+ 	else if (trust_cpu)
+-		_credit_init_bits(arch_bytes * 8);
++		_credit_init_bits(arch_bits);
+ 
+ 	return 0;
+ }
 
 
