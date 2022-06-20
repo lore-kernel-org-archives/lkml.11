@@ -2,90 +2,231 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E0F7C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 15:01:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FE5CC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 15:01:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235644AbiFTPB3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 11:01:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55768 "EHLO
+        id S242043AbiFTPBp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 11:01:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231754AbiFTPBJ (ORCPT
+        with ESMTP id S241755AbiFTPB1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 11:01:09 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 16B5D2A24E
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 07:26:45 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C925E1596;
-        Mon, 20 Jun 2022 07:26:44 -0700 (PDT)
-Received: from FVFF77S0Q05N (unknown [10.57.70.167])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 63A803F534;
-        Mon, 20 Jun 2022 07:26:41 -0700 (PDT)
-Date:   Mon, 20 Jun 2022 15:26:37 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Tong Tiangen <tongtiangen@huawei.com>
-Cc:     James Morse <james.morse@arm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>, x86@kernel.org,
-        "H . Peter Anvin" <hpa@zytor.com>, linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Xie XiuQi <xiexiuqi@huawei.com>,
-        Guohanjun <guohanjun@huawei.com>
-Subject: Re: [PATCH -next v5 2/8] arm64: extable: make uaaccess helper use
- extable type EX_TYPE_UACCESS_ERR_ZERO
-Message-ID: <YrCDnc8ZjgbHAhGU@FVFF77S0Q05N>
-References: <20220528065056.1034168-1-tongtiangen@huawei.com>
- <20220528065056.1034168-3-tongtiangen@huawei.com>
- <Yqw6TP3MhEqnQ+2o@FVFF77S0Q05N>
- <4371a7c9-8766-9fee-2558-e6f43f06ad19@huawei.com>
- <0da734f3-5743-3df3-3f90-d92e5bd585ce@huawei.com>
- <Yq3HoUyEcnKKk1AY@FVFF77S0Q05N>
- <684f0362-6e58-753d-32e1-112c6ffe6d12@huawei.com>
- <YrA5f44hySky8v5g@FVFF77S0Q05N>
- <908f4c14-b9cb-71f8-7a3c-7569f7c89033@huawei.com>
+        Mon, 20 Jun 2022 11:01:27 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD51A33E82;
+        Mon, 20 Jun 2022 07:27:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655735252; x=1687271252;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=WsS4aKTNsBEfsxzyCelSOGWceTw88jDLbhP2Gba4nWQ=;
+  b=iqG69QHZ2uVM+QEuQPaizoPWUNIGADlwPmOLy6rVZ2rxPMdAsR47dmOD
+   WVG/67BFwkyB3x/PdsSIo56GI6Rcvvb52IBmfXvRUGkh/j+WioAtYK2H/
+   jhVdIFx/HALAdH7vpSozrJt7fUD9qoiXTOZLLpaL/8UBMVIP4pOHhWW+v
+   cRQAIz3TnIS3cF4X1nxa8nvLFfkMCkndolHsS+qyVJFPsogCjesmN+3vj
+   kkfoRXNnTXQv+rT3RaghvJ6BlcCUxXry36AYtMhYLFVpTFwE+d5KLzzRX
+   gepUaGrYXkB+c2SE2aQukDUBQl8JBPUOdHusfIQ0qpV/grWNMycrxyNmZ
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="260341636"
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="260341636"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 07:27:29 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="689487163"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
+  by fmsmga002.fm.intel.com with ESMTP; 20 Jun 2022 07:27:26 -0700
+Date:   Mon, 20 Jun 2022 22:19:19 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     Tianfei Zhang <tianfei.zhang@intel.com>
+Cc:     lee.jones@linaro.org, hao.wu@intel.com, trix@redhat.com,
+        linux-kernel@vger.kernel.org, linux-fpga@vger.kernel.org,
+        russell.h.weight@intel.com, matthew.gerlach@linux.intel.com
+Subject: Re: [PATCH v2 4/4] mfd: intel-m10-bmc: support multiple register
+ layouts
+Message-ID: <20220620141919.GA1417169@yilunxu-OptiPlex-7050>
+References: <20220617020405.128352-1-tianfei.zhang@intel.com>
+ <20220617020405.128352-5-tianfei.zhang@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <908f4c14-b9cb-71f8-7a3c-7569f7c89033@huawei.com>
+In-Reply-To: <20220617020405.128352-5-tianfei.zhang@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 20, 2022 at 10:13:41PM +0800, Tong Tiangen wrote:
-> 
-> 
-> 在 2022/6/20 17:10, Mark Rutland 写道:
-> > On Mon, Jun 20, 2022 at 10:59:12AM +0800, Tong Tiangen wrote:
-> > > 在 2022/6/18 20:40, Mark Rutland 写道:
-> > > The following errors are reported during compilation:
-> > > [...]
-> > > arch/arm64/lib/clear_user.S:45: Error: invalid operands (*ABS* and *UND*
-> > > sections) for `<<'
-> > > [...]
-> > 
-> > As above, I'm not seeing this.
-> > 
-> > This suggests that the EX_DATA_REG() macro is going wrong somehow. Assuming the
-> > operand types correspond to the LHS and RHS of the expression, this would mean
-> > the GPR number is defined, but the REG value is not, and I can't currently see
-> > how that can happen.
- 
-> Now I can compile success, both versions 9.4.0 and 11.2.0.
-> 
-> I should have made a mistake. There is no problem using your implementation.
-> I will send a new version these days.
+On Thu, Jun 16, 2022 at 10:04:05PM -0400, Tianfei Zhang wrote:
+> There are different base addresses for the MAX10 CSR register.
 
-No problem; thanks for confirming!
+Actually I see differences for each register, not only the register
+base...
 
-Mark.
+> Introducing a new data structure m10bmc_csr for the register
+> definition of MAX10 CSR. Embedded m10bmc_csr into struct
+> intel_m10bmc to support multiple register layouts.
+
+Since the new BMC has different connections to host, different register
+layouts, different sub devices. Actually I can hardly find anything to
+share between them, so how about we just create a new driver for your
+new BMC?
+
+Thanks,
+Yilun
+
+> 
+> Signed-off-by: Tianfei Zhang <tianfei.zhang@intel.com>
+> ---
+>  drivers/mfd/intel-m10-bmc-core.c  | 30 +++++++++++++++++++++++++-----
+>  include/linux/mfd/intel-m10-bmc.h | 20 +++++++++++++++++++-
+>  2 files changed, 44 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/mfd/intel-m10-bmc-core.c b/drivers/mfd/intel-m10-bmc-core.c
+> index c6a1a4c28357..f85f8e2aa9a1 100644
+> --- a/drivers/mfd/intel-m10-bmc-core.c
+> +++ b/drivers/mfd/intel-m10-bmc-core.c
+> @@ -10,6 +10,22 @@
+>  #include <linux/mfd/intel-m10-bmc.h>
+>  #include <linux/module.h>
+>  
+> +static const struct m10bmc_csr m10bmc_pmci_csr = {
+> +	.base = M10BMC_PMCI_SYS_BASE,
+> +	.build_version = M10BMC_PMCI_BUILD_VER,
+> +	.fw_version = NIOS2_PMCI_FW_VERSION,
+> +	.mac_low = M10BMC_PMCI_MAC_LOW,
+> +	.mac_high = M10BMC_PMCI_MAC_HIGH,
+> +};
+> +
+> +static const struct m10bmc_csr m10bmc_spi_csr = {
+> +	.base = M10BMC_SYS_BASE,
+> +	.build_version = M10BMC_BUILD_VER,
+> +	.fw_version = NIOS2_FW_VERSION,
+> +	.mac_low = M10BMC_MAC_LOW,
+> +	.mac_high = M10BMC_MAC_HIGH,
+> +};
+> +
+>  static struct mfd_cell m10bmc_n6000_bmc_subdevs[] = {
+>  	{ .name = "n6000bmc-hwmon" },
+>  	{ .name = "n6000bmc-sec-update" }
+> @@ -36,7 +52,7 @@ static ssize_t bmc_version_show(struct device *dev,
+>  	unsigned int val;
+>  	int ret;
+>  
+> -	ret = m10bmc_sys_read(ddata, M10BMC_BUILD_VER, &val);
+> +	ret = m10bmc_sys_read(ddata, ddata->csr->build_version, &val);
+>  	if (ret)
+>  		return ret;
+>  
+> @@ -51,7 +67,7 @@ static ssize_t bmcfw_version_show(struct device *dev,
+>  	unsigned int val;
+>  	int ret;
+>  
+> -	ret = m10bmc_sys_read(ddata, NIOS2_FW_VERSION, &val);
+> +	ret = m10bmc_sys_read(ddata, ddata->csr->fw_version, &val);
+>  	if (ret)
+>  		return ret;
+>  
+> @@ -66,11 +82,11 @@ static ssize_t mac_address_show(struct device *dev,
+>  	unsigned int macaddr_low, macaddr_high;
+>  	int ret;
+>  
+> -	ret = m10bmc_sys_read(ddata, M10BMC_MAC_LOW, &macaddr_low);
+> +	ret = m10bmc_sys_read(ddata, ddata->csr->mac_low, &macaddr_low);
+>  	if (ret)
+>  		return ret;
+>  
+> -	ret = m10bmc_sys_read(ddata, M10BMC_MAC_HIGH, &macaddr_high);
+> +	ret = m10bmc_sys_read(ddata, ddata->csr->mac_high, &macaddr_high);
+>  	if (ret)
+>  		return ret;
+>  
+> @@ -91,7 +107,7 @@ static ssize_t mac_count_show(struct device *dev,
+>  	unsigned int macaddr_high;
+>  	int ret;
+>  
+> -	ret = m10bmc_sys_read(ddata, M10BMC_MAC_HIGH, &macaddr_high);
+> +	ret = m10bmc_sys_read(ddata, ddata->csr->mac_high, &macaddr_high);
+>  	if (ret)
+>  		return ret;
+>  
+> @@ -163,18 +179,22 @@ int m10bmc_dev_init(struct intel_m10bmc *m10bmc)
+>  	case M10_N3000:
+>  		cells = m10bmc_pacn3000_subdevs;
+>  		n_cell = ARRAY_SIZE(m10bmc_pacn3000_subdevs);
+> +		m10bmc->csr = &m10bmc_spi_csr;
+>  		break;
+>  	case M10_D5005:
+>  		cells = m10bmc_d5005_subdevs;
+>  		n_cell = ARRAY_SIZE(m10bmc_d5005_subdevs);
+> +		m10bmc->csr = &m10bmc_spi_csr;
+>  		break;
+>  	case M10_N5010:
+>  		cells = m10bmc_n5010_subdevs;
+>  		n_cell = ARRAY_SIZE(m10bmc_n5010_subdevs);
+> +		m10bmc->csr = &m10bmc_spi_csr;
+>  		break;
+>  	case M10_N6000:
+>  		cells = m10bmc_n6000_bmc_subdevs;
+>  		n_cell = ARRAY_SIZE(m10bmc_n6000_bmc_subdevs);
+> +		m10bmc->csr = &m10bmc_pmci_csr;
+>  		break;
+>  	default:
+>  		return -ENODEV;
+> diff --git a/include/linux/mfd/intel-m10-bmc.h b/include/linux/mfd/intel-m10-bmc.h
+> index 83c4d3993dcb..3a4fdab2acbd 100644
+> --- a/include/linux/mfd/intel-m10-bmc.h
+> +++ b/include/linux/mfd/intel-m10-bmc.h
+> @@ -125,6 +125,11 @@
+>  #define M10BMC_PMCI_TELEM_START		0x400
+>  #define M10BMC_PMCI_TELEM_END		0x78c
+>  
+> +#define M10BMC_PMCI_BUILD_VER   0x0
+> +#define NIOS2_PMCI_FW_VERSION   0x4
+> +#define M10BMC_PMCI_MAC_LOW    0x20
+> +#define M10BMC_PMCI_MAC_HIGH    0x24
+> +
+>  /* Supported MAX10 BMC types */
+>  enum m10bmc_type {
+>  	M10_N3000,
+> @@ -133,16 +138,29 @@ enum m10bmc_type {
+>  	M10_N6000
+>  };
+>  
+> +/**
+> + * struct m10bmc_csr - Intel MAX 10 BMC CSR register
+> + */
+> +struct m10bmc_csr {
+> +	unsigned int base;
+> +	unsigned int build_version;
+> +	unsigned int fw_version;
+> +	unsigned int mac_low;
+> +	unsigned int mac_high;
+> +};
+> +
+>  /**
+>   * struct intel_m10bmc - Intel MAX 10 BMC parent driver data structure
+>   * @dev: this device
+>   * @regmap: the regmap used to access registers by m10bmc itself
+>   * @type: the type of MAX10 BMC
+> + * @csr: the register definition of MAX10 BMC
+>   */
+>  struct intel_m10bmc {
+>  	struct device *dev;
+>  	struct regmap *regmap;
+>  	enum m10bmc_type type;
+> +	const struct m10bmc_csr *csr;
+>  };
+>  
+>  /*
+> @@ -174,7 +192,7 @@ m10bmc_raw_read(struct intel_m10bmc *m10bmc, unsigned int addr,
+>   * M10BMC_SYS_BASE accordingly.
+>   */
+>  #define m10bmc_sys_read(m10bmc, offset, val) \
+> -	m10bmc_raw_read(m10bmc, M10BMC_SYS_BASE + (offset), val)
+> +	m10bmc_raw_read(m10bmc, m10bmc->csr->base + (offset), val)
+>  
+>  /*
+>   * MAX10 BMC Core support
+> -- 
+> 2.26.2
