@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0625C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:10:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EC9ECCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:10:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351502AbiFTOJm (ORCPT
+        id S1351557AbiFTOJr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:09:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40750 "EHLO
+        Mon, 20 Jun 2022 10:09:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351638AbiFTNzF (ORCPT
+        with ESMTP id S1351530AbiFTNyz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:55:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B464C59;
-        Mon, 20 Jun 2022 06:21:20 -0700 (PDT)
+        Mon, 20 Jun 2022 09:54:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD9A63388A;
+        Mon, 20 Jun 2022 06:21:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 61F28B80E7A;
-        Mon, 20 Jun 2022 13:21:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B2D2C341C4;
-        Mon, 20 Jun 2022 13:21:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BD0C460FF1;
+        Mon, 20 Jun 2022 13:20:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C762CC3411C;
+        Mon, 20 Jun 2022 13:20:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731277;
-        bh=qvQ+DoApFMSYGyUqTdbIgWetXlmQvXHjNbqiyeHETKo=;
+        s=korg; t=1655731259;
+        bh=nP9i1+rEQjQRHfrlgE3xHFNg4YpgFbPf5Seq91ii+60=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SZ13zvySZ5O/D8Ost08uFCxhosS3OxrsMTRmgglmFPtURAXQYeZz1Fw9vhpDtPFxn
-         zQunVYq5OX2l725ZhzXXGpD4cPiWuK19dm5/8hjLzJiVeuRIveL3eDU9ZI1Ft6kg5x
-         seVXsRA7JVS8MwO5CsDP3JmvzCwYAY3zYz5pjskI=
+        b=xLYtyJRlY0twpQj76DK73RyVyiMKUeJowOnWYYNfkP8dDKvBYR1/N8Db0i4gU0crG
+         tREUT6T8cH8iODg7Ei/igj8P4IirWrIph4UPj82HwtRZ+OsfzZ3nFhHeDcvL0HttO/
+         r9ww30+hHVGxQjRssWv2t3x9gUz2yKvVxlSgFas8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Chengguang Xu <cgxu519@mykernel.net>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 210/240] tty: goldfish: Fix free_irq() on remove
-Date:   Mon, 20 Jun 2022 14:51:51 +0200
-Message-Id: <20220620124745.063484402@linuxfoundation.org>
+Subject: [PATCH 5.4 197/240] scsi: pmcraid: Fix missing resource cleanup in error case
+Date:   Mon, 20 Jun 2022 14:51:38 +0200
+Message-Id: <20220620124744.694221173@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -50,49 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Whitchurch <vincent.whitchurch@axis.com>
+From: Chengguang Xu <cgxu519@mykernel.net>
 
-[ Upstream commit 499e13aac6c762e1e828172b0f0f5275651d6512 ]
+[ Upstream commit ec1e8adcbdf661c57c395bca342945f4f815add7 ]
 
-Pass the correct dev_id to free_irq() to fix this splat when the driver
-is unbound:
+Fix missing resource cleanup (when '(--i) == 0') for error case in
+pmcraid_register_interrupt_handler().
 
- WARNING: CPU: 0 PID: 30 at kernel/irq/manage.c:1895 free_irq
- Trying to free already-free IRQ 65
- Call Trace:
-  warn_slowpath_fmt
-  free_irq
-  goldfish_tty_remove
-  platform_remove
-  device_remove
-  device_release_driver_internal
-  device_driver_detach
-  unbind_store
-  drv_attr_store
-  ...
-
-Fixes: 465893e18878e119 ("tty: goldfish: support platform_device with id -1")
-Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
-Link: https://lore.kernel.org/r/20220609141704.1080024-1-vincent.whitchurch@axis.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20220529153456.4183738-6-cgxu519@mykernel.net
+Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Chengguang Xu <cgxu519@mykernel.net>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/goldfish.c | 2 +-
+ drivers/scsi/pmcraid.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/goldfish.c b/drivers/tty/goldfish.c
-index abc84d84f638..9180ca5e4dcd 100644
---- a/drivers/tty/goldfish.c
-+++ b/drivers/tty/goldfish.c
-@@ -428,7 +428,7 @@ static int goldfish_tty_remove(struct platform_device *pdev)
- 	tty_unregister_device(goldfish_tty_driver, qtty->console.index);
- 	iounmap(qtty->base);
- 	qtty->base = NULL;
--	free_irq(qtty->irq, pdev);
-+	free_irq(qtty->irq, qtty);
- 	tty_port_destroy(&qtty->port);
- 	goldfish_tty_current_line_count--;
- 	if (goldfish_tty_current_line_count == 0)
+diff --git a/drivers/scsi/pmcraid.c b/drivers/scsi/pmcraid.c
+index 398d2af60832..f95a970db8fd 100644
+--- a/drivers/scsi/pmcraid.c
++++ b/drivers/scsi/pmcraid.c
+@@ -4532,7 +4532,7 @@ pmcraid_register_interrupt_handler(struct pmcraid_instance *pinstance)
+ 	return 0;
+ 
+ out_unwind:
+-	while (--i > 0)
++	while (--i >= 0)
+ 		free_irq(pci_irq_vector(pdev, i), &pinstance->hrrq_vector[i]);
+ 	pci_free_irq_vectors(pdev);
+ 	return rc;
 -- 
 2.35.1
 
