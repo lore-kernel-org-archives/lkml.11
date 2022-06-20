@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34EF6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:12:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8464C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:12:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351193AbiFTOMh (ORCPT
+        id S1350177AbiFTOMm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:12:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45304 "EHLO
+        Mon, 20 Jun 2022 10:12:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352604AbiFTN4p (ORCPT
+        with ESMTP id S245588AbiFTOC2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:56:45 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF6811A397;
-        Mon, 20 Jun 2022 06:22:42 -0700 (PDT)
+        Mon, 20 Jun 2022 10:02:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCB4D1AF25;
+        Mon, 20 Jun 2022 06:26:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 6E36BCE137F;
-        Mon, 20 Jun 2022 13:22:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C97FC3411B;
-        Mon, 20 Jun 2022 13:22:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 91724B811E1;
+        Mon, 20 Jun 2022 13:16:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E07F9C3411B;
+        Mon, 20 Jun 2022 13:16:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731358;
-        bh=97NfIAxnIn7gkMg0obk/1gUuSmamMXTVMSfa0wTFYG4=;
+        s=korg; t=1655731003;
+        bh=OpoznZMK1Ok1ZJg+f5Ff1jh+Gv+HjqOFJILFgEo6XZU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ujdWmp/ijzEhrYY64H4ZVM1FOoO8ZN3NtaJ3tMn6CkoTdKPLhsbnxMclnxmsluz4U
-         Z7wggRsQSAh8cufIg0x+hImw9KBZhf7Ip1+vp2QlYTluMLSRCT/z0eeCg/heJ0usbx
-         YYoME6JgNH24LmpCoPKNFonDuHGwDcY8ktTCwwRk=
+        b=abEahYSbBqCdwkUfUpaH1/KuJt+MypLZIH8PxF9a/i1nrVXMVKbWrEMGnC4BFStiP
+         u+N8fpIpTYJglAuFsC7rQvbjJ4Z9G+zXwdipEL3xsoSGDf9fhbH9IYWrHh5kJh7D8G
+         pxzLVDUyobDuv/JuDp0olzC7maahvyM4uGu/rxSs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andy Chi <andy.chi@canonical.com>,
-        Takashi Iwai <tiwai@suse.de>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH 5.4 232/240] ALSA: hda/realtek: fix right sounds and mute/micmute LEDs for HP machine
-Date:   Mon, 20 Jun 2022 14:52:13 +0200
-Message-Id: <20220620124745.679320803@linuxfoundation.org>
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.4 124/240] random: check for signal_pending() outside of need_resched() check
+Date:   Mon, 20 Jun 2022 14:50:25 +0200
+Message-Id: <20220620124742.606072992@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -50,33 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Chi <andy.chi@canonical.com>
+From: Jann Horn <jannh@google.com>
 
-commit 024a7ad9eb4df626ca8c77fef4f67fd0ebd559d2 upstream.
+commit 1448769c9cdb69ad65287f4f7ab58bc5f2f5d7ba upstream.
 
-The HP EliteBook 630 is using ALC236 codec which used 0x02 to control mute LED
-and 0x01 to control micmute LED. Therefore, add a quirk to make it works.
+signal_pending() checks TIF_NOTIFY_SIGNAL and TIF_SIGPENDING, which
+signal that the task should bail out of the syscall when possible. This
+is a separate concept from need_resched(), which checks
+TIF_NEED_RESCHED, signaling that the task should preempt.
 
-Signed-off-by: Andy Chi <andy.chi@canonical.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220513121648.28584-1-andy.chi@canonical.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-[sudip: adjust context]
-Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+In particular, with the current code, the signal_pending() bailout
+probably won't work reliably.
+
+Change this to look like other functions that read lots of data, such as
+read_zero().
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Jann Horn <jannh@google.com>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/char/random.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -8186,6 +8186,7 @@ static const struct snd_pci_quirk alc269
- 	SND_PCI_QUIRK(0x103c, 0x877a, "HP", ALC285_FIXUP_HP_MUTE_LED),
- 	SND_PCI_QUIRK(0x103c, 0x877d, "HP", ALC236_FIXUP_HP_MUTE_LED),
- 	SND_PCI_QUIRK(0x103c, 0x87e5, "HP ProBook 440 G8 Notebook PC", ALC236_FIXUP_HP_GPIO_LED),
-+	SND_PCI_QUIRK(0x103c, 0x89aa, "HP EliteBook 630 G9", ALC236_FIXUP_HP_GPIO_LED),
- 	SND_PCI_QUIRK(0x1043, 0x103e, "ASUS X540SA", ALC256_FIXUP_ASUS_MIC),
- 	SND_PCI_QUIRK(0x1043, 0x103f, "ASUS TX300", ALC282_FIXUP_ASUS_TX300),
- 	SND_PCI_QUIRK(0x1043, 0x106d, "Asus K53BE", ALC269_FIXUP_LIMIT_INT_MIC_BOOST),
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -549,13 +549,13 @@ static ssize_t get_random_bytes_user(voi
+ 	}
+ 
+ 	do {
+-		if (large_request && need_resched()) {
++		if (large_request) {
+ 			if (signal_pending(current)) {
+ 				if (!ret)
+ 					ret = -ERESTARTSYS;
+ 				break;
+ 			}
+-			schedule();
++			cond_resched();
+ 		}
+ 
+ 		chacha20_block(chacha_state, output);
 
 
