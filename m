@@ -2,68 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E779C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 10:11:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ADCDC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 10:11:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240888AbiFTKLh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 06:11:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42836 "EHLO
+        id S240912AbiFTKLn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 06:11:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240911AbiFTKLe (ORCPT
+        with ESMTP id S240916AbiFTKLk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 06:11:34 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44FB8A18B;
-        Mon, 20 Jun 2022 03:11:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655719891; x=1687255891;
-  h=references:from:to:cc:subject:date:in-reply-to:
-   message-id:mime-version;
-  bh=3y8nDAKWBUlZ9K1j37HQS8U7bJfHwitl9vAtCp1vOyU=;
-  b=RCAqntx1/fTtROJplSWXeeLgM4HtDXE2Fc63rFOyUZMtG5IUXEwGFqxc
-   aqzTmjaqSCzEA14tZLVG5l+EZe0B3zcTHNPeLQpCnFImVEwWepQiJQE4P
-   vAHBlgc2zjmqY2B2Zy2jfw9efwmF+oU3ISE4d4XlUbBAR+AmiAI36ymhn
-   000GnloM54LrVmM4EbpH9Vf5CB8+IE3Oo/RHugRp8biMHW6ddwr4Db8e4
-   hli34AZR/qJCjECn9AbVbYH/d9iqHIECEIL8hTR4jdhLKeKMqJKw9NAU3
-   MOcoJCFTb7fhE6/VC38zu3hs4PFKlqFIBIiewSHnASgkUTsA+GqWYwc/U
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="268576888"
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="268576888"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 03:11:30 -0700
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="584836507"
-Received: from gna-nuc-dev34.igk.intel.com (HELO localhost) ([10.102.80.34])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 03:11:27 -0700
-References: <85a6nq45uh.fsf@linux.intel.com>
- <20220620094907.4101274-1-maciej.kwapulinski@linux.intel.com>
- <YrBEP4P9JA60LeOB@kroah.com>
-User-agent: mu4e 1.6.10; emacs 27.2
-From:   Maciej Kwapulinski <maciej.kwapulinski@linux.intel.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     andy.shevchenko@gmail.com, arnd@arndb.de, corbet@lwn.net,
-        derek.kiernan@xilinx.com, dragan.cvetic@xilinx.com,
-        guy.zadicario@intel.com, linus.walleij@linaro.org, olof@lixom.net,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org
-Subject: Re: [PATCH v3 00/14] Driver of Intel(R) Gaussian & Neural Accelerator
-Date:   Mon, 20 Jun 2022 12:08:34 +0200
-In-reply-to: <YrBEP4P9JA60LeOB@kroah.com>
-Message-ID: <86czf3wsrg.fsf@linux.intel.com>
+        Mon, 20 Jun 2022 06:11:40 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47E12A19B;
+        Mon, 20 Jun 2022 03:11:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 2639ECE115D;
+        Mon, 20 Jun 2022 10:11:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 009CAC341C4;
+        Mon, 20 Jun 2022 10:11:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655719895;
+        bh=NycXRGtWzRHMAKOaSFn4Y7wy/Pe7R05IJTr1+bbd6wY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=nD5iFamu9CMt0ZPhWlLPV37Zv37vTeRlCApGx4IWqy0k2SY32DaZNPaNHlaa9b4Ci
+         fdjel+34lG/EP1LqcIarf2Mn0PFmHLnO+EK0MbsMJnA2XlXoyI6y+yN2zZfXQbYu+d
+         l12NU6O73zsZkJ7TH8sti6XQqoooBB9POVngkP4g=
+Date:   Mon, 20 Jun 2022 12:11:32 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Maciej =?utf-8?Q?=C5=BBenczykowski?= <maze@google.com>
+Cc:     patchwork-bot+netdevbpf@kernel.org, stable@vger.kernel.org,
+        Riccardo Paolo Bestetti <pbl@bestov.io>,
+        Carlos Llamas <cmllamas@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, kernel-team@android.com,
+        Kernel hackers <linux-kernel@vger.kernel.org>,
+        Linux NetDev <netdev@vger.kernel.org>,
+        Miaohe Lin <linmiaohe@huawei.com>
+Subject: Re: [PATCH v2] ipv4: ping: fix bind address validity check
+Message-ID: <YrBH1MXZq2/3Z94T@kroah.com>
+References: <20220617085435.193319-1-pbl@bestov.io>
+ <165546541315.12170.9716012665055247467.git-patchwork-notify@kernel.org>
+ <CANP3RGcMqXH2+g1=40zwpzbpDORjDpyo4cVYZWS_tfVR8A_6CQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CANP3RGcMqXH2+g1=40zwpzbpDORjDpyo4cVYZWS_tfVR8A_6CQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, Jun 17, 2022 at 04:45:52PM -0700, Maciej Żenczykowski wrote:
+> On Fri, Jun 17, 2022 at 4:30 AM <patchwork-bot+netdevbpf@kernel.org> wrote:
+> >
+> > Hello:
+> >
+> > This patch was applied to netdev/net.git (master)
+> > by David S. Miller <davem@davemloft.net>:
+> >
+> > On Fri, 17 Jun 2022 10:54:35 +0200 you wrote:
+> > > Commit 8ff978b8b222 ("ipv4/raw: support binding to nonlocal addresses")
+> > > introduced a helper function to fold duplicated validity checks of bind
+> > > addresses into inet_addr_valid_or_nonlocal(). However, this caused an
+> > > unintended regression in ping_check_bind_addr(), which previously would
+> > > reject binding to multicast and broadcast addresses, but now these are
+> > > both incorrectly allowed as reported in [1].
+> > >
+> > > [...]
+> >
+> > Here is the summary with links:
+> >   - [v2] ipv4: ping: fix bind address validity check
+> >     https://git.kernel.org/netdev/net/c/b4a028c4d031
+> >
+> > You are awesome, thank you!
+> > --
+> > Deet-doot-dot, I am a bot.
+> > https://korg.docs.kernel.org/patchwork/pwbot.html
+> 
+> I believe this [
+> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=b4a028c4d031
+> ] needs to end up in 5.17+ LTS (though I guess 5.17 is eol, so
+> probably just 5.18)
 
-Greg KH <gregkh@linuxfoundation.org> writes:
+5.17 is end-of-life, sorry.
 
-> On Mon, Jun 20, 2022 at 11:49:07AM +0200, maciej.kwapulinski@linux.intel.com wrote:
->> Please share your thoughts.
->
-> No code here to share thoughts about :(
+And this needs to hit Linus's tree first.
 
-code will be published in comming weeks to dri-devel ML
+thanks,
+
+greg k-h
