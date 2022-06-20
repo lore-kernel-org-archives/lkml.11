@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 822CFCCA480
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:15:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E33E9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:15:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245416AbiFTNPJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:15:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52792 "EHLO
+        id S1344238AbiFTNNg (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:13:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344272AbiFTNKE (ORCPT
+        with ESMTP id S1343868AbiFTNJm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:10:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B01A21C92E;
-        Mon, 20 Jun 2022 06:05:12 -0700 (PDT)
+        Mon, 20 Jun 2022 09:09:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DF5C1AF00;
+        Mon, 20 Jun 2022 06:04:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 41F596154F;
-        Mon, 20 Jun 2022 13:04:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3750EC341C5;
-        Mon, 20 Jun 2022 13:04:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4F65FB811BF;
+        Mon, 20 Jun 2022 13:04:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4161C3411B;
+        Mon, 20 Jun 2022 13:04:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730295;
-        bh=vsrbULSRmffU+Ek4wxyPOIn5RKUMRwfIqRM6dS1w7KE=;
+        s=korg; t=1655730283;
+        bh=vCrupNsbC1wjKS0rXH/B0/XNATIHGWVlhCDr/zbA33k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TUKdRYqzBhsyajoK+Zy8MUQ5kqgts0zrjRaBuGvimDiEuu1J8E5/JdSYz053MpAQ6
-         BWHZyWdj2inlXyoa6TXzVbQks/pKmk4XbuIeBb0DAAXdm3FXliy+VVZ/QfPpPTzxR0
-         HX0ZD2UvQ01FLwjS6ASZ8sxfUl7pSrxPLU0mCzvY=
+        b=Ded2t5LMfB8JLSMCHTfl+9WLm08signK21VYCIHeXlWAIAVjXuduOPWmxkDDNVRSO
+         mfh+/B+K/96vsw/Js/JeQ2wtCLTpRAf6kT9Ej67xCsGPNCEiYCWSWa/m7FBgIYTQgO
+         IImYWb8JAAfk0yhyEa5unUcC2r5KlYTAMWHBx/1c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stylon Wang <stylon.wang@amd.com>,
-        Nicholas Kazlauskas <Nicholas.Kazlauskas@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        "Limonciello, Mario" <Mario.Limonciello@amd.com>
-Subject: [PATCH 5.15 001/106] Revert "drm/amd/display: Fix DCN3 B0 DP Alt Mapping"
-Date:   Mon, 20 Jun 2022 14:50:20 +0200
-Message-Id: <20220620124724.428260237@linuxfoundation.org>
+        stable@vger.kernel.org, stable <stable@kernel.org>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@penugtronix.de>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH 5.10 67/84] serial: 8250: Store to lsr_save_flags after lsr read
+Date:   Mon, 20 Jun 2022 14:51:30 +0200
+Message-Id: <20220620124722.871093451@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
-References: <20220620124724.380838401@linuxfoundation.org>
+In-Reply-To: <20220620124720.882450983@linuxfoundation.org>
+References: <20220620124720.882450983@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -53,41 +53,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stylon Wang <stylon.wang@amd.com>
+From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-commit 1039188806d4cfdf9c412bb4ddb51b4d8cd15478 upstream.
+commit be03b0651ffd8bab69dfd574c6818b446c0753ce upstream.
 
-This reverts commit 4b7786d87fb3adf3e534c4f1e4f824d8700b786b.
+Not all LSR register flags are preserved across reads. Therefore, LSR
+readers must store the non-preserved bits into lsr_save_flags.
 
-Commit 4b7786d87fb3 ("drm/amd/display: Fix DCN3 B0 DP Alt Mapping")
-is causing 2nd USB-C display not lighting up.
-Phy id remapping is done differently than is assumed in this
-patch.
+This fix was initially mixed into feature commit f6f586102add ("serial:
+8250: Handle UART without interrupt on TEMT using em485"). However,
+that feature change had a flaw and it was reverted to make room for
+simpler approach providing the same feature. The embedded fix got
+reverted with the feature change.
 
-Signed-off-by: Stylon Wang <stylon.wang@amd.com>
-Reviewed-by: Nicholas Kazlauskas <Nicholas.Kazlauskas@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: "Limonciello, Mario" <Mario.Limonciello@amd.com>
+Re-add the lsr_save_flags fix and properly mark it's a fix.
+
+Link: https://lore.kernel.org/all/1d6c31d-d194-9e6a-ddf9-5f29af829f3@linux.intel.com/T/#m1737eef986bd20cf19593e344cebd7b0244945fc
+Fixes: e490c9144cfa ("tty: Add software emulated RS485 support for 8250")
+Cc: stable <stable@kernel.org>
+Acked-by: Uwe Kleine-König <u.kleine-koenig@penugtronix.de>
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Link: https://lore.kernel.org/r/f4d774be-1437-a550-8334-19d8722ab98c@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c |    6 ------
- 1 file changed, 6 deletions(-)
+ drivers/tty/serial/8250/8250_port.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c
-@@ -1294,12 +1294,6 @@ static struct stream_encoder *dcn31_stre
- 	if (!enc1 || !vpg || !afmt)
- 		return NULL;
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -1532,6 +1532,8 @@ static inline void __stop_tx(struct uart
  
--	if (ctx->asic_id.chip_family == FAMILY_YELLOW_CARP &&
--			ctx->asic_id.hw_internal_rev == YELLOW_CARP_B0) {
--		if ((eng_id == ENGINE_ID_DIGC) || (eng_id == ENGINE_ID_DIGD))
--			eng_id = eng_id + 3; // For B0 only. C->F, D->G.
--	}
--
- 	dcn30_dio_stream_encoder_construct(enc1, ctx, ctx->dc_bios,
- 					eng_id, vpg, afmt,
- 					&stream_enc_regs[eng_id],
+ 	if (em485) {
+ 		unsigned char lsr = serial_in(p, UART_LSR);
++		p->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
++
+ 		/*
+ 		 * To provide required timeing and allow FIFO transfer,
+ 		 * __stop_tx_rs485() must be called only when both FIFO and
 
 
