@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8323C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:00:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58548C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:00:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243595AbiFTNA3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:00:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47280 "EHLO
+        id S243630AbiFTNAi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:00:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244579AbiFTM7n (ORCPT
+        with ESMTP id S244685AbiFTM7s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 08:59:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 434F419FB9;
-        Mon, 20 Jun 2022 05:56:38 -0700 (PDT)
+        Mon, 20 Jun 2022 08:59:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C37B1A06D;
+        Mon, 20 Jun 2022 05:56:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 919D6B811A0;
-        Mon, 20 Jun 2022 12:56:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE15FC341C4;
-        Mon, 20 Jun 2022 12:56:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 17EBF614F0;
+        Mon, 20 Jun 2022 12:56:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AC5EC3411B;
+        Mon, 20 Jun 2022 12:56:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655729795;
-        bh=D2UwmSnr5W4IRYDH4+1SoWClJ8DsSUAmAlrFDCiml44=;
+        s=korg; t=1655729801;
+        bh=E2c6JwTTTgoenhfa01rg3ytkD9oy+z5TCsPOtlv3pdI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kyB1MXYhVucFYGssMdM9NFWpfTypS6ELzgceS/IOLpHnQF0SoJsahtKTZoh9XBW/M
-         bCWLCP02dNs75VmT6UWz1Zr4HvDti5zFgWJOid4p59NrWvGfGVkQPnzAhmSumYMFwP
-         pMKKKg3X1Ks6VPOEEk+Iy//cKy7s28IcNIAfKaaU=
+        b=pJnK9P0HrOCJtvc3hG0K2w80ErOVtEdSwUh42vcplttPXkdWZoQb05nwrTrAOicvC
+         XkzEEa3EBhLU7o0Bclfn/9wPdvCC/Ayv2MHZtp3ZQRI56R7hArpJbJXSorkcbJun9G
+         b2KEZ9A7p2jQAWLRaYZcS4c2zki53TkfjZogIUUw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marius Hoch <mail@mariushoch.de>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 026/141] Input: soc_button_array - also add Lenovo Yoga Tablet2 1051F to dmi_use_low_level_irq
-Date:   Mon, 20 Jun 2022 14:49:24 +0200
-Message-Id: <20220620124730.302867023@linuxfoundation.org>
+Subject: [PATCH 5.18 080/141] net: bgmac: Fix an erroneous kfree() in bgmac_remove()
+Date:   Mon, 20 Jun 2022 14:50:18 +0200
+Message-Id: <20220620124731.903001364@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 References: <20220620124729.509745706@linuxfoundation.org>
@@ -50,47 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marius Hoch <mail@mariushoch.de>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 6ab2e51898cd4343bbdf8587af8ce8fbabddbcb5 ]
+[ Upstream commit d7dd6eccfbc95ac47a12396f84e7e1b361db654b ]
 
-Commit 223f61b8c5ad ("Input: soc_button_array - add Lenovo Yoga Tablet2
-1051L to the dmi_use_low_level_irq list") added the 1051L to this list
-already, but the same problem applies to the 1051F. As there are no
-further 1051 variants (just the F/L), we can just DMI match 1051.
+'bgmac' is part of a managed resource allocated with bgmac_alloc(). It
+should not be freed explicitly.
 
-Tested on a Lenovo Yoga Tablet2 1051F: Without this patch the
-home-button stops working after a wakeup from suspend.
+Remove the erroneous kfree() from the .remove() function.
 
-Signed-off-by: Marius Hoch <mail@mariushoch.de>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Link: https://lore.kernel.org/r/20220603120246.3065-1-mail@mariushoch.de
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Fixes: 34a5102c3235 ("net: bgmac: allocate struct bgmac just once & don't copy it")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/a026153108dd21239036a032b95c25b5cece253b.1655153616.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/input/misc/soc_button_array.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/broadcom/bgmac-bcma.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/input/misc/soc_button_array.c b/drivers/input/misc/soc_button_array.c
-index cbb1599a520e..480476121c01 100644
---- a/drivers/input/misc/soc_button_array.c
-+++ b/drivers/input/misc/soc_button_array.c
-@@ -85,13 +85,13 @@ static const struct dmi_system_id dmi_use_low_level_irq[] = {
- 	},
- 	{
- 		/*
--		 * Lenovo Yoga Tab2 1051L, something messes with the home-button
-+		 * Lenovo Yoga Tab2 1051F/1051L, something messes with the home-button
- 		 * IRQ settings, leading to a non working home-button.
- 		 */
- 		.matches = {
- 			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
- 			DMI_MATCH(DMI_PRODUCT_NAME, "60073"),
--			DMI_MATCH(DMI_PRODUCT_VERSION, "1051L"),
-+			DMI_MATCH(DMI_PRODUCT_VERSION, "1051"),
- 		},
- 	},
- 	{} /* Terminating entry */
+diff --git a/drivers/net/ethernet/broadcom/bgmac-bcma.c b/drivers/net/ethernet/broadcom/bgmac-bcma.c
+index e6f48786949c..02bd3cf9a260 100644
+--- a/drivers/net/ethernet/broadcom/bgmac-bcma.c
++++ b/drivers/net/ethernet/broadcom/bgmac-bcma.c
+@@ -332,7 +332,6 @@ static void bgmac_remove(struct bcma_device *core)
+ 	bcma_mdio_mii_unregister(bgmac->mii_bus);
+ 	bgmac_enet_remove(bgmac);
+ 	bcma_set_drvdata(core, NULL);
+-	kfree(bgmac);
+ }
+ 
+ static struct bcma_driver bgmac_bcma_driver = {
 -- 
 2.35.1
 
