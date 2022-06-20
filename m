@@ -2,256 +2,265 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E17AAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 15:08:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC301C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 15:08:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242918AbiFTPID (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 11:08:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34186 "EHLO
+        id S243131AbiFTPII (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 11:08:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242848AbiFTPHb (ORCPT
+        with ESMTP id S242838AbiFTPHb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 20 Jun 2022 11:07:31 -0400
-Received: from mail.cybernetics.com (mail.cybernetics.com [173.71.130.66])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 583882CDF8
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 07:47:01 -0700 (PDT)
-X-ASG-Debug-ID: 1655735631-1cf43917f34590c0001-xx1T2L
-Received: from cybernetics.com ([10.10.4.126]) by mail.cybernetics.com with ESMTP id rNTjWzLE3XOW6cDI; Mon, 20 Jun 2022 10:33:51 -0400 (EDT)
-X-Barracuda-Envelope-From: tonyb@cybernetics.com
-X-ASG-Whitelist: Client
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=cybernetics.com; s=mail;
-        bh=NyOBabcM6HAlwTl1JjR0XgckKmX0BhrhtQCHxztObkw=;
-        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:References:Cc:To:
-        Content-Language:Subject:MIME-Version:Date:Message-ID; b=DA8qGE40RlmQr6pbL9qx
-        /yR4uAijBdwoP1qIlS2aZf0sbyXaMUs3AAdxt7lV7AXtPNmyGyl832BiLjrWRUzNxxDrGjc8l8lTq
-        JbhEHCwwBAaiaT75R7BOcnblcJc9FlnsszJxK7nVf6nft+305g7KEhLjk6uBpgghugBTXmgvdU=
-Received: from [10.157.2.224] (HELO [192.168.200.1])
-  by cybernetics.com (CommuniGate Pro SMTP 7.1.1)
-  with ESMTPS id 11936878; Mon, 20 Jun 2022 10:33:51 -0400
-Message-ID: <178e4e7a-64fc-a442-cdda-45100eaebda0@cybernetics.com>
-Date:   Mon, 20 Jun 2022 10:33:51 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6CB52CDF4;
+        Mon, 20 Jun 2022 07:46:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1655736411; x=1687272411;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=5b+DtsnaCnevf4/T6iU46EupXhn6Xo7afKetFueBYDY=;
+  b=AhuupxwHF5q3ty6HG0BQJe3yC/xErHCL8sZ9a5sEea/fHqHd1eJhJlFe
+   xujRqoj2/s2lM01Zt4E9ObOs7ONlYB/1M+K/QsB5S6BzqpBgkl8gzwfUQ
+   QlOW2DfwCOyxL/o/kur4DlaCy/npk1xbsGCjVuwEGmasKPLibi1vbq1O9
+   Ldnq4czjUeTdXjaelAuCGSRfywAplo0td0It1hyB5ZayuHB3N4a96eNHo
+   dbD11mBdmLoRn/QVpn/V591i8iZsSEb4j0Vxbhvgxepa3PgQVIGE9xSzR
+   VDMgCJCe4gWTi65Ox8BrN5lrAG0vM4HOc4qxoLroq976/AJBf53lZmtTk
+   g==;
+X-IronPort-AV: E=Sophos;i="5.92,207,1650956400"; 
+   d="scan'208";a="100846467"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 20 Jun 2022 07:46:50 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 20 Jun 2022 07:46:45 -0700
+Received: from kavya-HP-Compaq-6000-Pro-SFF-PC.microchip.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Mon, 20 Jun 2022 07:46:42 -0700
+From:   Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
+To:     <krzysztof.kozlowski@linaro.org>, <robh+dt@kernel.org>,
+        <Nicolas.Ferre@microchip.com>, <Claudiu.Beznea@microchip.com>,
+        <krzysztof.kozlowski+dt@linaro.org>
+CC:     <UNGLinuxDriver@microchip.com>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH v5 1/3] dt-bindings: mfd: atmel,flexcom: Convert to json-schema
+Date:   Mon, 20 Jun 2022 20:16:32 +0530
+Message-ID: <20220620144634.25464-2-kavyasree.kotagiri@microchip.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220620144634.25464-1-kavyasree.kotagiri@microchip.com>
+References: <20220620144634.25464-1-kavyasree.kotagiri@microchip.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [REGRESSION] qla2xxx: tape drive not removed after unplug FC
- cable
-Content-Language: en-US
-X-ASG-Orig-Subj: Re: [REGRESSION] qla2xxx: tape drive not removed after unplug FC
- cable
-To:     Thorsten Leemhuis <regressions@leemhuis.info>,
-        Arun Easi <aeasi@marvell.com>
-Cc:     Saurav Kashyap <skashyap@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        GR-QLogic-Storage-Upstream@marvell.com, linux-scsi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, regressions@lists.linux.dev
-References: <baef87c3-5dad-3b47-44c1-6914bfc90108@cybernetics.com>
- <alpine.LRH.2.21.9999.2205271524460.4730@mvluser05.qlc.com>
- <5bcb5963-9da0-fd59-45c5-d27af02e7748@leemhuis.info>
-From:   Tony Battersby <tonyb@cybernetics.com>
-In-Reply-To: <5bcb5963-9da0-fd59-45c5-d27af02e7748@leemhuis.info>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Barracuda-Connect: UNKNOWN[10.10.4.126]
-X-Barracuda-Start-Time: 1655735631
-X-Barracuda-URL: https://10.10.4.122:443/cgi-mod/mark.cgi
-X-Barracuda-BRTS-Status: 1
-X-Virus-Scanned: by bsmtpd at cybernetics.com
-X-Barracuda-Scan-Msg-Size: 14121
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/20/22 02:56, Thorsten Leemhuis wrote:
-> Hi!
->
-> On 28.05.22 02:27, Arun Easi wrote:
->> Hi Tony,
->>
->> Thanks for reporting the issue. We are trying to recreate this issue in 
->> house. I will reach out to you for logs, if we cannot repro. Typically, we 
->> get sufficient context to the issue when the problem is reproduced with 
->> module parameter "ql2xextended_error_logging=1".
->>
->> Anyway, I will let you know the status.
-> What's the status here? Tony, did you provide the info Arun asked for=
-> Or was some progress made somehow without it?
->
-I was waiting for them to reproduce the problem, or ask for logs. 
-Anyway, here are the logs they said they might want:
+Convert the Atmel flexcom device tree bindings to json schema.
 
-modprobe qla2xxx ql2xextended_error_logging=1
+Signed-off-by: Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
+---
+v4 -> v5:
+ - Fixed indentations.
 
-Jun 20 13:51:46 tony13 kern.warn kernel: qla2xxx [0000:00:00.0]-0005: : QLogic Fibre Channel HBA Driver: 10.02.07.400-k-debug.
-Jun 20 13:51:46 tony13 kern.warn kernel: qla2xxx [0000:00:00.0]-011c: : MSI-X vector count: 32.
-Jun 20 13:51:46 tony13 kern.warn kernel: qla2xxx [0000:00:00.0]-001d: : Found an ISP2031 irq 37 iobase 0x00000000875338f3.
-Jun 20 13:51:46 tony13 kern.warn kernel: qla2xxx [0000:83:00.0]-00c6:6: MSI-X: Using 26 vectors
-Jun 20 13:51:47 tony13 kern.warn kernel: qla2xxx [0000:83:00.0]-0075:6: ZIO mode 6 enabled; timer delay (200 us).
-Jun 20 13:51:47 tony13 kern.warn kernel: qla2xxx [0000:83:00.0]-ffff:6: FC4 priority set to NVMe
-Jun 20 13:51:48 tony13 kern.warn kernel: qla2xxx [0000:83:00.0]-507b:6: SFP detect: Short-Range SFP  (nvr=0 ll=40 lr=0 lrd=0).
-Jun 20 13:51:50 tony13 kern.info kernel: scsi host6: qla2xxx
-Jun 20 13:51:50 tony13 kern.warn kernel: qla2xxx [0000:83:00.0]-4000:6: DPC handler sleeping.
-Jun 20 13:51:51 tony13 kern.warn kernel: qla2xxx [0000:83:00.0]-400f:6: Loop resync scheduled.
-Jun 20 13:51:55 tony13 kern.warn kernel: qla2xxx [0000:83:00.0]-00fb:6: QLogic QLE2672 - QLE2672 QLogic 2-port 16Gb Fibre Channel Adapter.
-Jun 20 13:51:55 tony13 kern.warn kernel: qla2xxx [0000:83:00.0]-00fc:6: ISP2031: PCIe (8.0GT/s x8) @ 0000:83:00.0 hdma- host#=6 fw=8.07.12 (d0d5).
-Jun 20 13:51:55 tony13 kern.warn kernel: qla2xxx [0000:00:00.0]-011c: : MSI-X vector count: 32.
-Jun 20 13:51:55 tony13 kern.warn kernel: qla2xxx [0000:00:00.0]-001d: : Found an ISP2031 irq 135 iobase 0x000000007cfbf1eb.
-Jun 20 13:51:55 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-00c6:7: MSI-X: Using 26 vectors
-Jun 20 13:51:55 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-0075:7: ZIO mode 6 enabled; timer delay (200 us).
-Jun 20 13:51:55 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-ffff:7: FC4 priority set to NVMe
-Jun 20 13:51:57 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-507b:7: SFP detect: Short-Range SFP  (nvr=0 ll=40 lr=0 lrd=0).
-Jun 20 13:51:58 tony13 kern.info kernel: scsi host7: qla2xxx
-Jun 20 13:51:58 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-4000:7: DPC handler sleeping.
-Jun 20 13:51:59 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-400f:7: Loop resync scheduled.
-Jun 20 13:52:03 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-00fb:7: QLogic QLE2672 - QLE2672 QLogic 2-port 16Gb Fibre Channel Adapter.
-Jun 20 13:52:03 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-00fc:7: ISP2031: PCIe (8.0GT/s x8) @ 0000:83:00.1 hdma- host#=7 fw=8.07.12 (d0d5).
-Jun 20 13:52:11 tony13 kern.warn kernel: qla2xxx [0000:83:00.0]-8038:6: Cable is unplugged...
-Jun 20 13:52:11 tony13 kern.warn kernel: qla2xxx [0000:83:00.0]-803a:6: fw_state=4 (7, 141, 0, 800 0) curr time=ffffc764.
-Jun 20 13:52:11 tony13 kern.warn kernel: qla2xxx [0000:83:00.0]-206c:6: qla2x00_loop_resync *** FAILED ***.
-Jun 20 13:52:11 tony13 kern.warn kernel: qla2xxx [0000:83:00.0]-4010:6: Loop resync end.
-Jun 20 13:52:11 tony13 kern.warn kernel: qla2xxx [0000:83:00.0]-4000:6: DPC handler sleeping.
-Jun 20 13:52:20 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-8038:7: Cable is unplugged...
-Jun 20 13:52:20 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-803a:7: fw_state=4 (7, 141, 0, 800 0) curr time=ffffcaac.
-Jun 20 13:52:20 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-206c:7: qla2x00_loop_resync *** FAILED ***.
-Jun 20 13:52:20 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-4010:7: Loop resync end.
-Jun 20 13:52:20 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-4000:7: DPC handler sleeping.
+v3 -> v4:
+ - Corrected format of enum used for compatible string.
 
-Plug in cable
+v2 -> v3:
+ - used enum for compatible string.
+ - changed irq flag to IRQ_TYPE_LEVEL_HIGH in example.
+ - fixed dtschema errors.
 
-Jun 20 13:52:56 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-5009:7: LIP occurred (0).
-Jun 20 13:52:56 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-10b7:7: Format 0 : Number of VPs setup 254, number of VPs acquired 1.
-Jun 20 13:52:56 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-10b8:7: Primary port id 0000ef.
-Jun 20 13:52:58 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-500a:7: LOOP UP detected (8 Gbps).
-Jun 20 13:52:58 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-5012:7: Port database changed ffff 0006 0000.
-Jun 20 13:52:59 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-400f:7: Loop resync scheduled.
-Jun 20 13:52:59 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-8037:7: F/W Ready - OK.
-Jun 20 13:52:59 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-803a:7: fw_state=3 (7, 141, 0, 800 0) curr time=ffffd9e8.
-Jun 20 13:52:59 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-200b:7: HBA in NL topology.
-Jun 20 13:52:59 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-2014:7: Configure loop -- dpc flags = 0x112e0.
-Jun 20 13:52:59 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-2011:7: Entries in ID list (1).
-Jun 20 13:52:59 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-20d8:7: qla24xx_fcport_handle_login 50:00:e1:11:c5:27:f0:70 DS 0 LS 7 P 0 fl 0 confl 0000000000000000 rscn 0|0 login 0 lid 0 scan 2 fc4type 0
-Jun 20 13:52:59 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-307b:7: qla_chk_n2n_b4_login 50:00:e1:11:c5:27:f0:70 DS 0 LS 7 lid 0 retries=30
-Jun 20 13:52:59 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-20bf:7: qla_chk_n2n_b4_login 1628 50:00:e1:11:c5:27:f0:70 post login
-Jun 20 13:52:59 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-2069:7: LOOP READY.
-Jun 20 13:52:59 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-206b:7: qla2x00_configure_loop: exiting normally. local port wwpn 2100000e1e2227a1 id 0000ef)
-Jun 20 13:52:59 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-4010:7: Loop resync end.
-Jun 20 13:52:59 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-2134:7: FCPort 50:00:e1:11:c5:27:f0:70 disc_state transition: DELETED to LOGIN_PEND - portid=000026.
-Jun 20 13:52:59 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-2072:7: Async-login - 50:00:e1:11:c5:27:f0:70 hdl=2, loopid=0 portid=000026 retries=29 .
-Jun 20 13:52:59 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-4000:7: DPC handler sleeping.
-Jun 20 13:52:59 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-5036:7: Async-login complete: handle=2 pid=000026 wwpn=50:00:e1:11:c5:27:f0:70 iop0=312
-Jun 20 13:52:59 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-20dd:7: qla2x00_async_login_sp_done 50:00:e1:11:c5:27:f0:70 res 0 
-Jun 20 13:52:59 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-ffff:7: qla24xx_handle_plogi_done_event 50:00:e1:11:c5:27:f0:70 DS 3 LS 7 rc 0 login 0|0 rscn 0|0 data 4000|0 iop 0|0
-Jun 20 13:52:59 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-20ea:7: qla24xx_handle_plogi_done_event 2232 50:00:e1:11:c5:27:f0:70 LoopID 0x0 in use with 000026. post gpdb
-Jun 20 13:52:59 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-2134:7: FCPort 50:00:e1:11:c5:27:f0:70 disc_state transition: LOGIN_PEND to GPDB - portid=000026.
-Jun 20 13:52:59 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-20dc:7: Async-gpdb 50:00:e1:11:c5:27:f0:70 hndl 0 opt 0
-Jun 20 13:52:59 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-20db:7: Async done-gpdb res 0, WWPN 50:00:e1:11:c5:27:f0:70 mb[1]=0 mb[2]=ffdd 
-Jun 20 13:52:59 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-20d2:7: qla24xx_handle_gpdb_event 50:00:e1:11:c5:27:f0:70 DS 5 LS 6 fc4_type 0 rc 0
-Jun 20 13:52:59 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-2062:7: 50:00:e1:11:c5:27:f0:70 SVC Param w3 0312
-Jun 20 13:52:59 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-2134:7: FCPort 50:00:e1:11:c5:27:f0:70 disc_state transition: GPDB to UPD_FCPORT - portid=000026.
-Jun 20 13:52:59 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-20ef:7: qla2x00_update_fcport 50:00:e1:11:c5:27:f0:70
-Jun 20 13:52:59 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-2134:7: FCPort 50:00:e1:11:c5:27:f0:70 disc_state transition: UPD_FCPORT to UPD_FCPORT - portid=000026.
-Jun 20 13:52:59 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-207d:7: FCPort 50:00:e1:11:c5:27:f0:70 state transitioned from UNCONFIGURED to ONLINE - portid=000026.
-Jun 20 13:52:59 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-20ee:7: qla2x00_reg_remote_port: 5000e111c527f070. rport 7:0:0 (00000000bd175424) is tgt mode
-Jun 20 13:52:59 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-2134:7: FCPort 50:00:e1:11:c5:27:f0:70 disc_state transition: UPD_FCPORT to LOGIN_COMPLETE - portid=000026.
-Jun 20 13:52:59 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-911e:7: qla_register_fcport_fn rscn gen 0/0 next DS 0
-Jun 20 13:52:59 tony13 kern.notice kernel: scsi 7:0:0:0: Sequential-Access IBM      ULTRIUM-HH8      K4K1 PQ: 0 ANSI: 6
-Jun 20 13:52:59 tony13 kern.notice kernel: scsi 7:0:0:0: Attached scsi generic sg1 type 1
-Jun 20 13:52:59 tony13 kern.info kernel: st: Version 20160209, fixed bufsize 32768, s/g segs 256
-Jun 20 13:52:59 tony13 kern.notice kernel: st 7:0:0:0: Attached scsi tape st0
-Jun 20 13:52:59 tony13 kern.info kernel: st 7:0:0:0: st0: try direct i/o: yes (alignment 8 B)
+v1 -> v2:
+ - Fix title.
 
-Unplug cable
+ .../bindings/mfd/atmel,flexcom.yaml           | 104 ++++++++++++++++++
+ .../devicetree/bindings/mfd/atmel-flexcom.txt |  63 -----------
+ 2 files changed, 104 insertions(+), 63 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/mfd/atmel,flexcom.yaml
+ delete mode 100644 Documentation/devicetree/bindings/mfd/atmel-flexcom.txt
 
-Jun 20 13:54:03 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-500b:7: LOOP DOWN detected (2 7 0 0).
-Jun 20 13:54:03 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-20f1:7: Mark all dev lost
-
-sleep 180
-
-cat /proc/scsi/scsi 
-Attached devices:
-Host: scsi7 Channel: 00 Id: 00 Lun: 00
-  Vendor: IBM      Model: ULTRIUM-HH8      Rev: K4K1
-  Type:   Sequential-Access                ANSI  SCSI revision: 06
-
-rmmod qla2xxx
-
-Jun 20 14:00:18 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-211a:7: Delaying session delete for FCP2 flags 0x4 port_type = 0x4 port_id=000026 50
-Jun 20 14:00:18 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-b079:7: Removing driver
-Jun 20 14:00:18 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-00af:7: Performing ISP error recovery - ha=00000000c584070c.
-Jun 20 14:00:18 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-20f1:7: Mark all dev lost
-Jun 20 14:00:28 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-211a:7: Delaying session delete for FCP2 flags 0x4 port_type = 0x4 port_id=000026 50
-Jun 20 14:00:28 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-4011:7: DPC handler exiting.
-Jun 20 14:00:28 tony13 kern.warn kernel: qla2xxx [0000:83:00.1]-207d:7: FCPort 50:00:e1:11:c5:27:f0:70 state transitioned from ONLINE to DEAD - portid=000026.
-Jun 20 14:00:28 tony13 kern.warn kernel: qla2xxx [0000:83:00.0]-b079:6: Removing driver
-Jun 20 14:00:28 tony13 kern.warn kernel: qla2xxx [0000:83:00.0]-00af:6: Performing ISP error recovery - ha=000000008a8560d1.
-Jun 20 14:00:28 tony13 kern.warn kernel: qla2xxx [0000:83:00.0]-20f1:6: Mark all dev lost
-Jun 20 14:00:28 tony13 kern.warn kernel: qla2xxx [0000:83:00.0]-4011:6: DPC handler exiting.
-
-Tony Battersby
-Cybernetics
-
-> Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
->
-> P.S.: As the Linux kernel's regression tracker I deal with a lot of
-> reports and sometimes miss something important when writing mails like
-> this. If that's the case here, don't hesitate to tell me in a public
-> reply, it's in everyone's interest to set the public record straight.
->
->> On Wed, 25 May 2022, 3:03pm, Tony Battersby wrote:
->>
->>> #regzbot introduced: 44c57f205876
->>>
->>> I have several different QLogic FC HBAs (8, 16, 32 Gbps) and several
->>> different FC LTO tape drives (IBM Ultrium 8 & 9).  When I plug in the FC
->>> cable, the tape drive shows up as a SCSI device as expected.  With older
->>> kernels, when I unplug the FC cable, the tape drive SCSI device would
->>> disappear after about 30 seconds.  But with newer kernels (including
->>> 5.18), when I unplug the FC cable, the tape drive SCSI device never
->>> disappears.  I have bisected the change in behavior to the following
->>> commit in kernel 5.15:
->>>
->>> 44c57f205876 ("scsi: qla2xxx: Changes to support FCP2 Target")
->>>
->>> This commit has been backported to various -stable kernels, so they are
->>> also affected.
->>>
->>> When testing with two different tape drives:
->>> 1) Plug FC cable into tape drive A.  Tape drive A shows up as a SCSI device.
->>> 2) Unplug FC cable; wait 60 seconds.  Tape drive A does not disappear.
->>> 3) Plug FC cable into tape drive B.  Tape drive A disappears 30 seconds
->>> later, but tape drive B does not show up.
->>> 4) Unplug FC cable and plug it back into tape drive B.  Tape drive B
->>> shows up as a SCSI device.
->>>
->>> So I can actually make a tape drive disappear by plugging the cable into
->>> a different tape drive, but then I have to reseat the cable again to
->>> make the new tape drive show up.
->>>
->>> lspci -n
->>> 83:00.0 0c04: 1077:2031 (rev 02)
->>> 83:00.1 0c04: 1077:2031 (rev 02)
->>>
->>> When plugging in cable:
->>> qla2xxx [0000:83:00.1]-500a:7: LOOP UP detected (8 Gbps).
->>>
->>> When unplugging cable with old kernel:
->>> qla2xxx [0000:83:00.1]-500b:7: LOOP DOWN detected (2 7 0 0).
->>> rport-7:0-2: blocked FC remote port time out: removing target and saving binding
->>>
->>> When unplugging cable with new kernel:
->>> qla2xxx [0000:83:00.1]-500b:7: LOOP DOWN detected (2 7 0 0).
->>>
->>> /sys/class/fc_remote_ports/rport-*/
->>> dev_loss_tmo: 30
->>> supported_classes: Class 3
->>> port_state: Online
->>> (port_state remains Online even when FC cable unplugged)
->>>
->>> /proc/scsi/scsi
->>> Host: scsi7 Channel: 00 Id: 01 Lun: 00
->>>   Vendor: IBM      Model: ULTRIUM-HH8      Rev: K4K1
->>>   Type:   Sequential-Access                ANSI  SCSI revision: 06
->>>
->>> Tony Battersby
->>> Cybernetics
->>>
+diff --git a/Documentation/devicetree/bindings/mfd/atmel,flexcom.yaml b/Documentation/devicetree/bindings/mfd/atmel,flexcom.yaml
+new file mode 100644
+index 000000000000..fc5af946b568
+--- /dev/null
++++ b/Documentation/devicetree/bindings/mfd/atmel,flexcom.yaml
+@@ -0,0 +1,104 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/mfd/atmel,flexcom.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Atmel Flexcom (Flexible Serial Communication Unit)
++
++maintainers:
++  - Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
++
++description:
++  The Atmel Flexcom is just a wrapper which embeds a SPI controller,
++  an I2C controller and an USART. Only one function can be used at a
++  time and is chosen at boot time according to the device tree.
++
++properties:
++  compatible:
++    enum:
++      - atmel,sama5d2-flexcom
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  "#address-cells":
++    const: 1
++
++  "#size-cells":
++    const: 1
++
++  ranges:
++    description:
++      One range for the full I/O register region. (including USART,
++      TWI and SPI registers).
++    items:
++      maxItems: 3
++
++  atmel,flexcom-mode:
++    description: |
++      Specifies the flexcom mode as follows:
++      1: USART
++      2: SPI
++      3: I2C.
++    $ref: /schemas/types.yaml#/definitions/uint32
++    enum: [1, 2, 3]
++
++patternProperties:
++  "^serial@[0-9a-f]+$":
++    description: See atmel-usart.txt for details of USART bindings.
++    type: object
++
++  "^spi@[0-9a-f]+$":
++    description: See ../spi/spi_atmel.txt for details of SPI bindings.
++    type: object
++
++    properties:
++      compatible:
++        const: atmel,at91rm9200-spi
++
++  "^i2c@[0-9a-f]+$":
++    description: See ../i2c/i2c-at91.txt for details of I2C bindings.
++    type: object
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - "#address-cells"
++  - "#size-cells"
++  - ranges
++  - atmel,flexcom-mode
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++
++    flx0: flexcom@f8034000 {
++        compatible = "atmel,sama5d2-flexcom";
++        reg = <0xf8034000 0x200>;
++        clocks = <&flx0_clk>;
++        #address-cells = <1>;
++        #size-cells = <1>;
++        ranges = <0x0 0xf8034000 0x800>;
++        atmel,flexcom-mode = <2>;
++
++        spi0: spi@400 {
++            compatible = "atmel,at91rm9200-spi";
++            reg = <0x400 0x200>;
++            interrupts = <19 IRQ_TYPE_LEVEL_HIGH 7>;
++            pinctrl-names = "default";
++            pinctrl-0 = <&pinctrl_flx0_default>;
++            #address-cells = <1>;
++            #size-cells = <0>;
++            clocks = <&flx0_clk>;
++            clock-names = "spi_clk";
++            atmel,fifo-size = <32>;
++        };
++    };
++...
+diff --git a/Documentation/devicetree/bindings/mfd/atmel-flexcom.txt b/Documentation/devicetree/bindings/mfd/atmel-flexcom.txt
+deleted file mode 100644
+index 9d837535637b..000000000000
+--- a/Documentation/devicetree/bindings/mfd/atmel-flexcom.txt
++++ /dev/null
+@@ -1,63 +0,0 @@
+-* Device tree bindings for Atmel Flexcom (Flexible Serial Communication Unit)
+-
+-The Atmel Flexcom is just a wrapper which embeds a SPI controller, an I2C
+-controller and an USART. Only one function can be used at a time and is chosen
+-at boot time according to the device tree.
+-
+-Required properties:
+-- compatible:		Should be "atmel,sama5d2-flexcom"
+-- reg:			Should be the offset/length value for Flexcom dedicated
+-			I/O registers (without USART, TWI or SPI registers).
+-- clocks:		Should be the Flexcom peripheral clock from PMC.
+-- #address-cells:	Should be <1>
+-- #size-cells:		Should be <1>
+-- ranges:		Should be one range for the full I/O register region
+-			(including USART, TWI and SPI registers).
+-- atmel,flexcom-mode:	Should be one of the following values:
+-			- <1> for USART
+-			- <2> for SPI
+-			- <3> for I2C
+-
+-Required child:
+-A single available child device of type matching the "atmel,flexcom-mode"
+-property.
+-
+-The phandle provided by the clocks property of the child is the same as one for
+-the Flexcom parent.
+-
+-For other properties, please refer to the documentations of the respective
+-device:
+-- ../serial/atmel-usart.txt
+-- ../spi/spi_atmel.txt
+-- ../i2c/i2c-at91.txt
+-
+-Example:
+-
+-flexcom@f8034000 {
+-	compatible = "atmel,sama5d2-flexcom";
+-	reg = <0xf8034000 0x200>;
+-	clocks = <&flx0_clk>;
+-	#address-cells = <1>;
+-	#size-cells = <1>;
+-	ranges = <0x0 0xf8034000 0x800>;
+-	atmel,flexcom-mode = <2>;
+-
+-	spi@400 {
+-		compatible = "atmel,at91rm9200-spi";
+-		reg = <0x400 0x200>;
+-		interrupts = <19 IRQ_TYPE_LEVEL_HIGH 7>;
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&pinctrl_flx0_default>;
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-		clocks = <&flx0_clk>;
+-		clock-names = "spi_clk";
+-		atmel,fifo-size = <32>;
+-
+-		flash@0 {
+-			compatible = "atmel,at25f512b";
+-			reg = <0>;
+-			spi-max-frequency = <20000000>;
+-		};
+-	};
+-};
+-- 
+2.17.1
 
