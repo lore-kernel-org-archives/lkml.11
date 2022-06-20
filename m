@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D050C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:07:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59598C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:07:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243860AbiFTOHw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:07:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45362 "EHLO
+        id S1343850AbiFTOHy (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 10:07:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353154AbiFTN5j (ORCPT
+        with ESMTP id S1352818AbiFTN5H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:57:39 -0400
+        Mon, 20 Jun 2022 09:57:07 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F10F32253C;
-        Mon, 20 Jun 2022 06:23:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78BE736B76;
+        Mon, 20 Jun 2022 06:23:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B64160FA2;
-        Mon, 20 Jun 2022 13:23:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81CA1C3411B;
-        Mon, 20 Jun 2022 13:23:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8048360FAD;
+        Mon, 20 Jun 2022 13:23:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 754DDC341C0;
+        Mon, 20 Jun 2022 13:23:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731405;
-        bh=LPLkG9e3Qw3cepDzMe0dgXzRqV0PLnyIl/OKTXz6vEc=;
+        s=korg; t=1655731380;
+        bh=XaQf1WtlNVXvORkpGmBBusqXihg7/XyyCNcKtkHJsc4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bWGZo6jQ1ynwwqHIE4f5AUgMtMgTzCJAqfOVM1O9Nw72/NeaReTjm40Gjq3p4yHwK
-         Jxhb/Yataol0GkMn5SfzWVJ4z6XWuygEryMgEE73VELRVafbhYwI5kVIqoIO7EU64n
-         vdMsvDDHJWaiQMBzoYCn/a49eXDosZ9JiD+9gCkE=
+        b=IJPMpN6TvW5MuBdwtEJVACuX14OSQF4VNf7yVo0b2v1tVQArBaGO6X6Rm6op2ESb7
+         IT4z5T/8EGG654qwQIoe0Y9WhooE4Wt3ul4lBXujzO5vEfbwvLjh6xb3N+XdaJ8zTC
+         O08yxPbYECeVLNpUWbypoUc/hgtrFqCyEFZej4pc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexey Kardashevskiy <aik@ozlabs.ru>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Andreas Schwab <schwab@linux-m68k.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Arvind Sankar <nivedita@alum.mit.edu>,
+        Palmer Dabbelt <palmerdabbelt@google.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
         Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH 5.4 240/240] powerpc/mm: Switch obsolete dssall to .long
-Date:   Mon, 20 Jun 2022 14:52:21 +0200
-Message-Id: <20220620124745.903788641@linuxfoundation.org>
+Subject: [PATCH 5.4 238/240] RISC-V: fix barrier() use in <vdso/processor.h>
+Date:   Mon, 20 Jun 2022 14:52:19 +0200
+Message-Id: <20220620124745.846319559@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -49,142 +53,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Kardashevskiy <aik@ozlabs.ru>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-commit d51f86cfd8e378d4907958db77da3074f6dce3ba upstream.
+commit 30aca1bacb398dec6c1ed5eeca33f355bd7b6203 upstream.
 
-The dssall ("Data Stream Stop All") instruction is obsolete altogether
-with other Data Cache Instructions since ISA 2.03 (year 2006).
+riscv's <vdso/processor.h> uses barrier() so it should include
+<asm/barrier.h>
 
-LLVM IAS does not support it but PPC970 seems to be using it.
-This switches dssall to .long as there is no much point in fixing LLVM.
+Fixes this build error:
+  CC [M]  drivers/net/ethernet/emulex/benet/be_main.o
+In file included from ./include/vdso/processor.h:10,
+                 from ./arch/riscv/include/asm/processor.h:11,
+                 from ./include/linux/prefetch.h:15,
+                 from drivers/net/ethernet/emulex/benet/be_main.c:14:
+./arch/riscv/include/asm/vdso/processor.h: In function 'cpu_relax':
+./arch/riscv/include/asm/vdso/processor.h:14:2: error: implicit declaration of function 'barrier' [-Werror=implicit-function-declaration]
+   14 |  barrier();
 
-Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20211221055904.555763-6-aik@ozlabs.ru
-[sudip: adjust context]
+This happens with a total of 5 networking drivers -- they all use
+<linux/prefetch.h>.
+
+rv64 allmodconfig now builds cleanly after this patch.
+
+Fixes fallout from:
+815f0ddb346c ("include/linux/compiler*.h: make compiler-*.h mutually exclusive")
+
+Fixes: ad5d1122b82f ("riscv: use vDSO common flow to reduce the latency of the time-related functions")
+Reported-by: Andreas Schwab <schwab@linux-m68k.org>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Acked-by: Arvind Sankar <nivedita@alum.mit.edu>
+Signed-off-by: Palmer Dabbelt <palmerdabbelt@google.com>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Palmer Dabbelt <palmerdabbelt@google.com>
+[sudip: change in old path]
 Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/include/asm/ppc-opcode.h   |    2 ++
- arch/powerpc/kernel/idle_6xx.S          |    2 +-
- arch/powerpc/kernel/l2cr_6xx.S          |    6 +++---
- arch/powerpc/kernel/swsusp_32.S         |    2 +-
- arch/powerpc/kernel/swsusp_asm64.S      |    2 +-
- arch/powerpc/mm/mmu_context.c           |    2 +-
- arch/powerpc/platforms/powermac/cache.S |    4 ++--
- 7 files changed, 11 insertions(+), 9 deletions(-)
+ arch/riscv/include/asm/processor.h |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/arch/powerpc/include/asm/ppc-opcode.h
-+++ b/arch/powerpc/include/asm/ppc-opcode.h
-@@ -204,6 +204,7 @@
- #define PPC_INST_ICBT			0x7c00002c
- #define PPC_INST_ICSWX			0x7c00032d
- #define PPC_INST_ICSWEPX		0x7c00076d
-+#define PPC_INST_DSSALL			0x7e00066c
- #define PPC_INST_ISEL			0x7c00001e
- #define PPC_INST_ISEL_MASK		0xfc00003e
- #define PPC_INST_LDARX			0x7c0000a8
-@@ -439,6 +440,7 @@
- 					__PPC_RA(a) | __PPC_RB(b))
- #define	PPC_DCBZL(a, b)		stringify_in_c(.long PPC_INST_DCBZL | \
- 					__PPC_RA(a) | __PPC_RB(b))
-+#define PPC_DSSALL		stringify_in_c(.long PPC_INST_DSSALL)
- #define PPC_LQARX(t, a, b, eh)	stringify_in_c(.long PPC_INST_LQARX | \
- 					___PPC_RT(t) | ___PPC_RA(a) | \
- 					___PPC_RB(b) | __PPC_EH(eh))
---- a/arch/powerpc/kernel/idle_6xx.S
-+++ b/arch/powerpc/kernel/idle_6xx.S
-@@ -129,7 +129,7 @@ BEGIN_FTR_SECTION
- END_FTR_SECTION_IFCLR(CPU_FTR_NO_DPM)
- 	mtspr	SPRN_HID0,r4
- BEGIN_FTR_SECTION
--	DSSALL
-+	PPC_DSSALL
- 	sync
- END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
- 	lwz	r8,TI_LOCAL_FLAGS(r2)	/* set napping bit */
---- a/arch/powerpc/kernel/l2cr_6xx.S
-+++ b/arch/powerpc/kernel/l2cr_6xx.S
-@@ -96,7 +96,7 @@ END_FTR_SECTION_IFCLR(CPU_FTR_L2CR)
+--- a/arch/riscv/include/asm/processor.h
++++ b/arch/riscv/include/asm/processor.h
+@@ -22,6 +22,8 @@
  
- 	/* Stop DST streams */
- BEGIN_FTR_SECTION
--	DSSALL
-+	PPC_DSSALL
- 	sync
- END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
+ #ifndef __ASSEMBLY__
  
-@@ -293,7 +293,7 @@ END_FTR_SECTION_IFCLR(CPU_FTR_L3CR)
- 	isync
++#include <asm/barrier.h>
++
+ struct task_struct;
+ struct pt_regs;
  
- 	/* Stop DST streams */
--	DSSALL
-+	PPC_DSSALL
- 	sync
- 
- 	/* Get the current enable bit of the L3CR into r4 */
-@@ -402,7 +402,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_L3CR)
- _GLOBAL(__flush_disable_L1)
- 	/* Stop pending alitvec streams and memory accesses */
- BEGIN_FTR_SECTION
--	DSSALL
-+	PPC_DSSALL
- END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
-  	sync
- 
---- a/arch/powerpc/kernel/swsusp_32.S
-+++ b/arch/powerpc/kernel/swsusp_32.S
-@@ -181,7 +181,7 @@ _GLOBAL(swsusp_arch_resume)
- #ifdef CONFIG_ALTIVEC
- 	/* Stop pending alitvec streams and memory accesses */
- BEGIN_FTR_SECTION
--	DSSALL
-+	PPC_DSSALL
- END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
- #endif
-  	sync
---- a/arch/powerpc/kernel/swsusp_asm64.S
-+++ b/arch/powerpc/kernel/swsusp_asm64.S
-@@ -142,7 +142,7 @@ END_FW_FTR_SECTION_IFCLR(FW_FEATURE_LPAR
- _GLOBAL(swsusp_arch_resume)
- 	/* Stop pending alitvec streams and memory accesses */
- BEGIN_FTR_SECTION
--	DSSALL
-+	PPC_DSSALL
- END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
- 	sync
- 
---- a/arch/powerpc/mm/mmu_context.c
-+++ b/arch/powerpc/mm/mmu_context.c
-@@ -79,7 +79,7 @@ void switch_mm_irqs_off(struct mm_struct
- 	 * context
- 	 */
- 	if (cpu_has_feature(CPU_FTR_ALTIVEC))
--		asm volatile ("dssall");
-+		asm volatile (PPC_DSSALL);
- 
- 	if (new_on_cpu)
- 		radix_kvm_prefetch_workaround(next);
---- a/arch/powerpc/platforms/powermac/cache.S
-+++ b/arch/powerpc/platforms/powermac/cache.S
-@@ -48,7 +48,7 @@ flush_disable_75x:
- 
- 	/* Stop DST streams */
- BEGIN_FTR_SECTION
--	DSSALL
-+	PPC_DSSALL
- 	sync
- END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
- 
-@@ -196,7 +196,7 @@ flush_disable_745x:
- 	isync
- 
- 	/* Stop prefetch streams */
--	DSSALL
-+	PPC_DSSALL
- 	sync
- 
- 	/* Disable L2 prefetching */
 
 
