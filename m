@@ -2,401 +2,268 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 724DEC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 23:13:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76E3AC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 23:13:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343721AbiFTXM6 (ORCPT
+        id S1347041AbiFTXNB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 19:12:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53344 "EHLO
+        Mon, 20 Jun 2022 19:13:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346829AbiFTXLu (ORCPT
+        with ESMTP id S1345657AbiFTXMD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 19:11:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FA0D26544;
-        Mon, 20 Jun 2022 16:10:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9A693B8164D;
-        Mon, 20 Jun 2022 23:10:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECB79C36AE7;
-        Mon, 20 Jun 2022 23:10:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655766632;
-        bh=7Os/de3av0FDcoi4MWN14jETAiFGF7qvFPt5+ViREeE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sRwCov+YCQ5eWkPcV5pqEqjDGRdPIZYJC96fQGVsQV3HWrWD1SAO1N0L4Sz8JmOq9
-         qo6D56y6m4T7r+tbUo0zNRvkWmHNYHGSW1/y7ro9VCRzO1OxqT2iJ8e98+G3Q3fDsm
-         OxTMtxY4XBnAjl02CfYNkfmx3cDF1Gambq4V82NiGSTeqi7d0BktOnqiszKKoOWwTr
-         /bwTI9I8e8AAWMu000VeuqYv3XXS+l9J4/UZMBLVQcfK3mMzVfYNQ4IYVeimeIFNtm
-         dtP45MZfUH6Ch2pv+60gziWo6Pr+nbGAbQEHvWL6wYrzftCW0qQw3nTXbkk4uJwuNn
-         T/oxauglr4leQ==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 5EEFA5C0DAC; Mon, 20 Jun 2022 16:10:31 -0700 (PDT)
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     rcu@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
-        rostedt@goodmis.org, Frederic Weisbecker <frederic@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Uladzislau Rezki <uladzislau.rezki@sony.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Xiongfeng Wang <wangxiongfeng2@huawei.com>,
-        Yu Liao <liaoyu15@huawei.com>, Phil Auld <pauld@redhat.com>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Alex Belits <abelits@marvell.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>
-Subject: [PATCH rcu 10/23] context_tracking: Take idle eqs entrypoints over RCU
-Date:   Mon, 20 Jun 2022 16:10:16 -0700
-Message-Id: <20220620231029.3844583-10-paulmck@kernel.org>
-X-Mailer: git-send-email 2.31.1.189.g2e36527f23
-In-Reply-To: <20220620231027.GA3844372@paulmck-ThinkPad-P17-Gen-1>
-References: <20220620231027.GA3844372@paulmck-ThinkPad-P17-Gen-1>
+        Mon, 20 Jun 2022 19:12:03 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2069.outbound.protection.outlook.com [40.107.92.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 561DB2656B;
+        Mon, 20 Jun 2022 16:10:42 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hWVSNR/V6XvJTAR1uyLyoTEMLGCb7xbku7zL9xTXqKaqE1g4nVeirMAIq6CDd6p/pGbwHqnfZqXFgstSaaM3Qeb25SvKkffJaO7d1wxfaLRiyi7pGRNz69TZdi/M5iIO9z0X7VpsB8zSmnqGmznYS/WP+pjgLS7AiArjnrln6GQomCTJWJx6jbIdk6SvRwNWJcV+RGVwZXo6ImHYWCYGsaxhssnG75A5tbLrXD0AdqHj70AB1E++6I8wGu7V7gfZljO+FxVOzd1VC4fH5r7SrrKnfkdFoNYnxgDrb4EAWvPW86BPujZnJgVQfbr3vUAqjYpUN0+Bw7Wpj11BUlOsMQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=4JMLgkVDvhzMk7w43N7Ul4IJDstTk91YQUuH7g0xi1A=;
+ b=NGt/nKPxz9aoghB7GGIBFIDNNgNSR0oSd6/z0BODxdFMd7+QYKLTNCaUCBNhygFWCVQIpNDu5sHFJgZza4+6o4H7DL5x/kdlxTNMBFCU4/ak2CuChpBXg5jahjE9AzR3O4kDSSXbRZIgAtPDFR9rS1C/WLZZ6h12kdAtxZOxidT9ihBZ7ixJru0B/eOlNHnQHdb8LCRema+GwbBRUtNNdERr/SsnK2Jmjv8d/hlKuRILhCXcvUn/ZTd9yLBFto+a1fKbEWZT6VEIlO5sx53UKI4LzBHct+c/Z0mylhIEZwxvHfDB0t1BOamTXpcEfHlI5tiTP3zMzgikZORbgCoVvA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4JMLgkVDvhzMk7w43N7Ul4IJDstTk91YQUuH7g0xi1A=;
+ b=OHLs2+nP6m0DLt1SDuWdeemHeGHHbWVOIzGYODqbKUIP9peYHLH9WJ6uOm6Fyh5Oj0WNdT+ulWiK4ft8ZR8O7vEkFJ7Uf3x5ZnFI1eHTiVkCMZcm6Us59tOk6Ds5bwXZ8nm/WnQom1KRcZi+vK0tSxjpH+3b0y3cznA2J7fKmPg=
+Received: from DS7PR03CA0105.namprd03.prod.outlook.com (2603:10b6:5:3b7::20)
+ by BN8PR12MB3380.namprd12.prod.outlook.com (2603:10b6:408:43::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.18; Mon, 20 Jun
+ 2022 23:10:38 +0000
+Received: from DM6NAM11FT051.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:3b7:cafe::ae) by DS7PR03CA0105.outlook.office365.com
+ (2603:10b6:5:3b7::20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.14 via Frontend
+ Transport; Mon, 20 Jun 2022 23:10:38 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ DM6NAM11FT051.mail.protection.outlook.com (10.13.172.243) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5353.14 via Frontend Transport; Mon, 20 Jun 2022 23:10:38 +0000
+Received: from ashkalraubuntuserver.amd.com (10.180.168.240) by
+ SATLEXMB04.amd.com (10.181.40.145) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Mon, 20 Jun 2022 18:10:35 -0500
+From:   Ashish Kalra <Ashish.Kalra@amd.com>
+To:     <x86@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <kvm@vger.kernel.org>, <linux-coco@lists.linux.dev>,
+        <linux-mm@kvack.org>, <linux-crypto@vger.kernel.org>
+CC:     <tglx@linutronix.de>, <mingo@redhat.com>, <jroedel@suse.de>,
+        <thomas.lendacky@amd.com>, <hpa@zytor.com>, <ardb@kernel.org>,
+        <pbonzini@redhat.com>, <seanjc@google.com>, <vkuznets@redhat.com>,
+        <jmattson@google.com>, <luto@kernel.org>,
+        <dave.hansen@linux.intel.com>, <slp@redhat.com>,
+        <pgonda@google.com>, <peterz@infradead.org>,
+        <srinivas.pandruvada@linux.intel.com>, <rientjes@google.com>,
+        <dovmurik@linux.ibm.com>, <tobin@ibm.com>, <bp@alien8.de>,
+        <michael.roth@amd.com>, <vbabka@suse.cz>, <kirill@shutemov.name>,
+        <ak@linux.intel.com>, <tony.luck@intel.com>, <marcorr@google.com>,
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        <alpergun@google.com>, <dgilbert@redhat.com>, <jarkko@kernel.org>
+Subject: [PATCH Part2 v6 34/49] KVM: SVM: Do not use long-lived GHCB map while setting scratch area
+Date:   Mon, 20 Jun 2022 23:10:26 +0000
+Message-ID: <c5125b9135bfbb0ddd113bdf4a1efd74e8c91c59.1655761627.git.ashish.kalra@amd.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1655761627.git.ashish.kalra@amd.com>
+References: <cover.1655761627.git.ashish.kalra@amd.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 08acb551-e3b5-411a-1edf-08da5312170e
+X-MS-TrafficTypeDiagnostic: BN8PR12MB3380:EE_
+X-Microsoft-Antispam-PRVS: <BN8PR12MB33805418BC3557781746BDEB8EB09@BN8PR12MB3380.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: dXh+Uj4QoD+bereIe9VZH4MUltN/lzUaxh3YqNXbXM8tTbVb+Gah3pY/mKt2GC6vLhBSGPqlAaRxnBZxL8N5zTLqyO/t/LoUBU5l7VgpJYN5fFyeFxSGx8Rv+EfJ/p7hQKMQD3gIBS2MyKS489KVIfL5GwjJUYtuxfNrQj5ySnHJOhAKYtIZxQYwKrmoBcjGQrE3qZoQZG/UvakVup4aV2MZdgfQfJPTmwYOILtIBJ/45MaUQsTKBNwgwu8vm2J3jMtAiUOKn2vmuAzDqcWbn0fxUuf5n4cpwHjLMzQzjfveubgP+ylVbMThGOi/Hf88jRL2XGNcpmBf3y2yi37duhNZS7OR6KNLjvxqy5ryyoeqzSi29SxhYC/lWsmum101dNGi8yzq8yVt7JgFnLjU+LHxN6NSGVKO6yDmn3SLIHTTnDkIKhCt5heRcf3TowhpgCdYwrYDYOLSKBdfPQ1fO8ah4QujkgVEb73XLJUwadaZZ/z5XXEiiMJ8HmdainGt/+ZnpVPmicnVMWIWf5ttxtlsXKtQTa8AbS56vdl6uxzCtX4jHPF/MJvFbKtAZGJdnSrFwIBNq18H1CuNbXW8NimNTwEkZuQiJo3noxoyidrZD8qGzCR7Zx5jb+ZTLTlORsQWZmgUq5NR5X+dX1p0Mrwhz0WnzXXFB0LdXdlXMxpqCF6K4vkSdWlLWSAmsCwsFARTfTtltdPggqmLc8ugINPjIxadA/3SWHxqEabZmf6q4OuzhcZJyBkTQHZhkLCgvoNKv0QF0SFqxag8o+j7tA==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(136003)(39860400002)(396003)(376002)(346002)(36840700001)(46966006)(40470700004)(186003)(41300700001)(26005)(36860700001)(2906002)(6666004)(40460700003)(36756003)(7696005)(478600001)(81166007)(82310400005)(8676002)(110136005)(54906003)(316002)(5660300002)(8936002)(7406005)(7416002)(47076005)(70206006)(40480700001)(70586007)(4326008)(356005)(16526019)(82740400003)(336012)(86362001)(83380400001)(2616005)(426003)(36900700001)(2101003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jun 2022 23:10:38.6727
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 08acb551-e3b5-411a-1edf-08da5312170e
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT051.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3380
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frederic Weisbecker <frederic@kernel.org>
+From: Brijesh Singh <brijesh.singh@amd.com>
 
-The RCU dynticks counter is going to be merged into the context tracking
-subsystem. Start with moving the idle extended quiescent states
-entrypoints to context tracking. For now those are dumb redirections to
-existing RCU calls.
+The setup_vmgexit_scratch() function may rely on a long-lived GHCB
+mapping if the GHCB shared buffer area was used for the scratch area.
+In preparation for eliminating the long-lived GHCB mapping, always
+allocate a buffer for the scratch area so it can be accessed without
+the GHCB mapping.
 
-Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Neeraj Upadhyay <quic_neeraju@quicinc.com>
-Cc: Uladzislau Rezki <uladzislau.rezki@sony.com>
-Cc: Joel Fernandes <joel@joelfernandes.org>
-Cc: Boqun Feng <boqun.feng@gmail.com>
-Cc: Nicolas Saenz Julienne <nsaenz@kernel.org>
-Cc: Marcelo Tosatti <mtosatti@redhat.com>
-Cc: Xiongfeng Wang <wangxiongfeng2@huawei.com>
-Cc: Yu Liao <liaoyu15@huawei.com>
-Cc: Phil Auld <pauld@redhat.com>
-Cc: Paul Gortmaker<paul.gortmaker@windriver.com>
-Cc: Alex Belits <abelits@marvell.com>
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+Signed-off-by: Brijesh Singh <brijesh.singh@amd.com>
 ---
- Documentation/RCU/stallwarn.rst   |  4 ++--
- arch/arm/mach-imx/cpuidle-imx6q.c |  5 +++--
- drivers/acpi/processor_idle.c     |  5 +++--
- drivers/cpuidle/cpuidle.c         |  9 +++++----
- include/linux/context_tracking.h  |  8 ++++++++
- include/linux/rcupdate.h          |  2 +-
- kernel/context_tracking.c         | 15 +++++++++++++++
- kernel/locking/lockdep.c          |  2 +-
- kernel/rcu/Kconfig                |  2 ++
- kernel/rcu/tree.c                 |  2 --
- kernel/rcu/update.c               |  2 +-
- kernel/sched/idle.c               | 10 +++++-----
- kernel/sched/sched.h              |  1 +
- kernel/time/Kconfig               |  6 ++++++
- 14 files changed, 53 insertions(+), 20 deletions(-)
+ arch/x86/kvm/svm/sev.c | 74 +++++++++++++++++++-----------------------
+ arch/x86/kvm/svm/svm.h |  3 +-
+ 2 files changed, 36 insertions(+), 41 deletions(-)
 
-diff --git a/Documentation/RCU/stallwarn.rst b/Documentation/RCU/stallwarn.rst
-index 794837eb519b9..b95bda7755fa9 100644
---- a/Documentation/RCU/stallwarn.rst
-+++ b/Documentation/RCU/stallwarn.rst
-@@ -97,8 +97,8 @@ warnings:
- 	which will include additional debugging information.
+diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
+index 91d3d24e60d2..01ea257e17d6 100644
+--- a/arch/x86/kvm/svm/sev.c
++++ b/arch/x86/kvm/svm/sev.c
+@@ -2820,8 +2820,7 @@ void sev_free_vcpu(struct kvm_vcpu *vcpu)
+ 	__free_page(virt_to_page(svm->sev_es.vmsa));
  
- -	A low-level kernel issue that either fails to invoke one of the
--	variants of rcu_user_enter(), rcu_user_exit(), rcu_idle_enter(),
--	rcu_idle_exit(), rcu_irq_enter(), or rcu_irq_exit() on the one
-+	variants of rcu_user_enter(), rcu_user_exit(), ct_idle_enter(),
-+	ct_idle_exit(), rcu_irq_enter(), or rcu_irq_exit() on the one
- 	hand, or that invokes one of them too many times on the other.
- 	Historically, the most frequent issue has been an omission
- 	of either irq_enter() or irq_exit(), which in turn invoke
-diff --git a/arch/arm/mach-imx/cpuidle-imx6q.c b/arch/arm/mach-imx/cpuidle-imx6q.c
-index 094337dc1bc7e..d086cbae09c37 100644
---- a/arch/arm/mach-imx/cpuidle-imx6q.c
-+++ b/arch/arm/mach-imx/cpuidle-imx6q.c
-@@ -3,6 +3,7 @@
-  * Copyright (C) 2012 Freescale Semiconductor, Inc.
-  */
+ skip_vmsa_free:
+-	if (svm->sev_es.ghcb_sa_free)
+-		kvfree(svm->sev_es.ghcb_sa);
++	kvfree(svm->sev_es.ghcb_sa);
+ }
  
-+#include <linux/context_tracking.h>
- #include <linux/cpuidle.h>
- #include <linux/module.h>
- #include <asm/cpuidle.h>
-@@ -24,9 +25,9 @@ static int imx6q_enter_wait(struct cpuidle_device *dev,
- 		imx6_set_lpm(WAIT_UNCLOCKED);
- 	raw_spin_unlock(&cpuidle_lock);
+ static void dump_ghcb(struct vcpu_svm *svm)
+@@ -2909,6 +2908,9 @@ static void sev_es_sync_from_ghcb(struct vcpu_svm *svm)
+ 	control->exit_info_1 = ghcb_get_sw_exit_info_1(ghcb);
+ 	control->exit_info_2 = ghcb_get_sw_exit_info_2(ghcb);
  
--	rcu_idle_enter();
-+	ct_idle_enter();
- 	cpu_do_idle();
--	rcu_idle_exit();
-+	ct_idle_exit();
++	/* Copy the GHCB scratch area GPA */
++	svm->sev_es.ghcb_sa_gpa = ghcb_get_sw_scratch(ghcb);
++
+ 	/* Clear the valid entries fields */
+ 	memset(ghcb->save.valid_bitmap, 0, sizeof(ghcb->save.valid_bitmap));
+ }
+@@ -3054,23 +3056,12 @@ void sev_es_unmap_ghcb(struct vcpu_svm *svm)
+ 	if (!svm->sev_es.ghcb)
+ 		return;
  
- 	raw_spin_lock(&cpuidle_lock);
- 	if (num_idle_cpus-- == num_online_cpus())
-diff --git a/drivers/acpi/processor_idle.c b/drivers/acpi/processor_idle.c
-index 6a5572a1a80cc..1401d193a2dfc 100644
---- a/drivers/acpi/processor_idle.c
-+++ b/drivers/acpi/processor_idle.c
-@@ -23,6 +23,7 @@
- #include <linux/minmax.h>
- #include <linux/perf_event.h>
- #include <acpi/processor.h>
-+#include <linux/context_tracking.h>
- 
- /*
-  * Include the apic definitions for x86 to have the APIC timer related defines
-@@ -647,11 +648,11 @@ static int acpi_idle_enter_bm(struct cpuidle_driver *drv,
- 		raw_spin_unlock(&c3_lock);
+-	if (svm->sev_es.ghcb_sa_free) {
+-		/*
+-		 * The scratch area lives outside the GHCB, so there is a
+-		 * buffer that, depending on the operation performed, may
+-		 * need to be synced, then freed.
+-		 */
+-		if (svm->sev_es.ghcb_sa_sync) {
+-			kvm_write_guest(svm->vcpu.kvm,
+-					ghcb_get_sw_scratch(svm->sev_es.ghcb),
+-					svm->sev_es.ghcb_sa,
+-					svm->sev_es.ghcb_sa_len);
+-			svm->sev_es.ghcb_sa_sync = false;
+-		}
+-
+-		kvfree(svm->sev_es.ghcb_sa);
+-		svm->sev_es.ghcb_sa = NULL;
+-		svm->sev_es.ghcb_sa_free = false;
++	 /* Sync the scratch buffer area. */
++	if (svm->sev_es.ghcb_sa_sync) {
++		kvm_write_guest(svm->vcpu.kvm,
++				ghcb_get_sw_scratch(svm->sev_es.ghcb),
++				svm->sev_es.ghcb_sa, svm->sev_es.ghcb_sa_len);
++		svm->sev_es.ghcb_sa_sync = false;
  	}
  
--	rcu_idle_enter();
-+	ct_idle_enter();
+ 	trace_kvm_vmgexit_exit(svm->vcpu.vcpu_id, svm->sev_es.ghcb);
+@@ -3111,9 +3102,8 @@ static int setup_vmgexit_scratch(struct vcpu_svm *svm, bool sync, u64 len)
+ 	struct ghcb *ghcb = svm->sev_es.ghcb;
+ 	u64 ghcb_scratch_beg, ghcb_scratch_end;
+ 	u64 scratch_gpa_beg, scratch_gpa_end;
+-	void *scratch_va;
  
- 	acpi_idle_do_entry(cx);
+-	scratch_gpa_beg = ghcb_get_sw_scratch(ghcb);
++	scratch_gpa_beg = svm->sev_es.ghcb_sa_gpa;
+ 	if (!scratch_gpa_beg) {
+ 		pr_err("vmgexit: scratch gpa not provided\n");
+ 		goto e_scratch;
+@@ -3143,9 +3133,6 @@ static int setup_vmgexit_scratch(struct vcpu_svm *svm, bool sync, u64 len)
+ 			       scratch_gpa_beg, scratch_gpa_end);
+ 			goto e_scratch;
+ 		}
+-
+-		scratch_va = (void *)svm->sev_es.ghcb;
+-		scratch_va += (scratch_gpa_beg - control->ghcb_gpa);
+ 	} else {
+ 		/*
+ 		 * The guest memory must be read into a kernel buffer, so
+@@ -3156,29 +3143,36 @@ static int setup_vmgexit_scratch(struct vcpu_svm *svm, bool sync, u64 len)
+ 			       len, GHCB_SCRATCH_AREA_LIMIT);
+ 			goto e_scratch;
+ 		}
+-		scratch_va = kvzalloc(len, GFP_KERNEL_ACCOUNT);
+-		if (!scratch_va)
+-			return -ENOMEM;
++	}
  
--	rcu_idle_exit();
-+	ct_idle_exit();
+-		if (kvm_read_guest(svm->vcpu.kvm, scratch_gpa_beg, scratch_va, len)) {
+-			/* Unable to copy scratch area from guest */
+-			pr_err("vmgexit: kvm_read_guest for scratch area failed\n");
++	if (svm->sev_es.ghcb_sa_alloc_len < len) {
++		void *scratch_va = kvzalloc(len, GFP_KERNEL_ACCOUNT);
  
- 	/* Re-enable bus master arbitration */
- 	if (dis_bm) {
-diff --git a/drivers/cpuidle/cpuidle.c b/drivers/cpuidle/cpuidle.c
-index ef2ea1b12cd84..62dd956025f33 100644
---- a/drivers/cpuidle/cpuidle.c
-+++ b/drivers/cpuidle/cpuidle.c
-@@ -23,6 +23,7 @@
- #include <linux/suspend.h>
- #include <linux/tick.h>
- #include <linux/mmu_context.h>
-+#include <linux/context_tracking.h>
- #include <trace/events/power.h>
+-			kvfree(scratch_va);
+-			return -EFAULT;
+-		}
++		if (!scratch_va)
++			return -ENOMEM;
  
- #include "cpuidle.h"
-@@ -150,12 +151,12 @@ static void enter_s2idle_proper(struct cpuidle_driver *drv,
- 	 */
- 	stop_critical_timings();
- 	if (!(target_state->flags & CPUIDLE_FLAG_RCU_IDLE))
--		rcu_idle_enter();
-+		ct_idle_enter();
- 	target_state->enter_s2idle(dev, drv, index);
- 	if (WARN_ON_ONCE(!irqs_disabled()))
- 		local_irq_disable();
- 	if (!(target_state->flags & CPUIDLE_FLAG_RCU_IDLE))
--		rcu_idle_exit();
-+		ct_idle_exit();
- 	tick_unfreeze();
- 	start_critical_timings();
- 
-@@ -233,10 +234,10 @@ int cpuidle_enter_state(struct cpuidle_device *dev, struct cpuidle_driver *drv,
- 
- 	stop_critical_timings();
- 	if (!(target_state->flags & CPUIDLE_FLAG_RCU_IDLE))
--		rcu_idle_enter();
-+		ct_idle_enter();
- 	entered_state = target_state->enter(dev, drv, index);
- 	if (!(target_state->flags & CPUIDLE_FLAG_RCU_IDLE))
--		rcu_idle_exit();
-+		ct_idle_exit();
- 	start_critical_timings();
- 
- 	sched_clock_idle_wakeup_event();
-diff --git a/include/linux/context_tracking.h b/include/linux/context_tracking.h
-index e35ae66b4794e..01abadb2f9930 100644
---- a/include/linux/context_tracking.h
-+++ b/include/linux/context_tracking.h
-@@ -119,4 +119,12 @@ extern void context_tracking_init(void);
- static inline void context_tracking_init(void) { }
- #endif /* CONFIG_CONTEXT_TRACKING_USER_FORCE */
- 
-+#ifdef CONFIG_CONTEXT_TRACKING_IDLE
-+extern void ct_idle_enter(void);
-+extern void ct_idle_exit(void);
-+#else
-+static inline void ct_idle_enter(void) { }
-+static inline void ct_idle_exit(void) { }
-+#endif /* !CONFIG_CONTEXT_TRACKING_IDLE */
-+
- #endif
-diff --git a/include/linux/rcupdate.h b/include/linux/rcupdate.h
-index 1a32036c918cd..6ebe754501c38 100644
---- a/include/linux/rcupdate.h
-+++ b/include/linux/rcupdate.h
-@@ -128,7 +128,7 @@ static inline void rcu_nocb_flush_deferred_wakeup(void) { }
-  * @a: Code that RCU needs to pay attention to.
-  *
-  * RCU read-side critical sections are forbidden in the inner idle loop,
-- * that is, between the rcu_idle_enter() and the rcu_idle_exit() -- RCU
-+ * that is, between the ct_idle_enter() and the ct_idle_exit() -- RCU
-  * will happily ignore any such read-side critical sections.  However,
-  * things like powertop need tracepoints in the inner idle loop.
-  *
-diff --git a/kernel/context_tracking.c b/kernel/context_tracking.c
-index a6997daf27d10..e9904f935f7f4 100644
---- a/kernel/context_tracking.c
-+++ b/kernel/context_tracking.c
-@@ -22,6 +22,21 @@
- #include <linux/export.h>
- #include <linux/kprobes.h>
- 
-+
-+#ifdef CONFIG_CONTEXT_TRACKING_IDLE
-+noinstr void ct_idle_enter(void)
-+{
-+	rcu_idle_enter();
-+}
-+EXPORT_SYMBOL_GPL(ct_idle_enter);
-+
-+void ct_idle_exit(void)
-+{
-+	rcu_idle_exit();
-+}
-+EXPORT_SYMBOL_GPL(ct_idle_exit);
-+#endif /* #ifdef CONFIG_CONTEXT_TRACKING_IDLE */
-+
- #ifdef CONFIG_CONTEXT_TRACKING_USER
- 
- #define CREATE_TRACE_POINTS
-diff --git a/kernel/locking/lockdep.c b/kernel/locking/lockdep.c
-index f06b91ca6482d..5ea690cb4f7af 100644
---- a/kernel/locking/lockdep.c
-+++ b/kernel/locking/lockdep.c
-@@ -6570,7 +6570,7 @@ void lockdep_rcu_suspicious(const char *file, const int line, const char *s)
- 
- 	/*
- 	 * If a CPU is in the RCU-free window in idle (ie: in the section
--	 * between rcu_idle_enter() and rcu_idle_exit(), then RCU
-+	 * between ct_idle_enter() and ct_idle_exit(), then RCU
- 	 * considers that CPU to be in an "extended quiescent state",
- 	 * which means that RCU will be completely ignoring that CPU.
- 	 * Therefore, rcu_read_lock() and friends have absolutely no
-diff --git a/kernel/rcu/Kconfig b/kernel/rcu/Kconfig
-index 1c630e573548d..3fa24e63d6f9b 100644
---- a/kernel/rcu/Kconfig
-+++ b/kernel/rcu/Kconfig
-@@ -8,6 +8,8 @@ menu "RCU Subsystem"
- config TREE_RCU
- 	bool
- 	default y if SMP
-+	# Dynticks-idle tracking
-+	select CONTEXT_TRACKING_IDLE
- 	help
- 	  This option selects the RCU implementation that is
- 	  designed for very large SMP system with hundreds or
-diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
-index 9a5edab5558c9..051fed0844b67 100644
---- a/kernel/rcu/tree.c
-+++ b/kernel/rcu/tree.c
-@@ -664,7 +664,6 @@ void noinstr rcu_idle_enter(void)
- 	WARN_ON_ONCE(IS_ENABLED(CONFIG_RCU_EQS_DEBUG) && !raw_irqs_disabled());
- 	rcu_eqs_enter(false);
- }
--EXPORT_SYMBOL_GPL(rcu_idle_enter);
- 
- #ifdef CONFIG_NO_HZ_FULL
- 
-@@ -904,7 +903,6 @@ void noinstr rcu_idle_exit(void)
- 	rcu_eqs_exit(false);
- 	raw_local_irq_restore(flags);
- }
--EXPORT_SYMBOL_GPL(rcu_idle_exit);
- 
- #ifdef CONFIG_NO_HZ_FULL
- /**
-diff --git a/kernel/rcu/update.c b/kernel/rcu/update.c
-index fc7fef5756064..147214b2cd68e 100644
---- a/kernel/rcu/update.c
-+++ b/kernel/rcu/update.c
-@@ -85,7 +85,7 @@ module_param(rcu_normal_after_boot, int, 0444);
-  * and while lockdep is disabled.
-  *
-  * Note that if the CPU is in the idle loop from an RCU point of view (ie:
-- * that we are in the section between rcu_idle_enter() and rcu_idle_exit())
-+ * that we are in the section between ct_idle_enter() and ct_idle_exit())
-  * then rcu_read_lock_held() sets ``*ret`` to false even if the CPU did an
-  * rcu_read_lock().  The reason for this is that RCU ignores CPUs that are
-  * in such a section, considering these as in extended quiescent state,
-diff --git a/kernel/sched/idle.c b/kernel/sched/idle.c
-index 328cccbee4441..f26ab2675f7d7 100644
---- a/kernel/sched/idle.c
-+++ b/kernel/sched/idle.c
-@@ -53,14 +53,14 @@ static noinline int __cpuidle cpu_idle_poll(void)
- {
- 	trace_cpu_idle(0, smp_processor_id());
- 	stop_critical_timings();
--	rcu_idle_enter();
-+	ct_idle_enter();
- 	local_irq_enable();
- 
- 	while (!tif_need_resched() &&
- 	       (cpu_idle_force_poll || tick_check_broadcast_expired()))
- 		cpu_relax();
- 
--	rcu_idle_exit();
-+	ct_idle_exit();
- 	start_critical_timings();
- 	trace_cpu_idle(PWR_EVENT_EXIT, smp_processor_id());
- 
-@@ -98,12 +98,12 @@ void __cpuidle default_idle_call(void)
- 		 *
- 		 * Trace IRQs enable here, then switch off RCU, and have
- 		 * arch_cpu_idle() use raw_local_irq_enable(). Note that
--		 * rcu_idle_enter() relies on lockdep IRQ state, so switch that
-+		 * ct_idle_enter() relies on lockdep IRQ state, so switch that
- 		 * last -- this is very similar to the entry code.
+ 		/*
+-		 * The scratch area is outside the GHCB. The operation will
+-		 * dictate whether the buffer needs to be synced before running
+-		 * the vCPU next time (i.e. a read was requested so the data
+-		 * must be written back to the guest memory).
++		 * Free the old scratch area and switch to using newly
++		 * allocated.
  		 */
- 		trace_hardirqs_on_prepare();
- 		lockdep_hardirqs_on_prepare();
--		rcu_idle_enter();
-+		ct_idle_enter();
- 		lockdep_hardirqs_on(_THIS_IP_);
- 
- 		arch_cpu_idle();
-@@ -116,7 +116,7 @@ void __cpuidle default_idle_call(void)
- 		 */
- 		raw_local_irq_disable();
- 		lockdep_hardirqs_off(_THIS_IP_);
--		rcu_idle_exit();
-+		ct_idle_exit();
- 		lockdep_hardirqs_on(_THIS_IP_);
- 		raw_local_irq_enable();
- 
-diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-index 47b89a0fc6e55..0cfe2d0af2947 100644
---- a/kernel/sched/sched.h
-+++ b/kernel/sched/sched.h
-@@ -27,6 +27,7 @@
- #include <linux/capability.h>
- #include <linux/cgroup_api.h>
- #include <linux/cgroup.h>
-+#include <linux/context_tracking.h>
- #include <linux/cpufreq.h>
- #include <linux/cpumask_api.h>
- #include <linux/ctype.h>
-diff --git a/kernel/time/Kconfig b/kernel/time/Kconfig
-index 41f99bcfe9e66..a41753be1a2bf 100644
---- a/kernel/time/Kconfig
-+++ b/kernel/time/Kconfig
-@@ -76,6 +76,12 @@ config TIME_KUNIT_TEST
- config CONTEXT_TRACKING
- 	bool
- 
-+config CONTEXT_TRACKING_IDLE
-+	bool
-+	select CONTEXT_TRACKING
-+	help
-+	  Tracks idle state on behalf of RCU.
+-		svm->sev_es.ghcb_sa_sync = sync;
+-		svm->sev_es.ghcb_sa_free = true;
++		kvfree(svm->sev_es.ghcb_sa);
 +
- if GENERIC_CLOCKEVENTS
- menu "Timers subsystem"
++		svm->sev_es.ghcb_sa_alloc_len = len;
++		svm->sev_es.ghcb_sa = scratch_va;
+ 	}
  
+-	svm->sev_es.ghcb_sa = scratch_va;
++	if (kvm_read_guest(svm->vcpu.kvm, scratch_gpa_beg, svm->sev_es.ghcb_sa, len)) {
++		/* Unable to copy scratch area from guest */
++		pr_err("vmgexit: kvm_read_guest for scratch area failed\n");
++		return -EFAULT;
++	}
++
++	/*
++	 * The operation will dictate whether the buffer needs to be synced
++	 * before running the vCPU next time (i.e. a read was requested so
++	 * the data must be written back to the guest memory).
++	 */
++	svm->sev_es.ghcb_sa_sync = sync;
+ 	svm->sev_es.ghcb_sa_len = len;
+ 
+ 	return 0;
+diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
+index 7782312a1cda..bd0db4d4a61e 100644
+--- a/arch/x86/kvm/svm/svm.h
++++ b/arch/x86/kvm/svm/svm.h
+@@ -197,8 +197,9 @@ struct vcpu_sev_es_state {
+ 	/* SEV-ES scratch area support */
+ 	void *ghcb_sa;
+ 	u32 ghcb_sa_len;
++	u64 ghcb_sa_gpa;
++	u32 ghcb_sa_alloc_len;
+ 	bool ghcb_sa_sync;
+-	bool ghcb_sa_free;
+ };
+ 
+ struct vcpu_svm {
 -- 
-2.31.1.189.g2e36527f23
+2.25.1
 
