@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B4BFC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:22:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECA7BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:22:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344498AbiFTNWZ (ORCPT
+        id S1344522AbiFTNW2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:22:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57718 "EHLO
+        Mon, 20 Jun 2022 09:22:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345221AbiFTNTp (ORCPT
+        with ESMTP id S1345569AbiFTNT5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:19:45 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49E3F20BF3;
-        Mon, 20 Jun 2022 06:08:14 -0700 (PDT)
+        Mon, 20 Jun 2022 09:19:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F9B721816;
+        Mon, 20 Jun 2022 06:08:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 51956CE138F;
-        Mon, 20 Jun 2022 13:05:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1278DC341CA;
-        Mon, 20 Jun 2022 13:05:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A146961575;
+        Mon, 20 Jun 2022 13:06:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99AAEC3411B;
+        Mon, 20 Jun 2022 13:06:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730357;
-        bh=z17Ga3WJ++lHqaiRT4zQgkK6L8bZErLb/32G5B5+XmY=;
+        s=korg; t=1655730364;
+        bh=NU3qTRxhOSm9BEl48FUAb0SbJSdTyjiHmkrSZuytGGs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IrEUybslz+t9paP26lOeTrIaRbbxJEmExFHfoxAQXzl46LiY1qxxErGKMKMbCw92e
-         1pTlcUozaOh/bCGPXCEIcb1v/x6LFA4eyiB6HIYfbphckgs8XhaFnFGvilRVE1ON3o
-         1c4WipGarFkp2eGfV857Xc+oAyaaduGLgqvhwoiQ=
+        b=YCPvOdbtS3RKOp7m66dmGxNc2PjFDzo9bUzrYvYFka0iE5HrK3bcMSlUbdKKWCeeT
+         H9oxah70AKME+m+9GMqZp9fO22DzOjvgPp4OIpnffoHkGQ8rbx4COPY0EEEiVo8gpE
+         qM3LQ0vslY/seKikrVcEroD1n3XA6TFTChyA0t5o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Helge Deller <deller@gmx.de>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Chengguang Xu <cgxu519@mykernel.net>,
         "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 027/106] scsi: mpt3sas: Fix out-of-bounds compiler warning
-Date:   Mon, 20 Jun 2022 14:50:46 +0200
-Message-Id: <20220620124725.189125923@linuxfoundation.org>
+Subject: [PATCH 5.15 029/106] scsi: pmcraid: Fix missing resource cleanup in error case
+Date:   Mon, 20 Jun 2022 14:50:48 +0200
+Message-Id: <20220620124725.247407769@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
 References: <20220620124724.380838401@linuxfoundation.org>
@@ -50,89 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: Chengguang Xu <cgxu519@mykernel.net>
 
-[ Upstream commit 120f1d95efb1cdb6fe023c84e38ba06d8f78cd03 ]
+[ Upstream commit ec1e8adcbdf661c57c395bca342945f4f815add7 ]
 
-I'm facing this warning when building for the parisc64 architecture:
+Fix missing resource cleanup (when '(--i) == 0') for error case in
+pmcraid_register_interrupt_handler().
 
-drivers/scsi/mpt3sas/mpt3sas_base.c: In function ‘_base_make_ioc_operational’:
-drivers/scsi/mpt3sas/mpt3sas_base.c:5396:40: warning: array subscript ‘Mpi2SasIOUnitPage1_t {aka struct _MPI2_CONFIG_PAGE_SASIOUNIT_1}[0]’ is partly outside array bounds of ‘unsigned char[20]’ [-Warray-bounds]
- 5396 |             (le16_to_cpu(sas_iounit_pg1->SASWideMaxQueueDepth)) ?
-drivers/scsi/mpt3sas/mpt3sas_base.c:5382:26: note: referencing an object of size 20 allocated by ‘kzalloc’
- 5382 |         sas_iounit_pg1 = kzalloc(sz, GFP_KERNEL);
-      |                          ^~~~~~~~~~~~~~~~~~~~~~~
-
-The problem is, that only 20 bytes are allocated with kmalloc(), which is
-sufficient to hold the bytes which are needed.  Nevertheless, gcc complains
-because the whole Mpi2SasIOUnitPage1_t struct is 32 bytes in size and thus
-doesn't fit into those 20 bytes.
-
-This patch simply allocates all 32 bytes (instead of 20) and thus avoids
-the warning. There is no functional change introduced by this patch.
-
-While touching the code I cleaned up to calculation of max_wideport_qd,
-max_narrowport_qd and max_sata_qd to make it easier readable.
-
-Test successfully tested on a HP C8000 PA-RISC workstation with 64-bit
-kernel.
-
-Link: https://lore.kernel.org/r/YpZ197iZdDZSCzrT@p100
-Signed-off-by: Helge Deller <deller@gmx.de>
+Link: https://lore.kernel.org/r/20220529153456.4183738-6-cgxu519@mykernel.net
+Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Chengguang Xu <cgxu519@mykernel.net>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/mpt3sas/mpt3sas_base.c | 23 ++++++++++++-----------
- 1 file changed, 12 insertions(+), 11 deletions(-)
+ drivers/scsi/pmcraid.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/mpt3sas/mpt3sas_base.c b/drivers/scsi/mpt3sas/mpt3sas_base.c
-index c38e68943205..fafa9fbf3b10 100644
---- a/drivers/scsi/mpt3sas/mpt3sas_base.c
-+++ b/drivers/scsi/mpt3sas/mpt3sas_base.c
-@@ -5381,6 +5381,7 @@ static int _base_assign_fw_reported_qd(struct MPT3SAS_ADAPTER *ioc)
- 	Mpi2ConfigReply_t mpi_reply;
- 	Mpi2SasIOUnitPage1_t *sas_iounit_pg1 = NULL;
- 	Mpi26PCIeIOUnitPage1_t pcie_iounit_pg1;
-+	u16 depth;
- 	int sz;
- 	int rc = 0;
+diff --git a/drivers/scsi/pmcraid.c b/drivers/scsi/pmcraid.c
+index bffd9a9349e7..9660c4f4de40 100644
+--- a/drivers/scsi/pmcraid.c
++++ b/drivers/scsi/pmcraid.c
+@@ -4526,7 +4526,7 @@ pmcraid_register_interrupt_handler(struct pmcraid_instance *pinstance)
+ 	return 0;
  
-@@ -5392,7 +5393,7 @@ static int _base_assign_fw_reported_qd(struct MPT3SAS_ADAPTER *ioc)
- 		goto out;
- 	/* sas iounit page 1 */
- 	sz = offsetof(Mpi2SasIOUnitPage1_t, PhyData);
--	sas_iounit_pg1 = kzalloc(sz, GFP_KERNEL);
-+	sas_iounit_pg1 = kzalloc(sizeof(Mpi2SasIOUnitPage1_t), GFP_KERNEL);
- 	if (!sas_iounit_pg1) {
- 		pr_err("%s: failure at %s:%d/%s()!\n",
- 		    ioc->name, __FILE__, __LINE__, __func__);
-@@ -5405,16 +5406,16 @@ static int _base_assign_fw_reported_qd(struct MPT3SAS_ADAPTER *ioc)
- 		    ioc->name, __FILE__, __LINE__, __func__);
- 		goto out;
- 	}
--	ioc->max_wideport_qd =
--	    (le16_to_cpu(sas_iounit_pg1->SASWideMaxQueueDepth)) ?
--	    le16_to_cpu(sas_iounit_pg1->SASWideMaxQueueDepth) :
--	    MPT3SAS_SAS_QUEUE_DEPTH;
--	ioc->max_narrowport_qd =
--	    (le16_to_cpu(sas_iounit_pg1->SASNarrowMaxQueueDepth)) ?
--	    le16_to_cpu(sas_iounit_pg1->SASNarrowMaxQueueDepth) :
--	    MPT3SAS_SAS_QUEUE_DEPTH;
--	ioc->max_sata_qd = (sas_iounit_pg1->SATAMaxQDepth) ?
--	    sas_iounit_pg1->SATAMaxQDepth : MPT3SAS_SATA_QUEUE_DEPTH;
-+
-+	depth = le16_to_cpu(sas_iounit_pg1->SASWideMaxQueueDepth);
-+	ioc->max_wideport_qd = (depth ? depth : MPT3SAS_SAS_QUEUE_DEPTH);
-+
-+	depth = le16_to_cpu(sas_iounit_pg1->SASNarrowMaxQueueDepth);
-+	ioc->max_narrowport_qd = (depth ? depth : MPT3SAS_SAS_QUEUE_DEPTH);
-+
-+	depth = sas_iounit_pg1->SATAMaxQDepth;
-+	ioc->max_sata_qd = (depth ? depth : MPT3SAS_SATA_QUEUE_DEPTH);
-+
- 	/* pcie iounit page 1 */
- 	rc = mpt3sas_config_get_pcie_iounit_pg1(ioc, &mpi_reply,
- 	    &pcie_iounit_pg1, sizeof(Mpi26PCIeIOUnitPage1_t));
+ out_unwind:
+-	while (--i > 0)
++	while (--i >= 0)
+ 		free_irq(pci_irq_vector(pdev, i), &pinstance->hrrq_vector[i]);
+ 	pci_free_irq_vectors(pdev);
+ 	return rc;
 -- 
 2.35.1
 
