@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F170CCA47C
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:04:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1745BCCA47C
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:04:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242814AbiFTNEN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:04:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47426 "EHLO
+        id S243757AbiFTNEQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:04:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244033AbiFTNCT (ORCPT
+        with ESMTP id S243749AbiFTNCH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:02:19 -0400
+        Mon, 20 Jun 2022 09:02:07 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB3E91902F;
-        Mon, 20 Jun 2022 05:57:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97C281A81E;
+        Mon, 20 Jun 2022 05:57:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 63819614EB;
-        Mon, 20 Jun 2022 12:57:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59688C3411B;
-        Mon, 20 Jun 2022 12:57:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B649B61530;
+        Mon, 20 Jun 2022 12:57:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B34F3C3411B;
+        Mon, 20 Jun 2022 12:57:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655729858;
-        bh=6Ww8T925plAXP9KXKy5Qsr7chuYGPuqQ/V8sF+0yUnE=;
+        s=korg; t=1655729846;
+        bh=MBDHAZqTXSUeB2c4k4h7JnpVLUY9pLughCQPv6UVC4U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u4ilDCj7ddwso7TeA2G79YvI1qsnVXiDhC3i6L10/hPRyNAO54pqUWyIHqdG864dM
-         x4oefS1ekeAs3tUK0QXHbzKrU+nb1GDjTwyuu4HeP1Av1fckH7W/6JyQzV//KfXA0i
-         0iFNyFmBZHvdT2v4e4AQHOCMwIhzQjYj5W0IlsO0=
+        b=ERyDAwjVu+O2KQoHng2Ynjz2OPswkcCOhJErjYNJUiKuxHJqhmPM36JSqIntNVIol
+         e5N9aJSeMyba3LtBC3sL7n/80Tj5bp2/Dlfj3jJVHKLWBXTDTr2EtBpmN/9DWlnhNq
+         E0e8UnMS0goXXWqH/NlV1heOMuTvWHr9Ac0EH9sU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 098/141] i2c: designware: Use standard optional ref clock implementation
-Date:   Mon, 20 Jun 2022 14:50:36 +0200
-Message-Id: <20220620124732.441524559@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 094/141] irqchip/gic-v3: Fix error handling in gic_populate_ppi_partitions
+Date:   Mon, 20 Jun 2022 14:50:32 +0200
+Message-Id: <20220620124732.324002525@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 References: <20220620124729.509745706@linuxfoundation.org>
@@ -51,78 +48,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 27071b5cbca59d8e8f8750c199a6cbf8c9799963 ]
+[ Upstream commit ec8401a429ffee34ccf38cebf3443f8d5ae6cb0d ]
 
-Even though the DW I2C controller reference clock source is requested by
-the method devm_clk_get() with non-optional clock requirement the way the
-clock handler is used afterwards has a pure optional clock semantic
-(though in some circumstances we can get a warning about the clock missing
-printed in the system console). There is no point in reimplementing that
-functionality seeing the kernel clock framework already supports the
-optional interface from scratch. Thus let's convert the platform driver to
-using it.
+of_get_child_by_name() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+When kcalloc fails, it missing of_node_put() and results in refcount
+leak. Fix this by goto out_put_node label.
 
-Note by providing this commit we get to fix two problems. The first one
-was introduced in commit c62ebb3d5f0d ("i2c: designware: Add support for
-an interface clock"). It causes not having the interface clock (pclk)
-enabled/disabled in case if the reference clock isn't provided. The second
-problem was first introduced in commit b33af11de236 ("i2c: designware: Do
-not require clock when SSCN and FFCN are provided"). Since that
-modification the deferred probe procedure has been unsupported in case if
-the interface clock isn't ready.
-
-Fixes: c62ebb3d5f0d ("i2c: designware: Add support for an interface clock")
-Fixes: b33af11de236 ("i2c: designware: Do not require clock when SSCN and FFCN are provided")
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Acked-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Fixes: 52085d3f2028 ("irqchip/gic-v3: Dynamically allocate PPI partition descriptors")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220601080930.31005-5-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-designware-common.c  |  3 ---
- drivers/i2c/busses/i2c-designware-platdrv.c | 13 +++++++++++--
- 2 files changed, 11 insertions(+), 5 deletions(-)
+ drivers/irqchip/irq-gic-v3.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/i2c/busses/i2c-designware-common.c b/drivers/i2c/busses/i2c-designware-common.c
-index 9f8574320eb2..b08e5bc2b64c 100644
---- a/drivers/i2c/busses/i2c-designware-common.c
-+++ b/drivers/i2c/busses/i2c-designware-common.c
-@@ -477,9 +477,6 @@ int i2c_dw_prepare_clk(struct dw_i2c_dev *dev, bool prepare)
- {
- 	int ret;
+diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
+index 1af2b50f36f3..7855a2d7499e 100644
+--- a/drivers/irqchip/irq-gic-v3.c
++++ b/drivers/irqchip/irq-gic-v3.c
+@@ -1922,7 +1922,7 @@ static void __init gic_populate_ppi_partitions(struct device_node *gic_node)
  
--	if (IS_ERR(dev->clk))
--		return PTR_ERR(dev->clk);
--
- 	if (prepare) {
- 		/* Optional interface clock */
- 		ret = clk_prepare_enable(dev->pclk);
-diff --git a/drivers/i2c/busses/i2c-designware-platdrv.c b/drivers/i2c/busses/i2c-designware-platdrv.c
-index 70ade5306e45..ba043b547393 100644
---- a/drivers/i2c/busses/i2c-designware-platdrv.c
-+++ b/drivers/i2c/busses/i2c-designware-platdrv.c
-@@ -320,8 +320,17 @@ static int dw_i2c_plat_probe(struct platform_device *pdev)
- 		goto exit_reset;
- 	}
+ 	gic_data.ppi_descs = kcalloc(gic_data.ppi_nr, sizeof(*gic_data.ppi_descs), GFP_KERNEL);
+ 	if (!gic_data.ppi_descs)
+-		return;
++		goto out_put_node;
  
--	dev->clk = devm_clk_get(&pdev->dev, NULL);
--	if (!i2c_dw_prepare_clk(dev, true)) {
-+	dev->clk = devm_clk_get_optional(&pdev->dev, NULL);
-+	if (IS_ERR(dev->clk)) {
-+		ret = PTR_ERR(dev->clk);
-+		goto exit_reset;
-+	}
-+
-+	ret = i2c_dw_prepare_clk(dev, true);
-+	if (ret)
-+		goto exit_reset;
-+
-+	if (dev->clk) {
- 		u64 clk_khz;
+ 	nr_parts = of_get_child_count(parts_node);
  
- 		dev->get_clk_rate_khz = i2c_dw_get_clk_rate_khz;
 -- 
 2.35.1
 
