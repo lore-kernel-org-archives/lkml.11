@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFE70C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:08:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5D0DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:10:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350906AbiFTOIU (ORCPT
+        id S1350923AbiFTOIW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:08:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45246 "EHLO
+        Mon, 20 Jun 2022 10:08:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352321AbiFTN4S (ORCPT
+        with ESMTP id S1350154AbiFTNxH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:56:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FE81B8D;
-        Mon, 20 Jun 2022 06:22:17 -0700 (PDT)
+        Mon, 20 Jun 2022 09:53:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3E3C2658;
+        Mon, 20 Jun 2022 06:19:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8DBC3B80E7D;
-        Mon, 20 Jun 2022 13:22:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1122C3411B;
-        Mon, 20 Jun 2022 13:22:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C37460D36;
+        Mon, 20 Jun 2022 13:19:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B1C6C3411B;
+        Mon, 20 Jun 2022 13:19:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731333;
-        bh=7t+s0ziznUjXdQS+S/uk61BpyecWr0vrFpg8O5OBnsc=;
+        s=korg; t=1655731171;
+        bh=IEW6otHSZl5sjqwgj0rxhyr3I+WHHe6fZzRTBA3r1TA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y9KALw2XphkRSWScQuf3gCIVkE8seho5/sdP2L+y5ooxNCcMrBmUgdksCkBbdHhlb
-         jLC9BGNKj7KjNcHkXwbsEeBthDMO2mwLYDWPIS1cN/Ji7SHcLBFMWzqj/hranGGN/W
-         qXOlsDZv3dWr9X2v0r2+guP91431jjJ18fcOtyCU=
+        b=fRoVpmyzQk1GrRUG0idVBZEvRl17AvDWpiAg5h8JvnQliXvF0D+gcbLr2Oq/fQM8t
+         woxtfI6FIhSvJl45aaz3x2QybSzrNGd3/MFRur4AQ5D3MoBKqpbuWraO4BAQzEQXj0
+         w8ZhuSnXvJxm9hAhtunc4VksV8N4JW27yxLlECv4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        Miaoqian Lin <linmq006@gmail.com>
-Subject: [PATCH 5.4 225/240] usb: gadget: lpc32xx_udc: Fix refcount leak in lpc32xx_udc_probe
-Date:   Mon, 20 Jun 2022 14:52:06 +0200
-Message-Id: <20220620124745.480702063@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+2e635807decef724a1fa@syzkaller.appspotmail.com,
+        Stephan Mueller <smueller@chronox.de>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.4 176/240] crypto: drbg - always try to free Jitter RNG instance
+Date:   Mon, 20 Jun 2022 14:51:17 +0200
+Message-Id: <20220620124744.095037148@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -49,33 +52,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: "Stephan Müller" <smueller@chronox.de>
 
-commit 4757c9ade34178b351580133771f510b5ffcf9c8 upstream.
+commit 819966c06b759022e9932f328284314d9272b9f3 upstream.
 
-of_parse_phandle() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
-of_node_put() will check NULL pointer.
+The Jitter RNG is unconditionally allocated as a seed source follwoing
+the patch 97f2650e5040. Thus, the instance must always be deallocated.
 
-Fixes: 24a28e428351 ("USB: gadget driver for LPC32xx")
-Cc: stable <stable@kernel.org>
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220603140246.64529-1-linmq006@gmail.com
+Reported-by: syzbot+2e635807decef724a1fa@syzkaller.appspotmail.com
+Fixes: 97f2650e5040 ("crypto: drbg - always seeded with SP800-90B ...")
+Signed-off-by: Stephan Mueller <smueller@chronox.de>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/gadget/udc/lpc32xx_udc.c |    1 +
- 1 file changed, 1 insertion(+)
+ crypto/drbg.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/drivers/usb/gadget/udc/lpc32xx_udc.c
-+++ b/drivers/usb/gadget/udc/lpc32xx_udc.c
-@@ -3027,6 +3027,7 @@ static int lpc32xx_udc_probe(struct plat
+--- a/crypto/drbg.c
++++ b/crypto/drbg.c
+@@ -1647,10 +1647,12 @@ static int drbg_uninstantiate(struct drb
+ 	if (drbg->random_ready.notifier_call) {
+ 		unregister_random_ready_notifier(&drbg->random_ready);
+ 		cancel_work_sync(&drbg->seed_work);
+-		crypto_free_rng(drbg->jent);
+-		drbg->jent = NULL;
  	}
  
- 	udc->isp1301_i2c_client = isp1301_get_client(isp1301_node);
-+	of_node_put(isp1301_node);
- 	if (!udc->isp1301_i2c_client) {
- 		return -EPROBE_DEFER;
- 	}
++	if (!IS_ERR_OR_NULL(drbg->jent))
++		crypto_free_rng(drbg->jent);
++	drbg->jent = NULL;
++
+ 	if (drbg->d_ops)
+ 		drbg->d_ops->crypto_fini(drbg);
+ 	drbg_dealloc_state(drbg);
 
 
