@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E78ACCA481
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:29:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EEDCC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:30:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344435AbiFTN34 (ORCPT
+        id S1345171AbiFTNaD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:29:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47514 "EHLO
+        Mon, 20 Jun 2022 09:30:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344412AbiFTN0a (ORCPT
+        with ESMTP id S1344663AbiFTN0c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:26:30 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0E181C12D;
-        Mon, 20 Jun 2022 06:10:46 -0700 (PDT)
+        Mon, 20 Jun 2022 09:26:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D6F51C13F;
+        Mon, 20 Jun 2022 06:10:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0255CCE13A2;
-        Mon, 20 Jun 2022 13:10:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC94AC3411B;
-        Mon, 20 Jun 2022 13:10:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DF4D0B811BD;
+        Mon, 20 Jun 2022 13:09:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00909C3411B;
+        Mon, 20 Jun 2022 13:09:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730636;
-        bh=ihYjR+K6C4Ij3E7dcukP0z6SrLrtMKHF1u6OB+m00Wc=;
+        s=korg; t=1655730567;
+        bh=FQ0+lo00rXa4CTP60ZRh+3Zh+8ZU8gU6od9aO1oWjrU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YVnvbNyHbR+DzN3Y8FWwxVjMsq/ncbIldKQTMIp8rDw1fBZdxl4w5/F3JM7aP7/r+
-         nYRtBy2Wy6Zr6VpN93St/lGWjexmuWaW+Qlag2Ha4Q5Q5pe/3YWpyEYgljAvV/IM7A
-         PaxCAbDwW4Zvn87+QP8XkoghRGSMgYgD0c8mZsAA=
+        b=S2SM5RnjuFiUMeHnAIrAviTB6MRFU16S6Sd7A674UwEcVUtzA5qmrFmVq1boRimas
+         s6hlTNVvVGhQFblfJVe1Rk+C0iWmyYzmczP0ZOxeX+jJ5Up2oihRedOAQgwvUGTdQk
+         K7tK5aIBSKG7xQjK08dIobnGP5WLKDZ6TUGNqZyA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tadeusz Struk <tadeusz.struk@linaro.org>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Subject: [PATCH 5.4 001/240] 9p: missing chunk of "fs/9p: Dont update file type when updating file attributes"
-Date:   Mon, 20 Jun 2022 14:48:22 +0200
-Message-Id: <20220620124737.844728943@linuxfoundation.org>
+        stable@vger.kernel.org, Robert Eckelmann <longnoserob@gmail.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5.15 086/106] USB: serial: io_ti: add Agilent E5805A support
+Date:   Mon, 20 Jun 2022 14:51:45 +0200
+Message-Id: <20220620124726.935431301@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
-References: <20220620124737.799371052@linuxfoundation.org>
+In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
+References: <20220620124724.380838401@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -51,41 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Al Viro <viro@zeniv.linux.org.uk>
+From: Robert Eckelmann <longnoserob@gmail.com>
 
-commit b577d0cd2104fdfcf0ded3707540a12be8ddd8b0 upstream.
+commit 908e698f2149c3d6a67d9ae15c75545a3f392559 upstream.
 
-In commit 45089142b149 Aneesh had missed one (admittedly, very unlikely
-to hit) case in v9fs_stat2inode_dotl().  However, the same considerations
-apply there as well - we have no business whatsoever to change ->i_rdev
-or the file type.
+Add support for Agilent E5805A (rebranded ION Edgeport/4) to io_ti.
 
-Cc: Tadeusz Struk <tadeusz.struk@linaro.org>
-Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Robert Eckelmann <longnoserob@gmail.com>
+Link: https://lore.kernel.org/r/20220521230808.30931eca@octoberrain
+Cc: stable@vger.kernel.org
+Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/9p/vfs_inode_dotl.c |   10 +++-------
- 1 file changed, 3 insertions(+), 7 deletions(-)
+ drivers/usb/serial/io_ti.c      |    2 ++
+ drivers/usb/serial/io_usbvend.h |    1 +
+ 2 files changed, 3 insertions(+)
 
---- a/fs/9p/vfs_inode_dotl.c
-+++ b/fs/9p/vfs_inode_dotl.c
-@@ -641,14 +641,10 @@ v9fs_stat2inode_dotl(struct p9_stat_dotl
- 		if (stat->st_result_mask & P9_STATS_NLINK)
- 			set_nlink(inode, stat->st_nlink);
- 		if (stat->st_result_mask & P9_STATS_MODE) {
--			inode->i_mode = stat->st_mode;
--			if ((S_ISBLK(inode->i_mode)) ||
--						(S_ISCHR(inode->i_mode)))
--				init_special_inode(inode, inode->i_mode,
--								inode->i_rdev);
-+			mode = stat->st_mode & S_IALLUGO;
-+			mode |= inode->i_mode & ~S_IALLUGO;
-+			inode->i_mode = mode;
- 		}
--		if (stat->st_result_mask & P9_STATS_RDEV)
--			inode->i_rdev = new_decode_dev(stat->st_rdev);
- 		if (!(flags & V9FS_STAT2INODE_KEEP_ISIZE) &&
- 		    stat->st_result_mask & P9_STATS_SIZE)
- 			v9fs_i_size_write(inode, stat->st_size);
+--- a/drivers/usb/serial/io_ti.c
++++ b/drivers/usb/serial/io_ti.c
+@@ -166,6 +166,7 @@ static const struct usb_device_id edgepo
+ 	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_8S) },
+ 	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_416) },
+ 	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_416B) },
++	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_E5805A) },
+ 	{ }
+ };
+ 
+@@ -204,6 +205,7 @@ static const struct usb_device_id id_tab
+ 	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_8S) },
+ 	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_416) },
+ 	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_416B) },
++	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_E5805A) },
+ 	{ }
+ };
+ 
+--- a/drivers/usb/serial/io_usbvend.h
++++ b/drivers/usb/serial/io_usbvend.h
+@@ -212,6 +212,7 @@
+ //
+ // Definitions for other product IDs
+ #define ION_DEVICE_ID_MT4X56USB			0x1403	// OEM device
++#define ION_DEVICE_ID_E5805A			0x1A01  // OEM device (rebranded Edgeport/4)
+ 
+ 
+ #define	GENERATION_ID_FROM_USB_PRODUCT_ID(ProductId)				\
 
 
