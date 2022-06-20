@@ -2,139 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A50EAC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 11:56:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D6D1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 11:56:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241787AbiFTL4Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 07:56:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41076 "EHLO
+        id S241984AbiFTL4k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 07:56:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231272AbiFTL4O (ORCPT
+        with ESMTP id S231272AbiFTL4h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 07:56:14 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B1D926DC
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 04:56:13 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1o3G0j-0008Lu-35; Mon, 20 Jun 2022 13:56:05 +0200
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1o3G0f-001dBj-Kw; Mon, 20 Jun 2022 13:56:03 +0200
-Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1o3G0g-008XiD-Fg; Mon, 20 Jun 2022 13:56:02 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v4 1/1] net: phy: dp83td510: add SQI support
-Date:   Mon, 20 Jun 2022 13:56:01 +0200
-Message-Id: <20220620115601.2035452-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
+        Mon, 20 Jun 2022 07:56:37 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2865617E03;
+        Mon, 20 Jun 2022 04:56:37 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id DA00A21B73;
+        Mon, 20 Jun 2022 11:56:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1655726195; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+wkpLj1K+yPjMRJxi8utxl0ln69LqNl6bk/oJMw1gi4=;
+        b=g5wKTYdSVahRen1Xx4ZVdANCmeFmjoi1EBy2+EXhQj5rhUeouBHw0KBx+D3YR3oHBfcIyj
+        28t+BypWrSMddQIJPVhLC3xnTIm/70iAMX4vIpK2Lc6JiiGwBE/wWM8fGcKY6LOUIe1RrX
+        26nadAcchEElh1vnT54ytH/5QTS8iZo=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1655726195;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+wkpLj1K+yPjMRJxi8utxl0ln69LqNl6bk/oJMw1gi4=;
+        b=8OP+PeX7Ag28Hlzm51S2jXkO8equavYlE3ZtDEYXl+ptjPVEPWhEB31PHL8TPGL1WXTi0Z
+        PjfrpXODVaW6/RDw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id C7FD7134CA;
+        Mon, 20 Jun 2022 11:56:35 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 0lWkMHNgsGIKEQAAMHmgww
+        (envelope-from <hare@suse.de>); Mon, 20 Jun 2022 11:56:35 +0000
+Message-ID: <22bedb25-63ee-3106-f37d-b4ef19ac9e6f@suse.de>
+Date:   Mon, 20 Jun 2022 13:56:34 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Content-Language: en-US
+To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Christoph Hellwig <hch@lst.de>
+Cc:     John Garry <john.garry@huawei.com>,
+        Bart Van Assche <bvanassche@acm.org>, axboe@kernel.dk,
+        jejb@linux.ibm.com, martin.petersen@oracle.com, brking@us.ibm.com,
+        linux-block@vger.kernel.org, linux-ide@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
+        chenxiang66@hisilicon.com
+References: <1654770559-101375-4-git-send-email-john.garry@huawei.com>
+ <b4a0ede5-95a3-4388-e808-7627b5484d01@opensource.wdc.com>
+ <9e89360d-3325-92af-0436-b34df748f3e2@acm.org>
+ <e36bba7e-d78d-27b4-a0e2-9d921bc82f5d@opensource.wdc.com>
+ <3a27b6ff-e495-8f11-6925-1487c9d14fa9@huawei.com>
+ <c702f06e-b7da-92be-3c4f-5dd405600235@opensource.wdc.com>
+ <ecfb0694-21b8-55b4-c9b8-5e738f59ce8d@huawei.com>
+ <98fa010d-3555-a82b-e960-f47aeeb38151@opensource.wdc.com>
+ <7b046321-fdb3-33f0-94a0-78a25cbbe02e@suse.de>
+ <9de5ed1b-e874-28ac-0532-cd5420892064@opensource.wdc.com>
+ <20220620090543.GA13643@lst.de>
+ <41fa0f12-cdcf-f2c4-7366-1abd04312f1f@opensource.wdc.com>
+From:   Hannes Reinecke <hare@suse.de>
+Subject: Re: [PATCH RFC v2 03/18] scsi: core: Implement reserved command
+ handling
+In-Reply-To: <41fa0f12-cdcf-f2c4-7366-1abd04312f1f@opensource.wdc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert MSE (mean-square error) values to SNR and split it SQI (Signal Quality
-Indicator) ranges. The used ranges are taken from "OPEN ALLIANCE - Advanced
-diagnostic features for 100BASE-T1 automotive Ethernet PHYs"
-specification.
+On 6/20/22 13:24, Damien Le Moal wrote:
+> On 6/20/22 18:05, Christoph Hellwig wrote:
+>> On Mon, Jun 20, 2022 at 06:02:30PM +0900, Damien Le Moal wrote:
+>>> So reserving a tag/req to be able to do NCQ at the cost of max qd being 31
+>>> works for that. We could keep max qd at 32 by creating one more "fake" tag
+>>> and having a request for it, that is, having the fake tag visible to the
+>>> block layer as a reserved tag, as John's series is doing, but for the
+>>> reserved tags, we actually need to use an effective tag (qc->hw_tag) when
+>>> issuing the commands. And for that, we can reuse the tag of one of the
+>>> failed commands.
+>>
+>> Take a look at the magic flush request in blk-flush.c, which is
+>> preallocated but borrows a tag from the request that wants a pre- or
+>> post-flush.  The logic is rather ugly, but maybe it might actually
+>> become cleaner by generalizing it a bit.
+> 
+> Thanks. Will check.
+> I am also looking at scsi_unjam_host() and scsi_eh_get_sense(). These
+> reuse a scsi command to do eh operations. So I could use that too, modulo
+> making it work outside of eh context to keep the command flow intact.
+> 
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
----
- drivers/net/phy/dp83td510.c | 49 +++++++++++++++++++++++++++++++++++++
- 1 file changed, 49 insertions(+)
+Tsk. I was hoping to be able to remove it (especially 
+scsi_eh_get_sense()), but looks as if we actually do need it.
+But it might be not a bad idea to have scsi_eh_get_sense() to run 
+independent on the SCSI EH stuff; returning with a sense code is not 
+necessary an error, so there are reasons for not always invoking SCSI EH.
 
-diff --git a/drivers/net/phy/dp83td510.c b/drivers/net/phy/dp83td510.c
-index 1ae792b0daaa..3cd9a77f9532 100644
---- a/drivers/net/phy/dp83td510.c
-+++ b/drivers/net/phy/dp83td510.c
-@@ -27,6 +27,27 @@
- #define DP83TD510E_AN_STAT_1			0x60c
- #define DP83TD510E_MASTER_SLAVE_RESOL_FAIL	BIT(15)
- 
-+#define DP83TD510E_MSE_DETECT			0xa85
-+
-+#define DP83TD510_SQI_MAX	7
-+
-+/* Register values are converted to SNR(dB) as suggested by
-+ * "Application Report - DP83TD510E Cable Diagnostics Toolkit":
-+ * SNR(dB) = -10 * log10 (VAL/2^17) - 1.76 dB.
-+ * SQI ranges are implemented according to "OPEN ALLIANCE - Advanced diagnostic
-+ * features for 100BASE-T1 automotive Ethernet PHYs"
-+ */
-+static const u16 dp83td510_mse_sqi_map[] = {
-+	0x0569, /* < 18dB */
-+	0x044c, /* 18dB =< SNR < 19dB */
-+	0x0369, /* 19dB =< SNR < 20dB */
-+	0x02b6, /* 20dB =< SNR < 21dB */
-+	0x0227, /* 21dB =< SNR < 22dB */
-+	0x01b6, /* 22dB =< SNR < 23dB */
-+	0x015b, /* 23dB =< SNR < 24dB */
-+	0x0000  /* 24dB =< SNR */
-+};
-+
- static int dp83td510_config_intr(struct phy_device *phydev)
- {
- 	int ret;
-@@ -164,6 +185,32 @@ static int dp83td510_config_aneg(struct phy_device *phydev)
- 	return genphy_c45_check_and_restart_aneg(phydev, changed);
- }
- 
-+static int dp83td510_get_sqi(struct phy_device *phydev)
-+{
-+	int sqi, ret;
-+	u16 mse_val;
-+
-+	if (!phydev->link)
-+		return 0;
-+
-+	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, DP83TD510E_MSE_DETECT);
-+	if (ret < 0)
-+		return ret;
-+
-+	mse_val = 0xFFFF & ret;
-+	for (sqi = 0; sqi < ARRAY_SIZE(dp83td510_mse_sqi_map); sqi++) {
-+		if (mse_val >= dp83td510_mse_sqi_map[sqi])
-+			return sqi;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static int dp83td510_get_sqi_max(struct phy_device *phydev)
-+{
-+	return DP83TD510_SQI_MAX;
-+}
-+
- static int dp83td510_get_features(struct phy_device *phydev)
- {
- 	/* This PHY can't respond on MDIO bus if no RMII clock is enabled.
-@@ -192,6 +239,8 @@ static struct phy_driver dp83td510_driver[] = {
- 	.get_features	= dp83td510_get_features,
- 	.config_intr	= dp83td510_config_intr,
- 	.handle_interrupt = dp83td510_handle_interrupt,
-+	.get_sqi	= dp83td510_get_sqi,
-+	.get_sqi_max	= dp83td510_get_sqi_max,
- 
- 	.suspend	= genphy_suspend,
- 	.resume		= genphy_resume,
+Cheers,
+
+Hannes
 -- 
-2.30.2
-
+Dr. Hannes Reinecke		           Kernel Storage Architect
+hare@suse.de			                  +49 911 74053 688
+SUSE Software Solutions Germany GmbH, Maxfeldstr. 5, 90409 Nürnberg
+HRB 36809 (AG Nürnberg), GF: Felix Imendörffer
