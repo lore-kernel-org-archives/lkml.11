@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EFEFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:22:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23993C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:22:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344410AbiFTNWI (ORCPT
+        id S1344456AbiFTNWO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:22:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58274 "EHLO
+        Mon, 20 Jun 2022 09:22:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344839AbiFTNTc (ORCPT
+        with ESMTP id S1344983AbiFTNTh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:19:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 132771B799;
+        Mon, 20 Jun 2022 09:19:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B29D21B780;
         Mon, 20 Jun 2022 06:08:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F7FA61535;
-        Mon, 20 Jun 2022 13:06:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7330FC3411B;
-        Mon, 20 Jun 2022 13:06:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 90F39B811D8;
+        Mon, 20 Jun 2022 13:08:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BBB0C3411B;
+        Mon, 20 Jun 2022 13:08:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730382;
-        bh=bk35GxZMSvgCi98hPj3XUWJh2GZvRMQ+zORPkX2Ju3s=;
+        s=korg; t=1655730488;
+        bh=AKwpJEEE7pLrDoVknv5eywu/fVXwKCDL907a8dWzw1w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lLwXYUROnag38GrYyuNFt0Qu4IS9dzl9zu/m0qNnFvCalFXuRsFvDiuccvaGzfXtv
-         Da1mWnuTrOh5vls6RHsTeo7ixcGHyW1HBjrIQ7fsrgPxMuHgg0tZENLYt8QJTtkF4p
-         Ozzh2osDysjTfj/V9nC4+U6nhBVql+oIS1NqOvrY=
+        b=SUFxWT+ZAKkVXUTdxduERLq3mcaXDKscDc8wmKC3RBYUeyeMWTVC72/x5AyfwikpX
+         UgB71dJHLTMOl1QYW7ul315jIZ3wgVhnEUR8dcVpQ0qJbnMfzDk6OBfyFwKWbuE5qI
+         eM8z6xpr6kp0LGrc83qgWQYfCgpUYHdzSTfjHnr0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Lin <ctlin0@nuvoton.com>,
-        John Hsu <kchsu0@nuvoton.com>, Seven Li <wtli@nuvoton.com>,
-        Hui Wang <hui.wang@canonical.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 006/106] ASoC: nau8822: Add operation for internal PLL off and on
-Date:   Mon, 20 Jun 2022 14:50:25 +0200
-Message-Id: <20220620124724.575094372@linuxfoundation.org>
+Subject: [PATCH 5.15 036/106] mellanox: mlx5: avoid uninitialized variable warning with gcc-12
+Date:   Mon, 20 Jun 2022 14:50:55 +0200
+Message-Id: <20220620124725.456928916@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
 References: <20220620124724.380838401@linuxfoundation.org>
@@ -52,70 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hui Wang <hui.wang@canonical.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-[ Upstream commit aeca8a3295022bcec46697f16e098140423d8463 ]
+[ Upstream commit 842c3b3ddc5f4d17275edbaa09e23d712bf8b915 ]
 
-We tried to enable the audio on an imx6sx EVB with the codec nau8822,
-after setting the internal PLL fractional parameters, the audio still
-couldn't work and the there was no sdma irq at all.
+gcc-12 started warning about 'tracker' being used uninitialized:
 
-After checking with the section "8.1.1 Phase Locked Loop (PLL) Design
-Example" of "NAU88C22 Datasheet Rev 0.6", we found we need to
-turn off the PLL before programming fractional parameters and turn on
-the PLL after programming.
+  drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c: In function ‘mlx5_do_bond’:
+  drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c:786:28: warning: ‘tracker’ is used uninitialized [-Wuninitialized]
+    786 |         struct lag_tracker tracker;
+        |                            ^~~~~~~
 
-After this change, the audio driver could record and play sound and
-the sdma's irq is triggered when playing or recording.
+which seems to be because it doesn't track how the use (and
+initialization) is bound by the 'do_bond' flag.
 
-Cc: David Lin <ctlin0@nuvoton.com>
-Cc: John Hsu <kchsu0@nuvoton.com>
-Cc: Seven Li <wtli@nuvoton.com>
-Signed-off-by: Hui Wang <hui.wang@canonical.com>
-Link: https://lore.kernel.org/r/20220530040151.95221-2-hui.wang@canonical.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+But admittedly that 'do_bond' usage is fairly complicated, and involves
+passing it around as an argument to helper functions, so it's somewhat
+understandable that gcc doesn't see how that all works.
+
+This function could be rewritten to make the use of that tracker
+variable more obviously safe, but for now I'm just adding the forced
+initialization of it.
+
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/nau8822.c | 4 ++++
- sound/soc/codecs/nau8822.h | 3 +++
- 2 files changed, 7 insertions(+)
+ drivers/net/ethernet/mellanox/mlx5/core/lag.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/nau8822.c b/sound/soc/codecs/nau8822.c
-index 58123390c7a3..b436e532993d 100644
---- a/sound/soc/codecs/nau8822.c
-+++ b/sound/soc/codecs/nau8822.c
-@@ -740,6 +740,8 @@ static int nau8822_set_pll(struct snd_soc_dai *dai, int pll_id, int source,
- 		pll_param->pll_int, pll_param->pll_frac,
- 		pll_param->mclk_scaler, pll_param->pre_factor);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag.c b/drivers/net/ethernet/mellanox/mlx5/core/lag.c
+index 57d86d47ec2a..0fbb239559f3 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lag.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lag.c
+@@ -435,7 +435,7 @@ static void mlx5_do_bond(struct mlx5_lag *ldev)
+ {
+ 	struct mlx5_core_dev *dev0 = ldev->pf[MLX5_LAG_P1].dev;
+ 	struct mlx5_core_dev *dev1 = ldev->pf[MLX5_LAG_P2].dev;
+-	struct lag_tracker tracker;
++	struct lag_tracker tracker = { };
+ 	bool do_bond, roce_lag;
+ 	int err;
  
-+	snd_soc_component_update_bits(component,
-+		NAU8822_REG_POWER_MANAGEMENT_1, NAU8822_PLL_EN_MASK, NAU8822_PLL_OFF);
- 	snd_soc_component_update_bits(component,
- 		NAU8822_REG_PLL_N, NAU8822_PLLMCLK_DIV2 | NAU8822_PLLN_MASK,
- 		(pll_param->pre_factor ? NAU8822_PLLMCLK_DIV2 : 0) |
-@@ -757,6 +759,8 @@ static int nau8822_set_pll(struct snd_soc_dai *dai, int pll_id, int source,
- 		pll_param->mclk_scaler << NAU8822_MCLKSEL_SFT);
- 	snd_soc_component_update_bits(component,
- 		NAU8822_REG_CLOCKING, NAU8822_CLKM_MASK, NAU8822_CLKM_PLL);
-+	snd_soc_component_update_bits(component,
-+		NAU8822_REG_POWER_MANAGEMENT_1, NAU8822_PLL_EN_MASK, NAU8822_PLL_ON);
- 
- 	return 0;
- }
-diff --git a/sound/soc/codecs/nau8822.h b/sound/soc/codecs/nau8822.h
-index 489191ff187e..b45d42c15de6 100644
---- a/sound/soc/codecs/nau8822.h
-+++ b/sound/soc/codecs/nau8822.h
-@@ -90,6 +90,9 @@
- #define NAU8822_REFIMP_3K			0x3
- #define NAU8822_IOBUF_EN			(0x1 << 2)
- #define NAU8822_ABIAS_EN			(0x1 << 3)
-+#define NAU8822_PLL_EN_MASK			(0x1 << 5)
-+#define NAU8822_PLL_ON				(0x1 << 5)
-+#define NAU8822_PLL_OFF				(0x0 << 5)
- 
- /* NAU8822_REG_AUDIO_INTERFACE (0x4) */
- #define NAU8822_AIFMT_MASK			(0x3 << 3)
 -- 
 2.35.1
 
