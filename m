@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E266CCA488
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C799CCA486
 	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:10:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351343AbiFTOJP (ORCPT
+        id S1351296AbiFTOJN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:09:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45210 "EHLO
+        Mon, 20 Jun 2022 10:09:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351375AbiFTNym (ORCPT
+        with ESMTP id S1352775AbiFTN5D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:54:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DB0B326CC;
-        Mon, 20 Jun 2022 06:20:58 -0700 (PDT)
+        Mon, 20 Jun 2022 09:57:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A9ED13F60;
+        Mon, 20 Jun 2022 06:22:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8A8A0B811A9;
-        Mon, 20 Jun 2022 13:20:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4E17C341C0;
-        Mon, 20 Jun 2022 13:20:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1AF666129B;
+        Mon, 20 Jun 2022 13:22:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE47EC3411B;
+        Mon, 20 Jun 2022 13:22:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731256;
-        bh=7JqZO4gBFyYGQRpAT08nVxEHFtLtSadDB5BiDeLTUY0=;
+        s=korg; t=1655731355;
+        bh=flmuJNQMN5SPnQ7kfBxwfFnmeOGff5nDkDe3k7i3V4s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=me0/BB5XquQAKfWZkcYQJAnWKrs4J9UTEx3B50ABcgVNHXtSvbjOkoOCsj+V2B113
-         cjh4LX5vvA7uQ+XIpxjNnEPc9SDm/fxkQcENrwd41EhaXYE0N1Hw6TmWmDf7l1vV1Q
-         ivfPVhiZY4DiVHTUkk9ulTc+gEssmCAuwQVB6W3c=
+        b=LYmBm4TUyOkhhaCrB3NgEnexVJkVFHQwF4WmCaNVDyXoV/xSlDAV0OuWRvEK1kvUC
+         F49AkhrteAXQFQlaDXyS87CVBojFNQDt3YEw22F3eyDnqUnKbDdjIQh3A78rxNsd3l
+         NsdnVwdmr0XKa1DPvS/WaTe+2O2GWSQjcMgBqP/s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 151/240] random: help compiler out with fast_mix() by using simpler arguments
-Date:   Mon, 20 Jun 2022 14:50:52 +0200
-Message-Id: <20220620124743.385298866@linuxfoundation.org>
+        stable@vger.kernel.org, Jeremy Szu <jeremy.szu@canonical.com>,
+        Takashi Iwai <tiwai@suse.de>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: [PATCH 5.4 231/240] ALSA: hda/realtek: fix mute/micmute LEDs for HP 440 G8
+Date:   Mon, 20 Jun 2022 14:52:12 +0200
+Message-Id: <20220620124745.650869795@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -48,94 +50,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Jeremy Szu <jeremy.szu@canonical.com>
 
-commit 791332b3cbb080510954a4c152ce02af8832eac9 upstream.
+commit e7d66cf799390166e90f9a5715f2eede4fe06d51 upstream.
 
-Now that fast_mix() has more than one caller, gcc no longer inlines it.
-That's fine. But it also doesn't handle the compound literal argument we
-pass it very efficiently, nor does it handle the loop as well as it
-could. So just expand the code to spell out this function so that it
-generates the same code as it did before. Performance-wise, this now
-behaves as it did before the last commit. The difference in actual code
-size on x86 is 45 bytes, which is less than a cache line.
+The HP EliteBook 840 G8 Notebook PC is using ALC236 codec which is
+using 0x02 to control mute LED and 0x01 to control micmute LED.
+Therefore, add a quirk to make it works.
 
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Jeremy Szu <jeremy.szu@canonical.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20210316074626.79895-1-jeremy.szu@canonical.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+[sudip: adjust context]
+Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   44 +++++++++++++++++++++++---------------------
- 1 file changed, 23 insertions(+), 21 deletions(-)
+ sound/pci/hda/patch_realtek.c |   12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -1026,25 +1026,30 @@ static DEFINE_PER_CPU(struct fast_pool,
-  * and therefore this has no security on its own. s represents the
-  * four-word SipHash state, while v represents a two-word input.
-  */
--static void fast_mix(unsigned long s[4], const unsigned long v[2])
-+static void fast_mix(unsigned long s[4], unsigned long v1, unsigned long v2)
- {
--	size_t i;
--
--	for (i = 0; i < 2; ++i) {
--		s[3] ^= v[i];
- #ifdef CONFIG_64BIT
--		s[0] += s[1]; s[1] = rol64(s[1], 13); s[1] ^= s[0]; s[0] = rol64(s[0], 32);
--		s[2] += s[3]; s[3] = rol64(s[3], 16); s[3] ^= s[2];
--		s[0] += s[3]; s[3] = rol64(s[3], 21); s[3] ^= s[0];
--		s[2] += s[1]; s[1] = rol64(s[1], 17); s[1] ^= s[2]; s[2] = rol64(s[2], 32);
-+#define PERM() do { \
-+	s[0] += s[1]; s[1] = rol64(s[1], 13); s[1] ^= s[0]; s[0] = rol64(s[0], 32); \
-+	s[2] += s[3]; s[3] = rol64(s[3], 16); s[3] ^= s[2]; \
-+	s[0] += s[3]; s[3] = rol64(s[3], 21); s[3] ^= s[0]; \
-+	s[2] += s[1]; s[1] = rol64(s[1], 17); s[1] ^= s[2]; s[2] = rol64(s[2], 32); \
-+} while (0)
- #else
--		s[0] += s[1]; s[1] = rol32(s[1],  5); s[1] ^= s[0]; s[0] = rol32(s[0], 16);
--		s[2] += s[3]; s[3] = rol32(s[3],  8); s[3] ^= s[2];
--		s[0] += s[3]; s[3] = rol32(s[3],  7); s[3] ^= s[0];
--		s[2] += s[1]; s[1] = rol32(s[1], 13); s[1] ^= s[2]; s[2] = rol32(s[2], 16);
-+#define PERM() do { \
-+	s[0] += s[1]; s[1] = rol32(s[1],  5); s[1] ^= s[0]; s[0] = rol32(s[0], 16); \
-+	s[2] += s[3]; s[3] = rol32(s[3],  8); s[3] ^= s[2]; \
-+	s[0] += s[3]; s[3] = rol32(s[3],  7); s[3] ^= s[0]; \
-+	s[2] += s[1]; s[1] = rol32(s[1], 13); s[1] ^= s[2]; s[2] = rol32(s[2], 16); \
-+} while (0)
- #endif
--		s[0] ^= v[i];
--	}
-+
-+	s[3] ^= v1;
-+	PERM();
-+	s[0] ^= v1;
-+	s[3] ^= v2;
-+	PERM();
-+	s[0] ^= v2;
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -4296,6 +4296,12 @@ static void alc_fixup_hp_gpio_led(struct
+ 	}
  }
  
- #ifdef CONFIG_SMP
-@@ -1114,10 +1119,8 @@ void add_interrupt_randomness(int irq)
- 	struct pt_regs *regs = get_irq_regs();
- 	unsigned int new_count;
- 
--	fast_mix(fast_pool->pool, (unsigned long[2]){
--		entropy,
--		(regs ? instruction_pointer(regs) : _RET_IP_) ^ swab(irq)
--	});
-+	fast_mix(fast_pool->pool, entropy,
-+		 (regs ? instruction_pointer(regs) : _RET_IP_) ^ swab(irq));
- 	new_count = ++fast_pool->count;
- 
- 	if (new_count & MIX_INFLIGHT)
-@@ -1157,8 +1160,7 @@ static void add_timer_randomness(struct
- 	 * sometime after, so mix into the fast pool.
- 	 */
- 	if (in_irq()) {
--		fast_mix(this_cpu_ptr(&irq_randomness)->pool,
--			 (unsigned long[2]){ entropy, num });
-+		fast_mix(this_cpu_ptr(&irq_randomness)->pool, entropy, num);
- 	} else {
- 		spin_lock_irqsave(&input_pool.lock, flags);
- 		_mix_pool_bytes(&entropy, sizeof(entropy));
++static void alc236_fixup_hp_gpio_led(struct hda_codec *codec,
++				const struct hda_fixup *fix, int action)
++{
++	alc_fixup_hp_gpio_led(codec, action, 0x02, 0x01);
++}
++
+ static void alc269_fixup_hp_gpio_led(struct hda_codec *codec,
+ 				const struct hda_fixup *fix, int action)
+ {
+@@ -6477,6 +6483,7 @@ enum {
+ 	ALC294_FIXUP_ASUS_GU502_VERBS,
+ 	ALC285_FIXUP_HP_GPIO_LED,
+ 	ALC285_FIXUP_HP_MUTE_LED,
++	ALC236_FIXUP_HP_GPIO_LED,
+ 	ALC236_FIXUP_HP_MUTE_LED,
+ 	ALC298_FIXUP_SAMSUNG_HEADPHONE_VERY_QUIET,
+ 	ALC256_FIXUP_SAMSUNG_HEADPHONE_VERY_QUIET,
+@@ -7753,6 +7760,10 @@ static const struct hda_fixup alc269_fix
+ 		.type = HDA_FIXUP_FUNC,
+ 		.v.func = alc285_fixup_hp_mute_led,
+ 	},
++	[ALC236_FIXUP_HP_GPIO_LED] = {
++		.type = HDA_FIXUP_FUNC,
++		.v.func = alc236_fixup_hp_gpio_led,
++	},
+ 	[ALC236_FIXUP_HP_MUTE_LED] = {
+ 		.type = HDA_FIXUP_FUNC,
+ 		.v.func = alc236_fixup_hp_mute_led,
+@@ -8174,6 +8185,7 @@ static const struct snd_pci_quirk alc269
+ 	SND_PCI_QUIRK(0x103c, 0x8760, "HP", ALC285_FIXUP_HP_MUTE_LED),
+ 	SND_PCI_QUIRK(0x103c, 0x877a, "HP", ALC285_FIXUP_HP_MUTE_LED),
+ 	SND_PCI_QUIRK(0x103c, 0x877d, "HP", ALC236_FIXUP_HP_MUTE_LED),
++	SND_PCI_QUIRK(0x103c, 0x87e5, "HP ProBook 440 G8 Notebook PC", ALC236_FIXUP_HP_GPIO_LED),
+ 	SND_PCI_QUIRK(0x1043, 0x103e, "ASUS X540SA", ALC256_FIXUP_ASUS_MIC),
+ 	SND_PCI_QUIRK(0x1043, 0x103f, "ASUS TX300", ALC282_FIXUP_ASUS_TX300),
+ 	SND_PCI_QUIRK(0x1043, 0x106d, "Asus K53BE", ALC269_FIXUP_LIMIT_INT_MIC_BOOST),
 
 
