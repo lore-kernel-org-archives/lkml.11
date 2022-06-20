@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85F96C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:26:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD153CCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:26:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345184AbiFTN0m (ORCPT
+        id S1344718AbiFTN0r (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:26:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37752 "EHLO
+        Mon, 20 Jun 2022 09:26:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346227AbiFTNY1 (ORCPT
+        with ESMTP id S1344854AbiFTNXc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:24:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 951321A820;
-        Mon, 20 Jun 2022 06:09:49 -0700 (PDT)
+        Mon, 20 Jun 2022 09:23:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B95E23140;
+        Mon, 20 Jun 2022 06:09:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5998660C1B;
-        Mon, 20 Jun 2022 13:09:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EF24C3411B;
-        Mon, 20 Jun 2022 13:09:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 17B9E60A52;
+        Mon, 20 Jun 2022 13:07:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 176FEC3411B;
+        Mon, 20 Jun 2022 13:07:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730542;
-        bh=TKRXwffeNHN+/i/mN1DWtV3kDRF35Wfc9RNxJL8YP2U=;
+        s=korg; t=1655730478;
+        bh=Gcz5MMh+luo1mAG0oh47gcojUkta080KEWA+pDrqFIY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yZdkpJGt7JLxP5yJB/hAGx7ws5YTaxjX30cSqpAs9bT9Viu3/VYvXxNXSKGpDeoHX
-         rV37lqJ1uqXYDtp8zL93X2tH4KF/38K0kH7UqYpH7CX0P5et6AHKeoznSZBACCE52G
-         lTxo7Ec5wbY6XNu8hGmZZSSC7Rgt1TfZVSccsOXk=
+        b=fCYKT181d1YEIE2jxT5dYMH8xOyZnMCWMoOjfAM180ac+5EQ8JzITdWvMEs6y+oNi
+         xT7B5kl1SuuyNK1JtbrIgRIIGFK04OkR0SA8izA/o+ymeft5G0yN27KBuqhN37Di/9
+         M2m7g6iZTQCGuktJT93U99aheZNspqDUosIX1WAo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Ming Lei <ming.lei@redhat.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 072/106] block: Fix handling of offline queues in blk_mq_alloc_request_hctx()
-Date:   Mon, 20 Jun 2022 14:51:31 +0200
-Message-Id: <20220620124726.532250667@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Thomas=20Wei=C3=9Fschuh?= <linux@weissschuh.net>,
+        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 064/106] nvme: add device name to warning in uuid_show()
+Date:   Mon, 20 Jun 2022 14:51:23 +0200
+Message-Id: <20220620124726.295117925@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
 References: <20220620124724.380838401@linuxfoundation.org>
@@ -51,59 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bart Van Assche <bvanassche@acm.org>
+From: Thomas Weißschuh <linux@weissschuh.net>
 
-[ Upstream commit 14dc7a18abbe4176f5626c13c333670da8e06aa1 ]
+[ Upstream commit 1fc766b5c08417248e0008bca14c3572ac0f1c26 ]
 
-This patch prevents that test nvme/004 triggers the following:
+This provides more context to users.
 
-UBSAN: array-index-out-of-bounds in block/blk-mq.h:135:9
-index 512 is out of range for type 'long unsigned int [512]'
-Call Trace:
- show_stack+0x52/0x58
- dump_stack_lvl+0x49/0x5e
- dump_stack+0x10/0x12
- ubsan_epilogue+0x9/0x3b
- __ubsan_handle_out_of_bounds.cold+0x44/0x49
- blk_mq_alloc_request_hctx+0x304/0x310
- __nvme_submit_sync_cmd+0x70/0x200 [nvme_core]
- nvmf_connect_io_queue+0x23e/0x2a0 [nvme_fabrics]
- nvme_loop_connect_io_queues+0x8d/0xb0 [nvme_loop]
- nvme_loop_create_ctrl+0x58e/0x7d0 [nvme_loop]
- nvmf_create_ctrl+0x1d7/0x4d0 [nvme_fabrics]
- nvmf_dev_write+0xae/0x111 [nvme_fabrics]
- vfs_write+0x144/0x560
- ksys_write+0xb7/0x140
- __x64_sys_write+0x42/0x50
- do_syscall_64+0x35/0x80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+Old message:
 
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Ming Lei <ming.lei@redhat.com>
-Fixes: 20e4d8139319 ("blk-mq: simplify queue mapping & schedule with each possisble CPU")
-Signed-off-by: Bart Van Assche <bvanassche@acm.org>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Ming Lei <ming.lei@redhat.com>
-Link: https://lore.kernel.org/r/20220615210004.1031820-1-bvanassche@acm.org
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+[   00.000000] No UUID available providing old NGUID
+
+New message:
+
+[   00.000000] block nvme0n1: No UUID available providing old NGUID
+
+Fixes: d934f9848a77 ("nvme: provide UUID value to userspace")
+Signed-off-by: Thomas Weißschuh <linux@weissschuh.net>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/blk-mq.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/nvme/host/core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/block/blk-mq.c b/block/blk-mq.c
-index b70488e4db94..95993c4efa49 100644
---- a/block/blk-mq.c
-+++ b/block/blk-mq.c
-@@ -476,6 +476,8 @@ struct request *blk_mq_alloc_request_hctx(struct request_queue *q,
- 	if (!blk_mq_hw_queue_mapped(data.hctx))
- 		goto out_queue_exit;
- 	cpu = cpumask_first_and(data.hctx->cpumask, cpu_online_mask);
-+	if (cpu >= nr_cpu_ids)
-+		goto out_queue_exit;
- 	data.ctx = __blk_mq_get_ctx(q, cpu);
- 
- 	if (!q->elevator)
+diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
+index af355b9ee5ea..9bc9f6d225bd 100644
+--- a/drivers/nvme/host/core.c
++++ b/drivers/nvme/host/core.c
+@@ -3182,8 +3182,8 @@ static ssize_t uuid_show(struct device *dev, struct device_attribute *attr,
+ 	 * we have no UUID set
+ 	 */
+ 	if (uuid_is_null(&ids->uuid)) {
+-		printk_ratelimited(KERN_WARNING
+-				   "No UUID available providing old NGUID\n");
++		dev_warn_ratelimited(dev,
++			"No UUID available providing old NGUID\n");
+ 		return sysfs_emit(buf, "%pU\n", ids->nguid);
+ 	}
+ 	return sysfs_emit(buf, "%pU\n", &ids->uuid);
 -- 
 2.35.1
 
