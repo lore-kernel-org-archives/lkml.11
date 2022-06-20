@@ -2,170 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9782C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:07:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DB30C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:07:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240200AbiFTOHl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:07:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45250 "EHLO
+        id S1350762AbiFTOHr (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 10:07:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353674AbiFTN6h (ORCPT
+        with ESMTP id S1353586AbiFTN6b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:58:37 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A35D613D05
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 06:24:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655731381;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=Lz3XrBbri+7W5yHDKSER/WjV40K7I0YZnro9o8f5k5U=;
-        b=NOyK1YBJP0mBwDgDZbXVlbNTzn9zT2J87Gj1nUTIoRt5F5+Xd/el1cTgRE2RrbeXmYpByO
-        heTnHp0w/M7o2BGn/MnOfJmrBRhnA/dSkpdpIveK+RpECxIQOOUShMAgAmfgUWuSz3I100
-        1KPKoVnEdFdSnvAh8SKBfOcx5ubMDyk=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-468-Wi6EX5JEP9e9kOIYbUntbA-1; Mon, 20 Jun 2022 09:16:37 -0400
-X-MC-Unique: Wi6EX5JEP9e9kOIYbUntbA-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Mon, 20 Jun 2022 09:58:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C9201BEAC;
+        Mon, 20 Jun 2022 06:23:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9B652101AA4D;
-        Mon, 20 Jun 2022 13:16:36 +0000 (UTC)
-Received: from rules.brq.redhat.com (unknown [10.40.208.23])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 26188492CA3;
-        Mon, 20 Jun 2022 13:16:34 +0000 (UTC)
-From:   Vladis Dronov <vdronov@redhat.com>
-To:     Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Vladis Dronov <vdronov@redhat.com>, Simo Sorce <simo@redhat.com>
-Subject: [PATCH] crypto: fips - make proc files report fips module name and version
-Date:   Mon, 20 Jun 2022 15:16:18 +0200
-Message-Id: <20220620131618.952133-1-vdronov@redhat.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E22E160C2C;
+        Mon, 20 Jun 2022 13:08:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8EB7C3411B;
+        Mon, 20 Jun 2022 13:08:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655730507;
+        bh=WVB2cZoIsM8ti2+D/PLRAPxWV297NPg1wTNvLUzUnTo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=jvEsJAMVRguhDbRXzmhoFhZtaDT5BtmuIap/0vm7zjKcxGlQLUZgHjynUN0pkQ6H9
+         N0GlWxZu9lkCkqnSK+yIkqTRQhOV71uOkEvugym3yCGSoXencAhwVH10Jsmwmj9BPt
+         8aBtPWymVOx44xnvQpi2qCRR6gLq4a58YbbLyR3U=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 032/106] nfc: nfcmrvl: Fix memory leak in nfcmrvl_play_deferred
+Date:   Mon, 20 Jun 2022 14:50:51 +0200
+Message-Id: <20220620124725.335361192@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
+References: <20220620124724.380838401@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-type: text/plain
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-FIPS 140-3 introduced a requirement for the FIPS module to return
-information about itself, specifically a name and a version. These
-values must match the values reported on FIPS certificates.
+From: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
 
-This patch adds two files to read a name and a version from:
+[ Upstream commit 8a4d480702b71184fabcf379b80bf7539716752e ]
 
-/proc/sys/crypto/fips_name
-/proc/sys/crypto/fips_version
+Similar to the handling of play_deferred in commit 19cfe912c37b
+("Bluetooth: btusb: Fix memory leak in play_deferred"), we thought
+a patch might be needed here as well.
 
-Signed-off-by: Simo Sorce <simo@redhat.com>
-Signed-off-by: Vladis Dronov <vdronov@redhat.com>
+Currently usb_submit_urb is called directly to submit deferred tx
+urbs after unanchor them.
+
+So the usb_giveback_urb_bh would failed to unref it in usb_unanchor_urb
+and cause memory leak.
+
+Put those urbs in tx_anchor to avoid the leak, and also fix the error
+handling.
+
+Signed-off-by: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Link: https://lore.kernel.org/r/20220607083230.6182-1-xiaohuizhang@ruc.edu.cn
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- crypto/Kconfig       | 21 +++++++++++++++++++++
- crypto/fips.c        | 27 ++++++++++++++++++++++-----
- include/linux/fips.h |  9 +++++++++
- 3 files changed, 52 insertions(+), 5 deletions(-)
+ drivers/nfc/nfcmrvl/usb.c | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
 
-diff --git a/crypto/Kconfig b/crypto/Kconfig
-index 1d44893a997b..082ff03d9f6c 100644
---- a/crypto/Kconfig
-+++ b/crypto/Kconfig
-@@ -33,6 +33,27 @@ config CRYPTO_FIPS
- 	  certification.  You should say no unless you know what
- 	  this is.
+diff --git a/drivers/nfc/nfcmrvl/usb.c b/drivers/nfc/nfcmrvl/usb.c
+index a99aedff795d..ea7309453096 100644
+--- a/drivers/nfc/nfcmrvl/usb.c
++++ b/drivers/nfc/nfcmrvl/usb.c
+@@ -388,13 +388,25 @@ static void nfcmrvl_play_deferred(struct nfcmrvl_usb_drv_data *drv_data)
+ 	int err;
  
-+config CRYPTO_FIPS_NAME
-+	string "FIPS Module Name"
-+	default "Linux Kernel Cryptographic API"
-+	depends on (CRYPTO_FIPS)
-+	help
-+	  This option sets the FIPS Module name reported by the Crypto API via
-+	  the /proc/sys/crypto/fips_name file.
+ 	while ((urb = usb_get_from_anchor(&drv_data->deferred))) {
++		usb_anchor_urb(urb, &drv_data->tx_anchor);
 +
-+config CRYPTO_FIPS_CUSTOM_VERSION
-+	bool "Use Custom FIPS Module Version"
-+	depends on (CRYPTO_FIPS)
-+	default n
-+
-+config CRYPTO_FIPS_VERSION
-+	string "FIPS Module Version"
-+	default "(none)"
-+	depends on (CRYPTO_FIPS_CUSTOM_VERSION)
-+	help
-+	  This option provides the ability to override the FIPS Module Version.
-+	  By default the KERNELRELEASE value is used.
-+
- config CRYPTO_ALGAPI
- 	tristate
- 	select CRYPTO_ALGAPI2
-diff --git a/crypto/fips.c b/crypto/fips.c
-index 7b1d8caee669..644895d23c9b 100644
---- a/crypto/fips.c
-+++ b/crypto/fips.c
-@@ -30,13 +30,30 @@ static int fips_enable(char *str)
+ 		err = usb_submit_urb(urb, GFP_ATOMIC);
+-		if (err)
++		if (err) {
++			kfree(urb->setup_packet);
++			usb_unanchor_urb(urb);
++			usb_free_urb(urb);
+ 			break;
++		}
  
- __setup("fips=", fips_enable);
- 
-+static char fips_name[] = FIPS_MODULE_NAME;
-+static char fips_version[] = FIPS_MODULE_VERSION;
+ 		drv_data->tx_in_flight++;
++		usb_free_urb(urb);
++	}
 +
- static struct ctl_table crypto_sysctl_table[] = {
- 	{
--		.procname       = "fips_enabled",
--		.data           = &fips_enabled,
--		.maxlen         = sizeof(int),
--		.mode           = 0444,
--		.proc_handler   = proc_dointvec
-+		.procname	= "fips_enabled",
-+		.data		= &fips_enabled,
-+		.maxlen		= sizeof(int),
-+		.mode		= 0444,
-+		.proc_handler	= proc_dointvec
-+	},
-+	{
-+		.procname	= "fips_name",
-+		.data		= &fips_name,
-+		.maxlen		= 64,
-+		.mode		= 0444,
-+		.proc_handler	= proc_dostring
-+	},
-+	{
-+		.procname	= "fips_version",
-+		.data		= &fips_version,
-+		.maxlen		= 64,
-+		.mode		= 0444,
-+		.proc_handler	= proc_dostring
- 	},
- 	{}
- };
-diff --git a/include/linux/fips.h b/include/linux/fips.h
-index c6961e932fef..72d2e0e1d3ac 100644
---- a/include/linux/fips.h
-+++ b/include/linux/fips.h
-@@ -2,10 +2,19 @@
- #ifndef _FIPS_H
- #define _FIPS_H
++	/* Cleanup the rest deferred urbs. */
++	while ((urb = usb_get_from_anchor(&drv_data->deferred))) {
++		kfree(urb->setup_packet);
++		usb_free_urb(urb);
+ 	}
+-	usb_scuttle_anchored_urbs(&drv_data->deferred);
+ }
  
-+#include <generated/utsrelease.h>
-+
- #ifdef CONFIG_CRYPTO_FIPS
- extern int fips_enabled;
- extern struct atomic_notifier_head fips_fail_notif_chain;
- 
-+#define FIPS_MODULE_NAME CONFIG_CRYPTO_FIPS_NAME
-+#ifdef CONFIG_CRYPTO_FIPS_CUSTOM_VERSION
-+#define FIPS_MODULE_VERSION CONFIG_CRYPTO_FIPS_VERSION
-+#else
-+#define FIPS_MODULE_VERSION UTS_RELEASE
-+#endif
-+
- void fips_fail_notify(void);
- 
- #else
+ static int nfcmrvl_resume(struct usb_interface *intf)
 -- 
-2.36.1
+2.35.1
+
+
 
