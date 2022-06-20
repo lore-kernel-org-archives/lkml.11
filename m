@@ -2,73 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39C4DC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 04:34:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47DC5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 04:43:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234696AbiFTEew (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 00:34:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57890 "EHLO
+        id S237411AbiFTEm7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 00:42:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231775AbiFTEet (ORCPT
+        with ESMTP id S229908AbiFTEmz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 00:34:49 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71522D116
-        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 21:34:47 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id p3-20020a17090a428300b001ec865eb4a2so4511123pjg.3
-        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 21:34:47 -0700 (PDT)
+        Mon, 20 Jun 2022 00:42:55 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFF26C42
+        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 21:42:53 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id h34-20020a17090a29a500b001eb01527d9eso8289188pjd.3
+        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 21:42:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ZwqahDHThWPbCSkd04LkEiVlXEdscZb913LydHKUXuk=;
-        b=Y4b8o/SvbiJj5yXOw/uFM2KaEq4hLSLtkrgNsAUTmWf3BqPAm3TfIppnQFfZemf+zF
-         IMh7SaiMY0+2s7YvwjCDLR80REUPFfFoWiZnHbeb1pHc1QIi3pyrKElWuR4mwXheaEmO
-         dHWZ5TadCHmCE/Pa72NIX12Z8VzpqdAi3VLPlnZzN8YZCnmugqs2ysNLce6WnMf9Tn8n
-         BAzSG7OSwg41Jzr8tIYPKJqLFaqSiBwnvG5TnXAWGqMgiSXxVaBU/UOlYiVWi1Xyw0ab
-         DW8CQyrgIfwIEaEksnxUO2FUNFyCu7knFQY0e4oREQ4lZI/XtIQju0YafC0qGf8qcuG0
-         9LWA==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=+qD5oJD5pwRVHMYyuv6dIhRRxn/7fc+uDTelAP64E9M=;
+        b=Af+7C6s3YbdNOO9PX23VXIqItWHG7PIQsbq1V1/mALgYLAoAegp3S9AGltjAMh4Nob
+         y1BbkJ+P2PIGUAp3IQiraoFt8tzNT5k2YooDlvu+aOhrpJAVXG2rEw9z8sY3CzJOQK8W
+         vnWqeGFKGS0x2UaPtv85kuEG1HyhMra2I5ma8waloSHCiUAJ7TqR0Y4KebH7td6b/Z4K
+         o8JLAr98kkZt6wOc/MzGfKZguBgv41apjwYxAJp1vVryMhxF19cNmDIas1ftgOlfQrQ7
+         MLuzwenqIghXnn0upUwYE8mpa4WVnM3SNLOBdgnZud6GQ1IfFyZuNwMCj4NgJieqynhP
+         zByw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ZwqahDHThWPbCSkd04LkEiVlXEdscZb913LydHKUXuk=;
-        b=ZkLY8THqX0BigEqpieQGB62kj974mBvS9TfhRBNOLxqDo9/UaO0bO2DgV0u/T4Mwnq
-         ar+sQgHePSLIVg4qLP/XJGkLwoEx1LoqeDsVi90/ihGP6oceEc2H/qy5LeiCCMFd+wL0
-         b6GyxNr0ehziH7w0iGMfznXZ9bGAxMCcF3MmSOzeSnEttk36/DSwSp6raBZmZH+eRwj9
-         RVjijXb+I2SaT1KlXUubL5WKql4uth7h9I/WOm8+Jvt6lJYAJqqIA0dT1YqbCh3tglo0
-         6Nug8/M5Ab3M27amYUWlDwo545l4jhgC8uWmuEa/R9M8QDiwS1U9A7MGtKGRts4OBd1y
-         V0fg==
-X-Gm-Message-State: AJIora90p3cvPW5uZW7E318KMI4VXQwgHCJ6NhcJDEHFKN9cKnq8/uGz
-        tXJrpvqEhN1VmzaIde+T5ts=
-X-Google-Smtp-Source: AGRyM1sLOJK4GdbtT38Rxr8D9tca0o+Up1SX9oAhXVi9naycP0yEUoILLaD1ayt/I1XJfpH1QBc7ZQ==
-X-Received: by 2002:a17:902:f707:b0:16a:176b:d75f with SMTP id h7-20020a170902f70700b0016a176bd75fmr7888495plo.158.1655699686944;
-        Sun, 19 Jun 2022 21:34:46 -0700 (PDT)
-Received: from localhost.localdomain ([110.46.146.116])
-        by smtp.gmail.com with ESMTPSA id p9-20020a62b809000000b00522cae827f6sm3541984pfe.197.2022.06.19.21.34.43
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=+qD5oJD5pwRVHMYyuv6dIhRRxn/7fc+uDTelAP64E9M=;
+        b=y/viQv2DbSwQIcTy4YVAh2opUGkd9htEDpddshPLIb0NTzIivrw3LL9akU31GEaHYL
+         N9jF+cnXbKFf9/eig2yRcVgCT0ep+ZpQqcOHlIHJ/IQ3e4HcUNZYJ/N+n15Rt1orzmie
+         lKDx41TWWdHposT3/HBHISGY6W1QqIrhKlxAVviaHXA1OFRCWLFn4eJvCQGScXzbXmc3
+         leJffXy2G6OlJULbFparpFxe+sGF7L2JYBoiA9n171rEeXVZSJ+r83hj/sYbrXM9o8xG
+         SQ8wBXznKAp4v/L6E+FklKxRkNlXAnYZHuzkMRLQf3wJ4weoVSeBuTa/6F/+KJs9ZIcI
+         5TbQ==
+X-Gm-Message-State: AJIora8jz5X4gaM1ldlr0/+mDRhZCzZd7GX1qS+AvYapx7LYYWIerA0U
+        hvd09QYGDq4cL4R17AA5rj6JCA==
+X-Google-Smtp-Source: AGRyM1szVyxEGnAxt8i/GzxdmN2ytoRk0A1gssQ4uLTVg0Xmw7Tc52+asTsf9l1jW25eQT5VYqm1zg==
+X-Received: by 2002:a17:90b:48cf:b0:1e8:789c:4a9c with SMTP id li15-20020a17090b48cf00b001e8789c4a9cmr36207847pjb.98.1655700173208;
+        Sun, 19 Jun 2022 21:42:53 -0700 (PDT)
+Received: from localhost ([122.162.234.2])
+        by smtp.gmail.com with ESMTPSA id ja13-20020a170902efcd00b0016a087cfad8sm5150133plb.264.2022.06.19.21.42.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 19 Jun 2022 21:34:46 -0700 (PDT)
-From:   SungHwan Jung <onenowy@gmail.com>
-To:     hch@lst.de
-Cc:     Jason@zx2c4.com, abhijeet.rao@intel.com, alan.adamson@oracle.com,
-        axboe@fb.com, kbusch@kernel.org, linux-kernel@vger.kernel.org,
-        linux-nvme@lists.infradead.org, monish.kumar.r@intel.com,
-        pankydev8@gmail.com, sagi@grimberg.me, yi.zhang@redhat.com
-Subject: Re: 2 second nvme initialization delay regression in 5.18 [Was: Re: [bug report]nvme0: Admin Cmd(0x6), I/O Error (sct 0x0 / sc 0x2) MORE DNR observed during blktests]
-Date:   Mon, 20 Jun 2022 13:34:02 +0900
-Message-Id: <20220620043402.13202-1-onenowy@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220615113106.GA10697@lst.de>
-References: <20220615113106.GA10697@lst.de>
+        Sun, 19 Jun 2022 21:42:52 -0700 (PDT)
+Date:   Mon, 20 Jun 2022 10:12:42 +0530
+From:   Viresh Kumar <viresh.kumar@linaro.org>
+To:     Liang He <windhl@126.com>
+Cc:     rafael@kernel.org, mpe@ellerman.id.au, benh@kernel.crashing.org,
+        paulus@samba.org, linux-pm@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] cpufreq: pmac32-cpufreq: Fix refcount leak bug
+Message-ID: <20220620044242.fbknfhv5uqbrl232@vireshk-i7>
+References: <20220618022545.4056299-1-windhl@126.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220618022545.4056299-1-windhl@126.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi again,
-I'm sorry to send mail again.
+On 18-06-22, 10:25, Liang He wrote:
+> In pmac_cpufreq_init_MacRISC3(), we need to add corresponding
+> of_node_put() for the three node pointers whose refcount have
+> been incremented by of_find_node_by_name().
+> 
+> Signed-off-by: Liang He <windhl@126.com>
+> ---
+>  drivers/cpufreq/pmac32-cpufreq.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/drivers/cpufreq/pmac32-cpufreq.c b/drivers/cpufreq/pmac32-cpufreq.c
+> index 20f64a8b0a35..4b8ee2014da6 100644
+> --- a/drivers/cpufreq/pmac32-cpufreq.c
+> +++ b/drivers/cpufreq/pmac32-cpufreq.c
+> @@ -470,6 +470,10 @@ static int pmac_cpufreq_init_MacRISC3(struct device_node *cpunode)
+>  	if (slew_done_gpio_np)
+>  		slew_done_gpio = read_gpio(slew_done_gpio_np);
+>  
+> +	of_node_put(volt_gpio_np);
+> +	of_node_put(freq_gpio_np);
+> +	of_node_put(slew_done_gpio_np);
+> +
+>  	/* If we use the frequency GPIOs, calculate the min/max speeds based
+>  	 * on the bus frequencies
+>  	 */
 
-I think it would be to confirm that subsystem-ids for all X5 model and these ids are not used for other ssd by contact with samsung.
+Applied. Thanks.
 
-But I have no idea how to contant with them, please fowards this to them or if you already have these information, please tests the patch in previous mail.
+-- 
+viresh
