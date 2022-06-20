@@ -2,66 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A95D3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 09:37:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 141E6C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 09:37:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237155AbiFTJhQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 05:37:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43150 "EHLO
+        id S235965AbiFTJha (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 05:37:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233542AbiFTJg7 (ORCPT
+        with ESMTP id S235491AbiFTJhM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 05:36:59 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 559DE13D7B;
-        Mon, 20 Jun 2022 02:36:58 -0700 (PDT)
-Received: from kwepemi500023.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LRPbL0P6dz928x;
-        Mon, 20 Jun 2022 17:33:34 +0800 (CST)
-Received: from huawei.com (10.175.112.208) by kwepemi500023.china.huawei.com
- (7.221.188.76) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 20 Jun
- 2022 17:36:56 +0800
-From:   Peng Wu <wupeng58@huawei.com>
-To:     <tony@atomide.com>
-CC:     <linux-omap@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <liwei391@huawei.com>, <wupeng58@huawei.com>
-Subject: [PATCH] bus: ti-sysc: Add missing of_node_put() in sysc_add_named_clock_from_child()
-Date:   Mon, 20 Jun 2022 09:31:07 +0000
-Message-ID: <20220620093107.73809-1-wupeng58@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 20 Jun 2022 05:37:12 -0400
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C4E513D7C
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 02:37:10 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R451e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=hongnan.li@linux.alibaba.com;NM=1;PH=DS;RN=4;SR=0;TI=SMTPD_---0VGulrh2_1655717827;
+Received: from 30.225.24.32(mailfrom:hongnan.li@linux.alibaba.com fp:SMTPD_---0VGulrh2_1655717827)
+          by smtp.aliyun-inc.com;
+          Mon, 20 Jun 2022 17:37:07 +0800
+Message-ID: <70fe93a3-7af5-b563-dcb7-3f7be81348ed@linux.alibaba.com>
+Date:   Mon, 20 Jun 2022 17:37:07 +0800
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.208]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemi500023.china.huawei.com (7.221.188.76)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.10.0
+From:   hongnanLi <hongnan.li@linux.alibaba.com>
+Subject: Re: [PATCH v2] erofs: update ctx->pos for every emitted dirent
+To:     Chao Yu <chao@kernel.org>, linux-erofs@lists.ozlabs.org,
+        xiang@kernel.org
+Cc:     linux-kernel@vger.kernel.org
+References: <20220527072536.68516-1-hongnan.li@linux.alibaba.com>
+ <20220609034006.76649-1-hongnan.li@linux.alibaba.com>
+ <0c139517-e976-5017-8e7a-d34c38f0f6bb@kernel.org>
+Content-Language: en-US
+In-Reply-To: <0c139517-e976-5017-8e7a-d34c38f0f6bb@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-of_get_next_available_child() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+on 2022/6/19 8:19, Chao Yu wrote:
+> On 2022/6/9 11:40, Hongnan Li wrote:
+>> erofs_readdir update ctx->pos after filling a batch of dentries
+>> and it may cause dir/files duplication for NFS readdirplus which
+>> depends on ctx->pos to fill dir correctly. So update ctx->pos for
+>> every emitted dirent in erofs_fill_dentries to fix it.
+>>
+>> Fixes: 3e917cc305c6 ("erofs: make filesystem exportable")
+>> Signed-off-by: Hongnan Li <hongnan.li@linux.alibaba.com>
+>> ---
+>>   fs/erofs/dir.c | 20 ++++++++++----------
+>>   1 file changed, 10 insertions(+), 10 deletions(-)
+>>
+>> diff --git a/fs/erofs/dir.c b/fs/erofs/dir.c
+>> index 18e59821c597..94ef5287237a 100644
+>> --- a/fs/erofs/dir.c
+>> +++ b/fs/erofs/dir.c
+>> @@ -22,10 +22,9 @@ static void debug_one_dentry(unsigned char d_type, 
+>> const char *de_name,
+>>   }
+>>   static int erofs_fill_dentries(struct inode *dir, struct dir_context 
+>> *ctx,
+>> -                   void *dentry_blk, unsigned int *ofs,
+>> +                   void *dentry_blk, struct erofs_dirent *de,
+>>                      unsigned int nameoff, unsigned int maxsize)
+>>   {
+>> -    struct erofs_dirent *de = dentry_blk + *ofs;
+>>       const struct erofs_dirent *end = dentry_blk + nameoff;
+>>       while (de < end) {
+>> @@ -59,9 +58,8 @@ static int erofs_fill_dentries(struct inode *dir, 
+>> struct dir_context *ctx,
+>>               /* stopped by some reason */
+>>               return 1;
+>>           ++de;
+>> -        *ofs += sizeof(struct erofs_dirent);
+>> +        ctx->pos += sizeof(struct erofs_dirent);
+>>       }
+>> -    *ofs = maxsize;
+>>       return 0;
+>>   }
+>> @@ -95,7 +93,7 @@ static int erofs_readdir(struct file *f, struct 
+>> dir_context *ctx)
+>>                     "invalid de[0].nameoff %u @ nid %llu",
+>>                     nameoff, EROFS_I(dir)->nid);
+>>               err = -EFSCORRUPTED;
+>> -            goto skip_this;
+>> +            break;
+>>           }
+>>           maxsize = min_t(unsigned int,
+>> @@ -106,17 +104,19 @@ static int erofs_readdir(struct file *f, struct 
+>> dir_context *ctx)
+>>               initial = false;
+>>               ofs = roundup(ofs, sizeof(struct erofs_dirent));
+>> -            if (ofs >= nameoff)
+>> +            if (ofs >= nameoff) {
+>> +                ctx->pos = blknr_to_addr(i) + ofs;
+>>                   goto skip_this;
+>> +            }
+>>           }
+>> -        err = erofs_fill_dentries(dir, ctx, de, &ofs,
+>> -                      nameoff, maxsize);
+>> -skip_this:
+>>           ctx->pos = blknr_to_addr(i) + ofs;
+> 
+> Why updating ctx->pos before erofs_fill_dentries()?
+> 
+> Thanks,
 
-Signed-off-by: Peng Wu <wupeng58@huawei.com>
-Reported-by: Hulk Robot <hulkci@huawei.com>
----
- drivers/bus/ti-sysc.c | 1 +
- 1 file changed, 1 insertion(+)
+It’s to ensure the ctx->pos is correct and up to date in 
+erofs_fill_dentries() so that we can update ctx->pos instead of ofs for 
+every emitted dirent.
 
-diff --git a/drivers/bus/ti-sysc.c b/drivers/bus/ti-sysc.c
-index 9a7d12332fad..73fd42dd25b3 100644
---- a/drivers/bus/ti-sysc.c
-+++ b/drivers/bus/ti-sysc.c
-@@ -333,6 +333,7 @@ static int sysc_add_named_clock_from_child(struct sysc *ddata,
- 		return -ENODEV;
- 
- 	clock = devm_get_clk_from_child(ddata->dev, child, name);
-+	of_node_put(child);
- 	if (IS_ERR(clock))
- 		return PTR_ERR(clock);
- 
--- 
-2.17.1
-
+> 
+>> -
+>> +        err = erofs_fill_dentries(dir, ctx, de, (void *)de + ofs,
+>> +                      nameoff, maxsize);
+>>           if (err)
+>>               break;
+>> +        ctx->pos = blknr_to_addr(i) + maxsize;
+>> +skip_this:
+>>           ++i;
+>>           ofs = 0;
+>>       }
