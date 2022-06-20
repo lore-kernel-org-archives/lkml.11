@@ -2,169 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AE23C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 08:02:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 286ADC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 08:02:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238869AbiFTICc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 04:02:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54912 "EHLO
+        id S239777AbiFTICh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 04:02:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239731AbiFTICV (ORCPT
+        with ESMTP id S239740AbiFTICd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 04:02:21 -0400
-Received: from mail-qv1-f51.google.com (mail-qv1-f51.google.com [209.85.219.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 271C31145D;
-        Mon, 20 Jun 2022 01:02:20 -0700 (PDT)
-Received: by mail-qv1-f51.google.com with SMTP id c1so14516545qvi.11;
-        Mon, 20 Jun 2022 01:02:20 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=U6iOgcYMqJ9zOwx1P0bKGX4G545U6AIxu9kHxZeyUd0=;
-        b=J3htXg1EPv1BalqywQs3Ybn4KQ+idKLCI1sqx15OBE6cn6qnP0H6CeCGhARK4Md01b
-         QPmOnK6+OdCTdpKftctxpvXg64MonaqNOdOoQnN+1vVSioiNIkK26N3SAQfG2W6Q0APA
-         BA/euf01jTM0PpO90YxA9W3vnXTES/HIQt6OqHZqmChe6/jJ2NCzPP5IcmOIR5y8Zngv
-         Gv09K8KdzYVxjEF/n4MbtNr4djM4pZgeydVPo2w6SYbMw71LmJeQ+Ss+k8b1n2BMeumt
-         pnq3qQVbivlh/vO6+bDzyz2TB2k3adouB5zd2sgdU//O378xNqKMTNhbOo9isNkiOd97
-         UI1Q==
-X-Gm-Message-State: AJIora9wJzcoVZFdarqMgw0xfmetd8DtxF8b+JgTEohnUBTvpPxCnyWy
-        jM85VA1R7lCSZRnWJjTTR4ggQVWYT7K6qA==
-X-Google-Smtp-Source: AGRyM1vHgp9LHpiJ7Aqcns08PZ2ZNxRyprRpMxnZujRmGz0+s8hIYBEFAdOJpUPgoyLj15Y+Hk0hoQ==
-X-Received: by 2002:ac8:5915:0:b0:304:f2f8:f254 with SMTP id 21-20020ac85915000000b00304f2f8f254mr18791942qty.303.1655712139119;
-        Mon, 20 Jun 2022 01:02:19 -0700 (PDT)
-Received: from mail-yb1-f176.google.com (mail-yb1-f176.google.com. [209.85.219.176])
-        by smtp.gmail.com with ESMTPSA id j17-20020a05620a289100b006a6d7c3a82esm11798285qkp.15.2022.06.20.01.02.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Jun 2022 01:02:17 -0700 (PDT)
-Received: by mail-yb1-f176.google.com with SMTP id v81so17621539ybe.0;
-        Mon, 20 Jun 2022 01:02:17 -0700 (PDT)
-X-Received: by 2002:a25:bd41:0:b0:668:c259:f6c2 with SMTP id
- p1-20020a25bd41000000b00668c259f6c2mr15091616ybm.365.1655712136748; Mon, 20
- Jun 2022 01:02:16 -0700 (PDT)
+        Mon, 20 Jun 2022 04:02:33 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30F0011178;
+        Mon, 20 Jun 2022 01:02:32 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id B65B91F383;
+        Mon, 20 Jun 2022 08:02:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1655712150; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=K3mIJEfos5FRczXq+evNYHSc2VMl3bK+FlH80Aaf4S4=;
+        b=KG1ieZI3RKMCFozBnOgTGpV3xZogNkS7Q1rTjxmOTTDqxH2mG/t8MCit3Al4wh2LFIX77W
+        AvYsx0ICW34GwE+I3iI7UITSDrhH+cJbdyVusEIcJpD9pJQEA3IQnQopQ+tiWkvngHWbeF
+        tA1MMaLwlyVLwwTYPAWHE51AlXA4WXk=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1655712150;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=K3mIJEfos5FRczXq+evNYHSc2VMl3bK+FlH80Aaf4S4=;
+        b=L5DmlH7Jm9YSeMGt37pfXDDG0KMrtRlgYLsEtgsHRuRzWyY1IvB6J26q9D+zHKxSBg+5r0
+        4QuYubwK4ylsW9Cw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 9C61F13638;
+        Mon, 20 Jun 2022 08:02:30 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 7G3cJZYpsGLsFwAAMHmgww
+        (envelope-from <hare@suse.de>); Mon, 20 Jun 2022 08:02:30 +0000
+Message-ID: <c2ae8f65-5570-fdad-3b3a-c00bb10c98c8@suse.de>
+Date:   Mon, 20 Jun 2022 10:02:30 +0200
 MIME-Version: 1.0
-References: <20220618123035.563070-1-mail@conchuod.ie> <20220618123035.563070-7-mail@conchuod.ie>
-In-Reply-To: <20220618123035.563070-7-mail@conchuod.ie>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 20 Jun 2022 10:02:05 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdXtjZVvy-gGTksVRYa+dS7-1ngQf9_kfp6k29nkfizKbA@mail.gmail.com>
-Message-ID: <CAMuHMdXtjZVvy-gGTksVRYa+dS7-1ngQf9_kfp6k29nkfizKbA@mail.gmail.com>
-Subject: Re: [PATCH 06/14] spi: dt-bindings: dw-apb-ssi: update
- spi-{r,t}x-bus-width for dwc-ssi
-To:     Conor Dooley <mail@conchuod.ie>
-Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Content-Language: en-US
+To:     John Garry <john.garry@huawei.com>,
         Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Niklas Cassel <niklas.cassel@wdc.com>,
-        Dillon Min <dillon.minfei@gmail.com>,
-        Heng Sia <jee.heng.sia@intel.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
-        linux-riscv@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
+        Bart Van Assche <bvanassche@acm.org>, axboe@kernel.dk,
+        jejb@linux.ibm.com, martin.petersen@oracle.com, brking@us.ibm.com,
+        hch@lst.de
+Cc:     linux-block@vger.kernel.org, linux-ide@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
+        chenxiang66@hisilicon.com
+References: <1654770559-101375-1-git-send-email-john.garry@huawei.com>
+ <1654770559-101375-4-git-send-email-john.garry@huawei.com>
+ <b4a0ede5-95a3-4388-e808-7627b5484d01@opensource.wdc.com>
+ <9e89360d-3325-92af-0436-b34df748f3e2@acm.org>
+ <e36bba7e-d78d-27b4-a0e2-9d921bc82f5d@opensource.wdc.com>
+ <3a27b6ff-e495-8f11-6925-1487c9d14fa9@huawei.com>
+From:   Hannes Reinecke <hare@suse.de>
+Subject: Re: [PATCH RFC v2 03/18] scsi: core: Implement reserved command
+ handling
+In-Reply-To: <3a27b6ff-e495-8f11-6925-1487c9d14fa9@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Conor,
+On 6/15/22 09:35, John Garry wrote:
+> On 15/06/2022 00:43, Damien Le Moal wrote:
+>> On 6/15/22 03:20, Bart Van Assche wrote:
+>>> On 6/13/22 00:01, Damien Le Moal wrote:
+>>>> On 6/9/22 19:29, John Garry wrote:
+>>>>> +    /*
+>>>>> +     * This determines how many commands the HBA will set aside
+>>>>> +     * for internal commands. This number will be added to
+>>>>> +     * @can_queue to calcumate the maximum number of simultaneous
+>>>>
+>>>> s/calcumate/calculate
+>>>>
+>>>> But this is weird. For SATA, can_queue is 32. Having reserved commands,
+>>>> that number needs to stay the same. We cannot have more than 32 tags.
+>>>> I think keeping can_queue as the max queue depth with at most
+>>>> nr_reserved_cmds tags reserved is better.
+>>>>
+>>>>> +     * commands sent to the host.
+>>>>> +     */
+>>>>> +    int nr_reserved_cmds;
+>>>
+>>> +1 for Damien's request. I also prefer to keep can_queue as the maximum
+>>> queue depth, whether or not nr_reserved_cmds has been set.
+>>
+>> For non SATA drives, I still think that is a good idea. However, for 
+>> SATA,
+>> we always have the internal tag command that is special. With John's
+>> change, it would have to be reserved but that means we are down to 31 max
+>> QD,
+> 
+> My intention is to keep regular tag depth at 32 for SATA. We add an 
+> extra tag as a reserved tag. Indeed, this is called a 'tag', but it's 
+> just really the placeholder for what will be the ATA_TAG_INTERNAL request.
+> 
+> About how we set scsi_host.can_queue, in this series we set .can_queue 
+> as max regular tags, and the handling is as follows:
+> 
+> scsi_mq_setup_tags():
+> tag_set->queue_depth = shost->can_queue + shost->nr_reserved_cmds
+> tag_set->reserved_tags = shost->nr_reserved_cmds
+> 
+> So we honour the rule that blk_mq_tag_set.queue_depth is the total tag 
+> depth, including reserved.
+> 
+> Incidentally I think Christoph prefers to keep .can_queue at total max 
+> tags including reserved:
+> https://lore.kernel.org/linux-scsi/337339b7-6f4a-a25c-f11c-7f701b42d6a8@suse.de/ 
+> 
+> 
+>> so going backward several years... That internal tag for ATA does not
+>> need to be reserved since this command is always used when the drive is
+>> idle and no other NCQ commands are on-going.
+> 
+> So do you mean that ATA_TAG_INTERNAL qc is used for other commands apart 
+> from internal commands?
+> 
+Well.
 
-On Sat, Jun 18, 2022 at 2:32 PM Conor Dooley <mail@conchuod.ie> wrote:
-> From: Conor Dooley <conor.dooley@microchip.com>
->
-> snps,dwc-ssi-1.01a has a single user - the Canaan k210, which uses a
-> width of 4 for spi-{r,t}x-bus-width. Update the binding to reflect
-> this.
->
-> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+The problem is that 'ATA_TAG_INTERNAL' currently is overloaded to
+a) signal internal commands
+b) 'magic' tag when looking up commands
 
-Thanks for your patch!
+My proposal would be to separate these use-cases, and use a flag (eg 
+ATA_QCFLAG_INTERNAL) to determine internal commands.
 
-> --- a/Documentation/devicetree/bindings/spi/snps,dw-apb-ssi.yaml
-> +++ b/Documentation/devicetree/bindings/spi/snps,dw-apb-ssi.yaml
-> @@ -135,19 +135,41 @@ properties:
->        of the designware controller, and the upper limit is also subject to
->        controller configuration.
->
-> -patternProperties:
-> -  "^.*@[0-9a-f]+$":
-> -    type: object
-> -    properties:
-> -      reg:
-> -        minimum: 0
-> -        maximum: 3
-> -
-> -      spi-rx-bus-width:
-> -        const: 1
-> -
-> -      spi-tx-bus-width:
-> -        const: 1
-> +if:
-> +  properties:
-> +    compatible:
-> +      contains:
-> +        const: snps,dwc-ssi-1.01a
-> +
-> +then:
-> +  patternProperties:
-> +    "^.*@[0-9a-f]+$":
-> +      type: object
-> +      properties:
-> +        reg:
-> +          minimum: 0
-> +          maximum: 3
-> +
-> +        spi-rx-bus-width:
-> +          const: 4
-> +
-> +        spi-tx-bus-width:
-> +          const: 4
+The we'll be needing an internal tag-lookup map
+(NCQ tag -> blk-mq tag) for ata_qc_from_tag() to retrieve the command 
+corresponding to a driver tag.
 
-These two also depend on the board (SPI device + wiring).
-So all of [1, 2, 4] are valid values.
+I guess we'll need that anyway with libsas, as there we're working with 
+a budget tag which has no relationship with the NCQ tag whatsoever ...
 
-> +
-> +else:
-> +  patternProperties:
-> +    "^.*@[0-9a-f]+$":
-> +      type: object
-> +      properties:
-> +        reg:
-> +          minimum: 0
-> +          maximum: 3
-> +
-> +        spi-rx-bus-width:
-> +          const: 1
-> +
-> +        spi-tx-bus-width:
-> +          const: 1
->
->  unevaluatedProperties: false
+But with that we can kill 'ATA_TAG_INTERNAL', and let the driver figure 
+out how to allocate internal tags.
 
-Gr{oetje,eeting}s,
+Cheers,
 
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Hannes
+-- 
+Dr. Hannes Reinecke		           Kernel Storage Architect
+hare@suse.de			                  +49 911 74053 688
+SUSE Software Solutions Germany GmbH, Maxfeldstr. 5, 90409 Nürnberg
+HRB 36809 (AG Nürnberg), GF: Felix Imendörffer
