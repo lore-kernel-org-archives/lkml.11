@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61F7BC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:12:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F255AC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:12:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241448AbiFTOL6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:11:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44046 "EHLO
+        id S1351169AbiFTOMG (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 10:12:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352057AbiFTNzw (ORCPT
+        with ESMTP id S1350399AbiFTNxZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:55:52 -0400
+        Mon, 20 Jun 2022 09:53:25 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88CD134BB8;
-        Mon, 20 Jun 2022 06:21:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 456B95F8D;
+        Mon, 20 Jun 2022 06:19:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 95ADFB811D7;
-        Mon, 20 Jun 2022 13:11:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E543FC3411B;
-        Mon, 20 Jun 2022 13:11:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E08DEB811BF;
+        Mon, 20 Jun 2022 13:19:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B588C3411B;
+        Mon, 20 Jun 2022 13:19:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730667;
-        bh=Se/8P/jaRDfY+UTXLxqdL6SgFPgJump3fH5kjWf95ig=;
+        s=korg; t=1655731190;
+        bh=PnwFDSr0QbHhkvmwmnkK4Kuu2ybmHtpHvkQaBoGakRs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v4ou0V6Nq9Nv5/etmTHn0JyZTCpZ2r4qk8wYi6ZfexqkIMdpJlWsHR2j6MmDfcM6L
-         T1a52CTtsb3npUP0bpQPRDfu8/h8+zabFHZ7RGHMdiDBGVlqWJccGUPN8rNC9qaGkf
-         Du5dSe80DDi7mpopIorLhlCYUaKniO7UgPT5nRdo=
+        b=r74nb9u7TZk1Hk9CJR2W3FuGm0a22MaO38cfTYgySyKvWTBAlBlChv7Vp69r3bnL/
+         fY5fkhW0EvZbXDmxkQJ7g5lpCyFhLHvjksAcZltFbCnGf1DeZ+LwkIUNJyfl6YdusK
+         NPFTjH3Kc/3fWU6wX2qCLR/0aJxH+11pdBSB33UY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yangtao Li <tiny.windzz@gmail.com>,
-        Theodore Tso <tytso@mit.edu>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 019/240] random: Add and use pr_fmt()
-Date:   Mon, 20 Jun 2022 14:48:40 +0200
-Message-Id: <20220620124738.367436228@linuxfoundation.org>
+        stable@vger.kernel.org, Wanming Hu <huwanming@huaweil.com>,
+        He Ying <heying24@huawei.com>,
+        Chen Jingwen <chenjingwen6@huawei.com>,
+        Kees Cook <keescook@chromium.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 181/240] powerpc/kasan: Silence KASAN warnings in __get_wchan()
+Date:   Mon, 20 Jun 2022 14:51:22 +0200
+Message-Id: <20220620124744.238370329@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -49,103 +53,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yangtao Li <tiny.windzz@gmail.com>
+From: He Ying <heying24@huawei.com>
 
-commit 12cd53aff5ea0359b1dac91fcd9ddc7b9e646588 upstream.
+[ Upstream commit a1b29ba2f2c171b9bea73be993bfdf0a62d37d15 ]
 
-Prefix all printk/pr_<level> messages with "random: " to make the
-logging a bit more consistent.
+The following KASAN warning was reported in our kernel.
 
-Miscellanea:
+  BUG: KASAN: stack-out-of-bounds in get_wchan+0x188/0x250
+  Read of size 4 at addr d216f958 by task ps/14437
 
-o Convert a printks to pr_notice
-o Whitespace to align to open parentheses
-o Remove embedded "random: " from pr_* as pr_fmt adds it
+  CPU: 3 PID: 14437 Comm: ps Tainted: G           O      5.10.0 #1
+  Call Trace:
+  [daa63858] [c0654348] dump_stack+0x9c/0xe4 (unreliable)
+  [daa63888] [c035cf0c] print_address_description.constprop.3+0x8c/0x570
+  [daa63908] [c035d6bc] kasan_report+0x1ac/0x218
+  [daa63948] [c00496e8] get_wchan+0x188/0x250
+  [daa63978] [c0461ec8] do_task_stat+0xce8/0xe60
+  [daa63b98] [c0455ac8] proc_single_show+0x98/0x170
+  [daa63bc8] [c03cab8c] seq_read_iter+0x1ec/0x900
+  [daa63c38] [c03cb47c] seq_read+0x1dc/0x290
+  [daa63d68] [c037fc94] vfs_read+0x164/0x510
+  [daa63ea8] [c03808e4] ksys_read+0x144/0x1d0
+  [daa63f38] [c005b1dc] ret_from_syscall+0x0/0x38
+  --- interrupt: c00 at 0x8fa8f4
+      LR = 0x8fa8cc
 
-Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
-Link: https://lore.kernel.org/r/20190607182517.28266-3-tiny.windzz@gmail.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+  The buggy address belongs to the page:
+  page:98ebcdd2 refcount:0 mapcount:0 mapping:00000000 index:0x2 pfn:0x1216f
+  flags: 0x0()
+  raw: 00000000 00000000 01010122 00000000 00000002 00000000 ffffffff 00000000
+  raw: 00000000
+  page dumped because: kasan: bad access detected
+
+  Memory state around the buggy address:
+   d216f800: 00 00 00 00 00 f1 f1 f1 f1 00 00 00 00 00 00 00
+   d216f880: f2 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  >d216f900: 00 00 00 00 00 00 00 00 00 00 00 f1 f1 f1 f1 00
+                                            ^
+   d216f980: f2 f2 f2 f2 f2 f2 f2 00 00 00 00 00 00 00 00 00
+   d216fa00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+
+After looking into this issue, I find the buggy address belongs
+to the task stack region. It seems KASAN has something wrong.
+I look into the code of __get_wchan in x86 architecture and
+find the same issue has been resolved by the commit
+f7d27c35ddff ("x86/mm, kasan: Silence KASAN warnings in get_wchan()").
+The solution could be applied to powerpc architecture too.
+
+As Andrey Ryabinin said, get_wchan() is racy by design, it may
+access volatile stack of running task, thus it may access
+redzone in a stack frame and cause KASAN to warn about this.
+
+Use READ_ONCE_NOCHECK() to silence these warnings.
+
+Reported-by: Wanming Hu <huwanming@huaweil.com>
+Signed-off-by: He Ying <heying24@huawei.com>
+Signed-off-by: Chen Jingwen <chenjingwen6@huawei.com>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220121014418.155675-1-heying24@huawei.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/random.c |   21 ++++++++++-----------
- 1 file changed, 10 insertions(+), 11 deletions(-)
+ arch/powerpc/kernel/process.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -307,6 +307,8 @@
-  * Eastlake, Steve Crocker, and Jeff Schiller.
-  */
+diff --git a/arch/powerpc/kernel/process.c b/arch/powerpc/kernel/process.c
+index c94bba9142e7..832663f21422 100644
+--- a/arch/powerpc/kernel/process.c
++++ b/arch/powerpc/kernel/process.c
+@@ -2001,12 +2001,12 @@ static unsigned long __get_wchan(struct task_struct *p)
+ 		return 0;
  
-+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-+
- #include <linux/utsname.h>
- #include <linux/module.h>
- #include <linux/kernel.h>
-@@ -738,7 +740,7 @@ retry:
- 	}
- 
- 	if (WARN_ON(entropy_count < 0)) {
--		pr_warn("random: negative entropy/overflow: pool %s count %d\n",
-+		pr_warn("negative entropy/overflow: pool %s count %d\n",
- 			r->name, entropy_count);
- 		entropy_count = 0;
- 	} else if (entropy_count > pool_size)
-@@ -834,7 +836,7 @@ static void crng_initialize(struct crng_
- 		invalidate_batched_entropy();
- 		numa_crng_init();
- 		crng_init = 2;
--		pr_notice("random: crng done (trusting CPU's manufacturer)\n");
-+		pr_notice("crng done (trusting CPU's manufacturer)\n");
- 	}
- 	crng->init_time = jiffies - CRNG_RESEED_INTERVAL - 1;
- }
-@@ -858,14 +860,12 @@ static void crng_finalize_init(struct cr
- 	kill_fasync(&fasync, SIGIO, POLL_IN);
- 	pr_notice("crng init done\n");
- 	if (unseeded_warning.missed) {
--		pr_notice("random: %d get_random_xx warning(s) missed "
--			  "due to ratelimiting\n",
-+		pr_notice("%d get_random_xx warning(s) missed due to ratelimiting\n",
- 			  unseeded_warning.missed);
- 		unseeded_warning.missed = 0;
- 	}
- 	if (urandom_warning.missed) {
--		pr_notice("random: %d urandom warning(s) missed "
--			  "due to ratelimiting\n",
-+		pr_notice("%d urandom warning(s) missed due to ratelimiting\n",
- 			  urandom_warning.missed);
- 		urandom_warning.missed = 0;
- 	}
-@@ -948,7 +948,7 @@ static size_t crng_fast_load(const char
- 	if (crng_init_cnt >= CRNG_INIT_CNT_THRESH) {
- 		invalidate_batched_entropy();
- 		crng_init = 1;
--		pr_notice("random: fast init done\n");
-+		pr_notice("fast init done\n");
- 	}
- 	return ret;
- }
-@@ -1384,7 +1384,7 @@ retry:
- 		ibytes = 0;
- 
- 	if (WARN_ON(entropy_count < 0)) {
--		pr_warn("random: negative entropy count: pool %s count %d\n",
-+		pr_warn("negative entropy count: pool %s count %d\n",
- 			r->name, entropy_count);
- 		entropy_count = 0;
- 	}
-@@ -1870,9 +1870,8 @@ urandom_read(struct file *file, char __u
- 	if (!crng_ready() && maxwarn > 0) {
- 		maxwarn--;
- 		if (__ratelimit(&urandom_warning))
--			printk(KERN_NOTICE "random: %s: uninitialized "
--			       "urandom read (%zd bytes read)\n",
--			       current->comm, nbytes);
-+			pr_notice("%s: uninitialized urandom read (%zd bytes read)\n",
-+				  current->comm, nbytes);
- 		spin_lock_irqsave(&primary_crng.lock, flags);
- 		crng_init_cnt = 0;
- 		spin_unlock_irqrestore(&primary_crng.lock, flags);
+ 	do {
+-		sp = *(unsigned long *)sp;
++		sp = READ_ONCE_NOCHECK(*(unsigned long *)sp);
+ 		if (!validate_sp(sp, p, STACK_FRAME_OVERHEAD) ||
+ 		    p->state == TASK_RUNNING)
+ 			return 0;
+ 		if (count > 0) {
+-			ip = ((unsigned long *)sp)[STACK_FRAME_LR_SAVE];
++			ip = READ_ONCE_NOCHECK(((unsigned long *)sp)[STACK_FRAME_LR_SAVE]);
+ 			if (!in_sched_functions(ip))
+ 				return ip;
+ 		}
+-- 
+2.35.1
+
 
 
