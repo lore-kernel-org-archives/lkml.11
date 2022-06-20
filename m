@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97126CCA480
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:05:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6685EC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:05:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244084AbiFTOEI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:04:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36690 "EHLO
+        id S1349160AbiFTOFe (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 10:05:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348765AbiFTNxs (ORCPT
+        with ESMTP id S1351834AbiFTNz2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:53:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24EF0263D;
-        Mon, 20 Jun 2022 06:20:19 -0700 (PDT)
+        Mon, 20 Jun 2022 09:55:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 174F6340EB;
+        Mon, 20 Jun 2022 06:21:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 600846114A;
-        Mon, 20 Jun 2022 13:19:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56FEBC3411B;
-        Mon, 20 Jun 2022 13:19:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 593AD60AC0;
+        Mon, 20 Jun 2022 13:21:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62180C3411B;
+        Mon, 20 Jun 2022 13:21:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731162;
-        bh=nq7HXhaBjISt7ClCGXkRkXFP2hWY7lMTXMBj5JRgMWA=;
+        s=korg; t=1655731292;
+        bh=KRnyYm02/M04mY5xe4aX4sVWRy2Xqe+5jAymsdFwhho=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DhOubSZCjlR/g9SBx1Sug5EUWPpsQhvCo+bDkVqPMTx/hvMH43lBvKUQZv6yebW8e
-         Mch+hoSGMH8959H0c7I8L6mY7re5Jyc3h72hdpobIPRKiROmJD03f6wbtBRdPk4z7U
-         1GWRxjdp5CkrjpOHhxEs+9v0K8SQ+b5phyN0ZQas=
+        b=ZBPFwAI2k+hhmtb3ACEE5p/q7rKdx5tfUG4qAnX8cQG3HZ/Eb9mq8hJvHDowzcfRm
+         R+rAn5uT482RQpBjPCv9uY5dAqf9uKSJWxFQNziF8r6qsPXLhVA7Jw9niF+CI+eLA8
+         oRTWSVaRvrEFyVBRMl7/bQN8SOkIZBknsDZWQmzc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nicolai Stange <nstange@suse.de>,
-        =?UTF-8?q?Stephan=20M=C3=BCller?= <smueller@chronox.de>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 173/240] crypto: drbg - prepare for more fine-grained tracking of seeding state
-Date:   Mon, 20 Jun 2022 14:51:14 +0200
-Message-Id: <20220620124744.009745673@linuxfoundation.org>
+        stable@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@linux.microsoft.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 215/240] certs/blacklist_hashes.c: fix const confusion in certs blacklist
+Date:   Mon, 20 Jun 2022 14:51:56 +0200
+Message-Id: <20220620124745.202364357@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -50,137 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolai Stange <nstange@suse.de>
+From: Masahiro Yamada <masahiroy@kernel.org>
 
-commit ce8ce31b2c5c8b18667784b8c515650c65d57b4e upstream.
+[ Upstream commit 6a1c3767d82ed8233de1263aa7da81595e176087 ]
 
-There are two different randomness sources the DRBGs are getting seeded
-from, namely the jitterentropy source (if enabled) and get_random_bytes().
-At initial DRBG seeding time during boot, the latter might not have
-collected sufficient entropy for seeding itself yet and thus, the DRBG
-implementation schedules a reseed work from a random_ready_callback once
-that has happened. This is particularly important for the !->pr DRBG
-instances, for which (almost) no further reseeds are getting triggered
-during their lifetime.
+This file fails to compile as follows:
 
-Because collecting data from the jitterentropy source is a rather expensive
-operation, the aforementioned asynchronously scheduled reseed work
-restricts itself to get_random_bytes() only. That is, it in some sense
-amends the initial DRBG seed derived from jitterentropy output at full
-(estimated) entropy with fresh randomness obtained from get_random_bytes()
-once that has been seeded with sufficient entropy itself.
+  CC      certs/blacklist_hashes.o
+certs/blacklist_hashes.c:4:1: error: ignoring attribute ‘section (".init.data")’ because it conflicts with previous ‘section (".init.rodata")’ [-Werror=attributes]
+    4 | const char __initdata *const blacklist_hashes[] = {
+      | ^~~~~
+In file included from certs/blacklist_hashes.c:2:
+certs/blacklist.h:5:38: note: previous declaration here
+    5 | extern const char __initconst *const blacklist_hashes[];
+      |                                      ^~~~~~~~~~~~~~~~
 
-With the advent of rng_is_initialized(), there is no real need for doing
-the reseed operation from an asynchronously scheduled work anymore and a
-subsequent patch will make it synchronous by moving it next to related
-logic already present in drbg_generate().
+Apply the same fix as commit 2be04df5668d ("certs/blacklist_nohashes.c:
+fix const confusion in certs blacklist").
 
-However, for tracking whether a full reseed including the jitterentropy
-source is required or a "partial" reseed involving only get_random_bytes()
-would be sufficient already, the boolean struct drbg_state's ->seeded
-member must become a tristate value.
-
-Prepare for this by introducing the new enum drbg_seed_state and change
-struct drbg_state's ->seeded member's type from bool to that type.
-
-For facilitating review, enum drbg_seed_state is made to only contain
-two members corresponding to the former ->seeded values of false and true
-resp. at this point: DRBG_SEED_STATE_UNSEEDED and DRBG_SEED_STATE_FULL. A
-third one for tracking the intermediate state of "seeded from jitterentropy
-only" will be introduced with a subsequent patch.
-
-There is no change in behaviour at this point.
-
-Signed-off-by: Nicolai Stange <nstange@suse.de>
-Reviewed-by: Stephan Müller <smueller@chronox.de>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 734114f8782f ("KEYS: Add a system blacklist keyring")
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+Reviewed-by: Mickaël Salaün <mic@linux.microsoft.com>
+Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- crypto/drbg.c         |   19 ++++++++++---------
- include/crypto/drbg.h |    7 ++++++-
- 2 files changed, 16 insertions(+), 10 deletions(-)
+ certs/blacklist_hashes.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/crypto/drbg.c
-+++ b/crypto/drbg.c
-@@ -1042,7 +1042,7 @@ static inline int __drbg_seed(struct drb
- 	if (ret)
- 		return ret;
+diff --git a/certs/blacklist_hashes.c b/certs/blacklist_hashes.c
+index 344892337be0..d5961aa3d338 100644
+--- a/certs/blacklist_hashes.c
++++ b/certs/blacklist_hashes.c
+@@ -1,7 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0
+ #include "blacklist.h"
  
--	drbg->seeded = true;
-+	drbg->seeded = DRBG_SEED_STATE_FULL;
- 	/* 10.1.1.2 / 10.1.1.3 step 5 */
- 	drbg->reseed_ctr = 1;
- 
-@@ -1087,14 +1087,14 @@ static void drbg_async_seed(struct work_
- 	if (ret)
- 		goto unlock;
- 
--	/* Set seeded to false so that if __drbg_seed fails the
--	 * next generate call will trigger a reseed.
-+	/* Reset ->seeded so that if __drbg_seed fails the next
-+	 * generate call will trigger a reseed.
- 	 */
--	drbg->seeded = false;
-+	drbg->seeded = DRBG_SEED_STATE_UNSEEDED;
- 
- 	__drbg_seed(drbg, &seedlist, true);
- 
--	if (drbg->seeded)
-+	if (drbg->seeded == DRBG_SEED_STATE_FULL)
- 		drbg->reseed_threshold = drbg_max_requests(drbg);
- 
- unlock:
-@@ -1385,13 +1385,14 @@ static int drbg_generate(struct drbg_sta
- 	 * here. The spec is a bit convoluted here, we make it simpler.
- 	 */
- 	if (drbg->reseed_threshold < drbg->reseed_ctr)
--		drbg->seeded = false;
-+		drbg->seeded = DRBG_SEED_STATE_UNSEEDED;
- 
--	if (drbg->pr || !drbg->seeded) {
-+	if (drbg->pr || drbg->seeded == DRBG_SEED_STATE_UNSEEDED) {
- 		pr_devel("DRBG: reseeding before generation (prediction "
- 			 "resistance: %s, state %s)\n",
- 			 drbg->pr ? "true" : "false",
--			 drbg->seeded ? "seeded" : "unseeded");
-+			 (drbg->seeded ==  DRBG_SEED_STATE_FULL ?
-+			  "seeded" : "unseeded"));
- 		/* 9.3.1 steps 7.1 through 7.3 */
- 		len = drbg_seed(drbg, addtl, true);
- 		if (len)
-@@ -1576,7 +1577,7 @@ static int drbg_instantiate(struct drbg_
- 	if (!drbg->core) {
- 		drbg->core = &drbg_cores[coreref];
- 		drbg->pr = pr;
--		drbg->seeded = false;
-+		drbg->seeded = DRBG_SEED_STATE_UNSEEDED;
- 		drbg->reseed_threshold = drbg_max_requests(drbg);
- 
- 		ret = drbg_alloc_state(drbg);
---- a/include/crypto/drbg.h
-+++ b/include/crypto/drbg.h
-@@ -105,6 +105,11 @@ struct drbg_test_data {
- 	struct drbg_string *testentropy; /* TEST PARAMETER: test entropy */
+-const char __initdata *const blacklist_hashes[] = {
++const char __initconst *const blacklist_hashes[] = {
+ #include CONFIG_SYSTEM_BLACKLIST_HASH_LIST
+ 	, NULL
  };
- 
-+enum drbg_seed_state {
-+	DRBG_SEED_STATE_UNSEEDED,
-+	DRBG_SEED_STATE_FULL,
-+};
-+
- struct drbg_state {
- 	struct mutex drbg_mutex;	/* lock around DRBG */
- 	unsigned char *V;	/* internal state 10.1.1.1 1a) */
-@@ -127,7 +132,7 @@ struct drbg_state {
- 	struct crypto_wait ctr_wait;		/* CTR mode async wait obj */
- 	struct scatterlist sg_in, sg_out;	/* CTR mode SGLs */
- 
--	bool seeded;		/* DRBG fully seeded? */
-+	enum drbg_seed_state seeded;		/* DRBG fully seeded? */
- 	bool pr;		/* Prediction resistance enabled? */
- 	bool fips_primed;	/* Continuous test primed? */
- 	unsigned char *prev;	/* FIPS 140-2 continuous test value */
+-- 
+2.35.1
+
 
 
