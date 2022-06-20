@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF5A5CCA479
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:40:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0697CCA47C
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:40:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347224AbiFTNk2 (ORCPT
+        id S1347435AbiFTNkg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:40:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36812 "EHLO
+        Mon, 20 Jun 2022 09:40:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347301AbiFTNiS (ORCPT
+        with ESMTP id S1347400AbiFTNi2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:38:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1C7C1F609;
-        Mon, 20 Jun 2022 06:14:14 -0700 (PDT)
+        Mon, 20 Jun 2022 09:38:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 433002873D;
+        Mon, 20 Jun 2022 06:14:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F78F60C1A;
-        Mon, 20 Jun 2022 13:13:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F90AC3411C;
-        Mon, 20 Jun 2022 13:13:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CF8860A52;
+        Mon, 20 Jun 2022 13:14:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12C5BC3411B;
+        Mon, 20 Jun 2022 13:14:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730834;
-        bh=qphTwdliIn8w9lKPm/HwNo5p+1kw3P0H8jVb9mzhi/E=;
+        s=korg; t=1655730856;
+        bh=IRIB/nfddzpYszgOCi6TNfrnOf4M5Ta9hww7v3gomiQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xtIP+2wj8qEo4Ovjz9UzPkZpFcCqPZsyc0tqjHhIusv3qWWVQxxLbGaJ2ywkdkTNY
-         BVpIMSOEeI1Yu4XNlhE8xRwKW2eedBs3SfCUWhDtc4R8VqBLVSlLG6PkuaLwyCQyKY
-         ynFKXDNc9ahRluPEqcldAVqJnevtCf1FJIWIavfA=
+        b=zE2GHv73BP0MqJcipfDrggimtGr5B2g4tXSu6yr7os35OwB4Lsj7Nn5DCwuhSWJyY
+         Ls7oILxI8sxbKo6lAkyNlxAWTQss5dyhM11ceCoAdRNpWePUgKP4vU2BYz8Rs5aiXk
+         TRc7l3Qk816vMLWt6mn2W4eEE+w0mTkwLR0NYmQI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
-        Richard Henderson <rth@twiddle.net>,
-        Mark Brown <broonie@kernel.org>, Theodore Tso <tytso@mit.edu>,
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Eric Biggers <ebiggers@google.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 029/240] linux/random.h: Mark CONFIG_ARCH_RANDOM functions __must_check
-Date:   Mon, 20 Jun 2022 14:48:50 +0200
-Message-Id: <20220620124738.687364273@linuxfoundation.org>
+Subject: [PATCH 5.4 078/240] random: absorb fast pool into input pool after fast load
+Date:   Mon, 20 Jun 2022 14:49:39 +0200
+Message-Id: <20220620124741.016486257@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -51,49 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Richard Henderson <richard.henderson@linaro.org>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 904caa6413c87aacbf7d0682da617c39ca18cf1a upstream.
+commit c30c575db4858f0bbe5e315ff2e529c782f33a1f upstream.
 
-We must not use the pointer output without validating the
-success of the random read.
+During crng_init == 0, we never credit entropy in add_interrupt_
+randomness(), but instead dump it directly into the primary_crng. That's
+fine, except for the fact that we then wind up throwing away that
+entropy later when we switch to extracting from the input pool and
+xoring into (and later in this series overwriting) the primary_crng key.
+The two other early init sites -- add_hwgenerator_randomness()'s use
+crng_fast_load() and add_device_ randomness()'s use of crng_slow_load()
+-- always additionally give their inputs to the input pool. But not
+add_interrupt_randomness().
 
-Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
-Signed-off-by: Richard Henderson <rth@twiddle.net>
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/r/20200110145422.49141-7-broonie@kernel.org
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+This commit fixes that shortcoming by calling mix_pool_bytes() after
+crng_fast_load() in add_interrupt_randomness(). That's partially
+verboten on PREEMPT_RT, where it implies taking spinlock_t from an IRQ
+handler. But this also only happens during early boot and then never
+again after that. Plus it's a trylock so it has the same considerations
+as calling crng_fast_load(), which we're already using.
+
+Cc: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
+Suggested-by: Eric Biggers <ebiggers@google.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/random.h |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/char/random.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -118,19 +118,19 @@ unsigned long randomize_page(unsigned lo
- #ifdef CONFIG_ARCH_RANDOM
- # include <asm/archrandom.h>
- #else
--static inline bool arch_get_random_long(unsigned long *v)
-+static inline bool __must_check arch_get_random_long(unsigned long *v)
- {
- 	return false;
- }
--static inline bool arch_get_random_int(unsigned int *v)
-+static inline bool __must_check arch_get_random_int(unsigned int *v)
- {
- 	return false;
- }
--static inline bool arch_get_random_seed_long(unsigned long *v)
-+static inline bool __must_check arch_get_random_seed_long(unsigned long *v)
- {
- 	return false;
- }
--static inline bool arch_get_random_seed_int(unsigned int *v)
-+static inline bool __must_check arch_get_random_seed_int(unsigned int *v)
- {
- 	return false;
- }
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -850,6 +850,10 @@ void add_interrupt_randomness(int irq)
+ 		    crng_fast_load((u8 *)fast_pool->pool, sizeof(fast_pool->pool)) > 0) {
+ 			fast_pool->count = 0;
+ 			fast_pool->last = now;
++			if (spin_trylock(&input_pool.lock)) {
++				_mix_pool_bytes(&fast_pool->pool, sizeof(fast_pool->pool));
++				spin_unlock(&input_pool.lock);
++			}
+ 		}
+ 		return;
+ 	}
 
 
