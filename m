@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C685C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:05:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6616EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:05:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244505AbiFTNFl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:05:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47262 "EHLO
+        id S244577AbiFTNFq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:05:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244613AbiFTNDs (ORCPT
+        with ESMTP id S244601AbiFTNDr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:03:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3832B1ADAE;
-        Mon, 20 Jun 2022 05:58:29 -0700 (PDT)
+        Mon, 20 Jun 2022 09:03:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 285F51ADAB;
+        Mon, 20 Jun 2022 05:58:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C001261539;
-        Mon, 20 Jun 2022 12:58:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA495C3411B;
-        Mon, 20 Jun 2022 12:58:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 639CBB81092;
+        Mon, 20 Jun 2022 12:58:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E2C2C3411B;
+        Mon, 20 Jun 2022 12:58:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655729908;
-        bh=SPQd5Lsdt7SqMwWbRPh9kjVSXWoy8cExBwIjF7PcVVM=;
+        s=korg; t=1655729905;
+        bh=KRnyYm02/M04mY5xe4aX4sVWRy2Xqe+5jAymsdFwhho=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0Cf2HrHYRfYWwuJA103TC+R8AWCE86yfNmC6+5ZLhJ4bSOBH6sVNCdsu4QyE0FeVe
-         oOuKIOri6Jn+ot6YiD7pUC4hGbVxcSv5TTv71t6fDV9iD4KzfN+Y4H65MukHxKhDVA
-         IH3YK5pqY3DCZD65L24t7FmGNm/uNipmcbjCecEk=
+        b=NJhtPZ6SxJRKd6pwu+NwyiatBXHmc+vnlSP3PFH6ZNx/dfrDRkU2HyoouxQUwUYeT
+         rM+oD4SoWOwYXTKLQtZmuvEGVisOlSCpSIZ0gdG2ht0T/EsdyxBi1OeGgdWWshKJld
+         d2QYaLAPApH+gKch6mSTXqqmfoUwl5Pn8WIJZPW0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        Miaoqian Lin <linmq006@gmail.com>
-Subject: [PATCH 5.18 112/141] usb: gadget: lpc32xx_udc: Fix refcount leak in lpc32xx_udc_probe
-Date:   Mon, 20 Jun 2022 14:50:50 +0200
-Message-Id: <20220620124732.853364128@linuxfoundation.org>
+        stable@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@linux.microsoft.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 085/141] certs/blacklist_hashes.c: fix const confusion in certs blacklist
+Date:   Mon, 20 Jun 2022 14:50:23 +0200
+Message-Id: <20220620124732.058316706@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 References: <20220620124729.509745706@linuxfoundation.org>
@@ -48,33 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Masahiro Yamada <masahiroy@kernel.org>
 
-commit 4757c9ade34178b351580133771f510b5ffcf9c8 upstream.
+[ Upstream commit 6a1c3767d82ed8233de1263aa7da81595e176087 ]
 
-of_parse_phandle() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
-of_node_put() will check NULL pointer.
+This file fails to compile as follows:
 
-Fixes: 24a28e428351 ("USB: gadget driver for LPC32xx")
-Cc: stable <stable@kernel.org>
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220603140246.64529-1-linmq006@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+  CC      certs/blacklist_hashes.o
+certs/blacklist_hashes.c:4:1: error: ignoring attribute ‘section (".init.data")’ because it conflicts with previous ‘section (".init.rodata")’ [-Werror=attributes]
+    4 | const char __initdata *const blacklist_hashes[] = {
+      | ^~~~~
+In file included from certs/blacklist_hashes.c:2:
+certs/blacklist.h:5:38: note: previous declaration here
+    5 | extern const char __initconst *const blacklist_hashes[];
+      |                                      ^~~~~~~~~~~~~~~~
+
+Apply the same fix as commit 2be04df5668d ("certs/blacklist_nohashes.c:
+fix const confusion in certs blacklist").
+
+Fixes: 734114f8782f ("KEYS: Add a system blacklist keyring")
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+Reviewed-by: Mickaël Salaün <mic@linux.microsoft.com>
+Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/gadget/udc/lpc32xx_udc.c |    1 +
- 1 file changed, 1 insertion(+)
+ certs/blacklist_hashes.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/usb/gadget/udc/lpc32xx_udc.c
-+++ b/drivers/usb/gadget/udc/lpc32xx_udc.c
-@@ -3016,6 +3016,7 @@ static int lpc32xx_udc_probe(struct plat
- 	}
+diff --git a/certs/blacklist_hashes.c b/certs/blacklist_hashes.c
+index 344892337be0..d5961aa3d338 100644
+--- a/certs/blacklist_hashes.c
++++ b/certs/blacklist_hashes.c
+@@ -1,7 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0
+ #include "blacklist.h"
  
- 	udc->isp1301_i2c_client = isp1301_get_client(isp1301_node);
-+	of_node_put(isp1301_node);
- 	if (!udc->isp1301_i2c_client) {
- 		return -EPROBE_DEFER;
- 	}
+-const char __initdata *const blacklist_hashes[] = {
++const char __initconst *const blacklist_hashes[] = {
+ #include CONFIG_SYSTEM_BLACKLIST_HASH_LIST
+ 	, NULL
+ };
+-- 
+2.35.1
+
 
 
