@@ -2,98 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62274C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 15:57:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C550C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 15:57:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243821AbiFTP5J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 11:57:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54478 "EHLO
+        id S243362AbiFTP5i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 11:57:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243362AbiFTP5E (ORCPT
+        with ESMTP id S231167AbiFTP5f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 11:57:04 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63E9E1DA69
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 08:57:03 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id fd6so12984000edb.5
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 08:57:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=BLJok6X/XP9rRP7OVZBxo2FoWIuF2yxnMwl8P3cexO4=;
-        b=Xt7y5Qe7+Wa7yYibcVvdOfwMtbLwRTN0Zq/M6R55v21ht1WGi/IPChYQ+SvJSe5Brc
-         B6UA+MJObyH2Fm+8VXqwNRvg1mfurkHWqw8Xbq8NPqQmqVIqnya1L4ZahflvmPBtyeXD
-         VR938s9+lVuSDM/XmiZewPLFp4twSGcwligcvSmIjjVgtuPVp18bhkKjkYllVesSTaZs
-         Jp3PInwjuiJ6YQT3OjVPWlrCjvSeG8i4XyiMH2ryEGFTehrTgAEF1eroWKXB3auLr8r4
-         rBXbBgtscJ94JK8zvmoHlBJtsNtdaiYDWxMtwmVzVyGytdzcjzV4nZS7ol/DknUXGzjx
-         5TxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=BLJok6X/XP9rRP7OVZBxo2FoWIuF2yxnMwl8P3cexO4=;
-        b=Y0MiArBErhtw/pP3lXEfFF7MOmNp/pNqPqcuroPpA+koOnSnUwJ+N+oLCD5XbxYzFE
-         IpziBAqCBIGm7s0LycmijELGEwl2VA9zh6NcIPlPNbNWF7vA6Cdx6zKKMP7USr1fhKx3
-         9fRThA9S5aHJLPha4w5dUw6XLFzNH6+8V3GhqhTqv1cXR7HniVc7t3B0Vob87AH6RlIA
-         TnYXgM/78DIh2glfhnmtVRJVWns5GDryAzd1/rcujatLDd09zWLnhbhnI4lgTHFXs0rF
-         rvIQnM4p1qMqxFAb6i4SlLb7uzOzIubcVhxhnvSR8eXi4X1NA4MtBihrlf0DKpz4qzgO
-         NoaA==
-X-Gm-Message-State: AJIora/Z5K09dJW+BfjaM1T5tZ5vvxZ5xNhYIDalyWYuWSOrWbRpcamA
-        Ml1h+xVhnrRQVZFc8/SQjlUZtA==
-X-Google-Smtp-Source: AGRyM1vB4w9kMQvsDMIwngcwm/lZJao/j8ndNodHf3Z/j1CnWv4Tx74ZUtC1ToZcNlh2DUsmeckxOQ==
-X-Received: by 2002:a05:6402:5c8:b0:433:545f:a811 with SMTP id n8-20020a05640205c800b00433545fa811mr30285866edx.101.1655740622007;
-        Mon, 20 Jun 2022 08:57:02 -0700 (PDT)
-Received: from [192.168.0.210] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id e1-20020a056402148100b004357171dcccsm5866342edv.12.2022.06.20.08.57.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Jun 2022 08:57:01 -0700 (PDT)
-Message-ID: <bc3268e1-2a6e-8faf-3d3b-a8841569a42f@linaro.org>
-Date:   Mon, 20 Jun 2022 17:57:00 +0200
+        Mon, 20 Jun 2022 11:57:35 -0400
+Received: from smtp11.infineon.com (smtp11.infineon.com [IPv6:2a00:18f0:1e00:4::5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5812F1DA5F;
+        Mon, 20 Jun 2022 08:57:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=infineon.com; i=@infineon.com; q=dns/txt; s=IFXMAIL;
+  t=1655740655; x=1687276655;
+  h=message-id:date:mime-version:reply-to:subject:to:cc:
+   references:from:in-reply-to:content-transfer-encoding;
+  bh=K+H7Adg+FLJFWop8Zu77ezGAoHaOLh8NVnvvfeYqE24=;
+  b=bq90l67wimizzMMCMF77t/epfkOo33v7Oge9zQ4LRXAsDP5h+Tm+0tSU
+   Ehcp/FkKLhQu5yy7OLB8WvEm8S1pJs1eMnsjGDxdSaRvtEvVA1RWU2PDD
+   UWQEkmETMEWkglDELJVQyVGalhEnk1KgrwffZHu3OTWQiSRWqFSR7Udcw
+   s=;
+X-SBRS: None
+X-IronPort-AV: E=McAfee;i="6400,9594,10384"; a="301927446"
+X-IronPort-AV: E=Sophos;i="5.92,207,1650924000"; 
+   d="scan'208";a="301927446"
+Received: from unknown (HELO mucxv002.muc.infineon.com) ([172.23.11.17])
+  by smtp11.infineon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 17:57:33 +0200
+Received: from MUCSE805.infineon.com (MUCSE805.infineon.com [172.23.29.31])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mucxv002.muc.infineon.com (Postfix) with ESMTPS;
+        Mon, 20 Jun 2022 17:57:32 +0200 (CEST)
+Received: from MUCSE818.infineon.com (172.23.29.44) by MUCSE805.infineon.com
+ (172.23.29.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Mon, 20 Jun
+ 2022 17:57:32 +0200
+Received: from [10.165.68.86] (10.165.68.86) by MUCSE818.infineon.com
+ (172.23.29.44) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Mon, 20 Jun
+ 2022 17:57:31 +0200
+Message-ID: <058f32a4-58f4-6748-92cd-ce21b27e02fb@infineon.com>
+Date:   Mon, 20 Jun 2022 17:58:07 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 1/4] dt-bindings: net: broadcom-bluetooth: Add CYW55572 DT
- binding
+ Thunderbird/91.9.1
+Reply-To: <stefan.mahnke-hartmann@infineon.com>
+Subject: Re: [PATCH] tpm: sleep at least <...> ms in tpm_msleep()
 Content-Language: en-US
-To:     Hakan Jansson <hakan.jansson@infineon.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        linux-bluetooth@vger.kernel.org
-References: <cover.1655723462.git.hakan.jansson@infineon.com>
- <acd9e85b1ba82875e83ca68ae2aa62d828bfdfa3.1655723462.git.hakan.jansson@infineon.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <acd9e85b1ba82875e83ca68ae2aa62d828bfdfa3.1655723462.git.hakan.jansson@infineon.com>
-Content-Type: text/plain; charset=UTF-8
+To:     Jarkko Sakkinen <jarkko@kernel.org>,
+        Mimi Zohar <zohar@linux.ibm.com>
+CC:     Johannes Holland <johannes.holland@infineon.com>,
+        Nayna <nayna@linux.vnet.ibm.com>,
+        <linux-integrity@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <peterhuewe@gmx.de>, <jgg@ziepe.ca>,
+        <stefan.mahnke-hartmann@infineon.com>
+References: <20220510112902.23213-1-johannes.holland@infineon.com>
+ <YnvTSqRgYkWu0qgp@kernel.org>
+ <99541f08e8b554dea59334005cafb0af978f9a05.camel@linux.ibm.com>
+ <YoKPxMLuWWK2al9F@kernel.org>
+From:   Stefan Mahnke-Hartmann <stefan.mahnke-hartmann@infineon.com>
+Organization: Infineon Technologies AG
+In-Reply-To: <YoKPxMLuWWK2al9F@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.165.68.86]
+X-ClientProxiedBy: MUCSE807.infineon.com (172.23.29.33) To
+ MUCSE818.infineon.com (172.23.29.44)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 20/06/2022 14:01, Hakan Jansson wrote:
-> CYW55572 is a Wi-Fi + Bluetooth combo device from Infineon.
-> Extend the binding with its DT compatible.
-> 
-> Signed-off-by: Hakan Jansson <hakan.jansson@infineon.com>
-> ---
->  Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
 
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+On 16.05.22 19:54, Jarkko Sakkinen wrote:
+> On Thu, May 12, 2022 at 08:21:17AM -0400, Mimi Zohar wrote:
+>> On Wed, 2022-05-11 at 18:16 +0300, Jarkko Sakkinen wrote:
+>>> On Tue, May 10, 2022 at 01:29:03PM +0200, Johannes Holland wrote:
+>>>> To comply with protocol requirements, minimum polling times must often
+>>>> be adhered to. Therefore, a macro like tpm_msleep() should sleep at
+>>>> least the given amount of time (not up to the given period). Have
+>>>> tpm_msleep() sleep at least the given number of milliseconds.
+>>>>
+>>>> Signed-off-by: Johannes Holland <johannes.holland@infineon.com>
+>>>> ---
+>>>>  drivers/char/tpm/tpm.h | 4 ++--
+>>>>  1 file changed, 2 insertions(+), 2 deletions(-)
+>>>>
+>>>> diff --git a/drivers/char/tpm/tpm.h b/drivers/char/tpm/tpm.h
+>>>> index 2163c6ee0d36..0971b55fffe3 100644
+>>>> --- a/drivers/char/tpm/tpm.h
+>>>> +++ b/drivers/char/tpm/tpm.h
+>>>> @@ -185,8 +185,8 @@ int tpm_pm_resume(struct device *dev);
+>>>>  
+>>>>  static inline void tpm_msleep(unsigned int delay_msec)
+>>>>  {
+>>>> -	usleep_range((delay_msec * 1000) - TPM_TIMEOUT_RANGE_US,
+>>>> -		     delay_msec * 1000);
+>>>> +	usleep_range(delay_msec * 1000, (delay_msec * 1000)
+>>>> +		     + TPM_TIMEOUT_RANGE_US);
+>>>>  };
+>>>>  
+>>>>  int tpm_chip_start(struct tpm_chip *chip);
+>>>> -- 
+>>>> 2.34.1
+>>>>
+>>> For this I would really like to hear a 2nd opinion from Nayna and Mimi.
+>> This patch reverts commit 5ef924d9e2e8 ("tpm: use tpm_msleep() value as
+>> max delay").    Are you experiencing TPM issues that require it?
+>>
+>> thanks,
+>>
+>> Mimi
+> Yeah, there's no data to support making anything.  Without a live
+> system having issues with this, I guess this quite definitive NAK.
+>
+> BR, Jarkko
+>
+Either way, a static range is not perfect. So I would suggest,to have the
+values (TPM_TIMEOUT_RANGE_US, TPM_TIMEOUT_POLL) settable, to give the
+possibility to adjust the polling timing vendor specific. Furthermore,
+increasing the polling delay as a function of time would limit the number
+of attempts, especially for long-running commands.
 
-
-Best regards,
-Krzysztof
+BR, Stefan
