@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8467CCCA479
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:00:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3572ACCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:00:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243504AbiFTNAT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:00:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45902 "EHLO
+        id S243545AbiFTNAY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:00:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244080AbiFTM7O (ORCPT
+        with ESMTP id S244381AbiFTM7a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 08:59:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F147C183A7;
-        Mon, 20 Jun 2022 05:56:16 -0700 (PDT)
+        Mon, 20 Jun 2022 08:59:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0387A19F95;
+        Mon, 20 Jun 2022 05:56:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 16F0AB811A6;
-        Mon, 20 Jun 2022 12:56:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62DC9C3411B;
-        Mon, 20 Jun 2022 12:56:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0475C614B7;
+        Mon, 20 Jun 2022 12:56:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FF25C3411B;
+        Mon, 20 Jun 2022 12:56:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655729769;
-        bh=wW0qIChg5DhZAZiynCS13PgfmFZjwtltvi+ebPMRs+Q=;
+        s=korg; t=1655729782;
+        bh=Y7btmtWqz+zAxG7Ja3P/n/px+Y7cn2ZHLPzm5BXZRds=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BnvP7rEBk53BAVCI/P0Hd3Wr5y/sAeUUFV1ZMfW5DmFYS8oz2Lx9Qkk7LmTn7IAVu
-         3QX+INAEORNgN1Jvfojbf3aXZEiTWveGecQtLsLmr5Eq82DM3eFg5izbzawGrWBy8T
-         UBFMHKdaJvEmTW3KyPIHDNpv7qLOczKH9u4G0Nz8=
+        b=aetnlOlnRsYSlUul8iChS9UCUkOKZK2ph+iZUxPzNXg2b3eQw43ZbnQAP22GcEsNq
+         YkHtziJPBotS5kKqAbu3WIh+A8OdUKLIono88t9BixmRCmna5U0dnkOaJPjJyma7NL
+         KYhkKtGFxVQxj0lckLEOWm0wcmhlgveYDHbu4swc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Begunkov <asml.silence@gmail.com>,
-        Sasha Levin <sashal@kernel.org>,
-        van fantasy <g1042620637@gmail.com>
-Subject: [PATCH 5.18 067/141] io_uring: fix races with buffer table unregister
-Date:   Mon, 20 Jun 2022 14:50:05 +0200
-Message-Id: <20220620124731.519623762@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Brian King <brking@linux.vnet.ibm.com>,
+        Chengguang Xu <cgxu519@mykernel.net>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 032/141] scsi: ipr: Fix missing/incorrect resource cleanup in error case
+Date:   Mon, 20 Jun 2022 14:49:30 +0200
+Message-Id: <20220620124730.480598927@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 References: <20220620124729.509745706@linuxfoundation.org>
@@ -49,46 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Begunkov <asml.silence@gmail.com>
+From: Chengguang Xu <cgxu519@mykernel.net>
 
-[ Upstream commit d11d31fc5d8a96f707facee0babdcffaafa38de2 ]
+[ Upstream commit d64c491911322af1dcada98e5b9ee0d87e8c8fee ]
 
-Fixed buffer table quiesce might unlock ->uring_lock, potentially
-letting new requests to be submitted, don't allow those requests to
-use the table as they will race with unregistration.
+Fix missing resource cleanup (when '(--i) == 0') for error case in
+ipr_alloc_mem() and skip incorrect resource cleanup (when '(--i) == 0') for
+error case in ipr_request_other_msi_irqs() because variable i started from
+1.
 
-Reported-and-tested-by: van fantasy <g1042620637@gmail.com>
-Fixes: bd54b6fe3316ec ("io_uring: implement fixed buffers registration similar to fixed files")
-Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+Link: https://lore.kernel.org/r/20220529153456.4183738-4-cgxu519@mykernel.net
+Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
+Acked-by: Brian King <brking@linux.vnet.ibm.com>
+Signed-off-by: Chengguang Xu <cgxu519@mykernel.net>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/io_uring.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/scsi/ipr.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 0a9f9000fc80..3d123ca028c9 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -9495,12 +9495,19 @@ static void __io_sqe_buffers_unregister(struct io_ring_ctx *ctx)
+diff --git a/drivers/scsi/ipr.c b/drivers/scsi/ipr.c
+index 104bee9b3a9d..00593d8953f1 100644
+--- a/drivers/scsi/ipr.c
++++ b/drivers/scsi/ipr.c
+@@ -9795,7 +9795,7 @@ static int ipr_alloc_mem(struct ipr_ioa_cfg *ioa_cfg)
+ 					GFP_KERNEL);
  
- static int io_sqe_buffers_unregister(struct io_ring_ctx *ctx)
- {
-+	unsigned nr = ctx->nr_user_bufs;
- 	int ret;
- 
- 	if (!ctx->buf_data)
- 		return -ENXIO;
- 
-+	/*
-+	 * Quiesce may unlock ->uring_lock, and while it's not held
-+	 * prevent new requests using the table.
-+	 */
-+	ctx->nr_user_bufs = 0;
- 	ret = io_rsrc_ref_quiesce(ctx->buf_data, ctx);
-+	ctx->nr_user_bufs = nr;
- 	if (!ret)
- 		__io_sqe_buffers_unregister(ctx);
- 	return ret;
+ 		if (!ioa_cfg->hrrq[i].host_rrq)  {
+-			while (--i > 0)
++			while (--i >= 0)
+ 				dma_free_coherent(&pdev->dev,
+ 					sizeof(u32) * ioa_cfg->hrrq[i].size,
+ 					ioa_cfg->hrrq[i].host_rrq,
+@@ -10068,7 +10068,7 @@ static int ipr_request_other_msi_irqs(struct ipr_ioa_cfg *ioa_cfg,
+ 			ioa_cfg->vectors_info[i].desc,
+ 			&ioa_cfg->hrrq[i]);
+ 		if (rc) {
+-			while (--i >= 0)
++			while (--i > 0)
+ 				free_irq(pci_irq_vector(pdev, i),
+ 					&ioa_cfg->hrrq[i]);
+ 			return rc;
 -- 
 2.35.1
 
