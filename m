@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 939B0CCA47C
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:10:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79A88CCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:10:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350997AbiFTOIk (ORCPT
+        id S1351037AbiFTOIr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:08:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44192 "EHLO
+        Mon, 20 Jun 2022 10:08:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350737AbiFTNxt (ORCPT
+        with ESMTP id S1352139AbiFTNz7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:53:49 -0400
+        Mon, 20 Jun 2022 09:55:59 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D75337651;
-        Mon, 20 Jun 2022 06:20:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2276CCD;
+        Mon, 20 Jun 2022 06:22:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B58260EA0;
-        Mon, 20 Jun 2022 13:20:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4829C3411B;
-        Mon, 20 Jun 2022 13:20:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 53D6160AC0;
+        Mon, 20 Jun 2022 13:22:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE85AC3411C;
+        Mon, 20 Jun 2022 13:21:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731220;
-        bh=iABpyj6AcVi9DynW8F5QqxUDlCp7OURJBpq3YDyrx5c=;
+        s=korg; t=1655731320;
+        bh=dah1VrpcId8Z+u4nGQ7YFJhY+zDgfrwXLh8LQLGIoDs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qJuSiQY3jo9H5ct8IWiWmhvQwaALmboj2viBXkMU7MoI7D49MH8Y6gjqIXtCoXxUQ
-         XBJzFbMxXs98NeMyc0CZWHSJdtTvBzvxF8foLTKKrtt3lk5I26s2OtV5aTUibn2ucO
-         6sp/7xpOKdxN0o56OWdFnvA/sb6FJvfl5cLCU7Yo=
+        b=G/ZKoJy9e5GPcqY0lLHX2Ijkzbepd01GEDggVHJsGUFdLdm/n2o0X/dMJeiyJJ7Pf
+         gc6DQG6K32lRSj65BvFY9E+kEaZUyuv2SEQKLE+ErV4Dmj6xZS8WDK6av8d5UUZAcM
+         4eU2547BVAEcBBt6up9j4EkibOykO1aUgW2oYTa0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adam Ford <aford173@gmail.com>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 190/240] ASoC: wm8962: Fix suspend while playing music
-Date:   Mon, 20 Jun 2022 14:51:31 +0200
-Message-Id: <20220620124744.494379112@linuxfoundation.org>
+        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        Ian Abbott <abbotti@mev.co.uk>
+Subject: [PATCH 5.4 221/240] comedi: vmk80xx: fix expression for tx buffer size
+Date:   Mon, 20 Jun 2022 14:52:02 +0200
+Message-Id: <20220620124745.370312726@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -51,42 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adam Ford <aford173@gmail.com>
+From: Ian Abbott <abbotti@mev.co.uk>
 
-[ Upstream commit d1f5272c0f7d2e53c6f2480f46725442776f5f78 ]
+commit 242439f7e279d86b3f73b5de724bc67b2f8aeb07 upstream.
 
-If the audio CODEC is playing sound when the system is suspended,
-it can be left in a state which throws the following error:
+The expression for setting the size of the allocated bulk TX buffer
+(`devpriv->usb_tx_buf`) is calling `usb_endpoint_maxp(devpriv->ep_rx)`,
+which is using the wrong endpoint (should be `devpriv->ep_tx`).  Fix it.
 
-wm8962 3-001a: ASoC: error at soc_component_read_no_lock on wm8962.3-001a: -16
-
-Once this error has occurred, the audio will not work again until rebooted.
-
-Fix this by configuring SET_SYSTEM_SLEEP_PM_OPS.
-
-Signed-off-by: Adam Ford <aford173@gmail.com>
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220526182129.538472-1-aford173@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: a23461c47482 ("comedi: vmk80xx: fix transfer-buffer overflow")
+Cc: Johan Hovold <johan@kernel.org>
+Cc: stable@vger.kernel.org # 4.9+
+Reviewed-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Ian Abbott <abbotti@mev.co.uk>
+Link: https://lore.kernel.org/r/20220607171819.4121-1-abbotti@mev.co.uk
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/codecs/wm8962.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/staging/comedi/drivers/vmk80xx.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/wm8962.c b/sound/soc/codecs/wm8962.c
-index d9d59f45833f..ebaee468057b 100644
---- a/sound/soc/codecs/wm8962.c
-+++ b/sound/soc/codecs/wm8962.c
-@@ -3854,6 +3854,7 @@ static int wm8962_runtime_suspend(struct device *dev)
- #endif
+--- a/drivers/staging/comedi/drivers/vmk80xx.c
++++ b/drivers/staging/comedi/drivers/vmk80xx.c
+@@ -685,7 +685,7 @@ static int vmk80xx_alloc_usb_buffers(str
+ 	if (!devpriv->usb_rx_buf)
+ 		return -ENOMEM;
  
- static const struct dev_pm_ops wm8962_pm = {
-+	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend, pm_runtime_force_resume)
- 	SET_RUNTIME_PM_OPS(wm8962_runtime_suspend, wm8962_runtime_resume, NULL)
- };
- 
--- 
-2.35.1
-
+-	size = max(usb_endpoint_maxp(devpriv->ep_rx), MIN_BUF_SIZE);
++	size = max(usb_endpoint_maxp(devpriv->ep_tx), MIN_BUF_SIZE);
+ 	devpriv->usb_tx_buf = kzalloc(size, GFP_KERNEL);
+ 	if (!devpriv->usb_tx_buf)
+ 		return -ENOMEM;
 
 
