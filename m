@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E954BC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:34:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A47D0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:35:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346485AbiFTNez (ORCPT
+        id S1346506AbiFTNfB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:34:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55374 "EHLO
+        Mon, 20 Jun 2022 09:35:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346163AbiFTNcg (ORCPT
+        with ESMTP id S1347392AbiFTNeE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:32:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E53F26110;
-        Mon, 20 Jun 2022 06:12:42 -0700 (PDT)
+        Mon, 20 Jun 2022 09:34:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75EA01DA42;
+        Mon, 20 Jun 2022 06:13:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DA18F60A52;
-        Mon, 20 Jun 2022 13:11:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E97B6C3411C;
-        Mon, 20 Jun 2022 13:11:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DF676B80E2F;
+        Mon, 20 Jun 2022 13:13:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12BB1C3411C;
+        Mon, 20 Jun 2022 13:13:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730689;
-        bh=1+E2pDWYvJHF8rDS+xtktmcYX3zlcPQWkYN/rPnJ1g0=;
+        s=korg; t=1655730792;
+        bh=zC0rhojZPGoDhoHSXiKLJ+XGxJ+VMgmJnAnInp68XIo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bkOOSidIhi2XBls6qULvaSSzBsuJ5iwREIdw+nebsE7283cO+56ffgHF8bdj8RXYh
-         U2pVXLfWV6nwpyBmeBmWnnyGhKDEHqewL7P35MfnQoGiZB3MrWpG8VP7/mwFfnO6Vc
-         rCcW3QoHiwKEkjLwd0H7ExZDnCrTJgnRi8HF6WsU=
+        b=eIttD3E3jiysFqKxT7CsdQb94GzuZuQ90ikhVbbhmSw+E90B8F/yOx4jjzYwUclr6
+         O6suHtpsD7irduL3Exhu93XhNcWBdYgvTjSKdjmNjN8wZYe8bSdEy+bWL2X0BeSxAm
+         7Oz2nMY4fvleInpOdpTEK3ke9c97wmkmnZwZRASk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 008/240] random: dont forget compat_ioctl on urandom
-Date:   Mon, 20 Jun 2022 14:48:29 +0200
-Message-Id: <20220620124738.048034618@linuxfoundation.org>
+Subject: [PATCH 5.4 056/240] random: de-duplicate INPUT_POOL constants
+Date:   Mon, 20 Jun 2022 14:49:17 +0200
+Message-Id: <20220620124739.846276857@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -51,34 +52,72 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 4aa37c463764052c68c5c430af2a67b5d784c1e0 upstream.
+commit 5b87adf30f1464477169a1d653e9baf8c012bbfe upstream.
 
-Recently, there's been some compat ioctl cleanup, in which large
-hardcoded lists were replaced with compat_ptr_ioctl. One of these
-changes involved removing the random.c hardcoded list entries and adding
-a compat ioctl function pointer to the random.c fops. In the process,
-urandom was forgotten about, so this commit fixes that oversight.
+We already had the POOL_* constants, so deduplicate the older INPUT_POOL
+ones. As well, fold EXTRACT_SIZE into the poolinfo enum, since it's
+related.
 
-Fixes: 507e4e2b430b ("compat_ioctl: remove /dev/random commands")
-Cc: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Link: https://lore.kernel.org/r/20191217172455.186395-1-Jason@zx2c4.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/char/random.c |   17 ++++++-----------
+ 1 file changed, 6 insertions(+), 11 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -2199,6 +2199,7 @@ const struct file_operations urandom_fop
- 	.read  = urandom_read,
- 	.write = random_write,
- 	.unlocked_ioctl = random_ioctl,
-+	.compat_ioctl = compat_ptr_ioctl,
- 	.fasync = random_fasync,
- 	.llseek = noop_llseek,
+@@ -359,13 +359,6 @@
+ /* #define ADD_INTERRUPT_BENCH */
+ 
+ /*
+- * Configuration information
+- */
+-#define INPUT_POOL_SHIFT	12
+-#define INPUT_POOL_WORDS	(1 << (INPUT_POOL_SHIFT-5))
+-#define EXTRACT_SIZE		(BLAKE2S_HASH_SIZE / 2)
+-
+-/*
+  * To allow fractional bits to be tracked, the entropy_count field is
+  * denominated in units of 1/8th bits.
+  *
+@@ -440,7 +433,9 @@ enum poolinfo {
+ 	POOL_TAP2 = 76,
+ 	POOL_TAP3 = 51,
+ 	POOL_TAP4 = 25,
+-	POOL_TAP5 = 1
++	POOL_TAP5 = 1,
++
++	EXTRACT_SIZE = BLAKE2S_HASH_SIZE / 2
  };
+ 
+ /*
+@@ -503,7 +498,7 @@ MODULE_PARM_DESC(ratelimit_disable, "Dis
+  *
+  **********************************************************************/
+ 
+-static u32 input_pool_data[INPUT_POOL_WORDS] __latent_entropy;
++static u32 input_pool_data[POOL_WORDS] __latent_entropy;
+ 
+ static struct {
+ 	/* read-only data: */
+@@ -1961,7 +1956,7 @@ SYSCALL_DEFINE3(getrandom, char __user *
+ #include <linux/sysctl.h>
+ 
+ static int min_write_thresh;
+-static int max_write_thresh = INPUT_POOL_WORDS * 32;
++static int max_write_thresh = POOL_BITS;
+ static int random_min_urandom_seed = 60;
+ static char sysctl_bootid[16];
+ 
+@@ -2018,7 +2013,7 @@ static int proc_do_entropy(struct ctl_ta
+ 	return proc_dointvec(&fake_table, write, buffer, lenp, ppos);
+ }
+ 
+-static int sysctl_poolsize = INPUT_POOL_WORDS * 32;
++static int sysctl_poolsize = POOL_BITS;
+ extern struct ctl_table random_table[];
+ struct ctl_table random_table[] = {
+ 	{
 
 
