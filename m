@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4262EC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:42:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52922C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:42:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348391AbiFTNl7 (ORCPT
+        id S1347484AbiFTNmR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:41:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46100 "EHLO
+        Mon, 20 Jun 2022 09:42:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349527AbiFTNjs (ORCPT
+        with ESMTP id S1347365AbiFTNkd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:39:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E45762A427;
-        Mon, 20 Jun 2022 06:15:03 -0700 (PDT)
+        Mon, 20 Jun 2022 09:40:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B862B2A437;
+        Mon, 20 Jun 2022 06:15:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6773D61171;
-        Mon, 20 Jun 2022 13:15:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 517FAC36AEC;
-        Mon, 20 Jun 2022 13:15:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 852036102C;
+        Mon, 20 Jun 2022 13:15:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D136C341CE;
+        Mon, 20 Jun 2022 13:15:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730901;
-        bh=gRkETQJvr2FxHDr9oXch+XuY+cPLZ3ZZHS7YjlX3Skc=;
+        s=korg; t=1655730905;
+        bh=PI9wF56zKrfi07MLCXgjjjfQXCRyWevrkV50RAwJeS8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n5M+qOiSU/uLYUyeT2z0HSM7Cck4wIfZOBzPslx/nZxP017CfbpVrSE8Mrw7e0RxA
-         naTZ9KhV6C/JTK3wqqP9To7dml6Pr0JEFLxJMQzJ12djqPDUl8CtMU4fhCnM7K7u6j
-         soY1BqD8Z7oJCXozXKF55vC9eleDGsusZGwE0NDM=
+        b=MLAWNGWadFwdyggAhbaI2iQQNUMrBBfpf2TfIRrHiqUMXhsVRLnqO9IfGkgDtkXjD
+         osZhYE7i2rQ7+WZrJAIrJitAxL2HwtJA1HUMuuaDj6p9yunfYrUbvU3EmEcYPSKIAC
+         HYf1pyPa8A6xgVhE1ntGLf/tyNHXn8EIIluT9Cf4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        stable@vger.kernel.org,
         Dominik Brodowski <linux@dominikbrodowski.net>,
         Eric Biggers <ebiggers@google.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 091/240] random: remove useless header comment
-Date:   Mon, 20 Jun 2022 14:49:52 +0200
-Message-Id: <20220620124741.650491692@linuxfoundation.org>
+Subject: [PATCH 5.4 092/240] random: remove whitespace and reorder includes
+Date:   Mon, 20 Jun 2022 14:49:53 +0200
+Message-Id: <20220620124741.679045939@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -53,31 +53,33 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 6071a6c0fba2d747742cadcbb3ba26ed756ed73b upstream.
+commit 87e7d5abad0cbc9312dea7f889a57d294c1a5fcc upstream.
 
-This really adds nothing at all useful.
+This is purely cosmetic. Future work involves figuring out which of
+these headers we need and which we don't.
 
-Cc: Theodore Ts'o <tytso@mit.edu>
 Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Reviewed-by: Eric Biggers <ebiggers@google.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/random.h |    6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ drivers/char/random.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -1,9 +1,5 @@
- /* SPDX-License-Identifier: GPL-2.0 */
--/*
-- * include/linux/random.h
-- *
-- * Include file for the random number generator.
-- */
-+
- #ifndef _LINUX_RANDOM_H
- #define _LINUX_RANDOM_H
- 
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -193,11 +193,10 @@
+ #include <linux/syscalls.h>
+ #include <linux/completion.h>
+ #include <linux/uuid.h>
++#include <linux/uaccess.h>
+ #include <crypto/chacha.h>
+ #include <crypto/blake2s.h>
+-
+ #include <asm/processor.h>
+-#include <linux/uaccess.h>
+ #include <asm/irq.h>
+ #include <asm/irq_regs.h>
+ #include <asm/io.h>
 
 
