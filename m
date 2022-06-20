@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CC10C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:01:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D3CBC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:01:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243895AbiFTNB0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:01:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38652 "EHLO
+        id S242786AbiFTNB2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:01:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243958AbiFTM7I (ORCPT
+        with ESMTP id S243966AbiFTM7J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 08:59:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74CDB1BE80;
+        Mon, 20 Jun 2022 08:59:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44AE11C10B;
         Mon, 20 Jun 2022 05:56:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D1B561524;
-        Mon, 20 Jun 2022 12:56:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50AE8C3411B;
-        Mon, 20 Jun 2022 12:56:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 379A0B811A3;
+        Mon, 20 Jun 2022 12:55:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75A11C3411B;
+        Mon, 20 Jun 2022 12:55:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655729766;
-        bh=AAKjTYTHTzBZLCi9DHNHmED5xxkxD9PHoX1a1KXhIbw=;
+        s=korg; t=1655729751;
+        bh=BxlpKTalVEkBk0tBaPAm8eqtVfisQ6VMPRChsYYOfaU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n7yxyw7I1PNC6nIuOphPtNgNOEfUva3xeux7QT/TCvc0LVe3Mn9ZD4MCRcmcgPdhf
-         1/cU9LFqtRn6HaJsbBvMwA+Oc/bzp6no1pVK8w2sGfYHmEc0ASGV8ez1ANjHQucVP0
-         Vu8VRZRsSvCuhN/NkNFe+bBacqaAAPSXC13N2CPk=
+        b=mclWt2A5SsWdPkKTMW1iBu5n49IfqAixFqVZe/9baUXnoJZEZd9yOSX0fEFMQmanN
+         X3dQoyCLXmVVEhB9PQAnu/CSWiM9YvgDtWMZxZovd7KYG1Of6djzL0Xs1OEumqTm67
+         2pf3zAinnEpzkvlRMi5t+RfoYBdPvCsfNal/Nxlo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Begunkov <asml.silence@gmail.com>,
-        Sasha Levin <sashal@kernel.org>,
-        van fantasy <g1042620637@gmail.com>
-Subject: [PATCH 5.18 066/141] io_uring: fix races with file table unregister
-Date:   Mon, 20 Jun 2022 14:50:04 +0200
-Message-Id: <20220620124731.491373962@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Saurabh Sengar <ssengar@linux.microsoft.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 062/141] Drivers: hv: vmbus: Release cpu lock in error case
+Date:   Mon, 20 Jun 2022 14:50:00 +0200
+Message-Id: <20220620124731.373333892@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 References: <20220620124729.509745706@linuxfoundation.org>
@@ -49,46 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Begunkov <asml.silence@gmail.com>
+From: Saurabh Sengar <ssengar@linux.microsoft.com>
 
-[ Upstream commit b0380bf6dad4601d92025841e2b7a135d566c6e3 ]
+[ Upstream commit 656c5ba50b7172a0ea25dc1b37606bd51d01fe8d ]
 
-Fixed file table quiesce might unlock ->uring_lock, potentially letting
-new requests to be submitted, don't allow those requests to use the
-table as they will race with unregistration.
+In case of invalid sub channel, release cpu lock before returning.
 
-Reported-and-tested-by: van fantasy <g1042620637@gmail.com>
-Fixes: 05f3fb3c53975 ("io_uring: avoid ring quiesce for fixed file set unregister and update")
-Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+Fixes: a949e86c0d780 ("Drivers: hv: vmbus: Resolve race between init_vp_index() and CPU hotplug")
+Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
+Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+Link: https://lore.kernel.org/r/1654794996-13244-1-git-send-email-ssengar@linux.microsoft.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/io_uring.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/hv/channel_mgmt.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 3582db014aad..0a9f9000fc80 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -8508,11 +8508,19 @@ static void __io_sqe_files_unregister(struct io_ring_ctx *ctx)
- 
- static int io_sqe_files_unregister(struct io_ring_ctx *ctx)
- {
-+	unsigned nr = ctx->nr_user_files;
- 	int ret;
- 
- 	if (!ctx->file_data)
- 		return -ENXIO;
-+
-+	/*
-+	 * Quiesce may unlock ->uring_lock, and while it's not held
-+	 * prevent new requests using the table.
-+	 */
-+	ctx->nr_user_files = 0;
- 	ret = io_rsrc_ref_quiesce(ctx->file_data, ctx);
-+	ctx->nr_user_files = nr;
- 	if (!ret)
- 		__io_sqe_files_unregister(ctx);
- 	return ret;
+diff --git a/drivers/hv/channel_mgmt.c b/drivers/hv/channel_mgmt.c
+index 85a2142c9384..073ff9b6f535 100644
+--- a/drivers/hv/channel_mgmt.c
++++ b/drivers/hv/channel_mgmt.c
+@@ -637,6 +637,7 @@ static void vmbus_process_offer(struct vmbus_channel *newchannel)
+ 		 */
+ 		if (newchannel->offermsg.offer.sub_channel_index == 0) {
+ 			mutex_unlock(&vmbus_connection.channel_mutex);
++			cpus_read_unlock();
+ 			/*
+ 			 * Don't call free_channel(), because newchannel->kobj
+ 			 * is not initialized yet.
 -- 
 2.35.1
 
