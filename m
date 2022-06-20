@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64D24C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 23:08:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E5F6CCA480
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 23:09:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346418AbiFTXIV (ORCPT
+        id S1346226AbiFTXJ2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 19:08:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46884 "EHLO
+        Mon, 20 Jun 2022 19:09:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345739AbiFTXH4 (ORCPT
+        with ESMTP id S1347130AbiFTXIw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 19:07:56 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2080.outbound.protection.outlook.com [40.107.94.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7149B23BEB;
-        Mon, 20 Jun 2022 16:06:52 -0700 (PDT)
+        Mon, 20 Jun 2022 19:08:52 -0400
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2076.outbound.protection.outlook.com [40.107.100.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB7AF24BC3;
+        Mon, 20 Jun 2022 16:08:05 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YVhZV3r2fgl0gRYGDQNHRb2iYEJfWD/vWhzaLIkeI0huz1dXhX2fcsHAXUXZw9uo8nE7Ab47ICt9MSRF8fqbJe6gb3FUhxzW0icJN8cd50NjFdOqfiCD81HQaxQhPWCszdFj/pGtb2TmKuAF/OirzdmY4MQ81SQlCX2NXW4GzGQndx/ig03XwoaPUSs6XuxfPLwdl6fjMUAae1YPiCKp8XZBbN2/atWB1GW+BwZzDA/mpE2JAGdkEIzpb4EWponJ1Dm1t2sFscGq/k/GnQyf4KEZpVbk1WYwFtY2c1NLgDZW54zmHB5QGV9BE5lUW+YIEDzlvfeKovTUXBGRidH6/Q==
+ b=Ay7lcFWWTXpcuaEHJKRT5hgqY5jzNW8QdbQsCl3yVEuxUzdOILSAGuncIhSpXpRA99gttVBuR4dHH5VbdS0c6qdMdNIHIFMn92e1Wou5BTI2+jnzw0nR0Sp6aaLlvHVAghrXU9DZsbrwLdkqc8UxmrX5wChhyfmMUzf95AAc9kpJUCdNkXP5c+BnCdzuXsjo1Hyb7XR0g1PEiSdXoNWe04ZHJXlR/LUBva7+iDVe8+pI+diMsc1TB/AF0UWlp4EUBFcxFff+ZN5qP7BzvzhGaWAX4helBVMrX/JpdzeO61jyj9DMmCvKtM+CqhrcppQsxNSCWUyVtOBpZnm96rWE0g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gRNldrZ62q/dbiU8EB7pwK/9hQjFTKYoEkcuqsV4KLA=;
- b=RsBsJpv9pNLwkKPT3tRGgMhhWwGuC1nOWWhFu+qQ5Rb5xuZvYVlK43jczfgyLP+Opq/tuVKBPl4w86TrkijHd1vjoACS97JWcezWm+yF/cZal4AIBZo47tEOKYIknwvD7RpP4TPUd2fC9X9JmClSB6+8dIxJX9H89PGMet9kZoIIA75Lws7G2qUsBur6Ox2Zf+3jazGkpaeY+Cx67a6lqO27IYxs7Os+7ZvkZXAYxj5Mv+z2UCWG8yCwMyZAOtNCR7G+6lVAslepkU9o9323wzv5xuHXWOVHREszGtUICC6MZfqw63vce7MPt9KT+wHwLYqvSIv9Z2DZTOfn6q9yDw==
+ bh=TRMZ3HOdoZp8bsZg9WKNaitB9a5oUh93d6JbWV+hoo0=;
+ b=EASEPg2dUTK0nMmMpCf48p5tpNrHY8elEcMUT3lC8MzHsupz7t6iR1Urovzs/QE1SfmuCGOyU3m2Q4TmjxRhFB9OOX6+O0l2Ms7TyPGLZASN8kh+pK0FDrUBFLEqrAxuCMiOYdoP7MLrctSTUW8zeyLJ2bI3T/wuRgmlPwO6vzUdXjETGeoxOZ9vxzfIyFW+XPS/mqGZDeeQSc8F+saNI5C0q19181Mq+FwcsZuRELrMR2TozN5EiaXddcI1ZmtkcXDBirTMgj4qmLTjFy6XOM460capE9JgTXQKNbWK1Skr1fQYHFK6t3iLQnyVb79tzyo2jiMmtHizwcQI/6rb8A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
  (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gRNldrZ62q/dbiU8EB7pwK/9hQjFTKYoEkcuqsV4KLA=;
- b=CtDB7DjlHuHzgpsm+Bfp+hka23DWGcUYeFD33HEq+UuDRpL+e+M2hULZNUrA+d3RtYcgGpWZXgWbQb8ch7Bvi+K4QYK7aNvadhUIqpoXGbYnnMcqX6W9Il7pRa3/b9ruvgDAcfqku9OtmrBFnbpIgr4JJBPRN0WJoTww0eCTYc0=
-Received: from BY3PR10CA0008.namprd10.prod.outlook.com (2603:10b6:a03:255::13)
- by DM6PR12MB3881.namprd12.prod.outlook.com (2603:10b6:5:148::32) with
+ bh=TRMZ3HOdoZp8bsZg9WKNaitB9a5oUh93d6JbWV+hoo0=;
+ b=hv+Yt4NDEjkr4JkUX72OH0JV3B9taAgtFL6LGN3Sg0Ts3rAm5CqeqWXzNVJmZwirOFhJkeM/IpsTkGSgpSZWlzycF20HOTxdINP8YL6WYU581VQAKvBRpkUhbP5XMlJkWKg6tBuqVK2wQ62411XrrhToRcm1CeKMnJmq0IWzAQU=
+Received: from DM5PR12CA0065.namprd12.prod.outlook.com (2603:10b6:3:103::27)
+ by PH7PR12MB5594.namprd12.prod.outlook.com (2603:10b6:510:134::13) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.16; Mon, 20 Jun
- 2022 23:06:48 +0000
-Received: from DM6NAM11FT014.eop-nam11.prod.protection.outlook.com
- (2603:10b6:a03:255:cafe::ca) by BY3PR10CA0008.outlook.office365.com
- (2603:10b6:a03:255::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.19 via Frontend
- Transport; Mon, 20 Jun 2022 23:06:48 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.15; Mon, 20 Jun
+ 2022 23:08:01 +0000
+Received: from DM6NAM11FT068.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:3:103:cafe::20) by DM5PR12CA0065.outlook.office365.com
+ (2603:10b6:3:103::27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.14 via Frontend
+ Transport; Mon, 20 Jun 2022 23:08:01 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -48,13 +48,13 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT014.mail.protection.outlook.com (10.13.173.132) with Microsoft SMTP
+ DM6NAM11FT068.mail.protection.outlook.com (10.13.173.67) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5353.14 via Frontend Transport; Mon, 20 Jun 2022 23:06:47 +0000
+ 15.20.5353.14 via Frontend Transport; Mon, 20 Jun 2022 23:08:01 +0000
 Received: from ashkalraubuntuserver.amd.com (10.180.168.240) by
  SATLEXMB04.amd.com (10.181.40.145) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Mon, 20 Jun 2022 18:06:45 -0500
+ 15.1.2375.28; Mon, 20 Jun 2022 18:07:59 -0500
 From:   Ashish Kalra <Ashish.Kalra@amd.com>
 To:     <x86@kernel.org>, <linux-kernel@vger.kernel.org>,
         <kvm@vger.kernel.org>, <linux-coco@lists.linux.dev>,
@@ -71,9 +71,9 @@ CC:     <tglx@linutronix.de>, <mingo@redhat.com>, <jroedel@suse.de>,
         <ak@linux.intel.com>, <tony.luck@intel.com>, <marcorr@google.com>,
         <sathyanarayanan.kuppuswamy@linux.intel.com>,
         <alpergun@google.com>, <dgilbert@redhat.com>, <jarkko@kernel.org>
-Subject: [PATCH Part2 v6 20/49] KVM: SVM: Provide the Hypervisor Feature support VMGEXIT
-Date:   Mon, 20 Jun 2022 23:06:37 +0000
-Message-ID: <2aae6a4456858af4cd45bf2d8a2843f114b8e200.1655761627.git.ashish.kalra@amd.com>
+Subject: [PATCH Part2 v6 25/49] KVM: SVM: Disallow registering memory range from HugeTLB for SNP guest
+Date:   Mon, 20 Jun 2022 23:07:50 +0000
+Message-ID: <b32e0daab8af130a1bda76eb06ecd2546e8478bb.1655761627.git.ashish.kalra@amd.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1655761627.git.ashish.kalra@amd.com>
 References: <cover.1655761627.git.ashish.kalra@amd.com>
@@ -85,111 +85,107 @@ X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 760845bf-f7cc-4ad6-f4db-08da53118d8c
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3881:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB3881D1A3F1E483F638C70E498EB09@DM6PR12MB3881.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 7da90927-e7e2-4d32-0d8b-08da5311b961
+X-MS-TrafficTypeDiagnostic: PH7PR12MB5594:EE_
+X-Microsoft-Antispam-PRVS: <PH7PR12MB5594324BB3B4A60AC40C2BE68EB09@PH7PR12MB5594.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Su2e99hT9FSuskmNU5JDtrXyAAbMbGzBHuPBh6ITrmtE9MWkgw7Fb6K0Y/O88sL16fUHbM4A9yGrMiXEML2Oc7ImTs0BHN+C6KeIPDr5Pp+fvI0IupiztKNaXi/gAOin/qVZWJ4/sHLqhGq07YEPCJlcTtptj7VqJsElhuqd6NO7JmG8c1dwvMqDt4nK99ffs86lm9WhkS03beRC0pPZ/eW2TKm59LW4aYzk6X+qVGU69861VreYOnHUV79YypYsMm34zTclYfvJzbR2hXmrflcE+ftJv6f/Vz8UoyPFrOXTwhvnIYNBbu6XDZbtKukSml0M8osAK6ofjOYTLfOwDRTgB2EwQudJA6RRxcJiLQTsMTxf/88wvDtkcPE7e6UyXl7wu087QCw7KNOQPGWp+7RQRwC8BJrP6kdG6RRveZppBTOjiVl1XXXgEiCr+okuDCDkyQQRZ/7L2igHexsWcsTeiXi5XI+33dPi22Atb3kaBoXIAqaNEOecKDIxqCqykeLS0uNJkWLtYc/VUhJpewwVkZXLqEBGZFbMB6Mc8ythhAaQ2SoJaQ+zaWVfYvmIFFiecuKxdbUqNkwB7wlH+rarmyFia5DJ/cpBDSGbsbbb85Qe5wIbV9GWG0Lfq1WWNFqC0eSXisuZxsLmjKdGGe5reCkS5NgncHLHa2sAyWw90EpSNkCA9CYnfTYmR/pD8Kol+ul6tR6cAf+6G9wYVKUQOPRYiBIvJVpJ07IGICU4E2yEG17EWqfg539u5r/2vocoGQ46NhxkdlzKxcSNYQ==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(396003)(346002)(39860400002)(376002)(136003)(36840700001)(40470700004)(46966006)(26005)(7696005)(2906002)(356005)(82740400003)(86362001)(316002)(70586007)(6666004)(110136005)(82310400005)(54906003)(70206006)(8676002)(4326008)(7406005)(36756003)(478600001)(5660300002)(40480700001)(81166007)(7416002)(47076005)(16526019)(186003)(426003)(336012)(40460700003)(41300700001)(2616005)(8936002)(83380400001)(36860700001)(2101003)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: dgHtmBIJk7ALoh7ui3/FAxCpKuG/7TOWCDGxU5acAbyAmB9bcB3oDJ5rTsZ6VUANgUNBNXgwTATueFSK66Wf7O2OtEycKSjhWBsnFXPFA6iPZSHbKirRSMyprqCBtV12FSx2n+mzFuEoUbzGTtGgJFRF5ho1ezkXHWhchrRJW0JJMqykoeCKUo5eHL0LcF4vErkwccW0L/3JXblo8asbr3a9dqohfGf12WWN9J/2jJ7Kl5NkouY+9VgzAQGZPC72Xwl2XtF+NtZII92r7eHc/K0R3F+nillHFUq1xVQ6qvJsGt3TYEkYPUl05oO3Mx6d+vEg27AVZO9ItZTSS0oEw4Q3tyAgmFub4R9mQ+62DNzsi/klwUO+cqc07NEJhb8Wmc0tZSqQVram58LNXfgkAkFWaWA/F0eOlhwt4qXLeNDS/b1mCHwgF2bHevj7mbvgEs4UKnmYG0bBQvjLqxYnAFXqNauCmOnvVNlnJaW3WmhsTHteyYp8mzDolg3cqOetwi84YuZjOh+f8VBc2Lc62SUkSQNsSl4o9/pUo0M6g1a+t/EJFg70zQZy6LJsd3RA3Kddp1vNqzBl96HiOnhgOgeLZItHiqT+Bww4TLOybuoFPMr+F1kZ2xVLUkfjukF8i7d0AoHEvDk0fOZlu9eVd7UiWlEwEBQGQp19mXRpa6Ee+QeuNNI3SXaslXiXmvoyWw8jIa2gq2Y8b9bd8VXNTtt1aHN5rWtEMzz4kBmxSQMvUMEn4yaEz5EDVlMAOmDsCTUEZW7I/g38a1DG3VrAIw==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(346002)(396003)(39860400002)(376002)(136003)(40470700004)(36840700001)(46966006)(2616005)(40460700003)(70206006)(186003)(478600001)(336012)(8676002)(82310400005)(41300700001)(6666004)(83380400001)(316002)(4326008)(8936002)(54906003)(70586007)(40480700001)(7416002)(26005)(36756003)(47076005)(110136005)(82740400003)(16526019)(2906002)(5660300002)(7406005)(426003)(36860700001)(86362001)(81166007)(7696005)(356005)(2101003)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jun 2022 23:06:47.9627
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jun 2022 23:08:01.4947
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 760845bf-f7cc-4ad6-f4db-08da53118d8c
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7da90927-e7e2-4d32-0d8b-08da5311b961
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT014.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT068.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3881
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5594
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Brijesh Singh <brijesh.singh@amd.com>
 
-Version 2 of the GHCB specification introduced advertisement of features
-that are supported by the Hypervisor.
+While creating the VM, userspace call the KVM_MEMORY_ENCRYPT_REG_REGION
+ioctl to register the memory regions for the guest. This registered
+memory region is typically used as a guest RAM. Later, the guest may
+issue the page state change (PSC) request that will require splitting
+the large page into smaller page. If the memory is allocated from the
+HugeTLB then hypervisor will not be able to split it.
 
-Now that KVM supports version 2 of the GHCB specification, bump the
-maximum supported protocol version.
+Do not allow registering the memory range backed by the HugeTLB until
+the hypervisor support is added to handle the case.
 
 Signed-off-by: Brijesh Singh <brijesh.singh@amd.com>
 ---
- arch/x86/include/asm/sev-common.h |  2 ++
- arch/x86/kvm/svm/sev.c            | 14 ++++++++++++++
- arch/x86/kvm/svm/svm.h            |  3 ++-
- 3 files changed, 18 insertions(+), 1 deletion(-)
+ arch/x86/kvm/svm/sev.c | 37 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 37 insertions(+)
 
-diff --git a/arch/x86/include/asm/sev-common.h b/arch/x86/include/asm/sev-common.h
-index e15548d88f2a..539de6b93420 100644
---- a/arch/x86/include/asm/sev-common.h
-+++ b/arch/x86/include/asm/sev-common.h
-@@ -101,6 +101,8 @@ enum psc_op {
- /* GHCB Hypervisor Feature Request/Response */
- #define GHCB_MSR_HV_FT_REQ		0x080
- #define GHCB_MSR_HV_FT_RESP		0x081
-+#define GHCB_MSR_HV_FT_POS		12
-+#define GHCB_MSR_HV_FT_MASK		GENMASK_ULL(51, 0)
- #define GHCB_MSR_HV_FT_RESP_VAL(v)			\
- 	/* GHCBData[63:12] */				\
- 	(((u64)(v) & GENMASK_ULL(63, 12)) >> 12)
 diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
-index a1318236acd2..b49c370d5ae9 100644
+index 9e6fc7a94ed7..41b83aa6b5f4 100644
 --- a/arch/x86/kvm/svm/sev.c
 +++ b/arch/x86/kvm/svm/sev.c
-@@ -2480,6 +2480,7 @@ static int sev_es_validate_vmgexit(struct vcpu_svm *svm)
- 	case SVM_VMGEXIT_AP_HLT_LOOP:
- 	case SVM_VMGEXIT_AP_JUMP_TABLE:
- 	case SVM_VMGEXIT_UNSUPPORTED_EVENT:
-+	case SVM_VMGEXIT_HV_FEATURES:
- 		break;
- 	default:
- 		reason = GHCB_ERR_INVALID_EVENT;
-@@ -2746,6 +2747,13 @@ static int sev_handle_vmgexit_msr_protocol(struct vcpu_svm *svm)
- 				  GHCB_MSR_INFO_MASK,
- 				  GHCB_MSR_INFO_POS);
- 		break;
-+	case GHCB_MSR_HV_FT_REQ: {
-+		set_ghcb_msr_bits(svm, GHCB_HV_FT_SUPPORTED,
-+				  GHCB_MSR_HV_FT_MASK, GHCB_MSR_HV_FT_POS);
-+		set_ghcb_msr_bits(svm, GHCB_MSR_HV_FT_RESP,
-+				  GHCB_MSR_INFO_MASK, GHCB_MSR_INFO_POS);
-+		break;
-+	}
- 	case GHCB_MSR_TERM_REQ: {
- 		u64 reason_set, reason_code;
+@@ -17,6 +17,7 @@
+ #include <linux/misc_cgroup.h>
+ #include <linux/processor.h>
+ #include <linux/trace_events.h>
++#include <linux/hugetlb.h>
  
-@@ -2871,6 +2879,12 @@ int sev_handle_vmgexit(struct kvm_vcpu *vcpu)
- 		ret = 1;
- 		break;
- 	}
-+	case SVM_VMGEXIT_HV_FEATURES: {
-+		ghcb_set_sw_exit_info_2(ghcb, GHCB_HV_FT_SUPPORTED);
+ #include <asm/pkru.h>
+ #include <asm/trapnr.h>
+@@ -2007,6 +2008,35 @@ int sev_mem_enc_ioctl(struct kvm *kvm, void __user *argp)
+ 	return r;
+ }
+ 
++static bool is_range_hugetlb(struct kvm *kvm, struct kvm_enc_region *range)
++{
++	struct vm_area_struct *vma;
++	u64 start, end;
++	bool ret = true;
 +
-+		ret = 1;
-+		break;
-+	}
- 	case SVM_VMGEXIT_UNSUPPORTED_EVENT:
- 		vcpu_unimpl(vcpu,
- 			    "vmgexit: unsupported event - exit_info_1=%#llx, exit_info_2=%#llx\n",
-diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
-index 9f7eb1f18893..1f4a8bd09c9e 100644
---- a/arch/x86/kvm/svm/svm.h
-+++ b/arch/x86/kvm/svm/svm.h
-@@ -629,9 +629,10 @@ unsigned long avic_vcpu_get_apicv_inhibit_reasons(struct kvm_vcpu *vcpu);
++	start = range->addr;
++	end = start + range->size;
++
++	mmap_read_lock(kvm->mm);
++
++	do {
++		vma = find_vma_intersection(kvm->mm, start, end);
++		if (!vma)
++			goto unlock;
++
++		if (is_vm_hugetlb_page(vma))
++			goto unlock;
++
++		start = vma->vm_end;
++	} while (end > vma->vm_end);
++
++	ret = false;
++
++unlock:
++	mmap_read_unlock(kvm->mm);
++	return ret;
++}
++
+ int sev_mem_enc_register_region(struct kvm *kvm,
+ 				struct kvm_enc_region *range)
+ {
+@@ -2024,6 +2054,13 @@ int sev_mem_enc_register_region(struct kvm *kvm,
+ 	if (range->addr > ULONG_MAX || range->size > ULONG_MAX)
+ 		return -EINVAL;
  
- /* sev.c */
- 
--#define GHCB_VERSION_MAX	1ULL
-+#define GHCB_VERSION_MAX	2ULL
- #define GHCB_VERSION_MIN	1ULL
- 
-+#define GHCB_HV_FT_SUPPORTED	0
- 
- extern unsigned int max_sev_asid;
- 
++	/*
++	 * SEV-SNP does not support the backing pages from the HugeTLB. Verify
++	 * that the registered memory range is not from the HugeTLB.
++	 */
++	if (sev_snp_guest(kvm) && is_range_hugetlb(kvm, range))
++		return -EINVAL;
++
+ 	region = kzalloc(sizeof(*region), GFP_KERNEL_ACCOUNT);
+ 	if (!region)
+ 		return -ENOMEM;
 -- 
 2.25.1
 
