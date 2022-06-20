@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65C77C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:07:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83628C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:07:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244047AbiFTNHg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:07:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51010 "EHLO
+        id S244738AbiFTNHm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:07:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244927AbiFTNEJ (ORCPT
+        with ESMTP id S244051AbiFTNEd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:04:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B93D193D3;
-        Mon, 20 Jun 2022 05:59:24 -0700 (PDT)
+        Mon, 20 Jun 2022 09:04:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88F49193DA;
+        Mon, 20 Jun 2022 05:59:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 19F636153E;
-        Mon, 20 Jun 2022 12:59:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6B47C3411C;
-        Mon, 20 Jun 2022 12:59:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 25B5561535;
+        Mon, 20 Jun 2022 12:59:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1C56C3411B;
+        Mon, 20 Jun 2022 12:59:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655729963;
-        bh=udKYPvsT06cU8qjZ5wf0OQiIZyQGn9ezzGJ2iwG8vDQ=;
+        s=korg; t=1655729981;
+        bh=1X9QZlKy3N/ytBJj/DbB5zz0kkGXy5zj9pdAlAhiWf4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p94pYMxqcvWaVAzcjPBjP9sQBuI7/zlGVynt3fbPKw5M3/+qPH0nAr3PUIP4gqu8I
-         ykXNU0+otEwM+R0hBVTJOhJ5/Cd7a28wE79dGQwYv02dRyFqjCgYpbBApBO1s/eamc
-         KfCTq2H4VTbgu8hAk7Lpkwv5iXT4ypa9fsaQ0KPQ=
+        b=RKh5KYl0CPQdbsa0AF6tCi6vdZktNY+p/UIAHZKeC5dbEhSTaHulR3ME9Nx7VZE5F
+         z0pvjjomf3qU2h1fDDfBN/yOwDWvLYg9g+E6cJEHHx6vJk2Sc6r/XFTyO7mKulFGuB
+         WOD7NqywzMb84LpQ4l6zUkxkIjXR3gp+Pf3IbP0Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Auger <eric.auger@redhat.com>,
-        Marc Zyngier <maz@kernel.org>
-Subject: [PATCH 5.18 132/141] KVM: arm64: Dont read a HW interrupt pending state in user context
-Date:   Mon, 20 Jun 2022 14:51:10 +0200
-Message-Id: <20220620124733.459739098@linuxfoundation.org>
+        stable@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>,
+        Scott Wood <oss@buserror.net>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.18 137/141] powerpc/book3e: get rid of #include <generated/compile.h>
+Date:   Mon, 20 Jun 2022 14:51:15 +0200
+Message-Id: <20220620124733.608911236@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 References: <20220620124729.509745706@linuxfoundation.org>
@@ -48,106 +49,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <maz@kernel.org>
+From: Masahiro Yamada <masahiroy@kernel.org>
 
-commit 2cdea19a34c2340b3aa69508804efe4e3750fcec upstream.
+commit 7ad4bd887d27c6b6ffbef216f19c19f8fe2b8f52 upstream.
 
-Since 5bfa685e62e9 ("KVM: arm64: vgic: Read HW interrupt pending state
-from the HW"), we're able to source the pending bit for an interrupt
-that is stored either on the physical distributor or on a device.
+You cannot include <generated/compile.h> here because it is generated
+in init/Makefile but there is no guarantee that it happens before
+arch/powerpc/mm/nohash/kaslr_booke.c is compiled for parallel builds.
 
-However, this state is only available when the vcpu is loaded,
-and is not intended to be accessed from userspace. Unfortunately,
-the GICv2 emulation doesn't provide specific userspace accessors,
-and we fallback with the ones that are intended for the guest,
-with fatal consequences.
+The places where you can reliably include <generated/compile.h> are:
 
-Add a new vgic_uaccess_read_pending() accessor for userspace
-to use, build on top of the existing vgic_mmio_read_pending().
+  - init/          (because init/Makefile can specify the dependency)
+  - arch/*/boot/   (because it is compiled after vmlinux)
 
-Reported-by: Eric Auger <eric.auger@redhat.com>
-Reviewed-by: Eric Auger <eric.auger@redhat.com>
-Tested-by: Eric Auger <eric.auger@redhat.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Fixes: 5bfa685e62e9 ("KVM: arm64: vgic: Read HW interrupt pending state from the HW")
-Link: https://lore.kernel.org/r/20220607131427.1164881-2-maz@kernel.org
-Cc: stable@vger.kernel.org
+Commit f231e4333312 ("hexagon: get rid of #include <generated/compile.h>")
+fixed the last breakage at that time, but powerpc re-added this.
+
+<generated/compile.h> was unneeded because 'build_str' is almost the
+same as 'linux_banner' defined in init/version.c
+
+Let's copy the solution from MIPS.
+(get_random_boot() in arch/mips/kernel/relocate.c)
+
+Fixes: 6a38ea1d7b94 ("powerpc/fsl_booke/32: randomize the kernel image offset")
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Acked-by: Scott Wood <oss@buserror.net>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220604085050.4078927-1-masahiroy@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/kvm/vgic/vgic-mmio-v2.c |    4 ++--
- arch/arm64/kvm/vgic/vgic-mmio.c    |   19 ++++++++++++++++---
- arch/arm64/kvm/vgic/vgic-mmio.h    |    3 +++
- 3 files changed, 21 insertions(+), 5 deletions(-)
+ arch/powerpc/mm/nohash/kaslr_booke.c |    8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
---- a/arch/arm64/kvm/vgic/vgic-mmio-v2.c
-+++ b/arch/arm64/kvm/vgic/vgic-mmio-v2.c
-@@ -417,11 +417,11 @@ static const struct vgic_register_region
- 		VGIC_ACCESS_32bit),
- 	REGISTER_DESC_WITH_BITS_PER_IRQ(GIC_DIST_PENDING_SET,
- 		vgic_mmio_read_pending, vgic_mmio_write_spending,
--		NULL, vgic_uaccess_write_spending, 1,
-+		vgic_uaccess_read_pending, vgic_uaccess_write_spending, 1,
- 		VGIC_ACCESS_32bit),
- 	REGISTER_DESC_WITH_BITS_PER_IRQ(GIC_DIST_PENDING_CLEAR,
- 		vgic_mmio_read_pending, vgic_mmio_write_cpending,
--		NULL, vgic_uaccess_write_cpending, 1,
-+		vgic_uaccess_read_pending, vgic_uaccess_write_cpending, 1,
- 		VGIC_ACCESS_32bit),
- 	REGISTER_DESC_WITH_BITS_PER_IRQ(GIC_DIST_ACTIVE_SET,
- 		vgic_mmio_read_active, vgic_mmio_write_sactive,
---- a/arch/arm64/kvm/vgic/vgic-mmio.c
-+++ b/arch/arm64/kvm/vgic/vgic-mmio.c
-@@ -226,8 +226,9 @@ int vgic_uaccess_write_cenable(struct kv
- 	return 0;
- }
+--- a/arch/powerpc/mm/nohash/kaslr_booke.c
++++ b/arch/powerpc/mm/nohash/kaslr_booke.c
+@@ -18,7 +18,6 @@
+ #include <asm/prom.h>
+ #include <asm/kdump.h>
+ #include <mm/mmu_decl.h>
+-#include <generated/compile.h>
+ #include <generated/utsrelease.h>
  
--unsigned long vgic_mmio_read_pending(struct kvm_vcpu *vcpu,
--				     gpa_t addr, unsigned int len)
-+static unsigned long __read_pending(struct kvm_vcpu *vcpu,
-+				    gpa_t addr, unsigned int len,
-+				    bool is_user)
+ struct regions {
+@@ -36,10 +35,6 @@ struct regions {
+ 	int reserved_mem_size_cells;
+ };
+ 
+-/* Simplified build-specific string for starting entropy. */
+-static const char build_str[] = UTS_RELEASE " (" LINUX_COMPILE_BY "@"
+-		LINUX_COMPILE_HOST ") (" LINUX_COMPILER ") " UTS_VERSION;
+-
+ struct regions __initdata regions;
+ 
+ static __init void kaslr_get_cmdline(void *fdt)
+@@ -70,7 +65,8 @@ static unsigned long __init get_boot_see
  {
- 	u32 intid = VGIC_ADDR_TO_INTID(addr, 1);
- 	u32 value = 0;
-@@ -248,7 +249,7 @@ unsigned long vgic_mmio_read_pending(str
- 						    IRQCHIP_STATE_PENDING,
- 						    &val);
- 			WARN_RATELIMIT(err, "IRQ %d", irq->host_irq);
--		} else if (vgic_irq_is_mapped_level(irq)) {
-+		} else if (!is_user && vgic_irq_is_mapped_level(irq)) {
- 			val = vgic_get_phys_line_level(irq);
- 		} else {
- 			val = irq_is_pending(irq);
-@@ -263,6 +264,18 @@ unsigned long vgic_mmio_read_pending(str
- 	return value;
- }
+ 	unsigned long hash = 0;
  
-+unsigned long vgic_mmio_read_pending(struct kvm_vcpu *vcpu,
-+				     gpa_t addr, unsigned int len)
-+{
-+	return __read_pending(vcpu, addr, len, false);
-+}
-+
-+unsigned long vgic_uaccess_read_pending(struct kvm_vcpu *vcpu,
-+					gpa_t addr, unsigned int len)
-+{
-+	return __read_pending(vcpu, addr, len, true);
-+}
-+
- static bool is_vgic_v2_sgi(struct kvm_vcpu *vcpu, struct vgic_irq *irq)
- {
- 	return (vgic_irq_is_sgi(irq->intid) &&
---- a/arch/arm64/kvm/vgic/vgic-mmio.h
-+++ b/arch/arm64/kvm/vgic/vgic-mmio.h
-@@ -149,6 +149,9 @@ int vgic_uaccess_write_cenable(struct kv
- unsigned long vgic_mmio_read_pending(struct kvm_vcpu *vcpu,
- 				     gpa_t addr, unsigned int len);
+-	hash = rotate_xor(hash, build_str, sizeof(build_str));
++	/* build-specific string for starting entropy. */
++	hash = rotate_xor(hash, linux_banner, strlen(linux_banner));
+ 	hash = rotate_xor(hash, fdt, fdt_totalsize(fdt));
  
-+unsigned long vgic_uaccess_read_pending(struct kvm_vcpu *vcpu,
-+					gpa_t addr, unsigned int len);
-+
- void vgic_mmio_write_spending(struct kvm_vcpu *vcpu,
- 			      gpa_t addr, unsigned int len,
- 			      unsigned long val);
+ 	return hash;
 
 
