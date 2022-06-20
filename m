@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5535C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:35:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2A62C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:35:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346804AbiFTNfn (ORCPT
+        id S1346850AbiFTNfr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:35:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55698 "EHLO
+        Mon, 20 Jun 2022 09:35:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347216AbiFTNeA (ORCPT
+        with ESMTP id S1347564AbiFTNeH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:34:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE410275EF;
-        Mon, 20 Jun 2022 06:13:11 -0700 (PDT)
+        Mon, 20 Jun 2022 09:34:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C64E91D33D;
+        Mon, 20 Jun 2022 06:13:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DEB38B811D8;
-        Mon, 20 Jun 2022 13:12:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B984C3411C;
-        Mon, 20 Jun 2022 13:12:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1165360EC6;
+        Mon, 20 Jun 2022 13:12:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00434C3411B;
+        Mon, 20 Jun 2022 13:12:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730721;
-        bh=IXRIJ1GHDIZo2SuBShIm4o6PtlLtHIr1VFnSfZwBj5Q=;
+        s=korg; t=1655730759;
+        bh=mvbc0UwFRxHk3S/6WpcJH1rq+Wb+kHQBfZvG3cSrfQI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X3LVD1Mv+TDW+eCBeTIpLtm/NeWfplcUlF5dVViKuhrnC2OC8uKDhSkKtNFweVDrD
-         hIbzweLLoifaX5JsA55MmINMzC3oPhnKge55yiEzRoqcJTxnt56pxyEzlLLCgCdVRZ
-         hJSNDrLjhjWGN9cFoliC7Y/bE0ueXNYzZnkO+0rM=
+        b=CDV2jJPOo0xEsOpzaEeopYPfXCy9+ILkX08PitGHMDXrcsNbcdweuPy+nQTiQrNCB
+         Jcy2kjW9KIl52sG4cUtNVm3qzXjpI9n5F6sIhN29Se4ZbUAMkXxRXK3dqpX9q2HNnA
+         qbLhhgbuiZ+BJUNNcK1eCBuGEuMISrFMvbZSWjZw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
         Ard Biesheuvel <ardb@kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 036/240] crypto: blake2s - adjust include guard naming
-Date:   Mon, 20 Jun 2022 14:48:57 +0200
-Message-Id: <20220620124738.948395788@linuxfoundation.org>
+Subject: [PATCH 5.4 047/240] random: avoid superfluous call to RDRAND in CRNG extraction
+Date:   Mon, 20 Jun 2022 14:49:08 +0200
+Message-Id: <20220620124739.458601247@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -51,59 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 8786841bc2020f7f2513a6c74e64912f07b9c0dc upstream.
+commit 2ee25b6968b1b3c66ffa408de23d023c1bce81cf upstream.
 
-Use the full path in the include guards for the BLAKE2s headers to avoid
-ambiguity and to match the convention for most files in include/crypto/.
+RDRAND is not fast. RDRAND is actually quite slow. We've known this for
+a while, which is why functions like get_random_u{32,64} were converted
+to use batching of our ChaCha-based CRNG instead.
 
-Signed-off-by: Eric Biggers <ebiggers@google.com>
+Yet CRNG extraction still includes a call to RDRAND, in the hot path of
+every call to get_random_bytes(), /dev/urandom, and getrandom(2).
+
+This call to RDRAND here seems quite superfluous. CRNG is already
+extracting things based on a 256-bit key, based on good entropy, which
+is then reseeded periodically, updated, backtrack-mutated, and so
+forth. The CRNG extraction construction is something that we're already
+relying on to be secure and solid. If it's not, that's a serious
+problem, and it's unlikely that mixing in a measly 32 bits from RDRAND
+is going to alleviate things.
+
+And in the case where the CRNG doesn't have enough entropy yet, we're
+already initializing the ChaCha key row with RDRAND in
+crng_init_try_arch_early().
+
+Removing the call to RDRAND improves performance on an i7-11850H by
+370%. In other words, the vast majority of the work done by
+extract_crng() prior to this commit was devoted to fetching 32 bits of
+RDRAND.
+
+Reviewed-by: Theodore Ts'o <tytso@mit.edu>
 Acked-by: Ard Biesheuvel <ardb@kernel.org>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/crypto/blake2s.h          |    6 +++---
- include/crypto/internal/blake2s.h |    6 +++---
- 2 files changed, 6 insertions(+), 6 deletions(-)
+ drivers/char/random.c |    4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
---- a/include/crypto/blake2s.h
-+++ b/include/crypto/blake2s.h
-@@ -3,8 +3,8 @@
-  * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
-  */
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -1024,7 +1024,7 @@ static void crng_reseed(struct crng_stat
+ static void _extract_crng(struct crng_state *crng,
+ 			  __u8 out[CHACHA_BLOCK_SIZE])
+ {
+-	unsigned long v, flags, init_time;
++	unsigned long flags, init_time;
  
--#ifndef BLAKE2S_H
--#define BLAKE2S_H
-+#ifndef _CRYPTO_BLAKE2S_H
-+#define _CRYPTO_BLAKE2S_H
- 
- #include <linux/bug.h>
- #include <linux/types.h>
-@@ -99,4 +99,4 @@ static inline void blake2s(u8 *out, cons
- 	blake2s_final(&state, out);
- }
- 
--#endif /* BLAKE2S_H */
-+#endif /* _CRYPTO_BLAKE2S_H */
---- a/include/crypto/internal/blake2s.h
-+++ b/include/crypto/internal/blake2s.h
-@@ -1,7 +1,7 @@
- /* SPDX-License-Identifier: GPL-2.0 OR MIT */
- 
--#ifndef BLAKE2S_INTERNAL_H
--#define BLAKE2S_INTERNAL_H
-+#ifndef _CRYPTO_INTERNAL_BLAKE2S_H
-+#define _CRYPTO_INTERNAL_BLAKE2S_H
- 
- #include <crypto/blake2s.h>
- 
-@@ -16,4 +16,4 @@ static inline void blake2s_set_lastblock
- 	state->f[0] = -1;
- }
- 
--#endif /* BLAKE2S_INTERNAL_H */
-+#endif /* _CRYPTO_INTERNAL_BLAKE2S_H */
+ 	if (crng_ready()) {
+ 		init_time = READ_ONCE(crng->init_time);
+@@ -1034,8 +1034,6 @@ static void _extract_crng(struct crng_st
+ 				    &input_pool : NULL);
+ 	}
+ 	spin_lock_irqsave(&crng->lock, flags);
+-	if (arch_get_random_long(&v))
+-		crng->state[14] ^= v;
+ 	chacha20_block(&crng->state[0], out);
+ 	if (crng->state[12] == 0)
+ 		crng->state[13]++;
 
 
