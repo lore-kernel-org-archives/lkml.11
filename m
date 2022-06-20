@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CECCC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:10:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9964BCCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:10:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244345AbiFTNKm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:10:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51264 "EHLO
+        id S240373AbiFTNKq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:10:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231754AbiFTNF4 (ORCPT
+        with ESMTP id S244814AbiFTNF5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:05:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B800E1A044;
-        Mon, 20 Jun 2022 06:00:23 -0700 (PDT)
+        Mon, 20 Jun 2022 09:05:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF0651A057;
+        Mon, 20 Jun 2022 06:00:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7C2A9B811B9;
-        Mon, 20 Jun 2022 13:00:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9AD1C3411B;
-        Mon, 20 Jun 2022 13:00:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7FCB8B811C0;
+        Mon, 20 Jun 2022 13:00:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2373C3411B;
+        Mon, 20 Jun 2022 13:00:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730021;
-        bh=jEjmNSh47oqp7uebHlYwyx7toZeZXvjP9kh3xiYrcNo=;
+        s=korg; t=1655730024;
+        bh=bC9DTLtvzQkenP0Knef0ZUSmmW0hUV8voMCfBw0foiU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YQR+yTBsFekN7oF6VPVg0bBgArZYU4yGbiyHtb2zxXJf6tyNeI6wlkVjaTPUakrGE
-         6aLtKsc3cZJIZRt/2uTdIr4V0vGs/71VmfQdu9E0WB9xhAI3uuYCCHY2syaW2l8qtO
-         XGNFsp1PrkCcGOrEnN/VoPz12C8/JXTW8ZenuD5I=
+        b=CJMUcnifHv7RuNxxHI//Ro2CL7rzoWgH0ejtYJGaQibMPU3cozwAViJxVuCEUjojE
+         JuNByvKK8rw6AbZZuqPZGc8z+WwsRp0VF/nJ9xsG/O7dOGnJUyjUXFU7tgHfOfpI2q
+         d9RtBj6v/38AWTMyW6PLtYCmazmOJEQ/D2AI6q1k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Logan Gunthorpe <logang@deltatee.com>,
-        Christoph Hellwig <hch@lst.de>, Song Liu <song@kernel.org>
-Subject: [PATCH 5.18 118/141] md/raid5-ppl: Fix argument order in bio_alloc_bioset()
-Date:   Mon, 20 Jun 2022 14:50:56 +0200
-Message-Id: <20220620124733.039144373@linuxfoundation.org>
+        stable@vger.kernel.org, Tadeusz Struk <tadeusz.struk@linaro.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Subject: [PATCH 5.10 01/84] 9p: missing chunk of "fs/9p: Dont update file type when updating file attributes"
+Date:   Mon, 20 Jun 2022 14:50:24 +0200
+Message-Id: <20220620124720.928225421@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
-References: <20220620124729.509745706@linuxfoundation.org>
+In-Reply-To: <20220620124720.882450983@linuxfoundation.org>
+References: <20220620124720.882450983@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -48,52 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Logan Gunthorpe <logang@deltatee.com>
+From: Al Viro <viro@zeniv.linux.org.uk>
 
-commit f34fdcd4a0e7a0b92340ad7e48e7bcff9393fab5 upstream.
+commit b577d0cd2104fdfcf0ded3707540a12be8ddd8b0 upstream.
 
-bio_alloc_bioset() takes a block device, number of vectors, the
-OP flags, the GFP mask and the bio set. However when the prototype
-was changed, the callisite in ppl_do_flush() had the OP flags and
-the GFP flags reversed. This introduced some sparse error:
+In commit 45089142b149 Aneesh had missed one (admittedly, very unlikely
+to hit) case in v9fs_stat2inode_dotl().  However, the same considerations
+apply there as well - we have no business whatsoever to change ->i_rdev
+or the file type.
 
-  drivers/md/raid5-ppl.c:632:57: warning: incorrect type in argument 3
-				    (different base types)
-  drivers/md/raid5-ppl.c:632:57:    expected unsigned int opf
-  drivers/md/raid5-ppl.c:632:57:    got restricted gfp_t [usertype]
-  drivers/md/raid5-ppl.c:633:61: warning: incorrect type in argument 4
-  				    (different base types)
-  drivers/md/raid5-ppl.c:633:61:    expected restricted gfp_t [usertype]
-				    gfp_mask
-  drivers/md/raid5-ppl.c:633:61:    got unsigned long long
-
-The sparse error introduction may not have been reported correctly by
-0day due to other work that was cleaning up other sparse errors in this
-area.
-
-Fixes: 609be1066731 ("block: pass a block_device and opf to bio_alloc_bioset")
-Cc: stable@vger.kernel.org # 5.18+
-Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Song Liu <song@kernel.org>
+Cc: Tadeusz Struk <tadeusz.struk@linaro.org>
+Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/raid5-ppl.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ fs/9p/vfs_inode_dotl.c |   10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
 
---- a/drivers/md/raid5-ppl.c
-+++ b/drivers/md/raid5-ppl.c
-@@ -629,9 +629,9 @@ static void ppl_do_flush(struct ppl_io_u
- 		if (bdev) {
- 			struct bio *bio;
- 
--			bio = bio_alloc_bioset(bdev, 0, GFP_NOIO,
-+			bio = bio_alloc_bioset(bdev, 0,
- 					       REQ_OP_WRITE | REQ_PREFLUSH,
--					       &ppl_conf->flush_bs);
-+					       GFP_NOIO, &ppl_conf->flush_bs);
- 			bio->bi_private = io;
- 			bio->bi_end_io = ppl_flush_endio;
- 
+--- a/fs/9p/vfs_inode_dotl.c
++++ b/fs/9p/vfs_inode_dotl.c
+@@ -657,14 +657,10 @@ v9fs_stat2inode_dotl(struct p9_stat_dotl
+ 		if (stat->st_result_mask & P9_STATS_NLINK)
+ 			set_nlink(inode, stat->st_nlink);
+ 		if (stat->st_result_mask & P9_STATS_MODE) {
+-			inode->i_mode = stat->st_mode;
+-			if ((S_ISBLK(inode->i_mode)) ||
+-						(S_ISCHR(inode->i_mode)))
+-				init_special_inode(inode, inode->i_mode,
+-								inode->i_rdev);
++			mode = stat->st_mode & S_IALLUGO;
++			mode |= inode->i_mode & ~S_IALLUGO;
++			inode->i_mode = mode;
+ 		}
+-		if (stat->st_result_mask & P9_STATS_RDEV)
+-			inode->i_rdev = new_decode_dev(stat->st_rdev);
+ 		if (!(flags & V9FS_STAT2INODE_KEEP_ISIZE) &&
+ 		    stat->st_result_mask & P9_STATS_SIZE)
+ 			v9fs_i_size_write(inode, stat->st_size);
 
 
