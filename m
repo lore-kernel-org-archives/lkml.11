@@ -2,109 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6CCAC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:16:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEBD3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:16:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245673AbiFTNQc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:16:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52766 "EHLO
+        id S245163AbiFTNQn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:16:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343712AbiFTNJf (ORCPT
+        with ESMTP id S1343859AbiFTNJl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:09:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A6281A839;
-        Mon, 20 Jun 2022 06:04:44 -0700 (PDT)
+        Mon, 20 Jun 2022 09:09:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 571641ADBA
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 06:04:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9154F61589;
-        Mon, 20 Jun 2022 13:03:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89EB2C3411B;
-        Mon, 20 Jun 2022 13:03:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730193;
-        bh=drX2QLCOtNHz5cTapfgoCHjSxKmEkbKNmxZ06qd/EV0=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id C11E4B811B9
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 13:04:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA4CCC385A2;
+        Mon, 20 Jun 2022 13:04:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655730280;
+        bh=4mWPS+IfdQfX2LFjSB1gQ8XAQoFyzPvPGQA6/ViGNYo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WMdx8qNa1Hst12WUJjO90+T+9AnJ6sUu2owW/e1gWpk+6IXC+BRPkQ9Mej1ZlDeUp
-         vs9dpEhlCMejNrSOymOryCLrHaeWYBjdzAzjTA3RipQgKKaLtLK/v852heCmbRfha5
-         caIIvU686uXQLrxRtcfvaVEmbIoJVdT1XRUpRRiA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+        b=KuJZ8+kv4fsJf8BiGugozyqf60OTkrTlIdWIcI8yrTvi0LpCB/Hh2E0JuxvVW8kAM
+         9VtBV1WX99d3my3TEiaZJi/Tu+Olv2iE7g8nea4aUNJRzR8wfhJc8iaL1vyWBSJ6tT
+         y9BsP49hVm7DcazSA3iiLSFKottkehj0LiF9J2bHoZXzDkylGgqRngPTZW+bmeXoSc
+         JWLiung0jYb+o2850+kd0XGHAUxnJP64gXQwq8hHjXHQfvjTzc4V/9sou4/1fUWX7/
+         ah88arg2Sy/gi47RiD9pY1fg9V1l//rajgWYFzs90yQWQE23jzZRpFDpJue7/IlJz7
+         HWaC5CjSyYpew==
+From:   Oded Gabbay <ogabbay@kernel.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Ming Lei <ming.lei@redhat.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 53/84] block: Fix handling of offline queues in blk_mq_alloc_request_hctx()
-Date:   Mon, 20 Jun 2022 14:51:16 +0200
-Message-Id: <20220620124722.460728971@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124720.882450983@linuxfoundation.org>
-References: <20220620124720.882450983@linuxfoundation.org>
-User-Agent: quilt/0.66
+Cc:     Tal Cohen <talcohen@habana.ai>
+Subject: [PATCH 02/17] habanalabs: expose undefined opcode status via info ioctl
+Date:   Mon, 20 Jun 2022 16:04:17 +0300
+Message-Id: <20220620130432.1180451-2-ogabbay@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220620130432.1180451-1-ogabbay@kernel.org>
+References: <20220620130432.1180451-1-ogabbay@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bart Van Assche <bvanassche@acm.org>
+From: Tal Cohen <talcohen@habana.ai>
 
-[ Upstream commit 14dc7a18abbe4176f5626c13c333670da8e06aa1 ]
+The info ioctl retrieves information on the last undefined opcode
+occurred.
 
-This patch prevents that test nvme/004 triggers the following:
-
-UBSAN: array-index-out-of-bounds in block/blk-mq.h:135:9
-index 512 is out of range for type 'long unsigned int [512]'
-Call Trace:
- show_stack+0x52/0x58
- dump_stack_lvl+0x49/0x5e
- dump_stack+0x10/0x12
- ubsan_epilogue+0x9/0x3b
- __ubsan_handle_out_of_bounds.cold+0x44/0x49
- blk_mq_alloc_request_hctx+0x304/0x310
- __nvme_submit_sync_cmd+0x70/0x200 [nvme_core]
- nvmf_connect_io_queue+0x23e/0x2a0 [nvme_fabrics]
- nvme_loop_connect_io_queues+0x8d/0xb0 [nvme_loop]
- nvme_loop_create_ctrl+0x58e/0x7d0 [nvme_loop]
- nvmf_create_ctrl+0x1d7/0x4d0 [nvme_fabrics]
- nvmf_dev_write+0xae/0x111 [nvme_fabrics]
- vfs_write+0x144/0x560
- ksys_write+0xb7/0x140
- __x64_sys_write+0x42/0x50
- do_syscall_64+0x35/0x80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Ming Lei <ming.lei@redhat.com>
-Fixes: 20e4d8139319 ("blk-mq: simplify queue mapping & schedule with each possisble CPU")
-Signed-off-by: Bart Van Assche <bvanassche@acm.org>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Ming Lei <ming.lei@redhat.com>
-Link: https://lore.kernel.org/r/20220615210004.1031820-1-bvanassche@acm.org
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Tal Cohen <talcohen@habana.ai>
+Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
+Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
 ---
- block/blk-mq.c | 2 ++
- 1 file changed, 2 insertions(+)
+ .../misc/habanalabs/common/habanalabs_ioctl.c | 25 ++++++++++++++++
+ include/uapi/misc/habanalabs.h                | 30 +++++++++++++++++++
+ 2 files changed, 55 insertions(+)
 
-diff --git a/block/blk-mq.c b/block/blk-mq.c
-index 15a11a217cd0..c5d82b21a1cc 100644
---- a/block/blk-mq.c
-+++ b/block/blk-mq.c
-@@ -466,6 +466,8 @@ struct request *blk_mq_alloc_request_hctx(struct request_queue *q,
- 	if (!blk_mq_hw_queue_mapped(data.hctx))
- 		goto out_queue_exit;
- 	cpu = cpumask_first_and(data.hctx->cpumask, cpu_online_mask);
-+	if (cpu >= nr_cpu_ids)
-+		goto out_queue_exit;
- 	data.ctx = __blk_mq_get_ctx(q, cpu);
+diff --git a/drivers/misc/habanalabs/common/habanalabs_ioctl.c b/drivers/misc/habanalabs/common/habanalabs_ioctl.c
+index c7864d6bb0a1..fe7ed46cd1c5 100644
+--- a/drivers/misc/habanalabs/common/habanalabs_ioctl.c
++++ b/drivers/misc/habanalabs/common/habanalabs_ioctl.c
+@@ -610,6 +610,28 @@ static int razwi_info(struct hl_fpriv *hpriv, struct hl_info_args *args)
+ 	return copy_to_user(out, &info, min_t(size_t, max_size, sizeof(info))) ? -EFAULT : 0;
+ }
  
- 	if (!q->elevator)
++static int undefined_opcode_info(struct hl_fpriv *hpriv, struct hl_info_args *args)
++{
++	struct hl_device *hdev = hpriv->hdev;
++	u32 max_size = args->return_size;
++	struct hl_info_undefined_opcode_event info = {0};
++	void __user *out = (void __user *) (uintptr_t) args->return_pointer;
++
++	if ((!max_size) || (!out))
++		return -EINVAL;
++
++	info.timestamp = ktime_to_ns(hdev->last_error.undef_opcode.timestamp);
++	info.engine_id = hdev->last_error.undef_opcode.engine_id;
++	info.cq_addr = hdev->last_error.undef_opcode.cq_addr;
++	info.cq_size = hdev->last_error.undef_opcode.cq_size;
++	info.stream_id = hdev->last_error.undef_opcode.stream_id;
++	info.cb_addr_streams_len = hdev->last_error.undef_opcode.cb_addr_streams_len;
++	memcpy(info.cb_addr_streams, hdev->last_error.undef_opcode.cb_addr_streams,
++			sizeof(info.cb_addr_streams));
++
++	return copy_to_user(out, &info, min_t(size_t, max_size, sizeof(info))) ? -EFAULT : 0;
++}
++
+ static int dev_mem_alloc_page_sizes_info(struct hl_fpriv *hpriv, struct hl_info_args *args)
+ {
+ 	void __user *out = (void __user *) (uintptr_t) args->return_pointer;
+@@ -718,6 +740,9 @@ static int _hl_info_ioctl(struct hl_fpriv *hpriv, void *data,
+ 	case HL_INFO_RAZWI_EVENT:
+ 		return razwi_info(hpriv, args);
+ 
++	case HL_INFO_UNDEFINED_OPCODE_EVENT:
++		return undefined_opcode_info(hpriv, args);
++
+ 	case HL_INFO_DEV_MEM_ALLOC_PAGE_SIZES:
+ 		return dev_mem_alloc_page_sizes_info(hpriv, args);
+ 
+diff --git a/include/uapi/misc/habanalabs.h b/include/uapi/misc/habanalabs.h
+index c94b89cf1ec1..5f9a6097f5f3 100644
+--- a/include/uapi/misc/habanalabs.h
++++ b/include/uapi/misc/habanalabs.h
+@@ -352,6 +352,7 @@ enum hl_server_type {
+  * HL_INFO_REGISTER_EVENTFD   - Register eventfd for event notifications.
+  * HL_INFO_UNREGISTER_EVENTFD - Unregister eventfd
+  * HL_INFO_GET_EVENTS         - Retrieve the last occurred events
++ * HL_INFO_UNDEFINED_OPCODE_EVENT - Retrieve last undefined opcode error information.
+  */
+ #define HL_INFO_HW_IP_INFO			0
+ #define HL_INFO_HW_EVENTS			1
+@@ -380,6 +381,7 @@ enum hl_server_type {
+ #define HL_INFO_REGISTER_EVENTFD		28
+ #define HL_INFO_UNREGISTER_EVENTFD		29
+ #define HL_INFO_GET_EVENTS			30
++#define HL_INFO_UNDEFINED_OPCODE_EVENT		31
+ 
+ #define HL_INFO_VERSION_MAX_LEN			128
+ #define HL_INFO_CARD_NAME_MAX_LEN		16
+@@ -656,6 +658,34 @@ struct hl_info_razwi_event {
+ 	__u8 pad[2];
+ };
+ 
++#define MAX_QMAN_STREAMS_INFO		4
++#define OPCODE_INFO_MAX_ADDR_SIZE	8
++/**
++ * struct hl_info_undefined_opcode_event - info about last undefined opcode error
++ * @timestamp: timestamp of the undefined opcode error
++ * @cb_addr_streams: CB addresses (per stream) that are currently exists in the PQ
++ *                   entiers. In case all streams array entries are
++ *                   filled with values, it means the execution was in Lower-CP.
++ * @cq_addr: the address of the current handled command buffer
++ * @cq_size: the size of the current handled command buffer
++ * @cb_addr_streams_len: num of streams - actual len of cb_addr_streams array.
++ *                       should be equal to 1 incase of undefined opcode
++ *                       in Upper-CP (specific stream) and equal to 4 incase
++ *                       of undefined opcode in Lower-CP.
++ * @engine_id: engine-id that the error occurred on
++ * @stream_id: the stream id the error occurred on. In case the stream equals to
++ *             MAX_QMAN_STREAMS_INFO it means the error occurred on a Lower-CP.
++ */
++struct hl_info_undefined_opcode_event {
++	__s64 timestamp;
++	__u64 cb_addr_streams[MAX_QMAN_STREAMS_INFO][OPCODE_INFO_MAX_ADDR_SIZE];
++	__u64 cq_addr;
++	__u32 cq_size;
++	__u32 cb_addr_streams_len;
++	__u32 engine_id;
++	__u32 stream_id;
++};
++
+ /**
+  * struct hl_info_dev_memalloc_page_sizes - valid page sizes in device mem alloc information.
+  * @page_order_bitmask: bitmap in which a set bit represents the order of the supported page size
 -- 
-2.35.1
-
-
+2.25.1
 
