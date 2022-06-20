@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64AC0C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:22:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 338C5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:23:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344736AbiFTNW5 (ORCPT
+        id S1344487AbiFTNXG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:22:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58268 "EHLO
+        Mon, 20 Jun 2022 09:23:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242548AbiFTNUa (ORCPT
+        with ESMTP id S1344556AbiFTNUg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:20:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 856651B7B0;
-        Mon, 20 Jun 2022 06:08:41 -0700 (PDT)
+        Mon, 20 Jun 2022 09:20:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8983B22527;
+        Mon, 20 Jun 2022 06:08:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 493AA61546;
-        Mon, 20 Jun 2022 13:06:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A54EC3411C;
-        Mon, 20 Jun 2022 13:06:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AFC76B811A2;
+        Mon, 20 Jun 2022 13:07:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23813C3411B;
+        Mon, 20 Jun 2022 13:07:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730411;
-        bh=IZenuG6VcAy/vwb5NTPWmJ0UMfDIybVEzJVA13pGHcs=;
+        s=korg; t=1655730462;
+        bh=2me0UpX2QGc470gWTPLcXDcdd34FHBXND0Eocd5bEtE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q+calw3JlOjTrLYyKwP0xBrxPFrcAfRzJt4KIuv4DzK6/2bXU5bDQiTwaQkS9vc/P
-         Nqh+5xtWZSuARlZJr/P6Y/gopKMBeVmrgQr/glh7HLNJxIQlaS7BUe1Qjg4/b3oS1w
-         ZUhW/uCmkoyVR41myuoYUjqihqJnUYPuO8vtpQOA=
+        b=q46K9aZ9Pfmx8uCaJmEoLh0cp4SqGedaHSFIIwg59buTA99xluw78kiHlc1ebz09k
+         hGyl8yMAM/HzLDBze/95q8K+Vg96ENvyuIImtiAdNdRgj6UDesmVzYEvUrpcMpgV4j
+         dsZMiHoto2TeJVs+sNUE8bf0cAFAxTOBdpUS4Dek=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        stable@vger.kernel.org, Jian Shen <shenjian15@huawei.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 045/106] staging: r8188eu: Use zeroing allocator in wpa_set_encryption()
-Date:   Mon, 20 Jun 2022 14:51:04 +0200
-Message-Id: <20220620124725.721015507@linuxfoundation.org>
+Subject: [PATCH 5.15 060/106] net: hns3: split function hclge_update_port_base_vlan_cfg()
+Date:   Mon, 20 Jun 2022 14:51:19 +0200
+Message-Id: <20220620124726.177904410@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
 References: <20220620124724.380838401@linuxfoundation.org>
@@ -50,39 +51,114 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gustavo A. R. Silva <gustavoars@kernel.org>
+From: Jian Shen <shenjian15@huawei.com>
 
-[ Upstream commit c82462f124df06a0a34793f1a1dafe5c146a2a6f ]
+[ Upstream commit d25f5eddbe1ace18fa95318fd229b07a64ec4353 ]
 
-Use zeroing allocator rather than allocator followed by memset with 0.
+Currently the function hclge_update_port_base_vlan_cfg() is a
+bit long. Split it to several small functions, to improve the
+readability.
 
-This issue was detected with the help of Coccinelle.
-
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-Link: https://lore.kernel.org/r/20211012024624.GA1062447@embeddedor
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Jian Shen <shenjian15@huawei.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/r8188eu/os_dep/ioctl_linux.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ .../hisilicon/hns3/hns3pf/hclge_main.c        | 69 ++++++++++---------
+ 1 file changed, 36 insertions(+), 33 deletions(-)
 
-diff --git a/drivers/staging/r8188eu/os_dep/ioctl_linux.c b/drivers/staging/r8188eu/os_dep/ioctl_linux.c
-index fbfce4481ffe..3e9325d89afc 100644
---- a/drivers/staging/r8188eu/os_dep/ioctl_linux.c
-+++ b/drivers/staging/r8188eu/os_dep/ioctl_linux.c
-@@ -466,11 +466,10 @@ static int wpa_set_encryption(struct net_device *dev, struct ieee_param *param,
- 		if (wep_key_len > 0) {
- 			wep_key_len = wep_key_len <= 5 ? 5 : 13;
- 			wep_total_len = wep_key_len + FIELD_OFFSET(struct ndis_802_11_wep, KeyMaterial);
--			pwep = kmalloc(wep_total_len, GFP_KERNEL);
-+			pwep = kzalloc(wep_total_len, GFP_KERNEL);
- 			if (!pwep)
- 				goto exit;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index 892f2f12c54c..cdd1d2ebdde2 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -10397,12 +10397,41 @@ static bool hclge_need_update_vlan_filter(const struct hclge_vlan_info *new_cfg,
+ 	return false;
+ }
  
--			memset(pwep, 0, wep_total_len);
- 			pwep->KeyLength = wep_key_len;
- 			pwep->Length = wep_total_len;
- 			if (wep_key_len == 13) {
++static int hclge_modify_port_base_vlan_tag(struct hclge_vport *vport,
++					   struct hclge_vlan_info *new_info,
++					   struct hclge_vlan_info *old_info)
++{
++	struct hclge_dev *hdev = vport->back;
++	int ret;
++
++	/* add new VLAN tag */
++	ret = hclge_set_vlan_filter_hw(hdev, htons(new_info->vlan_proto),
++				       vport->vport_id, new_info->vlan_tag,
++				       false);
++	if (ret)
++		return ret;
++
++	/* remove old VLAN tag */
++	if (old_info->vlan_tag == 0)
++		ret = hclge_set_vf_vlan_common(hdev, vport->vport_id,
++					       true, 0);
++	else
++		ret = hclge_set_vlan_filter_hw(hdev, htons(ETH_P_8021Q),
++					       vport->vport_id,
++					       old_info->vlan_tag, true);
++	if (ret)
++		dev_err(&hdev->pdev->dev,
++			"failed to clear vport%u port base vlan %u, ret = %d.\n",
++			vport->vport_id, old_info->vlan_tag, ret);
++
++	return ret;
++}
++
+ int hclge_update_port_base_vlan_cfg(struct hclge_vport *vport, u16 state,
+ 				    struct hclge_vlan_info *vlan_info)
+ {
+ 	struct hnae3_handle *nic = &vport->nic;
+ 	struct hclge_vlan_info *old_vlan_info;
+-	struct hclge_dev *hdev = vport->back;
+ 	int ret;
+ 
+ 	old_vlan_info = &vport->port_base_vlan_cfg.vlan_info;
+@@ -10415,38 +10444,12 @@ int hclge_update_port_base_vlan_cfg(struct hclge_vport *vport, u16 state,
+ 	if (!hclge_need_update_vlan_filter(vlan_info, old_vlan_info))
+ 		goto out;
+ 
+-	if (state == HNAE3_PORT_BASE_VLAN_MODIFY) {
+-		/* add new VLAN tag */
+-		ret = hclge_set_vlan_filter_hw(hdev,
+-					       htons(vlan_info->vlan_proto),
+-					       vport->vport_id,
+-					       vlan_info->vlan_tag,
+-					       false);
+-		if (ret)
+-			return ret;
+-
+-		/* remove old VLAN tag */
+-		if (old_vlan_info->vlan_tag == 0)
+-			ret = hclge_set_vf_vlan_common(hdev, vport->vport_id,
+-						       true, 0);
+-		else
+-			ret = hclge_set_vlan_filter_hw(hdev,
+-						       htons(ETH_P_8021Q),
+-						       vport->vport_id,
+-						       old_vlan_info->vlan_tag,
+-						       true);
+-		if (ret) {
+-			dev_err(&hdev->pdev->dev,
+-				"failed to clear vport%u port base vlan %u, ret = %d.\n",
+-				vport->vport_id, old_vlan_info->vlan_tag, ret);
+-			return ret;
+-		}
+-
+-		goto out;
+-	}
+-
+-	ret = hclge_update_vlan_filter_entries(vport, state, vlan_info,
+-					       old_vlan_info);
++	if (state == HNAE3_PORT_BASE_VLAN_MODIFY)
++		ret = hclge_modify_port_base_vlan_tag(vport, vlan_info,
++						      old_vlan_info);
++	else
++		ret = hclge_update_vlan_filter_entries(vport, state, vlan_info,
++						       old_vlan_info);
+ 	if (ret)
+ 		return ret;
+ 
 -- 
 2.35.1
 
