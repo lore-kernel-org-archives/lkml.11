@@ -2,121 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC060CCA47C
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 12:50:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3C87CCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 12:51:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233263AbiFTMuy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 08:50:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33286 "EHLO
+        id S241919AbiFTMvY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 08:51:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231730AbiFTMuw (ORCPT
+        with ESMTP id S240792AbiFTMvW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 08:50:52 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5560C13E2C
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 05:50:49 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id mf9so582914ejb.0
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 05:50:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=wVGPCyQyPkXTNhupcCugMyUqAIjoQ2WAlQx451WBx0I=;
-        b=dYC9w8eDKPI+JGg49DsE+daHrtI1etV780GnsMfr8ha5KntBMDTWbv4sYUG4CY9gNn
-         fbvpsVmFnde2GARCnt42yjPrlgz1A/fHOjq2aQwU58khMNY+OzzgHto+iU/g94o0LjsH
-         HIDWiFwMjvQUN/Qp7xywZefNzn+qJympTQOCkfIqqaSVU4S2NkcmSDPQKbEin+5+b5Xm
-         nXD17eBwKop1QpWM5iySrFoK9usHrVWafJVabIYCIyYuVWln8bH3THIxC4E17oMEew5e
-         Iysip+1On7OdaqNte+TrbeAGQHryGTDFQyZF5rkt1LyGKR1S4ARKUJ8vUh3StZpSJfU+
-         839g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=wVGPCyQyPkXTNhupcCugMyUqAIjoQ2WAlQx451WBx0I=;
-        b=yfCWPD25/Ee10zVBZijYbi0SjpC4I79iGM0nHpB3B/pl3dtZYGJHJYw6MJDWNnd/XF
-         4LzjCnt/HcWZ8U+rN1X3VLBk9rXeDY9c0vu5Qog6y6VhXNfk6UZB07LNQgjNY+cLm1vl
-         tRqaF/BLcUgt1cUnXXQJF8ibh7B3YX5rPrelGBEmdGO+sSrwuf8I/BwUA6JgubhRnWan
-         ezePT8K36hVmPwFmea9UiBrL9z911rDETw57J3x2PzKbV39EC2mkISCwvzobdfoXwBj/
-         Uoi1YlLr62kjazClbB9bhS0xCt93oKgNFIcFuReYA0ZFzXJ+8ke8Iqjlkk6soazoMW6V
-         ueqQ==
-X-Gm-Message-State: AJIora/3Gz9wc2oaVQkT/QNvzSyyz3OrZJoo4trzrNHYWfbSSawgsb96
-        oqy7FgOdlPzul/l/qtZ4ncT+IA==
-X-Google-Smtp-Source: AGRyM1szXn/V8sntLjlItwCnzxeR/PMgaxIVnmKQ5ioDo/U2K9vNJYDX8XT2OfmCLsGo4DE6u1he+Q==
-X-Received: by 2002:a17:907:6e0f:b0:706:9a4f:2f3d with SMTP id sd15-20020a1709076e0f00b007069a4f2f3dmr20880444ejc.413.1655729447921;
-        Mon, 20 Jun 2022 05:50:47 -0700 (PDT)
-Received: from [192.168.0.210] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id z7-20020a05640240c700b0042617ba63c2sm10546832edb.76.2022.06.20.05.50.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Jun 2022 05:50:47 -0700 (PDT)
-Message-ID: <c3785da1-0142-5c4c-4f46-c569c8c06efa@linaro.org>
-Date:   Mon, 20 Jun 2022 14:50:45 +0200
+        Mon, 20 Jun 2022 08:51:22 -0400
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F19C717A9D;
+        Mon, 20 Jun 2022 05:51:17 -0700 (PDT)
+Received: from sslproxy04.your-server.de ([78.46.152.42])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1o3Gs4-0005hk-A0; Mon, 20 Jun 2022 14:51:12 +0200
+Received: from [2a02:168:f656:0:d16a:7287:ccf0:4fff] (helo=localhost.localdomain)
+        by sslproxy04.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1o3Gs3-000Luv-UF; Mon, 20 Jun 2022 14:51:11 +0200
+Subject: Re: [PATCH] libbpf: Remove kprobe_event on failed kprobe_open_legacy
+To:     chuang <nashuiliang@gmail.com>, Jiri Olsa <olsajiri@gmail.com>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        Jingren Zhou <zhoujingren@didiglobal.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Masami Hiramatsu <mhiramat@kernel.org>
+References: <20220614084930.43276-1-nashuiliang@gmail.com>
+ <62ad50fa9d42d_24b34208d6@john.notmuch>
+ <CACueBy7NqRszA3tCOvLhfi1OraUrL_GD9YZ9XOPNHzbR1=+z7g@mail.gmail.com>
+ <Yq5A4Cln4qeTaAeM@krava>
+ <CACueBy4Nr+rqJjZ3guBimd6t36V5B3CBp6_oZVMRzLvMZoTRpg@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <1b813650-baac-a93e-97b0-11967080fdfe@iogearbox.net>
+Date:   Mon, 20 Jun 2022 14:51:11 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v5 02/15] dt-bindings: mmc: cdns: Add AMD Pensando Elba
- SoC binding
+In-Reply-To: <CACueBy4Nr+rqJjZ3guBimd6t36V5B3CBp6_oZVMRzLvMZoTRpg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-To:     Brad Larson <brad@pensando.io>,
-        linux-arm-kernel@lists.infradead.org
-Cc:     linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
-        adrian.hunter@intel.com, alcooperx@gmail.com,
-        andy.shevchenko@gmail.com, arnd@arndb.de, blarson@amd.com,
-        brijeshkumar.singh@amd.com, catalin.marinas@arm.com,
-        gsomlo@gmail.com, gerg@linux-m68k.org, krzk@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, lee.jones@linaro.org,
-        broonie@kernel.org, yamada.masahiro@socionext.com,
-        p.zabel@pengutronix.de, piotrs@cadence.com, p.yadav@ti.com,
-        rdunlap@infradead.org, robh+dt@kernel.org, samuel@sholland.org,
-        fancer.lancer@gmail.com, suravee.suthikulpanit@amd.com,
-        thomas.lendacky@amd.com, ulf.hansson@linaro.org, will@kernel.org,
-        devicetree@vger.kernel.org
-References: <20220613195658.5607-1-brad@pensando.io>
- <20220613195658.5607-3-brad@pensando.io>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220613195658.5607-3-brad@pensando.io>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.6/26578/Mon Jun 20 10:06:11 2022)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13/06/2022 21:56, Brad Larson wrote:
-> From: Brad Larson <blarson@amd.com>
+On 6/19/22 3:56 AM, chuang wrote:
+> On Sun, Jun 19, 2022 at 5:17 AM Jiri Olsa <olsajiri@gmail.com> wrote:
+>>
+>> just curious.. is that because of ipmodify flag on ftrace_ops?
+>> AFAICS that be a poblem just for kretprobes, cc-ing Masami
 > 
-> AMD Pensando Elba ARM 64-bit SoC is integrated with this IP and
-> explicitly controls byte-lane enables.
+> Yes, the core reason is caused by ipmodify flag (not only for kretprobes).
+> Before commit 0bc11ed5ab60 ("kprobes: Allow kprobes coexist with
+> livepatch"), it's very easy to trigger this problem.
+> The kprobe has other problems and is communicating with Masami.
 > 
-> Signed-off-by: Brad Larson <blarson@amd.com>
-> ---
->  .../devicetree/bindings/mmc/cdns,sdhci.yaml        | 14 ++++++++++++++
->  1 file changed, 14 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/mmc/cdns,sdhci.yaml b/Documentation/devicetree/bindings/mmc/cdns,sdhci.yaml
-> index 4207fed62dfe..35bc4cf6f214 100644
-> --- a/Documentation/devicetree/bindings/mmc/cdns,sdhci.yaml
-> +++ b/Documentation/devicetree/bindings/mmc/cdns,sdhci.yaml
-> @@ -13,10 +13,24 @@ maintainers:
->  allOf:
->    - $ref: mmc-controller.yaml
->  
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          enum:
-> +            - amd,pensando-elba-sd4hc
-> +    then:
-> +      properties:
-> +        reg:
-> +          items:
-> +            - description: Cadence host controller registers
-> +            - description: Byte-lane control register
-> +          minItems: 2
-> +
+> With this fix, whenever an error is returned after
+> add_kprobe_event_legacy(), this guarantees cleanup of the kprobe
+> event.
 
-Except Rob's comment, the entire section now should be moved to bottom -
-just before unevaluated/additionalProperties:false
+The details from this follow-up conversation should definitely be part of
+the commit description, please add them to a v2 as otherwise context is
+missing if we look at the commit again in say few months from now. Also,
+would be good if Masami could provide ack given 0bc11ed5ab60.
 
-
-Best regards,
-Krzysztof
+Thanks,
+Daniel
