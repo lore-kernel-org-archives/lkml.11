@@ -2,104 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F1C0C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:32:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDD4BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:34:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241461AbiFTOcy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:32:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34410 "EHLO
+        id S1346752AbiFTOei (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 10:34:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243578AbiFTOci (ORCPT
+        with ESMTP id S242683AbiFTOeH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 10:32:38 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 206102DD4C
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 06:46:53 -0700 (PDT)
+        Mon, 20 Jun 2022 10:34:07 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EC5D2ED6C
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 06:48:50 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id u12so21228918eja.8
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 06:48:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1655732814; x=1687268814;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=tVd1abrCAVnuoDG/6O1kOukir1U0Iwq3YTDWJ+4jDh8=;
-  b=RA3qEnRO4mbMvrfjkUXWV92JnZtThoJAq6QbehjQp3nbRbjzA0xNAGNi
-   xxdqkrQSA3jpMEjju67ZonMZCpDDIpWC3sXRXkcVUxur/+HDI+VkR8kT1
-   2PB03QgDqAdYJrTsHgIGvpKD72GF17x0xT2a5cGJHLu87kUeL3VSzBujT
-   g=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 20 Jun 2022 06:46:53 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 06:46:51 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 20 Jun 2022 06:46:51 -0700
-Received: from qian (10.80.80.8) by nalasex01a.na.qualcomm.com (10.47.209.196)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 20 Jun
- 2022 06:46:49 -0700
-Date:   Mon, 20 Jun 2022 09:46:47 -0400
-From:   Qian Cai <quic_qiancai@quicinc.com>
-To:     Miaohe Lin <linmiaohe@huawei.com>
-CC:     Muchun Song <songmuchun@bytedance.com>,
-        "Huang, Ying" <ying.huang@intel.com>, <akpm@linux-foundation.org>,
-        <david@redhat.com>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 2/3] mm/swapfile: fix possible data races of
- inuse_pages
-Message-ID: <YrB6R5uHQaz1adhK@qian>
-References: <20220608144031.829-1-linmiaohe@huawei.com>
- <20220608144031.829-3-linmiaohe@huawei.com>
- <87edzjrcq8.fsf@yhuang6-desk2.ccr.corp.intel.com>
- <13414d6a-9e72-fb6c-f0a8-8b83ba0455de@huawei.com>
- <YrA8kxavqsDfH5R7@FVFYT0MHHV2J.usts.net>
- <09ffac27-7fe9-0977-cb33-30433e78e662@huawei.com>
- <b61771ad-9daa-741e-27e4-fdb50a7c5e38@huawei.com>
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hoDwsyCPbxAXsPRHgnlWqg6oqsfxTDr8MWMJehQSHOQ=;
+        b=U6tJGh/ymYHJiOb318DThrdnVTEZzfdovLcKmFYgbh21zmIgPKtJLHpjrLzRcM3mPQ
+         AwblBPHbaUn1sIe9+J57uk9W8nJTLB9gDPoIzdvfMX9nDPz5lWR3Ad04VhCL7L7Vlj+4
+         sWDgThs0lL1RNQ3/cOOn2pxDMihnBbUgHo10w=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hoDwsyCPbxAXsPRHgnlWqg6oqsfxTDr8MWMJehQSHOQ=;
+        b=C3fmEQEQr6CfIZHVQLmRLm6Zh6a5r+gh3t2okLzX1AJSaY4IcNVAP7MjwqoI1IAj4N
+         XAPTC95uh715/TRLPT2exNIY1YrnClkiNvXl3JybITv6akkm6dyxzCbTvENTlHDTnSzw
+         WZwfx6VnkdO4OLOBS19JxGwCD7vGxQt/7N4p8Z0DxsN4FWC21U1uzcgF8kZMsSm6WaiV
+         m0yuEnhOwV8MMRixnyFt8XPUJki8fzvvNI12whzyDJDgCo6mSUSQ1m2R/eGt2sS3wntb
+         vriGZcpjPfLHlOE/ACO7MTWxH8rYCM3+TuQwpGwivQ7n3PFW+eBmCxjef0klzeF5GQwH
+         e4fA==
+X-Gm-Message-State: AJIora+UwzRheRE5asHADHFQCw1aKQftPjjeA14L1EjVvzYr59MjkIjQ
+        LrA1KVgubpN2dDWhb5BzkUz/ribsddJXsm5D
+X-Google-Smtp-Source: AGRyM1vaorRZdMBl69MJeLMDHDRRQ3c9NAP6jkbfSSaYEZ22xAI3sivXG5l4Gm7s82H9BKPCVB5iEg==
+X-Received: by 2002:a17:907:60cb:b0:711:d516:ebab with SMTP id hv11-20020a17090760cb00b00711d516ebabmr21435036ejc.159.1655732928445;
+        Mon, 20 Jun 2022 06:48:48 -0700 (PDT)
+Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com. [209.85.221.49])
+        by smtp.gmail.com with ESMTPSA id 10-20020a170906218a00b006fee98045cdsm6112461eju.10.2022.06.20.06.48.46
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Jun 2022 06:48:47 -0700 (PDT)
+Received: by mail-wr1-f49.google.com with SMTP id m1so7014509wrb.2
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 06:48:46 -0700 (PDT)
+X-Received: by 2002:a05:6000:1251:b0:21a:efae:6cbe with SMTP id
+ j17-20020a056000125100b0021aefae6cbemr16632661wrx.281.1655732925960; Mon, 20
+ Jun 2022 06:48:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <b61771ad-9daa-741e-27e4-fdb50a7c5e38@huawei.com>
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+References: <20220619204949.50d9154d@thinkpad> <87r13kwawb.fsf@jogness.linutronix.de>
+ <20220620112936.48fcb2a4@thinkpad> <YrBdjVwBOVgLfHyb@alley>
+In-Reply-To: <YrBdjVwBOVgLfHyb@alley>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Mon, 20 Jun 2022 08:48:29 -0500
+X-Gmail-Original-Message-ID: <CAHk-=wgdquXVVE37CZooVK4X+YdSa7XoGtjr71CEYh8UsdKUow@mail.gmail.com>
+Message-ID: <CAHk-=wgdquXVVE37CZooVK4X+YdSa7XoGtjr71CEYh8UsdKUow@mail.gmail.com>
+Subject: Re: Boot stall regression from "printk for 5.19" merge
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     =?UTF-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>,
+        John Ogness <john.ogness@linutronix.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Jan Kara <jack@suse.cz>, Peter Zijlstra <peterz@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 20, 2022 at 08:32:27PM +0800, Miaohe Lin wrote:
-> >>>>> --- a/mm/swapfile.c
-> >>>>> +++ b/mm/swapfile.c
-> >>>>> @@ -2646,7 +2646,7 @@ static int swap_show(struct seq_file *swap, void *v)
-> >>>>>  	}
-> >>>>>  
-> >>>>>  	bytes = si->pages << (PAGE_SHIFT - 10);
-> >>>>> -	inuse = si->inuse_pages << (PAGE_SHIFT - 10);
-> >>>>> +	inuse = READ_ONCE(si->inuse_pages) << (PAGE_SHIFT - 10);
-> >>>>>  
-> >>>>>  	file = si->swap_file;
-> >>>>>  	len = seq_file_path(swap, file, " \t\n\\");
-> >>>>> @@ -3265,7 +3265,7 @@ void si_swapinfo(struct sysinfo *val)
-> >>>>>  		struct swap_info_struct *si = swap_info[type];
-> >>>>>  
-> >>>>>  		if ((si->flags & SWP_USED) && !(si->flags & SWP_WRITEOK))
-> >>>>> -			nr_to_be_unused += si->inuse_pages;
-> >>>>> +			nr_to_be_unused += READ_ONCE(si->inuse_pages);
-> >>>>>  	}
-> >>>>>  	val->freeswap = atomic_long_read(&nr_swap_pages) + nr_to_be_unused;
-> >>>>>  	val->totalswap = total_swap_pages + nr_to_be_unused;
-> >>>>
-> >>>> READ_ONCE() should be paired with WRITE_ONCE().  So, change the writer
-> >>>> side too?
-> >>>
-> >>> READ_ONCE() is used to fix the complaint of concurrent accessing to si->inuse_pages from KCSAN here.
-> >>> The similar commit is 218209487c3d ("mm/swapfile: fix data races in try_to_unuse()"). IMHO, it's fine
-> >>
-> >> I think the fix 218209487c3d is incomplete. The write side in swap_range_free() should
-> >> also be fixed. Otherwise, IIUC, it cannot stop KCSAN complaining.
-> > 
-> > I tend to agree with you. READ_ONCE() should be paired with WRITE_ONCE() theoretically. But WRITTE_ONCE()
-> > is ignored while the commit is introduced. Add Qian Cai for helping verify it. It's very kind of @Qian Cai
-> > if he could tell us whether WRITTE_ONCE() is ignored deliberately.
+On Mon, Jun 20, 2022 at 6:44 AM Petr Mladek <pmladek@suse.com> wrote:
+>
+> Both early console and proper console driver has its own kthread.
+>
+> >    1.166486] f0512000.serial: ttyS0 at MMIO 0xf0512000 (irq = 22, base_baud = 12500000) is a 16550A
+>
+> The line is malformed. I wonder if both early console and proper
+> console used the same port in parallel.
 
-The write side should be protected by the lock swap_info_struct::lock. Is
-that not the case here?
+Honestly, I get the feeling that we need to just revert the whole
+"console from thread" thing.
+
+Because:
+
+> So, it looks like that con->write() code is not correctly serialized
+> between the early and normal console.
+> [ ... ]
+> I am going to check the driver...
+
+We really cannot be in the situation that some random driver that used
+to work no longer does, and causes oopses and/or memory corruption
+just because it's now entered differently from how it traditionally
+has been.
+
+The traditional console write code has always been very careful to get
+exclusive access, and it sounds like that is just plain broken now.
+
+So I don't think this is a "driver is broken". Even if you find a fix
+for it that makes that particular configuration happy, it sounds like
+there is a much more fundamental issue at hand: the new printk code
+just doesn't work well, and does things that are against the way
+console printing has always worked in the past.
+
+I realize that people have wanted to do printing from proper thread
+context for ages and ages.
+
+But maybe people should also just admit that "I wanted this" was not
+"this was actually a good idea".
+
+                  Linus
