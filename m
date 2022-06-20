@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20E4FC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:06:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CB47C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:07:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350503AbiFTOGv (ORCPT
+        id S1350535AbiFTOGz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:06:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36782 "EHLO
+        Mon, 20 Jun 2022 10:06:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350627AbiFTNxq (ORCPT
+        with ESMTP id S1351755AbiFTNzR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:53:46 -0400
+        Mon, 20 Jun 2022 09:55:17 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69C2A55BB;
-        Mon, 20 Jun 2022 06:20:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9C5733E17;
+        Mon, 20 Jun 2022 06:21:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0DD62B811C7;
-        Mon, 20 Jun 2022 13:20:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FBA3C3411B;
-        Mon, 20 Jun 2022 13:20:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D9D26B81157;
+        Mon, 20 Jun 2022 13:21:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30168C3411B;
+        Mon, 20 Jun 2022 13:21:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731213;
-        bh=8Q/hRaHsPn+BJGJiuM3zr0zhutCo+TEYkn2w+A+kgoA=;
+        s=korg; t=1655731283;
+        bh=4YG/mLz04w7Z3iVgwRBUHl1vEuxLOBCOG6D0oHMrmAA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PNpWf68gwFfQUdiSJG9fWsCCq5+1k3k1EtybTmht67RYIR3JLXJDO1Me8G6OCM45G
-         KzV53dsyw0ihtZSRm7iP7/Kj0IaHZwl3lFcrqTHQ+C8QKw0ME1UK0ljXFawiG6Wc5R
-         juhHwrsR5RPaCQVOAWS21gYZoPVvBn5SfdrtastI=
+        b=v1tu+yzNvTBdAbmITEg/9ZGCCgrAf21CxM+l2VRIDnpWzY4Xkm45AfvO/u1lBIc4v
+         NfWs4Be64S0EnDAVfgPCvPjroZham8zBcmatHAg1yV0XraV7OKnTA5Oil5LGtO0CqH
+         QM0E3HzZblGCo30BG5XtgsDqoO19q0Jb8MJ7+LPs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Maksym Yaremchuk <maksymy@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 188/240] ASoC: cs42l56: Correct typo in minimum level for SX volume controls
-Date:   Mon, 20 Jun 2022 14:51:29 +0200
-Message-Id: <20220620124744.438120401@linuxfoundation.org>
+Subject: [PATCH 5.4 212/240] mlxsw: spectrum_cnt: Reorder counter pools
+Date:   Mon, 20 Jun 2022 14:51:53 +0200
+Message-Id: <20220620124745.119114358@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -51,39 +52,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Petr Machata <petrm@nvidia.com>
 
-[ Upstream commit a8928ada9b96944cadd8b65d191e33199fd38782 ]
+[ Upstream commit 4b7a632ac4e7101ceefee8484d5c2ca505d347b3 ]
 
-A couple of the SX volume controls specify 0x84 as the lowest volume
-value, however the correct value from the datasheet is 0x44. The
-datasheet don't include spaces in the value it displays as binary so
-this was almost certainly just a typo reading 1000100.
+Both RIF and ACL flow counters use a 24-bit SW-managed counter address to
+communicate which counter they want to bind.
 
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220602162119.3393857-6-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+In a number of Spectrum FW releases, binding a RIF counter is broken and
+slices the counter index to 16 bits. As a result, on Spectrum-2 and above,
+no more than about 410 RIF counters can be effectively used. This
+translates to 205 netdevices for which L3 HW stats can be enabled. (This
+does not happen on Spectrum-1, because there are fewer counters available
+overall and the counter index never exceeds 16 bits.)
+
+Binding counters to ACLs does not have this issue. Therefore reorder the
+counter allocation scheme so that RIF counters come first and therefore get
+lower indices that are below the 16-bit barrier.
+
+Fixes: 98e60dce4da1 ("Merge branch 'mlxsw-Introduce-initial-Spectrum-2-support'")
+Reported-by: Maksym Yaremchuk <maksymy@nvidia.com>
+Signed-off-by: Petr Machata <petrm@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Link: https://lore.kernel.org/r/20220613125017.2018162-1-idosch@nvidia.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/cs42l56.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/cs42l56.c b/sound/soc/codecs/cs42l56.c
-index 51d7a87ab4c3..8be7d83f0ce9 100644
---- a/sound/soc/codecs/cs42l56.c
-+++ b/sound/soc/codecs/cs42l56.c
-@@ -391,9 +391,9 @@ static const struct snd_kcontrol_new cs42l56_snd_controls[] = {
- 	SOC_DOUBLE("ADC Boost Switch", CS42L56_GAIN_BIAS_CTL, 3, 2, 1, 1),
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.h
+index 81465e267b10..b7eb3674e285 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.h
+@@ -7,8 +7,8 @@
+ #include "spectrum.h"
  
- 	SOC_DOUBLE_R_SX_TLV("Headphone Volume", CS42L56_HPA_VOLUME,
--			      CS42L56_HPB_VOLUME, 0, 0x84, 0x48, hl_tlv),
-+			      CS42L56_HPB_VOLUME, 0, 0x44, 0x48, hl_tlv),
- 	SOC_DOUBLE_R_SX_TLV("LineOut Volume", CS42L56_LOA_VOLUME,
--			      CS42L56_LOB_VOLUME, 0, 0x84, 0x48, hl_tlv),
-+			      CS42L56_LOB_VOLUME, 0, 0x44, 0x48, hl_tlv),
+ enum mlxsw_sp_counter_sub_pool_id {
+-	MLXSW_SP_COUNTER_SUB_POOL_FLOW,
+ 	MLXSW_SP_COUNTER_SUB_POOL_RIF,
++	MLXSW_SP_COUNTER_SUB_POOL_FLOW,
+ };
  
- 	SOC_SINGLE_TLV("Bass Shelving Volume", CS42L56_TONE_CTL,
- 			0, 0x00, 1, tone_tlv),
+ int mlxsw_sp_counter_alloc(struct mlxsw_sp *mlxsw_sp,
 -- 
 2.35.1
 
