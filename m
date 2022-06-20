@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 549F9C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:22:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EFEFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:22:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344331AbiFTNWB (ORCPT
+        id S1344410AbiFTNWI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:22:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52100 "EHLO
+        Mon, 20 Jun 2022 09:22:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344853AbiFTNTc (ORCPT
+        with ESMTP id S1344839AbiFTNTc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 20 Jun 2022 09:19:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BE9F2DC8;
-        Mon, 20 Jun 2022 06:08:02 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 132771B799;
+        Mon, 20 Jun 2022 06:08:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8D035B811D7;
-        Mon, 20 Jun 2022 13:07:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC35EC3411B;
-        Mon, 20 Jun 2022 13:07:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F7FA61535;
+        Mon, 20 Jun 2022 13:06:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7330FC3411B;
+        Mon, 20 Jun 2022 13:06:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730475;
-        bh=tTBtxrtsbqllWpjOaTxbtfxqH5FKE4RTKD1+Juy0hGc=;
+        s=korg; t=1655730382;
+        bh=bk35GxZMSvgCi98hPj3XUWJh2GZvRMQ+zORPkX2Ju3s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ErqoGj4+EvBrgUcpwaAKUXIEwrfi4aKp8xvvvuYs6tOrti3dp9ulHhFl4ABPxTEnY
-         8owfoVbVC9bK6hODONAftDsQJYmdCx6nO0P6vR11Pdqtd+1aoxc2ZYiZgfWMhmdOMK
-         vlOiJgCV12Eq7zoCXRHgbPMvhpHlQczOoFhd0hxI=
+        b=lLwXYUROnag38GrYyuNFt0Qu4IS9dzl9zu/m0qNnFvCalFXuRsFvDiuccvaGzfXtv
+         Da1mWnuTrOh5vls6RHsTeo7ixcGHyW1HBjrIQ7fsrgPxMuHgg0tZENLYt8QJTtkF4p
+         Ozzh2osDysjTfj/V9nC4+U6nhBVql+oIS1NqOvrY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guangbin Huang <huangguangbin2@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, David Lin <ctlin0@nuvoton.com>,
+        John Hsu <kchsu0@nuvoton.com>, Seven Li <wtli@nuvoton.com>,
+        Hui Wang <hui.wang@canonical.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 063/106] net: hns3: fix tm port shapping of fibre port is incorrect after driver initialization
-Date:   Mon, 20 Jun 2022 14:51:22 +0200
-Message-Id: <20220620124726.265999622@linuxfoundation.org>
+Subject: [PATCH 5.15 006/106] ASoC: nau8822: Add operation for internal PLL off and on
+Date:   Mon, 20 Jun 2022 14:50:25 +0200
+Message-Id: <20220620124724.575094372@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
 References: <20220620124724.380838401@linuxfoundation.org>
@@ -50,91 +52,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guangbin Huang <huangguangbin2@huawei.com>
+From: Hui Wang <hui.wang@canonical.com>
 
-[ Upstream commit 12a3670887725df364cc3e030cf3bede6f13b364 ]
+[ Upstream commit aeca8a3295022bcec46697f16e098140423d8463 ]
 
-Currently in driver initialization process, driver will set shapping
-parameters of tm port to default speed read from firmware. However, the
-speed of SFP module may not be default speed, so shapping parameters of
-tm port may be incorrect.
+We tried to enable the audio on an imx6sx EVB with the codec nau8822,
+after setting the internal PLL fractional parameters, the audio still
+couldn't work and the there was no sdma irq at all.
 
-To fix this problem, driver sets new shapping parameters for tm port
-after getting exact speed of SFP module in this case.
+After checking with the section "8.1.1 Phase Locked Loop (PLL) Design
+Example" of "NAU88C22 Datasheet Rev 0.6", we found we need to
+turn off the PLL before programming fractional parameters and turn on
+the PLL after programming.
 
-Fixes: 88d10bd6f730 ("net: hns3: add support for multiple media type")
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+After this change, the audio driver could record and play sound and
+the sdma's irq is triggered when playing or recording.
+
+Cc: David Lin <ctlin0@nuvoton.com>
+Cc: John Hsu <kchsu0@nuvoton.com>
+Cc: Seven Li <wtli@nuvoton.com>
+Signed-off-by: Hui Wang <hui.wang@canonical.com>
+Link: https://lore.kernel.org/r/20220530040151.95221-2-hui.wang@canonical.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c   | 11 ++++++++---
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c |  2 +-
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.h |  1 +
- 3 files changed, 10 insertions(+), 4 deletions(-)
+ sound/soc/codecs/nau8822.c | 4 ++++
+ sound/soc/codecs/nau8822.h | 3 +++
+ 2 files changed, 7 insertions(+)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 24239e28e88a..15d10775a757 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -3194,7 +3194,7 @@ static int hclge_tp_port_init(struct hclge_dev *hdev)
- static int hclge_update_port_info(struct hclge_dev *hdev)
- {
- 	struct hclge_mac *mac = &hdev->hw.mac;
--	int speed = HCLGE_MAC_SPEED_UNKNOWN;
-+	int speed;
- 	int ret;
+diff --git a/sound/soc/codecs/nau8822.c b/sound/soc/codecs/nau8822.c
+index 58123390c7a3..b436e532993d 100644
+--- a/sound/soc/codecs/nau8822.c
++++ b/sound/soc/codecs/nau8822.c
+@@ -740,6 +740,8 @@ static int nau8822_set_pll(struct snd_soc_dai *dai, int pll_id, int source,
+ 		pll_param->pll_int, pll_param->pll_frac,
+ 		pll_param->mclk_scaler, pll_param->pre_factor);
  
- 	/* get the port info from SFP cmd if not copper port */
-@@ -3205,10 +3205,13 @@ static int hclge_update_port_info(struct hclge_dev *hdev)
- 	if (!hdev->support_sfp_query)
- 		return 0;
++	snd_soc_component_update_bits(component,
++		NAU8822_REG_POWER_MANAGEMENT_1, NAU8822_PLL_EN_MASK, NAU8822_PLL_OFF);
+ 	snd_soc_component_update_bits(component,
+ 		NAU8822_REG_PLL_N, NAU8822_PLLMCLK_DIV2 | NAU8822_PLLN_MASK,
+ 		(pll_param->pre_factor ? NAU8822_PLLMCLK_DIV2 : 0) |
+@@ -757,6 +759,8 @@ static int nau8822_set_pll(struct snd_soc_dai *dai, int pll_id, int source,
+ 		pll_param->mclk_scaler << NAU8822_MCLKSEL_SFT);
+ 	snd_soc_component_update_bits(component,
+ 		NAU8822_REG_CLOCKING, NAU8822_CLKM_MASK, NAU8822_CLKM_PLL);
++	snd_soc_component_update_bits(component,
++		NAU8822_REG_POWER_MANAGEMENT_1, NAU8822_PLL_EN_MASK, NAU8822_PLL_ON);
  
--	if (hdev->ae_dev->dev_version >= HNAE3_DEVICE_VERSION_V2)
-+	if (hdev->ae_dev->dev_version >= HNAE3_DEVICE_VERSION_V2) {
-+		speed = mac->speed;
- 		ret = hclge_get_sfp_info(hdev, mac);
--	else
-+	} else {
-+		speed = HCLGE_MAC_SPEED_UNKNOWN;
- 		ret = hclge_get_sfp_speed(hdev, &speed);
-+	}
- 
- 	if (ret == -EOPNOTSUPP) {
- 		hdev->support_sfp_query = false;
-@@ -3220,6 +3223,8 @@ static int hclge_update_port_info(struct hclge_dev *hdev)
- 	if (hdev->ae_dev->dev_version >= HNAE3_DEVICE_VERSION_V2) {
- 		if (mac->speed_type == QUERY_ACTIVE_SPEED) {
- 			hclge_update_port_capability(hdev, mac);
-+			if (mac->speed != speed)
-+				(void)hclge_tm_port_shaper_cfg(hdev);
- 			return 0;
- 		}
- 		return hclge_cfg_mac_speed_dup(hdev, mac->speed,
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
-index 429652a8cde1..afc47c9b5ec4 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
-@@ -420,7 +420,7 @@ static int hclge_tm_pg_shapping_cfg(struct hclge_dev *hdev,
- 	return hclge_cmd_send(&hdev->hw, &desc, 1);
+ 	return 0;
  }
+diff --git a/sound/soc/codecs/nau8822.h b/sound/soc/codecs/nau8822.h
+index 489191ff187e..b45d42c15de6 100644
+--- a/sound/soc/codecs/nau8822.h
++++ b/sound/soc/codecs/nau8822.h
+@@ -90,6 +90,9 @@
+ #define NAU8822_REFIMP_3K			0x3
+ #define NAU8822_IOBUF_EN			(0x1 << 2)
+ #define NAU8822_ABIAS_EN			(0x1 << 3)
++#define NAU8822_PLL_EN_MASK			(0x1 << 5)
++#define NAU8822_PLL_ON				(0x1 << 5)
++#define NAU8822_PLL_OFF				(0x0 << 5)
  
--static int hclge_tm_port_shaper_cfg(struct hclge_dev *hdev)
-+int hclge_tm_port_shaper_cfg(struct hclge_dev *hdev)
- {
- 	struct hclge_port_shapping_cmd *shap_cfg_cmd;
- 	struct hclge_shaper_ir_para ir_para;
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.h
-index 1db7f40b4525..5df18cc3ee55 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.h
-@@ -231,6 +231,7 @@ int hclge_pause_addr_cfg(struct hclge_dev *hdev, const u8 *mac_addr);
- void hclge_pfc_rx_stats_get(struct hclge_dev *hdev, u64 *stats);
- void hclge_pfc_tx_stats_get(struct hclge_dev *hdev, u64 *stats);
- int hclge_tm_qs_shaper_cfg(struct hclge_vport *vport, int max_tx_rate);
-+int hclge_tm_port_shaper_cfg(struct hclge_dev *hdev);
- int hclge_tm_get_qset_num(struct hclge_dev *hdev, u16 *qset_num);
- int hclge_tm_get_pri_num(struct hclge_dev *hdev, u8 *pri_num);
- int hclge_tm_get_qset_map_pri(struct hclge_dev *hdev, u16 qset_id, u8 *priority,
+ /* NAU8822_REG_AUDIO_INTERFACE (0x4) */
+ #define NAU8822_AIFMT_MASK			(0x3 << 3)
 -- 
 2.35.1
 
