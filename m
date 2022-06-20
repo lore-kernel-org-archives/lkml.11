@@ -2,75 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BC18C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:07:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9782C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:07:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350689AbiFTOHb (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:07:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45314 "EHLO
+        id S240200AbiFTOHl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 10:07:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243773AbiFTNyp (ORCPT
+        with ESMTP id S1353674AbiFTN6h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:54:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 000EC3193F;
-        Mon, 20 Jun 2022 06:20:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 20 Jun 2022 09:58:37 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A35D613D05
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 06:24:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655731381;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Lz3XrBbri+7W5yHDKSER/WjV40K7I0YZnro9o8f5k5U=;
+        b=NOyK1YBJP0mBwDgDZbXVlbNTzn9zT2J87Gj1nUTIoRt5F5+Xd/el1cTgRE2RrbeXmYpByO
+        heTnHp0w/M7o2BGn/MnOfJmrBRhnA/dSkpdpIveK+RpECxIQOOUShMAgAmfgUWuSz3I100
+        1KPKoVnEdFdSnvAh8SKBfOcx5ubMDyk=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-468-Wi6EX5JEP9e9kOIYbUntbA-1; Mon, 20 Jun 2022 09:16:37 -0400
+X-MC-Unique: Wi6EX5JEP9e9kOIYbUntbA-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B174760EA0;
-        Mon, 20 Jun 2022 13:20:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1528C3411B;
-        Mon, 20 Jun 2022 13:20:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731245;
-        bh=wvyHoClL7ERvP595o/9+eYZSIUBBJhySOGYGJJR06BA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FN37YKbeg6kYVNle0C9gKvbvKJP63WHgq9C/mjHs0pY8lyo/SIHk7nhK1IsPTWXlD
-         5xOkxBy52wJF4/oQzJeotx3At+NkfeduXxvXrMuOP8YTSNqeGBTIO57CscPwwMaKM9
-         4Z1Lb3buCJEo5C11r4NEI/wSiraScWUTeJEQVHmk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 157/240] random: use proper jiffies comparison macro
-Date:   Mon, 20 Jun 2022 14:50:58 +0200
-Message-Id: <20220620124743.557873770@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
-References: <20220620124737.799371052@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9B652101AA4D;
+        Mon, 20 Jun 2022 13:16:36 +0000 (UTC)
+Received: from rules.brq.redhat.com (unknown [10.40.208.23])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 26188492CA3;
+        Mon, 20 Jun 2022 13:16:34 +0000 (UTC)
+From:   Vladis Dronov <vdronov@redhat.com>
+To:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Vladis Dronov <vdronov@redhat.com>, Simo Sorce <simo@redhat.com>
+Subject: [PATCH] crypto: fips - make proc files report fips module name and version
+Date:   Mon, 20 Jun 2022 15:16:18 +0200
+Message-Id: <20220620131618.952133-1-vdronov@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-type: text/plain
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+FIPS 140-3 introduced a requirement for the FIPS module to return
+information about itself, specifically a name and a version. These
+values must match the values reported on FIPS certificates.
 
-commit 8a5b8a4a4ceb353b4dd5bafd09e2b15751bcdb51 upstream.
+This patch adds two files to read a name and a version from:
 
-This expands to exactly the same code that it replaces, but makes things
-consistent by using the same macro for jiffy comparisons throughout.
+/proc/sys/crypto/fips_name
+/proc/sys/crypto/fips_version
 
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Simo Sorce <simo@redhat.com>
+Signed-off-by: Vladis Dronov <vdronov@redhat.com>
 ---
- drivers/char/random.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ crypto/Kconfig       | 21 +++++++++++++++++++++
+ crypto/fips.c        | 27 ++++++++++++++++++++++-----
+ include/linux/fips.h |  9 +++++++++
+ 3 files changed, 52 insertions(+), 5 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -324,7 +324,7 @@ static bool crng_has_old_seed(void)
- 			interval = max_t(unsigned int, CRNG_RESEED_START_INTERVAL,
- 					 (unsigned int)uptime / 2 * HZ);
- 	}
--	return time_after(jiffies, READ_ONCE(base_crng.birth) + interval);
-+	return time_is_before_jiffies(READ_ONCE(base_crng.birth) + interval);
- }
+diff --git a/crypto/Kconfig b/crypto/Kconfig
+index 1d44893a997b..082ff03d9f6c 100644
+--- a/crypto/Kconfig
++++ b/crypto/Kconfig
+@@ -33,6 +33,27 @@ config CRYPTO_FIPS
+ 	  certification.  You should say no unless you know what
+ 	  this is.
  
- /*
-
++config CRYPTO_FIPS_NAME
++	string "FIPS Module Name"
++	default "Linux Kernel Cryptographic API"
++	depends on (CRYPTO_FIPS)
++	help
++	  This option sets the FIPS Module name reported by the Crypto API via
++	  the /proc/sys/crypto/fips_name file.
++
++config CRYPTO_FIPS_CUSTOM_VERSION
++	bool "Use Custom FIPS Module Version"
++	depends on (CRYPTO_FIPS)
++	default n
++
++config CRYPTO_FIPS_VERSION
++	string "FIPS Module Version"
++	default "(none)"
++	depends on (CRYPTO_FIPS_CUSTOM_VERSION)
++	help
++	  This option provides the ability to override the FIPS Module Version.
++	  By default the KERNELRELEASE value is used.
++
+ config CRYPTO_ALGAPI
+ 	tristate
+ 	select CRYPTO_ALGAPI2
+diff --git a/crypto/fips.c b/crypto/fips.c
+index 7b1d8caee669..644895d23c9b 100644
+--- a/crypto/fips.c
++++ b/crypto/fips.c
+@@ -30,13 +30,30 @@ static int fips_enable(char *str)
+ 
+ __setup("fips=", fips_enable);
+ 
++static char fips_name[] = FIPS_MODULE_NAME;
++static char fips_version[] = FIPS_MODULE_VERSION;
++
+ static struct ctl_table crypto_sysctl_table[] = {
+ 	{
+-		.procname       = "fips_enabled",
+-		.data           = &fips_enabled,
+-		.maxlen         = sizeof(int),
+-		.mode           = 0444,
+-		.proc_handler   = proc_dointvec
++		.procname	= "fips_enabled",
++		.data		= &fips_enabled,
++		.maxlen		= sizeof(int),
++		.mode		= 0444,
++		.proc_handler	= proc_dointvec
++	},
++	{
++		.procname	= "fips_name",
++		.data		= &fips_name,
++		.maxlen		= 64,
++		.mode		= 0444,
++		.proc_handler	= proc_dostring
++	},
++	{
++		.procname	= "fips_version",
++		.data		= &fips_version,
++		.maxlen		= 64,
++		.mode		= 0444,
++		.proc_handler	= proc_dostring
+ 	},
+ 	{}
+ };
+diff --git a/include/linux/fips.h b/include/linux/fips.h
+index c6961e932fef..72d2e0e1d3ac 100644
+--- a/include/linux/fips.h
++++ b/include/linux/fips.h
+@@ -2,10 +2,19 @@
+ #ifndef _FIPS_H
+ #define _FIPS_H
+ 
++#include <generated/utsrelease.h>
++
+ #ifdef CONFIG_CRYPTO_FIPS
+ extern int fips_enabled;
+ extern struct atomic_notifier_head fips_fail_notif_chain;
+ 
++#define FIPS_MODULE_NAME CONFIG_CRYPTO_FIPS_NAME
++#ifdef CONFIG_CRYPTO_FIPS_CUSTOM_VERSION
++#define FIPS_MODULE_VERSION CONFIG_CRYPTO_FIPS_VERSION
++#else
++#define FIPS_MODULE_VERSION UTS_RELEASE
++#endif
++
+ void fips_fail_notify(void);
+ 
+ #else
+-- 
+2.36.1
 
