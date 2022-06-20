@@ -2,90 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2FC2C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 11:32:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DBE8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 11:33:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232549AbiFTLct (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 07:32:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52908 "EHLO
+        id S239999AbiFTLdj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 07:33:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241855AbiFTLcp (ORCPT
+        with ESMTP id S241962AbiFTLdd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 07:32:45 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83895165B0
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 04:32:44 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id f39so1148115lfv.3
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 04:32:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=JIMgUbT+sdDDCNglVtIeEpzvKHWn5FNbAyBHXWpSN1c=;
-        b=PLaJ/ay/YVqFpYPY2jfh6O1y+IIKjBmkQHUC5UeiT6DNhvyULiVcJ6r+KwY4WrG/Ci
-         qq8+ZTHG2Y8zjtWSdGPW+grBbRTv+aE+3KI01rDtyDjtgo+HN9iVZzz1B3FdV5uBHppw
-         iAJza80SEAUdWj5Hbiw8UfN6MmWGZr+rh9TXiPCYY82KkxjTNea2viH9ZCh6XhqXWLep
-         yUOkRfBaQovrA9wObEEHJ/pg0BT7sSX+OTWHxMfC8WAYFTaY2ZzDH546o0yh4xvi7uqp
-         waLvS70Mp7MZgx5OcEhVqIOXNX9GPcICgMXHTjWwFvwanesqylxLgKgrmwlGhZFjCNow
-         c/fQ==
+        Mon, 20 Jun 2022 07:33:33 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6457A15FD3
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 04:33:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655724811;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=3PbCQbIK7HmUq+A4wdqW1zRM8TVyI16FcVAtMkTtwns=;
+        b=dLgGBXxWqu74ukngw6HQmTnZJd1V3a/ny1dQ8kjEPGOa0igty37kNtk+TOM0LugeBsqRU0
+        cXHchhY2CdtvWZ930ph32/tpYvX5lPQu29yIOSR+tqoUmdV5O9JTtjJZSX7QAkhhhdP/TP
+        uMWBDDvwKdVnku7ry+mPsTnd4pG1uuk=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-635-urmT8y6tP3akduD2cPofMg-1; Mon, 20 Jun 2022 07:33:30 -0400
+X-MC-Unique: urmT8y6tP3akduD2cPofMg-1
+Received: by mail-ed1-f72.google.com with SMTP id w14-20020a056402268e00b0043556edda4dso7780138edd.0
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 04:33:30 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=JIMgUbT+sdDDCNglVtIeEpzvKHWn5FNbAyBHXWpSN1c=;
-        b=41sBg+M+2LJcGpr88IyLInSuvT2KGQ9kTR32/kBjq/vRkqyUTq+hhU/2PDMua5zMlF
-         srflJ8aCs35WhdIR9F8U4RyKEi38FNbDlc0leKjJm3uq+MeyYHg4RRRvRZn3d1w0QOgR
-         XDQSjoWs7Drzov+oG6eVzW04wppBeKDK/ZYSJBcoU4DqzB8t3HmWC4VYDxP1eHUHp97r
-         DHHL5q7jW5JHooHpBB60UHW9QdYMeQb33PtbIeNPCCoXGiorwJxXVrS85yG8wU2s9UCB
-         rzFdBfu2Lr3JcHX5/b/+0d6QIiCi0r49i0NWITXmRssA8Q59+n4hrlAfMwy0pc5LoQAN
-         wMbg==
-X-Gm-Message-State: AJIora+7ZLXZbbDjg/1dPAj3zpypoaH+CIzCe7POHD1moA7Q72T2JKjf
-        Z85vAWBgcucUwrde7e2l5j5QXPTC8PW/4iq6oDb82w==
-X-Google-Smtp-Source: AGRyM1uaPmO1+JFXQo6wupY7ns+3WPbbWvmOzzOUNbM8vu7hRg420BV856+U4FtUIQwAYEw/LDUBD1CHl3w4Yiql7D4=
-X-Received: by 2002:a05:6512:1317:b0:47f:528e:6a32 with SMTP id
- x23-20020a056512131700b0047f528e6a32mr9708569lfu.354.1655724762625; Mon, 20
- Jun 2022 04:32:42 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=3PbCQbIK7HmUq+A4wdqW1zRM8TVyI16FcVAtMkTtwns=;
+        b=OK9ya5xlqrjGB5HPgK5KsCI1O5gyUUQBt06VRE0IwmUNFbR3uhK22li0Sn2jXRgqEK
+         pPVLYEzQBkbOvWA21Y7bVTSPGvwgcSi6/oDiX11ot2XNfTVs/QpbFxBfcArzFWh1iXSI
+         KnBGe8iYFbYFswE2+0pFNcGkiPLryW522JKVVU8HkMYwAwku0jQ3KdbXfEQT+aWyN6LS
+         fhu1nItxOjveYyxBESxb3xlYntWkJbq3NMCL7E+dvpUKoKw3UZjE4SzBE6FzA0kGXLDB
+         my4piLuMUMbXws2kQOwP+yhvpHD6ZuRseikE3R2JJcef4a+SJxOplw3hWj3Dl+ytaWAi
+         gYWA==
+X-Gm-Message-State: AJIora8EeYEbynleO6+cvOPbfGfZC5NzNpb7acdFUhGNpaYVZBazY+TC
+        mNL3Fe7a/PNSRmwccQ/dYUElxuoJ5MtvEVDjDWYzy0YVfs5Ub+g1UG1n+dPaS5r2i52hxClYJq8
+        8/6MKgr7TdsQDj8AwOuJ9g9yU
+X-Received: by 2002:aa7:dd85:0:b0:435:64d1:5ba with SMTP id g5-20020aa7dd85000000b0043564d105bamr18660977edv.389.1655724809312;
+        Mon, 20 Jun 2022 04:33:29 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1tHnk2ocuWxsBwnqq7v2gZTo+b+WJkchX/7ahH1U/LmESuHPgZOhPNyLY8WwvbZRn6F8Jbjtg==
+X-Received: by 2002:aa7:dd85:0:b0:435:64d1:5ba with SMTP id g5-20020aa7dd85000000b0043564d105bamr18660949edv.389.1655724809062;
+        Mon, 20 Jun 2022 04:33:29 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:9af8:e5f5:7516:fa89? ([2001:b07:6468:f312:9af8:e5f5:7516:fa89])
+        by smtp.googlemail.com with ESMTPSA id z19-20020a056402275300b004319b12371asm10485788edd.47.2022.06.20.04.33.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Jun 2022 04:33:27 -0700 (PDT)
+Message-ID: <a844abdc-97c3-8e5a-94e7-ea967876f226@redhat.com>
+Date:   Mon, 20 Jun 2022 13:33:23 +0200
 MIME-Version: 1.0
-References: <CAMZm_C=o-rc4a+u_8-pFJtmL_2drwczASMRTqszamrks5Zm_OA@mail.gmail.com>
- <CAG48ez2PVMs-CeLoZtvPq2EeQqOg05mm3AuvEE_pr9Sog0O5og@mail.gmail.com> <CAMZm_CmW7pHwfEfCQfXRJPiHOjeGviQunfwxY_1ejrihKab5rA@mail.gmail.com>
-In-Reply-To: <CAMZm_CmW7pHwfEfCQfXRJPiHOjeGviQunfwxY_1ejrihKab5rA@mail.gmail.com>
-From:   Jann Horn <jannh@google.com>
-Date:   Mon, 20 Jun 2022 13:32:06 +0200
-Message-ID: <CAG48ez2OcfTQ4SRbY89uHDJG6QujSfChaO4B3=zgGpj=9J8bdA@mail.gmail.com>
-Subject: Re: pgprot_encrypted macro is broken
-To:     Federico Di Pierro <nierro92@gmail.com>
-Cc:     Linux API <linux-api@vger.kernel.org>,
-        kernel list <linux-kernel@vger.kernel.org>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        "the arch/x86 maintainers" <x86@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: 'WARNING in handle_exception_nmi' bug at
+ arch/x86/kvm/vmx/vmx.c:4959
+Content-Language: en-US
+To:     Dmitry Vyukov <dvyukov@google.com>,
+        =?UTF-8?B?5r2Y6auY5a6B?= <pgn@zju.edu.cn>
+Cc:     linux-sgx@vger.kernel.org, secalert@redhat.com, seanjc@google.com,
+        vkuznets@redhat.com, wanpengli@tencent.com, jmattson@google.com,
+        joro@8bytes.org, tglx@linutronix.de, mingo@redhat.com,
+        bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
+        hpa@zytor.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzkaller@googlegroups.com, kangel@zju.edu.cn, 22121145@zju.edu.cn
+References: <69ab985c.7d507.18180a4dcd7.Coremail.pgn@zju.edu.cn>
+ <CACT4Y+anXSNgCW3jvsm8wPf0LPxW-kCmXTeno4n-BWntpMaZBA@mail.gmail.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <CACT4Y+anXSNgCW3jvsm8wPf0LPxW-kCmXTeno4n-BWntpMaZBA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 20, 2022 at 9:39 AM Federico Di Pierro <nierro92@gmail.com> wrote:
-> > Why does your driver need to use that macro? pgprot_encrypted() is
-> > mostly only directly used by core kernel code, not by drivers... and
-> > if memory encryption is enabled, almost all memory mappings created by
-> > the kernel should be marked as encrypted automatically.
->
-> This is interesting; i don't really know the history behind our piece
-> of code; as far as i understand,
-> we have a shared ring buffer with userspace, onto which we push tracing events,
-> and we must mark it as encrypted when
-> the kmod runs on an AMD SME enabled kernel to allow userspace to grab sane data.
->
-> This is the commit that introduced the change (if you wish to give it a look):
-> https://github.com/falcosecurity/libs/commit/0333501cf429c045c61aaf5909812156f090786e
->
-> Do you see any workaround not involving `pgprot_encrypted` ?
+On 6/20/22 13:24, Dmitry Vyukov wrote:
+> On Mon, 20 Jun 2022 at 12:25, 潘高宁 <pgn@zju.edu.cn> wrote:
+>>
+>> Hello,
+>>
+>>      This is Xiao Lei, Gaoning Pan and Yongkang Jia from Zhejiang University. We found a 'WARNING in handle_exception_nmi' bug by syzkaller. This flaw allows a malicious user in a local DoS condition. The following program triggers Local DoS at arch/x86/kvm/vmx/vmx.c:4959 in latest release linux-5.18.5, this bug can be reproducible stably by the C reproducer:
+> 
+> 
+> FWIW a similarly-looking issue was reported by syzbot:
+> https://syzkaller.appspot.com/bug?id=1b411bfb1739c497a8f0c7f1aa501202726cd01a
+> https://lore.kernel.org/all/0000000000000a5eae05d8947adb@google.com/
+> 
+> Sean said it may be an issue in L0 kernel rather than in the tested kernel:
+> https://lore.kernel.org/all/Yqd5upAHNOxD0wrQ@google.com/
 
-If you do have to use remap_pfn_range() to map normal kernel memory,
-then you might want to use vma->vm_page_prot instead, like a few other
-places in the kernel do.
+Indeed I cannot reproduce these either on bare metal.
 
-(Alternatively you might want to use remap_vmalloc_range() to map
-vmalloc pages into userspace, but note that that has very different
-semantics - I believe that installs a normal page reference rather
-than a raw PFN reference, so that would permit get_user_pages() calls
-on the range.)
+Paolo
+
