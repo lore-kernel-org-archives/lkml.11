@@ -2,184 +2,255 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A7B3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 15:14:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D45BC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 15:15:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243428AbiFTPO5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 11:14:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40964 "EHLO
+        id S243521AbiFTPPB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 11:15:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243368AbiFTPMP (ORCPT
+        with ESMTP id S243469AbiFTPMY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 11:12:15 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDC171F637
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 08:02:57 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id f39so2084503lfv.3
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 08:02:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=WfituUDSg5fEW4dKt2h3fMS4b0IrVjkU8185C8pJjBY=;
-        b=kFdZRoBhFIxJZLPTayXCJlh5xBCUkR1K1zZ2YflpY7c0rNVWSY5swaSK9jMmPGXzxQ
-         1GqoSBU6NUtXhV/7NpOPU415njrI7EcPXH9XBXd4WeC09TyT7aDShPFqectxf2XnTjKY
-         X3C+gzqVgKqrfcGzRjiq9IsokgayDx9Kp7GcauUWykhbBQlMsWd8EOV4IaSf6cl1JH9m
-         4LnTKNKhmnC3xGA7mV5LH3e8TIDxFESOVT9cCG43VVnWG699CI5DKudZneoExnyrS4LM
-         ciWgtqOkaSmQjqfXB8SBoVjO9AlBPTrxQOKUvOTYOrQUx0YFbbDI3XM47H1u7DvEwL6s
-         PPxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=WfituUDSg5fEW4dKt2h3fMS4b0IrVjkU8185C8pJjBY=;
-        b=kuvEqdyp5K3Z/fgy6tYNI/u4yWhpkRoxVIgDOU81zRJHoiSbve2Kzkz1uo0HB38CoP
-         V/F+Wx7zMw/fcM3gSfC7/dpkF28VAmFcB6SiFIb9g/1Ya3SbxunxkJWv18Sz0CvQ6B5T
-         PEn46zSZFgCnCyUfGHx+4s/u1nvW/397695pTx54mNQdsgHdeEWsI07kA+xIUPJiEqmz
-         7W7Dq92rWJPUE5TlFoAdSQAHxbPG3+WSar/R7YPpobTVzWNgGcev7TbWnSLAKqOTnGvp
-         2xX73ntkUUnOYTp4o6pqvLDGNybYCK2m0suPM13gRJYOGq0ks+WViMw8V9QxrhOhnBv0
-         Zi8Q==
-X-Gm-Message-State: AJIora9sNcBX+68uQ3y+x74/oVN29muqBUX1yIRM2pySX9UQ7kPoXmxK
-        K2IpxubaK4Ebp5gwrSVLyMooYzKav4qzeA==
-X-Google-Smtp-Source: AGRyM1vqri5GOOgVM3EWWhhIHFGXwMbDMwQp2NcgRArqY1SeTMY9aLG3jE7fpVm9+Dh+PwPmgb5/Dw==
-X-Received: by 2002:a05:6512:214d:b0:47f:5a25:ac11 with SMTP id s13-20020a056512214d00b0047f5a25ac11mr7963474lfr.627.1655737376113;
-        Mon, 20 Jun 2022 08:02:56 -0700 (PDT)
-Received: from gilgamesh.lab.semihalf.net ([83.142.187.85])
-        by smtp.gmail.com with ESMTPSA id e19-20020a05651236d300b0047f79f7758asm17564lfs.22.2022.06.20.08.02.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jun 2022 08:02:55 -0700 (PDT)
-From:   Marcin Wojtas <mw@semihalf.com>
-To:     linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     rafael@kernel.org, andriy.shevchenko@linux.intel.com,
-        lenb@kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux@armlinux.org.uk, hkallweit1@gmail.com, gjb@semihalf.com,
-        mw@semihalf.com, jaz@semihalf.com, tn@semihalf.com,
-        Samer.El-Haj-Mahmoud@arm.com, upstream@semihalf.com
-Subject: [net-next: PATCH 10/12] net: dsa: add ACPI support
-Date:   Mon, 20 Jun 2022 17:02:23 +0200
-Message-Id: <20220620150225.1307946-11-mw@semihalf.com>
-X-Mailer: git-send-email 2.29.0
-In-Reply-To: <20220620150225.1307946-1-mw@semihalf.com>
-References: <20220620150225.1307946-1-mw@semihalf.com>
+        Mon, 20 Jun 2022 11:12:24 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AAAC1FA65
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 08:03:02 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 110EB21B79;
+        Mon, 20 Jun 2022 15:03:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1655737381; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=t6itNPFCM/lnavaNprI7q2GJhGFOOJ4FXVt/3QTMdTs=;
+        b=jOSWh3cSp4qY3jrTArBNyIWTSlP5sN2zlFDhgHJ99Ozpm375sY35aUAhORYaS9bBmyqJtF
+        5jK87/i8SX7btIMnj2ZyL98Ycnmhnno5C2NpSKwsPehEEe6YfjodHB70KcBEyplNjPGXzK
+        9UT4pblTVXqOFEmS/Bxj30/1CXT15wI=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1655737381;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=t6itNPFCM/lnavaNprI7q2GJhGFOOJ4FXVt/3QTMdTs=;
+        b=0MVJS+bvc8DE3OaNhF1caC9jOh1Y5VYohGLxkHR87aE6dlNl9+vibYS2EcGprXoX6Hdn1W
+        IMRJ/KyoZcz9vjCQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id DE54F13638;
+        Mon, 20 Jun 2022 15:03:00 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id M0+9NSSMsGIucAAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Mon, 20 Jun 2022 15:03:00 +0000
+From:   Vlastimil Babka <vbabka@suse.cz>
+To:     Marco Elver <elver@google.com>,
+        Alexander Potapenko <glider@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, patches@lists.linux.dev,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>, kasan-dev@googlegroups.com,
+        Vlastimil Babka <vbabka@suse.cz>
+Subject: [PATCH] lib/stackdepot: replace CONFIG_STACK_HASH_ORDER with automatic sizing
+Date:   Mon, 20 Jun 2022 17:02:49 +0200
+Message-Id: <20220620150249.16814-1-vbabka@suse.cz>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220527113706.24870-1-vbabka@suse.cz>
+References: <20220527113706.24870-1-vbabka@suse.cz>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Although the recent switch to device_/fwnode_ API covers the most
-of modifications required for supporting ACPI, minor additional
-changes should be applied:
+As Linus explained [1], setting the stackdepot hash table size as a
+config option is suboptimal, especially as stackdepot becomes a
+dependency of less "expert" subsystems than initially (e.g. DRM,
+networking, SLUB_DEBUG):
 
-* Use different subnode names with ACPI for 'ports' and 'mdio':
-  * Naming of the nodes in ACPI must conform the namespace
-    constraints, with regards to the characters' type
-    and ACPI_NAMESEG_SIZE [1]. Because of that, the 'ports'
-    subnode name used in device tree case, is not appropriate
-    in ACPI world. This patch updates the subnode name depending on
-    the hardware description type in runtime.
-* Obtain ports indexes from _ADR fields
-  * Same as in the MDIO PHY case, use this standard field instead of
-    parsing 'reg' property from _DSD object.
-* For now cascade topology remains unsupported in ACPI world, so
-  disable ports connected to other switch devices.
+: (a) it introduces a new compile-time question that isn't sane to ask
+: a regular user, but is now exposed to regular users.
 
-[1] https://uefi.org/specs/ACPI/6.4/05_ACPI_Software_Programming_Model/ACPI_Software_Programming_Model.html#acpi-namespace
+: (b) this by default uses 1MB of memory for a feature that didn't in
+: the past, so now if you have small machines you need to make sure you
+: make a special kernel config for them.
 
-Signed-off-by: Marcin Wojtas <mw@semihalf.com>
+Ideally we would employ rhashtable for fully automatic resizing, which
+should be feasible for many of the new users, but problematic for the
+original users with restricted context that call __stack_depot_save()
+with can_alloc == false, i.e. KASAN.
+
+However we can easily remove the config option and scale the hash table
+automatically with system memory. The STACK_HASH_MASK constant becomes
+stack_hash_mask variable and is used only in one mask operation, so the
+overhead should be negligible to none. For early allocation we can
+employ the existing alloc_large_system_hash() function and perform
+similar scaling for the late allocation.
+
+The existing limits of the config option (between 4k and 1M buckets)
+are preserved, and scaling factor is set to one bucket per 16kB memory
+so on 64bit the max 1M buckets (8MB memory) is achieved with 16GB
+system, while a 1GB system will use 512kB.
+
+Because KASAN is reported to need the maximum number of buckets even
+with smaller amounts of memory [2], set it as such when kasan_enabled().
+
+If needed, the automatic scaling could be complemented with a boot-time
+kernel parameter, but it feels pointless to add it without a specific
+use case.
+
+[1] https://lore.kernel.org/all/CAHk-=wjC5nS+fnf6EzRD9yQRJApAhxx7gRB87ZV+pAWo9oVrTg@mail.gmail.com/
+[2] https://lore.kernel.org/all/CACT4Y+Y4GZfXOru2z5tFPzFdaSUd+GFc6KVL=bsa0+1m197cQQ@mail.gmail.com/
+
+Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Vlastimil Babka <vbabka@suse.cz>
 ---
- net/dsa/dsa2.c | 35 +++++++++++++++++---
- 1 file changed, 31 insertions(+), 4 deletions(-)
+ lib/Kconfig      |  9 --------
+ lib/stackdepot.c | 59 ++++++++++++++++++++++++++++++++++++++++--------
+ 2 files changed, 49 insertions(+), 19 deletions(-)
 
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index 5e11d66f9057..53837dad1cca 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -6,6 +6,8 @@
-  * Copyright (c) 2016 Andrew Lunn <andrew@lunn.ch>
-  */
+diff --git a/lib/Kconfig b/lib/Kconfig
+index eaaad4d85bf2..986ea474836c 100644
+--- a/lib/Kconfig
++++ b/lib/Kconfig
+@@ -685,15 +685,6 @@ config STACKDEPOT_ALWAYS_INIT
+ 	bool
+ 	select STACKDEPOT
  
-+#include <linux/acpi.h>
-+#include <linux/acpi_mdio.h>
- #include <linux/device.h>
- #include <linux/etherdevice.h>
- #include <linux/err.h>
-@@ -854,6 +856,7 @@ static int dsa_switch_setup_tag_protocol(struct dsa_switch *ds)
- static int dsa_switch_setup(struct dsa_switch *ds)
- {
- 	struct dsa_devlink_priv *dl_priv;
-+	char mdio_node_name[] = "mdio";
- 	struct fwnode_handle *fwnode;
- 	struct dsa_port *dp;
- 	int err;
-@@ -910,9 +913,16 @@ static int dsa_switch_setup(struct dsa_switch *ds)
+-config STACK_HASH_ORDER
+-	int "stack depot hash size (12 => 4KB, 20 => 1024KB)"
+-	range 12 20
+-	default 20
+-	depends on STACKDEPOT
+-	help
+-	 Select the hash size as a power of 2 for the stackdepot hash table.
+-	 Choose a lower value to reduce the memory impact.
+-
+ config REF_TRACKER
+ 	bool
+ 	depends on STACKTRACE_SUPPORT
+diff --git a/lib/stackdepot.c b/lib/stackdepot.c
+index 5ca0d086ef4a..e73fda23388d 100644
+--- a/lib/stackdepot.c
++++ b/lib/stackdepot.c
+@@ -32,6 +32,7 @@
+ #include <linux/string.h>
+ #include <linux/types.h>
+ #include <linux/memblock.h>
++#include <linux/kasan-enabled.h>
  
- 		dsa_slave_mii_bus_init(ds);
+ #define DEPOT_STACK_BITS (sizeof(depot_stack_handle_t) * 8)
  
--		fwnode = fwnode_get_named_child_node(ds->dev->fwnode, "mdio");
-+		/* Update subnode name if operating in the ACPI world. */
-+		if (is_acpi_node(fwnode))
-+			strncpy(mdio_node_name, "MDIO", ACPI_NAMESEG_SIZE);
+@@ -145,10 +146,16 @@ depot_alloc_stack(unsigned long *entries, int size, u32 hash, void **prealloc)
+ 	return stack;
+ }
  
--		err = of_mdiobus_register(ds->slave_mii_bus, to_of_node(fwnode));
-+		fwnode = fwnode_get_named_child_node(ds->dev->fwnode, mdio_node_name);
+-#define STACK_HASH_SIZE (1L << CONFIG_STACK_HASH_ORDER)
+-#define STACK_HASH_MASK (STACK_HASH_SIZE - 1)
++/* one hash table bucket entry per 16kB of memory */
++#define STACK_HASH_SCALE	14
++/* limited between 4k and 1M buckets */
++#define STACK_HASH_ORDER_MIN	12
++#define STACK_HASH_ORDER_MAX	20
+ #define STACK_HASH_SEED 0x9747b28c
+ 
++static unsigned int stack_hash_order;
++static unsigned int stack_hash_mask;
 +
-+		if (is_acpi_node(fwnode))
-+			err = acpi_mdiobus_register(ds->slave_mii_bus, fwnode);
-+		else
-+			err = of_mdiobus_register(ds->slave_mii_bus, to_of_node(fwnode));
- 		fwnode_handle_put(fwnode);
- 		if (err < 0)
- 			goto free_slave_mii_bus;
-@@ -1374,6 +1384,15 @@ static int dsa_port_parse_user(struct dsa_port *dp, const char *name)
+ static bool stack_depot_disable;
+ static struct stack_record **stack_table;
  
- static int dsa_port_parse_dsa(struct dsa_port *dp)
+@@ -175,7 +182,7 @@ void __init stack_depot_want_early_init(void)
+ 
+ int __init stack_depot_early_init(void)
  {
-+	/* Cascade switch connection is not supported in ACPI world. */
-+	if (is_acpi_node(dp->fwnode)) {
-+		dev_warn(dp->ds->dev,
-+			 "DSA type is not supported with ACPI, disable port #%d\n",
-+			 dp->index);
-+		dp->type = DSA_PORT_TYPE_UNUSED;
-+		return 0;
-+	}
-+
- 	dp->type = DSA_PORT_TYPE_DSA;
+-	size_t size;
++	unsigned long entries = 0;
  
- 	return 0;
-@@ -1524,11 +1543,16 @@ static int dsa_switch_parse_ports_of(struct dsa_switch *ds,
- 				     struct fwnode_handle *fwnode)
- {
- 	struct fwnode_handle *ports, *port;
-+	char ports_node_name[] = "ports";
- 	struct dsa_port *dp;
- 	int err = 0;
- 	u32 reg;
+ 	/* This is supposed to be called only once, from mm_init() */
+ 	if (WARN_ON(__stack_depot_early_init_passed))
+@@ -183,13 +190,23 @@ int __init stack_depot_early_init(void)
  
--	ports = fwnode_get_named_child_node(fwnode, "ports");
-+	/* Update subnode name if operating in the ACPI world. */
-+	if (is_acpi_node(fwnode))
-+		strncpy(ports_node_name, "PRTS", ACPI_NAMESEG_SIZE);
+ 	__stack_depot_early_init_passed = true;
+ 
++	if (kasan_enabled() && !stack_hash_order)
++		stack_hash_order = STACK_HASH_ORDER_MAX;
 +
-+	ports = fwnode_get_named_child_node(fwnode, ports_node_name);
- 	if (!ports) {
- 		/* The second possibility is "ethernet-ports" */
- 		ports = fwnode_get_named_child_node(fwnode, "ethernet-ports");
-@@ -1539,7 +1563,10 @@ static int dsa_switch_parse_ports_of(struct dsa_switch *ds,
+ 	if (!__stack_depot_want_early_init || stack_depot_disable)
+ 		return 0;
+ 
+-	size = (STACK_HASH_SIZE * sizeof(struct stack_record *));
+-	pr_info("Stack Depot early init allocating hash table with memblock_alloc, %zu bytes\n",
+-		size);
+-	stack_table = memblock_alloc(size, SMP_CACHE_BYTES);
++	if (stack_hash_order)
++		entries = 1UL <<  stack_hash_order;
++	stack_table = alloc_large_system_hash("stackdepot",
++						sizeof(struct stack_record *),
++						entries,
++						STACK_HASH_SCALE,
++						HASH_EARLY | HASH_ZERO,
++						NULL,
++						&stack_hash_mask,
++						1UL << STACK_HASH_ORDER_MIN,
++						1UL << STACK_HASH_ORDER_MAX);
+ 
+ 	if (!stack_table) {
+ 		pr_err("Stack Depot hash table allocation failed, disabling\n");
+@@ -207,13 +224,35 @@ int stack_depot_init(void)
+ 
+ 	mutex_lock(&stack_depot_init_mutex);
+ 	if (!stack_depot_disable && !stack_table) {
+-		pr_info("Stack Depot allocating hash table with kvcalloc\n");
+-		stack_table = kvcalloc(STACK_HASH_SIZE, sizeof(struct stack_record *), GFP_KERNEL);
++		unsigned long entries;
++		int scale = STACK_HASH_SCALE;
++
++		if (stack_hash_order) {
++			entries = 1UL << stack_hash_order;
++		} else {
++			entries = nr_free_buffer_pages();
++			entries = roundup_pow_of_two(entries);
++
++			if (scale > PAGE_SHIFT)
++				entries >>= (scale - PAGE_SHIFT);
++			else
++				entries <<= (PAGE_SHIFT - scale);
++		}
++
++		if (entries < 1UL << STACK_HASH_ORDER_MIN)
++			entries = 1UL << STACK_HASH_ORDER_MIN;
++		if (entries > 1UL << STACK_HASH_ORDER_MAX)
++			entries = 1UL << STACK_HASH_ORDER_MAX;
++
++		pr_info("Stack Depot allocating hash table of %lu entries with kvcalloc\n",
++				entries);
++		stack_table = kvcalloc(entries, sizeof(struct stack_record *), GFP_KERNEL);
+ 		if (!stack_table) {
+ 			pr_err("Stack Depot hash table allocation failed, disabling\n");
+ 			stack_depot_disable = true;
+ 			ret = -ENOMEM;
+ 		}
++		stack_hash_mask = entries - 1;
  	}
+ 	mutex_unlock(&stack_depot_init_mutex);
+ 	return ret;
+@@ -386,7 +425,7 @@ depot_stack_handle_t __stack_depot_save(unsigned long *entries,
+ 		goto fast_exit;
  
- 	fwnode_for_each_available_child_node(ports, port) {
--		err = fwnode_property_read_u32(port, "reg", &reg);
-+		if (is_acpi_node(port))
-+			err = acpi_get_local_address(ACPI_HANDLE_FWNODE(port), &reg);
-+		else
-+			err = fwnode_property_read_u32(port, "reg", &reg);
- 		if (err) {
- 			fwnode_handle_put(port);
- 			goto out_put_node;
+ 	hash = hash_stack(entries, nr_entries);
+-	bucket = &stack_table[hash & STACK_HASH_MASK];
++	bucket = &stack_table[hash & stack_hash_mask];
+ 
+ 	/*
+ 	 * Fast path: look the stack trace up without locking.
 -- 
-2.29.0
+2.36.1
 
