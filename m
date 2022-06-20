@@ -2,104 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84E1BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 18:36:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB9ACCCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 18:37:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245721AbiFTSg6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 14:36:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45898 "EHLO
+        id S245703AbiFTShy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 14:37:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245659AbiFTSgr (ORCPT
+        with ESMTP id S243887AbiFTShv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 14:36:47 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34C891F620
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 11:36:47 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id k127so5753396pfd.10
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 11:36:47 -0700 (PDT)
+        Mon, 20 Jun 2022 14:37:51 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 271A320C
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 11:37:50 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id v1so22740950ejg.13
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 11:37:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=anholt-net.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=cuXafal7oQMsPKjaUnSX0izJjoMCagq43H5IBdJoY/0=;
-        b=HcNySfWkztX+IpyLdapmB5uQv+0HIWkTNMKKAUBo24pLvsbYdt0MhDUZ8AamP/aZZs
-         2GiClOnQwtLaUHbNNgwZvIlNV1NxAv09YX1qM+M8ZsC+t+woA8HTL0xrUUVHTaXgQtFA
-         8FBuTsB4XH9nq191ZTS4LYUooQk7H8oCGm9lmcuJSIiPLFVJ0s8wxOaDHR7c3PAHwUYk
-         kkRkFNINd50B/k8Y+kWGdSjF7SLflNWx8DLSASQPsU02g3sr+8mEyVN+hHwDVzV9fGJ+
-         iLaRwn7xGaqfvxbirLEalktbZwqgl36/g2RknT6Z1hinMikKYh5wNN89zPcWPQ4H9C2P
-         uU4w==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language
+         :from:to:cc:references:in-reply-to:content-transfer-encoding;
+        bh=of2w0PHhR5hD/6CAppicreTgy2ChYJ3890K0i0D/L90=;
+        b=AhKoMV70z3NzCSB1+F+SsObu+BcbBWWKtmuTyIYxFE3p2wqTmMwVm1PdTtMWLMePSm
+         qyiuPrTrI0lPHoLKgy/TvLJVYlsyyRgPF3z/A60LatObwrYxbIwPuXrF/ft9ZPfBn6Cm
+         UOeqtDb0X3wvWnRNJOReetdztIlG89v6Rj9aFKNP+A+57Yo3OGQ8kCWCubYxpP6g3e+i
+         uZp+itWyzV7D2hnpLqPIHRHGL7ozAC/Wso3Drpep8bd0Zkg7q249yU4kJIpiIbYl6A+k
+         ZiuYKRhes8yhITTgIxvBU0sp4VlBz7aQV9Fqc6fvfWXOeIlmbugBm21gLhdVnub6gyMD
+         BovA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=cuXafal7oQMsPKjaUnSX0izJjoMCagq43H5IBdJoY/0=;
-        b=Nl3U9HuAvfHV8yapbjorAv+pMEi8bddDTP25DaXftROUSaQhOvb7tQkseS1W3qkuPu
-         VQy5Mm0MVFa0Q4UHAmRNTDe3m31VEgPvusCIbywPEfm/dO9f4j5NYM0jL1Aj7yJxdQ0p
-         vDrHuHrsnkn+ck6T/8fQNi3heRttuWhlLUpD4zGrXofR0vlTZriNlbKTvwuucrc7/cMF
-         MTFKCtxkmKNtHHx4ibokItaYOv4a0Lhr0thtMrJRtSuy7l6pUtRsysW9HOU+FwtpRqnm
-         jNoJ0oMXGh+rUhSpsEMUMAQ2t7KK30JMfTvsvEyNaxW/2bHY0geAd4EBIfXw7m0PAD6K
-         7vow==
-X-Gm-Message-State: AJIora87zCMv9IrQoBi1Tb8BEQgsoRliKg3gNnhwquTwkltkmIozv73t
-        OfepguwcVf6q5dN2s8LunC8ifw==
-X-Google-Smtp-Source: AGRyM1uaVMxPdAdbEkr6R5BXQkH4b9IPtINsC+QUA2arv2IQf8W7zqXF2oWl6/UIv0I4Iw1fk1cI2w==
-X-Received: by 2002:a65:404c:0:b0:3c6:4018:ffbf with SMTP id h12-20020a65404c000000b003c64018ffbfmr23272611pgp.408.1655750206723;
-        Mon, 20 Jun 2022 11:36:46 -0700 (PDT)
-Received: from wildbow.anholt.net ([97.115.187.17])
-        by smtp.gmail.com with ESMTPSA id ds12-20020a17090b08cc00b001e0c1044ceasm8500041pjb.43.2022.06.20.11.36.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jun 2022 11:36:46 -0700 (PDT)
-From:   Emma Anholt <emma@anholt.net>
-To:     dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        freedreno@lists.freedesktop.org, Rob Clark <robdclark@gmail.com>,
-        Jordan Crouse <jordan@cosmicpenguin.net>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Joerg Roedel <joro@8bytes.org>
-Cc:     linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-        linux-arm-kernel@lists.infradead.org,
-        Emma Anholt <emma@anholt.net>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Subject: [PATCH v2 2/2] arm64: dts: qcom: sm8250: Enable per-process page tables.
-Date:   Mon, 20 Jun 2022 11:36:33 -0700
-Message-Id: <20220620183633.1131760-3-emma@anholt.net>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620183633.1131760-1-emma@anholt.net>
-References: <20220620183633.1131760-1-emma@anholt.net>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=of2w0PHhR5hD/6CAppicreTgy2ChYJ3890K0i0D/L90=;
+        b=n3/4SWxn2Uwhjjwy3wzT7AfzRgmfOT2lL+hxYUDqX4L1by1N1K5Nt64q9tn2pGClP6
+         1H/PNLblypBJm8E8qY0YMshWyMN513kzoJk3UrrMds9PsFPvPPdwDP8QZFvOd60vE219
+         1JPbBTuo10gdXTDfFszBTpE4Un/lxR/rKDRNcmEyc+NkTSI0YIWqBqNjmT26/ykaBTsM
+         dN2sfcfeO98c5reILG/0Kr+Q2BsOVrMkv57rQXaxM49jWckxNGplnOG4FZKWHpr4YfsS
+         TSbXzPC01Oqoei1DkJp/jtkVNwzTWLLR61yu9qdgP/FWcyUbwDu0Ce/5p3JokMYpW4/Y
+         aKuQ==
+X-Gm-Message-State: AJIora8AGvEj6mUSlu+at8Hf2TclKM1T0DtaKW/awcOB0PkpBBK/NOhL
+        UrqJELjm/HkDMmAGox+v3Rc6TQ==
+X-Google-Smtp-Source: AGRyM1ste2L5o/LjiFIQg7XGmQjRlV4SGaTh4U3FxhvhZ1Su0LsDHiOTFfl5ZybDm8CA3kqep/fvWw==
+X-Received: by 2002:a17:907:1686:b0:710:6ff6:1b97 with SMTP id hc6-20020a170907168600b007106ff61b97mr22503989ejc.378.1655750268774;
+        Mon, 20 Jun 2022 11:37:48 -0700 (PDT)
+Received: from [192.168.0.211] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id g13-20020aa7c84d000000b004357b717a96sm4369577edt.85.2022.06.20.11.37.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Jun 2022 11:37:48 -0700 (PDT)
+Message-ID: <d4972a70-8ddf-a394-3e8f-08fb778622d8@linaro.org>
+Date:   Mon, 20 Jun 2022 20:37:47 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 1/3] rpmsg: qcom: glink: replace strncpy() with
+ strscpy_pad()
+Content-Language: en-US
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Stephen Boyd <sboyd@kernel.org>
+References: <20220519073330.7187-1-krzysztof.kozlowski@linaro.org>
+ <640d2a3d-4c38-b921-45c1-048c255b5a9d@linaro.org>
+In-Reply-To: <640d2a3d-4c38-b921-45c1-048c255b5a9d@linaro.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is an SMMU for the adreno gpu, and adding this compatible lets
-the driver use per-fd page tables, which are required for security
-between GPU clients.
+On 09/06/2022 10:56, Krzysztof Kozlowski wrote:
+> On 19/05/2022 09:33, Krzysztof Kozlowski wrote:
+>> The use of strncpy() is considered deprecated for NUL-terminated
+>> strings[1]. Replace strncpy() with strscpy_pad(), to keep existing
+>> pad-behavior of strncpy, similarly to commit 08de420a8014 ("rpmsg:
+>> glink: Replace strncpy() with strscpy_pad()").  This fixes W=1 warning:
+>>
+>>   In function ‘qcom_glink_rx_close’,
+>>     inlined from ‘qcom_glink_work’ at ../drivers/rpmsg/qcom_glink_native.c:1638:4:
+>>   drivers/rpmsg/qcom_glink_native.c:1549:17: warning: ‘strncpy’ specified bound 32 equals destination size [-Wstringop-truncation]
+>>    1549 |                 strncpy(chinfo.name, channel->name, sizeof(chinfo.name));
+>>
+>> [1] https://www.kernel.org/doc/html/latest/process/deprecated.html#strncpy-on-nul-terminated-strings
+>>
+>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>>
+>> ---
+>>
+>> Changes since v1:
+>> 1. Split series per subsystem.
+> 
+> Any comments on these?
 
-Signed-off-by: Emma Anholt <emma@anholt.net>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
----
+I sent first iteration in May, then on 19th of May. There is review from
+Stephen.
 
-v2: moved qcom,adreno-smmu earlier
+On 9th of June I pinged but the patchset is still waiting. Anyone minds
+me taking these?
 
- arch/arm64/boot/dts/qcom/sm8250.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/arm64/boot/dts/qcom/sm8250.dtsi b/arch/arm64/boot/dts/qcom/sm8250.dtsi
-index a92230bec1dd..aae7b841b81a 100644
---- a/arch/arm64/boot/dts/qcom/sm8250.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sm8250.dtsi
-@@ -2513,7 +2513,7 @@ gpucc: clock-controller@3d90000 {
- 		};
- 
- 		adreno_smmu: iommu@3da0000 {
--			compatible = "qcom,sm8250-smmu-500", "arm,mmu-500";
-+			compatible = "qcom,sm8250-smmu-500", "qcom,adreno-smmu", "arm,mmu-500";
- 			reg = <0 0x03da0000 0 0x10000>;
- 			#iommu-cells = <2>;
- 			#global-interrupts = <2>;
--- 
-2.36.1
-
+Best regards,
+Krzysztof
