@@ -2,68 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C0E5CCA480
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 10:44:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FDD6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 10:44:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238525AbiFTKoN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 06:44:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38720 "EHLO
+        id S240249AbiFTKoQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 06:44:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232330AbiFTKoL (ORCPT
+        with ESMTP id S240122AbiFTKoO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 06:44:11 -0400
-Received: from smtpbg.qq.com (smtpbg139.qq.com [175.27.65.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B4E213E28;
-        Mon, 20 Jun 2022 03:44:06 -0700 (PDT)
-X-QQ-mid: bizesmtp85t1655721776tjwauf34
-Received: from localhost.localdomain ( [106.117.82.33])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Mon, 20 Jun 2022 18:42:46 +0800 (CST)
-X-QQ-SSF: 01000000004000D0I000B00A0000000
-X-QQ-FEAT: g1CXZ3gRPwz5VYsOrM7BP1wViAZWaqQ1Hg1S7R7wt+hdUXBZqVoZ2uMBp7GaL
-        tbLjZ7Jw71bqlqXZqnvmzkZoLkC+ixa0mblREvfm3dHuFgQ1TVomk8wa/DZjeBC274F2j0b
-        J4fC4tqtzQNuOhUff+Gnqs6zbSZuTUmvHYWj4jW/N/6n6GcxfFOKguFXyPIhDsfhcqN7DKt
-        CGRgc+lWlAWR8g8XtEq+QVr3x6HsZv0xHum+EzMEsAKC+lYqOJAtzwbiX3pFz/nlwQ2JBZ6
-        Sc+Guq9jfQn2qOM+D4Lt8uZhdAMqbcNzdry0iV9kk0OKGMnXEwqPmr5KlFAw2pNOnq9rXi8
-        ICL3FfricJP+AsOdZ5OtuF3IIlpGw==
-X-QQ-GoodBg: 0
-From:   Xiang wangx <wangxiang@cdjrlc.com>
-To:     stern@rowland.harvard.edu
-Cc:     gregkh@linuxfoundation.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org, usb-storage@lists.one-eyed-alien.net,
-        Xiang wangx <wangxiang@cdjrlc.com>
-Subject: [PATCH] USB: storage: Fix typo in comment
-Date:   Mon, 20 Jun 2022 18:42:43 +0800
-Message-Id: <20220620104243.4979-1-wangxiang@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Mon, 20 Jun 2022 06:44:14 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA29913F33
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 03:44:12 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id ej4so10565350edb.7
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 03:44:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/ayyFIPOEX7mmFlL3xX1k+HqUb9PAPVzELewnOWAtkE=;
+        b=YHDSC+bwoq5f1H4yX7964QUWsTVMA47TLsvBrzfEyMTkXapaxSZP0TWbgnxWBeYAk0
+         F+JVvZ0baWWoqZRyI7yF7jntpBwrjAOfx09c7ZxgIfdf35x65ITdjO7PB8B0mpqm7nJ/
+         z7Di2wgFdKY0W1UcI0ROZ1G+dYfI+t3mm669GOyCLRHwkpxWq0y8mGBVbZZE8PHWu4UI
+         dXPMLTIywRWkGq/4dSx1UWKMU6fUU6UhIsIh3n/5I8TT84dVsUBilTmtAiHGUg/ot26v
+         5vg5RUbRG/2WbxV9Tx3o//Uym3CCOoZNYU1OMbunmYImB7mYo7IVfmlc+rTvTmNWD1Sl
+         4Oew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/ayyFIPOEX7mmFlL3xX1k+HqUb9PAPVzELewnOWAtkE=;
+        b=EvjrcxRBFuwVoGeW+No5ahN1rdXR+AXlKee1JfBeXjk8QJCBStrzCZkVjCotjQpQZt
+         W+LlKltpK1z230tum+iEG/WhX0VE9OSeGJBWYTshxV16nO4iV8j2RgZZYf/vpZXANUGa
+         ijDfEZvxRs4w+UYFXYRwQcSCc01di4bxllPRbh9nEkS6m3NHaiNapnY3YPiYw0qLRP3g
+         6R1k0OnWKr3Bee4z9Byvi+kJxS/83PfDHavzXmGLBm2TXN6IOxVRbdO69lyScoD4THS1
+         S8fwUcCdP6aqI1omj9gg0wmNXw4bDVDsoZals8JG7SRPPneb2wh/xuiPqy0Xmdo1wM2z
+         R4/A==
+X-Gm-Message-State: AJIora+Hc62o/BxWFUVy060bRNqaJ8UCbuDPIEf5/4E2TJY6g+2HwVFH
+        EEw3iY7bQHg9i9nx9COq2XwyINwqN2K4kadFfDkBjAw7P3ZBFlRE
+X-Google-Smtp-Source: AGRyM1tRfiJVwErHKbnkWcDg2CzV3HdMX8kafR/tTByxj0eJ9JVyeM3W+qyR4A+SD4KT4KjWSui1kzD1A/aStDHwxXA=
+X-Received: by 2002:a05:6402:26ca:b0:435:7f6e:f3a4 with SMTP id
+ x10-20020a05640226ca00b004357f6ef3a4mr7230293edd.61.1655721851333; Mon, 20
+ Jun 2022 03:44:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam6
+References: <1653447164-15017-1-git-send-email-zhaoyang.huang@unisoc.com>
+ <CAB8ipk9cAoP6yV_-Gn8bwbn5ezCZujLeMpioa0TiNU5=akBaug@mail.gmail.com>
+ <Yq+PMWlARgDhv8uL@pc638.lan> <CAGWkznHPdk_yqn2GWPDJaT32+4MnFLnRjdjBkaFv9BLMh4yM=g@mail.gmail.com>
+In-Reply-To: <CAGWkznHPdk_yqn2GWPDJaT32+4MnFLnRjdjBkaFv9BLMh4yM=g@mail.gmail.com>
+From:   Uladzislau Rezki <urezki@gmail.com>
+Date:   Mon, 20 Jun 2022 12:43:59 +0200
+Message-ID: <CA+KHdyXpdow7SYsbq_7F0zDd5-nYGi6db7R11R3--g3gUu-59w@mail.gmail.com>
+Subject: Re: [PATCH] mm: fix racing of vb->va when kasan enabled
+To:     Zhaoyang Huang <huangzhaoyang@gmail.com>
+Cc:     "zhaoyang.huang" <zhaoyang.huang@unisoc.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "open list:MEMORY MANAGEMENT" <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ke Wang <ke.wang@unisoc.com>, Christoph Hellwig <hch@lst.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Delete the redundant word 'the'.
+> > >
+> > Is it easy to reproduce? If so could you please describe the steps? As i see
+> > the freeing of the "vb" is RCU safe whereas vb->va is not. But from the first
+> > glance i do not see how it can accessed twice. Hm..
+> It was raised from a monkey test on A13_k515 system and got 1/20 pcs
+> failed. IMO, vb->va which out of vmap_purge_lock protection could race
+> with a concurrent ra freeing within __purge_vmap_area_lazy.
+>
+Do you have exact steps how you run "monkey" test?
 
-Signed-off-by: Xiang wangx <wangxiang@cdjrlc.com>
----
- drivers/usb/storage/transport.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/usb/storage/transport.c b/drivers/usb/storage/transport.c
-index 64d96d210e02..7449e379077a 100644
---- a/drivers/usb/storage/transport.c
-+++ b/drivers/usb/storage/transport.c
-@@ -1178,7 +1178,7 @@ int usb_stor_Bulk_transport(struct scsi_cmnd *srb, struct us_data *us)
- 		/*
- 		 * If the device tried to send back more data than the
- 		 * amount requested, the spec requires us to transfer
--		 * the CSW anyway.  Since there's no point retrying the
-+		 * the CSW anyway.  Since there's no point retrying
- 		 * the command, we'll return fake sense data indicating
- 		 * Illegal Request, Invalid Field in CDB.
- 		 */
 -- 
-2.36.1
-
+Uladzislau Rezki
