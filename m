@@ -2,79 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46906C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78AFFCCA479
 	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:15:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344913AbiFTNOI (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:14:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53520 "EHLO
+        id S245591AbiFTNO5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:14:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344014AbiFTNJv (ORCPT
+        with ESMTP id S1344244AbiFTNKD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:09:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F9941C106
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 06:05:02 -0700 (PDT)
+        Mon, 20 Jun 2022 09:10:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9E111AF14;
+        Mon, 20 Jun 2022 06:05:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E4552B811C4
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 13:04:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0CEFC3411C;
-        Mon, 20 Jun 2022 13:04:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655730294;
-        bh=H1k0Cznz8WyYeBmkHYrxWLlxVvaYwUkpPArF6xP7LtY=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8FA60B811A5;
+        Mon, 20 Jun 2022 13:05:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EDCAC3411B;
+        Mon, 20 Jun 2022 13:05:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655730309;
+        bh=+PYrvTFnip/gg9TheCSfPkipohp84RZ+kbpGq3MpCVQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IXNIzmU4SJUGa3S537s8688egYLwn7nXzGsucE12GKf33iN95yyBQ468L59s4wok/
-         q89FcdVXG5aeTw+iurdD1FXNlQeLPLOOYYTPCfehngRPu84FTmTkAuU1YdbuUS5WV3
-         Fzt4smwaBwm3T0P0Fci/x/eLnjPCNK1y/BTEAF7KY7EFuDiXD768F53ORfUCrD6otD
-         ttgkInYMZr+Bl5pWdU8UvF0Z4w4BcFI4BQEmDs5sCn12jL0IW0RT/YT11ZzwRL8rF7
-         j8pRVAn60uSschD/eY6vmAk9dPN8sVF/KSQyYn4nFRDMpdmdRsYWul5v8SJXZN7TFC
-         6czcBZ8M9rX4w==
-From:   Oded Gabbay <ogabbay@kernel.org>
+        b=EShUIpg2x0KpPmC02D94V6CmQAoZiCX5gfv7mQUMuWsG8E5QjFkbRybrzF+9BFwsS
+         /QJrK2Mjho7P5je96I2ixCnCU+jO2pEQ0VHaE5MpVb7Sph8QPssP4BOllQubtYvgsy
+         IoDQmTP+NLxDUBNupJUd6A87E1eOLyUVlFDUZjQo=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     ran shalit <rshalit@habana.ai>
-Subject: [PATCH 13/17] habanalabs: add critical indication in sram ecc
-Date:   Mon, 20 Jun 2022 16:04:28 +0300
-Message-Id: <20220620130432.1180451-13-ogabbay@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220620130432.1180451-1-ogabbay@kernel.org>
-References: <20220620130432.1180451-1-ogabbay@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 013/106] ASoC: cs42l52: Correct TLV for Bypass Volume
+Date:   Mon, 20 Jun 2022 14:50:32 +0200
+Message-Id: <20220620124724.780161923@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
+References: <20220620124724.380838401@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: ran shalit <rshalit@habana.ai>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-Multiple SRAM SERR events are treated as critical events,
-and host should be notified about it. Thus, adding is_critical
-indication as part of SRAM ECC failure packet.
+[ Upstream commit 91e90c712fade0b69cdff7cc6512f6099bd18ae5 ]
 
-Signed-off-by: ran shalit <rshalit@habana.ai>
-Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
-Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
+The Bypass Volume is accidentally using a -6dB minimum TLV rather than
+the correct -60dB minimum. Add a new TLV to correct this.
+
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220602162119.3393857-5-ckeepax@opensource.cirrus.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/habanalabs/include/common/cpucp_if.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ sound/soc/codecs/cs42l52.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/misc/habanalabs/include/common/cpucp_if.h b/drivers/misc/habanalabs/include/common/cpucp_if.h
-index 38e44b6cf581..b190a44ef2e2 100644
---- a/drivers/misc/habanalabs/include/common/cpucp_if.h
-+++ b/drivers/misc/habanalabs/include/common/cpucp_if.h
-@@ -68,7 +68,8 @@ struct hl_eq_ecc_data {
- 	__le64 ecc_address;
- 	__le64 ecc_syndrom;
- 	__u8 memory_wrapper_idx;
--	__u8 pad[7];
-+	__u8 is_critical;
-+	__u8 pad[6];
- };
+diff --git a/sound/soc/codecs/cs42l52.c b/sound/soc/codecs/cs42l52.c
+index 785caba3f653..c19ad3c24702 100644
+--- a/sound/soc/codecs/cs42l52.c
++++ b/sound/soc/codecs/cs42l52.c
+@@ -137,6 +137,8 @@ static DECLARE_TLV_DB_SCALE(mic_tlv, 1600, 100, 0);
  
- enum hl_sm_sei_cause {
+ static DECLARE_TLV_DB_SCALE(pga_tlv, -600, 50, 0);
+ 
++static DECLARE_TLV_DB_SCALE(pass_tlv, -6000, 50, 0);
++
+ static DECLARE_TLV_DB_SCALE(mix_tlv, -5150, 50, 0);
+ 
+ static DECLARE_TLV_DB_SCALE(beep_tlv, -56, 200, 0);
+@@ -351,7 +353,7 @@ static const struct snd_kcontrol_new cs42l52_snd_controls[] = {
+ 			      CS42L52_SPKB_VOL, 0, 0x40, 0xC0, hl_tlv),
+ 
+ 	SOC_DOUBLE_R_SX_TLV("Bypass Volume", CS42L52_PASSTHRUA_VOL,
+-			      CS42L52_PASSTHRUB_VOL, 0, 0x88, 0x90, pga_tlv),
++			      CS42L52_PASSTHRUB_VOL, 0, 0x88, 0x90, pass_tlv),
+ 
+ 	SOC_DOUBLE("Bypass Mute", CS42L52_MISC_CTL, 4, 5, 1, 0),
+ 
 -- 
-2.25.1
+2.35.1
+
+
 
