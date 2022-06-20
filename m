@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43F06C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:52:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D804C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:52:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348784AbiFTNwh (ORCPT
+        id S1349511AbiFTNwl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:52:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40850 "EHLO
+        Mon, 20 Jun 2022 09:52:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349412AbiFTNvt (ORCPT
+        with ESMTP id S243224AbiFTNwS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:51:49 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C9113137B;
-        Mon, 20 Jun 2022 06:18:37 -0700 (PDT)
+        Mon, 20 Jun 2022 09:52:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49D5731394;
+        Mon, 20 Jun 2022 06:18:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 2905BCE1399;
-        Mon, 20 Jun 2022 13:06:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5C2AC36AE7;
-        Mon, 20 Jun 2022 13:06:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AC0BCB80E7D;
+        Mon, 20 Jun 2022 13:17:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D81AC3411B;
+        Mon, 20 Jun 2022 13:17:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730370;
-        bh=lPQbyezlJMUy6QXeMxaDBWiEUVbOZBwiOtnHSui0dp0=;
+        s=korg; t=1655731077;
+        bh=MAcRtMdcnl2NR8hKJaWGTe+7edZuSMTwiCleJBgybzw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rne5QWxripnFbIehHY8axRBAmd96rtOlEKN6DsBo0Z5Zbzegm08fjjDFGP8qNnQ13
-         JHBhN421MSTXcQLl1GY7jhy7JzYgh/C3sNWYZvuLIxf8xH1+gn6TW3UN/xPWjTx9pV
-         YcFD7R3+OnDTktDtnt/Dx20OYzKc12BcGHBSfg+o=
+        b=1THK1avZeNvwJf1Dzi5FPdlWX8SJCLFGkZmRQ1rUTJSkDT6y1Q/JTHa7mi8C/FSM3
+         Sbrixdf3eIhuSm4eyvquHuiZ3w6gIwpVOAT/KXzjBWuk1nSZC7bUsBBnIJh0XY+lU2
+         +C0Pk4K1EyIcD0zLA+f8LZcyjtonRClouxJRN4Go=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, huangwenhui <huangwenhuia@uniontech.com>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 030/106] ALSA: hda/realtek - Add HW8326 support
-Date:   Mon, 20 Jun 2022 14:50:49 +0200
-Message-Id: <20220620124725.278270509@linuxfoundation.org>
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.4 145/240] random: insist on random_get_entropy() existing in order to simplify
+Date:   Mon, 20 Jun 2022 14:50:46 +0200
+Message-Id: <20220620124743.211425201@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
-References: <20220620124724.380838401@linuxfoundation.org>
+In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
+References: <20220620124737.799371052@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,152 +49,222 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: huangwenhui <huangwenhuia@uniontech.com>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-[ Upstream commit 527f4643e03c298c1e3321cfa27866b1374a55e1 ]
+commit 4b758eda851eb9336ca86a0041a4d3da55f66511 upstream.
 
-Added the support of new Huawei codec HW8326. The HW8326 is developed
-by Huawei with Realtek's IP Core, and it's compatible with ALC256.
+All platforms are now guaranteed to provide some value for
+random_get_entropy(). In case some bug leads to this not being so, we
+print a warning, because that indicates that something is really very
+wrong (and likely other things are impacted too). This should never be
+hit, but it's a good and cheap way of finding out if something ever is
+problematic.
 
-Signed-off-by: huangwenhui <huangwenhuia@uniontech.com>
-Link: https://lore.kernel.org/r/20220608082357.26898-1-huangwenhuia@uniontech.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Since we now have viable fallback code for random_get_entropy() on all
+platforms, which is, in the worst case, not worse than jiffies, we can
+count on getting the best possible value out of it. That means there's
+no longer a use for using jiffies as entropy input. It also means we no
+longer have a reason for doing the round-robin register flow in the IRQ
+handler, which was always of fairly dubious value.
+
+Instead we can greatly simplify the IRQ handler inputs and also unify
+the construction between 64-bits and 32-bits. We now collect the cycle
+counter and the return address, since those are the two things that
+matter. Because the return address and the irq number are likely
+related, to the extent we mix in the irq number, we can just xor it into
+the top unchanging bytes of the return address, rather than the bottom
+changing bytes of the cycle counter as before. Then, we can do a fixed 2
+rounds of SipHash/HSipHash. Finally, we use the same construction of
+hashing only half of the [H]SipHash state on 32-bit and 64-bit. We're
+not actually discarding any entropy, since that entropy is carried
+through until the next time. And more importantly, it lets us do the
+same sponge-like construction everywhere.
+
+Cc: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/hda/hdac_device.c       |  1 +
- sound/pci/hda/patch_realtek.c | 14 ++++++++++++++
- 2 files changed, 15 insertions(+)
+ drivers/char/random.c |   86 +++++++++++++++-----------------------------------
+ 1 file changed, 26 insertions(+), 60 deletions(-)
 
-diff --git a/sound/hda/hdac_device.c b/sound/hda/hdac_device.c
-index 3e9e9ac804f6..b7e5032b61c9 100644
---- a/sound/hda/hdac_device.c
-+++ b/sound/hda/hdac_device.c
-@@ -660,6 +660,7 @@ static const struct hda_vendor_id hda_vendor_ids[] = {
- 	{ 0x14f1, "Conexant" },
- 	{ 0x17e8, "Chrontel" },
- 	{ 0x1854, "LG" },
-+	{ 0x19e5, "Huawei" },
- 	{ 0x1aec, "Wolfson Microelectronics" },
- 	{ 0x1af4, "QEMU" },
- 	{ 0x434d, "C-Media" },
-diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index 0ff43964a986..982292185b6a 100644
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -438,6 +438,7 @@ static void alc_fill_eapd_coef(struct hda_codec *codec)
- 	case 0x10ec0245:
- 	case 0x10ec0255:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 	case 0x10ec0257:
- 	case 0x10ec0282:
- 	case 0x10ec0283:
-@@ -575,6 +576,7 @@ static void alc_shutup_pins(struct hda_codec *codec)
- 	switch (codec->core.vendor_id) {
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 	case 0x10ec0283:
- 	case 0x10ec0286:
- 	case 0x10ec0288:
-@@ -3242,6 +3244,7 @@ static void alc_disable_headset_jack_key(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_write_coef_idx(codec, 0x48, 0x0);
- 		alc_update_coef_idx(codec, 0x49, 0x0045, 0x0);
- 		break;
-@@ -3270,6 +3273,7 @@ static void alc_enable_headset_jack_key(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_write_coef_idx(codec, 0x48, 0xd011);
- 		alc_update_coef_idx(codec, 0x49, 0x007f, 0x0045);
- 		break;
-@@ -4905,6 +4909,7 @@ static void alc_headset_mode_unplugged(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_process_coef_fw(codec, coef0256);
- 		break;
- 	case 0x10ec0234:
-@@ -5020,6 +5025,7 @@ static void alc_headset_mode_mic_in(struct hda_codec *codec, hda_nid_t hp_pin,
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_write_coef_idx(codec, 0x45, 0xc489);
- 		snd_hda_set_pin_ctl_cache(codec, hp_pin, 0);
- 		alc_process_coef_fw(codec, coef0256);
-@@ -5170,6 +5176,7 @@ static void alc_headset_mode_default(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_write_coef_idx(codec, 0x1b, 0x0e4b);
- 		alc_write_coef_idx(codec, 0x45, 0xc089);
- 		msleep(50);
-@@ -5269,6 +5276,7 @@ static void alc_headset_mode_ctia(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_process_coef_fw(codec, coef0256);
- 		break;
- 	case 0x10ec0234:
-@@ -5383,6 +5391,7 @@ static void alc_headset_mode_omtp(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_process_coef_fw(codec, coef0256);
- 		break;
- 	case 0x10ec0234:
-@@ -5484,6 +5493,7 @@ static void alc_determine_headset_type(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_write_coef_idx(codec, 0x1b, 0x0e4b);
- 		alc_write_coef_idx(codec, 0x06, 0x6104);
- 		alc_write_coefex_idx(codec, 0x57, 0x3, 0x09a3);
-@@ -5778,6 +5788,7 @@ static void alc255_set_default_jack_type(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_process_coef_fw(codec, alc256fw);
- 		break;
- 	}
-@@ -6380,6 +6391,7 @@ static void alc_combo_jack_hp_jd_restart(struct hda_codec *codec)
- 	case 0x10ec0236:
- 	case 0x10ec0255:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_update_coef_idx(codec, 0x1b, 0x8000, 1 << 15); /* Reset HP JD */
- 		alc_update_coef_idx(codec, 0x1b, 0x8000, 0 << 15);
- 		break;
-@@ -9880,6 +9892,7 @@ static int patch_alc269(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		spec->codec_variant = ALC269_TYPE_ALC256;
- 		spec->shutup = alc256_shutup;
- 		spec->init_hook = alc256_init;
-@@ -11330,6 +11343,7 @@ static const struct hda_device_id snd_hda_id_realtek[] = {
- 	HDA_CODEC_ENTRY(0x10ec0b00, "ALCS1200A", patch_alc882),
- 	HDA_CODEC_ENTRY(0x10ec1168, "ALC1220", patch_alc882),
- 	HDA_CODEC_ENTRY(0x10ec1220, "ALC1220", patch_alc882),
-+	HDA_CODEC_ENTRY(0x19e58326, "HW8326", patch_alc269),
- 	{} /* terminator */
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -1017,15 +1017,14 @@ int __init rand_initialize(void)
+  */
+ void add_device_randomness(const void *buf, size_t size)
+ {
+-	unsigned long cycles = random_get_entropy();
+-	unsigned long flags, now = jiffies;
++	unsigned long entropy = random_get_entropy();
++	unsigned long flags;
+ 
+ 	if (crng_init == 0 && size)
+ 		crng_pre_init_inject(buf, size, false);
+ 
+ 	spin_lock_irqsave(&input_pool.lock, flags);
+-	_mix_pool_bytes(&cycles, sizeof(cycles));
+-	_mix_pool_bytes(&now, sizeof(now));
++	_mix_pool_bytes(&entropy, sizeof(entropy));
+ 	_mix_pool_bytes(buf, size);
+ 	spin_unlock_irqrestore(&input_pool.lock, flags);
+ }
+@@ -1048,12 +1047,11 @@ struct timer_rand_state {
+  */
+ static void add_timer_randomness(struct timer_rand_state *state, unsigned int num)
+ {
+-	unsigned long cycles = random_get_entropy(), now = jiffies, flags;
++	unsigned long entropy = random_get_entropy(), now = jiffies, flags;
+ 	long delta, delta2, delta3;
+ 
+ 	spin_lock_irqsave(&input_pool.lock, flags);
+-	_mix_pool_bytes(&cycles, sizeof(cycles));
+-	_mix_pool_bytes(&now, sizeof(now));
++	_mix_pool_bytes(&entropy, sizeof(entropy));
+ 	_mix_pool_bytes(&num, sizeof(num));
+ 	spin_unlock_irqrestore(&input_pool.lock, flags);
+ 
+@@ -1181,7 +1179,6 @@ struct fast_pool {
+ 	unsigned long pool[4];
+ 	unsigned long last;
+ 	unsigned int count;
+-	u16 reg_idx;
  };
- MODULE_DEVICE_TABLE(hdaudio, snd_hda_id_realtek);
--- 
-2.35.1
-
+ 
+ static DEFINE_PER_CPU(struct fast_pool, irq_randomness) = {
+@@ -1199,13 +1196,13 @@ static DEFINE_PER_CPU(struct fast_pool,
+  * This is [Half]SipHash-1-x, starting from an empty key. Because
+  * the key is fixed, it assumes that its inputs are non-malicious,
+  * and therefore this has no security on its own. s represents the
+- * 128 or 256-bit SipHash state, while v represents a 128-bit input.
++ * four-word SipHash state, while v represents a two-word input.
+  */
+-static void fast_mix(unsigned long s[4], const unsigned long *v)
++static void fast_mix(unsigned long s[4], const unsigned long v[2])
+ {
+ 	size_t i;
+ 
+-	for (i = 0; i < 16 / sizeof(long); ++i) {
++	for (i = 0; i < 2; ++i) {
+ 		s[3] ^= v[i];
+ #ifdef CONFIG_64BIT
+ 		s[0] += s[1]; s[1] = rol64(s[1], 13); s[1] ^= s[0]; s[0] = rol64(s[0], 32);
+@@ -1245,33 +1242,17 @@ int random_online_cpu(unsigned int cpu)
+ }
+ #endif
+ 
+-static unsigned long get_reg(struct fast_pool *f, struct pt_regs *regs)
+-{
+-	unsigned long *ptr = (unsigned long *)regs;
+-	unsigned int idx;
+-
+-	if (regs == NULL)
+-		return 0;
+-	idx = READ_ONCE(f->reg_idx);
+-	if (idx >= sizeof(struct pt_regs) / sizeof(unsigned long))
+-		idx = 0;
+-	ptr += idx++;
+-	WRITE_ONCE(f->reg_idx, idx);
+-	return *ptr;
+-}
+-
+ static void mix_interrupt_randomness(struct work_struct *work)
+ {
+ 	struct fast_pool *fast_pool = container_of(work, struct fast_pool, mix);
+ 	/*
+-	 * The size of the copied stack pool is explicitly 16 bytes so that we
+-	 * tax mix_pool_byte()'s compression function the same amount on all
+-	 * platforms. This means on 64-bit we copy half the pool into this,
+-	 * while on 32-bit we copy all of it. The entropy is supposed to be
+-	 * sufficiently dispersed between bits that in the sponge-like
+-	 * half case, on average we don't wind up "losing" some.
++	 * The size of the copied stack pool is explicitly 2 longs so that we
++	 * only ever ingest half of the siphash output each time, retaining
++	 * the other half as the next "key" that carries over. The entropy is
++	 * supposed to be sufficiently dispersed between bits so on average
++	 * we don't wind up "losing" some.
+ 	 */
+-	u8 pool[16];
++	unsigned long pool[2];
+ 
+ 	/* Check to see if we're running on the wrong CPU due to hotplug. */
+ 	local_irq_disable();
+@@ -1303,36 +1284,21 @@ static void mix_interrupt_randomness(str
+ void add_interrupt_randomness(int irq)
+ {
+ 	enum { MIX_INFLIGHT = 1U << 31 };
+-	unsigned long cycles = random_get_entropy(), now = jiffies;
++	unsigned long entropy = random_get_entropy();
+ 	struct fast_pool *fast_pool = this_cpu_ptr(&irq_randomness);
+ 	struct pt_regs *regs = get_irq_regs();
+ 	unsigned int new_count;
+-	union {
+-		u32 u32[4];
+-		u64 u64[2];
+-		unsigned long longs[16 / sizeof(long)];
+-	} irq_data;
+-
+-	if (cycles == 0)
+-		cycles = get_reg(fast_pool, regs);
+-
+-	if (sizeof(unsigned long) == 8) {
+-		irq_data.u64[0] = cycles ^ rol64(now, 32) ^ irq;
+-		irq_data.u64[1] = regs ? instruction_pointer(regs) : _RET_IP_;
+-	} else {
+-		irq_data.u32[0] = cycles ^ irq;
+-		irq_data.u32[1] = now;
+-		irq_data.u32[2] = regs ? instruction_pointer(regs) : _RET_IP_;
+-		irq_data.u32[3] = get_reg(fast_pool, regs);
+-	}
+ 
+-	fast_mix(fast_pool->pool, irq_data.longs);
++	fast_mix(fast_pool->pool, (unsigned long[2]){
++		entropy,
++		(regs ? instruction_pointer(regs) : _RET_IP_) ^ swab(irq)
++	});
+ 	new_count = ++fast_pool->count;
+ 
+ 	if (new_count & MIX_INFLIGHT)
+ 		return;
+ 
+-	if (new_count < 64 && (!time_after(now, fast_pool->last + HZ) ||
++	if (new_count < 64 && (!time_is_before_jiffies(fast_pool->last + HZ) ||
+ 			       unlikely(crng_init == 0)))
+ 		return;
+ 
+@@ -1368,28 +1334,28 @@ static void entropy_timer(struct timer_l
+ static void try_to_generate_entropy(void)
+ {
+ 	struct {
+-		unsigned long cycles;
++		unsigned long entropy;
+ 		struct timer_list timer;
+ 	} stack;
+ 
+-	stack.cycles = random_get_entropy();
++	stack.entropy = random_get_entropy();
+ 
+ 	/* Slow counter - or none. Don't even bother */
+-	if (stack.cycles == random_get_entropy())
++	if (stack.entropy == random_get_entropy())
+ 		return;
+ 
+ 	timer_setup_on_stack(&stack.timer, entropy_timer, 0);
+ 	while (!crng_ready() && !signal_pending(current)) {
+ 		if (!timer_pending(&stack.timer))
+ 			mod_timer(&stack.timer, jiffies + 1);
+-		mix_pool_bytes(&stack.cycles, sizeof(stack.cycles));
++		mix_pool_bytes(&stack.entropy, sizeof(stack.entropy));
+ 		schedule();
+-		stack.cycles = random_get_entropy();
++		stack.entropy = random_get_entropy();
+ 	}
+ 
+ 	del_timer_sync(&stack.timer);
+ 	destroy_timer_on_stack(&stack.timer);
+-	mix_pool_bytes(&stack.cycles, sizeof(stack.cycles));
++	mix_pool_bytes(&stack.entropy, sizeof(stack.entropy));
+ }
+ 
+ 
 
 
