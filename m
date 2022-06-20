@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55C82C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCDF7CCA47C
 	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:20:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243387AbiFTNUn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:20:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36564 "EHLO
+        id S244491AbiFTNUs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:20:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345622AbiFTNOk (ORCPT
+        with ESMTP id S1345718AbiFTNOr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:14:40 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 822AA19C10;
-        Mon, 20 Jun 2022 06:07:26 -0700 (PDT)
+        Mon, 20 Jun 2022 09:14:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A69CF201A1;
+        Mon, 20 Jun 2022 06:07:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 62DE3CE139A;
-        Mon, 20 Jun 2022 13:06:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36CE6C3411B;
-        Mon, 20 Jun 2022 13:06:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8814C60A52;
+        Mon, 20 Jun 2022 13:07:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E66BC3411B;
+        Mon, 20 Jun 2022 13:07:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730379;
-        bh=01mawIc35r+gK++qej0uz5FbVWHFWwVOkaENnGgcWhE=;
+        s=korg; t=1655730452;
+        bh=6fAGBMVAci6ChGWdt3zDZTuNGDC6oQZF0j1O+kb+FLs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nRLfIuddib/dzNIVWs9fvoSCwGgRq0X6Y9N+Nng7qHdDf8cnvjQCTBFbAtMzo40VO
-         AKZ867h4LTMapuXSW1mRKgTJcmDOhRweBAJtsi+nPsMILxOzlMx8mbhwx9mpxvwXuF
-         8enCNjBi2qk86eZCKYd5+misdbLAYgG9oW0RIezQ=
+        b=WLnqae1mFvryRqLpxllRPkaCBYjUur++NqiE/YcYs+1XsgLDgS9DjLi1oscMZeTpo
+         JjV7SPHcy6rmDhIDuv1Z13FkYP+0UuRZAKufy5kjrXH1riSsdxVycbqqO54Dn1gWH7
+         9KbnUXbn1cdJFhB5uT3aAxwErgJXw5phc1RSZzk8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wanming Hu <huwanming@huaweil.com>,
-        He Ying <heying24@huawei.com>,
-        Chen Jingwen <chenjingwen6@huawei.com>,
-        Kees Cook <keescook@chromium.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 005/106] powerpc/kasan: Silence KASAN warnings in __get_wchan()
-Date:   Mon, 20 Jun 2022 14:50:24 +0200
-Message-Id: <20220620124724.544207703@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Begunkov <asml.silence@gmail.com>,
+        Sasha Levin <sashal@kernel.org>,
+        van fantasy <g1042620637@gmail.com>
+Subject: [PATCH 5.15 057/106] io_uring: fix races with file table unregister
+Date:   Mon, 20 Jun 2022 14:51:16 +0200
+Message-Id: <20220620124726.091379885@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
 References: <20220620124724.380838401@linuxfoundation.org>
@@ -52,89 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: He Ying <heying24@huawei.com>
+From: Pavel Begunkov <asml.silence@gmail.com>
 
-[ Upstream commit a1b29ba2f2c171b9bea73be993bfdf0a62d37d15 ]
+[ Upstream commit b0380bf6dad4601d92025841e2b7a135d566c6e3 ]
 
-The following KASAN warning was reported in our kernel.
+Fixed file table quiesce might unlock ->uring_lock, potentially letting
+new requests to be submitted, don't allow those requests to use the
+table as they will race with unregistration.
 
-  BUG: KASAN: stack-out-of-bounds in get_wchan+0x188/0x250
-  Read of size 4 at addr d216f958 by task ps/14437
-
-  CPU: 3 PID: 14437 Comm: ps Tainted: G           O      5.10.0 #1
-  Call Trace:
-  [daa63858] [c0654348] dump_stack+0x9c/0xe4 (unreliable)
-  [daa63888] [c035cf0c] print_address_description.constprop.3+0x8c/0x570
-  [daa63908] [c035d6bc] kasan_report+0x1ac/0x218
-  [daa63948] [c00496e8] get_wchan+0x188/0x250
-  [daa63978] [c0461ec8] do_task_stat+0xce8/0xe60
-  [daa63b98] [c0455ac8] proc_single_show+0x98/0x170
-  [daa63bc8] [c03cab8c] seq_read_iter+0x1ec/0x900
-  [daa63c38] [c03cb47c] seq_read+0x1dc/0x290
-  [daa63d68] [c037fc94] vfs_read+0x164/0x510
-  [daa63ea8] [c03808e4] ksys_read+0x144/0x1d0
-  [daa63f38] [c005b1dc] ret_from_syscall+0x0/0x38
-  --- interrupt: c00 at 0x8fa8f4
-      LR = 0x8fa8cc
-
-  The buggy address belongs to the page:
-  page:98ebcdd2 refcount:0 mapcount:0 mapping:00000000 index:0x2 pfn:0x1216f
-  flags: 0x0()
-  raw: 00000000 00000000 01010122 00000000 00000002 00000000 ffffffff 00000000
-  raw: 00000000
-  page dumped because: kasan: bad access detected
-
-  Memory state around the buggy address:
-   d216f800: 00 00 00 00 00 f1 f1 f1 f1 00 00 00 00 00 00 00
-   d216f880: f2 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  >d216f900: 00 00 00 00 00 00 00 00 00 00 00 f1 f1 f1 f1 00
-                                            ^
-   d216f980: f2 f2 f2 f2 f2 f2 f2 00 00 00 00 00 00 00 00 00
-   d216fa00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-
-After looking into this issue, I find the buggy address belongs
-to the task stack region. It seems KASAN has something wrong.
-I look into the code of __get_wchan in x86 architecture and
-find the same issue has been resolved by the commit
-f7d27c35ddff ("x86/mm, kasan: Silence KASAN warnings in get_wchan()").
-The solution could be applied to powerpc architecture too.
-
-As Andrey Ryabinin said, get_wchan() is racy by design, it may
-access volatile stack of running task, thus it may access
-redzone in a stack frame and cause KASAN to warn about this.
-
-Use READ_ONCE_NOCHECK() to silence these warnings.
-
-Reported-by: Wanming Hu <huwanming@huaweil.com>
-Signed-off-by: He Ying <heying24@huawei.com>
-Signed-off-by: Chen Jingwen <chenjingwen6@huawei.com>
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220121014418.155675-1-heying24@huawei.com
+Reported-and-tested-by: van fantasy <g1042620637@gmail.com>
+Fixes: 05f3fb3c53975 ("io_uring: avoid ring quiesce for fixed file set unregister and update")
+Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/process.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ fs/io_uring.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/arch/powerpc/kernel/process.c b/arch/powerpc/kernel/process.c
-index 50436b52c213..39a0a13a3a27 100644
---- a/arch/powerpc/kernel/process.c
-+++ b/arch/powerpc/kernel/process.c
-@@ -2124,12 +2124,12 @@ static unsigned long __get_wchan(struct task_struct *p)
- 		return 0;
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index b8e6398d9430..5f111a660fff 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -7933,11 +7933,19 @@ static void __io_sqe_files_unregister(struct io_ring_ctx *ctx)
  
- 	do {
--		sp = *(unsigned long *)sp;
-+		sp = READ_ONCE_NOCHECK(*(unsigned long *)sp);
- 		if (!validate_sp(sp, p, STACK_FRAME_OVERHEAD) ||
- 		    task_is_running(p))
- 			return 0;
- 		if (count > 0) {
--			ip = ((unsigned long *)sp)[STACK_FRAME_LR_SAVE];
-+			ip = READ_ONCE_NOCHECK(((unsigned long *)sp)[STACK_FRAME_LR_SAVE]);
- 			if (!in_sched_functions(ip))
- 				return ip;
- 		}
+ static int io_sqe_files_unregister(struct io_ring_ctx *ctx)
+ {
++	unsigned nr = ctx->nr_user_files;
+ 	int ret;
+ 
+ 	if (!ctx->file_data)
+ 		return -ENXIO;
++
++	/*
++	 * Quiesce may unlock ->uring_lock, and while it's not held
++	 * prevent new requests using the table.
++	 */
++	ctx->nr_user_files = 0;
+ 	ret = io_rsrc_ref_quiesce(ctx->file_data, ctx);
++	ctx->nr_user_files = nr;
+ 	if (!ret)
+ 		__io_sqe_files_unregister(ctx);
+ 	return ret;
 -- 
 2.35.1
 
