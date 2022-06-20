@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D612C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:13:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE6E3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:14:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233953AbiFTNNL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:13:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53586 "EHLO
+        id S244617AbiFTNNO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:13:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343755AbiFTNJh (ORCPT
+        with ESMTP id S1343773AbiFTNJh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 20 Jun 2022 09:09:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 601511AD93;
-        Mon, 20 Jun 2022 06:04:47 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2122918E33;
+        Mon, 20 Jun 2022 06:04:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C2493B811BD;
-        Mon, 20 Jun 2022 13:02:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C69E6C341C6;
-        Mon, 20 Jun 2022 13:01:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 93CB46157C;
+        Mon, 20 Jun 2022 13:03:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A02DCC3411C;
+        Mon, 20 Jun 2022 13:03:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730119;
-        bh=C0WZK9CSS9V+tb5AnQYO//H/JTaTChmLhGx1BsPk5EE=;
+        s=korg; t=1655730207;
+        bh=GIiPyNlf1hqKd/SxVZ63zAuQT1d8ca2jgkCXe8pRiQA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=17g0X9iMcYSgcz10CCyBi6CcrruM2c9UHPTaDKjOGuYlvEef0CXT853l9+GmdPuuy
-         q7eXuWe9PKJodg3f+naP5LQQmIPnkREOPX2RNJTw6JUZetQ3e82keRZ39bh26wnus9
-         a0g2rJmKlGbOTAQNyepkViUmenPcR6q07lvKKJ8Q=
+        b=ONM45szG9aEvi/V6IC7sqsq0OGj+x2fhv5FWuCWVywK0+mcg9smTq/DfNYpYsx0WV
+         0dsi+l6z4Faw9Yl6vWjntICTdwZiLmqsWjD6LBvhoEkntz5qC8W+uoE0nF/XN2QjD/
+         wrjiyR/HOh1//5RQVwjr7ihfZ4PeEV5hz5g2WCCk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, huangwenhui <huangwenhuia@uniontech.com>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 25/84] ALSA: hda/realtek - Add HW8326 support
-Date:   Mon, 20 Jun 2022 14:50:48 +0200
-Message-Id: <20220620124721.641188844@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 57/84] irqchip/gic-v3: Fix error handling in gic_populate_ppi_partitions
+Date:   Mon, 20 Jun 2022 14:51:20 +0200
+Message-Id: <20220620124722.578637812@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124720.882450983@linuxfoundation.org>
 References: <20220620124720.882450983@linuxfoundation.org>
@@ -48,150 +48,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: huangwenhui <huangwenhuia@uniontech.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 527f4643e03c298c1e3321cfa27866b1374a55e1 ]
+[ Upstream commit ec8401a429ffee34ccf38cebf3443f8d5ae6cb0d ]
 
-Added the support of new Huawei codec HW8326. The HW8326 is developed
-by Huawei with Realtek's IP Core, and it's compatible with ALC256.
+of_get_child_by_name() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+When kcalloc fails, it missing of_node_put() and results in refcount
+leak. Fix this by goto out_put_node label.
 
-Signed-off-by: huangwenhui <huangwenhuia@uniontech.com>
-Link: https://lore.kernel.org/r/20220608082357.26898-1-huangwenhuia@uniontech.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Fixes: 52085d3f2028 ("irqchip/gic-v3: Dynamically allocate PPI partition descriptors")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220601080930.31005-5-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/hda/hdac_device.c       |  1 +
- sound/pci/hda/patch_realtek.c | 14 ++++++++++++++
- 2 files changed, 15 insertions(+)
+ drivers/irqchip/irq-gic-v3.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/hda/hdac_device.c b/sound/hda/hdac_device.c
-index 3e9e9ac804f6..b7e5032b61c9 100644
---- a/sound/hda/hdac_device.c
-+++ b/sound/hda/hdac_device.c
-@@ -660,6 +660,7 @@ static const struct hda_vendor_id hda_vendor_ids[] = {
- 	{ 0x14f1, "Conexant" },
- 	{ 0x17e8, "Chrontel" },
- 	{ 0x1854, "LG" },
-+	{ 0x19e5, "Huawei" },
- 	{ 0x1aec, "Wolfson Microelectronics" },
- 	{ 0x1af4, "QEMU" },
- 	{ 0x434d, "C-Media" },
-diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index cf3b1133b785..83b5c2580c8f 100644
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -439,6 +439,7 @@ static void alc_fill_eapd_coef(struct hda_codec *codec)
- 	case 0x10ec0245:
- 	case 0x10ec0255:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 	case 0x10ec0257:
- 	case 0x10ec0282:
- 	case 0x10ec0283:
-@@ -576,6 +577,7 @@ static void alc_shutup_pins(struct hda_codec *codec)
- 	switch (codec->core.vendor_id) {
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 	case 0x10ec0283:
- 	case 0x10ec0286:
- 	case 0x10ec0288:
-@@ -3252,6 +3254,7 @@ static void alc_disable_headset_jack_key(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_write_coef_idx(codec, 0x48, 0x0);
- 		alc_update_coef_idx(codec, 0x49, 0x0045, 0x0);
- 		break;
-@@ -3280,6 +3283,7 @@ static void alc_enable_headset_jack_key(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_write_coef_idx(codec, 0x48, 0xd011);
- 		alc_update_coef_idx(codec, 0x49, 0x007f, 0x0045);
- 		break;
-@@ -4849,6 +4853,7 @@ static void alc_headset_mode_unplugged(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_process_coef_fw(codec, coef0256);
- 		break;
- 	case 0x10ec0234:
-@@ -4964,6 +4969,7 @@ static void alc_headset_mode_mic_in(struct hda_codec *codec, hda_nid_t hp_pin,
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_write_coef_idx(codec, 0x45, 0xc489);
- 		snd_hda_set_pin_ctl_cache(codec, hp_pin, 0);
- 		alc_process_coef_fw(codec, coef0256);
-@@ -5114,6 +5120,7 @@ static void alc_headset_mode_default(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_write_coef_idx(codec, 0x1b, 0x0e4b);
- 		alc_write_coef_idx(codec, 0x45, 0xc089);
- 		msleep(50);
-@@ -5213,6 +5220,7 @@ static void alc_headset_mode_ctia(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_process_coef_fw(codec, coef0256);
- 		break;
- 	case 0x10ec0234:
-@@ -5327,6 +5335,7 @@ static void alc_headset_mode_omtp(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_process_coef_fw(codec, coef0256);
- 		break;
- 	case 0x10ec0234:
-@@ -5428,6 +5437,7 @@ static void alc_determine_headset_type(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_write_coef_idx(codec, 0x1b, 0x0e4b);
- 		alc_write_coef_idx(codec, 0x06, 0x6104);
- 		alc_write_coefex_idx(codec, 0x57, 0x3, 0x09a3);
-@@ -5722,6 +5732,7 @@ static void alc255_set_default_jack_type(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_process_coef_fw(codec, alc256fw);
- 		break;
- 	}
-@@ -6325,6 +6336,7 @@ static void alc_combo_jack_hp_jd_restart(struct hda_codec *codec)
- 	case 0x10ec0236:
- 	case 0x10ec0255:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		alc_update_coef_idx(codec, 0x1b, 0x8000, 1 << 15); /* Reset HP JD */
- 		alc_update_coef_idx(codec, 0x1b, 0x8000, 0 << 15);
- 		break;
-@@ -9813,6 +9825,7 @@ static int patch_alc269(struct hda_codec *codec)
- 	case 0x10ec0230:
- 	case 0x10ec0236:
- 	case 0x10ec0256:
-+	case 0x19e58326:
- 		spec->codec_variant = ALC269_TYPE_ALC256;
- 		spec->shutup = alc256_shutup;
- 		spec->init_hook = alc256_init;
-@@ -11255,6 +11268,7 @@ static const struct hda_device_id snd_hda_id_realtek[] = {
- 	HDA_CODEC_ENTRY(0x10ec0b00, "ALCS1200A", patch_alc882),
- 	HDA_CODEC_ENTRY(0x10ec1168, "ALC1220", patch_alc882),
- 	HDA_CODEC_ENTRY(0x10ec1220, "ALC1220", patch_alc882),
-+	HDA_CODEC_ENTRY(0x19e58326, "HW8326", patch_alc269),
- 	{} /* terminator */
- };
- MODULE_DEVICE_TABLE(hdaudio, snd_hda_id_realtek);
+diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
+index e5e3fd6b9554..8d62028a0e04 100644
+--- a/drivers/irqchip/irq-gic-v3.c
++++ b/drivers/irqchip/irq-gic-v3.c
+@@ -1831,7 +1831,7 @@ static void __init gic_populate_ppi_partitions(struct device_node *gic_node)
+ 
+ 	gic_data.ppi_descs = kcalloc(gic_data.ppi_nr, sizeof(*gic_data.ppi_descs), GFP_KERNEL);
+ 	if (!gic_data.ppi_descs)
+-		return;
++		goto out_put_node;
+ 
+ 	nr_parts = of_get_child_count(parts_node);
+ 
 -- 
 2.35.1
 
