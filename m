@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABD90C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:50:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D917C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:51:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348979AbiFTNu5 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:50:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55978 "EHLO
+        id S243909AbiFTNvD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:51:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349197AbiFTNsb (ORCPT
+        with ESMTP id S1349207AbiFTNsb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 20 Jun 2022 09:48:31 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1097C2F03B;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10AF92F03C;
         Mon, 20 Jun 2022 06:17:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 427A8B811C6;
-        Mon, 20 Jun 2022 13:16:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DBFAC3411B;
-        Mon, 20 Jun 2022 13:16:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B677CB811D3;
+        Mon, 20 Jun 2022 13:03:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B197C3411B;
+        Mon, 20 Jun 2022 13:03:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730985;
-        bh=kLu6oEFnz7kWzqySjKoPppP6306WDVKu2D0M9xJxpzc=;
+        s=korg; t=1655730232;
+        bh=GD3PVsNA3YlhsK3Y2k4Oij5ixJFDcOnzgl9lnBFqP4U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eDa9nYR2rklghfW4NFDB2DRU1lmpfU47m5lotZyGzXqqXMlH+a0uNYYpeL+C7RuEz
-         sQJlT2QYBa9ijqDKBoadRxzYREndaTZupTRPZoF0CZ248gHFzMKcErUv0mASNZ7mKv
-         1VPuQ0YUmBDlMUXfNX+C5acDLmt32vH90Zi/9YyM=
+        b=T61GLVhl68nLt5XHQeByzyb3jSg0nNIfkx9D26YFbvslKHTXBP9eWLimCMGNIhQ2g
+         /xEibKATX2wpqBgjGRijlL58Y/H5J2WoH4HRMX4POJwgKFVZHnlcMkQYl0X+CJBYt1
+         l8u1kcGwloKwM/tEje6+nScRDxV+zJqT7BCvf8yc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 118/240] random: skip fast_init if hwrng provides large chunk of entropy
-Date:   Mon, 20 Jun 2022 14:50:19 +0200
-Message-Id: <20220620124742.432273887@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: [PATCH 5.10 74/84] KVM: x86: Account a variety of miscellaneous allocations
+Date:   Mon, 20 Jun 2022 14:51:37 +0200
+Message-Id: <20220620124723.078679722@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
-References: <20220620124737.799371052@linuxfoundation.org>
+In-Reply-To: <20220620124720.882450983@linuxfoundation.org>
+References: <20220620124720.882450983@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,40 +49,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Sean Christopherson <seanjc@google.com>
 
-commit af704c856e888fb044b058d731d61b46eeec499d upstream.
+commit eba04b20e4861d9bdbd8470a13c0c6e824521a36 upstream.
 
-At boot time, EFI calls add_bootloader_randomness(), which in turn calls
-add_hwgenerator_randomness(). Currently add_hwgenerator_randomness()
-feeds the first 64 bytes of randomness to the "fast init"
-non-crypto-grade phase. But if add_hwgenerator_randomness() gets called
-with more than POOL_MIN_BITS of entropy, there's no point in passing it
-off to the "fast init" stage, since that's enough entropy to bootstrap
-the real RNG. The "fast init" stage is just there to provide _something_
-in the case where we don't have enough entropy to properly bootstrap the
-RNG. But if we do have enough entropy to bootstrap the RNG, the current
-logic doesn't serve a purpose. So, in the case where we're passed
-greater than or equal to POOL_MIN_BITS of entropy, this commit makes us
-skip the "fast init" phase.
+Switch to GFP_KERNEL_ACCOUNT for a handful of allocations that are
+clearly associated with a single task/VM.
 
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Note, there are a several SEV allocations that aren't accounted, but
+those can (hopefully) be fixed by using the local stack for memory.
+
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20210331023025.2485960-3-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+[sudip: adjust context]
+Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kvm/svm/nested.c |    4 ++--
+ arch/x86/kvm/svm/sev.c    |    2 +-
+ arch/x86/kvm/vmx/vmx.c    |    2 +-
+ 3 files changed, 4 insertions(+), 4 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -1120,7 +1120,7 @@ void rand_initialize_disk(struct gendisk
- void add_hwgenerator_randomness(const void *buffer, size_t count,
- 				size_t entropy)
- {
--	if (unlikely(crng_init == 0)) {
-+	if (unlikely(crng_init == 0 && entropy < POOL_MIN_BITS)) {
- 		size_t ret = crng_pre_init_inject(buffer, count, true);
- 		mix_pool_bytes(buffer, ret);
- 		count -= ret;
+--- a/arch/x86/kvm/svm/nested.c
++++ b/arch/x86/kvm/svm/nested.c
+@@ -1198,8 +1198,8 @@ static int svm_set_nested_state(struct k
+ 		return -EINVAL;
+ 
+ 	ret  = -ENOMEM;
+-	ctl  = kzalloc(sizeof(*ctl),  GFP_KERNEL);
+-	save = kzalloc(sizeof(*save), GFP_KERNEL);
++	ctl  = kzalloc(sizeof(*ctl),  GFP_KERNEL_ACCOUNT);
++	save = kzalloc(sizeof(*save), GFP_KERNEL_ACCOUNT);
+ 	if (!ctl || !save)
+ 		goto out_free;
+ 
+--- a/arch/x86/kvm/svm/sev.c
++++ b/arch/x86/kvm/svm/sev.c
+@@ -537,7 +537,7 @@ static int sev_launch_measure(struct kvm
+ 		}
+ 
+ 		ret = -ENOMEM;
+-		blob = kmalloc(params.len, GFP_KERNEL);
++		blob = kmalloc(params.len, GFP_KERNEL_ACCOUNT);
+ 		if (!blob)
+ 			goto e_free;
+ 
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -619,7 +619,7 @@ static int hv_enable_direct_tlbflush(str
+ 	 * evmcs in singe VM shares same assist page.
+ 	 */
+ 	if (!*p_hv_pa_pg)
+-		*p_hv_pa_pg = kzalloc(PAGE_SIZE, GFP_KERNEL);
++		*p_hv_pa_pg = kzalloc(PAGE_SIZE, GFP_KERNEL_ACCOUNT);
+ 
+ 	if (!*p_hv_pa_pg)
+ 		return -ENOMEM;
 
 
