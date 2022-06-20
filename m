@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F2D0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:41:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41F29C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:41:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347908AbiFTNlB (ORCPT
+        id S1347970AbiFTNlE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:41:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38242 "EHLO
+        Mon, 20 Jun 2022 09:41:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348661AbiFTNjP (ORCPT
+        with ESMTP id S1348930AbiFTNj2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:39:15 -0400
+        Mon, 20 Jun 2022 09:39:28 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2A032981D;
-        Mon, 20 Jun 2022 06:14:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5218B29C8F;
+        Mon, 20 Jun 2022 06:14:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C49D860ECD;
-        Mon, 20 Jun 2022 13:14:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5844C3411B;
-        Mon, 20 Jun 2022 13:14:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 685AF60C1A;
+        Mon, 20 Jun 2022 13:14:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6038EC3411B;
+        Mon, 20 Jun 2022 13:14:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730876;
-        bh=8qXnFh0yU80+R8Mh2kVMrCcRTwcVGvH//4Sl7mjS2fI=;
+        s=korg; t=1655730882;
+        bh=04Pz+fF0w/7kWMaXUXaQSnSuQMtY6Y5I1iVKp9GXD5o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qcGx3ZGD8+jjXU1ASrYObDOm4TcGTaePnqHzjaLznamrlRsxra6STW5Dsq3uIbTzJ
-         KWSsOuaVBxrczCbIfXJhuQYHisKjNe1yFzLrlMITupt1sgMg9lEpkK2RrWQoR7UYEp
-         N73kAjzcK4/5RIEOnFlfZrFBBuDFMUUR1mnFvFRU=
+        b=po4qyEmkriMo2g385Sm0cy7TUWnmVdmLmWex/5BOVm9bQF8HDSfKJmw44Rwux+0+O
+         OFq/VBjUbI7eYMvgwD3U/bIejwl3YpyWarwUbyPrOgwqjzr95OLW3GwZUadp9xaDAs
+         /iiz4RjLtvk0jrAVt7tmNo3TvBwRdEtAbQnHza5g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Eric Biggers <ebiggers@google.com>,
         Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 066/240] random: simplify entropy debiting
-Date:   Mon, 20 Jun 2022 14:49:27 +0200
-Message-Id: <20220620124740.326702197@linuxfoundation.org>
+Subject: [PATCH 5.4 085/240] random: tie batched entropy generation to base_crng generation
+Date:   Mon, 20 Jun 2022 14:49:46 +0200
+Message-Id: <20220620124741.407728341@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -53,265 +53,129 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 9c07f57869e90140080cfc282cc628d123e27704 upstream.
+commit 0791e8b655cc373718f0f58800fdc625a3447ac5 upstream.
 
-Our pool is 256 bits, and we only ever use all of it or don't use it at
-all, which is decided by whether or not it has at least 128 bits in it.
-So we can drastically simplify the accounting and cmpxchg loop to do
-exactly this.  While we're at it, we move the minimum bit size into a
-constant so it can be shared between the two places where it matters.
-
-The reason we want any of this is for the case in which an attacker has
-compromised the current state, and then bruteforces small amounts of
-entropy added to it. By demanding a particular minimum amount of entropy
-be present before reseeding, we make that bruteforcing difficult.
-
-Note that this rationale no longer includes anything about /dev/random
-blocking at the right moment, since /dev/random no longer blocks (except
-for at ~boot), but rather uses the crng. In a former life, /dev/random
-was different and therefore required a more nuanced account(), but this
-is no longer.
-
-Behaviorally, nothing changes here. This is just a simplification of
-the code.
+Now that we have an explicit base_crng generation counter, we don't need
+a separate one for batched entropy. Rather, we can just move the
+generation forward every time we change crng_init state or update the
+base_crng key.
 
 Cc: Theodore Ts'o <tytso@mit.edu>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Reviewed-by: Eric Biggers <ebiggers@google.com>
 Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c         |   91 +++++++++---------------------------------
- include/trace/events/random.h |   30 ++-----------
- 2 files changed, 27 insertions(+), 94 deletions(-)
+ drivers/char/random.c |   29 ++++++++---------------------
+ 1 file changed, 8 insertions(+), 21 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -289,12 +289,14 @@
- enum poolinfo {
- 	POOL_BITS = BLAKE2S_HASH_SIZE * 8,
- 	POOL_BITSHIFT = ilog2(POOL_BITS),
-+	POOL_MIN_BITS = POOL_BITS / 2,
+@@ -428,8 +428,6 @@ static DEFINE_PER_CPU(struct crng, crngs
  
- 	/* To allow fractional bits to be tracked, the entropy_count field is
- 	 * denominated in units of 1/8th bits. */
- 	POOL_ENTROPY_SHIFT = 3,
- #define POOL_ENTROPY_BITS() (input_pool.entropy_count >> POOL_ENTROPY_SHIFT)
--	POOL_FRACBITS = POOL_BITS << POOL_ENTROPY_SHIFT
-+	POOL_FRACBITS = POOL_BITS << POOL_ENTROPY_SHIFT,
-+	POOL_MIN_FRACBITS = POOL_MIN_BITS << POOL_ENTROPY_SHIFT
- };
+ static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
  
+-static void invalidate_batched_entropy(void);
+-
  /*
-@@ -375,8 +377,7 @@ static struct {
- 	.lock = __SPIN_LOCK_UNLOCKED(input_pool.lock),
- };
+  * crng_fast_load() can be called by code in the interrupt service
+  * path.  So we can't afford to dilly-dally. Returns the number of
+@@ -452,7 +450,7 @@ static size_t crng_fast_load(const void
+ 		src++; crng_init_cnt++; len--; ret++;
+ 	}
+ 	if (crng_init_cnt >= CRNG_INIT_CNT_THRESH) {
+-		invalidate_batched_entropy();
++		++base_crng.generation;
+ 		crng_init = 1;
+ 	}
+ 	spin_unlock_irqrestore(&base_crng.lock, flags);
+@@ -529,7 +527,6 @@ static void crng_reseed(void)
+ 	WRITE_ONCE(base_crng.generation, next_gen);
+ 	WRITE_ONCE(base_crng.birth, jiffies);
+ 	if (crng_init < 2) {
+-		invalidate_batched_entropy();
+ 		crng_init = 2;
+ 		finalize_init = true;
+ 	}
+@@ -1254,8 +1251,9 @@ int __init rand_initialize(void)
+ 	mix_pool_bytes(utsname(), sizeof(*(utsname())));
  
--static bool extract_entropy(void *buf, size_t nbytes, int min);
--static void _extract_entropy(void *buf, size_t nbytes);
-+static void extract_entropy(void *buf, size_t nbytes);
- 
- static void crng_reseed(struct crng_state *crng, bool use_input_pool);
- 
-@@ -467,7 +468,7 @@ static void process_random_ready_list(vo
-  */
- static void credit_entropy_bits(int nbits)
- {
--	int entropy_count, entropy_bits, orig;
-+	int entropy_count, orig;
- 	int nfrac = nbits << POOL_ENTROPY_SHIFT;
- 
- 	/* Ensure that the multiplication can avoid being 64 bits wide. */
-@@ -527,8 +528,7 @@ retry:
- 
- 	trace_credit_entropy_bits(nbits, entropy_count >> POOL_ENTROPY_SHIFT, _RET_IP_);
- 
--	entropy_bits = entropy_count >> POOL_ENTROPY_SHIFT;
--	if (crng_init < 2 && entropy_bits >= 128)
-+	if (crng_init < 2 && entropy_count >= POOL_MIN_FRACBITS)
- 		crng_reseed(&primary_crng, true);
- }
- 
-@@ -618,7 +618,7 @@ static void crng_initialize_secondary(st
- 
- static void __init crng_initialize_primary(void)
- {
--	_extract_entropy(&primary_crng.state[4], sizeof(u32) * 12);
-+	extract_entropy(&primary_crng.state[4], sizeof(u32) * 12);
- 	if (crng_init_try_arch_early() && trust_cpu && crng_init < 2) {
- 		invalidate_batched_entropy();
- 		numa_crng_init();
-@@ -788,8 +788,17 @@ static void crng_reseed(struct crng_stat
- 	} buf;
- 
- 	if (use_input_pool) {
--		if (!extract_entropy(&buf, 32, 16))
--			return;
-+		int entropy_count;
-+		do {
-+			entropy_count = READ_ONCE(input_pool.entropy_count);
-+			if (entropy_count < POOL_MIN_FRACBITS)
-+				return;
-+		} while (cmpxchg(&input_pool.entropy_count, entropy_count, 0) != entropy_count);
-+		extract_entropy(buf.key, sizeof(buf.key));
-+		if (random_write_wakeup_bits) {
-+			wake_up_interruptible(&random_write_wait);
-+			kill_fasync(&fasync, SIGIO, POLL_OUT);
-+		}
- 	} else {
- 		_extract_crng(&primary_crng, buf.block);
- 		_crng_backtrack_protect(&primary_crng, buf.block,
-@@ -1115,51 +1124,10 @@ EXPORT_SYMBOL_GPL(add_disk_randomness);
-  *********************************************************************/
- 
- /*
-- * This function decides how many bytes to actually take from the
-- * given pool, and also debits the entropy count accordingly.
-- */
--static size_t account(size_t nbytes, int min)
--{
--	int entropy_count, orig;
--	size_t ibytes, nfrac;
--
--	BUG_ON(input_pool.entropy_count > POOL_FRACBITS);
--
--	/* Can we pull enough? */
--retry:
--	entropy_count = orig = READ_ONCE(input_pool.entropy_count);
--	if (WARN_ON(entropy_count < 0)) {
--		pr_warn("negative entropy count: count %d\n", entropy_count);
--		entropy_count = 0;
--	}
--
--	/* never pull more than available */
--	ibytes = min_t(size_t, nbytes, entropy_count >> (POOL_ENTROPY_SHIFT + 3));
--	if (ibytes < min)
--		ibytes = 0;
--	nfrac = ibytes << (POOL_ENTROPY_SHIFT + 3);
--	if ((size_t)entropy_count > nfrac)
--		entropy_count -= nfrac;
--	else
--		entropy_count = 0;
--
--	if (cmpxchg(&input_pool.entropy_count, orig, entropy_count) != orig)
--		goto retry;
--
--	trace_debit_entropy(8 * ibytes);
--	if (ibytes && POOL_ENTROPY_BITS() < random_write_wakeup_bits) {
--		wake_up_interruptible(&random_write_wait);
--		kill_fasync(&fasync, SIGIO, POLL_OUT);
--	}
--
--	return ibytes;
--}
--
--/*
-  * This is an HKDF-like construction for using the hashed collected entropy
-  * as a PRF key, that's then expanded block-by-block.
-  */
--static void _extract_entropy(void *buf, size_t nbytes)
-+static void extract_entropy(void *buf, size_t nbytes)
- {
- 	unsigned long flags;
- 	u8 seed[BLAKE2S_HASH_SIZE], next_key[BLAKE2S_HASH_SIZE];
-@@ -1169,6 +1137,8 @@ static void _extract_entropy(void *buf,
- 	} block;
- 	size_t i;
- 
-+	trace_extract_entropy(nbytes, POOL_ENTROPY_BITS());
+ 	extract_entropy(base_crng.key, sizeof(base_crng.key));
++	++base_crng.generation;
 +
- 	for (i = 0; i < ARRAY_SIZE(block.rdrand); ++i) {
- 		if (!arch_get_random_long(&block.rdrand[i]))
- 			block.rdrand[i] = random_get_entropy();
-@@ -1200,25 +1170,6 @@ static void _extract_entropy(void *buf,
- 	memzero_explicit(&block, sizeof(block));
- }
+ 	if (arch_init && trust_cpu && crng_init < 2) {
+-		invalidate_batched_entropy();
+ 		crng_init = 2;
+ 		pr_notice("crng init done (trusting CPU's manufacturer)\n");
+ 	}
+@@ -1595,8 +1593,6 @@ struct ctl_table random_table[] = {
+ };
+ #endif	/* CONFIG_SYSCTL */
  
--/*
-- * This function extracts randomness from the "entropy pool", and
-- * returns it in a buffer.
-- *
-- * The min parameter specifies the minimum amount we can pull before
-- * failing to avoid races that defeat catastrophic reseeding. If we
-- * have less than min entropy available, we return false and buf is
-- * not filled.
+-static atomic_t batch_generation = ATOMIC_INIT(0);
+-
+ struct batched_entropy {
+ 	union {
+ 		/*
+@@ -1609,8 +1605,8 @@ struct batched_entropy {
+ 		u64 entropy_u64[CHACHA_BLOCK_SIZE * 3 / (2 * sizeof(u64))];
+ 		u32 entropy_u32[CHACHA_BLOCK_SIZE * 3 / (2 * sizeof(u32))];
+ 	};
++	unsigned long generation;
+ 	unsigned int position;
+-	int generation;
+ };
+ 
+ /*
+@@ -1629,14 +1625,14 @@ u64 get_random_u64(void)
+ 	unsigned long flags;
+ 	struct batched_entropy *batch;
+ 	static void *previous;
+-	int next_gen;
++	unsigned long next_gen;
+ 
+ 	warn_unseeded_randomness(&previous);
+ 
+ 	local_irq_save(flags);
+ 	batch = raw_cpu_ptr(&batched_entropy_u64);
+ 
+-	next_gen = atomic_read(&batch_generation);
++	next_gen = READ_ONCE(base_crng.generation);
+ 	if (batch->position >= ARRAY_SIZE(batch->entropy_u64) ||
+ 	    next_gen != batch->generation) {
+ 		_get_random_bytes(batch->entropy_u64, sizeof(batch->entropy_u64));
+@@ -1662,14 +1658,14 @@ u32 get_random_u32(void)
+ 	unsigned long flags;
+ 	struct batched_entropy *batch;
+ 	static void *previous;
+-	int next_gen;
++	unsigned long next_gen;
+ 
+ 	warn_unseeded_randomness(&previous);
+ 
+ 	local_irq_save(flags);
+ 	batch = raw_cpu_ptr(&batched_entropy_u32);
+ 
+-	next_gen = atomic_read(&batch_generation);
++	next_gen = READ_ONCE(base_crng.generation);
+ 	if (batch->position >= ARRAY_SIZE(batch->entropy_u32) ||
+ 	    next_gen != batch->generation) {
+ 		_get_random_bytes(batch->entropy_u32, sizeof(batch->entropy_u32));
+@@ -1685,15 +1681,6 @@ u32 get_random_u32(void)
+ }
+ EXPORT_SYMBOL(get_random_u32);
+ 
+-/* It's important to invalidate all potential batched entropy that might
+- * be stored before the crng is initialized, which we can do lazily by
+- * bumping the generation counter.
 - */
--static bool extract_entropy(void *buf, size_t nbytes, int min)
+-static void invalidate_batched_entropy(void)
 -{
--	trace_extract_entropy(nbytes, POOL_ENTROPY_BITS(), _RET_IP_);
--	if (account(nbytes, min)) {
--		_extract_entropy(buf, nbytes);
--		return true;
--	}
--	return false;
+-	atomic_inc(&batch_generation);
 -}
 -
- #define warn_unseeded_randomness(previous) \
- 	_warn_unseeded_randomness(__func__, (void *)_RET_IP_, (previous))
- 
---- a/include/trace/events/random.h
-+++ b/include/trace/events/random.h
-@@ -79,22 +79,6 @@ TRACE_EVENT(credit_entropy_bits,
- 		  __entry->bits, __entry->entropy_count, (void *)__entry->IP)
- );
- 
--TRACE_EVENT(debit_entropy,
--	TP_PROTO(int debit_bits),
--
--	TP_ARGS( debit_bits),
--
--	TP_STRUCT__entry(
--		__field(	  int,	debit_bits		)
--	),
--
--	TP_fast_assign(
--		__entry->debit_bits	= debit_bits;
--	),
--
--	TP_printk("input pool: debit_bits %d", __entry->debit_bits)
--);
--
- TRACE_EVENT(add_input_randomness,
- 	TP_PROTO(int input_bits),
- 
-@@ -161,31 +145,29 @@ DEFINE_EVENT(random__get_random_bytes, g
- );
- 
- DECLARE_EVENT_CLASS(random__extract_entropy,
--	TP_PROTO(int nbytes, int entropy_count, unsigned long IP),
-+	TP_PROTO(int nbytes, int entropy_count),
- 
--	TP_ARGS(nbytes, entropy_count, IP),
-+	TP_ARGS(nbytes, entropy_count),
- 
- 	TP_STRUCT__entry(
- 		__field(	  int,	nbytes			)
- 		__field(	  int,	entropy_count		)
--		__field(unsigned long,	IP			)
- 	),
- 
- 	TP_fast_assign(
- 		__entry->nbytes		= nbytes;
- 		__entry->entropy_count	= entropy_count;
--		__entry->IP		= IP;
- 	),
- 
--	TP_printk("input pool: nbytes %d entropy_count %d caller %pS",
--		  __entry->nbytes, __entry->entropy_count, (void *)__entry->IP)
-+	TP_printk("input pool: nbytes %d entropy_count %d",
-+		  __entry->nbytes, __entry->entropy_count)
- );
- 
- 
- DEFINE_EVENT(random__extract_entropy, extract_entropy,
--	TP_PROTO(int nbytes, int entropy_count, unsigned long IP),
-+	TP_PROTO(int nbytes, int entropy_count),
- 
--	TP_ARGS(nbytes, entropy_count, IP)
-+	TP_ARGS(nbytes, entropy_count)
- );
- 
- TRACE_EVENT(urandom_read,
+ /**
+  * randomize_page - Generate a random, page aligned address
+  * @start:	The smallest acceptable address the caller will take.
 
 
