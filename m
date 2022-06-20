@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 871F0CCA486
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A642CCA481
 	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:29:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346214AbiFTN2u (ORCPT
+        id S1345896AbiFTN2g (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:28:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40630 "EHLO
+        Mon, 20 Jun 2022 09:28:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345010AbiFTN0K (ORCPT
+        with ESMTP id S1344766AbiFTNZ0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:26:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C18741C103;
-        Mon, 20 Jun 2022 06:10:33 -0700 (PDT)
+        Mon, 20 Jun 2022 09:25:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67FE01AF20;
+        Mon, 20 Jun 2022 06:10:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C6A760C14;
-        Mon, 20 Jun 2022 13:09:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43A4AC3411B;
-        Mon, 20 Jun 2022 13:09:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A35F60A21;
+        Mon, 20 Jun 2022 13:10:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75BD3C3411C;
+        Mon, 20 Jun 2022 13:10:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730570;
-        bh=QWVOvaoQcs9rJFN9ZErPqPmZV92C+J1OsaNkwQKcuwg=;
+        s=korg; t=1655730617;
+        bh=KSTBBIw5SEmWnx7td8ycDPE2VFjcDDTcRH8moZ/RsiY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rIZISMgBPgBhhKwzPHyb5+XxJfpvMUiEyX0T7/q19psL9iawUkwMkEEioA2jwF7XT
-         Mp4x1SrrJ4TK1OW6FdiXEFc7bkTkzHNW2H18lywwc5vODb+WEwm9YmCBsKgh6C/qFJ
-         KvVZYlDKOvcokzXiT9JhHt/8GP88R4jhPnt+QQ64=
+        b=FYG10HCT1TwyWLU9+jnDNkEReB4wCwUagT9px3bCbNWhyY5jYxY0YdFRh8Wl67J/1
+         VbADu+oVpEgv8h75LiyFVihWlenCmo9KTfmKOmFX6ZeLM2BIE1szDiIl0ZPIbly+NA
+         nRLdd0AUcbtl1OZ0N5HgB7EllF4R8d5p1IuzKQ5c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>
-Subject: [PATCH 5.15 095/106] dm mirror log: round up region bitmap size to BITS_PER_LONG
-Date:   Mon, 20 Jun 2022 14:51:54 +0200
-Message-Id: <20220620124727.203157994@linuxfoundation.org>
+        stable@vger.kernel.org, Michael Wu <michael@allwinnertech.com>,
+        John Keeping <john@metanate.com>,
+        Linyu Yuan <quic_linyyuan@quicinc.com>
+Subject: [PATCH 5.15 090/106] usb: gadget: f_fs: change ep->status safe in ffs_epfile_io()
+Date:   Mon, 20 Jun 2022 14:51:49 +0200
+Message-Id: <20220620124727.050996609@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
 References: <20220620124724.380838401@linuxfoundation.org>
@@ -49,39 +50,119 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Linyu Yuan <quic_linyyuan@quicinc.com>
 
-commit 85e123c27d5cbc22cfdc01de1e2ca1d9003a02d0 upstream.
+commit fb1f16d74e263baa4ad11e31e28b68f144aa55ed upstream.
 
-The code in dm-log rounds up bitset_size to 32 bits. It then uses
-find_next_zero_bit_le on the allocated region. find_next_zero_bit_le
-accesses the bitmap using unsigned long pointers. So, on 64-bit
-architectures, it may access 4 bytes beyond the allocated size.
+If a task read/write data in blocking mode, it will wait the completion
+in ffs_epfile_io(), if function unbind occurs, ffs_func_unbind() will
+kfree ffs ep, once the task wake up, it still dereference the ffs ep to
+obtain the request status.
 
-Fix this bug by rounding up bitset_size to BITS_PER_LONG.
+Fix it by moving the request status to io_data which is stack-safe.
 
-This bug was found by running the lvm2 testsuite with kasan.
-
-Fixes: 29121bd0b00e ("[PATCH] dm mirror log: bitset_size fix")
-Cc: stable@vger.kernel.org
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+Cc: <stable@vger.kernel.org> # 5.15
+Reported-by: Michael Wu <michael@allwinnertech.com>
+Tested-by: Michael Wu <michael@allwinnertech.com>
+Reviewed-by: John Keeping <john@metanate.com>
+Signed-off-by: Linyu Yuan <quic_linyyuan@quicinc.com>
+Link: https://lore.kernel.org/r/1654863478-26228-2-git-send-email-quic_linyyuan@quicinc.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/dm-log.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/usb/gadget/function/f_fs.c |   34 +++++++++++++++++++---------------
+ 1 file changed, 19 insertions(+), 15 deletions(-)
 
---- a/drivers/md/dm-log.c
-+++ b/drivers/md/dm-log.c
-@@ -415,8 +415,7 @@ static int create_log_context(struct dm_
- 	/*
- 	 * Work out how many "unsigned long"s we need to hold the bitset.
- 	 */
--	bitset_size = dm_round_up(region_count,
--				  sizeof(*lc->clean_bits) << BYTE_SHIFT);
-+	bitset_size = dm_round_up(region_count, BITS_PER_LONG);
- 	bitset_size >>= BYTE_SHIFT;
+--- a/drivers/usb/gadget/function/f_fs.c
++++ b/drivers/usb/gadget/function/f_fs.c
+@@ -122,8 +122,6 @@ struct ffs_ep {
+ 	struct usb_endpoint_descriptor	*descs[3];
  
- 	lc->bitset_uint32_count = bitset_size / sizeof(*lc->clean_bits);
+ 	u8				num;
+-
+-	int				status;	/* P: epfile->mutex */
+ };
+ 
+ struct ffs_epfile {
+@@ -227,6 +225,9 @@ struct ffs_io_data {
+ 	bool use_sg;
+ 
+ 	struct ffs_data *ffs;
++
++	int status;
++	struct completion done;
+ };
+ 
+ struct ffs_desc_helper {
+@@ -707,12 +708,15 @@ static const struct file_operations ffs_
+ 
+ static void ffs_epfile_io_complete(struct usb_ep *_ep, struct usb_request *req)
+ {
++	struct ffs_io_data *io_data = req->context;
++
+ 	ENTER();
+-	if (req->context) {
+-		struct ffs_ep *ep = _ep->driver_data;
+-		ep->status = req->status ? req->status : req->actual;
+-		complete(req->context);
+-	}
++	if (req->status)
++		io_data->status = req->status;
++	else
++		io_data->status = req->actual;
++
++	complete(&io_data->done);
+ }
+ 
+ static ssize_t ffs_copy_to_iter(void *data, int data_len, struct iov_iter *iter)
+@@ -1050,7 +1054,6 @@ static ssize_t ffs_epfile_io(struct file
+ 		WARN(1, "%s: data_len == -EINVAL\n", __func__);
+ 		ret = -EINVAL;
+ 	} else if (!io_data->aio) {
+-		DECLARE_COMPLETION_ONSTACK(done);
+ 		bool interrupted = false;
+ 
+ 		req = ep->req;
+@@ -1066,7 +1069,8 @@ static ssize_t ffs_epfile_io(struct file
+ 
+ 		io_data->buf = data;
+ 
+-		req->context  = &done;
++		init_completion(&io_data->done);
++		req->context  = io_data;
+ 		req->complete = ffs_epfile_io_complete;
+ 
+ 		ret = usb_ep_queue(ep->ep, req, GFP_ATOMIC);
+@@ -1075,7 +1079,7 @@ static ssize_t ffs_epfile_io(struct file
+ 
+ 		spin_unlock_irq(&epfile->ffs->eps_lock);
+ 
+-		if (wait_for_completion_interruptible(&done)) {
++		if (wait_for_completion_interruptible(&io_data->done)) {
+ 			/*
+ 			 * To avoid race condition with ffs_epfile_io_complete,
+ 			 * dequeue the request first then check
+@@ -1083,17 +1087,17 @@ static ssize_t ffs_epfile_io(struct file
+ 			 * condition with req->complete callback.
+ 			 */
+ 			usb_ep_dequeue(ep->ep, req);
+-			wait_for_completion(&done);
+-			interrupted = ep->status < 0;
++			wait_for_completion(&io_data->done);
++			interrupted = io_data->status < 0;
+ 		}
+ 
+ 		if (interrupted)
+ 			ret = -EINTR;
+-		else if (io_data->read && ep->status > 0)
+-			ret = __ffs_epfile_read_data(epfile, data, ep->status,
++		else if (io_data->read && io_data->status > 0)
++			ret = __ffs_epfile_read_data(epfile, data, io_data->status,
+ 						     &io_data->data);
+ 		else
+-			ret = ep->status;
++			ret = io_data->status;
+ 		goto error_mutex;
+ 	} else if (!(req = usb_ep_alloc_request(ep->ep, GFP_ATOMIC))) {
+ 		ret = -ENOMEM;
 
 
