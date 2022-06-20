@@ -2,188 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8CF3C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 11:38:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CF50C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 11:39:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237034AbiFTLiE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 07:38:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56108 "EHLO
+        id S241971AbiFTLj0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 07:39:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235801AbiFTLh7 (ORCPT
+        with ESMTP id S241956AbiFTLjY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 07:37:59 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1F66632B
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 04:37:58 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 900E11F8CF;
-        Mon, 20 Jun 2022 11:37:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1655725077; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=gk50856yvyikasm7bS0OG56qAWkZTO8FSBBzDtB/dnw=;
-        b=bS8dARtczrr/thaYtGaFWbzUCIuUilnu3VvA0Hpy5VRddQLxTtV/UzyYVHby5b5eVALWt2
-        OUHlUARH37jKTqa5bZ4JN/B+mmeX94bQ0vGWumv9rcjJWwFokGvQ43MwWvWlUCWu2GjuQJ
-        UkYqvYl/ibJH9qefIcEv5R3tCWEj0os=
-Received: from suse.cz (unknown [10.100.201.86])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 1705C2C16B;
-        Mon, 20 Jun 2022 11:37:57 +0000 (UTC)
-Date:   Mon, 20 Jun 2022 13:37:56 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     Kent Overstreet <kent.overstreet@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org, pmladek@suse.com,
-        rostedt@goodmis.org, enozhatsky@chromium.org,
-        linux@rasmusvillemoes.dk, willy@infradead.org
-Subject: Re: [PATCH v4 24/34] mm/memcontrol.c: Convert to printbuf
-Message-ID: <YrBcFLpvvfJOnhGO@dhcp22.suse.cz>
-References: <20220620004233.3805-1-kent.overstreet@gmail.com>
- <20220620004233.3805-25-kent.overstreet@gmail.com>
+        Mon, 20 Jun 2022 07:39:24 -0400
+X-Greylist: delayed 1844 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 20 Jun 2022 04:39:23 PDT
+Received: from imablier.rawalpindihotel.com (imablier.rawalpindihotel.com [45.130.138.4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97E6C16591
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 04:39:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed/relaxed; s=dkim; d=rawalpindihotel.com;
+ h=Reply-To:From:To:Subject:Date:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding; i=cor.car@rawalpindihotel.com;
+ bh=Nyf5OaNLvLP6QtC9iHPCmZ9OukM=;
+ b=C8mBrdBcSjO+CQVSVIRducMn0ntfI54Ha8Po5grh0AK9vZpcLpsXyjeVGdgM+2k8+uh5Asrwk49S
+   HLAlfYWXjzPRnpNXQH7irAcIaB+6JihA74mnmh6kQBYDAtmb9zdlsO1aoquuB5+N/OlJkIlZNbH7
+   oQc04HLqS0hddX28c4Dp0vRbskwe9XfB1l0zBC/0Mi3RJULKpNGS/iT4orYl3aJfCfqaqb5UZQyS
+   eSx/o1X6+XqnxYPUL+75mW2kvs+tAJLiGNimwfMO16lGWJKy7MnJ4d98suWpVMTi/qnNdGvCqb+a
+   HoPHHLN13FJEy/EbAvp2wgyN7c0xWBowgouh+A==
+DomainKey-Signature: a=rsa-sha1; c=nofws; q=dns; s=dkim; d=rawalpindihotel.com;
+ b=wiZHDp431zghB8mXISNVC6WNEthb9YO5GLJTQ0klxUkSuIBmc8R/Ya64Abuk/vRMsC85BggMKBWS
+   mXJWI1hsSQ//92vqmWEeVjNk90u+poVSQXpwIVYW9JHhmewYLcwzfWTlkJIlRLpl1qj2JZz+l5L0
+   2a+n6UxzTpLD6L99TLQ42/N9CQaYmazacim3Jkeo+gD52tuu4lGHqUFypKRHWpnnLMA62ZNkRdG/
+   SxiGF1X5opesjQLNFIDoq7ORN0eSCTChTPIiZCmWHmxFvaLvqsm0fGHW03x2ZFb6DQWwPjqgsRtc
+   Uqf0kwkzuxpKILWjA2XiGQFzI7YesRArAByIXQ==;
+Reply-To: lloydhoffman@dr.com
+From:   Lloyd <cor.car@rawalpindihotel.com>
+To:     linux-kernel@vger.kernel.org
+Subject: Business Capital Funding.
+Date:   20 Jun 2022 04:08:19 -0700
+Message-ID: <20220620040819.1A8DCA36BAA4D2D7@rawalpindihotel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220620004233.3805-25-kent.overstreet@gmail.com>
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun 19-06-22 20:42:23, Kent Overstreet wrote:
-> This converts memory_stat_format() from seq_buf to printbuf. Printbuf is
-> simalar to seq_buf except that it heap allocates the string buffer:
-> here, we were already heap allocating the buffer with kmalloc() so the
-> conversion is trivial.
-> 
-> Signed-off-by: Kent Overstreet <kent.overstreet@gmail.com>
+Hello,
+ 
 
-I have asked for a justification two times already not hearing anything.
-Please drop this patch. I do not see any actual advantage of the
-conversion. The primary downside of the existing code is that an
-internal buffer is exposed to the caller which is error prone and ugly.
-The conversion doesn't really address that part.
+We are expanding our global presence by investing in viable=20
+projects across the globe.
+=20
+We will be willing to inject upto $5 Billion and more into a=20
+viable project(s) We grant our funding at a 3.95% ROI per annum=20
+for 10 years and 12 months moratorium.
+=20
+If you have a viable project that needs funding, kindly revert=20
+with your business plan and executive summary for our review and=20
+possible funding.
+=20
+In Anticipation of your reply
+Lloyd Hoffman .
+Client Executive.
 
-Moreover there is an inconsistency between failrure case where the
-printbuf is destroyed by a docummented way (printbuf_exit) and when the
-caller frees the buffer directly. If printbuf_exit evers need to do more
-than just kfree (e.g. kvfree) then this is a subtle bug hard to find.
-
-> ---
->  mm/memcontrol.c | 68 ++++++++++++++++++++++++-------------------------
->  1 file changed, 33 insertions(+), 35 deletions(-)
-> 
-> diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-> index 598fece89e..57861dc9fe 100644
-> --- a/mm/memcontrol.c
-> +++ b/mm/memcontrol.c
-> @@ -62,7 +62,7 @@
->  #include <linux/file.h>
->  #include <linux/resume_user_mode.h>
->  #include <linux/psi.h>
-> -#include <linux/seq_buf.h>
-> +#include <linux/printbuf.h>
->  #include "internal.h"
->  #include <net/sock.h>
->  #include <net/ip.h>
-> @@ -1461,13 +1461,9 @@ static inline unsigned long memcg_page_state_output(struct mem_cgroup *memcg,
->  
->  static char *memory_stat_format(struct mem_cgroup *memcg)
->  {
-> -	struct seq_buf s;
-> +	struct printbuf buf = PRINTBUF;
->  	int i;
->  
-> -	seq_buf_init(&s, kmalloc(PAGE_SIZE, GFP_KERNEL), PAGE_SIZE);
-> -	if (!s.buffer)
-> -		return NULL;
-> -
->  	/*
->  	 * Provide statistics on the state of the memory subsystem as
->  	 * well as cumulative event counters that show past behavior.
-> @@ -1484,49 +1480,51 @@ static char *memory_stat_format(struct mem_cgroup *memcg)
->  		u64 size;
->  
->  		size = memcg_page_state_output(memcg, memory_stats[i].idx);
-> -		seq_buf_printf(&s, "%s %llu\n", memory_stats[i].name, size);
-> +		prt_printf(&buf, "%s %llu\n", memory_stats[i].name, size);
->  
->  		if (unlikely(memory_stats[i].idx == NR_SLAB_UNRECLAIMABLE_B)) {
->  			size += memcg_page_state_output(memcg,
->  							NR_SLAB_RECLAIMABLE_B);
-> -			seq_buf_printf(&s, "slab %llu\n", size);
-> +			prt_printf(&buf, "slab %llu\n", size);
->  		}
->  	}
->  
->  	/* Accumulated memory events */
->  
-> -	seq_buf_printf(&s, "%s %lu\n", vm_event_name(PGFAULT),
-> -		       memcg_events(memcg, PGFAULT));
-> -	seq_buf_printf(&s, "%s %lu\n", vm_event_name(PGMAJFAULT),
-> -		       memcg_events(memcg, PGMAJFAULT));
-> -	seq_buf_printf(&s, "%s %lu\n",  vm_event_name(PGREFILL),
-> -		       memcg_events(memcg, PGREFILL));
-> -	seq_buf_printf(&s, "pgscan %lu\n",
-> -		       memcg_events(memcg, PGSCAN_KSWAPD) +
-> -		       memcg_events(memcg, PGSCAN_DIRECT));
-> -	seq_buf_printf(&s, "pgsteal %lu\n",
-> -		       memcg_events(memcg, PGSTEAL_KSWAPD) +
-> -		       memcg_events(memcg, PGSTEAL_DIRECT));
-> -	seq_buf_printf(&s, "%s %lu\n", vm_event_name(PGACTIVATE),
-> -		       memcg_events(memcg, PGACTIVATE));
-> -	seq_buf_printf(&s, "%s %lu\n", vm_event_name(PGDEACTIVATE),
-> -		       memcg_events(memcg, PGDEACTIVATE));
-> -	seq_buf_printf(&s, "%s %lu\n", vm_event_name(PGLAZYFREE),
-> -		       memcg_events(memcg, PGLAZYFREE));
-> -	seq_buf_printf(&s, "%s %lu\n", vm_event_name(PGLAZYFREED),
-> -		       memcg_events(memcg, PGLAZYFREED));
-> +	prt_printf(&buf, "%s %lu\n", vm_event_name(PGFAULT),
-> +	       memcg_events(memcg, PGFAULT));
-> +	prt_printf(&buf, "%s %lu\n", vm_event_name(PGMAJFAULT),
-> +	       memcg_events(memcg, PGMAJFAULT));
-> +	prt_printf(&buf, "%s %lu\n",  vm_event_name(PGREFILL),
-> +	       memcg_events(memcg, PGREFILL));
-> +	prt_printf(&buf, "pgscan %lu\n",
-> +	       memcg_events(memcg, PGSCAN_KSWAPD) +
-> +	       memcg_events(memcg, PGSCAN_DIRECT));
-> +	prt_printf(&buf, "pgsteal %lu\n",
-> +	       memcg_events(memcg, PGSTEAL_KSWAPD) +
-> +	       memcg_events(memcg, PGSTEAL_DIRECT));
-> +	prt_printf(&buf, "%s %lu\n", vm_event_name(PGACTIVATE),
-> +	       memcg_events(memcg, PGACTIVATE));
-> +	prt_printf(&buf, "%s %lu\n", vm_event_name(PGDEACTIVATE),
-> +	       memcg_events(memcg, PGDEACTIVATE));
-> +	prt_printf(&buf, "%s %lu\n", vm_event_name(PGLAZYFREE),
-> +	       memcg_events(memcg, PGLAZYFREE));
-> +	prt_printf(&buf, "%s %lu\n", vm_event_name(PGLAZYFREED),
-> +	       memcg_events(memcg, PGLAZYFREED));
->  
->  #ifdef CONFIG_TRANSPARENT_HUGEPAGE
-> -	seq_buf_printf(&s, "%s %lu\n", vm_event_name(THP_FAULT_ALLOC),
-> -		       memcg_events(memcg, THP_FAULT_ALLOC));
-> -	seq_buf_printf(&s, "%s %lu\n", vm_event_name(THP_COLLAPSE_ALLOC),
-> -		       memcg_events(memcg, THP_COLLAPSE_ALLOC));
-> +	prt_printf(&buf, "%s %lu\n", vm_event_name(THP_FAULT_ALLOC),
-> +	       memcg_events(memcg, THP_FAULT_ALLOC));
-> +	prt_printf(&buf, "%s %lu\n", vm_event_name(THP_COLLAPSE_ALLOC),
-> +	       memcg_events(memcg, THP_COLLAPSE_ALLOC));
->  #endif /* CONFIG_TRANSPARENT_HUGEPAGE */
->  
-> -	/* The above should easily fit into one page */
-> -	WARN_ON_ONCE(seq_buf_has_overflowed(&s));
-> +	if (buf.allocation_failure) {
-> +		printbuf_exit(&buf);
-> +		return NULL;
-> +	}
->  
-> -	return s.buffer;
-> +	return buf.buf;
->  }
->  
->  #define K(x) ((x) << (PAGE_SHIFT-10))
-> -- 
-> 2.36.1
-
--- 
-Michal Hocko
-SUSE Labs
