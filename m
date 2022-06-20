@@ -2,123 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B818C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:32:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13D92C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:33:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346256AbiFTNcw (ORCPT
+        id S1346384AbiFTNc7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:32:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52864 "EHLO
+        Mon, 20 Jun 2022 09:32:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345367AbiFTNcW (ORCPT
+        with ESMTP id S1346293AbiFTNc0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:32:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0A8725C7E;
-        Mon, 20 Jun 2022 06:12:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BE65C60EA0;
-        Mon, 20 Jun 2022 13:12:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B12F7C3411B;
-        Mon, 20 Jun 2022 13:12:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730756;
-        bh=YAUKsAuc2AWmejvbJm7d9pwZjKJnlLRzpTNJ8hmemsc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UTQRJShqMOXB0Y0IN3t+GwPpixNAQt77iJ+5/jE5UHZXA1Xesuh8v3uE2T12b1Vka
-         f44cQfRs/qQrTxW8GQf7Gv6SY+WDfx2Cm3/Dnkf0tRhsLK0sVZs1AmDHHSysNcffwB
-         ntSX3i4wj72AuM06272gN4SNm0xxK2P0lO0ivSWs=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Herbert Xu <herbert@gondor.apana.org.au>,
+        Mon, 20 Jun 2022 09:32:26 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 640F525E85;
+        Mon, 20 Jun 2022 06:12:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655730757; x=1687266757;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=A26pOIWVwaxFpebW3F8OTi5WCNGWKZeMpH4yZlFPMe4=;
+  b=Y0eb+JvxB9QvpWcLb0EldUsFeZHh9nUmlSU66q83p3Nb30b4LkH3Gt4v
+   B6gcsNijIETJq2jV4tUS7imw/8AkQ/aVD/72ztaVBZqEPRSlOr2fDZ6Fe
+   rY92yJZoaKfVHwk2wPK4q5rzAVOBQRwIXhIWB7DdM6/yVKU32WWYtMFjJ
+   pB7ZzZ6fzvuiCX8LlfXHQjdBk+hJZOEbuN3InlDzl8TRdPrdyKTCLhSwD
+   P4ER6U7DtengSUfH+npkncH69pH3etuhM3bIk/tTulFBS0V06Q2OVp+j9
+   cvcy2mEMhlTKmJ2JqEBKl36EuRnkIsuA7RCMW4CGBZybKzZP785lLp4Xz
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="280621613"
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="280621613"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 06:12:36 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="913657331"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by fmsmga005.fm.intel.com with ESMTP; 20 Jun 2022 06:12:30 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 25KDCSEE027662;
+        Mon, 20 Jun 2022 14:12:28 +0100
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Yury Norov <yury.norov@gmail.com>,
+        "Mark Rutland" <mark.rutland@arm.com>,
+        Matt Turner <mattst88@gmail.com>,
+        Brian Cain <bcain@quicinc.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        "Yoshinori Sato" <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>,
         "David S. Miller" <davem@davemloft.net>,
-        linux-crypto@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 046/240] random: early initialization of ChaCha constants
-Date:   Mon, 20 Jun 2022 14:49:07 +0200
-Message-Id: <20220620124739.403999643@linuxfoundation.org>
+        Kees Cook <keescook@chromium.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Marco Elver <elver@google.com>, Borislav Petkov <bp@suse.de>,
+        Tony Luck <tony.luck@intel.com>,
+        "Maciej Fijalkowski" <maciej.fijalkowski@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-alpha@vger.kernel.org, linux-hexagon@vger.kernel.org,
+        linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
+        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 6/7] bitops: let optimize out non-atomic bitops on compile-time constants
+Date:   Mon, 20 Jun 2022 15:12:23 +0200
+Message-Id: <20220620131223.2627869-1-alexandr.lobakin@intel.com>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
-References: <20220620124737.799371052@linuxfoundation.org>
-User-Agent: quilt/0.66
+In-Reply-To: <YrBGUqfS7r9m0eAf@smile.fi.intel.com>
+References: <20220617144031.2549432-1-alexandr.lobakin@intel.com> <20220617144031.2549432-7-alexandr.lobakin@intel.com> <YrBGUqfS7r9m0eAf@smile.fi.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dominik Brodowski <linux@dominikbrodowski.net>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Date: Mon, 20 Jun 2022 13:05:06 +0300
 
-commit 96562f286884e2db89c74215b199a1084b5fb7f7 upstream.
+> On Fri, Jun 17, 2022 at 04:40:30PM +0200, Alexander Lobakin wrote:
+> > Currently, many architecture-specific non-atomic bitop
+> > implementations use inline asm or other hacks which are faster or
+> > more robust when working with "real" variables (i.e. fields from
+> > the structures etc.), but the compilers have no clue how to optimize
+> > them out when called on compile-time constants. That said, the
+> > following code:
+> > 
+> > 	DECLARE_BITMAP(foo, BITS_PER_LONG) = { }; // -> unsigned long foo[1];
+> > 	unsigned long bar = BIT(BAR_BIT);
+> > 	unsigned long baz = 0;
+> > 
+> > 	__set_bit(FOO_BIT, foo);
+> > 	baz |= BIT(BAZ_BIT);
+> > 
+> > 	BUILD_BUG_ON(!__builtin_constant_p(test_bit(FOO_BIT, foo));
+> > 	BUILD_BUG_ON(!__builtin_constant_p(bar & BAR_BIT));
+> > 	BUILD_BUG_ON(!__builtin_constant_p(baz & BAZ_BIT));
+> > 
+> > triggers the first assertion on x86_64, which means that the
+> > compiler is unable to evaluate it to a compile-time initializer
+> > when the architecture-specific bitop is used even if it's obvious.
+> > In order to let the compiler optimize out such cases, expand the
+> > bitop() macro to use the "constant" C non-atomic bitop
+> > implementations when all of the arguments passed are compile-time
+> > constants, which means that the result will be a compile-time
+> > constant as well, so that it produces more efficient and simple
+> > code in 100% cases, comparing to the architecture-specific
+> > counterparts.
+> > 
+> > The savings are architecture, compiler and compiler flags dependent,
+> > for example, on x86_64 -O2:
+> > 
+> > GCC 12: add/remove: 78/29 grow/shrink: 332/525 up/down: 31325/-61560 (-30235)
+> > LLVM 13: add/remove: 79/76 grow/shrink: 184/537 up/down: 55076/-141892 (-86816)
+> > LLVM 14: add/remove: 10/3 grow/shrink: 93/138 up/down: 3705/-6992 (-3287)
+> > 
+> > and ARM64 (courtesy of Mark):
+> > 
+> > GCC 11: add/remove: 92/29 grow/shrink: 933/2766 up/down: 39340/-82580 (-43240)
+> > LLVM 14: add/remove: 21/11 grow/shrink: 620/651 up/down: 12060/-15824 (-3764)
+> 
+> ...
+> 
+> > +/*
+> > + * Many architecture-specific non-atomic bitops contain inline asm code and due
+> > + * to that the compiler can't optimize them to compile-time expressions or
+> > + * constants. In contrary, gen_*() helpers are defined in pure C and compilers
+> 
+> generic_*() ?
 
-Previously, the ChaCha constants for the primary pool were only
-initialized in crng_initialize_primary(), called by rand_initialize().
-However, some randomness is actually extracted from the primary pool
-beforehand, e.g. by kmem_cache_create(). Therefore, statically
-initialize the ChaCha constants for the primary pool.
+Ah right, bah, forgot to change that in v2. Will fix in v4, as
+__builtin_constant_p() test from v7 triggered build bugs on ARC,
+will look into that.
 
-Cc: Herbert Xu <herbert@gondor.apana.org.au>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: <linux-crypto@vger.kernel.org>
-Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/char/random.c   |    5 ++++-
- include/crypto/chacha.h |   15 +++++++++++----
- 2 files changed, 15 insertions(+), 5 deletions(-)
+> 
+> > + * optimize them just well.
+> > + * Therefore, to make `unsigned long foo = 0; __set_bit(BAR, &foo)` effectively
+> > + * equal to `unsigned long foo = BIT(BAR)`, pick the generic C alternative when
+> > + * the arguments can be resolved at compile time. That expression itself is a
+> > + * constant and doesn't bring any functional changes to the rest of cases.
+> > + * The casts to `uintptr_t` are needed to mitigate `-Waddress` warnings when
+> > + * passing a bitmap from .bss or .data (-> `!!addr` is always true).
+> > + */
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -458,6 +458,10 @@ struct crng_state {
- 
- static struct crng_state primary_crng = {
- 	.lock = __SPIN_LOCK_UNLOCKED(primary_crng.lock),
-+	.state[0] = CHACHA_CONSTANT_EXPA,
-+	.state[1] = CHACHA_CONSTANT_ND_3,
-+	.state[2] = CHACHA_CONSTANT_2_BY,
-+	.state[3] = CHACHA_CONSTANT_TE_K,
- };
- 
- /*
-@@ -824,7 +828,6 @@ static void crng_initialize_secondary(st
- 
- static void __init crng_initialize_primary(struct crng_state *crng)
- {
--	chacha_init_consts(crng->state);
- 	_extract_entropy(&input_pool, &crng->state[4], sizeof(__u32) * 12, 0);
- 	if (crng_init_try_arch_early(crng) && trust_cpu && crng_init < 2) {
- 		invalidate_batched_entropy();
---- a/include/crypto/chacha.h
-+++ b/include/crypto/chacha.h
-@@ -51,12 +51,19 @@ int crypto_chacha12_setkey(struct crypto
- int crypto_chacha_crypt(struct skcipher_request *req);
- int crypto_xchacha_crypt(struct skcipher_request *req);
- 
-+enum chacha_constants { /* expand 32-byte k */
-+	CHACHA_CONSTANT_EXPA = 0x61707865U,
-+	CHACHA_CONSTANT_ND_3 = 0x3320646eU,
-+	CHACHA_CONSTANT_2_BY = 0x79622d32U,
-+	CHACHA_CONSTANT_TE_K = 0x6b206574U
-+};
-+
- static inline void chacha_init_consts(u32 *state)
- {
--	state[0]  = 0x61707865; /* "expa" */
--	state[1]  = 0x3320646e; /* "nd 3" */
--	state[2]  = 0x79622d32; /* "2-by" */
--	state[3]  = 0x6b206574; /* "te k" */
-+	state[0]  = CHACHA_CONSTANT_EXPA;
-+	state[1]  = CHACHA_CONSTANT_ND_3;
-+	state[2]  = CHACHA_CONSTANT_2_BY;
-+	state[3]  = CHACHA_CONSTANT_TE_K;
- }
- 
- #endif /* _CRYPTO_CHACHA_H */
-
-
+Thanks,
+Al
