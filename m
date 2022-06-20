@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B345C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:11:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52037C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:11:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245205AbiFTNLw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:11:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58272 "EHLO
+        id S245700AbiFTNLy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:11:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245487AbiFTNJA (ORCPT
+        with ESMTP id S245456AbiFTNIu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:09:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44AAA1182E;
-        Mon, 20 Jun 2022 06:03:07 -0700 (PDT)
+        Mon, 20 Jun 2022 09:08:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F3B618380;
+        Mon, 20 Jun 2022 06:02:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AE967B811C0;
-        Mon, 20 Jun 2022 13:01:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7D22C3411B;
-        Mon, 20 Jun 2022 13:01:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AA066614E9;
+        Mon, 20 Jun 2022 13:01:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EFD3C3411B;
+        Mon, 20 Jun 2022 13:01:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730093;
-        bh=kPhGt68UYbMxmvBml7tLO2pug4dgiKx+pxPUPlsO/Rk=;
+        s=korg; t=1655730109;
+        bh=gC3Xx2zFCXwqUVpSF+7ZiWx0Laaw7FOFLzekA/Sq/VY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XEG3xomZk/SznTd0+U8Y7LU0n5Dkggjvwe4PSjdGXzQGWyE1rdFHW0DQTDyg+uxkX
-         6Z2qJCIZoDvo8GURF0Soz6uBs3CdooeYukH9ToUB8O0krgM0DmazvpWKW6ficSVjx6
-         qdt2YPmJLLklr3V5KIP6FKfxuT7x2zxWvzVmaFwg=
+        b=knQjE2bb2NEbBLE8akF0FQKwjFOL8EFsXGfgu8XRlzTR6ypPgw3buf+IXG/pYbBfN
+         upCKwG6vptnI/8d5TaSxM7BD0U8VNFYDrzsq56F7orRcFFgr3BU47l0XVvViGQ5vU0
+         Dx6tS5RPs1Q+vjfZf41s+kucUJGHWt6eD7+SYeQ8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kees Cook <keescook@chromium.org>,
-        David Howells <dhowells@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
+        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
+        James Smart <jsmart2021@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 31/84] netfs: gcc-12: temporarily disable -Wattribute-warning for now
-Date:   Mon, 20 Jun 2022 14:50:54 +0200
-Message-Id: <20220620124721.813678177@linuxfoundation.org>
+Subject: [PATCH 5.10 22/84] scsi: lpfc: Allow reduced polling rate for nvme_admin_async_event cmd completion
+Date:   Mon, 20 Jun 2022 14:50:45 +0200
+Message-Id: <20220620124721.548828402@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124720.882450983@linuxfoundation.org>
 References: <20220620124720.882450983@linuxfoundation.org>
@@ -50,105 +50,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: James Smart <jsmart2021@gmail.com>
 
-[ Upstream commit 507160f46c55913955d272ebf559d63809a8e560 ]
+[ Upstream commit 2e7e9c0c1ec05f18d320ecc8a31eec59d2af1af9 ]
 
-This is a pure band-aid so that I can continue merging stuff from people
-while some of the gcc-12 fallout gets sorted out.
+NVMe Asynchronous Event Request commands have no command timeout value per
+specifications.
 
-In particular, gcc-12 is very unhappy about the kinds of pointer
-arithmetic tricks that netfs does, and that makes the fortify checks
-trigger in afs and ceph:
+Set WQE option to allow a reduced FLUSH polling rate for I/O error
+detection specifically for nvme_admin_async_event commands.
 
-  In function ‘fortify_memset_chk’,
-      inlined from ‘netfs_i_context_init’ at include/linux/netfs.h:327:2,
-      inlined from ‘afs_set_netfs_context’ at fs/afs/inode.c:61:2,
-      inlined from ‘afs_root_iget’ at fs/afs/inode.c:543:2:
-  include/linux/fortify-string.h:258:25: warning: call to ‘__write_overflow_field’ declared with attribute warning: detected write beyond size of field (1st parameter); maybe use struct_group()? [-Wattribute-warning]
-    258 |                         __write_overflow_field(p_size_field, size);
-        |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-and the reason is that netfs_i_context_init() is passed a 'struct inode'
-pointer, and then it does
-
-        struct netfs_i_context *ctx = netfs_i_context(inode);
-
-        memset(ctx, 0, sizeof(*ctx));
-
-where that netfs_i_context() function just does pointer arithmetic on
-the inode pointer, knowing that the netfs_i_context is laid out
-immediately after it in memory.
-
-This is all truly disgusting, since the whole "netfs_i_context is laid
-out immediately after it in memory" is not actually remotely true in
-general, but is just made to be that way for afs and ceph.
-
-See for example fs/cifs/cifsglob.h:
-
-  struct cifsInodeInfo {
-        struct {
-                /* These must be contiguous */
-                struct inode    vfs_inode;      /* the VFS's inode record */
-                struct netfs_i_context netfs_ctx; /* Netfslib context */
-        };
-	[...]
-
-and realize that this is all entirely wrong, and the pointer arithmetic
-that netfs_i_context() is doing is also very very wrong and wouldn't
-give the right answer if netfs_ctx had different alignment rules from a
-'struct inode', for example).
-
-Anyway, that's just a long-winded way to say "the gcc-12 warning is
-actually quite reasonable, and our code happens to work but is pretty
-disgusting".
-
-This is getting fixed properly, but for now I made the mistake of
-thinking "the week right after the merge window tends to be calm for me
-as people take a breather" and I did a sustem upgrade.  And I got gcc-12
-as a result, so to continue merging fixes from people and not have the
-end result drown in warnings, I am fixing all these gcc-12 issues I hit.
-
-Including with these kinds of temporary fixes.
-
-Cc: Kees Cook <keescook@chromium.org>
-Cc: David Howells <dhowells@redhat.com>
-Link: https://lore.kernel.org/all/AEEBCF5D-8402-441D-940B-105AA718C71F@chromium.org/
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Link: https://lore.kernel.org/r/20220603174329.63777-9-jsmart2021@gmail.com
+Co-developed-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/afs/inode.c  | 3 +++
- fs/ceph/inode.c | 3 +++
- 2 files changed, 6 insertions(+)
+ drivers/scsi/lpfc/lpfc_hw4.h  |  3 +++
+ drivers/scsi/lpfc/lpfc_nvme.c | 11 +++++++++--
+ 2 files changed, 12 insertions(+), 2 deletions(-)
 
-diff --git a/fs/afs/inode.c b/fs/afs/inode.c
-index 7e7a9454bcb9..942badb9b24b 100644
---- a/fs/afs/inode.c
-+++ b/fs/afs/inode.c
-@@ -25,6 +25,9 @@
- #include "internal.h"
- #include "afs_fs.h"
+diff --git a/drivers/scsi/lpfc/lpfc_hw4.h b/drivers/scsi/lpfc/lpfc_hw4.h
+index 47e832b7f2c2..bfbc1c4fcab1 100644
+--- a/drivers/scsi/lpfc/lpfc_hw4.h
++++ b/drivers/scsi/lpfc/lpfc_hw4.h
+@@ -4281,6 +4281,9 @@ struct wqe_common {
+ #define wqe_sup_SHIFT         6
+ #define wqe_sup_MASK          0x00000001
+ #define wqe_sup_WORD          word11
++#define wqe_ffrq_SHIFT         6
++#define wqe_ffrq_MASK          0x00000001
++#define wqe_ffrq_WORD          word11
+ #define wqe_wqec_SHIFT        7
+ #define wqe_wqec_MASK         0x00000001
+ #define wqe_wqec_WORD         word11
+diff --git a/drivers/scsi/lpfc/lpfc_nvme.c b/drivers/scsi/lpfc/lpfc_nvme.c
+index 03c81cec6bc9..ef92e0b4b9cf 100644
+--- a/drivers/scsi/lpfc/lpfc_nvme.c
++++ b/drivers/scsi/lpfc/lpfc_nvme.c
+@@ -1315,7 +1315,8 @@ lpfc_nvme_prep_io_cmd(struct lpfc_vport *vport,
+ {
+ 	struct lpfc_hba *phba = vport->phba;
+ 	struct nvmefc_fcp_req *nCmd = lpfc_ncmd->nvmeCmd;
+-	struct lpfc_iocbq *pwqeq = &(lpfc_ncmd->cur_iocbq);
++	struct nvme_common_command *sqe;
++	struct lpfc_iocbq *pwqeq = &lpfc_ncmd->cur_iocbq;
+ 	union lpfc_wqe128 *wqe = &pwqeq->wqe;
+ 	uint32_t req_len;
  
-+// Temporary: netfs does disgusting things with inode pointers
-+#pragma GCC diagnostic ignored "-Wattribute-warning"
-+
- static const struct inode_operations afs_symlink_inode_operations = {
- 	.get_link	= page_get_link,
- };
-diff --git a/fs/ceph/inode.c b/fs/ceph/inode.c
-index 76be50f6f041..394501d347f4 100644
---- a/fs/ceph/inode.c
-+++ b/fs/ceph/inode.c
-@@ -20,6 +20,9 @@
- #include "cache.h"
- #include <linux/ceph/decode.h>
+@@ -1371,8 +1372,14 @@ lpfc_nvme_prep_io_cmd(struct lpfc_vport *vport,
+ 		cstat->control_requests++;
+ 	}
  
-+// Temporary: netfs does disgusting things with inode pointers
-+#pragma GCC diagnostic ignored "-Wattribute-warning"
+-	if (pnode->nlp_nvme_info & NLP_NVME_NSLER)
++	if (pnode->nlp_nvme_info & NLP_NVME_NSLER) {
+ 		bf_set(wqe_erp, &wqe->generic.wqe_com, 1);
++		sqe = &((struct nvme_fc_cmd_iu *)
++			nCmd->cmdaddr)->sqe.common;
++		if (sqe->opcode == nvme_admin_async_event)
++			bf_set(wqe_ffrq, &wqe->generic.wqe_com, 1);
++	}
 +
- /*
-  * Ceph inode operations
-  *
+ 	/*
+ 	 * Finish initializing those WQE fields that are independent
+ 	 * of the nvme_cmnd request_buffer
 -- 
 2.35.1
 
