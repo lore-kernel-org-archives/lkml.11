@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7CEFC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:02:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BFB4CCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:02:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243867AbiFTNCc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:02:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47490 "EHLO
+        id S243956AbiFTNCf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:02:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244928AbiFTNAF (ORCPT
+        with ESMTP id S244915AbiFTNAD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:00:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E0941A06F;
-        Mon, 20 Jun 2022 05:56:58 -0700 (PDT)
+        Mon, 20 Jun 2022 09:00:03 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCCEB1A3A9;
+        Mon, 20 Jun 2022 05:56:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EB88F614CA;
-        Mon, 20 Jun 2022 12:56:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0D74C3411B;
-        Mon, 20 Jun 2022 12:56:56 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 81487CE138A;
+        Mon, 20 Jun 2022 12:56:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C32AC341C6;
+        Mon, 20 Jun 2022 12:56:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655729817;
-        bh=M/2gDY7ZzNb/oAKKkhfnwbKWyEObv/vJS66e1WXjz3U=;
+        s=korg; t=1655729810;
+        bh=Rl2yJlwfl/wqcLveA/n079p33M4Fb+zHO8zRFtpI5zA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pDXUbGlm7deDfcERBx55dInoM51EKmoyR2mYRS84A7yLTPtjkj6o9dJ17KhfPP2OP
-         WAiiE8cR8aRznDnBjTQteA8iALAPTZS5UOyYP8gX2emHu4uJQV4Ci1Tl2N/BtCTjCF
-         VPz0Cdn24hgDkq9qZcmY51RXV+Ib7kXykzS3YtPs=
+        b=yp9kk/nhS3xWs3+5eGQHqv7obEehVvUZxs2z3Lq7pGZzS+0hFtmc/uT6vMcIlq8CW
+         Oc/xP3Ao6e3hbtESD8P4O8q7S7csiqk+22qb14LgAPvcfJ1f5uLBOsk55Ena5iX+nF
+         uuWJD4x1LO8TYmA8Su66IBT6HK740NdIeIT4+tYA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maksym Yaremchuk <maksymy@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Guangbin Huang <huangguangbin2@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 075/141] mlxsw: spectrum_cnt: Reorder counter pools
-Date:   Mon, 20 Jun 2022 14:50:13 +0200
-Message-Id: <20220620124731.755588962@linuxfoundation.org>
+Subject: [PATCH 5.18 073/141] net: hns3: fix tm port shapping of fibre port is incorrect after driver initialization
+Date:   Mon, 20 Jun 2022 14:50:11 +0200
+Message-Id: <20220620124731.697043679@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 References: <20220620124729.509745706@linuxfoundation.org>
@@ -51,49 +49,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Petr Machata <petrm@nvidia.com>
+From: Guangbin Huang <huangguangbin2@huawei.com>
 
-[ Upstream commit 4b7a632ac4e7101ceefee8484d5c2ca505d347b3 ]
+[ Upstream commit 12a3670887725df364cc3e030cf3bede6f13b364 ]
 
-Both RIF and ACL flow counters use a 24-bit SW-managed counter address to
-communicate which counter they want to bind.
+Currently in driver initialization process, driver will set shapping
+parameters of tm port to default speed read from firmware. However, the
+speed of SFP module may not be default speed, so shapping parameters of
+tm port may be incorrect.
 
-In a number of Spectrum FW releases, binding a RIF counter is broken and
-slices the counter index to 16 bits. As a result, on Spectrum-2 and above,
-no more than about 410 RIF counters can be effectively used. This
-translates to 205 netdevices for which L3 HW stats can be enabled. (This
-does not happen on Spectrum-1, because there are fewer counters available
-overall and the counter index never exceeds 16 bits.)
+To fix this problem, driver sets new shapping parameters for tm port
+after getting exact speed of SFP module in this case.
 
-Binding counters to ACLs does not have this issue. Therefore reorder the
-counter allocation scheme so that RIF counters come first and therefore get
-lower indices that are below the 16-bit barrier.
-
-Fixes: 98e60dce4da1 ("Merge branch 'mlxsw-Introduce-initial-Spectrum-2-support'")
-Reported-by: Maksym Yaremchuk <maksymy@nvidia.com>
-Signed-off-by: Petr Machata <petrm@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Link: https://lore.kernel.org/r/20220613125017.2018162-1-idosch@nvidia.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: 88d10bd6f730 ("net: hns3: add support for multiple media type")
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c   | 11 ++++++++---
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c |  2 +-
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.h |  1 +
+ 3 files changed, 10 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.h
-index a68d931090dd..15c8d4de8350 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.h
-@@ -8,8 +8,8 @@
- #include "spectrum.h"
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index c8c99ab60ec1..c0b4ff73128f 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -3276,7 +3276,7 @@ static int hclge_tp_port_init(struct hclge_dev *hdev)
+ static int hclge_update_port_info(struct hclge_dev *hdev)
+ {
+ 	struct hclge_mac *mac = &hdev->hw.mac;
+-	int speed = HCLGE_MAC_SPEED_UNKNOWN;
++	int speed;
+ 	int ret;
  
- enum mlxsw_sp_counter_sub_pool_id {
--	MLXSW_SP_COUNTER_SUB_POOL_FLOW,
- 	MLXSW_SP_COUNTER_SUB_POOL_RIF,
-+	MLXSW_SP_COUNTER_SUB_POOL_FLOW,
- };
+ 	/* get the port info from SFP cmd if not copper port */
+@@ -3287,10 +3287,13 @@ static int hclge_update_port_info(struct hclge_dev *hdev)
+ 	if (!hdev->support_sfp_query)
+ 		return 0;
  
- int mlxsw_sp_counter_alloc(struct mlxsw_sp *mlxsw_sp,
+-	if (hdev->ae_dev->dev_version >= HNAE3_DEVICE_VERSION_V2)
++	if (hdev->ae_dev->dev_version >= HNAE3_DEVICE_VERSION_V2) {
++		speed = mac->speed;
+ 		ret = hclge_get_sfp_info(hdev, mac);
+-	else
++	} else {
++		speed = HCLGE_MAC_SPEED_UNKNOWN;
+ 		ret = hclge_get_sfp_speed(hdev, &speed);
++	}
+ 
+ 	if (ret == -EOPNOTSUPP) {
+ 		hdev->support_sfp_query = false;
+@@ -3302,6 +3305,8 @@ static int hclge_update_port_info(struct hclge_dev *hdev)
+ 	if (hdev->ae_dev->dev_version >= HNAE3_DEVICE_VERSION_V2) {
+ 		if (mac->speed_type == QUERY_ACTIVE_SPEED) {
+ 			hclge_update_port_capability(hdev, mac);
++			if (mac->speed != speed)
++				(void)hclge_tm_port_shaper_cfg(hdev);
+ 			return 0;
+ 		}
+ 		return hclge_cfg_mac_speed_dup(hdev, mac->speed,
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
+index f5296ff60694..2f33b036a47a 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
+@@ -420,7 +420,7 @@ static int hclge_tm_pg_shapping_cfg(struct hclge_dev *hdev,
+ 	return hclge_cmd_send(&hdev->hw, &desc, 1);
+ }
+ 
+-static int hclge_tm_port_shaper_cfg(struct hclge_dev *hdev)
++int hclge_tm_port_shaper_cfg(struct hclge_dev *hdev)
+ {
+ 	struct hclge_port_shapping_cmd *shap_cfg_cmd;
+ 	struct hclge_shaper_ir_para ir_para;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.h
+index 619cc30a2dfc..d943943912f7 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.h
+@@ -237,6 +237,7 @@ int hclge_pause_addr_cfg(struct hclge_dev *hdev, const u8 *mac_addr);
+ void hclge_pfc_rx_stats_get(struct hclge_dev *hdev, u64 *stats);
+ void hclge_pfc_tx_stats_get(struct hclge_dev *hdev, u64 *stats);
+ int hclge_tm_qs_shaper_cfg(struct hclge_vport *vport, int max_tx_rate);
++int hclge_tm_port_shaper_cfg(struct hclge_dev *hdev);
+ int hclge_tm_get_qset_num(struct hclge_dev *hdev, u16 *qset_num);
+ int hclge_tm_get_pri_num(struct hclge_dev *hdev, u8 *pri_num);
+ int hclge_tm_get_qset_map_pri(struct hclge_dev *hdev, u16 qset_id, u8 *priority,
 -- 
 2.35.1
 
