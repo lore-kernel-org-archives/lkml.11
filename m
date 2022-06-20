@@ -2,68 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0477EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 11:15:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09971CCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 11:15:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241326AbiFTLPl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 07:15:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59776 "EHLO
+        id S241883AbiFTLPq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 07:15:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241866AbiFTLO7 (ORCPT
+        with ESMTP id S241622AbiFTLPE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 07:14:59 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9837716580
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 04:14:44 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id g25so20367277ejh.9
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 04:14:44 -0700 (PDT)
+        Mon, 20 Jun 2022 07:15:04 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 157D7167D8
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 04:14:48 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id um5so5440742ejb.5
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 04:14:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=ClzjJShbVFx8TaQxCfkeV22/Wl7HoeIA99LoGmKA+g8=;
-        b=JbBGfXGBvpV/uk/dk4gI9PUkSHtjiE0n6+v4S+HKY8ZkglzgWdAERXCGgfP+Il/ckR
-         tENuRnPpbnOIl7roKYNXVPtDdEkHS1LGl0H0oy+Jahjjhc5d3+sEyzb8wA6kk39sMpRj
-         1Hij+r/IT9yIrpYmjZaIFauMUOR3ZHdg8NI/txVus2RPesI8MnkiHEGcJcEmRzhA6uo/
-         JpSxS+ToNCDSQgmkYQlL5Fahxk1rbnnotErqGYbC3jvBTit02+oNx+xGCiW1FYaRQY2A
-         hQRBSRjb7y8IKFI1ddSrzCy82n0d+Y4j13z72UIo3IIgR9fYMk6qB74PuqgTVMWR85Gm
-         QEEQ==
+        bh=3YSnqTYqRuc0HngtFWPh5+kNVV+S5mddHDRCwdOnK0Q=;
+        b=sHfqVD9QVh6BFE86b+wXb3sr+EcPv8EmCTq887SRnIWvpaBi2tnrvqH3pfdrb9C72k
+         UVSz7dQylpwxlc/9Q3nx7I3S9URKtp5lwVgnAQNKpqbvQzMn95Ay2BDX8YDdGZzNLzoS
+         mVQyJIfBVpyQeBm3O1smpb5rG6XxDGm6AMwcgeWrEnEAvjxgCmxOoYKF1brDSObo1luK
+         Hi93uucIiYVsCIwEFRMLkc5t8Un37ivWtKKKHlwFillSc5tJjqTkC4buXrcrnZufCRvF
+         tOcpCE0p7fn3JEF7/eDX1L4D0RSnAuI0Bu1+fZRcwMxNds4oe3UVmrYyEPxp2odLL4EK
+         HtDg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ClzjJShbVFx8TaQxCfkeV22/Wl7HoeIA99LoGmKA+g8=;
-        b=ukpPa+XeKgkBj8pH0mJ3Zx9ogZFSNW1IieNflWmSCbA0Q5xLWk1WN4H3Ckf0isSDN8
-         D55y59cpMEJAkAiDrMZGyXprFG+QDbDleYZArU1VcF4EjRrYNIYpO6UK2ZjaR+UO6TtN
-         JcWwKsoHrbXlOXZyUDSI/Gfd83xgasEQ0U4YU2sVh6zRx6dvhnIxo0WEZPtTACz3Tu6y
-         vJ1sP9gB0jolK9fIh9jJrN1F3oa3H0GH7cPfC5VylovBxZJYiVWDk7r1l46+6igPfYga
-         +dR/l/PCrgr5H+fZOnTK44wd3pgpA2XvckWIv3RrOC8slSwSogQPji6DnVTjjrjnulq+
-         aKSg==
-X-Gm-Message-State: AJIora8uMu7qFqXJZgcNqDzKTr/JrOXCleHSXTrk+BuavyvYyBM9yiC2
-        C6MUR/AVvlmrZs59D2y1HczpLw==
-X-Google-Smtp-Source: AGRyM1s3OCH1IXHmN9/QkFae5Zxbc8cFd2aL5mfxKeMADz7GSrTDrB9hE+rWIu/Wws4tYGNcmbhvmg==
-X-Received: by 2002:a17:906:730f:b0:711:db1a:fdb0 with SMTP id di15-20020a170906730f00b00711db1afdb0mr20529013ejc.54.1655723683183;
-        Mon, 20 Jun 2022 04:14:43 -0700 (PDT)
+        bh=3YSnqTYqRuc0HngtFWPh5+kNVV+S5mddHDRCwdOnK0Q=;
+        b=aUghUALS5PEUMc88MFjsmF32xvSKy1ZEnJVVsyrnOusKOeXVFkEscb1paSxHLoslcJ
+         yRwaXArnhy/eEbp9OT7WOzLupu6yZm7pmSVprhzZdHRW+wCmP8PLFYxuL7erSoEmlO32
+         42dhGfk/BktYODIDPKzG1eTH8SX6h96Vi9ALJYmEXlktLW1r2flJpRzQ013pf5LvFfgs
+         RXVM4lUoAVmHzSA9dld2z2RW6hPsKURxHpayZiCe+Vlk4LbTax1DatidYWaUibDAU3s5
+         sc7ZXD13sV+NFDlZ8mhWSCm4yf3a7AQfcLWiHi4XoAcBCOsVQkFiQ7rR49ezyic8J+EU
+         VpbA==
+X-Gm-Message-State: AJIora+VKGlbBcUbqW2+yUEf9tfj1oorHhEPg58yIvvkbJgZlfpcsrkt
+        BGRkJNB2p0lhr2Ikpl26zLZ2VQ==
+X-Google-Smtp-Source: AGRyM1t0aGHuhS4the+spmM02P4NTAGwl1TwS0neV2qA6YlGz1BJWmh9mn5i1N2POVtWv9Fhp0eZOg==
+X-Received: by 2002:a17:906:74d1:b0:712:2293:8f41 with SMTP id z17-20020a17090674d100b0071222938f41mr20109070ejl.495.1655723686682;
+        Mon, 20 Jun 2022 04:14:46 -0700 (PDT)
 Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id c26-20020a170906171a00b006fed9a0eb17sm5699969eje.187.2022.06.20.04.14.41
+        by smtp.gmail.com with ESMTPSA id c26-20020a170906171a00b006fed9a0eb17sm5699969eje.187.2022.06.20.04.14.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jun 2022 04:14:42 -0700 (PDT)
+        Mon, 20 Jun 2022 04:14:45 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Arnd Bergmann <arnd@arndb.de>, arm@kernel.org,
+To:     arm@kernel.org, Arnd Bergmann <arnd@arndb.de>,
         devicetree@vger.kernel.org,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        linux-arm-kernel@lists.infradead.org,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Olof Johansson <olof@lixom.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Wei Xu <xuwei5@hisilicon.com>, linux-kernel@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
         soc@kernel.org
-Subject: Re: (subset) [PATCH v3 10/40] arm64: dts: hisilicon: correct gpio-keys properties
-Date:   Mon, 20 Jun 2022 13:14:33 +0200
-Message-Id: <165572367262.35195.3017202631161821565.b4-ty@linaro.org>
+Subject: Re: (subset) [PATCH v3 35/40] ARM: dts: animeo: correct gpio-keys properties
+Date:   Mon, 20 Jun 2022 13:14:35 +0200
+Message-Id: <165572367263.35195.8304905583649336155.b4-ty@linaro.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220616005333.18491-10-krzysztof.kozlowski@linaro.org>
-References: <20220616005224.18391-1-krzysztof.kozlowski@linaro.org> <20220616005333.18491-10-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220616005333.18491-35-krzysztof.kozlowski@linaro.org>
+References: <20220616005224.18391-1-krzysztof.kozlowski@linaro.org> <20220616005333.18491-35-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -71,15 +69,15 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 15 Jun 2022 17:53:03 -0700, Krzysztof Kozlowski wrote:
+On Wed, 15 Jun 2022 17:53:28 -0700, Krzysztof Kozlowski wrote:
 > gpio-keys children do not use unit addresses.
 > 
 > 
 
 Applied, thanks!
 
-[10/40] arm64: dts: hisilicon: correct gpio-keys properties
-        https://git.kernel.org/krzk/linux/c/717b3096da2ea205c6f31b4c2cd4485671d6ac79
+[35/40] ARM: dts: animeo: correct gpio-keys properties
+        https://git.kernel.org/krzk/linux/c/91503e5a3b5aee6ac7240d1f03abe69253c14de9
 
 Best regards,
 -- 
