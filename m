@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB8F4C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:01:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 079F7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:01:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243971AbiFTNBr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:01:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37774 "EHLO
+        id S232153AbiFTNBv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:01:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243348AbiFTM5h (ORCPT
+        with ESMTP id S241339AbiFTM5p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 08:57:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D440A1ADAC;
-        Mon, 20 Jun 2022 05:55:30 -0700 (PDT)
+        Mon, 20 Jun 2022 08:57:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3927F1AF04;
+        Mon, 20 Jun 2022 05:55:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DE461614E8;
-        Mon, 20 Jun 2022 12:55:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5483C3411B;
-        Mon, 20 Jun 2022 12:55:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 016A4B811AC;
+        Mon, 20 Jun 2022 12:55:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDDC4C3411B;
+        Mon, 20 Jun 2022 12:55:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655729726;
-        bh=xKJgGnAp0JtvzVTO3ZMiIPxvPcxB/Pl0bxgrqj+nqCk=;
+        s=korg; t=1655729729;
+        bh=mR8UpIC9hOX8Y1EYshjyfXKNN3emi3SIWnW3qyzOb88=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G6VnUSlQF925hJW1keRQYnpdDpFYCrHzVy7lD7dhJTlX2KUnzGTVNfA+UzOVUOfnh
-         8PUo1fKp4LZroqr0Z44OAkexaIa/B6/7H4B8l+I5ZDDc+/3WV9bISw46EBLaDaPgTI
-         O1CG9ZkX02Gx1EVrxFSHSnQfXIfrg8688oQg80EU=
+        b=joxxqVebS1fLO/IYPp3mvAj4aEEAElUfYsRI5Ydjl3QCiN7ydu1ufjpUA1mfMZc34
+         jbTxl1KO7T4lapcqZTdDQdtfIYzmqXqCUHw8UDwMLLtkAlDCf06D3GQqchDZUBCJyk
+         SyDQBZNhoFKZ9loBHuk/h5gGFGTu4msil1VCsSvI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
+        James Smart <jsmart2021@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 055/141] pNFS: Avoid a live lock condition in pnfs_update_layout()
-Date:   Mon, 20 Jun 2022 14:49:53 +0200
-Message-Id: <20220620124731.162638823@linuxfoundation.org>
+Subject: [PATCH 5.18 029/141] scsi: lpfc: Fix port stuck in bypassed state after LIP in PT2PT topology
+Date:   Mon, 20 Jun 2022 14:49:27 +0200
+Message-Id: <20220620124730.391590041@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 References: <20220620124729.509745706@linuxfoundation.org>
@@ -50,104 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: James Smart <jsmart2021@gmail.com>
 
-[ Upstream commit 880265c77ac415090090d1fe72a188fee71cb458 ]
+[ Upstream commit 336d63615466b4c06b9401c987813fd19bdde39b ]
 
-If we're about to send the first layoutget for an empty layout, we want
-to make sure that we drain out the existing pending layoutget calls
-first. The reason is that these layouts may have been already implicitly
-returned to the server by a recall to which the client gave a
-NFS4ERR_NOMATCHING_LAYOUT response.
+After issuing a LIP, a specific target vendor does not ACC the FLOGI that
+lpfc sends.  However, it does send its own FLOGI that lpfc ACCs.  The
+target then establishes the port IDs by sending a PLOGI.  lpfc PLOGI_ACCs
+and starts the RPI registration for DID 0x000001.  The target then sends a
+LOGO to the fabric DID.  lpfc is currently treating the LOGO from the
+fabric DID as a link down and cleans up all the ndlps.  The ndlp for DID
+0x000001 is put back into NPR and discovery stops, leaving the port in
+stuck in bypassed mode.
 
-The problem is that wait_var_event_killable() could in principle see the
-plh_outstanding count go back to '1' when the first process to wake up
-starts sending a new layoutget. If it fails to get a layout, then this
-loop can continue ad infinitum...
+Change lpfc behavior such that if a LOGO is received for the fabric DID in
+PT2PT topology skip the lpfc_linkdown_port() routine and just move the
+fabric DID back to NPR.
 
-Fixes: 0b77f97a7e42 ("NFSv4/pnfs: Fix layoutget behaviour after invalidation")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Link: https://lore.kernel.org/r/20220603174329.63777-7-jsmart2021@gmail.com
+Co-developed-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/callback_proc.c |  1 +
- fs/nfs/pnfs.c          | 15 +++++++++------
- fs/nfs/pnfs.h          |  1 +
- 3 files changed, 11 insertions(+), 6 deletions(-)
+ drivers/scsi/lpfc/lpfc_nportdisc.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/fs/nfs/callback_proc.c b/fs/nfs/callback_proc.c
-index c8520284dda7..c1eda73254e1 100644
---- a/fs/nfs/callback_proc.c
-+++ b/fs/nfs/callback_proc.c
-@@ -288,6 +288,7 @@ static u32 initiate_file_draining(struct nfs_client *clp,
- 		rv = NFS4_OK;
- 		break;
- 	case -ENOENT:
-+		set_bit(NFS_LAYOUT_DRAIN, &lo->plh_flags);
- 		/* Embrace your forgetfulness! */
- 		rv = NFS4ERR_NOMATCHING_LAYOUT;
+diff --git a/drivers/scsi/lpfc/lpfc_nportdisc.c b/drivers/scsi/lpfc/lpfc_nportdisc.c
+index 4b065c51ee1b..f5de88877ffe 100644
+--- a/drivers/scsi/lpfc/lpfc_nportdisc.c
++++ b/drivers/scsi/lpfc/lpfc_nportdisc.c
+@@ -835,7 +835,8 @@ lpfc_rcv_logo(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
+ 		lpfc_nvmet_invalidate_host(phba, ndlp);
  
-diff --git a/fs/nfs/pnfs.c b/fs/nfs/pnfs.c
-index 4609e641710e..41a9b6b58fb9 100644
---- a/fs/nfs/pnfs.c
-+++ b/fs/nfs/pnfs.c
-@@ -469,6 +469,7 @@ pnfs_mark_layout_stateid_invalid(struct pnfs_layout_hdr *lo,
- 		pnfs_clear_lseg_state(lseg, lseg_list);
- 	pnfs_clear_layoutreturn_info(lo);
- 	pnfs_free_returned_lsegs(lo, lseg_list, &range, 0);
-+	set_bit(NFS_LAYOUT_DRAIN, &lo->plh_flags);
- 	if (test_bit(NFS_LAYOUT_RETURN, &lo->plh_flags) &&
- 	    !test_and_set_bit(NFS_LAYOUT_RETURN_LOCK, &lo->plh_flags))
- 		pnfs_clear_layoutreturn_waitbit(lo);
-@@ -1917,8 +1918,9 @@ static void nfs_layoutget_begin(struct pnfs_layout_hdr *lo)
- 
- static void nfs_layoutget_end(struct pnfs_layout_hdr *lo)
- {
--	if (atomic_dec_and_test(&lo->plh_outstanding))
--		wake_up_var(&lo->plh_outstanding);
-+	if (atomic_dec_and_test(&lo->plh_outstanding) &&
-+	    test_and_clear_bit(NFS_LAYOUT_DRAIN, &lo->plh_flags))
-+		wake_up_bit(&lo->plh_flags, NFS_LAYOUT_DRAIN);
- }
- 
- static bool pnfs_is_first_layoutget(struct pnfs_layout_hdr *lo)
-@@ -2025,11 +2027,11 @@ pnfs_update_layout(struct inode *ino,
- 	 * If the layout segment list is empty, but there are outstanding
- 	 * layoutget calls, then they might be subject to a layoutrecall.
- 	 */
--	if ((list_empty(&lo->plh_segs) || !pnfs_layout_is_valid(lo)) &&
-+	if (test_bit(NFS_LAYOUT_DRAIN, &lo->plh_flags) &&
- 	    atomic_read(&lo->plh_outstanding) != 0) {
- 		spin_unlock(&ino->i_lock);
--		lseg = ERR_PTR(wait_var_event_killable(&lo->plh_outstanding,
--					!atomic_read(&lo->plh_outstanding)));
-+		lseg = ERR_PTR(wait_on_bit(&lo->plh_flags, NFS_LAYOUT_DRAIN,
-+					   TASK_KILLABLE));
- 		if (IS_ERR(lseg))
- 			goto out_put_layout_hdr;
- 		pnfs_put_layout_hdr(lo);
-@@ -2413,7 +2415,8 @@ pnfs_layout_process(struct nfs4_layoutget *lgp)
- 		goto out_forget;
- 	}
- 
--	if (!pnfs_layout_is_valid(lo) && !pnfs_is_first_layoutget(lo))
-+	if (test_bit(NFS_LAYOUT_DRAIN, &lo->plh_flags) &&
-+	    !pnfs_is_first_layoutget(lo))
- 		goto out_forget;
- 
- 	if (nfs4_stateid_match_other(&lo->plh_stateid, &res->stateid)) {
-diff --git a/fs/nfs/pnfs.h b/fs/nfs/pnfs.h
-index 07f11489e4e9..f331f067691b 100644
---- a/fs/nfs/pnfs.h
-+++ b/fs/nfs/pnfs.h
-@@ -105,6 +105,7 @@ enum {
- 	NFS_LAYOUT_FIRST_LAYOUTGET,	/* Serialize first layoutget */
- 	NFS_LAYOUT_INODE_FREEING,	/* The inode is being freed */
- 	NFS_LAYOUT_HASHED,		/* The layout visible */
-+	NFS_LAYOUT_DRAIN,
- };
- 
- enum layoutdriver_policy_flags {
+ 	if (ndlp->nlp_DID == Fabric_DID) {
+-		if (vport->port_state <= LPFC_FDISC)
++		if (vport->port_state <= LPFC_FDISC ||
++		    vport->fc_flag & FC_PT2PT)
+ 			goto out;
+ 		lpfc_linkdown_port(vport);
+ 		spin_lock_irq(shost->host_lock);
 -- 
 2.35.1
 
