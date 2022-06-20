@@ -2,135 +2,301 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 440E1C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 15:06:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEAF5C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 15:07:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242824AbiFTPGu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 11:06:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59712 "EHLO
+        id S242647AbiFTPHF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 11:07:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242374AbiFTPGU (ORCPT
+        with ESMTP id S234402AbiFTPGp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 11:06:20 -0400
-Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 071D4100E;
-        Mon, 20 Jun 2022 07:43:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1655736219;
-  x=1687272219;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Na3GHwh2nPIlcEioUu2L4Q9Qk2l1gWyv/bLyqBui10c=;
-  b=a3j1NuVif+KCfAl5geHnr21ipGQbuWuSPp8uuXwGnlUIX8r8db8NqC7s
-   WBm4+pPbPUmroALH5cjuORJLZ0rtWSQana0N04Ef34DlUqMSQ8cu1XXZc
-   HMYXpak+gyqbVnAgL/36TArkSNS/o+oH7VJdCr+nisE2/AjjmccQ893nm
-   +LVmzJSB2seAJObTdTejeWGgQuPDqU+maVx0kMmP4GwN7XKSF2r/DC7Jf
-   ZfkUhL/jMa74DfNl4yxw7fUV5j4kuB9x+6Gtx0O7yl180jCQaGALCoZwL
-   b+Kl6UK3ND2oaqymSkfPBPcy5A2X+Gj2fW7PY9UAVfOQ59kenYPm7LI/Z
-   w==;
-Date:   Mon, 20 Jun 2022 16:42:31 +0200
-From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
-To:     <rafael.j.wysocki@intel.com>, <jic23@kernel.org>
-CC:     <linux-pm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>
-Subject: PM runtime_error handling missing in many drivers?
-Message-ID: <20220620144231.GA23345@axis.com>
+        Mon, 20 Jun 2022 11:06:45 -0400
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5FE122B3A;
+        Mon, 20 Jun 2022 07:44:16 -0700 (PDT)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 25KEhPPw103094;
+        Mon, 20 Jun 2022 09:43:25 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1655736205;
+        bh=msCQwh/1jtTFGMUA6aVLMiqUgrpZbx3J1b6A951eaYs=;
+        h=Date:From:To:CC:Subject:References:In-Reply-To;
+        b=vOIIsAbumW5KLznaAmq33NyjnfJG7lw+ERXEkomw94LUwMTnqSIVHQtG1+KZvyzeY
+         lFknTRHLOBtry0Zppo+2TKDtHvFyG9gEBXkxnQtG2unP5qjzGfGHeUjZ070hnB5rIy
+         1JC18WLROCcqWo4EF0YuV8Ip/FJB4luNuXaVgDy0=
+Received: from DFLE102.ent.ti.com (dfle102.ent.ti.com [10.64.6.23])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 25KEhP2F039948
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 20 Jun 2022 09:43:25 -0500
+Received: from DFLE114.ent.ti.com (10.64.6.35) by DFLE102.ent.ti.com
+ (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 20
+ Jun 2022 09:43:24 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Mon, 20 Jun 2022 09:43:24 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 25KEhNr1065265;
+        Mon, 20 Jun 2022 09:43:24 -0500
+Date:   Mon, 20 Jun 2022 20:13:23 +0530
+From:   Rahul T R <r-ravikumar@ti.com>
+To:     Jason Kridner <jkridner@gmail.com>
+CC:     Nishanth Menon <nm@ti.com>, Rob Herring <robh+dt@kernel.org>,
+        "Raghavendra, Vignesh" <vigneshr@ti.com>,
+        Kishon Vijay Abraham <kishon@ti.com>,
+        <krzysztof.kozlowski+dt@linaro.org>, <lee.jones@linaro.org>,
+        <rogerq@kernel.org>, <devicetree@vger.kernel.org>,
+        <kristo@kernel.org>,
+        ARM Kernel List <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, Suman Anna <s-anna@ti.com>,
+        "Pothukuchi, Vijay" <vijayp@ti.com>,
+        Robert Nelson <robertcnelson@gmail.com>
+Subject: Re: [PATCH v4 3/3] arm64: dts: ti: k3-j721e-sk: Add pinmux for RPi
+ Header
+Message-ID: <20220620144322.x54zitvhjreiy3ey@uda0490373>
+References: <20220530101031.11357-1-r-ravikumar@ti.com>
+ <20220530101031.11357-4-r-ravikumar@ti.com>
+ <20220618021614.svhnzlsm2chn5jey@kahuna>
+ <CA+T6QPnCut5KVUXcSqfHCjoc=5-JFvRSz=WFosCjQMXdRSjrTw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <CA+T6QPnCut5KVUXcSqfHCjoc=5-JFvRSz=WFosCjQMXdRSjrTw@mail.gmail.com>
+User-Agent: NeoMutt/20171215
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Many drivers do something like the following to resume their hardware
-before performing some hardware access when user space ask for it:
+On 08:11-20220618, Jason Kridner wrote:
+> For those seeing this message multiple times, my apologies for not
+> properly setting up my mailer.
+> 
+> On Fri, Jun 17, 2022 at 10:16 PM Nishanth Menon <nm@ti.com> wrote:
+> >
+> > On 15:40-20220530, Rahul T R wrote:
+> > > From: Sinthu Raja <sinthu.raja@ti.com>
+> > >
+> > > Add pinmux required to bring out
+> > > i2c5, ehrpwm 2 and 3 and gpios on
+> > > 40 pin RPi header on sk board
+> > >
+> > > Signed-off-by: Sinthu Raja <sinthu.raja@ti.com>
+> > > Signed-off-by: Rahul T R <r-ravikumar@ti.com>
+> >
+> >
+> > I was digging deeper at https://www.ti.com/lit/zip/sprr438
+> > (PROC112E2(001)_SCH.pdf - J3, Also looking at
+> > https://github.com/beagleboard/beaglebone-ai-64/blob/master/BeagleBone%20AI%20-64_SCH_V1.02_211119.pdf
+> > (P8, P9)
+> >
+> > And comparing it to https://www.raspberrypi-spy.co.uk/2012/06/simple-guide-to-the-rpi-gpio-header-and-pins/
+> > And considering potential use such as https://pypi.org/project/RPi.GPIO/
+> > variation,
+> >
+> > Here is my suggestion (applies to other TI Boards that attempt to
+> > emulate RPI header)
+> > a) Default mux in board.dts should be GPIO except for the i2c used for
+> >    ID detection.
+> > b) Secondary functions should be a dt overlay. (These can easily enable
+> >    the pwms and other functions as needed)
+> > c) Maintain node names consistent to allow reuse of overlays across
+> >    platforms.
+> >
+> > Usage: you can either use extlinux.conf OR uEnv.txt to apply the
+> > overlays as desired (ID detection from hats might help automate it based
+> > on the bootloader you'd want to use)
+> >
+> > Else, you have created a custom configuration here for 1 specific
+> > application, various hats that expect GPIO will end up croaking.
+> >
+> >
+> > I am open to discussions here.
+> 
+> 
+> 
+> A read of our recent blog series done with Bootlin is worth a read on
+> this topic. https://bbb.io/@2804
+> 
+> My suggestion is to put the entries for the common functions in the
+> base tree, but not enable them (except for the I2C used for ID
+> detection, as you suggested). This can remove SoC-specific
+> requirements on the overlays such that the overlays are written
+> against a header specification as defined by the common symbols
+> provided. So, make the entries in the base tree and leave them
+> "disabled" such that overlays only need to set the symbol to "okay",
+> at least for the common stuff to all implementations of the Pi header.
+> 
 
-	ret = pm_runtime_resume_and_get(dev);
-	if (ret)
-		return ret;
+Hi Nishanth, Jason,
 
-But if the ->runtime_resume() callback fails, then the
-power.runtime_error is set and any further attempts to use
-pm_runtime_resume_and_get() will fail, as documented in
-Documentation/power/runtime_pm.rst.
+I agree for enabling only gpio's in the base dts
+and create overlays based on the specific use case
 
-This means that if a driver sees an error even once from, say, an I2C
-transaction in its ->runtime_resume() callback, then the driver will
-permanently stop to work.  My guess is that this is *not* the behaviour
-intended by driver writers.  I would expect that the driver re-attempts
-to access the hardware the next time user space tries to use the device,
-so that the driver is resilient against temporary failures.
+We cannot create separate overlays for each functionality
+since the pimux varies based on the combination of
+functions enabled
 
-I noticed this with drivers/iio/light/vcnl4000.c.
+Ex: pinmux for gpio will be different between
+enabling only pwm and enabling pwm + spi
 
-During a read of iio:device0/in_illuminance_raw, an error is injected
-into the I2C transaction (the dump_stack() indicates the location) and
-the I2C transaction fails:
+When we create a overlay, along with setting
+the status to okay, we need to take care of
+configuring right pinmux as well
 
-[110190.730000][   T27] rpm_resume: 0-0009 flags-4 cnt-1  dep-0  auto-1 p-0 irq-0 child-0
-[110190.730000][   T27] i2c_write: i2c-0 #0 a=009 f=0000 l=3 [00-00-00]
-[110778.040000][   T27] i2c_result: i2c-0 n=1 ret=0
-[110778.040000][   T27] CPU: 0 PID: 27 Comm: python3 Not tainted 5.19.0-rc3+ #71
-[110778.040000][   T27] Stack:
-[110778.040000][   T27]  60a27dc6 60a27dc6 688af710 61085fc0
-[110778.040000][   T27]  61085f90 60a27dc6 60069bf0 00000001
-[110778.040000][   T27]  688af750 60905626 609055b3 61085fe0
-[110778.040000][   T27] Call Trace:
-[110778.040000][   T27]  [<608d05dc>] show_stack.cold+0x166/0x2a7
-[110778.040000][   T27]  [<60905626>] dump_stack_lvl+0x73/0x92
-[110778.040000][   T27]  [<6090566e>] dump_stack+0x29/0x31
-[110778.040000][   T27]  [<6092463e>] __i2c_transfer.cold+0x28/0x49
-[110778.040000][   T27]  [<607445dd>] i2c_smbus_xfer_emulated+0x28d/0xc60
-[110778.040000][   T27]  [<607452c2>] __i2c_smbus_xfer+0x312/0x8e0
-[110778.040000][   T27]  [<60745a40>] i2c_smbus_xfer+0x1b0/0x2e0
-[110778.040000][   T27]  [<60745e76>] i2c_smbus_write_word_data+0x46/0x60
-[110778.040000][   T27]  [<68968755>] vcnl4200_set_power_state+0x45/0x160 [vcnl4000]
-[110778.040000][   T27]  [<689680ee>] vcnl4000_runtime_resume+0x2e/0x40 [vcnl4000]
-[110778.040000][   T27]  [<606d262f>] __rpm_callback+0x5f/0x3e0
-[110778.040000][   T27]  [<606d2b44>] rpm_callback+0x194/0x1e0
-[110778.040000][   T27]  [<606d48fb>] rpm_resume+0xd5b/0x11d0
-[110778.040000][   T27]  [<606d5a77>] __pm_runtime_resume+0xb7/0x120
-[110778.040000][   T27]  [<68969903>] vcnl4000_set_pm_runtime_state.isra.0+0x43/0x1f0 [vcnl4000]
-[110778.040000][   T27]  [<68969b36>] vcnl4000_read_raw+0x86/0x250 [vcnl4000]
-[110778.040000][   T27]  [<607794fd>] iio_read_channel_info+0x10d/0x130
-[110778.040000][   T27]  [<60698553>] dev_attr_show+0x23/0x80
-[110778.040000][   T27]  [<60441174>] sysfs_kf_seq_show+0x144/0x2d0
-[110778.040000][   T27]  [<6043ce9e>] kernfs_seq_show+0x2e/0x40
-[110778.040000][   T27]  [<6033fe40>] seq_read_iter+0x310/0xb20
-[110778.040000][   T27]  [<6043e0ea>] kernfs_fop_read_iter+0x2da/0x520
-[110778.040000][   T27]  [<602cd46e>] new_sync_read+0x1ae/0x2f0
-[110778.040000][   T27]  [<602d1e84>] vfs_read+0x344/0x4a0
-[110778.040000][   T27]  [<602d2885>] ksys_read+0xb5/0x270
-[110778.040000][   T27]  [<602d2a63>] sys_read+0x23/0x30
-[110778.040000][   T27]  [<60051aea>] handle_syscall+0x1ba/0x250
-[110778.040000][   T27]  [<6006be9b>] userspace+0x3bb/0x600
-[110778.040000][   T27]  [<60047c8b>] fork_handler+0xcb/0xe0
-[110778.040000][   T27] rpm_idle: i2c-0 flags-5 cnt-0  dep-0  auto-1 p-0 irq-0 child-0
-[110778.040000][   T27] rpm_return_int: rpm_idle+0x250/0x970:i2c-0 ret=-11
-[110778.040000][   T27] rpm_return_int: rpm_resume+0x24d/0x11d0:0-0009 ret=-5
-
-The above is OK, the read of the file naturally fails since
-pm_runtime_resume_and_get() fails.  But all further reads of the file
-from user space fail even before getting to any register access, due to
-the behaviour described above.
-
-[110778.050000][   T27] rpm_resume: 0-0009 flags-4 cnt-1  dep-0  auto-1 p-0 irq-0 child-0
-[110778.050000][   T27] rpm_return_int: rpm_resume+0x24d/0x11d0:0-0009 ret=-22
-
-The following patch fixes the issue on vcnl4000, but is this the right
-fix?  And, unless I'm missing something, there are dozens of drivers
-with the same problem.
-
-diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-index e02e92bc2928..082b8969fe2f 100644
---- a/drivers/iio/light/vcnl4000.c
-+++ b/drivers/iio/light/vcnl4000.c
-@@ -414,6 +414,8 @@ static int vcnl4000_set_pm_runtime_state(struct vcnl4000_data *data, bool on)
+I will send a respin with enabling only gpio
  
- 	if (on) {
- 		ret = pm_runtime_resume_and_get(dev);
-+		if (ret)
-+			pm_runtime_set_suspended(dev);
- 	} else {
- 		pm_runtime_mark_last_busy(dev);
- 		ret = pm_runtime_put_autosuspend(dev);
+> 
+> >
+> >
+> > > ---
+> > >  arch/arm64/boot/dts/ti/k3-j721e-sk.dts | 89 ++++++++++++++++++++++----
+> > >  1 file changed, 78 insertions(+), 11 deletions(-)
+> > >
+> > > diff --git a/arch/arm64/boot/dts/ti/k3-j721e-sk.dts b/arch/arm64/boot/dts/ti/k3-j721e-sk.dts
+> > > index 98a55778f3fe..b913b18ae133 100644
+> > > --- a/arch/arm64/boot/dts/ti/k3-j721e-sk.dts
+> > > +++ b/arch/arm64/boot/dts/ti/k3-j721e-sk.dts
+> > > @@ -400,6 +400,57 @@
+> > >                       J721E_IOPAD(0x124, PIN_INPUT, 7) /* (Y24) PRG0_PRU1_GPO9.GPIO0_72 */
+> > >               >;
+> > >       };
+> > > +
+> > > +     main_i2c5_pins_default: main-i2c5-pins-default {
+> > > +             pinctrl-single,pins = <
+> > > +                     J721E_IOPAD(0x150, PIN_INPUT_PULLUP, 2) /* (Y26) PRG0_MDIO0_MDIO.I2C5_SCL */
+> > > +                     J721E_IOPAD(0x154, PIN_INPUT_PULLUP, 2) /* (AA27) PRG0_MDIO0_MDC.I2C5_SDA */
+> > > +             >;
+> > > +     };
+> > > +
+> > > +     rpi_header_gpio0_pins_default: rpi-header-gpio0-pins-default {
+> > > +             pinctrl-single,pins = <
+> > > +                     J721E_IOPAD(0x01c, PIN_INPUT, 7) /* (AD22) PRG1_PRU0_GPO6.GPIO0_7 */
+> > > +                     J721E_IOPAD(0x120, PIN_INPUT, 7) /* (AA28) PRG0_PRU1_GPO8.GPIO0_71 */
+> > > +                     J721E_IOPAD(0x14c, PIN_INPUT, 7) /* (AA29) PRG0_PRU1_GPO19.GPIO0_82 */
+> > > +                     J721E_IOPAD(0x02c, PIN_INPUT, 7) /* (AD21) PRG1_PRU0_GPO10.GPIO0_11 */
+> > > +                     J721E_IOPAD(0x198, PIN_INPUT, 7) /* (V25) RGMII6_TD1.GPIO0_101 */
+> > > +                     J721E_IOPAD(0x1b0, PIN_INPUT, 7) /* (W24) RGMII6_RD1.GPIO0_107 */
+> > > +                     J721E_IOPAD(0x1a0, PIN_INPUT, 7) /* (W29) RGMII6_TXC.GPIO0_103 */
+> > > +                     J721E_IOPAD(0x008, PIN_INPUT, 7) /* (AG22) PRG1_PRU0_GPO1.GPIO0_2 */
+> > > +                     J721E_IOPAD(0x1d0, PIN_INPUT, 7) /* (AA3) SPI0_D1.GPIO0_115 */
+> > > +                     J721E_IOPAD(0x11c, PIN_INPUT, 7) /* (AA24) PRG0_PRU1_GPO7.GPIO0_70 */
+> > > +                     J721E_IOPAD(0x148, PIN_INPUT, 7) /* (AA26) PRG0_PRU1_GPO18.GPIO0_81 */
+> > > +                     J721E_IOPAD(0x004, PIN_INPUT, 7) /* (AC23) PRG1_PRU0_GPO0.GPIO0_1 */
+> > > +                     J721E_IOPAD(0x014, PIN_INPUT, 7) /* (AH23) PRG1_PRU0_GPO4.GPIO0_5 */
+> > > +                     J721E_IOPAD(0x020, PIN_INPUT, 7) /* (AE20) PRG1_PRU0_GPO7.GPIO0_8 */
+> > > +                     J721E_IOPAD(0x19c, PIN_INPUT, 7) /* (W27) RGMII6_TD0.GPIO0_102 */
+> > > +                     J721E_IOPAD(0x1b4, PIN_INPUT, 7) /* (W25) RGMII6_RD0.GPIO0_108 */
+> > > +                     J721E_IOPAD(0x188, PIN_INPUT, 7) /* (Y28) RGMII6_TX_CTL.GPIO0_97 */
+> > > +                     J721E_IOPAD(0x00c, PIN_INPUT, 7) /* (AF22) PRG1_PRU0_GPO2.GPIO0_3 */
+> > > +                     J721E_IOPAD(0x010, PIN_INPUT, 7) /* (AJ23) PRG1_PRU0_GPO3.GPIO0_4 */
+> > > +             >;
+> > > +     };
+> > > +
+> > > +     rpi_header_gpio1_pins_default: rpi-header-gpio1-pins-default {
+> > > +             pinctrl-single,pins = <
+> > > +                     J721E_IOPAD(0x234, PIN_INPUT, 7) /* (U3) EXT_REFCLK1.GPIO1_12 */
+> > > +             >;
+> > > +     };
+> > > +
+> > > +     rpi_header_ehrpwm2_pins_default: rpi-header-ehrpwm2-pins-default {
+> > > +             pinctrl-single,pins = <
+> > > +                     J721E_IOPAD(0x178, PIN_INPUT, 6) /* (U27) RGMII5_RD3.EHRPWM2_A */
+> > > +                     J721E_IOPAD(0x17c, PIN_INPUT, 6) /* (U24) RGMII5_RD2.EHRPWM2_B */
+> > > +             >;
+> > > +     };
+> > > +
+> > > +     rpi_header_ehrpwm3_pins_default: rpi-header-ehrpwm3-pins-default {
+> > > +             pinctrl-single,pins = <
+> > > +                     J721E_IOPAD(0x18c, PIN_INPUT, 6) /* (V23) RGMII6_RX_CTL.EHRPWM3_A */
+> > > +                     J721E_IOPAD(0x190, PIN_INPUT, 6) /* (W23) RGMII6_TD3.EHRPWM3_B */
+> > > +             >;
+> > > +     };
+> > >  };
+> > >
+> > >  &wkup_pmx0 {
+> > > @@ -631,11 +682,6 @@
+> > >       status = "disabled";
+> > >  };
+> > >
+> > > -&main_i2c5 {
+> > > -     /* Brought out on RPi Header */
+> > > -     status = "disabled";
+> > > -};
+> > > -
+> >
+> > Please don't relocate nodes in the same patch - kinda messes up the
+> > diffstat and makes review a bit harder.
+> >
+
+will fix this in the respin
+
+Regards
+Rahul T R
+
+> > >  &main_i2c6 {
+> > >       /* Unused */
+> > >       status = "disabled";
+> > > @@ -1138,18 +1184,39 @@
+> > >       status = "disabled";
+> > >  };
+> > >
+> > > -&main_ehrpwm2 {
+> > > +&main_ehrpwm4 {
+> > >       status = "disabled";
+> > >  };
+> > >
+> > > -&main_ehrpwm3 {
+> > > +&main_ehrpwm5 {
+> > >       status = "disabled";
+> > >  };
+> > >
+> > > -&main_ehrpwm4 {
+> > > -     status = "disabled";
+> > > +&main_gpio0 {
+> > > +     pinctrl-names = "default";
+> > > +     pinctrl-0 = <&rpi_header_gpio0_pins_default>;
+> > >  };
+> > >
+> > > -&main_ehrpwm5 {
+> > > -     status = "disabled";
+> > > +&main_gpio1 {
+> > > +     pinctrl-names = "default";
+> > > +     pinctrl-0 = <&rpi_header_gpio1_pins_default>;
+> > > +};
+> > > +
+> > > +&main_i2c5 {
+> > > +     pinctrl-names = "default";
+> > > +     pinctrl-0 = <&main_i2c5_pins_default>;
+> > > +     clock-frequency = <400000>;
+> > > +     status = "okay";
+> >
+> > Defaults in SoC.dtsi so far are "okay" - so adding that again is
+> > superfluous This happens when you are relocating nodes etc
+> >
+> > > +};
+> > > +
+> > > +&main_ehrpwm2 {
+> > > +     pinctrl-names = "default";
+> > > +     pinctrl-0 = <&rpi_header_ehrpwm2_pins_default>;
+> > > +     status = "okay";
+> > > +};
+> > > +
+> > > +&main_ehrpwm3 {
+> > > +     pinctrl-names = "default";
+> > > +     pinctrl-0 = <&rpi_header_ehrpwm3_pins_default>;
+> > > +     status = "okay";
+> > >  };
+> >
+> > --
+> > Regards,
+> > Nishanth Menon
+> > Key (0xDDB5849D1736249D) / Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5 849D 1736 249D
+> 
+> 
+> 
+> -- 
+> https://beagleboard.org/about/jkridner - a 501c3 non-profit educating
+> around open hardware computing
