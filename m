@@ -2,622 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D414EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 21:13:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4840EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 21:14:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244328AbiFTVNN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 17:13:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58860 "EHLO
+        id S245505AbiFTVOH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 17:14:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231282AbiFTVNL (ORCPT
+        with ESMTP id S240502AbiFTVOF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 17:13:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3373D10D8
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 14:13:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AEF0DB8125A
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 21:13:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 206D8C341C4;
-        Mon, 20 Jun 2022 21:13:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655759587;
-        bh=gXALsYyc82ePOFLS8t2xIbS1pFQ7VsfVtZPWiN5pWS8=;
-        h=Date:From:To:Cc:Subject:From;
-        b=qQxbxOQfQPwOPABynWcaLKmsBIsOi910tGlWE7bISSx/HrkcXN9Y1CSf5UPj3SStG
-         a4tS6zfKY0dtzmP0Q72reX6+CTrDzqoouJf3mMu37BbgiZaeY/M+nagcr2jk17cIcO
-         LICcwiswVUKbH42noyJhELaIlSUQn14+OfshIyIgRRwKpqEYPw3KTWUjpkETw8glWK
-         kYGVlDTUZXnx8ynYNFlmWE3eaYkzD5NEsUyBOhGuUMI0s2L/hxcxJZIpvkC/wQRNr+
-         56yixlV2FHOgk2b9kKpftdcFLi6PTkbIub8JNknjK1IUEe6Tf7Ii4Y7aTG81bbyEAZ
-         fzDmfH5YNVT5Q==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id AE9E34096F; Mon, 20 Jun 2022 18:13:04 -0300 (-03)
-Date:   Mon, 20 Jun 2022 18:13:04 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     John Harrison <John.C.Harrison@intel.com>,
-        Matt Atwood <matthew.s.atwood@intel.com>,
-        Matt Roper <matthew.d.roper@intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@intel.com>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [PATCH 1/1 FYI] tools headers UAPI: Sync drm/i915_drm.h with the
- kernel sources
-Message-ID: <YrDi4ALYjv9Mdocq@kernel.org>
+        Mon, 20 Jun 2022 17:14:05 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 128B125F0;
+        Mon, 20 Jun 2022 14:14:05 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id p5so5452466pjt.2;
+        Mon, 20 Jun 2022 14:14:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cwzY7ZoNzHZiYaOkZYbeMk59nca74GZ7jo+Vq5dW0fA=;
+        b=azVvsKHuwAEP/JqQstjln6KsFx9oxCG+uJHophdI4atoKRPRDJm8dSTzgDSemPTcFV
+         sLQrRCDvGKNepxmXhH2TuRVKCiVyD6Z8HXd6xEpCXSpT5SK7IcT3ZcbYX4EfaYFYti5q
+         CfsI3BgJqeQqk9dQRrjCwle9MtcUnzecbU1cliCbnC3mb0lSwoLExyXFWyJLONsIqiOU
+         0wvyyzh6RmbB/3mkgjAhPfA7a3o7iWjGWh/SYqLEIbIBndf4BK4c233xHI/agAyUFz/p
+         IL1MyXjw9bEyaYcqagFvU3x3hmfwhiVu34LJDBWKxmZdagQj2hjKPvbiG7eb7ywz73/E
+         hDOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cwzY7ZoNzHZiYaOkZYbeMk59nca74GZ7jo+Vq5dW0fA=;
+        b=BUTs3kzaEqCtBBTy1JEbDyNSdrEKo0qf3e73po3xeVMI7ivh0dZEiodBAQcQxzHiEO
+         rEePoD/Cb3tMgsSG/+yn1OesXf8O7f7SH0s8WmIYzIwCXWbqrtCtXz6d1vyZDloIVNlR
+         CG/WY5LldWMpHL/P3aNKbAG7I4j8xENBXnEln6XMMI6FGvV7L2KaZXY/IqgbUbj75fZw
+         rY4EShXlajRfAtn8/t00j/sp7vUXrS9tAIUYFFPySpmAajUf0SuagGlVq0nHfEwNxKbh
+         vZkte6NP/6V0SKQzQs7c3fvfDnRWhTis3j2u0y5DYc8jhYtnS2QlekFp0lu6PL6lv/j0
+         ZkLQ==
+X-Gm-Message-State: AJIora/RJSYxwf0xNamwD11IC0UZOR1EqKLn+Z4rpwJ/irpeZTKO04b6
+        BaJYswQbRvErynBSg8cSYi7mOzvzuwLM/b1mO9E=
+X-Google-Smtp-Source: AGRyM1t2Ym72rFNRQyWXwqPQ8nzNQCvliioqTL8D7UzG+jUTcTDtmmsl6j+XYxYjZHjkK72fm/HqxzxOwatacFXUaZw=
+X-Received: by 2002:a17:903:32c4:b0:163:e765:5071 with SMTP id
+ i4-20020a17090332c400b00163e7655071mr25412607plr.153.1655759644403; Mon, 20
+ Jun 2022 14:14:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220530173324.921-1-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20220530173324.921-1-andriy.shevchenko@linux.intel.com>
+From:   Fabio Estevam <festevam@gmail.com>
+Date:   Mon, 20 Jun 2022 18:13:53 -0300
+Message-ID: <CAOMZO5CtjkjsbOTaNF7+Hwswsn-fs2WNK=zyFL53JnBBpS8=0Q@mail.gmail.com>
+Subject: Re: [PATCH v1 1/1] iio: adc: mxs-lradc-adc: Get rid of OF specifics
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-iio@vger.kernel.org,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        NXP Linux Team <linux-imx@nxp.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tldr; Just FYI, I'm carrying this on the perf tools tree.
+Hi Andy,
 
-Full explanation:
+On Mon, May 30, 2022 at 2:33 PM Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
+>
+> First of all, the additional conversion from vIRQ, and this is exactly
+> what is returned by platform_get_irq_byname(), to vIRQ is not needed.
+> Hence, drop no-op call to irq_of_parse_and_map().
+>
+> Second, assign the firmware node instead of of_node.
+>
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+>  drivers/iio/adc/mxs-lradc-adc.c | 9 +++------
+>  1 file changed, 3 insertions(+), 6 deletions(-)
+>
+> diff --git a/drivers/iio/adc/mxs-lradc-adc.c b/drivers/iio/adc/mxs-lradc-adc.c
+> index bca79a93cbe4..25292bb8a13f 100644
+> --- a/drivers/iio/adc/mxs-lradc-adc.c
+> +++ b/drivers/iio/adc/mxs-lradc-adc.c
+> @@ -17,7 +17,6 @@
+>  #include <linux/mfd/core.h>
+>  #include <linux/mfd/mxs-lradc.h>
+>  #include <linux/module.h>
+> -#include <linux/of_irq.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/sysfs.h>
 
-There used not to be copies, with tools/ code using kernel headers
-directly. From time to time tools/perf/ broke due to legitimate kernel
-hacking. At some point Linus complained about such direct usage. Then we
-adopted the current model.
+#include <linux/property.h> needs to be included, otherwise the build fails.
 
-The way these headers are used in perf are not restricted to just
-including them to compile something.
+> -               virq = irq_of_parse_and_map(dev->parent->of_node, irq);
+> -
+> -               ret = devm_request_irq(dev, virq, mxs_lradc_adc_handle_irq,
+> +               ret = devm_request_irq(dev, irq, mxs_lradc_adc_handle_irq,
+>                                        0, irq_name[i], iio);
 
-There are sometimes used in scripts that convert defines into string
-tables, etc, so some change may break one of these scripts, or new MSRs
-may use some different #define pattern, etc.
+I tried to apply the same change inside
+drivers/input/touchscreen/mxs-lradc-ts.c:
 
-E.g.:
+--- a/drivers/input/touchscreen/mxs-lradc-ts.c
++++ b/drivers/input/touchscreen/mxs-lradc-ts.c
+@@ -675,11 +675,9 @@ static int mxs_lradc_ts_probe(struct platform_device *pdev)
+                if (irq < 0)
+                        return irq;
 
-  $ ls -1 tools/perf/trace/beauty/*.sh | head -5
-  tools/perf/trace/beauty/arch_errno_names.sh
-  tools/perf/trace/beauty/drm_ioctl.sh
-  tools/perf/trace/beauty/fadvise.sh
-  tools/perf/trace/beauty/fsconfig.sh
-  tools/perf/trace/beauty/fsmount.sh
-  $
-  $ tools/perf/trace/beauty/fadvise.sh
-  static const char *fadvise_advices[] = {
-  	[0] = "NORMAL",
-  	[1] = "RANDOM",
-  	[2] = "SEQUENTIAL",
-  	[3] = "WILLNEED",
-  	[4] = "DONTNEED",
-  	[5] = "NOREUSE",
-  };
-  $
+-               virq = irq_of_parse_and_map(node, irq);
+-
+                mxs_lradc_ts_stop(ts);
 
-The tools/perf/check-headers.sh script, part of the tools/ build
-process, points out changes in the original files.
+-               ret = devm_request_irq(dev, virq,
++               ret = devm_request_irq(dev, irq,
+                                       mxs_lradc_ts_handle_irq,
+                                       0, mxs_lradc_ts_irq_names[i], ts);
+                if (ret)
 
-So its important not to touch the copies in tools/ when doing changes in
-the original kernel headers, that will be done later, when
-check-headers.sh inform about the change to the perf tools hackers.
+but I still get the following warning:
 
----
+[    6.135583] ------------[ cut here ]------------
+[    6.140366] WARNING: CPU: 0 PID: 1 at drivers/base/platform.c:449
+__platform_get_irq_byname+0x74/0x90
+[    6.151053] 0 is an invalid IRQ number
+[    6.155201] Modules linked in:
+[    6.158444] CPU: 0 PID: 1 Comm: swapper Not tainted
+5.18.5-00001-g3e38be7e4832 #108
+[    6.166537] Hardware name: Freescale MXS (Device Tree)
+[    6.172040]  unwind_backtrace from show_stack+0x10/0x14
+[    6.177503]  show_stack from __warn+0xc4/0x1cc
+[    6.182356]  __warn from warn_slowpath_fmt+0x90/0xc8
+[    6.187549]  warn_slowpath_fmt from __platform_get_irq_byname+0x74/0x90
+[    6.194698]  __platform_get_irq_byname from platform_get_irq_byname+0x10/0x30
+[    6.202286]  platform_get_irq_byname from mxs_lradc_ts_probe+0x19c/0x380
+[    6.209216]  mxs_lradc_ts_probe from platform_probe+0x58/0xb8
+[    6.215383]  platform_probe from really_probe+0xfc/0x288
+[    6.220907]  really_probe from __driver_probe_device+0x80/0xe4
+[    6.227145]  __driver_probe_device from driver_probe_device+0x30/0xd8
+[    6.234010]  driver_probe_device from __driver_attach+0x70/0xf4
+[    6.240137]  __driver_attach from bus_for_each_dev+0x74/0xc0
+[    6.246195]  bus_for_each_dev from bus_add_driver+0x154/0x1e8
+[    6.252359]  bus_add_driver from driver_register+0x74/0x108
+[    6.258131]  driver_register from do_one_initcall+0x8c/0x2fc
+[    6.264198]  do_one_initcall from kernel_init_freeable+0x184/0x210
+[    6.270588]  kernel_init_freeable from kernel_init+0x10/0x108
+[    6.276756]  kernel_init from ret_from_fork+0x14/0x3c
+[    6.282224] Exception stack(0xc8819fb0 to 0xc8819ff8)
+[    6.287444] 9fa0:                                     00000000
+00000000 00000000 00000000
+[    6.295988] 9fc0: 00000000 00000000 00000000 00000000 00000000
+00000000 00000000 00000000
+[    6.304631] 9fe0: 00000000 00000000 00000000 00000000 00000013 00000000
+[    6.311392] irq event stamp: 128211
+[    6.315220] hardirqs last  enabled at (128221): [<c0069c44>]
+__up_console_sem+0x54/0x64
+[    6.323632] hardirqs last disabled at (128230): [<c0069c30>]
+__up_console_sem+0x40/0x64
+[    6.331821] softirqs last  enabled at (128200): [<c00098e4>]
+__do_softirq+0x31c/0x4bc
+[    6.340041] softirqs last disabled at (128191): [<c0020f04>]
+irq_exit+0x150/0x18c
+[    6.347913] ---[ end trace 0000000000000000 ]---
+[    6.364587] input: mxs-lradc-ts as
+/devices/soc0/80000000.apb/80040000.apbx/80050000.lradc/mxs-lradc-ts/input/input0
 
-To pick up the changes in:
+Any suggestions?
 
-  ecf8eca51f33dbfd ("drm/i915/xehp: Add compute engine ABI")
-  991b4de3275728fd ("drm/i915/uapi: Add kerneldoc for engine class enum")
-  c94fde8f516610b0 ("drm/i915/uapi: Add DRM_I915_QUERY_GEOMETRY_SUBSLICES")
-  1c671ad753dbbf5f ("drm/i915/doc: Link query items to their uapi structs")
-  a2e5402691e23269 ("drm/i915/doc: Convert perf UAPI comments to kerneldoc")
-  462ac1cdf4d7acf1 ("drm/i915/doc: Convert drm_i915_query_topology_info comment to kerneldoc")
-  034d47b25b2ce627 ("drm/i915/uapi: Document DRM_I915_QUERY_HWCONFIG_BLOB")
-  78e1fb3112c0ac44 ("drm/i915/uapi: Add query for hwconfig blob")
-
-That don't add any new ioctl, so no changes in tooling.
-
-This silences this perf build warning:
-
-  Warning: Kernel ABI header at 'tools/include/uapi/drm/i915_drm.h' differs from latest version at 'include/uapi/drm/i915_drm.h'
-  diff -u tools/include/uapi/drm/i915_drm.h include/uapi/drm/i915_drm.h
-
-Cc: John Harrison <John.C.Harrison@intel.com>
-Cc: Matt Atwood <matthew.s.atwood@intel.com>
-Cc: Matt Roper <matthew.d.roper@intel.com>
-Cc: Rodrigo Vivi <rodrigo.vivi@intel.com>
-Cc: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
----
- tools/include/uapi/drm/i915_drm.h | 353 +++++++++++++++++++++++-------
- 1 file changed, 272 insertions(+), 81 deletions(-)
-
-diff --git a/tools/include/uapi/drm/i915_drm.h b/tools/include/uapi/drm/i915_drm.h
-index 05c3642aaece4429..a2def7b270097836 100644
---- a/tools/include/uapi/drm/i915_drm.h
-+++ b/tools/include/uapi/drm/i915_drm.h
-@@ -154,25 +154,77 @@ enum i915_mocs_table_index {
- 	I915_MOCS_CACHED,
- };
- 
--/*
-+/**
-+ * enum drm_i915_gem_engine_class - uapi engine type enumeration
-+ *
-  * Different engines serve different roles, and there may be more than one
-- * engine serving each role. enum drm_i915_gem_engine_class provides a
-- * classification of the role of the engine, which may be used when requesting
-- * operations to be performed on a certain subset of engines, or for providing
-- * information about that group.
-+ * engine serving each role.  This enum provides a classification of the role
-+ * of the engine, which may be used when requesting operations to be performed
-+ * on a certain subset of engines, or for providing information about that
-+ * group.
-  */
- enum drm_i915_gem_engine_class {
-+	/**
-+	 * @I915_ENGINE_CLASS_RENDER:
-+	 *
-+	 * Render engines support instructions used for 3D, Compute (GPGPU),
-+	 * and programmable media workloads.  These instructions fetch data and
-+	 * dispatch individual work items to threads that operate in parallel.
-+	 * The threads run small programs (called "kernels" or "shaders") on
-+	 * the GPU's execution units (EUs).
-+	 */
- 	I915_ENGINE_CLASS_RENDER	= 0,
-+
-+	/**
-+	 * @I915_ENGINE_CLASS_COPY:
-+	 *
-+	 * Copy engines (also referred to as "blitters") support instructions
-+	 * that move blocks of data from one location in memory to another,
-+	 * or that fill a specified location of memory with fixed data.
-+	 * Copy engines can perform pre-defined logical or bitwise operations
-+	 * on the source, destination, or pattern data.
-+	 */
- 	I915_ENGINE_CLASS_COPY		= 1,
-+
-+	/**
-+	 * @I915_ENGINE_CLASS_VIDEO:
-+	 *
-+	 * Video engines (also referred to as "bit stream decode" (BSD) or
-+	 * "vdbox") support instructions that perform fixed-function media
-+	 * decode and encode.
-+	 */
- 	I915_ENGINE_CLASS_VIDEO		= 2,
-+
-+	/**
-+	 * @I915_ENGINE_CLASS_VIDEO_ENHANCE:
-+	 *
-+	 * Video enhancement engines (also referred to as "vebox") support
-+	 * instructions related to image enhancement.
-+	 */
- 	I915_ENGINE_CLASS_VIDEO_ENHANCE	= 3,
- 
--	/* should be kept compact */
-+	/**
-+	 * @I915_ENGINE_CLASS_COMPUTE:
-+	 *
-+	 * Compute engines support a subset of the instructions available
-+	 * on render engines:  compute engines support Compute (GPGPU) and
-+	 * programmable media workloads, but do not support the 3D pipeline.
-+	 */
-+	I915_ENGINE_CLASS_COMPUTE	= 4,
-+
-+	/* Values in this enum should be kept compact. */
- 
-+	/**
-+	 * @I915_ENGINE_CLASS_INVALID:
-+	 *
-+	 * Placeholder value to represent an invalid engine class assignment.
-+	 */
- 	I915_ENGINE_CLASS_INVALID	= -1
- };
- 
--/*
-+/**
-+ * struct i915_engine_class_instance - Engine class/instance identifier
-+ *
-  * There may be more than one engine fulfilling any role within the system.
-  * Each engine of a class is given a unique instance number and therefore
-  * any engine can be specified by its class:instance tuplet. APIs that allow
-@@ -180,10 +232,21 @@ enum drm_i915_gem_engine_class {
-  * for this identification.
-  */
- struct i915_engine_class_instance {
--	__u16 engine_class; /* see enum drm_i915_gem_engine_class */
--	__u16 engine_instance;
-+	/**
-+	 * @engine_class:
-+	 *
-+	 * Engine class from enum drm_i915_gem_engine_class
-+	 */
-+	__u16 engine_class;
- #define I915_ENGINE_CLASS_INVALID_NONE -1
- #define I915_ENGINE_CLASS_INVALID_VIRTUAL -2
-+
-+	/**
-+	 * @engine_instance:
-+	 *
-+	 * Engine instance.
-+	 */
-+	__u16 engine_instance;
- };
- 
- /**
-@@ -2657,24 +2720,65 @@ enum drm_i915_perf_record_type {
- 	DRM_I915_PERF_RECORD_MAX /* non-ABI */
- };
- 
--/*
-+/**
-+ * struct drm_i915_perf_oa_config
-+ *
-  * Structure to upload perf dynamic configuration into the kernel.
-  */
- struct drm_i915_perf_oa_config {
--	/** String formatted like "%08x-%04x-%04x-%04x-%012x" */
-+	/**
-+	 * @uuid:
-+	 *
-+	 * String formatted like "%\08x-%\04x-%\04x-%\04x-%\012x"
-+	 */
- 	char uuid[36];
- 
-+	/**
-+	 * @n_mux_regs:
-+	 *
-+	 * Number of mux regs in &mux_regs_ptr.
-+	 */
- 	__u32 n_mux_regs;
-+
-+	/**
-+	 * @n_boolean_regs:
-+	 *
-+	 * Number of boolean regs in &boolean_regs_ptr.
-+	 */
- 	__u32 n_boolean_regs;
-+
-+	/**
-+	 * @n_flex_regs:
-+	 *
-+	 * Number of flex regs in &flex_regs_ptr.
-+	 */
- 	__u32 n_flex_regs;
- 
--	/*
--	 * These fields are pointers to tuples of u32 values (register address,
--	 * value). For example the expected length of the buffer pointed by
--	 * mux_regs_ptr is (2 * sizeof(u32) * n_mux_regs).
-+	/**
-+	 * @mux_regs_ptr:
-+	 *
-+	 * Pointer to tuples of u32 values (register address, value) for mux
-+	 * registers.  Expected length of buffer is (2 * sizeof(u32) *
-+	 * &n_mux_regs).
- 	 */
- 	__u64 mux_regs_ptr;
-+
-+	/**
-+	 * @boolean_regs_ptr:
-+	 *
-+	 * Pointer to tuples of u32 values (register address, value) for mux
-+	 * registers.  Expected length of buffer is (2 * sizeof(u32) *
-+	 * &n_boolean_regs).
-+	 */
- 	__u64 boolean_regs_ptr;
-+
-+	/**
-+	 * @flex_regs_ptr:
-+	 *
-+	 * Pointer to tuples of u32 values (register address, value) for mux
-+	 * registers.  Expected length of buffer is (2 * sizeof(u32) *
-+	 * &n_flex_regs).
-+	 */
- 	__u64 flex_regs_ptr;
- };
- 
-@@ -2685,12 +2789,24 @@ struct drm_i915_perf_oa_config {
-  * @data_ptr is also depends on the specific @query_id.
-  */
- struct drm_i915_query_item {
--	/** @query_id: The id for this query */
-+	/**
-+	 * @query_id:
-+	 *
-+	 * The id for this query.  Currently accepted query IDs are:
-+	 *  - %DRM_I915_QUERY_TOPOLOGY_INFO (see struct drm_i915_query_topology_info)
-+	 *  - %DRM_I915_QUERY_ENGINE_INFO (see struct drm_i915_engine_info)
-+	 *  - %DRM_I915_QUERY_PERF_CONFIG (see struct drm_i915_query_perf_config)
-+	 *  - %DRM_I915_QUERY_MEMORY_REGIONS (see struct drm_i915_query_memory_regions)
-+	 *  - %DRM_I915_QUERY_HWCONFIG_BLOB (see `GuC HWCONFIG blob uAPI`)
-+	 *  - %DRM_I915_QUERY_GEOMETRY_SUBSLICES (see struct drm_i915_query_topology_info)
-+	 */
- 	__u64 query_id;
--#define DRM_I915_QUERY_TOPOLOGY_INFO    1
--#define DRM_I915_QUERY_ENGINE_INFO	2
--#define DRM_I915_QUERY_PERF_CONFIG      3
--#define DRM_I915_QUERY_MEMORY_REGIONS   4
-+#define DRM_I915_QUERY_TOPOLOGY_INFO		1
-+#define DRM_I915_QUERY_ENGINE_INFO		2
-+#define DRM_I915_QUERY_PERF_CONFIG		3
-+#define DRM_I915_QUERY_MEMORY_REGIONS		4
-+#define DRM_I915_QUERY_HWCONFIG_BLOB		5
-+#define DRM_I915_QUERY_GEOMETRY_SUBSLICES	6
- /* Must be kept compact -- no holes and well documented */
- 
- 	/**
-@@ -2706,14 +2822,17 @@ struct drm_i915_query_item {
- 	/**
- 	 * @flags:
- 	 *
--	 * When query_id == DRM_I915_QUERY_TOPOLOGY_INFO, must be 0.
-+	 * When &query_id == %DRM_I915_QUERY_TOPOLOGY_INFO, must be 0.
- 	 *
--	 * When query_id == DRM_I915_QUERY_PERF_CONFIG, must be one of the
-+	 * When &query_id == %DRM_I915_QUERY_PERF_CONFIG, must be one of the
- 	 * following:
- 	 *
--	 *	- DRM_I915_QUERY_PERF_CONFIG_LIST
--	 *      - DRM_I915_QUERY_PERF_CONFIG_DATA_FOR_UUID
--	 *      - DRM_I915_QUERY_PERF_CONFIG_FOR_UUID
-+	 *	- %DRM_I915_QUERY_PERF_CONFIG_LIST
-+	 *      - %DRM_I915_QUERY_PERF_CONFIG_DATA_FOR_UUID
-+	 *      - %DRM_I915_QUERY_PERF_CONFIG_FOR_UUID
-+	 *
-+	 * When &query_id == %DRM_I915_QUERY_GEOMETRY_SUBSLICES must contain
-+	 * a struct i915_engine_class_instance that references a render engine.
- 	 */
- 	__u32 flags;
- #define DRM_I915_QUERY_PERF_CONFIG_LIST          1
-@@ -2771,66 +2890,112 @@ struct drm_i915_query {
- 	__u64 items_ptr;
- };
- 
--/*
-- * Data written by the kernel with query DRM_I915_QUERY_TOPOLOGY_INFO :
-- *
-- * data: contains the 3 pieces of information :
-- *
-- * - the slice mask with one bit per slice telling whether a slice is
-- *   available. The availability of slice X can be queried with the following
-- *   formula :
-- *
-- *           (data[X / 8] >> (X % 8)) & 1
-- *
-- * - the subslice mask for each slice with one bit per subslice telling
-- *   whether a subslice is available. Gen12 has dual-subslices, which are
-- *   similar to two gen11 subslices. For gen12, this array represents dual-
-- *   subslices. The availability of subslice Y in slice X can be queried
-- *   with the following formula :
-- *
-- *           (data[subslice_offset +
-- *                 X * subslice_stride +
-- *                 Y / 8] >> (Y % 8)) & 1
-- *
-- * - the EU mask for each subslice in each slice with one bit per EU telling
-- *   whether an EU is available. The availability of EU Z in subslice Y in
-- *   slice X can be queried with the following formula :
-+/**
-+ * struct drm_i915_query_topology_info
-  *
-- *           (data[eu_offset +
-- *                 (X * max_subslices + Y) * eu_stride +
-- *                 Z / 8] >> (Z % 8)) & 1
-+ * Describes slice/subslice/EU information queried by
-+ * %DRM_I915_QUERY_TOPOLOGY_INFO
-  */
- struct drm_i915_query_topology_info {
--	/*
-+	/**
-+	 * @flags:
-+	 *
- 	 * Unused for now. Must be cleared to zero.
- 	 */
- 	__u16 flags;
- 
-+	/**
-+	 * @max_slices:
-+	 *
-+	 * The number of bits used to express the slice mask.
-+	 */
- 	__u16 max_slices;
-+
-+	/**
-+	 * @max_subslices:
-+	 *
-+	 * The number of bits used to express the subslice mask.
-+	 */
- 	__u16 max_subslices;
-+
-+	/**
-+	 * @max_eus_per_subslice:
-+	 *
-+	 * The number of bits in the EU mask that correspond to a single
-+	 * subslice's EUs.
-+	 */
- 	__u16 max_eus_per_subslice;
- 
--	/*
-+	/**
-+	 * @subslice_offset:
-+	 *
- 	 * Offset in data[] at which the subslice masks are stored.
- 	 */
- 	__u16 subslice_offset;
- 
--	/*
-+	/**
-+	 * @subslice_stride:
-+	 *
- 	 * Stride at which each of the subslice masks for each slice are
- 	 * stored.
- 	 */
- 	__u16 subslice_stride;
- 
--	/*
-+	/**
-+	 * @eu_offset:
-+	 *
- 	 * Offset in data[] at which the EU masks are stored.
- 	 */
- 	__u16 eu_offset;
- 
--	/*
-+	/**
-+	 * @eu_stride:
-+	 *
- 	 * Stride at which each of the EU masks for each subslice are stored.
- 	 */
- 	__u16 eu_stride;
- 
-+	/**
-+	 * @data:
-+	 *
-+	 * Contains 3 pieces of information :
-+	 *
-+	 * - The slice mask with one bit per slice telling whether a slice is
-+	 *   available. The availability of slice X can be queried with the
-+	 *   following formula :
-+	 *
-+	 *   .. code:: c
-+	 *
-+	 *      (data[X / 8] >> (X % 8)) & 1
-+	 *
-+	 *   Starting with Xe_HP platforms, Intel hardware no longer has
-+	 *   traditional slices so i915 will always report a single slice
-+	 *   (hardcoded slicemask = 0x1) which contains all of the platform's
-+	 *   subslices.  I.e., the mask here does not reflect any of the newer
-+	 *   hardware concepts such as "gslices" or "cslices" since userspace
-+	 *   is capable of inferring those from the subslice mask.
-+	 *
-+	 * - The subslice mask for each slice with one bit per subslice telling
-+	 *   whether a subslice is available.  Starting with Gen12 we use the
-+	 *   term "subslice" to refer to what the hardware documentation
-+	 *   describes as a "dual-subslices."  The availability of subslice Y
-+	 *   in slice X can be queried with the following formula :
-+	 *
-+	 *   .. code:: c
-+	 *
-+	 *      (data[subslice_offset + X * subslice_stride + Y / 8] >> (Y % 8)) & 1
-+	 *
-+	 * - The EU mask for each subslice in each slice, with one bit per EU
-+	 *   telling whether an EU is available. The availability of EU Z in
-+	 *   subslice Y in slice X can be queried with the following formula :
-+	 *
-+	 *   .. code:: c
-+	 *
-+	 *      (data[eu_offset +
-+	 *            (X * max_subslices + Y) * eu_stride +
-+	 *            Z / 8
-+	 *       ] >> (Z % 8)) & 1
-+	 */
- 	__u8 data[];
- };
- 
-@@ -2951,52 +3116,68 @@ struct drm_i915_query_engine_info {
- 	struct drm_i915_engine_info engines[];
- };
- 
--/*
-- * Data written by the kernel with query DRM_I915_QUERY_PERF_CONFIG.
-+/**
-+ * struct drm_i915_query_perf_config
-+ *
-+ * Data written by the kernel with query %DRM_I915_QUERY_PERF_CONFIG and
-+ * %DRM_I915_QUERY_GEOMETRY_SUBSLICES.
-  */
- struct drm_i915_query_perf_config {
- 	union {
--		/*
--		 * When query_item.flags == DRM_I915_QUERY_PERF_CONFIG_LIST, i915 sets
--		 * this fields to the number of configurations available.
-+		/**
-+		 * @n_configs:
-+		 *
-+		 * When &drm_i915_query_item.flags ==
-+		 * %DRM_I915_QUERY_PERF_CONFIG_LIST, i915 sets this fields to
-+		 * the number of configurations available.
- 		 */
- 		__u64 n_configs;
- 
--		/*
--		 * When query_id == DRM_I915_QUERY_PERF_CONFIG_DATA_FOR_ID,
--		 * i915 will use the value in this field as configuration
--		 * identifier to decide what data to write into config_ptr.
-+		/**
-+		 * @config:
-+		 *
-+		 * When &drm_i915_query_item.flags ==
-+		 * %DRM_I915_QUERY_PERF_CONFIG_DATA_FOR_ID, i915 will use the
-+		 * value in this field as configuration identifier to decide
-+		 * what data to write into config_ptr.
- 		 */
- 		__u64 config;
- 
--		/*
--		 * When query_id == DRM_I915_QUERY_PERF_CONFIG_DATA_FOR_UUID,
--		 * i915 will use the value in this field as configuration
--		 * identifier to decide what data to write into config_ptr.
-+		/**
-+		 * @uuid:
-+		 *
-+		 * When &drm_i915_query_item.flags ==
-+		 * %DRM_I915_QUERY_PERF_CONFIG_DATA_FOR_UUID, i915 will use the
-+		 * value in this field as configuration identifier to decide
-+		 * what data to write into config_ptr.
- 		 *
- 		 * String formatted like "%08x-%04x-%04x-%04x-%012x"
- 		 */
- 		char uuid[36];
- 	};
- 
--	/*
-+	/**
-+	 * @flags:
-+	 *
- 	 * Unused for now. Must be cleared to zero.
- 	 */
- 	__u32 flags;
- 
--	/*
--	 * When query_item.flags == DRM_I915_QUERY_PERF_CONFIG_LIST, i915 will
--	 * write an array of __u64 of configuration identifiers.
-+	/**
-+	 * @data:
- 	 *
--	 * When query_item.flags == DRM_I915_QUERY_PERF_CONFIG_DATA, i915 will
--	 * write a struct drm_i915_perf_oa_config. If the following fields of
--	 * drm_i915_perf_oa_config are set not set to 0, i915 will write into
--	 * the associated pointers the values of submitted when the
-+	 * When &drm_i915_query_item.flags == %DRM_I915_QUERY_PERF_CONFIG_LIST,
-+	 * i915 will write an array of __u64 of configuration identifiers.
-+	 *
-+	 * When &drm_i915_query_item.flags == %DRM_I915_QUERY_PERF_CONFIG_DATA,
-+	 * i915 will write a struct drm_i915_perf_oa_config. If the following
-+	 * fields of struct drm_i915_perf_oa_config are not set to 0, i915 will
-+	 * write into the associated pointers the values of submitted when the
- 	 * configuration was created :
- 	 *
--	 *         - n_mux_regs
--	 *         - n_boolean_regs
--	 *         - n_flex_regs
-+	 *  - &drm_i915_perf_oa_config.n_mux_regs
-+	 *  - &drm_i915_perf_oa_config.n_boolean_regs
-+	 *  - &drm_i915_perf_oa_config.n_flex_regs
- 	 */
- 	__u8 data[];
- };
-@@ -3134,6 +3315,16 @@ struct drm_i915_query_memory_regions {
- 	struct drm_i915_memory_region_info regions[];
- };
- 
-+/**
-+ * DOC: GuC HWCONFIG blob uAPI
-+ *
-+ * The GuC produces a blob with information about the current device.
-+ * i915 reads this blob from GuC and makes it available via this uAPI.
-+ *
-+ * The format and meaning of the blob content are documented in the
-+ * Programmer's Reference Manual.
-+ */
-+
- /**
-  * struct drm_i915_gem_create_ext - Existing gem_create behaviour, with added
-  * extension support using struct i915_user_extension.
--- 
-2.36.1
-
+Thanks
