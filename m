@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 280BECCA479
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1413CCA485
 	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:29:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345784AbiFTN2c (ORCPT
+        id S1346336AbiFTN2z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:28:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44846 "EHLO
+        Mon, 20 Jun 2022 09:28:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344578AbiFTNZZ (ORCPT
+        with ESMTP id S1345014AbiFTN0K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:25:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93D781A80C;
-        Mon, 20 Jun 2022 06:10:22 -0700 (PDT)
+        Mon, 20 Jun 2022 09:26:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32F0D1C107;
+        Mon, 20 Jun 2022 06:10:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3AF10B811DC;
-        Mon, 20 Jun 2022 13:10:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 875B1C3411C;
-        Mon, 20 Jun 2022 13:10:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A80B160C1A;
+        Mon, 20 Jun 2022 13:10:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BE26C3411B;
+        Mon, 20 Jun 2022 13:10:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730621;
-        bh=//3TnK2oF9ccyJllNvDqoAXV3vpMCnk8UFstdNYtRLs=;
+        s=korg; t=1655730633;
+        bh=suxF+OV9SOJgom/P/dRCfVxDLXXQLItXBadyBvTXuKQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ogy6SKUZAKgI8CTUsVgQXLwGxU1QlqMNCdbMABIX/pkpbgZwhN6BbuSTIKHHPMHU/
-         awleJu6v39Vw+qqORHULmYqPmocKrWG+OFJjlPTze0jVcQV7k5otfgz8TanZE5t7Lk
-         JZqpSx6ESS6VZVt/qGzqJCa6b43PwW+45JqPGD0w=
+        b=VYywZmCVcAa3kBJyAUj6Rk6eNfgkAlc59GpLYx3tETY4N4uvv7SE8CJvLaSNP7d5K
+         RhKU56WJ83TUDEzw+Uv8LNiQZoe7dwc+Xpe32SNKbyIrMiZAapIejtDyONECmasQ+Z
+         zJTQnqZMT9guui1Ba8H10SAsuizTsCeXW/bOGnNs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Wu <michael@allwinnertech.com>,
-        John Keeping <john@metanate.com>,
-        Linyu Yuan <quic_linyyuan@quicinc.com>
-Subject: [PATCH 5.15 091/106] usb: gadget: f_fs: change ep->ep safe in ffs_epfile_io()
-Date:   Mon, 20 Jun 2022 14:51:50 +0200
-Message-Id: <20220620124727.082582503@linuxfoundation.org>
+        stable@vger.kernel.org, Slark Xiao <slark_xiao@163.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5.15 085/106] USB: serial: option: add support for Cinterion MV31 with new baseline
+Date:   Mon, 20 Jun 2022 14:51:44 +0200
+Message-Id: <20220620124726.907808787@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
 References: <20220620124724.380838401@linuxfoundation.org>
@@ -50,50 +49,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linyu Yuan <quic_linyyuan@quicinc.com>
+From: Slark Xiao <slark_xiao@163.com>
 
-commit 0698f0209d8032e8869525aeb68f65ee7fde12ad upstream.
+commit 158f7585bfcea4aae0ad4128d032a80fec550df1 upstream.
 
-In ffs_epfile_io(), when read/write data in blocking mode, it will wait
-the completion in interruptible mode, if task receive a signal, it will
-terminate the wait, at same time, if function unbind occurs,
-ffs_func_unbind() will kfree all eps, ffs_epfile_io() still try to
-dequeue request by dereferencing ep which may become invalid.
+Adding support for Cinterion device MV31 with Qualcomm
+new baseline. Use different PIDs to separate it from
+previous base line products.
+All interfaces settings keep same as previous.
 
-Fix it by add ep spinlock and will not dereference ep if it is not valid.
+Below is test evidence:
+T:  Bus=03 Lev=01 Prnt=01 Port=00 Cnt=01 Dev#=  6 Spd=480 MxCh= 0
+D:  Ver= 2.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
+P:  Vendor=1e2d ProdID=00b8 Rev=04.14
+S:  Manufacturer=Cinterion
+S:  Product=Cinterion PID 0x00B8 USB Mobile Broadband
+S:  SerialNumber=90418e79
+C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=500mA
+I:  If#=0x0 Alt= 0 #EPs= 1 Cls=02(commc) Sub=0e Prot=00 Driver=cdc_mbim
+I:  If#=0x1 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=02 Driver=cdc_mbim
+I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=40 Driver=option
+I:  If#=0x3 Alt= 0 #EPs= 1 Cls=ff(vend.) Sub=ff Prot=ff Driver=(none)
+I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=60 Driver=option
+I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=30 Driver=option
 
-Cc: <stable@vger.kernel.org> # 5.15
-Reported-by: Michael Wu <michael@allwinnertech.com>
-Tested-by: Michael Wu <michael@allwinnertech.com>
-Reviewed-by: John Keeping <john@metanate.com>
-Signed-off-by: Linyu Yuan <quic_linyyuan@quicinc.com>
-Link: https://lore.kernel.org/r/1654863478-26228-3-git-send-email-quic_linyyuan@quicinc.com
+T:  Bus=03 Lev=01 Prnt=01 Port=00 Cnt=01 Dev#=  7 Spd=480 MxCh= 0
+D:  Ver= 2.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
+P:  Vendor=1e2d ProdID=00b9 Rev=04.14
+S:  Manufacturer=Cinterion
+S:  Product=Cinterion PID 0x00B9 USB Mobile Broadband
+S:  SerialNumber=90418e79
+C:  #Ifs= 4 Cfg#= 1 Atr=a0 MxPwr=500mA
+I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=50 Driver=qmi_wwan
+I:  If#=0x1 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=40 Driver=option
+I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=60 Driver=option
+I:  If#=0x3 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=30 Driver=option
+
+For PID 00b8, interface 3 is GNSS port which don't use serial driver.
+
+Signed-off-by: Slark Xiao <slark_xiao@163.com>
+Link: https://lore.kernel.org/r/20220601034740.5438-1-slark_xiao@163.com
+[ johan: rename defines using a "2" infix ]
+Cc: stable@vger.kernel.org
+Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/gadget/function/f_fs.c |    6 ++++++
+ drivers/usb/serial/option.c |    6 ++++++
  1 file changed, 6 insertions(+)
 
---- a/drivers/usb/gadget/function/f_fs.c
-+++ b/drivers/usb/gadget/function/f_fs.c
-@@ -1080,6 +1080,11 @@ static ssize_t ffs_epfile_io(struct file
- 		spin_unlock_irq(&epfile->ffs->eps_lock);
+--- a/drivers/usb/serial/option.c
++++ b/drivers/usb/serial/option.c
+@@ -432,6 +432,8 @@ static void option_instat_callback(struc
+ #define CINTERION_PRODUCT_CLS8			0x00b0
+ #define CINTERION_PRODUCT_MV31_MBIM		0x00b3
+ #define CINTERION_PRODUCT_MV31_RMNET		0x00b7
++#define CINTERION_PRODUCT_MV31_2_MBIM		0x00b8
++#define CINTERION_PRODUCT_MV31_2_RMNET		0x00b9
+ #define CINTERION_PRODUCT_MV32_WA		0x00f1
+ #define CINTERION_PRODUCT_MV32_WB		0x00f2
  
- 		if (wait_for_completion_interruptible(&io_data->done)) {
-+			spin_lock_irq(&epfile->ffs->eps_lock);
-+			if (epfile->ep != ep) {
-+				ret = -ESHUTDOWN;
-+				goto error_lock;
-+			}
- 			/*
- 			 * To avoid race condition with ffs_epfile_io_complete,
- 			 * dequeue the request first then check
-@@ -1087,6 +1092,7 @@ static ssize_t ffs_epfile_io(struct file
- 			 * condition with req->complete callback.
- 			 */
- 			usb_ep_dequeue(ep->ep, req);
-+			spin_unlock_irq(&epfile->ffs->eps_lock);
- 			wait_for_completion(&io_data->done);
- 			interrupted = io_data->status < 0;
- 		}
+@@ -1979,6 +1981,10 @@ static const struct usb_device_id option
+ 	  .driver_info = RSVD(3)},
+ 	{ USB_DEVICE_INTERFACE_CLASS(CINTERION_VENDOR_ID, CINTERION_PRODUCT_MV31_RMNET, 0xff),
+ 	  .driver_info = RSVD(0)},
++	{ USB_DEVICE_INTERFACE_CLASS(CINTERION_VENDOR_ID, CINTERION_PRODUCT_MV31_2_MBIM, 0xff),
++	  .driver_info = RSVD(3)},
++	{ USB_DEVICE_INTERFACE_CLASS(CINTERION_VENDOR_ID, CINTERION_PRODUCT_MV31_2_RMNET, 0xff),
++	  .driver_info = RSVD(0)},
+ 	{ USB_DEVICE_INTERFACE_CLASS(CINTERION_VENDOR_ID, CINTERION_PRODUCT_MV32_WA, 0xff),
+ 	  .driver_info = RSVD(3)},
+ 	{ USB_DEVICE_INTERFACE_CLASS(CINTERION_VENDOR_ID, CINTERION_PRODUCT_MV32_WB, 0xff),
 
 
