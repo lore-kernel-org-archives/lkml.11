@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93F04C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:30:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23C48C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:30:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345895AbiFTNan (ORCPT
+        id S1345926AbiFTNar (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:30:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53280 "EHLO
+        Mon, 20 Jun 2022 09:30:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346266AbiFTN2x (ORCPT
+        with ESMTP id S1346256AbiFTN2w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:28:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B73F23BF5;
-        Mon, 20 Jun 2022 06:11:38 -0700 (PDT)
+        Mon, 20 Jun 2022 09:28:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A74023BE8;
+        Mon, 20 Jun 2022 06:11:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1F7DEB811E1;
-        Mon, 20 Jun 2022 13:10:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E0E7C3411B;
-        Mon, 20 Jun 2022 13:10:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 006F8B811EA;
+        Mon, 20 Jun 2022 13:10:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45624C3411B;
+        Mon, 20 Jun 2022 13:10:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730614;
-        bh=xivVxIhVD6bsZWKp3FwkBItPHUNppJede5pNFfxAmQY=;
+        s=korg; t=1655730654;
+        bh=pcD20pTjXc0OFvfBkI7Jf92GEK2cRr+LG3vaDSjPkLM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DIee2ISufU03yg97gwsAaFfe7Vq3h5QRCdoL2pn1/RemQ0kSOVL5LLRKNAXtxgbIo
-         Std5/PjLD0wxWAzuJWBQ3QvvA/phv1y8tZ9jonOf+OA92DX8HXxgrdREYt7aEzvYRo
-         nMbnjrHJjBB9Yhe1WYO/jvm7AsQVOf5V7rqM9LmU=
+        b=kGgzEujNdNrT36ekwSZZfPtpztZBTPkRq+UHQ5RmvGROp8wqP7+HF/XpQlnjGXlBS
+         V0mkCA9yg1vOCu4NRVBMtieq8h2N9YHYTD9qt36viqml00sg4MXrCdjTP8yCGQ9HkV
+         0Sq34qR0DztrCJdGoj/2UF21G7Pq9gG8uNIs1XMY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        Miaoqian Lin <linmq006@gmail.com>
-Subject: [PATCH 5.15 089/106] usb: gadget: lpc32xx_udc: Fix refcount leak in lpc32xx_udc_probe
-Date:   Mon, 20 Jun 2022 14:51:48 +0200
-Message-Id: <20220620124727.021723117@linuxfoundation.org>
+        stable@vger.kernel.org, Andy Lutomirski <luto@kernel.org>,
+        Theodore Tso <tytso@mit.edu>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.4 015/240] random: delete code to pull data into pools
+Date:   Mon, 20 Jun 2022 14:48:36 +0200
+Message-Id: <20220620124738.252986941@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
-References: <20220620124724.380838401@linuxfoundation.org>
+In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
+References: <20220620124737.799371052@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,33 +50,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Andy Lutomirski <luto@kernel.org>
 
-commit 4757c9ade34178b351580133771f510b5ffcf9c8 upstream.
+commit 84df7cdfbb215a34657b39f4257dab739efa2df9 upstream.
 
-of_parse_phandle() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
-of_node_put() will check NULL pointer.
+There is no pool that pulls, so it was just dead code.
 
-Fixes: 24a28e428351 ("USB: gadget driver for LPC32xx")
-Cc: stable <stable@kernel.org>
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220603140246.64529-1-linmq006@gmail.com
+Signed-off-by: Andy Lutomirski <luto@kernel.org>
+Link: https://lore.kernel.org/r/4a05fe0c7a5c831389ef4aea51d24528ac8682c7.1577088521.git.luto@kernel.org
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/gadget/udc/lpc32xx_udc.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/char/random.c |   40 ----------------------------------------
+ 1 file changed, 40 deletions(-)
 
---- a/drivers/usb/gadget/udc/lpc32xx_udc.c
-+++ b/drivers/usb/gadget/udc/lpc32xx_udc.c
-@@ -3014,6 +3014,7 @@ static int lpc32xx_udc_probe(struct plat
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -529,10 +529,8 @@ struct entropy_store {
+ 	const struct poolinfo *poolinfo;
+ 	__u32 *pool;
+ 	const char *name;
+-	struct entropy_store *pull;
+ 
+ 	/* read-write data: */
+-	unsigned long last_pulled;
+ 	spinlock_t lock;
+ 	unsigned short add_ptr;
+ 	unsigned short input_rotate;
+@@ -1368,41 +1366,6 @@ EXPORT_SYMBOL_GPL(add_disk_randomness);
+  *********************************************************************/
+ 
+ /*
+- * This utility inline function is responsible for transferring entropy
+- * from the primary pool to the secondary extraction pool. We make
+- * sure we pull enough for a 'catastrophic reseed'.
+- */
+-static void _xfer_secondary_pool(struct entropy_store *r, size_t nbytes);
+-static void xfer_secondary_pool(struct entropy_store *r, size_t nbytes)
+-{
+-	if (!r->pull ||
+-	    r->entropy_count >= (nbytes << (ENTROPY_SHIFT + 3)) ||
+-	    r->entropy_count > r->poolinfo->poolfracbits)
+-		return;
+-
+-	_xfer_secondary_pool(r, nbytes);
+-}
+-
+-static void _xfer_secondary_pool(struct entropy_store *r, size_t nbytes)
+-{
+-	__u32	tmp[OUTPUT_POOL_WORDS];
+-
+-	int bytes = nbytes;
+-
+-	/* pull at least as much as a wakeup */
+-	bytes = max_t(int, bytes, random_read_wakeup_bits / 8);
+-	/* but never more than the buffer size */
+-	bytes = min_t(int, bytes, sizeof(tmp));
+-
+-	trace_xfer_secondary_pool(r->name, bytes * 8, nbytes * 8,
+-				  ENTROPY_BITS(r), ENTROPY_BITS(r->pull));
+-	bytes = extract_entropy(r->pull, tmp, bytes,
+-				random_read_wakeup_bits / 8, 0);
+-	mix_pool_bytes(r, tmp, bytes);
+-	credit_entropy_bits(r, bytes*8);
+-}
+-
+-/*
+  * This function decides how many bytes to actually take from the
+  * given pool, and also debits the entropy count accordingly.
+  */
+@@ -1565,7 +1528,6 @@ static ssize_t extract_entropy(struct en
+ 			spin_unlock_irqrestore(&r->lock, flags);
+ 			trace_extract_entropy(r->name, EXTRACT_SIZE,
+ 					      ENTROPY_BITS(r), _RET_IP_);
+-			xfer_secondary_pool(r, EXTRACT_SIZE);
+ 			extract_buf(r, tmp);
+ 			spin_lock_irqsave(&r->lock, flags);
+ 			memcpy(r->last_data, tmp, EXTRACT_SIZE);
+@@ -1574,7 +1536,6 @@ static ssize_t extract_entropy(struct en
  	}
  
- 	udc->isp1301_i2c_client = isp1301_get_client(isp1301_node);
-+	of_node_put(isp1301_node);
- 	if (!udc->isp1301_i2c_client) {
- 		return -EPROBE_DEFER;
- 	}
+ 	trace_extract_entropy(r->name, nbytes, ENTROPY_BITS(r), _RET_IP_);
+-	xfer_secondary_pool(r, nbytes);
+ 	nbytes = account(r, nbytes, min, reserved);
+ 
+ 	return _extract_entropy(r, buf, nbytes, fips_enabled);
+@@ -1846,7 +1807,6 @@ static void __init init_std_data(struct
+ 	ktime_t now = ktime_get_real();
+ 	unsigned long rv;
+ 
+-	r->last_pulled = jiffies;
+ 	mix_pool_bytes(r, &now, sizeof(now));
+ 	for (i = r->poolinfo->poolbytes; i > 0; i -= sizeof(rv)) {
+ 		if (!arch_get_random_seed_long(&rv) &&
 
 
