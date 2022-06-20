@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13EA3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:16:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6BDAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:17:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343843AbiFTNQw (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:16:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53638 "EHLO
+        id S245622AbiFTNQ7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:16:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344296AbiFTNKG (ORCPT
+        with ESMTP id S1344391AbiFTNKL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:10:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 885511C93D;
-        Mon, 20 Jun 2022 06:05:15 -0700 (PDT)
+        Mon, 20 Jun 2022 09:10:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6414192A7;
+        Mon, 20 Jun 2022 06:05:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C7100B811AE;
-        Mon, 20 Jun 2022 13:02:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DD32C341C6;
-        Mon, 20 Jun 2022 13:02:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 38FCC61542;
+        Mon, 20 Jun 2022 13:02:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30613C3411B;
+        Mon, 20 Jun 2022 13:02:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730128;
-        bh=kY7M+cF6jVAw2h72tzuT6A72g36+rLAemXxLHPg6FwY=;
+        s=korg; t=1655730131;
+        bh=YnT0A5pYx7LECS7ve6dpcfSYlTvAMThZz2MiAayKHIE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wCIWO2QUba9G+cUty7/PiQbU2QvQYyypep+ijp2QyXShoIPowSikldQK2ZKKRFA3j
-         8slVLuF0Ah8jZgcPssQ1TV6WH+wKB4MOag3XA7MRBRCmKZZMMZrfnlQVOMVi3AzXBT
-         vkGovQumyFTrrV8WG4E/YkXxoMjwpSTfef37eC3Q=
+        b=s0+TlWFzC4ilu40yqSUCYAOnhtgEyBTr5z2LymcESp0VEPe7YDLrpbudtWfxGX5TP
+         ppQ0NqX8M5NWtz3biHu24c3bbvEE7uCbGze6Ah/gp9LsI8g7I87oXT7wJxzDRsFk1u
+         D4bTyt28bORljOe22yLt+UiUlQJNZWnjtfTOSdwQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wang Yufen <wangyufen@huawei.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Marius Hoch <mail@mariushoch.de>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 28/84] ipv6: Fix signed integer overflow in l2tp_ip6_sendmsg
-Date:   Mon, 20 Jun 2022 14:50:51 +0200
-Message-Id: <20220620124721.728418933@linuxfoundation.org>
+Subject: [PATCH 5.10 19/84] Input: soc_button_array - also add Lenovo Yoga Tablet2 1051F to dmi_use_low_level_irq
+Date:   Mon, 20 Jun 2022 14:50:42 +0200
+Message-Id: <20220620124721.461442805@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124720.882450983@linuxfoundation.org>
 References: <20220620124720.882450983@linuxfoundation.org>
@@ -50,44 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Yufen <wangyufen@huawei.com>
+From: Marius Hoch <mail@mariushoch.de>
 
-[ Upstream commit f638a84afef3dfe10554c51820c16e39a278c915 ]
+[ Upstream commit 6ab2e51898cd4343bbdf8587af8ce8fbabddbcb5 ]
 
-When len >= INT_MAX - transhdrlen, ulen = len + transhdrlen will be
-overflow. To fix, we can follow what udpv6 does and subtract the
-transhdrlen from the max.
+Commit 223f61b8c5ad ("Input: soc_button_array - add Lenovo Yoga Tablet2
+1051L to the dmi_use_low_level_irq list") added the 1051L to this list
+already, but the same problem applies to the 1051F. As there are no
+further 1051 variants (just the F/L), we can just DMI match 1051.
 
-Signed-off-by: Wang Yufen <wangyufen@huawei.com>
-Link: https://lore.kernel.org/r/20220607120028.845916-2-wangyufen@huawei.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Tested on a Lenovo Yoga Tablet2 1051F: Without this patch the
+home-button stops working after a wakeup from suspend.
+
+Signed-off-by: Marius Hoch <mail@mariushoch.de>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Link: https://lore.kernel.org/r/20220603120246.3065-1-mail@mariushoch.de
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/l2tp/l2tp_ip6.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/input/misc/soc_button_array.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/l2tp/l2tp_ip6.c b/net/l2tp/l2tp_ip6.c
-index 96f975777438..d54dbd01d86f 100644
---- a/net/l2tp/l2tp_ip6.c
-+++ b/net/l2tp/l2tp_ip6.c
-@@ -502,14 +502,15 @@ static int l2tp_ip6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 	struct ipcm6_cookie ipc6;
- 	int addr_len = msg->msg_namelen;
- 	int transhdrlen = 4; /* zero session-id */
--	int ulen = len + transhdrlen;
-+	int ulen;
- 	int err;
- 
- 	/* Rough check on arithmetic overflow,
- 	 * better check is made in ip6_append_data().
- 	 */
--	if (len > INT_MAX)
-+	if (len > INT_MAX - transhdrlen)
- 		return -EMSGSIZE;
-+	ulen = len + transhdrlen;
- 
- 	/* Mirror BSD error message compatibility */
- 	if (msg->msg_flags & MSG_OOB)
+diff --git a/drivers/input/misc/soc_button_array.c b/drivers/input/misc/soc_button_array.c
+index cb6ec59a045d..efffcf0ebd3b 100644
+--- a/drivers/input/misc/soc_button_array.c
++++ b/drivers/input/misc/soc_button_array.c
+@@ -85,13 +85,13 @@ static const struct dmi_system_id dmi_use_low_level_irq[] = {
+ 	},
+ 	{
+ 		/*
+-		 * Lenovo Yoga Tab2 1051L, something messes with the home-button
++		 * Lenovo Yoga Tab2 1051F/1051L, something messes with the home-button
+ 		 * IRQ settings, leading to a non working home-button.
+ 		 */
+ 		.matches = {
+ 			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "60073"),
+-			DMI_MATCH(DMI_PRODUCT_VERSION, "1051L"),
++			DMI_MATCH(DMI_PRODUCT_VERSION, "1051"),
+ 		},
+ 	},
+ 	{} /* Terminating entry */
 -- 
 2.35.1
 
