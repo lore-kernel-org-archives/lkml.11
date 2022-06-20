@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97B4AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:20:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79A5BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:20:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245423AbiFTNSU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:18:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37516 "EHLO
+        id S1344163AbiFTNS2 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:18:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344556AbiFTNNy (ORCPT
+        with ESMTP id S1344738AbiFTNOA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:13:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 861F91F2EF;
-        Mon, 20 Jun 2022 06:06:20 -0700 (PDT)
+        Mon, 20 Jun 2022 09:14:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4733E1EEFF;
+        Mon, 20 Jun 2022 06:06:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5F199B811BC;
-        Mon, 20 Jun 2022 13:04:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A394FC3411B;
-        Mon, 20 Jun 2022 13:04:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B8A85B811B1;
+        Mon, 20 Jun 2022 13:06:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E084BC3411B;
+        Mon, 20 Jun 2022 13:06:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730242;
-        bh=SjXAoznO5JPsYpcWKUijlKX7Px6pqsQqLLa1A/Kne20=;
+        s=korg; t=1655730376;
+        bh=zb93dGo4rOx73I2NIL7+fy8aGwRzCN4TayNzb/JoJmA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z9Vx5NFJHEiZFpf01kyn32D+cBYebEDOy9NqDWJAZxoIFuPHwPaS/q+8kywfOueGz
-         EmjNHy2ARWeDcR1bVjTOx8/8R82mf3AydpX5DZZvpSxuOoCCkE1DTYdyk20JYOEJrC
-         pqZz9+RN437wF2o91gQhlYSR9TcFelgks2SVRX6k=
+        b=XFWExt4Sm8PhmtgA3PpGll82TSI1HyurTcPIcZ4DnbE7mKAYiT6jcyEsfIaOTBq7o
+         doBDJG6+lKHlSE0lYDnpKxpIVnALOfahCO2teHIr218pji9LaqY4/upN6L9FiJntRE
+         /1b6VIk9MjHybxhKXVgpBowCgig+fIstj47ymb6M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Murilo Opsfelder Araujo <muriloo@linux.ibm.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Christophe de Dinechin <dinechin@redhat.com>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH 5.10 77/84] virtio-pci: Remove wrong address verification in vp_del_vqs()
-Date:   Mon, 20 Jun 2022 14:51:40 +0200
-Message-Id: <20220620124723.166737056@linuxfoundation.org>
+        stable@vger.kernel.org, Adam Ford <aford173@gmail.com>,
+        Shawn Guo <shawnguo@kernel.org>
+Subject: [PATCH 5.15 004/106] arm64: dts: imx8mn-beacon: Enable RTS-CTS on UART3
+Date:   Mon, 20 Jun 2022 14:50:23 +0200
+Message-Id: <20220620124724.513898809@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124720.882450983@linuxfoundation.org>
-References: <20220620124720.882450983@linuxfoundation.org>
+In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
+References: <20220620124724.380838401@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,49 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Murilo Opsfelder Araujo <muriloo@linux.ibm.com>
+From: Adam Ford <aford173@gmail.com>
 
-commit 7e415282b41bf0d15c6e0fe268f822d9b083f2f7 upstream.
+commit 5446ff1a67160ad92d9aae9530846aa54750be36 upstream.
 
-GCC 12 enhanced -Waddress when comparing array address to null [0],
-which warns:
+There is a header for a DB9 serial port, but any attempts to use
+hardware handshaking fail.  Enable RTS and CTS pin muxing and enable
+handshaking in the uart node.
 
-    drivers/virtio/virtio_pci_common.c: In function ‘vp_del_vqs’:
-    drivers/virtio/virtio_pci_common.c:257:29: warning: the comparison will always evaluate as ‘true’ for the pointer operand in ‘vp_dev->msix_affinity_masks + (sizetype)((long unsigned int)i * 256)’ must not be NULL [-Waddress]
-      257 |                         if (vp_dev->msix_affinity_masks[i])
-          |                             ^~~~~~
-
-In fact, the verification is comparing the result of a pointer
-arithmetic, the address "msix_affinity_masks + i", which will always
-evaluate to true.
-
-Under the hood, free_cpumask_var() calls kfree(), which is safe to pass
-NULL, not requiring non-null verification.  So remove the verification
-to make compiler happy (happy compiler, happy life).
-
-[0] https://gcc.gnu.org/bugzilla/show_bug.cgi?id=102103
-
-Signed-off-by: Murilo Opsfelder Araujo <muriloo@linux.ibm.com>
-Message-Id: <20220415023002.49805-1-muriloo@linux.ibm.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Acked-by: Christophe de Dinechin <dinechin@redhat.com>
-Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Signed-off-by: Adam Ford <aford173@gmail.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/virtio/virtio_pci_common.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ arch/arm64/boot/dts/freescale/imx8mn-beacon-baseboard.dtsi |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/virtio/virtio_pci_common.c
-+++ b/drivers/virtio/virtio_pci_common.c
-@@ -254,8 +254,7 @@ void vp_del_vqs(struct virtio_device *vd
+--- a/arch/arm64/boot/dts/freescale/imx8mn-beacon-baseboard.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mn-beacon-baseboard.dtsi
+@@ -176,6 +176,7 @@
+ 	pinctrl-0 = <&pinctrl_uart3>;
+ 	assigned-clocks = <&clk IMX8MN_CLK_UART3>;
+ 	assigned-clock-parents = <&clk IMX8MN_SYS_PLL1_80M>;
++	uart-has-rtscts;
+ 	status = "okay";
+ };
  
- 	if (vp_dev->msix_affinity_masks) {
- 		for (i = 0; i < vp_dev->msix_vectors; i++)
--			if (vp_dev->msix_affinity_masks[i])
--				free_cpumask_var(vp_dev->msix_affinity_masks[i]);
-+			free_cpumask_var(vp_dev->msix_affinity_masks[i]);
- 	}
+@@ -259,6 +260,8 @@
+ 		fsl,pins = <
+ 			MX8MN_IOMUXC_ECSPI1_SCLK_UART3_DCE_RX	0x40
+ 			MX8MN_IOMUXC_ECSPI1_MOSI_UART3_DCE_TX	0x40
++			MX8MN_IOMUXC_ECSPI1_MISO_UART3_DCE_CTS_B	0x40
++			MX8MN_IOMUXC_ECSPI1_SS0_UART3_DCE_RTS_B	0x40
+ 		>;
+ 	};
  
- 	if (vp_dev->msix_enabled) {
 
 
