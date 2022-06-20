@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A761CC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:13:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2D7FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:13:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343651AbiFTNM7 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:12:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58272 "EHLO
+        id S245100AbiFTNND (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:13:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343687AbiFTNJe (ORCPT
+        with ESMTP id S1343672AbiFTNJe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 20 Jun 2022 09:09:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5B3B1A82D;
-        Mon, 20 Jun 2022 06:04:41 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6394F1A822;
+        Mon, 20 Jun 2022 06:04:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A87B3B811C3;
-        Mon, 20 Jun 2022 13:04:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 011EBC3411B;
-        Mon, 20 Jun 2022 13:04:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 73F00B811D7;
+        Mon, 20 Jun 2022 13:03:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2AA5C3411B;
+        Mon, 20 Jun 2022 13:03:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730248;
-        bh=cmruC+OqZfqrMTsfd/DVGK3o8B7R6lhV1CvtHack+6c=;
+        s=korg; t=1655730226;
+        bh=lmx12xyyH4sS1e3SCxv2MacjkNSxnGdVrtzoBmi1DsY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c53i8IoSu7pddUGYWRtTgBqiy/eiMNeu/lqkDOwQ5utQyMfp+p7MLdnp93+azd5Ga
-         KQusycmK9KM7YJym5z7dWvVfOB2dnWUVaoHFeoXyHH2rtLZzmA1H2GTmA+WJbkFiIK
-         nA82OT5hXTkduLa8FgNYonUgY/BodS3U+ic/+c7o=
+        b=2uZkJm1SWZ5qwPRNS/flIOY3BGpU8GIcV0+uQvIKcSWEWk+OSxS89Vghgx7oMSE5b
+         HchxsT8R8FTQN9jA5iNZJFtKFb6fUiFmgEXq1SjRsohRmWHEcT5JkM5hsA6y7PXfyj
+         lu0iw+rigVpgpJJR5VRVtXnMUJR1Hz7N56c/Q9VQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Davide Caratti <dcaratti@redhat.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.10 79/84] net/sched: act_police: more accurate MTU policing
-Date:   Mon, 20 Jun 2022 14:51:42 +0200
-Message-Id: <20220620124723.225943635@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Zhang Yi <yi.zhang@huawei.com>,
+        Ritesh Harjani <ritesh.list@gmail.com>,
+        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 5.10 72/84] ext4: add reserved GDT blocks check
+Date:   Mon, 20 Jun 2022 14:51:35 +0200
+Message-Id: <20220620124723.021168812@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124720.882450983@linuxfoundation.org>
 References: <20220620124720.882450983@linuxfoundation.org>
@@ -50,136 +50,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Davide Caratti <dcaratti@redhat.com>
+From: Zhang Yi <yi.zhang@huawei.com>
 
-commit 4ddc844eb81da59bfb816d8d52089aba4e59e269 upstream.
+commit b55c3cd102a6f48b90e61c44f7f3dda8c290c694 upstream.
 
-in current Linux, MTU policing does not take into account that packets at
-the TC ingress have the L2 header pulled. Thus, the same TC police action
-(with the same value of tcfp_mtu) behaves differently for ingress/egress.
-In addition, the full GSO size is compared to tcfp_mtu: as a consequence,
-the policer drops GSO packets even when individual segments have the L2 +
-L3 + L4 + payload length below the configured valued of tcfp_mtu.
+We capture a NULL pointer issue when resizing a corrupt ext4 image which
+is freshly clear resize_inode feature (not run e2fsck). It could be
+simply reproduced by following steps. The problem is because of the
+resize_inode feature was cleared, and it will convert the filesystem to
+meta_bg mode in ext4_resize_fs(), but the es->s_reserved_gdt_blocks was
+not reduced to zero, so could we mistakenly call reserve_backup_gdb()
+and passing an uninitialized resize_inode to it when adding new group
+descriptors.
 
-Improve the accuracy of MTU policing as follows:
- - account for mac_len for non-GSO packets at TC ingress.
- - compare MTU threshold with the segmented size for GSO packets.
-Also, add a kselftest that verifies the correct behavior.
+ mkfs.ext4 /dev/sda 3G
+ tune2fs -O ^resize_inode /dev/sda #forget to run requested e2fsck
+ mount /dev/sda /mnt
+ resize2fs /dev/sda 8G
 
-Signed-off-by: Davide Caratti <dcaratti@redhat.com>
-Reviewed-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-[dcaratti: fix conflicts due to lack of the following commits:
- - commit 2ffe0395288a ("net/sched: act_police: add support for
-   packet-per-second policing")
- - commit 53b61f29367d ("selftests: forwarding: Add tc-police tests for
-   packets per second")]
-Link: https://lore.kernel.org/netdev/876d597a0ff55f6ba786f73c5a9fd9eb8d597a03.1644514748.git.dcaratti@redhat.com
+ ========
+ BUG: kernel NULL pointer dereference, address: 0000000000000028
+ CPU: 19 PID: 3243 Comm: resize2fs Not tainted 5.18.0-rc7-00001-gfde086c5ebfd #748
+ ...
+ RIP: 0010:ext4_flex_group_add+0xe08/0x2570
+ ...
+ Call Trace:
+  <TASK>
+  ext4_resize_fs+0xbec/0x1660
+  __ext4_ioctl+0x1749/0x24e0
+  ext4_ioctl+0x12/0x20
+  __x64_sys_ioctl+0xa6/0x110
+  do_syscall_64+0x3b/0x90
+  entry_SYSCALL_64_after_hwframe+0x44/0xae
+ RIP: 0033:0x7f2dd739617b
+ ========
+
+The fix is simple, add a check in ext4_resize_begin() to make sure that
+the es->s_reserved_gdt_blocks is zero when the resize_inode feature is
+disabled.
+
+Cc: stable@kernel.org
+Signed-off-by: Zhang Yi <yi.zhang@huawei.com>
+Reviewed-by: Ritesh Harjani <ritesh.list@gmail.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220601092717.763694-1-yi.zhang@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sched/act_police.c                              |   16 +++++-
- tools/testing/selftests/net/forwarding/tc_police.sh |   52 ++++++++++++++++++++
- 2 files changed, 67 insertions(+), 1 deletion(-)
+ fs/ext4/resize.c |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
---- a/net/sched/act_police.c
-+++ b/net/sched/act_police.c
-@@ -213,6 +213,20 @@ release_idr:
- 	return err;
- }
+--- a/fs/ext4/resize.c
++++ b/fs/ext4/resize.c
+@@ -53,6 +53,16 @@ int ext4_resize_begin(struct super_block
+ 		return -EPERM;
  
-+static bool tcf_police_mtu_check(struct sk_buff *skb, u32 limit)
-+{
-+	u32 len;
+ 	/*
++	 * If the reserved GDT blocks is non-zero, the resize_inode feature
++	 * should always be set.
++	 */
++	if (EXT4_SB(sb)->s_es->s_reserved_gdt_blocks &&
++	    !ext4_has_feature_resize_inode(sb)) {
++		ext4_error(sb, "resize_inode disabled but reserved GDT blocks non-zero");
++		return -EFSCORRUPTED;
++	}
 +
-+	if (skb_is_gso(skb))
-+		return skb_gso_validate_mac_len(skb, limit);
-+
-+	len = qdisc_pkt_len(skb);
-+	if (skb_at_tc_ingress(skb))
-+		len += skb->mac_len;
-+
-+	return len <= limit;
-+}
-+
- static int tcf_police_act(struct sk_buff *skb, const struct tc_action *a,
- 			  struct tcf_result *res)
- {
-@@ -235,7 +249,7 @@ static int tcf_police_act(struct sk_buff
- 			goto inc_overlimits;
- 	}
- 
--	if (qdisc_pkt_len(skb) <= p->tcfp_mtu) {
-+	if (tcf_police_mtu_check(skb, p->tcfp_mtu)) {
- 		if (!p->rate_present) {
- 			ret = p->tcfp_result;
- 			goto end;
---- a/tools/testing/selftests/net/forwarding/tc_police.sh
-+++ b/tools/testing/selftests/net/forwarding/tc_police.sh
-@@ -35,6 +35,8 @@ ALL_TESTS="
- 	police_shared_test
- 	police_rx_mirror_test
- 	police_tx_mirror_test
-+	police_mtu_rx_test
-+	police_mtu_tx_test
- "
- NUM_NETIFS=6
- source tc_common.sh
-@@ -290,6 +292,56 @@ police_tx_mirror_test()
- 	police_mirror_common_test $rp2 egress "police tx and mirror"
- }
- 
-+police_mtu_common_test() {
-+	RET=0
-+
-+	local test_name=$1; shift
-+	local dev=$1; shift
-+	local direction=$1; shift
-+
-+	tc filter add dev $dev $direction protocol ip pref 1 handle 101 flower \
-+		dst_ip 198.51.100.1 ip_proto udp dst_port 54321 \
-+		action police mtu 1042 conform-exceed drop/ok
-+
-+	# to count "conform" packets
-+	tc filter add dev $h2 ingress protocol ip pref 1 handle 101 flower \
-+		dst_ip 198.51.100.1 ip_proto udp dst_port 54321 \
-+		action drop
-+
-+	mausezahn $h1 -a own -b $(mac_get $rp1) -A 192.0.2.1 -B 198.51.100.1 \
-+		-t udp sp=12345,dp=54321 -p 1001 -c 10 -q
-+
-+	mausezahn $h1 -a own -b $(mac_get $rp1) -A 192.0.2.1 -B 198.51.100.1 \
-+		-t udp sp=12345,dp=54321 -p 1000 -c 3 -q
-+
-+	tc_check_packets "dev $dev $direction" 101 13
-+	check_err $? "wrong packet counter"
-+
-+	# "exceed" packets
-+	local overlimits_t0=$(tc_rule_stats_get ${dev} 1 ${direction} .overlimits)
-+	test ${overlimits_t0} = 10
-+	check_err $? "wrong overlimits, expected 10 got ${overlimits_t0}"
-+
-+	# "conform" packets
-+	tc_check_packets "dev $h2 ingress" 101 3
-+	check_err $? "forwarding error"
-+
-+	tc filter del dev $h2 ingress protocol ip pref 1 handle 101 flower
-+	tc filter del dev $dev $direction protocol ip pref 1 handle 101 flower
-+
-+	log_test "$test_name"
-+}
-+
-+police_mtu_rx_test()
-+{
-+	police_mtu_common_test "police mtu (rx)" $rp1 ingress
-+}
-+
-+police_mtu_tx_test()
-+{
-+	police_mtu_common_test "police mtu (tx)" $rp2 egress
-+}
-+
- setup_prepare()
- {
- 	h1=${NETIFS[p1]}
++	/*
+ 	 * If we are not using the primary superblock/GDT copy don't resize,
+          * because the user tools have no way of handling this.  Probably a
+          * bad time to do it anyways.
 
 
