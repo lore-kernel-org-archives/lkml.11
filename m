@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 370D8C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 22:55:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AECF9C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 22:55:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345230AbiFTWzf (ORCPT
+        id S1345343AbiFTWzg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 18:55:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59148 "EHLO
+        Mon, 20 Jun 2022 18:55:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344873AbiFTWy0 (ORCPT
+        with ESMTP id S1344851AbiFTWy0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 20 Jun 2022 18:54:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18FD61EECB;
-        Mon, 20 Jun 2022 15:54:18 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80F891F61A;
+        Mon, 20 Jun 2022 15:54:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B15C8614A1;
-        Mon, 20 Jun 2022 22:54:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38D84C36AFF;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3B54AB81661;
+        Mon, 20 Jun 2022 22:54:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 284F5C341F5;
         Mon, 20 Jun 2022 22:54:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1655765654;
-        bh=oeqjPlwjXE63AEix275I757EvtUPI3KuTQHjdeOt3rc=;
+        bh=3k+x6k9M3pDkvdWX0R8hRxdi0IEw/duPPbgwdatd52A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QuY9SbaL8NzO3lPK63bQn0eFr9sIRkeWHEA1QPThf964NXExo2VU/8eb0z9Eo9KdT
-         KxqeLO7npg+6A7HQU/eMUcG9z7JccQoJrgqNzWtB/zgQvGqrFbM37Tgr6tO8vRrLho
-         XHC7vRUUFQYRrBNvHu/kgH942BK4y2767T2kOIDN1Nki0OP7868lDQbUaGKUWdnyY9
-         xvnURwlQqyOptaDdK+xFwSSog/L7pNcQbkzHYUnUOB6xcrVbmmcnrCunX1BcmJzmfC
-         Ibc5brAzk3iMR/MA4JZFx+31izJ8UQdpGN8NVgpuw9xXzz6klip/SL/6LGpZ+2EwZJ
-         dIgoIBYT1lsbw==
+        b=K9sRBsbvNeaZmkprtb5MQCatRRaQtyXrMz4p4u5tjG7Gdr1CKE7ZN2v9pUKBeIy1c
+         uxomp2SYoFdj5UWH3WKtT1wvQVC30AHrc7ezsP467OnHEBgqIUKk62VYcclQn4MevN
+         hJq6t0GwNIz5Ca4vrXiMTAnbbtyChqzgKY8Gds22P7wS5q6nvP5yfTvr6z4NW0Uqr+
+         VgoGwStvQMwglVLFdCtE5vmVcx0hrLI50G2QlD5LAzyW/8qQR9sL3gNgHcgqu7nYyY
+         9n2446lTyxdBjefpN9rqO9ODK0q2lwksCXDn7FN1f4MWRiAhJbVIeRkkYdJAup+GMu
+         SjsAjz2z81P8w==
 Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 5BFFE5C164C; Mon, 20 Jun 2022 15:54:13 -0700 (PDT)
+        id 57F745C1503; Mon, 20 Jun 2022 15:54:13 -0700 (PDT)
 From:   "Paul E. McKenney" <paulmck@kernel.org>
 To:     rcu@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
@@ -45,9 +45,9 @@ Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
         Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         KP Singh <kpsingh@kernel.org>
-Subject: [PATCH rcu 27/32] rcu-tasks: Maintain a count of tasks blocking RCU Tasks Trace grace period
-Date:   Mon, 20 Jun 2022 15:54:06 -0700
-Message-Id: <20220620225411.3842519-27-paulmck@kernel.org>
+Subject: [PATCH rcu 25/32] rcu-tasks: Stop RCU Tasks Trace from scanning idle tasks
+Date:   Mon, 20 Jun 2022 15:54:04 -0700
+Message-Id: <20220620225411.3842519-25-paulmck@kernel.org>
 X-Mailer: git-send-email 2.31.1.189.g2e36527f23
 In-Reply-To: <20220620225402.GA3842369@paulmck-ThinkPad-P17-Gen-1>
 References: <20220620225402.GA3842369@paulmck-ThinkPad-P17-Gen-1>
@@ -57,9 +57,16 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This commit maintains a new n_trc_holdouts counter that tracks the number
-of tasks blocking the RCU Tasks grace period.  This counter is useful
-for debugging, and its value has been added to a diagostic message.
+Now that RCU scans both running tasks and tasks that have blocked within
+their current RCU Tasks Trace read-side critical section, there is no
+need for it to scan the idle tasks.  After all, an idle loop should not
+be remain within an RCU Tasks Trace read-side critical section across
+exit from idle, and from a BPF viewpoint, functions invoked from the
+idle loop should not sleep.  So only running idle tasks can be within
+RCU Tasks Trace read-side critical sections.
+
+This commit therefore removes the scan of the idle tasks from the
+rcu_tasks_trace_postscan() function.
 
 Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 Cc: Neeraj Upadhyay <quic_neeraju@quicinc.com>
@@ -69,47 +76,31 @@ Cc: Andrii Nakryiko <andrii@kernel.org>
 Cc: Martin KaFai Lau <kafai@fb.com>
 Cc: KP Singh <kpsingh@kernel.org>
 ---
- kernel/rcu/tasks.h | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ kernel/rcu/tasks.h | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
 
 diff --git a/kernel/rcu/tasks.h b/kernel/rcu/tasks.h
-index fe0552086ccfc..9d7d6fd4b8a79 100644
+index d318cdfd2309c..272c905995e56 100644
 --- a/kernel/rcu/tasks.h
 +++ b/kernel/rcu/tasks.h
-@@ -1206,6 +1206,7 @@ static DEFINE_PER_CPU(bool, trc_ipi_to_cpu);
- static unsigned long n_heavy_reader_attempts;
- static unsigned long n_heavy_reader_updates;
- static unsigned long n_heavy_reader_ofl_updates;
-+static unsigned long n_trc_holdouts;
- 
- void call_rcu_tasks_trace(struct rcu_head *rhp, rcu_callback_t func);
- DEFINE_RCU_TASKS(rcu_tasks_trace, rcu_tasks_wait_gp, call_rcu_tasks_trace,
-@@ -1299,6 +1300,7 @@ static void trc_add_holdout(struct task_struct *t, struct list_head *bhp)
- 	if (list_empty(&t->trc_holdout_list)) {
- 		get_task_struct(t);
- 		list_add(&t->trc_holdout_list, bhp);
-+		n_trc_holdouts++;
- 	}
+@@ -1533,16 +1533,10 @@ static void rcu_tasks_trace_pregp_step(struct list_head *hop)
  }
  
-@@ -1308,6 +1310,7 @@ static void trc_del_holdout(struct task_struct *t)
- 	if (!list_empty(&t->trc_holdout_list)) {
- 		list_del_init(&t->trc_holdout_list);
- 		put_task_struct(t);
-+		n_trc_holdouts--;
- 	}
- }
- 
-@@ -1760,7 +1763,8 @@ void show_rcu_tasks_trace_gp_kthread(void)
+ /*
+- * Do intermediate processing between task and holdout scans and
+- * pick up the idle tasks.
++ * Do intermediate processing between task and holdout scans.
+  */
+ static void rcu_tasks_trace_postscan(struct list_head *hop)
  {
- 	char buf[64];
+-	int cpu;
+-
+-	for_each_online_cpu(cpu)
+-		rcu_tasks_trace_pertask(idle_task(cpu), hop);
+-
+ 	// Re-enable CPU hotplug now that the tasklist scan has completed.
+ 	cpus_read_unlock();
  
--	sprintf(buf, "h:%lu/%lu/%lu",
-+	sprintf(buf, "N%lu h:%lu/%lu/%lu",
-+		data_race(n_trc_holdouts),
- 		data_race(n_heavy_reader_ofl_updates),
- 		data_race(n_heavy_reader_updates),
- 		data_race(n_heavy_reader_attempts));
 -- 
 2.31.1.189.g2e36527f23
 
