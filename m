@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF3BECCA481
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:01:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33B28C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:01:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349913AbiFTOA7 (ORCPT
+        id S1350071AbiFTOBH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:00:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37092 "EHLO
+        Mon, 20 Jun 2022 10:01:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350388AbiFTNxU (ORCPT
+        with ESMTP id S1347221AbiFTN5t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:53:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AB475F58;
-        Mon, 20 Jun 2022 06:19:51 -0700 (PDT)
+        Mon, 20 Jun 2022 09:57:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 346E022BCA;
+        Mon, 20 Jun 2022 06:23:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 15918611DA;
-        Mon, 20 Jun 2022 13:19:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A155C3411B;
-        Mon, 20 Jun 2022 13:19:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 67A1960EC7;
+        Mon, 20 Jun 2022 13:23:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DC77C3411B;
+        Mon, 20 Jun 2022 13:23:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731153;
-        bh=sOfvNL1mXYnv2wDlMKLoXmwX3nwTuRNpFhbm8sqNr54=;
+        s=korg; t=1655731402;
+        bh=M2xov3M5nLHIGiZU6LE/7jpo9MVr/0vDcs2PNZ97I9Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NCKy6kKCPmsvXkZeLxTMhWu3+FGQ3fEhZ8QURtGMeRNhIu9YjYokbA84sUNPDtObS
-         7PnPgkm/L53xx3sSNY8Z7hvV1O4Tracss3lXJA7klKm0trL0+zJkDsqCH0GKCg/5E0
-         TVZQiF/emALxlNt2dkhKgiNZ860uKeVeYsHr55O4=
+        b=O53IY7PMw+X7S++SSUCpDxPrrRGSR2NewZ+1BkohWc24pb1b4eZU4DIrEjsPQOWLO
+         fBhqaDg01whgeqjXufd8p3N7SgD8msB2LgmHyr+abmpkGg6M9FeqWTXuyXu5/X4VKE
+         CRGPMJ1euz4LJhq6zDXrIWOQ/aV+Lu+AlAzHbyGc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Joe Perches <joe@perches.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 153/240] random: use symbolic constants for crng_init states
-Date:   Mon, 20 Jun 2022 14:50:54 +0200
-Message-Id: <20220620124743.443248594@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Brian King <brking@linux.vnet.ibm.com>,
+        Chengguang Xu <cgxu519@mykernel.net>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 196/240] scsi: ipr: Fix missing/incorrect resource cleanup in error case
+Date:   Mon, 20 Jun 2022 14:51:37 +0200
+Message-Id: <20220620124744.665480947@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -51,125 +52,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Chengguang Xu <cgxu519@mykernel.net>
 
-commit e3d2c5e79a999aa4e7d6f0127e16d3da5a4ff70d upstream.
+[ Upstream commit d64c491911322af1dcada98e5b9ee0d87e8c8fee ]
 
-crng_init represents a state machine, with three states, and various
-rules for transitions. For the longest time, we've been managing these
-with "0", "1", and "2", and expecting people to figure it out. To make
-the code more obvious, replace these with proper enum values
-representing the transition, and then redocument what each of these
-states mean.
+Fix missing resource cleanup (when '(--i) == 0') for error case in
+ipr_alloc_mem() and skip incorrect resource cleanup (when '(--i) == 0') for
+error case in ipr_request_other_msi_irqs() because variable i started from
+1.
 
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Cc: Joe Perches <joe@perches.com>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20220529153456.4183738-4-cgxu519@mykernel.net
+Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
+Acked-by: Brian King <brking@linux.vnet.ibm.com>
+Signed-off-by: Chengguang Xu <cgxu519@mykernel.net>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/random.c |   38 +++++++++++++++++++-------------------
- 1 file changed, 19 insertions(+), 19 deletions(-)
+ drivers/scsi/ipr.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -70,16 +70,16 @@
-  *********************************************************************/
+diff --git a/drivers/scsi/ipr.c b/drivers/scsi/ipr.c
+index 7a57b61f0340..a163fd9331b3 100644
+--- a/drivers/scsi/ipr.c
++++ b/drivers/scsi/ipr.c
+@@ -9772,7 +9772,7 @@ static int ipr_alloc_mem(struct ipr_ioa_cfg *ioa_cfg)
+ 					GFP_KERNEL);
  
- /*
-- * crng_init =  0 --> Uninitialized
-- *		1 --> Initialized
-- *		2 --> Initialized from input_pool
-- *
-  * crng_init is protected by base_crng->lock, and only increases
-- * its value (from 0->1->2).
-+ * its value (from empty->early->ready).
-  */
--static int crng_init = 0;
--#define crng_ready() (likely(crng_init > 1))
--/* Various types of waiters for crng_init->2 transition. */
-+static enum {
-+	CRNG_EMPTY = 0, /* Little to no entropy collected */
-+	CRNG_EARLY = 1, /* At least POOL_EARLY_BITS collected */
-+	CRNG_READY = 2  /* Fully initialized with POOL_READY_BITS collected */
-+} crng_init = CRNG_EMPTY;
-+#define crng_ready() (likely(crng_init >= CRNG_READY))
-+/* Various types of waiters for crng_init->CRNG_READY transition. */
- static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
- static struct fasync_struct *fasync;
- static DEFINE_SPINLOCK(random_ready_chain_lock);
-@@ -282,7 +282,7 @@ static void crng_reseed(void)
- 	WRITE_ONCE(base_crng.generation, next_gen);
- 	WRITE_ONCE(base_crng.birth, jiffies);
- 	if (!crng_ready()) {
--		crng_init = 2;
-+		crng_init = CRNG_READY;
- 		finalize_init = true;
- 	}
- 	spin_unlock_irqrestore(&base_crng.lock, flags);
-@@ -376,7 +376,7 @@ static void crng_make_state(u32 chacha_s
- 	 * For the fast path, we check whether we're ready, unlocked first, and
- 	 * then re-check once locked later. In the case where we're really not
- 	 * ready, we do fast key erasure with the base_crng directly, extracting
--	 * when crng_init==0.
-+	 * when crng_init is CRNG_EMPTY.
- 	 */
- 	if (!crng_ready()) {
- 		bool ready;
-@@ -384,7 +384,7 @@ static void crng_make_state(u32 chacha_s
- 		spin_lock_irqsave(&base_crng.lock, flags);
- 		ready = crng_ready();
- 		if (!ready) {
--			if (crng_init == 0)
-+			if (crng_init == CRNG_EMPTY)
- 				extract_entropy(base_crng.key, sizeof(base_crng.key));
- 			crng_fast_key_erasure(base_crng.key, chacha_state,
- 					      random_data, random_data_len);
-@@ -735,8 +735,8 @@ EXPORT_SYMBOL(get_random_bytes_arch);
- 
- enum {
- 	POOL_BITS = BLAKE2S_HASH_SIZE * 8,
--	POOL_INIT_BITS = POOL_BITS, /* No point in settling for less. */
--	POOL_FAST_INIT_BITS = POOL_INIT_BITS / 2
-+	POOL_READY_BITS = POOL_BITS, /* When crng_init->CRNG_READY */
-+	POOL_EARLY_BITS = POOL_READY_BITS / 2 /* When crng_init->CRNG_EARLY */
- };
- 
- static struct {
-@@ -831,13 +831,13 @@ static void credit_init_bits(size_t nbit
- 		init_bits = min_t(unsigned int, POOL_BITS, orig + add);
- 	} while (cmpxchg(&input_pool.init_bits, orig, init_bits) != orig);
- 
--	if (!crng_ready() && init_bits >= POOL_INIT_BITS)
-+	if (!crng_ready() && init_bits >= POOL_READY_BITS)
- 		crng_reseed();
--	else if (unlikely(crng_init == 0 && init_bits >= POOL_FAST_INIT_BITS)) {
-+	else if (unlikely(crng_init == CRNG_EMPTY && init_bits >= POOL_EARLY_BITS)) {
- 		spin_lock_irqsave(&base_crng.lock, flags);
--		if (crng_init == 0) {
-+		if (crng_init == CRNG_EMPTY) {
- 			extract_entropy(base_crng.key, sizeof(base_crng.key));
--			crng_init = 1;
-+			crng_init = CRNG_EARLY;
- 		}
- 		spin_unlock_irqrestore(&base_crng.lock, flags);
- 	}
-@@ -1512,7 +1512,7 @@ const struct file_operations urandom_fop
-  *
-  * - write_wakeup_threshold - the amount of entropy in the input pool
-  *   below which write polls to /dev/random will unblock, requesting
-- *   more entropy, tied to the POOL_INIT_BITS constant. It is writable
-+ *   more entropy, tied to the POOL_READY_BITS constant. It is writable
-  *   to avoid breaking old userspaces, but writing to it does not
-  *   change any behavior of the RNG.
-  *
-@@ -1527,7 +1527,7 @@ const struct file_operations urandom_fop
- #include <linux/sysctl.h>
- 
- static int sysctl_random_min_urandom_seed = CRNG_RESEED_INTERVAL / HZ;
--static int sysctl_random_write_wakeup_bits = POOL_INIT_BITS;
-+static int sysctl_random_write_wakeup_bits = POOL_READY_BITS;
- static int sysctl_poolsize = POOL_BITS;
- static u8 sysctl_bootid[UUID_SIZE];
- 
+ 		if (!ioa_cfg->hrrq[i].host_rrq)  {
+-			while (--i > 0)
++			while (--i >= 0)
+ 				dma_free_coherent(&pdev->dev,
+ 					sizeof(u32) * ioa_cfg->hrrq[i].size,
+ 					ioa_cfg->hrrq[i].host_rrq,
+@@ -10045,7 +10045,7 @@ static int ipr_request_other_msi_irqs(struct ipr_ioa_cfg *ioa_cfg,
+ 			ioa_cfg->vectors_info[i].desc,
+ 			&ioa_cfg->hrrq[i]);
+ 		if (rc) {
+-			while (--i >= 0)
++			while (--i > 0)
+ 				free_irq(pci_irq_vector(pdev, i),
+ 					&ioa_cfg->hrrq[i]);
+ 			return rc;
+-- 
+2.35.1
+
 
 
