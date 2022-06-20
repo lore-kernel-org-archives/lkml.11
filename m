@@ -2,104 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C71BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:01:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FB8DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:01:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243829AbiFTNBN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:01:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38830 "EHLO
+        id S243852AbiFTNBS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:01:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243792AbiFTM6k (ORCPT
+        with ESMTP id S244669AbiFTM7r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 08:58:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 767731BE91;
-        Mon, 20 Jun 2022 05:55:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 89921B811A0;
-        Mon, 20 Jun 2022 12:55:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2C11C3411B;
-        Mon, 20 Jun 2022 12:55:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655729747;
-        bh=yIYtRfu76ISBMbAAz5Ej0mo7PqRgJKMWfOg+qBi6yK4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TO3a5E+X8RajqRY3xtDyzubb2eydYJ/cvIyBV2p2N32Le0QDxlGu/VtmLcgU0viFm
-         3glHzIxvwB0376czP4lJQ/U+e9GGGSEAxR1m05ftQCsie2nImMe1fE2XlE4MOCSOgo
-         a4V09AcB3icoz5jQRxPNC5du15HoDIiIGBl408s4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Michal Wilczynski <michal.wilczynski@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 061/141] iavf: Fix issue with MAC address of VF shown as zero
-Date:   Mon, 20 Jun 2022 14:49:59 +0200
-Message-Id: <20220620124731.343986611@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
-References: <20220620124729.509745706@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 20 Jun 2022 08:59:47 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 683DD1A04E
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 05:56:42 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id h23so20897158ejj.12
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 05:56:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=h3Tl1NcyyBUWJ2hHdmOi/Ijf7c9vRxpUfpu/sNPMip0=;
+        b=L/a+blQMKJ0CtjtTkyZsQV8mZ9nBiyrM0wdEwFTgm1g9+bNjfOUsuqa4hfYy25H4Su
+         CrEGNcLWNROSbOjP950Cv/bHAwylQVKT2hbbdgmq0CRPZdWDIKTESY4DiTaBTaqSR8Ba
+         MHcDwv0495ZgqFzrjTcCnqdeE4PSOKLjXoXkSo4Q808FhPz9TGdHsG4x0qGP8nXUD/Zl
+         +DzUh7shBy7R5aMQGAVx043OJFbNIa7to12Skiof61OdV+8xhHZLFh6PjDxhvTrv220f
+         XJyoQvVXVaLdPTvBZnIHccivBtK1KArdEMV+A1mOwWzM2YjLyk97Eyc1ruGcDtoRe8Fb
+         hd5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=h3Tl1NcyyBUWJ2hHdmOi/Ijf7c9vRxpUfpu/sNPMip0=;
+        b=RGkI8eQHhRX2LiRdZcwcZlZY9TeShHcGNdzF3VEjUoTBHEAKDGdCFpDojphcjj8RQt
+         br19bnofV5CjhTObym0KRctzZ4Mjl+j7GOPaaVNg9IEk0tX3sFFiWeM5UKrnWsCMRLvA
+         COBqWdYJukuAEJiPmDvnp90MBKI51j6ab3Q+5HLg7tadoe3bx5oWJPuce0YAaZraF6MU
+         IawtDtnHnt30hBwyJHFZA4WUozW4Ev4w4KTxUHRQBmTRGykQDIKKvDhESQ8nsSBmoCBM
+         2mKEv0LoKKPX5/TeoR7eDmZQ++JG5eVja2pSNeQP8ebWOz7opMjWdlB/9DKe6nHE/Z1N
+         qlOA==
+X-Gm-Message-State: AJIora+nvRX0KpXAkPmMH1/VRZylAYf7vL1sc/uGuUqufvEpr2AGlu9I
+        oFEofRXxSugD+fyZ6U3uyaqJmg==
+X-Google-Smtp-Source: AGRyM1u/8SxdA92Z860M9UR7l1Kg2/zV6W837GoE6rMQOgOO+jYLeQhNPSn5HkrZgk422GiqUnGnEQ==
+X-Received: by 2002:a17:906:7053:b0:711:b90e:47b7 with SMTP id r19-20020a170906705300b00711b90e47b7mr20354864ejj.652.1655729800692;
+        Mon, 20 Jun 2022 05:56:40 -0700 (PDT)
+Received: from [192.168.0.210] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id b23-20020aa7df97000000b004357ab9cfb1sm3830386edy.26.2022.06.20.05.56.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Jun 2022 05:56:40 -0700 (PDT)
+Message-ID: <b42b197f-2b11-cb6e-458a-ed12b2eb997d@linaro.org>
+Date:   Mon, 20 Jun 2022 14:56:38 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v5 06/15] dt-bindings: mfd: amd,pensando-elbasr: Add AMD
+ Pensando Elba System Resource chip
+Content-Language: en-US
+To:     Brad Larson <brad@pensando.io>,
+        linux-arm-kernel@lists.infradead.org
+Cc:     linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
+        adrian.hunter@intel.com, alcooperx@gmail.com,
+        andy.shevchenko@gmail.com, arnd@arndb.de, blarson@amd.com,
+        brijeshkumar.singh@amd.com, catalin.marinas@arm.com,
+        gsomlo@gmail.com, gerg@linux-m68k.org, krzk@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, lee.jones@linaro.org,
+        broonie@kernel.org, yamada.masahiro@socionext.com,
+        p.zabel@pengutronix.de, piotrs@cadence.com, p.yadav@ti.com,
+        rdunlap@infradead.org, robh+dt@kernel.org, samuel@sholland.org,
+        fancer.lancer@gmail.com, suravee.suthikulpanit@amd.com,
+        thomas.lendacky@amd.com, ulf.hansson@linaro.org, will@kernel.org,
+        devicetree@vger.kernel.org
+References: <20220613195658.5607-1-brad@pensando.io>
+ <20220613195658.5607-7-brad@pensando.io>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220613195658.5607-7-brad@pensando.io>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michal Wilczynski <michal.wilczynski@intel.com>
+On 13/06/2022 21:56, Brad Larson wrote:
+> From: Brad Larson <blarson@amd.com>
+> 
+> Add support for the AMD Pensando Elba SoC System Resource chip
+> using the SPI interface.  The Elba SR is a Multi-function Device
+> supporting device register access using CS0, smbus interface for
+> FRU and board peripherals using CS1, dual Lattice I2C masters for
+> transceiver management using CS2, and CS3 for flash access.
+> 
+> Signed-off-by: Brad Larson <blarson@amd.com>
+> ---
+>  .../bindings/mfd/amd,pensando-elbasr.yaml     | 93 +++++++++++++++++++
+>  1 file changed, 93 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/mfd/amd,pensando-elbasr.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/mfd/amd,pensando-elbasr.yaml b/Documentation/devicetree/bindings/mfd/amd,pensando-elbasr.yaml
+> new file mode 100644
+> index 000000000000..13356800b1cf
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/mfd/amd,pensando-elbasr.yaml
+> @@ -0,0 +1,93 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/mfd/amd,pensando-elbasr.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: AMD Pensando Elba SoC Resource Controller bindings
+> +
+> +description: |
+> +  AMD Pensando Elba SoC Resource Controller bindings attached to a SPI bus.
+> +
+> +maintainers:
+> +  - Brad Larson <blarson@amd.com>
+> +
+> +properties:
+> +  compatible:
+> +    items:
+> +      - enum:
+> +          - amd,pensando-elbasr
+> +      - const: simple-mfd
+> +
+> +  spi-max-frequency:
+> +    description: Maximum SPI frequency of the device in Hz.
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  '#address-cells':
+> +    const: 1
+> +
+> +  '#size-cells':
+> +    const: 0
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - spi-max-frequency
+> +
+> +patternProperties:
+> +  '^reset-controller@[a-f0-9]+$':
+> +    $ref: ../reset/amd,pensando-elbasr-reset.yaml
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/reset/amd,pensando-elba-reset.h>
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +
+> +    spi0 {
 
-[ Upstream commit 645603844270b69175899268be68b871295764fe ]
+Just "spi"
 
-After reinitialization of iavf, ice driver gets VIRTCHNL_OP_ADD_ETH_ADDR
-message with incorrectly set type of MAC address. Hardware address should
-have is_primary flag set as true. This way ice driver knows what it has
-to set as a MAC address.
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +        num-cs = <4>;
+> +
+> +        spi@0 {
 
-Check if the address is primary in iavf_add_filter function and set flag
-accordingly.
+"spi" is for SPI controllers. Use generic name matching the device.
+Usually this is "system-controller", however Rob pointed out your
+inaccurate bindings and example.
 
-To test set all-zero MAC on a VF. This triggers iavf re-initialization
-and VIRTCHNL_OP_ADD_ETH_ADDR message gets sent to PF.
-For example:
-
-ip link set dev ens785 vf 0 mac 00:00:00:00:00:00
-
-This triggers re-initialization of iavf. New MAC should be assigned.
-Now check if MAC is non-zero:
-
-ip link show dev ens785
-
-Fixes: a3e839d539e0 ("iavf: Add usage of new virtchnl format to set default MAC")
-Signed-off-by: Michal Wilczynski <michal.wilczynski@intel.com>
-Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/intel/iavf/iavf_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 7dfcf78b57fb..f3ecb3bca33d 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -984,7 +984,7 @@ struct iavf_mac_filter *iavf_add_filter(struct iavf_adapter *adapter,
- 		list_add_tail(&f->list, &adapter->mac_filter_list);
- 		f->add = true;
- 		f->is_new_mac = true;
--		f->is_primary = false;
-+		f->is_primary = ether_addr_equal(macaddr, adapter->hw.mac.addr);
- 		adapter->aq_required |= IAVF_FLAG_AQ_ADD_MAC_FILTER;
- 	} else {
- 		f->remove = false;
--- 
-2.35.1
-
+> +          compatible = "amd,pensando-elbasr", "simple-mfd";
+> +          reg = <0>;
+> +          #address-cells = <1>;
+> +          #size-cells = <0>;
+> +          spi-max-frequency = <12000000>;
+> +
+> +          rstc: reset-controller@0 {
+> +            compatible = "amd,pensando-elbasr-reset";
+> +            reg = <0>;
+> +            #reset-cells = <1>;
+> +          };
+> +        };
+> +
+> +        spi@1 {
+> +          compatible = "amd,pensando-elbasr", "simple-mfd";
+> +          reg = <1>;
+> +          spi-max-frequency = <12000000>;
+> +        };
+> +
+> +        spi@2 {
+> +          compatible = "amd,pensando-elbasr", "simple-mfd";
+> +          reg = <2>;
+> +          spi-max-frequency = <12000000>;
+> +          interrupt-parent = <&porta>;
+> +          interrupts = <0 IRQ_TYPE_LEVEL_LOW>;
+> +        };
+> +
+> +        spi@3 {
+> +          compatible = "amd,pensando-elbasr", "simple-mfd";
+> +          reg = <3>;
+> +          spi-max-frequency = <12000000>;
+> +        };
+> +    };
+> +
+> +...
 
 
+Best regards,
+Krzysztof
