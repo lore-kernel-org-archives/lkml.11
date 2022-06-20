@@ -2,229 +2,234 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3542C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 21:38:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4D15CCA480
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 21:44:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238023AbiFTViF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 17:38:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46062 "EHLO
+        id S1343818AbiFTVoQ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 17:44:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229608AbiFTViC (ORCPT
+        with ESMTP id S231244AbiFTVoP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 17:38:02 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B874917E06;
-        Mon, 20 Jun 2022 14:38:00 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id j21so6136396lfe.1;
-        Mon, 20 Jun 2022 14:38:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=EgAnwP4MqXgu0q0d6eXWE8mU2Kiz+p4e1fpGeFSH/Y8=;
-        b=o2pZhsbnmZB/hPYNsAdRYKSGEUThCWUrSiKDope47O0Hc6y1Ie/Uhr9vlzSWLA7VnO
-         6lN78P1MVEepVV3liDs+f/UB+HrgEgGkF966GYg6fLnqq8wNHYQe6N3JVso5Fyy44o6y
-         MTQQwOrei2MX3mKbp2o5cf+Ro3YqXr9BSPZ5sDofxPvIy+Jve8CIopY4koLos6Miyhim
-         HbI7xS8hrxSimFq+buz+51JhYFW3Umf1FryhoF2UDYiuUfKl62C81eqe/XBlIMtqb1Un
-         gQyf5QE3lnyE367qbAyXYc4b7q6kAK5See9cks50Cphd4BQMI3b++pGIJWMs08WbeyvQ
-         Qelg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=EgAnwP4MqXgu0q0d6eXWE8mU2Kiz+p4e1fpGeFSH/Y8=;
-        b=7RiOEA/bzBRath7sC7zWrFcuenBQGUwlcGUlmBrYYf2/bVUJVEMUlSkJFt82hxSpDK
-         jaMHk23RDo784UrVglD76cdP/x3CTw+sps4u3JGqxjgjlwbenKnTn1TGrwuuO0r45tyQ
-         lDzmy7sOioELHgrK2K0JT4sTVV8YJKh3sc27bkt7Cc45BxQAcY96NFR/SKjramP+3BO3
-         g2d2nMlwRFscd9EhR6jSF47Cc0G2jR7RZNtfnwFA0Sd31aCHJsSNsMzkzfLf10PLhdq3
-         RNESImdLMu3Hz8W7BSeKoWks2jqPXuxnuMbaQPLNNtWpwQ45tbmdWDJhaVThBwmNUDp6
-         BR2Q==
-X-Gm-Message-State: AJIora/cPLw00Ly/TAOP0b36pw4ysBN97ReNMWq0mK0qXJzKh/e/phif
-        wDNj4YeT8pQISdPIhHLieN4=
-X-Google-Smtp-Source: AGRyM1s0d2VrYvy3auZpZcZEHLNE88miIB37xA3w0baRw5oXY3mn7ZteuCobzjV8K7l5aFMU1SrfTQ==
-X-Received: by 2002:a05:6512:b1c:b0:47d:df52:b5a9 with SMTP id w28-20020a0565120b1c00b0047ddf52b5a9mr13983505lfu.293.1655761079086;
-        Mon, 20 Jun 2022 14:37:59 -0700 (PDT)
-Received: from mobilestation ([95.79.189.214])
-        by smtp.gmail.com with ESMTPSA id m3-20020a05651202e300b0047f647414eesm992667lfq.229.2022.06.20.14.37.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jun 2022 14:37:58 -0700 (PDT)
-Date:   Tue, 21 Jun 2022 00:37:55 +0300
-From:   Serge Semin <fancer.lancer@gmail.com>
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Vladimir Murzin <vladimir.murzin@arm.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Srujana Challa <schalla@marvell.com>,
-        Arnaud Ebalard <arno@natisbad.org>,
-        Boris Brezillon <bbrezillon@kernel.org>,
-        linux-crypto@vger.kernel.org, Vinod Koul <vkoul@kernel.org>,
-        dmaengine@vger.kernel.org, Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Li Yang <leoyang.li@nxp.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        linux-renesas-soc@vger.kernel.org,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        Oded Gabbay <ogabbay@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-arm-msm@vger.kernel.org,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Jon Mason <jdmason@kudzu.us>,
-        Dave Jiang <dave.jiang@intel.com>, ntb@lists.linux.dev,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dma-direct: take dma-ranges/offsets into account in
- resource mapping
-Message-ID: <20220620213755.kczuriyildoublzi@mobilestation>
-References: <20220610080802.11147-1-Sergey.Semin@baikalelectronics.ru>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+        Mon, 20 Jun 2022 17:44:15 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E865B98;
+        Mon, 20 Jun 2022 14:44:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655761451; x=1687297451;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=M++SGFYlMQ7EUf4lZu/Nxw8UrHS2BaRjFDRM2JfqF6s=;
+  b=PzJaBSG3rzxrfMozbNdzrlaNi1LycO6X/A0Gy070VFJA6mBi9+v8kpUu
+   aLDEdwSPQpRyYCzxm5VXEFjb5khS8QIu4bp7ahwRlN87NXoNcXAJ2AZH0
+   PGR9oETI8lz445wbmZdqKbmaucWmgVB9qDIWlm4phSWR/wolvyP5VSKyu
+   +5CryF8CkbUuwe/XbB4xw/aI5EYyc163hU/q7T7uOU4s+YktfbFQ745eu
+   ruAMIh3mzHt35ZLD9u0/IIz0QnxRMb7TDJo+rbpwoF2+iJ6usNvlU0/nR
+   EbcYLSX/NryyS+hK3b/puW0ZkDCXdKeEZNjxnelbEUupy1FouvXLYt2Ia
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10384"; a="305413264"
+X-IronPort-AV: E=Sophos;i="5.92,207,1650956400"; 
+   d="scan'208";a="305413264"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 14:44:11 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,207,1650956400"; 
+   d="scan'208";a="689641515"
+Received: from fmsmsx606.amr.corp.intel.com ([10.18.126.86])
+  by fmsmga002.fm.intel.com with ESMTP; 20 Jun 2022 14:44:11 -0700
+Received: from fmsmsx608.amr.corp.intel.com (10.18.126.88) by
+ fmsmsx606.amr.corp.intel.com (10.18.126.86) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Mon, 20 Jun 2022 14:44:10 -0700
+Received: from fmsmsx604.amr.corp.intel.com (10.18.126.84) by
+ fmsmsx608.amr.corp.intel.com (10.18.126.88) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Mon, 20 Jun 2022 14:44:10 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Mon, 20 Jun 2022 14:44:10 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.106)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.27; Mon, 20 Jun 2022 14:44:09 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Bdry31XzFw9i2bW+eyXQG3zjIxSaP3vc1yvRL9w7BVpoGUjtzqg1q3dxD3yrsSHreJSx93xLFuudUYcmZYlHVEtTHaVmvqXA7QGxqog+zHhSLMT5w9fi8suU85nUzIytiqkGBjiV3y5wAY3JTH6WGO1m+G5ivhYW8QbKODP/Bm2Wvf7K3WbrDAXvlW8f8y8o/PVLTiNf8CRy6PDuEnY11I3yBnInU60NHwQdMjZi128CBj6bg4loai7hieYJQKJZx4Ap7L6XoAYfwOP4uT4ZuZ61o9jj0Ass0iISixKJhbmxBoFPlnCdo9GU3kjFKTz2JxV1TSpVpqn4AW/l23GgdQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Ql9PZDXfL4/3XgsdO8TkUB+yjP5Ds7YoTr6XEyLGiNk=;
+ b=S7dwTgzcBsdRxmZ5L/vWFN6wV08ofp2LyBt34yJh3sLXm7oJ4BD27m/qTmWEIii+xKFycLRE4CYF0QkCS4ruxV6EkCRfiq5DVNoU24teN9hcmWauRsYIaqqtG6EWiQmmodXjHAyENru5QUDVPir64xECJbXrvTh58s3xyxRf1s4k31qLLo8EpTtbWbQ4zkmIfaUxiyHILMgfli3fugkTDYY+T4TwvMkH8Vk97+t1RL6KaKlKG1TAurqC3Omh+fPj24ik/j6+i4nkCQv9lJiFpK1GlZZWbH2EsE1Ca33Sv7aiox7lGRRoAyJczDeBZvyC3Zbno0I4fLH7yPoJufl6UA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DM4PR11MB6311.namprd11.prod.outlook.com (2603:10b6:8:a6::21) by
+ DM5PR11MB1355.namprd11.prod.outlook.com (2603:10b6:3:b::17) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5353.18; Mon, 20 Jun 2022 21:44:08 +0000
+Received: from DM4PR11MB6311.namprd11.prod.outlook.com
+ ([fe80::f0ac:be8f:9429:d262]) by DM4PR11MB6311.namprd11.prod.outlook.com
+ ([fe80::f0ac:be8f:9429:d262%5]) with mapi id 15.20.5353.018; Mon, 20 Jun 2022
+ 21:44:08 +0000
+Date:   Mon, 20 Jun 2022 14:44:04 -0700
+From:   Ira Weiny <ira.weiny@intel.com>
+To:     Bagas Sanjaya <bagasdotme@gmail.com>
+CC:     <linux-doc@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3] Documentation: highmem: Use literal block for code
+ example in highmem.h comment
+Message-ID: <YrDqJB0J1PT8VlwA@iweiny-desk3>
+References: <20220620083649.18172-1-bagasdotme@gmail.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220610080802.11147-1-Sergey.Semin@baikalelectronics.ru>
+In-Reply-To: <20220620083649.18172-1-bagasdotme@gmail.com>
+X-ClientProxiedBy: MWHPR15CA0036.namprd15.prod.outlook.com
+ (2603:10b6:300:ad::22) To DM4PR11MB6311.namprd11.prod.outlook.com
+ (2603:10b6:8:a6::21)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 03c2abe6-c29e-4ad8-2750-08da5306010e
+X-MS-TrafficTypeDiagnostic: DM5PR11MB1355:EE_
+X-Microsoft-Antispam-PRVS: <DM5PR11MB135518C0563F113FAE25B53BF7B09@DM5PR11MB1355.namprd11.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: zQl+1/xP1fuAUystTtz37j5nr6Iv/x2zTQl7H6ozQb6P4M0xOt/TFhqE9b/LWgqaWk4jZUv/q10dWENGkACIUeUN+jv/LH9Id8RfXibvcqfYo1W4hQW4iiXHoFfjQTjpcKQnymXarhH1hWFzwTG+FslKBYI4NPZ88ywIDWOvaahXvEtQptyoN2b7ujdf5iVcnmI49+OBOyiyqqe+kUrkMCz8JObyiIdqMDvFlWE2DKWhvmQOT3ESfX1LZyYb/3uzlv7uufAS/KsPQ8S/Q2HBFYS9s+cCoRGJFH5Xqtk0jwCaZZfqbdwcYCODbjpcyBmV39byhN9AObfMc/EgzXaOywihteZf6xIqu/Vxq3Hd6mMywtLWIgMrtw6OG+kdIa3kgtdm3K+CrCCNB3J+lkq/51s6zRp9VBxlFmGJxDXeYTlnvOQvOQ4AzUIXDQfrEvf24L+fJh5jhPnRP9LSwz5Iy7mcMy+EjFI4rXf8CGbnWmwXh0TOETpQ7m6ZJYH17kC0jWxSJUFNdYRyXDopwR3Yf4tQN32M4p0S68HIC3ymA8890JQFhLHlncrGBVPiAs4dfhSXQyGCvB9LIrQNIXAWygMvB5pZRgVeiZuYHc8DiH6hY5El9ySwlI5San/GNavjLG3VUdO9XOwT7UzdRwypRQ8V5UGjf594QXMJZnG58nOzuSfvd0ZPP+5rzMIYdSzM0d3ZPEh4d3eaSYz9/8yuJrMNItREu5tUMcbkVz32z6M=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB6311.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(136003)(346002)(39860400002)(396003)(366004)(376002)(82960400001)(9686003)(966005)(6666004)(5660300002)(6486002)(83380400001)(26005)(2906002)(6512007)(38100700002)(6506007)(86362001)(66476007)(66946007)(66556008)(478600001)(8936002)(33716001)(4326008)(8676002)(41300700001)(186003)(316002)(6916009)(54906003)(44832011);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?TYWY6HjydsHKssYwSn1MtYlz39v0UvYksFuZHv+lJI+i2DPGfwOHCrp7bfPU?=
+ =?us-ascii?Q?iO3RntFzC5KH8j1MDjkrx2yiQKdtO/e7EMI3XSKmzxtXo8mVX9z9MiCW6HaE?=
+ =?us-ascii?Q?QkIbl3zYjMPP8R7Prg9Zdz79ATbYG7QQrSo4Be1HOhEqQC6T4eeB9iNUz6lw?=
+ =?us-ascii?Q?XQgmnivZe/VEEcvHBewWO2r+O9P2EWFe1EV2FawgfNyQZFOQ9dxGih3kEPPj?=
+ =?us-ascii?Q?c7Gar/45LduL+P11aN1GTRFL9alV38ZMyXbug6XRiTI0AwLGxTZ1Cv5OnOsO?=
+ =?us-ascii?Q?9AHzysjMwm133eQsk7xxibQ7cGMBtFWFwZLjUDAfrxpZR2Gp5LQL1IYTP8Wo?=
+ =?us-ascii?Q?g+A+Crb2tj+mCYEUOwMu6peR0LkDatw4r101ceQnxP6z5H8AnhGZCzcUh9Xs?=
+ =?us-ascii?Q?W08X0hleOH5/OPWXyT3nZ5cn539BO5Oa2ZpdTiUDFa2KQ/Bv5qfOzqemVDA9?=
+ =?us-ascii?Q?NwOio9BLCBBeXCSSQC3g8HP/KQgNZIDZSr4XJrgVXUKQEjpIOhZ5H3TIuPVs?=
+ =?us-ascii?Q?0Hq+Qz7vwfGmY1OUfmzswmhbDSuXY+Hs3DFIP04CMqvmRVRZWljN6Me8CUFh?=
+ =?us-ascii?Q?uyaUKzdrAhx9KmDApd+SNHQVynDeXIO2Ltsg+130bVqBw8c9exYQTaDwMR7S?=
+ =?us-ascii?Q?AFdvGBdv+MsUTRnmCOMlQ5PVqEe20y+bZCrmBf3N1fjgwUK9aoSBCerkjo/7?=
+ =?us-ascii?Q?UD2ycxNMx8WvmYGTmCjZbqoBbbuthD2hDGvvrqWIp/fwbp/UNe0ClU81CXTv?=
+ =?us-ascii?Q?vZzwmL+J0ZR7l2wDpSPLvGhd5/UQFpz/2wfa6FYzY9zAMNo6r3eIUbHcwp1t?=
+ =?us-ascii?Q?xPxkEmNPc2RV2pylinJ1A6Fev5k5B+ObWqcChaPN8fVWrL18C7oMSLyJRcPy?=
+ =?us-ascii?Q?/aE/Wpgi9eXjQPsbCvahaZ9wC7udU+lb4S97CvHHlNrJQWqTfFHsx8Sn4um/?=
+ =?us-ascii?Q?O66yU9NVEFQ47Eh4xCWtIKeGEVb6oV3Dh4Wa60hkEA3BwZA7kk++9f0lSfJX?=
+ =?us-ascii?Q?a1pniY5sIvAnSo2nkMlz/soShr0zniMUPBoGocYjVJFeXJM8oCTzgU4z7mWF?=
+ =?us-ascii?Q?hfYlU9Wm21XjurtxulTDFF2UAii0vd9wug2ubZc0f81DHI0hoxs/S5+B8j/T?=
+ =?us-ascii?Q?CYEa+gcb2WO7r/YJRDKRvLpRhI1mHSQikIsvZcSlOVOP8G0K8LOwRgdQ+dcF?=
+ =?us-ascii?Q?jZS4Kx0ZtDQyqE+4L7zxxgAkN7DYbYkMdRZBaaJLkV/296XkbvKZQTIyeMzc?=
+ =?us-ascii?Q?TnryWltPumtHb8ExfSrsKybgobXJpCTAN/L0eSJoW32lO62C7djylXBcp3Be?=
+ =?us-ascii?Q?p3xK2mMbmxjaKVOmy/9kmzK+RU7oOyyhW5LyjJCgPc5S1u6bIUlvKlVsyNfl?=
+ =?us-ascii?Q?hZI9qmyyt0rEnoq5uqNUWOujPHitn3FFVVNYBbzh+sNxOcZXgpfA1UT2JgLJ?=
+ =?us-ascii?Q?Hh83GxfKp5O40K5X5xaItpFUzWH7JmPh95nYAvS926mQv5lI5U06vo6+CDZP?=
+ =?us-ascii?Q?0BePx6aQiaevwtjyrTCyLdOHhKVpKXJ7ivQ46NtK1u9nLdgD/rxZm1KDCPQI?=
+ =?us-ascii?Q?8EQKqGDXRRry3ir+u4MAM1EERWR8L+p4QEtvRzZ8NT02j5B5NkrJ0AWXpt+S?=
+ =?us-ascii?Q?M6x6OWfkZCT3/ReCUlvJ0wfQfQv/Id/Mrx6hMRVt1ALozGHCgl5hLTxgXgsz?=
+ =?us-ascii?Q?VPAswh146Yc9SVovXIyjJAQtBsM/FNC+QAIjyf1x0LnSfATs4wF18Zw+PQbC?=
+ =?us-ascii?Q?dVlyl/kTUA=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 03c2abe6-c29e-4ad8-2750-08da5306010e
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB6311.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jun 2022 21:44:08.0991
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Q5R1yDyag70sdeRQRhWtkgw8SsrZmTkp3TF6YDzOems91w/FnVEMODqrqgbgtndNaJdw9kFg57e/Cgj+3AOSpA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR11MB1355
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Folks,
+On Mon, Jun 20, 2022 at 03:36:49PM +0700, Bagas Sanjaya wrote:
+> When building htmldocs on Linus' tree, there are inline emphasis warnings
+> on include/linux/highmem.h:
+> 
+> Documentation/vm/highmem:166: ./include/linux/highmem.h:154: WARNING: Inline emphasis start-string without end-string.
+> Documentation/vm/highmem:166: ./include/linux/highmem.h:157: WARNING: Inline emphasis start-string without end-string.
+> 
+> These warnings above are due to comments in code example at the
+> mentioned lines above are enclosed by double dash (--), which confuses
+> Sphinx as inline markup delimiters instead.
+> 
+> Fix these warnings by indenting the code example with literal block
+> indentation and prefixing comments inside the example with C comment
+> symbol (#).
 
-On Fri, Jun 10, 2022 at 11:08:02AM +0300, Serge Semin wrote:
-> A basic device-specific linear memory mapping was introduced back in
-> commit ("dma: Take into account dma_pfn_offset") as a single-valued offset
-> preserved in the device.dma_pfn_offset field, which was initialized for
-> instance by means of the "dma-ranges" DT property. Afterwards the
-> functionality was extended to support more than one device-specific region
-> defined in the device.dma_range_map list of maps. But all of these
-> improvements concerned a single pointer, page or sg DMA-mapping methods,
-> while the system resource mapping function turned to miss the
-> corresponding modification. Thus the dma_direct_map_resource() method now
-> just casts the CPU physical address to the device DMA address with no
-> dma-ranges-based mapping taking into account, which is obviously wrong.
-> Let's fix it by using the phys_to_dma_direct() method to get the
-> device-specific bus address from the passed memory resource for the case
-> of the directly mapped DMA.
+"//"?
 
-So any comment on the suggest modification? Any notes against or for?
+Frankly I'd just drop "(#)".
 
--Sergey
+Perhaps:
+
+... indentation and making the comments C comments.
+
+Ira
 
 > 
-> Fixes: 25f1e1887088 ("dma: Take into account dma_pfn_offset")
-> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> 
+> Fixes: 85a85e7601263f ("Documentation/vm: move "Using kmap-atomic" to highmem.h")
+> Cc: Andrew Morton <akpm@linux-foundation.org>
+> Cc: Ira Weiny <ira.weiny@intel.com>
+> Cc: "Matthew Wilcox (Oracle)" <willy@infradead.org>
+> Cc: "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+> Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> Cc: linux-mm@kvack.org
+> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
 > ---
+>  Changes since v2 [1]:
+>    - Rebase on v5.19-rc3
+>    - Don't mention any functions
 > 
-> After a long discussion with Christoph and Robin regarding this patch
-> here:
-> https://lore.kernel.org/lkml/20220324014836.19149-4-Sergey.Semin@baikalelectronics.ru
-> and here
-> https://lore.kernel.org/linux-pci/20220503225104.12108-2-Sergey.Semin@baikalelectronics.ru/
-> It was decided to consult with wider maintainers audience whether it's ok
-> to accept the change as is or a more sophisticated solution needs to be
-> found for the non-linear direct MMIO mapping.
+>  [1]: https://lore.kernel.org/linux-doc/20220615101509.516520-1-bagasdotme@gmail.com/
+>  include/linux/highmem.h | 18 +++++++++---------
+>  1 file changed, 9 insertions(+), 9 deletions(-)
 > 
-> Cc: Christoph Hellwig <hch@lst.de>
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Cc: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> diff --git a/include/linux/highmem.h b/include/linux/highmem.h
+> index 3af34de54330cb..56d6a019653489 100644
+> --- a/include/linux/highmem.h
+> +++ b/include/linux/highmem.h
+> @@ -149,19 +149,19 @@ static inline void *kmap_local_folio(struct folio *folio, size_t offset);
+>   * It is used in atomic context when code wants to access the contents of a
+>   * page that might be allocated from high memory (see __GFP_HIGHMEM), for
+>   * example a page in the pagecache.  The API has two functions, and they
+> - * can be used in a manner similar to the following:
+> + * can be used in a manner similar to the following::
+>   *
+> - * -- Find the page of interest. --
+> - * struct page *page = find_get_page(mapping, offset);
+> + *   // Find the page of interest.
+> + *   struct page *page = find_get_page(mapping, offset);
+>   *
+> - * -- Gain access to the contents of that page. --
+> - * void *vaddr = kmap_atomic(page);
+> + *   // Gain access to the contents of that page.
+> + *   void *vaddr = kmap_atomic(page);
+>   *
+> - * -- Do something to the contents of that page. --
+> - * memset(vaddr, 0, PAGE_SIZE);
+> + *   // Do something to the contents of that page.
+> + *   memset(vaddr, 0, PAGE_SIZE);
+>   *
+> - * -- Unmap that page. --
+> - * kunmap_atomic(vaddr);
+> + *   // Unmap that page.
+> + *   kunmap_atomic(vaddr);
+>   *
+>   * Note that the kunmap_atomic() call takes the result of the kmap_atomic()
+>   * call, not the argument.
 > 
-> file: arch/arm/mach-orion5x/board-dt.c
-> Cc: Andrew Lunn <andrew@lunn.ch>
-> Cc: Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
-> Cc: Gregory Clement <gregory.clement@bootlin.com>
-> Cc: linux-arm-kernel@lists.infradead.org
-> 
-> file: drivers/crypto/marvell/cesa/cesa.c
-> Cc: Srujana Challa <schalla@marvell.com>
-> Cc: Arnaud Ebalard <arno@natisbad.org>
-> Cc: Boris Brezillon <bbrezillon@kernel.org>
-> Cc: linux-crypto@vger.kernel.org
-> 
-> file: drivers/dma/{fsl-edma-common.c,pl330.c,sh/rcar-dmac.c}
-> Cc: Vinod Koul <vkoul@kernel.org>
-> Cc: dmaengine@vger.kernel.org
-> 
-> file: arch/arm/boot/dts/{vfxxx.dtsi,ls1021a.dtsi,imx7ulp.dtsi,fsl-ls1043a.dtsi}
-> Cc: Shawn Guo <shawnguo@kernel.org>
-> Cc: Sascha Hauer <s.hauer@pengutronix.de>
-> Cc: Li Yang <leoyang.li@nxp.com>
-> Cc: linux-arm-kernel@lists.infradead.org
-> 
-> file: arch/arm/boot/dts/r8a77*.dtsi, arch/arm64/boot/dts/renesas/r8a77*.dtsi
-> Cc: Geert Uytterhoeven <geert+renesas@glider.be>
-> Cc: Magnus Damm <magnus.damm@gmail.com>
-> Cc: linux-renesas-soc@vger.kernel.org
-> 
-> file: drivers/gpu/drm/amd/amdgpu/amdgpu_vram_mgr.c
-> Cc: Alex Deucher <alexander.deucher@amd.com>
-> Cc: "Christian König" <christian.koenig@amd.com>
-> Cc: "Pan, Xinhui" <Xinhui.Pan@amd.com>
-> 
-> file: drivers/gpu/drm/virtio/virtgpu_vram.c
-> Cc: David Airlie <airlied@linux.ie>
-> Cc: Gerd Hoffmann <kraxel@redhat.com>
-> 
-> file: drivers/media/common/videobuf2/videobuf2-dma-contig.c
-> Cc: Tomasz Figa <tfiga@chromium.org>
-> Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-> 
-> file: drivers/misc/habanalabs/common/memory.c
-> Cc: Oded Gabbay <ogabbay@kernel.org>
-> Cc: Arnd Bergmann <arnd@arndb.de>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> 
-> file: drivers/mtd/nand/raw/qcom_nandc.c
-> Cc: Manivannan Sadhasivam <mani@kernel.org>
-> 
-> file: arch/arm64/boot/dts/qcom/{ipq8074.dtsi,ipq6018.dtsi,qcom-sdx55.dtsi,qcom-ipq4019.dtsi,qcom-ipq8064.dtsi}
-> Cc: Andy Gross <agross@kernel.org>
-> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Cc: linux-arm-msm@vger.kernel.org
-> 
-> file: drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-> Cc: Sunil Goutham <sgoutham@marvell.com>
-> Cc: Linu Cherian <lcherian@marvell.com>
-> Cc: Geetha sowjanya <gakula@marvell.com>
-> 
-> file: drivers/ntb/ntb_transport.c
-> Cc: Jon Mason <jdmason@kudzu.us>
-> Cc: Dave Jiang <dave.jiang@intel.com>
-> Cc: ntb@lists.linux.dev
-> ---
->  kernel/dma/direct.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> index 9743c6ccce1a..bc06db74dfdb 100644
-> --- a/kernel/dma/direct.c
-> +++ b/kernel/dma/direct.c
-> @@ -497,7 +497,7 @@ int dma_direct_map_sg(struct device *dev, struct scatterlist *sgl, int nents,
->  dma_addr_t dma_direct_map_resource(struct device *dev, phys_addr_t paddr,
->  		size_t size, enum dma_data_direction dir, unsigned long attrs)
->  {
-> -	dma_addr_t dma_addr = paddr;
-> +	dma_addr_t dma_addr = phys_to_dma_direct(dev, paddr);
->  
->  	if (unlikely(!dma_capable(dev, dma_addr, size, false))) {
->  		dev_err_once(dev,
+> base-commit: a111daf0c53ae91e71fd2bfe7497862d14132e3e
 > -- 
-> 2.35.1
+> An old man doll... just what I always wanted! - Clara
+> 
 > 
