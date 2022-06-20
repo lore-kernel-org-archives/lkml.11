@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01413C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:11:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24365C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:11:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344592AbiFTOLs (ORCPT
+        id S1350611AbiFTOLy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:11:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36878 "EHLO
+        Mon, 20 Jun 2022 10:11:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349186AbiFTNwh (ORCPT
+        with ESMTP id S232839AbiFTN5u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:52:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 336FE3151D;
-        Mon, 20 Jun 2022 06:19:09 -0700 (PDT)
+        Mon, 20 Jun 2022 09:57:50 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C70D0381B4;
+        Mon, 20 Jun 2022 06:23:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CA45CB811CF;
-        Mon, 20 Jun 2022 13:19:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2987C3411C;
-        Mon, 20 Jun 2022 13:19:06 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C1B9BCE138D;
+        Mon, 20 Jun 2022 13:06:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FF44C3411B;
+        Mon, 20 Jun 2022 13:06:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731147;
-        bh=6I0/CeuCYV+pLjRkLPGFe3RwaMAHdm/4MmSUdrwk8Qg=;
+        s=korg; t=1655730405;
+        bh=8el3SqLdZcIbqsykJyEZKxNlrqeGOrQgzCDXMo6yEMo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BiCuChqYxsricEp6tQfy/98o03fygFBGIV2bKBS/xawfr+j+tfVo84WV2ZTbxFArA
-         JH/dlfvsf7bp/O0Z1b2gTJyS6N8UOOv4EUZx6z0lPqbdNr4fSfFbGWOCSk6L2qeuVS
-         hWDQVSyAr0freMwxrmOgAPIYIxKn0a/QXO+xoGLU=
+        b=ZaiGG3Ena/E9LL4i4qaqOHBrJ5A3avkToq8Gu5EKw+ACeWJQp09nlf31mM7FvwAV3
+         aT1kcPv+iRH8t7QkohjcpltVY67G2Y+eDVtFXboG2VwEuet1TABDmpGSfqIiveDXKb
+         AQJb2sxMpzH7isrz9B3lVWINOGW804HbPMWygACs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 169/240] random: wire up fops->splice_{read,write}_iter()
-Date:   Mon, 20 Jun 2022 14:51:10 +0200
-Message-Id: <20220620124743.897085932@linuxfoundation.org>
+        stable@vger.kernel.org, Duke Lee <krnhotwings@gmail.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 043/106] platform/x86/intel: hid: Add Surface Go to VGBS allow list
+Date:   Mon, 20 Jun 2022 14:51:02 +0200
+Message-Id: <20220620124725.662434414@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
-References: <20220620124737.799371052@linuxfoundation.org>
+In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
+References: <20220620124724.380838401@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,45 +51,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jens Axboe <axboe@kernel.dk>
+From: Duke Lee <krnhotwings@gmail.com>
 
-commit 79025e727a846be6fd215ae9cdb654368ac3f9a6 upstream.
+[ Upstream commit d4fe9cc4ff8656704b58cfd9363d7c3c9d65e519 ]
 
-Now that random/urandom is using {read,write}_iter, we can wire it up to
-using the generic splice handlers.
+The Surface Go reports Chassis Type 9 (Laptop,) so the device needs to be
+added to dmi_vgbs_allow_list to enable tablet mode when an attached Type
+Cover is folded back.
 
-Fixes: 36e2c7421f02 ("fs: don't allow splice read/write without explicit ops")
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-[Jason: added the splice_write path. Note that sendfile() and such still
- does not work for read, though it does for write, because of a file
- type restriction in splice_direct_to_actor(), which I'll address
- separately.]
-Cc: Al Viro <viro@zeniv.linux.org.uk>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+BugLink: https://github.com/linux-surface/linux-surface/issues/837
+Signed-off-by: Duke Lee <krnhotwings@gmail.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Link: https://lore.kernel.org/r/20220607213654.5567-1-krnhotwings@gmail.com
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/random.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/platform/x86/intel/hid.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -1382,6 +1382,8 @@ const struct file_operations random_fops
- 	.compat_ioctl = compat_ptr_ioctl,
- 	.fasync = random_fasync,
- 	.llseek = noop_llseek,
-+	.splice_read = generic_file_splice_read,
-+	.splice_write = iter_file_splice_write,
+diff --git a/drivers/platform/x86/intel/hid.c b/drivers/platform/x86/intel/hid.c
+index e9e8554147e0..d7d6782c40c2 100644
+--- a/drivers/platform/x86/intel/hid.c
++++ b/drivers/platform/x86/intel/hid.c
+@@ -129,6 +129,12 @@ static const struct dmi_system_id dmi_vgbs_allow_list[] = {
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "HP Spectre x360 Convertible 15-df0xxx"),
+ 		},
+ 	},
++	{
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "Surface Go"),
++		},
++	},
+ 	{ }
  };
  
- const struct file_operations urandom_fops = {
-@@ -1391,6 +1393,8 @@ const struct file_operations urandom_fop
- 	.compat_ioctl = compat_ptr_ioctl,
- 	.fasync = random_fasync,
- 	.llseek = noop_llseek,
-+	.splice_read = generic_file_splice_read,
-+	.splice_write = iter_file_splice_write,
- };
- 
- 
+-- 
+2.35.1
+
 
 
