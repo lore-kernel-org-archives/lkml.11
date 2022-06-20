@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13520C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:05:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6175C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:05:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348678AbiFTOFD (ORCPT
+        id S1348929AbiFTOFP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:05:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45148 "EHLO
+        Mon, 20 Jun 2022 10:05:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345720AbiFTNy6 (ORCPT
+        with ESMTP id S1351121AbiFTNyO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:54:58 -0400
+        Mon, 20 Jun 2022 09:54:14 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5324E33377;
-        Mon, 20 Jun 2022 06:21:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E783222BB;
+        Mon, 20 Jun 2022 06:20:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F025260FAD;
-        Mon, 20 Jun 2022 13:21:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B567C3411C;
-        Mon, 20 Jun 2022 13:21:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4BF4460EC7;
+        Mon, 20 Jun 2022 13:20:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 407ECC3411C;
+        Mon, 20 Jun 2022 13:20:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731270;
-        bh=pHNUnVvFxgMHHtqeEJJweemAidY0jWCuaaOGMSlY6nc=;
+        s=korg; t=1655731235;
+        bh=f+gNgyrZfvIXtSqTYbU3pgS74xuHjz/V3tZOTKB6h9w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dHOcrgUkLM412kNSseX+x2U9boFmdJvJC5HhuUnyC2peWUXkEXeIkLXpp9aB479T1
-         2dwcajL6pVZSRTaNass4Hy77x5pJYFJ5mNUOCis1FMZYqY5GWqR/5JP00VZ6w+Eskc
-         Qlc6V8uK8PkLADISKJYUfFGH56GN5V3s93CResOs=
+        b=qNUpZfE3LyPCvSOOpRaMINu8NiIOKRlnhNWCO8E5A2IkXsixLMct/B5/fLR4L8b9d
+         PsrBOTzhiIKWM44+674Sto99w6gAsNXW6MecjCrItVm3+9E516pur8B07cMq4ms7Vy
+         Qto4SrEkaYvv7rLabkTG5bBjPSHyvO7JRV6PfUuE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Grzegorz Szczurek <grzegorzx.szczurek@intel.com>,
-        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
-        Bharathi Sreenivas <bharathi.sreenivas@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
+        James Smart <jsmart2021@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 208/240] i40e: Fix calculating the number of queue pairs
-Date:   Mon, 20 Jun 2022 14:51:49 +0200
-Message-Id: <20220620124745.007503488@linuxfoundation.org>
+Subject: [PATCH 5.4 194/240] scsi: lpfc: Fix port stuck in bypassed state after LIP in PT2PT topology
+Date:   Mon, 20 Jun 2022 14:51:35 +0200
+Message-Id: <20220620124744.607492509@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -53,39 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Grzegorz Szczurek <grzegorzx.szczurek@intel.com>
+From: James Smart <jsmart2021@gmail.com>
 
-[ Upstream commit 0bb050670ac90a167ecfa3f9590f92966c9a3677 ]
+[ Upstream commit 336d63615466b4c06b9401c987813fd19bdde39b ]
 
-If ADQ is enabled for a VF, then actual number of queue pair
-is a number of currently available traffic classes for this VF.
+After issuing a LIP, a specific target vendor does not ACC the FLOGI that
+lpfc sends.  However, it does send its own FLOGI that lpfc ACCs.  The
+target then establishes the port IDs by sending a PLOGI.  lpfc PLOGI_ACCs
+and starts the RPI registration for DID 0x000001.  The target then sends a
+LOGO to the fabric DID.  lpfc is currently treating the LOGO from the
+fabric DID as a link down and cleans up all the ndlps.  The ndlp for DID
+0x000001 is put back into NPR and discovery stops, leaving the port in
+stuck in bypassed mode.
 
-Without this change the configuration of the Rx/Tx queues
-fails with error.
+Change lpfc behavior such that if a LOGO is received for the fabric DID in
+PT2PT topology skip the lpfc_linkdown_port() routine and just move the
+fabric DID back to NPR.
 
-Fixes: d29e0d233e0d ("i40e: missing input validation on VF message handling by the PF")
-Signed-off-by: Grzegorz Szczurek <grzegorzx.szczurek@intel.com>
-Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
-Tested-by: Bharathi Sreenivas <bharathi.sreenivas@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Link: https://lore.kernel.org/r/20220603174329.63777-7-jsmart2021@gmail.com
+Co-developed-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/scsi/lpfc/lpfc_nportdisc.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-index 4962e6193eec..4080fdacca4c 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-@@ -2149,7 +2149,7 @@ static int i40e_vc_config_queues_msg(struct i40e_vf *vf, u8 *msg)
- 	}
- 
- 	if (vf->adq_enabled) {
--		for (i = 0; i < I40E_MAX_VF_VSI; i++)
-+		for (i = 0; i < vf->num_tc; i++)
- 			num_qps_all += vf->ch[i].num_qps;
- 		if (num_qps_all != qci->num_queue_pairs) {
- 			aq_ret = I40E_ERR_PARAM;
+diff --git a/drivers/scsi/lpfc/lpfc_nportdisc.c b/drivers/scsi/lpfc/lpfc_nportdisc.c
+index df2f7c3d7f84..e6a94f550a57 100644
+--- a/drivers/scsi/lpfc/lpfc_nportdisc.c
++++ b/drivers/scsi/lpfc/lpfc_nportdisc.c
+@@ -842,7 +842,8 @@ lpfc_rcv_logo(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
+ 	else
+ 		lpfc_els_rsp_acc(vport, ELS_CMD_ACC, cmdiocb, ndlp, NULL);
+ 	if (ndlp->nlp_DID == Fabric_DID) {
+-		if (vport->port_state <= LPFC_FDISC)
++		if (vport->port_state <= LPFC_FDISC ||
++		    vport->fc_flag & FC_PT2PT)
+ 			goto out;
+ 		lpfc_linkdown_port(vport);
+ 		spin_lock_irq(shost->host_lock);
 -- 
 2.35.1
 
