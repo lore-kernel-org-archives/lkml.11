@@ -2,98 +2,224 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6685EC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:05:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 943D7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:05:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349160AbiFTOFe (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:05:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45322 "EHLO
+        id S242972AbiFTOFh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 10:05:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351834AbiFTNz2 (ORCPT
+        with ESMTP id S1352967AbiFTN5V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:55:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 174F6340EB;
-        Mon, 20 Jun 2022 06:21:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 593AD60AC0;
-        Mon, 20 Jun 2022 13:21:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62180C3411B;
-        Mon, 20 Jun 2022 13:21:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731292;
-        bh=KRnyYm02/M04mY5xe4aX4sVWRy2Xqe+5jAymsdFwhho=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZBPFwAI2k+hhmtb3ACEE5p/q7rKdx5tfUG4qAnX8cQG3HZ/Eb9mq8hJvHDowzcfRm
-         R+rAn5uT482RQpBjPCv9uY5dAqf9uKSJWxFQNziF8r6qsPXLhVA7Jw9niF+CI+eLA8
-         oRTWSVaRvrEFyVBRMl7/bQN8SOkIZBknsDZWQmzc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@linux.microsoft.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 215/240] certs/blacklist_hashes.c: fix const confusion in certs blacklist
-Date:   Mon, 20 Jun 2022 14:51:56 +0200
-Message-Id: <20220620124745.202364357@linuxfoundation.org>
+        Mon, 20 Jun 2022 09:57:21 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05B0437A1A;
+        Mon, 20 Jun 2022 06:23:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655731392; x=1687267392;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=8KQlo1GaidK62joql7rVf5HOV1doJhcv4ni0UcMrcSg=;
+  b=f2NPgY3X6sqcrC0EQ1hnOZ9NcLKh0IGmf/IcK3zraY9D7+5aB91fiDlO
+   oEbT5jCu1hsPh2hUgRawP4E6YjbCg6/9d3DU3JHszCHocoF8oJOVIPZRT
+   WLiidAjQavb5/mZ2LMSfviYs4uxdwOMSktWzf8R1rRVl6dRHh2HGClu57
+   SQbQXl5rbyVoPkHoOptb00aeHBMV9L24NxsVdd5YumQ4J2YU4L/VfgR67
+   t3LhFL8PgMK6esoyjQY7V3QKQyOYdT+24rA6gSiWEe+1mzn//t4OfjSeq
+   B5t9ktYnkx9uFwTgK++1vjYTzngJtaiVfpd6su7ZL5peYvdQeP4r51xkS
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="279943101"
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="279943101"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 06:22:36 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="676537059"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by FMSMGA003.fm.intel.com with ESMTP; 20 Jun 2022 06:22:30 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 25KDMSqF029562;
+        Mon, 20 Jun 2022 14:22:28 +0100
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Yury Norov <yury.norov@gmail.com>,
+        "Andy Shevchenko" <andriy.shevchenko@linux.intel.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Matt Turner <mattst88@gmail.com>,
+        Brian Cain <bcain@quicinc.com>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Kees Cook <keescook@chromium.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Marco Elver <elver@google.com>, Borislav Petkov <bp@suse.de>,
+        Tony Luck <tony.luck@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        alpha <linux-alpha@vger.kernel.org>,
+        "open list:QUALCOMM HEXAGON..." <linux-hexagon@vger.kernel.org>,
+        "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        Linux-sh list <linux-sh@vger.kernel.org>,
+        sparclinux <sparclinux@vger.kernel.org>,
+        Linux-Arch <linux-arch@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 0/7] bitops: let optimize out non-atomic bitops on compile-time constants
+Date:   Mon, 20 Jun 2022 15:22:17 +0200
+Message-Id: <20220620132217.2628130-1-alexandr.lobakin@intel.com>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
-References: <20220620124737.799371052@linuxfoundation.org>
-User-Agent: quilt/0.66
+In-Reply-To: <CAMuHMdXYmtTf=e++fArH4K=vUtRxFd6=toD8An5KxrkRDkkOwg@mail.gmail.com>
+References: <20220617144031.2549432-1-alexandr.lobakin@intel.com> <CAMuHMdXYmtTf=e++fArH4K=vUtRxFd6=toD8An5KxrkRDkkOwg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masahiro Yamada <masahiroy@kernel.org>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Mon, 20 Jun 2022 14:07:27 +0200
 
-[ Upstream commit 6a1c3767d82ed8233de1263aa7da81595e176087 ]
+> Hi Olek,
 
-This file fails to compile as follows:
+Hey!
 
-  CC      certs/blacklist_hashes.o
-certs/blacklist_hashes.c:4:1: error: ignoring attribute ‘section (".init.data")’ because it conflicts with previous ‘section (".init.rodata")’ [-Werror=attributes]
-    4 | const char __initdata *const blacklist_hashes[] = {
-      | ^~~~~
-In file included from certs/blacklist_hashes.c:2:
-certs/blacklist.h:5:38: note: previous declaration here
-    5 | extern const char __initconst *const blacklist_hashes[];
-      |                                      ^~~~~~~~~~~~~~~~
+> 
+> On Fri, Jun 17, 2022 at 6:51 PM Alexander Lobakin
+> <alexandr.lobakin@intel.com> wrote:
+> > While I was working on converting some structure fields from a fixed
+> > type to a bitmap, I started observing code size increase not only in
+> > places where the code works with the converted structure fields, but
+> > also where the converted vars were on the stack. That said, the
+> > following code:
+> >
+> >         DECLARE_BITMAP(foo, BITS_PER_LONG) = { }; // -> unsigned long foo[1];
+> >         unsigned long bar = BIT(BAR_BIT);
+> >         unsigned long baz = 0;
+> >
+> >         __set_bit(FOO_BIT, foo);
+> >         baz |= BIT(BAZ_BIT);
+> >
+> >         BUILD_BUG_ON(!__builtin_constant_p(test_bit(FOO_BIT, foo));
+> >         BUILD_BUG_ON(!__builtin_constant_p(bar & BAR_BIT));
+> >         BUILD_BUG_ON(!__builtin_constant_p(baz & BAZ_BIT));
+> >
+> > triggers the first assertion on x86_64, which means that the
+> > compiler is unable to evaluate it to a compile-time initializer
+> > when the architecture-specific bitop is used even if it's obvious.
+> > I found that this is due to that many architecture-specific
+> > non-atomic bitop implementations use inline asm or other hacks which
+> > are faster or more robust when working with "real" variables (i.e.
+> > fields from the structures etc.), but the compilers have no clue how
+> > to optimize them out when called on compile-time constants.
+> >
+> > So, in order to let the compiler optimize out such cases, expand the
+> > test_bit() and __*_bit() definitions with a compile-time condition
+> > check, so that they will pick the generic C non-atomic bitop
+> > implementations when all of the arguments passed are compile-time
+> > constants, which means that the result will be a compile-time
+> > constant as well and the compiler will produce more efficient and
+> > simple code in 100% cases (no changes when there's at least one
+> > non-compile-time-constant argument).
+> > The condition itself:
+> >
+> > if (
+> > __builtin_constant_p(nr) &&     /* <- bit position is constant */
+> > __builtin_constant_p(!!addr) && /* <- compiler knows bitmap addr is
+> >                                       always either NULL or not */
+> > addr &&                         /* <- bitmap addr is not NULL */
+> > __builtin_constant_p(*addr)     /* <- compiler knows the value of
+> >                                       the target bitmap */
+> > )
+> >         /* then pick the generic C variant
+> > else
+> >         /* old code path, arch-specific
+> >
+> > I also tried __is_constexpr() as suggested by Andy, but it was
+> > always returning 0 ('not a constant') for the 2,3 and 4th
+> > conditions.
+> >
+> > The savings are architecture, compiler and compiler flags dependent,
+> > for example, on x86_64 -O2:
+> >
+> > GCC 12: add/remove: 78/29 grow/shrink: 332/525 up/down: 31325/-61560 (-30235)
+> > LLVM 13: add/remove: 79/76 grow/shrink: 184/537 up/down: 55076/-141892 (-86816)
+> > LLVM 14: add/remove: 10/3 grow/shrink: 93/138 up/down: 3705/-6992 (-3287)
+> >
+> > and ARM64 (courtesy of Mark[0]):
+> >
+> > GCC 11: add/remove: 92/29 grow/shrink: 933/2766 up/down: 39340/-82580 (-43240)
+> > LLVM 14: add/remove: 21/11 grow/shrink: 620/651 up/down: 12060/-15824 (-3764)
+> >
+> > And the following:
+> >
+> >         DECLARE_BITMAP(flags, __IP_TUNNEL_FLAG_NUM) = { };
+> >         __be16 flags;
+> >
+> >         __set_bit(IP_TUNNEL_CSUM_BIT, flags);
+> >
+> >         tun_flags = cpu_to_be16(*flags & U16_MAX);
+> >
+> >         if (test_bit(IP_TUNNEL_VTI_BIT, flags))
+> >                 tun_flags |= VTI_ISVTI;
+> >
+> >         BUILD_BUG_ON(!__builtin_constant_p(tun_flags));
+> >
+> > doesn't blow up anymore (which is being checked now at build time),
+> > so that we can now e.g. use fixed bitmaps in compile-time assertions
+> > etc.
+> >
+> > The series has been in intel-next for a while with no reported issues.
+> >
+> > From v2[1]:
+> > * collect several Reviewed-bys (Andy, Yury);
+> > * add a comment to generic_test_bit() that it is atomic-safe and
+> >   must always stay like that (the first version of this series
+> >   errorneously tried to change this) (Andy, Marco);
+> > * unify the way how architectures define platform-specific bitops,
+> >   both supporting instrumentation and not: now they define only
+> >   'arch_' versions and asm-generic includes take care of the rest;
+> > * micro-optimize the diffstat of 0004/0007 (__check_bitop_pr())
+> >   (Andy);
+> > * add compile-time tests to lib/test_bitmap to make sure everything
+> >   works as expected on any setup (Yury).
+> 
+> Thanks for the update!
+> 
+> Still seeing
+> add/remove: 49/13 grow/shrink: 280/137 up/down: 6464/-3328 (3136)
 
-Apply the same fix as commit 2be04df5668d ("certs/blacklist_nohashes.c:
-fix const confusion in certs blacklist").
+Meh. What about -O2 (OPTIMIZE_FOR_PERFORMANCE)? I have a thought to
+make it depend on the config option above, but that would make code
+behave differently, so it's not safe.
+Are those 3 Kb critical for m68k machines? I'm asking because for
+some embedded systems they are :)
+Another thing, this could happen due to inlining rebalance. E.g.
+the compiler could inline or uninline some functions due to
+resolving bit{maps,ops} to compile-time constants. I was seeing
+such in the past several times. Also, IIRC you already sent some
+bloat-o-meter results here, and that was the case.
+On the other hand, if lib/test_bitmap.o builds successfully (I
+assume it does), the series works as expected.
 
-Fixes: 734114f8782f ("KEYS: Add a system blacklist keyring")
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Reviewed-by: Mickaël Salaün <mic@linux.microsoft.com>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- certs/blacklist_hashes.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> on m68k atari_defconfig (i.e.CONFIG_CC_OPTIMIZE_FOR_SIZE=y)
+> with gcc version 9.4.0 (Ubuntu 9.4.0-1ubuntu1~20.04).
+> 
+> Gr{oetje,eeting}s,
+> 
+>                         Geert
+> 
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+> 
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                 -- Linus Torvalds
 
-diff --git a/certs/blacklist_hashes.c b/certs/blacklist_hashes.c
-index 344892337be0..d5961aa3d338 100644
---- a/certs/blacklist_hashes.c
-+++ b/certs/blacklist_hashes.c
-@@ -1,7 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
- #include "blacklist.h"
- 
--const char __initdata *const blacklist_hashes[] = {
-+const char __initconst *const blacklist_hashes[] = {
- #include CONFIG_SYSTEM_BLACKLIST_HASH_LIST
- 	, NULL
- };
--- 
-2.35.1
-
-
-
+Thanks,
+Olek
