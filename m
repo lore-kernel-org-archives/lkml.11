@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 244C2C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:06:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10E86C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:06:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244965AbiFTNGT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:06:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50938 "EHLO
+        id S244972AbiFTNGV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:06:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244841AbiFTNED (ORCPT
+        with ESMTP id S244839AbiFTNED (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 20 Jun 2022 09:04:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DEAE193C0;
-        Mon, 20 Jun 2022 05:58:53 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3936E192BD;
+        Mon, 20 Jun 2022 05:58:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3CD3861531;
-        Mon, 20 Jun 2022 12:58:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D445C3411C;
-        Mon, 20 Jun 2022 12:58:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EF6CEB811A3;
+        Mon, 20 Jun 2022 12:58:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60E09C3411C;
+        Mon, 20 Jun 2022 12:58:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655729932;
-        bh=ytZ1+hFyV2RqybENQgs4g/BucLFJXxFLio4+veEmxzc=;
+        s=korg; t=1655729929;
+        bh=zF1v78wE+V4e5SLuD5aljk/ixD5fd8h/4NWR5z4xJPQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XRJKcA/DDfNX5NnJL/H08kwpIpNiyL4jh8UWQvLlAjXcDPO8uVul2YWeyI3NNnuYx
-         rvCGxA/I1sVUsp1aRXJW82tuMSD7T8+hEIF9rnyatD7g5uoDqXL6+0JhhfolSqFHv6
-         ha2OTQppkwdCo1cj1TXwQOBuPA4KxHjG+N/tQidg=
+        b=x2j74huuUY0aZPS+bESw+2XaSSDrWjOrc9u2iNdsH4o7pxG8iKEOEDhZZ1EF6arc0
+         0SSTGvJ/E9uUwm3qCnp1Eh65lwJbdAhgSHEWTXyB+Xo+5IoT83BfzCaj1zjF/QDNJB
+         m2JOuCsc8BAmGeSJut5nClKAhpQEounH/BaWqxUw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 088/141] faddr2line: Fix overlapping text section failures, the sequel
-Date:   Mon, 20 Jun 2022 14:50:26 +0200
-Message-Id: <20220620124732.147178843@linuxfoundation.org>
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        Ming Lei <ming.lei@redhat.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 087/141] block: Fix handling of offline queues in blk_mq_alloc_request_hctx()
+Date:   Mon, 20 Jun 2022 14:50:25 +0200
+Message-Id: <20220620124732.116921788@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 References: <20220620124729.509745706@linuxfoundation.org>
@@ -49,137 +50,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@kernel.org>
+From: Bart Van Assche <bvanassche@acm.org>
 
-[ Upstream commit dcea997beed694cbd8705100ca1a6eb0d886de69 ]
+[ Upstream commit 14dc7a18abbe4176f5626c13c333670da8e06aa1 ]
 
-If a function lives in a section other than .text, but .text also exists
-in the object, faddr2line may wrongly assume .text.  This can result in
-comically wrong output.  For example:
+This patch prevents that test nvme/004 triggers the following:
 
-  $ scripts/faddr2line vmlinux.o enter_from_user_mode+0x1c
-  enter_from_user_mode+0x1c/0x30:
-  find_next_bit at /home/jpoimboe/git/linux/./include/linux/find.h:40
-  (inlined by) perf_clear_dirty_counters at /home/jpoimboe/git/linux/arch/x86/events/core.c:2504
+UBSAN: array-index-out-of-bounds in block/blk-mq.h:135:9
+index 512 is out of range for type 'long unsigned int [512]'
+Call Trace:
+ show_stack+0x52/0x58
+ dump_stack_lvl+0x49/0x5e
+ dump_stack+0x10/0x12
+ ubsan_epilogue+0x9/0x3b
+ __ubsan_handle_out_of_bounds.cold+0x44/0x49
+ blk_mq_alloc_request_hctx+0x304/0x310
+ __nvme_submit_sync_cmd+0x70/0x200 [nvme_core]
+ nvmf_connect_io_queue+0x23e/0x2a0 [nvme_fabrics]
+ nvme_loop_connect_io_queues+0x8d/0xb0 [nvme_loop]
+ nvme_loop_create_ctrl+0x58e/0x7d0 [nvme_loop]
+ nvmf_create_ctrl+0x1d7/0x4d0 [nvme_fabrics]
+ nvmf_dev_write+0xae/0x111 [nvme_fabrics]
+ vfs_write+0x144/0x560
+ ksys_write+0xb7/0x140
+ __x64_sys_write+0x42/0x50
+ do_syscall_64+0x35/0x80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-Fix it by passing the section name to addr2line, unless the object file
-is vmlinux, in which case the symbol table uses absolute addresses.
-
-Fixes: 1d1a0e7c5100 ("scripts/faddr2line: Fix overlapping text section failures")
-Reported-by: Peter Zijlstra <peterz@infradead.org>
-Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
-Link: https://lore.kernel.org/r/7d25bc1408bd3a750ac26e60d2f2815a5f4a8363.1654130536.git.jpoimboe@kernel.org
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Ming Lei <ming.lei@redhat.com>
+Fixes: 20e4d8139319 ("blk-mq: simplify queue mapping & schedule with each possisble CPU")
+Signed-off-by: Bart Van Assche <bvanassche@acm.org>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Ming Lei <ming.lei@redhat.com>
+Link: https://lore.kernel.org/r/20220615210004.1031820-1-bvanassche@acm.org
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- scripts/faddr2line | 45 ++++++++++++++++++++++++++++++++++-----------
- 1 file changed, 34 insertions(+), 11 deletions(-)
+ block/blk-mq.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/scripts/faddr2line b/scripts/faddr2line
-index 0e6268d59883..94ed98dd899f 100755
---- a/scripts/faddr2line
-+++ b/scripts/faddr2line
-@@ -95,17 +95,25 @@ __faddr2line() {
- 	local print_warnings=$4
+diff --git a/block/blk-mq.c b/block/blk-mq.c
+index de7fc6957271..631fb87b4976 100644
+--- a/block/blk-mq.c
++++ b/block/blk-mq.c
+@@ -579,6 +579,8 @@ struct request *blk_mq_alloc_request_hctx(struct request_queue *q,
+ 	if (!blk_mq_hw_queue_mapped(data.hctx))
+ 		goto out_queue_exit;
+ 	cpu = cpumask_first_and(data.hctx->cpumask, cpu_online_mask);
++	if (cpu >= nr_cpu_ids)
++		goto out_queue_exit;
+ 	data.ctx = __blk_mq_get_ctx(q, cpu);
  
- 	local sym_name=${func_addr%+*}
--	local offset=${func_addr#*+}
--	offset=${offset%/*}
-+	local func_offset=${func_addr#*+}
-+	func_offset=${func_offset%/*}
- 	local user_size=
-+	local file_type
-+	local is_vmlinux=0
- 	[[ $func_addr =~ "/" ]] && user_size=${func_addr#*/}
- 
--	if [[ -z $sym_name ]] || [[ -z $offset ]] || [[ $sym_name = $func_addr ]]; then
-+	if [[ -z $sym_name ]] || [[ -z $func_offset ]] || [[ $sym_name = $func_addr ]]; then
- 		warn "bad func+offset $func_addr"
- 		DONE=1
- 		return
- 	fi
- 
-+	# vmlinux uses absolute addresses in the section table rather than
-+	# section offsets.
-+	local file_type=$(${READELF} --file-header $objfile |
-+		${AWK} '$1 == "Type:" { print $2; exit }')
-+	[[ $file_type = "EXEC" ]] && is_vmlinux=1
-+
- 	# Go through each of the object's symbols which match the func name.
- 	# In rare cases there might be duplicates, in which case we print all
- 	# matches.
-@@ -114,9 +122,11 @@ __faddr2line() {
- 		local sym_addr=0x${fields[1]}
- 		local sym_elf_size=${fields[2]}
- 		local sym_sec=${fields[6]}
-+		local sec_size
-+		local sec_name
- 
- 		# Get the section size:
--		local sec_size=$(${READELF} --section-headers --wide $objfile |
-+		sec_size=$(${READELF} --section-headers --wide $objfile |
- 			sed 's/\[ /\[/' |
- 			${AWK} -v sec=$sym_sec '$1 == "[" sec "]" { print "0x" $6; exit }')
- 
-@@ -126,6 +136,17 @@ __faddr2line() {
- 			return
- 		fi
- 
-+		# Get the section name:
-+		sec_name=$(${READELF} --section-headers --wide $objfile |
-+			sed 's/\[ /\[/' |
-+			${AWK} -v sec=$sym_sec '$1 == "[" sec "]" { print $2; exit }')
-+
-+		if [[ -z $sec_name ]]; then
-+			warn "bad section name: section: $sym_sec"
-+			DONE=1
-+			return
-+		fi
-+
- 		# Calculate the symbol size.
- 		#
- 		# Unfortunately we can't use the ELF size, because kallsyms
-@@ -174,10 +195,10 @@ __faddr2line() {
- 
- 		sym_size=0x$(printf %x $sym_size)
- 
--		# Calculate the section address from user-supplied offset:
--		local addr=$(($sym_addr + $offset))
-+		# Calculate the address from user-supplied offset:
-+		local addr=$(($sym_addr + $func_offset))
- 		if [[ -z $addr ]] || [[ $addr = 0 ]]; then
--			warn "bad address: $sym_addr + $offset"
-+			warn "bad address: $sym_addr + $func_offset"
- 			DONE=1
- 			return
- 		fi
-@@ -191,9 +212,9 @@ __faddr2line() {
- 		fi
- 
- 		# Make sure the provided offset is within the symbol's range:
--		if [[ $offset -gt $sym_size ]]; then
-+		if [[ $func_offset -gt $sym_size ]]; then
- 			[[ $print_warnings = 1 ]] &&
--				echo "skipping $sym_name address at $addr due to size mismatch ($offset > $sym_size)"
-+				echo "skipping $sym_name address at $addr due to size mismatch ($func_offset > $sym_size)"
- 			continue
- 		fi
- 
-@@ -202,11 +223,13 @@ __faddr2line() {
- 		[[ $FIRST = 0 ]] && echo
- 		FIRST=0
- 
--		echo "$sym_name+$offset/$sym_size:"
-+		echo "$sym_name+$func_offset/$sym_size:"
- 
- 		# Pass section address to addr2line and strip absolute paths
- 		# from the output:
--		local output=$(${ADDR2LINE} -fpie $objfile $addr | sed "s; $dir_prefix\(\./\)*; ;")
-+		local args="--functions --pretty-print --inlines --exe=$objfile"
-+		[[ $is_vmlinux = 0 ]] && args="$args --section=$sec_name"
-+		local output=$(${ADDR2LINE} $args $addr | sed "s; $dir_prefix\(\./\)*; ;")
- 		[[ -z $output ]] && continue
- 
- 		# Default output (non --list):
+ 	if (!q->elevator)
 -- 
 2.35.1
 
