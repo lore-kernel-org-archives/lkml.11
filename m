@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6616EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:05:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A4DAC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:05:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244577AbiFTNFq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:05:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47608 "EHLO
+        id S244660AbiFTNFs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:05:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244601AbiFTNDr (ORCPT
+        with ESMTP id S244706AbiFTND4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:03:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 285F51ADAB;
-        Mon, 20 Jun 2022 05:58:28 -0700 (PDT)
+        Mon, 20 Jun 2022 09:03:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EDD21AF0E;
+        Mon, 20 Jun 2022 05:58:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 639CBB81092;
-        Mon, 20 Jun 2022 12:58:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E2C2C3411B;
-        Mon, 20 Jun 2022 12:58:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E5FA561531;
+        Mon, 20 Jun 2022 12:58:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E033AC3411B;
+        Mon, 20 Jun 2022 12:58:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655729905;
-        bh=KRnyYm02/M04mY5xe4aX4sVWRy2Xqe+5jAymsdFwhho=;
+        s=korg; t=1655729911;
+        bh=KSTBBIw5SEmWnx7td8ycDPE2VFjcDDTcRH8moZ/RsiY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NJhtPZ6SxJRKd6pwu+NwyiatBXHmc+vnlSP3PFH6ZNx/dfrDRkU2HyoouxQUwUYeT
-         rM+oD4SoWOwYXTKLQtZmuvEGVisOlSCpSIZ0gdG2ht0T/EsdyxBi1OeGgdWWshKJld
-         d2QYaLAPApH+gKch6mSTXqqmfoUwl5Pn8WIJZPW0=
+        b=WiD5CkGImPcynkrKlSmdpKd9YYqGv173fv2h8ueHGkjGT81EQVTG9p533IiAIlMlk
+         a7ZSMyJ19a+ypDUl9n3zldL4pC8j/cPUlL8Ckt++yBTMP2+c030B0zjJPKzZy/eQ+q
+         rZ0cMrPmwuFEJLmtCbT2Pmsk3Sw3OLquLi823/MI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@linux.microsoft.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 085/141] certs/blacklist_hashes.c: fix const confusion in certs blacklist
-Date:   Mon, 20 Jun 2022 14:50:23 +0200
-Message-Id: <20220620124732.058316706@linuxfoundation.org>
+        stable@vger.kernel.org, Michael Wu <michael@allwinnertech.com>,
+        John Keeping <john@metanate.com>,
+        Linyu Yuan <quic_linyyuan@quicinc.com>
+Subject: [PATCH 5.18 113/141] usb: gadget: f_fs: change ep->status safe in ffs_epfile_io()
+Date:   Mon, 20 Jun 2022 14:50:51 +0200
+Message-Id: <20220620124732.883603343@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 References: <20220620124729.509745706@linuxfoundation.org>
@@ -50,49 +49,119 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masahiro Yamada <masahiroy@kernel.org>
+From: Linyu Yuan <quic_linyyuan@quicinc.com>
 
-[ Upstream commit 6a1c3767d82ed8233de1263aa7da81595e176087 ]
+commit fb1f16d74e263baa4ad11e31e28b68f144aa55ed upstream.
 
-This file fails to compile as follows:
+If a task read/write data in blocking mode, it will wait the completion
+in ffs_epfile_io(), if function unbind occurs, ffs_func_unbind() will
+kfree ffs ep, once the task wake up, it still dereference the ffs ep to
+obtain the request status.
 
-  CC      certs/blacklist_hashes.o
-certs/blacklist_hashes.c:4:1: error: ignoring attribute ‘section (".init.data")’ because it conflicts with previous ‘section (".init.rodata")’ [-Werror=attributes]
-    4 | const char __initdata *const blacklist_hashes[] = {
-      | ^~~~~
-In file included from certs/blacklist_hashes.c:2:
-certs/blacklist.h:5:38: note: previous declaration here
-    5 | extern const char __initconst *const blacklist_hashes[];
-      |                                      ^~~~~~~~~~~~~~~~
+Fix it by moving the request status to io_data which is stack-safe.
 
-Apply the same fix as commit 2be04df5668d ("certs/blacklist_nohashes.c:
-fix const confusion in certs blacklist").
-
-Fixes: 734114f8782f ("KEYS: Add a system blacklist keyring")
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Reviewed-by: Mickaël Salaün <mic@linux.microsoft.com>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: <stable@vger.kernel.org> # 5.15
+Reported-by: Michael Wu <michael@allwinnertech.com>
+Tested-by: Michael Wu <michael@allwinnertech.com>
+Reviewed-by: John Keeping <john@metanate.com>
+Signed-off-by: Linyu Yuan <quic_linyyuan@quicinc.com>
+Link: https://lore.kernel.org/r/1654863478-26228-2-git-send-email-quic_linyyuan@quicinc.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- certs/blacklist_hashes.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/gadget/function/f_fs.c |   34 +++++++++++++++++++---------------
+ 1 file changed, 19 insertions(+), 15 deletions(-)
 
-diff --git a/certs/blacklist_hashes.c b/certs/blacklist_hashes.c
-index 344892337be0..d5961aa3d338 100644
---- a/certs/blacklist_hashes.c
-+++ b/certs/blacklist_hashes.c
-@@ -1,7 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
- #include "blacklist.h"
+--- a/drivers/usb/gadget/function/f_fs.c
++++ b/drivers/usb/gadget/function/f_fs.c
+@@ -122,8 +122,6 @@ struct ffs_ep {
+ 	struct usb_endpoint_descriptor	*descs[3];
  
--const char __initdata *const blacklist_hashes[] = {
-+const char __initconst *const blacklist_hashes[] = {
- #include CONFIG_SYSTEM_BLACKLIST_HASH_LIST
- 	, NULL
+ 	u8				num;
+-
+-	int				status;	/* P: epfile->mutex */
  };
--- 
-2.35.1
-
+ 
+ struct ffs_epfile {
+@@ -227,6 +225,9 @@ struct ffs_io_data {
+ 	bool use_sg;
+ 
+ 	struct ffs_data *ffs;
++
++	int status;
++	struct completion done;
+ };
+ 
+ struct ffs_desc_helper {
+@@ -707,12 +708,15 @@ static const struct file_operations ffs_
+ 
+ static void ffs_epfile_io_complete(struct usb_ep *_ep, struct usb_request *req)
+ {
++	struct ffs_io_data *io_data = req->context;
++
+ 	ENTER();
+-	if (req->context) {
+-		struct ffs_ep *ep = _ep->driver_data;
+-		ep->status = req->status ? req->status : req->actual;
+-		complete(req->context);
+-	}
++	if (req->status)
++		io_data->status = req->status;
++	else
++		io_data->status = req->actual;
++
++	complete(&io_data->done);
+ }
+ 
+ static ssize_t ffs_copy_to_iter(void *data, int data_len, struct iov_iter *iter)
+@@ -1050,7 +1054,6 @@ static ssize_t ffs_epfile_io(struct file
+ 		WARN(1, "%s: data_len == -EINVAL\n", __func__);
+ 		ret = -EINVAL;
+ 	} else if (!io_data->aio) {
+-		DECLARE_COMPLETION_ONSTACK(done);
+ 		bool interrupted = false;
+ 
+ 		req = ep->req;
+@@ -1066,7 +1069,8 @@ static ssize_t ffs_epfile_io(struct file
+ 
+ 		io_data->buf = data;
+ 
+-		req->context  = &done;
++		init_completion(&io_data->done);
++		req->context  = io_data;
+ 		req->complete = ffs_epfile_io_complete;
+ 
+ 		ret = usb_ep_queue(ep->ep, req, GFP_ATOMIC);
+@@ -1075,7 +1079,7 @@ static ssize_t ffs_epfile_io(struct file
+ 
+ 		spin_unlock_irq(&epfile->ffs->eps_lock);
+ 
+-		if (wait_for_completion_interruptible(&done)) {
++		if (wait_for_completion_interruptible(&io_data->done)) {
+ 			/*
+ 			 * To avoid race condition with ffs_epfile_io_complete,
+ 			 * dequeue the request first then check
+@@ -1083,17 +1087,17 @@ static ssize_t ffs_epfile_io(struct file
+ 			 * condition with req->complete callback.
+ 			 */
+ 			usb_ep_dequeue(ep->ep, req);
+-			wait_for_completion(&done);
+-			interrupted = ep->status < 0;
++			wait_for_completion(&io_data->done);
++			interrupted = io_data->status < 0;
+ 		}
+ 
+ 		if (interrupted)
+ 			ret = -EINTR;
+-		else if (io_data->read && ep->status > 0)
+-			ret = __ffs_epfile_read_data(epfile, data, ep->status,
++		else if (io_data->read && io_data->status > 0)
++			ret = __ffs_epfile_read_data(epfile, data, io_data->status,
+ 						     &io_data->data);
+ 		else
+-			ret = ep->status;
++			ret = io_data->status;
+ 		goto error_mutex;
+ 	} else if (!(req = usb_ep_alloc_request(ep->ep, GFP_ATOMIC))) {
+ 		ret = -ENOMEM;
 
 
