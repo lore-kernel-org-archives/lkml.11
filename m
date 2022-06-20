@@ -2,166 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A01BEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 11:07:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2E03C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 11:09:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241318AbiFTLHw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 07:07:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56876 "EHLO
+        id S239093AbiFTLI6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 07:08:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241255AbiFTLHs (ORCPT
+        with ESMTP id S239471AbiFTLI4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 07:07:48 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04B3C15822;
-        Mon, 20 Jun 2022 04:07:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1655723262; x=1687259262;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=p9cScR7+8tqT8UOdrsD/iPQ6vHskmsKAJjjJIaAQlj8=;
-  b=PUoIq0RB0ciq7/T273PnI+wrCDXU4TFwczb5TcnhEpTZErRTe+0x++yu
-   h+Byafnv59RcP2GT1qsRa0W7NSuZ0b/flPWmjZTUJnNRyUwqKChtUWczw
-   K5TNntWmWROAc8xAMK5K8CA+73IYL/JR3mpn05jMYKNi2U6/3dEvzzfhH
-   k=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 20 Jun 2022 04:07:42 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 04:07:41 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 20 Jun 2022 04:07:40 -0700
-Received: from [10.50.53.124] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 20 Jun
- 2022 04:07:35 -0700
-Message-ID: <a11732d6-a9b1-7ead-e89a-564a57a7192b@quicinc.com>
-Date:   Mon, 20 Jun 2022 16:37:31 +0530
+        Mon, 20 Jun 2022 07:08:56 -0400
+X-Greylist: delayed 230 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 20 Jun 2022 04:08:54 PDT
+Received: from metanate.com (unknown [IPv6:2001:8b0:1628:5005::111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 149C0A7;
+        Mon, 20 Jun 2022 04:08:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=metanate.com; s=stronger; h=In-Reply-To:Content-Transfer-Encoding:
+        Content-Type:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-ID:Content-Description;
+        bh=CZYkuwuyEVUXwAO4XEMsBG16iYPMRoKYAzF0IBgK8jw=; b=wL0TKz6sUdFxt5robK9s3vw+3G
+        vpCedd//rpevuhpOWvmzXtuI9V6if7lusAl/IUIO7gLmtPLmRydFYlzsTA4QGYxoPCryVFxTrC/ed
+        DQj9X5V2Iofi04R4r3gi1vbNV0IOLuGlNKnJuNVSyssmuo/3RAZKQSFiLd42qpxAMrIiUaGzO2rL2
+        eYln0Vxf/ZYHf820uZKfZF6B5lryx/pAgcnh1Y+juyqJJRzaS3IarO0crKCUX5GK0Bf0uLBs77Uvv
+        DI1aX1UMTtVe6MYIosymILmwqyo/qFJFDvjRbHQyCr/4VyDlhzMRXBGp0sy8d3uTl621LW3GemvTg
+        DxIbGEfQ==;
+Received: from 92.40.170.2.threembb.co.uk ([92.40.170.2] helo=donbot)
+        by email.metanate.com with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <john@metanate.com>)
+        id 1o3FGu-0002Pu-OT; Mon, 20 Jun 2022 12:08:44 +0100
+Date:   Mon, 20 Jun 2022 12:08:43 +0100
+From:   John Keeping <john@metanate.com>
+To:     LABBE Corentin <clabbe@baylibre.com>
+Cc:     heiko@sntech.de, ardb@kernel.org, herbert@gondor.apana.org.au,
+        krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-rockchip@lists.infradead.org
+Subject: Re: [PATCH v7 00/33] crypto: rockchip: permit to pass self-tests
+Message-ID: <YrBVO+2TWufDOrtH@donbot>
+References: <20220508185957.3629088-1-clabbe@baylibre.com>
+ <YqceGFafq7QoT+8w@Red>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH V15 6/9] mfd: pm8008: Use i2c_new_dummy_device() API
-Content-Language: en-US
-To:     Lee Jones <lee.jones@linaro.org>
-CC:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
-        <quic_collinsd@quicinc.com>, <quic_subbaram@quicinc.com>,
-        <quic_jprakash@quicinc.com>
-References: <1655200111-18357-1-git-send-email-quic_c_skakit@quicinc.com>
- <1655200111-18357-7-git-send-email-quic_c_skakit@quicinc.com>
- <YquZRcuRCrdF+Q1z@google.com>
- <eccbb030-97f7-3a6c-958e-05adcdca6210@quicinc.com>
- <YrAt6dq6ty9p8d05@google.com>
-From:   "Satya Priya Kakitapalli (Temp)" <quic_c_skakit@quicinc.com>
-In-Reply-To: <YrAt6dq6ty9p8d05@google.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+In-Reply-To: <YqceGFafq7QoT+8w@Red>
+X-Authenticated: YES
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, Jun 13, 2022 at 01:23:04PM +0200, LABBE Corentin wrote:
+> Le Sun, May 08, 2022 at 06:59:24PM +0000, Corentin Labbe a �crit :
+> > The rockchip crypto driver is broken and do not pass self-tests.
+> > This serie's goal is to permit to become usable and pass self-tests.
+> > 
+> > This whole serie is tested on a rk3328-rock64, rk3288-miqi and
+> > rk3399-khadas-edge-v with selftests (with CONFIG_CRYPTO_MANAGER_EXTRA_TESTS=y)
+> > 
+> > Regards
+> > 
+> 
+> This is a gentle ping since this serie has now, no comment to address.
 
-On 6/20/2022 1:50 PM, Lee Jones wrote:
-> On Mon, 20 Jun 2022, Satya Priya Kakitapalli (Temp) wrote:
->
->> On 6/17/2022 2:27 AM, Lee Jones wrote:
->>> On Tue, 14 Jun 2022, Satya Priya wrote:
->>>
->>>> Use i2c_new_dummy_device() to register pm8008-regulator
->>>> client present at a different address space, instead of
->>>> defining a separate DT node. This avoids calling the probe
->>>> twice for the same chip, once for each client pm8008-infra
->>>> and pm8008-regulator.
->>>>
->>>> As a part of this define pm8008_regmap_init() to do regmap
->>>> init for both the clients and define pm8008_get_regmap() to
->>>> pass the regmap to the regulator driver.
->>>>
->>>> Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
->>>> Reviewed-by: Stephen Boyd <swboyd@chromium.org>
->>>> ---
->>>> Changes in V15:
->>>>    - None.
->>>>
->>>> Changes in V14:
->>>>    - None.
->>>>
->>>> Changes in V13:
->>>>    - None.
->>>>
->>>>    drivers/mfd/qcom-pm8008.c       | 34 ++++++++++++++++++++++++++++++++--
->>>>    include/linux/mfd/qcom_pm8008.h |  9 +++++++++
->>>>    2 files changed, 41 insertions(+), 2 deletions(-)
->>>>    create mode 100644 include/linux/mfd/qcom_pm8008.h
->>>>
->>>> diff --git a/drivers/mfd/qcom-pm8008.c b/drivers/mfd/qcom-pm8008.c
->>>> index 569ffd50..55e2a8e 100644
->>>> --- a/drivers/mfd/qcom-pm8008.c
->>>> +++ b/drivers/mfd/qcom-pm8008.c
->>>> @@ -9,6 +9,7 @@
->>>>    #include <linux/interrupt.h>
->>>>    #include <linux/irq.h>
->>>>    #include <linux/irqdomain.h>
->>>> +#include <linux/mfd/qcom_pm8008.h>
->>>>    #include <linux/module.h>
->>>>    #include <linux/of_device.h>
->>>>    #include <linux/of_platform.h>
->>>> @@ -57,6 +58,7 @@ enum {
->>>>    struct pm8008_data {
->>>>    	struct device *dev;
->>>> +	struct regmap *regulators_regmap;
->>>>    	int irq;
->>>>    	struct regmap_irq_chip_data *irq_data;
->>>>    };
->>>> @@ -150,6 +152,12 @@ static struct regmap_config qcom_mfd_regmap_cfg = {
->>>>    	.max_register	= 0xFFFF,
->>>>    };
->>>> +struct regmap *pm8008_get_regmap(const struct pm8008_data *chip)
->>>> +{
->>>> +	return chip->regulators_regmap;
->>>> +}
->>>> +EXPORT_SYMBOL_GPL(pm8008_get_regmap);
->>> Seems like abstraction for the sake of abstraction.
->>>
->>> Why not do the dereference inside the regulator driver?
->> To derefer this in the regulator driver, we need to have the pm8008_data
->> struct definition in the qcom_pm8008 header file.
->>
->> I think it doesn't look great to have only that structure in header and all
->> other structs and enum in the mfd driver.
-> Then why pass 'pm8008_data' at all?
+I've just replied to patch 14 with a comment, but other than that I
+agree that patches 1-24 look good.  It would be good to get these merged
+soon as crypto acceleration on Rockchip hardware has been totally broken
+for several releases now.
 
+Patches 1-13 and 15-24 are:
 
-There is one more option, instead of passing the pm8008_data, we could 
-pass the pdev->dev.parent and get the pm8008 chip data directly in the 
-pm8008_get_regmap() like below
+	Reviewed-by: John Keeping <john@metanate.com>
 
-
-struct regmap *pm8008_get_regmap(const struct device *dev)
-  {
-      const struct pm8008_data *chip = dev_get_drvdata(dev);
-
-      return chip->regulators_regmap;
-}
-EXPORT_SYMBOL_GPL(pm8008_get_regmap);
-
-
-By doing this we can avoid having declaration of pm8008_data also in the 
-header. Please let me know if this looks good.
-
-> What's preventing you from passing 'regmap'?
-
-
-I didn't get what you meant here, could you please elaborate a bit?
-
-
+I'm less sure about patches 25-33 as I don't really know much about the
+crypto API, but it seems strange that dispatching requests to two
+(nearly) identical accelerators should need so much special handling in
+the driver and that there isn't some higher level management for this.
