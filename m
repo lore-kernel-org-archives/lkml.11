@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10E86C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:06:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1475BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:06:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244972AbiFTNGV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:06:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50936 "EHLO
+        id S244989AbiFTNGZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:06:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244839AbiFTNED (ORCPT
+        with ESMTP id S244855AbiFTNEE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:04:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3936E192BD;
-        Mon, 20 Jun 2022 05:58:52 -0700 (PDT)
+        Mon, 20 Jun 2022 09:04:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 501C71ADB4;
+        Mon, 20 Jun 2022 05:58:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EF6CEB811A3;
-        Mon, 20 Jun 2022 12:58:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60E09C3411C;
-        Mon, 20 Jun 2022 12:58:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0AD7CB811A6;
+        Mon, 20 Jun 2022 12:58:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DEAEC3411B;
+        Mon, 20 Jun 2022 12:58:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655729929;
-        bh=zF1v78wE+V4e5SLuD5aljk/ixD5fd8h/4NWR5z4xJPQ=;
+        s=korg; t=1655729935;
+        bh=hoomPFvizVhvLiU8GGXlQ5OeL4zUjz8Sg1399iIawpg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x2j74huuUY0aZPS+bESw+2XaSSDrWjOrc9u2iNdsH4o7pxG8iKEOEDhZZ1EF6arc0
-         0SSTGvJ/E9uUwm3qCnp1Eh65lwJbdAhgSHEWTXyB+Xo+5IoT83BfzCaj1zjF/QDNJB
-         m2JOuCsc8BAmGeSJut5nClKAhpQEounH/BaWqxUw=
+        b=jmsjvorF7akC2HHLoJpKIM3hLtfacVs120xx7ynyWyeNUXxykh/7sk3wkpq4+L4zm
+         Ykk8q1y4nQSpAk/8WxHltgjYb4rS1er+9e3aZwgy3NB/3Dtjf9ues+Evvwpq+KJrtq
+         WEKupau2aQjS3i5GmO1VxLscN4upIWYlA3Lf8brk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Ming Lei <ming.lei@redhat.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 087/141] block: Fix handling of offline queues in blk_mq_alloc_request_hctx()
-Date:   Mon, 20 Jun 2022 14:50:25 +0200
-Message-Id: <20220620124732.116921788@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 089/141] x86/ftrace: Remove OBJECT_FILES_NON_STANDARD usage
+Date:   Mon, 20 Jun 2022 14:50:27 +0200
+Message-Id: <20220620124732.176155347@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 References: <20220620124729.509745706@linuxfoundation.org>
@@ -50,59 +49,139 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bart Van Assche <bvanassche@acm.org>
+From: Josh Poimboeuf <jpoimboe@kernel.org>
 
-[ Upstream commit 14dc7a18abbe4176f5626c13c333670da8e06aa1 ]
+[ Upstream commit 7b6c7a877cc616bc7dc9cd39646fe454acbed48b ]
 
-This patch prevents that test nvme/004 triggers the following:
+The file-wide OBJECT_FILES_NON_STANDARD annotation is used with
+CONFIG_FRAME_POINTER to tell objtool to skip the entire file when frame
+pointers are enabled.  However that annotation is now deprecated because
+it doesn't work with IBT, where objtool runs on vmlinux.o instead of
+individual translation units.
 
-UBSAN: array-index-out-of-bounds in block/blk-mq.h:135:9
-index 512 is out of range for type 'long unsigned int [512]'
-Call Trace:
- show_stack+0x52/0x58
- dump_stack_lvl+0x49/0x5e
- dump_stack+0x10/0x12
- ubsan_epilogue+0x9/0x3b
- __ubsan_handle_out_of_bounds.cold+0x44/0x49
- blk_mq_alloc_request_hctx+0x304/0x310
- __nvme_submit_sync_cmd+0x70/0x200 [nvme_core]
- nvmf_connect_io_queue+0x23e/0x2a0 [nvme_fabrics]
- nvme_loop_connect_io_queues+0x8d/0xb0 [nvme_loop]
- nvme_loop_create_ctrl+0x58e/0x7d0 [nvme_loop]
- nvmf_create_ctrl+0x1d7/0x4d0 [nvme_fabrics]
- nvmf_dev_write+0xae/0x111 [nvme_fabrics]
- vfs_write+0x144/0x560
- ksys_write+0xb7/0x140
- __x64_sys_write+0x42/0x50
- do_syscall_64+0x35/0x80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+Instead, use more fine-grained function-specific annotations:
 
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Ming Lei <ming.lei@redhat.com>
-Fixes: 20e4d8139319 ("blk-mq: simplify queue mapping & schedule with each possisble CPU")
-Signed-off-by: Bart Van Assche <bvanassche@acm.org>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Ming Lei <ming.lei@redhat.com>
-Link: https://lore.kernel.org/r/20220615210004.1031820-1-bvanassche@acm.org
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+- The 'save_mcount_regs' macro does funny things with the frame pointer.
+  Use STACK_FRAME_NON_STANDARD_FP to tell objtool to ignore the
+  functions using it.
+
+- The return_to_handler() "function" isn't actually a callable function.
+  Instead of being called, it's returned to.  The real return address
+  isn't on the stack, so unwinding is already doomed no matter which
+  unwinder is used.  So just remove the STT_FUNC annotation, telling
+  objtool to ignore it.  That also removes the implicit
+  ANNOTATE_NOENDBR, which now needs to be made explicit.
+
+Fixes the following warning:
+
+  vmlinux.o: warning: objtool: __fentry__+0x16: return with modified stack frame
+
+Fixes: ed53a0d97192 ("x86/alternative: Use .ibt_endbr_seal to seal indirect calls")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
+Link: https://lore.kernel.org/r/b7a7a42fe306aca37826043dac89e113a1acdbac.1654268610.git.jpoimboe@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/blk-mq.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/x86/kernel/Makefile      |  4 ----
+ arch/x86/kernel/ftrace_64.S   | 11 ++++++++---
+ include/linux/objtool.h       |  6 ++++++
+ tools/include/linux/objtool.h |  6 ++++++
+ 4 files changed, 20 insertions(+), 7 deletions(-)
 
-diff --git a/block/blk-mq.c b/block/blk-mq.c
-index de7fc6957271..631fb87b4976 100644
---- a/block/blk-mq.c
-+++ b/block/blk-mq.c
-@@ -579,6 +579,8 @@ struct request *blk_mq_alloc_request_hctx(struct request_queue *q,
- 	if (!blk_mq_hw_queue_mapped(data.hctx))
- 		goto out_queue_exit;
- 	cpu = cpumask_first_and(data.hctx->cpumask, cpu_online_mask);
-+	if (cpu >= nr_cpu_ids)
-+		goto out_queue_exit;
- 	data.ctx = __blk_mq_get_ctx(q, cpu);
+diff --git a/arch/x86/kernel/Makefile b/arch/x86/kernel/Makefile
+index c41ef42adbe8..25828e4c6237 100644
+--- a/arch/x86/kernel/Makefile
++++ b/arch/x86/kernel/Makefile
+@@ -36,10 +36,6 @@ KCSAN_SANITIZE := n
  
- 	if (!q->elevator)
+ OBJECT_FILES_NON_STANDARD_test_nx.o			:= y
+ 
+-ifdef CONFIG_FRAME_POINTER
+-OBJECT_FILES_NON_STANDARD_ftrace_$(BITS).o		:= y
+-endif
+-
+ # If instrumentation of this dir is enabled, boot hangs during first second.
+ # Probably could be more selective here, but note that files related to irqs,
+ # boot, dumpstack/stacktrace, etc are either non-interesting or can lead to
+diff --git a/arch/x86/kernel/ftrace_64.S b/arch/x86/kernel/ftrace_64.S
+index 4ec13608d3c6..dfeb227de561 100644
+--- a/arch/x86/kernel/ftrace_64.S
++++ b/arch/x86/kernel/ftrace_64.S
+@@ -175,6 +175,7 @@ SYM_INNER_LABEL(ftrace_caller_end, SYM_L_GLOBAL)
+ 
+ 	jmp ftrace_epilogue
+ SYM_FUNC_END(ftrace_caller);
++STACK_FRAME_NON_STANDARD_FP(ftrace_caller)
+ 
+ SYM_FUNC_START(ftrace_epilogue)
+ /*
+@@ -282,6 +283,7 @@ SYM_INNER_LABEL(ftrace_regs_caller_end, SYM_L_GLOBAL)
+ 	jmp	ftrace_epilogue
+ 
+ SYM_FUNC_END(ftrace_regs_caller)
++STACK_FRAME_NON_STANDARD_FP(ftrace_regs_caller)
+ 
+ 
+ #else /* ! CONFIG_DYNAMIC_FTRACE */
+@@ -311,10 +313,14 @@ trace:
+ 	jmp ftrace_stub
+ SYM_FUNC_END(__fentry__)
+ EXPORT_SYMBOL(__fentry__)
++STACK_FRAME_NON_STANDARD_FP(__fentry__)
++
+ #endif /* CONFIG_DYNAMIC_FTRACE */
+ 
+ #ifdef CONFIG_FUNCTION_GRAPH_TRACER
+-SYM_FUNC_START(return_to_handler)
++SYM_CODE_START(return_to_handler)
++	UNWIND_HINT_EMPTY
++	ANNOTATE_NOENDBR
+ 	subq  $16, %rsp
+ 
+ 	/* Save the return values */
+@@ -339,7 +345,6 @@ SYM_FUNC_START(return_to_handler)
+ 	int3
+ .Ldo_rop:
+ 	mov %rdi, (%rsp)
+-	UNWIND_HINT_FUNC
+ 	RET
+-SYM_FUNC_END(return_to_handler)
++SYM_CODE_END(return_to_handler)
+ #endif
+diff --git a/include/linux/objtool.h b/include/linux/objtool.h
+index 586d35720f13..c81ea2264ad8 100644
+--- a/include/linux/objtool.h
++++ b/include/linux/objtool.h
+@@ -141,6 +141,12 @@ struct unwind_hint {
+ 	.popsection
+ .endm
+ 
++.macro STACK_FRAME_NON_STANDARD_FP func:req
++#ifdef CONFIG_FRAME_POINTER
++	STACK_FRAME_NON_STANDARD \func
++#endif
++.endm
++
+ .macro ANNOTATE_NOENDBR
+ .Lhere_\@:
+ 	.pushsection .discard.noendbr
+diff --git a/tools/include/linux/objtool.h b/tools/include/linux/objtool.h
+index 586d35720f13..c81ea2264ad8 100644
+--- a/tools/include/linux/objtool.h
++++ b/tools/include/linux/objtool.h
+@@ -141,6 +141,12 @@ struct unwind_hint {
+ 	.popsection
+ .endm
+ 
++.macro STACK_FRAME_NON_STANDARD_FP func:req
++#ifdef CONFIG_FRAME_POINTER
++	STACK_FRAME_NON_STANDARD \func
++#endif
++.endm
++
+ .macro ANNOTATE_NOENDBR
+ .Lhere_\@:
+ 	.pushsection .discard.noendbr
 -- 
 2.35.1
 
