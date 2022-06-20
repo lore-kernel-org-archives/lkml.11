@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20912CCA47C
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:10:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C524BC3F2D4
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:10:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351598AbiFTOJu (ORCPT
+        id S1351461AbiFTOJi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:09:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45280 "EHLO
+        Mon, 20 Jun 2022 10:09:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344205AbiFTN4o (ORCPT
+        with ESMTP id S1350232AbiFTNxN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:56:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E8C3BB1;
-        Mon, 20 Jun 2022 06:22:42 -0700 (PDT)
+        Mon, 20 Jun 2022 09:53:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0E7F2AE8;
+        Mon, 20 Jun 2022 06:19:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1F461B81157;
-        Mon, 20 Jun 2022 13:22:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C073C3411B;
-        Mon, 20 Jun 2022 13:22:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 67F36B811DA;
+        Mon, 20 Jun 2022 13:18:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A53ECC341C0;
+        Mon, 20 Jun 2022 13:18:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731342;
-        bh=QWVOvaoQcs9rJFN9ZErPqPmZV92C+J1OsaNkwQKcuwg=;
+        s=korg; t=1655731138;
+        bh=I/THteluo35ikLcViBVLql8JhlUMS3dyc2iQAAkxWYI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XLU/MT6uRgIBYmQ2QCs0uRUiIgtf3FrUQE2uOPd350J5/I6P0/E11/jt7a3OaMaxf
-         F/Ct9y5bWauuxthwJu9eOWHqp+uqUUUHqzvCLhL84y3qx+GwleedskXzZYD8MxEaNY
-         91NZ1Kq6bZH/7KcMv/Gv+VpomWO/xyCgN4WHA3Jk=
+        b=PEMU5h8gLtItPW+5rw0m9y16NPVoossw/Q8bLvrP6rAJgUXHxnaP4XCGqY0JrXyvS
+         3NfYAlVrKEvYlNtjnUIxDJxKPcZvn4STy9147RrTw8sPguEcklwA0JuIWXxu5yOo2m
+         D8BUI0X6fVlfP7Rgbc9/VSgwvXNce2zmNa6pWIMw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>
-Subject: [PATCH 5.4 227/240] dm mirror log: round up region bitmap size to BITS_PER_LONG
-Date:   Mon, 20 Jun 2022 14:52:08 +0200
-Message-Id: <20220620124745.536925135@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.4 166/240] random: unify batched entropy implementations
+Date:   Mon, 20 Jun 2022 14:51:07 +0200
+Message-Id: <20220620124743.813541325@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -49,39 +50,185 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 85e123c27d5cbc22cfdc01de1e2ca1d9003a02d0 upstream.
+commit 3092adcef3ffd2ef59634998297ca8358461ebce upstream.
 
-The code in dm-log rounds up bitset_size to 32 bits. It then uses
-find_next_zero_bit_le on the allocated region. find_next_zero_bit_le
-accesses the bitmap using unsigned long pointers. So, on 64-bit
-architectures, it may access 4 bytes beyond the allocated size.
+There are currently two separate batched entropy implementations, for
+u32 and u64, with nearly identical code, with the goal of avoiding
+unaligned memory accesses and letting the buffers be used more
+efficiently. Having to maintain these two functions independently is a
+bit of a hassle though, considering that they always need to be kept in
+sync.
 
-Fix this bug by rounding up bitset_size to BITS_PER_LONG.
+This commit factors them out into a type-generic macro, so that the
+expansion produces the same code as before, such that diffing the
+assembly shows no differences. This will also make it easier in the
+future to add u16 and u8 batches.
 
-This bug was found by running the lvm2 testsuite with kasan.
+This was initially tested using an always_inline function and letting
+gcc constant fold the type size in, but the code gen was less efficient,
+and in general it was more verbose and harder to follow. So this patch
+goes with the boring macro solution, similar to what's already done for
+the _wait functions in random.h.
 
-Fixes: 29121bd0b00e ("[PATCH] dm mirror log: bitset_size fix")
-Cc: stable@vger.kernel.org
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/dm-log.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/char/random.c |  140 ++++++++++++++++++--------------------------------
+ 1 file changed, 52 insertions(+), 88 deletions(-)
 
---- a/drivers/md/dm-log.c
-+++ b/drivers/md/dm-log.c
-@@ -415,8 +415,7 @@ static int create_log_context(struct dm_
- 	/*
- 	 * Work out how many "unsigned long"s we need to hold the bitset.
- 	 */
--	bitset_size = dm_round_up(region_count,
--				  sizeof(*lc->clean_bits) << BYTE_SHIFT);
-+	bitset_size = dm_round_up(region_count, BITS_PER_LONG);
- 	bitset_size >>= BYTE_SHIFT;
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -509,96 +509,60 @@ out_zero_chacha:
+  * provided by this function is okay, the function wait_for_random_bytes()
+  * should be called and return 0 at least once at any point prior.
+  */
+-struct batched_entropy {
+-	union {
+-		/*
+-		 * We make this 1.5x a ChaCha block, so that we get the
+-		 * remaining 32 bytes from fast key erasure, plus one full
+-		 * block from the detached ChaCha state. We can increase
+-		 * the size of this later if needed so long as we keep the
+-		 * formula of (integer_blocks + 0.5) * CHACHA_BLOCK_SIZE.
+-		 */
+-		u64 entropy_u64[CHACHA_BLOCK_SIZE * 3 / (2 * sizeof(u64))];
+-		u32 entropy_u32[CHACHA_BLOCK_SIZE * 3 / (2 * sizeof(u32))];
+-	};
+-	unsigned long generation;
+-	unsigned int position;
+-};
  
- 	lc->bitset_uint32_count = bitset_size / sizeof(*lc->clean_bits);
++#define DEFINE_BATCHED_ENTROPY(type)						\
++struct batch_ ##type {								\
++	/*									\
++	 * We make this 1.5x a ChaCha block, so that we get the			\
++	 * remaining 32 bytes from fast key erasure, plus one full		\
++	 * block from the detached ChaCha state. We can increase		\
++	 * the size of this later if needed so long as we keep the		\
++	 * formula of (integer_blocks + 0.5) * CHACHA_BLOCK_SIZE.		\
++	 */									\
++	type entropy[CHACHA_BLOCK_SIZE * 3 / (2 * sizeof(type))];		\
++	unsigned long generation;						\
++	unsigned int position;							\
++};										\
++										\
++static DEFINE_PER_CPU(struct batch_ ##type, batched_entropy_ ##type) = {	\
++	.position = UINT_MAX							\
++};										\
++										\
++type get_random_ ##type(void)							\
++{										\
++	type ret;								\
++	unsigned long flags;							\
++	struct batch_ ##type *batch;						\
++	unsigned long next_gen;							\
++										\
++	warn_unseeded_randomness();						\
++										\
++	if  (!crng_ready()) {							\
++		_get_random_bytes(&ret, sizeof(ret));				\
++		return ret;							\
++	}									\
++										\
++	local_irq_save(flags);		\
++	batch = raw_cpu_ptr(&batched_entropy_##type);				\
++										\
++	next_gen = READ_ONCE(base_crng.generation);				\
++	if (batch->position >= ARRAY_SIZE(batch->entropy) ||			\
++	    next_gen != batch->generation) {					\
++		_get_random_bytes(batch->entropy, sizeof(batch->entropy));	\
++		batch->position = 0;						\
++		batch->generation = next_gen;					\
++	}									\
++										\
++	ret = batch->entropy[batch->position];					\
++	batch->entropy[batch->position] = 0;					\
++	++batch->position;							\
++	local_irq_restore(flags);		\
++	return ret;								\
++}										\
++EXPORT_SYMBOL(get_random_ ##type);
+ 
+-static DEFINE_PER_CPU(struct batched_entropy, batched_entropy_u64) = {
+-	.position = UINT_MAX
+-};
+-
+-u64 get_random_u64(void)
+-{
+-	u64 ret;
+-	unsigned long flags;
+-	struct batched_entropy *batch;
+-	unsigned long next_gen;
+-
+-	warn_unseeded_randomness();
+-
+-	if  (!crng_ready()) {
+-		_get_random_bytes(&ret, sizeof(ret));
+-		return ret;
+-	}
+-
+-	local_irq_save(flags);
+-	batch = raw_cpu_ptr(&batched_entropy_u64);
+-
+-	next_gen = READ_ONCE(base_crng.generation);
+-	if (batch->position >= ARRAY_SIZE(batch->entropy_u64) ||
+-	    next_gen != batch->generation) {
+-		_get_random_bytes(batch->entropy_u64, sizeof(batch->entropy_u64));
+-		batch->position = 0;
+-		batch->generation = next_gen;
+-	}
+-
+-	ret = batch->entropy_u64[batch->position];
+-	batch->entropy_u64[batch->position] = 0;
+-	++batch->position;
+-	local_irq_restore(flags);
+-	return ret;
+-}
+-EXPORT_SYMBOL(get_random_u64);
+-
+-static DEFINE_PER_CPU(struct batched_entropy, batched_entropy_u32) = {
+-	.position = UINT_MAX
+-};
+-
+-u32 get_random_u32(void)
+-{
+-	u32 ret;
+-	unsigned long flags;
+-	struct batched_entropy *batch;
+-	unsigned long next_gen;
+-
+-	warn_unseeded_randomness();
+-
+-	if  (!crng_ready()) {
+-		_get_random_bytes(&ret, sizeof(ret));
+-		return ret;
+-	}
+-
+-	local_irq_save(flags);
+-	batch = raw_cpu_ptr(&batched_entropy_u32);
+-
+-	next_gen = READ_ONCE(base_crng.generation);
+-	if (batch->position >= ARRAY_SIZE(batch->entropy_u32) ||
+-	    next_gen != batch->generation) {
+-		_get_random_bytes(batch->entropy_u32, sizeof(batch->entropy_u32));
+-		batch->position = 0;
+-		batch->generation = next_gen;
+-	}
+-
+-	ret = batch->entropy_u32[batch->position];
+-	batch->entropy_u32[batch->position] = 0;
+-	++batch->position;
+-	local_irq_restore(flags);
+-	return ret;
+-}
+-EXPORT_SYMBOL(get_random_u32);
++DEFINE_BATCHED_ENTROPY(u64)
++DEFINE_BATCHED_ENTROPY(u32)
+ 
+ #ifdef CONFIG_SMP
+ /*
 
 
