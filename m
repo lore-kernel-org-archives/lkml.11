@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63BCAC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:50:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32FF7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:50:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349092AbiFTNs0 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:48:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55866 "EHLO
+        id S243074AbiFTNuL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:50:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348989AbiFTNro (ORCPT
+        with ESMTP id S1349007AbiFTNrp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:47:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EABF62EA3B;
-        Mon, 20 Jun 2022 06:17:36 -0700 (PDT)
+        Mon, 20 Jun 2022 09:47:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 784DA1A056;
+        Mon, 20 Jun 2022 06:17:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2F4A8B811F2;
-        Mon, 20 Jun 2022 13:17:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87CF8C3411B;
-        Mon, 20 Jun 2022 13:17:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D38360FEF;
+        Mon, 20 Jun 2022 13:16:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDBF8C3411B;
+        Mon, 20 Jun 2022 13:16:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731051;
-        bh=YVFCm9IvwmgkDNWZPZYSkH8bYCAZpNilJPeiWNu6Xuk=;
+        s=korg; t=1655731010;
+        bh=FHCpQXUyZuymp9eUMYo1Xrjj9Tv2JqAA3JogK1g4j7U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ScpGiY1ifLYKQdBAapQE9rfeZhXqHdCCT1+rXx3MF3qnmSHh4MRblcUQoxcsV/KWk
-         iw20QwiJA6GicbzJqL68lbmgMiOeFm6IDGJ/gg39l5SAoVn4YsL9gL/reAAZ8nofLT
-         uNXJYkOhUYb0jjNGtQ2tWUyKIw0Tcx45yErXbKoQ=
+        b=u3oT2OuOV9zFQ0RYY/hu7jpeF5T7+iYcZsm3RwlLVW9bdVFbd9YOQVgOFFOKCbN49
+         gyw7WFP+lhB28FAiTmrp0ubQ0Ous1BWYOvbXCAA31s1FXgrBeF+dYCiS+cf6rJf4Rs
+         pjat6pzd2Jbg2B6kskVSu9LNEy08gXgTqYoNmBb8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
+        stable@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Jann Horn <jannh@google.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 137/240] m68k: use fallback for random_get_entropy() instead of zero
-Date:   Mon, 20 Jun 2022 14:50:38 +0200
-Message-Id: <20220620124742.978509676@linuxfoundation.org>
+Subject: [PATCH 5.4 126/240] random: allow partial reads if later user copies fail
+Date:   Mon, 20 Jun 2022 14:50:27 +0200
+Message-Id: <20220620124742.663624602@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -53,36 +52,98 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 0f392c95391f2d708b12971a07edaa7973f9eece upstream.
+commit 5209aed5137880fa229746cb521f715e55596460 upstream.
 
-In the event that random_get_entropy() can't access a cycle counter or
-similar, falling back to returning 0 is really not the best we can do.
-Instead, at least calling random_get_entropy_fallback() would be
-preferable, because that always needs to return _something_, even
-falling back to jiffies eventually. It's not as though
-random_get_entropy_fallback() is super high precision or guaranteed to
-be entropic, but basically anything that's not zero all the time is
-better than returning zero all the time.
+Rather than failing entirely if a copy_to_user() fails at some point,
+instead we should return a partial read for the amount that succeeded
+prior, unless none succeeded at all, in which case we return -EFAULT as
+before.
 
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
+This makes it consistent with other reader interfaces. For example, the
+following snippet for /dev/zero outputs "4" followed by "1":
+
+  int fd;
+  void *x = mmap(NULL, 4096, PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+  assert(x != MAP_FAILED);
+  fd = open("/dev/zero", O_RDONLY);
+  assert(fd >= 0);
+  printf("%zd\n", read(fd, x, 4));
+  printf("%zd\n", read(fd, x + 4095, 4));
+  close(fd);
+
+This brings that same standard behavior to the various RNG reader
+interfaces.
+
+While we're at it, we can streamline the loop logic a little bit.
+
+Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Jann Horn <jannh@google.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/m68k/include/asm/timex.h |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/char/random.c |   22 ++++++++++++----------
+ 1 file changed, 12 insertions(+), 10 deletions(-)
 
---- a/arch/m68k/include/asm/timex.h
-+++ b/arch/m68k/include/asm/timex.h
-@@ -35,7 +35,7 @@ static inline unsigned long random_get_e
- {
- 	if (mach_random_get_entropy)
- 		return mach_random_get_entropy();
--	return 0;
-+	return random_get_entropy_fallback();
- }
- #define random_get_entropy	random_get_entropy
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -523,8 +523,7 @@ EXPORT_SYMBOL(get_random_bytes);
  
+ static ssize_t get_random_bytes_user(void __user *buf, size_t nbytes)
+ {
+-	ssize_t ret = 0;
+-	size_t len;
++	size_t len, left, ret = 0;
+ 	u32 chacha_state[CHACHA_BLOCK_SIZE / sizeof(u32)];
+ 	u8 output[CHACHA_BLOCK_SIZE];
+ 
+@@ -543,37 +542,40 @@ static ssize_t get_random_bytes_user(voi
+ 	 * the user directly.
+ 	 */
+ 	if (nbytes <= CHACHA_KEY_SIZE) {
+-		ret = copy_to_user(buf, &chacha_state[4], nbytes) ? -EFAULT : nbytes;
++		ret = nbytes - copy_to_user(buf, &chacha_state[4], nbytes);
+ 		goto out_zero_chacha;
+ 	}
+ 
+-	do {
++	for (;;) {
+ 		chacha20_block(chacha_state, output);
+ 		if (unlikely(chacha_state[12] == 0))
+ 			++chacha_state[13];
+ 
+ 		len = min_t(size_t, nbytes, CHACHA_BLOCK_SIZE);
+-		if (copy_to_user(buf, output, len)) {
+-			ret = -EFAULT;
++		left = copy_to_user(buf, output, len);
++		if (left) {
++			ret += len - left;
+ 			break;
+ 		}
+ 
+-		nbytes -= len;
+ 		buf += len;
+ 		ret += len;
++		nbytes -= len;
++		if (!nbytes)
++			break;
+ 
+ 		BUILD_BUG_ON(PAGE_SIZE % CHACHA_BLOCK_SIZE != 0);
+-		if (!(ret % PAGE_SIZE) && nbytes) {
++		if (ret % PAGE_SIZE == 0) {
+ 			if (signal_pending(current))
+ 				break;
+ 			cond_resched();
+ 		}
+-	} while (nbytes);
++	}
+ 
+ 	memzero_explicit(output, sizeof(output));
+ out_zero_chacha:
+ 	memzero_explicit(chacha_state, sizeof(chacha_state));
+-	return ret;
++	return ret ? ret : -EFAULT;
+ }
+ 
+ /*
 
 
