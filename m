@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C524BC3F2D4
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:10:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEBC2CCA480
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:10:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351461AbiFTOJi (ORCPT
+        id S1351637AbiFTOJ4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:09:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36716 "EHLO
+        Mon, 20 Jun 2022 10:09:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350232AbiFTNxN (ORCPT
+        with ESMTP id S1352958AbiFTN5T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:53:13 -0400
+        Mon, 20 Jun 2022 09:57:19 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0E7F2AE8;
-        Mon, 20 Jun 2022 06:19:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15C73377E9;
+        Mon, 20 Jun 2022 06:23:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 67F36B811DA;
-        Mon, 20 Jun 2022 13:18:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A53ECC341C0;
-        Mon, 20 Jun 2022 13:18:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 75E12B811C5;
+        Mon, 20 Jun 2022 13:23:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8A37C3411C;
+        Mon, 20 Jun 2022 13:23:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731138;
-        bh=I/THteluo35ikLcViBVLql8JhlUMS3dyc2iQAAkxWYI=;
+        s=korg; t=1655731387;
+        bh=/JxTVNZQgird5HD+oKTweiMNeN6rCY5i+EHHudwkku8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PEMU5h8gLtItPW+5rw0m9y16NPVoossw/Q8bLvrP6rAJgUXHxnaP4XCGqY0JrXyvS
-         3NfYAlVrKEvYlNtjnUIxDJxKPcZvn4STy9147RrTw8sPguEcklwA0JuIWXxu5yOo2m
-         D8BUI0X6fVlfP7Rgbc9/VSgwvXNce2zmNa6pWIMw=
+        b=vmtsBWBsqvJmT9SibJ5byZIqeFjsiVBZQaa17oGhpgQk3eG/U5e0lZcDCdQLtBxFI
+         p2iaHb+5G11bCdu7G0Ufk4y9o8eZZ3P1a7DDkGfaJONhFl5xrfH6eVG8WlwORBB7C0
+         KgUSAkjWt0I5e0cfHoAzJKXQTg5RO1L2gBhO9psM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 166/240] random: unify batched entropy implementations
-Date:   Mon, 20 Jun 2022 14:51:07 +0200
-Message-Id: <20220620124743.813541325@linuxfoundation.org>
+        stable@vger.kernel.org, Wang Yufen <wangyufen@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 201/240] ipv6: Fix signed integer overflow in l2tp_ip6_sendmsg
+Date:   Mon, 20 Jun 2022 14:51:42 +0200
+Message-Id: <20220620124744.806852543@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -50,185 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Wang Yufen <wangyufen@huawei.com>
 
-commit 3092adcef3ffd2ef59634998297ca8358461ebce upstream.
+[ Upstream commit f638a84afef3dfe10554c51820c16e39a278c915 ]
 
-There are currently two separate batched entropy implementations, for
-u32 and u64, with nearly identical code, with the goal of avoiding
-unaligned memory accesses and letting the buffers be used more
-efficiently. Having to maintain these two functions independently is a
-bit of a hassle though, considering that they always need to be kept in
-sync.
+When len >= INT_MAX - transhdrlen, ulen = len + transhdrlen will be
+overflow. To fix, we can follow what udpv6 does and subtract the
+transhdrlen from the max.
 
-This commit factors them out into a type-generic macro, so that the
-expansion produces the same code as before, such that diffing the
-assembly shows no differences. This will also make it easier in the
-future to add u16 and u8 batches.
-
-This was initially tested using an always_inline function and letting
-gcc constant fold the type size in, but the code gen was less efficient,
-and in general it was more verbose and harder to follow. So this patch
-goes with the boring macro solution, similar to what's already done for
-the _wait functions in random.h.
-
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+Link: https://lore.kernel.org/r/20220607120028.845916-2-wangyufen@huawei.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/random.c |  140 ++++++++++++++++++--------------------------------
- 1 file changed, 52 insertions(+), 88 deletions(-)
+ net/l2tp/l2tp_ip6.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -509,96 +509,60 @@ out_zero_chacha:
-  * provided by this function is okay, the function wait_for_random_bytes()
-  * should be called and return 0 at least once at any point prior.
-  */
--struct batched_entropy {
--	union {
--		/*
--		 * We make this 1.5x a ChaCha block, so that we get the
--		 * remaining 32 bytes from fast key erasure, plus one full
--		 * block from the detached ChaCha state. We can increase
--		 * the size of this later if needed so long as we keep the
--		 * formula of (integer_blocks + 0.5) * CHACHA_BLOCK_SIZE.
--		 */
--		u64 entropy_u64[CHACHA_BLOCK_SIZE * 3 / (2 * sizeof(u64))];
--		u32 entropy_u32[CHACHA_BLOCK_SIZE * 3 / (2 * sizeof(u32))];
--	};
--	unsigned long generation;
--	unsigned int position;
--};
+diff --git a/net/l2tp/l2tp_ip6.c b/net/l2tp/l2tp_ip6.c
+index 0fa694bd3f6a..23e9ce985ed6 100644
+--- a/net/l2tp/l2tp_ip6.c
++++ b/net/l2tp/l2tp_ip6.c
+@@ -515,14 +515,15 @@ static int l2tp_ip6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 	struct ipcm6_cookie ipc6;
+ 	int addr_len = msg->msg_namelen;
+ 	int transhdrlen = 4; /* zero session-id */
+-	int ulen = len + transhdrlen;
++	int ulen;
+ 	int err;
  
-+#define DEFINE_BATCHED_ENTROPY(type)						\
-+struct batch_ ##type {								\
-+	/*									\
-+	 * We make this 1.5x a ChaCha block, so that we get the			\
-+	 * remaining 32 bytes from fast key erasure, plus one full		\
-+	 * block from the detached ChaCha state. We can increase		\
-+	 * the size of this later if needed so long as we keep the		\
-+	 * formula of (integer_blocks + 0.5) * CHACHA_BLOCK_SIZE.		\
-+	 */									\
-+	type entropy[CHACHA_BLOCK_SIZE * 3 / (2 * sizeof(type))];		\
-+	unsigned long generation;						\
-+	unsigned int position;							\
-+};										\
-+										\
-+static DEFINE_PER_CPU(struct batch_ ##type, batched_entropy_ ##type) = {	\
-+	.position = UINT_MAX							\
-+};										\
-+										\
-+type get_random_ ##type(void)							\
-+{										\
-+	type ret;								\
-+	unsigned long flags;							\
-+	struct batch_ ##type *batch;						\
-+	unsigned long next_gen;							\
-+										\
-+	warn_unseeded_randomness();						\
-+										\
-+	if  (!crng_ready()) {							\
-+		_get_random_bytes(&ret, sizeof(ret));				\
-+		return ret;							\
-+	}									\
-+										\
-+	local_irq_save(flags);		\
-+	batch = raw_cpu_ptr(&batched_entropy_##type);				\
-+										\
-+	next_gen = READ_ONCE(base_crng.generation);				\
-+	if (batch->position >= ARRAY_SIZE(batch->entropy) ||			\
-+	    next_gen != batch->generation) {					\
-+		_get_random_bytes(batch->entropy, sizeof(batch->entropy));	\
-+		batch->position = 0;						\
-+		batch->generation = next_gen;					\
-+	}									\
-+										\
-+	ret = batch->entropy[batch->position];					\
-+	batch->entropy[batch->position] = 0;					\
-+	++batch->position;							\
-+	local_irq_restore(flags);		\
-+	return ret;								\
-+}										\
-+EXPORT_SYMBOL(get_random_ ##type);
+ 	/* Rough check on arithmetic overflow,
+ 	   better check is made in ip6_append_data().
+ 	 */
+-	if (len > INT_MAX)
++	if (len > INT_MAX - transhdrlen)
+ 		return -EMSGSIZE;
++	ulen = len + transhdrlen;
  
--static DEFINE_PER_CPU(struct batched_entropy, batched_entropy_u64) = {
--	.position = UINT_MAX
--};
--
--u64 get_random_u64(void)
--{
--	u64 ret;
--	unsigned long flags;
--	struct batched_entropy *batch;
--	unsigned long next_gen;
--
--	warn_unseeded_randomness();
--
--	if  (!crng_ready()) {
--		_get_random_bytes(&ret, sizeof(ret));
--		return ret;
--	}
--
--	local_irq_save(flags);
--	batch = raw_cpu_ptr(&batched_entropy_u64);
--
--	next_gen = READ_ONCE(base_crng.generation);
--	if (batch->position >= ARRAY_SIZE(batch->entropy_u64) ||
--	    next_gen != batch->generation) {
--		_get_random_bytes(batch->entropy_u64, sizeof(batch->entropy_u64));
--		batch->position = 0;
--		batch->generation = next_gen;
--	}
--
--	ret = batch->entropy_u64[batch->position];
--	batch->entropy_u64[batch->position] = 0;
--	++batch->position;
--	local_irq_restore(flags);
--	return ret;
--}
--EXPORT_SYMBOL(get_random_u64);
--
--static DEFINE_PER_CPU(struct batched_entropy, batched_entropy_u32) = {
--	.position = UINT_MAX
--};
--
--u32 get_random_u32(void)
--{
--	u32 ret;
--	unsigned long flags;
--	struct batched_entropy *batch;
--	unsigned long next_gen;
--
--	warn_unseeded_randomness();
--
--	if  (!crng_ready()) {
--		_get_random_bytes(&ret, sizeof(ret));
--		return ret;
--	}
--
--	local_irq_save(flags);
--	batch = raw_cpu_ptr(&batched_entropy_u32);
--
--	next_gen = READ_ONCE(base_crng.generation);
--	if (batch->position >= ARRAY_SIZE(batch->entropy_u32) ||
--	    next_gen != batch->generation) {
--		_get_random_bytes(batch->entropy_u32, sizeof(batch->entropy_u32));
--		batch->position = 0;
--		batch->generation = next_gen;
--	}
--
--	ret = batch->entropy_u32[batch->position];
--	batch->entropy_u32[batch->position] = 0;
--	++batch->position;
--	local_irq_restore(flags);
--	return ret;
--}
--EXPORT_SYMBOL(get_random_u32);
-+DEFINE_BATCHED_ENTROPY(u64)
-+DEFINE_BATCHED_ENTROPY(u32)
- 
- #ifdef CONFIG_SMP
- /*
+ 	/* Mirror BSD error message compatibility */
+ 	if (msg->msg_flags & MSG_OOB)
+-- 
+2.35.1
+
 
 
