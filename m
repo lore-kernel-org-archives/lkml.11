@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 079F7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:01:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9F8DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:01:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232153AbiFTNBv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:01:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38886 "EHLO
+        id S243898AbiFTNB4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:01:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241339AbiFTM5p (ORCPT
+        with ESMTP id S238387AbiFTM5r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 08:57:45 -0400
+        Mon, 20 Jun 2022 08:57:47 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3927F1AF04;
-        Mon, 20 Jun 2022 05:55:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF97A1AF16;
+        Mon, 20 Jun 2022 05:55:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 016A4B811AC;
+        by ams.source.kernel.org (Postfix) with ESMTPS id C8C76B811B3;
+        Mon, 20 Jun 2022 12:55:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2645EC341C4;
         Mon, 20 Jun 2022 12:55:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDDC4C3411B;
-        Mon, 20 Jun 2022 12:55:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655729729;
-        bh=mR8UpIC9hOX8Y1EYshjyfXKNN3emi3SIWnW3qyzOb88=;
+        s=korg; t=1655729732;
+        bh=YNWu+/GXQUo6nD402dR+q/FDYgLXdn3YWTkwGKNtjQo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=joxxqVebS1fLO/IYPp3mvAj4aEEAElUfYsRI5Ydjl3QCiN7ydu1ufjpUA1mfMZc34
-         jbTxl1KO7T4lapcqZTdDQdtfIYzmqXqCUHw8UDwMLLtkAlDCf06D3GQqchDZUBCJyk
-         SyDQBZNhoFKZ9loBHuk/h5gGFGTu4msil1VCsSvI=
+        b=zUnSa3DTcdlET0doZL0shE2eQIzWjfziKvvC3PkVc+YypdceDghDOXJ5tLYsksXhP
+         0ZV7sU0zWG+qyn6bZEf/kB/OEwAW70AYKb9UfrZGAIOBCHy6J65XTnD3n8L2n/vAND
+         VNyVtXM859x9NZQh5HSeyv2Lv/cGocilhWYb16bU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
-        James Smart <jsmart2021@gmail.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Scott Mayhew <smayhew@redhat.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 029/141] scsi: lpfc: Fix port stuck in bypassed state after LIP in PT2PT topology
-Date:   Mon, 20 Jun 2022 14:49:27 +0200
-Message-Id: <20220620124730.391590041@linuxfoundation.org>
+Subject: [PATCH 5.18 056/141] sunrpc: set cl_max_connect when cloning an rpc_clnt
+Date:   Mon, 20 Jun 2022 14:49:54 +0200
+Message-Id: <20220620124731.192061123@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 References: <20220620124729.509745706@linuxfoundation.org>
@@ -50,47 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: Scott Mayhew <smayhew@redhat.com>
 
-[ Upstream commit 336d63615466b4c06b9401c987813fd19bdde39b ]
+[ Upstream commit 304791255a2dc1c9be7e7c8a6cbdb31b6847b0e5 ]
 
-After issuing a LIP, a specific target vendor does not ACC the FLOGI that
-lpfc sends.  However, it does send its own FLOGI that lpfc ACCs.  The
-target then establishes the port IDs by sending a PLOGI.  lpfc PLOGI_ACCs
-and starts the RPI registration for DID 0x000001.  The target then sends a
-LOGO to the fabric DID.  lpfc is currently treating the LOGO from the
-fabric DID as a link down and cleans up all the ndlps.  The ndlp for DID
-0x000001 is put back into NPR and discovery stops, leaving the port in
-stuck in bypassed mode.
+If the initial attempt at trunking detection using the krb5i auth flavor
+fails with -EACCES, -NFS4ERR_CLID_INUSE, or -NFS4ERR_WRONGSEC, then the
+NFS client tries again using auth_sys, cloning the rpc_clnt in the
+process.  If this second attempt at trunking detection succeeds, then
+the resulting nfs_client->cl_rpcclient winds up having cl_max_connect=0
+and subsequent attempts to add additional transport connections to the
+rpc_clnt will fail with a message similar to the following being logged:
 
-Change lpfc behavior such that if a LOGO is received for the fabric DID in
-PT2PT topology skip the lpfc_linkdown_port() routine and just move the
-fabric DID back to NPR.
+[502044.312640] SUNRPC: reached max allowed number (0) did not add
+transport to server: 192.168.122.3
 
-Link: https://lore.kernel.org/r/20220603174329.63777-7-jsmart2021@gmail.com
-Co-developed-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Scott Mayhew <smayhew@redhat.com>
+Fixes: dc48e0abee24 ("SUNRPC enforce creation of no more than max_connect xprts")
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/lpfc/lpfc_nportdisc.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ net/sunrpc/clnt.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/scsi/lpfc/lpfc_nportdisc.c b/drivers/scsi/lpfc/lpfc_nportdisc.c
-index 4b065c51ee1b..f5de88877ffe 100644
---- a/drivers/scsi/lpfc/lpfc_nportdisc.c
-+++ b/drivers/scsi/lpfc/lpfc_nportdisc.c
-@@ -835,7 +835,8 @@ lpfc_rcv_logo(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
- 		lpfc_nvmet_invalidate_host(phba, ndlp);
+diff --git a/net/sunrpc/clnt.c b/net/sunrpc/clnt.c
+index e2c6eca0271b..b6781ada3aa8 100644
+--- a/net/sunrpc/clnt.c
++++ b/net/sunrpc/clnt.c
+@@ -651,6 +651,7 @@ static struct rpc_clnt *__rpc_clone_client(struct rpc_create_args *args,
+ 	new->cl_discrtry = clnt->cl_discrtry;
+ 	new->cl_chatty = clnt->cl_chatty;
+ 	new->cl_principal = clnt->cl_principal;
++	new->cl_max_connect = clnt->cl_max_connect;
+ 	return new;
  
- 	if (ndlp->nlp_DID == Fabric_DID) {
--		if (vport->port_state <= LPFC_FDISC)
-+		if (vport->port_state <= LPFC_FDISC ||
-+		    vport->fc_flag & FC_PT2PT)
- 			goto out;
- 		lpfc_linkdown_port(vport);
- 		spin_lock_irq(shost->host_lock);
+ out_err:
 -- 
 2.35.1
 
