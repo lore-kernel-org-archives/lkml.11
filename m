@@ -2,111 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF195C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 07:40:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0579CC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 07:42:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239467AbiFTHkv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 03:40:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40470 "EHLO
+        id S239288AbiFTHma (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 03:42:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238483AbiFTHks (ORCPT
+        with ESMTP id S237888AbiFTHm2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 03:40:48 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7AADFD12;
-        Mon, 20 Jun 2022 00:40:47 -0700 (PDT)
-Received: from fraeml701-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LRM323lT0z6H7t5;
-        Mon, 20 Jun 2022 15:38:54 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml701-chm.china.huawei.com (10.206.15.50) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.24; Mon, 20 Jun 2022 09:40:45 +0200
-Received: from [10.195.35.72] (10.195.35.72) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 20 Jun
- 2022 08:40:44 +0100
-Message-ID: <13b24b09-aebd-4cfc-c45a-a08ec6ead2cf@huawei.com>
-Date:   Mon, 20 Jun 2022 08:40:43 +0100
+        Mon, 20 Jun 2022 03:42:28 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC8A1FD15;
+        Mon, 20 Jun 2022 00:42:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655710947; x=1687246947;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=afrJTMQEPzFgwJo2gc0m4jjaI4R+MO4SngaxX75mOmk=;
+  b=d6urbr3QwU6tkkrTegj75ZyIe+KeMGd868XpFCZ42gf42mckXYv/xbB9
+   hvgm9eMBJ4TiM4xolKsuKONnMXe1i8fS3OSXHlOuvoGZ67psD+lQEOQkP
+   wes4Tc/ku5MEdvXQhn4DPTzawMuZ+ZTj2cH4smYzruimyBMkX+1wnH29u
+   wMNfr5mSsbmTWu1XyN8rOho8l/kagy1LFcmYpKlfzZXdGXHzpWAcA6VUj
+   5uEoVX2B7YzYEXLrK7PhM1O/GHeC8SE3NnbFoBCFoObz4f31ucVWUMSG2
+   sh1jc2rhcXfVECMq/l2qiOVcMMem84wUhkFz6t31bQlBqH/E0SlCS9SdK
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="268548831"
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="268548831"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 00:42:25 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="676419073"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
+  by FMSMGA003.fm.intel.com with ESMTP; 20 Jun 2022 00:42:18 -0700
+Date:   Mon, 20 Jun 2022 15:34:12 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     "Manne, Nava kishore" <nava.kishore.manne@amd.com>
+Cc:     Nava kishore Manne <nava.manne@xilinx.com>,
+        "mdf@kernel.org" <mdf@kernel.org>,
+        "hao.wu@intel.com" <hao.wu@intel.com>,
+        "trix@redhat.com" <trix@redhat.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "Simek, Michal" <michal.simek@amd.com>,
+        "linux-fpga@vger.kernel.org" <linux-fpga@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>, git <git@xilinx.com>
+Subject: Re: [PATCH v2 3/3] fpga: region: Add runtime PM support
+Message-ID: <20220620073412.GA1319418@yilunxu-OptiPlex-7050>
+References: <20220523134517.4056873-1-nava.manne@xilinx.com>
+ <20220523134517.4056873-4-nava.manne@xilinx.com>
+ <DM6PR12MB3993A1FF3517D99AC9A1C21CCDB09@DM6PR12MB3993.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH 3/4] scsi: pm8001: Use non-atomic bitmap ops for tag alloc
- + free
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Hannes Reinecke <hare@suse.de>, <jinpu.wang@cloud.ionos.com>,
-        <jejb@linux.ibm.com>, <martin.petersen@oracle.com>
-CC:     <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <Ajish.Koshy@microchip.com>
-References: <1654879602-33497-1-git-send-email-john.garry@huawei.com>
- <1654879602-33497-4-git-send-email-john.garry@huawei.com>
- <303bbfad-edde-1197-679e-4a09175fb1f3@suse.de>
- <594ac0c9-a55b-bec7-77e3-a6c7e9525f6b@opensource.wdc.com>
-From:   John Garry <john.garry@huawei.com>
-In-Reply-To: <594ac0c9-a55b-bec7-77e3-a6c7e9525f6b@opensource.wdc.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.195.35.72]
-X-ClientProxiedBy: lhreml744-chm.china.huawei.com (10.201.108.194) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <DM6PR12MB3993A1FF3517D99AC9A1C21CCDB09@DM6PR12MB3993.namprd12.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 20/06/2022 07:07, Damien Le Moal wrote:
-> On 6/20/22 15:00, Hannes Reinecke wrote:
->> On 6/10/22 18:46, John Garry wrote:
->>> In pm8001_tag_alloc() we don't require atomic set_bit() as we are already
->>> in atomic context. In pm8001_tag_free() we should use the same host
->>> spinlock to protect clearing the tag (and then don't require the atomic
->>> clear_bit()).
->>>
->>> Signed-off-by: John Garry <john.garry@huawei.com>
->>> ---
->>>    drivers/scsi/pm8001/pm8001_sas.c | 10 +++++++---
->>>    1 file changed, 7 insertions(+), 3 deletions(-)
->>>
->>> diff --git a/drivers/scsi/pm8001/pm8001_sas.c b/drivers/scsi/pm8001/pm8001_sas.c
->>> index 3a863d776724..8e3f2f9ddaac 100644
->>> --- a/drivers/scsi/pm8001/pm8001_sas.c
->>> +++ b/drivers/scsi/pm8001/pm8001_sas.c
->>> @@ -66,7 +66,11 @@ static int pm8001_find_tag(struct sas_task *task, u32 *tag)
->>>    void pm8001_tag_free(struct pm8001_hba_info *pm8001_ha, u32 tag)
->>>    {
->>>    	void *bitmap = pm8001_ha->tags;
->>> -	clear_bit(tag, bitmap);
->>> +	unsigned long flags;
->>> +
->>> +	spin_lock_irqsave(&pm8001_ha->bitmap_lock, flags);
->>> +	__clear_bit(tag, bitmap);
->>> +	spin_unlock_irqrestore(&pm8001_ha->bitmap_lock, flags);
->>>    }
->>>    
->> This spin lock is pretty much pointless; clear_bit() is always atomic.
-> 
-> But __clear_bit() is not atomic. I think it was the point of this patch,
-> to not use atomics and use the spinlock instead to protect bitmap.
-> 
-> Before the patch, pm8001_tag_alloc() takes the spinlock *and* use the
-> atomic set_bit(), which is an overkill. pm8001_tag_free() only clears the
-> bit using the the atomic clear_bit().
+On Mon, Jun 20, 2022 at 05:38:13AM +0000, Manne, Nava kishore wrote:
+> Ping!
 
-Right, so I could change to use __set_bit() in pm8001_find_tag(), but 
-rather use spinlock always.
-
-> 
-> After the patch, spinlock guarantees atomicity for both alloc and free.
-> 
-> Not sure there is any gain from this.
-
-A few more points to note:
-- On architectures which do not support atomic operations natively, they 
-have to use global spinlocks to create atomic context before doing 
-non-atomic bit clearing - see atomic64.c . As such, it's better to use 
-the already available pm8001_ha->bitmap_lock.
-- spinlock does more than create atomic context, but also has barrier 
-semantics, so proper to use consistently for protecting the same region.
+Sorry I missed this one. Will try to catch up.
 
 Thanks,
-John
+Yilun
+
+> 
+> > -----Original Message-----
+> > From: Nava kishore Manne <nava.manne@xilinx.com>
+> > Sent: Monday, May 23, 2022 7:15 PM
+> > To: mdf@kernel.org; hao.wu@intel.com; yilun.xu@intel.com;
+> > trix@redhat.com; robh+dt@kernel.org; krzysztof.kozlowski+dt@linaro.org;
+> > Michal Simek <michals@xilinx.com>; Nava kishore Manne
+> > <navam@xilinx.com>; linux-fpga@vger.kernel.org;
+> > devicetree@vger.kernel.org; linux-kernel@vger.kernel.org; linux-arm-
+> > kernel@lists.infradead.org; git <git@xilinx.com>
+> > Subject: [PATCH v2 3/3] fpga: region: Add runtime PM support
+> > 
+> > Add support to handle FPGA/PL power domain. With this patch, the PL
+> > power domain will be turned on before loading the bitstream into the
+> > targeted region and turned off while removing/unloading the bitstream from
+> > the targeted region using overlays. This can be achieved by adding the
+> > runtime PM support to the fpga regions.
+> > 
+> > Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
+> > ---
+> > Changes for v2:
+> >               - Updated commit message.
+> >               - Updated runtime PM handling logic to fix the PM ref count
+> >                 imbalance issues.
+> > 
+> >  drivers/fpga/of-fpga-region.c | 14 ++++++++++++++
+> >  1 file changed, 14 insertions(+)
+> > 
+> > diff --git a/drivers/fpga/of-fpga-region.c b/drivers/fpga/of-fpga-region.c
+> > index ae82532fc127..f14bb5916d97 100644
+> > --- a/drivers/fpga/of-fpga-region.c
+> > +++ b/drivers/fpga/of-fpga-region.c
+> > @@ -15,6 +15,7 @@
+> >  #include <linux/of_platform.h>
+> >  #include <linux/slab.h>
+> >  #include <linux/spinlock.h>
+> > +#include <linux/pm_runtime.h>
+> > 
+> >  static const struct of_device_id fpga_region_of_match[] = {
+> >  	{ .compatible = "fpga-region", },
+> > @@ -301,10 +302,17 @@ static int of_fpga_region_notify_pre_apply(struct
+> > fpga_region *region,
+> >  		return -EINVAL;
+> >  	}
+> > 
+> > +	ret = pm_runtime_resume_and_get(dev->parent);
+> > +	if (ret < 0) {
+> > +		fpga_image_info_free(info);
+> > +		return ret;
+> > +	}
+> > +
+> >  	region->info = info;
+> >  	ret = fpga_region_program_fpga(region);
+> >  	if (ret) {
+> >  		/* error; reject overlay */
+> > +		pm_runtime_put_sync(dev->parent);
+> >  		fpga_image_info_free(info);
+> >  		region->info = NULL;
+> >  	}
+> > @@ -324,10 +332,13 @@ static int of_fpga_region_notify_pre_apply(struct
+> > fpga_region *region,  static void of_fpga_region_notify_post_remove(struct
+> > fpga_region *region,
+> >  					      struct of_overlay_notify_data
+> > *nd)  {
+> > +	struct device *dev = &region->dev;
+> > +
+> >  	fpga_bridges_disable(&region->bridge_list);
+> >  	fpga_bridges_put(&region->bridge_list);
+> >  	fpga_image_info_free(region->info);
+> >  	region->info = NULL;
+> > +	pm_runtime_put_sync(dev->parent);
+> >  }
+> > 
+> >  /**
+> > @@ -411,6 +422,8 @@ static int of_fpga_region_probe(struct
+> > platform_device *pdev)
+> >  		goto eprobe_mgr_put;
+> >  	}
+> > 
+> > +	pm_runtime_enable(&pdev->dev);
+> > +
+> >  	of_platform_populate(np, fpga_region_of_match, NULL, &region-
+> > >dev);
+> >  	platform_set_drvdata(pdev, region);
+> > 
+> > @@ -430,6 +443,7 @@ static int of_fpga_region_remove(struct
+> > platform_device *pdev)
+> > 
+> >  	fpga_region_unregister(region);
+> >  	fpga_mgr_put(mgr);
+> > +	pm_runtime_disable(region->dev.parent);
+> > 
+> >  	return 0;
+> >  }
+> > --
+> > 2.25.1
