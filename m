@@ -2,284 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17160C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:53:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60898C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:54:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238660AbiFTOxr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:53:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52702 "EHLO
+        id S236578AbiFTOyE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 10:54:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231244AbiFTOx3 (ORCPT
+        with ESMTP id S242643AbiFTOxm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 10:53:29 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBE1D5402D;
-        Mon, 20 Jun 2022 07:12:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655734345; x=1687270345;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:in-reply-to;
-  bh=K/d62gPSVg4NmMutWFje50dPhFVYB3cepmG67K0wcUc=;
-  b=PtAYmLFQJH9hc5Pl0XaLMJftFj9UzobtnBZaW9X0eKi2Qn5YTowkdk0q
-   Ac4ko5y31hNZx86a1OWG34b1sAn9YaX8HgmKdm+m51pBFKYufhJOHuAjS
-   8zsfsTCLhtlsIiWNSseiMw6z+ISlqm/c42LpX3uuzSTVSKzzaiuZSeabV
-   1SOAStvCRkWdvs3paqR8NtHQ0KPFr+8//jV7Ht+Jnp3H9RHGv4hDuZqoc
-   0u5pgKNUblhhQ7Y/slD1urir1uUFBNbtaYjvJq+ticiu8yVtrgGIxLVsS
-   91PVWCA/EgZu6rTiKMWXoMNdvJQZfxjwC8+/wWwE5GhXdO/UAYoOHxqrC
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="278677648"
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="278677648"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 07:12:12 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="584911886"
-Received: from chaop.bj.intel.com (HELO localhost) ([10.240.192.101])
-  by orsmga007.jf.intel.com with ESMTP; 20 Jun 2022 07:12:02 -0700
-Date:   Mon, 20 Jun 2022 22:08:41 +0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-api@vger.kernel.org, linux-doc@vger.kernel.org,
-        qemu-devel@nongnu.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com, aarcange@redhat.com,
-        ddutile@redhat.com, dhildenb@redhat.com,
-        Quentin Perret <qperret@google.com>,
-        Michael Roth <michael.roth@amd.com>, mhocko@suse.com
-Subject: Re: [PATCH v6 4/8] KVM: Extend the memslot to support fd-based
- private memory
-Message-ID: <20220620140841.GA2016793@chaop.bj.intel.com>
-Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
-References: <20220519153713.819591-1-chao.p.peng@linux.intel.com>
- <20220519153713.819591-5-chao.p.peng@linux.intel.com>
- <Yqzpf3AEYabFWjnW@google.com>
+        Mon, 20 Jun 2022 10:53:42 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04A56544CD;
+        Mon, 20 Jun 2022 07:12:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1655734314;
+        bh=lrpj5bWSK91JJmPZUyypEEm3vSEYur1O7qLUbe+x124=;
+        h=X-UI-Sender-Class:Date:From:To:Cc:Subject;
+        b=cIMnEM6IhJPcFX2biB/Wl4q+Vdgn04RTW1eJQoQfLLBYOMZD6REMhCEAciB6u1WgM
+         ZsxSmcjWC9h4y7cIglygwNg2Sg+hUG5bO/np+ehAiTsoYquu893AyJlXRgtt9TptmJ
+         PF4FnKcsGH0g0/BR4/XZHJvDlI6NAM8O4vRfMBzY=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.100.20] ([46.142.35.49]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MyKDU-1nkYSc2Td6-00yiTN; Mon, 20
+ Jun 2022 16:11:54 +0200
+Message-ID: <96b85afe-a6e4-07c8-e1de-079893ac5f67@gmx.de>
+Date:   Mon, 20 Jun 2022 16:11:53 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yqzpf3AEYabFWjnW@google.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+From:   Ronald Warsow <rwarsow@gmx.de>
+To:     linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org
+Content-Language: de-DE
+Subject: Re: [PATCH 5.18 000/141] 5.18.6-rc1 review
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Provags-ID: V03:K1:OWX0qv4yg+TpG7dOD5rpGozVO56leqUX64ofGcWqZRcL1RbmgjL
+ rPrD+AVNnhixi3KfDTntNyIZ7u5RFc14aoWC0phQOc6CXsQgbyxiaLGu0EAy1lVXdafRPDb
+ MpZVpVbRksFTOQQpNuOJl9r+NeJj+uX9oNgpoROvPPif0dc2Y63kTVhI87nNOAKx8HScRDg
+ GB4S9luGq9QBl61mBoLmQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:sQnxqX5WwfA=:bv37lXSERIZLhV3VoFZdUW
+ JNiJJjLULWVCM/Q7+1P2punW5HYraYvUaGEyReChKPd3jUxIM2UeYqpOsL5v0Q7f7L9zSNJSL
+ mPxXKm+eov02rKKGoGKAhjpLPDcKZkt7ltWeZnxx5lcrwOV3MsTVzZ22D4pPmYlbYw8Dzinwn
+ lNLjYw/p6IpndQ3L4xcD+pjIjpo/GuZydSParZ+X65gpuO3ILj09zviNXfK1c8/CtIPermdcG
+ osIYx1Hjue02dXkgCoGs7Eq93nhkEwhez4qxQXlDgsPJUDUIYX+FNgvOX4ULlRmzBlHoU/Emq
+ xrnb+zgr3rSZimYs8kvCNFB27qUasYo4ljhworSxbl0L4OMG7ICKfPgA7XG/4bBduoDQwkk52
+ z7BxWA1il8AYAs7YCvN/40j1HSK82tjrOc0AzmydpDO6kXwMwRR8DZzdRDLYKccIKC3iKl2v+
+ e1GEIFvRZ5P/O+rCLdjEXAML7piFq+zFKgqwCqO3gp8KqTtJyClm34Qwh+ky8a2QjXi12h58n
+ iKM2QjRkpA0ON04DNRhCC0iHFnusxj7rVmJFaSJEq71W10raSCQd4OIQNBbZQ2QN25oNofhI4
+ 0XExGfcK/v7bLny3W34yI45CwVf1xOGQTn4Vm61PKcbjgm4D3oWBJbDpqH2i4x98w6DVzLMmY
+ vT+bv5hO1RkjlWfPkNiNRTJU065RMSYM98RWlxMQuR5P68OgEiHgp2oua7hzUa93ayPxbNYtN
+ o13N2FqH4fmwPvMy8Nm2bheSHXVpPqx1j9uXI0bIEpi9z6azh8RY+AHwkf+HM4R/TFkMO+HEG
+ nynj4Sb1uVYThxK39ZdaUc/QNm7PHhACf9nCjYqMGnQY8O78DcP5rCOGd65UlUkgGqtSmyHNg
+ 1LdsEfn9iKK7rpTtHNaaucF1abi4pWJFnXFtmwzvxWYnm3FIHyLN57EjhSxkkhnsBwLECIYxi
+ 0LHl2Hg1aLUKTySGstKsryj0/HFh/skYWxNy03ZDkGvCAfyZxw2sUBxI49CHjoxbDl+yJ7cYB
+ HTKA4aTosiRl6VNHaO8n4i0mCQRna8hiNKqO/72oYxHnztQd8m1vsfCuUZyKxpr8v17gXenHg
+ xYlWlqTqorIUw804+KPDOIAJtxS1iENSWYR
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 17, 2022 at 08:52:15PM +0000, Sean Christopherson wrote:
-> On Thu, May 19, 2022, Chao Peng wrote:
-> > @@ -653,12 +662,12 @@ struct kvm_irq_routing_table {
-> >  };
-> >  #endif
-> >  
-> > -#ifndef KVM_PRIVATE_MEM_SLOTS
-> > -#define KVM_PRIVATE_MEM_SLOTS 0
-> > +#ifndef KVM_INTERNAL_MEM_SLOTS
-> > +#define KVM_INTERNAL_MEM_SLOTS 0
-> >  #endif
-> 
-> This rename belongs in a separate patch.
+hallo Greg
 
-Will separate it out, thanks.
+5.18.6-rc1
 
-> 
-> >  #define KVM_MEM_SLOTS_NUM SHRT_MAX
-> > -#define KVM_USER_MEM_SLOTS (KVM_MEM_SLOTS_NUM - KVM_PRIVATE_MEM_SLOTS)
-> > +#define KVM_USER_MEM_SLOTS (KVM_MEM_SLOTS_NUM - KVM_INTERNAL_MEM_SLOTS)
-> >  
-> >  #ifndef __KVM_VCPU_MULTIPLE_ADDRESS_SPACE
-> >  static inline int kvm_arch_vcpu_memslots_id(struct kvm_vcpu *vcpu)
-> > @@ -1087,9 +1096,9 @@ enum kvm_mr_change {
-> >  };
-> >  
-> >  int kvm_set_memory_region(struct kvm *kvm,
-> > -			  const struct kvm_userspace_memory_region *mem);
-> > +			  const struct kvm_user_mem_region *mem);
-> >  int __kvm_set_memory_region(struct kvm *kvm,
-> > -			    const struct kvm_userspace_memory_region *mem);
-> > +			    const struct kvm_user_mem_region *mem);
-> >  void kvm_arch_free_memslot(struct kvm *kvm, struct kvm_memory_slot *slot);
-> >  void kvm_arch_memslots_updated(struct kvm *kvm, u64 gen);
-> >  int kvm_arch_prepare_memory_region(struct kvm *kvm,
-> > diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
-> > index e10d131edd80..28cacd3656d4 100644
-> > --- a/include/uapi/linux/kvm.h
-> > +++ b/include/uapi/linux/kvm.h
-> > @@ -103,6 +103,29 @@ struct kvm_userspace_memory_region {
-> >  	__u64 userspace_addr; /* start of the userspace allocated memory */
-> >  };
-> >  
-> > +struct kvm_userspace_memory_region_ext {
-> > +	struct kvm_userspace_memory_region region;
-> > +	__u64 private_offset;
-> > +	__u32 private_fd;
-> > +	__u32 pad1;
-> > +	__u64 pad2[14];
-> > +};
-> > +
-> > +#ifdef __KERNEL__
-> > +/* Internal helper, the layout must match above user visible structures */
-> 
-> It's worth explicity calling out which structureso this aliases.  And rather than
-> add a comment about the layout needing to match that, enforce it in code. I
-> personally wouldn't bother with an expolicit comment about the layout, IMO that's
-> a fairly obvious implication of aliasing.
-> 
-> /*
->  * kvm_user_mem_region is a kernel-only alias of kvm_userspace_memory_region_ext
->  * that "unpacks" kvm_userspace_memory_region so that KVM can directly access
->  * all fields from the top-level "extended" region.
->  */
-> 
+compiles, boots and runs here on x86_64
+(Intel i5-11400, Fedora 36)
 
-Thanks.
+Tested-by: Ronald Warsow <rwarsow@gmx.de
 
-> 
-> And I think it's in this patch that you missed a conversion to the alias, in the
-> prototype for check_memory_region_flags() (looks like it gets fixed up later in
-> the series).
-> 
-> diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-> index 0f81bf0407be..8765b334477d 100644
-> --- a/virt/kvm/kvm_main.c
-> +++ b/virt/kvm/kvm_main.c
-> @@ -1466,7 +1466,7 @@ static void kvm_replace_memslot(struct kvm *kvm,
->         }
->  }
-> 
-> -static int check_memory_region_flags(const struct kvm_userspace_memory_region *mem)
-> +static int check_memory_region_flags(const struct kvm_user_mem_region *mem)
->  {
->         u32 valid_flags = KVM_MEM_LOG_DIRTY_PAGES;
-> 
-> @@ -4514,6 +4514,33 @@ static int kvm_vm_ioctl_get_stats_fd(struct kvm *kvm)
->         return fd;
->  }
-> 
-> +#define SANITY_CHECK_MEM_REGION_FIELD(field)                                   \
-> +do {                                                                           \
-> +       BUILD_BUG_ON(offsetof(struct kvm_user_mem_region, field) !=             \
-> +                    offsetof(struct kvm_userspace_memory_region, field));      \
-> +       BUILD_BUG_ON(sizeof_field(struct kvm_user_mem_region, field) !=         \
-> +                    sizeof_field(struct kvm_userspace_memory_region, field));  \
-> +} while (0)
-> +
-> +#define SANITY_CHECK_MEM_REGION_EXT_FIELD(field)                                       \
-> +do {                                                                                   \
-> +       BUILD_BUG_ON(offsetof(struct kvm_user_mem_region, field) !=                     \
-> +                    offsetof(struct kvm_userspace_memory_region_ext, field));          \
-> +       BUILD_BUG_ON(sizeof_field(struct kvm_user_mem_region, field) !=                 \
-> +                    sizeof_field(struct kvm_userspace_memory_region_ext, field));      \
-> +} while (0)
-> +
-> +static void kvm_sanity_check_user_mem_region_alias(void)
-> +{
-> +       SANITY_CHECK_MEM_REGION_FIELD(slot);
-> +       SANITY_CHECK_MEM_REGION_FIELD(flags);
-> +       SANITY_CHECK_MEM_REGION_FIELD(guest_phys_addr);
-> +       SANITY_CHECK_MEM_REGION_FIELD(memory_size);
-> +       SANITY_CHECK_MEM_REGION_FIELD(userspace_addr);
-> +       SANITY_CHECK_MEM_REGION_EXT_FIELD(private_offset);
-> +       SANITY_CHECK_MEM_REGION_EXT_FIELD(private_fd);
-> +}
-> +
->  static long kvm_vm_ioctl(struct file *filp,
->                            unsigned int ioctl, unsigned long arg)
->  {
-> @@ -4541,6 +4568,8 @@ static long kvm_vm_ioctl(struct file *filp,
->                 unsigned long size;
->                 u32 flags;
-> 
-> +               kvm_sanity_check_user_mem_region_alias();
-> +
->                 memset(&mem, 0, sizeof(mem));
-> 
->                 r = -EFAULT;
-> 
-> > +struct kvm_user_mem_region {
-> > +	__u32 slot;
-> > +	__u32 flags;
-> > +	__u64 guest_phys_addr;
-> > +	__u64 memory_size;
-> > +	__u64 userspace_addr;
-> > +	__u64 private_offset;
-> > +	__u32 private_fd;
-> > +	__u32 pad1;
-> > +	__u64 pad2[14];
-> > +};
-> > +#endif
-> > +
-> >  /*
-> >   * The bit 0 ~ bit 15 of kvm_memory_region::flags are visible for userspace,
-> >   * other bits are reserved for kvm internal use which are defined in
-> > @@ -110,6 +133,7 @@ struct kvm_userspace_memory_region {
-> >   */
-> >  #define KVM_MEM_LOG_DIRTY_PAGES	(1UL << 0)
-> >  #define KVM_MEM_READONLY	(1UL << 1)
-> > +#define KVM_MEM_PRIVATE		(1UL << 2)
-> 
-> Hmm, KVM_MEM_PRIVATE is technically wrong now that a "private" memslot maps private
-> and/or shared memory.  Strictly speaking, we don't actually need a new flag.  Valid
-> file descriptors must be >=0, so the logic for specifying a memslot that can be
-> converted between private and shared could be that "(int)private_fd < 0" means
-> "not convertible", i.e. derive the flag from private_fd.
 
-I think a flag is still needed, the problem is private_fd can be safely
-accessed only when this flag is set, e.g. without this flag, we can't
-copy_from_user these new fields since they don't exist for previous
-kvm_userspace_memory_region callers.
+Thanks
 
-> 
-> And looking at the two KVM consumers of the flag, via kvm_slot_is_private(), they're
-> both wrong.  Both kvm_faultin_pfn() and kvm_mmu_max_mapping_level() should operate
-> on the _fault_, not the slot.  So it would actually be a positive to not have an easy
-> way to query if a slot supports conversion.
-> 
-> >  /* for KVM_IRQ_LINE */
-> >  struct kvm_irq_level {
-> 
-> ...
-> 
-> > +		if (flags & KVM_MEM_PRIVATE) {
-> 
-> An added bonus of dropping KVM_MEM_PRIVATE is that these checks go away.
-> 
-> > +			r = -EINVAL;
-> > +			goto out;
-> > +		}
-> > +
-> > +		size = sizeof(struct kvm_userspace_memory_region);
-> > +
-> > +		if (copy_from_user(&mem, argp, size))
-> > +			goto out;
-> > +
-> > +		r = -EINVAL;
-> > +		if ((flags ^ mem.flags) & KVM_MEM_PRIVATE)
-> >  			goto out;
-> >  
-> > -		r = kvm_vm_ioctl_set_memory_region(kvm, &kvm_userspace_mem);
-> > +		r = kvm_vm_ioctl_set_memory_region(kvm, &mem);
-> >  		break;
-> >  	}
-> >  	case KVM_GET_DIRTY_LOG: {
-> > -- 
-> > 2.25.1
-> > 
+Ronald
+
