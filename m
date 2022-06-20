@@ -2,79 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48682CCA483
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 10:02:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9619C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 10:02:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240785AbiFTKCr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 06:02:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34016 "EHLO
+        id S240824AbiFTKCy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 06:02:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240760AbiFTKCe (ORCPT
+        with ESMTP id S240775AbiFTKCf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 06:02:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7140F13E91
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 03:02:33 -0700 (PDT)
+        Mon, 20 Jun 2022 06:02:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96BE513EA5;
+        Mon, 20 Jun 2022 03:02:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0DA4F60B3E
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 10:02:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF518C3411C;
-        Mon, 20 Jun 2022 10:02:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 59CEFB80FBD;
+        Mon, 20 Jun 2022 10:02:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2111C3411B;
+        Mon, 20 Jun 2022 10:02:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655719352;
-        bh=RPWrMmTQ9win/WHzXLKou6ZiLn6V6pMKnD6XkzZiK3c=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=p4M02fgSJZiMjguc9W23jPi9utH2R6nytVOtyvj0yih7hCHQX9yeP2wXUFzklMvZw
-         PIPtcHOcVSmVtHtgl22+PZZZv2pu1uzsK44AqxCvjCekWb4lcJ+e/Isk/6bHotdYrd
-         XuhGs1SVO0j8YjImD14SlQ9m93oZ8eiLs/eHFX4zZjVPD55GgsBKc85YLgOlyZOw9A
-         hzbaen7ghnglOxDY5QmvdlOpMofpw6OepIXEyIV45fM+Lay/xY315yYLLEd47xEjcA
-         hWRLaN6UlpGieqhS8Vz65K3q7jL6OIO8sX+pN256atmCpPrZK3l9nTv3HP8BAfHPpT
-         Nol9KSGvfJvZQ==
-Date:   Mon, 20 Jun 2022 12:02:22 +0200
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     Petr Mladek <pmladek@suse.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org
-Subject: Re: Boot stall regression from "printk for 5.19" merge
-Message-ID: <20220620120222.38250035@thinkpad>
-In-Reply-To: <87o7yowaih.fsf@jogness.linutronix.de>
-References: <20220619204949.50d9154d@thinkpad>
-        <87r13kwawb.fsf@jogness.linutronix.de>
-        <87o7yowaih.fsf@jogness.linutronix.de>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        s=k20201202; t=1655719351;
+        bh=1Qix9NjjwRWFg9AdThL/ttBW7iUNhaFy23vyffkXhao=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=qTPctW0Iv73c1Acdc9eDe/gAi8E44hgW3RmEHZH3wOXop+ey92ZL8HrMu/y9dTSm/
+         BoIMcEOdeLV16nG872tZRRjMBjP6lZ4Z2H08l+pURt8dc8j2f+M8+ugUde6d5q4Fp4
+         B/x9dypApDlNhYYMGxeq8BhO3oBSbpGHTdG+FtMxuw8CW8fmhoIqM5zN4MtYon/49t
+         EEKyVhMSzujNnyvvJtQGNqi+wjCNVKpSKGBedcf+NYM9XY+R/GvNlOWRyqKrsjwRnB
+         6nXzyxDPRawn98BmO14gcB4eWbGEiisppIGEw/7ndBLc4YdRiwzxfxbutL58QGBNxu
+         ZgJsHe1hhsocw==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v6 1/2] ath9k: fix use-after-free in ath9k_hif_usb_rx_cb
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <d57bbedc857950659bfacac0ab48790c1eda00c8.1655145743.git.paskripkin@gmail.com>
+References: <d57bbedc857950659bfacac0ab48790c1eda00c8.1655145743.git.paskripkin@gmail.com>
+To:     Pavel Skripkin <paskripkin@gmail.com>
+Cc:     toke@toke.dk, davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        syzbot+03110230a11411024147@syzkaller.appspotmail.com,
+        syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com
+User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <165571934517.23287.2362581008087180339.kvalo@kernel.org>
+Date:   Mon, 20 Jun 2022 10:02:28 +0000 (UTC)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 20 Jun 2022 00:37:34 +0206
-John Ogness <john.ogness@linutronix.de> wrote:
+Pavel Skripkin <paskripkin@gmail.com> wrote:
 
-> On 2022-06-20, John Ogness <john.ogness@linutronix.de> wrote:
-> > On 2022-06-19, Marek Beh=C3=BAn <kabel@kernel.org> wrote: =20
-> >> the series
-> >> https://lore.kernel.org/linux-kernel/YouKQw72H7y9EJQK@alley/
-> >> merged by commit 537e62c865dc ("Merge tag 'printk-for-5.19' of
-> >> git://git.kernel.org/pub/scm/linux/kernel/git/printk/linux")
-> >>
-> >> and in particular the commit 09c5ba0aa2fc ("printk: add kthread console
-> >> printers")
-> >>
-> >> causes a regression on arm64 (Marvell CN9130-CRB board) where the
-> >> system boot freezes in most cases (and is unusable until restarted by
-> >> watchdog), or, in some cases boots, but the console output gets mangled
-> >> for a while (the serial console spits garbage characters). =20
->=20
-> Also, have you tried 5.19-rc3? There were several fixes that came in
-> after rc2.
->=20
-> John Ogness
+> Syzbot reported use-after-free Read in ath9k_hif_usb_rx_cb() [0]. The
+> problem was in incorrect htc_handle->drv_priv initialization.
+> 
+> Probable call trace which can trigger use-after-free:
+> 
+> ath9k_htc_probe_device()
+>   /* htc_handle->drv_priv = priv; */
+>   ath9k_htc_wait_for_target()      <--- Failed
+>   ieee80211_free_hw()              <--- priv pointer is freed
+> 
+> <IRQ>
+> ...
+> ath9k_hif_usb_rx_cb()
+>   ath9k_hif_usb_rx_stream()
+>    RX_STAT_INC()                <--- htc_handle->drv_priv access
+> 
+> In order to not add fancy protection for drv_priv we can move
+> htc_handle->drv_priv initialization at the end of the
+> ath9k_htc_probe_device() and add helper macro to make
+> all *_STAT_* macros NULL safe, since syzbot has reported related NULL
+> deref in that macros [1]
+> 
+> Link: https://syzkaller.appspot.com/bug?id=6ead44e37afb6866ac0c7dd121b4ce07cb665f60 [0]
+> Link: https://syzkaller.appspot.com/bug?id=b8101ffcec107c0567a0cd8acbbacec91e9ee8de [1]
+> Fixes: fb9987d0f748 ("ath9k_htc: Support for AR9271 chipset.")
+> Reported-and-tested-by: syzbot+03110230a11411024147@syzkaller.appspotmail.com
+> Reported-and-tested-by: syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com
+> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+> Acked-by: Toke Høiland-Jørgensen <toke@toke.dk>
+> Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
 
-rc3 still has the issue.
+2 patches applied to ath-next branch of ath.git, thanks.
 
-Marek
+0ac4827f78c7 ath9k: fix use-after-free in ath9k_hif_usb_rx_cb
+d7fc76039b74 ath9k: htc: clean up statistics macros
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/d57bbedc857950659bfacac0ab48790c1eda00c8.1655145743.git.paskripkin@gmail.com/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
