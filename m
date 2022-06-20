@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A2C1CCA480
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12C0DCCA47C
 	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:29:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345969AbiFTN2n (ORCPT
+        id S1345694AbiFTN22 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:28:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44944 "EHLO
+        Mon, 20 Jun 2022 09:28:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344778AbiFTNZ1 (ORCPT
+        with ESMTP id S1344697AbiFTNZU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:25:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78D841AF25;
-        Mon, 20 Jun 2022 06:10:27 -0700 (PDT)
+        Mon, 20 Jun 2022 09:25:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCE571AF16;
+        Mon, 20 Jun 2022 06:10:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D9308B811BF;
-        Mon, 20 Jun 2022 13:05:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F9DCC3411B;
-        Mon, 20 Jun 2022 13:05:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8DE5C60A6D;
+        Mon, 20 Jun 2022 13:10:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 978B2C3411B;
+        Mon, 20 Jun 2022 13:10:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730318;
-        bh=SG0d8nWr1NNbbxqYsCX7Km3fIjZdag3mvPeMHmSGtAs=;
+        s=korg; t=1655730612;
+        bh=fNMtNd/ZVAeJzffPN0WQglMzH9rYHRFh7UPCRvMC4n4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pzkWEp+7nXNQjOFDi2KodghsLpXr9fPVPaTLquxj1EUSL0Oot0BxAXJuQZyutPsKM
-         Gu5dKnHDz6rul1jQtM9GVnjgK6AkE7oMzqnUOmIaUCppEjWqZLep+LlA1Pwr18iBuo
-         PfGt+itfUdIEw9OWOjW9/jMcHpKqO3x8hS0xPqMk=
+        b=LFCNu0fetn5kBz6XifhWw3auHQPKiwrrl3TcKf+wO5ELFWlz0yV5XKvXsbbrVyg6A
+         IprPURFOu+zcHFr3Dia3cjXgb98Swg6DKJ3oHrVhW5UpUemUL0sLBRFDJrLfCYcDvU
+         JF49k3U2XHleozDH3D/HfrPPnTRLQ6G20pxnx2wQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lang Yu <Lang.Yu@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 016/106] drm/amdkfd: add pinned BOs to kfd_bo_list
-Date:   Mon, 20 Jun 2022 14:50:35 +0200
-Message-Id: <20220620124724.867369793@linuxfoundation.org>
+        stable@vger.kernel.org, stable <stable@kernel.org>,
+        Pawel Laszczak <pawell@cadence.com>,
+        Jing Leng <jleng@ambarella.com>
+Subject: [PATCH 5.15 088/106] usb: cdnsp: Fixed setting last_trb incorrectly
+Date:   Mon, 20 Jun 2022 14:51:47 +0200
+Message-Id: <20220620124726.993082471@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
 References: <20220620124724.380838401@linuxfoundation.org>
@@ -52,74 +50,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lang Yu <Lang.Yu@amd.com>
+From: Jing Leng <jleng@ambarella.com>
 
-[ Upstream commit 4fac4fcf4500bce515b0f32195e7bb86aa0246c6 ]
+commit 5c7578c39c3fffe85b7d15ca1cf8cf7ac38ec0c1 upstream.
 
-The kfd_bo_list is used to restore process BOs after
-evictions. As page tables could be destroyed during
-evictions, we should also update pinned BOs' page tables
-during restoring to make sure they are valid.
+When ZLP occurs in bulk transmission, currently cdnsp will set last_trb
+for the last two TRBs, it will trigger an error "ERROR Transfer event TRB
+DMA ptr not part of current TD ...".
 
-So for pinned BOs,
-1, Validate them and update their page tables.
-2, Don't add eviction fence for them.
-
-v2:
- - Don't handle pinned ones specially in BO validation.(Felix)
-
-Signed-off-by: Lang Yu <Lang.Yu@amd.com>
-Acked-by: Christian König <christian.koenig@amd.com>
-Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: e913aada0683 ("usb: cdnsp: Fixed issue with ZLP")
+Cc: stable <stable@kernel.org>
+Acked-by: Pawel Laszczak <pawell@cadence.com>
+Signed-off-by: Jing Leng <jleng@ambarella.com>
+Link: https://lore.kernel.org/r/20220609021134.1606-1-3090101217@zju.edu.cn
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ drivers/usb/cdns3/cdnsp-ring.c |   19 +++++++++++--------
+ 1 file changed, 11 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c
-index ab36cce59d2e..21c02f817a84 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c
-@@ -1828,9 +1828,6 @@ int amdgpu_amdkfd_gpuvm_map_gtt_bo_to_kernel(struct kgd_dev *kgd,
- 		return -EINVAL;
- 	}
+--- a/drivers/usb/cdns3/cdnsp-ring.c
++++ b/drivers/usb/cdns3/cdnsp-ring.c
+@@ -1941,13 +1941,16 @@ int cdnsp_queue_bulk_tx(struct cdnsp_dev
+ 		}
  
--	/* delete kgd_mem from kfd_bo_list to avoid re-validating
--	 * this BO in BO's restoring after eviction.
--	 */
- 	mutex_lock(&mem->process_info->lock);
- 
- 	ret = amdgpu_bo_reserve(bo, true);
-@@ -1853,7 +1850,6 @@ int amdgpu_amdkfd_gpuvm_map_gtt_bo_to_kernel(struct kgd_dev *kgd,
- 
- 	amdgpu_amdkfd_remove_eviction_fence(
- 		bo, mem->process_info->eviction_fence);
--	list_del_init(&mem->validate_list.head);
- 
- 	if (size)
- 		*size = amdgpu_bo_size(bo);
-@@ -2399,12 +2395,15 @@ int amdgpu_amdkfd_gpuvm_restore_process_bos(void *info, struct dma_fence **ef)
- 	process_info->eviction_fence = new_fence;
- 	*ef = dma_fence_get(&new_fence->base);
- 
--	/* Attach new eviction fence to all BOs */
-+	/* Attach new eviction fence to all BOs except pinned ones */
- 	list_for_each_entry(mem, &process_info->kfd_bo_list,
--		validate_list.head)
-+		validate_list.head) {
-+		if (mem->bo->tbo.pin_count)
-+			continue;
-+
- 		amdgpu_bo_fence(mem->bo,
- 			&process_info->eviction_fence->base, true);
+ 		if (enqd_len + trb_buff_len >= full_len) {
+-			if (need_zero_pkt)
+-				zero_len_trb = !zero_len_trb;
 -
-+	}
- 	/* Attach eviction fence to PD / PT BOs */
- 	list_for_each_entry(peer_vm, &process_info->vm_list_head,
- 			    vm_list_node) {
--- 
-2.35.1
-
+-			field &= ~TRB_CHAIN;
+-			field |= TRB_IOC;
+-			more_trbs_coming = false;
+-			preq->td.last_trb = ring->enqueue;
++			if (need_zero_pkt && !zero_len_trb) {
++				zero_len_trb = true;
++			} else {
++				zero_len_trb = false;
++				field &= ~TRB_CHAIN;
++				field |= TRB_IOC;
++				more_trbs_coming = false;
++				need_zero_pkt = false;
++				preq->td.last_trb = ring->enqueue;
++			}
+ 		}
+ 
+ 		/* Only set interrupt on short packet for OUT endpoints. */
+@@ -1962,7 +1965,7 @@ int cdnsp_queue_bulk_tx(struct cdnsp_dev
+ 		length_field = TRB_LEN(trb_buff_len) | TRB_TD_SIZE(remainder) |
+ 			TRB_INTR_TARGET(0);
+ 
+-		cdnsp_queue_trb(pdev, ring, more_trbs_coming | zero_len_trb,
++		cdnsp_queue_trb(pdev, ring, more_trbs_coming,
+ 				lower_32_bits(send_addr),
+ 				upper_32_bits(send_addr),
+ 				length_field,
 
 
