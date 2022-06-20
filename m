@@ -2,186 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58ACEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 20:11:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 865E1C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 20:12:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344732AbiFTULx (ORCPT
+        id S1344762AbiFTUMc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 16:11:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38738 "EHLO
+        Mon, 20 Jun 2022 16:12:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344570AbiFTUJS (ORCPT
+        with ESMTP id S245663AbiFTUMF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 16:09:18 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC012220CB;
-        Mon, 20 Jun 2022 13:07:39 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id o37-20020a05600c512500b0039c4ba4c64dso8276740wms.2;
-        Mon, 20 Jun 2022 13:07:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=gGGGI5LNQd5QfFmuY5vVwQrtUD8WBKwvWjL6Bicr/nE=;
-        b=S/EtAgiYih2o97vzKZ46FuXvAcLZH4aZSRqS9u2yBKGwrnkXOKPCMGGLd7i9ZmxQaG
-         BnBbK63aSq4v1vSjGAPc164mZGaSk3LPHtRt8daUl8xMv0xp20Wh0ybrxjQLqHXLqdDy
-         yhDIj9t6XfrHHFv3whu+IVZQrWETjZ1AesrYnf54NJGg7Cy+3sRgTPv9faAKYSFooPY0
-         45O48rrjzHJTrXu/6XULoJep5LjaBkkIDGdtmMKtfzD41Z5IcTn0ruAikZetXvnqo0Tl
-         Zdz1vCizcAGpaQKPTcGKQxbHlaaCG3L3c003lP0kS60LBM2I8ti3fkUMC/+0uVt3nR1g
-         Y3+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=gGGGI5LNQd5QfFmuY5vVwQrtUD8WBKwvWjL6Bicr/nE=;
-        b=V6mYZhraa+r19xr65iPPGyVil2wGL6CdM0InYTMK0U5V0tiQUDLhP3mcWeVHzP1eug
-         VO5SV4J31vdxfBypf5MFWUTo3eTCH92eUZPcdm+OhyWxPeXuqlogzE6Y8P8raTPYEhAd
-         cIZBDldTRIKE2/krY4YVbTPdbMBGZCBUNHl9IGIlJv7PXgW6Lx33vRuznbgHSv9S6s0y
-         oVOl+OEo2+MkIu1t3FMu+UfnvzP4J47inWvj/a/CXKY9VPMQGXc0L4bJR7i+jyh9pZo+
-         R/PgP8F07msI4UuxO1ed5bLiqpvlNzZMOP7KswxFR9ue+tpgG72YKQxQIBHlGy94tkQH
-         4uVw==
-X-Gm-Message-State: AJIora87Bt3QwjtkbXzFR9sHtCOvi4iJTb8Q8SpiqG3Sl2XrRYOIlNe4
-        3lc2sjbxK1fa38PyBalCY2A=
-X-Google-Smtp-Source: AGRyM1t7nmjsnyP7qTIA/w/988Wjv4MiUTlTDpMZzgOJTqyM5/Li8wCJHVRxnaV0tBlHxN/JpqOs4g==
-X-Received: by 2002:a05:600c:4ec7:b0:39c:84a7:3762 with SMTP id g7-20020a05600c4ec700b0039c84a73762mr25749060wmq.153.1655755653087;
-        Mon, 20 Jun 2022 13:07:33 -0700 (PDT)
-Received: from localhost (92.40.169.63.threembb.co.uk. [92.40.169.63])
-        by smtp.gmail.com with ESMTPSA id s7-20020a5d6a87000000b0021b8c99860asm5606007wru.115.2022.06.20.13.07.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jun 2022 13:07:32 -0700 (PDT)
-From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-To:     broonie@kernel.org
-Cc:     agross@kernel.org, bjorn.andersson@linaro.org,
-        srinivas.kandagatla@linaro.org, bgoswami@codeaurora.org,
-        gregkh@linuxfoundation.org, rafael@kernel.org,
-        cw00.choi@samsung.com, krzysztof.kozlowski@linaro.org,
-        b.zolnierkie@samsung.com, myungjoo.ham@samsung.com,
-        michael@walle.cc, linus.walleij@linaro.org, brgl@bgdev.pl,
-        tglx@linutronix.de, maz@kernel.org, lee.jones@linaro.org,
-        mani@kernel.org, cristian.ciocaltea@gmail.com, wens@csie.org,
-        tharvey@gateworks.com, rjones@gateworks.com,
-        mazziesaccount@gmail.com, orsonzhai@gmail.com,
-        baolin.wang7@gmail.com, zhang.lyra@gmail.com,
-        jernej.skrabec@gmail.com, samuel@sholland.org, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, linux-kernel@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-actions@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        alsa-devel@alsa-project.org
-Subject: [PATCH 48/49] mfd: qcom-pm8008: Use get_irq_reg() for irq chip
-Date:   Mon, 20 Jun 2022 21:06:43 +0100
-Message-Id: <20220620200644.1961936-49-aidanmacdonald.0x0@gmail.com>
-In-Reply-To: <20220620200644.1961936-1-aidanmacdonald.0x0@gmail.com>
-References: <20220620200644.1961936-1-aidanmacdonald.0x0@gmail.com>
+        Mon, 20 Jun 2022 16:12:05 -0400
+Received: from mx01.omp.ru (mx01.omp.ru [90.154.21.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9108C21828;
+        Mon, 20 Jun 2022 13:09:18 -0700 (PDT)
+Received: from [192.168.1.103] (178.176.78.78) by msexch01.omp.ru
+ (10.188.4.12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.986.14; Mon, 20 Jun
+ 2022 23:07:40 +0300
+Subject: Re: linux-next: build warning after merge of the libata tree
+To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+CC:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+References: <20220620103400.6b03f8d9@canb.auug.org.au>
+ <20220620182108.5efb3107@canb.auug.org.au>
+ <387885f0-999f-3746-0238-77052f10b25c@opensource.wdc.com>
+ <8e0717c2-d3c0-c81c-3a33-afdc045d123c@omp.ru>
+ <71cca7ed-6409-3066-8878-cdc647b17057@opensource.wdc.com>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <54db2644-aa04-82cc-88cd-1cb40a2b2d77@omp.ru>
+Date:   Mon, 20 Jun 2022 23:07:40 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <71cca7ed-6409-3066-8878-cdc647b17057@opensource.wdc.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [178.176.78.78]
+X-ClientProxiedBy: msexch01.omp.ru (10.188.4.12) To msexch01.omp.ru
+ (10.188.4.12)
+X-KSE-ServerInfo: msexch01.omp.ru, 9
+X-KSE-AntiSpam-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 06/20/2022 19:47:14
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 59
+X-KSE-AntiSpam-Info: Lua profiles 171243 [Jun 20 2022]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: s.shtylyov@omp.ru
+X-KSE-AntiSpam-Info: LuaCore: 490 490 64947c9fe6ec4170c45683de1592f92a9c3bac07
+X-KSE-AntiSpam-Info: {rep_avail}
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: {relay has no DNS name}
+X-KSE-AntiSpam-Info: {SMTP from is not routable}
+X-KSE-AntiSpam-Info: {Found in DNSBL: 178.176.78.78 in (user)
+ b.barracudacentral.org}
+X-KSE-AntiSpam-Info: {Found in DNSBL: 178.176.78.78 in (user)
+ dbl.spamhaus.org}
+X-KSE-AntiSpam-Info: d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;omp.ru:7.1.1;127.0.0.199:7.1.2
+X-KSE-AntiSpam-Info: ApMailHostAddress: 178.176.78.78
+X-KSE-AntiSpam-Info: {DNS response errors}
+X-KSE-AntiSpam-Info: Rate: 59
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-AntiSpam-Info: Auth:dmarc=temperror header.from=omp.ru;spf=temperror
+ smtp.mailfrom=omp.ru;dkim=none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Heuristic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 06/20/2022 19:50:00
+X-KSE-AttachmentFiltering-Interceptor-Info: protection disabled
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: Clean, bases: 6/20/2022 5:27:00 PM
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace the not_fixed_stride flag with a get_irq_reg() callback,
-which expresses what we want to do here more directly instead of
-relying on a convoluted hierarchy of offsets.
+On 6/20/22 2:07 PM, Damien Le Moal wrote:
 
-Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
----
- drivers/mfd/qcom-pm8008.c | 56 +++++++++++++++++----------------------
- 1 file changed, 25 insertions(+), 31 deletions(-)
+[...]
+>>>>> After merging the libata tree, today's linux-next build (powercp
+>>>>> ppc64_defconfig) produced this warning:
+>>>>>
+>>>>> In file included from include/linux/device.h:15,
+>>>>>                  from arch/powerpc/include/asm/io.h:27,
+>>>>>                  from include/linux/io.h:13,
+>>>>>                  from include/linux/irq.h:20,
+>>>>>                  from arch/powerpc/include/asm/hardirq.h:6,
+>>>>>                  from include/linux/hardirq.h:11,
+>>>>>                  from include/linux/highmem.h:11,
+>>>>>                  from include/linux/bvec.h:10,
+>>>>>                  from include/linux/blk_types.h:10,
+>>>>>                  from include/linux/blkdev.h:9,
+>>>>>                  from drivers/ata/pata_macio.c:18:
+>>>>> drivers/ata/pata_macio.c: In function 'pmac_macio_calc_timing_masks':
+>>>>> drivers/ata/pata_macio.c:1031:28: warning: format '%lx' expects argument of type 'long unsigned int', but argument 4 has type 'unsigned int' [-Wformat=]
+>>>>>  1031 |         dev_dbg(priv->dev, "Supported masks: PIO=%lx, MWDMA=%lx, UDMA=%lx\n",
+>>>>
+>>>> 	.
+>>>> 	.
+>>>> 	.
+>>>>
+>>>>> Introduced by commit
+>>>>>
+>>>>>   f0a6d77b351c ("ata: make transfer mode masks *unsigned int*")
+>>
+>>    Oops, sorry about that!>
+>>>> This turned into a build failure in my powerpc allyesconfig build, so I
+>>>> reverted the above commit for today.
+>>>
+>>> I pushed the fix already. It is in ata for-next branch.
+>>
+>>    Thank you!
+>>    Note that your Fixes: tag doesn't look right -- the asterisks are missing
+>> in the summary...
+> 
+> Fixed. Copy-paste from the mailer (build failure report email), the
+> asterisks are gone and "unsigned int" shown with bold font. Please stop
 
-diff --git a/drivers/mfd/qcom-pm8008.c b/drivers/mfd/qcom-pm8008.c
-index c778f2f87a17..f6407aa0bcfc 100644
---- a/drivers/mfd/qcom-pm8008.c
-+++ b/drivers/mfd/qcom-pm8008.c
-@@ -44,16 +44,6 @@ enum {
- #define PM8008_GPIO1_ADDR	PM8008_PERIPH_2_BASE
- #define PM8008_GPIO2_ADDR	PM8008_PERIPH_3_BASE
- 
--#define PM8008_STATUS_BASE	(PM8008_PERIPH_0_BASE | INT_LATCHED_STS_OFFSET)
--#define PM8008_MASK_BASE	(PM8008_PERIPH_0_BASE | INT_EN_CLR_OFFSET)
--#define PM8008_UNMASK_BASE	(PM8008_PERIPH_0_BASE | INT_EN_SET_OFFSET)
--#define PM8008_TYPE_BASE	(PM8008_PERIPH_0_BASE | INT_SET_TYPE_OFFSET)
--#define PM8008_ACK_BASE		(PM8008_PERIPH_0_BASE | INT_LATCHED_CLR_OFFSET)
--#define PM8008_POLARITY_HI_BASE	(PM8008_PERIPH_0_BASE | INT_POL_HIGH_OFFSET)
--#define PM8008_POLARITY_LO_BASE	(PM8008_PERIPH_0_BASE | INT_POL_LOW_OFFSET)
--
--#define PM8008_PERIPH_OFFSET(paddr)	(paddr - PM8008_PERIPH_0_BASE)
--
- struct pm8008_data {
- 	struct device *dev;
- 	struct regmap *regmap;
-@@ -61,22 +51,10 @@ struct pm8008_data {
- 	struct regmap_irq_chip_data *irq_data;
- };
- 
--static unsigned int p0_offs[] = {PM8008_PERIPH_OFFSET(PM8008_PERIPH_0_BASE)};
--static unsigned int p1_offs[] = {PM8008_PERIPH_OFFSET(PM8008_PERIPH_1_BASE)};
--static unsigned int p2_offs[] = {PM8008_PERIPH_OFFSET(PM8008_PERIPH_2_BASE)};
--static unsigned int p3_offs[] = {PM8008_PERIPH_OFFSET(PM8008_PERIPH_3_BASE)};
--
--static struct regmap_irq_sub_irq_map pm8008_sub_reg_offsets[] = {
--	REGMAP_IRQ_MAIN_REG_OFFSET(p0_offs),
--	REGMAP_IRQ_MAIN_REG_OFFSET(p1_offs),
--	REGMAP_IRQ_MAIN_REG_OFFSET(p2_offs),
--	REGMAP_IRQ_MAIN_REG_OFFSET(p3_offs),
--};
--
- static unsigned int pm8008_config_regs[] = {
--	PM8008_TYPE_BASE,
--	PM8008_POLARITY_HI_BASE,
--	PM8008_POLARITY_LO_BASE,
-+	INT_SET_TYPE_OFFSET,
-+	INT_POL_HIGH_OFFSET,
-+	INT_POL_LOW_OFFSET,
- };
- 
- enum {
-@@ -96,6 +74,23 @@ static struct regmap_irq pm8008_irqs[] = {
- 	REGMAP_IRQ_REG(PM8008_IRQ_GPIO2,	PM8008_GPIO2,	BIT(0)),
- };
- 
-+static const unsigned int pm8008_periph_base[] = {
-+	PM8008_PERIPH_0_BASE,
-+	PM8008_PERIPH_1_BASE,
-+	PM8008_PERIPH_2_BASE,
-+	PM8008_PERIPH_3_BASE,
-+};
-+
-+static unsigned int pm8008_get_irq_reg(struct regmap_irq_chip_data *data,
-+				       unsigned int base, int index)
-+{
-+	/* Simple linear addressing for the main status register */
-+	if (base == I2C_INTR_STATUS_BASE)
-+		return base + index;
-+
-+	return pm8008_periph_base[index] + base;
-+}
-+
- static int pm8008_set_type_config(unsigned int **buf, unsigned int type,
- 				  const struct regmap_irq *irq_data, int idx)
- {
-@@ -136,17 +131,16 @@ static struct regmap_irq_chip pm8008_irq_chip = {
- 	.irqs			= pm8008_irqs,
- 	.num_irqs		= ARRAY_SIZE(pm8008_irqs),
- 	.num_regs		= PM8008_NUM_PERIPHS,
--	.not_fixed_stride	= true,
--	.sub_reg_offsets	= pm8008_sub_reg_offsets,
--	.status_base		= PM8008_STATUS_BASE,
--	.mask_base		= PM8008_MASK_BASE,
--	.unmask_base		= PM8008_UNMASK_BASE,
-+	.status_base		= INT_LATCHED_STS_OFFSET,
-+	.mask_base		= INT_EN_CLR_OFFSET,
-+	.unmask_base		= INT_EN_SET_OFFSET,
- 	.mask_writeonly		= true,
--	.ack_base		= PM8008_ACK_BASE,
-+	.ack_base		= INT_LATCHED_CLR_OFFSET,
- 	.config_base		= pm8008_config_regs,
- 	.num_config_bases	= ARRAY_SIZE(pm8008_config_regs),
- 	.num_config_regs	= PM8008_NUM_PERIPHS,
- 	.set_type_config	= pm8008_set_type_config,
-+	.get_irq_reg		= pm8008_get_irq_reg,
- };
- 
- static struct regmap_config qcom_mfd_regmap_cfg = {
--- 
-2.35.1
+   Strange, I'm seeing both asterisks and bold font there. What kind of MUA
+you use? :-)
 
+> with the markdown style emphasis. That creates problems.
+
+   Mhm, OK...
+
+MBR, Sergey
