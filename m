@@ -2,265 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 316B4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 16:26:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E202C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 16:28:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240165AbiFTQ0n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 12:26:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48000 "EHLO
+        id S241491AbiFTQ2x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 12:28:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234213AbiFTQ0l (ORCPT
+        with ESMTP id S243785AbiFTQ2n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 12:26:41 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F27C1D317
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 09:26:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655742400; x=1687278400;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=f7g5q36s3nBOH9s2jmYUtqMFNU2MA/u3zaucBxlEbHc=;
-  b=nq505Ox3R+Fvs7phDJ6NDoYUsnVNvzG9Cc9CO/AGGekVCJi9mMHz53T2
-   sDv5oq4UgNciPjM+xSnMWmd2ub0t0QbQLXYHGXvVoVxaQQk10doxkOxL0
-   qEQ5AklN4GegQuHLIFaldSTN2fANvorfHAcEQZQzTeqK+x/DDuoxf2Kc4
-   iyGgoOMSlh8JeBfzCpjDUte92GD1NUUWy4ci9pU9DjNzc5I8c7No5nGx7
-   VG5A7r+9/N88ANVjaLnmO9cn3M93mICDNhDMsTdVYvWW7kHQI+8iJjE5s
-   DcKANE9wp2SlWrppiRBjZMGF1q1EhvWGN9/6UPkwxLXxvDCeTf/yqFvly
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10384"; a="366257595"
-X-IronPort-AV: E=Sophos;i="5.92,207,1650956400"; 
-   d="scan'208";a="366257595"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 09:26:39 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,207,1650956400"; 
-   d="scan'208";a="591243077"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 20 Jun 2022 09:25:22 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o3KDG-000UBr-44;
-        Mon, 20 Jun 2022 16:25:18 +0000
-Date:   Tue, 21 Jun 2022 00:24:42 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: drivers/soc/ixp4xx/ixp4xx-npe.c:737:34: warning:
- 'ixp4xx_npe_of_match' defined but not used
-Message-ID: <202206210010.piIa6O1b-lkp@intel.com>
+        Mon, 20 Jun 2022 12:28:43 -0400
+X-Greylist: delayed 2401 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 20 Jun 2022 09:28:42 PDT
+Received: from 7of9.schinagl.nl (7of9.connected.by.freedominter.net [185.238.129.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47F47BE0C;
+        Mon, 20 Jun 2022 09:28:42 -0700 (PDT)
+Received: from [10.2.12.24] (unknown [10.2.12.24])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by 7of9.schinagl.nl (Postfix) with ESMTPSA id 549661842F6F;
+        Mon, 20 Jun 2022 17:11:44 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=schinagl.nl; s=7of9;
+        t=1655737904; bh=UqBZTWQhX1oGqwuuGk9ArGFlxBsKUZyh+tzOazjtW9s=;
+        h=Date:Reply-To:Subject:To:Cc:References:From:In-Reply-To;
+        b=bOAzh2IFJWlWBZypDTa0e5IixUmK4ODxJw2v/sUawktoEQv/WpwcVc3LTrMbtQHhF
+         elnL57V0cO+lBHvFupyfUQQnTg4lArzlyPePP/ZUZOKyBBGv1uTDYimPzaXnBf04HK
+         xyx9I2GtQpi6lx7toDHyNw8pQLpR57FT+sUwMkWU=
+Message-ID: <fae4873e-2ff9-df35-0ab9-34bf4417b717@schinagl.nl>
+Date:   Mon, 20 Jun 2022 17:11:43 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Reply-To: oliver+list@schinagl.nl
+Subject: Re: [PATCH 00/13] [RFC] Rust support
+Content-Language: en-US
+To:     ojeda@kernel.org, Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     rust-for-linux@vger.kernel.org, linux-kbuild@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        oliver+list@schinagl.nl
+References: <20210414184604.23473-1-ojeda@kernel.org>
+From:   Olliver Schinagl <oliver@schinagl.nl>
+In-Reply-To: <20210414184604.23473-1-ojeda@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Arnd,
+Hey Miguel and others,
 
-First bad commit (maybe != root cause):
+Having followed this for a while, I finally decided it best to at least 
+share some thoughts in the hopes to make life better for us with some 
+readability/accessibility issues, such as dyslexia for example.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   4b35035bcf80ddb47c0112c4fbd84a63a2836a18
-commit: 7f94b69ece515ac82defa60ef7cba2cf26180216 ARM: ixp4xx: fix compile-testing soc drivers
-date:   11 months ago
-config: x86_64-buildonly-randconfig-r003-20220620 (https://download.01.org/0day-ci/archive/20220621/202206210010.piIa6O1b-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=7f94b69ece515ac82defa60ef7cba2cf26180216
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 7f94b69ece515ac82defa60ef7cba2cf26180216
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/gpu/drm/rockchip/ drivers/irqchip/ drivers/soc/ixp4xx/ kernel/sched/
+I apologize for being late to the party and for potentially using the 
+wrong thread, but I recall somewhere in v5 that it was best to respond 
+to the RFC for general comments.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+On 14-04-2021 20:45, ojeda@kernel.org wrote:
+> From: Miguel Ojeda <ojeda@kernel.org>
+> 
+> Some of you have noticed the past few weeks and months that
+> a serious attempt to bring a second language to the kernel was
+> being forged. We are finally here, with an RFC that adds support
+> for Rust to the Linux kernel.
+> 
+> This cover letter is fairly long, since there are quite a few topics
+> to describe, but I hope it answers as many questions as possible
+> before the discussion starts.
+> 
 
-All warnings (new ones prefixed by >>):
+<snip>
 
-   drivers/soc/ixp4xx/ixp4xx-npe.c:696:25: note: in expansion of macro 'dev_info'
-     696 |                         dev_info(dev, "NPE%d at 0x%08x-0x%08x not available\n",
-         |                         ^~~~~~~~
-   drivers/soc/ixp4xx/ixp4xx-npe.c:696:54: note: format string is defined here
-     696 |                         dev_info(dev, "NPE%d at 0x%08x-0x%08x not available\n",
-         |                                                   ~~~^
-         |                                                      |
-         |                                                      unsigned int
-         |                                                   %08llx
-   In file included from include/linux/device.h:15,
-                    from include/linux/dma-mapping.h:7,
-                    from drivers/soc/ixp4xx/ixp4xx-npe.c:15:
-   drivers/soc/ixp4xx/ixp4xx-npe.c:696:39: warning: format '%x' expects argument of type 'unsigned int', but argument 5 has type 'resource_size_t' {aka 'long long unsigned int'} [-Wformat=]
-     696 |                         dev_info(dev, "NPE%d at 0x%08x-0x%08x not available\n",
-         |                                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/dev_printk.h:19:22: note: in definition of macro 'dev_fmt'
-      19 | #define dev_fmt(fmt) fmt
-         |                      ^~~
-   drivers/soc/ixp4xx/ixp4xx-npe.c:696:25: note: in expansion of macro 'dev_info'
-     696 |                         dev_info(dev, "NPE%d at 0x%08x-0x%08x not available\n",
-         |                         ^~~~~~~~
-   drivers/soc/ixp4xx/ixp4xx-npe.c:696:61: note: format string is defined here
-     696 |                         dev_info(dev, "NPE%d at 0x%08x-0x%08x not available\n",
-         |                                                          ~~~^
-         |                                                             |
-         |                                                             unsigned int
-         |                                                          %08llx
-   In file included from include/linux/device.h:15,
-                    from include/linux/dma-mapping.h:7,
-                    from drivers/soc/ixp4xx/ixp4xx-npe.c:15:
-   drivers/soc/ixp4xx/ixp4xx-npe.c:705:39: warning: format '%x' expects argument of type 'unsigned int', but argument 4 has type 'resource_size_t' {aka 'long long unsigned int'} [-Wformat=]
-     705 |                         dev_info(dev, "NPE%d at 0x%08x-0x%08x does not reset\n",
-         |                                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/dev_printk.h:19:22: note: in definition of macro 'dev_fmt'
-      19 | #define dev_fmt(fmt) fmt
-         |                      ^~~
-   drivers/soc/ixp4xx/ixp4xx-npe.c:705:25: note: in expansion of macro 'dev_info'
-     705 |                         dev_info(dev, "NPE%d at 0x%08x-0x%08x does not reset\n",
-         |                         ^~~~~~~~
-   drivers/soc/ixp4xx/ixp4xx-npe.c:705:54: note: format string is defined here
-     705 |                         dev_info(dev, "NPE%d at 0x%08x-0x%08x does not reset\n",
-         |                                                   ~~~^
-         |                                                      |
-         |                                                      unsigned int
-         |                                                   %08llx
-   In file included from include/linux/device.h:15,
-                    from include/linux/dma-mapping.h:7,
-                    from drivers/soc/ixp4xx/ixp4xx-npe.c:15:
-   drivers/soc/ixp4xx/ixp4xx-npe.c:705:39: warning: format '%x' expects argument of type 'unsigned int', but argument 5 has type 'resource_size_t' {aka 'long long unsigned int'} [-Wformat=]
-     705 |                         dev_info(dev, "NPE%d at 0x%08x-0x%08x does not reset\n",
-         |                                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/dev_printk.h:19:22: note: in definition of macro 'dev_fmt'
-      19 | #define dev_fmt(fmt) fmt
-         |                      ^~~
-   drivers/soc/ixp4xx/ixp4xx-npe.c:705:25: note: in expansion of macro 'dev_info'
-     705 |                         dev_info(dev, "NPE%d at 0x%08x-0x%08x does not reset\n",
-         |                         ^~~~~~~~
-   drivers/soc/ixp4xx/ixp4xx-npe.c:705:61: note: format string is defined here
-     705 |                         dev_info(dev, "NPE%d at 0x%08x-0x%08x does not reset\n",
-         |                                                          ~~~^
-         |                                                             |
-         |                                                             unsigned int
-         |                                                          %08llx
-   In file included from include/linux/device.h:15,
-                    from include/linux/dma-mapping.h:7,
-                    from drivers/soc/ixp4xx/ixp4xx-npe.c:15:
-   drivers/soc/ixp4xx/ixp4xx-npe.c:710:31: warning: format '%x' expects argument of type 'unsigned int', but argument 4 has type 'resource_size_t' {aka 'long long unsigned int'} [-Wformat=]
-     710 |                 dev_info(dev, "NPE%d at 0x%08x-0x%08x registered\n",
-         |                               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/dev_printk.h:19:22: note: in definition of macro 'dev_fmt'
-      19 | #define dev_fmt(fmt) fmt
-         |                      ^~~
-   drivers/soc/ixp4xx/ixp4xx-npe.c:710:17: note: in expansion of macro 'dev_info'
-     710 |                 dev_info(dev, "NPE%d at 0x%08x-0x%08x registered\n",
-         |                 ^~~~~~~~
-   drivers/soc/ixp4xx/ixp4xx-npe.c:710:46: note: format string is defined here
-     710 |                 dev_info(dev, "NPE%d at 0x%08x-0x%08x registered\n",
-         |                                           ~~~^
-         |                                              |
-         |                                              unsigned int
-         |                                           %08llx
-   In file included from include/linux/device.h:15,
-                    from include/linux/dma-mapping.h:7,
-                    from drivers/soc/ixp4xx/ixp4xx-npe.c:15:
-   drivers/soc/ixp4xx/ixp4xx-npe.c:710:31: warning: format '%x' expects argument of type 'unsigned int', but argument 5 has type 'resource_size_t' {aka 'long long unsigned int'} [-Wformat=]
-     710 |                 dev_info(dev, "NPE%d at 0x%08x-0x%08x registered\n",
-         |                               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/dev_printk.h:19:22: note: in definition of macro 'dev_fmt'
-      19 | #define dev_fmt(fmt) fmt
-         |                      ^~~
-   drivers/soc/ixp4xx/ixp4xx-npe.c:710:17: note: in expansion of macro 'dev_info'
-     710 |                 dev_info(dev, "NPE%d at 0x%08x-0x%08x registered\n",
-         |                 ^~~~~~~~
-   drivers/soc/ixp4xx/ixp4xx-npe.c:710:53: note: format string is defined here
-     710 |                 dev_info(dev, "NPE%d at 0x%08x-0x%08x registered\n",
-         |                                                  ~~~^
-         |                                                     |
-         |                                                     unsigned int
-         |                                                  %08llx
-   At top level:
->> drivers/soc/ixp4xx/ixp4xx-npe.c:737:34: warning: 'ixp4xx_npe_of_match' defined but not used [-Wunused-const-variable=]
-     737 | static const struct of_device_id ixp4xx_npe_of_match[] = {
-         |                                  ^~~~~~~~~~~~~~~~~~~
+> 
+> Moreover, as explained above, we are taking the chance to enforce
+> some documentation guidelines. We are also enforcing automatic code
+> formatting, a set of Clippy lints, etc. We decided to go with Rust's
+> idiomatic style, i.e. keeping `rustfmt` defaults. For instance, this
+> means 4 spaces are used for indentation, rather than a tab. We are
+> happy to change that if needed -- we think what is important is
+> keeping the formatting automated
+
+Enforcing this is great, but how will you enforce this 'everywhere'? 
+Right now, you can easily 'bypass' any CI put in place, and while 'for 
+now' this is only about the Rust infra, where this can be strongly 
+enforced, once we see actual drivers pop-up; these won't go through the 
+Rust CI before merging CI forever? A maintainer can 'just merge' 
+something still, right?
+
+Anyway, what I wanted to criticize, is the so called "keeping with 
+`rustfmt` defaults". It has been known, that, well Rust's defaults are 
+pretty biased and opinionated. For the Rust project, that's fair of 
+course, their code, their rules.
+
+However, there's two arguments against that. For one, using the Rust 
+'style', now means there's 2 different code styles in the Kernel. 
+Cognitively alone, that can be quite frustrating and annoying. Having to 
+go back and forth between two styles can be mentally challenging which 
+only causes mistakes and frustration. So why change something that 
+already exists? Also, see my first point. Having to constantly 
+remember/switch to 'in this file/function the curly brace is on a 
+different line'. Lets try to stay consistent, the rules may not be 
+perfect (80 columns ;), but so far consistency is tried. OCD and Autism 
+etc doesn't help with this ;)
+
+Secondly, and this is really far more important, the Rust default style 
+is not very inclusive, as it makes readability harder. This has been 
+brought up by many others in plenty of places, including the `rustfmt` 
+issue tracker under bug #4067 [0]. While the discussion eventually only 
+led to the 'fmt-rfcs' [1], where it was basically said 'you could be on 
+to something, but this ship has sailed 3 years ago (when nobody was 
+looking caring), and while we hear you, we're not going to change our 
+defaults anymore.
+
+But I also agree and share these commenters pain. When the tab character 
+is used for indenting (and not alignment mind you), then visually 
+impaired (who can still be amazing coders) can more easily read code by 
+adjusting the width what works best to them.
+
+With even git renaming `master` to `main` to be more inclusive, can we 
+also be more inclusive to us that have a hard time distinguishing narrow 
+indentations?
+
+Thanks, and sorry for rubbing any ones nerves, but to "some of us" this 
+actually matters a great deal.
+
+Olliver
+
+P.S. would we expect inline C/Rust code mixed? What then?
 
 
-vim +/ixp4xx_npe_of_match +737 drivers/soc/ixp4xx/ixp4xx-npe.c
+<snip>
 
-82a96f5790ac93 arch/arm/mach-ixp4xx/ixp4xx_npe.c Krzysztof Halasa 2008-01-01  679  
-bc4d7eafb7ad59 drivers/soc/ixp4xx/ixp4xx-npe.c   Linus Walleij    2019-02-10  680  static int ixp4xx_npe_probe(struct platform_device *pdev)
-82a96f5790ac93 arch/arm/mach-ixp4xx/ixp4xx_npe.c Krzysztof Halasa 2008-01-01  681  {
-82a96f5790ac93 arch/arm/mach-ixp4xx/ixp4xx_npe.c Krzysztof Halasa 2008-01-01  682  	int i, found = 0;
-0b458d7b10f83e drivers/soc/ixp4xx/ixp4xx-npe.c   Linus Walleij    2019-02-10  683  	struct device *dev = &pdev->dev;
-76f24b4f46b8ca drivers/soc/ixp4xx/ixp4xx-npe.c   Linus Walleij    2021-05-25  684  	struct device_node *np = dev->of_node;
-0b458d7b10f83e drivers/soc/ixp4xx/ixp4xx-npe.c   Linus Walleij    2019-02-10  685  	struct resource *res;
-82a96f5790ac93 arch/arm/mach-ixp4xx/ixp4xx_npe.c Krzysztof Halasa 2008-01-01  686  
-82a96f5790ac93 arch/arm/mach-ixp4xx/ixp4xx_npe.c Krzysztof Halasa 2008-01-01  687  	for (i = 0; i < NPE_COUNT; i++) {
-82a96f5790ac93 arch/arm/mach-ixp4xx/ixp4xx_npe.c Krzysztof Halasa 2008-01-01  688  		struct npe *npe = &npe_tab[i];
-0b458d7b10f83e drivers/soc/ixp4xx/ixp4xx-npe.c   Linus Walleij    2019-02-10  689  
-0b458d7b10f83e drivers/soc/ixp4xx/ixp4xx-npe.c   Linus Walleij    2019-02-10  690  		res = platform_get_resource(pdev, IORESOURCE_MEM, i);
-0b458d7b10f83e drivers/soc/ixp4xx/ixp4xx-npe.c   Linus Walleij    2019-02-10  691  		if (!res)
-0b458d7b10f83e drivers/soc/ixp4xx/ixp4xx-npe.c   Linus Walleij    2019-02-10  692  			return -ENODEV;
-0b458d7b10f83e drivers/soc/ixp4xx/ixp4xx-npe.c   Linus Walleij    2019-02-10  693  
-82a96f5790ac93 arch/arm/mach-ixp4xx/ixp4xx_npe.c Krzysztof Halasa 2008-01-01  694  		if (!(ixp4xx_read_feature_bits() &
-0b458d7b10f83e drivers/soc/ixp4xx/ixp4xx-npe.c   Linus Walleij    2019-02-10  695  		      (IXP4XX_FEATURE_RESET_NPEA << i))) {
-0b458d7b10f83e drivers/soc/ixp4xx/ixp4xx-npe.c   Linus Walleij    2019-02-10  696  			dev_info(dev, "NPE%d at 0x%08x-0x%08x not available\n",
-0b458d7b10f83e drivers/soc/ixp4xx/ixp4xx-npe.c   Linus Walleij    2019-02-10  697  				 i, res->start, res->end);
-82a96f5790ac93 arch/arm/mach-ixp4xx/ixp4xx_npe.c Krzysztof Halasa 2008-01-01  698  			continue; /* NPE already disabled or not present */
-82a96f5790ac93 arch/arm/mach-ixp4xx/ixp4xx_npe.c Krzysztof Halasa 2008-01-01  699  		}
-0b458d7b10f83e drivers/soc/ixp4xx/ixp4xx-npe.c   Linus Walleij    2019-02-10  700  		npe->regs = devm_ioremap_resource(dev, res);
-cd3967bee004bc drivers/soc/ixp4xx/ixp4xx-npe.c   Dan Carpenter    2019-06-18  701  		if (IS_ERR(npe->regs))
-cd3967bee004bc drivers/soc/ixp4xx/ixp4xx-npe.c   Dan Carpenter    2019-06-18  702  			return PTR_ERR(npe->regs);
-82a96f5790ac93 arch/arm/mach-ixp4xx/ixp4xx_npe.c Krzysztof Halasa 2008-01-01  703  
-0b458d7b10f83e drivers/soc/ixp4xx/ixp4xx-npe.c   Linus Walleij    2019-02-10  704  		if (npe_reset(npe)) {
-0b458d7b10f83e drivers/soc/ixp4xx/ixp4xx-npe.c   Linus Walleij    2019-02-10  705  			dev_info(dev, "NPE%d at 0x%08x-0x%08x does not reset\n",
-0b458d7b10f83e drivers/soc/ixp4xx/ixp4xx-npe.c   Linus Walleij    2019-02-10  706  				 i, res->start, res->end);
-82a96f5790ac93 arch/arm/mach-ixp4xx/ixp4xx_npe.c Krzysztof Halasa 2008-01-01  707  			continue;
-0b458d7b10f83e drivers/soc/ixp4xx/ixp4xx-npe.c   Linus Walleij    2019-02-10  708  		}
-82a96f5790ac93 arch/arm/mach-ixp4xx/ixp4xx_npe.c Krzysztof Halasa 2008-01-01  709  		npe->valid = 1;
-0b458d7b10f83e drivers/soc/ixp4xx/ixp4xx-npe.c   Linus Walleij    2019-02-10 @710  		dev_info(dev, "NPE%d at 0x%08x-0x%08x registered\n",
-0b458d7b10f83e drivers/soc/ixp4xx/ixp4xx-npe.c   Linus Walleij    2019-02-10  711  			 i, res->start, res->end);
-82a96f5790ac93 arch/arm/mach-ixp4xx/ixp4xx_npe.c Krzysztof Halasa 2008-01-01  712  		found++;
-82a96f5790ac93 arch/arm/mach-ixp4xx/ixp4xx_npe.c Krzysztof Halasa 2008-01-01  713  	}
-82a96f5790ac93 arch/arm/mach-ixp4xx/ixp4xx_npe.c Krzysztof Halasa 2008-01-01  714  
-82a96f5790ac93 arch/arm/mach-ixp4xx/ixp4xx_npe.c Krzysztof Halasa 2008-01-01  715  	if (!found)
-3ba8c792055286 arch/arm/mach-ixp4xx/ixp4xx_npe.c Krzysztof Hałasa 2009-04-28  716  		return -ENODEV;
-76f24b4f46b8ca drivers/soc/ixp4xx/ixp4xx-npe.c   Linus Walleij    2021-05-25  717  
-76f24b4f46b8ca drivers/soc/ixp4xx/ixp4xx-npe.c   Linus Walleij    2021-05-25  718  	/* Spawn crypto subdevice if using device tree */
-76f24b4f46b8ca drivers/soc/ixp4xx/ixp4xx-npe.c   Linus Walleij    2021-05-25  719  	if (IS_ENABLED(CONFIG_OF) && np)
-76f24b4f46b8ca drivers/soc/ixp4xx/ixp4xx-npe.c   Linus Walleij    2021-05-25  720  		devm_of_platform_populate(dev);
-76f24b4f46b8ca drivers/soc/ixp4xx/ixp4xx-npe.c   Linus Walleij    2021-05-25  721  
-82a96f5790ac93 arch/arm/mach-ixp4xx/ixp4xx_npe.c Krzysztof Halasa 2008-01-01  722  	return 0;
-82a96f5790ac93 arch/arm/mach-ixp4xx/ixp4xx_npe.c Krzysztof Halasa 2008-01-01  723  }
-82a96f5790ac93 arch/arm/mach-ixp4xx/ixp4xx_npe.c Krzysztof Halasa 2008-01-01  724  
-bc4d7eafb7ad59 drivers/soc/ixp4xx/ixp4xx-npe.c   Linus Walleij    2019-02-10  725  static int ixp4xx_npe_remove(struct platform_device *pdev)
-82a96f5790ac93 arch/arm/mach-ixp4xx/ixp4xx_npe.c Krzysztof Halasa 2008-01-01  726  {
-82a96f5790ac93 arch/arm/mach-ixp4xx/ixp4xx_npe.c Krzysztof Halasa 2008-01-01  727  	int i;
-82a96f5790ac93 arch/arm/mach-ixp4xx/ixp4xx_npe.c Krzysztof Halasa 2008-01-01  728  
-82a96f5790ac93 arch/arm/mach-ixp4xx/ixp4xx_npe.c Krzysztof Halasa 2008-01-01  729  	for (i = 0; i < NPE_COUNT; i++)
-0b458d7b10f83e drivers/soc/ixp4xx/ixp4xx-npe.c   Linus Walleij    2019-02-10  730  		if (npe_tab[i].regs) {
-82a96f5790ac93 arch/arm/mach-ixp4xx/ixp4xx_npe.c Krzysztof Halasa 2008-01-01  731  			npe_reset(&npe_tab[i]);
-82a96f5790ac93 arch/arm/mach-ixp4xx/ixp4xx_npe.c Krzysztof Halasa 2008-01-01  732  		}
-bc4d7eafb7ad59 drivers/soc/ixp4xx/ixp4xx-npe.c   Linus Walleij    2019-02-10  733  
-bc4d7eafb7ad59 drivers/soc/ixp4xx/ixp4xx-npe.c   Linus Walleij    2019-02-10  734  	return 0;
-82a96f5790ac93 arch/arm/mach-ixp4xx/ixp4xx_npe.c Krzysztof Halasa 2008-01-01  735  }
-82a96f5790ac93 arch/arm/mach-ixp4xx/ixp4xx_npe.c Krzysztof Halasa 2008-01-01  736  
-e00797f2e05b7f drivers/soc/ixp4xx/ixp4xx-npe.c   Linus Walleij    2019-02-10 @737  static const struct of_device_id ixp4xx_npe_of_match[] = {
-e00797f2e05b7f drivers/soc/ixp4xx/ixp4xx-npe.c   Linus Walleij    2019-02-10  738  	{
-e00797f2e05b7f drivers/soc/ixp4xx/ixp4xx-npe.c   Linus Walleij    2019-02-10  739  		.compatible = "intel,ixp4xx-network-processing-engine",
-e00797f2e05b7f drivers/soc/ixp4xx/ixp4xx-npe.c   Linus Walleij    2019-02-10  740          },
-e00797f2e05b7f drivers/soc/ixp4xx/ixp4xx-npe.c   Linus Walleij    2019-02-10  741  	{},
-e00797f2e05b7f drivers/soc/ixp4xx/ixp4xx-npe.c   Linus Walleij    2019-02-10  742  };
-e00797f2e05b7f drivers/soc/ixp4xx/ixp4xx-npe.c   Linus Walleij    2019-02-10  743  
-
-:::::: The code at line 737 was first introduced by commit
-:::::: e00797f2e05b7f3758bb96e6248aff8d95999cec soc: ixp4xx: npe: Add DT probe code
-
-:::::: TO: Linus Walleij <linus.walleij@linaro.org>
-:::::: CC: Linus Walleij <linus.walleij@linaro.org>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+[0]: https://github.com/rust-lang/rustfmt/issues/4067#issuecomment-685961408
+[1]: 
+https://github.com/rust-dev-tools/fmt-rfcs/issues/1#issuecomment-911804826
