@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9896C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:20:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55C82C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:20:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346311AbiFTNUi (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:20:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42098 "EHLO
+        id S243387AbiFTNUn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:20:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345585AbiFTNOi (ORCPT
+        with ESMTP id S1345622AbiFTNOk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:14:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39EC02018A;
+        Mon, 20 Jun 2022 09:14:40 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 822AA19C10;
         Mon, 20 Jun 2022 06:07:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 08CF8B811CB;
-        Mon, 20 Jun 2022 13:05:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11880C36AEF;
-        Mon, 20 Jun 2022 13:05:43 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 62DE3CE139A;
+        Mon, 20 Jun 2022 13:06:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36CE6C3411B;
+        Mon, 20 Jun 2022 13:06:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730344;
-        bh=fc7MFvLBl5S0Dpre7Mc7IFBpLtZ3FB1t+p8Ol2drvI4=;
+        s=korg; t=1655730379;
+        bh=01mawIc35r+gK++qej0uz5FbVWHFWwVOkaENnGgcWhE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GMLGUH5kC7kXdxVPXZ7i1TyeVFdaEJ6YtBi053jJV9WXZPKgiwN8A8swc0ww4tmZj
-         HL93kH0nwLJnImo0aGgw2ZILUSmdVnZPRR/nJTPjWtV+qLCBFaj5smNGkxsOt2s1uk
-         7Ewj4z1lz6ZXM3OGjvCYwVz00Gy1Ey5CFCCjug5Y=
+        b=nRLfIuddib/dzNIVWs9fvoSCwGgRq0X6Y9N+Nng7qHdDf8cnvjQCTBFbAtMzo40VO
+         AKZ867h4LTMapuXSW1mRKgTJcmDOhRweBAJtsi+nPsMILxOzlMx8mbhwx9mpxvwXuF
+         8enCNjBi2qk86eZCKYd5+misdbLAYgG9oW0RIezQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wentao Wang <wwentao@vmware.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Wanming Hu <huwanming@huaweil.com>,
+        He Ying <heying24@huawei.com>,
+        Chen Jingwen <chenjingwen6@huawei.com>,
+        Kees Cook <keescook@chromium.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 023/106] scsi: vmw_pvscsi: Expand vcpuHint to 16 bits
-Date:   Mon, 20 Jun 2022 14:50:42 +0200
-Message-Id: <20220620124725.069953812@linuxfoundation.org>
+Subject: [PATCH 5.15 005/106] powerpc/kasan: Silence KASAN warnings in __get_wchan()
+Date:   Mon, 20 Jun 2022 14:50:24 +0200
+Message-Id: <20220620124724.544207703@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
 References: <20220620124724.380838401@linuxfoundation.org>
@@ -50,38 +52,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wentao Wang <wwentao@vmware.com>
+From: He Ying <heying24@huawei.com>
 
-[ Upstream commit cf71d59c2eceadfcde0fb52e237990a0909880d7 ]
+[ Upstream commit a1b29ba2f2c171b9bea73be993bfdf0a62d37d15 ]
 
-vcpuHint has been expanded to 16 bit on host to enable routing to more
-CPUs. Guest side should align with the change. This change has been tested
-with hosts with 8-bit and 16-bit vcpuHint, on both platforms host side can
-get correct value.
+The following KASAN warning was reported in our kernel.
 
-Link: https://lore.kernel.org/r/EF35F4D5-5DCC-42C5-BCC4-29DF1729B24C@vmware.com
-Signed-off-by: Wentao Wang <wwentao@vmware.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+  BUG: KASAN: stack-out-of-bounds in get_wchan+0x188/0x250
+  Read of size 4 at addr d216f958 by task ps/14437
+
+  CPU: 3 PID: 14437 Comm: ps Tainted: G           O      5.10.0 #1
+  Call Trace:
+  [daa63858] [c0654348] dump_stack+0x9c/0xe4 (unreliable)
+  [daa63888] [c035cf0c] print_address_description.constprop.3+0x8c/0x570
+  [daa63908] [c035d6bc] kasan_report+0x1ac/0x218
+  [daa63948] [c00496e8] get_wchan+0x188/0x250
+  [daa63978] [c0461ec8] do_task_stat+0xce8/0xe60
+  [daa63b98] [c0455ac8] proc_single_show+0x98/0x170
+  [daa63bc8] [c03cab8c] seq_read_iter+0x1ec/0x900
+  [daa63c38] [c03cb47c] seq_read+0x1dc/0x290
+  [daa63d68] [c037fc94] vfs_read+0x164/0x510
+  [daa63ea8] [c03808e4] ksys_read+0x144/0x1d0
+  [daa63f38] [c005b1dc] ret_from_syscall+0x0/0x38
+  --- interrupt: c00 at 0x8fa8f4
+      LR = 0x8fa8cc
+
+  The buggy address belongs to the page:
+  page:98ebcdd2 refcount:0 mapcount:0 mapping:00000000 index:0x2 pfn:0x1216f
+  flags: 0x0()
+  raw: 00000000 00000000 01010122 00000000 00000002 00000000 ffffffff 00000000
+  raw: 00000000
+  page dumped because: kasan: bad access detected
+
+  Memory state around the buggy address:
+   d216f800: 00 00 00 00 00 f1 f1 f1 f1 00 00 00 00 00 00 00
+   d216f880: f2 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  >d216f900: 00 00 00 00 00 00 00 00 00 00 00 f1 f1 f1 f1 00
+                                            ^
+   d216f980: f2 f2 f2 f2 f2 f2 f2 00 00 00 00 00 00 00 00 00
+   d216fa00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+
+After looking into this issue, I find the buggy address belongs
+to the task stack region. It seems KASAN has something wrong.
+I look into the code of __get_wchan in x86 architecture and
+find the same issue has been resolved by the commit
+f7d27c35ddff ("x86/mm, kasan: Silence KASAN warnings in get_wchan()").
+The solution could be applied to powerpc architecture too.
+
+As Andrey Ryabinin said, get_wchan() is racy by design, it may
+access volatile stack of running task, thus it may access
+redzone in a stack frame and cause KASAN to warn about this.
+
+Use READ_ONCE_NOCHECK() to silence these warnings.
+
+Reported-by: Wanming Hu <huwanming@huaweil.com>
+Signed-off-by: He Ying <heying24@huawei.com>
+Signed-off-by: Chen Jingwen <chenjingwen6@huawei.com>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220121014418.155675-1-heying24@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/vmw_pvscsi.h | 4 ++--
+ arch/powerpc/kernel/process.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/vmw_pvscsi.h b/drivers/scsi/vmw_pvscsi.h
-index 51a82f7803d3..9d16cf925483 100644
---- a/drivers/scsi/vmw_pvscsi.h
-+++ b/drivers/scsi/vmw_pvscsi.h
-@@ -331,8 +331,8 @@ struct PVSCSIRingReqDesc {
- 	u8	tag;
- 	u8	bus;
- 	u8	target;
--	u8	vcpuHint;
--	u8	unused[59];
-+	u16	vcpuHint;
-+	u8	unused[58];
- } __packed;
+diff --git a/arch/powerpc/kernel/process.c b/arch/powerpc/kernel/process.c
+index 50436b52c213..39a0a13a3a27 100644
+--- a/arch/powerpc/kernel/process.c
++++ b/arch/powerpc/kernel/process.c
+@@ -2124,12 +2124,12 @@ static unsigned long __get_wchan(struct task_struct *p)
+ 		return 0;
  
- /*
+ 	do {
+-		sp = *(unsigned long *)sp;
++		sp = READ_ONCE_NOCHECK(*(unsigned long *)sp);
+ 		if (!validate_sp(sp, p, STACK_FRAME_OVERHEAD) ||
+ 		    task_is_running(p))
+ 			return 0;
+ 		if (count > 0) {
+-			ip = ((unsigned long *)sp)[STACK_FRAME_LR_SAVE];
++			ip = READ_ONCE_NOCHECK(((unsigned long *)sp)[STACK_FRAME_LR_SAVE]);
+ 			if (!in_sched_functions(ip))
+ 				return ip;
+ 		}
 -- 
 2.35.1
 
