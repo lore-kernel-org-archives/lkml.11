@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD508CCA482
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:10:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B387CCA485
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:10:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351154AbiFTOJF (ORCPT
+        id S1351242AbiFTOJK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:09:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44212 "EHLO
+        Mon, 20 Jun 2022 10:09:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351088AbiFTNyL (ORCPT
+        with ESMTP id S1350932AbiFTNx4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:54:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CCB52228D;
-        Mon, 20 Jun 2022 06:20:34 -0700 (PDT)
+        Mon, 20 Jun 2022 09:53:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7860D21263;
+        Mon, 20 Jun 2022 06:20:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9E6E8B80E7A;
-        Mon, 20 Jun 2022 13:20:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBC94C3411B;
-        Mon, 20 Jun 2022 13:20:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 51D8A60FEF;
+        Mon, 20 Jun 2022 13:20:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 554DFC3411C;
+        Mon, 20 Jun 2022 13:20:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731201;
-        bh=L4eD9J0MTtWeGzYMeXFppIGyk1FWZFElAdCvuNUix20=;
+        s=korg; t=1655731210;
+        bh=7aIlIuEB9N0k6qcme0FaDrGuBkhMzq5/RaPg8hs7DaI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SagUYLEzbDvv2bjln7tJrCHwuJAf9x3e4B/pv4iHqkGhb45dIuPHSk8rfG4n6ClPi
-         H7xx7GHMibx22pmiGthO9O/HWLaHRN1VIZ45M8XfnKTKitOyCxlfWkvNEbrwYPhQMm
-         1c9px320+iN7LfyUrKCYa1JvceDhQY/w6VhjbI5U=
+        b=DxdYm4ShRCbPFKy1gg09wQtXFVhk97MWdKxtDnyKVK1G89DZgRrHlWbpiXWG66D1K
+         m+DdCuUgur/XNLhdWwsLg22X8R1UT34nRdhknTR+ZfeFqAgi9TJGmefyMBKPD23dR9
+         1/DGq3m5NJSHq0R/kXA9umKkWwRzVvHlOuT8ZB5I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Charles Keepax <ckeepax@opensource.cirrus.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 184/240] ASoC: cs42l52: Fix TLV scales for mixer controls
-Date:   Mon, 20 Jun 2022 14:51:25 +0200
-Message-Id: <20220620124744.323469425@linuxfoundation.org>
+Subject: [PATCH 5.4 187/240] ASoC: cs42l52: Correct TLV for Bypass Volume
+Date:   Mon, 20 Jun 2022 14:51:28 +0200
+Message-Id: <20220620124744.409918871@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -53,40 +53,40 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit 8bf5aabf524eec61013e506f764a0b2652dc5665 ]
+[ Upstream commit 91e90c712fade0b69cdff7cc6512f6099bd18ae5 ]
 
-The datasheet specifies the range of the mixer volumes as between
--51.5dB and 12dB with a 0.5dB step. Update the TLVs for this.
+The Bypass Volume is accidentally using a -6dB minimum TLV rather than
+the correct -60dB minimum. Add a new TLV to correct this.
 
 Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220602162119.3393857-2-ckeepax@opensource.cirrus.com
+Link: https://lore.kernel.org/r/20220602162119.3393857-5-ckeepax@opensource.cirrus.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/cs42l52.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ sound/soc/codecs/cs42l52.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/sound/soc/codecs/cs42l52.c b/sound/soc/codecs/cs42l52.c
-index 2ea4cba3be2a..0daa3b4c68ca 100644
+index 0daa3b4c68ca..6c054b357205 100644
 --- a/sound/soc/codecs/cs42l52.c
 +++ b/sound/soc/codecs/cs42l52.c
-@@ -137,7 +137,7 @@ static DECLARE_TLV_DB_SCALE(mic_tlv, 1600, 100, 0);
+@@ -137,6 +137,8 @@ static DECLARE_TLV_DB_SCALE(mic_tlv, 1600, 100, 0);
  
  static DECLARE_TLV_DB_SCALE(pga_tlv, -600, 50, 0);
  
--static DECLARE_TLV_DB_SCALE(mix_tlv, -50, 50, 0);
-+static DECLARE_TLV_DB_SCALE(mix_tlv, -5150, 50, 0);
++static DECLARE_TLV_DB_SCALE(pass_tlv, -6000, 50, 0);
++
+ static DECLARE_TLV_DB_SCALE(mix_tlv, -5150, 50, 0);
  
  static DECLARE_TLV_DB_SCALE(beep_tlv, -56, 200, 0);
+@@ -351,7 +353,7 @@ static const struct snd_kcontrol_new cs42l52_snd_controls[] = {
+ 			      CS42L52_SPKB_VOL, 0, 0x40, 0xC0, hl_tlv),
  
-@@ -364,7 +364,7 @@ static const struct snd_kcontrol_new cs42l52_snd_controls[] = {
- 			      CS42L52_ADCB_VOL, 0, 0xA0, 0x78, ipd_tlv),
- 	SOC_DOUBLE_R_SX_TLV("ADC Mixer Volume",
- 			     CS42L52_ADCA_MIXER_VOL, CS42L52_ADCB_MIXER_VOL,
--				0, 0x19, 0x7F, ipd_tlv),
-+				0, 0x19, 0x7F, mix_tlv),
+ 	SOC_DOUBLE_R_SX_TLV("Bypass Volume", CS42L52_PASSTHRUA_VOL,
+-			      CS42L52_PASSTHRUB_VOL, 0, 0x88, 0x90, pga_tlv),
++			      CS42L52_PASSTHRUB_VOL, 0, 0x88, 0x90, pass_tlv),
  
- 	SOC_DOUBLE("ADC Switch", CS42L52_ADC_MISC_CTL, 0, 1, 1, 0),
+ 	SOC_DOUBLE("Bypass Mute", CS42L52_MISC_CTL, 4, 5, 1, 0),
  
 -- 
 2.35.1
