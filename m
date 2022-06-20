@@ -2,136 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3959AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 08:54:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E55A7C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 08:54:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240292AbiFTIyD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 04:54:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37306 "EHLO
+        id S240284AbiFTIyc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 04:54:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240279AbiFTIxu (ORCPT
+        with ESMTP id S240036AbiFTIy3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 04:53:50 -0400
-Received: from esa3.hgst.iphmx.com (esa3.hgst.iphmx.com [216.71.153.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ABE925D7
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 01:53:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
-  t=1655715222; x=1687251222;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=boAJivS9bfjMA4zBe2zDcEocKVmxQESEuc3ZXCRCRlA=;
-  b=RmhnB8aK7qQizfaJaNd84Rnke1MiHaNLecqHl83GzcN/R9K5TweQK9X/
-   ZMBGP/4VRhQQFAGXtTxRM19dAfiJImyS/LJokSYo3DL38qepCtU6QMCyJ
-   ddTukbwDeTleKtfX75ztdVdCi9Gqc8ccWgzwEqtW/W9gaP0IlayFnaZdW
-   HkJ+zRrwUKL0NWjBjO1WCWgaWQpipPUttV84bAHYzS9aGRR5Ntn5DPfcB
-   ClXo3+ZKuwOaH5tMJnu//xhS8qYyRhVuHfv7GFkyLCApg3rlCcTNR4k7g
-   HfQ+l9NG5yC2meRVzGecELTSKlM1RMV4+LQYJG55B5L+FQLnFs+JOujjx
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.92,306,1650902400"; 
-   d="scan'208";a="208469249"
-Received: from h199-255-45-15.hgst.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
-  by ob1.hgst.iphmx.com with ESMTP; 20 Jun 2022 16:53:41 +0800
-IronPort-SDR: 7aB2ZXVVqpkp+fTRtrUz9xv53gj1Z/JcJUeIyjob9PCihwPfmC6EaFUTGsfdW3JhgZskzuEiWu
- Xd84drpdYbLWjIo64CdMZTcaj+B+lkgbXsUfYnskxRSbzmnT5oCLMj5N25yTDXr6o083YhPR1m
- sXOP2RJF5ywkBjD6LdcRmkxQoccNJf8Hw42PNEnSgUWzsbyaI89SfUtUjzhVIQ6tCQIMShjUcQ
- KOxjoBNpLRK5n/7Fccc5DF580VAE4ehQMqJm0wwFpCI5iK7jsUEEi4/eTTO8Y5VcgSYPqXnTtO
- UpUsA4EcYvEopWYxV3q+ntcZ
-Received: from uls-op-cesaip01.wdc.com ([10.248.3.36])
-  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 20 Jun 2022 01:11:50 -0700
-IronPort-SDR: KRN4zpvJCTgZzilo87RIFp18Y8sjuU5ROTEJKPIFOnShnleV7nfbcgmtQN1fe/J8tiKkl3t083
- PWugOLYPJE41mXDgVA8PgIp1r45Cfk/t0bLv5GOuHJl/V8f+5yBFhoiWCuLtXK+DqqdCZmIjiN
- W+UwcmpBzZEzrXmU7PxIWasE7ltC++Pd8nqlaTy66+u5L24qtvAKCW6CoEGC9rF0Zs1UClnJQI
- Liexbp0YcJBCehKkK9fs6eW1hlZisZSPIts5lEY8vMGC7zQOzQ//N+/EtIuwxbdNx3uImunI+k
- x+M=
-WDCIronportException: Internal
-Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
-  by uls-op-cesaip01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 20 Jun 2022 01:53:42 -0700
-Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4LRNjK33Nmz1Rvlx
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 01:53:41 -0700 (PDT)
-Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
-        reason="pass (just generated, assumed good)"
-        header.d=opensource.wdc.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
-        opensource.wdc.com; h=content-transfer-encoding:content-type
-        :in-reply-to:organization:from:references:to:content-language
-        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
-        1655715221; x=1658307222; bh=boAJivS9bfjMA4zBe2zDcEocKVmxQESEuc3
-        ZXCRCRlA=; b=SQ82m+DGQuSNjoWWHL3Lv6MOaGaR9RkST3iW8+0WErZcPDfJTfH
-        RjNwsAFZbheyuVoSLZmmv2iN8O3Zh37KNhnwXG0G+23e8jdHQVtme18wPzXo5y5l
-        3KmCxiNQOIj2TxDZ7r9GxLCOkqP/vBigo0qvytWLmJBs15wZG85a4jrJyVmZrXec
-        F2qs4QcpFSGoRszNPeUYytUJQexkwUmw7RbeMSAMHAV0b6Xt6dgI3s0LSAYWve3H
-        /xxXfkstA7ZXqzE4X8ep9O22wClQfuq3mtnouybrHDBmZ+qGopMptIx76VX5aFib
-        URk/kcaW58dW6/4tcBio/WrQz44I2CV5HaQ==
-X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
-Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
-        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id sC4mNx0lAPYW for <linux-kernel@vger.kernel.org>;
-        Mon, 20 Jun 2022 01:53:41 -0700 (PDT)
-Received: from [10.225.163.87] (unknown [10.225.163.87])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4LRNjJ317Tz1Rvlc;
-        Mon, 20 Jun 2022 01:53:40 -0700 (PDT)
-Message-ID: <387885f0-999f-3746-0238-77052f10b25c@opensource.wdc.com>
-Date:   Mon, 20 Jun 2022 17:53:39 +0900
+        Mon, 20 Jun 2022 04:54:29 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BECDE2AD8;
+        Mon, 20 Jun 2022 01:54:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1655715268; x=1687251268;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=SaZZWvTNEcpiYPz8/0JPj5e9vtDhJYHI5dAzFFEmZBE=;
+  b=BBdRHcKHa3pPT+BBpoNW3Chkc54tRenNwFbnZ2+FmQsod91ICdWG1o7R
+   QlB3mUlsIkY3X6Aeo2mYtwr5qJsBIOkihwiu8O66MRYVU9A3XzMWzhePd
+   81d2IrGkcXZiDS+Wk14IZIEmnqiYRzdvhuRgctoqkTdFO7RlEXGPUkhLy
+   w=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 20 Jun 2022 01:54:27 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 01:54:27 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 20 Jun 2022 01:54:25 -0700
+Received: from hu-pkondeti-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 20 Jun 2022 01:54:19 -0700
+Date:   Mon, 20 Jun 2022 14:24:15 +0530
+From:   Pavan Kondeti <quic_pkondeti@quicinc.com>
+To:     Matthias Kaehlcke <mka@chromium.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Felipe Balbi <balbi@kernel.org>
+CC:     Pavan Kondeti <quic_pkondeti@quicinc.com>,
+        Krishna Kurapati <quic_kriskura@quicinc.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Andy Gross" <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Doug Anderson <dianders@chromium.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        <devicetree@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-pm@vger.kernel.org>, <quic_ppratap@quicinc.com>,
+        <quic_vpulyala@quicinc.com>
+Subject: Re: [PATCH v20 2/5] usb: dwc3: core: Host wake up support from
+ system suspend
+Message-ID: <20220620085415.GA13744@hu-pkondeti-hyd.qualcomm.com>
+References: <1654158277-12921-1-git-send-email-quic_kriskura@quicinc.com>
+ <1654158277-12921-3-git-send-email-quic_kriskura@quicinc.com>
+ <YpkRDi2m7cLaKYEf@google.com>
+ <Yp5nf2w8uVZ38/XZ@google.com>
+ <Yqd9IHQEj3Ex+FcF@google.com>
+ <YqjLHyUVEjf7I3MI@google.com>
+ <20220616091110.GA24114@hu-pkondeti-hyd.qualcomm.com>
+ <YqtlRQOwb3t6Xtd0@google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: linux-next: build warning after merge of the libata tree
-Content-Language: en-US
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-References: <20220620103400.6b03f8d9@canb.auug.org.au>
- <20220620182108.5efb3107@canb.auug.org.au>
-From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Organization: Western Digital Research
-In-Reply-To: <20220620182108.5efb3107@canb.auug.org.au>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YqtlRQOwb3t6Xtd0@google.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/20/22 17:21, Stephen Rothwell wrote:
-> Hi all,
-> 
-> On Mon, 20 Jun 2022 10:34:00 +1000 Stephen Rothwell <sfr@canb.auug.org.au> wrote:
->>
->> Hi all,
->>
->> After merging the libata tree, today's linux-next build (powercp
->> ppc64_defconfig) produced this warning:
->>
->> In file included from include/linux/device.h:15,
->>                  from arch/powerpc/include/asm/io.h:27,
->>                  from include/linux/io.h:13,
->>                  from include/linux/irq.h:20,
->>                  from arch/powerpc/include/asm/hardirq.h:6,
->>                  from include/linux/hardirq.h:11,
->>                  from include/linux/highmem.h:11,
->>                  from include/linux/bvec.h:10,
->>                  from include/linux/blk_types.h:10,
->>                  from include/linux/blkdev.h:9,
->>                  from drivers/ata/pata_macio.c:18:
->> drivers/ata/pata_macio.c: In function 'pmac_macio_calc_timing_masks':
->> drivers/ata/pata_macio.c:1031:28: warning: format '%lx' expects argument of type 'long unsigned int', but argument 4 has type 'unsigned int' [-Wformat=]
->>  1031 |         dev_dbg(priv->dev, "Supported masks: PIO=%lx, MWDMA=%lx, UDMA=%lx\n",
-> 
-> 	.
-> 	.
-> 	.
-> 
->> Introduced by commit
->>
->>   f0a6d77b351c ("ata: make transfer mode masks *unsigned int*")
-> 
-> This turned into a build failure in my powerpc allyesconfig build, so I
-> reverted the above commit for today.
++Felipe, Bjorn
 
-I pushed the fix already. It is in ata for-next branch.
+On Thu, Jun 16, 2022 at 10:15:49AM -0700, Matthias Kaehlcke wrote:
+> On Thu, Jun 16, 2022 at 02:41:10PM +0530, Pavan Kondeti wrote:
+> > Hi Matthias/Krishna,
+> > 
+> > On Tue, Jun 14, 2022 at 10:53:35AM -0700, Matthias Kaehlcke wrote:
+> > > On Mon, Jun 13, 2022 at 11:08:32AM -0700, Matthias Kaehlcke wrote:
+> > > > On Mon, Jun 06, 2022 at 01:45:51PM -0700, Matthias Kaehlcke wrote:
+> > > > > On Thu, Jun 02, 2022 at 12:35:42PM -0700, Matthias Kaehlcke wrote:
+> > > > > > Hi Krishna,
+> > > > > > 
+> > > > > > with this version I see xHCI errors on my SC7180 based system, like
+> > > > > > these:
+> > > > > > 
+> > > > > > [   65.352605] xhci-hcd xhci-hcd.13.auto: xHC error in resume, USBSTS 0x401, Reinit
+> > > > > > 
+> > > > > > [  101.307155] xhci-hcd xhci-hcd.13.auto: WARN: xHC CMD_RUN timeout
+> > > > > > 
+> > > > > > After resume a downstream hub isn't enumerated again.
+> > > > > > 
+> > > > > > So far I didn't see those with v13, but I aso saw the first error with
+> > > > > > v16.
+> > > > > 
+> > > > > It also happens with v13, but only when a wakeup capable vUSB <= 2
+> > > > > device is plugged in. Initially I used a wakeup capable USB3 to
+> > > > > Ethernet adapter to trigger the wakeup case, however older versions
+> > > > > of this series that use usb_wakeup_enabled_descendants() to check
+> > > > > for wakeup capable devices didn't actually check for vUSB > 2
+> > > > > devices.
+> > > > > 
+> > > > > So the case were the controller/PHYs is powered down works, but
+> > > > > the controller is unhappy when the runtime PM path is used during
+> > > > > system suspend.
+> > > > 
+> > > > The issue isn't seen on all systems using dwc3-qcom and the problem starts
+> > > > during probe(). The expected probe sequence is something like this:
+> > > > 
+> > > > dwc3_qcom_probe
+> > > >   dwc3_qcom_of_register_core
+> > > >     dwc3_probe
+> > > > 
+> > > >   if (device_can_wakeup(&qcom->dwc3->dev))
+> > > >     ...
+> > > > 
+> > > > The important part is that device_can_wakeup() is called after dwc3_probe()
+> > > > has completed. That's what I see on a QC SC7280 system, where wakeup is
+> > > > generally working with these patches.
+> > > > 
+> > > > However on a QC SC7180 system dwc3_probe() is deferred and only executed after
+> > > > dwc3_qcom_probe(). As a result the device_can_wakeup() call returns false.
+> > > > With that the controller/driver ends up in an unhappy state after system
+> > > > suspend.
+> > > > 
+> > > > Probing is deferred on SC7180 because device_links_check_suppliers() finds
+> > > > that '88e3000.phy' isn't ready yet.
+> > > 
+> > > It seems device links could be used to make sure the dwc3 core is present:
+> > > 
+> > >   Another example for an inconsistent state would be a device link that
+> > >   represents a driver presence dependency, yet is added from the consumer’s
+> > >   ->probe callback while the supplier hasn’t probed yet: Had the driver core
+> > >   known about the device link earlier, it wouldn’t have probed the consumer
+> > >   in the first place. The onus is thus on the consumer to check presence of
+> > >   the supplier after adding the link, and defer probing on non-presence.
+> > > 
+> > >   https://www.kernel.org/doc/html/v5.18/driver-api/device_link.html#usage
+> > > 
+> > > 
+> > > You could add something like this to dwc3_qcom_of_register_core():
+> > > 
+> > > 
+> > >   device_link_add(dev, &qcom->dwc3->dev,
+> > >   		  DL_FLAG_AUTOREMOVE_CONSUMER | DL_FLAG_AUTOPROBE_CONSUMER);
+> > > 
+> > >   if (qcom->dwc3->dev.links.status != DL_DEV_DRIVER_BOUND)
+> > >       ret = -EPROBE_DEFER;
+> > > 
+> > > 
+> > I am not very sure how the device_link_add() API works. we are the parent and
+> > creating a depdency on child probe. That does not sound correct to me.
+> 
+> The functional dependency is effectively there, the driver already assumes that
+> the dwc3 core was probed when of_platform_populate() returns.
+> 
+> The device link itself doesn't create the dependency on the probe(), the check
+> of the link status below does.
+> 
+> Another option would be to add a link to the PHYs to the dwc3-qcom node in
+> the device tree, but I don't think that would be a better solution (and I
+> expect Rob would oppose this).
+> 
+> I'm open to other solutions, so far the device link is the cleanest that came
+> to my mind.
+> 
+> I think the root issue is the driver architecture, with two interdependent
+> drivers for the same IP block, instead of a single framework driver with a
+> common part (dwc3 core) and vendor specific hooks/data.
+> 
+> > Any ways, I have another question.
+> > 
+> > When dwc3_qcom_of_register_core() returns error back to dwc3_qcom_probe(), we
+> > goto depopulate label which calls of_platform_depopulate() which destroy the
+> > child devices that are populated. how does that ensure that child probe is
+> > completed by the time, our probe is called again. The child device it self is
+> > gone. Is this working because when our probe is called next time, the child
+> > probe depenencies are resolved?
+> 
+> Good point! It doesn't really ensure that the child is probed (actually it
+> won't be probed and DL_FLAG_AUTOPROBE_CONSUMER doesn't make sense here), it
+> could happen that dwc3_qcom_probe() is deferred multiple times, but eventually
+> the PHYs should be ready and dwc3_probe() be invoked through
+> of_platform_populate().
 
--- 
-Damien Le Moal
-Western Digital Research
+This is a generic problem i.e if a parent can only proceed after the child
+devices are bounded (i.e probed successfully), how to ensure this behavior
+from the parent's probe? Since we can't block the parent probe (async probe is
+not the default behavior), we have to identify the condition that the children
+are deferring probe, so that parent also can do that.
+
+Can we add a API in drivers core to tell if a device probe is deferred or
+not? This can be done by testing list_empty(&dev->p->deferred_probe) under
+deferred_probe_mutex mutex. The parent can return EPROBE_DEFER based on this
+API return value.
+
+Another alternative would be explicitly checking if the child device suppliers
+are ready or not before adding child device. That would require decoupling
+of_platform_populate() to creating devices and adding devices.
+
+Note that this problem is not just limited to suppliers not ready. if the
+dwc3-qcom is made asynchronous probe, then its child also probed
+asynchronously and there is no guarantee that child would be probed by the
+time of_platform_populate() is returned.  The bus notifier might come handy
+in this case. The parent can register for this notifier and waiting for
+the children device's BUS_NOTIFY_BOUND_DRIVER/BUS_NOTIFY_DRIVER_NOT_BOUND
+notifications. This would also work in our case, if we move to
+of_platform_populate() outside the probe().
+
+Would like to hear other people thoughts on this.
+
+Thanks,
+Pavan
