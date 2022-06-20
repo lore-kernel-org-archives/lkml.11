@@ -2,134 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51BAFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 06:42:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FC15CCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 06:43:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238970AbiFTGmo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 02:42:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60984 "EHLO
+        id S238702AbiFTGnJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 02:43:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238964AbiFTGm3 (ORCPT
+        with ESMTP id S238855AbiFTGmr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 02:42:29 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D5E88E0AE
-        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 23:42:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655707329;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=B5pSUOYEncUaPjeaEkr5IYucBBc8bLp3nCeCZmaUrOE=;
-        b=BidMuso9ouldZVIRKKkIoLac/lkEQJWrrrDD1MbwYwtE8ZjHylyz8710+aniX26ByLcikm
-        AmUu7g0DRTEflQ+mVsAY1kD1S8pRxMI4b/JdWJrRYAZNpTaXpc06zq9Za9+5vPtIV1vtdp
-        sSiBOhPBPOaIqQZhu9o6iMpVb8cFE4Y=
-Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com
- [209.85.216.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-352-bk7FNOQbODiPIlTrAOCJyQ-1; Mon, 20 Jun 2022 02:42:07 -0400
-X-MC-Unique: bk7FNOQbODiPIlTrAOCJyQ-1
-Received: by mail-pj1-f69.google.com with SMTP id q9-20020a17090a68c900b001ec8111ea56so3029519pjj.7
-        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 23:42:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=B5pSUOYEncUaPjeaEkr5IYucBBc8bLp3nCeCZmaUrOE=;
-        b=XARc1LfhY6xoBHYsre3k66RE5mS2UwALMya7Dxwm44sunbbn+TeTS55P6ZDiQELLUI
-         /JddDZKWSlkFvQ99JN/ryPkhUo1lVvw7F/5VRZxtvD07pNsHT7bl3DZ8JeIcHon9jz1C
-         xSrYC3zyab/OS44iT3528y8Imuyzjr2jEICBl/oNPNozeTGxGi7TgwdhZYicdMdF9VxJ
-         XpiFLD4g3kPLvW155N62o1w49V9O0kwo0ZPOgJ4YdMDWxFCK2Alka5ogWiPaH7vu0Rjk
-         VEhIWnsfaWgoC+j2uoDCE2bc4NRYIiAcvyWASYFzfHcZHFfHe/8AG2v7fzx8UIpMyq3c
-         slZw==
-X-Gm-Message-State: AJIora9+00PnB+C+yKLqk9TCMR8IBL3bB6lu+wYByyRfNx3CjtKaGLIZ
-        yCzj0MlF3SbHl8P8JJ+k565+Ku6pXUO0fJJMlwRQ+4vnIdWPhIdQPjZ6wB5x4kTFYsxvwkvO31a
-        Ij30zUI+nCHBq1tsIcdIljeo9
-X-Received: by 2002:a63:3608:0:b0:40c:a38e:2a3b with SMTP id d8-20020a633608000000b0040ca38e2a3bmr5229646pga.31.1655707326268;
-        Sun, 19 Jun 2022 23:42:06 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vayy0dcfFwO7ndztwu/0c7V86tRzzO8t/BWwPdFrAopmGRmWzudi9T0GZvGPOV8ZY7FB73/A==
-X-Received: by 2002:a63:3608:0:b0:40c:a38e:2a3b with SMTP id d8-20020a633608000000b0040ca38e2a3bmr5229633pga.31.1655707325972;
-        Sun, 19 Jun 2022 23:42:05 -0700 (PDT)
-Received: from [10.72.12.43] ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id b9-20020a17090aa58900b001e2f6c7b6f6sm7379811pjq.10.2022.06.19.23.42.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 19 Jun 2022 23:42:05 -0700 (PDT)
-Subject: Re: [PATCH 3/3] mm: Clear page->private when splitting or migrating a
- page
-To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org
-References: <20220619151143.1054746-1-willy@infradead.org>
- <20220619151143.1054746-4-willy@infradead.org>
-From:   Xiubo Li <xiubli@redhat.com>
-Message-ID: <2031fee3-e09a-5cea-be26-71360893d161@redhat.com>
-Date:   Mon, 20 Jun 2022 14:41:58 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Mon, 20 Jun 2022 02:42:47 -0400
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2071.outbound.protection.outlook.com [40.107.101.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 841ACDFFE;
+        Sun, 19 Jun 2022 23:42:40 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RooMSzPSDNgoVffqi7WRS1x3KLc6sYJu1TthIkRs7PPcggpDOmOWa7/A91p9ecRJaTD7nKTdeT8HKT6IVGsH2/H4heew1MXsYMp+DEpCs6vg3kgWQhBDDAebyjbbZ5Q5behojGFBktF5DR8YoZ4mh1K9jncRJg2h4y9Ropjj6yknAPVwu4ubDqBbbp8Sjx6D6UoqFzHVmaWfKT/zDnelEMhGY5gjageHPBcEO42dUY4d8qIDDheR9pIGohOu0ikauAUhYpuqF5jKUmIzCoRLGZjApp8PznNnrJYtVwE/QYONyW5WrL9X5wzPiLgD0zgtrOzrAeOfLpXf5h9gJuBO0A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=wSO7YZQc7vvNr6vJDmPdytdxRXyP2qrHEodpgmohqLc=;
+ b=Le3iDq5pHSeLp15GfcY7JZnyLYpnkVmOHoKHyQf2hCTKZK2DoS2h30EYH7TUJHeaMF9BCCO0sfKIrOTyeaQ7hlH8yEx9nwoK6ZgauRgM7576F58m+3jErhBPRUF07//1z0ts9GSEQIWOXimZf8swfgEy/aV0Gf1Qd3vS3MtE/n+PVul9hCO37TL7hijHCJxGkBVdfbpUY6ahA+X5/TB/FJCIXI3z5ySb0Graulgrlb4izdAzmc1C34vPFPqWXRlwFa0OLp3n3M2bqGE3a60HsJUChQ4Cdb5WWCklZbhEtioLbMYSB3X+6sqE7WC91SSCPUebA8hG3czJBB4ISf+ZVA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=xilinx.com smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wSO7YZQc7vvNr6vJDmPdytdxRXyP2qrHEodpgmohqLc=;
+ b=tqF84q+CXXL8hl1V3CGg59LcFHM0Mj/Wcg7jrOLywULs6g1b5FCia17IQEB5b1TlVKXUA95JHo9KAjG5bIjLFpbxT9QZQ+Fi4qSon4o31VhNEG6GZCSlRUMhn43deKMnAgIUqVnCVt0oTeXULjE0GtFuJZFZylZj/7jJZJsyRg4=
+Received: from MWHPR19CA0020.namprd19.prod.outlook.com (2603:10b6:300:d4::30)
+ by CO6PR12MB5458.namprd12.prod.outlook.com (2603:10b6:5:35b::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.15; Mon, 20 Jun
+ 2022 06:42:38 +0000
+Received: from CO1NAM11FT046.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:300:d4:cafe::b2) by MWHPR19CA0020.outlook.office365.com
+ (2603:10b6:300:d4::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.21 via Frontend
+ Transport; Mon, 20 Jun 2022 06:42:38 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1NAM11FT046.mail.protection.outlook.com (10.13.174.203) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5353.14 via Frontend Transport; Mon, 20 Jun 2022 06:42:38 +0000
+Received: from [10.254.241.52] (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Mon, 20 Jun
+ 2022 01:42:35 -0500
+Message-ID: <a095aae3-7143-e3cd-a73a-3db8a702d794@amd.com>
+Date:   Mon, 20 Jun 2022 08:42:32 +0200
 MIME-Version: 1.0
-In-Reply-To: <20220619151143.1054746-4-willy@infradead.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] MAINTAINERS: Add Xilinx Versal CPM Root Port maintainers
 Content-Language: en-US
+To:     Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>,
+        <linux-pci@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>
+CC:     <bhelgaas@google.com>, <michals@xilinx.com>
+References: <20220618052022.10388-1-bharat.kumar.gogada@xilinx.com>
+From:   Michal Simek <michal.simek@amd.com>
+In-Reply-To: <20220618052022.10388-1-bharat.kumar.gogada@xilinx.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 64f4f6e2-290d-4d4e-e8a2-08da52881160
+X-MS-TrafficTypeDiagnostic: CO6PR12MB5458:EE_
+X-Microsoft-Antispam-PRVS: <CO6PR12MB545854287CFF87F03BF522E888B09@CO6PR12MB5458.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: rlSzwLiiT97jMFs7+IJjIFbt/q9Sxx8Cr6HMV/JpYftfR96m9t4TWz1ozCFQV2H0SzIvVqzc7equfiJnVza65vTDbyWUSftnnQrq/c4kDie/V6uldPEhF7OARZuvb4kPBJXRpyFMSZ/w3H9zxuVmgnPs5YbUSOWDelCoKieH18/im4AG5UO1vysvrwVTv2LQJLPV3R6Z1YAYE5eMjRfA0XXiIwy3tGSboiRbetsUn7UssI/Gg7qXtrco+dJZgyHuBKG5Fmh+t9oBujMW1RXM/etVIu+ouuCzrRw9Y8zQnSvGBvkxeIljvJedv9+CGHPLgHrlXoc3O+8FH3iJ9zyzOKUu4LQvhLlgrcLL3RpEOk0vAWQcS2GPh37JoGcPxqfKCbmSCIAd7jAD+uMlNeQHG2Y20aAQQPy+l6rVqIvAJNX1/WSZbBEG7KH/rgyORuijfob6lWBE7mewx4/GCBVEDC++ahcbR1y2EcwBP4UIrdzWkMw7Dp3MSPYa9jDMaMfhAup4QryUkVImOPSDQNpIb/+kbHW0ka5V3lQ1Tr/smxvcTSRFDhwidl2Dz2tV5Q28EywkqipfFkvVJXkAAgzReoMlZ5KuRl4pahIdt7ZnthksX5nMyY/GJnl8unTnUz7jxbuO8hoc9ZDJqAqr58SPrhE/f8GeXdQVzkgAKEj8LgSVnX701ScWa33g+kfxTtCWFj3mUr8iSCORBxistIx6I/GZ3ays37UADK7VmLgNPHPbFrWWGl0Y701hbJPNyqJ5kgQj/qirmiZmx0mh5gyE5A==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(376002)(346002)(136003)(396003)(46966006)(36840700001)(40470700004)(107886003)(2616005)(53546011)(86362001)(6666004)(16576012)(316002)(26005)(2906002)(8936002)(31686004)(41300700001)(82310400005)(44832011)(36756003)(5660300002)(40460700003)(4744005)(40480700001)(110136005)(54906003)(82740400003)(81166007)(31696002)(4326008)(356005)(8676002)(478600001)(36860700001)(16526019)(186003)(70586007)(70206006)(426003)(47076005)(336012)(36900700001)(43740500002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jun 2022 06:42:38.5065
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 64f4f6e2-290d-4d4e-e8a2-08da52881160
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT046.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR12MB5458
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
-On 6/19/22 11:11 PM, Matthew Wilcox (Oracle) wrote:
-> In our efforts to remove uses of PG_private, we have found folios with
-> the private flag clear and folio->private not-NULL.  That is the root
-> cause behind 642d51fb0775 ("ceph: check folio PG_private bit instead
-> of folio->private").  It can also affect a few other filesystems that
-> haven't yet reported a problem.
->
-> compaction_alloc() can return a page with uninitialised page->private,
-> and rather than checking all the callers of migrate_pages(), just zero
-> page->private after calling get_new_page().  Similarly, the tail pages
-> from split_huge_page() may also have an uninitialised page->private.
->
-> Reported-by: Xiubo Li <xiubli@redhat.com>
-> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+
+On 6/18/22 07:20, Bharat Kumar Gogada wrote:
+> Add maintainer for driver and documentation of Xilinx Versal
+> CPM Root Port device.
+> 
+> Signed-off-by: Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
 > ---
->   mm/huge_memory.c | 1 +
->   mm/migrate.c     | 1 +
->   2 files changed, 2 insertions(+)
->
-> diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-> index f7248002dad9..9b31a50217b5 100644
-> --- a/mm/huge_memory.c
-> +++ b/mm/huge_memory.c
-> @@ -2377,6 +2377,7 @@ static void __split_huge_page_tail(struct page *head, int tail,
->   			page_tail);
->   	page_tail->mapping = head->mapping;
->   	page_tail->index = head->index + tail;
-> +	page_tail->private = NULL;
-
-There has a warning when compiling it:
-
-mm/huge_memory.c: In function ‘__split_huge_page_tail’:
-mm/huge_memory.c:2380:21: warning: assignment to ‘long unsigned int’ 
-from ‘void *’ makes integer from pointer without a cast [-Wint-conversion]
-   page_tail->private = NULL;
-                      ^
-   AR      mm/built-in.a
-
-
+>   MAINTAINERS | 8 ++++++++
+>   1 file changed, 8 insertions(+)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index ea3e6c914384..a07f926d7e93 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -15063,6 +15063,14 @@ L:	linux-pci@vger.kernel.org
+>   S:	Maintained
+>   F:	drivers/pci/controller/dwc/*spear*
 >   
->   	/* Page flags must be visible before we make the page non-compound. */
->   	smp_wmb();
-> diff --git a/mm/migrate.c b/mm/migrate.c
-> index e51588e95f57..6c1ea61f39d8 100644
-> --- a/mm/migrate.c
-> +++ b/mm/migrate.c
-> @@ -1106,6 +1106,7 @@ static int unmap_and_move(new_page_t get_new_page,
->   	if (!newpage)
->   		return -ENOMEM;
->   
-> +	newpage->private = 0;
->   	rc = __unmap_and_move(page, newpage, force, mode);
->   	if (rc == MIGRATEPAGE_SUCCESS)
->   		set_page_owner_migrate_reason(newpage, reason);
+> +PCI DRIVER FOR XILINX VERSAL CPM
+> +M:	Bharat Kumar Gogada <bharat.kumar.gogada@amd.com>
+> +M:	Michal Simek <michal.simek@amd.com>
+> +L:	linux-pci@vger.kernel.org
+> +S:	Maintained
+> +F:	Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml
+> +F:	drivers/pci/controller/pcie-xilinx-cpm.c
+> +
+>   PCMCIA SUBSYSTEM
+>   M:	Dominik Brodowski <linux@dominikbrodowski.net>
+>   S:	Odd Fixes
 
+Acked-by: Michal Simek <michal.simek@amd.com>
+
+Thanks,
+Michal
