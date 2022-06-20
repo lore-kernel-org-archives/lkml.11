@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAB61C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:07:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 130ADC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:07:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349231AbiFTOHQ (ORCPT
+        id S1350651AbiFTOHV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:07:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45314 "EHLO
+        Mon, 20 Jun 2022 10:07:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352049AbiFTNzw (ORCPT
+        with ESMTP id S1349475AbiFTNwd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:55:52 -0400
+        Mon, 20 Jun 2022 09:52:33 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7FBB34BB0;
-        Mon, 20 Jun 2022 06:21:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 273A3D6C;
+        Mon, 20 Jun 2022 06:19:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2F049B80E7D;
-        Mon, 20 Jun 2022 13:21:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A1DFC3411B;
-        Mon, 20 Jun 2022 13:21:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EEB03B811A9;
+        Mon, 20 Jun 2022 13:18:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40FF7C341C4;
+        Mon, 20 Jun 2022 13:18:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731314;
-        bh=8DZF6TjWRAkeSkrSGj382vFLh6zb/a/TTGiv/MwqmZ8=;
+        s=korg; t=1655731115;
+        bh=Fks3+OFrDCp2LBtgm5CxPt8bbalF/wsU+t94FuobBRA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QAhhy0eKlJiNQU+55prbmx0UgJYiADfdAllbLF05UH+QN/xRBaBWbIYLuTj0YJTx9
-         cMdKE4phaKVER+qMB3ECfZWKWjbJdwrvVsYnc0E17d6Kp/dm2vCf4s/powqfzxQnHr
-         uKCKem5SoX12eZsqd1XyDHDuR2cr/VwO9LGQHDDI=
+        b=X21GY6CrFKNZiSyqj7Jof9ELE5wY03Y/J7S93Le4G33TBPpX/YpTbjv0AG4u66ewH
+         yj+HmxH4qqseaahsl83AkLY104dnVuWEHPMVicBA6m/nPaoQDRy3IMGDHAme2gf/QC
+         VdjiivwFH6VMn69UkKmv1EeSLtIFmGJTo5/nTkLU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 219/240] irqchip/gic-v3: Fix refcount leak in gic_populate_ppi_partitions
-Date:   Mon, 20 Jun 2022 14:52:00 +0200
-Message-Id: <20220620124745.314062815@linuxfoundation.org>
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.4 107/240] random: only wake up writers after zap if threshold was passed
+Date:   Mon, 20 Jun 2022 14:50:08 +0200
+Message-Id: <20220620124742.116189202@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -49,46 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-[ Upstream commit fa1ad9d4cc47ca2470cd904ad4519f05d7e43a2b ]
+commit a3f9e8910e1584d7725ef7d5ac870920d42d0bb4 upstream.
 
-of_find_node_by_phandle() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+The only time that we need to wake up /dev/random writers on
+RNDCLEARPOOL/RNDZAPPOOL is when we're changing from a value that is
+greater than or equal to POOL_MIN_BITS to zero, because if we're
+changing from below POOL_MIN_BITS to zero, the writers are already
+unblocked.
 
-Fixes: e3825ba1af3a ("irqchip/gic-v3: Add support for partitioned PPIs")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220601080930.31005-6-linmq006@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/irqchip/irq-gic-v3.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/char/random.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
-index 8ce4a2925e92..77a130c03223 100644
---- a/drivers/irqchip/irq-gic-v3.c
-+++ b/drivers/irqchip/irq-gic-v3.c
-@@ -1657,12 +1657,15 @@ static void __init gic_populate_ppi_partitions(struct device_node *gic_node)
- 				continue;
- 
- 			cpu = of_cpu_node_to_id(cpu_node);
--			if (WARN_ON(cpu < 0))
-+			if (WARN_ON(cpu < 0)) {
-+				of_node_put(cpu_node);
- 				continue;
-+			}
- 
- 			pr_cont("%pOF[%d] ", cpu_node, cpu);
- 
- 			cpumask_set_cpu(cpu, &part->mask);
-+			of_node_put(cpu_node);
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -1577,7 +1577,7 @@ static long random_ioctl(struct file *f,
+ 		 */
+ 		if (!capable(CAP_SYS_ADMIN))
+ 			return -EPERM;
+-		if (xchg(&input_pool.entropy_count, 0)) {
++		if (xchg(&input_pool.entropy_count, 0) >= POOL_MIN_BITS) {
+ 			wake_up_interruptible(&random_write_wait);
+ 			kill_fasync(&fasync, SIGIO, POLL_OUT);
  		}
- 
- 		pr_cont("}\n");
--- 
-2.35.1
-
 
 
