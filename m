@@ -2,91 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 832B2C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 17 Jun 2022 20:11:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33211C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 12:41:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345705AbiFQULj (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 17 Jun 2022 16:11:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46764 "EHLO
+        id S242763AbiFTMly (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 08:41:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244439AbiFQULi (ORCPT
+        with ESMTP id S237851AbiFTMlt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 17 Jun 2022 16:11:38 -0400
-Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11C631ADA2
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 13:11:37 -0700 (PDT)
-Received: by mail-qv1-xf2b.google.com with SMTP id 43so7986986qvb.3
-        for <linux-kernel@vger.kernel.org>; Fri, 17 Jun 2022 13:11:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=maine.edu; s=google;
-        h=from:date:to:cc:message-id:mime-version;
-        bh=c6HUnYkSdwKF6VwZqapAdI/2A9eVLq9BatAO2vrrJnw=;
-        b=IX2PByp4AaPYCaHsl6YaKxCQDBLcbzVfewb/i5gDZJp4jC5hZnUusDaeihpND2VR3b
-         2sZT0iz0pv92t3hD0zp1TvJBu9l8dLLbEi7+msWg7AfZOIXgxBr5+apxMEFg4MuWs2ty
-         lLkNS/F1s2iGiJZURZjQDd3QjCpnH5JBlqEoA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:date:to:cc:message-id:mime-version;
-        bh=c6HUnYkSdwKF6VwZqapAdI/2A9eVLq9BatAO2vrrJnw=;
-        b=C/E5++CxqZEvBUKaIdF85dW5Wth7SdvmmatKkUNlXZ9MT0Hw21+TzveMnawTrwGRN5
-         tjgJVGcE+wRbn6kNCsbn0U555NKAVAdo7T4tByTu+unNz7z78nY02MaOXU5ysy7J1C5v
-         SfOeWmnD3K8mK419oHHrJZf8bNQGWEc2SIwtgQ9+vLqHUTHMJBE2XRyY8bZdUDXcp97S
-         P+L3Cp/cru2o1o/+JD7psFlDoUpOlJBxNUVvbu8LNNEgUop1ZGqd8O2KWg9afT1ZzjIm
-         L6YK16M20OwTxfs70gmH295VCZlKed7hsKgih98rxru4Ktau4yzmLoGC55YZKaTBoQIM
-         W4dg==
-X-Gm-Message-State: AJIora+439SUOCzIBOm2P2w1hXmTQ+pFQZC/UxjVGvHdISr/99rNlhk9
-        YZNn9E/Xz4od1ZJEg+HnS+aU9AtOuvZKsQ==
-X-Google-Smtp-Source: AGRyM1uH6N33lIH+urBS+pxdMchukdpm2KfvwVdoRWcIoCCFoYOXcO7VRs/OEyCpGYrMfI3DsYiOlg==
-X-Received: by 2002:ac8:5e4f:0:b0:305:1e3d:b829 with SMTP id i15-20020ac85e4f000000b003051e3db829mr10040332qtx.471.1655496695881;
-        Fri, 17 Jun 2022 13:11:35 -0700 (PDT)
-Received: from macbook-air.local (weaver.eece.maine.edu. [130.111.218.23])
-        by smtp.gmail.com with ESMTPSA id y29-20020a37f61d000000b006a3325fd985sm5011152qkj.13.2022.06.17.13.11.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jun 2022 13:11:35 -0700 (PDT)
-From:   Vince Weaver <vincent.weaver@maine.edu>
-X-Google-Original-From: Vince Weaver <vince@maine.edu>
-Date:   Fri, 17 Jun 2022 16:11:34 -0400 (EDT)
-To:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
-cc:     Mark Rutland <mark.rutland@arm.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Will Deacon <will@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Ingo Molnar <mingo@redhat.com>
-Message-ID: <db2031ec-cf4-4323-9d3-8262849add3d@maine.edu>
+        Mon, 20 Jun 2022 08:41:49 -0400
+Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDEA313F55;
+        Mon, 20 Jun 2022 05:41:47 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R301e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046060;MF=xianting.tian@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VGxH90I_1655728903;
+Received: from B-LB6YLVDL-0141.local(mailfrom:xianting.tian@linux.alibaba.com fp:SMTPD_---0VGxH90I_1655728903)
+          by smtp.aliyun-inc.com;
+          Mon, 20 Jun 2022 20:41:44 +0800
+Subject: Re: [PATCH 5.15] mm: validate buddy page before using
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     akpm@linux-foundation.org, ziy@nvidia.com, stable@vger.kernel.org,
+        guoren@kernel.org, huanyi.xj@alibaba-inc.com, guohanjun@huawei.com,
+        zjb194813@alibaba-inc.com, tianhu.hh@alibaba-inc.com,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+References: <20220616161746.3565225-1-xianting.tian@linux.alibaba.com>
+ <20220616161746.3565225-6-xianting.tian@linux.alibaba.com>
+ <YrBJVAZWOzmDyUN3@kroah.com>
+ <35bd7396-f5aa-e154-9495-0a36fc6f6a33@linux.alibaba.com>
+ <YrBdKwFHfy9Lr14c@kroah.com>
+ <8b16a502-5ad5-1efb-0d84-ed0a8ae63c0e@linux.alibaba.com>
+ <YrBi1evI1/BF/WLV@kroah.com>
+ <d52e17da-a382-0028-2b16-105ab7053028@linux.alibaba.com>
+ <YrBnE6Q1pijgE3gR@kroah.com>
+From:   Xianting Tian <xianting.tian@linux.alibaba.com>
+Message-ID: <294fa5b8-e0d1-841f-ab0a-29973e4986fb@linux.alibaba.com>
+Date:   Mon, 20 Jun 2022 20:41:43 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <YrBnE6Q1pijgE3gR@kroah.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello
 
-Is the perf_mmap__read_self() interface as found in tools/lib/perf/mmap.c
-the "official" interface for accessing the perf mmap info from
-userspace?
-
-Are the READ_ONCE() calls required?  If they are left out, will accessing 
-the mmap interface potentially fail?  Has this ever been seen in practice?
-
-Part of why I am asking is both
-	tools/lib/perf/mmap.c
-and
-	tools/linux/compiler.h (which defines READ_ONCE)
-have SPDX headers indicating they are GPL-2.0 licensed, which means it 
-seems like it would not be possible to easily use the perf mmap interface 
-from BSD-licensed code.  Would it be possible to get those two files 
-re-licensed?
-
-The (BSD-licensed) PAPI is currently using a mmap reading interface 
-based on early documentation for the feature, but it isn't 100% the same 
-as the version from libperf (and isn't using READ_ONCE).  Life would be 
-easier if we could use the perf version of the code because then we would 
-have one less variable to deal with when trying to track down issues.
-
-Vince Weaver
-vincent.weaver@maine.edu
-
-
+在 2022/6/20 下午8:24, Greg KH 写道:
+> On Mon, Jun 20, 2022 at 08:18:40PM +0800, Xianting Tian wrote:
+>> 在 2022/6/20 下午8:06, Greg KH 写道:
+>>> On Mon, Jun 20, 2022 at 07:57:05PM +0800, Xianting Tian wrote:
+>>>> 在 2022/6/20 下午7:42, Greg KH 写道:
+>>>>> On Mon, Jun 20, 2022 at 06:54:44PM +0800, Xianting Tian wrote:
+>>>>>> 在 2022/6/20 下午6:17, Greg KH 写道:
+>>>>>>> On Fri, Jun 17, 2022 at 12:17:45AM +0800, Xianting Tian wrote:
+>>>>>>>> Commit 787af64d05cd ("mm: page_alloc: validate buddy before check its migratetype.")
+>>>>>>>> fixes a bug in 1dd214b8f21c and there is a similar bug in d9dddbf55667 that
+>>>>>>>> can be fixed in a similar way too.
+>>>>>>>>
+>>>>>>>> In unset_migratetype_isolate(), we also need the fix, so move page_is_buddy()
+>>>>>>>> from mm/page_alloc.c to mm/internal.h
+>>>>>>>>
+>>>>>>>> In addition, for RISC-V arch the first 2MB RAM could be reserved for opensbi,
+>>>>>>>> so it would have pfn_base=512 and mem_map began with 512th PFN when
+>>>>>>>> CONFIG_FLATMEM=y.
+>>>>>>>> But __find_buddy_pfn algorithm thinks the start pfn 0, it could get 0 pfn or
+>>>>>>>> less than the pfn_base value. We need page_is_buddy() to verify the buddy to
+>>>>>>>> prevent accessing an invalid buddy.
+>>>>>>>>
+>>>>>>>> Fixes: d9dddbf55667 ("mm/page_alloc: prevent merging between isolated and other pageblocks")
+>>>>>>>> Cc: stable@vger.kernel.org
+>>>>>>>> Reported-by: zjb194813@alibaba-inc.com
+>>>>>>>> Reported-by: tianhu.hh@alibaba-inc.com
+>>>>>>>> Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
+>>>>>>>> ---
+>>>>>>>>      mm/internal.h       | 34 ++++++++++++++++++++++++++++++++++
+>>>>>>>>      mm/page_alloc.c     | 37 +++----------------------------------
+>>>>>>>>      mm/page_isolation.c |  3 ++-
+>>>>>>>>      3 files changed, 39 insertions(+), 35 deletions(-)
+>>>>>>> What is the commit id of this in Linus's tree?
+>>>>>> It is also this one，
+>>>>>>
+>>>>>> commit 787af64d05cd528aac9ad16752d11bb1c6061bb9
+>>>>>> Author: Zi Yan <ziy@nvidia.com>
+>>>>>> Date:   Wed Mar 30 15:45:43 2022 -0700
+>>>>>>
+>>>>>>        mm: page_alloc: validate buddy before check its migratetype.
+>>>>>>
+>>>>>>        Whenever a buddy page is found, page_is_buddy() should be called to
+>>>>>>        check its validity.  Add the missing check during pageblock merge check.
+>>>>>>
+>>>>>>        Fixes: 1dd214b8f21c ("mm: page_alloc: avoid merging non-fallbackable
+>>>>>> pageblocks with others")
+>>>>>>        Link:
+>>>>>> https://lore.kernel.org/all/20220330154208.71aca532@gandalf.local.home/
+>>>>>>        Reported-and-tested-by: Steven Rostedt <rostedt@goodmis.org>
+>>>>>>        Signed-off-by: Zi Yan <ziy@nvidia.com>
+>>>>>>        Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+>>>>> This commit looks nothing like what you posted here.
+>>>>>
+>>>>> Why the vast difference with no explaination as to why these are so
+>>>>> different from the other backports you provided here?  Also why is the
+>>>>> subject lines changed?
+>>>> Yes, the changes of 5.15 are not same with others branches, because we need
+>>>> additional fix for 5.15,
+>>>>
+>>>> You can check it in the thread:
+>>>>
+>>>> https://lore.kernel.org/linux-mm/435B45C3-E6A5-43B2-A5A2-318C748691FC@nvidia.com/ <https://lore.kernel.org/linux-mm/435B45C3-E6A5-43B2-A5A2-318C748691FC@nvidia.com/>
+>>>>
+>>>> Right. But pfn_valid_within() was removed since 5.15. So your fix is
+>>>> required for kernels between 5.15 and 5.17 (inclusive).
+>>> What is "your fix" here?
+>>>
+>>> This change differs a lot from what is in Linus's tree now, so this all
+>>> needs to be resend and fixed up as I mention above if we are going to be
+>>> able to take this.  As-is, it's all not correct so are dropped.
+>> I think, for branches except 5.15,  you can just backport Zi Yan's commit
+>> 787af64d05cd in Linus tree. I won't send more patches further,
+> So just for 5.18?  I am confused.
+Sorry, 5.18 needs the same fix with 5.15.  I will send the patch for it.
+>
+>> For 5.15, because it need additional fix except commit 787af64d05cd,  I will
+>> send a new patch as your comments.
+>>
+>> Is it ok for you?
+> No, please send fixed up patches for all branches you want them applied
+> to as I do not understand what to do here at all, sorry.
+Understood. I will send for all branches.
+>
+> greg k-h
