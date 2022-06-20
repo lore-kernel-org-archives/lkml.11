@@ -2,67 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B17DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 15:12:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8D8AC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 15:12:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243354AbiFTPMP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 11:12:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39644 "EHLO
+        id S242175AbiFTPMV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 11:12:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243269AbiFTPMD (ORCPT
+        with ESMTP id S242211AbiFTPMG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 11:12:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18F585FAA;
-        Mon, 20 Jun 2022 08:02:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C0447B80F4B;
-        Mon, 20 Jun 2022 15:02:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2B6EC3411B;
-        Mon, 20 Jun 2022 15:02:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655737338;
-        bh=L0RJ688oW+gNmui5vJ2YfJZGJk8akIpoKMPkkgDcaNw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=RiiFCcJA3SkJPDlOmUocOC9rzARGtL727yrGxz3EYPEW71x6RFYFyU5FJXFrCtl+D
-         F/CvzvCSJsQH1qn2NKTc1QQx5yc8cgQpwThNX/qAdpkfRtYSFslFlEr7EEKesrbfHZ
-         nw122++e6NQB/7sb68L3B22Qk9xBc6Y1R8PCEjRy2YgDbFH2VmeNFjmvKSSh8Tuhy7
-         ZUH5X4La2PoHlmmGx3tfb29Nq/KTa76VGs/fu3gzINV4RJ34wh1EijYKoUTIH0lbGs
-         dt3V7N/T9/9AIe0TF1mhz7EocqweWH6UtL9UTna7LjUVzGT3xf7xDIkv10hDN/aYcn
-         YW7wm+7yS+z3A==
-Date:   Mon, 20 Jun 2022 08:02:16 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jon Mason <jdmason@kudzu.us>
-Cc:     Wentao_Liang <Wentao_Liang_g@163.com>, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] [PATCH net v2]vexy: Fix a use-after-free bug in
- vxge-main.c
-Message-ID: <20220620080216.363e57ea@kernel.org>
-In-Reply-To: <YrCG0CZy4Onh/8RI@kudzu.us>
-References: <20220615013816.6593-1-Wentao_Liang_g@163.com>
-        <20220615195050.6e4785ef@kernel.org>
-        <YrCG0CZy4Onh/8RI@kudzu.us>
+        Mon, 20 Jun 2022 11:12:06 -0400
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D828213F1D
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 08:02:46 -0700 (PDT)
+Received: by mail-lj1-x236.google.com with SMTP id a11so3446818ljb.5
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 08:02:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=yxQNSbinrTsgQGxNEqtziHy+t5H7kRQgWCro6p1KBMA=;
+        b=WPXUf7U5nc8yTs7HL25c+VZwbO5QQ8T1QE+oQNxnT2blOmFQzN3XoFS/PHoxbQ/T31
+         fiqhWBaEDnIxujWfPayn2+tJJRfFzsx0aKRSv1es0t9hBbz7BoG56nmQepi5xs/A4dHl
+         Xk82m+eF76wCTnIkBRZ5dnb8GLVqsT+ME6Iva/hKtAmD3jK8h7Vt5ATRxDSASk9Ps4/e
+         pDLk6tU9UV1a7WtWzYI3tDjPclrLJBkEuo4lA13sX1i1t9X8tHXhGybICgtHao5lJqEV
+         IfC5iJ6zmZWDFrNZ4jFr2e4E4Rh7zW5P4prmXo7jXJrStYsEoZ2BaEdIaC5t8rBmXKy6
+         aCsA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=yxQNSbinrTsgQGxNEqtziHy+t5H7kRQgWCro6p1KBMA=;
+        b=jDelr+2xnjAqkNFFSHv5eCihG7mgvemk8XwGxel0DlEIYH/ud16JfKFkhugDF9VlDE
+         fOXu66D8yuUO/XI+c5hxZmRcIHCR86qpao7padkU80dNdobz/aS8x//DYOKfr9bOHIli
+         NHlXty6NatMQ6oRGdbagQOriBEYuOmImmBxFmGAFsghsX4qcPtwgmRsjhHzqLuFo78wz
+         1tsDNwL1ugNTZytyyL7elJWeS3+XeN+6sHHzopvXjarGcamxbakD2Zu3GjYy/u3ZXpoi
+         gmC0nSScZW8Rfb4kT1UZVoVaeZuPgKlQfI/It7n+4ms5TKLe8hdbb9ljrWeIpAHU7no7
+         yVNg==
+X-Gm-Message-State: AJIora/vVmPjFpvMQ+U3AST4MfMBqDT5k0uBIEoNDKFt6HPwxejm6Hur
+        cqplXPQZbIMOPLhGULF/VvL5Eayw2CCBjw==
+X-Google-Smtp-Source: AGRyM1tVQkRQxXTDvCUQrJ4dJeOiz18tvgdU6yJBqRC1zlngaVtLknPavVc+pf1G6HMrLNPY1QVPTg==
+X-Received: by 2002:a05:651c:12c5:b0:255:9384:b385 with SMTP id 5-20020a05651c12c500b002559384b385mr12087450lje.229.1655737363697;
+        Mon, 20 Jun 2022 08:02:43 -0700 (PDT)
+Received: from gilgamesh.lab.semihalf.net ([83.142.187.85])
+        by smtp.gmail.com with ESMTPSA id e19-20020a05651236d300b0047f79f7758asm17564lfs.22.2022.06.20.08.02.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Jun 2022 08:02:43 -0700 (PDT)
+From:   Marcin Wojtas <mw@semihalf.com>
+To:     linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     rafael@kernel.org, andriy.shevchenko@linux.intel.com,
+        lenb@kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux@armlinux.org.uk, hkallweit1@gmail.com, gjb@semihalf.com,
+        mw@semihalf.com, jaz@semihalf.com, tn@semihalf.com,
+        Samer.El-Haj-Mahmoud@arm.com, upstream@semihalf.com
+Subject: [net-next: PATCH 00/12] ACPI support for DSA
+Date:   Mon, 20 Jun 2022 17:02:13 +0200
+Message-Id: <20220620150225.1307946-1-mw@semihalf.com>
+X-Mailer: git-send-email 2.29.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 20 Jun 2022 10:40:16 -0400 Jon Mason wrote:
-> On Wed, Jun 15, 2022 at 07:50:50PM -0700, Jakub Kicinski wrote:
-> > Jon, if you're there, do you have any sense on whether this HW is still
-> > in production somewhere? I scrolled thru last 5 years of the git history
-> > and there doesn't seem to be any meaningful change here while there's a
-> > significant volume of refactoring going in.   
-> 
-> Neterion was killed off by Exar after acquiring it roughly a decade
-> ago.  To my knowledge no one ever acquired the IP.  So, this should be
-> viewed as an EOL'ed part.  It is a mature driver and I believe there are
-> parts out in the field still.  So, no need to kill off the driver.
+Hi!
 
-There is a real cost to maintaining this driver, refactoring it and
-dealing with all the poor quality fixes it attracts.
+This patchset introduces the support for DSA in ACPI world. A couple of
+words about the background and motivation behind those changes:
+
+The DSA code is strictly dependent on the Device Tree and Open Firmware
+(of_*) interface, both in the drivers and the common high-level net/dsa API.
+The only alternative is to pass the information about the topology via
+platform data - a legacy approach used by older systems that compiled the
+board description into the kernel.
+
+The above constraint is problematic for the embedded devices based e.g. on
+x86_64 SoCs, which are described by ACPI tables - to use DSA, some tricks
+and workarounds have to be applied. Addition of switch description to
+DSDT/SSDT tables would help to solve many similar cases and use unmodified
+kernel modules. It also enables this feature for ARM64 ACPI users.
+
+The key enablements allowing for adding ACPI support for DSA in Linux were
+NIC drivers, MDIO, PHY, and phylink modifications – the latter three merged
+in 2021. I thought it would be worth to experiment with DSA, which seemed
+to be a natural follow-up challenge.
+
+It turned out that without much hassle it is possible to describe
+DSA-compliant switches as child devices of the MDIO busses, which are
+responsible for their enumeration based on the standard _ADR fields and
+description in _DSD objects under 'device properties' UUID [1].
+The vast majority of required changes were simple of_* to fwnode_*
+transition, as the DT and ACPI topolgies are analogous, except for
+'ports' and 'mdio' subnodes naming, as they don't conform ACPI
+namespace constraints [2].
+
+The patchset can be logically split to subsets of commits:
+* Move a couple of missing routines to fwnode_ equivalents
+* Rework net/dsa to use fwnode_*/device_* API
+* Introduce fwnode_mdiobus_register_device() and allow MDIO device probing
+  in ACPI world.
+* Add necessary ACPI-related modifications to net/dsa and add Documentation
+  entry.
+* Shift example mv88e6xxx driver to fwnode_*/device_* and add ACPI hooks.
+The changes details can be found in the commit messages.
+
+Note that for now cascade topology remains unsupported in ACPI world
+(based on "dsa" label and "link" property values). It seems to be feasible,
+but would extend this patchset due to necessity of of_phandle_iterator
+migration to fwnode_. Leave it as a possible future step.
+
+Testing:
+* EACH commit was tested against regression with device tree on EspressoBIN
+  and SolidRun CN913x CEx7 Evaluation board. It works as expected throughout
+  entire patchset.
+* The latter board was used as example ACPI user of the feature - it's 1:1
+  to what's available when booting with DT. Please check [3] and [4] to
+  compare the DT/ACPI description.
+
+For convenience, this patchset is also available on a public branch [5].
+
+I am looking forward to any comments or remarks, your review will be
+appreciated.
+
+Best regards,
+Marcin
+
+[1] http://www.uefi.org/sites/default/files/resources/_DSD-device-properties-UUID.pdf
+[2] https://uefi.org/specs/ACPI/6.4/05_ACPI_Software_Programming_Model/ACPI_Software_Programming_Model.html#acpi-namespace
+[3] https://github.com/semihalf-wojtas-marcin/edk2-platforms/commit/6368ee09a232c1348e19729f21c05e9c5410cdb9
+[4] https://github.com/tianocore/edk2-non-osi/blob/master/Silicon/Marvell/OcteonTx/DeviceTree/T91/cn9130-cex7.dts#L252
+[5] https://github.com/semihalf-wojtas-marcin/Linux-Kernel/commits/dsa-acpi-v1
+
+Marcin Wojtas (12):
+  net: phy: fixed_phy: switch to fwnode_ API
+  net: mdio: switch fixed-link PHYs API to fwnode_
+  net: dsa: switch to device_/fwnode_ APIs
+  net: mvpp2: initialize port fwnode pointer
+  net: core: switch to fwnode_find_net_device_by_node()
+  net: mdio: introduce fwnode_mdiobus_register_device()
+  net: mdio: allow registering non-PHY devices in ACPI world
+  ACPI: scan: prevent double enumeration of MDIO bus children
+  Documentation: ACPI: DSD: introduce DSA description
+  net: dsa: add ACPI support
+  net: dsa: mv88e6xxx: switch to device_/fwnode_ APIs
+  net: dsa: mv88e6xxx: add ACPI support
+
+ include/linux/etherdevice.h                     |   1 +
+ include/linux/fwnode_mdio.h                     |  22 ++
+ include/linux/of_net.h                          |   6 -
+ include/linux/phy_fixed.h                       |   4 +-
+ include/net/dsa.h                               |   1 +
+ drivers/acpi/scan.c                             |  15 +
+ drivers/net/dsa/mv88e6xxx/chip.c                |  76 +++--
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c |   1 +
+ drivers/net/mdio/acpi_mdio.c                    |  40 ++-
+ drivers/net/mdio/fwnode_mdio.c                  | 129 +++++++
+ drivers/net/mdio/of_mdio.c                      | 105 +-----
+ drivers/net/phy/fixed_phy.c                     |  37 +-
+ drivers/net/phy/mdio_bus.c                      |   4 +
+ net/core/net-sysfs.c                            |  18 +-
+ net/dsa/dsa2.c                                  | 104 ++++--
+ net/dsa/port.c                                  |  54 ++-
+ net/dsa/slave.c                                 |   6 +-
+ Documentation/firmware-guide/acpi/dsd/dsa.rst   | 359 ++++++++++++++++++++
+ Documentation/firmware-guide/acpi/index.rst     |   1 +
+ 19 files changed, 748 insertions(+), 235 deletions(-)
+ create mode 100644 Documentation/firmware-guide/acpi/dsd/dsa.rst
+
+-- 
+2.29.0
+
