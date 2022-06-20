@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60EE1C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:07:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5CC6C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:07:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244513AbiFTNHK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:07:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51006 "EHLO
+        id S244555AbiFTNHP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:07:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244923AbiFTNEJ (ORCPT
+        with ESMTP id S244038AbiFTNEc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:04:09 -0400
+        Mon, 20 Jun 2022 09:04:32 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3698186FE;
-        Mon, 20 Jun 2022 05:59:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9287E186E4;
+        Mon, 20 Jun 2022 05:59:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8BC82B811B9;
-        Mon, 20 Jun 2022 12:59:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2628C3411C;
-        Mon, 20 Jun 2022 12:59:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 51755B811BE;
+        Mon, 20 Jun 2022 12:59:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9990C3411B;
+        Mon, 20 Jun 2022 12:59:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655729960;
-        bh=V0hnx/OqzswVYqIqJ7kc+Fe522IaypFMS8wlfWSPkHI=;
+        s=korg; t=1655729978;
+        bh=R1/XwB4xM2LGN1vbIhBm7hfqiiYghXeGUIAqoxloBZ4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=roJIL/2SRH52DPl0lVBlGRAJAa7j+W9STncuOYTZnu8nu7vZ9DkJQYQi1X1W3VNRC
-         PXrYxwYlpWh15XA6uY04OH2leH4PHVtsfVTG8ZVzaUX+eZ/zDAtU0OTo0Zt/DmUyT2
-         I/GvDp1eIgbidgSkQUB9HdBW3buJnngoOQAk7mrU=
+        b=tTkUtg/5UnIxt8Rq6kXOwzsIlRB9bh5+zCmU3EkicGYf3ltBKMUC0a3pvEyhwEvl6
+         KW53B1WN1TNTd3uB2GSBjUhcRjF8ynjkZxOYfaNN624Qh6IJklHHSmIfajySSxfmlB
+         MqIcREOBMPKJZ9QCUSRMCkyaFZu3eNDUWIQ6mcfo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.18 131/141] KVM: arm64: Always start with clearing SVE flag on load
-Date:   Mon, 20 Jun 2022 14:51:09 +0200
-Message-Id: <20220620124733.428882608@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>
+Subject: [PATCH 5.18 136/141] bpf: Use safer kvmalloc_array() where possible
+Date:   Mon, 20 Jun 2022 14:51:14 +0200
+Message-Id: <20220620124733.580621777@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 References: <20220620124729.509745706@linuxfoundation.org>
@@ -48,41 +49,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <maz@kernel.org>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit d52d165d67c5aa26c8c89909003c94a66492d23d upstream.
+commit fd58f7df2415ef747782e01f94880fefad1247cf upstream.
 
-On each vcpu load, we set the KVM_ARM64_HOST_SVE_ENABLED
-flag if SVE is enabled for EL0 on the host. This is used to restore
-the correct state on vpcu put.
+The kvmalloc_array() function is safer because it has a check for
+integer overflows.  These sizes come from the user and I was not
+able to see any bounds checking so an integer overflow seems like a
+realistic concern.
 
-However, it appears that nothing ever clears this flag. Once
-set, it will stick until the vcpu is destroyed, which has the
-potential to spuriously enable SVE for userspace.
-
-We probably never saw the issue because no VMM uses SVE, but
-that's still pretty bad. Unconditionally clearing the flag
-on vcpu load addresses the issue.
-
-Fixes: 8383741ab2e7 ("KVM: arm64: Get rid of host SVE tracking/saving")
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Cc: stable@vger.kernel.org
-Reviewed-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/r/20220528113829.1043361-2-maz@kernel.org
+Fixes: 0dcac2725406 ("bpf: Add multi kprobe link")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://lore.kernel.org/bpf/Yo9VRVMeHbALyjUH@kili
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/kvm/fpsimd.c |    1 +
- 1 file changed, 1 insertion(+)
+ kernel/trace/bpf_trace.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/arch/arm64/kvm/fpsimd.c
-+++ b/arch/arm64/kvm/fpsimd.c
-@@ -80,6 +80,7 @@ void kvm_arch_vcpu_load_fp(struct kvm_vc
- 	vcpu->arch.flags &= ~KVM_ARM64_FP_ENABLED;
- 	vcpu->arch.flags |= KVM_ARM64_FP_HOST;
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -2433,7 +2433,7 @@ int bpf_kprobe_multi_link_attach(const u
+ 		return -EINVAL;
  
-+	vcpu->arch.flags &= ~KVM_ARM64_HOST_SVE_ENABLED;
- 	if (read_sysreg(cpacr_el1) & CPACR_EL1_ZEN_EL0EN)
- 		vcpu->arch.flags |= KVM_ARM64_HOST_SVE_ENABLED;
- }
+ 	size = cnt * sizeof(*addrs);
+-	addrs = kvmalloc(size, GFP_KERNEL);
++	addrs = kvmalloc_array(cnt, sizeof(*addrs), GFP_KERNEL);
+ 	if (!addrs)
+ 		return -ENOMEM;
+ 
+@@ -2450,7 +2450,7 @@ int bpf_kprobe_multi_link_attach(const u
+ 
+ 	ucookies = u64_to_user_ptr(attr->link_create.kprobe_multi.cookies);
+ 	if (ucookies) {
+-		cookies = kvmalloc(size, GFP_KERNEL);
++		cookies = kvmalloc_array(cnt, sizeof(*addrs), GFP_KERNEL);
+ 		if (!cookies) {
+ 			err = -ENOMEM;
+ 			goto error;
 
 
