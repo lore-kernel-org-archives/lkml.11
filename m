@@ -2,65 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82FB8C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:39:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C130AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:39:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242683AbiFTOjW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:39:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39162 "EHLO
+        id S243189AbiFTOj0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 10:39:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348414AbiFTOil (ORCPT
+        with ESMTP id S1348649AbiFTOim (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 10:38:41 -0400
-Received: from mail.sysgo.com (mail.sysgo.com [159.69.174.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A3E42642;
-        Mon, 20 Jun 2022 06:55:45 -0700 (PDT)
-Date:   Mon, 20 Jun 2022 15:55:42 +0200
-From:   Vit Kabele <vit.kabele@sysgo.com>
-To:     Vitaly Kuznetsov <vkuznets@redhat.com>,
-        linux-hyperv@vger.kernel.org
-Cc:     mikelley@microsoft.com, linux-kernel@vger.kernel.org,
-        kys@microsoft.com
-Subject: Re: [RFC PATCH] Hyper-V: Initialize crash reporting before vmbus
-Message-ID: <YrB8Xvjp2KKQ/JhT@czspare1-lap.sysgo.cz>
-Mail-Followup-To: Vit Kabele <vit.kabele@sysgo.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        linux-hyperv@vger.kernel.org, mikelley@microsoft.com,
-        linux-kernel@vger.kernel.org, kys@microsoft.com
-References: <YqtAyitIGRAHL7V0@czspare1-lap.sysgo.cz>
- <874k0kirbf.fsf@redhat.com>
+        Mon, 20 Jun 2022 10:38:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BD28C5C
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 06:56:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F411F611D0
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 13:56:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65199C3411B;
+        Mon, 20 Jun 2022 13:56:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655733360;
+        bh=cNga3wLmI9V97jkEz2+oGgn7LYpWHhGgN0ZFwAqekGg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=J2E5MXyeN1c1H6mn2i+PFZ2j4M7F90rw3bvAdwoHwHKUAUv+Wewug6e5LnnfjweS/
+         BGRZc00cRYr05xktVVqRnqojDLmDg0MUCVWtpN5/9BF3mpsdwLzdQbubj0uH5eeu76
+         3gGsvejs6UnYVkH7Qrbz5HrElLYNMkWer1V+kvMb+99XlF2Q7p/PFlXddvXLY6X4fX
+         Ex/IbIvYoc3EN4nZ8/0EKcW2focxt8vYS2DkySTv0WT57IsI5g7AomWcnmlcvyhJ33
+         FvIHidEmWqdfI86CVPVpwmGHTMtsBcfmmJBZcp+BWuXRpZpS7S4vrfDaer42Q4ekgs
+         BEdmjDaPXNGvw==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1o3Hsi-0001LT-BV; Mon, 20 Jun 2022 15:55:57 +0200
+Date:   Mon, 20 Jun 2022 15:55:56 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Zhi Song <zhi.song@bytedance.com>
+Cc:     gregkh@linuxfoundation.org, rafael@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] node: put_device after failing to device_register
+Message-ID: <YrB8bIJj3fvvsCHg@hovoldconsulting.com>
+References: <20220615151738.1766206-1-zhi.song@bytedance.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <874k0kirbf.fsf@redhat.com>
+In-Reply-To: <20220615151738.1766206-1-zhi.song@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 16, 2022 at 05:03:16PM +0200, Vitaly Kuznetsov wrote:
-> Vit Kabele <vit.kabele@sysgo.com> writes:
-> > Nevertheless, I am not sure about following:
-> >
-> > 1/ The vmbus_initiate_unload function is called within the panic handler
-> > even when the vmbus initialization does not finish (there might be no
-> > vmbus at all). This should probably not be problem because the vmbus
-> > unload function always checks for current connection state and does
-> > nothing when this is "DISCONNECTED". For better readability, it might be
-> > better to add separate panic notifier for vmbus and crash reporting.
-> >
-> > 2/ Wouldn't it be better to extract the whole reporting capability out
-> > of the vmbus module, so that it stays present in the kernel even when
-> > the vmbus module is possibly unloaded?
+On Wed, Jun 15, 2022 at 11:17:38PM +0800, Zhi Song wrote:
+> device_register() is used to register a device with the system.
+> We need to call put_device() to give up the reference initialized
+> in device_register() when it returns an error and this will clean
+> up correctly.
 > 
-> IMHO yes but as you mention hyperv_panic_event() currently does to
-> things:
-> 1) Initiates VMBus unload
-> 2) Reports panic to the hypervisor
+> Fixes: 08d9dbe72b1f ("node: Link memory nodes to their compute nodes")
+> Signed-off-by: Zhi Song <zhi.song@bytedance.com>
+> ---
+> V1 -> V2: Fix up the changelog text correct.
+> V2 -> V3: Add a fixes tag line specifying the commit where this bug was
+> introduced.
+> ---
+>  drivers/base/node.c | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> I think untangling them moving the later to arch/x86/hyper-v (and
-> arch/arm64/hyperv/) makes sense.
-Ok, I will send the complete patch soon.
+> diff --git a/drivers/base/node.c b/drivers/base/node.c
+> index 0ac6376ef7a1..88a3337c546e 100644
+> --- a/drivers/base/node.c
+> +++ b/drivers/base/node.c
+> @@ -154,6 +154,7 @@ static struct node_access_nodes *node_init_node_access(struct node *node,
+>  	list_add_tail(&access_node->list_node, &node->access_list);
+>  	return access_node;
+>  free_name:
+> +	put_device(dev);
+>  	kfree_const(dev->kobj.name);
 
--- 
-Best regards,
-Vit Kabele
+That's a pretty obvious use-after-free you just added here. You can't
+access dev after you've just freed it.
+
+The name is freed along with the rest of the struct device so you need
+to remove the second explicit free. And you should rename the label too.
+
+>  free:
+>  	kfree(access_node);
+
+But here's another use after free... The put_device() call you added
+will have freed access_node by calling node_access_release().
+
+Johan
