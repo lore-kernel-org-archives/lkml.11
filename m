@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA805C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:31:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6A10C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:31:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345781AbiFTNb1 (ORCPT
+        id S1346013AbiFTNbb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:31:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53012 "EHLO
+        Mon, 20 Jun 2022 09:31:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345861AbiFTN2g (ORCPT
+        with ESMTP id S1346953AbiFTN3Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:28:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22D551CFC4;
-        Mon, 20 Jun 2022 06:11:24 -0700 (PDT)
+        Mon, 20 Jun 2022 09:29:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FFA8248D6;
+        Mon, 20 Jun 2022 06:11:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DAB1F60EB0;
-        Mon, 20 Jun 2022 13:11:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFAAAC3411B;
-        Mon, 20 Jun 2022 13:11:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 29B24B811E6;
+        Mon, 20 Jun 2022 13:11:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75E4AC341C0;
+        Mon, 20 Jun 2022 13:11:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730683;
-        bh=bwxSGq6grVVZrNdxLa9wT+rkSqRiuBDi9MFrTtazeEc=;
+        s=korg; t=1655730712;
+        bh=TvSP2+gIKr8wSl72N8VM4swQHZlA8NwkYof9GNkuWzE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IQABSn88v9jxWd9aXRsYySRG4fAayFDU32SeMAgDUSocQizjhZCtLlAtkIZySb1v+
-         KeJUc5WYLCd8ta9OaBlz4gKznPOYJAsDhakr1R6qgvHc9Cjzfra0CaceOl6UHJryrW
-         m15PN6zkvAaXn26/lWIrrnccTHQmFi5Z+hFhKMIo=
+        b=FdXgS2APsdnUv0rwIdnRlp7Rlz9zeGFSkZHbJtOJZBCGR66DFkYzX/BRy0bPuqHoL
+         2H+YllOxQkMpq1a7dZoIuH5OgMQMw6kzyf4jJ/nu7sjyQoDxEWnRbx3VnDgtcbP+ad
+         wkrXoYyqMoZPWQPi+A9a//Rb9ysjOkGOKorcEFKg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, linux-crypto@vger.kernel.org,
+        Andy Lutomirski <luto@kernel.org>,
+        Jann Horn <jannh@google.com>, Theodore Tso <tytso@mit.edu>,
         Ard Biesheuvel <ardb@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Eric Biggers <ebiggers@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 006/240] lib/crypto: sha1: re-roll loops to reduce code size
-Date:   Mon, 20 Jun 2022 14:48:27 +0200
-Message-Id: <20220620124737.990971483@linuxfoundation.org>
+Subject: [PATCH 5.4 033/240] random: remove dead code left over from blocking pool
+Date:   Mon, 20 Jun 2022 14:48:54 +0200
+Message-Id: <20220620124738.831012023@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -51,158 +54,187 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Eric Biggers <ebiggers@google.com>
 
-commit 9a1536b093bb5bf60689021275fd24d513bb8db0 upstream.
+commit 118a4417e14348b2e46f5e467da8444ec4757a45 upstream.
 
-With SHA-1 no longer being used for anything performance oriented, and
-also soon to be phased out entirely, we can make up for the space added
-by unrolled BLAKE2s by simply re-rolling SHA-1. Since SHA-1 is so much
-more complex, re-rolling it more or less takes care of the code size
-added by BLAKE2s. And eventually, hopefully we'll see SHA-1 removed
-entirely from most small kernel builds.
+Remove some dead code that was left over following commit 90ea1c6436d2
+("random: remove the blocking pool").
 
-Cc: Herbert Xu <herbert@gondor.apana.org.au>
-Cc: Ard Biesheuvel <ardb@kernel.org>
-Tested-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: linux-crypto@vger.kernel.org
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Jann Horn <jannh@google.com>
+Cc: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Andy Lutomirski <luto@kernel.org>
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- lib/sha1.c |   95 ++++++++-----------------------------------------------------
- 1 file changed, 14 insertions(+), 81 deletions(-)
+ drivers/char/random.c         |   17 +-------
+ include/trace/events/random.h |   83 ------------------------------------------
+ 2 files changed, 3 insertions(+), 97 deletions(-)
 
---- a/lib/sha1.c
-+++ b/lib/sha1.c
-@@ -10,6 +10,7 @@
- #include <linux/export.h>
- #include <linux/bitops.h>
- #include <linux/cryptohash.h>
-+#include <linux/string.h>
- #include <asm/unaligned.h>
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -501,7 +501,6 @@ struct entropy_store {
+ 	unsigned short add_ptr;
+ 	unsigned short input_rotate;
+ 	int entropy_count;
+-	unsigned int initialized:1;
+ 	unsigned int last_data_init:1;
+ 	__u8 last_data[EXTRACT_SIZE];
+ };
+@@ -661,7 +660,7 @@ static void process_random_ready_list(vo
+  */
+ static void credit_entropy_bits(struct entropy_store *r, int nbits)
+ {
+-	int entropy_count, orig, has_initialized = 0;
++	int entropy_count, orig;
+ 	const int pool_size = r->poolinfo->poolfracbits;
+ 	int nfrac = nbits << ENTROPY_SHIFT;
+ 
+@@ -718,23 +717,14 @@ retry:
+ 	if (cmpxchg(&r->entropy_count, orig, entropy_count) != orig)
+ 		goto retry;
+ 
+-	if (has_initialized) {
+-		r->initialized = 1;
+-		kill_fasync(&fasync, SIGIO, POLL_IN);
+-	}
+-
+ 	trace_credit_entropy_bits(r->name, nbits,
+ 				  entropy_count >> ENTROPY_SHIFT, _RET_IP_);
+ 
+ 	if (r == &input_pool) {
+ 		int entropy_bits = entropy_count >> ENTROPY_SHIFT;
+ 
+-		if (crng_init < 2) {
+-			if (entropy_bits < 128)
+-				return;
++		if (crng_init < 2 && entropy_bits >= 128)
+ 			crng_reseed(&primary_crng, r);
+-			entropy_bits = ENTROPY_BITS(r);
+-		}
+ 	}
+ }
+ 
+@@ -1392,8 +1382,7 @@ retry:
+ }
  
  /*
-@@ -55,7 +56,8 @@
- #define SHA_ROUND(t, input, fn, constant, A, B, C, D, E) do { \
- 	__u32 TEMP = input(t); setW(t, TEMP); \
- 	E += TEMP + rol32(A,5) + (fn) + (constant); \
--	B = ror32(B, 2); } while (0)
-+	B = ror32(B, 2); \
-+	TEMP = E; E = D; D = C; C = B; B = A; A = TEMP; } while (0)
+- * This function does the actual extraction for extract_entropy and
+- * extract_entropy_user.
++ * This function does the actual extraction for extract_entropy.
+  *
+  * Note: we assume that .poolwords is a multiple of 16 words.
+  */
+--- a/include/trace/events/random.h
++++ b/include/trace/events/random.h
+@@ -85,28 +85,6 @@ TRACE_EVENT(credit_entropy_bits,
+ 		  __entry->entropy_count, (void *)__entry->IP)
+ );
  
- #define T_0_15(t, A, B, C, D, E)  SHA_ROUND(t, SHA_SRC, (((C^D)&B)^D) , 0x5a827999, A, B, C, D, E )
- #define T_16_19(t, A, B, C, D, E) SHA_ROUND(t, SHA_MIX, (((C^D)&B)^D) , 0x5a827999, A, B, C, D, E )
-@@ -82,6 +84,7 @@
- void sha_transform(__u32 *digest, const char *data, __u32 *array)
- {
- 	__u32 A, B, C, D, E;
-+	unsigned int i = 0;
+-TRACE_EVENT(push_to_pool,
+-	TP_PROTO(const char *pool_name, int pool_bits, int input_bits),
+-
+-	TP_ARGS(pool_name, pool_bits, input_bits),
+-
+-	TP_STRUCT__entry(
+-		__field( const char *,	pool_name		)
+-		__field(	  int,	pool_bits		)
+-		__field(	  int,	input_bits		)
+-	),
+-
+-	TP_fast_assign(
+-		__entry->pool_name	= pool_name;
+-		__entry->pool_bits	= pool_bits;
+-		__entry->input_bits	= input_bits;
+-	),
+-
+-	TP_printk("%s: pool_bits %d input_pool_bits %d",
+-		  __entry->pool_name, __entry->pool_bits,
+-		  __entry->input_bits)
+-);
+-
+ TRACE_EVENT(debit_entropy,
+ 	TP_PROTO(const char *pool_name, int debit_bits),
  
- 	A = digest[0];
- 	B = digest[1];
-@@ -90,94 +93,24 @@ void sha_transform(__u32 *digest, const
- 	E = digest[4];
+@@ -161,35 +139,6 @@ TRACE_EVENT(add_disk_randomness,
+ 		  MINOR(__entry->dev), __entry->input_bits)
+ );
  
- 	/* Round 1 - iterations 0-16 take their input from 'data' */
--	T_0_15( 0, A, B, C, D, E);
--	T_0_15( 1, E, A, B, C, D);
--	T_0_15( 2, D, E, A, B, C);
--	T_0_15( 3, C, D, E, A, B);
--	T_0_15( 4, B, C, D, E, A);
--	T_0_15( 5, A, B, C, D, E);
--	T_0_15( 6, E, A, B, C, D);
--	T_0_15( 7, D, E, A, B, C);
--	T_0_15( 8, C, D, E, A, B);
--	T_0_15( 9, B, C, D, E, A);
--	T_0_15(10, A, B, C, D, E);
--	T_0_15(11, E, A, B, C, D);
--	T_0_15(12, D, E, A, B, C);
--	T_0_15(13, C, D, E, A, B);
--	T_0_15(14, B, C, D, E, A);
--	T_0_15(15, A, B, C, D, E);
-+	for (; i < 16; ++i)
-+		T_0_15(i, A, B, C, D, E);
+-TRACE_EVENT(xfer_secondary_pool,
+-	TP_PROTO(const char *pool_name, int xfer_bits, int request_bits,
+-		 int pool_entropy, int input_entropy),
+-
+-	TP_ARGS(pool_name, xfer_bits, request_bits, pool_entropy,
+-		input_entropy),
+-
+-	TP_STRUCT__entry(
+-		__field( const char *,	pool_name		)
+-		__field(	  int,	xfer_bits		)
+-		__field(	  int,	request_bits		)
+-		__field(	  int,	pool_entropy		)
+-		__field(	  int,	input_entropy		)
+-	),
+-
+-	TP_fast_assign(
+-		__entry->pool_name	= pool_name;
+-		__entry->xfer_bits	= xfer_bits;
+-		__entry->request_bits	= request_bits;
+-		__entry->pool_entropy	= pool_entropy;
+-		__entry->input_entropy	= input_entropy;
+-	),
+-
+-	TP_printk("pool %s xfer_bits %d request_bits %d pool_entropy %d "
+-		  "input_entropy %d", __entry->pool_name, __entry->xfer_bits,
+-		  __entry->request_bits, __entry->pool_entropy,
+-		  __entry->input_entropy)
+-);
+-
+ DECLARE_EVENT_CLASS(random__get_random_bytes,
+ 	TP_PROTO(int nbytes, unsigned long IP),
  
- 	/* Round 1 - tail. Input from 512-bit mixing array */
--	T_16_19(16, E, A, B, C, D);
--	T_16_19(17, D, E, A, B, C);
--	T_16_19(18, C, D, E, A, B);
--	T_16_19(19, B, C, D, E, A);
-+	for (; i < 20; ++i)
-+		T_16_19(i, A, B, C, D, E);
+@@ -253,38 +202,6 @@ DEFINE_EVENT(random__extract_entropy, ex
+ 	TP_ARGS(pool_name, nbytes, entropy_count, IP)
+ );
  
- 	/* Round 2 */
--	T_20_39(20, A, B, C, D, E);
--	T_20_39(21, E, A, B, C, D);
--	T_20_39(22, D, E, A, B, C);
--	T_20_39(23, C, D, E, A, B);
--	T_20_39(24, B, C, D, E, A);
--	T_20_39(25, A, B, C, D, E);
--	T_20_39(26, E, A, B, C, D);
--	T_20_39(27, D, E, A, B, C);
--	T_20_39(28, C, D, E, A, B);
--	T_20_39(29, B, C, D, E, A);
--	T_20_39(30, A, B, C, D, E);
--	T_20_39(31, E, A, B, C, D);
--	T_20_39(32, D, E, A, B, C);
--	T_20_39(33, C, D, E, A, B);
--	T_20_39(34, B, C, D, E, A);
--	T_20_39(35, A, B, C, D, E);
--	T_20_39(36, E, A, B, C, D);
--	T_20_39(37, D, E, A, B, C);
--	T_20_39(38, C, D, E, A, B);
--	T_20_39(39, B, C, D, E, A);
-+	for (; i < 40; ++i)
-+		T_20_39(i, A, B, C, D, E);
+-DEFINE_EVENT(random__extract_entropy, extract_entropy_user,
+-	TP_PROTO(const char *pool_name, int nbytes, int entropy_count,
+-		 unsigned long IP),
+-
+-	TP_ARGS(pool_name, nbytes, entropy_count, IP)
+-);
+-
+-TRACE_EVENT(random_read,
+-	TP_PROTO(int got_bits, int need_bits, int pool_left, int input_left),
+-
+-	TP_ARGS(got_bits, need_bits, pool_left, input_left),
+-
+-	TP_STRUCT__entry(
+-		__field(	  int,	got_bits		)
+-		__field(	  int,	need_bits		)
+-		__field(	  int,	pool_left		)
+-		__field(	  int,	input_left		)
+-	),
+-
+-	TP_fast_assign(
+-		__entry->got_bits	= got_bits;
+-		__entry->need_bits	= need_bits;
+-		__entry->pool_left	= pool_left;
+-		__entry->input_left	= input_left;
+-	),
+-
+-	TP_printk("got_bits %d still_needed_bits %d "
+-		  "blocking_pool_entropy_left %d input_entropy_left %d",
+-		  __entry->got_bits, __entry->got_bits, __entry->pool_left,
+-		  __entry->input_left)
+-);
+-
+ TRACE_EVENT(urandom_read,
+ 	TP_PROTO(int got_bits, int pool_left, int input_left),
  
- 	/* Round 3 */
--	T_40_59(40, A, B, C, D, E);
--	T_40_59(41, E, A, B, C, D);
--	T_40_59(42, D, E, A, B, C);
--	T_40_59(43, C, D, E, A, B);
--	T_40_59(44, B, C, D, E, A);
--	T_40_59(45, A, B, C, D, E);
--	T_40_59(46, E, A, B, C, D);
--	T_40_59(47, D, E, A, B, C);
--	T_40_59(48, C, D, E, A, B);
--	T_40_59(49, B, C, D, E, A);
--	T_40_59(50, A, B, C, D, E);
--	T_40_59(51, E, A, B, C, D);
--	T_40_59(52, D, E, A, B, C);
--	T_40_59(53, C, D, E, A, B);
--	T_40_59(54, B, C, D, E, A);
--	T_40_59(55, A, B, C, D, E);
--	T_40_59(56, E, A, B, C, D);
--	T_40_59(57, D, E, A, B, C);
--	T_40_59(58, C, D, E, A, B);
--	T_40_59(59, B, C, D, E, A);
-+	for (; i < 60; ++i)
-+		T_40_59(i, A, B, C, D, E);
- 
- 	/* Round 4 */
--	T_60_79(60, A, B, C, D, E);
--	T_60_79(61, E, A, B, C, D);
--	T_60_79(62, D, E, A, B, C);
--	T_60_79(63, C, D, E, A, B);
--	T_60_79(64, B, C, D, E, A);
--	T_60_79(65, A, B, C, D, E);
--	T_60_79(66, E, A, B, C, D);
--	T_60_79(67, D, E, A, B, C);
--	T_60_79(68, C, D, E, A, B);
--	T_60_79(69, B, C, D, E, A);
--	T_60_79(70, A, B, C, D, E);
--	T_60_79(71, E, A, B, C, D);
--	T_60_79(72, D, E, A, B, C);
--	T_60_79(73, C, D, E, A, B);
--	T_60_79(74, B, C, D, E, A);
--	T_60_79(75, A, B, C, D, E);
--	T_60_79(76, E, A, B, C, D);
--	T_60_79(77, D, E, A, B, C);
--	T_60_79(78, C, D, E, A, B);
--	T_60_79(79, B, C, D, E, A);
-+	for (; i < 80; ++i)
-+		T_60_79(i, A, B, C, D, E);
- 
- 	digest[0] += A;
- 	digest[1] += B;
 
 
