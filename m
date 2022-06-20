@@ -2,97 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12A65C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:15:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46906C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:15:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344847AbiFTNOF (ORCPT
+        id S1344913AbiFTNOI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:14:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52768 "EHLO
+        Mon, 20 Jun 2022 09:14:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343968AbiFTNJt (ORCPT
+        with ESMTP id S1344014AbiFTNJv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:09:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B65E31AF29;
-        Mon, 20 Jun 2022 06:04:59 -0700 (PDT)
+        Mon, 20 Jun 2022 09:09:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F9941C106
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 06:05:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0CFAF61548;
-        Mon, 20 Jun 2022 13:01:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03842C3411B;
-        Mon, 20 Jun 2022 13:01:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730090;
-        bh=3URXF5M3vcnkfz10ois3e+5aTzkVfZWqV/ln18/fkC4=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id E4552B811C4
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 13:04:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0CEFC3411C;
+        Mon, 20 Jun 2022 13:04:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655730294;
+        bh=H1k0Cznz8WyYeBmkHYrxWLlxVvaYwUkpPArF6xP7LtY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R1n8rwbOHhDWwnu11BxOxiC7tech4ZNafh4qLV07yMH9Hp65tPAeKZ0TpV6ILFtfu
-         a8zHN7C7GnDXlZPRA25cMV3kf4S6y6ElxJw2oHMHLMzAonKP3x4Rk0OmwnfHvT/bLh
-         bWcVrc4LOOPBrgIhODy7l14C/sH4pZDDWUA7w9MM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+        b=IXNIzmU4SJUGa3S537s8688egYLwn7nXzGsucE12GKf33iN95yyBQ468L59s4wok/
+         q89FcdVXG5aeTw+iurdD1FXNlQeLPLOOYYTPCfehngRPu84FTmTkAuU1YdbuUS5WV3
+         Fzt4smwaBwm3T0P0Fci/x/eLnjPCNK1y/BTEAF7KY7EFuDiXD768F53ORfUCrD6otD
+         ttgkInYMZr+Bl5pWdU8UvF0Z4w4BcFI4BQEmDs5sCn12jL0IW0RT/YT11ZzwRL8rF7
+         j8pRVAn60uSschD/eY6vmAk9dPN8sVF/KSQyYn4nFRDMpdmdRsYWul5v8SJXZN7TFC
+         6czcBZ8M9rX4w==
+From:   Oded Gabbay <ogabbay@kernel.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 30/84] mellanox: mlx5: avoid uninitialized variable warning with gcc-12
-Date:   Mon, 20 Jun 2022 14:50:53 +0200
-Message-Id: <20220620124721.785152170@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124720.882450983@linuxfoundation.org>
-References: <20220620124720.882450983@linuxfoundation.org>
-User-Agent: quilt/0.66
+Cc:     ran shalit <rshalit@habana.ai>
+Subject: [PATCH 13/17] habanalabs: add critical indication in sram ecc
+Date:   Mon, 20 Jun 2022 16:04:28 +0300
+Message-Id: <20220620130432.1180451-13-ogabbay@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220620130432.1180451-1-ogabbay@kernel.org>
+References: <20220620130432.1180451-1-ogabbay@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: ran shalit <rshalit@habana.ai>
 
-[ Upstream commit 842c3b3ddc5f4d17275edbaa09e23d712bf8b915 ]
+Multiple SRAM SERR events are treated as critical events,
+and host should be notified about it. Thus, adding is_critical
+indication as part of SRAM ECC failure packet.
 
-gcc-12 started warning about 'tracker' being used uninitialized:
-
-  drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c: In function ‘mlx5_do_bond’:
-  drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c:786:28: warning: ‘tracker’ is used uninitialized [-Wuninitialized]
-    786 |         struct lag_tracker tracker;
-        |                            ^~~~~~~
-
-which seems to be because it doesn't track how the use (and
-initialization) is bound by the 'do_bond' flag.
-
-But admittedly that 'do_bond' usage is fairly complicated, and involves
-passing it around as an argument to helper functions, so it's somewhat
-understandable that gcc doesn't see how that all works.
-
-This function could be rewritten to make the use of that tracker
-variable more obviously safe, but for now I'm just adding the forced
-initialization of it.
-
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: ran shalit <rshalit@habana.ai>
+Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
+Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/lag.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/misc/habanalabs/include/common/cpucp_if.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag.c b/drivers/net/ethernet/mellanox/mlx5/core/lag.c
-index 11cc3ea5010a..9fb3e5ec1da6 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag.c
-@@ -274,7 +274,7 @@ static void mlx5_do_bond(struct mlx5_lag *ldev)
- {
- 	struct mlx5_core_dev *dev0 = ldev->pf[MLX5_LAG_P1].dev;
- 	struct mlx5_core_dev *dev1 = ldev->pf[MLX5_LAG_P2].dev;
--	struct lag_tracker tracker;
-+	struct lag_tracker tracker = { };
- 	bool do_bond, roce_lag;
- 	int err;
+diff --git a/drivers/misc/habanalabs/include/common/cpucp_if.h b/drivers/misc/habanalabs/include/common/cpucp_if.h
+index 38e44b6cf581..b190a44ef2e2 100644
+--- a/drivers/misc/habanalabs/include/common/cpucp_if.h
++++ b/drivers/misc/habanalabs/include/common/cpucp_if.h
+@@ -68,7 +68,8 @@ struct hl_eq_ecc_data {
+ 	__le64 ecc_address;
+ 	__le64 ecc_syndrom;
+ 	__u8 memory_wrapper_idx;
+-	__u8 pad[7];
++	__u8 is_critical;
++	__u8 pad[6];
+ };
  
+ enum hl_sm_sei_cause {
 -- 
-2.35.1
-
-
+2.25.1
 
