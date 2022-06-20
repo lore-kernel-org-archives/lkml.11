@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9230C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 15:13:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB4C5C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 15:13:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243787AbiFTPNQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 11:13:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42016 "EHLO
+        id S243824AbiFTPNU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 11:13:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243364AbiFTPMP (ORCPT
+        with ESMTP id S243362AbiFTPMP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 20 Jun 2022 11:12:15 -0400
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD9B71EED7
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 08:02:57 -0700 (PDT)
-Received: by mail-lj1-x235.google.com with SMTP id b23so3654710ljh.7
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 08:02:57 -0700 (PDT)
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA3CD12630
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 08:02:56 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id i18so4061261lfu.8
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 08:02:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=semihalf.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=sH5mdU0J82lSBubyPIxIw/XIt0m9sm0DajZ7R0PZmFM=;
-        b=knaJ8eJAzYF2U1LYJ1OxeeM1p3RjFGe574cRemVmlbNHTejes4i6AYL3jRMyvOtZ7v
-         1fS4SAr4Ktc0OTo4P7z+pflNDq1ID5JQ5zbdvjnjbnqUlHXsw9MlMA5FczYtmZj2sHWQ
-         O7mgMEC7mlsws04CCUl8x2lUlBCwkCGFbZFLp1jUEEl+cL/3LRPWzTOLZM9FWqk7aEMQ
-         zvdRX+UGVNE/Iodgbp8j90mjh8ubaeFxf0o2H6gHJCxY4AmfEr6aMBzLQ5gXb7C6E78K
-         noaqIpK0dNrMiLMvv2XiuoprCbOcqEbg1QjkDRvAjLjty+GuuiAGmy+wj+Yz1aug2bd9
-         TAxA==
+        bh=lWuaSG6HSKcvFGFyg+g82A5w5pDsH3NkEfBqjUDTkfk=;
+        b=U6ZqexpWMwtNfy4fgrFqttD04y6IMahzDMMf5MP3BVVrG8OG0j4iKbznvGKRVKIH3x
+         EbRPXFceUxsEy2hVgGms7e9b4L9Hvh53LP5Ga76s+m097zlmDDUUg+lLVsqajUGMSDlq
+         j4orC0Fc6GDqnK49q0OJTmQfKv4I53zdBQ11H9R/d0lZgqJ13ku6CQtkA/AWQaRq7aih
+         VmynjT9xCgHmfPyGaXlgPPCFcghOwgX1qxNvJTHwpNqc4F+wW5MYZY969bwMwoER4bco
+         /o/bW3mJpIPeXmDoMvjJyweDcd6Cmfk7liDWCYmF1jO+pGGbH8dD+y2wEAVPaxF1UvHF
+         7wpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=sH5mdU0J82lSBubyPIxIw/XIt0m9sm0DajZ7R0PZmFM=;
-        b=quhj9D0yelqeqleFXO/6ee4IDPf5CP3rJ38Pj4m5g2FQjrL1L/qfgN7xtsW/kEDsLm
-         ncE/D5YLG1f98j/0fP/0icJp4+WpHXoc8jPlDlKMPmU9F3X9XeZDi9c9IHVhd9Kus691
-         kNftNQHJ+EN53t6UvFQn1rokxDT9Laa4jjvA8geqLTRVXnkd8drQopbQuF2AoU4gTQS7
-         E/2bKTP4aTyNCnYy4bv2eLXlfa8wpOYZYWb2iGnKPPVh3U2G50eegtcP9JuLEE0D82ax
-         S9ex3b9kM9CtYH7UwBqigOuguil4/XDoijs0yAh1pJOh0MERmsXXOU6CQc7oRup5B0/p
-         WnVw==
-X-Gm-Message-State: AJIora9nyslH2s6fhmzwYAz25olJe8xZjcCkjP59hOxlxz/aP3dk7dD/
-        J/yiHRwmnf8jCTrwEjMtvwja2zUnEliWTQ==
-X-Google-Smtp-Source: AGRyM1uiyaR+g5NXDERpjkMHAfHMuJYfDGHDxYxby94uVCwaSCkyGa0OMkqKgsg6hF0M/5asgijo4A==
-X-Received: by 2002:a05:651c:4d1:b0:255:c269:da49 with SMTP id e17-20020a05651c04d100b00255c269da49mr12310504lji.54.1655737377262;
-        Mon, 20 Jun 2022 08:02:57 -0700 (PDT)
+        bh=lWuaSG6HSKcvFGFyg+g82A5w5pDsH3NkEfBqjUDTkfk=;
+        b=L8hejgTWybeAqOiC6QxWtpqmd+i4f/PntI0KTeSEYKsIgixRop9wSDCYUpHYUuuwHj
+         Xbz7qq24SwEwxagzBswHXSqoL6hvvwRADOT+Gcy5ZqN3kPb/f/SbxUDQsLgAROI7EIrj
+         DRTHz6gr5Q/HHvHaWl55YXoml3/kR37gCryZmv3DCkp2vwa42z0RA1ZBJiuLX4b32TRE
+         1aOtPih8bUTq7lZiNexiwJzsqxpZ7/d7bcpJqz29x+H915JNzQbw5enibezggak8kdc4
+         HG8p3cv1m4MajRd9msboP3k1MKth2HRq+kIpxTObFphKCgVO5PBix41PIY6S47VoN8VT
+         JD1w==
+X-Gm-Message-State: AJIora+63vMCG5G70PBjm12Nj+gc7/EHemu1OfuVTu34zzD8iF9jTVsk
+        CHMewXoVgjAIx16CXKL3u8XbilG9W6NYsA==
+X-Google-Smtp-Source: AGRyM1uTGnXuPfk4GfByLJogKz1YnhnU1O9BZc/Qm5s2OM28A/6t4nD5tutEGUS8JHtjHKclXDPDwg==
+X-Received: by 2002:a05:6512:3fa0:b0:47f:5758:1951 with SMTP id x32-20020a0565123fa000b0047f57581951mr8779287lfa.609.1655737374810;
+        Mon, 20 Jun 2022 08:02:54 -0700 (PDT)
 Received: from gilgamesh.lab.semihalf.net ([83.142.187.85])
-        by smtp.gmail.com with ESMTPSA id e19-20020a05651236d300b0047f79f7758asm17564lfs.22.2022.06.20.08.02.56
+        by smtp.gmail.com with ESMTPSA id e19-20020a05651236d300b0047f79f7758asm17564lfs.22.2022.06.20.08.02.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jun 2022 08:02:56 -0700 (PDT)
+        Mon, 20 Jun 2022 08:02:54 -0700 (PDT)
 From:   Marcin Wojtas <mw@semihalf.com>
 To:     linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
         netdev@vger.kernel.org
@@ -58,9 +58,9 @@ Cc:     rafael@kernel.org, andriy.shevchenko@linux.intel.com,
         linux@armlinux.org.uk, hkallweit1@gmail.com, gjb@semihalf.com,
         mw@semihalf.com, jaz@semihalf.com, tn@semihalf.com,
         Samer.El-Haj-Mahmoud@arm.com, upstream@semihalf.com
-Subject: [net-next: PATCH 11/12] net: dsa: mv88e6xxx: switch to device_/fwnode_ APIs
-Date:   Mon, 20 Jun 2022 17:02:24 +0200
-Message-Id: <20220620150225.1307946-12-mw@semihalf.com>
+Subject: [net-next: PATCH 09/12] Documentation: ACPI: DSD: introduce DSA description
+Date:   Mon, 20 Jun 2022 17:02:22 +0200
+Message-Id: <20220620150225.1307946-10-mw@semihalf.com>
 X-Mailer: git-send-email 2.29.0
 In-Reply-To: <20220620150225.1307946-1-mw@semihalf.com>
 References: <20220620150225.1307946-1-mw@semihalf.com>
@@ -70,158 +70,398 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order to support both ACPI and DT, modify the generic
-DSA code to use device_/fwnode_ equivalent routines.
-No functional change is introduced by this patch.
+Describe the Distributed Switch Architecture (DSA) - compliant
+MDIO devices. In ACPI world they are represented as children
+of the MDIO busses, which are responsible for their enumeration
+based on the standard _ADR fields and description in _DSD objects
+under device properties UUID [1].
+
+[1] http://www.uefi.org/sites/default/files/resources/_DSD-device-properties-UUID.pdf
 
 Signed-off-by: Marcin Wojtas <mw@semihalf.com>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c | 53 ++++++++++----------
- 1 file changed, 27 insertions(+), 26 deletions(-)
+ Documentation/firmware-guide/acpi/dsd/dsa.rst | 359 ++++++++++++++++++++
+ Documentation/firmware-guide/acpi/index.rst   |   1 +
+ 2 files changed, 360 insertions(+)
+ create mode 100644 Documentation/firmware-guide/acpi/dsd/dsa.rst
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 0b49d243e00b..556defa4379d 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -3278,7 +3278,7 @@ static int mv88e6xxx_setup_upstream_port(struct mv88e6xxx_chip *chip, int port)
- 
- static int mv88e6xxx_setup_port(struct mv88e6xxx_chip *chip, int port)
- {
--	struct device_node *phy_handle = NULL;
-+	struct fwnode_handle *phy_handle = NULL;
- 	struct dsa_switch *ds = chip->ds;
- 	struct dsa_port *dp;
- 	int tx_amp;
-@@ -3475,15 +3475,15 @@ static int mv88e6xxx_setup_port(struct mv88e6xxx_chip *chip, int port)
- 	if (chip->info->ops->serdes_set_tx_amplitude) {
- 		dp = dsa_to_port(ds, port);
- 		if (dp)
--			phy_handle = of_parse_phandle(dp->dn, "phy-handle", 0);
-+			phy_handle = fwnode_find_reference(dp->fwnode, "phy-handle", 0);
- 
--		if (phy_handle && !of_property_read_u32(phy_handle,
--							"tx-p2p-microvolt",
--							&tx_amp))
-+		if (!IS_ERR(phy_handle) && !fwnode_property_read_u32(phy_handle,
-+								     "tx-p2p-microvolt",
-+								     &tx_amp))
- 			err = chip->info->ops->serdes_set_tx_amplitude(chip,
- 								port, tx_amp);
--		if (phy_handle) {
--			of_node_put(phy_handle);
-+		if (!IS_ERR(phy_handle)) {
-+			fwnode_handle_put(phy_handle);
- 			if (err)
- 				return err;
- 		}
-@@ -3867,10 +3867,11 @@ static int mv88e6xxx_mdio_write(struct mii_bus *bus, int phy, int reg, u16 val)
- }
- 
- static int mv88e6xxx_mdio_register(struct mv88e6xxx_chip *chip,
--				   struct device_node *np,
-+				   struct fwnode_handle *fwnode,
- 				   bool external)
- {
- 	static int index;
-+	struct device_node *np = to_of_node(fwnode);
- 	struct mv88e6xxx_mdio_bus *mdio_bus;
- 	struct mii_bus *bus;
- 	int err;
-@@ -3949,18 +3950,18 @@ static void mv88e6xxx_mdios_unregister(struct mv88e6xxx_chip *chip)
- }
- 
- static int mv88e6xxx_mdios_register(struct mv88e6xxx_chip *chip,
--				    struct device_node *np)
-+				    struct fwnode_handle *fwnode)
- {
--	struct device_node *child;
-+	struct fwnode_handle *child;
- 	int err;
- 
- 	/* Always register one mdio bus for the internal/default mdio
- 	 * bus. This maybe represented in the device tree, but is
- 	 * optional.
- 	 */
--	child = of_get_child_by_name(np, "mdio");
-+	child = fwnode_get_named_child_node(fwnode, "mdio");
- 	err = mv88e6xxx_mdio_register(chip, child, false);
--	of_node_put(child);
-+	fwnode_handle_put(child);
- 	if (err)
- 		return err;
- 
-@@ -3968,13 +3969,13 @@ static int mv88e6xxx_mdios_register(struct mv88e6xxx_chip *chip,
- 	 * which say they are compatible with the external mdio
- 	 * bus.
- 	 */
--	for_each_available_child_of_node(np, child) {
--		if (of_device_is_compatible(
--			    child, "marvell,mv88e6xxx-mdio-external")) {
-+	fwnode_for_each_available_child_node(fwnode, child) {
-+		if (fwnode_property_match_string(child, "compatible",
-+						 "marvell,mv88e6xxx-mdio-external") == 0) {
- 			err = mv88e6xxx_mdio_register(chip, child, true);
- 			if (err) {
- 				mv88e6xxx_mdios_unregister(chip);
--				of_node_put(child);
-+				fwnode_handle_put(child);
- 				return err;
- 			}
- 		}
-@@ -6962,16 +6963,16 @@ static int mv88e6xxx_probe(struct mdio_device *mdiodev)
- 	struct dsa_mv88e6xxx_pdata *pdata = mdiodev->dev.platform_data;
- 	const struct mv88e6xxx_info *compat_info = NULL;
- 	struct device *dev = &mdiodev->dev;
--	struct device_node *np = dev->of_node;
-+	struct fwnode_handle *fwnode = dev->fwnode;
- 	struct mv88e6xxx_chip *chip;
- 	int port;
- 	int err;
- 
--	if (!np && !pdata)
-+	if (!fwnode && !pdata)
- 		return -EINVAL;
- 
--	if (np)
--		compat_info = of_device_get_match_data(dev);
-+	if (fwnode)
-+		compat_info = device_get_match_data(dev);
- 
- 	if (pdata) {
- 		compat_info = pdata_device_get_match_data(dev);
-@@ -7030,9 +7031,9 @@ static int mv88e6xxx_probe(struct mdio_device *mdiodev)
- 	mv88e6xxx_phy_init(chip);
- 
- 	if (chip->info->ops->get_eeprom) {
--		if (np)
--			of_property_read_u32(np, "eeprom-length",
--					     &chip->eeprom_len);
-+		if (fwnode)
-+			device_property_read_u32(dev, "eeprom-length",
-+						 &chip->eeprom_len);
- 		else
- 			chip->eeprom_len = pdata->eeprom_len;
- 	}
-@@ -7043,8 +7044,8 @@ static int mv88e6xxx_probe(struct mdio_device *mdiodev)
- 	if (err)
- 		goto out;
- 
--	if (np) {
--		chip->irq = of_irq_get(np, 0);
-+	if (fwnode) {
-+		chip->irq = fwnode_irq_get(fwnode, 0);
- 		if (chip->irq == -EPROBE_DEFER) {
- 			err = chip->irq;
- 			goto out;
-@@ -7082,7 +7083,7 @@ static int mv88e6xxx_probe(struct mdio_device *mdiodev)
- 	if (err)
- 		goto out_g1_atu_prob_irq;
- 
--	err = mv88e6xxx_mdios_register(chip, np);
-+	err = mv88e6xxx_mdios_register(chip, fwnode);
- 	if (err)
- 		goto out_g1_vtu_prob_irq;
- 
+diff --git a/Documentation/firmware-guide/acpi/dsd/dsa.rst b/Documentation/firmware-guide/acpi/dsd/dsa.rst
+new file mode 100644
+index 000000000000..dba76d89f4e6
+--- /dev/null
++++ b/Documentation/firmware-guide/acpi/dsd/dsa.rst
+@@ -0,0 +1,359 @@
++.. SPDX-License-Identifier: GPL-2.0
++
++===========
++DSA in ACPI
++===========
++
++The **Distributed Switch Architecture (DSA)** devices on an MDIO bus [dsa]
++are enumerated using fwnode_mdiobus_register_device() and later probed
++by a dedicated driver based on the ACPI ID match result.
++
++In DSDT/SSDT the scope of switch device is extended by the front-panel
++and one or more so called 'CPU' switch ports. Additionally
++subsequent MDIO busses with attached PHYs can be described.
++
++This document presents the switch description with the required subnodes
++and _DSD properties.
++
++These properties are defined in accordance with the "Device
++Properties UUID For _DSD" [dsd-guide] document and the
++daffd814-6eba-4d8c-8a91-bc9bbf4aa301 UUID must be used in the Device
++Data Descriptors containing them.
++
++Switch device
++=============
++
++The switch device is represented as a child node of the MDIO bus.
++It must comprise the _HID (and optionally _CID) field, so to allow matching
++with appropriate driver via ACPI ID. The other obligatory field is
++_ADR with the device address on the MDIO bus [adr]. Below example
++shows 'SWI0' switch device at address 0x4 on the 'SMI0' bus.
++
++.. code-block:: none
++
++    Scope (\_SB.SMI0)
++    {
++        Name (_HID, "MRVL0100")
++        Name (_UID, 0x00)
++        Method (_STA)
++        {
++            Return (0xF)
++        }
++        Name (_CRS, ResourceTemplate ()
++        {
++            Memory32Fixed (ReadWrite,
++                0xf212a200,
++                0x00000010,
++                )
++        })
++        Device (SWI0)
++        {
++            Name (_HID, "MRVL0120")
++            Name (_UID, 0x00)
++            Name (_ADR, 0x4)
++            <...>
++        }
++    }
++
++Switch MDIO bus
++===============
++
++A switch internal MDIO bus, please refer to 'MDIO bus and PHYs in ACPI' [phy]
++document for more details. Its name must be set to **MDIO** for proper
++enumeration by net/dsa API.
++
++Switch MDIO bus declaration example:
++------------------------------------
++
++.. code-block:: none
++
++    Scope (\_SB.SMI0.SWI0)
++    {
++        Name (_HID, "MRVL0120")
++        Name (_UID, 0x00)
++        Name (_ADR, 0x4)
++        Device (MDIO) {
++            Name (_ADR, 0x0)
++            Device (S0P0)
++            {
++                Name (_ADR, 0x11)
++            }
++            Device (S0P1)
++            {
++                Name (_ADR, 0x12)
++            }
++            Device (S0P2)
++            {
++                Name (_ADR, 0x13)
++            }
++            Device (S0P3)
++            {
++                Name (_ADR, 0x14)
++            }
++        }
++        <...>
++    }
++
++Switch ports
++============
++
++The ports must be grouped under **PRTS** switch child device. They
++should comprise a _ADR field with a port enumerator [adr] and
++other properties in a standard _DSD object [dsa-properties].
++
++label
++-----
++A property with a string value describing port's name in the OS. In case the
++port is connected to the MAC ('CPU' port), its value should be set to "cpu".
++
++phy-handle
++----------
++For each MAC node, a device property "phy-handle" is used to reference
++the PHY that is registered on an MDIO bus. This is mandatory for
++network interfaces that have PHYs connected to MAC via MDIO bus.
++See [phy] for more details.
++
++ethernet
++--------
++A property valid for the so called 'CPU' port and should comprise a reference
++to the MAC object declared in the DSDT/SSDT.
++
++fixed-link
++----------
++The 'fixed-link' is described by a data-only subnode of the
++port, which is linked in the _DSD package via
++hierarchical data extension (UUID dbb8e3e6-5886-4ba6-8795-1319f52a966b
++in accordance with [dsd-guide] "_DSD Implementation Guide" document).
++The subnode should comprise a required property ("speed") and
++possibly the optional ones - complete list of parameters and
++their values are specified in [ethernet-controller].
++See [phy] for more details.
++
++Switch ports' description example:
++----------------------------------
++
++.. code-block:: none
++
++    Scope (\_SB.SMI0.SWI0)
++    {
++        Name (_HID, "MRVL0120")
++        Name (_UID, 0x00)
++        Name (_ADR, 0x4)
++        Device (PRTS) {
++            Name (_ADR, 0x0)
++            Device (PRT1)
++            {
++                Name (_ADR, 0x1)
++                Name (_DSD, Package () {
++                    ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
++                    Package () {
++                      Package () { "label", "lan2"},
++                      Package () { "phy-handle", \_SB.SMI0.SWI0.MDIO.S0P0},
++                    }
++                })
++            }
++            Device (PRT2)
++            {
++                Name (_ADR, 0x2)
++                Name (_DSD, Package () {
++                    ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
++                    Package () {
++                      Package () { "label", "lan1"},
++                    },
++                    ToUUID("dbb8e3e6-5886-4ba6-8795-1319f52a966b"),
++                    Package () {
++                      Package () {"fixed-link", "LNK0"}
++                    }
++                })
++                Name (LNK0, Package(){ // Data-only subnode of port
++                    ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
++                    Package () {
++                      Package () {"speed", 1000},
++                      Package () {"full-duplex", 1}
++                    }
++                })
++            }
++            Device (PRT3)
++            {
++                Name (_ADR, 0x3)
++                Name (_DSD, Package () {
++                    ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
++                    Package () {
++                      Package () { "label", "lan4"},
++                      Package () { "phy-handle", \_SB.SMI0.SWI0.MDIO.S0P2},
++                    }
++                })
++            }
++            Device (PRT4)
++            {
++                Name (_ADR, 0x4)
++                Name (_DSD, Package () {
++                    ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
++                    Package () {
++                      Package () { "label", "lan3"},
++                      Package () { "phy-handle", \_SB.SMI0.SWI0.MDIO.S0P3},
++                    }
++                })
++            }
++            Device (PRT5)
++            {
++                Name (_ADR, 0x5)
++                Name (_DSD, Package () {
++                    ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
++                    Package () {
++                      Package () { "label", "cpu"},
++                      Package () { "ethernet", \_SB.PP20.ETH2},
++                    }
++                })
++            }
++        }
++        <...>
++    }
++
++Full DSA description example
++============================
++
++Below example comprises MDIO bus ('SMI0') with a PHY at address 0x0 ('PHY0')
++and a switch ('SWI0') at 0x4. The so called 'CPU' port ('PRT5') is connected to
++the SoC's MAC (\_SB.PP20.ETH2). 'PRT2' port is configured as 1G fixed-link.
++
++.. code-block:: none
++
++    Scope (\_SB.SMI0)
++    {
++        Name (_HID, "MRVL0100")
++        Name (_UID, 0x00)
++        Method (_STA)
++        {
++            Return (0xF)
++        }
++        Name (_CRS, ResourceTemplate ()
++        {
++            Memory32Fixed (ReadWrite,
++                0xf212a200,
++                0x00000010,
++                )
++        })
++        Device (PHY0)
++        {
++            Name (_ADR, 0x0)
++        }
++        Device (SWI0)
++        {
++            Name (_HID, "MRVL0120")
++            Name (_UID, 0x00)
++            Name (_ADR, 0x4)
++            Device (PRTS) {
++                Name (_ADR, 0x0)
++                Device (PRT1)
++                {
++                    Name (_ADR, 0x1)
++                    Name (_DSD, Package () {
++                        ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
++                        Package () {
++                          Package () { "label", "lan2"},
++                          Package () { "phy-handle", \_SB.SMI0.SWI0.MDIO.S0P0},
++                        }
++                    })
++                }
++                Device (PRT2)
++                {
++                    Name (_ADR, 0x2)
++                    Name (_DSD, Package () {
++                        ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
++                        Package () {
++                          Package () { "label", "lan1"},
++                        },
++                        ToUUID("dbb8e3e6-5886-4ba6-8795-1319f52a966b"),
++                        Package () {
++                          Package () {"fixed-link", "LNK0"}
++                        }
++                    })
++                    Name (LNK0, Package(){ // Data-only subnode of port
++                        ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
++                        Package () {
++                          Package () {"speed", 1000},
++                          Package () {"full-duplex", 1}
++                        }
++                    })
++                }
++                Device (PRT3)
++                {
++                    Name (_ADR, 0x3)
++                    Name (_DSD, Package () {
++                        ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
++                        Package () {
++                          Package () { "label", "lan4"},
++                          Package () { "phy-handle", \_SB.SMI0.SWI0.MDIO.S0P2},
++                        }
++                    })
++                }
++                Device (PRT4)
++                {
++                    Name (_ADR, 0x4)
++                    Name (_DSD, Package () {
++                        ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
++                        Package () {
++                          Package () { "label", "lan3"},
++                          Package () { "phy-handle", \_SB.SMI0.SWI0.MDIO.S0P3},
++                        }
++                    })
++                }
++                Device (PRT5)
++                {
++                    Name (_ADR, 0x5)
++                    Name (_DSD, Package () {
++                        ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
++                        Package () {
++                          Package () { "label", "cpu"},
++                          Package () { "ethernet", \_SB.PP20.ETH2},
++                        }
++                    })
++                }
++            }
++            Device (MDIO) {
++                Name (_ADR, 0x0)
++                Device (S0P0)
++                {
++                    Name (_ADR, 0x11)
++                }
++                Device (S0P2)
++                {
++                    Name (_ADR, 0x13)
++                }
++                Device (S0P3)
++                {
++                    Name (_ADR, 0x14)
++                }
++            }
++        }
++    }
++
++TODO
++====
++
++* Add support for cascade switch connections via port's 'link' property [dsa-properties].
++
++References
++==========
++
++[adr] ACPI Specifications, Version 6.4 - Paragraph 6.1.1 _ADR Address
++    https://uefi.org/specs/ACPI/6.4/06_Device_Configuration/Device_Configuration.html#adr-address
++
++[dsa]
++    Documentation/networking/dsa/dsa.rst
++
++[dsa-properties]
++    Documentation/devicetree/bindings/net/dsa/dsa-port.yaml
++
++[dsd-guide] DSD Guide.
++    https://github.com/UEFI/DSD-Guide/blob/main/dsd-guide.adoc, referenced
++    2022-06-20.
++
++[dsd-properties-rules]
++    Documentation/firmware-guide/acpi/DSD-properties-rules.rst
++
++[ethernet-controller]
++    Documentation/devicetree/bindings/net/ethernet-controller.yaml
++
++[phy] Documentation/networking/phy.rst
+diff --git a/Documentation/firmware-guide/acpi/index.rst b/Documentation/firmware-guide/acpi/index.rst
+index b6a42f4ffe03..a6ed5ba90cdd 100644
+--- a/Documentation/firmware-guide/acpi/index.rst
++++ b/Documentation/firmware-guide/acpi/index.rst
+@@ -10,6 +10,7 @@ ACPI Support
+    namespace
+    dsd/graph
+    dsd/data-node-references
++   dsd/dsa
+    dsd/leds
+    dsd/phy
+    enumeration
 -- 
 2.29.0
 
