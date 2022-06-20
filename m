@@ -2,112 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CD18C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:06:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E8DBC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:06:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350101AbiFTOGK (ORCPT
+        id S1350169AbiFTOGQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:06:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44046 "EHLO
+        Mon, 20 Jun 2022 10:06:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349205AbiFTNxr (ORCPT
+        with ESMTP id S1355010AbiFTOAE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:53:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 639851A05C;
-        Mon, 20 Jun 2022 06:20:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A7F6AB80E7D;
-        Mon, 20 Jun 2022 13:19:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12A19C3411B;
-        Mon, 20 Jun 2022 13:19:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731156;
-        bh=K5PXdgP1phRc7i/QqxIpNqkZRJfk01xQXAilZKpUPHI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c2ynHxfZvbAkp5YVtwrvaOollChjNE9fhL3A8Vl+atSCpaKmSSVTCLPIU+UnDpG8+
-         7jCBAkehKfFbSR3WeSPEz0wAc5sA+cYN0n9ovTSB2ocy5N7MN9T2VuJJX7FAgrrQOS
-         IlDXOl3f8NM6u4UL/S1bBAvTrJse0sIetPt2JXa4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 171/240] Revert "random: use static branch for crng_ready()"
-Date:   Mon, 20 Jun 2022 14:51:12 +0200
-Message-Id: <20220620124743.954374435@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
-References: <20220620124737.799371052@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 20 Jun 2022 10:00:04 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35D453B3FF
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 06:26:05 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id gl15so21108472ejb.4
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 06:26:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=bpkWVggJ3SSUB8ub063CuI93Ce8O0+lE1lmNavRnw/U=;
+        b=vf/iYq9DpWz4A9mtQbIq4dg+t8LKJf93XXM3RhHu/GHf8CYhssYFp7miEDq8W3c0Fl
+         ao9NKWI8A9jq+Wqb9JkOCjf8/oHc586a8exo/yPyJOIAJYRswYbEIVrewpvjuMlRtcvv
+         CR2QfMue63UCqJArO6q+SMYpJU29d83H0Y4S3k4lRaNiJfkVVV+UQKz+CexOvxuCeTG4
+         J2cmK7WlOvb3TKiyEKJPwCvZfsJf16/vT1Q/NVQxUA/mGWCtzshY4I4coUYNN45IWdZB
+         txhWZkWbpQZVWpTXCWROu1N2Z/L2MPY552xGOi2ehwrJs2e5+4AwlYX3UwATMOxwmph/
+         PQOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=bpkWVggJ3SSUB8ub063CuI93Ce8O0+lE1lmNavRnw/U=;
+        b=uvNvh6Tr/GbMwj8EEbgKxXN6c+hR0Aul5HECzZrbCW57HoewxYWe8nHNDL8qwg7QVx
+         kurFpb5yKhu1iBVdCvJhMN31F+InDMBVXuxrDOHae+ftB3p9qjsLrTcNtEwG4ccLhUnB
+         +LQTU70qT0BYz9e3sf+uKGwSHy6XrB80uFe+QVrgNqlRKqKB/3xO5logjYrxV6h//vNJ
+         1H+pguE8x8mUagHdRygooin8l2oduswc80puuwYY6JTxGh1230G2cahSEWb1NpEF/aR/
+         wJEEcpSFGNhKXDJmpi7WltvIEG0FSlYyJxK5d/DzhOya7K2YHE8/JhUjEI/OimuPTWyj
+         73yg==
+X-Gm-Message-State: AJIora/C5lf+uYb84Z/64e1fwCyPd1kQeB8gThxlacJpE3UC9yXaR2Bm
+        1kqx31gy3Vu3q23pLXNGnLNKsw==
+X-Google-Smtp-Source: AGRyM1tYluEdJ+vnziL1SXQxMswnUz9oRFxNhv0bgVtToC+Hn6byz6Ji9EoyHK15pGGwLp0yY3CCvA==
+X-Received: by 2002:a17:907:97c9:b0:71d:67ea:42ca with SMTP id js9-20020a17090797c900b0071d67ea42camr13845804ejc.7.1655731563861;
+        Mon, 20 Jun 2022 06:26:03 -0700 (PDT)
+Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
+        by smtp.gmail.com with ESMTPSA id h7-20020a17090634c700b006febce7081esm6063456ejb.177.2022.06.20.06.26.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Jun 2022 06:26:03 -0700 (PDT)
+Date:   Mon, 20 Jun 2022 14:25:39 +0100
+From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
+To:     Zhangfei Gao <zhangfei.gao@linaro.org>
+Cc:     Yang Shen <shenyang39@huawei.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-crypto@vger.kernel.org, linux-accelerators@lists.ozlabs.org
+Subject: Re: [PATCH] uacce: fix concurrency of fops_open and uacce_remove
+Message-ID: <YrB1U29QVHcKV3g8@myrica>
+References: <20220610123423.27496-1-zhangfei.gao@linaro.org>
+ <Yqn3spLZHpAkQ9Us@myrica>
+ <fdc8d8b0-4e04-78f5-1e8a-4cf44c89a37f@linaro.org>
+ <YqrmdKNrYTCiS/MC@myrica>
+ <d90e8ea5-2f18-2eda-b4b2-711083aa7ecd@linaro.org>
+ <53b9acef-ad32-d0aa-fa1b-a7cb77a0d088@linaro.org>
+ <1fab1f9a-5c6c-8190-829b-4bacf15eb306@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <1fab1f9a-5c6c-8190-829b-4bacf15eb306@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+On Fri, Jun 17, 2022 at 10:23:13PM +0800, Zhangfei Gao wrote:
+> @@ -312,12 +345,20 @@ static ssize_t available_instances_show(struct device
+> *dev,
+>                      char *buf)
+>  {
+>      struct uacce_device *uacce = to_uacce_device(dev);
+> +    ssize_t ret;
+> 
+> -    if (!uacce->ops->get_available_instances)
+> -        return -ENODEV;
+> +    mutex_lock(&uacce_mutex);
+> +    if (!uacce->ops || !uacce->ops->get_available_instances) {
 
-This reverts upstream commit f5bda35fba615ace70a656d4700423fa6c9bebee
-from stable. It's not essential and will take some time during 5.19 to
-work out properly.
+Doesn't the sysfs group go away with uacce_remove()?  We shouldn't need
+this check
 
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/char/random.c |   12 ++----------
- 1 file changed, 2 insertions(+), 10 deletions(-)
-
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -79,8 +79,7 @@ static enum {
- 	CRNG_EARLY = 1, /* At least POOL_EARLY_BITS collected */
- 	CRNG_READY = 2  /* Fully initialized with POOL_READY_BITS collected */
- } crng_init __read_mostly = CRNG_EMPTY;
--static DEFINE_STATIC_KEY_FALSE(crng_is_ready);
--#define crng_ready() (static_branch_likely(&crng_is_ready) || crng_init >= CRNG_READY)
-+#define crng_ready() (likely(crng_init >= CRNG_READY))
- /* Various types of waiters for crng_init->CRNG_READY transition. */
- static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
- static struct fasync_struct *fasync;
-@@ -110,11 +109,6 @@ bool rng_is_initialized(void)
- }
- EXPORT_SYMBOL(rng_is_initialized);
- 
--static void __cold crng_set_ready(struct work_struct *work)
--{
--	static_branch_enable(&crng_is_ready);
--}
--
- /* Used by wait_for_random_bytes(), and considered an entropy collector, below. */
- static void try_to_generate_entropy(void);
- 
-@@ -268,7 +262,7 @@ static void crng_reseed(void)
- 		++next_gen;
- 	WRITE_ONCE(base_crng.generation, next_gen);
- 	WRITE_ONCE(base_crng.birth, jiffies);
--	if (!static_branch_likely(&crng_is_ready))
-+	if (!crng_ready())
- 		crng_init = CRNG_READY;
- 	spin_unlock_irqrestore(&base_crng.lock, flags);
- 	memzero_explicit(key, sizeof(key));
-@@ -709,7 +703,6 @@ static void extract_entropy(void *buf, s
- 
- static void __cold _credit_init_bits(size_t bits)
- {
--	static struct execute_work set_ready;
- 	unsigned int new, orig, add;
- 	unsigned long flags;
- 
-@@ -725,7 +718,6 @@ static void __cold _credit_init_bits(siz
- 
- 	if (orig < POOL_READY_BITS && new >= POOL_READY_BITS) {
- 		crng_reseed(); /* Sets crng_init to CRNG_READY under base_crng.lock. */
--		execute_in_process_context(crng_set_ready, &set_ready);
- 		process_random_ready_list();
- 		wake_up_interruptible(&crng_init_wait);
- 		kill_fasync(&fasync, SIGIO, POLL_IN);
-
-
+Thanks,
+Jean
