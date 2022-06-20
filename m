@@ -2,138 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E202C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 16:28:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B161BC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 16:28:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241491AbiFTQ2x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 12:28:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49784 "EHLO
+        id S241950AbiFTQ25 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 12:28:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243785AbiFTQ2n (ORCPT
+        with ESMTP id S244553AbiFTQ2u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 12:28:43 -0400
-X-Greylist: delayed 2401 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 20 Jun 2022 09:28:42 PDT
-Received: from 7of9.schinagl.nl (7of9.connected.by.freedominter.net [185.238.129.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47F47BE0C;
-        Mon, 20 Jun 2022 09:28:42 -0700 (PDT)
-Received: from [10.2.12.24] (unknown [10.2.12.24])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by 7of9.schinagl.nl (Postfix) with ESMTPSA id 549661842F6F;
-        Mon, 20 Jun 2022 17:11:44 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=schinagl.nl; s=7of9;
-        t=1655737904; bh=UqBZTWQhX1oGqwuuGk9ArGFlxBsKUZyh+tzOazjtW9s=;
-        h=Date:Reply-To:Subject:To:Cc:References:From:In-Reply-To;
-        b=bOAzh2IFJWlWBZypDTa0e5IixUmK4ODxJw2v/sUawktoEQv/WpwcVc3LTrMbtQHhF
-         elnL57V0cO+lBHvFupyfUQQnTg4lArzlyPePP/ZUZOKyBBGv1uTDYimPzaXnBf04HK
-         xyx9I2GtQpi6lx7toDHyNw8pQLpR57FT+sUwMkWU=
-Message-ID: <fae4873e-2ff9-df35-0ab9-34bf4417b717@schinagl.nl>
-Date:   Mon, 20 Jun 2022 17:11:43 +0200
+        Mon, 20 Jun 2022 12:28:50 -0400
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FBB9BE0C;
+        Mon, 20 Jun 2022 09:28:50 -0700 (PDT)
+Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25KDDo2h010544;
+        Mon, 20 Jun 2022 16:28:43 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding;
+ s=corp-2021-07-09; bh=UPuXuwaATnCiD95hRgHKAmygUc1xM5cEW1R932PHfNc=;
+ b=dg7RELv6yPPnxOGDkTR5jTbbt/a4uBWvKqvW6rVBDSmyfiYqNcxvJ6hbGeK5fSQW87I4
+ aYhAOH7NvJxVs/sZYDrjPyFXRf5ifmiit0SjiJvrCTQCkKrzVdtwpPJV1PIktm75QrFd
+ pcScMHs3Ez6s+nMaB8Of+ioRXmijOHKKdBKbCI2vOmdjrL6gujVzusIthL9WQ2TJAiZS
+ gc8gm8sEUYtERkHexZGWR8I5TGuvfOWRMnFk2rmZq0OVU23VMGOFBSH6eFJuEQbR36vS
+ 4lEhgX2BV/sk37X9JmtDmVb2bKLZTCWLZSYwGTMvsfoMkbiktPiAqAT03bkdPn5jBur5 dA== 
+Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3gs78tunpu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 20 Jun 2022 16:28:43 +0000
+Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 25KGKfjN000850;
+        Mon, 20 Jun 2022 16:28:42 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3gtg5tjd40-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 20 Jun 2022 16:28:42 +0000
+Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 25KGSf6Y019345;
+        Mon, 20 Jun 2022 16:28:41 GMT
+Received: from ca-dev112.us.oracle.com (ca-dev112.us.oracle.com [10.147.25.63])
+        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3gtg5tjd3a-1;
+        Mon, 20 Jun 2022 16:28:41 +0000
+From:   Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Cc:     harshit.m.mogalapalli@oracle.com, dan.carpenter@oracle.com,
+        Rishi Gupta <gupt21@gmail.com>, Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        linux-i2c@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] HID: mcp2221: prevent a buffer overflow in mcp_smbus_write()
+Date:   Mon, 20 Jun 2022 09:28:24 -0700
+Message-Id: <20220620162824.58937-1-harshit.m.mogalapalli@oracle.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Reply-To: oliver+list@schinagl.nl
-Subject: Re: [PATCH 00/13] [RFC] Rust support
-Content-Language: en-US
-To:     ojeda@kernel.org, Linus Torvalds <torvalds@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     rust-for-linux@vger.kernel.org, linux-kbuild@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        oliver+list@schinagl.nl
-References: <20210414184604.23473-1-ojeda@kernel.org>
-From:   Olliver Schinagl <oliver@schinagl.nl>
-In-Reply-To: <20210414184604.23473-1-ojeda@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-GUID: m7rxXkTFRvbfervoWggKeeMRoHZOjazw
+X-Proofpoint-ORIG-GUID: m7rxXkTFRvbfervoWggKeeMRoHZOjazw
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey Miguel and others,
+Smatch Warning:
+drivers/hid/hid-mcp2221.c:388 mcp_smbus_write() error: __memcpy()
+'&mcp->txbuf[5]' too small (59 vs 255)
+drivers/hid/hid-mcp2221.c:388 mcp_smbus_write() error: __memcpy() 'buf'
+too small (34 vs 255)
 
-Having followed this for a while, I finally decided it best to at least 
-share some thoughts in the hopes to make life better for us with some 
-readability/accessibility issues, such as dyslexia for example.
+The 'len' variable can take a value between 0-255 as it can come from
+data->block[0] and it is user data. So add an bound check to prevent a
+buffer overflow in memcpy().
 
-I apologize for being late to the party and for potentially using the 
-wrong thread, but I recall somewhere in v5 that it was best to respond 
-to the RFC for general comments.
+Fixes: 67a95c21463d ("HID: mcp2221: add usb to i2c-smbus host bridge")
+Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+---
+I believe I2C_SMBUS_BLOCK_MAX (32) is the appropriate limit to use here
+but the &mcp->txbuf[5] array could actually fit 59 bytes which is the
+destination in this case. I don't know why the buffer is larger than
+expected.
 
-On 14-04-2021 20:45, ojeda@kernel.org wrote:
-> From: Miguel Ojeda <ojeda@kernel.org>
-> 
-> Some of you have noticed the past few weeks and months that
-> a serious attempt to bring a second language to the kernel was
-> being forged. We are finally here, with an RFC that adds support
-> for Rust to the Linux kernel.
-> 
-> This cover letter is fairly long, since there are quite a few topics
-> to describe, but I hope it answers as many questions as possible
-> before the discussion starts.
-> 
+ drivers/hid/hid-mcp2221.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-<snip>
+diff --git a/drivers/hid/hid-mcp2221.c b/drivers/hid/hid-mcp2221.c
+index 4211b9839209..de52e9f7bb8c 100644
+--- a/drivers/hid/hid-mcp2221.c
++++ b/drivers/hid/hid-mcp2221.c
+@@ -385,6 +385,9 @@ static int mcp_smbus_write(struct mcp2221 *mcp, u16 addr,
+ 		data_len = 7;
+ 		break;
+ 	default:
++		if (len > I2C_SMBUS_BLOCK_MAX)
++			return -EINVAL;
++
+ 		memcpy(&mcp->txbuf[5], buf, len);
+ 		data_len = len + 5;
+ 	}
+-- 
+2.31.1
 
-> 
-> Moreover, as explained above, we are taking the chance to enforce
-> some documentation guidelines. We are also enforcing automatic code
-> formatting, a set of Clippy lints, etc. We decided to go with Rust's
-> idiomatic style, i.e. keeping `rustfmt` defaults. For instance, this
-> means 4 spaces are used for indentation, rather than a tab. We are
-> happy to change that if needed -- we think what is important is
-> keeping the formatting automated
-
-Enforcing this is great, but how will you enforce this 'everywhere'? 
-Right now, you can easily 'bypass' any CI put in place, and while 'for 
-now' this is only about the Rust infra, where this can be strongly 
-enforced, once we see actual drivers pop-up; these won't go through the 
-Rust CI before merging CI forever? A maintainer can 'just merge' 
-something still, right?
-
-Anyway, what I wanted to criticize, is the so called "keeping with 
-`rustfmt` defaults". It has been known, that, well Rust's defaults are 
-pretty biased and opinionated. For the Rust project, that's fair of 
-course, their code, their rules.
-
-However, there's two arguments against that. For one, using the Rust 
-'style', now means there's 2 different code styles in the Kernel. 
-Cognitively alone, that can be quite frustrating and annoying. Having to 
-go back and forth between two styles can be mentally challenging which 
-only causes mistakes and frustration. So why change something that 
-already exists? Also, see my first point. Having to constantly 
-remember/switch to 'in this file/function the curly brace is on a 
-different line'. Lets try to stay consistent, the rules may not be 
-perfect (80 columns ;), but so far consistency is tried. OCD and Autism 
-etc doesn't help with this ;)
-
-Secondly, and this is really far more important, the Rust default style 
-is not very inclusive, as it makes readability harder. This has been 
-brought up by many others in plenty of places, including the `rustfmt` 
-issue tracker under bug #4067 [0]. While the discussion eventually only 
-led to the 'fmt-rfcs' [1], where it was basically said 'you could be on 
-to something, but this ship has sailed 3 years ago (when nobody was 
-looking caring), and while we hear you, we're not going to change our 
-defaults anymore.
-
-But I also agree and share these commenters pain. When the tab character 
-is used for indenting (and not alignment mind you), then visually 
-impaired (who can still be amazing coders) can more easily read code by 
-adjusting the width what works best to them.
-
-With even git renaming `master` to `main` to be more inclusive, can we 
-also be more inclusive to us that have a hard time distinguishing narrow 
-indentations?
-
-Thanks, and sorry for rubbing any ones nerves, but to "some of us" this 
-actually matters a great deal.
-
-Olliver
-
-P.S. would we expect inline C/Rust code mixed? What then?
-
-
-<snip>
-
-[0]: https://github.com/rust-lang/rustfmt/issues/4067#issuecomment-685961408
-[1]: 
-https://github.com/rust-dev-tools/fmt-rfcs/issues/1#issuecomment-911804826
