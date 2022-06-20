@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2DEFCCA47C
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:11:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF651CCA47C
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:11:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245571AbiFTNLg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:11:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54236 "EHLO
+        id S245597AbiFTNLl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:11:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245189AbiFTNIh (ORCPT
+        with ESMTP id S245266AbiFTNIm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:08:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 526FA1BE82;
-        Mon, 20 Jun 2022 06:01:47 -0700 (PDT)
+        Mon, 20 Jun 2022 09:08:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37E631BE92;
+        Mon, 20 Jun 2022 06:02:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 053EB6154B;
-        Mon, 20 Jun 2022 13:00:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DA5EC341C6;
-        Mon, 20 Jun 2022 13:00:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0917961531;
+        Mon, 20 Jun 2022 13:01:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9987C385A9;
+        Mon, 20 Jun 2022 13:01:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730053;
-        bh=MOmFRCE5a3dD/N+54ASVvo0IJf6wG1WFdHcxInrx+eE=;
+        s=korg; t=1655730096;
+        bh=u6BCNLTrsZoIKbQqERzMMZ5VeSUX1G5hq5Lifk5rhkk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KfGn+6fWpfyUE5ep31TmGdDU8pCjztfgJTTdfJzzV/yNE7V1jy5JnEqdqcwSuzgiT
-         lwGuuY/pffCOzfiiVBCfk0IP0SxqvSdUgIaTJ2/Vlyu5IodbdKl7DCLijpDld+tQSo
-         PsJy9Y50fZtS1OBNMN/CNViNIFx3K9hYLjGw+0Dg=
+        b=o1Y9UZetHmRVLzuvI1sUnTjqvJlHJyY5sgKnxHxuSynelq0RdInghwWhKZPhs4oEU
+         4iE9lUhtUgB/tZFTX61joqV7QNWCu9imZ6lBPVxzGhyQ/9oE0owsT3nMcZX4eRfUFq
+         GCTcIuypen4FgMd1Ss12FgEZxVbEhmSoPbqLhGZQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>,
+        stable@vger.kernel.org, Yupeng Li <liyupeng@zbhlos.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 18/84] ASoC: wm_adsp: Fix event generation for wm_adsp_fw_put()
-Date:   Mon, 20 Jun 2022 14:50:41 +0200
-Message-Id: <20220620124721.429522182@linuxfoundation.org>
+Subject: [PATCH 5.10 32/84] MIPS: Loongson-3: fix compile mips cpu_hwmon as module build error.
+Date:   Mon, 20 Jun 2022 14:50:55 +0200
+Message-Id: <20220620124721.842657761@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124720.882450983@linuxfoundation.org>
 References: <20220620124720.882450983@linuxfoundation.org>
@@ -49,37 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Yupeng Li <liyupeng@zbhlos.com>
 
-[ Upstream commit 2abdf9f80019e8244d3806ed0e1c9f725e50b452 ]
+[ Upstream commit 41e456400212803704e82691716e1d7b0865114a ]
 
-Currently wm_adsp_fw_put() returns 0 rather than 1 when updating the value
-of the control, meaning that no event is generated to userspace. Fix this
-by setting the default return value to 1, the code already exits early with
-a return value of 0 if the value is unchanged.
+  set cpu_hwmon as a module build with loongson_sysconf, loongson_chiptemp
+  undefined error,fix cpu_hwmon compile options to be bool.Some kernel
+  compilation error information is as follows:
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Reviewed-by: Richard Fitzgerald <rf@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220603115003.3865834-1-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+  Checking missing-syscalls for N32
+  CALL    scripts/checksyscalls.sh
+  Checking missing-syscalls for O32
+  CALL    scripts/checksyscalls.sh
+  CALL    scripts/checksyscalls.sh
+  CHK     include/generated/compile.h
+  CC [M]  drivers/platform/mips/cpu_hwmon.o
+  Building modules, stage 2.
+  MODPOST 200 modules
+ERROR: "loongson_sysconf" [drivers/platform/mips/cpu_hwmon.ko] undefined!
+ERROR: "loongson_chiptemp" [drivers/platform/mips/cpu_hwmon.ko] undefined!
+make[1]: *** [scripts/Makefile.modpost:92：__modpost] 错误 1
+make: *** [Makefile:1261：modules] 错误 2
+
+Signed-off-by: Yupeng Li <liyupeng@zbhlos.com>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Reviewed-by: Huacai Chen <chenhuacai@kernel.org>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/wm_adsp.c | 2 +-
+ drivers/platform/mips/Kconfig | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/wm_adsp.c b/sound/soc/codecs/wm_adsp.c
-index 51d95437e0fd..10189f44af28 100644
---- a/sound/soc/codecs/wm_adsp.c
-+++ b/sound/soc/codecs/wm_adsp.c
-@@ -800,7 +800,7 @@ int wm_adsp_fw_put(struct snd_kcontrol *kcontrol,
- 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
- 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
- 	struct wm_adsp *dsp = snd_soc_component_get_drvdata(component);
--	int ret = 0;
-+	int ret = 1;
+diff --git a/drivers/platform/mips/Kconfig b/drivers/platform/mips/Kconfig
+index 8ac149173c64..495da331ca2d 100644
+--- a/drivers/platform/mips/Kconfig
++++ b/drivers/platform/mips/Kconfig
+@@ -17,7 +17,7 @@ menuconfig MIPS_PLATFORM_DEVICES
+ if MIPS_PLATFORM_DEVICES
  
- 	if (ucontrol->value.enumerated.item[0] == dsp[e->shift_l].fw)
- 		return 0;
+ config CPU_HWMON
+-	tristate "Loongson-3 CPU HWMon Driver"
++	bool "Loongson-3 CPU HWMon Driver"
+ 	depends on MACH_LOONGSON64
+ 	select HWMON
+ 	default y
 -- 
 2.35.1
 
