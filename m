@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 974D2C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:12:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A475C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:12:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245486AbiFTNMv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:12:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54220 "EHLO
+        id S245463AbiFTNMx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:12:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343607AbiFTNJb (ORCPT
+        with ESMTP id S1343619AbiFTNJb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 20 Jun 2022 09:09:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E78E51A3BF;
-        Mon, 20 Jun 2022 06:04:35 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D4F01A808;
+        Mon, 20 Jun 2022 06:04:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 31270B811BE;
-        Mon, 20 Jun 2022 13:03:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AC6CC3411B;
-        Mon, 20 Jun 2022 13:03:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 924AA6158C;
+        Mon, 20 Jun 2022 13:02:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85C19C3411B;
+        Mon, 20 Jun 2022 13:02:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730189;
-        bh=KRnyYm02/M04mY5xe4aX4sVWRy2Xqe+5jAymsdFwhho=;
+        s=korg; t=1655730177;
+        bh=g1Y79TAar7Q2dPaIs9K5zienpGWg2eXjPSazxsEs0Xk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rbE9TG0iUqu0GmhcvBAfINK5UgbwtFzVCH+pkKzJkLXL5rqrSYDUZd0H5EUCT/OdC
-         PlQYNUo8UiJdfnurFor6/khUkGPeOVqMj3tFArbXqOeLmZZIYMYpVMIDHfCQJ68jli
-         yvDF3ukcZOZ2VIeQIgDaEIx7rQJDhLGhBhh5eJzI=
+        b=AREqBJjjZlDIsGuqpN6hQ0rdCd9r0C0jOrmI+pnne4+QbFbjHhgGqcLIHu24O6adq
+         ITXBb7FY5zSEoErEBCAmvi6EHE3R/Lwt/5nzzCbsd9677lZWhNaPK7X5LLSV1uBwyJ
+         4uggrezdQoAzYy+HVJw2ISpie97IXJHucWrhdMls=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@linux.microsoft.com>,
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 52/84] certs/blacklist_hashes.c: fix const confusion in certs blacklist
-Date:   Mon, 20 Jun 2022 14:51:15 +0200
-Message-Id: <20220620124722.431829656@linuxfoundation.org>
+Subject: [PATCH 5.10 35/84] pNFS: Dont keep retrying if the server replied NFS4ERR_LAYOUTUNAVAILABLE
+Date:   Mon, 20 Jun 2022 14:50:58 +0200
+Message-Id: <20220620124721.929864471@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124720.882450983@linuxfoundation.org>
 References: <20220620124720.882450983@linuxfoundation.org>
@@ -50,47 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masahiro Yamada <masahiroy@kernel.org>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit 6a1c3767d82ed8233de1263aa7da81595e176087 ]
+[ Upstream commit fe44fb23d6ccde4c914c44ef74ab8d9d9ba02bea ]
 
-This file fails to compile as follows:
+If the server tells us that a pNFS layout is not available for a
+specific file, then we should not keep pounding it with further
+layoutget requests.
 
-  CC      certs/blacklist_hashes.o
-certs/blacklist_hashes.c:4:1: error: ignoring attribute ‘section (".init.data")’ because it conflicts with previous ‘section (".init.rodata")’ [-Werror=attributes]
-    4 | const char __initdata *const blacklist_hashes[] = {
-      | ^~~~~
-In file included from certs/blacklist_hashes.c:2:
-certs/blacklist.h:5:38: note: previous declaration here
-    5 | extern const char __initconst *const blacklist_hashes[];
-      |                                      ^~~~~~~~~~~~~~~~
-
-Apply the same fix as commit 2be04df5668d ("certs/blacklist_nohashes.c:
-fix const confusion in certs blacklist").
-
-Fixes: 734114f8782f ("KEYS: Add a system blacklist keyring")
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Reviewed-by: Mickaël Salaün <mic@linux.microsoft.com>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+Fixes: 183d9e7b112a ("pnfs: rework LAYOUTGET retry handling")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- certs/blacklist_hashes.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/nfs/pnfs.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/certs/blacklist_hashes.c b/certs/blacklist_hashes.c
-index 344892337be0..d5961aa3d338 100644
---- a/certs/blacklist_hashes.c
-+++ b/certs/blacklist_hashes.c
-@@ -1,7 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
- #include "blacklist.h"
- 
--const char __initdata *const blacklist_hashes[] = {
-+const char __initconst *const blacklist_hashes[] = {
- #include CONFIG_SYSTEM_BLACKLIST_HASH_LIST
- 	, NULL
- };
+diff --git a/fs/nfs/pnfs.c b/fs/nfs/pnfs.c
+index 8c0803d98008..69bb50d0ee3f 100644
+--- a/fs/nfs/pnfs.c
++++ b/fs/nfs/pnfs.c
+@@ -2155,6 +2155,12 @@ pnfs_update_layout(struct inode *ino,
+ 		case -ERECALLCONFLICT:
+ 		case -EAGAIN:
+ 			break;
++		case -ENODATA:
++			/* The server returned NFS4ERR_LAYOUTUNAVAILABLE */
++			pnfs_layout_set_fail_bit(
++				lo, pnfs_iomode_to_fail_bit(iomode));
++			lseg = NULL;
++			goto out_put_layout_hdr;
+ 		default:
+ 			if (!nfs_error_is_fatal(PTR_ERR(lseg))) {
+ 				pnfs_layout_clear_fail_bit(lo, pnfs_iomode_to_fail_bit(iomode));
 -- 
 2.35.1
 
