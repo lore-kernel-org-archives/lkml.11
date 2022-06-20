@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39FB7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:04:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42672C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:04:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243844AbiFTNET (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:04:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47812 "EHLO
+        id S243922AbiFTNEX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:04:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243762AbiFTNCI (ORCPT
+        with ESMTP id S243877AbiFTNCN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:02:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 984421DA64;
-        Mon, 20 Jun 2022 05:57:30 -0700 (PDT)
+        Mon, 20 Jun 2022 09:02:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E44EB18343;
+        Mon, 20 Jun 2022 05:57:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 22FDD61535;
-        Mon, 20 Jun 2022 12:57:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0074C3411B;
-        Mon, 20 Jun 2022 12:57:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0FB4E614EB;
+        Mon, 20 Jun 2022 12:57:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 149D5C3411B;
+        Mon, 20 Jun 2022 12:57:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655729849;
-        bh=H8rmEyrVTKLzJ7QSvB+TXXUSK8ndpboB0UP/6+u9+Eo=;
+        s=korg; t=1655729852;
+        bh=HR7GqMWbL932M9kWU/TdhBn86PFa6YN1adQ5FdOgz6Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ed9xWTk2OMqXFoYnP1Ml1UD17yszVLFaQAt43d1/tBdF2Ss1Mlkdfy5LhUSoIpLKG
-         iWTjlnTJBH/PEveZqsKeVyXlZyxxa90gDobeDrYedluc8eWOZrtB7znAuM+0wZL4HK
-         6ob/ZhiS1oDk387eT31WvR6rv5lkttGWJJsoTm1E=
+        b=Mk9TvBBzPCRuwVSLkvohPobZ5ksiZjXF36wS1EYp4a8/eD6Mu3P2k6uXouqRgoiUr
+         H6BeEwokncE0Cn4sshNcYM6iU6ZegRf+dJwAFyk8BzhGrN+RpKatUV2ujNXwOj5tQe
+         uoYY05nSBEwLxrLPf+2/HH7ixTEF7+PVxpmDtRE8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
         Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 095/141] irqchip/gic-v3: Fix refcount leak in gic_populate_ppi_partitions
-Date:   Mon, 20 Jun 2022 14:50:33 +0200
-Message-Id: <20220620124732.353647343@linuxfoundation.org>
+Subject: [PATCH 5.18 096/141] irqchip/realtek-rtl: Fix refcount leak in map_interrupts
+Date:   Mon, 20 Jun 2022 14:50:34 +0200
+Message-Id: <20220620124732.382809166@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 References: <20220620124729.509745706@linuxfoundation.org>
@@ -50,42 +50,38 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit fa1ad9d4cc47ca2470cd904ad4519f05d7e43a2b ]
+[ Upstream commit eff4780f83d0ae3e5b6c02ff5d999dc4c1c5c8ce ]
 
 of_find_node_by_phandle() returns a node pointer with refcount
 incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+This function doesn't call of_node_put() in error path.
+Call of_node_put() directly after of_property_read_u32() to cover
+both normal path and error path.
 
-Fixes: e3825ba1af3a ("irqchip/gic-v3: Add support for partitioned PPIs")
+Fixes: 9f3a0f34b84a ("irqchip: Add support for Realtek RTL838x/RTL839x interrupt controller")
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220601080930.31005-6-linmq006@gmail.com
+Link: https://lore.kernel.org/r/20220601080930.31005-7-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/irqchip/irq-gic-v3.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/irqchip/irq-realtek-rtl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
-index 7855a2d7499e..d5420f9d6219 100644
---- a/drivers/irqchip/irq-gic-v3.c
-+++ b/drivers/irqchip/irq-gic-v3.c
-@@ -1963,12 +1963,15 @@ static void __init gic_populate_ppi_partitions(struct device_node *gic_node)
- 				continue;
+diff --git a/drivers/irqchip/irq-realtek-rtl.c b/drivers/irqchip/irq-realtek-rtl.c
+index 50a56820c99b..56bf502d9c67 100644
+--- a/drivers/irqchip/irq-realtek-rtl.c
++++ b/drivers/irqchip/irq-realtek-rtl.c
+@@ -134,9 +134,9 @@ static int __init map_interrupts(struct device_node *node, struct irq_domain *do
+ 		if (!cpu_ictl)
+ 			return -EINVAL;
+ 		ret = of_property_read_u32(cpu_ictl, "#interrupt-cells", &tmp);
++		of_node_put(cpu_ictl);
+ 		if (ret || tmp != 1)
+ 			return -EINVAL;
+-		of_node_put(cpu_ictl);
  
- 			cpu = of_cpu_node_to_id(cpu_node);
--			if (WARN_ON(cpu < 0))
-+			if (WARN_ON(cpu < 0)) {
-+				of_node_put(cpu_node);
- 				continue;
-+			}
- 
- 			pr_cont("%pOF[%d] ", cpu_node, cpu);
- 
- 			cpumask_set_cpu(cpu, &part->mask);
-+			of_node_put(cpu_node);
- 		}
- 
- 		pr_cont("}\n");
+ 		cpu_int = be32_to_cpup(imap + 2);
+ 		if (cpu_int > 7 || cpu_int < 2)
 -- 
 2.35.1
 
