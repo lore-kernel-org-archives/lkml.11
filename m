@@ -2,43 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAF5BCCA480
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:11:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27053C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:11:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245464AbiFTNLV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:11:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50960 "EHLO
+        id S244532AbiFTNLZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:11:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244425AbiFTNIJ (ORCPT
+        with ESMTP id S245155AbiFTNIe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:08:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 497151A3A6;
-        Mon, 20 Jun 2022 06:01:37 -0700 (PDT)
+        Mon, 20 Jun 2022 09:08:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E1251A396;
+        Mon, 20 Jun 2022 06:01:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 82273B811BE;
-        Mon, 20 Jun 2022 13:00:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D54D8C3411C;
-        Mon, 20 Jun 2022 13:00:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D209DB811BC;
+        Mon, 20 Jun 2022 13:01:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F5BBC341C4;
+        Mon, 20 Jun 2022 13:00:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730047;
-        bh=6xwjsAZAN6khBLt8KdzfH0uzWkQQWNNqeRfPYu9dOQk=;
+        s=korg; t=1655730059;
+        bh=YFpkXxofjvxu68cWU9xKi/Y3Nj0hNqjzwEXHA38rjIc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dfRa9/bUmnwnSYpz63uPFvBLu8IcIny1l1Ig2uG8ry+Dt8XLmSAtgCVK2Dvu1CEE8
-         VNEbm5ukD0ugnPimSzMHnAAHiZuXJ5kbkCRcCJHi8DeLnPzuYqWk6uy/kb01ZQjOwy
-         jnP9s+f3Tn2dT7BKRIC5gvsQEO/9LmblvFPbhHRk=
+        b=X0g4HowaVXUEiIxsVhUDVK5M46UxOxUVZzoeM50wpsrnysYN4788dc3SLgY43SC1v
+         +BGKZZEBp9O4ctr4IqdRmFZRe+W90MxMuhQVkkHMC7GNEHQSKd4SP6HEBQg4154cNv
+         ovm4Qbduc1XJ/MVgMLISv8Vjg/8XuQxpFsnD/Sw8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adam Ford <aford173@gmail.com>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 16/84] ASoC: wm8962: Fix suspend while playing music
-Date:   Mon, 20 Jun 2022 14:50:39 +0200
-Message-Id: <20220620124721.370829740@linuxfoundation.org>
+        stable@vger.kernel.org, Yuntao Wang <ytcoode@gmail.com>
+Subject: [PATCH 5.10 03/84] bpf: Fix incorrect memory charge cost calculation in stack_map_alloc()
+Date:   Mon, 20 Jun 2022 14:50:26 +0200
+Message-Id: <20220620124720.987134562@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124720.882450983@linuxfoundation.org>
 References: <20220620124720.882450983@linuxfoundation.org>
@@ -50,42 +47,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adam Ford <aford173@gmail.com>
+From: Yuntao Wang <ytcoode@gmail.com>
 
-[ Upstream commit d1f5272c0f7d2e53c6f2480f46725442776f5f78 ]
+commit b45043192b3e481304062938a6561da2ceea46a6 upstream.
 
-If the audio CODEC is playing sound when the system is suspended,
-it can be left in a state which throws the following error:
+This is a backport of the original upstream patch for 5.4/5.10.
 
-wm8962 3-001a: ASoC: error at soc_component_read_no_lock on wm8962.3-001a: -16
+The original upstream patch has been applied to 5.4/5.10 branches, which
+simply removed the line:
 
-Once this error has occurred, the audio will not work again until rebooted.
+  cost += n_buckets * (value_size + sizeof(struct stack_map_bucket));
 
-Fix this by configuring SET_SYSTEM_SLEEP_PM_OPS.
+This is correct for upstream branch but incorrect for 5.4/5.10 branches,
+as the 5.4/5.10 branches do not have the commit 370868107bf6 ("bpf:
+Eliminate rlimit-based memory accounting for stackmap maps"), so the
+bpf_map_charge_init() function has not been removed.
 
-Signed-off-by: Adam Ford <aford173@gmail.com>
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220526182129.538472-1-aford173@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Currently the bpf_map_charge_init() function in 5.4/5.10 branches takes a
+wrong memory charge cost, the
+
+  attr->max_entries * (sizeof(struct stack_map_bucket) + (u64)value_size))
+
+part is missing, let's fix it.
+
+Cc: <stable@vger.kernel.org> # 5.4.y
+Cc: <stable@vger.kernel.org> # 5.10.y
+Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
 ---
- sound/soc/codecs/wm8962.c | 1 +
- 1 file changed, 1 insertion(+)
+ kernel/bpf/stackmap.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/wm8962.c b/sound/soc/codecs/wm8962.c
-index 0bd3bbc2aacf..38651022e3d5 100644
---- a/sound/soc/codecs/wm8962.c
-+++ b/sound/soc/codecs/wm8962.c
-@@ -3864,6 +3864,7 @@ static int wm8962_runtime_suspend(struct device *dev)
- #endif
+--- a/kernel/bpf/stackmap.c
++++ b/kernel/bpf/stackmap.c
+@@ -121,7 +121,8 @@ static struct bpf_map *stack_map_alloc(u
+ 		return ERR_PTR(-E2BIG);
  
- static const struct dev_pm_ops wm8962_pm = {
-+	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend, pm_runtime_force_resume)
- 	SET_RUNTIME_PM_OPS(wm8962_runtime_suspend, wm8962_runtime_resume, NULL)
- };
+ 	cost = n_buckets * sizeof(struct stack_map_bucket *) + sizeof(*smap);
+-	err = bpf_map_charge_init(&mem, cost);
++	err = bpf_map_charge_init(&mem, cost + attr->max_entries *
++			   (sizeof(struct stack_map_bucket) + (u64)value_size));
+ 	if (err)
+ 		return ERR_PTR(err);
  
--- 
-2.35.1
-
 
 
