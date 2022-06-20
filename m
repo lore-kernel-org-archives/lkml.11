@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70287CCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC2FECCA482
 	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:10:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351936AbiFTOKK (ORCPT
+        id S1351669AbiFTOJ5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:10:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45334 "EHLO
+        Mon, 20 Jun 2022 10:09:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243558AbiFTNyr (ORCPT
+        with ESMTP id S243160AbiFTN5I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:54:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 126CE326D3;
-        Mon, 20 Jun 2022 06:21:03 -0700 (PDT)
+        Mon, 20 Jun 2022 09:57:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 778E42ED5B;
+        Mon, 20 Jun 2022 06:22:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 25A8DB811BF;
-        Mon, 20 Jun 2022 13:20:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85E89C341C4;
-        Mon, 20 Jun 2022 13:20:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A56660EA0;
+        Mon, 20 Jun 2022 13:22:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80E39C3411B;
+        Mon, 20 Jun 2022 13:22:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731247;
-        bh=QCkWjBKDnAOQbXYQV9sAusFh7nG3tGA/nndnpnYHaOU=;
+        s=korg; t=1655731345;
+        bh=iQUqSYC8IzMfNEJ+4BS83/3V6QYmsc0R9JwVTlyBG1Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iZKljn9tPTdCWA+CcIGgSQ76z/L2753a7W5EigaiBKDCEweHXprxKsJTQo0qZkGJh
-         Tj1RFRDchrKKzo5REN1SCS3NcBpBXTsFrODMc0rjuTtV3UpJ5EHWbnIg6yR5vbCEBF
-         B5j0siEDOGhWVAYUM8irEhCiMa0GKVraVD5TpYHY=
+        b=E5UmiNmrDf3MtnGHVdKuJ0NbaHrf4d2p2+96aQwigLm2raPWEKk4F8sG5D7DgYBCm
+         WLk8Iu9rO4DiQY35N/Nhgrsg9MDk1+ty8/M24UGSCc1QrYFaZlV1Ze4SCMiCLdfWbQ
+         clzCVKivsRgi9nRqX4C7rEUWgLbADhfRrsLtPe44=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 158/240] random: handle latent entropy and command line from random_init()
-Date:   Mon, 20 Jun 2022 14:50:59 +0200
-Message-Id: <20220620124743.586157319@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Hulk Robot <hulkci@huawei.com>,
+        Baokun Li <libaokun1@huawei.com>,
+        Ritesh Harjani <ritesh.list@gmail.com>,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 5.4 228/240] ext4: fix bug_on ext4_mb_use_inode_pa
+Date:   Mon, 20 Jun 2022 14:52:09 +0200
+Message-Id: <20220620124745.565395402@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -50,117 +52,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Baokun Li <libaokun1@huawei.com>
 
-commit 2f14062bb14b0fcfcc21e6dc7d5b5c0d25966164 upstream.
+commit a08f789d2ab5242c07e716baf9a835725046be89 upstream.
 
-Currently, start_kernel() adds latent entropy and the command line to
-the entropy bool *after* the RNG has been initialized, deferring when
-it's actually used by things like stack canaries until the next time
-the pool is seeded. This surely is not intended.
+Hulk Robot reported a BUG_ON:
+==================================================================
+kernel BUG at fs/ext4/mballoc.c:3211!
+[...]
+RIP: 0010:ext4_mb_mark_diskspace_used.cold+0x85/0x136f
+[...]
+Call Trace:
+ ext4_mb_new_blocks+0x9df/0x5d30
+ ext4_ext_map_blocks+0x1803/0x4d80
+ ext4_map_blocks+0x3a4/0x1a10
+ ext4_writepages+0x126d/0x2c30
+ do_writepages+0x7f/0x1b0
+ __filemap_fdatawrite_range+0x285/0x3b0
+ file_write_and_wait_range+0xb1/0x140
+ ext4_sync_file+0x1aa/0xca0
+ vfs_fsync_range+0xfb/0x260
+ do_fsync+0x48/0xa0
+[...]
+==================================================================
 
-Rather than splitting up which entropy gets added where and when between
-start_kernel() and random_init(), just do everything in random_init(),
-which should eliminate these kinds of bugs in the future.
+Above issue may happen as follows:
+-------------------------------------
+do_fsync
+ vfs_fsync_range
+  ext4_sync_file
+   file_write_and_wait_range
+    __filemap_fdatawrite_range
+     do_writepages
+      ext4_writepages
+       mpage_map_and_submit_extent
+        mpage_map_one_extent
+         ext4_map_blocks
+          ext4_mb_new_blocks
+           ext4_mb_normalize_request
+            >>> start + size <= ac->ac_o_ex.fe_logical
+           ext4_mb_regular_allocator
+            ext4_mb_simple_scan_group
+             ext4_mb_use_best_found
+              ext4_mb_new_preallocation
+               ext4_mb_new_inode_pa
+                ext4_mb_use_inode_pa
+                 >>> set ac->ac_b_ex.fe_len <= 0
+           ext4_mb_mark_diskspace_used
+            >>> BUG_ON(ac->ac_b_ex.fe_len <= 0);
 
-While we're at it, rename the awkwardly titled "rand_initialize()" to
-the more standard "random_init()" nomenclature.
+we can easily reproduce this problem with the following commands:
+	`fallocate -l100M disk`
+	`mkfs.ext4 -b 1024 -g 256 disk`
+	`mount disk /mnt`
+	`fsstress -d /mnt -l 0 -n 1000 -p 1`
 
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+The size must be smaller than or equal to EXT4_BLOCKS_PER_GROUP.
+Therefore, "start + size <= ac->ac_o_ex.fe_logical" may occur
+when the size is truncated. So start should be the start position of
+the group where ac_o_ex.fe_logical is located after alignment.
+In addition, when the value of fe_logical or EXT4_BLOCKS_PER_GROUP
+is very large, the value calculated by start_off is more accurate.
+
+Cc: stable@kernel.org
+Fixes: cd648b8a8fd5 ("ext4: trim allocation requests to group size")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
+Reviewed-by: Ritesh Harjani <ritesh.list@gmail.com>
+Link: https://lore.kernel.org/r/20220528110017.354175-2-libaokun1@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c  |   13 ++++++++-----
- include/linux/random.h |   16 +++++++---------
- init/main.c            |   10 +++-------
- 3 files changed, 18 insertions(+), 21 deletions(-)
+ fs/ext4/mballoc.c |    9 +++++++++
+ 1 file changed, 9 insertions(+)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -883,12 +883,13 @@ early_param("random.trust_bootloader", p
+--- a/fs/ext4/mballoc.c
++++ b/fs/ext4/mballoc.c
+@@ -3172,6 +3172,15 @@ ext4_mb_normalize_request(struct ext4_al
+ 	size = size >> bsbits;
+ 	start = start_off >> bsbits;
  
- /*
-  * The first collection of entropy occurs at system boot while interrupts
-- * are still turned off. Here we push in RDSEED, a timestamp, and utsname().
-- * Depending on the above configuration knob, RDSEED may be considered
-- * sufficient for initialization. Note that much earlier setup may already
-- * have pushed entropy into the input pool by the time we get here.
-+ * are still turned off. Here we push in latent entropy, RDSEED, a timestamp,
-+ * utsname(), and the command line. Depending on the above configuration knob,
-+ * RDSEED may be considered sufficient for initialization. Note that much
-+ * earlier setup may already have pushed entropy into the input pool by the
-+ * time we get here.
-  */
--int __init rand_initialize(void)
-+int __init random_init(const char *command_line)
- {
- 	size_t i;
- 	ktime_t now = ktime_get_real();
-@@ -910,6 +911,8 @@ int __init rand_initialize(void)
- 	}
- 	_mix_pool_bytes(&now, sizeof(now));
- 	_mix_pool_bytes(utsname(), sizeof(*(utsname())));
-+	_mix_pool_bytes(command_line, strlen(command_line));
-+	add_latent_entropy();
- 
- 	if (crng_ready())
- 		crng_reseed();
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -14,26 +14,24 @@ struct notifier_block;
- 
- extern void add_device_randomness(const void *, size_t);
- extern void add_bootloader_randomness(const void *, size_t);
-+extern void add_input_randomness(unsigned int type, unsigned int code,
-+				 unsigned int value) __latent_entropy;
-+extern void add_interrupt_randomness(int irq) __latent_entropy;
-+extern void add_hwgenerator_randomness(const void *buffer, size_t count,
-+				       size_t entropy);
- 
- #if defined(LATENT_ENTROPY_PLUGIN) && !defined(__CHECKER__)
- static inline void add_latent_entropy(void)
- {
--	add_device_randomness((const void *)&latent_entropy,
--			      sizeof(latent_entropy));
-+	add_device_randomness((const void *)&latent_entropy, sizeof(latent_entropy));
- }
- #else
- static inline void add_latent_entropy(void) {}
- #endif
- 
--extern void add_input_randomness(unsigned int type, unsigned int code,
--				 unsigned int value) __latent_entropy;
--extern void add_interrupt_randomness(int irq) __latent_entropy;
--extern void add_hwgenerator_randomness(const void *buffer, size_t count,
--				       size_t entropy);
--
- extern void get_random_bytes(void *buf, size_t nbytes);
- extern int wait_for_random_bytes(void);
--extern int __init rand_initialize(void);
-+extern int __init random_init(const char *command_line);
- extern bool rng_is_initialized(void);
- extern int register_random_ready_notifier(struct notifier_block *nb);
- extern int unregister_random_ready_notifier(struct notifier_block *nb);
---- a/init/main.c
-+++ b/init/main.c
-@@ -685,15 +685,11 @@ asmlinkage __visible void __init start_k
- 	/*
- 	 * For best initial stack canary entropy, prepare it after:
- 	 * - setup_arch() for any UEFI RNG entropy and boot cmdline access
--	 * - timekeeping_init() for ktime entropy used in rand_initialize()
-+	 * - timekeeping_init() for ktime entropy used in random_init()
- 	 * - time_init() for making random_get_entropy() work on some platforms
--	 * - rand_initialize() to get any arch-specific entropy like RDRAND
--	 * - add_latent_entropy() to get any latent entropy
--	 * - adding command line entropy
-+	 * - random_init() to initialize the RNG from from early entropy sources
- 	 */
--	rand_initialize();
--	add_latent_entropy();
--	add_device_randomness(command_line, strlen(command_line));
-+	random_init(command_line);
- 	boot_init_stack_canary();
- 
- 	perf_event_init();
++	/*
++	 * For tiny groups (smaller than 8MB) the chosen allocation
++	 * alignment may be larger than group size. Make sure the
++	 * alignment does not move allocation to a different group which
++	 * makes mballoc fail assertions later.
++	 */
++	start = max(start, rounddown(ac->ac_o_ex.fe_logical,
++			(ext4_lblk_t)EXT4_BLOCKS_PER_GROUP(ac->ac_sb)));
++
+ 	/* don't cover already allocated blocks in selected range */
+ 	if (ar->pleft && start <= ar->lleft) {
+ 		size -= ar->lleft + 1 - start;
 
 
