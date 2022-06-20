@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFE67C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:08:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 858DCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:10:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245059AbiFTNIX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:08:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51290 "EHLO
+        id S245081AbiFTNI1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:08:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244094AbiFTNEe (ORCPT
+        with ESMTP id S244450AbiFTNFW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:04:34 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 057DE13CCB;
-        Mon, 20 Jun 2022 05:59:57 -0700 (PDT)
+        Mon, 20 Jun 2022 09:05:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ABB519C24;
+        Mon, 20 Jun 2022 06:00:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 542AFCE1386;
-        Mon, 20 Jun 2022 12:59:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3292FC3411C;
-        Mon, 20 Jun 2022 12:59:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 10DD4B811A6;
+        Mon, 20 Jun 2022 13:00:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29CE9C3411B;
+        Mon, 20 Jun 2022 13:00:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655729993;
-        bh=zKDGnQNZ3Lcx01ngixrSGF90RNivdIWvffi8qbGBins=;
+        s=korg; t=1655730011;
+        bh=WaG1nHyRp9gM42Yl11WvQkmWsXZ9kxeW+GdjIh4gZQ4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BvJdd455yw7tMD0HR4B++j6+3USh9lXBTtaIrQGj+XgeQ1QdxOM1HKWn9UzDu6Tl4
-         dQcUtE4sU/GaDGPIizRQd6A4JoBjRu78s9mYqQkhjZxTXUyA0eeFkJIJ3a0l/31PSE
-         dylJ58GPLoruubDKcmtzZO/Q/JYOzz/LoxCOITZ4=
+        b=neck4NhXlgyFTZVyO1V8lKwrP4EVn6Zu3igtZNX+fkO38djIZIRYvK42qYL8yGZmV
+         02leBcLKj0NW6UAVyLQSNm+mAFDx3Lke8+kDGHhprnFminAPl16XUL53JU0MphfHC1
+         ynrG+MU9PtXMthTV7JfMwHtusnhmojboK4IQ1gqY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Mike Snitzer <snitzer@kernel.org>
-Subject: [PATCH 5.18 140/141] dm: fix bio_set allocation
-Date:   Mon, 20 Jun 2022 14:51:18 +0200
-Message-Id: <20220620124733.697765253@linuxfoundation.org>
+        stable@vger.kernel.org, Seth Forshee <sforshee@digitalocean.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Aleksa Sarai <cyphar@cyphar.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        linux-fsdevel@vger.kernel.org,
+        "Christian Brauner (Microsoft)" <brauner@kernel.org>
+Subject: [PATCH 5.18 125/141] fs: account for group membership
+Date:   Mon, 20 Jun 2022 14:51:03 +0200
+Message-Id: <20220620124733.247984907@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 References: <20220620124729.509745706@linuxfoundation.org>
@@ -48,224 +52,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: Christian Brauner <brauner@kernel.org>
 
-commit 29dec90a0f1d961b93f34f910e9319d8cb23edbd upstream.
+commit 168f912893407a5acb798a4a58613b5f1f98c717 upstream.
 
-The use of bioset_init_from_src mean that the pre-allocated pools weren't
-used for anything except parameter passing, and the integrity pool
-creation got completely lost for the actual live mapped_device.  Fix that
-by assigning the actual preallocated dm_md_mempools to the mapped_device
-and using that for I/O instead of creating new mempools.
+When calling setattr_prepare() to determine the validity of the
+attributes the ia_{g,u}id fields contain the value that will be written
+to inode->i_{g,u}id. This is exactly the same for idmapped and
+non-idmapped mounts and allows callers to pass in the values they want
+to see written to inode->i_{g,u}id.
 
-Fixes: 2a2a4c510b76 ("dm: use bioset_init_from_src() to copy bio_set")
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+When group ownership is changed a caller whose fsuid owns the inode can
+change the group of the inode to any group they are a member of. When
+searching through the caller's groups we need to use the gid mapped
+according to the idmapped mount otherwise we will fail to change
+ownership for unprivileged users.
+
+Consider a caller running with fsuid and fsgid 1000 using an idmapped
+mount that maps id 65534 to 1000 and 65535 to 1001. Consequently, a file
+owned by 65534:65535 in the filesystem will be owned by 1000:1001 in the
+idmapped mount.
+
+The caller now requests the gid of the file to be changed to 1000 going
+through the idmapped mount. In the vfs we will immediately map the
+requested gid to the value that will need to be written to inode->i_gid
+and place it in attr->ia_gid. Since this idmapped mount maps 65534 to
+1000 we place 65534 in attr->ia_gid.
+
+When we check whether the caller is allowed to change group ownership we
+first validate that their fsuid matches the inode's uid. The
+inode->i_uid is 65534 which is mapped to uid 1000 in the idmapped mount.
+Since the caller's fsuid is 1000 we pass the check.
+
+We now check whether the caller is allowed to change inode->i_gid to the
+requested gid by calling in_group_p(). This will compare the passed in
+gid to the caller's fsgid and search the caller's additional groups.
+
+Since we're dealing with an idmapped mount we need to pass in the gid
+mapped according to the idmapped mount. This is akin to checking whether
+a caller is privileged over the future group the inode is owned by. And
+that needs to take the idmapped mount into account. Note, all helpers
+are nops without idmapped mounts.
+
+New regression test sent to xfstests.
+
+Link: https://github.com/lxc/lxd/issues/10537
+Link: https://lore.kernel.org/r/20220613111517.2186646-1-brauner@kernel.org
+Fixes: 2f221d6f7b88 ("attr: handle idmapped mounts")
+Cc: Seth Forshee <sforshee@digitalocean.com>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Aleksa Sarai <cyphar@cyphar.com>
+Cc: Al Viro <viro@zeniv.linux.org.uk>
+Cc: stable@vger.kernel.org # 5.15+
+CC: linux-fsdevel@vger.kernel.org
+Reviewed-by: Seth Forshee <sforshee@digitalocean.com>
+Signed-off-by: Christian Brauner (Microsoft) <brauner@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/dm-core.h  |   11 +++++-
- drivers/md/dm-rq.c    |    2 -
- drivers/md/dm-table.c |   11 ------
- drivers/md/dm.c       |   83 ++++++++++++++------------------------------------
- drivers/md/dm.h       |    2 -
- 5 files changed, 34 insertions(+), 75 deletions(-)
+ fs/attr.c |   26 ++++++++++++++++++++------
+ 1 file changed, 20 insertions(+), 6 deletions(-)
 
---- a/drivers/md/dm-core.h
-+++ b/drivers/md/dm-core.h
-@@ -32,6 +32,14 @@ struct dm_kobject_holder {
-  * access their members!
-  */
- 
-+/*
-+ * For mempools pre-allocation at the table loading time.
-+ */
-+struct dm_md_mempools {
-+	struct bio_set bs;
-+	struct bio_set io_bs;
-+};
+--- a/fs/attr.c
++++ b/fs/attr.c
+@@ -61,9 +61,15 @@ static bool chgrp_ok(struct user_namespa
+ 		     const struct inode *inode, kgid_t gid)
+ {
+ 	kgid_t kgid = i_gid_into_mnt(mnt_userns, inode);
+-	if (uid_eq(current_fsuid(), i_uid_into_mnt(mnt_userns, inode)) &&
+-	    (in_group_p(gid) || gid_eq(gid, inode->i_gid)))
+-		return true;
++	if (uid_eq(current_fsuid(), i_uid_into_mnt(mnt_userns, inode))) {
++		kgid_t mapped_gid;
 +
- struct mapped_device {
- 	struct mutex suspend_lock;
++		if (gid_eq(gid, inode->i_gid))
++			return true;
++		mapped_gid = mapped_kgid_fs(mnt_userns, i_user_ns(inode), gid);
++		if (in_group_p(mapped_gid))
++			return true;
++	}
+ 	if (capable_wrt_inode_uidgid(mnt_userns, inode, CAP_CHOWN))
+ 		return true;
+ 	if (gid_eq(kgid, INVALID_GID) &&
+@@ -123,12 +129,20 @@ int setattr_prepare(struct user_namespac
  
-@@ -109,8 +117,7 @@ struct mapped_device {
- 	/*
- 	 * io objects are allocated from here.
- 	 */
--	struct bio_set io_bs;
--	struct bio_set bs;
-+	struct dm_md_mempools *mempools;
- 
- 	/* kobject and completion */
- 	struct dm_kobject_holder kobj_holder;
---- a/drivers/md/dm-rq.c
-+++ b/drivers/md/dm-rq.c
-@@ -319,7 +319,7 @@ static int setup_clone(struct request *c
- {
- 	int r;
- 
--	r = blk_rq_prep_clone(clone, rq, &tio->md->bs, gfp_mask,
-+	r = blk_rq_prep_clone(clone, rq, &tio->md->mempools->bs, gfp_mask,
- 			      dm_rq_bio_constructor, tio);
- 	if (r)
- 		return r;
---- a/drivers/md/dm-table.c
-+++ b/drivers/md/dm-table.c
-@@ -1030,17 +1030,6 @@ static int dm_table_alloc_md_mempools(st
- 	return 0;
- }
- 
--void dm_table_free_md_mempools(struct dm_table *t)
--{
--	dm_free_md_mempools(t->mempools);
--	t->mempools = NULL;
--}
--
--struct dm_md_mempools *dm_table_get_md_mempools(struct dm_table *t)
--{
--	return t->mempools;
--}
--
- static int setup_indexes(struct dm_table *t)
- {
- 	int i;
---- a/drivers/md/dm.c
-+++ b/drivers/md/dm.c
-@@ -131,14 +131,6 @@ static int get_swap_bios(void)
- 	return latch;
- }
- 
--/*
-- * For mempools pre-allocation at the table loading time.
-- */
--struct dm_md_mempools {
--	struct bio_set bs;
--	struct bio_set io_bs;
--};
--
- struct table_device {
- 	struct list_head list;
- 	refcount_t count;
-@@ -573,7 +565,7 @@ static struct dm_io *alloc_io(struct map
- 	struct dm_target_io *tio;
- 	struct bio *clone;
- 
--	clone = bio_alloc_clone(bio->bi_bdev, bio, GFP_NOIO, &md->io_bs);
-+	clone = bio_alloc_clone(bio->bi_bdev, bio, GFP_NOIO, &md->mempools->io_bs);
- 
- 	tio = clone_to_tio(clone);
- 	tio->flags = 0;
-@@ -615,7 +607,7 @@ static struct bio *alloc_tio(struct clon
- 		clone = &tio->clone;
- 	} else {
- 		clone = bio_alloc_clone(ci->bio->bi_bdev, ci->bio,
--					gfp_mask, &ci->io->md->bs);
-+					gfp_mask, &ci->io->md->mempools->bs);
- 		if (!clone)
- 			return NULL;
- 
-@@ -1775,8 +1767,7 @@ static void cleanup_mapped_device(struct
- {
- 	if (md->wq)
- 		destroy_workqueue(md->wq);
--	bioset_exit(&md->bs);
--	bioset_exit(&md->io_bs);
-+	dm_free_md_mempools(md->mempools);
- 
- 	if (md->dax_dev) {
- 		dax_remove_host(md->disk);
-@@ -1948,48 +1939,6 @@ static void free_dev(struct mapped_devic
- 	kvfree(md);
- }
- 
--static int __bind_mempools(struct mapped_device *md, struct dm_table *t)
--{
--	struct dm_md_mempools *p = dm_table_get_md_mempools(t);
--	int ret = 0;
--
--	if (dm_table_bio_based(t)) {
--		/*
--		 * The md may already have mempools that need changing.
--		 * If so, reload bioset because front_pad may have changed
--		 * because a different table was loaded.
--		 */
--		bioset_exit(&md->bs);
--		bioset_exit(&md->io_bs);
--
--	} else if (bioset_initialized(&md->bs)) {
--		/*
--		 * There's no need to reload with request-based dm
--		 * because the size of front_pad doesn't change.
--		 * Note for future: If you are to reload bioset,
--		 * prep-ed requests in the queue may refer
--		 * to bio from the old bioset, so you must walk
--		 * through the queue to unprep.
--		 */
--		goto out;
--	}
--
--	BUG_ON(!p ||
--	       bioset_initialized(&md->bs) ||
--	       bioset_initialized(&md->io_bs));
--
--	ret = bioset_init_from_src(&md->bs, &p->bs);
--	if (ret)
--		goto out;
--	ret = bioset_init_from_src(&md->io_bs, &p->io_bs);
--	if (ret)
--		bioset_exit(&md->bs);
--out:
--	/* mempool bind completed, no longer need any mempools in the table */
--	dm_table_free_md_mempools(t);
--	return ret;
--}
--
- /*
-  * Bind a table to the device.
-  */
-@@ -2043,12 +1992,28 @@ static struct dm_table *__bind(struct ma
- 		 * immutable singletons - used to optimize dm_mq_queue_rq.
- 		 */
- 		md->immutable_target = dm_table_get_immutable_target(t);
--	}
- 
--	ret = __bind_mempools(md, t);
--	if (ret) {
--		old_map = ERR_PTR(ret);
--		goto out;
-+		/*
-+		 * There is no need to reload with request-based dm because the
-+		 * size of front_pad doesn't change.
-+		 *
-+		 * Note for future: If you are to reload bioset, prep-ed
-+		 * requests in the queue may refer to bio from the old bioset,
-+		 * so you must walk through the queue to unprep.
-+		 */
-+		if (!md->mempools) {
-+			md->mempools = t->mempools;
-+			t->mempools = NULL;
-+		}
-+	} else {
-+		/*
-+		 * The md may already have mempools that need changing.
-+		 * If so, reload bioset because front_pad may have changed
-+		 * because a different table was loaded.
-+		 */
-+		dm_free_md_mempools(md->mempools);
-+		md->mempools = t->mempools;
-+		t->mempools = NULL;
+ 	/* Make sure a caller can chmod. */
+ 	if (ia_valid & ATTR_MODE) {
++		kgid_t mapped_gid;
++
+ 		if (!inode_owner_or_capable(mnt_userns, inode))
+ 			return -EPERM;
++
++		if (ia_valid & ATTR_GID)
++			mapped_gid = mapped_kgid_fs(mnt_userns,
++						i_user_ns(inode), attr->ia_gid);
++		else
++			mapped_gid = i_gid_into_mnt(mnt_userns, inode);
++
+ 		/* Also check the setgid bit! */
+-               if (!in_group_p((ia_valid & ATTR_GID) ? attr->ia_gid :
+-                                i_gid_into_mnt(mnt_userns, inode)) &&
+-                    !capable_wrt_inode_uidgid(mnt_userns, inode, CAP_FSETID))
++		if (!in_group_p(mapped_gid) &&
++		    !capable_wrt_inode_uidgid(mnt_userns, inode, CAP_FSETID))
+ 			attr->ia_mode &= ~S_ISGID;
  	}
  
- 	ret = dm_table_set_restrictions(t, md->queue, limits);
---- a/drivers/md/dm.h
-+++ b/drivers/md/dm.h
-@@ -71,8 +71,6 @@ struct dm_target *dm_table_get_immutable
- struct dm_target *dm_table_get_wildcard_target(struct dm_table *t);
- bool dm_table_bio_based(struct dm_table *t);
- bool dm_table_request_based(struct dm_table *t);
--void dm_table_free_md_mempools(struct dm_table *t);
--struct dm_md_mempools *dm_table_get_md_mempools(struct dm_table *t);
- 
- void dm_lock_md_type(struct mapped_device *md);
- void dm_unlock_md_type(struct mapped_device *md);
 
 
