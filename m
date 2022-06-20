@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0244CCCA479
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:50:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 924BECCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:50:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348023AbiFTNuS (ORCPT
+        id S1348407AbiFTNu0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:50:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56020 "EHLO
+        Mon, 20 Jun 2022 09:50:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348180AbiFTNr6 (ORCPT
+        with ESMTP id S1348435AbiFTNsA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:47:58 -0400
+        Mon, 20 Jun 2022 09:48:00 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10A722ED6A;
-        Mon, 20 Jun 2022 06:17:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 239692ED77;
+        Mon, 20 Jun 2022 06:17:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 31AE7B80E7D;
-        Mon, 20 Jun 2022 13:16:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 852B2C3411C;
-        Mon, 20 Jun 2022 13:16:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 32049B811C7;
+        Mon, 20 Jun 2022 13:17:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8613EC3411B;
+        Mon, 20 Jun 2022 13:17:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730978;
-        bh=tgP0RprB/ziOwGFh2YoA80OFebgvpaanFA8mfj0LnTo=;
+        s=korg; t=1655731055;
+        bh=Af/mC/zq4tKhaB0LwhH5Vk0R8nnqO8wO9ms7HejQAZU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KknvPXb/U0HCEFNU+svlcNY1oJ88j8VJ+VwrTiRbaJobG56zps7gjs8taChW3pOaA
-         sYoFfmQsXHXXGx/YTXSO7OJ/4raajpByOs1X2J722uYtF8xp3z5XAxJLhKazo2/d5r
-         WnksOWk7OOa7rOAXEtpNFk/VCQWbX2LI3udpI8Rk=
+        b=W2oNKjbMQ4P8qx0z9w9bfJZl3Zqx2orA9I1JQwplwhIUstHC8Mul8szqs+G73ylUd
+         gwtVpvvZ4WJ8SZqzCUgGQigHdoMEdvU15aECPYblxAU2Mb3z4ZAIK3Z18PRumd5kuK
+         PtotSEwmaiLIJ/48h+iAi/MGmHR8inXQHaFYrjmU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 108/240] random: cleanup UUID handling
-Date:   Mon, 20 Jun 2022 14:50:09 +0200
-Message-Id: <20220620124742.144898647@linuxfoundation.org>
+Subject: [PATCH 5.4 138/240] mips: use fallback for random_get_entropy() instead of just c0 random
+Date:   Mon, 20 Jun 2022 14:50:39 +0200
+Message-Id: <20220620124743.007639709@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -52,91 +54,64 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 64276a9939ff414f2f0db38036cf4e1a0a703394 upstream.
+commit 1c99c6a7c3c599a68321b01b9ec243215ede5a68 upstream.
 
-Rather than hard coding various lengths, we can use the right constants.
-Strings should be `char *` while buffers should be `u8 *`. Rather than
-have a nonsensical and unused maxlength, just remove it. Finally, use
-snprintf instead of sprintf, just out of good hygiene.
+For situations in which we don't have a c0 counter register available,
+we've been falling back to reading the c0 "random" register, which is
+usually bounded by the amount of TLB entries and changes every other
+cycle or so. This means it wraps extremely often. We can do better by
+combining this fast-changing counter with a potentially slower-changing
+counter from random_get_entropy_fallback() in the more significant bits.
+This commit combines the two, taking into account that the changing bits
+are in a different bit position depending on the CPU model. In addition,
+we previously were falling back to 0 for ancient CPUs that Linux does
+not support anyway; remove that dead path entirely.
 
-As well, remove the old comment about returning a binary UUID via the
-binary sysctl syscall. That syscall was removed from the kernel in 5.5,
-and actually, the "uuid_strategy" function and related infrastructure
-for even serving it via the binary sysctl syscall was removed with
-894d2491153a ("sysctl drivers: Remove dead binary sysctl support") back
-in 2.6.33.
-
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Tested-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Acked-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   29 +++++++++++++----------------
- 1 file changed, 13 insertions(+), 16 deletions(-)
+ arch/mips/include/asm/timex.h |   17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -1656,22 +1656,25 @@ const struct file_operations urandom_fop
- static int sysctl_random_min_urandom_seed = 60;
- static int sysctl_random_write_wakeup_bits = POOL_MIN_BITS;
- static int sysctl_poolsize = POOL_BITS;
--static char sysctl_bootid[16];
-+static u8 sysctl_bootid[UUID_SIZE];
+--- a/arch/mips/include/asm/timex.h
++++ b/arch/mips/include/asm/timex.h
+@@ -76,25 +76,24 @@ static inline cycles_t get_cycles(void)
+ 	else
+ 		return 0;	/* no usable counter */
+ }
++#define get_cycles get_cycles
  
  /*
-  * This function is used to return both the bootid UUID, and random
-- * UUID.  The difference is in whether table->data is NULL; if it is,
-+ * UUID. The difference is in whether table->data is NULL; if it is,
-  * then a new UUID is generated and returned to the user.
+  * Like get_cycles - but where c0_count is not available we desperately
+  * use c0_random in an attempt to get at least a little bit of entropy.
 - *
-- * If the user accesses this via the proc interface, the UUID will be
-- * returned as an ASCII string in the standard UUID format; if via the
-- * sysctl system call, as 16 bytes of binary data.
+- * R6000 and R6000A neither have a count register nor a random register.
+- * That leaves no entropy source in the CPU itself.
   */
- static int proc_do_uuid(struct ctl_table *table, int write,
- 			void __user *buffer, size_t *lenp, loff_t *ppos)
+ static inline unsigned long random_get_entropy(void)
  {
--	struct ctl_table fake_table;
--	unsigned char buf[64], tmp_uuid[16], *uuid;
-+	u8 tmp_uuid[UUID_SIZE], *uuid;
-+	char uuid_string[UUID_STRING_LEN + 1];
-+	struct ctl_table fake_table = {
-+		.data = uuid_string,
-+		.maxlen = UUID_STRING_LEN
-+	};
+-	unsigned int prid = read_c0_prid();
+-	unsigned int imp = prid & PRID_IMP_MASK;
++	unsigned int c0_random;
+ 
+-	if (can_use_mips_counter(prid))
++	if (can_use_mips_counter(read_c0_prid()))
+ 		return read_c0_count();
+-	else if (likely(imp != PRID_IMP_R6000 && imp != PRID_IMP_R6000A))
+-		return read_c0_random();
 +
-+	if (write)
-+		return -EPERM;
- 
- 	uuid = table->data;
- 	if (!uuid) {
-@@ -1686,12 +1689,8 @@ static int proc_do_uuid(struct ctl_table
- 		spin_unlock(&bootid_spinlock);
- 	}
- 
--	sprintf(buf, "%pU", uuid);
--
--	fake_table.data = buf;
--	fake_table.maxlen = sizeof(buf);
--
--	return proc_dostring(&fake_table, write, buffer, lenp, ppos);
-+	snprintf(uuid_string, sizeof(uuid_string), "%pU", uuid);
-+	return proc_dostring(&fake_table, 0, buffer, lenp, ppos);
++	if (cpu_has_3kex)
++		c0_random = (read_c0_random() >> 8) & 0x3f;
+ 	else
+-		return 0;	/* no usable register */
++		c0_random = read_c0_random() & 0x3f;
++	return (random_get_entropy_fallback() << 6) | (0x3f - c0_random);
  }
+ #define random_get_entropy random_get_entropy
  
- extern struct ctl_table random_table[];
-@@ -1727,13 +1726,11 @@ struct ctl_table random_table[] = {
- 	{
- 		.procname	= "boot_id",
- 		.data		= &sysctl_bootid,
--		.maxlen		= 16,
- 		.mode		= 0444,
- 		.proc_handler	= proc_do_uuid,
- 	},
- 	{
- 		.procname	= "uuid",
--		.maxlen		= 16,
- 		.mode		= 0444,
- 		.proc_handler	= proc_do_uuid,
- 	},
 
 
