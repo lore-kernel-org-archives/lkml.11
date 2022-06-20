@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADCF5C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:06:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 144C8C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:06:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350200AbiFTOG0 (ORCPT
+        id S1350248AbiFTOGa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:06:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45324 "EHLO
+        Mon, 20 Jun 2022 10:06:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352630AbiFTN4r (ORCPT
+        with ESMTP id S1352414AbiFTN41 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:56:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A487A36B5E;
-        Mon, 20 Jun 2022 06:22:45 -0700 (PDT)
+        Mon, 20 Jun 2022 09:56:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A40E23630D;
+        Mon, 20 Jun 2022 06:22:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 85EAA61269;
-        Mon, 20 Jun 2022 13:22:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 788EEC3411B;
-        Mon, 20 Jun 2022 13:22:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EC043B811CE;
+        Mon, 20 Jun 2022 13:07:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50534C36AF2;
+        Mon, 20 Jun 2022 13:07:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731365;
-        bh=TunpWO37x+LD44jsChogmbb+G/gizFMI8x8e4aE54WY=;
+        s=korg; t=1655730424;
+        bh=NDNu/SpoG9dwbs1BYRNDlaOd1ny40enNsWHWjHOmNkc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XM40F8pyP9ioqN5E6hh+FpCWC4cOtVokoLRMGov29/DAmY8GBmf9LKF0s6c2CPelo
-         leGyUlweGvEM5UCKOqos82nrgakiOsZDNVpDjTTf9vSaSyr0PxLUo+xfQ+7oNWnzHi
-         UP4hoOLYOIwzC+Z4DHF0oXAJjo7b9XZevyTqCoiE=
+        b=f9XxyEk6ncTqa7ku05fKaIdiJNvVwQiTJGOup2x1hoe6KltMaR8ptJRP+a3nEhXoW
+         U5VaTQOF9W14aWNv6GxYZge8ZOwV377BfeeIvh8Z6Ve7Lw6DW2S+wE6DY3Ra941u/g
+         h1Vz7W0P9zOlBhKNSkHtmT/LuPa3tnniNpRxcAZM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Davide Caratti <dcaratti@redhat.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.4 234/240] net/sched: act_police: more accurate MTU policing
-Date:   Mon, 20 Jun 2022 14:52:15 +0200
-Message-Id: <20220620124745.735247247@linuxfoundation.org>
+        stable@vger.kernel.org, Scott Mayhew <smayhew@redhat.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 049/106] sunrpc: set cl_max_connect when cloning an rpc_clnt
+Date:   Mon, 20 Jun 2022 14:51:08 +0200
+Message-Id: <20220620124725.839476193@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
-References: <20220620124737.799371052@linuxfoundation.org>
+In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
+References: <20220620124724.380838401@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,68 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Davide Caratti <dcaratti@redhat.com>
+From: Scott Mayhew <smayhew@redhat.com>
 
-commit 4ddc844eb81da59bfb816d8d52089aba4e59e269 upstream.
+[ Upstream commit 304791255a2dc1c9be7e7c8a6cbdb31b6847b0e5 ]
 
-in current Linux, MTU policing does not take into account that packets at
-the TC ingress have the L2 header pulled. Thus, the same TC police action
-(with the same value of tcfp_mtu) behaves differently for ingress/egress.
-In addition, the full GSO size is compared to tcfp_mtu: as a consequence,
-the policer drops GSO packets even when individual segments have the L2 +
-L3 + L4 + payload length below the configured valued of tcfp_mtu.
+If the initial attempt at trunking detection using the krb5i auth flavor
+fails with -EACCES, -NFS4ERR_CLID_INUSE, or -NFS4ERR_WRONGSEC, then the
+NFS client tries again using auth_sys, cloning the rpc_clnt in the
+process.  If this second attempt at trunking detection succeeds, then
+the resulting nfs_client->cl_rpcclient winds up having cl_max_connect=0
+and subsequent attempts to add additional transport connections to the
+rpc_clnt will fail with a message similar to the following being logged:
 
-Improve the accuracy of MTU policing as follows:
- - account for mac_len for non-GSO packets at TC ingress.
- - compare MTU threshold with the segmented size for GSO packets.
-Also, add a kselftest that verifies the correct behavior.
+[502044.312640] SUNRPC: reached max allowed number (0) did not add
+transport to server: 192.168.122.3
 
-Signed-off-by: Davide Caratti <dcaratti@redhat.com>
-Reviewed-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-[dcaratti: fix conflicts due to lack of the following commits:
- - commit 2ffe0395288a ("net/sched: act_police: add support for
-   packet-per-second policing")
- - commit afe231d32eb5 ("selftests: forwarding: Add tc-police tests")
- - commit 53b61f29367d ("selftests: forwarding: Add tc-police tests for
-   packets per second")]
-Link: https://lore.kernel.org/netdev/876d597a0ff55f6ba786f73c5a9fd9eb8d597a03.1644514748.git.dcaratti@redhat.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Scott Mayhew <smayhew@redhat.com>
+Fixes: dc48e0abee24 ("SUNRPC enforce creation of no more than max_connect xprts")
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sched/act_police.c |   16 +++++++++++++++-
- 1 file changed, 15 insertions(+), 1 deletion(-)
+ net/sunrpc/clnt.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/net/sched/act_police.c
-+++ b/net/sched/act_police.c
-@@ -213,6 +213,20 @@ release_idr:
- 	return err;
- }
+diff --git a/net/sunrpc/clnt.c b/net/sunrpc/clnt.c
+index 0a0818e55879..6a035e9339d2 100644
+--- a/net/sunrpc/clnt.c
++++ b/net/sunrpc/clnt.c
+@@ -651,6 +651,7 @@ static struct rpc_clnt *__rpc_clone_client(struct rpc_create_args *args,
+ 	new->cl_discrtry = clnt->cl_discrtry;
+ 	new->cl_chatty = clnt->cl_chatty;
+ 	new->cl_principal = clnt->cl_principal;
++	new->cl_max_connect = clnt->cl_max_connect;
+ 	return new;
  
-+static bool tcf_police_mtu_check(struct sk_buff *skb, u32 limit)
-+{
-+	u32 len;
-+
-+	if (skb_is_gso(skb))
-+		return skb_gso_validate_mac_len(skb, limit);
-+
-+	len = qdisc_pkt_len(skb);
-+	if (skb_at_tc_ingress(skb))
-+		len += skb->mac_len;
-+
-+	return len <= limit;
-+}
-+
- static int tcf_police_act(struct sk_buff *skb, const struct tc_action *a,
- 			  struct tcf_result *res)
- {
-@@ -235,7 +249,7 @@ static int tcf_police_act(struct sk_buff
- 			goto inc_overlimits;
- 	}
- 
--	if (qdisc_pkt_len(skb) <= p->tcfp_mtu) {
-+	if (tcf_police_mtu_check(skb, p->tcfp_mtu)) {
- 		if (!p->rate_present) {
- 			ret = p->tcfp_result;
- 			goto end;
+ out_err:
+-- 
+2.35.1
+
 
 
