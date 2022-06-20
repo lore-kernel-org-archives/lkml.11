@@ -2,70 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE017C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 08:01:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27BBFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 08:02:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239718AbiFTIBy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 04:01:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54374 "EHLO
+        id S239721AbiFTICM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 04:02:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237592AbiFTIBw (ORCPT
+        with ESMTP id S239007AbiFTICK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 04:01:52 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5F3110FF7;
-        Mon, 20 Jun 2022 01:01:51 -0700 (PDT)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        Mon, 20 Jun 2022 04:02:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B1CA1114D
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 01:02:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id EA044660166E;
-        Mon, 20 Jun 2022 09:01:49 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1655712110;
-        bh=g5QlZVQ9AY69dLhGJBI/NoglBgUUwPY0hqE1JlNdASQ=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=WA9wKi/gQWlt5xFzenLxlqRm5TK6T7eh7A/TO5GztVNNvaN6+rQKhhrc99jX2EBCp
-         yYgDzQ46twRQlBTVl/L9HYqQTrGsaB+YZ2SdhCNnuKX/EQipNH9p4th8+uaFhYfNfb
-         E4WbOyuMyrL1wfQRDOtBHAg+hDnrFEBvzI7xKvtw1OR8EdnPtdFr2ip8tsELDOPOt5
-         5EstX3ZSuqIjEBjXnAJpz8gmvgBH/Ygwmocnhxtbg3xTeP8nESsh+fcsYkSGvemRry
-         XrExpreGrzI0rDTG/Ni1RSCzT67uJn6Op8YuSf0cYHr6S3gH4NBh5Ji7qZvVFd3C7R
-         BHcZTwSOC5xww==
-Message-ID: <61b06602-999f-b976-097f-895907798b40@collabora.com>
-Date:   Mon, 20 Jun 2022 10:01:47 +0200
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3AFBC6122A
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 08:02:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 183D7C3411B;
+        Mon, 20 Jun 2022 08:02:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655712128;
+        bh=DwhU0/KxtnYlqxZj35So4aWeWj3iqMidFqPyuGEWOsc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=nCl1xAjYaSjiD2yiORDCzx4gxd/Q1ObwVxYAlnPd4KDTvk4uR3JvCEfiAaigmwOHh
+         kboBiyjYZDBKr1ti6TSy02x09OWEoPtBDztSNmtdC+Lgu/+mCHlh7vdItt0U9X3ZCp
+         8ITi4zITqaFhkBANt3N8buI2jQoI1XKRnQEdr+KM=
+Date:   Mon, 20 Jun 2022 10:02:05 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Souptick Joarder <jrdr.linux@gmail.com>
+Cc:     martyn@welchs.me.uk, manohar.vanga@gmail.com,
+        alexandre.belloni@bootlin.com, rafael@kernel.org,
+        mathieu.poirier@linaro.org, u.kleine-koenig@pengutronix.de,
+        arnd@arndb.de, linux-kernel@vger.kernel.org,
+        linux-staging@lists.linux.dev, Kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH] vme: Added NULL check for bridge
+Message-ID: <YrApfbtMD56WwpIm@kroah.com>
+References: <20220619070645.100947-1-jrdr.linux@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 2/2] arm64: dts: mt8192: Fix idle-states entry-method
-Content-Language: en-US
-To:     =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
-        <nfraprado@collabora.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     kernel@collabora.com, James Liao <jamesjj.liao@mediatek.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mediatek@lists.infradead.org
-References: <20220617233150.2466344-1-nfraprado@collabora.com>
- <20220617233150.2466344-3-nfraprado@collabora.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220617233150.2466344-3-nfraprado@collabora.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220619070645.100947-1-jrdr.linux@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 18/06/22 01:31, Nícolas F. R. A. Prado ha scritto:
-> The entry-method property of the idle-states node should be "psci" as
-> described in the idle-states binding, since this is already the value of
-> enable-method in the CPU nodes. Fix it to get rid of a dtbs_check
-> warning.
+On Sun, Jun 19, 2022 at 12:36:45PM +0530, Souptick Joarder wrote:
+> From: "Souptick Joarder (HPE)" <jrdr.linux@gmail.com>
 > 
-> Fixes: 9260918d3a4f ("arm64: dts: mt8192: Add cpu-idle-states")
-> Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+> Kernel test robot throws below warning ->
+> drivers/staging/vme_user/vme.c:662:20: warning: dereference
+> of NULL 'bridge' [CWE-476] [-Wanalyzer-null-dereference]
+> 
+> Added a NULL check.
+> 
+> Reported-by: Kernel test robot <lkp@intel.com>
+> Signed-off-by: Souptick Joarder (HPE) <jrdr.linux@gmail.com>
+> ---
+>  drivers/staging/vme_user/vme.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/staging/vme_user/vme.c b/drivers/staging/vme_user/vme.c
+> index b5555683a069..ede774f2fe5a 100644
+> --- a/drivers/staging/vme_user/vme.c
+> +++ b/drivers/staging/vme_user/vme.c
+> @@ -659,7 +659,7 @@ ssize_t vme_master_read(struct vme_resource *resource, void *buf, size_t count,
+>  	struct vme_master_resource *image;
+>  	size_t length;
+>  
+> -	if (!bridge->master_read) {
+> +	if (bridge && !bridge->master_read) {
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+How can bridge ever be NULL here?
 
+thanks,
+
+greg k-h
