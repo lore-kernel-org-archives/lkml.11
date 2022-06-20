@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68195C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:08:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23E33C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:08:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231269AbiFTOIG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:08:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44040 "EHLO
+        id S1350873AbiFTOIN (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 10:08:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350898AbiFTNxz (ORCPT
+        with ESMTP id S1350741AbiFTNxt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:53:55 -0400
+        Mon, 20 Jun 2022 09:53:49 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5019921245;
-        Mon, 20 Jun 2022 06:20:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56B6B1AF37;
+        Mon, 20 Jun 2022 06:20:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 456BEB80E7D;
-        Mon, 20 Jun 2022 13:20:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6518C3411B;
-        Mon, 20 Jun 2022 13:20:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9D176B811C2;
+        Mon, 20 Jun 2022 13:19:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10405C3411B;
+        Mon, 20 Jun 2022 13:19:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731226;
-        bh=dz5oqgMyOl5udEA0pAhKl3A7qxvjlMQK6WHXNFGKWkE=;
+        s=korg; t=1655731150;
+        bh=OxBmzqVqX1mREF4WkljC/7yQplxzyWhFgFPRZ33k3wY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dsmDgQry2255xRmTpmNmzfEcV3lIfjUS8N6MjbNzEx9K1Ips+Ni8Jgm8iFTwhOkdi
-         coIWLcz1TOGcU3x0UKgUdotbwSz+ztRh+kJoVFwsRvIsykTw3vcNECmo8cpB556uTE
-         P+vpoMVWgDwyTB7GUcgcmSDU+kyenra2W/l6mJd8=
+        b=mnqh5EN3Nb7PqS4qvqDmasDmSr8UA8K3hBq5WSTxs5dL5M5FSv32ajf1RC2HOZtN7
+         gHI5JsE1N5A7NUrt0CmAM/6W1gjU9Rr3UuM4BQSZEaHzvmvgLsA5OkW4Ye6leocmKi
+         WXubHdLR9B/p33c0/ukvDmHWY+uKls1+CIKeIA5E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 191/240] ASoC: es8328: Fix event generation for deemphasis control
-Date:   Mon, 20 Jun 2022 14:51:32 +0200
-Message-Id: <20220620124744.522711550@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.4 170/240] random: check for signals after page of pool writes
+Date:   Mon, 20 Jun 2022 14:51:11 +0200
+Message-Id: <20220620124743.925904797@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -48,47 +50,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-[ Upstream commit 8259610c2ec01c5cbfb61882ae176aabacac9c19 ]
+commit 1ce6c8d68f8ac587f54d0a271ac594d3d51f3efb upstream.
 
-Currently the put() method for the deemphasis control returns 0 when a new
-value is written to the control even if the value changed, meaning events
-are not generated. Fix this, skip the work of updating the value when it is
-unchanged and then return 1 after having done so.
+get_random_bytes_user() checks for signals after producing a PAGE_SIZE
+worth of output, just like /dev/zero does. write_pool() is doing
+basically the same work (actually, slightly more expensive), and so
+should stop to check for signals in the same way. Let's also name it
+write_pool_user() to match get_random_bytes_user(), so this won't be
+misused in the future.
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/r/20220603123937.4013603-1-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Before this patch, massive writes to /dev/urandom would tie up the
+process for an extremely long time and make it unterminatable. After, it
+can be successfully interrupted. The following test program can be used
+to see this works as intended:
+
+  #include <unistd.h>
+  #include <fcntl.h>
+  #include <signal.h>
+  #include <stdio.h>
+
+  static unsigned char x[~0U];
+
+  static void handle(int) { }
+
+  int main(int argc, char *argv[])
+  {
+    pid_t pid = getpid(), child;
+    int fd;
+    signal(SIGUSR1, handle);
+    if (!(child = fork())) {
+      for (;;)
+        kill(pid, SIGUSR1);
+    }
+    fd = open("/dev/urandom", O_WRONLY);
+    pause();
+    printf("interrupted after writing %zd bytes\n", write(fd, x, sizeof(x)));
+    close(fd);
+    kill(child, SIGTERM);
+    return 0;
+  }
+
+Result before: "interrupted after writing 2147479552 bytes"
+Result after: "interrupted after writing 4096 bytes"
+
+Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/codecs/es8328.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/char/random.c |   14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
-diff --git a/sound/soc/codecs/es8328.c b/sound/soc/codecs/es8328.c
-index fdf64c29f563..4117ab6e9b6f 100644
---- a/sound/soc/codecs/es8328.c
-+++ b/sound/soc/codecs/es8328.c
-@@ -161,13 +161,16 @@ static int es8328_put_deemph(struct snd_kcontrol *kcontrol,
- 	if (deemph > 1)
- 		return -EINVAL;
- 
-+	if (es8328->deemph == deemph)
-+		return 0;
-+
- 	ret = es8328_set_deemph(component);
- 	if (ret < 0)
- 		return ret;
- 
- 	es8328->deemph = deemph;
- 
--	return 0;
-+	return 1;
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -1251,7 +1251,7 @@ static __poll_t random_poll(struct file
+ 	return crng_ready() ? EPOLLIN | EPOLLRDNORM : EPOLLOUT | EPOLLWRNORM;
  }
  
+-static ssize_t write_pool(struct iov_iter *iter)
++static ssize_t write_pool_user(struct iov_iter *iter)
+ {
+ 	u8 block[BLAKE2S_BLOCK_SIZE];
+ 	ssize_t ret = 0;
+@@ -1266,7 +1266,13 @@ static ssize_t write_pool(struct iov_ite
+ 		mix_pool_bytes(block, copied);
+ 		if (!iov_iter_count(iter) || copied != sizeof(block))
+ 			break;
+-		cond_resched();
++
++		BUILD_BUG_ON(PAGE_SIZE % sizeof(block) != 0);
++		if (ret % PAGE_SIZE == 0) {
++			if (signal_pending(current))
++				break;
++			cond_resched();
++		}
+ 	}
  
--- 
-2.35.1
-
+ 	memzero_explicit(block, sizeof(block));
+@@ -1275,7 +1281,7 @@ static ssize_t write_pool(struct iov_ite
+ 
+ static ssize_t random_write_iter(struct kiocb *kiocb, struct iov_iter *iter)
+ {
+-	return write_pool(iter);
++	return write_pool_user(iter);
+ }
+ 
+ static ssize_t urandom_read_iter(struct kiocb *kiocb, struct iov_iter *iter)
+@@ -1342,7 +1348,7 @@ static long random_ioctl(struct file *f,
+ 		ret = import_single_range(WRITE, p, len, &iov, &iter);
+ 		if (unlikely(ret))
+ 			return ret;
+-		ret = write_pool(&iter);
++		ret = write_pool_user(&iter);
+ 		if (unlikely(ret < 0))
+ 			return ret;
+ 		/* Since we're crediting, enforce that it was all written into the pool. */
 
 
