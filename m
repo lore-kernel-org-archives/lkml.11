@@ -2,290 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16B1AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:30:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37D58C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:32:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232345AbiFTOam (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:30:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34772 "EHLO
+        id S242260AbiFTOcP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 10:32:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244923AbiFTOaZ (ORCPT
+        with ESMTP id S245112AbiFTOcE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 10:30:25 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 368101A055;
-        Mon, 20 Jun 2022 06:44:22 -0700 (PDT)
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LRW4l3wmgzSgtc;
-        Mon, 20 Jun 2022 21:40:55 +0800 (CST)
-Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 20 Jun 2022 21:44:17 +0800
-Received: from [10.174.176.73] (10.174.176.73) by
- kwepemm600009.china.huawei.com (7.193.23.164) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 20 Jun 2022 21:44:17 +0800
-Subject: Re: [PATCH RFC -next] sbitmap: fix possible io hung due to lost
- wakeups
-To:     Jan Kara <jack@suse.cz>
-CC:     <axboe@kernel.dk>, <ming.lei@redhat.com>,
-        <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <yi.zhang@huawei.com>
-References: <20220617141125.3024491-1-yukuai3@huawei.com>
- <20220620122413.2fewshn5u6t2y4oi@quack3.lan>
- <20220620124831.g7bswgivvg5urv3d@quack3.lan>
-From:   Yu Kuai <yukuai3@huawei.com>
-Message-ID: <d0e2639b-885e-2789-7d1b-13057abc67f4@huawei.com>
-Date:   Mon, 20 Jun 2022 21:44:16 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <20220620124831.g7bswgivvg5urv3d@quack3.lan>
-Content-Type: text/plain; charset="gbk"; format=flowed
+        Mon, 20 Jun 2022 10:32:04 -0400
+Received: from EUR03-AM5-obe.outbound.protection.outlook.com (mail-eopbgr30055.outbound.protection.outlook.com [40.107.3.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C81104DF45
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 06:46:28 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cpziheHGr9jiTLJM0EbVpCnKsOGQ+Qnlwcub0E+lCPRfFc1CcC2C9HvY+sNDFbjMim4q106qlTlyUaYqb0RQkhiFVAcW9wvj1mJAGvXqELuCr6Jur/IcUUe5zIaaZNClUDYaWOf8JRjMAz5N1Tko2uMIrzarM32X3CF/k6cX0uyyP66Kh5ylVxg/zEYObO03aCAzRGb2LafdAsSmt0qTjLTTD+aWBjMjkjLzc620xGMtqDmm+88sNnLB/eIUbQRyMltxratwuba7dFRuifBpl+gLOc0ypIDiJx+jkYZS+ijyxFTT37/7AhE0JQR0weOn5AhdhspcHlCNsPsp1l8FZQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=rYPsw/KMJMSgiEjxopxQjcGlXw0Z7cS5onPZRmnAP6E=;
+ b=K0RadnPo5dmGYUyuKVQRMh9f3H7hU/FEvlB46B2ImyfGYyAhwPtjSs+oLlKqW5AVj7Rv0p6UlvN/v2ABnrbgHu+IIJ8Y9K/Ry/1WIdZ76WY9HPzVzKiOZujkGKRggWI8wiwTc0+Gq8hAaIinePR8+EXvBAk/NcpYCOndkFAFFS0m7oPt97aoJ/AVo32i4+hpuR6zrjHDzXRr6SAY/FsLFREKKlt6mJpn8EfG8G3DKGbDpplEpg/PAknL+ui19YsqWUlAuGMOX4PGtVORtNdCrioRl2m0zAxggaB/eqV4TRrCzT1ovcx2Yyo6lB6wmmL0+9JkZSVMI+CFpgpJw4FyaA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rYPsw/KMJMSgiEjxopxQjcGlXw0Z7cS5onPZRmnAP6E=;
+ b=TLF6dBcH2HbPKC3+rSzF78wYJFmrsdPZfeZq/cCWntr+BQT8IJP57+wx5jSH5fWYITSj00uX3/e2tFjNr9sKLNmDPoJaBx7E/E/P8Gwhp+O7e1oCMyh+dEYMH1A8lLufiw9wg/FMEmIUSWZo8DP0bYIGhKDQwPfDsGm7zY6Pnrg=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from DB9PR04MB8477.eurprd04.prod.outlook.com (2603:10a6:10:2c3::11)
+ by VI1PR04MB6190.eurprd04.prod.outlook.com (2603:10a6:803:f1::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.21; Mon, 20 Jun
+ 2022 13:46:22 +0000
+Received: from DB9PR04MB8477.eurprd04.prod.outlook.com
+ ([fe80::1942:6123:5468:bf72]) by DB9PR04MB8477.eurprd04.prod.outlook.com
+ ([fe80::1942:6123:5468:bf72%7]) with mapi id 15.20.5353.022; Mon, 20 Jun 2022
+ 13:46:22 +0000
+From:   Dong Aisheng <aisheng.dong@nxp.com>
+To:     broonie@kernel.org
+Cc:     linux-kernel@vger.kernel.org, dongas86@gmail.com,
+        l.stach@pengutronix.de, peng.fan@nxp.com, shawnguo@kernel.org,
+        Dong Aisheng <aisheng.dong@nxp.com>
+Subject: [PATCH RFC 0/2] regmap: option to disable debugfs
+Date:   Mon, 20 Jun 2022 21:47:56 +0800
+Message-Id: <20220620134758.1286480-1-aisheng.dong@nxp.com>
+X-Mailer: git-send-email 2.25.1
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.176.73]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemm600009.china.huawei.com (7.193.23.164)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
+X-ClientProxiedBy: SI2PR02CA0046.apcprd02.prod.outlook.com
+ (2603:1096:4:196::15) To DB9PR04MB8477.eurprd04.prod.outlook.com
+ (2603:10a6:10:2c3::11)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 59f3147c-06ba-480d-004e-08da52c342c8
+X-MS-TrafficTypeDiagnostic: VI1PR04MB6190:EE_
+X-Microsoft-Antispam-PRVS: <VI1PR04MB6190771304F6BBE6803A2E3C80B09@VI1PR04MB6190.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: cdNWPFlbTNbLRkuJHxMjDeCAHSnvbGTZhWdYlEeLVFtIV4XbNKvjwphQUfVbs9S4RBcY2+G2LygYfvPDjwt4L7xvZZ/LRERmBinWKE2Oet9JBU7h0LSpnL0QaHnomYqWuwEjch+9YA5xCuFvOuwuuOA9U9qkdgU6OLAezYVSpAB7JFPy112VQEGm60KsF1WXGDACIeL8W1V2z+5MY0QuxbllM233RbsqPlfqxjN0bw2jCQkfMZ7cOW8ZQwdzWOunL3LEn3dQx3O4bSX+JdVJmbDO1NZ4nrABdgDmq+YU3AU1yMGUA6Sphm0kJvf/PdB4oGnb/Ng0d9u4OFahoZwuxkSHgZEQBBF+twVMSa408FolxA8TFx6ENVmm5Ch+tdjfAZVC25rJ6QW2FapsY0V3Ph78xICZb6IDpnSkwN5+B7qIDaCnXY6ERVmvAU2zkL0cJiu/nLYfJclqgrZZrY4uSTRkIVO9C4/sgd/tPH2QKBqKwXqHIIYLRiMgwftRwbB2RRQapGBRHb+jBeHCXmjQBdIqHKILrSbZhnmNwyATn9teIEuY4Nhak2VaLJ7j2+I0ODTwcZJfF9haviteA4YGdYxuCTUA2U/DVJQzNGh/SPiP8BgnbCLIz2/snSTa8+hu8OvpLuYoygIRW83S+KnWpwPp4h5wg4RTbTc0jECOiN7KijUaorV9qEftIkSAiWkfIHZpMyTbsAnKdLGAqVhhGA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB8477.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(346002)(366004)(39860400002)(376002)(136003)(66556008)(36756003)(66946007)(8676002)(66476007)(83380400001)(4326008)(6506007)(8936002)(186003)(478600001)(316002)(1076003)(6486002)(2906002)(41300700001)(38100700002)(4744005)(6916009)(6512007)(2616005)(5660300002)(52116002)(26005)(86362001)(38350700002)(6666004);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?TrimzwI2Y70M96DxdK8EQKOGHgBW2l1OY0rsyTB4VjadlGwCx1iZ7NPH2PTA?=
+ =?us-ascii?Q?UgxA45W4m78OA6vdROz3hiS9xPhwq6deMCSxt0JqeACm2GIEKnhEnHP7FqTT?=
+ =?us-ascii?Q?sq0irCas6a1m6SjyJQ0VvQEyw2tdYdDjczrt7XwOJYzZoLFRwy96zv6MRggv?=
+ =?us-ascii?Q?86Ub3Ok+H5owUEcO5I1FgyZ2lB6kGQ6DZS1c1R/ErBZKCLU7mWp7mMNN8b2h?=
+ =?us-ascii?Q?drvATVNTRObMBIE/LSicEK6F0P3aEaI2mXhMlGDS9rt9S9TvLg4o2xBLgnJt?=
+ =?us-ascii?Q?SKyJZsq282KlbmxNfKSE7lvlu4Bv9vf10elISFronDLKS3Y2oU9DfhAah56M?=
+ =?us-ascii?Q?NnUJzrWJQyXB9y+BsNnuyFFFH/K4Q23qrpiLcfMW0kxrmxxPqO4FpKJemLRN?=
+ =?us-ascii?Q?FddXRi75/BzUFnfuoHAoxKAZOQN66udqu+PaJUoCgtWbggzj0HjMs/aSwj0m?=
+ =?us-ascii?Q?AuZFblOD0Bp61Rs63ZiR+wYQ7E40QJ36NbiFuzsr4iOTo3tz72KEHld5XZi6?=
+ =?us-ascii?Q?hA37TEUzfWEtgIKwNAHXyNrn8GAXv91T3aKRMBViX3U4Hs+kInYqt6mxUAjm?=
+ =?us-ascii?Q?DAZiSixfsc8yoah/piNg6lTZrbHvcRaMt21AaZEXxslpcbLwyda9SMNIPZHT?=
+ =?us-ascii?Q?80Div4cwwGpwyIpdwZipL2avbHUIC+Fi9bRnEihzR5/S1cZbR1EuN4jS/7i/?=
+ =?us-ascii?Q?bvHXXE0/TrCNUm3h9tlkJ6aGuli+khySPGEtF+pE8v1ob5RRLogV7zXVFgqn?=
+ =?us-ascii?Q?Ia9h1dyi4k/bKuWyoFgI6sHoAtvuSfxZ/wPbBslOFro8D7FWu/ujp78hqZSh?=
+ =?us-ascii?Q?V1p72Q62LGqDkEX0/zq2U7Ougv+nCkSdWI14OpAdS/Aqniit6hexWvzAEFeF?=
+ =?us-ascii?Q?+OvQUlgQitPpt4Ebcgcw/I+l9IiVteks+jlp4srz4w4AowgPhvVaWNcdSeql?=
+ =?us-ascii?Q?9wOGJpn2rkid6jK1Ct2/s/7sq7MZvBJjyaW6s+jQlT+hF0bMjs908a5Znmbj?=
+ =?us-ascii?Q?Skm1sDvnWH4lOilTSHRvob12SIOLvxAk0YOgNFBXRq1U6BlllSJWU2VebwnC?=
+ =?us-ascii?Q?7ti6Gz85WkCiBLrg3GxNy9cTbBAY3aQkCywMMQOeNkxWARAFnGqLZQ1R07bV?=
+ =?us-ascii?Q?m4gdEf5EBkpCCovQJdO8/kmq5WjIQlwNOpGFnkzSzgyKz7CsnHqI+THE4Ceq?=
+ =?us-ascii?Q?HyGk4SCyErcU7qUp244uiXrk9c27A1IKpM0q+a9zTlVH+aUbib+/8hx7wMQi?=
+ =?us-ascii?Q?hsPDju2VB5HnNR5XB9NnR4bjobTiUjH4SzNGJN369O/DgeCm8YT+eL1+OfQt?=
+ =?us-ascii?Q?gZ9LbJmJJXp+0BT0FkPEsWsy0Jb7wLBLW5JDGbvWrvoUSDKZfOXziwnPMkWV?=
+ =?us-ascii?Q?gA2zaXw0qFwSA2ijWzvxoiTVnYqiGhL3LhvUIVnfyMOX1KSlcr1iQ5FP2Gtt?=
+ =?us-ascii?Q?lBgnFMepwsLcG4DX/0yS/edciN9af/xRH7ryZ+vN0CnM1WUkRs9qSTyPRzP9?=
+ =?us-ascii?Q?f/8bwu5S/zeaO8wjYo7qiUVymGnhnb2O8TIGx1dRhmQqfZB8Mi0w011V/41L?=
+ =?us-ascii?Q?QGpZJkv39vmfT5Kl1sD7Q0Q7DRUnPkLlB47pl97NG0w/O6jfcaviRZsoL2dp?=
+ =?us-ascii?Q?sepoDnDuIkpfAww+mH0FusPGtfOfB94AmQwLjIxZWa6+GtNva7qQTs6gqocw?=
+ =?us-ascii?Q?1A8d9MBb5f8WQnkWjzYsjHxBxymRU+ZP8q77vCTLf9qYGkLAVtSRwkBynbOw?=
+ =?us-ascii?Q?hHMbwijMbJWTLuTgkZIuFq6GgoVdrRg=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 59f3147c-06ba-480d-004e-08da52c342c8
+X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB8477.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jun 2022 13:46:22.2912
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: qrhV4P/8YKOgVwYy9V7BCLtXHLeu+8oNWq6ez5YzOBtsbBZK8ymCErmZtL0c3mYocc2TEuOKs9FvKkIXEJZcLg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6190
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ÔÚ 2022/06/20 20:48, Jan Kara Ð´µÀ:
-> On Mon 20-06-22 14:24:13, Jan Kara wrote:
->> On Fri 17-06-22 22:11:25, Yu Kuai wrote:
->>> Currently, same waitqueue might be woken up continuously:
->>>
->>> __sbq_wake_up		__sbq_wake_up
->>>   sbq_wake_ptr -> assume	0
->>> 			 sbq_wake_ptr -> 0
->>>   atomic_dec_return
->>> 			atomic_dec_return
->>>   atomic_cmpxchg -> succeed
->>> 			 atomic_cmpxchg -> failed
->>> 			  return true
->>>
->>> 			__sbq_wake_up
->>> 			 sbq_wake_ptr
->>> 			  atomic_read(&sbq->wake_index) -> still 0
->>>   sbq_index_atomic_inc -> inc to 1
->>> 			  if (waitqueue_active(&ws->wait))
->>> 			   if (wake_index != atomic_read(&sbq->wake_index))
->>> 			    atomic_set -> reset from 1 to 0
->>>   wake_up_nr -> wake up first waitqueue
->>> 			    // continue to wake up in first waitqueue
->>>
->>> What's worse, io hung is possible in theory because wakeups might be
->>> missed. For example, 2 * wake_batch tags are put, while only wake_batch
->>> threads are worken:
->>>
->>> __sbq_wake_up
->>>   atomic_cmpxchg -> reset wait_cnt
->>> 			__sbq_wake_up -> decrease wait_cnt
->>> 			...
->>> 			__sbq_wake_up -> wait_cnt is decreased to 0 again
->>> 			 atomic_cmpxchg
->>> 			 sbq_index_atomic_inc -> increase wake_index
->>> 			 wake_up_nr -> wake up and waitqueue might be empty
->>>   sbq_index_atomic_inc -> increase again, one waitqueue is skipped
->>>   wake_up_nr -> invalid wake up because old wakequeue might be empty
->>>
->>> To fix the problem, refactor to make sure waitqueues will be woken up
->>> one by one,
->>>
->>> Signed-off-by: Yu Kuai <yukuai3@huawei.com>
->>
->> So as far as I can tell your patch does not completely fix this race. See
->> below:
->>
->>> diff --git a/lib/sbitmap.c b/lib/sbitmap.c
->>> index ae4fd4de9ebe..dc2959cb188c 100644
->>> --- a/lib/sbitmap.c
->>> +++ b/lib/sbitmap.c
->>> @@ -574,66 +574,69 @@ void sbitmap_queue_min_shallow_depth(struct sbitmap_queue *sbq,
->>>   }
->>>   EXPORT_SYMBOL_GPL(sbitmap_queue_min_shallow_depth);
->>>   
->>> -static struct sbq_wait_state *sbq_wake_ptr(struct sbitmap_queue *sbq)
->>> +static void sbq_update_wake_index(struct sbitmap_queue *sbq,
->>> +				  int old_wake_index)
->>>   {
->>>   	int i, wake_index;
->>> -
->>> -	if (!atomic_read(&sbq->ws_active))
->>> -		return NULL;
->>> +	struct sbq_wait_state *ws;
->>>   
->>>   	wake_index = atomic_read(&sbq->wake_index);
->>> -	for (i = 0; i < SBQ_WAIT_QUEUES; i++) {
->>> -		struct sbq_wait_state *ws = &sbq->ws[wake_index];
->>> +	if (old_wake_index != wake_index)
->>> +		return;
->>>   
->>> +	for (i = 1; i < SBQ_WAIT_QUEUES; i++) {
->>> +		wake_index = sbq_index_inc(wake_index);
->>> +		ws = &sbq->ws[wake_index];
->>> +		/* Find the next active waitqueue in round robin manner */
->>>   		if (waitqueue_active(&ws->wait)) {
->>> -			if (wake_index != atomic_read(&sbq->wake_index))
->>> -				atomic_set(&sbq->wake_index, wake_index);
->>> -			return ws;
->>> +			atomic_cmpxchg(&sbq->wake_index, old_wake_index,
->>> +				       wake_index);
->>> +			return;
->>>   		}
->>> -
->>> -		wake_index = sbq_index_inc(wake_index);
->>>   	}
->>> -
->>> -	return NULL;
->>>   }
->>>   
->>>   static bool __sbq_wake_up(struct sbitmap_queue *sbq)
->>>   {
->>>   	struct sbq_wait_state *ws;
->>>   	unsigned int wake_batch;
->>> -	int wait_cnt;
->>> +	int wait_cnt, wake_index;
->>>   
->>> -	ws = sbq_wake_ptr(sbq);
->>> -	if (!ws)
->>> +	if (!atomic_read(&sbq->ws_active))
->>>   		return false;
->>>   
->>> -	wait_cnt = atomic_dec_return(&ws->wait_cnt);
->>> -	if (wait_cnt <= 0) {
->>> -		int ret;
->>> -
->>> -		wake_batch = READ_ONCE(sbq->wake_batch);
->>> -
->>> -		/*
->>> -		 * Pairs with the memory barrier in sbitmap_queue_resize() to
->>> -		 * ensure that we see the batch size update before the wait
->>> -		 * count is reset.
->>> -		 */
->>> -		smp_mb__before_atomic();
->>> +	wake_index = atomic_read(&sbq->wake_index);
->>> +	ws = &sbq->ws[wake_index];
->>> +	/*
->>> +	 * This can only happen in the first wakeup when sbitmap waitqueues
->>> +	 * are no longer idle.
->>> +	 */
->>> +	if (!waitqueue_active(&ws->wait)) {
->>> +		sbq_update_wake_index(sbq, wake_index);
->>> +		return true;
->>> +	}
->>>   
->>> -		/*
->>> -		 * For concurrent callers of this, the one that failed the
->>> -		 * atomic_cmpxhcg() race should call this function again
->>> -		 * to wakeup a new batch on a different 'ws'.
->>> -		 */
->>> -		ret = atomic_cmpxchg(&ws->wait_cnt, wait_cnt, wake_batch);
->>> -		if (ret == wait_cnt) {
->>> -			sbq_index_atomic_inc(&sbq->wake_index);
->>> -			wake_up_nr(&ws->wait, wake_batch);
->>> -			return false;
->>> -		}
->>> +	wait_cnt = atomic_dec_return(&ws->wait_cnt);
->>> +	if (wait_cnt > 0)
->>> +		return false;
->>
->> The following race is still possible:
->>
->> CPU1					CPU2
->> __sbq_wake_up				__sbq_wake_up
->>    wake_index = atomic_read(&sbq->wake_index);
->> 					  wake_index = atomic_read(&sbq->wake_index);
->>
->>    if (!waitqueue_active(&ws->wait)) -> not taken
->> 					  if (!waitqueue_active(&ws->wait)) -> not taken
->>    wait_cnt = atomic_dec_return(&ws->wait_cnt);
->>    /* decremented to 0 now */
->>    if (wait_cnt > 0) -> not taken
->>    sbq_update_wake_index(sbq, wake_index);
->>    if (wait_cnt < 0) -> not taken
->>    ...
->>    atomic_set(&ws->wait_cnt, wake_batch);
->>    wake_up_nr(&ws->wait, wake_batch);
->> 					  wait_cnt = atomic_dec_return(&ws->wait_cnt);
->> 					  /*
->> 					   * decremented to wake_batch - 1 but
->> 					   * there are no tasks waiting anymore
->> 					   * so the wakeup should have gone
->> 					   * to a different waitqueue.
->> 					   */
->>
->> I have an idea how to fix all these lost wakeups, I'll try to code it
->> whether it would look usable...
-Hi, Jan
+Current regmap core will create debugfs by default for each instance.
+However, it's fairly possible that some devices may not work properly
+with regmap registers dump via debugfs due to it may be in suspend
+state (e.g. Power domain is off).
 
-Thanks for the analysis, it's right this is possible.
-> 
-> Thinking a bit more about it your code would just need a small tweak like:
-> 
-> 	wait_cnt = atomic_dec_return(&ws->wait_cnt);
-> 	/*
-> 	 * Concurrent callers should call this function again
-> 	 * to wakeup a new batch on a different 'ws'.
-> 	 */
-> 	if (wait_cnt < 0 || !waitqueue_active(&ws->wait)) {
-> 		sbq_update_wake_index(sbq, wake_index);
-> 		return true;
-> 	}
+This patchset allows user to claim no debugfs support due to platform
+limitations.
 
-I'm thinking that if the wait_queue is still active, this will decrease
-'wait_cnt' in old waitqueue while 'wake_index' is already moved to next
-waitqueue. This really broke the design...
+Dong Aisheng (2):
+  regmap: add option to disable debugfs
+  soc: imx8m-blk-ctrl: do not export debugfs
 
-Thanks,
-Kuai
-> 	if (wait_cnt > 0)
-> 		return false;
-> 	sbq_update_wake_index(sbq, wake_index);
-> 
-> 	wake_batch = READ_ONCE(sbq->wake_batch);
-> 	wake_up_nr(&ws->wait, wake_batch);
-> 	/*
-> 	 * Pairs with the memory barrier in sbitmap_queue_resize() to
-> 	 * ensure that we see the batch size update before the wait
-> 	 * count is reset.
-> 	 *
-> 	 * Also pairs with the implicit barrier between decrementing
-> 	 * wait_cnt and checking for waitqueue_active() to make sure
-> 	 * waitqueue_active() sees results of the wakeup if
-> 	 * atomic_dec_return() has seen results of the atomic_set.
-> 	 */
-> 	smp_mb__before_atomic();
-> 	atomic_set(&ws->wait_cnt, wake_batch);
-> 
-> 								Honza
-> 
->>> +	sbq_update_wake_index(sbq, wake_index);
->>> +	/*
->>> +	 * Concurrent callers should call this function again
->>> +	 * to wakeup a new batch on a different 'ws'.
->>> +	 */
->>> +	if (wait_cnt < 0)
->>>   		return true;
->>> -	}
->>> +
->>> +	wake_batch = READ_ONCE(sbq->wake_batch);
->>> +	/*
->>> +	 * Pairs with the memory barrier in sbitmap_queue_resize() to
->>> +	 * ensure that we see the batch size update before the wait
->>> +	 * count is reset.
->>> +	 */
->>> +	smp_mb__before_atomic();
->>> +	atomic_set(&ws->wait_cnt, wake_batch);
->>> +	wake_up_nr(&ws->wait, wake_batch);
->>>   
->>>   	return false;
->>>   }
->>> -- 
->>> 2.31.1
->>>
->> -- 
->> Jan Kara <jack@suse.com>
->> SUSE Labs, CR
+ drivers/base/regmap/regmap-debugfs.c | 3 ++-
+ drivers/base/regmap/regmap.c         | 3 +++
+ drivers/soc/imx/imx8m-blk-ctrl.c     | 1 +
+ include/linux/regmap.h               | 2 ++
+ 4 files changed, 8 insertions(+), 1 deletion(-)
+
+-- 
+2.25.1
+
