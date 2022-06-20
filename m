@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EEDCC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:30:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02DF1CCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:30:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345171AbiFTNaD (ORCPT
+        id S1345327AbiFTNaI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:30:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38036 "EHLO
+        Mon, 20 Jun 2022 09:30:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344663AbiFTN0c (ORCPT
+        with ESMTP id S1345217AbiFTN0r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:26:32 -0400
+        Mon, 20 Jun 2022 09:26:47 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D6F51C13F;
-        Mon, 20 Jun 2022 06:10:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 977081AF06;
+        Mon, 20 Jun 2022 06:10:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DF4D0B811BD;
-        Mon, 20 Jun 2022 13:09:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00909C3411B;
-        Mon, 20 Jun 2022 13:09:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4F3F9B811C0;
+        Mon, 20 Jun 2022 13:09:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 981BFC3411B;
+        Mon, 20 Jun 2022 13:09:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730567;
-        bh=FQ0+lo00rXa4CTP60ZRh+3Zh+8ZU8gU6od9aO1oWjrU=;
+        s=korg; t=1655730577;
+        bh=uGrc4TFtsDDheb0tYM3honumC3oheP7ORB0HHwlNEes=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S2SM5RnjuFiUMeHnAIrAviTB6MRFU16S6Sd7A674UwEcVUtzA5qmrFmVq1boRimas
-         s6hlTNVvVGhQFblfJVe1Rk+C0iWmyYzmczP0ZOxeX+jJ5Up2oihRedOAQgwvUGTdQk
-         K7tK5aIBSKG7xQjK08dIobnGP5WLKDZ6TUGNqZyA=
+        b=TWHdjxF+ncdQQoGzTqBCTnox2hvj8m6Y3hcpgVhwwDN1y5tELZM7c3osqN6IrPQSJ
+         msftyRxRXMlYzEpT42tbTKFp5EmnS7vIYYJHQtMMqbVLZcD+wAQnMAbe3/PD4SwRkN
+         ssAUCSlPllZcuaZK/qgTFQngZfJ4G1kc+dTV3IkU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Eckelmann <longnoserob@gmail.com>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 5.15 086/106] USB: serial: io_ti: add Agilent E5805A support
-Date:   Mon, 20 Jun 2022 14:51:45 +0200
-Message-Id: <20220620124726.935431301@linuxfoundation.org>
+        stable@vger.kernel.org, Sami Tolvanen <samitolvanen@google.com>,
+        Kees Cook <keescook@chromium.org>
+Subject: [PATCH 5.15 097/106] cfi: Fix __cfi_slowpath_diag RCU usage with cpuidle
+Date:   Mon, 20 Jun 2022 14:51:56 +0200
+Message-Id: <20220620124727.260974814@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
 References: <20220620124724.380838401@linuxfoundation.org>
@@ -49,49 +49,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Eckelmann <longnoserob@gmail.com>
+From: Sami Tolvanen <samitolvanen@google.com>
 
-commit 908e698f2149c3d6a67d9ae15c75545a3f392559 upstream.
+commit 57cd6d157eb479f0a8e820fd36b7240845c8a937 upstream.
 
-Add support for Agilent E5805A (rebranded ION Edgeport/4) to io_ti.
+RCU_NONIDLE usage during __cfi_slowpath_diag can result in an invalid
+RCU state in the cpuidle code path:
 
-Signed-off-by: Robert Eckelmann <longnoserob@gmail.com>
-Link: https://lore.kernel.org/r/20220521230808.30931eca@octoberrain
+  WARNING: CPU: 1 PID: 0 at kernel/rcu/tree.c:613 rcu_eqs_enter+0xe4/0x138
+  ...
+  Call trace:
+    rcu_eqs_enter+0xe4/0x138
+    rcu_idle_enter+0xa8/0x100
+    cpuidle_enter_state+0x154/0x3a8
+    cpuidle_enter+0x3c/0x58
+    do_idle.llvm.6590768638138871020+0x1f4/0x2ec
+    cpu_startup_entry+0x28/0x2c
+    secondary_start_kernel+0x1b8/0x220
+    __secondary_switched+0x94/0x98
+
+Instead, call rcu_irq_enter/exit to wake up RCU only when needed and
+disable interrupts for the entire CFI shadow/module check when we do.
+
+Signed-off-by: Sami Tolvanen <samitolvanen@google.com>
+Link: https://lore.kernel.org/r/20220531175910.890307-1-samitolvanen@google.com
+Fixes: cf68fffb66d6 ("add support for Clang CFI")
 Cc: stable@vger.kernel.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Kees Cook <keescook@chromium.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/serial/io_ti.c      |    2 ++
- drivers/usb/serial/io_usbvend.h |    1 +
- 2 files changed, 3 insertions(+)
+ kernel/cfi.c |   22 ++++++++++++++++------
+ 1 file changed, 16 insertions(+), 6 deletions(-)
 
---- a/drivers/usb/serial/io_ti.c
-+++ b/drivers/usb/serial/io_ti.c
-@@ -166,6 +166,7 @@ static const struct usb_device_id edgepo
- 	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_8S) },
- 	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_416) },
- 	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_416B) },
-+	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_E5805A) },
- 	{ }
- };
+--- a/kernel/cfi.c
++++ b/kernel/cfi.c
+@@ -281,6 +281,8 @@ static inline cfi_check_fn find_module_c
+ static inline cfi_check_fn find_check_fn(unsigned long ptr)
+ {
+ 	cfi_check_fn fn = NULL;
++	unsigned long flags;
++	bool rcu_idle;
  
-@@ -204,6 +205,7 @@ static const struct usb_device_id id_tab
- 	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_8S) },
- 	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_416) },
- 	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_416B) },
-+	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_E5805A) },
- 	{ }
- };
+ 	if (is_kernel_text(ptr))
+ 		return __cfi_check;
+@@ -290,13 +292,21 @@ static inline cfi_check_fn find_check_fn
+ 	 * the shadow and __module_address use RCU, so we need to wake it
+ 	 * up if necessary.
+ 	 */
+-	RCU_NONIDLE({
+-		if (IS_ENABLED(CONFIG_CFI_CLANG_SHADOW))
+-			fn = find_shadow_check_fn(ptr);
++	rcu_idle = !rcu_is_watching();
++	if (rcu_idle) {
++		local_irq_save(flags);
++		rcu_irq_enter();
++	}
  
---- a/drivers/usb/serial/io_usbvend.h
-+++ b/drivers/usb/serial/io_usbvend.h
-@@ -212,6 +212,7 @@
- //
- // Definitions for other product IDs
- #define ION_DEVICE_ID_MT4X56USB			0x1403	// OEM device
-+#define ION_DEVICE_ID_E5805A			0x1A01  // OEM device (rebranded Edgeport/4)
+-		if (!fn)
+-			fn = find_module_check_fn(ptr);
+-	});
++	if (IS_ENABLED(CONFIG_CFI_CLANG_SHADOW))
++		fn = find_shadow_check_fn(ptr);
++	if (!fn)
++		fn = find_module_check_fn(ptr);
++
++	if (rcu_idle) {
++		rcu_irq_exit();
++		local_irq_restore(flags);
++	}
  
- 
- #define	GENERATION_ID_FROM_USB_PRODUCT_ID(ProductId)				\
+ 	return fn;
+ }
 
 
