@@ -2,123 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA6E2C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 11:05:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AFBCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 11:06:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241148AbiFTLFI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 07:05:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54952 "EHLO
+        id S241233AbiFTLGp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 07:06:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239912AbiFTLFE (ORCPT
+        with ESMTP id S241013AbiFTLGm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 07:05:04 -0400
-Received: from metanate.com (unknown [IPv6:2001:8b0:1628:5005::111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20A1F12AA2
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 04:05:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=metanate.com; s=stronger; h=In-Reply-To:Content-Type:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description; bh=JtWYZV1ZUB9zWxnOO4bgicY4RQzn+QgQFFTY9VvrXQw=; b=n8sIg
-        XF3SiOc5XAmJlqEPRH9w4T59X6m+7fZ5y/F/Qb6F7qWo0h1ajoVkArF7YcYfpp+TZQF4c7i1aJubw
-        LqhGrGilz8QDOo/hoZUC2DO0heXPlc3eC+RbrCVvOVaoxDNANduUUyMy/t1a12wzWtcnFs6yOoh9J
-        DUlSHMLnjeqXeunHjxFjtL0izeiyMyfr3Q6f0h0RhFGWSHaQJhd+dVwtpGX31R6WM1ybVzm32DjMG
-        DzNcZLqUbbMtWjdn57XS9KRslbU+ZvrvpAPiA9ibsWTccyd4rYC0Ukwo6Um+iP77+PCsyopPTGamH
-        vxvHbVfim8mrn9zqJS5N+kBJZKQhA==;
-Received: from 92.40.170.2.threembb.co.uk ([92.40.170.2] helo=donbot)
-        by email.metanate.com with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <john@metanate.com>)
-        id 1o3FCk-0002O9-Hw; Mon, 20 Jun 2022 12:04:26 +0100
-Date:   Mon, 20 Jun 2022 12:04:24 +0100
-From:   John Keeping <john@metanate.com>
-To:     Corentin Labbe <clabbe@baylibre.com>
-Cc:     heiko@sntech.de, ardb@kernel.org, herbert@gondor.apana.org.au,
-        krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org
-Subject: Re: [PATCH v7 14/33] crypto: rockchip: handle reset also in PM
-Message-ID: <YrBUODGF51oUsF1f@donbot>
-References: <20220508185957.3629088-1-clabbe@baylibre.com>
- <20220508185957.3629088-15-clabbe@baylibre.com>
+        Mon, 20 Jun 2022 07:06:42 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18AF113FB5
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 04:06:41 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id um5so5401849ejb.5
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 04:06:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=so8sDrLioUFy7cOL3aS8tAl9RK2+NGzjPv7D1JAQDqc=;
+        b=u4+Znx6db0I1JIgKEtGzH7OPNIWp0RlAyfziZK61G7HLQXtKDmi0Zxo+Bi+wfiR/KD
+         FEIbLQ2dQ5i/LOnmBPY+8bWjgkGzi81qd+XxzZGYBnmCHPfK2tQfln5FUbnvER/7fYnz
+         Xf0z5hPHp3btaGed1cWbHZet8ft74tE+V/rzl+xxTSoKECBQzYh3vechswvdCqEtIyC1
+         lWd4r5c5ka8n4ivrhcvum5+oEW8M4gcVlqIuHs2aoXL5DHkoRKobgS1+b0+pfyejVNs0
+         IJAO81M44MsKVFwolQJsC6a0OWl/kZcXA+yPgrZnb3k2Phn+Miiyo25DoxyzYL3RRu/R
+         j/0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=so8sDrLioUFy7cOL3aS8tAl9RK2+NGzjPv7D1JAQDqc=;
+        b=rFvZoZ0GCUQVjt6orz2mI8DDSm2qu/Ctm55dkKEEs6SGp6MOgDK55RxWJ1nDOezUmL
+         r7YwGZ7uKcVXjDGP/OpXOGhCkeMxXN4in0P0WT4yYZyc6g3UGhugNgqQhCABMxBbUoNv
+         bSdrJlDetRxg+PkS1HWo85U4VaUHP4465mBbKDc+tW3jzrOSHqhwrl+kCTotej3kIyKM
+         hFyvVVZMeUCZen/gwtAOenbrg7yX/Ul2BuaB4oLWQcbawBGMtk6riFH2RRSnYN3dDuOy
+         P30czAWxoDe3d+kPaMJ18E3VQaV+3mp1fBi9EhtNHoKkAUN8cupeohegxpKDwTEnPl1i
+         veFg==
+X-Gm-Message-State: AJIora8Q6t2WQehLjw2PIP5V1niCSdwgffvv3oOfT/hTSMvVSIkwO/Vn
+        JPqbc43AvewET6ghnQbeXcN/Ig==
+X-Google-Smtp-Source: AGRyM1utaO1T4vO2p3+cLvVRr/p5V5NSZLwsZ5AVyieVsZkGXMqZnNV4gEgHvCEdu8Bh1P9TQOyRnQ==
+X-Received: by 2002:a17:906:58cf:b0:711:7acb:821f with SMTP id e15-20020a17090658cf00b007117acb821fmr20292050ejs.588.1655723199682;
+        Mon, 20 Jun 2022 04:06:39 -0700 (PDT)
+Received: from [192.168.0.209] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id b6-20020a17090630c600b006fef51aa566sm5797606ejb.2.2022.06.20.04.06.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Jun 2022 04:06:39 -0700 (PDT)
+Message-ID: <0207c2fe-7c01-7852-3cd1-74297cd4857d@linaro.org>
+Date:   Mon, 20 Jun 2022 13:06:38 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220508185957.3629088-15-clabbe@baylibre.com>
-X-Authenticated: YES
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 2/7] dt-bindings: arm: aspeed: document board compatibles
+Content-Language: en-US
+To:     Joel Stanley <joel@jms.id.au>, Andrew Jeffery <andrew@aj.id.au>
+Cc:     linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org,
+        David Wang <David_Wang6097@jabil.com>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Steven Lee <steven_lee@aspeedtech.com>,
+        Ken Chen <chen.kenyy@inventec.com>
+References: <20220529104928.79636-1-krzysztof.kozlowski@linaro.org>
+ <20220529104928.79636-2-krzysztof.kozlowski@linaro.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220529104928.79636-2-krzysztof.kozlowski@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, May 08, 2022 at 06:59:38PM +0000, Corentin Labbe wrote:
-> reset could be handled by PM functions.
-
-Is there any further rationale for this?
-
-After this change there is no longer a guaranteed reset pulse on probe
-since the reset control may already be de-asserted.  This is normally
-the most important case for a reset as it's the only time when the state
-of the hardware is unknown.
-
-The original use of devm_add_action_or_reset() seems a bit weird already
-since there doesn't seem to be any need to assert reset when the driver
-is unloaded.
-
-> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
-> ---
->  drivers/crypto/rockchip/rk3288_crypto.c | 19 ++++---------------
->  1 file changed, 4 insertions(+), 15 deletions(-)
+On 29/05/2022 12:49, Krzysztof Kozlowski wrote:
+> Document all compatibles used in existing upstreamed Aspeed AST2400,
+> AST2500 and AST2600 based boards.
 > 
-> diff --git a/drivers/crypto/rockchip/rk3288_crypto.c b/drivers/crypto/rockchip/rk3288_crypto.c
-> index d9258b9e71b3..a11a92e1f3fd 100644
-> --- a/drivers/crypto/rockchip/rk3288_crypto.c
-> +++ b/drivers/crypto/rockchip/rk3288_crypto.c
-> @@ -73,6 +73,8 @@ static int rk_crypto_pm_suspend(struct device *dev)
->  {
->  	struct rk_crypto_info *rkdev = dev_get_drvdata(dev);
->  
-> +	reset_control_assert(rkdev->rst);
-> +
->  	rk_crypto_disable_clk(rkdev);
->  	return 0;
->  }
-> @@ -81,6 +83,8 @@ static int rk_crypto_pm_resume(struct device *dev)
->  {
->  	struct rk_crypto_info *rkdev = dev_get_drvdata(dev);
->  
-> +	reset_control_deassert(rkdev->rst);
-> +
->  	return rk_crypto_enable_clk(rkdev);
->  }
->  
-> @@ -222,13 +226,6 @@ static void rk_crypto_unregister(void)
->  	}
->  }
->  
-> -static void rk_crypto_action(void *data)
-> -{
-> -	struct rk_crypto_info *crypto_info = data;
-> -
-> -	reset_control_assert(crypto_info->rst);
-> -}
-> -
->  static const struct of_device_id crypto_of_id_table[] = {
->  	{ .compatible = "rockchip,rk3288-crypto" },
->  	{}
-> @@ -254,14 +251,6 @@ static int rk_crypto_probe(struct platform_device *pdev)
->  		goto err_crypto;
->  	}
->  
-> -	reset_control_assert(crypto_info->rst);
-> -	usleep_range(10, 20);
-> -	reset_control_deassert(crypto_info->rst);
-> -
-> -	err = devm_add_action_or_reset(dev, rk_crypto_action, crypto_info);
-> -	if (err)
-> -		goto err_crypto;
-> -
->  	crypto_info->reg = devm_platform_ioremap_resource(pdev, 0);
->  	if (IS_ERR(crypto_info->reg)) {
->  		err = PTR_ERR(crypto_info->reg);
-> -- 
-> 2.35.1
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>  .../bindings/arm/aspeed/aspeed.yaml           | 83 +++++++++++++++++++
+>  MAINTAINERS                                   |  1 +
+>  2 files changed, 84 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/arm/aspeed/aspeed.yaml
+
+Joel, Andrew,
+
+Any comments on the series? Rob applied only patch 1, so the rest is
+supposed through Aspeed tree. Shall I pick them up and send to arm-soc?
+
+Best regards,
+Krzysztof
