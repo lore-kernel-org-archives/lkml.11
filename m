@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A6A8C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:10:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5FEAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:10:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350017AbiFTOKe (ORCPT
+        id S1350638AbiFTOKh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:10:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36654 "EHLO
+        Mon, 20 Jun 2022 10:10:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350874AbiFTNxy (ORCPT
+        with ESMTP id S1353126AbiFTN5h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:53:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB34D20F78;
-        Mon, 20 Jun 2022 06:20:25 -0700 (PDT)
+        Mon, 20 Jun 2022 09:57:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD6A937BFF;
+        Mon, 20 Jun 2022 06:23:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 632B3B811A9;
-        Mon, 20 Jun 2022 13:19:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEA0EC3411B;
-        Mon, 20 Jun 2022 13:19:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CCFFB60C95;
+        Mon, 20 Jun 2022 13:23:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1852C3411B;
+        Mon, 20 Jun 2022 13:23:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731178;
-        bh=ZIGf3OIICc/ZkZtAiW0hV2LGkW+W99wy51TwniPPSIY=;
+        s=korg; t=1655731390;
+        bh=Xi0jQe3lIdxIlfcgRyvoLYjNPKsnHhAsq8E55DyIMjk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YPRLamQgDJ7BMByzYpGbP8xbdRambB6NScElYjgMuQX5S+tp3FfaTPK2eVbC+RzI1
-         udTws95uBXrBjLX1J1cqKf1B2Im9KDO0dhIvrdHTdBiLRS3+ISv/rcLK87gdTTZRe3
-         +Wj7scdyPI7bx0snlDEHm+aCZ0pcj+t0EVqpVXXw=
+        b=dUMV8q09Pl4lMzLokbpp8HmGGK3kUq6048fOrPS1AnEeGq4IThPZvcls72orSAyjU
+         x1iPNthk9dXetucdXts9aNJ7GVwroUrwNW66w85Qh7ETLQ1G4n0OOj/OTgfXZpKX/O
+         L74a9pyd392pNTvP/lEevC9WfrTl8w8fWZrkVLDo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 178/240] random: avoid checking crng_ready() twice in random_init()
-Date:   Mon, 20 Jun 2022 14:51:19 +0200
-Message-Id: <20220620124744.154108727@linuxfoundation.org>
+        stable@vger.kernel.org, Chen Lin <chen45464546@163.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 202/240] net: ethernet: mtk_eth_soc: fix misuse of mem alloc interface netdev[napi]_alloc_frag
+Date:   Mon, 20 Jun 2022 14:51:43 +0200
+Message-Id: <20220620124744.834416319@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -50,47 +50,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Chen Lin <chen45464546@163.com>
 
-commit 9b29b6b20376ab64e1b043df6301d8a92378e631 upstream.
+[ Upstream commit 2f2c0d2919a14002760f89f4e02960c735a316d2 ]
 
-The current flow expands to:
+When rx_flag == MTK_RX_FLAGS_HWLRO,
+rx_data_len = MTK_MAX_LRO_RX_LENGTH(4096 * 3) > PAGE_SIZE.
+netdev_alloc_frag is for alloction of page fragment only.
+Reference to other drivers and Documentation/vm/page_frags.rst
 
-    if (crng_ready())
-       ...
-    else if (...)
-        if (!crng_ready())
-            ...
+Branch to use __get_free_pages when ring->frag_size > PAGE_SIZE.
 
-The second crng_ready() call is redundant, but can't so easily be
-optimized out by the compiler.
-
-This commit simplifies that to:
-
-    if (crng_ready()
-        ...
-    else if (...)
-        ...
-
-Fixes: 560181c27b58 ("random: move initialization functions out of hot pages")
-Cc: stable@vger.kernel.org
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Chen Lin <chen45464546@163.com>
+Link: https://lore.kernel.org/r/1654692413-2598-1-git-send-email-chen45464546@163.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/random.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 21 +++++++++++++++++++--
+ 1 file changed, 19 insertions(+), 2 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -834,7 +834,7 @@ int __init random_init(const char *comma
- 	if (crng_ready())
- 		crng_reseed();
- 	else if (trust_cpu)
--		credit_init_bits(arch_bytes * 8);
-+		_credit_init_bits(arch_bytes * 8);
- 
- 	return 0;
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+index 5dce4cd60f58..f9139150a8a2 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+@@ -802,6 +802,17 @@ static inline void mtk_rx_get_desc(struct mtk_rx_dma *rxd,
+ 	rxd->rxd4 = READ_ONCE(dma_rxd->rxd4);
  }
+ 
++static void *mtk_max_lro_buf_alloc(gfp_t gfp_mask)
++{
++	unsigned int size = mtk_max_frag_size(MTK_MAX_LRO_RX_LENGTH);
++	unsigned long data;
++
++	data = __get_free_pages(gfp_mask | __GFP_COMP | __GFP_NOWARN,
++				get_order(size));
++
++	return (void *)data;
++}
++
+ /* the qdma core needs scratch memory to be setup */
+ static int mtk_init_fq_dma(struct mtk_eth *eth)
+ {
+@@ -1299,7 +1310,10 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
+ 			goto release_desc;
+ 
+ 		/* alloc new buffer */
+-		new_data = napi_alloc_frag(ring->frag_size);
++		if (ring->frag_size <= PAGE_SIZE)
++			new_data = napi_alloc_frag(ring->frag_size);
++		else
++			new_data = mtk_max_lro_buf_alloc(GFP_ATOMIC);
+ 		if (unlikely(!new_data)) {
+ 			netdev->stats.rx_dropped++;
+ 			goto release_desc;
+@@ -1696,7 +1710,10 @@ static int mtk_rx_alloc(struct mtk_eth *eth, int ring_no, int rx_flag)
+ 		return -ENOMEM;
+ 
+ 	for (i = 0; i < rx_dma_size; i++) {
+-		ring->data[i] = netdev_alloc_frag(ring->frag_size);
++		if (ring->frag_size <= PAGE_SIZE)
++			ring->data[i] = netdev_alloc_frag(ring->frag_size);
++		else
++			ring->data[i] = mtk_max_lro_buf_alloc(GFP_KERNEL);
+ 		if (!ring->data[i])
+ 			return -ENOMEM;
+ 	}
+-- 
+2.35.1
+
 
 
