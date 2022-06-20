@@ -2,90 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55671C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 11:55:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A50EAC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 11:56:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241952AbiFTLz6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 07:55:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40900 "EHLO
+        id S241787AbiFTL4Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 07:56:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232170AbiFTLzz (ORCPT
+        with ESMTP id S231272AbiFTL4O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 07:55:55 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4337F26DC;
-        Mon, 20 Jun 2022 04:55:54 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id p6-20020a05600c1d8600b0039c630b8d96so6360971wms.1;
-        Mon, 20 Jun 2022 04:55:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Am5xMYkn5ju4qtsoURmMkGdCrSP1fkjrG6XDnZXvhTc=;
-        b=VdYcvoBGG1Q2lTNzlHp6tzbLLJNX5oS+z/1p2Zt0Nj+ejsttBBerQz5mxvfQ6AnDtH
-         IhFQxGn9GJqWCJa+Htk6udZJYlSRIH1MMi6/TxngTM1pKOZuFvvEd8uMwh5+PFZvCR1D
-         aALEDY3xwe52AfcJuLagSaZmWoebbrsxrFEURMs6MFRo7loJsIoq5qCgMXAc3PHf/J5C
-         d2beVXXrWlvP/N6uiUxH32vgPE39fH3UDoHI0CROLQopgg62CHsXp2r4h8W6MrDe0yiu
-         /tb9x7KNtVfnWYIFAe6DkFhluxxCjP4aY4gwolrSSjWern3ECK3jlLlwZSuO2eF8nVHP
-         ykNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Am5xMYkn5ju4qtsoURmMkGdCrSP1fkjrG6XDnZXvhTc=;
-        b=wM0EM/FrXng8oYUnd1oy3fG5VJdY4Cz9fKkoIAXo9DTET+Y5H58IMrJ1FyWxZfxmem
-         qozA608tpCMftJHHRHPHq/CzNhKJjVjYGheso8+1HA+lCIEJf3uxW51pGjAmd5WrRLCv
-         PQdmV3YW3vC34gW9pc0feEk+ktfohkeUtuk7B/le/VVc77WKU4dWdjhR08Uq5nH1oRQv
-         L9NAiKmybqhRT16tY640AZiukVrHmYdhQ/L30K7rEfpcSZJAufkXatuyYF+NK10rsHPO
-         D2LlcV35hiU2lX+IPixKDFSwbzI5yuKg3TLmcO+WsDuL9j+IGVQ7IVvSUKo/9w0FBRfq
-         NxgQ==
-X-Gm-Message-State: AOAM530LZ7aULrm+12O9/+RIvld+xOAr0M5cJkm8hDYiY4DYKmsuVaMy
-        Z5m6TaSoydLk8KgTNTo1o2c=
-X-Google-Smtp-Source: ABdhPJw3A6VGbMslJyKdy4iTFNkB/vUldHGTrHqLm/EmQLv7HlTnujXGficGtspKXibONcod6llshA==
-X-Received: by 2002:a05:600c:1906:b0:39c:7f82:3090 with SMTP id j6-20020a05600c190600b0039c7f823090mr34741869wmq.152.1655726151676;
-        Mon, 20 Jun 2022 04:55:51 -0700 (PDT)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id m15-20020a05600c4f4f00b0039748be12dbsm19816862wmq.47.2022.06.20.04.55.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jun 2022 04:55:51 -0700 (PDT)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-mips@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH][V2] MIPS: PCI: Remove leading space in info message, rename pci
-Date:   Mon, 20 Jun 2022 12:55:49 +0100
-Message-Id: <20220620115549.39177-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.35.3
+        Mon, 20 Jun 2022 07:56:14 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B1D926DC
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 04:56:13 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1o3G0j-0008Lu-35; Mon, 20 Jun 2022 13:56:05 +0200
+Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1o3G0f-001dBj-Kw; Mon, 20 Jun 2022 13:56:03 +0200
+Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1o3G0g-008XiD-Fg; Mon, 20 Jun 2022 13:56:02 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net-next v4 1/1] net: phy: dp83td510: add SQI support
+Date:   Mon, 20 Jun 2022 13:56:01 +0200
+Message-Id: <20220620115601.2035452-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is an info message with an extraneous leading space. Remove it.
-Also rename pci to PCI.
+Convert MSE (mean-square error) values to SNR and split it SQI (Signal Quality
+Indicator) ranges. The used ranges are taken from "OPEN ALLIANCE - Advanced
+diagnostic features for 100BASE-T1 automotive Ethernet PHYs"
+specification.
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
-V2: make pci uppercase
----
- arch/mips/pci/fixup-lemote2f.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/phy/dp83td510.c | 49 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 49 insertions(+)
 
-diff --git a/arch/mips/pci/fixup-lemote2f.c b/arch/mips/pci/fixup-lemote2f.c
-index 632ff2daa338..790d674cd80a 100644
---- a/arch/mips/pci/fixup-lemote2f.c
-+++ b/arch/mips/pci/fixup-lemote2f.c
-@@ -80,7 +80,7 @@ int pcibios_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
- 		}
- 		return dev->irq;
- 	} else {
--		printk(KERN_INFO " strange pci slot number.\n");
-+		printk(KERN_INFO "strange PCI slot number.\n");
- 		return 0;
- 	}
+diff --git a/drivers/net/phy/dp83td510.c b/drivers/net/phy/dp83td510.c
+index 1ae792b0daaa..3cd9a77f9532 100644
+--- a/drivers/net/phy/dp83td510.c
++++ b/drivers/net/phy/dp83td510.c
+@@ -27,6 +27,27 @@
+ #define DP83TD510E_AN_STAT_1			0x60c
+ #define DP83TD510E_MASTER_SLAVE_RESOL_FAIL	BIT(15)
+ 
++#define DP83TD510E_MSE_DETECT			0xa85
++
++#define DP83TD510_SQI_MAX	7
++
++/* Register values are converted to SNR(dB) as suggested by
++ * "Application Report - DP83TD510E Cable Diagnostics Toolkit":
++ * SNR(dB) = -10 * log10 (VAL/2^17) - 1.76 dB.
++ * SQI ranges are implemented according to "OPEN ALLIANCE - Advanced diagnostic
++ * features for 100BASE-T1 automotive Ethernet PHYs"
++ */
++static const u16 dp83td510_mse_sqi_map[] = {
++	0x0569, /* < 18dB */
++	0x044c, /* 18dB =< SNR < 19dB */
++	0x0369, /* 19dB =< SNR < 20dB */
++	0x02b6, /* 20dB =< SNR < 21dB */
++	0x0227, /* 21dB =< SNR < 22dB */
++	0x01b6, /* 22dB =< SNR < 23dB */
++	0x015b, /* 23dB =< SNR < 24dB */
++	0x0000  /* 24dB =< SNR */
++};
++
+ static int dp83td510_config_intr(struct phy_device *phydev)
+ {
+ 	int ret;
+@@ -164,6 +185,32 @@ static int dp83td510_config_aneg(struct phy_device *phydev)
+ 	return genphy_c45_check_and_restart_aneg(phydev, changed);
  }
+ 
++static int dp83td510_get_sqi(struct phy_device *phydev)
++{
++	int sqi, ret;
++	u16 mse_val;
++
++	if (!phydev->link)
++		return 0;
++
++	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, DP83TD510E_MSE_DETECT);
++	if (ret < 0)
++		return ret;
++
++	mse_val = 0xFFFF & ret;
++	for (sqi = 0; sqi < ARRAY_SIZE(dp83td510_mse_sqi_map); sqi++) {
++		if (mse_val >= dp83td510_mse_sqi_map[sqi])
++			return sqi;
++	}
++
++	return -EINVAL;
++}
++
++static int dp83td510_get_sqi_max(struct phy_device *phydev)
++{
++	return DP83TD510_SQI_MAX;
++}
++
+ static int dp83td510_get_features(struct phy_device *phydev)
+ {
+ 	/* This PHY can't respond on MDIO bus if no RMII clock is enabled.
+@@ -192,6 +239,8 @@ static struct phy_driver dp83td510_driver[] = {
+ 	.get_features	= dp83td510_get_features,
+ 	.config_intr	= dp83td510_config_intr,
+ 	.handle_interrupt = dp83td510_handle_interrupt,
++	.get_sqi	= dp83td510_get_sqi,
++	.get_sqi_max	= dp83td510_get_sqi_max,
+ 
+ 	.suspend	= genphy_suspend,
+ 	.resume		= genphy_resume,
 -- 
-2.35.3
+2.30.2
 
