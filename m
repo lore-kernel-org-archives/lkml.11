@@ -2,49 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C5B7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:40:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74108C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:40:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347600AbiFTNkl (ORCPT
+        id S1347650AbiFTNkq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:40:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45954 "EHLO
+        Mon, 20 Jun 2022 09:40:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347491AbiFTNik (ORCPT
+        with ESMTP id S1347743AbiFTNiv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:38:40 -0400
+        Mon, 20 Jun 2022 09:38:51 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D533D1F62C;
-        Mon, 20 Jun 2022 06:14:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41A86289A0;
+        Mon, 20 Jun 2022 06:14:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 57CE961543;
-        Mon, 20 Jun 2022 13:03:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FD8FC3411B;
-        Mon, 20 Jun 2022 13:03:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D41660A21;
+        Mon, 20 Jun 2022 13:14:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80C56C3411B;
+        Mon, 20 Jun 2022 13:14:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730235;
-        bh=r4HTTZDPskHPPm1axn9xIWDD/skwl4wwe/Ur5YtpFjY=;
+        s=korg; t=1655730863;
+        bh=bLrhEzyvIal2sDn4qUZktif14Nf2K0HpX6+iuLCe2uw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t/y31kxrrj2lrIXPcbwB81yjxm367j3EPpXDZWy/oWnrQlX+20amVFyAO9betY9sX
-         mPf9KIbbkI2b7vEoAF1CLDK+sWEzJpnzkyktCjQVDQOTJuv0wsAZcYDN+9P6fHBSlR
-         JQLBFEytijhnYO6iLUOue5Q00RhfzagUcLri2IfU=
+        b=VwUD2hG12KXS/fDMBOIth/M5/ntmo+vOcHFjC+ODwnNbqgyPfTpWpBCWk62OU+/SM
+         5XJSSxCTS8wGp6v4Mwr/He7l1LTobDtRoifzx2yOG8fasL0q+d+iMgQh0Yhz0gs5mW
+         rb0x+CFKrSLzwrsl1MizBjaxeIJxHI97XudD/VC0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andy Nguyen <theflow@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Peter Gonda <pgonda@google.com>, kvm@vger.kernel.org,
-        Ashish Kalra <ashish.kalra@amd.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH 5.10 75/84] KVM: SVM: Use kzalloc for sev ioctl interfaces to prevent kernel data leak
-Date:   Mon, 20 Jun 2022 14:51:38 +0200
-Message-Id: <20220620124723.109661211@linuxfoundation.org>
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Eric Biggers <ebiggers@google.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.4 080/240] random: use hash function for crng_slow_load()
+Date:   Mon, 20 Jun 2022 14:49:41 +0200
+Message-Id: <20220620124741.078716212@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124720.882450983@linuxfoundation.org>
-References: <20220620124720.882450983@linuxfoundation.org>
+In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
+References: <20220620124737.799371052@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,58 +51,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ashish Kalra <ashish.kalra@amd.com>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit d22d2474e3953996f03528b84b7f52cc26a39403 upstream.
+commit 66e4c2b9541503d721e936cc3898c9f25f4591ff upstream.
 
-For some sev ioctl interfaces, the length parameter that is passed maybe
-less than or equal to SEV_FW_BLOB_MAX_SIZE, but larger than the data
-that PSP firmware returns. In this case, kmalloc will allocate memory
-that is the size of the input rather than the size of the data.
-Since PSP firmware doesn't fully overwrite the allocated buffer, these
-sev ioctl interface may return uninitialized kernel slab memory.
+Since we have a hash function that's really fast, and the goal of
+crng_slow_load() is reportedly to "touch all of the crng's state", we
+can just hash the old state together with the new state and call it a
+day. This way we dont need to reason about another LFSR or worry about
+various attacks there. This code is only ever used at early boot and
+then never again.
 
-Reported-by: Andy Nguyen <theflow@google.com>
-Suggested-by: David Rientjes <rientjes@google.com>
-Suggested-by: Peter Gonda <pgonda@google.com>
-Cc: kvm@vger.kernel.org
-Cc: stable@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Fixes: eaf78265a4ab3 ("KVM: SVM: Move SEV code to separate file")
-Fixes: 2c07ded06427d ("KVM: SVM: add support for SEV attestation command")
-Fixes: 4cfdd47d6d95a ("KVM: SVM: Add KVM_SEV SEND_START command")
-Fixes: d3d1af85e2c75 ("KVM: SVM: Add KVM_SEND_UPDATE_DATA command")
-Fixes: eba04b20e4861 ("KVM: x86: Account a variety of miscellaneous allocations")
-Signed-off-by: Ashish Kalra <ashish.kalra@amd.com>
-Reviewed-by: Peter Gonda <pgonda@google.com>
-Message-Id: <20220516154310.3685678-1-Ashish.Kalra@amd.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-[sudip: adjust context]
-Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Cc: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/svm/sev.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/char/random.c |   40 ++++++++++++++--------------------------
+ 1 file changed, 14 insertions(+), 26 deletions(-)
 
---- a/arch/x86/kvm/svm/sev.c
-+++ b/arch/x86/kvm/svm/sev.c
-@@ -537,7 +537,7 @@ static int sev_launch_measure(struct kvm
- 		}
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -475,42 +475,30 @@ static size_t crng_fast_load(const u8 *c
+  * all), and (2) it doesn't have the performance constraints of
+  * crng_fast_load().
+  *
+- * So we do something more comprehensive which is guaranteed to touch
+- * all of the primary_crng's state, and which uses a LFSR with a
+- * period of 255 as part of the mixing algorithm.  Finally, we do
+- * *not* advance crng_init_cnt since buffer we may get may be something
+- * like a fixed DMI table (for example), which might very well be
+- * unique to the machine, but is otherwise unvarying.
++ * So, we simply hash the contents in with the current key. Finally,
++ * we do *not* advance crng_init_cnt since buffer we may get may be
++ * something like a fixed DMI table (for example), which might very
++ * well be unique to the machine, but is otherwise unvarying.
+  */
+-static int crng_slow_load(const u8 *cp, size_t len)
++static void crng_slow_load(const u8 *cp, size_t len)
+ {
+ 	unsigned long flags;
+-	static u8 lfsr = 1;
+-	u8 tmp;
+-	unsigned int i, max = sizeof(base_crng.key);
+-	const u8 *src_buf = cp;
+-	u8 *dest_buf = base_crng.key;
++	struct blake2s_state hash;
++
++	blake2s_init(&hash, sizeof(base_crng.key));
  
- 		ret = -ENOMEM;
--		blob = kmalloc(params.len, GFP_KERNEL_ACCOUNT);
-+		blob = kzalloc(params.len, GFP_KERNEL_ACCOUNT);
- 		if (!blob)
- 			goto e_free;
+ 	if (!spin_trylock_irqsave(&base_crng.lock, flags))
+-		return 0;
++		return;
+ 	if (crng_init != 0) {
+ 		spin_unlock_irqrestore(&base_crng.lock, flags);
+-		return 0;
++		return;
+ 	}
+-	if (len > max)
+-		max = len;
  
-@@ -676,7 +676,7 @@ static int __sev_dbg_decrypt_user(struct
- 	if (!IS_ALIGNED(dst_paddr, 16) ||
- 	    !IS_ALIGNED(paddr,     16) ||
- 	    !IS_ALIGNED(size,      16)) {
--		tpage = (void *)alloc_page(GFP_KERNEL);
-+		tpage = (void *)alloc_page(GFP_KERNEL | __GFP_ZERO);
- 		if (!tpage)
- 			return -ENOMEM;
+-	for (i = 0; i < max; i++) {
+-		tmp = lfsr;
+-		lfsr >>= 1;
+-		if (tmp & 1)
+-			lfsr ^= 0xE1;
+-		tmp = dest_buf[i % sizeof(base_crng.key)];
+-		dest_buf[i % sizeof(base_crng.key)] ^= src_buf[i % len] ^ lfsr;
+-		lfsr += (tmp << 3) | (tmp >> 5);
+-	}
++	blake2s_update(&hash, base_crng.key, sizeof(base_crng.key));
++	blake2s_update(&hash, cp, len);
++	blake2s_final(&hash, base_crng.key);
++
+ 	spin_unlock_irqrestore(&base_crng.lock, flags);
+-	return 1;
+ }
  
+ static void crng_reseed(void)
 
 
