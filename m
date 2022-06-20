@@ -2,165 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 256B6C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 09:52:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E5A5C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 09:53:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240475AbiFTJwT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 05:52:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54274 "EHLO
+        id S240393AbiFTJw7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 05:52:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240222AbiFTJwN (ORCPT
+        with ESMTP id S240363AbiFTJww (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 05:52:13 -0400
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81E6813E19
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 02:52:11 -0700 (PDT)
-Received: by mail-yb1-xb2f.google.com with SMTP id t1so18002046ybd.2
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 02:52:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8DyE/KWQUZrty8rXx81JIsG8zxsuYBbuRVM0whdGKxU=;
-        b=YMx5LG7Wdq+ZbP+hmySua4p+q8ITcfNOgA4wNN233s19a/7cF/MJtq3fr/LfgGQy4p
-         ogvSHl2Cf2DYFO76BS+OtDLYvlEEfUWUUgII7m+zE9Wag3P6PJmdocnBsDRN/vqEINWI
-         ESFYkAqEprhYE9UBRvqjrDhG4Bu6CEiZVt9gmH+r/aYAAW3S3pWUCuTKX2VFxgqZG2fL
-         7fcp5qJdRksrTWb/CAUc1PuUQq8hnng4kyvcesKz7U2bEjUgU6ubETbvxyw0B2MBoO4B
-         lteMT6G/lEy2Rzwd8AoL9zq5hwcwZzAfUZEWGcxA46w79qz+mEgvNVgv0mt59z/DFyWm
-         ty1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8DyE/KWQUZrty8rXx81JIsG8zxsuYBbuRVM0whdGKxU=;
-        b=Jb/w4CNFDcObno+x3DEj01DLN8pgsd1nHNJMnGuN0pVWIiDZXt0qF6YAXbAFtGExtn
-         Nrk3LKZJmTrhn8hEzxjWn2J6hghjUZ9RppRj9lCT6TGxOaIP9zEyMG0xu76Da/vz2zWp
-         //AGPbjqgVVpjFC6C0RykhuSU64G+hVUCEoHLIg6EdING1We+Kj+OyGX1BHs9F4F0u0v
-         a6YT0kocij0B+se+ikdJ4tn1CrFoUJpXFtEesLBiOhKZTCdSqY8fNgi5QhI/6IhF4XCj
-         JxrJ0fWpacMnawIDMV61blNLAfqEmFGdwBq5YDNVXj/OJDYqmXzgk12pOYF5S5+HqsdT
-         UAHA==
-X-Gm-Message-State: AJIora/lM6NCjFMefP8DddQmQDWh6ILR4NCWf54FltIyLR1XAloqQ4oW
-        bSyi+fkz8rf1DNfUeNmU8O+Q4wWTjj+yhQoqgun3RA==
-X-Google-Smtp-Source: AGRyM1sSBAv2oiSQZ55yekxja+O5pLkAMEu8ApBXNKvRuqsuhhN0KQ8acs5PUATsPYeMSQGzVNfHa1GTg72DYCPq9DI=
-X-Received: by 2002:a25:94a:0:b0:668:df94:fdf4 with SMTP id
- u10-20020a25094a000000b00668df94fdf4mr9911328ybm.425.1655718730567; Mon, 20
- Jun 2022 02:52:10 -0700 (PDT)
+        Mon, 20 Jun 2022 05:52:52 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71A9ABD0;
+        Mon, 20 Jun 2022 02:52:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655718771; x=1687254771;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=bbKxKH/SYPWm+cxwUF5Vsfm6/HyWDbMqK/8UZOAOmFs=;
+  b=cExCMGfslYwOpLdl/BqDNtvSMIwzwliE1u/domUMOpBndXW3c07zfc4x
+   54ItBHXGPLHfQdlHx6wCcILFkAHCIP4imTwt8ZcQu1nhLh/6yYwz/xJRU
+   FvjKbZEpF+PMtLDxUElNL7HEerTCmRkGL/sGIWbuV+60hzFnWwx6OozAl
+   ljRQJ6BrnrCpZNJmUv97tRwKRCSqJ+6LBx3XyDuoqCxWF/hhrLIw1g0eR
+   M/XfLxr0F+k2r5fP+IAsF7kdg00sN6f8yR5o5mO0ZelzLEHtw9h6MOPmq
+   F/SMbFbSbGZagW1T7fAgQ7LET5oNKvgLO2kSb5Ptno/btkhl77mjuqkFt
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="277402178"
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="277402178"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 02:52:51 -0700
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="833039628"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 02:52:49 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1o3E5O-000h48-Ro;
+        Mon, 20 Jun 2022 12:52:46 +0300
+Date:   Mon, 20 Jun 2022 12:52:46 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        mchehab@kernel.org, djrscally@gmail.com,
+        sakari.ailus@linux.intel.com
+Subject: Re: [PATCH] media: ov7251: add missing clk_disable_unprepare() on
+ error in ov7251_set_power_on()
+Message-ID: <YrBDbjS8rAGM4t4u@smile.fi.intel.com>
+References: <20220617013943.851327-1-yangyingliang@huawei.com>
+ <YqxVWg21PsdkMz2Y@smile.fi.intel.com>
+ <a6731874-1c72-898e-fe8f-8d08d4a4d74e@huawei.com>
 MIME-Version: 1.0
-References: <20220617144031.2549432-1-alexandr.lobakin@intel.com> <20220617144031.2549432-7-alexandr.lobakin@intel.com>
-In-Reply-To: <20220617144031.2549432-7-alexandr.lobakin@intel.com>
-From:   Marco Elver <elver@google.com>
-Date:   Mon, 20 Jun 2022 11:51:34 +0200
-Message-ID: <CANpmjNMi_kOGsiuSmNpg_yDVoFzw7zSGT7u+zk3HJZ9UER7Yrg@mail.gmail.com>
-Subject: Re: [PATCH v3 6/7] bitops: let optimize out non-atomic bitops on
- compile-time constants
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matt Turner <mattst88@gmail.com>,
-        Brian Cain <bcain@quicinc.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Kees Cook <keescook@chromium.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>, Tony Luck <tony.luck@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-alpha@vger.kernel.org, linux-hexagon@vger.kernel.org,
-        linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a6731874-1c72-898e-fe8f-8d08d4a4d74e@huawei.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 17 Jun 2022 at 19:00, Alexander Lobakin
-<alexandr.lobakin@intel.com> wrote:
->
-> Currently, many architecture-specific non-atomic bitop
-> implementations use inline asm or other hacks which are faster or
-> more robust when working with "real" variables (i.e. fields from
-> the structures etc.), but the compilers have no clue how to optimize
-> them out when called on compile-time constants. That said, the
-> following code:
->
->         DECLARE_BITMAP(foo, BITS_PER_LONG) = { }; // -> unsigned long foo[1];
->         unsigned long bar = BIT(BAR_BIT);
->         unsigned long baz = 0;
->
->         __set_bit(FOO_BIT, foo);
->         baz |= BIT(BAZ_BIT);
->
->         BUILD_BUG_ON(!__builtin_constant_p(test_bit(FOO_BIT, foo));
->         BUILD_BUG_ON(!__builtin_constant_p(bar & BAR_BIT));
->         BUILD_BUG_ON(!__builtin_constant_p(baz & BAZ_BIT));
->
-> triggers the first assertion on x86_64, which means that the
-> compiler is unable to evaluate it to a compile-time initializer
-> when the architecture-specific bitop is used even if it's obvious.
-> In order to let the compiler optimize out such cases, expand the
-> bitop() macro to use the "constant" C non-atomic bitop
-> implementations when all of the arguments passed are compile-time
-> constants, which means that the result will be a compile-time
-> constant as well, so that it produces more efficient and simple
-> code in 100% cases, comparing to the architecture-specific
-> counterparts.
->
-> The savings are architecture, compiler and compiler flags dependent,
-> for example, on x86_64 -O2:
->
-> GCC 12: add/remove: 78/29 grow/shrink: 332/525 up/down: 31325/-61560 (-30235)
-> LLVM 13: add/remove: 79/76 grow/shrink: 184/537 up/down: 55076/-141892 (-86816)
-> LLVM 14: add/remove: 10/3 grow/shrink: 93/138 up/down: 3705/-6992 (-3287)
->
-> and ARM64 (courtesy of Mark):
->
-> GCC 11: add/remove: 92/29 grow/shrink: 933/2766 up/down: 39340/-82580 (-43240)
-> LLVM 14: add/remove: 21/11 grow/shrink: 620/651 up/down: 12060/-15824 (-3764)
->
-> Cc: Mark Rutland <mark.rutland@arm.com>
-> Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+On Mon, Jun 20, 2022 at 04:48:46PM +0800, Yang Yingliang wrote:
+> On 2022/6/17 18:20, Andy Shevchenko wrote:
+> > On Fri, Jun 17, 2022 at 09:39:43AM +0800, Yang Yingliang wrote:
 
-Reviewed-by: Marco Elver <elver@google.com>
+...
 
-> ---
->  include/linux/bitops.h | 18 +++++++++++++++++-
->  1 file changed, 17 insertions(+), 1 deletion(-)
->
-> diff --git a/include/linux/bitops.h b/include/linux/bitops.h
-> index 3c3afbae1533..26a43360c4ae 100644
-> --- a/include/linux/bitops.h
-> +++ b/include/linux/bitops.h
-> @@ -33,8 +33,24 @@ extern unsigned long __sw_hweight64(__u64 w);
->
->  #include <asm-generic/bitops/generic-non-atomic.h>
->
-> +/*
-> + * Many architecture-specific non-atomic bitops contain inline asm code and due
-> + * to that the compiler can't optimize them to compile-time expressions or
-> + * constants. In contrary, gen_*() helpers are defined in pure C and compilers
-> + * optimize them just well.
-> + * Therefore, to make `unsigned long foo = 0; __set_bit(BAR, &foo)` effectively
-> + * equal to `unsigned long foo = BIT(BAR)`, pick the generic C alternative when
-> + * the arguments can be resolved at compile time. That expression itself is a
-> + * constant and doesn't bring any functional changes to the rest of cases.
-> + * The casts to `uintptr_t` are needed to mitigate `-Waddress` warnings when
-> + * passing a bitmap from .bss or .data (-> `!!addr` is always true).
-> + */
->  #define bitop(op, nr, addr)                                            \
-> -       op(nr, addr)
-> +       ((__builtin_constant_p(nr) &&                                   \
-> +         __builtin_constant_p((uintptr_t)(addr) != (uintptr_t)NULL) && \
-> +         (uintptr_t)(addr) != (uintptr_t)NULL &&                       \
-> +         __builtin_constant_p(*(const unsigned long *)(addr))) ?       \
-> +        const##op(nr, addr) : op(nr, addr))
->
->  #define __set_bit(nr, addr)            bitop(___set_bit, nr, addr)
->  #define __clear_bit(nr, addr)          bitop(___clear_bit, nr, addr)
-> --
-> 2.36.1
->
+> > >   	if (ret < 0) {
+> > >   		dev_err(ov7251->dev, "error during global init\n");
+> > > +		clk_disable_unprepare(ov7251->xclk);
+> > >   		ov7251_regulators_disable(ov7251);
+> > Logically it should go here. Please, read a code above this check.
+> Do you mean print the error code on error path ?
+
+The new code, you added, should be in correct order (reversed in comparison to
+resource allocation / registration).
+
+> > >   		return ret;
+> > >   	}
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
