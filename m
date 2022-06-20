@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 386BBCCA479
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:02:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6162BC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:02:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244100AbiFTOCA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:02:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45148 "EHLO
+        id S1345138AbiFTOCJ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 10:02:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350975AbiFTNx7 (ORCPT
+        with ESMTP id S1352325AbiFTN4S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:53:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5B4721803;
-        Mon, 20 Jun 2022 06:20:30 -0700 (PDT)
+        Mon, 20 Jun 2022 09:56:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F73F35873;
+        Mon, 20 Jun 2022 06:22:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7ECF1B811CF;
-        Mon, 20 Jun 2022 13:19:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11553C3411B;
-        Mon, 20 Jun 2022 13:19:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C47E5B811C4;
+        Mon, 20 Jun 2022 13:22:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9A16C3411B;
+        Mon, 20 Jun 2022 13:22:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731198;
-        bh=uscibvU1dE4kaGunAQ0AXMp4l9bxe2ohEYSnU0LLu6Q=;
+        s=korg; t=1655731336;
+        bh=AdFVJd7dV+iDxxJ8is6cJt2zyE1ZZxlOE5i/rQvNwmA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lOLhwsFLIZE8Okmc/Kl5MGupyN5jDQ57kJpooS3nZUU+XfPiLmCAbqHpWRsJxTBqp
-         zQVfBniRlURqdglVI4mplQAYDkaOFMMoUFoJ0pZeN75CBIp7yGXltFrlPG0iTOUW0I
-         JSmuIqSFXILx8X9SZQa55jIEFoVu1teTEoi96Lsk=
+        b=oQxyWWYwbX1T15xMYGkMNPfPbpVrL6lf7ZXbxchcqDROEW6ET0jTzNa4ibHujxj+h
+         17dbYwo9Y6AbCSEL8sj6G+k9EJGwt1lhfUto+UyQ2zypWowVFql4aHatDUAiPsNFqg
+         U5cdjojc63BbMvLXv3jHv0K9DrNH1paS5+/VP4Yk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rob Clark <robdclark@chromium.org>,
-        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 183/240] dma-debug: make things less spammy under memory pressure
-Date:   Mon, 20 Jun 2022 14:51:24 +0200
-Message-Id: <20220620124744.294871038@linuxfoundation.org>
+        stable@vger.kernel.org, chengkaitao <pilgrimtao@gmail.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 199/240] virtio-mmio: fix missing put_device() when vm_cmdline_parent registration failed
+Date:   Mon, 20 Jun 2022 14:51:40 +0200
+Message-Id: <20220620124744.750911421@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -48,36 +51,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rob Clark <robdclark@chromium.org>
+From: chengkaitao <pilgrimtao@gmail.com>
 
-[ Upstream commit e19f8fa6ce1ca9b8b934ba7d2e8f34c95abc6e60 ]
+[ Upstream commit a58a7f97ba11391d2d0d408e0b24f38d86ae748e ]
 
-Limit the error msg to avoid flooding the console.  If you have a lot of
-threads hitting this at once, they could have already gotten passed the
-dma_debug_disabled() check before they get to the point of allocation
-failure, resulting in quite a lot of this error message spamming the
-log.  Use pr_err_once() to limit that.
+The reference must be released when device_register(&vm_cmdline_parent)
+failed. Add the corresponding 'put_device()' in the error handling path.
 
-Signed-off-by: Rob Clark <robdclark@chromium.org>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: chengkaitao <pilgrimtao@gmail.com>
+Message-Id: <20220602005542.16489-1-chengkaitao@didiglobal.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/dma/debug.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/virtio/virtio_mmio.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index 1c133f610f59..9a4837b68e18 100644
---- a/kernel/dma/debug.c
-+++ b/kernel/dma/debug.c
-@@ -616,7 +616,7 @@ static void add_dma_entry(struct dma_debug_entry *entry)
- 
- 	rc = active_cacheline_insert(entry);
- 	if (rc == -ENOMEM) {
--		pr_err("cacheline tracking ENOMEM, dma-debug disabled\n");
-+		pr_err_once("cacheline tracking ENOMEM, dma-debug disabled\n");
- 		global_disable = true;
- 	}
- 
+diff --git a/drivers/virtio/virtio_mmio.c b/drivers/virtio/virtio_mmio.c
+index e09edb5c5e06..74547323aa83 100644
+--- a/drivers/virtio/virtio_mmio.c
++++ b/drivers/virtio/virtio_mmio.c
+@@ -669,6 +669,7 @@ static int vm_cmdline_set(const char *device,
+ 	if (!vm_cmdline_parent_registered) {
+ 		err = device_register(&vm_cmdline_parent);
+ 		if (err) {
++			put_device(&vm_cmdline_parent);
+ 			pr_err("Failed to register parent device!\n");
+ 			return err;
+ 		}
 -- 
 2.35.1
 
