@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F61EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:11:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E2EBCCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:11:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245386AbiFTNLN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:11:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51266 "EHLO
+        id S245429AbiFTNLS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:11:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244674AbiFTNH3 (ORCPT
+        with ESMTP id S244878AbiFTNH6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:07:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23F7319FB3;
-        Mon, 20 Jun 2022 06:01:00 -0700 (PDT)
+        Mon, 20 Jun 2022 09:07:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4116C1A392;
+        Mon, 20 Jun 2022 06:01:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9034761541;
-        Mon, 20 Jun 2022 13:00:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A314C3411B;
-        Mon, 20 Jun 2022 13:00:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 07EFC614D5;
+        Mon, 20 Jun 2022 13:00:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5AD7C3411B;
+        Mon, 20 Jun 2022 13:00:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730040;
-        bh=8Qzn7BoD5ZQpLMt2i9GXYEkymXCq5HaMGEz1nkaAPTw=;
+        s=korg; t=1655730050;
+        bh=+1TLaFmHua8IBNRCN5x+vDP5VBwQ5CoiTgi7CN00kSY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y5pJ0G3ek/0C4HR/lOeAz2w2zp6QrwIGAjhmHaSsX+hyVgXpZ1pjIHX8VQDdBAJem
-         fn+WvAGOqnr6k0ljfyBl55O5wq09PaCkD2A+YufP5q9OVNcdvly517uaXwOS43fH0x
-         cFKDSJnwR5lL76LPlvMdXdsnbUhhqyDBScgz0Fz0=
+        b=LxRt8gEpUXl2iVYkHj6T9qVt3M7YyPEtP550HU4dqOCNzoDcyLJK/r4ExO+SLS+AG
+         mfpcIE3f06o8JFci0KFQ7eSJqjQTOIHZS+kSvGHc1G+JC5J6foTtKZc5ptxHKVdwKo
+         aDlatDwuKWDIGg6rSaz1A/93wO5qwfz5llZK+BHI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 14/84] ata: libata-core: fix NULL pointer deref in ata_host_alloc_pinfo()
-Date:   Mon, 20 Jun 2022 14:50:37 +0200
-Message-Id: <20220620124721.312866453@linuxfoundation.org>
+Subject: [PATCH 5.10 17/84] ASoC: es8328: Fix event generation for deemphasis control
+Date:   Mon, 20 Jun 2022 14:50:40 +0200
+Message-Id: <20220620124721.400533949@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124720.882450983@linuxfoundation.org>
 References: <20220620124720.882450983@linuxfoundation.org>
@@ -49,48 +48,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Shtylyov <s.shtylyov@omp.ru>
+From: Mark Brown <broonie@kernel.org>
 
-[ Upstream commit bf476fe22aa1851bab4728e0c49025a6a0bea307 ]
+[ Upstream commit 8259610c2ec01c5cbfb61882ae176aabacac9c19 ]
 
-In an unlikely (and probably wrong?) case that the 'ppi' parameter of
-ata_host_alloc_pinfo() points to an array starting with a NULL pointer,
-there's going to be a kernel oops as the 'pi' local variable won't get
-reassigned from the initial value of NULL. Initialize 'pi' instead to
-'&ata_dummy_port_info' to fix the possible kernel oops for good...
+Currently the put() method for the deemphasis control returns 0 when a new
+value is written to the control even if the value changed, meaning events
+are not generated. Fix this, skip the work of updating the value when it is
+unchanged and then return 1 after having done so.
 
-Found by Linux Verification Center (linuxtesting.org) with the SVACE static
-analysis tool.
-
-Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20220603123937.4013603-1-broonie@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/ata/libata-core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ sound/soc/codecs/es8328.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/ata/libata-core.c b/drivers/ata/libata-core.c
-index f963a0a7da46..2402fa4d8aa5 100644
---- a/drivers/ata/libata-core.c
-+++ b/drivers/ata/libata-core.c
-@@ -5475,7 +5475,7 @@ struct ata_host *ata_host_alloc_pinfo(struct device *dev,
- 				      const struct ata_port_info * const * ppi,
- 				      int n_ports)
- {
--	const struct ata_port_info *pi;
-+	const struct ata_port_info *pi = &ata_dummy_port_info;
- 	struct ata_host *host;
- 	int i, j;
+diff --git a/sound/soc/codecs/es8328.c b/sound/soc/codecs/es8328.c
+index 7e26231a596a..081b5f189632 100644
+--- a/sound/soc/codecs/es8328.c
++++ b/sound/soc/codecs/es8328.c
+@@ -161,13 +161,16 @@ static int es8328_put_deemph(struct snd_kcontrol *kcontrol,
+ 	if (deemph > 1)
+ 		return -EINVAL;
  
-@@ -5483,7 +5483,7 @@ struct ata_host *ata_host_alloc_pinfo(struct device *dev,
- 	if (!host)
- 		return NULL;
++	if (es8328->deemph == deemph)
++		return 0;
++
+ 	ret = es8328_set_deemph(component);
+ 	if (ret < 0)
+ 		return ret;
  
--	for (i = 0, j = 0, pi = NULL; i < host->n_ports; i++) {
-+	for (i = 0, j = 0; i < host->n_ports; i++) {
- 		struct ata_port *ap = host->ports[i];
+ 	es8328->deemph = deemph;
  
- 		if (ppi[j])
+-	return 0;
++	return 1;
+ }
+ 
+ 
 -- 
 2.35.1
 
