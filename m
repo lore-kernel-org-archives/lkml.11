@@ -2,186 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE49DC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 20:59:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6C60C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 21:03:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240918AbiFTU7W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 16:59:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47780 "EHLO
+        id S243194AbiFTVC7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 17:02:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236831AbiFTU6V (ORCPT
+        with ESMTP id S234470AbiFTVC6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 16:58:21 -0400
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A2CB237F3;
-        Mon, 20 Jun 2022 13:56:59 -0700 (PDT)
-Received: by mail-lj1-x22e.google.com with SMTP id b23so4647627ljh.7;
-        Mon, 20 Jun 2022 13:56:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=I1q6whSBjY67mrzgmnGkRh2MNzKa13E3jo+SVBhTEQg=;
-        b=XqDUXO3E0jN9GQ9iGhmoxij0PahkYfXP61nSCTKCx/fvSoFpRgDWoLiqAgCUJw1PnX
-         GdUgZ6dYoT0Uit7ykMaMR28omMbZ7gDLoi3NlWPpOtwarIrAKYFsFwlDEOerY9w8oIh9
-         rbNjhalyLNI+e+pBOTtZlMUNIOGbQPKrYkgGGE49HLjM86guD1yX+eIVXs28qYEpQbEL
-         6u9TJxb58aw5NaSuOkvrVJyyneGqycdZCp/nKqOuDGx84SLdx3Jj79iGAZlYRrBgW6bm
-         FIeQBMEkq8FhjglPxtSJNnSUrVC7AertpkEpoopILkV/YW/Fu3kY37aS2zC50BoszzoE
-         3eOA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=I1q6whSBjY67mrzgmnGkRh2MNzKa13E3jo+SVBhTEQg=;
-        b=fVeinxp5aaWTvUGdfrPpd7mRoHUu/AH3fG4ZS87T/TrrETruzfxS4dXXs4W99daUvo
-         lFZeN4swwddKQ8pCyiPdX4oNVEmQKn4vKrJw/bRar/44k29MBweVUqoFQNNjn6Uo5StP
-         XK6JkkUDopHN5Yll0JFxNqj6P4AMr6cwTshnpIEs7/nnsjaWm/A2GEW0mSckC3yH2a1E
-         1bDI4/T8fML6djs0C+Xw1KP62irMxiNJsNAncNU4KV8tpeyA7wtz1hF+Z9BeF9ns7Jgz
-         YFtbjeYqxBosncUrkYgNKlB7uYyi/flxQuzl1tmYyDwnE8aq/ELzRESo8/wdFfJ95bXd
-         tQ2Q==
-X-Gm-Message-State: AJIora/gy/kJD74Q2/uTDIrU7gqrelxm7i6XtD3nCFKsv9BVNDbtuIps
-        vE4ZZR2WMzwmDwd2/OraoZk=
-X-Google-Smtp-Source: AGRyM1to9l7DPfbxuwJzqkPzvrt6m3YRq/lqE+tbkd+LRqyrjxLhnrSzMA6Azd9ZVxOZ5l1LL1DhCQ==
-X-Received: by 2002:a05:651c:2107:b0:255:beb0:9969 with SMTP id a7-20020a05651c210700b00255beb09969mr12785405ljq.157.1655758617786;
-        Mon, 20 Jun 2022 13:56:57 -0700 (PDT)
-Received: from mobilestation ([95.79.189.214])
-        by smtp.gmail.com with ESMTPSA id i17-20020ac25b51000000b004778632bff6sm1893799lfp.59.2022.06.20.13.56.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jun 2022 13:56:57 -0700 (PDT)
-Date:   Mon, 20 Jun 2022 23:56:54 +0300
-From:   Serge Semin <fancer.lancer@gmail.com>
-To:     Conor Dooley <mail@conchuod.ie>
-Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Niklas Cassel <niklas.cassel@wdc.com>,
-        Dillon Min <dillon.minfei@gmail.com>,
-        Heng Sia <jee.heng.sia@intel.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
-        linux-riscv@lists.infradead.org
-Subject: Re: [PATCH 06/14] spi: dt-bindings: dw-apb-ssi: update
- spi-{r,t}x-bus-width for dwc-ssi
-Message-ID: <20220620205654.g7fyipwytbww5757@mobilestation>
-References: <20220618123035.563070-1-mail@conchuod.ie>
- <20220618123035.563070-7-mail@conchuod.ie>
+        Mon, 20 Jun 2022 17:02:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABF7762D0;
+        Mon, 20 Jun 2022 14:02:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A9E461151;
+        Mon, 20 Jun 2022 21:02:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A819C3411B;
+        Mon, 20 Jun 2022 21:02:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655758975;
+        bh=YXHELCkM/DaDMHJEhftBobWPAAsBACKzdTfooNhF3xo=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=AihOai6z5WodejxapxdG/Gh+CAzGZfabSqHcZQbPnNr15qoCfvqUIevadlSPZhn4C
+         LGRoL6AGtPrpTv6DZHgkqQ1Lvg9gkjqKgZiJKFwUG/F82ovq63Dw4Gwz6pM9lKnOZA
+         nhna/6d/hg9dCqr3A6hgiXuB7+tFKmWZvIR6+ygHnj5v2EASXrYlGhlRzmUxs9VbvL
+         dkYUBlIei7DT7N37TRfXmll8F2mTvM2TeJKSloxY29tq9G90V5+mQO/AcyJFeelfez
+         b6fti4fjC4LzmOhVQdP3rQSuihxlDcW5nBR7QSfc3NAosS1OVKcltF925X3ehTBbUQ
+         akAHSbtZY0Htw==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 00D025C0564; Mon, 20 Jun 2022 14:02:54 -0700 (PDT)
+Date:   Mon, 20 Jun 2022 14:02:54 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Catalin Marinas <catalin.marinas@arm.com>
+Cc:     Marco Elver <elver@google.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>, will@kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        mark.rutland@arm.com, Jonathan Corbet <corbet@lwn.net>,
+        linux-doc@vger.kernel.org, arnd@arndb.de,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [PATCH v4 1/2] asm-generic: Add memory barrier dma_mb()
+Message-ID: <20220620210254.GY1790663@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220523113126.171714-1-wangkefeng.wang@huawei.com>
+ <20220523113126.171714-2-wangkefeng.wang@huawei.com>
+ <CANpmjNNPf5J2OcVxoMgVtFYjWJhJ2JE+UBFyqnt6+WrPobPOHQ@mail.gmail.com>
+ <20220616231350.GA1790663@paulmck-ThinkPad-P17-Gen-1>
+ <CANpmjNMnA0VtExcvpV=Sr57RQ3xxVkHxhrTkvEKeHZ27bhud+w@mail.gmail.com>
+ <Yq7wMj30T/mJp+FZ@arm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220618123035.563070-7-mail@conchuod.ie>
+In-Reply-To: <Yq7wMj30T/mJp+FZ@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jun 18, 2022 at 01:30:28PM +0100, Conor Dooley wrote:
-> From: Conor Dooley <conor.dooley@microchip.com>
+On Sun, Jun 19, 2022 at 10:45:22AM +0100, Catalin Marinas wrote:
+> On Fri, Jun 17, 2022 at 12:18:41PM +0200, Marco Elver wrote:
+> > On Fri, 17 Jun 2022 at 01:13, Paul E. McKenney <paulmck@kernel.org> wrote:
+> > > On Mon, May 23, 2022 at 01:35:27PM +0200, Marco Elver wrote:
+> > > > On Mon, 23 May 2022 at 13:21, Kefeng Wang <wangkefeng.wang@huawei.com> wrote:
+> > > > >
+> > > > > The memory barrier dma_mb() is introduced by commit a76a37777f2c
+> > > > > ("iommu/arm-smmu-v3: Ensure queue is read after updating prod pointer"),
+> > > > > which is used to ensure that prior (both reads and writes) accesses
+> > > > > to memory by a CPU are ordered w.r.t. a subsequent MMIO write.
+> > > > >
+> > > > > Reviewed-by: Arnd Bergmann <arnd@arndb.de> # for asm-generic
+> > > > > Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+> > > >
+> > > > Reviewed-by: Marco Elver <elver@google.com>
+> > >
+> > > Just checking...  Did these ever get picked up?  It was suggested
+> > > that they go up via the arm64 tree, if I remember correctly.
+> > 
+> > I don't see them in -next, and as far as I can tell, they're not in
+> > the arm64 tree.
 > 
-> snps,dwc-ssi-1.01a has a single user - the Canaan k210, which uses a
-> width of 4 for spi-{r,t}x-bus-width. Update the binding to reflect
-> this.
+> Since v4 was posted during the merging window, it hasn't been queued for
+> 5.19-rc1. I normally only merge patches with a Fixes tag during the -rc
+> period (though there are some exceptions). Mark commented in v1 that
+> such tag isn't necessary, so I thought I'd leave it for the 5.20 merging
+> window.
 > 
-> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
-> ---
->  .../bindings/spi/snps,dw-apb-ssi.yaml         | 48 ++++++++++++++-----
->  1 file changed, 35 insertions(+), 13 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/spi/snps,dw-apb-ssi.yaml b/Documentation/devicetree/bindings/spi/snps,dw-apb-ssi.yaml
-> index e25d44c218f2..f2b9e3f062cd 100644
-> --- a/Documentation/devicetree/bindings/spi/snps,dw-apb-ssi.yaml
-> +++ b/Documentation/devicetree/bindings/spi/snps,dw-apb-ssi.yaml
-> @@ -135,19 +135,41 @@ properties:
->        of the designware controller, and the upper limit is also subject to
->        controller configuration.
->  
-> -patternProperties:
-> -  "^.*@[0-9a-f]+$":
-> -    type: object
-> -    properties:
-> -      reg:
-> -        minimum: 0
-> -        maximum: 3
-> -
-> -      spi-rx-bus-width:
-> -        const: 1
-> -
-> -      spi-tx-bus-width:
-> -        const: 1
-> +if:
-> +  properties:
-> +    compatible:
-> +      contains:
-> +        const: snps,dwc-ssi-1.01a
-> +
-> +then:
-> +  patternProperties:
-> +    "^.*@[0-9a-f]+$":
-> +      type: object
-> +      properties:
-> +        reg:
-> +          minimum: 0
-> +          maximum: 3
-> +
-> +        spi-rx-bus-width:
-> +          const: 4
-> +
-> +        spi-tx-bus-width:
-> +          const: 4
-> +
-> +else:
-> +  patternProperties:
-> +    "^.*@[0-9a-f]+$":
-> +      type: object
-> +      properties:
-> +        reg:
-> +          minimum: 0
-> +          maximum: 3
-> +
-> +        spi-rx-bus-width:
-> +          const: 1
-> +
-> +        spi-tx-bus-width:
-> +          const: 1
+> That said, the diffstat is small, so if it helps having this in 5.19, I
+> can queue it for -rc4.
 
-You can just use a more relaxed constraint "enum: [1 2 4 8]" here
-irrespective from the compatible string. The modern DW APB SSI
-controllers of v.4.* and newer also support the enhanced SPI Modes too
-(Dual, Quad and Octal). Since the IP-core version is auto-detected at
-run-time there is no way to create a DT-schema correctly constraining
-the Rx/Tx SPI bus widths. So let's keep the
-compatible-string-independent "patternProperties" here but just extend
-the set of acceptable "spi-rx-bus-width" and "spi-tx-bus-width"
-properties values.
+As long as it is not going to be lost, I am good.  ;-)
 
-Note the DW APB SSI/AHB SSI driver currently doesn't support the
-enhanced SPI modes. So I am not sure whether the multi-lines Rx/Tx SPI
-bus indeed works for Canaan K210 AHB SSI controller. AFAICS from the
-DW APB SSI v4.01a manual the Enhanced SPI mode needs to be properly
-activated by means of the corresponding CSR. So most likely the DW AHB
-SSI controllers need some specific setups too.
+So v5.20 is fine.
 
--Sergey
-
->  
->  unevaluatedProperties: false
->  
-> -- 
-> 2.36.1
-> 
+							Thanx, Paul
