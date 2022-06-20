@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9F8DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:01:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E516C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:01:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243898AbiFTNB4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:01:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39408 "EHLO
+        id S242852AbiFTNB6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:01:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238387AbiFTM5r (ORCPT
+        with ESMTP id S243209AbiFTM5s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 08:57:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF97A1AF16;
-        Mon, 20 Jun 2022 05:55:35 -0700 (PDT)
+        Mon, 20 Jun 2022 08:57:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28F6419294;
+        Mon, 20 Jun 2022 05:55:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C8C76B811B3;
-        Mon, 20 Jun 2022 12:55:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2645EC341C4;
-        Mon, 20 Jun 2022 12:55:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9EED1B811A0;
+        Mon, 20 Jun 2022 12:55:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFC60C3411B;
+        Mon, 20 Jun 2022 12:55:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655729732;
-        bh=YNWu+/GXQUo6nD402dR+q/FDYgLXdn3YWTkwGKNtjQo=;
+        s=korg; t=1655729714;
+        bh=o4xZ5Na3RkwWIDOlYsfRkLahEYmnqPKWG46lPr0m57E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zUnSa3DTcdlET0doZL0shE2eQIzWjfziKvvC3PkVc+YypdceDghDOXJ5tLYsksXhP
-         0ZV7sU0zWG+qyn6bZEf/kB/OEwAW70AYKb9UfrZGAIOBCHy6J65XTnD3n8L2n/vAND
-         VNyVtXM859x9NZQh5HSeyv2Lv/cGocilhWYb16bU=
+        b=s97uI+Nv5mlVsE35GqlvdJfD5ARMgKdg4l0AXsK0ZNoEqB6C+c2SvfRbqaExsa8gS
+         1eHzhYDXbqJiIXU70GytL/wn2c4Nw18SVQViLWJn6iWYPbMQ6UX7DDf0OsMeXQ40/+
+         ZzTHGBDshsHl8Vc2ULLoxJysz9FoVUGSBJr9guio=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Scott Mayhew <smayhew@redhat.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        stable@vger.kernel.org, Duke Lee <krnhotwings@gmail.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 056/141] sunrpc: set cl_max_connect when cloning an rpc_clnt
-Date:   Mon, 20 Jun 2022 14:49:54 +0200
-Message-Id: <20220620124731.192061123@linuxfoundation.org>
+Subject: [PATCH 5.18 051/141] platform/x86/intel: hid: Add Surface Go to VGBS allow list
+Date:   Mon, 20 Jun 2022 14:49:49 +0200
+Message-Id: <20220620124731.043914458@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 References: <20220620124729.509745706@linuxfoundation.org>
@@ -49,41 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Scott Mayhew <smayhew@redhat.com>
+From: Duke Lee <krnhotwings@gmail.com>
 
-[ Upstream commit 304791255a2dc1c9be7e7c8a6cbdb31b6847b0e5 ]
+[ Upstream commit d4fe9cc4ff8656704b58cfd9363d7c3c9d65e519 ]
 
-If the initial attempt at trunking detection using the krb5i auth flavor
-fails with -EACCES, -NFS4ERR_CLID_INUSE, or -NFS4ERR_WRONGSEC, then the
-NFS client tries again using auth_sys, cloning the rpc_clnt in the
-process.  If this second attempt at trunking detection succeeds, then
-the resulting nfs_client->cl_rpcclient winds up having cl_max_connect=0
-and subsequent attempts to add additional transport connections to the
-rpc_clnt will fail with a message similar to the following being logged:
+The Surface Go reports Chassis Type 9 (Laptop,) so the device needs to be
+added to dmi_vgbs_allow_list to enable tablet mode when an attached Type
+Cover is folded back.
 
-[502044.312640] SUNRPC: reached max allowed number (0) did not add
-transport to server: 192.168.122.3
-
-Signed-off-by: Scott Mayhew <smayhew@redhat.com>
-Fixes: dc48e0abee24 ("SUNRPC enforce creation of no more than max_connect xprts")
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+BugLink: https://github.com/linux-surface/linux-surface/issues/837
+Signed-off-by: Duke Lee <krnhotwings@gmail.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Link: https://lore.kernel.org/r/20220607213654.5567-1-krnhotwings@gmail.com
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sunrpc/clnt.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/platform/x86/intel/hid.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/net/sunrpc/clnt.c b/net/sunrpc/clnt.c
-index e2c6eca0271b..b6781ada3aa8 100644
---- a/net/sunrpc/clnt.c
-+++ b/net/sunrpc/clnt.c
-@@ -651,6 +651,7 @@ static struct rpc_clnt *__rpc_clone_client(struct rpc_create_args *args,
- 	new->cl_discrtry = clnt->cl_discrtry;
- 	new->cl_chatty = clnt->cl_chatty;
- 	new->cl_principal = clnt->cl_principal;
-+	new->cl_max_connect = clnt->cl_max_connect;
- 	return new;
+diff --git a/drivers/platform/x86/intel/hid.c b/drivers/platform/x86/intel/hid.c
+index 216d31e3403d..79cff1fc675c 100644
+--- a/drivers/platform/x86/intel/hid.c
++++ b/drivers/platform/x86/intel/hid.c
+@@ -122,6 +122,12 @@ static const struct dmi_system_id dmi_vgbs_allow_list[] = {
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "HP Spectre x360 Convertible 15-df0xxx"),
+ 		},
+ 	},
++	{
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "Surface Go"),
++		},
++	},
+ 	{ }
+ };
  
- out_err:
 -- 
 2.35.1
 
