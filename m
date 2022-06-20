@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD913C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 12:53:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC61DCCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 12:53:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242057AbiFTMxR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 08:53:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36564 "EHLO
+        id S242873AbiFTMxi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 08:53:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241878AbiFTMxL (ORCPT
+        with ESMTP id S241906AbiFTMxM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 08:53:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8BC1A47E;
-        Mon, 20 Jun 2022 05:53:10 -0700 (PDT)
+        Mon, 20 Jun 2022 08:53:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A6BBDFC2;
+        Mon, 20 Jun 2022 05:53:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 94CCCB811AB;
-        Mon, 20 Jun 2022 12:53:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99D79C3411B;
-        Mon, 20 Jun 2022 12:53:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AA174614CA;
+        Mon, 20 Jun 2022 12:53:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B759EC3411C;
+        Mon, 20 Jun 2022 12:53:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655729588;
-        bh=jpahqU4Ez2Jv2ovq+6xWJVXthFohCC2sf6mGPWztRhY=;
+        s=korg; t=1655729591;
+        bh=2Z1+VyDmSP217IlxogHI6k4uHyug/J80iBfbbftIv3M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uRXraJslE664cO+IxmD4PT+zwxCuV7rbBPm5tj8XE0Qoc9e+Em3rFXftihRcZFdip
-         3DbwHOP1LpWdPa+1yA/ax7oAN0pksjldWoRxO3fpksfzkrSP1k+/+sih7+/7NXr0mL
-         KhG3FcXwcSwyIYOY+MlCmR7xLDT4l45NVxmVjWSw=
+        b=m/ARWKSPp5St//vX9o8yyuyPtIdbN1L/74a1h09IduMTVwIY3Q/Ilix5g15IurTfd
+         gnraYrbu4BDCGUTiXblBJV3S4rQI1wZH1OH6fUM4q+EayAfS/aHHolUWIvBnwrk9C6
+         E4H+xor8EpEYQmUy0evjMzYEWRwp/Nrt2aX15JA0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rob Clark <robdclark@chromium.org>,
-        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 011/141] dma-debug: make things less spammy under memory pressure
-Date:   Mon, 20 Jun 2022 14:49:09 +0200
-Message-Id: <20220620124729.852674260@linuxfoundation.org>
+        stable@vger.kernel.org, xliu <xiang.liu@cirrus.com>,
+        Brent Lu <brent.lu@intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 012/141] ASoC: Intel: cirrus-common: fix incorrect channel mapping
+Date:   Mon, 20 Jun 2022 14:49:10 +0200
+Message-Id: <20220620124729.882789615@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 References: <20220620124729.509745706@linuxfoundation.org>
@@ -48,36 +51,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rob Clark <robdclark@chromium.org>
+From: xliu <xiang.liu@cirrus.com>
 
-[ Upstream commit e19f8fa6ce1ca9b8b934ba7d2e8f34c95abc6e60 ]
+[ Upstream commit d69a155555c9d57463b788c400f6b452d976bacd ]
 
-Limit the error msg to avoid flooding the console.  If you have a lot of
-threads hitting this at once, they could have already gotten passed the
-dma_debug_disabled() check before they get to the point of allocation
-failure, resulting in quite a lot of this error message spamming the
-log.  Use pr_err_once() to limit that.
+The default mapping of ASPRX1 (DAC source) is slot 0. Change the slot
+mapping of right amplifiers (WR and TR) to slot 1 to receive right
+channel data. Also update the ACPI instance ID mapping according to HW
+configuration.
 
-Signed-off-by: Rob Clark <robdclark@chromium.org>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: xliu <xiang.liu@cirrus.com>
+Signed-off-by: Brent Lu <brent.lu@intel.com>
+Acked-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/20220602051922.1232457-1-brent.lu@intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/dma/debug.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/intel/boards/sof_cirrus_common.c | 40 +++++++++++++++++++---
+ 1 file changed, 36 insertions(+), 4 deletions(-)
 
-diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index ac740630c79c..2caafd13f8aa 100644
---- a/kernel/dma/debug.c
-+++ b/kernel/dma/debug.c
-@@ -564,7 +564,7 @@ static void add_dma_entry(struct dma_debug_entry *entry, unsigned long attrs)
+diff --git a/sound/soc/intel/boards/sof_cirrus_common.c b/sound/soc/intel/boards/sof_cirrus_common.c
+index e71d74ec1b0b..f4192df962d6 100644
+--- a/sound/soc/intel/boards/sof_cirrus_common.c
++++ b/sound/soc/intel/boards/sof_cirrus_common.c
+@@ -54,22 +54,29 @@ static struct snd_soc_dai_link_component cs35l41_components[] = {
+ 	},
+ };
  
- 	rc = active_cacheline_insert(entry);
- 	if (rc == -ENOMEM) {
--		pr_err("cacheline tracking ENOMEM, dma-debug disabled\n");
-+		pr_err_once("cacheline tracking ENOMEM, dma-debug disabled\n");
- 		global_disable = true;
- 	} else if (rc == -EEXIST && !(attrs & DMA_ATTR_SKIP_CPU_SYNC)) {
- 		err_printk(entry->dev, entry,
++/*
++ * Mapping between ACPI instance id and speaker position.
++ *
++ * Four speakers:
++ *         0: Tweeter left, 1: Woofer left
++ *         2: Tweeter right, 3: Woofer right
++ */
+ static struct snd_soc_codec_conf cs35l41_codec_conf[] = {
+ 	{
+ 		.dlc = COMP_CODEC_CONF(CS35L41_DEV0_NAME),
+-		.name_prefix = "WL",
++		.name_prefix = "TL",
+ 	},
+ 	{
+ 		.dlc = COMP_CODEC_CONF(CS35L41_DEV1_NAME),
+-		.name_prefix = "WR",
++		.name_prefix = "WL",
+ 	},
+ 	{
+ 		.dlc = COMP_CODEC_CONF(CS35L41_DEV2_NAME),
+-		.name_prefix = "TL",
++		.name_prefix = "TR",
+ 	},
+ 	{
+ 		.dlc = COMP_CODEC_CONF(CS35L41_DEV3_NAME),
+-		.name_prefix = "TR",
++		.name_prefix = "WR",
+ 	},
+ };
+ 
+@@ -101,6 +108,21 @@ static int cs35l41_init(struct snd_soc_pcm_runtime *rtd)
+ 	return ret;
+ }
+ 
++/*
++ * Channel map:
++ *
++ * TL/WL: ASPRX1 on slot 0, ASPRX2 on slot 1 (default)
++ * TR/WR: ASPRX1 on slot 1, ASPRX2 on slot 0
++ */
++static const struct {
++	unsigned int rx[2];
++} cs35l41_channel_map[] = {
++	{.rx = {0, 1}}, /* TL */
++	{.rx = {0, 1}}, /* WL */
++	{.rx = {1, 0}}, /* TR */
++	{.rx = {1, 0}}, /* WR */
++};
++
+ static int cs35l41_hw_params(struct snd_pcm_substream *substream,
+ 			     struct snd_pcm_hw_params *params)
+ {
+@@ -134,6 +156,16 @@ static int cs35l41_hw_params(struct snd_pcm_substream *substream,
+ 				ret);
+ 			return ret;
+ 		}
++
++		/* setup channel map */
++		ret = snd_soc_dai_set_channel_map(codec_dai, 0, NULL,
++						  ARRAY_SIZE(cs35l41_channel_map[i].rx),
++						  (unsigned int *)cs35l41_channel_map[i].rx);
++		if (ret < 0) {
++			dev_err(codec_dai->dev, "fail to set channel map, ret %d\n",
++				ret);
++			return ret;
++		}
+ 	}
+ 
+ 	return 0;
 -- 
 2.35.1
 
