@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32AD6C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:32:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B818C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:32:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230052AbiFTNci (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:32:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53250 "EHLO
+        id S1346256AbiFTNcw (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:32:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346147AbiFTNbv (ORCPT
+        with ESMTP id S1345367AbiFTNcW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:31:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0561255BE;
-        Mon, 20 Jun 2022 06:12:30 -0700 (PDT)
+        Mon, 20 Jun 2022 09:32:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0A8725C7E;
+        Mon, 20 Jun 2022 06:12:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 18967B811DD;
-        Mon, 20 Jun 2022 13:11:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AFC9C3411B;
-        Mon, 20 Jun 2022 13:11:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BE65C60EA0;
+        Mon, 20 Jun 2022 13:12:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B12F7C3411B;
+        Mon, 20 Jun 2022 13:12:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730708;
-        bh=mZClorf+G/U6t4QIzFPPF5nRPSXhrnLwo2yopIxpe4A=;
+        s=korg; t=1655730756;
+        bh=YAUKsAuc2AWmejvbJm7d9pwZjKJnlLRzpTNJ8hmemsc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WGMq3+m/A2+NKOOIiP1HqCrR0xCGGeykTEfjVG27FqNDhx9t6ROqxnT6s3VRWJHU2
-         oNa9okYK3rP5C7NhwWItK23NXTlsiZ6hE3EWxSgzfzuh8lcKmUMQLuVB/YYqAknHwN
-         wOGdJVW8bXl1afVwW8/bQrUdt6C/vl+ENvrFFqXk=
+        b=UTQRJShqMOXB0Y0IN3t+GwPpixNAQt77iJ+5/jE5UHZXA1Xesuh8v3uE2T12b1Vka
+         f44cQfRs/qQrTxW8GQf7Gv6SY+WDfx2Cm3/Dnkf0tRhsLK0sVZs1AmDHHSysNcffwB
+         ntSX3i4wj72AuM06272gN4SNm0xxK2P0lO0ivSWs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
-        Andre Przywara <andre.przywara@arm.com>,
-        Eric Biggers <ebiggers@google.com>,
-        Marc Zyngier <maz@kernel.org>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Will Deacon <will@kernel.org>
-Subject: [PATCH 5.4 032/240] random: avoid arch_get_random_seed_long() when collecting IRQ randomness
-Date:   Mon, 20 Jun 2022 14:48:53 +0200
-Message-Id: <20220620124738.795125071@linuxfoundation.org>
+        stable@vger.kernel.org, Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-crypto@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.4 046/240] random: early initialization of ChaCha constants
+Date:   Mon, 20 Jun 2022 14:49:07 +0200
+Message-Id: <20220620124739.403999643@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -52,88 +52,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ard Biesheuvel <ardb@kernel.org>
+From: Dominik Brodowski <linux@dominikbrodowski.net>
 
-commit 390596c9959c2a4f5b456df339f0604df3d55fe0 upstream.
+commit 96562f286884e2db89c74215b199a1084b5fb7f7 upstream.
 
-When reseeding the CRNG periodically, arch_get_random_seed_long() is
-called to obtain entropy from an architecture specific source if one
-is implemented. In most cases, these are special instructions, but in
-some cases, such as on ARM, we may want to back this using firmware
-calls, which are considerably more expensive.
+Previously, the ChaCha constants for the primary pool were only
+initialized in crng_initialize_primary(), called by rand_initialize().
+However, some randomness is actually extracted from the primary pool
+beforehand, e.g. by kmem_cache_create(). Therefore, statically
+initialize the ChaCha constants for the primary pool.
 
-Another call to arch_get_random_seed_long() exists in the CRNG driver,
-in add_interrupt_randomness(), which collects entropy by capturing
-inter-interrupt timing and relying on interrupt jitter to provide
-random bits. This is done by keeping a per-CPU state, and mixing in
-the IRQ number, the cycle counter and the return address every time an
-interrupt is taken, and mixing this per-CPU state into the entropy pool
-every 64 invocations, or at least once per second. The entropy that is
-gathered this way is credited as 1 bit of entropy. Every time this
-happens, arch_get_random_seed_long() is invoked, and the result is
-mixed in as well, and also credited with 1 bit of entropy.
-
-This means that arch_get_random_seed_long() is called at least once
-per second on every CPU, which seems excessive, and doesn't really
-scale, especially in a virtualization scenario where CPUs may be
-oversubscribed: in cases where arch_get_random_seed_long() is backed
-by an instruction that actually goes back to a shared hardware entropy
-source (such as RNDRRS on ARM), we will end up hitting it hundreds of
-times per second.
-
-So let's drop the call to arch_get_random_seed_long() from
-add_interrupt_randomness(), and instead, rely on crng_reseed() to call
-the arch hook to get random seed material from the platform.
-
-Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
-Reviewed-by: Andre Przywara <andre.przywara@arm.com>
-Tested-by: Andre Przywara <andre.przywara@arm.com>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
-Acked-by: Marc Zyngier <maz@kernel.org>
-Reviewed-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Link: https://lore.kernel.org/r/20201105152944.16953-1-ardb@kernel.org
-Signed-off-by: Will Deacon <will@kernel.org>
+Cc: Herbert Xu <herbert@gondor.apana.org.au>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: <linux-crypto@vger.kernel.org>
+Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   15 +--------------
- 1 file changed, 1 insertion(+), 14 deletions(-)
+ drivers/char/random.c   |    5 ++++-
+ include/crypto/chacha.h |   15 +++++++++++----
+ 2 files changed, 15 insertions(+), 5 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -1281,8 +1281,6 @@ void add_interrupt_randomness(int irq, i
- 	cycles_t		cycles = random_get_entropy();
- 	__u32			c_high, j_high;
- 	__u64			ip;
--	unsigned long		seed;
--	int			credit = 0;
+@@ -458,6 +458,10 @@ struct crng_state {
  
- 	if (cycles == 0)
- 		cycles = get_reg(fast_pool, regs);
-@@ -1318,23 +1316,12 @@ void add_interrupt_randomness(int irq, i
+ static struct crng_state primary_crng = {
+ 	.lock = __SPIN_LOCK_UNLOCKED(primary_crng.lock),
++	.state[0] = CHACHA_CONSTANT_EXPA,
++	.state[1] = CHACHA_CONSTANT_ND_3,
++	.state[2] = CHACHA_CONSTANT_2_BY,
++	.state[3] = CHACHA_CONSTANT_TE_K,
+ };
  
- 	fast_pool->last = now;
- 	__mix_pool_bytes(r, &fast_pool->pool, sizeof(fast_pool->pool));
--
--	/*
--	 * If we have architectural seed generator, produce a seed and
--	 * add it to the pool.  For the sake of paranoia don't let the
--	 * architectural seed generator dominate the input from the
--	 * interrupt noise.
--	 */
--	if (arch_get_random_seed_long(&seed)) {
--		__mix_pool_bytes(r, &seed, sizeof(seed));
--		credit = 1;
--	}
- 	spin_unlock(&r->lock);
+ /*
+@@ -824,7 +828,6 @@ static void crng_initialize_secondary(st
  
- 	fast_pool->count = 0;
+ static void __init crng_initialize_primary(struct crng_state *crng)
+ {
+-	chacha_init_consts(crng->state);
+ 	_extract_entropy(&input_pool, &crng->state[4], sizeof(__u32) * 12, 0);
+ 	if (crng_init_try_arch_early(crng) && trust_cpu && crng_init < 2) {
+ 		invalidate_batched_entropy();
+--- a/include/crypto/chacha.h
++++ b/include/crypto/chacha.h
+@@ -51,12 +51,19 @@ int crypto_chacha12_setkey(struct crypto
+ int crypto_chacha_crypt(struct skcipher_request *req);
+ int crypto_xchacha_crypt(struct skcipher_request *req);
  
- 	/* award one bit for the contents of the fast pool */
--	credit_entropy_bits(r, credit + 1);
-+	credit_entropy_bits(r, 1);
++enum chacha_constants { /* expand 32-byte k */
++	CHACHA_CONSTANT_EXPA = 0x61707865U,
++	CHACHA_CONSTANT_ND_3 = 0x3320646eU,
++	CHACHA_CONSTANT_2_BY = 0x79622d32U,
++	CHACHA_CONSTANT_TE_K = 0x6b206574U
++};
++
+ static inline void chacha_init_consts(u32 *state)
+ {
+-	state[0]  = 0x61707865; /* "expa" */
+-	state[1]  = 0x3320646e; /* "nd 3" */
+-	state[2]  = 0x79622d32; /* "2-by" */
+-	state[3]  = 0x6b206574; /* "te k" */
++	state[0]  = CHACHA_CONSTANT_EXPA;
++	state[1]  = CHACHA_CONSTANT_ND_3;
++	state[2]  = CHACHA_CONSTANT_2_BY;
++	state[3]  = CHACHA_CONSTANT_TE_K;
  }
- EXPORT_SYMBOL_GPL(add_interrupt_randomness);
  
+ #endif /* _CRYPTO_CHACHA_H */
 
 
