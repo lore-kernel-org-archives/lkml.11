@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65808C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:06:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA60EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:07:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244279AbiFTNGz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:06:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47636 "EHLO
+        id S244232AbiFTNHC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:07:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244888AbiFTNEH (ORCPT
+        with ESMTP id S244915AbiFTNEJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:04:07 -0400
+        Mon, 20 Jun 2022 09:04:09 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 664EE1704A;
-        Mon, 20 Jun 2022 05:59:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61976186E1;
+        Mon, 20 Jun 2022 05:59:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 256FEB811B9;
-        Mon, 20 Jun 2022 12:59:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69B1AC341C4;
-        Mon, 20 Jun 2022 12:59:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1931BB811A5;
+        Mon, 20 Jun 2022 12:59:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7654AC3411B;
+        Mon, 20 Jun 2022 12:59:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655729947;
-        bh=6lvvz833Vj6N548GKBS9vgnbN0iGWG1CACzGXTabowE=;
+        s=korg; t=1655729956;
+        bh=uff/LSoDCFORTp4ktTMN5owM8qbjZKsdjHY4n5fumQY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VKAmi3j7tEbQ4BXgE+o6SpKJc8JGCaocE0ICmBkRHeybjH5n2GNKQF1oxkRcknCVp
-         BBOawt/eOjzTEUdn0stLVc273mcoWgikssMDBPyg1YhIg2NXVC/ryLmKZ9GBqS2uB8
-         z746kTos56oQ2XoMuYCgbyxVESEqp/MIFC7KcPKY=
+        b=fyCyhiZbQEty+8KMZGDrawEnievsCHV6zNxGeUCZ7/oLAhsVbnyMBOqH0hfNLMoJ2
+         ve7HhbEh+ZL61gphdAiUuAwkcPkypCyrTdYb581kP7+C9/5GivRHUwmcgsJlQS53Vp
+         a+0lg+GZHq7PIwBmyu9ndzi8USklW/VwE+Iyu28w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Benjamin Marzinski <bmarzins@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>
-Subject: [PATCH 5.18 119/141] dm: fix race in dm_start_io_acct
-Date:   Mon, 20 Jun 2022 14:50:57 +0200
-Message-Id: <20220620124733.068967731@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Zhang Yi <yi.zhang@huawei.com>,
+        Ritesh Harjani <ritesh.list@gmail.com>,
+        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 5.18 130/141] ext4: add reserved GDT blocks check
+Date:   Mon, 20 Jun 2022 14:51:08 +0200
+Message-Id: <20220620124733.399180590@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 References: <20220620124729.509745706@linuxfoundation.org>
@@ -48,38 +50,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Benjamin Marzinski <bmarzins@redhat.com>
+From: Zhang Yi <yi.zhang@huawei.com>
 
-commit 10eb3a0d517fcc83eeea4242c149461205675eb4 upstream.
+commit b55c3cd102a6f48b90e61c44f7f3dda8c290c694 upstream.
 
-After commit 82f6cdcc3676c ("dm: switch dm_io booleans over to proper
-flags") dm_start_io_acct stopped atomically checking and setting
-was_accounted, which turned into the DM_IO_ACCOUNTED flag. This opened
-the possibility for a race where IO accounting is started twice for
-duplicate bios. To remove the race, check the flag while holding the
-io->lock.
+We capture a NULL pointer issue when resizing a corrupt ext4 image which
+is freshly clear resize_inode feature (not run e2fsck). It could be
+simply reproduced by following steps. The problem is because of the
+resize_inode feature was cleared, and it will convert the filesystem to
+meta_bg mode in ext4_resize_fs(), but the es->s_reserved_gdt_blocks was
+not reduced to zero, so could we mistakenly call reserve_backup_gdb()
+and passing an uninitialized resize_inode to it when adding new group
+descriptors.
 
-Fixes: 82f6cdcc3676c ("dm: switch dm_io booleans over to proper flags")
-Cc: stable@vger.kernel.org
-Signed-off-by: Benjamin Marzinski <bmarzins@redhat.com>
-Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+ mkfs.ext4 /dev/sda 3G
+ tune2fs -O ^resize_inode /dev/sda #forget to run requested e2fsck
+ mount /dev/sda /mnt
+ resize2fs /dev/sda 8G
+
+ ========
+ BUG: kernel NULL pointer dereference, address: 0000000000000028
+ CPU: 19 PID: 3243 Comm: resize2fs Not tainted 5.18.0-rc7-00001-gfde086c5ebfd #748
+ ...
+ RIP: 0010:ext4_flex_group_add+0xe08/0x2570
+ ...
+ Call Trace:
+  <TASK>
+  ext4_resize_fs+0xbec/0x1660
+  __ext4_ioctl+0x1749/0x24e0
+  ext4_ioctl+0x12/0x20
+  __x64_sys_ioctl+0xa6/0x110
+  do_syscall_64+0x3b/0x90
+  entry_SYSCALL_64_after_hwframe+0x44/0xae
+ RIP: 0033:0x7f2dd739617b
+ ========
+
+The fix is simple, add a check in ext4_resize_begin() to make sure that
+the es->s_reserved_gdt_blocks is zero when the resize_inode feature is
+disabled.
+
+Cc: stable@kernel.org
+Signed-off-by: Zhang Yi <yi.zhang@huawei.com>
+Reviewed-by: Ritesh Harjani <ritesh.list@gmail.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220601092717.763694-1-yi.zhang@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/dm.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ fs/ext4/resize.c |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
---- a/drivers/md/dm.c
-+++ b/drivers/md/dm.c
-@@ -551,6 +551,10 @@ static void dm_start_io_acct(struct dm_i
- 			return;
- 		/* Can afford locking given DM_TIO_IS_DUPLICATE_BIO */
- 		spin_lock_irqsave(&io->lock, flags);
-+		if (dm_io_flagged(io, DM_IO_ACCOUNTED)) {
-+			spin_unlock_irqrestore(&io->lock, flags);
-+			return;
-+		}
- 		dm_io_set_flag(io, DM_IO_ACCOUNTED);
- 		spin_unlock_irqrestore(&io->lock, flags);
- 	}
+--- a/fs/ext4/resize.c
++++ b/fs/ext4/resize.c
+@@ -54,6 +54,16 @@ int ext4_resize_begin(struct super_block
+ 		return -EPERM;
+ 
+ 	/*
++	 * If the reserved GDT blocks is non-zero, the resize_inode feature
++	 * should always be set.
++	 */
++	if (EXT4_SB(sb)->s_es->s_reserved_gdt_blocks &&
++	    !ext4_has_feature_resize_inode(sb)) {
++		ext4_error(sb, "resize_inode disabled but reserved GDT blocks non-zero");
++		return -EFSCORRUPTED;
++	}
++
++	/*
+ 	 * If we are not using the primary superblock/GDT copy don't resize,
+          * because the user tools have no way of handling this.  Probably a
+          * bad time to do it anyways.
 
 
