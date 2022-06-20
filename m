@@ -2,231 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FE5CC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 15:01:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BD22CCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 15:02:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242043AbiFTPBp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 11:01:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55316 "EHLO
+        id S242336AbiFTPCK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 11:02:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241755AbiFTPB1 (ORCPT
+        with ESMTP id S240792AbiFTPBk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 11:01:27 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD51A33E82;
-        Mon, 20 Jun 2022 07:27:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655735252; x=1687271252;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=WsS4aKTNsBEfsxzyCelSOGWceTw88jDLbhP2Gba4nWQ=;
-  b=iqG69QHZ2uVM+QEuQPaizoPWUNIGADlwPmOLy6rVZ2rxPMdAsR47dmOD
-   WVG/67BFwkyB3x/PdsSIo56GI6Rcvvb52IBmfXvRUGkh/j+WioAtYK2H/
-   jhVdIFx/HALAdH7vpSozrJt7fUD9qoiXTOZLLpaL/8UBMVIP4pOHhWW+v
-   cRQAIz3TnIS3cF4X1nxa8nvLFfkMCkndolHsS+qyVJFPsogCjesmN+3vj
-   kkfoRXNnTXQv+rT3RaghvJ6BlcCUxXry36AYtMhYLFVpTFwE+d5KLzzRX
-   gepUaGrYXkB+c2SE2aQukDUBQl8JBPUOdHusfIQ0qpV/grWNMycrxyNmZ
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="260341636"
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="260341636"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 07:27:29 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="689487163"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by fmsmga002.fm.intel.com with ESMTP; 20 Jun 2022 07:27:26 -0700
-Date:   Mon, 20 Jun 2022 22:19:19 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     Tianfei Zhang <tianfei.zhang@intel.com>
-Cc:     lee.jones@linaro.org, hao.wu@intel.com, trix@redhat.com,
-        linux-kernel@vger.kernel.org, linux-fpga@vger.kernel.org,
-        russell.h.weight@intel.com, matthew.gerlach@linux.intel.com
-Subject: Re: [PATCH v2 4/4] mfd: intel-m10-bmc: support multiple register
- layouts
-Message-ID: <20220620141919.GA1417169@yilunxu-OptiPlex-7050>
-References: <20220617020405.128352-1-tianfei.zhang@intel.com>
- <20220617020405.128352-5-tianfei.zhang@intel.com>
+        Mon, 20 Jun 2022 11:01:40 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76EDA20182;
+        Mon, 20 Jun 2022 07:29:42 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id e25so11071553wrc.13;
+        Mon, 20 Jun 2022 07:29:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=cGgBS2uDbSefMyYhaKgxH8+vsRuhCSOfmf5Gh6K/Kz4=;
+        b=pMub9SmSIR/Qt/2NpE/yWgATpZNmnhYhNRsUAKMb0VsEUhQ9TeGIsJOKjxTWCNWMzg
+         kwbuk5qHOW01JdvW3a2Uzchbvx2On+axpWl/gJx1vyymtNpXj+nduztom3tjudPxyG2P
+         x9nZ1DZ2TORzrwzRLn7b958lQkdaXyRgDcOjnPRAFlmtg279QYZu42DRjdumf1FpqnTC
+         lMgz5Aa4rNYbkJO+//LKDE/wAd6OF3wOcMdt2kDBsfcjyi59XGo3HAq8YhlNe/IQkv5W
+         iHZMZPAQzGNh7ezzFuhXXtN7pZulmDDl3Ti0Ydzw11HLqDGLySLq5Y58p1SQAKEjbx2c
+         z4Uw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=cGgBS2uDbSefMyYhaKgxH8+vsRuhCSOfmf5Gh6K/Kz4=;
+        b=SOVBWEGzPEkCph2P3yjryYhpef66VPYn9FEF0SmFLP0MA0XEX17yVJNPMOQ/ujy5oc
+         ntE6bu+tkihqlVv15GNwrOHxsz5JpLhbxksa3FVd2Falbwqnrj4/lWfPm5vjyZ6lrs3J
+         zgv1a+L3CZIAR0q/XcJnyPBRp1MYMBrEaSP86JTxd8C8j/BRAhwBWQzNO6CeKFNl0D/P
+         sG8LklwTTheeRGzbt+orZvC4XiLc+dTMfm72rVSEjUi/bpR+IS6KLEUixvhp/Jb28y5Y
+         aBtGY81pjts2kYT2dJp8lV8XAKl9kwvBewDz/YdCDN92kM3IdlMszY72oe5OtIl4epDc
+         b/pg==
+X-Gm-Message-State: AJIora9pgepRz8MJ2UcKOfkn93LeD6QnA4iGk5lIQQMEPX3bhDtrD2jC
+        oTRAsSA1lJgJU6D29YgdNho=
+X-Google-Smtp-Source: AGRyM1v//ix12t5zFYBJktov5584oQfdRGnD6ldDdATXUHbzjxTPUWl1ppZ0p9ORSMmY6kD3S0ziRQ==
+X-Received: by 2002:a05:6000:1e1c:b0:21b:8a12:acba with SMTP id bj28-20020a0560001e1c00b0021b8a12acbamr9056026wrb.710.1655735380796;
+        Mon, 20 Jun 2022 07:29:40 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:9af8:e5f5:7516:fa89? ([2001:b07:6468:f312:9af8:e5f5:7516:fa89])
+        by smtp.googlemail.com with ESMTPSA id u12-20020a05600c19cc00b0039c4e2ff7cfsm19492945wmq.43.2022.06.20.07.29.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Jun 2022 07:29:40 -0700 (PDT)
+Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
+Message-ID: <28a8dbbd-b917-bbe4-2480-d241f0b90533@redhat.com>
+Date:   Mon, 20 Jun 2022 16:29:38 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220617020405.128352-5-tianfei.zhang@intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 6/7] KVM: x86: Ignore benign host accesses to
+ "unsupported" PEBS and BTS MSRs
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Like Xu <likexu@tencent.com>
+References: <20220611005755.753273-1-seanjc@google.com>
+ <20220611005755.753273-7-seanjc@google.com> <YqdFIilui+0ji+WZ@google.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <YqdFIilui+0ji+WZ@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 16, 2022 at 10:04:05PM -0400, Tianfei Zhang wrote:
-> There are different base addresses for the MAX10 CSR register.
-
-Actually I see differences for each register, not only the register
-base...
-
-> Introducing a new data structure m10bmc_csr for the register
-> definition of MAX10 CSR. Embedded m10bmc_csr into struct
-> intel_m10bmc to support multiple register layouts.
-
-Since the new BMC has different connections to host, different register
-layouts, different sub devices. Actually I can hardly find anything to
-share between them, so how about we just create a new driver for your
-new BMC?
-
-Thanks,
-Yilun
-
+On 6/13/22 16:09, Sean Christopherson wrote:
+> On Sat, Jun 11, 2022, Sean Christopherson wrote:
+>> @@ -4122,6 +4132,16 @@ int kvm_get_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+>>   		msr_info->data = vcpu->arch.guest_fpu.xfd_err;
+>>   		break;
+>>   #endif
+>> +	case MSR_IA32_PEBS_ENABLE:
+>> +	case MSR_IA32_DS_AREA:
+>> +	case MSR_PEBS_DATA_CFG:
+>> +		if (kvm_pmu_is_valid_msr(vcpu, msr_info->index))
+>> +			return kvm_pmu_get_msr(vcpu, msr_info);
+>> +		/*
+>> +		 * Userspace is allowed to read MSRs that KVM reports as
+>> +		 * to-be-saved, even if an MSR isn't fully supported.
+>> +		 */
+>> +		return !msr_info->host_initiated;
 > 
-> Signed-off-by: Tianfei Zhang <tianfei.zhang@intel.com>
-> ---
->  drivers/mfd/intel-m10-bmc-core.c  | 30 +++++++++++++++++++++++++-----
->  include/linux/mfd/intel-m10-bmc.h | 20 +++++++++++++++++++-
->  2 files changed, 44 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/mfd/intel-m10-bmc-core.c b/drivers/mfd/intel-m10-bmc-core.c
-> index c6a1a4c28357..f85f8e2aa9a1 100644
-> --- a/drivers/mfd/intel-m10-bmc-core.c
-> +++ b/drivers/mfd/intel-m10-bmc-core.c
-> @@ -10,6 +10,22 @@
->  #include <linux/mfd/intel-m10-bmc.h>
->  #include <linux/module.h>
->  
-> +static const struct m10bmc_csr m10bmc_pmci_csr = {
-> +	.base = M10BMC_PMCI_SYS_BASE,
-> +	.build_version = M10BMC_PMCI_BUILD_VER,
-> +	.fw_version = NIOS2_PMCI_FW_VERSION,
-> +	.mac_low = M10BMC_PMCI_MAC_LOW,
-> +	.mac_high = M10BMC_PMCI_MAC_HIGH,
-> +};
-> +
-> +static const struct m10bmc_csr m10bmc_spi_csr = {
-> +	.base = M10BMC_SYS_BASE,
-> +	.build_version = M10BMC_BUILD_VER,
-> +	.fw_version = NIOS2_FW_VERSION,
-> +	.mac_low = M10BMC_MAC_LOW,
-> +	.mac_high = M10BMC_MAC_HIGH,
-> +};
-> +
->  static struct mfd_cell m10bmc_n6000_bmc_subdevs[] = {
->  	{ .name = "n6000bmc-hwmon" },
->  	{ .name = "n6000bmc-sec-update" }
-> @@ -36,7 +52,7 @@ static ssize_t bmc_version_show(struct device *dev,
->  	unsigned int val;
->  	int ret;
->  
-> -	ret = m10bmc_sys_read(ddata, M10BMC_BUILD_VER, &val);
-> +	ret = m10bmc_sys_read(ddata, ddata->csr->build_version, &val);
->  	if (ret)
->  		return ret;
->  
-> @@ -51,7 +67,7 @@ static ssize_t bmcfw_version_show(struct device *dev,
->  	unsigned int val;
->  	int ret;
->  
-> -	ret = m10bmc_sys_read(ddata, NIOS2_FW_VERSION, &val);
-> +	ret = m10bmc_sys_read(ddata, ddata->csr->fw_version, &val);
->  	if (ret)
->  		return ret;
->  
-> @@ -66,11 +82,11 @@ static ssize_t mac_address_show(struct device *dev,
->  	unsigned int macaddr_low, macaddr_high;
->  	int ret;
->  
-> -	ret = m10bmc_sys_read(ddata, M10BMC_MAC_LOW, &macaddr_low);
-> +	ret = m10bmc_sys_read(ddata, ddata->csr->mac_low, &macaddr_low);
->  	if (ret)
->  		return ret;
->  
-> -	ret = m10bmc_sys_read(ddata, M10BMC_MAC_HIGH, &macaddr_high);
-> +	ret = m10bmc_sys_read(ddata, ddata->csr->mac_high, &macaddr_high);
->  	if (ret)
->  		return ret;
->  
-> @@ -91,7 +107,7 @@ static ssize_t mac_count_show(struct device *dev,
->  	unsigned int macaddr_high;
->  	int ret;
->  
-> -	ret = m10bmc_sys_read(ddata, M10BMC_MAC_HIGH, &macaddr_high);
-> +	ret = m10bmc_sys_read(ddata, ddata->csr->mac_high, &macaddr_high);
->  	if (ret)
->  		return ret;
->  
-> @@ -163,18 +179,22 @@ int m10bmc_dev_init(struct intel_m10bmc *m10bmc)
->  	case M10_N3000:
->  		cells = m10bmc_pacn3000_subdevs;
->  		n_cell = ARRAY_SIZE(m10bmc_pacn3000_subdevs);
-> +		m10bmc->csr = &m10bmc_spi_csr;
->  		break;
->  	case M10_D5005:
->  		cells = m10bmc_d5005_subdevs;
->  		n_cell = ARRAY_SIZE(m10bmc_d5005_subdevs);
-> +		m10bmc->csr = &m10bmc_spi_csr;
->  		break;
->  	case M10_N5010:
->  		cells = m10bmc_n5010_subdevs;
->  		n_cell = ARRAY_SIZE(m10bmc_n5010_subdevs);
-> +		m10bmc->csr = &m10bmc_spi_csr;
->  		break;
->  	case M10_N6000:
->  		cells = m10bmc_n6000_bmc_subdevs;
->  		n_cell = ARRAY_SIZE(m10bmc_n6000_bmc_subdevs);
-> +		m10bmc->csr = &m10bmc_pmci_csr;
->  		break;
->  	default:
->  		return -ENODEV;
-> diff --git a/include/linux/mfd/intel-m10-bmc.h b/include/linux/mfd/intel-m10-bmc.h
-> index 83c4d3993dcb..3a4fdab2acbd 100644
-> --- a/include/linux/mfd/intel-m10-bmc.h
-> +++ b/include/linux/mfd/intel-m10-bmc.h
-> @@ -125,6 +125,11 @@
->  #define M10BMC_PMCI_TELEM_START		0x400
->  #define M10BMC_PMCI_TELEM_END		0x78c
->  
-> +#define M10BMC_PMCI_BUILD_VER   0x0
-> +#define NIOS2_PMCI_FW_VERSION   0x4
-> +#define M10BMC_PMCI_MAC_LOW    0x20
-> +#define M10BMC_PMCI_MAC_HIGH    0x24
-> +
->  /* Supported MAX10 BMC types */
->  enum m10bmc_type {
->  	M10_N3000,
-> @@ -133,16 +138,29 @@ enum m10bmc_type {
->  	M10_N6000
->  };
->  
-> +/**
-> + * struct m10bmc_csr - Intel MAX 10 BMC CSR register
-> + */
-> +struct m10bmc_csr {
-> +	unsigned int base;
-> +	unsigned int build_version;
-> +	unsigned int fw_version;
-> +	unsigned int mac_low;
-> +	unsigned int mac_high;
-> +};
-> +
->  /**
->   * struct intel_m10bmc - Intel MAX 10 BMC parent driver data structure
->   * @dev: this device
->   * @regmap: the regmap used to access registers by m10bmc itself
->   * @type: the type of MAX10 BMC
-> + * @csr: the register definition of MAX10 BMC
->   */
->  struct intel_m10bmc {
->  	struct device *dev;
->  	struct regmap *regmap;
->  	enum m10bmc_type type;
-> +	const struct m10bmc_csr *csr;
->  };
->  
->  /*
-> @@ -174,7 +192,7 @@ m10bmc_raw_read(struct intel_m10bmc *m10bmc, unsigned int addr,
->   * M10BMC_SYS_BASE accordingly.
->   */
->  #define m10bmc_sys_read(m10bmc, offset, val) \
-> -	m10bmc_raw_read(m10bmc, M10BMC_SYS_BASE + (offset), val)
-> +	m10bmc_raw_read(m10bmc, m10bmc->csr->base + (offset), val)
->  
->  /*
->   * MAX10 BMC Core support
-> -- 
-> 2.26.2
+> Gah, this needs to set msr_info->data.
+
+Might also reuse the F15H case:
+
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 70364d40e3f7..be39968149e6 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -3877,9 +3877,16 @@ int kvm_get_msr_common(struct kvm_vcpu *vcpu, 
+struct msr_data *msr_info)
+  	case MSR_DRAM_ENERGY_STATUS:	/* DRAM controller */
+  		msr_info->data = 0;
+  		break;
++	case MSR_IA32_PEBS_ENABLE:
++	case MSR_IA32_DS_AREA:
++	case MSR_PEBS_DATA_CFG:
+  	case MSR_F15H_PERF_CTL0 ... MSR_F15H_PERF_CTR5:
+  		if (kvm_pmu_is_valid_msr(vcpu, msr_info->index))
+  			return kvm_pmu_get_msr(vcpu, msr_info);
++		/*
++		 * Userspace is allowed to read MSRs that KVM reports as
++		 * to-be-saved, even if an MSR isn't fully supported.
++		 */
+  		if (!msr_info->host_initiated)
+  			return 1;
+  		msr_info->data = 0;
+
+
+Paolo
