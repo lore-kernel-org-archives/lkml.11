@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3049C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:51:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD6B3C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:51:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349155AbiFTNvU (ORCPT
+        id S1349185AbiFTNvX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:51:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33606 "EHLO
+        Mon, 20 Jun 2022 09:51:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349511AbiFTNsq (ORCPT
+        with ESMTP id S1349489AbiFTNsp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:48:46 -0400
+        Mon, 20 Jun 2022 09:48:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EEE46307;
-        Mon, 20 Jun 2022 06:17:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7BDF38AF;
+        Mon, 20 Jun 2022 06:17:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E60F661147;
-        Mon, 20 Jun 2022 13:17:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6AE4C3411B;
-        Mon, 20 Jun 2022 13:17:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 915636114F;
+        Mon, 20 Jun 2022 13:16:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 830EDC3411B;
+        Mon, 20 Jun 2022 13:16:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731074;
-        bh=o4soIyc1vQYJQ67dGq9GBUeAqDilcx63IcfzN7572IA=;
+        s=korg; t=1655731017;
+        bh=dYx8PdSREqiQ5TasPNKE71jnKx6CBu7ljjQxcwdD4tw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w/1bWtge37Pux3ZZXsWxUaHHRdnREt4OIHYwCjdrKbulgDFK/uOneD5lteg9t0hNr
-         xZ2bgIrKRLK299Eu/dBwS20HEa7JxJUYwgbn10zt9YnhMMCzeOq0MepoqT8lGxMwqw
-         FVD06gFe5PEs9/PRS1VrOwRfRN9sEQ/sC7peeGAw=
+        b=QdsAwoNVB63Gmr0ikE/NLds+XFDOC3m3YgvEaSdUD6LWr2FFnnKxcYzNMvco3xFj5
+         9kAlr0vMiMUTVhl/Q9poHk9fZSU6/39MlvQCi0FAtpsifvpkGYGWYadPmnklXP7sSI
+         8sYJOdAMkPvfbaOfbypgKlmu3MTXDuSkIVm2Vm6c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Max Filippov <jcmvbkbc@gmail.com>,
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Theodore Tso <tytso@mit.edu>,
+        Thomas Gleixner <tglx@linutronix.de>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 144/240] xtensa: use fallback for random_get_entropy() instead of zero
-Date:   Mon, 20 Jun 2022 14:50:45 +0200
-Message-Id: <20220620124743.182582416@linuxfoundation.org>
+Subject: [PATCH 5.4 127/240] random: make random_get_entropy() return an unsigned long
+Date:   Mon, 20 Jun 2022 14:50:28 +0200
+Message-Id: <20220620124742.692651357@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -53,49 +54,101 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit e10e2f58030c5c211d49042a8c2a1b93d40b2ffb upstream.
+commit b0c3e796f24b588b862b61ce235d3c9417dc8983 upstream.
 
-In the event that random_get_entropy() can't access a cycle counter or
-similar, falling back to returning 0 is really not the best we can do.
-Instead, at least calling random_get_entropy_fallback() would be
-preferable, because that always needs to return _something_, even
-falling back to jiffies eventually. It's not as though
-random_get_entropy_fallback() is super high precision or guaranteed to
-be entropic, but basically anything that's not zero all the time is
-better than returning zero all the time.
+Some implementations were returning type `unsigned long`, while others
+that fell back to get_cycles() were implicitly returning a `cycles_t` or
+an untyped constant int literal. That makes for weird and confusing
+code, and basically all code in the kernel already handled it like it
+was an `unsigned long`. I recently tried to handle it as the largest
+type it could be, a `cycles_t`, but doing so doesn't really help with
+much.
 
-This is accomplished by just including the asm-generic code like on
-other architectures, which means we can get rid of the empty stub
-function here.
+Instead let's just make random_get_entropy() return an unsigned long all
+the time. This also matches the commonly used `arch_get_random_long()`
+function, so now RDRAND and RDTSC return the same sized integer, which
+means one can fallback to the other more gracefully.
 
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Acked-by: Max Filippov <jcmvbkbc@gmail.com>
+Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+Cc: Theodore Ts'o <tytso@mit.edu>
+Acked-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/xtensa/include/asm/timex.h |    6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/char/random.c |   20 +++++++-------------
+ include/linux/timex.h |    2 +-
+ 2 files changed, 8 insertions(+), 14 deletions(-)
 
---- a/arch/xtensa/include/asm/timex.h
-+++ b/arch/xtensa/include/asm/timex.h
-@@ -29,10 +29,6 @@
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -1010,7 +1010,7 @@ int __init rand_initialize(void)
+  */
+ void add_device_randomness(const void *buf, size_t size)
+ {
+-	cycles_t cycles = random_get_entropy();
++	unsigned long cycles = random_get_entropy();
+ 	unsigned long flags, now = jiffies;
  
- extern unsigned long ccount_freq;
+ 	if (crng_init == 0 && size)
+@@ -1041,8 +1041,7 @@ struct timer_rand_state {
+  */
+ static void add_timer_randomness(struct timer_rand_state *state, unsigned int num)
+ {
+-	cycles_t cycles = random_get_entropy();
+-	unsigned long flags, now = jiffies;
++	unsigned long cycles = random_get_entropy(), now = jiffies, flags;
+ 	long delta, delta2, delta3;
  
--typedef unsigned long long cycles_t;
+ 	spin_lock_irqsave(&input_pool.lock, flags);
+@@ -1297,8 +1296,7 @@ static void mix_interrupt_randomness(str
+ void add_interrupt_randomness(int irq)
+ {
+ 	enum { MIX_INFLIGHT = 1U << 31 };
+-	cycles_t cycles = random_get_entropy();
+-	unsigned long now = jiffies;
++	unsigned long cycles = random_get_entropy(), now = jiffies;
+ 	struct fast_pool *fast_pool = this_cpu_ptr(&irq_randomness);
+ 	struct pt_regs *regs = get_irq_regs();
+ 	unsigned int new_count;
+@@ -1311,16 +1309,12 @@ void add_interrupt_randomness(int irq)
+ 	if (cycles == 0)
+ 		cycles = get_reg(fast_pool, regs);
+ 
+-	if (sizeof(cycles) == 8)
++	if (sizeof(unsigned long) == 8) {
+ 		irq_data.u64[0] = cycles ^ rol64(now, 32) ^ irq;
+-	else {
++		irq_data.u64[1] = regs ? instruction_pointer(regs) : _RET_IP_;
++	} else {
+ 		irq_data.u32[0] = cycles ^ irq;
+ 		irq_data.u32[1] = now;
+-	}
 -
--#define get_cycles()	(0)
--
- void local_timer_setup(unsigned cpu);
+-	if (sizeof(unsigned long) == 8)
+-		irq_data.u64[1] = regs ? instruction_pointer(regs) : _RET_IP_;
+-	else {
+ 		irq_data.u32[2] = regs ? instruction_pointer(regs) : _RET_IP_;
+ 		irq_data.u32[3] = get_reg(fast_pool, regs);
+ 	}
+@@ -1367,7 +1361,7 @@ static void entropy_timer(struct timer_l
+ static void try_to_generate_entropy(void)
+ {
+ 	struct {
+-		cycles_t cycles;
++		unsigned long cycles;
+ 		struct timer_list timer;
+ 	} stack;
+ 
+--- a/include/linux/timex.h
++++ b/include/linux/timex.h
+@@ -75,7 +75,7 @@
+  * By default we use get_cycles() for this purpose, but individual
+  * architectures may override this in their asm/timex.h header file.
+  */
+-#define random_get_entropy()	get_cycles()
++#define random_get_entropy()	((unsigned long)get_cycles())
+ #endif
  
  /*
-@@ -59,4 +55,6 @@ static inline void set_linux_timer (unsi
- 	xtensa_set_sr(ccompare, SREG_CCOMPARE + LINUX_TIMER);
- }
- 
-+#include <asm-generic/timex.h>
-+
- #endif	/* _XTENSA_TIMEX_H */
 
 
