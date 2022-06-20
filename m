@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE1BFC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:07:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65C77C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:07:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244659AbiFTNH0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:07:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51022 "EHLO
+        id S244047AbiFTNHg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:07:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239006AbiFTNEK (ORCPT
+        with ESMTP id S244927AbiFTNEJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:04:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BD7D17053;
-        Mon, 20 Jun 2022 05:59:27 -0700 (PDT)
+        Mon, 20 Jun 2022 09:04:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B93D193D3;
+        Mon, 20 Jun 2022 05:59:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1736F61535;
-        Mon, 20 Jun 2022 12:59:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E1E5C3411B;
-        Mon, 20 Jun 2022 12:59:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 19F636153E;
+        Mon, 20 Jun 2022 12:59:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6B47C3411C;
+        Mon, 20 Jun 2022 12:59:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655729966;
-        bh=SjXAoznO5JPsYpcWKUijlKX7Px6pqsQqLLa1A/Kne20=;
+        s=korg; t=1655729963;
+        bh=udKYPvsT06cU8qjZ5wf0OQiIZyQGn9ezzGJ2iwG8vDQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cLAyI4ZROC+Wk5pXpeY6CVul6BieYdWKCLtWKe/agY2j1S5wNt08nweOsk0KIHlyZ
-         mN/jfTZhyDF3cMmYYNxeqfobF923QCmtKd6f4wvuXEmM3wuSBuDvAgbRY/AXI/6sDY
-         XtACUQavjdO3JExDoM1l8cXPZvarOQ8sUfDix85Y=
+        b=p94pYMxqcvWaVAzcjPBjP9sQBuI7/zlGVynt3fbPKw5M3/+qPH0nAr3PUIP4gqu8I
+         ykXNU0+otEwM+R0hBVTJOhJ5/Cd7a28wE79dGQwYv02dRyFqjCgYpbBApBO1s/eamc
+         KfCTq2H4VTbgu8hAk7Lpkwv5iXT4ypa9fsaQ0KPQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Murilo Opsfelder Araujo <muriloo@linux.ibm.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Christophe de Dinechin <dinechin@redhat.com>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH 5.18 133/141] virtio-pci: Remove wrong address verification in vp_del_vqs()
-Date:   Mon, 20 Jun 2022 14:51:11 +0200
-Message-Id: <20220620124733.488734442@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Auger <eric.auger@redhat.com>,
+        Marc Zyngier <maz@kernel.org>
+Subject: [PATCH 5.18 132/141] KVM: arm64: Dont read a HW interrupt pending state in user context
+Date:   Mon, 20 Jun 2022 14:51:10 +0200
+Message-Id: <20220620124733.459739098@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 References: <20220620124729.509745706@linuxfoundation.org>
@@ -51,49 +48,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Murilo Opsfelder Araujo <muriloo@linux.ibm.com>
+From: Marc Zyngier <maz@kernel.org>
 
-commit 7e415282b41bf0d15c6e0fe268f822d9b083f2f7 upstream.
+commit 2cdea19a34c2340b3aa69508804efe4e3750fcec upstream.
 
-GCC 12 enhanced -Waddress when comparing array address to null [0],
-which warns:
+Since 5bfa685e62e9 ("KVM: arm64: vgic: Read HW interrupt pending state
+from the HW"), we're able to source the pending bit for an interrupt
+that is stored either on the physical distributor or on a device.
 
-    drivers/virtio/virtio_pci_common.c: In function ‘vp_del_vqs’:
-    drivers/virtio/virtio_pci_common.c:257:29: warning: the comparison will always evaluate as ‘true’ for the pointer operand in ‘vp_dev->msix_affinity_masks + (sizetype)((long unsigned int)i * 256)’ must not be NULL [-Waddress]
-      257 |                         if (vp_dev->msix_affinity_masks[i])
-          |                             ^~~~~~
+However, this state is only available when the vcpu is loaded,
+and is not intended to be accessed from userspace. Unfortunately,
+the GICv2 emulation doesn't provide specific userspace accessors,
+and we fallback with the ones that are intended for the guest,
+with fatal consequences.
 
-In fact, the verification is comparing the result of a pointer
-arithmetic, the address "msix_affinity_masks + i", which will always
-evaluate to true.
+Add a new vgic_uaccess_read_pending() accessor for userspace
+to use, build on top of the existing vgic_mmio_read_pending().
 
-Under the hood, free_cpumask_var() calls kfree(), which is safe to pass
-NULL, not requiring non-null verification.  So remove the verification
-to make compiler happy (happy compiler, happy life).
-
-[0] https://gcc.gnu.org/bugzilla/show_bug.cgi?id=102103
-
-Signed-off-by: Murilo Opsfelder Araujo <muriloo@linux.ibm.com>
-Message-Id: <20220415023002.49805-1-muriloo@linux.ibm.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Acked-by: Christophe de Dinechin <dinechin@redhat.com>
-Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Reported-by: Eric Auger <eric.auger@redhat.com>
+Reviewed-by: Eric Auger <eric.auger@redhat.com>
+Tested-by: Eric Auger <eric.auger@redhat.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Fixes: 5bfa685e62e9 ("KVM: arm64: vgic: Read HW interrupt pending state from the HW")
+Link: https://lore.kernel.org/r/20220607131427.1164881-2-maz@kernel.org
+Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/virtio/virtio_pci_common.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ arch/arm64/kvm/vgic/vgic-mmio-v2.c |    4 ++--
+ arch/arm64/kvm/vgic/vgic-mmio.c    |   19 ++++++++++++++++---
+ arch/arm64/kvm/vgic/vgic-mmio.h    |    3 +++
+ 3 files changed, 21 insertions(+), 5 deletions(-)
 
---- a/drivers/virtio/virtio_pci_common.c
-+++ b/drivers/virtio/virtio_pci_common.c
-@@ -254,8 +254,7 @@ void vp_del_vqs(struct virtio_device *vd
+--- a/arch/arm64/kvm/vgic/vgic-mmio-v2.c
++++ b/arch/arm64/kvm/vgic/vgic-mmio-v2.c
+@@ -417,11 +417,11 @@ static const struct vgic_register_region
+ 		VGIC_ACCESS_32bit),
+ 	REGISTER_DESC_WITH_BITS_PER_IRQ(GIC_DIST_PENDING_SET,
+ 		vgic_mmio_read_pending, vgic_mmio_write_spending,
+-		NULL, vgic_uaccess_write_spending, 1,
++		vgic_uaccess_read_pending, vgic_uaccess_write_spending, 1,
+ 		VGIC_ACCESS_32bit),
+ 	REGISTER_DESC_WITH_BITS_PER_IRQ(GIC_DIST_PENDING_CLEAR,
+ 		vgic_mmio_read_pending, vgic_mmio_write_cpending,
+-		NULL, vgic_uaccess_write_cpending, 1,
++		vgic_uaccess_read_pending, vgic_uaccess_write_cpending, 1,
+ 		VGIC_ACCESS_32bit),
+ 	REGISTER_DESC_WITH_BITS_PER_IRQ(GIC_DIST_ACTIVE_SET,
+ 		vgic_mmio_read_active, vgic_mmio_write_sactive,
+--- a/arch/arm64/kvm/vgic/vgic-mmio.c
++++ b/arch/arm64/kvm/vgic/vgic-mmio.c
+@@ -226,8 +226,9 @@ int vgic_uaccess_write_cenable(struct kv
+ 	return 0;
+ }
  
- 	if (vp_dev->msix_affinity_masks) {
- 		for (i = 0; i < vp_dev->msix_vectors; i++)
--			if (vp_dev->msix_affinity_masks[i])
--				free_cpumask_var(vp_dev->msix_affinity_masks[i]);
-+			free_cpumask_var(vp_dev->msix_affinity_masks[i]);
- 	}
+-unsigned long vgic_mmio_read_pending(struct kvm_vcpu *vcpu,
+-				     gpa_t addr, unsigned int len)
++static unsigned long __read_pending(struct kvm_vcpu *vcpu,
++				    gpa_t addr, unsigned int len,
++				    bool is_user)
+ {
+ 	u32 intid = VGIC_ADDR_TO_INTID(addr, 1);
+ 	u32 value = 0;
+@@ -248,7 +249,7 @@ unsigned long vgic_mmio_read_pending(str
+ 						    IRQCHIP_STATE_PENDING,
+ 						    &val);
+ 			WARN_RATELIMIT(err, "IRQ %d", irq->host_irq);
+-		} else if (vgic_irq_is_mapped_level(irq)) {
++		} else if (!is_user && vgic_irq_is_mapped_level(irq)) {
+ 			val = vgic_get_phys_line_level(irq);
+ 		} else {
+ 			val = irq_is_pending(irq);
+@@ -263,6 +264,18 @@ unsigned long vgic_mmio_read_pending(str
+ 	return value;
+ }
  
- 	if (vp_dev->msix_enabled) {
++unsigned long vgic_mmio_read_pending(struct kvm_vcpu *vcpu,
++				     gpa_t addr, unsigned int len)
++{
++	return __read_pending(vcpu, addr, len, false);
++}
++
++unsigned long vgic_uaccess_read_pending(struct kvm_vcpu *vcpu,
++					gpa_t addr, unsigned int len)
++{
++	return __read_pending(vcpu, addr, len, true);
++}
++
+ static bool is_vgic_v2_sgi(struct kvm_vcpu *vcpu, struct vgic_irq *irq)
+ {
+ 	return (vgic_irq_is_sgi(irq->intid) &&
+--- a/arch/arm64/kvm/vgic/vgic-mmio.h
++++ b/arch/arm64/kvm/vgic/vgic-mmio.h
+@@ -149,6 +149,9 @@ int vgic_uaccess_write_cenable(struct kv
+ unsigned long vgic_mmio_read_pending(struct kvm_vcpu *vcpu,
+ 				     gpa_t addr, unsigned int len);
+ 
++unsigned long vgic_uaccess_read_pending(struct kvm_vcpu *vcpu,
++					gpa_t addr, unsigned int len);
++
+ void vgic_mmio_write_spending(struct kvm_vcpu *vcpu,
+ 			      gpa_t addr, unsigned int len,
+ 			      unsigned long val);
 
 
