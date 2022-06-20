@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 387DDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:03:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30A55C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:03:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350454AbiFTODL (ORCPT
+        id S1348142AbiFTOCh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:03:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44182 "EHLO
+        Mon, 20 Jun 2022 10:02:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351550AbiFTNy4 (ORCPT
+        with ESMTP id S1352842AbiFTN5J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:54:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DC3233343;
-        Mon, 20 Jun 2022 06:21:09 -0700 (PDT)
+        Mon, 20 Jun 2022 09:57:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78B5736B63;
+        Mon, 20 Jun 2022 06:23:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1BA3760FA2;
-        Mon, 20 Jun 2022 13:20:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C5FCC3411B;
-        Mon, 20 Jun 2022 13:20:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1357EB80E78;
+        Mon, 20 Jun 2022 13:22:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62310C341CA;
+        Mon, 20 Jun 2022 13:22:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731253;
-        bh=yxrt/AhYhZ+ptvTBbqTsXTtDDwvi/BZIk1CzdojwcHk=;
+        s=korg; t=1655731377;
+        bh=OGbCoJXUuZjhdXifhTqNW6HdfxPMFypJMYAS7DP509w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wSqmC3Zi1cHp3gOXWMFINbAOeJgacGQzyoqmknlUoKFTFXVFP0uFTLXuKKO+GL8fL
-         YAALLqnP2CtE7oqlZYe3borjHOhsAtkCJ8/jU/10G8JvmMmdKqACrSBLzXIL5YVice
-         8H3os3aWKdyxGs3JAu4J+2cM759mpDGxUWsm+O3s=
+        b=enaDXNcgDYE12zAZcUR/nAF8jZGwsMZegzMf1EdthbyZtMoJNr7tdT6emz6b7tvL6
+         QjdJjlD+LfoDF/PkioBfPcoi/x0auNChk6G7eTR7yYvHgOaqWVisuHnQ+05XffbePs
+         So/lCl2fK16XUUfDqwW48q3Il5PTBMjqg93ogIyg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Sultan Alsawaf <sultan@kerneltoast.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 160/240] random: use static branch for crng_ready()
-Date:   Mon, 20 Jun 2022 14:51:01 +0200
-Message-Id: <20220620124743.643795860@linuxfoundation.org>
+        stable@vger.kernel.org, Will Deacon <will@kernel.org>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Mark-PK Tsai <mark-pk.tsai@mediatek.com>
+Subject: [PATCH 5.4 237/240] arm64: kprobes: Use BRK instead of single-step when executing instructions out-of-line
+Date:   Mon, 20 Jun 2022 14:52:18 +0200
+Message-Id: <20220620124745.818296028@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -51,97 +51,235 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 
-commit f5bda35fba615ace70a656d4700423fa6c9bebee upstream.
+commit 7ee31a3aa8f490c6507bc4294df6b70bed1c593e upstream.
 
-Since crng_ready() is only false briefly during initialization and then
-forever after becomes true, we don't need to evaluate it after, making
-it a prime candidate for a static branch.
+Commit 36dadef23fcc ("kprobes: Init kprobes in early_initcall") enabled
+using kprobes from early_initcall. Unfortunately at this point the
+hardware debug infrastructure is not operational. The OS lock may still
+be locked, and the hardware watchpoints may have unknown values when
+kprobe enables debug monitors to single-step instructions.
 
-One complication, however, is that it changes state in a particular call
-to credit_init_bits(), which might be made from atomic context, which
-means we must kick off a workqueue to change the static key. Further
-complicating things, credit_init_bits() may be called sufficiently early
-on in system initialization such that system_wq is NULL.
+Rather than using hardware single-step, append a BRK instruction after
+the instruction to be executed out-of-line.
 
-Fortunately, there exists the nice function execute_in_process_context(),
-which will immediately execute the function if !in_interrupt(), and
-otherwise defer it to a workqueue. During early init, before workqueues
-are available, in_interrupt() is always false, because interrupts
-haven't even been enabled yet, which means the function in that case
-executes immediately. Later on, after workqueues are available,
-in_interrupt() might be true, but in that case, the work is queued in
-system_wq and all goes well.
-
-Cc: Theodore Ts'o <tytso@mit.edu>
-Cc: Sultan Alsawaf <sultan@kerneltoast.com>
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Fixes: 36dadef23fcc ("kprobes: Init kprobes in early_initcall")
+Suggested-by: Will Deacon <will@kernel.org>
+Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
+Link: https://lore.kernel.org/r/20201103134900.337243-1-jean-philippe@linaro.org
+Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+ arch/arm64/include/asm/brk-imm.h        |    2 
+ arch/arm64/include/asm/debug-monitors.h |    1 
+ arch/arm64/include/asm/kprobes.h        |    2 
+ arch/arm64/kernel/probes/kprobes.c      |   69 ++++++++++----------------------
+ 4 files changed, 27 insertions(+), 47 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -77,8 +77,9 @@ static enum {
- 	CRNG_EMPTY = 0, /* Little to no entropy collected */
- 	CRNG_EARLY = 1, /* At least POOL_EARLY_BITS collected */
- 	CRNG_READY = 2  /* Fully initialized with POOL_READY_BITS collected */
--} crng_init = CRNG_EMPTY;
--#define crng_ready() (likely(crng_init >= CRNG_READY))
-+} crng_init __read_mostly = CRNG_EMPTY;
-+static DEFINE_STATIC_KEY_FALSE(crng_is_ready);
-+#define crng_ready() (static_branch_likely(&crng_is_ready) || crng_init >= CRNG_READY)
- /* Various types of waiters for crng_init->CRNG_READY transition. */
- static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
- static struct fasync_struct *fasync;
-@@ -108,6 +109,11 @@ bool rng_is_initialized(void)
- }
- EXPORT_SYMBOL(rng_is_initialized);
+--- a/arch/arm64/include/asm/brk-imm.h
++++ b/arch/arm64/include/asm/brk-imm.h
+@@ -10,6 +10,7 @@
+  * #imm16 values used for BRK instruction generation
+  * 0x004: for installing kprobes
+  * 0x005: for installing uprobes
++ * 0x006: for kprobe software single-step
+  * Allowed values for kgdb are 0x400 - 0x7ff
+  * 0x100: for triggering a fault on purpose (reserved)
+  * 0x400: for dynamic BRK instruction
+@@ -19,6 +20,7 @@
+  */
+ #define KPROBES_BRK_IMM			0x004
+ #define UPROBES_BRK_IMM			0x005
++#define KPROBES_BRK_SS_IMM		0x006
+ #define FAULT_BRK_IMM			0x100
+ #define KGDB_DYN_DBG_BRK_IMM		0x400
+ #define KGDB_COMPILED_DBG_BRK_IMM	0x401
+--- a/arch/arm64/include/asm/debug-monitors.h
++++ b/arch/arm64/include/asm/debug-monitors.h
+@@ -53,6 +53,7 @@
  
-+static void crng_set_ready(struct work_struct *work)
-+{
-+	static_branch_enable(&crng_is_ready);
-+}
-+
- /* Used by wait_for_random_bytes(), and considered an entropy collector, below. */
- static void try_to_generate_entropy(void);
+ /* kprobes BRK opcodes with ESR encoding  */
+ #define BRK64_OPCODE_KPROBES	(AARCH64_BREAK_MON | (KPROBES_BRK_IMM << 5))
++#define BRK64_OPCODE_KPROBES_SS	(AARCH64_BREAK_MON | (KPROBES_BRK_SS_IMM << 5))
+ /* uprobes BRK opcodes with ESR encoding  */
+ #define BRK64_OPCODE_UPROBES	(AARCH64_BREAK_MON | (UPROBES_BRK_IMM << 5))
  
-@@ -267,7 +273,7 @@ static void crng_reseed(void)
- 		++next_gen;
- 	WRITE_ONCE(base_crng.generation, next_gen);
- 	WRITE_ONCE(base_crng.birth, jiffies);
--	if (!crng_ready())
-+	if (!static_branch_likely(&crng_is_ready))
- 		crng_init = CRNG_READY;
- 	spin_unlock_irqrestore(&base_crng.lock, flags);
- 	memzero_explicit(key, sizeof(key));
-@@ -782,6 +788,7 @@ static void extract_entropy(void *buf, s
+--- a/arch/arm64/include/asm/kprobes.h
++++ b/arch/arm64/include/asm/kprobes.h
+@@ -16,7 +16,7 @@
+ #include <linux/percpu.h>
  
- static void credit_init_bits(size_t nbits)
+ #define __ARCH_WANT_KPROBES_INSN_SLOT
+-#define MAX_INSN_SIZE			1
++#define MAX_INSN_SIZE			2
+ 
+ #define flush_insn_slot(p)		do { } while (0)
+ #define kretprobe_blacklist_size	0
+--- a/arch/arm64/kernel/probes/kprobes.c
++++ b/arch/arm64/kernel/probes/kprobes.c
+@@ -36,25 +36,16 @@ DEFINE_PER_CPU(struct kprobe_ctlblk, kpr
+ static void __kprobes
+ post_kprobe_handler(struct kprobe_ctlblk *, struct pt_regs *);
+ 
+-static int __kprobes patch_text(kprobe_opcode_t *addr, u32 opcode)
+-{
+-	void *addrs[1];
+-	u32 insns[1];
+-
+-	addrs[0] = addr;
+-	insns[0] = opcode;
+-
+-	return aarch64_insn_patch_text(addrs, insns, 1);
+-}
+-
+ static void __kprobes arch_prepare_ss_slot(struct kprobe *p)
  {
-+	static struct execute_work set_ready;
- 	unsigned int new, orig, add;
- 	unsigned long flags;
++	kprobe_opcode_t *addr = p->ainsn.api.insn;
++	void *addrs[] = {addr, addr + 1};
++	u32 insns[] = {p->opcode, BRK64_OPCODE_KPROBES_SS};
++
+ 	/* prepare insn slot */
+-	patch_text(p->ainsn.api.insn, p->opcode);
++	aarch64_insn_patch_text(addrs, insns, 2);
  
-@@ -797,6 +804,7 @@ static void credit_init_bits(size_t nbit
+-	flush_icache_range((uintptr_t) (p->ainsn.api.insn),
+-			   (uintptr_t) (p->ainsn.api.insn) +
+-			   MAX_INSN_SIZE * sizeof(kprobe_opcode_t));
++	flush_icache_range((uintptr_t)addr, (uintptr_t)(addr + MAX_INSN_SIZE));
  
- 	if (orig < POOL_READY_BITS && new >= POOL_READY_BITS) {
- 		crng_reseed(); /* Sets crng_init to CRNG_READY under base_crng.lock. */
-+		execute_in_process_context(crng_set_ready, &set_ready);
- 		process_random_ready_list();
- 		wake_up_interruptible(&crng_init_wait);
- 		kill_fasync(&fasync, SIGIO, POLL_IN);
-@@ -1306,7 +1314,7 @@ SYSCALL_DEFINE3(getrandom, char __user *
- 	if (count > INT_MAX)
- 		count = INT_MAX;
+ 	/*
+ 	 * Needs restoring of return address after stepping xol.
+@@ -134,13 +125,18 @@ void *alloc_insn_page(void)
+ /* arm kprobe: install breakpoint in text */
+ void __kprobes arch_arm_kprobe(struct kprobe *p)
+ {
+-	patch_text(p->addr, BRK64_OPCODE_KPROBES);
++	void *addr = p->addr;
++	u32 insn = BRK64_OPCODE_KPROBES;
++
++	aarch64_insn_patch_text(&addr, &insn, 1);
+ }
  
--	if (!(flags & GRND_INSECURE) && !crng_ready()) {
-+	if (!crng_ready() && !(flags & GRND_INSECURE)) {
- 		int ret;
+ /* disarm kprobe: remove breakpoint from text */
+ void __kprobes arch_disarm_kprobe(struct kprobe *p)
+ {
+-	patch_text(p->addr, p->opcode);
++	void *addr = p->addr;
++
++	aarch64_insn_patch_text(&addr, &p->opcode, 1);
+ }
  
- 		if (flags & GRND_NONBLOCK)
+ void __kprobes arch_remove_kprobe(struct kprobe *p)
+@@ -169,20 +165,15 @@ static void __kprobes set_current_kprobe
+ }
+ 
+ /*
+- * Interrupts need to be disabled before single-step mode is set, and not
+- * reenabled until after single-step mode ends.
+- * Without disabling interrupt on local CPU, there is a chance of
+- * interrupt occurrence in the period of exception return and  start of
+- * out-of-line single-step, that result in wrongly single stepping
+- * into the interrupt handler.
++ * Mask all of DAIF while executing the instruction out-of-line, to keep things
++ * simple and avoid nesting exceptions. Interrupts do have to be disabled since
++ * the kprobe state is per-CPU and doesn't get migrated.
+  */
+ static void __kprobes kprobes_save_local_irqflag(struct kprobe_ctlblk *kcb,
+ 						struct pt_regs *regs)
+ {
+ 	kcb->saved_irqflag = regs->pstate & DAIF_MASK;
+-	regs->pstate |= PSR_I_BIT;
+-	/* Unmask PSTATE.D for enabling software step exceptions. */
+-	regs->pstate &= ~PSR_D_BIT;
++	regs->pstate |= DAIF_MASK;
+ }
+ 
+ static void __kprobes kprobes_restore_local_irqflag(struct kprobe_ctlblk *kcb,
+@@ -225,10 +216,7 @@ static void __kprobes setup_singlestep(s
+ 		slot = (unsigned long)p->ainsn.api.insn;
+ 
+ 		set_ss_context(kcb, slot);	/* mark pending ss */
+-
+-		/* IRQs and single stepping do not mix well. */
+ 		kprobes_save_local_irqflag(kcb, regs);
+-		kernel_enable_single_step(regs);
+ 		instruction_pointer_set(regs, slot);
+ 	} else {
+ 		/* insn simulation */
+@@ -279,12 +267,8 @@ post_kprobe_handler(struct kprobe_ctlblk
+ 	}
+ 	/* call post handler */
+ 	kcb->kprobe_status = KPROBE_HIT_SSDONE;
+-	if (cur->post_handler)	{
+-		/* post_handler can hit breakpoint and single step
+-		 * again, so we enable D-flag for recursive exception.
+-		 */
++	if (cur->post_handler)
+ 		cur->post_handler(cur, regs, 0);
+-	}
+ 
+ 	reset_current_kprobe();
+ }
+@@ -308,8 +292,6 @@ int __kprobes kprobe_fault_handler(struc
+ 		if (!instruction_pointer(regs))
+ 			BUG();
+ 
+-		kernel_disable_single_step();
+-
+ 		if (kcb->kprobe_status == KPROBE_REENTER)
+ 			restore_previous_kprobe(kcb);
+ 		else
+@@ -371,10 +353,6 @@ static void __kprobes kprobe_handler(str
+ 			 * pre-handler and it returned non-zero, it will
+ 			 * modify the execution path and no need to single
+ 			 * stepping. Let's just reset current kprobe and exit.
+-			 *
+-			 * pre_handler can hit a breakpoint and can step thru
+-			 * before return, keep PSTATE D-flag enabled until
+-			 * pre_handler return back.
+ 			 */
+ 			if (!p->pre_handler || !p->pre_handler(p, regs)) {
+ 				setup_singlestep(p, regs, kcb, 0);
+@@ -405,7 +383,7 @@ kprobe_ss_hit(struct kprobe_ctlblk *kcb,
+ }
+ 
+ static int __kprobes
+-kprobe_single_step_handler(struct pt_regs *regs, unsigned int esr)
++kprobe_breakpoint_ss_handler(struct pt_regs *regs, unsigned int esr)
+ {
+ 	struct kprobe_ctlblk *kcb = get_kprobe_ctlblk();
+ 	int retval;
+@@ -415,16 +393,15 @@ kprobe_single_step_handler(struct pt_reg
+ 
+ 	if (retval == DBG_HOOK_HANDLED) {
+ 		kprobes_restore_local_irqflag(kcb, regs);
+-		kernel_disable_single_step();
+-
+ 		post_kprobe_handler(kcb, regs);
+ 	}
+ 
+ 	return retval;
+ }
+ 
+-static struct step_hook kprobes_step_hook = {
+-	.fn = kprobe_single_step_handler,
++static struct break_hook kprobes_break_ss_hook = {
++	.imm = KPROBES_BRK_SS_IMM,
++	.fn = kprobe_breakpoint_ss_handler,
+ };
+ 
+ static int __kprobes
+@@ -568,7 +545,7 @@ int __kprobes arch_trampoline_kprobe(str
+ int __init arch_init_kprobes(void)
+ {
+ 	register_kernel_break_hook(&kprobes_break_hook);
+-	register_kernel_step_hook(&kprobes_step_hook);
++	register_kernel_break_hook(&kprobes_break_ss_hook);
+ 
+ 	return 0;
+ }
 
 
