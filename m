@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27E20C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 23:00:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C3D6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 23:00:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346443AbiFTXAx (ORCPT
+        id S1346459AbiFTXA5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 19:00:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39616 "EHLO
+        Mon, 20 Jun 2022 19:00:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346004AbiFTW7r (ORCPT
+        with ESMTP id S1345994AbiFTW7r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 20 Jun 2022 18:59:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5382319C05;
-        Mon, 20 Jun 2022 15:58:23 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E625C193F7;
+        Mon, 20 Jun 2022 15:58:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B956DB81647;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 407FBB81649;
         Mon, 20 Jun 2022 22:58:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46C05C341D2;
-        Mon, 20 Jun 2022 22:58:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9DF1C341C4;
+        Mon, 20 Jun 2022 22:58:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655765900;
-        bh=6+3iMWSppedO1jRXS9dt0Th+Hfq5H3+RDDhYWxtDlrE=;
+        s=k20201202; t=1655765899;
+        bh=W6kG3hpmkYco8VzH89bxd88TU98qz+QQY538iEjM9F4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LNJkwZ2lpWAx9wvbrHujDxkaywKCOunJa97NeNuzpq+nAu6v6fCh5AvkqOQeXlj9q
-         T+RArij0jQ6468unKZRDV0ayHljYSGbD+1BLSay6ok6ldeenfxgRwmWu+pPq/u8eQ7
-         DUibju7MeGHwj2P5UujgD6eNfR/KXXPiIFBtsK9r+FqHZMWPAItZH4HWK7oms7vU2F
-         ypbxnq/NKA+Ef8TqbMKEoeT+ddm61JN/FopzYiwBxhV95iU1tRb1d0v3fIEMaSyfCj
-         7tTVbrgod4HJmeTaCIV9l+j2I1Jw3Q+EIfCrE949hBN7Ny3ppwWSM77Gm7eRomWDW4
-         LkEbNjX3/eeNg==
+        b=AzwE355p7egz1mBjAAA04X4sCrzdl8xW2Sm/0hFWPYXzSyltLiqhwwgU1/2XeI327
+         NQ0xmmGmLPC5C/5acAeK1YGhTK8NUCtw4a1HLkXN98jRtEsydb60mTQrWplkDX0xCz
+         jvd0aw3aRfiErxTeR9ECLJbt6802pk9dJbccNI4aFIZl+qmRMBoAjbKLMFjdZa2dXb
+         Rt5jvWydWvsYmDG4nFXt/bzmpJ4U/+39IssL+sQd6XqubjbxNVDYK/k/PL7Rcz+NGt
+         dcp90ceuHn/T9rz9UAnuCple4tZLLjMfjPkX4V8ltkvBHtAZdFzv0bCPJC0e6oRu6j
+         ts9lund7bmmLg==
 Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 9F8BA5C0B06; Mon, 20 Jun 2022 15:58:19 -0700 (PDT)
+        id 9B87C5C0A33; Mon, 20 Jun 2022 15:58:19 -0700 (PDT)
 From:   "Paul E. McKenney" <paulmck@kernel.org>
 To:     rcu@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
-        rostedt@goodmis.org, "Paul E. McKenney" <paulmck@kernel.org>
-Subject: [PATCH rcu 06/12] rcutorture: Make failure indication note reader-batch overflow
-Date:   Mon, 20 Jun 2022 15:58:11 -0700
-Message-Id: <20220620225817.3843106-6-paulmck@kernel.org>
+        rostedt@goodmis.org, Zqiang <qiang1.zhang@intel.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>
+Subject: [PATCH rcu 04/12] rcutorture: Fix memory leak in rcu_test_debug_objects()
+Date:   Mon, 20 Jun 2022 15:58:09 -0700
+Message-Id: <20220620225817.3843106-4-paulmck@kernel.org>
 X-Mailer: git-send-email 2.31.1.189.g2e36527f23
 In-Reply-To: <20220620225814.GA3842995@paulmck-ThinkPad-P17-Gen-1>
 References: <20220620225814.GA3842995@paulmck-ThinkPad-P17-Gen-1>
@@ -51,31 +52,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The loop scanning the pipesummary[] array currently skips the last
-element, which means that the diagnostics ignore those rarest of
-situations, namely where some readers persist across more than ten
-grace periods, but all other readers avoid spanning a full grace period.
-This commit therefore adjusts the scan to include the last element of
-this array.
+From: Zqiang <qiang1.zhang@intel.com>
 
+The kernel memory leak detector located the following:
+
+unreferenced object 0xffff95d941135b50 (size 16):
+  comm "swapper/0", pid 1, jiffies 4294667610 (age 1367.451s)
+  hex dump (first 16 bytes):
+    f0 c6 c2 bd d9 95 ff ff 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<00000000bc81d9b1>] kmem_cache_alloc_trace+0x2f6/0x500
+    [<00000000d28be229>] rcu_torture_init+0x1235/0x1354
+    [<0000000032c3acd9>] do_one_initcall+0x51/0x210
+    [<000000003c117727>] kernel_init_freeable+0x205/0x259
+    [<000000003961f965>] kernel_init+0x1a/0x120
+    [<000000001998f890>] ret_from_fork+0x22/0x30
+
+This is caused by the rcu_test_debug_objects() function allocating an
+rcu_head structure, then failing to free it.  This commit therefore adds
+the needed kfree() after the last use of this structure.
+
+Signed-off-by: Zqiang <qiang1.zhang@intel.com>
 Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 ---
- kernel/rcu/rcutorture.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/rcu/rcutorture.c | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/kernel/rcu/rcutorture.c b/kernel/rcu/rcutorture.c
-index 613711b8242b9..64ad5305829b6 100644
+index 9273264772b88..613711b8242b9 100644
 --- a/kernel/rcu/rcutorture.c
 +++ b/kernel/rcu/rcutorture.c
-@@ -1869,7 +1869,7 @@ rcu_torture_stats_print(void)
- 			batchsummary[i] += READ_ONCE(per_cpu(rcu_torture_batch, cpu)[i]);
- 		}
- 	}
--	for (i = RCU_TORTURE_PIPE_LEN - 1; i >= 0; i--) {
-+	for (i = RCU_TORTURE_PIPE_LEN; i >= 0; i--) {
- 		if (pipesummary[i] != 0)
- 			break;
- 	}
+@@ -3116,6 +3116,7 @@ static void rcu_test_debug_objects(void)
+ 	pr_alert("%s: WARN: Duplicate call_rcu() test complete.\n", KBUILD_MODNAME);
+ 	destroy_rcu_head_on_stack(&rh1);
+ 	destroy_rcu_head_on_stack(&rh2);
++	kfree(rhp);
+ #else /* #ifdef CONFIG_DEBUG_OBJECTS_RCU_HEAD */
+ 	pr_alert("%s: !CONFIG_DEBUG_OBJECTS_RCU_HEAD, not testing duplicate call_rcu()\n", KBUILD_MODNAME);
+ #endif /* #else #ifdef CONFIG_DEBUG_OBJECTS_RCU_HEAD */
 -- 
 2.31.1.189.g2e36527f23
 
