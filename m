@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C744C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:21:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EEA4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:21:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243903AbiFTNVy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:21:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47666 "EHLO
+        id S1344317AbiFTNV5 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:21:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344766AbiFTNT2 (ORCPT
+        with ESMTP id S1344829AbiFTNTc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:19:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB75360E2;
-        Mon, 20 Jun 2022 06:08:05 -0700 (PDT)
+        Mon, 20 Jun 2022 09:19:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7144CBC0C;
+        Mon, 20 Jun 2022 06:08:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C80D6154F;
-        Mon, 20 Jun 2022 13:05:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E393C3411B;
-        Mon, 20 Jun 2022 13:05:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8BE45B811BD;
+        Mon, 20 Jun 2022 13:05:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAF79C3411B;
+        Mon, 20 Jun 2022 13:05:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730347;
-        bh=JicjRnQMDRin8zmcJ7QBb5GWds4gk7oiwtluZKwMO9s=;
+        s=korg; t=1655730341;
+        bh=YnT0A5pYx7LECS7ve6dpcfSYlTvAMThZz2MiAayKHIE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x7OxvxGWJpJkp66wG/UFFNDCMX2JkUT/+gB/ksTucQ6kptGuq8dlYFhkop5AKzw58
-         Z0MW4Q8BDTJjVFIDdidgA8U7Ojjo5d9RWi8IEwU4zrym1BMWhPlY6j5xLop7PfyVcD
-         ttc21bI3MO6YIvK5kPZg5hn/NORhn+pY3hU+ItUI=
+        b=DH8smWCikGt1gQeIM7CqTUccwYfRBN8jdyeCnim2LFghGvjP4g9MZzWXdcb25+L22
+         Fz3hdN4AbCkjaUcvHcRE6AoMXAhBGT3ahhWT2RANFwlDgWRY9PSgtPW5SCc3eYv5AC
+         uphE00ZibH7h4/tPKfqvUZcGK2T8vjQEQ32DDHR4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
-        James Smart <jsmart2021@gmail.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Marius Hoch <mail@mariushoch.de>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 024/106] scsi: lpfc: Resolve NULL ptr dereference after an ELS LOGO is aborted
-Date:   Mon, 20 Jun 2022 14:50:43 +0200
-Message-Id: <20220620124725.098592639@linuxfoundation.org>
+Subject: [PATCH 5.15 022/106] Input: soc_button_array - also add Lenovo Yoga Tablet2 1051F to dmi_use_low_level_irq
+Date:   Mon, 20 Jun 2022 14:50:41 +0200
+Message-Id: <20220620124725.040020885@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
 References: <20220620124724.380838401@linuxfoundation.org>
@@ -50,76 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: Marius Hoch <mail@mariushoch.de>
 
-[ Upstream commit b1b3440f437b75fb2a9b0cfe58df461e40eca474 ]
+[ Upstream commit 6ab2e51898cd4343bbdf8587af8ce8fbabddbcb5 ]
 
-A use-after-free crash can occur after an ELS LOGO is aborted.
+Commit 223f61b8c5ad ("Input: soc_button_array - add Lenovo Yoga Tablet2
+1051L to the dmi_use_low_level_irq list") added the 1051L to this list
+already, but the same problem applies to the 1051F. As there are no
+further 1051 variants (just the F/L), we can just DMI match 1051.
 
-Specifically, a nodelist structure is freed and then
-ndlp->vport->cfg_log_verbose is dereferenced in lpfc_nlp_get() when the
-discovery state machine is mistakenly called a second time with
-NLP_EVT_DEVICE_RM argument.
+Tested on a Lenovo Yoga Tablet2 1051F: Without this patch the
+home-button stops working after a wakeup from suspend.
 
-Rework lpfc_cmpl_els_logo() to prevent the duplicate calls to release a
-nodelist structure.
-
-Link: https://lore.kernel.org/r/20220603174329.63777-6-jsmart2021@gmail.com
-Co-developed-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Marius Hoch <mail@mariushoch.de>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Link: https://lore.kernel.org/r/20220603120246.3065-1-mail@mariushoch.de
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/lpfc/lpfc_els.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ drivers/input/misc/soc_button_array.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/lpfc/lpfc_els.c b/drivers/scsi/lpfc/lpfc_els.c
-index ce28c4a30460..5f44a0763f37 100644
---- a/drivers/scsi/lpfc/lpfc_els.c
-+++ b/drivers/scsi/lpfc/lpfc_els.c
-@@ -2955,18 +2955,10 @@ lpfc_cmpl_els_logo(struct lpfc_hba *phba, struct lpfc_iocbq *cmdiocb,
- 		spin_unlock_irq(&ndlp->lock);
- 		lpfc_disc_state_machine(vport, ndlp, cmdiocb,
- 					NLP_EVT_DEVICE_RM);
--		lpfc_els_free_iocb(phba, cmdiocb);
--		lpfc_nlp_put(ndlp);
--
--		/* Presume the node was released. */
--		return;
-+		goto out_rsrc_free;
- 	}
- 
- out:
--	/* Driver is done with the IO.  */
--	lpfc_els_free_iocb(phba, cmdiocb);
--	lpfc_nlp_put(ndlp);
--
- 	/* At this point, the LOGO processing is complete. NOTE: For a
- 	 * pt2pt topology, we are assuming the NPortID will only change
- 	 * on link up processing. For a LOGO / PLOGI initiated by the
-@@ -2993,6 +2985,10 @@ lpfc_cmpl_els_logo(struct lpfc_hba *phba, struct lpfc_iocbq *cmdiocb,
- 				 ndlp->nlp_DID, irsp->ulpStatus,
- 				 irsp->un.ulpWord[4], irsp->ulpTimeout,
- 				 vport->num_disc_nodes);
-+
-+		lpfc_els_free_iocb(phba, cmdiocb);
-+		lpfc_nlp_put(ndlp);
-+
- 		lpfc_disc_start(vport);
- 		return;
- 	}
-@@ -3009,6 +3005,10 @@ lpfc_cmpl_els_logo(struct lpfc_hba *phba, struct lpfc_iocbq *cmdiocb,
- 		lpfc_disc_state_machine(vport, ndlp, cmdiocb,
- 					NLP_EVT_DEVICE_RM);
- 	}
-+out_rsrc_free:
-+	/* Driver is done with the I/O. */
-+	lpfc_els_free_iocb(phba, cmdiocb);
-+	lpfc_nlp_put(ndlp);
- }
- 
- /**
+diff --git a/drivers/input/misc/soc_button_array.c b/drivers/input/misc/soc_button_array.c
+index cb6ec59a045d..efffcf0ebd3b 100644
+--- a/drivers/input/misc/soc_button_array.c
++++ b/drivers/input/misc/soc_button_array.c
+@@ -85,13 +85,13 @@ static const struct dmi_system_id dmi_use_low_level_irq[] = {
+ 	},
+ 	{
+ 		/*
+-		 * Lenovo Yoga Tab2 1051L, something messes with the home-button
++		 * Lenovo Yoga Tab2 1051F/1051L, something messes with the home-button
+ 		 * IRQ settings, leading to a non working home-button.
+ 		 */
+ 		.matches = {
+ 			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "60073"),
+-			DMI_MATCH(DMI_PRODUCT_VERSION, "1051L"),
++			DMI_MATCH(DMI_PRODUCT_VERSION, "1051"),
+ 		},
+ 	},
+ 	{} /* Terminating entry */
 -- 
 2.35.1
 
