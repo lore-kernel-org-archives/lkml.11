@@ -2,90 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3CBCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:31:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D919C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:31:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345751AbiFTNbK (ORCPT
+        id S1345815AbiFTNbY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:31:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49306 "EHLO
+        Mon, 20 Jun 2022 09:31:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346757AbiFTN3R (ORCPT
+        with ESMTP id S1346932AbiFTN3X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:29:17 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 079D3248F3;
-        Mon, 20 Jun 2022 06:11:56 -0700 (PDT)
+        Mon, 20 Jun 2022 09:29:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DD36245BC;
+        Mon, 20 Jun 2022 06:12:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C0EF5CE139F;
-        Mon, 20 Jun 2022 13:10:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC825C3411C;
-        Mon, 20 Jun 2022 13:10:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655730653;
-        bh=SHVwJLEk2tnmicNGaRD3YPQJdxFUin99Ol3gEng/YzA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=DzBJYmasWqnspP8jyZlLQwdZh+WpKwfIQaHEJQohLSkOnCxyJTrIni3XGZkn2x7Yl
-         zRqmC7/woIw1ThSGqggImr1d7rRVupXKZAe/RnXH5lbzMkGQtVPE/bsNoGL6DwZ4t2
-         okIXjHqB3novCwABI2il9fXgs1Ks7ai4feFwpW80Buumn0nkFY0vKXoBSaLAgno6PD
-         NhnAsvAZPb8XJd3km+w/ZY7YJFo9pRk9A4dIzQdjfQbX9DN9ypUoAokdEG72ENz0PX
-         XAxd0W/qEtTJoI1+zr+Do3FQARkLuecRexLZJjn522xf575e3CmZFTz7KBuyBpqDId
-         lL1j9CENZP/jw==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1o3HB3-0000z6-3O; Mon, 20 Jun 2022 15:10:49 +0200
-Date:   Mon, 20 Jun 2022 15:10:49 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Slark Xiao <slark_xiao@163.com>
-Cc:     gregkh@linuxfoundation.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] USB: serial: use kmemdup instead of kmalloc + memcpy
-Message-ID: <YrBx2eQYwiGcDC8m@hovoldconsulting.com>
-References: <20220620105939.5128-1-slark_xiao@163.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8AE12B811C4;
+        Mon, 20 Jun 2022 13:06:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B67DEC3411B;
+        Mon, 20 Jun 2022 13:06:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655730386;
+        bh=fYqEYfMpMmnw3A/eQFnbEnCAsansYVE/WSANxNzwF+8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Y5RJgDCSrnqc9PNj4Rx9M6IxcHm+1q9pxVLlFtopE0pxoCoXoxTlKK52sGYKL67ww
+         Z18b0btTh/JFWrCV/i6jSqSB6PkinuAlOe5dOzIcuNuriXjdPZZ85eSZH0Dq39s9ml
+         Xn8UfXT+XVWIKKGQDUHrI5c6LL+Ikpj9c5uYvtrM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Nicholas Kazlauskas <Nicholas.Kazlauskas@amd.com>,
+        Jasdeep Dhillon <jdhillon@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
+        Sherry Wang <YAO.WANG1@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 007/106] drm/amd/display: Read Golden Settings Table from VBIOS
+Date:   Mon, 20 Jun 2022 14:50:26 +0200
+Message-Id: <20220620124724.604637952@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
+References: <20220620124724.380838401@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220620105939.5128-1-slark_xiao@163.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 20, 2022 at 06:59:39PM +0800, Slark Xiao wrote:
-> For code neat purpose, we can use kmemdup to replace
-> kmalloc + memcpy.
-> 
-> Signed-off-by: Slark Xiao <slark_xiao@163.com>
-> ---
->  drivers/usb/serial/opticon.c | 4 +---
->  drivers/usb/serial/sierra.c  | 4 +---
->  2 files changed, 2 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/usb/serial/opticon.c b/drivers/usb/serial/opticon.c
-> index aed28c35caff..bca6766a63e6 100644
-> --- a/drivers/usb/serial/opticon.c
-> +++ b/drivers/usb/serial/opticon.c
-> @@ -208,7 +208,7 @@ static int opticon_write(struct tty_struct *tty, struct usb_serial_port *port,
->  	priv->outstanding_bytes += count;
->  	spin_unlock_irqrestore(&priv->lock, flags);
->  
-> -	buffer = kmalloc(count, GFP_ATOMIC);
-> +	buffer = kmemdup(buf, count, GFP_ATOMIC);
->  	if (!buffer)
->  		goto error_no_buffer;
->  
-> @@ -216,8 +216,6 @@ static int opticon_write(struct tty_struct *tty, struct usb_serial_port *port,
->  	if (!urb)
->  		goto error_no_urb;
->  
-> -	memcpy(buffer, buf, count);
-> -
->  	usb_serial_debug_data(&port->dev, __func__, count, buffer);
->  
->  	/* The connected devices do not have a bulk write endpoint,
+From: Sherry Wang <YAO.WANG1@amd.com>
 
-Looks like we have the same pattern also in garmin_write_bulk(). Care to
-include that one as well?
+[ Upstream commit 4b81dd2cc6f4f4e8cea0ed6ee8d5193a8ae14a72 ]
 
-Johan
+[Why]
+Dmub read AUX_DPHY_RX_CONTROL0 from Golden Setting Table,
+but driver will set it to default value 0x103d1110, which
+causes issue in some case
+
+[How]
+Remove the driver code, use the value set by dmub in
+dp_aux_init
+
+Reviewed-by: Nicholas Kazlauskas <Nicholas.Kazlauskas@amd.com>
+Acked-by: Jasdeep Dhillon <jdhillon@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Sherry Wang <YAO.WANG1@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/amd/display/dc/dcn31/dcn31_dio_link_encoder.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_dio_link_encoder.c b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_dio_link_encoder.c
+index b0892443fbd5..c7c27a605f15 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_dio_link_encoder.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_dio_link_encoder.c
+@@ -168,9 +168,7 @@ void enc31_hw_init(struct link_encoder *enc)
+ 	AUX_RX_PHASE_DETECT_LEN,  [21,20] = 0x3 default is 3
+ 	AUX_RX_DETECTION_THRESHOLD [30:28] = 1
+ */
+-	AUX_REG_WRITE(AUX_DPHY_RX_CONTROL0, 0x103d1110);
+-
+-	AUX_REG_WRITE(AUX_DPHY_TX_CONTROL, 0x21c7a);
++	// dmub will read AUX_DPHY_RX_CONTROL0/AUX_DPHY_TX_CONTROL from vbios table in dp_aux_init
+ 
+ 	//AUX_DPHY_TX_REF_CONTROL'AUX_TX_REF_DIV HW default is 0x32;
+ 	// Set AUX_TX_REF_DIV Divider to generate 2 MHz reference from refclk
+-- 
+2.35.1
+
+
+
