@@ -2,120 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54C31C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 15:05:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBC04CCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 15:05:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240557AbiFTPET (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 11:04:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33776 "EHLO
+        id S242238AbiFTPFY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 11:05:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242848AbiFTPDe (ORCPT
+        with ESMTP id S242154AbiFTPE4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 11:03:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6B34E1A056
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 07:35:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655735756;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=sB5vA/PYt/B++hSiLWtw5RtdOSfa5Qtze5kAXPaq3gM=;
-        b=ZeiqzRH3HsFuhMSdwRgj/fIYF+n7hC5hqi1p+yLatFnYWibEadVSXPD83Vq7km/l7R5/hZ
-        IJyga3ECB1X3SAvG2xnqGpO7hHg/7bcFMBBFC4CyReqBzUR0fARLxGY7D9r5yBG1ZGx+YN
-        UPNoXw0ARX0tfScyF4Mruc1496HKvgs=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-7-zg0LXaoKMdC1YOXlaYTCKg-1; Mon, 20 Jun 2022 10:35:54 -0400
-X-MC-Unique: zg0LXaoKMdC1YOXlaYTCKg-1
-Received: by mail-ed1-f71.google.com with SMTP id h16-20020a05640250d000b0043572a34a61so4089387edb.15
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 07:35:54 -0700 (PDT)
+        Mon, 20 Jun 2022 11:04:56 -0400
+Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B70C0616F
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 07:40:26 -0700 (PDT)
+Received: by mail-qk1-x735.google.com with SMTP id c144so7905036qkg.11
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 07:40:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kudzu-us.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Ty43DqmG3UXtsNzk9LiMVx5ZLHlOvXVEiRAeYWZUjis=;
+        b=ehdfbodio9asmZSE8+QMUK2IDGqIA9Uq2vXqgvkwME7asqb9ENdH6MKGVTdFrJRaX5
+         iQFRYY9IvYkwjjZAxEtAj39HLM0AUzeAQmZZnn8BwRij7yOUS55DD3PZVrs5I9/EGu2l
+         ERHd8/cL9D99VCHc+hgtlJgn/lip6xbX0KsaGg/21U2yKv5U9J4YnnMp1N++ELM5f4RZ
+         Il2h+bvvj6uyzDjSKAoCQGe9pJtQ7C2UBkkvtTcGA7T8W6s/0ZcITIyj40lQbSHcgXgg
+         0AQfk7oJLIyLgpq/oCrbPG7gructmTdYld7kLs1RzGk74WlKEuv4E9V07s0p5grKb9fu
+         k8zw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=sB5vA/PYt/B++hSiLWtw5RtdOSfa5Qtze5kAXPaq3gM=;
-        b=F/88+Pd54SuHoyBaiUIVgRMmzaD7zq9an49lOrzL1Gm3Soiyra9DCtGbYhqq+lsxrQ
-         AI6S7ovqq6KyP0RNfwksdYmnMR8Qes54TtE4ZvzOanrQiqsfFAC4mSRumflOcV+9hLQL
-         i5qQbVPi3t1pQDWH7ED7TIQeMur8zvoRDddIaNP4sELUzw9pdjlCFl0EmxSdQBoOiO5M
-         3rVOvzVqdL6yp8Vdu/zjEKXtDXvTyA4KAnO8XCBIiRdDdmd26ejYURZU9vEXFfc34wUL
-         9/ksQD0jfoE0Q/N3TKOnKP00yed0LFJkefG2xfei8WnDnI7jeK7CbKb2OIrOWiDx9PjP
-         aGJw==
-X-Gm-Message-State: AJIora/m7VQNg1ORJUiu7og2ywcQPuki0BRehLU75WvnDWaib5OFg48p
-        dWdNLZ69NHpdKOctJYgcwq32mW0Tvllne1poD57rTDrnwkJ9sOtFFp9qljo+4S2LkSiqq7b50Nn
-        IIYPZFwJ0SvI+nsxkdy1qow8X
-X-Received: by 2002:a05:6402:f8d:b0:435:6df2:68a with SMTP id eh13-20020a0564020f8d00b004356df2068amr15504692edb.209.1655735753655;
-        Mon, 20 Jun 2022 07:35:53 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vd1G5IDERU5ls3ZLMFPONjt/JzOY8kxQyAIF3O5ehuje2w68JMZlruTfRe1V2x9eaZ6rKddQ==
-X-Received: by 2002:a05:6402:f8d:b0:435:6df2:68a with SMTP id eh13-20020a0564020f8d00b004356df2068amr15504675edb.209.1655735753508;
-        Mon, 20 Jun 2022 07:35:53 -0700 (PDT)
-Received: from [10.0.0.147] (D57D5A4B.static.ziggozakelijk.nl. [213.125.90.75])
-        by smtp.gmail.com with ESMTPSA id rh17-20020a17090720f100b006fef5088792sm6001911ejb.108.2022.06.20.07.35.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Jun 2022 07:35:53 -0700 (PDT)
-Message-ID: <738d00dd-f05b-9b31-5260-0158ee89e399@redhat.com>
-Date:   Mon, 20 Jun 2022 16:35:52 +0200
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Ty43DqmG3UXtsNzk9LiMVx5ZLHlOvXVEiRAeYWZUjis=;
+        b=FGl0Hwv8XqbUADxU+/fXdbcgvfFPhvHNbFTxk4hDPPJ2BR8I2us4CTapX23K++7Bop
+         cUgrU3/qsCvN/0egtb/Am5bfq8syl+o6UH2ABGii0w2x8iezKoBv9ijqfJ3KaF72+nCZ
+         NJFwisC+cGoTcZSCs8NmSH/tYmLLx6SiHoi2fQCgoSBm9fxVSu6inn/SeqaF1bkEXsCN
+         67qRoCXtSf94a/Q1JqrissHaq5/CEqVPX9J1aAfYrnQSG1RoeOMz6uCjztTXbUL8fjCX
+         9EfW/0DlpUQIm791M/4QfHOGlu8971EUXmmcxhv/nbUmQ7FuS8At1uKzuCOie94I7tIg
+         QhzQ==
+X-Gm-Message-State: AJIora/yZmavrNgLJqWXrgskHwdUPidls+pnSu5eEn+RQfqvgRkTyf8h
+        QpWbHk6JmcM/pFbgBU9rJAiBGEwjt8BWZQ==
+X-Google-Smtp-Source: AGRyM1t2DpVL1ZKeGfA6+OkJVEPu5i1BfwpzqRN+1YOnxW1uLC3JhT4+n0ITZfeKUi3jvgYyK/GIhw==
+X-Received: by 2002:a05:620a:318b:b0:6a6:cb0b:bb3d with SMTP id bi11-20020a05620a318b00b006a6cb0bbb3dmr16343573qkb.480.1655736018813;
+        Mon, 20 Jun 2022 07:40:18 -0700 (PDT)
+Received: from kudzu.us ([2605:a601:a608:5600::59])
+        by smtp.gmail.com with ESMTPSA id u7-20020a05622a198700b002f90a33c78csm11015400qtc.67.2022.06.20.07.40.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Jun 2022 07:40:18 -0700 (PDT)
+Date:   Mon, 20 Jun 2022 10:40:16 -0400
+From:   Jon Mason <jdmason@kudzu.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Wentao_Liang <Wentao_Liang_g@163.com>, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] [PATCH net v2]vexy: Fix a use-after-free bug in
+ vxge-main.c
+Message-ID: <YrCG0CZy4Onh/8RI@kudzu.us>
+References: <20220615013816.6593-1-Wentao_Liang_g@163.com>
+ <20220615195050.6e4785ef@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v1 1/1] usb: typec: wcove: Drop wrong dependency to
- INTEL_SOC_PMIC
-Content-Language: en-US
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Guenter Roeck <linux@roeck-us.net>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-References: <20220620104316.57592-1-andriy.shevchenko@linux.intel.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <20220620104316.57592-1-andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220615195050.6e4785ef@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Wed, Jun 15, 2022 at 07:50:50PM -0700, Jakub Kicinski wrote:
+> Jon, if you're there, do you have any sense on whether this HW is still
+> in production somewhere? I scrolled thru last 5 years of the git history
+> and there doesn't seem to be any meaningful change here while there's a
+> significant volume of refactoring going in. 
 
-On 6/20/22 12:43, Andy Shevchenko wrote:
-> Intel SoC PMIC is a generic name for all PMICs that are used
-> on Intel platforms. In particular, INTEL_SOC_PMIC kernel configuration
-> option refers to Crystal Cove PMIC, which has never been a part
-> of any Intel Broxton hardware. Drop wrong dependency from Kconfig.
+Neterion was killed off by Exar after acquiring it roughly a decade
+ago.  To my knowledge no one ever acquired the IP.  So, this should be
+viewed as an EOL'ed part.  It is a mature driver and I believe there are
+parts out in the field still.  So, no need to kill off the driver.
+
+Thanks,
+Jon
+
 > 
-> Note, the correct dependency is satisfied via ACPI PMIC OpRegion driver,
-> which the Type-C depends on.
 > 
-> Fixes: d2061f9cc32d ("usb: typec: add driver for Intel Whiskey Cove PMIC USB Type-C PHY")
-> Reported-by: Hans de Goede <hdegoede@redhat.com>
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-
-Thanks, patch looks good to me:
-
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-
-Regards,
-
-Hans
-
-
-> ---
->  drivers/usb/typec/tcpm/Kconfig | 1 -
->  1 file changed, 1 deletion(-)
+> On the patch itself:
 > 
-> diff --git a/drivers/usb/typec/tcpm/Kconfig b/drivers/usb/typec/tcpm/Kconfig
-> index 557f392fe24d..073fd2ea5e0b 100644
-> --- a/drivers/usb/typec/tcpm/Kconfig
-> +++ b/drivers/usb/typec/tcpm/Kconfig
-> @@ -56,7 +56,6 @@ config TYPEC_WCOVE
->  	tristate "Intel WhiskeyCove PMIC USB Type-C PHY driver"
->  	depends on ACPI
->  	depends on MFD_INTEL_PMC_BXT
-> -	depends on INTEL_SOC_PMIC
->  	depends on BXT_WC_PMIC_OPREGION
->  	help
->  	  This driver adds support for USB Type-C on Intel Broxton platforms
-
+> On Wed, 15 Jun 2022 09:38:16 +0800 Wentao_Liang wrote:
+> > Subject: [PATCH] [PATCH net v2]vexy: Fix a use-after-free bug in vxge-main.c
+> 
+> No need to repeat "[PATCH]"
+> The driver is not called "vexy" as far as I can tell.
+> 
+> > The pointer vdev points to a memory region adjacent to a net_device
+> > structure ndev, which is a field of hldev. At line 4740, the invocation
+> > to vxge_device_unregister unregisters device hldev, and it also releases
+> > the memory region pointed by vdev->bar0. At line 4743, the freed memory
+> > region is referenced (i.e., iounmap(vdev->bar0)), resulting in a
+> > use-after-free vulnerability. We can fix the bug by calling iounmap
+> > before vxge_device_unregister.
+> 
+> Are you sure the bar0 is not needed by the netdev? You're freeing
+> memory that the netdev may need until it's unregistered.
