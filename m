@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2AA0CCA486
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:01:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31D90CCA488
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:01:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347124AbiFTOAp (ORCPT
+        id S1348441AbiFTOAs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:00:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44044 "EHLO
+        Mon, 20 Jun 2022 10:00:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348259AbiFTN4j (ORCPT
+        with ESMTP id S1347222AbiFTN5C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:56:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCF3A2251A;
-        Mon, 20 Jun 2022 06:22:36 -0700 (PDT)
+        Mon, 20 Jun 2022 09:57:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DABA9286D9;
+        Mon, 20 Jun 2022 06:22:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6093AB80E78;
-        Mon, 20 Jun 2022 13:22:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B83D5C3411B;
-        Mon, 20 Jun 2022 13:22:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 268BC6120B;
+        Mon, 20 Jun 2022 13:22:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DDF1C341C0;
+        Mon, 20 Jun 2022 13:22:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731330;
-        bh=0ItFtN6K/Y0+MmOpTs2KKTcstQJhzWyJHizhDgZZgjA=;
+        s=korg; t=1655731374;
+        bh=IiE6DsO7wRh8gXcLpAM57kA/m1iI5R75km7uKaNCuz4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iWkzCr4xKsOuMfGj8O8wXXTgbxsUl2tuuLEjxCGJqMKc+08EU2mdJQG6jYCVbEh+F
-         mzfizTyqseqAoi56u29sg0j5M/vOonSQ4WBCnqc8OsLu/I5u3ENv5xoSFIqMnRtGal
-         hzI1hGv0y0BmajKYu4+38FWlapIJaLaskXDe+pwM=
+        b=Mwwk9Fjd6Ry7Dz/syTIM4QfRRw5JHksfE/PFCqFp059s8luQygcv5FsN+ARXM/h18
+         dDCPDB+u03mrkOyPVox1BB6VShYgP3cV12Hs8lkF0lGWRXpofk2eWzMLop/1wG0slk
+         HdpQd6dVAUqlaPgmsSbOUkJM6Q/exMboeQJUefcI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        Minas Harutyunyan <hminas@synopsys.com>,
-        Miaoqian Lin <linmq006@gmail.com>
-Subject: [PATCH 5.4 224/240] usb: dwc2: Fix memory leak in dwc2_hcd_init
-Date:   Mon, 20 Jun 2022 14:52:05 +0200
-Message-Id: <20220620124745.453165519@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?St=C3=A9phane=20Graber?= <stgraber@ubuntu.com>,
+        Ilya Maximets <i.maximets@ovn.org>,
+        Aaron Conole <aconole@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.4 236/240] net: openvswitch: fix leak of nested actions
+Date:   Mon, 20 Jun 2022 14:52:17 +0200
+Message-Id: <20220620124745.790602845@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -50,35 +52,165 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Ilya Maximets <i.maximets@ovn.org>
 
-commit 3755278f078460b021cd0384562977bf2039a57a upstream.
+commit 1f30fb9166d4f15a1aa19449b9da871fe0ed4796 upstream.
 
-usb_create_hcd will alloc memory for hcd, and we should
-call usb_put_hcd to free it when platform_get_resource()
-fails to prevent memory leak.
-goto error2 label instead error1 to fix this.
+While parsing user-provided actions, openvswitch module may dynamically
+allocate memory and store pointers in the internal copy of the actions.
+So this memory has to be freed while destroying the actions.
 
-Fixes: 856e6e8e0f93 ("usb: dwc2: check return value after calling platform_get_resource()")
-Cc: stable <stable@kernel.org>
-Acked-by: Minas Harutyunyan <hminas@synopsys.com>
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220530085413.44068-1-linmq006@gmail.com
+Currently there are only two such actions: ct() and set().  However,
+there are many actions that can hold nested lists of actions and
+ovs_nla_free_flow_actions() just jumps over them leaking the memory.
+
+For example, removal of the flow with the following actions will lead
+to a leak of the memory allocated by nf_ct_tmpl_alloc():
+
+  actions:clone(ct(commit),0)
+
+Non-freed set() action may also leak the 'dst' structure for the
+tunnel info including device references.
+
+Under certain conditions with a high rate of flow rotation that may
+cause significant memory leak problem (2MB per second in reporter's
+case).  The problem is also hard to mitigate, because the user doesn't
+have direct control over the datapath flows generated by OVS.
+
+Fix that by iterating over all the nested actions and freeing
+everything that needs to be freed recursively.
+
+New build time assertion should protect us from this problem if new
+actions will be added in the future.
+
+Unfortunately, openvswitch module doesn't use NLA_F_NESTED, so all
+attributes has to be explicitly checked.  sample() and clone() actions
+are mixing extra attributes into the user-provided action list.  That
+prevents some code generalization too.
+
+Fixes: 34ae932a4036 ("openvswitch: Make tunnel set action attach a metadata dst")
+Link: https://mail.openvswitch.org/pipermail/ovs-dev/2022-March/392922.html
+Reported-by: Stéphane Graber <stgraber@ubuntu.com>
+Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
+Acked-by: Aaron Conole <aconole@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+[Backport for 5.4: Removed handling of OVS_ACTION_ATTR_DEC_TTL as it
+ doesn't exist in this version.  BUILD_BUG_ON condition adjusted
+ accordingly.]
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/dwc2/hcd.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/openvswitch/flow_netlink.c |   80 ++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 75 insertions(+), 5 deletions(-)
 
---- a/drivers/usb/dwc2/hcd.c
-+++ b/drivers/usb/dwc2/hcd.c
-@@ -5076,7 +5076,7 @@ int dwc2_hcd_init(struct dwc2_hsotg *hso
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	if (!res) {
- 		retval = -EINVAL;
--		goto error1;
-+		goto error2;
+--- a/net/openvswitch/flow_netlink.c
++++ b/net/openvswitch/flow_netlink.c
+@@ -2266,6 +2266,51 @@ static struct sw_flow_actions *nla_alloc
+ 	return sfa;
+ }
+ 
++static void ovs_nla_free_nested_actions(const struct nlattr *actions, int len);
++
++static void ovs_nla_free_check_pkt_len_action(const struct nlattr *action)
++{
++	const struct nlattr *a;
++	int rem;
++
++	nla_for_each_nested(a, action, rem) {
++		switch (nla_type(a)) {
++		case OVS_CHECK_PKT_LEN_ATTR_ACTIONS_IF_LESS_EQUAL:
++		case OVS_CHECK_PKT_LEN_ATTR_ACTIONS_IF_GREATER:
++			ovs_nla_free_nested_actions(nla_data(a), nla_len(a));
++			break;
++		}
++	}
++}
++
++static void ovs_nla_free_clone_action(const struct nlattr *action)
++{
++	const struct nlattr *a = nla_data(action);
++	int rem = nla_len(action);
++
++	switch (nla_type(a)) {
++	case OVS_CLONE_ATTR_EXEC:
++		/* The real list of actions follows this attribute. */
++		a = nla_next(a, &rem);
++		ovs_nla_free_nested_actions(a, rem);
++		break;
++	}
++}
++
++static void ovs_nla_free_sample_action(const struct nlattr *action)
++{
++	const struct nlattr *a = nla_data(action);
++	int rem = nla_len(action);
++
++	switch (nla_type(a)) {
++	case OVS_SAMPLE_ATTR_ARG:
++		/* The real list of actions follows this attribute. */
++		a = nla_next(a, &rem);
++		ovs_nla_free_nested_actions(a, rem);
++		break;
++	}
++}
++
+ static void ovs_nla_free_set_action(const struct nlattr *a)
+ {
+ 	const struct nlattr *ovs_key = nla_data(a);
+@@ -2279,25 +2324,50 @@ static void ovs_nla_free_set_action(cons
  	}
- 	hcd->rsrc_start = res->start;
- 	hcd->rsrc_len = resource_size(res);
+ }
+ 
+-void ovs_nla_free_flow_actions(struct sw_flow_actions *sf_acts)
++static void ovs_nla_free_nested_actions(const struct nlattr *actions, int len)
+ {
+ 	const struct nlattr *a;
+ 	int rem;
+ 
+-	if (!sf_acts)
++	/* Whenever new actions are added, the need to update this
++	 * function should be considered.
++	 */
++	BUILD_BUG_ON(OVS_ACTION_ATTR_MAX != 21);
++
++	if (!actions)
+ 		return;
+ 
+-	nla_for_each_attr(a, sf_acts->actions, sf_acts->actions_len, rem) {
++	nla_for_each_attr(a, actions, len, rem) {
+ 		switch (nla_type(a)) {
+-		case OVS_ACTION_ATTR_SET:
+-			ovs_nla_free_set_action(a);
++		case OVS_ACTION_ATTR_CHECK_PKT_LEN:
++			ovs_nla_free_check_pkt_len_action(a);
+ 			break;
++
++		case OVS_ACTION_ATTR_CLONE:
++			ovs_nla_free_clone_action(a);
++			break;
++
+ 		case OVS_ACTION_ATTR_CT:
+ 			ovs_ct_free_action(a);
+ 			break;
++
++		case OVS_ACTION_ATTR_SAMPLE:
++			ovs_nla_free_sample_action(a);
++			break;
++
++		case OVS_ACTION_ATTR_SET:
++			ovs_nla_free_set_action(a);
++			break;
+ 		}
+ 	}
++}
++
++void ovs_nla_free_flow_actions(struct sw_flow_actions *sf_acts)
++{
++	if (!sf_acts)
++		return;
+ 
++	ovs_nla_free_nested_actions(sf_acts->actions, sf_acts->actions_len);
+ 	kfree(sf_acts);
+ }
+ 
 
 
