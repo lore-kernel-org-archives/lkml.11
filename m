@@ -2,376 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC43FC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 23:16:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E309C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 23:17:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347229AbiFTXQE (ORCPT
+        id S1346047AbiFTXQp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 19:16:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55948 "EHLO
+        Mon, 20 Jun 2022 19:16:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347120AbiFTXMG (ORCPT
+        with ESMTP id S1348435AbiFTXO1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 19:12:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9638222A5;
-        Mon, 20 Jun 2022 16:10:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 90C7561515;
-        Mon, 20 Jun 2022 23:10:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55D7AC341EF;
-        Mon, 20 Jun 2022 23:10:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655766632;
-        bh=xl4Qv/D8eO08gmDd70pGOWhnlkzRN6HwvsTr8ErlRVs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PeJnwQLjb2yr4ZKchVmSDjcE/5bVBREF2ju+diiQNUrbqfyWJJYCOScGoWeCatTlA
-         +p50b69yLyT9aVH0DCMwVi4A00NrVzILftBP23XTuRorgdNKQLMDyMWOUvjwLyE9uW
-         cG6nuvxpSYN0FdUsvkXBAB1xqzp7Ppy4jFO7IOL7hDD/5clVvVfEnt3YLjjmULdLIG
-         yNTQIcStxJspHy9+66VYx3rAkLvhlKAcA6WFg3MtuJ2qbw8bRA5ZPlwYsqcu0VEXLa
-         qtVKzOE5U1/FuitQavSKjnlIJ6Zh0tQc2CZXpOAqDgr6qHZHVrlkYo3akrVS+2JBgB
-         g/hhMMvXl1YnQ==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 71F0A5C11DB; Mon, 20 Jun 2022 16:10:31 -0700 (PDT)
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     rcu@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
-        rostedt@goodmis.org, Frederic Weisbecker <frederic@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Uladzislau Rezki <uladzislau.rezki@sony.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Xiongfeng Wang <wangxiongfeng2@huawei.com>,
-        Yu Liao <liaoyu15@huawei.com>, Phil Auld <pauld@redhat.com>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Alex Belits <abelits@marvell.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>
-Subject: [PATCH rcu 19/23] rcu/context-tracking: Remove unused and/or unecessary middle functions
-Date:   Mon, 20 Jun 2022 16:10:25 -0700
-Message-Id: <20220620231029.3844583-19-paulmck@kernel.org>
-X-Mailer: git-send-email 2.31.1.189.g2e36527f23
-In-Reply-To: <20220620231027.GA3844372@paulmck-ThinkPad-P17-Gen-1>
-References: <20220620231027.GA3844372@paulmck-ThinkPad-P17-Gen-1>
+        Mon, 20 Jun 2022 19:14:27 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2067.outbound.protection.outlook.com [40.107.244.67])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C14C2717B;
+        Mon, 20 Jun 2022 16:12:45 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BqwD/r7/D5TCtUR6b5WCm9mT0p9ya+VvJIB6/QPojYE7LQ+1rzZzjpmojc6By8wzwVREpTKSeeHnRnpIt3K+l73MWDEqjva+pBRIZM5/ZbdGVpYKukN7y+2Rk7YdY8mrfQM+JZ1+hO6V/LWNGG0qd3W5bg8yH0YQUEJVQqZ3Z7znykGY/9+7V+6vB8qMSaggjYA61hzpH4BF+rdSVrnNJRgKuP8TWJoS0p896hT6PcBILslgj9QB+or0+RsCchdS7oOl8W3H95Tj7k8bVnSJnPAg8cJfuVkl1UZK98Pi0jiR7J7Llyn772mjFP0vu8LsAArHR0rhs01UHCgkX0Ojig==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=uPUBCdThmrDF2A2VzwtrISb6TK337bHMK+r46ZeP4j0=;
+ b=JDmnQfcMj67za+G/yWor2hENIOehEPEKw3nJfZnAG46wYquyJ59HTfXpjmRnf0Z+r+q6Wco77sZaCVtufsPNJMazkZ9WRPH8rmdaNIZs0Aw5AaQ/CT0qjkoWQEP86dPUxPY5KCa09cHaBo/UuG+DynJU06yryS/CibVjdRbzpo+YtO05gKR2Erp/fSE3BLchWiFctFKo3IADnyaMbdW/ZbpkE7g8nJYDJkX/8MI6HtLHjeoMS+7pwXTxyOYpmeH6urFkNEWfh5Mp5rRAeZ6RdI5YobRrOjg82MQsnRXkHs5b683WrNxBrRM9C3u96EmyqBwIoTo7BEZrZ1pv0+oeSQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=uPUBCdThmrDF2A2VzwtrISb6TK337bHMK+r46ZeP4j0=;
+ b=dtsoSSXgVPqLlPph/XdDJk3ajoebSL6r/4gkclKtWz3p+gddJZJvze2YltMqNCDCVcWs/Dkvm3vXxLBCHzl3FL/uDTooEbj0z267lFN7pCmcL/5Bipe36ZofG/XuB1JA5xgQWGuD6xZk7KsmG62del6HqQ6S1rnr0u81Y+CApsE=
+Received: from BN0PR04CA0156.namprd04.prod.outlook.com (2603:10b6:408:eb::11)
+ by DM6PR12MB3113.namprd12.prod.outlook.com (2603:10b6:5:11b::28) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.18; Mon, 20 Jun
+ 2022 23:12:43 +0000
+Received: from DM6NAM11FT018.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:eb:cafe::e9) by BN0PR04CA0156.outlook.office365.com
+ (2603:10b6:408:eb::11) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.14 via Frontend
+ Transport; Mon, 20 Jun 2022 23:12:42 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ DM6NAM11FT018.mail.protection.outlook.com (10.13.172.110) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5353.14 via Frontend Transport; Mon, 20 Jun 2022 23:12:42 +0000
+Received: from ashkalraubuntuserver.amd.com (10.180.168.240) by
+ SATLEXMB04.amd.com (10.181.40.145) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Mon, 20 Jun 2022 18:12:39 -0500
+From:   Ashish Kalra <Ashish.Kalra@amd.com>
+To:     <x86@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <kvm@vger.kernel.org>, <linux-coco@lists.linux.dev>,
+        <linux-mm@kvack.org>, <linux-crypto@vger.kernel.org>
+CC:     <tglx@linutronix.de>, <mingo@redhat.com>, <jroedel@suse.de>,
+        <thomas.lendacky@amd.com>, <hpa@zytor.com>, <ardb@kernel.org>,
+        <pbonzini@redhat.com>, <seanjc@google.com>, <vkuznets@redhat.com>,
+        <jmattson@google.com>, <luto@kernel.org>,
+        <dave.hansen@linux.intel.com>, <slp@redhat.com>,
+        <pgonda@google.com>, <peterz@infradead.org>,
+        <srinivas.pandruvada@linux.intel.com>, <rientjes@google.com>,
+        <dovmurik@linux.ibm.com>, <tobin@ibm.com>, <bp@alien8.de>,
+        <michael.roth@amd.com>, <vbabka@suse.cz>, <kirill@shutemov.name>,
+        <ak@linux.intel.com>, <tony.luck@intel.com>, <marcorr@google.com>,
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        <alpergun@google.com>, <dgilbert@redhat.com>, <jarkko@kernel.org>
+Subject: [PATCH Part2 v6 40/49] KVM: x86: Export the kvm_zap_gfn_range() for the SNP use
+Date:   Mon, 20 Jun 2022 23:12:31 +0000
+Message-ID: <61a7eae7e78923c8aee65b457687a2674ab5f6e5.1655761627.git.ashish.kalra@amd.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1655761627.git.ashish.kalra@amd.com>
+References: <cover.1655761627.git.ashish.kalra@amd.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 26c39b50-0bb7-4768-6007-08da531260d2
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3113:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR12MB3113A46DF145ECEF395B616E8EB09@DM6PR12MB3113.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: C5BXPUNI8qIDdaQJHnFKTz4/GyArOjeFG3VPlivDxAMNr/qyNWjl4lK/c62yUdML3/Bd1WF2w3k2KK7AXGDIkFfqOfPsiCJDzUgxqwW3WWtxBfoCP8EL5ole12qMZ7huI4pg5nliRfQIbfvm6Jg6zmxV19rbmX6ZeIyUS234R+uoktGr3bMn344AWCZNYs3+2yxn4Do3PQZGwai2lSFJ5yul8+WD0hX4YDOzCuUMkmSzBaOnqffH9xrV6rfK6Tt1QBa+dXy/0MXh/DBqRY4kP19rDPkn8gwSrrR388Zt6QAObpBezGiI2GQNtToj7XryvzjEFmPcZc0CRod1PBZ1eCphzmgODojXelSycxGxdBEflHWKPsEczIrL1FXCHMa2tNW+c4XbugTzC8Q26hpzbYVrGnZUGZB8DBbFDCQEcPYpa1XSufVO8iAjOI48yEP/c+km8m3b2qMAz6KUIjjOxMHgn2uGnsZn6HVd99eU+ceBScT/9chyegQ5xBRV7zKNcdX9GaW7QYVI+7NbnV7StRVogXfZ6i7OOIUU4oAEJYjweGZdBT3Cm+BWBt8kbbms7m1qty58s0A1m42GhnbSx8VgEv83A6aFA5AoNOSbZa9H21vwTtVl7W/XHl+bI962qyiTx/N9Fu9gftOX/kN3IKcVoU+02wDVmsdpGRnO55I8Vnbx6NGyapEEGBTUO558zfQ3E78nnQVwxqs6iP5B/S1CqJcQaNoliUHWrqimu+BVwAh2fcMrJumYLybsoAo8BFdV8C0FWUXHloOSry16aQ==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(396003)(346002)(136003)(39860400002)(376002)(46966006)(40470700004)(36840700001)(5660300002)(40480700001)(7416002)(82310400005)(7406005)(2906002)(356005)(82740400003)(81166007)(40460700003)(110136005)(86362001)(36860700001)(26005)(7696005)(70206006)(16526019)(36756003)(2616005)(6666004)(478600001)(41300700001)(186003)(70586007)(8676002)(4326008)(54906003)(8936002)(336012)(47076005)(316002)(426003)(83380400001)(2101003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jun 2022 23:12:42.4325
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 26c39b50-0bb7-4768-6007-08da531260d2
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT018.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3113
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frederic Weisbecker <frederic@kernel.org>
+From: Brijesh Singh <brijesh.singh@amd.com>
 
-Some eqs functions are now only used internally by context tracking, so
-their public declarations can be removed.
+While resolving the RMP page fault, we may run into cases where the page
+level between the RMP entry and TDP does not match and the 2M RMP entry
+must be split into 4K RMP entries. Or a 2M TDP page need to be broken
+into multiple of 4K pages.
 
-Also middle functions such as rcu_user_*() and rcu_idle_*()
-which now directly call to rcu_eqs_enter() and rcu_eqs_exit() can be
-wiped out as well.
+To keep the RMP and TDP page level in sync, we will zap the gfn range
+after splitting the pages in the RMP entry. The zap should force the
+TDP to gets rebuilt with the new page level.
 
-Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Neeraj Upadhyay <quic_neeraju@quicinc.com>
-Cc: Uladzislau Rezki <uladzislau.rezki@sony.com>
-Cc: Joel Fernandes <joel@joelfernandes.org>
-Cc: Boqun Feng <boqun.feng@gmail.com>
-Cc: Nicolas Saenz Julienne <nsaenz@kernel.org>
-Cc: Marcelo Tosatti <mtosatti@redhat.com>
-Cc: Xiongfeng Wang <wangxiongfeng2@huawei.com>
-Cc: Yu Liao <liaoyu15@huawei.com>
-Cc: Phil Auld <pauld@redhat.com>
-Cc: Paul Gortmaker<paul.gortmaker@windriver.com>
-Cc: Alex Belits <abelits@marvell.com>
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+Signed-off-by: Brijesh Singh <brijesh.singh@amd.com>
 ---
- Documentation/RCU/stallwarn.rst |  2 +-
- include/linux/hardirq.h         |  8 ---
- include/linux/rcupdate.h        |  8 ---
- include/linux/rcutiny.h         |  2 -
- include/linux/rcutree.h         |  2 -
- kernel/context_tracking.c       | 98 +++++++++------------------------
- 6 files changed, 28 insertions(+), 92 deletions(-)
+ arch/x86/include/asm/kvm_host.h | 2 ++
+ arch/x86/kvm/mmu.h              | 2 --
+ arch/x86/kvm/mmu/mmu.c          | 1 +
+ 3 files changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/RCU/stallwarn.rst b/Documentation/RCU/stallwarn.rst
-index ce1f58a9d954b..e38c587067fc8 100644
---- a/Documentation/RCU/stallwarn.rst
-+++ b/Documentation/RCU/stallwarn.rst
-@@ -97,7 +97,7 @@ warnings:
- 	which will include additional debugging information.
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 8abc0e724f5c..1db4d178eb1d 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -1627,6 +1627,8 @@ void kvm_mmu_slot_leaf_clear_dirty(struct kvm *kvm,
+ void kvm_mmu_zap_all(struct kvm *kvm);
+ void kvm_mmu_invalidate_mmio_sptes(struct kvm *kvm, u64 gen);
+ void kvm_mmu_change_mmu_pages(struct kvm *kvm, unsigned long kvm_nr_mmu_pages);
++void kvm_zap_gfn_range(struct kvm *kvm, gfn_t gfn_start, gfn_t gfn_end);
++
  
- -	A low-level kernel issue that either fails to invoke one of the
--	variants of rcu_user_enter(), rcu_user_exit(), ct_idle_enter(),
-+	variants of rcu_eqs_enter(true), rcu_eqs_exit(true), ct_idle_enter(),
- 	ct_idle_exit(), ct_irq_enter(), or ct_irq_exit() on the one
- 	hand, or that invokes one of them too many times on the other.
- 	Historically, the most frequent issue has been an omission
-diff --git a/include/linux/hardirq.h b/include/linux/hardirq.h
-index 345cdbe9c1b70..d57cab4d4c06f 100644
---- a/include/linux/hardirq.h
-+++ b/include/linux/hardirq.h
-@@ -92,14 +92,6 @@ void irq_exit_rcu(void);
- #define arch_nmi_exit()		do { } while (0)
- #endif
+ int load_pdptrs(struct kvm_vcpu *vcpu, unsigned long cr3);
  
--#ifdef CONFIG_TINY_RCU
--static inline void rcu_nmi_enter(void) { }
--static inline void rcu_nmi_exit(void) { }
--#else
--extern void rcu_nmi_enter(void);
--extern void rcu_nmi_exit(void);
--#endif
--
- /*
-  * NMI vs Tracing
-  * --------------
-diff --git a/include/linux/rcupdate.h b/include/linux/rcupdate.h
-index 3717cad983a67..434da1eb88cd9 100644
---- a/include/linux/rcupdate.h
-+++ b/include/linux/rcupdate.h
-@@ -104,14 +104,6 @@ static inline void rcu_sysrq_start(void) { }
- static inline void rcu_sysrq_end(void) { }
- #endif /* #else #ifdef CONFIG_RCU_STALL_COMMON */
- 
--#ifdef CONFIG_NO_HZ_FULL
--void rcu_user_enter(void);
--void rcu_user_exit(void);
--#else
--static inline void rcu_user_enter(void) { }
--static inline void rcu_user_exit(void) { }
--#endif /* CONFIG_NO_HZ_FULL */
--
- #if defined(CONFIG_NO_HZ_FULL) && (!defined(CONFIG_GENERIC_ENTRY) || !defined(CONFIG_KVM_XFER_TO_GUEST_WORK))
- void rcu_irq_work_resched(void);
- #else
-diff --git a/include/linux/rcutiny.h b/include/linux/rcutiny.h
-index 591119413cf1d..900ba35c3582d 100644
---- a/include/linux/rcutiny.h
-+++ b/include/linux/rcutiny.h
-@@ -76,8 +76,6 @@ static inline int rcu_needs_cpu(void)
- static inline void rcu_virt_note_context_switch(int cpu) { }
- static inline void rcu_cpu_stall_reset(void) { }
- static inline int rcu_jiffies_till_stall_check(void) { return 21 * HZ; }
--static inline void rcu_idle_enter(void) { }
--static inline void rcu_idle_exit(void) { }
- static inline void rcu_irq_exit_check_preempt(void) { }
- #define rcu_is_idle_cpu(cpu) \
- 	(is_idle_task(current) && !in_nmi() && !in_hardirq() && !in_serving_softirq())
-diff --git a/include/linux/rcutree.h b/include/linux/rcutree.h
-index 24db1e41695c8..9cca00ed9bc9f 100644
---- a/include/linux/rcutree.h
-+++ b/include/linux/rcutree.h
-@@ -45,8 +45,6 @@ unsigned long start_poll_synchronize_rcu(void);
- bool poll_state_synchronize_rcu(unsigned long oldstate);
- void cond_synchronize_rcu(unsigned long oldstate);
- 
--void rcu_idle_enter(void);
--void rcu_idle_exit(void);
- bool rcu_is_idle_cpu(int cpu);
- 
- #ifdef CONFIG_PROVE_RCU
-diff --git a/kernel/context_tracking.c b/kernel/context_tracking.c
-index f3e92705e0a89..8b0979412f755 100644
---- a/kernel/context_tracking.c
-+++ b/kernel/context_tracking.c
-@@ -189,17 +189,17 @@ static void noinstr rcu_eqs_exit(bool user)
+diff --git a/arch/x86/kvm/mmu.h b/arch/x86/kvm/mmu.h
+index d55b5166389a..c5044958a0fa 100644
+--- a/arch/x86/kvm/mmu.h
++++ b/arch/x86/kvm/mmu.h
+@@ -267,8 +267,6 @@ static inline u8 permission_fault(struct kvm_vcpu *vcpu, struct kvm_mmu *mmu,
+ 	return -(u32)fault & errcode;
  }
  
- /**
-- * rcu_nmi_exit - inform RCU of exit from NMI context
-+ * ct_nmi_exit - inform RCU of exit from NMI context
-  *
-  * If we are returning from the outermost NMI handler that interrupted an
-  * RCU-idle period, update ct->dynticks and ct->dynticks_nmi_nesting
-  * to let the RCU grace-period handling know that the CPU is back to
-  * being RCU-idle.
-  *
-- * If you add or remove a call to rcu_nmi_exit(), be sure to test
-+ * If you add or remove a call to ct_nmi_exit(), be sure to test
-  * with CONFIG_RCU_EQS_DEBUG=y.
-  */
--void noinstr rcu_nmi_exit(void)
-+void noinstr ct_nmi_exit(void)
- {
- 	struct context_tracking *ct = this_cpu_ptr(&context_tracking);
+-void kvm_zap_gfn_range(struct kvm *kvm, gfn_t gfn_start, gfn_t gfn_end);
+-
+ int kvm_arch_write_log_dirty(struct kvm_vcpu *vcpu);
  
-@@ -242,7 +242,7 @@ void noinstr rcu_nmi_exit(void)
+ int kvm_mmu_post_init_vm(struct kvm *kvm);
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index c1ac486e096e..67120bfeb667 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -6084,6 +6084,7 @@ static bool kvm_mmu_zap_collapsible_spte(struct kvm *kvm,
+ 
+ 	return need_tlb_flush;
  }
++EXPORT_SYMBOL_GPL(kvm_zap_gfn_range);
  
- /**
-- * rcu_nmi_enter - inform RCU of entry to NMI context
-+ * ct_nmi_enter - inform RCU of entry to NMI context
-  *
-  * If the CPU was idle from RCU's viewpoint, update ct->dynticks and
-  * ct->dynticks_nmi_nesting to let the RCU grace-period handling know
-@@ -250,10 +250,10 @@ void noinstr rcu_nmi_exit(void)
-  * long as the nesting level does not overflow an int.  (You will probably
-  * run out of stack space first.)
-  *
-- * If you add or remove a call to rcu_nmi_enter(), be sure to test
-+ * If you add or remove a call to ct_nmi_enter(), be sure to test
-  * with CONFIG_RCU_EQS_DEBUG=y.
-  */
--void noinstr rcu_nmi_enter(void)
-+void noinstr ct_nmi_enter(void)
- {
- 	long incby = 2;
- 	struct context_tracking *ct = this_cpu_ptr(&context_tracking);
-@@ -302,32 +302,33 @@ void noinstr rcu_nmi_enter(void)
- }
- 
- /**
-- * rcu_idle_enter - inform RCU that current CPU is entering idle
-+ * ct_idle_enter - inform RCU that current CPU is entering idle
-  *
-  * Enter idle mode, in other words, -leave- the mode in which RCU
-  * read-side critical sections can occur.  (Though RCU read-side
-  * critical sections can occur in irq handlers in idle, a possibility
-  * handled by irq_enter() and irq_exit().)
-  *
-- * If you add or remove a call to rcu_idle_enter(), be sure to test with
-+ * If you add or remove a call to ct_idle_enter(), be sure to test with
-  * CONFIG_RCU_EQS_DEBUG=y.
-  */
--void noinstr rcu_idle_enter(void)
-+void noinstr ct_idle_enter(void)
- {
- 	WARN_ON_ONCE(IS_ENABLED(CONFIG_RCU_EQS_DEBUG) && !raw_irqs_disabled());
- 	rcu_eqs_enter(false);
- }
-+EXPORT_SYMBOL_GPL(ct_idle_enter);
- 
- /**
-- * rcu_idle_exit - inform RCU that current CPU is leaving idle
-+ * ct_idle_exit - inform RCU that current CPU is leaving idle
-  *
-  * Exit idle mode, in other words, -enter- the mode in which RCU
-  * read-side critical sections can occur.
-  *
-- * If you add or remove a call to rcu_idle_exit(), be sure to test with
-+ * If you add or remove a call to ct_idle_exit(), be sure to test with
-  * CONFIG_RCU_EQS_DEBUG=y.
-  */
--void noinstr rcu_idle_exit(void)
-+void noinstr ct_idle_exit(void)
- {
- 	unsigned long flags;
- 
-@@ -335,18 +336,6 @@ void noinstr rcu_idle_exit(void)
- 	rcu_eqs_exit(false);
- 	raw_local_irq_restore(flags);
- }
--EXPORT_SYMBOL_GPL(rcu_idle_exit);
--
--noinstr void ct_idle_enter(void)
--{
--	rcu_idle_enter();
--}
--EXPORT_SYMBOL_GPL(ct_idle_enter);
--
--void ct_idle_exit(void)
--{
--	rcu_idle_exit();
--}
- EXPORT_SYMBOL_GPL(ct_idle_exit);
- 
- /**
-@@ -431,50 +420,11 @@ void ct_irq_exit_irqson(void)
- 	ct_irq_exit();
- 	local_irq_restore(flags);
- }
--
--noinstr void ct_nmi_enter(void)
--{
--	rcu_nmi_enter();
--}
--
--noinstr void ct_nmi_exit(void)
--{
--	rcu_nmi_exit();
--}
-+#else
-+static __always_inline void rcu_eqs_enter(bool user) { }
-+static __always_inline void rcu_eqs_exit(bool user) { }
- #endif /* #ifdef CONFIG_CONTEXT_TRACKING_IDLE */
- 
--#ifdef CONFIG_NO_HZ_FULL
--/**
-- * rcu_user_enter - inform RCU that we are resuming userspace.
-- *
-- * Enter RCU idle mode right before resuming userspace.  No use of RCU
-- * is permitted between this call and rcu_user_exit(). This way the
-- * CPU doesn't need to maintain the tick for RCU maintenance purposes
-- * when the CPU runs in userspace.
-- *
-- * If you add or remove a call to rcu_user_enter(), be sure to test with
-- * CONFIG_RCU_EQS_DEBUG=y.
-- */
--noinstr void rcu_user_enter(void)
--{
--	rcu_eqs_enter(true);
--}
--
--/**
-- * rcu_user_exit - inform RCU that we are exiting userspace.
-- *
-- * Exit RCU idle mode while entering the kernel because it can
-- * run a RCU read side critical section anytime.
-- *
-- * If you add or remove a call to rcu_user_exit(), be sure to test with
-- * CONFIG_RCU_EQS_DEBUG=y.
-- */
--void noinstr rcu_user_exit(void)
--{
--	rcu_eqs_exit(true);
--}
--#endif /* #ifdef CONFIG_NO_HZ_FULL */
--
- #ifdef CONFIG_CONTEXT_TRACKING_USER
- 
- #define CREATE_TRACE_POINTS
-@@ -542,7 +492,13 @@ void noinstr __ct_user_enter(enum ctx_state state)
- 			 * that will fire and reschedule once we resume in user/guest mode.
- 			 */
- 			rcu_irq_work_resched();
--			rcu_user_enter();
-+			/*
-+			 * Enter RCU idle mode right before resuming userspace.  No use of RCU
-+			 * is permitted between this call and rcu_eqs_exit(). This way the
-+			 * CPU doesn't need to maintain the tick for RCU maintenance purposes
-+			 * when the CPU runs in userspace.
-+			 */
-+			rcu_eqs_enter(true);
- 		}
- 		/*
- 		 * Even if context tracking is disabled on this CPU, because it's outside
-@@ -579,7 +535,7 @@ void ct_user_enter(enum ctx_state state)
- 	/*
- 	 * Some contexts may involve an exception occuring in an irq,
- 	 * leading to that nesting:
--	 * ct_irq_enter() rcu_user_exit() rcu_user_exit() ct_irq_exit()
-+	 * ct_irq_enter() rcu_eqs_exit(true) rcu_eqs_enter(true) ct_irq_exit()
- 	 * This would mess up the dyntick_nesting count though. And rcu_irq_*()
- 	 * helpers are enough to protect RCU uses inside the exception. So
- 	 * just return immediately if we detect we are in an IRQ.
-@@ -631,10 +587,10 @@ void noinstr __ct_user_exit(enum ctx_state state)
- 	if (__this_cpu_read(context_tracking.state) == state) {
- 		if (__this_cpu_read(context_tracking.active)) {
- 			/*
--			 * We are going to run code that may use RCU. Inform
--			 * RCU core about that (ie: we may need the tick again).
-+			 * Exit RCU idle mode while entering the kernel because it can
-+			 * run a RCU read side critical section anytime.
- 			 */
--			rcu_user_exit();
-+			rcu_eqs_exit(true);
- 			if (state == CONTEXT_USER) {
- 				instrumentation_begin();
- 				vtime_user_exit(current);
+ void kvm_mmu_zap_collapsible_sptes(struct kvm *kvm,
+ 				   const struct kvm_memory_slot *slot)
 -- 
-2.31.1.189.g2e36527f23
+2.25.1
 
