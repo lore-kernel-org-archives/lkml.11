@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 039F9C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:21:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E4EBC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:21:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243134AbiFTNVq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:21:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54500 "EHLO
+        id S243396AbiFTNVu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:21:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344635AbiFTNTP (ORCPT
+        with ESMTP id S1344677AbiFTNTR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:19:15 -0400
+        Mon, 20 Jun 2022 09:19:17 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBD6662F6;
-        Mon, 20 Jun 2022 06:08:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10F48273C;
+        Mon, 20 Jun 2022 06:08:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5DDB5B811A5;
-        Mon, 20 Jun 2022 13:05:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A625BC3411B;
-        Mon, 20 Jun 2022 13:05:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 52067B811DC;
+        Mon, 20 Jun 2022 13:07:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3073C3411B;
+        Mon, 20 Jun 2022 13:07:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730332;
-        bh=/UQsAmbFVIpuvPOcEckSNMGt6DUFGPH1Xmq0UyI8F0M=;
+        s=korg; t=1655730472;
+        bh=4qFLn4i9EC/djJiRhUWu34S6yAT/117hdjbWP984UM0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zGJDz/LzHpQ9deEcoTXF9uJudO8zVcUbWZNydsfTXmV6rDeSHoOSrSYC4wUdrGDWJ
-         f7PiwK5XjO6wCrtUBb+Pg6Ho7xHAdGKNxeFHQ3+cg00NFUxL5iO30kcwkloP49gKAB
-         jzRuvzdZLkcYyDKjOiTfi8tx6HBqSVAfmAyPPQms=
+        b=TiLtLE7CuCGXoVw5Wq5WP4nR8Iho40IKTStGalMNkt8bg9BM7Kksv5hQ7/TfQDJ3V
+         7/zlCobGVPbTjIIMolHrk/Xc80fgInjJI+WE3wljKhCcDXbAI1/oIPpsVNcdfbY8H5
+         TArkZtvr/Czlu5DiA+V9sXQu2vfYAqTHe4Ek6EXE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Leah Rumancik <leah.rumancik@gmail.com>
-Subject: [PATCH 5.15 002/106] nfsd: Replace use of rwsem with errseq_t
-Date:   Mon, 20 Jun 2022 14:50:21 +0200
-Message-Id: <20220620124724.456433227@linuxfoundation.org>
+        stable@vger.kernel.org, Jian Shen <shenjian15@huawei.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 062/106] net: hns3: dont push link state to VF if unalive
+Date:   Mon, 20 Jun 2022 14:51:21 +0200
+Message-Id: <20220620124726.236975959@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
 References: <20220620124724.380838401@linuxfoundation.org>
@@ -50,217 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Jian Shen <shenjian15@huawei.com>
 
-commit 555dbf1a9aac6d3150c8b52fa35f768a692f4eeb upstream.
+[ Upstream commit 283847e3ef6dbf79bf67083b5ce7b8033e8b6f34 ]
 
-The nfsd_file nf_rwsem is currently being used to separate file write
-and commit instances to ensure that we catch errors and apply them to
-the correct write/commit.
-We can improve scalability at the expense of a little accuracy (some
-extra false positives) by replacing the nf_rwsem with more careful
-use of the errseq_t mechanism to track errors across the different
-operations.
+It's unnecessary to push link state to unalive VF, and the VF will
+query link state from PF when it being start works.
 
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
-[ cel: rebased on zero-verifier fix ]
-Signed-off-by: Leah Rumancik <leah.rumancik@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 18b6e31f8bf4 ("net: hns3: PF add support for pushing link status to VFs")
+Signed-off-by: Jian Shen <shenjian15@huawei.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfsd/filecache.c |    1 -
- fs/nfsd/filecache.h |    1 -
- fs/nfsd/nfs4proc.c  |   16 +++++++++-------
- fs/nfsd/vfs.c       |   40 +++++++++++++++-------------------------
- 4 files changed, 24 insertions(+), 34 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/fs/nfsd/filecache.c
-+++ b/fs/nfsd/filecache.c
-@@ -194,7 +194,6 @@ nfsd_file_alloc(struct inode *inode, uns
- 				__set_bit(NFSD_FILE_BREAK_READ, &nf->nf_flags);
- 		}
- 		nf->nf_mark = NULL;
--		init_rwsem(&nf->nf_rwsem);
- 		trace_nfsd_file_alloc(nf);
- 	}
- 	return nf;
---- a/fs/nfsd/filecache.h
-+++ b/fs/nfsd/filecache.h
-@@ -46,7 +46,6 @@ struct nfsd_file {
- 	refcount_t		nf_ref;
- 	unsigned char		nf_may;
- 	struct nfsd_file_mark	*nf_mark;
--	struct rw_semaphore	nf_rwsem;
- };
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index 15098570047b..24239e28e88a 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -3302,6 +3302,12 @@ static int hclge_set_vf_link_state(struct hnae3_handle *handle, int vf,
+ 	link_state_old = vport->vf_info.link_state;
+ 	vport->vf_info.link_state = link_state;
  
- int nfsd_file_cache_init(void);
---- a/fs/nfsd/nfs4proc.c
-+++ b/fs/nfsd/nfs4proc.c
-@@ -1515,6 +1515,9 @@ static void nfsd4_init_copy_res(struct n
- 
- static ssize_t _nfsd_copy_file_range(struct nfsd4_copy *copy)
- {
-+	struct file *dst = copy->nf_dst->nf_file;
-+	struct file *src = copy->nf_src->nf_file;
-+	errseq_t since;
- 	ssize_t bytes_copied = 0;
- 	u64 bytes_total = copy->cp_count;
- 	u64 src_pos = copy->cp_src_pos;
-@@ -1527,9 +1530,8 @@ static ssize_t _nfsd_copy_file_range(str
- 	do {
- 		if (kthread_should_stop())
- 			break;
--		bytes_copied = nfsd_copy_file_range(copy->nf_src->nf_file,
--				src_pos, copy->nf_dst->nf_file, dst_pos,
--				bytes_total);
-+		bytes_copied = nfsd_copy_file_range(src, src_pos, dst, dst_pos,
-+						    bytes_total);
- 		if (bytes_copied <= 0)
- 			break;
- 		bytes_total -= bytes_copied;
-@@ -1539,11 +1541,11 @@ static ssize_t _nfsd_copy_file_range(str
- 	} while (bytes_total > 0 && !copy->cp_synchronous);
- 	/* for a non-zero asynchronous copy do a commit of data */
- 	if (!copy->cp_synchronous && copy->cp_res.wr_bytes_written > 0) {
--		down_write(&copy->nf_dst->nf_rwsem);
--		status = vfs_fsync_range(copy->nf_dst->nf_file,
--					 copy->cp_dst_pos,
-+		since = READ_ONCE(dst->f_wb_err);
-+		status = vfs_fsync_range(dst, copy->cp_dst_pos,
- 					 copy->cp_res.wr_bytes_written, 0);
--		up_write(&copy->nf_dst->nf_rwsem);
-+		if (!status)
-+			status = filemap_check_wb_err(dst->f_mapping, since);
- 		if (!status)
- 			copy->committed = true;
- 	}
---- a/fs/nfsd/vfs.c
-+++ b/fs/nfsd/vfs.c
-@@ -525,10 +525,11 @@ __be32 nfsd4_clone_file_range(struct nfs
- {
- 	struct file *src = nf_src->nf_file;
- 	struct file *dst = nf_dst->nf_file;
-+	errseq_t since;
- 	loff_t cloned;
- 	__be32 ret = 0;
- 
--	down_write(&nf_dst->nf_rwsem);
-+	since = READ_ONCE(dst->f_wb_err);
- 	cloned = vfs_clone_file_range(src, src_pos, dst, dst_pos, count, 0);
- 	if (cloned < 0) {
- 		ret = nfserrno(cloned);
-@@ -543,6 +544,8 @@ __be32 nfsd4_clone_file_range(struct nfs
- 		int status = vfs_fsync_range(dst, dst_pos, dst_end, 0);
- 
- 		if (!status)
-+			status = filemap_check_wb_err(dst->f_mapping, since);
-+		if (!status)
- 			status = commit_inode_metadata(file_inode(src));
- 		if (status < 0) {
- 			nfsd_reset_boot_verifier(net_generic(nf_dst->nf_net,
-@@ -551,7 +554,6 @@ __be32 nfsd4_clone_file_range(struct nfs
- 		}
- 	}
- out_err:
--	up_write(&nf_dst->nf_rwsem);
- 	return ret;
- }
- 
-@@ -954,6 +956,7 @@ nfsd_vfs_write(struct svc_rqst *rqstp, s
- 	struct super_block	*sb = file_inode(file)->i_sb;
- 	struct svc_export	*exp;
- 	struct iov_iter		iter;
-+	errseq_t		since;
- 	__be32			nfserr;
- 	int			host_err;
- 	int			use_wgather;
-@@ -991,8 +994,8 @@ nfsd_vfs_write(struct svc_rqst *rqstp, s
- 		flags |= RWF_SYNC;
- 
- 	iov_iter_kvec(&iter, WRITE, vec, vlen, *cnt);
-+	since = READ_ONCE(file->f_wb_err);
- 	if (flags & RWF_SYNC) {
--		down_write(&nf->nf_rwsem);
- 		if (verf)
- 			nfsd_copy_boot_verifier(verf,
- 					net_generic(SVC_NET(rqstp),
-@@ -1001,15 +1004,12 @@ nfsd_vfs_write(struct svc_rqst *rqstp, s
- 		if (host_err < 0)
- 			nfsd_reset_boot_verifier(net_generic(SVC_NET(rqstp),
- 						 nfsd_net_id));
--		up_write(&nf->nf_rwsem);
- 	} else {
--		down_read(&nf->nf_rwsem);
- 		if (verf)
- 			nfsd_copy_boot_verifier(verf,
- 					net_generic(SVC_NET(rqstp),
- 					nfsd_net_id));
- 		host_err = vfs_iter_write(file, &iter, &pos, flags);
--		up_read(&nf->nf_rwsem);
- 	}
- 	if (host_err < 0) {
- 		nfsd_reset_boot_verifier(net_generic(SVC_NET(rqstp),
-@@ -1019,6 +1019,9 @@ nfsd_vfs_write(struct svc_rqst *rqstp, s
- 	*cnt = host_err;
- 	nfsd_stats_io_write_add(exp, *cnt);
- 	fsnotify_modify(file);
-+	host_err = filemap_check_wb_err(file->f_mapping, since);
-+	if (host_err < 0)
-+		goto out_nfserr;
- 
- 	if (stable && use_wgather) {
- 		host_err = wait_for_concurrent_writes(file);
-@@ -1099,19 +1102,6 @@ out:
- }
- 
- #ifdef CONFIG_NFSD_V3
--static int
--nfsd_filemap_write_and_wait_range(struct nfsd_file *nf, loff_t offset,
--				  loff_t end)
--{
--	struct address_space *mapping = nf->nf_file->f_mapping;
--	int ret = filemap_fdatawrite_range(mapping, offset, end);
--
--	if (ret)
--		return ret;
--	filemap_fdatawait_range_keep_errors(mapping, offset, end);
--	return 0;
--}
--
- /*
-  * Commit all pending writes to stable storage.
-  *
-@@ -1142,25 +1132,25 @@ nfsd_commit(struct svc_rqst *rqstp, stru
- 	if (err)
- 		goto out;
- 	if (EX_ISSYNC(fhp->fh_export)) {
--		int err2 = nfsd_filemap_write_and_wait_range(nf, offset, end);
-+		errseq_t since = READ_ONCE(nf->nf_file->f_wb_err);
-+		int err2;
- 
--		down_write(&nf->nf_rwsem);
--		if (!err2)
--			err2 = vfs_fsync_range(nf->nf_file, offset, end, 0);
-+		err2 = vfs_fsync_range(nf->nf_file, offset, end, 0);
- 		switch (err2) {
- 		case 0:
- 			nfsd_copy_boot_verifier(verf, net_generic(nf->nf_net,
- 						nfsd_net_id));
-+			err2 = filemap_check_wb_err(nf->nf_file->f_mapping,
-+						    since);
- 			break;
- 		case -EINVAL:
- 			err = nfserr_notsupp;
- 			break;
- 		default:
--			err = nfserrno(err2);
- 			nfsd_reset_boot_verifier(net_generic(nf->nf_net,
- 						 nfsd_net_id));
- 		}
--		up_write(&nf->nf_rwsem);
-+		err = nfserrno(err2);
- 	} else
- 		nfsd_copy_boot_verifier(verf, net_generic(nf->nf_net,
- 					nfsd_net_id));
++	/* return success directly if the VF is unalive, VF will
++	 * query link state itself when it starts work.
++	 */
++	if (!test_bit(HCLGE_VPORT_STATE_ALIVE, &vport->state))
++		return 0;
++
+ 	ret = hclge_push_vf_link_status(vport);
+ 	if (ret) {
+ 		vport->vf_info.link_state = link_state_old;
+-- 
+2.35.1
+
 
 
