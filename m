@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BEFFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:01:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2AA0CCA486
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:01:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239760AbiFTOAk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:00:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45210 "EHLO
+        id S1347124AbiFTOAp (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 10:00:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351707AbiFTNzL (ORCPT
+        with ESMTP id S1348259AbiFTN4j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:55:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0FA733E0D;
-        Mon, 20 Jun 2022 06:21:25 -0700 (PDT)
+        Mon, 20 Jun 2022 09:56:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCF3A2251A;
+        Mon, 20 Jun 2022 06:22:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6578560D36;
-        Mon, 20 Jun 2022 13:21:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6840C3411B;
-        Mon, 20 Jun 2022 13:21:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6093AB80E78;
+        Mon, 20 Jun 2022 13:22:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B83D5C3411B;
+        Mon, 20 Jun 2022 13:22:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731262;
-        bh=y/XP3wk9EnG9yuYUzGj56hLoozEl8DkFXiTtGq1hi2Y=;
+        s=korg; t=1655731330;
+        bh=0ItFtN6K/Y0+MmOpTs2KKTcstQJhzWyJHizhDgZZgjA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R+9UrIsLU8j4YzcoZkh8jPPPShCWFWHQfzfPTMTt5utFCNm1fk65vlouoj6IrGfLR
-         7RXY/991TpdF+pvbjx2IWIpW+LFepTI1+JvB1U+VSFjsFXjBmlRoPO+KV9nl9wSDoe
-         cgBBZtmTC4/wJFxCPuTunbkhjU12C6UCcRKNp0O0=
+        b=iWkzCr4xKsOuMfGj8O8wXXTgbxsUl2tuuLEjxCGJqMKc+08EU2mdJQG6jYCVbEh+F
+         mzfizTyqseqAoi56u29sg0j5M/vOonSQ4WBCnqc8OsLu/I5u3ENv5xoSFIqMnRtGal
+         hzI1hGv0y0BmajKYu4+38FWlapIJaLaskXDe+pwM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 206/240] clocksource: hyper-v: unexport __init-annotated hv_init_clocksource()
-Date:   Mon, 20 Jun 2022 14:51:47 +0200
-Message-Id: <20220620124744.951151929@linuxfoundation.org>
+        stable@vger.kernel.org, stable <stable@kernel.org>,
+        Minas Harutyunyan <hminas@synopsys.com>,
+        Miaoqian Lin <linmq006@gmail.com>
+Subject: [PATCH 5.4 224/240] usb: dwc2: Fix memory leak in dwc2_hcd_init
+Date:   Mon, 20 Jun 2022 14:52:05 +0200
+Message-Id: <20220620124745.453165519@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -51,52 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masahiro Yamada <masahiroy@kernel.org>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 245b993d8f6c4e25f19191edfbd8080b645e12b1 ]
+commit 3755278f078460b021cd0384562977bf2039a57a upstream.
 
-EXPORT_SYMBOL and __init is a bad combination because the .init.text
-section is freed up after the initialization. Hence, modules cannot
-use symbols annotated __init. The access to a freed symbol may end up
-with kernel panic.
+usb_create_hcd will alloc memory for hcd, and we should
+call usb_put_hcd to free it when platform_get_resource()
+fails to prevent memory leak.
+goto error2 label instead error1 to fix this.
 
-modpost used to detect it, but it has been broken for a decade.
-
-Recently, I fixed modpost so it started to warn it again, then this
-showed up in linux-next builds.
-
-There are two ways to fix it:
-
-  - Remove __init
-  - Remove EXPORT_SYMBOL
-
-I chose the latter for this case because the only in-tree call-site,
-arch/x86/kernel/cpu/mshyperv.c is never compiled as modular.
-(CONFIG_HYPERVISOR_GUEST is boolean)
-
-Fixes: dd2cb348613b ("clocksource/drivers: Continue making Hyper-V clocksource ISA agnostic")
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Reviewed-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
-Link: https://lore.kernel.org/r/20220606050238.4162200-1-masahiroy@kernel.org
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 856e6e8e0f93 ("usb: dwc2: check return value after calling platform_get_resource()")
+Cc: stable <stable@kernel.org>
+Acked-by: Minas Harutyunyan <hminas@synopsys.com>
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220530085413.44068-1-linmq006@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/clocksource/hyperv_timer.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/usb/dwc2/hcd.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/clocksource/hyperv_timer.c b/drivers/clocksource/hyperv_timer.c
-index 36933e2b3b0d..80b4b8fee54d 100644
---- a/drivers/clocksource/hyperv_timer.c
-+++ b/drivers/clocksource/hyperv_timer.c
-@@ -325,4 +325,3 @@ void __init hv_init_clocksource(void)
- 	hv_sched_clock_offset = hyperv_cs->read(hyperv_cs);
- 	hv_setup_sched_clock(read_hv_sched_clock_msr);
- }
--EXPORT_SYMBOL_GPL(hv_init_clocksource);
--- 
-2.35.1
-
+--- a/drivers/usb/dwc2/hcd.c
++++ b/drivers/usb/dwc2/hcd.c
+@@ -5076,7 +5076,7 @@ int dwc2_hcd_init(struct dwc2_hsotg *hso
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	if (!res) {
+ 		retval = -EINVAL;
+-		goto error1;
++		goto error2;
+ 	}
+ 	hcd->rsrc_start = res->start;
+ 	hcd->rsrc_len = resource_size(res);
 
 
