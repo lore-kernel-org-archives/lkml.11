@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D917C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:51:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47CD6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:51:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243909AbiFTNvD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:51:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55992 "EHLO
+        id S1349074AbiFTNvM (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:51:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349207AbiFTNsb (ORCPT
+        with ESMTP id S1349230AbiFTNsc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:48:31 -0400
+        Mon, 20 Jun 2022 09:48:32 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10AF92F03C;
-        Mon, 20 Jun 2022 06:17:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6E652F386;
+        Mon, 20 Jun 2022 06:17:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B677CB811D3;
-        Mon, 20 Jun 2022 13:03:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B197C3411B;
-        Mon, 20 Jun 2022 13:03:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B2575B811CF;
+        Mon, 20 Jun 2022 13:06:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BABB7C3411B;
+        Mon, 20 Jun 2022 13:06:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730232;
-        bh=GD3PVsNA3YlhsK3Y2k4Oij5ixJFDcOnzgl9lnBFqP4U=;
+        s=korg; t=1655730408;
+        bh=49UHEjZkavBlhxGLg93/47bcstLUd7lqA2dOgyY7vcg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T61GLVhl68nLt5XHQeByzyb3jSg0nNIfkx9D26YFbvslKHTXBP9eWLimCMGNIhQ2g
-         /xEibKATX2wpqBgjGRijlL58Y/H5J2WoH4HRMX4POJwgKFVZHnlcMkQYl0X+CJBYt1
-         l8u1kcGwloKwM/tEje6+nScRDxV+zJqT7BCvf8yc=
+        b=qj3O+zyQlmw6JNLB6B3VOza12uWz+yRleTIbcoXy+yWAxr6apBp4ITWUHsbXG4ore
+         tnPTFjrSb2rM1RoGEH/vb25o1Mkh9e7E3RajEH1tsKsdZbZ31k69hTC1mapHLvEqCW
+         kEVVIrug8fNmjIlsY3/DgkUqTL4izvi6XV72bYOc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH 5.10 74/84] KVM: x86: Account a variety of miscellaneous allocations
-Date:   Mon, 20 Jun 2022 14:51:37 +0200
-Message-Id: <20220620124723.078679722@linuxfoundation.org>
+        stable@vger.kernel.org, Phillip Potter <phil@philpotter.co.uk>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 044/106] staging: r8188eu: fix rtw_alloc_hwxmits error detection for now
+Date:   Mon, 20 Jun 2022 14:51:03 +0200
+Message-Id: <20220620124725.690688383@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124720.882450983@linuxfoundation.org>
-References: <20220620124720.882450983@linuxfoundation.org>
+In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
+References: <20220620124724.380838401@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,62 +49,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Phillip Potter <phil@philpotter.co.uk>
 
-commit eba04b20e4861d9bdbd8470a13c0c6e824521a36 upstream.
+[ Upstream commit 5b7419ae1d208cab1e2826d473d8dab045aa75c7 ]
 
-Switch to GFP_KERNEL_ACCOUNT for a handful of allocations that are
-clearly associated with a single task/VM.
+In _rtw_init_xmit_priv, we use the res variable to store the error
+return from the newly converted rtw_alloc_hwxmits function. Sadly, the
+calling function interprets res using _SUCCESS and _FAIL still, meaning
+we change the semantics of the variable, even in the success case.
 
-Note, there are a several SEV allocations that aren't accounted, but
-those can (hopefully) be fixed by using the local stack for memory.
+This leads to the following on boot:
+r8188eu 1-2:1.0: _rtw_init_xmit_priv failed
 
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20210331023025.2485960-3-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-[sudip: adjust context]
-Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+In the long term, we should reverse these semantics, but for now, this
+fixes the driver. Also, inside rtw_alloc_hwxmits remove the if blocks,
+as HWXMIT_ENTRY is always 4.
+
+Fixes: f94b47c6bde6 ("staging: r8188eu: add check for kzalloc")
+Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
+Link: https://lore.kernel.org/r/20220521204741.921-1-phil@philpotter.co.uk
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/svm/nested.c |    4 ++--
- arch/x86/kvm/svm/sev.c    |    2 +-
- arch/x86/kvm/vmx/vmx.c    |    2 +-
- 3 files changed, 4 insertions(+), 4 deletions(-)
+ drivers/staging/r8188eu/core/rtw_xmit.c | 20 +++++---------------
+ 1 file changed, 5 insertions(+), 15 deletions(-)
 
---- a/arch/x86/kvm/svm/nested.c
-+++ b/arch/x86/kvm/svm/nested.c
-@@ -1198,8 +1198,8 @@ static int svm_set_nested_state(struct k
- 		return -EINVAL;
+diff --git a/drivers/staging/r8188eu/core/rtw_xmit.c b/drivers/staging/r8188eu/core/rtw_xmit.c
+index 0ee4f88a60d4..af13079a6d2c 100644
+--- a/drivers/staging/r8188eu/core/rtw_xmit.c
++++ b/drivers/staging/r8188eu/core/rtw_xmit.c
+@@ -179,8 +179,7 @@ s32	_rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, struct adapter *padapter)
  
- 	ret  = -ENOMEM;
--	ctl  = kzalloc(sizeof(*ctl),  GFP_KERNEL);
--	save = kzalloc(sizeof(*save), GFP_KERNEL);
-+	ctl  = kzalloc(sizeof(*ctl),  GFP_KERNEL_ACCOUNT);
-+	save = kzalloc(sizeof(*save), GFP_KERNEL_ACCOUNT);
- 	if (!ctl || !save)
- 		goto out_free;
+ 	pxmitpriv->free_xmit_extbuf_cnt = num_xmit_extbuf;
  
---- a/arch/x86/kvm/svm/sev.c
-+++ b/arch/x86/kvm/svm/sev.c
-@@ -537,7 +537,7 @@ static int sev_launch_measure(struct kvm
- 		}
+-	res = rtw_alloc_hwxmits(padapter);
+-	if (res) {
++	if (rtw_alloc_hwxmits(padapter)) {
+ 		res = _FAIL;
+ 		goto exit;
+ 	}
+@@ -1534,19 +1533,10 @@ int rtw_alloc_hwxmits(struct adapter *padapter)
  
- 		ret = -ENOMEM;
--		blob = kmalloc(params.len, GFP_KERNEL);
-+		blob = kmalloc(params.len, GFP_KERNEL_ACCOUNT);
- 		if (!blob)
- 			goto e_free;
+ 	hwxmits = pxmitpriv->hwxmits;
  
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -619,7 +619,7 @@ static int hv_enable_direct_tlbflush(str
- 	 * evmcs in singe VM shares same assist page.
- 	 */
- 	if (!*p_hv_pa_pg)
--		*p_hv_pa_pg = kzalloc(PAGE_SIZE, GFP_KERNEL);
-+		*p_hv_pa_pg = kzalloc(PAGE_SIZE, GFP_KERNEL_ACCOUNT);
+-	if (pxmitpriv->hwxmit_entry == 5) {
+-		hwxmits[0] .sta_queue = &pxmitpriv->bm_pending;
+-		hwxmits[1] .sta_queue = &pxmitpriv->vo_pending;
+-		hwxmits[2] .sta_queue = &pxmitpriv->vi_pending;
+-		hwxmits[3] .sta_queue = &pxmitpriv->bk_pending;
+-		hwxmits[4] .sta_queue = &pxmitpriv->be_pending;
+-	} else if (pxmitpriv->hwxmit_entry == 4) {
+-		hwxmits[0] .sta_queue = &pxmitpriv->vo_pending;
+-		hwxmits[1] .sta_queue = &pxmitpriv->vi_pending;
+-		hwxmits[2] .sta_queue = &pxmitpriv->be_pending;
+-		hwxmits[3] .sta_queue = &pxmitpriv->bk_pending;
+-	} else {
+-	}
++	hwxmits[0].sta_queue = &pxmitpriv->vo_pending;
++	hwxmits[1].sta_queue = &pxmitpriv->vi_pending;
++	hwxmits[2].sta_queue = &pxmitpriv->be_pending;
++	hwxmits[3].sta_queue = &pxmitpriv->bk_pending;
  
- 	if (!*p_hv_pa_pg)
- 		return -ENOMEM;
+ 	return 0;
+ }
+-- 
+2.35.1
+
 
 
