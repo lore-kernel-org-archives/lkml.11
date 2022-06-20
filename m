@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DBB2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:46:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B48AC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:46:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348659AbiFTNp7 (ORCPT
+        id S1348692AbiFTNqC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:45:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52818 "EHLO
+        Mon, 20 Jun 2022 09:46:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349572AbiFTNoc (ORCPT
+        with ESMTP id S1350001AbiFTNom (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:44:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D9092CDD2;
-        Mon, 20 Jun 2022 06:16:23 -0700 (PDT)
+        Mon, 20 Jun 2022 09:44:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94F132CE1C;
+        Mon, 20 Jun 2022 06:16:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 345E4B811E1;
-        Mon, 20 Jun 2022 13:16:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F479C3411B;
-        Mon, 20 Jun 2022 13:16:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 266EC60C98;
+        Mon, 20 Jun 2022 13:10:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1671EC3411B;
+        Mon, 20 Jun 2022 13:10:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730982;
-        bh=B1KcBXihG84hUbxR5ankUmNavS3EMHs70nPIAU0OEnI=;
+        s=korg; t=1655730648;
+        bh=mFwsKGduHehyAoFLCK8qRt2g0jAA6EtO8El7vftSjdw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GCyD76Z6n/CNUBmBEtYHQ/uWIP+eQTb2kGE5AhlZHwHNI/nq13N/NL7+V0/nffIl7
-         slX9BlrzpITInIn4yRxKx6zzdLsH3riwqXWjnIqBZTt6fQ9aecVZ2uiJ38SBA0/agT
-         Er+pc3Eq+tQhVnUipvyZR1JsdKXhBkoBS/n75XdY=
+        b=joNeD6cdeJFe7O0z8k/sdrBU815wMiAjIXgx+LKh434WFRUSONPb2QXNTw623F9YN
+         C5FluG+I9aTF1zO0TYc8wI9dQGaNCeIRyMJte2CUJCn3rR2I0DRzGX/1wJOiCFWiXc
+         hKiyp/eBZVAofmuzghUt77Chzp3dJxkpVB7VkpIw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
+        stable@vger.kernel.org, Andy Lutomirski <luto@kernel.org>,
+        Theodore Tso <tytso@mit.edu>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 117/240] random: check for signal and try earlier when generating entropy
-Date:   Mon, 20 Jun 2022 14:50:18 +0200
-Message-Id: <20220620124742.404159356@linuxfoundation.org>
+Subject: [PATCH 5.4 013/240] random: make /dev/random be almost like /dev/urandom
+Date:   Mon, 20 Jun 2022 14:48:34 +0200
+Message-Id: <20220620124738.192627631@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -50,58 +50,116 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Andy Lutomirski <luto@kernel.org>
 
-commit 3e504d2026eb6c8762cd6040ae57db166516824a upstream.
+commit 30c08efec8884fb106b8e57094baa51bb4c44e32 upstream.
 
-Rather than waiting a full second in an interruptable waiter before
-trying to generate entropy, try to generate entropy first and wait
-second. While waiting one second might give an extra second for getting
-entropy from elsewhere, we're already pretty late in the init process
-here, and whatever else is generating entropy will still continue to
-contribute. This has implications on signal handling: we call
-try_to_generate_entropy() from wait_for_random_bytes(), and
-wait_for_random_bytes() always uses wait_event_interruptible_timeout()
-when waiting, since it's called by userspace code in restartable
-contexts, where signals can pend. Since try_to_generate_entropy() now
-runs first, if a signal is pending, it's necessary for
-try_to_generate_entropy() to check for signals, since it won't hit the
-wait until after try_to_generate_entropy() has returned. And even before
-this change, when entering a busy loop in try_to_generate_entropy(), we
-should have been checking to see if any signals are pending, so that a
-process doesn't get stuck in that loop longer than expected.
+This patch changes the read semantics of /dev/random to be the same
+as /dev/urandom except that reads will block until the CRNG is
+ready.
 
-Cc: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+None of the cleanups that this enables have been done yet.  As a
+result, this gives a warning about an unused function.
+
+Signed-off-by: Andy Lutomirski <luto@kernel.org>
+Link: https://lore.kernel.org/r/5e6ac8831c6cf2e56a7a4b39616d1732b2bdd06c.1577088521.git.luto@kernel.org
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/char/random.c |   54 ++++++++++++--------------------------------------
+ 1 file changed, 13 insertions(+), 41 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -127,10 +127,11 @@ int wait_for_random_bytes(void)
- {
- 	while (!crng_ready()) {
- 		int ret;
-+
-+		try_to_generate_entropy();
- 		ret = wait_event_interruptible_timeout(crng_init_wait, crng_ready(), HZ);
- 		if (ret)
- 			return ret > 0 ? 0 : ret;
--		try_to_generate_entropy();
- 	}
- 	return 0;
- }
-@@ -1366,7 +1367,7 @@ static void try_to_generate_entropy(void
- 		return;
+@@ -354,7 +354,6 @@
+ #define INPUT_POOL_WORDS	(1 << (INPUT_POOL_SHIFT-5))
+ #define OUTPUT_POOL_SHIFT	10
+ #define OUTPUT_POOL_WORDS	(1 << (OUTPUT_POOL_SHIFT-5))
+-#define SEC_XFER_SIZE		512
+ #define EXTRACT_SIZE		10
  
- 	timer_setup_on_stack(&stack.timer, entropy_timer, 0);
--	while (!crng_ready()) {
-+	while (!crng_ready() && !signal_pending(current)) {
- 		if (!timer_pending(&stack.timer))
- 			mod_timer(&stack.timer, jiffies + 1);
- 		mix_pool_bytes(&stack.cycles, sizeof(stack.cycles));
+ 
+@@ -804,7 +803,6 @@ retry:
+ 		if (entropy_bits >= random_read_wakeup_bits &&
+ 		    wq_has_sleeper(&random_read_wait)) {
+ 			wake_up_interruptible(&random_read_wait);
+-			kill_fasync(&fasync, SIGIO, POLL_IN);
+ 		}
+ 		/* If the input pool is getting full, and the blocking
+ 		 * pool has room, send some entropy to the blocking
+@@ -2006,43 +2004,6 @@ void rand_initialize_disk(struct gendisk
+ #endif
+ 
+ static ssize_t
+-_random_read(int nonblock, char __user *buf, size_t nbytes)
+-{
+-	ssize_t n;
+-
+-	if (nbytes == 0)
+-		return 0;
+-
+-	nbytes = min_t(size_t, nbytes, SEC_XFER_SIZE);
+-	while (1) {
+-		n = extract_entropy_user(&blocking_pool, buf, nbytes);
+-		if (n < 0)
+-			return n;
+-		trace_random_read(n*8, (nbytes-n)*8,
+-				  ENTROPY_BITS(&blocking_pool),
+-				  ENTROPY_BITS(&input_pool));
+-		if (n > 0)
+-			return n;
+-
+-		/* Pool is (near) empty.  Maybe wait and retry. */
+-		if (nonblock)
+-			return -EAGAIN;
+-
+-		wait_event_interruptible(random_read_wait,
+-		    blocking_pool.initialized &&
+-		    (ENTROPY_BITS(&input_pool) >= random_read_wakeup_bits));
+-		if (signal_pending(current))
+-			return -ERESTARTSYS;
+-	}
+-}
+-
+-static ssize_t
+-random_read(struct file *file, char __user *buf, size_t nbytes, loff_t *ppos)
+-{
+-	return _random_read(file->f_flags & O_NONBLOCK, buf, nbytes);
+-}
+-
+-static ssize_t
+ urandom_read_nowarn(struct file *file, char __user *buf, size_t nbytes,
+ 		    loff_t *ppos)
+ {
+@@ -2074,15 +2035,26 @@ urandom_read(struct file *file, char __u
+ 	return urandom_read_nowarn(file, buf, nbytes, ppos);
+ }
+ 
++static ssize_t
++random_read(struct file *file, char __user *buf, size_t nbytes, loff_t *ppos)
++{
++	int ret;
++
++	ret = wait_for_random_bytes();
++	if (ret != 0)
++		return ret;
++	return urandom_read_nowarn(file, buf, nbytes, ppos);
++}
++
+ static __poll_t
+ random_poll(struct file *file, poll_table * wait)
+ {
+ 	__poll_t mask;
+ 
+-	poll_wait(file, &random_read_wait, wait);
++	poll_wait(file, &crng_init_wait, wait);
+ 	poll_wait(file, &random_write_wait, wait);
+ 	mask = 0;
+-	if (ENTROPY_BITS(&input_pool) >= random_read_wakeup_bits)
++	if (crng_ready())
+ 		mask |= EPOLLIN | EPOLLRDNORM;
+ 	if (ENTROPY_BITS(&input_pool) < random_write_wakeup_bits)
+ 		mask |= EPOLLOUT | EPOLLWRNORM;
 
 
