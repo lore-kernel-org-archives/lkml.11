@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69D91CCA482
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:11:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52043C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:11:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245185AbiFTNLA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:11:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52794 "EHLO
+        id S245249AbiFTNLD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:11:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242496AbiFTNGQ (ORCPT
+        with ESMTP id S244476AbiFTNHF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:06:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9588A1AF3F;
-        Mon, 20 Jun 2022 06:00:36 -0700 (PDT)
+        Mon, 20 Jun 2022 09:07:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AB931B788;
+        Mon, 20 Jun 2022 06:00:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 35387B811A6;
-        Mon, 20 Jun 2022 13:00:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27F39C341C4;
-        Mon, 20 Jun 2022 13:00:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ABBB761542;
+        Mon, 20 Jun 2022 13:00:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A23D1C341C4;
+        Mon, 20 Jun 2022 13:00:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730033;
-        bh=MDHUU8abgO5VK7Id2WBvk0k67bBL7YmBlI8K6lW9WKw=;
+        s=korg; t=1655730037;
+        bh=m++Hn3Fk2NwdqAxL7YXJgjX3tvqr/94r7cEDTL6dAr8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JflVD3cqnvfNeF1l7RLxUnA+Fv6Onz3iM7ypc1jbnNGl2ASFPGlp9TSQitHE1cWKe
-         PU1VOph1PUALUJoW4/lUFqSILFlQU16pQoml07ArDW3SIfV+yHDredlCybX+c9MDm9
-         rWId3ZKErmTaBufCsqTXtoGCSbLTakna0dIQeTwc=
+        b=xcCJsoFnEkYBOMiaers5lppmu81xqABjbc9VI4pCwjLeUrnyrHnF7+Hg5aIE2uGIG
+         gzZQwtAi+2hMHtacXDWOEAD3mFfcYp4rGKxWZvf44ok4RrSSPd/LrgrgbG9opOhqis
+         XkX7cIT76OGm+ASegVUeXf/f6KWSwsSw7yCzsMDg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -36,9 +36,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Charles Keepax <ckeepax@opensource.cirrus.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 12/84] ASoC: cs42l56: Correct typo in minimum level for SX volume controls
-Date:   Mon, 20 Jun 2022 14:50:35 +0200
-Message-Id: <20220620124721.254159360@linuxfoundation.org>
+Subject: [PATCH 5.10 13/84] ASoC: cs42l51: Correct minimum value for SX volume control
+Date:   Mon, 20 Jun 2022 14:50:36 +0200
+Message-Id: <20220620124721.282891966@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124720.882450983@linuxfoundation.org>
 References: <20220620124720.882450983@linuxfoundation.org>
@@ -52,37 +52,35 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit a8928ada9b96944cadd8b65d191e33199fd38782 ]
+[ Upstream commit fcb3b5a58926d16d9a338841b74af06d4c29be15 ]
 
-A couple of the SX volume controls specify 0x84 as the lowest volume
-value, however the correct value from the datasheet is 0x44. The
-datasheet don't include spaces in the value it displays as binary so
-this was almost certainly just a typo reading 1000100.
+The minimum value for the PGA Volume is given as 0x1A, however the
+values from there to 0x19 are all the same volume and this is not
+represented in the TLV structure. The number of volumes given is correct
+so this leads to all the volumes being shifted. Move the minimum value
+up to 0x19 to fix this.
 
 Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220602162119.3393857-6-ckeepax@opensource.cirrus.com
+Link: https://lore.kernel.org/r/20220602162119.3393857-7-ckeepax@opensource.cirrus.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/cs42l56.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ sound/soc/codecs/cs42l51.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/cs42l56.c b/sound/soc/codecs/cs42l56.c
-index 06dcfae9dfe7..d41e03193106 100644
---- a/sound/soc/codecs/cs42l56.c
-+++ b/sound/soc/codecs/cs42l56.c
-@@ -391,9 +391,9 @@ static const struct snd_kcontrol_new cs42l56_snd_controls[] = {
- 	SOC_DOUBLE("ADC Boost Switch", CS42L56_GAIN_BIAS_CTL, 3, 2, 1, 1),
- 
- 	SOC_DOUBLE_R_SX_TLV("Headphone Volume", CS42L56_HPA_VOLUME,
--			      CS42L56_HPB_VOLUME, 0, 0x84, 0x48, hl_tlv),
-+			      CS42L56_HPB_VOLUME, 0, 0x44, 0x48, hl_tlv),
- 	SOC_DOUBLE_R_SX_TLV("LineOut Volume", CS42L56_LOA_VOLUME,
--			      CS42L56_LOB_VOLUME, 0, 0x84, 0x48, hl_tlv),
-+			      CS42L56_LOB_VOLUME, 0, 0x44, 0x48, hl_tlv),
- 
- 	SOC_SINGLE_TLV("Bass Shelving Volume", CS42L56_TONE_CTL,
- 			0, 0x00, 1, tone_tlv),
+diff --git a/sound/soc/codecs/cs42l51.c b/sound/soc/codecs/cs42l51.c
+index c61b17dc2af8..fc6a2bc311b4 100644
+--- a/sound/soc/codecs/cs42l51.c
++++ b/sound/soc/codecs/cs42l51.c
+@@ -146,7 +146,7 @@ static const struct snd_kcontrol_new cs42l51_snd_controls[] = {
+ 			0, 0xA0, 96, adc_att_tlv),
+ 	SOC_DOUBLE_R_SX_TLV("PGA Volume",
+ 			CS42L51_ALC_PGA_CTL, CS42L51_ALC_PGB_CTL,
+-			0, 0x1A, 30, pga_tlv),
++			0, 0x19, 30, pga_tlv),
+ 	SOC_SINGLE("Playback Deemphasis Switch", CS42L51_DAC_CTL, 3, 1, 0),
+ 	SOC_SINGLE("Auto-Mute Switch", CS42L51_DAC_CTL, 2, 1, 0),
+ 	SOC_SINGLE("Soft Ramp Switch", CS42L51_DAC_CTL, 1, 1, 0),
 -- 
 2.35.1
 
