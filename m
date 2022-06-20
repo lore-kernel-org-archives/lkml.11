@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A1E7C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 23:04:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63E9FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 23:04:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345789AbiFTXEM (ORCPT
+        id S1346080AbiFTXEk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 19:04:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45598 "EHLO
+        Mon, 20 Jun 2022 19:04:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347002AbiFTXDr (ORCPT
+        with ESMTP id S1345752AbiFTXES (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 19:03:47 -0400
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2052.outbound.protection.outlook.com [40.107.236.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79ADA1FE;
-        Mon, 20 Jun 2022 16:03:42 -0700 (PDT)
+        Mon, 20 Jun 2022 19:04:18 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2048.outbound.protection.outlook.com [40.107.243.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 567DC20F69;
+        Mon, 20 Jun 2022 16:04:14 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aSrrI65kY2jyGDvUkBJk7pQ4HimCjHQ9+7V8pbiZKx5DNhtrExTYRrTDREzTRYb6jlsowbEP4dzvJDLjWHRL+4sJyYy1/iAjads/plUud9jNv5bceevaFcKccSgKMpv10t5ytSK9BK40etf/Kual5qMs9+BbYiR01ulVbB7x2uA5/BUx3FHv0wOVtmyza1W7Qx0qag/YWy2OCdY2tDLV2M0kX57Jq+JKZo1XueiVusDHrDABVUuXnGB5GsDS0hE0QU1pAhREy6DugtCl1rjWBqBlHtClP8qI2ND6vc5wGMBoOMhzFj21jMil1FI+J2pwINVg0zFM0YH2QYCPGB+t0Q==
+ b=XZM25cENgNcRIHhAkd4gVfrHvfdsNATCoJRgiQUlknK5aGZLV1YYDqSFxSp7EaonF4KT2jjLxk9x968aykkkn054+I8/9fkpbFmlEJgrmYu7nCZPHV8LXJ1kNQZC9E7br8OwVno6I2/FEuQnhmPuiBIoPATbnDOdoOHq52c1Q/zXLYFwn933v75oaMPqaWwOig5JrEl9j5x1MvfGkw6+h3OQLiq/Z/lWqOVVv2/1SHfly0qL/+YAhuBWxUs3z8znP5EPO5xk0hOY2AlhX1RJ05rBG3c1jlS3JCczK7F/aGA8KNaAJGGUn6ZeUExtWTpbT4nS+sR4y2Si0ZQP8QvW/Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KdsiXFsov7b6bmc81thYnFUAHUojIU9Zd2eTMANVyHk=;
- b=j4MArPHUHZR4Mnc6rXL9C1nxGzy+sSqTo70MvR6eG9CxohgW4mE37PgjMoytdXbrfFCAODHnOWB1/zJ40fn4/KQMwZXx5SM11X9myXIxlwtKp+MYERG8cTQpjuMIJHbkhuGL76MNp6YCTpHGczcwikur975gUaQ4CJMl83yU4pgZY0AlSjO1Afz0QnTBdcDL1/SX4HgmDWsGSVrMU0Bbx9zVnng++obTdvWFCWiQSTdreH022yAN0ll1G2IQs7JV/o85VlIQR8Oz6XfCGx6UTe3xlshanr1qmND1gxnaQ2jdgQjbydzfqMnZndCOJusl16JkXXp1Gfxl8/JcCyiH0w==
+ bh=WU3JMwJgqvyPUcyzBZs7TBL5nqj7/gWSpusixIl6aVc=;
+ b=QigYGxk8yVUAEvMHWYpqIKTm6wj1QnLJZuHNp28qPVlUgvVGOt8k4zKHUaVCTTk4enLYPAMCJP1i3+RHImxM9R2UlJnyCvDI0IaAG/l2TtAcn4hUt2TiFJJSJYzJJPWvogOobMqFdDqTLgi+jAmH9nTLryIe5rFy6lGNg9vbOcQlH9hyjA+LBFJRujlCA+Lg3lzqXy56SP6wnd77rL0FB1aEqg2ZLB8W4IubPBcCelgumY3ODucfArfQXmPH7pRDYE99qZZamGErGxpGvFq0bz5gmgR5gBPghdlOwf1T5Jk2pqdJfocR+Qm1crbtSzoEV0z8BChFcpMFJv0X0e/sfA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
  (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KdsiXFsov7b6bmc81thYnFUAHUojIU9Zd2eTMANVyHk=;
- b=2xYblfZ4kWk9QFT+AEcdjU2XLipSsBDSwMHSURmKBTwW0MCj+mRB8PA2h1a1sNNG0H69Amfp/X/VKDAiOe+4pnl1lBolmyxsoIG5F7chHk5kaSKwfr1qyBEXjrw+TtNEapp7dIeqAIEmu4ZPrkBfdwRVrnsvo9cx9C2M6STW314=
-Received: from BY3PR03CA0023.namprd03.prod.outlook.com (2603:10b6:a03:39a::28)
- by MN2PR12MB4797.namprd12.prod.outlook.com (2603:10b6:208:a4::24) with
+ bh=WU3JMwJgqvyPUcyzBZs7TBL5nqj7/gWSpusixIl6aVc=;
+ b=rpdDK4LIMmRU3EBgVOCZR1czzAf4dqMbgScBGyZrTXle/kIkMLaJJI5DQtG5RWUV+b2IAvFAyJmxWnQqP39qupU/2+vHbdiAiUAtfI8vX3aySMurDnyQNvyjkeugiM7Wz1jEfnRL2Wd1WSeABVin/m4FC9k4VAXq6xA+dfI9fsw=
+Received: from YQBPR0101CA0166.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:c01:f::9)
+ by BN6PR1201MB2546.namprd12.prod.outlook.com (2603:10b6:404:b0::22) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.18; Mon, 20 Jun
- 2022 23:03:40 +0000
-Received: from DM6NAM11FT066.eop-nam11.prod.protection.outlook.com
- (2603:10b6:a03:39a:cafe::7e) by BY3PR03CA0023.outlook.office365.com
- (2603:10b6:a03:39a::28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.15 via Frontend
- Transport; Mon, 20 Jun 2022 23:03:39 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.14; Mon, 20 Jun
+ 2022 23:04:10 +0000
+Received: from DM6NAM11FT044.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:c01:f:cafe::f) by YQBPR0101CA0166.outlook.office365.com
+ (2603:10b6:c01:f::9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.14 via Frontend
+ Transport; Mon, 20 Jun 2022 23:04:10 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -48,13 +48,13 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT066.mail.protection.outlook.com (10.13.173.179) with Microsoft SMTP
+ DM6NAM11FT044.mail.protection.outlook.com (10.13.173.185) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5353.14 via Frontend Transport; Mon, 20 Jun 2022 23:03:39 +0000
+ 15.20.5353.14 via Frontend Transport; Mon, 20 Jun 2022 23:04:10 +0000
 Received: from ashkalraubuntuserver.amd.com (10.180.168.240) by
  SATLEXMB04.amd.com (10.181.40.145) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Mon, 20 Jun 2022 18:03:36 -0500
+ 15.1.2375.28; Mon, 20 Jun 2022 18:04:07 -0500
 From:   Ashish Kalra <Ashish.Kalra@amd.com>
 To:     <x86@kernel.org>, <linux-kernel@vger.kernel.org>,
         <kvm@vger.kernel.org>, <linux-coco@lists.linux.dev>,
@@ -71,9 +71,9 @@ CC:     <tglx@linutronix.de>, <mingo@redhat.com>, <jroedel@suse.de>,
         <ak@linux.intel.com>, <tony.luck@intel.com>, <marcorr@google.com>,
         <sathyanarayanan.kuppuswamy@linux.intel.com>,
         <alpergun@google.com>, <dgilbert@redhat.com>, <jarkko@kernel.org>
-Subject: [PATCH Part2 v6 08/49] x86/traps: Define RMP violation #PF error code
-Date:   Mon, 20 Jun 2022 23:03:27 +0000
-Message-ID: <5328a76b3fab1f20b3ffc400ca2402bec19d9700.1655761627.git.ashish.kalra@amd.com>
+Subject: [PATCH Part2 v6 10/49] x86/fault: Add support to dump RMP entry on fault
+Date:   Mon, 20 Jun 2022 23:03:58 +0000
+Message-ID: <af381cc88410c0e2c48fda5732741edd0d7609ac.1655761627.git.ashish.kalra@amd.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1655761627.git.ashish.kalra@amd.com>
 References: <cover.1655761627.git.ashish.kalra@amd.com>
@@ -85,91 +85,239 @@ X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 23a5f2e7-ad38-48b6-962f-08da53111cee
-X-MS-TrafficTypeDiagnostic: MN2PR12MB4797:EE_
-X-Microsoft-Antispam-PRVS: <MN2PR12MB479711AF035501B4539DACAA8EB09@MN2PR12MB4797.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: bc7f4d59-db38-4cc8-9abe-08da53112f74
+X-MS-TrafficTypeDiagnostic: BN6PR1201MB2546:EE_
+X-Microsoft-Antispam-PRVS: <BN6PR1201MB25464941300B42D36A2A5BF98EB09@BN6PR1201MB2546.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: LFhTJDrohFrnVoEtuKxsI9O/Ejv/+FDyFzxtRZxBa7YwEdvF0qCcRImZbU8TahdRECh/E3yp5qs3weN1PRVZ0LlS2dmLD8BfdAOV3MRTqW1g+Zvg4JXZDcgMiKR1hoJ0j8BsgUdFcxH2WbTpanhhVTQVj6ZMg0OoJJNOacLfqwCvK7LmSvvRqQejLiYcfumDwaRI+uQGs9R1qf+4zYiCSbgdOmGp1btPIxjriSfknZnJuFUtrP1Bo8br52V93moRmL4JqypmVUDIjIYpPk2+0kewHJnrCj+hRJ9HV6OaxGIuax7Rmh1R7JIF/HH+Lu6j1M4KrSM2Vfgu/3eW7Lk5QxSbUyZaQwvy7Ohq+DnQyTmhEN1GgnhtFGmhP1HkWt6IQ92WizRGxXYFASdb3jFmZpAKO38eNIrN3nX+cCM8v9O2QXm19PoYZkIJP635i6fXgmuf8DIFCCEJJRwQEz0+P2DCNyqry/pd5Rjdgp9oy1vl5U8UPkK1qtrBnRqlPxnRcSd1xc9cdxZVwWUBvnx+zJI5DnS0R8bz1A2Q6+sRb9FLX5Cnddz0icPU6h7cDF3f7jUGVkY75OJGRuVCKoeuruxFozSYgNoHVJD4FyONQVGPsW36kFeD7/2Y70nytyYacWkrqK0Q3CmDUfXAWUk4N50DkCbmymGCPnhWQUYyLbFu9GT07Nx7ZT9XI7DILBG6CVZ5lfso+9MLnHFrSRoKBWUvoubK0YzLeyHhw90+6GN3wZ6gEgWeDyl+fsiDBfxg
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(136003)(39860400002)(376002)(396003)(346002)(40470700004)(36840700001)(46966006)(478600001)(26005)(110136005)(47076005)(16526019)(186003)(54906003)(8936002)(36756003)(316002)(336012)(83380400001)(2616005)(426003)(7416002)(86362001)(356005)(82740400003)(81166007)(36860700001)(40460700003)(7406005)(6666004)(82310400005)(8676002)(7696005)(70206006)(41300700001)(40480700001)(70586007)(4326008)(5660300002)(2906002)(2101003)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 3pHDBzM5VpiGW4Nl98G0PwVZGoYHbn8OONLwOnAoKVc0L3vc+8vCsdD1nrJKYrCKbjqzhpos3i8alACGd4yXNQ1hjk26+p6PTydSz3XjZ+Y9gGL2Sqh9zpYxxerAzR2Vm3GWIDEBb/xmZG1/lL7Ny7ACwTJ94FPuFpK/LZQXa7lXClDBufhlth55aU+C/PdszSC4DooWixhq46kE7xNKnxDhftcrP3FM/pYIp7Qud67RdWxIt+7Mb2b9LMBKiC93cRD/osmSHOOi+va3Bl2pylBw73u1oKFEQJ/+yoRNtE8fesGyiCfnwSUybI6mOgtEQzPNEXRpPOTXlW11IpDLmUM+1xfQ9jE2uuZT6auomNL2hyq9Gc/eEQEqL/Y3IFnLpuDE4mqur90RiyqnRRbgWlz1rXR9GI57QowAt3NxVMpAOeLrv49gU0Uqb0hcCwHXW+ArmmZgOhLEaVb43/4UNw0mNzxXXuTrwBISWRjsCLpf4tt5ba4tCcWxq8vDXcYQJ9qikQr1oGSFTwadVFGtyQi3X4Dd7BC3NfB76kBox3ZcQdkTDLFUlqwjnr2zUhjtddO7Av7dsyA0Fu6bR1NvVZMW46KpivKzriHPItn85gPSa8jpXS+Yau+K8SG/SCcBEv5T7sFQOVZy83PYm/paf3gspn5BblBEjGhrfS19+SZADwkiOtYnKRlME91qnrhe15EoMTADgVeYnhGBQOQxQFJ/RzhCTxJar13c9pu55Pjx7fz3IpuZ8sesf41QSSDj/6hGQdQwvmKd/zLnVhBOGQ==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(396003)(346002)(136003)(376002)(39860400002)(46966006)(36840700001)(40470700004)(40460700003)(336012)(82310400005)(6666004)(81166007)(426003)(47076005)(26005)(2616005)(41300700001)(40480700001)(7696005)(7406005)(2906002)(7416002)(5660300002)(36756003)(8936002)(70206006)(316002)(36860700001)(70586007)(54906003)(356005)(4326008)(8676002)(83380400001)(82740400003)(86362001)(478600001)(186003)(16526019)(110136005)(2101003)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jun 2022 23:03:39.0356
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jun 2022 23:04:10.1129
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 23a5f2e7-ad38-48b6-962f-08da53111cee
+X-MS-Exchange-CrossTenant-Network-Message-Id: bc7f4d59-db38-4cc8-9abe-08da53112f74
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT066.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT044.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4797
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR1201MB2546
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Brijesh Singh <brijesh.singh@amd.com>
 
-Bit 31 in the page fault-error bit will be set when processor encounters
-an RMP violation.
-
-While at it, use the BIT_ULL() macro.
+When SEV-SNP is enabled globally, a write from the host goes through the
+RMP check. If the hardware encounters the check failure, then it raises
+the #PF (with RMP set). Dump the RMP entry at the faulting pfn to help
+the debug.
 
 Signed-off-by: Brijesh Singh <brijesh.singh@amd.com>
 ---
- arch/x86/include/asm/trap_pf.h | 18 +++++++++++-------
- arch/x86/mm/fault.c            |  1 +
- 2 files changed, 12 insertions(+), 7 deletions(-)
+ arch/x86/include/asm/sev.h |  7 +++++++
+ arch/x86/kernel/sev.c      | 43 ++++++++++++++++++++++++++++++++++++++
+ arch/x86/mm/fault.c        | 17 +++++++++++----
+ include/linux/sev.h        |  2 ++
+ 4 files changed, 65 insertions(+), 4 deletions(-)
 
-diff --git a/arch/x86/include/asm/trap_pf.h b/arch/x86/include/asm/trap_pf.h
-index 10b1de500ab1..89b705114b3f 100644
---- a/arch/x86/include/asm/trap_pf.h
-+++ b/arch/x86/include/asm/trap_pf.h
-@@ -2,6 +2,8 @@
- #ifndef _ASM_X86_TRAP_PF_H
- #define _ASM_X86_TRAP_PF_H
+diff --git a/arch/x86/include/asm/sev.h b/arch/x86/include/asm/sev.h
+index 6ab872311544..c0c4df817159 100644
+--- a/arch/x86/include/asm/sev.h
++++ b/arch/x86/include/asm/sev.h
+@@ -113,6 +113,11 @@ struct __packed rmpentry {
  
-+#include <linux/bits.h>  /* BIT() macro */
+ #define rmpentry_assigned(x)	((x)->info.assigned)
+ #define rmpentry_pagesize(x)	((x)->info.pagesize)
++#define rmpentry_vmsa(x)	((x)->info.vmsa)
++#define rmpentry_asid(x)	((x)->info.asid)
++#define rmpentry_validated(x)	((x)->info.validated)
++#define rmpentry_gpa(x)		((unsigned long)(x)->info.gpa)
++#define rmpentry_immutable(x)	((x)->info.immutable)
+ 
+ #define RMPADJUST_VMSA_PAGE_BIT		BIT(16)
+ 
+@@ -205,6 +210,7 @@ void snp_set_wakeup_secondary_cpu(void);
+ bool snp_init(struct boot_params *bp);
+ void snp_abort(void);
+ int snp_issue_guest_request(u64 exit_code, struct snp_req_data *input, unsigned long *fw_err);
++void dump_rmpentry(u64 pfn);
+ #else
+ static inline void sev_es_ist_enter(struct pt_regs *regs) { }
+ static inline void sev_es_ist_exit(void) { }
+@@ -229,6 +235,7 @@ static inline int snp_issue_guest_request(u64 exit_code, struct snp_req_data *in
+ {
+ 	return -ENOTTY;
+ }
++static inline void dump_rmpentry(u64 pfn) {}
+ #endif
+ 
+ #endif
+diff --git a/arch/x86/kernel/sev.c b/arch/x86/kernel/sev.c
+index 734cddd837f5..6640a639fffc 100644
+--- a/arch/x86/kernel/sev.c
++++ b/arch/x86/kernel/sev.c
+@@ -2414,6 +2414,49 @@ static struct rmpentry *__snp_lookup_rmpentry(u64 pfn, int *level)
+ 	return entry;
+ }
+ 
++void dump_rmpentry(u64 pfn)
++{
++	unsigned long pfn_end;
++	struct rmpentry *e;
++	int level;
++
++	e = __snp_lookup_rmpentry(pfn, &level);
++	if (!e) {
++		pr_alert("failed to read RMP entry pfn 0x%llx\n", pfn);
++		return;
++	}
++
++	if (rmpentry_assigned(e)) {
++		pr_alert("RMPEntry paddr 0x%llx [assigned=%d immutable=%d pagesize=%d gpa=0x%lx"
++			" asid=%d vmsa=%d validated=%d]\n", pfn << PAGE_SHIFT,
++			rmpentry_assigned(e), rmpentry_immutable(e), rmpentry_pagesize(e),
++			rmpentry_gpa(e), rmpentry_asid(e), rmpentry_vmsa(e),
++			rmpentry_validated(e));
++		return;
++	}
++
++	/*
++	 * If the RMP entry at the faulting pfn was not assigned, then we do not
++	 * know what caused the RMP violation. To get some useful debug information,
++	 * let iterate through the entire 2MB region, and dump the RMP entries if
++	 * one of the bit in the RMP entry is set.
++	 */
++	pfn = pfn & ~(PTRS_PER_PMD - 1);
++	pfn_end = pfn + PTRS_PER_PMD;
++
++	while (pfn < pfn_end) {
++		e = __snp_lookup_rmpentry(pfn, &level);
++		if (!e)
++			return;
++
++		if (e->low || e->high)
++			pr_alert("RMPEntry paddr 0x%llx: [high=0x%016llx low=0x%016llx]\n",
++				 pfn << PAGE_SHIFT, e->high, e->low);
++		pfn++;
++	}
++}
++EXPORT_SYMBOL_GPL(dump_rmpentry);
 +
  /*
-  * Page fault error code bits:
-  *
-@@ -12,15 +14,17 @@
-  *   bit 4 ==				1: fault was an instruction fetch
-  *   bit 5 ==				1: protection keys block access
-  *   bit 15 ==				1: SGX MMU page-fault
-+ *   bit 31 ==				1: fault was due to RMP violation
-  */
- enum x86_pf_error_code {
--	X86_PF_PROT	=		1 << 0,
--	X86_PF_WRITE	=		1 << 1,
--	X86_PF_USER	=		1 << 2,
--	X86_PF_RSVD	=		1 << 3,
--	X86_PF_INSTR	=		1 << 4,
--	X86_PF_PK	=		1 << 5,
--	X86_PF_SGX	=		1 << 15,
-+	X86_PF_PROT	=		BIT_ULL(0),
-+	X86_PF_WRITE	=		BIT_ULL(1),
-+	X86_PF_USER	=		BIT_ULL(2),
-+	X86_PF_RSVD	=		BIT_ULL(3),
-+	X86_PF_INSTR	=		BIT_ULL(4),
-+	X86_PF_PK	=		BIT_ULL(5),
-+	X86_PF_SGX	=		BIT_ULL(15),
-+	X86_PF_RMP	=		BIT_ULL(31),
- };
- 
- #endif /* _ASM_X86_TRAP_PF_H */
+  * Return 1 if the RMP entry is assigned, 0 if it exists but is not assigned,
+  * and -errno if there is no corresponding RMP entry.
 diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
-index fad8faa29d04..a4c270e99f7f 100644
+index f5de9673093a..25896a6ba04a 100644
 --- a/arch/x86/mm/fault.c
 +++ b/arch/x86/mm/fault.c
-@@ -546,6 +546,7 @@ show_fault_oops(struct pt_regs *regs, unsigned long error_code, unsigned long ad
- 		 !(error_code & X86_PF_PROT) ? "not-present page" :
- 		 (error_code & X86_PF_RSVD)  ? "reserved bit violation" :
- 		 (error_code & X86_PF_PK)    ? "protection keys violation" :
-+		 (error_code & X86_PF_RMP)   ? "RMP violation" :
- 					       "permissions violation");
+@@ -34,6 +34,7 @@
+ #include <asm/kvm_para.h>		/* kvm_handle_async_pf		*/
+ #include <asm/vdso.h>			/* fixup_vdso_exception()	*/
+ #include <asm/irq_stack.h>
++#include <asm/sev.h>			/* dump_rmpentry()		*/
  
- 	if (!(error_code & X86_PF_USER) && user_mode(regs)) {
+ #define CREATE_TRACE_POINTS
+ #include <asm/trace/exceptions.h>
+@@ -290,7 +291,7 @@ static bool low_pfn(unsigned long pfn)
+ 	return pfn < max_low_pfn;
+ }
+ 
+-static void dump_pagetable(unsigned long address)
++static void dump_pagetable(unsigned long address, bool show_rmpentry)
+ {
+ 	pgd_t *base = __va(read_cr3_pa());
+ 	pgd_t *pgd = &base[pgd_index(address)];
+@@ -346,10 +347,11 @@ static int bad_address(void *p)
+ 	return get_kernel_nofault(dummy, (unsigned long *)p);
+ }
+ 
+-static void dump_pagetable(unsigned long address)
++static void dump_pagetable(unsigned long address, bool show_rmpentry)
+ {
+ 	pgd_t *base = __va(read_cr3_pa());
+ 	pgd_t *pgd = base + pgd_index(address);
++	unsigned long pfn;
+ 	p4d_t *p4d;
+ 	pud_t *pud;
+ 	pmd_t *pmd;
+@@ -367,6 +369,7 @@ static void dump_pagetable(unsigned long address)
+ 	if (bad_address(p4d))
+ 		goto bad;
+ 
++	pfn = p4d_pfn(*p4d);
+ 	pr_cont("P4D %lx ", p4d_val(*p4d));
+ 	if (!p4d_present(*p4d) || p4d_large(*p4d))
+ 		goto out;
+@@ -375,6 +378,7 @@ static void dump_pagetable(unsigned long address)
+ 	if (bad_address(pud))
+ 		goto bad;
+ 
++	pfn = pud_pfn(*pud);
+ 	pr_cont("PUD %lx ", pud_val(*pud));
+ 	if (!pud_present(*pud) || pud_large(*pud))
+ 		goto out;
+@@ -383,6 +387,7 @@ static void dump_pagetable(unsigned long address)
+ 	if (bad_address(pmd))
+ 		goto bad;
+ 
++	pfn = pmd_pfn(*pmd);
+ 	pr_cont("PMD %lx ", pmd_val(*pmd));
+ 	if (!pmd_present(*pmd) || pmd_large(*pmd))
+ 		goto out;
+@@ -391,9 +396,13 @@ static void dump_pagetable(unsigned long address)
+ 	if (bad_address(pte))
+ 		goto bad;
+ 
++	pfn = pte_pfn(*pte);
+ 	pr_cont("PTE %lx", pte_val(*pte));
+ out:
+ 	pr_cont("\n");
++
++	if (show_rmpentry)
++		dump_rmpentry(pfn);
+ 	return;
+ bad:
+ 	pr_info("BAD\n");
+@@ -579,7 +588,7 @@ show_fault_oops(struct pt_regs *regs, unsigned long error_code, unsigned long ad
+ 		show_ldttss(&gdt, "TR", tr);
+ 	}
+ 
+-	dump_pagetable(address);
++	dump_pagetable(address, error_code & X86_PF_RMP);
+ }
+ 
+ static noinline void
+@@ -596,7 +605,7 @@ pgtable_bad(struct pt_regs *regs, unsigned long error_code,
+ 
+ 	printk(KERN_ALERT "%s: Corrupted page table at address %lx\n",
+ 	       tsk->comm, address);
+-	dump_pagetable(address);
++	dump_pagetable(address, false);
+ 
+ 	if (__die("Bad pagetable", regs, error_code))
+ 		sig = 0;
+diff --git a/include/linux/sev.h b/include/linux/sev.h
+index 1a68842789e1..734b13a69c54 100644
+--- a/include/linux/sev.h
++++ b/include/linux/sev.h
+@@ -16,6 +16,7 @@ int snp_lookup_rmpentry(u64 pfn, int *level);
+ int psmash(u64 pfn);
+ int rmp_make_private(u64 pfn, u64 gpa, enum pg_level level, int asid, bool immutable);
+ int rmp_make_shared(u64 pfn, enum pg_level level);
++void dump_rmpentry(u64 pfn);
+ #else
+ static inline int snp_lookup_rmpentry(u64 pfn, int *level) { return 0; }
+ static inline int psmash(u64 pfn) { return -ENXIO; }
+@@ -25,6 +26,7 @@ static inline int rmp_make_private(u64 pfn, u64 gpa, enum pg_level level, int as
+ 	return -ENODEV;
+ }
+ static inline int rmp_make_shared(u64 pfn, enum pg_level level) { return -ENODEV; }
++static inline void dump_rmpentry(u64 pfn) { }
+ 
+ #endif /* CONFIG_AMD_MEM_ENCRYPT */
+ #endif /* __LINUX_SEV_H */
 -- 
 2.25.1
 
