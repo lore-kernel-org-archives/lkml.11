@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F4A4C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 12:57:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A787AC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 12:58:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243549AbiFTM5y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 08:57:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39424 "EHLO
+        id S236244AbiFTM6P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 08:58:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243272AbiFTM51 (ORCPT
+        with ESMTP id S243273AbiFTM5b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 08:57:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FB1A1AD80;
-        Mon, 20 Jun 2022 05:55:23 -0700 (PDT)
+        Mon, 20 Jun 2022 08:57:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 402B31AD84;
+        Mon, 20 Jun 2022 05:55:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 15756B811A3;
-        Mon, 20 Jun 2022 12:55:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A853C3411B;
-        Mon, 20 Jun 2022 12:55:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A9D7FB811B8;
+        Mon, 20 Jun 2022 12:55:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9DFFC341C5;
+        Mon, 20 Jun 2022 12:55:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655729719;
-        bh=ZNITDWnOHqy+yw+B4Q7xomhpdap+YNYWvyjpMY0ed+0=;
+        s=korg; t=1655729708;
+        bh=auP6D/jWIaQ/Z7xaV4u7K4m5SlM2yD1KPaGjIjeAf0U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wcKgwUDt8DQ3wiX7lUOVfmeLXfx511V60ELivP5Kitb/UAjmgIuOpFNvT4gDjApna
-         /DlcxMLv/vtiAy3t6c4paRXzSvil6lA7IRIFHas00KZnVIocEqLHgYIymR8QnD+k1t
-         BAf8qjwnaRbagvq+2cGQEL2U1Ba7160vg+ctqs/8=
+        b=OTchcy8KvziMVJ5g+TSTGmtjsOolLP2tRity82AnU+aVkezK+19IXEg/iMiFYbvh9
+         +qTIkihebTsc2V13FVsV6MgIcEmqXu1BvdFc828LazqOdnLZHIrT8GctmzKQR8fzUn
+         7rwXjyGo4tImgWKI3Y7A0BQ+QXqQmnvaHs0+BeHE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
+        stable@vger.kernel.org, Piotr Chmura <chmooreck@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 053/141] staging: r8188eu: Fix warning of array overflow in ioctl_linux.c
-Date:   Mon, 20 Jun 2022 14:49:51 +0200
-Message-Id: <20220620124731.104290428@linuxfoundation.org>
+Subject: [PATCH 5.18 049/141] platform/x86: gigabyte-wmi: Add Z690M AORUS ELITE AX DDR4 support
+Date:   Mon, 20 Jun 2022 14:49:47 +0200
+Message-Id: <20220620124730.984139414@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 References: <20220620124729.509745706@linuxfoundation.org>
@@ -50,65 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Larry Finger <Larry.Finger@lwfinger.net>
+From: Piotr Chmura <chmooreck@gmail.com>
 
-[ Upstream commit 96f0a54e8e65a765b3a4ad4b53751581f23279f3 ]
+[ Upstream commit 8a041afe3e774bedd3e0a9b96f65e48a1299a595 ]
 
-Building with -Warray-bounds results in the following warning plus others
-related to the same problem:
+Add dmi_system_id of Gigabyte Z690M AORUS ELITE AX DDR4 board.
+Tested on my PC.
 
-CC [M]  drivers/staging/r8188eu/os_dep/ioctl_linux.o
-In function ‘wpa_set_encryption’,
-    inlined from ‘rtw_wx_set_enc_ext’ at drivers/staging/r8188eu/os_dep/ioctl_linux.c:1868:9:
-drivers/staging/r8188eu/os_dep/ioctl_linux.c:412:41: warning: array subscript ‘struct ndis_802_11_wep[0]’ is partly outside array bounds of ‘void[25]’ [-Warray-bounds]
-  412 |                         pwep->KeyLength = wep_key_len;
-      |                         ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~
-In file included from drivers/staging/r8188eu/os_dep/../include/osdep_service.h:19,
-                 from drivers/staging/r8188eu/os_dep/ioctl_linux.c:4:
-In function ‘kmalloc’,
-    inlined from ‘kzalloc’ at ./include/linux/slab.h:733:9,
-    inlined from ‘wpa_set_encryption’ at drivers/staging/r8188eu/os_dep/ioctl_linux.c:408:11,
-    inlined from ‘rtw_wx_set_enc_ext’ at drivers/staging/r8188eu/os_dep/ioctl_linux.c:1868:9:
-./include/linux/slab.h:605:16: note: object of size [17, 25] allocated by ‘__kmalloc’
-  605 |         return __kmalloc(size, flags);
-      |                ^~~~~~~~~~~~~~~~~~~~~~
-./include/linux/slab.h:600:24: note: object of size [17, 25] allocated by ‘kmem_cache_alloc_trace’
-  600 |                 return kmem_cache_alloc_trace(
-      |                        ^~~~~~~~~~~~~~~~~~~~~~~
-  601 |                                 kmalloc_caches[kmalloc_type(flags)][index],
-      |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  602 |                                 flags, size);
-      |                                 ~~~~~~~~~~~~
-
-Although it is unlikely that anyone is still using WEP encryption, the
-size of the allocation needs to be increased just in case.
-
-Fixes commit 2b42bd58b321 ("staging: r8188eu: introduce new os_dep dir for RTL8188eu driver")
-
-Fixes: 2b42bd58b321 ("staging: r8188eu: introduce new os_dep dir for RTL8188eu driver")
-Signed-off-by: Larry Finger <Larry.Finger@lwfinger.net>
-Cc: Phillip Potter <phil@philpotter.co.uk>
-Cc: Dan Carpenter <dan.carpenter@oracle.com>
-Link: https://lore.kernel.org/r/20220531013103.2175-3-Larry.Finger@lwfinger.net
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Piotr Chmura <chmooreck@gmail.com>
+Link: https://lore.kernel.org/r/bd83567e-ebf5-0b31-074b-5f6dc7f7c147@gmail.com
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/r8188eu/os_dep/ioctl_linux.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/platform/x86/gigabyte-wmi.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/staging/r8188eu/os_dep/ioctl_linux.c b/drivers/staging/r8188eu/os_dep/ioctl_linux.c
-index 60bd1cc2b3af..607c5e1eb320 100644
---- a/drivers/staging/r8188eu/os_dep/ioctl_linux.c
-+++ b/drivers/staging/r8188eu/os_dep/ioctl_linux.c
-@@ -404,7 +404,7 @@ static int wpa_set_encryption(struct net_device *dev, struct ieee_param *param,
+diff --git a/drivers/platform/x86/gigabyte-wmi.c b/drivers/platform/x86/gigabyte-wmi.c
+index e87a931eab1e..05588a47ac38 100644
+--- a/drivers/platform/x86/gigabyte-wmi.c
++++ b/drivers/platform/x86/gigabyte-wmi.c
+@@ -154,6 +154,7 @@ static const struct dmi_system_id gigabyte_wmi_known_working_platforms[] = {
+ 	DMI_EXACT_MATCH_GIGABYTE_BOARD_NAME("X570 GAMING X"),
+ 	DMI_EXACT_MATCH_GIGABYTE_BOARD_NAME("X570 I AORUS PRO WIFI"),
+ 	DMI_EXACT_MATCH_GIGABYTE_BOARD_NAME("X570 UD"),
++	DMI_EXACT_MATCH_GIGABYTE_BOARD_NAME("Z690M AORUS ELITE AX DDR4"),
+ 	{ }
+ };
  
- 		if (wep_key_len > 0) {
- 			wep_key_len = wep_key_len <= 5 ? 5 : 13;
--			wep_total_len = wep_key_len + FIELD_OFFSET(struct ndis_802_11_wep, KeyMaterial);
-+			wep_total_len = wep_key_len + sizeof(*pwep);
- 			pwep = kzalloc(wep_total_len, GFP_KERNEL);
- 			if (!pwep)
- 				goto exit;
 -- 
 2.35.1
 
