@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0697CCA47C
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:40:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C5B7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:40:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347435AbiFTNkg (ORCPT
+        id S1347600AbiFTNkl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:40:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38242 "EHLO
+        Mon, 20 Jun 2022 09:40:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347400AbiFTNi2 (ORCPT
+        with ESMTP id S1347491AbiFTNik (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:38:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 433002873D;
-        Mon, 20 Jun 2022 06:14:17 -0700 (PDT)
+        Mon, 20 Jun 2022 09:38:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D533D1F62C;
+        Mon, 20 Jun 2022 06:14:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CF8860A52;
-        Mon, 20 Jun 2022 13:14:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12C5BC3411B;
-        Mon, 20 Jun 2022 13:14:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 57CE961543;
+        Mon, 20 Jun 2022 13:03:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FD8FC3411B;
+        Mon, 20 Jun 2022 13:03:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730856;
-        bh=IRIB/nfddzpYszgOCi6TNfrnOf4M5Ta9hww7v3gomiQ=;
+        s=korg; t=1655730235;
+        bh=r4HTTZDPskHPPm1axn9xIWDD/skwl4wwe/Ur5YtpFjY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zE2GHv73BP0MqJcipfDrggimtGr5B2g4tXSu6yr7os35OwB4Lsj7Nn5DCwuhSWJyY
-         Ls7oILxI8sxbKo6lAkyNlxAWTQss5dyhM11ceCoAdRNpWePUgKP4vU2BYz8Rs5aiXk
-         TRc7l3Qk816vMLWt6mn2W4eEE+w0mTkwLR0NYmQI=
+        b=t/y31kxrrj2lrIXPcbwB81yjxm367j3EPpXDZWy/oWnrQlX+20amVFyAO9betY9sX
+         mPf9KIbbkI2b7vEoAF1CLDK+sWEzJpnzkyktCjQVDQOTJuv0wsAZcYDN+9P6fHBSlR
+         JQLBFEytijhnYO6iLUOue5Q00RhfzagUcLri2IfU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Eric Biggers <ebiggers@google.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 078/240] random: absorb fast pool into input pool after fast load
-Date:   Mon, 20 Jun 2022 14:49:39 +0200
-Message-Id: <20220620124741.016486257@linuxfoundation.org>
+        stable@vger.kernel.org, Andy Nguyen <theflow@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Peter Gonda <pgonda@google.com>, kvm@vger.kernel.org,
+        Ashish Kalra <ashish.kalra@amd.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: [PATCH 5.10 75/84] KVM: SVM: Use kzalloc for sev ioctl interfaces to prevent kernel data leak
+Date:   Mon, 20 Jun 2022 14:51:38 +0200
+Message-Id: <20220620124723.109661211@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
-References: <20220620124737.799371052@linuxfoundation.org>
+In-Reply-To: <20220620124720.882450983@linuxfoundation.org>
+References: <20220620124720.882450983@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,49 +53,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Ashish Kalra <ashish.kalra@amd.com>
 
-commit c30c575db4858f0bbe5e315ff2e529c782f33a1f upstream.
+commit d22d2474e3953996f03528b84b7f52cc26a39403 upstream.
 
-During crng_init == 0, we never credit entropy in add_interrupt_
-randomness(), but instead dump it directly into the primary_crng. That's
-fine, except for the fact that we then wind up throwing away that
-entropy later when we switch to extracting from the input pool and
-xoring into (and later in this series overwriting) the primary_crng key.
-The two other early init sites -- add_hwgenerator_randomness()'s use
-crng_fast_load() and add_device_ randomness()'s use of crng_slow_load()
--- always additionally give their inputs to the input pool. But not
-add_interrupt_randomness().
+For some sev ioctl interfaces, the length parameter that is passed maybe
+less than or equal to SEV_FW_BLOB_MAX_SIZE, but larger than the data
+that PSP firmware returns. In this case, kmalloc will allocate memory
+that is the size of the input rather than the size of the data.
+Since PSP firmware doesn't fully overwrite the allocated buffer, these
+sev ioctl interface may return uninitialized kernel slab memory.
 
-This commit fixes that shortcoming by calling mix_pool_bytes() after
-crng_fast_load() in add_interrupt_randomness(). That's partially
-verboten on PREEMPT_RT, where it implies taking spinlock_t from an IRQ
-handler. But this also only happens during early boot and then never
-again after that. Plus it's a trylock so it has the same considerations
-as calling crng_fast_load(), which we're already using.
-
-Cc: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
-Suggested-by: Eric Biggers <ebiggers@google.com>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Reported-by: Andy Nguyen <theflow@google.com>
+Suggested-by: David Rientjes <rientjes@google.com>
+Suggested-by: Peter Gonda <pgonda@google.com>
+Cc: kvm@vger.kernel.org
+Cc: stable@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Fixes: eaf78265a4ab3 ("KVM: SVM: Move SEV code to separate file")
+Fixes: 2c07ded06427d ("KVM: SVM: add support for SEV attestation command")
+Fixes: 4cfdd47d6d95a ("KVM: SVM: Add KVM_SEV SEND_START command")
+Fixes: d3d1af85e2c75 ("KVM: SVM: Add KVM_SEND_UPDATE_DATA command")
+Fixes: eba04b20e4861 ("KVM: x86: Account a variety of miscellaneous allocations")
+Signed-off-by: Ashish Kalra <ashish.kalra@amd.com>
+Reviewed-by: Peter Gonda <pgonda@google.com>
+Message-Id: <20220516154310.3685678-1-Ashish.Kalra@amd.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+[sudip: adjust context]
+Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ arch/x86/kvm/svm/sev.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -850,6 +850,10 @@ void add_interrupt_randomness(int irq)
- 		    crng_fast_load((u8 *)fast_pool->pool, sizeof(fast_pool->pool)) > 0) {
- 			fast_pool->count = 0;
- 			fast_pool->last = now;
-+			if (spin_trylock(&input_pool.lock)) {
-+				_mix_pool_bytes(&fast_pool->pool, sizeof(fast_pool->pool));
-+				spin_unlock(&input_pool.lock);
-+			}
+--- a/arch/x86/kvm/svm/sev.c
++++ b/arch/x86/kvm/svm/sev.c
+@@ -537,7 +537,7 @@ static int sev_launch_measure(struct kvm
  		}
- 		return;
- 	}
+ 
+ 		ret = -ENOMEM;
+-		blob = kmalloc(params.len, GFP_KERNEL_ACCOUNT);
++		blob = kzalloc(params.len, GFP_KERNEL_ACCOUNT);
+ 		if (!blob)
+ 			goto e_free;
+ 
+@@ -676,7 +676,7 @@ static int __sev_dbg_decrypt_user(struct
+ 	if (!IS_ALIGNED(dst_paddr, 16) ||
+ 	    !IS_ALIGNED(paddr,     16) ||
+ 	    !IS_ALIGNED(size,      16)) {
+-		tpage = (void *)alloc_page(GFP_KERNEL);
++		tpage = (void *)alloc_page(GFP_KERNEL | __GFP_ZERO);
+ 		if (!tpage)
+ 			return -ENOMEM;
+ 
 
 
