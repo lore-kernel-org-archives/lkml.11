@@ -2,115 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86A5EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 08:01:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62B14C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 08:01:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239567AbiFTIBO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 04:01:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53502 "EHLO
+        id S239712AbiFTIBi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 04:01:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239707AbiFTIBK (ORCPT
+        with ESMTP id S237592AbiFTIBf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 04:01:10 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 399EB11466;
-        Mon, 20 Jun 2022 01:01:09 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id eo8so13993219edb.0;
-        Mon, 20 Jun 2022 01:01:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OcVNrdlKP0GzMJkVBTzuRwNNS1pphGPVCvGxdcsqxXM=;
-        b=ZucKaM0hl9UaeOsS2jAiYrP7lYP/mB4+nF/VfhP40XaBJyQu0CaKHFqZpZN+ZTwjY4
-         8W7/FAju6FiP8pSfaWpFFgPmVFANIh6OTyvDr2KKgmEAXA0U5NUb01d38Gk8bZ9FGSxE
-         ASBpeHYELSSAKBCHbEs6aE2J/bkHh9Dmrgntylfs+5k+F1rJb0ylTTbx34mxyZpq2atr
-         Os+KZL3lriMqh+4Jp3EyAHbcIqn6aEYJtHriXF2h7mGM3b3hePnw5wR1ZlUSmkllLO/Y
-         a3zINgixA1yks1eRLy2xSp3C2hZ1yb5BLJ3qeAKJOUqKiMjdZiTLH7EDEVnWtprL0R4n
-         kCQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OcVNrdlKP0GzMJkVBTzuRwNNS1pphGPVCvGxdcsqxXM=;
-        b=CfB0A453cI9kLSrBlCFInt+KCwCutJJoJtdOaIiHuMx+kjWkDvjhACiYEY1FTsxBhH
-         nSeCRwsongwhtPj6D5VBFBTGQaOM4SYTPVY1OM4VS589sTXenZ+WvfSWLiC6ahrbPkr6
-         pUD8nHTlEz9nH1BTw5O4RKaWh4Q7I8mMgM3GglGbHCk43CLketXInKmtp+Q3HfRgyLtZ
-         RdBvNXpW/Wy9mOiYfKs+FveRZV6hNTZgJGGfe20UKuwGkX1l38u0GGCGH0VTCAgwZ9Y1
-         79TJbdHT2GK/5GvXyRBBKvrx8KHomrIURnHLFmhI/0NfdcHZjzmvo6bN6ZtIw90TqFlS
-         ZVXA==
-X-Gm-Message-State: AJIora/TnuwZjKg7tR/ktiMRcRk3vlX2gatAF2jSUQiPtt7WRCcJE2OT
-        Wlc0odT0UW+z9mV+SayqT8LxPX40npiUdpYuRPY=
-X-Google-Smtp-Source: AGRyM1tA6kLSMzKCwH9JDPtey2pJ1C/MO5M13HPYA86Vm/MJKxqvE2quxGRMO2o0vPxLw/3eZP316rKgVBj7IxInrn0=
-X-Received: by 2002:a05:6402:249e:b0:42d:bb88:865b with SMTP id
- q30-20020a056402249e00b0042dbb88865bmr27299794eda.141.1655712067695; Mon, 20
- Jun 2022 01:01:07 -0700 (PDT)
+        Mon, 20 Jun 2022 04:01:35 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6078311174;
+        Mon, 20 Jun 2022 01:01:34 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 60363660166E;
+        Mon, 20 Jun 2022 09:01:32 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1655712092;
+        bh=1QfDJm0Il75vWMVfyjj3z3sKxluz2uEePpUdetg+Ws8=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=hWCb+WR2UI/EwmUEQ127NgCyTcFmAPnPG6VTgs1BbRO3hZRz0q2kqJmPhDceua0zL
+         4+mjlQU1CIigYkJGddLQxDF53wux+6w5bB8totm/p1oXOoH7vV2mNdxucDbm4gqEho
+         Yv6XMqSb+/imR2zIT7fP7wRMzMvyVpo89/3bNq/DT8yR5UJsFD8QfyIe8kYjSJH+xE
+         7jDpyoI5P/1WrCSrrfqH0vMZc7kRrJoFF6BDUBDbKbTM7CSnPfvxvwv9q2yts0x7Ek
+         uMagYu57KO2nIXVW0feS1e0Niyic81EGvxdb1u0TmRjfja4nbGFQsvypvCDeuRLkZ2
+         zxsRyrRM3Jung==
+Message-ID: <abb9a03f-f873-1f28-b8a6-ddd2b66c15f7@collabora.com>
+Date:   Mon, 20 Jun 2022 10:01:30 +0200
 MIME-Version: 1.0
-References: <20220619074030.1154429-1-mw@semihalf.com>
-In-Reply-To: <20220619074030.1154429-1-mw@semihalf.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 20 Jun 2022 10:00:31 +0200
-Message-ID: <CAHp75VdmtFJe5k_6biofS0HtgqC7HQuNzrM=9cMhM1uz1p5Eng@mail.gmail.com>
-Subject: Re: [PATCH] serial: 8250: dw: enable using pdata with ACPI
-To:     Marcin Wojtas <mw@semihalf.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Grzegorz Jaszczyk <jaz@semihalf.com>, upstream@semihalf.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 1/2] arm64: dts: mt8192: Fix idle-states nodes naming
+ scheme
+Content-Language: en-US
+To:     =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
+        <nfraprado@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     kernel@collabora.com, James Liao <jamesjj.liao@mediatek.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org
+References: <20220617233150.2466344-1-nfraprado@collabora.com>
+ <20220617233150.2466344-2-nfraprado@collabora.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220617233150.2466344-2-nfraprado@collabora.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jun 19, 2022 at 9:43 AM Marcin Wojtas <mw@semihalf.com> wrote:
->
-> Commit 3242fe805b52 ("serial: 8250: dw: Move the USR register to pdata")
-> caused NULL-pointer dereference when booting with ACPI by unconditional
-> usage of the recently added pdata.
->
-> In order to fix that and prevent similar issues in future, hook the
-> default version of this structure in dw8250_acpi_match table.
+Il 18/06/22 01:31, Nícolas F. R. A. Prado ha scritto:
+> Tweak the name of the idle-states subnodes so that they follow the
+> binding pattern, getting rid of dtbs_check warnings.
+> 
+> Only the usage of "-" in the name was necessary, but "off" was also
+> exchanged for "sleep" since that seems to be a more common wording in
+> other dts files.
+> 
+> Fixes: 9260918d3a4f ("arm64: dts: mt8192: Add cpu-idle-states")
+> Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+> 
 
-Thanks for the report and fix! One proposal below.
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-...
-
->  static const struct acpi_device_id dw8250_acpi_match[] = {
-> -       { "INT33C4", 0 },
-> -       { "INT33C5", 0 },
-> -       { "INT3434", 0 },
-> -       { "INT3435", 0 },
-> -       { "80860F0A", 0 },
-> -       { "8086228A", 0 },
-> -       { "APMC0D08", 0},
-> -       { "AMD0020", 0 },
-> -       { "AMDI0020", 0 },
-> -       { "AMDI0022", 0 },
-> -       { "BRCM2032", 0 },
-> -       { "HISI0031", 0 },
-> +       { "INT33C4", (kernel_ulong_t)&dw8250_dw_apb },
-> +       { "INT33C5", (kernel_ulong_t)&dw8250_dw_apb },
-> +       { "INT3434", (kernel_ulong_t)&dw8250_dw_apb },
-> +       { "INT3435", (kernel_ulong_t)&dw8250_dw_apb },
-> +       { "80860F0A", (kernel_ulong_t)&dw8250_dw_apb },
-> +       { "8086228A", (kernel_ulong_t)&dw8250_dw_apb },
-> +       { "APMC0D08", (kernel_ulong_t)&dw8250_dw_apb},
-> +       { "AMD0020", (kernel_ulong_t)&dw8250_dw_apb },
-> +       { "AMDI0020", (kernel_ulong_t)&dw8250_dw_apb },
-> +       { "AMDI0022", (kernel_ulong_t)&dw8250_dw_apb },
-> +       { "BRCM2032", (kernel_ulong_t)&dw8250_dw_apb },
-> +       { "HISI0031", (kernel_ulong_t)&dw8250_dw_apb },
-
-Since you are touching all of them, please keep the order
-alphanumerically sorted by the HID.
-
->         { },
->  };
-
-
--- 
-With Best Regards,
-Andy Shevchenko
