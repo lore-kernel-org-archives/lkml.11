@@ -2,47 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A44C6C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:08:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68195C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:08:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350099AbiFTOIA (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:08:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40460 "EHLO
+        id S231269AbiFTOIG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 10:08:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351974AbiFTNzr (ORCPT
+        with ESMTP id S1350898AbiFTNxz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:55:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B56B34671;
-        Mon, 20 Jun 2022 06:21:50 -0700 (PDT)
+        Mon, 20 Jun 2022 09:53:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5019921245;
+        Mon, 20 Jun 2022 06:20:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7680C60FAD;
-        Mon, 20 Jun 2022 13:21:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38322C3411B;
-        Mon, 20 Jun 2022 13:21:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 456BEB80E7D;
+        Mon, 20 Jun 2022 13:20:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6518C3411B;
+        Mon, 20 Jun 2022 13:20:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731289;
-        bh=RNqOf6SIw5tUJZWNqP2f+//vSwejOEjAPwK+TUZbi6w=;
+        s=korg; t=1655731226;
+        bh=dz5oqgMyOl5udEA0pAhKl3A7qxvjlMQK6WHXNFGKWkE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0T6N9FVGWMQZig3jjcor4qwtHRuLNZTPxmy/qc1zssxx1nRESRnFjkOpl/2EFmbQr
-         oVfzCxkGdFRrbgwK4Hxe2NhATfwijvMLvSRg+DwXQswDgCiiD4osw/cXsseEw97h39
-         QGJxV+AwXNrVgoBlQpnQmKAgKZKYxw6A0v4JD350=
+        b=dsmDgQry2255xRmTpmNmzfEcV3lIfjUS8N6MjbNzEx9K1Ips+Ni8Jgm8iFTwhOkdi
+         coIWLcz1TOGcU3x0UKgUdotbwSz+ztRh+kJoVFwsRvIsykTw3vcNECmo8cpB556uTE
+         P+vpoMVWgDwyTB7GUcgcmSDU+kyenra2W/l6mJd8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Will Deacon <will@kernel.org>,
-        "Ivan T. Ivanov" <iivanov@suse.de>,
-        Chengming Zhou <zhouchengming@bytedance.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 214/240] arm64: ftrace: fix branch range checks
-Date:   Mon, 20 Jun 2022 14:51:55 +0200
-Message-Id: <20220620124745.174675923@linuxfoundation.org>
+Subject: [PATCH 5.4 191/240] ASoC: es8328: Fix event generation for deemphasis control
+Date:   Mon, 20 Jun 2022 14:51:32 +0200
+Message-Id: <20220620124744.522711550@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -54,84 +48,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Rutland <mark.rutland@arm.com>
+From: Mark Brown <broonie@kernel.org>
 
-[ Upstream commit 3eefdf9d1e406f3da47470b2854347009ffcb6fa ]
+[ Upstream commit 8259610c2ec01c5cbfb61882ae176aabacac9c19 ]
 
-The branch range checks in ftrace_make_call() and ftrace_make_nop() are
-incorrect, erroneously permitting a forwards branch of 128M and
-erroneously rejecting a backwards branch of 128M.
+Currently the put() method for the deemphasis control returns 0 when a new
+value is written to the control even if the value changed, meaning events
+are not generated. Fix this, skip the work of updating the value when it is
+unchanged and then return 1 after having done so.
 
-This is because both functions calculate the offset backwards,
-calculating the offset *from* the target *to* the branch, rather than
-the other way around as the later comparisons expect.
-
-If an out-of-range branch were erroeously permitted, this would later be
-rejected by aarch64_insn_gen_branch_imm() as branch_imm_common() checks
-the bounds correctly, resulting in warnings and the placement of a BRK
-instruction. Note that this can only happen for a forwards branch of
-exactly 128M, and so the caller would need to be exactly 128M bytes
-below the relevant ftrace trampoline.
-
-If an in-range branch were erroeously rejected, then:
-
-* For modules when CONFIG_ARM64_MODULE_PLTS=y, this would result in the
-  use of a PLT entry, which is benign.
-
-  Note that this is the common case, as this is selected by
-  CONFIG_RANDOMIZE_BASE (and therefore RANDOMIZE_MODULE_REGION_FULL),
-  which distributions typically seelct. This is also selected by
-  CONFIG_ARM64_ERRATUM_843419.
-
-* For modules when CONFIG_ARM64_MODULE_PLTS=n, this would result in
-  internal ftrace failures.
-
-* For core kernel text, this would result in internal ftrace failues.
-
-  Note that for this to happen, the kernel text would need to be at
-  least 128M bytes in size, and typical configurations are smaller tha
-  this.
-
-Fix this by calculating the offset *from* the branch *to* the target in
-both functions.
-
-Fixes: f8af0b364e24 ("arm64: ftrace: don't validate branch via PLT in ftrace_make_nop()")
-Fixes: e71a4e1bebaf ("arm64: ftrace: add support for far branches to dynamic ftrace")
-Signed-off-by: Mark Rutland <mark.rutland@arm.com>
-Cc: Ard Biesheuvel <ardb@kernel.org>
-Cc: Will Deacon <will@kernel.org>
-Tested-by: "Ivan T. Ivanov" <iivanov@suse.de>
-Reviewed-by: Chengming Zhou <zhouchengming@bytedance.com>
-Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
-Link: https://lore.kernel.org/r/20220614080944.1349146-2-mark.rutland@arm.com
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20220603123937.4013603-1-broonie@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/kernel/ftrace.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ sound/soc/codecs/es8328.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/kernel/ftrace.c b/arch/arm64/kernel/ftrace.c
-index 822718eafdb4..d4a4be02d309 100644
---- a/arch/arm64/kernel/ftrace.c
-+++ b/arch/arm64/kernel/ftrace.c
-@@ -69,7 +69,7 @@ int ftrace_make_call(struct dyn_ftrace *rec, unsigned long addr)
- {
- 	unsigned long pc = rec->ip;
- 	u32 old, new;
--	long offset = (long)pc - (long)addr;
-+	long offset = (long)addr - (long)pc;
+diff --git a/sound/soc/codecs/es8328.c b/sound/soc/codecs/es8328.c
+index fdf64c29f563..4117ab6e9b6f 100644
+--- a/sound/soc/codecs/es8328.c
++++ b/sound/soc/codecs/es8328.c
+@@ -161,13 +161,16 @@ static int es8328_put_deemph(struct snd_kcontrol *kcontrol,
+ 	if (deemph > 1)
+ 		return -EINVAL;
  
- 	if (offset < -SZ_128M || offset >= SZ_128M) {
- #ifdef CONFIG_ARM64_MODULE_PLTS
-@@ -126,7 +126,7 @@ int ftrace_make_nop(struct module *mod, struct dyn_ftrace *rec,
- 	unsigned long pc = rec->ip;
- 	bool validate = true;
- 	u32 old = 0, new;
--	long offset = (long)pc - (long)addr;
-+	long offset = (long)addr - (long)pc;
++	if (es8328->deemph == deemph)
++		return 0;
++
+ 	ret = es8328_set_deemph(component);
+ 	if (ret < 0)
+ 		return ret;
  
- 	if (offset < -SZ_128M || offset >= SZ_128M) {
- #ifdef CONFIG_ARM64_MODULE_PLTS
+ 	es8328->deemph = deemph;
+ 
+-	return 0;
++	return 1;
+ }
+ 
+ 
 -- 
 2.35.1
 
