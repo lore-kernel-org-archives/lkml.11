@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD48FCCA479
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:47:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B0C0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:47:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348876AbiFTNrY (ORCPT
+        id S1347401AbiFTNrd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:47:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55992 "EHLO
+        Mon, 20 Jun 2022 09:47:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348290AbiFTNqr (ORCPT
+        with ESMTP id S1348028AbiFTNqv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:46:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95C242E0B9;
+        Mon, 20 Jun 2022 09:46:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95DAA2E0BB;
         Mon, 20 Jun 2022 06:17:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 24ABA60C95;
-        Mon, 20 Jun 2022 13:11:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 219D5C3411B;
-        Mon, 20 Jun 2022 13:11:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EC97AB811C7;
+        Mon, 20 Jun 2022 13:06:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37955C36AED;
+        Mon, 20 Jun 2022 13:06:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730692;
-        bh=z+WuQkY4e+UrmvGonoUQsXvQSkK+LF64I52WUPmEjRo=;
+        s=korg; t=1655730398;
+        bh=kY7M+cF6jVAw2h72tzuT6A72g36+rLAemXxLHPg6FwY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w7wwmcpwIo+tpd1UyCm5/61jJaL4pYorhDKo5MyPEfMCTrYRu0cLCuuAyP3pW2S31
-         NphNM+6GS157kI0TVmDLWJdEVX0OwIzPbj7JWJ0IxUh5iCnUyMN9Mf3vAZr++0SHUo
-         o6hpC747OTBtSubo4IHXIB6FI7x7wupdremlPxN4=
+        b=iQPH56mC8RGJ9j+55P/CDV+RxH1KYOSiM44KbRUDgoOmNfjbAA7d1bs9UNfuRbVjt
+         M7RGRuvm+jlZfNzc9512TBjdpf6agm2CgZPbsxd3Npris9t4E8+VfOKrRDKTjnUObu
+         g+5gG2NNUMKSoEP284TZyQy85bedazxLZ1p9mukc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andy Lutomirski <luto@kernel.org>,
-        Theodore Tso <tytso@mit.edu>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 009/240] random: Dont wake crng_init_wait when crng_init == 1
-Date:   Mon, 20 Jun 2022 14:48:30 +0200
-Message-Id: <20220620124738.077045092@linuxfoundation.org>
+        stable@vger.kernel.org, Wang Yufen <wangyufen@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 033/106] ipv6: Fix signed integer overflow in l2tp_ip6_sendmsg
+Date:   Mon, 20 Jun 2022 14:50:52 +0200
+Message-Id: <20220620124725.365645427@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
-References: <20220620124737.799371052@linuxfoundation.org>
+In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
+References: <20220620124724.380838401@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,32 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Lutomirski <luto@kernel.org>
+From: Wang Yufen <wangyufen@huawei.com>
 
-commit 4c8d062186d9923c09488716b2fb1b829b5b8006 upstream.
+[ Upstream commit f638a84afef3dfe10554c51820c16e39a278c915 ]
 
-crng_init_wait is only used to wayt for crng_init to be set to 2, so
-there's no point to waking it when crng_init is set to 1.  Remove the
-unnecessary wake_up_interruptible() call.
+When len >= INT_MAX - transhdrlen, ulen = len + transhdrlen will be
+overflow. To fix, we can follow what udpv6 does and subtract the
+transhdrlen from the max.
 
-Signed-off-by: Andy Lutomirski <luto@kernel.org>
-Link: https://lore.kernel.org/r/6fbc0bfcbfc1fa2c76fd574f5b6f552b11be7fde.1577088521.git.luto@kernel.org
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+Link: https://lore.kernel.org/r/20220607120028.845916-2-wangyufen@huawei.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/random.c |    1 -
- 1 file changed, 1 deletion(-)
+ net/l2tp/l2tp_ip6.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -999,7 +999,6 @@ static size_t crng_fast_load(const char
- 	if (crng_init_cnt >= CRNG_INIT_CNT_THRESH) {
- 		invalidate_batched_entropy();
- 		crng_init = 1;
--		wake_up_interruptible(&crng_init_wait);
- 		pr_notice("random: fast init done\n");
- 	}
- 	return ret;
+diff --git a/net/l2tp/l2tp_ip6.c b/net/l2tp/l2tp_ip6.c
+index 96f975777438..d54dbd01d86f 100644
+--- a/net/l2tp/l2tp_ip6.c
++++ b/net/l2tp/l2tp_ip6.c
+@@ -502,14 +502,15 @@ static int l2tp_ip6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 	struct ipcm6_cookie ipc6;
+ 	int addr_len = msg->msg_namelen;
+ 	int transhdrlen = 4; /* zero session-id */
+-	int ulen = len + transhdrlen;
++	int ulen;
+ 	int err;
+ 
+ 	/* Rough check on arithmetic overflow,
+ 	 * better check is made in ip6_append_data().
+ 	 */
+-	if (len > INT_MAX)
++	if (len > INT_MAX - transhdrlen)
+ 		return -EMSGSIZE;
++	ulen = len + transhdrlen;
+ 
+ 	/* Mirror BSD error message compatibility */
+ 	if (msg->msg_flags & MSG_OOB)
+-- 
+2.35.1
+
 
 
