@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B30FCCA486
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E297CCA482
 	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:14:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344673AbiFTNN5 (ORCPT
+        id S1344586AbiFTNNy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:13:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58276 "EHLO
+        Mon, 20 Jun 2022 09:13:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343958AbiFTNJt (ORCPT
+        with ESMTP id S1343919AbiFTNJs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:09:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8E0F1AF22;
-        Mon, 20 Jun 2022 06:04:58 -0700 (PDT)
+        Mon, 20 Jun 2022 09:09:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8F761AF1C;
+        Mon, 20 Jun 2022 06:04:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9BD8AB811A5;
-        Mon, 20 Jun 2022 13:04:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7AD3C341C4;
-        Mon, 20 Jun 2022 13:04:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C1C02614AB;
+        Mon, 20 Jun 2022 13:01:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1790C3411C;
+        Mon, 20 Jun 2022 13:01:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730292;
-        bh=k6te6UvAhWV0pHOaWU9Llx1ueM872wXXeKd2sw/X/WE=;
+        s=korg; t=1655730078;
+        bh=4syYMxPkzIJ/qkZf+faSQz3RfpeaARsghA50qhraB/I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zY18myHD+F+h115W7yCDn7kN9NcfXJQZ4tbkDe+CAKbPBNHLhSpakJV3wcGMVamHz
-         Oi1O2OovHsUfcJXpTgrEvaCvuXt1BmM3Spyguk512pKQvdXOaDWca2tb5S+7sLfEW0
-         wC7V1L2UE8gq70z3wUn8ju2K/V8AVH2m4ao3RcX8=
+        b=1lgrSapbFw0O0TPQsGXn1y7I6gYXgCQVbUcC5El8l02UtAZ8G4GLazMgGosc7gO2s
+         /RRWmnk7Amqt9PoVb3bZo0VifOMnDjEqAzUVRRajEiOy6Tt+y2h7SPiJjYEcJ8fPcU
+         p+OTGmfBLk0W7J9uFDBVJ7gTABRaYbhweXDLp2J0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Alexander Usyskin <alexander.usyskin@intel.com>,
-        Tomas Winkler <tomas.winkler@intel.com>
-Subject: [PATCH 5.10 60/84] mei: me: add raptor lake point S DID
-Date:   Mon, 20 Jun 2022 14:51:23 +0200
-Message-Id: <20220620124722.664826739@linuxfoundation.org>
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 09/84] ASoC: cs35l36: Update digital volume TLV
+Date:   Mon, 20 Jun 2022 14:50:32 +0200
+Message-Id: <20220620124721.165608230@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124720.882450983@linuxfoundation.org>
 References: <20220620124720.882450983@linuxfoundation.org>
@@ -50,43 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Usyskin <alexander.usyskin@intel.com>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-commit 3ed8c7d39cfef831fe508fc1308f146912fa72e6 upstream.
+[ Upstream commit 5005a2345825eb8346546d99bfe669f73111b5c5 ]
 
-Add Raptor (Point) Lake S device id.
+The digital volume TLV specifies the step as 0.25dB but the actual step
+of the control is 0.125dB. Update the TLV to correct this.
 
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Alexander Usyskin <alexander.usyskin@intel.com>
-Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
-Link: https://lore.kernel.org/r/20220606144225.282375-3-tomas.winkler@intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220602162119.3393857-3-ckeepax@opensource.cirrus.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/mei/hw-me-regs.h |    2 ++
- drivers/misc/mei/pci-me.c     |    2 ++
- 2 files changed, 4 insertions(+)
+ sound/soc/codecs/cs35l36.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/misc/mei/hw-me-regs.h
-+++ b/drivers/misc/mei/hw-me-regs.h
-@@ -109,6 +109,8 @@
- #define MEI_DEV_ID_ADP_P      0x51E0  /* Alder Lake Point P */
- #define MEI_DEV_ID_ADP_N      0x54E0  /* Alder Lake Point N */
+diff --git a/sound/soc/codecs/cs35l36.c b/sound/soc/codecs/cs35l36.c
+index e9b5f76f27a8..aa32b8c26578 100644
+--- a/sound/soc/codecs/cs35l36.c
++++ b/sound/soc/codecs/cs35l36.c
+@@ -444,7 +444,8 @@ static bool cs35l36_volatile_reg(struct device *dev, unsigned int reg)
+ 	}
+ }
  
-+#define MEI_DEV_ID_RPL_S      0x7A68  /* Raptor Lake Point S */
-+
- /*
-  * MEI HW Section
-  */
---- a/drivers/misc/mei/pci-me.c
-+++ b/drivers/misc/mei/pci-me.c
-@@ -115,6 +115,8 @@ static const struct pci_device_id mei_me
- 	{MEI_PCI_DEVICE(MEI_DEV_ID_ADP_P, MEI_ME_PCH15_CFG)},
- 	{MEI_PCI_DEVICE(MEI_DEV_ID_ADP_N, MEI_ME_PCH15_CFG)},
+-static DECLARE_TLV_DB_SCALE(dig_vol_tlv, -10200, 25, 0);
++static const DECLARE_TLV_DB_RANGE(dig_vol_tlv, 0, 912,
++				  TLV_DB_MINMAX_ITEM(-10200, 1200));
+ static DECLARE_TLV_DB_SCALE(amp_gain_tlv, 0, 1, 1);
  
-+	{MEI_PCI_DEVICE(MEI_DEV_ID_RPL_S, MEI_ME_PCH15_CFG)},
-+
- 	/* required last entry */
- 	{0, }
- };
+ static const char * const cs35l36_pcm_sftramp_text[] =  {
+-- 
+2.35.1
+
 
 
