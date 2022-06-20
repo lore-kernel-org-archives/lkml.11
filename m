@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA13AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:12:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34EF6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:12:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349934AbiFTOMd (ORCPT
+        id S1351193AbiFTOMh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:12:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36742 "EHLO
+        Mon, 20 Jun 2022 10:12:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350556AbiFTNxm (ORCPT
+        with ESMTP id S1352604AbiFTN4p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:53:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0623715A33;
-        Mon, 20 Jun 2022 06:20:04 -0700 (PDT)
+        Mon, 20 Jun 2022 09:56:45 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF6811A397;
+        Mon, 20 Jun 2022 06:22:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 85BD060EC7;
-        Mon, 20 Jun 2022 13:18:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79929C3411B;
-        Mon, 20 Jun 2022 13:18:41 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 6E36BCE137F;
+        Mon, 20 Jun 2022 13:22:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C97FC3411B;
+        Mon, 20 Jun 2022 13:22:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731121;
-        bh=FHmPyj2D2tGbC8s1f5us7ysnhTDu4Fn5V+6b2VESaaE=;
+        s=korg; t=1655731358;
+        bh=97NfIAxnIn7gkMg0obk/1gUuSmamMXTVMSfa0wTFYG4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ejtnZjyg/VELnrQVz6MtNXFLcZj5UmXjbDPZVOkMrJlKqZ4UHZN0KRPFrjGLazgKK
-         vmftVNQ7WHxpddsOMR5FOxXvR3cLvmjaaVSKa/qgjRA9qTKQ5ATbyX+inTEzMNa1HB
-         n5l7jBnZwdgXxDMYMcCHrfL5fqo7nrBZrDEJqnfg=
+        b=ujdWmp/ijzEhrYY64H4ZVM1FOoO8ZN3NtaJ3tMn6CkoTdKPLhsbnxMclnxmsluz4U
+         Z7wggRsQSAh8cufIg0x+hImw9KBZhf7Ip1+vp2QlYTluMLSRCT/z0eeCg/heJ0usbx
+         YYoME6JgNH24LmpCoPKNFonDuHGwDcY8ktTCwwRk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 161/240] random: remove extern from functions in header
-Date:   Mon, 20 Jun 2022 14:51:02 +0200
-Message-Id: <20220620124743.672356266@linuxfoundation.org>
+        stable@vger.kernel.org, Andy Chi <andy.chi@canonical.com>,
+        Takashi Iwai <tiwai@suse.de>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: [PATCH 5.4 232/240] ALSA: hda/realtek: fix right sounds and mute/micmute LEDs for HP machine
+Date:   Mon, 20 Jun 2022 14:52:13 +0200
+Message-Id: <20220620124745.679320803@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -48,138 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Andy Chi <andy.chi@canonical.com>
 
-commit 7782cfeca7d420e8bb707613d4cfb0f7ff29bb3a upstream.
+commit 024a7ad9eb4df626ca8c77fef4f67fd0ebd559d2 upstream.
 
-Accoriding to the kernel style guide, having `extern` on functions in
-headers is old school and deprecated, and doesn't add anything. So remove
-them from random.h, and tidy up the file a little bit too.
+The HP EliteBook 630 is using ALC236 codec which used 0x02 to control mute LED
+and 0x01 to control micmute LED. Therefore, add a quirk to make it works.
 
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Andy Chi <andy.chi@canonical.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220513121648.28584-1-andy.chi@canonical.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+[sudip: adjust context]
+Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/random.h |   71 +++++++++++++++++++------------------------------
- 1 file changed, 28 insertions(+), 43 deletions(-)
+ sound/pci/hda/patch_realtek.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -12,13 +12,12 @@
- 
- struct notifier_block;
- 
--extern void add_device_randomness(const void *, size_t);
--extern void add_bootloader_randomness(const void *, size_t);
--extern void add_input_randomness(unsigned int type, unsigned int code,
--				 unsigned int value) __latent_entropy;
--extern void add_interrupt_randomness(int irq) __latent_entropy;
--extern void add_hwgenerator_randomness(const void *buffer, size_t count,
--				       size_t entropy);
-+void add_device_randomness(const void *, size_t);
-+void add_bootloader_randomness(const void *, size_t);
-+void add_input_randomness(unsigned int type, unsigned int code,
-+			  unsigned int value) __latent_entropy;
-+void add_interrupt_randomness(int irq) __latent_entropy;
-+void add_hwgenerator_randomness(const void *buffer, size_t count, size_t entropy);
- 
- #if defined(LATENT_ENTROPY_PLUGIN) && !defined(__CHECKER__)
- static inline void add_latent_entropy(void)
-@@ -26,21 +25,11 @@ static inline void add_latent_entropy(vo
- 	add_device_randomness((const void *)&latent_entropy, sizeof(latent_entropy));
- }
- #else
--static inline void add_latent_entropy(void) {}
--#endif
--
--extern void get_random_bytes(void *buf, size_t nbytes);
--extern int wait_for_random_bytes(void);
--extern int __init random_init(const char *command_line);
--extern bool rng_is_initialized(void);
--extern int register_random_ready_notifier(struct notifier_block *nb);
--extern int unregister_random_ready_notifier(struct notifier_block *nb);
--extern size_t __must_check get_random_bytes_arch(void *buf, size_t nbytes);
--
--#ifndef MODULE
--extern const struct file_operations random_fops, urandom_fops;
-+static inline void add_latent_entropy(void) { }
- #endif
- 
-+void get_random_bytes(void *buf, size_t nbytes);
-+size_t __must_check get_random_bytes_arch(void *buf, size_t nbytes);
- u32 get_random_u32(void);
- u64 get_random_u64(void);
- static inline unsigned int get_random_int(void)
-@@ -72,11 +61,17 @@ static inline unsigned long get_random_l
- 
- static inline unsigned long get_random_canary(void)
- {
--	unsigned long val = get_random_long();
--
--	return val & CANARY_MASK;
-+	return get_random_long() & CANARY_MASK;
- }
- 
-+unsigned long randomize_page(unsigned long start, unsigned long range);
-+
-+int __init random_init(const char *command_line);
-+bool rng_is_initialized(void);
-+int wait_for_random_bytes(void);
-+int register_random_ready_notifier(struct notifier_block *nb);
-+int unregister_random_ready_notifier(struct notifier_block *nb);
-+
- /* Calls wait_for_random_bytes() and then calls get_random_bytes(buf, nbytes).
-  * Returns the result of the call to wait_for_random_bytes. */
- static inline int get_random_bytes_wait(void *buf, size_t nbytes)
-@@ -100,8 +95,6 @@ declare_get_random_var_wait(int)
- declare_get_random_var_wait(long)
- #undef declare_get_random_var
- 
--unsigned long randomize_page(unsigned long start, unsigned long range);
--
- /*
-  * This is designed to be standalone for just prandom
-  * users, but for now we include it from <linux/random.h>
-@@ -112,22 +105,10 @@ unsigned long randomize_page(unsigned lo
- #ifdef CONFIG_ARCH_RANDOM
- # include <asm/archrandom.h>
- #else
--static inline bool __must_check arch_get_random_long(unsigned long *v)
--{
--	return false;
--}
--static inline bool __must_check arch_get_random_int(unsigned int *v)
--{
--	return false;
--}
--static inline bool __must_check arch_get_random_seed_long(unsigned long *v)
--{
--	return false;
--}
--static inline bool __must_check arch_get_random_seed_int(unsigned int *v)
--{
--	return false;
--}
-+static inline bool __must_check arch_get_random_long(unsigned long *v) { return false; }
-+static inline bool __must_check arch_get_random_int(unsigned int *v) { return false; }
-+static inline bool __must_check arch_get_random_seed_long(unsigned long *v) { return false; }
-+static inline bool __must_check arch_get_random_seed_int(unsigned int *v) { return false; }
- #endif
- 
- /*
-@@ -151,8 +132,12 @@ static inline bool __init arch_get_rando
- #endif
- 
- #ifdef CONFIG_SMP
--extern int random_prepare_cpu(unsigned int cpu);
--extern int random_online_cpu(unsigned int cpu);
-+int random_prepare_cpu(unsigned int cpu);
-+int random_online_cpu(unsigned int cpu);
-+#endif
-+
-+#ifndef MODULE
-+extern const struct file_operations random_fops, urandom_fops;
- #endif
- 
- #endif /* _LINUX_RANDOM_H */
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -8186,6 +8186,7 @@ static const struct snd_pci_quirk alc269
+ 	SND_PCI_QUIRK(0x103c, 0x877a, "HP", ALC285_FIXUP_HP_MUTE_LED),
+ 	SND_PCI_QUIRK(0x103c, 0x877d, "HP", ALC236_FIXUP_HP_MUTE_LED),
+ 	SND_PCI_QUIRK(0x103c, 0x87e5, "HP ProBook 440 G8 Notebook PC", ALC236_FIXUP_HP_GPIO_LED),
++	SND_PCI_QUIRK(0x103c, 0x89aa, "HP EliteBook 630 G9", ALC236_FIXUP_HP_GPIO_LED),
+ 	SND_PCI_QUIRK(0x1043, 0x103e, "ASUS X540SA", ALC256_FIXUP_ASUS_MIC),
+ 	SND_PCI_QUIRK(0x1043, 0x103f, "ASUS TX300", ALC282_FIXUP_ASUS_TX300),
+ 	SND_PCI_QUIRK(0x1043, 0x106d, "Asus K53BE", ALC269_FIXUP_LIMIT_INT_MIC_BOOST),
 
 
