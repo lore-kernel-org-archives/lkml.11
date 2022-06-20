@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24365C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:11:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61F7BC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:12:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350611AbiFTOLy (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:11:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45278 "EHLO
+        id S241448AbiFTOL6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 10:11:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232839AbiFTN5u (ORCPT
+        with ESMTP id S1352057AbiFTNzw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:57:50 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C70D0381B4;
-        Mon, 20 Jun 2022 06:23:39 -0700 (PDT)
+        Mon, 20 Jun 2022 09:55:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88CD134BB8;
+        Mon, 20 Jun 2022 06:21:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C1B9BCE138D;
-        Mon, 20 Jun 2022 13:06:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FF44C3411B;
-        Mon, 20 Jun 2022 13:06:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 95ADFB811D7;
+        Mon, 20 Jun 2022 13:11:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E543FC3411B;
+        Mon, 20 Jun 2022 13:11:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730405;
-        bh=8el3SqLdZcIbqsykJyEZKxNlrqeGOrQgzCDXMo6yEMo=;
+        s=korg; t=1655730667;
+        bh=Se/8P/jaRDfY+UTXLxqdL6SgFPgJump3fH5kjWf95ig=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZaiGG3Ena/E9LL4i4qaqOHBrJ5A3avkToq8Gu5EKw+ACeWJQp09nlf31mM7FvwAV3
-         aT1kcPv+iRH8t7QkohjcpltVY67G2Y+eDVtFXboG2VwEuet1TABDmpGSfqIiveDXKb
-         AQJb2sxMpzH7isrz9B3lVWINOGW804HbPMWygACs=
+        b=v4ou0V6Nq9Nv5/etmTHn0JyZTCpZ2r4qk8wYi6ZfexqkIMdpJlWsHR2j6MmDfcM6L
+         T1a52CTtsb3npUP0bpQPRDfu8/h8+zabFHZ7RGHMdiDBGVlqWJccGUPN8rNC9qaGkf
+         Du5dSe80DDi7mpopIorLhlCYUaKniO7UgPT5nRdo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duke Lee <krnhotwings@gmail.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 043/106] platform/x86/intel: hid: Add Surface Go to VGBS allow list
-Date:   Mon, 20 Jun 2022 14:51:02 +0200
-Message-Id: <20220620124725.662434414@linuxfoundation.org>
+        stable@vger.kernel.org, Yangtao Li <tiny.windzz@gmail.com>,
+        Theodore Tso <tytso@mit.edu>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.4 019/240] random: Add and use pr_fmt()
+Date:   Mon, 20 Jun 2022 14:48:40 +0200
+Message-Id: <20220620124738.367436228@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
-References: <20220620124724.380838401@linuxfoundation.org>
+In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
+References: <20220620124737.799371052@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,44 +49,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duke Lee <krnhotwings@gmail.com>
+From: Yangtao Li <tiny.windzz@gmail.com>
 
-[ Upstream commit d4fe9cc4ff8656704b58cfd9363d7c3c9d65e519 ]
+commit 12cd53aff5ea0359b1dac91fcd9ddc7b9e646588 upstream.
 
-The Surface Go reports Chassis Type 9 (Laptop,) so the device needs to be
-added to dmi_vgbs_allow_list to enable tablet mode when an attached Type
-Cover is folded back.
+Prefix all printk/pr_<level> messages with "random: " to make the
+logging a bit more consistent.
 
-BugLink: https://github.com/linux-surface/linux-surface/issues/837
-Signed-off-by: Duke Lee <krnhotwings@gmail.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Link: https://lore.kernel.org/r/20220607213654.5567-1-krnhotwings@gmail.com
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Miscellanea:
+
+o Convert a printks to pr_notice
+o Whitespace to align to open parentheses
+o Remove embedded "random: " from pr_* as pr_fmt adds it
+
+Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
+Link: https://lore.kernel.org/r/20190607182517.28266-3-tiny.windzz@gmail.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/platform/x86/intel/hid.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/char/random.c |   21 ++++++++++-----------
+ 1 file changed, 10 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/platform/x86/intel/hid.c b/drivers/platform/x86/intel/hid.c
-index e9e8554147e0..d7d6782c40c2 100644
---- a/drivers/platform/x86/intel/hid.c
-+++ b/drivers/platform/x86/intel/hid.c
-@@ -129,6 +129,12 @@ static const struct dmi_system_id dmi_vgbs_allow_list[] = {
- 			DMI_MATCH(DMI_PRODUCT_NAME, "HP Spectre x360 Convertible 15-df0xxx"),
- 		},
- 	},
-+	{
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "Surface Go"),
-+		},
-+	},
- 	{ }
- };
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -307,6 +307,8 @@
+  * Eastlake, Steve Crocker, and Jeff Schiller.
+  */
  
--- 
-2.35.1
-
++#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
++
+ #include <linux/utsname.h>
+ #include <linux/module.h>
+ #include <linux/kernel.h>
+@@ -738,7 +740,7 @@ retry:
+ 	}
+ 
+ 	if (WARN_ON(entropy_count < 0)) {
+-		pr_warn("random: negative entropy/overflow: pool %s count %d\n",
++		pr_warn("negative entropy/overflow: pool %s count %d\n",
+ 			r->name, entropy_count);
+ 		entropy_count = 0;
+ 	} else if (entropy_count > pool_size)
+@@ -834,7 +836,7 @@ static void crng_initialize(struct crng_
+ 		invalidate_batched_entropy();
+ 		numa_crng_init();
+ 		crng_init = 2;
+-		pr_notice("random: crng done (trusting CPU's manufacturer)\n");
++		pr_notice("crng done (trusting CPU's manufacturer)\n");
+ 	}
+ 	crng->init_time = jiffies - CRNG_RESEED_INTERVAL - 1;
+ }
+@@ -858,14 +860,12 @@ static void crng_finalize_init(struct cr
+ 	kill_fasync(&fasync, SIGIO, POLL_IN);
+ 	pr_notice("crng init done\n");
+ 	if (unseeded_warning.missed) {
+-		pr_notice("random: %d get_random_xx warning(s) missed "
+-			  "due to ratelimiting\n",
++		pr_notice("%d get_random_xx warning(s) missed due to ratelimiting\n",
+ 			  unseeded_warning.missed);
+ 		unseeded_warning.missed = 0;
+ 	}
+ 	if (urandom_warning.missed) {
+-		pr_notice("random: %d urandom warning(s) missed "
+-			  "due to ratelimiting\n",
++		pr_notice("%d urandom warning(s) missed due to ratelimiting\n",
+ 			  urandom_warning.missed);
+ 		urandom_warning.missed = 0;
+ 	}
+@@ -948,7 +948,7 @@ static size_t crng_fast_load(const char
+ 	if (crng_init_cnt >= CRNG_INIT_CNT_THRESH) {
+ 		invalidate_batched_entropy();
+ 		crng_init = 1;
+-		pr_notice("random: fast init done\n");
++		pr_notice("fast init done\n");
+ 	}
+ 	return ret;
+ }
+@@ -1384,7 +1384,7 @@ retry:
+ 		ibytes = 0;
+ 
+ 	if (WARN_ON(entropy_count < 0)) {
+-		pr_warn("random: negative entropy count: pool %s count %d\n",
++		pr_warn("negative entropy count: pool %s count %d\n",
+ 			r->name, entropy_count);
+ 		entropy_count = 0;
+ 	}
+@@ -1870,9 +1870,8 @@ urandom_read(struct file *file, char __u
+ 	if (!crng_ready() && maxwarn > 0) {
+ 		maxwarn--;
+ 		if (__ratelimit(&urandom_warning))
+-			printk(KERN_NOTICE "random: %s: uninitialized "
+-			       "urandom read (%zd bytes read)\n",
+-			       current->comm, nbytes);
++			pr_notice("%s: uninitialized urandom read (%zd bytes read)\n",
++				  current->comm, nbytes);
+ 		spin_lock_irqsave(&primary_crng.lock, flags);
+ 		crng_init_cnt = 0;
+ 		spin_unlock_irqrestore(&primary_crng.lock, flags);
 
 
