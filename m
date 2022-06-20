@@ -2,138 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B216CCA481
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 15:19:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1097C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 15:19:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243600AbiFTPTj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 11:19:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44376 "EHLO
+        id S244195AbiFTPTz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 11:19:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243911AbiFTPSF (ORCPT
+        with ESMTP id S1343732AbiFTPTd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 11:18:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 077021C104;
-        Mon, 20 Jun 2022 08:09:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AF052B811D3;
-        Mon, 20 Jun 2022 15:09:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C5EAC3411B;
-        Mon, 20 Jun 2022 15:09:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655737772;
-        bh=nvUKsIOSB2sKsfhVbzK6dt7B6Lv7rlPXdDOGznoItlY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=FKVE6PdMFMl4zITgmVhBTj42NCZqaX9hDjUK7e6/sbm4gq3/EFqAW2I8vbdyt7c9y
-         EplvFbxsRjr6vene6rqWhrZE6Y3KTTLSiX/8FCy2wW/qSGPnpKUWUwY50LFsE1Z7fx
-         rIOt3pnmF3fWJDN39JTzSHJhW+jXkSjRB2bWfcePpANbFl5Rg8DRIZm664pvJlbkDQ
-         vy+guQDS+ken8AHZbiTSP5ovdeUU8hKRZKH4V0wkBkEVTPZ3ZEZ84ONsVzMuBnn8d5
-         cB/e4cJfIcFgAMWXCtOyNfWM2QRPxEQWFJYoSyqMDNNAFl2KrWxGeOnGIbnYvNY14c
-         GDvcHeJyqzH6A==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan+linaro@kernel.org>)
-        id 1o3J1s-00030a-Pp; Mon, 20 Jun 2022 17:09:28 +0200
-From:   Johan Hovold <johan+linaro@kernel.org>
-To:     Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Stanimir Varbanov <svarbanov@mm-sol.com>,
-        Rob Herring <robh@kernel.org>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        linux-arm-msm@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH] PCI: qcom: Drop unused post-init callbacks
-Date:   Mon, 20 Jun 2022 17:07:59 +0200
-Message-Id: <20220620150759.11507-1-johan+linaro@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        Mon, 20 Jun 2022 11:19:33 -0400
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27028E3C;
+        Mon, 20 Jun 2022 08:12:26 -0700 (PDT)
+Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25KEQU7b024436;
+        Mon, 20 Jun 2022 17:12:06 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=5rxaXKrnxGJg+Tuh7+UheAYB9LVA5fqJwlB51AZL1IQ=;
+ b=eXd923Q/3qtdj2Ll3aAymendGBBqcWVD4VWvFM6GeiwhgJmIWRQDPFlvuHE+kMUJ1S4g
+ XBFp6dysrtVvEuQU2MYdIoDKpNvPPTQiDhIlpgbSOWsymVV2nzNve4zmSeas6ggTKMd2
+ fpUyh9UFMp9S/oWZwJ84vco1v1AN8qpbApOqAUvEdnOSAvwuWP+7U1E/lEiVsnYhlyYW
+ cduOBJmaRu5UMoIPpLslGo/g5+Q3X29sRGM4HafYpf+WMyMl53j1fE77GiuilCEm3SCx
+ ZtGmvC/EiXOzwkOmZzFLPCq05mKDJek6C1StGcVY5v4YQM3MRdWQl1+q8pWhIrbUvioy kw== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3gs71tm62q-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 20 Jun 2022 17:12:06 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 9872E10002A;
+        Mon, 20 Jun 2022 17:12:05 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 1754422D18A;
+        Mon, 20 Jun 2022 17:12:05 +0200 (CEST)
+Received: from [10.201.21.93] (10.75.127.118) by SHFDAG1NODE1.st.com
+ (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Mon, 20 Jun
+ 2022 17:12:04 +0200
+Message-ID: <ab33d6d5-cedf-fb01-77a2-c56e8b6b1b49@foss.st.com>
+Date:   Mon, 20 Jun 2022 17:12:03 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH] dt-bindings: rcc: stm32: select the "secure" path for
+ stm32mp13
+Content-Language: en-US
+To:     <robh+dt@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-kernel@vger.kernel.org>
+References: <20220613093815.18334-1-alexandre.torgue@foss.st.com>
+From:   Alexandre TORGUE <alexandre.torgue@foss.st.com>
+In-Reply-To: <20220613093815.18334-1-alexandre.torgue@foss.st.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.75.127.118]
+X-ClientProxiedBy: GPXDAG2NODE5.st.com (10.75.127.69) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-20_05,2022-06-17_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drop the unused post_init and post_deinit callbacks that were added for
-the now removed pipe clock handling.
+On 6/13/22 11:38, Alexandre Torgue wrote:
+> Like for stm32mp15, when stm32 RCC node is used to interact with a secure
+> context (using clock SCMI protocol), a different path has to be used for
+> yaml verification.
+> 
+> Signed-off-by: Alexandre Torgue <alexandre.torgue@foss.st.com>
+> 
+> ---
+> 
+> Hi Rob, Krzysztof,
+> 
+> If you agree with this patch, I'll apply it directly in my STM32 tree.
+> 
+> Thanks
+> Alex
+> 
+> diff --git a/Documentation/devicetree/bindings/clock/st,stm32mp1-rcc.yaml b/Documentation/devicetree/bindings/clock/st,stm32mp1-rcc.yaml
+> index f8c474227807..242fe922b035 100644
+> --- a/Documentation/devicetree/bindings/clock/st,stm32mp1-rcc.yaml
+> +++ b/Documentation/devicetree/bindings/clock/st,stm32mp1-rcc.yaml
+> @@ -78,6 +78,7 @@ if:
+>         contains:
+>           enum:
+>             - st,stm32mp1-rcc-secure
+> +          - st,stm32mp13-rcc
+>   then:
+>     properties:
+>       clocks:
 
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
----
-
-Now that Bjorn has merged the pipe clock series:
-
-	https://git.kernel.org/pub/scm/linux/kernel/git/helgaas/pci.git/log/?h=pci/ctrl/qcom
-
-the post_init and post_deinit callbacks can also be removed.
-
-Note that this one depends on the patch adding support for modular
-builds:
-
-	https://lore.kernel.org/all/20220519094646.23009-1-johan+linaro@kernel.org/
-
-which has been reviewed by Rob and should be ready to be picked up.
-
-Johan
-
-
- drivers/pci/controller/dwc/pcie-qcom.c | 17 ++---------------
- 1 file changed, 2 insertions(+), 15 deletions(-)
-
-diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
-index ff1b40f213c1..fe701da32119 100644
---- a/drivers/pci/controller/dwc/pcie-qcom.c
-+++ b/drivers/pci/controller/dwc/pcie-qcom.c
-@@ -180,9 +180,7 @@ struct qcom_pcie;
- struct qcom_pcie_ops {
- 	int (*get_resources)(struct qcom_pcie *pcie);
- 	int (*init)(struct qcom_pcie *pcie);
--	int (*post_init)(struct qcom_pcie *pcie);
- 	void (*deinit)(struct qcom_pcie *pcie);
--	void (*post_deinit)(struct qcom_pcie *pcie);
- 	void (*ltssm_enable)(struct qcom_pcie *pcie);
- 	int (*config_sid)(struct qcom_pcie *pcie);
- };
-@@ -1331,27 +1329,18 @@ static int qcom_pcie_host_init(struct pcie_port *pp)
- 	if (ret)
- 		goto err_deinit;
- 
--	if (pcie->cfg->ops->post_init) {
--		ret = pcie->cfg->ops->post_init(pcie);
--		if (ret)
--			goto err_disable_phy;
--	}
--
- 	qcom_ep_reset_deassert(pcie);
- 
- 	if (pcie->cfg->ops->config_sid) {
- 		ret = pcie->cfg->ops->config_sid(pcie);
- 		if (ret)
--			goto err;
-+			goto err_assert_reset;
- 	}
- 
- 	return 0;
- 
--err:
-+err_assert_reset:
- 	qcom_ep_reset_assert(pcie);
--	if (pcie->cfg->ops->post_deinit)
--		pcie->cfg->ops->post_deinit(pcie);
--err_disable_phy:
- 	phy_power_off(pcie->phy);
- err_deinit:
- 	pcie->cfg->ops->deinit(pcie);
-@@ -1362,8 +1351,6 @@ static int qcom_pcie_host_init(struct pcie_port *pp)
- static void qcom_pcie_host_deinit(struct qcom_pcie *pcie)
- {
- 	qcom_ep_reset_assert(pcie);
--	if (pcie->cfg->ops->post_deinit)
--		pcie->cfg->ops->post_deinit(pcie);
- 	phy_power_off(pcie->phy);
- 	pcie->cfg->ops->deinit(pcie);
- }
--- 
-2.35.1
-
+Applied on stm32-next.
