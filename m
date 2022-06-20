@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7210C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D02BBC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:10:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351850AbiFTOKG (ORCPT
+        id S1351760AbiFTOKB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:10:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44238 "EHLO
+        Mon, 20 Jun 2022 10:10:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350772AbiFTNxu (ORCPT
+        with ESMTP id S1350194AbiFTNxH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:53:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 888461B789;
-        Mon, 20 Jun 2022 06:20:18 -0700 (PDT)
+        Mon, 20 Jun 2022 09:53:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7138B262E;
+        Mon, 20 Jun 2022 06:19:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 28E1DB811C6;
-        Mon, 20 Jun 2022 13:20:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6721DC3411B;
-        Mon, 20 Jun 2022 13:20:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 585B860C98;
+        Mon, 20 Jun 2022 13:18:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48B5FC3411B;
+        Mon, 20 Jun 2022 13:18:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731216;
-        bh=2WoKEsaIE0PMxojq0DMA1gG9fjx/03eR9RGT34/BisA=;
+        s=korg; t=1655731134;
+        bh=PlquIHmEkLUenrV0b8mftduqSX2W2iNXx8TVoXvh7V8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mH8OXsMEIKkmk8eDj9IGMYTYFXsiaaOmLG/phPnrbQCji4SdHNxaPorRKMpkY3r8z
-         QNVS4oJJ8MRfpwo06b3gomuTVznOjdpm9GBsO+raawVBXrod5Kt8UxRn0+7b+Ns42j
-         8lJMRGI6IBM0vhM2AtMr27y3tV/kimypKIct6Jvg=
+        b=K9cp1QiT90CgREapiteN/HgV6Qt+p/ddzIMphKY9h9ZL0ZHcvmxX8lOX4Z4uiVYZ7
+         BRll6NM4IaJucTIDjqFGbCsDz4dXcMEYubmkmj5GLxilOs9NHCw/mrtBiHErau1dPS
+         Qbx6DR8xJfVmUur1evqJ06+chPpJ8Y/PFJ0j/JGo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 189/240] ata: libata-core: fix NULL pointer deref in ata_host_alloc_pinfo()
-Date:   Mon, 20 Jun 2022 14:51:30 +0200
-Message-Id: <20220620124744.466758128@linuxfoundation.org>
+        stable@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.4 165/240] random: move randomize_page() into mm where it belongs
+Date:   Mon, 20 Jun 2022 14:51:06 +0200
+Message-Id: <20220620124743.785623693@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -50,50 +49,134 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Shtylyov <s.shtylyov@omp.ru>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-[ Upstream commit bf476fe22aa1851bab4728e0c49025a6a0bea307 ]
+commit 5ad7dd882e45d7fe432c32e896e2aaa0b21746ea upstream.
 
-In an unlikely (and probably wrong?) case that the 'ppi' parameter of
-ata_host_alloc_pinfo() points to an array starting with a NULL pointer,
-there's going to be a kernel oops as the 'pi' local variable won't get
-reassigned from the initial value of NULL. Initialize 'pi' instead to
-'&ata_dummy_port_info' to fix the possible kernel oops for good...
+randomize_page is an mm function. It is documented like one. It contains
+the history of one. It has the naming convention of one. It looks
+just like another very similar function in mm, randomize_stack_top().
+And it has always been maintained and updated by mm people. There is no
+need for it to be in random.c. In the "which shape does not look like
+the other ones" test, pointing to randomize_page() is correct.
 
-Found by Linux Verification Center (linuxtesting.org) with the SVACE static
-analysis tool.
+So move randomize_page() into mm/util.c, right next to the similar
+randomize_stack_top() function.
 
-Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This commit contains no actual code changes.
+
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/ata/libata-core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/char/random.c  |   32 --------------------------------
+ include/linux/mm.h     |    1 +
+ include/linux/random.h |    2 --
+ mm/util.c              |   32 ++++++++++++++++++++++++++++++++
+ 4 files changed, 33 insertions(+), 34 deletions(-)
 
-diff --git a/drivers/ata/libata-core.c b/drivers/ata/libata-core.c
-index af8a1bac9345..fc37e075f3e1 100644
---- a/drivers/ata/libata-core.c
-+++ b/drivers/ata/libata-core.c
-@@ -6235,7 +6235,7 @@ struct ata_host *ata_host_alloc_pinfo(struct device *dev,
- 				      const struct ata_port_info * const * ppi,
- 				      int n_ports)
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -619,38 +619,6 @@ int __cold random_prepare_cpu(unsigned i
+ }
+ #endif
+ 
+-/**
+- * randomize_page - Generate a random, page aligned address
+- * @start:	The smallest acceptable address the caller will take.
+- * @range:	The size of the area, starting at @start, within which the
+- *		random address must fall.
+- *
+- * If @start + @range would overflow, @range is capped.
+- *
+- * NOTE: Historical use of randomize_range, which this replaces, presumed that
+- * @start was already page aligned.  We now align it regardless.
+- *
+- * Return: A page aligned address within [start, start + range).  On error,
+- * @start is returned.
+- */
+-unsigned long randomize_page(unsigned long start, unsigned long range)
+-{
+-	if (!PAGE_ALIGNED(start)) {
+-		range -= PAGE_ALIGN(start) - start;
+-		start = PAGE_ALIGN(start);
+-	}
+-
+-	if (start > ULONG_MAX - range)
+-		range = ULONG_MAX - start;
+-
+-	range >>= PAGE_SHIFT;
+-
+-	if (range == 0)
+-		return start;
+-
+-	return start + (get_random_long() % range << PAGE_SHIFT);
+-}
+-
+ /*
+  * This function will use the architecture-specific hardware random
+  * number generator if it is available. It is not recommended for
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -2354,6 +2354,7 @@ extern int install_special_mapping(struc
+ 				   unsigned long flags, struct page **pages);
+ 
+ unsigned long randomize_stack_top(unsigned long stack_top);
++unsigned long randomize_page(unsigned long start, unsigned long range);
+ 
+ extern unsigned long get_unmapped_area(struct file *, unsigned long, unsigned long, unsigned long, unsigned long);
+ 
+--- a/include/linux/random.h
++++ b/include/linux/random.h
+@@ -64,8 +64,6 @@ static inline unsigned long get_random_c
+ 	return get_random_long() & CANARY_MASK;
+ }
+ 
+-unsigned long randomize_page(unsigned long start, unsigned long range);
+-
+ int __init random_init(const char *command_line);
+ bool rng_is_initialized(void);
+ int wait_for_random_bytes(void);
+--- a/mm/util.c
++++ b/mm/util.c
+@@ -320,6 +320,38 @@ unsigned long randomize_stack_top(unsign
+ #endif
+ }
+ 
++/**
++ * randomize_page - Generate a random, page aligned address
++ * @start:	The smallest acceptable address the caller will take.
++ * @range:	The size of the area, starting at @start, within which the
++ *		random address must fall.
++ *
++ * If @start + @range would overflow, @range is capped.
++ *
++ * NOTE: Historical use of randomize_range, which this replaces, presumed that
++ * @start was already page aligned.  We now align it regardless.
++ *
++ * Return: A page aligned address within [start, start + range).  On error,
++ * @start is returned.
++ */
++unsigned long randomize_page(unsigned long start, unsigned long range)
++{
++	if (!PAGE_ALIGNED(start)) {
++		range -= PAGE_ALIGN(start) - start;
++		start = PAGE_ALIGN(start);
++	}
++
++	if (start > ULONG_MAX - range)
++		range = ULONG_MAX - start;
++
++	range >>= PAGE_SHIFT;
++
++	if (range == 0)
++		return start;
++
++	return start + (get_random_long() % range << PAGE_SHIFT);
++}
++
+ #ifdef CONFIG_ARCH_WANT_DEFAULT_TOPDOWN_MMAP_LAYOUT
+ unsigned long arch_randomize_brk(struct mm_struct *mm)
  {
--	const struct ata_port_info *pi;
-+	const struct ata_port_info *pi = &ata_dummy_port_info;
- 	struct ata_host *host;
- 	int i, j;
- 
-@@ -6243,7 +6243,7 @@ struct ata_host *ata_host_alloc_pinfo(struct device *dev,
- 	if (!host)
- 		return NULL;
- 
--	for (i = 0, j = 0, pi = NULL; i < host->n_ports; i++) {
-+	for (i = 0, j = 0; i < host->n_ports; i++) {
- 		struct ata_port *ap = host->ports[i];
- 
- 		if (ppi[j])
--- 
-2.35.1
-
 
 
