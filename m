@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD77FC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:52:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F77AC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:52:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349772AbiFTNwO (ORCPT
+        id S1349046AbiFTNwZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:52:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36700 "EHLO
+        Mon, 20 Jun 2022 09:52:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347565AbiFTNuP (ORCPT
+        with ESMTP id S242156AbiFTNuY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:50:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2318931220;
-        Mon, 20 Jun 2022 06:18:28 -0700 (PDT)
+        Mon, 20 Jun 2022 09:50:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F4063123A;
+        Mon, 20 Jun 2022 06:18:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1A42EB811CC;
-        Mon, 20 Jun 2022 13:06:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66650C3411B;
-        Mon, 20 Jun 2022 13:06:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AC783B811C5;
+        Mon, 20 Jun 2022 13:18:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A75DC3411C;
+        Mon, 20 Jun 2022 13:18:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730414;
-        bh=mK5du5Ox7d6OrZvOgtZAFaV6MyQq0pYu6HN2dxkmUVQ=;
+        s=korg; t=1655731109;
+        bh=nwXc3XpthjYp9ixcMlB2623mIkpfvu/MjJP9HCed4NU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xD2pnKn91KE4q6xCa82Ycy3HryRgdY5u7mz+kdoCzuQLhY5EZ9j29guBuQNlXZRcA
-         vyG77MkEZgo156N0MXuMybYzFPEgOkd+P8bPaSU4D+LavHtRdcPZHEAJ2vBllWViFe
-         Ct4fNOWqYa3zobo3rKoNq1slnDCh8je4tlscDZh4=
+        b=gln9GiqPs9R8bzOrtLrt8Yb/evdaZGDr3+rvBy1z6LXGug0Vk280ECxjAsnG3908/
+         VWqVIvWITqAhtOrnTfWmGA+RHG9xaic6M3dlzPyAreP7zsOvZC4Q+CrBgqHuLXYJj+
+         D6PGVvgSF7hnSMuyIMFLdb2VFoDoXzQmlY/v9CPQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 046/106] staging: r8188eu: Fix warning of array overflow in ioctl_linux.c
-Date:   Mon, 20 Jun 2022 14:51:05 +0200
-Message-Id: <20220620124725.751478890@linuxfoundation.org>
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.4 115/240] random: make consistent usage of crng_ready()
+Date:   Mon, 20 Jun 2022 14:50:16 +0200
+Message-Id: <20220620124742.346167368@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
-References: <20220620124724.380838401@linuxfoundation.org>
+In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
+References: <20220620124737.799371052@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,67 +50,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Larry Finger <Larry.Finger@lwfinger.net>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-[ Upstream commit 96f0a54e8e65a765b3a4ad4b53751581f23279f3 ]
+commit a96cfe2d427064325ecbf56df8816c6b871ec285 upstream.
 
-Building with -Warray-bounds results in the following warning plus others
-related to the same problem:
+Rather than sometimes checking `crng_init < 2`, we should always use the
+crng_ready() macro, so that should we change anything later, it's
+consistent. Additionally, that macro already has a likely() around it,
+which means we don't need to open code our own likely() and unlikely()
+annotations.
 
-CC [M]  drivers/staging/r8188eu/os_dep/ioctl_linux.o
-In function ‘wpa_set_encryption’,
-    inlined from ‘rtw_wx_set_enc_ext’ at drivers/staging/r8188eu/os_dep/ioctl_linux.c:1868:9:
-drivers/staging/r8188eu/os_dep/ioctl_linux.c:412:41: warning: array subscript ‘struct ndis_802_11_wep[0]’ is partly outside array bounds of ‘void[25]’ [-Warray-bounds]
-  412 |                         pwep->KeyLength = wep_key_len;
-      |                         ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~
-In file included from drivers/staging/r8188eu/os_dep/../include/osdep_service.h:19,
-                 from drivers/staging/r8188eu/os_dep/ioctl_linux.c:4:
-In function ‘kmalloc’,
-    inlined from ‘kzalloc’ at ./include/linux/slab.h:733:9,
-    inlined from ‘wpa_set_encryption’ at drivers/staging/r8188eu/os_dep/ioctl_linux.c:408:11,
-    inlined from ‘rtw_wx_set_enc_ext’ at drivers/staging/r8188eu/os_dep/ioctl_linux.c:1868:9:
-./include/linux/slab.h:605:16: note: object of size [17, 25] allocated by ‘__kmalloc’
-  605 |         return __kmalloc(size, flags);
-      |                ^~~~~~~~~~~~~~~~~~~~~~
-./include/linux/slab.h:600:24: note: object of size [17, 25] allocated by ‘kmem_cache_alloc_trace’
-  600 |                 return kmem_cache_alloc_trace(
-      |                        ^~~~~~~~~~~~~~~~~~~~~~~
-  601 |                                 kmalloc_caches[kmalloc_type(flags)][index],
-      |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  602 |                                 flags, size);
-      |                                 ~~~~~~~~~~~~
-
-Although it is unlikely that anyone is still using WEP encryption, the
-size of the allocation needs to be increased just in case.
-
-Fixes commit 2b42bd58b321 ("staging: r8188eu: introduce new os_dep dir for RTL8188eu driver")
-
-Fixes: 2b42bd58b321 ("staging: r8188eu: introduce new os_dep dir for RTL8188eu driver")
-Signed-off-by: Larry Finger <Larry.Finger@lwfinger.net>
-Cc: Phillip Potter <phil@philpotter.co.uk>
-Cc: Dan Carpenter <dan.carpenter@oracle.com>
-Link: https://lore.kernel.org/r/20220531013103.2175-3-Larry.Finger@lwfinger.net
+Cc: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/r8188eu/os_dep/ioctl_linux.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/char/random.c |   19 +++++++------------
+ 1 file changed, 7 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/staging/r8188eu/os_dep/ioctl_linux.c b/drivers/staging/r8188eu/os_dep/ioctl_linux.c
-index 3e9325d89afc..ca376f7efd42 100644
---- a/drivers/staging/r8188eu/os_dep/ioctl_linux.c
-+++ b/drivers/staging/r8188eu/os_dep/ioctl_linux.c
-@@ -465,7 +465,7 @@ static int wpa_set_encryption(struct net_device *dev, struct ieee_param *param,
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -125,18 +125,13 @@ static void try_to_generate_entropy(void
+  */
+ int wait_for_random_bytes(void)
+ {
+-	if (likely(crng_ready()))
+-		return 0;
+-
+-	do {
++	while (!crng_ready()) {
+ 		int ret;
+ 		ret = wait_event_interruptible_timeout(crng_init_wait, crng_ready(), HZ);
+ 		if (ret)
+ 			return ret > 0 ? 0 : ret;
+-
+ 		try_to_generate_entropy();
+-	} while (!crng_ready());
+-
++	}
+ 	return 0;
+ }
+ EXPORT_SYMBOL(wait_for_random_bytes);
+@@ -291,7 +286,7 @@ static void crng_reseed(void)
+ 		++next_gen;
+ 	WRITE_ONCE(base_crng.generation, next_gen);
+ 	WRITE_ONCE(base_crng.birth, jiffies);
+-	if (crng_init < 2) {
++	if (!crng_ready()) {
+ 		crng_init = 2;
+ 		finalize_init = true;
+ 	}
+@@ -359,7 +354,7 @@ static void crng_make_state(u32 chacha_s
+ 	 * ready, we do fast key erasure with the base_crng directly, because
+ 	 * this is what crng_pre_init_inject() mutates during early init.
+ 	 */
+-	if (unlikely(!crng_ready())) {
++	if (!crng_ready()) {
+ 		bool ready;
  
- 		if (wep_key_len > 0) {
- 			wep_key_len = wep_key_len <= 5 ? 5 : 13;
--			wep_total_len = wep_key_len + FIELD_OFFSET(struct ndis_802_11_wep, KeyMaterial);
-+			wep_total_len = wep_key_len + sizeof(*pwep);
- 			pwep = kzalloc(wep_total_len, GFP_KERNEL);
- 			if (!pwep)
- 				goto exit;
--- 
-2.35.1
-
+ 		spin_lock_irqsave(&base_crng.lock, flags);
+@@ -799,7 +794,7 @@ static void credit_entropy_bits(size_t n
+ 		entropy_count = min_t(unsigned int, POOL_BITS, orig + add);
+ 	} while (cmpxchg(&input_pool.entropy_count, orig, entropy_count) != orig);
+ 
+-	if (crng_init < 2 && entropy_count >= POOL_MIN_BITS)
++	if (!crng_ready() && entropy_count >= POOL_MIN_BITS)
+ 		crng_reseed();
+ }
+ 
+@@ -956,7 +951,7 @@ int __init rand_initialize(void)
+ 	extract_entropy(base_crng.key, sizeof(base_crng.key));
+ 	++base_crng.generation;
+ 
+-	if (arch_init && trust_cpu && crng_init < 2) {
++	if (arch_init && trust_cpu && !crng_ready()) {
+ 		crng_init = 2;
+ 		pr_notice("crng init done (trusting CPU's manufacturer)\n");
+ 	}
+@@ -1545,7 +1540,7 @@ static long random_ioctl(struct file *f,
+ 	case RNDRESEEDCRNG:
+ 		if (!capable(CAP_SYS_ADMIN))
+ 			return -EPERM;
+-		if (crng_init < 2)
++		if (!crng_ready())
+ 			return -ENODATA;
+ 		crng_reseed();
+ 		return 0;
 
 
