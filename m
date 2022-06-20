@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBB46CCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC3C1CCA487
 	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:10:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351799AbiFTOKD (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:10:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41784 "EHLO
+        id S244063AbiFTOK1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 10:10:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350770AbiFTNxu (ORCPT
+        with ESMTP id S1352926AbiFTN5R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:53:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24DCB5FC1;
-        Mon, 20 Jun 2022 06:20:20 -0700 (PDT)
+        Mon, 20 Jun 2022 09:57:17 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C46C736E1D;
+        Mon, 20 Jun 2022 06:23:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3AE49B811E3;
-        Mon, 20 Jun 2022 13:19:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D95FC3411B;
-        Mon, 20 Jun 2022 13:19:25 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 72CC9CE0FF0;
+        Mon, 20 Jun 2022 13:22:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E993C36AE3;
+        Mon, 20 Jun 2022 13:22:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731166;
-        bh=8L1thByr+96y7LiwJjwBO7DzEBZc6NqjlE7eg/BZEZ8=;
+        s=korg; t=1655731361;
+        bh=SjXAoznO5JPsYpcWKUijlKX7Px6pqsQqLLa1A/Kne20=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zojaVqKGmbMClPf3kDTG5+MM2qlUNZ244c3WqiqMX3K7aXlVkLoU4wgUAdhYCZFfb
-         WRuDrElAtn4cNOYsYbbn4HsVHixyhmVGqbLxhZJvM5hbcz1uGlUKmQ0oGBQZrNO9RU
-         40zdFbMijHjeFI3LUgT2dOs+IJnPFcLjskztZdSQ=
+        b=L2ZDxbYvXdEAbU9dv3mJSCClHkQ6xmghvTCeVbl3inYaHJ9zcz++WmaLXkbvI5oND
+         m/ngdaIQc7Y31nXyGlaZzYnt0IsXhF/hQEVu993eJiK3ibO056aH7IHqYH5QOkhR+/
+         3kaS8QRRaYspCDONr8jER7jNslctYqT0FBVAYn4Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nicolai Stange <nstange@suse.de>,
-        =?UTF-8?q?Stephan=20M=C3=BCller?= <smueller@chronox.de>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 174/240] crypto: drbg - track whether DRBG was seeded with !rng_is_initialized()
-Date:   Mon, 20 Jun 2022 14:51:15 +0200
-Message-Id: <20220620124744.038354260@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Murilo Opsfelder Araujo <muriloo@linux.ibm.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Christophe de Dinechin <dinechin@redhat.com>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: [PATCH 5.4 233/240] virtio-pci: Remove wrong address verification in vp_del_vqs()
+Date:   Mon, 20 Jun 2022 14:52:14 +0200
+Message-Id: <20220620124745.707271865@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -51,132 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolai Stange <nstange@suse.de>
+From: Murilo Opsfelder Araujo <muriloo@linux.ibm.com>
 
-commit 2bcd25443868aa8863779a6ebc6c9319633025d2 upstream.
+commit 7e415282b41bf0d15c6e0fe268f822d9b083f2f7 upstream.
 
-Currently, the DRBG implementation schedules asynchronous works from
-random_ready_callbacks for reseeding the DRBG instances with output from
-get_random_bytes() once the latter has sufficient entropy available.
+GCC 12 enhanced -Waddress when comparing array address to null [0],
+which warns:
 
-However, as the get_random_bytes() initialization state can get queried by
-means of rng_is_initialized() now, there is no real need for this
-asynchronous reseeding logic anymore and it's better to keep things simple
-by doing it synchronously when needed instead, i.e. from drbg_generate()
-once rng_is_initialized() has flipped to true.
+    drivers/virtio/virtio_pci_common.c: In function ‘vp_del_vqs’:
+    drivers/virtio/virtio_pci_common.c:257:29: warning: the comparison will always evaluate as ‘true’ for the pointer operand in ‘vp_dev->msix_affinity_masks + (sizetype)((long unsigned int)i * 256)’ must not be NULL [-Waddress]
+      257 |                         if (vp_dev->msix_affinity_masks[i])
+          |                             ^~~~~~
 
-Of course, for this to work, drbg_generate() would need some means by which
-it can tell whether or not rng_is_initialized() has flipped to true since
-the last seeding from get_random_bytes(). Or equivalently, whether or not
-the last seed from get_random_bytes() has happened when
-rng_is_initialized() was still evaluating to false.
+In fact, the verification is comparing the result of a pointer
+arithmetic, the address "msix_affinity_masks + i", which will always
+evaluate to true.
 
-As it currently stands, enum drbg_seed_state allows for the representation
-of two different DRBG seeding states: DRBG_SEED_STATE_UNSEEDED and
-DRBG_SEED_STATE_FULL. The former makes drbg_generate() to invoke a full
-reseeding operation involving both, the rather expensive jitterentropy as
-well as the get_random_bytes() randomness sources. The DRBG_SEED_STATE_FULL
-state on the other hand implies that no reseeding at all is required for a
-!->pr DRBG variant.
+Under the hood, free_cpumask_var() calls kfree(), which is safe to pass
+NULL, not requiring non-null verification.  So remove the verification
+to make compiler happy (happy compiler, happy life).
 
-Introduce the new DRBG_SEED_STATE_PARTIAL state to enum drbg_seed_state for
-representing the condition that a DRBG was being seeded when
-rng_is_initialized() had still been false. In particular, this new state
-implies that
-- the given DRBG instance has been fully seeded from the jitterentropy
-  source (if enabled)
-- and drbg_generate() is supposed to reseed from get_random_bytes()
-  *only* once rng_is_initialized() turns to true.
+[0] https://gcc.gnu.org/bugzilla/show_bug.cgi?id=102103
 
-Up to now, the __drbg_seed() helper used to set the given DRBG instance's
-->seeded state to constant DRBG_SEED_STATE_FULL. Introduce a new argument
-allowing for the specification of the to be written ->seeded value instead.
-Make the first of its two callers, drbg_seed(), determine the appropriate
-value based on rng_is_initialized(). The remaining caller,
-drbg_async_seed(), is known to get invoked only once rng_is_initialized()
-is true, hence let it pass constant DRBG_SEED_STATE_FULL for the new
-argument to __drbg_seed().
-
-There is no change in behaviour, except for that the pr_devel() in
-drbg_generate() would now report "unseeded" for ->pr DRBG instances which
-had last been seeded when rng_is_initialized() was still evaluating to
-false.
-
-Signed-off-by: Nicolai Stange <nstange@suse.de>
-Reviewed-by: Stephan Müller <smueller@chronox.de>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Murilo Opsfelder Araujo <muriloo@linux.ibm.com>
+Message-Id: <20220415023002.49805-1-muriloo@linux.ibm.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Acked-by: Christophe de Dinechin <dinechin@redhat.com>
+Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- crypto/drbg.c         |   12 ++++++++----
- include/crypto/drbg.h |    1 +
- 2 files changed, 9 insertions(+), 4 deletions(-)
+ drivers/virtio/virtio_pci_common.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/crypto/drbg.c
-+++ b/crypto/drbg.c
-@@ -1035,14 +1035,14 @@ static const struct drbg_state_ops drbg_
-  ******************************************************************/
+--- a/drivers/virtio/virtio_pci_common.c
++++ b/drivers/virtio/virtio_pci_common.c
+@@ -254,8 +254,7 @@ void vp_del_vqs(struct virtio_device *vd
  
- static inline int __drbg_seed(struct drbg_state *drbg, struct list_head *seed,
--			      int reseed)
-+			      int reseed, enum drbg_seed_state new_seed_state)
- {
- 	int ret = drbg->d_ops->update(drbg, seed, reseed);
- 
- 	if (ret)
- 		return ret;
- 
--	drbg->seeded = DRBG_SEED_STATE_FULL;
-+	drbg->seeded = new_seed_state;
- 	/* 10.1.1.2 / 10.1.1.3 step 5 */
- 	drbg->reseed_ctr = 1;
- 
-@@ -1092,7 +1092,7 @@ static void drbg_async_seed(struct work_
- 	 */
- 	drbg->seeded = DRBG_SEED_STATE_UNSEEDED;
- 
--	__drbg_seed(drbg, &seedlist, true);
-+	__drbg_seed(drbg, &seedlist, true, DRBG_SEED_STATE_FULL);
- 
- 	if (drbg->seeded == DRBG_SEED_STATE_FULL)
- 		drbg->reseed_threshold = drbg_max_requests(drbg);
-@@ -1122,6 +1122,7 @@ static int drbg_seed(struct drbg_state *
- 	unsigned int entropylen = drbg_sec_strength(drbg->core->flags);
- 	struct drbg_string data1;
- 	LIST_HEAD(seedlist);
-+	enum drbg_seed_state new_seed_state = DRBG_SEED_STATE_FULL;
- 
- 	/* 9.1 / 9.2 / 9.3.1 step 3 */
- 	if (pers && pers->len > (drbg_max_addtl(drbg))) {
-@@ -1149,6 +1150,9 @@ static int drbg_seed(struct drbg_state *
- 		BUG_ON((entropylen * 2) > sizeof(entropy));
- 
- 		/* Get seed from in-kernel /dev/urandom */
-+		if (!rng_is_initialized())
-+			new_seed_state = DRBG_SEED_STATE_PARTIAL;
-+
- 		ret = drbg_get_random_bytes(drbg, entropy, entropylen);
- 		if (ret)
- 			goto out;
-@@ -1205,7 +1209,7 @@ static int drbg_seed(struct drbg_state *
- 		memset(drbg->C, 0, drbg_statelen(drbg));
+ 	if (vp_dev->msix_affinity_masks) {
+ 		for (i = 0; i < vp_dev->msix_vectors; i++)
+-			if (vp_dev->msix_affinity_masks[i])
+-				free_cpumask_var(vp_dev->msix_affinity_masks[i]);
++			free_cpumask_var(vp_dev->msix_affinity_masks[i]);
  	}
  
--	ret = __drbg_seed(drbg, &seedlist, reseed);
-+	ret = __drbg_seed(drbg, &seedlist, reseed, new_seed_state);
- 
- out:
- 	memzero_explicit(entropy, entropylen * 2);
---- a/include/crypto/drbg.h
-+++ b/include/crypto/drbg.h
-@@ -107,6 +107,7 @@ struct drbg_test_data {
- 
- enum drbg_seed_state {
- 	DRBG_SEED_STATE_UNSEEDED,
-+	DRBG_SEED_STATE_PARTIAL, /* Seeded with !rng_is_initialized() */
- 	DRBG_SEED_STATE_FULL,
- };
- 
+ 	if (vp_dev->msix_enabled) {
 
 
