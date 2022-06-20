@@ -2,230 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 711B1C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 11:10:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FE8BCCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 11:10:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241376AbiFTLKT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 07:10:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59462 "EHLO
+        id S238827AbiFTLKo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 07:10:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241336AbiFTLKG (ORCPT
+        with ESMTP id S241440AbiFTLKQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 07:10:06 -0400
-Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [217.70.178.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 448F3627F;
-        Mon, 20 Jun 2022 04:10:05 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 09ACF240004;
-        Mon, 20 Jun 2022 11:10:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1655723404;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=k9q4LuLy0/onHh/ci9yQegB6/q4H1YmNvAg7bHdmKDU=;
-        b=PQlwSpEcfFTkvZq27bLKiq9XZDObb9X/TMkG3e75duJxr182QuiAgBYSExKl3vFPX/ueG2
-        Ohdji8Q+hxx2pMqaBQFhlx48iU+wZCgkfmqScwwGa/olpuNrR5sf4lrkC1SfWxZQGhdbIB
-        wcs072JFgkBPEEOfjHZmH3Ygf3Z8KfxUSl+IrMzVJ3FdrQCQTSM5rJmroNNsvjJGgpc4JQ
-        OR5OTEusx7JWt0MbBpHBSXQxlkTlda/bDfUvhOT2D4EyUef8ulu3F7fFpWAysdSlyPSOIL
-        DdttdaX2ftMvlyyQ5wleKiNerGxGj1rXwLPbmb4uZscFL/H+2yJQIfPy9Ch9eA==
-From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Jose Abreu <joabreu@synopsys.com>
-Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?q?Miqu=C3=A8l=20Raynal?= <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH net-next v8 06/16] dt-bindings: net: dsa: add bindings for Renesas RZ/N1 Advanced 5 port switch
-Date:   Mon, 20 Jun 2022 13:08:36 +0200
-Message-Id: <20220620110846.374787-7-clement.leger@bootlin.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620110846.374787-1-clement.leger@bootlin.com>
-References: <20220620110846.374787-1-clement.leger@bootlin.com>
+        Mon, 20 Jun 2022 07:10:16 -0400
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FE3C15822
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 04:10:10 -0700 (PDT)
+Received: by mail-il1-f199.google.com with SMTP id l3-20020a056e021aa300b002d9094fb397so2275250ilv.11
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 04:10:10 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=L0CA2MlhQtK4QPyPo58hRkJeBmVI86UDYe2VvyBU06Q=;
+        b=e8BDxA5LsYAv+x1PC2N9cOyK6sEPWCCDugTOhmzyk5FifnkPv/jKnH0W+GGN2tJ0I1
+         /H/dOm4hnNTkTeuAmC1J6w2W+1+VUqOniq7NIqhdW+FbHqq9MF7QjtcsIMMl75yFESCF
+         FC6w06Jl8qaeBpN3mBW5vutRps9sIdK1GOvC7KDkiVl9hkqShixXN6y9RZVfKKPWjXNS
+         NekpJ2v+sTj8ICAFplYMxyCJ0sEJ/V2yP3vbCMOupQxbqPjXheZd2XugNZ8U18F7zP2S
+         vCAeDi3RCq+oUPa9EpLDUzRQLHUbDbiPfVPOySt3cRZpwGhAa1do6T7RnzcSGiTGSpL4
+         hnjg==
+X-Gm-Message-State: AJIora9dySQYTsNEBUJR/AhfGYhaedhMygiXn5XlYsqiUyI2I9QSGpGp
+        KYHdQiKJpr1CfAPUI7oqBIHnHdzCR7C0T7SHRRzB3OScLU7t
+X-Google-Smtp-Source: AGRyM1t3Qv1qIqXMTM3FbSGIAXCdjUmf3YlJqyUoTT9et2ae0H6zlkw2h8JP7uEmoci29o7QjzdAQ0dHnL5UJYoU0JUkQlBS59am
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6e02:1a44:b0:2d3:ff91:12a3 with SMTP id
+ u4-20020a056e021a4400b002d3ff9112a3mr13480154ilv.82.1655723409647; Mon, 20
+ Jun 2022 04:10:09 -0700 (PDT)
+Date:   Mon, 20 Jun 2022 04:10:09 -0700
+In-Reply-To: <20220620104728.501-1-hdanton@sina.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000adb35405e1df2545@google.com>
+Subject: Re: [syzbot] possible deadlock in console_lock_spinning_enable (2)
+From:   syzbot <syzbot+3cc1054e15babd5f4cd2@syzkaller.appspotmail.com>
+To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add bindings for Renesas RZ/N1 Advanced 5 port switch. This switch is
-present on Renesas RZ/N1 SoC and was probably provided by MoreThanIP.
-This company does not exists anymore and has been bought by Synopsys.
-Since this IP can't be find anymore in the Synospsy portfolio, lets use
-Renesas as the vendor compatible for this IP.
+Hello,
 
-Signed-off-by: Clément Léger <clement.leger@bootlin.com>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
----
- .../bindings/net/dsa/renesas,rzn1-a5psw.yaml  | 134 ++++++++++++++++++
- 1 file changed, 134 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
+syzbot has tested the proposed patch but the reproducer is still triggering an issue:
+UBSAN: object-size-mismatch in wg_xmit
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml b/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
-new file mode 100644
-index 000000000000..103b1ef5af1b
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
-@@ -0,0 +1,134 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/dsa/renesas,rzn1-a5psw.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Renesas RZ/N1 Advanced 5 ports ethernet switch
-+
-+maintainers:
-+  - Clément Léger <clement.leger@bootlin.com>
-+
-+description: |
-+  The advanced 5 ports switch is present on the Renesas RZ/N1 SoC family and
-+  handles 4 ports + 1 CPU management port.
-+
-+allOf:
-+  - $ref: dsa.yaml#
-+
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+          - renesas,r9a06g032-a5psw
-+      - const: renesas,rzn1-a5psw
-+
-+  reg:
-+    maxItems: 1
-+
-+  power-domains:
-+    maxItems: 1
-+
-+  mdio:
-+    $ref: /schemas/net/mdio.yaml#
-+    unevaluatedProperties: false
-+
-+  clocks:
-+    items:
-+      - description: AHB clock used for the switch register interface
-+      - description: Switch system clock
-+
-+  clock-names:
-+    items:
-+      - const: hclk
-+      - const: clk
-+
-+  ethernet-ports:
-+    type: object
-+    properties:
-+      '#address-cells':
-+        const: 1
-+      '#size-cells':
-+        const: 0
-+
-+    patternProperties:
-+      "^(ethernet-)?port@[0-4]$":
-+        type: object
-+        description: Ethernet switch ports
-+
-+        properties:
-+          pcs-handle:
-+            description:
-+              phandle pointing to a PCS sub-node compatible with
-+              renesas,rzn1-miic.yaml#
-+            $ref: /schemas/types.yaml#/definitions/phandle
-+
-+unevaluatedProperties: false
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - clock-names
-+  - power-domains
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+    #include <dt-bindings/clock/r9a06g032-sysctrl.h>
-+
-+    switch@44050000 {
-+        compatible = "renesas,r9a06g032-a5psw", "renesas,rzn1-a5psw";
-+        reg = <0x44050000 0x10000>;
-+        clocks = <&sysctrl R9A06G032_HCLK_SWITCH>, <&sysctrl R9A06G032_CLK_SWITCH>;
-+        clock-names = "hclk", "clk";
-+        power-domains = <&sysctrl>;
-+
-+        dsa,member = <0 0>;
-+
-+        ethernet-ports {
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+
-+            port@0 {
-+                reg = <0>;
-+                label = "lan0";
-+                phy-handle = <&switch0phy3>;
-+                pcs-handle = <&mii_conv4>;
-+            };
-+
-+            port@1 {
-+                reg = <1>;
-+                label = "lan1";
-+                phy-handle = <&switch0phy1>;
-+                pcs-handle = <&mii_conv3>;
-+            };
-+
-+            port@4 {
-+                reg = <4>;
-+                ethernet = <&gmac2>;
-+                label = "cpu";
-+                fixed-link {
-+                  speed = <1000>;
-+                  full-duplex;
-+                };
-+            };
-+        };
-+
-+        mdio {
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+
-+            reset-gpios = <&gpio0a 2 GPIO_ACTIVE_HIGH>;
-+            reset-delay-us = <15>;
-+            clock-frequency = <2500000>;
-+
-+            switch0phy1: ethernet-phy@1{
-+                reg = <1>;
-+            };
-+
-+            switch0phy3: ethernet-phy@3{
-+                reg = <3>;
-+            };
-+        };
-+    };
--- 
-2.36.1
+IPv6: ADDRCONF(NETDEV_CHANGE): veth0_to_batadv: link becomes ready
+IPv6: ADDRCONF(NETDEV_CHANGE): macvtap0: link becomes ready
+IPv6: ADDRCONF(NETDEV_CHANGE): veth1_to_batadv: link becomes ready
+================================================================================
+UBSAN: object-size-mismatch in ./include/linux/skbuff.h:2085:28
+member access within address ffffc9000278f420 with insufficient space
+for an object of type 'struct sk_buff'
+CPU: 1 PID: 3626 Comm: kworker/1:6 Not tainted 5.16.0-rc4-syzkaller-00161-gc741e49150db-dirty #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: ipv6_addrconf addrconf_dad_work
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0x1e3/0x2cb lib/dump_stack.c:106
+ ubsan_epilogue lib/ubsan.c:151 [inline]
+ handle_object_size_mismatch lib/ubsan.c:232 [inline]
+ ubsan_type_mismatch_common+0x1e6/0x390 lib/ubsan.c:245
+ __ubsan_handle_type_mismatch_v1+0x4a/0x60 lib/ubsan.c:274
+ __skb_queue_before include/linux/skbuff.h:2085 [inline]
+ __skb_queue_tail include/linux/skbuff.h:2118 [inline]
+ wg_xmit+0x565/0xda0 drivers/net/wireguard/device.c:185
+ __netdev_start_xmit include/linux/netdevice.h:4994 [inline]
+ netdev_start_xmit+0x7b/0x140 include/linux/netdevice.h:5008
+ xmit_one net/core/dev.c:3590 [inline]
+ dev_hard_start_xmit+0x182/0x2e0 net/core/dev.c:3606
+ __dev_queue_xmit+0x158e/0x2540 net/core/dev.c:4229
+ neigh_output include/net/neighbour.h:527 [inline]
+ ip6_finish_output2+0xf45/0x1300 net/ipv6/ip6_output.c:126
+ dst_output include/net/dst.h:450 [inline]
+ NF_HOOK include/linux/netfilter.h:307 [inline]
+ ndisc_send_skb+0x8c3/0xdd0 net/ipv6/ndisc.c:508
+ addrconf_dad_completed+0x543/0xa70 net/ipv6/addrconf.c:4216
+ addrconf_dad_work+0xbd8/0x1450
+ process_one_work+0x4ea/0x920 kernel/workqueue.c:2298
+ worker_thread+0x686/0x9e0 kernel/workqueue.c:2445
+ kthread+0x35c/0x430 kernel/kthread.c:327
+ ret_from_fork+0x1f/0x30
+ </TASK>
+================================================================================
+
+
+Tested on:
+
+commit:         c741e491 Merge tag 'for-linus' of git://git.kernel.org..
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+console output: https://syzkaller.appspot.com/x/log.txt?x=11102217f00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=308b87e56290f642
+dashboard link: https://syzkaller.appspot.com/bug?extid=3cc1054e15babd5f4cd2
+compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=1117be40080000
 
