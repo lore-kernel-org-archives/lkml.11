@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 395FAC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:38:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A406C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:38:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347231AbiFTNiI (ORCPT
+        id S1347255AbiFTNiO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:38:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37064 "EHLO
+        Mon, 20 Jun 2022 09:38:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346925AbiFTNhF (ORCPT
+        with ESMTP id S1346926AbiFTNhF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 20 Jun 2022 09:37:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B8E22871B;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 305F428710;
         Mon, 20 Jun 2022 06:14:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C84B60FEF;
-        Mon, 20 Jun 2022 13:13:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 432A5C3411B;
-        Mon, 20 Jun 2022 13:13:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7C611B811A6;
+        Mon, 20 Jun 2022 13:13:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C815BC341C0;
+        Mon, 20 Jun 2022 13:13:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730814;
-        bh=UQJ6FlovxwQc5SOGJLgNN+YfADKK5QP7JctfBCH+YzA=;
+        s=korg; t=1655730824;
+        bh=qAp+1FtUo5m3pP8NSq/qXrqVcDNdNIOx8aS3upOITXY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sTOFSXqm9bMUOvBq99Z1GHxj7tA3QmxkDuQT+l/WXUNA6soHMCIumqc0B6nTTsXAy
-         1AI5t8QuJpsmL+EUth/7t6qrK4XTchY6nhLhVFSp9V315Eg1ena+BVj6Az1wGZ5ZU+
-         +/7/AefcionLI02WtsfthqrDDSxQmPQS+Mktuxew=
+        b=hfsgyIIguQT8eLMR/1eXs/w3MnbYeH2AGhhwjH2HbbszDWz2zuzxpaCeF6jDvj0c4
+         XNN1hkl0Kl+S0/AVgD7oc3PjD/4Ye/UlyyKvd6WToz5HpnN4mCNS3rjqPyN5ojYW7n
+         YzFfXTcZBD/F8WlVReL26HJGwAChSOVEVKcAQNPU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Herbert Xu <herbert@gondor.apana.org.au>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>
-Subject: [PATCH 5.4 062/240] random: continually use hwgenerator randomness
-Date:   Mon, 20 Jun 2022 14:49:23 +0200
-Message-Id: <20220620124740.133004351@linuxfoundation.org>
+        stable@vger.kernel.org, Richard Henderson <rth@twiddle.net>,
+        Mark Brown <broonie@kernel.org>, Theodore Tso <tytso@mit.edu>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.4 026/240] s390: Remove arch_has_random, arch_has_random_seed
+Date:   Mon, 20 Jun 2022 14:48:47 +0200
+Message-Id: <20220620124738.572654509@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -50,45 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dominik Brodowski <linux@dominikbrodowski.net>
+From: Richard Henderson <richard.henderson@linaro.org>
 
-commit c321e907aa4803d562d6e70ebed9444ad082f953 upstream.
+commit 5e054c820f59bbb9714d5767f5f476581c309ca8 upstream.
 
-The rngd kernel thread may sleep indefinitely if the entropy count is
-kept above random_write_wakeup_bits by other entropy sources. To make
-best use of multiple sources of randomness, mix entropy from hardware
-RNGs into the pool at least once within CRNG_RESEED_INTERVAL.
+These symbols are currently part of the generic archrandom.h
+interface, but are currently unused and can be removed.
 
-Cc: Herbert Xu <herbert@gondor.apana.org.au>
-Cc: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Richard Henderson <rth@twiddle.net>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20200110145422.49141-4-broonie@kernel.org
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ arch/s390/include/asm/archrandom.h |   12 ------------
+ 1 file changed, 12 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -2195,13 +2195,15 @@ void add_hwgenerator_randomness(const ch
- 			return;
- 	}
+--- a/arch/s390/include/asm/archrandom.h
++++ b/arch/s390/include/asm/archrandom.h
+@@ -21,18 +21,6 @@ extern atomic64_t s390_arch_random_count
  
--	/* Suspend writing if we're above the trickle threshold.
-+	/* Throttle writing if we're above the trickle threshold.
- 	 * We'll be woken up again once below random_write_wakeup_thresh,
--	 * or when the calling thread is about to terminate.
-+	 * when the calling thread is about to terminate, or once
-+	 * CRNG_RESEED_INTERVAL has lapsed.
- 	 */
--	wait_event_interruptible(random_write_wait,
-+	wait_event_interruptible_timeout(random_write_wait,
- 			!system_wq || kthread_should_stop() ||
--			POOL_ENTROPY_BITS() <= random_write_wakeup_bits);
-+			POOL_ENTROPY_BITS() <= random_write_wakeup_bits,
-+			CRNG_RESEED_INTERVAL);
- 	mix_pool_bytes(buffer, count);
- 	credit_entropy_bits(entropy);
- }
+ bool s390_arch_random_generate(u8 *buf, unsigned int nbytes);
+ 
+-static inline bool arch_has_random(void)
+-{
+-	return false;
+-}
+-
+-static inline bool arch_has_random_seed(void)
+-{
+-	if (static_branch_likely(&s390_arch_random_available))
+-		return true;
+-	return false;
+-}
+-
+ static inline bool arch_get_random_long(unsigned long *v)
+ {
+ 	return false;
 
 
