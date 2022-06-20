@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F282EC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:45:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DBB2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:46:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348616AbiFTNp4 (ORCPT
+        id S1348659AbiFTNp7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:45:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56020 "EHLO
+        Mon, 20 Jun 2022 09:45:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349319AbiFTNoT (ORCPT
+        with ESMTP id S1349572AbiFTNoc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:44:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0586C2CC9C;
-        Mon, 20 Jun 2022 06:16:16 -0700 (PDT)
+        Mon, 20 Jun 2022 09:44:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D9092CDD2;
+        Mon, 20 Jun 2022 06:16:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BF3A660FEF;
-        Mon, 20 Jun 2022 13:15:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD77AC3411B;
-        Mon, 20 Jun 2022 13:15:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 345E4B811E1;
+        Mon, 20 Jun 2022 13:16:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F479C3411B;
+        Mon, 20 Jun 2022 13:16:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730956;
-        bh=N/NIA5jKRGapFcBKcTH4xUISDWf3g0Dhrm0AZVeEJeU=;
+        s=korg; t=1655730982;
+        bh=B1KcBXihG84hUbxR5ankUmNavS3EMHs70nPIAU0OEnI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E7ndhfkzF2hFrMtf862CQtgAvyvms9kEDuR7wp+X+XEOtM0F//P2ih9wklTxpA82j
-         QLCQGbHQP70KU03eWGELiegYTYWXIouKr4am80wfP2492gSIAVdwUw8UA5KmfQfD3u
-         ioSPiggmXOOoJlQXEJsN3jjYoxpptU5IhTUQQB+g=
+        b=GCyD76Z6n/CNUBmBEtYHQ/uWIP+eQTb2kGE5AhlZHwHNI/nq13N/NL7+V0/nffIl7
+         slX9BlrzpITInIn4yRxKx6zzdLsH3riwqXWjnIqBZTt6fQ9aecVZ2uiJ38SBA0/agT
+         Er+pc3Eq+tQhVnUipvyZR1JsdKXhBkoBS/n75XdY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
         Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 106/240] random: round-robin registers as ulong, not u32
-Date:   Mon, 20 Jun 2022 14:50:07 +0200
-Message-Id: <20220620124742.086819101@linuxfoundation.org>
+Subject: [PATCH 5.4 117/240] random: check for signal and try earlier when generating entropy
+Date:   Mon, 20 Jun 2022 14:50:18 +0200
+Message-Id: <20220620124742.404159356@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -52,44 +52,56 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit da3951ebdcd1cb1d5c750e08cd05aee7b0c04d9a upstream.
+commit 3e504d2026eb6c8762cd6040ae57db166516824a upstream.
 
-When the interrupt handler does not have a valid cycle counter, it calls
-get_reg() to read a register from the irq stack, in round-robin.
-Currently it does this assuming that registers are 32-bit. This is
-_probably_ the case, and probably all platforms without cycle counters
-are in fact 32-bit platforms. But maybe not, and either way, it's not
-quite correct. This commit fixes that to deal with `unsigned long`
-rather than `u32`.
+Rather than waiting a full second in an interruptable waiter before
+trying to generate entropy, try to generate entropy first and wait
+second. While waiting one second might give an extra second for getting
+entropy from elsewhere, we're already pretty late in the init process
+here, and whatever else is generating entropy will still continue to
+contribute. This has implications on signal handling: we call
+try_to_generate_entropy() from wait_for_random_bytes(), and
+wait_for_random_bytes() always uses wait_event_interruptible_timeout()
+when waiting, since it's called by userspace code in restartable
+contexts, where signals can pend. Since try_to_generate_entropy() now
+runs first, if a signal is pending, it's necessary for
+try_to_generate_entropy() to check for signals, since it won't hit the
+wait until after try_to_generate_entropy() has returned. And even before
+this change, when entering a busy loop in try_to_generate_entropy(), we
+should have been checking to see if any signals are pending, so that a
+process doesn't get stuck in that loop longer than expected.
 
 Cc: Theodore Ts'o <tytso@mit.edu>
 Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/char/random.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -1256,15 +1256,15 @@ int random_online_cpu(unsigned int cpu)
- }
- #endif
- 
--static u32 get_reg(struct fast_pool *f, struct pt_regs *regs)
-+static unsigned long get_reg(struct fast_pool *f, struct pt_regs *regs)
+@@ -127,10 +127,11 @@ int wait_for_random_bytes(void)
  {
--	u32 *ptr = (u32 *)regs;
-+	unsigned long *ptr = (unsigned long *)regs;
- 	unsigned int idx;
+ 	while (!crng_ready()) {
+ 		int ret;
++
++		try_to_generate_entropy();
+ 		ret = wait_event_interruptible_timeout(crng_init_wait, crng_ready(), HZ);
+ 		if (ret)
+ 			return ret > 0 ? 0 : ret;
+-		try_to_generate_entropy();
+ 	}
+ 	return 0;
+ }
+@@ -1366,7 +1367,7 @@ static void try_to_generate_entropy(void
+ 		return;
  
- 	if (regs == NULL)
- 		return 0;
- 	idx = READ_ONCE(f->reg_idx);
--	if (idx >= sizeof(struct pt_regs) / sizeof(u32))
-+	if (idx >= sizeof(struct pt_regs) / sizeof(unsigned long))
- 		idx = 0;
- 	ptr += idx++;
- 	WRITE_ONCE(f->reg_idx, idx);
+ 	timer_setup_on_stack(&stack.timer, entropy_timer, 0);
+-	while (!crng_ready()) {
++	while (!crng_ready() && !signal_pending(current)) {
+ 		if (!timer_pending(&stack.timer))
+ 			mod_timer(&stack.timer, jiffies + 1);
+ 		mix_pool_bytes(&stack.cycles, sizeof(stack.cycles));
 
 
