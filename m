@@ -2,146 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54888C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:18:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97B4AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:20:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344139AbiFTNSL (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:18:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35852 "EHLO
+        id S245423AbiFTNSU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:18:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344470AbiFTNNv (ORCPT
+        with ESMTP id S1344556AbiFTNNy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:13:51 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 012B51EEFD
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 06:06:17 -0700 (PDT)
+        Mon, 20 Jun 2022 09:13:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 861F91F2EF;
+        Mon, 20 Jun 2022 06:06:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 29621CE1389
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 13:04:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 884D2C341C5;
-        Mon, 20 Jun 2022 13:04:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655730284;
-        bh=LIh5P9rurCKr+WxNDqQn/Fla3DTQIh1w7F2VfHAcU28=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5F199B811BC;
+        Mon, 20 Jun 2022 13:04:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A394FC3411B;
+        Mon, 20 Jun 2022 13:04:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655730242;
+        bh=SjXAoznO5JPsYpcWKUijlKX7Px6pqsQqLLa1A/Kne20=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N93JXV3ImzapM0sI5AV3d7QUg64PHpBXdnAWKnvz7LBnVJbRCbVDi31wMjX/wvnAY
-         Ag/JBPg66aEPuUrR9387uDO5HKPappI8zgPvZ1sStFv8UAWxPW2tNEFa7LngTw6M+x
-         1Vu01PQhV2CVsxE2dHBpqkJZZprBajNZUQp0olMcNc+sD5VaVSiOMtj8dcxFHL/dHA
-         yiSnO1p9Y41/RWJVBph+febOG0o0QonXNIhJXInZLwxVvA44LP8Z33YPdgLO7eruRf
-         nd7EMCczFBPGEbTBti+3AWiqaWSDaexjpnszj70stNtbDagqJwCbUg4lZ8tuNyJQAV
-         kIpY15nqbABXA==
-From:   Oded Gabbay <ogabbay@kernel.org>
+        b=z9Vx5NFJHEiZFpf01kyn32D+cBYebEDOy9NqDWJAZxoIFuPHwPaS/q+8kywfOueGz
+         EmjNHy2ARWeDcR1bVjTOx8/8R82mf3AydpX5DZZvpSxuOoCCkE1DTYdyk20JYOEJrC
+         pqZz9+RN437wF2o91gQhlYSR9TcFelgks2SVRX6k=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Tal Cohen <talcohen@habana.ai>
-Subject: [PATCH 05/17] habanalabs: send an event notification when CS timeout occurs
-Date:   Mon, 20 Jun 2022 16:04:20 +0300
-Message-Id: <20220620130432.1180451-5-ogabbay@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220620130432.1180451-1-ogabbay@kernel.org>
-References: <20220620130432.1180451-1-ogabbay@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Murilo Opsfelder Araujo <muriloo@linux.ibm.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Christophe de Dinechin <dinechin@redhat.com>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: [PATCH 5.10 77/84] virtio-pci: Remove wrong address verification in vp_del_vqs()
+Date:   Mon, 20 Jun 2022 14:51:40 +0200
+Message-Id: <20220620124723.166737056@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220620124720.882450983@linuxfoundation.org>
+References: <20220620124720.882450983@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tal Cohen <talcohen@habana.ai>
+From: Murilo Opsfelder Araujo <muriloo@linux.ibm.com>
 
-The Driver needs to inform the User process whenever one of its
-CS is timed out. The Driver shall recognize the CS timeout and shall
-send an eventfd notification, towards user space, whenever a timeout
-is expired on a CS.
+commit 7e415282b41bf0d15c6e0fe268f822d9b083f2f7 upstream.
 
-Signed-off-by: Tal Cohen <talcohen@habana.ai>
-Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
-Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
+GCC 12 enhanced -Waddress when comparing array address to null [0],
+which warns:
+
+    drivers/virtio/virtio_pci_common.c: In function ‘vp_del_vqs’:
+    drivers/virtio/virtio_pci_common.c:257:29: warning: the comparison will always evaluate as ‘true’ for the pointer operand in ‘vp_dev->msix_affinity_masks + (sizetype)((long unsigned int)i * 256)’ must not be NULL [-Waddress]
+      257 |                         if (vp_dev->msix_affinity_masks[i])
+          |                             ^~~~~~
+
+In fact, the verification is comparing the result of a pointer
+arithmetic, the address "msix_affinity_masks + i", which will always
+evaluate to true.
+
+Under the hood, free_cpumask_var() calls kfree(), which is safe to pass
+NULL, not requiring non-null verification.  So remove the verification
+to make compiler happy (happy compiler, happy life).
+
+[0] https://gcc.gnu.org/bugzilla/show_bug.cgi?id=102103
+
+Signed-off-by: Murilo Opsfelder Araujo <muriloo@linux.ibm.com>
+Message-Id: <20220415023002.49805-1-muriloo@linux.ibm.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Acked-by: Christophe de Dinechin <dinechin@redhat.com>
+Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../habanalabs/common/command_submission.c    | 26 ++++++++++++-------
- include/uapi/misc/habanalabs.h                |  2 ++
- 2 files changed, 19 insertions(+), 9 deletions(-)
+ drivers/virtio/virtio_pci_common.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/misc/habanalabs/common/command_submission.c b/drivers/misc/habanalabs/common/command_submission.c
-index 47b49cbf67ab..cbb7c29966ff 100644
---- a/drivers/misc/habanalabs/common/command_submission.c
-+++ b/drivers/misc/habanalabs/common/command_submission.c
-@@ -797,10 +797,11 @@ static void cs_do_release(struct kref *ref)
- static void cs_timedout(struct work_struct *work)
- {
- 	struct hl_device *hdev;
-+	u64 event_mask;
- 	int rc;
- 	struct hl_cs *cs = container_of(work, struct hl_cs,
- 						 work_tdr.work);
--	bool skip_reset_on_timeout = cs->skip_reset_on_timeout;
-+	bool skip_reset_on_timeout = cs->skip_reset_on_timeout, device_reset = false;
+--- a/drivers/virtio/virtio_pci_common.c
++++ b/drivers/virtio/virtio_pci_common.c
+@@ -254,8 +254,7 @@ void vp_del_vqs(struct virtio_device *vd
  
- 	rc = cs_get_unless_zero(cs);
- 	if (!rc)
-@@ -811,9 +812,15 @@ static void cs_timedout(struct work_struct *work)
- 		return;
+ 	if (vp_dev->msix_affinity_masks) {
+ 		for (i = 0; i < vp_dev->msix_vectors; i++)
+-			if (vp_dev->msix_affinity_masks[i])
+-				free_cpumask_var(vp_dev->msix_affinity_masks[i]);
++			free_cpumask_var(vp_dev->msix_affinity_masks[i]);
  	}
  
--	/* Mark the CS is timed out so we won't try to cancel its TDR */
--	if (likely(!skip_reset_on_timeout))
-+	if (likely(!skip_reset_on_timeout)) {
-+		if (hdev->reset_on_lockup)
-+			device_reset = true;
-+		else
-+			hdev->reset_info.needs_reset = true;
-+
-+		/* Mark the CS is timed out so we won't try to cancel its TDR */
- 		cs->timedout = true;
-+	}
- 
- 	hdev = cs->ctx->hdev;
- 
-@@ -822,6 +829,11 @@ static void cs_timedout(struct work_struct *work)
- 	if (rc) {
- 		hdev->last_error.cs_timeout.timestamp = ktime_get();
- 		hdev->last_error.cs_timeout.seq = cs->sequence;
-+
-+		event_mask = device_reset ? (HL_NOTIFIER_EVENT_CS_TIMEOUT |
-+				HL_NOTIFIER_EVENT_DEVICE_RESET) : HL_NOTIFIER_EVENT_CS_TIMEOUT;
-+
-+		hl_notifier_event_send_all(hdev, event_mask);
- 	}
- 
- 	switch (cs->type) {
-@@ -856,12 +868,8 @@ static void cs_timedout(struct work_struct *work)
- 
- 	cs_put(cs);
- 
--	if (likely(!skip_reset_on_timeout)) {
--		if (hdev->reset_on_lockup)
--			hl_device_reset(hdev, HL_DRV_RESET_TDR);
--		else
--			hdev->reset_info.needs_reset = true;
--	}
-+	if (device_reset)
-+		hl_device_reset(hdev, HL_DRV_RESET_TDR);
- }
- 
- static int allocate_cs(struct hl_device *hdev, struct hl_ctx *ctx,
-diff --git a/include/uapi/misc/habanalabs.h b/include/uapi/misc/habanalabs.h
-index 5f9a6097f5f3..18f86d259421 100644
---- a/include/uapi/misc/habanalabs.h
-+++ b/include/uapi/misc/habanalabs.h
-@@ -1435,10 +1435,12 @@ struct hl_debug_args {
-  * HL_NOTIFIER_EVENT_TPC_ASSERT       - Indicates TPC assert event
-  * HL_NOTIFIER_EVENT_UNDEFINED_OPCODE - Indicates undefined operation code
-  * HL_NOTIFIER_EVENT_DEVICE_RESET     - Indicates device requires a reset
-+ * HL_NOTIFIER_EVENT_CS_TIMEOUT       - Indicates CS timeout error
-  */
- #define HL_NOTIFIER_EVENT_TPC_ASSERT		(1ULL << 0)
- #define HL_NOTIFIER_EVENT_UNDEFINED_OPCODE	(1ULL << 1)
- #define HL_NOTIFIER_EVENT_DEVICE_RESET		(1ULL << 2)
-+#define HL_NOTIFIER_EVENT_CS_TIMEOUT            (1ULL << 3)
- 
- /*
-  * Various information operations such as:
--- 
-2.25.1
+ 	if (vp_dev->msix_enabled) {
+
 
