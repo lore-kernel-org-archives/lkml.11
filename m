@@ -2,363 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3806EC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 15:47:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1DA1C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 15:48:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242267AbiFTPrR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 11:47:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46484 "EHLO
+        id S239100AbiFTPsq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 11:48:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233412AbiFTPrM (ORCPT
+        with ESMTP id S244329AbiFTPsk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 11:47:12 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF94D1AF06
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 08:47:09 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id z11so9539861edp.9
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 08:47:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mihalicyn.com; s=mihalicyn;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mw9X237dDhEA8SQhqrDdsGk0AgCqi+ZByddZS6/UV+4=;
-        b=eRU88IF/V8eG8wnibAb/BC04X+BsGb2lgYclIT+Z8D4ZCJZhKBS81EgW05qoLhICUi
-         nqbRGYrFYyXPmhQGO//FiA0c+xRZ5m+/++eX0eKWMoZurJ/Jgts81ofRY14KmirSAb/0
-         XQNoXiL9yphJwKesG1xnnKgsK2Z7yqA+3ieic=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mw9X237dDhEA8SQhqrDdsGk0AgCqi+ZByddZS6/UV+4=;
-        b=BmN7GvRsLM/1C8oO7aLxdsRAZ59Ru89kU1Mldbb+ZBIMjxSCzkOWVzezIly9NCp76h
-         LPF6rKK8ygdlholYGmSJ48KqWcQ/l8afNL2NpblsAQsHr+Vxw91cU+zRpWjST9Nf6HPs
-         +RA6A/vg4Ll+EXKqhIoiVbU8bvK5SSoFPzAOiqlgJYkeGcPeoK2OnjLIHn5uE+YQBabR
-         nTKeLFh7+NZNQ5UmvGL8bQ5EvYLv7/gmnpEpK2qXkkf4AT2O9KrsX1vXFQ1ebFdjZKK8
-         ToXFXA9/rc9FuW1KUaD3C0yTRIzRmazPvPbeLK6d5wqyUJlkkphBTCsAKvg+petMenv4
-         TIgg==
-X-Gm-Message-State: AJIora8+7vNIiFnM/GQzaSt1HPKAuwVG73IkqnISodc3VaXc4k555eGC
-        c6sA4MyQI9vd1yIE0lFJPZFhuXuvu7SdGe9Q85AOyw==
-X-Google-Smtp-Source: AGRyM1vUkL6VmK+oe0JzW5fCHNjn8YiMYi74M3TWRyN0ilKmP4YxNnrcgUtdaaLlbWwg3bS+/58zMC7mBailux8u6LE=
-X-Received: by 2002:a05:6402:170b:b0:435:5d22:7cd7 with SMTP id
- y11-20020a056402170b00b004355d227cd7mr22741876edu.383.1655740028462; Mon, 20
- Jun 2022 08:47:08 -0700 (PDT)
+        Mon, 20 Jun 2022 11:48:40 -0400
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D6A1FD3A;
+        Mon, 20 Jun 2022 08:48:39 -0700 (PDT)
+Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25KEiC4u002735;
+        Mon, 20 Jun 2022 17:48:14 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=selector1;
+ bh=zPr/nDv+NqgCll4/QE6301YdTarimLKEYjm6hZt54cU=;
+ b=3QrMbbUQhJfejLee/ZUMrRps4gsh9KU/5BNqES9+Y1FM8bHXgXX3LfDRplf3l4mjVHon
+ 1DNovKqTAHNFtTJ6gMbtb/ncA5PoiDf4gIWlecpfU63y/qjmQeXt3eXHxNTfSxKG0QsV
+ A4e94mhm5/JFdYG6AuPhPUj1A8acMdkMpMC7b/aqhU8lmDwfqPTuLoenH+3eNR/g+kNI
+ w9qpwgTzjBZSu6IU6L2oJKxuFX0szRfGgrlDFuJgAioXHhGbLh11juTXP+Vj+DCz9JlK
+ u4o6kXi3xeZGTVs3WnqSI4+J+X9VKwGcJApVv1rZ6L2vhD05NrLhdsZZmp+Yc4RdZ8n+ ng== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3gs71tmchc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 20 Jun 2022 17:48:14 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 96F42100038;
+        Mon, 20 Jun 2022 17:48:13 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 90F7722ECEF;
+        Mon, 20 Jun 2022 17:48:13 +0200 (CEST)
+Received: from localhost (10.75.127.119) by SHFDAG1NODE1.st.com (10.75.129.69)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Mon, 20 Jun
+ 2022 17:48:13 +0200
+From:   Olivier Moysan <olivier.moysan@foss.st.com>
+To:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Olivier Moysan <olivier.moysan@foss.st.com>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Wan Jiabing <wanjiabing@vivo.com>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>
+Subject: [PATCH 2/2] iio: adc: stm32-adc: disable adc before calibration
+Date:   Mon, 20 Jun 2022 17:47:38 +0200
+Message-ID: <20220620154738.801706-3-olivier.moysan@foss.st.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220620154738.801706-1-olivier.moysan@foss.st.com>
+References: <20220620154738.801706-1-olivier.moysan@foss.st.com>
 MIME-Version: 1.0
-References: <20220618182515.95831-1-minhquangbui99@gmail.com> <258546133.12151.1655739550814.JavaMail.zimbra@efficios.com>
-In-Reply-To: <258546133.12151.1655739550814.JavaMail.zimbra@efficios.com>
-From:   Alexander Mikhalitsyn <alexander@mihalicyn.com>
-Date:   Mon, 20 Jun 2022 18:46:57 +0300
-Message-ID: <CAJqdLroJ6eTD02dAi8Nnb63Sog5x9Pwt9CDwXaUeBQe1Sn2EBg@mail.gmail.com>
-Subject: Re: [PATCH] rseq: x86: Fix rseq_cs get cleared when returning from
- signal handler
-To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Cc:     Bui Quang Minh <minhquangbui99@gmail.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        x86 <x86@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Valentin Schneider <vschneid@redhat.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Kees Cook <keescook@chromium.org>,
-        "Chang S. Bae" <chang.seok.bae@intel.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Brian Gerst <brgerst@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.119]
+X-ClientProxiedBy: GPXDAG2NODE5.st.com (10.75.127.69) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-20_05,2022-06-17_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mathieu!
+The calibration is launched from prepare callback.
+The ADC state when entering this function may be unknown as the
+ADC may have been left enabled by boot stage.
+One prerequisite for ADC calibration is to have ADC in disabled state.
+If the calibration is started when ADC is still enabled, the behavior is
+unpredictable, and the calibration may fail with a timeout error.
 
-It comes from CRIU ;)
+Force ADC to disabled state in stm32h7_adc_selfcalib().
+ADC enabling is ensured by stm32h7_adc_enable() call,
+before leaving prepare callback.
 
-We have seen periodic failures of our ZDTM test (rseq02):
-zdtm: add rseq02 transition test with NO_RESTART CS flag
-https://github.com/checkpoint-restore/criu/commit/db9ec13616625f98db95b00438a370f8a660bfee
-zdtm: temporary disable rseq02 test
-https://github.com/checkpoint-restore/criu/commit/ead227994b4918422496e06d3f3802188c091a7a
+Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
+---
+ drivers/iio/adc/stm32-adc.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Bui Quang Minh wanted to investigate this problem and come up with
-this kernel patch.
+diff --git a/drivers/iio/adc/stm32-adc.c b/drivers/iio/adc/stm32-adc.c
+index 80e333f65ddd..3985fe972892 100644
+--- a/drivers/iio/adc/stm32-adc.c
++++ b/drivers/iio/adc/stm32-adc.c
+@@ -1019,6 +1019,9 @@ static int stm32h7_adc_selfcalib(struct iio_dev *indio_dev)
+ 	if (adc->cal.calibrated)
+ 		return true;
+ 
++	/* ADC must be disabled for calibration */
++	stm32h7_adc_disable(indio_dev);
++
+ 	/*
+ 	 * Select calibration mode:
+ 	 * - Offset calibration for single ended inputs
+-- 
+2.25.1
 
-Regards,
-Alex
-
-On Mon, Jun 20, 2022 at 6:39 PM Mathieu Desnoyers
-<mathieu.desnoyers@efficios.com> wrote:
->
-> ----- On Jun 18, 2022, at 2:25 PM, Bui Quang Minh minhquangbui99@gmail.com wrote:
->
-> > rseq.rseq_cs is not expected to be cleared when we are still in critical
-> > section. When using rseq with RSEQ_CS_FLAG_NO_RESTART_ON_SIGNAL, if the
-> > signal is delivered, we don't restart to the abort ip but go to signal
-> > handler then return and continue the critical section execution. While in
-> > signal handler, if a preemption, migration or another signal is delivered,
-> > we will fall into rseq_ip_fixup again. At that moment, the IP is in signal
-> > handler not in critical section so the rseq.rseq_cs is cleared. Later, when
-> > we return back to critical section from signal handlers, we get the
-> > rseq.rseq_cs incorrectly cleared.
-> >
-> > Another scenario is when a preemption or migration happens, then a signal
-> > is delivered. When preparing to return to user mode, in
-> > exit_to_user_mode_loop, we first handle the signal and set return IP to
-> > signal handler. After that, rseq_handle_notify_resume is called to handle
-> > the preemption/migration, sees the IP is the address of signal handler not
-> > in critical section and clear rseq.rseq_cs.
-> >
-> > To handle this case, a RSEQ_CS_FLAG_IN_SIGNAL_HANDLER is added. This flag
-> > is set in rseq.flags (it is easier to read and update rseq.flags than
-> > rseq.rseq_cs.flags) by the kernel when rseq does not restart on signal.
-> > When this flag is set, we don't clear rseq.rseq_cs when the IP is outside
-> > of critical section. The flag is unset in sigreturn path when the last
-> > signal handler returns back to the critical section.
->
-> Hi,
->
-> You raise valid points.
->
-> May I first ask what is your use-case for RSEQ_CS_FLAG_NO_RESTART_ON_SIGNAL ?
->
-> Considering the added per-arch complexity, I think we should consider whether
-> it's worthwhile to keep supporting this flag, and whether there are actual users
-> of it out there, or if we should handle this by deprecating this flag.
->
-> Thanks,
->
-> Mathieu
->
-> >
-> > Reviewed-by: Alexander Mikhalitsyn <alexander@mihalicyn.com>
-> > Signed-off-by: Bui Quang Minh <minhquangbui99@gmail.com>
-> > ---
-> > arch/x86/kernel/signal.c  |  7 ++++
-> > include/linux/sched.h     |  5 +++
-> > include/uapi/linux/rseq.h |  8 +++-
-> > kernel/rseq.c             | 80 ++++++++++++++++++++++++++++++++++++---
-> > 4 files changed, 94 insertions(+), 6 deletions(-)
-> >
-> > diff --git a/arch/x86/kernel/signal.c b/arch/x86/kernel/signal.c
-> > index 9c7265b524c7..7aadf69d6849 100644
-> > --- a/arch/x86/kernel/signal.c
-> > +++ b/arch/x86/kernel/signal.c
-> > @@ -646,6 +646,10 @@ SYSCALL_DEFINE0(sigreturn)
-> >        */
-> >       if (!restore_sigcontext(regs, &frame->sc, 0))
-> >               goto badframe;
-> > +
-> > +     if (rseq_sigreturn(regs))
-> > +             goto badframe;
-> > +
-> >       return regs->ax;
-> >
-> > badframe:
-> > @@ -678,6 +682,9 @@ SYSCALL_DEFINE0(rt_sigreturn)
-> >       if (restore_altstack(&frame->uc.uc_stack))
-> >               goto badframe;
-> >
-> > +     if (rseq_sigreturn(regs))
-> > +             goto badframe;
-> > +
-> >       return regs->ax;
-> >
-> > badframe:
-> > diff --git a/include/linux/sched.h b/include/linux/sched.h
-> > index c46f3a63b758..656b03232d0a 100644
-> > --- a/include/linux/sched.h
-> > +++ b/include/linux/sched.h
-> > @@ -2340,6 +2340,8 @@ static inline void rseq_execve(struct task_struct *t)
-> >       t->rseq_event_mask = 0;
-> > }
-> >
-> > +int rseq_sigreturn(struct pt_regs *regs);
-> > +
-> > #else
-> >
-> > static inline void rseq_set_notify_resume(struct task_struct *t)
-> > @@ -2365,6 +2367,9 @@ static inline void rseq_fork(struct task_struct *t,
-> > unsigned long clone_flags)
-> > static inline void rseq_execve(struct task_struct *t)
-> > {
-> > }
-> > +static inline int rseq_sigreturn(struct pt_regs *regs)
-> > +{
-> > +}
-> >
-> > #endif
-> >
-> > diff --git a/include/uapi/linux/rseq.h b/include/uapi/linux/rseq.h
-> > index 77ee207623a9..f946af8e21e6 100644
-> > --- a/include/uapi/linux/rseq.h
-> > +++ b/include/uapi/linux/rseq.h
-> > @@ -26,6 +26,7 @@ enum rseq_cs_flags_bit {
-> >       RSEQ_CS_FLAG_NO_RESTART_ON_PREEMPT_BIT  = 0,
-> >       RSEQ_CS_FLAG_NO_RESTART_ON_SIGNAL_BIT   = 1,
-> >       RSEQ_CS_FLAG_NO_RESTART_ON_MIGRATE_BIT  = 2,
-> > +     RSEQ_CS_FLAG_IN_SIGNAL_HANDLER_BIT      = 3,
-> > };
-> >
-> > enum rseq_cs_flags {
-> > @@ -35,6 +36,8 @@ enum rseq_cs_flags {
-> >               (1U << RSEQ_CS_FLAG_NO_RESTART_ON_SIGNAL_BIT),
-> >       RSEQ_CS_FLAG_NO_RESTART_ON_MIGRATE      =
-> >               (1U << RSEQ_CS_FLAG_NO_RESTART_ON_MIGRATE_BIT),
-> > +     RSEQ_CS_FLAG_IN_SIGNAL_HANDLER          =
-> > +             (1U << RSEQ_CS_FLAG_IN_SIGNAL_HANDLER_BIT),
-> > };
-> >
-> > /*
-> > @@ -115,7 +118,7 @@ struct rseq {
-> >        * Restartable sequences flags field.
-> >        *
-> >        * This field should only be updated by the thread which
-> > -      * registered this data structure. Read by the kernel.
-> > +      * registered this data structure. Read and set by the kernel.
-> >        * Mainly used for single-stepping through rseq critical sections
-> >        * with debuggers.
-> >        *
-> > @@ -128,6 +131,9 @@ struct rseq {
-> >        * - RSEQ_CS_FLAG_NO_RESTART_ON_MIGRATE
-> >        *     Inhibit instruction sequence block restart on migration for
-> >        *     this thread.
-> > +      * - RSEQ_CS_FLAG_IN_SIGNAL_HANDLER
-> > +      *     Mark that this thread is in critical section but currently in
-> > +      *     signal handlers, so don't clear the rseq_cs field.
-> >        */
-> >       __u32 flags;
-> > } __attribute__((aligned(4 * sizeof(__u64))));
-> > diff --git a/kernel/rseq.c b/kernel/rseq.c
-> > index 97ac20b4f738..a4aca612724b 100644
-> > --- a/kernel/rseq.c
-> > +++ b/kernel/rseq.c
-> > @@ -172,14 +172,16 @@ static int rseq_get_rseq_cs(struct task_struct *t, struct
-> > rseq_cs *rseq_cs)
-> >
-> > static int rseq_need_restart(struct task_struct *t, u32 cs_flags)
-> > {
-> > -     u32 flags, event_mask;
-> > +     u32 old_flags, flags, event_mask;
-> >       int ret;
-> >
-> >       /* Get thread flags. */
-> > -     ret = get_user(flags, &t->rseq->flags);
-> > +     ret = get_user(old_flags, &t->rseq->flags);
-> >       if (ret)
-> >               return ret;
-> >
-> > +     flags = old_flags;
-> > +
-> >       /* Take critical section flags into account. */
-> >       flags |= cs_flags;
-> >
-> > @@ -203,6 +205,21 @@ static int rseq_need_restart(struct task_struct *t, u32
-> > cs_flags)
-> >       t->rseq_event_mask = 0;
-> >       preempt_enable();
-> >
-> > +     /*
-> > +      * If we don't restart on signal event, set the
-> > +      * RSEQ_CS_FLAG_IN_SIGNAL_HANDLER flag so that later rseq_ip_fixup
-> > +      * doesn't clear rseq_cs pointer as the IP is outside of critical
-> > +      * section.
-> > +      */
-> > +     if ((flags & RSEQ_CS_FLAG_NO_RESTART_ON_SIGNAL) &&
-> > +         (event_mask & RSEQ_EVENT_SIGNAL) &&
-> > +         !(old_flags & RSEQ_CS_FLAG_IN_SIGNAL_HANDLER)) {
-> > +             old_flags |= RSEQ_CS_FLAG_IN_SIGNAL_HANDLER;
-> > +             ret = put_user(old_flags, &t->rseq->flags);
-> > +             if (ret)
-> > +                     return ret;
-> > +     }
-> > +
-> >       return !!(event_mask & ~flags);
-> > }
-> >
-> > @@ -248,10 +265,23 @@ static int rseq_ip_fixup(struct pt_regs *regs)
-> >       /*
-> >        * Handle potentially not being within a critical section.
-> >        * If not nested over a rseq critical section, restart is useless.
-> > -      * Clear the rseq_cs pointer and return.
-> > +      * In case the RSEQ_CS_FLAG_IN_SIGNAL_HANDLER is set, we are in
-> > +      * signal handlers and later return to critical section so don't
-> > +      * clear rseq_cs pointer.
-> > +      * Otherwise, clear the rseq_cs pointer and return.
-> >        */
-> > -     if (!in_rseq_cs(ip, &rseq_cs))
-> > -             return clear_rseq_cs(t);
-> > +     if (!in_rseq_cs(ip, &rseq_cs)) {
-> > +             u32 flags;
-> > +
-> > +             ret = get_user(flags, &t->rseq->flags);
-> > +             if (ret)
-> > +                     return ret;
-> > +             if (flags & RSEQ_CS_FLAG_IN_SIGNAL_HANDLER)
-> > +                     return 0;
-> > +             else
-> > +                     return clear_rseq_cs(t);
-> > +     }
-> > +
-> >       ret = rseq_need_restart(t, rseq_cs.flags);
-> >       if (ret <= 0)
-> >               return ret;
-> > @@ -322,6 +352,46 @@ void rseq_syscall(struct pt_regs *regs)
-> >
-> > #endif
-> >
-> > +#ifdef CONFIG_RSEQ
-> > +
-> > +int rseq_sigreturn(struct pt_regs *regs)
-> > +{
-> > +     int ret;
-> > +     struct rseq_cs rseq_cs;
-> > +     struct task_struct *t = current;
-> > +
-> > +     if (t->rseq) {
-> > +             u32 flags;
-> > +
-> > +             ret = get_user(flags, &t->rseq->flags);
-> > +             if (ret)
-> > +                     return ret;
-> > +
-> > +             if (flags & RSEQ_CS_FLAG_IN_SIGNAL_HANDLER) {
-> > +                     ret = rseq_get_rseq_cs(t, &rseq_cs);
-> > +                     if (ret)
-> > +                             return ret;
-> > +
-> > +                     /*
-> > +                      * If the returned IP is in critical section, it
-> > +                      * means we handle all the possible nested signal,
-> > +                      * so unset the RSEQ_CS_FLAG_IN_SIGNAL_HANDLER.
-> > +                      */
-> > +                     if (in_rseq_cs(regs->ip, &rseq_cs)) {
-> > +                             flags &= ~RSEQ_CS_FLAG_IN_SIGNAL_HANDLER;
-> > +
-> > +                             ret = put_user(flags, &t->rseq->flags);
-> > +                             if (ret)
-> > +                                     return ret;
-> > +                     }
-> > +             }
-> > +     }
-> > +
-> > +     return 0;
-> > +}
-> > +
-> > +#endif
-> > +
-> > /*
-> >  * sys_rseq - setup restartable sequences for caller thread.
-> >  */
-> > --
-> > 2.25.1
->
-> --
-> Mathieu Desnoyers
-> EfficiOS Inc.
-> http://www.efficios.com
