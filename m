@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1413CCA485
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:29:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E78ACCA481
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:29:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346336AbiFTN2z (ORCPT
+        id S1344435AbiFTN34 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:28:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43174 "EHLO
+        Mon, 20 Jun 2022 09:29:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345014AbiFTN0K (ORCPT
+        with ESMTP id S1344412AbiFTN0a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:26:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32F0D1C107;
-        Mon, 20 Jun 2022 06:10:35 -0700 (PDT)
+        Mon, 20 Jun 2022 09:26:30 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0E181C12D;
+        Mon, 20 Jun 2022 06:10:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A80B160C1A;
-        Mon, 20 Jun 2022 13:10:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BE26C3411B;
-        Mon, 20 Jun 2022 13:10:32 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 0255CCE13A2;
+        Mon, 20 Jun 2022 13:10:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC94AC3411B;
+        Mon, 20 Jun 2022 13:10:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730633;
-        bh=suxF+OV9SOJgom/P/dRCfVxDLXXQLItXBadyBvTXuKQ=;
+        s=korg; t=1655730636;
+        bh=ihYjR+K6C4Ij3E7dcukP0z6SrLrtMKHF1u6OB+m00Wc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VYywZmCVcAa3kBJyAUj6Rk6eNfgkAlc59GpLYx3tETY4N4uvv7SE8CJvLaSNP7d5K
-         RhKU56WJ83TUDEzw+Uv8LNiQZoe7dwc+Xpe32SNKbyIrMiZAapIejtDyONECmasQ+Z
-         zJTQnqZMT9guui1Ba8H10SAsuizTsCeXW/bOGnNs=
+        b=YVnvbNyHbR+DzN3Y8FWwxVjMsq/ncbIldKQTMIp8rDw1fBZdxl4w5/F3JM7aP7/r+
+         nYRtBy2Wy6Zr6VpN93St/lGWjexmuWaW+Qlag2Ha4Q5Q5pe/3YWpyEYgljAvV/IM7A
+         PaxCAbDwW4Zvn87+QP8XkoghRGSMgYgD0c8mZsAA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Slark Xiao <slark_xiao@163.com>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 5.15 085/106] USB: serial: option: add support for Cinterion MV31 with new baseline
-Date:   Mon, 20 Jun 2022 14:51:44 +0200
-Message-Id: <20220620124726.907808787@linuxfoundation.org>
+        stable@vger.kernel.org, Tadeusz Struk <tadeusz.struk@linaro.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Subject: [PATCH 5.4 001/240] 9p: missing chunk of "fs/9p: Dont update file type when updating file attributes"
+Date:   Mon, 20 Jun 2022 14:48:22 +0200
+Message-Id: <20220620124737.844728943@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
-References: <20220620124724.380838401@linuxfoundation.org>
+In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
+References: <20220620124737.799371052@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -49,75 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Slark Xiao <slark_xiao@163.com>
+From: Al Viro <viro@zeniv.linux.org.uk>
 
-commit 158f7585bfcea4aae0ad4128d032a80fec550df1 upstream.
+commit b577d0cd2104fdfcf0ded3707540a12be8ddd8b0 upstream.
 
-Adding support for Cinterion device MV31 with Qualcomm
-new baseline. Use different PIDs to separate it from
-previous base line products.
-All interfaces settings keep same as previous.
+In commit 45089142b149 Aneesh had missed one (admittedly, very unlikely
+to hit) case in v9fs_stat2inode_dotl().  However, the same considerations
+apply there as well - we have no business whatsoever to change ->i_rdev
+or the file type.
 
-Below is test evidence:
-T:  Bus=03 Lev=01 Prnt=01 Port=00 Cnt=01 Dev#=  6 Spd=480 MxCh= 0
-D:  Ver= 2.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
-P:  Vendor=1e2d ProdID=00b8 Rev=04.14
-S:  Manufacturer=Cinterion
-S:  Product=Cinterion PID 0x00B8 USB Mobile Broadband
-S:  SerialNumber=90418e79
-C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=500mA
-I:  If#=0x0 Alt= 0 #EPs= 1 Cls=02(commc) Sub=0e Prot=00 Driver=cdc_mbim
-I:  If#=0x1 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=02 Driver=cdc_mbim
-I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=40 Driver=option
-I:  If#=0x3 Alt= 0 #EPs= 1 Cls=ff(vend.) Sub=ff Prot=ff Driver=(none)
-I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=60 Driver=option
-I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=30 Driver=option
-
-T:  Bus=03 Lev=01 Prnt=01 Port=00 Cnt=01 Dev#=  7 Spd=480 MxCh= 0
-D:  Ver= 2.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
-P:  Vendor=1e2d ProdID=00b9 Rev=04.14
-S:  Manufacturer=Cinterion
-S:  Product=Cinterion PID 0x00B9 USB Mobile Broadband
-S:  SerialNumber=90418e79
-C:  #Ifs= 4 Cfg#= 1 Atr=a0 MxPwr=500mA
-I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=50 Driver=qmi_wwan
-I:  If#=0x1 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=40 Driver=option
-I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=60 Driver=option
-I:  If#=0x3 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=30 Driver=option
-
-For PID 00b8, interface 3 is GNSS port which don't use serial driver.
-
-Signed-off-by: Slark Xiao <slark_xiao@163.com>
-Link: https://lore.kernel.org/r/20220601034740.5438-1-slark_xiao@163.com
-[ johan: rename defines using a "2" infix ]
-Cc: stable@vger.kernel.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
+Cc: Tadeusz Struk <tadeusz.struk@linaro.org>
+Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/serial/option.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ fs/9p/vfs_inode_dotl.c |   10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
 
---- a/drivers/usb/serial/option.c
-+++ b/drivers/usb/serial/option.c
-@@ -432,6 +432,8 @@ static void option_instat_callback(struc
- #define CINTERION_PRODUCT_CLS8			0x00b0
- #define CINTERION_PRODUCT_MV31_MBIM		0x00b3
- #define CINTERION_PRODUCT_MV31_RMNET		0x00b7
-+#define CINTERION_PRODUCT_MV31_2_MBIM		0x00b8
-+#define CINTERION_PRODUCT_MV31_2_RMNET		0x00b9
- #define CINTERION_PRODUCT_MV32_WA		0x00f1
- #define CINTERION_PRODUCT_MV32_WB		0x00f2
- 
-@@ -1979,6 +1981,10 @@ static const struct usb_device_id option
- 	  .driver_info = RSVD(3)},
- 	{ USB_DEVICE_INTERFACE_CLASS(CINTERION_VENDOR_ID, CINTERION_PRODUCT_MV31_RMNET, 0xff),
- 	  .driver_info = RSVD(0)},
-+	{ USB_DEVICE_INTERFACE_CLASS(CINTERION_VENDOR_ID, CINTERION_PRODUCT_MV31_2_MBIM, 0xff),
-+	  .driver_info = RSVD(3)},
-+	{ USB_DEVICE_INTERFACE_CLASS(CINTERION_VENDOR_ID, CINTERION_PRODUCT_MV31_2_RMNET, 0xff),
-+	  .driver_info = RSVD(0)},
- 	{ USB_DEVICE_INTERFACE_CLASS(CINTERION_VENDOR_ID, CINTERION_PRODUCT_MV32_WA, 0xff),
- 	  .driver_info = RSVD(3)},
- 	{ USB_DEVICE_INTERFACE_CLASS(CINTERION_VENDOR_ID, CINTERION_PRODUCT_MV32_WB, 0xff),
+--- a/fs/9p/vfs_inode_dotl.c
++++ b/fs/9p/vfs_inode_dotl.c
+@@ -641,14 +641,10 @@ v9fs_stat2inode_dotl(struct p9_stat_dotl
+ 		if (stat->st_result_mask & P9_STATS_NLINK)
+ 			set_nlink(inode, stat->st_nlink);
+ 		if (stat->st_result_mask & P9_STATS_MODE) {
+-			inode->i_mode = stat->st_mode;
+-			if ((S_ISBLK(inode->i_mode)) ||
+-						(S_ISCHR(inode->i_mode)))
+-				init_special_inode(inode, inode->i_mode,
+-								inode->i_rdev);
++			mode = stat->st_mode & S_IALLUGO;
++			mode |= inode->i_mode & ~S_IALLUGO;
++			inode->i_mode = mode;
+ 		}
+-		if (stat->st_result_mask & P9_STATS_RDEV)
+-			inode->i_rdev = new_decode_dev(stat->st_rdev);
+ 		if (!(flags & V9FS_STAT2INODE_KEEP_ISIZE) &&
+ 		    stat->st_result_mask & P9_STATS_SIZE)
+ 			v9fs_i_size_write(inode, stat->st_size);
 
 
