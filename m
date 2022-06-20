@@ -2,112 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30142C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 08:21:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B2EEC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 08:21:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239170AbiFTIV0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 04:21:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38776 "EHLO
+        id S231954AbiFTIVr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 04:21:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239177AbiFTIVQ (ORCPT
+        with ESMTP id S238441AbiFTIVm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 04:21:16 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDC9B12086;
-        Mon, 20 Jun 2022 01:21:14 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LRMzp47Qxz4xZB;
-        Mon, 20 Jun 2022 18:21:10 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1655713271;
-        bh=GmWBIOzwoR1yaR0PSMTUHraxjWmZ6HJsMb8gd6IVL70=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=B0oZPUKohoUw9Mqq/TaIfGBKEjN7Z2zxXcGPQ9pWigwrxTmnNyIjKpv+2XDeXnkcn
-         bWi+DMtanTkqmtNCLNTJ71OAhPCkAPAmKXnaIWoMO3aKQTBArd2y2hFzcykY6ghAoU
-         dwt3ljtZwa0dYu5IqwHT6zg5yEWdhNG9InNmo/3pnMaB06wOKB1yuTUufE6MGplqnq
-         7qBmYIaP4pCuyFA2jd0I5Rn20dprVX1SGkfTb3fN3+AQCGDg9AbcmfDGaD2nOxIxc3
-         kVi0XGP/joPANvIr/gpQWSRXQEH6lMvX+aKBXIkziDc2jkYuKn94Cb/WQip3DBqobJ
-         CfA+1jC6GS7fA==
-Date:   Mon, 20 Jun 2022 18:21:08 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Cc:     Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build warning after merge of the libata tree
-Message-ID: <20220620182108.5efb3107@canb.auug.org.au>
-In-Reply-To: <20220620103400.6b03f8d9@canb.auug.org.au>
-References: <20220620103400.6b03f8d9@canb.auug.org.au>
+        Mon, 20 Jun 2022 04:21:42 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE2101263E;
+        Mon, 20 Jun 2022 01:21:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655713301; x=1687249301;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=8E2kEq+GCo7Dhht4sPeokQjW9I35j7HibLiiqhyWzLc=;
+  b=XQCRb7LRslUeYyqtC37ZEvv8qINrkxD6+a3bKfKstm+iYXbMk8s8zUyT
+   ASMv5PcNIYCSaETcUaoSS4N0Kl5+lEPqSMdFqrd0xrtJbKH9AcVLDFGq+
+   62PWcLhXMdimpG22Yoj0TGEBZpCXVDDoFjXGNKU+DplTrtDDyX9m003yY
+   Y3wPJaa0zX78hq0MuzrdVZmAXt2AHv9Y/MBmAMdytC/UYnZPbDB6BCMJe
+   c0xg9shEgxnLNBC1sYe88d6p+MGHtcSpTy1tZvEa8veJLd+wZccWpbAsU
+   vcgEKRxJsg8tJAudl30GOZ6+0VuVrb4NU+g77cgEY6QVEMotR5teNpYDH
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="341518496"
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="341518496"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 01:21:39 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="584799278"
+Received: from allen-box.sh.intel.com ([10.239.159.48])
+  by orsmga007.jf.intel.com with ESMTP; 20 Jun 2022 01:21:37 -0700
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+To:     Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>
+Cc:     Chenyi Qiang <chenyi.qiang@intel.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+        Lu Baolu <baolu.lu@linux.intel.com>, stable@vger.kernel.org
+Subject: [PATCH 1/1] iommu/vt-d: Fix RID2PASID setup failure
+Date:   Mon, 20 Jun 2022 16:17:29 +0800
+Message-Id: <20220620081729.4610-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/XO/KDNfh3p1WO2yhElHs/1q";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/XO/KDNfh3p1WO2yhElHs/1q
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+The IOMMU driver shares the pasid table for PCI alias devices. When the
+RID2PASID entry of the shared pasid table has been filled by the first
+device, the subsequent devices will encounter the "DMAR: Setup RID2PASID
+failed" failure as the pasid entry has already been marke as present. As
+the result, the IOMMU probing process will be aborted.
 
-Hi all,
+This fixes it by skipping RID2PASID setting if the pasid entry has been
+populated. This works because the IOMMU core ensures that only the same
+IOMMU domain can be attached to all PCI alias devices at the same time.
+Therefore the subsequent devices just try to setup the RID2PASID entry
+with the same domain, which is negligible.
 
-On Mon, 20 Jun 2022 10:34:00 +1000 Stephen Rothwell <sfr@canb.auug.org.au> =
-wrote:
->
-> Hi all,
->=20
-> After merging the libata tree, today's linux-next build (powercp
-> ppc64_defconfig) produced this warning:
->=20
-> In file included from include/linux/device.h:15,
->                  from arch/powerpc/include/asm/io.h:27,
->                  from include/linux/io.h:13,
->                  from include/linux/irq.h:20,
->                  from arch/powerpc/include/asm/hardirq.h:6,
->                  from include/linux/hardirq.h:11,
->                  from include/linux/highmem.h:11,
->                  from include/linux/bvec.h:10,
->                  from include/linux/blk_types.h:10,
->                  from include/linux/blkdev.h:9,
->                  from drivers/ata/pata_macio.c:18:
-> drivers/ata/pata_macio.c: In function 'pmac_macio_calc_timing_masks':
-> drivers/ata/pata_macio.c:1031:28: warning: format '%lx' expects argument =
-of type 'long unsigned int', but argument 4 has type 'unsigned int' [-Wform=
-at=3D]
->  1031 |         dev_dbg(priv->dev, "Supported masks: PIO=3D%lx, MWDMA=3D%=
-lx, UDMA=3D%lx\n",
+Fixes: ef848b7e5a6a0 ("iommu/vt-d: Setup pasid entry for RID2PASID support")
+Reported-by: Chenyi Qiang <chenyi.qiang@intel.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/intel/iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-	.
-	.
-	.
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 44016594831d..b9966c01a2a2 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -2564,7 +2564,7 @@ static int domain_add_dev_info(struct dmar_domain *domain, struct device *dev)
+ 			ret = intel_pasid_setup_second_level(iommu, domain,
+ 					dev, PASID_RID2PASID);
+ 		spin_unlock_irqrestore(&iommu->lock, flags);
+-		if (ret) {
++		if (ret && ret != -EBUSY) {
+ 			dev_err(dev, "Setup RID2PASID failed\n");
+ 			dmar_remove_one_dev_info(dev);
+ 			return ret;
+-- 
+2.25.1
 
-> Introduced by commit
->=20
->   f0a6d77b351c ("ata: make transfer mode masks *unsigned int*")
-
-This turned into a build failure in my powerpc allyesconfig build, so I
-reverted the above commit for today.
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/XO/KDNfh3p1WO2yhElHs/1q
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKwLfQACgkQAVBC80lX
-0GwTBgf/Zi+BLOsoWaXA44le72TXra975gKnDm9VsaDqCloxedC4GgVmCFPQfaa4
-GBGya2rXJN5msVNV3bnUnq+Yt9zlG8KI8afTofCqIj+5CEA7dR/gYtZWY2jBv+cc
-beFmGr7KsmTcwbCscjV/ToH+ShAO7teE+N8wrAkHFlylraeF3Pb+whpFk7AUiu3X
-dWL329TadKIlE5lrLvPOPzwNogRw7Hn5y22m/i/OxfMnvkgRsJRPkTHNiQ0QV8XT
-5lEqwwT0ontYhps+BIoyTqDJ5/EdQEUm8BEN/hlG15lg4Zpkez1n7DmhEmhMYGfG
-fu+aqrQAJacyzHPFWwMvoGkFpErluA==
-=7C44
------END PGP SIGNATURE-----
-
---Sig_/XO/KDNfh3p1WO2yhElHs/1q--
