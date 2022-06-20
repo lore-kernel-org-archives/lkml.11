@@ -2,126 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0612FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:22:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79E31C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:22:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344780AbiFTNWn (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:22:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58210 "EHLO
+        id S245625AbiFTNWs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:22:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345966AbiFTNUN (ORCPT
+        with ESMTP id S1346149AbiFTNUV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:20:13 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2080.outbound.protection.outlook.com [40.107.220.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12E3D21270
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 06:08:17 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eLVcrDbhLazna0wtoKGbAh69iEaj8TmX0AFeWoqiv7zSS5oj+nyGECcy3MJQPyNh0/RSzs8m+NfUtXLJ/+T+vOnotOhr7+BbTJYYOdPEQQAsp83U/jF9c2yakq1UVLxNB9YdNE6pNCJOT/RwXLhY10E99CzVoUDJKuTRU9hZC6gxVN+KnuZVW9OvN4r74xCsEaetMFQgSK7SvGoykLDeBvDGk5oqltIMV8DLJvF/tjG57OhjCjuvhX0OLcuM0EH6NeH1aDzA/CrN78TCk70gHmY1nvIEBv1cce6OUJlMtCE4L0eP5HqDlH2zGGdrJjvMtGDbcDg9ykFxMRDhRRQNXg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=esHaG2jhqwvNjd2L5nGegXUxT+4rVJ9Gfm3Wr8WE31g=;
- b=Argk+XlfiwgFl4BU+tIuMSfCzxX/3Zlb21sJTf2zjkKJH/E/SmNfbe40l77PqhT3kHVAI08rGrd+p12srUzd5rhVijISBX5z/K/KgrTel2fjA5V9OXzadC7ybWboMT4LTwBvGdmmFMfeE37wklcOdJaMRwqEuVQVjpBEUrttk+ZMVhNU3re5JmrBzf69PmQfztdicnfTY0WMm3LSEb4ddYYLsIGTcTYfZqbb/jMI7PnQ+Ald6iwLk0UvJ02LvZU2dyg9TpFi6MEfKRgnVzpRcYLlwqicyabIZO2ZpTOs3+PxlTHz3+KMS810IEMQPH8gv4YrV7oM3OmP3XH0kKRi8A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.238) smtp.rcpttodomain=lists.linux-foundation.org
- smtp.mailfrom=nvidia.com; dmarc=pass (p=reject sp=reject pct=100) action=none
- header.from=nvidia.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=esHaG2jhqwvNjd2L5nGegXUxT+4rVJ9Gfm3Wr8WE31g=;
- b=ZQkBWL2vrTsn2QJ7YbrJh+bOgJT0CI41RLXJom7Ql55BCk3oRCxMC6KlUylhUX967UCvdxPlhhCrUiiV+polldt6bAqL4GCXLyyNo+SkEdCoriNjo2bC9X9SfumH5APbKyDCUasj+hEKA4nwAoHhNypS8AZ5Zl6JY50p+NSiQntZPy+ql/fVozNxPwhrm/M6VDqE9RULRS34x8q/SUvjmBN+c3V4pvdxJyEhKxKadj5WGE0d/Md9L+6aJz31JZW6cZPqJPku0lqsuFYiv1Uw6vLo6tcFmU44UZoZQB53DgTUDlmsDaf3s8UMfLI0hA+6B9M5jyFnEQhNqpk0GJUTsA==
-Received: from DM5PR16CA0037.namprd16.prod.outlook.com (2603:10b6:4:15::23) by
- MN0PR12MB6055.namprd12.prod.outlook.com (2603:10b6:208:3cd::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.14; Mon, 20 Jun
- 2022 13:06:30 +0000
-Received: from DM6NAM11FT059.eop-nam11.prod.protection.outlook.com
- (2603:10b6:4:15:cafe::60) by DM5PR16CA0037.outlook.office365.com
- (2603:10b6:4:15::23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.22 via Frontend
- Transport; Mon, 20 Jun 2022 13:06:29 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.238; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.238) by
- DM6NAM11FT059.mail.protection.outlook.com (10.13.172.92) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5353.14 via Frontend Transport; Mon, 20 Jun 2022 13:06:28 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by DRHQMAIL105.nvidia.com
- (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Mon, 20 Jun
- 2022 13:06:28 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 20 Jun
- 2022 06:06:27 -0700
-Received: from vdi.nvidia.com (10.127.8.13) by mail.nvidia.com (10.129.68.8)
- with Microsoft SMTP Server id 15.2.986.22 via Frontend Transport; Mon, 20 Jun
- 2022 06:06:25 -0700
-From:   Eli Cohen <elic@nvidia.com>
-To:     <eperezma@redhat.com>, <jasowang@redhat.com>, <mst@redhat.com>,
-        <virtualization@lists.linux-foundation.org>
-CC:     <linux-kernel@vger.kernel.org>, <si-wei.liu@oracle.com>,
-        <parav@nvidia.com>, Eli Cohen <elic@nvidia.com>
-Subject: [PATCH RFC v1 3/3] vdpa/mlx5: Disable VLAN support to support live migration
-Date:   Mon, 20 Jun 2022 16:06:14 +0300
-Message-ID: <20220620130614.19679-4-elic@nvidia.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220620130614.19679-1-elic@nvidia.com>
-References: <20220620130614.19679-1-elic@nvidia.com>
+        Mon, 20 Jun 2022 09:20:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2941222507;
+        Mon, 20 Jun 2022 06:08:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 20D3B61589;
+        Mon, 20 Jun 2022 13:07:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1303FC3411B;
+        Mon, 20 Jun 2022 13:07:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655730421;
+        bh=r8XnFs77UWEw8tdx9AYeZYY87hyU7AdHg/IfaytmtIk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=G0eSH96EiCoAflrCwTn2bjWWA40VWGluZzYKbF+xtJjooFInEsQRAM5UDnLrRE8TD
+         7VPIruPw6+OUQSmb159cfFDewzCMgVi48tNo3uVFKqdNUH5FqGeVj1VKQdBfFXqNIe
+         lKpZvZxkyfflw4qK6/T3W0vZnCTbW47XxsPMpulM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 048/106] pNFS: Avoid a live lock condition in pnfs_update_layout()
+Date:   Mon, 20 Jun 2022 14:51:07 +0200
+Message-Id: <20220620124725.811625811@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
+References: <20220620124724.380838401@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9cf26089-38ad-427e-1327-08da52bdb08b
-X-MS-TrafficTypeDiagnostic: MN0PR12MB6055:EE_
-X-Microsoft-Antispam-PRVS: <MN0PR12MB6055902E8D0670AF33AF7EF9ABB09@MN0PR12MB6055.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: L4XUieuAmerUOF8n5Ng0VDmUMq9feaW5KEwf5bW/qjzR2AScH3x9e8bLPRm+sjCwyW8Oy08NFAyMwGpGo9jEySOmPOqHcp27kpiRRQy6fSgd0FqpJWc7Kbz2+4L4cWbhbp5QpiKKaNLJtl7Ynuwz4+4srdKGEJMPQEejkAVAmhXslKuP+5YTti11wreoWtTqaWCkDtlFXKEqb5kjCdy2YSKaZ3Hs5mcpf298gvePpkKj5BOer7Nz0ZGhNNB7vwobqoqCLrNOi+889g0TIO+7QTED1fg2o14CpB7Yo4AjCCSwqUFDeMOCR9/XsH9Xxw3+ot9yTZkI/+/ssQEFvcjDURVzgBUJ41B8fIAhwAvqZDhBUNprrKSwkCjrGjNqNemEtMwsEVFalXPJa7eF7eHGsl051P+Ul9BtGScKzjEMT+KQD/u4aqba+mpCp3JT23Yk95DJt+Fn1V5CQupiKc8QkGM6CiMFowvTbqRYKpusP01dt7+ULWkuLlFJwbTTclvAJ6+L/hRm/PEc1VrZfldv9X9JXehr3Ubz8melXO1rwBCB9bEbHXe5FQRlMFpB8FfLDfqs/YP1+jYWnRB1NmoXFRxhHmJcL6NAEhMaJAJvZb3WfHuQPtxbMjO6+VfXWKBhYTgr9OwGrKK67ClNuKcSmRSFhB8etCvV4StvR3CmQIJmOrt57TcUG65stNu+gXpOFV3gNSu/XmXcuiq26F/5bSJAjJNHFtWZZqD/6uZlkp+y4wUlfORuLoVikv5bhnlQ
-X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(376002)(39860400002)(396003)(346002)(136003)(46966006)(40470700004)(36840700001)(36860700001)(186003)(107886003)(70206006)(83380400001)(356005)(4744005)(47076005)(316002)(2906002)(426003)(5660300002)(86362001)(2616005)(336012)(26005)(8936002)(82740400003)(54906003)(40460700003)(40480700001)(41300700001)(81166007)(4326008)(110136005)(8676002)(6666004)(82310400005)(70586007)(36756003)(1076003)(478600001)(7696005)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jun 2022 13:06:28.9453
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9cf26089-38ad-427e-1327-08da52bdb08b
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT059.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB6055
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Current qemu code does not support live migration for devices supporting
-VLAN. Disable it.
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-Note: this patch is provided just to enable testing with current qemu.
+[ Upstream commit 880265c77ac415090090d1fe72a188fee71cb458 ]
 
-Signed-off-by: Eli Cohen <elic@nvidia.com>
+If we're about to send the first layoutget for an empty layout, we want
+to make sure that we drain out the existing pending layoutget calls
+first. The reason is that these layouts may have been already implicitly
+returned to the server by a recall to which the client gave a
+NFS4ERR_NOMATCHING_LAYOUT response.
+
+The problem is that wait_var_event_killable() could in principle see the
+plh_outstanding count go back to '1' when the first process to wake up
+starts sending a new layoutget. If it fails to get a layout, then this
+loop can continue ad infinitum...
+
+Fixes: 0b77f97a7e42 ("NFSv4/pnfs: Fix layoutget behaviour after invalidation")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/vdpa/mlx5/net/mlx5_vnet.c | 1 -
- 1 file changed, 1 deletion(-)
+ fs/nfs/callback_proc.c |  1 +
+ fs/nfs/pnfs.c          | 15 +++++++++------
+ fs/nfs/pnfs.h          |  1 +
+ 3 files changed, 11 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-index cb637dee2ea8..a468e02fd869 100644
---- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-+++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-@@ -2172,7 +2172,6 @@ static u64 get_supported_features(struct mlx5_core_dev *mdev)
- 	mlx_vdpa_features |= BIT_ULL(VIRTIO_NET_F_MQ);
- 	mlx_vdpa_features |= BIT_ULL(VIRTIO_NET_F_STATUS);
- 	mlx_vdpa_features |= BIT_ULL(VIRTIO_NET_F_MTU);
--	mlx_vdpa_features |= BIT_ULL(VIRTIO_NET_F_CTRL_VLAN);
+diff --git a/fs/nfs/callback_proc.c b/fs/nfs/callback_proc.c
+index a30dd35ec1c2..ccf313238441 100644
+--- a/fs/nfs/callback_proc.c
++++ b/fs/nfs/callback_proc.c
+@@ -288,6 +288,7 @@ static u32 initiate_file_draining(struct nfs_client *clp,
+ 		rv = NFS4_OK;
+ 		break;
+ 	case -ENOENT:
++		set_bit(NFS_LAYOUT_DRAIN, &lo->plh_flags);
+ 		/* Embrace your forgetfulness! */
+ 		rv = NFS4ERR_NOMATCHING_LAYOUT;
  
- 	return mlx_vdpa_features;
+diff --git a/fs/nfs/pnfs.c b/fs/nfs/pnfs.c
+index 9b2549222391..7217f3eeb069 100644
+--- a/fs/nfs/pnfs.c
++++ b/fs/nfs/pnfs.c
+@@ -469,6 +469,7 @@ pnfs_mark_layout_stateid_invalid(struct pnfs_layout_hdr *lo,
+ 		pnfs_clear_lseg_state(lseg, lseg_list);
+ 	pnfs_clear_layoutreturn_info(lo);
+ 	pnfs_free_returned_lsegs(lo, lseg_list, &range, 0);
++	set_bit(NFS_LAYOUT_DRAIN, &lo->plh_flags);
+ 	if (test_bit(NFS_LAYOUT_RETURN, &lo->plh_flags) &&
+ 	    !test_and_set_bit(NFS_LAYOUT_RETURN_LOCK, &lo->plh_flags))
+ 		pnfs_clear_layoutreturn_waitbit(lo);
+@@ -1917,8 +1918,9 @@ static void nfs_layoutget_begin(struct pnfs_layout_hdr *lo)
+ 
+ static void nfs_layoutget_end(struct pnfs_layout_hdr *lo)
+ {
+-	if (atomic_dec_and_test(&lo->plh_outstanding))
+-		wake_up_var(&lo->plh_outstanding);
++	if (atomic_dec_and_test(&lo->plh_outstanding) &&
++	    test_and_clear_bit(NFS_LAYOUT_DRAIN, &lo->plh_flags))
++		wake_up_bit(&lo->plh_flags, NFS_LAYOUT_DRAIN);
  }
+ 
+ static bool pnfs_is_first_layoutget(struct pnfs_layout_hdr *lo)
+@@ -2025,11 +2027,11 @@ pnfs_update_layout(struct inode *ino,
+ 	 * If the layout segment list is empty, but there are outstanding
+ 	 * layoutget calls, then they might be subject to a layoutrecall.
+ 	 */
+-	if ((list_empty(&lo->plh_segs) || !pnfs_layout_is_valid(lo)) &&
++	if (test_bit(NFS_LAYOUT_DRAIN, &lo->plh_flags) &&
+ 	    atomic_read(&lo->plh_outstanding) != 0) {
+ 		spin_unlock(&ino->i_lock);
+-		lseg = ERR_PTR(wait_var_event_killable(&lo->plh_outstanding,
+-					!atomic_read(&lo->plh_outstanding)));
++		lseg = ERR_PTR(wait_on_bit(&lo->plh_flags, NFS_LAYOUT_DRAIN,
++					   TASK_KILLABLE));
+ 		if (IS_ERR(lseg))
+ 			goto out_put_layout_hdr;
+ 		pnfs_put_layout_hdr(lo);
+@@ -2413,7 +2415,8 @@ pnfs_layout_process(struct nfs4_layoutget *lgp)
+ 		goto out_forget;
+ 	}
+ 
+-	if (!pnfs_layout_is_valid(lo) && !pnfs_is_first_layoutget(lo))
++	if (test_bit(NFS_LAYOUT_DRAIN, &lo->plh_flags) &&
++	    !pnfs_is_first_layoutget(lo))
+ 		goto out_forget;
+ 
+ 	if (nfs4_stateid_match_other(&lo->plh_stateid, &res->stateid)) {
+diff --git a/fs/nfs/pnfs.h b/fs/nfs/pnfs.h
+index 5a54cf8ac6f3..3307361c7956 100644
+--- a/fs/nfs/pnfs.h
++++ b/fs/nfs/pnfs.h
+@@ -109,6 +109,7 @@ enum {
+ 	NFS_LAYOUT_FIRST_LAYOUTGET,	/* Serialize first layoutget */
+ 	NFS_LAYOUT_INODE_FREEING,	/* The inode is being freed */
+ 	NFS_LAYOUT_HASHED,		/* The layout visible */
++	NFS_LAYOUT_DRAIN,
+ };
+ 
+ enum layoutdriver_policy_flags {
 -- 
 2.35.1
+
+
 
