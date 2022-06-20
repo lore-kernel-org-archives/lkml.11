@@ -2,108 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F1F3C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 11:00:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B12D7C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 11:00:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241132AbiFTLAK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 07:00:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51292 "EHLO
+        id S241175AbiFTLA1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 07:00:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240411AbiFTLAI (ORCPT
+        with ESMTP id S240411AbiFTLAW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 07:00:08 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 247EC55AE;
-        Mon, 20 Jun 2022 04:00:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1655722807; x=1687258807;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=c8QNBVZ8wFnmT7eCQXOvJyyFc4aUfS6m/vVmJyJk64g=;
-  b=2swxPYfLMKjKWWzuxwGqtMijESKVe6ce8gtR0xKJyVNg8Bzmm3kTBrCh
-   9x51HbGgO3JpwEJyxv2YsgQgDN6MbgLUv/tQ4vZfc+nfbBvxl9WuHwBRu
-   e2UEpQ6mqpbd6QKgpolw45EcpfMAoPhISpVibfo7EibILPDmmZGU5cbt+
-   byYU2sEJo3mE5Y11MK8IgDopUer+rubEoTy/E/V2LpPyWOQ05odZlT7rY
-   zpCwiorq2J9kNM9FBnC/BTjl4WqAGt6eE5+PAEsA20VnFGZN05xDIk7LI
-   jMMJaLorLCSwpPgPk4N1NaISgLM8Nf1Xvonn3omUInRd5yFY5nkHgU0TZ
-   w==;
+        Mon, 20 Jun 2022 07:00:22 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3331C55AE;
+        Mon, 20 Jun 2022 04:00:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655722822; x=1687258822;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=5kEN8LEeudPIKeDQ20lyx4aW7nBMG8/Yp54OnqCaljs=;
+  b=Mo1UGGShxIdhLR/5PXFaiZ5T4YOS7UFIqLlOPzPhqJOAbgpFE4gudmnG
+   h4LEeijUb3fif4jZfJUHPMHxT08kG8wr+HSCvmPUHIk3QG60s7QqpTt1p
+   8YpILD9uZhaW+b3AZsXoiutNr1A4COuNtQtLtoYp4rRaeZBAibqLZv+QN
+   XPpQfUYH4ZS1GWcKCistBJOpGl7wownbei32xmffEjFT4FdtIS74aAK7z
+   3YfUaMIwa6GQPaZxyrn7ZZsPuhHh4Wmfl6IUFIYio5TToZgh69agZhSi1
+   ooafz6SgFCRXJuSwGbhKAUkIrjkzG3y1IOC/9XGDEF06FGOXnQvRZjbxd
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="341547247"
 X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="100805212"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 20 Jun 2022 04:00:05 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 20 Jun 2022 04:00:05 -0700
-Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Mon, 20 Jun 2022 04:00:02 -0700
-From:   Conor Dooley <conor.dooley@microchip.com>
-To:     <i.bornyakov@metrotek.ru>
-CC:     <Conor.Dooley@microchip.com>, <corbet@lwn.net>,
-        <devicetree@vger.kernel.org>, <hao.wu@intel.com>,
-        <krzysztof.kozlowski+dt@linaro.org>, <linux-doc@vger.kernel.org>,
-        <linux-fpga@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <mdf@kernel.org>, <robh+dt@kernel.org>, <system@metrotek.ru>,
-        <trix@redhat.com>, <yilun.xu@intel.com>,
-        Conor Dooley <conor.dooley@microchip.com>
-Subject: Re: [PATCH v20 0/4] Microchip Polarfire FPGA manager
-Date:   Mon, 20 Jun 2022 11:57:48 +0100
-Message-ID: <20220620105747.2145347-1-conor.dooley@microchip.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620100745.yxjmq2qtsicxlrgn@h-e2.ddg>
-References: <20220620100745.yxjmq2qtsicxlrgn@h-e2.ddg>
+   d="scan'208";a="341547247"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 04:00:21 -0700
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="591125969"
+Received: from gao-cwp.sh.intel.com (HELO gao-cwp) ([10.239.159.23])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 04:00:16 -0700
+Date:   Mon, 20 Jun 2022 19:00:02 +0800
+From:   Chao Gao <chao.gao@intel.com>
+To:     Shenming Lu <lushenming@bytedance.com>
+Cc:     Zeng Guang <guang.zeng@intel.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jethro Beekman <jethro@fortanix.com>,
+        Kai Huang <kai.huang@intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, Robert Hu <robert.hu@intel.com>,
+        zhouyibo@bytedance.com
+Subject: Re: [External] [PATCH v9 9/9] KVM: VMX: enable IPI virtualization
+Message-ID: <20220620105957.GA9496@gao-cwp>
+References: <20220419154510.11938-1-guang.zeng@intel.com>
+ <cdead652-cbd6-90e4-dab8-9cb18f71a624@bytedance.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cdead652-cbd6-90e4-dab8-9cb18f71a624@bytedance.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I had a quick check in -next and there's an entry for the BMC
-driver there.
-How about the following? I put you as R, but clearly if you want to be
-maintainer then you are *more than* qualified.
-Feel free to edit the patch if so, either is fine by me.
-You can tack this onto a v21 if you have more changes or I can resend
-standalone once the driver is merged.
+On Mon, Jun 20, 2022 at 06:02:32PM +0800, Shenming Lu wrote:
+>> +		if (enable_ipiv)
+>> +			tertiary_exec_controls_clearbit(vmx, TERTIARY_EXEC_IPI_VIRT);
+>> +	}
+>>   	vmx_update_msr_bitmap_x2apic(vcpu);
+>>   }
+>
+>Hi, just a small question here:
+>
+>It seems that we clear the TERTIARY_EXEC_IPI_VIRT bit before enabling
+>interception for APIC_ICR when deactivating APICv on some reason.
+>Is there any problem with this sequence?
 
-Thanks,
-Conor.
-
-From: Conor Dooley <conor.dooley@microchip.com>
-Date: Mon, 20 Jun 2022 11:46:19 +0100
-Subject: [PATCH] MAINTAINERS: add polarfire fpga programmer drivers
-Add a MAINTAINERS entry for the newly added PolarFire (MPF) SPI slave
-programming driver.
-
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
----
- MAINTAINERS | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 168e0af869a7..60ab3c4bf65d 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -7869,6 +7869,14 @@ S:	Maintained
- F:	Documentation/ABI/testing/sysfs-driver-intel-m10-bmc-sec-update
- F:	drivers/fpga/intel-m10-bmc-sec-update.c
- 
-+FPGA PolarFire Drivers
-+M:	Conor Dooley <conor.dooley@microchip.com>
-+R:	Ivan Bornyakov <i.bornyakov@metrotek.ru>
-+L:	linux-fpga@vger.kernel.org
-+S:	Supported
-+F:	Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
-+F:	drivers/fpga/microchip-spi.c
-+
- FPU EMULATOR
- M:	Bill Metzenthen <billm@melbpc.org.au>
- S:	Maintained
-
-base-commit: 07dc787be2316e243a16a33d0a9b734cd9365bd3
--- 
-2.36.1
-
+Both are done before the next vCPU entry. As long as no guest code can
+run between them (APICv setting takes effect in guest), this sequence
+shouldn't have any problem.
