@@ -2,84 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FEE5C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 12:32:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1844AC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 12:32:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241192AbiFTMcc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 08:32:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47086 "EHLO
+        id S242078AbiFTMch (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 08:32:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241891AbiFTMcb (ORCPT
+        with ESMTP id S241905AbiFTMcb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 20 Jun 2022 08:32:31 -0400
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06F04E08F;
-        Mon, 20 Jun 2022 05:32:29 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 25KCWLul063868;
-        Mon, 20 Jun 2022 07:32:21 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1655728341;
-        bh=ZsFaBV1V/LW1gAYLmrjMePxiQoN3HUuKAY+NyuyKRco=;
-        h=From:To:CC:Subject:Date;
-        b=SkALwlxW1hHqGDUzGhfEurHtbICNRdvlv+6BYR1QJQ9aJRm9gDPCC75gVJnp+VcDR
-         w3zCCrNf+UYS4bpFiDqEwbJsIm2YKbbCDYicohuIqf/KS02kCgcwJocFom/PVjhF95
-         QmlmdvZuA1CqkN1c5CzmSbnrX28CycQ/VFpcbtqk=
-Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 25KCWLJJ025942
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 20 Jun 2022 07:32:21 -0500
-Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE115.ent.ti.com
- (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 20
- Jun 2022 07:32:20 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Mon, 20 Jun 2022 07:32:21 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 25KCWKBp018190;
-        Mon, 20 Jun 2022 07:32:20 -0500
-From:   Aradhya Bhatia <a-bhatia1@ti.com>
-To:     Tomi Valkeinen <tomba@kernel.org>, Jyri Sarha <jyri.sarha@iki.fi>,
-        Rob Herring <robh+dt@kernel.org>,
-        David Airlie <airlied@linux.ie>
-CC:     Nishanth Menon <nm@ti.com>, Vignesh Raghavendra <vigneshr@ti.com>,
-        Rahul T R <r-ravikumar@ti.com>,
-        DRI Devel List <dri-devel@lists.freedesktop.org>,
-        Devicetree List <devicetree@vger.kernel.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        Aradhya Bhatia <a-bhatia1@ti.com>
-Subject: [PATCH 0/2] Add DSS support for AM625 SoC
-Date:   Mon, 20 Jun 2022 18:02:15 +0530
-Message-ID: <20220620123217.25809-1-a-bhatia1@ti.com>
-X-Mailer: git-send-email 2.36.1
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAF83E031
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 05:32:29 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LRTWM3Tfyz1KC5x;
+        Mon, 20 Jun 2022 20:30:23 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 20 Jun 2022 20:32:27 +0800
+Subject: Re: [PATCH v2 2/3] mm/swapfile: fix possible data races of
+ inuse_pages
+From:   Miaohe Lin <linmiaohe@huawei.com>
+To:     Muchun Song <songmuchun@bytedance.com>,
+        "Huang, Ying" <ying.huang@intel.com>,
+        Qian Cai <quic_qiancai@quicinc.com>
+CC:     <akpm@linux-foundation.org>, <david@redhat.com>,
+        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>
+References: <20220608144031.829-1-linmiaohe@huawei.com>
+ <20220608144031.829-3-linmiaohe@huawei.com>
+ <87edzjrcq8.fsf@yhuang6-desk2.ccr.corp.intel.com>
+ <13414d6a-9e72-fb6c-f0a8-8b83ba0455de@huawei.com>
+ <YrA8kxavqsDfH5R7@FVFYT0MHHV2J.usts.net>
+ <09ffac27-7fe9-0977-cb33-30433e78e662@huawei.com>
+Message-ID: <b61771ad-9daa-741e-27e4-fdb50a7c5e38@huawei.com>
+Date:   Mon, 20 Jun 2022 20:32:27 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+In-Reply-To: <09ffac27-7fe9-0977-cb33-30433e78e662@huawei.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch series adds a new compatible for the DSS IP on TI's AM625
-SoC. It further adds the required support for the same in the tidss
-driver. The IP is a newer version of the DSS IP available on AM65X SoC,
-with a major change being in the addition of another OLDI TX inside it.
-With the help of 2 OLDI TXes, this new DSS IP supports OLDI displays
-with a resolution of upto 2K. The OLDI support will be added
-subsequently.
+On 2022/6/20 20:23, Miaohe Lin wrote:
+> On 2022/6/20 17:23, Muchun Song wrote:
+>> On Mon, Jun 20, 2022 at 05:04:50PM +0800, Miaohe Lin wrote:
+>>> On 2022/6/20 15:54, Huang, Ying wrote:
+>>>> Miaohe Lin <linmiaohe@huawei.com> writes:
+>>>>
+>>>>> si->inuse_pages could still be accessed concurrently now. The plain reads
+>>>>> outside si->lock critical section, i.e. swap_show and si_swapinfo, which
+>>>>> results in data races. But these should be ok because they're just used
+>>>>> for showing swap info.
+>>>>>
+>>>>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+>>>>> Reviewed-by: David Hildenbrand <david@redhat.com>
+>>>>> ---
+>>>>>  mm/swapfile.c | 4 ++--
+>>>>>  1 file changed, 2 insertions(+), 2 deletions(-)
+>>>>>
+>>>>> diff --git a/mm/swapfile.c b/mm/swapfile.c
+>>>>> index d2bead7b8b70..3fa26f6971e9 100644
+>>>>> --- a/mm/swapfile.c
+>>>>> +++ b/mm/swapfile.c
+>>>>> @@ -2646,7 +2646,7 @@ static int swap_show(struct seq_file *swap, void *v)
+>>>>>  	}
+>>>>>  
+>>>>>  	bytes = si->pages << (PAGE_SHIFT - 10);
+>>>>> -	inuse = si->inuse_pages << (PAGE_SHIFT - 10);
+>>>>> +	inuse = READ_ONCE(si->inuse_pages) << (PAGE_SHIFT - 10);
+>>>>>  
+>>>>>  	file = si->swap_file;
+>>>>>  	len = seq_file_path(swap, file, " \t\n\\");
+>>>>> @@ -3265,7 +3265,7 @@ void si_swapinfo(struct sysinfo *val)
+>>>>>  		struct swap_info_struct *si = swap_info[type];
+>>>>>  
+>>>>>  		if ((si->flags & SWP_USED) && !(si->flags & SWP_WRITEOK))
+>>>>> -			nr_to_be_unused += si->inuse_pages;
+>>>>> +			nr_to_be_unused += READ_ONCE(si->inuse_pages);
+>>>>>  	}
+>>>>>  	val->freeswap = atomic_long_read(&nr_swap_pages) + nr_to_be_unused;
+>>>>>  	val->totalswap = total_swap_pages + nr_to_be_unused;
+>>>>
+>>>> READ_ONCE() should be paired with WRITE_ONCE().  So, change the writer
+>>>> side too?
+>>>
+>>> READ_ONCE() is used to fix the complaint of concurrent accessing to si->inuse_pages from KCSAN here.
+>>> The similar commit is 218209487c3d ("mm/swapfile: fix data races in try_to_unuse()"). IMHO, it's fine
+>>
+>> I think the fix 218209487c3d is incomplete. The write side in swap_range_free() should
+>> also be fixed. Otherwise, IIUC, it cannot stop KCSAN complaining.
+> 
+> I tend to agree with you. READ_ONCE() should be paired with WRITE_ONCE() theoretically. But WRITTE_ONCE()
+> is ignored while the commit is introduced. Add Qian Cai for helping verify it. It's very kind of @Qian Cai
+> if he could tell us whether WRITTE_ONCE() is ignored deliberately.
 
-Aradhya Bhatia (2):
-  dt-bindings: display: ti,am65x-dss: Add am625 dss compatible
-  drm/tidss: Add support for AM625 DSS
+Update the email address of Qian Cai.
 
- .../bindings/display/ti/ti,am65x-dss.yaml     |  4 +-
- drivers/gpu/drm/tidss/tidss_dispc.c           | 83 ++++++++++++++++++-
- drivers/gpu/drm/tidss/tidss_dispc.h           |  2 +
- drivers/gpu/drm/tidss/tidss_drv.c             |  1 +
- 4 files changed, 88 insertions(+), 2 deletions(-)
-
--- 
-2.36.1
+> 
+> Thanks all of you. :)
+> 
+>>
+>>> to see a not-uptodate value of si->inuse_pages because it's just used for showing swap info. So
+>>> WRITE_ONCE() is not obligatory. Or am I miss something?
+>>>
+>>>>
+>>>> Best Regards,
+>>>> Huang, Ying
+>>>
+>>> Thanks!
+>>>
+>>>> .
+>>>>
+>>>
+>>>
+>> .
+>>
+> 
 
