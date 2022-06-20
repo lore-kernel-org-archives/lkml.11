@@ -2,173 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5160BC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 12:03:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A01DDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 12:03:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241168AbiFTMDQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 08:03:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47202 "EHLO
+        id S242215AbiFTMDq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 08:03:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242089AbiFTMCl (ORCPT
+        with ESMTP id S242242AbiFTMCw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 08:02:41 -0400
-Received: from smtp2.infineon.com (smtp2.infineon.com [IPv6:2a00:18f0:1e00:4::4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A72D18380;
-        Mon, 20 Jun 2022 05:02:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=infineon.com; i=@infineon.com; q=dns/txt; s=IFXMAIL;
-  t=1655726560; x=1687262560;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=mcU2zd605tdGXObukOV2l4wgt38ac82d1qr3NR5XZ4s=;
-  b=Z7UDaHXgELPH/zR4+23dq3dPylvSdCLLvZULsOjkrxhe1drLZhXtgCm4
-   yu65OeCcCVnrKDw8xDL93w7rwBDsRV+0G6jE/xSoUXdqzyGswgIggptlk
-   nm+Bs6eHXga0f/K9FgTIsNxWQTAfc5FH4NlxYu6Wf/9K5TfeDhmxK5gRF
-   k=;
-X-SBRS: None
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="184450176"
-X-IronPort-AV: E=Sophos;i="5.92,306,1650924000"; 
-   d="scan'208";a="184450176"
-Received: from unknown (HELO mucxv002.muc.infineon.com) ([172.23.11.17])
-  by smtp2.infineon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 14:02:35 +0200
-Received: from MUCSE819.infineon.com (MUCSE819.infineon.com [172.23.29.45])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 20 Jun 2022 08:02:52 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1231B18B23
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 05:02:46 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by mucxv002.muc.infineon.com (Postfix) with ESMTPS;
-        Mon, 20 Jun 2022 14:02:35 +0200 (CEST)
-Received: from MUCSE807.infineon.com (172.23.29.33) by MUCSE819.infineon.com
- (172.23.29.45) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Mon, 20 Jun
- 2022 14:02:35 +0200
-Received: from ISCNPF0RJXQS.infineon.com (172.23.8.247) by
- MUCSE807.infineon.com (172.23.29.33) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.26; Mon, 20 Jun 2022 14:02:34 +0200
-From:   Hakan Jansson <hakan.jansson@infineon.com>
-CC:     Hakan Jansson <hakan.jansson@infineon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "Luiz Augusto von Dentz" <luiz.dentz@gmail.com>,
-        <linux-bluetooth@vger.kernel.org>
-Subject: [PATCH 4/4] Bluetooth: hci_bcm: Increase host baudrate for CYW55572 in autobaud mode
-Date:   Mon, 20 Jun 2022 14:01:29 +0200
-Message-ID: <386b205422099c795272ad8b792091b692def3cd.1655723462.git.hakan.jansson@infineon.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1655723462.git.hakan.jansson@infineon.com>
-References: <cover.1655723462.git.hakan.jansson@infineon.com>
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 74E301F45E;
+        Mon, 20 Jun 2022 12:02:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1655726565; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=trD6oDP/oU8K8dJxIz+dxuUeJsrMnku6W+1r4BQpCf0=;
+        b=ZorN7QgrzXhLExwAn218fgIC5FfaeIv6TReRRI7xdSxJkf1e/5k649P79PRZZMLqoQfC7s
+        UUudXPlwKJB+3aJTfvO/fdaXQolnKaIuCWFbzXhhvp73npz3H0lPrvXns+EQ0Vq2x6/dht
+        K8XYjTgDd6IXG9K7pf/yMoTuR8FUaT4=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1655726565;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=trD6oDP/oU8K8dJxIz+dxuUeJsrMnku6W+1r4BQpCf0=;
+        b=ZSvL4DqDEL0UObQafmOG7pduvvvPOkc9D9tk704KMNDH+CCia7xbgahqmlsA5GRSBEgJYq
+        wWRifN2kVyvq31Bw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 4CF85134CA;
+        Mon, 20 Jun 2022 12:02:45 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id xhEnEuVhsGLoFAAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Mon, 20 Jun 2022 12:02:45 +0000
+Message-ID: <a8082f00-3e00-f781-f5f0-20b4853b3335@suse.cz>
+Date:   Mon, 20 Jun 2022 14:02:45 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [172.23.8.247]
-X-ClientProxiedBy: MUCSE805.infineon.com (172.23.29.31) To
- MUCSE807.infineon.com (172.23.29.33)
-To:     unlisted-recipients:; (no To-header on input)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+From:   Vlastimil Babka <vbabka@suse.cz>
+Subject: [GIT PULL] slab fixes for 5.19
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>, patches@lists.linux.dev,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add device specific data for max baudrate in autobaud mode. This allows the
-host to use a baudrate higher than "init speed" when loading FW in autobaud
-mode.
+Linus
 
-Signed-off-by: Hakan Jansson <hakan.jansson@infineon.com>
----
- drivers/bluetooth/hci_bcm.c | 20 ++++++++++++++++----
- 1 file changed, 16 insertions(+), 4 deletions(-)
+please pull the slab fixes for 5.19 from
 
-diff --git a/drivers/bluetooth/hci_bcm.c b/drivers/bluetooth/hci_bcm.c
-index 0ae627c293c5..d7e0b75db8a6 100644
---- a/drivers/bluetooth/hci_bcm.c
-+++ b/drivers/bluetooth/hci_bcm.c
-@@ -53,10 +53,12 @@
-  * struct bcm_device_data - device specific data
-  * @no_early_set_baudrate: Disallow set baudrate before driver setup()
-  * @drive_rts_on_open: drive RTS signal on ->open() when platform requires it
-+ * @max_autobaud_speed: max baudrate supported by device in autobaud mode
-  */
- struct bcm_device_data {
- 	bool	no_early_set_baudrate;
- 	bool	drive_rts_on_open;
-+	u32	max_autobaud_speed;
- };
- 
- /**
-@@ -100,6 +102,7 @@ struct bcm_device_data {
-  * @drive_rts_on_open: drive RTS signal on ->open() when platform requires it
-  * @pcm_int_params: keep the initial PCM configuration
-  * @use_autobaud_mode: start Bluetooth device in autobaud mode
-+ * @max_autobaud_speed: max baudrate supported by device in autobaud mode
-  */
- struct bcm_device {
- 	/* Must be the first member, hci_serdev.c expects this. */
-@@ -139,6 +142,7 @@ struct bcm_device {
- 	bool			drive_rts_on_open;
- 	bool			use_autobaud_mode;
- 	u8			pcm_int_params[5];
-+	u32			max_autobaud_speed;
- };
- 
- /* generic bcm uart resources */
-@@ -479,7 +483,10 @@ static int bcm_open(struct hci_uart *hu)
- 		else if (bcm->dev->drive_rts_on_open)
- 			hci_uart_set_flow_control(hu, true);
- 
--		hu->init_speed = bcm->dev->init_speed;
-+		if (bcm->dev->use_autobaud_mode && bcm->dev->max_autobaud_speed)
-+			hu->init_speed = min(bcm->dev->oper_speed, bcm->dev->max_autobaud_speed);
-+		else
-+			hu->init_speed = bcm->dev->init_speed;
- 
- 		/* If oper_speed is set, ldisc/serdev will set the baudrate
- 		 * before calling setup()
-@@ -585,8 +592,8 @@ static int bcm_setup(struct hci_uart *hu)
- 		return 0;
- 
- 	/* Init speed if any */
--	if (hu->init_speed)
--		speed = hu->init_speed;
-+	if (bcm->dev && bcm->dev->init_speed)
-+		speed = bcm->dev->init_speed;
- 	else if (hu->proto->init_speed)
- 		speed = hu->proto->init_speed;
- 	else
-@@ -1519,6 +1526,7 @@ static int bcm_serdev_probe(struct serdev_device *serdev)
- 
- 	data = device_get_match_data(bcmdev->dev);
- 	if (data) {
-+		bcmdev->max_autobaud_speed = data->max_autobaud_speed;
- 		bcmdev->no_early_set_baudrate = data->no_early_set_baudrate;
- 		bcmdev->drive_rts_on_open = data->drive_rts_on_open;
- 	}
-@@ -1542,6 +1550,10 @@ static struct bcm_device_data bcm43438_device_data = {
- 	.drive_rts_on_open = true,
- };
- 
-+static struct bcm_device_data cyw55572_device_data = {
-+	.max_autobaud_speed = 921600,
-+};
-+
- static const struct of_device_id bcm_bluetooth_of_match[] = {
- 	{ .compatible = "brcm,bcm20702a1" },
- 	{ .compatible = "brcm,bcm4329-bt" },
-@@ -1554,7 +1566,7 @@ static const struct of_device_id bcm_bluetooth_of_match[] = {
- 	{ .compatible = "brcm,bcm4349-bt", .data = &bcm43438_device_data },
- 	{ .compatible = "brcm,bcm43540-bt", .data = &bcm4354_device_data },
- 	{ .compatible = "brcm,bcm4335a0" },
--	{ .compatible = "infineon,cyw55572-bt" },
-+	{ .compatible = "infineon,cyw55572-bt", .data = &cyw55572_device_data },
- 	{ },
- };
- MODULE_DEVICE_TABLE(of, bcm_bluetooth_of_match);
--- 
-2.25.1
+  git://git.kernel.org/pub/scm/linux/kernel/git/vbabka/slab.git tags/slab-for-5.19-fixup
 
+======================================
+
+- A slub fix for PREEMPT_RT locking semantics from Sebastian.
+
+- A slub fix for state corruption due to a possible race scenario from Jann.
+
+Thanks,
+Vlastimil
+
+----------------------------------------------------------------
+Jann Horn (1):
+      mm/slub: add missing TID updates on slab deactivation
+
+Sebastian Andrzej Siewior (1):
+      mm/slub: Move the stackdepot related allocation out of IRQ-off section.
+
+ mm/slub.c | 43 ++++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 36 insertions(+), 7 deletions(-)
