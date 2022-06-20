@@ -2,122 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D6D1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 11:56:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B305CCA47C
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 11:56:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241984AbiFTL4k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 07:56:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41310 "EHLO
+        id S241055AbiFTL45 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 07:56:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231272AbiFTL4h (ORCPT
+        with ESMTP id S242040AbiFTL4w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 07:56:37 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2865617E03;
-        Mon, 20 Jun 2022 04:56:37 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id DA00A21B73;
-        Mon, 20 Jun 2022 11:56:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1655726195; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+wkpLj1K+yPjMRJxi8utxl0ln69LqNl6bk/oJMw1gi4=;
-        b=g5wKTYdSVahRen1Xx4ZVdANCmeFmjoi1EBy2+EXhQj5rhUeouBHw0KBx+D3YR3oHBfcIyj
-        28t+BypWrSMddQIJPVhLC3xnTIm/70iAMX4vIpK2Lc6JiiGwBE/wWM8fGcKY6LOUIe1RrX
-        26nadAcchEElh1vnT54ytH/5QTS8iZo=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1655726195;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+wkpLj1K+yPjMRJxi8utxl0ln69LqNl6bk/oJMw1gi4=;
-        b=8OP+PeX7Ag28Hlzm51S2jXkO8equavYlE3ZtDEYXl+ptjPVEPWhEB31PHL8TPGL1WXTi0Z
-        PjfrpXODVaW6/RDw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id C7FD7134CA;
-        Mon, 20 Jun 2022 11:56:35 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 0lWkMHNgsGIKEQAAMHmgww
-        (envelope-from <hare@suse.de>); Mon, 20 Jun 2022 11:56:35 +0000
-Message-ID: <22bedb25-63ee-3106-f37d-b4ef19ac9e6f@suse.de>
-Date:   Mon, 20 Jun 2022 13:56:34 +0200
+        Mon, 20 Jun 2022 07:56:52 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BD5C17E11
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 04:56:47 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id h192so10108423pgc.4
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 04:56:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ventanamicro.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rI0zAiF6+xouFdkf88WxUsEVQ+mvGqHQih04lexR5nU=;
+        b=n1R4AymCtdjuMbvvEWoz/d9pnN3llJKP2G7oN4iZfCbG7/Y0GGXIzu6B1PssT/sF/d
+         CWsYvD6uglFULOhQdMIaOXecbMrj6pXPakW4qweTQCkmeC9zn8lW70vQp6sgr5FR9dcm
+         X6yQyWVqwwZJAwVDUYgCXeN5Q6arTIdHxRaquhWKB9qWoTjswJuOkEpGynPqbYXrqZLT
+         4b2WfwwmuarH2Y9DoxINyGvy1pqUg+LZyGsufMWArb3aNSJYeGCQRD0nNWun/WVaUbhG
+         UH7Ci/jtHZgZO1Xe/UBBrQ0Zvw/rP4jd7TlsbeLDv04g5JFoU9H1ElEQe4nxhDqZAgpT
+         yykg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rI0zAiF6+xouFdkf88WxUsEVQ+mvGqHQih04lexR5nU=;
+        b=OnZqWeFbV9vvOFQrEhO+CIEqe8UIvXNSDBB4TKYwnw8B34uE+Ert188MpmauYbi3pG
+         dpy49HBM4o7PMG7VuQIEs7Sv1u/mvm9qET+KAScIDl7NT3MlIC2ztssRHdjs+7zF+usL
+         j9qGzIW0CdwF/u2BcBtMfherlWSN2ea3gNblO5OC4YiOypa90Gg3XaleH0WMLZLfP8vK
+         oLLNtPH9Mt2pu3eNO5IdVVkIhEIBd9UHUCv+FW904PcWFrZkPMufFQX8MEgCQ6BRNqdE
+         H1LXC1KFpMZ8lYNtk29mMfJVUkdVi5lDfD3ja176HIlmXVK9inujwdFAX0ugMT+7rF5M
+         o9Ig==
+X-Gm-Message-State: AJIora91TxyJLeqUGS1skeyqBxuEWCaUgTVOKiIbcyx3I4X/RCS22hrP
+        U22w3PJQlZUZRuqvaXjEwM/Iqg==
+X-Google-Smtp-Source: AGRyM1vC//SgXgox2YN72+b7ZCp08BereLLgLXewSNx2DC5V6PNqDmhpgdYQAR8ndKksIX1jIkydNg==
+X-Received: by 2002:a65:668b:0:b0:3f6:4026:97cd with SMTP id b11-20020a65668b000000b003f6402697cdmr21086549pgw.420.1655726207401;
+        Mon, 20 Jun 2022 04:56:47 -0700 (PDT)
+Received: from anup-ubuntu64-vm.. ([122.167.110.75])
+        by smtp.gmail.com with ESMTPSA id iy22-20020a170903131600b0016a1d007637sm2756809plb.110.2022.06.20.04.56.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Jun 2022 04:56:46 -0700 (PDT)
+From:   Anup Patel <apatel@ventanamicro.com>
+To:     Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Atish Patra <atishp@atishpatra.org>,
+        Nikita Shubin <nikita.shubin@maquefel.me>,
+        Heinrich Schuchardt <heinrich.schuchardt@canonical.com>,
+        Anup Patel <anup@brainfault.org>,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Anup Patel <apatel@ventanamicro.com>
+Subject: [PATCH] RISC-V: Add mvendorid, marchid, and mimpid to /proc/cpuinfo output
+Date:   Mon, 20 Jun 2022 17:25:49 +0530
+Message-Id: <20220620115549.1529597-1-apatel@ventanamicro.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Content-Language: en-US
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Christoph Hellwig <hch@lst.de>
-Cc:     John Garry <john.garry@huawei.com>,
-        Bart Van Assche <bvanassche@acm.org>, axboe@kernel.dk,
-        jejb@linux.ibm.com, martin.petersen@oracle.com, brking@us.ibm.com,
-        linux-block@vger.kernel.org, linux-ide@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
-        chenxiang66@hisilicon.com
-References: <1654770559-101375-4-git-send-email-john.garry@huawei.com>
- <b4a0ede5-95a3-4388-e808-7627b5484d01@opensource.wdc.com>
- <9e89360d-3325-92af-0436-b34df748f3e2@acm.org>
- <e36bba7e-d78d-27b4-a0e2-9d921bc82f5d@opensource.wdc.com>
- <3a27b6ff-e495-8f11-6925-1487c9d14fa9@huawei.com>
- <c702f06e-b7da-92be-3c4f-5dd405600235@opensource.wdc.com>
- <ecfb0694-21b8-55b4-c9b8-5e738f59ce8d@huawei.com>
- <98fa010d-3555-a82b-e960-f47aeeb38151@opensource.wdc.com>
- <7b046321-fdb3-33f0-94a0-78a25cbbe02e@suse.de>
- <9de5ed1b-e874-28ac-0532-cd5420892064@opensource.wdc.com>
- <20220620090543.GA13643@lst.de>
- <41fa0f12-cdcf-f2c4-7366-1abd04312f1f@opensource.wdc.com>
-From:   Hannes Reinecke <hare@suse.de>
-Subject: Re: [PATCH RFC v2 03/18] scsi: core: Implement reserved command
- handling
-In-Reply-To: <41fa0f12-cdcf-f2c4-7366-1abd04312f1f@opensource.wdc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/20/22 13:24, Damien Le Moal wrote:
-> On 6/20/22 18:05, Christoph Hellwig wrote:
->> On Mon, Jun 20, 2022 at 06:02:30PM +0900, Damien Le Moal wrote:
->>> So reserving a tag/req to be able to do NCQ at the cost of max qd being 31
->>> works for that. We could keep max qd at 32 by creating one more "fake" tag
->>> and having a request for it, that is, having the fake tag visible to the
->>> block layer as a reserved tag, as John's series is doing, but for the
->>> reserved tags, we actually need to use an effective tag (qc->hw_tag) when
->>> issuing the commands. And for that, we can reuse the tag of one of the
->>> failed commands.
->>
->> Take a look at the magic flush request in blk-flush.c, which is
->> preallocated but borrows a tag from the request that wants a pre- or
->> post-flush.  The logic is rather ugly, but maybe it might actually
->> become cleaner by generalizing it a bit.
-> 
-> Thanks. Will check.
-> I am also looking at scsi_unjam_host() and scsi_eh_get_sense(). These
-> reuse a scsi command to do eh operations. So I could use that too, modulo
-> making it work outside of eh context to keep the command flow intact.
-> 
+Identifying the underlying RISC-V implementation can be important
+for some of the user space applications. For example, the perf tool
+uses arch specific CPU implementation id (i.e. CPUID) to select a
+JSON file describing custom perf events on a CPU.
 
-Tsk. I was hoping to be able to remove it (especially 
-scsi_eh_get_sense()), but looks as if we actually do need it.
-But it might be not a bad idea to have scsi_eh_get_sense() to run 
-independent on the SCSI EH stuff; returning with a sense code is not 
-necessary an error, so there are reasons for not always invoking SCSI EH.
+Currently, there is no way to identify RISC-V implementation so we
+add mvendorid, marchid, and mimpid to /proc/cpuinfo output.
 
-Cheers,
+Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+---
+ arch/riscv/kernel/cpu.c | 51 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 51 insertions(+)
 
-Hannes
+diff --git a/arch/riscv/kernel/cpu.c b/arch/riscv/kernel/cpu.c
+index fba9e9f46a8c..c037b8691bbb 100644
+--- a/arch/riscv/kernel/cpu.c
++++ b/arch/riscv/kernel/cpu.c
+@@ -3,10 +3,13 @@
+  * Copyright (C) 2012 Regents of the University of California
+  */
+ 
++#include <linux/cpu.h>
+ #include <linux/init.h>
+ #include <linux/seq_file.h>
+ #include <linux/of.h>
++#include <asm/csr.h>
+ #include <asm/hwcap.h>
++#include <asm/sbi.h>
+ #include <asm/smp.h>
+ #include <asm/pgtable.h>
+ 
+@@ -64,6 +67,50 @@ int riscv_of_parent_hartid(struct device_node *node)
+ }
+ 
+ #ifdef CONFIG_PROC_FS
++
++struct riscv_cpuinfo {
++	unsigned long mvendorid;
++	unsigned long marchid;
++	unsigned long mimpid;
++};
++static DEFINE_PER_CPU(struct riscv_cpuinfo, riscv_cpuinfo);
++
++static int riscv_cpuinfo_starting(unsigned int cpu)
++{
++	struct riscv_cpuinfo *ci = this_cpu_ptr(&riscv_cpuinfo);
++
++#if defined(CONFIG_RISCV_SBI)
++	ci->mvendorid = sbi_spec_is_0_1() ? 0 : sbi_get_mvendorid();
++	ci->marchid = sbi_spec_is_0_1() ? 0 : sbi_get_marchid();
++	ci->mimpid = sbi_spec_is_0_1() ? 0 : sbi_get_mimpid();
++#elif defined(CONFIG_RISCV_M_MODE)
++	ci->mvendorid = csr_read(CSR_MVENDORID);
++	ci->marchid = csr_read(CSR_MARCHID);
++	ci->mimpid = csr_read(CSR_MIMPID);
++#else
++	ci->mvendorid = 0;
++	ci->marchid = 0;
++	ci->mimpid = 0;
++#endif
++
++	return 0;
++}
++
++static int __init riscv_cpuinfo_init(void)
++{
++	int ret;
++
++	ret = cpuhp_setup_state(CPUHP_AP_ONLINE_DYN, "riscv/cpuinfo:starting",
++				riscv_cpuinfo_starting, NULL);
++	if (ret < 0) {
++		pr_err("cpuinfo: failed to register hotplug callbacks.\n");
++		return ret;
++	}
++
++	return 0;
++}
++device_initcall(riscv_cpuinfo_init);
++
+ #define __RISCV_ISA_EXT_DATA(UPROP, EXTID) \
+ 	{							\
+ 		.uprop = #UPROP,				\
+@@ -178,6 +225,7 @@ static int c_show(struct seq_file *m, void *v)
+ {
+ 	unsigned long cpu_id = (unsigned long)v - 1;
+ 	struct device_node *node = of_get_cpu_node(cpu_id, NULL);
++	struct riscv_cpuinfo *ci = per_cpu_ptr(&riscv_cpuinfo, cpu_id);
+ 	const char *compat, *isa;
+ 
+ 	seq_printf(m, "processor\t: %lu\n", cpu_id);
+@@ -188,6 +236,9 @@ static int c_show(struct seq_file *m, void *v)
+ 	if (!of_property_read_string(node, "compatible", &compat)
+ 	    && strcmp(compat, "riscv"))
+ 		seq_printf(m, "uarch\t\t: %s\n", compat);
++	seq_printf(m, "mvendorid\t: 0x%lx\n", ci->mvendorid);
++	seq_printf(m, "marchid\t\t: 0x%lx\n", ci->marchid);
++	seq_printf(m, "mimpid\t\t: 0x%lx\n", ci->mimpid);
+ 	seq_puts(m, "\n");
+ 	of_node_put(node);
+ 
 -- 
-Dr. Hannes Reinecke		           Kernel Storage Architect
-hare@suse.de			                  +49 911 74053 688
-SUSE Software Solutions Germany GmbH, Maxfeldstr. 5, 90409 Nürnberg
-HRB 36809 (AG Nürnberg), GF: Felix Imendörffer
+2.34.1
+
