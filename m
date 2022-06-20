@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6175EC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:02:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81069C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:02:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243927AbiFTNCR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:02:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47500 "EHLO
+        id S243606AbiFTNCV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:02:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244789AbiFTM7w (ORCPT
+        with ESMTP id S242756AbiFTNAA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 08:59:52 -0400
+        Mon, 20 Jun 2022 09:00:00 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF7261CFC8;
-        Mon, 20 Jun 2022 05:56:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DEAB1CFFB;
+        Mon, 20 Jun 2022 05:56:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 65A71614DA;
-        Mon, 20 Jun 2022 12:56:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78A65C3411C;
-        Mon, 20 Jun 2022 12:56:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D3F0C614CE;
+        Mon, 20 Jun 2022 12:56:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A486C341C4;
+        Mon, 20 Jun 2022 12:56:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655729807;
-        bh=qrkbySgKhibtVCFL0La5dUdABQ+I8ii8SIbiNjB7t0U=;
+        s=korg; t=1655729814;
+        bh=NY3J8kQlVXglfPf8Lzkwc6k5b+VTjHUvUCXI5tTtqKM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SSXcnqPyjQDA9kC4lC2Ql+X+U6rBJT6q5Y/zCwHOQewg2Aqh7iNqOL6BvoeewjunO
-         C6Uqu20pruzAWGg+kX6h5DgzxaHqEEynAFPQdNjasoOYZHoWHtEUOkQTU/LEZJ/Y6a
-         OXkzGSMnljDO3LoX1JsmAo9uokuBOx4ZNQwWZfDY=
+        b=ndOSjepOD/n9C6YSGdiz8QwKSniZ+aKI79UXFUPYcsIKTJ/fhgbxV7xRasANb+VRq
+         t0u79cCHAUWdtp3pd7e/3zqDlLmRj3ZoYicswcMFWNT/S9nNAnM/5ANgaFK8KkqFsN
+         wD465avCm650Ck1HrUuSsS3aUFO1bBk+24hBGmEg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jie Wang <wangjie125@huawei.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 072/141] net: hns3: fix PF rss size initialization bug
-Date:   Mon, 20 Jun 2022 14:50:10 +0200
-Message-Id: <20220620124731.667222691@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Thomas=20Wei=C3=9Fschuh?= <linux@weissschuh.net>,
+        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 074/141] nvme: add device name to warning in uuid_show()
+Date:   Mon, 20 Jun 2022 14:50:12 +0200
+Message-Id: <20220620124731.726537509@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 References: <20220620124729.509745706@linuxfoundation.org>
@@ -50,38 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jie Wang <wangjie125@huawei.com>
+From: Thomas Weißschuh <linux@weissschuh.net>
 
-[ Upstream commit 71b215f36dca1a3d5d1c576b2099e6d7ea03047e ]
+[ Upstream commit 1fc766b5c08417248e0008bca14c3572ac0f1c26 ]
 
-Currently hns3 driver misuses the VF rss size to initialize the PF rss size
-in hclge_tm_vport_tc_info_update. So this patch fix it by checking the
-vport id before initialization.
+This provides more context to users.
 
-Fixes: 7347255ea389 ("net: hns3: refactor PF rss get APIs with new common rss get APIs")
-Signed-off-by: Jie Wang <wangjie125@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Old message:
+
+[   00.000000] No UUID available providing old NGUID
+
+New message:
+
+[   00.000000] block nvme0n1: No UUID available providing old NGUID
+
+Fixes: d934f9848a77 ("nvme: provide UUID value to userspace")
+Signed-off-by: Thomas Weißschuh <linux@weissschuh.net>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/nvme/host/core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
-index ad53a3447322..f5296ff60694 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
-@@ -681,7 +681,9 @@ static void hclge_tm_vport_tc_info_update(struct hclge_vport *vport)
- 	kinfo->num_tqps = hclge_vport_get_tqp_num(vport);
- 	vport->dwrr = 100;  /* 100 percent as init */
- 	vport->bw_limit = hdev->tm_info.pg_info[0].bw_limit;
--	hdev->rss_cfg.rss_size = kinfo->rss_size;
-+
-+	if (vport->vport_id == PF_VPORT_ID)
-+		hdev->rss_cfg.rss_size = kinfo->rss_size;
- 
- 	/* when enable mqprio, the tc_info has been updated. */
- 	if (kinfo->tc_info.mqprio_active)
+diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
+index 2d6a01853109..1ea85c88d795 100644
+--- a/drivers/nvme/host/core.c
++++ b/drivers/nvme/host/core.c
+@@ -3226,8 +3226,8 @@ static ssize_t uuid_show(struct device *dev, struct device_attribute *attr,
+ 	 * we have no UUID set
+ 	 */
+ 	if (uuid_is_null(&ids->uuid)) {
+-		printk_ratelimited(KERN_WARNING
+-				   "No UUID available providing old NGUID\n");
++		dev_warn_ratelimited(dev,
++			"No UUID available providing old NGUID\n");
+ 		return sysfs_emit(buf, "%pU\n", ids->nguid);
+ 	}
+ 	return sysfs_emit(buf, "%pU\n", &ids->uuid);
 -- 
 2.35.1
 
