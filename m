@@ -2,36 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A1FCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 21:34:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7695CCA480
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 21:34:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244361AbiFTVeZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 17:34:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42056 "EHLO
+        id S1343563AbiFTVee (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 17:34:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233809AbiFTVeO (ORCPT
+        with ESMTP id S242433AbiFTVeR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 17:34:14 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CDA115709
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 14:34:13 -0700 (PDT)
+        Mon, 20 Jun 2022 17:34:17 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2C171572E
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 14:34:15 -0700 (PDT)
 Received: from hermes-devbox.fritz.box (82-71-8-225.dsl.in-addr.zen.co.uk [82.71.8.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: bbeckett)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 7D20766017D6;
-        Mon, 20 Jun 2022 22:34:11 +0100 (BST)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 3D9B0660179B;
+        Mon, 20 Jun 2022 22:34:14 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1655760851;
-        bh=JT0TnJkB0rL8RAGj5L8WxKKfTjJ2qr1XwBthtCgxh3Y=;
+        s=mail; t=1655760854;
+        bh=AgP5Riz/FHb587iBL1vYiW/g4qmDc92BtRCaR0jjFGw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MPAxmFo5Z9i/mCG0uVW4wFwnBmwfN1H5RM77P+9JrdL5Q+Elbm4negTsXns53uDoi
-         JHpon/pxt4t3zw5s8sU5GHM+EGJbSAlP3y1azj+IMoPGRGHzIIC4keey9hOth/gHND
-         mw8m2HQyALODDBwNkKHjpWAVK3N/VJvhREjOgc8Z0tnizOUc326JCW7XbYF9hN++JO
-         BVSneZpihaDdwN8wXS3mjPbat1hLRGLGVru+tkCiy7PNpRQ/siUvlmSeUFMWd6WQZs
-         8FrWPOu5djxOyuyb5mjAysDAjT7IvlXBcniXEaWMcerejLy93eP+tZDzRomHV212gU
-         H+e5IGfLYUFWg==
+        b=Y5CiKSbpQG/ukWpxDeRwljhigdQFYdoAJSwyeexJRVo+fpjvj1Zc6/LSVcgzyn2/M
+         K0EbZX7/4wK8/5rgT1qzIKPCp8dtLp5Wt7JyPocBJbnJ8+TPqNSWUAV/qkDKdiwF0h
+         9d84dMkrklTXF+mh8r2qmDeG1/Rn51mq45q3KD1pdyC/1x7Wdp/KNL1f7foBfv6h4y
+         B5uplaYowW+oAX04sqqlbIkwMPRkGCyy52HubDILqPGKGFyRYjF1WRZdJtYq4ZRBxA
+         mP2Lu3nSfSMfggPzGHczfAecQO2vnx1yvrcqlPi0lFHgU3zQZ7CvQsSOLuOAh4EiRQ
+         pCy6gb5Gz3jbA==
 From:   Robert Beckett <bob.beckett@collabora.com>
 To:     dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
         Jani Nikula <jani.nikula@linux.intel.com>,
@@ -44,47 +45,57 @@ Cc:     kernel@collabora.com, Robert Beckett <bob.beckett@collabora.com>,
         Matthew Auld <matthew.auld@intel.com>,
         =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
         <thomas.hellstrom@linux.intel.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH v7 02/10] drm/i915: limit ttm to dma32 for i965G[M]
-Date:   Mon, 20 Jun 2022 21:33:32 +0000
-Message-Id: <20220620213340.3199605-3-bob.beckett@collabora.com>
+Subject: [PATCH v7 06/10] drm/i915: sanitize mem_flags for stolen buffers
+Date:   Mon, 20 Jun 2022 21:33:36 +0000
+Message-Id: <20220620213340.3199605-7-bob.beckett@collabora.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220620213340.3199605-1-bob.beckett@collabora.com>
 References: <20220620213340.3199605-1-bob.beckett@collabora.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-i965G[M] cannot relocate objects above 4GiB.
-Ensure ttm uses dma32 on these systems.
+Stolen regions are not page backed or considered iomem.
+Prevent flags indicating such.
+This correctly prevents stolen buffers from attempting to directly map
+them.
+
+See i915_gem_object_has_struct_page() and i915_gem_object_has_iomem()
+usage for where it would break otherwise.
 
 Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
+Reviewed-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
 ---
- drivers/gpu/drm/i915/intel_region_ttm.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/i915/intel_region_ttm.c b/drivers/gpu/drm/i915/intel_region_ttm.c
-index 62ff77445b01..fd2ecfdd8fa1 100644
---- a/drivers/gpu/drm/i915/intel_region_ttm.c
-+++ b/drivers/gpu/drm/i915/intel_region_ttm.c
-@@ -32,10 +32,15 @@
- int intel_region_ttm_device_init(struct drm_i915_private *dev_priv)
- {
- 	struct drm_device *drm = &dev_priv->drm;
-+	bool use_dma32 = false;
-+
-+	/* i965g[m] cannot relocate objects above 4GiB. */
-+	if (IS_I965GM(dev_priv) || IS_I965G(dev_priv))
-+		use_dma32 = true;
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
+index 675e9ab30396..81c67ca9edda 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
+@@ -14,6 +14,7 @@
+ #include "gem/i915_gem_region.h"
+ #include "gem/i915_gem_ttm.h"
+ #include "gem/i915_gem_ttm_move.h"
++#include "gem/i915_gem_stolen.h"
  
- 	return ttm_device_init(&dev_priv->bdev, i915_ttm_driver(),
- 			       drm->dev, drm->anon_inode->i_mapping,
--			       drm->vma_offset_manager, false, false);
-+			       drm->vma_offset_manager, false, use_dma32);
- }
+ #include "gt/intel_engine_pm.h"
+ #include "gt/intel_gt.h"
+@@ -124,8 +125,9 @@ void i915_ttm_adjust_gem_after_move(struct drm_i915_gem_object *obj)
  
- /**
+ 	obj->mem_flags &= ~(I915_BO_FLAG_STRUCT_PAGE | I915_BO_FLAG_IOMEM);
+ 
+-	obj->mem_flags |= i915_ttm_cpu_maps_iomem(bo->resource) ? I915_BO_FLAG_IOMEM :
+-		I915_BO_FLAG_STRUCT_PAGE;
++	if (!i915_gem_object_is_stolen(obj))
++		obj->mem_flags |= i915_ttm_cpu_maps_iomem(bo->resource) ? I915_BO_FLAG_IOMEM :
++			I915_BO_FLAG_STRUCT_PAGE;
+ 
+ 	if (!obj->ttm.cache_level_override) {
+ 		cache_level = i915_ttm_cache_level(to_i915(bo->base.dev),
 -- 
 2.25.1
 
