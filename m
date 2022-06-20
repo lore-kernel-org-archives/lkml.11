@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7211BC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:21:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E577C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:21:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243559AbiFTNVa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:21:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45242 "EHLO
+        id S1344013AbiFTNVg (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:21:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343966AbiFTNR1 (ORCPT
+        with ESMTP id S245664AbiFTNRg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:17:27 -0400
+        Mon, 20 Jun 2022 09:17:36 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE49F1145;
-        Mon, 20 Jun 2022 06:07:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33235E21;
+        Mon, 20 Jun 2022 06:07:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 42924B811E0;
-        Mon, 20 Jun 2022 13:07:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 711E2C36AF4;
-        Mon, 20 Jun 2022 13:07:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5E192B811E1;
+        Mon, 20 Jun 2022 13:07:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA6B4C3411B;
+        Mon, 20 Jun 2022 13:07:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730468;
-        bh=X5ZsW+5AJFVaTR65HbXpOKA8Yb1ZrXLbKvlRDnWkls4=;
+        s=korg; t=1655730456;
+        bh=js67p3A6r8bSQ11UmhXkeDmQ7ZxE7A+ttl3hqzllPQI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WuH4DGm423XCNGjPUrLcvLnAyH3atjnbEDG7fhH7vUchwK2DmUXZsw3gyK3uAlAMe
-         fBubJV2+9LqMRRV6rlZ6o7CrUhhNDjaiKZu23//nOCyQUqgPWZdFNalysdWrWjJ8TE
-         jBrA0/40PrXOLf8Qhf0+Ws2y98plTtqxdPWwKWG8=
+        b=I/m0D60Ay7Exds4qRfFkeOUrx62T4WQU9rwrobUgoxTCuwgf9A5JoYVS0/S4Jel5e
+         TsVPCg4JC3JRdyqIKCyfRPE2mFVb3hIa+KtHmuXiyQMhLia/UNWGctunB2+lToPbCg
+         VXcbePNzI0EzCdk4vNEphM8xPg5Nm4Zr7CPyYMWU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 035/106] gcc-12: disable -Wdangling-pointer warning for now
-Date:   Mon, 20 Jun 2022 14:50:54 +0200
-Message-Id: <20220620124725.427024679@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Begunkov <asml.silence@gmail.com>,
+        Sasha Levin <sashal@kernel.org>,
+        van fantasy <g1042620637@gmail.com>
+Subject: [PATCH 5.15 058/106] io_uring: fix races with buffer table unregister
+Date:   Mon, 20 Jun 2022 14:51:17 +0200
+Message-Id: <20220620124726.120555527@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
 References: <20220620124724.380838401@linuxfoundation.org>
@@ -49,64 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Pavel Begunkov <asml.silence@gmail.com>
 
-[ Upstream commit 49beadbd47c270a00754c107a837b4f29df4c822 ]
+[ Upstream commit d11d31fc5d8a96f707facee0babdcffaafa38de2 ]
 
-While the concept of checking for dangling pointers to local variables
-at function exit is really interesting, the gcc-12 implementation is not
-compatible with reality, and results in false positives.
+Fixed buffer table quiesce might unlock ->uring_lock, potentially
+letting new requests to be submitted, don't allow those requests to
+use the table as they will race with unregistration.
 
-For example, gcc sees us putting things on a local list head allocated
-on the stack, which involves exactly those kinds of pointers to the
-local stack entry:
-
-  In function ‘__list_add’,
-      inlined from ‘list_add_tail’ at include/linux/list.h:102:2,
-      inlined from ‘rebuild_snap_realms’ at fs/ceph/snap.c:434:2:
-  include/linux/list.h:74:19: warning: storing the address of local variable ‘realm_queue’ in ‘*&realm_27(D)->rebuild_item.prev’ [-Wdangling-pointer=]
-     74 |         new->prev = prev;
-        |         ~~~~~~~~~~^~~~~~
-
-But then gcc - understandably - doesn't really understand the big
-picture how the doubly linked list works, so doesn't see how we then end
-up emptying said list head in a loop and the pointer we added has been
-removed.
-
-Gcc also complains about us (intentionally) using this as a way to store
-a kind of fake stack trace, eg
-
-  drivers/acpi/acpica/utdebug.c:40:38: warning: storing the address of local variable ‘current_sp’ in ‘acpi_gbl_entry_stack_pointer’ [-Wdangling-pointer=]
-     40 |         acpi_gbl_entry_stack_pointer = &current_sp;
-        |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~
-
-which is entirely reasonable from a compiler standpoint, and we may want
-to change those kinds of patterns, but not not.
-
-So this is one of those "it would be lovely if the compiler were to
-complain about us leaving dangling pointers to the stack", but not this
-way.
-
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Reported-and-tested-by: van fantasy <g1042620637@gmail.com>
+Fixes: bd54b6fe3316ec ("io_uring: implement fixed buffers registration similar to fixed files")
+Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Makefile | 3 +++
- 1 file changed, 3 insertions(+)
+ fs/io_uring.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/Makefile b/Makefile
-index 8d7d65bd8efb..3f19b55e9958 100644
---- a/Makefile
-+++ b/Makefile
-@@ -811,6 +811,9 @@ endif
- KBUILD_CFLAGS += $(call cc-disable-warning, unused-but-set-variable)
- KBUILD_CFLAGS += $(call cc-disable-warning, unused-const-variable)
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index 5f111a660fff..be2176575353 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -8905,12 +8905,19 @@ static void __io_sqe_buffers_unregister(struct io_ring_ctx *ctx)
  
-+# These result in bogus false positives
-+KBUILD_CFLAGS += $(call cc-disable-warning, dangling-pointer)
-+
- ifdef CONFIG_FRAME_POINTER
- KBUILD_CFLAGS	+= -fno-omit-frame-pointer -fno-optimize-sibling-calls
- else
+ static int io_sqe_buffers_unregister(struct io_ring_ctx *ctx)
+ {
++	unsigned nr = ctx->nr_user_bufs;
+ 	int ret;
+ 
+ 	if (!ctx->buf_data)
+ 		return -ENXIO;
+ 
++	/*
++	 * Quiesce may unlock ->uring_lock, and while it's not held
++	 * prevent new requests using the table.
++	 */
++	ctx->nr_user_bufs = 0;
+ 	ret = io_rsrc_ref_quiesce(ctx->buf_data, ctx);
++	ctx->nr_user_bufs = nr;
+ 	if (!ret)
+ 		__io_sqe_buffers_unregister(ctx);
+ 	return ret;
 -- 
 2.35.1
 
