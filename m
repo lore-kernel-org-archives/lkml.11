@@ -2,93 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B2EEC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 08:21:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F928C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 08:22:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231954AbiFTIVr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 04:21:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39212 "EHLO
+        id S239491AbiFTIWg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 04:22:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238441AbiFTIVm (ORCPT
+        with ESMTP id S238797AbiFTIWb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 04:21:42 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE2101263E;
-        Mon, 20 Jun 2022 01:21:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655713301; x=1687249301;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=8E2kEq+GCo7Dhht4sPeokQjW9I35j7HibLiiqhyWzLc=;
-  b=XQCRb7LRslUeYyqtC37ZEvv8qINrkxD6+a3bKfKstm+iYXbMk8s8zUyT
-   ASMv5PcNIYCSaETcUaoSS4N0Kl5+lEPqSMdFqrd0xrtJbKH9AcVLDFGq+
-   62PWcLhXMdimpG22Yoj0TGEBZpCXVDDoFjXGNKU+DplTrtDDyX9m003yY
-   Y3wPJaa0zX78hq0MuzrdVZmAXt2AHv9Y/MBmAMdytC/UYnZPbDB6BCMJe
-   c0xg9shEgxnLNBC1sYe88d6p+MGHtcSpTy1tZvEa8veJLd+wZccWpbAsU
-   vcgEKRxJsg8tJAudl30GOZ6+0VuVrb4NU+g77cgEY6QVEMotR5teNpYDH
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="341518496"
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="341518496"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 01:21:39 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="584799278"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga007.jf.intel.com with ESMTP; 20 Jun 2022 01:21:37 -0700
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-To:     Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>
-Cc:     Chenyi Qiang <chenyi.qiang@intel.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-        Lu Baolu <baolu.lu@linux.intel.com>, stable@vger.kernel.org
-Subject: [PATCH 1/1] iommu/vt-d: Fix RID2PASID setup failure
-Date:   Mon, 20 Jun 2022 16:17:29 +0800
-Message-Id: <20220620081729.4610-1-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 20 Jun 2022 04:22:31 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08B9212091;
+        Mon, 20 Jun 2022 01:22:30 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 978C4660166E;
+        Mon, 20 Jun 2022 09:22:27 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1655713348;
+        bh=Bw8//Vr2/4Y/0JdxL5tF76a5lDkcKuJqgY+A3/ga2oc=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=nkDYwqvAQkgqrN1VB8RcGMCWM/y8IbVV5IMjNrJSkbf3JeM4U3lsuMtlMPqHSihGf
+         LS4afm8BEm05GBgs1KoSme5dQ+/U5ll7i5/QDfai6wrtRRhKqQDKvSK2e+CJzCkT1W
+         qEarsfCUI7gQ63UpHjMZsm0JI9gwPYKksjyrfXlqsQK1S+txPemzyGI1BJCRfKmFzu
+         jXTHmAUoWo/HhfF/hFzsl5WeOJ0p1xeCEoaFqhTEtoJwNUETILjvCjgouu5IBySRHZ
+         NR8LDI5T2dZnJ6yawv3Ek1uMm921LKw2N/RDEGk41FCkEE9AsHHhCdncqnqMg8vBGB
+         yyUD7/xVGkQyg==
+Message-ID: <96322aee-6fbe-9c0c-8935-1c2d10ae60f1@collabora.com>
+Date:   Mon, 20 Jun 2022 10:22:25 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH, v2] media: mediatek: vcodec: Initialize decoder
+ parameters after getting dec_capability
+Content-Language: en-US
+To:     Yunfei Dong <yunfei.dong@mediatek.com>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Nicolas Dufresne <nicolas@ndufresne.ca>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        Tiffany Lin <tiffany.lin@mediatek.com>,
+        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Tomasz Figa <tfiga@google.com>
+Cc:     George Sun <george.sun@mediatek.com>,
+        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Fritz Koenig <frkoenig@chromium.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Irui Wang <irui.wang@mediatek.com>,
+        Steve Cho <stevecho@chromium.org>, linux-media@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220620063217.9867-1-yunfei.dong@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220620063217.9867-1-yunfei.dong@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The IOMMU driver shares the pasid table for PCI alias devices. When the
-RID2PASID entry of the shared pasid table has been filled by the first
-device, the subsequent devices will encounter the "DMAR: Setup RID2PASID
-failed" failure as the pasid entry has already been marke as present. As
-the result, the IOMMU probing process will be aborted.
+Il 20/06/22 08:32, Yunfei Dong ha scritto:
+> Need to get dec_capability from scp first, then initialize decoder
+> supported format and other parameters according to dec_capability value.
+> 
+> Fixes: fd00d90330d1 ("media: mtk-vcodec: vdec: move stateful ops into their own file")
+> Signed-off-by: Yunfei Dong <yunfei.dong@mediatek.com>
+> Tested-by: Chen-Yu Tsai <wenst@chromium.org>
 
-This fixes it by skipping RID2PASID setting if the pasid entry has been
-populated. This works because the IOMMU core ensures that only the same
-IOMMU domain can be attached to all PCI alias devices at the same time.
-Therefore the subsequent devices just try to setup the RID2PASID entry
-with the same domain, which is negligible.
-
-Fixes: ef848b7e5a6a0 ("iommu/vt-d: Setup pasid entry for RID2PASID support")
-Reported-by: Chenyi Qiang <chenyi.qiang@intel.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 44016594831d..b9966c01a2a2 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -2564,7 +2564,7 @@ static int domain_add_dev_info(struct dmar_domain *domain, struct device *dev)
- 			ret = intel_pasid_setup_second_level(iommu, domain,
- 					dev, PASID_RID2PASID);
- 		spin_unlock_irqrestore(&iommu->lock, flags);
--		if (ret) {
-+		if (ret && ret != -EBUSY) {
- 			dev_err(dev, "Setup RID2PASID failed\n");
- 			dmar_remove_one_dev_info(dev);
- 			return ret;
--- 
-2.25.1
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
