@@ -2,106 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC4E1CCA479
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC1E6CCA481
 	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:20:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344305AbiFTNSv (ORCPT
+        id S1344376AbiFTNS5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:18:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37554 "EHLO
+        Mon, 20 Jun 2022 09:18:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345285AbiFTNOT (ORCPT
+        with ESMTP id S1345294AbiFTNOT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 20 Jun 2022 09:14:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F13E1FCE6;
-        Mon, 20 Jun 2022 06:07:00 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AF171FCDE
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 06:06:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 329BC614E9;
-        Mon, 20 Jun 2022 13:04:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 201A5C3411C;
-        Mon, 20 Jun 2022 13:04:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730257;
-        bh=02UmM0q3jA33fUQBUc8MJyNymoomP4LfNrzJVtLqnjU=;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 5A2D4CE1395
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 13:04:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F271DC3411C;
+        Mon, 20 Jun 2022 13:04:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655730290;
+        bh=EkiVmwPNEg3FOzf15e9eFLF0yMH/4A+tHea5lErg9qs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TUmUV2lgltgwb4bYAwT3OsdO8hjBRCEtXaIFRCAZEyZue0gGsRG99kDKYAcEh5JEw
-         J7z/TPHYRZaRpsxb0ad0hy1mEXEriOiRv5aFhwzpDCFUGKNPx0BfHd4NOSbYpd+r98
-         r/q8rHFm8aj4akFud2iII77Z9LbjrVZ0cCoaTwRY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+        b=buWOlcul2r5sjtIUpIQJEVZXtEDcHaj+G07vJWJMYiIV712MtZ1F9hgx8fQBbn39Q
+         hXHQFTlDJ+NYj1Ybu3jYFSRC7xLLZUdslaTce58blhs3Bd5eYciWiYmmL5ItCi9coj
+         3tlV4vleC77OoPFFY9UuxH7rVVgXINaI7W3KSdYLiObE60LTAcFoEVaBn2jJitqaYX
+         L9rdhO/je0oFB9R1PrRVnu6c7lrr/ra6ooZ1Fj+saFzzOvXHOljLyb/5DzfnOWRzq8
+         KpyG/TUznu3xNjU/Lk9rr7/8Or0V/1+TUn2NJnQYZizsbUhkzLwrX/ivmkNLVgC5Jz
+         FqLsq2xRpxlkg==
+From:   Oded Gabbay <ogabbay@kernel.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Meng Tang <tangmeng@uniontech.com>
-Subject: [PATCH 5.10 81/84] Revert "PCI: Make pci_enable_ptm() private"
-Date:   Mon, 20 Jun 2022 14:51:44 +0200
-Message-Id: <20220620124723.283894071@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124720.882450983@linuxfoundation.org>
-References: <20220620124720.882450983@linuxfoundation.org>
-User-Agent: quilt/0.66
+Cc:     Yuri Nudelman <ynudelman@habana.ai>
+Subject: [PATCH 10/17] habanalabs: fix NULL dereference on cs timeout
+Date:   Mon, 20 Jun 2022 16:04:25 +0300
+Message-Id: <20220620130432.1180451-10-ogabbay@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220620130432.1180451-1-ogabbay@kernel.org>
+References: <20220620130432.1180451-1-ogabbay@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+From: Yuri Nudelman <ynudelman@habana.ai>
 
-commit 1d71eb53e45187f58089d32b51e27784c791d90e upstream.
+Device descriptor is accessed before an assignment
 
-Make pci_enable_ptm() accessible from the drivers.
-
-Exposing this to the driver enables the driver to use the
-'ptm_enabled' field of 'pci_dev' to check if PTM is enabled or not.
-
-This reverts commit ac6c26da29c1 ("PCI: Make pci_enable_ptm() private").
-
-Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Acked-by: Bjorn Helgaas <bhelgaas@google.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Meng Tang <tangmeng@uniontech.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Yuri Nudelman <ynudelman@habana.ai>
+Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
+Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
 ---
- drivers/pci/pci.h   |    3 ---
- include/linux/pci.h |    7 +++++++
- 2 files changed, 7 insertions(+), 3 deletions(-)
+ drivers/misc/habanalabs/common/command_submission.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/pci/pci.h
-+++ b/drivers/pci/pci.h
-@@ -585,11 +585,8 @@ static inline void pcie_ecrc_get_policy(
+diff --git a/drivers/misc/habanalabs/common/command_submission.c b/drivers/misc/habanalabs/common/command_submission.c
+index 72a557b83a7d..c050f38b7091 100644
+--- a/drivers/misc/habanalabs/common/command_submission.c
++++ b/drivers/misc/habanalabs/common/command_submission.c
+@@ -812,6 +812,8 @@ static void cs_timedout(struct work_struct *work)
+ 		return;
+ 	}
  
- #ifdef CONFIG_PCIE_PTM
- void pci_ptm_init(struct pci_dev *dev);
--int pci_enable_ptm(struct pci_dev *dev, u8 *granularity);
- #else
- static inline void pci_ptm_init(struct pci_dev *dev) { }
--static inline int pci_enable_ptm(struct pci_dev *dev, u8 *granularity)
--{ return -EINVAL; }
- #endif
- 
- struct pci_dev_reset_methods {
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -1599,6 +1599,13 @@ static inline bool pci_aer_available(voi
- 
- bool pci_ats_disabled(void);
- 
-+#ifdef CONFIG_PCIE_PTM
-+int pci_enable_ptm(struct pci_dev *dev, u8 *granularity);
-+#else
-+static inline int pci_enable_ptm(struct pci_dev *dev, u8 *granularity)
-+{ return -EINVAL; }
-+#endif
++	hdev = cs->ctx->hdev;
 +
- void pci_cfg_access_lock(struct pci_dev *dev);
- bool pci_cfg_access_trylock(struct pci_dev *dev);
- void pci_cfg_access_unlock(struct pci_dev *dev);
-
+ 	if (likely(!skip_reset_on_timeout)) {
+ 		if (hdev->reset_on_lockup)
+ 			device_reset = true;
+@@ -822,8 +824,6 @@ static void cs_timedout(struct work_struct *work)
+ 		cs->timedout = true;
+ 	}
+ 
+-	hdev = cs->ctx->hdev;
+-
+ 	/* Save only the first CS timeout parameters */
+ 	rc = atomic_cmpxchg(&hdev->last_error.cs_timeout.write_enable, 1, 0);
+ 	if (rc) {
+-- 
+2.25.1
 
