@@ -2,73 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D243C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 09:06:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 809D8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 09:09:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240420AbiFTJGj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 05:06:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49402 "EHLO
+        id S240404AbiFTJJ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 05:09:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240400AbiFTJGg (ORCPT
+        with ESMTP id S235819AbiFTJJ2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 05:06:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77A6E558D
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 02:06:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 02C446137F
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 09:06:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 315C4C3411B
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 09:06:33 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="QAjDGtYL"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1655715991;
+        Mon, 20 Jun 2022 05:09:28 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 90085634E
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 02:09:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655716166;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=eNu1t95F3WyLFnN1cO3TOfXzGLQMrfQBdi7kaaniOVg=;
-        b=QAjDGtYL9DVK58HtGk4VJIwJZNRgwP+jLywts85pocctjxQB1JZvL+eixWxk8Fktj2XYfc
-        imWd/JqNS4T1iYNx9NoUiHmKs4UFNWXOWWvXZ8ON4vCBSc9btvEsxJSZmTzHiZTYB1VXyV
-        drMrzt6nZ3A5xdq2qfqD2ciy14p2JAg=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 571924b3 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Mon, 20 Jun 2022 09:06:31 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH] random: update comment from copy_to_user() -> copy_to_iter()
-Date:   Mon, 20 Jun 2022 11:06:26 +0200
-Message-Id: <20220620090626.700684-1-Jason@zx2c4.com>
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ip5gU7n+7tnzIW3sZz7U43hM4W5of8Lp22JutOuA5zs=;
+        b=UOOvMIYWYVZ+1pbPdiEFxHS/OBPVoJ1TzGtf4lgPwPPJyuhIszsyiOjGKLTiLGaBKPKvGR
+        fmG8k9PYGmUqhjVMOVDFJjM6MgRu1l7DXzpqSgD/wofwSDr+Qi+b+OwT9gtYXG7F7vmbjA
+        tE3yG+rYAOv5OSdxOPHxXvCmobeKS3U=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-511-J13o2K1tN0-5sOamI6e7ww-1; Mon, 20 Jun 2022 05:09:25 -0400
+X-MC-Unique: J13o2K1tN0-5sOamI6e7ww-1
+Received: by mail-wr1-f69.google.com with SMTP id s14-20020adfa28e000000b0020ac7532f08so2275827wra.15
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 02:09:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ip5gU7n+7tnzIW3sZz7U43hM4W5of8Lp22JutOuA5zs=;
+        b=hTCTxDIfHsgf+4ADCoRJoH+6Z82kByjkEPm0/U89OEcirfZAaafj61Xbd6839zX9k+
+         8M80hBYrHUzrHdt26b+IMNXDfk5OVn6js2C8G+JTG+UJIWyHRTk6lMfKNvTbl362pHOx
+         m6QNcWoFBCV2cRQkO3MG7TsirAWdR5Jc4aTI2H4vqayStKUUpE0fFxvTJ4mNfl979Ylp
+         J7uBVbKEIq1lgfVvy6XOV/5/HmHqx0P/P9JMvrEQ8NOtf+if69sE9rEvvgL9pmdvNX2d
+         E9KEpbWZ3S/K3ztQqahcqm92kBx2k3DLUZ2HPLgNOfvZdvF55Ku1EhOGYwGe58nr0RTI
+         T60g==
+X-Gm-Message-State: AJIora8zTd3rlul6ITBK54TqvO8ECe/wAGW4ZBiA26Gu3VBeTX8GPi79
+        e/KjNYx6kFw2TThwZ5h35YOY3BfVCrnT55W4K1WLyAIKcSVTqRjG+aUe46o0VW1uuLGEIIvTI0K
+        RJX3U5CjxNzyZr5wzMUvm8rVn
+X-Received: by 2002:adf:f90d:0:b0:20c:de32:4d35 with SMTP id b13-20020adff90d000000b0020cde324d35mr21616162wrr.583.1655716163912;
+        Mon, 20 Jun 2022 02:09:23 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1tOfjUybmB+bQvA8vD/lOhSPWWZvWt88lj37HQ0oaZRkPTZx6wDkueUlbRqz0hw/1reZ27zfA==
+X-Received: by 2002:adf:f90d:0:b0:20c:de32:4d35 with SMTP id b13-20020adff90d000000b0020cde324d35mr21616144wrr.583.1655716163681;
+        Mon, 20 Jun 2022 02:09:23 -0700 (PDT)
+Received: from redhat.com ([2.52.146.221])
+        by smtp.gmail.com with ESMTPSA id p19-20020a05600c359300b0039c54bb28f2sm14884348wmq.36.2022.06.20.02.09.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Jun 2022 02:09:23 -0700 (PDT)
+Date:   Mon, 20 Jun 2022 05:09:19 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, erwan.yvin@stericsson.com
+Subject: Re: [PATCH 3/3] caif_virtio: fix the race between reset and netdev
+ unregister
+Message-ID: <20220620050446-mutt-send-email-mst@kernel.org>
+References: <20220620051115.3142-1-jasowang@redhat.com>
+ <20220620051115.3142-4-jasowang@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220620051115.3142-4-jasowang@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This comment wasn't updated when we moved from read() to read_iter(), so
-this patch makes the trivial fix.
+On Mon, Jun 20, 2022 at 01:11:15PM +0800, Jason Wang wrote:
+> We use to do the following steps during .remove():
 
-Fixes: 1b388e7765f2 ("random: convert to using fops->read_iter()")
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
- drivers/char/random.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+We currently do
 
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 07a022e24057..e3dd1dd3dd22 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -408,7 +408,7 @@ static ssize_t get_random_bytes_user(struct iov_iter *iter)
- 
- 	/*
- 	 * Immediately overwrite the ChaCha key at index 4 with random
--	 * bytes, in case userspace causes copy_to_user() below to sleep
-+	 * bytes, in case userspace causes copy_to_iter() below to sleep
- 	 * forever, so that we still retain forward secrecy in that case.
- 	 */
- 	crng_make_state(chacha_state, (u8 *)&chacha_state[4], CHACHA_KEY_SIZE);
--- 
-2.35.1
+
+> static void cfv_remove(struct virtio_device *vdev)
+> {
+> 	struct cfv_info *cfv = vdev->priv;
+> 
+> 	rtnl_lock();
+> 	dev_close(cfv->ndev);
+> 	rtnl_unlock();
+> 
+> 	tasklet_kill(&cfv->tx_release_tasklet);
+> 	debugfs_remove_recursive(cfv->debugfs);
+> 
+> 	vringh_kiov_cleanup(&cfv->ctx.riov);
+> 	virtio_reset_device(vdev);
+> 	vdev->vringh_config->del_vrhs(cfv->vdev);
+> 	cfv->vr_rx = NULL;
+> 	vdev->config->del_vqs(cfv->vdev);
+> 	unregister_netdev(cfv->ndev);
+> }
+> This is racy since device could be re-opened after dev_close() but
+> before unregister_netdevice():
+> 
+> 1) RX vringh is cleaned before resetting the device, rx callbacks that
+>    is called after the vringh_kiov_cleanup() will result a UAF
+> 2) Network stack can still try to use TX virtqueue even if it has been
+>    deleted after dev_vqs()
+> 
+> Fixing this by unregistering the network device first to make sure not
+> device access from both TX and RX side.
+> 
+> Fixes: 0d2e1a2926b18 ("caif_virtio: Introduce caif over virtio")
+> Signed-off-by: Jason Wang <jasowang@redhat.com>
+> ---
+>  drivers/net/caif/caif_virtio.c | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/caif/caif_virtio.c b/drivers/net/caif/caif_virtio.c
+> index 66375bea2fcd..a29f9b2df5b1 100644
+> --- a/drivers/net/caif/caif_virtio.c
+> +++ b/drivers/net/caif/caif_virtio.c
+> @@ -752,9 +752,8 @@ static void cfv_remove(struct virtio_device *vdev)
+>  {
+>  	struct cfv_info *cfv = vdev->priv;
+>  
+> -	rtnl_lock();
+> -	dev_close(cfv->ndev);
+> -	rtnl_unlock();
+> +	/* Make sure NAPI/TX won't try to access the device */
+> +	unregister_netdev(cfv->ndev);
+>  
+>  	tasklet_kill(&cfv->tx_release_tasklet);
+>  	debugfs_remove_recursive(cfv->debugfs);
+> @@ -764,7 +763,6 @@ static void cfv_remove(struct virtio_device *vdev)
+>  	vdev->vringh_config->del_vrhs(cfv->vdev);
+>  	cfv->vr_rx = NULL;
+>  	vdev->config->del_vqs(cfv->vdev);
+> -	unregister_netdev(cfv->ndev);
+>  }
+
+
+This gives me pause, callbacks can now trigger after device
+has been unregistered. Are we sure this is safe?
+Won't it be safer to just keep the rtnl_lock around
+the whole process?
+
+>  static struct virtio_device_id id_table[] = {
+> -- 
+> 2.25.1
 
