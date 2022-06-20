@@ -2,254 +2,246 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9318DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 06:41:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EAAEC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 06:42:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238816AbiFTGlU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 02:41:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59828 "EHLO
+        id S238874AbiFTGmA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 02:42:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238762AbiFTGlM (ORCPT
+        with ESMTP id S238833AbiFTGlw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 02:41:12 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D946EDF50;
-        Sun, 19 Jun 2022 23:41:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655707271; x=1687243271;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=hpHQEL0bY2235Xf8dLhHi9xQeV0+rIWxi3BbCRA7j5M=;
-  b=iShlKnAvLc9LQv92CKWpcR2BaqrCFGK91dw55jqRbE43t9rZfBoa9LSn
-   89JLz+LCxgkfNmTLDUcP9CNy0PYw39Re4R2JJPjAx8egTU6jwZdXYEZav
-   m9OMdyvAsJr1ddLE83WgSpkHrW0tWmYe0P3m0z2rNVPThJd866j69Q1EY
-   Dn16jSDOdwR37Mt588PjgKSi6uO/hPrJu9LP9QgxZ7EguYljFleYtlRiY
-   9OV9/4AU2dZvxKwNwHVsdPLFeSZSMDPF0l6Cg4M5R+jmnWB3AXBmqFw7C
-   4XKvD8DUJTbv6zuIvnzXoF3U3YSYhRZZImodJD3J4nI38aLA/+/ntgtKc
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="260247020"
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="260247020"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2022 23:41:11 -0700
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="642967791"
-Received: from lspinell-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.251.215.169])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2022 23:41:08 -0700
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Arnd Bergmann <arnd@arndb.de>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Lukas Wunner <lukas@wunner.de>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        linux-api@vger.kernel.org
-Subject: [PATCH v8 5/6] serial: Support for RS-485 multipoint addresses
-Date:   Mon, 20 Jun 2022 09:40:29 +0300
-Message-Id: <20220620064030.7938-6-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220620064030.7938-1-ilpo.jarvinen@linux.intel.com>
-References: <20220620064030.7938-1-ilpo.jarvinen@linux.intel.com>
+        Mon, 20 Jun 2022 02:41:52 -0400
+Received: from FRA01-PR2-obe.outbound.protection.outlook.com (mail-eopbgr120052.outbound.protection.outlook.com [40.107.12.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BFC3DFD6
+        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 23:41:19 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dAHnxGdLjXYHv9OhMxV3FrUd2PhGinm+9Tcnq4GOXjeakL0XhLQ8J3DmvzDxNMpSnbpd8Zd3/Pwp4UYkqnPafqy3i/K3SYswoshpcyLncgOKpQyYgDjvOp/ILMK9JqsghSoz9zV9QWD/XIwYalbzS+yuAqryNSjPH8O3rXkiDrV1v4IyWhzFiTIgR6MK6QpxclUW+u33MnjEPIpArB7fIhxCg7Zp588hhhFlwdPH6jNL81oxS7B+YXNM3dbzA9EpY5wUGHpxR47Zmz9j3AEuJ5A548jP+I+14uSyyM2KZ0oEqfhn+dtQNs3e4CC1z+ApjkhI7TwI4r2JRu4VnAoNbA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=qDp5H4mdI4MRvMJYMXG4/8Utlzny6nyTOmtb6gACueI=;
+ b=FhxiUmJF9nr5PpF5qmojviXV9uBZsasB27QbsxClMD/EUQnqR33IFOSOXLLt01q+ces1USSkZSeRwtFG/Cz/tT/zIopMbmpIpxCYIUcC9XjauZFfqVV9N5bwXZuBXBVj0CDLMISnczhNyC1hkHjqCvBsOxNj7DpS9OBGU/2docujz5vc5/UMU9WCi7vlKteUNdM6QcMlGdrgGUn9goDT0HSchilA6yx7mBK95eo0TlZk3pwWIe6mH+bluGFVgzRrc13wxHrGQo9Aib/JIbSq3Ja6UC+DGhdLyKjw8uMaEgeQeAjruZyGD7Z4b3mAVu7iotXqMZXJSk8LVcjIZ5PA+A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=csgroup.eu; dmarc=pass action=none header.from=csgroup.eu;
+ dkim=pass header.d=csgroup.eu; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=csgroup.eu;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qDp5H4mdI4MRvMJYMXG4/8Utlzny6nyTOmtb6gACueI=;
+ b=LahcdX6vYOAvru7LTm+rx/ybTf+upc1ZECRwLaODSLSVSMGQcVD8y8FLzs2j7BOtGPRwz0sxI+aZZVvNv8Pur8yVkJDn7mCBNEnirDwFqgUNXajausT8FArTnCB901/ylFkMV1UapE7BUpY0gxvVH/m2UBfbXgX4UsW2b/cXUGoNQM42sl/+3iT1oKKWw8lN2NTPbu8rPhiUIe1Vvw94tnUmMnyDebbpX6+Me9rqrB4w1UKL4ohvN2MMPnzU7jsClyiDk8YjjwwEd2IoFD9cpC+lCS89OZSXznvT/AVMUoL6G2vcBq3JZg4BcG/J23u1gkBDRbYIlRptAq2yg5ZI2w==
+Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:31::15)
+ by PR1P264MB1933.FRAP264.PROD.OUTLOOK.COM (2603:10a6:102:1b6::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.14; Mon, 20 Jun
+ 2022 06:41:16 +0000
+Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+ ([fe80::b15e:862f:adf7:5356]) by MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+ ([fe80::b15e:862f:adf7:5356%5]) with mapi id 15.20.5353.022; Mon, 20 Jun 2022
+ 06:41:16 +0000
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Anshuman Khandual <anshuman.khandual@arm.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>
+CC:     "hch@infradead.org" <hch@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH V3 1/2] mm/mmap: Restrict generic protection_map[] array
+ visibility
+Thread-Topic: [PATCH V3 1/2] mm/mmap: Restrict generic protection_map[] array
+ visibility
+Thread-Index: AQHYgTbnl64fdvvm+kuWk4WKkbugyq1Rg14AgAZEBoCAABepAA==
+Date:   Mon, 20 Jun 2022 06:41:16 +0000
+Message-ID: <2ade2595-d03b-6027-f93a-fa8f7c39654e@csgroup.eu>
+References: <20220616040924.1022607-1-anshuman.khandual@arm.com>
+ <20220616040924.1022607-2-anshuman.khandual@arm.com>
+ <4830e415-cdbb-7050-ebd6-7480493655ef@csgroup.eu>
+ <cecd8c0c-ebd8-91f1-bfe4-cc5da02b4223@arm.com>
+In-Reply-To: <cecd8c0c-ebd8-91f1-bfe4-cc5da02b4223@arm.com>
+Accept-Language: fr-FR, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=csgroup.eu;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: f3a89f26-dc04-48cc-f219-08da5287e04f
+x-ms-traffictypediagnostic: PR1P264MB1933:EE_
+x-microsoft-antispam-prvs: <PR1P264MB1933D80F11E1C179999FEACAEDB09@PR1P264MB1933.FRAP264.PROD.OUTLOOK.COM>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: gfWi7j7a3GNj46t6fXtcexAK1K0Q2/kIQZPgQIl6P7i+1hensKeZppJ9xznQJSZBG37/kgSiKHGzBHDD1186PrhzNYcCQfU/68UUoh4bQZBcKKZPFUM/LIrSE0VNdqthrHeWuiCBe7Mpz2nhNcL7PvKfLnnDfL9NZVj0TSZZEp8YMkWBliL5TWnmMddlyBh9sxPXXv4eJ4DGDlHSiWoOptTwNCVXWwF+cDhZqCYjJsajgMocXPPbuL5tLynTnAeZw7gagmV5DBHAvMkgu15xmThNhKfH7wpoJ3Kd+651Zp1rxF1RMuXKeL3dkJBB6ASTeM/swPHuK0/qcXzDf+2s1SqhiRyZag5/2WKmm6WlxVNgRwHCO4RH72uMThZhucEdK5iMPSMXoz/mof25S8gJmYzQKmN9bgAUN3jJaFo0KN2mHqH0QOFL7WAgRv7IeRqrcYiLcywtPZzFJQNHPSZGXMyydEEMGwtskmzMQt+p6QNsRGj8UmjuEbOnUzipx8UezwagxpeJZTpUlbVTxEHfW9dmP9oGw7IpeEesYPvRcg2iIrImFdCoA8TretyomNzc9nJUCSla4fZLmZEdrmBD4jVcahWvtT4lMgtXmV4GxYCx+5iHmgsetii1Nm5Nv3SNd6Ngd7dyR2pVk54jSRIoO69xEuj6+yXIDy4V29E0gcI+ZUX/LiDMRVEXcXalFR5las8rlpOqm8C3PaRPpLuYwKZc+6b1gmku9Ye2NaLv1dggWYvBynlR883yW3EWXV9mK2p4eXTEZi7njOarMPXMEUrwE5OT3yEm0+KSIEh0QV0=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(66446008)(64756008)(498600001)(122000001)(8676002)(4326008)(31696002)(66476007)(6486002)(66556008)(71200400001)(38070700005)(54906003)(110136005)(76116006)(91956017)(316002)(66574015)(186003)(83380400001)(66946007)(26005)(6506007)(38100700002)(6512007)(86362001)(2616005)(53546011)(5660300002)(36756003)(8936002)(44832011)(2906002)(31686004)(41533002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?Qm9aQUxuQzFwV2V2bkwyYm1QRTNWYU1aYTRYb21nZXFzUG15SkhETzNkREVt?=
+ =?utf-8?B?d2RScG56cG03VDJCaFk0bzdoQnFjRklWUDRGR0g4TjRIZ1E2WFBUMnVQOFVC?=
+ =?utf-8?B?aUtaTmRPSDVzUWQ4Z2dwV2ZiYk9IL0d1a05MbEdxTHFSbUNSUGxQdHFkSzlF?=
+ =?utf-8?B?VzdBbDdJRnRWKy82UFBMMXRwOWkzVE03cFl1VWt1WVpoTTF2UG45ZXZFVlFX?=
+ =?utf-8?B?VVdYanE5Q0ZHZWtic3VRN3IrLzAyRkJEbjAwZS9HVXdZSmtoVmdHNjJ1N0Va?=
+ =?utf-8?B?RXk1SlVwRCtLeUlBYkw2Q09SOEdTMWphaGUwWGhvTUQ2MlRYY1JudGRYTTlM?=
+ =?utf-8?B?NG5QUllYWWZpU2dSTFBSQzE1bUFHKzdpdnl4TmtyaHVkbXYySW5vNGdUdUs4?=
+ =?utf-8?B?U2dOTktMaTJSdDNETzdWTHFqS0hnaWt0OW01QkczRVVHRWt4V24rbXNnVGE1?=
+ =?utf-8?B?Z3NMMGtQSU9CTitDM1l4SlIrZnpieVgyK2orRW5kaEg4RFBlejRhNXlYREZ3?=
+ =?utf-8?B?QWJzMk1LODRuZldPMDdLRWFQNmtzS09INEEyTDZQMGI4TTBqNUM4b3grNmM1?=
+ =?utf-8?B?VFZZc1QxdWNuVjRuVkp0MFlNZkxZZFdhQ0hzdHJrK3E1aEpvM25sRFcrbWh4?=
+ =?utf-8?B?elZQcXNENUZ0aWgvQjZjUkRsQW1CejFCaGVnRXAvVkNjQmoxbmxPRTlYUGtV?=
+ =?utf-8?B?OUZQMUFEaENHMGljVWdZWDJaTkVMcmpIN0FHS1Z0Vm5ONHkyVUVQQUxsRFNM?=
+ =?utf-8?B?S3lNcXRMZlVwRDFKN1ovOWIwbkpySCtnT0QzOUkzNVBvZDhVNzFaL1VWZUZv?=
+ =?utf-8?B?cEd5VVBBeVFjMjhrb2lONWNaRWZPTHVtdEdIcSt6czFBTFFSV2tnQ1hINlRr?=
+ =?utf-8?B?SGVWR2djT1BmWCt3cVE4WHZHLzhHd0tXZTRBVEZNc21wSXJSZ2lyWmIxaTNy?=
+ =?utf-8?B?Y0dYUW1WRmhJa1JTa2N6QXNrYVgreFJqaVVGYVVkN21PdC9EcmxVZHpUK24v?=
+ =?utf-8?B?OVN5U2lzL09XRVhrdUJIc2x3YnE0WkZBNWZIQTJGTks5SmpsbTZOUzFIR3I5?=
+ =?utf-8?B?RE16anI3MW1EbEQvK25XVzlPU1lLTGtzYXRucGpJQ0pwQ2NoM2tqZGQ5bEZv?=
+ =?utf-8?B?dUFRaE4wTStscXRqZHRQUWVUL05NNjltUDRENndNTno4VmhWTXhEVURjUWhm?=
+ =?utf-8?B?QjYwdmt6UlVoOEI4L3Y5RDF1WlRDUmlaUFpjbysxL1AxSHEvM3licUVJNk84?=
+ =?utf-8?B?QU5YT05wUURHVU9oYStQMm1JdXZVVUF2Nk9MMS9tdUtnNDRLWWxLMldBeFEr?=
+ =?utf-8?B?SGRVTmxTZFJiTCttTTk2NlNvQnlnTkR6VzBUOHV4ZDRQYjNWQ3VnclJQSEEw?=
+ =?utf-8?B?bGE0b2d5S2ZBQ094UWV3NWVydHNLMzRINTZTSUR1bm9ZM0t1eEcvREQrdUhs?=
+ =?utf-8?B?T3RKdEYwbG9YZUxMaDVWUUg0Yld0VmtPVTRsczVLZm10dzZpaFg3R1RuUlQr?=
+ =?utf-8?B?andLY2UzVUdWc1FqT1BWdEVjT1ZVZ2tXSDEwMWpEK3dFWFVtT2Y4UXZ2R1Qv?=
+ =?utf-8?B?VG4wcWVJTGx5bXBOY0VFdzhTc2NNTGVLS0tOWElWOVR5NEdieDE3L3FpZUhs?=
+ =?utf-8?B?aytTaGV3RkxCQmVzNnlxaFV5OWg5ZCtydE5NZDdPdytTcG1iNm8vNlR0dG5a?=
+ =?utf-8?B?MUUxQVozay9nOUV0L2VVTlpOY0hRSFlkUEdYWlJqK3NhQTVXREoyK2NZdnda?=
+ =?utf-8?B?L3NpZDhpa1J5NmlEU1U0dG55cDdtVGVpUW52cDRWTGFYckZ4NzZwVEVGRlVw?=
+ =?utf-8?B?SnJYdWZOeG5hdGNKT0RxZ3Y2OGpjTVlORGNGM2l1cTJlQXovdVdMUXd6bm5J?=
+ =?utf-8?B?TjZFcVdrU242NUg5S2NYejFxblZKNUFRVlcxUUplNWo4K0lRVkNBRHdjMTkx?=
+ =?utf-8?B?TlY0Zm1qZVZVMjlHLzBwSjY4YUZHYkNIU0FueWlFMnhyWjR2dU9UK25Qb0gy?=
+ =?utf-8?B?Wis1Kyt3ZlNLcVpkTUxVYkI5Y1BkVE11elNFeUdtZnBXODFOTlVIRDNFcDBN?=
+ =?utf-8?B?VU5jTFAvVzdEdFlXV3JDNGx3VExDTGRueVFKRVlCclRYNDVmQTFNQWVzRWZR?=
+ =?utf-8?B?a01PeTg3SHlmSnVNSXltVE1RM0x4Y2VacmtJZ3V2ZTJaMHRiMHM4SkVjSEIz?=
+ =?utf-8?B?RXpjZGJHTTVodUR6OEY2cG9QcHhUNFI0b1RoTHJsaFNDeFBoZjlYMTE4cmlp?=
+ =?utf-8?B?TS96SVJ0OUdUcDhFdGVQNXcvTzVhaHRLMi9lZWxxL3cyVHRuVXlYei95dTFG?=
+ =?utf-8?B?UlpEbmdtaG9uZWxWd09NWkJrTTJMSDhoK0hqQ0k2WU9WaTUxQ3lIb3BLYStX?=
+ =?utf-8?Q?3N5yK4/xQ9DqCsz5xC56wPY/mUyzNAOP5tBm9?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <372E9092CAD1C7439020D2510836CB33@FRAP264.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: csgroup.eu
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: f3a89f26-dc04-48cc-f219-08da5287e04f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Jun 2022 06:41:16.3432
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 9914def7-b676-4fda-8815-5d49fb3b45c8
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: u/l3IVs20fc3vaaNQh6FM/IQBa5yp2MceO7xuARU94VzmUlDLkF+R3PrAl/FJBTGF+gDRJd3byoqe9jtz9ZIboJJwQIgdv00Ra0OkiazJsg=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PR1P264MB1933
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for RS-485 multipoint addressing using 9th bit [*]. The
-addressing mode is configured through ->rs485_config().
-
-ADDRB in termios indicates 9th bit addressing mode is enabled. In this
-mode, 9th bit is used to indicate an address (byte) within the
-communication line. ADDRB can only be enabled/disabled through
-->rs485_config() that is also responsible for setting the destination and
-receiver (filter) addresses.
-
-The changes to serial_rs485 struct were test built with a few traps to
-detect mislayouting on archs lkp/0day builts for (all went fine):
-  BUILD_BUG_ON(((&rs485.delay_rts_after_send) + 1) != &rs485.padding[0]);
-  BUILD_BUG_ON(&rs485.padding[1] != &rs485.padding1[0]);
-  BUILD_BUG_ON(sizeof(rs485) != ((u8 *)(&rs485.padding[4]) -
-				 ((u8 *)&rs485.flags) + sizeof(__u32)));
-
-[*] Technically, RS485 is just an electronic spec and does not itself
-specify the 9th bit addressing mode but 9th bit seems at least
-"semi-standard" way to do addressing with RS485.
-
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-
----
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: linux-api@vger.kernel.org
-Cc: linux-doc@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-arch@vger.kernel.org
----
- Documentation/driver-api/serial/driver.rst    |  2 ++
- .../driver-api/serial/serial-rs485.rst        | 26 ++++++++++++++++++-
- drivers/tty/serial/serial_core.c              | 14 +++++++++-
- drivers/tty/tty_ioctl.c                       |  4 +++
- include/uapi/asm-generic/termbits-common.h    |  1 +
- include/uapi/linux/serial.h                   | 20 ++++++++++++--
- 6 files changed, 63 insertions(+), 4 deletions(-)
-
-diff --git a/Documentation/driver-api/serial/driver.rst b/Documentation/driver-api/serial/driver.rst
-index 7ef83fd3917b..35fb3866bb3d 100644
---- a/Documentation/driver-api/serial/driver.rst
-+++ b/Documentation/driver-api/serial/driver.rst
-@@ -261,6 +261,8 @@ hardware.
- 			- parity enable
- 		PARODD
- 			- odd parity (when PARENB is in force)
-+		ADDRB
-+			- address bit (changed through .rs485_config()).
- 		CREAD
- 			- enable reception of characters (if not set,
- 			  still receive characters from the port, but
-diff --git a/Documentation/driver-api/serial/serial-rs485.rst b/Documentation/driver-api/serial/serial-rs485.rst
-index 00b5d333acba..6ebad75c74ed 100644
---- a/Documentation/driver-api/serial/serial-rs485.rst
-+++ b/Documentation/driver-api/serial/serial-rs485.rst
-@@ -99,7 +99,31 @@ RS485 Serial Communications
- 		/* Error handling. See errno. */
- 	}
- 
--5. References
-+5. Multipoint Addressing
-+========================
-+
-+   The Linux kernel provides addressing mode for multipoint RS-485 serial
-+   communications line. The addressing mode is enabled with SER_RS485_ADDRB
-+   flag in serial_rs485. Struct serial_rs485 has two additional flags and
-+   fields for enabling receive and destination addresses.
-+
-+   Address mode flags:
-+	- SER_RS485_ADDRB: Enabled addressing mode (sets also ADDRB in termios).
-+	- SER_RS485_ADDR_RECV: Receive (filter) address enabled.
-+	- SER_RS485_ADDR_DEST: Set destination address.
-+
-+   Address fields (enabled with corresponding SER_RS485_ADDR_* flag):
-+	- addr_recv: Receive address.
-+	- addr_dest: Destination address.
-+
-+   Once a receive address is set, the communication can occur only with the
-+   particular device and other peers are filtered out. It is left up to the
-+   receiver side to enforce the filtering. Receive address will be cleared
-+   if SER_RS485_ADDR_RECV is not set.
-+
-+   Note: not all devices supporting RS485 support multipoint addressing.
-+
-+6. References
- =============
- 
-  [1]	include/uapi/linux/serial.h
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 44c3785445e3..414099e3262a 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -1294,6 +1294,17 @@ static int uart_check_rs485_flags(struct uart_port *port, struct serial_rs485 *r
- 	if (flags & ~port->rs485_supported->flags)
- 		return -EINVAL;
- 
-+	/* Asking for address w/o addressing mode? */
-+	if (!(rs485->flags & SER_RS485_ADDRB) &&
-+	    (rs485->flags & (SER_RS485_ADDR_RECV|SER_RS485_ADDR_DEST)))
-+		return -EINVAL;
-+
-+	/* Address given but not enabled? */
-+	if (!(rs485->flags & SER_RS485_ADDR_RECV) && rs485->addr_recv)
-+		return -EINVAL;
-+	if (!(rs485->flags & SER_RS485_ADDR_DEST) && rs485->addr_dest)
-+		return -EINVAL;
-+
- 	return 0;
- }
- 
-@@ -1349,7 +1360,8 @@ static void uart_sanitize_serial_rs485(struct uart_port *port, struct serial_rs4
- 	rs485->flags &= supported_flags;
- 
- 	/* Return clean padding area to userspace */
--	memset(rs485->padding, 0, sizeof(rs485->padding));
-+	memset(rs485->padding0, 0, sizeof(rs485->padding0));
-+	memset(rs485->padding1, 0, sizeof(rs485->padding1));
- }
- 
- int uart_rs485_config(struct uart_port *port)
-diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
-index adae687f654b..ed253f2337a7 100644
---- a/drivers/tty/tty_ioctl.c
-+++ b/drivers/tty/tty_ioctl.c
-@@ -319,6 +319,8 @@ unsigned char tty_get_frame_size(unsigned int cflag)
- 		bits++;
- 	if (cflag & PARENB)
- 		bits++;
-+	if (cflag & ADDRB)
-+		bits++;
- 
- 	return bits;
- }
-@@ -353,6 +355,8 @@ int tty_set_termios(struct tty_struct *tty, struct ktermios *new_termios)
- 	old_termios = tty->termios;
- 	tty->termios = *new_termios;
- 	unset_locked_termios(tty, &old_termios);
-+	/* Reset any ADDRB changes, ADDRB is changed through ->rs485_config() */
-+	tty->termios.c_cflag ^= (tty->termios.c_cflag ^ old_termios.c_cflag) & ADDRB;
- 
- 	if (tty->ops->set_termios)
- 		tty->ops->set_termios(tty, &old_termios);
-diff --git a/include/uapi/asm-generic/termbits-common.h b/include/uapi/asm-generic/termbits-common.h
-index 4d084fe8def5..4a6a79f28b21 100644
---- a/include/uapi/asm-generic/termbits-common.h
-+++ b/include/uapi/asm-generic/termbits-common.h
-@@ -46,6 +46,7 @@ typedef unsigned int	speed_t;
- #define EXTA		B19200
- #define EXTB		B38400
- 
-+#define ADDRB		0x20000000	/* address bit */
- #define CMSPAR		0x40000000	/* mark or space (stick) parity */
- #define CRTSCTS		0x80000000	/* flow control */
- 
-diff --git a/include/uapi/linux/serial.h b/include/uapi/linux/serial.h
-index fa6b16e5fdd8..c4c75fd7037e 100644
---- a/include/uapi/linux/serial.h
-+++ b/include/uapi/linux/serial.h
-@@ -126,10 +126,26 @@ struct serial_rs485 {
- #define SER_RS485_TERMINATE_BUS		(1 << 5)	/* Enable bus
- 							   termination
- 							   (if supported) */
-+
-+/* RS-485 addressing mode */
-+#define SER_RS485_ADDRB			(1 << 6)	/* Enable addressing mode */
-+#define SER_RS485_ADDR_RECV		(1 << 7)	/* Receive address filter */
-+#define SER_RS485_ADDR_DEST		(1 << 8)	/* Destination address */
-+
- 	__u32	delay_rts_before_send;	/* Delay before send (milliseconds) */
- 	__u32	delay_rts_after_send;	/* Delay after send (milliseconds) */
--	__u32	padding[5];		/* Memory is cheap, new structs
--					   are a royal PITA .. */
-+	union {
-+		/* v1 */
-+		__u32	padding[5];		/* Memory is cheap, new structs are a pain */
-+
-+		/* v2 (adds addressing mode fields) */
-+		struct {
-+			__u8	addr_recv;
-+			__u8	addr_dest;
-+			__u8	padding0[2];
-+			__u32	padding1[4];
-+		};
-+	};
- };
- 
- /*
--- 
-2.30.2
-
+DQoNCkxlIDIwLzA2LzIwMjIgw6AgMDc6MTYsIEFuc2h1bWFuIEtoYW5kdWFsIGEgw6ljcml0wqA6
+DQo+IA0KPiANCj4gT24gNi8xNi8yMiAxMTowNSwgQ2hyaXN0b3BoZSBMZXJveSB3cm90ZToNCj4+
+DQo+PiBMZSAxNi8wNi8yMDIyIMOgIDA2OjA5LCBBbnNodW1hbiBLaGFuZHVhbCBhIMOpY3JpdMKg
+Og0KPj4+IFJlc3RyaWN0IGdlbmVyaWMgcHJvdGVjdGlvbl9tYXBbXSBhcnJheSB2aXNpYmlsaXR5
+IG9ubHkgZm9yIHBsYXRmb3JtcyB3aGljaA0KPj4+IGRvIG5vdCBlbmFibGUgQVJDSF9IQVNfVk1f
+R0VUX1BBR0VfUFJPVC4gRm9yIG90aGVyIHBsYXRmb3JtcyB0aGF0IGRvIGRlZmluZQ0KPj4+IHRo
+ZWlyIG93biB2bV9nZXRfcGFnZV9wcm90KCkgZW5hYmxpbmcgQVJDSF9IQVNfVk1fR0VUX1BBR0Vf
+UFJPVCwgY291bGQgaGF2ZQ0KPj4+IHRoZWlyIHByaXZhdGUgc3RhdGljIHByb3RlY3Rpb25fbWFw
+W10gc3RpbGwgaW1wbGVtZW50aW5nIGFuIGFycmF5IGxvb2sgdXAuDQo+Pj4gVGhlc2UgcHJpdmF0
+ZSBwcm90ZWN0aW9uX21hcFtdIGFycmF5IGNvdWxkIGRvIHdpdGhvdXQgX19QWFhYL19fU1hYWCBt
+YWNyb3MsDQo+Pj4gbWFraW5nIHRoZW0gcmVkdW5kYW50IGFuZCBkcm9wcGluZyB0aGVtIG9mZiBh
+cyB3ZWxsLg0KPj4+DQo+Pj4gQnV0IHBsYXRmb3JtcyB3aGljaCBkbyBub3QgZGVmaW5lIHRoZWly
+IGN1c3RvbSB2bV9nZXRfcGFnZV9wcm90KCkgZW5hYmxpbmcNCj4+PiBBUkNIX0hBU19WTV9HRVRf
+UEFHRV9QUk9ULCB3aWxsIHN0aWxsIGhhdmUgdG8gcHJvdmlkZSBfX1BYWFgvX19TWFhYIG1hY3Jv
+cy4NCj4+Pg0KPj4+IENjOiBBbmRyZXcgTW9ydG9uIDxha3BtQGxpbnV4LWZvdW5kYXRpb24ub3Jn
+Pg0KPj4+IENjOiBsaW51eC1tbUBrdmFjay5vcmcNCj4+PiBDYzogbGludXgta2VybmVsQHZnZXIu
+a2VybmVsLm9yZw0KPj4+IEFja2VkLWJ5OiBDaHJpc3RvcGggSGVsbHdpZyA8aGNoQGxzdC5kZT4N
+Cj4+PiBTaWduZWQtb2ZmLWJ5OiBBbnNodW1hbiBLaGFuZHVhbCA8YW5zaHVtYW4ua2hhbmR1YWxA
+YXJtLmNvbT4NCj4+PiAtLS0NCj4+PiAgICBhcmNoL2FybTY0L2luY2x1ZGUvYXNtL3BndGFibGUt
+cHJvdC5oIHwgMTggLS0tLS0tLS0tLS0tLS0tLS0tDQo+Pj4gICAgYXJjaC9hcm02NC9tbS9tbWFw
+LmMgICAgICAgICAgICAgICAgICB8IDIxICsrKysrKysrKysrKysrKysrKysrKw0KPj4+ICAgIGFy
+Y2gvcG93ZXJwYy9pbmNsdWRlL2FzbS9wZ3RhYmxlLmggICAgfCAgMiArKw0KPj4+ICAgIGFyY2gv
+cG93ZXJwYy9tbS9ib29rM3M2NC9wZ3RhYmxlLmMgICAgfCAyMCArKysrKysrKysrKysrKysrKysr
+Kw0KPj4+ICAgIGFyY2gvc3BhcmMvaW5jbHVkZS9hc20vcGd0YWJsZV82NC5oICAgfCAxOSAtLS0t
+LS0tLS0tLS0tLS0tLS0tDQo+Pj4gICAgYXJjaC9zcGFyYy9tbS9pbml0XzY0LmMgICAgICAgICAg
+ICAgICB8ICAzICsrKw0KPj4+ICAgIGFyY2gveDg2L2luY2x1ZGUvYXNtL3BndGFibGVfdHlwZXMu
+aCAgfCAxOSAtLS0tLS0tLS0tLS0tLS0tLS0tDQo+Pj4gICAgYXJjaC94ODYvbW0vcGdwcm90LmMg
+ICAgICAgICAgICAgICAgICB8IDE5ICsrKysrKysrKysrKysrKysrKysNCj4+PiAgICBpbmNsdWRl
+L2xpbnV4L21tLmggICAgICAgICAgICAgICAgICAgIHwgIDIgKysNCj4+PiAgICBtbS9tbWFwLmMg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgIDIgKy0NCj4+PiAgICAxMCBmaWxlcyBjaGFu
+Z2VkLCA2OCBpbnNlcnRpb25zKCspLCA1NyBkZWxldGlvbnMoLSkNCj4+Pg0KPj4+IGRpZmYgLS1n
+aXQgYS9hcmNoL3Bvd2VycGMvaW5jbHVkZS9hc20vcGd0YWJsZS5oIGIvYXJjaC9wb3dlcnBjL2lu
+Y2x1ZGUvYXNtL3BndGFibGUuaA0KPj4+IGluZGV4IGQ1NjRkMGVjZDRjZC4uOGVkMmE4MGM4OTZl
+IDEwMDY0NA0KPj4+IC0tLSBhL2FyY2gvcG93ZXJwYy9pbmNsdWRlL2FzbS9wZ3RhYmxlLmgNCj4+
+PiArKysgYi9hcmNoL3Bvd2VycGMvaW5jbHVkZS9hc20vcGd0YWJsZS5oDQo+Pj4gQEAgLTIxLDYg
+KzIxLDcgQEAgc3RydWN0IG1tX3N0cnVjdDsNCj4+PiAgICAjZW5kaWYgLyogIUNPTkZJR19QUENf
+Qk9PSzNTICovDQo+Pj4gICAgDQo+Pj4gICAgLyogTm90ZSBkdWUgdG8gdGhlIHdheSB2bSBmbGFn
+cyBhcmUgbGFpZCBvdXQsIHRoZSBiaXRzIGFyZSBYV1IgKi8NCj4+PiArI2lmbmRlZiBDT05GSUdf
+QVJDSF9IQVNfVk1fR0VUX1BBR0VfUFJPVA0KPj4gVGhpcyBpZmRlZiBpZiBub3QgbmVjZXNzYXJ5
+IGZvciBub3csIGl0IGRvZXNuJ3QgbWF0dGVyIGlmIF9fUDAwMCBldGMNCj4+IHN0aWxsIGV4aXN0
+IHRob3VnaHQgbm90IHVzZWQuDQo+Pg0KPj4+ICAgICNkZWZpbmUgX19QMDAwCVBBR0VfTk9ORQ0K
+Pj4+ICAgICNkZWZpbmUgX19QMDAxCVBBR0VfUkVBRE9OTFkNCj4+PiAgICAjZGVmaW5lIF9fUDAx
+MAlQQUdFX0NPUFkNCj4+PiBAQCAtMzgsNiArMzksNyBAQCBzdHJ1Y3QgbW1fc3RydWN0Ow0KPj4+
+ICAgICNkZWZpbmUgX19TMTAxCVBBR0VfUkVBRE9OTFlfWA0KPj4+ICAgICNkZWZpbmUgX19TMTEw
+CVBBR0VfU0hBUkVEX1gNCj4+PiAgICAjZGVmaW5lIF9fUzExMQlQQUdFX1NIQVJFRF9YDQo+Pj4g
+KyNlbmRpZg0KPj4+ICAgIA0KPj4+ICAgICNpZm5kZWYgX19BU1NFTUJMWV9fDQo+Pj4gICAgDQo+
+Pj4gZGlmZiAtLWdpdCBhL2FyY2gvcG93ZXJwYy9tbS9ib29rM3M2NC9wZ3RhYmxlLmMgYi9hcmNo
+L3Bvd2VycGMvbW0vYm9vazNzNjQvcGd0YWJsZS5jDQo+Pj4gaW5kZXggN2I5OTY2NDAyYjI1Li5k
+M2IwMTliOTVjMWQgMTAwNjQ0DQo+Pj4gLS0tIGEvYXJjaC9wb3dlcnBjL21tL2Jvb2szczY0L3Bn
+dGFibGUuYw0KPj4+ICsrKyBiL2FyY2gvcG93ZXJwYy9tbS9ib29rM3M2NC9wZ3RhYmxlLmMNCj4+
+PiBAQCAtNTUxLDYgKzU1MSwyNiBAQCB1bnNpZ25lZCBsb25nIG1lbXJlbWFwX2NvbXBhdF9hbGln
+bih2b2lkKQ0KPj4+ICAgIEVYUE9SVF9TWU1CT0xfR1BMKG1lbXJlbWFwX2NvbXBhdF9hbGlnbik7
+DQo+Pj4gICAgI2VuZGlmDQo+Pj4gICAgDQo+Pj4gKy8qIE5vdGUgZHVlIHRvIHRoZSB3YXkgdm0g
+ZmxhZ3MgYXJlIGxhaWQgb3V0LCB0aGUgYml0cyBhcmUgWFdSICovDQo+Pj4gK3N0YXRpYyBjb25z
+dCBwZ3Byb3RfdCBwcm90ZWN0aW9uX21hcFsxNl0gPSB7DQo+Pj4gKwlbVk1fTk9ORV0JCQkJCT0g
+UEFHRV9OT05FLA0KPj4+ICsJW1ZNX1JFQURdCQkJCQk9IFBBR0VfUkVBRE9OTFksDQo+Pj4gKwlb
+Vk1fV1JJVEVdCQkJCQk9IFBBR0VfQ09QWSwNCj4+PiArCVtWTV9XUklURSB8IFZNX1JFQURdCQkJ
+CT0gUEFHRV9DT1BZLA0KPj4+ICsJW1ZNX0VYRUNdCQkJCQk9IFBBR0VfUkVBRE9OTFlfWCwNCj4+
+PiArCVtWTV9FWEVDIHwgVk1fUkVBRF0JCQkJPSBQQUdFX1JFQURPTkxZX1gsDQo+Pj4gKwlbVk1f
+RVhFQyB8IFZNX1dSSVRFXQkJCQk9IFBBR0VfQ09QWV9YLA0KPj4+ICsJW1ZNX0VYRUMgfCBWTV9X
+UklURSB8IFZNX1JFQURdCQkJPSBQQUdFX0NPUFlfWCwNCj4+PiArCVtWTV9TSEFSRURdCQkJCQk9
+IFBBR0VfTk9ORSwNCj4+PiArCVtWTV9TSEFSRUQgfCBWTV9SRUFEXQkJCQk9IFBBR0VfUkVBRE9O
+TFksDQo+Pj4gKwlbVk1fU0hBUkVEIHwgVk1fV1JJVEVdCQkJCT0gUEFHRV9TSEFSRUQsDQo+Pj4g
+KwlbVk1fU0hBUkVEIHwgVk1fV1JJVEUgfCBWTV9SRUFEXQkJPSBQQUdFX1NIQVJFRCwNCj4+PiAr
+CVtWTV9TSEFSRUQgfCBWTV9FWEVDXQkJCQk9IFBBR0VfUkVBRE9OTFlfWCwNCj4+PiArCVtWTV9T
+SEFSRUQgfCBWTV9FWEVDIHwgVk1fUkVBRF0JCQk9IFBBR0VfUkVBRE9OTFlfWCwNCj4+PiArCVtW
+TV9TSEFSRUQgfCBWTV9FWEVDIHwgVk1fV1JJVEVdCQk9IFBBR0VfU0hBUkVEX1gsDQo+Pj4gKwlb
+Vk1fU0hBUkVEIHwgVk1fRVhFQyB8IFZNX1dSSVRFIHwgVk1fUkVBRF0JPSBQQUdFX1NIQVJFRF9Y
+DQo+Pj4gK307DQo+Pj4gKw0KPj4gVGhlcmUgaXMgbm90IG11Y2ggcG9pbnQgaXMgZmlyc3QgYWRk
+aXRpbmcgdGhhdCBoZXJlIGFuZCB0aGVuIG1vdmUgaXQNCj4+IGVsc2V3aGVyZSBpbiB0aGUgc2Vj
+b25kIHBhdGNoLg0KPj4NCj4+IEkgdGhpbmsgd2l0aCBteSBzdWdnZXN0aW9uIHRvIHVzZSAjaWZk
+ZWYgX19QMDAwIGFzIGEgZ3VhcmQsIHRoZSBwb3dlcnBjDQo+PiBjaGFuZ2VzIGNvdWxkIGdvIGlu
+IGEgc2luZ2xlIHBhdGNoLg0KPj4NCj4+PiAgICBwZ3Byb3RfdCB2bV9nZXRfcGFnZV9wcm90KHVu
+c2lnbmVkIGxvbmcgdm1fZmxhZ3MpDQo+Pj4gICAgew0KPj4+ICAgIAl1bnNpZ25lZCBsb25nIHBy
+b3QgPSBwZ3Byb3RfdmFsKHByb3RlY3Rpb25fbWFwW3ZtX2ZsYWdzICYNCj4+PiBkaWZmIC0tZ2l0
+IGEvbW0vbW1hcC5jIGIvbW0vbW1hcC5jDQo+Pj4gaW5kZXggNjFlNjEzNWM1NGVmLi5lNjY5MjA0
+MTQ5NDUgMTAwNjQ0DQo+Pj4gLS0tIGEvbW0vbW1hcC5jDQo+Pj4gKysrIGIvbW0vbW1hcC5jDQo+
+Pj4gQEAgLTEwMSw2ICsxMDEsNyBAQCBzdGF0aWMgdm9pZCB1bm1hcF9yZWdpb24oc3RydWN0IG1t
+X3N0cnVjdCAqbW0sDQo+Pj4gICAgICoJCQkJCQkJCXc6IChubykgbm8NCj4+PiAgICAgKgkJCQkJ
+CQkJeDogKHllcykgeWVzDQo+Pj4gICAgICovDQo+Pj4gKyNpZm5kZWYgQ09ORklHX0FSQ0hfSEFT
+X1ZNX0dFVF9QQUdFX1BST1QNCj4+IFlvdSBzaG91bGQgdXNlICNpZmRlZiBfX1AwMDAgaW5zdGVh
+ZCwgdGhhdCB3YXkgeW91IGNvdWxkIG1pZ3JhdGUNCj4+IGFyY2hpdGVjdHVyZXMgb25lIGJ5IG9u
+ZS4NCj4gDQo+IElmIHZtX2dldF9wYWdlX3Byb3QoKSBnZXRzIG1vdmVkIGludG8gYWxsIHBsYXRm
+b3Jtcywgd29uZGVyaW5nIHdoYXQgd291bGQgYmUNCj4gdGhlIHByZWZlcnJlZCBtZXRob2QgdG8g
+b3JnYW5pemUgdGhpcyBwYXRjaCBzZXJpZXMgPw0KPiANCj4gMS4gTW92ZSBwcm90ZWN0aW9uX21h
+cFtdIGluc2lkZSBwbGF0Zm9ybXMgd2l0aCBBUkNIX0hBU19WTV9QQUdFX1BST1QgKGN1cnJlbnQg
+cGF0Y2ggMSkNCj4gMi4gQ29udmVydCByZW1haW5pbmcgcGxhdGZvcm1zIHRvIHVzZSBBUkNIX0hB
+U19WTV9QQUdFX1BST1Qgb25lIGFmdGVyIHRoZSBvdGhlcg0KPiAzLiBEcm9wIEFSQ0hfSEFTX1ZN
+X1BBR0VfUFJPVCBjb21wbGV0ZWx5DQo+IA0KPiBVc2luZyAiI2lmZGVmIF9fUDAwMCIgZm9yIHdy
+YXBwaW5nIHByb3RlY3Rpb25fbWFwW10gd2lsbCBsZWF2ZSB0d28gZGlmZmVyZW50ICNpZmRlZnMN
+Cj4gaW4gZmxpZ2h0IGkuZSBfX1AwMDAsIEFSQ0hfSEFTX1ZNX1BBR0VfUFJPVCBpbiB0aGUgZ2Vu
+ZXJpYyBtbWFwIGNvZGUsIHVudGlsIGJvdGggZ2V0cw0KPiBkcm9wcGVkIGV2ZW50dWFsbHkuIEJ1
+dCB1c2luZyAiI2lmZGVmIF9fUDAwMCIgZG9lcyBlbmFibGUgc3BsaXR0aW5nIHRoZSBmaXJzdCBw
+YXRjaA0KPiBpbnRvIG11bHRpcGxlIGNoYW5nZXMgZm9yIGVhY2ggaW5kaXZpZHVhbCBwbGF0Zm9y
+bXMuDQoNCiBGcm9tIHByZXZpb3VzIGRpc2N1c3Npb25zIGFuZCBiYXNlZCBvbiBDaHJpc3RvcGgn
+cyBzdWdnZXN0aW9uLCBJIGd1ZXNzIA0Kd2Ugbm93IGFpbSBhdCBnZXR0aW5nIHZtX2dldF9wYWdl
+X3Byb3QoKSBtb3ZlZCBpbnRvIGFsbCBwbGF0Zm9ybXMgDQp0b2dldGhlciB3aXRoIHByb3RlY3Rp
+b25fbWFwW10uIFRoZXJlZm9yZSB0aGUgdXNlIG9mICNpZmRlZiBfX1AwMDAgY291bGQgDQpiZSB2
+ZXJ5IHRlbXBvcmFyeSBhdCB0aGUgYmVnaW5pbmcgb2YgdGhlIHNlcmllczoNCjEuIEd1YXJkIGdl
+bmVyaWMgcHJvdGVjdGlvbl9tYXBbXSB3aXRoICNpZmRlZiBfX19QMDAwDQoyLiBNb3ZlIHByb3Rl
+Y3Rpb25fbWFwW10gaW50byBhcmNoaXRlY3R1cmUgYW5kIGRyb3AgX19QeHh4L19fU3h4eCAgZm9y
+IGFybTY0DQozLiBTYW1lIGZvciBzcGFyYw0KNC4gU2FtZSBmb3IgeDg2DQo1LiBDb252ZXJ0IGVu
+dGlyZSBwb3dlcnBjIHRvIEFSQ0hfSEFTX1ZNX1BBR0VfUFJPVCBhbmQgbW92ZSANCnByb3RlY3Rp
+b25fbWFwW10gaW50byBhcmNoaXRlY3R1cmUgYW5kIGRyb3AgX19QeHh4L19fU3h4eA0KNi4gUmVw
+bGFjZSAjaWZkZWYgX19QMDAwIGJ5ICNpZmRlZiBDT05GSUdfQVJDSF9IQVNfVk1fUEFHRV9QUk9U
+DQo3LiBDb252ZXJ0IGFsbCByZW1haW5pbmcgcGxhdGZvcm1zIHRvIENPTkZJR19BUkNIX0hBU19W
+TV9QQUdFX1BST1Qgb25lIA0KYnkgb25lIChidXQga2VlcCBhIHByb3RlY3Rpb25fbWFwW10gdGFi
+bGUsIGRvbid0IHVzZSBzd2l0Y2gvY2FzZSkNCjguIERyb3AgQVJDSF9IQVNfVk1fUEFHRV9QUk9U
+IGNvbXBsZXRlbHkuDQoNCkV2ZW50dWFsbHkgeW91IGNhbiBzcXVhc2ggc3RlcCA2IGludG8gc3Rl
+cCA4Lg==
