@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA1A5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:16:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC98DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:16:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343602AbiFTNQD (ORCPT
+        id S1343672AbiFTNQJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:16:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53700 "EHLO
+        Mon, 20 Jun 2022 09:16:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245340AbiFTNIp (ORCPT
+        with ESMTP id S245718AbiFTNJW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:08:45 -0400
+        Mon, 20 Jun 2022 09:09:22 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1396119FB4;
-        Mon, 20 Jun 2022 06:02:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 151E4B1C8;
+        Mon, 20 Jun 2022 06:04:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 45AAE61543;
-        Mon, 20 Jun 2022 13:01:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46D29C3411B;
-        Mon, 20 Jun 2022 13:01:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CF4F36154F;
+        Mon, 20 Jun 2022 13:02:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9B60C341C5;
+        Mon, 20 Jun 2022 13:02:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730062;
-        bh=MgywS8XvIM5eqT3QyCdyvklsRJN0u5CnLIFVeSWA3Cg=;
+        s=korg; t=1655730166;
+        bh=qvQ+DoApFMSYGyUqTdbIgWetXlmQvXHjNbqiyeHETKo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qZ7ztMDLDxbG4/XCBFInhJvfJS3DBLbonF2vRD3Ptrl/IaRxy3pkSGKSg4Um8FZDJ
-         oaXwxLzzkxKAkicBxMJAU/BOvRSBRw3oeecWnHPrIH82w8sUOzGePW9pWYRP6t72qB
-         dblYO9pH2rKa2Hl5xuQqqvCcmUuDwSA8idCaBFIQ=
+        b=joH3Aw7gnEum8VUuZZ517AuKV7Yux2m3upRB61sO0S+kFe9llEyBJPAKUTb1hDp+1
+         AQaDwroLkXuJukYFHcKE6xHO0jeJ2LqcOmhWi8pdowNs+Xhthg5ZTqBSeMDgPEnXNh
+         DLj0eNF8NmOr+3EHICqqQosUbG0XaT1/TJTBXZrg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adam Ford <aford173@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>
-Subject: [PATCH 5.10 04/84] arm64: dts: imx8mm-beacon: Enable RTS-CTS on UART3
-Date:   Mon, 20 Jun 2022 14:50:27 +0200
-Message-Id: <20220620124721.016486184@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 42/84] tty: goldfish: Fix free_irq() on remove
+Date:   Mon, 20 Jun 2022 14:51:05 +0200
+Message-Id: <20220620124722.135562596@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124720.882450983@linuxfoundation.org>
 References: <20220620124720.882450983@linuxfoundation.org>
@@ -49,39 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adam Ford <aford173@gmail.com>
+From: Vincent Whitchurch <vincent.whitchurch@axis.com>
 
-commit 4ce01ce36d77137cf60776b320babed89de6bd4c upstream.
+[ Upstream commit 499e13aac6c762e1e828172b0f0f5275651d6512 ]
 
-There is a header for a DB9 serial port, but any attempts to use
-hardware handshaking fail.  Enable RTS and CTS pin muxing and enable
-handshaking in the uart node.
+Pass the correct dev_id to free_irq() to fix this splat when the driver
+is unbound:
 
-Signed-off-by: Adam Ford <aford173@gmail.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+ WARNING: CPU: 0 PID: 30 at kernel/irq/manage.c:1895 free_irq
+ Trying to free already-free IRQ 65
+ Call Trace:
+  warn_slowpath_fmt
+  free_irq
+  goldfish_tty_remove
+  platform_remove
+  device_remove
+  device_release_driver_internal
+  device_driver_detach
+  unbind_store
+  drv_attr_store
+  ...
+
+Fixes: 465893e18878e119 ("tty: goldfish: support platform_device with id -1")
+Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+Link: https://lore.kernel.org/r/20220609141704.1080024-1-vincent.whitchurch@axis.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/freescale/imx8mm-beacon-baseboard.dtsi |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/tty/goldfish.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/arm64/boot/dts/freescale/imx8mm-beacon-baseboard.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mm-beacon-baseboard.dtsi
-@@ -167,6 +167,7 @@
- 	pinctrl-0 = <&pinctrl_uart3>;
- 	assigned-clocks = <&clk IMX8MM_CLK_UART3>;
- 	assigned-clock-parents = <&clk IMX8MM_SYS_PLL1_80M>;
-+	uart-has-rtscts;
- 	status = "okay";
- };
- 
-@@ -237,6 +238,8 @@
- 		fsl,pins = <
- 			MX8MM_IOMUXC_ECSPI1_SCLK_UART3_DCE_RX	0x40
- 			MX8MM_IOMUXC_ECSPI1_MOSI_UART3_DCE_TX	0x40
-+			MX8MM_IOMUXC_ECSPI1_MISO_UART3_DCE_CTS_B	0x40
-+			MX8MM_IOMUXC_ECSPI1_SS0_UART3_DCE_RTS_B	0x40
- 		>;
- 	};
- 
+diff --git a/drivers/tty/goldfish.c b/drivers/tty/goldfish.c
+index abc84d84f638..9180ca5e4dcd 100644
+--- a/drivers/tty/goldfish.c
++++ b/drivers/tty/goldfish.c
+@@ -428,7 +428,7 @@ static int goldfish_tty_remove(struct platform_device *pdev)
+ 	tty_unregister_device(goldfish_tty_driver, qtty->console.index);
+ 	iounmap(qtty->base);
+ 	qtty->base = NULL;
+-	free_irq(qtty->irq, pdev);
++	free_irq(qtty->irq, qtty);
+ 	tty_port_destroy(&qtty->port);
+ 	goldfish_tty_current_line_count--;
+ 	if (goldfish_tty_current_line_count == 0)
+-- 
+2.35.1
+
 
 
