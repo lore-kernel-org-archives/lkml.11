@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23C48C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:30:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F37D5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:30:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345926AbiFTNar (ORCPT
+        id S1345943AbiFTNax (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:30:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43376 "EHLO
+        Mon, 20 Jun 2022 09:30:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346256AbiFTN2w (ORCPT
+        with ESMTP id S1346370AbiFTN24 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:28:52 -0400
+        Mon, 20 Jun 2022 09:28:56 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A74023BE8;
-        Mon, 20 Jun 2022 06:11:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6069F240B5;
+        Mon, 20 Jun 2022 06:11:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 006F8B811EA;
-        Mon, 20 Jun 2022 13:10:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45624C3411B;
-        Mon, 20 Jun 2022 13:10:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B67F4B811DD;
+        Mon, 20 Jun 2022 13:11:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F9CDC3411B;
+        Mon, 20 Jun 2022 13:11:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730654;
-        bh=pcD20pTjXc0OFvfBkI7Jf92GEK2cRr+LG3vaDSjPkLM=;
+        s=korg; t=1655730702;
+        bh=VX61gT+Y08KmB0rcQK6oQt7Le4cwnWnzjxbdvU33n7k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kGgzEujNdNrT36ekwSZZfPtpztZBTPkRq+UHQ5RmvGROp8wqP7+HF/XpQlnjGXlBS
-         V0mkCA9yg1vOCu4NRVBMtieq8h2N9YHYTD9qt36viqml00sg4MXrCdjTP8yCGQ9HkV
-         0Sq34qR0DztrCJdGoj/2UF21G7Pq9gG8uNIs1XMY=
+        b=HBsCW8ZvLufSCuxSfGjnu2FAVYhvu5okFk7akNzK1/Au3BaERcg10Yeq9FAbb6puw
+         MxceYzcQMLr0wwHAHYIFPyY2YDAH84b8T98+4VFHEN0D4OIhUASwJu0fcmWoncuTex
+         6EVhnKF80UuFJYJ5b7xEj9UvVSxN7CH6AUUoVcEg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andy Lutomirski <luto@kernel.org>,
-        Theodore Tso <tytso@mit.edu>,
+        stable@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
+        Richard Henderson <rth@twiddle.net>,
+        Mark Brown <broonie@kernel.org>, Theodore Tso <tytso@mit.edu>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 015/240] random: delete code to pull data into pools
-Date:   Mon, 20 Jun 2022 14:48:36 +0200
-Message-Id: <20220620124738.252986941@linuxfoundation.org>
+Subject: [PATCH 5.4 030/240] powerpc: Use bool in archrandom.h
+Date:   Mon, 20 Jun 2022 14:48:51 +0200
+Message-Id: <20220620124738.719312946@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -50,99 +51,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Lutomirski <luto@kernel.org>
+From: Richard Henderson <richard.henderson@linaro.org>
 
-commit 84df7cdfbb215a34657b39f4257dab739efa2df9 upstream.
+commit 98dcfce69729f9ce0fb14f96a39bbdba21429597 upstream.
 
-There is no pool that pulls, so it was just dead code.
+The generic interface uses bool not int; match that.
 
-Signed-off-by: Andy Lutomirski <luto@kernel.org>
-Link: https://lore.kernel.org/r/4a05fe0c7a5c831389ef4aea51d24528ac8682c7.1577088521.git.luto@kernel.org
+Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Richard Henderson <rth@twiddle.net>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20200110145422.49141-9-broonie@kernel.org
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   40 ----------------------------------------
- 1 file changed, 40 deletions(-)
+ arch/powerpc/include/asm/archrandom.h |   17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -529,10 +529,8 @@ struct entropy_store {
- 	const struct poolinfo *poolinfo;
- 	__u32 *pool;
- 	const char *name;
--	struct entropy_store *pull;
+--- a/arch/powerpc/include/asm/archrandom.h
++++ b/arch/powerpc/include/asm/archrandom.h
+@@ -6,27 +6,28 @@
  
- 	/* read-write data: */
--	unsigned long last_pulled;
- 	spinlock_t lock;
- 	unsigned short add_ptr;
- 	unsigned short input_rotate;
-@@ -1368,41 +1366,6 @@ EXPORT_SYMBOL_GPL(add_disk_randomness);
-  *********************************************************************/
+ #include <asm/machdep.h>
  
- /*
-- * This utility inline function is responsible for transferring entropy
-- * from the primary pool to the secondary extraction pool. We make
-- * sure we pull enough for a 'catastrophic reseed'.
-- */
--static void _xfer_secondary_pool(struct entropy_store *r, size_t nbytes);
--static void xfer_secondary_pool(struct entropy_store *r, size_t nbytes)
--{
--	if (!r->pull ||
--	    r->entropy_count >= (nbytes << (ENTROPY_SHIFT + 3)) ||
--	    r->entropy_count > r->poolinfo->poolfracbits)
--		return;
--
--	_xfer_secondary_pool(r, nbytes);
--}
--
--static void _xfer_secondary_pool(struct entropy_store *r, size_t nbytes)
--{
--	__u32	tmp[OUTPUT_POOL_WORDS];
--
--	int bytes = nbytes;
--
--	/* pull at least as much as a wakeup */
--	bytes = max_t(int, bytes, random_read_wakeup_bits / 8);
--	/* but never more than the buffer size */
--	bytes = min_t(int, bytes, sizeof(tmp));
--
--	trace_xfer_secondary_pool(r->name, bytes * 8, nbytes * 8,
--				  ENTROPY_BITS(r), ENTROPY_BITS(r->pull));
--	bytes = extract_entropy(r->pull, tmp, bytes,
--				random_read_wakeup_bits / 8, 0);
--	mix_pool_bytes(r, tmp, bytes);
--	credit_entropy_bits(r, bytes*8);
--}
--
--/*
-  * This function decides how many bytes to actually take from the
-  * given pool, and also debits the entropy count accordingly.
-  */
-@@ -1565,7 +1528,6 @@ static ssize_t extract_entropy(struct en
- 			spin_unlock_irqrestore(&r->lock, flags);
- 			trace_extract_entropy(r->name, EXTRACT_SIZE,
- 					      ENTROPY_BITS(r), _RET_IP_);
--			xfer_secondary_pool(r, EXTRACT_SIZE);
- 			extract_buf(r, tmp);
- 			spin_lock_irqsave(&r->lock, flags);
- 			memcpy(r->last_data, tmp, EXTRACT_SIZE);
-@@ -1574,7 +1536,6 @@ static ssize_t extract_entropy(struct en
- 	}
+-static inline int arch_get_random_long(unsigned long *v)
++static inline bool arch_get_random_long(unsigned long *v)
+ {
+-	return 0;
++	return false;
+ }
  
- 	trace_extract_entropy(r->name, nbytes, ENTROPY_BITS(r), _RET_IP_);
--	xfer_secondary_pool(r, nbytes);
- 	nbytes = account(r, nbytes, min, reserved);
+-static inline int arch_get_random_int(unsigned int *v)
++static inline bool arch_get_random_int(unsigned int *v)
+ {
+-	return 0;
++	return false;
+ }
  
- 	return _extract_entropy(r, buf, nbytes, fips_enabled);
-@@ -1846,7 +1807,6 @@ static void __init init_std_data(struct
- 	ktime_t now = ktime_get_real();
- 	unsigned long rv;
+-static inline int arch_get_random_seed_long(unsigned long *v)
++static inline bool arch_get_random_seed_long(unsigned long *v)
+ {
+ 	if (ppc_md.get_random_seed)
+ 		return ppc_md.get_random_seed(v);
  
--	r->last_pulled = jiffies;
- 	mix_pool_bytes(r, &now, sizeof(now));
- 	for (i = r->poolinfo->poolbytes; i > 0; i -= sizeof(rv)) {
- 		if (!arch_get_random_seed_long(&rv) &&
+-	return 0;
++	return false;
+ }
+-static inline int arch_get_random_seed_int(unsigned int *v)
++
++static inline bool arch_get_random_seed_int(unsigned int *v)
+ {
+ 	unsigned long val;
+-	int rc;
++	bool rc;
+ 
+ 	rc = arch_get_random_seed_long(&val);
+ 	if (rc)
 
 
