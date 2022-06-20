@@ -2,611 +2,730 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90BDFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 03:44:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1501FC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 03:46:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238205AbiFTDok (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 19 Jun 2022 23:44:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37222 "EHLO
+        id S238069AbiFTDpx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 19 Jun 2022 23:45:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238110AbiFTDod (ORCPT
+        with ESMTP id S231416AbiFTDpg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 19 Jun 2022 23:44:33 -0400
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2060.outbound.protection.outlook.com [40.107.21.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC8D7CE2D;
-        Sun, 19 Jun 2022 20:44:26 -0700 (PDT)
+        Sun, 19 Jun 2022 23:45:36 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E242BE3A
+        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 20:45:34 -0700 (PDT)
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25JGt8JB018712;
+        Mon, 20 Jun 2022 03:45:29 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : content-transfer-encoding : content-type :
+ mime-version; s=corp-2021-07-09;
+ bh=V0nFqoiVYEb44aTtjgIWrliw/DACwV6Lb1BvQer+H2s=;
+ b=eoZxR64PXK13iTuepyMptHwkTzXCMrXleBEm+b6/fyeM1ReVCP4e9ESb+m8cLTnNnEmb
+ Kx6l8U18xExXOPldoJiCpBbHkQwIY1FxPrN33xMGSSa4aHpYK+4TayrG9bAXiuhJrJ/O
+ N4m7mcmxZ+WCgK+vHtZxbF05HIhpV64P1wIQMsTw6zIIsLI4sMeR1koAoo+TyngR3eo/
+ DGC0teb2hymZM2z0qTBvAXCVtCrKkq8wnZUCwJI/8ToRkkTooDH9/WpWqySK3Z6pnIr0
+ L2TtPc8PSIso04j1BmgNsbfT0OjDJyIux6SSQsO1RB01fzQEmRvx59JK5jxn2Nkt82up gA== 
+Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3gs5g1t6bw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 20 Jun 2022 03:45:29 +0000
+Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 25K3AggJ000846;
+        Mon, 20 Jun 2022 03:26:51 GMT
+Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2041.outbound.protection.outlook.com [104.47.66.41])
+        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3gtg5t0rer-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 20 Jun 2022 03:26:51 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FOyVw0fNGNPRvFonwtJAgzFWXb6njFqFSeiOoxKWdqTsvdh9H9YQrnQn/tM8oMcHOQPJ8OSRxmd/dvKDk9veLZga63L+YGUh2w1MV/eFm0TZRfTOzYGh5NvbXTAL3auVkhUw1+2pVs7O/7062+s1CfRMRVH5fWAFku3RjHfZkr8VcKQyj1boMYQ+HsrRBlkYNvdjA14azgRcUysmbpvf7IZnTYUzBJVVr4Q1mjRvIWYItqSN66/Vh0UwV+xrqcPBjyH/e+XsY9hiIFVab56F9v2dtOrzoG9LjJRCtNQThaQ5lbDtEnhn7IfN5jk+nTuvrI4XjVYMEAWTaid9CSHjWA==
+ b=M+mzkJBcdAdNT+JbEDl+fWdApo9pjSXwAnyfy+esLAl+4HbEcf8WFFB/n6InMyTIPZ9Ke143L6rnhclNaedbu5OhD2V0aOsEJV1Eiio+oiMSmm1dlq4proAB8NAfA9hdyatEYqow7+M4vIr7Lb3P9ob9TAl40pL5m+cDOdQ5xh9GebnXu1+f2BMfQMPgzlW0/Z/Xs6E4dzZmxCE1KKuKU85iHvD/B+DhM3eI2QTzhfXgBxI5aFiB79rO/JCfZssTcEiLhFYDpd4NApNyhqdlJ8FeL0juCkSok7x5tB6lSUo0z0Bz97gxLSKxegPBYTw0RfuFpLnOJS83T4zvalbqsQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tMaXT+oEMTEebcqyKU8b7m1grHc4GKptpfoEXSX1aeA=;
- b=iZpd9eLeVJC2FsQU7dKMNpO++SLloZcPBDQ2FJ+TnaZT+oNqTPerC/2UOu5dqrxgM8UsiHNz9femQ7Vu+MJfyn5DGARKLFZ4JOMYGgNBVu3wlyuCNpf5akxH5YkZYw+GQKYf+Qew1yePkjNCIlgK0AIbzx1twEHmgqdNGTglklwtmJ/tJYI2LILBS/uAQJYURPA6sFaj/XMlmqh9LudRNEUSf4ZkfThjSo+riHCyFSWFZeQ+q4Dn8Gn3l2HrrHIHErOIVggGvrRfwYwBGOYE2smz0FFR6Hw+jUhdD+HkTR01pBk9JYKxJteAYUvHXg8/Kuh4iguYEaROzzQbg5wjMQ==
+ bh=V0nFqoiVYEb44aTtjgIWrliw/DACwV6Lb1BvQer+H2s=;
+ b=XnREJdo6ZPVBXEUMU1t90PTArRGm8QiAyptKJx0i0ny206bRIQjw6YzyaWY/U6kNWf04d4cFHIkLdevd6SXWozTQrGDYxIct9Dib2wnU11yovGNjAOWuZvHZSGAi/dCjuMaZJxOIE2ZEo/Ovk3UAhZkVKmH34jkpteog+WUVwqw/kkeqvN6k/FKU7/xoi0LNhx2HvZ0qmM/W711IYFAOMOnbtY3J+Y7qKgmI6ZnEviG8MDH+F8Hv3sfcpm6NuHEkgNZNYGBO37X9VEmCqiBrdagiCaUKnE0YNmhfdAa/V31hgL3sG+Viga9SxgYKiTmyzUqgVlxs1/lskSjEx4/u4A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tMaXT+oEMTEebcqyKU8b7m1grHc4GKptpfoEXSX1aeA=;
- b=HVM8D50xx+YFm86UhUlMd3pIAmirv+F7q0bt8f6MqpBdSdlcKcijKWu2wvsJ2xm/A85sCZJHV0f2glhCckliajzepn2t2oLfzLq7dSwr7QKEAArL0ojbssNPBwrHX1pgDINnkesjmcysjkac4t208i4+62ty3pJww+lhqzusu0w=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AM7PR04MB7046.eurprd04.prod.outlook.com (2603:10a6:20b:113::22)
- by PA4PR04MB7965.eurprd04.prod.outlook.com (2603:10a6:102:c9::22) with
+ bh=V0nFqoiVYEb44aTtjgIWrliw/DACwV6Lb1BvQer+H2s=;
+ b=k94kS+292KVmkEg6+wVsBplnhuKgFe/MkqpLHAmeyJRMHvjrEGRmWHf2atH3z12oMoxiyDDeM4nmBDX1b+9Z2YTMxqgsNtf34LGLEbDFad2Q3RR+TEruLBFcJNgsaLfGQCrtBy3VdbjCOAs9/sjviqZOpsbiUIRYRwd1bhykTo0=
+Received: from CO1PR10MB4468.namprd10.prod.outlook.com (2603:10b6:303:6c::24)
+ by SJ0PR10MB4750.namprd10.prod.outlook.com (2603:10b6:a03:2d5::7) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.22; Mon, 20 Jun
- 2022 03:44:24 +0000
-Received: from AM7PR04MB7046.eurprd04.prod.outlook.com
- ([fe80::3c82:f63b:711a:502]) by AM7PR04MB7046.eurprd04.prod.outlook.com
- ([fe80::3c82:f63b:711a:502%6]) with mapi id 15.20.5353.021; Mon, 20 Jun 2022
- 03:44:24 +0000
-From:   Liu Ying <victor.liu@nxp.com>
-To:     linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     kishon@ti.com, vkoul@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
-        linux-imx@nxp.com, krzysztof.kozlowski@linaro.org
-Subject: [PATCH v2 3/3] phy: freescale: Add i.MX8qm Mixel LVDS PHY support
-Date:   Mon, 20 Jun 2022 11:45:33 +0800
-Message-Id: <20220620034533.4108170-4-victor.liu@nxp.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220620034533.4108170-1-victor.liu@nxp.com>
-References: <20220620034533.4108170-1-victor.liu@nxp.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.15; Mon, 20 Jun
+ 2022 03:26:48 +0000
+Received: from CO1PR10MB4468.namprd10.prod.outlook.com
+ ([fe80::e9bd:ba52:c1c2:11e0]) by CO1PR10MB4468.namprd10.prod.outlook.com
+ ([fe80::e9bd:ba52:c1c2:11e0%9]) with mapi id 15.20.5353.021; Mon, 20 Jun 2022
+ 03:26:48 +0000
+From:   Imran Khan <imran.f.khan@oracle.com>
+To:     tj@kernel.org, gregkh@linuxfoundation.org, viro@zeniv.linux.org.uk
+Cc:     linux-kernel@vger.kernel.org
+Subject: [PATCH] kernfs: Change kernfs_rwsem to a per-cpu rwsem.
+Date:   Mon, 20 Jun 2022 13:26:34 +1000
+Message-Id: <20220620032634.1103822-1-imran.f.khan@oracle.com>
+X-Mailer: git-send-email 2.30.2
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: SI2PR02CA0049.apcprd02.prod.outlook.com
- (2603:1096:4:196::7) To AM7PR04MB7046.eurprd04.prod.outlook.com
- (2603:10a6:20b:113::22)
+X-ClientProxiedBy: SYBPR01CA0147.ausprd01.prod.outlook.com
+ (2603:10c6:10:d::15) To CO1PR10MB4468.namprd10.prod.outlook.com
+ (2603:10b6:303:6c::24)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6c86d968-feaa-49ae-2168-08da526f2adf
-X-MS-TrafficTypeDiagnostic: PA4PR04MB7965:EE_
-X-Microsoft-Antispam-PRVS: <PA4PR04MB79653FEA0F259EE424187CED98B09@PA4PR04MB7965.eurprd04.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 2de10d7e-54c9-48f5-eac5-08da526cb521
+X-MS-TrafficTypeDiagnostic: SJ0PR10MB4750:EE_
+X-Microsoft-Antispam-PRVS: <SJ0PR10MB4750E87594270FFFD8C845D5B0B09@SJ0PR10MB4750.namprd10.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 1/56ioT3N2J//bHzkijOPnGgNKUI/RSSiMgACUKcgjO0B5pT5VcHRCrbCKsmhLBt5pECUcElgx4xL6J32Es8Qj2gd6Z6uMsbrnsengMNx6uhjSPtsgu1NPstJJgMrop1mGyegGu+b8S/SMtVBvT6mOIbIy4JX/KjuDnYcJfo0dwaJczg5VzXEjbLIuG+hwffcM7cIXyiGhKaHTZKjtQnP7g85aO+teNjBLoDIKsbif6eIKJXwe4ar4cDPtpoeytGkFCLVWEzINVMstzcSpEkIu3H5NjR8Vm4FWi9EA0e6wrWGtNWDTGiWOLTHO4xTpT19ALGrHgGNFgUqbQae/e6os0Kia+QvZr7DNXBNVBs63AAs5O+nxxeRia8FoF5QSt1dqRj9oMOR80hFBIWyZaRNZlOThHhNbMGdDrC9UZ45zTTBa2uc/Uvl5YFN9mzRvZUI2ZwVkCZ5bxy1IgypZDp6/F/LM+TkZGsbI6kZ+WhFXbq4gx6G+DPRtkTPlWLk8NRmktTzBWudDimUedl+Dr1nn42GeKpk4lP0oVeKcv06qnmDPB3FtyvJdVm4rO1TAfNmfSKyZXktQM714XmnyYdf9DqEs61hV2TDXK6oJXexMNYstHw2UJ+5VYSKS0/N+MzCZ5gIU1Ezj3ny0VEVqJX+63E1id+89izW6tmaRRSrDrCkvBDzxYDRSeJJmlwtlx8UeSC8RZoI9RbhmuN6ex+CQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM7PR04MB7046.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(6506007)(66556008)(52116002)(7416002)(5660300002)(316002)(26005)(6512007)(30864003)(6666004)(66476007)(498600001)(86362001)(8936002)(8676002)(66946007)(6486002)(4326008)(2906002)(1076003)(2616005)(186003)(36756003)(38350700002)(38100700002)(83380400001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: wOWUuxG7KISyd8MZOTNsOl6uASqPVQUjQeF8ajhlUYdASqnTMZgss8ht9Iy8zovEqvX0Ml649nJk5qEMyE6mItD5v8Gac9sAYHoicrAOowyP2dmJPora5omZhgY2LoJ2g/OYWHj1s1NSxJD4ux2wYoliAkKhTxL/oz85RsL5M39Qd8cXx7DuAkxwC5hYMsES7VaqP+s2LsVYiZM9AGX7YSjazvUX//rslrw8ZCJhVNUXRi5g3dNb1c4oQTqVCmA6IVxdHMoXrZqFs6Oa+dQ5KDrl4y7XQOiI14ETkUdG2kumgPm3XBnLNEv8C6xf++ftN3weSKkEF/QgAAkii4KYHzttedzlZ29rsGWDZyogjNbohmPhEocIih1l8NaMrDQXfu9zw20SY6VHkk/XFNwVmMpiicpotLdQPz3t3Teya4oJeVdEcazTv8SahYbNYxPy5/9XXbQjlATgNCWlmV/5QMmRrxYKGNKE4pbx0DehFNUJli008NTIcwT4Gz+PenIWLgJa8oQlP+OxIoS9BVuWV7YH+TQxt2RrpJK9aAg+83SR2j8s8cV6m0uATjLkE5zX5XS59ro1Y/Wymg7xeMAEf38uh7FkAMSfVLdwTvvhtYCwpMYSF6h1GN5vdUM/zSx6e0iwS/xjjKl1pH1JLrIjfLb/G1HZ2kb6IhCXltJQfwDQYUIsALm4q4BXPnRLukQdwNzN/SkwbGeRTJYcuMxcfLtVCI8Dc1bgC2QaJBzRvBtM760MdxthvRmGyWeQ4KBhdtbB4zgN4DrrRb7FldVixTQYPk0+VDNyZuSl+dr2h01td136Ij6bi1K0xM1i7uzdvVcNqYXQbdofZwwyVyZFow==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR10MB4468.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(6486002)(966005)(83380400001)(4326008)(103116003)(66476007)(8676002)(1076003)(66556008)(66946007)(186003)(26005)(2906002)(6506007)(6666004)(52116002)(498600001)(2616005)(6512007)(8936002)(86362001)(5660300002)(30864003)(36756003)(316002)(38350700002)(38100700002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?kuvYXUA3s3qyp350XrivIGyGrU1vT3Lt0a8Mp6S798YTRKES2CrJEAs7sCOT?=
- =?us-ascii?Q?t4IhOLBOTv4ycWqoWs98FGx3RiUBw44ATlT61licptwP/1kiu3qU/RoIRp2i?=
- =?us-ascii?Q?CBs6yGq7JlEF39rp1yLqNjRIMJi3Af6UoOCOcIIRA5zo0Wvp2t7W80ZJfVk6?=
- =?us-ascii?Q?Fbu1pV7cRunYERUA87f2a7CFcXr0eNvNovGMYgx8TWRVR3+QAScCt1NYkyqz?=
- =?us-ascii?Q?mVITpQEcLO+86CxVkUTKRJDNus4lOp1QApjTi/+yfYl/fieJXg1oy/UzvhgX?=
- =?us-ascii?Q?m09s6NMV/IaRCtFGmVUyojGNrFx096lkDKofcW1nC/1yjH2wJ68gR1K84/GL?=
- =?us-ascii?Q?iRqb69/UhDTbUcL/bvxisPsp1QQNHCqZUu8ojXzR2wXEZ4zjXR/XJq8BIZfg?=
- =?us-ascii?Q?VIYEmlBkJN7/Pp506Fj2699gR1EKfWEfwE9U4KAa1hvNyAYDvdNoD5QULBfy?=
- =?us-ascii?Q?G2nz/iwCMj3iuCf1HXxTdw95gNTRLWjEWdzf59fjCVdycQ+rAc1dSdV6DpHZ?=
- =?us-ascii?Q?ExxQ9/WSktvQgbCDgz1roWhAn4iQwReEGy1uY7xZgoJurMBtB7jKg7ZsccnD?=
- =?us-ascii?Q?MBOeLka1gVoMlWMDw88RBaGvBS9/vsbv2l51v3lM1nya9zI4cBrX9qdmus2J?=
- =?us-ascii?Q?K7wghdiEbwLxkudnnBB+1Btn5CkVxQ2A4SWQ7BXCpB+OtZvTrK8+gcpRdWWT?=
- =?us-ascii?Q?o4h4aRMyxlCuv8JDgOxSKUcKlXGbq907W0s+x7k1YI3/gH6rkoicCzcgaKHE?=
- =?us-ascii?Q?8cWxzy/WBMUkj0GwnDnkzHoJphYtNuaWd860wfFn+881qv9ASFzOpNSSEVol?=
- =?us-ascii?Q?aA+Rf9nhZZs06DH36P9NZuyJZVUl4GxyIZXgvE/eidX0QZZJG3lscTnj1GrV?=
- =?us-ascii?Q?XUYmUlzLJmTeFzYt+8t0R1krHbmCBPGJeKjJ6eN17O6CaQM83f9uzBVDZCxW?=
- =?us-ascii?Q?6VKuN0tT27WgHKsgkLBiWVBIoAzxpJoJlEebPbmD4YqZMDe+Yz5ALQTAkxhP?=
- =?us-ascii?Q?RF10txQWGHP4gNLY6/s+c5jmDAjW03Mjwem/PTwh6ozMLm9ylaTdL2jERLeS?=
- =?us-ascii?Q?z2UPOvLYsM78mQXsSTJKdPmColHCBpAQFIAbExolv/C/5jNH1Neyna2ZZl+/?=
- =?us-ascii?Q?aM1XiDN5rfYSHp+fiaVFGXMEkhSJbhjdBmaffrOoriXI2swOmXkVrDSGzRLU?=
- =?us-ascii?Q?Ejqn7vheJTsahDRtHX6GR0/5Xn6Aybsdjv0mO7+Oi5+g+zXkNQXNV5Yb1ksr?=
- =?us-ascii?Q?eV7IdxkehAL5CzFNKD90Wf1nXxz/9yOW7qu9v/aUBSDRtOCMqMYl4ySFm6+B?=
- =?us-ascii?Q?d1J3P0jkv++spRmNE7zfJa1TuY7KBBWREErHMMWRxbbtjW4ZYxzy12Lo+ihH?=
- =?us-ascii?Q?KYb4RbsZTYkdC9UH48Inv8bOzPVsZuR8CQAjFSIKpIqYZ3MfX77gB924V7+s?=
- =?us-ascii?Q?4MdHzBR8DUNq+WVC7LKR0Nq38y1yYrqznpKs/foEEcXIZZA5TmXbzAx9B222?=
- =?us-ascii?Q?2QGbwrsK/WHR/mZBs7shN+GKZCLAwoatILPZsyWd8MZyRod2jCgPAG7j1ksI?=
- =?us-ascii?Q?aVqigQHr4ZO88U/eZXYu9/8Wfe44XIGnXytc7Uweaq33veTm59HkMVCKZneg?=
- =?us-ascii?Q?fC2IzpNYL1R6Sk7FOEzwT66nIRlnEUUqNYo9wKPtMYeejmxNJI4Rg48HP9MD?=
- =?us-ascii?Q?f4ScGNj9yDTIOCYzqf9wp0R/rwtc39O8quqGXmbK7WCjvxsNmPOnCpD9uriS?=
- =?us-ascii?Q?ZAfv9Nr/yg=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6c86d968-feaa-49ae-2168-08da526f2adf
-X-MS-Exchange-CrossTenant-AuthSource: AM7PR04MB7046.eurprd04.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?N+xVU9Jc8b3BxpRo6MvnzXzvkF0a1+ZwjpUYnd2JgqAQaRmMVQDHl7OF9yn9?=
+ =?us-ascii?Q?+CiO+y0rO6majHjAQbmNJnvYym6ygfR68rS7Pt1dAH6L487KxugIYp3AokOY?=
+ =?us-ascii?Q?sbiJ7UJogwSX3scmvneCDwM98cXr3Ke0YeYGMIPgUif3WeAuiPKJbi+6SaJO?=
+ =?us-ascii?Q?noLsX5O5g98vQ2eaLAAZ3+cFJsFp8N36+oRG2tjdX2hQVgcgujDAGKPHWHJp?=
+ =?us-ascii?Q?8DlxXHpi5GrXtcBQIpcnSf1SAZuBmE04SmoiWkiTq0WYFQtc8FUcI8BN9vKA?=
+ =?us-ascii?Q?5kYRL1S222EcW9KI7goGDRf1tHXtDlQvKQR4gODGX01v4XmWchwRV/ygGKnk?=
+ =?us-ascii?Q?z48pYDIRe+sM80LCBAud0C/aQxaID3gToP1jY8NZc1DSZ1uAS5jH/qshy/sW?=
+ =?us-ascii?Q?SU67RcL/W4KaZxxfyqAOaMI21zotnjcPWetnrc4Ul6vofO2UYNvQHXb5jJl8?=
+ =?us-ascii?Q?KzvLp/eamAnnvWhWKdzMTzw+o30X4LjNyzf0wS4zF2LkI2hlDiNogTn0j7O4?=
+ =?us-ascii?Q?fxuQPIzDEj5a1VhesE+05ixDTYfyN3XjI5xF2Ap4G/vK9KHW2kJ9SXWSMrlA?=
+ =?us-ascii?Q?m7LLmP4+5BWmFzIlJ/f1sOQyWB125U4I6TM0fI8VKernuyDbGSaNpgGPijre?=
+ =?us-ascii?Q?GAeYxLZcZdmQ/fAS3hPzyO3zu7ARl7cd9UJCRcriigBykgpru+uZNLunsWJL?=
+ =?us-ascii?Q?ZZmhxE7e93bVGn/1+QUdMny0vUXXcHJxxs21atKfXe9Ck10IVRsQ1EaGnv+J?=
+ =?us-ascii?Q?547FLiKjOV/244m+qTWjP6KdIV6n6+OtrQ8EYPMiNJyerHjKN7gk6PbdNq29?=
+ =?us-ascii?Q?/kSlF1OkE9pQhPx3PjXtbepAmiO1F8xe0puSlHOgQgaSDE3s2o8TlXXoaEY5?=
+ =?us-ascii?Q?0WIec+RFVTVZs9O2Q3X+kfhu5rNZyWFdhRpUZT+S6I119BpBgthb2c86QDSo?=
+ =?us-ascii?Q?mnPrMjdTQrPIh6K9NnuPX1Tj9Q9WA0F+rht5k7u0/c1FRVG/xkLC6GCeE+5H?=
+ =?us-ascii?Q?LxLJWHckdc5CGNqUpRd7DX6arCZAIu/qv8NNPXjmO4HSzi3+WhzxE0YZhfmN?=
+ =?us-ascii?Q?0FRLA9LBS7m8fc0jyjH0O/UydyB3VI72V2tNldf8TM7VmURFB3gWsv7ZtW7a?=
+ =?us-ascii?Q?x1ETOFiQSX4iM2RZK+cBPwuwrz7XdirqRj7/gIMc4AR1mFdeKrmJJ7A6Bjwb?=
+ =?us-ascii?Q?GSaCW+ikpwOQ5/Ahqk+601Mkb4L34z9PypxU3uOmWqzr1i69dNq6ldrz/Tns?=
+ =?us-ascii?Q?/CZAjlT1AOT2lp6bgRF99hT0jel3Dx5dqJrD5j6/dv923528SyLeqLw897I1?=
+ =?us-ascii?Q?ojaSpBiehW7MCJugYQTE4+r4vIgA3mutUlO+xb7ATRrMkD2sAdaj98LsiGxI?=
+ =?us-ascii?Q?hN3pU6xfuDJTM+pMn3ZmGqd9UX/4Zcul1DaKUvI4ON+mtK6udYfZGxCrOf0B?=
+ =?us-ascii?Q?s/aJcu7f/+FRGLzV0hWCO7hD/YoDIM3PgweJIQbdD4pFBxHGgIw8Ml4Ym4gw?=
+ =?us-ascii?Q?BHu4C8LBveAoUSLazQDU5kmTag6FnJ94kcO5n5plQzsyQ4UmW27U6eo61k6Y?=
+ =?us-ascii?Q?T86a3cyd67qOn9/EspoBzT4wgAYy12727u/FQa4nReqGeXqidnCKLU+1Qu9m?=
+ =?us-ascii?Q?ZuK8ZQxITxYewxk8WplTPgKp2x1JrwFa4GWXs/5vpujSOJmiVizjv7Fv4416?=
+ =?us-ascii?Q?4/2941xzfP175MralZgfEcBZsGpNEP2lwZ64fBB2mIrtctFQqB13nX1YyN4n?=
+ =?us-ascii?Q?u7cRlOZz+sPi553ARltY2DxTr5yjDsQ=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2de10d7e-54c9-48f5-eac5-08da526cb521
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR10MB4468.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jun 2022 03:44:24.2889
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jun 2022 03:26:48.1139
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: pvW9ssts5vNZr8ocYTsQxFt2KF2TDhm6Dj3l59Yi8vdvJ5ZSqzyeaqQ2CbaOzX9T4zNjsuDN+o4tWZsloYXwZA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR04MB7965
+X-MS-Exchange-CrossTenant-UserPrincipalName: MmcxNrPsAqhwkif2xeVxdLkGYYqKuxpnfN/LoCEGHKr4Dn9XKAT0eGI4lFU7YsJR1uPUgtUknR4vf9jGcCcDhg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR10MB4750
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.883
+ definitions=2022-06-19_12:2022-06-17,2022-06-19 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 malwarescore=0
+ mlxlogscore=999 bulkscore=0 phishscore=0 suspectscore=0 spamscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206200014
+X-Proofpoint-GUID: YkbRxng0zhz63mA3yWPKRvPCW2DCW-uS
+X-Proofpoint-ORIG-GUID: YkbRxng0zhz63mA3yWPKRvPCW2DCW-uS
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add Freescale i.MX8qm LVDS PHY support.
-The PHY IP is from Mixel, Inc.
+On large systems when few hundred CPUs simulateously acquire kernfs_rwsem,
+for reading we see performance degradation due to bouncing of cache line
+that contains kernfs_rwsem. Changing kernfs_rwsem into a per-fs, per-cpu
+rwsem can fix this degradation.
 
-Signed-off-by: Liu Ying <victor.liu@nxp.com>
+For example on a system of 384 cores, If I run 200 instances of an
+application that is mostly executing following loop:
+
+for (int loop = 0; loop <100 ; loop++)
+  {
+    for (int port_num = 1; port_num < 2; port_num++)
+    {
+      for (int gid_index = 0; gid_index < 254; gid_index++ )
+      {
+        char ret_buf[64], ret_buf_lo[64];
+        char gid_file_path[1024];
+
+        int      ret_len;
+        int      ret_fd;
+        ssize_t  ret_rd;
+
+        ub4  i, saved_errno;
+
+        memset(ret_buf, 0, sizeof(ret_buf));
+        memset(gid_file_path, 0, sizeof(gid_file_path));
+
+        ret_len = snprintf(gid_file_path, sizeof(gid_file_path),
+                           "/sys/class/infiniband/%s/ports/%d/gids/%d",
+                           dev_name,
+                           port_num,
+                           gid_index);
+
+        ret_fd = open(gid_file_path, O_RDONLY | O_CLOEXEC);
+        if (ret_fd < 0)
+        {
+          printf("Failed to open %s\n", gid_file_path);
+          continue;
+        }
+
+        /* Read the GID */
+        ret_rd = read(ret_fd, ret_buf, 40);
+
+        if (ret_rd == -1)
+        {
+          printf("Failed to read from file %s, errno: %u\n",
+                 gid_file_path, saved_errno);
+
+          continue;
+        }
+
+        close(ret_fd);
+      }
+    }
+  }
+
+I can see contention around kernfs_rwsem as follows:
+
+-   21.09%    20.95%  showgids       [kernel.kallsyms]        [k] down_read
+     20.95% __libc_start_main
+        __GI___libc_open
+        entry_SYSCALL_64_after_hwframe
+        do_syscall_64
+        sys_open
+        do_sys_open
+        do_filp_open
+      - path_openat
+         - 19.55% link_path_walk
+            - 10.60% inode_permission
+               - __inode_permission
+                  - 10.60% kernfs_iop_permission
+                       down_read
+            - 8.18% walk_component
+                 lookup_fast
+               - d_revalidate.part.24
+                  - 8.18% kernfs_dop_revalidate
+                       down_read
+            - 0.76% kernfs_iop_get_link
+                 down_read
+         - 0.74% may_open
+              inode_permission
+              __inode_permission
+              kernfs_iop_permission
+              down_read
+         - 0.66% lookup_fast
+              d_revalidate.part.24
+              kernfs_dop_revalidate
+              down_read
+
+-   16.04%    15.96%  showgids       [kernel.kallsyms]        [k] up_read
+     15.96% __libc_start_main
+        __GI___libc_open
+        entry_SYSCALL_64_after_hwframe
+        do_syscall_64
+        sys_open
+        do_sys_open
+        do_filp_open
+      - path_openat
+         - 15.04% link_path_walk
+            - 8.36% inode_permission
+               - __inode_permission
+                  - 8.36% kernfs_iop_permission
+                       up_read
+            - 6.15% walk_component
+                 lookup_fast
+               - d_revalidate.part.24
+                  - 6.15% kernfs_dop_revalidate
+                       up_read
+            - 0.53% kernfs_iop_get_link
+
+Moreover this run of 200 applications take more than 32 secs to finish on
+this system.
+
+After changing kernfs_rwsem to a per-cpu rwsem, I can see that contention
+for kernfs_rwsem is no longer visible in perf data and the test execution
+time has reduced to almost half (17 secs or less from 32 secs or more).
+
+The overhead involving write operations with per-cpu rwsem will be higher
+but frequency of creation/deletion of kernfs files is much less than
+frequency at which kernfs (cgroup, sysfs) files are read.
+
+Signed-off-by: Imran Khan <imran.f.khan@oracle.com>
 ---
-v1->v2:
-* Drop 'This patch' from commit message. (Krzysztof)
-* Make dev_err_probe() function calls as one-liners. (Krzysztof)
-* Drop unnecessary debug messages. (Krzysztof)
 
- drivers/phy/freescale/Kconfig                 |   9 +
- drivers/phy/freescale/Makefile                |   1 +
- .../phy/freescale/phy-fsl-imx8qm-lvds-phy.c   | 440 ++++++++++++++++++
- 3 files changed, 450 insertions(+)
- create mode 100644 drivers/phy/freescale/phy-fsl-imx8qm-lvds-phy.c
+This patch introduces an alternative approach to address problem of kernfs_rwsem
+contention discussed in [1]. Since [1] was dealing with 3 global locks i.e.
+kernfs_open_file_mutex, kernfs_open_node_lock and kernfs_rwsem and most of the
+major changes were around kernfs_rwsem we decided in [2] to sort out
+kernfs_open_file_mutex and kernfs_open_node_lock first. These 2 global locks have
+now been removed and corresponding patches [3] have been Acked.
 
-diff --git a/drivers/phy/freescale/Kconfig b/drivers/phy/freescale/Kconfig
-index f9c54cd02036..853958fb2c06 100644
---- a/drivers/phy/freescale/Kconfig
-+++ b/drivers/phy/freescale/Kconfig
-@@ -8,6 +8,15 @@ config PHY_FSL_IMX8MQ_USB
- 	select GENERIC_PHY
- 	default ARCH_MXC && ARM64
+As far as kernfs_rwsem is concerned, we are trying to use hashed kernfs_rwsem in
+[1]. These changes have not been Acked yet and there may still be some broken
+corner cases which I am trying to find/fix at the moment. But in the meanwhile
+I tried with per-cpu rwsem for kernfs_rwsem and found that it is giving me
+similar improvement as far as my test case is concerned. Compared to hashed
+kernfs_rwsem, per-cpu kernfs_rwsem is less intrusive because in worst case we
+may incur some performance penalties for some unknown scenarios but it will not
+break kernfs flow.
+
+So in this patch I am proposing the idea of using per-cpu kernfs_rwsem, so that
+I can get some feedback about this approach as well.
+
+[1]: https://lore.kernel.org/lkml/20220410023719.1752460-1-imran.f.khan@oracle.com/
+[2]: https://lore.kernel.org/lkml/f2ca9d19-023f-76d9-5c76-6f08ccfbe348@oracle.com/
+[3]: https://lore.kernel.org/lkml/20220615021059.862643-1-imran.f.khan@oracle.com/
+
+ fs/kernfs/dir.c             | 70 ++++++++++++++++++-------------------
+ fs/kernfs/file.c            |  4 +--
+ fs/kernfs/inode.c           | 16 ++++-----
+ fs/kernfs/kernfs-internal.h |  4 +--
+ fs/kernfs/mount.c           | 12 +++----
+ fs/kernfs/symlink.c         |  4 +--
+ 6 files changed, 55 insertions(+), 55 deletions(-)
+
+diff --git a/fs/kernfs/dir.c b/fs/kernfs/dir.c
+index 6eca72cfa1f28..678e71856afc0 100644
+--- a/fs/kernfs/dir.c
++++ b/fs/kernfs/dir.c
+@@ -472,7 +472,7 @@ static void kernfs_drain(struct kernfs_node *kn)
+ 	lockdep_assert_held_write(&root->kernfs_rwsem);
+ 	WARN_ON_ONCE(kernfs_active(kn));
  
-+config PHY_MIXEL_LVDS_PHY
-+	tristate "Mixel LVDS PHY support"
-+	depends on OF
-+	select GENERIC_PHY
-+	select REGMAP_MMIO
-+	help
-+	  Enable this to add support for the Mixel LVDS PHY as found
-+	  on NXP's i.MX8qm SoC.
-+
- config PHY_MIXEL_MIPI_DPHY
- 	tristate "Mixel MIPI DSI PHY support"
- 	depends on OF && HAS_IOMEM
-diff --git a/drivers/phy/freescale/Makefile b/drivers/phy/freescale/Makefile
-index 3518d5dbe8a7..cedb328bc4d2 100644
---- a/drivers/phy/freescale/Makefile
-+++ b/drivers/phy/freescale/Makefile
-@@ -1,5 +1,6 @@
- # SPDX-License-Identifier: GPL-2.0-only
- obj-$(CONFIG_PHY_FSL_IMX8MQ_USB)	+= phy-fsl-imx8mq-usb.o
-+obj-$(CONFIG_PHY_MIXEL_LVDS_PHY)	+= phy-fsl-imx8qm-lvds-phy.o
- obj-$(CONFIG_PHY_MIXEL_MIPI_DPHY)	+= phy-fsl-imx8-mipi-dphy.o
- obj-$(CONFIG_PHY_FSL_IMX8M_PCIE)	+= phy-fsl-imx8m-pcie.o
- obj-$(CONFIG_PHY_FSL_LYNX_28G)		+= phy-fsl-lynx-28g.o
-diff --git a/drivers/phy/freescale/phy-fsl-imx8qm-lvds-phy.c b/drivers/phy/freescale/phy-fsl-imx8qm-lvds-phy.c
-new file mode 100644
-index 000000000000..37f77115ddab
---- /dev/null
-+++ b/drivers/phy/freescale/phy-fsl-imx8qm-lvds-phy.c
-@@ -0,0 +1,440 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/*
-+ * Copyright 2017-2020,2022 NXP
-+ */
-+
-+#include <linux/bitfield.h>
-+#include <linux/bits.h>
-+#include <linux/clk.h>
-+#include <linux/mfd/syscon.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/phy/phy.h>
-+#include <linux/platform_device.h>
-+#include <linux/pm_runtime.h>
-+#include <linux/regmap.h>
-+
-+#define REG_SET		0x4
-+#define REG_CLR		0x8
-+
-+#define PHY_CTRL	0x0
-+#define  M_MASK		GENMASK(18, 17)
-+#define  M(n)		FIELD_PREP(M_MASK, (n))
-+#define  CCM_MASK	GENMASK(16, 14)
-+#define  CCM(n)		FIELD_PREP(CCM_MASK, (n))
-+#define  CA_MASK	GENMASK(13, 11)
-+#define  CA(n)		FIELD_PREP(CA_MASK, (n))
-+#define  TST_MASK	GENMASK(10, 5)
-+#define  TST(n)		FIELD_PREP(TST_MASK, (n))
-+#define  CH_EN(id)	BIT(3 + (id))
-+#define  NB		BIT(2)
-+#define  RFB		BIT(1)
-+#define  PD		BIT(0)
-+
-+/* Power On Reset(POR) value */
-+#define  CTRL_RESET_VAL	(M(0x0) | CCM(0x4) | CA(0x4) | TST(0x25))
-+
-+/* PHY initialization value and mask */
-+#define  CTRL_INIT_MASK	(M_MASK | CCM_MASK | CA_MASK | TST_MASK | NB | RFB)
-+#define  CTRL_INIT_VAL	(M(0x0) | CCM(0x5) | CA(0x4) | TST(0x25) | RFB)
-+
-+#define PHY_STATUS	0x10
-+#define  LOCK		BIT(0)
-+
-+#define PHY_NUM		2
-+
-+#define MIN_CLKIN_FREQ	25000000
-+#define MAX_CLKIN_FREQ	165000000
-+
-+#define PLL_LOCK_SLEEP		10
-+#define PLL_LOCK_TIMEOUT	1000
-+
-+struct mixel_lvds_phy {
-+	struct phy *phy;
-+	struct phy_configure_opts_lvds cfg;
-+	unsigned int id;
-+};
-+
-+struct mixel_lvds_phy_priv {
-+	struct regmap *regmap;
-+	struct mutex lock;	/* protect remap access and cfg of our own */
-+	struct clk *phy_ref_clk;
-+	struct mixel_lvds_phy *phys[PHY_NUM];
-+};
-+
-+static int mixel_lvds_phy_init(struct phy *phy)
-+{
-+	struct mixel_lvds_phy_priv *priv = dev_get_drvdata(phy->dev.parent);
-+
-+	mutex_lock(&priv->lock);
-+	regmap_update_bits(priv->regmap,
-+			   PHY_CTRL, CTRL_INIT_MASK, CTRL_INIT_VAL);
-+	mutex_unlock(&priv->lock);
-+
-+	return 0;
-+}
-+
-+static int mixel_lvds_phy_power_on(struct phy *phy)
-+{
-+	struct mixel_lvds_phy_priv *priv = dev_get_drvdata(phy->dev.parent);
-+	struct mixel_lvds_phy *lvds_phy = phy_get_drvdata(phy);
-+	struct mixel_lvds_phy *companion = priv->phys[lvds_phy->id ^ 1];
-+	struct phy_configure_opts_lvds *cfg = &lvds_phy->cfg;
-+	u32 val = 0;
-+	u32 locked;
-+	int ret;
-+
-+	ret = clk_prepare_enable(priv->phy_ref_clk);
-+	if (ret < 0) {
-+		dev_err(&phy->dev,
-+			"failed to enable PHY reference clock: %d\n", ret);
-+		return ret;
-+	}
-+
-+	/* The master PHY would power on the slave PHY. */
-+	if (cfg->is_slave)
-+		return 0;
-+
-+	mutex_lock(&priv->lock);
-+	if (cfg->bits_per_lane_and_dclk_cycle == 7) {
-+		if (cfg->differential_clk_rate < 44000000)
-+			val |= M(0x2);
-+		else if (cfg->differential_clk_rate < 90000000)
-+			val |= M(0x1);
-+		else
-+			val |= M(0x0);
-+	} else {
-+		val = NB;
-+
-+		if (cfg->differential_clk_rate < 32000000)
-+			val |= M(0x2);
-+		else if (cfg->differential_clk_rate < 63000000)
-+			val |= M(0x1);
-+		else
-+			val |= M(0x0);
-+	}
-+	regmap_update_bits(priv->regmap, PHY_CTRL, M_MASK | NB, val);
-+
-+	/*
-+	 * Enable two channels synchronously,
-+	 * if the companion PHY is a slave PHY.
-+	 */
-+	if (companion->cfg.is_slave)
-+		val = CH_EN(0) | CH_EN(1);
-+	else
-+		val = CH_EN(lvds_phy->id);
-+	regmap_write(priv->regmap, PHY_CTRL + REG_SET, val);
-+
-+	ret = regmap_read_poll_timeout(priv->regmap, PHY_STATUS, locked,
-+				       locked, PLL_LOCK_SLEEP,
-+				       PLL_LOCK_TIMEOUT);
-+	if (ret < 0) {
-+		dev_err(&phy->dev, "failed to get PHY lock: %d\n", ret);
-+		clk_disable_unprepare(priv->phy_ref_clk);
-+	}
-+	mutex_unlock(&priv->lock);
-+
-+	return ret;
-+}
-+
-+static int mixel_lvds_phy_power_off(struct phy *phy)
-+{
-+	struct mixel_lvds_phy_priv *priv = dev_get_drvdata(phy->dev.parent);
-+	struct mixel_lvds_phy *lvds_phy = phy_get_drvdata(phy);
-+
-+	mutex_lock(&priv->lock);
-+	regmap_write(priv->regmap, PHY_CTRL + REG_CLR, CH_EN(lvds_phy->id));
-+	mutex_unlock(&priv->lock);
-+
-+	clk_disable_unprepare(priv->phy_ref_clk);
-+
-+	return 0;
-+}
-+
-+static int mixel_lvds_phy_configure(struct phy *phy,
-+				    union phy_configure_opts *opts)
-+{
-+	struct mixel_lvds_phy_priv *priv = dev_get_drvdata(phy->dev.parent);
-+	struct phy_configure_opts_lvds *cfg = &opts->lvds;
-+	int ret;
-+
-+	ret = clk_set_rate(priv->phy_ref_clk, cfg->differential_clk_rate);
-+	if (ret)
-+		dev_err(&phy->dev,
-+			"failed to set PHY reference clock rate(%lu): %d\n",
-+			cfg->differential_clk_rate, ret);
-+
-+	return ret;
-+}
-+
-+/* Assume the master PHY's configuration set is cached first. */
-+static int mixel_lvds_phy_check_slave(struct phy *slave_phy)
-+{
-+	struct device *dev = &slave_phy->dev;
-+	struct mixel_lvds_phy_priv *priv = dev_get_drvdata(dev->parent);
-+	struct mixel_lvds_phy *slv = phy_get_drvdata(slave_phy);
-+	struct mixel_lvds_phy *mst = priv->phys[slv->id ^ 1];
-+	struct phy_configure_opts_lvds *mst_cfg = &mst->cfg;
-+	struct phy_configure_opts_lvds *slv_cfg = &slv->cfg;
-+
-+	if (mst_cfg->bits_per_lane_and_dclk_cycle !=
-+	    slv_cfg->bits_per_lane_and_dclk_cycle) {
-+		dev_err(dev, "number bits mismatch(mst: %u vs slv: %u)\n",
-+			mst_cfg->bits_per_lane_and_dclk_cycle,
-+			slv_cfg->bits_per_lane_and_dclk_cycle);
-+		return -EINVAL;
-+	}
-+
-+	if (mst_cfg->differential_clk_rate !=
-+	    slv_cfg->differential_clk_rate) {
-+		dev_err(dev, "dclk rate mismatch(mst: %lu vs slv: %lu)\n",
-+			mst_cfg->differential_clk_rate,
-+			slv_cfg->differential_clk_rate);
-+		return -EINVAL;
-+	}
-+
-+	if (mst_cfg->lanes != slv_cfg->lanes) {
-+		dev_err(dev, "lanes mismatch(mst: %u vs slv: %u)\n",
-+			mst_cfg->lanes, slv_cfg->lanes);
-+		return -EINVAL;
-+	}
-+
-+	if (mst_cfg->is_slave == slv_cfg->is_slave) {
-+		dev_err(dev, "master PHY is not found\n");
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+static int mixel_lvds_phy_validate(struct phy *phy, enum phy_mode mode,
-+				   int submode, union phy_configure_opts *opts)
-+{
-+	struct mixel_lvds_phy_priv *priv = dev_get_drvdata(phy->dev.parent);
-+	struct mixel_lvds_phy *lvds_phy = phy_get_drvdata(phy);
-+	struct phy_configure_opts_lvds *cfg = &opts->lvds;
-+	int ret = 0;
-+
-+	if (mode != PHY_MODE_LVDS) {
-+		dev_err(&phy->dev, "invalid PHY mode(%d)\n", mode);
-+		return -EINVAL;
-+	}
-+
-+	if (cfg->bits_per_lane_and_dclk_cycle != 7 &&
-+	    cfg->bits_per_lane_and_dclk_cycle != 10) {
-+		dev_err(&phy->dev, "invalid bits per data lane(%u)\n",
-+			cfg->bits_per_lane_and_dclk_cycle);
-+		return -EINVAL;
-+	}
-+
-+	if (cfg->lanes != 4 && cfg->lanes != 3) {
-+		dev_err(&phy->dev, "invalid data lanes(%u)\n", cfg->lanes);
-+		return -EINVAL;
-+	}
-+
-+	if (cfg->differential_clk_rate < MIN_CLKIN_FREQ ||
-+	    cfg->differential_clk_rate > MAX_CLKIN_FREQ) {
-+		dev_err(&phy->dev, "invalid differential clock rate(%lu)\n",
-+			cfg->differential_clk_rate);
-+		return -EINVAL;
-+	}
-+
-+	mutex_lock(&priv->lock);
-+	/* cache configuration set of our own for check */
-+	memcpy(&lvds_phy->cfg, cfg, sizeof(*cfg));
-+
-+	if (cfg->is_slave) {
-+		ret = mixel_lvds_phy_check_slave(phy);
-+		if (ret)
-+			dev_err(&phy->dev,
-+				"failed to check slave PHY: %d\n", ret);
-+	}
-+	mutex_unlock(&priv->lock);
-+
-+	return ret;
-+}
-+
-+static const struct phy_ops mixel_lvds_phy_ops = {
-+	.init = mixel_lvds_phy_init,
-+	.power_on = mixel_lvds_phy_power_on,
-+	.power_off = mixel_lvds_phy_power_off,
-+	.configure = mixel_lvds_phy_configure,
-+	.validate = mixel_lvds_phy_validate,
-+	.owner = THIS_MODULE,
-+};
-+
-+static int mixel_lvds_phy_reset(struct device *dev)
-+{
-+	struct mixel_lvds_phy_priv *priv = dev_get_drvdata(dev);
-+	int ret;
-+
-+	ret = pm_runtime_get_sync(dev);
-+	if (ret < 0) {
-+		dev_err(dev, "failed to get PM runtime: %d\n", ret);
-+		return ret;
-+	}
-+
-+	regmap_write(priv->regmap, PHY_CTRL, CTRL_RESET_VAL);
-+
-+	ret = pm_runtime_put(dev);
-+	if (ret < 0)
-+		dev_err(dev, "failed to put PM runtime: %d\n", ret);
-+
-+	return ret;
-+}
-+
-+static struct phy *mixel_lvds_phy_xlate(struct device *dev,
-+					struct of_phandle_args *args)
-+{
-+	struct mixel_lvds_phy_priv *priv = dev_get_drvdata(dev);
-+	unsigned int phy_id;
-+
-+	if (args->args_count != 1) {
-+		dev_err(dev,
-+			"invalid argument number(%d) for 'phys' property\n",
-+			args->args_count);
-+		return ERR_PTR(-EINVAL);
-+	}
-+
-+	phy_id = args->args[0];
-+
-+	if (phy_id >= PHY_NUM) {
-+		dev_err(dev, "invalid PHY index(%d)\n", phy_id);
-+		return ERR_PTR(-ENODEV);
-+	}
-+
-+	return priv->phys[phy_id]->phy;
-+}
-+
-+static int mixel_lvds_phy_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct phy_provider *phy_provider;
-+	struct mixel_lvds_phy_priv *priv;
-+	struct mixel_lvds_phy *lvds_phy;
-+	struct phy *phy;
-+	int i;
-+	int ret;
-+
-+	if (!dev->of_node)
-+		return -ENODEV;
-+
-+	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	priv->regmap = syscon_node_to_regmap(dev->of_node->parent);
-+	if (IS_ERR(priv->regmap))
-+		return dev_err_probe(dev, PTR_ERR(priv->regmap),
-+				     "failed to get regmap\n");
-+
-+	priv->phy_ref_clk = devm_clk_get(dev, NULL);
-+	if (IS_ERR(priv->phy_ref_clk))
-+		return dev_err_probe(dev, PTR_ERR(priv->phy_ref_clk),
-+				     "failed to get PHY reference clock\n");
-+
-+	mutex_init(&priv->lock);
-+
-+	dev_set_drvdata(dev, priv);
-+
-+	pm_runtime_enable(dev);
-+
-+	ret = mixel_lvds_phy_reset(dev);
-+	if (ret) {
-+		dev_err(dev, "failed to do POR reset: %d\n", ret);
-+		return ret;
-+	}
-+
-+	for (i = 0; i < PHY_NUM; i++) {
-+		lvds_phy = devm_kzalloc(dev, sizeof(*lvds_phy), GFP_KERNEL);
-+		if (!lvds_phy) {
-+			ret = -ENOMEM;
-+			goto err;
-+		}
-+
-+		phy = devm_phy_create(dev, NULL, &mixel_lvds_phy_ops);
-+		if (IS_ERR(phy)) {
-+			ret = PTR_ERR(phy);
-+			dev_err(dev, "failed to create PHY for channel%d: %d\n",
-+				i, ret);
-+			goto err;
-+		}
-+
-+		lvds_phy->phy = phy;
-+		lvds_phy->id = i;
-+		priv->phys[i] = lvds_phy;
-+
-+		phy_set_drvdata(phy, lvds_phy);
-+	}
-+
-+	phy_provider = devm_of_phy_provider_register(dev, mixel_lvds_phy_xlate);
-+	if (IS_ERR(phy_provider)) {
-+		ret = PTR_ERR(phy_provider);
-+		dev_err(dev, "failed to register PHY provider: %d\n", ret);
-+		goto err;
-+	}
-+
-+	return 0;
-+err:
-+	pm_runtime_disable(dev);
-+
-+	return ret;
-+}
-+
-+static int mixel_lvds_phy_remove(struct platform_device *pdev)
-+{
-+	pm_runtime_disable(&pdev->dev);
-+
-+	return 0;
-+}
-+
-+static int __maybe_unused mixel_lvds_phy_runtime_suspend(struct device *dev)
-+{
-+	struct mixel_lvds_phy_priv *priv = dev_get_drvdata(dev);
-+
-+	/* power down */
-+	mutex_lock(&priv->lock);
-+	regmap_write(priv->regmap, PHY_CTRL + REG_SET, PD);
-+	mutex_unlock(&priv->lock);
-+
-+	return 0;
-+}
-+
-+static int __maybe_unused mixel_lvds_phy_runtime_resume(struct device *dev)
-+{
-+	struct mixel_lvds_phy_priv *priv = dev_get_drvdata(dev);
-+
-+	/* power up + control initialization */
-+	mutex_lock(&priv->lock);
-+	regmap_update_bits(priv->regmap, PHY_CTRL,
-+			   CTRL_INIT_MASK | PD, CTRL_INIT_VAL);
-+	mutex_unlock(&priv->lock);
-+
-+	return 0;
-+}
-+
-+static const struct dev_pm_ops mixel_lvds_phy_pm_ops = {
-+	SET_RUNTIME_PM_OPS(mixel_lvds_phy_runtime_suspend,
-+			   mixel_lvds_phy_runtime_resume, NULL)
-+};
-+
-+static const struct of_device_id mixel_lvds_phy_of_match[] = {
-+	{ .compatible = "fsl,imx8qm-lvds-phy" },
-+	{ /* sentinel */ }
-+};
-+MODULE_DEVICE_TABLE(of, mixel_lvds_phy_of_match);
-+
-+static struct platform_driver mixel_lvds_phy_driver = {
-+	.probe	= mixel_lvds_phy_probe,
-+	.remove	= mixel_lvds_phy_remove,
-+	.driver = {
-+		.pm = &mixel_lvds_phy_pm_ops,
-+		.name = "mixel-lvds-phy",
-+		.of_match_table	= mixel_lvds_phy_of_match,
-+	}
-+};
-+module_platform_driver(mixel_lvds_phy_driver);
-+
-+MODULE_DESCRIPTION("Mixel LVDS PHY driver");
-+MODULE_AUTHOR("Liu Ying <victor.liu@nxp.com>");
-+MODULE_LICENSE("GPL");
+-	up_write(&root->kernfs_rwsem);
++	percpu_up_write(&root->kernfs_rwsem);
+ 
+ 	if (kernfs_lockdep(kn)) {
+ 		rwsem_acquire(&kn->dep_map, 0, 0, _RET_IP_);
+@@ -491,7 +491,7 @@ static void kernfs_drain(struct kernfs_node *kn)
+ 
+ 	kernfs_drain_open_files(kn);
+ 
+-	down_write(&root->kernfs_rwsem);
++	percpu_down_write(&root->kernfs_rwsem);
+ }
+ 
+ /**
+@@ -731,7 +731,7 @@ int kernfs_add_one(struct kernfs_node *kn)
+ 	bool has_ns;
+ 	int ret;
+ 
+-	down_write(&root->kernfs_rwsem);
++	percpu_down_write(&root->kernfs_rwsem);
+ 
+ 	ret = -EINVAL;
+ 	has_ns = kernfs_ns_enabled(parent);
+@@ -762,7 +762,7 @@ int kernfs_add_one(struct kernfs_node *kn)
+ 		ps_iattr->ia_mtime = ps_iattr->ia_ctime;
+ 	}
+ 
+-	up_write(&root->kernfs_rwsem);
++	percpu_up_write(&root->kernfs_rwsem);
+ 
+ 	/*
+ 	 * Activate the new node unless CREATE_DEACTIVATED is requested.
+@@ -776,7 +776,7 @@ int kernfs_add_one(struct kernfs_node *kn)
+ 	return 0;
+ 
+ out_unlock:
+-	up_write(&root->kernfs_rwsem);
++	percpu_up_write(&root->kernfs_rwsem);
+ 	return ret;
+ }
+ 
+@@ -869,10 +869,10 @@ struct kernfs_node *kernfs_find_and_get_ns(struct kernfs_node *parent,
+ 	struct kernfs_node *kn;
+ 	struct kernfs_root *root = kernfs_root(parent);
+ 
+-	down_read(&root->kernfs_rwsem);
++	percpu_down_read(&root->kernfs_rwsem);
+ 	kn = kernfs_find_ns(parent, name, ns);
+ 	kernfs_get(kn);
+-	up_read(&root->kernfs_rwsem);
++	percpu_up_read(&root->kernfs_rwsem);
+ 
+ 	return kn;
+ }
+@@ -894,10 +894,10 @@ struct kernfs_node *kernfs_walk_and_get_ns(struct kernfs_node *parent,
+ 	struct kernfs_node *kn;
+ 	struct kernfs_root *root = kernfs_root(parent);
+ 
+-	down_read(&root->kernfs_rwsem);
++	percpu_down_read(&root->kernfs_rwsem);
+ 	kn = kernfs_walk_ns(parent, path, ns);
+ 	kernfs_get(kn);
+-	up_read(&root->kernfs_rwsem);
++	percpu_up_read(&root->kernfs_rwsem);
+ 
+ 	return kn;
+ }
+@@ -922,7 +922,7 @@ struct kernfs_root *kernfs_create_root(struct kernfs_syscall_ops *scops,
+ 		return ERR_PTR(-ENOMEM);
+ 
+ 	idr_init(&root->ino_idr);
+-	init_rwsem(&root->kernfs_rwsem);
++	percpu_init_rwsem(&root->kernfs_rwsem);
+ 	INIT_LIST_HEAD(&root->supers);
+ 
+ 	/*
+@@ -1078,12 +1078,12 @@ static int kernfs_dop_revalidate(struct dentry *dentry, unsigned int flags)
+ 		if (parent) {
+ 			spin_unlock(&dentry->d_lock);
+ 			root = kernfs_root(parent);
+-			down_read(&root->kernfs_rwsem);
++			percpu_down_read(&root->kernfs_rwsem);
+ 			if (kernfs_dir_changed(parent, dentry)) {
+-				up_read(&root->kernfs_rwsem);
++				percpu_up_read(&root->kernfs_rwsem);
+ 				return 0;
+ 			}
+-			up_read(&root->kernfs_rwsem);
++			percpu_up_read(&root->kernfs_rwsem);
+ 		} else
+ 			spin_unlock(&dentry->d_lock);
+ 
+@@ -1095,7 +1095,7 @@ static int kernfs_dop_revalidate(struct dentry *dentry, unsigned int flags)
+ 
+ 	kn = kernfs_dentry_node(dentry);
+ 	root = kernfs_root(kn);
+-	down_read(&root->kernfs_rwsem);
++	percpu_down_read(&root->kernfs_rwsem);
+ 
+ 	/* The kernfs node has been deactivated */
+ 	if (!kernfs_active(kn))
+@@ -1114,10 +1114,10 @@ static int kernfs_dop_revalidate(struct dentry *dentry, unsigned int flags)
+ 	    kernfs_info(dentry->d_sb)->ns != kn->ns)
+ 		goto out_bad;
+ 
+-	up_read(&root->kernfs_rwsem);
++	percpu_up_read(&root->kernfs_rwsem);
+ 	return 1;
+ out_bad:
+-	up_read(&root->kernfs_rwsem);
++	percpu_up_read(&root->kernfs_rwsem);
+ 	return 0;
+ }
+ 
+@@ -1136,7 +1136,7 @@ static struct dentry *kernfs_iop_lookup(struct inode *dir,
+ 	const void *ns = NULL;
+ 
+ 	root = kernfs_root(parent);
+-	down_read(&root->kernfs_rwsem);
++	percpu_down_read(&root->kernfs_rwsem);
+ 	if (kernfs_ns_enabled(parent))
+ 		ns = kernfs_info(dir->i_sb)->ns;
+ 
+@@ -1147,7 +1147,7 @@ static struct dentry *kernfs_iop_lookup(struct inode *dir,
+ 		 * create a negative.
+ 		 */
+ 		if (!kernfs_active(kn)) {
+-			up_read(&root->kernfs_rwsem);
++			percpu_up_read(&root->kernfs_rwsem);
+ 			return NULL;
+ 		}
+ 		inode = kernfs_get_inode(dir->i_sb, kn);
+@@ -1162,7 +1162,7 @@ static struct dentry *kernfs_iop_lookup(struct inode *dir,
+ 	 */
+ 	if (!IS_ERR(inode))
+ 		kernfs_set_rev(parent, dentry);
+-	up_read(&root->kernfs_rwsem);
++	percpu_up_read(&root->kernfs_rwsem);
+ 
+ 	/* instantiate and hash (possibly negative) dentry */
+ 	return d_splice_alias(inode, dentry);
+@@ -1322,7 +1322,7 @@ void kernfs_activate(struct kernfs_node *kn)
+ 	struct kernfs_node *pos;
+ 	struct kernfs_root *root = kernfs_root(kn);
+ 
+-	down_write(&root->kernfs_rwsem);
++	percpu_down_write(&root->kernfs_rwsem);
+ 
+ 	pos = NULL;
+ 	while ((pos = kernfs_next_descendant_post(pos, kn))) {
+@@ -1336,7 +1336,7 @@ void kernfs_activate(struct kernfs_node *kn)
+ 		pos->flags |= KERNFS_ACTIVATED;
+ 	}
+ 
+-	up_write(&root->kernfs_rwsem);
++	percpu_up_write(&root->kernfs_rwsem);
+ }
+ 
+ static void __kernfs_remove(struct kernfs_node *kn)
+@@ -1420,9 +1420,9 @@ void kernfs_remove(struct kernfs_node *kn)
+ 
+ 	root = kernfs_root(kn);
+ 
+-	down_write(&root->kernfs_rwsem);
++	percpu_down_write(&root->kernfs_rwsem);
+ 	__kernfs_remove(kn);
+-	up_write(&root->kernfs_rwsem);
++	percpu_up_write(&root->kernfs_rwsem);
+ }
+ 
+ /**
+@@ -1510,7 +1510,7 @@ bool kernfs_remove_self(struct kernfs_node *kn)
+ 	bool ret;
+ 	struct kernfs_root *root = kernfs_root(kn);
+ 
+-	down_write(&root->kernfs_rwsem);
++	percpu_down_write(&root->kernfs_rwsem);
+ 	kernfs_break_active_protection(kn);
+ 
+ 	/*
+@@ -1538,9 +1538,9 @@ bool kernfs_remove_self(struct kernfs_node *kn)
+ 			    atomic_read(&kn->active) == KN_DEACTIVATED_BIAS)
+ 				break;
+ 
+-			up_write(&root->kernfs_rwsem);
++			percpu_up_write(&root->kernfs_rwsem);
+ 			schedule();
+-			down_write(&root->kernfs_rwsem);
++			percpu_down_write(&root->kernfs_rwsem);
+ 		}
+ 		finish_wait(waitq, &wait);
+ 		WARN_ON_ONCE(!RB_EMPTY_NODE(&kn->rb));
+@@ -1553,7 +1553,7 @@ bool kernfs_remove_self(struct kernfs_node *kn)
+ 	 */
+ 	kernfs_unbreak_active_protection(kn);
+ 
+-	up_write(&root->kernfs_rwsem);
++	percpu_up_write(&root->kernfs_rwsem);
+ 	return ret;
+ }
+ 
+@@ -1579,13 +1579,13 @@ int kernfs_remove_by_name_ns(struct kernfs_node *parent, const char *name,
+ 	}
+ 
+ 	root = kernfs_root(parent);
+-	down_write(&root->kernfs_rwsem);
++	percpu_down_write(&root->kernfs_rwsem);
+ 
+ 	kn = kernfs_find_ns(parent, name, ns);
+ 	if (kn)
+ 		__kernfs_remove(kn);
+ 
+-	up_write(&root->kernfs_rwsem);
++	percpu_up_write(&root->kernfs_rwsem);
+ 
+ 	if (kn)
+ 		return 0;
+@@ -1613,7 +1613,7 @@ int kernfs_rename_ns(struct kernfs_node *kn, struct kernfs_node *new_parent,
+ 		return -EINVAL;
+ 
+ 	root = kernfs_root(kn);
+-	down_write(&root->kernfs_rwsem);
++	percpu_down_write(&root->kernfs_rwsem);
+ 
+ 	error = -ENOENT;
+ 	if (!kernfs_active(kn) || !kernfs_active(new_parent) ||
+@@ -1667,7 +1667,7 @@ int kernfs_rename_ns(struct kernfs_node *kn, struct kernfs_node *new_parent,
+ 
+ 	error = 0;
+  out:
+-	up_write(&root->kernfs_rwsem);
++	percpu_up_write(&root->kernfs_rwsem);
+ 	return error;
+ }
+ 
+@@ -1745,7 +1745,7 @@ static int kernfs_fop_readdir(struct file *file, struct dir_context *ctx)
+ 		return 0;
+ 
+ 	root = kernfs_root(parent);
+-	down_read(&root->kernfs_rwsem);
++	percpu_down_read(&root->kernfs_rwsem);
+ 
+ 	if (kernfs_ns_enabled(parent))
+ 		ns = kernfs_info(dentry->d_sb)->ns;
+@@ -1762,12 +1762,12 @@ static int kernfs_fop_readdir(struct file *file, struct dir_context *ctx)
+ 		file->private_data = pos;
+ 		kernfs_get(pos);
+ 
+-		up_read(&root->kernfs_rwsem);
++		percpu_up_read(&root->kernfs_rwsem);
+ 		if (!dir_emit(ctx, name, len, ino, type))
+ 			return 0;
+-		down_read(&root->kernfs_rwsem);
++		percpu_down_read(&root->kernfs_rwsem);
+ 	}
+-	up_read(&root->kernfs_rwsem);
++	percpu_up_read(&root->kernfs_rwsem);
+ 	file->private_data = NULL;
+ 	ctx->pos = INT_MAX;
+ 	return 0;
+diff --git a/fs/kernfs/file.c b/fs/kernfs/file.c
+index e3abfa843879c..068651fbcfa70 100644
+--- a/fs/kernfs/file.c
++++ b/fs/kernfs/file.c
+@@ -862,7 +862,7 @@ static void kernfs_notify_workfn(struct work_struct *work)
+ 
+ 	root = kernfs_root(kn);
+ 	/* kick fsnotify */
+-	down_write(&root->kernfs_rwsem);
++	percpu_down_write(&root->kernfs_rwsem);
+ 
+ 	list_for_each_entry(info, &kernfs_root(kn)->supers, node) {
+ 		struct kernfs_node *parent;
+@@ -900,7 +900,7 @@ static void kernfs_notify_workfn(struct work_struct *work)
+ 		iput(inode);
+ 	}
+ 
+-	up_write(&root->kernfs_rwsem);
++	percpu_up_write(&root->kernfs_rwsem);
+ 	kernfs_put(kn);
+ 	goto repeat;
+ }
+diff --git a/fs/kernfs/inode.c b/fs/kernfs/inode.c
+index 3d783d80f5daa..6b8d204839ee2 100644
+--- a/fs/kernfs/inode.c
++++ b/fs/kernfs/inode.c
+@@ -101,9 +101,9 @@ int kernfs_setattr(struct kernfs_node *kn, const struct iattr *iattr)
+ 	int ret;
+ 	struct kernfs_root *root = kernfs_root(kn);
+ 
+-	down_write(&root->kernfs_rwsem);
++	percpu_down_write(&root->kernfs_rwsem);
+ 	ret = __kernfs_setattr(kn, iattr);
+-	up_write(&root->kernfs_rwsem);
++	percpu_up_write(&root->kernfs_rwsem);
+ 	return ret;
+ }
+ 
+@@ -119,7 +119,7 @@ int kernfs_iop_setattr(struct user_namespace *mnt_userns, struct dentry *dentry,
+ 		return -EINVAL;
+ 
+ 	root = kernfs_root(kn);
+-	down_write(&root->kernfs_rwsem);
++	percpu_down_write(&root->kernfs_rwsem);
+ 	error = setattr_prepare(&init_user_ns, dentry, iattr);
+ 	if (error)
+ 		goto out;
+@@ -132,7 +132,7 @@ int kernfs_iop_setattr(struct user_namespace *mnt_userns, struct dentry *dentry,
+ 	setattr_copy(&init_user_ns, inode, iattr);
+ 
+ out:
+-	up_write(&root->kernfs_rwsem);
++	percpu_up_write(&root->kernfs_rwsem);
+ 	return error;
+ }
+ 
+@@ -189,12 +189,12 @@ int kernfs_iop_getattr(struct user_namespace *mnt_userns,
+ 	struct kernfs_node *kn = inode->i_private;
+ 	struct kernfs_root *root = kernfs_root(kn);
+ 
+-	down_read(&root->kernfs_rwsem);
++	percpu_down_read(&root->kernfs_rwsem);
+ 	spin_lock(&inode->i_lock);
+ 	kernfs_refresh_inode(kn, inode);
+ 	generic_fillattr(&init_user_ns, inode, stat);
+ 	spin_unlock(&inode->i_lock);
+-	up_read(&root->kernfs_rwsem);
++	percpu_up_read(&root->kernfs_rwsem);
+ 
+ 	return 0;
+ }
+@@ -287,12 +287,12 @@ int kernfs_iop_permission(struct user_namespace *mnt_userns,
+ 	kn = inode->i_private;
+ 	root = kernfs_root(kn);
+ 
+-	down_read(&root->kernfs_rwsem);
++	percpu_down_read(&root->kernfs_rwsem);
+ 	spin_lock(&inode->i_lock);
+ 	kernfs_refresh_inode(kn, inode);
+ 	ret = generic_permission(&init_user_ns, inode, mask);
+ 	spin_unlock(&inode->i_lock);
+-	up_read(&root->kernfs_rwsem);
++	percpu_up_read(&root->kernfs_rwsem);
+ 
+ 	return ret;
+ }
+diff --git a/fs/kernfs/kernfs-internal.h b/fs/kernfs/kernfs-internal.h
+index eeaa779b929c7..a3c0739db92f9 100644
+--- a/fs/kernfs/kernfs-internal.h
++++ b/fs/kernfs/kernfs-internal.h
+@@ -13,7 +13,7 @@
+ #include <linux/lockdep.h>
+ #include <linux/fs.h>
+ #include <linux/mutex.h>
+-#include <linux/rwsem.h>
++#include <linux/percpu-rwsem.h>
+ #include <linux/xattr.h>
+ 
+ #include <linux/kernfs.h>
+@@ -46,7 +46,7 @@ struct kernfs_root {
+ 	struct list_head	supers;
+ 
+ 	wait_queue_head_t	deactivate_waitq;
+-	struct rw_semaphore	kernfs_rwsem;
++	struct percpu_rw_semaphore	kernfs_rwsem;
+ };
+ 
+ /* +1 to avoid triggering overflow warning when negating it */
+diff --git a/fs/kernfs/mount.c b/fs/kernfs/mount.c
+index cfa79715fc1a7..e3059de2e05c1 100644
+--- a/fs/kernfs/mount.c
++++ b/fs/kernfs/mount.c
+@@ -256,9 +256,9 @@ static int kernfs_fill_super(struct super_block *sb, struct kernfs_fs_context *k
+ 	sb->s_shrink.seeks = 0;
+ 
+ 	/* get root inode, initialize and unlock it */
+-	down_read(&kf_root->kernfs_rwsem);
++	percpu_down_read(&kf_root->kernfs_rwsem);
+ 	inode = kernfs_get_inode(sb, info->root->kn);
+-	up_read(&kf_root->kernfs_rwsem);
++	percpu_up_read(&kf_root->kernfs_rwsem);
+ 	if (!inode) {
+ 		pr_debug("kernfs: could not get root inode\n");
+ 		return -ENOMEM;
+@@ -346,9 +346,9 @@ int kernfs_get_tree(struct fs_context *fc)
+ 		}
+ 		sb->s_flags |= SB_ACTIVE;
+ 
+-		down_write(&root->kernfs_rwsem);
++		percpu_down_write(&root->kernfs_rwsem);
+ 		list_add(&info->node, &info->root->supers);
+-		up_write(&root->kernfs_rwsem);
++		percpu_up_write(&root->kernfs_rwsem);
+ 	}
+ 
+ 	fc->root = dget(sb->s_root);
+@@ -375,9 +375,9 @@ void kernfs_kill_sb(struct super_block *sb)
+ 	struct kernfs_super_info *info = kernfs_info(sb);
+ 	struct kernfs_root *root = info->root;
+ 
+-	down_write(&root->kernfs_rwsem);
++	percpu_down_write(&root->kernfs_rwsem);
+ 	list_del(&info->node);
+-	up_write(&root->kernfs_rwsem);
++	percpu_up_write(&root->kernfs_rwsem);
+ 
+ 	/*
+ 	 * Remove the superblock from fs_supers/s_instances
+diff --git a/fs/kernfs/symlink.c b/fs/kernfs/symlink.c
+index 0ab13824822f7..61c8260a55717 100644
+--- a/fs/kernfs/symlink.c
++++ b/fs/kernfs/symlink.c
+@@ -116,9 +116,9 @@ static int kernfs_getlink(struct inode *inode, char *path)
+ 	struct kernfs_root *root = kernfs_root(parent);
+ 	int error;
+ 
+-	down_read(&root->kernfs_rwsem);
++	percpu_down_read(&root->kernfs_rwsem);
+ 	error = kernfs_get_target_path(parent, target, path);
+-	up_read(&root->kernfs_rwsem);
++	percpu_up_read(&root->kernfs_rwsem);
+ 
+ 	return error;
+ }
+
+base-commit: 35d872b9ea5b3ad784d7479ea728dcb688df2db7
 -- 
-2.25.1
+2.30.2
 
