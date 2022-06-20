@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64228C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:24:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37E48CCA480
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:24:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344154AbiFTNYs (ORCPT
+        id S1344272AbiFTNYz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:24:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59008 "EHLO
+        Mon, 20 Jun 2022 09:24:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345905AbiFTNYL (ORCPT
+        with ESMTP id S1345164AbiFTNXk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:24:11 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA4FE13D49;
-        Mon, 20 Jun 2022 06:09:36 -0700 (PDT)
+        Mon, 20 Jun 2022 09:23:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF4DC22BC7;
+        Mon, 20 Jun 2022 06:09:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 2465BCE1395;
-        Mon, 20 Jun 2022 13:08:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3467BC3411B;
-        Mon, 20 Jun 2022 13:08:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9CFB760C8B;
+        Mon, 20 Jun 2022 13:09:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6A07C3411B;
+        Mon, 20 Jun 2022 13:09:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730529;
-        bh=k6te6UvAhWV0pHOaWU9Llx1ueM872wXXeKd2sw/X/WE=;
+        s=korg; t=1655730558;
+        bh=11s6Ei1gVDZqIT526BKcdwCSBUZr0YwZ7Kl+tobtiqE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gPTwFKUm5/lm3iHp7VegnEaFOI7o4hkvPSk4uW2wBKNykcwCg15oExXaxSS3VTGo1
-         6H2cm3cguQ+PKg4VfIQcXXskOG9noauDpvHwRclT2AT/klfV56wBylImz1rXwwS5qQ
-         1Ecym5T8Tc3eUwz2ScIhG6rJSRDaJam455aU+EoU=
+        b=zHRmgu8bZt7aPjke58WjC5p3n5xxD7Wa/BKW5QVNof/lwI7EIi0NLIv6FUozTC20h
+         /AsXo2N17CPuKl+ZCVLk+oDNEjLpcavHAZmK1f+6YxkGhexr1cX1SHpcV4/s4+MJHj
+         CjCXs/UzIZum0BV1+Jmrmm0aD7UXSOxniNBGjfio=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexander Usyskin <alexander.usyskin@intel.com>,
-        Tomas Winkler <tomas.winkler@intel.com>
-Subject: [PATCH 5.15 082/106] mei: me: add raptor lake point S DID
-Date:   Mon, 20 Jun 2022 14:51:41 +0200
-Message-Id: <20220620124726.819126808@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 077/106] irqchip/gic-v3: Fix refcount leak in gic_populate_ppi_partitions
+Date:   Mon, 20 Jun 2022 14:51:36 +0200
+Message-Id: <20220620124726.675074192@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
 References: <20220620124724.380838401@linuxfoundation.org>
@@ -50,43 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Usyskin <alexander.usyskin@intel.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 3ed8c7d39cfef831fe508fc1308f146912fa72e6 upstream.
+[ Upstream commit fa1ad9d4cc47ca2470cd904ad4519f05d7e43a2b ]
 
-Add Raptor (Point) Lake S device id.
+of_find_node_by_phandle() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Alexander Usyskin <alexander.usyskin@intel.com>
-Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
-Link: https://lore.kernel.org/r/20220606144225.282375-3-tomas.winkler@intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: e3825ba1af3a ("irqchip/gic-v3: Add support for partitioned PPIs")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220601080930.31005-6-linmq006@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/mei/hw-me-regs.h |    2 ++
- drivers/misc/mei/pci-me.c     |    2 ++
- 2 files changed, 4 insertions(+)
+ drivers/irqchip/irq-gic-v3.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/drivers/misc/mei/hw-me-regs.h
-+++ b/drivers/misc/mei/hw-me-regs.h
-@@ -109,6 +109,8 @@
- #define MEI_DEV_ID_ADP_P      0x51E0  /* Alder Lake Point P */
- #define MEI_DEV_ID_ADP_N      0x54E0  /* Alder Lake Point N */
+diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
+index 867a45aa0698..fd4fb1b35787 100644
+--- a/drivers/irqchip/irq-gic-v3.c
++++ b/drivers/irqchip/irq-gic-v3.c
+@@ -1905,12 +1905,15 @@ static void __init gic_populate_ppi_partitions(struct device_node *gic_node)
+ 				continue;
  
-+#define MEI_DEV_ID_RPL_S      0x7A68  /* Raptor Lake Point S */
-+
- /*
-  * MEI HW Section
-  */
---- a/drivers/misc/mei/pci-me.c
-+++ b/drivers/misc/mei/pci-me.c
-@@ -115,6 +115,8 @@ static const struct pci_device_id mei_me
- 	{MEI_PCI_DEVICE(MEI_DEV_ID_ADP_P, MEI_ME_PCH15_CFG)},
- 	{MEI_PCI_DEVICE(MEI_DEV_ID_ADP_N, MEI_ME_PCH15_CFG)},
+ 			cpu = of_cpu_node_to_id(cpu_node);
+-			if (WARN_ON(cpu < 0))
++			if (WARN_ON(cpu < 0)) {
++				of_node_put(cpu_node);
+ 				continue;
++			}
  
-+	{MEI_PCI_DEVICE(MEI_DEV_ID_RPL_S, MEI_ME_PCH15_CFG)},
-+
- 	/* required last entry */
- 	{0, }
- };
+ 			pr_cont("%pOF[%d] ", cpu_node, cpu);
+ 
+ 			cpumask_set_cpu(cpu, &part->mask);
++			of_node_put(cpu_node);
+ 		}
+ 
+ 		pr_cont("}\n");
+-- 
+2.35.1
+
 
 
