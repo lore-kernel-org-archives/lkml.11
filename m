@@ -2,40 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBC15CCA481
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:00:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BEFFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:01:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238499AbiFTOA1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:00:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36862 "EHLO
+        id S239760AbiFTOAk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 10:00:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350511AbiFTNxk (ORCPT
+        with ESMTP id S1351707AbiFTNzL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:53:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B86DB6311;
-        Mon, 20 Jun 2022 06:19:58 -0700 (PDT)
+        Mon, 20 Jun 2022 09:55:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0FA733E0D;
+        Mon, 20 Jun 2022 06:21:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E58E761149;
-        Mon, 20 Jun 2022 13:19:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8FE1C3411C;
-        Mon, 20 Jun 2022 13:19:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6578560D36;
+        Mon, 20 Jun 2022 13:21:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6840C3411B;
+        Mon, 20 Jun 2022 13:21:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731181;
-        bh=0FJWfLoW8P5fpPUhXZhjrPk7ihopk+wbSWD3MHtf1pc=;
+        s=korg; t=1655731262;
+        bh=y/XP3wk9EnG9yuYUzGj56hLoozEl8DkFXiTtGq1hi2Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nDSY3/qPy+Ugi9dgVGPp66dlAZPNf1yB7F0azL1O7CsIC32xCk9Y36c8jubupZDmd
-         bR2v1fKvkDnj8a+JkCeISa0k/W3laI7RaRndihlJypQdvfPn3MUmLZAclKjmiqzGC1
-         hkm6ZenN0N0/cRuBjsyRpIqQdvh8Q7bis4Iey+qg=
+        b=R+9UrIsLU8j4YzcoZkh8jPPPShCWFWHQfzfPTMTt5utFCNm1fk65vlouoj6IrGfLR
+         7RXY/991TpdF+pvbjx2IWIpW+LFepTI1+JvB1U+VSFjsFXjBmlRoPO+KV9nl9wSDoe
+         cgBBZtmTC4/wJFxCPuTunbkhjU12C6UCcRKNp0O0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 179/240] random: mark bootloader randomness code as __init
-Date:   Mon, 20 Jun 2022 14:51:20 +0200
-Message-Id: <20220620124744.182495936@linuxfoundation.org>
+        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 206/240] clocksource: hyper-v: unexport __init-annotated hv_init_clocksource()
+Date:   Mon, 20 Jun 2022 14:51:47 +0200
+Message-Id: <20220620124744.951151929@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -47,62 +51,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Masahiro Yamada <masahiroy@kernel.org>
 
-commit 39e0f991a62ed5efabd20711a7b6e7da92603170 upstream.
+[ Upstream commit 245b993d8f6c4e25f19191edfbd8080b645e12b1 ]
 
-add_bootloader_randomness() and the variables it touches are only used
-during __init and not after, so mark these as __init. At the same time,
-unexport this, since it's only called by other __init code that's
-built-in.
+EXPORT_SYMBOL and __init is a bad combination because the .init.text
+section is freed up after the initialization. Hence, modules cannot
+use symbols annotated __init. The access to a freed symbol may end up
+with kernel panic.
 
-Cc: stable@vger.kernel.org
-Fixes: 428826f5358c ("fdt: add support for rng-seed")
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+modpost used to detect it, but it has been broken for a decade.
+
+Recently, I fixed modpost so it started to warn it again, then this
+showed up in linux-next builds.
+
+There are two ways to fix it:
+
+  - Remove __init
+  - Remove EXPORT_SYMBOL
+
+I chose the latter for this case because the only in-tree call-site,
+arch/x86/kernel/cpu/mshyperv.c is never compiled as modular.
+(CONFIG_HYPERVISOR_GUEST is boolean)
+
+Fixes: dd2cb348613b ("clocksource/drivers: Continue making Hyper-V clocksource ISA agnostic")
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Reviewed-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+Link: https://lore.kernel.org/r/20220606050238.4162200-1-masahiroy@kernel.org
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/random.c  |    7 +++----
- include/linux/random.h |    2 +-
- 2 files changed, 4 insertions(+), 5 deletions(-)
+ drivers/clocksource/hyperv_timer.c | 1 -
+ 1 file changed, 1 deletion(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -785,8 +785,8 @@ static void __cold _credit_init_bits(siz
-  *
-  **********************************************************************/
- 
--static bool trust_cpu __ro_after_init = IS_ENABLED(CONFIG_RANDOM_TRUST_CPU);
--static bool trust_bootloader __ro_after_init = IS_ENABLED(CONFIG_RANDOM_TRUST_BOOTLOADER);
-+static bool trust_cpu __initdata = IS_ENABLED(CONFIG_RANDOM_TRUST_CPU);
-+static bool trust_bootloader __initdata = IS_ENABLED(CONFIG_RANDOM_TRUST_BOOTLOADER);
- static int __init parse_trust_cpu(char *arg)
- {
- 	return kstrtobool(arg, &trust_cpu);
-@@ -882,13 +882,12 @@ EXPORT_SYMBOL_GPL(add_hwgenerator_random
-  * Handle random seed passed by bootloader, and credit it if
-  * CONFIG_RANDOM_TRUST_BOOTLOADER is set.
-  */
--void __cold add_bootloader_randomness(const void *buf, size_t len)
-+void __init add_bootloader_randomness(const void *buf, size_t len)
- {
- 	mix_pool_bytes(buf, len);
- 	if (trust_bootloader)
- 		credit_init_bits(len * 8);
+diff --git a/drivers/clocksource/hyperv_timer.c b/drivers/clocksource/hyperv_timer.c
+index 36933e2b3b0d..80b4b8fee54d 100644
+--- a/drivers/clocksource/hyperv_timer.c
++++ b/drivers/clocksource/hyperv_timer.c
+@@ -325,4 +325,3 @@ void __init hv_init_clocksource(void)
+ 	hv_sched_clock_offset = hyperv_cs->read(hyperv_cs);
+ 	hv_setup_sched_clock(read_hv_sched_clock_msr);
  }
--EXPORT_SYMBOL_GPL(add_bootloader_randomness);
- 
- struct fast_pool {
- 	struct work_struct mix;
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -13,7 +13,7 @@
- struct notifier_block;
- 
- void add_device_randomness(const void *buf, size_t len);
--void add_bootloader_randomness(const void *buf, size_t len);
-+void __init add_bootloader_randomness(const void *buf, size_t len);
- void add_input_randomness(unsigned int type, unsigned int code,
- 			  unsigned int value) __latent_entropy;
- void add_interrupt_randomness(int irq) __latent_entropy;
+-EXPORT_SYMBOL_GPL(hv_init_clocksource);
+-- 
+2.35.1
+
 
 
