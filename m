@@ -2,93 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AFBCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 11:06:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA35CC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 11:07:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241233AbiFTLGp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 07:06:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55912 "EHLO
+        id S241030AbiFTLH2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 07:07:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241013AbiFTLGm (ORCPT
+        with ESMTP id S241234AbiFTLHX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 07:06:42 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18AF113FB5
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 04:06:41 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id um5so5401849ejb.5
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 04:06:41 -0700 (PDT)
+        Mon, 20 Jun 2022 07:07:23 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CAE71572B
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 04:07:17 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id w19-20020a17090a8a1300b001ec79064d8dso7118181pjn.2
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 04:07:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=so8sDrLioUFy7cOL3aS8tAl9RK2+NGzjPv7D1JAQDqc=;
-        b=u4+Znx6db0I1JIgKEtGzH7OPNIWp0RlAyfziZK61G7HLQXtKDmi0Zxo+Bi+wfiR/KD
-         FEIbLQ2dQ5i/LOnmBPY+8bWjgkGzi81qd+XxzZGYBnmCHPfK2tQfln5FUbnvER/7fYnz
-         Xf0z5hPHp3btaGed1cWbHZet8ft74tE+V/rzl+xxTSoKECBQzYh3vechswvdCqEtIyC1
-         lWd4r5c5ka8n4ivrhcvum5+oEW8M4gcVlqIuHs2aoXL5DHkoRKobgS1+b0+pfyejVNs0
-         IJAO81M44MsKVFwolQJsC6a0OWl/kZcXA+yPgrZnb3k2Phn+Miiyo25DoxyzYL3RRu/R
-         j/0w==
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0sGj0xCuJeJNCCPLHCLqdmxME5IfW++lXhxnglYboi8=;
+        b=hoWVGpODBe/YKi9SbmUMRWfZQJopZdiyFsLI2U8DvbSKvA2tL/nSGGZQMpvN59k09M
+         SkSvRyeC6dchTzsqKc2s19iHWCsYP9MBUHvEX8zNgzeOclL1hodoeZDWcSNTphc516dN
+         dtirYjK+EQTfLbtOVfqp31nsfVl/CwOiek5szJVpv0rO+tyOEi7dPxGfUm4gT8cLiPX0
+         VpaTfe9jDF7sDKI+gzNgojc91WHIAfMHGiJ27STOPLWAFd703qyYYOQBtMfDdpqWCCq9
+         Qel7ZDV7nkgbAHf/9ME6xi65rdgEJ/p+gg77qHUru8c5pOWpZTnm1lBApsgJk5P/f9GH
+         ZLeA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=so8sDrLioUFy7cOL3aS8tAl9RK2+NGzjPv7D1JAQDqc=;
-        b=rFvZoZ0GCUQVjt6orz2mI8DDSm2qu/Ctm55dkKEEs6SGp6MOgDK55RxWJ1nDOezUmL
-         r7YwGZ7uKcVXjDGP/OpXOGhCkeMxXN4in0P0WT4yYZyc6g3UGhugNgqQhCABMxBbUoNv
-         bSdrJlDetRxg+PkS1HWo85U4VaUHP4465mBbKDc+tW3jzrOSHqhwrl+kCTotej3kIyKM
-         hFyvVVZMeUCZen/gwtAOenbrg7yX/Ul2BuaB4oLWQcbawBGMtk6riFH2RRSnYN3dDuOy
-         P30czAWxoDe3d+kPaMJ18E3VQaV+3mp1fBi9EhtNHoKkAUN8cupeohegxpKDwTEnPl1i
-         veFg==
-X-Gm-Message-State: AJIora8Q6t2WQehLjw2PIP5V1niCSdwgffvv3oOfT/hTSMvVSIkwO/Vn
-        JPqbc43AvewET6ghnQbeXcN/Ig==
-X-Google-Smtp-Source: AGRyM1utaO1T4vO2p3+cLvVRr/p5V5NSZLwsZ5AVyieVsZkGXMqZnNV4gEgHvCEdu8Bh1P9TQOyRnQ==
-X-Received: by 2002:a17:906:58cf:b0:711:7acb:821f with SMTP id e15-20020a17090658cf00b007117acb821fmr20292050ejs.588.1655723199682;
-        Mon, 20 Jun 2022 04:06:39 -0700 (PDT)
-Received: from [192.168.0.209] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id b6-20020a17090630c600b006fef51aa566sm5797606ejb.2.2022.06.20.04.06.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Jun 2022 04:06:39 -0700 (PDT)
-Message-ID: <0207c2fe-7c01-7852-3cd1-74297cd4857d@linaro.org>
-Date:   Mon, 20 Jun 2022 13:06:38 +0200
+        bh=0sGj0xCuJeJNCCPLHCLqdmxME5IfW++lXhxnglYboi8=;
+        b=u2fMkMwY7E2jZDgmMgqconMbUm2j9At16s68wi8fBEfytWLTRaSLa6Ng82pxzdAPMG
+         YjefOGr0Hl+M5uh+kzq1X9pQhEo9W3zgeNWnM6N/26Od30tFXqc7DMaJLURAGOhLWyNm
+         p0TmuL00Pmi5KvDI+sku0Xxr/2YGJ34Gcd4AMBzr7OvmAmKctiw+B7H2sZHlg8Fv4N0P
+         +ODLL4ELWYqhUzLGNEBV5Kl/4GpScsc2J4cOqgolm31S/7gwTgKtQnoG8jo+QMBFTgck
+         WXYPyYXcVNIo2/dx+OaQoxJXvbsPEf9tGnNOkVPZf4YEipfSXTYN3Q+h21v6RIdmWSzk
+         aWVg==
+X-Gm-Message-State: AJIora/fv4qK1c6v7NpgU6filBjx4eLLTqhMMduxAJ2fhjLIzj24o6hT
+        Fag7v61nb7cqMg150WZB3HVX6w==
+X-Google-Smtp-Source: AGRyM1suLGp4qjo9VDQHNPePbkZuz6/HSVjWExA6/4od6/EiLpwMBCaC4xzkmVvMSj7Q0DQ26y2tjA==
+X-Received: by 2002:a17:902:ee55:b0:16a:5b2:a2b0 with SMTP id 21-20020a170902ee5500b0016a05b2a2b0mr16073492plo.133.1655723236602;
+        Mon, 20 Jun 2022 04:07:16 -0700 (PDT)
+Received: from FVFYT0MHHV2J.bytedance.net ([139.177.225.255])
+        by smtp.gmail.com with ESMTPSA id iw10-20020a170903044a00b0016a214e4afasm2385962plb.125.2022.06.20.04.07.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Jun 2022 04:07:16 -0700 (PDT)
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     akpm@linux-foundation.org, corbet@lwn.net, david@redhat.com,
+        mike.kravetz@oracle.com, osalvador@suse.de, paulmck@kernel.org
+Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, duanxiongchun@bytedance.com, smuchun@gmail.com,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: [PATCH v5 0/2] make hugetlb_optimize_vmemmap compatible with memmap_on_memory
+Date:   Mon, 20 Jun 2022 19:06:14 +0800
+Message-Id: <20220620110616.12056-1-songmuchun@bytedance.com>
+X-Mailer: git-send-email 2.32.1 (Apple Git-133)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 2/7] dt-bindings: arm: aspeed: document board compatibles
-Content-Language: en-US
-To:     Joel Stanley <joel@jms.id.au>, Andrew Jeffery <andrew@aj.id.au>
-Cc:     linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org,
-        David Wang <David_Wang6097@jabil.com>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Steven Lee <steven_lee@aspeedtech.com>,
-        Ken Chen <chen.kenyy@inventec.com>
-References: <20220529104928.79636-1-krzysztof.kozlowski@linaro.org>
- <20220529104928.79636-2-krzysztof.kozlowski@linaro.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220529104928.79636-2-krzysztof.kozlowski@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 29/05/2022 12:49, Krzysztof Kozlowski wrote:
-> Document all compatibles used in existing upstreamed Aspeed AST2400,
-> AST2500 and AST2600 based boards.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> ---
->  .../bindings/arm/aspeed/aspeed.yaml           | 83 +++++++++++++++++++
->  MAINTAINERS                                   |  1 +
->  2 files changed, 84 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/arm/aspeed/aspeed.yaml
+This series makes hugetlb_optimize_vmemmap compatible with memmap_on_memory
+and is based on mm-stable.  The reason refers to the patch 2's commit log.
 
-Joel, Andrew,
+v5:
+ - Replace enum to defines per David.
+ - Walk vmemmap page tables to avoid false-positive.
 
-Any comments on the series? Rob applied only patch 1, so the rest is
-supposed through Aspeed tree. Shall I pick them up and send to arm-soc?
+v4:
+ - Fix compiling error when CONFIG_MEMORY_HOTPLUG is disabled reported by kernel test robot.
+ - Fix a bug when memory_block_size_bytes() is not equal to section size.
 
-Best regards,
-Krzysztof
+v3:
+ - Switch complicated enumeration magic (David).
+ - Introduce PageVmemmapSelfHosted to make both parameters compatible (David and Oscar).
+
+v2:
+ - Fix compile error when !CONFIG_ZONE_DEVICE reported by kernel test robot.
+
+Muchun Song (2):
+  mm: memory_hotplug: enumerate all supported section flags
+  mm: memory_hotplug: make hugetlb_optimize_vmemmap compatible with
+    memmap_on_memory
+
+ Documentation/admin-guide/kernel-parameters.txt | 22 ++++-----
+ Documentation/admin-guide/sysctl/vm.rst         |  5 +-
+ include/linux/memory_hotplug.h                  |  9 ----
+ include/linux/mmzone.h                          | 41 +++++++++++----
+ include/linux/page-flags.h                      | 11 +++++
+ mm/hugetlb_vmemmap.c                            | 66 ++++++++++++++++++++++---
+ mm/memory_hotplug.c                             | 33 +++++++------
+ mm/sparse.c                                     |  2 +-
+ 8 files changed, 132 insertions(+), 57 deletions(-)
+
+-- 
+2.11.0
+
