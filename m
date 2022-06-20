@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 134DEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:25:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08B68CCA47C
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:25:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351093AbiFTOZC (ORCPT
+        id S1351212AbiFTOZG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:25:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53326 "EHLO
+        Mon, 20 Jun 2022 10:25:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242629AbiFTOY3 (ORCPT
+        with ESMTP id S1346299AbiFTOYh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 10:24:29 -0400
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9772F28E1A
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 06:40:19 -0700 (PDT)
-Received: by mail-yb1-xb33.google.com with SMTP id t1so19017705ybd.2
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 06:40:19 -0700 (PDT)
+        Mon, 20 Jun 2022 10:24:37 -0400
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 173D32935C
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 06:40:26 -0700 (PDT)
+Received: by mail-yb1-xb34.google.com with SMTP id p69so7339928ybc.5
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 06:40:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=mK//W8+alc6U2SRanqIfp5lLUuphqu6jqWQbXvYHju8=;
-        b=rcNec0L28V59argJ+4p78OWpEUVBF0h7njQetuVutBS53hvZWQKuzmt27ET9pS9ZcD
-         9W1NCt25xnDieQfUEJaCxfsUE+wDQc2j/ZVAkFFY1tOOvi56apy0D5bSbLc6YRBjhND+
-         WXw8va9EmAT242Oc5aOd+xvJNOeDK3Ls9XR4f4JEPy/M8KwJ3Ixk+GPihpS+yao7ZrpK
-         d+FCNGpT1F5fsc0bP4aNn4sEbNn7EYi8i9hlGVfYdZN7Y/Rp9GXqsRIWah+YLJE6Cpl7
-         YGkz8sHY9Bdx1biY29nZLKLgEBCM8nXyoEiUvAU4O2XYc+N7qEwomZ/KHikBYMtnMeCM
-         NToQ==
+        bh=qC8/39KyiVmkl5BIZHurMzBUhpZZ/2u2VsK+Aq1J8ck=;
+        b=n5grsZvn37HTJvF7JA9iDYlBioHc18d2ANnnTFPfnz1iuWR3ngzEQtfFNI+L/z2FCv
+         Kw+da3fcl8sTfSrM9d6BVz6LjzSfp55xy/s0TYpzX7DgcpiMalQQrXPtLO8qf+CKxXxJ
+         oOFitOjgxGC+ccHqd9xVj9y8uqqfj/EvCg+GbaGgcURdSWtTE++dQKmGgq89cUK5rIbQ
+         uEZeryy2q/4qpoHxj7npuMm7okgUIbpgP/y6GiGmfbAaRsPjfvoaN1Fh3VMF1i5Rr/Xb
+         7jOf0IVwtVIMfaJvlfqFCPiQACWG43TX47vx95xFwHd+dzwJV/nCX96F3XL9Apn/2c3V
+         XIlg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=mK//W8+alc6U2SRanqIfp5lLUuphqu6jqWQbXvYHju8=;
-        b=L9PioKMX7x114aU6YZb9E2/KxbJqph13VukN7LwhGrRC7CWdZaAeYHOr0l14Ioe5rM
-         HrkCJcaxQ/trzgh0f5BMw8X+eKHEpDzAk0CfO2oxB55jFRFyhxvbHHsu/3tp2Y+hfWu+
-         Ycxv2XHKgVAmCsNixsWVXeiQdIr4pSrwNBf11N7HKboJt9+FP435kAq/59ezA/aaaxWq
-         hJth6PtZmMSfEs5DEfSrCiMu7PaqFa6tFNGF2lBKpbYfyHosg6lOFeOfpri8oyBSr82G
-         Pqm3mRp5S6PpyroRpdzPmlPCb7ELRI7FNo03cIWWjbE3DQR8g1Fn3dxS4EtGmY326TD4
-         xScA==
-X-Gm-Message-State: AJIora+AwXPZ2rzzTY/yo3dzuP8aeayjE2PpvyfE6zsbDG3gZieXO3Cx
-        NNnqQvtIp37qkoyJidDrm8YvsM0qkMfx4RIfRAT3IA==
-X-Google-Smtp-Source: AGRyM1u5HCt/E7YgbS4siTPjLChUt+KSYx6/jJ6HdGxCqmwqm/xwrh1hHxSTeT9pme5VcWkg9UjNJjUl3vG1LSDPFUs=
-X-Received: by 2002:a25:bfc8:0:b0:664:a5a8:d518 with SMTP id
- q8-20020a25bfc8000000b00664a5a8d518mr25666775ybm.625.1655732418326; Mon, 20
- Jun 2022 06:40:18 -0700 (PDT)
+        bh=qC8/39KyiVmkl5BIZHurMzBUhpZZ/2u2VsK+Aq1J8ck=;
+        b=ycfcTgWRiVlZyQ4YtdquIOSEs09ILEGgbducV0V9q6CfYCjFy7xK14IZauMazipqYm
+         rXsHpXwt8einTWCo+Pc0lUVUK5H6MxRD4h3/xcjuk/wKSGhZiWhDABtkiQ00Cd7fl/11
+         HXJAJznaZ79+LFiOZ4nFKAXAQARFONEOcNBNYDNBD57OofZfDZjCtBfM4bWGA+pMTZsT
+         CCoOQBbvwSGNkWcF9P/7YQ8o5wGH3AMXOFnh/ZNJL/gZfyCRCE1cdTzbnQnRL++RjKCG
+         vc02z7syS2yyOyrlZ6A/lU0JsGI3SovGZenIs9sIGhgVEd7SU7ntPgKe8K6WV2f5Wtqq
+         P0nw==
+X-Gm-Message-State: AJIora9unj7RDbgdB1506LTADlFlOpNsd+H5VRoDNw4CjnNh9gqDK1KV
+        91HFqvClDCpBQO+kH0T7x5v7UDcPnS3jN79yo9gMVQ==
+X-Google-Smtp-Source: AGRyM1tFQRMqH7PE0XOK25t/U3BmF+AvWBCqJkpRyfkJZxomI2+bNrTC9wgUda8cQUepFpAOOZt1wJOnaH/B7Ysif/s=
+X-Received: by 2002:a25:1583:0:b0:668:e74a:995f with SMTP id
+ 125-20020a251583000000b00668e74a995fmr11104743ybv.1.1655732424678; Mon, 20
+ Jun 2022 06:40:24 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1655150842.git.andreyknvl@google.com> <cfc1744f4a5eb6f50eddee53238af1a2fb4e8583.1655150842.git.andreyknvl@google.com>
-In-Reply-To: <cfc1744f4a5eb6f50eddee53238af1a2fb4e8583.1655150842.git.andreyknvl@google.com>
+References: <cover.1655150842.git.andreyknvl@google.com> <8d1cf94238a325e441f684cbdbb2a1da0db78add.1655150842.git.andreyknvl@google.com>
+In-Reply-To: <8d1cf94238a325e441f684cbdbb2a1da0db78add.1655150842.git.andreyknvl@google.com>
 From:   Marco Elver <elver@google.com>
-Date:   Mon, 20 Jun 2022 15:39:42 +0200
-Message-ID: <CANpmjNNKKUkxOnOQBf5EZ3kCMv_wqd0V74R5Rx8K1+MhbXmSJQ@mail.gmail.com>
-Subject: Re: [PATCH 05/32] kasan: drop CONFIG_KASAN_TAGS_IDENTIFY
+Date:   Mon, 20 Jun 2022 15:39:48 +0200
+Message-ID: <CANpmjNO_DqF+=HMQ+j9uL7qeO4a7FGy1Vuzs=pHhpQVC_is9Pw@mail.gmail.com>
+Subject: Re: [PATCH 08/32] kasan: introduce kasan_init_object_meta
 To:     andrey.konovalov@linux.dev
 Cc:     Alexander Potapenko <glider@google.com>,
         Andrey Konovalov <andreyknvl@gmail.com>,
@@ -69,14 +69,18 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 13 Jun 2022 at 22:15, <andrey.konovalov@linux.dev> wrote:
+On Mon, 13 Jun 2022 at 22:16, <andrey.konovalov@linux.dev> wrote:
 >
 > From: Andrey Konovalov <andreyknvl@google.com>
 >
-> Drop CONFIG_KASAN_TAGS_IDENTIFY and related code to simplify making
-> changes to the reporting code.
+> Add a kasan_init_object_meta() helper that initializes metadata for a slab
+> object and use it in the common code.
 >
-> The dropped functionality will be restored in the following patches in
+> For now, the implementations of this helper are the same for the Generic
+> and tag-based modes, but they will diverge later in the series.
+>
+> This change hides references to alloc_meta from the common code. This is
+> desired as only the Generic mode will be using per-object metadata after
 > this series.
 >
 > Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
@@ -85,152 +89,90 @@ Reviewed-by: Marco Elver <elver@google.com>
 
 
 > ---
->  lib/Kconfig.kasan      |  8 --------
->  mm/kasan/kasan.h       | 12 +-----------
->  mm/kasan/report_tags.c | 28 ----------------------------
->  mm/kasan/tags.c        | 21 ++-------------------
->  4 files changed, 3 insertions(+), 66 deletions(-)
+>  mm/kasan/common.c  | 10 +++-------
+>  mm/kasan/generic.c |  9 +++++++++
+>  mm/kasan/kasan.h   |  2 ++
+>  mm/kasan/tags.c    |  9 +++++++++
+>  4 files changed, 23 insertions(+), 7 deletions(-)
 >
-> diff --git a/lib/Kconfig.kasan b/lib/Kconfig.kasan
-> index f0973da583e0..ca09b1cf8ee9 100644
-> --- a/lib/Kconfig.kasan
-> +++ b/lib/Kconfig.kasan
-> @@ -167,14 +167,6 @@ config KASAN_STACK
->           as well, as it adds inline-style instrumentation that is run
->           unconditionally.
->
-> -config KASAN_TAGS_IDENTIFY
-> -       bool "Memory corruption type identification"
-> -       depends on KASAN_SW_TAGS || KASAN_HW_TAGS
-> -       help
-> -         Enables best-effort identification of the bug types (use-after-free
-> -         or out-of-bounds) at the cost of increased memory consumption.
-> -         Only applicable for the tag-based KASAN modes.
+> diff --git a/mm/kasan/common.c b/mm/kasan/common.c
+> index 2848c7a2402a..f0ee1c1b4b3c 100644
+> --- a/mm/kasan/common.c
+> +++ b/mm/kasan/common.c
+> @@ -312,13 +312,9 @@ static inline u8 assign_tag(struct kmem_cache *cache,
+>  void * __must_check __kasan_init_slab_obj(struct kmem_cache *cache,
+>                                                 const void *object)
+>  {
+> -       struct kasan_alloc_meta *alloc_meta;
 > -
->  config KASAN_VMALLOC
->         bool "Check accesses to vmalloc allocations"
->         depends on HAVE_ARCH_KASAN_VMALLOC
+> -       if (kasan_stack_collection_enabled()) {
+> -               alloc_meta = kasan_get_alloc_meta(cache, object);
+> -               if (alloc_meta)
+> -                       __memset(alloc_meta, 0, sizeof(*alloc_meta));
+> -       }
+> +       /* Initialize per-object metadata if it is present. */
+> +       if (kasan_stack_collection_enabled())
+> +               kasan_init_object_meta(cache, object);
+>
+>         /* Tag is ignored in set_tag() without CONFIG_KASAN_SW/HW_TAGS */
+>         object = set_tag(object, assign_tag(cache, object, true));
+> diff --git a/mm/kasan/generic.c b/mm/kasan/generic.c
+> index f212b9ae57b5..5462ddbc21e6 100644
+> --- a/mm/kasan/generic.c
+> +++ b/mm/kasan/generic.c
+> @@ -328,6 +328,15 @@ DEFINE_ASAN_SET_SHADOW(f3);
+>  DEFINE_ASAN_SET_SHADOW(f5);
+>  DEFINE_ASAN_SET_SHADOW(f8);
+>
+> +void kasan_init_object_meta(struct kmem_cache *cache, const void *object)
+> +{
+> +       struct kasan_alloc_meta *alloc_meta;
+> +
+> +       alloc_meta = kasan_get_alloc_meta(cache, object);
+> +       if (alloc_meta)
+> +               __memset(alloc_meta, 0, sizeof(*alloc_meta));
+> +}
+> +
+>  static void __kasan_record_aux_stack(void *addr, bool can_alloc)
+>  {
+>         struct slab *slab = kasan_addr_to_slab(addr);
 > diff --git a/mm/kasan/kasan.h b/mm/kasan/kasan.h
-> index 610057e651d2..aa6b43936f8d 100644
+> index 4005da62a1e1..751c3b17749a 100644
 > --- a/mm/kasan/kasan.h
 > +++ b/mm/kasan/kasan.h
-> @@ -168,23 +168,13 @@ struct kasan_track {
->         depot_stack_handle_t stack;
->  };
+> @@ -278,6 +278,8 @@ void kasan_report_invalid_free(void *object, unsigned long ip);
+>  struct page *kasan_addr_to_page(const void *addr);
+>  struct slab *kasan_addr_to_slab(const void *addr);
 >
-> -#if defined(CONFIG_KASAN_TAGS_IDENTIFY) && defined(CONFIG_KASAN_SW_TAGS)
-> -#define KASAN_NR_FREE_STACKS 5
-> -#else
-> -#define KASAN_NR_FREE_STACKS 1
-> -#endif
-> -
->  struct kasan_alloc_meta {
->         struct kasan_track alloc_track;
->         /* Generic mode stores free track in kasan_free_meta. */
->  #ifdef CONFIG_KASAN_GENERIC
->         depot_stack_handle_t aux_stack[2];
->  #else
-> -       struct kasan_track free_track[KASAN_NR_FREE_STACKS];
-> -#endif
-> -#ifdef CONFIG_KASAN_TAGS_IDENTIFY
-> -       u8 free_pointer_tag[KASAN_NR_FREE_STACKS];
-> -       u8 free_track_idx;
-> +       struct kasan_track free_track;
->  #endif
->  };
->
-> diff --git a/mm/kasan/report_tags.c b/mm/kasan/report_tags.c
-> index e25d2166e813..35cf3cae4aa4 100644
-> --- a/mm/kasan/report_tags.c
-> +++ b/mm/kasan/report_tags.c
-> @@ -5,37 +5,9 @@
->   */
->
->  #include "kasan.h"
-> -#include "../slab.h"
->
->  const char *kasan_get_bug_type(struct kasan_report_info *info)
->  {
-> -#ifdef CONFIG_KASAN_TAGS_IDENTIFY
-> -       struct kasan_alloc_meta *alloc_meta;
-> -       struct kmem_cache *cache;
-> -       struct slab *slab;
-> -       const void *addr;
-> -       void *object;
-> -       u8 tag;
-> -       int i;
-> -
-> -       tag = get_tag(info->access_addr);
-> -       addr = kasan_reset_tag(info->access_addr);
-> -       slab = kasan_addr_to_slab(addr);
-> -       if (slab) {
-> -               cache = slab->slab_cache;
-> -               object = nearest_obj(cache, slab, (void *)addr);
-> -               alloc_meta = kasan_get_alloc_meta(cache, object);
-> -
-> -               if (alloc_meta) {
-> -                       for (i = 0; i < KASAN_NR_FREE_STACKS; i++) {
-> -                               if (alloc_meta->free_pointer_tag[i] == tag)
-> -                                       return "use-after-free";
-> -                       }
-> -               }
-> -               return "out-of-bounds";
-> -       }
-> -#endif
-> -
->         /*
->          * If access_size is a negative number, then it has reason to be
->          * defined as out-of-bounds bug type.
+> +void kasan_init_object_meta(struct kmem_cache *cache, const void *object);
+> +
+>  depot_stack_handle_t kasan_save_stack(gfp_t flags, bool can_alloc);
+>  void kasan_set_track(struct kasan_track *track, gfp_t flags);
+>  void kasan_save_alloc_info(struct kmem_cache *cache, void *object, gfp_t flags);
 > diff --git a/mm/kasan/tags.c b/mm/kasan/tags.c
-> index 1ba3c8399f72..e0e5de8ce834 100644
+> index 7b1fc8e7c99c..2e200969a4b8 100644
 > --- a/mm/kasan/tags.c
 > +++ b/mm/kasan/tags.c
-> @@ -30,39 +30,22 @@ void kasan_save_free_info(struct kmem_cache *cache,
->                                 void *object, u8 tag)
+> @@ -17,6 +17,15 @@
+>
+>  #include "kasan.h"
+>
+> +void kasan_init_object_meta(struct kmem_cache *cache, const void *object)
+> +{
+> +       struct kasan_alloc_meta *alloc_meta;
+> +
+> +       alloc_meta = kasan_get_alloc_meta(cache, object);
+> +       if (alloc_meta)
+> +               __memset(alloc_meta, 0, sizeof(*alloc_meta));
+> +}
+> +
+>  void kasan_save_alloc_info(struct kmem_cache *cache, void *object, gfp_t flags)
 >  {
 >         struct kasan_alloc_meta *alloc_meta;
-> -       u8 idx = 0;
->
->         alloc_meta = kasan_get_alloc_meta(cache, object);
->         if (!alloc_meta)
->                 return;
->
-> -#ifdef CONFIG_KASAN_TAGS_IDENTIFY
-> -       idx = alloc_meta->free_track_idx;
-> -       alloc_meta->free_pointer_tag[idx] = tag;
-> -       alloc_meta->free_track_idx = (idx + 1) % KASAN_NR_FREE_STACKS;
-> -#endif
-> -
-> -       kasan_set_track(&alloc_meta->free_track[idx], GFP_NOWAIT);
-> +       kasan_set_track(&alloc_meta->free_track, GFP_NOWAIT);
->  }
->
->  struct kasan_track *kasan_get_free_track(struct kmem_cache *cache,
->                                 void *object, u8 tag)
->  {
->         struct kasan_alloc_meta *alloc_meta;
-> -       int i = 0;
->
->         alloc_meta = kasan_get_alloc_meta(cache, object);
->         if (!alloc_meta)
->                 return NULL;
->
-> -#ifdef CONFIG_KASAN_TAGS_IDENTIFY
-> -       for (i = 0; i < KASAN_NR_FREE_STACKS; i++) {
-> -               if (alloc_meta->free_pointer_tag[i] == tag)
-> -                       break;
-> -       }
-> -       if (i == KASAN_NR_FREE_STACKS)
-> -               i = alloc_meta->free_track_idx;
-> -#endif
-> -
-> -       return &alloc_meta->free_track[i];
-> +       return &alloc_meta->free_track;
->  }
 > --
 > 2.25.1
 >
 > --
 > You received this message because you are subscribed to the Google Groups "kasan-dev" group.
 > To unsubscribe from this group and stop receiving emails from it, send an email to kasan-dev+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/kasan-dev/cfc1744f4a5eb6f50eddee53238af1a2fb4e8583.1655150842.git.andreyknvl%40google.com.
+> To view this discussion on the web visit https://groups.google.com/d/msgid/kasan-dev/8d1cf94238a325e441f684cbdbb2a1da0db78add.1655150842.git.andreyknvl%40google.com.
