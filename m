@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CB47C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:07:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9400C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:07:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350535AbiFTOGz (ORCPT
+        id S1343926AbiFTOHE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:06:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45250 "EHLO
+        Mon, 20 Jun 2022 10:07:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351755AbiFTNzR (ORCPT
+        with ESMTP id S1352942AbiFTN5T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:55:17 -0400
+        Mon, 20 Jun 2022 09:57:19 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9C5733E17;
-        Mon, 20 Jun 2022 06:21:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54AA3377D9;
+        Mon, 20 Jun 2022 06:23:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D9D26B81157;
-        Mon, 20 Jun 2022 13:21:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30168C3411B;
-        Mon, 20 Jun 2022 13:21:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 38070B80E7D;
+        Mon, 20 Jun 2022 13:23:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 876E1C3411C;
+        Mon, 20 Jun 2022 13:23:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731283;
-        bh=4YG/mLz04w7Z3iVgwRBUHl1vEuxLOBCOG6D0oHMrmAA=;
+        s=korg; t=1655731384;
+        bh=d/IVFWvZ8uN8hvP+g0DuztiB3i9L0kZPmtP3qYFkZ5w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v1tu+yzNvTBdAbmITEg/9ZGCCgrAf21CxM+l2VRIDnpWzY4Xkm45AfvO/u1lBIc4v
-         NfWs4Be64S0EnDAVfgPCvPjroZham8zBcmatHAg1yV0XraV7OKnTA5Oil5LGtO0CqH
-         QM0E3HzZblGCo30BG5XtgsDqoO19q0Jb8MJ7+LPs=
+        b=Muto04CIA5K6t0x2eU5k/ko5/hiqyopj4dvpKjJaqwkvVAkATnN+GfOXbKvDbvNKK
+         aIfP1PEMrkR+CigE/Ng/iYMzJKlIyavu+lEdBKJq16foFMsaOitQJFgOAaF22M37gx
+         PmUGGkNU2rGfzuLDpZErnocF2lKIRtNGk2FOPE+I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maksym Yaremchuk <maksymy@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 212/240] mlxsw: spectrum_cnt: Reorder counter pools
-Date:   Mon, 20 Jun 2022 14:51:53 +0200
-Message-Id: <20220620124745.119114358@linuxfoundation.org>
+        stable@vger.kernel.org, Olof Johansson <olof@lixom.net>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: [PATCH 5.4 239/240] riscv: Less inefficient gcc tishift helpers (and export their symbols)
+Date:   Mon, 20 Jun 2022 14:52:20 +0200
+Message-Id: <20220620124745.874878407@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -52,51 +50,139 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Petr Machata <petrm@nvidia.com>
+From: Olof Johansson <olof@lixom.net>
 
-[ Upstream commit 4b7a632ac4e7101ceefee8484d5c2ca505d347b3 ]
+commit fc585d4a5cf614727f64d86550b794bcad29d5c3 upstream.
 
-Both RIF and ACL flow counters use a 24-bit SW-managed counter address to
-communicate which counter they want to bind.
+The existing __lshrti3 was really inefficient, and the other two helpers
+are also needed to compile some modules.
 
-In a number of Spectrum FW releases, binding a RIF counter is broken and
-slices the counter index to 16 bits. As a result, on Spectrum-2 and above,
-no more than about 410 RIF counters can be effectively used. This
-translates to 205 netdevices for which L3 HW stats can be enabled. (This
-does not happen on Spectrum-1, because there are fewer counters available
-overall and the counter index never exceeds 16 bits.)
+Add the missing versions, and export all of the symbols like arm64
+already does.
 
-Binding counters to ACLs does not have this issue. Therefore reorder the
-counter allocation scheme so that RIF counters come first and therefore get
-lower indices that are below the 16-bit barrier.
+This code is based on the assembly generated by libgcc builds.
 
-Fixes: 98e60dce4da1 ("Merge branch 'mlxsw-Introduce-initial-Spectrum-2-support'")
-Reported-by: Maksym Yaremchuk <maksymy@nvidia.com>
-Signed-off-by: Petr Machata <petrm@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Link: https://lore.kernel.org/r/20220613125017.2018162-1-idosch@nvidia.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This fixes a build break triggered by ubsan:
+
+riscv64-unknown-linux-gnu-ld: lib/ubsan.o: in function `.L2':
+ubsan.c:(.text.unlikely+0x38): undefined reference to `__ashlti3'
+riscv64-unknown-linux-gnu-ld: ubsan.c:(.text.unlikely+0x42): undefined reference to `__ashrti3'
+
+Signed-off-by: Olof Johansson <olof@lixom.net>
+[paul.walmsley@sifive.com: use SYM_FUNC_{START,END} instead of
+ ENTRY/ENDPROC; note libgcc origin]
+Signed-off-by: Paul Walmsley <paul.walmsley@sifive.com>
+Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/riscv/include/asm/asm-prototypes.h |    4 +
+ arch/riscv/lib/tishift.S                |   75 ++++++++++++++++++++++++--------
+ 2 files changed, 61 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.h
-index 81465e267b10..b7eb3674e285 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.h
-@@ -7,8 +7,8 @@
- #include "spectrum.h"
+--- a/arch/riscv/include/asm/asm-prototypes.h
++++ b/arch/riscv/include/asm/asm-prototypes.h
+@@ -4,4 +4,8 @@
+ #include <linux/ftrace.h>
+ #include <asm-generic/asm-prototypes.h>
  
- enum mlxsw_sp_counter_sub_pool_id {
--	MLXSW_SP_COUNTER_SUB_POOL_FLOW,
- 	MLXSW_SP_COUNTER_SUB_POOL_RIF,
-+	MLXSW_SP_COUNTER_SUB_POOL_FLOW,
- };
++long long __lshrti3(long long a, int b);
++long long __ashrti3(long long a, int b);
++long long __ashlti3(long long a, int b);
++
+ #endif /* _ASM_RISCV_PROTOTYPES_H */
+--- a/arch/riscv/lib/tishift.S
++++ b/arch/riscv/lib/tishift.S
+@@ -4,34 +4,73 @@
+  */
  
- int mlxsw_sp_counter_alloc(struct mlxsw_sp *mlxsw_sp,
--- 
-2.35.1
-
+ #include <linux/linkage.h>
++#include <asm-generic/export.h>
+ 
+-ENTRY(__lshrti3)
++SYM_FUNC_START(__lshrti3)
+ 	beqz	a2, .L1
+ 	li	a5,64
+ 	sub	a5,a5,a2
+-	addi	sp,sp,-16
+ 	sext.w	a4,a5
+ 	blez	a5, .L2
+ 	sext.w	a2,a2
+-	sll	a4,a1,a4
+ 	srl	a0,a0,a2
+-	srl	a1,a1,a2
++	sll	a4,a1,a4
++	srl	a2,a1,a2
+ 	or	a0,a0,a4
+-	sd	a1,8(sp)
+-	sd	a0,0(sp)
+-	ld	a0,0(sp)
+-	ld	a1,8(sp)
+-	addi	sp,sp,16
+-	ret
++	mv	a1,a2
+ .L1:
+ 	ret
+ .L2:
+-	negw	a4,a4
+-	srl	a1,a1,a4
+-	sd	a1,0(sp)
+-	sd	zero,8(sp)
+-	ld	a0,0(sp)
+-	ld	a1,8(sp)
+-	addi	sp,sp,16
++	negw	a0,a4
++	li	a2,0
++	srl	a0,a1,a0
++	mv	a1,a2
++	ret
++SYM_FUNC_END(__lshrti3)
++EXPORT_SYMBOL(__lshrti3)
++
++SYM_FUNC_START(__ashrti3)
++	beqz	a2, .L3
++	li	a5,64
++	sub	a5,a5,a2
++	sext.w	a4,a5
++	blez	a5, .L4
++	sext.w	a2,a2
++	srl	a0,a0,a2
++	sll	a4,a1,a4
++	sra	a2,a1,a2
++	or	a0,a0,a4
++	mv	a1,a2
++.L3:
++	ret
++.L4:
++	negw	a0,a4
++	srai	a2,a1,0x3f
++	sra	a0,a1,a0
++	mv	a1,a2
++	ret
++SYM_FUNC_END(__ashrti3)
++EXPORT_SYMBOL(__ashrti3)
++
++SYM_FUNC_START(__ashlti3)
++	beqz	a2, .L5
++	li	a5,64
++	sub	a5,a5,a2
++	sext.w	a4,a5
++	blez	a5, .L6
++	sext.w	a2,a2
++	sll	a1,a1,a2
++	srl	a4,a0,a4
++	sll	a2,a0,a2
++	or	a1,a1,a4
++	mv	a0,a2
++.L5:
++	ret
++.L6:
++	negw	a1,a4
++	li	a2,0
++	sll	a1,a0,a1
++	mv	a0,a2
+ 	ret
+-ENDPROC(__lshrti3)
++SYM_FUNC_END(__ashlti3)
++EXPORT_SYMBOL(__ashlti3)
 
 
