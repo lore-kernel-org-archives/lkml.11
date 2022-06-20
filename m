@@ -2,70 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C560CCCA482
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:15:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 822CFCCA480
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:15:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245259AbiFTNPC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:15:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53586 "EHLO
+        id S245416AbiFTNPJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:15:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344275AbiFTNKE (ORCPT
+        with ESMTP id S1344272AbiFTNKE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 20 Jun 2022 09:10:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C5231C10D
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 06:05:14 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B01A21C92E;
+        Mon, 20 Jun 2022 06:05:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 52094615A3
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 13:04:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 287C4C341C4
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 13:04:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655730295;
-        bh=hr/hOCgCt4RQ3cFJyt/AXGGsYG23Z+eJMh/aP+XrKNE=;
-        h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=kX5M4PEbSQlEURh8H08DBP0x7o8veNMVW+bl27XYz9kmuii6Uz817HUhzCpCMkAFj
-         pW8zZbZQaUQLMwc/7X90fXFv4nNnBBWu0b8aBnx0AQYM0Dpd8xatBkHsa2yB8V0xQV
-         xG82sfgE6M1bfsDIk/aClkM/MiLd5rvVPsbvhdxZhhthIgE7CZSeCnn5yMUmaA0vSJ
-         6Usm55NKS0EF8Fr3r6B9VGJyrXtxO4JLTJMmvg+UI+j4bZP28wLXnUFPiNBMIY1hf6
-         oWalZU0Gn2fEQgPvCUhkMbHx+sXqCdTCvGZ/SxJXEFji0jf0ane8TEMcbNmvaZrAZg
-         EE/Uc3PnJCiuw==
-From:   Oded Gabbay <ogabbay@kernel.org>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 41F596154F;
+        Mon, 20 Jun 2022 13:04:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3750EC341C5;
+        Mon, 20 Jun 2022 13:04:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655730295;
+        bh=vsrbULSRmffU+Ek4wxyPOIn5RKUMRwfIqRM6dS1w7KE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=TUKdRYqzBhsyajoK+Zy8MUQ5kqgts0zrjRaBuGvimDiEuu1J8E5/JdSYz053MpAQ6
+         BWHZyWdj2inlXyoa6TXzVbQks/pKmk4XbuIeBb0DAAXdm3FXliy+VVZ/QfPpPTzxR0
+         HX0ZD2UvQ01FLwjS6ASZ8sxfUl7pSrxPLU0mCzvY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
-Subject: [PATCH 14/17] habanalabs: check fence pointer before use
-Date:   Mon, 20 Jun 2022 16:04:29 +0300
-Message-Id: <20220620130432.1180451-14-ogabbay@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220620130432.1180451-1-ogabbay@kernel.org>
-References: <20220620130432.1180451-1-ogabbay@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Stylon Wang <stylon.wang@amd.com>,
+        Nicholas Kazlauskas <Nicholas.Kazlauskas@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        "Limonciello, Mario" <Mario.Limonciello@amd.com>
+Subject: [PATCH 5.15 001/106] Revert "drm/amd/display: Fix DCN3 B0 DP Alt Mapping"
+Date:   Mon, 20 Jun 2022 14:50:20 +0200
+Message-Id: <20220620124724.428260237@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
+References: <20220620124724.380838401@linuxfoundation.org>
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-fence pointer can be NULL in this path, as shown by an earlier check.
+From: Stylon Wang <stylon.wang@amd.com>
 
-Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
+commit 1039188806d4cfdf9c412bb4ddb51b4d8cd15478 upstream.
+
+This reverts commit 4b7786d87fb3adf3e534c4f1e4f824d8700b786b.
+
+Commit 4b7786d87fb3 ("drm/amd/display: Fix DCN3 B0 DP Alt Mapping")
+is causing 2nd USB-C display not lighting up.
+Phy id remapping is done differently than is assumed in this
+patch.
+
+Signed-off-by: Stylon Wang <stylon.wang@amd.com>
+Reviewed-by: Nicholas Kazlauskas <Nicholas.Kazlauskas@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: "Limonciello, Mario" <Mario.Limonciello@amd.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/misc/habanalabs/common/command_submission.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c |    6 ------
+ 1 file changed, 6 deletions(-)
 
-diff --git a/drivers/misc/habanalabs/common/command_submission.c b/drivers/misc/habanalabs/common/command_submission.c
-index c050f38b7091..e5549a9da42e 100644
---- a/drivers/misc/habanalabs/common/command_submission.c
-+++ b/drivers/misc/habanalabs/common/command_submission.c
-@@ -2581,7 +2581,7 @@ static int hl_cs_poll_fences(struct multi_cs_data *mcs_data, struct multi_cs_com
- 			 * For this we have to validate that the timestamp is
- 			 * earliest of all timestamps so far.
- 			 */
--			if (mcs_data->update_ts &&
-+			if (fence && mcs_data->update_ts &&
- 					(ktime_compare(fence->timestamp, first_cs_time) < 0))
- 				first_cs_time = fence->timestamp;
- 			break;
--- 
-2.25.1
+--- a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c
+@@ -1294,12 +1294,6 @@ static struct stream_encoder *dcn31_stre
+ 	if (!enc1 || !vpg || !afmt)
+ 		return NULL;
+ 
+-	if (ctx->asic_id.chip_family == FAMILY_YELLOW_CARP &&
+-			ctx->asic_id.hw_internal_rev == YELLOW_CARP_B0) {
+-		if ((eng_id == ENGINE_ID_DIGC) || (eng_id == ENGINE_ID_DIGD))
+-			eng_id = eng_id + 3; // For B0 only. C->F, D->G.
+-	}
+-
+ 	dcn30_dio_stream_encoder_construct(enc1, ctx, ctx->dc_bios,
+ 					eng_id, vpg, afmt,
+ 					&stream_enc_regs[eng_id],
+
 
