@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D3C7C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D549DC43334
 	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:04:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244114AbiFTNDA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:03:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47608 "EHLO
+        id S244161AbiFTNDC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:03:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243823AbiFTNBL (ORCPT
+        with ESMTP id S243364AbiFTNB1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:01:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F40EA1CFD4;
-        Mon, 20 Jun 2022 05:57:15 -0700 (PDT)
+        Mon, 20 Jun 2022 09:01:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE2401D30E;
+        Mon, 20 Jun 2022 05:57:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5D04EB811BD;
-        Mon, 20 Jun 2022 12:57:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E5F2C3411B;
-        Mon, 20 Jun 2022 12:57:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2E4F5B811A3;
+        Mon, 20 Jun 2022 12:57:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D1BBC341C4;
+        Mon, 20 Jun 2022 12:57:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655729832;
-        bh=EwPaBTg4uRgoErXhKRZXM6RnPI0iuAxbfKZUuX7aFNk=;
+        s=korg; t=1655729835;
+        bh=4Rx4HJ/h5ecDSnypmxv1UZjjGFyfEiNCr0kUC9xd7iI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LL4WlYy/t4ask9RJWhjHjPGJk6PhWVNcIHulxszQoQqm7IkXzBTcC5E+8Lm8uP1oP
-         /KAnXsF/OgNFF8Yr55bS9pJmd3Jzx1Ug0XCKe/85z18AmUyP8GxwvINm574yEJTzf4
-         Leoq8P+tfbPwG+QTJfOQzuYEL4l5qSy2IGiqCCd4=
+        b=Zt5SNroMNGBsh0oEay58dK+wewSYtV9rFZH7Ql2sH0Mo1AjV6kHMKo6xUr/chp/D9
+         PSBNJ907gEPImkSl3UURCcqvi0QmsYIzDkIAPTmzdpCsazhl1ZQJ3XF4WV2wwy1SH2
+         4UQSv+OO4Wsrabv6qHat2yChJe9aTm/oRCbpHQXg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jian Shen <shenjian15@huawei.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Will Deacon <will@kernel.org>,
+        "Ivan T. Ivanov" <iivanov@suse.de>,
+        Chengming Zhou <zhouchengming@bytedance.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 070/141] net: hns3: dont push link state to VF if unalive
-Date:   Mon, 20 Jun 2022 14:50:08 +0200
-Message-Id: <20220620124731.606158757@linuxfoundation.org>
+Subject: [PATCH 5.18 083/141] arm64: ftrace: fix branch range checks
+Date:   Mon, 20 Jun 2022 14:50:21 +0200
+Message-Id: <20220620124731.994830188@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 References: <20220620124729.509745706@linuxfoundation.org>
@@ -50,39 +53,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jian Shen <shenjian15@huawei.com>
+From: Mark Rutland <mark.rutland@arm.com>
 
-[ Upstream commit 283847e3ef6dbf79bf67083b5ce7b8033e8b6f34 ]
+[ Upstream commit 3eefdf9d1e406f3da47470b2854347009ffcb6fa ]
 
-It's unnecessary to push link state to unalive VF, and the VF will
-query link state from PF when it being start works.
+The branch range checks in ftrace_make_call() and ftrace_make_nop() are
+incorrect, erroneously permitting a forwards branch of 128M and
+erroneously rejecting a backwards branch of 128M.
 
-Fixes: 18b6e31f8bf4 ("net: hns3: PF add support for pushing link status to VFs")
-Signed-off-by: Jian Shen <shenjian15@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+This is because both functions calculate the offset backwards,
+calculating the offset *from* the target *to* the branch, rather than
+the other way around as the later comparisons expect.
+
+If an out-of-range branch were erroeously permitted, this would later be
+rejected by aarch64_insn_gen_branch_imm() as branch_imm_common() checks
+the bounds correctly, resulting in warnings and the placement of a BRK
+instruction. Note that this can only happen for a forwards branch of
+exactly 128M, and so the caller would need to be exactly 128M bytes
+below the relevant ftrace trampoline.
+
+If an in-range branch were erroeously rejected, then:
+
+* For modules when CONFIG_ARM64_MODULE_PLTS=y, this would result in the
+  use of a PLT entry, which is benign.
+
+  Note that this is the common case, as this is selected by
+  CONFIG_RANDOMIZE_BASE (and therefore RANDOMIZE_MODULE_REGION_FULL),
+  which distributions typically seelct. This is also selected by
+  CONFIG_ARM64_ERRATUM_843419.
+
+* For modules when CONFIG_ARM64_MODULE_PLTS=n, this would result in
+  internal ftrace failures.
+
+* For core kernel text, this would result in internal ftrace failues.
+
+  Note that for this to happen, the kernel text would need to be at
+  least 128M bytes in size, and typical configurations are smaller tha
+  this.
+
+Fix this by calculating the offset *from* the branch *to* the target in
+both functions.
+
+Fixes: f8af0b364e24 ("arm64: ftrace: don't validate branch via PLT in ftrace_make_nop()")
+Fixes: e71a4e1bebaf ("arm64: ftrace: add support for far branches to dynamic ftrace")
+Signed-off-by: Mark Rutland <mark.rutland@arm.com>
+Cc: Ard Biesheuvel <ardb@kernel.org>
+Cc: Will Deacon <will@kernel.org>
+Tested-by: "Ivan T. Ivanov" <iivanov@suse.de>
+Reviewed-by: Chengming Zhou <zhouchengming@bytedance.com>
+Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
+Link: https://lore.kernel.org/r/20220614080944.1349146-2-mark.rutland@arm.com
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/arm64/kernel/ftrace.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 5d1615e27a1c..c8c99ab60ec1 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -3384,6 +3384,12 @@ static int hclge_set_vf_link_state(struct hnae3_handle *handle, int vf,
- 	link_state_old = vport->vf_info.link_state;
- 	vport->vf_info.link_state = link_state;
+diff --git a/arch/arm64/kernel/ftrace.c b/arch/arm64/kernel/ftrace.c
+index 4506c4a90ac1..d9e3eda419ec 100644
+--- a/arch/arm64/kernel/ftrace.c
++++ b/arch/arm64/kernel/ftrace.c
+@@ -84,7 +84,7 @@ int ftrace_make_call(struct dyn_ftrace *rec, unsigned long addr)
+ {
+ 	unsigned long pc = rec->ip;
+ 	u32 old, new;
+-	long offset = (long)pc - (long)addr;
++	long offset = (long)addr - (long)pc;
  
-+	/* return success directly if the VF is unalive, VF will
-+	 * query link state itself when it starts work.
-+	 */
-+	if (!test_bit(HCLGE_VPORT_STATE_ALIVE, &vport->state))
-+		return 0;
-+
- 	ret = hclge_push_vf_link_status(vport);
- 	if (ret) {
- 		vport->vf_info.link_state = link_state_old;
+ 	if (offset < -SZ_128M || offset >= SZ_128M) {
+ 		struct module *mod;
+@@ -183,7 +183,7 @@ int ftrace_make_nop(struct module *mod, struct dyn_ftrace *rec,
+ 	unsigned long pc = rec->ip;
+ 	bool validate = true;
+ 	u32 old = 0, new;
+-	long offset = (long)pc - (long)addr;
++	long offset = (long)addr - (long)pc;
+ 
+ 	if (offset < -SZ_128M || offset >= SZ_128M) {
+ 		u32 replaced;
 -- 
 2.35.1
 
