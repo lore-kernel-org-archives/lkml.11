@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D7EAC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:23:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E325C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:23:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344781AbiFTNXJ (ORCPT
+        id S1344527AbiFTNXO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:23:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54442 "EHLO
+        Mon, 20 Jun 2022 09:23:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346303AbiFTNUg (ORCPT
+        with ESMTP id S245570AbiFTNUm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:20:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF2662251A;
-        Mon, 20 Jun 2022 06:08:47 -0700 (PDT)
+        Mon, 20 Jun 2022 09:20:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E7DE22523;
+        Mon, 20 Jun 2022 06:08:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D3F45B811E3;
-        Mon, 20 Jun 2022 13:07:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A300C341C4;
-        Mon, 20 Jun 2022 13:07:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D68A61537;
+        Mon, 20 Jun 2022 13:07:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79633C3411B;
+        Mon, 20 Jun 2022 13:07:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730446;
-        bh=ogNGfTtMduZfmwm18K2XT8ql8Ti1rZIdNpSg/M1cZ6A=;
+        s=korg; t=1655730430;
+        bh=vFdejECll6k6STgIMzyhcUkU/wxsO+FwIvlIlIPfv3Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KJuKIlYgMj+vyHOgKUlZr77KqQcyFRvZ0Q3BFq65e/sJKa4eBzPGgiTd3dHk6LoqH
-         9V8ed/uxRwzV1fGbz/0DyMRGd0jXvKhFA9bPq38IGRDmm9n5uLESTCma8nSv8YHvAi
-         9Ew6RBf5+wgWSsRy3Dk0xdyUBGOMbsH5Xss2RMnA=
+        b=qpzVOGXI+D3PuUd92gCtK8X1KjeliZbvIGOq44wRAOi+ufjtZoPWRPO+lpWb25mQN
+         NHWg7j1ITOneuovoyqsSrB6L7l3zH2OXdflKd2wpkWeOz31f1vEq91+GqALDAPYENy
+         brJTblKOTV5tFAC87aLe/sttWj18M52KPk7I+VLc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        Grzegorz Szczurek <grzegorzx.szczurek@intel.com>,
+        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
+        Bharathi Sreenivas <bharathi.sreenivas@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 055/106] tty: goldfish: Fix free_irq() on remove
-Date:   Mon, 20 Jun 2022 14:51:14 +0200
-Message-Id: <20220620124726.030250381@linuxfoundation.org>
+Subject: [PATCH 5.15 051/106] i40e: Fix adding ADQ filter to TC0
+Date:   Mon, 20 Jun 2022 14:51:10 +0200
+Message-Id: <20220620124725.900194880@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
 References: <20220620124724.380838401@linuxfoundation.org>
@@ -50,49 +53,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Whitchurch <vincent.whitchurch@axis.com>
+From: Grzegorz Szczurek <grzegorzx.szczurek@intel.com>
 
-[ Upstream commit 499e13aac6c762e1e828172b0f0f5275651d6512 ]
+[ Upstream commit c3238d36c3a2be0a29a9d848d6c51e1b14be6692 ]
 
-Pass the correct dev_id to free_irq() to fix this splat when the driver
-is unbound:
+Procedure of configure tc flower filters erroneously allows to create
+filters on TC0 where unfiltered packets are also directed by default.
+Issue was caused by insufficient checks of hw_tc parameter specifying
+the hardware traffic class to pass matching packets to.
 
- WARNING: CPU: 0 PID: 30 at kernel/irq/manage.c:1895 free_irq
- Trying to free already-free IRQ 65
- Call Trace:
-  warn_slowpath_fmt
-  free_irq
-  goldfish_tty_remove
-  platform_remove
-  device_remove
-  device_release_driver_internal
-  device_driver_detach
-  unbind_store
-  drv_attr_store
-  ...
+Fix checking hw_tc parameter which blocks creation of filters on TC0.
 
-Fixes: 465893e18878e119 ("tty: goldfish: support platform_device with id -1")
-Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
-Link: https://lore.kernel.org/r/20220609141704.1080024-1-vincent.whitchurch@axis.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 2f4b411a3d67 ("i40e: Enable cloud filters via tc-flower")
+Signed-off-by: Grzegorz Szczurek <grzegorzx.szczurek@intel.com>
+Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
+Tested-by: Bharathi Sreenivas <bharathi.sreenivas@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/goldfish.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/intel/i40e/i40e_main.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/tty/goldfish.c b/drivers/tty/goldfish.c
-index 0dc9a6a36ce0..0e32920af10d 100644
---- a/drivers/tty/goldfish.c
-+++ b/drivers/tty/goldfish.c
-@@ -428,7 +428,7 @@ static int goldfish_tty_remove(struct platform_device *pdev)
- 	tty_unregister_device(goldfish_tty_driver, qtty->console.index);
- 	iounmap(qtty->base);
- 	qtty->base = NULL;
--	free_irq(qtty->irq, pdev);
-+	free_irq(qtty->irq, qtty);
- 	tty_port_destroy(&qtty->port);
- 	goldfish_tty_current_line_count--;
- 	if (goldfish_tty_current_line_count == 0)
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
+index 29387f0814e9..9bc05d671ad5 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -8523,6 +8523,11 @@ static int i40e_configure_clsflower(struct i40e_vsi *vsi,
+ 		return -EOPNOTSUPP;
+ 	}
+ 
++	if (!tc) {
++		dev_err(&pf->pdev->dev, "Unable to add filter because of invalid destination");
++		return -EINVAL;
++	}
++
+ 	if (test_bit(__I40E_RESET_RECOVERY_PENDING, pf->state) ||
+ 	    test_bit(__I40E_RESET_INTR_RECEIVED, pf->state))
+ 		return -EBUSY;
 -- 
 2.35.1
 
