@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A63DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:15:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7108C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:15:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243122AbiFTNPm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:15:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34978 "EHLO
+        id S245683AbiFTNPt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:15:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344372AbiFTNKK (ORCPT
+        with ESMTP id S1344374AbiFTNKK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 20 Jun 2022 09:10:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECD161CB28;
-        Mon, 20 Jun 2022 06:05:19 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66F731CB2D;
+        Mon, 20 Jun 2022 06:05:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 088766157C;
-        Mon, 20 Jun 2022 13:05:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EAB9C3411C;
-        Mon, 20 Jun 2022 13:05:14 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 9151CCE138F;
+        Mon, 20 Jun 2022 13:03:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9964C3411B;
+        Mon, 20 Jun 2022 13:03:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730315;
-        bh=m++Hn3Fk2NwdqAxL7YXJgjX3tvqr/94r7cEDTL6dAr8=;
+        s=korg; t=1655730200;
+        bh=/5STY4As5xDCMvpwXO6rE/4s0dKYkRo+K5FsrP4My5E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Acx+CkNe6WEQJXDODMc5e6XsOZNS6M6U/hW6GbJ5qbEWwiIPDANbLZLPHxPDLJLCb
-         1aPfBCjzzYNXKqbescM3htjuzyLZ+X8LynpHjugklqKTITJqROx1RASoXN5NKGlx9f
-         5NiT6hYD9Phq7z9/sRsfdfOFIm/syRWG3eq9Iodc=
+        b=lXm/FMvr+x7D+ktnXf2pCfuUaoBiJ7/0gn+zqeiKbf6DISSIf7WfqJ/dgTCwL0V9k
+         9Ok59LpQ+50uTBp193Vc5XCyyu/QEFN3Y9ad2bt4yeYPyly5Rf+jlEB80KmDvz6XME
+         kUuelDBGc1d1cnIyYd1Ccj2tSBKeII+vkuAI/iRg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 015/106] ASoC: cs42l51: Correct minimum value for SX volume control
-Date:   Mon, 20 Jun 2022 14:50:34 +0200
-Message-Id: <20220620124724.838652237@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 55/84] i2c: npcm7xx: Add check for platform_driver_register
+Date:   Mon, 20 Jun 2022 14:51:18 +0200
+Message-Id: <20220620124722.520291207@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
-References: <20220620124724.380838401@linuxfoundation.org>
+In-Reply-To: <20220620124720.882450983@linuxfoundation.org>
+References: <20220620124720.882450983@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,37 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit fcb3b5a58926d16d9a338841b74af06d4c29be15 ]
+[ Upstream commit 6ba12b56b9b844b83ed54fb7ed59fb0eb41e4045 ]
 
-The minimum value for the PGA Volume is given as 0x1A, however the
-values from there to 0x19 are all the same volume and this is not
-represented in the TLV structure. The number of volumes given is correct
-so this leads to all the volumes being shifted. Move the minimum value
-up to 0x19 to fix this.
+As platform_driver_register() could fail, it should be better
+to deal with the return value in order to maintain the code
+consisitency.
 
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220602162119.3393857-7-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 56a1485b102e ("i2c: npcm7xx: Add Nuvoton NPCM I2C controller driver")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Acked-by: Tali Perry <tali.perry1@gmail.com>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/cs42l51.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/i2c/busses/i2c-npcm7xx.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/sound/soc/codecs/cs42l51.c b/sound/soc/codecs/cs42l51.c
-index c61b17dc2af8..fc6a2bc311b4 100644
---- a/sound/soc/codecs/cs42l51.c
-+++ b/sound/soc/codecs/cs42l51.c
-@@ -146,7 +146,7 @@ static const struct snd_kcontrol_new cs42l51_snd_controls[] = {
- 			0, 0xA0, 96, adc_att_tlv),
- 	SOC_DOUBLE_R_SX_TLV("PGA Volume",
- 			CS42L51_ALC_PGA_CTL, CS42L51_ALC_PGB_CTL,
--			0, 0x1A, 30, pga_tlv),
-+			0, 0x19, 30, pga_tlv),
- 	SOC_SINGLE("Playback Deemphasis Switch", CS42L51_DAC_CTL, 3, 1, 0),
- 	SOC_SINGLE("Auto-Mute Switch", CS42L51_DAC_CTL, 2, 1, 0),
- 	SOC_SINGLE("Soft Ramp Switch", CS42L51_DAC_CTL, 1, 1, 0),
+diff --git a/drivers/i2c/busses/i2c-npcm7xx.c b/drivers/i2c/busses/i2c-npcm7xx.c
+index 20a2f903b7f6..d9ac62c1ac25 100644
+--- a/drivers/i2c/busses/i2c-npcm7xx.c
++++ b/drivers/i2c/busses/i2c-npcm7xx.c
+@@ -2369,8 +2369,7 @@ static struct platform_driver npcm_i2c_bus_driver = {
+ static int __init npcm_i2c_init(void)
+ {
+ 	npcm_i2c_debugfs_dir = debugfs_create_dir("npcm_i2c", NULL);
+-	platform_driver_register(&npcm_i2c_bus_driver);
+-	return 0;
++	return platform_driver_register(&npcm_i2c_bus_driver);
+ }
+ module_init(npcm_i2c_init);
+ 
 -- 
 2.35.1
 
