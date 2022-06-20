@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42B42C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:17:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2287C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:17:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343525AbiFTNRo (ORCPT
+        id S1344042AbiFTNRv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:17:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35144 "EHLO
+        Mon, 20 Jun 2022 09:17:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343578AbiFTNMY (ORCPT
+        with ESMTP id S1343519AbiFTNNM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:12:24 -0400
+        Mon, 20 Jun 2022 09:13:12 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F5B11D328;
-        Mon, 20 Jun 2022 06:05:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C7AF1E3DA;
+        Mon, 20 Jun 2022 06:05:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C1B8F614F4;
-        Mon, 20 Jun 2022 13:04:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B485DC3411B;
-        Mon, 20 Jun 2022 13:04:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C44DB61535;
+        Mon, 20 Jun 2022 13:05:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB706C3411C;
+        Mon, 20 Jun 2022 13:05:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730245;
-        bh=GYU38HEj4rh8+X71tEHJGkKhTn4HiMBRUlYTJJu1n1k=;
+        s=korg; t=1655730354;
+        bh=ToUh3uw+d6OuQ3xQsEOfSMJFmNh46l4CiJEgdqIQs3w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hS/P4HDDr67NvzmQmihjeEiq+otZoEN6SVshYrz9HoPZPK7W1tMjRz7ZgmfzmWhZn
-         0BiVDXshGmu+BdUIX2MzjSFwQGOTsGfy2lABIJ+HBr34Cf5r1BdN2nmF1k5LB2PeH7
-         ktr8k/CDzsMo2suvVhLw0neddIsYEPg77XEOlVLY=
+        b=A/M96afLJtI2moiWabkrbF84zM3YWL8xBr+H3m1gcCv7mswXed5mc2d2sxV8U2EED
+         NP3BdOIPHJCL0aU1bRla+HPlrze1uP5jFNyRcaInJj7yNPFGO3aEIf+sspRFccnNuS
+         h/BJzv4SaHILgPptX+FA6c4r0amL1Y3tk+Umr10w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
-        Christoph Hellwig <hch@lst.de>,
-        David Rientjes <rientjes@google.com>
-Subject: [PATCH 5.10 78/84] dma-direct: dont over-decrypt memory
-Date:   Mon, 20 Jun 2022 14:51:41 +0200
-Message-Id: <20220620124723.196723432@linuxfoundation.org>
+        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
+        James Smart <jsmart2021@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 026/106] scsi: lpfc: Allow reduced polling rate for nvme_admin_async_event cmd completion
+Date:   Mon, 20 Jun 2022 14:50:45 +0200
+Message-Id: <20220620124725.159383225@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124720.882450983@linuxfoundation.org>
-References: <20220620124720.882450983@linuxfoundation.org>
+In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
+References: <20220620124724.380838401@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,107 +51,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robin Murphy <robin.murphy@arm.com>
+From: James Smart <jsmart2021@gmail.com>
 
-commit 4a37f3dd9a83186cb88d44808ab35b78375082c9 upstream.
+[ Upstream commit 2e7e9c0c1ec05f18d320ecc8a31eec59d2af1af9 ]
 
-The original x86 sev_alloc() only called set_memory_decrypted() on
-memory returned by alloc_pages_node(), so the page order calculation
-fell out of that logic. However, the common dma-direct code has several
-potential allocators, not all of which are guaranteed to round up the
-underlying allocation to a power-of-two size, so carrying over that
-calculation for the encryption/decryption size was a mistake. Fix it by
-rounding to a *number* of pages, rather than an order.
+NVMe Asynchronous Event Request commands have no command timeout value per
+specifications.
 
-Until recently there was an even worse interaction with DMA_DIRECT_REMAP
-where we could have ended up decrypting part of the next adjacent
-vmalloc area, only averted by no architecture actually supporting both
-configs at once. Don't ask how I found that one out...
+Set WQE option to allow a reduced FLUSH polling rate for I/O error
+detection specifically for nvme_admin_async_event commands.
 
-Fixes: c10f07aa27da ("dma/direct: Handle force decryption for DMA coherent buffers in common code")
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Acked-by: David Rientjes <rientjes@google.com>
-[ backport the functional change without all the prior refactoring ]
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20220603174329.63777-9-jsmart2021@gmail.com
+Co-developed-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/dma/direct.c |   16 ++++++----------
- 1 file changed, 6 insertions(+), 10 deletions(-)
+ drivers/scsi/lpfc/lpfc_hw4.h  |  3 +++
+ drivers/scsi/lpfc/lpfc_nvme.c | 11 +++++++++--
+ 2 files changed, 12 insertions(+), 2 deletions(-)
 
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -188,7 +188,7 @@ void *dma_direct_alloc(struct device *de
- 			goto out_free_pages;
- 		if (force_dma_unencrypted(dev)) {
- 			err = set_memory_decrypted((unsigned long)ret,
--						   1 << get_order(size));
-+						   PFN_UP(size));
- 			if (err)
- 				goto out_free_pages;
- 		}
-@@ -210,7 +210,7 @@ void *dma_direct_alloc(struct device *de
- 	ret = page_address(page);
- 	if (force_dma_unencrypted(dev)) {
- 		err = set_memory_decrypted((unsigned long)ret,
--					   1 << get_order(size));
-+					   PFN_UP(size));
- 		if (err)
- 			goto out_free_pages;
- 	}
-@@ -231,7 +231,7 @@ done:
- out_encrypt_pages:
- 	if (force_dma_unencrypted(dev)) {
- 		err = set_memory_encrypted((unsigned long)page_address(page),
--					   1 << get_order(size));
-+					   PFN_UP(size));
- 		/* If memory cannot be re-encrypted, it must be leaked */
- 		if (err)
- 			return NULL;
-@@ -244,8 +244,6 @@ out_free_pages:
- void dma_direct_free(struct device *dev, size_t size,
- 		void *cpu_addr, dma_addr_t dma_addr, unsigned long attrs)
+diff --git a/drivers/scsi/lpfc/lpfc_hw4.h b/drivers/scsi/lpfc/lpfc_hw4.h
+index 7359505e6041..824fc8c08840 100644
+--- a/drivers/scsi/lpfc/lpfc_hw4.h
++++ b/drivers/scsi/lpfc/lpfc_hw4.h
+@@ -4448,6 +4448,9 @@ struct wqe_common {
+ #define wqe_sup_SHIFT         6
+ #define wqe_sup_MASK          0x00000001
+ #define wqe_sup_WORD          word11
++#define wqe_ffrq_SHIFT         6
++#define wqe_ffrq_MASK          0x00000001
++#define wqe_ffrq_WORD          word11
+ #define wqe_wqec_SHIFT        7
+ #define wqe_wqec_MASK         0x00000001
+ #define wqe_wqec_WORD         word11
+diff --git a/drivers/scsi/lpfc/lpfc_nvme.c b/drivers/scsi/lpfc/lpfc_nvme.c
+index 66cb66aea2cf..4fb3dc5092f5 100644
+--- a/drivers/scsi/lpfc/lpfc_nvme.c
++++ b/drivers/scsi/lpfc/lpfc_nvme.c
+@@ -1182,7 +1182,8 @@ lpfc_nvme_prep_io_cmd(struct lpfc_vport *vport,
  {
--	unsigned int page_order = get_order(size);
--
- 	if ((attrs & DMA_ATTR_NO_KERNEL_MAPPING) &&
- 	    !force_dma_unencrypted(dev)) {
- 		/* cpu_addr is a struct page cookie, not a kernel address */
-@@ -266,7 +264,7 @@ void dma_direct_free(struct device *dev,
- 		return;
+ 	struct lpfc_hba *phba = vport->phba;
+ 	struct nvmefc_fcp_req *nCmd = lpfc_ncmd->nvmeCmd;
+-	struct lpfc_iocbq *pwqeq = &(lpfc_ncmd->cur_iocbq);
++	struct nvme_common_command *sqe;
++	struct lpfc_iocbq *pwqeq = &lpfc_ncmd->cur_iocbq;
+ 	union lpfc_wqe128 *wqe = &pwqeq->wqe;
+ 	uint32_t req_len;
  
- 	if (force_dma_unencrypted(dev))
--		set_memory_encrypted((unsigned long)cpu_addr, 1 << page_order);
-+		set_memory_encrypted((unsigned long)cpu_addr, PFN_UP(size));
- 
- 	if (IS_ENABLED(CONFIG_DMA_REMAP) && is_vmalloc_addr(cpu_addr))
- 		vunmap(cpu_addr);
-@@ -302,8 +300,7 @@ struct page *dma_direct_alloc_pages(stru
- 
- 	ret = page_address(page);
- 	if (force_dma_unencrypted(dev)) {
--		if (set_memory_decrypted((unsigned long)ret,
--				1 << get_order(size)))
-+		if (set_memory_decrypted((unsigned long)ret, PFN_UP(size)))
- 			goto out_free_pages;
+@@ -1239,8 +1240,14 @@ lpfc_nvme_prep_io_cmd(struct lpfc_vport *vport,
+ 		cstat->control_requests++;
  	}
- 	memset(ret, 0, size);
-@@ -318,7 +315,6 @@ void dma_direct_free_pages(struct device
- 		struct page *page, dma_addr_t dma_addr,
- 		enum dma_data_direction dir)
- {
--	unsigned int page_order = get_order(size);
- 	void *vaddr = page_address(page);
  
- 	/* If cpu_addr is not from an atomic pool, dma_free_from_pool() fails */
-@@ -327,7 +323,7 @@ void dma_direct_free_pages(struct device
- 		return;
- 
- 	if (force_dma_unencrypted(dev))
--		set_memory_encrypted((unsigned long)vaddr, 1 << page_order);
-+		set_memory_encrypted((unsigned long)vaddr, PFN_UP(size));
- 
- 	dma_free_contiguous(dev, page, size);
- }
+-	if (pnode->nlp_nvme_info & NLP_NVME_NSLER)
++	if (pnode->nlp_nvme_info & NLP_NVME_NSLER) {
+ 		bf_set(wqe_erp, &wqe->generic.wqe_com, 1);
++		sqe = &((struct nvme_fc_cmd_iu *)
++			nCmd->cmdaddr)->sqe.common;
++		if (sqe->opcode == nvme_admin_async_event)
++			bf_set(wqe_ffrq, &wqe->generic.wqe_com, 1);
++	}
++
+ 	/*
+ 	 * Finish initializing those WQE fields that are independent
+ 	 * of the nvme_cmnd request_buffer
+-- 
+2.35.1
+
 
 
