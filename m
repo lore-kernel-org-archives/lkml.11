@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1745BCCA47C
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:04:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39FB7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:04:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243757AbiFTNEQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:04:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47808 "EHLO
+        id S243844AbiFTNET (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:04:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243749AbiFTNCH (ORCPT
+        with ESMTP id S243762AbiFTNCI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:02:07 -0400
+        Mon, 20 Jun 2022 09:02:08 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97C281A81E;
-        Mon, 20 Jun 2022 05:57:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 984421DA64;
+        Mon, 20 Jun 2022 05:57:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B649B61530;
-        Mon, 20 Jun 2022 12:57:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B34F3C3411B;
-        Mon, 20 Jun 2022 12:57:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 22FDD61535;
+        Mon, 20 Jun 2022 12:57:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0074C3411B;
+        Mon, 20 Jun 2022 12:57:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655729846;
-        bh=MBDHAZqTXSUeB2c4k4h7JnpVLUY9pLughCQPv6UVC4U=;
+        s=korg; t=1655729849;
+        bh=H8rmEyrVTKLzJ7QSvB+TXXUSK8ndpboB0UP/6+u9+Eo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ERyDAwjVu+O2KQoHng2Ynjz2OPswkcCOhJErjYNJUiKuxHJqhmPM36JSqIntNVIol
-         e5N9aJSeMyba3LtBC3sL7n/80Tj5bp2/Dlfj3jJVHKLWBXTDTr2EtBpmN/9DWlnhNq
-         E0e8UnMS0goXXWqH/NlV1heOMuTvWHr9Ac0EH9sU=
+        b=Ed9xWTk2OMqXFoYnP1Ml1UD17yszVLFaQAt43d1/tBdF2Ss1Mlkdfy5LhUSoIpLKG
+         iWTjlnTJBH/PEveZqsKeVyXlZyxxa90gDobeDrYedluc8eWOZrtB7znAuM+0wZL4HK
+         6ob/ZhiS1oDk387eT31WvR6rv5lkttGWJJsoTm1E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
         Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 094/141] irqchip/gic-v3: Fix error handling in gic_populate_ppi_partitions
-Date:   Mon, 20 Jun 2022 14:50:32 +0200
-Message-Id: <20220620124732.324002525@linuxfoundation.org>
+Subject: [PATCH 5.18 095/141] irqchip/gic-v3: Fix refcount leak in gic_populate_ppi_partitions
+Date:   Mon, 20 Jun 2022 14:50:33 +0200
+Message-Id: <20220620124732.353647343@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 References: <20220620124729.509745706@linuxfoundation.org>
@@ -50,35 +50,42 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit ec8401a429ffee34ccf38cebf3443f8d5ae6cb0d ]
+[ Upstream commit fa1ad9d4cc47ca2470cd904ad4519f05d7e43a2b ]
 
-of_get_child_by_name() returns a node pointer with refcount
+of_find_node_by_phandle() returns a node pointer with refcount
 incremented, we should use of_node_put() on it when not need anymore.
-When kcalloc fails, it missing of_node_put() and results in refcount
-leak. Fix this by goto out_put_node label.
+Add missing of_node_put() to avoid refcount leak.
 
-Fixes: 52085d3f2028 ("irqchip/gic-v3: Dynamically allocate PPI partition descriptors")
+Fixes: e3825ba1af3a ("irqchip/gic-v3: Add support for partitioned PPIs")
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220601080930.31005-5-linmq006@gmail.com
+Link: https://lore.kernel.org/r/20220601080930.31005-6-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/irqchip/irq-gic-v3.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/irqchip/irq-gic-v3.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
-index 1af2b50f36f3..7855a2d7499e 100644
+index 7855a2d7499e..d5420f9d6219 100644
 --- a/drivers/irqchip/irq-gic-v3.c
 +++ b/drivers/irqchip/irq-gic-v3.c
-@@ -1922,7 +1922,7 @@ static void __init gic_populate_ppi_partitions(struct device_node *gic_node)
+@@ -1963,12 +1963,15 @@ static void __init gic_populate_ppi_partitions(struct device_node *gic_node)
+ 				continue;
  
- 	gic_data.ppi_descs = kcalloc(gic_data.ppi_nr, sizeof(*gic_data.ppi_descs), GFP_KERNEL);
- 	if (!gic_data.ppi_descs)
--		return;
-+		goto out_put_node;
+ 			cpu = of_cpu_node_to_id(cpu_node);
+-			if (WARN_ON(cpu < 0))
++			if (WARN_ON(cpu < 0)) {
++				of_node_put(cpu_node);
+ 				continue;
++			}
  
- 	nr_parts = of_get_child_count(parts_node);
+ 			pr_cont("%pOF[%d] ", cpu_node, cpu);
  
+ 			cpumask_set_cpu(cpu, &part->mask);
++			of_node_put(cpu_node);
+ 		}
+ 
+ 		pr_cont("}\n");
 -- 
 2.35.1
 
