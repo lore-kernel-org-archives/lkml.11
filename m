@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E4EBC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:21:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C744C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:21:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243396AbiFTNVu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:21:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45480 "EHLO
+        id S243903AbiFTNVy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:21:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344677AbiFTNTR (ORCPT
+        with ESMTP id S1344766AbiFTNT2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:19:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10F48273C;
-        Mon, 20 Jun 2022 06:08:00 -0700 (PDT)
+        Mon, 20 Jun 2022 09:19:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB75360E2;
+        Mon, 20 Jun 2022 06:08:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 52067B811DC;
-        Mon, 20 Jun 2022 13:07:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3073C3411B;
-        Mon, 20 Jun 2022 13:07:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C80D6154F;
+        Mon, 20 Jun 2022 13:05:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E393C3411B;
+        Mon, 20 Jun 2022 13:05:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730472;
-        bh=4qFLn4i9EC/djJiRhUWu34S6yAT/117hdjbWP984UM0=;
+        s=korg; t=1655730347;
+        bh=JicjRnQMDRin8zmcJ7QBb5GWds4gk7oiwtluZKwMO9s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TiLtLE7CuCGXoVw5Wq5WP4nR8Iho40IKTStGalMNkt8bg9BM7Kksv5hQ7/TfQDJ3V
-         7/zlCobGVPbTjIIMolHrk/Xc80fgInjJI+WE3wljKhCcDXbAI1/oIPpsVNcdfbY8H5
-         TArkZtvr/Czlu5DiA+V9sXQu2vfYAqTHe4Ek6EXE=
+        b=x7OxvxGWJpJkp66wG/UFFNDCMX2JkUT/+gB/ksTucQ6kptGuq8dlYFhkop5AKzw58
+         Z0MW4Q8BDTJjVFIDdidgA8U7Ojjo5d9RWi8IEwU4zrym1BMWhPlY6j5xLop7PfyVcD
+         ttc21bI3MO6YIvK5kPZg5hn/NORhn+pY3hU+ItUI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jian Shen <shenjian15@huawei.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
+        James Smart <jsmart2021@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 062/106] net: hns3: dont push link state to VF if unalive
-Date:   Mon, 20 Jun 2022 14:51:21 +0200
-Message-Id: <20220620124726.236975959@linuxfoundation.org>
+Subject: [PATCH 5.15 024/106] scsi: lpfc: Resolve NULL ptr dereference after an ELS LOGO is aborted
+Date:   Mon, 20 Jun 2022 14:50:43 +0200
+Message-Id: <20220620124725.098592639@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
 References: <20220620124724.380838401@linuxfoundation.org>
@@ -50,39 +50,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jian Shen <shenjian15@huawei.com>
+From: James Smart <jsmart2021@gmail.com>
 
-[ Upstream commit 283847e3ef6dbf79bf67083b5ce7b8033e8b6f34 ]
+[ Upstream commit b1b3440f437b75fb2a9b0cfe58df461e40eca474 ]
 
-It's unnecessary to push link state to unalive VF, and the VF will
-query link state from PF when it being start works.
+A use-after-free crash can occur after an ELS LOGO is aborted.
 
-Fixes: 18b6e31f8bf4 ("net: hns3: PF add support for pushing link status to VFs")
-Signed-off-by: Jian Shen <shenjian15@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Specifically, a nodelist structure is freed and then
+ndlp->vport->cfg_log_verbose is dereferenced in lpfc_nlp_get() when the
+discovery state machine is mistakenly called a second time with
+NLP_EVT_DEVICE_RM argument.
+
+Rework lpfc_cmpl_els_logo() to prevent the duplicate calls to release a
+nodelist structure.
+
+Link: https://lore.kernel.org/r/20220603174329.63777-6-jsmart2021@gmail.com
+Co-developed-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/scsi/lpfc/lpfc_els.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 15098570047b..24239e28e88a 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -3302,6 +3302,12 @@ static int hclge_set_vf_link_state(struct hnae3_handle *handle, int vf,
- 	link_state_old = vport->vf_info.link_state;
- 	vport->vf_info.link_state = link_state;
+diff --git a/drivers/scsi/lpfc/lpfc_els.c b/drivers/scsi/lpfc/lpfc_els.c
+index ce28c4a30460..5f44a0763f37 100644
+--- a/drivers/scsi/lpfc/lpfc_els.c
++++ b/drivers/scsi/lpfc/lpfc_els.c
+@@ -2955,18 +2955,10 @@ lpfc_cmpl_els_logo(struct lpfc_hba *phba, struct lpfc_iocbq *cmdiocb,
+ 		spin_unlock_irq(&ndlp->lock);
+ 		lpfc_disc_state_machine(vport, ndlp, cmdiocb,
+ 					NLP_EVT_DEVICE_RM);
+-		lpfc_els_free_iocb(phba, cmdiocb);
+-		lpfc_nlp_put(ndlp);
+-
+-		/* Presume the node was released. */
+-		return;
++		goto out_rsrc_free;
+ 	}
  
-+	/* return success directly if the VF is unalive, VF will
-+	 * query link state itself when it starts work.
-+	 */
-+	if (!test_bit(HCLGE_VPORT_STATE_ALIVE, &vport->state))
-+		return 0;
+ out:
+-	/* Driver is done with the IO.  */
+-	lpfc_els_free_iocb(phba, cmdiocb);
+-	lpfc_nlp_put(ndlp);
+-
+ 	/* At this point, the LOGO processing is complete. NOTE: For a
+ 	 * pt2pt topology, we are assuming the NPortID will only change
+ 	 * on link up processing. For a LOGO / PLOGI initiated by the
+@@ -2993,6 +2985,10 @@ lpfc_cmpl_els_logo(struct lpfc_hba *phba, struct lpfc_iocbq *cmdiocb,
+ 				 ndlp->nlp_DID, irsp->ulpStatus,
+ 				 irsp->un.ulpWord[4], irsp->ulpTimeout,
+ 				 vport->num_disc_nodes);
 +
- 	ret = hclge_push_vf_link_status(vport);
- 	if (ret) {
- 		vport->vf_info.link_state = link_state_old;
++		lpfc_els_free_iocb(phba, cmdiocb);
++		lpfc_nlp_put(ndlp);
++
+ 		lpfc_disc_start(vport);
+ 		return;
+ 	}
+@@ -3009,6 +3005,10 @@ lpfc_cmpl_els_logo(struct lpfc_hba *phba, struct lpfc_iocbq *cmdiocb,
+ 		lpfc_disc_state_machine(vport, ndlp, cmdiocb,
+ 					NLP_EVT_DEVICE_RM);
+ 	}
++out_rsrc_free:
++	/* Driver is done with the I/O. */
++	lpfc_els_free_iocb(phba, cmdiocb);
++	lpfc_nlp_put(ndlp);
+ }
+ 
+ /**
 -- 
 2.35.1
 
