@@ -2,82 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEFC2C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 19:22:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14443CCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 19:30:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245485AbiFTTWS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 15:22:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42826 "EHLO
+        id S243729AbiFTTaw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 15:30:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244220AbiFTTWQ (ORCPT
+        with ESMTP id S238346AbiFTTau (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 15:22:16 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA28F1BE8D
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 12:22:15 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id f16so9648409pjj.1
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 12:22:15 -0700 (PDT)
+        Mon, 20 Jun 2022 15:30:50 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF9B21B7B7
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 12:30:49 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id c2so18851257lfk.0
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 12:30:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=oOBgCs1oKhLX6l+6YjA7JxDMiSGGwf3k7mwAD0yAsos=;
-        b=kc/aTUcgZD/czsu+1K0bcaLwII+rWCUf5wZ5/rEMKMmca0T4gM3SJEVMJHr5JSQdFX
-         Ijfxe/NxNEu2UriAJr1D9GOV9XK+qBoLoE0A/saDgeUUUlvO8IKPDZY6weONcSbnLwK4
-         mpGke3ZjLN8UW8P/TeUcsz5wLMjUTdkdfP8A5lpsapBKS1aZnVq0wARbZ9uNLnHs87cr
-         0i9Mh6ZCfd6MbSqZ/uBJbizAon1HvZzr7ESR6ai4OqWb9sj190jG/S5d7EnNmw/ZOJP6
-         qliUdPvmmYT2CvTiv/XppHmxd4eLenZsJeMyM/o27VgWBwUw84RmcG1VvHHX6oLCfhCP
-         TNEQ==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=4FVWZ5RD6j0T2Oz4CkZsx11e2rZOpIesuz+EhC8MdRg=;
+        b=MbUCCRU5DEOoziE4wlo9CXBSmyaZwaccLPzrC3aZa6M4LNES8QI+iVGPE7n9kWn1xr
+         FlInSDeXNkWMJR7TYkuFA9bGny04rz853TIMRJL0vjAEBysKvO2qOO777nLwYYlk0Ged
+         jugVJAJDoawma6KdVboL/15ypjCA1wzr4Xn9og9Da+DmcnJZyiV4tHNSkgP4/RqDUxo0
+         Suri7F2c6BCq6t5gsvz5OlTsVQPVQ5re0ZZC30g+xMb8sFdWoupX+PxvN5YjGS1CGdu4
+         6yqb+YdJsZQ6cudDnXMAIcknM7f6BiYFyzhadXb0gE/groQ5lW9lhcuSrGnlQn/MyZk0
+         agbg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oOBgCs1oKhLX6l+6YjA7JxDMiSGGwf3k7mwAD0yAsos=;
-        b=t/bxgPtgieeUiqtC2sur91CYSsW1ffiFSYfFBz1JReVCuKnJUydxtSevzfd/D5tAbo
-         VBzG/FAjnf1o5lgbF8g23En1f7DRzPNDUgLUquYmUQQdt45R4Y7sWqv5iOGMl8apxgZb
-         21DPePb/B8SOtgxC07feF1SlCLaCHSMgsuW6Ocyhi2jFMtRLRBGugOV0FOR3Uk+tDuPX
-         ZbklYGq02AUntatAvI/faasSLnvoQJX8SWV8+d35KPKsUuiqQfzEn1iQQF3gyJipp4Fk
-         AkWhCVjnpK4AJ9m2uSqF2oJ7SooxJTsPg95nUXc588FpQkySERkomtefZlpmGG3NuZ0r
-         pvxA==
-X-Gm-Message-State: AJIora/pufXBG6wRVvxwW5oOPvPCpy/d/4i8k0GCoAbiQgW5C1Ymufje
-        mPBYV7EIFXLfzY4GJ86LwfW5mUVrlIipoRWr3Gzt8w==
-X-Google-Smtp-Source: AGRyM1sy1C9FMV0zpCSDUtmmHsqLSolD8o7U+F/Leb9Gs2gN2IUQE3JC9/w2aYnz7jxPghxjLhdaHpZNmUzG61SfAi0=
-X-Received: by 2002:a17:90a:cc7:b0:1ea:3993:78f9 with SMTP id
- 7-20020a17090a0cc700b001ea399378f9mr39409700pjt.179.1655752935449; Mon, 20
- Jun 2022 12:22:15 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=4FVWZ5RD6j0T2Oz4CkZsx11e2rZOpIesuz+EhC8MdRg=;
+        b=sYUNvsiNIK3FZHE3qsU0OJ+VBKengSN2NcfJCpacGDuq9TRxCPdYrU6dnXbtGGZzhv
+         dza8huQdsWDLps6PzmcEOJrn3WlOOcfWod+bJj9QRmmrhFn8UYUqvk4URmpWacRdBh3h
+         lz3SXXXUUrmqTFQifhhb8MiE3CbgVa2UxXrAOfju2b8IJQubk3mKpCuh9PU6wZDrVf6k
+         89bnE4ZpjU7P/NFhGp2Rtj2hjVRh0co4DzmyEZv43bSQjSwJDWdi/Yhw06BTsrFbxOzu
+         oGsLCLELvP/Tt49ylbrTGfiU9ukOMW6j/L0JfsumKtJCV2XXhhdZ4zmGwetzxk73J0HE
+         DKlg==
+X-Gm-Message-State: AJIora/Z/NDkad/Ejll+G7MWp3pcEZhKst0y4lnuxxECE8Bhj1KH1HlZ
+        8XAnLTkXPiaaHXKaYGaQ6iANRg==
+X-Google-Smtp-Source: AGRyM1uXYt5CRb9/0qaQTYLRAE5TNEoyPlRb7jf3bFWn+UD6F49KM7ZcWPEBO77nwZg6/8tmqZdWJA==
+X-Received: by 2002:ac2:51a5:0:b0:47f:79a1:5c02 with SMTP id f5-20020ac251a5000000b0047f79a15c02mr1094804lfk.575.1655753448163;
+        Mon, 20 Jun 2022 12:30:48 -0700 (PDT)
+Received: from [192.168.1.211] ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id e2-20020ac25ca2000000b0047255d21100sm1872617lfq.47.2022.06.20.12.30.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Jun 2022 12:30:47 -0700 (PDT)
+Message-ID: <fa5c77c3-517c-32da-5d8b-ecfb9c898b92@linaro.org>
+Date:   Mon, 20 Jun 2022 22:30:46 +0300
 MIME-Version: 1.0
-References: <20220611141421.718743-1-victor.liu@nxp.com> <YqsRcUsdZzcwqplJ@valkosipuli.retiisi.eu>
-In-Reply-To: <YqsRcUsdZzcwqplJ@valkosipuli.retiisi.eu>
-From:   Robert Foss <robert.foss@linaro.org>
-Date:   Mon, 20 Jun 2022 21:22:04 +0200
-Message-ID: <CAG3jFyv-AQU4M1JBPtcZ1gNsrDs8MSBuaOX5_VB29BtC1jmscA@mail.gmail.com>
-Subject: Re: [PATCH v9 00/14] Add some DRM bridge drivers support for
- i.MX8qm/qxp SoCs
-To:     Sakari Ailus <sakari.ailus@iki.fi>
-Cc:     Liu Ying <victor.liu@nxp.com>, dri-devel@lists.freedesktop.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        andrzej.hajda@intel.com, narmstrong@baylibre.com,
-        Laurent.pinchart@ideasonboard.com, jonas@kwiboo.se,
-        jernej.skrabec@gmail.com, airlied@linux.ie, daniel@ffwll.ch,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
-        festevam@gmail.com, linux-imx@nxp.com, lee.jones@linaro.org,
-        mchehab@kernel.org, marcel.ziswiler@toradex.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v3 2/2] spmi: pmic-arb: Add support for PMIC v7
+Content-Language: en-GB
+To:     Vinod Koul <vkoul@kernel.org>, Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        David Collins <quic_collinsd@quicinc.com>
+Cc:     linux-arm-msm@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        David Collins <collinsd@codeaurora.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        David Dai <daidavid1@codeaurora.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220201134108.2677578-1-vkoul@kernel.org>
+ <20220201134108.2677578-3-vkoul@kernel.org>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <20220201134108.2677578-3-vkoul@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 16 Jun 2022 at 13:18, Sakari Ailus <sakari.ailus@iki.fi> wrote:
->
-> On Sat, Jun 11, 2022 at 10:14:07PM +0800, Liu Ying wrote:
-> > Patch 1/14 and 2/14 add bus formats used by pixel combiner.
->
-> Thanks!
->
-> For these:
->
-> Acked-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+On 01/02/2022 16:41, Vinod Koul wrote:
+> From: David Collins <collinsd@codeaurora.org>
+> 
+> PMIC v7 has different offset values and seqeunces, so add support for
+> this new version of PMIC
+> 
+> Signed-off-by: David Collins <collinsd@codeaurora.org>
+> Signed-off-by: Vinod Koul <vkoul@kernel.org>
 
-Applied to drm-misc-next.
+Tested-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org> # SM8450 HDK
+
+> ---
+>   drivers/spmi/spmi-pmic-arb.c | 233 ++++++++++++++++++++++++++++++++---
+>   1 file changed, 214 insertions(+), 19 deletions(-)
+
+
+-- 
+With best wishes
+Dmitry
