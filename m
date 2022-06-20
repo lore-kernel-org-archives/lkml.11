@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAE9CC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:41:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61EABCCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:41:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348007AbiFTNlM (ORCPT
+        id S1347314AbiFTNkb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:41:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46062 "EHLO
+        Mon, 20 Jun 2022 09:40:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348973AbiFTNj3 (ORCPT
+        with ESMTP id S1347419AbiFTNi2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:39:29 -0400
+        Mon, 20 Jun 2022 09:38:28 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 138152983C;
-        Mon, 20 Jun 2022 06:14:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 157C61F622;
+        Mon, 20 Jun 2022 06:14:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0FDE960ABE;
-        Mon, 20 Jun 2022 13:14:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 041A4C3411B;
-        Mon, 20 Jun 2022 13:14:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 27A9B61541;
+        Mon, 20 Jun 2022 13:02:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28D54C3411B;
+        Mon, 20 Jun 2022 13:02:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730879;
-        bh=OFK+I4hC4CbXFovI2d2Y6mlAc9oHx06iwqtm1T1Gx8k=;
+        s=korg; t=1655730170;
+        bh=G9sVT9BCC2t1SfzLQZXZjkGeZ3YE+zHFK85LE1yWtJo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qmjjAKh3rfyE8FXiHLO/QsMs66udFOF2da0lKUmMS3g43DcpGWf0kTv7WdIbCKEFF
-         cIF0TXGiKAqP15K7btFvrEBgvBCAasXRHJnHu4EPqzN0yc5imCr0qZWkuH+anshRxV
-         B+JbBmFsJ5zuiSxUOQM5lmYWb0yf41d7Omxf/tF8=
+        b=FNKt68WDn4HkBxT+1OZeYlK93xRnmF8+zLHzS61nT0/mqGnwgD86+0yEbXpdX4Vls
+         fH2mmGwHB3rMtUUunkkv/VksFiKyfXMfRNRG86mwWHmQnvtBClEIb6vXLx3elaOWMx
+         +4S8sps9cvkWv9BJm0z8Pxr4aCHuMgNjo5tY1p7E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Eric Biggers <ebiggers@google.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 084/240] random: fix locking for crng_init in crng_reseed()
-Date:   Mon, 20 Jun 2022 14:49:45 +0200
-Message-Id: <20220620124741.344640221@linuxfoundation.org>
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Miaoqian Lin <linmq006@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 43/84] misc: atmel-ssc: Fix IRQ check in ssc_probe
+Date:   Mon, 20 Jun 2022 14:51:06 +0200
+Message-Id: <20220620124722.164498710@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
-References: <20220620124737.799371052@linuxfoundation.org>
+In-Reply-To: <20220620124720.882450983@linuxfoundation.org>
+References: <20220620124720.882450983@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,50 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dominik Brodowski <linux@dominikbrodowski.net>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 7191c628fe07b70d3f37de736d173d1b115396ed upstream.
+[ Upstream commit 1c245358ce0b13669f6d1625f7a4e05c41f28980 ]
 
-crng_init is protected by primary_crng->lock. Therefore, we need
-to hold this lock when increasing crng_init to 2. As we shouldn't
-hold this lock for too long, only hold it for those parts which
-require protection.
+platform_get_irq() returns negative error number instead 0 on failure.
+And the doc of platform_get_irq() provides a usage example:
 
-Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+    int irq = platform_get_irq(pdev, 0);
+    if (irq < 0)
+        return irq;
+
+Fix the check of return value to catch errors correctly.
+
+Fixes: eb1f2930609b ("Driver for the Atmel on-chip SSC on AT32AP and AT91")
+Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220601123026.7119-1-linmq006@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/random.c |    9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/misc/atmel-ssc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -500,6 +500,7 @@ static void crng_reseed(void)
- 	int entropy_count;
- 	unsigned long next_gen;
- 	u8 key[CHACHA_KEY_SIZE];
-+	bool finalize_init = false;
+diff --git a/drivers/misc/atmel-ssc.c b/drivers/misc/atmel-ssc.c
+index d6cd5537126c..69f9b0336410 100644
+--- a/drivers/misc/atmel-ssc.c
++++ b/drivers/misc/atmel-ssc.c
+@@ -232,9 +232,9 @@ static int ssc_probe(struct platform_device *pdev)
+ 	clk_disable_unprepare(ssc->clk);
  
- 	/*
- 	 * First we make sure we have POOL_MIN_BITS of entropy in the pool,
-@@ -527,12 +528,14 @@ static void crng_reseed(void)
- 		++next_gen;
- 	WRITE_ONCE(base_crng.generation, next_gen);
- 	WRITE_ONCE(base_crng.birth, jiffies);
--	spin_unlock_irqrestore(&base_crng.lock, flags);
--	memzero_explicit(key, sizeof(key));
--
- 	if (crng_init < 2) {
- 		invalidate_batched_entropy();
- 		crng_init = 2;
-+		finalize_init = true;
-+	}
-+	spin_unlock_irqrestore(&base_crng.lock, flags);
-+	memzero_explicit(key, sizeof(key));
-+	if (finalize_init) {
- 		process_random_ready_list();
- 		wake_up_interruptible(&crng_init_wait);
- 		kill_fasync(&fasync, SIGIO, POLL_IN);
+ 	ssc->irq = platform_get_irq(pdev, 0);
+-	if (!ssc->irq) {
++	if (ssc->irq < 0) {
+ 		dev_dbg(&pdev->dev, "could not get irq\n");
+-		return -ENXIO;
++		return ssc->irq;
+ 	}
+ 
+ 	mutex_lock(&user_lock);
+-- 
+2.35.1
+
 
 
