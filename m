@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 865E1C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 20:12:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEEE8CCA480
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 20:12:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344762AbiFTUMc (ORCPT
+        id S1344528AbiFTUM5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 16:12:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39632 "EHLO
+        Mon, 20 Jun 2022 16:12:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245663AbiFTUMF (ORCPT
+        with ESMTP id S1344144AbiFTUMl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 16:12:05 -0400
+        Mon, 20 Jun 2022 16:12:41 -0400
 Received: from mx01.omp.ru (mx01.omp.ru [90.154.21.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9108C21828;
-        Mon, 20 Jun 2022 13:09:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3C6A25299;
+        Mon, 20 Jun 2022 13:09:39 -0700 (PDT)
 Received: from [192.168.1.103] (178.176.78.78) by msexch01.omp.ru
  (10.188.4.12) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.986.14; Mon, 20 Jun
- 2022 23:07:40 +0300
+ 2022 23:08:00 +0300
 Subject: Re: linux-next: build warning after merge of the libata tree
 To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
         Stephen Rothwell <sfr@canb.auug.org.au>
@@ -32,8 +32,8 @@ References: <20220620103400.6b03f8d9@canb.auug.org.au>
  <71cca7ed-6409-3066-8878-cdc647b17057@opensource.wdc.com>
 From:   Sergey Shtylyov <s.shtylyov@omp.ru>
 Organization: Open Mobile Platform
-Message-ID: <54db2644-aa04-82cc-88cd-1cb40a2b2d77@omp.ru>
-Date:   Mon, 20 Jun 2022 23:07:40 +0300
+Message-ID: <6cc66995-6e15-509d-eed7-172a5071e08b@omp.ru>
+Date:   Mon, 20 Jun 2022 23:08:00 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.10.1
 MIME-Version: 1.0
@@ -125,7 +125,7 @@ On 6/20/22 2:07 PM, Damien Le Moal wrote:
 > asterisks are gone and "unsigned int" shown with bold font. Please stop
 
    Strange, I'm seeing both asterisks and bold font there. What kind of MUA
-you use? :-)
+do you use? :-)
 
 > with the markdown style emphasis. That creates problems.
 
