@@ -2,83 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54F77C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:51:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80795C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:51:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349318AbiFTNve (ORCPT
+        id S1349357AbiFTNvh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:51:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36722 "EHLO
+        Mon, 20 Jun 2022 09:51:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350084AbiFTNtG (ORCPT
+        with ESMTP id S1350471AbiFTNtT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:49:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5C0A2F032
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 06:17:47 -0700 (PDT)
+        Mon, 20 Jun 2022 09:49:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AE472FFE5;
+        Mon, 20 Jun 2022 06:18:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B1954B811C2
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 13:07:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51062C3411C;
-        Mon, 20 Jun 2022 13:06:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655730420;
-        bh=HHDQX3NlnZLPN1fa0iK8DZnWO6BfR1zyzteOcjoiVi0=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=jDPIXvHQX18UEYQlx4HNpijY7v08HdK6Z59LniMV9r6zv5YWWaYLYW5omi0xo5tNJ
-         52P7pJC3yL817qJOTzi74pG3W7u4Z/7jXhpc7DWmoDsN9qbXbqyTomZp6cfw4YnywO
-         EEJVxNjLTLRMQN1V6UoboeIjDmsV+CROjfZe5DP4TwrNJfEc1JJyN/B/a8C5ko9XrT
-         X2HCWjphlXV+qI2lCAcoWuJ2G5xfQFw5n/cWypFAuQMewZSrAx+kcJS7vXd0I21Vf7
-         M2GPQ3hYyJyz19+E5VOD6xwj2Y5LOg5cKW4cpIgMPfILwACbm/v91EaCZjFutI8SUj
-         E5RWkgbTxPEgA==
-From:   Mark Brown <broonie@kernel.org>
-To:     srinivas.kandagatla@linaro.org
-Cc:     lgirdwood@gmail.com, tiwai@suse.com, linux-kernel@vger.kernel.org,
-        alsa-devel@alsa-project.org, perex@perex.cz
-In-Reply-To: <20220617210230.7685-1-srinivas.kandagatla@linaro.org>
-References: <20220617210230.7685-1-srinivas.kandagatla@linaro.org>
-Subject: Re: [PATCH] MAINTAINERS: update ASoC Qualcomm maintainer email-id
-Message-Id: <165573041905.667528.13097598599735683089.b4-ty@kernel.org>
-Date:   Mon, 20 Jun 2022 14:06:59 +0100
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E5B2060FF1;
+        Mon, 20 Jun 2022 13:17:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7EDCC3411B;
+        Mon, 20 Jun 2022 13:17:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655731023;
+        bh=BevbwWX2OSD1W1/1qk/rCqhmGFAAMpSJAO781kxqSM8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Tmdx3iktU6gXyVnlpq4cfz1+vEZiM8v2k5kI2dNPzsfQYKvPSyYkTlSrKZpTR8Og/
+         lJaQbH6KLr9vfShoE1SQQKllDerD3Im69a4QJwXjTRSBTkpTpwIIEeNV+i3Qcfx/CO
+         tH3c5Z0yWwxYEg13PWWcU2DuB50yFmW6dJpvowKM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.4 129/240] random: fix sysctl documentation nits
+Date:   Mon, 20 Jun 2022 14:50:30 +0200
+Message-Id: <20220620124742.750178728@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
+References: <20220620124737.799371052@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 17 Jun 2022 14:02:30 -0700, Srinivas Kandagatla wrote:
-> Update Banajit's email address from codeaurora.org to quicinc.com, as
-> codeaurora.org is not in use anymore.
-> 
-> 
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-Applied to
+commit 069c4ea6871c18bd368f27756e0f91ffb524a788 upstream.
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
+A semicolon was missing, and the almost-alphabetical-but-not ordering
+was confusing, so regroup these by category instead.
 
-Thanks!
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ Documentation/admin-guide/sysctl/kernel.rst |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-[1/1] MAINTAINERS: update ASoC Qualcomm maintainer email-id
-      commit: ad9894ac6cc1c1f7c36451d508d69f6ba677834a
+--- a/Documentation/admin-guide/sysctl/kernel.rst
++++ b/Documentation/admin-guide/sysctl/kernel.rst
+@@ -876,6 +876,9 @@ This is a directory, with the following
+ * ``boot_id``: a UUID generated the first time this is retrieved, and
+   unvarying after that;
+ 
++* ``uuid``: a UUID generated every time this is retrieved (this can
++  thus be used to generate UUIDs at will);
++
+ * ``entropy_avail``: the pool's entropy count, in bits;
+ 
+ * ``poolsize``: the entropy pool size, in bits;
+@@ -883,10 +886,7 @@ This is a directory, with the following
+ * ``urandom_min_reseed_secs``: obsolete (used to determine the minimum
+   number of seconds between urandom pool reseeding). This file is
+   writable for compatibility purposes, but writing to it has no effect
+-  on any RNG behavior.
+-
+-* ``uuid``: a UUID generated every time this is retrieved (this can
+-  thus be used to generate UUIDs at will);
++  on any RNG behavior;
+ 
+ * ``write_wakeup_threshold``: when the entropy count drops below this
+   (as a number of bits), processes waiting to write to ``/dev/random``
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
