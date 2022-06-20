@@ -2,107 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BDB1CCA479
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70287CCA47C
 	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:10:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351896AbiFTOKJ (ORCPT
+        id S1351936AbiFTOKK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:10:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47832 "EHLO
+        Mon, 20 Jun 2022 10:10:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354643AbiFTN7o (ORCPT
+        with ESMTP id S243558AbiFTNyr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:59:44 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81D0A3A729;
-        Mon, 20 Jun 2022 06:25:35 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id 73-20020a17090a0fcf00b001eaee69f600so10304996pjz.1;
-        Mon, 20 Jun 2022 06:25:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=1SRZahO4w5J/q1AxamwHmWbo+QN6jL4DplQ3GJck67Q=;
-        b=Yfz4kPN4Epxgld8RHdqX+DgMerLlPdZE2q1himsiKuhf+pOrqaCXF8BhF9LkVvWOnp
-         9aXDpNUMjqDP+82FNjGLrCpz8XBIMlgUIZw2WdbxWL48Sz7rts4aspIOwQkX/wqVFqPf
-         1J7wxlGwBSpxXBF4KejzRbs6XS/AkIeWCESXqSTQ8od47R9NnNgkxObeM+ef65Cw4L/q
-         kMUTu32cmMNnlmV2j9suedht7lBl3hqCkNmCOAMTt8lVcqqgRKI9Rg4gacWUxgnzxf0I
-         685KjzIxFwQuWdGBYc+wHHr6gV2zI8MQ/jhb8nevWRqiiInmgJjnHsmihePlazOzcsxz
-         cLRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=1SRZahO4w5J/q1AxamwHmWbo+QN6jL4DplQ3GJck67Q=;
-        b=DMmspJqnRLn0ajafL6qe5KJiN8AKBl3YCz1kynwnk2jZrP6IyMkZMe0lK2PMjG0kEt
-         NAhQoRU2uuh4D9OU4JssM9+0g6aV1/2yICDzfeWS9GNChfwwS1NsLMV06z7fyq542fdE
-         MroRUQDiAfAFeISouoTxe+9aBdcFNQgFLi4RA+8oolmwH8dgaKrzeZ7m8ae76fObvXjp
-         KZIs+4ivKGwcjwUZyCJc9pWuSG7zykz0qoqUO7MhCHu8JwAXGukPd6JxenH8zy9ediDI
-         Z38sJSooNpH5lbEx3RTQN/s4yRFcZrspeebW4rDqacI64a3NW0q5+MpWHdReTiTvZSIn
-         MtWg==
-X-Gm-Message-State: AJIora+RFshZHVa4qWdnRgUu96LapxCED+BAQPOlYXBpD7mMxHDPx4T/
-        v/KqV2w+f1WMbw/1bVW4HXw=
-X-Google-Smtp-Source: AGRyM1sriAMqD/tVrcUsQCeNd2USxuUFdiLg7orv2BCCs0tunNFnqevMKSGN2qUHWs8/wkImAEhsJQ==
-X-Received: by 2002:a17:90b:1bc7:b0:1e8:317d:6b3b with SMTP id oa7-20020a17090b1bc700b001e8317d6b3bmr26630225pjb.136.1655731534551;
-        Mon, 20 Jun 2022 06:25:34 -0700 (PDT)
-Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id j6-20020a17090a694600b001ec839fff50sm4829562pjm.34.2022.06.20.06.25.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Jun 2022 06:25:33 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <f8520fac-28b3-0d8d-4d27-25463978b2ec@roeck-us.net>
-Date:   Mon, 20 Jun 2022 06:25:31 -0700
+        Mon, 20 Jun 2022 09:54:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 126CE326D3;
+        Mon, 20 Jun 2022 06:21:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 25A8DB811BF;
+        Mon, 20 Jun 2022 13:20:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85E89C341C4;
+        Mon, 20 Jun 2022 13:20:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655731247;
+        bh=QCkWjBKDnAOQbXYQV9sAusFh7nG3tGA/nndnpnYHaOU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=iZKljn9tPTdCWA+CcIGgSQ76z/L2753a7W5EigaiBKDCEweHXprxKsJTQo0qZkGJh
+         Tj1RFRDchrKKzo5REN1SCS3NcBpBXTsFrODMc0rjuTtV3UpJ5EHWbnIg6yR5vbCEBF
+         B5j0siEDOGhWVAYUM8irEhCiMa0GKVraVD5TpYHY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.4 158/240] random: handle latent entropy and command line from random_init()
+Date:   Mon, 20 Jun 2022 14:50:59 +0200
+Message-Id: <20220620124743.586157319@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
+References: <20220620124737.799371052@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v1 1/1] usb: typec: wcove: Drop wrong dependency to
- INTEL_SOC_PMIC
-Content-Language: en-US
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hans de Goede <hdegoede@redhat.com>
-References: <20220620104316.57592-1-andriy.shevchenko@linux.intel.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <20220620104316.57592-1-andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/20/22 03:43, Andy Shevchenko wrote:
-> Intel SoC PMIC is a generic name for all PMICs that are used
-> on Intel platforms. In particular, INTEL_SOC_PMIC kernel configuration
-> option refers to Crystal Cove PMIC, which has never been a part
-> of any Intel Broxton hardware. Drop wrong dependency from Kconfig.
-> 
-> Note, the correct dependency is satisfied via ACPI PMIC OpRegion driver,
-> which the Type-C depends on.
-> 
-> Fixes: d2061f9cc32d ("usb: typec: add driver for Intel Whiskey Cove PMIC USB Type-C PHY")
-> Reported-by: Hans de Goede <hdegoede@redhat.com>
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+commit 2f14062bb14b0fcfcc21e6dc7d5b5c0d25966164 upstream.
 
-> ---
->   drivers/usb/typec/tcpm/Kconfig | 1 -
->   1 file changed, 1 deletion(-)
-> 
-> diff --git a/drivers/usb/typec/tcpm/Kconfig b/drivers/usb/typec/tcpm/Kconfig
-> index 557f392fe24d..073fd2ea5e0b 100644
-> --- a/drivers/usb/typec/tcpm/Kconfig
-> +++ b/drivers/usb/typec/tcpm/Kconfig
-> @@ -56,7 +56,6 @@ config TYPEC_WCOVE
->   	tristate "Intel WhiskeyCove PMIC USB Type-C PHY driver"
->   	depends on ACPI
->   	depends on MFD_INTEL_PMC_BXT
-> -	depends on INTEL_SOC_PMIC
->   	depends on BXT_WC_PMIC_OPREGION
->   	help
->   	  This driver adds support for USB Type-C on Intel Broxton platforms
+Currently, start_kernel() adds latent entropy and the command line to
+the entropy bool *after* the RNG has been initialized, deferring when
+it's actually used by things like stack canaries until the next time
+the pool is seeded. This surely is not intended.
+
+Rather than splitting up which entropy gets added where and when between
+start_kernel() and random_init(), just do everything in random_init(),
+which should eliminate these kinds of bugs in the future.
+
+While we're at it, rename the awkwardly titled "rand_initialize()" to
+the more standard "random_init()" nomenclature.
+
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/char/random.c  |   13 ++++++++-----
+ include/linux/random.h |   16 +++++++---------
+ init/main.c            |   10 +++-------
+ 3 files changed, 18 insertions(+), 21 deletions(-)
+
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -883,12 +883,13 @@ early_param("random.trust_bootloader", p
+ 
+ /*
+  * The first collection of entropy occurs at system boot while interrupts
+- * are still turned off. Here we push in RDSEED, a timestamp, and utsname().
+- * Depending on the above configuration knob, RDSEED may be considered
+- * sufficient for initialization. Note that much earlier setup may already
+- * have pushed entropy into the input pool by the time we get here.
++ * are still turned off. Here we push in latent entropy, RDSEED, a timestamp,
++ * utsname(), and the command line. Depending on the above configuration knob,
++ * RDSEED may be considered sufficient for initialization. Note that much
++ * earlier setup may already have pushed entropy into the input pool by the
++ * time we get here.
+  */
+-int __init rand_initialize(void)
++int __init random_init(const char *command_line)
+ {
+ 	size_t i;
+ 	ktime_t now = ktime_get_real();
+@@ -910,6 +911,8 @@ int __init rand_initialize(void)
+ 	}
+ 	_mix_pool_bytes(&now, sizeof(now));
+ 	_mix_pool_bytes(utsname(), sizeof(*(utsname())));
++	_mix_pool_bytes(command_line, strlen(command_line));
++	add_latent_entropy();
+ 
+ 	if (crng_ready())
+ 		crng_reseed();
+--- a/include/linux/random.h
++++ b/include/linux/random.h
+@@ -14,26 +14,24 @@ struct notifier_block;
+ 
+ extern void add_device_randomness(const void *, size_t);
+ extern void add_bootloader_randomness(const void *, size_t);
++extern void add_input_randomness(unsigned int type, unsigned int code,
++				 unsigned int value) __latent_entropy;
++extern void add_interrupt_randomness(int irq) __latent_entropy;
++extern void add_hwgenerator_randomness(const void *buffer, size_t count,
++				       size_t entropy);
+ 
+ #if defined(LATENT_ENTROPY_PLUGIN) && !defined(__CHECKER__)
+ static inline void add_latent_entropy(void)
+ {
+-	add_device_randomness((const void *)&latent_entropy,
+-			      sizeof(latent_entropy));
++	add_device_randomness((const void *)&latent_entropy, sizeof(latent_entropy));
+ }
+ #else
+ static inline void add_latent_entropy(void) {}
+ #endif
+ 
+-extern void add_input_randomness(unsigned int type, unsigned int code,
+-				 unsigned int value) __latent_entropy;
+-extern void add_interrupt_randomness(int irq) __latent_entropy;
+-extern void add_hwgenerator_randomness(const void *buffer, size_t count,
+-				       size_t entropy);
+-
+ extern void get_random_bytes(void *buf, size_t nbytes);
+ extern int wait_for_random_bytes(void);
+-extern int __init rand_initialize(void);
++extern int __init random_init(const char *command_line);
+ extern bool rng_is_initialized(void);
+ extern int register_random_ready_notifier(struct notifier_block *nb);
+ extern int unregister_random_ready_notifier(struct notifier_block *nb);
+--- a/init/main.c
++++ b/init/main.c
+@@ -685,15 +685,11 @@ asmlinkage __visible void __init start_k
+ 	/*
+ 	 * For best initial stack canary entropy, prepare it after:
+ 	 * - setup_arch() for any UEFI RNG entropy and boot cmdline access
+-	 * - timekeeping_init() for ktime entropy used in rand_initialize()
++	 * - timekeeping_init() for ktime entropy used in random_init()
+ 	 * - time_init() for making random_get_entropy() work on some platforms
+-	 * - rand_initialize() to get any arch-specific entropy like RDRAND
+-	 * - add_latent_entropy() to get any latent entropy
+-	 * - adding command line entropy
++	 * - random_init() to initialize the RNG from from early entropy sources
+ 	 */
+-	rand_initialize();
+-	add_latent_entropy();
+-	add_device_randomness(command_line, strlen(command_line));
++	random_init(command_line);
+ 	boot_init_stack_canary();
+ 
+ 	perf_event_init();
+
 
