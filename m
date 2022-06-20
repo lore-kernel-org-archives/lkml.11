@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88D35C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 12:54:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC935C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 12:54:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242961AbiFTMyD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 08:54:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36794 "EHLO
+        id S243018AbiFTMyH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 08:54:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242877AbiFTMxi (ORCPT
+        with ESMTP id S242912AbiFTMxo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 08:53:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D443DFC2;
-        Mon, 20 Jun 2022 05:53:38 -0700 (PDT)
+        Mon, 20 Jun 2022 08:53:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74CB1140A7;
+        Mon, 20 Jun 2022 05:53:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EF266B811A2;
-        Mon, 20 Jun 2022 12:53:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E812C3411B;
-        Mon, 20 Jun 2022 12:53:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 35C55B811A2;
+        Mon, 20 Jun 2022 12:53:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7090EC3411B;
+        Mon, 20 Jun 2022 12:53:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655729615;
-        bh=0T5pLQ2jcyVXZqHu1Zl2epmxPE4gtirDF3BkhxV0uDg=;
+        s=korg; t=1655729618;
+        bh=/S8yQzz0bEZtXnByi4TQCeaXrYJNa/rP7ocesI2o9rc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wAocZ3n59j3tnYWH3tT726u9IwGu0Hbmr0wp5gKpUZuYztjpYZtp5iM+fxBz4Ld7j
-         5FmX9O//fNp8b3plIsPq8v0z8E62GkgCP9ZwWfTqtOVQIVVFG1ZsVUpLxcn6uXOt2t
-         cOk+xuZeXA5Gba+5DP3SpImvXn/9+Ffw88Lp/6pA=
+        b=XtJb6mvVbX+lNZoquJkhEsvdtl+K+Drvsbro7mgbjQmgunvFW3qRXaW9tS7O3WReQ
+         vI/8whB+86LP6xRa0Zi0mv7do2fsyf7R6replqAraWuP3R45AbGG7ow5+MZfLMKuVO
+         M4hVUban8wLHwQfd2U1sJj3Xlct1GrcW/qGmKB0Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adam Ford <aford173@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>
-Subject: [PATCH 5.18 002/141] arm64: dts: imx8mm-beacon: Enable RTS-CTS on UART3
-Date:   Mon, 20 Jun 2022 14:49:00 +0200
-Message-Id: <20220620124729.585626370@linuxfoundation.org>
+        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 020/141] ata: libata-core: fix NULL pointer deref in ata_host_alloc_pinfo()
+Date:   Mon, 20 Jun 2022 14:49:18 +0200
+Message-Id: <20220620124730.118972624@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 References: <20220620124729.509745706@linuxfoundation.org>
@@ -48,39 +49,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adam Ford <aford173@gmail.com>
+From: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-commit 4ce01ce36d77137cf60776b320babed89de6bd4c upstream.
+[ Upstream commit bf476fe22aa1851bab4728e0c49025a6a0bea307 ]
 
-There is a header for a DB9 serial port, but any attempts to use
-hardware handshaking fail.  Enable RTS and CTS pin muxing and enable
-handshaking in the uart node.
+In an unlikely (and probably wrong?) case that the 'ppi' parameter of
+ata_host_alloc_pinfo() points to an array starting with a NULL pointer,
+there's going to be a kernel oops as the 'pi' local variable won't get
+reassigned from the initial value of NULL. Initialize 'pi' instead to
+'&ata_dummy_port_info' to fix the possible kernel oops for good...
 
-Signed-off-by: Adam Ford <aford173@gmail.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Found by Linux Verification Center (linuxtesting.org) with the SVACE static
+analysis tool.
+
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/freescale/imx8mm-beacon-baseboard.dtsi |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/ata/libata-core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/arch/arm64/boot/dts/freescale/imx8mm-beacon-baseboard.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mm-beacon-baseboard.dtsi
-@@ -278,6 +278,7 @@
- 	pinctrl-0 = <&pinctrl_uart3>;
- 	assigned-clocks = <&clk IMX8MM_CLK_UART3>;
- 	assigned-clock-parents = <&clk IMX8MM_SYS_PLL1_80M>;
-+	uart-has-rtscts;
- 	status = "okay";
- };
+diff --git a/drivers/ata/libata-core.c b/drivers/ata/libata-core.c
+index 3d57fa84e2be..ea9671821258 100644
+--- a/drivers/ata/libata-core.c
++++ b/drivers/ata/libata-core.c
+@@ -5506,7 +5506,7 @@ struct ata_host *ata_host_alloc_pinfo(struct device *dev,
+ 				      const struct ata_port_info * const * ppi,
+ 				      int n_ports)
+ {
+-	const struct ata_port_info *pi;
++	const struct ata_port_info *pi = &ata_dummy_port_info;
+ 	struct ata_host *host;
+ 	int i, j;
  
-@@ -386,6 +387,8 @@
- 		fsl,pins = <
- 			MX8MM_IOMUXC_ECSPI1_SCLK_UART3_DCE_RX	0x40
- 			MX8MM_IOMUXC_ECSPI1_MOSI_UART3_DCE_TX	0x40
-+			MX8MM_IOMUXC_ECSPI1_MISO_UART3_DCE_CTS_B	0x40
-+			MX8MM_IOMUXC_ECSPI1_SS0_UART3_DCE_RTS_B	0x40
- 		>;
- 	};
+@@ -5514,7 +5514,7 @@ struct ata_host *ata_host_alloc_pinfo(struct device *dev,
+ 	if (!host)
+ 		return NULL;
  
+-	for (i = 0, j = 0, pi = NULL; i < host->n_ports; i++) {
++	for (i = 0, j = 0; i < host->n_ports; i++) {
+ 		struct ata_port *ap = host->ports[i];
+ 
+ 		if (ppi[j])
+-- 
+2.35.1
+
 
 
