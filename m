@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB43EC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:06:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CD18C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:06:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344928AbiFTOGG (ORCPT
+        id S1350101AbiFTOGK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:06:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44182 "EHLO
+        Mon, 20 Jun 2022 10:06:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351873AbiFTNzf (ORCPT
+        with ESMTP id S1349205AbiFTNxr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:55:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70BD5344F2;
-        Mon, 20 Jun 2022 06:21:42 -0700 (PDT)
+        Mon, 20 Jun 2022 09:53:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 639851A05C;
+        Mon, 20 Jun 2022 06:20:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DE01A60FF3;
-        Mon, 20 Jun 2022 13:21:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1747C341C5;
-        Mon, 20 Jun 2022 13:21:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A7F6AB80E7D;
+        Mon, 20 Jun 2022 13:19:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12A19C3411B;
+        Mon, 20 Jun 2022 13:19:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731299;
-        bh=ytZ1+hFyV2RqybENQgs4g/BucLFJXxFLio4+veEmxzc=;
+        s=korg; t=1655731156;
+        bh=K5PXdgP1phRc7i/QqxIpNqkZRJfk01xQXAilZKpUPHI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KOHp0NJYFhbjaHZAEJyIGQDQ1c13v0+AUXGErPd8Ajo6lFUol4rBIQu2pt+Ey0F1l
-         wjovJDgCzsMat7lK43cxcKOwrIPbate8hhk8IGPu/IH5YDpc812xjUKY9Mehs1zRtq
-         ULsJryZ2L0ngtMOLm2kLE5wvXgURGFNqNZ8cf9Cc=
+        b=c2ynHxfZvbAkp5YVtwrvaOollChjNE9fhL3A8Vl+atSCpaKmSSVTCLPIU+UnDpG8+
+         7jCBAkehKfFbSR3WeSPEz0wAc5sA+cYN0n9ovTSB2ocy5N7MN9T2VuJJX7FAgrrQOS
+         IlDXOl3f8NM6u4UL/S1bBAvTrJse0sIetPt2JXa4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 216/240] faddr2line: Fix overlapping text section failures, the sequel
-Date:   Mon, 20 Jun 2022 14:51:57 +0200
-Message-Id: <20220620124745.230302229@linuxfoundation.org>
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.4 171/240] Revert "random: use static branch for crng_ready()"
+Date:   Mon, 20 Jun 2022 14:51:12 +0200
+Message-Id: <20220620124743.954374435@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -50,139 +48,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@kernel.org>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-[ Upstream commit dcea997beed694cbd8705100ca1a6eb0d886de69 ]
+This reverts upstream commit f5bda35fba615ace70a656d4700423fa6c9bebee
+from stable. It's not essential and will take some time during 5.19 to
+work out properly.
 
-If a function lives in a section other than .text, but .text also exists
-in the object, faddr2line may wrongly assume .text.  This can result in
-comically wrong output.  For example:
-
-  $ scripts/faddr2line vmlinux.o enter_from_user_mode+0x1c
-  enter_from_user_mode+0x1c/0x30:
-  find_next_bit at /home/jpoimboe/git/linux/./include/linux/find.h:40
-  (inlined by) perf_clear_dirty_counters at /home/jpoimboe/git/linux/arch/x86/events/core.c:2504
-
-Fix it by passing the section name to addr2line, unless the object file
-is vmlinux, in which case the symbol table uses absolute addresses.
-
-Fixes: 1d1a0e7c5100 ("scripts/faddr2line: Fix overlapping text section failures")
-Reported-by: Peter Zijlstra <peterz@infradead.org>
-Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
-Link: https://lore.kernel.org/r/7d25bc1408bd3a750ac26e60d2f2815a5f4a8363.1654130536.git.jpoimboe@kernel.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- scripts/faddr2line | 45 ++++++++++++++++++++++++++++++++++-----------
- 1 file changed, 34 insertions(+), 11 deletions(-)
+ drivers/char/random.c |   12 ++----------
+ 1 file changed, 2 insertions(+), 10 deletions(-)
 
-diff --git a/scripts/faddr2line b/scripts/faddr2line
-index 0e6268d59883..94ed98dd899f 100755
---- a/scripts/faddr2line
-+++ b/scripts/faddr2line
-@@ -95,17 +95,25 @@ __faddr2line() {
- 	local print_warnings=$4
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -79,8 +79,7 @@ static enum {
+ 	CRNG_EARLY = 1, /* At least POOL_EARLY_BITS collected */
+ 	CRNG_READY = 2  /* Fully initialized with POOL_READY_BITS collected */
+ } crng_init __read_mostly = CRNG_EMPTY;
+-static DEFINE_STATIC_KEY_FALSE(crng_is_ready);
+-#define crng_ready() (static_branch_likely(&crng_is_ready) || crng_init >= CRNG_READY)
++#define crng_ready() (likely(crng_init >= CRNG_READY))
+ /* Various types of waiters for crng_init->CRNG_READY transition. */
+ static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
+ static struct fasync_struct *fasync;
+@@ -110,11 +109,6 @@ bool rng_is_initialized(void)
+ }
+ EXPORT_SYMBOL(rng_is_initialized);
  
- 	local sym_name=${func_addr%+*}
--	local offset=${func_addr#*+}
--	offset=${offset%/*}
-+	local func_offset=${func_addr#*+}
-+	func_offset=${func_offset%/*}
- 	local user_size=
-+	local file_type
-+	local is_vmlinux=0
- 	[[ $func_addr =~ "/" ]] && user_size=${func_addr#*/}
+-static void __cold crng_set_ready(struct work_struct *work)
+-{
+-	static_branch_enable(&crng_is_ready);
+-}
+-
+ /* Used by wait_for_random_bytes(), and considered an entropy collector, below. */
+ static void try_to_generate_entropy(void);
  
--	if [[ -z $sym_name ]] || [[ -z $offset ]] || [[ $sym_name = $func_addr ]]; then
-+	if [[ -z $sym_name ]] || [[ -z $func_offset ]] || [[ $sym_name = $func_addr ]]; then
- 		warn "bad func+offset $func_addr"
- 		DONE=1
- 		return
- 	fi
+@@ -268,7 +262,7 @@ static void crng_reseed(void)
+ 		++next_gen;
+ 	WRITE_ONCE(base_crng.generation, next_gen);
+ 	WRITE_ONCE(base_crng.birth, jiffies);
+-	if (!static_branch_likely(&crng_is_ready))
++	if (!crng_ready())
+ 		crng_init = CRNG_READY;
+ 	spin_unlock_irqrestore(&base_crng.lock, flags);
+ 	memzero_explicit(key, sizeof(key));
+@@ -709,7 +703,6 @@ static void extract_entropy(void *buf, s
  
-+	# vmlinux uses absolute addresses in the section table rather than
-+	# section offsets.
-+	local file_type=$(${READELF} --file-header $objfile |
-+		${AWK} '$1 == "Type:" { print $2; exit }')
-+	[[ $file_type = "EXEC" ]] && is_vmlinux=1
-+
- 	# Go through each of the object's symbols which match the func name.
- 	# In rare cases there might be duplicates, in which case we print all
- 	# matches.
-@@ -114,9 +122,11 @@ __faddr2line() {
- 		local sym_addr=0x${fields[1]}
- 		local sym_elf_size=${fields[2]}
- 		local sym_sec=${fields[6]}
-+		local sec_size
-+		local sec_name
+ static void __cold _credit_init_bits(size_t bits)
+ {
+-	static struct execute_work set_ready;
+ 	unsigned int new, orig, add;
+ 	unsigned long flags;
  
- 		# Get the section size:
--		local sec_size=$(${READELF} --section-headers --wide $objfile |
-+		sec_size=$(${READELF} --section-headers --wide $objfile |
- 			sed 's/\[ /\[/' |
- 			${AWK} -v sec=$sym_sec '$1 == "[" sec "]" { print "0x" $6; exit }')
+@@ -725,7 +718,6 @@ static void __cold _credit_init_bits(siz
  
-@@ -126,6 +136,17 @@ __faddr2line() {
- 			return
- 		fi
- 
-+		# Get the section name:
-+		sec_name=$(${READELF} --section-headers --wide $objfile |
-+			sed 's/\[ /\[/' |
-+			${AWK} -v sec=$sym_sec '$1 == "[" sec "]" { print $2; exit }')
-+
-+		if [[ -z $sec_name ]]; then
-+			warn "bad section name: section: $sym_sec"
-+			DONE=1
-+			return
-+		fi
-+
- 		# Calculate the symbol size.
- 		#
- 		# Unfortunately we can't use the ELF size, because kallsyms
-@@ -174,10 +195,10 @@ __faddr2line() {
- 
- 		sym_size=0x$(printf %x $sym_size)
- 
--		# Calculate the section address from user-supplied offset:
--		local addr=$(($sym_addr + $offset))
-+		# Calculate the address from user-supplied offset:
-+		local addr=$(($sym_addr + $func_offset))
- 		if [[ -z $addr ]] || [[ $addr = 0 ]]; then
--			warn "bad address: $sym_addr + $offset"
-+			warn "bad address: $sym_addr + $func_offset"
- 			DONE=1
- 			return
- 		fi
-@@ -191,9 +212,9 @@ __faddr2line() {
- 		fi
- 
- 		# Make sure the provided offset is within the symbol's range:
--		if [[ $offset -gt $sym_size ]]; then
-+		if [[ $func_offset -gt $sym_size ]]; then
- 			[[ $print_warnings = 1 ]] &&
--				echo "skipping $sym_name address at $addr due to size mismatch ($offset > $sym_size)"
-+				echo "skipping $sym_name address at $addr due to size mismatch ($func_offset > $sym_size)"
- 			continue
- 		fi
- 
-@@ -202,11 +223,13 @@ __faddr2line() {
- 		[[ $FIRST = 0 ]] && echo
- 		FIRST=0
- 
--		echo "$sym_name+$offset/$sym_size:"
-+		echo "$sym_name+$func_offset/$sym_size:"
- 
- 		# Pass section address to addr2line and strip absolute paths
- 		# from the output:
--		local output=$(${ADDR2LINE} -fpie $objfile $addr | sed "s; $dir_prefix\(\./\)*; ;")
-+		local args="--functions --pretty-print --inlines --exe=$objfile"
-+		[[ $is_vmlinux = 0 ]] && args="$args --section=$sec_name"
-+		local output=$(${ADDR2LINE} $args $addr | sed "s; $dir_prefix\(\./\)*; ;")
- 		[[ -z $output ]] && continue
- 
- 		# Default output (non --list):
--- 
-2.35.1
-
+ 	if (orig < POOL_READY_BITS && new >= POOL_READY_BITS) {
+ 		crng_reseed(); /* Sets crng_init to CRNG_READY under base_crng.lock. */
+-		execute_in_process_context(crng_set_ready, &set_ready);
+ 		process_random_ready_list();
+ 		wake_up_interruptible(&crng_init_wait);
+ 		kill_fasync(&fasync, SIGIO, POLL_IN);
 
 
