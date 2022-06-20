@@ -2,94 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C3D6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 23:00:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C07DAC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 23:01:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346459AbiFTXA5 (ORCPT
+        id S1345854AbiFTXBi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 19:00:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39614 "EHLO
+        Mon, 20 Jun 2022 19:01:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345994AbiFTW7r (ORCPT
+        with ESMTP id S1344873AbiFTXBU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 18:59:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E625C193F7;
-        Mon, 20 Jun 2022 15:58:22 -0700 (PDT)
+        Mon, 20 Jun 2022 19:01:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4D7021263;
+        Mon, 20 Jun 2022 16:01:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 407FBB81649;
-        Mon, 20 Jun 2022 22:58:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9DF1C341C4;
-        Mon, 20 Jun 2022 22:58:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 387A4614DB;
+        Mon, 20 Jun 2022 23:01:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A25DFC3411C;
+        Mon, 20 Jun 2022 23:01:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655765899;
-        bh=W6kG3hpmkYco8VzH89bxd88TU98qz+QQY538iEjM9F4=;
+        s=k20201202; t=1655766078;
+        bh=qtAlTGYG35KObNBX4bA5SMGxiGB4jAp/BEJx1e1sI3w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AzwE355p7egz1mBjAAA04X4sCrzdl8xW2Sm/0hFWPYXzSyltLiqhwwgU1/2XeI327
-         NQ0xmmGmLPC5C/5acAeK1YGhTK8NUCtw4a1HLkXN98jRtEsydb60mTQrWplkDX0xCz
-         jvd0aw3aRfiErxTeR9ECLJbt6802pk9dJbccNI4aFIZl+qmRMBoAjbKLMFjdZa2dXb
-         Rt5jvWydWvsYmDG4nFXt/bzmpJ4U/+39IssL+sQd6XqubjbxNVDYK/k/PL7Rcz+NGt
-         dcp90ceuHn/T9rz9UAnuCple4tZLLjMfjPkX4V8ltkvBHtAZdFzv0bCPJC0e6oRu6j
-         ts9lund7bmmLg==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 9B87C5C0A33; Mon, 20 Jun 2022 15:58:19 -0700 (PDT)
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     rcu@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
-        rostedt@goodmis.org, Zqiang <qiang1.zhang@intel.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>
-Subject: [PATCH rcu 04/12] rcutorture: Fix memory leak in rcu_test_debug_objects()
-Date:   Mon, 20 Jun 2022 15:58:09 -0700
-Message-Id: <20220620225817.3843106-4-paulmck@kernel.org>
-X-Mailer: git-send-email 2.31.1.189.g2e36527f23
-In-Reply-To: <20220620225814.GA3842995@paulmck-ThinkPad-P17-Gen-1>
-References: <20220620225814.GA3842995@paulmck-ThinkPad-P17-Gen-1>
+        b=reP4tGnn03T01ZfIZb14y+3vf/o5lIsm9EnJ9fsMnD52Jwh7H5gpqhLs6kugCB3pM
+         gN7C6d6u8yiD9CYei2ZNLKZLzzyGAoj/jWFelcswTRG+rVn7U8OkJcD7cyIFwkLA8i
+         EW4ofXfxt+zG/Jxa0ZxhwdWbXnZPftfgaoNeCAZLfmkrm25uoDFSlIkepoXkM5xowd
+         Payr9/CoZwizXJgjW37F08lrNwAeQ/9TQY8Q5+VHvJo/f2DimGsVFnJIC9HmnlBMAK
+         gxErNVC66QrPovOUJD3vjix+rBNr3h8xBFJ8SphVqnmy4f4N+i8/R3BplQeeFuzT1X
+         jDMw3lRN++UWg==
+From:   Dinh Nguyen <dinguyen@kernel.org>
+To:     jarkko.nikula@linux.intel.com
+Cc:     dinguyen@kernel.org, andriy.shevchenko@linux.intel.com,
+        mika.westerberg@linux.intel.com, robh+dt@kernel.org,
+        krzk+dt@kernel.org, linux-i2c@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCHv6 2/2] dt-bindings: i2c: dw: Add Intel's SoCFPGA I2C controller
+Date:   Mon, 20 Jun 2022 18:01:09 -0500
+Message-Id: <20220620230109.986298-2-dinguyen@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220620230109.986298-1-dinguyen@kernel.org>
+References: <20220620230109.986298-1-dinguyen@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zqiang <qiang1.zhang@intel.com>
+The I2C pins on Intel's SoCFPGA platform are not connected to GPIOs and
+thus cannot be recovered by the standard GPIO method.
 
-The kernel memory leak detector located the following:
+Document the "intel,socfpga-i2c" binding.
 
-unreferenced object 0xffff95d941135b50 (size 16):
-  comm "swapper/0", pid 1, jiffies 4294667610 (age 1367.451s)
-  hex dump (first 16 bytes):
-    f0 c6 c2 bd d9 95 ff ff 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<00000000bc81d9b1>] kmem_cache_alloc_trace+0x2f6/0x500
-    [<00000000d28be229>] rcu_torture_init+0x1235/0x1354
-    [<0000000032c3acd9>] do_one_initcall+0x51/0x210
-    [<000000003c117727>] kernel_init_freeable+0x205/0x259
-    [<000000003961f965>] kernel_init+0x1a/0x120
-    [<000000001998f890>] ret_from_fork+0x22/0x30
-
-This is caused by the rcu_test_debug_objects() function allocating an
-rcu_head structure, then failing to free it.  This commit therefore adds
-the needed kfree() after the last use of this structure.
-
-Signed-off-by: Zqiang <qiang1.zhang@intel.com>
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
 ---
- kernel/rcu/rcutorture.c | 1 +
- 1 file changed, 1 insertion(+)
+v6: no changes
+v5: no changes
+v4: no changes
+v3: no changes
+v2: Added Acked-by
+---
+ Documentation/devicetree/bindings/i2c/snps,designware-i2c.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/kernel/rcu/rcutorture.c b/kernel/rcu/rcutorture.c
-index 9273264772b88..613711b8242b9 100644
---- a/kernel/rcu/rcutorture.c
-+++ b/kernel/rcu/rcutorture.c
-@@ -3116,6 +3116,7 @@ static void rcu_test_debug_objects(void)
- 	pr_alert("%s: WARN: Duplicate call_rcu() test complete.\n", KBUILD_MODNAME);
- 	destroy_rcu_head_on_stack(&rh1);
- 	destroy_rcu_head_on_stack(&rh2);
-+	kfree(rhp);
- #else /* #ifdef CONFIG_DEBUG_OBJECTS_RCU_HEAD */
- 	pr_alert("%s: !CONFIG_DEBUG_OBJECTS_RCU_HEAD, not testing duplicate call_rcu()\n", KBUILD_MODNAME);
- #endif /* #else #ifdef CONFIG_DEBUG_OBJECTS_RCU_HEAD */
+diff --git a/Documentation/devicetree/bindings/i2c/snps,designware-i2c.yaml b/Documentation/devicetree/bindings/i2c/snps,designware-i2c.yaml
+index d9293c57f573..a130059e97ab 100644
+--- a/Documentation/devicetree/bindings/i2c/snps,designware-i2c.yaml
++++ b/Documentation/devicetree/bindings/i2c/snps,designware-i2c.yaml
+@@ -33,6 +33,8 @@ properties:
+           - const: snps,designware-i2c
+       - description: Baikal-T1 SoC System I2C controller
+         const: baikal,bt1-sys-i2c
++      - description: Intel's SoCFPGA I2C controller
++        const: intel,socfpga-i2c
+ 
+   reg:
+     minItems: 1
 -- 
-2.31.1.189.g2e36527f23
+2.25.1
 
