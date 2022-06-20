@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC6CAC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:35:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B559C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:35:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346710AbiFTNfT (ORCPT
+        id S1346147AbiFTNfb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:35:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55370 "EHLO
+        Mon, 20 Jun 2022 09:35:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347110AbiFTNd5 (ORCPT
+        with ESMTP id S1346024AbiFTNce (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:33:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D75F2717E;
-        Mon, 20 Jun 2022 06:13:07 -0700 (PDT)
+        Mon, 20 Jun 2022 09:32:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBB2B25EBD;
+        Mon, 20 Jun 2022 06:12:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 570AEB811AE;
-        Mon, 20 Jun 2022 13:05:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC147C341C8;
-        Mon, 20 Jun 2022 13:05:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D624060ECD;
+        Mon, 20 Jun 2022 13:11:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E953EC3411B;
+        Mon, 20 Jun 2022 13:11:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730325;
-        bh=vJjdRV6suW58wg8UxIw6dYY+UwjX1tnxBI4Y8tgNXmY=;
+        s=korg; t=1655730718;
+        bh=2XrBjZ9r1JiQmbgW7MJXyVhxs+2lGIZGcEAZKhkzzC8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R2VXcWZPD5RWeb3UTXkbzZsiXUig6JJYGn/kBDjHd1OH70B1Om0E3TKtQIdvV7kOf
-         1hXJbjTeUVw/jJYZF8Lz1Yl9Bjbrm9BzKr4Be8/MuPoDqaCOxL55rsHkWnM4HQwhxC
-         FT9Jh2jm8FnP75SAuk7DvTGBifN10LSo0H/PQQu8=
+        b=Opxg4s3TwgllpJQeMJrWwGQKiEm6uPFIAGqDMT3OQEbG9/fBMLAPnacL+XOAiJ3kv
+         xjQAYnOpfEZn3LQy2L+dnxIXNCkIUPxYjb3Fnsh3CvstChImeDYqPYZ1k7AoSEflsr
+         j8MQpTfeTSJcAIpmk6IMnhSyKdDDDythS/e/9IYc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Jan Kara <jack@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 018/106] quota: Prevent memory allocation recursion while holding dq_lock
-Date:   Mon, 20 Jun 2022 14:50:37 +0200
-Message-Id: <20220620124724.925186492@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.4 035/240] crypto: blake2s - include <linux/bug.h> instead of <asm/bug.h>
+Date:   Mon, 20 Jun 2022 14:48:56 +0200
+Message-Id: <20220620124738.915177595@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
-References: <20220620124724.380838401@linuxfoundation.org>
+In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
+References: <20220620124737.799371052@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,97 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthew Wilcox (Oracle) <willy@infradead.org>
+From: Eric Biggers <ebiggers@google.com>
 
-[ Upstream commit 537e11cdc7a6b3ce94fa25ed41306193df9677b7 ]
+commit bbda6e0f1303953c855ee3669655a81b69fbe899 upstream.
 
-As described in commit 02117b8ae9c0 ("f2fs: Set GF_NOFS in
-read_cache_page_gfp while doing f2fs_quota_read"), we must not enter
-filesystem reclaim while holding the dq_lock.  Prevent this more generally
-by using memalloc_nofs_save() while holding the lock.
+Address the following checkpatch warning:
 
-Link: https://lore.kernel.org/r/20220605143815.2330891-2-willy@infradead.org
-Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-Signed-off-by: Jan Kara <jack@suse.cz>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+	WARNING: Use #include <linux/bug.h> instead of <asm/bug.h>
+
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/quota/dquot.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ include/crypto/blake2s.h |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/fs/quota/dquot.c b/fs/quota/dquot.c
-index a74aef99bd3d..09d1307959d0 100644
---- a/fs/quota/dquot.c
-+++ b/fs/quota/dquot.c
-@@ -79,6 +79,7 @@
- #include <linux/capability.h>
- #include <linux/quotaops.h>
- #include <linux/blkdev.h>
-+#include <linux/sched/mm.h>
- #include "../internal.h" /* ugh */
+--- a/include/crypto/blake2s.h
++++ b/include/crypto/blake2s.h
+@@ -6,12 +6,11 @@
+ #ifndef BLAKE2S_H
+ #define BLAKE2S_H
  
- #include <linux/uaccess.h>
-@@ -425,9 +426,11 @@ EXPORT_SYMBOL(mark_info_dirty);
- int dquot_acquire(struct dquot *dquot)
- {
- 	int ret = 0, ret2 = 0;
-+	unsigned int memalloc;
- 	struct quota_info *dqopt = sb_dqopt(dquot->dq_sb);
++#include <linux/bug.h>
+ #include <linux/types.h>
+ #include <linux/kernel.h>
+ #include <linux/string.h>
  
- 	mutex_lock(&dquot->dq_lock);
-+	memalloc = memalloc_nofs_save();
- 	if (!test_bit(DQ_READ_B, &dquot->dq_flags)) {
- 		ret = dqopt->ops[dquot->dq_id.type]->read_dqblk(dquot);
- 		if (ret < 0)
-@@ -458,6 +461,7 @@ int dquot_acquire(struct dquot *dquot)
- 	smp_mb__before_atomic();
- 	set_bit(DQ_ACTIVE_B, &dquot->dq_flags);
- out_iolock:
-+	memalloc_nofs_restore(memalloc);
- 	mutex_unlock(&dquot->dq_lock);
- 	return ret;
- }
-@@ -469,9 +473,11 @@ EXPORT_SYMBOL(dquot_acquire);
- int dquot_commit(struct dquot *dquot)
- {
- 	int ret = 0;
-+	unsigned int memalloc;
- 	struct quota_info *dqopt = sb_dqopt(dquot->dq_sb);
- 
- 	mutex_lock(&dquot->dq_lock);
-+	memalloc = memalloc_nofs_save();
- 	if (!clear_dquot_dirty(dquot))
- 		goto out_lock;
- 	/* Inactive dquot can be only if there was error during read/init
-@@ -481,6 +487,7 @@ int dquot_commit(struct dquot *dquot)
- 	else
- 		ret = -EIO;
- out_lock:
-+	memalloc_nofs_restore(memalloc);
- 	mutex_unlock(&dquot->dq_lock);
- 	return ret;
- }
-@@ -492,9 +499,11 @@ EXPORT_SYMBOL(dquot_commit);
- int dquot_release(struct dquot *dquot)
- {
- 	int ret = 0, ret2 = 0;
-+	unsigned int memalloc;
- 	struct quota_info *dqopt = sb_dqopt(dquot->dq_sb);
- 
- 	mutex_lock(&dquot->dq_lock);
-+	memalloc = memalloc_nofs_save();
- 	/* Check whether we are not racing with some other dqget() */
- 	if (dquot_is_busy(dquot))
- 		goto out_dqlock;
-@@ -510,6 +519,7 @@ int dquot_release(struct dquot *dquot)
- 	}
- 	clear_bit(DQ_ACTIVE_B, &dquot->dq_flags);
- out_dqlock:
-+	memalloc_nofs_restore(memalloc);
- 	mutex_unlock(&dquot->dq_lock);
- 	return ret;
- }
--- 
-2.35.1
-
+-#include <asm/bug.h>
+-
+ enum blake2s_lengths {
+ 	BLAKE2S_BLOCK_SIZE = 64,
+ 	BLAKE2S_HASH_SIZE = 32,
 
 
