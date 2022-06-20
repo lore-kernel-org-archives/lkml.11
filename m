@@ -2,84 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4ED6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 12:31:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA3F0C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 12:32:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241073AbiFTMb0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 08:31:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46360 "EHLO
+        id S241605AbiFTMcT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 08:32:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240064AbiFTMbW (ORCPT
+        with ESMTP id S241174AbiFTMcR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 08:31:22 -0400
-Received: from m1550.mail.126.com (m1550.mail.126.com [220.181.15.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A7C0913D33
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 05:31:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=W2zaJ
-        ZZZmWCsovcjbBPv8wVDU6mq90VO6c2xwP7F890=; b=SjUFNX350XJ3COY/c9/Bj
-        hpKd42XenFerfK5w8IUsuUbILIjb/KvkbgQHQJ9gdq+I0qL7JjQn10Y6R6Rm0Qpq
-        TqZeaw1CcoIvOHWv8mCBS18/cu4Ow4dTyEvAd65LHPDB9ETOJMZbgv74P0jrN5x/
-        AJtiFY035orupok84a+dGY=
-Received: from windhl$126.com ( [124.16.139.61] ) by ajax-webmail-wmsvr50
- (Coremail) ; Mon, 20 Jun 2022 20:27:05 +0800 (CST)
-X-Originating-IP: [124.16.139.61]
-Date:   Mon, 20 Jun 2022 20:27:05 +0800 (CST)
-From:   "Liang He" <windhl@126.com>
-To:     "Christophe Leroy" <christophe.leroy@csgroup.eu>
-Cc:     "mpe@ellerman.id.au" <mpe@ellerman.id.au>,
-        "benh@kernel.crashing.org" <benh@kernel.crashing.org>,
-        "paulus@samba.org" <paulus@samba.org>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "rppt@kernel.org" <rppt@kernel.org>,
-        "wangkefeng.wang@huawei.com" <wangkefeng.wang@huawei.com>,
-        "gpiccoli@igalia.com" <gpiccoli@igalia.com>,
-        "aneesh.kumar@linux.ibm.com" <aneesh.kumar@linux.ibm.com>,
-        "dmitry.osipenko@collabora.com" <dmitry.osipenko@collabora.com>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re:Re: [PATCH] powerpc: kernel: Change the order of of_node_put()
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
- Copyright (c) 2002-2022 www.mailtech.cn 126com
-In-Reply-To: <1f3cdf9c-7437-65e7-c226-c53e17a722b7@csgroup.eu>
-References: <20220617112636.4041671-1-windhl@126.com>
- <a6a5e5b3-ffd1-904b-bba1-22baff5f7b67@csgroup.eu>
- <61c85548.1a55.18175d69e21.Coremail.windhl@126.com>
- <c9785db9-b74d-540e-9c83-4db7bee10303@csgroup.eu>
- <30af2253.74d8.181806c9337.Coremail.windhl@126.com>
- <1f3cdf9c-7437-65e7-c226-c53e17a722b7@csgroup.eu>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        Mon, 20 Jun 2022 08:32:17 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07165E08F
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 05:32:16 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id h23so20766105ejj.12
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 05:32:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=7YmAtGuUNzr3gUuWPc4KOL752YfmuI3qBOWH+yd3+h4=;
+        b=EdLy5fr5XGxx/vVcT9Ub07TMY29cEaIzuTeee7orZoxugcQhL+oVPwN4wMMA7rBVgn
+         /7yynxstyPpM1V9Ys56bcDhJbPddSxRIXBdC3/CX/qMhk3qmJmvhW975A7ifL6IBbZf0
+         6xfhkFZpSdlWxJeKHyTT8XATMgrqA5f4n1Bnx7z6DLSmKyQugO0XM8s3YH5k3uCe+bH5
+         pumdCpJNJt8ciAycv0oz/ZnfHDGTZLgYuV4kFvUex89gCqEmDaAYUbT2f5xhi9oLTUaV
+         8+U/j1Xc5SNq+TUxkwO5VxJ7bEOg11qiGFUGK4xpeGNOP+9WrfnXUOCavwGW8VXDfCZU
+         wkmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=7YmAtGuUNzr3gUuWPc4KOL752YfmuI3qBOWH+yd3+h4=;
+        b=J5ZKwAfD4Y5Me+TS/lso0FUfktG85sFlxcuE/4IcispTNnEWP4EXt9vVBQ1AaTjzBc
+         s/WVdY9QaczbL6uvbnnPPbtnf65MjQPAzgIPuvkBUxUGix8PZ+N/XTdFFTUDum26agYE
+         hYBI8H8ySCSllmKipZLzc6DT1/gmB4N2/nLEveTzxd9lwVoqlNIcIllTRmAm+QBmOhUu
+         MkrnWwXo79w3o8SdN0b/nVrMWwKKgmafBTgo2HMslv+8g4ljP7c8Oc458ERZjm8hTiEa
+         DMbIcxIOIhHg9IyVcI7Hxdy8lnQ5LIASluIviojhqzs6HKDxv1wrirLpxqfIGNEyfONq
+         0Z4w==
+X-Gm-Message-State: AJIora92RuCBcSOom6wayoYVgfMF57V52vxmBpvOaJ4arUanNHEHNork
+        LnghI5kzfYp4RmsIdAlSHIR18w==
+X-Google-Smtp-Source: AGRyM1tYfe/5BEzRAUIPHntlRJzpoZstl5iSVvRMrTdqa/N6fL2lTjOUrfsUX3SJbLvtR9lARKYlrw==
+X-Received: by 2002:a17:907:6295:b0:703:92b8:e113 with SMTP id nd21-20020a170907629500b0070392b8e113mr21027834ejc.594.1655728334584;
+        Mon, 20 Jun 2022 05:32:14 -0700 (PDT)
+Received: from [192.168.0.210] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id o26-20020a1709061b1a00b0070c4abe4706sm5811842ejg.158.2022.06.20.05.32.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Jun 2022 05:32:13 -0700 (PDT)
+Message-ID: <2c753258-b68e-b2ad-c4cc-f0a437769bc2@linaro.org>
+Date:   Mon, 20 Jun 2022 14:32:12 +0200
 MIME-Version: 1.0
-Message-ID: <16a2a6b2.8542.1818114aeea.Coremail.windhl@126.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: MsqowABXrPCaZ7Bi8RE6AA--.41388W
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi2hkmF1uwMPrXgQABsE
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 1/4] dt-bindings: net: broadcom-bluetooth: Add CYW55572 DT
+ binding
+Content-Language: en-US
+To:     Hakan Jansson <hakan.jansson@infineon.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-bluetooth@vger.kernel.org
+References: <cover.1655723462.git.hakan.jansson@infineon.com>
+ <acd9e85b1ba82875e83ca68ae2aa62d828bfdfa3.1655723462.git.hakan.jansson@infineon.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <acd9e85b1ba82875e83ca68ae2aa62d828bfdfa3.1655723462.git.hakan.jansson@infineon.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CgoKQXQgMjAyMi0wNi0yMCAxOToxMTozMywgIkNocmlzdG9waGUgTGVyb3kiIDxjaHJpc3RvcGhl
-Lmxlcm95QGNzZ3JvdXAuZXU+IHdyb3RlOgo+SGksCj4KPkxlIDIwLzA2LzIwMjIgw6AgMTE6MjMs
-IExpYW5nIEhlIGEgw6ljcml0wqA6Cj4+IAo+PiBIaSwgQ2hyaXN0b3BoZS4KPj4gCj4+IFNvcnJ5
-IHRvIHRyb2J1bGUgeW91IGFnYWluLgo+PiAKPj4gTm93IEkgaGF2ZSBmb3VuZCBvdGhlciBidWdz
-IGluIHNhbWUgZGlyZWN0b3JpZXMgKGkuZS4sIGFyY2gvcG93ZXJwYy9zeXNkZXYpLAo+PiB3aXRo
-IHRoZSBvbmVzIEkgaGF2ZSBzZW50IGJ1dCBub3QgcmVjaWV2ZWQgYWNrZWQtYnkgb3IgY29uZmly
-bWVkIGVtYWlsLgo+PiAKPj4gU28gSSBuZWVkIHRvIG1lcmdlIHRoZSBvbGQgb25lcyBpbnRvIHRo
-ZSBuZXcgb25lcyBhcyBhIFBBVENILXYyIGFuZCB0aGVuIHJlc2VuZCB0aGUKPj4gb2xkIG9uZXMg
-Pwo+PiBvciBqdXN0IHVzZSBhIG5ldyBQQVRDSCB0byBzZW5kIG9ubHkgbmV3IG9uZXM/Cj4+IAo+
-PiBJIGFtIGFmcmFpZCB0byBtYWtlIG5ldyB0cm91YmxlIGZvciBtYWludGFpbmVycywgc28gY2Fu
-IHlvdSBzaGFyZSB5b3VyIHZhbHVhYmxlCj4+IGV4cGVyaWVuY2U/Cj4+IAo+Cj5IZXJlIGlzIHRo
-ZSBsaXN0IG9mIHlvdXIgcGF0Y2hlcyA6IAo+aHR0cHM6Ly9wYXRjaHdvcmsub3psYWJzLm9yZy9w
-cm9qZWN0L2xpbnV4cHBjLWRldi9saXN0Lz9zdWJtaXR0ZXI9ODQyNTgKPgo+IEZyb20gbXkgcG9p
-bnQgb2YgdmlldywgZm9yIGFsbCB0aGUgcGF0Y2hlcyB0aGF0IGFyZSBzdGlsbCBpbiBzdGF0dXMg
-Cj4ibmV3IiBpdCBpcyBiZXR0ZXIgdGhhbiB5b3Ugc2VuZCBhIHYyIHdpdGggbW9yZSB0aGluZ3Mg
-aW50byBhIHNpbmdsZSAKPnBhdGNoLiBXaGVuIHRoZSBwYXRjaCBpcyBpbiAidW5kZXIgcmV2aWV3
-IiBzdGF0ZSwgaXQgaXMgYmV0dGVyIHRvIG5vdCAKPnVwZGF0ZSBpdCBhbnltb3JlLgo+Cj5TbyBp
-biB0aGUgbGlzdCB0aGVyZSBhcmUgZm9yIGluc3RhbmNlIHNldmVyYWwgcGF0Y2hlcyBmb3IgcG93
-ZXJudiwgc28gaXQgCj53b3VsZCBiZSBnb29kIGlmIHlvdSBjYW4gcmVncm91cCBhbGwgb2YgdGhl
-bSBpbiBhIHNpbmdsZSB2MiBwYXRjaC4KPgo+Q2hyaXN0b3BoZQoKVGhhbmtzLCBDaHJpc3RvcGhl
-LgoKSSB3aWxsIGZvbGxvdyB5b3VyIHJ1bGVzIGFuZCB0cnkgdG8gZ3JvdXAgdGhlICduZXcnIHN0
-YXRlIG9uZXMu
+On 20/06/2022 14:01, Hakan Jansson wrote:
+> CYW55572 is a Wi-Fi + Bluetooth combo device from Infineon.
+> Extend the binding with its DT compatible.
+> 
+> Signed-off-by: Hakan Jansson <hakan.jansson@infineon.com>
+> ---
+>  Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml b/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml
+> index df59575840fe..71fe9b17f8f1 100644
+> --- a/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml
+> +++ b/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml
+> @@ -24,6 +24,7 @@ properties:
+>        - brcm,bcm43540-bt
+>        - brcm,bcm4335a0
+>        - brcm,bcm4349-bt
+> +      - infineon,cyw55572-bt
+
+Patch is okay, but just to be sure - is it entirely different device
+from Infineon or some variant of Broadcom block? Are all existing
+properties applicable to it as well?
+
+
+Best regards,
+Krzysztof
