@@ -2,96 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68043C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 15:18:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B216CCA481
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 15:19:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244182AbiFTPSS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 11:18:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48126 "EHLO
+        id S243600AbiFTPTj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 11:19:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244134AbiFTPR7 (ORCPT
+        with ESMTP id S243911AbiFTPSF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 11:17:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B44D2B22;
-        Mon, 20 Jun 2022 08:09:15 -0700 (PDT)
+        Mon, 20 Jun 2022 11:18:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 077021C104;
+        Mon, 20 Jun 2022 08:09:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4AB5D61204;
-        Mon, 20 Jun 2022 15:09:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05906C3411B;
-        Mon, 20 Jun 2022 15:09:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AF052B811D3;
+        Mon, 20 Jun 2022 15:09:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C5EAC3411B;
+        Mon, 20 Jun 2022 15:09:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655737754;
-        bh=UowpPsN4dwRx6/3c+/Ap4rkZrDx0R5Ze0ezebq/G9JI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=oavu5I/YbxUqRbE8zqch6EIX41XpXQI0joby5hziQYwFeeIWNJveoetauTksx6kJw
-         s5pkjUDxIHrbUvMJl+s7e42XXKBDikIs68DDJZf4HSQg0y6J3DC8Ik5UGJrO65M4Wz
-         LNYUzn8xexo0ZssOhcPIC/vuo2Tx+puBCStNSyNXN2YReeF0h670DBH0+DTtfKOL+8
-         RjOkUGkfPTj79Ts5qJrRVEDHJnTnB1BJYboaD/euBwpua/gu6LAbwnt16aVRCsX2Is
-         DRsq3GXPwwjqNQl3dt7SG/Jp5M9k+SQBJ5sQbYyZUUL0beI3tc194vHcuTxyexU69G
-         gOhT0VZsNTZmA==
-Date:   Mon, 20 Jun 2022 16:09:07 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Pierluigi Passaro <pierluigi.p@variscite.com>
-Cc:     Alifer Willians de Moraes <alifer.m@variscite.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        Eran Matityahu <eran.m@variscite.com>,
-        "festevam@gmail.com" <festevam@gmail.com>,
-        "lgirdwood@gmail.com" <lgirdwood@gmail.com>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "nicoleotsuka@gmail.com" <nicoleotsuka@gmail.com>,
-        "patches@opensource.cirrus.com" <patches@opensource.cirrus.com>,
-        "perex@perex.cz" <perex@perex.cz>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "shengjiu.wang@gmail.com" <shengjiu.wang@gmail.com>,
-        "tiwai@suse.com" <tiwai@suse.com>,
-        "Xiubo.Lee@gmail.com" <Xiubo.Lee@gmail.com>
-Subject: Re: [PATCH 4/4] ASoC: wm8904: add DMIC support
-Message-ID: <YrCNk+g6Xh7uC9fg@sirena.org.uk>
-References: <AM6PR08MB4376C690036C5558058C4F16FFB09@AM6PR08MB4376.eurprd08.prod.outlook.com>
+        s=k20201202; t=1655737772;
+        bh=nvUKsIOSB2sKsfhVbzK6dt7B6Lv7rlPXdDOGznoItlY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=FKVE6PdMFMl4zITgmVhBTj42NCZqaX9hDjUK7e6/sbm4gq3/EFqAW2I8vbdyt7c9y
+         EplvFbxsRjr6vene6rqWhrZE6Y3KTTLSiX/8FCy2wW/qSGPnpKUWUwY50LFsE1Z7fx
+         rIOt3pnmF3fWJDN39JTzSHJhW+jXkSjRB2bWfcePpANbFl5Rg8DRIZm664pvJlbkDQ
+         vy+guQDS+ken8AHZbiTSP5ovdeUU8hKRZKH4V0wkBkEVTPZ3ZEZ84ONsVzMuBnn8d5
+         cB/e4cJfIcFgAMWXCtOyNfWM2QRPxEQWFJYoSyqMDNNAFl2KrWxGeOnGIbnYvNY14c
+         GDvcHeJyqzH6A==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan+linaro@kernel.org>)
+        id 1o3J1s-00030a-Pp; Mon, 20 Jun 2022 17:09:28 +0200
+From:   Johan Hovold <johan+linaro@kernel.org>
+To:     Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Stanimir Varbanov <svarbanov@mm-sol.com>,
+        Rob Herring <robh@kernel.org>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+        linux-arm-msm@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Johan Hovold <johan+linaro@kernel.org>
+Subject: [PATCH] PCI: qcom: Drop unused post-init callbacks
+Date:   Mon, 20 Jun 2022 17:07:59 +0200
+Message-Id: <20220620150759.11507-1-johan+linaro@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="4wRJYg8FNZuITX9R"
-Content-Disposition: inline
-In-Reply-To: <AM6PR08MB4376C690036C5558058C4F16FFB09@AM6PR08MB4376.eurprd08.prod.outlook.com>
-X-Cookie: Good day to avoid cops.  Crawl to work.
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Drop the unused post_init and post_deinit callbacks that were added for
+the now removed pipe clock handling.
 
---4wRJYg8FNZuITX9R
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+---
 
-On Mon, Jun 20, 2022 at 03:03:50PM +0000, Pierluigi Passaro wrote:
+Now that Bjorn has merged the pipe clock series:
 
-> > Via firmware description.
+	https://git.kernel.org/pub/scm/linux/kernel/git/helgaas/pci.git/log/?h=pci/ctrl/qcom
 
-> Can you please provide any reference approach in the kernel code ?
+the post_init and post_deinit callbacks can also be removed.
 
-git grep of_
-git grep fwnode_
+Note that this one depends on the patch adding support for modular
+builds:
 
-and I don't immediately remember what the prefix is for ACPI functions.
+	https://lore.kernel.org/all/20220519094646.23009-1-johan+linaro@kernel.org/
 
---4wRJYg8FNZuITX9R
-Content-Type: application/pgp-signature; name="signature.asc"
+which has been reviewed by Rob and should be ready to be picked up.
 
------BEGIN PGP SIGNATURE-----
+Johan
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKwjZIACgkQJNaLcl1U
-h9DhxAf/QjS/aWkP17En2BvW+Gr3yNc/jrpVJq7UvOIWIXQbGH3NWey/fDtsW1Q8
-SfV0/JZKiG69wIff6Plva4R6TMcU9FuJTlbb5wnU3Vl/IbY7sdG3tXh6epyt5UBf
-xBKao3u3lpErY6OUF+xU6m9qf0MPlxGMVYgvQOOuJfE+0T6IBbS9fVSzr0assttw
-199iCsBk1c+0dF/ZufZubBpZUk6Y+b+mmEDQ/4GoM2bsutX1Nw+EIqUw+HWK4YO8
-CCltIK18dFjMm3bGhsEBCBcJCox0neYaCKmGhO9zb7YUTFlppaupdblWKBF58ylX
-BJCFh2F9Ue/m0syfrLOvA169USrKNA==
-=buGM
------END PGP SIGNATURE-----
 
---4wRJYg8FNZuITX9R--
+ drivers/pci/controller/dwc/pcie-qcom.c | 17 ++---------------
+ 1 file changed, 2 insertions(+), 15 deletions(-)
+
+diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
+index ff1b40f213c1..fe701da32119 100644
+--- a/drivers/pci/controller/dwc/pcie-qcom.c
++++ b/drivers/pci/controller/dwc/pcie-qcom.c
+@@ -180,9 +180,7 @@ struct qcom_pcie;
+ struct qcom_pcie_ops {
+ 	int (*get_resources)(struct qcom_pcie *pcie);
+ 	int (*init)(struct qcom_pcie *pcie);
+-	int (*post_init)(struct qcom_pcie *pcie);
+ 	void (*deinit)(struct qcom_pcie *pcie);
+-	void (*post_deinit)(struct qcom_pcie *pcie);
+ 	void (*ltssm_enable)(struct qcom_pcie *pcie);
+ 	int (*config_sid)(struct qcom_pcie *pcie);
+ };
+@@ -1331,27 +1329,18 @@ static int qcom_pcie_host_init(struct pcie_port *pp)
+ 	if (ret)
+ 		goto err_deinit;
+ 
+-	if (pcie->cfg->ops->post_init) {
+-		ret = pcie->cfg->ops->post_init(pcie);
+-		if (ret)
+-			goto err_disable_phy;
+-	}
+-
+ 	qcom_ep_reset_deassert(pcie);
+ 
+ 	if (pcie->cfg->ops->config_sid) {
+ 		ret = pcie->cfg->ops->config_sid(pcie);
+ 		if (ret)
+-			goto err;
++			goto err_assert_reset;
+ 	}
+ 
+ 	return 0;
+ 
+-err:
++err_assert_reset:
+ 	qcom_ep_reset_assert(pcie);
+-	if (pcie->cfg->ops->post_deinit)
+-		pcie->cfg->ops->post_deinit(pcie);
+-err_disable_phy:
+ 	phy_power_off(pcie->phy);
+ err_deinit:
+ 	pcie->cfg->ops->deinit(pcie);
+@@ -1362,8 +1351,6 @@ static int qcom_pcie_host_init(struct pcie_port *pp)
+ static void qcom_pcie_host_deinit(struct qcom_pcie *pcie)
+ {
+ 	qcom_ep_reset_assert(pcie);
+-	if (pcie->cfg->ops->post_deinit)
+-		pcie->cfg->ops->post_deinit(pcie);
+ 	phy_power_off(pcie->phy);
+ 	pcie->cfg->ops->deinit(pcie);
+ }
+-- 
+2.35.1
+
