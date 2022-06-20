@@ -2,81 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F530C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:11:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B18FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:11:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230061AbiFTOLJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:11:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45248 "EHLO
+        id S1350971AbiFTOLS (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 10:11:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352669AbiFTN4t (ORCPT
+        with ESMTP id S1352992AbiFTN50 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:56:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 585A536B75;
-        Mon, 20 Jun 2022 06:22:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Mon, 20 Jun 2022 09:57:26 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0348437A3D
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 06:23:14 -0700 (PDT)
+Received: from zn.tnic (p200300ea974657f0329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9746:57f0:329c:23ff:fea6:a903])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 235AFB811D2;
-        Mon, 20 Jun 2022 13:06:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6557EC3411B;
-        Mon, 20 Jun 2022 13:06:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730401;
-        bh=7lHSFtUY1PHqrzclwXoAD8WLofsBbD+ZxJnchOu5vQQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HGU7xrUAk/6PNNe3vlYsxvVgokdq3/N/S7fp/Gn01plb9AKx6odG2E+6gMKUyC54U
-         bWFg+rdxuJmED86Ga28S1CtR0iqY8PM6IzNgo5zvYLwco4vIxVqkLRZDUhhs9k0l95
-         qXS4xqhr0UT2gCl5fZRLcqK5zYpPYPdP9MnFcPy0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, August Wikerfors <git@augustwikerfors.se>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 042/106] platform/x86: gigabyte-wmi: Add support for B450M DS3H-CF
-Date:   Mon, 20 Jun 2022 14:51:01 +0200
-Message-Id: <20220620124725.633398060@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
-References: <20220620124724.380838401@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id E81721EC0657;
+        Mon, 20 Jun 2022 15:22:12 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1655731333;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=LrGpaF007OQqZrjEUL4cOEK+6b5ptHcd1OgrPbOBhQc=;
+        b=kWLHioT5UQlaSJoVi5j86oOVwPwb26iLxGk6Lbs+ei26Nq/TNiLbkDhLvIBEcM1dDW7PwE
+        REHLuI7rtdbxYZJ11zXspxBMbDlwr0roQw/RaMWMbPlZlmUydz0+9GqupSWNQ5iHJDtzLd
+        ZDKnGzQwg1BILxQITGEggBx6lvjZ+IE=
+Date:   Mon, 20 Jun 2022 15:22:08 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Juergen Gross <jgross@suse.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>
+Cc:     xen-devel@lists.xenproject.org, x86@kernel.org,
+        linux-kernel@vger.kernel.org,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        "H. Peter Anvin" <hpa@zytor.com>
+Subject: Re: [PATCH v2] x86/pat: fix x86_has_pat_wp()
+Message-ID: <YrB0gNtIfCwV+xnE@zn.tnic>
+References: <20220620113441.23961-1-jgross@suse.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220620113441.23961-1-jgross@suse.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: August Wikerfors <git@augustwikerfors.se>
++ Tom.
 
-[ Upstream commit c6bc7e8ee90845556a90faf8b043cbefd77b8903 ]
+On Mon, Jun 20, 2022 at 01:34:41PM +0200, Juergen Gross wrote:
+> x86_has_pat_wp() is using a wrong test, as it relies on the normal
+> PAT configuration used by the kernel. In case the PAT MSR has been
+> setup by another entity (e.g. BIOS or Xen hypervisor) it might return
+> false even if the PAT configuration is allowing WP mappings.
 
-Tested and works on my system.
+... because Xen doesn't allow writing the PAT MSR. Please explain
+exactly what happens because we will forget.
 
-Signed-off-by: August Wikerfors <git@augustwikerfors.se>
-Link: https://lore.kernel.org/r/20220608212028.28307-1-git@augustwikerfors.se
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/platform/x86/gigabyte-wmi.c | 1 +
- 1 file changed, 1 insertion(+)
+> The correct way to test for WP support is:
+> 
+> 1. Get the PTE protection bits needed to select WP mode by reading
+>    __cachemode2pte_tbl[_PAGE_CACHE_MODE_WP] (depending on the PAT MSR
+>    setting this might return protection bits for a stronger mode, e.g.
+>    UC-)
+> 2. Translate those bits back into the real cache mode selected by those
+>    PTE bits by reading __pte2cachemode_tbl[__pte2cm_idx(prot)]
+> 3. Test for the cache mode to be _PAGE_CACHE_MODE_WP
 
-diff --git a/drivers/platform/x86/gigabyte-wmi.c b/drivers/platform/x86/gigabyte-wmi.c
-index ad4f789309d6..ebd15c1d13ec 100644
---- a/drivers/platform/x86/gigabyte-wmi.c
-+++ b/drivers/platform/x86/gigabyte-wmi.c
-@@ -140,6 +140,7 @@ static u8 gigabyte_wmi_detect_sensor_usability(struct wmi_device *wdev)
- 	}}
- 
- static const struct dmi_system_id gigabyte_wmi_known_working_platforms[] = {
-+	DMI_EXACT_MATCH_GIGABYTE_BOARD_NAME("B450M DS3H-CF"),
- 	DMI_EXACT_MATCH_GIGABYTE_BOARD_NAME("B450M S2H V2"),
- 	DMI_EXACT_MATCH_GIGABYTE_BOARD_NAME("B550 AORUS ELITE AX V2"),
- 	DMI_EXACT_MATCH_GIGABYTE_BOARD_NAME("B550 AORUS ELITE"),
+Yes, this is a good explanation albeit a bit too verbose. You can stick
+a shorter version of it as a comment over the function so that we don't
+have to swap it all back in next time.
+
+> Fixes: 1f6f655e01ad ("x86/mm: Add a x86_has_pat_wp() helper")
+
+If anything, this should be:
+
+f88a68facd9a ("x86/mm: Extend early_memremap() support with additional attrs")
+
+Also, I'm thinking CC:stable here.
+
+> Signed-off-by: Juergen Gross <jgross@suse.com>
+> ---
+> V2:
+> - fix indexing into __pte2cachemode_tbl[]
+
+Yes, in any case, I see it now. The key aspect being in the comment
+above it:
+
+ *   Index into __pte2cachemode_tbl[] are the caching attribute bits of the pte
+ *   (_PAGE_PWT, _PAGE_PCD, _PAGE_PAT) at index bit positions 0, 1, 2.
+
+which is how one should index into that array.
+
+Thx.
+
 -- 
-2.35.1
+Regards/Gruss,
+    Boris.
 
-
-
+https://people.kernel.org/tglx/notes-about-netiquette
