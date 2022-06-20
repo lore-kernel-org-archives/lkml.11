@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58548C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:00:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CBC6C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:00:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243630AbiFTNAi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:00:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38812 "EHLO
+        id S243646AbiFTNAr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:00:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244685AbiFTM7s (ORCPT
+        with ESMTP id S243710AbiFTM6c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 08:59:48 -0400
+        Mon, 20 Jun 2022 08:58:32 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C37B1A06D;
-        Mon, 20 Jun 2022 05:56:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9065E1B7B7;
+        Mon, 20 Jun 2022 05:55:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 17EBF614F0;
-        Mon, 20 Jun 2022 12:56:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AC5EC3411B;
-        Mon, 20 Jun 2022 12:56:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E0542614E8;
+        Mon, 20 Jun 2022 12:55:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F191BC3411B;
+        Mon, 20 Jun 2022 12:55:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655729801;
-        bh=E2c6JwTTTgoenhfa01rg3ytkD9oy+z5TCsPOtlv3pdI=;
+        s=korg; t=1655729741;
+        bh=gtE2dNF9bLFouJJ01VSMIAbH3vpPiagTMoot2XNi7x4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pJnK9P0HrOCJtvc3hG0K2w80ErOVtEdSwUh42vcplttPXkdWZoQb05nwrTrAOicvC
-         XkzEEa3EBhLU7o0Bclfn/9wPdvCC/Ayv2MHZtp3ZQRI56R7hArpJbJXSorkcbJun9G
-         b2KEZ9A7p2jQAWLRaYZcS4c2zki53TkfjZogIUUw=
+        b=zZCzV5v1Oe6CmWW348NSn0GlQUWj/5ocAvd0ShqS+jf/Yj1WR293B4vpwMzjW5Ahs
+         yycshbvo6kEQGVkMv1iQLszYMFL79JaU75XvUdQoD/NSeq6iaAexvKGMGgJytcVxJw
+         9Ae8oTIaoWFqx0q4BD0U2LPVWb60lq3gNaNLgr3s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        Grzegorz Szczurek <grzegorzx.szczurek@intel.com>,
+        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
+        Bharathi Sreenivas <bharathi.sreenivas@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 080/141] net: bgmac: Fix an erroneous kfree() in bgmac_remove()
-Date:   Mon, 20 Jun 2022 14:50:18 +0200
-Message-Id: <20220620124731.903001364@linuxfoundation.org>
+Subject: [PATCH 5.18 059/141] i40e: Fix calculating the number of queue pairs
+Date:   Mon, 20 Jun 2022 14:49:57 +0200
+Message-Id: <20220620124731.282138032@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 References: <20220620124729.509745706@linuxfoundation.org>
@@ -51,37 +52,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Grzegorz Szczurek <grzegorzx.szczurek@intel.com>
 
-[ Upstream commit d7dd6eccfbc95ac47a12396f84e7e1b361db654b ]
+[ Upstream commit 0bb050670ac90a167ecfa3f9590f92966c9a3677 ]
 
-'bgmac' is part of a managed resource allocated with bgmac_alloc(). It
-should not be freed explicitly.
+If ADQ is enabled for a VF, then actual number of queue pair
+is a number of currently available traffic classes for this VF.
 
-Remove the erroneous kfree() from the .remove() function.
+Without this change the configuration of the Rx/Tx queues
+fails with error.
 
-Fixes: 34a5102c3235 ("net: bgmac: allocate struct bgmac just once & don't copy it")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/a026153108dd21239036a032b95c25b5cece253b.1655153616.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: d29e0d233e0d ("i40e: missing input validation on VF message handling by the PF")
+Signed-off-by: Grzegorz Szczurek <grzegorzx.szczurek@intel.com>
+Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
+Tested-by: Bharathi Sreenivas <bharathi.sreenivas@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bgmac-bcma.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bgmac-bcma.c b/drivers/net/ethernet/broadcom/bgmac-bcma.c
-index e6f48786949c..02bd3cf9a260 100644
---- a/drivers/net/ethernet/broadcom/bgmac-bcma.c
-+++ b/drivers/net/ethernet/broadcom/bgmac-bcma.c
-@@ -332,7 +332,6 @@ static void bgmac_remove(struct bcma_device *core)
- 	bcma_mdio_mii_unregister(bgmac->mii_bus);
- 	bgmac_enet_remove(bgmac);
- 	bcma_set_drvdata(core, NULL);
--	kfree(bgmac);
- }
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
+index 2606e8f0f19b..033ea71763e3 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
+@@ -2282,7 +2282,7 @@ static int i40e_vc_config_queues_msg(struct i40e_vf *vf, u8 *msg)
+ 	}
  
- static struct bcma_driver bgmac_bcma_driver = {
+ 	if (vf->adq_enabled) {
+-		for (i = 0; i < I40E_MAX_VF_VSI; i++)
++		for (i = 0; i < vf->num_tc; i++)
+ 			num_qps_all += vf->ch[i].num_qps;
+ 		if (num_qps_all != qci->num_queue_pairs) {
+ 			aq_ret = I40E_ERR_PARAM;
 -- 
 2.35.1
 
