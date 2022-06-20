@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EC9ECCA479
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:10:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20912CCA47C
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:10:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351557AbiFTOJr (ORCPT
+        id S1351598AbiFTOJu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:09:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45128 "EHLO
+        Mon, 20 Jun 2022 10:09:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351530AbiFTNyz (ORCPT
+        with ESMTP id S1344205AbiFTN4o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:54:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD9A63388A;
-        Mon, 20 Jun 2022 06:21:13 -0700 (PDT)
+        Mon, 20 Jun 2022 09:56:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E8C3BB1;
+        Mon, 20 Jun 2022 06:22:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BD0C460FF1;
-        Mon, 20 Jun 2022 13:20:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C762CC3411C;
-        Mon, 20 Jun 2022 13:20:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1F461B81157;
+        Mon, 20 Jun 2022 13:22:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C073C3411B;
+        Mon, 20 Jun 2022 13:22:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731259;
-        bh=nP9i1+rEQjQRHfrlgE3xHFNg4YpgFbPf5Seq91ii+60=;
+        s=korg; t=1655731342;
+        bh=QWVOvaoQcs9rJFN9ZErPqPmZV92C+J1OsaNkwQKcuwg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xLYtyJRlY0twpQj76DK73RyVyiMKUeJowOnWYYNfkP8dDKvBYR1/N8Db0i4gU0crG
-         tREUT6T8cH8iODg7Ei/igj8P4IirWrIph4UPj82HwtRZ+OsfzZ3nFhHeDcvL0HttO/
-         r9ww30+hHVGxQjRssWv2t3x9gUz2yKvVxlSgFas8=
+        b=XLU/MT6uRgIBYmQ2QCs0uRUiIgtf3FrUQE2uOPd350J5/I6P0/E11/jt7a3OaMaxf
+         F/Ct9y5bWauuxthwJu9eOWHqp+uqUUUHqzvCLhL84y3qx+GwleedskXzZYD8MxEaNY
+         91NZ1Kq6bZH/7KcMv/Gv+VpomWO/xyCgN4WHA3Jk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Chengguang Xu <cgxu519@mykernel.net>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 197/240] scsi: pmcraid: Fix missing resource cleanup in error case
-Date:   Mon, 20 Jun 2022 14:51:38 +0200
-Message-Id: <20220620124744.694221173@linuxfoundation.org>
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>
+Subject: [PATCH 5.4 227/240] dm mirror log: round up region bitmap size to BITS_PER_LONG
+Date:   Mon, 20 Jun 2022 14:52:08 +0200
+Message-Id: <20220620124745.536925135@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -51,37 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chengguang Xu <cgxu519@mykernel.net>
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-[ Upstream commit ec1e8adcbdf661c57c395bca342945f4f815add7 ]
+commit 85e123c27d5cbc22cfdc01de1e2ca1d9003a02d0 upstream.
 
-Fix missing resource cleanup (when '(--i) == 0') for error case in
-pmcraid_register_interrupt_handler().
+The code in dm-log rounds up bitset_size to 32 bits. It then uses
+find_next_zero_bit_le on the allocated region. find_next_zero_bit_le
+accesses the bitmap using unsigned long pointers. So, on 64-bit
+architectures, it may access 4 bytes beyond the allocated size.
 
-Link: https://lore.kernel.org/r/20220529153456.4183738-6-cgxu519@mykernel.net
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Chengguang Xu <cgxu519@mykernel.net>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fix this bug by rounding up bitset_size to BITS_PER_LONG.
+
+This bug was found by running the lvm2 testsuite with kasan.
+
+Fixes: 29121bd0b00e ("[PATCH] dm mirror log: bitset_size fix")
+Cc: stable@vger.kernel.org
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Mike Snitzer <snitzer@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/pmcraid.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/md/dm-log.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/pmcraid.c b/drivers/scsi/pmcraid.c
-index 398d2af60832..f95a970db8fd 100644
---- a/drivers/scsi/pmcraid.c
-+++ b/drivers/scsi/pmcraid.c
-@@ -4532,7 +4532,7 @@ pmcraid_register_interrupt_handler(struct pmcraid_instance *pinstance)
- 	return 0;
+--- a/drivers/md/dm-log.c
++++ b/drivers/md/dm-log.c
+@@ -415,8 +415,7 @@ static int create_log_context(struct dm_
+ 	/*
+ 	 * Work out how many "unsigned long"s we need to hold the bitset.
+ 	 */
+-	bitset_size = dm_round_up(region_count,
+-				  sizeof(*lc->clean_bits) << BYTE_SHIFT);
++	bitset_size = dm_round_up(region_count, BITS_PER_LONG);
+ 	bitset_size >>= BYTE_SHIFT;
  
- out_unwind:
--	while (--i > 0)
-+	while (--i >= 0)
- 		free_irq(pci_irq_vector(pdev, i), &pinstance->hrrq_vector[i]);
- 	pci_free_irq_vectors(pdev);
- 	return rc;
--- 
-2.35.1
-
+ 	lc->bitset_uint32_count = bitset_size / sizeof(*lc->clean_bits);
 
 
