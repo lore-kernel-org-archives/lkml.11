@@ -2,100 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1FF2C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 07:34:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0FAFC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 07:35:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236876AbiFTHeI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 03:34:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36062 "EHLO
+        id S239389AbiFTHfl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 03:35:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238922AbiFTHeG (ORCPT
+        with ESMTP id S238369AbiFTHfi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 03:34:06 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B70B6AE76
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 00:34:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655710441;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9O0CIqeEaoJn03vVtSYdv9IsNbaraVCXGcehJj6LilQ=;
-        b=BfDApnmT7TD6h8hYXmbv84ET73ro96bm2Ug/mCPq5iB4RInm64D8HKG8fbCuxanbWgfu4R
-        demVSV+8TVYb0h3CyJwbhrJhqpLtEkWcxBSNOH3ALvS0h7pMYVDofQPZ54lGeYg5RPuwfp
-        zMWHp7ybxz7SqLs/zoc0K6R8T23/K2g=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-608-F-p-ug5mPU-LDTh9sa8ODA-1; Mon, 20 Jun 2022 03:34:00 -0400
-X-MC-Unique: F-p-ug5mPU-LDTh9sa8ODA-1
-Received: by mail-wm1-f70.google.com with SMTP id l17-20020a05600c4f1100b0039c860db521so4666309wmq.5
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 00:34:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=9O0CIqeEaoJn03vVtSYdv9IsNbaraVCXGcehJj6LilQ=;
-        b=iDzJJK3XY2NmZbclufCMI84QlT23Tf52033CAtfkFsbA6bzqxOV7UD/HY4LpoJt/KI
-         h+svJ6HrIkgrvSgTgYP1DAagCEsVNG11+EH9QgRJD+sjzDlzdvPtuRmD7cMAH2aXQ4Yp
-         PWlwU+SlIrkPpSO8u8G8wlhZnDeoKHQLlmcE7Z+XfzqVnicl3/tPgZwlL+g89/1D+99y
-         4+2IvuSz3Lir+j285gTTRs7TnflciEFLJtfE84tQ5ud5egtiUxlWaYKa7dn0dqpzDPxN
-         4wj7Ly6qkhLn724w92AdmCLKiT6PntINRkSaDnDtmzjj+hy/WV/zEU3FrnqOrvhMSKwT
-         k0ZQ==
-X-Gm-Message-State: AJIora+9G6yOxL5toaYH06pxfaBens1IJBFP7qNgNiaEGhbCi+JLHT4r
-        bi62KPqebmLatr7N4pDtABFNBuUccyS3v6bT31MUrgss9+wkDCZmc6Il8eWGYGPYb9Gjhw0EfRZ
-        YGL6xBv+qmVq7Ygg9jcisTcPB
-X-Received: by 2002:a5d:59ac:0:b0:218:5b7e:1c1c with SMTP id p12-20020a5d59ac000000b002185b7e1c1cmr21891416wrr.621.1655710439273;
-        Mon, 20 Jun 2022 00:33:59 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vkewhJzwIOJ9l+/yqE7pUpzblIRdbrwtFQigT8P4KR1GnlkLPaHlZsigHVgHZi02aADaZXLg==
-X-Received: by 2002:a5d:59ac:0:b0:218:5b7e:1c1c with SMTP id p12-20020a5d59ac000000b002185b7e1c1cmr21891397wrr.621.1655710439119;
-        Mon, 20 Jun 2022 00:33:59 -0700 (PDT)
-Received: from gator (cst2-173-67.cust.vodafone.cz. [31.30.173.67])
-        by smtp.gmail.com with ESMTPSA id l9-20020a1c7909000000b0039c96b97359sm14054471wme.37.2022.06.20.00.33.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jun 2022 00:33:58 -0700 (PDT)
-Date:   Mon, 20 Jun 2022 09:33:56 +0200
-From:   Andrew Jones <drjones@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>, Marc Zyngier <maz@kernel.org>,
-        Anup Patel <anup@brainfault.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Atish Patra <atishp@atishpatra.org>,
-        David Hildenbrand <david@redhat.com>, kvm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Colton Lewis <coltonlewis@google.com>
-Subject: Re: [PATCH 0/3] KVM: selftests: Consolidate ucall code
-Message-ID: <20220620073356.fmtsa4ub74igm7me@gator>
-References: <20220618001618.1840806-1-seanjc@google.com>
+        Mon, 20 Jun 2022 03:35:38 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B15E2AE76
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 00:35:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=KuxuOwm8WkLtH8CAws9zFjiLjGew//3+cwkg+2fol+M=; b=S2IfV1aNCqbSdQdz7NKG80lxFY
+        LRt3jlo2Jxu+InJDxT/6vFse2sekCpU+Nipm+OCIRO+SBS93fqTwpvOvXIp0GbsRnDDOkP/m1ijMK
+        r7yyChxkKGB2d/UGDO66+MruyjstTdfYuSox5Fb/MXpXw7DbOPj7b+AP6oVNoVMZSHEsmawaHz0NN
+        vsZExcuQHSIXVWSJYcOVjbF/N8xxa+SbzPRTyc+g581E08RRQ8wSz4iUCXQiFg90PiKJUfdvDIsJe
+        wJHRN3Kxz2dJZdWHpkD1koOY080YlI+xpcmYM45+pOvEaosjMJtYvaLFbQDtI3FX7VUngOraYd5Af
+        +hM2I96g==;
+Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o3BwP-009Pgj-IY; Mon, 20 Jun 2022 07:35:21 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id B3F57300212;
+        Mon, 20 Jun 2022 09:35:20 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 852D029A25D80; Mon, 20 Jun 2022 09:35:20 +0200 (CEST)
+Date:   Mon, 20 Jun 2022 09:35:20 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Josh Poimboeuf <jpoimboe@kernel.org>
+Cc:     Steven Rostedt <rostedt@goodmis.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
+        christophe.leroy@csgroup.eu, naveen.n.rao@linux.vnet.ibm.com,
+        mbenes@suse.cz
+Subject: Re: [RFC][PATCH] ftrace,objtool: PC32 based __mcount_loc
+Message-ID: <YrAjOHDrkXQPLv+6@hirez.programming.kicks-ass.net>
+References: <YqxkhV1YcI6e+xXp@worktop.programming.kicks-ass.net>
+ <20220617201142.yea5ze7od43fat4o@treble>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220618001618.1840806-1-seanjc@google.com>
+In-Reply-To: <20220617201142.yea5ze7od43fat4o@treble>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jun 18, 2022 at 12:16:15AM +0000, Sean Christopherson wrote:
-> Consolidate the code for making and getting ucalls.  All architectures pass
-> the ucall struct via memory, so filling and copying the struct is 100%
-> generic.  The only per-arch code is sending and receiving the address of
-> said struct.
+On Fri, Jun 17, 2022 at 01:11:42PM -0700, Josh Poimboeuf wrote:
+> On Fri, Jun 17, 2022 at 01:24:53PM +0200, Peter Zijlstra wrote:
+> > 
+> > Hi,
+> > 
+> > I recently noticed that __mcount_loc is 64bit wide, containing absolute
+> > addresses. Since __mcount_loc is a permanent section (not one we drop
+> > after boot), this bloats the kernel memory usage for no real purpose.
+> > 
+> > The below patch adds __mcount_loc_32 and objtool support to generate it.
+> > This saves, on an x86_64-defconfig + FTRACE, 23975*4 ~= 94K of permanent
+> > storage.
+> > 
+> > XXX hobbled sorttable for now
+> > XXX compile tested only
+> > 
+> > Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 > 
-> Tested on x86 and arm, compile tested on s390 and RISC-V.
+> Nice!
+> 
+> Some nits:
+> 
+> - No need for renaming the section, it can still be called
+>   '__mcount_loc' regardless?
 
-For the series
+I wanted to avoid mixing them by accidental build funnies, also, it
+having a different name makes it easier to check what's what with a
+simple readelf.
 
-Reviewed-by: Andrew Jones <drjones@redhat.com>
+> - No need for a new FTRACE_MCOUNT32_USE_OBJTOOL config option or
+>   '--mcount32' cmdline option, just change the old ones to be pc32?
 
-Thanks,
-drew
+Right, so I did that because of the pending --mcount patches for Power.
+If Christophe is on board with that, sure, can do.
 
+> - change "32" to "PC32": CC_USING_MCOUNT_LOC_PC32
+
+Right.
