@@ -2,94 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D49E9C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:17:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE283C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:17:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343940AbiFTNRW (ORCPT
+        id S1343949AbiFTNRZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:17:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34846 "EHLO
+        Mon, 20 Jun 2022 09:17:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344584AbiFTNKW (ORCPT
+        with ESMTP id S1344625AbiFTNK2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:10:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13D991CFFC;
-        Mon, 20 Jun 2022 06:05:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A52D961531;
-        Mon, 20 Jun 2022 13:05:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FA61C341C4;
-        Mon, 20 Jun 2022 13:05:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730335;
-        bh=XOI0c77YmpwmB73ozt+1WFSrwCF5nxhWw69Zwe/maM0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OBH2qU9dxIpi1JeZf2DgvJfOwPCeRsW9Jo08sV7PIC1n+J4ymdORdtX62DUq5WXNm
-         eL/sGNcShimw4y+MMfWAgxoQe0F3/A0bzpVTf/yMCiFBoIKNhOQChlDiq0wscz7pxC
-         fXEnVdBkSEZDL1XmEE/823FfYWlEywgJ44S4HzA4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 020/106] ASoC: es8328: Fix event generation for deemphasis control
-Date:   Mon, 20 Jun 2022 14:50:39 +0200
-Message-Id: <20220620124724.982262386@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
-References: <20220620124724.380838401@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 20 Jun 2022 09:10:28 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 130A31CFEA;
+        Mon, 20 Jun 2022 06:05:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655730336; x=1687266336;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ZzVSD9qEoT6Yq+FOyrnnfBbkXdS74k0EP3YzW+wwaHs=;
+  b=cKdUwqb927M/u3Ek04PuESB/qbsEFJspcWBZC2D3NCxrvrIWTa84pfDs
+   52Sur0QTQ/2yhmf1PJMvMhXIN99HJ4ASzaDfY4f65+lAB6wVPivS5O/Vu
+   3zbhXYfOT0rR47ONJLe8+bFS1jQV9zY0NP2Vu22idMlHa0ydW2wp/0SvE
+   9jMVDOrgvX49GQx4CsO0p7p5rWZQ2BlJxB1ni6sASHqaY5TOA3tAVDxSm
+   BTrfSJvvClqkVjkKp7yVmDtudjq0ErV0F4v5Bg1zctznVkx5wutuVNPVU
+   bGNDYk3u+kAuJChMakfLWW+vioiyV6mQwsLARFaPDFvK4Fzfbj5t59ccr
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="341569969"
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="341569969"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 06:01:22 -0700
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="833107585"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 06:01:19 -0700
+Received: by lahna (sSMTP sendmail emulation); Mon, 20 Jun 2022 16:01:17 +0300
+Date:   Mon, 20 Jun 2022 16:01:17 +0300
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andy@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH v1 1/7] pinctrl: intel: Embed struct pingroup into struct
+ intel_pingroup
+Message-ID: <YrBvnW/pKj2Rgft/@lahna>
+References: <20220620114439.31491-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220620114439.31491-1-andriy.shevchenko@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+On Mon, Jun 20, 2022 at 02:44:33PM +0300, Andy Shevchenko wrote:
+> Add a new member to the struct intel_pingroup to cover generic
+> pin control group parameters. The idea is to convert all users
+> (one-by-one) to it and drop old members later on.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-[ Upstream commit 8259610c2ec01c5cbfb61882ae176aabacac9c19 ]
+For the whole series,
 
-Currently the put() method for the deemphasis control returns 0 when a new
-value is written to the control even if the value changed, meaning events
-are not generated. Fix this, skip the work of updating the value when it is
-unchanged and then return 1 after having done so.
-
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/r/20220603123937.4013603-1-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- sound/soc/codecs/es8328.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/sound/soc/codecs/es8328.c b/sound/soc/codecs/es8328.c
-index 9632afc2d4d6..ca3b1c00fa78 100644
---- a/sound/soc/codecs/es8328.c
-+++ b/sound/soc/codecs/es8328.c
-@@ -161,13 +161,16 @@ static int es8328_put_deemph(struct snd_kcontrol *kcontrol,
- 	if (deemph > 1)
- 		return -EINVAL;
- 
-+	if (es8328->deemph == deemph)
-+		return 0;
-+
- 	ret = es8328_set_deemph(component);
- 	if (ret < 0)
- 		return ret;
- 
- 	es8328->deemph = deemph;
- 
--	return 0;
-+	return 1;
- }
- 
- 
--- 
-2.35.1
-
-
-
+Acked-by: Mika Westerberg <mika.westerberg@linux.intel.com>
