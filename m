@@ -2,73 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D540C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 04:18:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB0ABC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 04:19:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232394AbiFTEOo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 00:14:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50256 "EHLO
+        id S235428AbiFTESE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 00:18:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231775AbiFTEOk (ORCPT
+        with ESMTP id S231775AbiFTESA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 00:14:40 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A4E23655D
-        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 21:14:39 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 273441042;
-        Sun, 19 Jun 2022 21:14:39 -0700 (PDT)
-Received: from [192.168.0.110] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 92A4F3F7D7;
-        Sun, 19 Jun 2022 21:14:36 -0700 (PDT)
-Message-ID: <8da7bf08-0234-2d57-afb0-012b94fd8889@arm.com>
-Date:   Mon, 20 Jun 2022 09:44:27 +0530
+        Mon, 20 Jun 2022 00:18:00 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44C52F39;
+        Sun, 19 Jun 2022 21:17:57 -0700 (PDT)
+Received: from canpemm500006.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LRGXl29LLz1K9Sh;
+        Mon, 20 Jun 2022 12:15:51 +0800 (CST)
+Received: from container.huawei.com (10.175.104.82) by
+ canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 20 Jun 2022 12:17:54 +0800
+From:   Ziyang Xuan <william.xuanziyang@huawei.com>
+To:     <borisp@nvidia.com>, <john.fastabend@gmail.com>,
+        <daniel@iogearbox.net>, <kuba@kernel.org>, <davem@davemloft.net>,
+        <edumazet@google.com>, <pabeni@redhat.com>,
+        <netdev@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>
+Subject: [PATCH net] net/tls: fix tls_sk_proto_close executed repeatedly
+Date:   Mon, 20 Jun 2022 12:35:08 +0800
+Message-ID: <20220620043508.3455616-1-william.xuanziyang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH V3 2/2] mm/mmap: Drop generic protection_map[] array
-Content-Language: en-US
-To:     "hch@infradead.org" <hch@infradead.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        kernel test robot <lkp@intel.com>,
-        Christoph Hellwig <hch@lst.de>
-References: <20220616040924.1022607-1-anshuman.khandual@arm.com>
- <20220616040924.1022607-3-anshuman.khandual@arm.com>
- <7cf922f4-2367-e173-0280-cb498391d9f7@csgroup.eu>
- <YqrJvV/dWK/iyVvR@infradead.org>
- <7c72a97f-d7d4-db27-faa5-fec01673cca7@arm.com>
- <43205917-0517-4e45-6fbf-4fc849fb0325@csgroup.eu>
- <Yqw0pxSNLZWPyPIG@infradead.org>
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-In-Reply-To: <Yqw0pxSNLZWPyPIG@infradead.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.82]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500006.china.huawei.com (7.192.105.130)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+After setting the sock ktls, update ctx->sk_proto to sock->sk_prot by
+tls_update(), so now ctx->sk_proto->close is tls_sk_proto_close(). When
+close the sock, tls_sk_proto_close() is called for sock->sk_prot->close
+is tls_sk_proto_close(). But ctx->sk_proto->close() will be executed later
+in tls_sk_proto_close(). Thus tls_sk_proto_close() executed repeatedly
+occurred. That will trigger the following bug.
 
+=================================================================
+KASAN: null-ptr-deref in range [0x0000000000000010-0x0000000000000017]
+RIP: 0010:tls_sk_proto_close+0xd8/0xaf0 net/tls/tls_main.c:306
+Call Trace:
+ <TASK>
+ tls_sk_proto_close+0x356/0xaf0 net/tls/tls_main.c:329
+ inet_release+0x12e/0x280 net/ipv4/af_inet.c:428
+ __sock_release+0xcd/0x280 net/socket.c:650
+ sock_close+0x18/0x20 net/socket.c:1365
 
-On 6/17/22 13:30, hch@infradead.org wrote:
-> On Fri, Jun 17, 2022 at 05:48:11AM +0000, Christophe Leroy wrote:
->> Is it a good idea to duplicate vm_get_page_prot() in each architecture ? 
-> 
-> It is a completely trivial array index.  And I really like the idea
-> of not having the protection_map in common code - it really is an
-> implementation detail.  But what we could do is something like
-> 
-> #define DECLARE_VM_GET_PAGE_PROT				\
-> pgprot_t vm_get_page_prot(unsigned long vm_flags)		\
-> {								\
->         return protection_map[vm_flags &			\
-> 		(VM_READ | VM_WRITE | VM_EXEC | VM_SHARED)];	\
-> }								\
-> EXPORT_SYMBOL(vm_get_page_prot);
-> 
-> as a helper for the architectures.
+Updating a proto which is same with sock->sk_prot is incorrect. Add proto
+and sock->sk_prot equality check at the head of tls_update() to fix it.
 
-Agreed, this will ensure the exact same implementation for all platforms
-(except those custom vm_get_page_prot), without deviations and mistakes.
+Fixes: 95fa145479fb ("bpf: sockmap/tls, close can race with map free")
+Reported-by: syzbot+29c3c12f3214b85ad081@syzkaller.appspotmail.com
+Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+---
+ net/tls/tls_main.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
+index da176411c1b5..46bd5f26338b 100644
+--- a/net/tls/tls_main.c
++++ b/net/tls/tls_main.c
+@@ -921,6 +921,9 @@ static void tls_update(struct sock *sk, struct proto *p,
+ {
+ 	struct tls_context *ctx;
+ 
++	if (sk->sk_prot == p)
++		return;
++
+ 	ctx = tls_get_ctx(sk);
+ 	if (likely(ctx)) {
+ 		ctx->sk_write_space = write_space;
+-- 
+2.25.1
+
