@@ -2,50 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D919C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:31:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA805C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:31:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345815AbiFTNbY (ORCPT
+        id S1345781AbiFTNb1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:31:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53354 "EHLO
+        Mon, 20 Jun 2022 09:31:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346932AbiFTN3X (ORCPT
+        with ESMTP id S1345861AbiFTN2g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:29:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DD36245BC;
-        Mon, 20 Jun 2022 06:12:01 -0700 (PDT)
+        Mon, 20 Jun 2022 09:28:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22D551CFC4;
+        Mon, 20 Jun 2022 06:11:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8AE12B811C4;
-        Mon, 20 Jun 2022 13:06:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B67DEC3411B;
-        Mon, 20 Jun 2022 13:06:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DAB1F60EB0;
+        Mon, 20 Jun 2022 13:11:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFAAAC3411B;
+        Mon, 20 Jun 2022 13:11:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730386;
-        bh=fYqEYfMpMmnw3A/eQFnbEnCAsansYVE/WSANxNzwF+8=;
+        s=korg; t=1655730683;
+        bh=bwxSGq6grVVZrNdxLa9wT+rkSqRiuBDi9MFrTtazeEc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y5RJgDCSrnqc9PNj4Rx9M6IxcHm+1q9pxVLlFtopE0pxoCoXoxTlKK52sGYKL67ww
-         Z18b0btTh/JFWrCV/i6jSqSB6PkinuAlOe5dOzIcuNuriXjdPZZ85eSZH0Dq39s9ml
-         Xn8UfXT+XVWIKKGQDUHrI5c6LL+Ikpj9c5uYvtrM=
+        b=IQABSn88v9jxWd9aXRsYySRG4fAayFDU32SeMAgDUSocQizjhZCtLlAtkIZySb1v+
+         KeJUc5WYLCd8ta9OaBlz4gKznPOYJAsDhakr1R6qgvHc9Cjzfra0CaceOl6UHJryrW
+         m15PN6zkvAaXn26/lWIrrnccTHQmFi5Z+hFhKMIo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Nicholas Kazlauskas <Nicholas.Kazlauskas@amd.com>,
-        Jasdeep Dhillon <jdhillon@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Sherry Wang <YAO.WANG1@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 007/106] drm/amd/display: Read Golden Settings Table from VBIOS
-Date:   Mon, 20 Jun 2022 14:50:26 +0200
-Message-Id: <20220620124724.604637952@linuxfoundation.org>
+        stable@vger.kernel.org, Herbert Xu <herbert@gondor.apana.org.au>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.4 006/240] lib/crypto: sha1: re-roll loops to reduce code size
+Date:   Mon, 20 Jun 2022 14:48:27 +0200
+Message-Id: <20220620124737.990971483@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
-References: <20220620124724.380838401@linuxfoundation.org>
+In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
+References: <20220620124737.799371052@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -54,46 +51,158 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sherry Wang <YAO.WANG1@amd.com>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-[ Upstream commit 4b81dd2cc6f4f4e8cea0ed6ee8d5193a8ae14a72 ]
+commit 9a1536b093bb5bf60689021275fd24d513bb8db0 upstream.
 
-[Why]
-Dmub read AUX_DPHY_RX_CONTROL0 from Golden Setting Table,
-but driver will set it to default value 0x103d1110, which
-causes issue in some case
+With SHA-1 no longer being used for anything performance oriented, and
+also soon to be phased out entirely, we can make up for the space added
+by unrolled BLAKE2s by simply re-rolling SHA-1. Since SHA-1 is so much
+more complex, re-rolling it more or less takes care of the code size
+added by BLAKE2s. And eventually, hopefully we'll see SHA-1 removed
+entirely from most small kernel builds.
 
-[How]
-Remove the driver code, use the value set by dmub in
-dp_aux_init
-
-Reviewed-by: Nicholas Kazlauskas <Nicholas.Kazlauskas@amd.com>
-Acked-by: Jasdeep Dhillon <jdhillon@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Sherry Wang <YAO.WANG1@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: Herbert Xu <herbert@gondor.apana.org.au>
+Cc: Ard Biesheuvel <ardb@kernel.org>
+Tested-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/display/dc/dcn31/dcn31_dio_link_encoder.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ lib/sha1.c |   95 ++++++++-----------------------------------------------------
+ 1 file changed, 14 insertions(+), 81 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_dio_link_encoder.c b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_dio_link_encoder.c
-index b0892443fbd5..c7c27a605f15 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_dio_link_encoder.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_dio_link_encoder.c
-@@ -168,9 +168,7 @@ void enc31_hw_init(struct link_encoder *enc)
- 	AUX_RX_PHASE_DETECT_LEN,  [21,20] = 0x3 default is 3
- 	AUX_RX_DETECTION_THRESHOLD [30:28] = 1
- */
--	AUX_REG_WRITE(AUX_DPHY_RX_CONTROL0, 0x103d1110);
--
--	AUX_REG_WRITE(AUX_DPHY_TX_CONTROL, 0x21c7a);
-+	// dmub will read AUX_DPHY_RX_CONTROL0/AUX_DPHY_TX_CONTROL from vbios table in dp_aux_init
+--- a/lib/sha1.c
++++ b/lib/sha1.c
+@@ -10,6 +10,7 @@
+ #include <linux/export.h>
+ #include <linux/bitops.h>
+ #include <linux/cryptohash.h>
++#include <linux/string.h>
+ #include <asm/unaligned.h>
  
- 	//AUX_DPHY_TX_REF_CONTROL'AUX_TX_REF_DIV HW default is 0x32;
- 	// Set AUX_TX_REF_DIV Divider to generate 2 MHz reference from refclk
--- 
-2.35.1
-
+ /*
+@@ -55,7 +56,8 @@
+ #define SHA_ROUND(t, input, fn, constant, A, B, C, D, E) do { \
+ 	__u32 TEMP = input(t); setW(t, TEMP); \
+ 	E += TEMP + rol32(A,5) + (fn) + (constant); \
+-	B = ror32(B, 2); } while (0)
++	B = ror32(B, 2); \
++	TEMP = E; E = D; D = C; C = B; B = A; A = TEMP; } while (0)
+ 
+ #define T_0_15(t, A, B, C, D, E)  SHA_ROUND(t, SHA_SRC, (((C^D)&B)^D) , 0x5a827999, A, B, C, D, E )
+ #define T_16_19(t, A, B, C, D, E) SHA_ROUND(t, SHA_MIX, (((C^D)&B)^D) , 0x5a827999, A, B, C, D, E )
+@@ -82,6 +84,7 @@
+ void sha_transform(__u32 *digest, const char *data, __u32 *array)
+ {
+ 	__u32 A, B, C, D, E;
++	unsigned int i = 0;
+ 
+ 	A = digest[0];
+ 	B = digest[1];
+@@ -90,94 +93,24 @@ void sha_transform(__u32 *digest, const
+ 	E = digest[4];
+ 
+ 	/* Round 1 - iterations 0-16 take their input from 'data' */
+-	T_0_15( 0, A, B, C, D, E);
+-	T_0_15( 1, E, A, B, C, D);
+-	T_0_15( 2, D, E, A, B, C);
+-	T_0_15( 3, C, D, E, A, B);
+-	T_0_15( 4, B, C, D, E, A);
+-	T_0_15( 5, A, B, C, D, E);
+-	T_0_15( 6, E, A, B, C, D);
+-	T_0_15( 7, D, E, A, B, C);
+-	T_0_15( 8, C, D, E, A, B);
+-	T_0_15( 9, B, C, D, E, A);
+-	T_0_15(10, A, B, C, D, E);
+-	T_0_15(11, E, A, B, C, D);
+-	T_0_15(12, D, E, A, B, C);
+-	T_0_15(13, C, D, E, A, B);
+-	T_0_15(14, B, C, D, E, A);
+-	T_0_15(15, A, B, C, D, E);
++	for (; i < 16; ++i)
++		T_0_15(i, A, B, C, D, E);
+ 
+ 	/* Round 1 - tail. Input from 512-bit mixing array */
+-	T_16_19(16, E, A, B, C, D);
+-	T_16_19(17, D, E, A, B, C);
+-	T_16_19(18, C, D, E, A, B);
+-	T_16_19(19, B, C, D, E, A);
++	for (; i < 20; ++i)
++		T_16_19(i, A, B, C, D, E);
+ 
+ 	/* Round 2 */
+-	T_20_39(20, A, B, C, D, E);
+-	T_20_39(21, E, A, B, C, D);
+-	T_20_39(22, D, E, A, B, C);
+-	T_20_39(23, C, D, E, A, B);
+-	T_20_39(24, B, C, D, E, A);
+-	T_20_39(25, A, B, C, D, E);
+-	T_20_39(26, E, A, B, C, D);
+-	T_20_39(27, D, E, A, B, C);
+-	T_20_39(28, C, D, E, A, B);
+-	T_20_39(29, B, C, D, E, A);
+-	T_20_39(30, A, B, C, D, E);
+-	T_20_39(31, E, A, B, C, D);
+-	T_20_39(32, D, E, A, B, C);
+-	T_20_39(33, C, D, E, A, B);
+-	T_20_39(34, B, C, D, E, A);
+-	T_20_39(35, A, B, C, D, E);
+-	T_20_39(36, E, A, B, C, D);
+-	T_20_39(37, D, E, A, B, C);
+-	T_20_39(38, C, D, E, A, B);
+-	T_20_39(39, B, C, D, E, A);
++	for (; i < 40; ++i)
++		T_20_39(i, A, B, C, D, E);
+ 
+ 	/* Round 3 */
+-	T_40_59(40, A, B, C, D, E);
+-	T_40_59(41, E, A, B, C, D);
+-	T_40_59(42, D, E, A, B, C);
+-	T_40_59(43, C, D, E, A, B);
+-	T_40_59(44, B, C, D, E, A);
+-	T_40_59(45, A, B, C, D, E);
+-	T_40_59(46, E, A, B, C, D);
+-	T_40_59(47, D, E, A, B, C);
+-	T_40_59(48, C, D, E, A, B);
+-	T_40_59(49, B, C, D, E, A);
+-	T_40_59(50, A, B, C, D, E);
+-	T_40_59(51, E, A, B, C, D);
+-	T_40_59(52, D, E, A, B, C);
+-	T_40_59(53, C, D, E, A, B);
+-	T_40_59(54, B, C, D, E, A);
+-	T_40_59(55, A, B, C, D, E);
+-	T_40_59(56, E, A, B, C, D);
+-	T_40_59(57, D, E, A, B, C);
+-	T_40_59(58, C, D, E, A, B);
+-	T_40_59(59, B, C, D, E, A);
++	for (; i < 60; ++i)
++		T_40_59(i, A, B, C, D, E);
+ 
+ 	/* Round 4 */
+-	T_60_79(60, A, B, C, D, E);
+-	T_60_79(61, E, A, B, C, D);
+-	T_60_79(62, D, E, A, B, C);
+-	T_60_79(63, C, D, E, A, B);
+-	T_60_79(64, B, C, D, E, A);
+-	T_60_79(65, A, B, C, D, E);
+-	T_60_79(66, E, A, B, C, D);
+-	T_60_79(67, D, E, A, B, C);
+-	T_60_79(68, C, D, E, A, B);
+-	T_60_79(69, B, C, D, E, A);
+-	T_60_79(70, A, B, C, D, E);
+-	T_60_79(71, E, A, B, C, D);
+-	T_60_79(72, D, E, A, B, C);
+-	T_60_79(73, C, D, E, A, B);
+-	T_60_79(74, B, C, D, E, A);
+-	T_60_79(75, A, B, C, D, E);
+-	T_60_79(76, E, A, B, C, D);
+-	T_60_79(77, D, E, A, B, C);
+-	T_60_79(78, C, D, E, A, B);
+-	T_60_79(79, B, C, D, E, A);
++	for (; i < 80; ++i)
++		T_60_79(i, A, B, C, D, E);
+ 
+ 	digest[0] += A;
+ 	digest[1] += B;
 
 
