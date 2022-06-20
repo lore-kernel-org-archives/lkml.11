@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83628C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:07:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B816C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:07:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244738AbiFTNHm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:07:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51264 "EHLO
+        id S244777AbiFTNHq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:07:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244051AbiFTNEd (ORCPT
+        with ESMTP id S244023AbiFTNEd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 20 Jun 2022 09:04:33 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88F49193DA;
-        Mon, 20 Jun 2022 05:59:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FF05193DF;
+        Mon, 20 Jun 2022 05:59:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 25B5561535;
-        Mon, 20 Jun 2022 12:59:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1C56C3411B;
-        Mon, 20 Jun 2022 12:59:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B02461535;
+        Mon, 20 Jun 2022 12:59:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39599C3411B;
+        Mon, 20 Jun 2022 12:59:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655729981;
-        bh=1X9QZlKy3N/ytBJj/DbB5zz0kkGXy5zj9pdAlAhiWf4=;
+        s=korg; t=1655729984;
+        bh=QWVOvaoQcs9rJFN9ZErPqPmZV92C+J1OsaNkwQKcuwg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RKh5KYl0CPQdbsa0AF6tCi6vdZktNY+p/UIAHZKeC5dbEhSTaHulR3ME9Nx7VZE5F
-         z0pvjjomf3qU2h1fDDfBN/yOwDWvLYg9g+E6cJEHHx6vJk2Sc6r/XFTyO7mKulFGuB
-         WOD7NqywzMb84LpQ4l6zUkxkIjXR3gp+Pf3IbP0Q=
+        b=yWwrCNMheFllQcwOVMHZ6q2dET4Wxbc1PtU+7cyhX/Ck+W8DnFv+HH7XK3jOcdEP8
+         3qcZUaipp2HBDokaZGJm+U2mkK/XPQNAlqyX6H7VV528WF88I8Z0aDNOXMjO00Um1d
+         NlhOckT1blSXbHMPE92VXTyZq4kVKDc7gvJwWVyE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>,
-        Scott Wood <oss@buserror.net>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.18 137/141] powerpc/book3e: get rid of #include <generated/compile.h>
-Date:   Mon, 20 Jun 2022 14:51:15 +0200
-Message-Id: <20220620124733.608911236@linuxfoundation.org>
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        Mike Snitzer <snitzer@kernel.org>
+Subject: [PATCH 5.18 120/141] dm mirror log: round up region bitmap size to BITS_PER_LONG
+Date:   Mon, 20 Jun 2022 14:50:58 +0200
+Message-Id: <20220620124733.098180033@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 References: <20220620124729.509745706@linuxfoundation.org>
@@ -49,68 +48,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masahiro Yamada <masahiroy@kernel.org>
+From: Mikulas Patocka <mpatocka@redhat.com>
 
-commit 7ad4bd887d27c6b6ffbef216f19c19f8fe2b8f52 upstream.
+commit 85e123c27d5cbc22cfdc01de1e2ca1d9003a02d0 upstream.
 
-You cannot include <generated/compile.h> here because it is generated
-in init/Makefile but there is no guarantee that it happens before
-arch/powerpc/mm/nohash/kaslr_booke.c is compiled for parallel builds.
+The code in dm-log rounds up bitset_size to 32 bits. It then uses
+find_next_zero_bit_le on the allocated region. find_next_zero_bit_le
+accesses the bitmap using unsigned long pointers. So, on 64-bit
+architectures, it may access 4 bytes beyond the allocated size.
 
-The places where you can reliably include <generated/compile.h> are:
+Fix this bug by rounding up bitset_size to BITS_PER_LONG.
 
-  - init/          (because init/Makefile can specify the dependency)
-  - arch/*/boot/   (because it is compiled after vmlinux)
+This bug was found by running the lvm2 testsuite with kasan.
 
-Commit f231e4333312 ("hexagon: get rid of #include <generated/compile.h>")
-fixed the last breakage at that time, but powerpc re-added this.
-
-<generated/compile.h> was unneeded because 'build_str' is almost the
-same as 'linux_banner' defined in init/version.c
-
-Let's copy the solution from MIPS.
-(get_random_boot() in arch/mips/kernel/relocate.c)
-
-Fixes: 6a38ea1d7b94 ("powerpc/fsl_booke/32: randomize the kernel image offset")
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Acked-by: Scott Wood <oss@buserror.net>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220604085050.4078927-1-masahiroy@kernel.org
+Fixes: 29121bd0b00e ("[PATCH] dm mirror log: bitset_size fix")
+Cc: stable@vger.kernel.org
+Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Mike Snitzer <snitzer@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/mm/nohash/kaslr_booke.c |    8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+ drivers/md/dm-log.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/arch/powerpc/mm/nohash/kaslr_booke.c
-+++ b/arch/powerpc/mm/nohash/kaslr_booke.c
-@@ -18,7 +18,6 @@
- #include <asm/prom.h>
- #include <asm/kdump.h>
- #include <mm/mmu_decl.h>
--#include <generated/compile.h>
- #include <generated/utsrelease.h>
+--- a/drivers/md/dm-log.c
++++ b/drivers/md/dm-log.c
+@@ -415,8 +415,7 @@ static int create_log_context(struct dm_
+ 	/*
+ 	 * Work out how many "unsigned long"s we need to hold the bitset.
+ 	 */
+-	bitset_size = dm_round_up(region_count,
+-				  sizeof(*lc->clean_bits) << BYTE_SHIFT);
++	bitset_size = dm_round_up(region_count, BITS_PER_LONG);
+ 	bitset_size >>= BYTE_SHIFT;
  
- struct regions {
-@@ -36,10 +35,6 @@ struct regions {
- 	int reserved_mem_size_cells;
- };
- 
--/* Simplified build-specific string for starting entropy. */
--static const char build_str[] = UTS_RELEASE " (" LINUX_COMPILE_BY "@"
--		LINUX_COMPILE_HOST ") (" LINUX_COMPILER ") " UTS_VERSION;
--
- struct regions __initdata regions;
- 
- static __init void kaslr_get_cmdline(void *fdt)
-@@ -70,7 +65,8 @@ static unsigned long __init get_boot_see
- {
- 	unsigned long hash = 0;
- 
--	hash = rotate_xor(hash, build_str, sizeof(build_str));
-+	/* build-specific string for starting entropy. */
-+	hash = rotate_xor(hash, linux_banner, strlen(linux_banner));
- 	hash = rotate_xor(hash, fdt, fdt_totalsize(fdt));
- 
- 	return hash;
+ 	lc->bitset_uint32_count = bitset_size / sizeof(*lc->clean_bits);
 
 
