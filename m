@@ -2,46 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D549DC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:04:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6254BCCA47C
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:04:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244161AbiFTNDC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:03:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47628 "EHLO
+        id S244116AbiFTNDX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:03:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243364AbiFTNB1 (ORCPT
+        with ESMTP id S243643AbiFTNBn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:01:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE2401D30E;
-        Mon, 20 Jun 2022 05:57:18 -0700 (PDT)
+        Mon, 20 Jun 2022 09:01:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 524AC1D339;
+        Mon, 20 Jun 2022 05:57:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2E4F5B811A3;
-        Mon, 20 Jun 2022 12:57:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D1BBC341C4;
-        Mon, 20 Jun 2022 12:57:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8841761538;
+        Mon, 20 Jun 2022 12:57:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94E16C3411B;
+        Mon, 20 Jun 2022 12:57:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655729835;
-        bh=4Rx4HJ/h5ecDSnypmxv1UZjjGFyfEiNCr0kUC9xd7iI=;
+        s=korg; t=1655729842;
+        bh=f4ierFhYKiIg4w0A3habm5TSCOLZQu2deHCWmz73H3I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Zt5SNroMNGBsh0oEay58dK+wewSYtV9rFZH7Ql2sH0Mo1AjV6kHMKo6xUr/chp/D9
-         PSBNJ907gEPImkSl3UURCcqvi0QmsYIzDkIAPTmzdpCsazhl1ZQJ3XF4WV2wwy1SH2
-         4UQSv+OO4Wsrabv6qHat2yChJe9aTm/oRCbpHQXg=
+        b=Wu7iSQsBAxdp4yL3p+SzKvbFMCYych3yiNw2zGEwkbrcFpTuK2YNnKcn0kLmFkYbm
+         NQSVDxMzzcRxj6sHSItLWHHWWsWHrko9GPiuHxE8yKFKIgD/br0eHzW9G911mNOjtN
+         i4pXstiS4Nkg/mQXOcNogV8M6aX633tlopj9uNUA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Will Deacon <will@kernel.org>,
-        "Ivan T. Ivanov" <iivanov@suse.de>,
-        Chengming Zhou <zhouchengming@bytedance.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 083/141] arm64: ftrace: fix branch range checks
-Date:   Mon, 20 Jun 2022 14:50:21 +0200
-Message-Id: <20220620124731.994830188@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 093/141] irqchip/apple-aic: Fix refcount leak in aic_of_ic_init
+Date:   Mon, 20 Jun 2022 14:50:31 +0200
+Message-Id: <20220620124732.294192757@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 References: <20220620124729.509745706@linuxfoundation.org>
@@ -53,84 +48,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Rutland <mark.rutland@arm.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 3eefdf9d1e406f3da47470b2854347009ffcb6fa ]
+[ Upstream commit 3d45670fab3c25a7452721e4588cc95c51cda134 ]
 
-The branch range checks in ftrace_make_call() and ftrace_make_nop() are
-incorrect, erroneously permitting a forwards branch of 128M and
-erroneously rejecting a backwards branch of 128M.
+of_get_child_by_name() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-This is because both functions calculate the offset backwards,
-calculating the offset *from* the target *to* the branch, rather than
-the other way around as the later comparisons expect.
-
-If an out-of-range branch were erroeously permitted, this would later be
-rejected by aarch64_insn_gen_branch_imm() as branch_imm_common() checks
-the bounds correctly, resulting in warnings and the placement of a BRK
-instruction. Note that this can only happen for a forwards branch of
-exactly 128M, and so the caller would need to be exactly 128M bytes
-below the relevant ftrace trampoline.
-
-If an in-range branch were erroeously rejected, then:
-
-* For modules when CONFIG_ARM64_MODULE_PLTS=y, this would result in the
-  use of a PLT entry, which is benign.
-
-  Note that this is the common case, as this is selected by
-  CONFIG_RANDOMIZE_BASE (and therefore RANDOMIZE_MODULE_REGION_FULL),
-  which distributions typically seelct. This is also selected by
-  CONFIG_ARM64_ERRATUM_843419.
-
-* For modules when CONFIG_ARM64_MODULE_PLTS=n, this would result in
-  internal ftrace failures.
-
-* For core kernel text, this would result in internal ftrace failues.
-
-  Note that for this to happen, the kernel text would need to be at
-  least 128M bytes in size, and typical configurations are smaller tha
-  this.
-
-Fix this by calculating the offset *from* the branch *to* the target in
-both functions.
-
-Fixes: f8af0b364e24 ("arm64: ftrace: don't validate branch via PLT in ftrace_make_nop()")
-Fixes: e71a4e1bebaf ("arm64: ftrace: add support for far branches to dynamic ftrace")
-Signed-off-by: Mark Rutland <mark.rutland@arm.com>
-Cc: Ard Biesheuvel <ardb@kernel.org>
-Cc: Will Deacon <will@kernel.org>
-Tested-by: "Ivan T. Ivanov" <iivanov@suse.de>
-Reviewed-by: Chengming Zhou <zhouchengming@bytedance.com>
-Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
-Link: https://lore.kernel.org/r/20220614080944.1349146-2-mark.rutland@arm.com
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Fixes: a5e8801202b3 ("irqchip/apple-aic: Parse FIQ affinities from device-tree")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220601080930.31005-4-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/kernel/ftrace.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/irqchip/irq-apple-aic.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm64/kernel/ftrace.c b/arch/arm64/kernel/ftrace.c
-index 4506c4a90ac1..d9e3eda419ec 100644
---- a/arch/arm64/kernel/ftrace.c
-+++ b/arch/arm64/kernel/ftrace.c
-@@ -84,7 +84,7 @@ int ftrace_make_call(struct dyn_ftrace *rec, unsigned long addr)
- {
- 	unsigned long pc = rec->ip;
- 	u32 old, new;
--	long offset = (long)pc - (long)addr;
-+	long offset = (long)addr - (long)pc;
+diff --git a/drivers/irqchip/irq-apple-aic.c b/drivers/irqchip/irq-apple-aic.c
+index 478d0af16d9f..5ac83185ff47 100644
+--- a/drivers/irqchip/irq-apple-aic.c
++++ b/drivers/irqchip/irq-apple-aic.c
+@@ -1144,6 +1144,7 @@ static int __init aic_of_ic_init(struct device_node *node, struct device_node *p
+ 		for_each_child_of_node(affs, chld)
+ 			build_fiq_affinity(irqc, chld);
+ 	}
++	of_node_put(affs);
  
- 	if (offset < -SZ_128M || offset >= SZ_128M) {
- 		struct module *mod;
-@@ -183,7 +183,7 @@ int ftrace_make_nop(struct module *mod, struct dyn_ftrace *rec,
- 	unsigned long pc = rec->ip;
- 	bool validate = true;
- 	u32 old = 0, new;
--	long offset = (long)pc - (long)addr;
-+	long offset = (long)addr - (long)pc;
- 
- 	if (offset < -SZ_128M || offset >= SZ_128M) {
- 		u32 replaced;
+ 	set_handle_irq(aic_handle_irq);
+ 	set_handle_fiq(aic_handle_fiq);
 -- 
 2.35.1
 
