@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E99AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:17:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2371C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:17:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343899AbiFTNRM (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:17:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53510 "EHLO
+        id S245651AbiFTNRP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:17:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344454AbiFTNKQ (ORCPT
+        with ESMTP id S1344592AbiFTNKW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:10:16 -0400
+        Mon, 20 Jun 2022 09:10:22 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A93DD1CFC4;
-        Mon, 20 Jun 2022 06:05:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13B011CFF7;
+        Mon, 20 Jun 2022 06:05:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A3011B811CC;
-        Mon, 20 Jun 2022 13:02:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAC80C3411B;
-        Mon, 20 Jun 2022 13:02:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6151FB811CB;
+        Mon, 20 Jun 2022 13:02:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60CA5C3411B;
+        Mon, 20 Jun 2022 13:02:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730147;
-        bh=9iz+eAWx5+Ws2N52jR5JJFMW77Zr3QxK4wBKjTOUjec=;
+        s=korg; t=1655730163;
+        bh=K76a5TvFGJUF2CBEP0W6kloGTiafSGkY5l+yzkmeFvY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C6Xf7WN4z1fsZe/JUj1fCXtFSMGXrKdGlTcHj6BYWlOaoY1aJSPBbF1vCsqUB+1rz
-         msVjX7GMwUQtAhD6AXHhizaMb834QOVn70ogj5YdxV9Un8pfUTLNHIU2diGV8umUbn
-         a06sNAZ9HE2CIQCHb+UnvZmyMP6DiFNL7zPaxVOs=
+        b=XAc0ooHYzSCwV02GoACsU0hzVcxkhF5ay8owDTRnJEH02WzkYVNN4e6RW6qoAEZ+p
+         O058OmMpzHoI4OtaSGBLZKj4kLIjgOW45QOnM7/tUBcEhlTaYODW2jF30PlJiF3eOX
+         Xa19oHkqFDSgjYsCkMwSfB51Eo+AK+rVvEFO0dWM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 48/84] net: bgmac: Fix an erroneous kfree() in bgmac_remove()
-Date:   Mon, 20 Jun 2022 14:51:11 +0200
-Message-Id: <20220620124722.309628108@linuxfoundation.org>
+        Saurabh Sengar <ssengar@linux.microsoft.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 41/84] Drivers: hv: vmbus: Release cpu lock in error case
+Date:   Mon, 20 Jun 2022 14:51:04 +0200
+Message-Id: <20220620124722.107170698@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124720.882450983@linuxfoundation.org>
 References: <20220620124720.882450983@linuxfoundation.org>
@@ -52,37 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Saurabh Sengar <ssengar@linux.microsoft.com>
 
-[ Upstream commit d7dd6eccfbc95ac47a12396f84e7e1b361db654b ]
+[ Upstream commit 656c5ba50b7172a0ea25dc1b37606bd51d01fe8d ]
 
-'bgmac' is part of a managed resource allocated with bgmac_alloc(). It
-should not be freed explicitly.
+In case of invalid sub channel, release cpu lock before returning.
 
-Remove the erroneous kfree() from the .remove() function.
-
-Fixes: 34a5102c3235 ("net: bgmac: allocate struct bgmac just once & don't copy it")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/a026153108dd21239036a032b95c25b5cece253b.1655153616.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: a949e86c0d780 ("Drivers: hv: vmbus: Resolve race between init_vp_index() and CPU hotplug")
+Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
+Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+Link: https://lore.kernel.org/r/1654794996-13244-1-git-send-email-ssengar@linux.microsoft.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bgmac-bcma.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/hv/channel_mgmt.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/broadcom/bgmac-bcma.c b/drivers/net/ethernet/broadcom/bgmac-bcma.c
-index a5fd161ab5ee..26746197515f 100644
---- a/drivers/net/ethernet/broadcom/bgmac-bcma.c
-+++ b/drivers/net/ethernet/broadcom/bgmac-bcma.c
-@@ -323,7 +323,6 @@ static void bgmac_remove(struct bcma_device *core)
- 	bcma_mdio_mii_unregister(bgmac->mii_bus);
- 	bgmac_enet_remove(bgmac);
- 	bcma_set_drvdata(core, NULL);
--	kfree(bgmac);
- }
- 
- static struct bcma_driver bgmac_bcma_driver = {
+diff --git a/drivers/hv/channel_mgmt.c b/drivers/hv/channel_mgmt.c
+index 5dbb949b1afd..10188b1a6a08 100644
+--- a/drivers/hv/channel_mgmt.c
++++ b/drivers/hv/channel_mgmt.c
+@@ -606,6 +606,7 @@ static void vmbus_process_offer(struct vmbus_channel *newchannel)
+ 		 */
+ 		if (newchannel->offermsg.offer.sub_channel_index == 0) {
+ 			mutex_unlock(&vmbus_connection.channel_mutex);
++			cpus_read_unlock();
+ 			/*
+ 			 * Don't call free_channel(), because newchannel->kobj
+ 			 * is not initialized yet.
 -- 
 2.35.1
 
