@@ -2,112 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 142F0C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 22:21:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D109CC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 22:25:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344202AbiFTWVg (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 18:21:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38066 "EHLO
+        id S243664AbiFTWZL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 18:25:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344570AbiFTWV0 (ORCPT
+        with ESMTP id S242768AbiFTWZI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 18:21:26 -0400
-Received: from gproxy4-pub.mail.unifiedlayer.com (gproxy4-pub.mail.unifiedlayer.com [69.89.23.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 163F21B78B
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 15:21:01 -0700 (PDT)
-Received: from cmgw12.mail.unifiedlayer.com (unknown [10.0.90.127])
-        by progateway6.mail.pro1.eigbox.com (Postfix) with ESMTP id 2E77610041229
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 22:21:01 +0000 (UTC)
-Received: from box5620.bluehost.com ([162.241.219.59])
-        by cmsmtp with ESMTP
-        id 3PlUoIMPBPDOm3PlUoQSBw; Mon, 20 Jun 2022 22:21:01 +0000
-X-Authority-Reason: nr=8
-X-Authority-Analysis: v=2.4 cv=Wt3ujfTv c=1 sm=1 tr=0 ts=62b0f2cd
- a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
- a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
- a=JPEYwPQDsx4A:10:nop_rcvd_month_year
- a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
- a=HaFmDPmJAAAA:8 a=49j0FZ7RFL9ueZfULrUA:9 a=QEXdDO2ut3YA:10:nop_charset_2
- a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
-        s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
-        Message-ID:From:In-Reply-To:References:Cc:To:Subject:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=HZf2G7xR0fSQshOdtg3RXmnoGuS2F+oE+ZQZ7WsxZ2M=; b=mZbLGEgrkiUNyyYRLa+kD1HGHP
-        TRTYKLUKzFPhjfpur/TFiOIZZ+AAA/mDRYhw6eDkeJTHCLQLWWnJ5KslLjcnjYtQYabhao1hYXBl3
-        6Q/s5TLELDFgBoGiqJv8zWJfabPBaML4eFHC0ETqqi3G8uN7JcV5JfN1EZYzXOJYsrp6OIPYWNSjs
-        EJOE6HsJPaKZsZnlPiEBMqd2tKw+Pydp7cpPMqITy7Rtxm3XOHXpgh2zi03KtcW0ocSJm5+1pMm1P
-        ZxQ0O+tiW3Qobe5z/FZM/PWajgRcJpi+vYPv4PT1eRfXO4tl8enln+x2/tNGEdnpE6u8GAYuEodgp
-        aIg+093w==;
-Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:45060 helo=[10.0.1.48])
-        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.95)
-        (envelope-from <re@w6rz.net>)
-        id 1o3PlT-000tA3-JL;
-        Mon, 20 Jun 2022 16:20:59 -0600
-Subject: Re: [PATCH 5.18 000/141] 5.18.6-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-References: <20220620124729.509745706@linuxfoundation.org>
-In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
-From:   Ron Economos <re@w6rz.net>
-Message-ID: <a87c5dec-b9dc-a7e5-2e4f-8ce514b85144@w6rz.net>
-Date:   Mon, 20 Jun 2022 15:20:57 -0700
-User-Agent: Mozilla/5.0 (X11; Linux armv7l; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Mon, 20 Jun 2022 18:25:08 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 340A113E3F
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 15:25:07 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 3E74E1F9D0;
+        Mon, 20 Jun 2022 22:25:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1655763905; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=PJ0iztHxsK8a+Ha9h5rHbJfy+QtzjyiswzEJIkBJEYg=;
+        b=Lou7oJk0l21cmXaZoH5uz/345ApgwxkXV3JrYfjJ3Fxse7kAMVwnYzhoECxQEy7NK1+TbP
+        lvceRmr6MG7ZQUkmE76xbGdfFvw6NMBdnu8FetBVz9b1z5vhSDp0F/ndcTT5qKnxx5WPb5
+        50+tyeKnw/McWVROCIfEKqCSuUOrSzg=
+Received: from suse.cz (unknown [10.100.201.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id A38E02C141;
+        Mon, 20 Jun 2022 22:25:04 +0000 (UTC)
+Date:   Tue, 21 Jun 2022 00:25:01 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        John Ogness <john.ogness@linutronix.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Jan Kara <jack@suse.cz>, Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [PATCH] printk/console: Enable console kthreads only when there
+ is no boot console left
+Message-ID: <YrDzvX1fXWn5hMWL@alley>
+References: <20220619204949.50d9154d@thinkpad>
+ <87r13kwawb.fsf@jogness.linutronix.de>
+ <20220620112936.48fcb2a4@thinkpad>
+ <YrBdjVwBOVgLfHyb@alley>
+ <CAHk-=wgdquXVVE37CZooVK4X+YdSa7XoGtjr71CEYh8UsdKUow@mail.gmail.com>
+ <YrCDNqsPrY+Hs9ju@alley>
+ <YrCO04oNncE1xF5K@alley>
+ <CAHk-=whBSrixcBVoWGnU0eoaksp82gnQ9_1jMNZsCzhLXEgEpw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - box5620.bluehost.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - w6rz.net
-X-BWhitelist: no
-X-Source-IP: 73.162.232.9
-X-Source-L: No
-X-Exim-ID: 1o3PlT-000tA3-JL
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.48]) [73.162.232.9]:45060
-X-Source-Auth: re@w6rz.net
-X-Email-Count: 2
-X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
-X-Local-Domain: yes
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=whBSrixcBVoWGnU0eoaksp82gnQ9_1jMNZsCzhLXEgEpw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/20/22 5:48 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.18.6 release.
-> There are 141 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On Mon 2022-06-20 14:10:20, Linus Torvalds wrote:
+> On Mon, Jun 20, 2022 at 10:14 AM Petr Mladek <pmladek@suse.com> wrote:
+> >
+> > The console kthreads uncovered several races in console drivers.
+> 
+> I really want to make it clear that this was NOT some kind of "races
+> in drivers".
 >
-> Responses should be made by Wed, 22 Jun 2022 12:47:02 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.6-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.18.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+> Console drivers may very well  have intentionally avoided taking locks
+> for console output, since the printk output was supposed to be
+> serialized by printk.
+> 
+> Don't try to make this some kind of "buggy drivers" thing. This is on
+> printk, not on anything else.
 
-Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
+OK, I see that uart_console_write() is used by
+early_serial8250_write() without port->lock. It means that it is
+racy against serial8250_console_write(). It might
+cause problems reported by this thread. And you are
+right that it has never been used in parallel before the kthreads.
 
-Tested-by: Ron Economos <re@w6rz.net>
+But I believe that it might cause real problems. serial8250_console_write()
+takes port->lock to get serialized against other operations on the
+port. And there might be some when the same port is added as
+a proper serial console.
 
+Today I found that probe_baud() is called from
+serial8250_console_setup() without port->lock. It does reads and
+writes. I believe that it might break with the earlycon.
+
+Also the commit 589f892ac8ef244e47c5a ("serial: meson:
+acquire port->lock in startup()") fixes a race between
+meson_serial_port_write() and meson_uart_startup(), where
+meson_serial_port_write() is used by both early and proper
+console driver. The problem was there even without kthreads.
+They just made it more visible.
+
+My colleagues familiar with ARM told me that they heard about
+boot freezes with early consoles before threads. The kthreads
+allow to reproduce and fix them. In the end, they make the early
+consoles more reliable.
+
+
+> Assuming this solves all issues, I'm ok with this approach, but I
+> really want this to be clearly about printk being buggy, no "blame the
+> drivers" garbage.
+>
+> And if there are other issues coming up, we revert the whole thing entirely.
+> 
+> Because printk is too important to play games with, and too important
+> to try to blame drivers.
+
+I take printk() really seriously. And I definitely do not want
+to wave out problems as others problem.
+
+I do not want to release 5.19 with broken printk(). But the kthreads
+solve real bugs where printk() put the system into knees. I want
+to invest much more time on improving them and fixing related
+problems. Unfortunately, linux-next was not able to catch
+the recently reported problems and we were not able to fix them
+in advance.
+
+All the recent fixes were generic and should make printk() with
+kthreads much more reliable. I can't be sure if it will be enough.
+I could only say that I am going to fix any new ones.
+
+Of course, if people continue reporting problems, we would need
+to revert it for 5.19. But I would really like to give it another
+chance later.
+
+Best Regards,
+Petr
