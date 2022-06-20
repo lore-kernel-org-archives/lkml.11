@@ -2,463 +2,276 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3430C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 10:06:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6276CC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 10:07:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239376AbiFTKGt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 06:06:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38482 "EHLO
+        id S239124AbiFTKHQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 06:07:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239124AbiFTKGm (ORCPT
+        with ESMTP id S240451AbiFTKHL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 06:06:42 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0421E1030;
-        Mon, 20 Jun 2022 03:06:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655719600; x=1687255600;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=3O74OoWkH/A87P21AgivPk4iFTe+cL+7psl//jnUvOE=;
-  b=cascRjLrhrHQzQEwKnpc85Ln34E60RNNVLNDVfKWlF8bgWmO+TVkK4mo
-   Gwjyn4DPm/Gqj6GM3SSu0g4oPv7/I9D34AshqOv3sKRmyosmjOT1QB+mg
-   lu87az65sI/3ZZSnJZq7OmphrZ1XuBLsu+ZYH/sOKAM8WUL2nHllH/S7V
-   TK3ebwYA5dUpnflumWxNA7n/Lxie/HnxXOINOTkXKXSQzwFsIvI1J6Zb9
-   ZjqHynJWTSr7Zl+/5SUPuEUdUmOmT2CZ/0QxUgBYoH+fyri+bfQZLvKQN
-   C3SYonyLm/Dx89YYLMU+AZotU6bXCskXe0vjD0sAk6OHGyVrQZZM4KX4F
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="277404662"
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="277404662"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 03:06:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="833045031"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by fmsmga006.fm.intel.com with ESMTP; 20 Jun 2022 03:06:38 -0700
-Date:   Mon, 20 Jun 2022 17:58:32 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     Tianfei Zhang <tianfei.zhang@intel.com>
-Cc:     lee.jones@linaro.org, hao.wu@intel.com, trix@redhat.com,
-        linux-kernel@vger.kernel.org, linux-fpga@vger.kernel.org,
-        russell.h.weight@intel.com, matthew.gerlach@linux.intel.com
-Subject: Re: [PATCH v2 2/4] mfd: intel-m10-bmc: split into core and spi
-Message-ID: <20220620095832.GB1319418@yilunxu-OptiPlex-7050>
-References: <20220617020405.128352-1-tianfei.zhang@intel.com>
- <20220617020405.128352-3-tianfei.zhang@intel.com>
+        Mon, 20 Jun 2022 06:07:11 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8265D644C
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 03:07:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655719626;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=H8+oyhT+8f+yjPHoPC8FgRV/Li3g70WqJrxyO3naqDE=;
+        b=EAmZH1+m3thmANW/n2fx8fBSupJd4IqbP0wSkINtUuQ7srhdASm4rAu5WtDoRBEPXO2QXr
+        DbHtEK2BA9A72uTez9CZ8qmjAJXa5Ysa+yNOFsDSACNNWi8IZoFLZTAcNU8uWa+RbahsJC
+        J1sxfUDRe2d6ETWtYDKPN2l7UrRuvFA=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-302-VDstPHVpPGqsT4dxuuzduA-1; Mon, 20 Jun 2022 06:07:05 -0400
+X-MC-Unique: VDstPHVpPGqsT4dxuuzduA-1
+Received: by mail-ed1-f70.google.com with SMTP id b14-20020a056402278e00b004359006fd49so85656ede.8
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 03:07:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=H8+oyhT+8f+yjPHoPC8FgRV/Li3g70WqJrxyO3naqDE=;
+        b=T7M5tZ3t/NdDn/BiMkmrzV+eqmQ+Z4/o/lfiJUdHE9UwLCObp9a/Hmy2sKRXUB0puw
+         zcubVj+H+2eVFSDWQAqzRVUDlKsmet3fV1AklB9Ie4+2v4+ap4if2KhAmvYgp9gWKFew
+         5t6T/tE/BMZGJ80tGMe9bGux25tPvkabRd5GPxi02+e5yG37zBTlEmsCRcJeYm8/Vo/d
+         BP+AckgmKSBqvfGP3e6+FR0iGne5504w+Y8yPvf6bSOEEVG1kGSLJDcHTcJkiQrU3+wm
+         0dlvrB0AGPCL/O/Bn3dSEyIl/rFssWdaiFrQMSQs0f8KvZa83DeCoX/W0ktealBlyWV7
+         RZYQ==
+X-Gm-Message-State: AJIora/3SW2qkglY/W68oQJ23YucVEZJEKgK2mnUfbv+/OsFbmQj6wDn
+        acRcNSeh76GzUeZQjfLwqUV1/Hqvd/QD5L1mBA+mqMElonKaWVbcvVlNbhg04DD7wl33SFoPQJd
+        OpZVD/NRuOfYHqd3rVmWaXDLq
+X-Received: by 2002:a17:906:6947:b0:711:a86b:6780 with SMTP id c7-20020a170906694700b00711a86b6780mr20685665ejs.686.1655719624524;
+        Mon, 20 Jun 2022 03:07:04 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1u/bE5PbUXYWNZC5VVu4LfaqOg1wJkcAHhTMKdsDxWystOWTHiclgbd+3CabgeQZjeuhlnZxg==
+X-Received: by 2002:a17:906:6947:b0:711:a86b:6780 with SMTP id c7-20020a170906694700b00711a86b6780mr20685640ejs.686.1655719624264;
+        Mon, 20 Jun 2022 03:07:04 -0700 (PDT)
+Received: from redhat.com ([2.52.146.221])
+        by smtp.gmail.com with ESMTPSA id m13-20020a056402510d00b0042ddd08d5f8sm10152736edd.2.2022.06.20.03.07.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Jun 2022 03:07:03 -0700 (PDT)
+Date:   Mon, 20 Jun 2022 06:06:59 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Eugenio Perez Martin <eperezma@redhat.com>
+Cc:     Jason Wang <jasowang@redhat.com>, Eli Cohen <elic@nvidia.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Si-Wei Liu <si-wei.liu@oracle.com>,
+        Parav Pandit <parav@nvidia.com>
+Subject: Re: [PATCH RFC 1/3] vdpa/mlx5: Implement susupend virtqueue callback
+Message-ID: <20220620060312-mutt-send-email-mst@kernel.org>
+References: <20220616132725.50599-1-elic@nvidia.com>
+ <20220616132725.50599-2-elic@nvidia.com>
+ <CACGkMEue-X8-u0Z=EwUbBSV6vmomwNy52Tot3Zf+0pu4Pztutg@mail.gmail.com>
+ <CAJaqyWfTG_jVW6Vzf64QO=255kfwWKn4gCUMeGog-1shHx3O_g@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220617020405.128352-3-tianfei.zhang@intel.com>
+In-Reply-To: <CAJaqyWfTG_jVW6Vzf64QO=255kfwWKn4gCUMeGog-1shHx3O_g@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 16, 2022 at 10:04:03PM -0400, Tianfei Zhang wrote:
-> Split the common code from intel-m10-bmc driver into intel-m10-bmc-core.
-> intel-m10-bmc-core is the core MFD functions which can support multiple
-> bus interfaces like SPI bus.
-
-Please specify which else are you going to support, for better
-understanding.
-
+On Mon, Jun 20, 2022 at 11:58:33AM +0200, Eugenio Perez Martin wrote:
+> On Mon, Jun 20, 2022 at 10:56 AM Jason Wang <jasowang@redhat.com> wrote:
+> >
+> > On Thu, Jun 16, 2022 at 9:27 PM Eli Cohen <elic@nvidia.com> wrote:
+> > >
+> > > Implement the suspend callback allowing to suspend the virtqueues so
+> > > they stop processing descriptors. This is required to allow the shadow
+> > > virtqueue to kick in.
+> > >
+> > > Signed-off-by: Eli Cohen <elic@nvidia.com>
+> > > ---
+> > >  drivers/vdpa/mlx5/net/mlx5_vnet.c  | 68 +++++++++++++++++++++++++++++-
+> > >  include/linux/mlx5/mlx5_ifc_vdpa.h |  8 ++++
+> > >  2 files changed, 75 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > index fb0b23e71383..ea4bc8a0cd25 100644
+> > > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > @@ -895,6 +895,7 @@ static int create_virtqueue(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtque
+> > >         if (err)
+> > >                 goto err_cmd;
+> > >
+> > > +       mvq->fw_state = MLX5_VIRTIO_NET_Q_OBJECT_STATE_INIT;
+> > >         kfree(in);
+> > >         mvq->virtq_id = MLX5_GET(general_obj_out_cmd_hdr, out, obj_id);
+> > >
+> > > @@ -922,6 +923,7 @@ static void destroy_virtqueue(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtq
+> > >                 mlx5_vdpa_warn(&ndev->mvdev, "destroy virtqueue 0x%x\n", mvq->virtq_id);
+> > >                 return;
+> > >         }
+> > > +       mvq->fw_state = MLX5_VIRTIO_NET_Q_OBJECT_NONE;
+> > >         umems_destroy(ndev, mvq);
+> > >  }
+> > >
+> > > @@ -1121,6 +1123,20 @@ static int query_virtqueue(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueu
+> > >         return err;
+> > >  }
+> > >
+> > > +static bool is_valid_state_change(int oldstate, int newstate)
+> > > +{
+> > > +       switch (oldstate) {
+> > > +       case MLX5_VIRTIO_NET_Q_OBJECT_STATE_INIT:
+> > > +               return newstate == MLX5_VIRTIO_NET_Q_OBJECT_STATE_RDY;
+> > > +       case MLX5_VIRTIO_NET_Q_OBJECT_STATE_RDY:
+> > > +               return newstate == MLX5_VIRTIO_NET_Q_OBJECT_STATE_SUSPEND;
+> > > +       case MLX5_VIRTIO_NET_Q_OBJECT_STATE_SUSPEND:
+> > > +       case MLX5_VIRTIO_NET_Q_OBJECT_STATE_ERR:
+> > > +       default:
+> > > +               return false;
+> > > +       }
+> > > +}
+> > > +
+> > >  static int modify_virtqueue(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *mvq, int state)
+> > >  {
+> > >         int inlen = MLX5_ST_SZ_BYTES(modify_virtio_net_q_in);
+> > > @@ -1130,6 +1146,12 @@ static int modify_virtqueue(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtque
+> > >         void *in;
+> > >         int err;
+> > >
+> > > +       if (mvq->fw_state == MLX5_VIRTIO_NET_Q_OBJECT_NONE)
+> > > +               return 0;
+> > > +
+> > > +       if (!is_valid_state_change(mvq->fw_state, state))
+> > > +               return -EINVAL;
+> > > +
+> > >         in = kzalloc(inlen, GFP_KERNEL);
+> > >         if (!in)
+> > >                 return -ENOMEM;
+> > > @@ -1991,6 +2013,7 @@ static void mlx5_vdpa_set_vq_ready(struct vdpa_device *vdev, u16 idx, bool ready
+> > >         struct mlx5_vdpa_dev *mvdev = to_mvdev(vdev);
+> > >         struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
+> > >         struct mlx5_vdpa_virtqueue *mvq;
+> > > +       int err;
+> > >
+> > >         if (!mvdev->actual_features)
+> > >                 return;
+> > > @@ -2004,8 +2027,16 @@ static void mlx5_vdpa_set_vq_ready(struct vdpa_device *vdev, u16 idx, bool ready
+> > >         }
+> > >
+> > >         mvq = &ndev->vqs[idx];
+> > > -       if (!ready)
+> > > +       if (!ready) {
+> > >                 suspend_vq(ndev, mvq);
+> > > +       } else {
+> > > +               err = modify_virtqueue(ndev, mvq, MLX5_VIRTIO_NET_Q_OBJECT_STATE_RDY);
+> > > +               if (err) {
+> > > +                       mlx5_vdpa_warn(mvdev, "modify VQ %d to ready failed (%d)\n", idx, err);
+> > > +                       ready = false;
+> > > +               }
+> > > +       }
+> > > +
+> > >
+> > >         mvq->ready = ready;
+> > >  }
+> > > @@ -2732,6 +2763,39 @@ static int mlx5_vdpa_get_vendor_vq_stats(struct vdpa_device *vdev, u16 idx,
+> > >         return err;
+> > >  }
+> > >
+> > > +static void mlx5_vdpa_cvq_suspend(struct mlx5_vdpa_dev *mvdev, bool suspend)
+> > > +{
+> > > +       struct mlx5_control_vq *cvq;
+> > > +
+> > > +       if (!(mvdev->actual_features & BIT_ULL(VIRTIO_NET_F_CTRL_VQ)))
+> > > +               return;
+> > > +
+> > > +       cvq = &mvdev->cvq;
+> > > +       cvq->ready = !suspend;
+> > > +}
+> >
+> > It looks to me we need to synchronize this with reslock. And this
+> > probably deserve a dedicated fix.
+> >
+> > > +
+> > > +static int mlx5_vdpa_suspend(struct vdpa_device *vdev, bool suspend)
+> > > +{
+> > > +       struct mlx5_vdpa_dev *mvdev = to_mvdev(vdev);
+> > > +       struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
+> > > +       struct mlx5_vdpa_virtqueue *mvq;
+> > > +       int i;
+> > > +
+> > > +       if (!suspend) {
+> > > +               mlx5_vdpa_warn(mvdev, "Resume of virtqueues is not supported\n");
+> > > +               return -EOPNOTSUPP;
+> > > +       }
+> > > +
+> > > +       down_write(&ndev->reslock);
+> > > +       for (i = 0; i < ndev->cur_num_vqs; i++) {
+> > > +               mvq = &ndev->vqs[i];
+> > > +               suspend_vq(ndev, mvq);
+> > > +       }
+> > > +       mlx5_vdpa_cvq_suspend(mvdev, suspend);
+> >
+> > Do we need to synchronize with the carrier work here? Otherwise we may
+> > get config notification after suspending.
+> >
+> > > +       up_write(&ndev->reslock);
+> > > +       return 0;
+> > > +}
+> > > +
+> > >  static const struct vdpa_config_ops mlx5_vdpa_ops = {
+> > >         .set_vq_address = mlx5_vdpa_set_vq_address,
+> > >         .set_vq_num = mlx5_vdpa_set_vq_num,
+> > > @@ -2762,6 +2826,7 @@ static const struct vdpa_config_ops mlx5_vdpa_ops = {
+> > >         .get_generation = mlx5_vdpa_get_generation,
+> > >         .set_map = mlx5_vdpa_set_map,
+> > >         .free = mlx5_vdpa_free,
+> > > +       .suspend = mlx5_vdpa_suspend,
+> >
+> > I don't see the vDPA bus patch to enable this method. Or anything I missed here?
+> >
 > 
-> Signed-off-by: Tianfei Zhang <tianfei.zhang@intel.com>
-> ---
->  drivers/mfd/Kconfig                           |  30 +++---
->  drivers/mfd/Makefile                          |   5 +-
->  .../{intel-m10-bmc.c => intel-m10-bmc-core.c} | 101 +++++-------------
->  drivers/mfd/intel-m10-bmc-spi.c               |  83 ++++++++++++++
->  include/linux/mfd/intel-m10-bmc.h             |  15 +++
->  5 files changed, 144 insertions(+), 90 deletions(-)
->  rename drivers/mfd/{intel-m10-bmc.c => intel-m10-bmc-core.c} (63%)
->  create mode 100644 drivers/mfd/intel-m10-bmc-spi.c
+> Should we add
+> Based-on: <20220526124338.36247-1-eperezma@redhat.com>
 > 
-> diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
-> index 3b59456f5545..ee8398b02321 100644
-> --- a/drivers/mfd/Kconfig
-> +++ b/drivers/mfd/Kconfig
-> @@ -2158,18 +2158,24 @@ config SGI_MFD_IOC3
->  	  If you have an SGI Origin, Octane, or a PCI IOC3 card,
->  	  then say Y. Otherwise say N.
->  
-> -config MFD_INTEL_M10_BMC
-> -	tristate "Intel MAX 10 Board Management Controller"
-> -	depends on SPI_MASTER
-> -	select REGMAP_SPI_AVMM
-> -	select MFD_CORE
-> -	help
-> -	  Support for the Intel MAX 10 board management controller using the
-> -	  SPI interface.
-> -
-> -	  This driver provides common support for accessing the device,
-> -	  additional drivers must be enabled in order to use the functionality
-> -	  of the device.
-> +config MFD_INTEL_M10_BMC_CORE
-> +        tristate
-> +        select MFD_CORE
-> +        select REGMAP
-> +        default n
-> +
-> +config MFD_INTEL_M10_BMC_SPI
-> +        tristate "Intel MAX 10 Board Management Controller with SPI"
-> +        depends on SPI_MASTER
-> +        select MFD_INTEL_M10_BMC_CORE
-> +        select REGMAP_SPI_AVMM
-> +        help
-> +          Support for the Intel MAX 10 board management controller using the
-> +          SPI interface.
-> +
-> +          This driver provides common support for accessing the device,
+> To this series?
 
-                                                                   device by SPI,
+If it's based on your patch then mentioning this in the log and
+including the S.O.B. is customary. what would this tag add?
+was there relevant discussion?
 
-> +          additional drivers must be enabled in order to use the functionality
-> +          of the device.
->  
->  config MFD_RSMU_I2C
->  	tristate "Renesas Synchronization Management Unit with I2C"
-> diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
-> index 858cacf659d6..b5d3263c1205 100644
-> --- a/drivers/mfd/Makefile
-> +++ b/drivers/mfd/Makefile
-> @@ -266,7 +266,10 @@ obj-$(CONFIG_MFD_QCOM_PM8008)	+= qcom-pm8008.o
->  
->  obj-$(CONFIG_SGI_MFD_IOC3)	+= ioc3.o
->  obj-$(CONFIG_MFD_SIMPLE_MFD_I2C)	+= simple-mfd-i2c.o
-> -obj-$(CONFIG_MFD_INTEL_M10_BMC)   += intel-m10-bmc.o
-> +
-> +intel-m10-bmc-objs             := intel-m10-bmc-core.o
-> +obj-$(CONFIG_MFD_INTEL_M10_BMC_CORE)   += intel-m10-bmc.o
 
-Why make a intel-m10-bmc obj here? What's the problem of
-intel-m10-bmc-core.o?
+> > Thanks
+> >
+> > >  };
+> > >
+> > >  static int query_mtu(struct mlx5_core_dev *mdev, u16 *mtu)
+> > > @@ -2827,6 +2892,7 @@ static void init_mvqs(struct mlx5_vdpa_net *ndev)
+> > >                 mvq->index = i;
+> > >                 mvq->ndev = ndev;
+> > >                 mvq->fwqp.fw = true;
+> > > +               mvq->fw_state = MLX5_VIRTIO_NET_Q_OBJECT_NONE;
+> > >         }
+> > >         for (; i < ndev->mvdev.max_vqs; i++) {
+> > >                 mvq = &ndev->vqs[i];
+> > > diff --git a/include/linux/mlx5/mlx5_ifc_vdpa.h b/include/linux/mlx5/mlx5_ifc_vdpa.h
+> > > index 4414ed5b6ed2..423562f39d3c 100644
+> > > --- a/include/linux/mlx5/mlx5_ifc_vdpa.h
+> > > +++ b/include/linux/mlx5/mlx5_ifc_vdpa.h
+> > > @@ -150,6 +150,14 @@ enum {
+> > >         MLX5_VIRTIO_NET_Q_OBJECT_STATE_ERR      = 0x3,
+> > >  };
+> > >
+> > > +/* This indicates that the object was not created or has alreadyi
+> > > + * been desroyed. It is very safe to assume that this object will never
+> > > + * have so many states
+> > > + */
+> > > +enum {
+> > > +       MLX5_VIRTIO_NET_Q_OBJECT_NONE = 0xffffffff
+> > > +};
+> > > +
+> > >  enum {
+> > >         MLX5_RQTC_LIST_Q_TYPE_RQ            = 0x0,
+> > >         MLX5_RQTC_LIST_Q_TYPE_VIRTIO_NET_Q  = 0x1,
+> > > --
+> > > 2.35.1
+> > >
+> >
 
-> +obj-$(CONFIG_MFD_INTEL_M10_BMC_SPI)   += intel-m10-bmc-spi.o
->  
->  obj-$(CONFIG_MFD_ATC260X)	+= atc260x-core.o
->  obj-$(CONFIG_MFD_ATC260X_I2C)	+= atc260x-i2c.o
-> diff --git a/drivers/mfd/intel-m10-bmc.c b/drivers/mfd/intel-m10-bmc-core.c
-> similarity index 63%
-> rename from drivers/mfd/intel-m10-bmc.c
-> rename to drivers/mfd/intel-m10-bmc-core.c
-> index 7e521df29c72..f6dc549e1bc3 100644
-> --- a/drivers/mfd/intel-m10-bmc.c
-> +++ b/drivers/mfd/intel-m10-bmc-core.c
-> @@ -1,23 +1,14 @@
->  // SPDX-License-Identifier: GPL-2.0
->  /*
-> - * Intel MAX 10 Board Management Controller chip
-> + * Intel MAX 10 Board Management Controller chip - common code
->   *
-> - * Copyright (C) 2018-2020 Intel Corporation. All rights reserved.
-> + * Copyright (C) 2018-2022 Intel Corporation. All rights reserved.
->   */
->  #include <linux/bitfield.h>
->  #include <linux/init.h>
->  #include <linux/mfd/core.h>
->  #include <linux/mfd/intel-m10-bmc.h>
->  #include <linux/module.h>
-> -#include <linux/mutex.h>
-> -#include <linux/regmap.h>
-> -#include <linux/spi/spi.h>
-> -
-> -enum m10bmc_type {
-> -	M10_N3000,
-> -	M10_D5005,
-> -	M10_N5010,
-> -};
->  
->  static struct mfd_cell m10bmc_d5005_subdevs[] = {
->  	{ .name = "d5005bmc-hwmon" },
-> @@ -33,26 +24,6 @@ static struct mfd_cell m10bmc_n5010_subdevs[] = {
->  	{ .name = "n5010bmc-hwmon" },
->  };
->  
-> -static const struct regmap_range m10bmc_regmap_range[] = {
-> -	regmap_reg_range(M10BMC_LEGACY_BUILD_VER, M10BMC_LEGACY_BUILD_VER),
-> -	regmap_reg_range(M10BMC_SYS_BASE, M10BMC_SYS_END),
-> -	regmap_reg_range(M10BMC_FLASH_BASE, M10BMC_FLASH_END),
-> -};
-> -
-> -static const struct regmap_access_table m10bmc_access_table = {
-> -	.yes_ranges	= m10bmc_regmap_range,
-> -	.n_yes_ranges	= ARRAY_SIZE(m10bmc_regmap_range),
-> -};
-> -
-> -static struct regmap_config intel_m10bmc_regmap_config = {
-> -	.reg_bits = 32,
-> -	.val_bits = 32,
-> -	.reg_stride = 4,
-> -	.wr_table = &m10bmc_access_table,
-> -	.rd_table = &m10bmc_access_table,
-> -	.max_register = M10BMC_MEM_END,
-> -};
-
-Why remove all these configurations, I suppose it is not related to bus
-type.
-
-> -
->  static ssize_t bmc_version_show(struct device *dev,
->  				struct device_attribute *attr, char *buf)
->  {
-> @@ -131,7 +102,16 @@ static struct attribute *m10bmc_attrs[] = {
->  	&dev_attr_mac_count.attr,
->  	NULL,
->  };
-> -ATTRIBUTE_GROUPS(m10bmc);
-> +
-> +static const struct attribute_group m10bmc_group = {
-> +	.attrs = m10bmc_attrs,
-> +};
-> +
-> +const struct attribute_group *m10bmc_dev_groups[] = {
-> +	&m10bmc_group,
-> +	NULL,
-> +};
-> +EXPORT_SYMBOL_GPL(m10bmc_dev_groups);
->  
->  static int check_m10bmc_version(struct intel_m10bmc *ddata)
->  {
-> @@ -158,37 +138,21 @@ static int check_m10bmc_version(struct intel_m10bmc *ddata)
->  	return 0;
->  }
->  
-> -static int intel_m10_bmc_spi_probe(struct spi_device *spi)
-> +int m10bmc_dev_init(struct intel_m10bmc *m10bmc)
->  {
-> -	const struct spi_device_id *id = spi_get_device_id(spi);
-> -	struct device *dev = &spi->dev;
-> +	enum m10bmc_type type = m10bmc->type;
->  	struct mfd_cell *cells;
-> -	struct intel_m10bmc *ddata;
->  	int ret, n_cell;
->  
-> -	ddata = devm_kzalloc(dev, sizeof(*ddata), GFP_KERNEL);
-> -	if (!ddata)
-> -		return -ENOMEM;
-> -
-> -	ddata->dev = dev;
-> -
-> -	ddata->regmap =
-> -		devm_regmap_init_spi_avmm(spi, &intel_m10bmc_regmap_config);
-> -	if (IS_ERR(ddata->regmap)) {
-> -		ret = PTR_ERR(ddata->regmap);
-> -		dev_err(dev, "Failed to allocate regmap: %d\n", ret);
-> -		return ret;
-> -	}
-> -
-> -	spi_set_drvdata(spi, ddata);
-> +	dev_set_drvdata(m10bmc->dev, m10bmc);
-
-The naming is not consistent here, some are ddata, some are m10bmc,
-please keep a unified name acress all the patches.
-
->  
-> -	ret = check_m10bmc_version(ddata);
-> +	ret = check_m10bmc_version(m10bmc);
->  	if (ret) {
-> -		dev_err(dev, "Failed to identify m10bmc hardware\n");
-> +		dev_err(m10bmc->dev, "Failed to identify m10bmc hardware\n");
-
-Keep the dev local variable so that we don't have to change every
-related lines.
-
->  		return ret;
->  	}
->  
-> -	switch (id->driver_data) {
-> +	switch (type) {
->  	case M10_N3000:
->  		cells = m10bmc_pacn3000_subdevs;
->  		n_cell = ARRAY_SIZE(m10bmc_pacn3000_subdevs);
-> @@ -205,33 +169,16 @@ static int intel_m10_bmc_spi_probe(struct spi_device *spi)
->  		return -ENODEV;
->  	}
->  
-> -	ret = devm_mfd_add_devices(dev, PLATFORM_DEVID_AUTO, cells, n_cell,
-> -				   NULL, 0, NULL);
-> +	ret = devm_mfd_add_devices(m10bmc->dev, PLATFORM_DEVID_AUTO,
-> +				   cells, n_cell, NULL, 0, NULL);
-
-ditto
-
->  	if (ret)
-> -		dev_err(dev, "Failed to register sub-devices: %d\n", ret);
-> +		dev_err(m10bmc->dev, "Failed to register sub-devices: %d\n",
-> +			ret);
-
-ditto
-
->  
->  	return ret;
->  }
-> +EXPORT_SYMBOL_GPL(m10bmc_dev_init);
->  
-> -static const struct spi_device_id m10bmc_spi_id[] = {
-> -	{ "m10-n3000", M10_N3000 },
-> -	{ "m10-d5005", M10_D5005 },
-> -	{ "m10-n5010", M10_N5010 },
-> -	{ }
-> -};
-> -MODULE_DEVICE_TABLE(spi, m10bmc_spi_id);
-> -
-> -static struct spi_driver intel_m10bmc_spi_driver = {
-> -	.driver = {
-> -		.name = "intel-m10-bmc",
-> -		.dev_groups = m10bmc_groups,
-> -	},
-> -	.probe = intel_m10_bmc_spi_probe,
-> -	.id_table = m10bmc_spi_id,
-> -};
-> -module_spi_driver(intel_m10bmc_spi_driver);
-> -
-> -MODULE_DESCRIPTION("Intel MAX 10 BMC Device Driver");
-> +MODULE_DESCRIPTION("Intel MAX 10 BMC core MFD driver");
->  MODULE_AUTHOR("Intel Corporation");
->  MODULE_LICENSE("GPL v2");
-> -MODULE_ALIAS("spi:intel-m10-bmc");
-> diff --git a/drivers/mfd/intel-m10-bmc-spi.c b/drivers/mfd/intel-m10-bmc-spi.c
-> new file mode 100644
-> index 000000000000..9cafbc0f89f0
-> --- /dev/null
-> +++ b/drivers/mfd/intel-m10-bmc-spi.c
-> @@ -0,0 +1,83 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Intel MAX 10 Board Management Controller chip
-
-SPI driver for Intel MAX 10 ...
-
-> + *
-> + * Copyright (C) 2018-2021 Intel Corporation. All rights reserved.
-> + */
-> +#include <linux/bitfield.h>
-> +#include <linux/init.h>
-> +#include <linux/mfd/core.h>
-> +#include <linux/mfd/intel-m10-bmc.h>
-> +#include <linux/module.h>
-> +#include <linux/regmap.h>
-> +#include <linux/spi/spi.h>
-> +
-> +static const struct regmap_range m10bmc_regmap_range[] = {
-> +	regmap_reg_range(M10BMC_LEGACY_BUILD_VER, M10BMC_LEGACY_BUILD_VER),
-> +	regmap_reg_range(M10BMC_SYS_BASE, M10BMC_SYS_END),
-> +	regmap_reg_range(M10BMC_FLASH_BASE, M10BMC_FLASH_END),
-> +};
-> +
-> +static const struct regmap_access_table m10bmc_access_table = {
-> +	.yes_ranges	= m10bmc_regmap_range,
-> +	.n_yes_ranges	= ARRAY_SIZE(m10bmc_regmap_range),
-> +};
-> +
-> +static struct regmap_config intel_m10bmc_regmap_config = {
-> +	.reg_bits = 32,
-> +	.val_bits = 32,
-> +	.reg_stride = 4,
-> +	.wr_table = &m10bmc_access_table,
-> +	.rd_table = &m10bmc_access_table,
-> +	.max_register = M10BMC_MEM_END,
-> +};
-> +
-> +static int intel_m10_bmc_spi_probe(struct spi_device *spi)
-> +{
-> +	const struct spi_device_id *id = spi_get_device_id(spi);
-> +	struct device *dev = &spi->dev;
-> +	struct intel_m10bmc *ddata;
-> +	int ret;
-> +
-> +	ddata = devm_kzalloc(dev, sizeof(*ddata), GFP_KERNEL);
-> +	if (!ddata)
-> +		return -ENOMEM;
-> +
-> +	ddata->dev = dev;
-> +	ddata->type = (enum m10bmc_type)(id->driver_data);
-> +
-> +	ddata->regmap =
-> +		devm_regmap_init_spi_avmm(spi, &intel_m10bmc_regmap_config);
-> +	if (IS_ERR(ddata->regmap)) {
-> +		ret = PTR_ERR(ddata->regmap);
-> +		dev_err(dev, "Failed to allocate regmap: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	spi_set_drvdata(spi, ddata);
-
-Why we need this? I saw the dev.drvdata is set in core driver.
-
-> +
-> +	return m10bmc_dev_init(ddata);
-> +}
-> +
-> +static const struct spi_device_id m10bmc_spi_id[] = {
-> +	{ "m10-n3000", M10_N3000 },
-> +	{ "m10-d5005", M10_D5005 },
-> +	{ "m10-n5010", M10_N5010 },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(spi, m10bmc_spi_id);
-> +
-> +static struct spi_driver intel_m10bmc_spi_driver = {
-> +	.driver = {
-> +		.name = "intel-m10-bmc",
-
-Need renaming?
-
-> +		.dev_groups = m10bmc_dev_groups,
-> +	},
-> +	.probe = intel_m10_bmc_spi_probe,
-> +	.id_table = m10bmc_spi_id,
-> +};
-> +module_spi_driver(intel_m10bmc_spi_driver);
-> +
-> +MODULE_DESCRIPTION("Intel MAX 10 BMC SPI bus interface");
-> +MODULE_AUTHOR("Intel Corporation");
-> +MODULE_LICENSE("GPL");
-> +MODULE_ALIAS("spi:intel-m10-bmc");
-> diff --git a/include/linux/mfd/intel-m10-bmc.h b/include/linux/mfd/intel-m10-bmc.h
-> index f0044b14136e..dd81ffdcf168 100644
-> --- a/include/linux/mfd/intel-m10-bmc.h
-> +++ b/include/linux/mfd/intel-m10-bmc.h
-> @@ -118,14 +118,23 @@
->  /* Address of 4KB inverted bit vector containing staging area FLASH count */
->  #define STAGING_FLASH_COUNT	0x17ffb000
->  
-> +/* Supported MAX10 BMC types */
-
-Please use correct format for kernel doc comments
-
-> +enum m10bmc_type {
-> +	M10_N3000,
-> +	M10_D5005,
-> +	M10_N5010,
-> +};
-> +
->  /**
->   * struct intel_m10bmc - Intel MAX 10 BMC parent driver data structure
->   * @dev: this device
->   * @regmap: the regmap used to access registers by m10bmc itself
-> + * @type: the type of MAX10 BMC
->   */
->  struct intel_m10bmc {
->  	struct device *dev;
->  	struct regmap *regmap;
-> +	enum m10bmc_type type;
->  };
->  
->  /*
-> @@ -159,4 +168,10 @@ m10bmc_raw_read(struct intel_m10bmc *m10bmc, unsigned int addr,
->  #define m10bmc_sys_read(m10bmc, offset, val) \
->  	m10bmc_raw_read(m10bmc, M10BMC_SYS_BASE + (offset), val)
->  
-> +/*
-> + * MAX10 BMC Core support
-> + */
-> +int m10bmc_dev_init(struct intel_m10bmc *m10bmc);
-> +extern const struct attribute_group *m10bmc_dev_groups[];
-> +
->  #endif /* __MFD_INTEL_M10_BMC_H */
-> -- 
-> 2.26.2
