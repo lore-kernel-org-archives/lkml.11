@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96F47CCA479
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:01:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12DC5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:01:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243759AbiFTNBE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:01:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38652 "EHLO
+        id S243807AbiFTNBI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:01:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244424AbiFTM7f (ORCPT
+        with ESMTP id S243673AbiFTM62 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 08:59:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 513BB1CB10;
-        Mon, 20 Jun 2022 05:56:29 -0700 (PDT)
+        Mon, 20 Jun 2022 08:58:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01356193CB;
+        Mon, 20 Jun 2022 05:55:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C9B1614CA;
-        Mon, 20 Jun 2022 12:56:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C061C3411B;
-        Mon, 20 Jun 2022 12:56:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 644C3B811AC;
+        Mon, 20 Jun 2022 12:55:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC0E7C3411B;
+        Mon, 20 Jun 2022 12:55:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655729785;
-        bh=jnvaKL2ylP9hoy1It4rGwhTXwZO5J+36jAw+FL5Cfcs=;
+        s=korg; t=1655729744;
+        bh=PCNgaEBVRKBmezcn+MpndPZjURty+KU0BWVj3KL5+4Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KzfYTxNbt2tVhybMSFjta95oT6HtqzPp/1mCzMAn9JaiEKZu6zzJ/kxx7zo45sIwk
-         Nm3RSOjC4OFiX1HMyogITIYE1q1wAa/9u2hBDPLal0iJ4Vj+H97TADqTeMC5i7Mk7J
-         QH/pxsD7CqpYZVA4L/OLUrHyEy5XuGLwmNX1iWYs=
+        b=biIL677foJ2TVZyRUg7eN0rNqZptOgyldhUNRZUjKOu2HgGpNjC7mVyFvSSXUShP6
+         hXDgrM9WLsSLYWVXdT+YEOCWoNQqbeI5sdAx/R/ZOLBvHpKRzc8X50rSSzUUXQ2pnh
+         9D684JDLSbRwt2kDKLxX9AJDu67iqn0EpEgHV7jw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Chengguang Xu <cgxu519@mykernel.net>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 033/141] scsi: pmcraid: Fix missing resource cleanup in error case
-Date:   Mon, 20 Jun 2022 14:49:31 +0200
-Message-Id: <20220620124730.511907555@linuxfoundation.org>
+        stable@vger.kernel.org, Michal Jaron <michalx.jaron@intel.com>,
+        Aleksandr Loktionov <aleksandr.loktionov@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Gurucharan <gurucharanx.g@intel.com>
+Subject: [PATCH 5.18 060/141] i40e: Fix call trace in setup_tx_descriptors
+Date:   Mon, 20 Jun 2022 14:49:58 +0200
+Message-Id: <20220620124731.312906413@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 References: <20220620124729.509745706@linuxfoundation.org>
@@ -50,35 +51,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chengguang Xu <cgxu519@mykernel.net>
+From: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
 
-[ Upstream commit ec1e8adcbdf661c57c395bca342945f4f815add7 ]
+[ Upstream commit fd5855e6b1358e816710afee68a1d2bc685176ca ]
 
-Fix missing resource cleanup (when '(--i) == 0') for error case in
-pmcraid_register_interrupt_handler().
+After PF reset and ethtool -t there was call trace in dmesg
+sometimes leading to panic. When there was some time, around 5
+seconds, between reset and test there were no errors.
 
-Link: https://lore.kernel.org/r/20220529153456.4183738-6-cgxu519@mykernel.net
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Chengguang Xu <cgxu519@mykernel.net>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Problem was that pf reset calls i40e_vsi_close in prep_for_reset
+and ethtool -t calls i40e_vsi_close in diag_test. If there was not
+enough time between those commands the second i40e_vsi_close starts
+before previous i40e_vsi_close was done which leads to crash.
+
+Add check to diag_test if pf is in reset and don't start offline
+tests if it is true.
+Add netif_info("testing failed") into unhappy path of i40e_diag_test()
+
+Fixes: e17bc411aea8 ("i40e: Disable offline diagnostics if VFs are enabled")
+Fixes: 510efb2682b3 ("i40e: Fix ethtool offline diagnostic with netqueues")
+Signed-off-by: Michal Jaron <michalx.jaron@intel.com>
+Signed-off-by: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
+Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pmcraid.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../net/ethernet/intel/i40e/i40e_ethtool.c    | 25 +++++++++++++------
+ 1 file changed, 17 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/scsi/pmcraid.c b/drivers/scsi/pmcraid.c
-index fd674ed1febe..6d94837c9049 100644
---- a/drivers/scsi/pmcraid.c
-+++ b/drivers/scsi/pmcraid.c
-@@ -4031,7 +4031,7 @@ pmcraid_register_interrupt_handler(struct pmcraid_instance *pinstance)
- 	return 0;
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
+index e48499624d22..06c05a6b8b71 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
+@@ -2584,15 +2584,16 @@ static void i40e_diag_test(struct net_device *netdev,
  
- out_unwind:
--	while (--i > 0)
-+	while (--i >= 0)
- 		free_irq(pci_irq_vector(pdev, i), &pinstance->hrrq_vector[i]);
- 	pci_free_irq_vectors(pdev);
- 	return rc;
+ 		set_bit(__I40E_TESTING, pf->state);
+ 
++		if (test_bit(__I40E_RESET_RECOVERY_PENDING, pf->state) ||
++		    test_bit(__I40E_RESET_INTR_RECEIVED, pf->state)) {
++			dev_warn(&pf->pdev->dev,
++				 "Cannot start offline testing when PF is in reset state.\n");
++			goto skip_ol_tests;
++		}
++
+ 		if (i40e_active_vfs(pf) || i40e_active_vmdqs(pf)) {
+ 			dev_warn(&pf->pdev->dev,
+ 				 "Please take active VFs and Netqueues offline and restart the adapter before running NIC diagnostics\n");
+-			data[I40E_ETH_TEST_REG]		= 1;
+-			data[I40E_ETH_TEST_EEPROM]	= 1;
+-			data[I40E_ETH_TEST_INTR]	= 1;
+-			data[I40E_ETH_TEST_LINK]	= 1;
+-			eth_test->flags |= ETH_TEST_FL_FAILED;
+-			clear_bit(__I40E_TESTING, pf->state);
+ 			goto skip_ol_tests;
+ 		}
+ 
+@@ -2639,9 +2640,17 @@ static void i40e_diag_test(struct net_device *netdev,
+ 		data[I40E_ETH_TEST_INTR] = 0;
+ 	}
+ 
+-skip_ol_tests:
+-
+ 	netif_info(pf, drv, netdev, "testing finished\n");
++	return;
++
++skip_ol_tests:
++	data[I40E_ETH_TEST_REG]		= 1;
++	data[I40E_ETH_TEST_EEPROM]	= 1;
++	data[I40E_ETH_TEST_INTR]	= 1;
++	data[I40E_ETH_TEST_LINK]	= 1;
++	eth_test->flags |= ETH_TEST_FL_FAILED;
++	clear_bit(__I40E_TESTING, pf->state);
++	netif_info(pf, drv, netdev, "testing failed\n");
+ }
+ 
+ static void i40e_get_wol(struct net_device *netdev,
 -- 
 2.35.1
 
