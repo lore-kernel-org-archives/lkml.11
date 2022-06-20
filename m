@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE44BC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:35:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 926F6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:35:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346456AbiFTNfg (ORCPT
+        id S1346661AbiFTNfi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:35:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36984 "EHLO
+        Mon, 20 Jun 2022 09:35:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346641AbiFTNdi (ORCPT
+        with ESMTP id S1346989AbiFTNdy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:33:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 190CB18B3D;
-        Mon, 20 Jun 2022 06:12:56 -0700 (PDT)
+        Mon, 20 Jun 2022 09:33:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74F061D32A;
+        Mon, 20 Jun 2022 06:13:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4723460EB0;
-        Mon, 20 Jun 2022 13:11:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39AB4C3411B;
-        Mon, 20 Jun 2022 13:11:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 072C7B811A6;
+        Mon, 20 Jun 2022 13:01:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3452C3411B;
+        Mon, 20 Jun 2022 13:01:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730705;
-        bh=U82DIsX+lF48iQEDOUkl50m+QxeFH14o5q2Gh5WhJ6I=;
+        s=korg; t=1655730115;
+        bh=YIs9ShMGN2GvWoBBYcpdcEv1M9la4CQJGFzqf7sJSWc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EB+h4wCRJnuyA/a4COW+Z3JwGLWvYi5eQG0LjK7L25qMZaq/90hQBWC1ExX+kTt+0
-         gFlJbNXzocPc7Gy0vQJu9P2cwiO+x6l99wL3NpIA1+UwMqXzGjg7BFLarwahsoX2BG
-         0evkQRMIqZzKu7JLUFNBnAp3ov+HVvewhgAuQheI=
+        b=kqWjt75h6NpjmA2ZbuEY4CVejFyLroxqcFvEbazD4rBvmEubP/oeVXt9YYvqTxW0J
+         2Cb/a1vqaj7WOxo3wEI3hMP1w9/Nu86ER5xriRGcc12AIpP1O8BcKjjKPrypDeu4q9
+         G/P7Cvrv/cUyBw7+XPOSfxq0OhgoneoVwBBBUgP0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
-        Mark Brown <broonie@kernel.org>, Theodore Tso <tytso@mit.edu>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 031/240] random: add arch_get_random_*long_early()
-Date:   Mon, 20 Jun 2022 14:48:52 +0200
-Message-Id: <20220620124738.754762072@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Chengguang Xu <cgxu519@mykernel.net>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 24/84] scsi: pmcraid: Fix missing resource cleanup in error case
+Date:   Mon, 20 Jun 2022 14:50:47 +0200
+Message-Id: <20220620124721.611055919@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
-References: <20220620124737.799371052@linuxfoundation.org>
+In-Reply-To: <20220620124720.882450983@linuxfoundation.org>
+References: <20220620124720.882450983@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,111 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Rutland <mark.rutland@arm.com>
+From: Chengguang Xu <cgxu519@mykernel.net>
 
-commit 253d3194c2b58152fe830fd27c2fd83ebc6fe5ee upstream.
+[ Upstream commit ec1e8adcbdf661c57c395bca342945f4f815add7 ]
 
-Some architectures (e.g. arm64) can have heterogeneous CPUs, and the
-boot CPU may be able to provide entropy while secondary CPUs cannot. On
-such systems, arch_get_random_long() and arch_get_random_seed_long()
-will fail unless support for RNG instructions has been detected on all
-CPUs. This prevents the boot CPU from being able to provide
-(potentially) trusted entropy when seeding the primary CRNG.
+Fix missing resource cleanup (when '(--i) == 0') for error case in
+pmcraid_register_interrupt_handler().
 
-To make it possible to seed the primary CRNG from the boot CPU without
-adversely affecting the runtime versions of arch_get_random_long() and
-arch_get_random_seed_long(), this patch adds new early versions of the
-functions used when initializing the primary CRNG.
-
-Default implementations are provided atop of the existing
-arch_get_random_long() and arch_get_random_seed_long() so that only
-architectures with such constraints need to provide the new helpers.
-
-There should be no functional change as a result of this patch.
-
-Signed-off-by: Mark Rutland <mark.rutland@arm.com>
-Cc: Mark Brown <broonie@kernel.org>
-Cc: Theodore Ts'o <tytso@mit.edu>
-Link: https://lore.kernel.org/r/20200210130015.17664-3-mark.rutland@arm.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20220529153456.4183738-6-cgxu519@mykernel.net
+Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Chengguang Xu <cgxu519@mykernel.net>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/random.c  |   20 +++++++++++++++++++-
- include/linux/random.h |   22 ++++++++++++++++++++++
- 2 files changed, 41 insertions(+), 1 deletion(-)
+ drivers/scsi/pmcraid.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -800,6 +800,24 @@ static bool crng_init_try_arch(struct cr
- 	return arch_init;
- }
+diff --git a/drivers/scsi/pmcraid.c b/drivers/scsi/pmcraid.c
+index cbe5fab793eb..ce10d680c56c 100644
+--- a/drivers/scsi/pmcraid.c
++++ b/drivers/scsi/pmcraid.c
+@@ -4528,7 +4528,7 @@ pmcraid_register_interrupt_handler(struct pmcraid_instance *pinstance)
+ 	return 0;
  
-+static bool __init crng_init_try_arch_early(struct crng_state *crng)
-+{
-+	int		i;
-+	bool		arch_init = true;
-+	unsigned long	rv;
-+
-+	for (i = 4; i < 16; i++) {
-+		if (!arch_get_random_seed_long_early(&rv) &&
-+		    !arch_get_random_long_early(&rv)) {
-+			rv = random_get_entropy();
-+			arch_init = false;
-+		}
-+		crng->state[i] ^= rv;
-+	}
-+
-+	return arch_init;
-+}
-+
- static void __maybe_unused crng_initialize_secondary(struct crng_state *crng)
- {
- 	memcpy(&crng->state[0], "expand 32-byte k", 16);
-@@ -812,7 +830,7 @@ static void __init crng_initialize_prima
- {
- 	memcpy(&crng->state[0], "expand 32-byte k", 16);
- 	_extract_entropy(&input_pool, &crng->state[4], sizeof(__u32) * 12, 0);
--	if (crng_init_try_arch(crng) && trust_cpu) {
-+	if (crng_init_try_arch_early(crng) && trust_cpu) {
- 		invalidate_batched_entropy();
- 		numa_crng_init();
- 		crng_init = 2;
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -7,6 +7,8 @@
- #ifndef _LINUX_RANDOM_H
- #define _LINUX_RANDOM_H
- 
-+#include <linux/bug.h>
-+#include <linux/kernel.h>
- #include <linux/list.h>
- #include <linux/once.h>
- 
-@@ -136,4 +138,24 @@ static inline bool __must_check arch_get
- }
- #endif
- 
-+/*
-+ * Called from the boot CPU during startup; not valid to call once
-+ * secondary CPUs are up and preemption is possible.
-+ */
-+#ifndef arch_get_random_seed_long_early
-+static inline bool __init arch_get_random_seed_long_early(unsigned long *v)
-+{
-+	WARN_ON(system_state != SYSTEM_BOOTING);
-+	return arch_get_random_seed_long(v);
-+}
-+#endif
-+
-+#ifndef arch_get_random_long_early
-+static inline bool __init arch_get_random_long_early(unsigned long *v)
-+{
-+	WARN_ON(system_state != SYSTEM_BOOTING);
-+	return arch_get_random_long(v);
-+}
-+#endif
-+
- #endif /* _LINUX_RANDOM_H */
+ out_unwind:
+-	while (--i > 0)
++	while (--i >= 0)
+ 		free_irq(pci_irq_vector(pdev, i), &pinstance->hrrq_vector[i]);
+ 	pci_free_irq_vectors(pdev);
+ 	return rc;
+-- 
+2.35.1
+
 
 
