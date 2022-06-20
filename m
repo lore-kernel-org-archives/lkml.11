@@ -2,123 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12BADC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 07:35:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29C18C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 07:37:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239403AbiFTHfm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 03:35:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36968 "EHLO
+        id S239414AbiFTHhg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 03:37:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239343AbiFTHfk (ORCPT
+        with ESMTP id S231954AbiFTHhc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 03:35:40 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FBBDE0F5
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 00:35:39 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id z7so13816835edm.13
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 00:35:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=LK+h2iGp+FEdq5egGWt8aFfxmV7BDPBoOQ4aISdjxsw=;
-        b=dR2FYV+L/1fAtQC91SldjEDV5m2KbV+omB84RliOqB9SF54DIX6B/WK2iZizEMpVZT
-         L86d5D0lDyYoQVnZRPSJUFQ5Ne+KsAHajW5Kco24dXJHFk1ThMEgs9LS+oET/xIq6ZRB
-         /4Z1H8OvK9/1q+fx3cB0b3Zdv6/rWpscTAswKAEJa918sbBLLMisvdWmPY3awoRjE91W
-         grlz+Rqy0B7u6DtRUVTgy5UPRmL7nSCIEsK/xKNBdeTn9ZkaqFME+qKXLxxna5vHrBdJ
-         o5NdUZKHXDie0SN0ESBQ44+A0X2LYA8uJ9WtF0np5k7AhAbKHbidzCz7K+iJQW+o5nqe
-         olhQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=LK+h2iGp+FEdq5egGWt8aFfxmV7BDPBoOQ4aISdjxsw=;
-        b=587ru13A5nTgiz04S3/7QMHwxNWL+fl+6+DEs7TQbb44c8z909Q3nLgTJrFZ2lKG9P
-         kPVCxEYr7kGg4Eqp52JlwExqh34EL75w4vdRljbdfecWKyVXBDNlkeTqCnR6gN4+s8cX
-         AyqYri1nzVAV5M0MBnBIvXJxZYAFtxQdV65wCBIBeeYTIpiDcdLRW2hk86DlqFV8Vj48
-         jrpiEO1mCdw2ovqgBLfvrzUwzz26Q399jc28/c/ynTabcROvIW770SM8Raeho1qbXppc
-         2f4p3V8DqBIUNfpTJ271Uge2PnYcOtr4Sgj714AgZeaIBhiZCtbfwjs3sLspNVbssPFF
-         CtKw==
-X-Gm-Message-State: AJIora+ZGV7yPPvD9gtN8W826J3BVgSQal/GKOgJfFw+WwYWvxnAfHJt
-        GvpbKlfOUSwBbwVuAOS42QN8Bw==
-X-Google-Smtp-Source: AGRyM1vQz+p3dzznqsCkDc567/s1M7YN/IdCOaWjkzpxc4fFrcYHL7hmiHyPBFESeaSj77W2DDl1gg==
-X-Received: by 2002:a05:6402:24a4:b0:434:e43e:2462 with SMTP id q36-20020a05640224a400b00434e43e2462mr28012497eda.312.1655710538202;
-        Mon, 20 Jun 2022 00:35:38 -0700 (PDT)
-Received: from [192.168.0.206] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id y3-20020a056402358300b0042dc25fdf5bsm9685616edc.29.2022.06.20.00.35.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Jun 2022 00:35:37 -0700 (PDT)
-Message-ID: <3f805983-47c0-9be1-f221-4cd23b847018@linaro.org>
-Date:   Mon, 20 Jun 2022 09:35:36 +0200
+        Mon, 20 Jun 2022 03:37:32 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28E30EE32;
+        Mon, 20 Jun 2022 00:37:31 -0700 (PDT)
+Received: from fraeml708-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LRLzF1D8vz6H6l9;
+        Mon, 20 Jun 2022 15:35:37 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml708-chm.china.huawei.com (10.206.15.36) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 20 Jun 2022 09:37:28 +0200
+Received: from [10.195.35.72] (10.195.35.72) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 20 Jun
+ 2022 08:37:26 +0100
+Message-ID: <b033027d-2600-0c7a-a74a-133bda610f2c@huawei.com>
+Date:   Mon, 20 Jun 2022 08:37:25 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 1/2] dt-bindings: phy: Add Freescale i.MX8qm Mixel LVDS
- PHY binding
-Content-Language: en-US
-To:     Liu Ying <victor.liu@nxp.com>, linux-phy@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Cc:     kishon@ti.com, vkoul@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
-        linux-imx@nxp.com
-References: <20220618092201.3837791-1-victor.liu@nxp.com>
- <20220618092201.3837791-2-victor.liu@nxp.com>
- <b83e3100-edd6-4f91-75e0-8a87447d8a4c@linaro.org>
- <89a29795e918343583f45b0f8a65a002592f8b15.camel@nxp.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <89a29795e918343583f45b0f8a65a002592f8b15.camel@nxp.com>
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH 1/5] scsi: core: Remove reserved request time-out handling
+To:     Christoph Hellwig <hch@lst.de>
+CC:     <axboe@kernel.dk>, <damien.lemoal@opensource.wdc.com>,
+        <bvanassche@acm.org>, <jejb@linux.ibm.com>,
+        <martin.petersen@oracle.com>, <hare@suse.de>, <satishkh@cisco.com>,
+        <sebaddel@cisco.com>, <kartilak@cisco.com>,
+        <linux-rdma@vger.kernel.org>, <linux-mmc@vger.kernel.org>,
+        <linux-nvme@lists.infradead.org>, <linux-s390@vger.kernel.org>,
+        <linux-scsi@vger.kernel.org>, <mpi3mr-linuxdrv.pdl@broadcom.com>,
+        <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <nbd@other.debian.org>
+References: <1655463320-241202-1-git-send-email-john.garry@huawei.com>
+ <1655463320-241202-2-git-send-email-john.garry@huawei.com>
+ <20220620055828.GA10192@lst.de>
+From:   John Garry <john.garry@huawei.com>
+In-Reply-To: <20220620055828.GA10192@lst.de>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.195.35.72]
+X-ClientProxiedBy: lhreml744-chm.china.huawei.com (10.201.108.194) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 20/06/2022 05:06, Liu Ying wrote:
-> On Sun, 2022-06-19 at 14:11 +0200, Krzysztof Kozlowski wrote:
->> On 18/06/2022 11:22, Liu Ying wrote:
->>> This patch adds bindings for Mixel LVDS PHY found on
->>> Freescale i.MX8qm SoC.
->>>
->>> Signed-off-by: Liu Ying <victor.liu@nxp.com>
->>> ---
->>>  .../bindings/phy/mixel,lvds-phy.yaml          | 64
->>> +++++++++++++++++++
->>>  1 file changed, 64 insertions(+)
->>>  create mode 100644
->>> Documentation/devicetree/bindings/phy/mixel,lvds-phy.yaml
+On 20/06/2022 06:58, Christoph Hellwig wrote:
+> On Fri, Jun 17, 2022 at 06:55:16PM +0800, John Garry wrote:
+>> The SCSI code does not currently support reserved commands. As such,
+>> requests which time-out would never be reserved, and scsi_timeout()
+>> 'reserved' arg should never be set.
 >>
->>> diff --git a/Documentation/devicetree/bindings/phy/mixel,lvds-
->>> phy.yaml b/Documentation/devicetree/bindings/phy/mixel,lvds-
->>> phy.yaml
->>> new file mode 100644
->>> index 000000000000..de964ffb9356
->>> --- /dev/null
->>> +++ b/Documentation/devicetree/bindings/phy/mixel,lvds-phy.yaml
->>> @@ -0,0 +1,64 @@
->>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->>> +%YAML 1.2
->>> +---
->>> +$id: 
->>> https://eur01.safelinks.protection.outlook.com/?url=http%3A%2F%2Fdevicetree.org%2Fschemas%2Fphy%2Fmixel%2Clvds-phy.yaml%23&amp;data=05%7C01%7Cvictor.liu%40nxp.com%7Cb68f9012ddcc44bc10cd08da51ece7f7%7C686ea1d3bc2b4c6fa92cd99c5c301635%7C0%7C0%7C637912375188731290%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=MdBILPYmfYeWeCXXNxy1mu1NcU0b6EW3QztYc294dd4%3D&amp;reserved=0
->>> +$schema: 
->>> https://eur01.safelinks.protection.outlook.com/?url=http%3A%2F%2Fdevicetree.org%2Fmeta-schemas%2Fcore.yaml%23&amp;data=05%7C01%7Cvictor.liu%40nxp.com%7Cb68f9012ddcc44bc10cd08da51ece7f7%7C686ea1d3bc2b4c6fa92cd99c5c301635%7C0%7C0%7C637912375188731290%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=MhHwku8rbDLAZAQh1T9CGFULMkk5MaNoj3LQnQJ6VXM%3D&amp;reserved=0
->>> +
->>> +title: Mixel LVDS PHY for Freescale i.MX8qm SoC
->>
->> If Mixel is a vendor, it needs it's vendor prefix documented and used
->> in
->> compatible. Filename should match compatible. If it is not a vendor,
->> then filename should be "fsl,imx8qm-lvds-phy.yaml"
+>> Remove handling for reserved requests and drop wrapper scsi_timeout() as
+>> it now just calls scsi_times_out() always.
 > 
-> Mixel is a vendor. I'll document the vendor prefix and set
-> 'fsl,imx8qm-lvds-phy' and 'mixel,lvds-phy' as compatible's enum.
-> I'll keep the filename as-is.
-mixel,lvds-phy is not a good compatible (and filename) because it is not
-specific about component version. Please use specific compatibles only
-thus also specific filename (filename should match first compatible).
+> Please rename scsi_times_out to scsi_timeout so it still matches the
+> method name.
+>
 
-Best regards,
-Krzysztof
+ok, note that some code comments and Documentation reference 
+scsi_times_out() so I will need to fix them up also.
+
+
+> Otherwise looks good:
+> 
+> Reviewed-by: Christoph Hellwig <hch@lst.de>
+> 
+> .
+
+Cheers,
+John
