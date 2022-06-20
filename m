@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F37D5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:30:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20BD1C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:31:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345943AbiFTNax (ORCPT
+        id S1345966AbiFTNa7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:30:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52674 "EHLO
+        Mon, 20 Jun 2022 09:30:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346370AbiFTN24 (ORCPT
+        with ESMTP id S1346483AbiFTN3C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:28:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6069F240B5;
+        Mon, 20 Jun 2022 09:29:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A4331CB0A;
         Mon, 20 Jun 2022 06:11:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B67F4B811DD;
-        Mon, 20 Jun 2022 13:11:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F9CDC3411B;
-        Mon, 20 Jun 2022 13:11:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AC7C060ABA;
+        Mon, 20 Jun 2022 13:10:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B58C9C3411B;
+        Mon, 20 Jun 2022 13:10:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730702;
-        bh=VX61gT+Y08KmB0rcQK6oQt7Le4cwnWnzjxbdvU33n7k=;
+        s=korg; t=1655730630;
+        bh=7HXLfzXZPKUoSFxq2zbCBvTU5X7bq2SjOdG0EnWubOU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HBsCW8ZvLufSCuxSfGjnu2FAVYhvu5okFk7akNzK1/Au3BaERcg10Yeq9FAbb6puw
-         MxceYzcQMLr0wwHAHYIFPyY2YDAH84b8T98+4VFHEN0D4OIhUASwJu0fcmWoncuTex
-         6EVhnKF80UuFJYJ5b7xEj9UvVSxN7CH6AUUoVcEg=
+        b=dOXzb8ugZzhW5WkbRkw2TWZcAQ9HvvFesQYPRSh4CHJj24uthMEETBDR7pgIjS8PW
+         d+mmMjUWXTa0ZLbH/Rgd+GAA3EXdZcm8XIZxJfR50I63osC84JnbtKtzW0Kq8Kjzx6
+         cZRzpY9yY5Xvcf+dM+hRcEZShB57YKxYzU4e57Hw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
-        Richard Henderson <rth@twiddle.net>,
-        Mark Brown <broonie@kernel.org>, Theodore Tso <tytso@mit.edu>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 030/240] powerpc: Use bool in archrandom.h
-Date:   Mon, 20 Jun 2022 14:48:51 +0200
-Message-Id: <20220620124738.719312946@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Shinichiro Kawasaki <shinichiro.kawasaki@wdc.com>
+Subject: [PATCH 5.15 094/106] bus: fsl-mc-bus: fix KASAN use-after-free in fsl_mc_bus_remove()
+Date:   Mon, 20 Jun 2022 14:51:53 +0200
+Message-Id: <20220620124727.172649742@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
-References: <20220620124737.799371052@linuxfoundation.org>
+In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
+References: <20220620124724.380838401@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,61 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Richard Henderson <richard.henderson@linaro.org>
+From: Shin'ichiro Kawasaki <shinichiro.kawasaki@wdc.com>
 
-commit 98dcfce69729f9ce0fb14f96a39bbdba21429597 upstream.
+commit 928ea98252ad75118950941683893cf904541da9 upstream.
 
-The generic interface uses bool not int; match that.
+In fsl_mc_bus_remove(), mc->root_mc_bus_dev->mc_io is passed to
+fsl_destroy_mc_io(). However, mc->root_mc_bus_dev is already freed in
+fsl_mc_device_remove(). Then reference to mc->root_mc_bus_dev->mc_io
+triggers KASAN use-after-free. To avoid the use-after-free, keep the
+reference to mc->root_mc_bus_dev->mc_io in a local variable and pass to
+fsl_destroy_mc_io().
 
-Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
-Signed-off-by: Richard Henderson <rth@twiddle.net>
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/r/20200110145422.49141-9-broonie@kernel.org
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+This patch needs rework to apply to kernels older than v5.15.
+
+Fixes: f93627146f0e ("staging: fsl-mc: fix asymmetry in destroy of mc_io")
+Cc: stable@vger.kernel.org # v5.15+
+Signed-off-by: Shin'ichiro Kawasaki <shinichiro.kawasaki@wdc.com>
+Link: https://lore.kernel.org/r/20220601105159.87752-1-shinichiro.kawasaki@wdc.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/include/asm/archrandom.h |   17 +++++++++--------
- 1 file changed, 9 insertions(+), 8 deletions(-)
+ drivers/bus/fsl-mc/fsl-mc-bus.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/arch/powerpc/include/asm/archrandom.h
-+++ b/arch/powerpc/include/asm/archrandom.h
-@@ -6,27 +6,28 @@
- 
- #include <asm/machdep.h>
- 
--static inline int arch_get_random_long(unsigned long *v)
-+static inline bool arch_get_random_long(unsigned long *v)
+--- a/drivers/bus/fsl-mc/fsl-mc-bus.c
++++ b/drivers/bus/fsl-mc/fsl-mc-bus.c
+@@ -1236,14 +1236,14 @@ error_cleanup_mc_io:
+ static int fsl_mc_bus_remove(struct platform_device *pdev)
  {
--	return 0;
-+	return false;
- }
+ 	struct fsl_mc *mc = platform_get_drvdata(pdev);
++	struct fsl_mc_io *mc_io;
  
--static inline int arch_get_random_int(unsigned int *v)
-+static inline bool arch_get_random_int(unsigned int *v)
- {
--	return 0;
-+	return false;
- }
+ 	if (!fsl_mc_is_root_dprc(&mc->root_mc_bus_dev->dev))
+ 		return -EINVAL;
  
--static inline int arch_get_random_seed_long(unsigned long *v)
-+static inline bool arch_get_random_seed_long(unsigned long *v)
- {
- 	if (ppc_md.get_random_seed)
- 		return ppc_md.get_random_seed(v);
++	mc_io = mc->root_mc_bus_dev->mc_io;
+ 	fsl_mc_device_remove(mc->root_mc_bus_dev);
+-
+-	fsl_destroy_mc_io(mc->root_mc_bus_dev->mc_io);
+-	mc->root_mc_bus_dev->mc_io = NULL;
++	fsl_destroy_mc_io(mc_io);
  
--	return 0;
-+	return false;
- }
--static inline int arch_get_random_seed_int(unsigned int *v)
-+
-+static inline bool arch_get_random_seed_int(unsigned int *v)
- {
- 	unsigned long val;
--	int rc;
-+	bool rc;
+ 	bus_unregister_notifier(&fsl_mc_bus_type, &fsl_mc_nb);
  
- 	rc = arch_get_random_seed_long(&val);
- 	if (rc)
 
 
