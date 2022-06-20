@@ -2,187 +2,248 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AA95C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 10:53:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F66AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 10:54:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240610AbiFTKxP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 06:53:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45026 "EHLO
+        id S240801AbiFTKyL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 06:54:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234950AbiFTKxN (ORCPT
+        with ESMTP id S240739AbiFTKyH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 06:53:13 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66EDF657E;
-        Mon, 20 Jun 2022 03:53:12 -0700 (PDT)
-Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LRRK20yrFz689SS;
-        Mon, 20 Jun 2022 18:51:18 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.24; Mon, 20 Jun 2022 12:53:09 +0200
-Received: from localhost (10.202.226.42) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 20 Jun
- 2022 11:53:08 +0100
-Date:   Mon, 20 Jun 2022 11:53:07 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Dan Williams <dan.j.williams@intel.com>
-CC:     Alison Schofield <alison.schofield@intel.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        "Weiny, Ira" <ira.weiny@intel.com>,
-        "Verma, Vishal L" <vishal.l.verma@intel.com>,
-        Ben Widawsky <bwidawsk@kernel.org>,
-        "Steven Rostedt" <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        "linux-cxl@vger.kernel.org" <linux-cxl@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "a.manzanares@samsung.com" <a.manzanares@samsung.com>
-Subject: Re: [PATCH 2/3] cxl/mbox: Add GET_POISON_LIST mailbox command
- support
-Message-ID: <20220620115307.000037a2@Huawei.com>
-In-Reply-To: <62accfc892f74_81c5e29456@dwillia2-xfh.notmuch>
-References: <cover.1655250669.git.alison.schofield@intel.com>
-        <382a9c35ef43e89db85670637d88371f9197b7a2.1655250669.git.alison.schofield@intel.com>
-        <20220616194334.pvorvoozt4rrzr66@offworld>
-        <20220616203400.GA1529208@alison-desk>
-        <62accfc892f74_81c5e29456@dwillia2-xfh.notmuch>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
+        Mon, 20 Jun 2022 06:54:07 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 881A81263C
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 03:54:05 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id s12so20311411ejx.3
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 03:54:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=hp2WGbyJPQrcYBr/XiNMK7doTTxfiplTJX+MgBeSAjk=;
+        b=V8WuZTzz4RLhzrXaT34PRQdsAHlsY8b4gwm8fGjpLSJJOe6u3ktfPj/62DdTwHFl5k
+         ADcxTvmNnD5PRE859vDuFkAown69AnrqSYdG3xAbvnZcdTnmxqo+BTfqM4Ofn0Bt3pEV
+         ugXo2fWqMOsiBsbxbrLaa329Eh8tGnUKdjAO3gQo/QkW4djLKAsozmmt5uycJUUpeyv/
+         SMjSLyz+91sntPIx0jV9KxbA9rk+z1J9790XIkDErj89KiRqcR8XqRsSLTh7vdDc1SjM
+         3tugJYgoVw+PQMrWtRjy18m5Ej4ucOfMigWX7zhGB/ZWD355fhmECQKR4fyKO7uYSBnd
+         yjlw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=hp2WGbyJPQrcYBr/XiNMK7doTTxfiplTJX+MgBeSAjk=;
+        b=72Eu3Ewo7FvYGtNsAJJM/rK811bnwsQPCSJHzV8Q/6OsissNkBtzPlk1rUOJCFttxb
+         t/guifVR01HXXAEtBxlQeNYV4noMY5xKu7Xyf2nWh4g/drBFVMAgV/DaCKze59rvwvB4
+         iWxFjth9mElOikZMr8bEB/8ESScoMAT+R5pRpoCgJpDH9goJEUagCtlrQKgIsZv2EPRS
+         GqFNqZS6OwxoSrivfguZ5kD5nPiyT7JfI0Ya2tWHimYO7z3KDH4oTAE9FSjy50Gg8WD4
+         e+LXxMh4jgl+FPdWP6nWNusSDLWKgwlBTnM1eS5BMVlqAuuDtkyfdF+gLQnIUe8e0wUh
+         RXVg==
+X-Gm-Message-State: AJIora8VL42HAfmaY2ua0OG55IKBknfhsBdkBToK4cnAmmb+05pCRPWR
+        EQMFefKIyqksNATTRHwfM8k1Gw==
+X-Google-Smtp-Source: AGRyM1vta/B1wtP+ozKz/g12g4uYiSh9+ViwTSAraXtw87o3jK9uGbeGbfea9n+cTO//cMif3CbwAQ==
+X-Received: by 2002:a17:907:6f07:b0:715:7e23:bbb7 with SMTP id sy7-20020a1709076f0700b007157e23bbb7mr19703837ejc.462.1655722444039;
+        Mon, 20 Jun 2022 03:54:04 -0700 (PDT)
+Received: from [192.168.0.209] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id y3-20020a056402358300b0042dc25fdf5bsm10214203edc.29.2022.06.20.03.54.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Jun 2022 03:54:03 -0700 (PDT)
+Message-ID: <16684442-35d4-df51-d9f7-4de36d7cf6fd@linaro.org>
+Date:   Mon, 20 Jun 2022 12:54:02 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH net-next 01/28] dt-bindings: phy: Add QorIQ SerDes binding
+Content-Language: en-US
+To:     Sean Anderson <sean.anderson@seco.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Madalin Bucur <madalin.bucur@nxp.com>, netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Eric Dumazet <edumazet@google.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>, devicetree@vger.kernel.org,
+        linux-phy@lists.infradead.org
+References: <20220617203312.3799646-1-sean.anderson@seco.com>
+ <20220617203312.3799646-2-sean.anderson@seco.com>
+ <110c4a4b-8007-1826-ee27-02eaedd22d8f@linaro.org>
+ <535a0389-6c97-523d-382f-e54d69d3907e@seco.com>
+ <d79239ce-3959-15f8-7121-478fc6d432e4@linaro.org>
+ <e6ed314d-290f-ace5-b0ff-01a9a2edca88@seco.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <e6ed314d-290f-ace5-b0ff-01a9a2edca88@seco.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.226.42]
-X-ClientProxiedBy: lhreml748-chm.china.huawei.com (10.201.108.198) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 17 Jun 2022 12:02:32 -0700
-Dan Williams <dan.j.williams@intel.com> wrote:
-
-> Alison Schofield wrote:
-> > On Thu, Jun 16, 2022 at 12:43:34PM -0700, Davidlohr Bueso wrote:  
-> > > On Tue, 14 Jun 2022, alison.schofield@intel.com wrote:
-> > >   
-> > > >From: Alison Schofield <alison.schofield@intel.com>
-> > > >
-> > > >CXL devices that support persistent memory maintain a list of locations
-> > > >that are poisoned or result in poison if the addresses are accessed by
-> > > >the host.
-> > > >
-> > > >Per the spec (CXL 2.0 8.2.8.5.4.1), the device returns this Poison
-> > > >list as a set of  Media Error Records that include the source of the
-> > > >error, the starting device physical address and length. The length is
-> > > >the number of adjacent DPAs in the record and is in units of 64 bytes.
-> > > >
-> > > >Retrieve the list and log each Media Error Record as a trace event of
-> > > >type cxl_poison_list.
-> > > >
-> > > >Signed-off-by: Alison Schofield <alison.schofield@intel.com>
-> > > >---
-> > > > drivers/cxl/cxlmem.h    | 43 +++++++++++++++++++++++
-> > > > drivers/cxl/core/mbox.c | 75 +++++++++++++++++++++++++++++++++++++++++
-> > > > 2 files changed, 118 insertions(+)
-> > > >  
-> > snip
-> >   
-> > > >+int cxl_mem_get_poison_list(struct device *dev)
-> > > >+{
-> > > >+	struct cxl_memdev *cxlmd = to_cxl_memdev(dev);
-> > > >+	struct cxl_dev_state *cxlds = cxlmd->cxlds;
-> > > >+	struct cxl_mbox_poison_payload_out *po;
-> > > >+	struct cxl_mbox_poison_payload_in pi;
-> > > >+	int nr_records = 0;
-> > > >+	int rc, i;
-> > > >+
-> > > >+	if (range_len(&cxlds->pmem_range)) {
-> > > >+		pi.offset = cpu_to_le64(cxlds->pmem_range.start);
-> > > >+		pi.length = cpu_to_le64(range_len(&cxlds->pmem_range));  
-> > 
-> > First off - you stopped at a bug here - that pi.length needs to be
-> > in units of 64 bytes.  
-> > > 
-> > > Do you ever see this changing to not always use the full pmem DPA range
-> > > but allow arbitrary ones? I also assume this is the reason why you don't
-> > > check the range vs cxlds->ram_range to prevent any overlaps, no?
-> > > 
-> > > Thanks,
-> > > Davidlohr  
-> > 
-> > David - Great question!
-> > 
-> > I'm headed in this direction -
-> > 
-> > cxl list --media-errors -m mem1
-> > 	lists media errors for requested memdev
-> > 
-> > cxl list --media-errors -r region#
-> > 	lists region errors with HPA addresses
-> > 	(So here cxl tool will collect the poison for all the regions
-> > 	 memdevs and do the DPA to HPA translation)
-> > 
-> > To answer your question, I wasn't thinking of limiting
-> > the range within the memdev, but certainly could. And if we were
-> > taking in ranges, those ranges would need to be checked.
-> > 
-> > $cxl list --media-errors -m mem1 --range-start=  --range-end|len=
-> > 
-> > Now, if I left the sysfs inteface as is, the driver will read the 
-> > entire poison list for the memdev and then cxl tool will filter it
-> > for the range requested. 
-> > 
-> > Or, maybe we should implement in libcxl (not sysfs), with memdev and
-> > range options and only collect from the device the range requested.
-> > 
-> > Either one looks the same to the cxl tool user, but limiting the
-> > range we send to the device would certainly cut down on unwanted
-> > records being logged, retrieved, and examined.
-> > 
-> > I'd like to hear more from you and other community members.  
+On 19/06/2022 17:53, Sean Anderson wrote:
+>>>
+>>>>> +          The first lane in the group. Lanes are numbered based on the register
+>>>>> +          offsets, not the I/O ports. This corresponds to the letter-based
+>>>>> +          ("Lane A") naming scheme, and not the number-based ("Lane 0") naming
+>>>>> +          scheme. On most SoCs, "Lane A" is "Lane 0", but not always.
+>>>>> +        minimum: 0
+>>>>> +        maximum: 7
+>>>>> +      - description: |
+>>>>> +          Last lane. For single-lane protocols, this should be the same as the
+>>>>> +          first lane.
+>>>>> +        minimum: 0
+>>>>> +        maximum: 7
+>>>>> +
+>>>>> +  compatible:
+>>>>> +    enum:
+>>>>> +      - fsl,ls1046a-serdes-1
+>>>>> +      - fsl,ls1046a-serdes-2
+>>>>
+>>>> Does not look like proper compatible and your explanation from commit
+>>>> msg did not help me. What "1" and "2" stand for? Usually compatibles
+>>>> cannot have some arbitrary properties encoded.
+>>>
+>>> Each serdes has a different set of supported protocols for each lane. This is encoded
+>>> in the driver data associated with the compatible
+>>
+>> Implementation does not matter.
 > 
-> There is some history here that is relevant to this design. CXL Get
-> Poison List builds on lessons learned from the ACPI "Address Range
-> Scrub" mechanism that was deployed for ACPI described persistent memory
-> platform (See ACPI 6.4 9.20.7.2 "Address Range Scrubbing (ARS)
-> Overview"). In that case there was no expectation that the device
-> maintained a cached and coherent (with incoming poison writes) copy of
-> the media error list. CXL Get Poison List in comparison is meant to
-> obviate the need to perform Scan Media in most scenarios, and it is
-> lightweight enough that userspace need not have a mechanism to request
-> errors by range, in my opinion.
-> 
-> One of the design warts of drivers/acpi/nfit/ that I want to get away
-> from in the case of drivers/cxl/ is snooping the equivalent of ARS
-> command results to populate a kernel list of poison addresses and
-> instead put the onus on userspace to collect DPA events and optionally
-> inform the kernel of the HPA impacts.
+> Of *course* implementation matters. Devicetree bindings do not happen in a vacuum. They
+> describe the hardware, but only in service to the implementation.
 
-Can you give more info on why such an in kernel flow doesn't work
-well for this usecase (particularly for volatile memory)? I don't
-much like the flow differing from how we do DRAM patrol scrub based
-handling today. I'm not sure I like the requirement for userspace
-to be in the loop if we are dealing with volatile failures even if
-the detection is async.
+This is so not true. Bindings do not service implementation. Bindings
+happen in vacuum, because they are used by different implementations:
+Linux, u-Boot, BSD and several other quite different systems.
 
-> For example, DAX filesystems will
-> soon have the ability to do something useful with poison notifications
-> [1], but that support is limited to synchronously consumed poison
-> flagged by memory_failure(). When the cxl tool translates the poison
-> list to HPA it needs an ABI to turn around and notify the filesystem
-> about which blocks got clobbered.
+Any references to implemention from the bindings is questionable,
+although of course not always wrong.
 
-I'm not clear why it makes sense to do the DPA to HPA conversion in
-userspace. It should be a fairly trivial bit of code to do the reverse look
-up in kernel and then we just bolt into existing infrastructure.
-
-Jonathan
+Building bindings per specific implementation is as well usually not
+correct.
 
 > 
-> [1]: https://lore.kernel.org/all/20220616193157.2c2e963f3e7e38dfac554a28@linux-foundation.org/
+>>> , along with the appropriate values
+>>> to plug into the protocol control registers. Because each serdes has a different set
+>>> of supported protocols
+>>
+>> Another way is to express it with a property.
+>>
+>>> and register configuration,
+>>
+>> What does it mean exactly? The same protocols have different programming
+>> model on the instances?
+> 
+> (In the below paragraph, when I say "register" I mean "register or field within a
+> register")
+> 
+> Yes. Every serdes instance has a different way to program protocols into lanes. While
+> there is a little bit of orthogonality (the same registers are typically used for the
+> same protocols), each serdes is different. The values programmed into the registers are
+> unique to the serdes, and the lane which they apply to is also unique (e.g. the same
+> register may be used to program a different lane with a different protocol).
+
+That's not answering the point here, but I'll respond to the later
+paragraph.
+
+> 
+>>> adding support for a new SoC will
+>>> require adding the appropriate configuration to the driver, and adding a new compatible
+>>> string. Although most of the driver is generic, this critical portion is shared only
+>>> between closely-related SoCs (such as variants with differing numbers of cores).
+>>>
+>>
+>> Again implementation - we do not talk here about driver, but the bindings.
+>>
+>>> The 1 and 2 stand for the number of the SerDes on that SoC. e.g. the documentation will
+>>> refer to SerDes1 and SerDes2.
+>>>    
+>>> So e.g. other compatibles might be
+>>>
+>>> - fsl,ls1043a-serdes-1 # There's only one serdes on this SoC
+>>> - fsl,t4042-serdes-1 # This SoC has four serdes
+>>> - fsl,t4042-serdes-2
+>>> - fsl,t4042-serdes-3
+>>> - fsl,t4042-serdes-4
+>>
+>> If the devices are really different - there is no common parts in the
+>> programming model (registers) - then please find some descriptive
+>> compatible. However if the programming model of common part is
+>> consistent and the differences are only for different protocols (kind of
+>> expected), this should be rather a property describing which protocols
+>> are supported.
+>>
+> 
+> I do not want to complicate the driver by attempting to encode such information in the
+> bindings. Storing the information in the driver is extremely common. Please refer to e.g.
+
+Yes, quirks are even more common, more flexible and are in general
+recommended for more complicated cases. Yet you talk about driver
+implementation, which I barely care.
+
+> 
+> - mvebu_comphy_cp110_modes in drivers/phy/marvell/phy-mvebu-cp110-comphy.c
+> - mvebu_a3700_comphy_modes in drivers/phy/marvell/phy-mvebu-a3700-comphy.c
+> - icm_matrix in drivers/phy/xilinx/phy-zynqmp.c
+> - samsung_usb2_phy_config in drivers/phy/samsung/
+
+This one is a good example - where do you see there compatibles with
+arbitrary numbers attached?
+
+> - qmp_phy_init_tbl in drivers/phy/qualcomm/phy-qcom-qmp.c
+> 
+> All of these drivers (and there are more)
+> 
+> - Use a driver-internal struct to encode information specific to different device models.
+> - Select that struct based on the compatible
+
+Driver implementation. You can do it in many different ways. Does not
+matter for the bindings.
+
+> 
+> The other thing is that while the LS1046A SerDes are fairly generic, other SerDes of this
+> type have particular restructions on the clocks. E.g. on some SoCs, certain protocols
+> cannot be used together (even if they would otherwise be legal), and some protocols must
+> use particular PLLs (whereas in general there is no such restriction). There are also
+> some register fields which are required to program on some SoCs, and which are reserved
+> on others.
+
+Just to be clear, because you are quite unspecific here ("some
+protocols") - we talk about the same protocol programmed on two of these
+serdes (serdes-1 and serdes-2 how you call it). Does it use different
+registers? Are some registers - for the same protocol - reserved in one
+version?
+
+> 
+> There is, frankly, a large amount of variation between devices as implemented on different
+> SoCs. 
+
+This I don't get. You mean different SoCs have entirely different
+Serdes? Sure, no problem. We talk here only about this SoC, this
+serdes-1 and serdes-2.
+
+> Especially because (AIUI) drivers must remain compatible with old devicetrees, I
+> think using a specific compatible string is especially appropriate here. 
+
+This argument does not make any sense in case of new bindings and new
+drivers, unless you build on top of existing implementation. Anyway no
+one asks you to break existing bindings...
+
+> It will give us
+> the ability to correct any implementation quirks as they are discovered (and I anticipate
+> that there will be) rather than having to determine everything up front.
+
+All the quirks can be also chosen by respective properties.
+
+Anyway, "serdes-1" and "serdes-2" are not correct compatibles, so my NAK
+stays. These might be separate compatibles, although that would require
+proper naming and proper justification (as you did not answer my actual
+questions about differences when using same protocols). Judging by the
+bindings and your current description (implementation does not matter),
+this also looks like a property.
 
 
-
+Best regards,
+Krzysztof
