@@ -2,290 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D258C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 12:48:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F512C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 12:49:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241657AbiFTMsr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 08:48:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59836 "EHLO
+        id S241903AbiFTMtE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 08:49:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241374AbiFTMsf (ORCPT
+        with ESMTP id S241235AbiFTMtB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 08:48:35 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00F191114D;
-        Mon, 20 Jun 2022 05:48:33 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 9E8A921BA7;
-        Mon, 20 Jun 2022 12:48:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1655729312; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=4L4vI2gT/UYwMSz8JNw6k5BEpCFpyn/9iaWISo83eRs=;
-        b=SBQfzNu2ZVa9IkaX6aRrWDLH+27swsMBydP8qWvgntvHkTQXFzxsj6T1rWVUZ2LtcAHtzY
-        BZ843ohsRze9SY8bUuaX8FSHH81EIFmC2W2uAj/PlSASY9fT7KziO3ifSDdF7UHXJRzgyB
-        SHqLdn/tM5g6LC3omdfRuakvfKUzrW0=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1655729312;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=4L4vI2gT/UYwMSz8JNw6k5BEpCFpyn/9iaWISo83eRs=;
-        b=v/LhxNZuI8QxtYdWvLSNzbywgKgrA0827S2GuU/gyJjFPAgLnUDNDAkfqqng7ffvYDWK6F
-        3VqwK9kfVdHBtQBg==
-Received: from quack3.suse.cz (unknown [10.100.224.230])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 823112C143;
-        Mon, 20 Jun 2022 12:48:32 +0000 (UTC)
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id 02613A0636; Mon, 20 Jun 2022 14:48:31 +0200 (CEST)
-Date:   Mon, 20 Jun 2022 14:48:31 +0200
-From:   Jan Kara <jack@suse.cz>
-To:     Yu Kuai <yukuai3@huawei.com>
-Cc:     axboe@kernel.dk, ming.lei@redhat.com, jack@suse.cz,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        yi.zhang@huawei.com
-Subject: Re: [PATCH RFC -next] sbitmap: fix possible io hung due to lost
- wakeups
-Message-ID: <20220620124831.g7bswgivvg5urv3d@quack3.lan>
-References: <20220617141125.3024491-1-yukuai3@huawei.com>
- <20220620122413.2fewshn5u6t2y4oi@quack3.lan>
+        Mon, 20 Jun 2022 08:49:01 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE378120B8
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 05:48:59 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id h23so20855439ejj.12
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 05:48:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=25MF9bCZg+nfQVclxRAj22UNao3u9KJnaDQNqtN7pPs=;
+        b=y/SePXg4BKIZ2rCBvahqjNHAYrm/fPndCXouPWVx21VOCzQasCbuZb3zCrxchlpc6C
+         iNLqkwLxOPlBIw0Z3lSudBi3E6/djVe18sB4x7j031BQDualuu3SkuBoLGffP1aJP6Vk
+         dLpb83sPdfz0c06+qNqCPQpckLtIppBn1XoFBBk+ydk4ngQhtd0ymBcqHiSGvBkI7C3B
+         4dgJcUNJhfzGzr0Hy9JYSkN3oMtvz6UHUJ/fttdDE0oYd4BUTsAlwgOUJJ5Jr5tP6Aam
+         uyhxv7iZ6u1aNkjYChtk8ixoil/arL/mZr84aDEj9oAa7Zfqo+B2EgB+SYztE+GhB2mt
+         H7IQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=25MF9bCZg+nfQVclxRAj22UNao3u9KJnaDQNqtN7pPs=;
+        b=uT0OgawRkie70HctH6fzkXmDTuDxYAP3miLVtWzWq/77ExC60iXFAGQWhtf793XNb4
+         ZAnJXoO/IpU9oJw4ZtbxvE6DQmPlqezrfItppixM4dGN11F288W9c3rhuyhgIp5cKdwm
+         tkVRf2EllcbKYZaWoop3/xK9Xr8o8DE6IChbj4aR5X5yA8ieWOOH+bcNAEIqocBE/v9O
+         QYVwUZvieuMdxIbBC3vTgH8qt+jBp7qGE3tVtoFnCVZcKcuvRv0c4G+HYGtUbwtIhqCR
+         CaDVONYiEYkp+gHeMe+rX6yI+pW17mxBd73GLilv2WvVMC2uzbfDbkaYa+KsGV/OlWUa
+         6ijg==
+X-Gm-Message-State: AJIora+q/zO2Gv4DSKg7uqtpD+aG+UT/4v7Ey3QkJLsN7GkzUgvb89H6
+        sJiacF8SiCORJLcCN8e+3Fu21hvi226O6Q==
+X-Google-Smtp-Source: AGRyM1ua+PHdvFVhKnc7bKaPda6LbhC16pScYCj1ebE9gDhAUmRSsupGeC4bFEC3ObLAmRhQDhE/Tg==
+X-Received: by 2002:a17:906:4f:b0:712:af2:29d9 with SMTP id 15-20020a170906004f00b007120af229d9mr21303926ejg.751.1655729338197;
+        Mon, 20 Jun 2022 05:48:58 -0700 (PDT)
+Received: from [192.168.0.210] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id p3-20020a17090653c300b006fed93bf71fsm6051568ejo.18.2022.06.20.05.48.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Jun 2022 05:48:57 -0700 (PDT)
+Message-ID: <655c8da3-e4ad-b971-39e7-3d69b4dcd241@linaro.org>
+Date:   Mon, 20 Jun 2022 14:48:56 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220620122413.2fewshn5u6t2y4oi@quack3.lan>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v5 01/15] dt-bindings: arm: add AMD Pensando boards
+Content-Language: en-US
+To:     Brad Larson <brad@pensando.io>,
+        linux-arm-kernel@lists.infradead.org
+Cc:     linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
+        adrian.hunter@intel.com, alcooperx@gmail.com,
+        andy.shevchenko@gmail.com, arnd@arndb.de, blarson@amd.com,
+        brijeshkumar.singh@amd.com, catalin.marinas@arm.com,
+        gsomlo@gmail.com, gerg@linux-m68k.org,
+        krzysztof.kozlowski+dt@linaro.org, lee.jones@linaro.org,
+        broonie@kernel.org, yamada.masahiro@socionext.com,
+        p.zabel@pengutronix.de, piotrs@cadence.com, p.yadav@ti.com,
+        rdunlap@infradead.org, robh+dt@kernel.org, samuel@sholland.org,
+        fancer.lancer@gmail.com, suravee.suthikulpanit@amd.com,
+        thomas.lendacky@amd.com, ulf.hansson@linaro.org, will@kernel.org,
+        devicetree@vger.kernel.org
+References: <20220613195658.5607-1-brad@pensando.io>
+ <20220613195658.5607-2-brad@pensando.io>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220613195658.5607-2-brad@pensando.io>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 20-06-22 14:24:13, Jan Kara wrote:
-> On Fri 17-06-22 22:11:25, Yu Kuai wrote:
-> > Currently, same waitqueue might be woken up continuously:
-> > 
-> > __sbq_wake_up		__sbq_wake_up
-> >  sbq_wake_ptr -> assume	0
-> > 			 sbq_wake_ptr -> 0
-> >  atomic_dec_return
-> > 			atomic_dec_return
-> >  atomic_cmpxchg -> succeed
-> > 			 atomic_cmpxchg -> failed
-> > 			  return true
-> > 
-> > 			__sbq_wake_up
-> > 			 sbq_wake_ptr
-> > 			  atomic_read(&sbq->wake_index) -> still 0
-> >  sbq_index_atomic_inc -> inc to 1
-> > 			  if (waitqueue_active(&ws->wait))
-> > 			   if (wake_index != atomic_read(&sbq->wake_index))
-> > 			    atomic_set -> reset from 1 to 0
-> >  wake_up_nr -> wake up first waitqueue
-> > 			    // continue to wake up in first waitqueue
-> > 
-> > What's worse, io hung is possible in theory because wakeups might be
-> > missed. For example, 2 * wake_batch tags are put, while only wake_batch
-> > threads are worken:
-> > 
-> > __sbq_wake_up
-> >  atomic_cmpxchg -> reset wait_cnt
-> > 			__sbq_wake_up -> decrease wait_cnt
-> > 			...
-> > 			__sbq_wake_up -> wait_cnt is decreased to 0 again
-> > 			 atomic_cmpxchg
-> > 			 sbq_index_atomic_inc -> increase wake_index
-> > 			 wake_up_nr -> wake up and waitqueue might be empty
-> >  sbq_index_atomic_inc -> increase again, one waitqueue is skipped
-> >  wake_up_nr -> invalid wake up because old wakequeue might be empty
-> > 
-> > To fix the problem, refactor to make sure waitqueues will be woken up
-> > one by one,
-> > 
-> > Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+On 13/06/2022 21:56, Brad Larson wrote:
+> From: Brad Larson <blarson@amd.com>
 > 
-> So as far as I can tell your patch does not completely fix this race. See
-> below:
+> Document the compatible for AMD Pensando Elba SoC boards.
 > 
-> > diff --git a/lib/sbitmap.c b/lib/sbitmap.c
-> > index ae4fd4de9ebe..dc2959cb188c 100644
-> > --- a/lib/sbitmap.c
-> > +++ b/lib/sbitmap.c
-> > @@ -574,66 +574,69 @@ void sbitmap_queue_min_shallow_depth(struct sbitmap_queue *sbq,
-> >  }
-> >  EXPORT_SYMBOL_GPL(sbitmap_queue_min_shallow_depth);
-> >  
-> > -static struct sbq_wait_state *sbq_wake_ptr(struct sbitmap_queue *sbq)
-> > +static void sbq_update_wake_index(struct sbitmap_queue *sbq,
-> > +				  int old_wake_index)
-> >  {
-> >  	int i, wake_index;
-> > -
-> > -	if (!atomic_read(&sbq->ws_active))
-> > -		return NULL;
-> > +	struct sbq_wait_state *ws;
-> >  
-> >  	wake_index = atomic_read(&sbq->wake_index);
-> > -	for (i = 0; i < SBQ_WAIT_QUEUES; i++) {
-> > -		struct sbq_wait_state *ws = &sbq->ws[wake_index];
-> > +	if (old_wake_index != wake_index)
-> > +		return;
-> >  
-> > +	for (i = 1; i < SBQ_WAIT_QUEUES; i++) {
-> > +		wake_index = sbq_index_inc(wake_index);
-> > +		ws = &sbq->ws[wake_index];
-> > +		/* Find the next active waitqueue in round robin manner */
-> >  		if (waitqueue_active(&ws->wait)) {
-> > -			if (wake_index != atomic_read(&sbq->wake_index))
-> > -				atomic_set(&sbq->wake_index, wake_index);
-> > -			return ws;
-> > +			atomic_cmpxchg(&sbq->wake_index, old_wake_index,
-> > +				       wake_index);
-> > +			return;
-> >  		}
-> > -
-> > -		wake_index = sbq_index_inc(wake_index);
-> >  	}
-> > -
-> > -	return NULL;
-> >  }
-> >  
-> >  static bool __sbq_wake_up(struct sbitmap_queue *sbq)
-> >  {
-> >  	struct sbq_wait_state *ws;
-> >  	unsigned int wake_batch;
-> > -	int wait_cnt;
-> > +	int wait_cnt, wake_index;
-> >  
-> > -	ws = sbq_wake_ptr(sbq);
-> > -	if (!ws)
-> > +	if (!atomic_read(&sbq->ws_active))
-> >  		return false;
-> >  
-> > -	wait_cnt = atomic_dec_return(&ws->wait_cnt);
-> > -	if (wait_cnt <= 0) {
-> > -		int ret;
-> > -
-> > -		wake_batch = READ_ONCE(sbq->wake_batch);
-> > -
-> > -		/*
-> > -		 * Pairs with the memory barrier in sbitmap_queue_resize() to
-> > -		 * ensure that we see the batch size update before the wait
-> > -		 * count is reset.
-> > -		 */
-> > -		smp_mb__before_atomic();
-> > +	wake_index = atomic_read(&sbq->wake_index);
-> > +	ws = &sbq->ws[wake_index];
-> > +	/*
-> > +	 * This can only happen in the first wakeup when sbitmap waitqueues
-> > +	 * are no longer idle.
-> > +	 */
-> > +	if (!waitqueue_active(&ws->wait)) {
-> > +		sbq_update_wake_index(sbq, wake_index);
-> > +		return true;
-> > +	}
-> >  
-> > -		/*
-> > -		 * For concurrent callers of this, the one that failed the
-> > -		 * atomic_cmpxhcg() race should call this function again
-> > -		 * to wakeup a new batch on a different 'ws'.
-> > -		 */
-> > -		ret = atomic_cmpxchg(&ws->wait_cnt, wait_cnt, wake_batch);
-> > -		if (ret == wait_cnt) {
-> > -			sbq_index_atomic_inc(&sbq->wake_index);
-> > -			wake_up_nr(&ws->wait, wake_batch);
-> > -			return false;
-> > -		}
-> > +	wait_cnt = atomic_dec_return(&ws->wait_cnt);
-> > +	if (wait_cnt > 0)
-> > +		return false;
-> 
-> The following race is still possible:
-> 
-> CPU1					CPU2
-> __sbq_wake_up				__sbq_wake_up
->   wake_index = atomic_read(&sbq->wake_index);
-> 					  wake_index = atomic_read(&sbq->wake_index);
-> 
->   if (!waitqueue_active(&ws->wait)) -> not taken
-> 					  if (!waitqueue_active(&ws->wait)) -> not taken
->   wait_cnt = atomic_dec_return(&ws->wait_cnt);
->   /* decremented to 0 now */
->   if (wait_cnt > 0) -> not taken
->   sbq_update_wake_index(sbq, wake_index);
->   if (wait_cnt < 0) -> not taken
->   ...
->   atomic_set(&ws->wait_cnt, wake_batch);
->   wake_up_nr(&ws->wait, wake_batch);
-> 					  wait_cnt = atomic_dec_return(&ws->wait_cnt);
-> 					  /*
-> 					   * decremented to wake_batch - 1 but
-> 					   * there are no tasks waiting anymore
-> 					   * so the wakeup should have gone
-> 					   * to a different waitqueue.
-> 					   */
-> 
-> I have an idea how to fix all these lost wakeups, I'll try to code it
-> whether it would look usable...
+> Signed-off-by: Brad Larson <blarson@amd.com>
 
-Thinking a bit more about it your code would just need a small tweak like:
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-	wait_cnt = atomic_dec_return(&ws->wait_cnt);
-	/*
-	 * Concurrent callers should call this function again
-	 * to wakeup a new batch on a different 'ws'.
-	 */
-	if (wait_cnt < 0 || !waitqueue_active(&ws->wait)) {
-		sbq_update_wake_index(sbq, wake_index);
-		return true;
-	}
-	if (wait_cnt > 0)
-		return false;
-	sbq_update_wake_index(sbq, wake_index);
-
-	wake_batch = READ_ONCE(sbq->wake_batch);
-	wake_up_nr(&ws->wait, wake_batch);
-	/*
-	 * Pairs with the memory barrier in sbitmap_queue_resize() to
-	 * ensure that we see the batch size update before the wait
-	 * count is reset.
-	 *
-	 * Also pairs with the implicit barrier between decrementing
-	 * wait_cnt and checking for waitqueue_active() to make sure
-	 * waitqueue_active() sees results of the wakeup if
-	 * atomic_dec_return() has seen results of the atomic_set.
-	 */
-	smp_mb__before_atomic();
-	atomic_set(&ws->wait_cnt, wake_batch);
-
-								Honza
-
-> > +	sbq_update_wake_index(sbq, wake_index);
-> > +	/*
-> > +	 * Concurrent callers should call this function again
-> > +	 * to wakeup a new batch on a different 'ws'.
-> > +	 */
-> > +	if (wait_cnt < 0)
-> >  		return true;
-> > -	}
-> > +
-> > +	wake_batch = READ_ONCE(sbq->wake_batch);
-> > +	/*
-> > +	 * Pairs with the memory barrier in sbitmap_queue_resize() to
-> > +	 * ensure that we see the batch size update before the wait
-> > +	 * count is reset.
-> > +	 */
-> > +	smp_mb__before_atomic();
-> > +	atomic_set(&ws->wait_cnt, wake_batch);
-> > +	wake_up_nr(&ws->wait, wake_batch);
-> >  
-> >  	return false;
-> >  }
-> > -- 
-> > 2.31.1
-> > 
-> -- 
-> Jan Kara <jack@suse.com>
-> SUSE Labs, CR
--- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+Best regards,
+Krzysztof
