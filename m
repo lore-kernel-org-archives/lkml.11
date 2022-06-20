@@ -2,105 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58CCFC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 18:25:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A64EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 18:28:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245350AbiFTSZp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 14:25:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38354 "EHLO
+        id S245370AbiFTS2w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 14:28:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238810AbiFTSZm (ORCPT
+        with ESMTP id S238810AbiFTS2u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 14:25:42 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBDEC1D309;
-        Mon, 20 Jun 2022 11:25:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1655749531;
-        bh=g1DrBhSApPqCrOkx7rqvIZlJ4nA4K9qZgEmyWNfkG1g=;
-        h=X-UI-Sender-Class:Date:Subject:To:References:From:In-Reply-To;
-        b=LPWXOKns/sUNNC5ie4zr1SOVSbuwDE5MHA4y1LWq1ClUNfjzu/jkVDj9J5g7QtgyT
-         plHhrs50yQa2W43qxlv4/9yPAUMT10DMrVLNNeU61hBajUYj1uwaxvF2himdCquBWs
-         RVHFc7GHX9CUBTII1SabztPKQ38kCeGgMxQUSbmo=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.174.149]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MRCK6-1oHi6o3aiq-00N6Bo; Mon, 20
- Jun 2022 20:25:30 +0200
-Message-ID: <f7e75426-035b-bf0a-b565-bc816b4eeb23@gmx.de>
-Date:   Mon, 20 Jun 2022 20:25:09 +0200
+        Mon, 20 Jun 2022 14:28:50 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56E811402C;
+        Mon, 20 Jun 2022 11:28:49 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id e25so11927650wrc.13;
+        Mon, 20 Jun 2022 11:28:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=EbH61xgbcQFZqiKdtF3EiTrlMIA03mVcXgcJh8nFhYw=;
+        b=mSQEmLJ0Fn5QVozsHIogGY5NXi+9CJYGRIz8gpuc1yRs1WXusV7NLcUOAPe/oDHd+p
+         CGfunJlCmJ3FttTozAiBihvuQo80brGH5cxd7esS/dJ8+prrLrD9NYWnUklcB1Wn/L9D
+         4xSjQZ8Ht1+2KVRUzP+G9tpz8dK5qZdWFtEcKKIo3UWWd5lQCv7rPsKZhCW5toVy38+V
+         HzYrtpJ5nPWn9oymuE5UJnlGqTc5qT4epprO+dTLcXI+5zwNJsTsQNUu7WMD9R9VluLf
+         yzP0plxjqlwIb92S1XFNdmlBBMjgngHOZahcjJtaSnvziwMaVFoUKTmPGRSoHc1Y+Zlh
+         1dxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=EbH61xgbcQFZqiKdtF3EiTrlMIA03mVcXgcJh8nFhYw=;
+        b=3fbZzVOsre0YyqJTJjqtn6TD85OU9GirMi64OjFaYnpvNXaJo9RFSS+NKccpRiCPKn
+         OPKHUIKo/P6nfdkAGqQE/TSMxTaoOfuQLsWXNir6ku6b8Mcve0CkpsuuBJDrNfXpXcX4
+         w0OOSndnO/u9UQ2Njd1YSLAntL4wGZ5uRlYz6SsCiasEvtXmQHlAYpqBxNctrPTqJHyg
+         rOxRqirRElfO6XRgtTqvmzaWpMRyJN4HidJqDVUQruWlkY1TNjydEvvJTArW0bcrW+8h
+         cjm6JOPU0zS9RIFdGV5V+l4iupNavN2hUM0BF2WY/4Wa4q1xd6o3rnWhygwUTu8nrXWd
+         U88Q==
+X-Gm-Message-State: AJIora9ZiNq3qBGDtsI6/U28T+8vv6VYnXrCUumvbNVjxgn0G8jr6LZH
+        ABKBdb1awfgY6HM3TcRk3is=
+X-Google-Smtp-Source: AGRyM1t14bVeWv+aaSXZzdp98dSIn+wgQmnAILYuJY07t+yPD4z3EwzouaR/YGr9cTVVtwEooMSWGA==
+X-Received: by 2002:a5d:584c:0:b0:218:4ee2:38fd with SMTP id i12-20020a5d584c000000b002184ee238fdmr24050138wrf.584.1655749727868;
+        Mon, 20 Jun 2022 11:28:47 -0700 (PDT)
+Received: from kista.localnet (213-161-3-76.dynamic.telemach.net. [213.161.3.76])
+        by smtp.gmail.com with ESMTPSA id l8-20020a1ced08000000b0039744bd664esm19254682wmh.13.2022.06.20.11.28.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Jun 2022 11:28:47 -0700 (PDT)
+From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
+To:     Chen-Yu Tsai <wens@csie.org>, Vinod Koul <vkoul@kernel.org>,
+        Samuel Holland <samuel@sholland.org>
+Cc:     Samuel Holland <samuel@sholland.org>, dmaengine@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-sunxi@lists.linux.dev
+Subject: Re: [PATCH] dmaengine: sun6i: Set the maximum segment size
+Date:   Mon, 20 Jun 2022 20:28:46 +0200
+Message-ID: <3494277.R56niFO833@kista>
+In-Reply-To: <20220617034209.57337-1-samuel@sholland.org>
+References: <20220617034209.57337-1-samuel@sholland.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH] fbdev: simplefb: Check before clk_put() not needed
-Content-Language: en-US
-To:     Hans de Goede <hdegoede@redhat.com>, Yihao Han <hanyihao@vivo.com>,
-        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-References: <20220602094219.13024-1-hanyihao@vivo.com>
- <84aa3225-d514-4c08-f6d3-ed8f0423e513@redhat.com>
-From:   Helge Deller <deller@gmx.de>
-In-Reply-To: <84aa3225-d514-4c08-f6d3-ed8f0423e513@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:F7AmgmvffE840tXWVRq7mb8PATQeMnhx+HwH9ip+oSIRJIYMOEI
- Mc4HXrcX+QKZJ7V/nkhoiI/Dxz+zY6IAx3ijx43pkPQZKPCJSwQyek/li3OkJffXzUQHSMx
- u0kbgcV9SZbD9lvK/ukwKjRRCbZqtDwbv8uEGtIL+xk3wGPn9+4fFavnmtGUl9XIh5yDwDU
- TuLtJe+WcWTqk+tXZqJ5g==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:TzJKf2LyMVk=:n70VceyDlP3L499n504Lja
- DRe5F+1r2lDAW5JEM99pCAWctF0QSTjJzHeJXUXT/CvIxu37uD7Oejws3klX1K+kTSPuQoxiI
- 60nkDosVueRU7HvGfEYvsT0wipD0Buxk0ofEyln3T3K78eGcWPjnY7AeuBRnE05wOqn7k84Zz
- nfbQ0AOvWzLOhI+0zdLX65WqwHaWUBhacEmzdXRcCxOJ7vnL/+Pw/8Jo3XplFfxbkT5snqXXz
- KsURX4dxbVI9+963ErTxz0vIZpmBeCaU8pxtiaq7F557gehOhK0AcwQvyRdGwEMDH0MpI9azG
- 9KM9+PHnZdx3Dhd4Ws5vKulMBGyJ4Eg0XUm5WgsLPpAeuTt+fByF0dJZn+mXbYwSEfSPRVuIN
- 61bcoe0rcUQcDpUdC2ofeitx8Qeq4H/A+Q1IP4449RjGXNHU1H+B50eG4g2jFGrvfOE2/uMOU
- rDJ8Yt3C0CK2i8ChYJudqcps+ga3TGcwW813dJ6BDYmBnQdDLB6zEGElMH/IJPe5GOWhInuum
- s05E4wHRt4l2Ks+oTwY+Gr6mFqtotn4U2KWaAc9R3KXUTr55hTTgqrGCOfZ2B/yWLg1T0C5fb
- Y5Yniuq4q7XyA83z4jQ9/ptVKSr2G3djKbkQyTliFy+lJOlJF/zi3UeYkCFiBWLNMuIRZmHg5
- oFdWFc4fcVi7WUeGTMe7/7kcyujwndi9OXJvc42OlURg/VvBCWDm0Hv/ZauD/ZDterl/rv7ej
- ljZjA79OLXikhmzpYGTryj1q88l95FZYmo7cvL9OJHpSfO0ySP/iMrfDpb1rpBCLMIA/FQhLd
- 0J0fqmk9NlpAyQaUYcJhzAxkaMViYwK+fhD2Bq6LL28IiRTm64z+5hQ3xa2uMuX7G7mRWqXPf
- mKUqgDNmaXtyT45cVHPKJSwRoJ9V8x8LMqKAYLqH958sUVtWpoJwJmU70+k/qBQrDJhQ0YgBt
- h5smT0eRUPvK+VUglNgsQ2/dQkSQQ17BeMHKU21vKmI+NGoYTrZX79eLPngkn+mvveI5CrVfM
- AxRZmRCVVCma1oY9+dMQe9oivXEOfxWatKZ9WPW2+248RgWiyckDyp1BfEy+xiXo4FRdTdH79
- t1aJnD3B5PrXkP+rz0eSt1cJgFk2fXrKCS57FwWN5OCL1SY3ED9l2UvoA==
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/2/22 12:50, Hans de Goede wrote:
-> Hi,
->
-> On 6/2/22 11:42, Yihao Han wrote:
->> clk_put() already checks the clk ptr using !clk and IS_ERR()
->> so there is no need to check it again before calling it.
->>
->> Signed-off-by: Yihao Han <hanyihao@vivo.com>
->> ---
->>  drivers/video/fbdev/simplefb.c | 3 +--
->>  1 file changed, 1 insertion(+), 2 deletions(-)
->>
->> diff --git a/drivers/video/fbdev/simplefb.c b/drivers/video/fbdev/simpl=
-efb.c
->> index 2c198561c338..f96ce8801be4 100644
->> --- a/drivers/video/fbdev/simplefb.c
->> +++ b/drivers/video/fbdev/simplefb.c
->> @@ -237,8 +237,7 @@ static int simplefb_clocks_get(struct simplefb_par =
-*par,
->>  		if (IS_ERR(clock)) {
->>  			if (PTR_ERR(clock) =3D=3D -EPROBE_DEFER) {
->>  				while (--i >=3D 0) {
->> -					if (par->clks[i])
->> -						clk_put(par->clks[i]);
->> +					clk_put(par->clks[i]);
->>  				}
->>  				kfree(par->clks);
->>  				return -EPROBE_DEFER;
->
-> Thanks, patch looks good to me:
->
-> Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Dne petek, 17. junij 2022 ob 05:42:09 CEST je Samuel Holland napisal(a):
+> The sun6i DMA engine supports segment sizes up to 2^25-1 bytes. This is
+> explicitly stated in newer SoC documentation (H6, D1), and it is implied
+> in older documentation by the 25-bit width of the "bytes left in the
+> current segment" register field.
 
-applied to fbdev tree.
+At least A10 user manual says 128k max in description for Byte Counter 
+register (0x100+N*0x20+0xC), although field size is defined as 23:0, but that's 
+still less than 2^25-1. A20 supports only 128k too according to manual. New 
+quirk should be introduced for this.
 
-Thanks!
-Helge
+Best regards,
+Jernej
+
+> 
+> Exposing the real segment size limit (instead of the 64k default)
+> reduces the number of SG list segments needed for a transaction.
+> 
+> Signed-off-by: Samuel Holland <samuel@sholland.org>
+> ---
+> Tested on A64, verified that the maximum ALSA PCM period increased, and
+> that audio playback still worked.
+> 
+>  drivers/dma/sun6i-dma.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/dma/sun6i-dma.c b/drivers/dma/sun6i-dma.c
+> index b7557f437936..1425f87d97b7 100644
+> --- a/drivers/dma/sun6i-dma.c
+> +++ b/drivers/dma/sun6i-dma.c
+> @@ -9,6 +9,7 @@
+>  
+>  #include <linux/clk.h>
+>  #include <linux/delay.h>
+> +#include <linux/dma-mapping.h>
+>  #include <linux/dmaengine.h>
+>  #include <linux/dmapool.h>
+>  #include <linux/interrupt.h>
+> @@ -1334,6 +1335,8 @@ static int sun6i_dma_probe(struct platform_device 
+*pdev)
+>  	INIT_LIST_HEAD(&sdc->pending);
+>  	spin_lock_init(&sdc->lock);
+>  
+> +	dma_set_max_seg_size(&pdev->dev, DMA_BIT_MASK(25));
+> +
+>  	dma_cap_set(DMA_PRIVATE, sdc->slave.cap_mask);
+>  	dma_cap_set(DMA_MEMCPY, sdc->slave.cap_mask);
+>  	dma_cap_set(DMA_SLAVE, sdc->slave.cap_mask);
+> -- 
+> 2.35.1
+> 
+> 
+
+
