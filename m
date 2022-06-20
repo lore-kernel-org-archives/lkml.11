@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80795C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:51:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EDE2C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:51:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349357AbiFTNvh (ORCPT
+        id S1349380AbiFTNvl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:51:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36700 "EHLO
+        Mon, 20 Jun 2022 09:51:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350471AbiFTNtT (ORCPT
+        with ESMTP id S1350636AbiFTNto (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:49:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AE472FFE5;
-        Mon, 20 Jun 2022 06:18:11 -0700 (PDT)
+        Mon, 20 Jun 2022 09:49:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64A762FFF9;
+        Mon, 20 Jun 2022 06:18:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E5B2060FF1;
-        Mon, 20 Jun 2022 13:17:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7EDCC3411B;
-        Mon, 20 Jun 2022 13:17:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AA215B81200;
+        Mon, 20 Jun 2022 13:17:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F64BC3411C;
+        Mon, 20 Jun 2022 13:17:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731023;
-        bh=BevbwWX2OSD1W1/1qk/rCqhmGFAAMpSJAO781kxqSM8=;
+        s=korg; t=1655731045;
+        bh=x2D9DlfT0qTyz/nfR0Zj5P0AZC9Wk3MKs7Z+ijB8Ris=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Tmdx3iktU6gXyVnlpq4cfz1+vEZiM8v2k5kI2dNPzsfQYKvPSyYkTlSrKZpTR8Og/
-         lJaQbH6KLr9vfShoE1SQQKllDerD3Im69a4QJwXjTRSBTkpTpwIIEeNV+i3Qcfx/CO
-         tH3c5Z0yWwxYEg13PWWcU2DuB50yFmW6dJpvowKM=
+        b=W4Ud8SpuHbGPIDm+fEE7hfMYxyJqZyCm27boDooE+BMx9jK3u6jjKhHtn3QPGX9ZA
+         ze9TErJOITM0fax4d54+ieeli1Nf+lCWFGLpN5xUiNEzSb1vNYpFBJa4JBWcpYASk8
+         b7eeT1TfVYMWnAY9XCRJLz1ofJiJQLGztNx1mWxA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 129/240] random: fix sysctl documentation nits
-Date:   Mon, 20 Jun 2022 14:50:30 +0200
-Message-Id: <20220620124742.750178728@linuxfoundation.org>
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Arnd Bergmann <arnd@arndb.de>, Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 5.4 136/240] timekeeping: Add raw clock fallback for random_get_entropy()
+Date:   Mon, 20 Jun 2022 14:50:37 +0200
+Message-Id: <20220620124742.949340094@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -50,40 +52,98 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 069c4ea6871c18bd368f27756e0f91ffb524a788 upstream.
+commit 1366992e16bddd5e2d9a561687f367f9f802e2e4 upstream.
 
-A semicolon was missing, and the almost-alphabetical-but-not ordering
-was confusing, so regroup these by category instead.
+The addition of random_get_entropy_fallback() provides access to
+whichever time source has the highest frequency, which is useful for
+gathering entropy on platforms without available cycle counters. It's
+not necessarily as good as being able to quickly access a cycle counter
+that the CPU has, but it's still something, even when it falls back to
+being jiffies-based.
 
+In the event that a given arch does not define get_cycles(), falling
+back to the get_cycles() default implementation that returns 0 is really
+not the best we can do. Instead, at least calling
+random_get_entropy_fallback() would be preferable, because that always
+needs to return _something_, even falling back to jiffies eventually.
+It's not as though random_get_entropy_fallback() is super high precision
+or guaranteed to be entropic, but basically anything that's not zero all
+the time is better than returning zero all the time.
+
+Finally, since random_get_entropy_fallback() is used during extremely
+early boot when randomizing freelists in mm_init(), it can be called
+before timekeeping has been initialized. In that case there really is
+nothing we can do; jiffies hasn't even started ticking yet. So just give
+up and return 0.
+
+Suggested-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/admin-guide/sysctl/kernel.rst |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ include/linux/timex.h     |    8 ++++++++
+ kernel/time/timekeeping.c |   15 +++++++++++++++
+ 2 files changed, 23 insertions(+)
 
---- a/Documentation/admin-guide/sysctl/kernel.rst
-+++ b/Documentation/admin-guide/sysctl/kernel.rst
-@@ -876,6 +876,9 @@ This is a directory, with the following
- * ``boot_id``: a UUID generated the first time this is retrieved, and
-   unvarying after that;
+--- a/include/linux/timex.h
++++ b/include/linux/timex.h
+@@ -62,6 +62,8 @@
+ #include <linux/types.h>
+ #include <linux/param.h>
  
-+* ``uuid``: a UUID generated every time this is retrieved (this can
-+  thus be used to generate UUIDs at will);
++unsigned long random_get_entropy_fallback(void);
 +
- * ``entropy_avail``: the pool's entropy count, in bits;
+ #include <asm/timex.h>
  
- * ``poolsize``: the entropy pool size, in bits;
-@@ -883,10 +886,7 @@ This is a directory, with the following
- * ``urandom_min_reseed_secs``: obsolete (used to determine the minimum
-   number of seconds between urandom pool reseeding). This file is
-   writable for compatibility purposes, but writing to it has no effect
--  on any RNG behavior.
--
--* ``uuid``: a UUID generated every time this is retrieved (this can
--  thus be used to generate UUIDs at will);
-+  on any RNG behavior;
+ #ifndef random_get_entropy
+@@ -74,8 +76,14 @@
+  *
+  * By default we use get_cycles() for this purpose, but individual
+  * architectures may override this in their asm/timex.h header file.
++ * If a given arch does not have get_cycles(), then we fallback to
++ * using random_get_entropy_fallback().
+  */
++#ifdef get_cycles
+ #define random_get_entropy()	((unsigned long)get_cycles())
++#else
++#define random_get_entropy()	random_get_entropy_fallback()
++#endif
+ #endif
  
- * ``write_wakeup_threshold``: when the entropy count drops below this
-   (as a number of bits), processes waiting to write to ``/dev/random``
+ /*
+--- a/kernel/time/timekeeping.c
++++ b/kernel/time/timekeeping.c
+@@ -17,6 +17,7 @@
+ #include <linux/clocksource.h>
+ #include <linux/jiffies.h>
+ #include <linux/time.h>
++#include <linux/timex.h>
+ #include <linux/tick.h>
+ #include <linux/stop_machine.h>
+ #include <linux/pvclock_gtod.h>
+@@ -2304,6 +2305,20 @@ static int timekeeping_validate_timex(co
+ 	return 0;
+ }
+ 
++/**
++ * random_get_entropy_fallback - Returns the raw clock source value,
++ * used by random.c for platforms with no valid random_get_entropy().
++ */
++unsigned long random_get_entropy_fallback(void)
++{
++	struct tk_read_base *tkr = &tk_core.timekeeper.tkr_mono;
++	struct clocksource *clock = READ_ONCE(tkr->clock);
++
++	if (unlikely(timekeeping_suspended || !clock))
++		return 0;
++	return clock->read(clock);
++}
++EXPORT_SYMBOL_GPL(random_get_entropy_fallback);
+ 
+ /**
+  * do_adjtimex() - Accessor function to NTP __do_adjtimex function
 
 
