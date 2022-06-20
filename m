@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02DF1CCA479
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:30:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3EE0C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:30:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345327AbiFTNaI (ORCPT
+        id S1345408AbiFTNaN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:30:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40144 "EHLO
+        Mon, 20 Jun 2022 09:30:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345217AbiFTN0r (ORCPT
+        with ESMTP id S1345239AbiFTN0z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:26:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 977081AF06;
-        Mon, 20 Jun 2022 06:10:54 -0700 (PDT)
+        Mon, 20 Jun 2022 09:26:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3D711C90C;
+        Mon, 20 Jun 2022 06:10:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4F3F9B811C0;
-        Mon, 20 Jun 2022 13:09:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 981BFC3411B;
-        Mon, 20 Jun 2022 13:09:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A59A260C95;
+        Mon, 20 Jun 2022 13:10:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6667DC3411C;
+        Mon, 20 Jun 2022 13:10:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730577;
-        bh=uGrc4TFtsDDheb0tYM3honumC3oheP7ORB0HHwlNEes=;
+        s=korg; t=1655730658;
+        bh=X7zB1pE8Sst2u4rO6adk2JOEApJkqM0WbyDU/PwXG3M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TWHdjxF+ncdQQoGzTqBCTnox2hvj8m6Y3hcpgVhwwDN1y5tELZM7c3osqN6IrPQSJ
-         msftyRxRXMlYzEpT42tbTKFp5EmnS7vIYYJHQtMMqbVLZcD+wAQnMAbe3/PD4SwRkN
-         ssAUCSlPllZcuaZK/qgTFQngZfJ4G1kc+dTV3IkU=
+        b=veMfzVbjIEIaEb4KO1Fc6qrV/SAYpQ2Klk+pMuZk5nP7k1JtUsLP8VzorsUU9gyg5
+         pZDqct7Y5YvLbpp4IjJHU/T8SQvHU6PBKknN8RiGIhMJj4OjxJFB4tCfecKou4BQBj
+         8uHhiymYMfUYUtRGwVByjqJXiW93P9z3pK+E5oks=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sami Tolvanen <samitolvanen@google.com>,
-        Kees Cook <keescook@chromium.org>
-Subject: [PATCH 5.15 097/106] cfi: Fix __cfi_slowpath_diag RCU usage with cpuidle
-Date:   Mon, 20 Jun 2022 14:51:56 +0200
-Message-Id: <20220620124727.260974814@linuxfoundation.org>
+        stable@vger.kernel.org, Andy Lutomirski <luto@kernel.org>,
+        Theodore Tso <tytso@mit.edu>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.4 016/240] random: remove kernel.random.read_wakeup_threshold
+Date:   Mon, 20 Jun 2022 14:48:37 +0200
+Message-Id: <20220620124738.281381269@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
-References: <20220620124724.380838401@linuxfoundation.org>
+In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
+References: <20220620124737.799371052@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,76 +50,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sami Tolvanen <samitolvanen@google.com>
+From: Andy Lutomirski <luto@kernel.org>
 
-commit 57cd6d157eb479f0a8e820fd36b7240845c8a937 upstream.
+commit c95ea0c69ffda19381c116db2be23c7e654dac98 upstream.
 
-RCU_NONIDLE usage during __cfi_slowpath_diag can result in an invalid
-RCU state in the cpuidle code path:
+It has no effect any more, so remove it.  We can revert this if
+there is some user code that expects to be able to set this sysctl.
 
-  WARNING: CPU: 1 PID: 0 at kernel/rcu/tree.c:613 rcu_eqs_enter+0xe4/0x138
-  ...
-  Call trace:
-    rcu_eqs_enter+0xe4/0x138
-    rcu_idle_enter+0xa8/0x100
-    cpuidle_enter_state+0x154/0x3a8
-    cpuidle_enter+0x3c/0x58
-    do_idle.llvm.6590768638138871020+0x1f4/0x2ec
-    cpu_startup_entry+0x28/0x2c
-    secondary_start_kernel+0x1b8/0x220
-    __secondary_switched+0x94/0x98
-
-Instead, call rcu_irq_enter/exit to wake up RCU only when needed and
-disable interrupts for the entire CFI shadow/module check when we do.
-
-Signed-off-by: Sami Tolvanen <samitolvanen@google.com>
-Link: https://lore.kernel.org/r/20220531175910.890307-1-samitolvanen@google.com
-Fixes: cf68fffb66d6 ("add support for Clang CFI")
-Cc: stable@vger.kernel.org
-Signed-off-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Andy Lutomirski <luto@kernel.org>
+Link: https://lore.kernel.org/r/a74ed2cf0b5a5451428a246a9239f5bc4e29358f.1577088521.git.luto@kernel.org
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/cfi.c |   22 ++++++++++++++++------
- 1 file changed, 16 insertions(+), 6 deletions(-)
+ drivers/char/random.c |   18 +-----------------
+ 1 file changed, 1 insertion(+), 17 deletions(-)
 
---- a/kernel/cfi.c
-+++ b/kernel/cfi.c
-@@ -281,6 +281,8 @@ static inline cfi_check_fn find_module_c
- static inline cfi_check_fn find_check_fn(unsigned long ptr)
- {
- 	cfi_check_fn fn = NULL;
-+	unsigned long flags;
-+	bool rcu_idle;
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -370,12 +370,6 @@
+ #define ENTROPY_BITS(r) ((r)->entropy_count >> ENTROPY_SHIFT)
  
- 	if (is_kernel_text(ptr))
- 		return __cfi_check;
-@@ -290,13 +292,21 @@ static inline cfi_check_fn find_check_fn
- 	 * the shadow and __module_address use RCU, so we need to wake it
- 	 * up if necessary.
- 	 */
--	RCU_NONIDLE({
--		if (IS_ENABLED(CONFIG_CFI_CLANG_SHADOW))
--			fn = find_shadow_check_fn(ptr);
-+	rcu_idle = !rcu_is_watching();
-+	if (rcu_idle) {
-+		local_irq_save(flags);
-+		rcu_irq_enter();
-+	}
+ /*
+- * The minimum number of bits of entropy before we wake up a read on
+- * /dev/random.  Should be enough to do a significant reseed.
+- */
+-static int random_read_wakeup_bits = 64;
+-
+-/*
+  * If the entropy count falls under this number of bits, then we
+  * should wake up processes which are selecting or polling on write
+  * access to /dev/random.
+@@ -2076,8 +2070,7 @@ SYSCALL_DEFINE3(getrandom, char __user *
  
--		if (!fn)
--			fn = find_module_check_fn(ptr);
--	});
-+	if (IS_ENABLED(CONFIG_CFI_CLANG_SHADOW))
-+		fn = find_shadow_check_fn(ptr);
-+	if (!fn)
-+		fn = find_module_check_fn(ptr);
-+
-+	if (rcu_idle) {
-+		rcu_irq_exit();
-+		local_irq_restore(flags);
-+	}
+ #include <linux/sysctl.h>
  
- 	return fn;
- }
+-static int min_read_thresh = 8, min_write_thresh;
+-static int max_read_thresh = OUTPUT_POOL_WORDS * 32;
++static int min_write_thresh;
+ static int max_write_thresh = INPUT_POOL_WORDS * 32;
+ static int random_min_urandom_seed = 60;
+ static char sysctl_bootid[16];
+@@ -2153,15 +2146,6 @@ struct ctl_table random_table[] = {
+ 		.data		= &input_pool.entropy_count,
+ 	},
+ 	{
+-		.procname	= "read_wakeup_threshold",
+-		.data		= &random_read_wakeup_bits,
+-		.maxlen		= sizeof(int),
+-		.mode		= 0644,
+-		.proc_handler	= proc_dointvec_minmax,
+-		.extra1		= &min_read_thresh,
+-		.extra2		= &max_read_thresh,
+-	},
+-	{
+ 		.procname	= "write_wakeup_threshold",
+ 		.data		= &random_write_wakeup_bits,
+ 		.maxlen		= sizeof(int),
 
 
