@@ -2,102 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BA0ECCA479
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 11:00:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F1F3C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 11:00:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241091AbiFTK77 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 06:59:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51186 "EHLO
+        id S241132AbiFTLAK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 07:00:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240411AbiFTK76 (ORCPT
+        with ESMTP id S240411AbiFTLAI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 06:59:58 -0400
-Received: from mail-m975.mail.163.com (mail-m975.mail.163.com [123.126.97.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 52722273F;
-        Mon, 20 Jun 2022 03:59:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=s/DqW
-        3JifVc3jI4z9atXF9bTKKNtQPalK25TvRQSEOc=; b=GfO7bK1ypzGSVHbX3BE/u
-        FAB6h4hC8I7D+4oAxmCiNTpHZY2VAEFKeu5Jww2m001zbjfzPrWSnqXyONcCrV0b
-        OHKH9mj0HfCqYfvC11XTBT0Ibp8XPBxp2PWoT/SmnIM/BF06dGkwv1U/5kZAw8+e
-        70cl/2NafDJMnxnbcvVPp4=
-Received: from localhost.localdomain (unknown [112.97.57.116])
-        by smtp5 (Coremail) with SMTP id HdxpCgAHAi4cU7BiaJhjKA--.6065S2;
-        Mon, 20 Jun 2022 18:59:42 +0800 (CST)
-From:   Slark Xiao <slark_xiao@163.com>
-To:     johan@kernel.org
-Cc:     gregkh@linuxfoundation.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Slark Xiao <slark_xiao@163.com>
-Subject: [PATCH] USB: serial: use kmemdup instead of kmalloc + memcpy
-Date:   Mon, 20 Jun 2022 18:59:39 +0800
-Message-Id: <20220620105939.5128-1-slark_xiao@163.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 20 Jun 2022 07:00:08 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 247EC55AE;
+        Mon, 20 Jun 2022 04:00:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1655722807; x=1687258807;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=c8QNBVZ8wFnmT7eCQXOvJyyFc4aUfS6m/vVmJyJk64g=;
+  b=2swxPYfLMKjKWWzuxwGqtMijESKVe6ce8gtR0xKJyVNg8Bzmm3kTBrCh
+   9x51HbGgO3JpwEJyxv2YsgQgDN6MbgLUv/tQ4vZfc+nfbBvxl9WuHwBRu
+   e2UEpQ6mqpbd6QKgpolw45EcpfMAoPhISpVibfo7EibILPDmmZGU5cbt+
+   byYU2sEJo3mE5Y11MK8IgDopUer+rubEoTy/E/V2LpPyWOQ05odZlT7rY
+   zpCwiorq2J9kNM9FBnC/BTjl4WqAGt6eE5+PAEsA20VnFGZN05xDIk7LI
+   jMMJaLorLCSwpPgPk4N1NaISgLM8Nf1Xvonn3omUInRd5yFY5nkHgU0TZ
+   w==;
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="100805212"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 20 Jun 2022 04:00:05 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 20 Jun 2022 04:00:05 -0700
+Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Mon, 20 Jun 2022 04:00:02 -0700
+From:   Conor Dooley <conor.dooley@microchip.com>
+To:     <i.bornyakov@metrotek.ru>
+CC:     <Conor.Dooley@microchip.com>, <corbet@lwn.net>,
+        <devicetree@vger.kernel.org>, <hao.wu@intel.com>,
+        <krzysztof.kozlowski+dt@linaro.org>, <linux-doc@vger.kernel.org>,
+        <linux-fpga@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <mdf@kernel.org>, <robh+dt@kernel.org>, <system@metrotek.ru>,
+        <trix@redhat.com>, <yilun.xu@intel.com>,
+        Conor Dooley <conor.dooley@microchip.com>
+Subject: Re: [PATCH v20 0/4] Microchip Polarfire FPGA manager
+Date:   Mon, 20 Jun 2022 11:57:48 +0100
+Message-ID: <20220620105747.2145347-1-conor.dooley@microchip.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220620100745.yxjmq2qtsicxlrgn@h-e2.ddg>
+References: <20220620100745.yxjmq2qtsicxlrgn@h-e2.ddg>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: HdxpCgAHAi4cU7BiaJhjKA--.6065S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7KFyUKrW8WF45Zw4kWrWxZwb_yoW8CryDpF
-        4Yg3yqqr10qr1fXr1DCws8Za45WanrKFy2k347C3yavr13tw1Sg3WIqFWYqr1UCF97Jw1a
-        qw4v9rWvkr47tw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zRHlkhUUUUU=
-X-Originating-IP: [112.97.57.116]
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/1tbivx4mZFWB0C2ffQAAso
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For code neat purpose, we can use kmemdup to replace
-kmalloc + memcpy.
+I had a quick check in -next and there's an entry for the BMC
+driver there.
+How about the following? I put you as R, but clearly if you want to be
+maintainer then you are *more than* qualified.
+Feel free to edit the patch if so, either is fine by me.
+You can tack this onto a v21 if you have more changes or I can resend
+standalone once the driver is merged.
 
-Signed-off-by: Slark Xiao <slark_xiao@163.com>
+Thanks,
+Conor.
+
+From: Conor Dooley <conor.dooley@microchip.com>
+Date: Mon, 20 Jun 2022 11:46:19 +0100
+Subject: [PATCH] MAINTAINERS: add polarfire fpga programmer drivers
+Add a MAINTAINERS entry for the newly added PolarFire (MPF) SPI slave
+programming driver.
+
+Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
 ---
- drivers/usb/serial/opticon.c | 4 +---
- drivers/usb/serial/sierra.c  | 4 +---
- 2 files changed, 2 insertions(+), 6 deletions(-)
+ MAINTAINERS | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/usb/serial/opticon.c b/drivers/usb/serial/opticon.c
-index aed28c35caff..bca6766a63e6 100644
---- a/drivers/usb/serial/opticon.c
-+++ b/drivers/usb/serial/opticon.c
-@@ -208,7 +208,7 @@ static int opticon_write(struct tty_struct *tty, struct usb_serial_port *port,
- 	priv->outstanding_bytes += count;
- 	spin_unlock_irqrestore(&priv->lock, flags);
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 168e0af869a7..60ab3c4bf65d 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -7869,6 +7869,14 @@ S:	Maintained
+ F:	Documentation/ABI/testing/sysfs-driver-intel-m10-bmc-sec-update
+ F:	drivers/fpga/intel-m10-bmc-sec-update.c
  
--	buffer = kmalloc(count, GFP_ATOMIC);
-+	buffer = kmemdup(buf, count, GFP_ATOMIC);
- 	if (!buffer)
- 		goto error_no_buffer;
- 
-@@ -216,8 +216,6 @@ static int opticon_write(struct tty_struct *tty, struct usb_serial_port *port,
- 	if (!urb)
- 		goto error_no_urb;
- 
--	memcpy(buffer, buf, count);
--
- 	usb_serial_debug_data(&port->dev, __func__, count, buffer);
- 
- 	/* The connected devices do not have a bulk write endpoint,
-diff --git a/drivers/usb/serial/sierra.c b/drivers/usb/serial/sierra.c
-index 9d56138133a9..865d1237d611 100644
---- a/drivers/usb/serial/sierra.c
-+++ b/drivers/usb/serial/sierra.c
-@@ -453,7 +453,7 @@ static int sierra_write(struct tty_struct *tty, struct usb_serial_port *port,
- 		goto error_simple;
- 	}
- 
--	buffer = kmalloc(writesize, GFP_ATOMIC);
-+	buffer = kmemdup(buf, writesize, GFP_ATOMIC);
- 	if (!buffer) {
- 		retval = -ENOMEM;
- 		goto error_no_buffer;
-@@ -465,8 +465,6 @@ static int sierra_write(struct tty_struct *tty, struct usb_serial_port *port,
- 		goto error_no_urb;
- 	}
- 
--	memcpy(buffer, buf, writesize);
--
- 	usb_serial_debug_data(&port->dev, __func__, writesize, buffer);
- 
- 	usb_fill_bulk_urb(urb, serial->dev,
++FPGA PolarFire Drivers
++M:	Conor Dooley <conor.dooley@microchip.com>
++R:	Ivan Bornyakov <i.bornyakov@metrotek.ru>
++L:	linux-fpga@vger.kernel.org
++S:	Supported
++F:	Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
++F:	drivers/fpga/microchip-spi.c
++
+ FPU EMULATOR
+ M:	Bill Metzenthen <billm@melbpc.org.au>
+ S:	Maintained
+
+base-commit: 07dc787be2316e243a16a33d0a9b734cd9365bd3
 -- 
-2.25.1
+2.36.1
 
