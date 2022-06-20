@@ -2,375 +2,290 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10922CCA479
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 12:48:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D258C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 12:48:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242811AbiFTMs0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 08:48:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59742 "EHLO
+        id S241657AbiFTMsr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 08:48:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237161AbiFTMsY (ORCPT
+        with ESMTP id S241374AbiFTMsf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 08:48:24 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6148F10FEB;
-        Mon, 20 Jun 2022 05:48:23 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id a29so17094626lfk.2;
-        Mon, 20 Jun 2022 05:48:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=yoBzSqACQn33+ca8WrFRr+QEzFTSdDl1Gyu09fSh7Yk=;
-        b=qnRqP2NIM1rA5mQ8bZSBCDGOv+6XdmHAwIWBLdG4hV1eyYgpuKzUfKvGSQvRoz+cuE
-         AoisPbz2tu+KCdOJVfSjOW/8+n+Ma4XdEyDEaUdyVEPjpyHmclosj34FzdWtW1rtnV/8
-         BMqy2f6ugXS4nsAehjPOkOK73Nepv7VWISD6akvHn5qtkdKS/buqR/vZVDluhiMmbfKp
-         0Aducig3sZqNCXtplUq1b0PeGXb30NJVYeRnGvCKivxHj5NMTUbOYU7FNZ0ujK2CwmKc
-         c16wcOK02CLxbmXTBR/JZaPioV1om8t2qTFCNcX4LEc3ry+bPVmvYv1tuCTc9r34bz4C
-         EM7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=yoBzSqACQn33+ca8WrFRr+QEzFTSdDl1Gyu09fSh7Yk=;
-        b=xyI+jxf7Qo1fIT9/NFJzpT+NySVTvoiH1sxMIrL9r6I8ZX3rIUwDt9UxWKAaeMDO62
-         mje6XubhDX6alwx3ku+In+4uDzlzPM+79Rmv9bNGj/eEZuCHij6+DqYGHYrAocpkeciM
-         wrtlFPijxq5eBGJoaiS5gpUV4CgNnYy06IKmXyXJ14bcLnG6CAkcEvNem2VtWWt8u8vt
-         Xt/WF1XRkxmUv8sv92bR56PO5/tPc3XPYz2Dx5s/n+EhTiQEsmBnnpAGVVcLZeT7H/HE
-         IQ2X7Hoy3KwyztbRM2DU0PBICPd2ldvox1wqHN/MuV+Q+IP8vKxF7DgUA1P3CJQT/u6J
-         0dOw==
-X-Gm-Message-State: AJIora/dnnfIrH5imPbwWJv6GNBIrMQK1lMATrSN8cBgVKxkaRMK/Oq5
-        q1j1X8PlAuBLVBQCdKcsKoJdT6CofICOuiYcjWU=
-X-Google-Smtp-Source: AGRyM1uOZaiLHFcU0DmO5rkF3sDamaM4UPkYUTs4W17rltoOoI/9h4hu2+EdnbBzetM6WfkARuWTWvp1igeAytcvU3I=
-X-Received: by 2002:a05:6512:1685:b0:47f:5ec2:becc with SMTP id
- bu5-20020a056512168500b0047f5ec2beccmr6829516lfb.639.1655729301528; Mon, 20
- Jun 2022 05:48:21 -0700 (PDT)
+        Mon, 20 Jun 2022 08:48:35 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00F191114D;
+        Mon, 20 Jun 2022 05:48:33 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 9E8A921BA7;
+        Mon, 20 Jun 2022 12:48:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1655729312; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=4L4vI2gT/UYwMSz8JNw6k5BEpCFpyn/9iaWISo83eRs=;
+        b=SBQfzNu2ZVa9IkaX6aRrWDLH+27swsMBydP8qWvgntvHkTQXFzxsj6T1rWVUZ2LtcAHtzY
+        BZ843ohsRze9SY8bUuaX8FSHH81EIFmC2W2uAj/PlSASY9fT7KziO3ifSDdF7UHXJRzgyB
+        SHqLdn/tM5g6LC3omdfRuakvfKUzrW0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1655729312;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=4L4vI2gT/UYwMSz8JNw6k5BEpCFpyn/9iaWISo83eRs=;
+        b=v/LhxNZuI8QxtYdWvLSNzbywgKgrA0827S2GuU/gyJjFPAgLnUDNDAkfqqng7ffvYDWK6F
+        3VqwK9kfVdHBtQBg==
+Received: from quack3.suse.cz (unknown [10.100.224.230])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 823112C143;
+        Mon, 20 Jun 2022 12:48:32 +0000 (UTC)
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id 02613A0636; Mon, 20 Jun 2022 14:48:31 +0200 (CEST)
+Date:   Mon, 20 Jun 2022 14:48:31 +0200
+From:   Jan Kara <jack@suse.cz>
+To:     Yu Kuai <yukuai3@huawei.com>
+Cc:     axboe@kernel.dk, ming.lei@redhat.com, jack@suse.cz,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yi.zhang@huawei.com
+Subject: Re: [PATCH RFC -next] sbitmap: fix possible io hung due to lost
+ wakeups
+Message-ID: <20220620124831.g7bswgivvg5urv3d@quack3.lan>
+References: <20220617141125.3024491-1-yukuai3@huawei.com>
+ <20220620122413.2fewshn5u6t2y4oi@quack3.lan>
 MIME-Version: 1.0
-References: <20220619151225.209029-1-tmaimon77@gmail.com> <20220619151225.209029-7-tmaimon77@gmail.com>
- <6566c16c-f36f-6806-3879-3e6b40713e5e@wanadoo.fr>
-In-Reply-To: <6566c16c-f36f-6806-3879-3e6b40713e5e@wanadoo.fr>
-From:   Tomer Maimon <tmaimon77@gmail.com>
-Date:   Mon, 20 Jun 2022 15:48:10 +0300
-Message-ID: <CAP6Zq1jT3fbbRzDhriPT7JVYsrAOVGa4ukL_3yh_=wj-4f6zyA@mail.gmail.com>
-Subject: Re: [PATCH v3 06/18] clk: npcm8xx: add clock controller
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Avi Fishman <avifishman70@gmail.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Lubomir Rintel <lkundrak@v3.sk>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Olof Johansson <olof@lixom.net>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Robert Hancock <robert.hancock@calian.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Patrick Venture <venture@google.com>,
-        Vinod Koul <vkoul@kernel.org>, Will Deacon <will@kernel.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Nancy Yuen <yuenn@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220620122413.2fewshn5u6t2y4oi@quack3.lan>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Christophe,
+On Mon 20-06-22 14:24:13, Jan Kara wrote:
+> On Fri 17-06-22 22:11:25, Yu Kuai wrote:
+> > Currently, same waitqueue might be woken up continuously:
+> > 
+> > __sbq_wake_up		__sbq_wake_up
+> >  sbq_wake_ptr -> assume	0
+> > 			 sbq_wake_ptr -> 0
+> >  atomic_dec_return
+> > 			atomic_dec_return
+> >  atomic_cmpxchg -> succeed
+> > 			 atomic_cmpxchg -> failed
+> > 			  return true
+> > 
+> > 			__sbq_wake_up
+> > 			 sbq_wake_ptr
+> > 			  atomic_read(&sbq->wake_index) -> still 0
+> >  sbq_index_atomic_inc -> inc to 1
+> > 			  if (waitqueue_active(&ws->wait))
+> > 			   if (wake_index != atomic_read(&sbq->wake_index))
+> > 			    atomic_set -> reset from 1 to 0
+> >  wake_up_nr -> wake up first waitqueue
+> > 			    // continue to wake up in first waitqueue
+> > 
+> > What's worse, io hung is possible in theory because wakeups might be
+> > missed. For example, 2 * wake_batch tags are put, while only wake_batch
+> > threads are worken:
+> > 
+> > __sbq_wake_up
+> >  atomic_cmpxchg -> reset wait_cnt
+> > 			__sbq_wake_up -> decrease wait_cnt
+> > 			...
+> > 			__sbq_wake_up -> wait_cnt is decreased to 0 again
+> > 			 atomic_cmpxchg
+> > 			 sbq_index_atomic_inc -> increase wake_index
+> > 			 wake_up_nr -> wake up and waitqueue might be empty
+> >  sbq_index_atomic_inc -> increase again, one waitqueue is skipped
+> >  wake_up_nr -> invalid wake up because old wakequeue might be empty
+> > 
+> > To fix the problem, refactor to make sure waitqueues will be woken up
+> > one by one,
+> > 
+> > Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+> 
+> So as far as I can tell your patch does not completely fix this race. See
+> below:
+> 
+> > diff --git a/lib/sbitmap.c b/lib/sbitmap.c
+> > index ae4fd4de9ebe..dc2959cb188c 100644
+> > --- a/lib/sbitmap.c
+> > +++ b/lib/sbitmap.c
+> > @@ -574,66 +574,69 @@ void sbitmap_queue_min_shallow_depth(struct sbitmap_queue *sbq,
+> >  }
+> >  EXPORT_SYMBOL_GPL(sbitmap_queue_min_shallow_depth);
+> >  
+> > -static struct sbq_wait_state *sbq_wake_ptr(struct sbitmap_queue *sbq)
+> > +static void sbq_update_wake_index(struct sbitmap_queue *sbq,
+> > +				  int old_wake_index)
+> >  {
+> >  	int i, wake_index;
+> > -
+> > -	if (!atomic_read(&sbq->ws_active))
+> > -		return NULL;
+> > +	struct sbq_wait_state *ws;
+> >  
+> >  	wake_index = atomic_read(&sbq->wake_index);
+> > -	for (i = 0; i < SBQ_WAIT_QUEUES; i++) {
+> > -		struct sbq_wait_state *ws = &sbq->ws[wake_index];
+> > +	if (old_wake_index != wake_index)
+> > +		return;
+> >  
+> > +	for (i = 1; i < SBQ_WAIT_QUEUES; i++) {
+> > +		wake_index = sbq_index_inc(wake_index);
+> > +		ws = &sbq->ws[wake_index];
+> > +		/* Find the next active waitqueue in round robin manner */
+> >  		if (waitqueue_active(&ws->wait)) {
+> > -			if (wake_index != atomic_read(&sbq->wake_index))
+> > -				atomic_set(&sbq->wake_index, wake_index);
+> > -			return ws;
+> > +			atomic_cmpxchg(&sbq->wake_index, old_wake_index,
+> > +				       wake_index);
+> > +			return;
+> >  		}
+> > -
+> > -		wake_index = sbq_index_inc(wake_index);
+> >  	}
+> > -
+> > -	return NULL;
+> >  }
+> >  
+> >  static bool __sbq_wake_up(struct sbitmap_queue *sbq)
+> >  {
+> >  	struct sbq_wait_state *ws;
+> >  	unsigned int wake_batch;
+> > -	int wait_cnt;
+> > +	int wait_cnt, wake_index;
+> >  
+> > -	ws = sbq_wake_ptr(sbq);
+> > -	if (!ws)
+> > +	if (!atomic_read(&sbq->ws_active))
+> >  		return false;
+> >  
+> > -	wait_cnt = atomic_dec_return(&ws->wait_cnt);
+> > -	if (wait_cnt <= 0) {
+> > -		int ret;
+> > -
+> > -		wake_batch = READ_ONCE(sbq->wake_batch);
+> > -
+> > -		/*
+> > -		 * Pairs with the memory barrier in sbitmap_queue_resize() to
+> > -		 * ensure that we see the batch size update before the wait
+> > -		 * count is reset.
+> > -		 */
+> > -		smp_mb__before_atomic();
+> > +	wake_index = atomic_read(&sbq->wake_index);
+> > +	ws = &sbq->ws[wake_index];
+> > +	/*
+> > +	 * This can only happen in the first wakeup when sbitmap waitqueues
+> > +	 * are no longer idle.
+> > +	 */
+> > +	if (!waitqueue_active(&ws->wait)) {
+> > +		sbq_update_wake_index(sbq, wake_index);
+> > +		return true;
+> > +	}
+> >  
+> > -		/*
+> > -		 * For concurrent callers of this, the one that failed the
+> > -		 * atomic_cmpxhcg() race should call this function again
+> > -		 * to wakeup a new batch on a different 'ws'.
+> > -		 */
+> > -		ret = atomic_cmpxchg(&ws->wait_cnt, wait_cnt, wake_batch);
+> > -		if (ret == wait_cnt) {
+> > -			sbq_index_atomic_inc(&sbq->wake_index);
+> > -			wake_up_nr(&ws->wait, wake_batch);
+> > -			return false;
+> > -		}
+> > +	wait_cnt = atomic_dec_return(&ws->wait_cnt);
+> > +	if (wait_cnt > 0)
+> > +		return false;
+> 
+> The following race is still possible:
+> 
+> CPU1					CPU2
+> __sbq_wake_up				__sbq_wake_up
+>   wake_index = atomic_read(&sbq->wake_index);
+> 					  wake_index = atomic_read(&sbq->wake_index);
+> 
+>   if (!waitqueue_active(&ws->wait)) -> not taken
+> 					  if (!waitqueue_active(&ws->wait)) -> not taken
+>   wait_cnt = atomic_dec_return(&ws->wait_cnt);
+>   /* decremented to 0 now */
+>   if (wait_cnt > 0) -> not taken
+>   sbq_update_wake_index(sbq, wake_index);
+>   if (wait_cnt < 0) -> not taken
+>   ...
+>   atomic_set(&ws->wait_cnt, wake_batch);
+>   wake_up_nr(&ws->wait, wake_batch);
+> 					  wait_cnt = atomic_dec_return(&ws->wait_cnt);
+> 					  /*
+> 					   * decremented to wake_batch - 1 but
+> 					   * there are no tasks waiting anymore
+> 					   * so the wakeup should have gone
+> 					   * to a different waitqueue.
+> 					   */
+> 
+> I have an idea how to fix all these lost wakeups, I'll try to code it
+> whether it would look usable...
 
-Thanks for your comments.
+Thinking a bit more about it your code would just need a small tweak like:
 
-On Sun, 19 Jun 2022 at 20:14, Christophe JAILLET
-<christophe.jaillet@wanadoo.fr> wrote:
->
-> Le 19/06/2022 =C3=A0 17:12, Tomer Maimon a =C3=A9crit :
-> > Nuvoton Arbel BMC NPCM8XX contains an integrated clock controller which
-> > generates and supplies clocks to all modules within the BMC.
-> >
-> > Signed-off-by: Tomer Maimon <tmaimon77-Re5JQEeQqe8AvxtiuMwx3w@public.gm=
-ane.org>
-> > ---
-> >   drivers/clk/Kconfig       |   6 +
-> >   drivers/clk/Makefile      |   1 +
-> >   drivers/clk/clk-npcm8xx.c | 760 +++++++++++++++++++++++++++++++++++++=
-+
-> >   3 files changed, 767 insertions(+)
-> >   create mode 100644 drivers/clk/clk-npcm8xx.c
-> >
->
-> [...]
->
-> Hi, below a few comments related to error handling and possible
-> dev_err_probe() usage to savec a few LoC.
->
-> CJ
->
-> > +static struct clk_hw *
-> > +npcm8xx_clk_register_pll(struct device *dev, void __iomem *pllcon,
-> > +                      const char *name, const char *parent_name,
-> > +                      unsigned long flags)
-> > +{
-> > +     struct npcm8xx_clk_pll *pll;
-> > +     struct clk_init_data init;
-> > +     struct clk_hw *hw;
-> > +     int ret;
-> > +
-> > +     pll =3D kzalloc(sizeof(*pll), GFP_KERNEL);
-> > +     if (!pll)
-> > +             return ERR_PTR(-ENOMEM);
-> > +
-> > +     pr_debug("%s reg, name=3D%s, p=3D%s\n", __func__, name, parent_na=
-me);
-> > +
-> > +     init.name =3D name;
-> > +     init.ops =3D &npcm8xx_clk_pll_ops;
-> > +     init.parent_names =3D &parent_name;
-> > +     init.num_parents =3D 1;
-> > +     init.flags =3D flags;
-> > +
-> > +     pll->pllcon =3D pllcon;
-> > +     pll->hw.init =3D &init;
-> > +
-> > +     hw =3D &pll->hw;
-> > +
-> > +     ret =3D devm_clk_hw_register(dev, hw);
-> > +     if (ret) {
-> > +             kfree(pll);
->
-> Hi,
->
-> there is no other kfree(() in this patch. It is handled by the framework
-> once the clk is registered or should there be another kfree() somewhere
-> or should pll be devm_alloc()'ed?
-Could use the devm_kzalloc but the hw is sent to the devm function and
-not the pll struct.
->
->
-> > +             return ERR_PTR(ret);
-> > +     }
-> > +
-> > +     return hw;
-> > +}
-> > +
->
-> [...]
->
-> > +static int npcm8xx_clk_probe(struct platform_device *pdev)
-> > +{
-> > +     struct clk_hw_onecell_data *npcm8xx_clk_data;
-> > +     struct device *dev =3D &pdev->dev;
-> > +     void __iomem *clk_base;
-> > +     struct clk_hw *hw;
-> > +     int i;
-> > +
-> > +     npcm8xx_clk_data =3D devm_kzalloc(dev, struct_size(npcm8xx_clk_da=
-ta, hws,
-> > +                                                      NPCM8XX_NUM_CLOC=
-KS),
-> > +                                     GFP_KERNEL);
-> > +     if (!npcm8xx_clk_data)
-> > +             return -ENOMEM;
-> > +
-> > +     clk_base =3D devm_platform_ioremap_resource(pdev, 0);
-> > +     if (IS_ERR(clk_base))
-> > +             return PTR_ERR(clk_base);
-> > +
-> > +     npcm8xx_clk_data->num =3D NPCM8XX_NUM_CLOCKS;
-> > +
-> > +     for (i =3D 0; i < NPCM8XX_NUM_CLOCKS; i++)
-> > +             npcm8xx_clk_data->hws[i] =3D ERR_PTR(-EPROBE_DEFER);
-> > +
-> > +     /* Reference 25MHz clock */
-> > +     hw =3D clk_hw_register_fixed_rate(dev, "refclk", NULL, 0, NPCM8XX=
-_REF_CLK);
->
-> Other resoruces are managed, but not this one.
-> Is it on purpose?
-This is the fixed clock - the SoC Reference clock, what do you mean by
-not managed?
-> Is an error handling path needed or a devm_add_action_or_reset()?
->
-> > +     if (IS_ERR(hw))
-> > +             return PTR_ERR(hw);
-> > +     npcm8xx_clk_data->hws[NPCM8XX_CLK_REFCLK] =3D hw;
-> > +
-> > +     /* Register plls */
-> > +     for (i =3D 0; i < ARRAY_SIZE(npcm8xx_plls); i++) {
-> > +             const struct npcm8xx_clk_pll_data *pll_data =3D &npcm8xx_=
-plls[i];
-> > +
-> > +             hw =3D npcm8xx_clk_register_pll(dev, clk_base + pll_data-=
->reg,
-> > +                                           pll_data->name,
-> > +                                           pll_data->parent_name,
-> > +                                           pll_data->flags);
-> > +             if (IS_ERR(hw)) {
-> > +                     dev_err(dev, "npcm8xx_clk: Can't register pll\n")=
-;
-> > +                     return PTR_ERR(hw);
-> > +             }
-> > +
-> > +             if (pll_data->onecell_idx >=3D 0)
-> > +                     npcm8xx_clk_data->hws[pll_data->onecell_idx] =3D =
-hw;
-> > +     }
-> > +
-> > +     /* Register fixed dividers */
-> > +     hw =3D devm_clk_hw_register_fixed_factor(dev, NPCM8XX_CLK_S_PLL1_=
-DIV2,
-> > +                                            NPCM8XX_CLK_S_PLL1, 0, 1, =
-2);
-> > +     if (IS_ERR(hw)) {
-> > +             dev_err(dev, "npcm8xx_clk: Can't register fixed div\n");
-> > +             return PTR_ERR(hw);
->
-> return dev_err_probe()?
-it will save online but still enter to a bigger function, I am not
-sure that the error will be EPROBE_DEFER, and we have returned the
-error in the code.
->
-> > +     }
-> > +
-> > +     hw =3D devm_clk_hw_register_fixed_factor(dev, NPCM8XX_CLK_S_PLL2_=
-DIV2,
-> > +                                            NPCM8XX_CLK_S_PLL2, 0, 1, =
-2);
-> > +     if (IS_ERR(hw)) {
-> > +             dev_err(dev, "npcm8xx_clk: Can't register pll div2\n");
-> > +             return PTR_ERR(hw);
->
-> Same here and in other calls below.
->
-> > +     }
-> > +
-> > +     hw =3D devm_clk_hw_register_fixed_factor(dev, NPCM8XX_CLK_S_PRE_C=
-LK,
-> > +                                            NPCM8XX_CLK_S_CPU_MUX, 0, =
-1, 2);
-> > +     if (IS_ERR(hw)) {
-> > +             dev_err(dev, "npcm8xx_clk: Can't register ckclk div2\n");
-> > +             return PTR_ERR(hw);
-> > +     }
-> > +
-> > +     hw =3D devm_clk_hw_register_fixed_factor(dev, NPCM8XX_CLK_S_AXI,
-> > +                                            NPCM8XX_CLK_S_TH, 0, 1, 2)=
-;
-> > +     if (IS_ERR(hw)) {
-> > +             dev_err(dev, "npcm8xx_clk: Can't register axi div2\n");
-> > +             return PTR_ERR(hw);
-> > +     }
-> > +
-> > +     hw =3D devm_clk_hw_register_fixed_factor(dev, NPCM8XX_CLK_S_ATB,
-> > +                                            NPCM8XX_CLK_S_AXI, 0, 1, 2=
-);
-> > +     if (IS_ERR(hw)) {
-> > +             dev_err(dev, "npcm8xx_clk: Can't register atb div2\n");
-> > +             return PTR_ERR(hw);
-> > +     }
-> > +
-> > +     /* Register muxes */
-> > +     for (i =3D 0; i < ARRAY_SIZE(npcm8xx_muxes); i++) {
-> > +             const struct npcm8xx_clk_mux_data *mux_data =3D &npcm8xx_=
-muxes[i];
-> > +
-> > +             hw =3D clk_hw_register_mux_table(dev, mux_data->name,
-> > +                                            mux_data->parent_names,
-> > +                                            mux_data->num_parents,
-> > +                                            mux_data->flags,
-> > +                                            clk_base + NPCM8XX_CLKSEL,
-> > +                                            mux_data->shift,
-> > +                                            mux_data->mask, 0,
-> > +                                            mux_data->table,
-> > +                                            &npcm8xx_clk_lock);
-> > +
-> Same here. Error handling?
-what do you mean?
->
-> > +             if (IS_ERR(hw)) {
-> > +                     dev_err(dev, "npcm8xx_clk: Can't register mux\n")=
-;
-> > +                     return PTR_ERR(hw);
-> > +             }
-> > +
-> > +             if (mux_data->onecell_idx >=3D 0)
-> > +                     npcm8xx_clk_data->hws[mux_data->onecell_idx] =3D =
-hw;
-> > +     }
-> > +
-> > +     /* Register clock dividers specified in npcm8xx_divs */
-> > +     for (i =3D 0; i < ARRAY_SIZE(npcm8xx_divs); i++) {
-> > +             const struct npcm8xx_clk_div_data *div_data =3D &npcm8xx_=
-divs[i];
-> > +
-> > +             hw =3D clk_hw_register_divider(dev, div_data->name,
-> > +                                          div_data->parent_name,
-> > +                                          div_data->flags,
-> > +                                          clk_base + div_data->reg,
-> > +                                          div_data->shift, div_data->w=
-idth,
-> > +                                          div_data->clk_divider_flags,
-> > +                                          &npcm8xx_clk_lock);
->
-> devm_clk_hw_register_divider()?
-Will do.
->
-> > +             if (IS_ERR(hw)) {
-> > +                     dev_err(dev, "npcm8xx_clk: Can't register div tab=
-le\n");
-> > +                     return PTR_ERR(hw);
-> > +             }
-> > +
-> > +             if (div_data->onecell_idx >=3D 0)
-> > +                     npcm8xx_clk_data->hws[div_data->onecell_idx] =3D =
-hw;
-> > +     }
-> > +
-> > +     return devm_of_clk_add_hw_provider(dev, of_clk_hw_onecell_get,
-> > +                                        npcm8xx_clk_data);
-> > +}
-> > +
-> > +static const struct of_device_id npcm8xx_clk_dt_ids[] =3D {
-> > +     { .compatible =3D "nuvoton,npcm845-clk", },
-> > +     { }
-> > +};
-> > +MODULE_DEVICE_TABLE(of, npcm8xx_clk_dt_ids);
-> > +
-> > +static struct platform_driver npcm8xx_clk_driver =3D {
-> > +     .probe  =3D npcm8xx_clk_probe,
-> > +     .driver =3D {
-> > +             .name =3D "npcm8xx_clk",
-> > +             .of_match_table =3D npcm8xx_clk_dt_ids,
-> > +     },
-> > +};
-> > +
-> > +static int __init npcm8xx_clk_driver_init(void)
-> > +{
-> > +     return platform_driver_register(&npcm8xx_clk_driver);
-> > +}
-> > +arch_initcall(npcm8xx_clk_driver_init);
-> > +
->
+	wait_cnt = atomic_dec_return(&ws->wait_cnt);
+	/*
+	 * Concurrent callers should call this function again
+	 * to wakeup a new batch on a different 'ws'.
+	 */
+	if (wait_cnt < 0 || !waitqueue_active(&ws->wait)) {
+		sbq_update_wake_index(sbq, wake_index);
+		return true;
+	}
+	if (wait_cnt > 0)
+		return false;
+	sbq_update_wake_index(sbq, wake_index);
 
-Best regards,
+	wake_batch = READ_ONCE(sbq->wake_batch);
+	wake_up_nr(&ws->wait, wake_batch);
+	/*
+	 * Pairs with the memory barrier in sbitmap_queue_resize() to
+	 * ensure that we see the batch size update before the wait
+	 * count is reset.
+	 *
+	 * Also pairs with the implicit barrier between decrementing
+	 * wait_cnt and checking for waitqueue_active() to make sure
+	 * waitqueue_active() sees results of the wakeup if
+	 * atomic_dec_return() has seen results of the atomic_set.
+	 */
+	smp_mb__before_atomic();
+	atomic_set(&ws->wait_cnt, wake_batch);
 
-Tomer
+								Honza
+
+> > +	sbq_update_wake_index(sbq, wake_index);
+> > +	/*
+> > +	 * Concurrent callers should call this function again
+> > +	 * to wakeup a new batch on a different 'ws'.
+> > +	 */
+> > +	if (wait_cnt < 0)
+> >  		return true;
+> > -	}
+> > +
+> > +	wake_batch = READ_ONCE(sbq->wake_batch);
+> > +	/*
+> > +	 * Pairs with the memory barrier in sbitmap_queue_resize() to
+> > +	 * ensure that we see the batch size update before the wait
+> > +	 * count is reset.
+> > +	 */
+> > +	smp_mb__before_atomic();
+> > +	atomic_set(&ws->wait_cnt, wake_batch);
+> > +	wake_up_nr(&ws->wait, wake_batch);
+> >  
+> >  	return false;
+> >  }
+> > -- 
+> > 2.31.1
+> > 
+> -- 
+> Jan Kara <jack@suse.com>
+> SUSE Labs, CR
+-- 
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
