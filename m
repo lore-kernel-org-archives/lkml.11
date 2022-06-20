@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DB30C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:07:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F3AAC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:07:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350762AbiFTOHr (ORCPT
+        id S1350778AbiFTOHt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:07:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45304 "EHLO
+        Mon, 20 Jun 2022 10:07:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353586AbiFTN6b (ORCPT
+        with ESMTP id S1350911AbiFTNxz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:58:31 -0400
+        Mon, 20 Jun 2022 09:53:55 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C9201BEAC;
-        Mon, 20 Jun 2022 06:23:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 784392125C;
+        Mon, 20 Jun 2022 06:20:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E22E160C2C;
-        Mon, 20 Jun 2022 13:08:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8EB7C3411B;
-        Mon, 20 Jun 2022 13:08:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 440E560FA2;
+        Mon, 20 Jun 2022 13:20:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44A07C3411B;
+        Mon, 20 Jun 2022 13:20:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730507;
-        bh=WVB2cZoIsM8ti2+D/PLRAPxWV297NPg1wTNvLUzUnTo=;
+        s=korg; t=1655731207;
+        bh=h3/CVxVIjCVxAAoWrgd+Z2TY8aIOGi1RT8g+0/Nmjpw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jvEsJAMVRguhDbRXzmhoFhZtaDT5BtmuIap/0vm7zjKcxGlQLUZgHjynUN0pkQ6H9
-         N0GlWxZu9lkCkqnSK+yIkqTRQhOV71uOkEvugym3yCGSoXencAhwVH10Jsmwmj9BPt
-         8aBtPWymVOx44xnvQpi2qCRR6gLq4a58YbbLyR3U=
+        b=cRqpJox5Zrhibt0ar5q2IwrmRSPQXNjukuvGsOqC/2RHwyTCn3MIBVDGQtQiqh7X/
+         VNAaqPYuUShg0pQbpvIb/bYZawMTtGBZv/9s4da5IxwwH4k0PVpQVUaQuqkhNsXdtm
+         Sno2hh5Xe5thJg8lYncN0VfiSJt0feGJVkfSmQ9Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, David Rhodes <david.rhodes@cirrus.com>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 032/106] nfc: nfcmrvl: Fix memory leak in nfcmrvl_play_deferred
-Date:   Mon, 20 Jun 2022 14:50:51 +0200
-Message-Id: <20220620124725.335361192@linuxfoundation.org>
+Subject: [PATCH 5.4 186/240] ASoC: cs53l30: Correct number of volume levels on SX controls
+Date:   Mon, 20 Jun 2022 14:51:27 +0200
+Message-Id: <20220620124744.380776568@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
-References: <20220620124724.380838401@linuxfoundation.org>
+In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
+References: <20220620124737.799371052@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,64 +51,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit 8a4d480702b71184fabcf379b80bf7539716752e ]
+[ Upstream commit 7fbd6dd68127927e844912a16741016d432a0737 ]
 
-Similar to the handling of play_deferred in commit 19cfe912c37b
-("Bluetooth: btusb: Fix memory leak in play_deferred"), we thought
-a patch might be needed here as well.
+This driver specified the maximum value rather than the number of volume
+levels on the SX controls, this is incorrect, so correct them.
 
-Currently usb_submit_urb is called directly to submit deferred tx
-urbs after unanchor them.
-
-So the usb_giveback_urb_bh would failed to unref it in usb_unanchor_urb
-and cause memory leak.
-
-Put those urbs in tx_anchor to avoid the leak, and also fix the error
-handling.
-
-Signed-off-by: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220607083230.6182-1-xiaohuizhang@ruc.edu.cn
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reported-by: David Rhodes <david.rhodes@cirrus.com>
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220602162119.3393857-4-ckeepax@opensource.cirrus.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nfc/nfcmrvl/usb.c | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+ sound/soc/codecs/cs53l30.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/nfc/nfcmrvl/usb.c b/drivers/nfc/nfcmrvl/usb.c
-index a99aedff795d..ea7309453096 100644
---- a/drivers/nfc/nfcmrvl/usb.c
-+++ b/drivers/nfc/nfcmrvl/usb.c
-@@ -388,13 +388,25 @@ static void nfcmrvl_play_deferred(struct nfcmrvl_usb_drv_data *drv_data)
- 	int err;
+diff --git a/sound/soc/codecs/cs53l30.c b/sound/soc/codecs/cs53l30.c
+index ed22361b35c1..a5a383b92305 100644
+--- a/sound/soc/codecs/cs53l30.c
++++ b/sound/soc/codecs/cs53l30.c
+@@ -347,22 +347,22 @@ static const struct snd_kcontrol_new cs53l30_snd_controls[] = {
+ 	SOC_ENUM("ADC2 NG Delay", adc2_ng_delay_enum),
  
- 	while ((urb = usb_get_from_anchor(&drv_data->deferred))) {
-+		usb_anchor_urb(urb, &drv_data->tx_anchor);
-+
- 		err = usb_submit_urb(urb, GFP_ATOMIC);
--		if (err)
-+		if (err) {
-+			kfree(urb->setup_packet);
-+			usb_unanchor_urb(urb);
-+			usb_free_urb(urb);
- 			break;
-+		}
+ 	SOC_SINGLE_SX_TLV("ADC1A PGA Volume",
+-		    CS53L30_ADC1A_AFE_CTL, 0, 0x34, 0x18, pga_tlv),
++		    CS53L30_ADC1A_AFE_CTL, 0, 0x34, 0x24, pga_tlv),
+ 	SOC_SINGLE_SX_TLV("ADC1B PGA Volume",
+-		    CS53L30_ADC1B_AFE_CTL, 0, 0x34, 0x18, pga_tlv),
++		    CS53L30_ADC1B_AFE_CTL, 0, 0x34, 0x24, pga_tlv),
+ 	SOC_SINGLE_SX_TLV("ADC2A PGA Volume",
+-		    CS53L30_ADC2A_AFE_CTL, 0, 0x34, 0x18, pga_tlv),
++		    CS53L30_ADC2A_AFE_CTL, 0, 0x34, 0x24, pga_tlv),
+ 	SOC_SINGLE_SX_TLV("ADC2B PGA Volume",
+-		    CS53L30_ADC2B_AFE_CTL, 0, 0x34, 0x18, pga_tlv),
++		    CS53L30_ADC2B_AFE_CTL, 0, 0x34, 0x24, pga_tlv),
  
- 		drv_data->tx_in_flight++;
-+		usb_free_urb(urb);
-+	}
-+
-+	/* Cleanup the rest deferred urbs. */
-+	while ((urb = usb_get_from_anchor(&drv_data->deferred))) {
-+		kfree(urb->setup_packet);
-+		usb_free_urb(urb);
- 	}
--	usb_scuttle_anchored_urbs(&drv_data->deferred);
- }
+ 	SOC_SINGLE_SX_TLV("ADC1A Digital Volume",
+-		    CS53L30_ADC1A_DIG_VOL, 0, 0xA0, 0x0C, dig_tlv),
++		    CS53L30_ADC1A_DIG_VOL, 0, 0xA0, 0x6C, dig_tlv),
+ 	SOC_SINGLE_SX_TLV("ADC1B Digital Volume",
+-		    CS53L30_ADC1B_DIG_VOL, 0, 0xA0, 0x0C, dig_tlv),
++		    CS53L30_ADC1B_DIG_VOL, 0, 0xA0, 0x6C, dig_tlv),
+ 	SOC_SINGLE_SX_TLV("ADC2A Digital Volume",
+-		    CS53L30_ADC2A_DIG_VOL, 0, 0xA0, 0x0C, dig_tlv),
++		    CS53L30_ADC2A_DIG_VOL, 0, 0xA0, 0x6C, dig_tlv),
+ 	SOC_SINGLE_SX_TLV("ADC2B Digital Volume",
+-		    CS53L30_ADC2B_DIG_VOL, 0, 0xA0, 0x0C, dig_tlv),
++		    CS53L30_ADC2B_DIG_VOL, 0, 0xA0, 0x6C, dig_tlv),
+ };
  
- static int nfcmrvl_resume(struct usb_interface *intf)
+ static const struct snd_soc_dapm_widget cs53l30_dapm_widgets[] = {
 -- 
 2.35.1
 
