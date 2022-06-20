@@ -2,126 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0E54C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 11:02:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7577DCCA479
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 11:03:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241209AbiFTLCJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 07:02:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52696 "EHLO
+        id S240987AbiFTLDd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 07:03:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241148AbiFTLCI (ORCPT
+        with ESMTP id S240146AbiFTLDb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 07:02:08 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 861C66339
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 04:02:07 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id z7so14552648edm.13
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 04:02:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=WhQKcQWdfh+qi9q/v/2cFx1cfDj+vsZNcur6hEkr1L4=;
-        b=ZTSGOyoo4P4+63u2AcFSC2wLm3VOxozGvCOgQPHMzOikglfXqQm8kRmi9oEe+TrT6D
-         tVG2mNpE+z9eDC32vjWpPagDUbCraBzQhEs9bvUuBm2CmrxzKLDAcvttoEQ0wxhkSwUA
-         C+ieD5sTF3SRcYeaEkNePDspxZsKsC2X9yI9wgzGY38zS6XY3T10wJiUpn3b99x2mQft
-         wz9Aelb19XScjKQ006skw9xP5kP+XfSwHRT5puceRNWKHk7kvd1Ho8loLI5i6rMoAoPm
-         WO1Y/cAzvBZqj/Us4cE1B7Rb/j6Si21Twu7c9XD5LkbdOAZEqK7PBWa009iAYQcvOHpN
-         Q4zg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=WhQKcQWdfh+qi9q/v/2cFx1cfDj+vsZNcur6hEkr1L4=;
-        b=SomeE8y6YAnTnp1TLmhATL37Nfnq37bHElUuNCRq/EPcvB4GlKSemOk2/nYpDXZR2V
-         E/V3TED289z6Z9c4vaDDK2qjwTNO694l5H0Chc3y+26NbJM/J+qIAd3LJgTQKpWTAg5U
-         fnUks4gGFt2yrJ7OPnx5xYCF5ggEd3TBFwd8Wi2TCuPZ1QRP6t41gPKGpwnSpO9t+XGt
-         g2dyXufSYZQtPKQFk/oGdnaqeik+uE0WTYChmizfhgg/y7+cM8qLlRZLX71KKS/2TqUR
-         uUFhweB/KrIFZMwKV6oIwwC5mmtUNpenDZMxqdQ1W0y9yWGe7e6pmmeEgsdPwwlnbTf4
-         oo1Q==
-X-Gm-Message-State: AJIora+AkNNSnEal3dhMtstsfxEJ9giM4KCwv3AISBLAUgzqADu0TXTb
-        O7/G6YCsUU4YMYbk/9qGQkxKpDreNG3EgCzUcNM=
-X-Google-Smtp-Source: AGRyM1sgmWmoe2JqOoQ8RHXev39j0YYhnWlXRZK4mL4db2WGtm0Ur6rf/pZNYRr4yJv4St+pxXyeGIJLvICniUEp8b4=
-X-Received: by 2002:a05:6402:4390:b0:42e:b7e:e9ac with SMTP id
- o16-20020a056402439000b0042e0b7ee9acmr29054633edc.97.1655722926065; Mon, 20
- Jun 2022 04:02:06 -0700 (PDT)
+        Mon, 20 Jun 2022 07:03:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAE5312AA2;
+        Mon, 20 Jun 2022 04:03:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7CEA3B8108C;
+        Mon, 20 Jun 2022 11:03:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E842C3411C;
+        Mon, 20 Jun 2022 11:03:24 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="DFTzjwGR"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1655723002;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=XCzTJV39Spaf8xMntkyuVAWW186G7M690N665AOiqfk=;
+        b=DFTzjwGRSPlUI4JRPx49WGas67S5luQNT3sO44uqmW65LM/Q+gAQp7KBSGA5js3G0rzVX8
+        ssHLJZdTeOo7HfCSp4HhIDTQLWlYtbng9iWf/vmrDVj15b42YNZI8pfaaaRdxxx68YMScn
+        UO+dw4P6FJeXC7n59l5gyc3ibbnT7fM=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 29d6483a (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Mon, 20 Jun 2022 11:03:22 +0000 (UTC)
+Date:   Mon, 20 Jun 2022 13:03:19 +0200
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Harald Freudenberger <freude@linux.ibm.com>
+Cc:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, Ingo Franzki <ifranzki@linux.ibm.com>,
+        Juergen Christ <jchrist@linux.ibm.com>,
+        Martin Schwidefsky <schwidefsky@de.ibm.com>,
+        Heiko Carstens <heiko.carstens@de.ibm.com>
+Subject: Re: [PATCH] s390/archrandom: simplify back to earlier design
+Message-ID: <YrBT97lARo2QAWVF@zx2c4.com>
+References: <20220610111041.2709-1-Jason@zx2c4.com>
+ <1e6dd1baa9a5d7a665917793e2df785c@linux.ibm.com>
 MIME-Version: 1.0
-References: <20220619204949.50d9154d@thinkpad> <YrAEUM20n3Rc4aOn@google.com>
- <20220620120234.5a65ac97@thinkpad> <YrBIURn7lxykWghw@google.com> <20220620122904.30c06c4e@thinkpad>
-In-Reply-To: <20220620122904.30c06c4e@thinkpad>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 20 Jun 2022 13:01:28 +0200
-Message-ID: <CAHp75VdcY1TAksJ10gFPJbagVVfYoe08J9c3Ow_X7dGRrrNyyQ@mail.gmail.com>
-Subject: Re: Boot stall regression from "printk for 5.19" merge
-To:     =?UTF-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>,
-        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        John Ogness <john.ogness@linutronix.de>,
-        Petr Mladek <pmladek@suse.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <1e6dd1baa9a5d7a665917793e2df785c@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-+Cc: Ilpo, a new maintainer for the driver
+Hi Harald,
 
-On Mon, Jun 20, 2022 at 12:46 PM Marek Beh=C3=BAn <kabel@kernel.org> wrote:
->
-> On Mon, 20 Jun 2022 19:13:37 +0900
-> Sergey Senozhatsky <senozhatsky@chromium.org> wrote:
->
-> > On (22/06/20 12:02), Marek Beh=C3=BAn wrote:
-> > > > On (22/06/19 20:49), Marek Beh=C3=BAn wrote:
-> > > > [..]
-> > > > > causes a regression on arm64 (Marvell CN9130-CRB board) where the
-> > > > > system boot freezes in most cases (and is unusable until restarte=
-d by
-> > > > > watchdog), or, in some cases boots, but the console output gets m=
-angled
-> > > > > for a while (the serial console spits garbage characters).
-> > > >
-> > > > Can you please try disabling console kthreads and see how the boot
-> > > > process goes? Just `return 0` from printk_activate_kthreads() (I th=
-ink
-> > > > this should do the trick).
-> > >
-> > > This indeed makes the problem go away...
-> >
-> > Oh... OK. Didn't expect that :)
-> >
-> > > > > The garbage example:
-> > > > >
-> > > > >   ...
-> > > > >   [    0.920951] raid6: using neon recovery algorithm
-> > > > >   [    0.921228] iommu: Default domain type: Translated
-> > > > >   %
-> > > > >
-> > > > >           gb@k+cFL/[    4.954974] DSA: tree 0 setup
-> > > > >   [    4.955286] cfg80211: Loading compiled-in X.509 certificates=
- for regulatory database
-> > > >
-> > > > This is pretty suspicious. I don't see how console kthreads would
-> > > > corrupt the output. I suspect that something else is going on, some
-> > > > memory corruption, etc.
-> > >
-> > > Maybe multiple threads are writing to serial registers, or something.=
-..
-> >
-> > That's possible. Console drivers usually should grab port->lock for
-> > write(), but maybe something is missing in the driver you use. What
-> > console driver are you using?
->
-> compatible =3D "snps,dw-apb-uart", so drivers/tty/serial/8250/8250_dw.c
->
-> seems that the function dw8250_serial_out() does not use the spinlock...
->
-> Marek
+On Mon, Jun 20, 2022 at 12:54:11PM +0200, Harald Freudenberger wrote:
+> Hi Jason, I've been on vacation and now seen your s390 arch random 
+> rework.
+> Your assumption is right. The hw TRNG we have on the s390 platform is
+> relatively expensive and I had to learn that directly calling the TRNG
+> as part of an arch_get_random_{long,int} is not the right way. As we
+> also have a NIST 800-90A conform PRNG in hardware, I used it as some
+> kind of caching the TRNG random data.
 
+Indeed that's what I saw. I actually think this kind of caching is
+undesirable from an rng perspective too, since it essentially means we
+have two software rngs, with different lifetimes and semantics on key
+duration. So getting rid of that seems like a benefit.
 
+> With all the changes in random.c there is no need to provide any
+> arch_get_random_{long,int}() implementation any more.
+> However, the arch_get_random_seed functions should provide TRNG
+> values to random.c and so I'll have a close look onto your changes.
 
---=20
-With Best Regards,
-Andy Shevchenko
+Right, that's what my patch does.
+
+> Thanks for your patches, I'll come back with some feedback.
+
+Thanks, looking forward. Please be sure to read v3 of the bunch I sent
+(rather than this v1 you're replying to here):
+https://lore.kernel.org/lkml/20220610222023.378448-1-Jason@zx2c4.com/
+
+Jason
