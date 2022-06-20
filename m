@@ -2,125 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF26CC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 01:37:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83C63C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 01:53:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236345AbiFTBhz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 19 Jun 2022 21:37:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42852 "EHLO
+        id S236971AbiFTBxm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 19 Jun 2022 21:53:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232286AbiFTBhw (ORCPT
+        with ESMTP id S237603AbiFTBxe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 19 Jun 2022 21:37:52 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E8FC109
-        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 18:37:49 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LRBzz2Kcrz1KC2d;
-        Mon, 20 Jun 2022 09:35:43 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+        Sun, 19 Jun 2022 21:53:34 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7068CB495
+        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 18:53:31 -0700 (PDT)
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LRCLb5QCdzkWMc;
+        Mon, 20 Jun 2022 09:51:51 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 20 Jun 2022 09:37:47 +0800
-Subject: Re: [PATCH] mm/madvise: minor cleanup for swapin_walk_pmd_entry()
-To:     Andrew Morton <akpm@linux-foundation.org>
-CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>
-References: <20220618090527.37843-1-linmiaohe@huawei.com>
- <20220618115909.5f2d1a4da68cc4115e73d14a@linux-foundation.org>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <ac31de7c-4473-5479-b276-9602f0b7dd84@huawei.com>
-Date:   Mon, 20 Jun 2022 09:37:46 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+ 15.1.2375.24; Mon, 20 Jun 2022 09:53:29 +0800
+Received: from [10.174.179.234] (10.174.179.234) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 20 Jun 2022 09:53:27 +0800
+Message-ID: <95ae5d1a-fcfd-9106-4b13-9978de1a3d23@huawei.com>
+Date:   Mon, 20 Jun 2022 09:53:26 +0800
 MIME-Version: 1.0
-In-Reply-To: <20220618115909.5f2d1a4da68cc4115e73d14a@linux-foundation.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- canpemm500002.china.huawei.com (7.192.104.244)
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH -next v5 6/8] arm64: add support for machine check error
+ safe
+To:     Mark Rutland <mark.rutland@arm.com>
+CC:     James Morse <james.morse@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "Ingo Molnar" <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "Catalin Marinas" <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        "Alexander Viro" <viro@zeniv.linux.org.uk>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>, <x86@kernel.org>,
+        "H . Peter Anvin" <hpa@zytor.com>, <linuxppc-dev@lists.ozlabs.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Xie XiuQi <xiexiuqi@huawei.com>,
+        Guohanjun <guohanjun@huawei.com>
+References: <20220528065056.1034168-1-tongtiangen@huawei.com>
+ <20220528065056.1034168-7-tongtiangen@huawei.com>
+ <YqxBd9GfUHLWZWoh@FVFF77S0Q05N>
+ <4aa8b109-c79b-8da0-db89-85ca128f1049@huawei.com>
+ <Yq3KiDN87pd6mg+m@FVFF77S0Q05N>
+From:   Tong Tiangen <tongtiangen@huawei.com>
+In-Reply-To: <Yq3KiDN87pd6mg+m@FVFF77S0Q05N>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.179.234]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/6/19 2:59, Andrew Morton wrote:
-> On Sat, 18 Jun 2022 17:05:27 +0800 Miaohe Lin <linmiaohe@huawei.com> wrote:
-> 
->> Passing index to pte_offset_map_lock() directly so the below calculation
->> can be avoided. Rename orig_pte to ptep as it's not changed. Also use
->> helper is_swap_pte() to improve the readability. No functional change
->> intended.
->>
->> ...
->>
->> --- a/mm/madvise.c
->> +++ b/mm/madvise.c
->> @@ -195,7 +195,7 @@ static int madvise_update_vma(struct vm_area_struct *vma,
->>  static int swapin_walk_pmd_entry(pmd_t *pmd, unsigned long start,
->>  	unsigned long end, struct mm_walk *walk)
->>  {
->> -	pte_t *orig_pte;
->> +	pte_t *ptep;
->>  	struct vm_area_struct *vma = walk->private;
->>  	unsigned long index;
->>  	struct swap_iocb *splug = NULL;
->> @@ -209,11 +209,11 @@ static int swapin_walk_pmd_entry(pmd_t *pmd, unsigned long start,
->>  		struct page *page;
->>  		spinlock_t *ptl;
->>  
->> -		orig_pte = pte_offset_map_lock(vma->vm_mm, pmd, start, &ptl);
->> -		pte = *(orig_pte + ((index - start) / PAGE_SIZE));
->> -		pte_unmap_unlock(orig_pte, ptl);
->> +		ptep = pte_offset_map_lock(vma->vm_mm, pmd, index, &ptl);
->> +		pte = *ptep;
->> +		pte_unmap_unlock(ptep, ptl);
->>  
->> -		if (pte_present(pte) || pte_none(pte))
->> +		if (!is_swap_pte(pte))
->>  			continue;
->>  		entry = pte_to_swp_entry(pte);
->>  		if (unlikely(non_swap_entry(entry)))
-> 
-> Also...
-> 
-> From: Andrew Morton <akpm@linux-foundation.org>
-> Subject: mm-madvise-minor-cleanup-for-swapin_walk_pmd_entry-fix
-> Date: Sat Jun 18 11:58:03 AM PDT 2022
-> 
-> reduce scope of `ptep'
 
-Looks good to me. Thanks for doing this. :)
+
+在 2022/6/18 20:52, Mark Rutland 写道:
+> On Sat, Jun 18, 2022 at 05:18:55PM +0800, Tong Tiangen wrote:
+>> 在 2022/6/17 16:55, Mark Rutland 写道:
+>>> On Sat, May 28, 2022 at 06:50:54AM +0000, Tong Tiangen wrote:
+>>>> +static bool arm64_do_kernel_sea(unsigned long addr, unsigned int esr,
+>>>> +				     struct pt_regs *regs, int sig, int code)
+>>>> +{
+>>>> +	if (!IS_ENABLED(CONFIG_ARCH_HAS_COPY_MC))
+>>>> +		return false;
+>>>> +
+>>>> +	if (user_mode(regs) || !current->mm)
+>>>> +		return false;
+>>>
+>>> What's the `!current->mm` check for? >>
+>> At first, I considered that only user processes have the opportunity to
+>> recover when they trigger memory error.
+>>
+>> But it seems that this restriction is unreasonable. When the kernel thread
+>> triggers memory error, it can also be recovered. for instance:
+>>
+>> https://lore.kernel.org/linux-mm/20220527190731.322722-1-jiaqiyan@google.com/
+>>
+>> And i think if(!current->mm) shoud be added below:
+>>
+>> if(!current->mm) {
+>> 	set_thread_esr(0, esr);
+>> 	arm64_force_sig_fault(...);
+>> }
+>> return true;
+> 
+> Why does 'current->mm' have anything to do with this, though?
+
+Sorry, typo, my original logic was:
+if(current->mm) {
+	[...]
+}
 
 > 
-> Cc: Miaohe Lin <linmiaohe@huawei.com>
-> Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-> ---
+> There can be kernel threads with `current->mm` set in unusual circumstances
+> (and there's a lot of kernel code out there which handles that wrong), so if
+> you want to treat user tasks differently, we should be doing something like
+> checking PF_KTHREAD, or adding something like an is_user_task() helper.
 > 
->  mm/madvise.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+
+OK, i do want to treat user tasks differently here and didn't take into 
+account what you said. will be fixed next version according to your 
+suggestiong.
+
+As follows:
+if (!(current->flags & PF_KTHREAD)) {
+   set_thread_esr(0, esr);
+   arm64_force_sig_fault(...);
+}
+return true;
+
+
+> [...]
 > 
-> --- a/mm/madvise.c~mm-madvise-minor-cleanup-for-swapin_walk_pmd_entry-fix
-> +++ a/mm/madvise.c
-> @@ -195,7 +195,6 @@ success:
->  static int swapin_walk_pmd_entry(pmd_t *pmd, unsigned long start,
->  	unsigned long end, struct mm_walk *walk)
->  {
-> -	pte_t *ptep;
->  	struct vm_area_struct *vma = walk->private;
->  	unsigned long index;
->  	struct swap_iocb *splug = NULL;
-> @@ -208,6 +207,7 @@ static int swapin_walk_pmd_entry(pmd_t *
->  		swp_entry_t entry;
->  		struct page *page;
->  		spinlock_t *ptl;
-> +		pte_t *ptep;
->  
->  		ptep = pte_offset_map_lock(vma->vm_mm, pmd, index, &ptl);
->  		pte = *ptep;
-> _
+>>>> +
+>>>> +	if (apei_claim_sea(regs) < 0)
+>>>> +		return false;
+>>>> +
+>>>> +	if (!fixup_exception_mc(regs))
+>>>> +		return false;
+>>>
+>>> I thought we still wanted to signal the task in this case? Or do you expect to
+>>> add that into `fixup_exception_mc()` ?
+>>
+>> Yeah, here return false and will signal to task in do_sea() ->
+>> arm64_notify_die().
+> 
+> I mean when we do the fixup.
+> 
+> I thought the idea was to apply the fixup (to stop the kernel from crashing),
+> but still to deliver a fatal signal to the user task since we can't do what the
+> user task asked us to.
+> 
+
+Yes, that's what i mean. :)
+
+>>>> +
+>>>> +	set_thread_esr(0, esr);
+>>>
+>>> Why are we not setting the address? Is that deliberate, or an oversight?
+>>
+>> Here set fault_address to 0, i refer to the logic of arm64_notify_die().
+>>
+>> void arm64_notify_die(...)
+>> {
+>>           if (user_mode(regs)) {
+>>                   WARN_ON(regs != current_pt_regs());
+>>                   current->thread.fault_address = 0;
+>>                   current->thread.fault_code = err;
+>>
+>>                   arm64_force_sig_fault(signo, sicode, far, str);
+>>           } else {
+>>                   die(str, regs, err);
+>>           }
+>> }
+>>
+>> I don't know exactly why and do you know why arm64_notify_die() did this? :)
+> 
+> To be honest, I don't know, and that looks equally suspicious to me.
+> 
+> Looking at the git history, that was added in commit:
+> 
+>    9141300a5884b57c ("arm64: Provide read/write fault information in compat signal handlers")
+> 
+> ... so maybe Catalin recalls why.
+> 
+> Perhaps the assumption is just that this will be fatal and so unimportant? ...
+> but in that case the same logic would apply to the ESR value, so it's not clear
+> to me.
+
+OK, let's proceed as set to 0, if there is any change later, the two 
+positions shall be changed together.
+
+Thanks,
+Tong.
+
+> 
+> Mark.
 > 
 > .
-> 
-
