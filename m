@@ -2,47 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C1A0C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:26:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB98ECCA47C
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:26:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344124AbiFTN0a (ORCPT
+        id S1345164AbiFTN0e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:26:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40838 "EHLO
+        Mon, 20 Jun 2022 09:26:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346218AbiFTNY1 (ORCPT
+        with ESMTP id S1346222AbiFTNY1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 20 Jun 2022 09:24:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 346F81A80B;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFC1FB1F7;
         Mon, 20 Jun 2022 06:09:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 545B661552;
-        Mon, 20 Jun 2022 13:01:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DA98C3411B;
-        Mon, 20 Jun 2022 13:01:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9FC26B811D8;
+        Mon, 20 Jun 2022 13:09:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1A86C3411B;
+        Mon, 20 Jun 2022 13:09:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730102;
-        bh=VbIVNjrBy01bIHggSUKxhjYr1cGPEZk6h9ZzNdAtPB8=;
+        s=korg; t=1655730564;
+        bh=c6DkyfXXAeDar36Z3S2Z4vj3HAL9Gsos/b/igRPYi4s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vg5zmT3jy/b+z+uZI7W9ijMmgPXnHywiQKP5aGF0cjJzVcXQ3EHC7ELuG7nQRtFLP
-         yqsSzZSZZrh7PxhewefZso5VCTWL0PQESWyKGyLfjIjGaAVTLZxeHljtoSjz+bevn3
-         pvu7DwiFOx30K3KQ39EfXwIGqZSjsKbbSEKePq74=
+        b=uaQdyixLN6ORMMh9bSy6S6Mu3troOrTtuSKGPE7ycV8FjeZvarpFuO3/vMdOaaYCy
+         A6151WDQdmNRvNdc5CnfA0CUXOz70/88f2au56tsGtqyxcmyX5lgd7QlxdLFe//r+1
+         7wzTxW77dKVd6JpHLbHJBMQE35jrmZKqG5OD0oQc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        stable@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
         Ard Biesheuvel <ardb@kernel.org>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Will Deacon <will@kernel.org>,
+        "Ivan T. Ivanov" <iivanov@suse.de>,
+        Chengming Zhou <zhouchengming@bytedance.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 34/84] random: credit cpu and bootloader seeds by default
-Date:   Mon, 20 Jun 2022 14:50:57 +0200
-Message-Id: <20220620124721.900539540@linuxfoundation.org>
+Subject: [PATCH 5.15 069/106] arm64: ftrace: consistently handle PLTs.
+Date:   Mon, 20 Jun 2022 14:51:28 +0200
+Message-Id: <20220620124726.443997775@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124720.882450983@linuxfoundation.org>
-References: <20220620124720.882450983@linuxfoundation.org>
+In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
+References: <20220620124724.380838401@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,201 +54,303 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason A. Donenfeld <Jason@zx2c4.com>
+From: Mark Rutland <mark.rutland@arm.com>
 
-[ Upstream commit 846bb97e131d7938847963cca00657c995b1fce1 ]
+[ Upstream commit a6253579977e4c6f7818eeb05bf2bc65678a7187 ]
 
-This commit changes the default Kconfig values of RANDOM_TRUST_CPU and
-RANDOM_TRUST_BOOTLOADER to be Y by default. It does not change any
-existing configs or change any kernel behavior. The reason for this is
-several fold.
+Sometimes it is necessary to use a PLT entry to call an ftrace
+trampoline. This is handled by ftrace_make_call() and ftrace_make_nop(),
+with each having *almost* identical logic, but this is not handled by
+ftrace_modify_call() since its introduction in commit:
 
-As background, I recently had an email thread with the kernel
-maintainers of Fedora/RHEL, Debian, Ubuntu, Gentoo, Arch, NixOS, Alpine,
-SUSE, and Void as recipients. I noted that some distros trust RDRAND,
-some trust EFI, and some trust both, and I asked why or why not. There
-wasn't really much of a "debate" but rather an interesting discussion of
-what the historical reasons have been for this, and it came up that some
-distros just missed the introduction of the bootloader Kconfig knob,
-while another didn't want to enable it until there was a boot time
-switch to turn it off for more concerned users (which has since been
-added). The result of the rather uneventful discussion is that every
-major Linux distro enables these two options by default.
+  3b23e4991fb66f6d ("arm64: implement ftrace with regs")
 
-While I didn't have really too strong of an opinion going into this
-thread -- and I mostly wanted to learn what the distros' thinking was
-one way or another -- ultimately I think their choice was a decent
-enough one for a default option (which can be disabled at boot time).
-I'll try to summarize the pros and cons:
+Due to this, if we ever were to call ftrace_modify_call() for a callsite
+which requires a PLT entry for a trampoline, then either:
 
-Pros:
+a) If the old addr requires a trampoline, ftrace_modify_call() will use
+   an out-of-range address to generate the 'old' branch instruction.
+   This will result in warnings from aarch64_insn_gen_branch_imm() and
+   ftrace_modify_code(), and no instructions will be modified. As
+   ftrace_modify_call() will return an error, this will result in
+   subsequent internal ftrace errors.
 
-- The RNG machinery gets initialized super quickly, and there's no
-  messing around with subsequent blocking behavior.
+b) If the old addr does not require a trampoline, but the new addr does,
+   ftrace_modify_call() will use an out-of-range address to generate the
+   'new' branch instruction. This will result in warnings from
+   aarch64_insn_gen_branch_imm(), and ftrace_modify_code() will replace
+   the 'old' branch with a BRK. This will result in a kernel panic when
+   this BRK is later executed.
 
-- The bootloader mechanism is used by kexec in order for the prior
-  kernel to initialize the RNG of the next kernel, which increases
-  the entropy available to early boot daemons of the next kernel.
+Practically speaking, case (a) is vastly more likely than case (b), and
+typically this will result in internal ftrace errors that don't
+necessarily affect the rest of the system. This can be demonstrated with
+an out-of-tree test module which triggers ftrace_modify_call(), e.g.
 
-- Previous objections related to backdoors centered around
-  Dual_EC_DRBG-like kleptographic systems, in which observing some
-  amount of the output stream enables an adversary holding the right key
-  to determine the entire output stream.
+| # insmod test_ftrace.ko
+| test_ftrace: Function test_function raw=0xffffb3749399201c, callsite=0xffffb37493992024
+| branch_imm_common: offset out of range
+| branch_imm_common: offset out of range
+| ------------[ ftrace bug ]------------
+| ftrace failed to modify
+| [<ffffb37493992024>] test_function+0x8/0x38 [test_ftrace]
+|  actual:   1d:00:00:94
+| Updating ftrace call site to call a different ftrace function
+| ftrace record flags: e0000002
+|  (2) R
+|  expected tramp: ffffb374ae42ed54
+| ------------[ cut here ]------------
+| WARNING: CPU: 0 PID: 165 at kernel/trace/ftrace.c:2085 ftrace_bug+0x280/0x2b0
+| Modules linked in: test_ftrace(+)
+| CPU: 0 PID: 165 Comm: insmod Not tainted 5.19.0-rc2-00002-g4d9ead8b45ce #13
+| Hardware name: linux,dummy-virt (DT)
+| pstate: 60400005 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+| pc : ftrace_bug+0x280/0x2b0
+| lr : ftrace_bug+0x280/0x2b0
+| sp : ffff80000839ba00
+| x29: ffff80000839ba00 x28: 0000000000000000 x27: ffff80000839bcf0
+| x26: ffffb37493994180 x25: ffffb374b0991c28 x24: ffffb374b0d70000
+| x23: 00000000ffffffea x22: ffffb374afcc33b0 x21: ffffb374b08f9cc8
+| x20: ffff572b8462c000 x19: ffffb374b08f9000 x18: ffffffffffffffff
+| x17: 6c6c6163202c6331 x16: ffffb374ae5ad110 x15: ffffb374b0d51ee4
+| x14: 0000000000000000 x13: 3435646532346561 x12: 3437336266666666
+| x11: 203a706d61727420 x10: 6465746365707865 x9 : ffffb374ae5149e8
+| x8 : 336266666666203a x7 : 706d617274206465 x6 : 00000000fffff167
+| x5 : ffff572bffbc4a08 x4 : 00000000fffff167 x3 : 0000000000000000
+| x2 : 0000000000000000 x1 : ffff572b84461e00 x0 : 0000000000000022
+| Call trace:
+|  ftrace_bug+0x280/0x2b0
+|  ftrace_replace_code+0x98/0xa0
+|  ftrace_modify_all_code+0xe0/0x144
+|  arch_ftrace_update_code+0x14/0x20
+|  ftrace_startup+0xf8/0x1b0
+|  register_ftrace_function+0x38/0x90
+|  test_ftrace_init+0xd0/0x1000 [test_ftrace]
+|  do_one_initcall+0x50/0x2b0
+|  do_init_module+0x50/0x1f0
+|  load_module+0x17c8/0x1d64
+|  __do_sys_finit_module+0xa8/0x100
+|  __arm64_sys_finit_module+0x2c/0x3c
+|  invoke_syscall+0x50/0x120
+|  el0_svc_common.constprop.0+0xdc/0x100
+|  do_el0_svc+0x3c/0xd0
+|  el0_svc+0x34/0xb0
+|  el0t_64_sync_handler+0xbc/0x140
+|  el0t_64_sync+0x18c/0x190
+| ---[ end trace 0000000000000000 ]---
 
-  This used to be a partially justified concern, because RDRAND output
-  was mixed into the output stream in varying ways, some of which may
-  have lacked pre-image resistance (e.g. XOR or an LFSR).
+We can solve this by consistently determining whether to use a PLT entry
+for an address.
 
-  But this is no longer the case. Now, all usage of RDRAND and
-  bootloader seeds go through a cryptographic hash function. This means
-  that the CPU would have to compute a hash pre-image, which is not
-  considered to be feasible (otherwise the hash function would be
-  terribly broken).
+Note that since (the earlier) commit:
 
-- More generally, if the CPU is backdoored, the RNG is probably not the
-  realistic vector of choice for an attacker.
+  f1a54ae9af0da4d7 ("arm64: module/ftrace: intialize PLT at load time")
 
-- These CPU or bootloader seeds are far from being the only source of
-  entropy. Rather, there is generally a pretty huge amount of entropy,
-  not all of which is credited, especially on CPUs that support
-  instructions like RDRAND. In other words, assuming RDRAND outputs all
-  zeros, an attacker would *still* have to accurately model every single
-  other entropy source also in use.
+... we can consistently determine the PLT address that a given callsite
+will use, and therefore ftrace_make_nop() does not need to skip
+validation when a PLT is in use.
 
-- The RNG now reseeds itself quite rapidly during boot, starting at 2
-  seconds, then 4, then 8, then 16, and so forth, so that other sources
-  of entropy get used without much delay.
+This patch factors the existing logic out of ftrace_make_call() and
+ftrace_make_nop() into a common ftrace_find_callable_addr() helper
+function, which is used by ftrace_make_call(), ftrace_make_nop(), and
+ftrace_modify_call(). In ftrace_make_nop() the patching is consistently
+validated by ftrace_modify_code() as we can always determine what the
+old instruction should have been.
 
-- Paranoid users can set random.trust_{cpu,bootloader}=no in the kernel
-  command line, and paranoid system builders can set the Kconfig options
-  to N, so there's no reduction or restriction of optionality.
-
-- It's a practical default.
-
-- All the distros have it set this way. Microsoft and Apple trust it
-  too. Bandwagon.
-
-Cons:
-
-- RDRAND *could* still be backdoored with something like a fixed key or
-  limited space serial number seed or another indexable scheme like
-  that. (However, it's hard to imagine threat models where the CPU is
-  backdoored like this, yet people are still okay making *any*
-  computations with it or connecting it to networks, etc.)
-
-- RDRAND *could* be defective, rather than backdoored, and produce
-  garbage that is in one way or another insufficient for crypto.
-
-- Suggesting a *reduction* in paranoia, as this commit effectively does,
-  may cause some to question my personal integrity as a "security
-  person".
-
-- Bootloader seeds and RDRAND are generally very difficult if not all
-  together impossible to audit.
-
-Keep in mind that this doesn't actually change any behavior. This
-is just a change in the default Kconfig value. The distros already are
-shipping kernels that set things this way.
-
-Ard made an additional argument in [1]:
-
-    We're at the mercy of firmware and micro-architecture anyway, given
-    that we are also relying on it to ensure that every instruction in
-    the kernel's executable image has been faithfully copied to memory,
-    and that the CPU implements those instructions as documented. So I
-    don't think firmware or ISA bugs related to RNGs deserve special
-    treatment - if they are broken, we should quirk around them like we
-    usually do. So enabling these by default is a step in the right
-    direction IMHO.
-
-In [2], Phil pointed out that having this disabled masked a bug that CI
-otherwise would have caught:
-
-    A clean 5.15.45 boots cleanly, whereas a downstream kernel shows the
-    static key warning (but it does go on to boot). The significant
-    difference is that our defconfigs set CONFIG_RANDOM_TRUST_BOOTLOADER=y
-    defining that on top of multi_v7_defconfig demonstrates the issue on
-    a clean 5.15.45. Conversely, not setting that option in a
-    downstream kernel build avoids the warning
-
-[1] https://lore.kernel.org/lkml/CAMj1kXGi+ieviFjXv9zQBSaGyyzeGW_VpMpTLJK8PJb2QHEQ-w@mail.gmail.com/
-[2] https://lore.kernel.org/lkml/c47c42e3-1d56-5859-a6ad-976a1a3381c6@raspberrypi.com/
-
-Cc: Theodore Ts'o <tytso@mit.edu>
+Fixes: 3b23e4991fb6 ("arm64: implement ftrace with regs")
+Signed-off-by: Mark Rutland <mark.rutland@arm.com>
+Cc: Ard Biesheuvel <ardb@kernel.org>
+Cc: Will Deacon <will@kernel.org>
+Tested-by: "Ivan T. Ivanov" <iivanov@suse.de>
+Reviewed-by: Chengming Zhou <zhouchengming@bytedance.com>
 Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Link: https://lore.kernel.org/r/20220614080944.1349146-3-mark.rutland@arm.com
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/Kconfig | 54 +++++++++++++++++++++++++++-----------------
- 1 file changed, 33 insertions(+), 21 deletions(-)
+ arch/arm64/kernel/ftrace.c | 137 ++++++++++++++++++-------------------
+ 1 file changed, 66 insertions(+), 71 deletions(-)
 
-diff --git a/drivers/char/Kconfig b/drivers/char/Kconfig
-index 3e2703a49632..b4e65d1ede26 100644
---- a/drivers/char/Kconfig
-+++ b/drivers/char/Kconfig
-@@ -471,29 +471,41 @@ config ADI
- 	  and SSM (Silicon Secured Memory).  Intended consumers of this
- 	  driver include crash and makedumpfile.
+diff --git a/arch/arm64/kernel/ftrace.c b/arch/arm64/kernel/ftrace.c
+index abb6f1bbc2a3..ae0248154981 100644
+--- a/arch/arm64/kernel/ftrace.c
++++ b/arch/arm64/kernel/ftrace.c
+@@ -78,47 +78,76 @@ static struct plt_entry *get_ftrace_plt(struct module *mod, unsigned long addr)
+ }
  
--endmenu
+ /*
+- * Turn on the call to ftrace_caller() in instrumented function
++ * Find the address the callsite must branch to in order to reach '*addr'.
++ *
++ * Due to the limited range of 'BL' instructions, modules may be placed too far
++ * away to branch directly and must use a PLT.
++ *
++ * Returns true when '*addr' contains a reachable target address, or has been
++ * modified to contain a PLT address. Returns false otherwise.
+  */
+-int ftrace_make_call(struct dyn_ftrace *rec, unsigned long addr)
++static bool ftrace_find_callable_addr(struct dyn_ftrace *rec,
++				      struct module *mod,
++				      unsigned long *addr)
+ {
+ 	unsigned long pc = rec->ip;
+-	u32 old, new;
+-	long offset = (long)addr - (long)pc;
++	long offset = (long)*addr - (long)pc;
++	struct plt_entry *plt;
+ 
+-	if (offset < -SZ_128M || offset >= SZ_128M) {
+-		struct module *mod;
+-		struct plt_entry *plt;
++	/*
++	 * When the target is within range of the 'BL' instruction, use 'addr'
++	 * as-is and branch to that directly.
++	 */
++	if (offset >= -SZ_128M && offset < SZ_128M)
++		return true;
+ 
+-		if (!IS_ENABLED(CONFIG_ARM64_MODULE_PLTS))
+-			return -EINVAL;
++	/*
++	 * When the target is outside of the range of a 'BL' instruction, we
++	 * must use a PLT to reach it. We can only place PLTs for modules, and
++	 * only when module PLT support is built-in.
++	 */
++	if (!IS_ENABLED(CONFIG_ARM64_MODULE_PLTS))
++		return false;
+ 
+-		/*
+-		 * On kernels that support module PLTs, the offset between the
+-		 * branch instruction and its target may legally exceed the
+-		 * range of an ordinary relative 'bl' opcode. In this case, we
+-		 * need to branch via a trampoline in the module.
+-		 *
+-		 * NOTE: __module_text_address() must be called with preemption
+-		 * disabled, but we can rely on ftrace_lock to ensure that 'mod'
+-		 * retains its validity throughout the remainder of this code.
+-		 */
++	/*
++	 * 'mod' is only set at module load time, but if we end up
++	 * dealing with an out-of-range condition, we can assume it
++	 * is due to a module being loaded far away from the kernel.
++	 *
++	 * NOTE: __module_text_address() must be called with preemption
++	 * disabled, but we can rely on ftrace_lock to ensure that 'mod'
++	 * retains its validity throughout the remainder of this code.
++	 */
++	if (!mod) {
+ 		preempt_disable();
+ 		mod = __module_text_address(pc);
+ 		preempt_enable();
++	}
+ 
+-		if (WARN_ON(!mod))
+-			return -EINVAL;
++	if (WARN_ON(!mod))
++		return false;
+ 
+-		plt = get_ftrace_plt(mod, addr);
+-		if (!plt) {
+-			pr_err("ftrace: no module PLT for %ps\n", (void *)addr);
+-			return -EINVAL;
+-		}
 -
- config RANDOM_TRUST_CPU
--	bool "Trust the CPU manufacturer to initialize Linux's CRNG"
-+	bool "Initialize RNG using CPU RNG instructions"
-+	default y
- 	depends on ARCH_RANDOM
--	default n
- 	help
--	Assume that CPU manufacturer (e.g., Intel or AMD for RDSEED or
--	RDRAND, IBM for the S390 and Power PC architectures) is trustworthy
--	for the purposes of initializing Linux's CRNG.  Since this is not
--	something that can be independently audited, this amounts to trusting
--	that CPU manufacturer (perhaps with the insistence or mandate
--	of a Nation State's intelligence or law enforcement agencies)
--	has not installed a hidden back door to compromise the CPU's
--	random number generation facilities. This can also be configured
--	at boot with "random.trust_cpu=on/off".
-+	  Initialize the RNG using random numbers supplied by the CPU's
-+	  RNG instructions (e.g. RDRAND), if supported and available. These
-+	  random numbers are never used directly, but are rather hashed into
-+	  the main input pool, and this happens regardless of whether or not
-+	  this option is enabled. Instead, this option controls whether the
-+	  they are credited and hence can initialize the RNG. Additionally,
-+	  other sources of randomness are always used, regardless of this
-+	  setting.  Enabling this implies trusting that the CPU can supply high
-+	  quality and non-backdoored random numbers.
-+
-+	  Say Y here unless you have reason to mistrust your CPU or believe
-+	  its RNG facilities may be faulty. This may also be configured at
-+	  boot time with "random.trust_cpu=on/off".
+-		addr = (unsigned long)plt;
++	plt = get_ftrace_plt(mod, *addr);
++	if (!plt) {
++		pr_err("ftrace: no module PLT for %ps\n", (void *)*addr);
++		return false;
+ 	}
  
- config RANDOM_TRUST_BOOTLOADER
--	bool "Trust the bootloader to initialize Linux's CRNG"
--	help
--	Some bootloaders can provide entropy to increase the kernel's initial
--	device randomness. Say Y here to assume the entropy provided by the
--	booloader is trustworthy so it will be added to the kernel's entropy
--	pool. Otherwise, say N here so it will be regarded as device input that
--	only mixes the entropy pool. This can also be configured at boot with
--	"random.trust_bootloader=on/off".
-+	bool "Initialize RNG using bootloader-supplied seed"
-+	default y
-+	help
-+	  Initialize the RNG using a seed supplied by the bootloader or boot
-+	  environment (e.g. EFI or a bootloader-generated device tree). This
-+	  seed is not used directly, but is rather hashed into the main input
-+	  pool, and this happens regardless of whether or not this option is
-+	  enabled. Instead, this option controls whether the seed is credited
-+	  and hence can initialize the RNG. Additionally, other sources of
-+	  randomness are always used, regardless of this setting. Enabling
-+	  this implies trusting that the bootloader can supply high quality and
-+	  non-backdoored seeds.
++	*addr = (unsigned long)plt;
++	return true;
++}
 +
-+	  Say Y here unless you have reason to mistrust your bootloader or
-+	  believe its RNG facilities may be faulty. This may also be configured
-+	  at boot time with "random.trust_bootloader=on/off".
++/*
++ * Turn on the call to ftrace_caller() in instrumented function
++ */
++int ftrace_make_call(struct dyn_ftrace *rec, unsigned long addr)
++{
++	unsigned long pc = rec->ip;
++	u32 old, new;
 +
-+endmenu
++	if (!ftrace_find_callable_addr(rec, NULL, &addr))
++		return -EINVAL;
++
+ 	old = aarch64_insn_gen_nop();
+ 	new = aarch64_insn_gen_branch_imm(pc, addr, AARCH64_INSN_BRANCH_LINK);
+ 
+@@ -132,6 +161,11 @@ int ftrace_modify_call(struct dyn_ftrace *rec, unsigned long old_addr,
+ 	unsigned long pc = rec->ip;
+ 	u32 old, new;
+ 
++	if (!ftrace_find_callable_addr(rec, NULL, &old_addr))
++		return -EINVAL;
++	if (!ftrace_find_callable_addr(rec, NULL, &addr))
++		return -EINVAL;
++
+ 	old = aarch64_insn_gen_branch_imm(pc, old_addr,
+ 					  AARCH64_INSN_BRANCH_LINK);
+ 	new = aarch64_insn_gen_branch_imm(pc, addr, AARCH64_INSN_BRANCH_LINK);
+@@ -181,54 +215,15 @@ int ftrace_make_nop(struct module *mod, struct dyn_ftrace *rec,
+ 		    unsigned long addr)
+ {
+ 	unsigned long pc = rec->ip;
+-	bool validate = true;
+ 	u32 old = 0, new;
+-	long offset = (long)addr - (long)pc;
+ 
+-	if (offset < -SZ_128M || offset >= SZ_128M) {
+-		u32 replaced;
+-
+-		if (!IS_ENABLED(CONFIG_ARM64_MODULE_PLTS))
+-			return -EINVAL;
+-
+-		/*
+-		 * 'mod' is only set at module load time, but if we end up
+-		 * dealing with an out-of-range condition, we can assume it
+-		 * is due to a module being loaded far away from the kernel.
+-		 */
+-		if (!mod) {
+-			preempt_disable();
+-			mod = __module_text_address(pc);
+-			preempt_enable();
+-
+-			if (WARN_ON(!mod))
+-				return -EINVAL;
+-		}
+-
+-		/*
+-		 * The instruction we are about to patch may be a branch and
+-		 * link instruction that was redirected via a PLT entry. In
+-		 * this case, the normal validation will fail, but we can at
+-		 * least check that we are dealing with a branch and link
+-		 * instruction that points into the right module.
+-		 */
+-		if (aarch64_insn_read((void *)pc, &replaced))
+-			return -EFAULT;
+-
+-		if (!aarch64_insn_is_bl(replaced) ||
+-		    !within_module(pc + aarch64_get_branch_offset(replaced),
+-				   mod))
+-			return -EINVAL;
+-
+-		validate = false;
+-	} else {
+-		old = aarch64_insn_gen_branch_imm(pc, addr,
+-						  AARCH64_INSN_BRANCH_LINK);
+-	}
++	if (!ftrace_find_callable_addr(rec, mod, &addr))
++		return -EINVAL;
+ 
++	old = aarch64_insn_gen_branch_imm(pc, addr, AARCH64_INSN_BRANCH_LINK);
+ 	new = aarch64_insn_gen_nop();
+ 
+-	return ftrace_modify_code(pc, old, new, validate);
++	return ftrace_modify_code(pc, old, new, true);
+ }
+ 
+ void arch_ftrace_update_code(int command)
 -- 
 2.35.1
 
