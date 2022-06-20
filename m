@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12C0DCCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 693F8CCA483
 	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:29:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345694AbiFTN22 (ORCPT
+        id S1346060AbiFTN2q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:28:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38292 "EHLO
+        Mon, 20 Jun 2022 09:28:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344697AbiFTNZU (ORCPT
+        with ESMTP id S1344823AbiFTNZp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:25:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCE571AF16;
-        Mon, 20 Jun 2022 06:10:24 -0700 (PDT)
+        Mon, 20 Jun 2022 09:25:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EB3C192BA;
+        Mon, 20 Jun 2022 06:10:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8DE5C60A6D;
-        Mon, 20 Jun 2022 13:10:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 978B2C3411B;
-        Mon, 20 Jun 2022 13:10:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 29D1DB811C3;
+        Mon, 20 Jun 2022 13:05:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38F04C341C4;
+        Mon, 20 Jun 2022 13:05:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730612;
-        bh=fNMtNd/ZVAeJzffPN0WQglMzH9rYHRFh7UPCRvMC4n4=;
+        s=korg; t=1655730321;
+        bh=viO+JQqdOeguQ9qNe8xiV1tZu4HFPpWs46BHApHPB8U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LFCNu0fetn5kBz6XifhWw3auHQPKiwrrl3TcKf+wO5ELFWlz0yV5XKvXsbbrVyg6A
-         IprPURFOu+zcHFr3Dia3cjXgb98Swg6DKJ3oHrVhW5UpUemUL0sLBRFDJrLfCYcDvU
-         JF49k3U2XHleozDH3D/HfrPPnTRLQ6G20pxnx2wQ=
+        b=X+Sa86+RNSpN7Kwb1CL2ltTJilEj7c+Fw+I5JVrArADSE05LiQa3jdhvtwMZfxoR3
+         3T3H54ZoMs2i0e+CG7/dr2EAZBBEUPjUEQAQtGmkX4Nj7O8In61pFdcQJl81+HZuT8
+         Oj+bCyv+PCZVIC4RP7EXSUrIYDjtm0k0Xaq5yx5U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        Pawel Laszczak <pawell@cadence.com>,
-        Jing Leng <jleng@ambarella.com>
-Subject: [PATCH 5.15 088/106] usb: cdnsp: Fixed setting last_trb incorrectly
-Date:   Mon, 20 Jun 2022 14:51:47 +0200
-Message-Id: <20220620124726.993082471@linuxfoundation.org>
+        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 017/106] ata: libata-core: fix NULL pointer deref in ata_host_alloc_pinfo()
+Date:   Mon, 20 Jun 2022 14:50:36 +0200
+Message-Id: <20220620124724.896210538@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
 References: <20220620124724.380838401@linuxfoundation.org>
@@ -50,58 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jing Leng <jleng@ambarella.com>
+From: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-commit 5c7578c39c3fffe85b7d15ca1cf8cf7ac38ec0c1 upstream.
+[ Upstream commit bf476fe22aa1851bab4728e0c49025a6a0bea307 ]
 
-When ZLP occurs in bulk transmission, currently cdnsp will set last_trb
-for the last two TRBs, it will trigger an error "ERROR Transfer event TRB
-DMA ptr not part of current TD ...".
+In an unlikely (and probably wrong?) case that the 'ppi' parameter of
+ata_host_alloc_pinfo() points to an array starting with a NULL pointer,
+there's going to be a kernel oops as the 'pi' local variable won't get
+reassigned from the initial value of NULL. Initialize 'pi' instead to
+'&ata_dummy_port_info' to fix the possible kernel oops for good...
 
-Fixes: e913aada0683 ("usb: cdnsp: Fixed issue with ZLP")
-Cc: stable <stable@kernel.org>
-Acked-by: Pawel Laszczak <pawell@cadence.com>
-Signed-off-by: Jing Leng <jleng@ambarella.com>
-Link: https://lore.kernel.org/r/20220609021134.1606-1-3090101217@zju.edu.cn
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Found by Linux Verification Center (linuxtesting.org) with the SVACE static
+analysis tool.
+
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/cdns3/cdnsp-ring.c |   19 +++++++++++--------
- 1 file changed, 11 insertions(+), 8 deletions(-)
+ drivers/ata/libata-core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/usb/cdns3/cdnsp-ring.c
-+++ b/drivers/usb/cdns3/cdnsp-ring.c
-@@ -1941,13 +1941,16 @@ int cdnsp_queue_bulk_tx(struct cdnsp_dev
- 		}
+diff --git a/drivers/ata/libata-core.c b/drivers/ata/libata-core.c
+index a0343b7c9add..413faa9330b2 100644
+--- a/drivers/ata/libata-core.c
++++ b/drivers/ata/libata-core.c
+@@ -5500,7 +5500,7 @@ struct ata_host *ata_host_alloc_pinfo(struct device *dev,
+ 				      const struct ata_port_info * const * ppi,
+ 				      int n_ports)
+ {
+-	const struct ata_port_info *pi;
++	const struct ata_port_info *pi = &ata_dummy_port_info;
+ 	struct ata_host *host;
+ 	int i, j;
  
- 		if (enqd_len + trb_buff_len >= full_len) {
--			if (need_zero_pkt)
--				zero_len_trb = !zero_len_trb;
--
--			field &= ~TRB_CHAIN;
--			field |= TRB_IOC;
--			more_trbs_coming = false;
--			preq->td.last_trb = ring->enqueue;
-+			if (need_zero_pkt && !zero_len_trb) {
-+				zero_len_trb = true;
-+			} else {
-+				zero_len_trb = false;
-+				field &= ~TRB_CHAIN;
-+				field |= TRB_IOC;
-+				more_trbs_coming = false;
-+				need_zero_pkt = false;
-+				preq->td.last_trb = ring->enqueue;
-+			}
- 		}
+@@ -5508,7 +5508,7 @@ struct ata_host *ata_host_alloc_pinfo(struct device *dev,
+ 	if (!host)
+ 		return NULL;
  
- 		/* Only set interrupt on short packet for OUT endpoints. */
-@@ -1962,7 +1965,7 @@ int cdnsp_queue_bulk_tx(struct cdnsp_dev
- 		length_field = TRB_LEN(trb_buff_len) | TRB_TD_SIZE(remainder) |
- 			TRB_INTR_TARGET(0);
+-	for (i = 0, j = 0, pi = NULL; i < host->n_ports; i++) {
++	for (i = 0, j = 0; i < host->n_ports; i++) {
+ 		struct ata_port *ap = host->ports[i];
  
--		cdnsp_queue_trb(pdev, ring, more_trbs_coming | zero_len_trb,
-+		cdnsp_queue_trb(pdev, ring, more_trbs_coming,
- 				lower_32_bits(send_addr),
- 				upper_32_bits(send_addr),
- 				length_field,
+ 		if (ppi[j])
+-- 
+2.35.1
+
 
 
