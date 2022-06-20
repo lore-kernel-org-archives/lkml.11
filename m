@@ -2,106 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 084BAC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 00:45:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EF4EC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 00:47:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238577AbiFTApf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 19 Jun 2022 20:45:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43636 "EHLO
+        id S238601AbiFTArA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 19 Jun 2022 20:47:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237887AbiFTAnM (ORCPT
+        with ESMTP id S238611AbiFTAqt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 19 Jun 2022 20:43:12 -0400
-Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A72E8B85E
-        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 17:43:03 -0700 (PDT)
-Received: by mail-qv1-xf36.google.com with SMTP id g18so6506831qvn.2
-        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 17:43:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=jzrJaN7GJ4zvwlB0O2GIJnZ1v/nEIhK2TK9aO5Rtgmc=;
-        b=Lx1lmnEKLmHMo8GHFAGvtwT3kPHmLRskpKD6CEVJIlEOc7OOqPkS+AyPuQjC6rkL/R
-         RVK8+PQf6sJtv6K7a1/JuyP1Tc8zux4etc1R1OE3bbgEZ3C8RrskO7A6KayUFnodw0Pi
-         /nvSWAOB9bk2S6Md2QizVlUhMvW8PKZGGu8BijiTIUeuUUB/OGAuTBxCrEE/ciQCaAUX
-         Rml/JegJzNmIz1eCPDhc3Qw9qhEClxDG6UowIKZUFCXu6kOW63ydkkszQeUimcN+3KHr
-         RuJ/x1XnWgd11/FREucrvMRD+5RQLlaQC0XKRsSPIHg0Gshd7s5dqqdASW/2g/yvTaQo
-         gWfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=jzrJaN7GJ4zvwlB0O2GIJnZ1v/nEIhK2TK9aO5Rtgmc=;
-        b=r8kdixNkOjs59Imbledaw3FOrWGPzvT6xQmayshKJwD/N1zq057SQW/C5EKuj11kaW
-         ATE9+F3KtTqVf9/60FYZagzso9ZynING9Za4yQuGrT356cdBVDVzjiMKa+/yK1qsN5Nb
-         iKuM0GqmFFi9su34S9IMQS7W2vHqXYU+3jf4ASKJSDhBIzAD64PJfQhOK+wHrRfbeCEj
-         zCWgbACSMhO7h9nZZx8qNuuCk/u7rZcR/7c0+SLU+70jNRGFK19LJyhwdhPogMil+Pfz
-         Jq/ds9WcENSNt5EB+Bdo7O24kuok2TI9p4uaT6IVjuioJgpEhLseWShCEKROoxxyPjT7
-         LvOA==
-X-Gm-Message-State: AJIora/tDIjIcNd/qc1oXV78HzTIV37qp+Ha+rsOdWz2jOin8BT/wW2i
-        5t0EUSUSbx5MSsRGoqz0KSHb2pAcsBQiDpA=
-X-Google-Smtp-Source: AGRyM1sksTfZsVTyUyCjlAQdG4wXyI6RZnc1sCTZrHrYV9IC64sOB5+yfZ27xlwBXuwuV9wyMa93IA==
-X-Received: by 2002:ac8:5750:0:b0:304:fcfa:67db with SMTP id 16-20020ac85750000000b00304fcfa67dbmr17632697qtx.249.1655685781656;
-        Sun, 19 Jun 2022 17:43:01 -0700 (PDT)
-Received: from localhost (c-73-219-103-14.hsd1.vt.comcast.net. [73.219.103.14])
-        by smtp.gmail.com with ESMTPSA id c10-20020a05620a0cea00b006a6ab259261sm9905480qkj.29.2022.06.19.17.43.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 19 Jun 2022 17:43:01 -0700 (PDT)
-From:   Kent Overstreet <kent.overstreet@gmail.com>
-To:     linux-kernel@vger.kernel.org, linux-mm@kvack.org, pmladek@suse.com
-Cc:     Kent Overstreet <kent.overstreet@gmail.com>, rostedt@goodmis.org,
-        enozhatsky@chromium.org, linux@rasmusvillemoes.dk,
-        willy@infradead.org
-Subject: [PATCH v4 13/34] test_printf: Drop requirement that sprintf not write past nul
-Date:   Sun, 19 Jun 2022 20:42:12 -0400
-Message-Id: <20220620004233.3805-14-kent.overstreet@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620004233.3805-1-kent.overstreet@gmail.com>
-References: <20220620004233.3805-1-kent.overstreet@gmail.com>
+        Sun, 19 Jun 2022 20:46:49 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 918BDDFE4;
+        Sun, 19 Jun 2022 17:45:09 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LR9sX41bJz4xD7;
+        Mon, 20 Jun 2022 10:45:04 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1655685904;
+        bh=fZsJ+YoSpqHTBQV/80b74IIOHcEdhT9gIgEtsHi9Wlk=;
+        h=Date:From:To:Cc:Subject:From;
+        b=j6KArQv1GhY2ZVdaE0Z0kJbi75oHQV3uGvh1i/VTYX0H2DKqF1mLvUe4+nSB+Hyyo
+         f3RmsMAp378bu9cf9s8DqNXNA9Q7z+Z6wlDYV7Jh4ISb6zaR3KGxUfLTFeRFYOpZF6
+         nwooTWVd9qgqXYFZdxB1R/F41ZXhOndS8BtEKDhR4Tx1AIL/hfhufEs3FTZOkfAh0d
+         ZQGHYt4Sw5v9HfTKctTD49LFs+RxKzfOY8Is2l2lmi08rPsNWjgGMThVp0FANUOzIY
+         SX2idDzN4reIj30H0xcktGBe2NLfGJVXJ8m7xkzJevjzXBmAvGx/4KWiRI2X/8NSJT
+         RzqHJx2As1NZw==
+Date:   Mon, 20 Jun 2022 10:45:03 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Sebastian Reichel <sre@kernel.org>
+Cc:     Asmaa Mnebhi <asmaa@nvidia.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build failure after merge of the battery tree
+Message-ID: <20220620104503.11c0f2e1@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/9sxveIozfBx0WVjxIM+1Yax";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The current test code checks that sprintf never writes past the
-terminating nul. This is a rather strange requirement, completely
-separate from writing past the end of the buffer, which of course we
-can't do: writing anywhere to the buffer passed to snprintf, within size
-of course, should be perfectly fine.
+--Sig_/9sxveIozfBx0WVjxIM+1Yax
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Since this check has no documentation as to where it comes from or what
-depends on it, and it's getting in the way of further refactoring
-(printf_spec handling is right now scattered massively throughout the
-code, and we'd like to consolidate it) - delete it.
+Hi all,
 
-Also, many current pretty-printers building up their output on the
-stack, and then copy it to the actual output buffer - by eliminating
-this requirement we can kill those extra buffers.
+After merging the battery tree, today's linux-next build (x86_64
+allmodconfig) failed like this:
 
-Signed-off-by: Kent Overstreet <kent.overstreet@gmail.com>
----
- lib/test_printf.c | 6 ------
- 1 file changed, 6 deletions(-)
+drivers/power/reset/pwr-mlxbf.c: In function 'pwr_mlxbf_probe':
+drivers/power/reset/pwr-mlxbf.c:67:15: error: implicit declaration of funct=
+ion 'devm_work_autocancel' [-Werror=3Dimplicit-function-declaration]
+   67 |         err =3D devm_work_autocancel(dev, &priv->send_work, pwr_mlx=
+bf_send_work);
+      |               ^~~~~~~~~~~~~~~~~~~~
+cc1: all warnings being treated as errors
 
-diff --git a/lib/test_printf.c b/lib/test_printf.c
-index e3de52da91..853e89e2f8 100644
---- a/lib/test_printf.c
-+++ b/lib/test_printf.c
-@@ -79,12 +79,6 @@ do_test(int bufsize, const char *expect, int elen,
- 		return 1;
- 	}
- 
--	if (memchr_inv(test_buffer + written + 1, FILL_CHAR, BUF_SIZE + PAD_SIZE - (written + 1))) {
--		pr_warn("vsnprintf(buf, %d, \"%s\", ...) wrote beyond the nul-terminator\n",
--			bufsize, fmt);
--		return 1;
--	}
--
- 	if (memcmp(test_buffer, expect, written)) {
- 		pr_warn("vsnprintf(buf, %d, \"%s\", ...) wrote '%s', expected '%.*s'\n",
- 			bufsize, fmt, test_buffer, written, expect);
--- 
-2.36.1
+Caused by commit
 
+  a4c0094fcf76 ("power: reset: pwr-mlxbf: add BlueField SoC power control d=
+river")
+
+I have used the battery tree from next-20220617 for today.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/9sxveIozfBx0WVjxIM+1Yax
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKvww8ACgkQAVBC80lX
+0Gwawgf/e3NZE+XICcPMn54eB39haSJZWGSl8LGjjfJtJ6a5LTttl4QsopZFC3gZ
+nGBjYazcRl9yWSj6ooYfL5Aho9lLWs9cGG+63dSOs21SSjGcgYyKt3cZMETo6rLg
+gzn0paxkcoqLYDnXbN5THWpaJ9b12ZW/Zlc5D6dWBnwRa1KpC0E5Jq4Xao7I97Yb
+CwTrPWqdE+vHSS5IcIFlFvLDoUft3Ed+zUVYx5nYwM0qwtEVmr7XPzgr9GHNiJ6k
+HExjp6BX53RxSmHGrTlA61aoeuQrOQJfDAGT5lZYr9SjVcZvv+tllNNgMm0msEx3
+1ZSgR9TqQCIrmvM6FXo/0LTYjqFzHw==
+=Oys2
+-----END PGP SIGNATURE-----
+
+--Sig_/9sxveIozfBx0WVjxIM+1Yax--
