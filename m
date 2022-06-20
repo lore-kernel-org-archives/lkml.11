@@ -2,108 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5382CC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 11:12:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F6C5CCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 11:12:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241619AbiFTLMF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 07:12:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60562 "EHLO
+        id S241696AbiFTLMP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 07:12:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241579AbiFTLKq (ORCPT
+        with ESMTP id S241487AbiFTLLm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 07:10:46 -0400
-Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [217.70.178.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CEAB16585;
-        Mon, 20 Jun 2022 04:10:32 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id ED7B8240004;
-        Mon, 20 Jun 2022 11:10:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1655723431;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=e4XpCpixXHLWm12EJGAvEFvcWpgfd1sjAVb3qu+xQD0=;
-        b=Ylh7Za5Q8ufOyeXGXMkeLwwvRmi224S6ilmGGrMl0bZN05OLPHEthWBpLDIotRMg4QAIx4
-        1qXnTZ8sm0QQRLmVG1s0rILxI+y1VIIa8zqKfufDD/LcGHYhsDEinFk1fpRqh/hJmSoFnj
-        89jFvggzLsS9Bhhe/ZRQ/m4PnfRVDvMNpeJsdgR5rARKmXRlaHKwkvhezYQlz61yUqVJAo
-        wOOO4AvmTeyj8T338RCrVWWkMBBexZECOQ8WjPqsi5NkmDdgokmxglJVEf5+VCr1EYD4MR
-        G4CVRvyE+ckD5DkYCVRgddhmDA47AqbR6bkQrhdeXJSN6s5S4y9TscOYqVVEmQ==
-From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Jose Abreu <joabreu@synopsys.com>
-Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?q?Miqu=C3=A8l=20Raynal?= <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v8 16/16] MAINTAINERS: add Renesas RZ/N1 switch related driver entry
-Date:   Mon, 20 Jun 2022 13:08:46 +0200
-Message-Id: <20220620110846.374787-17-clement.leger@bootlin.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620110846.374787-1-clement.leger@bootlin.com>
-References: <20220620110846.374787-1-clement.leger@bootlin.com>
+        Mon, 20 Jun 2022 07:11:42 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B9D2165B3;
+        Mon, 20 Jun 2022 04:10:38 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LRRkj26mrzDsHn;
+        Mon, 20 Jun 2022 19:10:05 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 20 Jun 2022 19:10:36 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 20 Jun
+ 2022 19:10:36 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-media@vger.kernel.org>
+CC:     <mchehab@kernel.org>, <djrscally@gmail.com>,
+        <andriy.shevchenko@linux.intel.com>, <sakari.ailus@linux.intel.com>
+Subject: [PATCH -next] media: ov7251: add missing disable functions on error in ov7251_set_power_on()
+Date:   Mon, 20 Jun 2022 19:20:42 +0800
+Message-ID: <20220620112042.3231519-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-After contributing the drivers, volunteer for maintenance and add
-myself as the maintainer for Renesas RZ/N1 switch related drivers.
+Add the missing gpiod_set_value_cansleep() and clk_disable_unprepare()
+before return from ov7251_set_power_on() in the error handling case.
 
-Signed-off-by: Clément Léger <clement.leger@bootlin.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+Fixes: 9e1d3012cc10 ("media: i2c: Remove .s_power() from ov7251")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 ---
- MAINTAINERS | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ drivers/media/i2c/ov7251.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index ca95b1833b97..52f1439aac4b 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -17054,6 +17054,19 @@ S:	Supported
- F:	Documentation/devicetree/bindings/iio/adc/renesas,rzg2l-adc.yaml
- F:	drivers/iio/adc/rzg2l_adc.c
- 
-+RENESAS RZ/N1 A5PSW SWITCH DRIVER
-+M:	Clément Léger <clement.leger@bootlin.com>
-+L:	linux-renesas-soc@vger.kernel.org
-+L:	netdev@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
-+F:	Documentation/devicetree/bindings/net/pcs/renesas,rzn1-miic.yaml
-+F:	drivers/net/dsa/rzn1_a5psw*
-+F:	drivers/net/pcs/pcs-rzn1-miic.c
-+F:	include/dt-bindings/net/pcs-rzn1-miic.h
-+F:	include/linux/pcs-rzn1-miic.h
-+F:	net/dsa/tag_rzn1_a5psw.c
-+
- RENESAS RZ/N1 RTC CONTROLLER DRIVER
- M:	Miquel Raynal <miquel.raynal@bootlin.com>
- L:	linux-rtc@vger.kernel.org
+diff --git a/drivers/media/i2c/ov7251.c b/drivers/media/i2c/ov7251.c
+index 0e7be15bc20a..ad9689820ecc 100644
+--- a/drivers/media/i2c/ov7251.c
++++ b/drivers/media/i2c/ov7251.c
+@@ -934,6 +934,8 @@ static int ov7251_set_power_on(struct device *dev)
+ 					ARRAY_SIZE(ov7251_global_init_setting));
+ 	if (ret < 0) {
+ 		dev_err(ov7251->dev, "error during global init\n");
++		gpiod_set_value_cansleep(ov7251->enable_gpio, 0);
++		clk_disable_unprepare(ov7251->xclk);
+ 		ov7251_regulators_disable(ov7251);
+ 		return ret;
+ 	}
 -- 
-2.36.1
+2.25.1
 
