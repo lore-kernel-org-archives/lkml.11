@@ -2,318 +2,270 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 008ABC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 23:15:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C79D0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 23:16:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347263AbiFTXP4 (ORCPT
+        id S1347294AbiFTXQA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 19:15:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53560 "EHLO
+        Mon, 20 Jun 2022 19:16:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348211AbiFTXOR (ORCPT
+        with ESMTP id S1347106AbiFTXMG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 19:14:17 -0400
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2073.outbound.protection.outlook.com [40.107.101.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4ED02654A;
-        Mon, 20 Jun 2022 16:12:31 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YzQ9dy6vkA9hYGcoE9lhaXn90oR82PYuE7DmFrWsfFdW/bSB9foep4AQOnEjgOLSFAqRaVSGtF09kBpjYU92yxA1XIkEfrk1V/FvEA/EONNypjmu1K6QjPLUpsum3jZlEiru7vGV/3uGsiODP4MxNXdrAVM7xkFPa+qk7uJL8jEHahYAnB21u3U4PaNz3BIkKAbntBGGg2MRTN57Ucsz1ZgHO1Vo9iGoGmgoy1GIoDJsq2DZ056eEKXOAQTODTLj/ck8IBgOx1cACswvBsJuSY1GP6+vF6Kh+Oo8L+uBe1oA57I4N2+G/BytpzfyFjkVSvlJ+pqXnr+pqS8Z26oVpQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4II7Sw+OTmVpH+XlNpuL4yzBMW7v2TG4Mfy2slvmeEs=;
- b=YNr+WH2VUMMYF3a4WFOkXxPQrIP1ZPPba5dLQNwhjs6zxIRLiaI+RA9zyC2TnEs2J1dFaFE8CYkCnz8rPyS0Wn7CcecbIV6abwOGjbJZ/hRSyPklrE792WDMTbf3bPPRA3vpRFaOnTjDQ/FVNP+kz5xd+Dq8twQb8w/G2R92BpHWUUN8k9+3XOxuF7xILp1AJePlRPZauiH5YTXZi+yMR5qEFaUnW1+EScTHOIqJzV0qreIjyOVEL1fo3/a2CKJViO2CFA6mCvKr1K1/XnAozD++JRSq7tPQ4B0H5vZrkWVNH0xWLAb3XFER7cc1Fj8tlprarxoJ3pBB3Emcee/PtQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4II7Sw+OTmVpH+XlNpuL4yzBMW7v2TG4Mfy2slvmeEs=;
- b=B4nxlEgl9gNooUY05wSXDT0g3h6C9JbH4En5g/3SzXEvNCLIOJI+EYSaWaN2KnQptYRPLkDkukUNkWXUNT5ektzr4uKxTH0w4z9EhVVztfec/s8LTjxHnnbhLn25RDAGEF25ZhANBK3FihFjQVYek/Sh9ycI5bax2ybbDLN2BbU=
-Received: from BN9PR03CA0601.namprd03.prod.outlook.com (2603:10b6:408:106::6)
- by DM6PR12MB4516.namprd12.prod.outlook.com (2603:10b6:5:2ac::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.15; Mon, 20 Jun
- 2022 23:12:28 +0000
-Received: from DM6NAM11FT061.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:106:cafe::19) by BN9PR03CA0601.outlook.office365.com
- (2603:10b6:408:106::6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.14 via Frontend
- Transport; Mon, 20 Jun 2022 23:12:28 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT061.mail.protection.outlook.com (10.13.173.138) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5353.14 via Frontend Transport; Mon, 20 Jun 2022 23:12:27 +0000
-Received: from ashkalraubuntuserver.amd.com (10.180.168.240) by
- SATLEXMB04.amd.com (10.181.40.145) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Mon, 20 Jun 2022 18:12:24 -0500
-From:   Ashish Kalra <Ashish.Kalra@amd.com>
-To:     <x86@kernel.org>, <linux-kernel@vger.kernel.org>,
-        <kvm@vger.kernel.org>, <linux-coco@lists.linux.dev>,
-        <linux-mm@kvack.org>, <linux-crypto@vger.kernel.org>
-CC:     <tglx@linutronix.de>, <mingo@redhat.com>, <jroedel@suse.de>,
-        <thomas.lendacky@amd.com>, <hpa@zytor.com>, <ardb@kernel.org>,
-        <pbonzini@redhat.com>, <seanjc@google.com>, <vkuznets@redhat.com>,
-        <jmattson@google.com>, <luto@kernel.org>,
-        <dave.hansen@linux.intel.com>, <slp@redhat.com>,
-        <pgonda@google.com>, <peterz@infradead.org>,
-        <srinivas.pandruvada@linux.intel.com>, <rientjes@google.com>,
-        <dovmurik@linux.ibm.com>, <tobin@ibm.com>, <bp@alien8.de>,
-        <michael.roth@amd.com>, <vbabka@suse.cz>, <kirill@shutemov.name>,
-        <ak@linux.intel.com>, <tony.luck@intel.com>, <marcorr@google.com>,
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        <alpergun@google.com>, <dgilbert@redhat.com>, <jarkko@kernel.org>
-Subject: [PATCH Part2 v6 39/49] KVM: SVM: Introduce ops for the post gfn map and unmap
-Date:   Mon, 20 Jun 2022 23:12:16 +0000
-Message-ID: <34246866043db7bab34a92fe22f359667ab155a0.1655761627.git.ashish.kalra@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1655761627.git.ashish.kalra@amd.com>
-References: <cover.1655761627.git.ashish.kalra@amd.com>
+        Mon, 20 Jun 2022 19:12:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A92F022296;
+        Mon, 20 Jun 2022 16:10:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2F71961505;
+        Mon, 20 Jun 2022 23:10:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5459BC341EE;
+        Mon, 20 Jun 2022 23:10:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655766632;
+        bh=yH3rcc6h4bxkbl4PBwXYAQclBPLiEgWRFDrMwOLKi5U=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=kTFwUd47L6m/G992pjcvZo2kRrAFTbAn8KMWAd3NI3qCX40S5Z9grrlYkv31W+20t
+         hrW9PTOM5UjZnsXlfmy77Og3zu1gAfQQbm0CoFE0k1Tcn9po8QihEeJ17E92Cpqu7z
+         H9TmEJ9eYMHVZ/dkBzOv9wQLRo58l4/3ahHX2TcgKCWgckt544luPpkHHUFxzSGkwA
+         jFsYA2FdWEPYay3nIYJJpmiZmYlxGbk5QCFHARDQ/W36JeXIqKLjQMSVBAEZkah65q
+         W2g+TdIhNgsi5ZzIWFZYaTJC2f+M7Z3hcmf0q48al3eBVJTRTTJMLXOltFzd7fRknV
+         QWM+uypkMBvog==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 73E035C11DC; Mon, 20 Jun 2022 16:10:31 -0700 (PDT)
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     rcu@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
+        rostedt@goodmis.org, Frederic Weisbecker <frederic@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Uladzislau Rezki <uladzislau.rezki@sony.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Xiongfeng Wang <wangxiongfeng2@huawei.com>,
+        Yu Liao <liaoyu15@huawei.com>, Phil Auld <pauld@redhat.com>,
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Alex Belits <abelits@marvell.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>
+Subject: [PATCH rcu 20/23] context_tracking: Convert state to atomic_t
+Date:   Mon, 20 Jun 2022 16:10:26 -0700
+Message-Id: <20220620231029.3844583-20-paulmck@kernel.org>
+X-Mailer: git-send-email 2.31.1.189.g2e36527f23
+In-Reply-To: <20220620231027.GA3844372@paulmck-ThinkPad-P17-Gen-1>
+References: <20220620231027.GA3844372@paulmck-ThinkPad-P17-Gen-1>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 26e7cd5b-f3a2-4a86-9911-08da53125820
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4516:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB4516BCF7B0A2563CB7E4875D8EB09@DM6PR12MB4516.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: se44/YaMlqecFPiDUEsVVNRJw/HeVTYvKwPNxtKsYggYUq7O2+qml0l/Y+MJ9i0SnVoXkbNpYn/JomJOBzI6RALJ3HL4rKTnFegnoZcdZjSrGG+OlXRc+30tpNqRUPxNxcrGi93HcxxqoyWX97E8sx7ozWctDdxbPYrXGhyRmgYbNTMZkFy4kRExVBH9ht5TPb40qaR71+wU3wX7tDpm6EdkHWVZiTwAyiZmvkhtKWLaQXRgPC2WpgcobMElNPatCUEEE6Ls6zP3wmJFbRdYUQdE9zD1LOILB1IoRI0rPy/0MJ27YtobyftLJH48S7tnAwGrmjrMMaBbtQKEy8A9hHKlJ10POgzlXd9abLD7M+IBlNgCt+lmwzXa9X8lYxiTwsKq0lxe4t0LBleLSwAsMdDeIxFJ1j8GVF/qOr/EKYEuo0+EZAUWs861pFXYb3XM/rRQgMIQjKM1Bi7yfEQCXy9mcpj6s1zg+nUGtLNomzyP6OrB9kte4QtjTipNttWasVvg1YgpA6bIzS5E3ZA8EuVu4wZjE+KrOS0Xk4sLXKpWz2cU0Keqo3FmuAfN9LqaX9WZuWkYgxwGgQge/QyUNo8scOHBBCD3Txwa2j+gnelBrf6cSOZHNf1UPvo4rY9j/nKiZ2XqP+RsSb38AOJmlYgCXmtYcsQjbK7hLUNIm2nMAptL5Jid4mDrtup9aLmAW6kCEFLwIJjvJ/YuOHm9Ewc72+tHNjpj6E8cOzkI8h20T9fJxEpQ4qZU6vgqtjorFgvP4JUxBsivc3o99VfuUg==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(396003)(376002)(39860400002)(136003)(346002)(36840700001)(46966006)(40470700004)(82740400003)(356005)(82310400005)(36756003)(36860700001)(81166007)(110136005)(316002)(40480700001)(54906003)(186003)(47076005)(26005)(8676002)(16526019)(4326008)(426003)(2906002)(70206006)(336012)(70586007)(83380400001)(7416002)(7406005)(8936002)(478600001)(86362001)(5660300002)(2616005)(40460700003)(6666004)(41300700001)(7696005)(2101003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jun 2022 23:12:27.8457
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 26e7cd5b-f3a2-4a86-9911-08da53125820
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT061.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4516
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brijesh Singh <brijesh.singh@amd.com>
+From: Frederic Weisbecker <frederic@kernel.org>
 
-When SEV-SNP is enabled in the guest VM, the guest memory pages can
-either be a private or shared. A write from the hypervisor goes through
-the RMP checks. If hardware sees that hypervisor is attempting to write
-to a guest private page, then it triggers an RMP violation #PF.
+Context tracking's state and dynticks counter are going to be merged
+in a single field so that both updates can happen atomically and at the
+same time. Prepare for that with converting the state into an atomic_t.
 
-To avoid the RMP violation with GHCB pages, added new post_{map,unmap}_gfn
-functions to verify if its safe to map GHCB pages.  Uses a spinlock to
-protect against the page state change for existing mapped pages.
-
-Need to add generic post_{map,unmap}_gfn() ops that can be used to verify
-that its safe to map a given guest page in the hypervisor.
-
-This patch will need to be revisited later after consensus is reached on
-how to manage guest private memory as probably UPM private memslots will
-be able to handle this page state change more gracefully.
-
-Signed-off-by: Brijesh Singh <brijesh.singh@amd.com>
-Signed-off by: Ashish Kalra <ashish.kalra@amd.com>
+Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Neeraj Upadhyay <quic_neeraju@quicinc.com>
+Cc: Uladzislau Rezki <uladzislau.rezki@sony.com>
+Cc: Joel Fernandes <joel@joelfernandes.org>
+Cc: Boqun Feng <boqun.feng@gmail.com>
+Cc: Nicolas Saenz Julienne <nsaenz@kernel.org>
+Cc: Marcelo Tosatti <mtosatti@redhat.com>
+Cc: Xiongfeng Wang <wangxiongfeng2@huawei.com>
+Cc: Yu Liao <liaoyu15@huawei.com>
+Cc: Phil Auld <pauld@redhat.com>
+Cc: Paul Gortmaker<paul.gortmaker@windriver.com>
+Cc: Alex Belits <abelits@marvell.com>
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 ---
- arch/x86/include/asm/kvm-x86-ops.h |  1 +
- arch/x86/include/asm/kvm_host.h    |  3 ++
- arch/x86/kvm/svm/sev.c             | 48 ++++++++++++++++++++++++++++--
- arch/x86/kvm/svm/svm.c             |  3 ++
- arch/x86/kvm/svm/svm.h             | 11 +++++++
- 5 files changed, 64 insertions(+), 2 deletions(-)
+ include/linux/context_tracking.h       | 24 +++++-------------
+ include/linux/context_tracking_state.h | 34 +++++++++++++++++++++++---
+ kernel/context_tracking.c              | 15 +++++++-----
+ 3 files changed, 45 insertions(+), 28 deletions(-)
 
-diff --git a/arch/x86/include/asm/kvm-x86-ops.h b/arch/x86/include/asm/kvm-x86-ops.h
-index e0068e702692..2dd2bc0cf4c3 100644
---- a/arch/x86/include/asm/kvm-x86-ops.h
-+++ b/arch/x86/include/asm/kvm-x86-ops.h
-@@ -130,6 +130,7 @@ KVM_X86_OP(vcpu_deliver_sipi_vector)
- KVM_X86_OP_OPTIONAL_RET0(vcpu_get_apicv_inhibit_reasons);
- KVM_X86_OP(alloc_apic_backing_page)
- KVM_X86_OP_OPTIONAL(rmp_page_level_adjust)
-+KVM_X86_OP(update_protected_guest_state)
+diff --git a/include/linux/context_tracking.h b/include/linux/context_tracking.h
+index 1f568676bc1d2..a8c1db0a3f65a 100644
+--- a/include/linux/context_tracking.h
++++ b/include/linux/context_tracking.h
+@@ -56,7 +56,7 @@ static inline enum ctx_state exception_enter(void)
+ 	    !context_tracking_enabled())
+ 		return 0;
  
- #undef KVM_X86_OP
- #undef KVM_X86_OP_OPTIONAL
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 49b217dc8d7e..8abc0e724f5c 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1522,7 +1522,10 @@ struct kvm_x86_ops {
- 	unsigned long (*vcpu_get_apicv_inhibit_reasons)(struct kvm_vcpu *vcpu);
+-	prev_ctx = this_cpu_read(context_tracking.state);
++	prev_ctx = __ct_state();
+ 	if (prev_ctx != CONTEXT_KERNEL)
+ 		ct_user_exit(prev_ctx);
  
- 	void *(*alloc_apic_backing_page)(struct kvm_vcpu *vcpu);
+@@ -86,33 +86,21 @@ static __always_inline void context_tracking_guest_exit(void)
+ 		__ct_user_exit(CONTEXT_GUEST);
+ }
+ 
+-/**
+- * ct_state() - return the current context tracking state if known
+- *
+- * Returns the current cpu's context tracking state if context tracking
+- * is enabled.  If context tracking is disabled, returns
+- * CONTEXT_DISABLED.  This should be used primarily for debugging.
+- */
+-static __always_inline enum ctx_state ct_state(void)
+-{
+-	return context_tracking_enabled() ?
+-		this_cpu_read(context_tracking.state) : CONTEXT_DISABLED;
+-}
++#define CT_WARN_ON(cond) WARN_ON(context_tracking_enabled() && (cond))
 +
- 	void (*rmp_page_level_adjust)(struct kvm *kvm, kvm_pfn_t pfn, int *level);
+ #else
+ static inline void user_enter(void) { }
+ static inline void user_exit(void) { }
+ static inline void user_enter_irqoff(void) { }
+ static inline void user_exit_irqoff(void) { }
+-static inline enum ctx_state exception_enter(void) { return 0; }
++static inline int exception_enter(void) { return 0; }
+ static inline void exception_exit(enum ctx_state prev_ctx) { }
+-static inline enum ctx_state ct_state(void) { return CONTEXT_DISABLED; }
++static inline int ct_state(void) { return -1; }
+ static __always_inline bool context_tracking_guest_enter(void) { return false; }
+ static inline void context_tracking_guest_exit(void) { }
+-
++#define CT_WARN_ON(cond)
+ #endif /* !CONFIG_CONTEXT_TRACKING_USER */
+ 
+-#define CT_WARN_ON(cond) WARN_ON(context_tracking_enabled() && (cond))
+-
+ #ifdef CONFIG_CONTEXT_TRACKING_USER_FORCE
+ extern void context_tracking_init(void);
+ #else
+diff --git a/include/linux/context_tracking_state.h b/include/linux/context_tracking_state.h
+index 2f957b48e24f9..7d2dddf0da690 100644
+--- a/include/linux/context_tracking_state.h
++++ b/include/linux/context_tracking_state.h
+@@ -6,6 +6,9 @@
+ #include <linux/static_key.h>
+ #include <linux/context_tracking_irq.h>
+ 
++/* Offset to allow distinguishing irq vs. task-based idle entry/exit. */
++#define DYNTICK_IRQ_NONIDLE	((LONG_MAX / 2) + 1)
 +
-+	int (*update_protected_guest_state)(struct kvm_vcpu *vcpu);
+ enum ctx_state {
+ 	CONTEXT_DISABLED = -1,	/* returned by ct_state() if unknown */
+ 	CONTEXT_KERNEL = 0,
+@@ -13,9 +16,6 @@ enum ctx_state {
+ 	CONTEXT_GUEST,
  };
  
- struct kvm_x86_nested_ops {
-diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
-index cb2d1bbb862b..4ed90331bca0 100644
---- a/arch/x86/kvm/svm/sev.c
-+++ b/arch/x86/kvm/svm/sev.c
-@@ -341,6 +341,7 @@ static int sev_guest_init(struct kvm *kvm, struct kvm_sev_cmd *argp)
- 		if (ret)
- 			goto e_free;
+-/* Offset to allow distinguishing irq vs. task-based idle entry/exit. */
+-#define DYNTICK_IRQ_NONIDLE	((LONG_MAX / 2) + 1)
+-
+ struct context_tracking {
+ #ifdef CONFIG_CONTEXT_TRACKING_USER
+ 	/*
+@@ -26,7 +26,7 @@ struct context_tracking {
+ 	 */
+ 	bool active;
+ 	int recursion;
+-	enum ctx_state state;
++	atomic_t state;
+ #endif
+ #ifdef CONFIG_CONTEXT_TRACKING_IDLE
+ 	atomic_t dynticks;		/* Even value for idle, else odd. */
+@@ -98,6 +98,32 @@ static inline bool context_tracking_enabled_this_cpu(void)
+ 	return context_tracking_enabled() && __this_cpu_read(context_tracking.active);
+ }
  
-+		spin_lock_init(&sev->psc_lock);
- 		ret = sev_snp_init(&argp->error);
- 	} else {
- 		ret = sev_platform_init(&argp->error);
-@@ -2828,19 +2829,28 @@ static inline int svm_map_ghcb(struct vcpu_svm *svm, struct kvm_host_map *map)
++static __always_inline int __ct_state(void)
++{
++	return atomic_read(this_cpu_ptr(&context_tracking.state));
++}
++
++/**
++ * ct_state() - return the current context tracking state if known
++ *
++ * Returns the current cpu's context tracking state if context tracking
++ * is enabled.  If context tracking is disabled, returns
++ * CONTEXT_DISABLED.  This should be used primarily for debugging.
++ */
++static __always_inline int ct_state(void)
++{
++	int ret;
++
++	if (!context_tracking_enabled())
++		return CONTEXT_DISABLED;
++
++	preempt_disable();
++	ret = __ct_state();
++	preempt_enable();
++
++	return ret;
++}
++
+ #else
+ static __always_inline bool context_tracking_enabled(void) { return false; }
+ static __always_inline bool context_tracking_enabled_cpu(int cpu) { return false; }
+diff --git a/kernel/context_tracking.c b/kernel/context_tracking.c
+index 8b0979412f755..c477c7d696e0f 100644
+--- a/kernel/context_tracking.c
++++ b/kernel/context_tracking.c
+@@ -463,6 +463,7 @@ static __always_inline void context_tracking_recursion_exit(void)
+  */
+ void noinstr __ct_user_enter(enum ctx_state state)
  {
- 	struct vmcb_control_area *control = &svm->vmcb->control;
- 	u64 gfn = gpa_to_gfn(control->ghcb_gpa);
-+	struct kvm_vcpu *vcpu = &svm->vcpu;
++	struct context_tracking *ct = this_cpu_ptr(&context_tracking);
+ 	lockdep_assert_irqs_disabled();
  
--	if (kvm_vcpu_map(&svm->vcpu, gfn, map)) {
-+	if (kvm_vcpu_map(vcpu, gfn, map)) {
- 		/* Unable to map GHCB from guest */
- 		pr_err("error mapping GHCB GFN [%#llx] from guest\n", gfn);
- 		return -EFAULT;
+ 	/* Kernel threads aren't supposed to go to userspace */
+@@ -471,8 +472,8 @@ void noinstr __ct_user_enter(enum ctx_state state)
+ 	if (!context_tracking_recursion_enter())
+ 		return;
+ 
+-	if ( __this_cpu_read(context_tracking.state) != state) {
+-		if (__this_cpu_read(context_tracking.active)) {
++	if (__ct_state() != state) {
++		if (ct->active) {
+ 			/*
+ 			 * At this stage, only low level arch entry code remains and
+ 			 * then we'll run in userspace. We can assume there won't be
+@@ -513,7 +514,7 @@ void noinstr __ct_user_enter(enum ctx_state state)
+ 		 * OTOH we can spare the calls to vtime and RCU when context_tracking.active
+ 		 * is false because we know that CPU is not tickless.
+ 		 */
+-		__this_cpu_write(context_tracking.state, state);
++		atomic_set(&ct->state, state);
  	}
- 
-+	if (sev_post_map_gfn(vcpu->kvm, map->gfn, map->pfn)) {
-+		kvm_vcpu_unmap(vcpu, map, false);
-+		return -EBUSY;
-+	}
-+
- 	return 0;
+ 	context_tracking_recursion_exit();
  }
- 
- static inline void svm_unmap_ghcb(struct vcpu_svm *svm, struct kvm_host_map *map)
+@@ -581,11 +582,13 @@ NOKPROBE_SYMBOL(user_enter_callable);
+  */
+ void noinstr __ct_user_exit(enum ctx_state state)
  {
--	kvm_vcpu_unmap(&svm->vcpu, map, true);
-+	struct kvm_vcpu *vcpu = &svm->vcpu;
++	struct context_tracking *ct = this_cpu_ptr(&context_tracking);
 +
-+	kvm_vcpu_unmap(vcpu, map, true);
-+	sev_post_unmap_gfn(vcpu->kvm, map->gfn, map->pfn);
- }
+ 	if (!context_tracking_recursion_enter())
+ 		return;
  
- static void dump_ghcb(struct vcpu_svm *svm)
-@@ -3383,6 +3393,8 @@ static int __snp_handle_page_state_change(struct kvm_vcpu *vcpu, enum psc_op op,
- 				return PSC_UNDEF_ERR;
+-	if (__this_cpu_read(context_tracking.state) == state) {
+-		if (__this_cpu_read(context_tracking.active)) {
++	if (__ct_state() == state) {
++		if (ct->active) {
+ 			/*
+ 			 * Exit RCU idle mode while entering the kernel because it can
+ 			 * run a RCU read side critical section anytime.
+@@ -598,7 +601,7 @@ void noinstr __ct_user_exit(enum ctx_state state)
+ 				instrumentation_end();
+ 			}
  		}
- 
-+		spin_lock(&sev->psc_lock);
-+
- 		write_lock(&kvm->mmu_lock);
- 
- 		rc = kvm_mmu_get_tdp_walk(vcpu, gpa, &pfn, &npt_level);
-@@ -3417,6 +3429,8 @@ static int __snp_handle_page_state_change(struct kvm_vcpu *vcpu, enum psc_op op,
- 
- 		write_unlock(&kvm->mmu_lock);
- 
-+		spin_unlock(&sev->psc_lock);
-+
- 		if (rc) {
- 			pr_err_ratelimited("Error op %d gpa %llx pfn %llx level %d rc %d\n",
- 					   op, gpa, pfn, level, rc);
-@@ -3965,3 +3979,33 @@ void sev_rmp_page_level_adjust(struct kvm *kvm, kvm_pfn_t pfn, int *level)
- 	/* Adjust the level to keep the NPT and RMP in sync */
- 	*level = min_t(size_t, *level, rmp_level);
+-		__this_cpu_write(context_tracking.state, CONTEXT_KERNEL);
++		atomic_set(&ct->state, CONTEXT_KERNEL);
+ 	}
+ 	context_tracking_recursion_exit();
  }
-+
-+int sev_post_map_gfn(struct kvm *kvm, gfn_t gfn, kvm_pfn_t pfn)
-+{
-+	struct kvm_sev_info *sev = &to_kvm_svm(kvm)->sev_info;
-+	int level;
-+
-+	if (!sev_snp_guest(kvm))
-+		return 0;
-+
-+	spin_lock(&sev->psc_lock);
-+
-+	/* If pfn is not added as private then fail */
-+	if (snp_lookup_rmpentry(pfn, &level) == 1) {
-+		spin_unlock(&sev->psc_lock);
-+		pr_err_ratelimited("failed to map private gfn 0x%llx pfn 0x%llx\n", gfn, pfn);
-+		return -EBUSY;
-+	}
-+
-+	return 0;
-+}
-+
-+void sev_post_unmap_gfn(struct kvm *kvm, gfn_t gfn, kvm_pfn_t pfn)
-+{
-+	struct kvm_sev_info *sev = &to_kvm_svm(kvm)->sev_info;
-+
-+	if (!sev_snp_guest(kvm))
-+		return;
-+
-+	spin_unlock(&sev->psc_lock);
-+}
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index b24e0171cbf2..1c8e035ba011 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -4734,7 +4734,10 @@ static struct kvm_x86_ops svm_x86_ops __initdata = {
- 	.vcpu_get_apicv_inhibit_reasons = avic_vcpu_get_apicv_inhibit_reasons,
- 
- 	.alloc_apic_backing_page = svm_alloc_apic_backing_page,
-+
- 	.rmp_page_level_adjust = sev_rmp_page_level_adjust,
-+
-+	.update_protected_guest_state = sev_snp_update_protected_guest_state,
- };
- 
- /*
-diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
-index 54ff56cb6125..3fd95193ed8d 100644
---- a/arch/x86/kvm/svm/svm.h
-+++ b/arch/x86/kvm/svm/svm.h
-@@ -79,19 +79,25 @@ struct kvm_sev_info {
- 	bool active;		/* SEV enabled guest */
- 	bool es_active;		/* SEV-ES enabled guest */
- 	bool snp_active;	/* SEV-SNP enabled guest */
-+
- 	unsigned int asid;	/* ASID used for this guest */
- 	unsigned int handle;	/* SEV firmware handle */
- 	int fd;			/* SEV device fd */
-+
- 	unsigned long pages_locked; /* Number of pages locked */
- 	struct list_head regions_list;  /* List of registered regions */
-+
- 	u64 ap_jump_table;	/* SEV-ES AP Jump Table address */
-+
- 	struct kvm *enc_context_owner; /* Owner of copied encryption context */
- 	struct list_head mirror_vms; /* List of VMs mirroring */
- 	struct list_head mirror_entry; /* Use as a list entry of mirrors */
- 	struct misc_cg *misc_cg; /* For misc cgroup accounting */
- 	atomic_t migration_in_progress;
-+
- 	u64 snp_init_flags;
- 	void *snp_context;      /* SNP guest context page */
-+	spinlock_t psc_lock;
- };
- 
- struct kvm_svm {
-@@ -702,6 +708,11 @@ void sev_es_prepare_switch_to_guest(struct sev_es_save_area *hostsa);
- void sev_es_unmap_ghcb(struct vcpu_svm *svm);
- struct page *snp_safe_alloc_page(struct kvm_vcpu *vcpu);
- void sev_rmp_page_level_adjust(struct kvm *kvm, kvm_pfn_t pfn, int *level);
-+int sev_post_map_gfn(struct kvm *kvm, gfn_t gfn, kvm_pfn_t pfn);
-+void sev_post_unmap_gfn(struct kvm *kvm, gfn_t gfn, kvm_pfn_t pfn);
-+void handle_rmp_page_fault(struct kvm_vcpu *vcpu, gpa_t gpa, u64 error_code);
-+void sev_snp_init_protected_guest_state(struct kvm_vcpu *vcpu);
-+int sev_snp_update_protected_guest_state(struct kvm_vcpu *vcpu);
- 
- /* vmenter.S */
- 
 -- 
-2.25.1
+2.31.1.189.g2e36527f23
 
