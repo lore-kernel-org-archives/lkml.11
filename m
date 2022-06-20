@@ -2,116 +2,791 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDD4BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:34:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBA6DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:35:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346752AbiFTOei (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:34:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34798 "EHLO
+        id S238728AbiFTOfC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 10:35:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242683AbiFTOeH (ORCPT
+        with ESMTP id S242244AbiFTOeg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 10:34:07 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EC5D2ED6C
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 06:48:50 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id u12so21228918eja.8
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 06:48:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hoDwsyCPbxAXsPRHgnlWqg6oqsfxTDr8MWMJehQSHOQ=;
-        b=U6tJGh/ymYHJiOb318DThrdnVTEZzfdovLcKmFYgbh21zmIgPKtJLHpjrLzRcM3mPQ
-         AwblBPHbaUn1sIe9+J57uk9W8nJTLB9gDPoIzdvfMX9nDPz5lWR3Ad04VhCL7L7Vlj+4
-         sWDgThs0lL1RNQ3/cOOn2pxDMihnBbUgHo10w=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hoDwsyCPbxAXsPRHgnlWqg6oqsfxTDr8MWMJehQSHOQ=;
-        b=C3fmEQEQr6CfIZHVQLmRLm6Zh6a5r+gh3t2okLzX1AJSaY4IcNVAP7MjwqoI1IAj4N
-         XAPTC95uh715/TRLPT2exNIY1YrnClkiNvXl3JybITv6akkm6dyxzCbTvENTlHDTnSzw
-         WZwfx6VnkdO4OLOBS19JxGwCD7vGxQt/7N4p8Z0DxsN4FWC21U1uzcgF8kZMsSm6WaiV
-         m0yuEnhOwV8MMRixnyFt8XPUJki8fzvvNI12whzyDJDgCo6mSUSQ1m2R/eGt2sS3wntb
-         vriGZcpjPfLHlOE/ACO7MTWxH8rYCM3+TuQwpGwivQ7n3PFW+eBmCxjef0klzeF5GQwH
-         e4fA==
-X-Gm-Message-State: AJIora+UwzRheRE5asHADHFQCw1aKQftPjjeA14L1EjVvzYr59MjkIjQ
-        LrA1KVgubpN2dDWhb5BzkUz/ribsddJXsm5D
-X-Google-Smtp-Source: AGRyM1vaorRZdMBl69MJeLMDHDRRQ3c9NAP6jkbfSSaYEZ22xAI3sivXG5l4Gm7s82H9BKPCVB5iEg==
-X-Received: by 2002:a17:907:60cb:b0:711:d516:ebab with SMTP id hv11-20020a17090760cb00b00711d516ebabmr21435036ejc.159.1655732928445;
-        Mon, 20 Jun 2022 06:48:48 -0700 (PDT)
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com. [209.85.221.49])
-        by smtp.gmail.com with ESMTPSA id 10-20020a170906218a00b006fee98045cdsm6112461eju.10.2022.06.20.06.48.46
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Jun 2022 06:48:47 -0700 (PDT)
-Received: by mail-wr1-f49.google.com with SMTP id m1so7014509wrb.2
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 06:48:46 -0700 (PDT)
-X-Received: by 2002:a05:6000:1251:b0:21a:efae:6cbe with SMTP id
- j17-20020a056000125100b0021aefae6cbemr16632661wrx.281.1655732925960; Mon, 20
- Jun 2022 06:48:45 -0700 (PDT)
+        Mon, 20 Jun 2022 10:34:36 -0400
+X-Greylist: delayed 348 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 20 Jun 2022 06:50:28 PDT
+Received: from mo4-p00-ob.smtp.rzone.de (mo4-p00-ob.smtp.rzone.de [81.169.146.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 842552F019;
+        Mon, 20 Jun 2022 06:50:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1655732658;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
+    From:Subject:Sender;
+    bh=5WgjuEeXPzdgvWBfofFU6r+g2J0NyIZBSoT5kgGACTU=;
+    b=W4wQ3ykUHyYU/D32s6tkCQmRMBIRGTH5+fRKKEfIu0PrLOm8wZNeIaiuhFWPkY3K5z
+    LYavYNzZeuZUjhg+cGY9jAFxbqElBYlZrWvlPZ+IwdtVIw+QndyL5LkYqf29GPEC0E+J
+    ICA4M9pIHlYDWzCDJfc64BZgHkpzw/V6eX7CWVYJPmPWyr6EnJmT+tXWy9jNkBI4g/V6
+    937+Lc3FVrJl5SePK+21Hn62OsVhf56tWzmQd2Zo5iAxtIeXmGa15rr/iovrbkBPj19L
+    4HxBVqe/TfmM00ui6HR9D319l275zI4yUnMS1EPsEfCVwKbYnMXU8moVGO0r4sUzoX2b
+    wyJA==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdBqPeOuh2kneQdYGqA2E4P8JkCzsEGifkMD"
+X-RZG-CLASS-ID: mo00
+Received: from [IPV6:2a00:6020:1cff:5b00:6774:46a:3797:c828]
+    by smtp.strato.de (RZmta 47.46.0 AUTH)
+    with ESMTPSA id D7afdcy5KDiHF2F
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Mon, 20 Jun 2022 15:44:17 +0200 (CEST)
+Message-ID: <04920243-e585-edf6-a849-cfa5a2ff6ba1@hartkopp.net>
+Date:   Mon, 20 Jun 2022 15:44:08 +0200
 MIME-Version: 1.0
-References: <20220619204949.50d9154d@thinkpad> <87r13kwawb.fsf@jogness.linutronix.de>
- <20220620112936.48fcb2a4@thinkpad> <YrBdjVwBOVgLfHyb@alley>
-In-Reply-To: <YrBdjVwBOVgLfHyb@alley>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 20 Jun 2022 08:48:29 -0500
-X-Gmail-Original-Message-ID: <CAHk-=wgdquXVVE37CZooVK4X+YdSa7XoGtjr71CEYh8UsdKUow@mail.gmail.com>
-Message-ID: <CAHk-=wgdquXVVE37CZooVK4X+YdSa7XoGtjr71CEYh8UsdKUow@mail.gmail.com>
-Subject: Re: Boot stall regression from "printk for 5.19" merge
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     =?UTF-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>,
-        John Ogness <john.ogness@linutronix.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Jan Kara <jack@suse.cz>, Peter Zijlstra <peterz@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 5.18 081/141] net: remove noblock parameter from
+ skb_recv_datagram()
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+References: <20220620124729.509745706@linuxfoundation.org>
+ <20220620124731.932460774@linuxfoundation.org>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+In-Reply-To: <20220620124731.932460774@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 20, 2022 at 6:44 AM Petr Mladek <pmladek@suse.com> wrote:
->
-> Both early console and proper console driver has its own kthread.
->
-> >    1.166486] f0512000.serial: ttyS0 at MMIO 0xf0512000 (irq = 22, base_baud = 12500000) is a 16550A
->
-> The line is malformed. I wonder if both early console and proper
-> console used the same port in parallel.
+Hello Greg,
 
-Honestly, I get the feeling that we need to just revert the whole
-"console from thread" thing.
+as already answered to Sascha:
 
-Because:
+---
 
-> So, it looks like that con->write() code is not correctly serialized
-> between the early and normal console.
-> [ ... ]
-> I am going to check the driver...
+Hello Sasha,
 
-We really cannot be in the situation that some random driver that used
-to work no longer does, and causes oopses and/or memory corruption
-just because it's now entered differently from how it traditionally
-has been.
+this patch is some kind of improvement/simplification to reduce and 
+clean up the number of variables passed through skb_recv_datagram() call.
 
-The traditional console write code has always been very careful to get
-exclusive access, and it sounds like that is just plain broken now.
+There is no functional change and therefore no need to backport this 
+patch IMO.
 
-So I don't think this is a "driver is broken". Even if you find a fix
-for it that makes that particular configuration happy, it sounds like
-there is a much more fundamental issue at hand: the new printk code
-just doesn't work well, and does things that are against the way
-console printing has always worked in the past.
+The 'Reported-by:' tag just came from the kernel test robot when posting 
+the original patch and getting direct feedback on some missing calling 
+sites.
 
-I realize that people have wanted to do printing from proper thread
-context for ages and ages.
+Best regards,
+Oliver
 
-But maybe people should also just admit that "I wanted this" was not
-"this was actually a good idea".
-
-                  Linus
+On 6/20/22 14:50, Greg Kroah-Hartman wrote:
+> From: Oliver Hartkopp <socketcan@hartkopp.net>
+> 
+> [ Upstream commit f4b41f062c424209e3939a81e6da022e049a45f2 ]
+> 
+> skb_recv_datagram() has two parameters 'flags' and 'noblock' that are
+> merged inside skb_recv_datagram() by 'flags | (noblock ? MSG_DONTWAIT : 0)'
+> 
+> As 'flags' may contain MSG_DONTWAIT as value most callers split the 'flags'
+> into 'flags' and 'noblock' with finally obsolete bit operations like this:
+> 
+> skb_recv_datagram(sk, flags & ~MSG_DONTWAIT, flags & MSG_DONTWAIT, &rc);
+> 
+> And this is not even done consistently with the 'flags' parameter.
+> 
+> This patch removes the obsolete and costly splitting into two parameters
+> and only performs bit operations when really needed on the caller side.
+> 
+> One missing conversion thankfully reported by kernel test robot. I missed
+> to enable kunit tests to build the mctp code.
+> 
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
+> Signed-off-by: David S. Miller <davem@davemloft.net>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> ---
+>   drivers/isdn/mISDN/socket.c    | 2 +-
+>   drivers/net/ppp/pppoe.c        | 3 +--
+>   include/linux/skbuff.h         | 3 +--
+>   net/appletalk/ddp.c            | 3 +--
+>   net/atm/common.c               | 2 +-
+>   net/ax25/af_ax25.c             | 3 +--
+>   net/bluetooth/af_bluetooth.c   | 3 +--
+>   net/bluetooth/hci_sock.c       | 3 +--
+>   net/caif/caif_socket.c         | 2 +-
+>   net/can/bcm.c                  | 5 +----
+>   net/can/isotp.c                | 4 +---
+>   net/can/j1939/socket.c         | 2 +-
+>   net/can/raw.c                  | 6 +-----
+>   net/core/datagram.c            | 5 ++---
+>   net/ieee802154/socket.c        | 6 ++++--
+>   net/ipv4/ping.c                | 3 ++-
+>   net/ipv4/raw.c                 | 3 ++-
+>   net/ipv6/raw.c                 | 3 ++-
+>   net/iucv/af_iucv.c             | 3 +--
+>   net/key/af_key.c               | 2 +-
+>   net/l2tp/l2tp_ip.c             | 3 ++-
+>   net/l2tp/l2tp_ip6.c            | 3 ++-
+>   net/l2tp/l2tp_ppp.c            | 3 +--
+>   net/mctp/af_mctp.c             | 2 +-
+>   net/mctp/test/route-test.c     | 8 ++++----
+>   net/netlink/af_netlink.c       | 3 +--
+>   net/netrom/af_netrom.c         | 3 ++-
+>   net/nfc/llcp_sock.c            | 3 +--
+>   net/nfc/rawsock.c              | 3 +--
+>   net/packet/af_packet.c         | 2 +-
+>   net/phonet/datagram.c          | 3 ++-
+>   net/phonet/pep.c               | 6 ++++--
+>   net/qrtr/af_qrtr.c             | 3 +--
+>   net/rose/af_rose.c             | 3 ++-
+>   net/unix/af_unix.c             | 5 +++--
+>   net/vmw_vsock/vmci_transport.c | 5 +----
+>   net/x25/af_x25.c               | 3 +--
+>   37 files changed, 57 insertions(+), 70 deletions(-)
+> 
+> diff --git a/drivers/isdn/mISDN/socket.c b/drivers/isdn/mISDN/socket.c
+> index a6606736d8c5..2776ca5fc33f 100644
+> --- a/drivers/isdn/mISDN/socket.c
+> +++ b/drivers/isdn/mISDN/socket.c
+> @@ -121,7 +121,7 @@ mISDN_sock_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+>   	if (sk->sk_state == MISDN_CLOSED)
+>   		return 0;
+>   
+> -	skb = skb_recv_datagram(sk, flags, flags & MSG_DONTWAIT, &err);
+> +	skb = skb_recv_datagram(sk, flags, &err);
+>   	if (!skb)
+>   		return err;
+>   
+> diff --git a/drivers/net/ppp/pppoe.c b/drivers/net/ppp/pppoe.c
+> index e172743948ed..ce2cbb5903d7 100644
+> --- a/drivers/net/ppp/pppoe.c
+> +++ b/drivers/net/ppp/pppoe.c
+> @@ -1012,8 +1012,7 @@ static int pppoe_recvmsg(struct socket *sock, struct msghdr *m,
+>   		goto end;
+>   	}
+>   
+> -	skb = skb_recv_datagram(sk, flags & ~MSG_DONTWAIT,
+> -				flags & MSG_DONTWAIT, &error);
+> +	skb = skb_recv_datagram(sk, flags, &error);
+>   	if (error < 0)
+>   		goto end;
+>   
+> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> index 3a30cae8b0a5..2394441fa3dd 100644
+> --- a/include/linux/skbuff.h
+> +++ b/include/linux/skbuff.h
+> @@ -3836,8 +3836,7 @@ struct sk_buff *__skb_try_recv_datagram(struct sock *sk,
+>   struct sk_buff *__skb_recv_datagram(struct sock *sk,
+>   				    struct sk_buff_head *sk_queue,
+>   				    unsigned int flags, int *off, int *err);
+> -struct sk_buff *skb_recv_datagram(struct sock *sk, unsigned flags, int noblock,
+> -				  int *err);
+> +struct sk_buff *skb_recv_datagram(struct sock *sk, unsigned int flags, int *err);
+>   __poll_t datagram_poll(struct file *file, struct socket *sock,
+>   			   struct poll_table_struct *wait);
+>   int skb_copy_datagram_iter(const struct sk_buff *from, int offset,
+> diff --git a/net/appletalk/ddp.c b/net/appletalk/ddp.c
+> index bf5736c1d458..a06f4d4a6f47 100644
+> --- a/net/appletalk/ddp.c
+> +++ b/net/appletalk/ddp.c
+> @@ -1753,8 +1753,7 @@ static int atalk_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+>   	int err = 0;
+>   	struct sk_buff *skb;
+>   
+> -	skb = skb_recv_datagram(sk, flags & ~MSG_DONTWAIT,
+> -						flags & MSG_DONTWAIT, &err);
+> +	skb = skb_recv_datagram(sk, flags, &err);
+>   	lock_sock(sk);
+>   
+>   	if (!skb)
+> diff --git a/net/atm/common.c b/net/atm/common.c
+> index 1cfa9bf1d187..d0c8ab7ff8f6 100644
+> --- a/net/atm/common.c
+> +++ b/net/atm/common.c
+> @@ -540,7 +540,7 @@ int vcc_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+>   	    !test_bit(ATM_VF_READY, &vcc->flags))
+>   		return 0;
+>   
+> -	skb = skb_recv_datagram(sk, flags, flags & MSG_DONTWAIT, &error);
+> +	skb = skb_recv_datagram(sk, flags, &error);
+>   	if (!skb)
+>   		return error;
+>   
+> diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
+> index 289f355e1853..95393bb2760b 100644
+> --- a/net/ax25/af_ax25.c
+> +++ b/net/ax25/af_ax25.c
+> @@ -1676,8 +1676,7 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+>   	}
+>   
+>   	/* Now we can treat all alike */
+> -	skb = skb_recv_datagram(sk, flags & ~MSG_DONTWAIT,
+> -				flags & MSG_DONTWAIT, &err);
+> +	skb = skb_recv_datagram(sk, flags, &err);
+>   	if (skb == NULL)
+>   		goto out;
+>   
+> diff --git a/net/bluetooth/af_bluetooth.c b/net/bluetooth/af_bluetooth.c
+> index a0cb2e3da8d4..62705734343b 100644
+> --- a/net/bluetooth/af_bluetooth.c
+> +++ b/net/bluetooth/af_bluetooth.c
+> @@ -251,7 +251,6 @@ EXPORT_SYMBOL(bt_accept_dequeue);
+>   int bt_sock_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+>   		    int flags)
+>   {
+> -	int noblock = flags & MSG_DONTWAIT;
+>   	struct sock *sk = sock->sk;
+>   	struct sk_buff *skb;
+>   	size_t copied;
+> @@ -263,7 +262,7 @@ int bt_sock_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+>   	if (flags & MSG_OOB)
+>   		return -EOPNOTSUPP;
+>   
+> -	skb = skb_recv_datagram(sk, flags, noblock, &err);
+> +	skb = skb_recv_datagram(sk, flags, &err);
+>   	if (!skb) {
+>   		if (sk->sk_shutdown & RCV_SHUTDOWN)
+>   			return 0;
+> diff --git a/net/bluetooth/hci_sock.c b/net/bluetooth/hci_sock.c
+> index 33b3c0ffc339..189e3115c8c6 100644
+> --- a/net/bluetooth/hci_sock.c
+> +++ b/net/bluetooth/hci_sock.c
+> @@ -1453,7 +1453,6 @@ static void hci_sock_cmsg(struct sock *sk, struct msghdr *msg,
+>   static int hci_sock_recvmsg(struct socket *sock, struct msghdr *msg,
+>   			    size_t len, int flags)
+>   {
+> -	int noblock = flags & MSG_DONTWAIT;
+>   	struct sock *sk = sock->sk;
+>   	struct sk_buff *skb;
+>   	int copied, err;
+> @@ -1470,7 +1469,7 @@ static int hci_sock_recvmsg(struct socket *sock, struct msghdr *msg,
+>   	if (sk->sk_state == BT_CLOSED)
+>   		return 0;
+>   
+> -	skb = skb_recv_datagram(sk, flags, noblock, &err);
+> +	skb = skb_recv_datagram(sk, flags, &err);
+>   	if (!skb)
+>   		return err;
+>   
+> diff --git a/net/caif/caif_socket.c b/net/caif/caif_socket.c
+> index 2b8892d502f7..251e666ba9a2 100644
+> --- a/net/caif/caif_socket.c
+> +++ b/net/caif/caif_socket.c
+> @@ -282,7 +282,7 @@ static int caif_seqpkt_recvmsg(struct socket *sock, struct msghdr *m,
+>   	if (flags & MSG_OOB)
+>   		goto read_error;
+>   
+> -	skb = skb_recv_datagram(sk, flags, 0 , &ret);
+> +	skb = skb_recv_datagram(sk, flags, &ret);
+>   	if (!skb)
+>   		goto read_error;
+>   	copylen = skb->len;
+> diff --git a/net/can/bcm.c b/net/can/bcm.c
+> index 95d209b52e6a..64c07e650bb4 100644
+> --- a/net/can/bcm.c
+> +++ b/net/can/bcm.c
+> @@ -1632,12 +1632,9 @@ static int bcm_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+>   	struct sock *sk = sock->sk;
+>   	struct sk_buff *skb;
+>   	int error = 0;
+> -	int noblock;
+>   	int err;
+>   
+> -	noblock =  flags & MSG_DONTWAIT;
+> -	flags   &= ~MSG_DONTWAIT;
+> -	skb = skb_recv_datagram(sk, flags, noblock, &error);
+> +	skb = skb_recv_datagram(sk, flags, &error);
+>   	if (!skb)
+>   		return error;
+>   
+> diff --git a/net/can/isotp.c b/net/can/isotp.c
+> index 1e7c6a460ef9..35a1ae61744c 100644
+> --- a/net/can/isotp.c
+> +++ b/net/can/isotp.c
+> @@ -1055,7 +1055,6 @@ static int isotp_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+>   	struct sock *sk = sock->sk;
+>   	struct sk_buff *skb;
+>   	struct isotp_sock *so = isotp_sk(sk);
+> -	int noblock = flags & MSG_DONTWAIT;
+>   	int ret = 0;
+>   
+>   	if (flags & ~(MSG_DONTWAIT | MSG_TRUNC | MSG_PEEK))
+> @@ -1064,8 +1063,7 @@ static int isotp_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+>   	if (!so->bound)
+>   		return -EADDRNOTAVAIL;
+>   
+> -	flags &= ~MSG_DONTWAIT;
+> -	skb = skb_recv_datagram(sk, flags, noblock, &ret);
+> +	skb = skb_recv_datagram(sk, flags, &ret);
+>   	if (!skb)
+>   		return ret;
+>   
+> diff --git a/net/can/j1939/socket.c b/net/can/j1939/socket.c
+> index 6dff4510687a..0bb4fd3f6264 100644
+> --- a/net/can/j1939/socket.c
+> +++ b/net/can/j1939/socket.c
+> @@ -802,7 +802,7 @@ static int j1939_sk_recvmsg(struct socket *sock, struct msghdr *msg,
+>   		return sock_recv_errqueue(sock->sk, msg, size, SOL_CAN_J1939,
+>   					  SCM_J1939_ERRQUEUE);
+>   
+> -	skb = skb_recv_datagram(sk, flags, 0, &ret);
+> +	skb = skb_recv_datagram(sk, flags, &ret);
+>   	if (!skb)
+>   		return ret;
+>   
+> diff --git a/net/can/raw.c b/net/can/raw.c
+> index 7105fa4824e4..0cf728dcff36 100644
+> --- a/net/can/raw.c
+> +++ b/net/can/raw.c
+> @@ -846,16 +846,12 @@ static int raw_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+>   	struct sock *sk = sock->sk;
+>   	struct sk_buff *skb;
+>   	int err = 0;
+> -	int noblock;
+> -
+> -	noblock = flags & MSG_DONTWAIT;
+> -	flags &= ~MSG_DONTWAIT;
+>   
+>   	if (flags & MSG_ERRQUEUE)
+>   		return sock_recv_errqueue(sk, msg, size,
+>   					  SOL_CAN_RAW, SCM_CAN_RAW_ERRQUEUE);
+>   
+> -	skb = skb_recv_datagram(sk, flags, noblock, &err);
+> +	skb = skb_recv_datagram(sk, flags, &err);
+>   	if (!skb)
+>   		return err;
+>   
+> diff --git a/net/core/datagram.c b/net/core/datagram.c
+> index ee290776c661..70126d15ca6e 100644
+> --- a/net/core/datagram.c
+> +++ b/net/core/datagram.c
+> @@ -310,12 +310,11 @@ struct sk_buff *__skb_recv_datagram(struct sock *sk,
+>   EXPORT_SYMBOL(__skb_recv_datagram);
+>   
+>   struct sk_buff *skb_recv_datagram(struct sock *sk, unsigned int flags,
+> -				  int noblock, int *err)
+> +				  int *err)
+>   {
+>   	int off = 0;
+>   
+> -	return __skb_recv_datagram(sk, &sk->sk_receive_queue,
+> -				   flags | (noblock ? MSG_DONTWAIT : 0),
+> +	return __skb_recv_datagram(sk, &sk->sk_receive_queue, flags,
+>   				   &off, err);
+>   }
+>   EXPORT_SYMBOL(skb_recv_datagram);
+> diff --git a/net/ieee802154/socket.c b/net/ieee802154/socket.c
+> index 3b2366a88c3c..a725dd9bbda8 100644
+> --- a/net/ieee802154/socket.c
+> +++ b/net/ieee802154/socket.c
+> @@ -314,7 +314,8 @@ static int raw_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+>   	int err = -EOPNOTSUPP;
+>   	struct sk_buff *skb;
+>   
+> -	skb = skb_recv_datagram(sk, flags, noblock, &err);
+> +	flags |= (noblock ? MSG_DONTWAIT : 0);
+> +	skb = skb_recv_datagram(sk, flags, &err);
+>   	if (!skb)
+>   		goto out;
+>   
+> @@ -703,7 +704,8 @@ static int dgram_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+>   	struct dgram_sock *ro = dgram_sk(sk);
+>   	DECLARE_SOCKADDR(struct sockaddr_ieee802154 *, saddr, msg->msg_name);
+>   
+> -	skb = skb_recv_datagram(sk, flags, noblock, &err);
+> +	flags |= (noblock ? MSG_DONTWAIT : 0);
+> +	skb = skb_recv_datagram(sk, flags, &err);
+>   	if (!skb)
+>   		goto out;
+>   
+> diff --git a/net/ipv4/ping.c b/net/ipv4/ping.c
+> index aa9a11b20d18..4e5ceca7ff7f 100644
+> --- a/net/ipv4/ping.c
+> +++ b/net/ipv4/ping.c
+> @@ -871,7 +871,8 @@ int ping_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int noblock,
+>   	if (flags & MSG_ERRQUEUE)
+>   		return inet_recv_error(sk, msg, len, addr_len);
+>   
+> -	skb = skb_recv_datagram(sk, flags, noblock, &err);
+> +	flags |= (noblock ? MSG_DONTWAIT : 0);
+> +	skb = skb_recv_datagram(sk, flags, &err);
+>   	if (!skb)
+>   		goto out;
+>   
+> diff --git a/net/ipv4/raw.c b/net/ipv4/raw.c
+> index 9f97b9cbf7b3..c9dd9603f2e7 100644
+> --- a/net/ipv4/raw.c
+> +++ b/net/ipv4/raw.c
+> @@ -769,7 +769,8 @@ static int raw_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+>   		goto out;
+>   	}
+>   
+> -	skb = skb_recv_datagram(sk, flags, noblock, &err);
+> +	flags |= (noblock ? MSG_DONTWAIT : 0);
+> +	skb = skb_recv_datagram(sk, flags, &err);
+>   	if (!skb)
+>   		goto out;
+>   
+> diff --git a/net/ipv6/raw.c b/net/ipv6/raw.c
+> index c51d5ce3711c..8bb41f3b246a 100644
+> --- a/net/ipv6/raw.c
+> +++ b/net/ipv6/raw.c
+> @@ -477,7 +477,8 @@ static int rawv6_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+>   	if (np->rxpmtu && np->rxopt.bits.rxpmtu)
+>   		return ipv6_recv_rxpmtu(sk, msg, len, addr_len);
+>   
+> -	skb = skb_recv_datagram(sk, flags, noblock, &err);
+> +	flags |= (noblock ? MSG_DONTWAIT : 0);
+> +	skb = skb_recv_datagram(sk, flags, &err);
+>   	if (!skb)
+>   		goto out;
+>   
+> diff --git a/net/iucv/af_iucv.c b/net/iucv/af_iucv.c
+> index a1760add5bf1..a0385ddbffcf 100644
+> --- a/net/iucv/af_iucv.c
+> +++ b/net/iucv/af_iucv.c
+> @@ -1223,7 +1223,6 @@ static void iucv_process_message_q(struct sock *sk)
+>   static int iucv_sock_recvmsg(struct socket *sock, struct msghdr *msg,
+>   			     size_t len, int flags)
+>   {
+> -	int noblock = flags & MSG_DONTWAIT;
+>   	struct sock *sk = sock->sk;
+>   	struct iucv_sock *iucv = iucv_sk(sk);
+>   	unsigned int copied, rlen;
+> @@ -1242,7 +1241,7 @@ static int iucv_sock_recvmsg(struct socket *sock, struct msghdr *msg,
+>   
+>   	/* receive/dequeue next skb:
+>   	 * the function understands MSG_PEEK and, thus, does not dequeue skb */
+> -	skb = skb_recv_datagram(sk, flags, noblock, &err);
+> +	skb = skb_recv_datagram(sk, flags, &err);
+>   	if (!skb) {
+>   		if (sk->sk_shutdown & RCV_SHUTDOWN)
+>   			return 0;
+> diff --git a/net/key/af_key.c b/net/key/af_key.c
+> index d93bde657359..c249b84efbb2 100644
+> --- a/net/key/af_key.c
+> +++ b/net/key/af_key.c
+> @@ -3700,7 +3700,7 @@ static int pfkey_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+>   	if (flags & ~(MSG_PEEK|MSG_DONTWAIT|MSG_TRUNC|MSG_CMSG_COMPAT))
+>   		goto out;
+>   
+> -	skb = skb_recv_datagram(sk, flags, flags & MSG_DONTWAIT, &err);
+> +	skb = skb_recv_datagram(sk, flags, &err);
+>   	if (skb == NULL)
+>   		goto out;
+>   
+> diff --git a/net/l2tp/l2tp_ip.c b/net/l2tp/l2tp_ip.c
+> index b3edafa5fba4..c6a5cc2d88e7 100644
+> --- a/net/l2tp/l2tp_ip.c
+> +++ b/net/l2tp/l2tp_ip.c
+> @@ -526,7 +526,8 @@ static int l2tp_ip_recvmsg(struct sock *sk, struct msghdr *msg,
+>   	if (flags & MSG_OOB)
+>   		goto out;
+>   
+> -	skb = skb_recv_datagram(sk, flags, noblock, &err);
+> +	flags |= (noblock ? MSG_DONTWAIT : 0);
+> +	skb = skb_recv_datagram(sk, flags, &err);
+>   	if (!skb)
+>   		goto out;
+>   
+> diff --git a/net/l2tp/l2tp_ip6.c b/net/l2tp/l2tp_ip6.c
+> index d54dbd01d86f..8f76e647adbb 100644
+> --- a/net/l2tp/l2tp_ip6.c
+> +++ b/net/l2tp/l2tp_ip6.c
+> @@ -672,7 +672,8 @@ static int l2tp_ip6_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+>   	if (flags & MSG_ERRQUEUE)
+>   		return ipv6_recv_error(sk, msg, len, addr_len);
+>   
+> -	skb = skb_recv_datagram(sk, flags, noblock, &err);
+> +	flags |= (noblock ? MSG_DONTWAIT : 0);
+> +	skb = skb_recv_datagram(sk, flags, &err);
+>   	if (!skb)
+>   		goto out;
+>   
+> diff --git a/net/l2tp/l2tp_ppp.c b/net/l2tp/l2tp_ppp.c
+> index bf35710127dd..8be1fdc68a0b 100644
+> --- a/net/l2tp/l2tp_ppp.c
+> +++ b/net/l2tp/l2tp_ppp.c
+> @@ -191,8 +191,7 @@ static int pppol2tp_recvmsg(struct socket *sock, struct msghdr *msg,
+>   		goto end;
+>   
+>   	err = 0;
+> -	skb = skb_recv_datagram(sk, flags & ~MSG_DONTWAIT,
+> -				flags & MSG_DONTWAIT, &err);
+> +	skb = skb_recv_datagram(sk, flags, &err);
+>   	if (!skb)
+>   		goto end;
+>   
+> diff --git a/net/mctp/af_mctp.c b/net/mctp/af_mctp.c
+> index e22b0cbb2f35..221863afc4b1 100644
+> --- a/net/mctp/af_mctp.c
+> +++ b/net/mctp/af_mctp.c
+> @@ -216,7 +216,7 @@ static int mctp_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+>   	if (flags & ~(MSG_DONTWAIT | MSG_TRUNC | MSG_PEEK))
+>   		return -EOPNOTSUPP;
+>   
+> -	skb = skb_recv_datagram(sk, flags, flags & MSG_DONTWAIT, &rc);
+> +	skb = skb_recv_datagram(sk, flags, &rc);
+>   	if (!skb)
+>   		return rc;
+>   
+> diff --git a/net/mctp/test/route-test.c b/net/mctp/test/route-test.c
+> index 61205cf40074..24df29e135ed 100644
+> --- a/net/mctp/test/route-test.c
+> +++ b/net/mctp/test/route-test.c
+> @@ -352,7 +352,7 @@ static void mctp_test_route_input_sk(struct kunit *test)
+>   	if (params->deliver) {
+>   		KUNIT_EXPECT_EQ(test, rc, 0);
+>   
+> -		skb2 = skb_recv_datagram(sock->sk, 0, 1, &rc);
+> +		skb2 = skb_recv_datagram(sock->sk, MSG_DONTWAIT, &rc);
+>   		KUNIT_EXPECT_NOT_ERR_OR_NULL(test, skb2);
+>   		KUNIT_EXPECT_EQ(test, skb->len, 1);
+>   
+> @@ -360,7 +360,7 @@ static void mctp_test_route_input_sk(struct kunit *test)
+>   
+>   	} else {
+>   		KUNIT_EXPECT_NE(test, rc, 0);
+> -		skb2 = skb_recv_datagram(sock->sk, 0, 1, &rc);
+> +		skb2 = skb_recv_datagram(sock->sk, MSG_DONTWAIT, &rc);
+>   		KUNIT_EXPECT_PTR_EQ(test, skb2, NULL);
+>   	}
+>   
+> @@ -423,7 +423,7 @@ static void mctp_test_route_input_sk_reasm(struct kunit *test)
+>   		rc = mctp_route_input(&rt->rt, skb);
+>   	}
+>   
+> -	skb2 = skb_recv_datagram(sock->sk, 0, 1, &rc);
+> +	skb2 = skb_recv_datagram(sock->sk, MSG_DONTWAIT, &rc);
+>   
+>   	if (params->rx_len) {
+>   		KUNIT_EXPECT_NOT_ERR_OR_NULL(test, skb2);
+> @@ -582,7 +582,7 @@ static void mctp_test_route_input_sk_keys(struct kunit *test)
+>   	rc = mctp_route_input(&rt->rt, skb);
+>   
+>   	/* (potentially) receive message */
+> -	skb2 = skb_recv_datagram(sock->sk, 0, 1, &rc);
+> +	skb2 = skb_recv_datagram(sock->sk, MSG_DONTWAIT, &rc);
+>   
+>   	if (params->deliver)
+>   		KUNIT_EXPECT_NOT_ERR_OR_NULL(test, skb2);
+> diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+> index 73e9c0a9c187..0cd91f813a3b 100644
+> --- a/net/netlink/af_netlink.c
+> +++ b/net/netlink/af_netlink.c
+> @@ -1931,7 +1931,6 @@ static int netlink_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+>   	struct scm_cookie scm;
+>   	struct sock *sk = sock->sk;
+>   	struct netlink_sock *nlk = nlk_sk(sk);
+> -	int noblock = flags & MSG_DONTWAIT;
+>   	size_t copied;
+>   	struct sk_buff *skb, *data_skb;
+>   	int err, ret;
+> @@ -1941,7 +1940,7 @@ static int netlink_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+>   
+>   	copied = 0;
+>   
+> -	skb = skb_recv_datagram(sk, flags, noblock, &err);
+> +	skb = skb_recv_datagram(sk, flags, &err);
+>   	if (skb == NULL)
+>   		goto out;
+>   
+> diff --git a/net/netrom/af_netrom.c b/net/netrom/af_netrom.c
+> index fa9dc2ba3941..6f7f4392cffb 100644
+> --- a/net/netrom/af_netrom.c
+> +++ b/net/netrom/af_netrom.c
+> @@ -1159,7 +1159,8 @@ static int nr_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+>   	}
+>   
+>   	/* Now we can treat all alike */
+> -	if ((skb = skb_recv_datagram(sk, flags & ~MSG_DONTWAIT, flags & MSG_DONTWAIT, &er)) == NULL) {
+> +	skb = skb_recv_datagram(sk, flags, &er);
+> +	if (!skb) {
+>   		release_sock(sk);
+>   		return er;
+>   	}
+> diff --git a/net/nfc/llcp_sock.c b/net/nfc/llcp_sock.c
+> index 4ca35791c93b..77642d18a3b4 100644
+> --- a/net/nfc/llcp_sock.c
+> +++ b/net/nfc/llcp_sock.c
+> @@ -821,7 +821,6 @@ static int llcp_sock_sendmsg(struct socket *sock, struct msghdr *msg,
+>   static int llcp_sock_recvmsg(struct socket *sock, struct msghdr *msg,
+>   			     size_t len, int flags)
+>   {
+> -	int noblock = flags & MSG_DONTWAIT;
+>   	struct sock *sk = sock->sk;
+>   	unsigned int copied, rlen;
+>   	struct sk_buff *skb, *cskb;
+> @@ -842,7 +841,7 @@ static int llcp_sock_recvmsg(struct socket *sock, struct msghdr *msg,
+>   	if (flags & (MSG_OOB))
+>   		return -EOPNOTSUPP;
+>   
+> -	skb = skb_recv_datagram(sk, flags, noblock, &err);
+> +	skb = skb_recv_datagram(sk, flags, &err);
+>   	if (!skb) {
+>   		pr_err("Recv datagram failed state %d %d %d",
+>   		       sk->sk_state, err, sock_error(sk));
+> diff --git a/net/nfc/rawsock.c b/net/nfc/rawsock.c
+> index 0ca214ab5aef..8dd569765f96 100644
+> --- a/net/nfc/rawsock.c
+> +++ b/net/nfc/rawsock.c
+> @@ -238,7 +238,6 @@ static int rawsock_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
+>   static int rawsock_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+>   			   int flags)
+>   {
+> -	int noblock = flags & MSG_DONTWAIT;
+>   	struct sock *sk = sock->sk;
+>   	struct sk_buff *skb;
+>   	int copied;
+> @@ -246,7 +245,7 @@ static int rawsock_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+>   
+>   	pr_debug("sock=%p sk=%p len=%zu flags=%d\n", sock, sk, len, flags);
+>   
+> -	skb = skb_recv_datagram(sk, flags, noblock, &rc);
+> +	skb = skb_recv_datagram(sk, flags, &rc);
+>   	if (!skb)
+>   		return rc;
+>   
+> diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+> index 002d2b9c69dd..243566129784 100644
+> --- a/net/packet/af_packet.c
+> +++ b/net/packet/af_packet.c
+> @@ -3426,7 +3426,7 @@ static int packet_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+>   	 *	but then it will block.
+>   	 */
+>   
+> -	skb = skb_recv_datagram(sk, flags, flags & MSG_DONTWAIT, &err);
+> +	skb = skb_recv_datagram(sk, flags, &err);
+>   
+>   	/*
+>   	 *	An error occurred so return it. Because skb_recv_datagram()
+> diff --git a/net/phonet/datagram.c b/net/phonet/datagram.c
+> index 393e6aa7a592..3f2e62b63dd4 100644
+> --- a/net/phonet/datagram.c
+> +++ b/net/phonet/datagram.c
+> @@ -123,7 +123,8 @@ static int pn_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+>   			MSG_CMSG_COMPAT))
+>   		goto out_nofree;
+>   
+> -	skb = skb_recv_datagram(sk, flags, noblock, &rval);
+> +	flags |= (noblock ? MSG_DONTWAIT : 0);
+> +	skb = skb_recv_datagram(sk, flags, &rval);
+>   	if (skb == NULL)
+>   		goto out_nofree;
+>   
+> diff --git a/net/phonet/pep.c b/net/phonet/pep.c
+> index 65d463ad8770..441a26706592 100644
+> --- a/net/phonet/pep.c
+> +++ b/net/phonet/pep.c
+> @@ -772,7 +772,8 @@ static struct sock *pep_sock_accept(struct sock *sk, int flags, int *errp,
+>   	u8 pipe_handle, enabled, n_sb;
+>   	u8 aligned = 0;
+>   
+> -	skb = skb_recv_datagram(sk, 0, flags & O_NONBLOCK, errp);
+> +	skb = skb_recv_datagram(sk, (flags & O_NONBLOCK) ? MSG_DONTWAIT : 0,
+> +				errp);
+>   	if (!skb)
+>   		return NULL;
+>   
+> @@ -1267,7 +1268,8 @@ static int pep_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+>   			return -EINVAL;
+>   	}
+>   
+> -	skb = skb_recv_datagram(sk, flags, noblock, &err);
+> +	flags |= (noblock ? MSG_DONTWAIT : 0);
+> +	skb = skb_recv_datagram(sk, flags, &err);
+>   	lock_sock(sk);
+>   	if (skb == NULL) {
+>   		if (err == -ENOTCONN && sk->sk_state == TCP_CLOSE_WAIT)
+> diff --git a/net/qrtr/af_qrtr.c b/net/qrtr/af_qrtr.c
+> index ec2322529727..5c2fb992803b 100644
+> --- a/net/qrtr/af_qrtr.c
+> +++ b/net/qrtr/af_qrtr.c
+> @@ -1035,8 +1035,7 @@ static int qrtr_recvmsg(struct socket *sock, struct msghdr *msg,
+>   		return -EADDRNOTAVAIL;
+>   	}
+>   
+> -	skb = skb_recv_datagram(sk, flags & ~MSG_DONTWAIT,
+> -				flags & MSG_DONTWAIT, &rc);
+> +	skb = skb_recv_datagram(sk, flags, &rc);
+>   	if (!skb) {
+>   		release_sock(sk);
+>   		return rc;
+> diff --git a/net/rose/af_rose.c b/net/rose/af_rose.c
+> index 30a1cf4c16c6..bf2d986a6bc3 100644
+> --- a/net/rose/af_rose.c
+> +++ b/net/rose/af_rose.c
+> @@ -1230,7 +1230,8 @@ static int rose_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+>   		return -ENOTCONN;
+>   
+>   	/* Now we can treat all alike */
+> -	if ((skb = skb_recv_datagram(sk, flags & ~MSG_DONTWAIT, flags & MSG_DONTWAIT, &er)) == NULL)
+> +	skb = skb_recv_datagram(sk, flags, &er);
+> +	if (!skb)
+>   		return er;
+>   
+>   	qbit = (skb->data[0] & ROSE_Q_BIT) == ROSE_Q_BIT;
+> diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+> index 4aed12e94221..6114d69b8a2d 100644
+> --- a/net/unix/af_unix.c
+> +++ b/net/unix/af_unix.c
+> @@ -1643,7 +1643,8 @@ static int unix_accept(struct socket *sock, struct socket *newsock, int flags,
+>   	 * so that no locks are necessary.
+>   	 */
+>   
+> -	skb = skb_recv_datagram(sk, 0, flags&O_NONBLOCK, &err);
+> +	skb = skb_recv_datagram(sk, (flags & O_NONBLOCK) ? MSG_DONTWAIT : 0,
+> +				&err);
+>   	if (!skb) {
+>   		/* This means receive shutdown. */
+>   		if (err == 0)
+> @@ -2500,7 +2501,7 @@ static int unix_read_sock(struct sock *sk, read_descriptor_t *desc,
+>   		int used, err;
+>   
+>   		mutex_lock(&u->iolock);
+> -		skb = skb_recv_datagram(sk, 0, 1, &err);
+> +		skb = skb_recv_datagram(sk, MSG_DONTWAIT, &err);
+>   		mutex_unlock(&u->iolock);
+>   		if (!skb)
+>   			return err;
+> diff --git a/net/vmw_vsock/vmci_transport.c b/net/vmw_vsock/vmci_transport.c
+> index b17dc9745188..b14f0ed7427b 100644
+> --- a/net/vmw_vsock/vmci_transport.c
+> +++ b/net/vmw_vsock/vmci_transport.c
+> @@ -1732,19 +1732,16 @@ static int vmci_transport_dgram_dequeue(struct vsock_sock *vsk,
+>   					int flags)
+>   {
+>   	int err;
+> -	int noblock;
+>   	struct vmci_datagram *dg;
+>   	size_t payload_len;
+>   	struct sk_buff *skb;
+>   
+> -	noblock = flags & MSG_DONTWAIT;
+> -
+>   	if (flags & MSG_OOB || flags & MSG_ERRQUEUE)
+>   		return -EOPNOTSUPP;
+>   
+>   	/* Retrieve the head sk_buff from the socket's receive queue. */
+>   	err = 0;
+> -	skb = skb_recv_datagram(&vsk->sk, flags, noblock, &err);
+> +	skb = skb_recv_datagram(&vsk->sk, flags, &err);
+>   	if (!skb)
+>   		return err;
+>   
+> diff --git a/net/x25/af_x25.c b/net/x25/af_x25.c
+> index 3a171828638b..6bc2ac8d8146 100644
+> --- a/net/x25/af_x25.c
+> +++ b/net/x25/af_x25.c
+> @@ -1315,8 +1315,7 @@ static int x25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+>   	} else {
+>   		/* Now we can treat all alike */
+>   		release_sock(sk);
+> -		skb = skb_recv_datagram(sk, flags & ~MSG_DONTWAIT,
+> -					flags & MSG_DONTWAIT, &rc);
+> +		skb = skb_recv_datagram(sk, flags, &rc);
+>   		lock_sock(sk);
+>   		if (!skb)
+>   			goto out;
