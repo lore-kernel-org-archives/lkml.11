@@ -2,156 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD26ECCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD7A8CCA481
 	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:10:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351134AbiFTOJB (ORCPT
+        id S1351065AbiFTOIv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:09:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45288 "EHLO
+        Mon, 20 Jun 2022 10:08:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353187AbiFTN5n (ORCPT
+        with ESMTP id S1353031AbiFTN5b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:57:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0E3F18E16;
-        Mon, 20 Jun 2022 06:23:29 -0700 (PDT)
+        Mon, 20 Jun 2022 09:57:31 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 632CA37AA6
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 06:23:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E23F060A52;
-        Mon, 20 Jun 2022 13:23:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1C96C341C0;
-        Mon, 20 Jun 2022 13:23:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731393;
-        bh=iDY4arXZnyHYHq65woHslZHWS2GnD5hC8l1NrQ/eu2s=;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 4CE18CE12A1
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 13:04:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC2B1C3411B;
+        Mon, 20 Jun 2022 13:04:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655730289;
+        bh=UPF8dEluSGgTwiU8y0xT2wEIG9wst3hS4/cy3U6kZbw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uNmUPUuoL4a9QRSTJ2oGCK9M+aYsbEi/cm0H/SU7dK7oa8CX20Ra3+WL8IP8ZkpI4
-         vh7NJQnIhIh5qx0vMEyt5XVt4L2qJETcJ2ZmqNwWQzAwinGgtvf2kxFBTOCtsJkhTg
-         LkYksOdui/OVeJT76iZyBhY9zg3nlTa4oCpGKSjI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+        b=byW0Ldufi00UL+b+JrLQVVHcLCL1lqAmKNcTDFAOM4/IXogwL4Thgw9vOhlUTnwSn
+         NS3A02uNdPP9ya/My/Y2FxyxFTKkeeHCxrItPeUw2joPoOAsZqG4Y8qPkl5wx3WM6Q
+         B5fM6QTG/H/j30C4lv4x4uo5DRZ5ChtSDpum56Y9AsIWoHiREeY9DPTrekvmx3xL5X
+         WQmlmZr2wkoN6oP4JHRIn2HETsaihuUCGyx3ywXgceMTGOgge2EjNcx/2a8uvElTMW
+         +DurGYyRopNLxdLEurfPRo/YwrauSH/ezZi33eDwI+Z67D0YbGFyY/c5X0Gh/kA/fP
+         qUakJKel2jiZg==
+From:   Oded Gabbay <ogabbay@kernel.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kees Cook <keescook@chromium.org>,
-        David Howells <dhowells@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 203/240] netfs: gcc-12: temporarily disable -Wattribute-warning for now
-Date:   Mon, 20 Jun 2022 14:51:44 +0200
-Message-Id: <20220620124744.862192281@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
-References: <20220620124737.799371052@linuxfoundation.org>
-User-Agent: quilt/0.66
+Cc:     Ofir Bitton <obitton@habana.ai>
+Subject: [PATCH 09/17] habanalabs/gaudi: fix shift out of bounds
+Date:   Mon, 20 Jun 2022 16:04:24 +0300
+Message-Id: <20220620130432.1180451-9-ogabbay@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220620130432.1180451-1-ogabbay@kernel.org>
+References: <20220620130432.1180451-1-ogabbay@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Ofir Bitton <obitton@habana.ai>
 
-[ Upstream commit 507160f46c55913955d272ebf559d63809a8e560 ]
+When validating NIC queues, queue offset calculation must be
+performed only for NIC queues.
 
-This is a pure band-aid so that I can continue merging stuff from people
-while some of the gcc-12 fallout gets sorted out.
-
-In particular, gcc-12 is very unhappy about the kinds of pointer
-arithmetic tricks that netfs does, and that makes the fortify checks
-trigger in afs and ceph:
-
-  In function ‘fortify_memset_chk’,
-      inlined from ‘netfs_i_context_init’ at include/linux/netfs.h:327:2,
-      inlined from ‘afs_set_netfs_context’ at fs/afs/inode.c:61:2,
-      inlined from ‘afs_root_iget’ at fs/afs/inode.c:543:2:
-  include/linux/fortify-string.h:258:25: warning: call to ‘__write_overflow_field’ declared with attribute warning: detected write beyond size of field (1st parameter); maybe use struct_group()? [-Wattribute-warning]
-    258 |                         __write_overflow_field(p_size_field, size);
-        |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-and the reason is that netfs_i_context_init() is passed a 'struct inode'
-pointer, and then it does
-
-        struct netfs_i_context *ctx = netfs_i_context(inode);
-
-        memset(ctx, 0, sizeof(*ctx));
-
-where that netfs_i_context() function just does pointer arithmetic on
-the inode pointer, knowing that the netfs_i_context is laid out
-immediately after it in memory.
-
-This is all truly disgusting, since the whole "netfs_i_context is laid
-out immediately after it in memory" is not actually remotely true in
-general, but is just made to be that way for afs and ceph.
-
-See for example fs/cifs/cifsglob.h:
-
-  struct cifsInodeInfo {
-        struct {
-                /* These must be contiguous */
-                struct inode    vfs_inode;      /* the VFS's inode record */
-                struct netfs_i_context netfs_ctx; /* Netfslib context */
-        };
-	[...]
-
-and realize that this is all entirely wrong, and the pointer arithmetic
-that netfs_i_context() is doing is also very very wrong and wouldn't
-give the right answer if netfs_ctx had different alignment rules from a
-'struct inode', for example).
-
-Anyway, that's just a long-winded way to say "the gcc-12 warning is
-actually quite reasonable, and our code happens to work but is pretty
-disgusting".
-
-This is getting fixed properly, but for now I made the mistake of
-thinking "the week right after the merge window tends to be calm for me
-as people take a breather" and I did a sustem upgrade.  And I got gcc-12
-as a result, so to continue merging fixes from people and not have the
-end result drown in warnings, I am fixing all these gcc-12 issues I hit.
-
-Including with these kinds of temporary fixes.
-
-Cc: Kees Cook <keescook@chromium.org>
-Cc: David Howells <dhowells@redhat.com>
-Link: https://lore.kernel.org/all/AEEBCF5D-8402-441D-940B-105AA718C71F@chromium.org/
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Ofir Bitton <obitton@habana.ai>
+Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
+Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
 ---
- fs/afs/inode.c  | 3 +++
- fs/ceph/inode.c | 3 +++
- 2 files changed, 6 insertions(+)
+ drivers/misc/habanalabs/gaudi/gaudi.c | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
 
-diff --git a/fs/afs/inode.c b/fs/afs/inode.c
-index 90eac3ec01cb..243ba4e0ab1f 100644
---- a/fs/afs/inode.c
-+++ b/fs/afs/inode.c
-@@ -25,6 +25,9 @@
- #include "internal.h"
- #include "afs_fs.h"
+diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
+index 8b9ff7fa51ea..31e702846f7a 100644
+--- a/drivers/misc/habanalabs/gaudi/gaudi.c
++++ b/drivers/misc/habanalabs/gaudi/gaudi.c
+@@ -5692,15 +5692,17 @@ static int gaudi_parse_cb_no_ext_queue(struct hl_device *hdev,
+ {
+ 	struct asic_fixed_properties *asic_prop = &hdev->asic_prop;
+ 	struct gaudi_device *gaudi = hdev->asic_specific;
+-	u32 nic_mask_q_id = 1 << (HW_CAP_NIC_SHIFT +
+-		((parser->hw_queue_id - GAUDI_QUEUE_ID_NIC_0_0) >> 2));
++	u32 nic_queue_offset, nic_mask_q_id;
  
-+// Temporary: netfs does disgusting things with inode pointers
-+#pragma GCC diagnostic ignored "-Wattribute-warning"
+ 	if ((parser->hw_queue_id >= GAUDI_QUEUE_ID_NIC_0_0) &&
+-			(parser->hw_queue_id <= GAUDI_QUEUE_ID_NIC_9_3) &&
+-			(!(gaudi->hw_cap_initialized & nic_mask_q_id))) {
+-		dev_err(hdev->dev, "h/w queue %d is disabled\n",
+-				parser->hw_queue_id);
+-		return -EINVAL;
++			(parser->hw_queue_id <= GAUDI_QUEUE_ID_NIC_9_3)) {
++		nic_queue_offset = parser->hw_queue_id - GAUDI_QUEUE_ID_NIC_0_0;
++		nic_mask_q_id = 1 << (HW_CAP_NIC_SHIFT + (nic_queue_offset >> 2));
 +
- static const struct inode_operations afs_symlink_inode_operations = {
- 	.get_link	= page_get_link,
- };
-diff --git a/fs/ceph/inode.c b/fs/ceph/inode.c
-index af85a7237604..d7e0f7cd3768 100644
---- a/fs/ceph/inode.c
-+++ b/fs/ceph/inode.c
-@@ -20,6 +20,9 @@
- #include "cache.h"
- #include <linux/ceph/decode.h>
++		if (!(gaudi->hw_cap_initialized & nic_mask_q_id)) {
++			dev_err(hdev->dev, "h/w queue %d is disabled\n", parser->hw_queue_id);
++			return -EINVAL;
++		}
+ 	}
  
-+// Temporary: netfs does disgusting things with inode pointers
-+#pragma GCC diagnostic ignored "-Wattribute-warning"
-+
- /*
-  * Ceph inode operations
-  *
+ 	/* For internal queue jobs just check if CB address is valid */
 -- 
-2.35.1
-
-
+2.25.1
 
