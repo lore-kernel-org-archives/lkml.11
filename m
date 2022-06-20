@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB0C8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:10:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BA10C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:10:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350711AbiFTOKk (ORCPT
+        id S1350813AbiFTOKo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:10:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44184 "EHLO
+        Mon, 20 Jun 2022 10:10:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350177AbiFTNxH (ORCPT
+        with ESMTP id S1351486AbiFTNyw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:53:07 -0400
+        Mon, 20 Jun 2022 09:54:52 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFF3D2716;
-        Mon, 20 Jun 2022 06:19:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F57B32EF3;
+        Mon, 20 Jun 2022 06:21:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C0B3A60FEF;
-        Mon, 20 Jun 2022 13:19:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B62EEC341C0;
-        Mon, 20 Jun 2022 13:19:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A656060ECD;
+        Mon, 20 Jun 2022 13:16:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B0FCC3411B;
+        Mon, 20 Jun 2022 13:16:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731175;
-        bh=a+UdIJLx/PgRhwZ8TyyJP6Ys6DBN89qAr/7PZ6fjCVg=;
+        s=korg; t=1655730966;
+        bh=CyisIf9INCjyFHjfwTjNSEOJjVael70+fsDzwWHhi9c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sWFqTxuXqGrd1Tl75xMwfyQOPmVCnQHVPqu8vHfVXFtVqklJI5eRxu0zDXARuFhKu
-         uajpLxz/kCQrGhvUBO0+dv6qJ5JiRjkkLHl5IsHMlko/XSxVsRLYdKNhy6459EGRzq
-         Zk8Gy4A1bX9R7EOC77TJiMF/+Yu0BpM40uWJcb8s=
+        b=uSB5N0nQMzVZNX7h/mdm89NLtpsXYvplLD/H2BLX3PgZ2g673WvQO31uZC7c28quj
+         PNDLu9poOXe9W++7dyEGEmNdEKX69+oEJTKtPQ/wGjG271/pJi1Mc4dDY9kkZ9uM3i
+         IU9z0vMLAj7G+Jpc1udLfCzyKSQE23qNSXT8qCEg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nicolai Stange <nstange@suse.de>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Eric Biggers <ebiggers@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 177/240] crypto: drbg - make reseeding from get_random_bytes() synchronous
-Date:   Mon, 20 Jun 2022 14:51:18 +0200
-Message-Id: <20220620124744.124256940@linuxfoundation.org>
+Subject: [PATCH 5.4 071/240] random: remove batched entropy locking
+Date:   Mon, 20 Jun 2022 14:49:32 +0200
+Message-Id: <20220620124740.504525232@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -50,230 +54,154 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolai Stange <nstange@suse.de>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 074bcd4000e0d812bc253f86fedc40f81ed59ccc upstream.
+commit 77760fd7f7ae3dfd03668204e708d1568d75447d upstream.
 
-get_random_bytes() usually hasn't full entropy available by the time DRBG
-instances are first getting seeded from it during boot. Thus, the DRBG
-implementation registers random_ready_callbacks which would in turn
-schedule some work for reseeding the DRBGs once get_random_bytes() has
-sufficient entropy available.
+Rather than use spinlocks to protect batched entropy, we can instead
+disable interrupts locally, since we're dealing with per-cpu data, and
+manage resets with a basic generation counter. At the same time, we
+can't quite do this on PREEMPT_RT, where we still want spinlocks-as-
+mutexes semantics. So we use a local_lock_t, which provides the right
+behavior for each. Because this is a per-cpu lock, that generation
+counter is still doing the necessary CPU-to-CPU communication.
 
-For reference, the relevant history around handling DRBG (re)seeding in
-the context of a not yet fully seeded get_random_bytes() is:
+This should improve performance a bit. It will also fix the linked splat
+that Jonathan received with a PROVE_RAW_LOCK_NESTING=y.
 
-  commit 16b369a91d0d ("random: Blocking API for accessing
-                        nonblocking_pool")
-  commit 4c7879907edd ("crypto: drbg - add async seeding operation")
-
-  commit 205a525c3342 ("random: Add callback API for random pool
-                        readiness")
-  commit 57225e679788 ("crypto: drbg - Use callback API for random
-                        readiness")
-  commit c2719503f5e1 ("random: Remove kernel blocking API")
-
-However, some time later, the initialization state of get_random_bytes()
-has been made queryable via rng_is_initialized() introduced with commit
-9a47249d444d ("random: Make crng state queryable"). This primitive now
-allows for streamlining the DRBG reseeding from get_random_bytes() by
-replacing that aforementioned asynchronous work scheduling from
-random_ready_callbacks with some simpler, synchronous code in
-drbg_generate() next to the related logic already present therein. Apart
-from improving overall code readability, this change will also enable DRBG
-users to rely on wait_for_random_bytes() for ensuring that the initial
-seeding has completed, if desired.
-
-The previous patches already laid the grounds by making drbg_seed() to
-record at each DRBG instance whether it was being seeded at a time when
-rng_is_initialized() still had been false as indicated by
-->seeded == DRBG_SEED_STATE_PARTIAL.
-
-All that remains to be done now is to make drbg_generate() check for this
-condition, determine whether rng_is_initialized() has flipped to true in
-the meanwhile and invoke a reseed from get_random_bytes() if so.
-
-Make this move:
-- rename the former drbg_async_seed() work handler, i.e. the one in charge
-  of reseeding a DRBG instance from get_random_bytes(), to
-  "drbg_seed_from_random()",
-- change its signature as appropriate, i.e. make it take a struct
-  drbg_state rather than a work_struct and change its return type from
-  "void" to "int" in order to allow for passing error information from
-  e.g. its __drbg_seed() invocation onwards to callers,
-- make drbg_generate() invoke this drbg_seed_from_random() once it
-  encounters a DRBG instance with ->seeded == DRBG_SEED_STATE_PARTIAL by
-  the time rng_is_initialized() has flipped to true and
-- prune everything related to the former, random_ready_callback based
-  mechanism.
-
-As drbg_seed_from_random() is now getting invoked from drbg_generate() with
-the ->drbg_mutex being held, it must not attempt to recursively grab it
-once again. Remove the corresponding mutex operations from what is now
-drbg_seed_from_random(). Furthermore, as drbg_seed_from_random() can now
-report errors directly to its caller, there's no need for it to temporarily
-switch the DRBG's ->seeded state to DRBG_SEED_STATE_UNSEEDED so that a
-failure of the subsequently invoked __drbg_seed() will get signaled to
-drbg_generate(). Don't do it then.
-
-Signed-off-by: Nicolai Stange <nstange@suse.de>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-[Jason: for stable, undid the modifications for the backport of 5acd3548.]
+Reviewed-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
+Suggested-by: Andy Lutomirski <luto@kernel.org>
+Reported-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+Tested-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+Link: https://lore.kernel.org/lkml/YfMa0QgsjCVdRAvJ@latitude/
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- crypto/drbg.c         |   61 +++++++++-----------------------------------------
- drivers/char/random.c |    2 -
- include/crypto/drbg.h |    2 -
- 3 files changed, 11 insertions(+), 54 deletions(-)
+ drivers/char/random.c |   58 +++++++++++++++++++++++---------------------------
+ 1 file changed, 27 insertions(+), 31 deletions(-)
 
---- a/crypto/drbg.c
-+++ b/crypto/drbg.c
-@@ -1086,12 +1086,10 @@ static inline int drbg_get_random_bytes(
- 	return 0;
- }
- 
--static void drbg_async_seed(struct work_struct *work)
-+static int drbg_seed_from_random(struct drbg_state *drbg)
- {
- 	struct drbg_string data;
- 	LIST_HEAD(seedlist);
--	struct drbg_state *drbg = container_of(work, struct drbg_state,
--					       seed_work);
- 	unsigned int entropylen = drbg_sec_strength(drbg->core->flags);
- 	unsigned char entropy[32];
- 	int ret;
-@@ -1102,23 +1100,15 @@ static void drbg_async_seed(struct work_
- 	drbg_string_fill(&data, entropy, entropylen);
- 	list_add_tail(&data.list, &seedlist);
- 
--	mutex_lock(&drbg->drbg_mutex);
--
- 	ret = drbg_get_random_bytes(drbg, entropy, entropylen);
- 	if (ret)
--		goto unlock;
--
--	/* Reset ->seeded so that if __drbg_seed fails the next
--	 * generate call will trigger a reseed.
--	 */
--	drbg->seeded = DRBG_SEED_STATE_UNSEEDED;
-+		goto out;
- 
--	__drbg_seed(drbg, &seedlist, true, DRBG_SEED_STATE_FULL);
--
--unlock:
--	mutex_unlock(&drbg->drbg_mutex);
-+	ret = __drbg_seed(drbg, &seedlist, true, DRBG_SEED_STATE_FULL);
- 
-+out:
- 	memzero_explicit(entropy, entropylen);
-+	return ret;
- }
- 
- /*
-@@ -1421,6 +1411,11 @@ static int drbg_generate(struct drbg_sta
- 			goto err;
- 		/* 9.3.1 step 7.4 */
- 		addtl = NULL;
-+	} else if (rng_is_initialized() &&
-+		   drbg->seeded == DRBG_SEED_STATE_PARTIAL) {
-+		len = drbg_seed_from_random(drbg);
-+		if (len)
-+			goto err;
- 	}
- 
- 	if (addtl && 0 < addtl->len)
-@@ -1513,44 +1508,15 @@ static int drbg_generate_long(struct drb
- 	return 0;
- }
- 
--static int drbg_schedule_async_seed(struct notifier_block *nb, unsigned long action, void *data)
--{
--	struct drbg_state *drbg = container_of(nb, struct drbg_state,
--					       random_ready);
--
--	schedule_work(&drbg->seed_work);
--	return 0;
--}
--
- static int drbg_prepare_hrng(struct drbg_state *drbg)
- {
--	int err;
--
- 	/* We do not need an HRNG in test mode. */
- 	if (list_empty(&drbg->test_data.list))
- 		return 0;
- 
- 	drbg->jent = crypto_alloc_rng("jitterentropy_rng", 0, 0);
- 
--	INIT_WORK(&drbg->seed_work, drbg_async_seed);
--
--	drbg->random_ready.notifier_call = drbg_schedule_async_seed;
--	err = register_random_ready_notifier(&drbg->random_ready);
--
--	switch (err) {
--	case 0:
--		break;
--
--	case -EALREADY:
--		err = 0;
--		/* fall through */
--
--	default:
--		drbg->random_ready.notifier_call = NULL;
--		return err;
--	}
--
--	return err;
-+	return 0;
- }
- 
- /*
-@@ -1644,11 +1610,6 @@ free_everything:
-  */
- static int drbg_uninstantiate(struct drbg_state *drbg)
- {
--	if (drbg->random_ready.notifier_call) {
--		unregister_random_ready_notifier(&drbg->random_ready);
--		cancel_work_sync(&drbg->seed_work);
--	}
--
- 	if (!IS_ERR_OR_NULL(drbg->jent))
- 		crypto_free_rng(drbg->jent);
- 	drbg->jent = NULL;
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -157,7 +157,6 @@ int __cold register_random_ready_notifie
- 	spin_unlock_irqrestore(&random_ready_chain_lock, flags);
- 	return ret;
- }
--EXPORT_SYMBOL(register_random_ready_notifier);
+@@ -1721,13 +1721,15 @@ struct ctl_table random_table[] = {
+ };
+ #endif	/* CONFIG_SYSCTL */
  
- /*
-  * Delete a previously registered readiness callback function.
-@@ -172,7 +171,6 @@ int __cold unregister_random_ready_notif
- 	spin_unlock_irqrestore(&random_ready_chain_lock, flags);
- 	return ret;
- }
--EXPORT_SYMBOL(unregister_random_ready_notifier);
- 
- static void __cold process_random_ready_list(void)
- {
---- a/include/crypto/drbg.h
-+++ b/include/crypto/drbg.h
-@@ -137,12 +137,10 @@ struct drbg_state {
- 	bool pr;		/* Prediction resistance enabled? */
- 	bool fips_primed;	/* Continuous test primed? */
- 	unsigned char *prev;	/* FIPS 140-2 continuous test value */
--	struct work_struct seed_work;	/* asynchronous seeding support */
- 	struct crypto_rng *jent;
- 	const struct drbg_state_ops *d_ops;
- 	const struct drbg_core *core;
- 	struct drbg_string test_data;
--	struct notifier_block random_ready;
++static atomic_t batch_generation = ATOMIC_INIT(0);
++
+ struct batched_entropy {
+ 	union {
+ 		u64 entropy_u64[CHACHA_BLOCK_SIZE / sizeof(u64)];
+ 		u32 entropy_u32[CHACHA_BLOCK_SIZE / sizeof(u32)];
+ 	};
+ 	unsigned int position;
+-	spinlock_t batch_lock;
++	int generation;
  };
  
- static inline __u8 drbg_statelen(struct drbg_state *drbg)
+ /*
+@@ -1738,9 +1740,7 @@ struct batched_entropy {
+  * wait_for_random_bytes() should be called and return 0 at least once at any
+  * point prior.
+  */
+-static DEFINE_PER_CPU(struct batched_entropy, batched_entropy_u64) = {
+-	.batch_lock = __SPIN_LOCK_UNLOCKED(batched_entropy_u64.lock),
+-};
++static DEFINE_PER_CPU(struct batched_entropy, batched_entropy_u64);
+ 
+ u64 get_random_u64(void)
+ {
+@@ -1748,67 +1748,63 @@ u64 get_random_u64(void)
+ 	unsigned long flags;
+ 	struct batched_entropy *batch;
+ 	static void *previous;
++	int next_gen;
+ 
+ 	warn_unseeded_randomness(&previous);
+ 
++	local_irq_save(flags);
+ 	batch = raw_cpu_ptr(&batched_entropy_u64);
+-	spin_lock_irqsave(&batch->batch_lock, flags);
+-	if (batch->position % ARRAY_SIZE(batch->entropy_u64) == 0) {
++
++	next_gen = atomic_read(&batch_generation);
++	if (batch->position % ARRAY_SIZE(batch->entropy_u64) == 0 ||
++	    next_gen != batch->generation) {
+ 		extract_crng((u8 *)batch->entropy_u64);
+ 		batch->position = 0;
++		batch->generation = next_gen;
+ 	}
++
+ 	ret = batch->entropy_u64[batch->position++];
+-	spin_unlock_irqrestore(&batch->batch_lock, flags);
++	local_irq_restore(flags);
+ 	return ret;
+ }
+ EXPORT_SYMBOL(get_random_u64);
+ 
+-static DEFINE_PER_CPU(struct batched_entropy, batched_entropy_u32) = {
+-	.batch_lock = __SPIN_LOCK_UNLOCKED(batched_entropy_u32.lock),
+-};
++static DEFINE_PER_CPU(struct batched_entropy, batched_entropy_u32);
++
+ u32 get_random_u32(void)
+ {
+ 	u32 ret;
+ 	unsigned long flags;
+ 	struct batched_entropy *batch;
+ 	static void *previous;
++	int next_gen;
+ 
+ 	warn_unseeded_randomness(&previous);
+ 
++	local_irq_save(flags);
+ 	batch = raw_cpu_ptr(&batched_entropy_u32);
+-	spin_lock_irqsave(&batch->batch_lock, flags);
+-	if (batch->position % ARRAY_SIZE(batch->entropy_u32) == 0) {
++
++	next_gen = atomic_read(&batch_generation);
++	if (batch->position % ARRAY_SIZE(batch->entropy_u32) == 0 ||
++	    next_gen != batch->generation) {
+ 		extract_crng((u8 *)batch->entropy_u32);
+ 		batch->position = 0;
++		batch->generation = next_gen;
+ 	}
++
+ 	ret = batch->entropy_u32[batch->position++];
+-	spin_unlock_irqrestore(&batch->batch_lock, flags);
++	local_irq_restore(flags);
+ 	return ret;
+ }
+ EXPORT_SYMBOL(get_random_u32);
+ 
+ /* It's important to invalidate all potential batched entropy that might
+  * be stored before the crng is initialized, which we can do lazily by
+- * simply resetting the counter to zero so that it's re-extracted on the
+- * next usage. */
++ * bumping the generation counter.
++ */
+ static void invalidate_batched_entropy(void)
+ {
+-	int cpu;
+-	unsigned long flags;
+-
+-	for_each_possible_cpu(cpu) {
+-		struct batched_entropy *batched_entropy;
+-
+-		batched_entropy = per_cpu_ptr(&batched_entropy_u32, cpu);
+-		spin_lock_irqsave(&batched_entropy->batch_lock, flags);
+-		batched_entropy->position = 0;
+-		spin_unlock(&batched_entropy->batch_lock);
+-
+-		batched_entropy = per_cpu_ptr(&batched_entropy_u64, cpu);
+-		spin_lock(&batched_entropy->batch_lock);
+-		batched_entropy->position = 0;
+-		spin_unlock_irqrestore(&batched_entropy->batch_lock, flags);
+-	}
++	atomic_inc(&batch_generation);
+ }
+ 
+ /**
 
 
