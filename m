@@ -2,200 +2,243 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FE1BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 23:21:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C4C8C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 23:22:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347662AbiFTXVe (ORCPT
+        id S1347682AbiFTXWr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 19:21:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37146 "EHLO
+        Mon, 20 Jun 2022 19:22:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347368AbiFTXVV (ORCPT
+        with ESMTP id S1347406AbiFTXWd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 19:21:21 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2061.outbound.protection.outlook.com [40.107.223.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B46FF29830;
-        Mon, 20 Jun 2022 16:16:18 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=To1xJBCDg0Rc8rNz+rbN4qzd6yEQYiHpW2ULBzjwRS3kNBrGp2qlG+zhLBmdYd2bd1+JCsu0UUO3EnLKJpUbVC+DE6+pzfY+aBKAdB0uEBbeEJY8As2Qrs5eMqAGWn9ruWk0mmKy0Cq3ax+sdFN+AyLCZBBiMiaabUn6sjAZyblzn3cnsdml5RKdWfERj6Jsj7RMJutY7ktrKTSSu133fXhcPi7Qnjc0Yl7nRIT8ho3Rvn2TbdTVr0d6QbXu6puwjrdbd67EhWT4X9Gs7nfNtJzBS36UKDuMhomcvJQWCOQxVplajstUOLP6cmftItg20o0OND5s87y98umYlQ9I9w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5EgfhYuxDyHCe6IiqKxVFkRy2SnJCwK4q9IjERMmJbg=;
- b=HEN5PXH7xlZxOEDMRUO1vIyAJpuwZIFOxoNIOSt416ngvewg7hNnWHdmPwbteoBAqM9uiilRW7+0SNzeLUJGWE3KbT8e9B10r8acLYEtJ5zaxTFWbniNkuM0eIRZ4MJF8nr3nhkjI8TC1oWt+g8dbzEqeU41Y6z/w91mPo5ot63GzCDx/P7Sb6x77A8lfFiqF9/KBmbiiUlZSsggcQ9QZa0TwWwsrMqNYfmgbFOoC6Vcs7hJnX+AwAFj6T98VpfCNKTiiy9o42wtZ6Lz2kbV7qeQY5uRQJ00OLyyp8EQbYomIbw42npE+xgD85F+C+LAJee3KTUuWEv40AXrmwQmHQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5EgfhYuxDyHCe6IiqKxVFkRy2SnJCwK4q9IjERMmJbg=;
- b=c3HHz8SJR2ICFe7JbpKR/mA4nNzIrtya56USuusExlBd1Hlm6Om9DG04oeddrOX5Zp+ds/81lLx/FHDmBPlQVubRooR3taN9hCQHvsWSSE8NZpzekfNAa4afVEZL5MMWOuw0YmJsXDB8KP9s9Sn0aGkUC8WWtHgjoNckthUVi0k=
-Received: from DM5PR1401CA0010.namprd14.prod.outlook.com (2603:10b6:4:4a::20)
- by DM4PR12MB5309.namprd12.prod.outlook.com (2603:10b6:5:390::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.15; Mon, 20 Jun
- 2022 23:15:54 +0000
-Received: from DM6NAM11FT025.eop-nam11.prod.protection.outlook.com
- (2603:10b6:4:4a:cafe::86) by DM5PR1401CA0010.outlook.office365.com
- (2603:10b6:4:4a::20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.14 via Frontend
- Transport; Mon, 20 Jun 2022 23:15:54 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT025.mail.protection.outlook.com (10.13.172.197) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5353.14 via Frontend Transport; Mon, 20 Jun 2022 23:15:54 +0000
-Received: from ashkalraubuntuserver.amd.com (10.180.168.240) by
- SATLEXMB04.amd.com (10.181.40.145) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Mon, 20 Jun 2022 18:15:51 -0500
-From:   Ashish Kalra <Ashish.Kalra@amd.com>
-To:     <x86@kernel.org>, <linux-kernel@vger.kernel.org>,
-        <kvm@vger.kernel.org>, <linux-coco@lists.linux.dev>,
-        <linux-mm@kvack.org>, <linux-crypto@vger.kernel.org>
-CC:     <tglx@linutronix.de>, <mingo@redhat.com>, <jroedel@suse.de>,
-        <thomas.lendacky@amd.com>, <hpa@zytor.com>, <ardb@kernel.org>,
-        <pbonzini@redhat.com>, <seanjc@google.com>, <vkuznets@redhat.com>,
-        <jmattson@google.com>, <luto@kernel.org>,
-        <dave.hansen@linux.intel.com>, <slp@redhat.com>,
-        <pgonda@google.com>, <peterz@infradead.org>,
-        <srinivas.pandruvada@linux.intel.com>, <rientjes@google.com>,
-        <dovmurik@linux.ibm.com>, <tobin@ibm.com>, <bp@alien8.de>,
-        <michael.roth@amd.com>, <vbabka@suse.cz>, <kirill@shutemov.name>,
-        <ak@linux.intel.com>, <tony.luck@intel.com>, <marcorr@google.com>,
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        <alpergun@google.com>, <dgilbert@redhat.com>, <jarkko@kernel.org>
-Subject: [PATCH Part2 v6 49/49] KVM: SVM: Sync the GHCB scratch buffer using already mapped ghcb
-Date:   Mon, 20 Jun 2022 23:15:42 +0000
-Message-ID: <65fc68fd20199994c0a61864fd826f1a461d40c2.1655761627.git.ashish.kalra@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1655761627.git.ashish.kalra@amd.com>
-References: <cover.1655761627.git.ashish.kalra@amd.com>
+        Mon, 20 Jun 2022 19:22:33 -0400
+Received: from esa3.hgst.iphmx.com (esa3.hgst.iphmx.com [216.71.153.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1171922BC6
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 16:17:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1655767049; x=1687303049;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=8Iz6YFZtbcFYcwcjopjjArKVT0IuGvxeSilsHzUbATU=;
+  b=mWDMM1sEhlWv2sJ4APLG4+AqZa3ROcVpHKCCAXWixxpfl8lvAhKGOmPM
+   uqDr99ZbXgPxuZwqc77yhkWVhH9KsmMLoQ3f/ycyBU++wwRKYXHEIcgyr
+   lJNWxLbw7JvUO96VEvUqzKqLNPHwoFhZ8CuF1/AHxageigSVhGU9aHAbq
+   hycl/ZflgRTOeNtogk3yhJWZIJHMiWlf17EyddDWYwrTRxOvjZZW9o1IQ
+   NbwdYos4Q056uV3PuAg/3SeFxWH5y+JSUNBHlDYVV4sfQ+x7uRsnrZ9II
+   SwzZ5b/HWQdZwhYGOu9pw9a54NvvRikYYTtBx0CL1hkjT3DoXr6RF3J6P
+   A==;
+X-IronPort-AV: E=Sophos;i="5.92,207,1650902400"; 
+   d="scan'208";a="208521896"
+Received: from uls-op-cesaip01.wdc.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
+  by ob1.hgst.iphmx.com with ESMTP; 21 Jun 2022 07:17:29 +0800
+IronPort-SDR: 7TSKbOgwroc+VZdpHOBpTp26VgXkxfCF17PjIxaHnGRq0aNaCmR4HNNxnvzpgQe0toGKLCdG/T
+ xK2idPjKD/eRrP5MYN6S9XsEoK01/H/v4TwC37kD6GRn5iiCx+qDyV6cOX90IXKvYGU60spjQM
+ iafnPXIUX9Q9c7ducoYqPfpEmtQ0OiMy+iemcMtZFTqUUHC6lmppQeoEvpx1t99XnYUyjL1Kh7
+ Dpu4Zs5FbHiEIKOC0JJ74d1FC13oCBW3mfSdTnH2oJQDE6jg0MZb2baiVN9G46Rm6zh7rL0i7i
+ xlOHNgRvTACo2uTPMiHkGxVd
+Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
+  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 20 Jun 2022 15:39:59 -0700
+IronPort-SDR: +IYXd6+UJQHJO99cHuL5luCC1pR6nci0oQilUIWeODq4Lym0ZtYhmaEXpuXzwis2BlpmmGlaLQ
+ l8CYUd8dPbJ/VN4JxTxNdbOhxg2EHl2VfdPJiKW+xKijoS3WHdDj0oydmE6NSfslGtsPG0qvgp
+ 1kuRtVdD1ZYGJKWyEVAXEks8tV8vkCF3pc+8Keh6AZrRxQ0l2eSk2LYcuC0vVLH0BI0Y3VcFl8
+ NSWbFaWfR3JPUI6hqd6LFb+RzXDgKePAaa5Wt3AUgqgepWd8MYSnfOyFWDgtFIG3x2GQa7FXGz
+ f0c=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 20 Jun 2022 16:17:29 -0700
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4LRlt01K80z1SVnx
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 16:17:28 -0700 (PDT)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1655767047; x=1658359048; bh=8Iz6YFZtbcFYcwcjopjjArKVT0IuGvxeSil
+        sHzUbATU=; b=UQxdQIO/DgiT8AvQoecraHX41EUJtYAtz6fgPeku15XW9M5Stm3
+        LY7Hc/LYEdpIRpDooBsIzkWFCA2tZYmcebwwwMCIzwTYfeVjWFVJ7QavztL4GxHp
+        H2KdJA/p/Qu1y+y9xjt05HheIEUjOdHrEDmIp6Plnv+acg2GR2vOOXckPsmjyGDk
+        YNaxlUEefaB6rBauRplBz4zbwmT2bypE85jX90H5sdA7lJASFEtjlPUeZb2wmJmk
+        KFzNIap5bdwTDtRhIqj9ctHa46mvrWGNEX90XkZliFW94X3nEHIdVC9noWGvp9NI
+        6mVz4a2o9C8N9hcfAiiirGYDj2/7hMhTVKg==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id fz4uBmdu3M94 for <linux-kernel@vger.kernel.org>;
+        Mon, 20 Jun 2022 16:17:27 -0700 (PDT)
+Received: from [10.225.163.87] (unknown [10.225.163.87])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4LRlss3Tsdz1Rvlc;
+        Mon, 20 Jun 2022 16:17:21 -0700 (PDT)
+Message-ID: <c272728f-f610-77df-bd9b-c9fee6b727f8@opensource.wdc.com>
+Date:   Tue, 21 Jun 2022 08:17:20 +0900
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 51880043-d745-4190-6c37-08da5312d31b
-X-MS-TrafficTypeDiagnostic: DM4PR12MB5309:EE_
-X-Microsoft-Antispam-PRVS: <DM4PR12MB5309566C144B69AEC9330F658EB09@DM4PR12MB5309.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: lgwtG3juvmHjcZoLOCYLBK6pkmaSdSt52vt0PeEHdEs49VdmslxVaLahLusOuBcU9b6/32pv3ljJ3/GRvqSnbygYqVDkVo98VkqXaneQL7EWjT1Jr06qG270e+SYPrRtmpdaF09koQbEmou3DCozaCxRzedIcwZ6Uq9hkX1rKE7+uD32z/Ovm3MXONs5JZSDoynbYsLMzS09NOJ06rxpA7hyb2POzqFKrxxiS6EITxpYM7/cL7SCSTI2EyoZFwJYUeXnGzWwRliaLYTaFGf/KBXX7CIMd3/PD5cAoQQMgZMwBPvw6kC8mA6WRYvTd78xb3B964IVw8+yPgFrTMfYyK3E46M1HNCaKoLb/sw+ujOElc5NU8Jqx5wtAWMcDKo3n5Cf2/HSzF7ul9R80sFMmJCXStFRA+DtZchjJ+MQ+orLjoNaP/fIzbfdakHzfG0+5a9YL9VgYqVk7b4Zih9Od5YJKoXydiUCfHhTD4wCdBBGvMP33qSuqkKRzygCOLUB6pzcYRBF7pdjq4tZhqsdVdZNfEq1FPa7IOvdLM20gLiWUOF9Ony3wfVang1r6UCovF6sfjRkcAEyif4u+5b/1irMbrML9X1IivMVnAB8sav16pViKJSKpCOuRUxWMvfXWi3LJR1/R9Yo7g4IlHc+qhDZuAeGFxqwG3QX3AlGYJIUXDb4HRXsrZ6g4qokqIbT/D7yRfSJkCAIF3CvBRjQFZFOxFQRTQVOAGApoCOvV2Kf431Z2XPUI9NO+hy4Kbvo3mr1DQIKBM2CC4UZdXx43w==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(136003)(346002)(39860400002)(376002)(396003)(46966006)(36840700001)(40470700004)(8676002)(81166007)(4326008)(478600001)(356005)(2906002)(110136005)(54906003)(82740400003)(83380400001)(70586007)(336012)(47076005)(426003)(70206006)(186003)(16526019)(36860700001)(2616005)(316002)(40460700003)(41300700001)(6666004)(7696005)(5660300002)(7416002)(7406005)(36756003)(8936002)(26005)(40480700001)(82310400005)(86362001)(36900700001)(2101003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jun 2022 23:15:54.1559
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 51880043-d745-4190-6c37-08da5312d31b
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT025.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5309
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 06/14] spi: dt-bindings: dw-apb-ssi: update
+ spi-{r,t}x-bus-width for dwc-ssi
+Content-Language: en-US
+To:     Conor Dooley <mail@conchuod.ie>, Conor.Dooley@microchip.com,
+        fancer.lancer@gmail.com
+Cc:     airlied@linux.ie, daniel@ffwll.ch, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, thierry.reding@gmail.com,
+        sam@ravnborg.org, Eugeniy.Paltsev@synopsys.com, vkoul@kernel.org,
+        lgirdwood@gmail.com, broonie@kernel.org, daniel.lezcano@linaro.org,
+        palmer@dabbelt.com, palmer@rivosinc.com, tglx@linutronix.de,
+        paul.walmsley@sifive.com, aou@eecs.berkeley.edu,
+        masahiroy@kernel.org, geert@linux-m68k.org, niklas.cassel@wdc.com,
+        dillon.minfei@gmail.com, jee.heng.sia@intel.com,
+        joabreu@synopsys.com, dri-devel@lists.freedesktop.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dmaengine@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-spi@vger.kernel.org, linux-riscv@lists.infradead.org
+References: <20220618123035.563070-1-mail@conchuod.ie>
+ <20220618123035.563070-7-mail@conchuod.ie>
+ <20220620205654.g7fyipwytbww5757@mobilestation>
+ <61b0fb86-078d-0262-b142-df2984ce0f97@microchip.com>
+ <9a1fcb40-9267-d8e6-b3b6-3b03fd789822@opensource.wdc.com>
+ <a2d85598-76d1-c9dc-d50d-e5aa815997cf@conchuod.ie>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <a2d85598-76d1-c9dc-d50d-e5aa815997cf@conchuod.ie>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ashish Kalra <ashish.kalra@amd.com>
+On 6/21/22 07:49, Conor Dooley wrote:
+> 
+> 
+> On 20/06/2022 23:46, Damien Le Moal wrote:
+>> On 6/21/22 06:06, Conor.Dooley@microchip.com wrote:
+>>> On 20/06/2022 21:56, Serge Semin wrote:
+>>>> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+>>>>
+>>>> On Sat, Jun 18, 2022 at 01:30:28PM +0100, Conor Dooley wrote:
+>>>>> From: Conor Dooley <conor.dooley@microchip.com>
+>>>>>
+>>>>> snps,dwc-ssi-1.01a has a single user - the Canaan k210, which uses a
+>>>>> width of 4 for spi-{r,t}x-bus-width. Update the binding to reflect
+>>>>> this.
+>>>>>
+>>>>> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+>>>>> ---
+>>>>>  .../bindings/spi/snps,dw-apb-ssi.yaml         | 48 ++++++++++++++-----
+>>>>>  1 file changed, 35 insertions(+), 13 deletions(-)
+>>>>>
+>>>>> diff --git a/Documentation/devicetree/bindings/spi/snps,dw-apb-ssi.yaml b/Documentation/devicetree/bindings/spi/snps,dw-apb-ssi.yaml
+>>>>> index e25d44c218f2..f2b9e3f062cd 100644
+>>>>> --- a/Documentation/devicetree/bindings/spi/snps,dw-apb-ssi.yaml
+>>>>> +++ b/Documentation/devicetree/bindings/spi/snps,dw-apb-ssi.yaml
+>>>>> @@ -135,19 +135,41 @@ properties:
+>>>>>        of the designware controller, and the upper limit is also subject to
+>>>>>        controller configuration.
+>>>>>
+>>>>> -patternProperties:
+>>>>> -  "^.*@[0-9a-f]+$":
+>>>>> -    type: object
+>>>>> -    properties:
+>>>>> -      reg:
+>>>>> -        minimum: 0
+>>>>> -        maximum: 3
+>>>>> -
+>>>>> -      spi-rx-bus-width:
+>>>>> -        const: 1
+>>>>> -
+>>>>> -      spi-tx-bus-width:
+>>>>> -        const: 1
+>>>>> +if:
+>>>>> +  properties:
+>>>>> +    compatible:
+>>>>> +      contains:
+>>>>> +        const: snps,dwc-ssi-1.01a
+>>>>> +
+>>>>> +then:
+>>>>> +  patternProperties:
+>>>>> +    "^.*@[0-9a-f]+$":
+>>>>> +      type: object
+>>>>> +      properties:
+>>>>> +        reg:
+>>>>> +          minimum: 0
+>>>>> +          maximum: 3
+>>>>> +
+>>>>> +        spi-rx-bus-width:
+>>>>> +          const: 4
+>>>>> +
+>>>>> +        spi-tx-bus-width:
+>>>>> +          const: 4
+>>>>> +
+>>>>> +else:
+>>>>> +  patternProperties:
+>>>>> +    "^.*@[0-9a-f]+$":
+>>>>> +      type: object
+>>>>> +      properties:
+>>>>> +        reg:
+>>>>> +          minimum: 0
+>>>>> +          maximum: 3
+>>>>> +
+>>>>> +        spi-rx-bus-width:
+>>>>> +          const: 1
+>>>>> +
+>>>>> +        spi-tx-bus-width:
+>>>>> +          const: 1
+>>>>
+>>>> You can just use a more relaxed constraint "enum: [1 2 4 8]" here
+>>>
+>>> 8 too? sure.
+>>>
+>>>> irrespective from the compatible string. The modern DW APB SSI
+>>>> controllers of v.4.* and newer also support the enhanced SPI Modes too
+>>>> (Dual, Quad and Octal). Since the IP-core version is auto-detected at
+>>>> run-time there is no way to create a DT-schema correctly constraining
+>>>> the Rx/Tx SPI bus widths. So let's keep the
+>>>> compatible-string-independent "patternProperties" here but just extend
+>>>> the set of acceptable "spi-rx-bus-width" and "spi-tx-bus-width"
+>>>> properties values.
+>>>
+>>> SGTM!
+>>>
+>>>>
+>>>> Note the DW APB SSI/AHB SSI driver currently doesn't support the
+>>>> enhanced SPI modes. So I am not sure whether the multi-lines Rx/Tx SPI
+>>>> bus indeed works for Canaan K210 AHB SSI controller. AFAICS from the
+>>>> DW APB SSI v4.01a manual the Enhanced SPI mode needs to be properly
+>>>> activated by means of the corresponding CSR. So most likely the DW AHB
+>>>> SSI controllers need some specific setups too.
+>>>
+>>> hmm, well I'll leave that up to people that have Canaan hardware!
+>>
+>> I will test this series.
+>>
+> 
+> Cool, thanks.
+> I'll try to get a respin out tomorrow w/ the memory node "unfixed".
 
-Using kvm_write_guest() to sync the GHCB scratch buffer can fail
-due to host mapping being 2M, but RMP being 4K. The page fault handling
-in do_user_addr_fault() fails to split the 2M page to handle RMP fault due
-to it being called here in a non-preemptible context. Instead use
-the already kernel mapped ghcb to sync the scratch buffer when the
-scratch buffer is contained within the GHCB.
+OK. I will test that then :)
 
-Signed-off-by: Ashish Kalra <ashish.kalra@amd.com>
----
- arch/x86/kvm/svm/sev.c | 29 +++++++++++++++++++++--------
- arch/x86/kvm/svm/svm.h |  2 ++
- 2 files changed, 23 insertions(+), 8 deletions(-)
+> Conor.
+> 
+>>> Thanks,
+>>> Conor.
+>>>
+>>>>
+>>>> -Sergey
+>>>>
+>>>>>
+>>>>>  unevaluatedProperties: false
+>>>>>
+>>>>> --
+>>>>> 2.36.1
+>>>>>
+>>>
+>>
+>>
 
-diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
-index 2c88215a111f..e1dd67e12774 100644
---- a/arch/x86/kvm/svm/sev.c
-+++ b/arch/x86/kvm/svm/sev.c
-@@ -2944,6 +2944,24 @@ static bool sev_es_sync_to_ghcb(struct vcpu_svm *svm)
- 	ghcb_set_sw_exit_info_1(ghcb, svm->sev_es.ghcb_sw_exit_info_1);
- 	ghcb_set_sw_exit_info_2(ghcb, svm->sev_es.ghcb_sw_exit_info_2);
- 
-+	/* Sync the scratch buffer area. */
-+	if (svm->sev_es.ghcb_sa_sync) {
-+		if (svm->sev_es.ghcb_sa_contained) {
-+			memcpy(ghcb->shared_buffer + svm->sev_es.ghcb_sa_offset,
-+			       svm->sev_es.ghcb_sa, svm->sev_es.ghcb_sa_len);
-+		} else {
-+			int ret;
-+
-+			ret = kvm_write_guest(svm->vcpu.kvm,
-+					      svm->sev_es.ghcb_sa_gpa,
-+					      svm->sev_es.ghcb_sa, svm->sev_es.ghcb_sa_len);
-+			if (ret)
-+				pr_warn_ratelimited("unmap_ghcb: kvm_write_guest failed while syncing scratch area, gpa: %llx, ret: %d\n",
-+						    svm->sev_es.ghcb_sa_gpa, ret);
-+		}
-+		svm->sev_es.ghcb_sa_sync = false;
-+	}
-+
- 	trace_kvm_vmgexit_exit(svm->vcpu.vcpu_id, ghcb);
- 
- 	svm_unmap_ghcb(svm, &map);
-@@ -3156,14 +3174,6 @@ void sev_es_unmap_ghcb(struct vcpu_svm *svm)
- 	if (!svm->sev_es.ghcb_in_use)
- 		return;
- 
--	 /* Sync the scratch buffer area. */
--	if (svm->sev_es.ghcb_sa_sync) {
--		kvm_write_guest(svm->vcpu.kvm,
--				svm->sev_es.ghcb_sa_gpa,
--				svm->sev_es.ghcb_sa, svm->sev_es.ghcb_sa_len);
--		svm->sev_es.ghcb_sa_sync = false;
--	}
--
- 	sev_es_sync_to_ghcb(svm);
- 
- 	svm->sev_es.ghcb_in_use = false;
-@@ -3229,6 +3239,8 @@ static int setup_vmgexit_scratch(struct vcpu_svm *svm, bool sync, u64 len)
- 			       scratch_gpa_beg, scratch_gpa_end);
- 			goto e_scratch;
- 		}
-+		svm->sev_es.ghcb_sa_contained = true;
-+		svm->sev_es.ghcb_sa_offset = scratch_gpa_beg - ghcb_scratch_beg;
- 	} else {
- 		/*
- 		 * The guest memory must be read into a kernel buffer, so
-@@ -3239,6 +3251,7 @@ static int setup_vmgexit_scratch(struct vcpu_svm *svm, bool sync, u64 len)
- 			       len, GHCB_SCRATCH_AREA_LIMIT);
- 			goto e_scratch;
- 		}
-+		svm->sev_es.ghcb_sa_contained = false;
- 	}
- 
- 	if (svm->sev_es.ghcb_sa_alloc_len < len) {
-diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
-index 7b14b5ef1f8c..2cdfc79bf2cf 100644
---- a/arch/x86/kvm/svm/svm.h
-+++ b/arch/x86/kvm/svm/svm.h
-@@ -210,6 +210,8 @@ struct vcpu_sev_es_state {
- 	u64 ghcb_sa_gpa;
- 	u32 ghcb_sa_alloc_len;
- 	bool ghcb_sa_sync;
-+	bool ghcb_sa_contained;
-+	u32 ghcb_sa_offset;
- 
- 	/*
- 	 * SEV-ES support to hold the sw_exit_info return values to be
+
 -- 
-2.25.1
-
+Damien Le Moal
+Western Digital Research
