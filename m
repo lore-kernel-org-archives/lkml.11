@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 674FCC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:50:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87D74C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:50:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243621AbiFTNuf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:50:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56076 "EHLO
+        id S1348782AbiFTNui (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:50:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241684AbiFTNsF (ORCPT
+        with ESMTP id S1348867AbiFTNsF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 20 Jun 2022 09:48:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0066B2F009;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17B302F00E;
         Mon, 20 Jun 2022 06:17:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C16C060FF3;
-        Mon, 20 Jun 2022 13:16:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8472C3411B;
-        Mon, 20 Jun 2022 13:16:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7F0E2B811A0;
+        Mon, 20 Jun 2022 13:17:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB656C3411C;
+        Mon, 20 Jun 2022 13:17:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731000;
-        bh=ZE8Oti+fu3e1FxWiLUTqce4e2vXw7qouPFIc2w4kBJs=;
+        s=korg; t=1655731058;
+        bh=YAaAnfdN5DGX6izEPZPLbxRmKyDvGykDk8xyS2lO+OE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YhzJ8YqKOePz4BQRRjVACR17Pbai0KAZdx1oPANmLe4CofpDowUX55tXs+bFA0rSY
-         qM9/Q8DFhX7N3v9gq2q7TjVeETyFKQvrq4yfCaXdLhbtnsm3xprX2e87fk5+O5wjEc
-         uXctUAZIlEI8pXx0DXHBGgtBm/Po4plidSWd9sko=
+        b=XPZPaPFRuxbHbAWO0rX8oU+xPbUXuv/HkF1CTsHJ1+iIW7Vhe36bCHLCET6jyv15l
+         s0RsmER1Q4VK41CJtJWoxC04XPnsxjMqWL8I3D29LquOCan5j4NfFS3DOn+kvbs/sR
+         egCbvS6KWIpc/L0BA8g66Iuk4eXSfTll/3TAQQ2M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Jann Horn <jannh@google.com>,
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 123/240] random: do not allow user to keep crng key around on stack
-Date:   Mon, 20 Jun 2022 14:50:24 +0200
-Message-Id: <20220620124742.577765573@linuxfoundation.org>
+Subject: [PATCH 5.4 139/240] arm: use fallback for random_get_entropy() instead of zero
+Date:   Mon, 20 Jun 2022 14:50:40 +0200
+Message-Id: <20220620124743.036424435@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -51,96 +53,34 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit aba120cc101788544aa3e2c30c8da88513892350 upstream.
+commit ff8a8f59c99f6a7c656387addc4d9f2247d75077 upstream.
 
-The fast key erasure RNG design relies on the key that's used to be used
-and then discarded. We do this, making judicious use of
-memzero_explicit().  However, reads to /dev/urandom and calls to
-getrandom() involve a copy_to_user(), and userspace can use FUSE or
-userfaultfd, or make a massive call, dynamically remap memory addresses
-as it goes, and set the process priority to idle, in order to keep a
-kernel stack alive indefinitely. By probing
-/proc/sys/kernel/random/entropy_avail to learn when the crng key is
-refreshed, a malicious userspace could mount this attack every 5 minutes
-thereafter, breaking the crng's forward secrecy.
+In the event that random_get_entropy() can't access a cycle counter or
+similar, falling back to returning 0 is really not the best we can do.
+Instead, at least calling random_get_entropy_fallback() would be
+preferable, because that always needs to return _something_, even
+falling back to jiffies eventually. It's not as though
+random_get_entropy_fallback() is super high precision or guaranteed to
+be entropic, but basically anything that's not zero all the time is
+better than returning zero all the time.
 
-In order to fix this, we just overwrite the stack's key with the first
-32 bytes of the "free" fast key erasure output. If we're returning <= 32
-bytes to the user, then we can still return those bytes directly, so
-that short reads don't become slower. And for long reads, the difference
-is hopefully lost in the amortization, so it doesn't change much, with
-that amortization helping variously for medium reads.
-
-We don't need to do this for get_random_bytes() and the various
-kernel-space callers, and later, if we ever switch to always batching,
-this won't be necessary either, so there's no need to change the API of
-these functions.
-
-Cc: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Jann Horn <jannh@google.com>
-Fixes: c92e040d575a ("random: add backtracking protection to the CRNG")
-Fixes: 186873c549df ("random: use simpler fast key erasure flow on per-cpu keys")
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   35 +++++++++++++++++++++++------------
- 1 file changed, 23 insertions(+), 12 deletions(-)
+ arch/arm/include/asm/timex.h |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -532,19 +532,29 @@ static ssize_t get_random_bytes_user(voi
- 	if (!nbytes)
- 		return 0;
+--- a/arch/arm/include/asm/timex.h
++++ b/arch/arm/include/asm/timex.h
+@@ -11,5 +11,6 @@
  
--	len = min_t(size_t, 32, nbytes);
--	crng_make_state(chacha_state, output, len);
--
--	if (copy_to_user(buf, output, len))
--		return -EFAULT;
--	nbytes -= len;
--	buf += len;
--	ret += len;
-+	/*
-+	 * Immediately overwrite the ChaCha key at index 4 with random
-+	 * bytes, in case userspace causes copy_to_user() below to sleep
-+	 * forever, so that we still retain forward secrecy in that case.
-+	 */
-+	crng_make_state(chacha_state, (u8 *)&chacha_state[4], CHACHA_KEY_SIZE);
-+	/*
-+	 * However, if we're doing a read of len <= 32, we don't need to
-+	 * use chacha_state after, so we can simply return those bytes to
-+	 * the user directly.
-+	 */
-+	if (nbytes <= CHACHA_KEY_SIZE) {
-+		ret = copy_to_user(buf, &chacha_state[4], nbytes) ? -EFAULT : nbytes;
-+		goto out_zero_chacha;
-+	}
+ typedef unsigned long cycles_t;
+ #define get_cycles()	({ cycles_t c; read_current_timer(&c) ? 0 : c; })
++#define random_get_entropy() (((unsigned long)get_cycles()) ?: random_get_entropy_fallback())
  
--	while (nbytes) {
-+	do {
- 		if (large_request && need_resched()) {
--			if (signal_pending(current))
-+			if (signal_pending(current)) {
-+				if (!ret)
-+					ret = -ERESTARTSYS;
- 				break;
-+			}
- 			schedule();
- 		}
- 
-@@ -561,10 +571,11 @@ static ssize_t get_random_bytes_user(voi
- 		nbytes -= len;
- 		buf += len;
- 		ret += len;
--	}
-+	} while (nbytes);
- 
--	memzero_explicit(chacha_state, sizeof(chacha_state));
- 	memzero_explicit(output, sizeof(output));
-+out_zero_chacha:
-+	memzero_explicit(chacha_state, sizeof(chacha_state));
- 	return ret;
- }
- 
+ #endif
 
 
