@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29744CCA47C
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:04:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9743C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:04:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344675AbiFTOEO (ORCPT
+        id S1345882AbiFTOER (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:04:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47302 "EHLO
+        Mon, 20 Jun 2022 10:04:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353466AbiFTN6N (ORCPT
+        with ESMTP id S1351858AbiFTNzc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:58:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA7D838D81;
-        Mon, 20 Jun 2022 06:23:51 -0700 (PDT)
+        Mon, 20 Jun 2022 09:55:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01134344D0;
+        Mon, 20 Jun 2022 06:21:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5F245B811D3;
-        Mon, 20 Jun 2022 13:18:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4B5AC3411C;
-        Mon, 20 Jun 2022 13:18:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E9A2FB811C5;
+        Mon, 20 Jun 2022 13:21:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B212C3411B;
+        Mon, 20 Jun 2022 13:21:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731125;
-        bh=JHeNvVQv+nXpZEwiZAVU/EY4i1gnNMnF72ZktDobAGA=;
+        s=korg; t=1655731280;
+        bh=G9sVT9BCC2t1SfzLQZXZjkGeZ3YE+zHFK85LE1yWtJo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lCMCELqwO0fUVA2yVcuc9AP3Ycm3sQCkpn/rWxKe0CPtqmGrR0NnjYTbAm82I6P4U
-         3s0dmJqFLNvQ8E9kiwQuoypH0x+v/3ThO0GyBnEbrFvEjvHJ8zolMoYH1gpo2jtK1b
-         c/U0PkYuta8nQa9K7UznIqNv0eKlO9o+WxiQAm1U=
+        b=RvP5nJhK3w1iHzlrvFzSL4zAbccP+949PfZgUa/swB9ZT0dsq3QEawr4t3T8o9/m9
+         BzhoFLUn9wDV9Yf/RjhHh1cZW4HkiL54dnKkxloOXIhv/qNGmdH6Ja3hnrzBEezd6x
+         eajAC/p20GH59MiSt/4rIQj2mLTN5dGuIWfXy+us=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 162/240] random: use proper return types on get_random_{int,long}_wait()
-Date:   Mon, 20 Jun 2022 14:51:03 +0200
-Message-Id: <20220620124743.700290908@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Miaoqian Lin <linmq006@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 211/240] misc: atmel-ssc: Fix IRQ check in ssc_probe
+Date:   Mon, 20 Jun 2022 14:51:52 +0200
+Message-Id: <20220620124745.091587762@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -48,46 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 7c3a8a1db5e03d02cc0abb3357a84b8b326dfac3 upstream.
+[ Upstream commit 1c245358ce0b13669f6d1625f7a4e05c41f28980 ]
 
-Before these were returning signed values, but the API is intended to be
-used with unsigned values.
+platform_get_irq() returns negative error number instead 0 on failure.
+And the doc of platform_get_irq() provides a usage example:
 
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+    int irq = platform_get_irq(pdev, 0);
+    if (irq < 0)
+        return irq;
+
+Fix the check of return value to catch errors correctly.
+
+Fixes: eb1f2930609b ("Driver for the Atmel on-chip SSC on AT32AP and AT91")
+Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220601123026.7119-1-linmq006@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/random.h |   14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ drivers/misc/atmel-ssc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -81,18 +81,18 @@ static inline int get_random_bytes_wait(
- 	return ret;
- }
+diff --git a/drivers/misc/atmel-ssc.c b/drivers/misc/atmel-ssc.c
+index d6cd5537126c..69f9b0336410 100644
+--- a/drivers/misc/atmel-ssc.c
++++ b/drivers/misc/atmel-ssc.c
+@@ -232,9 +232,9 @@ static int ssc_probe(struct platform_device *pdev)
+ 	clk_disable_unprepare(ssc->clk);
  
--#define declare_get_random_var_wait(var) \
--	static inline int get_random_ ## var ## _wait(var *out) { \
-+#define declare_get_random_var_wait(name, ret_type) \
-+	static inline int get_random_ ## name ## _wait(ret_type *out) { \
- 		int ret = wait_for_random_bytes(); \
- 		if (unlikely(ret)) \
- 			return ret; \
--		*out = get_random_ ## var(); \
-+		*out = get_random_ ## name(); \
- 		return 0; \
+ 	ssc->irq = platform_get_irq(pdev, 0);
+-	if (!ssc->irq) {
++	if (ssc->irq < 0) {
+ 		dev_dbg(&pdev->dev, "could not get irq\n");
+-		return -ENXIO;
++		return ssc->irq;
  	}
--declare_get_random_var_wait(u32)
--declare_get_random_var_wait(u64)
--declare_get_random_var_wait(int)
--declare_get_random_var_wait(long)
-+declare_get_random_var_wait(u32, u32)
-+declare_get_random_var_wait(u64, u32)
-+declare_get_random_var_wait(int, unsigned int)
-+declare_get_random_var_wait(long, unsigned long)
- #undef declare_get_random_var
  
- /*
+ 	mutex_lock(&user_lock);
+-- 
+2.35.1
+
 
 
