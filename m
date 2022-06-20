@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A03E1C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:20:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AAF8C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:21:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243615AbiFTNUy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:20:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47082 "EHLO
+        id S1343781AbiFTNVB (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:21:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245538AbiFTNO5 (ORCPT
+        with ESMTP id S1343789AbiFTNO6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:14:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C454201B6;
-        Mon, 20 Jun 2022 06:07:37 -0700 (PDT)
+        Mon, 20 Jun 2022 09:14:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DDCE1FCF3;
+        Mon, 20 Jun 2022 06:07:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 783D3614B7;
-        Mon, 20 Jun 2022 13:05:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 660CDC3411B;
-        Mon, 20 Jun 2022 13:05:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0E9D7B811C0;
+        Mon, 20 Jun 2022 13:07:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 600B9C3411C;
+        Mon, 20 Jun 2022 13:07:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730350;
-        bh=n0EDmbEOrkNOBvW/GijmfjermZbvRf0zE44tEbRt0PE=;
+        s=korg; t=1655730427;
+        bh=ZDUqt44bbeOu9tG6SfC5lmwbRy4fFSZTfMu/NpoAug8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y75goWTV1IBnDGHUR95kzRIEN8f1P2m7+RvKE9CLM5LMziY67562huJVdRwz5CLUU
-         tRsl+C1moHIT/EYqFSMT+Wq6zm8wJfmkycb+6WsVG3TMFeJnKZyQBUt0X9MWqxXgla
-         9SPReMbQYKCa9Yn2pjiC9q61bdejDw7f5ZtivrzI=
+        b=bU1dXaUsV3sxDtJOAtF4ygOoDDk56O3pXTMRAvic+Aza5ZzETQ7Envd7g706qWl1v
+         8SOfuGqbYffNCUFL/dFcUza9EkrgvNtASbolpVPatBqFK77XBq4LriXcsvxfuvXA81
+         CglMxo6yliUsKpIxWI8172If1j/kT34Oo3AZ4wV0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
-        James Smart <jsmart2021@gmail.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 025/106] scsi: lpfc: Fix port stuck in bypassed state after LIP in PT2PT topology
-Date:   Mon, 20 Jun 2022 14:50:44 +0200
-Message-Id: <20220620124725.128905313@linuxfoundation.org>
+        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 050/106] clocksource: hyper-v: unexport __init-annotated hv_init_clocksource()
+Date:   Mon, 20 Jun 2022 14:51:09 +0200
+Message-Id: <20220620124725.870459142@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
 References: <20220620124724.380838401@linuxfoundation.org>
@@ -50,47 +52,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: Masahiro Yamada <masahiroy@kernel.org>
 
-[ Upstream commit 336d63615466b4c06b9401c987813fd19bdde39b ]
+[ Upstream commit 245b993d8f6c4e25f19191edfbd8080b645e12b1 ]
 
-After issuing a LIP, a specific target vendor does not ACC the FLOGI that
-lpfc sends.  However, it does send its own FLOGI that lpfc ACCs.  The
-target then establishes the port IDs by sending a PLOGI.  lpfc PLOGI_ACCs
-and starts the RPI registration for DID 0x000001.  The target then sends a
-LOGO to the fabric DID.  lpfc is currently treating the LOGO from the
-fabric DID as a link down and cleans up all the ndlps.  The ndlp for DID
-0x000001 is put back into NPR and discovery stops, leaving the port in
-stuck in bypassed mode.
+EXPORT_SYMBOL and __init is a bad combination because the .init.text
+section is freed up after the initialization. Hence, modules cannot
+use symbols annotated __init. The access to a freed symbol may end up
+with kernel panic.
 
-Change lpfc behavior such that if a LOGO is received for the fabric DID in
-PT2PT topology skip the lpfc_linkdown_port() routine and just move the
-fabric DID back to NPR.
+modpost used to detect it, but it has been broken for a decade.
 
-Link: https://lore.kernel.org/r/20220603174329.63777-7-jsmart2021@gmail.com
-Co-developed-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Recently, I fixed modpost so it started to warn it again, then this
+showed up in linux-next builds.
+
+There are two ways to fix it:
+
+  - Remove __init
+  - Remove EXPORT_SYMBOL
+
+I chose the latter for this case because the only in-tree call-site,
+arch/x86/kernel/cpu/mshyperv.c is never compiled as modular.
+(CONFIG_HYPERVISOR_GUEST is boolean)
+
+Fixes: dd2cb348613b ("clocksource/drivers: Continue making Hyper-V clocksource ISA agnostic")
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Reviewed-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+Link: https://lore.kernel.org/r/20220606050238.4162200-1-masahiroy@kernel.org
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/lpfc/lpfc_nportdisc.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/clocksource/hyperv_timer.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/scsi/lpfc/lpfc_nportdisc.c b/drivers/scsi/lpfc/lpfc_nportdisc.c
-index fdf5e777bf11..2bd35a7424c2 100644
---- a/drivers/scsi/lpfc/lpfc_nportdisc.c
-+++ b/drivers/scsi/lpfc/lpfc_nportdisc.c
-@@ -810,7 +810,8 @@ lpfc_rcv_logo(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
- 		lpfc_nvmet_invalidate_host(phba, ndlp);
- 
- 	if (ndlp->nlp_DID == Fabric_DID) {
--		if (vport->port_state <= LPFC_FDISC)
-+		if (vport->port_state <= LPFC_FDISC ||
-+		    vport->fc_flag & FC_PT2PT)
- 			goto out;
- 		lpfc_linkdown_port(vport);
- 		spin_lock_irq(shost->host_lock);
+diff --git a/drivers/clocksource/hyperv_timer.c b/drivers/clocksource/hyperv_timer.c
+index ff188ab68496..bb47610bbd1c 100644
+--- a/drivers/clocksource/hyperv_timer.c
++++ b/drivers/clocksource/hyperv_timer.c
+@@ -565,4 +565,3 @@ void __init hv_init_clocksource(void)
+ 	hv_sched_clock_offset = hv_read_reference_counter();
+ 	hv_setup_sched_clock(read_hv_sched_clock_msr);
+ }
+-EXPORT_SYMBOL_GPL(hv_init_clocksource);
 -- 
 2.35.1
 
