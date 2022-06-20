@@ -2,517 +2,591 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AC2ACCA479
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:02:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B78FCC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:03:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350383AbiFTOCv (ORCPT
+        id S1350434AbiFTOC6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:02:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46972 "EHLO
+        Mon, 20 Jun 2022 10:02:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354063AbiFTN7D (ORCPT
+        with ESMTP id S1350061AbiFTNxE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:59:03 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC0BA393DE
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 06:24:57 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id c21so14691984wrb.1
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 06:24:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=WkHQBMY5sZWHUTmAufsKBaQGlpK2u/YP0S0lHgpegqU=;
-        b=Ks9Ou/Wv66FLVyAa7ZVYQGbjU5yUCUgt7VFRhMTEO+18jMLgPvyXqSrq/tkzkA1gNT
-         G0VjlA+lxTcIclPrXRQKn8d7r24KUhD/BiWiQY0zRA9whMhLnxAQuDiuGFkEFG3OyMC/
-         HS/iMVQprbKQie+jgIN0uovqZR8G8mvd6TR1OpTXNkW99aLUZK+Ii9H/S51ct6U802eT
-         7Dl4da2nEIGnuSsS5dJ5ua+IMV+9IqknvB2CRo9yKGhNfftgQZTbML2BS2UKSsE1Afra
-         NoIJVjF6f33yBMJ/isc34ck0tclLsw5iRdogqPO5A+pgBnwmmflJkEXz+ym94K7tRBn0
-         Jddw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=WkHQBMY5sZWHUTmAufsKBaQGlpK2u/YP0S0lHgpegqU=;
-        b=h2uaZUrVim1/8lWssD+dD6q0M3DM8JgvqqNPZz/InzR1p1Glk9RL02g2iWx8rd/bi+
-         guwigPXAuhsXq/QqbpVkeZU0pZPXSU5eV4wW6/DdbkGtSy8AXjZIDNd9ZMOMWW75ZjSX
-         2L6P3lNvQfa/KLsrvoWLzA7pHn8eK7NUVVeD2d5CbPSpkkgHLwesMkb3TPKV1mgb3yYA
-         fL5Gk2monTxObqC4JF31Jo2kgrXYm1VQ5WgsVJkdsH5ax9ndZ08dNW4gsfhOS73wosnD
-         QletWjsPv096hBOm6M9Xpfgh3EFzBTHvsAWjAzGoF4l0G14ZSQR71Kp/sOBYUkqpbDrk
-         L+bg==
-X-Gm-Message-State: AJIora/p3H747p6tsU1PfsZvJg0HoQWRXvoQmS3o4Bop5/E9hib2b5jq
-        5PUkyv6XGELrV+hIlw1DUfZ9SeW52uRC4Q==
-X-Google-Smtp-Source: AGRyM1vnLhyNwYVcGCjuxl7HB9lldMaX7ispBSSxxxBQil3Xb0XAMuzJIk+0hoa9hWPFLdxKuUHl8A==
-X-Received: by 2002:adf:decc:0:b0:21b:8915:36da with SMTP id i12-20020adfdecc000000b0021b891536damr10058759wrn.261.1655731496256;
-        Mon, 20 Jun 2022 06:24:56 -0700 (PDT)
-Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
-        by smtp.gmail.com with ESMTPSA id x5-20020a5d54c5000000b0021b88ec99cesm6276585wrv.94.2022.06.20.06.24.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jun 2022 06:24:55 -0700 (PDT)
-Date:   Mon, 20 Jun 2022 14:24:31 +0100
-From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
-To:     Zhangfei Gao <zhangfei.gao@linaro.org>
+        Mon, 20 Jun 2022 09:53:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1FBC31535;
+        Mon, 20 Jun 2022 06:19:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DD28360AC0;
+        Mon, 20 Jun 2022 13:18:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEA8CC3411B;
+        Mon, 20 Jun 2022 13:18:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655731128;
+        bh=872yXN0wEsK4jtldB34BJM+L9gpY9fkJa+VNt7S9pA0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=QSZfL++xmLHGBVx+SdC0uiMC1bxury9iZde/CZTO9WrOQPF9/fcf+kh1sDREYIiBi
+         Cp8YdFkVAZvjdMcZrCJurEg+58pjyTr9scZKqXKGRZEoKPSensUjMBquvtH8RKQ4ev
+         hz8Sj325uxxrlWas8oo522FhMTC4/kOHNjeX2fa8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Wangzhou <wangzhou1@hisilicon.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        linux-accelerators@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        linux-crypto@vger.kernel.org, iommu@lists.linux-foundation.org,
-        Yang Shen <shenyang39@huawei.com>
-Subject: Re: [PATCH] uacce: fix concurrency of fops_open and uacce_remove
-Message-ID: <YrB1D9rv9G4h/BYU@myrica>
-References: <20220610123423.27496-1-zhangfei.gao@linaro.org>
- <Yqn3spLZHpAkQ9Us@myrica>
- <fdc8d8b0-4e04-78f5-1e8a-4cf44c89a37f@linaro.org>
- <YqrmdKNrYTCiS/MC@myrica>
- <d90e8ea5-2f18-2eda-b4b2-711083aa7ecd@linaro.org>
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.4 163/240] random: make consistent use of buf and len
+Date:   Mon, 20 Jun 2022 14:51:04 +0200
+Message-Id: <20220620124743.729090024@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
+References: <20220620124737.799371052@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: attachment
-In-Reply-To: <d90e8ea5-2f18-2eda-b4b2-711083aa7ecd@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 17, 2022 at 02:05:21PM +0800, Zhangfei Gao wrote:
-> > The refcount only ensures that the uacce_device object is not freed as
-> > long as there are open fds. But uacce_remove() can run while there are
-> > open fds, or fds in the process of being opened. And atfer uacce_remove()
-> > runs, the uacce_device object still exists but is mostly unusable. For
-> > example once the module is freed, uacce->ops is not valid anymore. But
-> > currently uacce_fops_open() may dereference the ops in this case:
-> > 
-> > 	uacce_fops_open()
-> > 	 if (!uacce->parent->driver)
-> > 	 /* Still valid, keep going */		
-> > 	 ...					rmmod
-> > 						 uacce_remove()
-> > 	 ...					 free_module()
-> > 	 uacce->ops->get_queue() /* BUG */
-> 
-> uacce_remove should wait for uacce->queues_lock, until fops_open release the
-> lock.
-> If open happen just after the uacce_remove: unlock, uacce_bind_queue in open
-> should fail.
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-Ah yes sorry, I lost sight of what this patch was adding. But we could
-have the same issue with the patch, just in a different order, no?
+commit a19402634c435a4eae226df53c141cdbb9922e7b upstream.
 
-	uacce_fops_open()
-	 uacce = xa_load()
-	 ...					rmmod
-						 uacce_remove()
-						  mutex_lock()
-						  mutex_unlock()
-	 mutex_lock()
-	 if (!uacce->parent->driver)            
-	 /* Still valid, keep going */		 parent->driver = NULL
-						 free_module()
-	 uacce->ops->get_queue() /* BUG */
+The current code was a mix of "nbytes", "count", "size", "buffer", "in",
+and so forth. Instead, let's clean this up by naming input parameters
+"buf" (or "ubuf") and "len", so that you always understand that you're
+reading this variety of function argument.
 
-
-> > Accessing uacce->ops after free_module() is a use-after-free. We need all
-> you men parent release the resources.
-> > the fops to synchronize with uacce_remove() to ensure they don't use any
-> > resource of the parent after it's been freed.
-> After fops_open, currently we are counting on parent driver stop all dma
-> first, then call uacce_remove, which is assumption.
-> Like drivers/crypto/hisilicon/zip/zip_main.c: hisi_qm_wait_task_finish,
-> which will wait uacce_release.
-> If comments this , there may other issue,
-> Unable to handle kernel paging request at virtual address ffff80000b700204
-> pc : hisi_qm_cache_wb.part.0+0x2c/0xa0
-> 
-> > I see uacce_fops_poll() may have the same problem, and should be inside
-> > uacce_mutex.
-> Do we need consider this, uacce_remove can happen anytime but not waiting
-> dma stop?
-
-No, the parent driver must stop DMA before calling uacce_remove(), there
-is no way around that
-
-> 
-> Not sure uacce_mutex can do this.
-> Currently the sequence is
-> mutex_lock(&uacce->queues_lock);
-> mutex_lock(&uacce_mutex);
-
-We should document why some ops use one lock or the other. I believe it's
-to avoid circular lock dependency between ioctl and mmap, do you know if
-there was another reason?
-
-> 
-> Or we set all the callbacks of uacce_ops to NULL?
-
-That would be cleaner, though we already use the queue state to indicate
-whether it is usable or not. I think we just need to extend that to all
-ops.
-
-How about the following patch? Unfortunately it still has the lock
-disparity between ioctl and mmap because of the circular lockking with
-mmap_sem, I don't know how to make that cleaner.
-
---- 8< ---
-
-From c7c2b051ec19285bbb973f8a2a5e58bb5326e00e Mon Sep 17 00:00:00 2001
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Date: Mon, 20 Jun 2022 10:10:41 +0100
-Subject: [PATCH] uacce: Tidy up locking
-
-The uacce driver must deal with a possible removal of the parent driver
-or device at any time. At the moment there are several issues that may
-result in use-after-free. Tidy up the locking to handle module removal.
-
-When unbinding the parent device from its driver, the driver calls
-uacce_remove(). This function removes the cdev, ensuring that no new
-uacce file descriptor will be opened, but existing fds are still open
-and uacce fops may be called after uacce_remove() completes, when the
-parent module is gone. Each open fd holds a reference to the uacce
-device, ensuring that the structure cannot be freed until all fds are
-closed. But the uacce fops may still access uacce->ops which belonged to
-the parent module, now freed. To solve this:
-
-* use the global uacce_mutex to serialize uacce_fops_open() against
-  uacce_remove(), and q->mutex to serialize all other fops against
-  uacce_remove().
-
-* q->mutex replaces the less scalable uacce->queues_lock. The queues
-  list is now protected by uacce_mutex, and the queue state by q->mutex.
-  Note that scalability is only desirable for poll(), since the other
-  fops are only used during setup.
-
-* uacce_queue_is_valid(), checked under q->mutex, denotes whether
-  uacce_remove() has disabled all queues. If that is the case, don't go
-  any further since the parent module may be gone. Any call to
-  uacce->ops must be done while holding q->mutex to ensure the state
-  doesn't change.
-
-* Clear uacce->ops in uacce_remove(), just to make sure that a
-  programming error would result in NULL dereference rather than
-  use-after-free.
-
-Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/misc/uacce/uacce.c | 137 ++++++++++++++++++++++++-------------
- include/linux/uacce.h      |   4 +-
- 2 files changed, 91 insertions(+), 50 deletions(-)
+ drivers/char/random.c  |  195 +++++++++++++++++++++++--------------------------
+ include/linux/random.h |   10 +-
+ 2 files changed, 100 insertions(+), 105 deletions(-)
 
-diff --git a/drivers/misc/uacce/uacce.c b/drivers/misc/uacce/uacce.c
-index 281c54003edc..0bb2743d8da3 100644
---- a/drivers/misc/uacce/uacce.c
-+++ b/drivers/misc/uacce/uacce.c
-@@ -9,43 +9,40 @@
- 
- static struct class *uacce_class;
- static dev_t uacce_devt;
-+/* Protects uacce_xa and uacce->queues */
- static DEFINE_MUTEX(uacce_mutex);
- static DEFINE_XARRAY_ALLOC(uacce_xa);
- 
--static int uacce_start_queue(struct uacce_queue *q)
-+/*
-+ * If the parent driver or the device disappears, the queue state is invalid and
-+ * ops are not usable anymore.
-+ */
-+static bool uacce_queue_is_valid(struct uacce_queue *q)
- {
--	int ret = 0;
-+	return q->state == UACCE_Q_INIT || q->state == UACCE_Q_STARTED;
-+}
- 
--	mutex_lock(&uacce_mutex);
-+static int uacce_start_queue(struct uacce_queue *q)
-+{
-+	int ret;
- 
--	if (q->state != UACCE_Q_INIT) {
--		ret = -EINVAL;
--		goto out_with_lock;
--	}
-+	if (q->state != UACCE_Q_INIT)
-+		return -EINVAL;
- 
- 	if (q->uacce->ops->start_queue) {
- 		ret = q->uacce->ops->start_queue(q);
- 		if (ret < 0)
--			goto out_with_lock;
-+			return ret;
- 	}
- 
- 	q->state = UACCE_Q_STARTED;
--
--out_with_lock:
--	mutex_unlock(&uacce_mutex);
--
--	return ret;
-+	return 0;
- }
- 
- static int uacce_put_queue(struct uacce_queue *q)
- {
- 	struct uacce_device *uacce = q->uacce;
- 
--	mutex_lock(&uacce_mutex);
--
--	if (q->state == UACCE_Q_ZOMBIE)
--		goto out;
--
- 	if ((q->state == UACCE_Q_STARTED) && uacce->ops->stop_queue)
- 		uacce->ops->stop_queue(q);
- 
-@@ -54,8 +51,6 @@ static int uacce_put_queue(struct uacce_queue *q)
- 		uacce->ops->put_queue(q);
- 
- 	q->state = UACCE_Q_ZOMBIE;
--out:
--	mutex_unlock(&uacce_mutex);
- 
- 	return 0;
- }
-@@ -65,20 +60,36 @@ static long uacce_fops_unl_ioctl(struct file *filep,
- {
- 	struct uacce_queue *q = filep->private_data;
- 	struct uacce_device *uacce = q->uacce;
-+	long ret = -ENXIO;
-+
-+	/*
-+	 * uacce->ops->ioctl() may take the mmap_sem in order to copy arg
-+	 * to/from user. Avoid a circular lock dependency with
-+	 * uacce_fops_mmap(), which gets called with mmap_sem held, by taking
-+	 * uacce_mutex instead of q->mutex. Doing this in uacce_fops_mmap() is
-+	 * not possible because uacce_fops_open() calls iommu_sva_bind_device(),
-+	 * which takes mmap_sem, while holding uacce_mutex.
-+	 */
-+	mutex_lock(&uacce_mutex);
-+	if (!uacce_queue_is_valid(q))
-+		goto out_unlock;
- 
- 	switch (cmd) {
- 	case UACCE_CMD_START_Q:
--		return uacce_start_queue(q);
--
-+		ret = uacce_start_queue(q);
-+		break;
- 	case UACCE_CMD_PUT_Q:
--		return uacce_put_queue(q);
--
-+		ret = uacce_put_queue(q);
-+		break;
- 	default:
--		if (!uacce->ops->ioctl)
--			return -EINVAL;
--
--		return uacce->ops->ioctl(q, cmd, arg);
-+		if (uacce->ops->ioctl)
-+			ret = uacce->ops->ioctl(q, cmd, arg);
-+		else
-+			ret = -EINVAL;
- 	}
-+out_unlock:
-+	mutex_unlock(&uacce_mutex);
-+	return ret;
- }
- 
- #ifdef CONFIG_COMPAT
-@@ -128,13 +139,18 @@ static int uacce_fops_open(struct inode *inode, struct file *filep)
- 	struct uacce_queue *q;
- 	int ret;
- 
-+	mutex_lock(&uacce_mutex);
- 	uacce = xa_load(&uacce_xa, iminor(inode));
--	if (!uacce)
--		return -ENODEV;
-+	if (!uacce) {
-+		ret = -ENODEV;
-+		goto out_with_lock;
-+	}
- 
- 	q = kzalloc(sizeof(struct uacce_queue), GFP_KERNEL);
--	if (!q)
--		return -ENOMEM;
-+	if (!q) {
-+		ret = -ENOMEM;
-+		goto out_with_lock;
-+	}
- 
- 	ret = uacce_bind_queue(uacce, q);
- 	if (ret)
-@@ -152,10 +168,10 @@ static int uacce_fops_open(struct inode *inode, struct file *filep)
- 	filep->private_data = q;
- 	uacce->inode = inode;
- 	q->state = UACCE_Q_INIT;
-+	mutex_init(&q->mutex);
- 
--	mutex_lock(&uacce->queues_lock);
- 	list_add(&q->list, &uacce->queues);
--	mutex_unlock(&uacce->queues_lock);
-+	mutex_unlock(&uacce_mutex);
- 
- 	return 0;
- 
-@@ -163,6 +179,8 @@ static int uacce_fops_open(struct inode *inode, struct file *filep)
- 	uacce_unbind_queue(q);
- out_with_mem:
- 	kfree(q);
-+out_with_lock:
-+	mutex_unlock(&uacce_mutex);
- 	return ret;
- }
- 
-@@ -170,11 +188,11 @@ static int uacce_fops_release(struct inode *inode, struct file *filep)
- {
- 	struct uacce_queue *q = filep->private_data;
- 
--	mutex_lock(&q->uacce->queues_lock);
--	list_del(&q->list);
--	mutex_unlock(&q->uacce->queues_lock);
-+	mutex_lock(&uacce_mutex);
- 	uacce_put_queue(q);
- 	uacce_unbind_queue(q);
-+	list_del(&q->list);
-+	mutex_unlock(&uacce_mutex);
- 	kfree(q);
- 
- 	return 0;
-@@ -217,10 +235,9 @@ static int uacce_fops_mmap(struct file *filep, struct vm_area_struct *vma)
- 	vma->vm_private_data = q;
- 	qfr->type = type;
- 
--	mutex_lock(&uacce_mutex);
--
--	if (q->state != UACCE_Q_INIT && q->state != UACCE_Q_STARTED) {
--		ret = -EINVAL;
-+	mutex_lock(&q->mutex);
-+	if (!uacce_queue_is_valid(q)) {
-+		ret = -ENXIO;
- 		goto out_with_lock;
- 	}
- 
-@@ -248,12 +265,12 @@ static int uacce_fops_mmap(struct file *filep, struct vm_area_struct *vma)
- 	}
- 
- 	q->qfrs[type] = qfr;
--	mutex_unlock(&uacce_mutex);
-+	mutex_unlock(&q->mutex);
- 
- 	return ret;
- 
- out_with_lock:
--	mutex_unlock(&uacce_mutex);
-+	mutex_unlock(&q->mutex);
- 	kfree(qfr);
- 	return ret;
- }
-@@ -262,12 +279,20 @@ static __poll_t uacce_fops_poll(struct file *file, poll_table *wait)
- {
- 	struct uacce_queue *q = file->private_data;
- 	struct uacce_device *uacce = q->uacce;
-+	int ret = 0;
- 
- 	poll_wait(file, &q->wait, wait);
-+
-+	mutex_lock(&q->mutex);
-+	if (!uacce_queue_is_valid(q))
-+		goto out_unlock;
-+
- 	if (uacce->ops->is_q_updated && uacce->ops->is_q_updated(q))
--		return EPOLLIN | EPOLLRDNORM;
-+		ret = EPOLLIN | EPOLLRDNORM;
- 
--	return 0;
-+out_unlock:
-+	mutex_unlock(&q->mutex);
-+	return ret;
- }
- 
- static const struct file_operations uacce_fops = {
-@@ -450,7 +475,6 @@ struct uacce_device *uacce_alloc(struct device *parent,
- 		goto err_with_uacce;
- 
- 	INIT_LIST_HEAD(&uacce->queues);
--	mutex_init(&uacce->queues_lock);
- 	device_initialize(&uacce->dev);
- 	uacce->dev.devt = MKDEV(MAJOR(uacce_devt), uacce->dev_id);
- 	uacce->dev.class = uacce_class;
-@@ -507,13 +531,23 @@ void uacce_remove(struct uacce_device *uacce)
- 	if (uacce->inode)
- 		unmap_mapping_range(uacce->inode->i_mapping, 0, 0, 1);
- 
-+	/*
-+	 * uacce_fops_open() may be running concurrently, even after we remove
-+	 * the cdev. Holding uacce_mutex ensures that open() does not obtain a
-+	 * removed uacce device.
-+	 */
-+	mutex_lock(&uacce_mutex);
- 	/* ensure no open queue remains */
--	mutex_lock(&uacce->queues_lock);
- 	list_for_each_entry_safe(q, next_q, &uacce->queues, list) {
-+		/*
-+		 * Taking q->mutex ensures that fops do not use the defunct
-+		 * uacce->ops after the queue is disabled.
-+		 */
-+		mutex_lock(&q->mutex);
- 		uacce_put_queue(q);
-+		mutex_unlock(&q->mutex);
- 		uacce_unbind_queue(q);
- 	}
--	mutex_unlock(&uacce->queues_lock);
- 
- 	/* disable sva now since no opened queues */
- 	uacce_disable_sva(uacce);
-@@ -521,7 +555,14 @@ void uacce_remove(struct uacce_device *uacce)
- 	if (uacce->cdev)
- 		cdev_device_del(uacce->cdev, &uacce->dev);
- 	xa_erase(&uacce_xa, uacce->dev_id);
-+	/*
-+	 * uacce exists as long as there are open fds, but ops will be freed
-+	 * now. Ensure that bugs cause NULL deref rather than use-after-free.
-+	 */
-+	uacce->ops = NULL;
-+	uacce->parent = NULL;
- 	put_device(&uacce->dev);
-+	mutex_unlock(&uacce_mutex);
- }
- EXPORT_SYMBOL_GPL(uacce_remove);
- 
-diff --git a/include/linux/uacce.h b/include/linux/uacce.h
-index 48e319f40275..1ea2d753ef89 100644
---- a/include/linux/uacce.h
-+++ b/include/linux/uacce.h
-@@ -70,6 +70,7 @@ enum uacce_q_state {
-  * @wait: wait queue head
-  * @list: index into uacce queues list
-  * @qfrs: pointer of qfr regions
-+ * @mutex: protects queue state
-  * @state: queue state machine
-  * @pasid: pasid associated to the mm
-  * @handle: iommu_sva handle returned by iommu_sva_bind_device()
-@@ -80,6 +81,7 @@ struct uacce_queue {
- 	wait_queue_head_t wait;
- 	struct list_head list;
- 	struct uacce_qfile_region *qfrs[UACCE_MAX_REGION];
-+	struct mutex mutex;
- 	enum uacce_q_state state;
- 	u32 pasid;
- 	struct iommu_sva *handle;
-@@ -99,7 +101,6 @@ struct uacce_queue {
-  * @dev: dev of the uacce
-  * @priv: private pointer of the uacce
-  * @queues: list of queues
-- * @queues_lock: lock for queues list
-  * @inode: core vfs
-  */
- struct uacce_device {
-@@ -115,7 +116,6 @@ struct uacce_device {
- 	struct device dev;
- 	void *priv;
- 	struct list_head queues;
--	struct mutex queues_lock;
- 	struct inode *inode;
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -210,7 +210,7 @@ static void _warn_unseeded_randomness(co
+  *
+  * There are a few exported interfaces for use by other drivers:
+  *
+- *	void get_random_bytes(void *buf, size_t nbytes)
++ *	void get_random_bytes(void *buf, size_t len)
+  *	u32 get_random_u32()
+  *	u64 get_random_u64()
+  *	unsigned int get_random_int()
+@@ -249,7 +249,7 @@ static DEFINE_PER_CPU(struct crng, crngs
  };
  
--- 
-2.25.1
+ /* Used by crng_reseed() and crng_make_state() to extract a new seed from the input pool. */
+-static void extract_entropy(void *buf, size_t nbytes);
++static void extract_entropy(void *buf, size_t len);
+ 
+ /* This extracts a new crng key from the input pool. */
+ static void crng_reseed(void)
+@@ -403,24 +403,24 @@ static void crng_make_state(u32 chacha_s
+ 	local_irq_restore(flags);
+ }
+ 
+-static void _get_random_bytes(void *buf, size_t nbytes)
++static void _get_random_bytes(void *buf, size_t len)
+ {
+ 	u32 chacha_state[CHACHA_BLOCK_SIZE / sizeof(u32)];
+ 	u8 tmp[CHACHA_BLOCK_SIZE];
+-	size_t len;
++	size_t first_block_len;
+ 
+-	if (!nbytes)
++	if (!len)
+ 		return;
+ 
+-	len = min_t(size_t, 32, nbytes);
+-	crng_make_state(chacha_state, buf, len);
+-	nbytes -= len;
+-	buf += len;
++	first_block_len = min_t(size_t, 32, len);
++	crng_make_state(chacha_state, buf, first_block_len);
++	len -= first_block_len;
++	buf += first_block_len;
+ 
+-	while (nbytes) {
+-		if (nbytes < CHACHA_BLOCK_SIZE) {
++	while (len) {
++		if (len < CHACHA_BLOCK_SIZE) {
+ 			chacha20_block(chacha_state, tmp);
+-			memcpy(buf, tmp, nbytes);
++			memcpy(buf, tmp, len);
+ 			memzero_explicit(tmp, sizeof(tmp));
+ 			break;
+ 		}
+@@ -428,7 +428,7 @@ static void _get_random_bytes(void *buf,
+ 		chacha20_block(chacha_state, buf);
+ 		if (unlikely(chacha_state[12] == 0))
+ 			++chacha_state[13];
+-		nbytes -= CHACHA_BLOCK_SIZE;
++		len -= CHACHA_BLOCK_SIZE;
+ 		buf += CHACHA_BLOCK_SIZE;
+ 	}
+ 
+@@ -445,20 +445,20 @@ static void _get_random_bytes(void *buf,
+  * wait_for_random_bytes() should be called and return 0 at least once
+  * at any point prior.
+  */
+-void get_random_bytes(void *buf, size_t nbytes)
++void get_random_bytes(void *buf, size_t len)
+ {
+ 	warn_unseeded_randomness();
+-	_get_random_bytes(buf, nbytes);
++	_get_random_bytes(buf, len);
+ }
+ EXPORT_SYMBOL(get_random_bytes);
+ 
+-static ssize_t get_random_bytes_user(void __user *buf, size_t nbytes)
++static ssize_t get_random_bytes_user(void __user *ubuf, size_t len)
+ {
+-	size_t len, left, ret = 0;
++	size_t block_len, left, ret = 0;
+ 	u32 chacha_state[CHACHA_BLOCK_SIZE / sizeof(u32)];
+ 	u8 output[CHACHA_BLOCK_SIZE];
+ 
+-	if (!nbytes)
++	if (!len)
+ 		return 0;
+ 
+ 	/*
+@@ -472,8 +472,8 @@ static ssize_t get_random_bytes_user(voi
+ 	 * use chacha_state after, so we can simply return those bytes to
+ 	 * the user directly.
+ 	 */
+-	if (nbytes <= CHACHA_KEY_SIZE) {
+-		ret = nbytes - copy_to_user(buf, &chacha_state[4], nbytes);
++	if (len <= CHACHA_KEY_SIZE) {
++		ret = len - copy_to_user(ubuf, &chacha_state[4], len);
+ 		goto out_zero_chacha;
+ 	}
+ 
+@@ -482,17 +482,17 @@ static ssize_t get_random_bytes_user(voi
+ 		if (unlikely(chacha_state[12] == 0))
+ 			++chacha_state[13];
+ 
+-		len = min_t(size_t, nbytes, CHACHA_BLOCK_SIZE);
+-		left = copy_to_user(buf, output, len);
++		block_len = min_t(size_t, len, CHACHA_BLOCK_SIZE);
++		left = copy_to_user(ubuf, output, block_len);
+ 		if (left) {
+-			ret += len - left;
++			ret += block_len - left;
+ 			break;
+ 		}
+ 
+-		buf += len;
+-		ret += len;
+-		nbytes -= len;
+-		if (!nbytes)
++		ubuf += block_len;
++		ret += block_len;
++		len -= block_len;
++		if (!len)
+ 			break;
+ 
+ 		BUILD_BUG_ON(PAGE_SIZE % CHACHA_BLOCK_SIZE != 0);
+@@ -663,24 +663,24 @@ unsigned long randomize_page(unsigned lo
+  * use. Use get_random_bytes() instead. It returns the number of
+  * bytes filled in.
+  */
+-size_t __must_check get_random_bytes_arch(void *buf, size_t nbytes)
++size_t __must_check get_random_bytes_arch(void *buf, size_t len)
+ {
+-	size_t left = nbytes;
++	size_t left = len;
+ 	u8 *p = buf;
+ 
+ 	while (left) {
+ 		unsigned long v;
+-		size_t chunk = min_t(size_t, left, sizeof(unsigned long));
++		size_t block_len = min_t(size_t, left, sizeof(unsigned long));
+ 
+ 		if (!arch_get_random_long(&v))
+ 			break;
+ 
+-		memcpy(p, &v, chunk);
+-		p += chunk;
+-		left -= chunk;
++		memcpy(p, &v, block_len);
++		p += block_len;
++		left -= block_len;
+ 	}
+ 
+-	return nbytes - left;
++	return len - left;
+ }
+ EXPORT_SYMBOL(get_random_bytes_arch);
+ 
+@@ -691,15 +691,15 @@ EXPORT_SYMBOL(get_random_bytes_arch);
+  *
+  * Callers may add entropy via:
+  *
+- *     static void mix_pool_bytes(const void *in, size_t nbytes)
++ *     static void mix_pool_bytes(const void *buf, size_t len)
+  *
+  * After which, if added entropy should be credited:
+  *
+- *     static void credit_init_bits(size_t nbits)
++ *     static void credit_init_bits(size_t bits)
+  *
+  * Finally, extract entropy via:
+  *
+- *     static void extract_entropy(void *buf, size_t nbytes)
++ *     static void extract_entropy(void *buf, size_t len)
+  *
+  **********************************************************************/
+ 
+@@ -721,9 +721,9 @@ static struct {
+ 	.lock = __SPIN_LOCK_UNLOCKED(input_pool.lock),
+ };
+ 
+-static void _mix_pool_bytes(const void *in, size_t nbytes)
++static void _mix_pool_bytes(const void *buf, size_t len)
+ {
+-	blake2s_update(&input_pool.hash, in, nbytes);
++	blake2s_update(&input_pool.hash, buf, len);
+ }
+ 
+ /*
+@@ -731,12 +731,12 @@ static void _mix_pool_bytes(const void *
+  * update the initialization bit counter; the caller should call
+  * credit_init_bits if this is appropriate.
+  */
+-static void mix_pool_bytes(const void *in, size_t nbytes)
++static void mix_pool_bytes(const void *buf, size_t len)
+ {
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&input_pool.lock, flags);
+-	_mix_pool_bytes(in, nbytes);
++	_mix_pool_bytes(buf, len);
+ 	spin_unlock_irqrestore(&input_pool.lock, flags);
+ }
+ 
+@@ -744,7 +744,7 @@ static void mix_pool_bytes(const void *i
+  * This is an HKDF-like construction for using the hashed collected entropy
+  * as a PRF key, that's then expanded block-by-block.
+  */
+-static void extract_entropy(void *buf, size_t nbytes)
++static void extract_entropy(void *buf, size_t len)
+ {
+ 	unsigned long flags;
+ 	u8 seed[BLAKE2S_HASH_SIZE], next_key[BLAKE2S_HASH_SIZE];
+@@ -773,12 +773,12 @@ static void extract_entropy(void *buf, s
+ 	spin_unlock_irqrestore(&input_pool.lock, flags);
+ 	memzero_explicit(next_key, sizeof(next_key));
+ 
+-	while (nbytes) {
+-		i = min_t(size_t, nbytes, BLAKE2S_HASH_SIZE);
++	while (len) {
++		i = min_t(size_t, len, BLAKE2S_HASH_SIZE);
+ 		/* output = HASHPRF(seed, RDSEED || ++counter) */
+ 		++block.counter;
+ 		blake2s(buf, (u8 *)&block, seed, i, sizeof(block), sizeof(seed));
+-		nbytes -= i;
++		len -= i;
+ 		buf += i;
+ 	}
+ 
+@@ -786,16 +786,16 @@ static void extract_entropy(void *buf, s
+ 	memzero_explicit(&block, sizeof(block));
+ }
+ 
+-static void credit_init_bits(size_t nbits)
++static void credit_init_bits(size_t bits)
+ {
+ 	static struct execute_work set_ready;
+ 	unsigned int new, orig, add;
+ 	unsigned long flags;
+ 
+-	if (crng_ready() || !nbits)
++	if (crng_ready() || !bits)
+ 		return;
+ 
+-	add = min_t(size_t, nbits, POOL_BITS);
++	add = min_t(size_t, bits, POOL_BITS);
+ 
+ 	do {
+ 		orig = READ_ONCE(input_pool.init_bits);
+@@ -831,13 +831,11 @@ static void credit_init_bits(size_t nbit
+  * The following exported functions are used for pushing entropy into
+  * the above entropy accumulation routines:
+  *
+- *	void add_device_randomness(const void *buf, size_t size);
+- *	void add_hwgenerator_randomness(const void *buffer, size_t count,
+- *					size_t entropy);
+- *	void add_bootloader_randomness(const void *buf, size_t size);
++ *	void add_device_randomness(const void *buf, size_t len);
++ *	void add_hwgenerator_randomness(const void *buf, size_t len, size_t entropy);
++ *	void add_bootloader_randomness(const void *buf, size_t len);
+  *	void add_interrupt_randomness(int irq);
+- *	void add_input_randomness(unsigned int type, unsigned int code,
+- *	                          unsigned int value);
++ *	void add_input_randomness(unsigned int type, unsigned int code, unsigned int value);
+  *	void add_disk_randomness(struct gendisk *disk);
+  *
+  * add_device_randomness() adds data to the input pool that
+@@ -901,7 +899,7 @@ int __init random_init(const char *comma
+ {
+ 	ktime_t now = ktime_get_real();
+ 	unsigned int i, arch_bytes;
+-	unsigned long rv;
++	unsigned long entropy;
+ 
+ #if defined(LATENT_ENTROPY_PLUGIN)
+ 	static const u8 compiletime_seed[BLAKE2S_BLOCK_SIZE] __initconst __latent_entropy;
+@@ -909,13 +907,13 @@ int __init random_init(const char *comma
+ #endif
+ 
+ 	for (i = 0, arch_bytes = BLAKE2S_BLOCK_SIZE;
+-	     i < BLAKE2S_BLOCK_SIZE; i += sizeof(rv)) {
+-		if (!arch_get_random_seed_long_early(&rv) &&
+-		    !arch_get_random_long_early(&rv)) {
+-			rv = random_get_entropy();
+-			arch_bytes -= sizeof(rv);
++	     i < BLAKE2S_BLOCK_SIZE; i += sizeof(entropy)) {
++		if (!arch_get_random_seed_long_early(&entropy) &&
++		    !arch_get_random_long_early(&entropy)) {
++			entropy = random_get_entropy();
++			arch_bytes -= sizeof(entropy);
+ 		}
+-		_mix_pool_bytes(&rv, sizeof(rv));
++		_mix_pool_bytes(&entropy, sizeof(entropy));
+ 	}
+ 	_mix_pool_bytes(&now, sizeof(now));
+ 	_mix_pool_bytes(utsname(), sizeof(*(utsname())));
+@@ -938,14 +936,14 @@ int __init random_init(const char *comma
+  * the entropy pool having similar initial state across largely
+  * identical devices.
+  */
+-void add_device_randomness(const void *buf, size_t size)
++void add_device_randomness(const void *buf, size_t len)
+ {
+ 	unsigned long entropy = random_get_entropy();
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&input_pool.lock, flags);
+ 	_mix_pool_bytes(&entropy, sizeof(entropy));
+-	_mix_pool_bytes(buf, size);
++	_mix_pool_bytes(buf, len);
+ 	spin_unlock_irqrestore(&input_pool.lock, flags);
+ }
+ EXPORT_SYMBOL(add_device_randomness);
+@@ -955,10 +953,9 @@ EXPORT_SYMBOL(add_device_randomness);
+  * Those devices may produce endless random bits and will be throttled
+  * when our pool is full.
+  */
+-void add_hwgenerator_randomness(const void *buffer, size_t count,
+-				size_t entropy)
++void add_hwgenerator_randomness(const void *buf, size_t len, size_t entropy)
+ {
+-	mix_pool_bytes(buffer, count);
++	mix_pool_bytes(buf, len);
+ 	credit_init_bits(entropy);
+ 
+ 	/*
+@@ -974,11 +971,11 @@ EXPORT_SYMBOL_GPL(add_hwgenerator_random
+  * Handle random seed passed by bootloader, and credit it if
+  * CONFIG_RANDOM_TRUST_BOOTLOADER is set.
+  */
+-void add_bootloader_randomness(const void *buf, size_t size)
++void add_bootloader_randomness(const void *buf, size_t len)
+ {
+-	mix_pool_bytes(buf, size);
++	mix_pool_bytes(buf, len);
+ 	if (trust_bootloader)
+-		credit_init_bits(size * 8);
++		credit_init_bits(len * 8);
+ }
+ EXPORT_SYMBOL_GPL(add_bootloader_randomness);
+ 
+@@ -1178,8 +1175,7 @@ static void add_timer_randomness(struct
+ 		credit_init_bits(bits);
+ }
+ 
+-void add_input_randomness(unsigned int type, unsigned int code,
+-			  unsigned int value)
++void add_input_randomness(unsigned int type, unsigned int code, unsigned int value)
+ {
+ 	static unsigned char last_value;
+ 	static struct timer_rand_state input_timer_state = { INITIAL_JIFFIES };
+@@ -1298,8 +1294,7 @@ static void try_to_generate_entropy(void
+  *
+  **********************************************************************/
+ 
+-SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count, unsigned int,
+-		flags)
++SYSCALL_DEFINE3(getrandom, char __user *, ubuf, size_t, len, unsigned int, flags)
+ {
+ 	if (flags & ~(GRND_NONBLOCK | GRND_RANDOM | GRND_INSECURE))
+ 		return -EINVAL;
+@@ -1311,8 +1306,8 @@ SYSCALL_DEFINE3(getrandom, char __user *
+ 	if ((flags & (GRND_INSECURE | GRND_RANDOM)) == (GRND_INSECURE | GRND_RANDOM))
+ 		return -EINVAL;
+ 
+-	if (count > INT_MAX)
+-		count = INT_MAX;
++	if (len > INT_MAX)
++		len = INT_MAX;
+ 
+ 	if (!crng_ready() && !(flags & GRND_INSECURE)) {
+ 		int ret;
+@@ -1323,7 +1318,7 @@ SYSCALL_DEFINE3(getrandom, char __user *
+ 		if (unlikely(ret))
+ 			return ret;
+ 	}
+-	return get_random_bytes_user(buf, count);
++	return get_random_bytes_user(ubuf, len);
+ }
+ 
+ static __poll_t random_poll(struct file *file, poll_table *wait)
+@@ -1332,21 +1327,21 @@ static __poll_t random_poll(struct file
+ 	return crng_ready() ? EPOLLIN | EPOLLRDNORM : EPOLLOUT | EPOLLWRNORM;
+ }
+ 
+-static int write_pool(const char __user *ubuf, size_t count)
++static int write_pool(const char __user *ubuf, size_t len)
+ {
+-	size_t len;
++	size_t block_len;
+ 	int ret = 0;
+ 	u8 block[BLAKE2S_BLOCK_SIZE];
+ 
+-	while (count) {
+-		len = min(count, sizeof(block));
+-		if (copy_from_user(block, ubuf, len)) {
++	while (len) {
++		block_len = min(len, sizeof(block));
++		if (copy_from_user(block, ubuf, block_len)) {
+ 			ret = -EFAULT;
+ 			goto out;
+ 		}
+-		count -= len;
+-		ubuf += len;
+-		mix_pool_bytes(block, len);
++		len -= block_len;
++		ubuf += block_len;
++		mix_pool_bytes(block, block_len);
+ 		cond_resched();
+ 	}
+ 
+@@ -1355,20 +1350,20 @@ out:
+ 	return ret;
+ }
+ 
+-static ssize_t random_write(struct file *file, const char __user *buffer,
+-			    size_t count, loff_t *ppos)
++static ssize_t random_write(struct file *file, const char __user *ubuf,
++			    size_t len, loff_t *ppos)
+ {
+ 	int ret;
+ 
+-	ret = write_pool(buffer, count);
++	ret = write_pool(ubuf, len);
+ 	if (ret)
+ 		return ret;
+ 
+-	return (ssize_t)count;
++	return (ssize_t)len;
+ }
+ 
+-static ssize_t urandom_read(struct file *file, char __user *buf, size_t nbytes,
+-			    loff_t *ppos)
++static ssize_t urandom_read(struct file *file, char __user *ubuf,
++			    size_t len, loff_t *ppos)
+ {
+ 	static int maxwarn = 10;
+ 
+@@ -1378,22 +1373,22 @@ static ssize_t urandom_read(struct file
+ 		else if (ratelimit_disable || __ratelimit(&urandom_warning)) {
+ 			--maxwarn;
+ 			pr_notice("%s: uninitialized urandom read (%zd bytes read)\n",
+-				  current->comm, nbytes);
++				  current->comm, len);
+ 		}
+ 	}
+ 
+-	return get_random_bytes_user(buf, nbytes);
++	return get_random_bytes_user(ubuf, len);
+ }
+ 
+-static ssize_t random_read(struct file *file, char __user *buf, size_t nbytes,
+-			   loff_t *ppos)
++static ssize_t random_read(struct file *file, char __user *ubuf,
++			   size_t len, loff_t *ppos)
+ {
+ 	int ret;
+ 
+ 	ret = wait_for_random_bytes();
+ 	if (ret != 0)
+ 		return ret;
+-	return get_random_bytes_user(buf, nbytes);
++	return get_random_bytes_user(ubuf, len);
+ }
+ 
+ static long random_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
+@@ -1518,8 +1513,8 @@ static u8 sysctl_bootid[UUID_SIZE];
+  * UUID. The difference is in whether table->data is NULL; if it is,
+  * then a new UUID is generated and returned to the user.
+  */
+-static int proc_do_uuid(struct ctl_table *table, int write,
+-			void __user *buffer, size_t *lenp, loff_t *ppos)
++static int proc_do_uuid(struct ctl_table *table, int write, void __user *buf,
++			size_t *lenp, loff_t *ppos)
+ {
+ 	u8 tmp_uuid[UUID_SIZE], *uuid;
+ 	char uuid_string[UUID_STRING_LEN + 1];
+@@ -1545,14 +1540,14 @@ static int proc_do_uuid(struct ctl_table
+ 	}
+ 
+ 	snprintf(uuid_string, sizeof(uuid_string), "%pU", uuid);
+-	return proc_dostring(&fake_table, 0, buffer, lenp, ppos);
++	return proc_dostring(&fake_table, 0, buf, lenp, ppos);
+ }
+ 
+ /* The same as proc_dointvec, but writes don't change anything. */
+-static int proc_do_rointvec(struct ctl_table *table, int write, void __user *buffer,
++static int proc_do_rointvec(struct ctl_table *table, int write, void __user *buf,
+ 			    size_t *lenp, loff_t *ppos)
+ {
+-	return write ? 0 : proc_dointvec(table, 0, buffer, lenp, ppos);
++	return write ? 0 : proc_dointvec(table, 0, buf, lenp, ppos);
+ }
+ 
+ extern struct ctl_table random_table[];
+--- a/include/linux/random.h
++++ b/include/linux/random.h
+@@ -12,12 +12,12 @@
+ 
+ struct notifier_block;
+ 
+-void add_device_randomness(const void *, size_t);
+-void add_bootloader_randomness(const void *, size_t);
++void add_device_randomness(const void *buf, size_t len);
++void add_bootloader_randomness(const void *buf, size_t len);
+ void add_input_randomness(unsigned int type, unsigned int code,
+ 			  unsigned int value) __latent_entropy;
+ void add_interrupt_randomness(int irq) __latent_entropy;
+-void add_hwgenerator_randomness(const void *buffer, size_t count, size_t entropy);
++void add_hwgenerator_randomness(const void *buf, size_t len, size_t entropy);
+ 
+ #if defined(LATENT_ENTROPY_PLUGIN) && !defined(__CHECKER__)
+ static inline void add_latent_entropy(void)
+@@ -28,8 +28,8 @@ static inline void add_latent_entropy(vo
+ static inline void add_latent_entropy(void) { }
+ #endif
+ 
+-void get_random_bytes(void *buf, size_t nbytes);
+-size_t __must_check get_random_bytes_arch(void *buf, size_t nbytes);
++void get_random_bytes(void *buf, size_t len);
++size_t __must_check get_random_bytes_arch(void *buf, size_t len);
+ u32 get_random_u32(void);
+ u64 get_random_u64(void);
+ static inline unsigned int get_random_int(void)
 
 
