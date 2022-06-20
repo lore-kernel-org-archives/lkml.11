@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EB43C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:11:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01413C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:11:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351062AbiFTOLp (ORCPT
+        id S1344592AbiFTOLs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:11:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45246 "EHLO
+        Mon, 20 Jun 2022 10:11:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344645AbiFTNy2 (ORCPT
+        with ESMTP id S1349186AbiFTNwh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:54:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61D4331934;
-        Mon, 20 Jun 2022 06:20:50 -0700 (PDT)
+        Mon, 20 Jun 2022 09:52:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 336FE3151D;
+        Mon, 20 Jun 2022 06:19:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 470D5B80E7D;
-        Mon, 20 Jun 2022 13:20:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83B81C3411C;
-        Mon, 20 Jun 2022 13:20:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CA45CB811CF;
+        Mon, 20 Jun 2022 13:19:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2987C3411C;
+        Mon, 20 Jun 2022 13:19:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731239;
-        bh=gpkYebRH4SEsKpxmhmXzkbXxcODhpgm2UHDw0rYNRNc=;
+        s=korg; t=1655731147;
+        bh=6I0/CeuCYV+pLjRkLPGFe3RwaMAHdm/4MmSUdrwk8Qg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ymkqtjnxLGDENSBnctJRIejOV22U1uqO00SzqYKZhsX6cxsMuJDD1vYjZ+IYXQ5Y9
-         cefdPlaKwAnTsCSOhqP5nbBG+REUEuAwYWdy3ZjIO2KIHqD9YVzAHwTfRBPijWJT45
-         Xxa+nt9H3hRR/IhSp0ifiQCQrU5kBIkWB+ShU0tY=
+        b=BiCuChqYxsricEp6tQfy/98o03fygFBGIV2bKBS/xawfr+j+tfVo84WV2ZTbxFArA
+         JH/dlfvsf7bp/O0Z1b2gTJyS6N8UOOv4EUZx6z0lPqbdNr4fSfFbGWOCSk6L2qeuVS
+         hWDQVSyAr0freMwxrmOgAPIYIxKn0a/QXO+xoGLU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
-        James Smart <jsmart2021@gmail.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 195/240] scsi: lpfc: Allow reduced polling rate for nvme_admin_async_event cmd completion
-Date:   Mon, 20 Jun 2022 14:51:36 +0200
-Message-Id: <20220620124744.636617622@linuxfoundation.org>
+        stable@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.4 169/240] random: wire up fops->splice_{read,write}_iter()
+Date:   Mon, 20 Jun 2022 14:51:10 +0200
+Message-Id: <20220620124743.897085932@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -51,73 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: Jens Axboe <axboe@kernel.dk>
 
-[ Upstream commit 2e7e9c0c1ec05f18d320ecc8a31eec59d2af1af9 ]
+commit 79025e727a846be6fd215ae9cdb654368ac3f9a6 upstream.
 
-NVMe Asynchronous Event Request commands have no command timeout value per
-specifications.
+Now that random/urandom is using {read,write}_iter, we can wire it up to
+using the generic splice handlers.
 
-Set WQE option to allow a reduced FLUSH polling rate for I/O error
-detection specifically for nvme_admin_async_event commands.
-
-Link: https://lore.kernel.org/r/20220603174329.63777-9-jsmart2021@gmail.com
-Co-developed-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 36e2c7421f02 ("fs: don't allow splice read/write without explicit ops")
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+[Jason: added the splice_write path. Note that sendfile() and such still
+ does not work for read, though it does for write, because of a file
+ type restriction in splice_direct_to_actor(), which I'll address
+ separately.]
+Cc: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/lpfc/lpfc_hw4.h  |  3 +++
- drivers/scsi/lpfc/lpfc_nvme.c | 11 +++++++++--
- 2 files changed, 12 insertions(+), 2 deletions(-)
+ drivers/char/random.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/scsi/lpfc/lpfc_hw4.h b/drivers/scsi/lpfc/lpfc_hw4.h
-index b8a772f80d6c..cbea3e0c1a7d 100644
---- a/drivers/scsi/lpfc/lpfc_hw4.h
-+++ b/drivers/scsi/lpfc/lpfc_hw4.h
-@@ -4249,6 +4249,9 @@ struct wqe_common {
- #define wqe_sup_SHIFT         6
- #define wqe_sup_MASK          0x00000001
- #define wqe_sup_WORD          word11
-+#define wqe_ffrq_SHIFT         6
-+#define wqe_ffrq_MASK          0x00000001
-+#define wqe_ffrq_WORD          word11
- #define wqe_wqec_SHIFT        7
- #define wqe_wqec_MASK         0x00000001
- #define wqe_wqec_WORD         word11
-diff --git a/drivers/scsi/lpfc/lpfc_nvme.c b/drivers/scsi/lpfc/lpfc_nvme.c
-index 5a86a1ee0de3..193c1a81cac0 100644
---- a/drivers/scsi/lpfc/lpfc_nvme.c
-+++ b/drivers/scsi/lpfc/lpfc_nvme.c
-@@ -1202,7 +1202,8 @@ lpfc_nvme_prep_io_cmd(struct lpfc_vport *vport,
- {
- 	struct lpfc_hba *phba = vport->phba;
- 	struct nvmefc_fcp_req *nCmd = lpfc_ncmd->nvmeCmd;
--	struct lpfc_iocbq *pwqeq = &(lpfc_ncmd->cur_iocbq);
-+	struct nvme_common_command *sqe;
-+	struct lpfc_iocbq *pwqeq = &lpfc_ncmd->cur_iocbq;
- 	union lpfc_wqe128 *wqe = &pwqeq->wqe;
- 	uint32_t req_len;
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -1382,6 +1382,8 @@ const struct file_operations random_fops
+ 	.compat_ioctl = compat_ptr_ioctl,
+ 	.fasync = random_fasync,
+ 	.llseek = noop_llseek,
++	.splice_read = generic_file_splice_read,
++	.splice_write = iter_file_splice_write,
+ };
  
-@@ -1258,8 +1259,14 @@ lpfc_nvme_prep_io_cmd(struct lpfc_vport *vport,
- 		cstat->control_requests++;
- 	}
+ const struct file_operations urandom_fops = {
+@@ -1391,6 +1393,8 @@ const struct file_operations urandom_fop
+ 	.compat_ioctl = compat_ptr_ioctl,
+ 	.fasync = random_fasync,
+ 	.llseek = noop_llseek,
++	.splice_read = generic_file_splice_read,
++	.splice_write = iter_file_splice_write,
+ };
  
--	if (pnode->nlp_nvme_info & NLP_NVME_NSLER)
-+	if (pnode->nlp_nvme_info & NLP_NVME_NSLER) {
- 		bf_set(wqe_erp, &wqe->generic.wqe_com, 1);
-+		sqe = &((struct nvme_fc_cmd_iu *)
-+			nCmd->cmdaddr)->sqe.common;
-+		if (sqe->opcode == nvme_admin_async_event)
-+			bf_set(wqe_ffrq, &wqe->generic.wqe_com, 1);
-+	}
-+
- 	/*
- 	 * Finish initializing those WQE fields that are independent
- 	 * of the nvme_cmnd request_buffer
--- 
-2.35.1
-
+ 
 
 
