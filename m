@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5F3DCCA479
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 12:57:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 169CCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 12:57:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243325AbiFTM5A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 08:57:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37974 "EHLO
+        id S243261AbiFTM5E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 08:57:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243224AbiFTM4j (ORCPT
+        with ESMTP id S243295AbiFTM4l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 08:56:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9385A1A07F;
-        Mon, 20 Jun 2022 05:54:57 -0700 (PDT)
+        Mon, 20 Jun 2022 08:56:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43DFF18B3C;
+        Mon, 20 Jun 2022 05:55:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AF11261476;
-        Mon, 20 Jun 2022 12:54:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6789C3411B;
-        Mon, 20 Jun 2022 12:54:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6B7B1B811A3;
+        Mon, 20 Jun 2022 12:55:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C068BC3411B;
+        Mon, 20 Jun 2022 12:54:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655729696;
-        bh=wH1jD07RcbhORAYwFh0vGkqjoepRYwCcbcsNy0Z1jkA=;
+        s=korg; t=1655729699;
+        bh=Gc6fuGZ+6DADRITiZxkitRn492CZ5PoYNJGVIcbu6d8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DMKJmg78Jdfgvq51UfVww2MGbdOIqHp2DxMVZKQPwVFnkjKJA35AkJSz7gBKBl0u/
-         AWjdOBYy4S6VQ6THev04XFU2gR5kRmgB/s6S88LGz8Z/7U63Kd7tJ2maZ7Q6T9FSoz
-         Ri7n+vq23tY0Z8xwXSCjJu/1xed/FnuYnRm4tQJs=
+        b=hpgL/2OxLikM4KwV8G1cCSmfsXI1cv/0r+a7ZyqFCGgO4NJlXB6Hrt3NhJ3FkTZLW
+         /RH+1Xj1XdCwO3qJ21ogcdXSuo3C7gW/ictYFvYQacFcWgCy1X8TP+FPA+1Bm21cBX
+         zqwQZ+fi3ArQfC+i+ShVvuflRFgVEEwriHv8AdaU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
-        James Smart <jsmart2021@gmail.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org,
+        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 028/141] scsi: lpfc: Resolve NULL ptr dereference after an ELS LOGO is aborted
-Date:   Mon, 20 Jun 2022 14:49:26 +0200
-Message-Id: <20220620124730.362008601@linuxfoundation.org>
+Subject: [PATCH 5.18 046/141] gpio: dwapb: Dont print error on -EPROBE_DEFER
+Date:   Mon, 20 Jun 2022 14:49:44 +0200
+Message-Id: <20220620124730.895298056@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 References: <20220620124729.509745706@linuxfoundation.org>
@@ -50,76 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 
-[ Upstream commit b1b3440f437b75fb2a9b0cfe58df461e40eca474 ]
+[ Upstream commit 77006f6edc0e0f58617eb25e53731f78641e820d ]
 
-A use-after-free crash can occur after an ELS LOGO is aborted.
+Currently if the APB or Debounce clocks aren't yet ready to be requested
+the DW GPIO driver will correctly handle that by deferring the probe
+procedure, but the error is still printed to the system log. It needlessly
+pollutes the log since there was no real error but a request to postpone
+the clock request procedure since the clocks subsystem hasn't been fully
+initialized yet. Let's fix that by using the dev_err_probe method to print
+the APB/clock request error status. It will correctly handle the deferred
+probe situation and print the error if it actually happens.
 
-Specifically, a nodelist structure is freed and then
-ndlp->vport->cfg_log_verbose is dereferenced in lpfc_nlp_get() when the
-discovery state machine is mistakenly called a second time with
-NLP_EVT_DEVICE_RM argument.
-
-Rework lpfc_cmpl_els_logo() to prevent the duplicate calls to release a
-nodelist structure.
-
-Link: https://lore.kernel.org/r/20220603174329.63777-6-jsmart2021@gmail.com
-Co-developed-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/lpfc/lpfc_els.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ drivers/gpio/gpio-dwapb.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/scsi/lpfc/lpfc_els.c b/drivers/scsi/lpfc/lpfc_els.c
-index 892b3da1ba45..9e3899580039 100644
---- a/drivers/scsi/lpfc/lpfc_els.c
-+++ b/drivers/scsi/lpfc/lpfc_els.c
-@@ -3035,18 +3035,10 @@ lpfc_cmpl_els_logo(struct lpfc_hba *phba, struct lpfc_iocbq *cmdiocb,
- 		spin_unlock_irq(&ndlp->lock);
- 		lpfc_disc_state_machine(vport, ndlp, cmdiocb,
- 					NLP_EVT_DEVICE_RM);
--		lpfc_els_free_iocb(phba, cmdiocb);
--		lpfc_nlp_put(ndlp);
--
--		/* Presume the node was released. */
--		return;
-+		goto out_rsrc_free;
- 	}
+diff --git a/drivers/gpio/gpio-dwapb.c b/drivers/gpio/gpio-dwapb.c
+index b0f3aca61974..9467d695a33e 100644
+--- a/drivers/gpio/gpio-dwapb.c
++++ b/drivers/gpio/gpio-dwapb.c
+@@ -652,10 +652,9 @@ static int dwapb_get_clks(struct dwapb_gpio *gpio)
+ 	gpio->clks[1].id = "db";
+ 	err = devm_clk_bulk_get_optional(gpio->dev, DWAPB_NR_CLOCKS,
+ 					 gpio->clks);
+-	if (err) {
+-		dev_err(gpio->dev, "Cannot get APB/Debounce clocks\n");
+-		return err;
+-	}
++	if (err)
++		return dev_err_probe(gpio->dev, err,
++				     "Cannot get APB/Debounce clocks\n");
  
- out:
--	/* Driver is done with the IO.  */
--	lpfc_els_free_iocb(phba, cmdiocb);
--	lpfc_nlp_put(ndlp);
--
- 	/* At this point, the LOGO processing is complete. NOTE: For a
- 	 * pt2pt topology, we are assuming the NPortID will only change
- 	 * on link up processing. For a LOGO / PLOGI initiated by the
-@@ -3073,6 +3065,10 @@ lpfc_cmpl_els_logo(struct lpfc_hba *phba, struct lpfc_iocbq *cmdiocb,
- 				 ndlp->nlp_DID, ulp_status,
- 				 ulp_word4, tmo,
- 				 vport->num_disc_nodes);
-+
-+		lpfc_els_free_iocb(phba, cmdiocb);
-+		lpfc_nlp_put(ndlp);
-+
- 		lpfc_disc_start(vport);
- 		return;
- 	}
-@@ -3089,6 +3085,10 @@ lpfc_cmpl_els_logo(struct lpfc_hba *phba, struct lpfc_iocbq *cmdiocb,
- 		lpfc_disc_state_machine(vport, ndlp, cmdiocb,
- 					NLP_EVT_DEVICE_RM);
- 	}
-+out_rsrc_free:
-+	/* Driver is done with the I/O. */
-+	lpfc_els_free_iocb(phba, cmdiocb);
-+	lpfc_nlp_put(ndlp);
- }
- 
- /**
+ 	err = clk_bulk_prepare_enable(DWAPB_NR_CLOCKS, gpio->clks);
+ 	if (err) {
 -- 
 2.35.1
 
