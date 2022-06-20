@@ -2,281 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 251D9C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 06:41:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E43FC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 06:41:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238182AbiFTGk7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 02:40:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59558 "EHLO
+        id S238732AbiFTGlE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 02:41:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238194AbiFTGkw (ORCPT
+        with ESMTP id S238194AbiFTGlA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 02:40:52 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8BECDF27;
+        Mon, 20 Jun 2022 02:41:00 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9373DDF1F;
         Sun, 19 Jun 2022 23:40:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655707251; x=1687243251;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=fjWAYUqOtPYEEj9xHBO9BO9wmhwh3ENAOoxiK8aLTk0=;
-  b=RwB8hoCaqT3YJ4kc1on1D+F4GIj54Xuge7YnFC2gYxK/LiqZB6mItFTi
-   mZ3NCKa/0xk/ks8nPQcak0EUw/O+boniU+MD2D+Uqq9i2LRVqWqr/e/rt
-   NUWseG6KC9xzbpAfbfVg1ga8uXpeV89VwCMaQ32Vwt1s8lS5ZfbZanbty
-   jgu4cowqEZq8VnzgJaIUsOsqCue/Vgtbael+fRStgUvAwq2rXReJ7Thqp
-   0BwDYwxcf036jTbtC6s0pcnr1BFYjDoSFcOTiLoY0CBhS5KF/Z/bRLYU9
-   MkhYek1oVmgth7+OiMH28nKQqJAD+rnQKNZiPfG/Zo6vfwtI0J07qUxB1
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="277365658"
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="277365658"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2022 23:40:51 -0700
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="642967700"
-Received: from lspinell-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.251.215.169])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2022 23:40:48 -0700
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Paul Cercueil <paul@crapouillou.net>,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Lukas Wunner <lukas@wunner.de>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH v8 1/6] serial: 8250: make saved LSR larger
-Date:   Mon, 20 Jun 2022 09:40:25 +0300
-Message-Id: <20220620064030.7938-2-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220620064030.7938-1-ilpo.jarvinen@linux.intel.com>
-References: <20220620064030.7938-1-ilpo.jarvinen@linux.intel.com>
+X-UUID: c162e9edf4db4404856e4756a22d8076-20220620
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.6,REQID:f6cdc3df-dea3-4d74-8c15-1165459c00cc,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:45
+X-CID-INFO: VERSION:1.1.6,REQID:f6cdc3df-dea3-4d74-8c15-1165459c00cc,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
+        N:release,TS:45
+X-CID-META: VersionHash:b14ad71,CLOUDID:f20e832d-1756-4fa3-be7f-474a6e4be921,C
+        OID:69f70ab7a418,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:1,File:nil,QS:nil,BEC:nil,COL:0
+X-UUID: c162e9edf4db4404856e4756a22d8076-20220620
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1999594167; Mon, 20 Jun 2022 14:40:47 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Mon, 20 Jun 2022 14:40:47 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Mon, 20 Jun 2022 14:40:47 +0800
+Message-ID: <08653b784294bb11182faf82c74757a14d780c4e.camel@mediatek.com>
+Subject: Re: [PATCH v8 16/19] arm64: dts: mediatek: Add infra #reset-cells
+ property for MT8195
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     "mturquette@baylibre.com" <mturquette@baylibre.com>,
+        "sboyd@kernel.org" <sboyd@kernel.org>,
+        "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>
+CC:     "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
+        "angelogioacchino.delregno@collabora.com" 
+        <angelogioacchino.delregno@collabora.com>,
+        "nfraprado@collabora.com" <nfraprado@collabora.com>,
+        Chun-Jie Chen =?UTF-8?Q?=28=E9=99=B3=E6=B5=9A=E6=A1=80=29?= 
+        <Chun-Jie.Chen@mediatek.com>,
+        "wenst@chromium.org" <wenst@chromium.org>,
+        Runyang Chen =?UTF-8?Q?=28=E9=99=88=E6=B6=A6=E6=B4=8B=29?= 
+        <Runyang.Chen@mediatek.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        Project_Global_Chrome_Upstream_Group 
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Mon, 20 Jun 2022 14:40:46 +0800
+In-Reply-To: <20220523060056.24396-17-rex-bc.chen@mediatek.com>
+References: <20220523060056.24396-1-rex-bc.chen@mediatek.com>
+         <20220523060056.24396-17-rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DW flags address received as BIT(8) in LSR. In order to not lose that
-on read, enlarge lsr_saved_flags to u16.
+On Mon, 2022-05-23 at 14:00 +0800, Rex-BC Chen wrote:
+> We will use mediatek clock reset as infracfg_ao reset instead of
+> ti-syscon. To support this, remove property of ti reset and add
+> property of #reset-cells for mediatek clock reset.
+> 
+> Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+> Reviewed-by: AngeloGioacchino Del Regno <
+> angelogioacchino.delregno@collabora.com>
+> Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+> Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+> ---
+>  arch/arm64/boot/dts/mediatek/mt8195.dtsi | 15 ++-------------
+>  1 file changed, 2 insertions(+), 13 deletions(-)
+> 
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
+> b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
+> index b57e620c2c72..db16eba9d475 100644
+> --- a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
+> +++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
+> @@ -10,7 +10,6 @@
+>  #include <dt-bindings/interrupt-controller/irq.h>
+>  #include <dt-bindings/phy/phy.h>
+>  #include <dt-bindings/pinctrl/mt8195-pinfunc.h>
+> -#include <dt-bindings/reset/ti-syscon.h>
+>  
+>  / {
+>  	compatible = "mediatek,mt8195";
+> @@ -292,20 +291,10 @@
+>  		};
+>  
+>  		infracfg_ao: syscon@10001000 {
+> -			compatible = "mediatek,mt8195-infracfg_ao",
+> "syscon", "simple-mfd";
+> +			compatible = "mediatek,mt8195-infracfg_ao",
+> "syscon";
+>  			reg = <0 0x10001000 0 0x1000>;
+>  			#clock-cells = <1>;
+> -
+> -			infracfg_rst: reset-controller {
+> -				compatible = "ti,syscon-reset";
+> -				#reset-cells = <1>;
+> -				ti,reset-bits = <
+> -					0x140 18 0x144 18 0 0
+> (ASSERT_SET | DEASSERT_SET | STATUS_NONE) /* pcie */
+> -					0x120 0  0x124 0  0 0
+> (ASSERT_SET | DEASSERT_SET | STATUS_NONE) /* thermal */
+> -					0x730 10 0x734 10 0 0
+> (ASSERT_SET | DEASSERT_SET | STATUS_NONE) /* thermal */
+> -					0x150 5  0x154 5  0 0
+> (ASSERT_SET | DEASSERT_SET | STATUS_NONE) /* svs gpu */
+> -				>;
+> -			};
+> +			#reset-cells = <1>;
+>  		};
+>  
+>  		pericfg: syscon@10003000 {
+> -- 
+> 2.18.0
+> 
 
-Adjust lsr/status variables and related call chains to use u16.
-Technically, some of these type conversion would not be needed but it
-doesn't hurt to be consistent.
+Hello Matthias,
 
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
----
- drivers/tty/serial/8250/8250.h         |  4 ++--
- drivers/tty/serial/8250/8250_exar.c    |  2 +-
- drivers/tty/serial/8250/8250_fsl.c     |  2 +-
- drivers/tty/serial/8250/8250_ingenic.c |  2 +-
- drivers/tty/serial/8250/8250_omap.c    |  7 +++----
- drivers/tty/serial/8250/8250_port.c    | 17 +++++++++--------
- include/linux/serial_8250.h            |  6 +++---
- 7 files changed, 20 insertions(+), 20 deletions(-)
+driver part is accepted by Setphen[1].
+dts part is also reviewed.
+Is these dts parts ok for you? (including patch 15 and 16)
+Or should I send another series for dts part?
 
-diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
-index b120da57c61f..0ff5688ba90c 100644
---- a/drivers/tty/serial/8250/8250.h
-+++ b/drivers/tty/serial/8250/8250.h
-@@ -133,9 +133,9 @@ static inline void serial_out(struct uart_8250_port *up, int offset, int value)
-  *
-  *	Returns LSR value or'ed with the preserved flags (if any).
-  */
--static inline unsigned int serial_lsr_in(struct uart_8250_port *up)
-+static inline u16 serial_lsr_in(struct uart_8250_port *up)
- {
--	unsigned int lsr = up->lsr_saved_flags;
-+	u16 lsr = up->lsr_saved_flags;
- 
- 	lsr |= serial_in(up, UART_LSR);
- 	up->lsr_saved_flags = lsr & LSR_SAVE_FLAGS;
-diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
-index 528779b40049..3d999eec4087 100644
---- a/drivers/tty/serial/8250/8250_exar.c
-+++ b/drivers/tty/serial/8250/8250_exar.c
-@@ -195,11 +195,11 @@ static int xr17v35x_startup(struct uart_port *port)
- 
- static void exar_shutdown(struct uart_port *port)
- {
--	unsigned char lsr;
- 	bool tx_complete = false;
- 	struct uart_8250_port *up = up_to_u8250p(port);
- 	struct circ_buf *xmit = &port->state->xmit;
- 	int i = 0;
-+	u16 lsr;
- 
- 	do {
- 		lsr = serial_in(up, UART_LSR);
-diff --git a/drivers/tty/serial/8250/8250_fsl.c b/drivers/tty/serial/8250/8250_fsl.c
-index 9c01c531349d..fd4005fcd0d6 100644
---- a/drivers/tty/serial/8250/8250_fsl.c
-+++ b/drivers/tty/serial/8250/8250_fsl.c
-@@ -25,8 +25,8 @@
- 
- int fsl8250_handle_irq(struct uart_port *port)
- {
--	unsigned char lsr, orig_lsr;
- 	unsigned long flags;
-+	u16 lsr, orig_lsr;
- 	unsigned int iir;
- 	struct uart_8250_port *up = up_to_u8250p(port);
- 
-diff --git a/drivers/tty/serial/8250/8250_ingenic.c b/drivers/tty/serial/8250/8250_ingenic.c
-index cff91aa03f29..2b2f5d8d24b9 100644
---- a/drivers/tty/serial/8250/8250_ingenic.c
-+++ b/drivers/tty/serial/8250/8250_ingenic.c
-@@ -54,7 +54,7 @@ static void early_out(struct uart_port *port, int offset, uint8_t value)
- 
- static void ingenic_early_console_putc(struct uart_port *port, unsigned char c)
- {
--	uint8_t lsr;
-+	u16 lsr;
- 
- 	do {
- 		lsr = early_in(port, UART_LSR);
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index ac8bfa042391..0dcecbbc3967 100644
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -1115,8 +1115,7 @@ static bool handle_rx_dma(struct uart_8250_port *up, unsigned int iir)
- 	return omap_8250_rx_dma(up);
- }
- 
--static unsigned char omap_8250_handle_rx_dma(struct uart_8250_port *up,
--					     u8 iir, unsigned char status)
-+static u16 omap_8250_handle_rx_dma(struct uart_8250_port *up, u8 iir, u16 status)
- {
- 	if ((status & (UART_LSR_DR | UART_LSR_BI)) &&
- 	    (iir & UART_IIR_RDI)) {
-@@ -1130,7 +1129,7 @@ static unsigned char omap_8250_handle_rx_dma(struct uart_8250_port *up,
- }
- 
- static void am654_8250_handle_rx_dma(struct uart_8250_port *up, u8 iir,
--				     unsigned char status)
-+				     u16 status)
- {
- 	/*
- 	 * Queue a new transfer if FIFO has data.
-@@ -1164,7 +1163,7 @@ static int omap_8250_dma_handle_irq(struct uart_port *port)
- {
- 	struct uart_8250_port *up = up_to_u8250p(port);
- 	struct omap8250_priv *priv = up->port.private_data;
--	unsigned char status;
-+	u16 status;
- 	u8 iir;
- 
- 	serial8250_rpm_get(up);
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index c860f5964138..19c612d732cf 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1508,7 +1508,7 @@ static inline void __stop_tx(struct uart_8250_port *p)
- 	struct uart_8250_em485 *em485 = p->em485;
- 
- 	if (em485) {
--		unsigned char lsr = serial_lsr_in(p);
-+		u16 lsr = serial_lsr_in(p);
- 		u64 stop_delay = 0;
- 
- 		if (!(lsr & UART_LSR_THRE))
-@@ -1565,7 +1565,7 @@ static inline void __start_tx(struct uart_port *port)
- 
- 	if (serial8250_set_THRI(up)) {
- 		if (up->bugs & UART_BUG_TXEN) {
--			unsigned char lsr = serial_lsr_in(up);
-+			u16 lsr = serial_lsr_in(up);
- 
- 			if (lsr & UART_LSR_THRE)
- 				serial8250_tx_chars(up);
-@@ -1719,7 +1719,7 @@ static void serial8250_enable_ms(struct uart_port *port)
- 	serial8250_rpm_put(up);
- }
- 
--void serial8250_read_char(struct uart_8250_port *up, unsigned char lsr)
-+void serial8250_read_char(struct uart_8250_port *up, u16 lsr)
- {
- 	struct uart_port *port = &up->port;
- 	unsigned char ch;
-@@ -1788,7 +1788,7 @@ EXPORT_SYMBOL_GPL(serial8250_read_char);
-  * (such as THRE) because the LSR value might come from an already consumed
-  * character.
-  */
--unsigned char serial8250_rx_chars(struct uart_8250_port *up, unsigned char lsr)
-+u16 serial8250_rx_chars(struct uart_8250_port *up, u16 lsr)
- {
- 	struct uart_port *port = &up->port;
- 	int max_count = 256;
-@@ -1908,10 +1908,10 @@ static bool handle_rx_dma(struct uart_8250_port *up, unsigned int iir)
-  */
- int serial8250_handle_irq(struct uart_port *port, unsigned int iir)
- {
--	unsigned char status;
- 	struct uart_8250_port *up = up_to_u8250p(port);
- 	bool skip_rx = false;
- 	unsigned long flags;
-+	u16 status;
- 
- 	if (iir & UART_IIR_NO_INT)
- 		return 0;
-@@ -1994,7 +1994,7 @@ static unsigned int serial8250_tx_empty(struct uart_port *port)
- {
- 	struct uart_8250_port *up = up_to_u8250p(port);
- 	unsigned long flags;
--	unsigned int lsr;
-+	u16 lsr;
- 
- 	serial8250_rpm_get(up);
- 
-@@ -2117,8 +2117,8 @@ static void wait_for_xmitr(struct uart_8250_port *up, int bits)
- static int serial8250_get_poll_char(struct uart_port *port)
- {
- 	struct uart_8250_port *up = up_to_u8250p(port);
--	unsigned char lsr;
- 	int status;
-+	u16 lsr;
- 
- 	serial8250_rpm_get(up);
- 
-@@ -2173,8 +2173,9 @@ int serial8250_do_startup(struct uart_port *port)
- {
- 	struct uart_8250_port *up = up_to_u8250p(port);
- 	unsigned long flags;
--	unsigned char lsr, iir;
-+	unsigned char iir;
- 	int retval;
-+	u16 lsr;
- 
- 	if (!port->fifosize)
- 		port->fifosize = uart_config[port->type].fifo_size;
-diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
-index ff84a3ed10ea..4565f25ba9a2 100644
---- a/include/linux/serial_8250.h
-+++ b/include/linux/serial_8250.h
-@@ -119,7 +119,7 @@ struct uart_8250_port {
- 	 * be immediately processed.
- 	 */
- #define LSR_SAVE_FLAGS UART_LSR_BRK_ERROR_BITS
--	unsigned char		lsr_saved_flags;
-+	u16			lsr_saved_flags;
- #define MSR_SAVE_FLAGS UART_MSR_ANY_DELTA
- 	unsigned char		msr_saved_flags;
- 
-@@ -170,8 +170,8 @@ extern void serial8250_do_set_divisor(struct uart_port *port, unsigned int baud,
- 				      unsigned int quot_frac);
- extern int fsl8250_handle_irq(struct uart_port *port);
- int serial8250_handle_irq(struct uart_port *port, unsigned int iir);
--unsigned char serial8250_rx_chars(struct uart_8250_port *up, unsigned char lsr);
--void serial8250_read_char(struct uart_8250_port *up, unsigned char lsr);
-+u16 serial8250_rx_chars(struct uart_8250_port *up, u16 lsr);
-+void serial8250_read_char(struct uart_8250_port *up, u16 lsr);
- void serial8250_tx_chars(struct uart_8250_port *up);
- unsigned int serial8250_modem_status(struct uart_8250_port *up);
- void serial8250_init_port(struct uart_8250_port *up);
--- 
-2.30.2
+Thanks!
+
+[1]: 
+https://git.kernel.org/pub/scm/linux/kernel/git/clk/linux.git/log/?h=clk-next
+
+BRs,
+Bo-Chen
 
