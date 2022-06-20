@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86B5DCCA481
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DE54CCA480
 	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:10:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351995AbiFTOKQ (ORCPT
+        id S1352013AbiFTOKT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:10:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44186 "EHLO
+        Mon, 20 Jun 2022 10:10:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351436AbiFTNyt (ORCPT
+        with ESMTP id S1350916AbiFTNx4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:54:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECB1F32EE5;
-        Mon, 20 Jun 2022 06:21:06 -0700 (PDT)
+        Mon, 20 Jun 2022 09:53:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4BB721810;
+        Mon, 20 Jun 2022 06:20:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E5ED60EC7;
-        Mon, 20 Jun 2022 13:20:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EC7AC3411B;
-        Mon, 20 Jun 2022 13:20:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CF51060EC7;
+        Mon, 20 Jun 2022 13:20:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C61FFC3411B;
+        Mon, 20 Jun 2022 13:20:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731250;
-        bh=IVqg8u+gF0ORv3w81IDPWbZ8HpMy12YNLIg3Mycg8fk=;
+        s=korg; t=1655731229;
+        bh=RLHSQVtkqrazy0mBeNjXkqecGr67GUWi+zQRgtJ/3Bw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=12sMEThxRaQh+OfGsECgrsCr0dl57K5AxG8icJcf4Dk0vkx5e/2Pd6iUdA8zds1Kl
-         hQFlDpQw1ebDxo0U26LsQhmFMnaWrAsZjBT6zSwKapRcEPqDd1QXL5w+pHnn12JQvC
-         AhwY3h0yLg7QnzolJVj94h2RkIjZldfOspyFogCs=
+        b=lKP5kADx7QCkq6zYSIvgjZolK22Y5jZ1Z4j4HMRNB/jbDX3YqOEaD9HCh0tw6104W
+         tAUJkT1tE6q+MNVIkRxYhht00/+zwAl1osXFGeLF2Dkt6fMaVfRJKDiD4y+v6eNiWt
+         3rOq2vzr0NCBjYzXyW0GFzRcN1s7JeeFNNQ+gmyw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 159/240] random: credit architectural init the exact amount
-Date:   Mon, 20 Jun 2022 14:51:00 +0200
-Message-Id: <20220620124743.615043254@linuxfoundation.org>
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Richard Fitzgerald <rf@opensource.cirrus.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 192/240] ASoC: wm_adsp: Fix event generation for wm_adsp_fw_put()
+Date:   Mon, 20 Jun 2022 14:51:33 +0200
+Message-Id: <20220620124744.549777429@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -50,61 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Mark Brown <broonie@kernel.org>
 
-commit 12e45a2a6308105469968951e6d563e8f4fea187 upstream.
+[ Upstream commit 2abdf9f80019e8244d3806ed0e1c9f725e50b452 ]
 
-RDRAND and RDSEED can fail sometimes, which is fine. We currently
-initialize the RNG with 512 bits of RDRAND/RDSEED. We only need 256 bits
-of those to succeed in order to initialize the RNG. Instead of the
-current "all or nothing" approach, actually credit these contributions
-the amount that is actually contributed.
+Currently wm_adsp_fw_put() returns 0 rather than 1 when updating the value
+of the control, meaning that no event is generated to userspace. Fix this
+by setting the default return value to 1, the code already exits early with
+a return value of 0 if the value is unchanged.
 
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Reviewed-by: Richard Fitzgerald <rf@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220603115003.3865834-1-broonie@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/random.c |   12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ sound/soc/codecs/wm_adsp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -891,9 +891,8 @@ early_param("random.trust_bootloader", p
-  */
- int __init random_init(const char *command_line)
- {
--	size_t i;
- 	ktime_t now = ktime_get_real();
--	bool arch_init = true;
-+	unsigned int i, arch_bytes;
- 	unsigned long rv;
+diff --git a/sound/soc/codecs/wm_adsp.c b/sound/soc/codecs/wm_adsp.c
+index 13672928da99..aedfa6b2895b 100644
+--- a/sound/soc/codecs/wm_adsp.c
++++ b/sound/soc/codecs/wm_adsp.c
+@@ -791,7 +791,7 @@ int wm_adsp_fw_put(struct snd_kcontrol *kcontrol,
+ 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+ 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
+ 	struct wm_adsp *dsp = snd_soc_component_get_drvdata(component);
+-	int ret = 0;
++	int ret = 1;
  
- #if defined(LATENT_ENTROPY_PLUGIN)
-@@ -901,11 +900,12 @@ int __init random_init(const char *comma
- 	_mix_pool_bytes(compiletime_seed, sizeof(compiletime_seed));
- #endif
- 
--	for (i = 0; i < BLAKE2S_BLOCK_SIZE; i += sizeof(rv)) {
-+	for (i = 0, arch_bytes = BLAKE2S_BLOCK_SIZE;
-+	     i < BLAKE2S_BLOCK_SIZE; i += sizeof(rv)) {
- 		if (!arch_get_random_seed_long_early(&rv) &&
- 		    !arch_get_random_long_early(&rv)) {
- 			rv = random_get_entropy();
--			arch_init = false;
-+			arch_bytes -= sizeof(rv);
- 		}
- 		_mix_pool_bytes(&rv, sizeof(rv));
- 	}
-@@ -916,8 +916,8 @@ int __init random_init(const char *comma
- 
- 	if (crng_ready())
- 		crng_reseed();
--	else if (arch_init && trust_cpu)
--		credit_init_bits(BLAKE2S_BLOCK_SIZE * 8);
-+	else if (trust_cpu)
-+		credit_init_bits(arch_bytes * 8);
- 
- 	return 0;
- }
+ 	if (ucontrol->value.enumerated.item[0] == dsp[e->shift_l].fw)
+ 		return 0;
+-- 
+2.35.1
+
 
 
