@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47598C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:17:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42B42C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:17:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343502AbiFTNRj (ORCPT
+        id S1343525AbiFTNRo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:17:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36724 "EHLO
+        Mon, 20 Jun 2022 09:17:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244536AbiFTNLX (ORCPT
+        with ESMTP id S1343578AbiFTNMY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:11:23 -0400
+        Mon, 20 Jun 2022 09:12:24 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F23F1D31E;
-        Mon, 20 Jun 2022 06:05:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F5B11D328;
+        Mon, 20 Jun 2022 06:05:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BA58D614D5;
-        Mon, 20 Jun 2022 13:03:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B035CC3411B;
-        Mon, 20 Jun 2022 13:03:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C1B8F614F4;
+        Mon, 20 Jun 2022 13:04:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B485DC3411B;
+        Mon, 20 Jun 2022 13:04:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730210;
-        bh=/priOgJTXN0kbwzsFXPHLKpgAMPWgSlze1Yp7NjcPVM=;
+        s=korg; t=1655730245;
+        bh=GYU38HEj4rh8+X71tEHJGkKhTn4HiMBRUlYTJJu1n1k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vepJqmoZKuK6r7tFeTvSOghhjp76eRFCWER/3YSpqoEYlK8Z5f62EA1/Dv3k9p7g1
-         v5FIXA2I4/RnRBPfOmZk6OS7xGJ5A0ioBuIt/htmiX5UsaxxtIjtMrx6Q3CsWKso5L
-         q1b9XoN2X+c043g6c9e4EDkwIiRczVgiOwT2rwgE=
+        b=hS/P4HDDr67NvzmQmihjeEiq+otZoEN6SVshYrz9HoPZPK7W1tMjRz7ZgmfzmWhZn
+         0BiVDXshGmu+BdUIX2MzjSFwQGOTsGfy2lABIJ+HBr34Cf5r1BdN2nmF1k5LB2PeH7
+         ktr8k/CDzsMo2suvVhLw0neddIsYEPg77XEOlVLY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 58/84] irqchip/gic-v3: Fix refcount leak in gic_populate_ppi_partitions
-Date:   Mon, 20 Jun 2022 14:51:21 +0200
-Message-Id: <20220620124722.606306165@linuxfoundation.org>
+        stable@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
+        Christoph Hellwig <hch@lst.de>,
+        David Rientjes <rientjes@google.com>
+Subject: [PATCH 5.10 78/84] dma-direct: dont over-decrypt memory
+Date:   Mon, 20 Jun 2022 14:51:41 +0200
+Message-Id: <20220620124723.196723432@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124720.882450983@linuxfoundation.org>
 References: <20220620124720.882450983@linuxfoundation.org>
@@ -49,46 +50,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
 
-[ Upstream commit fa1ad9d4cc47ca2470cd904ad4519f05d7e43a2b ]
+commit 4a37f3dd9a83186cb88d44808ab35b78375082c9 upstream.
 
-of_find_node_by_phandle() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+The original x86 sev_alloc() only called set_memory_decrypted() on
+memory returned by alloc_pages_node(), so the page order calculation
+fell out of that logic. However, the common dma-direct code has several
+potential allocators, not all of which are guaranteed to round up the
+underlying allocation to a power-of-two size, so carrying over that
+calculation for the encryption/decryption size was a mistake. Fix it by
+rounding to a *number* of pages, rather than an order.
 
-Fixes: e3825ba1af3a ("irqchip/gic-v3: Add support for partitioned PPIs")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220601080930.31005-6-linmq006@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Until recently there was an even worse interaction with DMA_DIRECT_REMAP
+where we could have ended up decrypting part of the next adjacent
+vmalloc area, only averted by no architecture actually supporting both
+configs at once. Don't ask how I found that one out...
+
+Fixes: c10f07aa27da ("dma/direct: Handle force decryption for DMA coherent buffers in common code")
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Acked-by: David Rientjes <rientjes@google.com>
+[ backport the functional change without all the prior refactoring ]
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/irqchip/irq-gic-v3.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ kernel/dma/direct.c |   16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
-index 8d62028a0e04..4c8f18f0cecf 100644
---- a/drivers/irqchip/irq-gic-v3.c
-+++ b/drivers/irqchip/irq-gic-v3.c
-@@ -1872,12 +1872,15 @@ static void __init gic_populate_ppi_partitions(struct device_node *gic_node)
- 				continue;
- 
- 			cpu = of_cpu_node_to_id(cpu_node);
--			if (WARN_ON(cpu < 0))
-+			if (WARN_ON(cpu < 0)) {
-+				of_node_put(cpu_node);
- 				continue;
-+			}
- 
- 			pr_cont("%pOF[%d] ", cpu_node, cpu);
- 
- 			cpumask_set_cpu(cpu, &part->mask);
-+			of_node_put(cpu_node);
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -188,7 +188,7 @@ void *dma_direct_alloc(struct device *de
+ 			goto out_free_pages;
+ 		if (force_dma_unencrypted(dev)) {
+ 			err = set_memory_decrypted((unsigned long)ret,
+-						   1 << get_order(size));
++						   PFN_UP(size));
+ 			if (err)
+ 				goto out_free_pages;
  		}
+@@ -210,7 +210,7 @@ void *dma_direct_alloc(struct device *de
+ 	ret = page_address(page);
+ 	if (force_dma_unencrypted(dev)) {
+ 		err = set_memory_decrypted((unsigned long)ret,
+-					   1 << get_order(size));
++					   PFN_UP(size));
+ 		if (err)
+ 			goto out_free_pages;
+ 	}
+@@ -231,7 +231,7 @@ done:
+ out_encrypt_pages:
+ 	if (force_dma_unencrypted(dev)) {
+ 		err = set_memory_encrypted((unsigned long)page_address(page),
+-					   1 << get_order(size));
++					   PFN_UP(size));
+ 		/* If memory cannot be re-encrypted, it must be leaked */
+ 		if (err)
+ 			return NULL;
+@@ -244,8 +244,6 @@ out_free_pages:
+ void dma_direct_free(struct device *dev, size_t size,
+ 		void *cpu_addr, dma_addr_t dma_addr, unsigned long attrs)
+ {
+-	unsigned int page_order = get_order(size);
+-
+ 	if ((attrs & DMA_ATTR_NO_KERNEL_MAPPING) &&
+ 	    !force_dma_unencrypted(dev)) {
+ 		/* cpu_addr is a struct page cookie, not a kernel address */
+@@ -266,7 +264,7 @@ void dma_direct_free(struct device *dev,
+ 		return;
  
- 		pr_cont("}\n");
--- 
-2.35.1
-
+ 	if (force_dma_unencrypted(dev))
+-		set_memory_encrypted((unsigned long)cpu_addr, 1 << page_order);
++		set_memory_encrypted((unsigned long)cpu_addr, PFN_UP(size));
+ 
+ 	if (IS_ENABLED(CONFIG_DMA_REMAP) && is_vmalloc_addr(cpu_addr))
+ 		vunmap(cpu_addr);
+@@ -302,8 +300,7 @@ struct page *dma_direct_alloc_pages(stru
+ 
+ 	ret = page_address(page);
+ 	if (force_dma_unencrypted(dev)) {
+-		if (set_memory_decrypted((unsigned long)ret,
+-				1 << get_order(size)))
++		if (set_memory_decrypted((unsigned long)ret, PFN_UP(size)))
+ 			goto out_free_pages;
+ 	}
+ 	memset(ret, 0, size);
+@@ -318,7 +315,6 @@ void dma_direct_free_pages(struct device
+ 		struct page *page, dma_addr_t dma_addr,
+ 		enum dma_data_direction dir)
+ {
+-	unsigned int page_order = get_order(size);
+ 	void *vaddr = page_address(page);
+ 
+ 	/* If cpu_addr is not from an atomic pool, dma_free_from_pool() fails */
+@@ -327,7 +323,7 @@ void dma_direct_free_pages(struct device
+ 		return;
+ 
+ 	if (force_dma_unencrypted(dev))
+-		set_memory_encrypted((unsigned long)vaddr, 1 << page_order);
++		set_memory_encrypted((unsigned long)vaddr, PFN_UP(size));
+ 
+ 	dma_free_contiguous(dev, page, size);
+ }
 
 
