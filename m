@@ -2,85 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC1E6CCA481
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACC64CCA47C
 	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:20:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344376AbiFTNS5 (ORCPT
+        id S1344244AbiFTNSi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:18:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37668 "EHLO
+        Mon, 20 Jun 2022 09:18:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345294AbiFTNOT (ORCPT
+        with ESMTP id S1345204AbiFTNOQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:14:19 -0400
+        Mon, 20 Jun 2022 09:14:16 -0400
 Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AF171FCDE
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 06:06:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 442081FA7F;
+        Mon, 20 Jun 2022 06:06:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 5A2D4CE1395
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 13:04:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F271DC3411C;
-        Mon, 20 Jun 2022 13:04:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655730290;
-        bh=EkiVmwPNEg3FOzf15e9eFLF0yMH/4A+tHea5lErg9qs=;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 6D807CE1391;
+        Mon, 20 Jun 2022 13:05:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 346F9C3411B;
+        Mon, 20 Jun 2022 13:05:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655730328;
+        bh=35ASCPnS8+xGT0L0LVS2NYvX5iXNUglTyS4P5OUQwgg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=buWOlcul2r5sjtIUpIQJEVZXtEDcHaj+G07vJWJMYiIV712MtZ1F9hgx8fQBbn39Q
-         hXHQFTlDJ+NYj1Ybu3jYFSRC7xLLZUdslaTce58blhs3Bd5eYciWiYmmL5ItCi9coj
-         3tlV4vleC77OoPFFY9UuxH7rVVgXINaI7W3KSdYLiObE60LTAcFoEVaBn2jJitqaYX
-         L9rdhO/je0oFB9R1PrRVnu6c7lrr/ra6ooZ1Fj+saFzzOvXHOljLyb/5DzfnOWRzq8
-         KpyG/TUznu3xNjU/Lk9rr7/8Or0V/1+TUn2NJnQYZizsbUhkzLwrX/ivmkNLVgC5Jz
-         FqLsq2xRpxlkg==
-From:   Oded Gabbay <ogabbay@kernel.org>
+        b=XuS2mHAgv0omWgoJbTwlh4OouWfZx6nrIKQDmIVBuVQU0dZWhZeBQRliXixtpVfr+
+         9lM8NaGubXRKlLeBkeFGXBjmeD3dCt9r7o3FpQHbW2Gw01hhn0g2AJbSn7PDxcS+2u
+         LcxKUeEU4Zf95QfEDX5VKL6bzlN2XG9tCwW34dSA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Yuri Nudelman <ynudelman@habana.ai>
-Subject: [PATCH 10/17] habanalabs: fix NULL dereference on cs timeout
-Date:   Mon, 20 Jun 2022 16:04:25 +0300
-Message-Id: <20220620130432.1180451-10-ogabbay@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220620130432.1180451-1-ogabbay@kernel.org>
-References: <20220620130432.1180451-1-ogabbay@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Adam Ford <aford173@gmail.com>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 019/106] ASoC: wm8962: Fix suspend while playing music
+Date:   Mon, 20 Jun 2022 14:50:38 +0200
+Message-Id: <20220620124724.953424961@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
+References: <20220620124724.380838401@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yuri Nudelman <ynudelman@habana.ai>
+From: Adam Ford <aford173@gmail.com>
 
-Device descriptor is accessed before an assignment
+[ Upstream commit d1f5272c0f7d2e53c6f2480f46725442776f5f78 ]
 
-Signed-off-by: Yuri Nudelman <ynudelman@habana.ai>
-Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
-Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
+If the audio CODEC is playing sound when the system is suspended,
+it can be left in a state which throws the following error:
+
+wm8962 3-001a: ASoC: error at soc_component_read_no_lock on wm8962.3-001a: -16
+
+Once this error has occurred, the audio will not work again until rebooted.
+
+Fix this by configuring SET_SYSTEM_SLEEP_PM_OPS.
+
+Signed-off-by: Adam Ford <aford173@gmail.com>
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220526182129.538472-1-aford173@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/habanalabs/common/command_submission.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ sound/soc/codecs/wm8962.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/misc/habanalabs/common/command_submission.c b/drivers/misc/habanalabs/common/command_submission.c
-index 72a557b83a7d..c050f38b7091 100644
---- a/drivers/misc/habanalabs/common/command_submission.c
-+++ b/drivers/misc/habanalabs/common/command_submission.c
-@@ -812,6 +812,8 @@ static void cs_timedout(struct work_struct *work)
- 		return;
- 	}
+diff --git a/sound/soc/codecs/wm8962.c b/sound/soc/codecs/wm8962.c
+index ba16bdf9e478..a5a4ae4440cc 100644
+--- a/sound/soc/codecs/wm8962.c
++++ b/sound/soc/codecs/wm8962.c
+@@ -3867,6 +3867,7 @@ static int wm8962_runtime_suspend(struct device *dev)
+ #endif
  
-+	hdev = cs->ctx->hdev;
-+
- 	if (likely(!skip_reset_on_timeout)) {
- 		if (hdev->reset_on_lockup)
- 			device_reset = true;
-@@ -822,8 +824,6 @@ static void cs_timedout(struct work_struct *work)
- 		cs->timedout = true;
- 	}
+ static const struct dev_pm_ops wm8962_pm = {
++	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend, pm_runtime_force_resume)
+ 	SET_RUNTIME_PM_OPS(wm8962_runtime_suspend, wm8962_runtime_resume, NULL)
+ };
  
--	hdev = cs->ctx->hdev;
--
- 	/* Save only the first CS timeout parameters */
- 	rc = atomic_cmpxchg(&hdev->last_error.cs_timeout.write_enable, 1, 0);
- 	if (rc) {
 -- 
-2.25.1
+2.35.1
+
+
 
