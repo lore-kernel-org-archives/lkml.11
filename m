@@ -2,47 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4C41CCA480
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 22:21:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 104B0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 22:21:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344143AbiFTWVB (ORCPT
+        id S1344191AbiFTWVD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 18:21:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36366 "EHLO
+        Mon, 20 Jun 2022 18:21:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244457AbiFTWUm (ORCPT
+        with ESMTP id S244719AbiFTWUn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 18:20:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 934801B7BA;
-        Mon, 20 Jun 2022 15:20:37 -0700 (PDT)
+        Mon, 20 Jun 2022 18:20:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68D391BE85;
+        Mon, 20 Jun 2022 15:20:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B4421B8164A;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9BB9761302;
         Mon, 20 Jun 2022 22:20:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F3CEC341C4;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB7EBC341D0;
         Mon, 20 Jun 2022 22:20:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1655763634;
-        bh=BzfEqP9ZYAPt1rGlIDWKlmdtdWPBu8au1LUFkZLPWlc=;
+        bh=fOc9xTo9noQUtXSDMR5WJIHkNdSsrsFNVIlNlxZLH50=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oHVBE8KNv/cZfZZ+GP0GVSaJkI0CWNmwoGVW4IkSqhdIU1gj3ueXFrCicOqFBcpy6
-         z1RtdbYlRukO8rO81rMfaZiLjkluSmlKJf2Y0ZlXgc97fIv+hbW6LsPbJA3bA/UPIV
-         ESpCpICh1e4FCA7uf8XuwzxC7lNhoD2J5Yct/uUP3XU+PtndgEkZfl+PTQheYREKjS
-         E/uIBMHEcFzHjxvhBYm9bB8cgG9onuwpFH2/MLpx6FVMKLso+AvL7PsuBoVlnAK8po
-         KNyDv6CCW1iu93u9FeMo7V8mfjHG/vA3Gv57P8HBTYIoD+htSRsSc0LC4pfG/2rF3g
-         1RfDROIS/WBcQ==
+        b=a0KJoIJTBJ+Y5jVRE5E9CD1dTRHBWAelLTfseUbGLRi//UzfbXpIj2iU3U8ztQBA5
+         vH3rIZ2w8GVUpAdInHNPSbUVl3whA41c94ptNMeNk5S/rkeCW8GGm1vr6zd9+wWrqL
+         uerl/BEvUgOEKmTP6rECBCHPyh/UxUQw1pT+EdWUw9r2EP+D1taP4xHobKAfcqlPqJ
+         fL6nhguLD4Swe9JLL3bI43S7ZVOgdXZipgjLqmYSDakQCR0ExaSdP1r38naqvNmDCJ
+         F8KilofCaGy7EVh6o/K5wYDPSTOayGrQy2lWkpbgKiJZxT6ZV/1wP/4bxWwmW1n0H+
+         qHinlt9FnH/FA==
 Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 03B8C5C0A33; Mon, 20 Jun 2022 15:20:34 -0700 (PDT)
+        id 122A85C0E3F; Mon, 20 Jun 2022 15:20:34 -0700 (PDT)
 From:   "Paul E. McKenney" <paulmck@kernel.org>
 To:     rcu@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
-        rostedt@goodmis.org, Zqiang <qiang1.zhang@intel.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>
-Subject: [PATCH rcu 04/12] rcu: Immediately boost preempted readers for strict grace periods
-Date:   Mon, 20 Jun 2022 15:20:24 -0700
-Message-Id: <20220620222032.3839547-4-paulmck@kernel.org>
+        rostedt@goodmis.org, "Paul E. McKenney" <paulmck@kernel.org>,
+        Zhangfei Gao <zhangfei.gao@linaro.org>,
+        Shameerali Kolothum Thodi 
+        <shameerali.kolothum.thodi@huawei.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH rcu 12/12] srcu: Block less aggressively for expedited grace periods
+Date:   Mon, 20 Jun 2022 15:20:32 -0700
+Message-Id: <20220620222032.3839547-12-paulmck@kernel.org>
 X-Mailer: git-send-email 2.31.1.189.g2e36527f23
 In-Reply-To: <20220620222022.GA3839466@paulmck-ThinkPad-P17-Gen-1>
 References: <20220620222022.GA3839466@paulmck-ThinkPad-P17-Gen-1>
@@ -52,42 +55,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zqiang <qiang1.zhang@intel.com>
+Commit 282d8998e997 ("srcu: Prevent expedited GPs and blocking readers
+from consuming CPU") fixed a problem where a long-running expedited SRCU
+grace period could block kernel live patching.  It did so by giving up
+on expediting once a given SRCU expedited grace period grew too old.
 
-The intent of the CONFIG_RCU_STRICT_GRACE_PERIOD Konfig option is to
-cause normal grace periods to complete quickly in order to better catch
-errors resulting from improperly leaking pointers from RCU read-side
-critical sections.  However, kernels built with this option enabled still
-wait for some hundreds of milliseconds before boosting RCU readers that
-have been preempted within their current critical section.  The value
-of this delay is set by the CONFIG_RCU_BOOST_DELAY Kconfig option,
-which defaults to 500 milliseconds.
+Unfortunately, this added excessive delays to boots of embedded systems
+running on qemu that use the ARM IORT RMR feature.  This commit therefore
+makes the transition away from expediting less aggressive, increasing
+the per-grace-period phase number of non-sleeping polls of readers from
+one to three and increasing the required grace-period age from one jiffy
+(actually from zero to one jiffies) to two jiffies (actually from one
+to two jiffies).
 
-This commit therefore causes kernels build with strict grace periods
-to ignore CONFIG_RCU_BOOST_DELAY.  This causes rcu_initiate_boost()
-to start boosting immediately after all CPUs on a given leaf rcu_node
-structure have passed through their quiescent states.
-
-Signed-off-by: Zqiang <qiang1.zhang@intel.com>
+Fixes: 282d8998e997 ("srcu: Prevent expedited GPs and blocking readers from consuming CPU")
 Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+Reported-by: Zhangfei Gao <zhangfei.gao@linaro.org>
+Reported-by: chenxiang (M)" <chenxiang66@hisilicon.com>
+Cc: Shameerali Kolothum Thodi  <shameerali.kolothum.thodi@huawei.com>
+Cc: Paolo Bonzini <pbonzini@redhat.com>
+Link: https://lore.kernel.org/all/20615615-0013-5adc-584f-2b1d5c03ebfc@linaro.org/
 ---
- kernel/rcu/tree_plugin.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ kernel/rcu/srcutree.c | 20 +++++++++++++-------
+ 1 file changed, 13 insertions(+), 7 deletions(-)
 
-diff --git a/kernel/rcu/tree_plugin.h b/kernel/rcu/tree_plugin.h
-index 440d9e02a26e0..53d05eb804121 100644
---- a/kernel/rcu/tree_plugin.h
-+++ b/kernel/rcu/tree_plugin.h
-@@ -1140,7 +1140,8 @@ static void rcu_initiate_boost(struct rcu_node *rnp, unsigned long flags)
- 	    (rnp->gp_tasks != NULL &&
- 	     rnp->boost_tasks == NULL &&
- 	     rnp->qsmask == 0 &&
--	     (!time_after(rnp->boost_time, jiffies) || rcu_state.cbovld))) {
-+	     (!time_after(rnp->boost_time, jiffies) || rcu_state.cbovld ||
-+	      IS_ENABLED(CONFIG_RCU_STRICT_GRACE_PERIOD)))) {
- 		if (rnp->exp_tasks == NULL)
- 			WRITE_ONCE(rnp->boost_tasks, rnp->gp_tasks);
- 		raw_spin_unlock_irqrestore_rcu_node(rnp, flags);
+diff --git a/kernel/rcu/srcutree.c b/kernel/rcu/srcutree.c
+index 50ba70f019dea..0db7873f4e95b 100644
+--- a/kernel/rcu/srcutree.c
++++ b/kernel/rcu/srcutree.c
+@@ -513,7 +513,7 @@ static bool srcu_readers_active(struct srcu_struct *ssp)
+ 
+ #define SRCU_INTERVAL		1	// Base delay if no expedited GPs pending.
+ #define SRCU_MAX_INTERVAL	10	// Maximum incremental delay from slow readers.
+-#define SRCU_MAX_NODELAY_PHASE	1	// Maximum per-GP-phase consecutive no-delay instances.
++#define SRCU_MAX_NODELAY_PHASE	3	// Maximum per-GP-phase consecutive no-delay instances.
+ #define SRCU_MAX_NODELAY	100	// Maximum consecutive no-delay instances.
+ 
+ /*
+@@ -522,16 +522,22 @@ static bool srcu_readers_active(struct srcu_struct *ssp)
+  */
+ static unsigned long srcu_get_delay(struct srcu_struct *ssp)
+ {
++	unsigned long gpstart;
++	unsigned long j;
+ 	unsigned long jbase = SRCU_INTERVAL;
+ 
+ 	if (ULONG_CMP_LT(READ_ONCE(ssp->srcu_gp_seq), READ_ONCE(ssp->srcu_gp_seq_needed_exp)))
+ 		jbase = 0;
+-	if (rcu_seq_state(READ_ONCE(ssp->srcu_gp_seq)))
+-		jbase += jiffies - READ_ONCE(ssp->srcu_gp_start);
+-	if (!jbase) {
+-		WRITE_ONCE(ssp->srcu_n_exp_nodelay, READ_ONCE(ssp->srcu_n_exp_nodelay) + 1);
+-		if (READ_ONCE(ssp->srcu_n_exp_nodelay) > SRCU_MAX_NODELAY_PHASE)
+-			jbase = 1;
++	if (rcu_seq_state(READ_ONCE(ssp->srcu_gp_seq))) {
++		j = jiffies - 1;
++		gpstart = READ_ONCE(ssp->srcu_gp_start);
++		if (time_after(j, gpstart))
++			jbase += j - gpstart;
++		if (!jbase) {
++			WRITE_ONCE(ssp->srcu_n_exp_nodelay, READ_ONCE(ssp->srcu_n_exp_nodelay) + 1);
++			if (READ_ONCE(ssp->srcu_n_exp_nodelay) > SRCU_MAX_NODELAY_PHASE)
++				jbase = 1;
++		}
+ 	}
+ 	return jbase > SRCU_MAX_INTERVAL ? SRCU_MAX_INTERVAL : jbase;
+ }
 -- 
 2.31.1.189.g2e36527f23
 
