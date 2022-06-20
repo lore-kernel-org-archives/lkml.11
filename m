@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BC0AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:22:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B4BFC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:22:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244484AbiFTNWU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:22:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55458 "EHLO
+        id S1344498AbiFTNWZ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:22:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345014AbiFTNTi (ORCPT
+        with ESMTP id S1345221AbiFTNTp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:19:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EC0915FFA;
-        Mon, 20 Jun 2022 06:08:09 -0700 (PDT)
+        Mon, 20 Jun 2022 09:19:45 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49E3F20BF3;
+        Mon, 20 Jun 2022 06:08:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 174E6B811C0;
-        Mon, 20 Jun 2022 13:08:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4683DC3411B;
-        Mon, 20 Jun 2022 13:08:01 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 51956CE138F;
+        Mon, 20 Jun 2022 13:05:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1278DC341CA;
+        Mon, 20 Jun 2022 13:05:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730481;
-        bh=M/2gDY7ZzNb/oAKKkhfnwbKWyEObv/vJS66e1WXjz3U=;
+        s=korg; t=1655730357;
+        bh=z17Ga3WJ++lHqaiRT4zQgkK6L8bZErLb/32G5B5+XmY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sYrpzT9y4QQTVvwsHcHZ9R3+qbVOievosRg485IYWSiXi+W1Ql7Eclp2Orccf3f0E
-         ju07exjUaaS83xZuCxoD/FKEcGbKE632Qa+DZg6ERzazqJtZPertNfoDocymrPmfsL
-         H1j55vlUneGTt9osBVMMPf5kuRvfcUnM7QwCSa4I=
+        b=IrEUybslz+t9paP26lOeTrIaRbbxJEmExFHfoxAQXzl46LiY1qxxErGKMKMbCw92e
+         1pTlcUozaOh/bCGPXCEIcb1v/x6LFA4eyiB6HIYfbphckgs8XhaFnFGvilRVE1ON3o
+         1c4WipGarFkp2eGfV857Xc+oAyaaduGLgqvhwoiQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maksym Yaremchuk <maksymy@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Helge Deller <deller@gmx.de>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 065/106] mlxsw: spectrum_cnt: Reorder counter pools
-Date:   Mon, 20 Jun 2022 14:51:24 +0200
-Message-Id: <20220620124726.323272076@linuxfoundation.org>
+Subject: [PATCH 5.15 027/106] scsi: mpt3sas: Fix out-of-bounds compiler warning
+Date:   Mon, 20 Jun 2022 14:50:46 +0200
+Message-Id: <20220620124725.189125923@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
 References: <20220620124724.380838401@linuxfoundation.org>
@@ -51,49 +50,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Petr Machata <petrm@nvidia.com>
+From: Helge Deller <deller@gmx.de>
 
-[ Upstream commit 4b7a632ac4e7101ceefee8484d5c2ca505d347b3 ]
+[ Upstream commit 120f1d95efb1cdb6fe023c84e38ba06d8f78cd03 ]
 
-Both RIF and ACL flow counters use a 24-bit SW-managed counter address to
-communicate which counter they want to bind.
+I'm facing this warning when building for the parisc64 architecture:
 
-In a number of Spectrum FW releases, binding a RIF counter is broken and
-slices the counter index to 16 bits. As a result, on Spectrum-2 and above,
-no more than about 410 RIF counters can be effectively used. This
-translates to 205 netdevices for which L3 HW stats can be enabled. (This
-does not happen on Spectrum-1, because there are fewer counters available
-overall and the counter index never exceeds 16 bits.)
+drivers/scsi/mpt3sas/mpt3sas_base.c: In function ‘_base_make_ioc_operational’:
+drivers/scsi/mpt3sas/mpt3sas_base.c:5396:40: warning: array subscript ‘Mpi2SasIOUnitPage1_t {aka struct _MPI2_CONFIG_PAGE_SASIOUNIT_1}[0]’ is partly outside array bounds of ‘unsigned char[20]’ [-Warray-bounds]
+ 5396 |             (le16_to_cpu(sas_iounit_pg1->SASWideMaxQueueDepth)) ?
+drivers/scsi/mpt3sas/mpt3sas_base.c:5382:26: note: referencing an object of size 20 allocated by ‘kzalloc’
+ 5382 |         sas_iounit_pg1 = kzalloc(sz, GFP_KERNEL);
+      |                          ^~~~~~~~~~~~~~~~~~~~~~~
 
-Binding counters to ACLs does not have this issue. Therefore reorder the
-counter allocation scheme so that RIF counters come first and therefore get
-lower indices that are below the 16-bit barrier.
+The problem is, that only 20 bytes are allocated with kmalloc(), which is
+sufficient to hold the bytes which are needed.  Nevertheless, gcc complains
+because the whole Mpi2SasIOUnitPage1_t struct is 32 bytes in size and thus
+doesn't fit into those 20 bytes.
 
-Fixes: 98e60dce4da1 ("Merge branch 'mlxsw-Introduce-initial-Spectrum-2-support'")
-Reported-by: Maksym Yaremchuk <maksymy@nvidia.com>
-Signed-off-by: Petr Machata <petrm@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Link: https://lore.kernel.org/r/20220613125017.2018162-1-idosch@nvidia.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+This patch simply allocates all 32 bytes (instead of 20) and thus avoids
+the warning. There is no functional change introduced by this patch.
+
+While touching the code I cleaned up to calculation of max_wideport_qd,
+max_narrowport_qd and max_sata_qd to make it easier readable.
+
+Test successfully tested on a HP C8000 PA-RISC workstation with 64-bit
+kernel.
+
+Link: https://lore.kernel.org/r/YpZ197iZdDZSCzrT@p100
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/scsi/mpt3sas/mpt3sas_base.c | 23 ++++++++++++-----------
+ 1 file changed, 12 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.h
-index a68d931090dd..15c8d4de8350 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.h
-@@ -8,8 +8,8 @@
- #include "spectrum.h"
+diff --git a/drivers/scsi/mpt3sas/mpt3sas_base.c b/drivers/scsi/mpt3sas/mpt3sas_base.c
+index c38e68943205..fafa9fbf3b10 100644
+--- a/drivers/scsi/mpt3sas/mpt3sas_base.c
++++ b/drivers/scsi/mpt3sas/mpt3sas_base.c
+@@ -5381,6 +5381,7 @@ static int _base_assign_fw_reported_qd(struct MPT3SAS_ADAPTER *ioc)
+ 	Mpi2ConfigReply_t mpi_reply;
+ 	Mpi2SasIOUnitPage1_t *sas_iounit_pg1 = NULL;
+ 	Mpi26PCIeIOUnitPage1_t pcie_iounit_pg1;
++	u16 depth;
+ 	int sz;
+ 	int rc = 0;
  
- enum mlxsw_sp_counter_sub_pool_id {
--	MLXSW_SP_COUNTER_SUB_POOL_FLOW,
- 	MLXSW_SP_COUNTER_SUB_POOL_RIF,
-+	MLXSW_SP_COUNTER_SUB_POOL_FLOW,
- };
- 
- int mlxsw_sp_counter_alloc(struct mlxsw_sp *mlxsw_sp,
+@@ -5392,7 +5393,7 @@ static int _base_assign_fw_reported_qd(struct MPT3SAS_ADAPTER *ioc)
+ 		goto out;
+ 	/* sas iounit page 1 */
+ 	sz = offsetof(Mpi2SasIOUnitPage1_t, PhyData);
+-	sas_iounit_pg1 = kzalloc(sz, GFP_KERNEL);
++	sas_iounit_pg1 = kzalloc(sizeof(Mpi2SasIOUnitPage1_t), GFP_KERNEL);
+ 	if (!sas_iounit_pg1) {
+ 		pr_err("%s: failure at %s:%d/%s()!\n",
+ 		    ioc->name, __FILE__, __LINE__, __func__);
+@@ -5405,16 +5406,16 @@ static int _base_assign_fw_reported_qd(struct MPT3SAS_ADAPTER *ioc)
+ 		    ioc->name, __FILE__, __LINE__, __func__);
+ 		goto out;
+ 	}
+-	ioc->max_wideport_qd =
+-	    (le16_to_cpu(sas_iounit_pg1->SASWideMaxQueueDepth)) ?
+-	    le16_to_cpu(sas_iounit_pg1->SASWideMaxQueueDepth) :
+-	    MPT3SAS_SAS_QUEUE_DEPTH;
+-	ioc->max_narrowport_qd =
+-	    (le16_to_cpu(sas_iounit_pg1->SASNarrowMaxQueueDepth)) ?
+-	    le16_to_cpu(sas_iounit_pg1->SASNarrowMaxQueueDepth) :
+-	    MPT3SAS_SAS_QUEUE_DEPTH;
+-	ioc->max_sata_qd = (sas_iounit_pg1->SATAMaxQDepth) ?
+-	    sas_iounit_pg1->SATAMaxQDepth : MPT3SAS_SATA_QUEUE_DEPTH;
++
++	depth = le16_to_cpu(sas_iounit_pg1->SASWideMaxQueueDepth);
++	ioc->max_wideport_qd = (depth ? depth : MPT3SAS_SAS_QUEUE_DEPTH);
++
++	depth = le16_to_cpu(sas_iounit_pg1->SASNarrowMaxQueueDepth);
++	ioc->max_narrowport_qd = (depth ? depth : MPT3SAS_SAS_QUEUE_DEPTH);
++
++	depth = sas_iounit_pg1->SATAMaxQDepth;
++	ioc->max_sata_qd = (depth ? depth : MPT3SAS_SATA_QUEUE_DEPTH);
++
+ 	/* pcie iounit page 1 */
+ 	rc = mpt3sas_config_get_pcie_iounit_pg1(ioc, &mpi_reply,
+ 	    &pcie_iounit_pg1, sizeof(Mpi26PCIeIOUnitPage1_t));
 -- 
 2.35.1
 
