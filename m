@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8B2CCCA481
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 20:11:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8070CCCA480
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 20:11:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344996AbiFTUJz (ORCPT
+        id S1344284AbiFTULe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 16:09:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38460 "EHLO
+        Mon, 20 Jun 2022 16:11:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344741AbiFTUIm (ORCPT
+        with ESMTP id S1344282AbiFTUJA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 16:08:42 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15EA02183A;
-        Mon, 20 Jun 2022 13:07:29 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id q15so6375291wmj.2;
-        Mon, 20 Jun 2022 13:07:29 -0700 (PDT)
+        Mon, 20 Jun 2022 16:09:00 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 537DF21E16;
+        Mon, 20 Jun 2022 13:07:33 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id o8so16104302wro.3;
+        Mon, 20 Jun 2022 13:07:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=E0jLkqilWpvnbTcSo4wfjkJhQqF1reP5Ib9ezCHoYWc=;
-        b=U/u1eI8XG0RLSewZC9yH0TEBjAQ2QVQeFgi9rzCUa/S/IXH9PHYw0gdakIKNDT90kV
-         hMuwVJCliXAFt+/OKjfOJGf07gA2TRZWRFVa9nvnR7w8MWysPG76mxgNw9ukyrADHZ5N
-         ALr37IiaH9saP7DoyArHAIbUsX5KFRzx8Uw6meqm+M15MdeUmVUAWTmMi15JWu+Wq07m
-         itZyiVgoqQZkvIT6ra3IIfQvQJZJo5C0Y+CD2t4yxMPenkkULdYZFq6Wwj6TJ4CoenZF
-         dRCH3mEbVAzCd1YjOvUgfQGm1TEKpTWU8WSRmJwdw9G0Be/ybY4XqRUVEJ0I0EIJYNRr
-         FSCg==
+        bh=rFP2epvfooKrZpPFT8BKKDNI28ulsq6H0dBYSPgFoyk=;
+        b=AjebCnrCn0roYHEXtZUSrMTMzWgreVkEMmGmWHB4aW5MqCKA4G4WAtMmLhSH/wSD9O
+         hErB+wW/nmuyZcj6VsVAhDUiCzXy1A0InOSiMOhVg1zOo944NV//bnCbQ2Nfq/Wvm/4X
+         gHuja0BV7C29XQ21FTvJ66Q4m2HHGHfjAfbDNfzOus4oL46kEV7W/Ut/DNWQxw6A0wN3
+         MaclksZzjz+wgvfYM3RiCRmGkMi+n+Veo8oqESntYKECZMRtvsRVSUdWqg/UzoMptmRp
+         DOSCYB+7UcRMW3szUyAX5e47sGuNfYYpbyhUPLebUPzr6yz1Frjd0ZNrD8flYUO0+4T7
+         n+iQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=E0jLkqilWpvnbTcSo4wfjkJhQqF1reP5Ib9ezCHoYWc=;
-        b=1Xy+1tjkZ1GV5lQ3g5DPuBw+io2/y9ZSIc3csHyFPVeuwB8XJFyNr0bk8ZokQqWcqa
-         VvD6pPC8zwznOfMxWggTwpc/kV/BXu0hO9jSALm118Espc+HOSUlVbD3bEI7inWuZJfR
-         d6lTYRc36wcXxL1BtNae54LHdyTYJWNTuLucJom3i0Oad55VIh3MeRMJL9uTwQT1+mH0
-         noEwZ9atXshX1uxArroPJOsd5SVgJCnKYwsmpndP1PsFTrjiLQSDDbZSd41VZ8/E2AZ+
-         JdaBggyI7jWQrq1OIzHuEaGJRn1XzPuPhztae+rEYBwtPlGLq95HCHhyw1RIuMnWSeeH
-         Ccuw==
-X-Gm-Message-State: AJIora+O9GpFtnQAQUSgoNUf39qKFl0p2sbc44E2ep9dcr2qe0ypkRQg
-        Uzwk7M5Jt6OVTmAwWtu1heA=
-X-Google-Smtp-Source: AGRyM1uhXBLM2mCEhpF1oCgYeIG722Adlji+SZHE2C7bZquQV7GS0wP1KfS6UMHZPFYNwRmyV3niBQ==
-X-Received: by 2002:a05:600c:1c10:b0:39c:4708:648d with SMTP id j16-20020a05600c1c1000b0039c4708648dmr26590108wms.85.1655755649580;
-        Mon, 20 Jun 2022 13:07:29 -0700 (PDT)
+        bh=rFP2epvfooKrZpPFT8BKKDNI28ulsq6H0dBYSPgFoyk=;
+        b=m2PZwAKxSBFM29cdZs60Qvi1i/8UCO/KbK7InycUNlGZtaiD17J9ovFjPWph5VAF6Q
+         blWNzyx1nWQpTl0LsKsQE0xcG4ioZHg67VfIVu6YzYDAR6mqKYp6Phi9c/b2nOPn/zhx
+         QEt7m6pBAB3eLsDSNI8UWWNbrKY2zqZwnLn4QBl2G9zq2UcGcazBk89+y594Ax+EzEfn
+         vj3/1j3wxAIbO6si80Rj6g180SzFyrHd2CuV8R3VW0NU8Hts7VhqBySe1cYvJ3o3jsjs
+         rcP7g48NVPAJjTNwXoQ6de0cZyWE7fWL9Imal1u+N85WIx970TkJ0YDU1Y2Au3aAPoQx
+         B7Qg==
+X-Gm-Message-State: AJIora/62Qns/+mRDfFxNahq3W0E/MMMhNvMLTxm8trSibQzG0ALov3y
+        wP+2qmbRW88yMZ+w9820p7k=
+X-Google-Smtp-Source: AGRyM1tPhWdLWdfyykUlpNJ3PSEDMPtwatE94NYU/Ih24mSrC9Dy3BbzCPtCbJhpEUzIutMTZqJdog==
+X-Received: by 2002:a05:6000:10d0:b0:21b:8ffb:80ad with SMTP id b16-20020a05600010d000b0021b8ffb80admr6433209wrx.444.1655755644354;
+        Mon, 20 Jun 2022 13:07:24 -0700 (PDT)
 Received: from localhost (92.40.169.63.threembb.co.uk. [92.40.169.63])
-        by smtp.gmail.com with ESMTPSA id j11-20020a05600c190b00b0039c5328ad92sm22754411wmq.41.2022.06.20.13.07.28
+        by smtp.gmail.com with ESMTPSA id o20-20020a1c7514000000b0039c4ec6fdacsm15898561wmc.40.2022.06.20.13.07.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jun 2022 13:07:29 -0700 (PDT)
+        Mon, 20 Jun 2022 13:07:23 -0700 (PDT)
 From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
 To:     broonie@kernel.org
 Cc:     agross@kernel.org, bjorn.andersson@linaro.org,
@@ -68,9 +68,9 @@ Cc:     agross@kernel.org, bjorn.andersson@linaro.org,
         linux-arm-msm@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
         alsa-devel@alsa-project.org
-Subject: [PATCH 46/49] regmap-irq: Refactor checks for status bulk read support
-Date:   Mon, 20 Jun 2022 21:06:41 +0100
-Message-Id: <20220620200644.1961936-47-aidanmacdonald.0x0@gmail.com>
+Subject: [PATCH 43/49] mfd: qcom-pm8008: Enable mask_writeonly flag for irq chip
+Date:   Mon, 20 Jun 2022 21:06:38 +0100
+Message-Id: <20220620200644.1961936-44-aidanmacdonald.0x0@gmail.com>
 In-Reply-To: <20220620200644.1961936-1-aidanmacdonald.0x0@gmail.com>
 References: <20220620200644.1961936-1-aidanmacdonald.0x0@gmail.com>
 MIME-Version: 1.0
@@ -79,54 +79,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are several conditions that must be satisfied to support
-bulk read of status registers. Move the check into a function
-to avoid duplicating it in two places.
+The PM8008 has separate set and clear registers for controlling
+its interrupt masks. These are likely volatile registers which
+read as 0, and writing a '1' bit sets or clears the corresponding
+bit in the mask register.
+
+The PM8008's regmap config doesn't enable a cache, so all register
+access is already volatile. Adding the mask_writeonly flag should
+reduce bus traffic by avoiding a read-modify-write on the mask
+set/clear registers.
 
 Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
 ---
- drivers/base/regmap/regmap-irq.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ drivers/mfd/qcom-pm8008.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/base/regmap/regmap-irq.c b/drivers/base/regmap/regmap-irq.c
-index 0a8edaee064a..7b5bd1d45fc0 100644
---- a/drivers/base/regmap/regmap-irq.c
-+++ b/drivers/base/regmap/regmap-irq.c
-@@ -72,6 +72,14 @@ struct regmap_irq *irq_to_regmap_irq(struct regmap_irq_chip_data *data,
- 	return &data->chip->irqs[irq];
- }
- 
-+static bool regmap_irq_can_bulk_read_status(struct regmap_irq_chip_data *data)
-+{
-+	struct regmap *map = data->map;
-+
-+	return !map->use_single_read && map->reg_stride == 1 &&
-+		data->irq_reg_stride == 1;
-+}
-+
- static void regmap_irq_lock(struct irq_data *data)
- {
- 	struct regmap_irq_chip_data *d = irq_data_get_irq_chip_data(data);
-@@ -413,8 +421,7 @@ static irqreturn_t regmap_irq_thread(int irq, void *d)
- 			}
- 
- 		}
--	} else if (!map->use_single_read && map->reg_stride == 1 &&
--		   data->irq_reg_stride == 1) {
-+	} else if (regmap_irq_can_bulk_read_status(data)) {
- 
- 		u8 *buf8 = data->status_reg_buf;
- 		u16 *buf16 = data->status_reg_buf;
-@@ -723,8 +730,7 @@ int regmap_add_irq_chip_fwnode(struct fwnode_handle *fwnode,
- 	else
- 		d->irq_reg_stride = 1;
- 
--	if (!map->use_single_read && map->reg_stride == 1 &&
--	    d->irq_reg_stride == 1) {
-+	if (regmap_irq_can_bulk_read_status(d)) {
- 		d->status_reg_buf = kmalloc_array(chip->num_regs,
- 						  map->format.val_bytes,
- 						  GFP_KERNEL);
+diff --git a/drivers/mfd/qcom-pm8008.c b/drivers/mfd/qcom-pm8008.c
+index 7bc6becfe7f4..c778f2f87a17 100644
+--- a/drivers/mfd/qcom-pm8008.c
++++ b/drivers/mfd/qcom-pm8008.c
+@@ -141,6 +141,7 @@ static struct regmap_irq_chip pm8008_irq_chip = {
+ 	.status_base		= PM8008_STATUS_BASE,
+ 	.mask_base		= PM8008_MASK_BASE,
+ 	.unmask_base		= PM8008_UNMASK_BASE,
++	.mask_writeonly		= true,
+ 	.ack_base		= PM8008_ACK_BASE,
+ 	.config_base		= pm8008_config_regs,
+ 	.num_config_bases	= ARRAY_SIZE(pm8008_config_regs),
 -- 
 2.35.1
 
