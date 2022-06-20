@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A206C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:45:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F282EC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:45:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348561AbiFTNpx (ORCPT
+        id S1348616AbiFTNp4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:45:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51582 "EHLO
+        Mon, 20 Jun 2022 09:45:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349152AbiFTNoO (ORCPT
+        with ESMTP id S1349319AbiFTNoT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:44:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32FC42CC86;
-        Mon, 20 Jun 2022 06:16:13 -0700 (PDT)
+        Mon, 20 Jun 2022 09:44:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0586C2CC9C;
+        Mon, 20 Jun 2022 06:16:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 92F44B811C6;
-        Mon, 20 Jun 2022 13:10:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC459C36AEA;
-        Mon, 20 Jun 2022 13:10:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BF3A660FEF;
+        Mon, 20 Jun 2022 13:15:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD77AC3411B;
+        Mon, 20 Jun 2022 13:15:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730645;
-        bh=uUG+JO2pkBTfHGENInvGXPSD7uC8e+wMAg3tib7nqsI=;
+        s=korg; t=1655730956;
+        bh=N/NIA5jKRGapFcBKcTH4xUISDWf3g0Dhrm0AZVeEJeU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IRcfWNdeAuPsEtj9kV4BZ1PnqK/9m6zhfxZzbjBb1F2ST4ve0+cnUBDhxbdUFQk20
-         dTaZHRbfRVkulf/lHjaKalbH4u+MrMDf0oQEU1k9OUTCqxYrnb80D5TyxH+RpDCCKa
-         J9i3iV2rzAOT/3huDqCcnzIansQ3Bi+kWYYLn85I=
+        b=E7ndhfkzF2hFrMtf862CQtgAvyvms9kEDuR7wp+X+XEOtM0F//P2ih9wklTxpA82j
+         QLCQGbHQP70KU03eWGELiegYTYWXIouKr4am80wfP2492gSIAVdwUw8UA5KmfQfD3u
+         ioSPiggmXOOoJlQXEJsN3jjYoxpptU5IhTUQQB+g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andy Lutomirski <luto@kernel.org>,
-        Theodore Tso <tytso@mit.edu>,
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 012/240] random: ignore GRND_RANDOM in getentropy(2)
-Date:   Mon, 20 Jun 2022 14:48:33 +0200
-Message-Id: <20220620124738.163581928@linuxfoundation.org>
+Subject: [PATCH 5.4 106/240] random: round-robin registers as ulong, not u32
+Date:   Mon, 20 Jun 2022 14:50:07 +0200
+Message-Id: <20220620124742.086819101@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -50,48 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Lutomirski <luto@kernel.org>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 48446f198f9adcb499b30332488dfd5bc3f176f6 upstream.
+commit da3951ebdcd1cb1d5c750e08cd05aee7b0c04d9a upstream.
 
-The separate blocking pool is going away.  Start by ignoring
-GRND_RANDOM in getentropy(2).
+When the interrupt handler does not have a valid cycle counter, it calls
+get_reg() to read a register from the irq stack, in round-robin.
+Currently it does this assuming that registers are 32-bit. This is
+_probably_ the case, and probably all platforms without cycle counters
+are in fact 32-bit platforms. But maybe not, and either way, it's not
+quite correct. This commit fixes that to deal with `unsigned long`
+rather than `u32`.
 
-This should not materially break any API.  Any code that worked
-without this change should work at least as well with this change.
-
-Signed-off-by: Andy Lutomirski <luto@kernel.org>
-Link: https://lore.kernel.org/r/705c5a091b63cc5da70c99304bb97e0109be0a26.1577088521.git.luto@kernel.org
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c       |    3 ---
- include/uapi/linux/random.h |    2 +-
- 2 files changed, 1 insertion(+), 4 deletions(-)
+ drivers/char/random.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -2230,9 +2230,6 @@ SYSCALL_DEFINE3(getrandom, char __user *
- 	if (count > INT_MAX)
- 		count = INT_MAX;
+@@ -1256,15 +1256,15 @@ int random_online_cpu(unsigned int cpu)
+ }
+ #endif
  
--	if (flags & GRND_RANDOM)
--		return _random_read(flags & GRND_NONBLOCK, buf, count);
--
- 	if (!(flags & GRND_INSECURE) && !crng_ready()) {
- 		if (flags & GRND_NONBLOCK)
- 			return -EAGAIN;
---- a/include/uapi/linux/random.h
-+++ b/include/uapi/linux/random.h
-@@ -48,7 +48,7 @@ struct rand_pool_info {
-  * Flags for getrandom(2)
-  *
-  * GRND_NONBLOCK	Don't block and return EAGAIN instead
-- * GRND_RANDOM		Use the /dev/random pool instead of /dev/urandom
-+ * GRND_RANDOM		No effect
-  * GRND_INSECURE	Return non-cryptographic random bytes
-  */
- #define GRND_NONBLOCK	0x0001
+-static u32 get_reg(struct fast_pool *f, struct pt_regs *regs)
++static unsigned long get_reg(struct fast_pool *f, struct pt_regs *regs)
+ {
+-	u32 *ptr = (u32 *)regs;
++	unsigned long *ptr = (unsigned long *)regs;
+ 	unsigned int idx;
+ 
+ 	if (regs == NULL)
+ 		return 0;
+ 	idx = READ_ONCE(f->reg_idx);
+-	if (idx >= sizeof(struct pt_regs) / sizeof(u32))
++	if (idx >= sizeof(struct pt_regs) / sizeof(unsigned long))
+ 		idx = 0;
+ 	ptr += idx++;
+ 	WRITE_ONCE(f->reg_idx, idx);
 
 
