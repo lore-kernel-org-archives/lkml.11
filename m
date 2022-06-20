@@ -2,96 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61C76CCA480
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 08:44:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02138C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 08:46:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240134AbiFTIoq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 04:44:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56916 "EHLO
+        id S239993AbiFTIqZ convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 04:46:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239062AbiFTIop (ORCPT
+        with ESMTP id S239620AbiFTIqX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 04:44:45 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24C31E9A;
-        Mon, 20 Jun 2022 01:44:44 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id D5CFC1F383;
-        Mon, 20 Jun 2022 08:44:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1655714682; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=mMXO29bS5Q5WlYmqVACMoUiiETrgWHmM6SWuoP7+kKk=;
-        b=lP9zx3xPKJLxlJpBtp1BMFWIfqYN19uwvucIIYapP9tnNRt001tMLdLVdX5Auq/B7OpdNK
-        ICULE3T252YKMFmyGXMaiBHQu0D+Y3wbC8hgjCjiuKFLfO+ysv3XMJJdGlyQRk5CmGh6z5
-        IheflEFXNcTl67Nohect5VcFvKupEV0=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1655714682;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=mMXO29bS5Q5WlYmqVACMoUiiETrgWHmM6SWuoP7+kKk=;
-        b=OXh9d08JY4cPZuhYh4bghTRS6B4Iaz6hpajRV8YXITxOpgsVKp5mBAdN5nBqdtYrSM3eP2
-        Ms1Tw9nvVP1aWLAw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 3796313638;
-        Mon, 20 Jun 2022 08:44:42 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 7mreCnozsGLQLAAAMHmgww
-        (envelope-from <osalvador@suse.de>); Mon, 20 Jun 2022 08:44:42 +0000
-Date:   Mon, 20 Jun 2022 10:44:40 +0200
-From:   Oscar Salvador <osalvador@suse.de>
-To:     Muchun Song <songmuchun@bytedance.com>
-Cc:     David Hildenbrand <david@redhat.com>, akpm@linux-foundation.org,
-        corbet@lwn.net, mike.kravetz@oracle.com, paulmck@kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, duanxiongchun@bytedance.com, smuchun@gmail.com
-Subject: Re: [PATCH v4 2/2] mm: memory_hotplug: make hugetlb_optimize_vmemmap
- compatible with memmap_on_memory
-Message-ID: <YrAzeHbYt1mAs9ue@localhost.localdomain>
-References: <20220619133851.68184-1-songmuchun@bytedance.com>
- <20220619133851.68184-3-songmuchun@bytedance.com>
- <YrAgUtV6wD6CIrad@FVFYT0MHHV2J.usts.net>
- <226243a9-b4f5-182e-1a5b-7b8d5c28f3b3@redhat.com>
- <YrAv18GnMOcQaAxz@FVFYT0MHHV2J.usts.net>
+        Mon, 20 Jun 2022 04:46:23 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5442BE9A
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 01:46:21 -0700 (PDT)
+Received: from kwepemi100013.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LRNVQ5NBzzhYYG;
+        Mon, 20 Jun 2022 16:44:14 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ kwepemi100013.china.huawei.com (7.221.188.136) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 20 Jun 2022 16:46:19 +0800
+Received: from dggpemm500006.china.huawei.com ([7.185.36.236]) by
+ dggpemm500006.china.huawei.com ([7.185.36.236]) with mapi id 15.01.2375.024;
+ Mon, 20 Jun 2022 16:46:19 +0800
+From:   "chenjun (AM)" <chenjun102@huawei.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "will@kernel.org" <will@kernel.org>,
+        "xuqiang (M)" <xuqiang36@huawei.com>
+Subject: Re: [PATCH 1/1] lockdep: pass curr_inner to
+ print_lock_invalid_wait_context
+Thread-Topic: [PATCH 1/1] lockdep: pass curr_inner to
+ print_lock_invalid_wait_context
+Thread-Index: AQHYgk0/9VHjoiftGU6cvzdp/UjhBQ==
+Date:   Mon, 20 Jun 2022 08:46:18 +0000
+Message-ID: <233a8820e3df4c8ca594c4a78fdb0fb9@huawei.com>
+References: <20220616134042.130002-1-chenjun102@huawei.com>
+ <YqyAAvSw3+0GyHhg@worktop.programming.kicks-ass.net>
+Accept-Language: zh-CN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.174.178.43]
+Content-Type: text/plain; charset="iso-2022-jp"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YrAv18GnMOcQaAxz@FVFYT0MHHV2J.usts.net>
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 20, 2022 at 04:29:11PM +0800, Muchun Song wrote:
-> > > Although it works, I think PageVmemmapSelfHosted() check for the 1st pfn's
-> > > vmemmap page is not always reliable.  Since we reused PG_owner_priv_1
-> > > as PG_vmemmap_self_hosted, the test is noly reliable for vmemmap page's
-> > > vmemmap page.  Other non-vmemmap page can be flagged with PG_owner_priv_1.
-> > > So this check can be false-positive. Maybe the following code snippet is
-> > > the solution.
-> > 
-> > How could that happen for pages used for backing a vmemmap?
-> >
+在 2022/6/17 21:22, Peter Zijlstra 写道:
+> On Thu, Jun 16, 2022 at 01:40:42PM +0000, Chen Jun wrote:
+>> Same information (task_wait_context(curr)) is printed twice.
 > 
-> It cannot happen for memmap_on_memory case. Howwver, it can happen for other
-> cases. E.g. the 1st pfn (of boot memory block) whose vmemmap page may be flagged
-> as PG_owner_priv_1 (if PG_swapcache is set). Then, the check is false-positive.
+> Yes, because at that point the inner and outer context are the same.
+> 
+>> curr_inner in check_wait_context is what we need.
+> 
+> IIRC it simply prints the task_wait_context as a starting point, the
+> lockdep_print_held_locks() should include the contexts for each of
+> those, after which you can compute the resulting value.
+> 
+> IOW, the information is complete.
+> 
+> 
+> 
 
-If this can really happen, which I am not that sure tbh, maybe a way out would be
-to just define a new page-type as we did in previous versions of memmap_on_memory.
-In that way we would not for flags, but for its type.
-
-But as I said, I am not entirely sure about the potential fallout of what you mention.
-
+Thanks for pointing this out.
 
 -- 
-Oscar Salvador
-SUSE Labs
+Regards
+Chen Jun
