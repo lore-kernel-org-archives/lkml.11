@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28F3FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:05:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2715C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:05:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349254AbiFTOFj (ORCPT
+        id S1349479AbiFTOFo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:05:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36718 "EHLO
+        Mon, 20 Jun 2022 10:05:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350535AbiFTNxl (ORCPT
+        with ESMTP id S1352174AbiFTN4C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:53:41 -0400
+        Mon, 20 Jun 2022 09:56:02 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5546D12761;
-        Mon, 20 Jun 2022 06:20:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C31703586B;
+        Mon, 20 Jun 2022 06:22:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B343A60AC0;
-        Mon, 20 Jun 2022 13:19:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76A05C3411B;
-        Mon, 20 Jun 2022 13:19:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D11260FF1;
+        Mon, 20 Jun 2022 13:22:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9471CC3411B;
+        Mon, 20 Jun 2022 13:22:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731194;
-        bh=uDO5nkW3n7id8M1f7aDZx0zjUV7GsY+47TRMg3RV4e4=;
+        s=korg; t=1655731327;
+        bh=+5shk+eauZhl+KC0dXVhipM9m38Ll0zkCxApQYigSeM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Bge1Sadacq4HQ6pJK/aa0SaWKQ6Vetbpo/1aiJ0KEqjS90DhzQOgi6uwNJlAhF0hJ
-         yAy/nhTEOQFevwqO6MPfgPpWfb30nushgQwxbYF6YpIlZeAM34+UE1aQ6iuf8zA+oH
-         Rr3JCjWQ3RewPV7Es9DWSXw5DKXfC2NX7xy9vqPc=
+        b=ZDGFCmj4ZmWOD6h00u6eClE6D1SSFL+5tRtCIFfzu3nNNruS78gjnidIIxSNwCoeH
+         u53wovqE+RJiqKvZhVPtlFqRHRzjBxypOec6czQXhsetCiNLQMqHlPQYGiXauzIRJx
+         GldidxQwLxgZdI+hxWCPUYVt4zom+/s7qkR5PcgM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Lin <ctlin0@nuvoton.com>,
-        John Hsu <kchsu0@nuvoton.com>, Seven Li <wtli@nuvoton.com>,
-        Hui Wang <hui.wang@canonical.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 182/240] ASoC: nau8822: Add operation for internal PLL off and on
-Date:   Mon, 20 Jun 2022 14:51:23 +0200
-Message-Id: <20220620124744.266534259@linuxfoundation.org>
+        stable@vger.kernel.org, Robert Eckelmann <longnoserob@gmail.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5.4 223/240] USB: serial: io_ti: add Agilent E5805A support
+Date:   Mon, 20 Jun 2022 14:52:04 +0200
+Message-Id: <20220620124745.426185819@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -52,72 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hui Wang <hui.wang@canonical.com>
+From: Robert Eckelmann <longnoserob@gmail.com>
 
-[ Upstream commit aeca8a3295022bcec46697f16e098140423d8463 ]
+commit 908e698f2149c3d6a67d9ae15c75545a3f392559 upstream.
 
-We tried to enable the audio on an imx6sx EVB with the codec nau8822,
-after setting the internal PLL fractional parameters, the audio still
-couldn't work and the there was no sdma irq at all.
+Add support for Agilent E5805A (rebranded ION Edgeport/4) to io_ti.
 
-After checking with the section "8.1.1 Phase Locked Loop (PLL) Design
-Example" of "NAU88C22 Datasheet Rev 0.6", we found we need to
-turn off the PLL before programming fractional parameters and turn on
-the PLL after programming.
-
-After this change, the audio driver could record and play sound and
-the sdma's irq is triggered when playing or recording.
-
-Cc: David Lin <ctlin0@nuvoton.com>
-Cc: John Hsu <kchsu0@nuvoton.com>
-Cc: Seven Li <wtli@nuvoton.com>
-Signed-off-by: Hui Wang <hui.wang@canonical.com>
-Link: https://lore.kernel.org/r/20220530040151.95221-2-hui.wang@canonical.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Robert Eckelmann <longnoserob@gmail.com>
+Link: https://lore.kernel.org/r/20220521230808.30931eca@octoberrain
+Cc: stable@vger.kernel.org
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/codecs/nau8822.c | 4 ++++
- sound/soc/codecs/nau8822.h | 3 +++
- 2 files changed, 7 insertions(+)
+ drivers/usb/serial/io_ti.c      |    2 ++
+ drivers/usb/serial/io_usbvend.h |    1 +
+ 2 files changed, 3 insertions(+)
 
-diff --git a/sound/soc/codecs/nau8822.c b/sound/soc/codecs/nau8822.c
-index 78db3bd0b3bc..cd163978792e 100644
---- a/sound/soc/codecs/nau8822.c
-+++ b/sound/soc/codecs/nau8822.c
-@@ -740,6 +740,8 @@ static int nau8822_set_pll(struct snd_soc_dai *dai, int pll_id, int source,
- 		pll_param->pll_int, pll_param->pll_frac,
- 		pll_param->mclk_scaler, pll_param->pre_factor);
+--- a/drivers/usb/serial/io_ti.c
++++ b/drivers/usb/serial/io_ti.c
+@@ -168,6 +168,7 @@ static const struct usb_device_id edgepo
+ 	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_8S) },
+ 	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_416) },
+ 	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_416B) },
++	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_E5805A) },
+ 	{ }
+ };
  
-+	snd_soc_component_update_bits(component,
-+		NAU8822_REG_POWER_MANAGEMENT_1, NAU8822_PLL_EN_MASK, NAU8822_PLL_OFF);
- 	snd_soc_component_update_bits(component,
- 		NAU8822_REG_PLL_N, NAU8822_PLLMCLK_DIV2 | NAU8822_PLLN_MASK,
- 		(pll_param->pre_factor ? NAU8822_PLLMCLK_DIV2 : 0) |
-@@ -757,6 +759,8 @@ static int nau8822_set_pll(struct snd_soc_dai *dai, int pll_id, int source,
- 		pll_param->mclk_scaler << NAU8822_MCLKSEL_SFT);
- 	snd_soc_component_update_bits(component,
- 		NAU8822_REG_CLOCKING, NAU8822_CLKM_MASK, NAU8822_CLKM_PLL);
-+	snd_soc_component_update_bits(component,
-+		NAU8822_REG_POWER_MANAGEMENT_1, NAU8822_PLL_EN_MASK, NAU8822_PLL_ON);
+@@ -206,6 +207,7 @@ static const struct usb_device_id id_tab
+ 	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_8S) },
+ 	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_416) },
+ 	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_416B) },
++	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_E5805A) },
+ 	{ }
+ };
  
- 	return 0;
- }
-diff --git a/sound/soc/codecs/nau8822.h b/sound/soc/codecs/nau8822.h
-index 489191ff187e..b45d42c15de6 100644
---- a/sound/soc/codecs/nau8822.h
-+++ b/sound/soc/codecs/nau8822.h
-@@ -90,6 +90,9 @@
- #define NAU8822_REFIMP_3K			0x3
- #define NAU8822_IOBUF_EN			(0x1 << 2)
- #define NAU8822_ABIAS_EN			(0x1 << 3)
-+#define NAU8822_PLL_EN_MASK			(0x1 << 5)
-+#define NAU8822_PLL_ON				(0x1 << 5)
-+#define NAU8822_PLL_OFF				(0x0 << 5)
+--- a/drivers/usb/serial/io_usbvend.h
++++ b/drivers/usb/serial/io_usbvend.h
+@@ -212,6 +212,7 @@
+ //
+ // Definitions for other product IDs
+ #define ION_DEVICE_ID_MT4X56USB			0x1403	// OEM device
++#define ION_DEVICE_ID_E5805A			0x1A01  // OEM device (rebranded Edgeport/4)
  
- /* NAU8822_REG_AUDIO_INTERFACE (0x4) */
- #define NAU8822_AIFMT_MASK			(0x3 << 3)
--- 
-2.35.1
-
+ 
+ #define	GENERATION_ID_FROM_USB_PRODUCT_ID(ProductId)				\
 
 
