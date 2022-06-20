@@ -2,80 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F46FCCA479
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 16:40:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1350CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 16:50:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243373AbiFTQkS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 12:40:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56744 "EHLO
+        id S233099AbiFTQuU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 12:50:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229906AbiFTQkR (ORCPT
+        with ESMTP id S231396AbiFTQuS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 12:40:17 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5768BE15;
-        Mon, 20 Jun 2022 09:40:16 -0700 (PDT)
-Received: from zn.tnic (p200300ea974657f0329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9746:57f0:329c:23ff:fea6:a903])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 46D431EC05ED;
-        Mon, 20 Jun 2022 18:40:11 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1655743211;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=uVkwYYD3WNvkHSrPcC3CPbJPRGT2Rr8D4frbfFUL2Hs=;
-        b=n1wHZBcSwAq8PYDjrtgmPSl7w3SaSZeFIoFaI1Uu6DNJRlYzUcqGQdWqi32jQLApZWcS2a
-        hse+Za2prAk7smsjcBp9MCBk67LYupuxF7bWvaaFGclzZRn6B6Vgse2fzeRZGyb1KUqLJa
-        ZC9u+BDllQRkUxZk5raV/125ljU+3lo=
-Date:   Mon, 20 Jun 2022 18:40:07 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     medadyoung@gmail.com
-Cc:     rric@kernel.org, james.morse@arm.com, tony.luck@intel.com,
-        mchehab@kernel.org, robh+dt@kernel.org, benjaminfair@google.com,
-        yuenn@google.com, venture@google.com, KWLIU@nuvoton.com,
-        YSCHU@nuvoton.com, JJLIU0@nuvoton.com, KFTING@nuvoton.com,
-        avifishman70@gmail.com, tmaimon77@gmail.com, tali.perry1@gmail.com,
-        ctcchien@nuvoton.com, linux-edac@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        openbmc@lists.ozlabs.org
-Subject: Re: [PATCH v12 1/3] dt-bindings: edac: nuvoton: add NPCM memory
- controller
-Message-ID: <YrCi1fg+mUPwZ7sX@zn.tnic>
-References: <20220610084340.2268-1-ctcchien@nuvoton.com>
- <20220610084340.2268-2-ctcchien@nuvoton.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220610084340.2268-2-ctcchien@nuvoton.com>
+        Mon, 20 Jun 2022 12:50:18 -0400
+Received: from mail-il1-x14a.google.com (mail-il1-x14a.google.com [IPv6:2607:f8b0:4864:20::14a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B95B21758B
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 09:50:17 -0700 (PDT)
+Received: by mail-il1-x14a.google.com with SMTP id s6-20020a056e021a0600b002d8fcba296aso3971096ild.20
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 09:50:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=ExmBzSKpLkiCHa59QsqYQ/MSjLYvSFah4s+gXGLxJqg=;
+        b=YPF0ZpgHCqKySH8864zZhz8jjEywgWvK0N2eUVokfhTYL9opzubKr6lpU+aEV2Mt33
+         6F7mvs7DFJpAtBqyOQK5B1ZGhjpyNSN7GGDq14uIcQrfP6RtdeZMDDJTXnPOJ+eVU8sc
+         dMZDwRSkv5JYW8U17L7SqX1kJB0LcJB70pbUGK3rO1T2rD9qp/AZLuLDMC7XlpZBPwsJ
+         v0aBxLFLCGUdmNQZJw1a2Uv5Zf/FT/+YyXYWlORlUWuRSRzcnKX+BYEDtWUxMOvRl9t3
+         5qLBIzUR9OOEN3+/b39OiDXyxrXQmIcv69lth7biygb2Cl633/n7srzCZMCrxWbrf4qi
+         7Tdg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=ExmBzSKpLkiCHa59QsqYQ/MSjLYvSFah4s+gXGLxJqg=;
+        b=VXqfmWBsQ0HDjY9eBSH8ajT4Qt99OsHJVsMQ5dbUVq2litBsaWCWNhB5PPffQ1w3H+
+         m6mXFHmK+koKlZays+2Pqwz5dyQb0P7AWbJ0JCLxf9oevQdrrPwAa8d/AIbnZLwsYQoT
+         8J+/eGhtfS6u/cZ7Kj6imfhttN9ivkHKXydgWE9o5a/8L6byd+Lg9Ck7YzTcgL6lOGXR
+         1yM31YSCojLevea0S8LdfksYvcJnaYODnwMD6rtdBc25bK5HiR2w+psf6EFtBw++aRDV
+         K0kpUjroqOsnNgLjFDdpMihEph3+EYo7DCs77oyWGooUj9QB1S+aZ5yVWVrRHn6f0Gz1
+         X0jA==
+X-Gm-Message-State: AJIora9I+WN9pYqgz9cyXoHBP/+oa4lbq5sB/t+v19YTPFnUQX6z+GgN
+        VejVcn7s49fk+zP+bU6i7ZrhmwIM0uOmoQ==
+X-Google-Smtp-Source: AGRyM1vGM7WoTsCDjAm/pRnXDblKRzisQgoA2GpoRfzaTLDl0iP0ZMsyTomuWIie58fRybYOHkVAbMJibswRjQ==
+X-Received: from riochico.c.googlers.com ([fda3:e722:ac3:cc00:2b:ff92:c0a8:b3e])
+ (user=rsilvera job=sendgmr) by 2002:a92:902:0:b0:2d8:ea84:e37c with SMTP id
+ y2-20020a920902000000b002d8ea84e37cmr8562357ilg.214.1655743817146; Mon, 20
+ Jun 2022 09:50:17 -0700 (PDT)
+Date:   Mon, 20 Jun 2022 16:49:53 +0000
+Message-Id: <20220620164953.1503934-1-rsilvera@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.0.rc0.104.g0611611a94-goog
+Subject: [PATCH] perf: Adjust perf-inject output data offset for backward compatibility
+From:   Raul Silvera <rsilvera@google.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Colin Ian King <colin.king@intel.com>,
+        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
+        Raul Silvera <rsilvera@google.com>
+Cc:     linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 10, 2022 at 04:43:38PM +0800, medadyoung@gmail.com wrote:
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 4383949ff654..7f832e6ed4e5 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -2367,12 +2367,14 @@ L:	openbmc@lists.ozlabs.org (moderated for non-subscribers)
->  S:	Supported
->  F:	Documentation/devicetree/bindings/*/*/*npcm*
->  F:	Documentation/devicetree/bindings/*/*npcm*
-> +F:	Documentation/devicetree/bindings/*/npcm-memory-controller.yaml
->  F:	arch/arm/boot/dts/nuvoton-npcm*
->  F:	arch/arm/mach-npcm/
->  F:	drivers/*/*npcm*
->  F:	drivers/*/*/*npcm*
->  F:	include/dt-bindings/clock/nuvoton,npcm7xx-clock.h
->  
-> +
+When perf inject creates a new file, it reuses the data offset from the
+input file. If there has been a change on the size of the header, as
+happened in v5.12 -> v5.13, the new offsets will be wrong, resulting in
+a corrupted output file.
 
-That looks like it went in when committing. You can remove it in case
-you have to resend v13.
+This change adds the function perf_session__data_offset to compute the
+data offset based on the current header size, and uses that instead of
+the offset from the original input file.
 
+Signed-off-by: Raul Silvera <rsilvera@google.com>
+---
+ tools/perf/builtin-inject.c |  2 +-
+ tools/perf/util/header.c    | 16 +++++++++++++++-
+ tools/perf/util/header.h    |  2 ++
+ 3 files changed, 18 insertions(+), 2 deletions(-)
+
+diff --git a/tools/perf/builtin-inject.c b/tools/perf/builtin-inject.c
+index a75bf11585b5..1dfdcef36607 100644
+--- a/tools/perf/builtin-inject.c
++++ b/tools/perf/builtin-inject.c
+@@ -916,7 +916,7 @@ static int __cmd_inject(struct perf_inject *inject)
+ 		inject->tool.tracing_data = perf_event__repipe_tracing_data;
+ 	}
+ 
+-	output_data_offset = session->header.data_offset;
++	output_data_offset = perf_session__data_offset(session->evlist);
+ 
+ 	if (inject->build_id_all) {
+ 		inject->tool.mmap	  = perf_event__repipe_buildid_mmap;
+diff --git a/tools/perf/util/header.c b/tools/perf/util/header.c
+index 53332da100e8..93706ae827f1 100644
+--- a/tools/perf/util/header.c
++++ b/tools/perf/util/header.c
+@@ -3660,7 +3660,7 @@ static int perf_session__do_write_header(struct perf_session *session,
+ 			.size   = evlist->core.nr_entries * sizeof(f_attr),
+ 		},
+ 		.data = {
+-			.offset = header->data_offset,
++			.offset = attr_offset + evlist->core.nr_entries * sizeof(f_attr),
+ 			.size	= header->data_size,
+ 		},
+ 		/* event_types is ignored, store zeros */
+@@ -3686,6 +3686,20 @@ int perf_session__write_header(struct perf_session *session,
+ 	return perf_session__do_write_header(session, evlist, fd, at_exit, NULL);
+ }
+ 
++size_t perf_session__data_offset(const struct evlist *evlist)
++{
++	struct evsel *evsel;
++	size_t data_offset;
++
++	data_offset = sizeof(struct perf_file_header);
++	evlist__for_each_entry(evlist, evsel) {
++		data_offset += evsel->core.ids * sizeof(u64);
++	}
++	data_offset += evlist->core.nr_entries * sizeof(struct perf_file_attr);
++
++	return data_offset;
++}
++
+ int perf_session__inject_header(struct perf_session *session,
+ 				struct evlist *evlist,
+ 				int fd,
+diff --git a/tools/perf/util/header.h b/tools/perf/util/header.h
+index 08563c1f1bff..56916dabce7b 100644
+--- a/tools/perf/util/header.h
++++ b/tools/perf/util/header.h
+@@ -136,6 +136,8 @@ int perf_session__inject_header(struct perf_session *session,
+ 				int fd,
+ 				struct feat_copier *fc);
+ 
++size_t perf_session__data_offset(const struct evlist *evlist);
++
+ void perf_header__set_feat(struct perf_header *header, int feat);
+ void perf_header__clear_feat(struct perf_header *header, int feat);
+ bool perf_header__has_feat(const struct perf_header *header, int feat);
 -- 
-Regards/Gruss,
-    Boris.
+2.37.0.rc0.104.g0611611a94-goog
 
-https://people.kernel.org/tglx/notes-about-netiquette
