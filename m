@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E577C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:21:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13B35C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:21:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344013AbiFTNVg (ORCPT
+        id S1344058AbiFTNVk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:21:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49598 "EHLO
+        Mon, 20 Jun 2022 09:21:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245664AbiFTNRg (ORCPT
+        with ESMTP id S1344038AbiFTNRv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:17:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33235E21;
-        Mon, 20 Jun 2022 06:07:53 -0700 (PDT)
+        Mon, 20 Jun 2022 09:17:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5B912631;
+        Mon, 20 Jun 2022 06:07:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5E192B811E1;
-        Mon, 20 Jun 2022 13:07:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA6B4C3411B;
-        Mon, 20 Jun 2022 13:07:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BD3B2614D5;
+        Mon, 20 Jun 2022 13:06:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAF18C3411B;
+        Mon, 20 Jun 2022 13:06:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730456;
-        bh=js67p3A6r8bSQ11UmhXkeDmQ7ZxE7A+ttl3hqzllPQI=;
+        s=korg; t=1655730367;
+        bh=MKH20Wi8RY3EZ8Yh/cC2lcDSCXi8M7373XryUgxii1w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I/m0D60Ay7Exds4qRfFkeOUrx62T4WQU9rwrobUgoxTCuwgf9A5JoYVS0/S4Jel5e
-         TsVPCg4JC3JRdyqIKCyfRPE2mFVb3hIa+KtHmuXiyQMhLia/UNWGctunB2+lToPbCg
-         VXcbePNzI0EzCdk4vNEphM8xPg5Nm4Zr7CPyYMWU=
+        b=eCAcCWDxx0GNAZPesUb5uPetfDCb13PS6uhN96J971q4zVsPotroe+M0gbJbvGTI3
+         y5PYJ7oeUk/Ex8PQvayJabITB1/3ZkU7gV8reNPg1GUALoY+mxCtgG49Pq6Fv5s/2q
+         1Nut90p2++yzhO3SHn+yXR13fuivoDEcuzl7KYsw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Begunkov <asml.silence@gmail.com>,
-        Sasha Levin <sashal@kernel.org>,
-        van fantasy <g1042620637@gmail.com>
-Subject: [PATCH 5.15 058/106] io_uring: fix races with buffer table unregister
-Date:   Mon, 20 Jun 2022 14:51:17 +0200
-Message-Id: <20220620124726.120555527@linuxfoundation.org>
+        stable@vger.kernel.org, Adam Ford <aford173@gmail.com>,
+        Shawn Guo <shawnguo@kernel.org>
+Subject: [PATCH 5.15 003/106] arm64: dts: imx8mm-beacon: Enable RTS-CTS on UART3
+Date:   Mon, 20 Jun 2022 14:50:22 +0200
+Message-Id: <20220620124724.485420491@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
 References: <20220620124724.380838401@linuxfoundation.org>
@@ -50,48 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Begunkov <asml.silence@gmail.com>
+From: Adam Ford <aford173@gmail.com>
 
-[ Upstream commit d11d31fc5d8a96f707facee0babdcffaafa38de2 ]
+commit 4ce01ce36d77137cf60776b320babed89de6bd4c upstream.
 
-Fixed buffer table quiesce might unlock ->uring_lock, potentially
-letting new requests to be submitted, don't allow those requests to
-use the table as they will race with unregistration.
+There is a header for a DB9 serial port, but any attempts to use
+hardware handshaking fail.  Enable RTS and CTS pin muxing and enable
+handshaking in the uart node.
 
-Reported-and-tested-by: van fantasy <g1042620637@gmail.com>
-Fixes: bd54b6fe3316ec ("io_uring: implement fixed buffers registration similar to fixed files")
-Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Adam Ford <aford173@gmail.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/io_uring.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ arch/arm64/boot/dts/freescale/imx8mm-beacon-baseboard.dtsi |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 5f111a660fff..be2176575353 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -8905,12 +8905,19 @@ static void __io_sqe_buffers_unregister(struct io_ring_ctx *ctx)
+--- a/arch/arm64/boot/dts/freescale/imx8mm-beacon-baseboard.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mm-beacon-baseboard.dtsi
+@@ -166,6 +166,7 @@
+ 	pinctrl-0 = <&pinctrl_uart3>;
+ 	assigned-clocks = <&clk IMX8MM_CLK_UART3>;
+ 	assigned-clock-parents = <&clk IMX8MM_SYS_PLL1_80M>;
++	uart-has-rtscts;
+ 	status = "okay";
+ };
  
- static int io_sqe_buffers_unregister(struct io_ring_ctx *ctx)
- {
-+	unsigned nr = ctx->nr_user_bufs;
- 	int ret;
+@@ -236,6 +237,8 @@
+ 		fsl,pins = <
+ 			MX8MM_IOMUXC_ECSPI1_SCLK_UART3_DCE_RX	0x40
+ 			MX8MM_IOMUXC_ECSPI1_MOSI_UART3_DCE_TX	0x40
++			MX8MM_IOMUXC_ECSPI1_MISO_UART3_DCE_CTS_B	0x40
++			MX8MM_IOMUXC_ECSPI1_SS0_UART3_DCE_RTS_B	0x40
+ 		>;
+ 	};
  
- 	if (!ctx->buf_data)
- 		return -ENXIO;
- 
-+	/*
-+	 * Quiesce may unlock ->uring_lock, and while it's not held
-+	 * prevent new requests using the table.
-+	 */
-+	ctx->nr_user_bufs = 0;
- 	ret = io_rsrc_ref_quiesce(ctx->buf_data, ctx);
-+	ctx->nr_user_bufs = nr;
- 	if (!ret)
- 		__io_sqe_buffers_unregister(ctx);
- 	return ret;
--- 
-2.35.1
-
 
 
