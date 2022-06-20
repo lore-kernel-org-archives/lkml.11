@@ -2,102 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D964ECCA480
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:14:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B30FCCA486
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:14:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344406AbiFTNNn (ORCPT
+        id S1344673AbiFTNN5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:13:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35146 "EHLO
+        Mon, 20 Jun 2022 09:13:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343925AbiFTNJs (ORCPT
+        with ESMTP id S1343958AbiFTNJt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:09:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C4E11AF15
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 06:04:57 -0700 (PDT)
+        Mon, 20 Jun 2022 09:09:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8E0F1AF22;
+        Mon, 20 Jun 2022 06:04:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 26478B811A2
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 13:04:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FD1DC3411B;
-        Mon, 20 Jun 2022 13:04:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655730286;
-        bh=DwXafDeIgu51boCgcI30lD+RCbzk47DPP8hGZLfeELE=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9BD8AB811A5;
+        Mon, 20 Jun 2022 13:04:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7AD3C341C4;
+        Mon, 20 Jun 2022 13:04:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655730292;
+        bh=k6te6UvAhWV0pHOaWU9Llx1ueM872wXXeKd2sw/X/WE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZOx9c8yEXhk80Yc+vPPt2rrp9YdlPzzFbVoWMXnbhJu82XBmyuijMcA78Uzhu83jf
-         2HvyLaTq+5twAXrXqXioPADYKGlp7MT1+yXGvNn+yO/CO6AfWETT9qjmycul/DeC0M
-         JWKOg32+xS8Kbwx+d35v0EzUN/9iFH4u9TI7UuGVM2qmrNiwkEmT3iGdQN+xAxyBsZ
-         erDYdEp0+pn0Mdgm7KYp/lFxh8gYh6L7yaBzcfVTPANn1iC4QAVW0ql2MAF4FpUjJb
-         ZWtZYlyGkX7YC/J8tH6LJQ5viRgTT2PgNauWPgeRK5SWxxlN7PlsXo+iNiz6Bs3FTa
-         uTWeYVCYWXsZw==
-From:   Oded Gabbay <ogabbay@kernel.org>
+        b=zY18myHD+F+h115W7yCDn7kN9NcfXJQZ4tbkDe+CAKbPBNHLhSpakJV3wcGMVamHz
+         Oi1O2OovHsUfcJXpTgrEvaCvuXt1BmM3Spyguk512pKQvdXOaDWca2tb5S+7sLfEW0
+         wC7V1L2UE8gq70z3wUn8ju2K/V8AVH2m4ao3RcX8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Koby Elbaz <kelbaz@habana.ai>
-Subject: [PATCH 07/17] habanalabs/gaudi: fix incorrect MME offset calculation
-Date:   Mon, 20 Jun 2022 16:04:22 +0300
-Message-Id: <20220620130432.1180451-7-ogabbay@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220620130432.1180451-1-ogabbay@kernel.org>
-References: <20220620130432.1180451-1-ogabbay@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Alexander Usyskin <alexander.usyskin@intel.com>,
+        Tomas Winkler <tomas.winkler@intel.com>
+Subject: [PATCH 5.10 60/84] mei: me: add raptor lake point S DID
+Date:   Mon, 20 Jun 2022 14:51:23 +0200
+Message-Id: <20220620124722.664826739@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220620124720.882450983@linuxfoundation.org>
+References: <20220620124720.882450983@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Koby Elbaz <kelbaz@habana.ai>
+From: Alexander Usyskin <alexander.usyskin@intel.com>
 
-Once FW raised an event following a MME2 QMAN error, the driver should
-have gone to the corresponding status registers, trying to gather more
-info on the error, yet it was accidentally accessing MME1 QMAN address
-space.
+commit 3ed8c7d39cfef831fe508fc1308f146912fa72e6 upstream.
 
-Generally, we have x4 MMEs, while 0 & 2 are marked MASTER, and
-1 & 3 are marked SLAVE. The former can be addressed, yet addressing
-the latter is considered an access violation, and will result in a
-hung system, which is what unintentionally happened above.
-Note that this cannot happen in a secured system, since these registers
-are protected with range registers.
+Add Raptor (Point) Lake S device id.
 
-Signed-off-by: Koby Elbaz <kelbaz@habana.ai>
-Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
-Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Alexander Usyskin <alexander.usyskin@intel.com>
+Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
+Link: https://lore.kernel.org/r/20220606144225.282375-3-tomas.winkler@intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/misc/habanalabs/gaudi/gaudi.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ drivers/misc/mei/hw-me-regs.h |    2 ++
+ drivers/misc/mei/pci-me.c     |    2 ++
+ 2 files changed, 4 insertions(+)
 
-diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
-index b7460c30aa51..8b9ff7fa51ea 100644
---- a/drivers/misc/habanalabs/gaudi/gaudi.c
-+++ b/drivers/misc/habanalabs/gaudi/gaudi.c
-@@ -454,7 +454,7 @@ static const int gaudi_queue_id_to_engine_id[] = {
- 	[GAUDI_QUEUE_ID_DMA_6_0...GAUDI_QUEUE_ID_DMA_6_3] = GAUDI_ENGINE_ID_DMA_6,
- 	[GAUDI_QUEUE_ID_DMA_7_0...GAUDI_QUEUE_ID_DMA_7_3] = GAUDI_ENGINE_ID_DMA_7,
- 	[GAUDI_QUEUE_ID_MME_0_0...GAUDI_QUEUE_ID_MME_0_3] = GAUDI_ENGINE_ID_MME_0,
--	[GAUDI_QUEUE_ID_MME_1_0...GAUDI_QUEUE_ID_MME_1_3] = GAUDI_ENGINE_ID_MME_1,
-+	[GAUDI_QUEUE_ID_MME_1_0...GAUDI_QUEUE_ID_MME_1_3] = GAUDI_ENGINE_ID_MME_2,
- 	[GAUDI_QUEUE_ID_TPC_0_0...GAUDI_QUEUE_ID_TPC_0_3] = GAUDI_ENGINE_ID_TPC_0,
- 	[GAUDI_QUEUE_ID_TPC_1_0...GAUDI_QUEUE_ID_TPC_1_3] = GAUDI_ENGINE_ID_TPC_1,
- 	[GAUDI_QUEUE_ID_TPC_2_0...GAUDI_QUEUE_ID_TPC_2_3] = GAUDI_ENGINE_ID_TPC_2,
-@@ -7383,8 +7383,13 @@ static void gaudi_handle_qman_err(struct hl_device *hdev, u16 event_type, u64 *e
- 		snprintf(desc, ARRAY_SIZE(desc), "%s%d", "TPC_QM", index);
- 		break;
- 	case GAUDI_EVENT_MME0_QM ... GAUDI_EVENT_MME2_QM:
--		index = event_type - GAUDI_EVENT_MME0_QM;
--		qid_base = GAUDI_QUEUE_ID_MME_0_0 + index * QMAN_STREAMS;
-+		if (event_type == GAUDI_EVENT_MME0_QM) {
-+			index = 0;
-+			qid_base = GAUDI_QUEUE_ID_MME_0_0;
-+		} else if (event_type == GAUDI_EVENT_MME2_QM) {
-+			index = 2;
-+			qid_base = GAUDI_QUEUE_ID_MME_1_0;
-+		}
- 		qman_base = mmMME0_QM_BASE + index * MME_QMAN_OFFSET;
- 		snprintf(desc, ARRAY_SIZE(desc), "%s%d", "MME_QM", index);
- 		break;
--- 
-2.25.1
+--- a/drivers/misc/mei/hw-me-regs.h
++++ b/drivers/misc/mei/hw-me-regs.h
+@@ -109,6 +109,8 @@
+ #define MEI_DEV_ID_ADP_P      0x51E0  /* Alder Lake Point P */
+ #define MEI_DEV_ID_ADP_N      0x54E0  /* Alder Lake Point N */
+ 
++#define MEI_DEV_ID_RPL_S      0x7A68  /* Raptor Lake Point S */
++
+ /*
+  * MEI HW Section
+  */
+--- a/drivers/misc/mei/pci-me.c
++++ b/drivers/misc/mei/pci-me.c
+@@ -115,6 +115,8 @@ static const struct pci_device_id mei_me
+ 	{MEI_PCI_DEVICE(MEI_DEV_ID_ADP_P, MEI_ME_PCH15_CFG)},
+ 	{MEI_PCI_DEVICE(MEI_DEV_ID_ADP_N, MEI_ME_PCH15_CFG)},
+ 
++	{MEI_PCI_DEVICE(MEI_DEV_ID_RPL_S, MEI_ME_PCH15_CFG)},
++
+ 	/* required last entry */
+ 	{0, }
+ };
+
 
