@@ -2,127 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D692CCA480
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 00:57:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8DB6C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 01:03:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238814AbiFTAyZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 19 Jun 2022 20:54:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54068 "EHLO
+        id S237447AbiFTBDm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 19 Jun 2022 21:03:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237651AbiFTAyW (ORCPT
+        with ESMTP id S238056AbiFTBDi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 19 Jun 2022 20:54:22 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27DA76562
-        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 17:54:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655686458; x=1687222458;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=QmBce5JrFncnZ4bmvD1o0Irg3NdV7p4KqJoxQVl0DTM=;
-  b=CFa/vdkOReUH4PRIRGNtGvCFsOmJXtZGdw2HTqbO1gy1qPbP0Dy8KF+s
-   RtcAAdcwVxR5URRhlmkcabbVBiuGcWcpQ9IHMvcFytes0SxbMnbip0RY2
-   MXvDPV33TYTcDOKWgoA+Ya1I5+ahH6SNcW4v2cYcncFQH8N2rX03jpN7q
-   9qk9FVZWRfFTDXQB2ilib5amj9JN80PIuoF94pLu2dA2wS3PCnJojWKWk
-   5NkqiWnM/4DMicsGeD9sQeGBw33w6GZXo6Johcs3fHdO0fixYNLuNLSl/
-   QOi4Rm0b1qirew8AsXybldhH5zVZr2731hhsvm+uAivWEmvk4CXItS3Mk
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="343767163"
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="343767163"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2022 17:54:17 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="584313661"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 19 Jun 2022 17:54:16 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o35gF-000Rin-Ep;
-        Mon, 20 Jun 2022 00:54:15 +0000
-Date:   Mon, 20 Jun 2022 08:53:17 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     James Morse <james.morse@arm.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [morse:mpam/snapshot/v5.18 139/146]
- drivers/platform/mpam/mpam_resctrl.c:226:6: warning: variable 'partid' is
- used uninitialized whenever 'if' condition is false
-Message-ID: <202206200833.sGQrZPBe-lkp@intel.com>
+        Sun, 19 Jun 2022 21:03:38 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 902315FC3
+        for <linux-kernel@vger.kernel.org>; Sun, 19 Jun 2022 18:03:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1655687016; x=1687223016;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=TuxIGco71jaVaJIEuquq4AaCuR5x1f2GY72Xc62P4Vw=;
+  b=cwdVLDae/Yr+8lUkYl8S+0avr58Iei8GVEKrCBDahQ3MRa5BVB/W5LBL
+   a4/9VXX5PMfnQ0jCD+/+SvRWpHDrHk51x6tcpcVY7qcQRunmSH8oNDmFi
+   psSGLr3jhSYnC/CPoTt/QYZ3fuv+jZHIgvsoelbBuxn7Z5x8hXKT7CaPj
+   Q=;
+Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 19 Jun 2022 18:03:35 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2022 18:03:35 -0700
+Received: from nalasex01b.na.qualcomm.com (10.47.209.197) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Sun, 19 Jun 2022 18:03:35 -0700
+Received: from [10.253.79.24] (10.80.80.8) by nalasex01b.na.qualcomm.com
+ (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Sun, 19 Jun
+ 2022 18:03:33 -0700
+Message-ID: <e1a484a5-b14e-ab6d-09e7-645b1e740beb@quicinc.com>
+Date:   Mon, 20 Jun 2022 09:03:31 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v5 1/3] tracing: eprobe: remove duplicate is_good_name()
+ operation
+Content-Language: en-US
+To:     Steven Rostedt <rostedt@goodmis.org>
+CC:     Masami Hiramatsu <mhiramat@kernel.org>,
+        Tom Zanussi <zanussi@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>, <linux-kernel@vger.kernel.org>
+References: <1655168698-19898-1-git-send-email-quic_linyyuan@quicinc.com>
+ <1655168698-19898-2-git-send-email-quic_linyyuan@quicinc.com>
+ <20220617214942.1dbfb55b@gandalf.local.home>
+From:   Linyu Yuan <quic_linyyuan@quicinc.com>
+In-Reply-To: <20220617214942.1dbfb55b@gandalf.local.home>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/morse/linux.git mpam/snapshot/v5.18
-head:   bac90d25cbdee0fc233b9b1c47d5b6f44101a384
-commit: fcd8f8da43dcd27b641fb9a297094ff95113a977 [139/146] arm_mpam: resctrl: Add iommu helpers to get/set the partid and pmg
-config: arm64-allmodconfig (https://download.01.org/0day-ci/archive/20220620/202206200833.sGQrZPBe-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project af6d2a0b6825e71965f3e2701a63c239fa0ad70f)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/morse/linux.git/commit/?id=fcd8f8da43dcd27b641fb9a297094ff95113a977
-        git remote add morse https://git.kernel.org/pub/scm/linux/kernel/git/morse/linux.git
-        git fetch --no-tags morse mpam/snapshot/v5.18
-        git checkout fcd8f8da43dcd27b641fb9a297094ff95113a977
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/perf/ drivers/platform/mpam/
+hi tom,
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+On 6/18/2022 9:49 AM, Steven Rostedt wrote:
+> On Tue, 14 Jun 2022 09:04:56 +0800
+> Linyu Yuan <quic_linyyuan@quicinc.com> wrote:
+>
+>> traceprobe_parse_event_name() already validate group and event name,
+>> there is no need to call is_good_name() after it.
+>>
+>> Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+>> Signed-off-by: Linyu Yuan <quic_linyyuan@quicinc.com>
+>> ---
+>> v2: drop v1 change as it is NACK.
+>>      add it to remove duplicate is_good_name().
+>> v3: move it as first patch.
+>> v4: no change
+>> v5: add Acked-by tag
+>>
+>>   kernel/trace/trace_eprobe.c | 4 ----
+>>   1 file changed, 4 deletions(-)
+>>
+>> diff --git a/kernel/trace/trace_eprobe.c b/kernel/trace/trace_eprobe.c
+>> index 7d44785..17d64e3 100644
+>> --- a/kernel/trace/trace_eprobe.c
+>> +++ b/kernel/trace/trace_eprobe.c
+>> @@ -878,16 +878,12 @@ static int __trace_eprobe_create(int argc, const char *argv[])
+>>   		sanitize_event_name(buf1);
+>>   		event = buf1;
+>>   	}
+>> -	if (!is_good_name(event) || !is_good_name(group))
+>> -		goto parse_error;
+>>   
+> Tom replied that the above may be an issue. You ignored his response.
+>
+> -- Steve
+>
+i reply his mail in V4 
+https://lore.kernel.org/lkml/d14f0409-351f-873e-b7ca-82ff444bf809@quicinc.com/,
 
-All warnings (new ones prefixed by >>):
+form my view, i think it is safe, in !event case Tom mentioned, we will 
+generate event from SYSTEM.EVENT
 
->> drivers/platform/mpam/mpam_resctrl.c:226:6: warning: variable 'partid' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
-           if (cdp_enabled)
-               ^~~~~~~~~~~
-   drivers/platform/mpam/mpam_resctrl.c:229:42: note: uninitialized use occurs here
-           return ops->set_group_qos_params(group, partid, rmid);
-                                                   ^~~~~~
-   drivers/platform/mpam/mpam_resctrl.c:226:2: note: remove the 'if' if its condition is always true
-           if (cdp_enabled)
-           ^~~~~~~~~~~~~~~~
-   drivers/platform/mpam/mpam_resctrl.c:219:12: note: initialize the variable 'partid' to silence this warning
-           u16 partid;
-                     ^
-                      = 0
-   drivers/platform/mpam/mpam_resctrl.c:381:25: warning: variable 'dom' is uninitialized when used here [-Wuninitialized]
-                   mpam_msmon_reset_mbwu(dom->comp, &cfg);
-                                         ^~~
-   drivers/platform/mpam/mpam_resctrl.c:370:30: note: initialize the variable 'dom' to silence this warning
-           struct mpam_resctrl_dom *dom;
-                                       ^
-                                        = NULL
-   2 warnings generated.
+which is verified by traceprobe_parse_event_name().
 
 
-vim +226 drivers/platform/mpam/mpam_resctrl.c
+Tom, could you review it again ?
 
-   215	
-   216	int resctrl_arch_set_iommu_closid_rmid(struct iommu_group *group, u32 closid,
-   217						u32 rmid)
-   218	{
-   219		u16 partid;
-   220		const struct iommu_ops *ops;
-   221	
-   222		ops = iommu_group_get_ops(group);
-   223		if (!ops || !ops->set_group_qos_params)
-   224			return -EOPNOTSUPP;
-   225	
- > 226		if (cdp_enabled)
-   227			partid = closid << 1;
-   228	
-   229		return ops->set_group_qos_params(group, partid, rmid);
-   230	}
-   231	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+>>   	sys_event = argv[1];
+>>   	ret = traceprobe_parse_event_name(&sys_event, &sys_name, buf2,
+>>   					  sys_event - argv[1]);
+>>   	if (ret || !sys_name)
+>>   		goto parse_error;
+>> -	if (!is_good_name(sys_event) || !is_good_name(sys_name))
+>> -		goto parse_error;
+>>   
+>>   	mutex_lock(&event_mutex);
+>>   	event_call = find_and_get_event(sys_name, sys_event);
