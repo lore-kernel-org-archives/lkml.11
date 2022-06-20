@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE4A0C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:26:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32AB2C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:27:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345263AbiFTN06 (ORCPT
+        id S1344817AbiFTN1A (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:26:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40628 "EHLO
+        Mon, 20 Jun 2022 09:27:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346109AbiFTNYX (ORCPT
+        with ESMTP id S1346270AbiFTNY3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:24:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B33E237E2;
-        Mon, 20 Jun 2022 06:09:44 -0700 (PDT)
+        Mon, 20 Jun 2022 09:24:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1ACB1A822;
+        Mon, 20 Jun 2022 06:09:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 740CBB811A5;
-        Mon, 20 Jun 2022 13:08:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8E57C3411B;
-        Mon, 20 Jun 2022 13:08:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 853F760A52;
+        Mon, 20 Jun 2022 13:09:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 869F1C3411B;
+        Mon, 20 Jun 2022 13:09:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730520;
-        bh=nLDFLvp+B+jYarXOJonNUdZQr9RoJmBpzWUBnAjWvyY=;
+        s=korg; t=1655730574;
+        bh=OrsCIYWQBYKXGd15h2v6xA5zpBDuug2Ugnbm/LRYMK0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Dnj1ZiesSSt8Ge+mNqYh+qr8rpfua3rbsg92Kw0WsTkxFTeGWfTAgiVFvKEYybFLj
-         n0Rb97Qm18gGDa31AzRGrys/KPzheioyvxhCcyJOSqE+JSTPPGBYQrWeCxKedqN8Yr
-         W3x+4AFxP9Uh7qpy/ri79+ND+z2Z8Sx1b6uVHxrY=
+        b=B7w9t5SNecNZsl9WxvT8YORo3InhxmORjn9cT4Dr08zUXLwlW6511iIqnTDIsTYha
+         0eY2G32fUeIfHhL4JZu/fs9ChI9HitspzSQl4wMgoWlPy/gzWD4Xtd4KlPBBpHaJOZ
+         3x4CkSgH9igtodglOulmQZ0yobQFR2M4ltC9Y2do=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jing-Ting Wu <jing-ting.wu@mediatek.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 079/106] sched: Fix balance_push() vs __sched_setscheduler()
-Date:   Mon, 20 Jun 2022 14:51:38 +0200
-Message-Id: <20220620124726.733586066@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        Hamza Mahfooz <hamza.mahfooz@amd.com>,
+        Roman Li <roman.li@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.15 096/106] drm/amd/display: Cap OLED brightness per max frame-average luminance
+Date:   Mon, 20 Jun 2022 14:51:55 +0200
+Message-Id: <20220620124727.232651045@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
 References: <20220620124724.380838401@linuxfoundation.org>
@@ -50,120 +53,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Roman Li <roman.li@amd.com>
 
-[ Upstream commit 04193d590b390ec7a0592630f46d559ec6564ba1 ]
+commit 4fd17f2ac0aa4e48823ac2ede5b050fb70300bf4 upstream.
 
-The purpose of balance_push() is to act as a filter on task selection
-in the case of CPU hotplug, specifically when taking the CPU out.
+[Why]
+For OLED eDP the Display Manager uses max_cll value as a limit
+for brightness control.
+max_cll defines the content light luminance for individual pixel.
+Whereas max_fall defines frame-average level luminance.
+The user may not observe the difference in brightness in between
+max_fall and max_cll.
+That negatively impacts the user experience.
 
-It does this by (ab)using the balance callback infrastructure, with
-the express purpose of keeping all the unlikely/odd cases in a single
-place.
+[How]
+Use max_fall value instead of max_cll as a limit for brightness control.
 
-In order to serve its purpose, the balance_push_callback needs to be
-(exclusively) on the callback list at all times (noting that the
-callback always places itself back on the list the moment it runs,
-also noting that when the CPU goes down, regular balancing concerns
-are moot, so ignoring them is fine).
-
-And here-in lies the problem, __sched_setscheduler()'s use of
-splice_balance_callbacks() takes the callbacks off the list across a
-lock-break, making it possible for, an interleaving, __schedule() to
-see an empty list and not get filtered.
-
-Fixes: ae7927023243 ("sched: Optimize finish_lock_switch()")
-Reported-by: Jing-Ting Wu <jing-ting.wu@mediatek.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Tested-by: Jing-Ting Wu <jing-ting.wu@mediatek.com>
-Link: https://lkml.kernel.org/r/20220519134706.GH2578@worktop.programming.kicks-ass.net
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reviewed-by: Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>
+Acked-by: Hamza Mahfooz <hamza.mahfooz@amd.com>
+Signed-off-by: Roman Li <roman.li@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/sched/core.c  | 36 +++++++++++++++++++++++++++++++++---
- kernel/sched/sched.h |  5 +++++
- 2 files changed, 38 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 838623b68031..b89ca5c83143 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -4630,25 +4630,55 @@ static void do_balance_callbacks(struct rq *rq, struct callback_head *head)
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -2417,7 +2417,7 @@ static struct drm_mode_config_helper_fun
  
- static void balance_push(struct rq *rq);
- 
-+/*
-+ * balance_push_callback is a right abuse of the callback interface and plays
-+ * by significantly different rules.
-+ *
-+ * Where the normal balance_callback's purpose is to be ran in the same context
-+ * that queued it (only later, when it's safe to drop rq->lock again),
-+ * balance_push_callback is specifically targeted at __schedule().
-+ *
-+ * This abuse is tolerated because it places all the unlikely/odd cases behind
-+ * a single test, namely: rq->balance_callback == NULL.
-+ */
- struct callback_head balance_push_callback = {
- 	.next = NULL,
- 	.func = (void (*)(struct callback_head *))balance_push,
- };
- 
--static inline struct callback_head *splice_balance_callbacks(struct rq *rq)
-+static inline struct callback_head *
-+__splice_balance_callbacks(struct rq *rq, bool split)
+ static void update_connector_ext_caps(struct amdgpu_dm_connector *aconnector)
  {
- 	struct callback_head *head = rq->balance_callback;
+-	u32 max_cll, min_cll, max, min, q, r;
++	u32 max_avg, min_cll, max, min, q, r;
+ 	struct amdgpu_dm_backlight_caps *caps;
+ 	struct amdgpu_display_manager *dm;
+ 	struct drm_connector *conn_base;
+@@ -2447,7 +2447,7 @@ static void update_connector_ext_caps(st
+ 	caps = &dm->backlight_caps[i];
+ 	caps->ext_caps = &aconnector->dc_link->dpcd_sink_ext_caps;
+ 	caps->aux_support = false;
+-	max_cll = conn_base->hdr_sink_metadata.hdmi_type1.max_cll;
++	max_avg = conn_base->hdr_sink_metadata.hdmi_type1.max_fall;
+ 	min_cll = conn_base->hdr_sink_metadata.hdmi_type1.min_cll;
  
-+	if (likely(!head))
-+		return NULL;
-+
- 	lockdep_assert_rq_held(rq);
--	if (head)
-+	/*
-+	 * Must not take balance_push_callback off the list when
-+	 * splice_balance_callbacks() and balance_callbacks() are not
-+	 * in the same rq->lock section.
-+	 *
-+	 * In that case it would be possible for __schedule() to interleave
-+	 * and observe the list empty.
-+	 */
-+	if (split && head == &balance_push_callback)
-+		head = NULL;
-+	else
- 		rq->balance_callback = NULL;
+ 	if (caps->ext_caps->bits.oled == 1 /*||
+@@ -2475,8 +2475,8 @@ static void update_connector_ext_caps(st
+ 	 * The results of the above expressions can be verified at
+ 	 * pre_computed_values.
+ 	 */
+-	q = max_cll >> 5;
+-	r = max_cll % 32;
++	q = max_avg >> 5;
++	r = max_avg % 32;
+ 	max = (1 << q) * pre_computed_values[r];
  
- 	return head;
- }
- 
-+static inline struct callback_head *splice_balance_callbacks(struct rq *rq)
-+{
-+	return __splice_balance_callbacks(rq, true);
-+}
-+
- static void __balance_callbacks(struct rq *rq)
- {
--	do_balance_callbacks(rq, splice_balance_callbacks(rq));
-+	do_balance_callbacks(rq, __splice_balance_callbacks(rq, false));
- }
- 
- static inline void balance_callbacks(struct rq *rq, struct callback_head *head)
-diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-index f386c6c2b198..fe8be2f8a47d 100644
---- a/kernel/sched/sched.h
-+++ b/kernel/sched/sched.h
-@@ -1718,6 +1718,11 @@ queue_balance_callback(struct rq *rq,
- {
- 	lockdep_assert_rq_held(rq);
- 
-+	/*
-+	 * Don't (re)queue an already queued item; nor queue anything when
-+	 * balance_push() is active, see the comment with
-+	 * balance_push_callback.
-+	 */
- 	if (unlikely(head->next || rq->balance_callback == &balance_push_callback))
- 		return;
- 
--- 
-2.35.1
-
+ 	// min luminance: maxLum * (CV/255)^2 / 100
 
 
