@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECA7BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:22:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 623BFC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:22:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344522AbiFTNW2 (ORCPT
+        id S1344653AbiFTNWd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:22:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48300 "EHLO
+        Mon, 20 Jun 2022 09:22:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345569AbiFTNT5 (ORCPT
+        with ESMTP id S1345643AbiFTNUD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:19:57 -0400
+        Mon, 20 Jun 2022 09:20:03 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F9B721816;
-        Mon, 20 Jun 2022 06:08:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A1AE193FE;
+        Mon, 20 Jun 2022 06:08:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A146961575;
-        Mon, 20 Jun 2022 13:06:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99AAEC3411B;
-        Mon, 20 Jun 2022 13:06:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EB2A16153E;
+        Mon, 20 Jun 2022 13:06:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0735DC3411B;
+        Mon, 20 Jun 2022 13:06:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730364;
-        bh=NU3qTRxhOSm9BEl48FUAb0SbJSdTyjiHmkrSZuytGGs=;
+        s=korg; t=1655730389;
+        bh=0G8hn+LDRdvLcmIuBLbKikNM+6KmtRGefFtgmQdTpPE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YCPvOdbtS3RKOp7m66dmGxNc2PjFDzo9bUzrYvYFka0iE5HrK3bcMSlUbdKKWCeeT
-         H9oxah70AKME+m+9GMqZp9fO22DzOjvgPp4OIpnffoHkGQ8rbx4COPY0EEEiVo8gpE
-         qM3LQ0vslY/seKikrVcEroD1n3XA6TFTChyA0t5o=
+        b=hl7T6zFxRP9P/kwZl1n0fMkVVso1y1VLzZNGpC7DrgCJ5Y0FYrN6DYU3y1hQ31n88
+         ynHXriMKkAdvhMdjRTOU0hOhxBofHiHKDEX2gZMWDImzfU7pMNglZQtq7V8bkiEb9S
+         STKZkWMG4KxqGQh4RFjOsKe8Yn3irXyunvM8TPmU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Chengguang Xu <cgxu519@mykernel.net>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Philip Yang <Philip.Yang@amd.com>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 029/106] scsi: pmcraid: Fix missing resource cleanup in error case
-Date:   Mon, 20 Jun 2022 14:50:48 +0200
-Message-Id: <20220620124725.247407769@linuxfoundation.org>
+Subject: [PATCH 5.15 008/106] drm/amdkfd: Use mmget_not_zero in MMU notifier
+Date:   Mon, 20 Jun 2022 14:50:27 +0200
+Message-Id: <20220620124724.634826037@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
 References: <20220620124724.380838401@linuxfoundation.org>
@@ -51,35 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chengguang Xu <cgxu519@mykernel.net>
+From: Philip Yang <Philip.Yang@amd.com>
 
-[ Upstream commit ec1e8adcbdf661c57c395bca342945f4f815add7 ]
+[ Upstream commit fa582c6f3684ac0098a9d02ddf0ed52a02b37127 ]
 
-Fix missing resource cleanup (when '(--i) == 0') for error case in
-pmcraid_register_interrupt_handler().
+MMU notifier callback may pass in mm with mm->mm_users==0 when process
+is exiting, use mmget_no_zero to avoid accessing invalid mm in deferred
+list work after mm is gone.
 
-Link: https://lore.kernel.org/r/20220529153456.4183738-6-cgxu519@mykernel.net
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Chengguang Xu <cgxu519@mykernel.net>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Philip Yang <Philip.Yang@amd.com>
+Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pmcraid.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/amd/amdkfd/kfd_svm.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/scsi/pmcraid.c b/drivers/scsi/pmcraid.c
-index bffd9a9349e7..9660c4f4de40 100644
---- a/drivers/scsi/pmcraid.c
-+++ b/drivers/scsi/pmcraid.c
-@@ -4526,7 +4526,7 @@ pmcraid_register_interrupt_handler(struct pmcraid_instance *pinstance)
- 	return 0;
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_svm.c b/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
+index 830809b694dd..74e6f613be02 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
+@@ -2181,6 +2181,8 @@ svm_range_cpu_invalidate_pagetables(struct mmu_interval_notifier *mni,
  
- out_unwind:
--	while (--i > 0)
-+	while (--i >= 0)
- 		free_irq(pci_irq_vector(pdev, i), &pinstance->hrrq_vector[i]);
- 	pci_free_irq_vectors(pdev);
- 	return rc;
+ 	if (range->event == MMU_NOTIFY_RELEASE)
+ 		return true;
++	if (!mmget_not_zero(mni->mm))
++		return true;
+ 
+ 	start = mni->interval_tree.start;
+ 	last = mni->interval_tree.last;
+@@ -2207,6 +2209,7 @@ svm_range_cpu_invalidate_pagetables(struct mmu_interval_notifier *mni,
+ 	}
+ 
+ 	svm_range_unlock(prange);
++	mmput(mni->mm);
+ 
+ 	return true;
+ }
 -- 
 2.35.1
 
