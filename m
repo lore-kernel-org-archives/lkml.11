@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87307C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:04:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2ED5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:04:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244141AbiFTNEh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:04:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47760 "EHLO
+        id S244214AbiFTNEm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:04:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243866AbiFTNCx (ORCPT
+        with ESMTP id S244123AbiFTNDB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:02:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A93A21A838;
-        Mon, 20 Jun 2022 05:57:47 -0700 (PDT)
+        Mon, 20 Jun 2022 09:03:01 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50414B70;
+        Mon, 20 Jun 2022 05:57:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 47E95B811AC;
-        Mon, 20 Jun 2022 12:57:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0A87C3411B;
-        Mon, 20 Jun 2022 12:57:44 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B029ACE138A;
+        Mon, 20 Jun 2022 12:57:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A221BC3411B;
+        Mon, 20 Jun 2022 12:57:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655729865;
-        bh=d+Sd3pkdwyWjKKIEML2KReblaje9FPliZz3Y2tO3UCM=;
+        s=korg; t=1655729868;
+        bh=orVY5jXm62Jz5UFZUXwbsEjISfrzWWrNVjdLMJi/c1M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ajggkjv4MaQ2NezJBoz0uYDCMl/6JWCsnIM4HbLAj0prUF7xWiDSns3K98lJfjyiv
-         Fq1+ToR3VxNQszoSS2/KJCdibpgDw2K9nF4D+uWWDz0zYcGzgmo8JPiiABMcKPuvhB
-         aOmH5TLxpQ5YzLdWuxdEn7l6v7fuIG0W6YVyNqkc=
+        b=dNlorHNZ5X00R9MATbA120V36xxjOXJLLoDppcPVss6Gzc/EjCauWhop1bF1+uWwT
+         egIZNvLYJBT+dg8LaF64w5/Q2MNiPoZ+N95mDdbV88wGauTKqKN/fRKRNpiThO61kE
+         GLEGFTrkEp+7dr+Eze1qpGV3jyTOBqxNLqQoUUH4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Alexander Usyskin <alexander.usyskin@intel.com>,
         Tomas Winkler <tomas.winkler@intel.com>
-Subject: [PATCH 5.18 100/141] mei: hbm: drop capability response on early shutdown
-Date:   Mon, 20 Jun 2022 14:50:38 +0200
-Message-Id: <20220620124732.501148354@linuxfoundation.org>
+Subject: [PATCH 5.18 101/141] mei: me: add raptor lake point S DID
+Date:   Mon, 20 Jun 2022 14:50:39 +0200
+Message-Id: <20220620124732.530201907@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 References: <20220620124729.509745706@linuxfoundation.org>
@@ -51,38 +51,41 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Alexander Usyskin <alexander.usyskin@intel.com>
 
-commit 68553650bc9c57c7e530c84e5b2945e9dfe1a560 upstream.
+commit 3ed8c7d39cfef831fe508fc1308f146912fa72e6 upstream.
 
-Drop HBM responses also in the early shutdown phase where
-the usual traffic is allowed.
-Extend the rule that drop HBM responses received during the shutdown
-phase by also in MEI_DEV_POWERING_DOWN state.
-This resolves the stall if the driver is stopping in the middle
-of the link initialization or link reset.
+Add Raptor (Point) Lake S device id.
 
-Drop the capabilities response on early shutdown.
-
-Fixes: 6d7163f2c49f ("mei: hbm: drop hbm responses on early shutdown")
 Cc: <stable@vger.kernel.org>
 Signed-off-by: Alexander Usyskin <alexander.usyskin@intel.com>
 Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
-Link: https://lore.kernel.org/r/20220606144225.282375-2-tomas.winkler@intel.com
+Link: https://lore.kernel.org/r/20220606144225.282375-3-tomas.winkler@intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/misc/mei/hbm.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/misc/mei/hw-me-regs.h |    2 ++
+ drivers/misc/mei/pci-me.c     |    2 ++
+ 2 files changed, 4 insertions(+)
 
---- a/drivers/misc/mei/hbm.c
-+++ b/drivers/misc/mei/hbm.c
-@@ -1351,7 +1351,8 @@ int mei_hbm_dispatch(struct mei_device *
+--- a/drivers/misc/mei/hw-me-regs.h
++++ b/drivers/misc/mei/hw-me-regs.h
+@@ -109,6 +109,8 @@
+ #define MEI_DEV_ID_ADP_P      0x51E0  /* Alder Lake Point P */
+ #define MEI_DEV_ID_ADP_N      0x54E0  /* Alder Lake Point N */
  
- 		if (dev->dev_state != MEI_DEV_INIT_CLIENTS ||
- 		    dev->hbm_state != MEI_HBM_CAP_SETUP) {
--			if (dev->dev_state == MEI_DEV_POWER_DOWN) {
-+			if (dev->dev_state == MEI_DEV_POWER_DOWN ||
-+			    dev->dev_state == MEI_DEV_POWERING_DOWN) {
- 				dev_dbg(dev->dev, "hbm: capabilities response: on shutdown, ignoring\n");
- 				return 0;
- 			}
++#define MEI_DEV_ID_RPL_S      0x7A68  /* Raptor Lake Point S */
++
+ /*
+  * MEI HW Section
+  */
+--- a/drivers/misc/mei/pci-me.c
++++ b/drivers/misc/mei/pci-me.c
+@@ -116,6 +116,8 @@ static const struct pci_device_id mei_me
+ 	{MEI_PCI_DEVICE(MEI_DEV_ID_ADP_P, MEI_ME_PCH15_CFG)},
+ 	{MEI_PCI_DEVICE(MEI_DEV_ID_ADP_N, MEI_ME_PCH15_CFG)},
+ 
++	{MEI_PCI_DEVICE(MEI_DEV_ID_RPL_S, MEI_ME_PCH15_CFG)},
++
+ 	/* required last entry */
+ 	{0, }
+ };
 
 
