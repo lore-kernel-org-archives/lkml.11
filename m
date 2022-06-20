@@ -2,136 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB6F6CCA479
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 09:04:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A07A8C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 09:05:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240439AbiFTJEx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 05:04:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47320 "EHLO
+        id S240474AbiFTJFK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 05:05:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240405AbiFTJEt (ORCPT
+        with ESMTP id S240455AbiFTJE4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 05:04:49 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B30ADBDB
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 02:04:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655715885;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=XvT2/EIqirhY+p5g64uUJvmK6JkYzBXCB04zVu3nQHE=;
-        b=Q5cDxUeei/6tuFFfuZg+zYItaso9WgspcpOWh4CLKXsPvx70swQ9d5vi2zJ4cCTQM1GZvT
-        F2QtzIlE4zuUEU7coRp11YOVNVWPWOEkt11jBMVfNHlBbsfuRsMDSsbkabsvN3ofKlbGJJ
-        3yZBxBfxPg4uba+QTEsN3JXE/QcSlEA=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-592-_HlnDeGqM8irUqCX6p-P4w-1; Mon, 20 Jun 2022 05:04:41 -0400
-X-MC-Unique: _HlnDeGqM8irUqCX6p-P4w-1
-Received: by mail-ed1-f72.google.com with SMTP id m5-20020a056402430500b004319d8ba8afso8291163edc.5
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 02:04:41 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=XvT2/EIqirhY+p5g64uUJvmK6JkYzBXCB04zVu3nQHE=;
-        b=3OIAYE9JJY0m9cWpRiKT2v57C/A4rfrRgN6sSFCHCaP3djni+9j2Tc86x4BMIZ6u93
-         EKUa8sf9Slyexu7GFPQHuGMzygVJYoRGF4waWcSZZo70kDzIeng9257xX0D4pI9tMGi+
-         e5N/4kZ2ubBxZhumol4aTUYn62MBHaa/6lPqJL3ldVvLfVurbXzngK+2hEel4Afvi8u4
-         u+sNkCO5xPn2iDDzbjxsj4IujXMhJNYHJwsXdemHMjTT3iSyHcX7U2FuAZe7xciQFCO5
-         XG4hrhtTSpF14n5ruYcgW+fVQ/66ZP/v7upevPwjnEsPba7Ccwq8YkEO2DxUdt2qLPIn
-         DAsQ==
-X-Gm-Message-State: AJIora/E6D0Sbw6ohlcRdKIL3MX9rTd1bhWE0rbI102kmUw6/G+YYNv5
-        ITmm2r/LGD0dEZkesq+HLNTeqO+TiTE1Rx8/kr3etYepNoBHKNN+ZuE6plw37bR9DSg+qLRU5Zq
-        szFG+xDJlQZ+I1dp+BiSfmEOJ
-X-Received: by 2002:a05:6402:5412:b0:435:5997:ccb5 with SMTP id ev18-20020a056402541200b004355997ccb5mr22879961edb.167.1655715880626;
-        Mon, 20 Jun 2022 02:04:40 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1u1V+8Z1olE7xRgb2e9/tLuRkZXYmTbhDWHE3J4zi9+b+f3sbuOtlQmw5zirNa6vEQBRLEWbA==
-X-Received: by 2002:a05:6402:5412:b0:435:5997:ccb5 with SMTP id ev18-20020a056402541200b004355997ccb5mr22879947edb.167.1655715880436;
-        Mon, 20 Jun 2022 02:04:40 -0700 (PDT)
-Received: from redhat.com ([2.52.146.221])
-        by smtp.gmail.com with ESMTPSA id o17-20020aa7dd51000000b0042df0c7deccsm9739758edw.78.2022.06.20.02.04.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jun 2022 02:04:39 -0700 (PDT)
-Date:   Mon, 20 Jun 2022 05:04:36 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org, erwan.yvin@stericsson.com
-Subject: Re: [PATCH 2/3] caif_virtio: fix the race between
- virtio_device_ready() and ndo_open()
-Message-ID: <20220620050251-mutt-send-email-mst@kernel.org>
-References: <20220620051115.3142-1-jasowang@redhat.com>
- <20220620051115.3142-3-jasowang@redhat.com>
+        Mon, 20 Jun 2022 05:04:56 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F86BDEB
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 02:04:55 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LRNxd3088zDsK6;
+        Mon, 20 Jun 2022 17:04:21 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 20 Jun 2022 17:04:50 +0800
+Subject: Re: [PATCH v2 2/3] mm/swapfile: fix possible data races of
+ inuse_pages
+To:     "Huang, Ying" <ying.huang@intel.com>
+CC:     <akpm@linux-foundation.org>, <david@redhat.com>,
+        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>
+References: <20220608144031.829-1-linmiaohe@huawei.com>
+ <20220608144031.829-3-linmiaohe@huawei.com>
+ <87edzjrcq8.fsf@yhuang6-desk2.ccr.corp.intel.com>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <13414d6a-9e72-fb6c-f0a8-8b83ba0455de@huawei.com>
+Date:   Mon, 20 Jun 2022 17:04:50 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220620051115.3142-3-jasowang@redhat.com>
+In-Reply-To: <87edzjrcq8.fsf@yhuang6-desk2.ccr.corp.intel.com>
+Content-Type: text/plain; charset="windows-1252"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 20, 2022 at 01:11:14PM +0800, Jason Wang wrote:
-> We used to depend on the virtio_device_ready() that is called after
-
-"We used to" implies it's not the case currently.
-I think you mean "we currently depend".
-
-> probe() by virtio_dev_probe() after netdev registration. This
-> cause 
-
-causes
-
->a race between ndo_open() and virtio_device_ready(): if
-> ndo_open() is called before virtio_device_ready(), the driver may
-> start to use the device (e.g TX) before DRIVER_OK which violates the
-> spec.
+On 2022/6/20 15:54, Huang, Ying wrote:
+> Miaohe Lin <linmiaohe@huawei.com> writes:
 > 
-> Fixing this
-
-Fix this
-
-> by switching to use register_netdevice() and protect the
-> virtio_device_ready() with rtnl_lock() to make sure ndo_open() can
-> only be called after virtio_device_ready().
+>> si->inuse_pages could still be accessed concurrently now. The plain reads
+>> outside si->lock critical section, i.e. swap_show and si_swapinfo, which
+>> results in data races. But these should be ok because they're just used
+>> for showing swap info.
+>>
+>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+>> Reviewed-by: David Hildenbrand <david@redhat.com>
+>> ---
+>>  mm/swapfile.c | 4 ++--
+>>  1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/mm/swapfile.c b/mm/swapfile.c
+>> index d2bead7b8b70..3fa26f6971e9 100644
+>> --- a/mm/swapfile.c
+>> +++ b/mm/swapfile.c
+>> @@ -2646,7 +2646,7 @@ static int swap_show(struct seq_file *swap, void *v)
+>>  	}
+>>  
+>>  	bytes = si->pages << (PAGE_SHIFT - 10);
+>> -	inuse = si->inuse_pages << (PAGE_SHIFT - 10);
+>> +	inuse = READ_ONCE(si->inuse_pages) << (PAGE_SHIFT - 10);
+>>  
+>>  	file = si->swap_file;
+>>  	len = seq_file_path(swap, file, " \t\n\\");
+>> @@ -3265,7 +3265,7 @@ void si_swapinfo(struct sysinfo *val)
+>>  		struct swap_info_struct *si = swap_info[type];
+>>  
+>>  		if ((si->flags & SWP_USED) && !(si->flags & SWP_WRITEOK))
+>> -			nr_to_be_unused += si->inuse_pages;
+>> +			nr_to_be_unused += READ_ONCE(si->inuse_pages);
+>>  	}
+>>  	val->freeswap = atomic_long_read(&nr_swap_pages) + nr_to_be_unused;
+>>  	val->totalswap = total_swap_pages + nr_to_be_unused;
 > 
-> Fixes: 0d2e1a2926b18 ("caif_virtio: Introduce caif over virtio")
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
+> READ_ONCE() should be paired with WRITE_ONCE().  So, change the writer
+> side too?
 
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
+READ_ONCE() is used to fix the complaint of concurrent accessing to si->inuse_pages from KCSAN here.
+The similar commit is 218209487c3d ("mm/swapfile: fix data races in try_to_unuse()"). IMHO, it's fine
+to see a not-uptodate value of si->inuse_pages because it's just used for showing swap info. So
+WRITE_ONCE() is not obligatory. Or am I miss something?
 
-> ---
->  drivers/net/caif/caif_virtio.c | 10 +++++++++-
->  1 file changed, 9 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/net/caif/caif_virtio.c b/drivers/net/caif/caif_virtio.c
-> index c677ded81133..66375bea2fcd 100644
-> --- a/drivers/net/caif/caif_virtio.c
-> +++ b/drivers/net/caif/caif_virtio.c
-> @@ -719,13 +719,21 @@ static int cfv_probe(struct virtio_device *vdev)
->  	/* Carrier is off until netdevice is opened */
->  	netif_carrier_off(netdev);
->  
-> +	/* serialize netdev register + virtio_device_ready() with ndo_open() */
-> +	rtnl_lock();
-> +
->  	/* register Netdev */
-> -	err = register_netdev(netdev);
-> +	err = register_netdevice(netdev);
->  	if (err) {
-> +		rtnl_unlock();
->  		dev_err(&vdev->dev, "Unable to register netdev (%d)\n", err);
->  		goto err;
->  	}
->  
-> +	virtio_device_ready(vdev);
-> +
-> +	rtnl_unlock();
-> +
->  	debugfs_init(cfv);
->  
->  	return 0;
-> -- 
-> 2.25.1
+> Best Regards,
+> Huang, Ying
+
+Thanks!
+
+> .
+> 
 
