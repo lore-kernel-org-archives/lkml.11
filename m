@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A47D0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:35:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21DF2C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:35:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346506AbiFTNfB (ORCPT
+        id S1346553AbiFTNfI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:35:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55338 "EHLO
+        Mon, 20 Jun 2022 09:35:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347392AbiFTNeE (ORCPT
+        with ESMTP id S1346953AbiFTNdx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:34:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75EA01DA42;
-        Mon, 20 Jun 2022 06:13:14 -0700 (PDT)
+        Mon, 20 Jun 2022 09:33:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF9422714C;
+        Mon, 20 Jun 2022 06:13:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DF676B80E2F;
-        Mon, 20 Jun 2022 13:13:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12BB1C3411C;
-        Mon, 20 Jun 2022 13:13:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C747460ABA;
+        Mon, 20 Jun 2022 13:11:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A18B4C3411B;
+        Mon, 20 Jun 2022 13:11:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730792;
-        bh=zC0rhojZPGoDhoHSXiKLJ+XGxJ+VMgmJnAnInp68XIo=;
+        s=korg; t=1655730715;
+        bh=vmFwneUPrgtWPznSynZ/cQFRxxjN8IKHGf0tkrIPyn0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eIttD3E3jiysFqKxT7CsdQb94GzuZuQ90ikhVbbhmSw+E90B8F/yOx4jjzYwUclr6
-         O6suHtpsD7irduL3Exhu93XhNcWBdYgvTjSKdjmNjN8wZYe8bSdEy+bWL2X0BeSxAm
-         7Oz2nMY4fvleInpOdpTEK3ke9c97wmkmnZwZRASk=
+        b=xJtjtpA+SJ36onHTpWyxOH+F2jRy62ab5M4tdGGNk+NP1zXl1x9nKIVNZ/Wvx7Oae
+         ReR0KYGYuUWHxuSl2LcdsHaJfFqjOeu/hsScZfTZR+tui4xRvvsgpusL0Imx2uHObI
+         W5pK9g38nZRxTIexEL5u3HbiCONndTMmGVglFVJE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 056/240] random: de-duplicate INPUT_POOL constants
-Date:   Mon, 20 Jun 2022 14:49:17 +0200
-Message-Id: <20220620124739.846276857@linuxfoundation.org>
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.4 034/240] MAINTAINERS: co-maintain random.c
+Date:   Mon, 20 Jun 2022 14:48:55 +0200
+Message-Id: <20220620124738.876040118@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 References: <20220620124737.799371052@linuxfoundation.org>
@@ -52,72 +52,31 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 5b87adf30f1464477169a1d653e9baf8c012bbfe upstream.
+commit 58e1100fdc5990b0cc0d4beaf2562a92e621ac7d upstream.
 
-We already had the POOL_* constants, so deduplicate the older INPUT_POOL
-ones. As well, fold EXTRACT_SIZE into the poolinfo enum, since it's
-related.
+random.c is a bit understaffed, and folks want more prompt reviews. I've
+got the crypto background and the interest to do these reviews, and have
+authored parts of the file already.
 
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Cc: Theodore Ts'o <tytso@mit.edu>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   17 ++++++-----------
- 1 file changed, 6 insertions(+), 11 deletions(-)
+ MAINTAINERS |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -359,13 +359,6 @@
- /* #define ADD_INTERRUPT_BENCH */
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -13640,6 +13640,7 @@ F:	arch/mips/configs/generic/board-ranch
  
- /*
-- * Configuration information
-- */
--#define INPUT_POOL_SHIFT	12
--#define INPUT_POOL_WORDS	(1 << (INPUT_POOL_SHIFT-5))
--#define EXTRACT_SIZE		(BLAKE2S_HASH_SIZE / 2)
--
--/*
-  * To allow fractional bits to be tracked, the entropy_count field is
-  * denominated in units of 1/8th bits.
-  *
-@@ -440,7 +433,9 @@ enum poolinfo {
- 	POOL_TAP2 = 76,
- 	POOL_TAP3 = 51,
- 	POOL_TAP4 = 25,
--	POOL_TAP5 = 1
-+	POOL_TAP5 = 1,
-+
-+	EXTRACT_SIZE = BLAKE2S_HASH_SIZE / 2
- };
+ RANDOM NUMBER DRIVER
+ M:	"Theodore Ts'o" <tytso@mit.edu>
++M:	Jason A. Donenfeld <Jason@zx2c4.com>
+ S:	Maintained
+ F:	drivers/char/random.c
  
- /*
-@@ -503,7 +498,7 @@ MODULE_PARM_DESC(ratelimit_disable, "Dis
-  *
-  **********************************************************************/
- 
--static u32 input_pool_data[INPUT_POOL_WORDS] __latent_entropy;
-+static u32 input_pool_data[POOL_WORDS] __latent_entropy;
- 
- static struct {
- 	/* read-only data: */
-@@ -1961,7 +1956,7 @@ SYSCALL_DEFINE3(getrandom, char __user *
- #include <linux/sysctl.h>
- 
- static int min_write_thresh;
--static int max_write_thresh = INPUT_POOL_WORDS * 32;
-+static int max_write_thresh = POOL_BITS;
- static int random_min_urandom_seed = 60;
- static char sysctl_bootid[16];
- 
-@@ -2018,7 +2013,7 @@ static int proc_do_entropy(struct ctl_ta
- 	return proc_dointvec(&fake_table, write, buffer, lenp, ppos);
- }
- 
--static int sysctl_poolsize = INPUT_POOL_WORDS * 32;
-+static int sysctl_poolsize = POOL_BITS;
- extern struct ctl_table random_table[];
- struct ctl_table random_table[] = {
- 	{
 
 
