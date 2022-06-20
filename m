@@ -2,149 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23E33C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:08:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 240FCC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 14:08:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350873AbiFTOIN (ORCPT
+        id S1350599AbiFTOIP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 10:08:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44198 "EHLO
+        Mon, 20 Jun 2022 10:08:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350741AbiFTNxt (ORCPT
+        with ESMTP id S1352465AbiFTN4d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:53:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56B6B1AF37;
-        Mon, 20 Jun 2022 06:20:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9D176B811C2;
-        Mon, 20 Jun 2022 13:19:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10405C3411B;
-        Mon, 20 Jun 2022 13:19:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655731150;
-        bh=OxBmzqVqX1mREF4WkljC/7yQplxzyWhFgFPRZ33k3wY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mnqh5EN3Nb7PqS4qvqDmasDmSr8UA8K3hBq5WSTxs5dL5M5FSv32ajf1RC2HOZtN7
-         gHI5JsE1N5A7NUrt0CmAM/6W1gjU9Rr3UuM4BQSZEaHzvmvgLsA5OkW4Ye6leocmKi
-         WXubHdLR9B/p33c0/ukvDmHWY+uKls1+CIKeIA5E=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.4 170/240] random: check for signals after page of pool writes
-Date:   Mon, 20 Jun 2022 14:51:11 +0200
-Message-Id: <20220620124743.925904797@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
-References: <20220620124737.799371052@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 20 Jun 2022 09:56:33 -0400
+Received: from SHSQR01.spreadtrum.com (unknown [222.66.158.135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 548A43632A;
+        Mon, 20 Jun 2022 06:22:29 -0700 (PDT)
+Received: from SHSend.spreadtrum.com (bjmbx01.spreadtrum.com [10.0.64.7])
+        by SHSQR01.spreadtrum.com with ESMTPS id 25KDKAgo049381
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NO);
+        Mon, 20 Jun 2022 21:20:11 +0800 (CST)
+        (envelope-from Di.Shen@unisoc.com)
+Received: from bj10906pcu1.spreadtrum.com (10.0.74.51) by
+ BJMBX01.spreadtrum.com (10.0.64.7) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.23; Mon, 20 Jun 2022 21:20:12 +0800
+From:   Di Shen <di.shen@unisoc.com>
+To:     <rafael@kernel.org>, <rui.zhang@intel.com>
+CC:     <xuewen.yan@unisoc.com>, <cindygm567@gmail.com>,
+        <daniel.lezcano@linaro.org>, <amitk@kernel.org>,
+        <linux-pm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <lukasz.luba@arm.com>
+Subject: [PATCH 1/1] thermal/sysfs: Clear the slot left in cooling_device_attr_groups
+Date:   Mon, 20 Jun 2022 21:19:53 +0800
+Message-ID: <20220620131953.16575-1-di.shen@unisoc.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.0.74.51]
+X-ClientProxiedBy: SHCAS01.spreadtrum.com (10.0.1.201) To
+ BJMBX01.spreadtrum.com (10.0.64.7)
+X-MAIL: SHSQR01.spreadtrum.com 25KDKAgo049381
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+There's a space allocated for cooling_device_stats_attr_group within co-
+oling_device_attr_groups. This space is shared by all cooling devices.
 
-commit 1ce6c8d68f8ac587f54d0a271ac594d3d51f3efb upstream.
+If not clear this space before cooling_device_stats_attr_group is initi-
+alized, the next cooling device will still create stats sysfs file node.
+At this time, read or write related nodes will cause kernel crash.
 
-get_random_bytes_user() checks for signals after producing a PAGE_SIZE
-worth of output, just like /dev/zero does. write_pool() is doing
-basically the same work (actually, slightly more expensive), and so
-should stop to check for signals in the same way. Let's also name it
-write_pool_user() to match get_random_bytes_user(), so this won't be
-misused in the future.
+[exception_reboot_reason]: kernel_crash
+[exception_panic_reason]: Fatal exception
+[exception_time]: 2022-06-07_06-32-25
+[exception_file_info]: not-bugon
+[exception_task_id]: 3154
+[exception_task_family]: [cat, 3154][sh, 2597][sh, 2362][adbd, 1804]
+[exception_pc_symbol]: [<747516ae>] _raw_spin_lock+0x20/0x60
+[exception_stack_info]: [<4cbe9ac1>] prepare_exception_info+0x19c/0x1a4
+[<03041be7>] sysdump_panic_event+0x57c/0x6f4
+[<b16f865e>] atomic_notifier_call_chain+0x48/0x7c
+[<5baac8d4>] panic+0x1b4/0x3c8
+[<9d287b0f>] arm_notify_die+0x0/0x78
+[<094fc22c>] __do_kernel_fault+0x94/0xa4
+[<3b4b69a4>] do_page_fault+0xd4/0x364
+[<23793e7a>] do_translation_fault+0x38/0xc0
+[<6e5cc52a>] do_DataAbort+0x4c/0xd0
+[<a28c16b8>] __dabt_svc+0x5c/0xa0
+[<747516ae>] _raw_spin_lock+0x20/0x60
+[<9a9e4cd4>] time_in_state_ms_show+0x28/0x148
+[<cb78325e>] dev_attr_show+0x38/0x64
+[<aea3e364>] sysfs_kf_seq_show+0x8c/0xf0
+[<c0a843ab>] seq_read+0x244/0x620
+[<b316b374>] vfs_read+0xd8/0x218
+[<3aebf5fa>] sys_read+0x80/0xe4
+[<7cf100f5>] ret_fast_syscall+0x0/0x28
+[<08cbe22f>] 0xbe8c1198
 
-Before this patch, massive writes to /dev/urandom would tie up the
-process for an extremely long time and make it unterminatable. After, it
-can be successfully interrupted. The following test program can be used
-to see this works as intended:
+So clear the slot left in cooling_device_attr_groups before cooling_dev-
+ice_stats_attr_group is initialized to avoid kernel crash.
 
-  #include <unistd.h>
-  #include <fcntl.h>
-  #include <signal.h>
-  #include <stdio.h>
-
-  static unsigned char x[~0U];
-
-  static void handle(int) { }
-
-  int main(int argc, char *argv[])
-  {
-    pid_t pid = getpid(), child;
-    int fd;
-    signal(SIGUSR1, handle);
-    if (!(child = fork())) {
-      for (;;)
-        kill(pid, SIGUSR1);
-    }
-    fd = open("/dev/urandom", O_WRONLY);
-    pause();
-    printf("interrupted after writing %zd bytes\n", write(fd, x, sizeof(x)));
-    close(fd);
-    kill(child, SIGTERM);
-    return 0;
-  }
-
-Result before: "interrupted after writing 2147479552 bytes"
-Result after: "interrupted after writing 4096 bytes"
-
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Di Shen <di.shen@unisoc.com>
 ---
- drivers/char/random.c |   14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ drivers/thermal/thermal_sysfs.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -1251,7 +1251,7 @@ static __poll_t random_poll(struct file
- 	return crng_ready() ? EPOLLIN | EPOLLRDNORM : EPOLLOUT | EPOLLWRNORM;
- }
+diff --git a/drivers/thermal/thermal_sysfs.c b/drivers/thermal/thermal_sysfs.c
+index 1c4aac8464a7..fbc3dbc85841 100644
+--- a/drivers/thermal/thermal_sysfs.c
++++ b/drivers/thermal/thermal_sysfs.c
+@@ -817,6 +817,11 @@ static void cooling_device_stats_setup(struct thermal_cooling_device *cdev)
+ 	unsigned long states;
+ 	int var;
  
--static ssize_t write_pool(struct iov_iter *iter)
-+static ssize_t write_pool_user(struct iov_iter *iter)
- {
- 	u8 block[BLAKE2S_BLOCK_SIZE];
- 	ssize_t ret = 0;
-@@ -1266,7 +1266,13 @@ static ssize_t write_pool(struct iov_ite
- 		mix_pool_bytes(block, copied);
- 		if (!iov_iter_count(iter) || copied != sizeof(block))
- 			break;
--		cond_resched();
++	/* Clear the slot left in cooling_device_attr_groups */
++	var = ARRAY_SIZE(cooling_device_attr_groups) - 2;
++	if (cooling_device_attr_groups[var])
++		cooling_device_attr_groups[var] = NULL;
 +
-+		BUILD_BUG_ON(PAGE_SIZE % sizeof(block) != 0);
-+		if (ret % PAGE_SIZE == 0) {
-+			if (signal_pending(current))
-+				break;
-+			cond_resched();
-+		}
- 	}
+ 	if (cdev->ops->get_max_state(cdev, &states))
+ 		return;
  
- 	memzero_explicit(block, sizeof(block));
-@@ -1275,7 +1281,7 @@ static ssize_t write_pool(struct iov_ite
- 
- static ssize_t random_write_iter(struct kiocb *kiocb, struct iov_iter *iter)
- {
--	return write_pool(iter);
-+	return write_pool_user(iter);
- }
- 
- static ssize_t urandom_read_iter(struct kiocb *kiocb, struct iov_iter *iter)
-@@ -1342,7 +1348,7 @@ static long random_ioctl(struct file *f,
- 		ret = import_single_range(WRITE, p, len, &iov, &iter);
- 		if (unlikely(ret))
- 			return ret;
--		ret = write_pool(&iter);
-+		ret = write_pool_user(&iter);
- 		if (unlikely(ret < 0))
- 			return ret;
- 		/* Since we're crediting, enforce that it was all written into the pool. */
-
+-- 
+2.17.1
 
