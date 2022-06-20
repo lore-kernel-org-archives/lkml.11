@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A90A1C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:17:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C60BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:17:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343980AbiFTNRd (ORCPT
+        id S1343996AbiFTNRh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:17:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35878 "EHLO
+        Mon, 20 Jun 2022 09:17:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245452AbiFTNLT (ORCPT
+        with ESMTP id S244374AbiFTNLT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 20 Jun 2022 09:11:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0FC4193D4;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0E99186E1;
         Mon, 20 Jun 2022 06:05:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B6286154B;
-        Mon, 20 Jun 2022 13:03:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 918E5C3411B;
-        Mon, 20 Jun 2022 13:03:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D3E061535;
+        Mon, 20 Jun 2022 13:03:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1093BC3411B;
+        Mon, 20 Jun 2022 13:03:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730196;
-        bh=ytZ1+hFyV2RqybENQgs4g/BucLFJXxFLio4+veEmxzc=;
+        s=korg; t=1655730186;
+        bh=prgXgAGzwFMqOOt0O0CvQgrBXVVuHlcL+eeocBClauA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qVUuIl4jrbkFFaMNYFQw3K+KkCEwSt4HTpdRHM0LVWtLF+FD2hIaO4OAEgP5n8uco
-         C5216DTUdSIWvTtdGeCBsFu/wFZ+ov1H7tKouMBXSy+5zk/DPQqqZElvzc3SnmRyGJ
-         3d91cc03NqdyA1eVe3y8Pqpti5lYO6+9C/dVR6us=
+        b=tfnTHcoT5eyBSyVT6soBCFQsJ9jsMA4Ue/yTz5x7g5LFW3O8mHFs88mQ3ZnAXCCU2
+         P+JB7XAwOEHOXNWEo3xn+zf7xep9m6CevPp7qbh669oHILlA7cNgYFaT6X/DL/WL7z
+         N/eTnE9qVNkqjqC3aUzvYCVZOqbzSERswTyc0sqU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
+        stable@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Will Deacon <will@kernel.org>,
+        "Ivan T. Ivanov" <iivanov@suse.de>,
+        Chengming Zhou <zhouchengming@bytedance.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 54/84] faddr2line: Fix overlapping text section failures, the sequel
-Date:   Mon, 20 Jun 2022 14:51:17 +0200
-Message-Id: <20220620124722.492188906@linuxfoundation.org>
+Subject: [PATCH 5.10 51/84] arm64: ftrace: consistently handle PLTs.
+Date:   Mon, 20 Jun 2022 14:51:14 +0200
+Message-Id: <20220620124722.400351941@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124720.882450983@linuxfoundation.org>
 References: <20220620124720.882450983@linuxfoundation.org>
@@ -50,137 +54,303 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@kernel.org>
+From: Mark Rutland <mark.rutland@arm.com>
 
-[ Upstream commit dcea997beed694cbd8705100ca1a6eb0d886de69 ]
+[ Upstream commit a6253579977e4c6f7818eeb05bf2bc65678a7187 ]
 
-If a function lives in a section other than .text, but .text also exists
-in the object, faddr2line may wrongly assume .text.  This can result in
-comically wrong output.  For example:
+Sometimes it is necessary to use a PLT entry to call an ftrace
+trampoline. This is handled by ftrace_make_call() and ftrace_make_nop(),
+with each having *almost* identical logic, but this is not handled by
+ftrace_modify_call() since its introduction in commit:
 
-  $ scripts/faddr2line vmlinux.o enter_from_user_mode+0x1c
-  enter_from_user_mode+0x1c/0x30:
-  find_next_bit at /home/jpoimboe/git/linux/./include/linux/find.h:40
-  (inlined by) perf_clear_dirty_counters at /home/jpoimboe/git/linux/arch/x86/events/core.c:2504
+  3b23e4991fb66f6d ("arm64: implement ftrace with regs")
 
-Fix it by passing the section name to addr2line, unless the object file
-is vmlinux, in which case the symbol table uses absolute addresses.
+Due to this, if we ever were to call ftrace_modify_call() for a callsite
+which requires a PLT entry for a trampoline, then either:
 
-Fixes: 1d1a0e7c5100 ("scripts/faddr2line: Fix overlapping text section failures")
-Reported-by: Peter Zijlstra <peterz@infradead.org>
-Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
-Link: https://lore.kernel.org/r/7d25bc1408bd3a750ac26e60d2f2815a5f4a8363.1654130536.git.jpoimboe@kernel.org
+a) If the old addr requires a trampoline, ftrace_modify_call() will use
+   an out-of-range address to generate the 'old' branch instruction.
+   This will result in warnings from aarch64_insn_gen_branch_imm() and
+   ftrace_modify_code(), and no instructions will be modified. As
+   ftrace_modify_call() will return an error, this will result in
+   subsequent internal ftrace errors.
+
+b) If the old addr does not require a trampoline, but the new addr does,
+   ftrace_modify_call() will use an out-of-range address to generate the
+   'new' branch instruction. This will result in warnings from
+   aarch64_insn_gen_branch_imm(), and ftrace_modify_code() will replace
+   the 'old' branch with a BRK. This will result in a kernel panic when
+   this BRK is later executed.
+
+Practically speaking, case (a) is vastly more likely than case (b), and
+typically this will result in internal ftrace errors that don't
+necessarily affect the rest of the system. This can be demonstrated with
+an out-of-tree test module which triggers ftrace_modify_call(), e.g.
+
+| # insmod test_ftrace.ko
+| test_ftrace: Function test_function raw=0xffffb3749399201c, callsite=0xffffb37493992024
+| branch_imm_common: offset out of range
+| branch_imm_common: offset out of range
+| ------------[ ftrace bug ]------------
+| ftrace failed to modify
+| [<ffffb37493992024>] test_function+0x8/0x38 [test_ftrace]
+|  actual:   1d:00:00:94
+| Updating ftrace call site to call a different ftrace function
+| ftrace record flags: e0000002
+|  (2) R
+|  expected tramp: ffffb374ae42ed54
+| ------------[ cut here ]------------
+| WARNING: CPU: 0 PID: 165 at kernel/trace/ftrace.c:2085 ftrace_bug+0x280/0x2b0
+| Modules linked in: test_ftrace(+)
+| CPU: 0 PID: 165 Comm: insmod Not tainted 5.19.0-rc2-00002-g4d9ead8b45ce #13
+| Hardware name: linux,dummy-virt (DT)
+| pstate: 60400005 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+| pc : ftrace_bug+0x280/0x2b0
+| lr : ftrace_bug+0x280/0x2b0
+| sp : ffff80000839ba00
+| x29: ffff80000839ba00 x28: 0000000000000000 x27: ffff80000839bcf0
+| x26: ffffb37493994180 x25: ffffb374b0991c28 x24: ffffb374b0d70000
+| x23: 00000000ffffffea x22: ffffb374afcc33b0 x21: ffffb374b08f9cc8
+| x20: ffff572b8462c000 x19: ffffb374b08f9000 x18: ffffffffffffffff
+| x17: 6c6c6163202c6331 x16: ffffb374ae5ad110 x15: ffffb374b0d51ee4
+| x14: 0000000000000000 x13: 3435646532346561 x12: 3437336266666666
+| x11: 203a706d61727420 x10: 6465746365707865 x9 : ffffb374ae5149e8
+| x8 : 336266666666203a x7 : 706d617274206465 x6 : 00000000fffff167
+| x5 : ffff572bffbc4a08 x4 : 00000000fffff167 x3 : 0000000000000000
+| x2 : 0000000000000000 x1 : ffff572b84461e00 x0 : 0000000000000022
+| Call trace:
+|  ftrace_bug+0x280/0x2b0
+|  ftrace_replace_code+0x98/0xa0
+|  ftrace_modify_all_code+0xe0/0x144
+|  arch_ftrace_update_code+0x14/0x20
+|  ftrace_startup+0xf8/0x1b0
+|  register_ftrace_function+0x38/0x90
+|  test_ftrace_init+0xd0/0x1000 [test_ftrace]
+|  do_one_initcall+0x50/0x2b0
+|  do_init_module+0x50/0x1f0
+|  load_module+0x17c8/0x1d64
+|  __do_sys_finit_module+0xa8/0x100
+|  __arm64_sys_finit_module+0x2c/0x3c
+|  invoke_syscall+0x50/0x120
+|  el0_svc_common.constprop.0+0xdc/0x100
+|  do_el0_svc+0x3c/0xd0
+|  el0_svc+0x34/0xb0
+|  el0t_64_sync_handler+0xbc/0x140
+|  el0t_64_sync+0x18c/0x190
+| ---[ end trace 0000000000000000 ]---
+
+We can solve this by consistently determining whether to use a PLT entry
+for an address.
+
+Note that since (the earlier) commit:
+
+  f1a54ae9af0da4d7 ("arm64: module/ftrace: intialize PLT at load time")
+
+... we can consistently determine the PLT address that a given callsite
+will use, and therefore ftrace_make_nop() does not need to skip
+validation when a PLT is in use.
+
+This patch factors the existing logic out of ftrace_make_call() and
+ftrace_make_nop() into a common ftrace_find_callable_addr() helper
+function, which is used by ftrace_make_call(), ftrace_make_nop(), and
+ftrace_modify_call(). In ftrace_make_nop() the patching is consistently
+validated by ftrace_modify_code() as we can always determine what the
+old instruction should have been.
+
+Fixes: 3b23e4991fb6 ("arm64: implement ftrace with regs")
+Signed-off-by: Mark Rutland <mark.rutland@arm.com>
+Cc: Ard Biesheuvel <ardb@kernel.org>
+Cc: Will Deacon <will@kernel.org>
+Tested-by: "Ivan T. Ivanov" <iivanov@suse.de>
+Reviewed-by: Chengming Zhou <zhouchengming@bytedance.com>
+Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
+Link: https://lore.kernel.org/r/20220614080944.1349146-3-mark.rutland@arm.com
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- scripts/faddr2line | 45 ++++++++++++++++++++++++++++++++++-----------
- 1 file changed, 34 insertions(+), 11 deletions(-)
+ arch/arm64/kernel/ftrace.c | 137 ++++++++++++++++++-------------------
+ 1 file changed, 66 insertions(+), 71 deletions(-)
 
-diff --git a/scripts/faddr2line b/scripts/faddr2line
-index 0e6268d59883..94ed98dd899f 100755
---- a/scripts/faddr2line
-+++ b/scripts/faddr2line
-@@ -95,17 +95,25 @@ __faddr2line() {
- 	local print_warnings=$4
+diff --git a/arch/arm64/kernel/ftrace.c b/arch/arm64/kernel/ftrace.c
+index e21a01b99999..3724bab278b2 100644
+--- a/arch/arm64/kernel/ftrace.c
++++ b/arch/arm64/kernel/ftrace.c
+@@ -77,47 +77,76 @@ static struct plt_entry *get_ftrace_plt(struct module *mod, unsigned long addr)
+ }
  
- 	local sym_name=${func_addr%+*}
--	local offset=${func_addr#*+}
--	offset=${offset%/*}
-+	local func_offset=${func_addr#*+}
-+	func_offset=${func_offset%/*}
- 	local user_size=
-+	local file_type
-+	local is_vmlinux=0
- 	[[ $func_addr =~ "/" ]] && user_size=${func_addr#*/}
+ /*
+- * Turn on the call to ftrace_caller() in instrumented function
++ * Find the address the callsite must branch to in order to reach '*addr'.
++ *
++ * Due to the limited range of 'BL' instructions, modules may be placed too far
++ * away to branch directly and must use a PLT.
++ *
++ * Returns true when '*addr' contains a reachable target address, or has been
++ * modified to contain a PLT address. Returns false otherwise.
+  */
+-int ftrace_make_call(struct dyn_ftrace *rec, unsigned long addr)
++static bool ftrace_find_callable_addr(struct dyn_ftrace *rec,
++				      struct module *mod,
++				      unsigned long *addr)
+ {
+ 	unsigned long pc = rec->ip;
+-	u32 old, new;
+-	long offset = (long)addr - (long)pc;
++	long offset = (long)*addr - (long)pc;
++	struct plt_entry *plt;
  
--	if [[ -z $sym_name ]] || [[ -z $offset ]] || [[ $sym_name = $func_addr ]]; then
-+	if [[ -z $sym_name ]] || [[ -z $func_offset ]] || [[ $sym_name = $func_addr ]]; then
- 		warn "bad func+offset $func_addr"
- 		DONE=1
- 		return
- 	fi
+-	if (offset < -SZ_128M || offset >= SZ_128M) {
+-		struct module *mod;
+-		struct plt_entry *plt;
++	/*
++	 * When the target is within range of the 'BL' instruction, use 'addr'
++	 * as-is and branch to that directly.
++	 */
++	if (offset >= -SZ_128M && offset < SZ_128M)
++		return true;
  
-+	# vmlinux uses absolute addresses in the section table rather than
-+	# section offsets.
-+	local file_type=$(${READELF} --file-header $objfile |
-+		${AWK} '$1 == "Type:" { print $2; exit }')
-+	[[ $file_type = "EXEC" ]] && is_vmlinux=1
+-		if (!IS_ENABLED(CONFIG_ARM64_MODULE_PLTS))
+-			return -EINVAL;
++	/*
++	 * When the target is outside of the range of a 'BL' instruction, we
++	 * must use a PLT to reach it. We can only place PLTs for modules, and
++	 * only when module PLT support is built-in.
++	 */
++	if (!IS_ENABLED(CONFIG_ARM64_MODULE_PLTS))
++		return false;
+ 
+-		/*
+-		 * On kernels that support module PLTs, the offset between the
+-		 * branch instruction and its target may legally exceed the
+-		 * range of an ordinary relative 'bl' opcode. In this case, we
+-		 * need to branch via a trampoline in the module.
+-		 *
+-		 * NOTE: __module_text_address() must be called with preemption
+-		 * disabled, but we can rely on ftrace_lock to ensure that 'mod'
+-		 * retains its validity throughout the remainder of this code.
+-		 */
++	/*
++	 * 'mod' is only set at module load time, but if we end up
++	 * dealing with an out-of-range condition, we can assume it
++	 * is due to a module being loaded far away from the kernel.
++	 *
++	 * NOTE: __module_text_address() must be called with preemption
++	 * disabled, but we can rely on ftrace_lock to ensure that 'mod'
++	 * retains its validity throughout the remainder of this code.
++	 */
++	if (!mod) {
+ 		preempt_disable();
+ 		mod = __module_text_address(pc);
+ 		preempt_enable();
++	}
+ 
+-		if (WARN_ON(!mod))
+-			return -EINVAL;
++	if (WARN_ON(!mod))
++		return false;
+ 
+-		plt = get_ftrace_plt(mod, addr);
+-		if (!plt) {
+-			pr_err("ftrace: no module PLT for %ps\n", (void *)addr);
+-			return -EINVAL;
+-		}
+-
+-		addr = (unsigned long)plt;
++	plt = get_ftrace_plt(mod, *addr);
++	if (!plt) {
++		pr_err("ftrace: no module PLT for %ps\n", (void *)*addr);
++		return false;
+ 	}
+ 
++	*addr = (unsigned long)plt;
++	return true;
++}
 +
- 	# Go through each of the object's symbols which match the func name.
- 	# In rare cases there might be duplicates, in which case we print all
- 	# matches.
-@@ -114,9 +122,11 @@ __faddr2line() {
- 		local sym_addr=0x${fields[1]}
- 		local sym_elf_size=${fields[2]}
- 		local sym_sec=${fields[6]}
-+		local sec_size
-+		local sec_name
- 
- 		# Get the section size:
--		local sec_size=$(${READELF} --section-headers --wide $objfile |
-+		sec_size=$(${READELF} --section-headers --wide $objfile |
- 			sed 's/\[ /\[/' |
- 			${AWK} -v sec=$sym_sec '$1 == "[" sec "]" { print "0x" $6; exit }')
- 
-@@ -126,6 +136,17 @@ __faddr2line() {
- 			return
- 		fi
- 
-+		# Get the section name:
-+		sec_name=$(${READELF} --section-headers --wide $objfile |
-+			sed 's/\[ /\[/' |
-+			${AWK} -v sec=$sym_sec '$1 == "[" sec "]" { print $2; exit }')
++/*
++ * Turn on the call to ftrace_caller() in instrumented function
++ */
++int ftrace_make_call(struct dyn_ftrace *rec, unsigned long addr)
++{
++	unsigned long pc = rec->ip;
++	u32 old, new;
 +
-+		if [[ -z $sec_name ]]; then
-+			warn "bad section name: section: $sym_sec"
-+			DONE=1
-+			return
-+		fi
++	if (!ftrace_find_callable_addr(rec, NULL, &addr))
++		return -EINVAL;
 +
- 		# Calculate the symbol size.
- 		#
- 		# Unfortunately we can't use the ELF size, because kallsyms
-@@ -174,10 +195,10 @@ __faddr2line() {
+ 	old = aarch64_insn_gen_nop();
+ 	new = aarch64_insn_gen_branch_imm(pc, addr, AARCH64_INSN_BRANCH_LINK);
  
- 		sym_size=0x$(printf %x $sym_size)
+@@ -131,6 +160,11 @@ int ftrace_modify_call(struct dyn_ftrace *rec, unsigned long old_addr,
+ 	unsigned long pc = rec->ip;
+ 	u32 old, new;
  
--		# Calculate the section address from user-supplied offset:
--		local addr=$(($sym_addr + $offset))
-+		# Calculate the address from user-supplied offset:
-+		local addr=$(($sym_addr + $func_offset))
- 		if [[ -z $addr ]] || [[ $addr = 0 ]]; then
--			warn "bad address: $sym_addr + $offset"
-+			warn "bad address: $sym_addr + $func_offset"
- 			DONE=1
- 			return
- 		fi
-@@ -191,9 +212,9 @@ __faddr2line() {
- 		fi
++	if (!ftrace_find_callable_addr(rec, NULL, &old_addr))
++		return -EINVAL;
++	if (!ftrace_find_callable_addr(rec, NULL, &addr))
++		return -EINVAL;
++
+ 	old = aarch64_insn_gen_branch_imm(pc, old_addr,
+ 					  AARCH64_INSN_BRANCH_LINK);
+ 	new = aarch64_insn_gen_branch_imm(pc, addr, AARCH64_INSN_BRANCH_LINK);
+@@ -180,54 +214,15 @@ int ftrace_make_nop(struct module *mod, struct dyn_ftrace *rec,
+ 		    unsigned long addr)
+ {
+ 	unsigned long pc = rec->ip;
+-	bool validate = true;
+ 	u32 old = 0, new;
+-	long offset = (long)addr - (long)pc;
  
- 		# Make sure the provided offset is within the symbol's range:
--		if [[ $offset -gt $sym_size ]]; then
-+		if [[ $func_offset -gt $sym_size ]]; then
- 			[[ $print_warnings = 1 ]] &&
--				echo "skipping $sym_name address at $addr due to size mismatch ($offset > $sym_size)"
-+				echo "skipping $sym_name address at $addr due to size mismatch ($func_offset > $sym_size)"
- 			continue
- 		fi
+-	if (offset < -SZ_128M || offset >= SZ_128M) {
+-		u32 replaced;
+-
+-		if (!IS_ENABLED(CONFIG_ARM64_MODULE_PLTS))
+-			return -EINVAL;
+-
+-		/*
+-		 * 'mod' is only set at module load time, but if we end up
+-		 * dealing with an out-of-range condition, we can assume it
+-		 * is due to a module being loaded far away from the kernel.
+-		 */
+-		if (!mod) {
+-			preempt_disable();
+-			mod = __module_text_address(pc);
+-			preempt_enable();
+-
+-			if (WARN_ON(!mod))
+-				return -EINVAL;
+-		}
+-
+-		/*
+-		 * The instruction we are about to patch may be a branch and
+-		 * link instruction that was redirected via a PLT entry. In
+-		 * this case, the normal validation will fail, but we can at
+-		 * least check that we are dealing with a branch and link
+-		 * instruction that points into the right module.
+-		 */
+-		if (aarch64_insn_read((void *)pc, &replaced))
+-			return -EFAULT;
+-
+-		if (!aarch64_insn_is_bl(replaced) ||
+-		    !within_module(pc + aarch64_get_branch_offset(replaced),
+-				   mod))
+-			return -EINVAL;
+-
+-		validate = false;
+-	} else {
+-		old = aarch64_insn_gen_branch_imm(pc, addr,
+-						  AARCH64_INSN_BRANCH_LINK);
+-	}
++	if (!ftrace_find_callable_addr(rec, mod, &addr))
++		return -EINVAL;
  
-@@ -202,11 +223,13 @@ __faddr2line() {
- 		[[ $FIRST = 0 ]] && echo
- 		FIRST=0
++	old = aarch64_insn_gen_branch_imm(pc, addr, AARCH64_INSN_BRANCH_LINK);
+ 	new = aarch64_insn_gen_nop();
  
--		echo "$sym_name+$offset/$sym_size:"
-+		echo "$sym_name+$func_offset/$sym_size:"
+-	return ftrace_modify_code(pc, old, new, validate);
++	return ftrace_modify_code(pc, old, new, true);
+ }
  
- 		# Pass section address to addr2line and strip absolute paths
- 		# from the output:
--		local output=$(${ADDR2LINE} -fpie $objfile $addr | sed "s; $dir_prefix\(\./\)*; ;")
-+		local args="--functions --pretty-print --inlines --exe=$objfile"
-+		[[ $is_vmlinux = 0 ]] && args="$args --section=$sec_name"
-+		local output=$(${ADDR2LINE} $args $addr | sed "s; $dir_prefix\(\./\)*; ;")
- 		[[ -z $output ]] && continue
- 
- 		# Default output (non --list):
+ void arch_ftrace_update_code(int command)
 -- 
 2.35.1
 
