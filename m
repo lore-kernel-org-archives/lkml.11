@@ -2,129 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD61EC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:16:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13EA3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:16:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343815AbiFTNQt (ORCPT
+        id S1343843AbiFTNQw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:16:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54228 "EHLO
+        Mon, 20 Jun 2022 09:16:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344146AbiFTNJ7 (ORCPT
+        with ESMTP id S1344296AbiFTNKG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:09:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AF391C136
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 06:05:07 -0700 (PDT)
+        Mon, 20 Jun 2022 09:10:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 885511C93D;
+        Mon, 20 Jun 2022 06:05:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 56B9961575
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 13:04:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF9D2C3411B;
-        Mon, 20 Jun 2022 13:04:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655730281;
-        bh=jSR7IjcsR2+GyvGmEMWqDNbvzujtbnJRgMjf3an/hzE=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id C7100B811AE;
+        Mon, 20 Jun 2022 13:02:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DD32C341C6;
+        Mon, 20 Jun 2022 13:02:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655730128;
+        bh=kY7M+cF6jVAw2h72tzuT6A72g36+rLAemXxLHPg6FwY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OPwQpG4D/fChawGIcHTnzG6nEzuJ9m6J8uvTmYEz1qWHw51OOXYD8EISYwL+nwsr1
-         qj/GiHnnPhOQUyWCp558ni+8VuU7Gvk0h7I2Oi6niMOVsm6BDkuICVmIZKuooxoSaC
-         Bwmsx/ej5XM44Ftkqz2Felbx2nHcyVCUar3Vk4CtuVr7iciNL+VQ/w1Hr+gHVvHRkj
-         hI6Sk9XVpUdfWzvrHclyN8Q6GadqAHey/96VnASbIUUCtugrhOg/mSkQrOowucSXkj
-         Dwb5e51asL2JmGK+1WY8YbwZ5abPFYEOQbR3Uk+QGOs8Skzi0E2RtUydszV3NQpxsM
-         el8agfoblgjJQ==
-From:   Oded Gabbay <ogabbay@kernel.org>
+        b=wCIWO2QUba9G+cUty7/PiQbU2QvQYyypep+ijp2QyXShoIPowSikldQK2ZKKRFA3j
+         8slVLuF0Ah8jZgcPssQ1TV6WH+wKB4MOag3XA7MRBRCmKZZMMZrfnlQVOMVi3AzXBT
+         vkGovQumyFTrrV8WG4E/YkXxoMjwpSTfef37eC3Q=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Tal Cohen <talcohen@habana.ai>
-Subject: [PATCH 03/17] habanalabs/gaudi: invoke device reset from one code block
-Date:   Mon, 20 Jun 2022 16:04:18 +0300
-Message-Id: <20220620130432.1180451-3-ogabbay@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220620130432.1180451-1-ogabbay@kernel.org>
-References: <20220620130432.1180451-1-ogabbay@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Wang Yufen <wangyufen@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 28/84] ipv6: Fix signed integer overflow in l2tp_ip6_sendmsg
+Date:   Mon, 20 Jun 2022 14:50:51 +0200
+Message-Id: <20220620124721.728418933@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220620124720.882450983@linuxfoundation.org>
+References: <20220620124720.882450983@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tal Cohen <talcohen@habana.ai>
+From: Wang Yufen <wangyufen@huawei.com>
 
-In order to prepare the driver code for device reset event
-notification, change the event handler function flow to call
-device reset from one code block.
+[ Upstream commit f638a84afef3dfe10554c51820c16e39a278c915 ]
 
-In addition, the commit fixes an issue that reset was performed
-w/o checking the 'hard_reset_on_fw_event' state and w/o setting
-the HL_DRV_RESET_DELAY flag.
+When len >= INT_MAX - transhdrlen, ulen = len + transhdrlen will be
+overflow. To fix, we can follow what udpv6 does and subtract the
+transhdrlen from the max.
 
-Signed-off-by: Tal Cohen <talcohen@habana.ai>
-Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
-Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
+Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+Link: https://lore.kernel.org/r/20220607120028.845916-2-wangyufen@huawei.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/habanalabs/gaudi/gaudi.c | 25 ++++++++++++++++---------
- 1 file changed, 16 insertions(+), 9 deletions(-)
+ net/l2tp/l2tp_ip6.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
-index ec9f0a93cbe2..8f37297b2c3b 100644
---- a/drivers/misc/habanalabs/gaudi/gaudi.c
-+++ b/drivers/misc/habanalabs/gaudi/gaudi.c
-@@ -7795,10 +7795,10 @@ static void gaudi_handle_eqe(struct hl_device *hdev,
- 	struct gaudi_device *gaudi = hdev->asic_specific;
- 	u64 data = le64_to_cpu(eq_entry->data[0]), event_mask = 0;
- 	u32 ctl = le32_to_cpu(eq_entry->hdr.ctl);
--	u32 fw_fatal_err_flag = 0;
-+	u32 fw_fatal_err_flag = 0, flags = 0;
- 	u16 event_type = ((ctl & EQ_CTL_EVENT_TYPE_MASK)
- 			>> EQ_CTL_EVENT_TYPE_SHIFT);
--	bool reset_required;
-+	bool reset_required, reset_direct = false;
- 	u8 cause;
- 	int rc;
+diff --git a/net/l2tp/l2tp_ip6.c b/net/l2tp/l2tp_ip6.c
+index 96f975777438..d54dbd01d86f 100644
+--- a/net/l2tp/l2tp_ip6.c
++++ b/net/l2tp/l2tp_ip6.c
+@@ -502,14 +502,15 @@ static int l2tp_ip6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 	struct ipcm6_cookie ipc6;
+ 	int addr_len = msg->msg_namelen;
+ 	int transhdrlen = 4; /* zero session-id */
+-	int ulen = len + transhdrlen;
++	int ulen;
+ 	int err;
  
-@@ -7886,7 +7886,8 @@ static void gaudi_handle_eqe(struct hl_device *hdev,
- 			dev_err(hdev->dev, "reset required due to %s\n",
- 				gaudi_irq_map_table[event_type].name);
+ 	/* Rough check on arithmetic overflow,
+ 	 * better check is made in ip6_append_data().
+ 	 */
+-	if (len > INT_MAX)
++	if (len > INT_MAX - transhdrlen)
+ 		return -EMSGSIZE;
++	ulen = len + transhdrlen;
  
--			hl_device_reset(hdev, 0);
-+			reset_direct = true;
-+			goto reset_device;
- 		} else {
- 			hl_fw_unmask_irq(hdev, event_type);
- 		}
-@@ -7908,7 +7909,8 @@ static void gaudi_handle_eqe(struct hl_device *hdev,
- 			dev_err(hdev->dev, "reset required due to %s\n",
- 				gaudi_irq_map_table[event_type].name);
- 
--			hl_device_reset(hdev, 0);
-+			reset_direct = true;
-+			goto reset_device;
- 		} else {
- 			hl_fw_unmask_irq(hdev, event_type);
- 		}
-@@ -8050,12 +8052,17 @@ static void gaudi_handle_eqe(struct hl_device *hdev,
- 	return;
- 
- reset_device:
--	if (hdev->asic_prop.fw_security_enabled)
--		hl_device_reset(hdev, HL_DRV_RESET_HARD
--					| HL_DRV_RESET_BYPASS_REQ_TO_FW
--					| fw_fatal_err_flag);
-+	reset_required = true;
-+
-+	if (hdev->asic_prop.fw_security_enabled && !reset_direct)
-+		flags = HL_DRV_RESET_HARD | HL_DRV_RESET_BYPASS_REQ_TO_FW | fw_fatal_err_flag;
- 	else if (hdev->hard_reset_on_fw_events)
--		hl_device_reset(hdev, HL_DRV_RESET_HARD | HL_DRV_RESET_DELAY | fw_fatal_err_flag);
-+		flags = HL_DRV_RESET_HARD | HL_DRV_RESET_DELAY | fw_fatal_err_flag;
-+	else
-+		reset_required = false;
-+
-+	if (reset_required)
-+		hl_device_reset(hdev, flags);
- 	else
- 		hl_fw_unmask_irq(hdev, event_type);
- }
+ 	/* Mirror BSD error message compatibility */
+ 	if (msg->msg_flags & MSG_OOB)
 -- 
-2.25.1
+2.35.1
+
+
 
