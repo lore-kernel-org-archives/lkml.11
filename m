@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42672C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:04:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D4C4C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:04:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243922AbiFTNEX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:04:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47634 "EHLO
+        id S244033AbiFTNEb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 09:04:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243877AbiFTNCN (ORCPT
+        with ESMTP id S244023AbiFTNCR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:02:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E44EB18343;
-        Mon, 20 Jun 2022 05:57:33 -0700 (PDT)
+        Mon, 20 Jun 2022 09:02:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 511E219008;
+        Mon, 20 Jun 2022 05:57:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0FB4E614EB;
-        Mon, 20 Jun 2022 12:57:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 149D5C3411B;
-        Mon, 20 Jun 2022 12:57:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EAE78B811A3;
+        Mon, 20 Jun 2022 12:57:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C3C9C3411B;
+        Mon, 20 Jun 2022 12:57:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655729852;
-        bh=HR7GqMWbL932M9kWU/TdhBn86PFa6YN1adQ5FdOgz6Y=;
+        s=korg; t=1655729855;
+        bh=fhDHOpT5UB8R05poRAfCYJlJkd3xObPZ2ivB/X4YfXw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Mk9TvBBzPCRuwVSLkvohPobZ5ksiZjXF36wS1EYp4a8/eD6Mu3P2k6uXouqRgoiUr
-         H6BeEwokncE0Cn4sshNcYM6iU6ZegRf+dJwAFyk8BzhGrN+RpKatUV2ujNXwOj5tQe
-         uoYY05nSBEwLxrLPf+2/HH7ixTEF7+PVxpmDtRE8=
+        b=haWxKm2WMylIhAmMSH13tBZgbwZ7ULLRVbnJQz3WEMD+rmithK3SoW7jLvH6nWT45
+         E+XfL5p4oyaIbc4i/26//ApaSbP/ekTFuEbGwuuS1hOCLE0oSSYEZWLAUf+4Fv9oaF
+         MrMEQ3Ckgmk8R/Y53WEOBbLOR5hcDHPbtfozSIXs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 096/141] irqchip/realtek-rtl: Fix refcount leak in map_interrupts
-Date:   Mon, 20 Jun 2022 14:50:34 +0200
-Message-Id: <20220620124732.382809166@linuxfoundation.org>
+        stable@vger.kernel.org, Jing-Ting Wu <jing-ting.wu@mediatek.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 097/141] sched: Fix balance_push() vs __sched_setscheduler()
+Date:   Mon, 20 Jun 2022 14:50:35 +0200
+Message-Id: <20220620124732.411011417@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 References: <20220620124729.509745706@linuxfoundation.org>
@@ -48,40 +49,118 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-[ Upstream commit eff4780f83d0ae3e5b6c02ff5d999dc4c1c5c8ce ]
+[ Upstream commit 04193d590b390ec7a0592630f46d559ec6564ba1 ]
 
-of_find_node_by_phandle() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-This function doesn't call of_node_put() in error path.
-Call of_node_put() directly after of_property_read_u32() to cover
-both normal path and error path.
+The purpose of balance_push() is to act as a filter on task selection
+in the case of CPU hotplug, specifically when taking the CPU out.
 
-Fixes: 9f3a0f34b84a ("irqchip: Add support for Realtek RTL838x/RTL839x interrupt controller")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220601080930.31005-7-linmq006@gmail.com
+It does this by (ab)using the balance callback infrastructure, with
+the express purpose of keeping all the unlikely/odd cases in a single
+place.
+
+In order to serve its purpose, the balance_push_callback needs to be
+(exclusively) on the callback list at all times (noting that the
+callback always places itself back on the list the moment it runs,
+also noting that when the CPU goes down, regular balancing concerns
+are moot, so ignoring them is fine).
+
+And here-in lies the problem, __sched_setscheduler()'s use of
+splice_balance_callbacks() takes the callbacks off the list across a
+lock-break, making it possible for, an interleaving, __schedule() to
+see an empty list and not get filtered.
+
+Fixes: ae7927023243 ("sched: Optimize finish_lock_switch()")
+Reported-by: Jing-Ting Wu <jing-ting.wu@mediatek.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Tested-by: Jing-Ting Wu <jing-ting.wu@mediatek.com>
+Link: https://lkml.kernel.org/r/20220519134706.GH2578@worktop.programming.kicks-ass.net
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/irqchip/irq-realtek-rtl.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/sched/core.c  | 36 +++++++++++++++++++++++++++++++++---
+ kernel/sched/sched.h |  5 +++++
+ 2 files changed, 38 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/irqchip/irq-realtek-rtl.c b/drivers/irqchip/irq-realtek-rtl.c
-index 50a56820c99b..56bf502d9c67 100644
---- a/drivers/irqchip/irq-realtek-rtl.c
-+++ b/drivers/irqchip/irq-realtek-rtl.c
-@@ -134,9 +134,9 @@ static int __init map_interrupts(struct device_node *node, struct irq_domain *do
- 		if (!cpu_ictl)
- 			return -EINVAL;
- 		ret = of_property_read_u32(cpu_ictl, "#interrupt-cells", &tmp);
-+		of_node_put(cpu_ictl);
- 		if (ret || tmp != 1)
- 			return -EINVAL;
--		of_node_put(cpu_ictl);
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index e58d894df207..dd11daa7a84b 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -4755,25 +4755,55 @@ static void do_balance_callbacks(struct rq *rq, struct callback_head *head)
  
- 		cpu_int = be32_to_cpup(imap + 2);
- 		if (cpu_int > 7 || cpu_int < 2)
+ static void balance_push(struct rq *rq);
+ 
++/*
++ * balance_push_callback is a right abuse of the callback interface and plays
++ * by significantly different rules.
++ *
++ * Where the normal balance_callback's purpose is to be ran in the same context
++ * that queued it (only later, when it's safe to drop rq->lock again),
++ * balance_push_callback is specifically targeted at __schedule().
++ *
++ * This abuse is tolerated because it places all the unlikely/odd cases behind
++ * a single test, namely: rq->balance_callback == NULL.
++ */
+ struct callback_head balance_push_callback = {
+ 	.next = NULL,
+ 	.func = (void (*)(struct callback_head *))balance_push,
+ };
+ 
+-static inline struct callback_head *splice_balance_callbacks(struct rq *rq)
++static inline struct callback_head *
++__splice_balance_callbacks(struct rq *rq, bool split)
+ {
+ 	struct callback_head *head = rq->balance_callback;
+ 
++	if (likely(!head))
++		return NULL;
++
+ 	lockdep_assert_rq_held(rq);
+-	if (head)
++	/*
++	 * Must not take balance_push_callback off the list when
++	 * splice_balance_callbacks() and balance_callbacks() are not
++	 * in the same rq->lock section.
++	 *
++	 * In that case it would be possible for __schedule() to interleave
++	 * and observe the list empty.
++	 */
++	if (split && head == &balance_push_callback)
++		head = NULL;
++	else
+ 		rq->balance_callback = NULL;
+ 
+ 	return head;
+ }
+ 
++static inline struct callback_head *splice_balance_callbacks(struct rq *rq)
++{
++	return __splice_balance_callbacks(rq, true);
++}
++
+ static void __balance_callbacks(struct rq *rq)
+ {
+-	do_balance_callbacks(rq, splice_balance_callbacks(rq));
++	do_balance_callbacks(rq, __splice_balance_callbacks(rq, false));
+ }
+ 
+ static inline void balance_callbacks(struct rq *rq, struct callback_head *head)
+diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+index 0d2b6b758f32..84bba67c92dc 100644
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -1686,6 +1686,11 @@ queue_balance_callback(struct rq *rq,
+ {
+ 	lockdep_assert_rq_held(rq);
+ 
++	/*
++	 * Don't (re)queue an already queued item; nor queue anything when
++	 * balance_push() is active, see the comment with
++	 * balance_push_callback.
++	 */
+ 	if (unlikely(head->next || rq->balance_callback == &balance_push_callback))
+ 		return;
+ 
 -- 
 2.35.1
 
