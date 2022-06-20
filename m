@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20BD1C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:31:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77492C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 20 Jun 2022 13:31:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345966AbiFTNa7 (ORCPT
+        id S1345992AbiFTNbG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 09:30:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52998 "EHLO
+        Mon, 20 Jun 2022 09:31:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346483AbiFTN3C (ORCPT
+        with ESMTP id S1346564AbiFTN3H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 09:29:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A4331CB0A;
-        Mon, 20 Jun 2022 06:11:44 -0700 (PDT)
+        Mon, 20 Jun 2022 09:29:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25A4B240AF;
+        Mon, 20 Jun 2022 06:11:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AC7C060ABA;
-        Mon, 20 Jun 2022 13:10:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B58C9C3411B;
-        Mon, 20 Jun 2022 13:10:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 054C5B811E7;
+        Mon, 20 Jun 2022 13:10:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48A5EC3411B;
+        Mon, 20 Jun 2022 13:10:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655730630;
-        bh=7HXLfzXZPKUoSFxq2zbCBvTU5X7bq2SjOdG0EnWubOU=;
+        s=korg; t=1655730605;
+        bh=laOXoPHW2nCB9BheLcxWUWK6vmMnekRsr4lZlIDiysE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dOXzb8ugZzhW5WkbRkw2TWZcAQ9HvvFesQYPRSh4CHJj24uthMEETBDR7pgIjS8PW
-         d+mmMjUWXTa0ZLbH/Rgd+GAA3EXdZcm8XIZxJfR50I63osC84JnbtKtzW0Kq8Kjzx6
-         cZRzpY9yY5Xvcf+dM+hRcEZShB57YKxYzU4e57Hw=
+        b=0RmmNqgIgtWgOyywkZxuP6H0fTmpxXkuoHzogjEEUlRiTVSRiwyypTe72Da4a/mvx
+         ByaKl9A3OgGNKiWCDCtZfXxigf5yARjN79SL/opknkGSUXBLj3kQnN52g/gu12AxXC
+         YBwb6GVaS9R9BBsFtewykjzYHDP2CsBwuDvl1ku8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Shinichiro Kawasaki <shinichiro.kawasaki@wdc.com>
-Subject: [PATCH 5.15 094/106] bus: fsl-mc-bus: fix KASAN use-after-free in fsl_mc_bus_remove()
-Date:   Mon, 20 Jun 2022 14:51:53 +0200
-Message-Id: <20220620124727.172649742@linuxfoundation.org>
+        stable@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>,
+        Scott Wood <oss@buserror.net>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.15 105/106] powerpc/book3e: get rid of #include <generated/compile.h>
+Date:   Mon, 20 Jun 2022 14:52:04 +0200
+Message-Id: <20220620124727.489994226@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
 References: <20220620124724.380838401@linuxfoundation.org>
@@ -49,47 +50,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shin'ichiro Kawasaki <shinichiro.kawasaki@wdc.com>
+From: Masahiro Yamada <masahiroy@kernel.org>
 
-commit 928ea98252ad75118950941683893cf904541da9 upstream.
+commit 7ad4bd887d27c6b6ffbef216f19c19f8fe2b8f52 upstream.
 
-In fsl_mc_bus_remove(), mc->root_mc_bus_dev->mc_io is passed to
-fsl_destroy_mc_io(). However, mc->root_mc_bus_dev is already freed in
-fsl_mc_device_remove(). Then reference to mc->root_mc_bus_dev->mc_io
-triggers KASAN use-after-free. To avoid the use-after-free, keep the
-reference to mc->root_mc_bus_dev->mc_io in a local variable and pass to
-fsl_destroy_mc_io().
+You cannot include <generated/compile.h> here because it is generated
+in init/Makefile but there is no guarantee that it happens before
+arch/powerpc/mm/nohash/kaslr_booke.c is compiled for parallel builds.
 
-This patch needs rework to apply to kernels older than v5.15.
+The places where you can reliably include <generated/compile.h> are:
 
-Fixes: f93627146f0e ("staging: fsl-mc: fix asymmetry in destroy of mc_io")
-Cc: stable@vger.kernel.org # v5.15+
-Signed-off-by: Shin'ichiro Kawasaki <shinichiro.kawasaki@wdc.com>
-Link: https://lore.kernel.org/r/20220601105159.87752-1-shinichiro.kawasaki@wdc.com
+  - init/          (because init/Makefile can specify the dependency)
+  - arch/*/boot/   (because it is compiled after vmlinux)
+
+Commit f231e4333312 ("hexagon: get rid of #include <generated/compile.h>")
+fixed the last breakage at that time, but powerpc re-added this.
+
+<generated/compile.h> was unneeded because 'build_str' is almost the
+same as 'linux_banner' defined in init/version.c
+
+Let's copy the solution from MIPS.
+(get_random_boot() in arch/mips/kernel/relocate.c)
+
+Fixes: 6a38ea1d7b94 ("powerpc/fsl_booke/32: randomize the kernel image offset")
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Acked-by: Scott Wood <oss@buserror.net>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220604085050.4078927-1-masahiroy@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/bus/fsl-mc/fsl-mc-bus.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/powerpc/mm/nohash/kaslr_booke.c |    8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
---- a/drivers/bus/fsl-mc/fsl-mc-bus.c
-+++ b/drivers/bus/fsl-mc/fsl-mc-bus.c
-@@ -1236,14 +1236,14 @@ error_cleanup_mc_io:
- static int fsl_mc_bus_remove(struct platform_device *pdev)
- {
- 	struct fsl_mc *mc = platform_get_drvdata(pdev);
-+	struct fsl_mc_io *mc_io;
+--- a/arch/powerpc/mm/nohash/kaslr_booke.c
++++ b/arch/powerpc/mm/nohash/kaslr_booke.c
+@@ -18,7 +18,6 @@
+ #include <asm/prom.h>
+ #include <asm/kdump.h>
+ #include <mm/mmu_decl.h>
+-#include <generated/compile.h>
+ #include <generated/utsrelease.h>
  
- 	if (!fsl_mc_is_root_dprc(&mc->root_mc_bus_dev->dev))
- 		return -EINVAL;
+ struct regions {
+@@ -36,10 +35,6 @@ struct regions {
+ 	int reserved_mem_size_cells;
+ };
  
-+	mc_io = mc->root_mc_bus_dev->mc_io;
- 	fsl_mc_device_remove(mc->root_mc_bus_dev);
+-/* Simplified build-specific string for starting entropy. */
+-static const char build_str[] = UTS_RELEASE " (" LINUX_COMPILE_BY "@"
+-		LINUX_COMPILE_HOST ") (" LINUX_COMPILER ") " UTS_VERSION;
 -
--	fsl_destroy_mc_io(mc->root_mc_bus_dev->mc_io);
--	mc->root_mc_bus_dev->mc_io = NULL;
-+	fsl_destroy_mc_io(mc_io);
+ struct regions __initdata regions;
  
- 	bus_unregister_notifier(&fsl_mc_bus_type, &fsl_mc_nb);
+ static __init void kaslr_get_cmdline(void *fdt)
+@@ -72,7 +67,8 @@ static unsigned long __init get_boot_see
+ {
+ 	unsigned long hash = 0;
  
+-	hash = rotate_xor(hash, build_str, sizeof(build_str));
++	/* build-specific string for starting entropy. */
++	hash = rotate_xor(hash, linux_banner, strlen(linux_banner));
+ 	hash = rotate_xor(hash, fdt, fdt_totalsize(fdt));
+ 
+ 	return hash;
 
 
