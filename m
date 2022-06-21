@@ -2,70 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F765C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 14:25:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 839DFC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 14:29:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351529AbiFUOZJ (ORCPT
+        id S1351556AbiFUO3L (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 10:25:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37326 "EHLO
+        Tue, 21 Jun 2022 10:29:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349421AbiFUOZI (ORCPT
+        with ESMTP id S230038AbiFUO3J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 10:25:08 -0400
-Received: from smtpbg.qq.com (smtpbg139.qq.com [175.27.65.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C56515FCC;
-        Tue, 21 Jun 2022 07:25:03 -0700 (PDT)
-X-QQ-mid: bizesmtp80t1655821432tiv9c18h
-Received: from ubuntu.localdomain ( [106.117.99.68])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 21 Jun 2022 22:23:48 +0800 (CST)
-X-QQ-SSF: 0100000000700060B000D00A0000000
-X-QQ-FEAT: rCzLTtzQ0gcnji6xLlhDR/w4nX/P79abYLkOaTRlAZW+wnQmI3CnF4k3BiJRn
-        /FybuJcViTGqzAXrxQh6GT/w8faNPbGatL4ajOsZR0bFL2y824RF+sfVSbDPa94jEZxoOfo
-        W/g5/kSspCQDaYsuy/Icf4UNTpHN4/SQylFw8RjnTxGEmLZFqfbGQN+i0B37Wq8w/N8/z5/
-        McUbIzwztGBFmE6gaFiBExFsjR+9jOPfijNQ/RDPjACnRi1Hv51ciXyYlf0gdUfvE+Rh8Wf
-        tAsr2VLekeGarmlD6sYi35h0z9cr3EbOtqjzWCHliMYtuFPIOb7q5c25I9cwcqKOAqU+oHo
-        6Os9Pok+VvaiJ0y8TgnXX9TSG/dIg==
-X-QQ-GoodBg: 0
-From:   Jiang Jian <jiangjian@cdjrlc.com>
-To:     jejb@linux.ibm.com, martin.petersen@oracle.com
-Cc:     aacraid@microsemi.com, linux-scsi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jiang Jian <jiangjian@cdjrlc.com>
-Subject: [PATCH] scsi: aacraid: Remove duplicate 'the' in two places.
-Date:   Tue, 21 Jun 2022 22:23:46 +0800
-Message-Id: <20220621142346.6429-1-jiangjian@cdjrlc.com>
-X-Mailer: git-send-email 2.17.1
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam6
+        Tue, 21 Jun 2022 10:29:09 -0400
+Received: from mail-m971.mail.163.com (mail-m971.mail.163.com [123.126.97.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A8AA262D9;
+        Tue, 21 Jun 2022 07:29:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=Subject:From:Message-ID:Date:MIME-Version; bh=dD98V
+        ez2aD21iNFpk0tg6AZ8kngi+2AB0UFxeAgDYzA=; b=EPnbdMYvAKUIAIkqAogV7
+        koFPnM4fK9Ghtb9Wd2rUtZ9UIZDyKCaq3M1bnyZbqe0hyTyXeKEbkXIsLzgxWGNe
+        M8eHqj7vpnwmlZdFWA6MqqS/DFWMNhQtPmEEBtMsYgj0zFB27Kx/rHOCwiGDoAaM
+        yqa5QJ+1wK6WAYqCx9fJR0=
+Received: from [10.20.42.77] (unknown [114.242.206.180])
+        by smtp1 (Coremail) with SMTP id GdxpCgCHjcWo1bFiVHd1KQ--.4781S2;
+        Tue, 21 Jun 2022 22:28:57 +0800 (CST)
+Subject: Re: [PATCH 1/2] ext4: page-io: use 'unsigned int' to bare use of
+ 'unsigned'
+To:     Theodore Ts'o <tytso@mit.edu>
+Cc:     adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220518120137.2544-1-liupeibao@163.com>
+ <YqtDEfJd5uUxucaS@mit.edu> <c19b8c8f-7c0f-33e6-3f2c-3425dee7fa8d@163.com>
+ <Yq9obvFIv8LjAAvg@mit.edu>
+From:   Liu Peibao <liupeibao@163.com>
+Message-ID: <902000f3-7d9b-3115-0864-3ffa0f87d4d4@163.com>
+Date:   Tue, 21 Jun 2022 22:28:56 +0800
+User-Agent: Mozilla/5.0 (X11; Linux loongarch64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
+MIME-Version: 1.0
+In-Reply-To: <Yq9obvFIv8LjAAvg@mit.edu>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-CM-TRANSID: GdxpCgCHjcWo1bFiVHd1KQ--.4781S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7Aw4Utw4fZF18ZFWxAw18Zrb_yoW8Cr1xpr
+        WfZws8KFs8G3yxAr97XwsxJFWrAw4Fkas8JF18JFy5AF1DXF12grZYkF45uryUCrsIg3Wa
+        ga98Z39a9F1qvFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UCzuZUUUUU=
+X-Originating-IP: [114.242.206.180]
+X-CM-SenderInfo: xolx1vpled0qqrwthudrp/1tbiEwknbGE15DBCuAAAsr
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-file: drivers/scsi/aacraid/aachba.c
-line: 1053
-* The LSB is the the end.
-chaned to
-* The LSB is the end.
+On 6/20/22 2:18 AM, Theodore Ts'o wrote:
+> On Sun, Jun 19, 2022 at 11:21:27AM +0800, Liu Peibao wrote:
+>>
+>> Thanks for your reply. What I want do to is rename some temporary variables
+>> in the patch2 and when I make the patch, there are the checkpatch warnings.
+>>  From the point of view "one patch do one thing", I split the modification
+>> into two patches. Thanks!
+> 
+> I didn't really see the poiont of renaming the temporary variables,
+> either.
+> 
+> In this particular case basically only used to avoid line lengths from
+> exceeding ~72 characters, and requiring a line wrap, and bio_start and
+> bio_end is used only in one place in the code block below.
+> 
+> Is it _really_ all that confusing whether they are named
+> bio_{start,end} instead of bvec_{start,end}?
+> 
+> If I was writing that code from scratch, I might have just used start
+> and end without any prefixes.  And as far as "only have a patch do one
+> thing at a time", this doesn't apply to checkpatch fixes.
+> 
+> The basic motivation behind "no checkpatch-only fixes" is that it
+> tends to introduce code churn which makes interpreting information
+> from "git blame" more difficult; and so therefore the costs exceed the
+> extremely marginal benefits of fixing most checkpatch complaints.  So
+> making a _patch_ be checkpatch clean, whether it's modifying existing
+> code or writing new code, is fine, since you're making a subtantive
+> change to the code, so this is as good a time as any to fix up tiny
+> nits such as checkpatch complaints.
+> 
+> But the idea behind "no unnecessary code churn since it ruins git
+> blame and could potentially induce future patch conflicts" also
+> applies to renaming variables.  The benefits are very minor, and they
+> don't outweigh the costs.
+> 
+> 						- Ted
+> 
 
-Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
----
- drivers/scsi/aacraid/aachba.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Got it! Thanks for your detailed and comprehensive explanation!
 
-diff --git a/drivers/scsi/aacraid/aachba.c b/drivers/scsi/aacraid/aachba.c
-index 81462f4ddb90..4d4cb47b3846 100644
---- a/drivers/scsi/aacraid/aachba.c
-+++ b/drivers/scsi/aacraid/aachba.c
-@@ -1050,7 +1050,7 @@ static void get_container_serial_callback(void *context, struct fib * fibptr)
- 				vpdpage83data.type1.productid));
- 
- 			/* Convert to ascii based serial number.
--			 * The LSB is the the end.
-+			 * The LSB is the end.
- 			 */
- 			for (i = 0; i < 8; i++) {
- 				u8 temp =
--- 
-2.17.1
+Best Regards,
+Peibao
 
