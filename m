@@ -2,139 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5469CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 08:02:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E63F2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 08:03:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347882AbiFUICG (ORCPT
+        id S1347926AbiFUIDS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 04:02:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56328 "EHLO
+        Tue, 21 Jun 2022 04:03:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345745AbiFUICE (ORCPT
+        with ESMTP id S1346733AbiFUIDO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 04:02:04 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E1E8B23BDA
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 01:02:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655798522;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=odfmvDZicXBGV9BNCqYRut3jKMvFr9kgGN63h8//0S8=;
-        b=MzBEkmqP2HR5c1FCbvx2/NFXF/jtQwLT9W+x8Pm97f0lNDgnu5T3YSC1f1/7fWlus7notw
-        NpS0V8kjAzgNC2hqEG22IckozvNiss3X2W0s1cKjs5Zo64iB8LLP6Zpjs56889ZVkUbOYi
-        NVbExFpGZkVyDSn2yqjGtvJHT5BnWY8=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-612-WLTzY7TGOnqnYvRIV1W30w-1; Tue, 21 Jun 2022 04:01:58 -0400
-X-MC-Unique: WLTzY7TGOnqnYvRIV1W30w-1
-Received: by mail-wm1-f72.google.com with SMTP id j31-20020a05600c1c1f00b0039c481c4664so3995383wms.7
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 01:01:58 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=odfmvDZicXBGV9BNCqYRut3jKMvFr9kgGN63h8//0S8=;
-        b=M2k/nQsFdvTNXKd1MSt5Kcv/i/YPChbDOa9bPWjToDsmR8rEf02x76/hPreNu1e8Az
-         C4qDCNAGYKBljh+V/BBOQMDFfs5yDDoSZKwydR25CkGFkJyA656a5JFQJH7Pr6eqOsmk
-         0doMMU1r2/NuwTUuupwKCyO8Etp4orxk7NJcLQy7yT3kikrgbOUz0ls6DmPAWk/CJMoy
-         uGF+WKGJUjld0WbRv1wR5JtWN2+R4l2AnnYeapW4Is5vFfBOm5B8hoGAvdkmpcPLsZKW
-         XWh9D15gRl42wn7JbwadxF15BTmCJGqU81HRc/G2f24k2SPtQjrTd4dZOSQk000JNJWz
-         Lzag==
-X-Gm-Message-State: AJIora9tMpCPJPMEuXZiq6vgHdoHF++3xSiwMASZZWSPftg4aYKslNdw
-        0wqH0m5GqSToUI33O4U0f89jpZjnqUxeIoUpIQ59e/BfxiybVUux/xAf7GEWOfY/YjPx2iEdE8q
-        aCxKbmREvMV+us9OeWTaf1nUx
-X-Received: by 2002:adf:dc09:0:b0:218:5f6a:f5db with SMTP id t9-20020adfdc09000000b002185f6af5dbmr26665210wri.480.1655798517535;
-        Tue, 21 Jun 2022 01:01:57 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vZNwW8e6Rj6IHQIbhTyUdMFDurbwBo3yfnFs1OTbM2oN9e4yp1wELe2N9RSD7BZybV8QmNuA==
-X-Received: by 2002:adf:dc09:0:b0:218:5f6a:f5db with SMTP id t9-20020adfdc09000000b002185f6af5dbmr26665186wri.480.1655798517242;
-        Tue, 21 Jun 2022 01:01:57 -0700 (PDT)
-Received: from ?IPV6:2003:d8:2f04:2500:cdb0:9b78:d423:43f? (p200300d82f042500cdb09b78d423043f.dip0.t-ipconnect.de. [2003:d8:2f04:2500:cdb0:9b78:d423:43f])
-        by smtp.gmail.com with ESMTPSA id y12-20020adff6cc000000b0021126891b05sm14987265wrp.61.2022.06.21.01.01.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Jun 2022 01:01:56 -0700 (PDT)
-Message-ID: <c45a6850-772e-8d2c-9261-7621f242dbae@redhat.com>
-Date:   Tue, 21 Jun 2022 10:01:55 +0200
+        Tue, 21 Jun 2022 04:03:14 -0400
+Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6B2E3615F;
+        Tue, 21 Jun 2022 01:03:12 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by mail.nfschina.com (Postfix) with ESMTP id 428D71E80D50;
+        Tue, 21 Jun 2022 16:03:11 +0800 (CST)
+X-Virus-Scanned: amavisd-new at test.com
+Received: from mail.nfschina.com ([127.0.0.1])
+        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id qIN_2rhMcT5i; Tue, 21 Jun 2022 16:03:08 +0800 (CST)
+Received: from localhost.localdomain (unknown [112.64.61.97])
+        (Authenticated sender: jiaming@nfschina.com)
+        by mail.nfschina.com (Postfix) with ESMTPA id 565A71E80D2D;
+        Tue, 21 Jun 2022 16:03:08 +0800 (CST)
+From:   Zhang Jiaming <jiaming@nfschina.com>
+To:     pbonzini@redhat.com, shuah@kernel.org
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, liqiong@nfschina.com,
+        renyu@nfschina.com, Zhang Jiaming <jiaming@nfschina.com>
+Subject: [PATCH] KVM: Fix a typo
+Date:   Tue, 21 Jun 2022 16:01:28 +0800
+Message-Id: <20220621080128.49513-1-jiaming@nfschina.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH] mm: fixup validation of buddy pfn
-Content-Language: en-US
-To:     Xianting Tian <xianting.tian@linux.alibaba.com>,
-        akpm@linux-foundation.org, ziy@nvidia.com
-Cc:     guoren@kernel.org, linux-mm@kvack.org, linux-kernel@vger.kernel.org
-References: <20220621031118.3650529-1-xianting.tian@linux.alibaba.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <20220621031118.3650529-1-xianting.tian@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 21.06.22 05:11, Xianting Tian wrote:
-> For RISC-V arch the first 2MB RAM could be reserved for opensbi,
-> and the arch code may don't create pages for the first 2MB RAM,
-> so it would have pfn_base=512 and mem_map began with 512th PFN when
-> CONFIG_FLATMEM=y.
-> 
-> But __find_buddy_pfn algorithm thinks the start PFN 0, it could get
-> 0 PFN or less than the pfn_base value, so page_is_buddy() can't
-> verify the page whose PFN is 0 ~ 511, actually we don't have valid
-> pages for PFN 0 ~ 511.
-> 
-> Actually, buddy system should not assume Arch cretaed pages for
-> reserved memory, Arch may don't know the implied limitation.
+There is a typo in kvm_vm_elf_load. Change 'begining' to 'beginning'.
 
-Ehm, sorry, no. Archs have to stick to the rules of the buddy, not the
-other way around. Why should we add additional overhead to the buddy
-just because arch XYZ wants to be special?
+Signed-off-by: Zhang Jiaming <jiaming@nfschina.com>
+---
+ tools/testing/selftests/kvm/lib/elf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-If at all, we should fail hard if an arch doesn't play with the rules
-and make this a VM_BUG_ON().
-
-> With this patch, we can gurantee a valid buddy no matter what we
-> have pages for reserved memory or not.
-> 
-> Fixes: 8170ac4700d26f65 ("mm: wrap __find_buddy_pfn() with a necessary buddy page validation")
-> Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
-> ---
->  mm/internal.h | 6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
-> 
-> diff --git a/mm/internal.h b/mm/internal.h
-> index c0f8fbe0445b..0ec446caeb2e 100644
-> --- a/mm/internal.h
-> +++ b/mm/internal.h
-> @@ -322,7 +322,8 @@ __find_buddy_pfn(unsigned long page_pfn, unsigned int order)
->   * The found buddy can be a non PageBuddy, out of @page's zone, or its order is
->   * not the same as @page. The validation is necessary before use it.
->   *
-> - * Return: the found buddy page or NULL if not found.
-> + * Return: the found buddy page or NULL if not found or NULL if buddy pfn is
-> + *         not valid.
->   */
->  static inline struct page *find_buddy_page_pfn(struct page *page,
->  			unsigned long pfn, unsigned int order, unsigned long *buddy_pfn)
-> @@ -330,6 +331,9 @@ static inline struct page *find_buddy_page_pfn(struct page *page,
->  	unsigned long __buddy_pfn = __find_buddy_pfn(pfn, order);
->  	struct page *buddy;
->  
-> +	if (!pfn_valid(__buddy_pfn))
-> +		return NULL;
-> +
->  	buddy = page + (__buddy_pfn - pfn);
->  	if (buddy_pfn)
->  		*buddy_pfn = __buddy_pfn;
-
-
+diff --git a/tools/testing/selftests/kvm/lib/elf.c b/tools/testing/selftests/kvm/lib/elf.c
+index 13e8e3dcf984..272ea7d39fb4 100644
+--- a/tools/testing/selftests/kvm/lib/elf.c
++++ b/tools/testing/selftests/kvm/lib/elf.c
+@@ -139,7 +139,7 @@ void kvm_vm_elf_load(struct kvm_vm *vm, const char *filename)
+ 		offset = hdr.e_phoff + (n1 * hdr.e_phentsize);
+ 		offset_rv = lseek(fd, offset, SEEK_SET);
+ 		TEST_ASSERT(offset_rv == offset,
+-			"Failed to seek to begining of program header %u,\n"
++			"Failed to seek to beginning of program header %u,\n"
+ 			"  filename: %s\n"
+ 			"  rv: %jd errno: %i",
+ 			n1, filename, (intmax_t) offset_rv, errno);
 -- 
-Thanks,
-
-David / dhildenb
+2.25.1
 
