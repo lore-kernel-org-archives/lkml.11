@@ -2,85 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F009C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 12:22:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F487CCA473
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 12:25:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349886AbiFUMWq (ORCPT
+        id S1350364AbiFUMZs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 08:22:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56420 "EHLO
+        Tue, 21 Jun 2022 08:25:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350061AbiFUMWj (ORCPT
+        with ESMTP id S1350178AbiFUMZq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 08:22:39 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56C4523168
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 05:22:38 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id g25so27067085ejh.9
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 05:22:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=PTPXtHxYqLGYZmdj0tHzFMVrdsxMJpp8auFdi6gANok=;
-        b=KrVOQQCs3Bi9zq5d+bBrsPBDSaXCFEIPJPMunB9Rr4vwMqCFLDddvbAQSC5vyGOnFw
-         vLEUXioNrKmDQTtlZiy4oFgk6M0J1FSGQhkPSY9ODSLxerk5mD0lH9felwF1LyJOdenA
-         InbWHrITWSRhrWo99YH8OU8W8OaFT9czihqg2R4GEj+B3Xy0PoMw0d+xYgN2Fkr/CvTc
-         fd4EDfpfeIuzo140Oh6eIOneg3EZFYRcoatyhOudmGS2AtYBGt9I0Y8Oxpd8qzhhWvMB
-         SnWAfzpVUwBd49W3bU+ldWeQitL5r+0uczO8IUZPOI87zzf/r0QDNwA81DjQlXUxoPpi
-         i4TQ==
+        Tue, 21 Jun 2022 08:25:46 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D60AA26110
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 05:25:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655814344;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ChvXxqyn9OOMyURFW0VTLkgw2UAz7rtxv6HEJjFmKS0=;
+        b=atXEIrPbHJar4Iiksv11BcResq7BKqi0Ryhu/MAax18XFr+sYbFF6wJ3gaJ2hu/kD+dUZZ
+        paVDuFs+hx74cIHNsY6hgETL4/pxaqUXg6N0EGC2Z3tOzrvEq50WRD2LXIamimeT6uRxTu
+        eQ1i8IUz/TNek+wPFiABllPHhawzVQs=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-592-3aIx_EubP1iaomYqQxpIgw-1; Tue, 21 Jun 2022 08:25:42 -0400
+X-MC-Unique: 3aIx_EubP1iaomYqQxpIgw-1
+Received: by mail-wr1-f70.google.com with SMTP id v8-20020adfa1c8000000b0021b81a553fbso2547792wrv.18
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 05:25:41 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=PTPXtHxYqLGYZmdj0tHzFMVrdsxMJpp8auFdi6gANok=;
-        b=rbFDCwEbur9zoxAftUfX0YGPbl34vkA/uW3bgjEaGhpb8Rk7w+xlhiiFnEpsls5znt
-         Z/5mjspRwmOFNkrlAJ+/AOirocCpK349RWa1mMdmuE5DYozCUeASWZFuze7di6iRkBUk
-         +8MV85KND8jmSbSqgDrfoza8umHUXDoTQN4yN5nQ4yE9vtpGv6j3jobFGawQhamds3ky
-         d9psJiffwNZtMjlZySc3gkUYXKKvQr//DIHF9AKlpEHPe2RYvrKwSKhku23DL8d52oPk
-         ppH9JDiSo1C+PXdt6lZrg/5hj3jhgdEhxkGUYpB1nfz/wBfgZnp5Zq/m0YvXiech0Qia
-         +49Q==
-X-Gm-Message-State: AJIora94bZU0k/3SmYrCZuSJUae6hzKoSgP0lFixOQVC/x1w5CQglZ7o
-        5BoDargXIar8G8xgdgSg7Hz2/A==
-X-Google-Smtp-Source: AGRyM1sXT5CYOKsEAdFreJiILB92jOp8xv/+ppd8XlVIQS3GkHCZ1B4lfdob7R4bMzcm2ShZ0t4SMA==
-X-Received: by 2002:a17:907:16a4:b0:711:c9a7:dc75 with SMTP id hc36-20020a17090716a400b00711c9a7dc75mr24577617ejc.542.1655814156854;
-        Tue, 21 Jun 2022 05:22:36 -0700 (PDT)
-Received: from [192.168.0.220] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id 18-20020a170906219200b006f3ef214dc3sm7565294eju.41.2022.06.21.05.22.35
+        bh=ChvXxqyn9OOMyURFW0VTLkgw2UAz7rtxv6HEJjFmKS0=;
+        b=sAiAyYVxYFjvT4WKs30EEcVc52wAl86xw5WqInraqEE8DMoTgOYUMUQPXGEfvOrj5i
+         /wLSqYijlXM4i4RSgn3TT5kghrwXskGk3qkRFG6npy1MGnDaXBu+PwmWvzzrYN51AFUe
+         s7tSmFitO/RJvYbYncrmqFj14FJjUykpiT/1uuzd2bQJUC2bZf5lmEuqCuBmAB9ltYDT
+         tZV8ZXW1n43MQr/SBP5XA5MVY/AciqIkDy8++YR0rr23ukY7l04D1B5secfUrftk51My
+         Xatl0+31wKDmwJcjO57heJZR2ZtvOjEEQ16Qb6n2ZbIiPWyFfSh9VvYQKMD/TGUuozC/
+         mQyQ==
+X-Gm-Message-State: AOAM532wgwvNzc3ZE/IB9k2As9WjiMetSuL1PlQx+YRfFvGXUKUmbga2
+        JORUm6VXQ/o6MIF9cLHrnt88Ya1hFjAMBmIuZEuGFBWVjUih2WoUfRaW2a1lSyRtfAosyWLjtiL
+        d3TOKUYjSWRxb8TyZRTWQazyv
+X-Received: by 2002:a1c:5411:0:b0:39c:4761:66f8 with SMTP id i17-20020a1c5411000000b0039c476166f8mr39561332wmb.47.1655814340790;
+        Tue, 21 Jun 2022 05:25:40 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxTAiCn5Imotvz18wokmi04OBc4tB0BgS4MkpRYCxooHQh3Q2IacQwQDWlfA//FgEeY08KGiA==
+X-Received: by 2002:a1c:5411:0:b0:39c:4761:66f8 with SMTP id i17-20020a1c5411000000b0039c476166f8mr39561316wmb.47.1655814340566;
+        Tue, 21 Jun 2022 05:25:40 -0700 (PDT)
+Received: from [192.168.1.129] (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id t19-20020a05600c129300b0039c8a22554bsm18838723wmd.27.2022.06.21.05.25.35
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Jun 2022 05:22:36 -0700 (PDT)
-Message-ID: <6207a625-d6d8-71c6-c4bb-f7078da2781f@linaro.org>
-Date:   Tue, 21 Jun 2022 14:22:35 +0200
+        Tue, 21 Jun 2022 05:25:40 -0700 (PDT)
+Message-ID: <c259699e-c478-d3f6-f892-721727a5f1bf@redhat.com>
+Date:   Tue, 21 Jun 2022 14:25:24 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.10.0
-Subject: Re: [PATCH] arm64: dts: ipq8074: fix NAND node name
+Subject: Re: [PATCH v2 1/2] drm: Implement DRM aperture helpers under video/
 Content-Language: en-US
-To:     Robert Marko <robimarko@gmail.com>, agross@kernel.org,
-        bjorn.andersson@linaro.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220621120642.518575-1-robimarko@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220621120642.518575-1-robimarko@gmail.com>
+To:     Thomas Zimmermann <tzimmermann@suse.de>,
+        Alex Williamson <alex.williamson@redhat.com>, corbet@lwn.net,
+        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+        airlied@linux.ie, daniel@ffwll.ch, deller@gmx.de,
+        gregkh@linuxfoundation.org
+Cc:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        linux-doc@vger.kernel.org
+References: <165541020563.1955826.16350888595945658159.stgit@omen>
+ <165541192621.1955826.6848784198896919390.stgit@omen>
+ <e1fd76ae-a865-889f-b4f0-878c00837368@redhat.com>
+ <4f6e9b63-f955-d263-e69b-6396fbe48868@suse.de>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <4f6e9b63-f955-d263-e69b-6396fbe48868@suse.de>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 21/06/2022 14:06, Robert Marko wrote:
-> Per schema it should be nand-controller@79b0000 instead of nand@79b0000.
-> Fix it to match nand-controller.yaml requirements.
-> 
-> Signed-off-by: Robert Marko <robimarko@gmail.com>
-> ---
->  arch/arm64/boot/dts/qcom/ipq8074.dtsi | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
+Hello Thomas,
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+On 6/21/22 13:29, Thomas Zimmermann wrote:
 
+[...]
+
+>>> +
+>>> +static bool overlap(resource_size_t base1, resource_size_t end1,
+>>> +		    resource_size_t base2, resource_size_t end2)
+>>> +{
+>>> +	return (base1 < end2) && (end1 > base2);
+>>> +}
+>>
+>> There's a resource_overlaps() helper in include/linux/ioport.h, I wonder if it
+>> could just be used, maybe declaring and filling a struct resource just to call
+>> that helper. Later as an optimization a resource_range_overlap() or something
+>> could be proposed for include/linux/ioport.h.
+> 
+> Bu then we'd have to declare struct resource-es for using an interface. 
+> This helper is trivial. If anything, resource_overlaps() should be 
+> generalized.
+>
+
+Yes, that works too. Probably then we should just keep as is and then as a follow
+up we can add another helper to include/linux/ioport.h to avoid having something
+that's only for the aperture helpers.
+
+>>
+>> Also, I noticed that resource_overlaps() uses <= and >= but this helper uses
+>> < and >. It seems there's an off-by-one error here but maybe I'm wrong on this.
+> 
+> struct resource stores the final byte of the resource. In our case 'end' 
+> is the byte after that. So the code is correct.
+> 
+> Do we ever have resources that end at the top-most byte of the address 
+> space?
+>
+
+I don't know to be honest.
+
+[...]
+
+>>> +static void detach_platform_device(struct device *dev)
+>>> +{
+>>> +	struct platform_device *pdev = to_platform_device(dev);
+>>> +
+>>> +	/*
+>>> +	 * Remove the device from the device hierarchy. This is the right thing
+>>> +	 * to do for firmware-based DRM drivers, such as EFI, VESA or VGA. After
+>>> +	 * the new driver takes over the hardware, the firmware device's state
+>>> +	 * will be lost.
+>>> +	 *
+>>> +	 * For non-platform devices, a new callback would be required.
+>>> +	 *
+>>
+>> I wonder if we ever are going to need this. AFAICT the problem only happens for
+>> platform devices. Or do you envision a case when some a bus could need this and
+>> the aperture unregister the device instead of the Linux kernel device model ?
+>>
+> 
+> In the current code, we clearly distinguish between the device and the 
+> platform device. The latter is only used in a few places where it's 
+> absolutely necessary, because there's no generic equivalent to 
+> platform_device_unregister(). (device_unregister() is something else 
+> AFAICT.)  At some point, I'd like to see the aperture code being handled 
+> in a more prominent place within resource management. That would need it 
+> to use struct device.
+>
+
+Ok, I was wondering what was the value of the indirection level other than
+making the code more complex and supporting an hypothetical case of a FW
+driver that would not bind against a platform device.
+
+But if the goal is to move this at some point to a more generic place (i.e:
+the Linux device model itself) then I agree that we can just keep it as is.
+
+When you re-spin this patch, feel free to add my R-b since looks good to me.
+
+And thanks again for working on this!
+
+-- 
 Best regards,
-Krzysztof
+
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
+
