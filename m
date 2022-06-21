@@ -2,49 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 107F6CCA486
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 474DBCCA488
 	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:05:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356362AbiFUVEI (ORCPT
+        id S1356458AbiFUVER (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 17:04:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38980 "EHLO
+        Tue, 21 Jun 2022 17:04:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356250AbiFUU7o (ORCPT
+        with ESMTP id S1355511AbiFUVAW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 16:59:44 -0400
+        Tue, 21 Jun 2022 17:00:22 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7949333A3D;
-        Tue, 21 Jun 2022 13:52:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C694FCE8;
+        Tue, 21 Jun 2022 13:52:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 198456188D;
-        Tue, 21 Jun 2022 20:51:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08818C36AE2;
-        Tue, 21 Jun 2022 20:51:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3CA786188C;
+        Tue, 21 Jun 2022 20:51:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E3CDC341C6;
+        Tue, 21 Jun 2022 20:51:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655844694;
-        bh=mgM1U4HzcvMMp0z+maQndZhe3LltKXwQl4NU4lVOCfY=;
+        s=k20201202; t=1655844711;
+        bh=7U3ei2s7RJZ4v+MhI7mnjMrb2CFiiXJuYxH5BGcxVMQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WJHaki0PQhYVVI8Q+qF1U18MWesRGZUN9YQ8sYUF6DHgEATv03spF4jhwgQPsZmMt
-         ogStxju23lKZLv5oG1uRyWA8FMxn3fn/4SVI8zMW7/gO5ajSc5dSJ8lQ2772Y2yx8V
-         pBgV3cDefrGAivWPB+s0E1xRGyMrMjPL/O9PlY0ViBV7VCLfN39AlS5z5rxRJ2M+yZ
-         NEMTYHMTHniapQ5mtWThEbOezSXbnT8hCXPZiwO8nteD/vWTbaqGCnSItBvbM6FPt/
-         Imy39wKZ7M4aMvko8O67KzpQbq0CKd82s1ROMQLRzdeM+EQwnr7Y5gRiELb1Vt4NM9
-         pVa5EnUK4CkaQ==
+        b=L/fC+rwqz4N3oIGkaZevQOpYhmof6NP0/rzmi8aJwUBu98TM29bUNLpx3CcFNLTML
+         353RGACN+OLV50kZ7Mc99n7d9YyPyQmHuZbv6Nrh1WHzYEEzX+Gpr4GfS6+BWunGPz
+         uhQ4V2hHtYP2hlW6gYcTmNIvwJHH2taqla8lR0rnFFBnnlZTxFvtNx1/n1qm3n5Gp9
+         iT2nFEWjo2pU1a66jDwtmK2lcWGcdnfKtDFXkK7Q2YRFfFiFr2+Ka1GFvcqRhq8WF/
+         h2m5gzyeVrJP7gOOrbga61IMgHVRLo5Z1E6pTqEnTLteilHHMrBdzi7WCAAHSB1tyf
+         2eHHno4w+EriQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexander Usyskin <alexander.usyskin@intel.com>,
-        Tomas Winkler <tomas.winkler@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.19 3/7] mei: me: set internal pg flag to off on hardware reset
-Date:   Tue, 21 Jun 2022 16:51:25 -0400
-Message-Id: <20220621205130.250874-3-sashal@kernel.org>
+Cc:     Jan Kara <jack@suse.cz>, Theodore Ts'o <tytso@mit.edu>,
+        Sasha Levin <sashal@kernel.org>, adilger.kernel@dilger.ca,
+        linux-ext4@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 2/3] ext4: improve write performance with disabled delalloc
+Date:   Tue, 21 Jun 2022 16:51:46 -0400
+Message-Id: <20220621205148.251040-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220621205130.250874-1-sashal@kernel.org>
-References: <20220621205130.250874-1-sashal@kernel.org>
+In-Reply-To: <20220621205148.251040-1-sashal@kernel.org>
+References: <20220621205148.251040-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,39 +52,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Usyskin <alexander.usyskin@intel.com>
+From: Jan Kara <jack@suse.cz>
 
-[ Upstream commit 9f4639373e6756e1ccf0029f861f1061db3c3616 ]
+[ Upstream commit 8d5459c11f548131ce48b2fbf45cccc5c382558f ]
 
-Link reset flow is always performed in the runtime resumed state.
-The internal PG state may be left as ON after the suspend
-and will not be updated upon the resume if the D0i3 is not supported.
+When delayed allocation is disabled (either through mount option or
+because we are running low on free space), ext4_write_begin() allocates
+blocks with EXT4_GET_BLOCKS_IO_CREATE_EXT flag. With this flag extent
+merging is disabled and since ext4_write_begin() is called for each page
+separately, we end up with a *lot* of 1 block extents in the extent tree
+and following writeback is writing 1 block at a time which results in
+very poor write throughput (4 MB/s instead of 200 MB/s). These days when
+ext4_get_block_unwritten() is used only by ext4_write_begin(),
+ext4_page_mkwrite() and inline data conversion, we can safely allow
+extent merging to happen from these paths since following writeback will
+happen on different boundaries anyway. So use
+EXT4_GET_BLOCKS_CREATE_UNRIT_EXT instead which restores the performance.
 
-Ensure that the internal PG state is set to the right value on the flow
-entrance in case the firmware does not support D0i3.
-
-Signed-off-by: Alexander Usyskin <alexander.usyskin@intel.com>
-Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
-Link: https://lore.kernel.org/r/20220606144225.282375-1-tomas.winkler@intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220520111402.4252-1-jack@suse.cz
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/mei/hw-me.c | 2 ++
- 1 file changed, 2 insertions(+)
+ fs/ext4/inode.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/misc/mei/hw-me.c b/drivers/misc/mei/hw-me.c
-index 60c8c84181a9..ba12be7ec7df 100644
---- a/drivers/misc/mei/hw-me.c
-+++ b/drivers/misc/mei/hw-me.c
-@@ -1138,6 +1138,8 @@ static int mei_me_hw_reset(struct mei_device *dev, bool intr_enable)
- 			ret = mei_me_d0i3_exit_sync(dev);
- 			if (ret)
- 				return ret;
-+		} else {
-+			hw->pg_state = MEI_PG_OFF;
- 		}
- 	}
+diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
+index 754b33828853..9aebd9bb68a4 100644
+--- a/fs/ext4/inode.c
++++ b/fs/ext4/inode.c
+@@ -791,7 +791,7 @@ int ext4_get_block_unwritten(struct inode *inode, sector_t iblock,
+ 	ext4_debug("ext4_get_block_unwritten: inode %lu, create flag %d\n",
+ 		   inode->i_ino, create);
+ 	return _ext4_get_block(inode, iblock, bh_result,
+-			       EXT4_GET_BLOCKS_IO_CREATE_EXT);
++			       EXT4_GET_BLOCKS_CREATE_UNWRIT_EXT);
+ }
  
+ /* Maximum number of blocks we map for direct IO at once. */
 -- 
 2.35.1
 
