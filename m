@@ -2,400 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E72FC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 07:59:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 321F5C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 07:59:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347938AbiFUH72 (ORCPT
+        id S1347947AbiFUH7y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 03:59:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53884 "EHLO
+        Tue, 21 Jun 2022 03:59:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347916AbiFUH60 (ORCPT
+        with ESMTP id S1347878AbiFUH7w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 03:58:26 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20D8C5F6E
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 00:58:23 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id c2so21046267lfk.0
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 00:58:23 -0700 (PDT)
+        Tue, 21 Jun 2022 03:59:52 -0400
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68B2512A83
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 00:59:51 -0700 (PDT)
+Received: by mail-yb1-xb33.google.com with SMTP id u9so12960704ybq.3
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 00:59:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=rAupvnq6gF+hfLMwbK5FyshoSuZewieI0Qe5jG8mpEQ=;
-        b=SHZB3elG8KdiWQghfW62kq8Y+JxtW3U7O18wzOMTwfPmoGL+RUVIV4mssgQfpyX/rP
-         AYyxH5BAB0QHlruVFAoHSzDP3uKW1fHvwoFgiP6f+pR8W7+QfS4k0jmuVeVzhWW8gnxx
-         6Ccwc2mdBKx0lDj0U9XrhF+UuQLBKJIJ4Bc4s=
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=tWwF4ytRWfOwG8af/YByItsQwpXVQu/cHXdztBQ/QOM=;
+        b=ybupSzX96lOxodVhFXvSlU+/swUoCIZBYBKIaDlpNKzjrpQwXsCCiPg1I9wsxXSktP
+         FATk16ld2MYLc451qcRj9Kt/pA+7jLBODAdRvoQ5t/eXlyUwNkY4shdqCLfqoUtcHDH/
+         alw4tLbL7hllg22z+jnIpUHpEOH+rYAqa0z0IWd3pr5JBY7mvbmo92Jo+EalnYEakL2K
+         4p5HZuxutdf9f5v3dDFphiRqqgGjvMubcoyvNdtdW9+Zs5en/TgcJUmEkluavbR0mZ3G
+         0morwoOWD8+mxxdI4Bra/5aXQqUVQuZalbg5/gLNTcJXUjalDbnFmqZeVYsx1I46BK76
+         Eneg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=rAupvnq6gF+hfLMwbK5FyshoSuZewieI0Qe5jG8mpEQ=;
-        b=i9ENdQ2fuUDBD2uoxwoBR4mD+MNoBqPoLYrWXPEm/TWlrlrUkaassphM8mEDzo8px5
-         ZYiLf5VDTbLDYEzXsUW1BJwjLti9Wrniwel+5ZmJ3WGJdvmF2YKg0FLKm+vjDjXDh0aa
-         ZI6OGwR1597b9ztHnPl50OW9PkyiOjxTOwv6UvifzLr7VoueR0XSLSIkLRICG6wu3Xyv
-         2zWZJJrBWawOdYf4ubhXIP5rHF2H7Uvi/uIf7w7OUfwBpb+Ihnq10zUxE6Qsjk725hNh
-         nBW/O+JeeAic0TMUqTIAQy+Ii5Qp3Q4O2+R9z07ElP7Eru6DLyRr+3ZUj0RDWxBHrSiB
-         gd7w==
-X-Gm-Message-State: AJIora81UTx9d2XN69achTxV9KptWoTQZhH71iP4uT6KwZweyNX1IxEU
-        w3VcZnssebroWLktuFjpMejHXQ==
-X-Google-Smtp-Source: AGRyM1uvyHwv5Nms9vMGrT+Pj3Myl57qJQnwG96nAmt2D1U+IkwcRVqRNQQZtUK91Tb/HD+gpUxTMw==
-X-Received: by 2002:a05:6512:1523:b0:47f:7940:4a24 with SMTP id bq35-20020a056512152300b0047f79404a24mr2767391lfb.516.1655798301954;
-        Tue, 21 Jun 2022 00:58:21 -0700 (PDT)
-Received: from [172.16.11.74] ([81.216.59.226])
-        by smtp.gmail.com with ESMTPSA id h20-20020a05651c125400b0024f3d1daea2sm1938664ljh.42.2022.06.21.00.58.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Jun 2022 00:58:20 -0700 (PDT)
-Message-ID: <44e37b45-55cf-3705-e5e6-e3921d3646c4@rasmusvillemoes.dk>
-Date:   Tue, 21 Jun 2022 09:58:19 +0200
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=tWwF4ytRWfOwG8af/YByItsQwpXVQu/cHXdztBQ/QOM=;
+        b=bbol+8EMnQ3s8TneqnfU9lm2FSgRy1w1Z2R6EIEvqBj4gFFflhaxmRLZ+u5oXXARXG
+         ZUUQ3ZoA+9PdWYkL5jUZE3DrQF6CkO/tEr1BEbcsnv4rOhl8qVvFJWXpSxIhH0LWIHuG
+         lAF3nWUrUTJz0lWQ0ViLWh4TYel4tlD9NbLB+Yp9wAu9TlkSYEK/eIgBZgYr4t1EjISK
+         qeSEVlV21kUpxRRb08JooTFLBZegFEiHI24lYddITJsaApRyOxhiZEbpTRbHi9z80WnG
+         a9ry9Gmam5JLcKEdk6AgZG7l/cQzkErbT1jGvK+nDC1ikFxVsKdCZHFGF0WXNdwcn3uG
+         5UCA==
+X-Gm-Message-State: AJIora/3hmzmohfGlPYric6OBjqV9v818WUGvLcWCy79VoZSOQNcjRCZ
+        Jxa4n8R0lFoNuwSOBTOf+NMpjUDKI4YFUSpTJmhYyg==
+X-Google-Smtp-Source: AGRyM1tl0A5pwz4xRSxLxmfnF2AbtXs3Hbo6NWh2A3Fc5yFoS1FOivwilEGpCpvfJEVXQwPH98mvxbuyAaRmZvxDXAE=
+X-Received: by 2002:a25:8311:0:b0:668:fbcd:f3dd with SMTP id
+ s17-20020a258311000000b00668fbcdf3ddmr11093626ybk.608.1655798390443; Tue, 21
+ Jun 2022 00:59:50 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v4 07/34] lib/printbuf: Heap allocation
-Content-Language: en-US
-To:     Kent Overstreet <kent.overstreet@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org, pmladek@suse.com
-Cc:     rostedt@goodmis.org, enozhatsky@chromium.org, willy@infradead.org
-References: <20220620004233.3805-1-kent.overstreet@gmail.com>
- <20220620004233.3805-8-kent.overstreet@gmail.com>
-From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
-In-Reply-To: <20220620004233.3805-8-kent.overstreet@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220620124737.799371052@linuxfoundation.org>
+In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Tue, 21 Jun 2022 13:29:39 +0530
+Message-ID: <CA+G9fYspTNKgYD2o2wAaQ=V+n+1W_ZGrWShMLjin+fGwCOTZeg@mail.gmail.com>
+Subject: Re: [PATCH 5.4 000/240] 5.4.200-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 20/06/2022 02.42, Kent Overstreet wrote:
-> This makes printbufs optionally heap allocated: a printbuf initialized
-> with the PRINTBUF initializer will automatically heap allocate and
-> resize as needed.
-> 
-> Allocations are done with GFP_KERNEL: code should use e.g.
-> memalloc_nofs_save()/restore() as needed. Since we do not currently have
-> memalloc_nowait_save()/restore(), in contexts where it is not safe to
-> block we provide the helpers
-> 
->   printbuf_atomic_inc()
->   printbuf_atomic_dec()
-> 
-> When the atomic count is nonzero, memory allocations will be done with
-> GFP_NOWAIT.
-> 
-> On memory allocation failure, output will be truncated. Code that wishes
-> to check for memory allocation failure (in contexts where we should
-> return -ENOMEM) should check if printbuf->allocation_failure is set.
-> Since printbufs are expected to be typically used for log messages and
-> on a best effort basis, we don't return errors directly.
-> 
-> Other helpers provided by this patch:
-> 
->  - printbuf_make_room(buf, extra)
->    Reallocates if necessary to make room for @extra bytes (not including
->    terminating null).
-> 
->  - printbuf_str(buf)
->    Returns a null terminated string equivalent to the contents of @buf.
->    If @buf was never allocated (or allocation failed), returns a
->    constant empty string.
-> 
->  - printbuf_exit(buf)
->    Releases memory allocated by a printbuf.
-> 
-> Signed-off-by: Kent Overstreet <kent.overstreet@gmail.com>
-> ---
->  include/linux/printbuf.h | 120 +++++++++++++++++++++++++++++++++------
->  lib/Makefile             |   2 +-
->  lib/printbuf.c           |  71 +++++++++++++++++++++++
->  3 files changed, 175 insertions(+), 18 deletions(-)
->  create mode 100644 lib/printbuf.c
-> 
-> diff --git a/include/linux/printbuf.h b/include/linux/printbuf.h
-> index 8186c447ca..382863afa7 100644
-> --- a/include/linux/printbuf.h
-> +++ b/include/linux/printbuf.h
-> @@ -4,19 +4,69 @@
->  #ifndef _LINUX_PRINTBUF_H
->  #define _LINUX_PRINTBUF_H
->  
-> -#include <linux/kernel.h>
-> -#include <linux/string.h>
-> -
->  /*
-> - * Printbufs: String buffer for outputting (printing) to, for vsnprintf
-> + * Printbufs: Simple strings for printing to, with optional heap allocation
-> + *
-> + * This code has provisions for use in userspace, to aid in making other code
-> + * portable between kernelspace and userspace.
-> + *
-> + * Basic example:
-> + *   struct printbuf buf = PRINTBUF;
-> + *
-> + *   prt_printf(&buf, "foo=");
-> + *   foo_to_text(&buf, foo);
-> + *   printk("%s", buf.buf);
-
-So, if prt_printf() and foo_to_text() failed to make room, buf.buf would
-still be NULL, right? Sure, vsnprintf() handles that gracefully, but
-this is probably not what you intended.
-
->  struct printbuf {
->  	char			*buf;
->  	unsigned		size;
->  	unsigned		pos;
-> +	/*
-> +	 * If nonzero, allocations will be done with GFP_ATOMIC:
-> +	 */
-> +	u8			atomic;
-> +	bool			allocation_failure:1;
-> +	bool			heap_allocated:1;
->  };
->  
-> +int printbuf_make_room(struct printbuf *, unsigned);
-> +const char *printbuf_str(const struct printbuf *);
-> +void printbuf_exit(struct printbuf *);
-> +
-> +/* Initializer for a heap allocated printbuf: */
-> +#define PRINTBUF ((struct printbuf) { .heap_allocated = true })
-> +
-> +/* Initializer a printbuf that points to an external buffer: */
-> +#define PRINTBUF_EXTERN(_buf, _size)			\
-> +((struct printbuf) {					\
-> +	.buf	= _buf,					\
-> +	.size	= _size,				\
-> +})
-> +
->  /*
->   * Returns size remaining of output buffer:
->   */
-> @@ -49,26 +99,36 @@ static inline bool printbuf_overflowed(struct printbuf *out)
->  
->  static inline void printbuf_nul_terminate(struct printbuf *out)
->  {
-> +	printbuf_make_room(out, 1);
-> +
-
-Shouldn't this be printbuf_make_room(out, 0)?
-
-Probably this should be split up, so that the functions that also do
-printbuf_make_room() which ensures room for a nul-terminator could then
-call __printbuf_nul_terminate(), which would just contain the below:
-
->  	if (out->pos < out->size)
->  		out->buf[out->pos] = 0;
->  	else if (out->size)
->  		out->buf[out->size - 1] = 0;
->  }
+On Mon, 20 Jun 2022 at 18:41, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 5.4.200 release.
+> There are 240 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Wed, 22 Jun 2022 12:47:02 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
+5.4.200-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-5.4.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
 
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-> -static inline void __prt_char(struct printbuf *out, char c)
-> +/* Doesn't call printbuf_make_room(), doesn't nul terminate: */
-> +static inline void __prt_char_reserved(struct printbuf *out, char c)
->  {
->  	if (printbuf_remaining(out))
->  		out->buf[out->pos] = c;
->  	out->pos++;
->  }
->  
-> +/* Doesn't nul terminate: */
-> +static inline void __prt_char(struct printbuf *out, char c)
-> +{
-> +	printbuf_make_room(out, 1);
-> +	__prt_char_reserved(out, c);
-> +}
-> +
->  static inline void prt_char(struct printbuf *out, char c)
->  {
->  	__prt_char(out, c);
->  	printbuf_nul_terminate(out);
->  }
->  
-> -static inline void __prt_chars(struct printbuf *out, char c, unsigned n)
-> +static inline void __prt_chars_reserved(struct printbuf *out, char c, unsigned n)
->  {
->  	unsigned i, can_print = min(n, printbuf_remaining(out));
->  
-> @@ -79,13 +139,18 @@ static inline void __prt_chars(struct printbuf *out, char c, unsigned n)
->  
->  static inline void prt_chars(struct printbuf *out, char c, unsigned n)
->  {
-> -	__prt_chars(out, c, n);
-> +	printbuf_make_room(out, n);
-> +	__prt_chars_reserved(out, c, n);
->  	printbuf_nul_terminate(out);
->  }
->  
->  static inline void prt_bytes(struct printbuf *out, const void *b, unsigned n)
->  {
-> -	unsigned i, can_print = min(n, printbuf_remaining(out));
-> +	unsigned i, can_print;
-> +
-> +	printbuf_make_room(out, n);
-> +
-> +	can_print = min(n, printbuf_remaining(out));
->  
->  	for (i = 0; i < can_print; i++)
->  		out->buf[out->pos++] = ((char *) b)[i];
-> @@ -101,22 +166,43 @@ static inline void prt_str(struct printbuf *out, const char *str)
->  
->  static inline void prt_hex_byte(struct printbuf *out, u8 byte)
->  {
-> -	__prt_char(out, hex_asc_hi(byte));
-> -	__prt_char(out, hex_asc_lo(byte));
-> +	printbuf_make_room(out, 2);
-> +	__prt_char_reserved(out, hex_asc_hi(byte));
-> +	__prt_char_reserved(out, hex_asc_lo(byte));
->  	printbuf_nul_terminate(out);
->  }
->  
->  static inline void prt_hex_byte_upper(struct printbuf *out, u8 byte)
->  {
-> -	__prt_char(out, hex_asc_upper_hi(byte));
-> -	__prt_char(out, hex_asc_upper_lo(byte));
-> +	printbuf_make_room(out, 2);
-> +	__prt_char_reserved(out, hex_asc_upper_hi(byte));
-> +	__prt_char_reserved(out, hex_asc_upper_lo(byte));
->  	printbuf_nul_terminate(out);
->  }
->  
-> -#define PRINTBUF_EXTERN(_buf, _size)			\
-> -((struct printbuf) {					\
-> -	.buf	= _buf,					\
-> -	.size	= _size,				\
-> -})
-> +/**
-> + * printbuf_reset - re-use a printbuf without freeing and re-initializing it:
-> + */
-> +static inline void printbuf_reset(struct printbuf *buf)
-> +{
-> +	buf->pos		= 0;
-> +	buf->allocation_failure	= 0;
-> +}
-> +
-> +/**
-> + * printbuf_atomic_inc - mark as entering an atomic section
-> + */
-> +static inline void printbuf_atomic_inc(struct printbuf *buf)
-> +{
-> +	buf->atomic++;
-> +}
-> +
-> +/**
-> + * printbuf_atomic_inc - mark as leaving an atomic section
-> + */
-> +static inline void printbuf_atomic_dec(struct printbuf *buf)
-> +{
-> +	buf->atomic--;
-> +}
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-So, if I have a printbuf in scope, and I do irq_disable() or spin_lock()
-or whatnot, I'm supposed to also call printbuf_atomic_inc(), at least if
-the printbuf is used within the locked region.
+## Build
+* kernel: 5.4.200-rc1
+* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
+* git branch: linux-5.4.y
+* git commit: bc956dd0d885f095b41747a151ae0caa1b9dcdd4
+* git describe: v5.4.199-241-gbc956dd0d885
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.4.y/build/v5.4.1=
+99-241-gbc956dd0d885
 
-Honest question: An u8 used for this purpose cannot overflow?
+## Test Regressions (compared to v5.4.196-11-g04a2bb5e4a0b)
+No test regressions found.
 
->  #endif /* _LINUX_PRINTBUF_H */
-> diff --git a/lib/Makefile b/lib/Makefile
-> index 6b9ffc1bd1..b4609a4258 100644
-> --- a/lib/Makefile
-> +++ b/lib/Makefile
-> @@ -34,7 +34,7 @@ lib-y := ctype.o string.o vsprintf.o cmdline.o \
->  	 is_single_threaded.o plist.o decompress.o kobject_uevent.o \
->  	 earlycpio.o seq_buf.o siphash.o dec_and_lock.o \
->  	 nmi_backtrace.o nodemask.o win_minmax.o memcat_p.o \
-> -	 buildid.o
-> +	 buildid.o printbuf.o
->  
->  lib-$(CONFIG_PRINTK) += dump_stack.o
->  lib-$(CONFIG_SMP) += cpumask.o
-> diff --git a/lib/printbuf.c b/lib/printbuf.c
-> new file mode 100644
-> index 0000000000..8c70128e31
-> --- /dev/null
-> +++ b/lib/printbuf.c
-> @@ -0,0 +1,71 @@
-> +// SPDX-License-Identifier: LGPL-2.1+
-> +/* Copyright (C) 2022 Kent Overstreet */
-> +
-> +#ifdef __KERNEL__
-> +#include <linux/export.h>
-> +#include <linux/kernel.h>
-> +#else
-> +#define EXPORT_SYMBOL(x)
-> +#endif
-> +
-> +#include <linux/err.h>
-> +#include <linux/slab.h>
-> +#include <linux/printbuf.h>
-> +
-> +int printbuf_make_room(struct printbuf *out, unsigned extra)
-> +{
-> +	unsigned new_size;
-> +	char *buf;
-> +
-> +	if (!out->heap_allocated)
-> +		return 0;
+## Metric Regressions (compared to v5.4.196-11-g04a2bb5e4a0b)
+No metric regressions found.
 
-I think that ->allocation_failure should be sticky and make us return an
-early error here; if we're under memory pressure we don't want each and
-every prt_char() of whatever we're trying to print to end up trying to
-do an allocation.
+## Test Fixes (compared to v5.4.196-11-g04a2bb5e4a0b)
+No test fixes found.
 
-> +	/* Reserved space for terminating nul: */
-> +	extra += 1;
-> +
-> +	if (out->pos + extra < out->size)
-> +		return 0;
+## Metric Fixes (compared to v5.4.196-11-g04a2bb5e4a0b)
+No metric fixes found.
 
-Are you sure you don't want to be careful about the possibility of
-out->pos+extra overflowing? And since extra has been ++'ed, shouldn't
-the comparison be <= ? If pos is 0, size is 2, and I want to add one
-char (so on entry extra is 1), this should not require a reallocation?
+## Test result summary
+total: 119849, pass: 106680, fail: 213, skip: 11709, xfail: 1247
 
-> +	new_size = roundup_pow_of_two(out->size + extra);
+## Build Summary
+* arc: 10 total, 10 passed, 0 failed
+* arm: 313 total, 313 passed, 0 failed
+* arm64: 57 total, 53 passed, 4 failed
+* i386: 28 total, 25 passed, 3 failed
+* mips: 37 total, 37 passed, 0 failed
+* parisc: 12 total, 12 passed, 0 failed
+* powerpc: 54 total, 54 passed, 0 failed
+* riscv: 27 total, 27 passed, 0 failed
+* s390: 12 total, 12 passed, 0 failed
+* sh: 24 total, 24 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x86_64: 55 total, 54 passed, 1 failed
 
-Are you sure you don't want to be careful about the possibility of
-out->size+extra overflowing, or hitting that with roundup_pow_of_two()
-doing that?
+## Test suites summary
+* fwts
+* kunit
+* kvm-unit-tests
+* libgpiod
+* libhugetlbfs
+* log-parser-boot
+* log-parser-test
+* ltp-cap_bounds
+* ltp-cap_bounds-tests
+* ltp-commands
+* ltp-commands-tests
+* ltp-containers
+* ltp-containers-tests
+* ltp-controllers-tests
+* ltp-cpuhotplug-tests
+* ltp-crypto
+* ltp-crypto-tests
+* ltp-cve-tests
+* ltp-dio-tests
+* ltp-fcntl-locktests
+* ltp-fcntl-locktests-tests
+* ltp-filecaps
+* ltp-filecaps-tests
+* ltp-fs
+* ltp-fs-tests
+* ltp-fs_bind
+* ltp-fs_bind-tests
+* ltp-fs_perms_simple
+* ltp-fs_perms_simple-tests
+* ltp-fsx
+* ltp-fsx-tests
+* ltp-hugetlb
+* ltp-hugetlb-tests
+* ltp-io
+* ltp-io-tests
+* ltp-ipc
+* ltp-ipc-tests
+* ltp-math-tests
+* ltp-mm-tests
+* ltp-nptl
+* ltp-nptl-tests
+* ltp-open-posix-tests
+* ltp-pty
+* ltp-pty-tests
+* ltp-sched
+* ltp-sched-tests
+* ltp-securebits
+* ltp-securebits-tests
+* ltp-smoke
+* ltp-syscalls-tests
+* ltp-tracing-tests
+* network-basic-tests
+* packetdrill
+* perf
+* perf/Zstd-perf.data-compression
+* rcutorture
+* ssuite
+* v4l2-compliance
+* vdso
 
-> +	buf = krealloc(out->buf, new_size, !out->atomic ? GFP_KERNEL : GFP_NOWAIT);
-> +
-> +	if (!buf) {
-> +		out->allocation_failure = true;
-> +		return -ENOMEM;
-> +	}
-> +
-> +	out->buf	= buf;
-> +	out->size	= new_size;
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL(printbuf_make_room);
-> +
-> +/**
-> + * printbuf_str - returns printbuf's buf as a C string, guaranteed to be null
-
-Pet peeve: Please use the spelling "nul" consistently.
-
-> + * terminated
-> + */
-> +const char *printbuf_str(const struct printbuf *buf)
-> +{
-> +	/*
-> +	 * If we've written to a printbuf then it's guaranteed to be a null
-> +	 * terminated string - but if we haven't, then we might not have
-> +	 * allocated a buffer at all:
-> +	 */
-> +	return buf->pos
-> +		? buf->buf
-> +		: "";
-> +}
-> +EXPORT_SYMBOL(printbuf_str);
-
-I think the documentation lacks some mention of lifetimes and caller
-obligations or lack thereof. Especially since the return value could
-become dangling not just if the printbuf is destroyed (printbuf_exit),
-but also any other use of the printbuf which could cause a realloc.
-
-Rasmus
+--
+Linaro LKFT
+https://lkft.linaro.org
