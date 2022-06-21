@@ -2,122 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42E41CCA473
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:00:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD67CC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:01:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352081AbiFUPAJ (ORCPT
+        id S1352109AbiFUPB3 convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 11:00:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36936 "EHLO
+        Tue, 21 Jun 2022 11:01:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351048AbiFUPAF (ORCPT
+        with ESMTP id S236418AbiFUPB1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 11:00:05 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1C97F26570
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:00:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655823603;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=DXSrhSZvaWyzVBh2O00gGtnoAZnTCy8whfaR0jeknu4=;
-        b=UBdWAEoFfwTenYutpXcX2sKnCYU69qrbvPSv5vG5Sc1JHtjLOC6dKGimmz8ypinsVl9BV3
-        RrhqEEaz1R7gHQt/davt0knWnUYdlyQnuyUtFunhLQ4ghAx+mVcZqgUksoiJBEBPSF+bZJ
-        AWDKpRUfZI2cXlAFEGphLW+psCnRAHs=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-93-ZTgjpt9YNhSFnLQ48_68_Q-1; Tue, 21 Jun 2022 10:59:59 -0400
-X-MC-Unique: ZTgjpt9YNhSFnLQ48_68_Q-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 115A1811E75;
-        Tue, 21 Jun 2022 14:59:59 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.62])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 347F2C23DBF;
-        Tue, 21 Jun 2022 14:59:58 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-To:     torvalds@linux-foundation.org
-cc:     dhowells@redhat.com, marc.dionne@auristor.com,
-        linux-afs@lists.infradead.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] afs: Fix dynamic root getattr
+        Tue, 21 Jun 2022 11:01:27 -0400
+Received: from relay.hostedemail.com (smtprelay0017.hostedemail.com [216.40.44.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3172526553
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:01:24 -0700 (PDT)
+Received: from omf06.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay06.hostedemail.com (Postfix) with ESMTP id 1D50E351D9;
+        Tue, 21 Jun 2022 15:01:21 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf06.hostedemail.com (Postfix) with ESMTPA id B87FD2000F;
+        Tue, 21 Jun 2022 15:01:18 +0000 (UTC)
+Message-ID: <a502003f9ba31c660ddb9c9d8683b7b2a01d12f7.camel@perches.com>
+Subject: Re: [PATCH] net: s390: drop unexpected word "the" in the comments
+From:   Joe Perches <joe@perches.com>
+To:     Alexandra Winter <wintera@linux.ibm.com>,
+        Jiang Jian <jiangjian@cdjrlc.com>
+Cc:     wenjia@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
+        svens@linux.ibm.com, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Tue, 21 Jun 2022 08:01:17 -0700
+In-Reply-To: <09b411b2-0e1f-26d5-c0ea-8ee6504bdcfd@linux.ibm.com>
+References: <20220621113740.103317-1-jiangjian@cdjrlc.com>
+         <09b411b2-0e1f-26d5-c0ea-8ee6504bdcfd@linux.ibm.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.44.1-0ubuntu1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <1273399.1655823597.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date:   Tue, 21 Jun 2022 15:59:57 +0100
-Message-ID: <1273400.1655823597@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+X-Stat-Signature: nbwwtqkrsbqnzwh9ramyn7pzw1fuzn1n
+X-Rspamd-Server: rspamout03
+X-Rspamd-Queue-Id: B87FD2000F
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX1+sUyxK4FFvpDjZtlXFNMosIz2P+MhhHMw=
+X-HE-Tag: 1655823678-383585
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+On Tue, 2022-06-21 at 13:58 +0200, Alexandra Winter wrote:
+> On 21.06.22 13:37, Jiang Jian wrote:
+> > there is an unexpected word "the" in the comments that need to be dropped
+[]
+> > * have to request a PCI to be sure the the PCI
+> > * have to request a PCI to be sure the PCI
+[]
+> > diff --git a/drivers/s390/net/qeth_core_main.c b/drivers/s390/net/qeth_core_main.c
+[]
+> > @@ -3565,7 +3565,7 @@ static void qeth_flush_buffers(struct qeth_qdio_out_q *queue, int index,
+> >  			if (!atomic_read(&queue->set_pci_flags_count)) {
+> >  				/*
+> >  				 * there's no outstanding PCI any more, so we
+> > -				 * have to request a PCI to be sure the the PCI
 
-Could you apply this please?  It fixes an oops inadvertently introduced by
-the fix to make afs_getattr() update the status from the server if it was
-no longer valid.
+Might have intended "that the" and not "the the"
 
-Thanks,
-David
----
-afs: Fix dynamic root getattr
+> > +				 * have to request a PCI to be sure the PCI
+> >  				 * will wake at some time in the future then we
+> >  				 * can flush packed buffers that might still be
+> >  				 * hanging around, which can happen if no
 
-The recent patch to make afs_getattr consult the server didn't account for
-the pseudo-inodes employed by the dynamic root-type afs superblock not
-having a volume or a server to access, and thus an oops occurs if such a
-directory is stat'd.
+And this is a relatively long sentence.
 
-Fix this by checking to see if the vnode->volume pointer actually points
-anywhere before following it in afs_getattr().
+Perhaps something like:
 
-This can be tested by stat'ing a directory in /afs.  It may be sufficient
-just to do "ls /afs" and the oops looks something like:
-
-        BUG: kernel NULL pointer dereference, address: 0000000000000020
-        ...
-        RIP: 0010:afs_getattr+0x8b/0x14b
-        ...
-        Call Trace:
-         <TASK>
-         vfs_statx+0x79/0xf5
-         vfs_fstatat+0x49/0x62
-
-Fixes: 2aeb8c86d499 ("afs: Fix afs_getattr() to refetch file status if cal=
-lback break occurred")
-Reported-by: Marc Dionne <marc.dionne@auristor.com>
-Signed-off-by: David Howells <dhowells@redhat.com>
-Reviewed-by: Marc Dionne <marc.dionne@auristor.com>
-Tested-by: Marc Dionne <marc.dionne@auristor.com>
-cc: linux-afs@lists.infradead.org
-Link: https://lore.kernel.org/r/165408450783.1031787.7941404776393751186.s=
-tgit@warthog.procyon.org.uk/
----
- fs/afs/inode.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/fs/afs/inode.c b/fs/afs/inode.c
-index 89630acbc2cc..64dab70d4a4f 100644
---- a/fs/afs/inode.c
-+++ b/fs/afs/inode.c
-@@ -745,7 +745,8 @@ int afs_getattr(struct user_namespace *mnt_userns, con=
-st struct path *path,
- =
-
- 	_enter("{ ino=3D%lu v=3D%u }", inode->i_ino, inode->i_generation);
- =
-
--	if (!(query_flags & AT_STATX_DONT_SYNC) &&
-+	if (vnode->volume &&
-+	    !(query_flags & AT_STATX_DONT_SYNC) &&
- 	    !test_bit(AFS_VNODE_CB_PROMISED, &vnode->flags)) {
- 		key =3D afs_request_key(vnode->volume->cell);
- 		if (IS_ERR(key))
+			if (!atomic_read(&queue->set_pci_flags_count)) {
+				/*
+				 * there's no outstanding PCI any more so:
+				 * o request a PCI to be sure that the PCI
+				 *   will wake at some time in the future
+				 * o flush packed buffers that might still be
+				 *   hanging around (which can happen if no
+				 *   further send was requested by the stack)
+				 */
 
