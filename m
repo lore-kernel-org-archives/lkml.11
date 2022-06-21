@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4BE9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:59:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F9D8C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 16:00:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353446AbiFUP7x (ORCPT
+        id S1353294AbiFUQAD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 11:59:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43532 "EHLO
+        Tue, 21 Jun 2022 12:00:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353536AbiFUP6t (ORCPT
+        with ESMTP id S1353561AbiFUP6z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 11:58:49 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D26F1B96
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:58:48 -0700 (PDT)
+        Tue, 21 Jun 2022 11:58:55 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0AA20B96
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:58:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655827128;
+        s=mimecast20190719; t=1655827133;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=PNBrmWnN3XnulCkQsAu4oIaBrmhBegkKO8NaBiEN1js=;
-        b=OlVjr7MZuLuvh8mkRj2jO7aJ8rhToms7QOFDz/drB9Akjn5Q+Jo5b0ZGcKW+xMQl7DGxKO
-        pSWvwDN2Lxnntrfz+uanLj/rw+/ynYDb4vR+QLu0h8/zyDX3YPgcP2Cgce99IOouCzQARO
-        IabEJgcZaNeygOaz2aTChpAo3l/ijz0=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=EmEzVaoMAZSsUe/5lbRI/mv6YdcXtXL+W5zafkz/96I=;
+        b=Coj4odrLJkK7sHiVHAW8GQ3sN/e19XpsSL/4WWFUVZC4P4WhP89JPrbOcmZHwHVPBj4DcD
+        mzPRgMAGk7nlxDdDttkOz26F/2qjJbfF/+7VFQHapDaQK7X2lHCrFFVQk3dA3pxeysVXwv
+        pKA976Yz23JSpqYF0c9BSzWxehd0Qm4=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-235-TCTk5-TjO9iOqGzTs-VyqQ-1; Tue, 21 Jun 2022 11:58:44 -0400
-X-MC-Unique: TCTk5-TjO9iOqGzTs-VyqQ-1
+ us-mta-344-mg2ovC4pPmuAadO-8QTN3g-1; Tue, 21 Jun 2022 11:58:51 -0400
+X-MC-Unique: mg2ovC4pPmuAadO-8QTN3g-1
 Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 76C4E101E989;
-        Tue, 21 Jun 2022 15:58:43 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5AE933815D28;
+        Tue, 21 Jun 2022 15:58:51 +0000 (UTC)
 Received: from fedora.redhat.com (unknown [10.40.195.134])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 6F0362026D64;
-        Tue, 21 Jun 2022 15:58:41 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 199812026D64;
+        Tue, 21 Jun 2022 15:58:48 +0000 (UTC)
 From:   Vitaly Kuznetsov <vkuznets@redhat.com>
 To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
@@ -47,9 +47,9 @@ Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
         Jim Mattson <jmattson@google.com>,
         Maxim Levitsky <mlevitsk@redhat.com>,
         linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 04/11] KVM: VMX: Define VMCS-to-EVMCS conversion for the new fields
-Date:   Tue, 21 Jun 2022 17:58:23 +0200
-Message-Id: <20220621155830.60115-5-vkuznets@redhat.com>
+Subject: [PATCH 07/11] KVM: selftests: Switch to KVM_CAP_HYPERV_ENLIGHTENED_VMCS2
+Date:   Tue, 21 Jun 2022 17:58:26 +0200
+Message-Id: <20220621155830.60115-8-vkuznets@redhat.com>
 In-Reply-To: <20220621155830.60115-1-vkuznets@redhat.com>
 References: <20220621155830.60115-1-vkuznets@redhat.com>
 MIME-Version: 1.0
@@ -60,69 +60,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enlightened VMCS v1 definition was updated with new fields, support
-them in KVM by defining VMCS-to-EVMCS conversion.
-
-Note: SSP, CET and Guest LBR features are not supported by KVM yet and
-the corresponding fields are not defined in 'enum vmcs_field', leave
-them commented out for now.
+KVM_CAP_HYPERV_ENLIGHTENED_VMCS was obsoleted by
+KVM_CAP_HYPERV_ENLIGHTENED_VMCS2, use it in selftests.
 
 Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- arch/x86/kvm/vmx/evmcs.c | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+ tools/testing/selftests/kvm/include/kvm_util_base.h       | 8 ++++++++
+ tools/testing/selftests/kvm/include/x86_64/evmcs.h        | 1 +
+ tools/testing/selftests/kvm/lib/x86_64/vmx.c              | 5 +++--
+ tools/testing/selftests/kvm/x86_64/evmcs_test.c           | 2 +-
+ tools/testing/selftests/kvm/x86_64/hyperv_cpuid.c         | 2 +-
+ .../selftests/kvm/x86_64/vmx_set_nested_state_test.c      | 2 +-
+ 6 files changed, 15 insertions(+), 5 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx/evmcs.c b/arch/x86/kvm/vmx/evmcs.c
-index 6a61b1ae7942..8bea5dea0341 100644
---- a/arch/x86/kvm/vmx/evmcs.c
-+++ b/arch/x86/kvm/vmx/evmcs.c
-@@ -28,6 +28,8 @@ const struct evmcs_field vmcs_field_to_evmcs_1[] = {
- 		     HV_VMX_ENLIGHTENED_CLEAN_FIELD_HOST_GRP1),
- 	EVMCS1_FIELD(HOST_IA32_EFER, host_ia32_efer,
- 		     HV_VMX_ENLIGHTENED_CLEAN_FIELD_HOST_GRP1),
-+	EVMCS1_FIELD(HOST_IA32_PERF_GLOBAL_CTRL, host_ia32_perf_global_ctrl,
-+		     HV_VMX_ENLIGHTENED_CLEAN_FIELD_HOST_GRP1),
- 	EVMCS1_FIELD(HOST_CR0, host_cr0,
- 		     HV_VMX_ENLIGHTENED_CLEAN_FIELD_HOST_GRP1),
- 	EVMCS1_FIELD(HOST_CR3, host_cr3,
-@@ -78,6 +80,8 @@ const struct evmcs_field vmcs_field_to_evmcs_1[] = {
- 		     HV_VMX_ENLIGHTENED_CLEAN_FIELD_GUEST_GRP1),
- 	EVMCS1_FIELD(GUEST_IA32_EFER, guest_ia32_efer,
- 		     HV_VMX_ENLIGHTENED_CLEAN_FIELD_GUEST_GRP1),
-+	EVMCS1_FIELD(GUEST_IA32_PERF_GLOBAL_CTRL, guest_ia32_perf_global_ctrl,
-+		     HV_VMX_ENLIGHTENED_CLEAN_FIELD_GUEST_GRP1),
- 	EVMCS1_FIELD(GUEST_PDPTR0, guest_pdptr0,
- 		     HV_VMX_ENLIGHTENED_CLEAN_FIELD_GUEST_GRP1),
- 	EVMCS1_FIELD(GUEST_PDPTR1, guest_pdptr1,
-@@ -126,6 +130,28 @@ const struct evmcs_field vmcs_field_to_evmcs_1[] = {
- 		     HV_VMX_ENLIGHTENED_CLEAN_FIELD_GUEST_GRP1),
- 	EVMCS1_FIELD(XSS_EXIT_BITMAP, xss_exit_bitmap,
- 		     HV_VMX_ENLIGHTENED_CLEAN_FIELD_CONTROL_GRP2),
-+	EVMCS1_FIELD(ENCLS_EXITING_BITMAP, encls_exiting_bitmap,
-+		     HV_VMX_ENLIGHTENED_CLEAN_FIELD_CONTROL_GRP2),
-+	EVMCS1_FIELD(TSC_MULTIPLIER, tsc_multiplier,
-+		     HV_VMX_ENLIGHTENED_CLEAN_FIELD_CONTROL_GRP2),
-+	/*
-+	 * Not used by KVM:
-+	 *
-+	 * EVMCS1_FIELD(0x00006828, guest_ia32_s_cet,
-+	 *	     HV_VMX_ENLIGHTENED_CLEAN_FIELD_GUEST_GRP1),
-+	 * EVMCS1_FIELD(0x0000682A, guest_ssp,
-+	 *	     HV_VMX_ENLIGHTENED_CLEAN_FIELD_GUEST_BASIC),
-+	 * EVMCS1_FIELD(0x0000682C, guest_ia32_int_ssp_table_addr,
-+	 *	     HV_VMX_ENLIGHTENED_CLEAN_FIELD_GUEST_GRP1),
-+	 * EVMCS1_FIELD(0x00002816, guest_ia32_lbr_ctl,
-+	 *	     HV_VMX_ENLIGHTENED_CLEAN_FIELD_GUEST_GRP1),
-+	 * EVMCS1_FIELD(0x00006C18, host_ia32_s_cet,
-+	 *	     HV_VMX_ENLIGHTENED_CLEAN_FIELD_HOST_GRP1),
-+	 * EVMCS1_FIELD(0x00006C1A, host_ssp,
-+	 *	     HV_VMX_ENLIGHTENED_CLEAN_FIELD_HOST_GRP1),
-+	 * EVMCS1_FIELD(0x00006C1C, host_ia32_int_ssp_table_addr,
-+	 *	     HV_VMX_ENLIGHTENED_CLEAN_FIELD_HOST_GRP1),
-+	 */
+diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
+index cdaea2383543..3b5d25d6baae 100644
+--- a/tools/testing/selftests/kvm/include/kvm_util_base.h
++++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
+@@ -348,6 +348,14 @@ static inline void vcpu_enable_cap(struct kvm_vcpu *vcpu, uint32_t cap,
+ 	vcpu_ioctl(vcpu, KVM_ENABLE_CAP, &enable_cap);
+ }
  
- 	/* 64 bit read only */
- 	EVMCS1_FIELD(GUEST_PHYSICAL_ADDRESS, guest_physical_address,
++static inline void vcpu_enable_cap2(struct kvm_vcpu *vcpu, uint32_t cap,
++				   uint64_t arg0, uint64_t arg1)
++{
++	struct kvm_enable_cap enable_cap = { .cap = cap, .args = { arg0, arg1 } };
++
++	vcpu_ioctl(vcpu, KVM_ENABLE_CAP, &enable_cap);
++}
++
+ static inline void vcpu_guest_debug_set(struct kvm_vcpu *vcpu,
+ 					struct kvm_guest_debug *debug)
+ {
+diff --git a/tools/testing/selftests/kvm/include/x86_64/evmcs.h b/tools/testing/selftests/kvm/include/x86_64/evmcs.h
+index 3c9260f8e116..b6d6c73f68dc 100644
+--- a/tools/testing/selftests/kvm/include/x86_64/evmcs.h
++++ b/tools/testing/selftests/kvm/include/x86_64/evmcs.h
+@@ -17,6 +17,7 @@
+ #define u64 uint64_t
+ 
+ #define EVMCS_VERSION 1
++#define EVMCS_REVISION 1
+ 
+ extern bool enable_evmcs;
+ 
+diff --git a/tools/testing/selftests/kvm/lib/x86_64/vmx.c b/tools/testing/selftests/kvm/lib/x86_64/vmx.c
+index 381432741df4..1a0b9334f8d4 100644
+--- a/tools/testing/selftests/kvm/lib/x86_64/vmx.c
++++ b/tools/testing/selftests/kvm/lib/x86_64/vmx.c
+@@ -42,12 +42,13 @@ struct eptPageTablePointer {
+ 	uint64_t address:40;
+ 	uint64_t reserved_63_52:12;
+ };
++
+ int vcpu_enable_evmcs(struct kvm_vcpu *vcpu)
+ {
+ 	uint16_t evmcs_ver;
+ 
+-	vcpu_enable_cap(vcpu, KVM_CAP_HYPERV_ENLIGHTENED_VMCS,
+-			(unsigned long)&evmcs_ver);
++	vcpu_enable_cap2(vcpu, KVM_CAP_HYPERV_ENLIGHTENED_VMCS2,
++			 EVMCS_REVISION, (unsigned long)&evmcs_ver);
+ 
+ 	/* KVM should return supported EVMCS version range */
+ 	TEST_ASSERT(((evmcs_ver >> 8) >= (evmcs_ver & 0xff)) &&
+diff --git a/tools/testing/selftests/kvm/x86_64/evmcs_test.c b/tools/testing/selftests/kvm/x86_64/evmcs_test.c
+index 8dda527cc080..a546d1cad146 100644
+--- a/tools/testing/selftests/kvm/x86_64/evmcs_test.c
++++ b/tools/testing/selftests/kvm/x86_64/evmcs_test.c
+@@ -210,7 +210,7 @@ int main(int argc, char *argv[])
+ 
+ 	TEST_REQUIRE(nested_vmx_supported());
+ 	TEST_REQUIRE(kvm_has_cap(KVM_CAP_NESTED_STATE));
+-	TEST_REQUIRE(kvm_has_cap(KVM_CAP_HYPERV_ENLIGHTENED_VMCS));
++	TEST_REQUIRE(kvm_has_cap(KVM_CAP_HYPERV_ENLIGHTENED_VMCS2));
+ 
+ 	vcpu_set_hv_cpuid(vcpu);
+ 	vcpu_enable_evmcs(vcpu);
+diff --git a/tools/testing/selftests/kvm/x86_64/hyperv_cpuid.c b/tools/testing/selftests/kvm/x86_64/hyperv_cpuid.c
+index cbd4a7d36189..f19859f1956e 100644
+--- a/tools/testing/selftests/kvm/x86_64/hyperv_cpuid.c
++++ b/tools/testing/selftests/kvm/x86_64/hyperv_cpuid.c
+@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
+ 	free(hv_cpuid_entries);
+ 
+ 	if (!nested_vmx_supported() ||
+-	    !kvm_has_cap(KVM_CAP_HYPERV_ENLIGHTENED_VMCS)) {
++	    !kvm_has_cap(KVM_CAP_HYPERV_ENLIGHTENED_VMCS2)) {
+ 		print_skip("Enlightened VMCS is unsupported");
+ 		goto do_sys;
+ 	}
+diff --git a/tools/testing/selftests/kvm/x86_64/vmx_set_nested_state_test.c b/tools/testing/selftests/kvm/x86_64/vmx_set_nested_state_test.c
+index b564b86dfc1d..b624a08a5574 100644
+--- a/tools/testing/selftests/kvm/x86_64/vmx_set_nested_state_test.c
++++ b/tools/testing/selftests/kvm/x86_64/vmx_set_nested_state_test.c
+@@ -265,7 +265,7 @@ int main(int argc, char *argv[])
+ 	struct kvm_nested_state state;
+ 	struct kvm_vcpu *vcpu;
+ 
+-	have_evmcs = kvm_check_cap(KVM_CAP_HYPERV_ENLIGHTENED_VMCS);
++	have_evmcs = kvm_check_cap(KVM_CAP_HYPERV_ENLIGHTENED_VMCS2);
+ 
+ 	TEST_REQUIRE(kvm_has_cap(KVM_CAP_NESTED_STATE));
+ 
 -- 
 2.35.3
 
