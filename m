@@ -2,100 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78276C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 11:23:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA294CCA482
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 11:23:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349720AbiFULXC (ORCPT
+        id S1349405AbiFULXo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 07:23:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37218 "EHLO
+        Tue, 21 Jun 2022 07:23:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349242AbiFULWj (ORCPT
+        with ESMTP id S1349938AbiFULXg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 07:22:39 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BE8C2A435;
-        Tue, 21 Jun 2022 04:22:35 -0700 (PDT)
-Received: from fraeml740-chm.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LS3wQ0Twwz6H6r5;
-        Tue, 21 Jun 2022 19:20:38 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml740-chm.china.huawei.com (10.206.15.221) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 21 Jun 2022 13:22:33 +0200
-Received: from localhost.localdomain (10.69.192.58) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 21 Jun 2022 12:22:27 +0100
-From:   John Garry <john.garry@huawei.com>
-To:     <axboe@kernel.dk>, <damien.lemoal@opensource.wdc.com>,
-        <bvanassche@acm.org>, <hch@lst.de>, <jejb@linux.ibm.com>,
-        <martin.petersen@oracle.com>, <hare@suse.de>, <satishkh@cisco.com>,
-        <sebaddel@cisco.com>, <kartilak@cisco.com>
-CC:     <linux-doc@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        <linux-mmc@vger.kernel.org>, <linux-nvme@lists.infradead.org>,
-        <linux-s390@vger.kernel.org>, <linux-scsi@vger.kernel.org>,
-        <mpi3mr-linuxdrv.pdl@broadcom.com>, <linux-block@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <nbd@other.debian.org>,
-        John Garry <john.garry@huawei.com>
-Subject: [PATCH v2 6/6] blk-mq: Drop local variable for reserved tag
-Date:   Tue, 21 Jun 2022 19:15:43 +0800
-Message-ID: <1655810143-67784-7-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1655810143-67784-1-git-send-email-john.garry@huawei.com>
-References: <1655810143-67784-1-git-send-email-john.garry@huawei.com>
+        Tue, 21 Jun 2022 07:23:36 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFCC038A4;
+        Tue, 21 Jun 2022 04:23:35 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id es26so17201750edb.4;
+        Tue, 21 Jun 2022 04:23:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7QvLRXiq8Bnt0eVtULkdQpLTyiJt3SvSjod+5Ee1wHE=;
+        b=HMxM/aSlAuvaJsppaX7ddSubVt1WRfhY6JdmStM/lact7dWcIhwpBX7cz+FHKMJm6t
+         2HupTlKSz0UHEjqwnyxZx1HOJvnoyAivxWsEi8kTIgPsxu1mTbRYGAeE+twEt/wBycAi
+         m5+u5LKdDaif2kZxbUni7KGQKiXxONlXDlYtafEwt0gNn743reBmGHcJEmwoNig4EL1E
+         OttNdoPwbVgtBrnRtgy0NSUxQamjNPKlTrSyI8FeVJrVEpYglXBfg07kVMwnNMGj8xa5
+         DWzkvQHd5JFDkfY807CwqOe+f0w2VsRZHtJrh+eBTSxHDqKBljSoq6QPqOO2pg3r3Ii+
+         2DCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7QvLRXiq8Bnt0eVtULkdQpLTyiJt3SvSjod+5Ee1wHE=;
+        b=yPHTSrdhiapBHqipRWmZGQhW923uPCq7wwF9VggDMqXhrrvmrg9ETVyDZMZGhlS9qD
+         KeIFJHXc7cT/ZuxJyZ/hb2jst9Mo9M753qZZCOGPZpEdCeIykwMVt4Zi8i/IaNdYTH67
+         bFyzykRHbdQSfQ/y1y5AxHrFRkpUc15frD2GUsL8ZDjcKXdLE3T25I6JnkEDQ49ssuYo
+         DcnurzBwLwRGqBPdRtFUEcbOmF/mrfrYjs3GJerkr2JYUj5fxJJgPyY12esuMK+SNpaD
+         T2nx6cG2CKC2C2FVKp9F+JnvBPHF5rit1/vmSuWUfQRDFXU3WAwhzNS/SEufIkCXMzbt
+         D4rg==
+X-Gm-Message-State: AJIora/KPA0CNtLffWlacGOMQ3SVnFYpvPUERNBvsFybBFVWjkeLJP8X
+        hpfRJslqL+jH0oNfoQAr3Ik=
+X-Google-Smtp-Source: AGRyM1sL1ZkhLrEB/tV8w83l9vV8GuWECpMuHhwAq6ozTvxgrj1WCBu30JWPo8tUpOaWLX9Cpm7q7g==
+X-Received: by 2002:a05:6402:5388:b0:435:71b:5d44 with SMTP id ew8-20020a056402538800b00435071b5d44mr34535569edb.364.1655810614370;
+        Tue, 21 Jun 2022 04:23:34 -0700 (PDT)
+Received: from fedora.robimarko.hr (dh207-99-158.xnet.hr. [88.207.99.158])
+        by smtp.googlemail.com with ESMTPSA id a12-20020a50858c000000b0042617ba638esm12394840edh.24.2022.06.21.04.23.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Jun 2022 04:23:33 -0700 (PDT)
+From:   Robert Marko <robimarko@gmail.com>
+To:     svarbanov@mm-sol.com, agross@kernel.org,
+        bjorn.andersson@linaro.org, lpieralisi@kernel.org, robh@kernel.org,
+        kw@linux.com, bhelgaas@google.com, p.zabel@pengutronix.de,
+        jingoohan1@gmail.com, linux-pci@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        johan+linaro@kernel.org
+Cc:     Robert Marko <robimarko@gmail.com>
+Subject: [PATCH v2] PCI: qcom: fix IPQ8074 Gen2 support
+Date:   Tue, 21 Jun 2022 13:23:30 +0200
+Message-Id: <20220621112330.448754-1-robimarko@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The local variable is now only referenced once so drop it.
+IPQ8074 has one Gen2 and one Gen3 port, currently the Gen2 port will
+cause the system to hang as its using DBI registers in the .init
+and those are only accesible after phy_power_on().
 
-Signed-off-by: John Garry <john.garry@huawei.com>
+So solve this by splitting the DBI read/writes to .post_init.
+
+Fixes: a0fd361db8e5 ("PCI: dwc: Move "dbi", "dbi2", and "addr_space" resource setup into common code")
+Signed-off-by: Robert Marko <robimarko@gmail.com>
 ---
- block/blk-mq-tag.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+Changes in v2:
+* Rebase onto next-20220621
+---
+ drivers/pci/controller/dwc/pcie-qcom.c | 48 +++++++++++++++-----------
+ 1 file changed, 28 insertions(+), 20 deletions(-)
 
-diff --git a/block/blk-mq-tag.c b/block/blk-mq-tag.c
-index 509c35f080a9..b8cc8b41553f 100644
---- a/block/blk-mq-tag.c
-+++ b/block/blk-mq-tag.c
-@@ -266,7 +266,6 @@ static bool bt_iter(struct sbitmap *bitmap, unsigned int bitnr, void *data)
- 	struct blk_mq_hw_ctx *hctx = iter_data->hctx;
- 	struct request_queue *q = iter_data->q;
- 	struct blk_mq_tag_set *set = q->tag_set;
--	bool reserved = iter_data->reserved;
- 	struct blk_mq_tags *tags;
- 	struct request *rq;
- 	bool ret = true;
-@@ -276,7 +275,7 @@ static bool bt_iter(struct sbitmap *bitmap, unsigned int bitnr, void *data)
- 	else
- 		tags = hctx->tags;
+diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
+index 51fed83484af..da6d79d61397 100644
+--- a/drivers/pci/controller/dwc/pcie-qcom.c
++++ b/drivers/pci/controller/dwc/pcie-qcom.c
+@@ -1061,9 +1061,7 @@ static int qcom_pcie_init_2_3_3(struct qcom_pcie *pcie)
+ 	struct qcom_pcie_resources_2_3_3 *res = &pcie->res.v2_3_3;
+ 	struct dw_pcie *pci = pcie->pci;
+ 	struct device *dev = pci->dev;
+-	u16 offset = dw_pcie_find_capability(pci, PCI_CAP_ID_EXP);
+ 	int i, ret;
+-	u32 val;
  
--	if (!reserved)
-+	if (!iter_data->reserved)
- 		bitnr += tags->nr_reserved_tags;
- 	/*
- 	 * We can hit rq == NULL here, because the tagging functions
-@@ -337,12 +336,11 @@ static bool bt_tags_iter(struct sbitmap *bitmap, unsigned int bitnr, void *data)
- {
- 	struct bt_tags_iter_data *iter_data = data;
- 	struct blk_mq_tags *tags = iter_data->tags;
--	bool reserved = iter_data->flags & BT_TAG_ITER_RESERVED;
- 	struct request *rq;
- 	bool ret = true;
- 	bool iter_static_rqs = !!(iter_data->flags & BT_TAG_ITER_STATIC_RQS);
+ 	for (i = 0; i < ARRAY_SIZE(res->rst); i++) {
+ 		ret = reset_control_assert(res->rst[i]);
+@@ -1120,6 +1118,33 @@ static int qcom_pcie_init_2_3_3(struct qcom_pcie *pcie)
+ 		goto err_clk_aux;
+ 	}
  
--	if (!reserved)
-+	if (!(iter_data->flags & BT_TAG_ITER_RESERVED))
- 		bitnr += tags->nr_reserved_tags;
++	return 0;
++
++err_clk_aux:
++	clk_disable_unprepare(res->ahb_clk);
++err_clk_ahb:
++	clk_disable_unprepare(res->axi_s_clk);
++err_clk_axi_s:
++	clk_disable_unprepare(res->axi_m_clk);
++err_clk_axi_m:
++	clk_disable_unprepare(res->iface);
++err_clk_iface:
++	/*
++	 * Not checking for failure, will anyway return
++	 * the original failure in 'ret'.
++	 */
++	for (i = 0; i < ARRAY_SIZE(res->rst); i++)
++		reset_control_assert(res->rst[i]);
++
++	return ret;
++}
++
++static int qcom_pcie_post_init_2_3_3(struct qcom_pcie *pcie)
++{
++	struct dw_pcie *pci = pcie->pci;
++	u16 offset = dw_pcie_find_capability(pci, PCI_CAP_ID_EXP);
++	u32 val;
++
+ 	writel(SLV_ADDR_SPACE_SZ,
+ 		pcie->parf + PCIE20_v3_PARF_SLV_ADDR_SPACE_SIZE);
  
- 	/*
+@@ -1147,24 +1172,6 @@ static int qcom_pcie_init_2_3_3(struct qcom_pcie *pcie)
+ 		PCI_EXP_DEVCTL2);
+ 
+ 	return 0;
+-
+-err_clk_aux:
+-	clk_disable_unprepare(res->ahb_clk);
+-err_clk_ahb:
+-	clk_disable_unprepare(res->axi_s_clk);
+-err_clk_axi_s:
+-	clk_disable_unprepare(res->axi_m_clk);
+-err_clk_axi_m:
+-	clk_disable_unprepare(res->iface);
+-err_clk_iface:
+-	/*
+-	 * Not checking for failure, will anyway return
+-	 * the original failure in 'ret'.
+-	 */
+-	for (i = 0; i < ARRAY_SIZE(res->rst); i++)
+-		reset_control_assert(res->rst[i]);
+-
+-	return ret;
+ }
+ 
+ static int qcom_pcie_get_resources_2_7_0(struct qcom_pcie *pcie)
+@@ -1598,6 +1605,7 @@ static const struct qcom_pcie_ops ops_2_4_0 = {
+ static const struct qcom_pcie_ops ops_2_3_3 = {
+ 	.get_resources = qcom_pcie_get_resources_2_3_3,
+ 	.init = qcom_pcie_init_2_3_3,
++	.post_init = qcom_pcie_post_init_2_3_3,
+ 	.deinit = qcom_pcie_deinit_2_3_3,
+ 	.ltssm_enable = qcom_pcie_2_3_2_ltssm_enable,
+ };
 -- 
-2.25.1
+2.36.1
 
