@@ -2,66 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91877CCA480
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 08:56:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19F14C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 08:57:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347583AbiFUIz7 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 04:55:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39844 "EHLO
+        id S229718AbiFUI5L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 21 Jun 2022 04:57:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347098AbiFUIzY (ORCPT
+        with ESMTP id S1348632AbiFUI5B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 04:55:24 -0400
-Received: from smtpbg.qq.com (smtpbg136.qq.com [106.55.201.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 052EF26AE8
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 01:55:16 -0700 (PDT)
-X-QQ-mid: bizesmtp72t1655801711talo4mx2
-Received: from ubuntu.localdomain ( [106.117.99.68])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 21 Jun 2022 16:55:08 +0800 (CST)
-X-QQ-SSF: 0100000000700020B000B00A0000000
-X-QQ-FEAT: 2jrz+7Xgw5qDVeHR0n0OiJFwquw8NwZVWIk8kZoUm/hBmndiygU7wjdMGVRPl
-        mDCL3o9nJrGH48S/lLxts2iGQSKEZ4mFcZDS8lWB747TFqNU5W6ClqgJQx+mFpNCMOSyVKM
-        iO+TGE+DySjoEu8CnOY6Vnq/JATsBorNtapfkXXbs8nV6szuxyMIR+4+AfKuP8kL1GEZldD
-        +Hpscmmt+NCcJM28z0IlwHPX+lS2HLKjg54bXVOBosHpNCYZ4t0NkMP9KTnlRt9qyMbh2ri
-        A7W0RM0vLdoKGWI48rJbimmFPqmlmdGWsmibnWP+BknrCKZBGrhJXTg2CIPttThsSRLPCIL
-        l7UApevGJE4sXROWJI=
-X-QQ-GoodBg: 0
-From:   Jiang Jian <jiangjian@cdjrlc.com>
-To:     miquel.raynal@bootlin.com, vigneshr@ti.com
-Cc:     richard@nod.at, linux-mtd@lists.infradead.org,
-        linux-kernel@vger.kernel.org, jiangjian@cdjrlc.com
-Subject: [PATCH] ubi: remove unexpected word "the"
-Date:   Tue, 21 Jun 2022 16:55:06 +0800
-Message-Id: <20220621085506.64039-1-jiangjian@cdjrlc.com>
-X-Mailer: git-send-email 2.17.1
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam7
+        Tue, 21 Jun 2022 04:57:01 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E45A27177;
+        Tue, 21 Jun 2022 01:56:56 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id v1so25954698ejg.13;
+        Tue, 21 Jun 2022 01:56:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0cx/amxb3Wd/PcYv0eYLLeJxSM7TQT62UUtprSbhbwY=;
+        b=l6LNhCtWPcYK5lVOJB4knQOEE4oFs6J2Jg6Rt0e7BaNut9e46lb5KdVYDnj6ilkGm2
+         mQ7VTnH80+cXckqjznh1du5dtOdVPhs652Du5TxDiQ+58oHjtxhVtjko9YTZsFibM+4t
+         dteat9bhz8IHA88U249+vCWBP8CMzaA8asRdTLzsuGL9ee0hN04GeQteE0Fi4kylaNKj
+         0TFF8lnde6SvXHYI9XMpMF1ignz5BbL2lHAoTlF4Oug9V6Zxoushwt5/wntbiBkIu6+l
+         VjoJciC5kvKSDrAabkgWHTdSnlVHc0xwfw64uWPO7VuWtTj36CeQPvqwS05CcagrCAjw
+         1RAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0cx/amxb3Wd/PcYv0eYLLeJxSM7TQT62UUtprSbhbwY=;
+        b=m8yDpWL7xnjkW6wcHoxsuYxU6LlsCcTBEV72s689WvD+38v5JEDXr78vVMoMPGgyan
+         jRHUv6HlIiS4AnO6TI0RBl701pqSD0TXEg2dUotfR5Pd3e0ur/NXQUIc03sx4iptAnuW
+         OiGRCGiyi2Xx9NxL7+pddkPMn34YLt/G9MEOhCFpK7CurT2+BMa8oYCgTnfp5O+KMDgr
+         DV4HoKqYMQd/TyevHAbQNKsolLJDP00yT1S7ehDDMrph97pZtYq8hXbEgLAvIkzmzgkJ
+         rNcZAWFIYybJCzGFkqFVV9xjjdUKbq3dXpPalinCgC3dG16Hd33zZVdQNMyUI45M9EGh
+         b83g==
+X-Gm-Message-State: AJIora+x8yZDC9bqMjjaFgJ5yMhGdWFHxYUH6xYK99Gh3P+ESpI023rc
+        8FXYd7Y0HWif71+feEYOhwnhh/6Qhvam6gML1X0=
+X-Google-Smtp-Source: AGRyM1sw3R8Crk409rPsvgBxACxYsWIMkIS18fGIYjIZmrNrU7BKdbSLOiW7pxIAdyNT+keBTGz9ZcOQjom49l348P4=
+X-Received: by 2002:a17:906:d550:b0:704:7ba6:9854 with SMTP id
+ cr16-20020a170906d55000b007047ba69854mr24696900ejc.579.1655801815068; Tue, 21
+ Jun 2022 01:56:55 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220621064321.25635-1-jiangjian@cdjrlc.com>
+In-Reply-To: <20220621064321.25635-1-jiangjian@cdjrlc.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 21 Jun 2022 10:56:18 +0200
+Message-ID: <CAHp75VeXCaoKQ94x+ehXWMi5zeysJdjrzS1WE2oZCUAeLbCzvQ@mail.gmail.com>
+Subject: Re: [PATCH] iio: aligned '*' each line
+To:     Jiang Jian <jiangjian@cdjrlc.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-there is an unexpected word "the" in the comments that need to be removed
+On Tue, Jun 21, 2022 at 8:57 AM Jiang Jian <jiangjian@cdjrlc.com> wrote:
+>
+> Consider '*' alignment in comments
 
-Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
----
- drivers/mtd/ubi/wl.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Subject should start with "iio: dac: ad5380: ..."
 
-diff --git a/drivers/mtd/ubi/wl.c b/drivers/mtd/ubi/wl.c
-index 55bae06cf408..330f9ffec3a7 100644
---- a/drivers/mtd/ubi/wl.c
-+++ b/drivers/mtd/ubi/wl.c
-@@ -429,7 +429,7 @@ static int prot_queue_del(struct ubi_device *ubi, int pnum)
- /**
-  * sync_erase - synchronously erase a physical eraseblock.
-  * @ubi: UBI device description object
-- * @e: the the physical eraseblock to erase
-+ * @e: the physical eraseblock to erase
-  * @torture: if the physical eraseblock has to be tortured
-  *
-  * This function returns zero in case of success and a negative error code in
+The commit message should follow English grammar (missed period in
+your case) and explain a little bit more, e.g. "Consider '*' alignment
+in the comments of struct ad5380_chip_info declaration".
+
+...
+
+>   * @channel_template:  channel specification template
+>   * @num_channels:      number of channels
+>   * @int_vref:          internal vref in uV
+> -*/
+> + */
+>
+
+While at it, drop the unneeded blank line here.
+
+>  struct ad5380_chip_info {
+
+
 -- 
-2.17.1
-
+With Best Regards,
+Andy Shevchenko
