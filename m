@@ -2,129 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC837C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 08:42:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F152C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 08:42:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347281AbiFUImU (ORCPT
+        id S1346734AbiFUImv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 04:42:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57560 "EHLO
+        Tue, 21 Jun 2022 04:42:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345991AbiFUImT (ORCPT
+        with ESMTP id S231418AbiFUImt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 04:42:19 -0400
-Received: from conssluserg-05.nifty.com (conssluserg-05.nifty.com [210.131.2.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB44E26117;
-        Tue, 21 Jun 2022 01:42:17 -0700 (PDT)
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51]) (authenticated)
-        by conssluserg-05.nifty.com with ESMTP id 25L8ft8O031713;
-        Tue, 21 Jun 2022 17:41:56 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-05.nifty.com 25L8ft8O031713
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1655800917;
-        bh=EKHBbDTCPyvGCAQJZpjv49SkvfU2WO9PSidvTkgkPa0=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=aJDmBgZYFDboHTyeZYL28qU2jAxDDsIlWeQi0Hl+uBvrc9PT1q4476UfA/R97wWbV
-         nqHqW6fr+3+mtHNCppsS/KHEjmJxkQ8zWPEm4LEbR/aJrjjOidwU2QHywYSFPL5ODZ
-         Cn72cFbENj1oXXzVNGcBslQhxQnohc4bWs14gK1ezrqtrtS9KfsqDLSp8+8Kr+HsLQ
-         SvEtpi/UebRNiwz8vuWriUB0lQBM6Q2Pawmt/g4O6d2lWWl0ap6Eprzj0Oa0ElFYNu
-         F2ezpQOksaCdjHE66MuFOZquc5kZimQoUxohTjDU9vQ0FZ3+34VbwSlqfVTjWTLP4A
-         diw3zCMb7gOQQ==
-X-Nifty-SrcIP: [209.85.128.51]
-Received: by mail-wm1-f51.google.com with SMTP id l2-20020a05600c4f0200b0039c55c50482so8943205wmq.0;
-        Tue, 21 Jun 2022 01:41:56 -0700 (PDT)
-X-Gm-Message-State: AOAM531oPk0CmPjl8ACilEhnbDpfZ2ILr8c7/c03/hwxo++FeSU2ufeK
-        9EAwvZRhtxDBjVdTzcO76ZXCRSvB2veWY9j/bgg=
-X-Google-Smtp-Source: ABdhPJzT56CBfFVMiC4fKwNOaeVVeGLbDxCuY2eZLPHge0iXXEIqIJIzyJsOyqSr7xxF9EPh6fyQIIXjd0V9tmmLoRc=
-X-Received: by 2002:a05:600c:a42:b0:39c:9086:8a34 with SMTP id
- c2-20020a05600c0a4200b0039c90868a34mr38779379wmq.169.1655800915172; Tue, 21
- Jun 2022 01:41:55 -0700 (PDT)
+        Tue, 21 Jun 2022 04:42:49 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B566526128;
+        Tue, 21 Jun 2022 01:42:48 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id g16-20020a17090a7d1000b001ea9f820449so12994282pjl.5;
+        Tue, 21 Jun 2022 01:42:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BXsLSrPEBOdi1z9Ti6DCxwcO5PjEZPzcVOSiTfdD/4Y=;
+        b=c9Q7RdRfYibGX0zXagNXxxUcf3zgcJuKk+tTK6EHNafaMjJ4OghPXN8tK5dVm9fx1p
+         VazlTYGHPVnFg7D2zo0bhIyWcx3BlCaYLB1J/yY8wcTz01s96SB1b8hfeXouMCZRUH9v
+         /qPNj8aXK7eK7mxVI7KDZgLHB/mhoX/eqkHev6P7VjnKL4FuXFdnn3jhOWzO24kGjLuu
+         2FLu1HhJIMuXdRBIri5xqXRLOLxk/mlXjCjABvUQAeVVlguPMdODohOd6tr6Ll7cyfBJ
+         KcZHLBiJs4GN3Bweq356hPAPzSW+Zm/8c/uOiQgwzOeMa8pzdQDS3B5W8QJMQzdEf+vw
+         pMaw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BXsLSrPEBOdi1z9Ti6DCxwcO5PjEZPzcVOSiTfdD/4Y=;
+        b=yH+pCvs8Gd0ts5iTcMvBr3Vteqdv1pL3dHmZmHOuQEq4AwQxiQmtivD+ZcpQ6hVJiR
+         6rDAXX6j4LS8vor9uwWygQd0WVpeLosHNnO5ctssTnVo071hB3lr+homcRggCP1g9HyD
+         vwOsB14p6uz3Xm6yNregdfPSWBXFg2y60grbItSHC3eBPlEXcxsgZNtxXNKL8j4SLztU
+         j0+RKpe4FF7I1CEV9ncJAO0eAIrIH+3lzta553/SsDp9bfTBoP1axopcRbb3fRPqq3TM
+         DdzYGddAB+vWQEKQZX1JdOELFx5at997L0xUBpY7P43D7KAAPmz56VP68DUyqL6KenDF
+         v1gA==
+X-Gm-Message-State: AJIora+L1c0NiYh4j6jaKkmd7UNzxZS+/M1BpmNAaenmZEhoRCnY3Lgp
+        2AWj2QRvmspCd76wtCp/VcI=
+X-Google-Smtp-Source: AGRyM1vN3ljCDQ8WMbISJSPrI9LgB/bE64nxkJtqABPk2gUGrZJRvKUggQYqlxfBp6/JMzIoAhGYtg==
+X-Received: by 2002:a17:90b:180b:b0:1e3:2871:6be3 with SMTP id lw11-20020a17090b180b00b001e328716be3mr31188459pjb.85.1655800968203;
+        Tue, 21 Jun 2022 01:42:48 -0700 (PDT)
+Received: from localhost.localdomain ([178.173.230.211])
+        by smtp.gmail.com with ESMTPSA id y18-20020a62b512000000b0051e7b6e8b12sm4509082pfe.11.2022.06.21.01.42.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Jun 2022 01:42:47 -0700 (PDT)
+From:   Shida Zhang <starzhangzsd@gmail.com>
+X-Google-Original-From: Shida Zhang <zhangshida@kylinos.cn>
+To:     djwong@kernel.org, dchinner@redhat.com
+Cc:     zhangshida@kylinos.cn, starzhangzsd@gmail.com,
+        linux-kernel@vger.kernel.org, linux-xfs@vger.kernel.org
+Subject: [PATCH v3] xfs: add check before calling xfs_mod_fdblocks
+Date:   Tue, 21 Jun 2022 16:42:38 +0800
+Message-Id: <20220621084238.1235880-1-zhangshida@kylinos.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220616104541.16289-1-jslaby@suse.cz> <CA+icZUW8O-HUSpw-656o6YZOiR2ZiCXjxsJwm2kctT6DHrs=4g@mail.gmail.com>
- <CA+icZUV6bM2_jxyROK5B4XRid6fv8oX6YYNEdHUX8e_1OAdQYA@mail.gmail.com>
- <CA+icZUUSTcrJqZB-gwNYt5objVg1J5+Ous6_hof0_A6eVCM-Kg@mail.gmail.com>
- <CAKwvOdmb5xdF70TzNp=4STCpzkGh16FnuKE1KbdzDhHt=OuRFA@mail.gmail.com> <14c9839b-c015-69c1-84f0-a99d03877005@suse.cz>
-In-Reply-To: <14c9839b-c015-69c1-84f0-a99d03877005@suse.cz>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Tue, 21 Jun 2022 17:41:18 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAS46hrVh3FNiHHL8_Hqp85VgWnsHyjQ4t-TFH_H344NOg@mail.gmail.com>
-Message-ID: <CAK7LNAS46hrVh3FNiHHL8_Hqp85VgWnsHyjQ4t-TFH_H344NOg@mail.gmail.com>
-Subject: Re: [PATCH] kbuild: pass jobserver to cmd_ld_vmlinux.o
-To:     Jiri Slaby <jslaby@suse.cz>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        Sedat Dilek <sedat.dilek@gmail.com>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Sami Tolvanen <samitolvanen@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 21, 2022 at 4:30 PM Jiri Slaby <jslaby@suse.cz> wrote:
->
-> On 17. 06. 22, 18:32, Nick Desaulniers wrote:
-> > On Fri, Jun 17, 2022 at 3:35 AM Sedat Dilek <sedat.dilek@gmail.com> wrote:
-> >>
-> >> On Fri, Jun 17, 2022 at 12:53 AM Sedat Dilek <sedat.dilek@gmail.com> wrote:
-> >>>
-> >>> On Thu, Jun 16, 2022 at 4:09 PM Sedat Dilek <sedat.dilek@gmail.com> wrote:
-> >>>>
-> >>>> On Thu, Jun 16, 2022 at 12:45 PM Jiri Slaby <jslaby@suse.cz> wrote:
-> >>>>>
-> >>>>> Until the link-vmlinux.sh split (cf. the commit below), the linker was
-> >>>>> run with jobserver set in MAKEFLAGS. After the split, the command in
-> >>>>> Makefile.vmlinux_o is not prefixed by "+" anymore, so this information
-> >>>>> is lost.
-> >>>>>
-> >>>>> Restore it as linkers working in parallel (esp. the LTO ones) make a use
-> >>>>> of it.
-> >
-> > TBH, I agree with Masahiro. I didn't understand this comment "esp. the
-> > LTO ones."  Jiri, can you clarify what you mean here?
->
-> Sure. clang is not the only compiler/linker that can handle kernel ;).
-> So while rebasing gcc-LTO-kernel-patches to 5.19-rc (to upstream them
-> later), this broke. See:
-> https://gcc.gnu.org/git/?p=gcc.git;a=blob;f=gcc/lto-wrapper.cc;h=26e06e77be4e0afb2bc3e913062a9c51cab5d205;hb=HEAD#l1336
->
-> gcc really parses MAKEFLAGS and looks for "--jobserver-auth=" there, if
-> one passes specifies -flto=jobserver.
->
-> thanks,
-> --
-> js
-> suse labs
+Checks are missing when delta equals 0 in __xfs_ag_resv_free() and
+__xfs_ag_resv_init().
 
+the case that the delta equals 0 is reachable with the command
+sequence below:
 
+ # mkfs.xfs -f /dev/sdb5
+ # mount /dev/sdb5 /mnt/scratch/
 
-Then, this patch should go together (or after) the GCC LTO upstreaming.
+where /dev/sdb5 is my disk for test. And if the patch below is
+applied:
 
+====
+xfs_mod_freecounter(
+        if (rsvd)
+                ASSERT(has_resv_pool);
 
++       if (delta == 0)
++               dump_stack();
++
+        if (delta > 0) {
+                /*
+                 * If the reserve pool is depleted, put blocks back into it
+====
 
+the following stack will be shown in the message:
 
-I still do not understand why you are patching the pre-modpost linking, though.
+=>  xfs_mod_freecounter+0x84/0x2b8
+=>  __xfs_ag_resv_free+0xc4/0x188
+=>  xfs_ag_resv_free+0x24/0x50
+=>  xfs_fs_unreserve_ag_blocks+0x40/0x160
+=>  xfs_mountfs+0x500/0x900
+=>  xfs_fs_fill_super+0x3d8/0x810
+=>  get_tree_bdev+0x164/0x258
+=>  xfs_fs_get_tree+0x20/0x30
+=>  vfs_get_tree+0x30/0xf8
+=>  path_mount+0x3c4/0xa58
+=>  do_mount+0x74/0x98
 
-In my understanding, Clang LTO and GCC LTO are implemented
-in different layers.
+=>  xfs_mod_freecounter+0x84/0x2b8
+=>  __xfs_ag_resv_init+0x64/0x1d0
+=>  xfs_ag_resv_init+0x108/0x1c8
+=>  xfs_fs_reserve_ag_blocks+0x4c/0x110
+=>  xfs_mountfs+0x57c/0x900
+=>  xfs_fs_fill_super+0x3d8/0x810
+=>  get_tree_bdev+0x164/0x258
+=>  xfs_fs_get_tree+0x20/0x30
+=>  vfs_get_tree+0x30/0xf8
+=>  path_mount+0x3c4/0xa58
+=>  do_mount+0x74/0x98
 
-Clang LTO is implemented in the linker (i.e. lld).
+After applying this patch, we can avoid to call xfs_mod_fdblocks when
+delta equals 0.
 
-In contrast,  GCC LTO is implemented in the compiler (i.e. gcc itself)
-The linker (i.e. BFD linker or Gold from GNU binutils project)
-is agnostic about LTO.
+Signed-off-by: Shida Zhang <zhangshida@kylinos.cn>
+---
+ Changes from v1:
+ -Add checks before calling xfs_mod_fdblocks instead.
+ Changes from v2:
+ -Rephrase the commit description.
 
+ fs/xfs/libxfs/xfs_ag_resv.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
-Your are patching the relocatable link ($(LD) -r),
-but I could not find the code parsing jobserver-auth
-in the binutils-gdb repository.
-
-
-
-
-
+diff --git a/fs/xfs/libxfs/xfs_ag_resv.c b/fs/xfs/libxfs/xfs_ag_resv.c
+index fe94058d4e9e..c8fa032e4b00 100644
+--- a/fs/xfs/libxfs/xfs_ag_resv.c
++++ b/fs/xfs/libxfs/xfs_ag_resv.c
+@@ -149,7 +149,12 @@ __xfs_ag_resv_free(
+ 		oldresv = resv->ar_orig_reserved;
+ 	else
+ 		oldresv = resv->ar_reserved;
+-	error = xfs_mod_fdblocks(pag->pag_mount, oldresv, true);
++
++	if (oldresv)
++		error = xfs_mod_fdblocks(pag->pag_mount, oldresv, true);
++	else
++		error = 0;
++
+ 	resv->ar_reserved = 0;
+ 	resv->ar_asked = 0;
+ 	resv->ar_orig_reserved = 0;
+@@ -215,8 +220,13 @@ __xfs_ag_resv_init(
+ 
+ 	if (XFS_TEST_ERROR(false, mp, XFS_ERRTAG_AG_RESV_FAIL))
+ 		error = -ENOSPC;
+-	else
+-		error = xfs_mod_fdblocks(mp, -(int64_t)hidden_space, true);
++	else {
++		error = 0;
++		if (hidden_space)
++			error = xfs_mod_fdblocks(mp, -(int64_t)hidden_space,
++						true);
++	}
++
+ 	if (error) {
+ 		trace_xfs_ag_resv_init_error(pag->pag_mount, pag->pag_agno,
+ 				error, _RET_IP_);
 -- 
-Best Regards
-Masahiro Yamada
+2.25.1
+
