@@ -2,96 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B83FCC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 13:35:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62A8BC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 13:36:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351479AbiFUNf1 (ORCPT
+        id S1351733AbiFUNgh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 09:35:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56490 "EHLO
+        Tue, 21 Jun 2022 09:36:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351719AbiFUNbC (ORCPT
+        with ESMTP id S1351706AbiFUNgJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 09:31:02 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 897822AE1D;
-        Tue, 21 Jun 2022 06:25:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1655817937;
-        bh=DRphZ/l39/9GYPej7UvI8/O4Gz2dDgvZS7UWsf3aqIE=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=XsfFdQGesBGo+d6jFBt7KwUZyTkzPntZJYZaf75N5WdwuZW474pAeYAuMFtGR1Vh0
-         j9irPZA4O5C6NvLxP+VSYGJev/m+N/SelnMmIns9CCCHjMysqXFFpqoYxl7nV3LQkv
-         I1/3z8DWt6oUZ2t0HRzLVvLSx4BcwllkXT0HyyTE=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from Venus.fritz.box ([46.223.2.162]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MXp9i-1oBKRh0p6y-00Y7wW; Tue, 21
- Jun 2022 15:25:37 +0200
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-To:     peterhuewe@gmx.de, jarkko@kernel.org, jgg@ziepe.ca
-Cc:     stefanb@linux.vnet.ibm.com, linux@mniewoehner.de,
-        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
-        l.sanfilippo@kunbus.com, LinoSanfilippo@gmx.de, lukas@wunner.de,
-        p.rosenberger@kunbus.com
-Subject: [PATCH v6 3/9] tpm, tpm_tis: Disable interrupts if tpm_tis_probe_irq() failed
-Date:   Tue, 21 Jun 2022 15:24:41 +0200
-Message-Id: <20220621132447.16281-4-LinoSanfilippo@gmx.de>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220621132447.16281-1-LinoSanfilippo@gmx.de>
-References: <20220621132447.16281-1-LinoSanfilippo@gmx.de>
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-X-Provags-ID: V03:K1:9JtmR9KMEqWCGdhBCxpCM1SHKiKG1NG9K14z71jAmxvmXo5bQfg
- +tNzkMCHEl8sWEscHLU1ZFgKfu9EIrIpopTa1Tf29SK0KVSi1m4J+WVZ1+MOWQwlEyonhfu
- M1f0J9+HBuZDaBCBadHeFXh5pfZDT9zwTrI8akaplIBlF8btvbBbiYLEzO+8w2NiSIP4qjk
- opGtv1y09cwHytfpSsVZA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:QH/j+wn9piI=:V69SuUQHmNngJbKTt60HnZ
- yVkHYgg5fmaOaCILpalYehML/iHQooumiaBIn4dttRRqSg+9tZ9955FMX26Jf/S+Wk77PZCAq
- fi0L8LU3YeSIsqNBE2Dxq6kihAtJx+KUPVMihtF/bKlt+meY9DC8q1DeeqRS3spPuyQ+P2Ii0
- cdNhPXNWcj8y87idsaWBTS80wKpRVOCW9dpSP3mGXfKODw27eUwslCNc9hg5j5RHG6qC8MjQs
- AkEx117fOHvQLS3Y5tRQN8NSDwsr+fG+dv464+MSoQisFLuiTVIIjFBaj38a8j8QaEcfaPPOx
- EN1n/9gr3uHiQNndosSw0KfQUDeUMMwuxd4n3x7jl/P1Y2a/78VnOpkz/loHcjrDFUiEH/mKU
- HuCLr7KIUuLI5yY1040orbBSqFzkSXloap1Nt4cHeSzVIcLnfemliOnzc6AnT6YwYTGmn+rPV
- GizeVzBFOYAHFKtW7Aw//R6j41NRUDLL3nrQcB1KBevqWJ5+Ookq8hOC4WXGxSdGm4e8SdODT
- OGrLAnFzQIEFxVUC8X5EffoPsMjs0UGdMMZD88wsMzcbcIclElcqekOUaC1P1OXM+dhYl8sBA
- chp0egkVnImTuTxdop9J8Sl3RQOR37qcYk2VL7WEiNe4aiG7sGJxB/D/ukd2loLVVtebgaNhc
- N1ZR478vdTnigULh4B9oEXISCZJ2f6sRrSTRBct8mPEQMqS0KOGpDXW3Py2ssJ11/d9zGlGkE
- ENCre6P1AxK/pIu6G94s2qs/wLOkiOI39aWtovRmKcZNSNXpI9Ea/JAbY7s/SSbkXMUdJwdSO
- 4tDt8eMgY9IGE27AftZu40VCmVS41J4RrfvDu5ncf2SIelKvciswNiw2mbVWuXpmt1aTe8jeK
- /8fcT9p0SOn6PxuMnJ/6levV4ztKgJ7X/ZPqTb3uBNljkngZXNRvtowUcd4tN4SS7oQnH8aur
- WbNsmwfx2jv42HX8EAvdBgxyDQxVqayyTGm4HRaWEvi+9IuBf6eYxIP3kFvt/IikLBg7Mk7PA
- GSakP8NWbihfB9e0xyNxf0UyMvTCkGi53aqYkmUAGrR9NYyNKn0VFhXw+zjzvcjCxFS17OPmy
- 0LIizjyBx3Qejgx5SHhehptSNmdp7mezbkGQatGFMqe8p/7weIYIsHuXQ==
+        Tue, 21 Jun 2022 09:36:09 -0400
+Received: from smtpbg.qq.com (smtpbg139.qq.com [175.27.65.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D811A2AE31
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 06:35:05 -0700 (PDT)
+X-QQ-mid: bizesmtp82t1655818482t4lelr4u
+Received: from ubuntu.localdomain ( [106.117.99.68])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 21 Jun 2022 21:34:37 +0800 (CST)
+X-QQ-SSF: 0100000000700050B000D00A0000000
+X-QQ-FEAT: xoS364mEyr1O7d4xyo1etuat7DIRMKm12/lCtpnC6qIif68t8nBxJY9ZY0STk
+        aCyrhNuGMgYXDparfZoJuQ8uDc1fRY/EfzT/bF1r+YwjyQ3a2uB8NaB05pVwtNaxYlvfv//
+        7dvJk1QTs0S1HUe/b4a35ZsfECag7K0z5MaNcrgykUjt1BrvA1qpMh0Ah56LlZZSBenHPRC
+        bjKuzCJl1sZpG0o4wDlIK3ryt54M7HbVAZPyYJxtt4UESyhWT+mTnQQQHbTR9+6tWIk9rzE
+        nUsJfM/qnjuFYHX2rDtvcJWkt6GE6IR04hq+FB8b5x3HnegcrA1rXb1obNyp1SIO6E2QvSk
+        /BzCRf1lNt7q/sT7Nbrs2XjoA/7Sw==
+X-QQ-GoodBg: 0
+From:   Jiang Jian <jiangjian@cdjrlc.com>
+To:     airlied@linux.ie, daniel@ffwll.ch
+Cc:     jani.nikula@linux.intel.com, joonas.lahtinen@linux.intel.com,
+        rodrigo.vivi@intel.com, tvrtko.ursulin@linux.intel.com,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, Jiang Jian <jiangjian@cdjrlc.com>
+Subject: [PATCH] drm/i915: i915_irq - drop unexpected word "the" in the comments
+Date:   Tue, 21 Jun 2022 21:34:35 +0800
+Message-Id: <20220621133435.5924-1-jiangjian@cdjrlc.com>
+X-Mailer: git-send-email 2.17.1
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-RnJvbTogTGlubyBTYW5maWxpcHBvIDxsLnNhbmZpbGlwcG9Aa3VuYnVzLmNvbT4KCkJvdGggZnVu
-Y3Rpb25zIHRwbV90aXNfcHJvYmVfaXJxX3NpbmdsZSgpIGFuZCB0cG1fdGlzX3Byb2JlX2lycSgp
-IG1heSBzZXR1cAp0aGUgaW50ZXJydXB0cyBhbmQgdGhlbiByZXR1cm4gd2l0aCBhbiBlcnJvci4g
-VGhpcyBjYXNlIGlzIGluZGljYXRlZCBieSBhCm1pc3NpbmcgVFBNX0NISVBfRkxBR19JUlEgZmxh
-ZyBpbiBjaGlwLT5mbGFncy4KQ3VycmVudGx5IHRoZSBpbnRlcnJ1cHQgc2V0dXAgaXMgb25seSB1
-bmRvbmUgaWYgdHBtX3Rpc19wcm9iZV9pcnFfc2luZ2xlKCkKZmFpbHMuIFVuZG8gdGhlIHNldHVw
-IGFsc28gaWYgdHBtX3Rpc19wcm9iZV9pcnEoKSBmYWlscy4KClNpZ25lZC1vZmYtYnk6IExpbm8g
-U2FuZmlsaXBwbyA8bC5zYW5maWxpcHBvQGt1bmJ1cy5jb20+ClJldmlld2VkLWJ5OiBKYXJra28g
-U2Fra2luZW4gPGphcmtrb0BrZXJuZWwub3JnPgotLS0KIGRyaXZlcnMvY2hhci90cG0vdHBtX3Rp
-c19jb3JlLmMgfCAyMiArKysrKysrKysrKy0tLS0tLS0tLS0tCiAxIGZpbGUgY2hhbmdlZCwgMTEg
-aW5zZXJ0aW9ucygrKSwgMTEgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9jaGFy
-L3RwbS90cG1fdGlzX2NvcmUuYyBiL2RyaXZlcnMvY2hhci90cG0vdHBtX3Rpc19jb3JlLmMKaW5k
-ZXggMGU2OGU0NTAyYTU2Li5kMzJlOTNjODZmNDggMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvY2hhci90
-cG0vdHBtX3Rpc19jb3JlLmMKKysrIGIvZHJpdmVycy9jaGFyL3RwbS90cG1fdGlzX2NvcmUuYwpA
-QCAtMTA3NywyMSArMTA3NywyMSBAQCBpbnQgdHBtX3Rpc19jb3JlX2luaXQoc3RydWN0IGRldmlj
-ZSAqZGV2LCBzdHJ1Y3QgdHBtX3Rpc19kYXRhICpwcml2LCBpbnQgaXJxLAogCQkJZ290byBvdXRf
-ZXJyOwogCQl9CiAKLQkJaWYgKGlycSkgeworCQlpZiAoaXJxKQogCQkJdHBtX3Rpc19wcm9iZV9p
-cnFfc2luZ2xlKGNoaXAsIGludG1hc2ssIElSUUZfU0hBUkVELAogCQkJCQkJIGlycSk7Ci0JCQlp
-ZiAoIShjaGlwLT5mbGFncyAmIFRQTV9DSElQX0ZMQUdfSVJRKSkgewotCQkJCWRldl9lcnIoJmNo
-aXAtPmRldiwgRldfQlVHCisJCWVsc2UKKwkJCXRwbV90aXNfcHJvYmVfaXJxKGNoaXAsIGludG1h
-c2spOworCisJCWlmICghKGNoaXAtPmZsYWdzICYgVFBNX0NISVBfRkxBR19JUlEpKSB7CisJCQlk
-ZXZfZXJyKCZjaGlwLT5kZXYsIEZXX0JVRwogCQkJCQkiVFBNIGludGVycnVwdCBub3Qgd29ya2lu
-ZywgcG9sbGluZyBpbnN0ZWFkXG4iKTsKIAotCQkJCXJjID0gcmVxdWVzdF9sb2NhbGl0eShjaGlw
-LCAwKTsKLQkJCQlpZiAocmMgPCAwKQotCQkJCQlnb3RvIG91dF9lcnI7Ci0JCQkJZGlzYWJsZV9p
-bnRlcnJ1cHRzKGNoaXApOwotCQkJCXJlbGVhc2VfbG9jYWxpdHkoY2hpcCwgMCk7Ci0JCQl9Ci0J
-CX0gZWxzZSB7Ci0JCQl0cG1fdGlzX3Byb2JlX2lycShjaGlwLCBpbnRtYXNrKTsKKwkJCXJjID0g
-cmVxdWVzdF9sb2NhbGl0eShjaGlwLCAwKTsKKwkJCWlmIChyYyA8IDApCisJCQkJZ290byBvdXRf
-ZXJyOworCQkJZGlzYWJsZV9pbnRlcnJ1cHRzKGNoaXApOworCQkJcmVsZWFzZV9sb2NhbGl0eShj
-aGlwLCAwKTsKIAkJfQogCX0KIAotLSAKMi4zNi4xCgo=
+there is an unexpected word "the" in the comments that need to be dropped
+
+file: drivers/gpu/drm/i915/i915_irq.c
+line 68
+ * interrupt originated from the the GPU so interrupts from a device which
+changed to
+ * interrupt originated from the GPU so interrupts from a device which
+
+Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
+---
+ drivers/gpu/drm/i915/i915_irq.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/i915/i915_irq.c b/drivers/gpu/drm/i915/i915_irq.c
+index 73cebc6aa650..783a6ca41a61 100644
+--- a/drivers/gpu/drm/i915/i915_irq.c
++++ b/drivers/gpu/drm/i915/i915_irq.c
+@@ -65,7 +65,7 @@
+ 
+ /*
+  * Interrupt statistic for PMU. Increments the counter only if the
+- * interrupt originated from the the GPU so interrupts from a device which
++ * interrupt originated from the GPU so interrupts from a device which
+  * shares the interrupt line are not accounted.
+  */
+ static inline void pmu_irq_stats(struct drm_i915_private *i915,
+-- 
+2.17.1
+
