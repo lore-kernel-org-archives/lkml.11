@@ -2,118 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79FECC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 07:03:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63E3FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 07:03:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346561AbiFUHDU (ORCPT
+        id S1344286AbiFUHDc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 03:03:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39842 "EHLO
+        Tue, 21 Jun 2022 03:03:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346490AbiFUHDT (ORCPT
+        with ESMTP id S1346185AbiFUHD3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 03:03:19 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A156C64DC;
-        Tue, 21 Jun 2022 00:03:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1655794998; x=1687330998;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Jukm3d+VxnW0QHCLY6N8dPRZFsIaWVH93a5NTyWgsdg=;
-  b=GqFYnr/beDz1kWNMYZmmLb+QSSHivMsqh8QrBWSHRbnnmR66aRXOYYy9
-   RU6ZJGb3xU9RA129AFmiuk08m9HGtq9YVqyGdwzuTv+u09W341gXeoXsW
-   IXlC0myjdFXG3Lpd3PTi8kp3PzlOFd43/fUtMgHQbU1reohFphRxGjw6L
-   c=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 21 Jun 2022 00:03:18 -0700
-X-QCInternal: smtphost
-Received: from nasanex01b.na.qualcomm.com ([10.46.141.250])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 00:03:18 -0700
-Received: from [10.50.44.13] (10.80.80.8) by nasanex01b.na.qualcomm.com
- (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 21 Jun
- 2022 00:03:15 -0700
-Message-ID: <5fa27044-9515-f8fa-511c-64014479e875@quicinc.com>
-Date:   Tue, 21 Jun 2022 12:33:12 +0530
+        Tue, 21 Jun 2022 03:03:29 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBB92205F2
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 00:03:28 -0700 (PDT)
+Date:   Tue, 21 Jun 2022 09:03:25 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1655795006;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=IdkDQIhfC7cpssWNBP1piNlmLoHC3/U6At/sRsoe+rU=;
+        b=jhGf8KyfIAO2gyDlwFrSoGn6NchTV7CdMre3vRs0CG156iO1wLTmbS793aSUrxnJw6vBx6
+        FTa3Y+rBUBpa13zOPdhtbdkiH1vq19F2orvRqGxyQtlqVO7CfdqH2myU5sYy8zR5Ki7iNH
+        ULXJmbEPltX76cklds43+MJYFCDoWhOLE2DDTaagIO+7k9b/PSo6yW3EU2M89JGRcmqBBy
+        GnU9Nf4HLZFgGFjjp+n2Yvb1+PQlCniD4sxjn1I/dDaHk5oVhSwVUFHf5f+LERkIfrOE1c
+        bZTNALDbRsgUtrRN7Y1xnjRh1nR9kX0Rw6h2BDMUJ8r41d6LUhoWa1+s3n+y9g==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1655795006;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=IdkDQIhfC7cpssWNBP1piNlmLoHC3/U6At/sRsoe+rU=;
+        b=A2jjLFihl/0JDSGAmgECFehN6v0oif4Novkf0hzP6B73qa17M4A9XI+nTC5R/swdjWNs8R
+        mFstRycliQuZpNDA==
+From:   Sebastian Siewior <bigeasy@linutronix.de>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Jann Horn <jannh@google.com>, Theodore Ts'o <tytso@mit.edu>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH] random: Fix signal_pending() usage
+Message-ID: <YrFtPYItG0+YgR/8@linutronix.de>
+References: <20220405163931.1108442-1-jannh@google.com>
+ <CAHmME9pW6heXtPrfCP7J6ODgSc8sotsv6E3dnJoVBaPi+Ph=HA@mail.gmail.com>
+ <YqywapDM7NPC/X+E@linutronix.de>
+ <Yq0EcG9GsAkoiF3H@zx2c4.com>
+ <YrAlPKeOowD5qv/B@linutronix.de>
+ <CAHk-=wg5jqTdjZrwbSsMsd=NUSi_acBHoLQmRDgNArMvXWj8bw@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH rcu 08/12] rcu: Cleanup RCU urgency state for offline CPU
-Content-Language: en-US
-To:     "Paul E. McKenney" <paulmck@kernel.org>, <rcu@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <kernel-team@fb.com>,
-        <rostedt@goodmis.org>, Zqiang <qiang1.zhang@intel.com>
-References: <20220620222022.GA3839466@paulmck-ThinkPad-P17-Gen-1>
- <20220620222032.3839547-8-paulmck@kernel.org>
-From:   Neeraj Upadhyay <quic_neeraju@quicinc.com>
-In-Reply-To: <20220620222032.3839547-8-paulmck@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01b.na.qualcomm.com (10.46.141.250)
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wg5jqTdjZrwbSsMsd=NUSi_acBHoLQmRDgNArMvXWj8bw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 2022-06-20 14:00:18 [-0500], Linus Torvalds wrote:
+>
+> As mentioned, expecting an uninterruptible read is not "security". It's garbage.
 
+right.
 
-On 6/21/2022 3:50 AM, Paul E. McKenney wrote:
-> From: Zqiang <qiang1.zhang@intel.com>
-> 
-> When a CPU is slow to provide a quiescent state for a given grace
-> period, RCU takes steps to encourage that CPU to get with the
-> quiescent-state program in a more timely fashion.  These steps
-> include these flags in the rcu_data structure:
-> 
-> 1.	->rcu_urgent_qs, which causes the scheduling-clock interrupt to
-> 	request an otherwise pointless context switch from the scheduler.
-> 
-> 2.	->rcu_need_heavy_qs, which causes both cond_resched() and RCU's
-> 	context-switch hook to do an immediate momentary quiscent state.
-> 
-> 3.	->rcu_need_heavy_qs, which causes the scheduler-clock tick to
+>               Linus
 
-nit: s/->rcu_need_heavy_qs/->rcu_forced_tick/ ?
-
-> 	be enabled even on nohz_full CPUs with only one runnable task.
-> 
-> These flags are of course cleared once the corresponding CPU has passed
-> through a quiescent state.  Unless that quiescent state is the CPU
-> going offline, which means that when the CPU comes back online, it will
-> needlessly consume additional CPU time and incur additional latency,
-> which constitutes a minor but very real performance bug.
-> 
-> This commit therefore adds the call to rcu_disable_urgency_upon_qs()
-> that clears these flags to the CPU-hotplug offlining code path.
-> 
-> Signed-off-by: Zqiang <qiang1.zhang@intel.com>
-> Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-> ---
-
-
-Reviewed-by: Neeraj Upadhyay <quic_neeraju@quicinc.com>
-
-
-
-
-Thanks
-Neeraj
-
->   kernel/rcu/tree.c | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
-> index f4a37f2032664..5445b19b48408 100644
-> --- a/kernel/rcu/tree.c
-> +++ b/kernel/rcu/tree.c
-> @@ -4446,6 +4446,7 @@ void rcu_report_dead(unsigned int cpu)
->   	rdp->rcu_ofl_gp_flags = READ_ONCE(rcu_state.gp_flags);
->   	if (rnp->qsmask & mask) { /* RCU waiting on outgoing CPU? */
->   		/* Report quiescent state -before- changing ->qsmaskinitnext! */
-> +		rcu_disable_urgency_upon_qs(rdp);
->   		rcu_report_qs_rnp(mask, rnp, rnp->gp_seq, flags);
->   		raw_spin_lock_irqsave_rcu_node(rnp, flags);
->   	}
+Sebastian
