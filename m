@@ -2,72 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CE3FC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 12:54:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1963CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 12:56:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350652AbiFUMyx (ORCPT
+        id S1350683AbiFUM4I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 08:54:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54112 "EHLO
+        Tue, 21 Jun 2022 08:56:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350637AbiFUMyt (ORCPT
+        with ESMTP id S240281AbiFUM4G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 08:54:49 -0400
-Received: from smtpbg.qq.com (smtpbg138.qq.com [106.55.201.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AC3E12ADD
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 05:54:44 -0700 (PDT)
-X-QQ-mid: bizesmtp85t1655816007tx16ubgh
-Received: from ubuntu.localdomain ( [106.117.99.68])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 21 Jun 2022 20:53:22 +0800 (CST)
-X-QQ-SSF: 0100000000700050B000B00A0000000
-X-QQ-FEAT: rCzLTtzQ0geQp+pbd93/gnp9dHiIBybiXO88mAETAH6V50Mq1S6Da4uNbPpKg
-        hutvFwg6dHO7XAmvQgxuOW0+u4ckVI2yIZbf5JH/TsbWo6GkMAhl+x0iofAybpKF8Z4JKxs
-        b/7pGt+Qs17VqDN4zMVjTtZ2UcIMyhIwujdv9NK0wWOh48Xtis1rL7TlXv/ecZAZ0xeclVy
-        zlJUB6Y3a2oQfouHuRFEb5DVsRC1Nku/jzJtAQLIT1ZsJHADUFKx9x4hPQg3VBcsdNMdoTB
-        mJY4CmnHOOn8A2G3EyAx81cBQBBf2x9LzhD9j2Htn8vjw2QToIjTalS64tkiEqJVLD1uUHg
-        Oi6XsErJHDKu7zmxPcVBSC2CI7MCw==
-X-QQ-GoodBg: 0
-From:   Jiang Jian <jiangjian@cdjrlc.com>
-To:     fbarrat@linux.ibm.com, ajd@linux.ibm.com, arnd@arndb.de
-Cc:     gregkh@linuxfoundation.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, Jiang Jian <jiangjian@cdjrlc.com>
-Subject: [PATCH] cxl: drop unexpected word "the" in the comments
-Date:   Tue, 21 Jun 2022 20:53:21 +0800
-Message-Id: <20220621125321.122280-1-jiangjian@cdjrlc.com>
-X-Mailer: git-send-email 2.17.1
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam10
+        Tue, 21 Jun 2022 08:56:06 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 233D813F35;
+        Tue, 21 Jun 2022 05:56:02 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id C9CB321C3F;
+        Tue, 21 Jun 2022 12:56:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1655816160;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=sSjZbPkqQdR6EElLUxJxClG+/12pLCezNC9VmSqWelM=;
+        b=G6ipTntU+hsV178Qy2wOI7IMYjIKqZgMNOvJVhPEKvUMhFkgXc1nvI6Lhv1v8cIoUDgFos
+        fTNChfs+bIugOOnr9319VTwHOjcNXBtfreoYVp4KsTXNd5bv1LDCVqAzEhbk0RjvoY2R09
+        35wVIDNr71L5qo5S5++HgpQbod+yBRU=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1655816160;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=sSjZbPkqQdR6EElLUxJxClG+/12pLCezNC9VmSqWelM=;
+        b=myOiY6Sgfr//h2jZqcThrUO4W3hLtIXS+EeKqDiNEYJWHED450SdbpakUvBN62logeMEkU
+        x0zY+eQUpp1RyNAg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id A786813A88;
+        Tue, 21 Jun 2022 12:56:00 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id o0rvJ+C/sWIAGwAAMHmgww
+        (envelope-from <dsterba@suse.cz>); Tue, 21 Jun 2022 12:56:00 +0000
+Date:   Tue, 21 Jun 2022 14:51:23 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     David Sterba <dsterba@suse.com>,
+        linux-btrfs <linux-btrfs@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [GIT PULL] Fixes for btrfs 5.19-rc4
+Message-ID: <20220621125123.GV20633@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        David Sterba <dsterba@suse.com>,
+        linux-btrfs <linux-btrfs@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <cover.1655815078.git.dsterba@suse.com>
+ <CAHk-=whAd6NRL1JcFnqrxJ2JMhNM3mRRzN4iv7anG+F-+xKNmw@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=whAd6NRL1JcFnqrxJ2JMhNM3mRRzN4iv7anG+F-+xKNmw@mail.gmail.com>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-there is an unexpected word "the" in the comments that need to be dropped
+On Tue, Jun 21, 2022 at 07:48:12AM -0500, Linus Torvalds wrote:
+> On Tue, Jun 21, 2022 at 7:45 AM David Sterba <dsterba@suse.com> wrote:
+> >
+> >   git://git.kernel.org/pub/scm/linux/kernel/git/kdave/linux.git for-5.19-rc3-tag
+> 
+> ENOSUCHTAG.
+> 
+> Forgot to push?
 
-file: drivers/misc/cxl/cxl.h
-line: 1107
-+/* check if the given pci_dev is on the the cxl vphb bus */
-changed to
-+/* check if the given pci_dev is on the cxl vphb bus */
-
-Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
----
- drivers/misc/cxl/cxl.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/misc/cxl/cxl.h b/drivers/misc/cxl/cxl.h
-index 7a6dd91987fd..0562071cdd4a 100644
---- a/drivers/misc/cxl/cxl.h
-+++ b/drivers/misc/cxl/cxl.h
-@@ -1104,7 +1104,7 @@ extern const struct cxl_backend_ops cxl_native_ops;
- extern const struct cxl_backend_ops cxl_guest_ops;
- extern const struct cxl_backend_ops *cxl_ops;
- 
--/* check if the given pci_dev is on the the cxl vphb bus */
-+/* check if the given pci_dev is on the cxl vphb bus */
- bool cxl_pci_is_vphb_device(struct pci_dev *dev);
- 
- /* decode AFU error bits in the PSL register PSL_SERR_An */
--- 
-2.17.1
-
+Yeah sorry, now pushed.
