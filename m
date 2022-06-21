@@ -2,142 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A377C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 00:14:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38111CCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 00:16:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343732AbiFUAOm (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 20:14:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42748 "EHLO
+        id S244646AbiFUAQC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 20:16:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236390AbiFUAOj (ORCPT
+        with ESMTP id S231244AbiFUAQA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 20:14:39 -0400
-X-Greylist: delayed 1201 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 20 Jun 2022 17:14:37 PDT
-Received: from gnutoo.cyberdimension.org (cyberdimension.org [IPv6:2001:910:1314:ffff::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37D2B1836D;
-        Mon, 20 Jun 2022 17:14:36 -0700 (PDT)
-Received: from gnutoo.cyberdimension.org (localhost [127.0.0.1])
-        by cyberdimension.org (OpenSMTPD) with ESMTP id 0950e3d8;
-        Mon, 20 Jun 2022 23:39:55 +0000 (UTC)
-Received: from primarylaptop.localdomain (localhost [::1])
-        by gnutoo.cyberdimension.org (OpenSMTPD) with ESMTP id 8547062c;
-        Mon, 20 Jun 2022 23:39:55 +0000 (UTC)
-Date:   Tue, 21 Jun 2022 01:47:48 +0200
-From:   Denis 'GNUtoo' Carikli <GNUtoo@cyberdimension.org>
-To:     Krzysztof Kozlowski via Replicant <replicant@osuosl.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org,
-        Simon Shields <simon@lineageos.org>,
-        Martin =?UTF-8?B?SsO8Y2tlcg==?= <martin.juecker@gmail.com>
-Subject: Re: [Replicant] [PATCH 3/3] ARM: dts: exynos: add function and
- color to aat1290 flash LED node in Galaxy S3
-Message-ID: <20220621014748.1c0b2b05@primarylaptop.localdomain>
-In-Reply-To: <f1cc0f5a-12fb-28bc-7345-13ac2bf5b74d@linaro.org>
-References: <20220607085343.72414-1-krzysztof.kozlowski@linaro.org>
-        <20220607085343.72414-3-krzysztof.kozlowski@linaro.org>
-        <4a7f8ab6-c061-3861-5790-b6c0fbd7cad1@gmail.com>
-        <ef62a7bb-2217-2947-17dd-fc4a51acdea5@linaro.org>
-        <f1402a1d-a74d-f7b9-b9e2-fc3991781e64@gmail.com>
-        <f1cc0f5a-12fb-28bc-7345-13ac2bf5b74d@linaro.org>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; i686-pc-linux-gnu)
+        Mon, 20 Jun 2022 20:16:00 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 901B019000
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 17:15:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655770558;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=am4ljrsE7Ufjfmqsop2MzHsqSlEXrA5rSRIM1yT2FYE=;
+        b=P5dRtsSKvV3QKbbOdEXRRj7ZY4MqanQrTt19Kdz7fCwkp/Xfa2FZdSX39CLp3blWQkHW3d
+        7KY+FW18aC6fDGOA32qw5O1iep3JWnx0YZ8wdS3Fj4/vAqkTRsJNnuDPKMPmw7aI/Gq+Gt
+        V2CVktJp25Zw/rUIIP/SJX0H/dqG4lM=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-3-rRxPcep1Pda1BUJKX7K4iw-1; Mon, 20 Jun 2022 20:15:57 -0400
+X-MC-Unique: rRxPcep1Pda1BUJKX7K4iw-1
+Received: by mail-wm1-f70.google.com with SMTP id i188-20020a1c3bc5000000b0039db971c6d9so6312227wma.7
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 17:15:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=am4ljrsE7Ufjfmqsop2MzHsqSlEXrA5rSRIM1yT2FYE=;
+        b=J+TzfkQidPtmJq/UzzqndzVDcZfGYyM0hoq54P/bdyyy35y4SdiwX7uKHhcFQv6P0/
+         qYmddTbjSAGJMTsyiEhkqrjRARO5+bTgpNOyzsIJFwg33WP3OP43FCjvAUc0qPkl5keP
+         HAlChvgmnnl0ua/6IkJw+vxeWkIcqJAcRgQ9wgk3P+aMzEb5qEBPtXvRnuldtrbiDx9X
+         rFH8PtLcy9xmlKDKjNUlLWDEeBIgbNMgppZuyYozl6aTaGkPX9wGwGytrno+0mCcDV+b
+         THmtrUwWO3NHPlTb8PV9WR+JkLwZpCGiOUkTV/WkH1qvT6wHgXHawrEo/+PJMVIv6XWI
+         UgVQ==
+X-Gm-Message-State: AOAM532oe4GHlttJxUI6xl4GTEufAPzJcqSvdxEvq+Df179buRG3SWHt
+        k6jzg2/sigcz1w4kcpTxcx7AFTATkdJyJ+8mf7zrErC8bPZMINtnDgOdLhnGgwbj6JGKKVaBlqY
+        Mn0KhZmdvzHN4voWbBZzkHyhS
+X-Received: by 2002:a05:600c:3b05:b0:397:54ce:896 with SMTP id m5-20020a05600c3b0500b0039754ce0896mr37343025wms.3.1655770556337;
+        Mon, 20 Jun 2022 17:15:56 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxuF9L1be7ni3J1YmYNIb9c4ZabGtFSUgGjCv0tSabp2R2QRhWX6wNq50I5/oKWe6fZHu9qDw==
+X-Received: by 2002:a05:600c:3b05:b0:397:54ce:896 with SMTP id m5-20020a05600c3b0500b0039754ce0896mr37343003wms.3.1655770556103;
+        Mon, 20 Jun 2022 17:15:56 -0700 (PDT)
+Received: from [192.168.1.129] (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id e13-20020adfe7cd000000b0021b89181863sm7340790wrn.41.2022.06.20.17.15.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Jun 2022 17:15:55 -0700 (PDT)
+Message-ID: <e6306933-45c4-f38a-bae1-3ad149d67e1b@redhat.com>
+Date:   Tue, 21 Jun 2022 02:15:54 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/RXcLkuiECAhv+Y3/6Gw0ixN";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 2/2] vfio/pci: Remove console drivers
+Content-Language: en-US
+To:     Alex Williamson <alex.williamson@redhat.com>, corbet@lwn.net,
+        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+        tzimmermann@suse.de, airlied@linux.ie, daniel@ffwll.ch,
+        deller@gmx.de, gregkh@linuxfoundation.org
+Cc:     linux-fbdev@vger.kernel.org, kvm@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, Gerd Hoffmann <kraxel@redhat.com>,
+        Laszlo Ersek <lersek@redhat.com>
+References: <165541020563.1955826.16350888595945658159.stgit@omen>
+ <165541193265.1955826.8778757616438743090.stgit@omen>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <165541193265.1955826.8778757616438743090.stgit@omen>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/RXcLkuiECAhv+Y3/6Gw0ixN
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Hello Alex,
 
-On Sun, 12 Jun 2022 19:06:09 +0200
-Krzysztof Kozlowski via Replicant <replicant@osuosl.org> wrote:
+On 6/16/22 22:38, Alex Williamson wrote:
+> Console drivers can create conflicts with PCI resources resulting in
+> userspace getting mmap failures to memory BARs.  This is especially
+> evident when trying to re-use the system primary console for userspace
+> drivers.  Use the aperture helpers to remove these conflicts.
+> 
+> Reported-by: Laszlo Ersek <lersek@redhat.com>
+> Suggested-by: Gerd Hoffmann <kraxel@redhat.com>
+> Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
+> ---
 
-> On 12/06/2022 17:09, Jacek Anaszewski wrote:
-> > On 6/10/22 12:14, Krzysztof Kozlowski wrote:
-> >> On 09/06/2022 22:31, Jacek Anaszewski wrote:
-> >>> Hi Krzysztof,
-> >>>
-> >>> On 6/7/22 10:53, Krzysztof Kozlowski wrote:
-> >>>> Add common LED properties - the function and color - to aat1290
-> >>>> flash LED node in Galaxy S3.
-> >>>>
-> >>>> Signed-off-by: Krzysztof Kozlowski
-> >>>> <krzysztof.kozlowski@linaro.org> ---
-> >>>>    arch/arm/boot/dts/exynos4412-galaxy-s3.dtsi | 3 +++
-> >>>>    1 file changed, 3 insertions(+)
-> >>>>
-> >>>> diff --git a/arch/arm/boot/dts/exynos4412-galaxy-s3.dtsi
-> >>>> b/arch/arm/boot/dts/exynos4412-galaxy-s3.dtsi index
-> >>>> 72901772fcad..d76f3678dcab 100644 ---
-> >>>> a/arch/arm/boot/dts/exynos4412-galaxy-s3.dtsi +++
-> >>>> b/arch/arm/boot/dts/exynos4412-galaxy-s3.dtsi @@ -7,6 +7,7 @@
-> >>>>     */
-> >>>>   =20
-> >>>>    /dts-v1/;
-> >>>> +#include <dt-bindings/leds/common.h>
-> >>>>    #include "exynos4412-midas.dtsi"
-> >>>>   =20
-> >>>>    / {
-> >>>> @@ -27,6 +28,8 @@ led-controller {
-> >>>>   =20
-> >>>>    		led {
-> >>>>    			label =3D "flash";
-> >>>> +			function =3D LED_FUNCTION_FLASH;
-> >>>> +			color =3D <LED_COLOR_ID_WHITE>;
-> >>>
-> >>> Addition of these two properties will not change anything because
-> >>> the label has precedence. It is deprecated, but if you introduce
-> >>> function and color to the binding instead of the label, the
-> >>> resulting LED class device name will change.
-> >>
-> >> Which is not necessarily what we want, right? Adding these
-> >> properties is a proper description of hardware, regardless whether
-> >> current Linux implementation uses them or not.
-> >=20
-> > Actually I'd just drop label in addition to your change.
-> > I don't think it would break anybody seriously - not expecting it
-> > has any larger group of users and having uniformly constructed DTS
-> > files in the mainline has greater value.
-> >=20
->=20
-> What about some PostmarketOSos, LineageOS and other OSes?
->=20
-> Let me Cc here some folks - Simon, Martin, is the label in flash LED
-> node anyhow important for you? Can it be dropped and replaced with
-> function+color?
-We don't have flash or camera support yet with Replicant version(s) that
-use kernel(s) based on upstream Linux, so it won't break anything.
+Patch looks good to me. 
 
-Denis.
+Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
 
---Sig_/RXcLkuiECAhv+Y3/6Gw0ixN
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+-- 
+Best regards,
 
------BEGIN PGP SIGNATURE-----
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
 
-iQIzBAEBCAAdFiEEeC+d2+Nrp/PU3kkGX138wUF34mMFAmKxByUACgkQX138wUF3
-4mMYKBAAizG0drTNSDYUxHg7Da7PcIFOxip+GcGDJLI27Fi0cFg/kEyaJboALnxx
-Q3CvVhpuJqOGKDe0HfF6FZO/+BxzShNC/NxDXUlfkyI2SXvY3EAqe4kBkU7ynyKc
-aejrFq9CTXXvnPiVbyRlOzz15tkj8byNqNvN7cgd6kGzLtU13B7w+tPBzL3lg5Zh
-sT/kPqF8Wq++sN1INqMT9g1WVUUWl47dia1DJ9xz11qYznYCKea7Khej/vOsRh9b
-Aue1drPuUX+19MEGaCmkvXJAwhP3gMJVSrxuPg0iKJwwNMS93o2bRQmST0MIqp+F
-UAvDTEHqxpWhCG1O3wwKFLAVZCSlPr0bf8o8iRyMrJF+y1Cu/h9VA+ejvRSsyvIr
-Ggk7X0uBWphQIzESAW8z3Ggl8ZDev17m6kn99kHa522fhbT7zpxMzmbKMfmtI4CZ
-kHdmyNiJXVblYc9nIdF1OdjoeNxuJaYRSPFX+rzIluT2Hd17Ds6AkgoyNAvjRmOT
-Omh3UORRJgSxE2L0yECrpfXbSenPuaKQqv1OUcNjaHj6k3VonRi4DbFeGMRCOCr5
-aDs+T1CgdPDOzxytoxrevY5g1aY6iIIIjkqQOVn8gFF6KmyarAmr6XVARHURYenI
-7fPUQnHtSdHqBS5NlDvYwhMDL992U1ibbhNDsSE0NUpElEIU4ZU=
-=YOd1
------END PGP SIGNATURE-----
-
---Sig_/RXcLkuiECAhv+Y3/6Gw0ixN--
