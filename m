@@ -2,193 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60ED8CCA473
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 07:10:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43F78C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 07:12:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346452AbiFUHK5 (ORCPT
+        id S1346569AbiFUHM2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 03:10:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43822 "EHLO
+        Tue, 21 Jun 2022 03:12:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236786AbiFUHK4 (ORCPT
+        with ESMTP id S1344836AbiFUHMZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 03:10:56 -0400
-Received: from mail-vs1-f42.google.com (mail-vs1-f42.google.com [209.85.217.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 473DB21E27;
-        Tue, 21 Jun 2022 00:10:55 -0700 (PDT)
-Received: by mail-vs1-f42.google.com with SMTP id j39so12891631vsv.11;
-        Tue, 21 Jun 2022 00:10:55 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4ezwPnqEAb9XxkVE6EHdU5akaM6B3QfniuvIAXM1ujs=;
-        b=fuofd0oO5ckTaIX0G1gNLRd1YEzHxjZNEpPhcxtUP/1v3vrfEnIDnEhcFyoGQEUvW+
-         zSnNUot8AVfrbL796eiV81eKdQIE+etqt6j5zez6pPMb/s3nC78ZqbRk1H9W7hIEPB4F
-         8W7y+qPfVg5eH4Y/sjPBNKmhuSPNGoVrjkOxxyZ7Yv4H35M2uRoWs6NFTbkYt5RDH3If
-         WS5JmU49CSgt2YLTfAUn+kT6Q33Ile5j0CdFe4n7b/s9Lj4toAlO9jgcjSkZXajhIE3y
-         /1WvlZg5jgR3z5aYHKsKGGZWEycSkIuXNqbjmrK7IU1nn7FuaXXNT3SI5q1KPJDGHU1A
-         3VQA==
-X-Gm-Message-State: AJIora86IIt2ZF348GKFVi03VTj/bE16OAbnKDhfMdW/eXz7yxuM8mBt
-        oAb04WP6auVM8SvjPDTYgza2rgTI2glL6A==
-X-Google-Smtp-Source: AGRyM1uC15BDDDPZ32VHX52B3S2f6EVB9JAVhTCz8cbw4+sQXaxKgCVv6c8qbfb+j3Vg3jtQMUguQw==
-X-Received: by 2002:a67:ead7:0:b0:354:40c1:6859 with SMTP id s23-20020a67ead7000000b0035440c16859mr1984640vso.71.1655795454160;
-        Tue, 21 Jun 2022 00:10:54 -0700 (PDT)
-Received: from mail-ua1-f41.google.com (mail-ua1-f41.google.com. [209.85.222.41])
-        by smtp.gmail.com with ESMTPSA id r42-20020a9f362d000000b00379a495e42esm2353234uad.28.2022.06.21.00.10.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Jun 2022 00:10:54 -0700 (PDT)
-Received: by mail-ua1-f41.google.com with SMTP id q1so4762894uao.1;
-        Tue, 21 Jun 2022 00:10:54 -0700 (PDT)
-X-Received: by 2002:a05:6902:a:b0:65c:b38e:6d9f with SMTP id
- l10-20020a056902000a00b0065cb38e6d9fmr30754158ybh.36.1655795017074; Tue, 21
- Jun 2022 00:03:37 -0700 (PDT)
+        Tue, 21 Jun 2022 03:12:25 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 592BC2229E
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 00:12:25 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1o3Y3a-0006RX-Ql; Tue, 21 Jun 2022 09:12:14 +0200
+Received: from pengutronix.de (2a03-f580-87bc-d400-bd72-15a3-eb10-2206.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:bd72:15a3:eb10:2206])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 353969B386;
+        Tue, 21 Jun 2022 06:35:02 +0000 (UTC)
+Date:   Tue, 21 Jun 2022 08:35:01 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Frank Jungclaus <frank.jungclaus@esd.eu>
+Cc:     linux-can@vger.kernel.org, Wolfgang Grandegger <wg@grandegger.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Stefan =?utf-8?B?TcOkdGpl?= <stefan.maetje@esd.eu>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/1] can/esd_usb2: Added support for esd CAN-USB/3
+Message-ID: <20220621063501.wxxpotw6vck42gsn@pengutronix.de>
+References: <20220620202603.2069841-1-frank.jungclaus@esd.eu>
 MIME-Version: 1.0
-References: <20220618123035.563070-1-mail@conchuod.ie> <20220618123035.563070-7-mail@conchuod.ie>
- <20220620205654.g7fyipwytbww5757@mobilestation>
-In-Reply-To: <20220620205654.g7fyipwytbww5757@mobilestation>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 21 Jun 2022 09:03:25 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdWDcnAxjxdwpnbfUiDUoo=RGvQm537-EboAmaQTmxpY-g@mail.gmail.com>
-Message-ID: <CAMuHMdWDcnAxjxdwpnbfUiDUoo=RGvQm537-EboAmaQTmxpY-g@mail.gmail.com>
-Subject: Re: [PATCH 06/14] spi: dt-bindings: dw-apb-ssi: update
- spi-{r,t}x-bus-width for dwc-ssi
-To:     Serge Semin <fancer.lancer@gmail.com>
-Cc:     Conor Dooley <mail@conchuod.ie>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Niklas Cassel <niklas.cassel@wdc.com>,
-        Dillon Min <dillon.minfei@gmail.com>,
-        Heng Sia <jee.heng.sia@intel.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        dmaengine <dmaengine@vger.kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="5bpvqibdgubwlgdb"
+Content-Disposition: inline
+In-Reply-To: <20220620202603.2069841-1-frank.jungclaus@esd.eu>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Serge,
 
-On Mon, Jun 20, 2022 at 10:56 PM Serge Semin <fancer.lancer@gmail.com> wrote:
-> On Sat, Jun 18, 2022 at 01:30:28PM +0100, Conor Dooley wrote:
-> > From: Conor Dooley <conor.dooley@microchip.com>
-> >
-> > snps,dwc-ssi-1.01a has a single user - the Canaan k210, which uses a
-> > width of 4 for spi-{r,t}x-bus-width. Update the binding to reflect
-> > this.
-> >
-> > Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
-> > ---
-> >  .../bindings/spi/snps,dw-apb-ssi.yaml         | 48 ++++++++++++++-----
-> >  1 file changed, 35 insertions(+), 13 deletions(-)
-> >
-> > diff --git a/Documentation/devicetree/bindings/spi/snps,dw-apb-ssi.yaml b/Documentation/devicetree/bindings/spi/snps,dw-apb-ssi.yaml
-> > index e25d44c218f2..f2b9e3f062cd 100644
-> > --- a/Documentation/devicetree/bindings/spi/snps,dw-apb-ssi.yaml
-> > +++ b/Documentation/devicetree/bindings/spi/snps,dw-apb-ssi.yaml
-> > @@ -135,19 +135,41 @@ properties:
-> >        of the designware controller, and the upper limit is also subject to
-> >        controller configuration.
-> >
-> > -patternProperties:
-> > -  "^.*@[0-9a-f]+$":
-> > -    type: object
-> > -    properties:
-> > -      reg:
-> > -        minimum: 0
-> > -        maximum: 3
-> > -
-> > -      spi-rx-bus-width:
-> > -        const: 1
-> > -
-> > -      spi-tx-bus-width:
-> > -        const: 1
-> > +if:
-> > +  properties:
-> > +    compatible:
-> > +      contains:
-> > +        const: snps,dwc-ssi-1.01a
-> > +
-> > +then:
-> > +  patternProperties:
-> > +    "^.*@[0-9a-f]+$":
-> > +      type: object
-> > +      properties:
-> > +        reg:
-> > +          minimum: 0
-> > +          maximum: 3
-> > +
-> > +        spi-rx-bus-width:
-> > +          const: 4
-> > +
-> > +        spi-tx-bus-width:
-> > +          const: 4
-> > +
-> > +else:
-> > +  patternProperties:
-> > +    "^.*@[0-9a-f]+$":
-> > +      type: object
-> > +      properties:
-> > +        reg:
-> > +          minimum: 0
-> > +          maximum: 3
-> > +
-> > +        spi-rx-bus-width:
-> > +          const: 1
-> > +
-> > +        spi-tx-bus-width:
-> > +          const: 1
->
-> You can just use a more relaxed constraint "enum: [1 2 4 8]" here
-> irrespective from the compatible string. The modern DW APB SSI
-> controllers of v.4.* and newer also support the enhanced SPI Modes too
-> (Dual, Quad and Octal). Since the IP-core version is auto-detected at
-> run-time there is no way to create a DT-schema correctly constraining
-> the Rx/Tx SPI bus widths. So let's keep the
-> compatible-string-independent "patternProperties" here but just extend
-> the set of acceptable "spi-rx-bus-width" and "spi-tx-bus-width"
-> properties values.
->
-> Note the DW APB SSI/AHB SSI driver currently doesn't support the
-> enhanced SPI modes. So I am not sure whether the multi-lines Rx/Tx SPI
-> bus indeed works for Canaan K210 AHB SSI controller. AFAICS from the
-> DW APB SSI v4.01a manual the Enhanced SPI mode needs to be properly
-> activated by means of the corresponding CSR. So most likely the DW AHB
-> SSI controllers need some specific setups too.
+--5bpvqibdgubwlgdb
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-That doesn't matter here, as DT describes hardware, not software
-limitations.
+Hello Frank,
 
-Gr{oetje,eeting}s,
+thanks for your patch!
 
-                        Geert
+On 20.06.2022 22:26:02, Frank Jungclaus wrote:
+> This patch adds support for the newly available esd CAN-USB/3.
+>=20
+> The USB protocol for the CAN-USB/3 is similar to the protocol used
+> for the CAN-USB/2 and the CAN-USB/Micro, so most of the code can be
+> shared for all three platforms.
+> Due to the fact that the CAN-USB/3 additionally supports CAN FD
+> some new functionality / functions are introduced.
+> Each occurrence of the term "usb2" within variables, function names,
+> etc. is changed to "usb" where it is shared for all three platforms.
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+Can you split the patch into several ones. Please do the renaming first.
+There's some seemingly unrelated reformatting, this could be a separate
+patch, too. If this is too much work, you might take this into the
+renaming patch. Then add the new device. This makes reviewing a lot
+easier.
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+> The patch has been tested against / should apply to Marc's=20
+> current testing branch:
+> commit 934135149578 ("Merge branch 'document-polarfire-soc-can-controller=
+'")
+
+Note: Better use the linux-can-next/master branch as a base, it will be
+only fast forwarded. The testing branch will be rebased. As you don't
+depend on any new features, it doesn't make any difference for you.
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--5bpvqibdgubwlgdb
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKxZpIACgkQrX5LkNig
+010Wzgf9EESo1mSFr/dxiOtxvp0BR3UdEVIbciQ4jaSBnN1ANqBSmp0Vb1JsaXdx
+ueC/1P4q9gygB15XcS7ITmOI3pfQwKcEbW/c/X8CJn7gCU1fRRDrqKtlloYY+i8u
+xkwAY3Vgy7hJ1M1gChDJ+7WFTkXEL86agYZmYxGPQBB+GBsLF50d7Jgsn6Piuge3
+3Mw6X2T7PWsYeQ1CA6YHhcplKuMLUZZ10tM1rDnVVcRMjzjS/hCk+wSJ67KKo1mr
+Iy6GeLT0fkDvr/hLpZfJqFSk892lK4jyur4rHTFjXRmUx0fM9mnZc1rwiCObOWsy
+sHIJhathYttsCASc9/vj16torj6Szw==
+=Bhiy
+-----END PGP SIGNATURE-----
+
+--5bpvqibdgubwlgdb--
