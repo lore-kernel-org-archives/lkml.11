@@ -2,87 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39F56C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 12:45:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22808C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 12:45:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350546AbiFUMpn (ORCPT
+        id S1350558AbiFUMp4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 08:45:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45652 "EHLO
+        Tue, 21 Jun 2022 08:45:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350684AbiFUMpd (ORCPT
+        with ESMTP id S1350547AbiFUMpy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 08:45:33 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20DBC29802
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 05:45:30 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id pk21so4121489ejb.2
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 05:45:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bcjA9/tClfWPESGlrIQVZA/2r4BPB9szIxR6nIZp8Ww=;
-        b=gJW2z+Y4X78SHt7UAWAYQwmYmh3fuUA+fG8GEQH8GLP8+sGvw+wkgDN2h41I6JMxLh
-         meCoPMfH2uzNKpXtTgzPGogy3bU3FxrNet7ujQdYM5LCIsS4n0lt/7a50cWHAQX0uTLS
-         0cG8AoDGgzyXgx2Ox47YAbkV7kVHCiwRXJVQM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bcjA9/tClfWPESGlrIQVZA/2r4BPB9szIxR6nIZp8Ww=;
-        b=Xop+OViQPY70yJfD26KwRbkhFKgLky0VPkS1Fk5ycOU07furEbyXq+BqqVZnC98Sdz
-         dSSUeuTV7CI10c5GZoWCMCLPI2qBjpCMx6Rq5iFFJuN+j5owVuapMbuGfW0vZ2mLFEJj
-         erTxXoB3HUtfLAD+AaAfHtohJ1uDw9rpb1IuZUp84+qCR3VukFzYQAXTYR/H5i7yVXNA
-         d59PPG6tFTuad87qHODgb/lAeFVs6EEuekaK5SR20glSvIHCq5YMhY0LzCVi6r3Oisc+
-         nWKYe+gEHDe9t7LfYbKY8lNc6zWobrxoBJ980f13jKOC5xxjjb0yA3m6t6pWGkapDWJR
-         oaLQ==
-X-Gm-Message-State: AJIora8PHgo7tlpY13s3W15ZSIfBXCQeN4E/4aKR7J8gIk9r2QNsC70B
-        UDumXqhh4h/sOH3NgQ8itmqlrFBXen45e0R7
-X-Google-Smtp-Source: AGRyM1s1Skkjzn0JntwguH5V+e6fEfFCTjNONcV4dV/PeKmXAMu1itiMWNaoG9Mhhu60B9+iJwuYJQ==
-X-Received: by 2002:a17:906:c048:b0:718:ca61:e7b9 with SMTP id bm8-20020a170906c04800b00718ca61e7b9mr25593821ejb.120.1655815528513;
-        Tue, 21 Jun 2022 05:45:28 -0700 (PDT)
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com. [209.85.128.46])
-        by smtp.gmail.com with ESMTPSA id h12-20020a05640250cc00b004358cec9ce1sm3593457edb.65.2022.06.21.05.45.26
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Jun 2022 05:45:26 -0700 (PDT)
-Received: by mail-wm1-f46.google.com with SMTP id l126-20020a1c2584000000b0039c1a10507fso7198838wml.1
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 05:45:26 -0700 (PDT)
-X-Received: by 2002:a05:600c:3485:b0:39c:7db5:f0f7 with SMTP id
- a5-20020a05600c348500b0039c7db5f0f7mr30105277wmq.8.1655815525809; Tue, 21 Jun
- 2022 05:45:25 -0700 (PDT)
+        Tue, 21 Jun 2022 08:45:54 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93B6B1EC5F;
+        Tue, 21 Jun 2022 05:45:53 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 4C85F1F8A3;
+        Tue, 21 Jun 2022 12:45:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1655815552; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=gOBExk5CeiV+de5yPYSWWhO9HrXnqPSCpeLO4mmWiBc=;
+        b=YXhDQgpM1Uo0PIOJUVO9FnjzR0ytrwEfg74iGRDftfhFLVs8mpTkhhw7b59Uj+KDFje6vJ
+        l+7nVPRBX0cCJzGLM5SeyT9SDCHZ/TSzhISTMBSLBmVJFF81FWJVZ+fQ9j5UItRgCvUez9
+        0m8sDhAQLIpj8wsMgwxB/0R2i16G590=
+Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
+        by relay2.suse.de (Postfix) with ESMTP id 42DB12C141;
+        Tue, 21 Jun 2022 12:45:52 +0000 (UTC)
+Received: by ds.suse.cz (Postfix, from userid 10065)
+        id 4627ADA853; Tue, 21 Jun 2022 14:41:16 +0200 (CEST)
+From:   David Sterba <dsterba@suse.com>
+To:     torvalds@linux-foundation.org
+Cc:     David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [GIT PULL] Fixes for btrfs 5.19-rc4
+Date:   Tue, 21 Jun 2022 14:41:15 +0200
+Message-Id: <cover.1655815078.git.dsterba@suse.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-References: <20220621090900.GB7891@pathway.suse.cz> <CAFr9PXkKCf-JRcv+bk17HcC8-4kRG=J9bnNtp_nsMqzg4f=epw@mail.gmail.com>
-In-Reply-To: <CAFr9PXkKCf-JRcv+bk17HcC8-4kRG=J9bnNtp_nsMqzg4f=epw@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue, 21 Jun 2022 07:45:09 -0500
-X-Gmail-Original-Message-ID: <CAHk-=wg9dB5Fc7skWTEOHNohgf=p3oLdL4H_FW-7GyunnQ5Edg@mail.gmail.com>
-Message-ID: <CAHk-=wg9dB5Fc7skWTEOHNohgf=p3oLdL4H_FW-7GyunnQ5Edg@mail.gmail.com>
-Subject: Re: [PATCH v2] printk/console: Enable console kthreads only when
- there is no boot console left
-To:     Daniel Palmer <daniel@0x0f.com>
-Cc:     Petr Mladek <pmladek@suse.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        =?UTF-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Jan Kara <jack@suse.cz>, Peter Zijlstra <peterz@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 21, 2022 at 6:42 AM Daniel Palmer <daniel@0x0f.com> wrote:
->
-> The lockups on boot seem to be gone on my boards with this patch.
+Hi,
 
-Good.
+a few more fixes. Please pull thanks.
 
-Petr, was this all the reports sorted out? Sounds like we can keep the
-kernel thread model.
+- print more error messages for invalid mount option values
 
-                  Linus
+- prevent remount with v1 space cache for subpage filesystem
+
+- fix hang during unmount when block group reclaim task is running
+
+
+----------------------------------------------------------------
+The following changes since commit 0a05fafe9def0d9f0fbef3dfc8094925af9e3185:
+
+  btrfs: zoned: introduce a minimal zone size 4M and reject mount (2022-05-17 20:15:25 +0200)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/kdave/linux.git for-5.19-rc3-tag
+
+for you to fetch changes up to e3a4167c880cf889f66887a152799df4d609dd21:
+
+  btrfs: add error messages to all unrecognized mount options (2022-06-07 17:29:50 +0200)
+
+----------------------------------------------------------------
+David Sterba (1):
+      btrfs: add error messages to all unrecognized mount options
+
+Filipe Manana (1):
+      btrfs: fix hang during unmount when block group reclaim task is running
+
+Qu Wenruo (1):
+      btrfs: prevent remounting to v1 space cache for subpage mount
+
+ fs/btrfs/disk-io.c | 13 +++++++++++--
+ fs/btrfs/super.c   | 47 ++++++++++++++++++++++++++++++++++++++++-------
+ 2 files changed, 51 insertions(+), 9 deletions(-)
