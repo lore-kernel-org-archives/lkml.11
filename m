@@ -2,186 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81C06C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 13:35:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E390EC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 13:35:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231407AbiFUNfC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 09:35:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54430 "EHLO
+        id S1349877AbiFUNfG (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 21 Jun 2022 09:35:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351722AbiFUNbC (ORCPT
+        with ESMTP id S1351916AbiFUNdJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 09:31:02 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 678DD2AE19;
-        Tue, 21 Jun 2022 06:25:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1655817938;
-        bh=ZtEf9z9KJysNGGV3ChvOjRTJrFhCrpznXAsR54JnfUE=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=OzUTeAj6/Yec0YXXCrxnrihQym7oUcnXm/+bI/eRw6Y7kMIeJWjjXuioR9y/61yGE
-         6bKj/Sl6FFaOMHU+LKQjncFk/44e5UXXkGEyufJ1YA5KWbJzrWrIgb+QgIrePHoeuS
-         8JFGuMNWDyYfYxMg8je4Nk1HcIXE3ptOGzhbkOac=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from Venus.fritz.box ([46.223.2.162]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MhD6W-1nQTJL3ozS-00ePJO; Tue, 21
- Jun 2022 15:25:38 +0200
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-To:     peterhuewe@gmx.de, jarkko@kernel.org, jgg@ziepe.ca
-Cc:     stefanb@linux.vnet.ibm.com, linux@mniewoehner.de,
-        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
-        l.sanfilippo@kunbus.com, LinoSanfilippo@gmx.de, lukas@wunner.de,
-        p.rosenberger@kunbus.com
-Subject: [PATCH v6 5/9] tpm, tpm_tis: Only handle supported interrupts
-Date:   Tue, 21 Jun 2022 15:24:43 +0200
-Message-Id: <20220621132447.16281-6-LinoSanfilippo@gmx.de>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220621132447.16281-1-LinoSanfilippo@gmx.de>
-References: <20220621132447.16281-1-LinoSanfilippo@gmx.de>
+        Tue, 21 Jun 2022 09:33:09 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35B1028983;
+        Tue, 21 Jun 2022 06:30:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=G80LNemDmZomH/5dG561zVRY02eIMOerEfE83vdjZHg=; b=OnwqUjGZM/WkATzH2paqr7BPUu
+        zQS/hPvFxad2qilfB71xD1PlP5LEqIgNC6vLSQaXAukL0/Ud5fw4RxkCCnNbCNPysOp6zW6q+bMiL
+        DckLx6qqM0tOaJiw+kMWqZDcavgiHQ8UycMU94twN8oOLqaXgCofaayVC4TXC/uKUpktjgewuWH1Z
+        KRfeovTzP8grfg5Fg5rib3Za2bdULIymDSzYt66z67jEU4sv6qhg3mVssMp13fW7ej0iqrLkrAIgB
+        ORy4jdcg5WBumsobuT5TxkkFeTlT4fhY/JxCRfnIhfTv3ZArwqbhELlAcSdONImzIk9mivs7qq8Hx
+        MMDfNe8g==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:32964)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1o3dx4-0002Qr-Dq; Tue, 21 Jun 2022 14:29:53 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1o3dwv-00064M-6m; Tue, 21 Jun 2022 14:29:45 +0100
+Date:   Tue, 21 Jun 2022 14:29:45 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Zheng Bin <zhengbin13@huawei.com>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        boon.leong.ong@intel.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, gaochao49@huawei.com
+Subject: Re: [PATCH -next] net: pcs: pcs-xpcs: Fix build error when
+ CONFIG_PCS_XPCS=y && CONFIG_PHYLINK=m
+Message-ID: <YrHHyZNJXVme1JIe@shell.armlinux.org.uk>
+References: <20220621131251.3357104-1-zhengbin13@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-X-Provags-ID: V03:K1:PfAWhCJFoEHpwbXMfPUh7kYO31Tnx8Cf5/J7Gpg8nzHJD17NSJS
- A9z46GMWp0J+eAaQ/oOnB1XTWj3eoo1HiZXwmrgOdZ+505PBRKp+AMgA/oaBYWn2nUjZv2A
- AB0C8s+5xX4SeMrZYOmtI/x8+schZerxyGuUwVFnsY0amSIKqUHdtAbEix+OC7vuRt9i9Ym
- e4ik1o7L9itY5PHe34MEA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:G+++L7UgAio=:vHehAF1AaVLEPwfa7S05gL
- aoahPZHLW22hMlDcBURPbL6TFlOnrbymKuWLXxj8ThnBIDm9YVa4ETKQE+cjQJx1ud68nZMGI
- I4MzOS/E1yzDsrpsqb6KiN7ekXtR/cQm03ttdrtdim9JAMiBA8xv0LjYPxVifxzjMBNT9+kf0
- tdHfgOrSaX5lCyYls2rMSY6ogsSECukhCUdXo+6p6sPu+QZzTTjT4mWNzwNrtIJym4MTUWLAS
- W5C5fHL9GZCQMkyBy4IpFBy6mWE1j6aPg7RjGFv2RBzA4FjmVnytvNy+5h7FCZUZdMukBCaUc
- YXZYa32BfeUm8jqPNTgLEuvSyJqchw0VLrskzo4EzXmzZ8i/rem/mchhaCq3KbJ33nmszhGO1
- O2PZ4lqk2/dyDYd4hMOuw4/sb81PfTykqJ6/ZKbst/qtAPCtdRCTV7F6qwOtxc1vuwePPjnoZ
- ePhfxjJ/kAoUsp6Op8ZmjGIuxaj8C34ilmqLfzSt034JyWb2lXtNWxVJSSwB0Ws6MQZywsHeM
- pEqo0Dl6vf/ldYo440034wxkkxt2DS+bu17939iarzYvLV9UJRSqWcllFFMkd7CuxPJ13JBBi
- 7S2UVq+r4H/6O/+F6KS3eWNCTU+fu3zAIUr23PpEi5ubdgRhHuitebCEHyUhXJTa3NAUgF/cJ
- 6f6e+UKfgZQXkH6NoVHGNXBjwlPYe3RnHygTj5rffnWnBh8rqmpftzTAoUKMOa3jiN+Z6mjjs
- UY8QcTsZ0XKvhNiTCT+AXmy9FFR49gyZ0VsGV1V28E+7EN+QZjN9Wsr9g1oEbhtSnF7fq2PSp
- DnwfNjuID7eeI9Z6yK8rHs7KF0/rNyZBKKV08vqKBwFfiCMo+PNtFKwgYuEk4C8ivPTVKLrhY
- hJfBuKhQmGxVy0iLkDy2i6PyG6PvqKdiQU8AuZ/h/1e+QYX7qCxo9mcX4GgLJBLszII/0Fc1c
- 1g4oWySyfsdTxMe9vY6TZpVyaT/dSR/QKnl4Eh3p8bLPv83IlDXXImw5afZABDCFjdCCAxASQ
- oleW3CA5y3uUoJr/OFiMd4TsX92l43DZt9/UeDla2N/IMR/rRhhswrV0xk0DA6WXVxSralNFE
- ydZLGlB76O/gzc7i3kv/arWOa/xEF9smfsMDgvwJDsmHXHUWfKxhn4SdA==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220621131251.3357104-1-zhengbin13@huawei.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-RnJvbTogTGlubyBTYW5maWxpcHBvIDxsLnNhbmZpbGlwcG9Aa3VuYnVzLmNvbT4KCkFjY29yZGlu
-ZyB0byB0aGUgVFBNIEludGVyZmFjZSBTcGVjaWZpY2F0aW9uIChUSVMpIHN1cHBvcnQgZm9yICJz
-dHNWYWxpZCIKYW5kICJjb21tYW5kUmVhZHkiIGludGVycnVwdHMgaXMgb25seSBvcHRpb25hbC4K
-VGhpcyBoYXMgdG8gYmUgdGFrZW4gaW50byBhY2NvdW50IHdoZW4gaGFuZGxpbmcgdGhlIGludGVy
-cnVwdHMgaW4gZnVuY3Rpb25zCmxpa2Ugd2FpdF9mb3JfdHBtX3N0YXQoKS4gVG8gZGV0ZXJtaW5l
-IHRoZSBzdXBwb3J0ZWQgaW50ZXJydXB0cyB1c2UgdGhlCmNhcGFiaWxpdHkgcXVlcnkuCgpBbHNv
-IGFkanVzdCB3YWl0X2Zvcl90cG1fc3RhdCgpIHRvIG9ubHkgd2FpdCBmb3IgaW50ZXJydXB0IHJl
-cG9ydGVkIHN0YXR1cwpjaGFuZ2VzLiBBZnRlciB0aGF0IHByb2Nlc3MgYWxsIHRoZSByZW1haW5p
-bmcgc3RhdHVzIGNoYW5nZXMgYnkgcG9sbGluZwp0aGUgc3RhdHVzIHJlZ2lzdGVyLgoKU2lnbmVk
-LW9mZi1ieTogTGlubyBTYW5maWxpcHBvIDxsLnNhbmZpbGlwcG9Aa3VuYnVzLmNvbT4KLS0tCiBk
-cml2ZXJzL2NoYXIvdHBtL3RwbV90aXNfY29yZS5jIHwgMTE5ICsrKysrKysrKysrKysrKysrKyst
-LS0tLS0tLS0tLS0tCiBkcml2ZXJzL2NoYXIvdHBtL3RwbV90aXNfY29yZS5oIHwgICAxICsKIDIg
-ZmlsZXMgY2hhbmdlZCwgNzIgaW5zZXJ0aW9ucygrKSwgNDggZGVsZXRpb25zKC0pCgpkaWZmIC0t
-Z2l0IGEvZHJpdmVycy9jaGFyL3RwbS90cG1fdGlzX2NvcmUuYyBiL2RyaXZlcnMvY2hhci90cG0v
-dHBtX3Rpc19jb3JlLmMKaW5kZXggMDlkOGYwNGNiYzgxLi5jYjQ2OTU5MTM3M2EgMTAwNjQ0Ci0t
-LSBhL2RyaXZlcnMvY2hhci90cG0vdHBtX3Rpc19jb3JlLmMKKysrIGIvZHJpdmVycy9jaGFyL3Rw
-bS90cG1fdGlzX2NvcmUuYwpAQCAtNTMsNDEgKzUzLDYzIEBAIHN0YXRpYyBpbnQgd2FpdF9mb3Jf
-dHBtX3N0YXQoc3RydWN0IHRwbV9jaGlwICpjaGlwLCB1OCBtYXNrLAogCWxvbmcgcmM7CiAJdTgg
-c3RhdHVzOwogCWJvb2wgY2FuY2VsZWQgPSBmYWxzZTsKKwl1OCBzdHNfbWFzayA9IDA7CisJaW50
-IHJldCA9IDA7CiAKIAkvKiBjaGVjayBjdXJyZW50IHN0YXR1cyAqLwogCXN0YXR1cyA9IGNoaXAt
-Pm9wcy0+c3RhdHVzKGNoaXApOwogCWlmICgoc3RhdHVzICYgbWFzaykgPT0gbWFzaykKIAkJcmV0
-dXJuIDA7CiAKLQlzdG9wID0gamlmZmllcyArIHRpbWVvdXQ7CisJLyogY2hlY2sgd2hhdCBzdGF0
-dXMgY2hhbmdlcyBjYW4gYmUgaGFuZGxlZCBieSBpcnFzICovCisJaWYgKHByaXYtPmludF9tYXNr
-ICYgVFBNX0lOVEZfU1RTX1ZBTElEX0lOVCkKKwkJc3RzX21hc2sgfD0gVFBNX1NUU19WQUxJRDsK
-IAotCWlmIChjaGlwLT5mbGFncyAmIFRQTV9DSElQX0ZMQUdfSVJRKSB7CisJaWYgKHByaXYtPmlu
-dF9tYXNrICYgVFBNX0lOVEZfREFUQV9BVkFJTF9JTlQpCisJCXN0c19tYXNrIHw9IFRQTV9TVFNf
-REFUQV9BVkFJTDsKKworCWlmIChwcml2LT5pbnRfbWFzayAmIFRQTV9JTlRGX0NNRF9SRUFEWV9J
-TlQpCisJCXN0c19tYXNrIHw9IFRQTV9TVFNfQ09NTUFORF9SRUFEWTsKKworCXN0c19tYXNrICY9
-IG1hc2s7CisKKwlzdG9wID0gamlmZmllcyArIHRpbWVvdXQ7CisJLyogcHJvY2VzcyBzdGF0dXMg
-Y2hhbmdlcyB3aXRoIGlycSBzdXBwb3J0ICovCisJaWYgKHN0c19tYXNrKSB7CisJCXJldCA9IC1F
-VElNRTsKIGFnYWluOgogCQl0aW1lb3V0ID0gc3RvcCAtIGppZmZpZXM7CiAJCWlmICgobG9uZyl0
-aW1lb3V0IDw9IDApCiAJCQlyZXR1cm4gLUVUSU1FOwogCQlyYyA9IHdhaXRfZXZlbnRfaW50ZXJy
-dXB0aWJsZV90aW1lb3V0KCpxdWV1ZSwKLQkJCXdhaXRfZm9yX3RwbV9zdGF0X2NvbmQoY2hpcCwg
-bWFzaywgY2hlY2tfY2FuY2VsLAorCQkJd2FpdF9mb3JfdHBtX3N0YXRfY29uZChjaGlwLCBzdHNf
-bWFzaywgY2hlY2tfY2FuY2VsLAogCQkJCQkgICAgICAgJmNhbmNlbGVkKSwKIAkJCXRpbWVvdXQp
-OwogCQlpZiAocmMgPiAwKSB7CiAJCQlpZiAoY2FuY2VsZWQpCiAJCQkJcmV0dXJuIC1FQ0FOQ0VM
-RUQ7Ci0JCQlyZXR1cm4gMDsKKwkJCXJldCA9IDA7CiAJCX0KIAkJaWYgKHJjID09IC1FUkVTVEFS
-VFNZUyAmJiBmcmVlemluZyhjdXJyZW50KSkgewogCQkJY2xlYXJfdGhyZWFkX2ZsYWcoVElGX1NJ
-R1BFTkRJTkcpOwogCQkJZ290byBhZ2FpbjsKIAkJfQotCX0gZWxzZSB7Ci0JCWRvIHsKLQkJCXVz
-bGVlcF9yYW5nZShwcml2LT50aW1lb3V0X21pbiwKLQkJCQkgICAgIHByaXYtPnRpbWVvdXRfbWF4
-KTsKLQkJCXN0YXR1cyA9IGNoaXAtPm9wcy0+c3RhdHVzKGNoaXApOwotCQkJaWYgKChzdGF0dXMg
-JiBtYXNrKSA9PSBtYXNrKQotCQkJCXJldHVybiAwOwotCQl9IHdoaWxlICh0aW1lX2JlZm9yZShq
-aWZmaWVzLCBzdG9wKSk7CiAJfQorCisJaWYgKHJldCkKKwkJcmV0dXJuIHJldDsKKworCW1hc2sg
-Jj0gfnN0c19tYXNrOworCWlmICghbWFzaykgLyogYWxsIGRvbmUgKi8KKwkJcmV0dXJuIDA7CisJ
-LyogcHJvY2VzcyBzdGF0dXMgY2hhbmdlcyB3aXRob3V0IGlycSBzdXBwb3J0ICovCisJZG8gewor
-CQlzdGF0dXMgPSBjaGlwLT5vcHMtPnN0YXR1cyhjaGlwKTsKKwkJaWYgKChzdGF0dXMgJiBtYXNr
-KSA9PSBtYXNrKQorCQkJcmV0dXJuIDA7CisJCXVzbGVlcF9yYW5nZShwcml2LT50aW1lb3V0X21p
-biwKKwkJCSAgICAgcHJpdi0+dGltZW91dF9tYXgpOworCX0gd2hpbGUgKHRpbWVfYmVmb3JlKGpp
-ZmZpZXMsIHN0b3ApKTsKIAlyZXR1cm4gLUVUSU1FOwogfQogCkBAIC0xMDA3LDggKzEwMjksMzkg
-QEAgaW50IHRwbV90aXNfY29yZV9pbml0KHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IHRwbV90
-aXNfZGF0YSAqcHJpdiwgaW50IGlycSwKIAlpZiAocmMgPCAwKQogCQlnb3RvIG91dF9lcnI7CiAK
-LQlpbnRtYXNrIHw9IFRQTV9JTlRGX0NNRF9SRUFEWV9JTlQgfCBUUE1fSU5URl9MT0NBTElUWV9D
-SEFOR0VfSU5UIHwKLQkJICAgVFBNX0lOVEZfREFUQV9BVkFJTF9JTlQgfCBUUE1fSU5URl9TVFNf
-VkFMSURfSU5UOworCS8qIEZpZ3VyZSBvdXQgdGhlIGNhcGFiaWxpdGllcyAqLworCXJjID0gdHBt
-X3Rpc19yZWFkMzIocHJpdiwgVFBNX0lOVEZfQ0FQUyhwcml2LT5sb2NhbGl0eSksICZpbnRmY2Fw
-cyk7CisJaWYgKHJjIDwgMCkKKwkJZ290byBvdXRfZXJyOworCisJZGV2X2RiZyhkZXYsICJUUE0g
-aW50ZXJmYWNlIGNhcGFiaWxpdGllcyAoMHgleCk6XG4iLAorCQlpbnRmY2Fwcyk7CisJaWYgKGlu
-dGZjYXBzICYgVFBNX0lOVEZfQlVSU1RfQ09VTlRfU1RBVElDKQorCQlkZXZfZGJnKGRldiwgIlx0
-QnVyc3QgQ291bnQgU3RhdGljXG4iKTsKKwlpZiAoaW50ZmNhcHMgJiBUUE1fSU5URl9DTURfUkVB
-RFlfSU5UKSB7CisJCWludG1hc2sgfD0gVFBNX0lOVEZfQ01EX1JFQURZX0lOVDsKKwkJZGV2X2Ri
-ZyhkZXYsICJcdENvbW1hbmQgUmVhZHkgSW50IFN1cHBvcnRcbiIpOworCX0KKwlpZiAoaW50ZmNh
-cHMgJiBUUE1fSU5URl9JTlRfRURHRV9GQUxMSU5HKQorCQlkZXZfZGJnKGRldiwgIlx0SW50ZXJy
-dXB0IEVkZ2UgRmFsbGluZ1xuIik7CisJaWYgKGludGZjYXBzICYgVFBNX0lOVEZfSU5UX0VER0Vf
-UklTSU5HKQorCQlkZXZfZGJnKGRldiwgIlx0SW50ZXJydXB0IEVkZ2UgUmlzaW5nXG4iKTsKKwlp
-ZiAoaW50ZmNhcHMgJiBUUE1fSU5URl9JTlRfTEVWRUxfTE9XKQorCQlkZXZfZGJnKGRldiwgIlx0
-SW50ZXJydXB0IExldmVsIExvd1xuIik7CisJaWYgKGludGZjYXBzICYgVFBNX0lOVEZfSU5UX0xF
-VkVMX0hJR0gpCisJCWRldl9kYmcoZGV2LCAiXHRJbnRlcnJ1cHQgTGV2ZWwgSGlnaFxuIik7CisJ
-aWYgKGludGZjYXBzICYgVFBNX0lOVEZfTE9DQUxJVFlfQ0hBTkdFX0lOVCkKKwkJaW50bWFzayB8
-PSBUUE1fSU5URl9MT0NBTElUWV9DSEFOR0VfSU5UOworCQlkZXZfZGJnKGRldiwgIlx0TG9jYWxp
-dHkgQ2hhbmdlIEludCBTdXBwb3J0XG4iKTsKKwlpZiAoaW50ZmNhcHMgJiBUUE1fSU5URl9TVFNf
-VkFMSURfSU5UKSB7CisJCWludG1hc2sgfD0gVFBNX0lOVEZfU1RTX1ZBTElEX0lOVDsKKwkJZGV2
-X2RiZyhkZXYsICJcdFN0cyBWYWxpZCBJbnQgU3VwcG9ydFxuIik7CisJfQorCWlmIChpbnRmY2Fw
-cyAmIFRQTV9JTlRGX0RBVEFfQVZBSUxfSU5UKSB7CisJCWludG1hc2sgfD0gVFBNX0lOVEZfREFU
-QV9BVkFJTF9JTlQ7CisJCWRldl9kYmcoZGV2LCAiXHREYXRhIEF2YWlsIEludCBTdXBwb3J0XG4i
-KTsKKwl9CisKIAlpbnRtYXNrICY9IH5UUE1fR0xPQkFMX0lOVF9FTkFCTEU7CiAKIAlyYyA9IHJl
-cXVlc3RfbG9jYWxpdHkoY2hpcCwgMCk7CkBAIC0xMDQyLDMyICsxMDk1LDYgQEAgaW50IHRwbV90
-aXNfY29yZV9pbml0KHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IHRwbV90aXNfZGF0YSAqcHJp
-diwgaW50IGlycSwKIAkJZ290byBvdXRfZXJyOwogCX0KIAotCS8qIEZpZ3VyZSBvdXQgdGhlIGNh
-cGFiaWxpdGllcyAqLwotCXJjID0gdHBtX3Rpc19yZWFkMzIocHJpdiwgVFBNX0lOVEZfQ0FQUyhw
-cml2LT5sb2NhbGl0eSksICZpbnRmY2Fwcyk7Ci0JaWYgKHJjIDwgMCkKLQkJZ290byBvdXRfZXJy
-OwotCi0JZGV2X2RiZyhkZXYsICJUUE0gaW50ZXJmYWNlIGNhcGFiaWxpdGllcyAoMHgleCk6XG4i
-LAotCQlpbnRmY2Fwcyk7Ci0JaWYgKGludGZjYXBzICYgVFBNX0lOVEZfQlVSU1RfQ09VTlRfU1RB
-VElDKQotCQlkZXZfZGJnKGRldiwgIlx0QnVyc3QgQ291bnQgU3RhdGljXG4iKTsKLQlpZiAoaW50
-ZmNhcHMgJiBUUE1fSU5URl9DTURfUkVBRFlfSU5UKQotCQlkZXZfZGJnKGRldiwgIlx0Q29tbWFu
-ZCBSZWFkeSBJbnQgU3VwcG9ydFxuIik7Ci0JaWYgKGludGZjYXBzICYgVFBNX0lOVEZfSU5UX0VE
-R0VfRkFMTElORykKLQkJZGV2X2RiZyhkZXYsICJcdEludGVycnVwdCBFZGdlIEZhbGxpbmdcbiIp
-OwotCWlmIChpbnRmY2FwcyAmIFRQTV9JTlRGX0lOVF9FREdFX1JJU0lORykKLQkJZGV2X2RiZyhk
-ZXYsICJcdEludGVycnVwdCBFZGdlIFJpc2luZ1xuIik7Ci0JaWYgKGludGZjYXBzICYgVFBNX0lO
-VEZfSU5UX0xFVkVMX0xPVykKLQkJZGV2X2RiZyhkZXYsICJcdEludGVycnVwdCBMZXZlbCBMb3dc
-biIpOwotCWlmIChpbnRmY2FwcyAmIFRQTV9JTlRGX0lOVF9MRVZFTF9ISUdIKQotCQlkZXZfZGJn
-KGRldiwgIlx0SW50ZXJydXB0IExldmVsIEhpZ2hcbiIpOwotCWlmIChpbnRmY2FwcyAmIFRQTV9J
-TlRGX0xPQ0FMSVRZX0NIQU5HRV9JTlQpCi0JCWRldl9kYmcoZGV2LCAiXHRMb2NhbGl0eSBDaGFu
-Z2UgSW50IFN1cHBvcnRcbiIpOwotCWlmIChpbnRmY2FwcyAmIFRQTV9JTlRGX1NUU19WQUxJRF9J
-TlQpCi0JCWRldl9kYmcoZGV2LCAiXHRTdHMgVmFsaWQgSW50IFN1cHBvcnRcbiIpOwotCWlmIChp
-bnRmY2FwcyAmIFRQTV9JTlRGX0RBVEFfQVZBSUxfSU5UKQotCQlkZXZfZGJnKGRldiwgIlx0RGF0
-YSBBdmFpbCBJbnQgU3VwcG9ydFxuIik7Ci0KIAkvKiBJTlRFUlJVUFQgU2V0dXAgKi8KIAlpbml0
-X3dhaXRxdWV1ZV9oZWFkKCZwcml2LT5yZWFkX3F1ZXVlKTsKIAlpbml0X3dhaXRxdWV1ZV9oZWFk
-KCZwcml2LT5pbnRfcXVldWUpOwpAQCAtMTA5OCw3ICsxMTI1LDkgQEAgaW50IHRwbV90aXNfY29y
-ZV9pbml0KHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IHRwbV90aXNfZGF0YSAqcHJpdiwgaW50
-IGlycSwKIAkJZWxzZQogCQkJdHBtX3Rpc19wcm9iZV9pcnEoY2hpcCwgaW50bWFzayk7CiAKLQkJ
-aWYgKCEoY2hpcC0+ZmxhZ3MgJiBUUE1fQ0hJUF9GTEFHX0lSUSkpIHsKKwkJaWYgKGNoaXAtPmZs
-YWdzICYgVFBNX0NISVBfRkxBR19JUlEpIHsKKwkJCXByaXYtPmludF9tYXNrID0gaW50bWFzazsK
-KwkJfSBlbHNlIHsKIAkJCWRldl9lcnIoJmNoaXAtPmRldiwgRldfQlVHCiAJCQkJCSJUUE0gaW50
-ZXJydXB0IG5vdCB3b3JraW5nLCBwb2xsaW5nIGluc3RlYWRcbiIpOwogCkBAIC0xMTQ1LDEzICsx
-MTc0LDcgQEAgc3RhdGljIHZvaWQgdHBtX3Rpc19yZWVuYWJsZV9pbnRlcnJ1cHRzKHN0cnVjdCB0
-cG1fY2hpcCAqY2hpcCkKIAlpZiAocmMgPCAwKQogCQlnb3RvIG91dDsKIAotCXJjID0gdHBtX3Rp
-c19yZWFkMzIocHJpdiwgVFBNX0lOVF9FTkFCTEUocHJpdi0+bG9jYWxpdHkpLCAmaW50bWFzayk7
-Ci0JaWYgKHJjIDwgMCkKLQkJZ290byBvdXQ7Ci0KLQlpbnRtYXNrIHw9IFRQTV9JTlRGX0NNRF9S
-RUFEWV9JTlQKLQkgICAgfCBUUE1fSU5URl9MT0NBTElUWV9DSEFOR0VfSU5UIHwgVFBNX0lOVEZf
-REFUQV9BVkFJTF9JTlQKLQkgICAgfCBUUE1fSU5URl9TVFNfVkFMSURfSU5UIHwgVFBNX0dMT0JB
-TF9JTlRfRU5BQkxFOworCWludG1hc2sgPSBwcml2LT5pbnRfbWFzayB8IFRQTV9HTE9CQUxfSU5U
-X0VOQUJMRTsKIAogCXRwbV90aXNfd3JpdGUzMihwcml2LCBUUE1fSU5UX0VOQUJMRShwcml2LT5s
-b2NhbGl0eSksIGludG1hc2spOwogCmRpZmYgLS1naXQgYS9kcml2ZXJzL2NoYXIvdHBtL3RwbV90
-aXNfY29yZS5oIGIvZHJpdmVycy9jaGFyL3RwbS90cG1fdGlzX2NvcmUuaAppbmRleCBiZjA3Mzc5
-ZGVhNDIuLmUwMDVlYjk5NDgwZSAxMDA2NDQKLS0tIGEvZHJpdmVycy9jaGFyL3RwbS90cG1fdGlz
-X2NvcmUuaAorKysgYi9kcml2ZXJzL2NoYXIvdHBtL3RwbV90aXNfY29yZS5oCkBAIC05Myw2ICs5
-Myw3IEBAIHN0cnVjdCB0cG1fdGlzX2RhdGEgewogCXUxNiBtYW51ZmFjdHVyZXJfaWQ7CiAJaW50
-IGxvY2FsaXR5OwogCWludCBpcnE7CisJdW5zaWduZWQgaW50IGludF9tYXNrOwogCXVuc2lnbmVk
-IGxvbmcgZmxhZ3M7CiAJdm9pZCBfX2lvbWVtICppbGJfYmFzZV9hZGRyOwogCXUxNiBjbGtydW5f
-ZW5hYmxlZDsKLS0gCjIuMzYuMQoK
+On Tue, Jun 21, 2022 at 09:12:51PM +0800, Zheng Bin wrote:
+> If CONFIG_PCS_XPCS=y, CONFIG_PHYLINK=m, bulding fails:
+> 
+> drivers/net/pcs/pcs-xpcs.o: in function `xpcs_do_config':
+> pcs-xpcs.c:(.text+0x64f): undefined reference to `phylink_mii_c22_pcs_encode_advertisement'
+> drivers/net/pcs/pcs-xpcs.o: in function `xpcs_get_state':
+> pcs-xpcs.c:(.text+0x10f8): undefined reference to `phylink_mii_c22_pcs_decode_state
+> 
+> Make PCS_XPCS depends on PHYLINK to fix this.
+> 
+> Fixes: b47aec885bcd ("net: pcs: xpcs: add CL37 1000BASE-X AN support")
+> Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
+
+Paolo Abeni has already sent a patch, which I think is addressing a
+similar issue. Please see:
+
+https://lore.kernel.org/r/6959a6a51582e8bc2343824d0cee56f1db246e23.1655797997.git.pabeni@redhat.com
+
+Thanks.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
