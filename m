@@ -2,98 +2,377 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADDC3C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 22:08:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BDF8C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 22:14:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354503AbiFUWIL (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 18:08:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46884 "EHLO
+        id S229846AbiFUWOA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 21 Jun 2022 18:14:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238847AbiFUWIJ (ORCPT
+        with ESMTP id S231335AbiFUWNi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 18:08:09 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 210062ED77
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 15:08:08 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id y32so24650628lfa.6
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 15:08:08 -0700 (PDT)
+        Tue, 21 Jun 2022 18:13:38 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A135F2FFC6
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 15:13:36 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id g4so12292923lfv.9
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 15:13:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=KXWwIJvBgndA3WhK3GL3i3aCpDws4Fk1OlRLme0f82A=;
-        b=mRKePrjtbODAs180aZDsLAEONbuWrZ7iGPXcpUcfSsrbTaJykoYbaixY19NrzKgz7j
-         1/my6u6yhWkZb5L5apnLqQX9tN9kuwSNicpksyprremF6LMxq2Iy334TSqxCxNTO94NL
-         bo9B0OdZSvL3+EoKfiLr4jPe6x/Okg94myvTB7LOBFfxM2w8kpRF8rIsJ2B91aZxzjp2
-         OizmhlznIuMCkJWavRj5GCmTeE4RqozPM5Tx3k0xtMn0R8rQsPIBQPhu2LRW2AwpXJN8
-         Qoens8HmrxcVEMMc2WJpaBQeFUfS9L2PvzbNgnc/KBmZgVP2q8DPl0VpJILYyw6zURnN
-         Nkhw==
+        bh=FhT6OgEtSRMHYL/iMsKO81waTMS99DUORODlB8eMUM8=;
+        b=a7hoFAhgQmpKSok/Lhi54i4SFrBkg28yrGhZvbu5aYam+yowAkMrXoahazNTU2k2Up
+         TXmLEe5TeVQ3YZxcvE/4fpKCLU7CpV6rwYS0EPHxp0gsSJmx/zfSZrwHiM0ExWf27/a3
+         tmPrrDXnR3tSW+DPFtzWDEIdPYLa1yH5n+Lv/SEVTDJXRpJ7dqsP4Y/br0cURQsxWx+D
+         tz2KHFJsYXNc1xSxHdbAVJ2i4LXyEllM/BFHxTvjyAc2f25ZGyFyRFwsiTgfTlbnKICs
+         KrRb9HI2BL2mcHkcYgVklHZWmMMYkoW+ZrYVxnle/SG3fJuYDf6VOS6jB3DrV8WwcSzV
+         ep3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=KXWwIJvBgndA3WhK3GL3i3aCpDws4Fk1OlRLme0f82A=;
-        b=6mJrnVWtHHylryLeQTPZ44smDs/h4jSG5eS8JUJaju5AnVzSXzi7ERrSj3U9mfR6/v
-         HFfTYr0ESS+Qru9DlP/dJ3YfZglzSH0G+yToJCYUUqWSNqv13Rztpfd+GnrNvVgMcnjH
-         ljX2OYpzmcurh8mDMRDxxJkf9Gnaq1hyfll4hy/6/kgzswDhCMPpRwv+M+aGFRHhgHBn
-         Sytf9vnAIzPSc/BRiMxlK2cXO3bIAXU3KwFMrUR+NVQ0AqJN+uqjxyK53Mnf5G0JHI4Z
-         5/mkqlAzAAhCxZgJAzrCjx7VKGvHijJOnM0IJYrJ9SnEZZZ5gY0XRzDuN0D9ymrFq6S6
-         2oGQ==
-X-Gm-Message-State: AJIora/Ymx55wGzN0quADGQPUXw0e49oiV1Su0ncZYfS7geRsQu0XLG8
-        +LQKT1fT30wqXHGg/oXUy6bD25Tq0q8ZbtqjHm6CIGxjuM8PmA==
-X-Google-Smtp-Source: AGRyM1tLMp5Ggp2CW7vw70R1i+unH7HMYj8AjZRj1bFWF1Nw2npoZKI4aWcJQ+py3yCG2KULLc91IK4cn22E3FnjVOc=
-X-Received: by 2002:a05:6512:118f:b0:47f:69ef:91b4 with SMTP id
- g15-20020a056512118f00b0047f69ef91b4mr261672lfr.100.1655849286267; Tue, 21
- Jun 2022 15:08:06 -0700 (PDT)
+        bh=FhT6OgEtSRMHYL/iMsKO81waTMS99DUORODlB8eMUM8=;
+        b=YdBHLs5uOzuvFQUPGWDe6/A6aVGq1p6fAcFr0gI4NsdvVDn+Abh1TIaPNsZpgj2VWb
+         4iv4CfanljmshTOBajEtDVAv3EaH4OVlLkh4K6YXAJMjisGPni3BX2n5nutVKxN1T146
+         ynHCTzgNubeeZRnb7o68USrlGcimf8YdQtG0D5fJO2+iZEmKy8B1WqQGBI3pH4R6VOmP
+         +SqtLWFzmEEUzR+mhwoHnb7Z6Owvie0qIa1HwR/vFWe05rDt9PrqLdSla9CDhP9pgVrh
+         ccbY+R2XAxAEghKG3j7mC78x4BO+D8MW6MuR7rAQAAm4xxourjouJUVH9Aw3Z+srY4jT
+         y5YQ==
+X-Gm-Message-State: AJIora8aEG6Gxhj7Rv6BmVfxEHQmNcpSIPUuQQ25dIg3wl/KO1/m0mFt
+        wm/SxMUELgNKoNbZLKuByK/nQzDkDVUpU0FwrZj4rw==
+X-Google-Smtp-Source: AGRyM1vZzONrGhIdryRXMBvMBWgyMydFB/KNCIogQq5HGQtB2z3xPzoZumHyfUXbMaC9I0J80N3eYKZKpITx63fF3Ik=
+X-Received: by 2002:a05:6512:a94:b0:47f:6621:cf2a with SMTP id
+ m20-20020a0565120a9400b0047f6621cf2amr250041lfu.193.1655849614508; Tue, 21
+ Jun 2022 15:13:34 -0700 (PDT)
 MIME-Version: 1.0
-References: <CAKwvOd=nEddFaTVQ80JrHcpjVv34=EhxJ9bb7rUFrRapuGFj2A@mail.gmail.com>
-In-Reply-To: <CAKwvOd=nEddFaTVQ80JrHcpjVv34=EhxJ9bb7rUFrRapuGFj2A@mail.gmail.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Tue, 21 Jun 2022 15:07:55 -0700
-Message-ID: <CAKwvOdnG3YWLEJ87a2HptA5y4mDBKWp3ZpEV_g6jN9t9uJZA0Q@mail.gmail.com>
-Subject: Re: Fast Kernel Headers talk @ Plumbers?
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     Arnd Bergmann <arnd@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        "Jose E. Marchesi" <jemarch@gnu.org>,
-        clang-built-linux <llvm@lists.linux.dev>,
-        LKML <linux-kernel@vger.kernel.org>
+References: <cover.1655761627.git.ashish.kalra@amd.com> <d325cb5d7961f015400999dda7ee8e08e4ca2ec6.1655761627.git.ashish.kalra@amd.com>
+In-Reply-To: <d325cb5d7961f015400999dda7ee8e08e4ca2ec6.1655761627.git.ashish.kalra@amd.com>
+From:   Peter Gonda <pgonda@google.com>
+Date:   Tue, 21 Jun 2022 16:13:22 -0600
+Message-ID: <CAMkAt6okrB57pwWu1RCRA1BqTzosD52KFHn7XD6DoJNFo1N72A@mail.gmail.com>
+Subject: Re: [PATCH Part2 v6 17/49] crypto: ccp: Add the SNP_{SET,GET}_EXT_CONFIG
+ command
+To:     Ashish Kalra <Ashish.Kalra@amd.com>
+Cc:     "the arch/x86 maintainers" <x86@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        kvm list <kvm@vger.kernel.org>, linux-coco@lists.linux.dev,
+        linux-mm@kvack.org,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+        "Lendacky, Thomas" <thomas.lendacky@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Sergio Lopez <slp@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Dov Murik <dovmurik@linux.ibm.com>,
+        Tobin Feldman-Fitzthum <tobin@ibm.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Michael Roth <michael.roth@amd.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Andi Kleen <ak@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>, Marc Orr <marcorr@google.com>,
+        Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        Alper Gun <alpergun@google.com>,
+        "Dr. David Alan Gilbert" <dgilbert@redhat.com>, jarkko@kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Apr 20, 2022 at 11:14 AM Nick Desaulniers
-<ndesaulniers@google.com> wrote:
+On Mon, Jun 20, 2022 at 5:06 PM Ashish Kalra <Ashish.Kalra@amd.com> wrote:
 >
-> Hi Ingo,
-> Jose and I are currently in the planning process to put together a
-> Kernel+Toolchain microconference track at Linux Plumbers Conference
-> this year (Sept 12-14) in Dublin, Ireland.
+> From: Brijesh Singh <brijesh.singh@amd.com>
 >
-> We were very excited to see numbers posted about improvements to
-> kernel build times from your work.  If you're planning on attending
-> plumbers and our MC gets approved, would you be able to present on
-> this work?
+> The SEV-SNP firmware provides the SNP_CONFIG command used to set the
+> system-wide configuration value for SNP guests. The information includes
+> the TCB version string to be reported in guest attestation reports.
 >
-> Would others be interested in such a topic?
+> Version 2 of the GHCB specification adds an NAE (SNP extended guest
+> request) that a guest can use to query the reports that include additional
+> certificates.
+>
+> In both cases, userspace provided additional data is included in the
+> attestation reports. The userspace will use the SNP_SET_EXT_CONFIG
+> command to give the certificate blob and the reported TCB version string
+> at once. Note that the specification defines certificate blob with a
+> specific GUID format; the userspace is responsible for building the
+> proper certificate blob. The ioctl treats it an opaque blob.
+>
+> While it is not defined in the spec, but let's add SNP_GET_EXT_CONFIG
+> command that can be used to obtain the data programmed through the
+> SNP_SET_EXT_CONFIG.
+>
+> Signed-off-by: Brijesh Singh <brijesh.singh@amd.com>
+> ---
+>  Documentation/virt/coco/sevguest.rst |  27 +++++++
+>  drivers/crypto/ccp/sev-dev.c         | 115 +++++++++++++++++++++++++++
+>  drivers/crypto/ccp/sev-dev.h         |   3 +
+>  include/uapi/linux/psp-sev.h         |  17 ++++
+>  4 files changed, 162 insertions(+)
+>
+> diff --git a/Documentation/virt/coco/sevguest.rst b/Documentation/virt/coco/sevguest.rst
+> index 11ea67c944df..3014de47e4ce 100644
+> --- a/Documentation/virt/coco/sevguest.rst
+> +++ b/Documentation/virt/coco/sevguest.rst
+> @@ -145,6 +145,33 @@ The SNP_PLATFORM_STATUS command is used to query the SNP platform status. The
+>  status includes API major, minor version and more. See the SEV-SNP
+>  specification for further details.
+>
+> +2.5 SNP_SET_EXT_CONFIG
+> +----------------------
+> +:Technology: sev-snp
+> +:Type: hypervisor ioctl cmd
+> +:Parameters (in): struct sev_data_snp_ext_config
+> +:Returns (out): 0 on success, -negative on error
+> +
+> +The SNP_SET_EXT_CONFIG is used to set the system-wide configuration such as
+> +reported TCB version in the attestation report. The command is similar to
+> +SNP_CONFIG command defined in the SEV-SNP spec. The main difference is the
+> +command also accepts an additional certificate blob defined in the GHCB
+> +specification.
+> +
+> +If the certs_address is zero, then previous certificate blob will deleted.
 
-Hi Ingo,
-Any interest in talking more about your fast kernel headers work at
-plumbers this year?
-If you're still considering attending Linux Plumbers conf, please
-submit a proposal:
-https://lpc.events/event/16/abstracts/
-Please make sure to select "Toolchains Track" as the "Track" after
-clicking on "Submit new abstract."
+... then the previous certificate blob will be deleted.
 
+> +For more information on the certificate blob layout, see the GHCB spec
+> +(extended guest request message).
+> +
+> +2.6 SNP_GET_EXT_CONFIG
+> +----------------------
+> +:Technology: sev-snp
+> +:Type: hypervisor ioctl cmd
+> +:Parameters (in): struct sev_data_snp_ext_config
+> +:Returns (out): 0 on success, -negative on error
+> +
+> +The SNP_SET_EXT_CONFIG is used to query the system-wide configuration set
+> +through the SNP_SET_EXT_CONFIG.
+> +
+>  3. SEV-SNP CPUID Enforcement
+>  ============================
+>
+> diff --git a/drivers/crypto/ccp/sev-dev.c b/drivers/crypto/ccp/sev-dev.c
+> index b9b6fab31a82..97b479d5aa86 100644
+> --- a/drivers/crypto/ccp/sev-dev.c
+> +++ b/drivers/crypto/ccp/sev-dev.c
+> @@ -1312,6 +1312,10 @@ static int __sev_snp_shutdown_locked(int *error)
+>         if (!sev->snp_inited)
+>                 return 0;
+>
+> +       /* Free the memory used for caching the certificate data */
+> +       kfree(sev->snp_certs_data);
+> +       sev->snp_certs_data = NULL;
+> +
+>         /* SHUTDOWN requires the DF_FLUSH */
+>         wbinvd_on_all_cpus();
+>         __sev_do_cmd_locked(SEV_CMD_SNP_DF_FLUSH, NULL, NULL);
+> @@ -1616,6 +1620,111 @@ static int sev_ioctl_snp_platform_status(struct sev_issue_cmd *argp)
+>         return ret;
+>  }
+>
+> +static int sev_ioctl_snp_get_config(struct sev_issue_cmd *argp)
+> +{
+> +       struct sev_device *sev = psp_master->sev_data;
+> +       struct sev_user_data_ext_snp_config input;
+
+Lets memset |input| to zero to avoid leaking kernel memory, see
+"crypto: ccp - Use kzalloc for sev ioctl interfaces to prevent kernel
+memory leak"
+
+> +       int ret;
+> +
+> +       if (!sev->snp_inited || !argp->data)
+> +               return -EINVAL;
+> +
+> +       if (copy_from_user(&input, (void __user *)argp->data, sizeof(input)))
+> +               return -EFAULT;
+> +
+> +       /* Copy the TCB version programmed through the SET_CONFIG to userspace */
+> +       if (input.config_address) {
+> +               if (copy_to_user((void * __user)input.config_address,
+> +                                &sev->snp_config, sizeof(struct sev_user_data_snp_config)))
+> +                       return -EFAULT;
+> +       }
+> +
+> +       /* Copy the extended certs programmed through the SNP_SET_CONFIG */
+> +       if (input.certs_address && sev->snp_certs_data) {
+> +               if (input.certs_len < sev->snp_certs_len) {
+> +                       /* Return the certs length to userspace */
+> +                       input.certs_len = sev->snp_certs_len;
+> +
+> +                       ret = -ENOSR;
+> +                       goto e_done;
+> +               }
+> +
+> +               if (copy_to_user((void * __user)input.certs_address,
+> +                                sev->snp_certs_data, sev->snp_certs_len))
+> +                       return -EFAULT;
+> +       }
+> +
+> +       ret = 0;
+> +
+> +e_done:
+> +       if (copy_to_user((void __user *)argp->data, &input, sizeof(input)))
+> +               ret = -EFAULT;
+> +
+> +       return ret;
+> +}
+> +
+> +static int sev_ioctl_snp_set_config(struct sev_issue_cmd *argp, bool writable)
+> +{
+> +       struct sev_device *sev = psp_master->sev_data;
+> +       struct sev_user_data_ext_snp_config input;
+> +       struct sev_user_data_snp_config config;
+> +       void *certs = NULL;
+> +       int ret = 0;
+> +
+> +       if (!sev->snp_inited || !argp->data)
+> +               return -EINVAL;
+> +
+> +       if (!writable)
+> +               return -EPERM;
+> +
+> +       if (copy_from_user(&input, (void __user *)argp->data, sizeof(input)))
+> +               return -EFAULT;
+> +
+> +       /* Copy the certs from userspace */
+> +       if (input.certs_address) {
+> +               if (!input.certs_len || !IS_ALIGNED(input.certs_len, PAGE_SIZE))
+> +                       return -EINVAL;
+> +
+> +               certs = psp_copy_user_blob(input.certs_address, input.certs_len);
+
+I see that psp_copy_user_blob() uses memdup_user() which tracks the
+allocated memory to GFP_USER. Given this memory is long lived and now
+belongs to the PSP driver in perpetuity, should this be tracked with
+GFP_KERNEL?
+
+> +               if (IS_ERR(certs))
+> +                       return PTR_ERR(certs);
+> +       }
+> +
+> +       /* Issue the PSP command to update the TCB version using the SNP_CONFIG. */
+> +       if (input.config_address) {
+> +               if (copy_from_user(&config,
+> +                                  (void __user *)input.config_address, sizeof(config))) {
+> +                       ret = -EFAULT;
+> +                       goto e_free;
+> +               }
+> +
+> +               ret = __sev_do_cmd_locked(SEV_CMD_SNP_CONFIG, &config, &argp->error);
+> +               if (ret)
+> +                       goto e_free;
+> +
+> +               memcpy(&sev->snp_config, &config, sizeof(config));
+> +       }
+> +
+> +       /*
+> +        * If the new certs are passed then cache it else free the old certs.
+> +        */
+> +       if (certs) {
+> +               kfree(sev->snp_certs_data);
+> +               sev->snp_certs_data = certs;
+> +               sev->snp_certs_len = input.certs_len;
+> +       } else {
+> +               kfree(sev->snp_certs_data);
+> +               sev->snp_certs_data = NULL;
+> +               sev->snp_certs_len = 0;
+> +       }
+
+Do we need another lock here? When I look at 18/49 it seems like
+snp_guest_ext_guest_request() it seems like we have a race for
+|sev->snp_certs_data|
+
+> +
+> +       return 0;
+> +
+> +e_free:
+> +       kfree(certs);
+> +       return ret;
+> +}
+> +
+>  static long sev_ioctl(struct file *file, unsigned int ioctl, unsigned long arg)
+>  {
+>         void __user *argp = (void __user *)arg;
+> @@ -1670,6 +1779,12 @@ static long sev_ioctl(struct file *file, unsigned int ioctl, unsigned long arg)
+>         case SNP_PLATFORM_STATUS:
+>                 ret = sev_ioctl_snp_platform_status(&input);
+>                 break;
+> +       case SNP_SET_EXT_CONFIG:
+> +               ret = sev_ioctl_snp_set_config(&input, writable);
+> +               break;
+> +       case SNP_GET_EXT_CONFIG:
+> +               ret = sev_ioctl_snp_get_config(&input);
+> +               break;
+>         default:
+>                 ret = -EINVAL;
+>                 goto out;
+> diff --git a/drivers/crypto/ccp/sev-dev.h b/drivers/crypto/ccp/sev-dev.h
+> index fe5d7a3ebace..d2fe1706311a 100644
+> --- a/drivers/crypto/ccp/sev-dev.h
+> +++ b/drivers/crypto/ccp/sev-dev.h
+> @@ -66,6 +66,9 @@ struct sev_device {
+>
+>         bool snp_inited;
+>         struct snp_host_map snp_host_map[MAX_SNP_HOST_MAP_BUFS];
+> +       void *snp_certs_data;
+> +       u32 snp_certs_len;
+> +       struct sev_user_data_snp_config snp_config;
+
+Since this gets copy_to_user'd can we memset this to 0 to prevent
+leaking kernel uninitialized memory? Similar to recent patches with
+kzalloc and __GPF_ZERO usage.
+
+
+>  };
+>
+>  int sev_dev_init(struct psp_device *psp);
+> diff --git a/include/uapi/linux/psp-sev.h b/include/uapi/linux/psp-sev.h
+> index ffd60e8b0a31..60e7a8d1a18e 100644
+> --- a/include/uapi/linux/psp-sev.h
+> +++ b/include/uapi/linux/psp-sev.h
+> @@ -29,6 +29,8 @@ enum {
+>         SEV_GET_ID,     /* This command is deprecated, use SEV_GET_ID2 */
+>         SEV_GET_ID2,
+>         SNP_PLATFORM_STATUS,
+> +       SNP_SET_EXT_CONFIG,
+> +       SNP_GET_EXT_CONFIG,
+>
+>         SEV_MAX,
+>  };
+> @@ -190,6 +192,21 @@ struct sev_user_data_snp_config {
+>         __u8 rsvd[52];
+>  } __packed;
+>
+> +/**
+> + * struct sev_data_snp_ext_config - system wide configuration value for SNP.
+> + *
+> + * @config_address: address of the struct sev_user_data_snp_config or 0 when
+> + *             reported_tcb does not need to be updated.
+> + * @certs_address: address of extended guest request certificate chain or
+> + *              0 when previous certificate should be removed on SNP_SET_EXT_CONFIG.
+> + * @certs_len: length of the certs
+> + */
+> +struct sev_user_data_ext_snp_config {
+> +       __u64 config_address;           /* In */
+> +       __u64 certs_address;            /* In */
+> +       __u32 certs_len;                /* In */
+> +};
+> +
+>  /**
+>   * struct sev_issue_cmd - SEV ioctl parameters
+>   *
 > --
-> Thanks,
-> ~Nick Desaulniers
-
-
-
--- 
-Thanks,
-~Nick Desaulniers
+> 2.25.1
+>
