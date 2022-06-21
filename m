@@ -2,126 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACE3EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 14:36:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D08C7CCA473
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 14:36:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351399AbiFUOgF (ORCPT
+        id S1351816AbiFUOg1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 10:36:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45190 "EHLO
+        Tue, 21 Jun 2022 10:36:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349502AbiFUOgE (ORCPT
+        with ESMTP id S1351476AbiFUOgZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 10:36:04 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 329B61C93F
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 07:36:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655822162;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=RSGBimivEze+n4dtbXJkxFNriZUPEE36wmWbROM+6Dg=;
-        b=FLBQ8Sw/gJBz/iLRCkOrlLaloCBrjuJd/6sXYKqjeVTDYeGK5nRwPeSJumRD1mYt7wsaxT
-        o3HxonE0tCRzcYXfLRbBJNCBEaW1cTLhVFGhwZaGSTDCzlk8seSNLikqy5Vsv249WN9YvO
-        aY/lAuPO2ukG9A1m6Wsc4MdVEP3JuDE=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-661-q3rKiIGcNxW4UwhIeW6YSg-1; Tue, 21 Jun 2022 10:36:00 -0400
-X-MC-Unique: q3rKiIGcNxW4UwhIeW6YSg-1
-Received: by mail-ed1-f69.google.com with SMTP id g8-20020a056402090800b00433940d207eso11154598edz.1
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 07:36:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RSGBimivEze+n4dtbXJkxFNriZUPEE36wmWbROM+6Dg=;
-        b=1Hr5c7nWYGY7GbHV3APfXrwfPTlmihCcI6dt1MwPJcXEFpLLwQIDbOUqnBoeRJnZAg
-         sTVs7gMn4nRwFJW6P8pLJDLuzT3xxwhwbmSwYbLGAbL21DomID+gkPJyyn3c8dFJgoiX
-         OeQqECmlkZmOE+Shr1tbB6RfExHfmSxZGqE3zBqpCoK9NCSWKpLuIr5YhQL4+jyO6NNG
-         Yu5U1SG6LVQ/+xVwhYs5tCvOSbzd02ff/54RnYl4GN6l8xTOpBrE+DEJzt5Ylq+Ktek7
-         V5mM98VyD22ejbLqsVTypOoxfX1PpiQTcfD4xLFawWwMXMT4hyk9wtXpJYUQkGppow/o
-         y2Ig==
-X-Gm-Message-State: AJIora80Zg9pk1bjEjnhvNbxLBIqySnminfDYvFAHdKI3neftifHO/R7
-        xEJeOpXZSkyKkRafOhqmmvBNIBZkzSrudBaRtEZB3IhIDL0cq8O+3cYn/bj6xxIlbcZzE8vohyE
-        sKpaJYlP9zsjBYji8FjVeRo3/1HmSZf5T2cu+aCpk
-X-Received: by 2002:a05:6402:2694:b0:42d:e05d:3984 with SMTP id w20-20020a056402269400b0042de05d3984mr35354887edd.419.1655822159528;
-        Tue, 21 Jun 2022 07:35:59 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uccH1oXNG8W/n8lbN+i3vqJggxl37Nh59lCOkVkXH4xWIJYiQHe8SQW9WE7sOdkib7dRLLvyzpRWt0vZP3Vfk=
-X-Received: by 2002:a05:6402:2694:b0:42d:e05d:3984 with SMTP id
- w20-20020a056402269400b0042de05d3984mr35354874edd.419.1655822159382; Tue, 21
- Jun 2022 07:35:59 -0700 (PDT)
+        Tue, 21 Jun 2022 10:36:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E766920BEA;
+        Tue, 21 Jun 2022 07:36:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8319F6168D;
+        Tue, 21 Jun 2022 14:36:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E7A8C3411C;
+        Tue, 21 Jun 2022 14:36:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655822183;
+        bh=9hzVJBmXejWxqKoWbTYAA5mBykUEAvY+19xhKlfx+aM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=h9XH0EAkI74XOBgpK92u1iqaQqlF0Y5PaZFC9rX4RJWOuJSVJ6268ltKh196Uo5Do
+         geb/cdM+8qvDgcfiue/PulRRVnhw2W3dZY5G1/hdVBDtVESzt5DuTuguC5gtAaJ4Z1
+         hfwKwY5OmnlhzASl4GhLJFBvltZK70nVMaEJ/qQU=
+Date:   Tue, 21 Jun 2022 16:36:21 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Conor Dooley <conor.dooley@microchip.com>
+Cc:     Bin Liu <b-liu@ti.com>,
+        Daire McNamara <daire.mcnamara@microchip.com>,
+        Valentina Fernandez <valentina.fernandezalanis@microchip.com>,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-riscv@lists.infradead.org,
+        Ben Dooks <ben.dooks@codethink.co.uk>,
+        Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
+Subject: Re: [PATCH v2 0/2] Add support for PolarFire SoC's musb controller
+Message-ID: <YrHXZYe4e4vlCHh3@kroah.com>
+References: <20220613114642.1615292-1-conor.dooley@microchip.com>
 MIME-Version: 1.0
-References: <20220620131618.952133-1-vdronov@redhat.com> <23bc9020-4519-65ba-725e-e7efd226c192@infradead.org>
-In-Reply-To: <23bc9020-4519-65ba-725e-e7efd226c192@infradead.org>
-From:   Vlad Dronov <vdronov@redhat.com>
-Date:   Tue, 21 Jun 2022 16:35:47 +0200
-Message-ID: <CAMusb+SaCeFe9maPZEE3JuaF1Q18=zj_Ljb0+HeNABKQwAa+mg@mail.gmail.com>
-Subject: Re: [PATCH] crypto: fips - make proc files report fips module name
- and version
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Simo Sorce <simo@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220613114642.1615292-1-conor.dooley@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Mon, Jun 13, 2022 at 12:46:41PM +0100, Conor Dooley wrote:
+> Hey Bin, Greg,
+> Short series here adding support for USB on Microchip PolarFire SoC FPGAs.
+> The kconfig dependency for INVENTRA_DMA has become a bit of a mouthful,
+> is there a better way of dealing with that?
+> Thanks,
+> Conor.
+> 
+> Changes since v1:
+> - Drop unneeded resource copying as per Rob's changes to the other drivers
+> - Drop the dts patch
+> 
+> Conor Dooley (2):
+>   usb: musb: Add support for PolarFire SoC's musb controller
+>   MAINTAINERS: add musb to PolarFire SoC entry
+> 
+>  MAINTAINERS               |   1 +
+>  drivers/usb/musb/Kconfig  |  13 +-
+>  drivers/usb/musb/Makefile |   1 +
+>  drivers/usb/musb/mpfs.c   | 265 ++++++++++++++++++++++++++++++++++++++
+>  4 files changed, 279 insertions(+), 1 deletion(-)
+>  create mode 100644 drivers/usb/musb/mpfs.c
+> 
+> 
+> base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
+> -- 
+> 2.36.1
+> 
 
-On Mon, Jun 20, 2022 at 11:40 PM Randy Dunlap <rdunlap@infradead.org> wrote:
->
-> Hi--
->
-> On 6/20/22 06:16, Vladis Dronov wrote:
-> > diff --git a/crypto/Kconfig b/crypto/Kconfig
-> > index 1d44893a997b..082ff03d9f6c 100644
-> > --- a/crypto/Kconfig
-> > +++ b/crypto/Kconfig
-> > @@ -33,6 +33,27 @@ config CRYPTO_FIPS
-> >         certification.  You should say no unless you know what
-> >         this is.
-> >
-> > +config CRYPTO_FIPS_NAME
-> > +     string "FIPS Module Name"
-> > +     default "Linux Kernel Cryptographic API"
-> > +     depends on (CRYPTO_FIPS)
->
-> No parentheses.
->
-> > +     help
-> > +       This option sets the FIPS Module name reported by the Crypto API via
-> > +       the /proc/sys/crypto/fips_name file.
-> > +
-> > +config CRYPTO_FIPS_CUSTOM_VERSION
-> > +     bool "Use Custom FIPS Module Version"
-> > +     depends on (CRYPTO_FIPS)
->
-> Ditto.
->
-> > +     default n
-> > +
-> > +config CRYPTO_FIPS_VERSION
-> > +     string "FIPS Module Version"
-> > +     default "(none)"
-> > +     depends on (CRYPTO_FIPS_CUSTOM_VERSION)
->
-> Ditto.
->
-> > +     help
-> > +       This option provides the ability to override the FIPS Module Version.
-> > +       By default the KERNELRELEASE value is used.
->
-> --
-> ~Randy
+Any chance you can get your company to fix up their email settings:
 
-Oh dang, indeed. Thanks, Randy.
+Grabbing thread from lore.kernel.org/all/20220613114642.1615292-1-conor.dooley%40microchip.com/t.mbox.gz
+Analyzing 4 messages in the thread
+Checking attestation on all messages, may take a moment...
+---
+  ✗ [PATCH v2 1/2] usb: musb: Add support for PolarFire SoC's musb controller
+  ✗ [PATCH v2 2/2] MAINTAINERS: add musb to PolarFire SoC entry
+  ---
+  ✗ BADSIG: DKIM/microchip.com
+---
+Total patches: 2
 
-Let me post v2 to this same thread to reduce separate threads.
+If I didn't know better, I would think you were spoofing the address...
 
-Best regards,
-Vladis Dronov | Red Hat, Inc. | The Core Kernel | Senior Software Engineer
+thanks,
 
+greg k-h
