@@ -2,175 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D3A1CCA473
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 07:44:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A80E3CCA482
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 07:45:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347617AbiFUHny convert rfc822-to-8bit (ORCPT
+        id S1347301AbiFUHox (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 03:43:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42454 "EHLO
+        Tue, 21 Jun 2022 03:44:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347249AbiFUHnM (ORCPT
+        with ESMTP id S1347477AbiFUHo2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 03:43:12 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 371F3237D1;
-        Tue, 21 Jun 2022 00:43:11 -0700 (PDT)
-Received: from fraeml703-chm.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LRz3G1mFdz67kTG;
-        Tue, 21 Jun 2022 15:41:14 +0800 (CST)
-Received: from lhreml715-chm.china.huawei.com (10.201.108.66) by
- fraeml703-chm.china.huawei.com (10.206.15.52) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.24; Tue, 21 Jun 2022 09:43:08 +0200
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- lhreml715-chm.china.huawei.com (10.201.108.66) with Microsoft SMTP Server
+        Tue, 21 Jun 2022 03:44:28 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA67223BEA;
+        Tue, 21 Jun 2022 00:44:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1655797467; x=1687333467;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=ga0yI8b3nFUJ/A1nAFDaHWb+WYFb6o6Ncf2niaqtUg8=;
+  b=pgxHedHjqanp+mm9guBT3gqsqzXv2jXJQ3qVuO1hj8z5qYwjWM8I8SJy
+   S24qQslAWKhBYdOkGycP7eOOc5VecESMyzfptgnwOW7r8jJq9EndMUujF
+   a84/kdmYxRHTDEPxZS2mQtU7+njxapC8/9BgpL6dEMG2iAFJfAqurkQL+
+   LTSMcz4Ucn5Ec3NTCChxC2b10u+qz71Bh9FFAJV8YiHrjHXFtO1BOwQKM
+   pdFhytuGOkSRnspHbi8mHPVmfETAGluvtMxX+IpSaL8MUhjt6pVqLmGUz
+   C6hpWqY7WhofW3hfbKAMaMGDoll8xWCsEQTUkVxAfIHa/EhfG3vr+sFmI
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.92,209,1650956400"; 
+   d="scan'208";a="164318494"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 Jun 2022 00:44:23 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 21 Jun 2022 08:43:08 +0100
-Received: from lhreml710-chm.china.huawei.com ([169.254.81.184]) by
- lhreml710-chm.china.huawei.com ([169.254.81.184]) with mapi id
- 15.01.2375.024; Tue, 21 Jun 2022 08:43:08 +0100
-From:   Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-To:     "Paul E. McKenney" <paulmck@kernel.org>,
-        "rcu@vger.kernel.org" <rcu@vger.kernel.org>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kernel-team@fb.com" <kernel-team@fb.com>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        Zhangfei Gao <zhangfei.gao@linaro.org>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: RE: [PATCH rcu 12/12] srcu: Block less aggressively for expedited
- grace periods
-Thread-Topic: [PATCH rcu 12/12] srcu: Block less aggressively for expedited
- grace periods
-Thread-Index: AQHYhPP8VjWNJPtPxUuR+oHDE6Rcoq1ZeCVw
-Date:   Tue, 21 Jun 2022 07:43:08 +0000
-Message-ID: <fef4fbd55b88481490d52cbd65e1b1f8@huawei.com>
-References: <20220620222022.GA3839466@paulmck-ThinkPad-P17-Gen-1>
- <20220620222032.3839547-12-paulmck@kernel.org>
-In-Reply-To: <20220620222032.3839547-12-paulmck@kernel.org>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.202.227.178]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+ 15.1.2375.17; Tue, 21 Jun 2022 00:44:23 -0700
+Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Tue, 21 Jun 2022 00:44:21 -0700
+From:   Conor Dooley <conor.dooley@microchip.com>
+To:     <wsa@kernel.org>, <linux-i2c@vger.kernel.org>
+CC:     <ben.dooks@codethink.co.uk>, <linux-kernel@vger.kernel.org>,
+        <linux-riscv@lists.infradead.org>, <daire.mcnamara@microchip.com>,
+        <conor.dooley@microchip.com>
+Subject: [PATCH v6 2/2] MAINTAINERS: add the polarfire soc's i2c driver
+Date:   Tue, 21 Jun 2022 08:42:39 +0100
+Message-ID: <20220621074238.957177-2-conor.dooley@microchip.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220621074238.957177-1-conor.dooley@microchip.com>
+References: <20220621074238.957177-1-conor.dooley@microchip.com>
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Add the newly added i2c controller driver to the existing entry for
+PolarFire SoC.
 
+Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+---
+New in v6.
+FYI: I have several maintainers updates in flight - usb, pwm, spi
+of which some will be in 5.20 & clk/hwrng/pci that are likely to
+go into 5.19-rcN.
+---
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
 
-> -----Original Message-----
-> From: Paul E. McKenney [mailto:paulmck@kernel.org]
-> Sent: 20 June 2022 23:21
-> To: rcu@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org; kernel-team@fb.com;
-> rostedt@goodmis.org; Paul E. McKenney <paulmck@kernel.org>; Zhangfei
-> Gao <zhangfei.gao@linaro.org>; Shameerali Kolothum Thodi
-> <shameerali.kolothum.thodi@huawei.com>; Paolo Bonzini
-> <pbonzini@redhat.com>
-> Subject: [PATCH rcu 12/12] srcu: Block less aggressively for expedited grace
-> periods
-> 
-> Commit 282d8998e997 ("srcu: Prevent expedited GPs and blocking readers
-> from consuming CPU") fixed a problem where a long-running expedited
-> SRCU
-> grace period could block kernel live patching.  It did so by giving up
-> on expediting once a given SRCU expedited grace period grew too old.
-> 
-> Unfortunately, this added excessive delays to boots of embedded systems
-> running on qemu that use the ARM IORT RMR feature. 
-
-As pointed out here[0]/[1], this delay has nothing to do with ARM IORT RMR
-feature. The delay is due to the "-bios QEMU_EFI.fd" line which emulates flash
-devices and requires excessive memslot ops during boot.
-
-Thanks,
-Shameer
-
-[0] https://lore.kernel.org/all/110bbec5cee74efba0aad64360069a12@huawei.com/
-[1] https://lore.kernel.org/all/8735g649ew.wl-maz@kernel.org/
-
-
- This commit
-> therefore
-> makes the transition away from expediting less aggressive, increasing
-> the per-grace-period phase number of non-sleeping polls of readers from
-> one to three and increasing the required grace-period age from one jiffy
-> (actually from zero to one jiffies) to two jiffies (actually from one
-> to two jiffies).
-> 
-> Fixes: 282d8998e997 ("srcu: Prevent expedited GPs and blocking readers
-> from consuming CPU")
-> Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-> Reported-by: Zhangfei Gao <zhangfei.gao@linaro.org>
-> Reported-by: chenxiang (M)" <chenxiang66@hisilicon.com>
-> Cc: Shameerali Kolothum Thodi  <shameerali.kolothum.thodi@huawei.com>
-> Cc: Paolo Bonzini <pbonzini@redhat.com>
-> Link:
-> https://lore.kernel.org/all/20615615-0013-5adc-584f-2b1d5c03ebfc@linaro
-> .org/
-> ---
->  kernel/rcu/srcutree.c | 20 +++++++++++++-------
->  1 file changed, 13 insertions(+), 7 deletions(-)
-> 
-> diff --git a/kernel/rcu/srcutree.c b/kernel/rcu/srcutree.c
-> index 50ba70f019dea..0db7873f4e95b 100644
-> --- a/kernel/rcu/srcutree.c
-> +++ b/kernel/rcu/srcutree.c
-> @@ -513,7 +513,7 @@ static bool srcu_readers_active(struct srcu_struct
-> *ssp)
-> 
->  #define SRCU_INTERVAL		1	// Base delay if no expedited GPs
-> pending.
->  #define SRCU_MAX_INTERVAL	10	// Maximum incremental delay from
-> slow readers.
-> -#define SRCU_MAX_NODELAY_PHASE	1	// Maximum per-GP-phase
-> consecutive no-delay instances.
-> +#define SRCU_MAX_NODELAY_PHASE	3	// Maximum per-GP-phase
-> consecutive no-delay instances.
->  #define SRCU_MAX_NODELAY	100	// Maximum consecutive no-delay
-> instances.
-> 
->  /*
-> @@ -522,16 +522,22 @@ static bool srcu_readers_active(struct srcu_struct
-> *ssp)
->   */
->  static unsigned long srcu_get_delay(struct srcu_struct *ssp)
->  {
-> +	unsigned long gpstart;
-> +	unsigned long j;
->  	unsigned long jbase = SRCU_INTERVAL;
-> 
->  	if (ULONG_CMP_LT(READ_ONCE(ssp->srcu_gp_seq),
-> READ_ONCE(ssp->srcu_gp_seq_needed_exp)))
->  		jbase = 0;
-> -	if (rcu_seq_state(READ_ONCE(ssp->srcu_gp_seq)))
-> -		jbase += jiffies - READ_ONCE(ssp->srcu_gp_start);
-> -	if (!jbase) {
-> -		WRITE_ONCE(ssp->srcu_n_exp_nodelay,
-> READ_ONCE(ssp->srcu_n_exp_nodelay) + 1);
-> -		if (READ_ONCE(ssp->srcu_n_exp_nodelay) >
-> SRCU_MAX_NODELAY_PHASE)
-> -			jbase = 1;
-> +	if (rcu_seq_state(READ_ONCE(ssp->srcu_gp_seq))) {
-> +		j = jiffies - 1;
-> +		gpstart = READ_ONCE(ssp->srcu_gp_start);
-> +		if (time_after(j, gpstart))
-> +			jbase += j - gpstart;
-> +		if (!jbase) {
-> +			WRITE_ONCE(ssp->srcu_n_exp_nodelay,
-> READ_ONCE(ssp->srcu_n_exp_nodelay) + 1);
-> +			if (READ_ONCE(ssp->srcu_n_exp_nodelay) >
-> SRCU_MAX_NODELAY_PHASE)
-> +				jbase = 1;
-> +		}
->  	}
->  	return jbase > SRCU_MAX_INTERVAL ? SRCU_MAX_INTERVAL : jbase;
->  }
-> --
-> 2.31.1.189.g2e36527f23
+diff --git a/MAINTAINERS b/MAINTAINERS
+index a6d3bd9d2a8d..90de65041863 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -17141,6 +17141,7 @@ M:	Conor Dooley <conor.dooley@microchip.com>
+ L:	linux-riscv@lists.infradead.org
+ S:	Supported
+ F:	arch/riscv/boot/dts/microchip/
++F:	drivers/i2c/busses/i2c-microchip-core.c
+ F:	drivers/mailbox/mailbox-mpfs.c
+ F:	drivers/soc/microchip/
+ F:	include/soc/microchip/mpfs.h
+-- 
+2.36.1
 
