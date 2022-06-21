@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5946CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:03:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8A42C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:03:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355787AbiFUVDB (ORCPT
+        id S1355978AbiFUVDF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 17:03:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55296 "EHLO
+        Tue, 21 Jun 2022 17:03:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355452AbiFUU6K (ORCPT
+        with ESMTP id S1355541AbiFUU6i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 16:58:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4558632072;
-        Tue, 21 Jun 2022 13:51:06 -0700 (PDT)
+        Tue, 21 Jun 2022 16:58:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84709326E0;
+        Tue, 21 Jun 2022 13:51:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8CBEF618A9;
-        Tue, 21 Jun 2022 20:50:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D1AAC385A2;
-        Tue, 21 Jun 2022 20:50:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 89996B81B3A;
+        Tue, 21 Jun 2022 20:50:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AED80C36AE3;
+        Tue, 21 Jun 2022 20:50:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655844630;
-        bh=+lZaMnFOoxnUhYX883BYYPwc6fIp1y4d7L22V3SpJfg=;
+        s=k20201202; t=1655844632;
+        bh=dIM7iEccu207ZB7h7nXDFCY96ISltuBe6kC/RN40lTk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fJYqdzpRmNBsXFi4BrkYV9kbew1f0vU77HszQG9IQq+cKGqmsPWq7bhWNscydfUM+
-         RW+sW39MdkmrgMUewza0lXnWIqcnYTMMhYX4yTSb5SYo/FhM7wxnJ0uKHJNiudVwre
-         y5sREzMIs+0EqDWuKd+bcQV1nXArQ8fLtY2k5evbYPU8SE+DXw4xsgiHmMDbcgmRoJ
-         NLwcmAsO4IZ5F4YNODULUy9lOGHv0SsQj+BAkut4FZAk7LHvy0ltXeLk1yDyu2cEal
-         l5q0aT0dYFpePc1LdoNaQeb7JYWf8lKYx17g4Sag5VstMHD+p8pjpmceOAdX6anbKt
-         T17lQR9YIFXxA==
+        b=k7Wuz9UYJGA3j95iwGySpKVmCQurqyzxziMkTHqepzwRhyxhWu30szvUJlBTct5Lm
+         eoW8iwemZ5cReF6Mf6Ak7xqNf3JEtLCj3sn2walC164gQbCG1ia0aJd8XureetdVKU
+         XxjDqH3O8Dp+x04PtpOKGVeIULigIMpjomqCSmrFxfvPmdAq49uySoyU2vGovooLbI
+         z/xl4S/3ciPtqNWR7cw3hAP/7u9k3jFlMXF9B5apgM0tb8XX0XqoCae07OVcGNxuV8
+         VKznvrhTSpUoM4yc1u2/7wztutbBiCin00l6j5wr1F4YrDKjeCX3/eTA4oMV3+0w6/
+         u1ytaB3WRMJHQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ning Wang <ningwang35@outlook.com>, Christoph Hellwig <hch@lst.de>,
-        Sasha Levin <sashal@kernel.org>, kbusch@kernel.org,
-        axboe@fb.com, sagi@grimberg.me, linux-nvme@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.17 11/20] nvme-pci: avoid the deepest sleep state on ZHITAI TiPro7000 SSDs
-Date:   Tue, 21 Jun 2022 16:50:01 -0400
-Message-Id: <20220621205010.250185-11-sashal@kernel.org>
+Cc:     Ye Bin <yebin10@huawei.com>, Jan Kara <jack@suse.cz>,
+        Sasha Levin <sashal@kernel.org>, jack@suse.com,
+        linux-ext4@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 13/20] ext2: fix fs corruption when trying to remove a non-empty directory with IO error
+Date:   Tue, 21 Jun 2022 16:50:03 -0400
+Message-Id: <20220621205010.250185-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220621205010.250185-1-sashal@kernel.org>
 References: <20220621205010.250185-1-sashal@kernel.org>
@@ -52,62 +52,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ning Wang <ningwang35@outlook.com>
+From: Ye Bin <yebin10@huawei.com>
 
-[ Upstream commit 6b961bce50e489186232cef51036ddb8d672bc3b ]
+[ Upstream commit 27cfa258951a465e3eae63ee1e715e902cd45578 ]
 
-When ZHITAI TiPro7000 SSDs entered deepest power state(ps4)
-it has the same APST sleep problem as Kingston A2000.
-by chance the system crashes and displays the same dmesg info:
+We got issue as follows:
+[home]# mount  /dev/sdd  test
+[home]# cd test
+[test]# ls
+dir1  lost+found
+[test]# rmdir  dir1
+ext2_empty_dir: inject fault
+[test]# ls
+lost+found
+[test]# cd ..
+[home]# umount test
+[home]# fsck.ext2 -fn  /dev/sdd
+e2fsck 1.42.9 (28-Dec-2013)
+Pass 1: Checking inodes, blocks, and sizes
+Inode 4065, i_size is 0, should be 1024.  Fix? no
 
-https://bugzilla.kernel.org/show_bug.cgi?id=195039#c65
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Unconnected directory inode 4065 (/???)
+Connect to /lost+found? no
 
-As the Archlinux wiki suggest (enlat + exlat) < 25000 is fine
-and my testing shows no system crashes ever since.
-Therefore disabling the deepest power state will fix the APST sleep issue.
+'..' in ... (4065) is / (2), should be <The NULL inode> (0).
+Fix? no
 
-https://wiki.archlinux.org/title/Solid_state_drive/NVMe
+Pass 4: Checking reference counts
+Inode 2 ref count is 3, should be 4.  Fix? no
 
-This is the APST data from 'nvme id-ctrl /dev/nvme1'
+Inode 4065 ref count is 2, should be 3.  Fix? no
 
-NVME Identify Controller:
-vid       : 0x1e49
-ssvid     : 0x1e49
-sn        : [...]
-mn        : ZHITAI TiPro7000 1TB
-fr        : ZTA32F3Y
-[...]
-ps    0 : mp:3.50W operational enlat:5 exlat:5 rrt:0 rrl:0
-          rwt:0 rwl:0 idle_power:- active_power:-
-ps    1 : mp:3.30W operational enlat:50 exlat:100 rrt:1 rrl:1
-          rwt:1 rwl:1 idle_power:- active_power:-
-ps    2 : mp:2.80W operational enlat:50 exlat:200 rrt:2 rrl:2
-          rwt:2 rwl:2 idle_power:- active_power:-
-ps    3 : mp:0.1500W non-operational enlat:500 exlat:5000 rrt:3 rrl:3
-          rwt:3 rwl:3 idle_power:- active_power:-
-ps    4 : mp:0.0200W non-operational enlat:2000 exlat:60000 rrt:4 rrl:4
-          rwt:4 rwl:4 idle_power:- active_power:-
+Pass 5: Checking group summary information
 
-Signed-off-by: Ning Wang <ningwang35@outlook.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+/dev/sdd: ********** WARNING: Filesystem still has errors **********
+
+/dev/sdd: 14/128016 files (0.0% non-contiguous), 18477/512000 blocks
+
+Reason is same with commit 7aab5c84a0f6. We can't assume directory
+is empty when read directory entry failed.
+
+Link: https://lore.kernel.org/r/20220615090010.1544152-1-yebin10@huawei.com
+Signed-off-by: Ye Bin <yebin10@huawei.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/pci.c | 2 ++
- 1 file changed, 2 insertions(+)
+ fs/ext2/dir.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index 5934abc24fb3..70dc05c60f2b 100644
---- a/drivers/nvme/host/pci.c
-+++ b/drivers/nvme/host/pci.c
-@@ -3466,6 +3466,8 @@ static const struct pci_device_id nvme_id_table[] = {
- 		.driver_data = NVME_QUIRK_BOGUS_NID, },
- 	{ PCI_DEVICE(0x1cc1, 0x5350),   /* ADATA XPG GAMMIX S50 */
- 		.driver_data = NVME_QUIRK_BOGUS_NID, },
-+	{ PCI_DEVICE(0x1e49, 0x0041),   /* ZHITAI TiPro7000 NVMe SSD */
-+		.driver_data = NVME_QUIRK_NO_DEEPEST_PS, },
- 	{ PCI_DEVICE(PCI_VENDOR_ID_AMAZON, 0x0061),
- 		.driver_data = NVME_QUIRK_DMA_ADDRESS_BITS_48, },
- 	{ PCI_DEVICE(PCI_VENDOR_ID_AMAZON, 0x0065),
+diff --git a/fs/ext2/dir.c b/fs/ext2/dir.c
+index 2c2f179b6977..43de293cef56 100644
+--- a/fs/ext2/dir.c
++++ b/fs/ext2/dir.c
+@@ -672,17 +672,14 @@ int ext2_empty_dir (struct inode * inode)
+ 	void *page_addr = NULL;
+ 	struct page *page = NULL;
+ 	unsigned long i, npages = dir_pages(inode);
+-	int dir_has_error = 0;
+ 
+ 	for (i = 0; i < npages; i++) {
+ 		char *kaddr;
+ 		ext2_dirent * de;
+-		page = ext2_get_page(inode, i, dir_has_error, &page_addr);
++		page = ext2_get_page(inode, i, 0, &page_addr);
+ 
+-		if (IS_ERR(page)) {
+-			dir_has_error = 1;
+-			continue;
+-		}
++		if (IS_ERR(page))
++			goto not_empty;
+ 
+ 		kaddr = page_addr;
+ 		de = (ext2_dirent *)kaddr;
 -- 
 2.35.1
 
