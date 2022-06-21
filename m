@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 009C7C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 20:59:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4FF0CCA482
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:00:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356311AbiFUU7z (ORCPT
+        id S1355493AbiFUVAU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 16:59:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55362 "EHLO
+        Tue, 21 Jun 2022 17:00:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355162AbiFUU5M (ORCPT
+        with ESMTP id S1355348AbiFUU52 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 16:57:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C01531DE9;
-        Tue, 21 Jun 2022 13:50:51 -0700 (PDT)
+        Tue, 21 Jun 2022 16:57:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00E9F3204B;
+        Tue, 21 Jun 2022 13:50:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C4799618B9;
-        Tue, 21 Jun 2022 20:50:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95064C385A9;
-        Tue, 21 Jun 2022 20:50:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D305661893;
+        Tue, 21 Jun 2022 20:50:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EE0EC341C4;
+        Tue, 21 Jun 2022 20:50:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655844638;
-        bh=lfy/DZCrv24kyMVUIOeDOcUGM+Acl7i43DdckyjHqYI=;
+        s=k20201202; t=1655844653;
+        bh=27H04Xa7RUasluHV4FQZNrDJjyArwUaxGVE6ViV4Bog=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MvU5mJSzO3RklVy2g2593FiBhqnOLjEBNmYlrOwf9/lZabkHEV1KRbB4dx5yvDtH1
-         Mvpp6dNYCDwgtoXcm07Tr9H+NHpr7J1/N2fl7Ipt711uUeR6jHCssUYXSkrNhiLtvv
-         J+NZQstuW85vzc2PZCHxxlOH9PSb9eUTWciiRc9phrPfaCNm9FFIUalxR3Tdsq3VtX
-         LQKuuwlb7k/LXiPQelTiV1a+bqcXXJ8Be4320zfAt1Wqzvc5YLWYEL6URrXIxiU3nM
-         /SjjWNSJ6I+4whOIUrq4L81PUbd5eAl34Psw5FQrHRcOUsBs10l/WUAsZu6AgyquHf
-         dEY9FaaCUm2VQ==
+        b=AVMqPiqpkLEb9Zr0jwH47KrjRIJwGdl+lGKnPSljnqJoTTdbycI5xgdaIvIUnD2fb
+         bpT7X0Suk2FZ+YOdj0UszUqkhwNMlDQ6LcwzruRxjmBM04MGee57Pf2oph27wWO2LK
+         rIB6usHIPk6PY/nzguV6iSqNHjHrWGoCIxccuFFxoj5qkWeVzQONUfzYDEKREBtSgm
+         3rXw2mTANf/3TsBuoBfXtdPOgClGleIFPTiJwzW3r1dYDkmddgPGEtLhFvddwxzddh
+         lHd99fywFUh1Fi1opIpAeyx9KBj60EYdqUDMqVd504PfSKVKXXn755Zcx1l4PWGSSr
+         xeCJE7A0x+/zQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ming Lei <ming.lei@redhat.com>, Christoph Hellwig <hch@lst.de>,
-        Yu Kuai <yukuai3@huawei.com>, Jens Axboe <axboe@kernel.dk>,
-        Sasha Levin <sashal@kernel.org>, linux-block@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 18/20] blk-mq: don't clear flush_rq from tags->rqs[]
-Date:   Tue, 21 Jun 2022 16:50:08 -0400
-Message-Id: <20220621205010.250185-18-sashal@kernel.org>
+Cc:     Keith Busch <kbusch@kernel.org>, Christoph Hellwig <hch@lst.de>,
+        Sasha Levin <sashal@kernel.org>, axboe@fb.com,
+        sagi@grimberg.me, linux-nvme@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.15 07/17] nvme-pci: phison e12 has bogus namespace ids
+Date:   Tue, 21 Jun 2022 16:50:30 -0400
+Message-Id: <20220621205041.250426-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220621205010.250185-1-sashal@kernel.org>
-References: <20220621205010.250185-1-sashal@kernel.org>
+In-Reply-To: <20220621205041.250426-1-sashal@kernel.org>
+References: <20220621205041.250426-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,48 +52,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ming Lei <ming.lei@redhat.com>
+From: Keith Busch <kbusch@kernel.org>
 
-[ Upstream commit 6cfeadbff3f8905f2854735ebb88e581402c16c4 ]
+[ Upstream commit 2cf7a77ed5f8903606f4f7833d02d67b08650442 ]
 
-commit 364b61818f65 ("blk-mq: clearing flush request reference in
-tags->rqs[]") is added to clear the to-be-free flush request from
-tags->rqs[] for avoiding use-after-free on the flush rq.
+Add the quirk.
 
-Yu Kuai reported that blk_mq_clear_flush_rq_mapping() slows down boot time
-by ~8s because running scsi probe which may create and remove lots of
-unpresent LUNs on megaraid-sas which uses BLK_MQ_F_TAG_HCTX_SHARED and
-each request queue has lots of hw queues.
-
-Improve the situation by not running blk_mq_clear_flush_rq_mapping if
-disk isn't added when there can't be any flush request issued.
-
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Reported-by: Yu Kuai <yukuai3@huawei.com>
-Signed-off-by: Ming Lei <ming.lei@redhat.com>
-Link: https://lore.kernel.org/r/20220616014401.817001-4-ming.lei@redhat.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=216049
+Signed-off-by: Keith Busch <kbusch@kernel.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/blk-mq.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/nvme/host/pci.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/block/blk-mq.c b/block/blk-mq.c
-index 8f77023c0f39..047d8b44878f 100644
---- a/block/blk-mq.c
-+++ b/block/blk-mq.c
-@@ -3413,8 +3413,9 @@ static void blk_mq_exit_hctx(struct request_queue *q,
- 	if (blk_mq_hw_queue_mapped(hctx))
- 		blk_mq_tag_idle(hctx);
- 
--	blk_mq_clear_flush_rq_mapping(set->tags[hctx_idx],
--			set->queue_depth, flush_rq);
-+	if (blk_queue_init_done(q))
-+		blk_mq_clear_flush_rq_mapping(set->tags[hctx_idx],
-+				set->queue_depth, flush_rq);
- 	if (set->ops->exit_request)
- 		set->ops->exit_request(set, flush_rq, hctx_idx);
- 
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index 700857af5b79..93d1f12f31bb 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -3344,6 +3344,8 @@ static const struct pci_device_id nvme_id_table[] = {
+ 		.driver_data = NVME_QUIRK_DELAY_BEFORE_CHK_RDY |
+ 				NVME_QUIRK_DISABLE_WRITE_ZEROES|
+ 				NVME_QUIRK_IGNORE_DEV_SUBNQN, },
++	{ PCI_DEVICE(0x1987, 0x5012),	/* Phison E12 */
++		.driver_data = NVME_QUIRK_BOGUS_NID, },
+ 	{ PCI_DEVICE(0x1987, 0x5016),	/* Phison E16 */
+ 		.driver_data = NVME_QUIRK_IGNORE_DEV_SUBNQN, },
+ 	{ PCI_DEVICE(0x1b4b, 0x1092),	/* Lexar 256 GB SSD */
 -- 
 2.35.1
 
