@@ -2,90 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03297C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 14:33:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFFE4C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 14:34:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231578AbiFUOdm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 10:33:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43858 "EHLO
+        id S1351791AbiFUOd7 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 21 Jun 2022 10:33:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237343AbiFUOd2 (ORCPT
+        with ESMTP id S1350991AbiFUOd4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 10:33:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A48D717585;
-        Tue, 21 Jun 2022 07:33:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 21 Jun 2022 10:33:56 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A3081C127;
+        Tue, 21 Jun 2022 07:33:55 -0700 (PDT)
+Received: from [192.168.10.5] (unknown [39.45.247.111])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6948CB81817;
-        Tue, 21 Jun 2022 14:33:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B57C1C3411D;
-        Tue, 21 Jun 2022 14:33:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655822005;
-        bh=JYrLpERtN5LzOmO2YH5CtQSk8rM2T/YTYKNbWl0hAtI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=JZpc974jigr8blzNaQR+GCYzCfAXB7D7nnVJ+txJ66DPrFx2kyPs0XuTbblsRM8hG
-         vXQk0i+yMcycm2xmFJUH2tFNxx/WRld5aAKGycVRYTHI9ePzW+tbDP+z3NwRXPsBVX
-         MkpNlOd+H1wNqn7T47nDMfENWBg1v+1ShQZCwGIQ=
-Date:   Tue, 21 Jun 2022 16:33:22 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Xuezhi Zhang <zhangxuezhi1@coolpad.com>
-Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] usb: core: sysfs: convert sysfs snprintf to sysfs_emit
-Message-ID: <YrHWsiwEh3YouRWo@kroah.com>
-References: <20220613023553.103441-1-zhangxuezhi1@coolpad.com>
+        (Authenticated sender: usama.anjum)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id B53416601688;
+        Tue, 21 Jun 2022 15:33:51 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1655822033;
+        bh=F8yRvq3Kx4hHKAfFp6vxgPwTAuKL3kJxkpN/M5vr8DY=;
+        h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
+        b=h1Ddw65ku4x4Nz7IzNI9dXxbxgHEDS1oXPh3Ik5YWwcmtnFtu4gTAqD7vY98PONbS
+         BKWE4iWsQy+CrobZHgfJS0S8iP0ZkoZQyGVpg/nQFxWJDPHGdM/Q1LzbuDe8r5EYOC
+         7LrQEal5vlPjDHPALOP8MD3CbWTbnjqxCsJc5eGyniip8Z9L5U7Vru/hMGckRgrutw
+         76xda5pWGluCK01Ot/QyJY9isqndWIe6RnnDjPPAOAU25if5ezkFAj93VCHDO1SmYg
+         i/Wa6cu4xVqXQHngCI2x6RDZKRkzEU7b0dYaMHI3T+VcACjHwHer8vjiVjuXu4t9fp
+         VK+g09nMzsFOQ==
+Message-ID: <0e8ea624-3cf0-7c63-9b24-8c4109096d3d@collabora.com>
+Date:   Tue, 21 Jun 2022 19:33:47 +0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220613023553.103441-1-zhangxuezhi1@coolpad.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Cc:     usama.anjum@collabora.com, kernel@collabora.com,
+        bagasdotme@gmail.com, linux-kselftest@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] docs/kselftest: add more guidelines for adding new
+ tests
+Content-Language: en-US
+To:     Shuah Khan <skhan@linuxfoundation.org>,
+        Shuah Khan <shuah@kernel.org>, Jonathan Corbet <corbet@lwn.net>
+References: <20220521073651.4191910-1-usama.anjum@collabora.com>
+ <e01f90a0-a3c7-c5fd-ae1f-197c6fec525e@collabora.com>
+ <63fc263d-c06a-2974-298c-5da80322411a@linuxfoundation.org>
+From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
+In-Reply-To: <63fc263d-c06a-2974-298c-5da80322411a@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 10:35:53AM +0800, Xuezhi Zhang wrote:
-> Fix the following coccicheck warnings:
-> drivers/usb/core/sysfs.c:921:8-16:
-> WARNING: use scnprintf or sprintf
-> drivers/usb/core/sysfs.c:730:8-16:
-> WARNING: use scnprintf or sprintf
-
-Please do not wrap error or warning messages.
-
+On 6/8/22 2:41 AM, Shuah Khan wrote:
 > 
-> Signed-off-by: Xuezhi Zhang <zhangxuezhi1@coolpad.com>
-> ---
-> v2: add correct public mailing list
-> ---
->  drivers/usb/core/sysfs.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+> The change looks good to me. I am catching up on patch backlog after the
+> merge window and vacation. I can take this through kselftest or if it
+> goes through doc tree - here is my
 > 
-> diff --git a/drivers/usb/core/sysfs.c b/drivers/usb/core/sysfs.c
-> index fa2e49d432ff..6387c0dfe30e 100644
-> --- a/drivers/usb/core/sysfs.c
-> +++ b/drivers/usb/core/sysfs.c
-> @@ -727,7 +727,7 @@ static ssize_t authorized_show(struct device *dev,
->  			       struct device_attribute *attr, char *buf)
->  {
->  	struct usb_device *usb_dev = to_usb_device(dev);
-> -	return snprintf(buf, PAGE_SIZE, "%u\n", usb_dev->authorized);
-> +	return sysfs_emit(buf, "%u\n", usb_dev->authorized);
->  }
->  
->  /*
-> @@ -918,7 +918,7 @@ static ssize_t authorized_default_show(struct device *dev,
->  	struct usb_hcd *hcd;
->  
->  	hcd = bus_to_hcd(usb_bus);
-> -	return snprintf(buf, PAGE_SIZE, "%u\n", hcd->dev_policy);
-> +	return sysfs_emit(buf, "%u\n", hcd->dev_policy);
->  }
+> Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+> 
+This patch hasn't been accepted yet.
 
-Any specific reason you are not fixing up all sysfs show entries in this
-file?  Only doing a few feels odd and wrong, please do the whole file at
-once.
+> thanks,
+> -- Shuah
 
-thanks,
-
-greg k-h
+-- 
+Muhammad Usama Anjum
