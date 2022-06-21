@@ -2,138 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93AA3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 04:17:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39696C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 04:19:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245563AbiFUERm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 00:17:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44822 "EHLO
+        id S245520AbiFUET0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 21 Jun 2022 00:19:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242636AbiFUER2 (ORCPT
+        with ESMTP id S229450AbiFUETU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 00:17:28 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B56925ED
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 21:17:27 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id EC40821F36;
-        Tue, 21 Jun 2022 04:17:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1655785045; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=RD4sy+2BaX5dGg7b7ucLGgHHapq1SLtKUacFvTEnfcw=;
-        b=QjIquwJYZLJwTxi8gcPBkW+f69EjNnNYPBikE5v9wlMM3rIlFRqPVmr73cSWXS4cS6RxXj
-        7rUVLuGDQ3cUv3csK4AiMecz0Y4ZhKFjxx2nHMBPJiC1zDuaAIZfNNy76s82Y0Qzn2BZF3
-        +9B3tltxCldl3aiF+QSDUqFKxJluNSM=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1655785045;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=RD4sy+2BaX5dGg7b7ucLGgHHapq1SLtKUacFvTEnfcw=;
-        b=HG3iaJAln/w9mHkkdLgaE/tOq2y/oW+ySyN7n5ei2te6jezSoii+28guvjax8/oQuSAK+d
-        Hab1RlMU5t859oCg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 8670813A37;
-        Tue, 21 Jun 2022 04:17:25 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 6G3hHVVGsWLLGwAAMHmgww
-        (envelope-from <osalvador@suse.de>); Tue, 21 Jun 2022 04:17:25 +0000
-From:   Oscar Salvador <osalvador@suse.de>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     David Hildenbrand <david@redhat.com>,
-        Michal Hocko <mhocko@kernel.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, Oscar Salvador <osalvador@suse.de>
-Subject: [PATCH v2 1/2] mm/page_alloc: Do not calculate node's total pages and memmap pages when empty
-Date:   Tue, 21 Jun 2022 06:17:16 +0200
-Message-Id: <20220621041717.6355-2-osalvador@suse.de>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220621041717.6355-1-osalvador@suse.de>
-References: <20220621041717.6355-1-osalvador@suse.de>
+        Tue, 21 Jun 2022 00:19:20 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ED3E2DD1
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 21:19:20 -0700 (PDT)
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25L3gD4m032278;
+        Tue, 21 Jun 2022 04:19:04 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : in-reply-to : references : date : message-id : content-type :
+ mime-version; s=pp1; bh=hwOBoY5qFMEfFMRZbs9LOCT/B/V2y64Uzzn/r8yUL5A=;
+ b=hUp3uFMbfV+/Mewg3VXKziIPVel6PY/K85X2H8dJidALUkVPc+cyS2vC6j6UZqClwRg6
+ Bf41KA8ytYxPP/s4zIZirseShiT00Ke5dRyz6y6aGcf4fajhjBW/MyuSXNOF3aEvqMBX
+ o1L+0lBB7UTfKA26pb/jHpCGLN0ykdnqud0o3busrIMj/laYxejNmkyIjNsf4wsSWKZ+
+ YRlFhVcNqi4lk23ASaK1ACxunwa0E7fSenFFfbhk11RQc2o9NlvmYYw3Y12olNiracXH
+ 26RWJAYQXHLMLA/3ZDc3eUijhIiZjsTgc8FyBGiyRNmFa3JHbO1rEtPlpjWVzNuKWc3x Kw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gu6ae0p4q-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 21 Jun 2022 04:19:03 +0000
+Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25L4J3RI014203;
+        Tue, 21 Jun 2022 04:19:03 GMT
+Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gu6ae0p4b-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 21 Jun 2022 04:19:03 +0000
+Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
+        by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25L49wxs004428;
+        Tue, 21 Jun 2022 04:19:01 GMT
+Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
+        by ppma02dal.us.ibm.com with ESMTP id 3gt008wrnv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 21 Jun 2022 04:19:01 +0000
+Received: from b01ledav006.gho.pok.ibm.com (b01ledav006.gho.pok.ibm.com [9.57.199.111])
+        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25L4J1xi9634402
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 21 Jun 2022 04:19:01 GMT
+Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E8228AC060;
+        Tue, 21 Jun 2022 04:19:00 +0000 (GMT)
+Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5462DAC059;
+        Tue, 21 Jun 2022 04:18:53 +0000 (GMT)
+Received: from skywalker.linux.ibm.com (unknown [9.109.205.170])
+        by b01ledav006.gho.pok.ibm.com (Postfix) with ESMTP;
+        Tue, 21 Jun 2022 04:18:53 +0000 (GMT)
+X-Mailer: emacs 29.0.50 (via feedmail 11-beta-1 I)
+From:   "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
+To:     Tim Chen <tim.c.chen@linux.intel.com>, linux-mm@kvack.org,
+        akpm@linux-foundation.org
+Cc:     Tim Chen <tim.c.chen@linux.intel.com>, Wei Xu <weixugc@google.com>,
+        Huang Ying <ying.huang@intel.com>,
+        Greg Thelen <gthelen@google.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Brice Goglin <brice.goglin@gmail.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hesham Almatary <hesham.almatary@huawei.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Jagdish Gediya <jvgediya@linux.ibm.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        David Rientjes <rientjes@google.com>,
+        Shakeel Butt <shakeelb@google.com>
+Subject: Re: [RFC PATCH 1/3] mm/memory-tiers Add functions for tier memory
+ usage in a cgroup
+In-Reply-To: <94a10c772c50d378b81dad654476551bfc50e3d7.1655242024.git.tim.c.chen@linux.intel.com>
+References: <cover.1655242024.git.tim.c.chen@linux.intel.com>
+ <94a10c772c50d378b81dad654476551bfc50e3d7.1655242024.git.tim.c.chen@linux.intel.com>
+Date:   Tue, 21 Jun 2022 09:48:50 +0530
+Message-ID: <875ykuabth.fsf@linux.ibm.com>
+Content-Type: text/plain
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: _2_iRA_8FO38nrjsJSbRM4ZfVDQEZ7Ly
+X-Proofpoint-GUID: k5MDrmGV_hKijexuBAQBpBWw9EOMkmVE
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-21_02,2022-06-17_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 phishscore=0
+ mlxlogscore=999 mlxscore=0 bulkscore=0 lowpriorityscore=0 malwarescore=0
+ suspectscore=0 impostorscore=0 priorityscore=1501 clxscore=1015
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206210015
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-free_area_init_node() calls calculate_node_totalpages() and
-free_area_init_core(). The former to get node's {spanned,present}_pages,
-and the latter to calculate, among other things, how many pages per zone
-we spent on memmap_pages, which is used to substract zone's free pages.
+Tim Chen <tim.c.chen@linux.intel.com> writes:
 
-On memoryless-nodes, it is pointless to perform such a bunch of work, so
-make sure we skip the calculations when having a node or empty zone.
+ +unsigned long mem_cgroup_toptier_usage(struct mem_cgroup *memcg)
+> +{
+> +	struct memory_tier *top_tier;
+> +
+> +	top_tier = list_first_entry(&memory_tiers, struct memory_tier, list);
+> +	if (top_tier)
+> +		return mem_cgroup_memtier_usage(memcg, top_tier);
+> +	else
+> +		return 0;
+> +}
 
-Signed-off-by: Oscar Salvador <osalvador@suse.de>
----
- mm/page_alloc.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+As discussed here, we would want to consider all memory tiers that got
+compute as top tier.
 
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index e008a3df0485..2b9b2422ba32 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -7361,6 +7361,10 @@ static void __init calculate_node_totalpages(struct pglist_data *pgdat,
- 	unsigned long realtotalpages = 0, totalpages = 0;
- 	enum zone_type i;
- 
-+	/* Skip calculation for memoryless nodes */
-+	if (pgdat_is_empty(pgdat))
-+		goto no_pages;
-+
- 	for (i = 0; i < MAX_NR_ZONES; i++) {
- 		struct zone *zone = pgdat->node_zones + i;
- 		unsigned long zone_start_pfn, zone_end_pfn;
-@@ -7393,6 +7397,7 @@ static void __init calculate_node_totalpages(struct pglist_data *pgdat,
- 		realtotalpages += real_size;
- 	}
- 
-+no_pages:
- 	pgdat->node_spanned_pages = totalpages;
- 	pgdat->node_present_pages = realtotalpages;
- 	pr_debug("On node %d totalpages: %lu\n", pgdat->node_id, realtotalpages);
-@@ -7610,6 +7615,12 @@ static void __init free_area_init_core(struct pglist_data *pgdat)
- 		size = zone->spanned_pages;
- 		freesize = zone->present_pages;
- 
-+		/* No pages? Nothing to calculate then. */
-+		if (!size) {
-+			zone_init_internals(zone, j, nid, 0);
-+			continue;
-+		}
-+
- 		/*
- 		 * Adjust freesize so that it accounts for how much memory
- 		 * is used by this zone for memmap. This affects the watermark
-@@ -7647,9 +7658,6 @@ static void __init free_area_init_core(struct pglist_data *pgdat)
- 		 */
- 		zone_init_internals(zone, j, nid, freesize);
- 
--		if (!size)
--			continue;
--
- 		set_pageblock_order();
- 		setup_usemap(zone);
- 		init_currently_empty_zone(zone, zone->zone_start_pfn, size);
-@@ -7730,7 +7738,7 @@ static void __init free_area_init_node(int nid)
- 	pgdat->node_start_pfn = start_pfn;
- 	pgdat->per_cpu_nodestats = NULL;
- 
--	if (start_pfn != end_pfn) {
-+	if (!pgdat_is_empty(pgdat)) {
- 		pr_info("Initmem setup node %d [mem %#018Lx-%#018Lx]\n", nid,
- 			(u64)start_pfn << PAGE_SHIFT,
- 			end_pfn ? ((u64)end_pfn << PAGE_SHIFT) - 1 : 0);
--- 
-2.35.3
+https://lore.kernel.org/linux-mm/11f94e0c50f17f4a6a2f974cb69a1ae72853e2be.camel@intel.com
 
+V6 patchset actually walk the full memory tier hierarchy reverse and consider any
+memory tier with higher or equal rank value than the first memory tier with CPU as top tier.
+
+https://lore.kernel.org/linux-mm/20220610135229.182859-12-aneesh.kumar@linux.ibm.com
+
+-aneesh
