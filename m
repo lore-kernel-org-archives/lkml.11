@@ -2,81 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2A47CCA482
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 07:47:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E604C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 07:47:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347319AbiFUHrP (ORCPT
+        id S1347428AbiFUHrS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 03:47:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44912 "EHLO
+        Tue, 21 Jun 2022 03:47:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344495AbiFUHrM (ORCPT
+        with ESMTP id S1347280AbiFUHoS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 03:47:12 -0400
-X-Greylist: delayed 2655 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 21 Jun 2022 00:47:09 PDT
-Received: from esgaroth.petrovitsch.at (unknown [IPv6:2a01:4f8:120:527b:6876:2a4f:a044:62ad])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32B0723BCA
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 00:47:09 -0700 (PDT)
-Received: from [172.16.0.14] (84-115-219-246.cable.dynamic.surfer.at [84.115.219.246])
-        (authenticated bits=0)
-        by esgaroth.petrovitsch.at (8.17.1/8.17.1) with ESMTPSA id 25L72lm63449013
-        (version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT);
-        Tue, 21 Jun 2022 09:02:48 +0200
-DKIM-Filter: OpenDKIM Filter v2.11.0 esgaroth.petrovitsch.at 25L72lm63449013
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=petrovitsch.priv.at;
-        s=default; t=1655794968;
-        bh=YZ81fjTKo/UYSEbtnBxZUB9g2m46rZ2UpolJeNl5ia0=;
-        h=Date:Subject:To:References:Cc:From:In-Reply-To:From;
-        b=Bh5SKEUPFNJgHy+Ujp6DQTYjh+RjlpP0kpxaQgdAw6CGJ0NHAG4CKedqzUwSNRqPG
-         18llQNELXUgd+LGLOIGyQFdzpA2LDoIM7Nf5wmDqIvWy11FNUpybUwfPjk9KNmiCVr
-         HtTm02d0bZoMBef+D7di1t6oePszRz6Q0rBw48K8=
-X-Info-sendmail: I was here
-Message-ID: <b6d8611a-714c-4fb0-5027-584884bb66a1@petrovitsch.priv.at>
-Date:   Tue, 21 Jun 2022 09:02:38 +0200
+        Tue, 21 Jun 2022 03:44:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62A2A2317A;
+        Tue, 21 Jun 2022 00:44:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 23D31B8169E;
+        Tue, 21 Jun 2022 07:44:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0ED6BC3411D;
+        Tue, 21 Jun 2022 07:44:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655797454;
+        bh=TgZQktU/5vsZP3GPNZ/qWZleinBCCk2cgAR6Lox4crc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=wht0PXyeuQwQyGpWl60X7KoWQ4g7oJT8n4WSl6EFrGYthyFE7HShKTIyBJGnBxmAb
+         467t3Luka6NxNagPemIBgkgzsXnCDWmc5oXT9YqDSLh8BX8/0LLURrypXa+4Qk8Aq+
+         Ap1psmSnRkJLyskIBIwSkuYFJ8Kf6sideKMUsN6o=
+Date:   Tue, 21 Jun 2022 09:44:11 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Zhangfei Gao <zhangfei.gao@linaro.org>
+Cc:     Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Wangzhou <wangzhou1@hisilicon.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        linux-accelerators@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        linux-crypto@vger.kernel.org, iommu@lists.linux-foundation.org,
+        Yang Shen <shenyang39@huawei.com>
+Subject: Re: [PATCH] uacce: fix concurrency of fops_open and uacce_remove
+Message-ID: <YrF2yypHZfiNVRBh@kroah.com>
+References: <20220610123423.27496-1-zhangfei.gao@linaro.org>
+ <Yqn3spLZHpAkQ9Us@myrica>
+ <fdc8d8b0-4e04-78f5-1e8a-4cf44c89a37f@linaro.org>
+ <YqrmdKNrYTCiS/MC@myrica>
+ <d90e8ea5-2f18-2eda-b4b2-711083aa7ecd@linaro.org>
+ <YrB1D9rv9G4h/BYU@myrica>
+ <YrB30M9yAbUbPFrG@kroah.com>
+ <b5011dd2-e8ec-a307-1b43-5aff6cbb6891@linaro.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: Networking Question
-Content-Language: en-US
-To:     "Ryan P. Nicholl" <rnicholl@protonmail.com>
-References: <6_nVwntZEyEq2Gn0PYDz5w_yuD20E9Je_Bk2rJHsOersGq3v2x3_6hXnyjNm-X83-OTl1KKo4eLoHzyBVM_nzCcDrpPtz4dz3_71A3QezfI=@protonmail.com>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>
-From:   Bernd Petrovitsch <bernd@petrovitsch.priv.at>
-BIMI-Selector: v=BIMI1; s=default
-In-Reply-To: <6_nVwntZEyEq2Gn0PYDz5w_yuD20E9Je_Bk2rJHsOersGq3v2x3_6hXnyjNm-X83-OTl1KKo4eLoHzyBVM_nzCcDrpPtz4dz3_71A3QezfI=@protonmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-DCC--Metrics: esgaroth.petrovitsch.priv.at 1102; Body=2 Fuz1=2 Fuz2=2
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <b5011dd2-e8ec-a307-1b43-5aff6cbb6891@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi all!
-
-On 21/06/2022 02:29, Ryan P. Nicholl wrote:
-> I've been unable to find any Linux API for asynchronously waiting for the TCP send buffer to drain.
+On Tue, Jun 21, 2022 at 03:37:31PM +0800, Zhangfei Gao wrote:
 > 
-> The problem I have, in a nutshell, is noted in this part of the documentation:
 > 
->         If fildes refers to a socket, close() shall cause the socket to
->         be destroyed. If the socket is in connection-mode, and the
+> On 2022/6/20 下午9:36, Greg Kroah-Hartman wrote:
+> > On Mon, Jun 20, 2022 at 02:24:31PM +0100, Jean-Philippe Brucker wrote:
+> > > On Fri, Jun 17, 2022 at 02:05:21PM +0800, Zhangfei Gao wrote:
+> > > > > The refcount only ensures that the uacce_device object is not freed as
+> > > > > long as there are open fds. But uacce_remove() can run while there are
+> > > > > open fds, or fds in the process of being opened. And atfer uacce_remove()
+> > > > > runs, the uacce_device object still exists but is mostly unusable. For
+> > > > > example once the module is freed, uacce->ops is not valid anymore. But
+> > > > > currently uacce_fops_open() may dereference the ops in this case:
+> > > > > 
+> > > > > 	uacce_fops_open()
+> > > > > 	 if (!uacce->parent->driver)
+> > > > > 	 /* Still valid, keep going */		
+> > > > > 	 ...					rmmod
+> > > > > 						 uacce_remove()
+> > > > > 	 ...					 free_module()
+> > > > > 	 uacce->ops->get_queue() /* BUG */
+> > > > uacce_remove should wait for uacce->queues_lock, until fops_open release the
+> > > > lock.
+> > > > If open happen just after the uacce_remove: unlock, uacce_bind_queue in open
+> > > > should fail.
+> > > Ah yes sorry, I lost sight of what this patch was adding. But we could
+> > > have the same issue with the patch, just in a different order, no?
+> > > 
+> > > 	uacce_fops_open()
+> > > 	 uacce = xa_load()
+> > > 	 ...					rmmod
+> > Um, how is rmmod called if the file descriptor is open?
+> > 
+> > That should not be possible if the owner of the file descriptor is
+> > properly set.  Please fix that up.
+> Thanks Greg
+> 
+> Set cdev owner or use module_get/put can block rmmod once fops_open.
+> -       uacce->cdev->owner = THIS_MODULE;
+> +       uacce->cdev->owner = uacce->parent->driver->owner;
+> 
+> However, still not find good method to block removing parent pci device.
+> 
+> $ echo 1 > /sys/bus/pci/devices/0000:00:02.0/remove &
+> 
+> [   32.563350]  uacce_remove+0x6c/0x148
+> [   32.563353]  hisi_qm_uninit+0x12c/0x178
+> [   32.563356]  hisi_zip_remove+0xa0/0xd0 [hisi_zip]
+> [   32.563361]  pci_device_remove+0x44/0xd8
+> [   32.563364]  device_remove+0x54/0x88
+> [   32.563367]  device_release_driver_internal+0xec/0x1a0
+> [   32.563370]  device_release_driver+0x20/0x30
+> [   32.563372]  pci_stop_bus_device+0x8c/0xe0
+> [   32.563375]  pci_stop_and_remove_bus_device_locked+0x28/0x60
+> [   32.563378]  remove_store+0x9c/0xb0
+> [   32.563379]  dev_attr_store+0x20/0x38
 
-That's not really a Linux kernel question as such (because that should 
-work that way on all TCP connections anywhere) but the shutdown() 
-syscall is probably what you need:
-- your side shuts down the sending part of the socket.
-- the other side reads data and gets eventually EOF
-- the other side call shutdown() for it's sending side when it's done.
-- your side gets EOF.
-And then your side knows that no data is in flight.
-- finally, you clean up with close(). You can shutdown() the receiving
-   side too but doesn't change anything.
+Removing the parent pci device does not remove the module code, it
+removes the device itself.  Don't confuse code vs. data here.
 
-[ deleted SO_LINGER stuff - that's for something completelly different ... ]
+thanks,
 
-Kind regards,
-	Bernd
--- 
-Bernd Petrovitsch                  Email : bernd@petrovitsch.priv.at
-      There is NO CLOUD, just other people's computers. - FSFE
-                      LUGA : http://www.luga.at
+greg k-h
