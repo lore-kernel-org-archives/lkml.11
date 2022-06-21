@@ -2,84 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DC39CCA473
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:05:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3564CCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:05:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356525AbiFUVEc (ORCPT
+        id S1355801AbiFUVFR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 17:04:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38752 "EHLO
+        Tue, 21 Jun 2022 17:05:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355644AbiFUVAq (ORCPT
+        with ESMTP id S1356805AbiFUVEw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 17:00:46 -0400
+        Tue, 21 Jun 2022 17:04:52 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D1FC110E;
-        Tue, 21 Jun 2022 13:52:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 671926400;
+        Tue, 21 Jun 2022 13:53:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A13D7B81B47;
-        Tue, 21 Jun 2022 20:51:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2CB5C341C4;
-        Tue, 21 Jun 2022 20:51:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655844683;
-        bh=M5ZujuZ0mG33Rr/sqbkSj4dYDw6RrPY7vPQnXkZ/t0s=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oxCvZ+GrotMBP5r2Gn4oyZBNZx0HyPODgIkaY3EA3w9bffETP1rKDBQ+6XpADle0h
-         WviV6zxpnfFeZzYdbmzhc8iHj2jq7zty/zDJ/JLogllBK4min2ywvM280s+xCHvibY
-         TJT8gw+naQgsaYJJqThrvo2qrJqMG5QiDX8h2X8j7pkGYtBiS4pxZsa67n7cpcWcS9
-         7ulADEDIKgq+8gMgOzNQBjyFj7AzN7FEorgLt9ig/KBzSnI3RJgHsqBajZfFsK184F
-         c9NEegt1VDlnHSSc1pWsjFsUuyb71y0n+sF37mkSB6bVo2T2JTsQKfv+kPL9TUPpQa
-         1TP/z/9aBxILQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        tglx@linutronix.de, mhiramat@kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.4 2/7] irqchip/uniphier-aidet: Add compatible string for NX1 SoC
-Date:   Tue, 21 Jun 2022 16:51:14 -0400
-Message-Id: <20220621205120.250779-2-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220621205120.250779-1-sashal@kernel.org>
-References: <20220621205120.250779-1-sashal@kernel.org>
-MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+        by ams.source.kernel.org (Postfix) with ESMTPS id BF0F4B81A9A;
+        Tue, 21 Jun 2022 20:53:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E70BC3411C;
+        Tue, 21 Jun 2022 20:53:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1655844811;
+        bh=20N4ZigNt3ywDZXkpxWcD1TBryesu5HI23JwFB7LT6Y=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Ki9Ly2I17JqvfHtT9RHEyv92O0rFsOjs8eDP3o2/BGTxMObJIPpQZgeqVnU/Vn8VT
+         +qrGnD6sUvLGN1MjXJtGByEvIB0XWyBMMCbt0IuJN1hocwlnH54YS62IhyT+LYf+is
+         01mlP/9fWSPpl+j6bDoLXjDXLRZzJ8Df5WNTKDDE=
+Date:   Tue, 21 Jun 2022 13:53:13 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Muchun Song <songmuchun@bytedance.com>
+Cc:     corbet@lwn.net, david@redhat.com, mike.kravetz@oracle.com,
+        osalvador@suse.de, paulmck@kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        duanxiongchun@bytedance.com, smuchun@gmail.com
+Subject: Re: [PATCH v5 0/2] make hugetlb_optimize_vmemmap compatible with
+ memmap_on_memory
+Message-Id: <20220621135313.ae6fbc28338f1220328694f7@linux-foundation.org>
+In-Reply-To: <20220620110616.12056-1-songmuchun@bytedance.com>
+References: <20220620110616.12056-1-songmuchun@bytedance.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+On Mon, 20 Jun 2022 19:06:14 +0800 Muchun Song <songmuchun@bytedance.com> wrote:
 
-[ Upstream commit e3f056a7aafabe4ac3ad4b7465ba821b44a7e639 ]
+> This series makes hugetlb_optimize_vmemmap compatible with memmap_on_memory
+> and is based on mm-stable.  The reason refers to the patch 2's commit log.
+> 
+> v5:
+>  - Replace enum to defines per David.
+>  - Walk vmemmap page tables to avoid false-positive.
 
-Add the compatible string to support UniPhier NX1 SoC, which has the same
-kinds of controls as the other UniPhier SoCs.
+I can't see this second change in the v3->v5 deltas?
 
-Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/1653023822-19229-3-git-send-email-hayashi.kunihiko@socionext.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+
+From: Muchun Song <songmuchun@bytedance.com>
+Subject: mm-memory_hotplug-enumerate-all-supported-section-flags-v5
+Date: Mon, 20 Jun 2022 19:06:15 +0800
+
+replace enum with defines per David
+ 
+Link: https://lkml.kernel.org/r/20220620110616.12056-2-songmuchun@bytedance.com
+Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 ---
- drivers/irqchip/irq-uniphier-aidet.c | 1 +
- 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/irqchip/irq-uniphier-aidet.c b/drivers/irqchip/irq-uniphier-aidet.c
-index 89121b39be26..716b1bb88bf2 100644
---- a/drivers/irqchip/irq-uniphier-aidet.c
-+++ b/drivers/irqchip/irq-uniphier-aidet.c
-@@ -237,6 +237,7 @@ static const struct of_device_id uniphier_aidet_match[] = {
- 	{ .compatible = "socionext,uniphier-ld11-aidet" },
- 	{ .compatible = "socionext,uniphier-ld20-aidet" },
- 	{ .compatible = "socionext,uniphier-pxs3-aidet" },
-+	{ .compatible = "socionext,uniphier-nx1-aidet" },
- 	{ /* sentinel */ }
+ include/linux/mmzone.h |   13 +++++--------
+ 1 file changed, 5 insertions(+), 8 deletions(-)
+
+--- a/include/linux/mmzone.h~mm-memory_hotplug-enumerate-all-supported-section-flags-v5
++++ a/include/linux/mmzone.h
+@@ -1439,16 +1439,13 @@ enum {
+ 	SECTION_MAP_LAST_BIT,
  };
  
--- 
-2.35.1
+-enum {
+-	SECTION_MARKED_PRESENT		= BIT(SECTION_MARKED_PRESENT_BIT),
+-	SECTION_HAS_MEM_MAP		= BIT(SECTION_HAS_MEM_MAP_BIT),
+-	SECTION_IS_ONLINE		= BIT(SECTION_IS_ONLINE_BIT),
+-	SECTION_IS_EARLY		= BIT(SECTION_IS_EARLY_BIT),
++#define SECTION_MARKED_PRESENT		BIT(SECTION_MARKED_PRESENT_BIT)
++#define SECTION_HAS_MEM_MAP		BIT(SECTION_HAS_MEM_MAP_BIT)
++#define SECTION_IS_ONLINE		BIT(SECTION_IS_ONLINE_BIT)
++#define SECTION_IS_EARLY		BIT(SECTION_IS_EARLY_BIT)
+ #ifdef CONFIG_ZONE_DEVICE
+-	SECTION_TAINT_ZONE_DEVICE	= BIT(SECTION_TAINT_ZONE_DEVICE_BIT),
++#define SECTION_TAINT_ZONE_DEVICE	BIT(SECTION_TAINT_ZONE_DEVICE_BIT)
+ #endif
+-};
+-
+ #define SECTION_MAP_MASK		(~(BIT(SECTION_MAP_LAST_BIT) - 1))
+ #define SECTION_NID_SHIFT		SECTION_MAP_LAST_BIT
+ 
+_
+
+
+
+
+From: Muchun Song <songmuchun@bytedance.com>
+Subject: mm-memory_hotplug-make-hugetlb_optimize_vmemmap-compatible-with-memmap_on_memory-v5
+Date: Mon, 20 Jun 2022 19:06:16 +0800
+
+walk vmemmap page tables to avoid false-positive
+
+Link: https://lkml.kernel.org/r/20220620110616.12056-3-songmuchun@bytedance.com
+Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+Co-developed-by: Oscar Salvador <osalvador@suse.de>
+Signed-off-by: Oscar Salvador <osalvador@suse.de>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+---
+
+ mm/hugetlb_vmemmap.c |   69 ++++++++++++++++++++++++++---------------
+ 1 file changed, 44 insertions(+), 25 deletions(-)
+
+--- a/mm/hugetlb_vmemmap.c~mm-memory_hotplug-make-hugetlb_optimize_vmemmap-compatible-with-memmap_on_memory-v5
++++ a/mm/hugetlb_vmemmap.c
+@@ -10,6 +10,7 @@
+  */
+ #define pr_fmt(fmt)	"HugeTLB: " fmt
+ 
++#include <linux/memory.h>
+ #include "hugetlb_vmemmap.h"
+ 
+ /*
+@@ -99,34 +100,52 @@ int hugetlb_vmemmap_alloc(struct hstate
+ static unsigned int vmemmap_optimizable_pages(struct hstate *h,
+ 					      struct page *head)
+ {
+-	struct mem_section *ms;
+-	struct page *vmemmap_page;
+-	unsigned long pfn = page_to_pfn(head);
+-
+ 	if (READ_ONCE(vmemmap_optimize_mode) == VMEMMAP_OPTIMIZE_OFF)
+ 		return 0;
+ 
+-	ms = __pfn_to_section(pfn);
+-	vmemmap_page = sparse_decode_mem_map(ms->section_mem_map,
+-					     pfn_to_section_nr(pfn));
+-	/*
+-	 * Only the vmemmap pages' vmemmap may be marked as VmemmapSelfHosted.
+-	 *
+-	 * Due to HugeTLB alignment requirements, and the vmemmap pages being
+-	 * at the start of the hotplugged memory region. Checking any vmemmap
+-	 * page's vmemmap is fine.
+-	 *
+-	 * [      hotplugged memory     ]
+-	 * [ vmemmap ][  usable memory  ]
+-	 *   ^   |      |            |
+-	 *   +---+      |            |
+-	 *     ^        |            |
+-	 *     +--------+            |
+-	 *         ^                 |
+-	 *         +-----------------+
+-	 */
+-	if (PageVmemmapSelfHosted(vmemmap_page))
+-		return 0;
++	if (IS_ENABLED(CONFIG_MEMORY_HOTPLUG)) {
++		pmd_t *pmdp, pmd;
++		struct page *vmemmap_page;
++		unsigned long vaddr = (unsigned long)head;
++
++		/*
++		 * Only the vmemmap page's vmemmap page can be self-hosted.
++		 * Walking the page tables to find the backing page of the
++		 * vmemmap page.
++		 */
++		pmdp = pmd_off_k(vaddr);
++		/*
++		 * The READ_ONCE() is used to stabilize *pmdp in a register or
++		 * on the stack so that it will stop changing under the code.
++		 * The only concurrent operation where it can be changed is
++		 * split_vmemmap_huge_pmd() (*pmdp will be stable after this
++		 * operation).
++		 */
++		pmd = READ_ONCE(*pmdp);
++		if (pmd_leaf(pmd))
++			vmemmap_page = pmd_page(pmd) + pte_index(vaddr);
++		else
++			vmemmap_page = pte_page(*pte_offset_kernel(pmdp, vaddr));
++		/*
++		 * Due to HugeTLB alignment requirements and the vmemmap pages
++		 * being at the start of the hotplugged memory region in
++		 * memory_hotplug.memmap_on_memory case. Checking any vmemmap
++		 * page's vmemmap page if it is marked as VmemmapSelfHosted is
++		 * sufficient.
++		 *
++		 * [                  hotplugged memory                  ]
++		 * [        section        ][...][        section        ]
++		 * [ vmemmap ][              usable memory               ]
++		 *   ^   |     |                                        |
++		 *   +---+     |                                        |
++		 *     ^       |                                        |
++		 *     +-------+                                        |
++		 *          ^                                           |
++		 *          +-------------------------------------------+
++		 */
++		if (PageVmemmapSelfHosted(vmemmap_page))
++			return 0;
++	}
+ 
+ 	return hugetlb_optimize_vmemmap_pages(h);
+ }
+_
 
