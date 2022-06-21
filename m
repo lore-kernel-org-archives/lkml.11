@@ -2,124 +2,324 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 254B6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 14:49:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B30C4C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 14:50:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352052AbiFUOtW (ORCPT
+        id S1352083AbiFUOuD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 10:49:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54464 "EHLO
+        Tue, 21 Jun 2022 10:50:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351919AbiFUOsv (ORCPT
+        with ESMTP id S1352089AbiFUOtt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 10:48:51 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2D921835B;
-        Tue, 21 Jun 2022 07:48:50 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id n1so19055685wrg.12;
-        Tue, 21 Jun 2022 07:48:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=vlnKRuBPqss3zsQNpDmnIm6uVAnBcGHoNC6WSZ5FLE0=;
-        b=ATyPaeNCm+RavESosXQxuYwdmPLZwgPqSl2lWPcmJaUElksx8WCtRcjNGOzumVJ3bh
-         Mh8WiMW0oQLGvb/u3pZwT8HrVuq7k/5tk5NxB7/bbz02D+XjBrpiv2X70BRESjE1+uaw
-         jMUM/cSCXpfksjHMGhf3oLUDygBm9OiC9Yh44O9HcEO5SQmoazkqG3DzR/WRRrmeEkep
-         vz4Hg9Ncy1lPg4LQ6vvA3GqgwZTAaenwSuh8/H9C6YEAFac2gPvezj+ent/aRGjTdCjE
-         7WaXyRC9w+AlEfYEg8GotXuPkiGBpln3a4iiFCGqvuB3GhHU0xXQNuYnGnIbO2ub0x9l
-         63mg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=vlnKRuBPqss3zsQNpDmnIm6uVAnBcGHoNC6WSZ5FLE0=;
-        b=MQHWCYpZgqzhRvuc42OIlFtePIFIPELvoVGyZAkKcFY5Reye+WKsM04R400mOMC6Wy
-         QwF0jrsbiubVTU/sSQZNJQZvmwlP4lp6cCqL0Jak03LHHbvCDMcg7QKN7GVk0pDhMNn7
-         x6s8+iECF6ZEXVW6JzIfSWUis6dELqstiYINhkQruHUSxocqWZFGUPJXt3+6HZbRWTHc
-         rJRbNiZGGIp6FKDBXvpuGr3ALxN0oJdLv6s+Xd5Tgl6zQ3xhYb1CEoU6xCxiL3piZ410
-         IoGuiq2zPtldmTTti8YRTvz6QF9fTS4TkbEMA7Tmrgo5aq8Z9jfIdgQGcLLBxobohvIX
-         QklQ==
-X-Gm-Message-State: AJIora+powTiziCAW+zx923tNGQit7KGaOm2gZBLscHfsZHA4oTeZ5KT
-        1n1un54P7vhiPU03wq9+SI0=
-X-Google-Smtp-Source: AGRyM1tvXZLrrUbKR+gsHOyD1FD16/5ehOu9iiQCaOw5Yxpis0oosu8Pa14UfBeLsw6pF0Gd9rCczQ==
-X-Received: by 2002:a05:6000:10d0:b0:21b:8ffb:80ad with SMTP id b16-20020a05600010d000b0021b8ffb80admr10459888wrx.444.1655822929034;
-        Tue, 21 Jun 2022 07:48:49 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.gmail.com with ESMTPSA id cc3-20020a5d5c03000000b00213ba3384aesm16252153wrb.35.2022.06.21.07.48.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jun 2022 07:48:48 -0700 (PDT)
-Message-ID: <62b1da50.1c69fb81.c77ce.0278@mx.google.com>
-X-Google-Original-Message-ID: <YrHaT0CwbpDvJM/+@Ansuel-xps.>
-Date:   Tue, 21 Jun 2022 16:48:47 +0200
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jonathan McDowell <noodles@earth.li>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] net: dsa: qca8k: reduce mgmt ethernet timeout
-References: <20220618062300.28541-1-ansuelsmth@gmail.com>
- <20220621123335.gvuuob7pnlz77lof@skbuf>
+        Tue, 21 Jun 2022 10:49:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CFAD275E7;
+        Tue, 21 Jun 2022 07:49:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BD780616C3;
+        Tue, 21 Jun 2022 14:49:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7D0EC341C0;
+        Tue, 21 Jun 2022 14:49:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655822987;
+        bh=o7k5aZt+GPZLT7AuMi7ejxspY8QjEmA3Qfnf6gZmvRg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=SbxceeGo4Rfq03hmZY7hQfj7fGA2j2+J9UAesk6KId9yP9v5gbCsUYOTCtfwhKxWb
+         mpVzFpUkMYxyhVage0lH5AP+0ImXKHRql1FHq9M/X37DewFxw/Sginw4mJq5fxgMtr
+         E5Gp+faUZPQxyzW3mRDygHO4Yd3VtT16GyGXMP7QKSmbkZNXENaEfGaAoK7VN4Rd0E
+         yZquxtpOfq6tw9dlLeaMQK2BTRBNd7+zjUDksyxex3t3i28rnS0qaAKv6unnsGHPBL
+         MOYRpvnPBPJB7LAiS0bjuddfQsf5QoOYNM3JAKbZj9trolZ3Hrjrz66NtPF9vAwWu+
+         2Vy7M0/zMC0KA==
+From:   guoren@kernel.org
+To:     palmer@rivosinc.com, arnd@arndb.de, peterz@infradead.org,
+        longman@redhat.com, boqun.feng@gmail.com,
+        Conor.Dooley@microchip.com, chenhuacai@loongson.cn,
+        kernel@xen0n.name, r@hev.cc, shorne@gmail.com
+Cc:     linux-riscv@lists.infradead.org, linux-arch@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>,
+        Guo Ren <guoren@kernel.org>
+Subject: [PATCH V6 1/2] asm-generic: spinlock: Move qspinlock & ticket-lock into generic spinlock.h
+Date:   Tue, 21 Jun 2022 10:49:19 -0400
+Message-Id: <20220621144920.2945595-2-guoren@kernel.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220621144920.2945595-1-guoren@kernel.org>
+References: <20220621144920.2945595-1-guoren@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220621123335.gvuuob7pnlz77lof@skbuf>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 21, 2022 at 03:33:35PM +0300, Vladimir Oltean wrote:
-> On Sat, Jun 18, 2022 at 08:22:58AM +0200, Christian Marangi wrote:
-> > The current mgmt ethernet timeout is set to 100ms. This value is too
-> > big and would slow down any mdio command in case the mgmt ethernet
-> > packet have some problems on the receiving part.
-> > Reduce it to just 5ms to handle case when some operation are done on the
-> > master port that would cause the mgmt ethernet to not work temporarily.
-> > 
-> > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> > ---
-> 
-> I think this could very well qualify as a regression and have a tag of:
-> 
-> Fixes: 5950c7c0a68c ("net: dsa: qca8k: add support for mgmt read/write in Ethernet packet")
-> 
-> if it was presented along with a situation where users could hit some
-> real life conditions where the Ethernet management interface isn't
-> functional.
->
+From: Guo Ren <guoren@linux.alibaba.com>
 
-It's really to handle corner case... In testing the MTU change (and
-noticing the mgmt ethernet going "macheroni") I notice the timeout was
-absurdly high. In a situation where something goes wrong at least you
-can have access to it after some time.
+Separate ticket-lock into tspinlock.h and let generic spinlock support
+qspinlock or ticket-lock selected by CONFIG_ARCH_USE_QUEUED_SPINLOCKS
+config.
 
-Ok I will add the fixes tag.
+Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+Signed-off-by: Guo Ren <guoren@kernel.org>
+Cc: Peter Zijlstra (Intel) <peterz@infradead.org>
+Cc: Arnd Bergmann <arnd@arndb.de>
+---
+ include/asm-generic/spinlock.h        | 90 ++------------------------
+ include/asm-generic/spinlock_types.h  | 14 ++--
+ include/asm-generic/tspinlock.h       | 92 +++++++++++++++++++++++++++
+ include/asm-generic/tspinlock_types.h | 17 +++++
+ 4 files changed, 119 insertions(+), 94 deletions(-)
+ create mode 100644 include/asm-generic/tspinlock.h
+ create mode 100644 include/asm-generic/tspinlock_types.h
 
-> >  drivers/net/dsa/qca8k.h | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
-> > index 04408e11402a..ec58d0e80a70 100644
-> > --- a/drivers/net/dsa/qca8k.h
-> > +++ b/drivers/net/dsa/qca8k.h
-> > @@ -15,7 +15,7 @@
-> >  
-> >  #define QCA8K_ETHERNET_MDIO_PRIORITY			7
-> >  #define QCA8K_ETHERNET_PHY_PRIORITY			6
-> > -#define QCA8K_ETHERNET_TIMEOUT				100
-> > +#define QCA8K_ETHERNET_TIMEOUT				5
-> >  
-> >  #define QCA8K_NUM_PORTS					7
-> >  #define QCA8K_NUM_CPU_PORTS				2
-> > -- 
-> > 2.36.1
-> > 
-
+diff --git a/include/asm-generic/spinlock.h b/include/asm-generic/spinlock.h
+index fdfebcb050f4..4eca2488af38 100644
+--- a/include/asm-generic/spinlock.h
++++ b/include/asm-generic/spinlock.h
+@@ -1,92 +1,12 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
+-
+-/*
+- * 'Generic' ticket-lock implementation.
+- *
+- * It relies on atomic_fetch_add() having well defined forward progress
+- * guarantees under contention. If your architecture cannot provide this, stick
+- * to a test-and-set lock.
+- *
+- * It also relies on atomic_fetch_add() being safe vs smp_store_release() on a
+- * sub-word of the value. This is generally true for anything LL/SC although
+- * you'd be hard pressed to find anything useful in architecture specifications
+- * about this. If your architecture cannot do this you might be better off with
+- * a test-and-set.
+- *
+- * It further assumes atomic_*_release() + atomic_*_acquire() is RCpc and hence
+- * uses atomic_fetch_add() which is RCsc to create an RCsc hot path, along with
+- * a full fence after the spin to upgrade the otherwise-RCpc
+- * atomic_cond_read_acquire().
+- *
+- * The implementation uses smp_cond_load_acquire() to spin, so if the
+- * architecture has WFE like instructions to sleep instead of poll for word
+- * modifications be sure to implement that (see ARM64 for example).
+- *
+- */
+-
+ #ifndef __ASM_GENERIC_SPINLOCK_H
+ #define __ASM_GENERIC_SPINLOCK_H
+ 
+-#include <linux/atomic.h>
+-#include <asm-generic/spinlock_types.h>
+-
+-static __always_inline void arch_spin_lock(arch_spinlock_t *lock)
+-{
+-	u32 val = atomic_fetch_add(1<<16, lock);
+-	u16 ticket = val >> 16;
+-
+-	if (ticket == (u16)val)
+-		return;
+-
+-	/*
+-	 * atomic_cond_read_acquire() is RCpc, but rather than defining a
+-	 * custom cond_read_rcsc() here we just emit a full fence.  We only
+-	 * need the prior reads before subsequent writes ordering from
+-	 * smb_mb(), but as atomic_cond_read_acquire() just emits reads and we
+-	 * have no outstanding writes due to the atomic_fetch_add() the extra
+-	 * orderings are free.
+-	 */
+-	atomic_cond_read_acquire(lock, ticket == (u16)VAL);
+-	smp_mb();
+-}
+-
+-static __always_inline bool arch_spin_trylock(arch_spinlock_t *lock)
+-{
+-	u32 old = atomic_read(lock);
+-
+-	if ((old >> 16) != (old & 0xffff))
+-		return false;
+-
+-	return atomic_try_cmpxchg(lock, &old, old + (1<<16)); /* SC, for RCsc */
+-}
+-
+-static __always_inline void arch_spin_unlock(arch_spinlock_t *lock)
+-{
+-	u16 *ptr = (u16 *)lock + IS_ENABLED(CONFIG_CPU_BIG_ENDIAN);
+-	u32 val = atomic_read(lock);
+-
+-	smp_store_release(ptr, (u16)val + 1);
+-}
+-
+-static __always_inline int arch_spin_is_locked(arch_spinlock_t *lock)
+-{
+-	u32 val = atomic_read(lock);
+-
+-	return ((val >> 16) != (val & 0xffff));
+-}
+-
+-static __always_inline int arch_spin_is_contended(arch_spinlock_t *lock)
+-{
+-	u32 val = atomic_read(lock);
+-
+-	return (s16)((val >> 16) - (val & 0xffff)) > 1;
+-}
+-
+-static __always_inline int arch_spin_value_unlocked(arch_spinlock_t lock)
+-{
+-	return !arch_spin_is_locked(&lock);
+-}
+-
++#ifdef CONFIG_ARCH_USE_QUEUED_SPINLOCKS
++#include <asm/qspinlock.h>
+ #include <asm/qrwlock.h>
++#else
++#include <asm-generic/tspinlock.h>
++#endif
+ 
+ #endif /* __ASM_GENERIC_SPINLOCK_H */
+diff --git a/include/asm-generic/spinlock_types.h b/include/asm-generic/spinlock_types.h
+index 8962bb730945..9875c1d058b3 100644
+--- a/include/asm-generic/spinlock_types.h
++++ b/include/asm-generic/spinlock_types.h
+@@ -3,15 +3,11 @@
+ #ifndef __ASM_GENERIC_SPINLOCK_TYPES_H
+ #define __ASM_GENERIC_SPINLOCK_TYPES_H
+ 
+-#include <linux/types.h>
+-typedef atomic_t arch_spinlock_t;
+-
+-/*
+- * qrwlock_types depends on arch_spinlock_t, so we must typedef that before the
+- * include.
+- */
++#ifdef CONFIG_ARCH_USE_QUEUED_SPINLOCKS
++#include <asm-generic/qspinlock_types.h>
+ #include <asm/qrwlock_types.h>
+-
+-#define __ARCH_SPIN_LOCK_UNLOCKED	ATOMIC_INIT(0)
++#else
++#include <asm-generic/tspinlock_types.h>
++#endif
+ 
+ #endif /* __ASM_GENERIC_SPINLOCK_TYPES_H */
+diff --git a/include/asm-generic/tspinlock.h b/include/asm-generic/tspinlock.h
+new file mode 100644
+index 000000000000..def7b8f0f4f4
+--- /dev/null
++++ b/include/asm-generic/tspinlock.h
+@@ -0,0 +1,92 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++/*
++ * 'Generic' ticket-lock implementation.
++ *
++ * It relies on atomic_fetch_add() having well defined forward progress
++ * guarantees under contention. If your architecture cannot provide this, stick
++ * to a test-and-set lock.
++ *
++ * It also relies on atomic_fetch_add() being safe vs smp_store_release() on a
++ * sub-word of the value. This is generally true for anything LL/SC although
++ * you'd be hard pressed to find anything useful in architecture specifications
++ * about this. If your architecture cannot do this you might be better off with
++ * a test-and-set.
++ *
++ * It further assumes atomic_*_release() + atomic_*_acquire() is RCpc and hence
++ * uses atomic_fetch_add() which is RCsc to create an RCsc hot path, along with
++ * a full fence after the spin to upgrade the otherwise-RCpc
++ * atomic_cond_read_acquire().
++ *
++ * The implementation uses smp_cond_load_acquire() to spin, so if the
++ * architecture has WFE like instructions to sleep instead of poll for word
++ * modifications be sure to implement that (see ARM64 for example).
++ *
++ */
++
++#ifndef __ASM_GENERIC_TSPINLOCK_H
++#define __ASM_GENERIC_TSPINLOCK_H
++
++#include <linux/atomic.h>
++#include <asm-generic/tspinlock_types.h>
++
++static __always_inline void arch_spin_lock(arch_spinlock_t *lock)
++{
++	u32 val = atomic_fetch_add(1<<16, lock);
++	u16 ticket = val >> 16;
++
++	if (ticket == (u16)val)
++		return;
++
++	/*
++	 * atomic_cond_read_acquire() is RCpc, but rather than defining a
++	 * custom cond_read_rcsc() here we just emit a full fence.  We only
++	 * need the prior reads before subsequent writes ordering from
++	 * smb_mb(), but as atomic_cond_read_acquire() just emits reads and we
++	 * have no outstanding writes due to the atomic_fetch_add() the extra
++	 * orderings are free.
++	 */
++	atomic_cond_read_acquire(lock, ticket == (u16)VAL);
++	smp_mb();
++}
++
++static __always_inline bool arch_spin_trylock(arch_spinlock_t *lock)
++{
++	u32 old = atomic_read(lock);
++
++	if ((old >> 16) != (old & 0xffff))
++		return false;
++
++	return atomic_try_cmpxchg(lock, &old, old + (1<<16)); /* SC, for RCsc */
++}
++
++static __always_inline void arch_spin_unlock(arch_spinlock_t *lock)
++{
++	u16 *ptr = (u16 *)lock + IS_ENABLED(CONFIG_CPU_BIG_ENDIAN);
++	u32 val = atomic_read(lock);
++
++	smp_store_release(ptr, (u16)val + 1);
++}
++
++static __always_inline int arch_spin_is_locked(arch_spinlock_t *lock)
++{
++	u32 val = atomic_read(lock);
++
++	return ((val >> 16) != (val & 0xffff));
++}
++
++static __always_inline int arch_spin_is_contended(arch_spinlock_t *lock)
++{
++	u32 val = atomic_read(lock);
++
++	return (s16)((val >> 16) - (val & 0xffff)) > 1;
++}
++
++static __always_inline int arch_spin_value_unlocked(arch_spinlock_t lock)
++{
++	return !arch_spin_is_locked(&lock);
++}
++
++#include <asm/qrwlock.h>
++
++#endif /* __ASM_GENERIC_TSPINLOCK_H */
+diff --git a/include/asm-generic/tspinlock_types.h b/include/asm-generic/tspinlock_types.h
+new file mode 100644
+index 000000000000..ca3ea5acd172
+--- /dev/null
++++ b/include/asm-generic/tspinlock_types.h
+@@ -0,0 +1,17 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++#ifndef __ASM_GENERIC_TSPINLOCK_TYPES_H
++#define __ASM_GENERIC_TSPINLOCK_TYPES_H
++
++#include <linux/types.h>
++typedef atomic_t arch_spinlock_t;
++
++/*
++ * qrwlock_types depends on arch_spinlock_t, so we must typedef that before the
++ * include.
++ */
++#include <asm/qrwlock_types.h>
++
++#define __ARCH_SPIN_LOCK_UNLOCKED	ATOMIC_INIT(0)
++
++#endif /* __ASM_GENERIC_TSPINLOCK_TYPES_H */
 -- 
-	Ansuel
+2.36.1
+
