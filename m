@@ -2,175 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E323C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:19:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D3A6CCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:19:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355541AbiFUVTP (ORCPT
+        id S1355931AbiFUVTT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 17:19:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33972 "EHLO
+        Tue, 21 Jun 2022 17:19:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355790AbiFUVTA (ORCPT
+        with ESMTP id S1355661AbiFUVTC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 17:19:00 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3E4173526D
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 14:04:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655845462;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6KcRH4/KUHtf5xpIj4aJVy42n1FCoQeasRmMHkO/WZY=;
-        b=Qt5LTOXlYE83qQIlY9uXeg0NSio4kzTD5sD2z1meOpp5+/htVZ9s/FSSUGW1lBQR9jzs7R
-        /869uxLv166UfwxArOUE/onpxRNBRyvNx1wf+CGrm3mtXInCz9kGCI3yrF7WOTzjRSmkuC
-        4Jwp4eQn0saKjdh8im+BFBA/UtTsK4g=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-668-cEr2j4qbOVa_-EGnshGRsw-1; Tue, 21 Jun 2022 17:04:20 -0400
-X-MC-Unique: cEr2j4qbOVa_-EGnshGRsw-1
-Received: by mail-wm1-f72.google.com with SMTP id l3-20020a05600c1d0300b0039c7efa2526so6741964wms.3
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 14:04:20 -0700 (PDT)
+        Tue, 21 Jun 2022 17:19:02 -0400
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11DAC2F644
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 14:04:35 -0700 (PDT)
+Received: by mail-io1-f72.google.com with SMTP id q197-20020a6b8ece000000b00670f1479a02so4166537iod.14
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 14:04:35 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=6KcRH4/KUHtf5xpIj4aJVy42n1FCoQeasRmMHkO/WZY=;
-        b=UgnIZlSKASWaaOUmjtlwihFogJix0pmbgtSD9OoWwavag6FXewZc0jT5/2E5SlAQ04
-         0cvn+nsezebW1rIf6xtzKQJ8qTmyu3/4LvKGPUBh+Xxplu881AR+6bkChrzTO4/MDFGU
-         pQjliI5+1XcnXpEwQet/xXkxHO/uwyfFw+XUvMcO1nteLK4OqX4HhgHjfm0IFZ5/569G
-         0WzX+Hzn880H2/HxGF8WO49pSByTo0EfGghoyoKvQy/UKjdauyJOizQDOz8erp3N+0Of
-         Nny4AgswIBD18lXIjJYHdgRqofU7G0AWz9GJCM5/fDS15C2eYguqh4lovpiWY/cIYKpb
-         fgDg==
-X-Gm-Message-State: AOAM530AuIUk3w8+16X3Syl5zkvVKt9IYXMvC/8YJMoQIltcEeJ6ROW4
-        Hn3xUwG5vIryLXRJpN/1HwO4FkJluIACIH99YRjzr8rbsRFWjnZXEK+6GqbH2Q6N5EcpjReJdRz
-        YHe1ju+2K6RPa/L/GxvAOnMRn
-X-Received: by 2002:a1c:7411:0:b0:39c:8e4c:9704 with SMTP id p17-20020a1c7411000000b0039c8e4c9704mr42808297wmc.52.1655845459381;
-        Tue, 21 Jun 2022 14:04:19 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwm+wwv4IGBrN3CJ2eLl14IUYzF8AfIDUJBjL++7SCmt5nepLdvMx+y2Kx/kdCIkOHLNxnIWg==
-X-Received: by 2002:a1c:7411:0:b0:39c:8e4c:9704 with SMTP id p17-20020a1c7411000000b0039c8e4c9704mr42808282wmc.52.1655845459151;
-        Tue, 21 Jun 2022 14:04:19 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c705:bc00:a63c:7e37:6061:1706? (p200300cbc705bc00a63c7e3760611706.dip0.t-ipconnect.de. [2003:cb:c705:bc00:a63c:7e37:6061:1706])
-        by smtp.gmail.com with ESMTPSA id b3-20020a5d5503000000b0021b881c4c5csm10872237wrv.53.2022.06.21.14.04.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Jun 2022 14:04:18 -0700 (PDT)
-Message-ID: <e25cb58c-464c-8bd4-c7da-9ab80b49f3bb@redhat.com>
-Date:   Tue, 21 Jun 2022 23:04:18 +0200
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=C+3Mp5eGJJIAr0nNvTRNoEHotNhZy1SzSYyrJ1qhGOM=;
+        b=LM3U9K1hTbPazIHOvoGRaeSjNHSV/GZzPUfpLGDXgyPiyoCn2lMGi796sakz+QnwwB
+         lQqNzb6vbSqYUUkKVOQ5JPqjQ09SITGxZ1qDR1WkxPgq544TNGs8gRHUwO8y4rcEd9nC
+         Vi2DmzPmYJxnJjMuXaJ0iwH/5lJ+5quEd20aNwfnxIyPOm89OUdIsNnZtWTU2afAefmK
+         Mo5dvRvHga/YesuUGmXlPUMhB8+PRiHZvZxKUlUHpXUPJR6H5B8zv68SKrGaJTxvQg6Q
+         /6R5X8KvTAD6VI09nhC+Bh5qwoqz1a4rnX1OD83t9Wbs1vsC3pma3xbtf200VJCOsgIX
+         Tgiw==
+X-Gm-Message-State: AJIora8AK4SejXMBkUbtM3VtPle9ly2Tia67yQkO4fB4Q/YRDbWirEaB
+        pe0Z7i+ypu5sIHiE1BfkPABaJuob7u0VmAk4PzLajNKxJgVv
+X-Google-Smtp-Source: AGRyM1sSwSuEpD8CazXxC+Sjb+PX5IKY/ITJdC4XGJ7MaOqbylO8rX/M02XfpKscvH+Ko7Rjsw61gFt0SfI94zSwPOQcVzbrjudm
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v10 11/69] mm/mmap: use the maple tree in find_vma()
- instead of the rbtree.
-Content-Language: en-US
-To:     Liam Howlett <liam.howlett@oracle.com>,
-        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "damon @ lists . linux . dev" <damon@lists.linux.dev>,
-        SeongJae Park <sj@kernel.org>
-References: <20220621204632.3370049-1-Liam.Howlett@oracle.com>
- <20220621204632.3370049-12-Liam.Howlett@oracle.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <20220621204632.3370049-12-Liam.Howlett@oracle.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a05:6e02:78a:b0:2d3:af3f:a9e2 with SMTP id
+ q10-20020a056e02078a00b002d3af3fa9e2mr115686ils.96.1655845474431; Tue, 21 Jun
+ 2022 14:04:34 -0700 (PDT)
+Date:   Tue, 21 Jun 2022 14:04:34 -0700
+In-Reply-To: <00000000000073aa8605e1df6ab9@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000004e7a7505e1fb919f@google.com>
+Subject: Re: [syzbot] general protection fault in do_mpage_readpage
+From:   syzbot <syzbot+dbbd022e608bb122cf4e@syzkaller.appspotmail.com>
+To:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, viro@zeniv.linux.org.uk
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 21.06.22 22:46, Liam Howlett wrote:
-> From: "Liam R. Howlett" <Liam.Howlett@Oracle.com>
-> 
-> Using the maple tree interface mt_find() will handle the RCU locking and
-> will start searching at the address up to the limit, ULONG_MAX in this
-> case.
-> 
-> Add kernel documentation to this API.
-> 
-> Link: https://lkml.kernel.org/r/20220504010716.661115-13-Liam.Howlett@oracle.com
-> Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
-> Acked-by: Vlastimil Babka <vbabka@suse.cz>
-> Cc: Catalin Marinas <catalin.marinas@arm.com>
-> Cc: David Howells <dhowells@redhat.com>
-> Cc: "Matthew Wilcox (Oracle)" <willy@infradead.org>
-> Cc: SeongJae Park <sj@kernel.org>
-> Cc: Will Deacon <will@kernel.org>
-> Cc: Davidlohr Bueso <dave@stgolabs.net>
-> Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-> ---
->  mm/mmap.c | 28 ++++++++++------------------
->  1 file changed, 10 insertions(+), 18 deletions(-)
-> 
-> diff --git a/mm/mmap.c b/mm/mmap.c
-> index d7e6baa2f40f..fdb61252448f 100644
-> --- a/mm/mmap.c
-> +++ b/mm/mmap.c
-> @@ -2486,11 +2486,18 @@ get_unmapped_area(struct file *file, unsigned long addr, unsigned long len,
->  
->  EXPORT_SYMBOL(get_unmapped_area);
->  
-> -/* Look up the first VMA which satisfies  addr < vm_end,  NULL if none. */
-> +/**
-> + * find_vma() - Find the VMA for a given address, or the next vma.
-> + * @mm: The mm_struct to check
-> + * @addr: The address
-> + *
-> + * Returns: The VMA associated with addr, or the next vma.
-> + * May return %NULL in the case of no vma at addr or above.
+syzbot has found a reproducer for the following issue on:
 
-Nit: inconsistent use of VMA vs. vma.
+HEAD commit:    34d1d36073ea Add linux-next specific files for 20220621
+git tree:       linux-next
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=11eeec3ff00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b24b62d1c051cfc8
+dashboard link: https://syzkaller.appspot.com/bug?extid=dbbd022e608bb122cf4e
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1216c174080000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14362fd8080000
 
-> + */
->  struct vm_area_struct *find_vma(struct mm_struct *mm, unsigned long addr)
->  {
-> -	struct rb_node *rb_node;
->  	struct vm_area_struct *vma;
-> +	unsigned long index = addr;
->  
->  	mmap_assert_locked(mm);
->  	/* Check the cache first. */
-> @@ -2498,22 +2505,7 @@ struct vm_area_struct *find_vma(struct mm_struct *mm, unsigned long addr)
->  	if (likely(vma))
->  		return vma;
->  
-> -	rb_node = mm->mm_rb.rb_node;
-> -
-> -	while (rb_node) {
-> -		struct vm_area_struct *tmp;
-> -
-> -		tmp = rb_entry(rb_node, struct vm_area_struct, vm_rb);
-> -
-> -		if (tmp->vm_end > addr) {
-> -			vma = tmp;
-> -			if (tmp->vm_start <= addr)
-> -				break;
-> -			rb_node = rb_node->rb_left;
-> -		} else
-> -			rb_node = rb_node->rb_right;
-> -	}
-> -
-> +	vma = mt_find(&mm->mm_mt, &index, ULONG_MAX);
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+dbbd022e608bb122cf4e@syzkaller.appspotmail.com
 
-I guess it would be handy to have a mt_find() variant that simply
-consumes an address, because for example here, we don't actually care
-about the output semantics? Does anything speak against such a utility
-function or is this here really just a corner case?
-
-That would make that code *even easier* to read.
-
->  	if (vma)
->  		vmacache_update(addr, vma);
->  	return vma;
-
-Reviewed-by: David Hildenbrand <david@redhat.com>
-
--- 
-Thanks,
-
-David / dhildenb
+loop0: detected capacity change from 0 to 8191
+ntfs3: loop0: Mark volume as dirty due to NTFS errors
+general protection fault, probably for non-canonical address 0xdffffc0000000001: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
+CPU: 0 PID: 3604 Comm: syz-executor200 Not tainted 5.19.0-rc3-next-20220621-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:map_buffer_to_folio fs/mpage.c:107 [inline]
+RIP: 0010:do_mpage_readpage+0xfe8/0x19f0 fs/mpage.c:228
+Code: 85 ed 0f 84 98 01 00 00 49 be 00 00 00 00 00 fc ff df 4c 89 ed 45 31 e4 eb 2c e8 73 8f 93 ff 48 8d 7d 08 48 89 f8 48 c1 e8 03 <42> 80 3c 30 00 0f 85 53 08 00 00 48 8b 6d 08 41 83 c4 01 49 39 ed
+RSP: 0018:ffffc90002f9f7c0 EFLAGS: 00010202
+RAX: 0000000000000001 RBX: 0000000000000002 RCX: 0000000000000000
+RDX: ffff8880206957c0 RSI: ffffffff81e72ddd RDI: 0000000000000008
+RBP: 0000000000000000 R08: 0000000000000004 R09: 0000000000000002
+R10: 0000000000000000 R11: 0000000000000001 R12: 0000000000000000
+R13: 0000000000000000 R14: dffffc0000000000 R15: ffffc90002f9f960
+FS:  000055555626d300(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00000000005d84c8 CR3: 000000007e93c000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ mpage_read_folio+0xa5/0x140 fs/mpage.c:378
+ ntfs_read_folio+0x148/0x1e0 fs/ntfs3/inode.c:706
+ filemap_read_folio+0x3c/0x1d0 mm/filemap.c:2396
+ do_read_cache_folio+0x251/0x5b0 mm/filemap.c:3521
+ do_read_cache_page mm/filemap.c:3563 [inline]
+ read_cache_page+0x59/0x2a0 mm/filemap.c:3572
+ read_mapping_page include/linux/pagemap.h:756 [inline]
+ ntfs_map_page fs/ntfs3/ntfs_fs.h:897 [inline]
+ ntfs_fill_super+0x27e9/0x3730 fs/ntfs3/super.c:1145
+ get_tree_bdev+0x4a2/0x7e0 fs/super.c:1294
+ vfs_get_tree+0x89/0x2f0 fs/super.c:1501
+ do_new_mount fs/namespace.c:3040 [inline]
+ path_mount+0x1320/0x1fa0 fs/namespace.c:3370
+ do_mount fs/namespace.c:3383 [inline]
+ __do_sys_mount fs/namespace.c:3591 [inline]
+ __se_sys_mount fs/namespace.c:3568 [inline]
+ __x64_sys_mount+0x27f/0x300 fs/namespace.c:3568
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+RIP: 0033:0x7f240cf2feaa
+Code: 83 c4 08 5b 5d c3 66 2e 0f 1f 84 00 00 00 00 00 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 49 89 ca b8 a5 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffefafe8648 EFLAGS: 00000286 ORIG_RAX: 00000000000000a5
+RAX: ffffffffffffffda RBX: 00007ffefafe86a0 RCX: 00007f240cf2feaa
+RDX: 0000000020000000 RSI: 0000000020000100 RDI: 00007ffefafe8660
+RBP: 00007ffefafe8660 R08: 00007ffefafe86a0 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000286 R12: 00000000200034e8
+R13: 0000000000000003 R14: 0000000000000004 R15: 000000000000021f
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:map_buffer_to_folio fs/mpage.c:107 [inline]
+RIP: 0010:do_mpage_readpage+0xfe8/0x19f0 fs/mpage.c:228
+Code: 85 ed 0f 84 98 01 00 00 49 be 00 00 00 00 00 fc ff df 4c 89 ed 45 31 e4 eb 2c e8 73 8f 93 ff 48 8d 7d 08 48 89 f8 48 c1 e8 03 <42> 80 3c 30 00 0f 85 53 08 00 00 48 8b 6d 08 41 83 c4 01 49 39 ed
+RSP: 0018:ffffc90002f9f7c0 EFLAGS: 00010202
+RAX: 0000000000000001 RBX: 0000000000000002 RCX: 0000000000000000
+RDX: ffff8880206957c0 RSI: ffffffff81e72ddd RDI: 0000000000000008
+RBP: 0000000000000000 R08: 0000000000000004 R09: 0000000000000002
+R10: 0000000000000000 R11: 0000000000000001 R12: 0000000000000000
+R13: 0000000000000000 R14: dffffc0000000000 R15: ffffc90002f9f960
+FS:  000055555626d300(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f240cf1fd20 CR3: 000000007e93c000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+----------------
+Code disassembly (best guess):
+   0:	85 ed                	test   %ebp,%ebp
+   2:	0f 84 98 01 00 00    	je     0x1a0
+   8:	49 be 00 00 00 00 00 	movabs $0xdffffc0000000000,%r14
+   f:	fc ff df
+  12:	4c 89 ed             	mov    %r13,%rbp
+  15:	45 31 e4             	xor    %r12d,%r12d
+  18:	eb 2c                	jmp    0x46
+  1a:	e8 73 8f 93 ff       	callq  0xff938f92
+  1f:	48 8d 7d 08          	lea    0x8(%rbp),%rdi
+  23:	48 89 f8             	mov    %rdi,%rax
+  26:	48 c1 e8 03          	shr    $0x3,%rax
+* 2a:	42 80 3c 30 00       	cmpb   $0x0,(%rax,%r14,1) <-- trapping instruction
+  2f:	0f 85 53 08 00 00    	jne    0x888
+  35:	48 8b 6d 08          	mov    0x8(%rbp),%rbp
+  39:	41 83 c4 01          	add    $0x1,%r12d
+  3d:	49 39 ed             	cmp    %rbp,%r13
 
