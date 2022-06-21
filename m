@@ -2,63 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B6A0C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 03:49:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE942C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 03:50:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344303AbiFUDtw (ORCPT
+        id S1344839AbiFUDu2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 23:49:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60220 "EHLO
+        Mon, 20 Jun 2022 23:50:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237675AbiFUDtp (ORCPT
+        with ESMTP id S237675AbiFUDuV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 23:49:45 -0400
-Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEFA418E19;
-        Mon, 20 Jun 2022 20:49:43 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R831e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VH.K7.0_1655783380;
-Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0VH.K7.0_1655783380)
-          by smtp.aliyun-inc.com;
-          Tue, 21 Jun 2022 11:49:40 +0800
-From:   Yang Li <yang.lee@linux.alibaba.com>
-To:     rth@twiddle.net
-Cc:     ink@jurassic.park.msu.ru, mattst88@gmail.com,
-        linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yang Li <yang.lee@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH -next] mm: Fix warning comparing pointer to 0
-Date:   Tue, 21 Jun 2022 11:49:39 +0800
-Message-Id: <20220621034939.111812-1-yang.lee@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Mon, 20 Jun 2022 23:50:21 -0400
+Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7704118E19;
+        Mon, 20 Jun 2022 20:50:20 -0700 (PDT)
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id E808A1A1322;
+        Tue, 21 Jun 2022 05:50:18 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 5C4261A131E;
+        Tue, 21 Jun 2022 05:50:18 +0200 (CEST)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 288631802204;
+        Tue, 21 Jun 2022 11:50:17 +0800 (+08)
+From:   Shengjiu Wang <shengjiu.wang@nxp.com>
+To:     vkoul@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
+        kernel@pengutronix.de, festevam@gmail.com, shengjiu.wang@gmail.com,
+        joy.zou@nxp.com, linux-imx@nxp.com, dmaengine@vger.kernel.org
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3] dmaengine: imx-sdma: Add FIFO stride support for multi FIFO script
+Date:   Tue, 21 Jun 2022 11:36:06 +0800
+Message-Id: <1655782566-21386-1-git-send-email-shengjiu.wang@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the following coccicheck warning:
-./arch/alpha/mm/fault.c:197:52-53: WARNING comparing pointer to 0
+The peripheral may have several FIFOs, but some case just select
+some FIFOs from them for data transfer, which means FIFO0 and FIFO2
+may be selected. So add FIFO address stride support, 0 means all FIFOs
+are continuous, 1 means 1 word stride between FIFOs. All stride between
+FIFOs should be same.
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+Another option words_per_fifo means how many audio channel data copied
+to one FIFO one time, 1 means one channel per FIFO, 2 means 2 channels
+per FIFO.
+
+If 'n_fifos_src =  4' and 'words_per_fifo = 2', it means the first two
+words(channels) fetch from FIFO0 and then jump to FIFO1 for next two words,
+and so on after the last FIFO3 fetched, roll back to FIFO0.
+
+Signed-off-by: Joy Zou <joy.zou@nxp.com>
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
 ---
- arch/alpha/mm/fault.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+changes in v3
+- fix issue with words_per_fifo = 0 case;
 
-diff --git a/arch/alpha/mm/fault.c b/arch/alpha/mm/fault.c
-index ef427a6bdd1a..bb3fe2949313 100644
---- a/arch/alpha/mm/fault.c
-+++ b/arch/alpha/mm/fault.c
-@@ -194,7 +194,8 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
+changes in v2
+- change offset to stride for naming and description
+- fix description for words_per_fifo
+- update subsystem tag to be dmaengine
+
+ drivers/dma/imx-sdma.c      | 27 +++++++++++++++++++++++++--
+ include/linux/dma/imx-dma.h | 13 +++++++++++++
+ 2 files changed, 38 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/dma/imx-sdma.c b/drivers/dma/imx-sdma.c
+index 39d70ef1caf0..17adad9cb6d9 100644
+--- a/drivers/dma/imx-sdma.c
++++ b/drivers/dma/imx-sdma.c
+@@ -183,6 +183,8 @@
+ 				 BIT(DMA_DEV_TO_DEV))
  
-  no_context:
- 	/* Are we prepared to handle this fault as an exception?  */
--	if ((fixup = search_exception_tables(regs->pc)) != 0) {
-+	fixup = search_exception_tables(regs->pc);
-+	if (fixup) {
- 		unsigned long newpc;
- 		newpc = fixup_exception(dpf_reg, fixup, regs->pc);
- 		regs->pc = newpc;
+ #define SDMA_WATERMARK_LEVEL_N_FIFOS	GENMASK(15, 12)
++#define SDMA_WATERMARK_LEVEL_OFF_FIFOS  GENMASK(19, 16)
++#define SDMA_WATERMARK_LEVEL_WORDS_PER_FIFO   GENMASK(31, 28)
+ #define SDMA_WATERMARK_LEVEL_SW_DONE	BIT(23)
+ 
+ #define SDMA_DONE0_CONFIG_DONE_SEL	BIT(7)
+@@ -429,6 +431,9 @@ struct sdma_desc {
+  * @n_fifos_src:	number of source device fifos
+  * @n_fifos_dst:	number of destination device fifos
+  * @sw_done:		software done flag
++ * @stride_fifos_src:	stride for source device FIFOs
++ * @stride_fifos_dst:	stride for destination device FIFOs
++ * @words_per_fifo:	copy number of words one time for one FIFO
+  */
+ struct sdma_channel {
+ 	struct virt_dma_chan		vc;
+@@ -456,6 +461,9 @@ struct sdma_channel {
+ 	bool				is_ram_script;
+ 	unsigned int			n_fifos_src;
+ 	unsigned int			n_fifos_dst;
++	unsigned int			stride_fifos_src;
++	unsigned int			stride_fifos_dst;
++	unsigned int			words_per_fifo;
+ 	bool				sw_done;
+ };
+ 
+@@ -1245,17 +1253,29 @@ static void sdma_set_watermarklevel_for_p2p(struct sdma_channel *sdmac)
+ static void sdma_set_watermarklevel_for_sais(struct sdma_channel *sdmac)
+ {
+ 	unsigned int n_fifos;
++	unsigned int stride_fifos;
++	unsigned int words_per_fifo;
+ 
+ 	if (sdmac->sw_done)
+ 		sdmac->watermark_level |= SDMA_WATERMARK_LEVEL_SW_DONE;
+ 
+-	if (sdmac->direction == DMA_DEV_TO_MEM)
++	if (sdmac->direction == DMA_DEV_TO_MEM) {
+ 		n_fifos = sdmac->n_fifos_src;
+-	else
++		stride_fifos = sdmac->stride_fifos_src;
++	} else {
+ 		n_fifos = sdmac->n_fifos_dst;
++		stride_fifos = sdmac->stride_fifos_dst;
++	}
++
++	words_per_fifo = sdmac->words_per_fifo;
+ 
+ 	sdmac->watermark_level |=
+ 			FIELD_PREP(SDMA_WATERMARK_LEVEL_N_FIFOS, n_fifos);
++	sdmac->watermark_level |=
++			FIELD_PREP(SDMA_WATERMARK_LEVEL_OFF_FIFOS, stride_fifos);
++	if (words_per_fifo)
++		sdmac->watermark_level |=
++			FIELD_PREP(SDMA_WATERMARK_LEVEL_WORDS_PER_FIFO, (words_per_fifo - 1));
+ }
+ 
+ static int sdma_config_channel(struct dma_chan *chan)
+@@ -1769,6 +1789,9 @@ static int sdma_config(struct dma_chan *chan,
+ 		}
+ 		sdmac->n_fifos_src = sdmacfg->n_fifos_src;
+ 		sdmac->n_fifos_dst = sdmacfg->n_fifos_dst;
++		sdmac->stride_fifos_src = sdmacfg->stride_fifos_src;
++		sdmac->stride_fifos_dst = sdmacfg->stride_fifos_dst;
++		sdmac->words_per_fifo = sdmacfg->words_per_fifo;
+ 		sdmac->sw_done = sdmacfg->sw_done;
+ 	}
+ 
+diff --git a/include/linux/dma/imx-dma.h b/include/linux/dma/imx-dma.h
+index 8887762360d4..f487a4fa103a 100644
+--- a/include/linux/dma/imx-dma.h
++++ b/include/linux/dma/imx-dma.h
+@@ -70,6 +70,16 @@ static inline int imx_dma_is_general_purpose(struct dma_chan *chan)
+  * struct sdma_peripheral_config - SDMA config for audio
+  * @n_fifos_src: Number of FIFOs for recording
+  * @n_fifos_dst: Number of FIFOs for playback
++ * @stride_fifos_src: FIFO address stride for recording, 0 means all FIFOs are
++ *                    continuous, 1 means 1 word stride between FIFOs. All stride
++ *                    between FIFOs should be same.
++ * @stride_fifos_dst: FIFO address stride for playback
++ * @words_per_fifo: numbers of words per FIFO fetch/fill, 1 means
++ *                  one channel per FIFO, 2 means 2 channels per FIFO..
++ *                  If 'n_fifos_src =  4' and 'words_per_fifo = 2', it
++ *                  means the first two words(channels) fetch from FIFO0
++ *                  and then jump to FIFO1 for next two words, and so on
++ *                  after the last FIFO3 fetched, roll back to FIFO0.
+  * @sw_done: Use software done. Needed for PDM (micfil)
+  *
+  * Some i.MX Audio devices (SAI, micfil) have multiple successive FIFO
+@@ -82,6 +92,9 @@ static inline int imx_dma_is_general_purpose(struct dma_chan *chan)
+ struct sdma_peripheral_config {
+ 	int n_fifos_src;
+ 	int n_fifos_dst;
++	int stride_fifos_src;
++	int stride_fifos_dst;
++	int words_per_fifo;
+ 	bool sw_done;
+ };
+ 
 -- 
-2.20.1.7.g153144c
+2.17.1
 
