@@ -2,103 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46598C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:05:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DC39CCA473
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:05:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355618AbiFUVFO (ORCPT
+        id S1356525AbiFUVEc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 17:05:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38490 "EHLO
+        Tue, 21 Jun 2022 17:04:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355982AbiFUVDH (ORCPT
+        with ESMTP id S1355644AbiFUVAq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 17:03:07 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A28FA3527E;
-        Tue, 21 Jun 2022 13:53:18 -0700 (PDT)
-From:   John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1655844748;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Nb5dLcX7krWQuD6zSqBNNfRwXIDlKoAFhGKnYz0pyus=;
-        b=poyjZf3m9GJDdbHcAdbqc30s9c+rDUxQp7mpaG31RnP3wDDL+wcPVuo+TFKb5FWS6qKdCZ
-        GTC4htJ9T9aYZ69nkdK3uQecEjzyvxl2iyfVlKjQv56zdLGgwz73e2PKvuCG5w9Ehle+D4
-        u6lkclTEH/ZQs8D19VRcyMhHfF9rVynMtAwEgMwZ3CjtOZ0/nwmaO1GjcyWR2T7M+Z5SMx
-        7yaICC2yWZeJeVydVlb5L0wxNgYn2S42rdJPeRzsPiwD8n3h5P2g5qNymuu4oV6rvWfazE
-        Uy+OJt8b0nVlsVDmk3juHlZu1LxIu5tJZABrfCY4lSLXn1sE5m7X7KvNA2KKGw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1655844748;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Nb5dLcX7krWQuD6zSqBNNfRwXIDlKoAFhGKnYz0pyus=;
-        b=cV8ms7gdEr44A8gH7coFpKz1whmzqybo6L1e7KaFOk/Oltr3Ii5uGgHeVFUvBwYMD+UleV
-        N6AH5qV01G3xYcDw==
-To:     paulmck@kernel.org
-Cc:     rcu@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-team@fb.com, rostedt@goodmis.org
-Subject: Re: [PATCH rcu 11/12] torture: Flush printk() buffers before
- powering off
-In-Reply-To: <20220621181335.GJ1790663@paulmck-ThinkPad-P17-Gen-1>
-References: <20220620225814.GA3842995@paulmck-ThinkPad-P17-Gen-1>
- <20220620225817.3843106-11-paulmck@kernel.org>
- <8735fyc42v.fsf@jogness.linutronix.de>
- <20220620232838.GZ1790663@paulmck-ThinkPad-P17-Gen-1>
- <87v8suphdy.fsf@jogness.linutronix.de>
- <20220621181335.GJ1790663@paulmck-ThinkPad-P17-Gen-1>
-Date:   Tue, 21 Jun 2022 22:58:27 +0206
-Message-ID: <87ilotagdw.fsf@jogness.linutronix.de>
+        Tue, 21 Jun 2022 17:00:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D1FC110E;
+        Tue, 21 Jun 2022 13:52:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A13D7B81B47;
+        Tue, 21 Jun 2022 20:51:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2CB5C341C4;
+        Tue, 21 Jun 2022 20:51:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655844683;
+        bh=M5ZujuZ0mG33Rr/sqbkSj4dYDw6RrPY7vPQnXkZ/t0s=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=oxCvZ+GrotMBP5r2Gn4oyZBNZx0HyPODgIkaY3EA3w9bffETP1rKDBQ+6XpADle0h
+         WviV6zxpnfFeZzYdbmzhc8iHj2jq7zty/zDJ/JLogllBK4min2ywvM280s+xCHvibY
+         TJT8gw+naQgsaYJJqThrvo2qrJqMG5QiDX8h2X8j7pkGYtBiS4pxZsa67n7cpcWcS9
+         7ulADEDIKgq+8gMgOzNQBjyFj7AzN7FEorgLt9ig/KBzSnI3RJgHsqBajZfFsK184F
+         c9NEegt1VDlnHSSc1pWsjFsUuyb71y0n+sF37mkSB6bVo2T2JTsQKfv+kPL9TUPpQa
+         1TP/z/9aBxILQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        tglx@linutronix.de, mhiramat@kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.4 2/7] irqchip/uniphier-aidet: Add compatible string for NX1 SoC
+Date:   Tue, 21 Jun 2022 16:51:14 -0400
+Message-Id: <20220621205120.250779-2-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220621205120.250779-1-sashal@kernel.org>
+References: <20220621205120.250779-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-06-21, "Paul E. McKenney" <paulmck@kernel.org> wrote:
-> The patch below will cause rcutorture to implicitly test this
-> functionality, unless told otherwise, for example, by using the
-> --bootargs "torture.printk_shutdown_bug_workaround" kvm.sh
-> argument.
->
-> Thoughts?
+From: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
 
-I feel like this is dirtying the torture.* bootarg namespace a
-bit. Also, I am not sure how useful it is as a dynamic option. I assume
-that users would generally avoid using it, so its very existence might
-just be more noise in the documentation and code. It is an unusual
-feature:
+[ Upstream commit e3f056a7aafabe4ac3ad4b7465ba821b44a7e639 ]
 
-"In case some bug shows up, here is a flag to avoid it."
+Add the compatible string to support UniPhier NX1 SoC, which has the same
+kinds of controls as the other UniPhier SoCs.
 
-I personally would just drop the patch and rely on a correctly
-functional kernel. But I am also not an rcutorture user. If _you_ think
-that such a flag is useful, feel free to include the patch.
+Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/1653023822-19229-3-git-send-email-hayashi.kunihiko@socionext.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/irqchip/irq-uniphier-aidet.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-> commit 204bf1e2a5a2fb68c15b4b64793ad0896db6f705
-> Author: Paul E. McKenney <paulmck@kernel.org>
-> Date:   Tue Jun 21 11:02:25 2022 -0700
->
->     torture: Optionally flush printk() buffers before powering off
->     
->     The rcutorture test suite produces quite a bit of console output at
->     the end of a test.  This means that the new-in-2022 printk() kthreads
->     are likely to be in the process of flushing output at the time of the
->     torture_shutdown() function's call to kernel_power_off().  Normally,
->     rcutorture relies on printk() to flush any pending output upon shutdown,
->     the better to detect bugs in this area, for example, the one introduced
->     by 8e274732115f ("printk: extend console_lock for per-console locking").
->     However, once such a bug is detected and reported, it is necessary to
->     test the rest of the system, without noise from the already-reported bug.
->     
->     This commit therefore adds a torture.printk_shutdown_bug_workaround
->     kernel parameter, which causes torture_shutdown() to invoke pr_flush(),
->     and print an informative message on the console, immediately before
->     invoking kernel_power_off().  When this kernel parameter is not specified,
->     it is up to printk() to flush its own buffers.
->     
->     Suggested-by: John Ogness <john.ogness@linutronix.de>
->     Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+diff --git a/drivers/irqchip/irq-uniphier-aidet.c b/drivers/irqchip/irq-uniphier-aidet.c
+index 89121b39be26..716b1bb88bf2 100644
+--- a/drivers/irqchip/irq-uniphier-aidet.c
++++ b/drivers/irqchip/irq-uniphier-aidet.c
+@@ -237,6 +237,7 @@ static const struct of_device_id uniphier_aidet_match[] = {
+ 	{ .compatible = "socionext,uniphier-ld11-aidet" },
+ 	{ .compatible = "socionext,uniphier-ld20-aidet" },
+ 	{ .compatible = "socionext,uniphier-pxs3-aidet" },
++	{ .compatible = "socionext,uniphier-nx1-aidet" },
+ 	{ /* sentinel */ }
+ };
+ 
+-- 
+2.35.1
 
-Reviewed-by: John Ogness <john.ogness@linutronix.de>
