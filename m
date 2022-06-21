@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8556AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 19:21:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C598C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 19:21:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353427AbiFUTV0 (ORCPT
+        id S1351651AbiFUTVn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 15:21:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39898 "EHLO
+        Tue, 21 Jun 2022 15:21:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236144AbiFUTVD (ORCPT
+        with ESMTP id S1353256AbiFUTVI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 15:21:03 -0400
+        Tue, 21 Jun 2022 15:21:08 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D7CFB1163
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 12:21:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4644D1174
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 12:21:07 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CFBEA1688;
-        Tue, 21 Jun 2022 12:21:02 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3D46D1688;
+        Tue, 21 Jun 2022 12:21:07 -0700 (PDT)
 Received: from usa.arm.com (e103737-lin.cambridge.arm.com [10.1.197.49])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id C66003F792;
-        Tue, 21 Jun 2022 12:21:00 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 008833F792;
+        Tue, 21 Jun 2022 12:21:04 -0700 (PDT)
 From:   Sudeep Holla <sudeep.holla@arm.com>
 To:     linux-kernel@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>
 Cc:     Sudeep Holla <sudeep.holla@arm.com>,
@@ -35,10 +35,12 @@ Cc:     Sudeep Holla <sudeep.holla@arm.com>,
         Ionela Voinescu <ionela.voinescu@arm.com>,
         Pierre Gondois <pierre.gondois@arm.com>,
         linux-arm-kernel@lists.infradead.org,
-        linux-riscv@lists.infradead.org, Gavin Shan <gshan@redhat.com>
-Subject: [PATCH v4 08/20] arch_topology: Add support to parse and detect cache attributes
-Date:   Tue, 21 Jun 2022 20:20:22 +0100
-Message-Id: <20220621192034.3332546-9-sudeep.holla@arm.com>
+        linux-riscv@lists.infradead.org, Will Deacon <will@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Gavin Shan <gshan@redhat.com>
+Subject: [PATCH v4 10/20] arm64: topology: Remove redundant setting of llc_id in CPU topology
+Date:   Tue, 21 Jun 2022 20:20:24 +0100
+Message-Id: <20220621192034.3332546-11-sudeep.holla@arm.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220621192034.3332546-1-sudeep.holla@arm.com>
 References: <20220621192034.3332546-1-sudeep.holla@arm.com>
@@ -48,65 +50,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently ACPI populates just the minimum information about the last
-level cache from PPTT in order to feed the same to build sched_domains.
-Similar support for DT platforms is not present.
+Since the cacheinfo LLC information is used directly in arch_topology,
+there is no need to parse and fetch the LLC ID information only for
+ACPI systems.
 
-In order to enable the same, the entire cache hierarchy information can
-be built as part of CPU topoplogy parsing both on ACPI and DT platforms.
+Just drop the redundant parsing and setting of llc_id in CPU topology
+from ACPI PPTT.
 
-Note that this change builds the cacheinfo early even on ACPI systems, but
-the current mechanism of building llc_sibling mask remains unchanged.
-
+Cc: Will Deacon <will@kernel.org>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
 Reviewed-by: Gavin Shan <gshan@redhat.com>
 Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
 ---
- drivers/base/arch_topology.c | 23 ++++++++++++++++-------
- 1 file changed, 16 insertions(+), 7 deletions(-)
+ arch/arm64/kernel/topology.c | 14 --------------
+ 1 file changed, 14 deletions(-)
 
-diff --git a/drivers/base/arch_topology.c b/drivers/base/arch_topology.c
-index 579c851a2bd7..23cb52180ce3 100644
---- a/drivers/base/arch_topology.c
-+++ b/drivers/base/arch_topology.c
-@@ -7,6 +7,7 @@
-  */
+Hi Will/Catalin,
+
+This is part of a series updating topology to get both ACPI and DT view
+aligned. I have not cc-ed you assuming you won't be interested. Let me
+know if you are. The parts affecting arm64 is just this patch removing
+some unnecessary ACPI code that is now moved to core arch_topology.c
+
+Please ack if you are happy with this and OK to take this as part of the
+series.
+
+Regards,
+Sudeep
+
+diff --git a/arch/arm64/kernel/topology.c b/arch/arm64/kernel/topology.c
+diff --git a/arch/arm64/kernel/topology.c b/arch/arm64/kernel/topology.c
+index 9ab78ad826e2..869ffc4d4484 100644
+--- a/arch/arm64/kernel/topology.c
++++ b/arch/arm64/kernel/topology.c
+@@ -89,8 +89,6 @@ int __init parse_acpi_topology(void)
+ 		return 0;
  
- #include <linux/acpi.h>
-+#include <linux/cacheinfo.h>
- #include <linux/cpu.h>
- #include <linux/cpufreq.h>
- #include <linux/device.h>
-@@ -780,15 +781,23 @@ __weak int __init parse_acpi_topology(void)
- #if defined(CONFIG_ARM64) || defined(CONFIG_RISCV)
- void __init init_cpu_topology(void)
- {
-+	int ret, cpu;
-+
- 	reset_cpu_topology();
-+	ret = parse_acpi_topology();
-+	if (!ret)
-+		ret = of_have_populated_dt() && parse_dt_topology();
+ 	for_each_possible_cpu(cpu) {
+-		int i, cache_id;
+-
+ 		topology_id = find_acpi_cpu_topology(cpu, 0);
+ 		if (topology_id < 0)
+ 			return topology_id;
+@@ -107,18 +105,6 @@ int __init parse_acpi_topology(void)
+ 		cpu_topology[cpu].cluster_id = topology_id;
+ 		topology_id = find_acpi_cpu_topology_package(cpu);
+ 		cpu_topology[cpu].package_id = topology_id;
+-
+-		i = acpi_find_last_cache_level(cpu);
+-
+-		if (i > 0) {
+-			/*
+-			 * this is the only part of cpu_topology that has
+-			 * a direct relationship with the cache topology
+-			 */
+-			cache_id = find_acpi_cpu_cache_topology(cpu, i);
+-			if (cache_id > 0)
+-				cpu_topology[cpu].llc_id = cache_id;
+-		}
+ 	}
  
--	/*
--	 * Discard anything that was parsed if we hit an error so we
--	 * don't use partial information.
--	 */
--	if (parse_acpi_topology())
--		reset_cpu_topology();
--	else if (of_have_populated_dt() && parse_dt_topology())
-+	if (ret) {
-+		/*
-+		 * Discard anything that was parsed if we hit an error so we
-+		 * don't use partial information.
-+		 */
- 		reset_cpu_topology();
-+		return;
-+	}
-+
-+	for_each_possible_cpu(cpu)
-+		detect_cache_attributes(cpu);
- }
- #endif
+ 	return 0;
 -- 
 2.36.1
 
