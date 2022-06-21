@@ -2,47 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ECC9C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 752DACCA482
 	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:05:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356046AbiFUVDb (ORCPT
+        id S1356093AbiFUVDm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 17:03:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38452 "EHLO
+        Tue, 21 Jun 2022 17:03:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356327AbiFUU75 (ORCPT
+        with ESMTP id S1356435AbiFUVAK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 16:59:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1780F340D5;
-        Tue, 21 Jun 2022 13:52:38 -0700 (PDT)
+        Tue, 21 Jun 2022 17:00:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECCA013DCA;
+        Tue, 21 Jun 2022 13:52:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D6CFFB81B50;
-        Tue, 21 Jun 2022 20:51:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CAE3C3411C;
-        Tue, 21 Jun 2022 20:51:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D3D661874;
+        Tue, 21 Jun 2022 20:51:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E167C3411C;
+        Tue, 21 Jun 2022 20:51:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655844667;
-        bh=7Iwp/fUaUl06UFCpLuyrVMnx5bcm9rWoaft8PrbSHiQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=lVQO9tSjjOx12OJfhmFfw6lHxs3azdeIXc9gGObr0RgzEhCZylhzyF6PlMUyhRXoy
-         Q1KyffiiLrENTOT3ky671sD2r9uZgezdYVEWpDXXyCrKUfuuuLMWfQkzW8sfXjnTCf
-         FML6IgxwOHSD0LOQeea1Vi3eZtyILe6apNFHzpe3p9wvp1JRRX7ofh9Z9BBa0E2XUi
-         GPt+GhrSr0P5HnSkqJ8ek5YWR6sgPTRrbnmjl65QACT7RgCLDoe9M1chyuz4EPowgz
-         B8qJmVNuduX5Q1MTEMoHc95+xXW8xcgKirBoWmOB7IzT5KsFgqemeLgAhG/tBZLRkX
-         rMP+sgirR4H1A==
+        s=k20201202; t=1655844704;
+        bh=5RO8nX9FgfFlq+ZpUAoFpO1fZvRG13fHUxCWKqzrDqY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=b/Eja4Qumqm2bBdp5ZVlTxHrgH8RKPcF2ToSwwIlYFDi8Cxrw86POIOSLEHPMA+Oy
+         Oh3ZM7pViUzZkmzCXgn0Ae+GFqVbnd7/tjkqIn7MRduTdm4p8UXqSJtcsqoHXUdFZV
+         jMD7KMK631bvHUTTZGVuLzUdik1VMQAO4N5yA9yqllfraxYkvrH7Ehw/yF8Fp2f4QJ
+         pOZ2/2c+JZmZSxwXiPWrzJUX/4Uu7+B00myBjHc+i6hjQ0OAFX0f5XqDk1Ev/ft1iD
+         0di5GLJhrdB1c59VwZYAPwAn5iftxrICTMaN81lRQ6G5MWjq34Kin4KWudvySMz3Qn
+         +09ZGOWSaJo3g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Marc Zyngier <maz@kernel.org>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Liu Ying <victor.liu@nxp.com>, Sasha Levin <sashal@kernel.org>,
-        tglx@linutronix.de
-Subject: [PATCH AUTOSEL 5.10 01/11] genirq: PM: Use runtime PM for chained interrupts
-Date:   Tue, 21 Jun 2022 16:50:55 -0400
-Message-Id: <20220621205105.250640-1-sashal@kernel.org>
+Cc:     Keith Busch <kbusch@kernel.org>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Sasha Levin <sashal@kernel.org>, axboe@fb.com,
+        sagi@grimberg.me, linux-nvme@lists.infradead.org
+Subject: [PATCH AUTOSEL 4.14 3/5] nvme-pci: add trouble shooting steps for timeouts
+Date:   Tue, 21 Jun 2022 16:51:37 -0400
+Message-Id: <20220621205140.250968-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220621205140.250968-1-sashal@kernel.org>
+References: <20220621205140.250968-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -51,53 +54,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <maz@kernel.org>
+From: Keith Busch <kbusch@kernel.org>
 
-[ Upstream commit 668a9fe5c6a1bcac6b65d5e9b91a9eca86f782a3 ]
+[ Upstream commit 4641a8e6e145f595059e695f0f8dbbe608134086 ]
 
-When requesting an interrupt, we correctly call into the runtime
-PM framework to guarantee that the underlying interrupt controller
-is up and running.
+Many users have encountered IO timeouts with a CSTS value of 0xffffffff,
+which indicates a failure to read the register. While there are various
+potential causes for this observation, faulty NVMe APST has been the
+culprit quite frequently. Add the recommended troubleshooting steps in
+the error output when this condition occurs.
 
-However, we fail to do so for chained interrupt controllers, as
-the mux interrupt is not requested along the same path.
-
-Augment __irq_do_set_handler() to call into the runtime PM code
-in this case, making sure the PM flow is the same for all interrupts.
-
-Reported-by: Lucas Stach <l.stach@pengutronix.de>
-Tested-by: Liu Ying <victor.liu@nxp.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/26973cddee5f527ea17184c0f3fccb70bc8969a0.camel@pengutronix.de
+Signed-off-by: Keith Busch <kbusch@kernel.org>
+Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/irq/chip.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/nvme/host/pci.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
-index 0b70811fd956..6400760b7136 100644
---- a/kernel/irq/chip.c
-+++ b/kernel/irq/chip.c
-@@ -1038,8 +1038,10 @@ __irq_do_set_handler(struct irq_desc *desc, irq_flow_handler_t handle,
- 		if (desc->irq_data.chip != &no_irq_chip)
- 			mask_ack_irq(desc);
- 		irq_state_set_disabled(desc);
--		if (is_chained)
-+		if (is_chained) {
- 			desc->action = NULL;
-+			WARN_ON(irq_chip_pm_put(irq_desc_get_irq_data(desc)));
-+		}
- 		desc->depth = 1;
- 	}
- 	desc->handle_irq = handle;
-@@ -1065,6 +1067,7 @@ __irq_do_set_handler(struct irq_desc *desc, irq_flow_handler_t handle,
- 		irq_settings_set_norequest(desc);
- 		irq_settings_set_nothread(desc);
- 		desc->action = &chained_action;
-+		WARN_ON(irq_chip_pm_get(irq_desc_get_irq_data(desc)));
- 		irq_activate_and_startup(desc, IRQ_RESEND);
- 	}
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index de23f2814877..6d352a69a637 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -1055,6 +1055,14 @@ static void nvme_warn_reset(struct nvme_dev *dev, u32 csts)
+ 		dev_warn(dev->ctrl.device,
+ 			 "controller is down; will reset: CSTS=0x%x, PCI_STATUS read failed (%d)\n",
+ 			 csts, result);
++
++	if (csts != ~0)
++		return;
++
++	dev_warn(dev->ctrl.device,
++		 "Does your device have a faulty power saving mode enabled?\n");
++	dev_warn(dev->ctrl.device,
++		 "Try \"nvme_core.default_ps_max_latency_us=0 pcie_aspm=off\" and report a bug\n");
  }
+ 
+ static enum blk_eh_timer_return nvme_timeout(struct request *req, bool reserved)
 -- 
 2.35.1
 
