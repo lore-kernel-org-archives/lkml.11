@@ -2,250 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AD6EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 05:33:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35589C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 05:35:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344417AbiFUFdg (ORCPT
+        id S1344660AbiFUFfX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 01:33:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47304 "EHLO
+        Tue, 21 Jun 2022 01:35:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229761AbiFUFdd (ORCPT
+        with ESMTP id S229761AbiFUFfU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 01:33:33 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5FCB22183E
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 22:33:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655789610;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=h+MrydMOJRPtRlmLWVZnu2Vf2FmC8y0u+vnzj78C7Ng=;
-        b=SVFER4kxi2YZefPiemDFBaglr9G/muqUPfloaQJnukxy2EXLuPkDsfbSmWHaNYXf6MbiUI
-        5GdvCtZKsr2BisUqSYXEep+ZG8alhLlnSUHRH2jLwyWdwRePbTh4hc4abwSubyBAP2NBOA
-        K9CTXOjRimIk0TrA+sh4tPn9SCVyFQ8=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-154-pyhe4RwjNv-T_j2ChAXYbA-1; Tue, 21 Jun 2022 01:33:24 -0400
-X-MC-Unique: pyhe4RwjNv-T_j2ChAXYbA-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C9735101AA47;
-        Tue, 21 Jun 2022 05:33:23 +0000 (UTC)
-Received: from localhost (ovpn-12-183.pek2.redhat.com [10.72.12.183])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 303CF492C3B;
-        Tue, 21 Jun 2022 05:33:21 +0000 (UTC)
-Date:   Tue, 21 Jun 2022 13:33:17 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     Zhen Lei <thunder.leizhen@huawei.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Ard Biesheuvel <ardb@kernel.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Eric Biederman <ebiederm@xmission.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        devicetree@vger.kernel.org, Dave Young <dyoung@redhat.com>,
-        Vivek Goyal <vgoyal@redhat.com>, kexec@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Will Deacon <will@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Feng Zhou <zhoufeng.zf@bytedance.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Chen Zhou <dingguo.cz@antgroup.com>,
-        John Donnelly <John.p.donnelly@oracle.com>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>
-Subject: Re: [PATCH 5/5] arm64: kdump: Don't defer the reservation of crash
- high memory
-Message-ID: <YrFYHYgX3mC//t2l@MiWiFi-R3L-srv>
-References: <20220613080932.663-1-thunder.leizhen@huawei.com>
- <20220613080932.663-6-thunder.leizhen@huawei.com>
+        Tue, 21 Jun 2022 01:35:20 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2C4B2181B;
+        Mon, 20 Jun 2022 22:35:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1655789718; x=1687325718;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=jxYs77w82kG4F9iMmzULoGawmt1nSz58YBjgnbMIT9o=;
+  b=FsiYOFEAWMw2C0jCs/IpIFR8e7BRcHC10zylajEVyiaNgGItXtRuV/cV
+   r3uT8BvbM5i6S7HhpmSirUUa/Y+Aa4PKsQXVNyDBcl6wEYgOHzZ4MJNCU
+   YLzcIRWRqtLrrlqHEQRuBu97zJJVKJPCE3JPh27ueH8zGEv2FXDXB/8ME
+   M=;
+Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 20 Jun 2022 22:35:18 -0700
+X-QCInternal: smtphost
+Received: from nasanex01b.na.qualcomm.com ([10.46.141.250])
+  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 22:30:04 -0700
+Received: from [10.50.44.13] (10.80.80.8) by nasanex01b.na.qualcomm.com
+ (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 20 Jun
+ 2022 22:30:01 -0700
+Message-ID: <87c17e9a-565a-d717-3534-83a4c506b984@quicinc.com>
+Date:   Tue, 21 Jun 2022 10:59:58 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220613080932.663-6-thunder.leizhen@huawei.com>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH rcu 01/12] rcu: Decrease FQS scan wait time in case of
+ callback overloading
+Content-Language: en-US
+To:     "Paul E. McKenney" <paulmck@kernel.org>, <rcu@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <kernel-team@fb.com>,
+        <rostedt@goodmis.org>
+References: <20220620222022.GA3839466@paulmck-ThinkPad-P17-Gen-1>
+ <20220620222032.3839547-1-paulmck@kernel.org>
+From:   Neeraj Upadhyay <quic_neeraju@quicinc.com>
+In-Reply-To: <20220620222032.3839547-1-paulmck@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01b.na.qualcomm.com (10.46.141.250)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
 
-On 06/13/22 at 04:09pm, Zhen Lei wrote:
-> If the crashkernel has both high memory above DMA zones and low memory
-> in DMA zones, kexec always loads the content such as Image and dtb to the
-> high memory instead of the low memory. This means that only high memory
-> requires write protection based on page-level mapping. The allocation of
-> high memory does not depend on the DMA boundary. So we can reserve the
-> high memory first even if the crashkernel reservation is deferred.
+
+On 6/21/2022 3:50 AM, Paul E. McKenney wrote:
+> The force-quiesce-state loop function rcu_gp_fqs_loop() checks for
+> callback overloading and does an immediate initial scan for idle CPUs
+> if so.  However, subsequent rescans will be carried out at as leisurely a
+> rate as they always are, as specified by the rcutree.jiffies_till_next_fqs
+> module parameter.  It might be tempting to just continue immediately
+> rescanning, but this turns the RCU grace-period kthread into a CPU hog.
+> It might also be tempting to reduce the time between rescans to a single
+> jiffy, but this can be problematic on larger systems.
 > 
-> This means that the block mapping can still be performed on other kernel
-> linear address spaces, the TLB miss rate can be reduced and the system
-> performance will be improved.
+> This commit therefore divides the normal time between rescans by three,
+> rounding up.  Thus a small system running at HZ=1000 that is suffering
+> from callback overload will wait only one jiffy instead of the normal
+> three between rescans.
+> 
+> Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+> ---
+>   kernel/rcu/tree.c | 5 +++++
+>   1 file changed, 5 insertions(+)
+> 
+> diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
+> index c25ba442044a6..c19d5926886fb 100644
+> --- a/kernel/rcu/tree.c
+> +++ b/kernel/rcu/tree.c
+> @@ -1993,6 +1993,11 @@ static noinline_for_stack void rcu_gp_fqs_loop(void)
+>   			WRITE_ONCE(rcu_state.jiffies_kick_kthreads,
+>   				   jiffies + (j ? 3 * j : 2));
+>   		}
+> +		if (rcu_state.cbovld) {
+> +			j = (j + 2) / 3;
+> +			if (j <= 0)
+> +				j = 1;
+> +		}
 
-Ugh, this looks a little ugly, honestly.
+We update 'j' here, after setting rcu_state.jiffies_force_qs
 
-If that's for sure arm64 can't split large page mapping of linear
-region, this patch is one way to optimize linear mapping. Given kdump
-setting is necessary on arm64 server, the booting speed is truly
-impacted heavily.
+     WRITE_ONCE(rcu_state.jiffies_force_qs, jiffies + j)
 
-However, I would suggest letting it as is with below reasons:
+So, we return from swait_event_idle_timeout_exclusive after 1/3 time 
+duration.
 
-1) The code will complicate the crashkernel reservatoin code which
-is already difficult to understand. 
-2) It can only optimize the two cases, first is CONFIG_ZONE_DMA|DMA32
-  disabled, the other is crashkernel=,high is specified. While both
-  two cases are corner case, most of systems have CONFIG_ZONE_DMA|DMA32
-  enabled, and most of systems have crashkernel=xM which is enough.
-  Having them optimized won't bring benefit to most of systems.
-3) Besides, the crashkernel=,high can be handled earlier because 
-  arm64 alwasys have memblock.bottom_up == false currently, thus we
-  don't need worry arbout the lower limit of crashkernel,high
-  reservation for now. If memblock.bottom_up is set true in the future,
-  this patch doesn't work any more.
+     swait_event_idle_timeout_exclusive(rcu_state.gp_wq,
+				 rcu_gp_fqs_check_wake(&gf), j);
+
+This can result in !timer_after check to return false and we will
+enter the 'else' (stray signal block) code?
+
+This might not matter for first 2 fqs loop iterations, where 
+RCU_GP_FLAG_OVLD is set in 'gf', but subsequent iterations won't benefit
+from this patch?
 
 
-...
-        crash_base = memblock_phys_alloc_range(crash_size, CRASH_ALIGN,
-                                               crash_base, crash_max);
+if (!time_after(rcu_state.jiffies_force_qs, jiffies) ||
+	(gf & (RCU_GP_FLAG_FQS | RCU_GP_FLAG_OVLD))) {
+			...
+} else {
+	/* Deal with stray signal. */
+}
 
-So, in my opinion, we can leave the current NON_BLOCK|SECT mapping as
-is caused by crashkernel reserving, since no regression is brought.
-And meantime, turning to check if there's any way to make the contiguous
-linear mapping and later splitting work. The patch 4, 5 in this patchset
-doesn't make much sense to me, frankly speaking.
+
+So, do we need to move this calculation above the 'if' block which sets 
+rcu_state.jiffies_force_qs?
+		if (!ret) {
+
+			WRITE_ONCE(rcu_state.jiffies_force_qs, jiffies +
+						j);...
+		}
 
 Thanks
-Baoquan
+Neeraj
 
-> 
-> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-> ---
->  arch/arm64/mm/init.c | 71 ++++++++++++++++++++++++++++++++++++++++----
->  1 file changed, 65 insertions(+), 6 deletions(-)
-> 
-> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-> index fb24efbc46f5ef4..ae0bae2cafe6ab0 100644
-> --- a/arch/arm64/mm/init.c
-> +++ b/arch/arm64/mm/init.c
-> @@ -141,15 +141,44 @@ static void __init reserve_crashkernel(int dma_state)
->  	unsigned long long crash_max = CRASH_ADDR_LOW_MAX;
->  	char *cmdline = boot_command_line;
->  	int dma_enabled = IS_ENABLED(CONFIG_ZONE_DMA) || IS_ENABLED(CONFIG_ZONE_DMA32);
-> -	int ret;
-> +	int ret, skip_res = 0, skip_low_res = 0;
->  	bool fixed_base;
->  
->  	if (!IS_ENABLED(CONFIG_KEXEC_CORE))
->  		return;
->  
-> -	if ((!dma_enabled && (dma_state != DMA_PHYS_LIMIT_UNKNOWN)) ||
-> -	     (dma_enabled && (dma_state != DMA_PHYS_LIMIT_KNOWN)))
-> -		return;
-> +	/*
-> +	 * In the following table:
-> +	 * X,high  means crashkernel=X,high
-> +	 * unknown means dma_state = DMA_PHYS_LIMIT_UNKNOWN
-> +	 * known   means dma_state = DMA_PHYS_LIMIT_KNOWN
-> +	 *
-> +	 * The first two columns indicate the status, and the last two
-> +	 * columns indicate the phase in which crash high or low memory
-> +	 * needs to be reserved.
-> +	 *  ---------------------------------------------------
-> +	 * | DMA enabled | X,high used |  unknown  |   known   |
-> +	 *  ---------------------------------------------------
-> +	 * |      N            N       |    low    |    NOP    |
-> +	 * |      Y            N       |    NOP    |    low    |
-> +	 * |      N            Y       |  high/low |    NOP    |
-> +	 * |      Y            Y       |    high   |    low    |
-> +	 *  ---------------------------------------------------
-> +	 *
-> +	 * But in this function, the crash high memory allocation of
-> +	 * crashkernel=Y,high and the crash low memory allocation of
-> +	 * crashkernel=X[@offset] for crashk_res are mixed at one place.
-> +	 * So the table above need to be adjusted as below:
-> +	 *  ---------------------------------------------------
-> +	 * | DMA enabled | X,high used |  unknown  |   known   |
-> +	 *  ---------------------------------------------------
-> +	 * |      N            N       |    res    |    NOP    |
-> +	 * |      Y            N       |    NOP    |    res    |
-> +	 * |      N            Y       |res/low_res|    NOP    |
-> +	 * |      Y            Y       |    res    |  low_res  |
-> +	 *  ---------------------------------------------------
-> +	 *
-> +	 */
->  
->  	/* crashkernel=X[@offset] */
->  	ret = parse_crashkernel(cmdline, memblock_phys_mem_size(),
-> @@ -169,10 +198,33 @@ static void __init reserve_crashkernel(int dma_state)
->  		else if (ret)
->  			return;
->  
-> +		/* See the third row of the second table above, NOP */
-> +		if (!dma_enabled && (dma_state == DMA_PHYS_LIMIT_KNOWN))
-> +			return;
-> +
-> +		/* See the fourth row of the second table above */
-> +		if (dma_enabled) {
-> +			if (dma_state == DMA_PHYS_LIMIT_UNKNOWN)
-> +				skip_low_res = 1;
-> +			else
-> +				skip_res = 1;
-> +		}
-> +
->  		crash_max = CRASH_ADDR_HIGH_MAX;
->  	} else if (ret || !crash_size) {
->  		/* The specified value is invalid */
->  		return;
-> +	} else {
-> +		/* See the 1-2 rows of the second table above, NOP */
-> +		if ((!dma_enabled && (dma_state == DMA_PHYS_LIMIT_KNOWN)) ||
-> +		     (dma_enabled && (dma_state == DMA_PHYS_LIMIT_UNKNOWN)))
-> +			return;
-> +	}
-> +
-> +	if (skip_res) {
-> +		crash_base = crashk_res.start;
-> +		crash_size = crashk_res.end - crashk_res.start + 1;
-> +		goto check_low;
->  	}
->  
->  	fixed_base = !!crash_base;
-> @@ -202,9 +254,18 @@ static void __init reserve_crashkernel(int dma_state)
->  		return;
->  	}
->  
-> +	crashk_res.start = crash_base;
-> +	crashk_res.end = crash_base + crash_size - 1;
-> +
-> +check_low:
-> +	if (skip_low_res)
-> +		return;
-> +
->  	if ((crash_base >= CRASH_ADDR_LOW_MAX) &&
->  	     crash_low_size && reserve_crashkernel_low(crash_low_size)) {
->  		memblock_phys_free(crash_base, crash_size);
-> +		crashk_res.start = 0;
-> +		crashk_res.end = 0;
->  		return;
->  	}
->  
-> @@ -219,8 +280,6 @@ static void __init reserve_crashkernel(int dma_state)
->  	if (crashk_low_res.end)
->  		kmemleak_ignore_phys(crashk_low_res.start);
->  
-> -	crashk_res.start = crash_base;
-> -	crashk_res.end = crash_base + crash_size - 1;
->  	insert_resource(&iomem_resource, &crashk_res);
->  }
->  
-> -- 
-> 2.25.1
-> 
-
+>   		trace_rcu_grace_period(rcu_state.name, rcu_state.gp_seq,
+>   				       TPS("fqswait"));
+>   		WRITE_ONCE(rcu_state.gp_state, RCU_GP_WAIT_FQS);
