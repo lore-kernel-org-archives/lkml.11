@@ -2,255 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCB72C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:35:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45CA6C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:36:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351758AbiFUPfS (ORCPT
+        id S1352002AbiFUPgi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 11:35:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43784 "EHLO
+        Tue, 21 Jun 2022 11:36:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352002AbiFUPdS (ORCPT
+        with ESMTP id S1351806AbiFUPgf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 11:33:18 -0400
-Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1590E9FD8
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:33:17 -0700 (PDT)
-Received: by mail-qv1-xf33.google.com with SMTP id g18so13375678qvn.2
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:33:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ndufresne-ca.20210112.gappssmtp.com; s=20210112;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :content-transfer-encoding:user-agent:mime-version;
-        bh=dy8yeG9fTBHltWG4kJedgv5LPIew+OWd8uTBYekbBzc=;
-        b=ApJ/dLZCmEw0l/GZjONyC5HqMPHnP/1v5EjjO1KCkzHQMylqrSeF7f1PAqFEtcA5p7
-         B5L7VLmvKXMkO3mBusxE4aofO5gnetF3tBYYwFOBpVJp+ZHpNjY2yIJIKkIC5ik+xBVg
-         uADxSpGmWIuEmcvyscNyZq4wRAFjkfTGd5fw8vkIUElXZ7Fh7K0t4I4f6BB6HMBT5br2
-         7NCDPnMq22xS1dnrAdLeSQoiWz64pI/Jrs0HO9z4O6pbFJ4oAYasBaxsv3sEwsv/op3Y
-         PyNof9m1d/UwIgmRDoOP1CmTU/y+FXB4dNy3XB838qTtpSSnqKp5JlrXrGTQNEKwf5FG
-         7rhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:content-transfer-encoding:user-agent:mime-version;
-        bh=dy8yeG9fTBHltWG4kJedgv5LPIew+OWd8uTBYekbBzc=;
-        b=JvB79ZPCTX1CVyDexlQPeRfXmLjViwIdD6Yv2PXwB2igA56/j+Cag+rKU3KlZx8L//
-         J9ufkxTpu20rxekfPW0ePCnGJhsZoqEVGebTHMdvWccWD6LAYR94yelyCMIebPhyVr6s
-         T4fbDYgXJQfcMFIqw/pdOYPWithEwC9uvRe0Y/Om5dRb8iDrgeJLu4F1LjpBBYKu5xou
-         WLwakDZ+p17ASBkV2sDEeo9gNQR0QYEoOPzMTSYMeTApskjqLBS3vbZxJCWT7PJCJwH/
-         NRb1PN15/5O6HdfuV6uVSqtWqVX7uSc2jj/qrEVSPE3kpuNAq83+hgU3A7V9d8raZuqA
-         QVEQ==
-X-Gm-Message-State: AJIora8232DjRtXBcILaYjTuNnpWQeUVQaMlaS7w3qiPewTbauYOP9iq
-        6Og46mfID7HvOEJVnXxKg9Zz6Q==
-X-Google-Smtp-Source: AGRyM1srW5WWOiSz7XlL+lVwbQcKJ8mCJy/w+hJaCXN4HQuLbalFyFAI4j3aN7yjXcA9VUwq7W66HA==
-X-Received: by 2002:a05:622a:1054:b0:306:3216:4f00 with SMTP id f20-20020a05622a105400b0030632164f00mr24570852qte.109.1655825596108;
-        Tue, 21 Jun 2022 08:33:16 -0700 (PDT)
-Received: from nicolas-tpx395.localdomain (192-222-136-102.qc.cable.ebox.net. [192.222.136.102])
-        by smtp.gmail.com with ESMTPSA id 20-20020ac85754000000b002f93554c009sm11589284qtx.59.2022.06.21.08.33.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jun 2022 08:33:15 -0700 (PDT)
-Message-ID: <e95f2b43c131927a488f86081683c15b885efea7.camel@ndufresne.ca>
-Subject: Re: [PATCH v7, 04/15] media: mtk-vcodec: Read max resolution from
- dec_capability
-From:   Nicolas Dufresne <nicolas@ndufresne.ca>
-To:     Chen-Yu Tsai <wenst@chromium.org>
-Cc:     Yunfei Dong <yunfei.dong@mediatek.com>,
-        Alexandre Courbot <acourbot@chromium.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Tzung-Bi Shih <tzungbi@chromium.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Tiffany Lin <tiffany.lin@mediatek.com>,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tomasz Figa <tfiga@google.com>,
-        George Sun <george.sun@mediatek.com>,
-        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Fritz Koenig <frkoenig@chromium.org>,
-        Dafna Hirschfeld <dafna.hirschfeld@collabora.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Irui Wang <irui.wang@mediatek.com>,
-        Steve Cho <stevecho@chromium.org>, linux-media@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, srv_heupstream@mediatek.com,
-        linux-mediatek@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-Date:   Tue, 21 Jun 2022 11:33:14 -0400
-In-Reply-To: <YqwjOurt2DCV6snP@google.com>
-References: <20220223034008.15781-1-yunfei.dong@mediatek.com>
-         <20220223034008.15781-5-yunfei.dong@mediatek.com>
-         <cb7cf296bc7df7334f55cc51ef11b671572559ac.camel@ndufresne.ca>
-         <YqwjOurt2DCV6snP@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.2 (3.44.2-1.fc36) 
+        Tue, 21 Jun 2022 11:36:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 196D415A04;
+        Tue, 21 Jun 2022 08:36:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 666E8B81A65;
+        Tue, 21 Jun 2022 15:36:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8C22C3411C;
+        Tue, 21 Jun 2022 15:36:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655825791;
+        bh=uD0eZMoByns/eKleOGZqOtUhpN1XGZHzZG92SeFcNHU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=f5kHRLPaF91f9kmtnYKIp8M9cipRJbFKDz278Q0B4WKzewJ+oFuD+p589jXMyiM4a
+         xtS8J4f5/EDSxHorxqGNYhR3+gZw3aZz8KaUtSpZaZoYXNGXhr668TOXdcF155PkJO
+         9jadaAfaU5buWCCkjmuWJ1OGSjTqa4Tyz4qoikOP6wbIf5QAOchU+rrgaI+jvote4W
+         nRHnuga6DxlvZpPr1OJdEMSwk23dCwnPf/beNCVvwkhm59hd6/qkh6rH3TYle9LIpv
+         VHOZAvA/ZdPO3Dv8EOHIfwuhMNNoxNa3/aSux3kvL0KlOMYLUh2JGR0CMPAVK773Aq
+         /DuTVJQ2qWYCA==
+From:   Ard Biesheuvel <ardb@kernel.org>
+To:     linux-efi@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
+        Matthew Garrett <mjg59@srcf.ucam.org>,
+        Peter Jones <pjones@redhat.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Kees Cook <keescook@chromium.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>
+Subject: [PATCH v2 0/9] efi: Restructure EFI varstore driver
+Date:   Tue, 21 Jun 2022 17:36:14 +0200
+Message-Id: <20220621153623.3786960-1-ardb@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=5182; h=from:subject; bh=uD0eZMoByns/eKleOGZqOtUhpN1XGZHzZG92SeFcNHU=; b=owEB7QES/pANAwAKAcNPIjmS2Y8kAcsmYgBiseVmS93RMxuSv+p9kvjnBYHicMEUGcU74E7RDDkS HeS2QlaJAbMEAAEKAB0WIQT72WJ8QGnJQhU3VynDTyI5ktmPJAUCYrHlZgAKCRDDTyI5ktmPJIItC/ 4hW++c4DNpNu4z7YDpK4Ui4ztuLNLTOF4qhs+UqHGdDMgBsioTrdrjjHDeB0Oi/HY8r8GDyG8sN7x/ SHeSEHs2O02mpcfEpdTYkxY4/Ba3UyB91UTn3FPwuvM3NIXRIC0UzHkGzh7TGnjNf0ti1jIFF7BrGS RbPkcBzVdVBwGqZrQBbxJ9vbgi+abilhAlahK6vI4DnX1FJckBRt1uFD3URDTOpc4AVMhdKsCcQLtb g1VtdJA3E1iv0/DQtF/h/02ada5d1DDtu5HYMUmlf2EuW3e3m1583VoT35KLnDozXFJEn5GqzCmNss QTo0dxWc5Gi46B0UJ/Erdu+75p2esaKQDfwvIhXR9pn6Q4N+cFNr8yR5tRP3EZn2q80qyUPu8/60A5 LhgwhOXXpVhF24wnXWBbCYev3TELliByTxumpzUeC4NyF2Yz0IatDjFjHZnGXJI/P98/SXX5tOCUgv THtUAyvJMrHOxXFbWVxtpadVjw+ZhnKr2Z6wx/88xhNSY=
+X-Developer-Key: i=ardb@kernel.org; a=openpgp; fpr=F43D03328115A198C90016883D200E9CA6329909
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le vendredi 17 juin 2022 =C3=A0 14:46 +0800, Chen-Yu Tsai a =C3=A9crit=C2=
-=A0:
-> Hi,
->=20
-> On Mon, Feb 28, 2022 at 04:29:15PM -0500, Nicolas Dufresne wrote:
-> > Hi Yunfei,
-> >=20
-> > this patch does not work unless userland calls enum_framesizes, which i=
-s
-> > completely optional. See comment and suggestion below.
-> >=20
-> > Le mercredi 23 f=C3=A9vrier 2022 =C3=A0 11:39 +0800, Yunfei Dong a =C3=
-=A9crit=C2=A0:
-> > > Supported max resolution for different platforms are not the same: 2K
-> > > or 4K, getting it according to dec_capability.
-> > >=20
-> > > Signed-off-by: Yunfei Dong <yunfei.dong@mediatek.com>
-> > > Reviewed-by: Tzung-Bi Shih<tzungbi@google.com>
-> > > ---
-> > >  .../platform/mtk-vcodec/mtk_vcodec_dec.c      | 29 +++++++++++------=
---
-> > >  .../platform/mtk-vcodec/mtk_vcodec_drv.h      |  4 +++
-> > >  2 files changed, 21 insertions(+), 12 deletions(-)
-> > >=20
-> > > diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec.c b/dri=
-vers/media/platform/mtk-vcodec/mtk_vcodec_dec.c
-> > > index 130ecef2e766..304f5afbd419 100644
-> > > --- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec.c
-> > > +++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec.c
-> > > @@ -445,7 +447,7 @@ static int vidioc_vdec_s_fmt(struct file *file, v=
-oid *priv,
-> > >  		return -EINVAL;
-> > > =20
-> > >  	q_data->fmt =3D fmt;
-> > > -	vidioc_try_fmt(f, q_data->fmt);
-> > > +	vidioc_try_fmt(ctx, f, q_data->fmt);
-> > >  	if (f->type =3D=3D V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE) {
-> > >  		q_data->sizeimage[0] =3D pix_mp->plane_fmt[0].sizeimage;
-> > >  		q_data->coded_width =3D pix_mp->width;
-> > > @@ -545,6 +547,9 @@ static int vidioc_enum_framesizes(struct file *fi=
-le, void *priv,
-> > >  				fsize->stepwise.min_height,
-> > >  				fsize->stepwise.max_height,
-> > >  				fsize->stepwise.step_height);
-> > > +
-> > > +		ctx->max_width =3D fsize->stepwise.max_width;
-> > > +		ctx->max_height =3D fsize->stepwise.max_height;
-> >=20
-> > The spec does not require calling enum_fmt, so changing the maximum her=
-e is
-> > incorrect (and fail with GStreamer). If userland never enum the framesi=
-zes, the
-> > resolution get limited to 1080p.
-> >=20
-> > As this only depends and the OUTPUT format and the device being open()
-> > (condition being dev_capability being set and OUTPUT format being known=
- / not
-> > VP8), you could initialize the cxt max inside s_fmt(OUTPUT) instead, wh=
-ich is a
-> > mandatory call. I have tested this change to verify this:
-> >=20
-> >=20
-> > diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec.c b/drive=
-rs/media/platform/mtk-vcodec/mtk_vcodec_dec.c
-> > index 044e3dfbdd8c..3e7c571526a4 100644
-> > --- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec.c
-> > +++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec.c
-> > @@ -484,6 +484,14 @@ static int vidioc_vdec_s_fmt(struct file *file, vo=
-id *priv,
-> >  	if (fmt =3D=3D NULL)
-> >  		return -EINVAL;
-> > =20
-> > +	if (f->type =3D=3D V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE &&
-> > +	    !(ctx->dev->dec_capability & VCODEC_CAPABILITY_4K_DISABLED) &&
-> > +	    fmt->fourcc !=3D V4L2_PIX_FMT_VP8_FRAME) {
-> > +		mtk_v4l2_debug(3, "4K is enabled");
-> > +		ctx->max_width =3D VCODEC_DEC_4K_CODED_WIDTH;
-> > +		ctx->max_height =3D VCODEC_DEC_4K_CODED_HEIGHT;
-> > +	}
-> > +
-> >  	q_data->fmt =3D fmt;
-> >  	vidioc_try_fmt(ctx, f, q_data->fmt);
-> >  	if (f->type =3D=3D V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE) {
-> > @@ -574,15 +582,9 @@ static int vidioc_enum_framesizes(struct file *fil=
-e, void *priv,
-> > =20
-> >  		fsize->type =3D V4L2_FRMSIZE_TYPE_STEPWISE;
-> >  		fsize->stepwise =3D dec_pdata->vdec_framesizes[i].stepwise;
-> > -		if (!(ctx->dev->dec_capability &
-> > -				VCODEC_CAPABILITY_4K_DISABLED) &&
-> > -				fsize->pixel_format !=3D V4L2_PIX_FMT_VP8_FRAME) {
-> > -			mtk_v4l2_debug(3, "4K is enabled");
-> > -			fsize->stepwise.max_width =3D
-> > -					VCODEC_DEC_4K_CODED_WIDTH;
-> > -			fsize->stepwise.max_height =3D
-> > -					VCODEC_DEC_4K_CODED_HEIGHT;
-> > -		}
-> > +		fsize->stepwise.max_width =3D ctx->max_width;
-> > +		fsize->stepwise.max_height =3D ctx->max_height;
-> > +
->=20
-> Recent testing on ChromeOS suggests this doesn't work. The spec implies
-> that querying capabilities could happen before the output format is set.
-> And also, supported frame sizes are detected for each given format,
-> which may not be the one current set.
+This is marked as a v2 given that it is a followup to a RFC patch I sent
+last week [0]. Since nobody commented that removing the old sysfs
+efivars interface is a bad idea, I went ahead and performed the cleanup
+that this enables.
 
-In v4l2, formats are always set. Perhaps the problem is that we don't
-automatically set ctx->max_width/height for the default format when the fir=
-mware
-is up. I noticed recently the chromium always do G_FMT before S_FMT, so per=
-haps
-it can skip S_FMT if the default format is appropriate, and that endup avoi=
-ding
-the code I've just suggested. At the time I wrote that, I only had GStreame=
-r
-available to test, and it always calls S_FMT, which is mandatory, see 4.5.3=
-.2.
-Initialization step 1. But I cannot say userland would be wrong to skip if =
-that
-format was "initially" correct.
+Some of the prerequisites of this work have been posted separately and
+have been queued up in efi/next already, mainly to move other users away
+from the efivar API which they were using in the wrong way, or without a
+good reason. [1]
 
-If my understanding is not correct, then perhaps you should provide a tad m=
-ore
-details on how this failed for you, and we can then better judge an appropr=
-iate
-fix.
+The current state of things is that efi-pstore, efivarfs and the efivars
+sysfs interface all share a common support layer which manages a linked
+list containing efivar_entry items describing each EFI variable that
+this support layer assumes to be present in the EFI variable store
+managed by the firmware.
 
-regards,
-Nicolas
+This shared layer also contains an efivars_operations pointer, which
+carries function pointers that refer to the underlying EFI get/set
+variable routines, but can be superseded by other implementations
+(currently, this is only implemented for Google x86 systems that
+implement the GSMI interface)
 
->=20
-> So the if block above has to be reintroduced in some form. I'll take a
-> look at this.
->=20
->=20
-> Regards
-> ChenYu
->=20
-> >  		mtk_v4l2_debug(1, "%x, %d %d %d %d %d %d",
-> >  				ctx->dev->dec_capability,
-> >  				fsize->stepwise.min_width,
-> > @@ -592,8 +594,6 @@ static int vidioc_enum_framesizes(struct file *file=
-, void *priv,
-> >  				fsize->stepwise.max_height,
-> >  				fsize->stepwise.step_height);
-> > =20
-> > -		ctx->max_width =3D fsize->stepwise.max_width;
-> > -		ctx->max_height =3D fsize->stepwise.max_height;
-> >  		return 0;
-> >  	}
-> > =20
-> >=20
-> >=20
-> > >  		return 0;
-> > >  	}
-> > > =20
->=20
-> [...]
->=20
+Each user of this shared layer has its own linked list, which means they
+all have a different view of the underlying variable store, even though
+they might operate on the same variables. For EFI pstore related
+variables in particular, manipulating these behind the back of the other
+drivers is likely to result in fun.
+
+This shared layer as well as its 3 different users all use a single
+semaphore to mediate access to the individual linked lists as well as
+the ops pointer.
+
+The shared layer carries a substantial amount of 'business logic'
+related to which EFI variables are relevant to the firmware, to limit
+whether and how they may be manipulated. This aspect of the code is
+only relevant when such variables can be manipulated arbitrarily, e.g.
+by user space, but EFI pstore, for example, has no need for this, as it
+uses its own GUIDed namespace for EFI variables, and does not permit
+other variables to be manipulated.
+
+The two remaining users are efivars sysfs and efivarfs, both of which
+provide a cached view of these 'important' variables. Given that the
+former has been deprecated for a long time, and given the potential
+concerns around using both concurrently, let's get rid of the sysfs
+based one.
+
+Then, we can restructure the efivars API so that this business logic
+can be incorporated into the efivarfs driver, leaving only a minimal
+wrapper around the get/set variable calls, allowing the GSMI replacement
+to remain in use, as well as mediate access to the different services
+using the existing semaphore. This is mainly useful to ensure that
+set_variable() calls do no invalidate an enumeration of the EFI
+variables that is in progress using get_next_variable() by another task.
+
+[0] https://lore.kernel.org/linux-efi/20220616124740.580708-1-ardb@kernel.org/T/#t
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/efi/efi.git/log/
+
+Cc: Matthew Garrett <mjg59@srcf.ucam.org>
+Cc: Peter Jones <pjones@redhat.com>
+Cc: Tony Luck <tony.luck@intel.com>
+Cc: Kees Cook <keescook@chromium.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+
+Ard Biesheuvel (9):
+  pstore: Don't expose ECC metadata via pstore file system
+  efi: vars: Don't drop lock in the middle of efivar_init()
+  efi: vars: Add thin wrapper around EFI get/set variable interface
+  efi: pstore: Omit efivars caching EFI varstore access layer
+  efi: vars: Use locking version to iterate over efivars linked lists
+  efi: vars: Drop __efivar_entry_iter() helper which is no longer used
+  efi: vars: Remove deprecated 'efivars' sysfs interface
+  efi: vars: Switch to new wrapper layer
+  efi: vars: Move efivar caching layer into efivarfs
+
+ Documentation/x86/x86_64/uefi.rst        |    2 +-
+ arch/arm/configs/milbeaut_m10v_defconfig |    1 -
+ arch/ia64/configs/bigsur_defconfig       |    1 -
+ arch/ia64/configs/generic_defconfig      |    1 -
+ arch/ia64/configs/gensparse_defconfig    |    1 -
+ arch/ia64/configs/tiger_defconfig        |    1 -
+ arch/ia64/configs/zx1_defconfig          |    1 -
+ arch/x86/configs/i386_defconfig          |    1 -
+ arch/x86/configs/x86_64_defconfig        |    1 -
+ drivers/firmware/efi/Kconfig             |   12 -
+ drivers/firmware/efi/Makefile            |    1 -
+ drivers/firmware/efi/efi-pstore.c        |  389 ++-----
+ drivers/firmware/efi/efi.c               |    1 +
+ drivers/firmware/efi/efivars.c           |  671 -----------
+ drivers/firmware/efi/vars.c              | 1219 +++-----------------
+ fs/efivarfs/Makefile                     |    2 +-
+ fs/efivarfs/internal.h                   |   40 +
+ fs/efivarfs/super.c                      |   15 +-
+ fs/efivarfs/vars.c                       |  742 ++++++++++++
+ fs/pstore/inode.c                        |    2 +-
+ include/linux/efi.h                      |   80 +-
+ 21 files changed, 1058 insertions(+), 2126 deletions(-)
+ delete mode 100644 drivers/firmware/efi/efivars.c
+ create mode 100644 fs/efivarfs/vars.c
+
+-- 
+2.35.1
 
