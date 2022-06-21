@@ -2,290 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D917FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 12:59:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 013F8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 12:59:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350999AbiFUM70 (ORCPT
+        id S1351123AbiFUM72 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 08:59:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57006 "EHLO
+        Tue, 21 Jun 2022 08:59:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351157AbiFUM6h (ORCPT
+        with ESMTP id S233208AbiFUM66 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 08:58:37 -0400
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 701B0B2C
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 05:58:36 -0700 (PDT)
-Received: by mail-pg1-x52e.google.com with SMTP id z14so13085514pgh.0
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 05:58:36 -0700 (PDT)
+        Tue, 21 Jun 2022 08:58:58 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2DCE2A2;
+        Tue, 21 Jun 2022 05:58:56 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id eq6so11915905edb.6;
+        Tue, 21 Jun 2022 05:58:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=FXYyMqCuMn8N8AtiePCadIk2ihaRxjS8+sCa4dkDZyY=;
-        b=ID4gt1H5XAXZc2WTCkcM4F1wzX1sAe3JOWtacCk0iQKQ+aLMZXAoV2LeDm9V/qhVXx
-         6tpAVEejJhQBmJjVUK+nIaNyniVWz7hJGtPgx1OZl1uOfj2pujAFTcbGChoVU9DBG1kQ
-         iSr/YRd45uGdFIuCRF+nZy0GIGBavXDFzjNLsbIp/9bZz+yRlZan+nvKfKhVHEPvjiD5
-         P/VKwyJbbrvB0eRUS26CEwFTb/hg3CWoix8AAXQYFzZU3v7OZBDBODtMEhL6UOydPlDK
-         QPnx0hfY8bRXub0eY6AxeQXF/rpFM66dPqaBxFcGtr4OkljZGqrs6ATOyrSkIf9U3exr
-         0w8A==
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=PN1gz29FFWaPhyNAiNXSx3lrGEyj3A20CvuOZ9ZGnOA=;
+        b=aj2GC+C3rG9sFJPCCeRcQmRqTzKpjP+9EaeQeq8htWK6s5WkeSZS2FUhyzpYLS/yWD
+         eq4p2mTvR7HbHuvGAJosDtHN4KM5H95ir3ddri2elgdc4k6Gmyv69+ne/Gs4dy6g4edS
+         tMs/Kv9F8vSQXmO0lBlaHC5XXUjjY7BW7XYSMDAhMwJ38Fe2ciQX/RKWwcV1O6QFHKpK
+         gLKgh08pExpiVikg8tIFKWfE1+0a5YqwldDHjfvzQ/rUl6V4eozPb5yABx0xzKA0bCLu
+         w25P6Lwi58PBHCzNvYlRMGf02nHlTOWhkRTUUXSUZ0/rAtb3jZ++5NOJQMxcUP06/jBo
+         z25A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=FXYyMqCuMn8N8AtiePCadIk2ihaRxjS8+sCa4dkDZyY=;
-        b=1Ho6hQdYop/3SMfjykvCh8G6aGxYHbuvzmQt4r/rW0P+7+qJlCmWkEl7cTQj2UePYF
-         5ppcYjmDt+lGPEJOen5b77FqMzgWHQr52Xv8WlRSbSZs9TIT0yQPq3f4NWf4kLBrYEym
-         tosP6LX6Y4WIoh0QzFvYbnr4I2i8MbZMWuWgCIcYK50Bc9u9pVmdLvZn1iw6KnpGVLL+
-         CAf2QPvfbg3I5eMNmbVq+/yxKQi6JJZdiW7C0GP9cWFG/4Vy0MEtf5usHkIyZizsdAOO
-         zMd4M/iME34yuwanpOLXqj82LYcSfmArlT1c0ipeK5ekADAQ35jWmVyqD/e/Mu1g0T88
-         9/fg==
-X-Gm-Message-State: AJIora9jd46xjSYXFEF0V8PmxMbPnD2eGPbtmxVbl9VUawfSPi0qvayk
-        P+S06Lm7BOwPKhtU3EOwuYsxVg==
-X-Google-Smtp-Source: AGRyM1s3jBpILIrDx7KtbyRkegEjXT/bYyiPJT5PmXEB7MsPCFZC/X2wELk53MsJbksfq61xEhFUrw==
-X-Received: by 2002:a63:7c4e:0:b0:380:8ae9:c975 with SMTP id l14-20020a637c4e000000b003808ae9c975mr26959498pgn.25.1655816315865;
-        Tue, 21 Jun 2022 05:58:35 -0700 (PDT)
-Received: from FVFYT0MHHV2J.bytedance.net ([139.177.225.255])
-        by smtp.gmail.com with ESMTPSA id e3-20020a170903240300b0015ea3a491a1sm10643134plo.191.2022.06.21.05.58.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jun 2022 05:58:35 -0700 (PDT)
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     akpm@linux-foundation.org, hannes@cmpxchg.org, longman@redhat.com,
-        mhocko@kernel.org, roman.gushchin@linux.dev, shakeelb@google.com
-Cc:     cgroups@vger.kernel.org, duanxiongchun@bytedance.com,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: [PATCH v6 11/11] mm: lru: use lruvec lock to serialize memcg changes
-Date:   Tue, 21 Jun 2022 20:56:58 +0800
-Message-Id: <20220621125658.64935-12-songmuchun@bytedance.com>
-X-Mailer: git-send-email 2.32.1 (Apple Git-133)
-In-Reply-To: <20220621125658.64935-1-songmuchun@bytedance.com>
-References: <20220621125658.64935-1-songmuchun@bytedance.com>
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=PN1gz29FFWaPhyNAiNXSx3lrGEyj3A20CvuOZ9ZGnOA=;
+        b=PuHdseKo2OAvoTxiOg1nXDHYcWsIoLMzQ+l7mlRNGprTlZvfBJsepx5tAGCyJwrAyE
+         hQ0XUBdeuBs+JGCsUEO6/ZQg9QNw5V8jZwB/UNrl7JZ4Eyw+BWr+fa7UdvPc+U8rx6fP
+         dOuyWTjOEXKbE2eBvKDV+6zLttFpRvBs1WL5MFQJ1XNCcmJbYcCTQE4a5Vm39D2cNAiO
+         YGKpfxBgPvOhsPnX7aYXI6Lt8OA8GcYmGGeRt+YLJZ3d0smLw9KMRXZVnwaBECjtU9TH
+         RatAr+ps+KRS3u1R+1btsa8ymMeHO9DIC/gg8tsGVxAhvu9epDJxUywwZmajlLsG/1Bl
+         6H+A==
+X-Gm-Message-State: AJIora+pVkIkGjx2kJIszJpDmWMw077FrfUCfeqGFJkQQlCeFr5+LhFY
+        zGjsdZI0Q/e0h15qpGYnt4hn3bhH5nk=
+X-Google-Smtp-Source: AGRyM1uHjiwz+YFBo6alPO/8jYq69f3aXQdVTR6nGy8rAH64GA1wbGkq3sCGafwVxTGmE5k/OeSF5A==
+X-Received: by 2002:aa7:c681:0:b0:42f:b180:bb3d with SMTP id n1-20020aa7c681000000b0042fb180bb3dmr34623722edq.191.1655816335265;
+        Tue, 21 Jun 2022 05:58:55 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:9af8:e5f5:7516:fa89? ([2001:b07:6468:f312:9af8:e5f5:7516:fa89])
+        by smtp.googlemail.com with ESMTPSA id h12-20020a05640250cc00b004358cec9ce1sm3620502edb.65.2022.06.21.05.58.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 21 Jun 2022 05:58:54 -0700 (PDT)
+Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
+Message-ID: <17a2e85a-a1f2-99e1-fc69-1baed2275bd5@redhat.com>
+Date:   Tue, 21 Jun 2022 14:58:51 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v7 10/39] KVM: x86: hyper-v: Don't use
+ sparse_set_to_vcpu_mask() in kvm_hv_send_ipi()
+Content-Language: en-US
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        Yuan Yao <yuan.yao@linux.intel.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220613133922.2875594-1-vkuznets@redhat.com>
+ <20220613133922.2875594-11-vkuznets@redhat.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220613133922.2875594-11-vkuznets@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As described by commit fc574c23558c ("mm/swap.c: serialize memcg
-changes in pagevec_lru_move_fn"), TestClearPageLRU() aims to
-serialize mem_cgroup_move_account() during pagevec_lru_move_fn().
-Now folio_lruvec_lock*() has the ability to detect whether page
-memcg has been changed. So we can use lruvec lock to serialize
-mem_cgroup_move_account() during pagevec_lru_move_fn(). This
-change is a partial revert of the commit fc574c23558c ("mm/swap.c:
-serialize memcg changes in pagevec_lru_move_fn").
+On 6/13/22 15:38, Vitaly Kuznetsov wrote:
+> Get rid of on-stack allocation of vcpu_mask and optimize kvm_hv_send_ipi()
+> for a smaller number of vCPUs in the request. When Hyper-V TLB flush
+> is in  use, HvSendSyntheticClusterIpi{,Ex} calls are not commonly used to
+> send IPIs to a large number of vCPUs (and are rarely used in general).
+> 
+> Introduce hv_is_vp_in_sparse_set() to directly check if the specified
+> VP_ID is present in sparse vCPU set.
+> 
+> Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+> ---
+>   arch/x86/kvm/hyperv.c | 37 ++++++++++++++++++++++++++-----------
+>   1 file changed, 26 insertions(+), 11 deletions(-)
 
-And pagevec_lru_move_fn() is more hot compare with
-mem_cgroup_move_account(), removing an atomic operation would be
-an optimization. Also this change would not dirty cacheline for a
-page which isn't on the LRU.
+I'm a bit confused by this patch being in this series.
 
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
----
- mm/memcontrol.c | 34 ++++++++++++++++++++++++++++++++++
- mm/swap.c       | 32 +++++++++++++++-----------------
- mm/vmscan.c     | 16 +++++++---------
- 3 files changed, 56 insertions(+), 26 deletions(-)
+Just to be clear, PV IPI does *not* support the VP_ID, right?  And since 
+patch 12 only affects the sparse banks, the patch does not have any 
+other dependency.  Is this correct?
 
-diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index 803dbdf5f233..85adc43c5a25 100644
---- a/mm/memcontrol.c
-+++ b/mm/memcontrol.c
-@@ -1330,10 +1330,39 @@ struct lruvec *folio_lruvec_lock(struct folio *folio)
- 	lruvec = folio_lruvec(folio);
- 	spin_lock(&lruvec->lru_lock);
- 
-+	/*
-+	 * The memcg of the page can be changed by any the following routines:
-+	 *
-+	 * 1) mem_cgroup_move_account() or
-+	 * 2) memcg_reparent_objcgs()
-+	 *
-+	 * The possible bad scenario would like:
-+	 *
-+	 * CPU0:                CPU1:                CPU2:
-+	 * lruvec = folio_lruvec()
-+	 *
-+	 *                      if (!isolate_lru_page())
-+	 *                              mem_cgroup_move_account()
-+	 *
-+	 *                                           memcg_reparent_objcgs()
-+	 *
-+	 * spin_lock(&lruvec->lru_lock)
-+	 *                ^^^^^^
-+	 *              wrong lock
-+	 *
-+	 * Either CPU1 or CPU2 can change page memcg, so we need to check
-+	 * whether page memcg is changed, if so, we should reacquire the
-+	 * new lruvec lock.
-+	 */
- 	if (unlikely(lruvec_memcg(lruvec) != folio_memcg(folio))) {
- 		spin_unlock(&lruvec->lru_lock);
- 		goto retry;
- 	}
-+
-+	/*
-+	 * When we reach here, it means that the folio_memcg(folio) is
-+	 * stable.
-+	 */
- 	rcu_read_unlock();
- 
- 	return lruvec;
-@@ -1361,6 +1390,7 @@ struct lruvec *folio_lruvec_lock_irq(struct folio *folio)
- 	lruvec = folio_lruvec(folio);
- 	spin_lock_irq(&lruvec->lru_lock);
- 
-+	/* See the comments in folio_lruvec_lock(). */
- 	if (unlikely(lruvec_memcg(lruvec) != folio_memcg(folio))) {
- 		spin_unlock_irq(&lruvec->lru_lock);
- 		goto retry;
-@@ -1394,6 +1424,7 @@ struct lruvec *folio_lruvec_lock_irqsave(struct folio *folio,
- 	lruvec = folio_lruvec(folio);
- 	spin_lock_irqsave(&lruvec->lru_lock, *flags);
- 
-+	/* See the comments in folio_lruvec_lock(). */
- 	if (unlikely(lruvec_memcg(lruvec) != folio_memcg(folio))) {
- 		spin_unlock_irqrestore(&lruvec->lru_lock, *flags);
- 		goto retry;
-@@ -5809,7 +5840,10 @@ static int mem_cgroup_move_account(struct page *page,
- 	obj_cgroup_put(rcu_dereference(from->objcg));
- 	rcu_read_unlock();
- 
-+	/* See the comments in folio_lruvec_lock(). */
-+	spin_lock(&from_vec->lru_lock);
- 	folio->memcg_data = (unsigned long)rcu_access_pointer(to->objcg);
-+	spin_unlock(&from_vec->lru_lock);
- 
- 	__folio_memcg_unlock(from);
- 
-diff --git a/mm/swap.c b/mm/swap.c
-index 987dcbd93ffa..0fc59409e27d 100644
---- a/mm/swap.c
-+++ b/mm/swap.c
-@@ -196,6 +196,7 @@ static void lru_add_fn(struct lruvec *lruvec, struct folio *folio)
- 
- 	VM_BUG_ON_FOLIO(folio_test_lru(folio), folio);
- 
-+	folio_set_lru(folio);
- 	/*
- 	 * Is an smp_mb__after_atomic() still required here, before
- 	 * folio_evictable() tests the mlocked flag, to rule out the possibility
-@@ -238,14 +239,8 @@ static void folio_batch_move_lru(struct folio_batch *fbatch, move_fn_t move_fn)
- 	for (i = 0; i < folio_batch_count(fbatch); i++) {
- 		struct folio *folio = fbatch->folios[i];
- 
--		/* block memcg migration while the folio moves between lru */
--		if (move_fn != lru_add_fn && !folio_test_clear_lru(folio))
--			continue;
--
- 		lruvec = folio_lruvec_relock_irqsave(folio, lruvec, &flags);
- 		move_fn(lruvec, folio);
--
--		folio_set_lru(folio);
- 	}
- 
- 	if (lruvec)
-@@ -265,7 +260,7 @@ static void folio_batch_add_and_move(struct folio_batch *fbatch,
- 
- static void lru_move_tail_fn(struct lruvec *lruvec, struct folio *folio)
- {
--	if (!folio_test_unevictable(folio)) {
-+	if (folio_test_lru(folio) && !folio_test_unevictable(folio)) {
- 		lruvec_del_folio(lruvec, folio);
- 		folio_clear_active(folio);
- 		lruvec_add_folio_tail(lruvec, folio);
-@@ -348,7 +343,8 @@ void lru_note_cost_folio(struct folio *folio)
- 
- static void folio_activate_fn(struct lruvec *lruvec, struct folio *folio)
- {
--	if (!folio_test_active(folio) && !folio_test_unevictable(folio)) {
-+	if (folio_test_lru(folio) && !folio_test_active(folio) &&
-+	    !folio_test_unevictable(folio)) {
- 		long nr_pages = folio_nr_pages(folio);
- 
- 		lruvec_del_folio(lruvec, folio);
-@@ -394,12 +390,9 @@ static void folio_activate(struct folio *folio)
- {
- 	struct lruvec *lruvec;
- 
--	if (folio_test_clear_lru(folio)) {
--		lruvec = folio_lruvec_lock_irq(folio);
--		folio_activate_fn(lruvec, folio);
--		lruvec_unlock_irq(lruvec);
--		folio_set_lru(folio);
--	}
-+	lruvec = folio_lruvec_lock_irq(folio);
-+	folio_activate_fn(lruvec, folio);
-+	lruvec_unlock_irq(lruvec);
- }
- #endif
- 
-@@ -542,6 +535,9 @@ static void lru_deactivate_file_fn(struct lruvec *lruvec, struct folio *folio)
- 	bool active = folio_test_active(folio);
- 	long nr_pages = folio_nr_pages(folio);
- 
-+	if (!folio_test_lru(folio))
-+		return;
-+
- 	if (folio_test_unevictable(folio))
- 		return;
- 
-@@ -580,7 +576,8 @@ static void lru_deactivate_file_fn(struct lruvec *lruvec, struct folio *folio)
- 
- static void lru_deactivate_fn(struct lruvec *lruvec, struct folio *folio)
- {
--	if (folio_test_active(folio) && !folio_test_unevictable(folio)) {
-+	if (folio_test_lru(folio) && folio_test_active(folio) &&
-+	    !folio_test_unevictable(folio)) {
- 		long nr_pages = folio_nr_pages(folio);
- 
- 		lruvec_del_folio(lruvec, folio);
-@@ -596,8 +593,9 @@ static void lru_deactivate_fn(struct lruvec *lruvec, struct folio *folio)
- 
- static void lru_lazyfree_fn(struct lruvec *lruvec, struct folio *folio)
- {
--	if (folio_test_anon(folio) && folio_test_swapbacked(folio) &&
--	    !folio_test_swapcache(folio) && !folio_test_unevictable(folio)) {
-+	if (folio_test_lru(folio) && folio_test_anon(folio) &&
-+	    folio_test_swapbacked(folio) && !folio_test_swapcache(folio) &&
-+	    !folio_test_unevictable(folio)) {
- 		long nr_pages = folio_nr_pages(folio);
- 
- 		lruvec_del_folio(lruvec, folio);
-diff --git a/mm/vmscan.c b/mm/vmscan.c
-index 51b1607c81e4..11e1f6fc5898 100644
---- a/mm/vmscan.c
-+++ b/mm/vmscan.c
-@@ -4864,21 +4864,19 @@ void check_move_unevictable_pages(struct pagevec *pvec)
- 		if (PageTransTail(page))
- 			continue;
- 
--		nr_pages = thp_nr_pages(page);
-+		nr_pages = folio_nr_pages(folio);
- 		pgscanned += nr_pages;
- 
--		/* block memcg migration during page moving between lru */
--		if (!TestClearPageLRU(page))
-+		lruvec = folio_lruvec_relock_irq(folio, lruvec);
-+		if (!folio_test_lru(folio) || !folio_test_unevictable(folio))
- 			continue;
- 
--		lruvec = folio_lruvec_relock_irq(folio, lruvec);
--		if (page_evictable(page) && PageUnevictable(page)) {
--			del_page_from_lru_list(page, lruvec);
--			ClearPageUnevictable(page);
--			add_page_to_lru_list(page, lruvec);
-+		if (folio_evictable(folio)) {
-+			lruvec_del_folio(lruvec, folio);
-+			folio_clear_unevictable(folio);
-+			lruvec_add_folio(lruvec, folio);
- 			pgrescued += nr_pages;
- 		}
--		SetPageLRU(page);
- 	}
- 
- 	if (lruvec) {
--- 
-2.11.0
+Paolo
+
+> diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
+> index f41153c71beb..269a5fcca31b 100644
+> --- a/arch/x86/kvm/hyperv.c
+> +++ b/arch/x86/kvm/hyperv.c
+> @@ -1747,6 +1747,25 @@ static void sparse_set_to_vcpu_mask(struct kvm *kvm, u64 *sparse_banks,
+>   	}
+>   }
+>   
+> +static bool hv_is_vp_in_sparse_set(u32 vp_id, u64 valid_bank_mask, u64 sparse_banks[])
+> +{
+> +	int bank, sbank = 0;
+> +
+> +	if (!test_bit(vp_id / HV_VCPUS_PER_SPARSE_BANK,
+> +		      (unsigned long *)&valid_bank_mask))
+> +		return false;
+> +
+> +	for_each_set_bit(bank, (unsigned long *)&valid_bank_mask,
+> +			 KVM_HV_MAX_SPARSE_VCPU_SET_BITS) {
+> +		if (bank == vp_id / HV_VCPUS_PER_SPARSE_BANK)
+> +			break;
+> +		sbank++;
+> +	}
+> +
+> +	return test_bit(vp_id % HV_VCPUS_PER_SPARSE_BANK,
+> +			(unsigned long *)&sparse_banks[sbank]);
+> +}
+> +
+>   struct kvm_hv_hcall {
+>   	u64 param;
+>   	u64 ingpa;
+> @@ -2029,8 +2048,8 @@ static u64 kvm_hv_flush_tlb(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
+>   		((u64)hc->rep_cnt << HV_HYPERCALL_REP_COMP_OFFSET);
+>   }
+>   
+> -static void kvm_send_ipi_to_many(struct kvm *kvm, u32 vector,
+> -				 unsigned long *vcpu_bitmap)
+> +static void kvm_hv_send_ipi_to_many(struct kvm *kvm, u32 vector,
+> +				    u64 *sparse_banks, u64 valid_bank_mask)
+>   {
+>   	struct kvm_lapic_irq irq = {
+>   		.delivery_mode = APIC_DM_FIXED,
+> @@ -2040,7 +2059,10 @@ static void kvm_send_ipi_to_many(struct kvm *kvm, u32 vector,
+>   	unsigned long i;
+>   
+>   	kvm_for_each_vcpu(i, vcpu, kvm) {
+> -		if (vcpu_bitmap && !test_bit(i, vcpu_bitmap))
+> +		if (sparse_banks &&
+> +		    !hv_is_vp_in_sparse_set(kvm_hv_get_vpindex(vcpu),
+> +					    valid_bank_mask,
+> +					    sparse_banks))
+>   			continue;
+>   
+>   		/* We fail only when APIC is disabled */
+> @@ -2053,7 +2075,6 @@ static u64 kvm_hv_send_ipi(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
+>   	struct kvm *kvm = vcpu->kvm;
+>   	struct hv_send_ipi_ex send_ipi_ex;
+>   	struct hv_send_ipi send_ipi;
+> -	DECLARE_BITMAP(vcpu_mask, KVM_MAX_VCPUS);
+>   	u64 valid_bank_mask;
+>   	u64 sparse_banks[KVM_HV_MAX_SPARSE_VCPU_SET_BITS];
+>   	u32 vector;
+> @@ -2115,13 +2136,7 @@ static u64 kvm_hv_send_ipi(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
+>   	if ((vector < HV_IPI_LOW_VECTOR) || (vector > HV_IPI_HIGH_VECTOR))
+>   		return HV_STATUS_INVALID_HYPERCALL_INPUT;
+>   
+> -	if (all_cpus) {
+> -		kvm_send_ipi_to_many(kvm, vector, NULL);
+> -	} else {
+> -		sparse_set_to_vcpu_mask(kvm, sparse_banks, valid_bank_mask, vcpu_mask);
+> -
+> -		kvm_send_ipi_to_many(kvm, vector, vcpu_mask);
+> -	}
+> +	kvm_hv_send_ipi_to_many(kvm, vector, all_cpus ? NULL : sparse_banks, valid_bank_mask);
+>   
+>   ret_success:
+>   	return HV_STATUS_SUCCESS;
 
