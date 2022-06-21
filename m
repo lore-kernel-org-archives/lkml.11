@@ -2,140 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8454DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 06:55:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8055AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 06:57:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346295AbiFUGzu (ORCPT
+        id S1346318AbiFUG5r (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 02:55:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34210 "EHLO
+        Tue, 21 Jun 2022 02:57:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231830AbiFUGzq (ORCPT
+        with ESMTP id S231830AbiFUG5p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 02:55:46 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7DDF1CFCF
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 23:55:45 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id y13-20020a17090a154d00b001eaaa3b9b8dso12416855pja.2
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 23:55:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lrtTaXmDH4j2G9DmDgYy3Hx6WoOoJlaM6bssxvYmN/s=;
-        b=U/6RCn5/rnlCWPEvZmw/CvlDBd7e7AuS8iDEETwq+hrEH+sdjwYLrsXxea6i48NMrs
-         Us2vRiB6BQRD8MOtGP7RS1KLIB0GU00JbD87+Fsk0BkmrLxxQE2R+0IGo6HfLaVl+15w
-         W7ol69OS3VwQEgHJMGDwVjZQRkVm0tr6EuTz/OKifAyh1KsRlHB5EOEZ0GEz8LnAvNws
-         u2fDrLpN2sOA/dvHcR7+7241kVt3vpHpYnIGGxKY3rJrpYM7iVwImg6BZfwrAxtSnM9m
-         YBqRn5/b8rdrdidYVsr2xvfc/2grb8CTwV39h0O3LDATqjVDB6UMoNNWTgVTSM1Pc48v
-         5Zpw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lrtTaXmDH4j2G9DmDgYy3Hx6WoOoJlaM6bssxvYmN/s=;
-        b=iDljhzexXEtWWzpkOOGRbmp8t05jSLmPeuUyLAht7MOCR4uoYlSfekY3tje/EK8A/2
-         aUuQBdG8vCZuN/HcR/Ip3tgFApxRMRguKlTFP2mhAjIYHEkRPIwhB7swt+aNE11K1FsA
-         fjznlzVQZU1rjDVb4rNBO0SiPx64avOFGZFwWZnZSCakJgMW4b8MWbpeYPwptUqbTYtP
-         CN0219dJKWFFSghS7JTDxvVpzI4jhndP//bTTz+uSLpBJ3lBW4rGMGWnO9U3RWbG3mS+
-         1Bc1a4OTR7NxN2N/gjGuAlCmPXhL25QDx9fG99Fh5jEtMN/j+eNN1iBDUsXDTlA9R37Q
-         m7zg==
-X-Gm-Message-State: AJIora86ck8K4qKLUKBV6U3x+aGBHrV4wtgvEsjTCwhJg5EUUNNm1dQS
-        CaZzUD3i/RTWXAOJtZTJNBqZEpVoRFyRGKP+
-X-Google-Smtp-Source: AGRyM1sbObkSlzAr84nXXCiR0sZIUcKAWYxHwt27RpCXoFi8PVJJ46244mVxNRT+sShWIgXpygECKQ==
-X-Received: by 2002:a17:902:d2d0:b0:168:b0b2:f068 with SMTP id n16-20020a170902d2d000b00168b0b2f068mr26766089plc.45.1655794545155;
-        Mon, 20 Jun 2022 23:55:45 -0700 (PDT)
-Received: from localhost.localdomain ([156.236.96.165])
-        by smtp.gmail.com with ESMTPSA id x10-20020a1709028eca00b0016368840c41sm8230471plo.14.2022.06.20.23.55.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jun 2022 23:55:43 -0700 (PDT)
-From:   Chao Liu <chaoliu719@gmail.com>
-To:     Jaegeuk Kim <jaegeuk@kernel.org>, Chao Yu <chao@kernel.org>
-Cc:     linux-f2fs-devel@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, Yue Hu <huyue2@coolpad.com>,
-        Wayne Zhang <zhangwen@coolpad.com>,
-        Xiaoyu Qi <qxy65535@gmail.com>, Chao Liu <liuchao@coolpad.com>
-Subject: [PATCH] f2fs: fix to remove F2FS_COMPR_FL and tag F2FS_NOCOMP_FL at the same time
-Date:   Tue, 21 Jun 2022 14:48:33 +0800
-Message-Id: <20220621064833.1079383-1-chaoliu719@gmail.com>
-X-Mailer: git-send-email 2.36.1
+        Tue, 21 Jun 2022 02:57:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BF8B1CFE4;
+        Mon, 20 Jun 2022 23:57:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3D705B81699;
+        Tue, 21 Jun 2022 06:57:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAE58C341C0;
+        Tue, 21 Jun 2022 06:57:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655794661;
+        bh=+kaDe/Oc1bAbXeDpkUaPaEqe5MkYjktUVSkOvw2ENsA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=NL/Cr1TLFu3AZMGTVjKIQwKYHYVCEyrdjwzWY2iZTV9roW4HiOSgspUkaKbDUEg6i
+         0owWKTefExYoOqnTNKpDIsrmn6nz8Cglc/h1ag6r4+ubpDmjrIorxv0TNmb+Tyr6RM
+         pf8rwjCz/wqwqCmHdEigjZkM9TDFLzOFPN889sJnXbtOEVy4aWwS/oM840gTr4CDOd
+         6O9j7Ry+ZbF1Xua5ybSoMEgzqy/uX90WUa2QQ9iSTsYLXTJ2KDEqjElm2aTY7VV4V1
+         rWoMFxXQ0AkyqO/6khHEeAKJ2yidCyp9GioqezwVzaZxbnA38TAs1koHgmoaUtIoKI
+         IR9n2DSGh7ITA==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1o3XpO-0002OK-JE; Tue, 21 Jun 2022 08:57:35 +0200
+Date:   Tue, 21 Jun 2022 08:57:34 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     frank zago <frank@zago.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Wolfram Sang <wsa@kernel.org>, USB <linux-usb@vger.kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        linux-i2c <linux-i2c@vger.kernel.org>
+Subject: Re: [PATCH v6 2/4] gpio: ch341: add GPIO MFD cell driver for the
+ CH341
+Message-ID: <YrFr3s50ZMD1Et9W@hovoldconsulting.com>
+References: <20220616013747.126051-1-frank@zago.net>
+ <20220616013747.126051-3-frank@zago.net>
+ <YrBLGMD/Gzfv0W6F@hovoldconsulting.com>
+ <CAHp75VfWbC2fbKenuzx6LXjUTApcUKyX6gXd-3Pe31cvrbT7kQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHp75VfWbC2fbKenuzx6LXjUTApcUKyX6gXd-3Pe31cvrbT7kQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Liu <liuchao@coolpad.com>
+On Mon, Jun 20, 2022 at 06:08:19PM +0200, Andy Shevchenko wrote:
+> On Mon, Jun 20, 2022 at 12:26 PM Johan Hovold <johan@kernel.org> wrote:
+> > On Wed, Jun 15, 2022 at 08:37:45PM -0500, frank zago wrote:
+> 
+> ...
+> 
+> > > +     /* Create an URB for handling interrupt */
+> > > +     dev->irq_urb = usb_alloc_urb(0, GFP_KERNEL);
+> > > +     if (!dev->irq_urb)
+> > > +             return dev_err_probe(&pdev->dev, -ENOMEM, "Cannot allocate the int URB\n");
+> >
+> > This isn't how dev_err_probe() is used.
+> 
+> While I agree on the below comment, what does this imply?
 
-If the inode has the compress flag, it will fail to use
-'chattr -c +m' to remove its compress flag and tag no compress flag.
-However, the same command will be successful when executed again,
-as shown below:
+That you should only use dev_err_probe() to handle -EPROBE_DEFER. That's
+what it is was added for, documented as, and it is what the
+implementation still tells you.
 
-  $ touch foo.txt
-  $ chattr +c foo.txt
-  $ chattr -c +m foo.txt
-  chattr: Invalid argument while setting flags on foo.txt
-  $ chattr -c +m foo.txt
-  $ f2fs_io getflags foo.txt
-  get a flag on foo.txt ret=0, flags=nocompression,inline_data
+I see now that there has recently been some mission creep:
 
-Fix this by removing some checks in f2fs_setflags_common()
-that do not affect the original logic. I go through all the
-possible scenarios, and the results are as follows. Bold is
-the only thing that has changed.
+	7065f92255bb ("driver core: Clarify that dev_err_probe() is OK even w/out -EPROBE_DEFER")
 
-+---------------+-----------+-----------+----------+
-|               |            file flags            |
-+ command       +-----------+-----------+----------+
-|               | no flag   | compr     | nocompr  |
-+---------------+-----------+-----------+----------+
-| chattr +c     | compr     | compr     | -EINVAL  |
-| chattr -c     | no flag   | no flag   | nocompr  |
-| chattr +m     | nocompr   | -EINVAL   | nocompr  |
-| chattr -m     | no flag   | compr     | no flag  |
-| chattr +c +m  | -EINVAL   | -EINVAL   | -EINVAL  |
-| chattr +c -m  | compr     | compr     | compr    |
-| chattr -c +m  | nocompr   | *nocompr* | nocompr  |
-| chattr -c -m  | no flag   | no flag   | no flag  |
-+---------------+-----------+-----------+----------+
+I'm not sure I agree with that, but fortunately we don't need to have
+that debate in this case due to the below.
+ 
+> > And allocation failures are already logged so just return -ENOMEM here.
 
-Fixes: 4c8ff7095bef ("f2fs: support data compression")
-Signed-off-by: Chao Liu <liuchao@coolpad.com>
----
-
-This patch depends on the the patch
-"f2fs: allow compression of files without blocks" sent earlier this day.
-
- fs/f2fs/file.c | 9 +--------
- 1 file changed, 1 insertion(+), 8 deletions(-)
-
-diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
-index daaa0dfd2d2e..0c3ae5993b7a 100644
---- a/fs/f2fs/file.c
-+++ b/fs/f2fs/file.c
-@@ -1873,10 +1873,7 @@ static int f2fs_setflags_common(struct inode *inode, u32 iflags, u32 mask)
- 		if (masked_flags & F2FS_COMPR_FL) {
- 			if (!f2fs_disable_compressed_file(inode))
- 				return -EINVAL;
--		}
--		if (iflags & F2FS_NOCOMP_FL)
--			return -EINVAL;
--		if (iflags & F2FS_COMPR_FL) {
-+		} else {
- 			if (!f2fs_may_compress(inode))
- 				return -EINVAL;
- 			if (S_ISREG(inode->i_mode) && F2FS_HAS_BLOCKS(inode))
-@@ -1885,10 +1882,6 @@ static int f2fs_setflags_common(struct inode *inode, u32 iflags, u32 mask)
- 			set_compress_context(inode);
- 		}
- 	}
--	if ((iflags ^ masked_flags) & F2FS_NOCOMP_FL) {
--		if (masked_flags & F2FS_COMPR_FL)
--			return -EINVAL;
--	}
-
- 	fi->i_flags = iflags | (fi->i_flags & ~mask);
- 	f2fs_bug_on(F2FS_I_SB(inode), (fi->i_flags & F2FS_COMPR_FL) &&
---
-2.36.1
+Johan
