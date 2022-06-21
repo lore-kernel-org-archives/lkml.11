@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48FA5C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:03:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5946CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:03:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355960AbiFUVC5 (ORCPT
+        id S1355787AbiFUVDB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 17:02:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36890 "EHLO
+        Tue, 21 Jun 2022 17:03:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355451AbiFUU6J (ORCPT
+        with ESMTP id S1355452AbiFUU6K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 16:58:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F55832071;
-        Tue, 21 Jun 2022 13:51:05 -0700 (PDT)
+        Tue, 21 Jun 2022 16:58:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4558632072;
+        Tue, 21 Jun 2022 13:51:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E8320B81B43;
-        Tue, 21 Jun 2022 20:51:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F56CC3411C;
-        Tue, 21 Jun 2022 20:51:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8CBEF618A9;
+        Tue, 21 Jun 2022 20:50:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D1AAC385A2;
+        Tue, 21 Jun 2022 20:50:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655844663;
-        bh=1nCe2vNL3CdFgMlwOCIA5leKZTxpAVMHSxUCBmDJ+8o=;
+        s=k20201202; t=1655844630;
+        bh=+lZaMnFOoxnUhYX883BYYPwc6fIp1y4d7L22V3SpJfg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IiO3tQoBYR5UgM1imem2I2fRIRFBYTUDFrrjNzIwm3/fgORD7XS8XCKH1+CIRElJV
-         wIRSvqMuLDBh6PPpdBjyFg8WxMWMXIzRO+NAamghW78+QI/0ieULS94k5i6TYjFPpw
-         IsEQue4YafCMo3IPdXW683a2OFtzbxfmepGhPoc9jgJoMo28vaeCoHWST+9947Iu6C
-         Do0ul3wRfBO9x2uEc4KpPtMQDYGyT90DY/v6cVROJ/kNR5OuPxVnWKpfIY1HwXD0eK
-         lNsV4xyp9NthlE95KuTVcOqjGZPmA+Zvh4dgc2rYlFKeKpCr1yw2Bl6JFcOHpN/Ynl
-         BAIECqqaMRXsA==
+        b=fJYqdzpRmNBsXFi4BrkYV9kbew1f0vU77HszQG9IQq+cKGqmsPWq7bhWNscydfUM+
+         RW+sW39MdkmrgMUewza0lXnWIqcnYTMMhYX4yTSb5SYo/FhM7wxnJ0uKHJNiudVwre
+         y5sREzMIs+0EqDWuKd+bcQV1nXArQ8fLtY2k5evbYPU8SE+DXw4xsgiHmMDbcgmRoJ
+         NLwcmAsO4IZ5F4YNODULUy9lOGHv0SsQj+BAkut4FZAk7LHvy0ltXeLk1yDyu2cEal
+         l5q0aT0dYFpePc1LdoNaQeb7JYWf8lKYx17g4Sag5VstMHD+p8pjpmceOAdX6anbKt
+         T17lQR9YIFXxA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ming Lei <ming.lei@redhat.com>, Christoph Hellwig <hch@lst.de>,
-        Yu Kuai <yukuai3@huawei.com>, Jens Axboe <axboe@kernel.dk>,
-        Sasha Levin <sashal@kernel.org>, linux-block@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 16/17] blk-mq: don't clear flush_rq from tags->rqs[]
-Date:   Tue, 21 Jun 2022 16:50:39 -0400
-Message-Id: <20220621205041.250426-16-sashal@kernel.org>
+Cc:     Ning Wang <ningwang35@outlook.com>, Christoph Hellwig <hch@lst.de>,
+        Sasha Levin <sashal@kernel.org>, kbusch@kernel.org,
+        axboe@fb.com, sagi@grimberg.me, linux-nvme@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.17 11/20] nvme-pci: avoid the deepest sleep state on ZHITAI TiPro7000 SSDs
+Date:   Tue, 21 Jun 2022 16:50:01 -0400
+Message-Id: <20220621205010.250185-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220621205041.250426-1-sashal@kernel.org>
-References: <20220621205041.250426-1-sashal@kernel.org>
+In-Reply-To: <20220621205010.250185-1-sashal@kernel.org>
+References: <20220621205010.250185-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,48 +52,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ming Lei <ming.lei@redhat.com>
+From: Ning Wang <ningwang35@outlook.com>
 
-[ Upstream commit 6cfeadbff3f8905f2854735ebb88e581402c16c4 ]
+[ Upstream commit 6b961bce50e489186232cef51036ddb8d672bc3b ]
 
-commit 364b61818f65 ("blk-mq: clearing flush request reference in
-tags->rqs[]") is added to clear the to-be-free flush request from
-tags->rqs[] for avoiding use-after-free on the flush rq.
+When ZHITAI TiPro7000 SSDs entered deepest power state(ps4)
+it has the same APST sleep problem as Kingston A2000.
+by chance the system crashes and displays the same dmesg info:
 
-Yu Kuai reported that blk_mq_clear_flush_rq_mapping() slows down boot time
-by ~8s because running scsi probe which may create and remove lots of
-unpresent LUNs on megaraid-sas which uses BLK_MQ_F_TAG_HCTX_SHARED and
-each request queue has lots of hw queues.
+https://bugzilla.kernel.org/show_bug.cgi?id=195039#c65
 
-Improve the situation by not running blk_mq_clear_flush_rq_mapping if
-disk isn't added when there can't be any flush request issued.
+As the Archlinux wiki suggest (enlat + exlat) < 25000 is fine
+and my testing shows no system crashes ever since.
+Therefore disabling the deepest power state will fix the APST sleep issue.
 
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Reported-by: Yu Kuai <yukuai3@huawei.com>
-Signed-off-by: Ming Lei <ming.lei@redhat.com>
-Link: https://lore.kernel.org/r/20220616014401.817001-4-ming.lei@redhat.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+https://wiki.archlinux.org/title/Solid_state_drive/NVMe
+
+This is the APST data from 'nvme id-ctrl /dev/nvme1'
+
+NVME Identify Controller:
+vid       : 0x1e49
+ssvid     : 0x1e49
+sn        : [...]
+mn        : ZHITAI TiPro7000 1TB
+fr        : ZTA32F3Y
+[...]
+ps    0 : mp:3.50W operational enlat:5 exlat:5 rrt:0 rrl:0
+          rwt:0 rwl:0 idle_power:- active_power:-
+ps    1 : mp:3.30W operational enlat:50 exlat:100 rrt:1 rrl:1
+          rwt:1 rwl:1 idle_power:- active_power:-
+ps    2 : mp:2.80W operational enlat:50 exlat:200 rrt:2 rrl:2
+          rwt:2 rwl:2 idle_power:- active_power:-
+ps    3 : mp:0.1500W non-operational enlat:500 exlat:5000 rrt:3 rrl:3
+          rwt:3 rwl:3 idle_power:- active_power:-
+ps    4 : mp:0.0200W non-operational enlat:2000 exlat:60000 rrt:4 rrl:4
+          rwt:4 rwl:4 idle_power:- active_power:-
+
+Signed-off-by: Ning Wang <ningwang35@outlook.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/blk-mq.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/nvme/host/pci.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/block/blk-mq.c b/block/blk-mq.c
-index 95da44063e65..cc313b364691 100644
---- a/block/blk-mq.c
-+++ b/block/blk-mq.c
-@@ -2681,8 +2681,9 @@ static void blk_mq_exit_hctx(struct request_queue *q,
- 	if (blk_mq_hw_queue_mapped(hctx))
- 		blk_mq_tag_idle(hctx);
- 
--	blk_mq_clear_flush_rq_mapping(set->tags[hctx_idx],
--			set->queue_depth, flush_rq);
-+	if (blk_queue_init_done(q))
-+		blk_mq_clear_flush_rq_mapping(set->tags[hctx_idx],
-+				set->queue_depth, flush_rq);
- 	if (set->ops->exit_request)
- 		set->ops->exit_request(set, flush_rq, hctx_idx);
- 
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index 5934abc24fb3..70dc05c60f2b 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -3466,6 +3466,8 @@ static const struct pci_device_id nvme_id_table[] = {
+ 		.driver_data = NVME_QUIRK_BOGUS_NID, },
+ 	{ PCI_DEVICE(0x1cc1, 0x5350),   /* ADATA XPG GAMMIX S50 */
+ 		.driver_data = NVME_QUIRK_BOGUS_NID, },
++	{ PCI_DEVICE(0x1e49, 0x0041),   /* ZHITAI TiPro7000 NVMe SSD */
++		.driver_data = NVME_QUIRK_NO_DEEPEST_PS, },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_AMAZON, 0x0061),
+ 		.driver_data = NVME_QUIRK_DMA_ADDRESS_BITS_48, },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_AMAZON, 0x0065),
 -- 
 2.35.1
 
