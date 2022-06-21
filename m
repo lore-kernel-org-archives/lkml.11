@@ -2,59 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A375C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:22:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32AC6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:22:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352738AbiFUPWE (ORCPT
+        id S1352754AbiFUPWM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 11:22:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59738 "EHLO
+        Tue, 21 Jun 2022 11:22:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352733AbiFUPWC (ORCPT
+        with ESMTP id S1352742AbiFUPWF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 11:22:02 -0400
+        Tue, 21 Jun 2022 11:22:05 -0400
 Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E7D1328E2C;
-        Tue, 21 Jun 2022 08:22:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3DB2F2873E;
+        Tue, 21 Jun 2022 08:22:04 -0700 (PDT)
 Received: from uucp (helo=alpha)
         by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1o3fh4-0001zL-05; Tue, 21 Jun 2022 17:21:30 +0200
+        id 1o3fh4-0001zL-01; Tue, 21 Jun 2022 17:21:30 +0200
 Received: by alpha.franken.de (Postfix, from userid 1000)
-        id DAA63C01AA; Tue, 21 Jun 2022 17:16:11 +0200 (CEST)
-Date:   Tue, 21 Jun 2022 17:16:11 +0200
+        id 567E8C01AA; Tue, 21 Jun 2022 17:14:38 +0200 (CEST)
+Date:   Tue, 21 Jun 2022 17:14:38 +0200
 From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 To:     Liang He <windhl@126.com>
-Cc:     yangtiezhu@loongson.cn, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] mips/pic32/pic32mzda: Fix refcount leak bugs
-Message-ID: <20220621151611.GF12206@alpha.franken.de>
-References: <20220619045427.4064946-1-windhl@126.com>
+Cc:     miodrag.dinic@mips.com, paulburton@kernel.org,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] arch: mips: generic: Add missing of_node_put() in
+ board-ranchu.c
+Message-ID: <20220621151438.GB12206@alpha.franken.de>
+References: <20220615141123.3968401-1-windhl@126.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220619045427.4064946-1-windhl@126.com>
+In-Reply-To: <20220615141123.3968401-1-windhl@126.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jun 19, 2022 at 12:54:27PM +0800, Liang He wrote:
-> of_find_matching_node(), of_find_compatible_node() and
-> of_find_node_by_path() will return node pointers with refcout
-> incremented. We should call of_node_put() when they are not
-> used anymore.
+On Wed, Jun 15, 2022 at 10:11:23PM +0800, Liang He wrote:
+> In ranchu_measure_hpt_freq(), of_find_compatible_node() will return
+> a node pointer with refcount incremented. We should use of_put_node()
+> when it is not used anymore.
 > 
 > Signed-off-by: Liang He <windhl@126.com>
 > ---
->  changelog: 
->  
->  v2: (1) merge pic32/pic32mzda bugs into one patch
->      (2) fix leak bug related to of_find_node_by_path.
->  v1: use two patch for intit.c and time.c
+>  arch/mips/generic/board-ranchu.c | 1 +
+>  1 file changed, 1 insertion(+)
 > 
->  arch/mips/pic32/pic32mzda/init.c | 7 ++++++-
->  arch/mips/pic32/pic32mzda/time.c | 3 +++
->  2 files changed, 9 insertions(+), 1 deletion(-)
+> diff --git a/arch/mips/generic/board-ranchu.c b/arch/mips/generic/board-ranchu.c
+> index a89aaad59cb1..930c45041882 100644
+> --- a/arch/mips/generic/board-ranchu.c
+> +++ b/arch/mips/generic/board-ranchu.c
+> @@ -44,6 +44,7 @@ static __init unsigned int ranchu_measure_hpt_freq(void)
+>  		      __func__);
+>  
+>  	rtc_base = of_iomap(np, 0);
+> +	of_node_put(np);
+>  	if (!rtc_base)
+>  		panic("%s(): Failed to ioremap Goldfish RTC base!", __func__);
+>  
+> -- 
+> 2.25.1
 
 applied to mips-fixes.
 
