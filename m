@@ -2,136 +2,287 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10107C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:23:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A985FCCA482
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:23:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353783AbiFUVW7 (ORCPT
+        id S1356234AbiFUVXC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 17:22:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37674 "EHLO
+        Tue, 21 Jun 2022 17:23:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355893AbiFUVW3 (ORCPT
+        with ESMTP id S1356034AbiFUVWh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 17:22:29 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FBCDC45;
-        Tue, 21 Jun 2022 14:11:59 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id i10so16879012wrc.0;
-        Tue, 21 Jun 2022 14:11:59 -0700 (PDT)
+        Tue, 21 Jun 2022 17:22:37 -0400
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CDD662E0
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 14:12:26 -0700 (PDT)
+Received: by mail-yb1-xb30.google.com with SMTP id v81so26710620ybe.0
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 14:12:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=references:from:to:cc:subject:in-reply-to:date:message-id
-         :mime-version;
-        bh=5jGRxWa+Hik2xXu28OZInbUMDSK1LmZ28o9a5C6ustA=;
-        b=dBkR+OXnEaZPr9uoaZB+DI5wT1AXufYbc+9qN44d74R1jy7oOaP5glLLgc/hzh3E8m
-         VEYB0O8O8TiK3K0KU8aR4nbUvWWFGE7uePKS5PELYCU4SnEeJA8EVcTkrM2DoduTme8M
-         T2w+A4Oj1CabUPV/iQcD8tJhe3/0P4UoInCNfQd2pdDiq/qrgQ6JtX7yLUUFdykN73bM
-         NtCtwLELefp/0JcgOX6hIfK1mCyMbjfNrGysmUUfiSDKIuEdhMG6diRPWKvISTwtHa9N
-         kgrC4FpslcP3XTRRhPHg48OrMHfSCIL2fPrOOeRY9LvrBNjg8LF3SLUYHP6wXsVMRurd
-         LPAQ==
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0sx9mCt7ugcCul7YmAFz+wOWvzn0YCkRrYodgyvLA20=;
+        b=jJLcV4chSkoxoph0SxMvMEEtpXLscNJzrhZaEHO3ZPc7SbpH/zvDKOiacYWqha9wxj
+         DO7jw0cqqT3DV5bQSLGtU5a9z6gAx2WcRSGhSMTNItAm+gIhGX/Z0ZytqEyIRY8+z2KA
+         wVxV7TcVmKDv/2YKQiNeaADNAJIuInAo74XsY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=5jGRxWa+Hik2xXu28OZInbUMDSK1LmZ28o9a5C6ustA=;
-        b=GRmD+rEmXrMnUtW7IfBoAGKKPPN+YVnROxzkNjrqTB/oz9pEbFht7AMknO1tjHabtH
-         TyfGnnqPnVsO6X4PwWyabx59vfmnikZO7mq5isr6P+Zj0wiV0y0EE1IVRIcdjKAV/8x+
-         9IZQGI937lernsAAO5yuRjtIADETJF2BYtVShBsoH+k1pugq8/sdslg+3ZFOlqPs43iQ
-         44gKlfi++UfxdSIX5JU/d5d/eVhqdLeuYCGDE/VFeBg39klm7YBpg6GSNmJrphlF53D5
-         izCsU0mkxRSqxFnLWYIhXd9mYl656kdoT/MhptGVBbddFG0H66mT0VHttGBIanHBLbl+
-         2Ffg==
-X-Gm-Message-State: AJIora9I2C5lWwottjfOMj0YGN8+wtusm1f1iLN/FZ6qin5yVDs3/Fk7
-        rfUByHCKM4FIdpQwygRl+3Q=
-X-Google-Smtp-Source: AGRyM1uWGscZnGaavVg/uIQYsRslzM5t54de/BLxZBl+KXB10CZYw57ndf/q8EV3SUZ+AQYy58rh1w==
-X-Received: by 2002:adf:fb10:0:b0:207:af88:1eb9 with SMTP id c16-20020adffb10000000b00207af881eb9mr30853557wrr.238.1655845918233;
-        Tue, 21 Jun 2022 14:11:58 -0700 (PDT)
-Received: from localhost (92.40.168.122.threembb.co.uk. [92.40.168.122])
-        by smtp.gmail.com with ESMTPSA id bv27-20020a0560001f1b00b0021b84ac7a05sm7979960wrb.0.2022.06.21.14.11.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jun 2022 14:11:57 -0700 (PDT)
-References: <20220620200644.1961936-1-aidanmacdonald.0x0@gmail.com>
- <20220620200644.1961936-16-aidanmacdonald.0x0@gmail.com>
- <CAHp75Vd7Sq9RMqin_y-8qUEAJLaGfuqxAbe+qcMB22=bqkyZqg@mail.gmail.com>
-From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Mark Brown <broonie@kernel.org>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Banajit Goswami <bgoswami@codeaurora.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Michael Walle <michael@walle.cc>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Cristian Ciocaltea <cristian.ciocaltea@gmail.com>,
-        Chen-Yu Tsai <wens@csie.org>, tharvey@gateworks.com,
-        rjones@gateworks.com, Matti Vaittinen <mazziesaccount@gmail.com>,
-        orsonzhai@gmail.com, baolin.wang7@gmail.com, zhang.lyra@gmail.com,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        linux-actions@lists.infradead.org,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        linux-sunxi@lists.linux.dev,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>
-Subject: Re: [PATCH 15/49] regmap-irq: Change the behavior of mask_writeonly
-In-reply-to: <CAHp75Vd7Sq9RMqin_y-8qUEAJLaGfuqxAbe+qcMB22=bqkyZqg@mail.gmail.com>
-Date:   Tue, 21 Jun 2022 22:13:03 +0100
-Message-ID: <FQHPnJKuXUHf8vLiZoXidpoim5RtEYUC@localhost>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0sx9mCt7ugcCul7YmAFz+wOWvzn0YCkRrYodgyvLA20=;
+        b=LTIFb5Wgtx1bOls2G6e6KuDKuIJTvj1OKApyya4QkLWK4LJLgkh4jA578n6AhD6yIm
+         Lo+FEW6jbVQ/3ph5CEVB4CaPVyHrTbXIL6vsWubkaJtkKpeEdJ3F5TE0MF/K46FW8IO8
+         zfYZPZ9aWL9+0sEydiN4wtgHR/fonizEfFa1EoKNrygGIc2xsA3c5CcPkLAGebJcc0kR
+         p2rUBhoetdK9MPGSny2DlAcFmnNz8SIMEQzhiE947hQa5nlEMcaT8zBI8ndy2uIQVh/w
+         IkFbBFqF0BI023r5OPGXkZ1AuLVqsfy8iLWHX9FKs2ttJcBHIIwHuFqXZNrIoeUosjk6
+         W87g==
+X-Gm-Message-State: AJIora/NfX8U1XdCGb5iiiyyfFDfmK6ctE04lSADW9IGkYdQ8kBMwKIF
+        BICU/FBS5a86KoTm8NffWmdgsvfDUIuo/D/SevlkqQXTDm8=
+X-Google-Smtp-Source: AGRyM1t+DFUzS0wvZf5giwOBI/iXtOif2fd5MijWJHsJfzfG0w42jihhLkAOXFsXvEb8fVJDIYNV5qGIHiM0JlDwnXY=
+X-Received: by 2002:a25:9d89:0:b0:669:31d4:7cd9 with SMTP id
+ v9-20020a259d89000000b0066931d47cd9mr158778ybp.294.1655845945358; Tue, 21 Jun
+ 2022 14:12:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20220615172129.1314056-1-pmalani@chromium.org>
+ <20220615172129.1314056-5-pmalani@chromium.org> <CAE-0n53ub30HXB325wPoMB4C3n4j_9FWnNu5AmtYgU3PBvs8mQ@mail.gmail.com>
+ <CACeCKadSCXZo3E4JZiwxFn_4CH3KDfQkk=xRrxSqCEWAgYhV6Q@mail.gmail.com>
+ <20220616193424.GA3844759-robh@kernel.org> <CACeCKaeH6qTTdG_huC4yw0xxG8TYEOtfPW3tiVNwYs=P4QVPXg@mail.gmail.com>
+In-Reply-To: <CACeCKaeH6qTTdG_huC4yw0xxG8TYEOtfPW3tiVNwYs=P4QVPXg@mail.gmail.com>
+From:   Prashant Malani <pmalani@chromium.org>
+Date:   Tue, 21 Jun 2022 14:12:14 -0700
+Message-ID: <CACeCKad=gm0zU47hmEZwninETycv0pB5fYv0J_c0_fv2cBr3hw@mail.gmail.com>
+Subject: Re: [PATCH v4 4/7] dt-bindings: drm/bridge: anx7625: Add mode-switch support
+To:     Rob Herring <robh@kernel.org>
+Cc:     Stephen Boyd <swboyd@chromium.org>, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, bleung@chromium.org,
+        heikki.krogerus@linux.intel.com,
+        =?UTF-8?B?TsOtY29sYXMgRiAuIFIgLiBBIC4gUHJhZG8=?= 
+        <nfraprado@collabora.com>, Andrzej Hajda <andrzej.hajda@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>, devicetree@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Pin-Yen Lin <treapking@chromium.org>,
+        Robert Foss <robert.foss@linaro.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Xin Ji <xji@analogixsemi.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-Andy Shevchenko <andy.shevchenko@gmail.com> writes:
-
-> On Mon, Jun 20, 2022 at 10:08 PM Aidan MacDonald
-> <aidanmacdonald.0x0@gmail.com> wrote:
->>
->> No drivers currently use mask_writeonly, and in its current form
->> it seems a bit misleading. When set, mask registers will be
->> updated with regmap_write_bits() instead of regmap_update_bits(),
->> but regmap_write_bits() still does a read-modify-write under the
->> hood. It's not a write-only operation.
->>
->> Performing a simple regmap_write() is probably more useful, since
->> it can be used for chips that have separate set & clear registers
->> for controlling mask bits. Such registers are normally volatile
->> and read as 0, so avoiding a register read minimizes bus traffic.
+On Thu, Jun 16, 2022 at 12:57 PM Prashant Malani <pmalani@chromium.org> wrote:
 >
-> Reading your explanations and the code, I would rather think about
-> fixing the regmap_write_bits() to be writeonly op.
+> On Thu, Jun 16, 2022 at 12:34 PM Rob Herring <robh@kernel.org> wrote:
+> >
+> > On Thu, Jun 16, 2022 at 01:54:36AM -0700, Prashant Malani wrote:
+> > > On Thu, Jun 16, 2022 at 12:42 AM Stephen Boyd <swboyd@chromium.org> wrote:
+> > > >
+> > > > Quoting Prashant Malani (2022-06-15 10:20:20)
+> > > > >
+> > > > >  .../display/bridge/analogix,anx7625.yaml      | 64 +++++++++++++++++++
+> > > > >  1 file changed, 64 insertions(+)
+> > > >
+> > > > Can this file get a link to the product brief[1]? It helps to quickly
+> > > > find the block diagram.
+> > >
+> > > Sure, but I don't really think that should be included in this patch
+> > > (or series).
+> > > I'd be happy to submit a separate patch once this series is resolved.
+> > >
+> > > >
+> > > > >
+> > > > > diff --git a/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml b/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
+> > > > > index 35a48515836e..bc6f7644db31 100644
+> > > > > --- a/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
+> > > > > +++ b/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
+> > > > > @@ -105,6 +105,34 @@ properties:
+> > > > >        - port@0
+> > > > >        - port@1
+> > > > >
+> > > > > +  switches:
+> > > > > +    type: object
+> > > > > +    description: Set of switches controlling DisplayPort traffic on
+> > > > > +      outgoing RX/TX lanes to Type C ports.
+> > > > > +    additionalProperties: false
+> > > > > +
+> > > > > +    properties:
+> > > > > +      '#address-cells':
+> > > > > +        const: 1
+> > > > > +
+> > > > > +      '#size-cells':
+> > > > > +        const: 0
+> > > > > +
+> > > > > +    patternProperties:
+> > > > > +      '^switch@[01]$':
+> > > > > +        $ref: /schemas/usb/typec-switch.yaml#
+> > > > > +        unevaluatedProperties: false
+> > > > > +
+> > > > > +        properties:
+> > > > > +          reg:
+> > > > > +            maxItems: 1
+> > > > > +
+> > > > > +        required:
+> > > > > +          - reg
+> > > > > +
+> > > > > +    required:
+> > > > > +      - switch@0
+> > > > > +
+> > > > >  required:
+> > > > >    - compatible
+> > > > >    - reg
+> > > > > @@ -167,5 +195,41 @@ examples:
+> > > > >                      };
+> > > > >                  };
+> > > > >              };
+> > > > > +            switches {
+> > > >
+> > > > Is "switches" a bus?
+> > >
+> > > No.
+> > >
+> > > >
+> > > > > +                #address-cells = <1>;
+> > > > > +                #size-cells = <0>;
+> > > > > +                switch@0 {
+> > > > > +                    compatible = "typec-switch";
+> > > >
+> > > > Is this compatible matched against a driver that's populated on this
+> > > > "switches" bus?
+> > >
+> > > No. Patch 6/7 has the implementation details on how the anx driver
+> > > performs the enumeration of switches.
+> > >
+> > > >
+> > > > > +                    reg = <0>;
+> > > > > +                    mode-switch;
+> > > > > +
+> > > > > +                    ports {
+> > > > > +                        #address-cells = <1>;
+> > > > > +                        #size-cells = <0>;
+> > > > > +                        port@0 {
+> > > > > +                            reg = <0>;
+> > > > > +                            anx_typec0: endpoint {
+> > > > > +                                remote-endpoint = <&typec_port0>;
+> > > > > +                            };
+> > > > > +                        };
+> > > > > +                    };
+> > > >
+> > > > I was expecting to see these simply be more ports in the existing graph
+> > > > binding of this device, and then have the 'mode-switch' or
+> > > > 'orientation-switch' properties be at the same level as the compatible
+> > > > string "analogix,anx7625". Here's the reasoning, based on looking at the
+> > > > product brief and the existing binding/implementation.
+> > > >
+> > > > Looking at the only existing implementation of this binding upstream in
+> > > > mt8183-kukui-jacuzzi.dtsi it looks like one of these typec ports is
+> > > > actually the same physically as the 'anx7625_out' endpoint (reg address
+> > > > of 1) that is already defined in the binding. It seems that MIPI DSI/DPI
+> > > > comes in and is output through 2 lanes, SSRX2 and SSTX2 according to the
+> > > > product brief[1], and that is connected to some eDP panel
+> > > > ("auo,b116xw03"). Presumably that is the same as anx_typec1 in this
+> > > > patch? I suspect the USB3.1 input is not connected on this board, and
+> > > > thus the crosspoint switch is never used, nor the SSRX1/SSTX1 pins.
+> > > >
+> > > > The existing binding defines the MIPI DSI/DPI input as port0 and two of
+> > > > the four lanes of output that is probably by default connected to the
+> > > > "DisplayPort Transmitter" as port1 because that's how the crosspoint
+> > > > switch comes out of reset. That leaves the USB3.1 input possibly needing
+> > > > a port in the ports binding, and the other two lanes of output needing a
+> > > > port in the ports binding to describe their connection to the downstream
+> > > > device. And finally information about if the crosspoint switch needs to
+> > > > be registered with the typec framework to do typec things, which can be
+> > > > achieved by the presence of the 'mode-switch' property.
+> > > >
+> > > > On a board like kukui-jacuzzi these new properties and ports wouldn't be
+> > > > specified, because what is there is already sufficient. If this chip is
+> > > > connected to a usb-c-connector then I'd expect to see a connection from
+> > > > the output ports in the graph binding to the connector node's ports.
+> > > > There aren't any ports in the usb-c-connector binding though from what I
+> > > > see.
+> > > >
+> > > > I believe there's also one more use case here where USB3.1 or MIPI
+> > > > DSI/DPI is connected on the input side and this device is used to steer
+> > > > USB3.1 or DP through the crosspoint switch to either of the two output
+> > > > pairs. This last scenario means that we have to describe both output
+> > > > pairs, SSRX1/SSTX1 and SSRX2/SSTX2, as different ports in the binding so
+> > > > they can be connected to different usb-c-connectors if the hardware
+> > > > engineer wired the output pins that way.
+> > > >
+> > > > TL;DR: Can we add 'mode-switch' as an optional property and two more
+> > > > ports at address 2 and 3 for the USB3.1 input and the SSRX1/SSTX1 pair
+> > > > respectively to the existing graph part of this binding?
+> > >
+> > > Sorry, but I got lost midway through the preceding explanation.
+> >
+> > Made sense to me.
+> >
+> > > The binding
+> > > can always add additional ports to each "switch" to accomplish the
+> > > graph connections
+> > > you are alluding to (if the driver needs/uses it, which I don't think
+> > > this one does at present).
+> >
+> > Why is the switch special? If I just look at this from a block diagram
+> > perspective, I just see a list of interfaces that need to be described
+> > in the graph.
+>
+> Because it is specific to Type-C connectors. The anx7625.h does
+> contain a cross-point
+> switch which controls data lines coming from 1 (or more) Type-C
+> connectors, so it seems reasonable
+> to have a dedicated binding for such types of hardware sub-components,
+> which helps define the graph connections
+> in a more uniform manner. That's not to say:
+> - this can only be used by this hardware. The typec-switch binding is
+> generic enough to accommodate other hardware.
+> - there is only 1 way to do this. The interfaces could be described
+> using existing port OF graph bindings, but I don't
+> see that as reason enough to not include a dedicated switch binding if
+> it makes the overall binding more logically organized (IMO) and
+> makes driver registration code mode clean.
+>
+> >
+> > > Adding extra ports to existing ports gets tricky from a mode-switch
+> > > enumeration perspective (which
+> > > ports should have the modes switches, which shouldn't? Do you follow
+> > > the remote end points for each port
+> > > and see which one is a Type C connector?
+> >
+> > The driver knows which port is which because the binding has to define
+> > it. So you have to check 2 of them (SSRX1/SSTX1 and SSRX2/SSTX2) to find
+> > usb C connectors.
+>
+> Right, but with the switch binding you no longer need to check. If
+> there is a typec-switch, you know
+> it is coming from a Type-C connector, so you can just register the
+> switches with the Type-C framework.
+>
+> >
+> > > What if we add an
+> > > intermediate switch device in the future?)
+> > > Having a dedicated "switch" binding makes this consistent and easy
+> > > (port0 will always have the end-point for the switch).
+> > >
+> > > While there may be more than 1 valid approach here, I believe the
+> > > current one is appropriate.
+> >
+> > To put it simply, if you want to define a generic binding, I want to see
+> > at least 2 users of it.
 
-That's impossible without special hardware support.
+Pin-Yen and I will work on adding another user for the binding to v5 of
+this patch series.
 
-> Otherwise it's unclear what's the difference between
-> regmap_write_bits() vs. regmap_update_bits().
+Best regards,
 
-This was not obvious to me either. They're the same except in how they
-issue the low-level write op -- regmap_update_bits() will only do the
-write if the new value differs from the current one. regmap_write_bits()
-will always do a write, even if the new value is the same.
-
-I think the problem is lack of documentation. I only figured this out
-by reading the implementation.
-
->>         if (d->chip->mask_writeonly)
->> -               return regmap_write_bits(d->map, reg, mask, val);
->> +               return regmap_write(d->map, reg, val & mask);
->>         else
->>                 return regmap_update_bits(d->map, reg, mask, val);
+- Prashant
