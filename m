@@ -2,83 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22808C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 12:45:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91055C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 12:46:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350558AbiFUMp4 (ORCPT
+        id S1350547AbiFUMqk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 08:45:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46976 "EHLO
+        Tue, 21 Jun 2022 08:46:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350547AbiFUMpy (ORCPT
+        with ESMTP id S1344117AbiFUMqj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 08:45:54 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93B6B1EC5F;
-        Tue, 21 Jun 2022 05:45:53 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 4C85F1F8A3;
-        Tue, 21 Jun 2022 12:45:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1655815552; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=gOBExk5CeiV+de5yPYSWWhO9HrXnqPSCpeLO4mmWiBc=;
-        b=YXhDQgpM1Uo0PIOJUVO9FnjzR0ytrwEfg74iGRDftfhFLVs8mpTkhhw7b59Uj+KDFje6vJ
-        l+7nVPRBX0cCJzGLM5SeyT9SDCHZ/TSzhISTMBSLBmVJFF81FWJVZ+fQ9j5UItRgCvUez9
-        0m8sDhAQLIpj8wsMgwxB/0R2i16G590=
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id 42DB12C141;
-        Tue, 21 Jun 2022 12:45:52 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id 4627ADA853; Tue, 21 Jun 2022 14:41:16 +0200 (CEST)
-From:   David Sterba <dsterba@suse.com>
-To:     torvalds@linux-foundation.org
-Cc:     David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [GIT PULL] Fixes for btrfs 5.19-rc4
-Date:   Tue, 21 Jun 2022 14:41:15 +0200
-Message-Id: <cover.1655815078.git.dsterba@suse.com>
-X-Mailer: git-send-email 2.36.1
+        Tue, 21 Jun 2022 08:46:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 895FA12ACF;
+        Tue, 21 Jun 2022 05:46:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D69C6144D;
+        Tue, 21 Jun 2022 12:46:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4B66C3411D;
+        Tue, 21 Jun 2022 12:46:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655815597;
+        bh=/lJf1g6k/vLlYyh34H6cKOQDaBIETGFyt/Fw9AGyS8o=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=QxKixXtz2oKY9+H1+w1iZ4YVxk07FG8wnR1oEGHhNg0aYKv573urCmtVPnYilqOPq
+         tRx+0RuJykPGgGWsDIrBJggd3BfCjb6Zsuo7D64qKC/ZD2kEjwM5FAuPaOPc+oQHFx
+         9XIV39rI7wQSRlVhhomKct+53id9oZ4UIbke2vxkQyRYHNewBBnSo9vYmsXk9Qo+gM
+         brv5gWxxMzb0o7XKV8rrEhMuwHZ7ARgA61HSf9dw4CFNR6Jm2TZiwjJPrmOQv/WD/3
+         ub8oJ5RAmQ0sj6nFMuxDy3C6iM8NukqetVUt/okXMqZId5DjMHOGz7EYz8omkMNHpP
+         Nz5I/vgUrip2g==
+Date:   Tue, 21 Jun 2022 18:16:24 +0530
+From:   Manivannan Sadhasivam <mani@kernel.org>
+To:     Yonglin Tan <yonglin.tan@outlook.com>
+Cc:     loic.poulain@linaro.org, gregkh@linuxfoundation.org,
+        quic_hemantk@quicinc.com, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mhi@lists.linux.dev
+Subject: Re: [PATCH v2] bus: mhi: host: Add support for Quectel EM120 FCCL.
+Message-ID: <20220621124624.GA17181@thinkpad>
+References: <MEYP282MB2374837FFCB18B12BFDEDE80FDCF9@MEYP282MB2374.AUSP282.PROD.OUTLOOK.COM>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <MEYP282MB2374837FFCB18B12BFDEDE80FDCF9@MEYP282MB2374.AUSP282.PROD.OUTLOOK.COM>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Mon, May 16, 2022 at 02:38:29PM +0800, Yonglin Tan wrote:
+> The product's enumeration align with previous 
+> Quectel EM120R-GL, so the EM120 FCCL would use 
+> the same config as Quectel EM120R-GL. 
+> 
+> Signed-off-by: Yonglin Tan <yonglin.tan@outlook.com>
 
-a few more fixes. Please pull thanks.
+Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
 
-- print more error messages for invalid mount option values
+Thanks,
+Mani
 
-- prevent remount with v1 space cache for subpage filesystem
+> ---
+> 
+> V2:
+> Fixed the format errors in the patch description.
+> 
+>  drivers/bus/mhi/host/pci_generic.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/bus/mhi/host/pci_generic.c b/drivers/bus/mhi/host/pci_generic.c
+> index 8416267..0a6469c 100644
+> --- a/drivers/bus/mhi/host/pci_generic.c
+> +++ b/drivers/bus/mhi/host/pci_generic.c
+> @@ -557,6 +557,8 @@ static const struct pci_device_id mhi_pci_id_table[] = {
+>  		.driver_data = (kernel_ulong_t) &mhi_quectel_em1xx_info },
+>  	{ PCI_DEVICE(0x1eac, 0x1002), /* EM160R-GL (sdx24) */
+>  		.driver_data = (kernel_ulong_t) &mhi_quectel_em1xx_info },
+> +	{ PCI_DEVICE(0x1eac, 0x2001), /* EM120R-GL for FCCL (sdx24) */
+> +		.driver_data = (kernel_ulong_t) &mhi_quectel_em1xx_info },
+>  	/* T99W175 (sdx55), Both for eSIM and Non-eSIM */
+>  	{ PCI_DEVICE(PCI_VENDOR_ID_FOXCONN, 0xe0ab),
+>  		.driver_data = (kernel_ulong_t) &mhi_foxconn_sdx55_info },
+> -- 
+> 2.7.4
+> 
 
-- fix hang during unmount when block group reclaim task is running
-
-
-----------------------------------------------------------------
-The following changes since commit 0a05fafe9def0d9f0fbef3dfc8094925af9e3185:
-
-  btrfs: zoned: introduce a minimal zone size 4M and reject mount (2022-05-17 20:15:25 +0200)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/kdave/linux.git for-5.19-rc3-tag
-
-for you to fetch changes up to e3a4167c880cf889f66887a152799df4d609dd21:
-
-  btrfs: add error messages to all unrecognized mount options (2022-06-07 17:29:50 +0200)
-
-----------------------------------------------------------------
-David Sterba (1):
-      btrfs: add error messages to all unrecognized mount options
-
-Filipe Manana (1):
-      btrfs: fix hang during unmount when block group reclaim task is running
-
-Qu Wenruo (1):
-      btrfs: prevent remounting to v1 space cache for subpage mount
-
- fs/btrfs/disk-io.c | 13 +++++++++++--
- fs/btrfs/super.c   | 47 ++++++++++++++++++++++++++++++++++++++++-------
- 2 files changed, 51 insertions(+), 9 deletions(-)
+-- 
+மணிவண்ணன் சதாசிவம்
