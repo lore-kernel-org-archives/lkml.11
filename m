@@ -2,99 +2,236 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DDB1C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:38:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C52A1C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:38:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232521AbiFUPiE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 11:38:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46996 "EHLO
+        id S241313AbiFUPiv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 21 Jun 2022 11:38:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352923AbiFUPhq (ORCPT
+        with ESMTP id S1353071AbiFUPiq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 11:37:46 -0400
-Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CF522B272
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:37:44 -0700 (PDT)
-Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-31772f8495fso133973627b3.4
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:37:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jNomwlsDfqU5poOBT4be6sMDFMnq8kqupfgjKPBSl0o=;
-        b=Qt4+GtYLdrDWQ6a5jl3LLOu8so+RPUk0wXjzmyqo52tVhlMHxh+jHNFbD0VR2STZ4K
-         5Kj+4Vv9NJyGdkpnEeEXy4dYLuU05zKinvDfx8L62t/nGOK7pk1Bb8nPm9gD3PWmCzB+
-         0FsTPU9LLC+vH9Ahtgte4BU6/x5GtcPAioWD/CA5Kw9kAdi7S6uhutiYCMu9N0ohluZ3
-         xYnZ/jjuUSLbzzkcZ4iY420a6fi0MZTYxsamgxpanWk8sGUMvDQu7WphHBxiNpbkI0FZ
-         svL5BHCVyM70iTmWazyMHlSzSg6z3CND1vVS5DIaHVUVVdEGMhYYjHHg0/En+btpU/PN
-         ionQ==
+        Tue, 21 Jun 2022 11:38:46 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 13DBFB7C6
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:38:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655825924;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=FnbHuNXX+33sc1khx411pyZstIbascagbQJiHj3LaFU=;
+        b=Q361U+kBqmfO25Eu+hmWja8O9nhGLbwb40T2N+D8TFDemY0Ks+QSPt6KsxjOHWW2KZLAps
+        SwuarveSWT1nHYWbM1Sev2hOyP8broycHGnkg7k2r3Kna3BAVRwbss+M5/JP4zOleDIt4H
+        4XrBPeC17lgxlK2+/DmQ7N6rxEyr8B0=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-502-sLuP8idpMZi0QL3JCARdvQ-1; Tue, 21 Jun 2022 11:38:42 -0400
+X-MC-Unique: sLuP8idpMZi0QL3JCARdvQ-1
+Received: by mail-qv1-f69.google.com with SMTP id b18-20020a0ccd12000000b004703d1b04e8so7433709qvm.13
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:38:42 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jNomwlsDfqU5poOBT4be6sMDFMnq8kqupfgjKPBSl0o=;
-        b=xkmphwE2BQCiH1YSNCFwCUyyBTcb70fNwWk2Zcz4Ts2mukPnYSsnGLkN8CdlyUcrpk
-         5OB7KNJjKXjaB/rZoxTtUOrbvPXjza3Lyg6Wok6SB05UiFAAfkQ9W99axYglzQNlhGcG
-         hPi4CP1A5YEJUNDAH+vdZ27eKqFcPJTigCpYCfCf008LnpllY5HP2gdwN6mjvFD+Pk1o
-         RdzFabCSveVLzf9c14y9RUa9vFaW6EVaTQIDk8bK21amMuS7K25ilay3BvvdNcFu7hM6
-         Gpj161PCXWzmG81e+toVb2/VKXHWxUhY9/o8p5Sq8BTe0uN09VB9QSHWJMdkpfSvsde0
-         iDDw==
-X-Gm-Message-State: AJIora/8ncCnq/ht+EbvJBGjZt3TgGo+WLlKSISCXdPSkBsnkt/zd+vU
-        Eemc0/p5wiHJ1lvndwWSolMDQoi+NRioPAh2FbyknA==
-X-Google-Smtp-Source: AGRyM1vYstW9b2v9MIEqueYX9u9xiZGFjBQFAh/JjmmuCtc+6VDOyY89kLRdUecjQlJnAPWr+psfhcWdOT9gqpPorWw=
-X-Received: by 2002:a81:100d:0:b0:317:a2a8:833d with SMTP id
- 13-20020a81100d000000b00317a2a8833dmr18684737ywq.69.1655825863727; Tue, 21
- Jun 2022 08:37:43 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=FnbHuNXX+33sc1khx411pyZstIbascagbQJiHj3LaFU=;
+        b=UgWpliJgREDZ5dfUqmu9+eVeu7paYiss5E0RPPiHbWkGb3zm3mDnywVmXwrJRG18RZ
+         E4xfWVfgyJ06FMpjuorim6H5lHWepB/CjLSAcCBvUif3M+1bBQ1RsygCl/93n2K8HuEW
+         jQsSiSEAjW1ss/Lvc7J/fOR5HITh5tsYoU4K9KN87TOzN+mjbAFGou1z0rSKiuTt46I5
+         DePsYH/IKLMMXyfh/ai1CPQoo50o0oN8/qjPlKUBeUDEzldqiPF9ZU24K96NPJPpuQoh
+         LZiGIDQfRZavol/2L4DkSS5hmCTGXg98jBzj+7n+EkAJuJfcihNJWdidTwnQ8HBl4tjD
+         KXBQ==
+X-Gm-Message-State: AJIora/Y03lcH0APDmxa8g1rj+yiH+p+ye+W2ZXK4+BBvD9OKITKIMNp
+        SHETTzoc8nVxX0LjgPQjUhTMWIxvKMI30P0Zey+LWX9AheeB5nxFBz0KWMe1yH9tttBclDD2WYU
+        AqurbFw6YHe+7nMTIi0tkwe1V
+X-Received: by 2002:a05:622a:5ca:b0:306:6c7c:efe7 with SMTP id d10-20020a05622a05ca00b003066c7cefe7mr24478225qtb.310.1655825922391;
+        Tue, 21 Jun 2022 08:38:42 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1snfFXk68dQT4mRBgAFD3F/WUiGoBjFE3pNpAayeNMZAj/1qtmjBnO8Rp9miRu6x2a7GQi+Yw==
+X-Received: by 2002:a05:622a:5ca:b0:306:6c7c:efe7 with SMTP id d10-20020a05622a05ca00b003066c7cefe7mr24478201qtb.310.1655825922126;
+        Tue, 21 Jun 2022 08:38:42 -0700 (PDT)
+Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id bl17-20020a05620a1a9100b006a6c9e17088sm13650258qkb.65.2022.06.21.08.38.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 21 Jun 2022 08:38:41 -0700 (PDT)
+Subject: Re: [PATCH v1] memory: dfl-emif: Update the dfl emif driver support
+ revision 1
+To:     Tianfei Zhang <tianfei.zhang@intel.com>, ssantosh@kernel.org,
+        krzysztof.kozlowski@linaro.org
+Cc:     yilun.xu@intel.com, russell.h.weight@intel.com,
+        linux-fpga@vger.kernel.org, linux-kernel@vger.kernel.org,
+        matthew.gerlach@linux.intel.com,
+        Debarati Biswas <debaratix.biswas@intel.com>
+References: <20220621123854.8686-1-tianfei.zhang@intel.com>
+From:   Tom Rix <trix@redhat.com>
+Message-ID: <39675efc-5c35-74e6-c824-d7f09d80fa61@redhat.com>
+Date:   Tue, 21 Jun 2022 08:38:36 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-References: <20220616195759.3214538-1-samitolvanen@google.com> <CAK7LNARAAdWPxaMWawQf5Y4kYJ065OMtvrnUaHkjCquL_BZYYQ@mail.gmail.com>
-In-Reply-To: <CAK7LNARAAdWPxaMWawQf5Y4kYJ065OMtvrnUaHkjCquL_BZYYQ@mail.gmail.com>
-From:   Sami Tolvanen <samitolvanen@google.com>
-Date:   Tue, 21 Jun 2022 08:37:07 -0700
-Message-ID: <CABCJKudwqKOGfE0Ha9b8DXaZ23bvKk+DhdVbJHoLneV5zJaZzQ@mail.gmail.com>
-Subject: Re: [PATCH] kbuild: Ignore __this_module in gen_autoksyms.sh
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Nicolas Schier <nicolas@fjasle.eu>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Steve Muckle <smuckle@google.com>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20220621123854.8686-1-tianfei.zhang@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jun 18, 2022 at 4:01 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> On Fri, Jun 17, 2022 at 4:58 AM Sami Tolvanen <samitolvanen@google.com> wrote:
-> >
-> > Module object files can contain an undefined reference to __this_module,
-> > which isn't resolved until we link the final .ko. The kernel doesn't
-> > export this symbol, so ignore it in gen_autoksyms.sh.
->
-> OK, I understand these two sentences.
->
-> > This avoids an
-> > unnecessary vmlinux rebuild with UNUSED_KSYMS_WHITELIST when we have a
-> > symbol list that already contains all the module dependencies.
-> >
->
-> I do not understand how this can happen.
->
->
-> Can you provide me steps to reproduce it?
+It does not seem like version 0 is being handled in all places, please 
+review for backward compatibility.
 
-This issue only happens when we have a whitelist that already contains
-all the symbols we need to export. As autoksyms.h contains all the
-necessary symbols in the initial vmlinux build, there should be no
-need to link vmlinux again. However, as the code is looking at
-undefined symbols in module .o files before __this_module is resolved,
-adjust_autoksyms.sh thinks that __this_module is still missing and
-triggers a rebuild, without actually changing anything.
+On 6/21/22 5:38 AM, Tianfei Zhang wrote:
+> From: Debarati Biswas <debaratix.biswas@intel.com>
+>
+> The next generation (revision 1) of the DFL EMIF feature device requires
+> support for more than 4 memory banks. It does not support the selective
 
-I suspect this isn't a common situation, but it does happen when
-building Android kernels, which specify a complete list of exported
-symbols. Linking vmlinux.o takes a while with LTO and we would like to
-avoid performing this step more than once.
+more than 4 or 8 ? below seems like 8.
 
-Sami
+ver > 0 is not the same as ver == 1, I prefer the later
+
+> clearing of memory banks. A capability register replaces the previous
+> control register, and contains a bitmask to indicate the presence of each
+> memory bank. This bitmask aligns with the previous control register
+> bitmask that served the same purpose. The control and capability
+> registers are treated like a C Union structure in order to support both
+> the new and old revisions of the EMIF device.
+>
+> Signed-off-by: Debarati Biswas <debaratix.biswas@intel.com>
+> Signed-off-by: Russ Weight <russell.h.weight@intel.com>
+> Signed-off-by: Tianfei Zhang <tianfei.zhang@intel.com>
+> ---
+>   drivers/memory/dfl-emif.c | 62 +++++++++++++++++++++++++++++++++++----
+>   1 file changed, 57 insertions(+), 5 deletions(-)
+>
+> diff --git a/drivers/memory/dfl-emif.c b/drivers/memory/dfl-emif.c
+> index 3f719816771d..da06cd30a016 100644
+> --- a/drivers/memory/dfl-emif.c
+> +++ b/drivers/memory/dfl-emif.c
+> @@ -24,11 +24,24 @@
+>   #define EMIF_STAT_CLEAR_BUSY_SFT	16
+>   #define EMIF_CTRL			0x10
+>   #define EMIF_CTRL_CLEAR_EN_SFT		0
+> -#define EMIF_CTRL_CLEAR_EN_MSK		GENMASK_ULL(3, 0)
+> +#define EMIF_CTRL_CLEAR_EN_MSK		GENMASK_ULL(7, 0)
+
+This would seem to be version specific and not a static value.
+
+ver 0 is (3,0) , ver > 0 (7,0)
+
+like what is done below.
+
+This #define is used in emif_clear_attr() but there is not version check 
+in this macro.
+
+>   
+>   #define EMIF_POLL_INVL			10000 /* us */
+>   #define EMIF_POLL_TIMEOUT		5000000 /* us */
+>   
+> +/*
+> + * The Capability Register replaces the Control Register (at the same
+> + * offset) for EMIF feature revisions > 0. The bitmask that indicates
+> + * the presence of memory channels exists in both the Capability Register
+> + * and Control Register definitions. These can be thought of as a C union.
+> + * The Capability Register definitions are used to check for the existence
+> + * of a memory channel, and the Control Register definitions are used for
+> + * managing the memory-clear functionality in revision 0.
+> + */
+> +#define EMIF_CAPABILITY_BASE		0x10
+> +#define EMIF_CAPABILITY_CHN_MSK_V0	GENMASK_ULL(3, 0)
+> +#define EMIF_CAPABILITY_CHN_MSK		GENMASK_ULL(7, 0)
+> +
+>   struct dfl_emif {
+>   	struct device *dev;
+>   	void __iomem *base;
+> @@ -106,16 +119,30 @@ emif_state_attr(init_done, EMIF_STAT_INIT_DONE_SFT, 0);
+>   emif_state_attr(init_done, EMIF_STAT_INIT_DONE_SFT, 1);
+>   emif_state_attr(init_done, EMIF_STAT_INIT_DONE_SFT, 2);
+>   emif_state_attr(init_done, EMIF_STAT_INIT_DONE_SFT, 3);
+> +emif_state_attr(init_done, EMIF_STAT_INIT_DONE_SFT, 4);
+> +emif_state_attr(init_done, EMIF_STAT_INIT_DONE_SFT, 5);
+> +emif_state_attr(init_done, EMIF_STAT_INIT_DONE_SFT, 6);
+> +emif_state_attr(init_done, EMIF_STAT_INIT_DONE_SFT, 7);
+>   
+>   emif_state_attr(cal_fail, EMIF_STAT_CALC_FAIL_SFT, 0);
+>   emif_state_attr(cal_fail, EMIF_STAT_CALC_FAIL_SFT, 1);
+>   emif_state_attr(cal_fail, EMIF_STAT_CALC_FAIL_SFT, 2);
+>   emif_state_attr(cal_fail, EMIF_STAT_CALC_FAIL_SFT, 3);
+> +emif_state_attr(cal_fail, EMIF_STAT_CALC_FAIL_SFT, 4);
+> +emif_state_attr(cal_fail, EMIF_STAT_CALC_FAIL_SFT, 5);
+> +emif_state_attr(cal_fail, EMIF_STAT_CALC_FAIL_SFT, 6);
+> +emif_state_attr(cal_fail, EMIF_STAT_CALC_FAIL_SFT, 7);
+> +
+>   
+>   emif_clear_attr(0);
+>   emif_clear_attr(1);
+>   emif_clear_attr(2);
+>   emif_clear_attr(3);
+> +emif_clear_attr(4);
+> +emif_clear_attr(5);
+> +emif_clear_attr(6);
+> +emif_clear_attr(7);
+> +
+>   
+>   static struct attribute *dfl_emif_attrs[] = {
+>   	&emif_attr_inf0_init_done.attr.attr,
+> @@ -134,6 +161,22 @@ static struct attribute *dfl_emif_attrs[] = {
+>   	&emif_attr_inf3_cal_fail.attr.attr,
+>   	&emif_attr_inf3_clear.attr.attr,
+>   
+> +	&emif_attr_inf4_init_done.attr.attr,
+> +	&emif_attr_inf4_cal_fail.attr.attr,
+> +	&emif_attr_inf4_clear.attr.attr,
+> +
+> +	&emif_attr_inf5_init_done.attr.attr,
+> +	&emif_attr_inf5_cal_fail.attr.attr,
+> +	&emif_attr_inf5_clear.attr.attr,
+> +
+> +	&emif_attr_inf6_init_done.attr.attr,
+> +	&emif_attr_inf6_cal_fail.attr.attr,
+> +	&emif_attr_inf6_clear.attr.attr,
+> +
+> +	&emif_attr_inf7_init_done.attr.attr,
+> +	&emif_attr_inf7_cal_fail.attr.attr,
+> +	&emif_attr_inf7_clear.attr.attr,
+> +
+>   	NULL,
+>   };
+>   
+> @@ -143,15 +186,24 @@ static umode_t dfl_emif_visible(struct kobject *kobj,
+>   	struct dfl_emif *de = dev_get_drvdata(kobj_to_dev(kobj));
+>   	struct emif_attr *eattr = container_of(attr, struct emif_attr,
+>   					       attr.attr);
+> +	struct dfl_device *ddev = to_dfl_dev(de->dev);
+>   	u64 val;
+>   
+>   	/*
+> -	 * This device supports upto 4 memory interfaces, but not all
+> +	 * This device supports up to 8 memory interfaces, but not all
+>   	 * interfaces are used on different platforms. The read out value of
+> -	 * CLEAN_EN field (which is a bitmap) could tell how many interfaces
+> -	 * are available.
+> +	 * CAPABILITY_CHN_MSK field (which is a bitmap) indicates which
+> +	 * interfaces are available.
+>   	 */
+> -	val = FIELD_GET(EMIF_CTRL_CLEAR_EN_MSK, readq(de->base + EMIF_CTRL));
+> +	if (ddev->revision > 0 && strstr(attr->name, "_clear"))
+
+This check does not match to comment, why is this needed ?
+
+Tom
+
+> +		return 0;
+> +
+> +	if (ddev->revision == 0)
+> +		val = FIELD_GET(EMIF_CAPABILITY_CHN_MSK_V0,
+> +				readq(de->base + EMIF_CAPABILITY_BASE));
+> +	else
+> +		val = FIELD_GET(EMIF_CAPABILITY_CHN_MSK,
+> +				readq(de->base + EMIF_CAPABILITY_BASE));
+>   
+>   	return (val & BIT_ULL(eattr->index)) ? attr->mode : 0;
+>   }
+
