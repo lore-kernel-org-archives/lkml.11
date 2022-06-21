@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA586CCA48A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAC87CCA48D
 	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:05:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356562AbiFUVEe (ORCPT
+        id S1356606AbiFUVEg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 17:04:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38790 "EHLO
+        Tue, 21 Jun 2022 17:04:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355742AbiFUVBB (ORCPT
+        with ESMTP id S1355345AbiFUVBD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 17:01:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D78EB25F9;
-        Tue, 21 Jun 2022 13:52:57 -0700 (PDT)
+        Tue, 21 Jun 2022 17:01:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05A6D18E0E;
+        Tue, 21 Jun 2022 13:53:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AF585B81B31;
-        Tue, 21 Jun 2022 20:51:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05383C3411C;
-        Tue, 21 Jun 2022 20:51:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3F78BB81B2E;
+        Tue, 21 Jun 2022 20:51:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 781BCC341C5;
+        Tue, 21 Jun 2022 20:51:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655844710;
-        bh=VL7bWDXe8ljpJO1MWHeq70mjEul+u0QUCZHVWXXtVrk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=RvB1uNDNtO7d5Q8Kp3zE11jo0nwgIfL+/7UAtgbzr7K4uR8zMIHiHI03t+w2y+k4b
-         5Cm2AX6EANxmuq0ihZ9Pt44hJ8j+HAUAEIsFmmNhBvwlySiHAhs3Yg+DUIhh7x5d3T
-         tid0JDMySzRGSJRoC48FNusRv3aAnLhLbgJrfFLNu6uzEtlLdDvaiOPgWlymgmPOvp
-         gA0vbTTU/fwT3liNhfPZDnSRPrBhYdvgmR2kmmchRTRQj4WM7fXX9Q/QmhVxSjita2
-         ur42xWqBTjc5Yb9o+2cBc6fcV0HE/PdkyHU7dfFgFmxdfyBOfIhzeh09gPzjlgUOgm
-         xislqTWYrwsaA==
+        s=k20201202; t=1655844688;
+        bh=y/YKOVyGTJLYeT7AKWF3q0TQrnWzUX01HdNS9l3D26s=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=KiB8yxJmhNMAvLwosgnnds7jOQ1jRd7WkXXQIZDyO0/jvXeoXvO7Jgoiffagblpqj
+         Da2GrlT3o4v2SKt9FAK032hBVPvCo2hHy86VUH5qcWtUEa6XH1K+GvCx4BGVWDszN6
+         UCu4ZpigECq4MPKHpStrvsfMo6SKLfLTYtZAIiB0R9wjVIWZxuSwy79257psOWYXv3
+         NgfppXECRYLMDf+Nc4H7OQQevm17F9j6DLHAhYkYqpHfOdtLQ2HRMDIROcQjZpKj1e
+         eMXDoTdHSv2TmsPcbmLFIAJSYn4n1zMY7OFtpuYEbPuxsFHoJwZh4+JDXHxSYrTbk/
+         YbJxWRAljybCQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexander Usyskin <alexander.usyskin@intel.com>,
-        Tomas Winkler <tomas.winkler@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.9 1/3] mei: me: set internal pg flag to off on hardware reset
-Date:   Tue, 21 Jun 2022 16:51:45 -0400
-Message-Id: <20220621205148.251040-1-sashal@kernel.org>
+Cc:     Ming Lei <ming.lei@redhat.com>, Christoph Hellwig <hch@lst.de>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>,
+        linux-block@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 6/7] blk-mq: protect q->elevator by ->sysfs_lock in blk_mq_elv_switch_none
+Date:   Tue, 21 Jun 2022 16:51:18 -0400
+Message-Id: <20220621205120.250779-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220621205120.250779-1-sashal@kernel.org>
+References: <20220621205120.250779-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -51,39 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Usyskin <alexander.usyskin@intel.com>
+From: Ming Lei <ming.lei@redhat.com>
 
-[ Upstream commit 9f4639373e6756e1ccf0029f861f1061db3c3616 ]
+[ Upstream commit 5fd7a84a09e640016fe106dd3e992f5210e23dc7 ]
 
-Link reset flow is always performed in the runtime resumed state.
-The internal PG state may be left as ON after the suspend
-and will not be updated upon the resume if the D0i3 is not supported.
+elevator can be tore down by sysfs switch interface or disk release, so
+hold ->sysfs_lock before referring to q->elevator, then potential
+use-after-free can be avoided.
 
-Ensure that the internal PG state is set to the right value on the flow
-entrance in case the firmware does not support D0i3.
-
-Signed-off-by: Alexander Usyskin <alexander.usyskin@intel.com>
-Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
-Link: https://lore.kernel.org/r/20220606144225.282375-1-tomas.winkler@intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Ming Lei <ming.lei@redhat.com>
+Link: https://lore.kernel.org/r/20220616014401.817001-2-ming.lei@redhat.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/mei/hw-me.c | 2 ++
- 1 file changed, 2 insertions(+)
+ block/blk-mq.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/misc/mei/hw-me.c b/drivers/misc/mei/hw-me.c
-index 56c2101e80ad..082450c27be6 100644
---- a/drivers/misc/mei/hw-me.c
-+++ b/drivers/misc/mei/hw-me.c
-@@ -1061,6 +1061,8 @@ static int mei_me_hw_reset(struct mei_device *dev, bool intr_enable)
- 			ret = mei_me_d0i3_exit_sync(dev);
- 			if (ret)
- 				return ret;
-+		} else {
-+			hw->pg_state = MEI_PG_OFF;
- 		}
- 	}
+diff --git a/block/blk-mq.c b/block/blk-mq.c
+index 84798d09ca46..959df4e60f4e 100644
+--- a/block/blk-mq.c
++++ b/block/blk-mq.c
+@@ -3247,12 +3247,14 @@ static bool blk_mq_elv_switch_none(struct list_head *head,
+ 	if (!qe)
+ 		return false;
  
++	/* q->elevator needs protection from ->sysfs_lock */
++	mutex_lock(&q->sysfs_lock);
++
+ 	INIT_LIST_HEAD(&qe->node);
+ 	qe->q = q;
+ 	qe->type = q->elevator->type;
+ 	list_add(&qe->node, head);
+ 
+-	mutex_lock(&q->sysfs_lock);
+ 	/*
+ 	 * After elevator_switch_mq, the previous elevator_queue will be
+ 	 * released by elevator_release. The reference of the io scheduler
 -- 
 2.35.1
 
