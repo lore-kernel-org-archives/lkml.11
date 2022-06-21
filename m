@@ -2,159 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EC6BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 07:42:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D3A1CCA473
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 07:44:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347805AbiFUHl7 (ORCPT
+        id S1347617AbiFUHny convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 03:41:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40920 "EHLO
+        Tue, 21 Jun 2022 03:43:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347919AbiFUHlo (ORCPT
+        with ESMTP id S1347249AbiFUHnM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 03:41:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A852E140AE;
-        Tue, 21 Jun 2022 00:41:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 478676144D;
-        Tue, 21 Jun 2022 07:41:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A953DC3411D;
-        Tue, 21 Jun 2022 07:41:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655797302;
-        bh=xHrJEBMzMAaB/yf3L0nRdLkzzYcCFC+/oWPA8LkrBrc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=MPg6lskTYBxqWfZR+Rmf32dlWTI6IXzpNKe8pqs0dZeQas50a3nfc+PA2FwPGQNtx
-         zX86Uk3+S29hLX0MwN6gQnM8MgLaDFiQsJefNd7b+LWJFJZw9TK1Ou6hUpKNOqEaH6
-         Tf7gzvq9oNlnWO5wkbTm20qpxtGUcD69IZiyMLhuEdNEi+BKVV3O3aq62QoCxe6zYM
-         g2iOfdvlR/cY9uHNtyjfCNuYB5o7Zm53KLektfBbnY1qrmiXtB466FTXBZ2Dg976K6
-         2uFHEpKn/KeVQZv+3oLegTZlsYSOn5w/2/+iLK1BGgJX+0Uw7f0nO93Mf4nM7fNB0a
-         G0rPTfai6hTTA==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1o3YVz-0005ab-SL; Tue, 21 Jun 2022 09:41:36 +0200
-Date:   Tue, 21 Jun 2022 09:41:35 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Yonglin Tan <yonglin.tan@outlook.com>
-Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] USB: serial: option: add Quectel EM05-G modem
-Message-ID: <YrF2LxpeUR5Sk1tR@hovoldconsulting.com>
-References: <MEYP282MB237401279FB031848505EFB2FDB39@MEYP282MB2374.AUSP282.PROD.OUTLOOK.COM>
+        Tue, 21 Jun 2022 03:43:12 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 371F3237D1;
+        Tue, 21 Jun 2022 00:43:11 -0700 (PDT)
+Received: from fraeml703-chm.china.huawei.com (unknown [172.18.147.207])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LRz3G1mFdz67kTG;
+        Tue, 21 Jun 2022 15:41:14 +0800 (CST)
+Received: from lhreml715-chm.china.huawei.com (10.201.108.66) by
+ fraeml703-chm.china.huawei.com (10.206.15.52) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.24; Tue, 21 Jun 2022 09:43:08 +0200
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ lhreml715-chm.china.huawei.com (10.201.108.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 21 Jun 2022 08:43:08 +0100
+Received: from lhreml710-chm.china.huawei.com ([169.254.81.184]) by
+ lhreml710-chm.china.huawei.com ([169.254.81.184]) with mapi id
+ 15.01.2375.024; Tue, 21 Jun 2022 08:43:08 +0100
+From:   Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+To:     "Paul E. McKenney" <paulmck@kernel.org>,
+        "rcu@vger.kernel.org" <rcu@vger.kernel.org>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kernel-team@fb.com" <kernel-team@fb.com>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        Zhangfei Gao <zhangfei.gao@linaro.org>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: RE: [PATCH rcu 12/12] srcu: Block less aggressively for expedited
+ grace periods
+Thread-Topic: [PATCH rcu 12/12] srcu: Block less aggressively for expedited
+ grace periods
+Thread-Index: AQHYhPP8VjWNJPtPxUuR+oHDE6Rcoq1ZeCVw
+Date:   Tue, 21 Jun 2022 07:43:08 +0000
+Message-ID: <fef4fbd55b88481490d52cbd65e1b1f8@huawei.com>
+References: <20220620222022.GA3839466@paulmck-ThinkPad-P17-Gen-1>
+ <20220620222032.3839547-12-paulmck@kernel.org>
+In-Reply-To: <20220620222032.3839547-12-paulmck@kernel.org>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.202.227.178]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <MEYP282MB237401279FB031848505EFB2FDB39@MEYP282MB2374.AUSP282.PROD.OUTLOOK.COM>
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 21, 2022 at 10:31:52AM +0800, Yonglin Tan wrote:
-> The EM05-G modem has 2 USB configurations that are configurable via the AT
-> command AT+QCFG="usbnet",[ 0 | 2 ] which make the modem enumerate with
-> the following interfaces, respectively:
+
+
+> -----Original Message-----
+> From: Paul E. McKenney [mailto:paulmck@kernel.org]
+> Sent: 20 June 2022 23:21
+> To: rcu@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org; kernel-team@fb.com;
+> rostedt@goodmis.org; Paul E. McKenney <paulmck@kernel.org>; Zhangfei
+> Gao <zhangfei.gao@linaro.org>; Shameerali Kolothum Thodi
+> <shameerali.kolothum.thodi@huawei.com>; Paolo Bonzini
+> <pbonzini@redhat.com>
+> Subject: [PATCH rcu 12/12] srcu: Block less aggressively for expedited grace
+> periods
 > 
-> "RMNET"	: AT + DIAG + NMEA + Modem + QMI
-> "MBIM"	: MBIM + AT + DIAG + NMEA + Modem
+> Commit 282d8998e997 ("srcu: Prevent expedited GPs and blocking readers
+> from consuming CPU") fixed a problem where a long-running expedited
+> SRCU
+> grace period could block kernel live patching.  It did so by giving up
+> on expediting once a given SRCU expedited grace period grew too old.
 > 
-> The detailed description of the USB configuration for each mode as follows:
+> Unfortunately, this added excessive delays to boots of embedded systems
+> running on qemu that use the ARM IORT RMR feature. 
+
+As pointed out here[0]/[1], this delay has nothing to do with ARM IORT RMR
+feature. The delay is due to the "-bios QEMU_EFI.fd" line which emulates flash
+devices and requires excessive memslot ops during boot.
+
+Thanks,
+Shameer
+
+[0] https://lore.kernel.org/all/110bbec5cee74efba0aad64360069a12@huawei.com/
+[1] https://lore.kernel.org/all/8735g649ew.wl-maz@kernel.org/
+
+
+ This commit
+> therefore
+> makes the transition away from expediting less aggressive, increasing
+> the per-grace-period phase number of non-sleeping polls of readers from
+> one to three and increasing the required grace-period age from one jiffy
+> (actually from zero to one jiffies) to two jiffies (actually from one
+> to two jiffies).
 > 
-> RMNET Mode
-> --------------
-> T:  Bus=01 Lev=01 Prnt=01 Port=00 Cnt=01 Dev#= 21 Spd=480  MxCh= 0
-> D:  Ver= 2.00 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
-> P:  Vendor=2c7c ProdID=030a Rev= 3.18
-> S:  Manufacturer=Quectel
-> S:  Product=Quectel EM05-G
-> C:* #Ifs= 5 Cfg#= 1 Atr=a0 MxPwr=500mA
-> I:* If#= 3 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-> E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-> E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-> I:* If#= 4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-> E:  Ad=83(I) Atr=03(Int.) MxPS=  10 Ivl=32ms
-> E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-> E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-> I:* If#= 2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-> E:  Ad=85(I) Atr=03(Int.) MxPS=  10 Ivl=32ms
-> E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-> E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-> I:* If#= 5 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-> E:  Ad=87(I) Atr=03(Int.) MxPS=  10 Ivl=32ms
-> E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-> E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-> I:* If#= 6 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=(none)
-> E:  Ad=89(I) Atr=03(Int.) MxPS=   8 Ivl=32ms
-> E:  Ad=88(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-> E:  Ad=05(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-> 
-> MBIM Mode
-> --------------
-> T:  Bus=01 Lev=01 Prnt=01 Port=00 Cnt=01 Dev#= 16 Spd=480  MxCh= 0
-> D:  Ver= 2.00 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
-> P:  Vendor=2c7c ProdID=030a Rev= 3.18
-> S:  Manufacturer=Quectel
-> S:  Product=Quectel EM05-G
-> C:* #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=500mA
-> A:  FirstIf#= 0 IfCount= 2 Cls=02(comm.) Sub=0e Prot=00
-> I:* If#= 3 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-> E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-> E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-> I:* If#= 4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-> E:  Ad=83(I) Atr=03(Int.) MxPS=  10 Ivl=32ms
-> E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-> E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-> I:* If#= 2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-> E:  Ad=85(I) Atr=03(Int.) MxPS=  10 Ivl=32ms
-> E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-> E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-> I:* If#= 5 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-> E:  Ad=87(I) Atr=03(Int.) MxPS=  10 Ivl=32ms
-> E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-> E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-> I:* If#= 0 Alt= 0 #EPs= 1 Cls=02(comm.) Sub=0e Prot=00 Driver=cdc_mbim
-> E:  Ad=89(I) Atr=03(Int.) MxPS=  64 Ivl=32ms
-> I:  If#= 1 Alt= 0 #EPs= 0 Cls=0a(data ) Sub=00 Prot=02 Driver=cdc_mbim
-> I:* If#= 1 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=02 Driver=cdc_mbim
-> E:  Ad=88(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-> E:  Ad=05(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-> 
-> Signed-off-by: Yonglin Tan <yonglin.tan@outlook.com>
+> Fixes: 282d8998e997 ("srcu: Prevent expedited GPs and blocking readers
+> from consuming CPU")
+> Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+> Reported-by: Zhangfei Gao <zhangfei.gao@linaro.org>
+> Reported-by: chenxiang (M)" <chenxiang66@hisilicon.com>
+> Cc: Shameerali Kolothum Thodi  <shameerali.kolothum.thodi@huawei.com>
+> Cc: Paolo Bonzini <pbonzini@redhat.com>
+> Link:
+> https://lore.kernel.org/all/20615615-0013-5adc-584f-2b1d5c03ebfc@linaro
+> .org/
 > ---
-> V2:
->  1. Add the description of the usb interface configurations.
->  2. Add QMI Interface description.
-
-Thanks for the update.
-
-It looks like you missed my comment about moving the entry to where the
-other Quectel entries with numerical PIDs are (sorted by PID) and moving
-the comment to the first line of the entry.
-
+>  kernel/rcu/srcutree.c | 20 +++++++++++++-------
+>  1 file changed, 13 insertions(+), 7 deletions(-)
 > 
->  drivers/usb/serial/option.c | 2 ++
->  1 file changed, 2 insertions(+)
->  mode change 100644 => 100755 drivers/usb/serial/option.c
+> diff --git a/kernel/rcu/srcutree.c b/kernel/rcu/srcutree.c
+> index 50ba70f019dea..0db7873f4e95b 100644
+> --- a/kernel/rcu/srcutree.c
+> +++ b/kernel/rcu/srcutree.c
+> @@ -513,7 +513,7 @@ static bool srcu_readers_active(struct srcu_struct
+> *ssp)
+> 
+>  #define SRCU_INTERVAL		1	// Base delay if no expedited GPs
+> pending.
+>  #define SRCU_MAX_INTERVAL	10	// Maximum incremental delay from
+> slow readers.
+> -#define SRCU_MAX_NODELAY_PHASE	1	// Maximum per-GP-phase
+> consecutive no-delay instances.
+> +#define SRCU_MAX_NODELAY_PHASE	3	// Maximum per-GP-phase
+> consecutive no-delay instances.
+>  #define SRCU_MAX_NODELAY	100	// Maximum consecutive no-delay
+> instances.
+> 
+>  /*
+> @@ -522,16 +522,22 @@ static bool srcu_readers_active(struct srcu_struct
+> *ssp)
+>   */
+>  static unsigned long srcu_get_delay(struct srcu_struct *ssp)
+>  {
+> +	unsigned long gpstart;
+> +	unsigned long j;
+>  	unsigned long jbase = SRCU_INTERVAL;
+> 
+>  	if (ULONG_CMP_LT(READ_ONCE(ssp->srcu_gp_seq),
+> READ_ONCE(ssp->srcu_gp_seq_needed_exp)))
+>  		jbase = 0;
+> -	if (rcu_seq_state(READ_ONCE(ssp->srcu_gp_seq)))
+> -		jbase += jiffies - READ_ONCE(ssp->srcu_gp_start);
+> -	if (!jbase) {
+> -		WRITE_ONCE(ssp->srcu_n_exp_nodelay,
+> READ_ONCE(ssp->srcu_n_exp_nodelay) + 1);
+> -		if (READ_ONCE(ssp->srcu_n_exp_nodelay) >
+> SRCU_MAX_NODELAY_PHASE)
+> -			jbase = 1;
+> +	if (rcu_seq_state(READ_ONCE(ssp->srcu_gp_seq))) {
+> +		j = jiffies - 1;
+> +		gpstart = READ_ONCE(ssp->srcu_gp_start);
+> +		if (time_after(j, gpstart))
+> +			jbase += j - gpstart;
+> +		if (!jbase) {
+> +			WRITE_ONCE(ssp->srcu_n_exp_nodelay,
+> READ_ONCE(ssp->srcu_n_exp_nodelay) + 1);
+> +			if (READ_ONCE(ssp->srcu_n_exp_nodelay) >
+> SRCU_MAX_NODELAY_PHASE)
+> +				jbase = 1;
+> +		}
+>  	}
+>  	return jbase > SRCU_MAX_INTERVAL ? SRCU_MAX_INTERVAL : jbase;
+>  }
+> --
+> 2.31.1.189.g2e36527f23
 
-You also should not change the execute permission bits on this file.
-
-> diff --git a/drivers/usb/serial/option.c b/drivers/usb/serial/option.c
-> old mode 100644
-> new mode 100755
-> index ed1e50d..05fc322
-> --- a/drivers/usb/serial/option.c
-> +++ b/drivers/usb/serial/option.c
-> @@ -1147,6 +1147,8 @@ static const struct usb_device_id option_ids[] = {
->  	  .driver_info = ZLP },
->  	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_EC200S_CN, 0xff, 0, 0) },
->  	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_EC200T, 0xff, 0, 0) },
-> +	{ USB_DEVICE_INTERFACE_CLASS(QUECTEL_VENDOR_ID, 0x030a, 0xff),
-> +	  .driver_info = RSVD(6) | ZLP }, /* EM05-G */
->  
->  	{ USB_DEVICE(CMOTECH_VENDOR_ID, CMOTECH_PRODUCT_6001) },
->  	{ USB_DEVICE(CMOTECH_VENDOR_ID, CMOTECH_PRODUCT_CMU_300) },
-
-Could you fix that up in a v3?
-
-Johan
