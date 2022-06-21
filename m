@@ -2,123 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42DADC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:20:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97974CCA485
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:21:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352659AbiFUPUb (ORCPT
+        id S1352687AbiFUPV5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 11:20:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58444 "EHLO
+        Tue, 21 Jun 2022 11:21:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352650AbiFUPUW (ORCPT
+        with ESMTP id S1352670AbiFUPVz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 11:20:22 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4789B1FA70
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:20:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655824817;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=m/qf6ov0omQZSA34pET1sX3jxVcqup+wfHTRPaQS72Q=;
-        b=AxEbiWMzJwT5HusztAkdT3IGQ6SF1LRkaQQ4q8OlqQzBwPrV6NDH/kbbBgR13npAIduP+e
-        ePXOW9t9s32Zdv40kxAveLiYbZ4Gh77rs7CZK95Dxd4Pe9ojtMjc+NYO2z/TUWbOHPqS/w
-        MXd34Eh3GhVkBJs8EizMli8QZQz9gOY=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-551-cVIuGa09MXOM8jx5kmBEiA-1; Tue, 21 Jun 2022 11:20:12 -0400
-X-MC-Unique: cVIuGa09MXOM8jx5kmBEiA-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B196C101E9B0;
-        Tue, 21 Jun 2022 15:20:11 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.62])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9C833492C3B;
-        Tue, 21 Jun 2022 15:20:10 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-To:     torvalds@linux-foundation.org
-cc:     dhowells@redhat.com, simo@redhat.com,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Jarkko Sakkinen <jarkko@kernel.org>, keyrings@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [GIT PULL] certs: Make signature verification FIPS compliant
+        Tue, 21 Jun 2022 11:21:55 -0400
+Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 788A9252BE;
+        Tue, 21 Jun 2022 08:21:54 -0700 (PDT)
+Received: from uucp (helo=alpha)
+        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
+        id 1o3fh4-0001zL-00; Tue, 21 Jun 2022 17:21:30 +0200
+Received: by alpha.franken.de (Postfix, from userid 1000)
+        id 14293C0170; Tue, 21 Jun 2022 17:14:11 +0200 (CEST)
+Date:   Tue, 21 Jun 2022 17:14:11 +0200
+From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To:     Genjian Zhang <zhanggenjian123@gmail.com>
+Cc:     linus.walleij@linaro.org, brgl@bgdev.pl, f.fainelli@gmail.com,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-gpio@vger.kernel.org, huhai <huhai@kylinos.cn>,
+        k2ci <kernel-bot@kylinos.cn>,
+        Genjian Zhang <zhanggenjian@kylinos.cn>
+Subject: Re: [PATCH v4] MIPS: Remove repetitive increase irq_err_count
+Message-ID: <20220621151410.GA12206@alpha.franken.de>
+References: <20220525043916.584850-1-zhanggenjian@kylinos.cn>
+ <20220610111420.1520410-1-zhanggenjian@kylinos.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <1276150.1655824809.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date:   Tue, 21 Jun 2022 16:20:09 +0100
-Message-ID: <1276151.1655824809@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220610111420.1520410-1-zhanggenjian@kylinos.cn>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+On Fri, Jun 10, 2022 at 07:14:20PM +0800, Genjian Zhang wrote:
+> From: huhai <huhai@kylinos.cn>
+> 
+> commit 979934da9e7a ("[PATCH] mips: update IRQ handling for vr41xx") added
+> a function irq_dispatch, and it'll increase irq_err_count when the get_irq
+> callback returns a negative value, but increase irq_err_count in get_irq
+> was not removed.
+> 
+> And also, modpost complains once gpio-vr41xx drivers become modules.
+>   ERROR: modpost: "irq_err_count" [drivers/gpio/gpio-vr41xx.ko] undefined!
+> 
+> So it would be a good idea to remove repetitive increase irq_err_count in
+> get_irq callback.
+> 
+> Fixes: 27fdd325dace ("MIPS: Update VR41xx GPIO driver to use gpiolib")
+> Fixes: 979934da9e7a ("[PATCH] mips: update IRQ handling for vr41xx")
+> Reported-by: k2ci <kernel-bot@kylinos.cn>
+> Signed-off-by: huhai <huhai@kylinos.cn>
+> Signed-off-by: Genjian Zhang <zhanggenjian@kylinos.cn>
+> ---
+>  arch/mips/vr41xx/common/icu.c | 2 --
+>  drivers/gpio/gpio-vr41xx.c    | 2 --
+>  2 files changed, 4 deletions(-)
+> 
+> diff --git a/arch/mips/vr41xx/common/icu.c b/arch/mips/vr41xx/common/icu.c
+> index 7b7f25b4b057..9240bcdbe74e 100644
+> --- a/arch/mips/vr41xx/common/icu.c
+> +++ b/arch/mips/vr41xx/common/icu.c
+> @@ -640,8 +640,6 @@ static int icu_get_irq(unsigned int irq)
+>  
+>  	printk(KERN_ERR "spurious ICU interrupt: %04x,%04x\n", pend1, pend2);
+>  
+> -	atomic_inc(&irq_err_count);
+> -
+>  	return -1;
+>  }
+>  
+> diff --git a/drivers/gpio/gpio-vr41xx.c b/drivers/gpio/gpio-vr41xx.c
+> index 98cd715ccc33..8d09b619c166 100644
+> --- a/drivers/gpio/gpio-vr41xx.c
+> +++ b/drivers/gpio/gpio-vr41xx.c
+> @@ -217,8 +217,6 @@ static int giu_get_irq(unsigned int irq)
+>  	printk(KERN_ERR "spurious GIU interrupt: %04x(%04x),%04x(%04x)\n",
+>  	       maskl, pendl, maskh, pendh);
+>  
+> -	atomic_inc(&irq_err_count);
+> -
+>  	return -EINVAL;
+>  }
+>  
+> -- 
+> 2.25.1
 
-Can you pull this please?  The signature checking code, as used by module
-signing, kexec, etc., is non-FIPS compliant as there is no selftest.  For =
-a
-kernel to be FIPS-compliant, signature checking would have to be tested
-before being used, and the box would need to panic if it's not available
-(probably reasonable as simply disabling signature checking would prevent
-you from loading any driver modules).
+applied to mips-fixes.
 
-Deal with this by adding a minimal test.
+Thomas.
 
-This is split into two patches: the first moves load_certificate_list() to
-the same place as the X.509 code to make it more accessible internally; th=
-e
-second adds a selftest.
-
-David
-
-Link: https://lore.kernel.org/r/165515741424.1554877.9363755381201121213.s=
-tgit@warthog.procyon.org.uk/
----
-The following changes since commit b13baccc3850ca8b8cccbf8ed9912dbaa0fdf7f=
-3:
-
-  Linux 5.19-rc2 (2022-06-12 16:11:37 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git tags=
-/certs-20220621
-
-for you to fetch changes up to 3cde3174eb910513d32a9ec8a9b95ea59be833df:
-
-  certs: Add FIPS selftests (2022-06-21 16:05:12 +0100)
-
-----------------------------------------------------------------
-Certs changes
-
-----------------------------------------------------------------
-David Howells (2):
-      certs: Move load_certificate_list() to be with the asymmetric keys c=
-ode
-      certs: Add FIPS selftests
-
- certs/Makefile                                     |   4 +-
- certs/blacklist.c                                  |   8 +-
- certs/common.h                                     |   9 -
- certs/system_keyring.c                             |   6 +-
- crypto/asymmetric_keys/Kconfig                     |  10 +
- crypto/asymmetric_keys/Makefile                    |   2 +
- crypto/asymmetric_keys/selftest.c                  | 224 ++++++++++++++++=
-+++++
- .../asymmetric_keys/x509_loader.c                  |   8 +-
- crypto/asymmetric_keys/x509_parser.h               |   9 +
- crypto/asymmetric_keys/x509_public_key.c           |   8 +-
- include/keys/asymmetric-type.h                     |   3 +
- 11 files changed, 268 insertions(+), 23 deletions(-)
- delete mode 100644 certs/common.h
- create mode 100644 crypto/asymmetric_keys/selftest.c
- rename certs/common.c =3D> crypto/asymmetric_keys/x509_loader.c (87%)
-
+-- 
+Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
+good idea.                                                [ RFC1925, 2.3 ]
