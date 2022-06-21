@@ -2,64 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC1D2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 14:19:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B98E3CCA481
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 14:19:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230327AbiFUOTh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 10:19:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32786 "EHLO
+        id S1351102AbiFUOTj (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 21 Jun 2022 10:19:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349027AbiFUOT3 (ORCPT
+        with ESMTP id S1351157AbiFUOTg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 10:19:29 -0400
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22214140CD;
-        Tue, 21 Jun 2022 07:19:29 -0700 (PDT)
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id 4474368AFE; Tue, 21 Jun 2022 16:19:25 +0200 (CEST)
-Date:   Tue, 21 Jun 2022 16:19:24 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     Mark Hounschell <markh@compro.net>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Linux-kernel <linux-kernel@vger.kernel.org>,
-        dmaengine@vger.kernel.org
-Subject: Re: [BUG] dma-mapping: remove CONFIG_DMA_REMAP
-Message-ID: <20220621141924.GA8348@lst.de>
-References: <c32d2da1-9122-66bd-12fc-916be79b33fd@compro.net> <20220621134837.GA8025@lst.de> <9de341bc-fe8d-1820-187a-46455e4b9bf2@compro.net>
+        Tue, 21 Jun 2022 10:19:36 -0400
+X-Greylist: delayed 966 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 21 Jun 2022 07:19:32 PDT
+Received: from smtp28.bhosted.nl (smtp28.bhosted.nl [IPv6:2a02:9e0:8000::40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 586E31F2FD
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 07:19:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=protonic.nl; s=202111;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc:to:from:
+         from;
+        bh=B9lL9OqSXc2eVWzkrNe9zxYlTNTyMllYa44sGFVBFnM=;
+        b=RODBEiWX5dtF8x+goNia8bLTbClkx28ml6ZqLOtfb6b5jNhYKKBlu0kzzpJzI3PKlDnh1iEhLLcMl
+         EtsDQCR4H7jTZkEWtQfOVEjUqYDiHF5EkFkJBHsTg5asxOZ+49q45Eo5UYW4J2hbHMae8hthpLbBZE
+         bBSFum1bXO3jD0UbhwdzKPMvpWWRRPrI26gyUoCTC9Xcq02awdYWTPIFs0/Lb0afJYOlB5t127UnlZ
+         GyZDDO4gRo57YrryMXh3ITlGvASLK7HSCrgrxiFvC14zEVK1Gz+zQ6ObtBtTnjMm03/A/3+spNyQTT
+         hGnyxWAo/9Ti5/cWUxpk8ugDUx5zyTA==
+X-MSG-ID: ea2d0624-f16a-11ec-8a45-0050569d11ae
+From:   Robin van der Gracht <robin@protonic.nl>
+To:     Rob Herring <robh+dt@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, David Jander <david@protonic.nl>,
+        Robin van der Gracht <robin@protonic.nl>
+Subject: [PATCH] ARM: dts: imx6qdl-prti6q.dtsi: Add applicable properties to usdhc3
+Date:   Tue, 21 Jun 2022 16:03:34 +0200
+Message-Id: <20220621140334.568446-1-robin@protonic.nl>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <9de341bc-fe8d-1820-187a-46455e4b9bf2@compro.net>
-User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 21, 2022 at 10:06:59AM -0400, Mark Hounschell wrote:
-> On 6/21/22 09:48, Christoph Hellwig wrote:
->> On Tue, Jun 21, 2022 at 09:43:18AM -0400, Mark Hounschell wrote:
->>> Revert that commit and all works like normal. This commit breaks user land.
->>
->> No.  We had that discussion before.  It exposeѕ how broken your out of
->> tree driver is, which you don't bother to fix despite Robin even taking
->> the pains to explain you how.
->
-> No, this is not the original issue and we never actually had a discussion. 
-> That original issue was about using Set/ClearPageReserved. You nor Robin 
-> even tried to explain why it was wrong to use it. It was never an issue in 
-> previous kernels. Why now? In any case I have removed that code. This is 
-> what happens now.
->
-> What is it you think I am doing wrong. Except for using 
-> Set/ClearPageReserved you have not explained anything to me.
+The usdhc3 interface is connected to a soldered eMMC chip on all boards
+that import this dtsi. Adding these properties speeds up the device probe
+during boot.
 
-Which part of "you must not call virt_to_page on the result that is
-very clearly stated in the documentation and has been explained to
-you repeatly" is still not clear to you?
+Signed-off-by: Robin van der Gracht <robin@protonic.nl>
+---
+ arch/arm/boot/dts/imx6qdl-prti6q.dtsi | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Which part of "if your of tree modules stops working, this does not
-constitute userspace breakage" is not clear to you?
+diff --git a/arch/arm/boot/dts/imx6qdl-prti6q.dtsi b/arch/arm/boot/dts/imx6qdl-prti6q.dtsi
+index 19578f660b09..f0db0d4471f4 100644
+--- a/arch/arm/boot/dts/imx6qdl-prti6q.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-prti6q.dtsi
+@@ -94,6 +94,9 @@ &usdhc3 {
+ 	pinctrl-0 = <&pinctrl_usdhc3>;
+ 	bus-width = <8>;
+ 	non-removable;
++	no-1-8-v;
++	no-sd;
++	no-sdio;
+ 	status = "okay";
+ };
+ 
+-- 
+2.34.1
 
-I'm done with this, please stop bothering me.
