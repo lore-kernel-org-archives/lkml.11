@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29F1DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 20:56:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A855C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 20:56:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354576AbiFUU4f (ORCPT
+        id S1355196AbiFUU4h (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 16:56:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55322 "EHLO
+        Tue, 21 Jun 2022 16:56:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355718AbiFUUyp (ORCPT
+        with ESMTP id S1355702AbiFUUyo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 16:54:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67B19313B4;
-        Tue, 21 Jun 2022 13:50:05 -0700 (PDT)
+        Tue, 21 Jun 2022 16:54:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF298313B1;
+        Tue, 21 Jun 2022 13:50:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 34AAF6188A;
-        Tue, 21 Jun 2022 20:49:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 017FBC341C4;
-        Tue, 21 Jun 2022 20:49:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9FD11B81B3A;
+        Tue, 21 Jun 2022 20:49:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FA54C341C5;
+        Tue, 21 Jun 2022 20:49:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655844591;
-        bh=r/ki/nn5lDRi/fmgq8xrIpBItw40es9Cpxv7lHYtyd4=;
+        s=k20201202; t=1655844590;
+        bh=uZjgm7qavAbocjanMQ8eDS7EXa62sZGIK8QR7SKRvLw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KGpD27CnziA9dXi+tldVs48JKnS5pGfeQ8z46buKWKYa7eU7BPgpbUcj2agrVMPbh
-         wrgEpMCd9edrZarGiLymkhzKat4lKJGcuX7HCQGIcpmoM295DT0GhZA/y6kqQrOOX+
-         LxcKkuD6xZhObtZ5VTIKueOgum2LVYosKnUOwyHJMgwBUIs9VFm7Wr+B7OOwDbs/J3
-         n7Um5P8mvZOYWYa4U7shC+Fgv1O59ZaKnmULfUv9xGMvNrOYgzGn/G3w1OohP+ZiPx
-         75Rk1YCElWoWGp+7JDs0JjOrPs4ekU/fm1hRsnjKxZjiICwCXMLATvlxXnAzqXILoW
-         7vheTmXbuqpmQ==
+        b=AdC5mL00lB2Rf6MZXkKOU0Vu6q7zTD+2cUV6CbM3zsEcXkFHHGGLvZCndoVHzDmLz
+         SA+F8HBYfS1TUWL7td3hi0XOIGLul0bYdK4dwlZdMnRK8VpR3HwodX15O/PpGvao13
+         Pkkn2YjUE45RcEZSNT27yqpX+Z/bZjTXJH/Jmo8jkLH/dFFs/bNVVgRY7DOBr34kJo
+         6RVkbc6OLrMKV5vASXWb2WO4+W+LXJ3UwU19+OiZLImKkzHfJgDssye66Ff+tifGna
+         ftg8PkYFbmAiv+fjw2LrFdtE4X0T5LqaR2jFLiNZFMbyezIxdcpECkNjTeeqvq00pk
+         HLOtxeGFOYUxA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Keith Busch <kbusch@kernel.org>, Christoph Hellwig <hch@lst.de>,
-        Sasha Levin <sashal@kernel.org>, axboe@fb.com,
-        sagi@grimberg.me, linux-nvme@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.18 09/22] nvme-pci: phison e12 has bogus namespace ids
-Date:   Tue, 21 Jun 2022 16:49:15 -0400
-Message-Id: <20220621204928.249907-9-sashal@kernel.org>
+Cc:     Stefan Reiter <stefan@pimaker.at>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Sasha Levin <sashal@kernel.org>, kbusch@kernel.org,
+        axboe@fb.com, sagi@grimberg.me, linux-nvme@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.18 08/22] nvme-pci: add NVME_QUIRK_BOGUS_NID for ADATA XPG GAMMIX S50
+Date:   Tue, 21 Jun 2022 16:49:14 -0400
+Message-Id: <20220621204928.249907-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220621204928.249907-1-sashal@kernel.org>
 References: <20220621204928.249907-1-sashal@kernel.org>
@@ -52,14 +54,16 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Keith Busch <kbusch@kernel.org>
+From: Stefan Reiter <stefan@pimaker.at>
 
-[ Upstream commit 2cf7a77ed5f8903606f4f7833d02d67b08650442 ]
+[ Upstream commit 3765fad508964f433ac111c127d6bedd19bdfa04 ]
 
-Add the quirk.
+ADATA XPG GAMMIX S50 drives report bogus eui64 values that appear to
+be the same across drives in one system. Quirk them out so they are
+not marked as "non globally unique" duplicates.
 
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216049
-Signed-off-by: Keith Busch <kbusch@kernel.org>
+Signed-off-by: Stefan Reiter <stefan@pimaker.at>
+Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
@@ -67,18 +71,18 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 2 insertions(+)
 
 diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index 37a2a88d35c9..a14f204b07c1 100644
+index a4393c5ca8db..37a2a88d35c9 100644
 --- a/drivers/nvme/host/pci.c
 +++ b/drivers/nvme/host/pci.c
-@@ -3455,6 +3455,8 @@ static const struct pci_device_id nvme_id_table[] = {
- 		.driver_data = NVME_QUIRK_DELAY_BEFORE_CHK_RDY |
- 				NVME_QUIRK_DISABLE_WRITE_ZEROES|
- 				NVME_QUIRK_IGNORE_DEV_SUBNQN, },
-+	{ PCI_DEVICE(0x1987, 0x5012),	/* Phison E12 */
+@@ -3479,6 +3479,8 @@ static const struct pci_device_id nvme_id_table[] = {
+ 		.driver_data = NVME_QUIRK_BOGUS_NID, },
+ 	{ PCI_DEVICE(0x1e4B, 0x1202),   /* MAXIO MAP1202 */
+ 		.driver_data = NVME_QUIRK_BOGUS_NID, },
++	{ PCI_DEVICE(0x1cc1, 0x5350),   /* ADATA XPG GAMMIX S50 */
 +		.driver_data = NVME_QUIRK_BOGUS_NID, },
- 	{ PCI_DEVICE(0x1987, 0x5016),	/* Phison E16 */
- 		.driver_data = NVME_QUIRK_IGNORE_DEV_SUBNQN, },
- 	{ PCI_DEVICE(0x1b4b, 0x1092),	/* Lexar 256 GB SSD */
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_AMAZON, 0x0061),
+ 		.driver_data = NVME_QUIRK_DMA_ADDRESS_BITS_48, },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_AMAZON, 0x0065),
 -- 
 2.35.1
 
