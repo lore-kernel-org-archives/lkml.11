@@ -2,90 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F860C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:23:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACF47CCA485
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:23:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355560AbiFUVXH (ORCPT
+        id S1355600AbiFUVXu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 17:23:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37576 "EHLO
+        Tue, 21 Jun 2022 17:23:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355464AbiFUVWi (ORCPT
+        with ESMTP id S1355139AbiFUVXK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 17:22:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0F7562F6;
-        Tue, 21 Jun 2022 14:12:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EA076155D;
-        Tue, 21 Jun 2022 21:12:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEDD8C341C4;
-        Tue, 21 Jun 2022 21:12:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655845949;
-        bh=nUYoRoex6w347HOwhaDxEO5t5c8d600lKv1dhQIfL5c=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=ZbGRF/Y8Bn6KTBDQOCtPqsTiGZyLokKfBISfZJAG4yobQaKFvMV2Jck7Uyz14tUjw
-         W8SqMmRA/nqwnxrLPI1ASP0cBWkpUiVPCCXGoacD3d8Gis5eI4FjMH0jwDHal4aVij
-         gP7XFSac0HWyOg3tfsyz1dhmDLd6A4xiWC2Jwj6b1eOGWI+W5At3H/KYWL/+Mdqm6z
-         joY8UCbXj+v+fA2B0n27l/cB0SFv4tZ6LkJsnWgTTc0sgqKPmbz9QQLOeR5TrWuxkz
-         xrleY2ClSfYSEwyGccRtNLpEijg4US7s9tyzibRACrGJxdjxdpL8hzhL/GNhiNBWLo
-         ERboSqUl81VjQ==
-Received: by mail-oa1-f43.google.com with SMTP id 586e51a60fabf-101d2e81bceso11180349fac.0;
-        Tue, 21 Jun 2022 14:12:28 -0700 (PDT)
-X-Gm-Message-State: AJIora/yKFWUcduipDUo75V7CaCU9oPGBjW6m+y92yubfZ2KZQPSqWBC
-        EgKGkIsdBx2AZghFOu6E1DAtREHgS1uiYlJD5Yg=
-X-Google-Smtp-Source: AGRyM1tatOOl+GEd9ZOd7DehrkpsULz9y5U1aqhVWL3SL9NiTCcfADEG6C6z6SP1xp7bqTcqm4hJ4zAnDzQq+zbY6ow=
-X-Received: by 2002:a05:6870:d587:b0:101:dfd4:4cfa with SMTP id
- u7-20020a056870d58700b00101dfd44cfamr41237oao.126.1655845948158; Tue, 21 Jun
- 2022 14:12:28 -0700 (PDT)
+        Tue, 21 Jun 2022 17:23:10 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9A6D05FF7
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 14:13:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655846015;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=p2ZyEjz/X1rrSRyY38O7XcVSbvfO1EBTiv9ehORRiiM=;
+        b=amlFTC61cxaMpJAJOk7D9m9lnlqVWMxEAopTgTXzBpiliSYNg3e53VVgIaN8Pr2Io3QMzU
+        CoJ2dAPtBXM36VqI/3/NblxCQnfnJumBNMx1tvsJvWYuwq0J7fXuZAgaKlGQpnIJtUcvtc
+        ExI1L3NnvSoBHRS0gJIFtpjpd/X6RNA=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-74-hrp6LAabP5WbMd84IijUfg-1; Tue, 21 Jun 2022 17:13:34 -0400
+X-MC-Unique: hrp6LAabP5WbMd84IijUfg-1
+Received: by mail-wm1-f71.google.com with SMTP id h205-20020a1c21d6000000b0039c96ec500fso8963349wmh.8
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 14:13:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=p2ZyEjz/X1rrSRyY38O7XcVSbvfO1EBTiv9ehORRiiM=;
+        b=2YFa9ag35AUUZk2F79IWPyjDVjZUWO1xT86vRU3bWTgCaIoJEJxsO3BshVdrKdBV0r
+         bjbgVl7MZJWwA0N9BIE1e+QIWmcPTd8VmQRlT39YYbJWVIH1Kfg0gtc6jdGeDbNJlUnx
+         IWLYTV8E5UnqZM2Ir+38LNFVUI6ZLgnVEliICBZhQSIhmetRGBMqIhwyUAUstQrRmKE2
+         B/FNSg0Wzyr2HtV9omMcoR2HNdET+yByqeEM46c2IAdRmOW2BIderoU5lkrXO4uHRmsG
+         vXTYiRdpDMremBSMK5lGk5m2B2q2CfNeV7oXvCY0liMrpdWPCJ+rXkk+SG8I3KUgOUrN
+         cFUw==
+X-Gm-Message-State: AOAM530CuBtDVkzNBk707oFYZG4t61FRTJM3OGH1HjFvUVAWAbuVsIye
+        ZbPQaPKHN/5RgB0qT0ZO3h0qcF+FF3ZNdtp8AFtguULck7VsBYRLS3hfK7IUkpyWN96a4HMIhNb
+        cgPfFqY2B3FvbxURz6DUJ5QzF
+X-Received: by 2002:a05:600c:583:b0:39c:3637:b9f with SMTP id o3-20020a05600c058300b0039c36370b9fmr41890250wmd.79.1655846013138;
+        Tue, 21 Jun 2022 14:13:33 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwOeKyTVNcHGO8XIrslQyDEH0amifKDQHgWoO8MHT556YVEyS90MtqIiT8yBXXL779Lr60M4g==
+X-Received: by 2002:a05:600c:583:b0:39c:3637:b9f with SMTP id o3-20020a05600c058300b0039c36370b9fmr41890234wmd.79.1655846012925;
+        Tue, 21 Jun 2022 14:13:32 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c705:bc00:a63c:7e37:6061:1706? (p200300cbc705bc00a63c7e3760611706.dip0.t-ipconnect.de. [2003:cb:c705:bc00:a63c:7e37:6061:1706])
+        by smtp.gmail.com with ESMTPSA id 64-20020a1c1943000000b0039c6390730bsm22251249wmz.29.2022.06.21.14.13.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 21 Jun 2022 14:13:32 -0700 (PDT)
+Message-ID: <5d3bf51b-3bba-3bd4-db1f-1c0a3930a1e4@redhat.com>
+Date:   Tue, 21 Jun 2022 23:13:31 +0200
 MIME-Version: 1.0
-References: <20220621153623.3786960-1-ardb@kernel.org> <20220621153623.3786960-5-ardb@kernel.org>
- <202206211357.C66CD742E5@keescook>
-In-Reply-To: <202206211357.C66CD742E5@keescook>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Tue, 21 Jun 2022 23:12:17 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXGPi+Cy-D8am8tr-rm8gbmUQ-G0bfibD3R3nx=rL7-XVw@mail.gmail.com>
-Message-ID: <CAMj1kXGPi+Cy-D8am8tr-rm8gbmUQ-G0bfibD3R3nx=rL7-XVw@mail.gmail.com>
-Subject: Re: [PATCH v2 4/9] efi: pstore: Omit efivars caching EFI varstore
- access layer
-To:     Kees Cook <keescook@chromium.org>
-Cc:     linux-efi <linux-efi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Matthew Garrett <mjg59@srcf.ucam.org>,
-        Peter Jones <pjones@redhat.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v10 10/69] mmap: use the VMA iterator in
+ count_vma_pages_range()
+Content-Language: en-US
+To:     Liam Howlett <liam.howlett@oracle.com>,
+        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "damon @ lists . linux . dev" <damon@lists.linux.dev>,
+        SeongJae Park <sj@kernel.org>
+References: <20220621204632.3370049-1-Liam.Howlett@oracle.com>
+ <20220621204632.3370049-11-Liam.Howlett@oracle.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20220621204632.3370049-11-Liam.Howlett@oracle.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 21 Jun 2022 at 23:00, Kees Cook <keescook@chromium.org> wrote:
->
-> On Tue, Jun 21, 2022 at 05:36:18PM +0200, Ard Biesheuvel wrote:
-> > Avoid the efivars layer and simply call the newly introduced EFI
-> > varstore helpers instead. This simplifies the code substantially, and
-> > also allows us to remove some hacks in the shared efivars layer that
-> > were added for efi-pstore specifically.
-> >
-> > Since we don't store the name of the associated EFI variable into each
-> > pstore record when enumerating them, we have to guess the variable name
-> > it was constructed from at deletion time, since we no longer keep a
-> > shadow copy of the variable store. To make this a bit more exact, store
-> > the CRC-32 of the ASCII name into the pstore record's ECC region so we
-> > can use it later to make an educated guess regarding the name of the EFI
-> > variable.
->
-> I wonder if pstore_record should have a "private" field for backends to
-> use? That seems like it solve the need for overloading the ecc field,
-> and allow for arbitrarily more information to be stored (i.e. store full
-> efi var name instead of an easily-colliding crc32?)
->
+On 21.06.22 22:46, Liam Howlett wrote:
+> From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
+> 
+> This simplifies the implementation and is faster than using the linked
+> list.
+> 
+> Link: https://lkml.kernel.org/r/20220504010716.661115-12-Liam.Howlett@oracle.com
+> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+> Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
+> Acked-by: Vlastimil Babka <vbabka@suse.cz>
+> Cc: Catalin Marinas <catalin.marinas@arm.com>
+> Cc: David Howells <dhowells@redhat.com>
+> Cc: SeongJae Park <sj@kernel.org>
+> Cc: Will Deacon <will@kernel.org>
+> Cc: Davidlohr Bueso <dave@stgolabs.net>
+> Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+> ---
+>  mm/mmap.c | 24 +++++++-----------------
+>  1 file changed, 7 insertions(+), 17 deletions(-)
+> 
+> diff --git a/mm/mmap.c b/mm/mmap.c
+> index 6be7833c781b..d7e6baa2f40f 100644
+> --- a/mm/mmap.c
+> +++ b/mm/mmap.c
+> @@ -675,29 +675,19 @@ munmap_vma_range(struct mm_struct *mm, unsigned long start, unsigned long len,
+>  
+>  	return 0;
+>  }
+> +
+>  static unsigned long count_vma_pages_range(struct mm_struct *mm,
+>  		unsigned long addr, unsigned long end)
+>  {
+> -	unsigned long nr_pages = 0;
+> +	VMA_ITERATOR(vmi, mm, addr);
+>  	struct vm_area_struct *vma;
+> +	unsigned long nr_pages = 0;
+>  
+> -	/* Find first overlapping mapping */
+> -	vma = find_vma_intersection(mm, addr, end);
+> -	if (!vma)
+> -		return 0;
+> -
+> -	nr_pages = (min(end, vma->vm_end) -
+> -		max(addr, vma->vm_start)) >> PAGE_SHIFT;
+> -
+> -	/* Iterate over the rest of the overlaps */
+> -	for (vma = vma->vm_next; vma; vma = vma->vm_next) {
+> -		unsigned long overlap_len;
+> -
+> -		if (vma->vm_start > end)
+> -			break;
+> +	for_each_vma_range(vmi, vma, end) {
+> +		unsigned long vm_start = max(addr, vma->vm_start);
+> +		unsigned long vm_end = min(end, vma->vm_end);
 
-We could easily add that - we'd just have to decide how to free the
-memory it points to.
+I thought using max_t and min_t was the latest advisory. I might be
+wrong and simply kept doing it that way ;)
+
+>  
+> -		overlap_len = min(end, vma->vm_end) - vma->vm_start;
+> -		nr_pages += overlap_len >> PAGE_SHIFT;
+> +		nr_pages += (vm_end - vm_start) / PAGE_SIZE;
+
+PHYS_PFN(vm_end - vm_start)
+
+>  	}
+>  
+>  	return nr_pages;
+
+Reviewed-by: David Hildenbrand <david@redhat.com>
+
+-- 
+Thanks,
+
+David / dhildenb
+
