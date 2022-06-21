@@ -2,103 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FDFDC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 13:39:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00121CCA473
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 13:40:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351541AbiFUNiX (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 09:38:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34916 "EHLO
+        id S232465AbiFUNkZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 21 Jun 2022 09:40:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349954AbiFUNiC (ORCPT
+        with ESMTP id S229717AbiFUNkX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 09:38:02 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9AB62AE1D;
-        Tue, 21 Jun 2022 06:36:30 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id go6so8275807pjb.0;
-        Tue, 21 Jun 2022 06:36:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Fx8g3r1KTTzJkYG1K4wZ+U1IUr2NvwFpzxpC63oezXE=;
-        b=DFs28vjmWHS7TDax1Jz+aoFmtp+R/umVCUnMqh2fsT65fZeEF17may3CO3LTZ5B454
-         Vhi/YCitgRRweC0lw+R/X0tr+7BPtdXnx5ni/kWIphUbTWlP6GRUe43yBbreJc9OUdyV
-         Z7bsm8YFDMxrgvfwnEnRaaZ6CnIHVr2UKA/4dgkD0jW9Hc+RDVNq1w86cAazXeUUnfbG
-         NTixw3LdhXETmF7iM2L6vTg6yblMMmrmWSlvQZnmDQSMIcDFHwYIGVOat8CWBVzF+nrF
-         Kbva7efJeIQoYidHsUEdrq8nRRPn6Sbr/dzw1H+e/rR2WNd9P1wZjy5rQSo4Ecr2/gd9
-         MuYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=Fx8g3r1KTTzJkYG1K4wZ+U1IUr2NvwFpzxpC63oezXE=;
-        b=0ogUDlnUH/uYc8mg4ETautNea9ElV+rp2J8v3QQqMyVqv+uwfE67QjA3+gOgMZyAOf
-         2j0J0QoM0PDVwOndgc2IPbscefJ/8vKeIYxuic3kTjQh/XXDzYYOModHQivBsiJ/7Mon
-         vJAdgrss/f4s/sTTrVW0Aa7DpaKzA6dVbFsX03JEuTpaLZ9o5mzZIQg0+g2nR2cqbtUW
-         ZlE2SGZulgiu8BqL7bYiVS+cwEbJQqoQY/VeE+RUirw8210BS+WThc8H8mWIP3NaOyt+
-         V6N3Bw+OhHPQ6daelNgIamVqNRZ2CXpYVNPMUNc8wIeAMIq4189VMIeBILKTNug14cY/
-         d6WA==
-X-Gm-Message-State: AJIora+GcNBfPiOWUzg5sGYiGbkH/xo0YGZxhK1hT3sO+KfDPPHnce3v
-        vtdLNMwp1b6AH8s5YGjczjw=
-X-Google-Smtp-Source: AGRyM1s2DLwO8bGzRB6zAQFF8oYQj8wVkI7mdb6HuZuN3OXPlsIcJTr9e20AXq5oaQMdJ0De7hNU6g==
-X-Received: by 2002:a17:902:7e84:b0:166:395c:4b68 with SMTP id z4-20020a1709027e8400b00166395c4b68mr29425645pla.8.1655818590356;
-        Tue, 21 Jun 2022 06:36:30 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id y14-20020a637d0e000000b0040cb267ce67sm4498633pgc.53.2022.06.21.06.36.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jun 2022 06:36:29 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Tue, 21 Jun 2022 06:36:27 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 5.4 000/240] 5.4.200-rc1 review
-Message-ID: <20220621133627.GA3436363@roeck-us.net>
-References: <20220620124737.799371052@linuxfoundation.org>
+        Tue, 21 Jun 2022 09:40:23 -0400
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02A492AD;
+        Tue, 21 Jun 2022 06:40:21 -0700 (PDT)
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25LDdlIi018286;
+        Tue, 21 Jun 2022 15:40:03 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=Apf+7CviifI2y9qxHX4Kx+OwpIulEKFtZSgO3H/Qjrs=;
+ b=2FLelbh+BDz/vcA8AwNMPxiFMf36KNmB+QCzMm9wS2kSARnT309KLR9nxLY4RJkdGsrZ
+ reWe32l1yJM4waESv+b1/xSlt9lHVIQB1ZNngVWFL74pWfjP+R8rEKvBButhQelDom60
+ aJiiy9w3uGYkC1x9juVox5i6D/5XEHVATcPU1MWFJpiW7d5VDYCQNlNT5E+G02mwEcFG
+ PoZom/TuY4RY4yybQi+Q5v2B/mp0/IvimuEw0j7Z//uApNQPSHDK2jmQnKd9MB6OhFUl
+ n9ssOsZ+7gd+5eb3PGdv5BU6ZOxIyUiB7KVPRBTNR86E/aBZGZpIgAQRrVR32mu5w7hx cw== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3guau51v7j-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 21 Jun 2022 15:40:03 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id DB886100034;
+        Tue, 21 Jun 2022 15:40:01 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id CFF29222CBD;
+        Tue, 21 Jun 2022 15:40:01 +0200 (CEST)
+Received: from [10.48.0.19] (10.75.127.118) by SHFDAG1NODE1.st.com
+ (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Tue, 21 Jun
+ 2022 15:40:01 +0200
+Message-ID: <18c0e9c9-f0c9-7458-8287-e52f63247c16@foss.st.com>
+Date:   Tue, 21 Jun 2022 15:39:40 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 2/4] i2c: stm32: only perform a reset if there is a reset
+ property
+Content-Language: en-US
+To:     Alain Volmat <alain.volmat@foss.st.com>, <wsa@kernel.org>,
+        <robh+dt@kernel.org>
+CC:     <mark.rutland@arm.com>, <mcoquelin.stm32@gmail.com>,
+        <alexandre.torgue@foss.st.com>, <linux-i2c@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <fabrice.gasnier@foss.st.com>,
+        <amelie.delaunay@foss.st.com>
+References: <20220620105405.145959-1-alain.volmat@foss.st.com>
+ <20220620105405.145959-3-alain.volmat@foss.st.com>
+From:   Pierre Yves MORDRET <pierre-yves.mordret@foss.st.com>
+In-Reply-To: <20220620105405.145959-3-alain.volmat@foss.st.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.75.127.118]
+X-ClientProxiedBy: GPXDAG2NODE5.st.com (10.75.127.69) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-21_06,2022-06-21_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 20, 2022 at 02:48:21PM +0200, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.4.200 release.
-> There are 240 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Wed, 22 Jun 2022 12:47:02 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.200-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.4.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-> 
-> -------------
-> Pseudo-Shortlog of commits:
-> 
-[ ... ]
-> 
-> Linus Torvalds <torvalds@linux-foundation.org>
->     netfs: gcc-12: temporarily disable '-Wattribute-warning' for now
-> 
-I am told that this commit breaks builds with clang. Maybe that is no
-concern for others, but we'll have to revert it when merging the release
-into ChromeOS.
+Hi All
 
-Guenter
+Look good to me.
+
+Reviewed-by: Pierre-Yves MORDRET <pierre-yves.mordret@foss.st.com>
+
+Regards
+
+On 6/20/22 12:54, Alain Volmat wrote:
+> Allow the driver to properly initialize even if there is no reset
+> property given.  In such case reset control is not done and
+> initialization proceed.
+> 
+> Signed-off-by: Alain Volmat <alain.volmat@foss.st.com>
+> ---
+>  drivers/i2c/busses/i2c-stm32f7.c | 13 +++++++------
+>  1 file changed, 7 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/i2c/busses/i2c-stm32f7.c b/drivers/i2c/busses/i2c-stm32f7.c
+> index 6d4aa64b195d..b29d8e476342 100644
+> --- a/drivers/i2c/busses/i2c-stm32f7.c
+> +++ b/drivers/i2c/busses/i2c-stm32f7.c
+> @@ -2138,13 +2138,14 @@ static int stm32f7_i2c_probe(struct platform_device *pdev)
+>  
+>  	rst = devm_reset_control_get(&pdev->dev, NULL);
+>  	if (IS_ERR(rst)) {
+> -		ret = dev_err_probe(&pdev->dev, PTR_ERR(rst),
+> -				    "Error: Missing reset ctrl\n");
+> -		goto clk_free;
+> +		ret = PTR_ERR(rst);
+> +		if (ret == -EPROBE_DEFER)
+> +			goto clk_free;
+> +	} else {
+> +		reset_control_assert(rst);
+> +		udelay(2);
+> +		reset_control_deassert(rst);
+>  	}
+> -	reset_control_assert(rst);
+> -	udelay(2);
+> -	reset_control_deassert(rst);
+>  
+>  	i2c_dev->dev = &pdev->dev;
+>  
+
+-- 
+--
+~ Py MORDRET
+--
