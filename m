@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A687CCA482
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 10:54:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12387CCA488
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 10:54:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348671AbiFUKxx (ORCPT
+        id S1348896AbiFUKyX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 06:53:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46854 "EHLO
+        Tue, 21 Jun 2022 06:54:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349002AbiFUKxr (ORCPT
+        with ESMTP id S229660AbiFUKxu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 06:53:47 -0400
+        Tue, 21 Jun 2022 06:53:50 -0400
 Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04C8F25EA4;
-        Tue, 21 Jun 2022 03:53:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64DE41A067;
+        Tue, 21 Jun 2022 03:53:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1655808827; x=1687344827;
+  t=1655808829; x=1687344829;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references;
-  bh=mb5DQUx++WBYqHBb28dKoW1PAZ+4l8zH8PF2XnRF4bc=;
-  b=IwGQReI6tvZN6q7SY0h/bJL3oqEvZEqhguy5uApJnoMxUq6B71wPtDVt
-   0uQPcF4ZqF4l8/JC1AfS7W+MpZZpKtytzL+pDsbmxmQT7BjZteO5G/y0a
-   VmF2BBdXP9tqYJYdjKUW6KVs8jK/OvISl9VXrAQwMnm48QRI2qvxyEVDH
-   A=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 21 Jun 2022 03:53:47 -0700
+  bh=CfxCnLkx8qDNg+hw34ZntdovidZpeIyItmpLtPTt2cA=;
+  b=mJYUMNZl0GgZp4nzqxma16zjMGV+QF5LWCT9HtFQwxD7g5vwP0nKZOMG
+   KBZT17DKx2Q5XzGmXUyISvOeZTJv3Fzg/BkF0iUm0nRsc5kJh8SWm9SCW
+   U7sWAD4khK4yptocUdTyvp4R14s/9rI0rtnYEmvX6rY6TeIYagHKYS+Iz
+   I=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 21 Jun 2022 03:53:49 -0700
 X-QCInternal: smtphost
 Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 21 Jun 2022 03:53:45 -0700
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 21 Jun 2022 03:53:47 -0700
 X-QCInternal: smtphost
 Received: from vpolimer-linux.qualcomm.com ([10.204.67.235])
-  by ironmsg01-blr.qualcomm.com with ESMTP; 21 Jun 2022 16:23:27 +0530
+  by ironmsg01-blr.qualcomm.com with ESMTP; 21 Jun 2022 16:23:31 +0530
 Received: by vpolimer-linux.qualcomm.com (Postfix, from userid 463814)
-        id 32B123CF4; Tue, 21 Jun 2022 16:23:26 +0530 (IST)
+        id A28683D58; Tue, 21 Jun 2022 16:23:30 +0530 (IST)
 From:   Vinod Polimera <quic_vpolimer@quicinc.com>
 To:     y@qualcomm.com, dri-devel@lists.freedesktop.org,
         linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org,
@@ -45,65 +45,62 @@ Cc:     Vinod Polimera <quic_vpolimer@quicinc.com>,
         dianders@chromium.org, swboyd@chromium.org,
         quic_kalyant@quicinc.com, dmitry.baryshkov@linaro.org,
         quic_sbillaka@quicinc.com
-Subject: [v3 0/5] Add PSR support for eDP
-Date:   Tue, 21 Jun 2022 16:23:15 +0530
-Message-Id: <1655808800-3996-1-git-send-email-quic_vpolimer@quicinc.com>
+Subject: [v3 4/5] drm/msm/disp/dpu1: use atomic enable/disable callbacks for encoder functions
+Date:   Tue, 21 Jun 2022 16:23:19 +0530
+Message-Id: <1655808800-3996-5-git-send-email-quic_vpolimer@quicinc.com>
 X-Mailer: git-send-email 2.7.4
-In-Reply-To: <y>
+In-Reply-To: <1655808800-3996-1-git-send-email-quic_vpolimer@quicinc.com>
 References: <y>
+ <1655808800-3996-1-git-send-email-quic_vpolimer@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Changes in v2:
-  - Use dp bridge to set psr entry/exit instead of dpu_enocder.
-  - Don't modify whitespaces.
-  - Set self refresh aware from atomic_check.
-  - Set self refresh aware only if psr is supported.
-  - Provide a stub for msm_dp_display_set_psr.
-  - Move dp functions to bridge code.
+Use atomic variants for encoder callback functions such that
+certain states like self-refresh can be accessed as part of
+enable/disable sequence.
 
-Changes in v3:
-  - Change callback names to reflect atomic interfaces.
-  - Move bridge callback change to separate patch as suggested by Dmitry.
-  - Remove psr function declaration from msm_drv.h.
-  - Set self_refresh_aware flag only if psr is supported.
-  - Modify the variable names to simpler form.
-  - Define bit fields for PSR settings.
-  - Add comments explaining the steps to enter/exit psr.
-  - Change DRM_INFO to drm_dbg_db. 
-
-Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
 Signed-off-by: Kalyan Thota <quic_kalyant@quicinc.com>
 Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
+---
+ drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-Vinod Polimera (5):
-  drm/msm/dp: Add basic PSR support for eDP
-  drm/bridge: use atomic enable/disable callbacks for panel bridge
-    functions
-  drm/bridge: add psr support during panel bridge enable & disable
-    sequence
-  drm/msm/disp/dpu1: use atomic enable/disable callbacks for encoder
-    functions
-  drm/msm/disp/dpu1: add PSR support for eDP interface in dpu driver
-
- drivers/gpu/drm/bridge/panel.c              | 110 ++++++++++++++++--
- drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c    |  36 +++++-
- drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c |  30 ++++-
- drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c     |   2 +-
- drivers/gpu/drm/msm/dp/dp_catalog.c         |  81 ++++++++++++++
- drivers/gpu/drm/msm/dp/dp_catalog.h         |   4 +
- drivers/gpu/drm/msm/dp/dp_ctrl.c            |  76 ++++++++++++-
- drivers/gpu/drm/msm/dp/dp_ctrl.h            |   3 +
- drivers/gpu/drm/msm/dp/dp_display.c         |  14 +++
- drivers/gpu/drm/msm/dp/dp_display.h         |   2 +
- drivers/gpu/drm/msm/dp/dp_drm.c             | 166 +++++++++++++++++++++++++++-
- drivers/gpu/drm/msm/dp/dp_link.c            |  36 ++++++
- drivers/gpu/drm/msm/dp/dp_panel.c           |  22 ++++
- drivers/gpu/drm/msm/dp/dp_panel.h           |   6 +
- drivers/gpu/drm/msm/dp/dp_reg.h             |  27 +++++
- 15 files changed, 591 insertions(+), 24 deletions(-)
-
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+index 52516eb..cc2809b 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+@@ -1130,7 +1130,8 @@ void dpu_encoder_virt_runtime_resume(struct drm_encoder *drm_enc)
+ 	mutex_unlock(&dpu_enc->enc_lock);
+ }
+ 
+-static void dpu_encoder_virt_enable(struct drm_encoder *drm_enc)
++static void dpu_encoder_virt_atomic_enable(struct drm_encoder *drm_enc,
++					struct drm_atomic_state *state)
+ {
+ 	struct dpu_encoder_virt *dpu_enc = NULL;
+ 	int ret = 0;
+@@ -1166,7 +1167,8 @@ static void dpu_encoder_virt_enable(struct drm_encoder *drm_enc)
+ 	mutex_unlock(&dpu_enc->enc_lock);
+ }
+ 
+-static void dpu_encoder_virt_disable(struct drm_encoder *drm_enc)
++static void dpu_encoder_virt_atomic_disable(struct drm_encoder *drm_enc,
++					struct drm_atomic_state *state)
+ {
+ 	struct dpu_encoder_virt *dpu_enc = NULL;
+ 	int i = 0;
+@@ -2332,8 +2334,8 @@ static void dpu_encoder_frame_done_timeout(struct timer_list *t)
+ 
+ static const struct drm_encoder_helper_funcs dpu_encoder_helper_funcs = {
+ 	.atomic_mode_set = dpu_encoder_virt_atomic_mode_set,
+-	.disable = dpu_encoder_virt_disable,
+-	.enable = dpu_encoder_virt_enable,
++	.atomic_disable = dpu_encoder_virt_atomic_disable,
++	.atomic_enable = dpu_encoder_virt_atomic_enable,
+ 	.atomic_check = dpu_encoder_virt_atomic_check,
+ };
+ 
 -- 
 2.7.4
 
