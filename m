@@ -2,123 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E18AC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:59:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EAD2CCA486
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:59:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352460AbiFUP6Q (ORCPT
+        id S1352862AbiFUP7O (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 11:58:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41748 "EHLO
+        Tue, 21 Jun 2022 11:59:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350789AbiFUP5j (ORCPT
+        with ESMTP id S1352285AbiFUP6N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 11:57:39 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A82542E08A
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:56:41 -0700 (PDT)
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25LFsXvs021760;
-        Tue, 21 Jun 2022 15:56:32 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=AxSkufauQUOeia0u9yBcznU8tnLNHKa2HTwQi/mubrg=;
- b=Hq/jo3jLx7Y77hNG6RyMVUJABKvKY5EkJ2Ztx7hBmlmcVbydxtWRE6UKdgReDQDD5SpX
- r36qsvUaPl1HRCVJj0rasqFKFrPZM+b4c601+K3ufYw9Gd1AI5avL5Ao9BAYpBluZxDS
- zy0xW37dTVJFQBiq2KGnU5soFUCCb0FuFK3s+7VqzU80j2T0szeeVTmBPlEgV0W7iuwQ
- YTgu7l6YDG4X0D/EdBX4W58CTOWfWcgSjSMTTCHVB1eK+wpWkt3QYZhKPtateiGp89MI
- gHRoHZGgOI+PDC0ECBjnjTCQWHctohNTDXGrpljiz2N1WG7xF3surLi/e0nl4di3H4nq Mw== 
-Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3guh1w81gt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 21 Jun 2022 15:56:31 +0000
-Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
-        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25LFaCX0016127;
-        Tue, 21 Jun 2022 15:56:29 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma06fra.de.ibm.com with ESMTP id 3gs5yj3csh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 21 Jun 2022 15:56:29 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25LFuW7j24510804
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 21 Jun 2022 15:56:32 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B1D18A405C;
-        Tue, 21 Jun 2022 15:56:26 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5AB6BA4054;
-        Tue, 21 Jun 2022 15:56:26 +0000 (GMT)
-Received: from ozlabs.au.ibm.com (unknown [9.192.253.14])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 21 Jun 2022 15:56:26 +0000 (GMT)
-Received: from [9.43.178.199] (unknown [9.43.178.199])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ozlabs.au.ibm.com (Postfix) with ESMTPSA id B5F75600F7;
-        Wed, 22 Jun 2022 01:56:19 +1000 (AEST)
-Message-ID: <4ade48fbefc59dbabaf2d9c89c27665811254ea2.camel@linux.ibm.com>
-Subject: Re: [PATCH] cxl: drop unexpected word "the" in the comments
-From:   Andrew Donnellan <ajd@linux.ibm.com>
-To:     Jiang Jian <jiangjian@cdjrlc.com>, fbarrat@linux.ibm.com,
-        arnd@arndb.de
-Cc:     gregkh@linuxfoundation.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org
-Date:   Wed, 22 Jun 2022 01:56:15 +1000
-In-Reply-To: <20220621125321.122280-1-jiangjian@cdjrlc.com>
-References: <20220621125321.122280-1-jiangjian@cdjrlc.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
+        Tue, 21 Jun 2022 11:58:13 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61DA5D50
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:58:08 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id c130-20020a1c3588000000b0039c6fd897b4so9560853wma.4
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:58:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=8bGIi/65SNf1gUCizJJAA/uyPpaT7iiHXEa0Yre3OLs=;
+        b=qc78xzPKYmrdcuYQ1ne6Hu8H1BSHHtXY0kD3g+N7e0SwghvQN3cw/qoAboUgUrs+Ck
+         +iwQJ1AJ10Btc0VTT9f6WHOgo8D1M44NtYEiybmDF8Qw1nuDngA9JskQuGCbrE3tO6nl
+         eOC4eyyo/f5SFvf9KgmRv+CDRnTziQhvDBCEM5t7Y86dYYU5K3O1Rl6sZVi1kpPAVOvC
+         Mm5VwD38GAGomFJPcHYSHlYRYekmhbWFD6Ok/DiaZrz5oqAr5y0B65kbUBRp1g5dzbcn
+         hGDJpk81SwmFxFBSKHm447D3o18Ami9ckEnNWJFVwbBjwjxjpvgRktuW+I3Y1jnfs+DD
+         k+ww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=8bGIi/65SNf1gUCizJJAA/uyPpaT7iiHXEa0Yre3OLs=;
+        b=EXIsFaEsaN0ZbgUuafevs7DwIhOO/QJrBRkeMhwc0bjERA9n6G1FPnCj/0eXa4/xT+
+         pr9WYbfhqAA1KwQoFYvK6163Xx4vx2Y2j6rrySdq+aRrXeN4k098btlCipTxHxtlSni8
+         A0esnG/67QwpaomX2ecqfkvk7toWTCxN+VA9Rn7mSOE7hCxP5gjaQwntFcMtNXoYiXKh
+         DZsQXlpHFs4E2+osNll//VpZ1+HGkaPJ1BlYg+Es4bDFqfKD1Mlb/xwnTRvVc4OcgBJB
+         silsneergSQJYB0DYLKZkBxc9xPa8DBwDLOjeuT4kTSzlRPDW/EpHZH4/pONLG7mQyZK
+         Ghqw==
+X-Gm-Message-State: AOAM531VX57gHenZGwk3epMvdeN+xOLN3/Y+sKoJIYjyx20lAdnJSKU3
+        Q0xFTS24ds3fGiIleHKEP4IqHNv6o1MSmQ==
+X-Google-Smtp-Source: ABdhPJzfQtcmGS9lGGD/a74+uwozsMtxNFYclUUgKl5wNK5vG+XpP16pmsEjUM4CRShV7wvaWru3eQ==
+X-Received: by 2002:a05:600c:3b88:b0:39c:55b2:3d1 with SMTP id n8-20020a05600c3b8800b0039c55b203d1mr42734848wms.64.1655827086597;
+        Tue, 21 Jun 2022 08:58:06 -0700 (PDT)
+Received: from [192.168.0.221] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id i187-20020a1c3bc4000000b0039ee52c1345sm12581252wma.4.2022.06.21.08.58.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 21 Jun 2022 08:58:06 -0700 (PDT)
+Message-ID: <a194d4c5-8e31-ecd9-ecd0-0c96af03485b@linaro.org>
+Date:   Tue, 21 Jun 2022 17:58:04 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: bTULBcs58uY8yCn5-zUBDDGOzyhgkKbd
-X-Proofpoint-ORIG-GUID: bTULBcs58uY8yCn5-zUBDDGOzyhgkKbd
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-06-21_08,2022-06-21_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0 mlxscore=0
- clxscore=1011 adultscore=0 impostorscore=0 spamscore=0 mlxlogscore=999
- priorityscore=1501 bulkscore=0 suspectscore=0 phishscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2204290000
- definitions=main-2206210066
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 1/2] dt-bindings: net: wireless: ath11k: add new DT entry
+ for board ID
+Content-Language: en-US
+To:     Robert Marko <robimarko@gmail.com>, kvalo@kernel.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, ath11k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220621135339.1269409-1-robimarko@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220621135339.1269409-1-robimarko@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-06-21 at 20:53 +0800, Jiang Jian wrote:
-> there is an unexpected word "the" in the comments that need to be
-> dropped
+On 21/06/2022 15:53, Robert Marko wrote:
+> bus + qmi-chip-id + qmi-board-id and optionally the variant are currently
+> used for identifying the correct board data file.
 > 
-> file: drivers/misc/cxl/cxl.h
-> line: 1107
-> +/* check if the given pci_dev is on the the cxl vphb bus */
-> changed to
-> +/* check if the given pci_dev is on the cxl vphb bus */
+> This however is sometimes not enough as all of the IPQ8074 boards that I
+> have access to dont have the qmi-board-id properly fused and simply return
+> the default value of 0xFF.
 > 
-> Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
+> So, to provide the correct qmi-board-id add a new DT property that allows
+> the qmi-board-id to be overridden from DTS in cases where its not set.
+> This is what vendors have been doing in the stock firmwares that were
+> shipped on boards I have.
+> 
+> Signed-off-by: Robert Marko <robimarko@gmail.com>
 
-Thanks!
-
-Acked-by: Andrew Donnellan <ajd@linux.ibm.com>
+Thank you for your patch. There is something to discuss/improve.
 
 > ---
->  drivers/misc/cxl/cxl.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  .../devicetree/bindings/net/wireless/qcom,ath11k.yaml     | 8 ++++++++
+>  1 file changed, 8 insertions(+)
 > 
-> diff --git a/drivers/misc/cxl/cxl.h b/drivers/misc/cxl/cxl.h
-> index 7a6dd91987fd..0562071cdd4a 100644
-> --- a/drivers/misc/cxl/cxl.h
-> +++ b/drivers/misc/cxl/cxl.h
-> @@ -1104,7 +1104,7 @@ extern const struct cxl_backend_ops
-> cxl_native_ops;
->  extern const struct cxl_backend_ops cxl_guest_ops;
->  extern const struct cxl_backend_ops *cxl_ops;
->  
-> -/* check if the given pci_dev is on the the cxl vphb bus */
-> +/* check if the given pci_dev is on the cxl vphb bus */
->  bool cxl_pci_is_vphb_device(struct pci_dev *dev);
->  
->  /* decode AFU error bits in the PSL register PSL_SERR_An */
+> diff --git a/Documentation/devicetree/bindings/net/wireless/qcom,ath11k.yaml b/Documentation/devicetree/bindings/net/wireless/qcom,ath11k.yaml
+> index a677b056f112..fe6aafdab9d4 100644
+> --- a/Documentation/devicetree/bindings/net/wireless/qcom,ath11k.yaml
+> +++ b/Documentation/devicetree/bindings/net/wireless/qcom,ath11k.yaml
+> @@ -41,6 +41,14 @@ properties:
+>          * reg
+>          * reg-names
+>  
+> +  qcom,ath11k-board-id:
+
+The "board" a bit confuses me because in the context of entire system it
+means the entire hardware running Qualcomm SoC. This is sometimes
+encoded as qcom,board-id property.
+
+Is your property exactly the same?
+
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    description:
+> +      Board ID to override the one returned by the firmware or the default
+> +      0xff if it was not set by the vendor at all.
+> +      It is used along the ath11k-calibration-variant to mach the correct
+> +      calibration data from board-2.bin.
+> +
+>    qcom,ath11k-calibration-variant:
+>      $ref: /schemas/types.yaml#/definitions/string
+>      description:
 
 
+Best regards,
+Krzysztof
