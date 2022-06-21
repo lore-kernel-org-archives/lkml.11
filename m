@@ -2,174 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 775A2C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:10:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A10D9C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:10:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352388AbiFUPKK (ORCPT
+        id S1352298AbiFUPKh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 11:10:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44198 "EHLO
+        Tue, 21 Jun 2022 11:10:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352330AbiFUPJv (ORCPT
+        with ESMTP id S1352432AbiFUPK1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 11:09:51 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 36D9727CD3
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:09:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655824190;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ka4XL8eUbPK3JlNTcyLvESzgetbfj19qXaCNRJQDQwU=;
-        b=X89n48G8ikGvxZ/HVrFM8mtt/uVtCQRZS6wfpmNwUm4qrrO2zKWXvpPrlrXWgmZJxQ7ZN9
-        SlLRV+m5xStqQRNUaxPUAvMqf6oA5TvHn8CII0k8G9pn9e6sQysABPMI47GrhIyPjWsJBv
-        1kJXFqmBOMcpzRNPySFH83h8TV+3y2A=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-324-WIYvMZs6Mw-UA6Q5f7iyJw-1; Tue, 21 Jun 2022 11:09:47 -0400
-X-MC-Unique: WIYvMZs6Mw-UA6Q5f7iyJw-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7B64E811E83;
-        Tue, 21 Jun 2022 15:09:46 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.40.194.180])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0810710725;
-        Tue, 21 Jun 2022 15:09:42 +0000 (UTC)
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     kvm@vger.kernel.org
-Cc:     Sean Christopherson <seanjc@google.com>, x86@kernel.org,
-        Kees Cook <keescook@chromium.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        linux-kernel@vger.kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
-        Borislav Petkov <bp@alien8.de>, Joerg Roedel <joro@8bytes.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>
-Subject: [PATCH v2 10/11] KVM: x86: SVM: use smram structs
-Date:   Tue, 21 Jun 2022 18:09:01 +0300
-Message-Id: <20220621150902.46126-11-mlevitsk@redhat.com>
-In-Reply-To: <20220621150902.46126-1-mlevitsk@redhat.com>
-References: <20220621150902.46126-1-mlevitsk@redhat.com>
+        Tue, 21 Jun 2022 11:10:27 -0400
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 343A62980C
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:10:24 -0700 (PDT)
+Received: by mail-io1-f72.google.com with SMTP id 199-20020a6b01d0000000b00669bf42cd4cso7767546iob.4
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:10:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=orJv/QF6/hQyCVCkoKcPGnTko1ommFIuCUIXzQv7jwI=;
+        b=o0EjqohNBH2uYuANd+A9t6Uf5p6MsNY+BhadMBz9kSOYEs77jToGhKRGPYzu0qrpmZ
+         wbVn7NVCnAuAqZkTFjQPyBZa/xSOeLAAKHFCj0RGSWzCHGgLNx7h+8WotylCcSvUo/eU
+         09PZy/+5q64OoueOMuYVGD6W0i6Ljup44IiuLy4tEpSph2HUY6Cnhis192xhUYn84wze
+         rEl4nBnkEgdJQMqfxfQiuqJFaGC5DAJE141AQheqDFQ/qn6PncCZaRiD0J2hY1YOqSbG
+         iVHTSVWMPTAQIU06G5s6tLY5Kjkxn2omw8pK35+iZnJeV0koJSxQOrCMJXrD7jQ7SO0y
+         7IOg==
+X-Gm-Message-State: AJIora8ZoB/DCMQRUFKCnR41zyNWZSiLS5UkKq+JuvDOd+UrAqpgJRfF
+        Z0w8SkjCoxedNP+j23fKYQcazXLhymH6KmC0gKx0CGHc2Jom
+X-Google-Smtp-Source: AGRyM1uQePVfTEOaeMTn3UjYHAfWksYYYP9NNjLMDbV9XXmg8SbP7RQv1ctWcAVbgaMBbfkmJYBmZfY0sUmZ9N6xFYOzCpoj0C5G
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+X-Received: by 2002:a05:6e02:1c86:b0:2d9:333f:5b9d with SMTP id
+ w6-20020a056e021c8600b002d9333f5b9dmr1266033ill.36.1655824223607; Tue, 21 Jun
+ 2022 08:10:23 -0700 (PDT)
+Date:   Tue, 21 Jun 2022 08:10:23 -0700
+In-Reply-To: <0000000000003189f305e19f5d3e@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000a8a4a905e1f69ec4@google.com>
+Subject: Re: [syzbot] KASAN: null-ptr-deref Read in hugepage_vma_check
+From:   syzbot <syzbot+4d875b4d2e2b60bae9b4@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, shy828301@gmail.com,
+        syzkaller-bugs@googlegroups.com, willy@infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This removes the last user of put_smstate/GET_SMSTATE so
-remove these functions as well.
+syzbot has found a reproducer for the following issue on:
 
-Also add a sanity check that we don't attempt to enter the SMM
-on non long mode capable guest CPU with a running nested guest.
+HEAD commit:    34d1d36073ea Add linux-next specific files for 20220621
+git tree:       linux-next
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=15a34140080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b24b62d1c051cfc8
+dashboard link: https://syzkaller.appspot.com/bug?extid=4d875b4d2e2b60bae9b4
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14097a3ff00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1466c63ff00000
 
-Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
----
- arch/x86/include/asm/kvm_host.h |  6 ------
- arch/x86/kvm/svm/svm.c          | 28 +++++++++++++++++-----------
- 2 files changed, 17 insertions(+), 17 deletions(-)
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+4d875b4d2e2b60bae9b4@syzkaller.appspotmail.com
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 1038ccb7056a39..9e8467be96b4e6 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -2057,12 +2057,6 @@ static inline int kvm_cpu_get_apicid(int mps_cpu)
- #endif
- }
- 
--#define put_smstate(type, buf, offset, val)                      \
--	*(type *)((buf) + (offset) - 0x7e00) = val
--
--#define GET_SMSTATE(type, buf, offset)		\
--	(*(type *)((buf) + (offset) - 0x7e00))
--
- int kvm_cpu_dirty_log_size(void);
- 
- int memslot_rmap_alloc(struct kvm_memory_slot *slot, unsigned long npages);
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index 136298cfb3fb57..8dcbbe839bef36 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -4399,6 +4399,7 @@ static int svm_smi_allowed(struct kvm_vcpu *vcpu, bool for_injection)
- 
- static int svm_enter_smm(struct kvm_vcpu *vcpu, char *smstate)
- {
-+	struct kvm_smram_state_64 *smram = (struct kvm_smram_state_64 *)smstate;
- 	struct vcpu_svm *svm = to_svm(vcpu);
- 	struct kvm_host_map map_save;
- 	int ret;
-@@ -4406,10 +4407,17 @@ static int svm_enter_smm(struct kvm_vcpu *vcpu, char *smstate)
- 	if (!is_guest_mode(vcpu))
- 		return 0;
- 
--	/* FED8h - SVM Guest */
--	put_smstate(u64, smstate, 0x7ed8, 1);
--	/* FEE0h - SVM Guest VMCB Physical Address */
--	put_smstate(u64, smstate, 0x7ee0, svm->nested.vmcb12_gpa);
-+	/*
-+	 * 32 bit SMRAM format doesn't preserve EFER and SVM state.
-+	 * SVM should not be enabled by the userspace without marking
-+	 * the CPU as at least long mode capable.
-+	 */
-+
-+	if (!guest_cpuid_has(vcpu, X86_FEATURE_SVM))
-+		return 1;
-+
-+	smram->svm_guest_flag = 1;
-+	smram->svm_guest_vmcb_gpa = svm->nested.vmcb12_gpa;
- 
- 	svm->vmcb->save.rax = vcpu->arch.regs[VCPU_REGS_RAX];
- 	svm->vmcb->save.rsp = vcpu->arch.regs[VCPU_REGS_RSP];
-@@ -4446,9 +4454,9 @@ static int svm_enter_smm(struct kvm_vcpu *vcpu, char *smstate)
- 
- static int svm_leave_smm(struct kvm_vcpu *vcpu, const char *smstate)
- {
-+	struct kvm_smram_state_64 *smram = (struct kvm_smram_state_64 *)smstate;
- 	struct vcpu_svm *svm = to_svm(vcpu);
- 	struct kvm_host_map map, map_save;
--	u64 saved_efer, vmcb12_gpa;
- 	struct vmcb *vmcb12;
- 	int ret;
- 
-@@ -4456,18 +4464,16 @@ static int svm_leave_smm(struct kvm_vcpu *vcpu, const char *smstate)
- 		return 0;
- 
- 	/* Non-zero if SMI arrived while vCPU was in guest mode. */
--	if (!GET_SMSTATE(u64, smstate, 0x7ed8))
-+	if (!smram->svm_guest_flag)
- 		return 0;
- 
- 	if (!guest_cpuid_has(vcpu, X86_FEATURE_SVM))
- 		return 1;
- 
--	saved_efer = GET_SMSTATE(u64, smstate, 0x7ed0);
--	if (!(saved_efer & EFER_SVME))
-+	if (!(smram->efer & EFER_SVME))
- 		return 1;
- 
--	vmcb12_gpa = GET_SMSTATE(u64, smstate, 0x7ee0);
--	if (kvm_vcpu_map(vcpu, gpa_to_gfn(vmcb12_gpa), &map) == -EINVAL)
-+	if (kvm_vcpu_map(vcpu, gpa_to_gfn(smram->svm_guest_vmcb_gpa), &map) == -EINVAL)
- 		return 1;
- 
- 	ret = 1;
-@@ -4493,7 +4499,7 @@ static int svm_leave_smm(struct kvm_vcpu *vcpu, const char *smstate)
- 	vmcb12 = map.hva;
- 	nested_copy_vmcb_control_to_cache(svm, &vmcb12->control);
- 	nested_copy_vmcb_save_to_cache(svm, &vmcb12->save);
--	ret = enter_svm_guest_mode(vcpu, vmcb12_gpa, vmcb12, false);
-+	ret = enter_svm_guest_mode(vcpu, smram->svm_guest_vmcb_gpa, vmcb12, false);
- 
- 	if (ret)
- 		goto unmap_save;
--- 
-2.26.3
+==================================================================
+BUG: KASAN: null-ptr-deref in instrument_atomic_read include/linux/instrumented.h:71 [inline]
+BUG: KASAN: null-ptr-deref in test_bit include/asm-generic/bitops/instrumented-non-atomic.h:134 [inline]
+BUG: KASAN: null-ptr-deref in hugepage_vma_check+0x8e/0x750 mm/huge_memory.c:82
+Read of size 8 at addr 00000000000005a8 by task syz-executor405/3606
+
+CPU: 0 PID: 3606 Comm: syz-executor405 Not tainted 5.19.0-rc3-next-20220621-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ kasan_report+0xbe/0x1f0 mm/kasan/report.c:495
+ check_region_inline mm/kasan/generic.c:183 [inline]
+ kasan_check_range+0x13d/0x180 mm/kasan/generic.c:189
+ instrument_atomic_read include/linux/instrumented.h:71 [inline]
+ test_bit include/asm-generic/bitops/instrumented-non-atomic.h:134 [inline]
+ hugepage_vma_check+0x8e/0x750 mm/huge_memory.c:82
+ show_smap+0x1c6/0x470 fs/proc/task_mmu.c:866
+ traverse.part.0+0xcf/0x5f0 fs/seq_file.c:111
+ traverse fs/seq_file.c:101 [inline]
+ seq_read_iter+0x90f/0x1280 fs/seq_file.c:195
+ seq_read+0x337/0x4b0 fs/seq_file.c:162
+ do_loop_readv_writev fs/read_write.c:763 [inline]
+ do_loop_readv_writev fs/read_write.c:750 [inline]
+ do_iter_read+0x4f8/0x750 fs/read_write.c:805
+ vfs_readv+0xe5/0x150 fs/read_write.c:923
+ do_preadv fs/read_write.c:1015 [inline]
+ __do_sys_preadv fs/read_write.c:1065 [inline]
+ __se_sys_preadv fs/read_write.c:1060 [inline]
+ __x64_sys_preadv+0x22b/0x310 fs/read_write.c:1060
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+RIP: 0033:0x7fcb44a75239
+Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffedce269f8 EFLAGS: 00000246 ORIG_RAX: 0000000000000127
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007fcb44a75239
+RDX: 0000000000000001 RSI: 00000000200006c0 RDI: 0000000000000003
+RBP: 00007ffedce26a00 R08: 0000000000000000 R09: 65732f636f72702f
+R10: 00000000fffffffe R11: 0000000000000246 R12: 00007fcb44a39120
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+ </TASK>
+==================================================================
 
