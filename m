@@ -2,82 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2E04C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:33:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 839F1C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:34:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351874AbiFUPdS (ORCPT
+        id S1350792AbiFUPeq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 11:33:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43614 "EHLO
+        Tue, 21 Jun 2022 11:34:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230298AbiFUPdN (ORCPT
+        with ESMTP id S231305AbiFUPeo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 11:33:13 -0400
-Received: from m1550.mail.126.com (m1550.mail.126.com [220.181.15.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1D456654B;
-        Tue, 21 Jun 2022 08:33:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=9VZGf
-        79RSfusZpOmSyRtMDiWqSh9xMMOEKRSR6xpo/0=; b=G8ljdWdJf4WzfbMSHoyLm
-        zgLJMH9DocVUCfLW1MILDPPwt+o5QbxgFWjufjsMB+kX4rqhstF3zAy8olzkpMQ3
-        CN+Vc3iSMRmJZPCv94R7k/fbHP1x1KIVSoLZZVtxExYnGOg1a1LZC1ps+/H6H9/+
-        /z5DAWaBB0r/QWNPIAd1NU=
-Received: from windhl$126.com ( [123.112.70.164] ) by ajax-webmail-wmsvr50
- (Coremail) ; Tue, 21 Jun 2022 23:32:41 +0800 (CST)
-X-Originating-IP: [123.112.70.164]
-Date:   Tue, 21 Jun 2022 23:32:41 +0800 (CST)
-From:   "Liang He" <windhl@126.com>
-To:     "Thomas Bogendoerfer" <tsbogend@alpha.franken.de>
-Cc:     john@phrozen.org, linux-mips@vger.kernel.org,
+        Tue, 21 Jun 2022 11:34:44 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15BD515A04
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:34:44 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id y13-20020a17090a154d00b001eaaa3b9b8dso13765526pja.2
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:34:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=/V/+YYZrFlvtCdfb2sUBNlJeIodua+DE/MZpzGTItj0=;
+        b=EN5iNriTOwjp0S9DUzAk99diMPSRYxFc/YdvcYFmXhfaRnFbklR/2EQSSFRjZjSzI/
+         wvKb1rLBI3rT7bbvdEmJffWILQJb6oCRUiGSTqAnS+lthnXJbkBtyYy15Mxy5pQP1P8X
+         D7b4fUqEiIgGTxyzHUxAuyeO+Ft3E8DfMSaQlpKXXj7n2RDMnImOCowE/vCOlrBGL1kb
+         qx3rZQ7eaqAuLHIjiJ8vFiPyrvIRyYsGfy3xh7D4mgmlRa+aX0n1XTxMi6p8cnUPjRTH
+         2EqhTzUeYQijwJLopCODr46hf/95qJ0bVau6MgtNE7PSWt543N8Q+wXyNI3AWHabBlRk
+         q9Jg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/V/+YYZrFlvtCdfb2sUBNlJeIodua+DE/MZpzGTItj0=;
+        b=mhvW82fOwarUdIMzx5zi4aK7FT2gYTG7QHsowYNecpiRxWy5zKYKnwTYjFQFdguSUE
+         q4XRxGNRNFOeSlLSHEOUf02wV7N6jSc4DvbY3kG1Nh4hzjwzPMGhsFZA0MTKGCmwH6Uq
+         8ooMOjJoORnpz+SK4gEgDKDgeKlv+gv5xGlkhJHGFznaUG4HKAG6tevnv9GQp9VXfDgP
+         72vvW77xnqVXjP9NMCuuDJlik9XyMSwrKCe5XCh7vxSY1lZL6efqCmpMxYIsoof5il0O
+         SjzHgjiHWaBqTJLh95YH8cl6PMhNOO8sQ7HVGwHdRxPF1VwZitGtTwIIRmZGADF7VbxN
+         Zy7w==
+X-Gm-Message-State: AJIora/LHAaD8IpP436Hn71Fn1AhKRZtjRDFE9xh62UOFlDoXtGcU617
+        zhKh96+YEC5mp40057RN4QDI+w==
+X-Google-Smtp-Source: AGRyM1uRAdNlEE4ncewgTKXm3tHw89Dn6NW6okZTTfjqi1GF5bAvxsdZ1dQo8KKj41BGI5sUbEDZyg==
+X-Received: by 2002:a17:903:1cb:b0:16a:3a9d:4813 with SMTP id e11-20020a17090301cb00b0016a3a9d4813mr3223207plh.158.1655825683573;
+        Tue, 21 Jun 2022 08:34:43 -0700 (PDT)
+Received: from localhost ([122.172.201.58])
+        by smtp.gmail.com with ESMTPSA id q5-20020a170902a3c500b0016a38fa3f95sm1693856plb.118.2022.06.21.08.34.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Jun 2022 08:34:43 -0700 (PDT)
+Date:   Tue, 21 Jun 2022 21:04:40 +0530
+From:   Viresh Kumar <viresh.kumar@linaro.org>
+To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>
+Cc:     Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>, linux-pm@vger.kernel.org,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Rafael Wysocki <rjw@rjwysocki.net>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         linux-kernel@vger.kernel.org
-Subject: Re:Re: [PATCH] mips: lantiq: Add missing of_node_put() in irq.c
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
- Copyright (c) 2002-2022 www.mailtech.cn 126com
-In-Reply-To: <20220621152119.GB12322@alpha.franken.de>
-References: <20220615153339.3970658-1-windhl@126.com>
- <20220621152119.GB12322@alpha.franken.de>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=GBK
+Subject: Re: [PATCH 02/31] OPP: Add dev_pm_opp_set_config() and friends
+Message-ID: <20220621153440.aazq7cjiq5vgkvxy@vireshk-i7>
+References: <cover.1653564321.git.viresh.kumar@linaro.org>
+ <9c4b2bfe628bf7a583a96cee7cc3539e2e66245e.1653564321.git.viresh.kumar@linaro.org>
+ <da2f1552-6896-5ae8-4837-28f31f3031a9@collabora.com>
 MIME-Version: 1.0
-Message-ID: <5b777944.84cc.18186e4f5ba.Coremail.windhl@126.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: MsqowADHHPGa5LFiN+g6AA--.2303W
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi7QknF1pEAP6xCQADsP
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <da2f1552-6896-5ae8-4837-28f31f3031a9@collabora.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CgpBdCAyMDIyLTA2LTIxIDIzOjIxOjE5LCAiVGhvbWFzIEJvZ2VuZG9lcmZlciIgPHRzYm9nZW5k
-QGFscGhhLmZyYW5rZW4uZGU+IHdyb3RlOgo+T24gV2VkLCBKdW4gMTUsIDIwMjIgYXQgMTE6MzM6
-MzlQTSArMDgwMCwgTGlhbmcgSGUgd3JvdGU6Cj4+IEluIGljdV9vZl9pbml0KCksIG9mX2ZpbmRf
-Y29tcGF0aWJsZV9ub2RlKCkgd2lsbCByZXR1cm4gYSBub2RlCj4+IHBvaW50ZXIgd2l0aCByZWZj
-b3VudCBpbmNyZW1lbnRlZC4gV2Ugc2hvdWxkIHVzZSBvZl9ub2RlX3B1dCgpCj4+IHdoZW4gaXQg
-aXMgbm90IHVzZWQgYW55bW9yZS4KPj4gCj4+IFNpZ25lZC1vZmYtYnk6IExpYW5nIEhlIDx3aW5k
-aGxAMTI2LmNvbT4KPj4gLS0tCj4+ICBhcmNoL21pcHMvbGFudGlxL2lycS5jIHwgNiArKysrKysK
-Pj4gIDEgZmlsZSBjaGFuZ2VkLCA2IGluc2VydGlvbnMoKykKPj4gCj4+IGRpZmYgLS1naXQgYS9h
-cmNoL21pcHMvbGFudGlxL2lycS5jIGIvYXJjaC9taXBzL2xhbnRpcS9pcnEuYwo+PiBpbmRleCBi
-NzMyNDk1ZjEzOGEuLjYyZjFiMjBhMjE2OSAxMDA2NDQKPj4gLS0tIGEvYXJjaC9taXBzL2xhbnRp
-cS9pcnEuYwo+PiArKysgYi9hcmNoL21pcHMvbGFudGlxL2lycS5jCj4+IEBAIC0zOTYsNiArMzk2
-LDkgQEAgaW50IF9faW5pdCBpY3Vfb2ZfaW5pdChzdHJ1Y3QgZGV2aWNlX25vZGUgKm5vZGUsIHN0
-cnVjdCBkZXZpY2Vfbm9kZSAqcGFyZW50KQo+PiAgCj4+ICAJCXJldCA9IG9mX3Byb3BlcnR5X3Jl
-YWRfdTMyX2FycmF5KGVpdV9ub2RlLCAibGFudGlxLGVpdS1pcnFzIiwKPj4gIAkJCQkJCWx0cV9l
-aXVfaXJxLCBleGluX2F2YWlsKTsKPj4gKwkJCQkJCQo+Cj50cmFpbGluZyB3aGl0ZXNwYWNlcwo+
-Cj4+ICsJCW9mX25vZGVfcHV0KGVpdV9ub2RlKTsKPj4gKwkJCQkJCQo+Cj50cmFpbGluZyB3aGl0
-ZXNwYWNlcwo+Cj4+ICAJCWlmIChyZXQpCj4+ICAJCQlwYW5pYygiZmFpbGVkIHRvIGxvYWQgZXh0
-ZXJuYWwgaXJxIHJlc291cmNlcyIpOwo+PiAgCj4+IEBAIC00MDksNiArNDEyLDkgQEAgaW50IF9f
-aW5pdCBpY3Vfb2ZfaW5pdChzdHJ1Y3QgZGV2aWNlX25vZGUgKm5vZGUsIHN0cnVjdCBkZXZpY2Vf
-bm9kZSAqcGFyZW50KQo+PiAgCQkJcGFuaWMoIkZhaWxlZCB0byByZW1hcCBlaXUgbWVtb3J5Iik7
-Cj4+ICAJfQo+PiAgCj4+ICsJLyogaWYgZWl1X25vZGUmb2ZfYWRkcmVzc190b19yZXNvdXJjZSAq
-Lwo+PiArCW9mX25vZGVfcHV0KGVpdV9ub2RlKTsKPj4gKwo+Cj5pZiBJJ20gbm90IG1pc3Rha2Vu
-IHlvdSBhcmUgZnJlZWluZyB0aGUgdGFrZW4gcmVmZXJlbmNlIHR3aWNlLiBTaG91bGRuJ3QKPml0
-IHdvcmsgYnkgb25seSBhZGRpbmcgdGhlIGxhc3Qgb2Zfbm9kZV9wdXQoKSA/Cj4KPlRob21hcy4K
-CkhpLCBUaG9tYXMuCgpUaGFua3MgdmVyeSBtdWNoIGZvciB5b3VyIGVmZm9ydCB0byByZXZpZXcg
-YW5kIGFwcGx5IG15IHBhdGNoZXMuCgpZb3UgYXJlIHJpZ2h0LCB0aGlzIHBhdGNoIGlzIHdyb25n
-IGFuZCBvbmx5IHRoZSBsYXN0IHB1dCBpcyBuZWVkZWQuCgpJIHdpbGwgc2VuZCBhIG5ldyBwYXRj
-aDogcmVtb3ZpbmcgdHJhaWxpbmcgd2hpdHNwYWNlIGFuZCB0aGUgZmlyc3QgcHV0LgoKVGhhbnMg
-YWdhaW4uCgpMaWFuZwoKPgo+LS0gCj5DcmFwIGNhbiB3b3JrLiBHaXZlbiBlbm91Z2ggdGhydXN0
-IHBpZ3Mgd2lsbCBmbHksIGJ1dCBpdCdzIG5vdCBuZWNlc3NhcmlseSBhCj5nb29kIGlkZWEuICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgWyBSRkMxOTI1LCAy
-LjMgXQo=
+Hi Dmitry,
+
+On 21-06-22, 18:09, Dmitry Osipenko wrote:
+> 1. I started to look at the Tegra regressions caused by these OPP
+> patches and this one looks wrong to me because dev_pm_opp_set_config()
+> could be invoked multiple times by different drivers for the same device
+> and then you're putting table not in accordance to the config that was
+> used by a particular driver.
+> 
+> For example, if parent tegra-cpufreq driver sets supported_hw for
+> cpu_dev and then cpufreq-dt also does dev_pm_opp_set_config(cpu_dev),
+> then dev_pm_opp_clear_config(cpu_dev) of cpufreq-dt will put
+> supported_hw(cpu_dev) of tegra-cpufreq. Hence this
+> dev_pm_opp_set/clear_config() approach isn't viable, unless I'm missing
+> something.
+
+Yeah, I know that and I didn't put a lot of effort into it because of multiple
+reasons:
+
+- That is partially the existing behavior. For example, we can call the
+  set-supported-hw interface right now for each CPU of a policy, which many
+  drivers do right now btw, and then while putting them back we drop the
+  resource on the first call itself and not on the last CPU.
+
+- Yes, with the new patchset we will drop the resources even for an unrelated
+  resource call, I will think again about it though and maybe add a flag field
+  to notify which all resources to clean, but even in the current case it should
+  be fine as we won't be able to use a half initialized OPP table anyway (which
+  may actually be harmful). What I mean is, if you set regulators and
+  supported-hw in the beginning, then on un-init, we won't want to work with
+  only one of them in place. We always want all of them.
+
+> 2. Patches aren't bisectable, please make sure that all patches compile
+> individually and without warnings.
+
+That is strange. I will try build over each and every patch (again). Also I
+think the kernel bots (from LKP) test individual patches and I haven't got any
+failure messages yet. Which patch broke the build for you ?
+
+> 3. There is a new NULL dereference in the recent linux-next on Tegra in
+> _set_opp() of the gpu/host1x driver. I'll take a closer look at this
+> crash a bit later.
+
+I just fixed a bug for devices which don't have the clock property, but just
+level or bandwidth. Not sure if that is the one that caused trouble for you. It
+is pushed to opp/linux-next.
+
+-- 
+viresh
