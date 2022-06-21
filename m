@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0619DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:09:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 381AECCA473
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:09:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352316AbiFUPJq (ORCPT
+        id S1351168AbiFUPJu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 11:09:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44072 "EHLO
+        Tue, 21 Jun 2022 11:09:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351485AbiFUPJo (ORCPT
+        with ESMTP id S1352308AbiFUPJo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 21 Jun 2022 11:09:44 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5AA5827CD3
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:09:36 -0700 (PDT)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 27D61286E2
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:09:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655824175;
+        s=mimecast20190719; t=1655824178;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=iKMJAOMUnqojm6f+PSfvuxFpiYCb8Fg7PQ9tT8zsGYc=;
-        b=agdHOcDXdDsuVs1HBLaD4OptKLURahy5LVCNfXByprGOQLowM5KgzNEJkjrmr6RaUKI+Ec
-        Jld5KLOggigI3/QZbOJ46eMhs/Hmq4UydafJEpP3PY0nFbBYlGPn4UTcCaZEPCJusVoxT0
-        xw2G+kFJgbcCjl9KIYjmx63OFTMb7+A=
+        bh=d9bdeuqQcUBSdjmQo8dMHBeTNo5swwTJ8mubljrij5I=;
+        b=YGE4BpLCgYqicIk3n/EGvfplysa6SebhLQd9ctuL69MEfej6f+cNOk1yRnaON6vBOvp5VU
+        +eliJg71PDXbJw1pZHHzlSaNwKgI5AgVERlwK/QUQk5T0SaMJn5Hj1TzEhDcamji6436Yq
+        670oDFrugbQwpUY1zBYd3ApQEOiW5vc=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-445-WnP0U4rHOa-85xVkzuFcJw-1; Tue, 21 Jun 2022 11:09:28 -0400
-X-MC-Unique: WnP0U4rHOa-85xVkzuFcJw-1
+ us-mta-168-shJJ2STeMgyU3YMrYn421g-1; Tue, 21 Jun 2022 11:09:36 -0400
+X-MC-Unique: shJJ2STeMgyU3YMrYn421g-1
 Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4C0011044564;
-        Tue, 21 Jun 2022 15:09:27 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id F142C85A580;
+        Tue, 21 Jun 2022 15:09:34 +0000 (UTC)
 Received: from localhost.localdomain (unknown [10.40.194.180])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9BEC818EA3;
-        Tue, 21 Jun 2022 15:09:23 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 802EF18EA3;
+        Tue, 21 Jun 2022 15:09:31 +0000 (UTC)
 From:   Maxim Levitsky <mlevitsk@redhat.com>
 To:     kvm@vger.kernel.org
 Cc:     Sean Christopherson <seanjc@google.com>, x86@kernel.org,
@@ -53,9 +53,9 @@ Cc:     Sean Christopherson <seanjc@google.com>, x86@kernel.org,
         Wanpeng Li <wanpengli@tencent.com>,
         Jim Mattson <jmattson@google.com>,
         Maxim Levitsky <mlevitsk@redhat.com>
-Subject: [PATCH v2 05/11] KVM: x86: emulator: update the emulation mode after CR0 write
-Date:   Tue, 21 Jun 2022 18:08:56 +0300
-Message-Id: <20220621150902.46126-6-mlevitsk@redhat.com>
+Subject: [PATCH v2 07/11] KVM: x86: emulator/smm: add structs for KVM's smram layout
+Date:   Tue, 21 Jun 2022 18:08:58 +0300
+Message-Id: <20220621150902.46126-8-mlevitsk@redhat.com>
 In-Reply-To: <20220621150902.46126-1-mlevitsk@redhat.com>
 References: <20220621150902.46126-1-mlevitsk@redhat.com>
 MIME-Version: 1.0
@@ -65,46 +65,166 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CR0.PE toggles real/protected mode, thus its update
-should update the emulation mode.
+Those structs will be used to read/write the smram state image.
 
-This is likely a benign bug because there is no writeback
-of state, other than the RIP increment, and when toggling
-CR0.PE, the CPU has to execute code from a very low memory address.
+Also document the differences between KVM's SMRAM layout and SMRAM
+layout that is used by real Intel/AMD cpus.
 
 Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
 ---
- arch/x86/kvm/emulate.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+ arch/x86/kvm/kvm_emulate.h | 139 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 139 insertions(+)
 
-diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
-index 6f4632babc4cd8..002687d17f9364 100644
---- a/arch/x86/kvm/emulate.c
-+++ b/arch/x86/kvm/emulate.c
-@@ -3659,11 +3659,22 @@ static int em_movbe(struct x86_emulate_ctxt *ctxt)
+diff --git a/arch/x86/kvm/kvm_emulate.h b/arch/x86/kvm/kvm_emulate.h
+index 89246446d6aa9d..7015728da36d5f 100644
+--- a/arch/x86/kvm/kvm_emulate.h
++++ b/arch/x86/kvm/kvm_emulate.h
+@@ -503,6 +503,145 @@ enum x86_intercept {
+ 	nr_x86_intercepts
+ };
  
- static int em_cr_write(struct x86_emulate_ctxt *ctxt)
- {
--	if (ctxt->ops->set_cr(ctxt, ctxt->modrm_reg, ctxt->src.val))
-+	int cr_num = ctxt->modrm_reg;
-+	int r;
 +
-+	if (ctxt->ops->set_cr(ctxt, cr_num, ctxt->src.val))
- 		return emulate_gp(ctxt, 0);
- 
- 	/* Disable writeback. */
- 	ctxt->dst.type = OP_NONE;
++/*
++ * 32 bit KVM's emulated SMM layout
++ * Loosely based on Intel's layout
++ */
 +
-+	if (cr_num == 0) {
-+		/* CR0 write might have updated CR0.PE */
-+		r = update_emulation_mode(ctxt);
-+		if (r != X86EMUL_CONTINUE)
-+			return r;
-+	}
++struct kvm_smm_seg_state_32 {
++	u32 flags;
++	u32 limit;
++	u32 base;
++} __packed;
 +
- 	return X86EMUL_CONTINUE;
- }
- 
++struct kvm_smram_state_32 {
++
++	u32 reserved1[62];			/* FE00 - FEF7 */
++	u32 smbase;				/* FEF8 */
++	u32 smm_revision;			/* FEFC */
++	u32 reserved2[5];			/* FF00-FF13 */
++	/* CR4 is not present in Intel/AMD SMRAM image*/
++	u32 cr4;				/* FF14 */
++	u32 reserved3[5];			/* FF18 */
++
++	/*
++	 * Segment state is not present/documented in the
++	 * Intel/AMD SMRAM image
++	 */
++	struct kvm_smm_seg_state_32 ds;		/* FF2C */
++	struct kvm_smm_seg_state_32 fs;		/* FF38 */
++	struct kvm_smm_seg_state_32 gs;		/* FF44 */
++	/* idtr has only base and limit*/
++	struct kvm_smm_seg_state_32 idtr;	/* FF50 */
++	struct kvm_smm_seg_state_32 tr;		/* FF5C */
++	u32 reserved;				/* FF68 */
++	/* gdtr has only base and limit*/
++	struct kvm_smm_seg_state_32 gdtr;	/* FF6C */
++	struct kvm_smm_seg_state_32 ldtr;	/* FF78 */
++	struct kvm_smm_seg_state_32 es;		/* FF84 */
++	struct kvm_smm_seg_state_32 cs;		/* FF90 */
++	struct kvm_smm_seg_state_32 ss;		/* FF9C */
++
++	u32 es_sel;				/* FFA8 */
++	u32 cs_sel;				/* FFAC */
++	u32 ss_sel;				/* FFB0 */
++	u32 ds_sel;				/* FFB4 */
++	u32 fs_sel;				/* FFB8 */
++	u32 gs_sel;				/* FFBC */
++	u32 ldtr_sel;				/* FFC0 */
++	u32 tr_sel;				/* FFC4 */
++
++	u32 dr7;				/* FFC8 */
++	u32 dr6;				/* FFCC */
++
++	/* GPRS in the "natural" X86 order (RAX/RCX/RDX.../RDI)*/
++	u32 gprs[8];				/* FFD0-FFEC */
++
++	u32 eip;				/* FFF0 */
++	u32 eflags;				/* FFF4 */
++	u32 cr3;				/* FFF8 */
++	u32 cr0;				/* FFFC */
++} __packed;
++
++/*
++ * 64 bit KVM's emulated SMM layout
++ * Based on AMD64 layout
++ */
++
++struct kvm_smm_seg_state_64 {
++	u16 selector;
++	u16 attributes;
++	u32 limit;
++	u64 base;
++};
++
++struct kvm_smram_state_64 {
++	struct kvm_smm_seg_state_64 es;		/* FE00 (R/O) */
++	struct kvm_smm_seg_state_64 cs;		/* FE10 (R/O) */
++	struct kvm_smm_seg_state_64 ss;		/* FE20 (R/O) */
++	struct kvm_smm_seg_state_64 ds;		/* FE30 (R/O) */
++	struct kvm_smm_seg_state_64 fs;		/* FE40 (R/O) */
++	struct kvm_smm_seg_state_64 gs;		/* FE50 (R/O) */
++
++	/* gdtr has only base and limit*/
++	struct kvm_smm_seg_state_64 gdtr;	/* FE60 (R/O) */
++	struct kvm_smm_seg_state_64 ldtr;	/* FE70 (R/O) */
++
++	/* idtr has only base and limit*/
++	struct kvm_smm_seg_state_64 idtr;	/* FE80 (R/O) */
++	struct kvm_smm_seg_state_64 tr;		/* FE90 (R/O) */
++
++	/* I/O restart and auto halt restart are not implemented by KVM */
++	u64 io_restart_rip;			/* FEA0 (R/O) */
++	u64 io_restart_rcx;			/* FEA8 (R/O) */
++	u64 io_restart_rsi;			/* FEB0 (R/O) */
++	u64 io_restart_rdi;			/* FEB8 (R/O) */
++	u32 io_restart_dword;			/* FEC0 (R/O) */
++	u32 reserved1;				/* FEC4 */
++	u8 io_instruction_restart;		/* FEC8 (R/W) */
++	u8 auto_halt_restart;			/* FEC9 (R/W) */
++	u8 reserved2[6];			/* FECA-FECF */
++
++	u64 efer;				/* FED0 (R/O) */
++
++	/*
++	 * Implemented on AMD only, to store current SVM guest address.
++	 * svm_guest_virtual_int has unknown purpose, not implemented.
++	 */
++
++	u64 svm_guest_flag;			/* FED8 (R/O) */
++	u64 svm_guest_vmcb_gpa;			/* FEE0 (R/O) */
++	u64 svm_guest_virtual_int;		/* FEE8 (R/O) */
++
++	u32 reserved3[3];			/* FEF0-FEFB */
++	u32 smm_revison;			/* FEFC (R/O) */
++	u32 smbase;				/* FFF0 (R/W) */
++	u32 reserved4[5];			/* FF04-FF17 */
++
++	/* SSP and SVM fields below are not implemented by KVM */
++	u64 ssp;				/* FF18 (R/W) */
++	u64 svm_guest_pat;			/* FF20 (R/O) */
++	u64 svm_host_efer;			/* FF28 (R/O) */
++	u64 svm_host_cr4;			/* FF30 (R/O) */
++	u64 svm_host_cr3;			/* FF38 (R/O) */
++	u64 svm_host_cr0;			/* FF40 (R/O) */
++
++	u64 cr4;				/* FF48 (R/O) */
++	u64 cr3;				/* FF50 (R/O) */
++	u64 cr0;				/* FF58 (R/O) */
++
++	u64 dr7;				/* FF60 (R/O) */
++	u64 dr6;				/* FF68 (R/O) */
++
++	u64 rflags;				/* FF70 (R/W) */
++	u64 rip;				/* FF78 (R/W) */
++
++	/* GPRS in a reversed "natural" X86 order (R15/R14/../RCX/RAX.) */
++	u64 gprs[16];				/* FF80-FFFF (R/W) */
++};
++
++
+ /* Host execution mode. */
+ #if defined(CONFIG_X86_32)
+ #define X86EMUL_MODE_HOST X86EMUL_MODE_PROT32
 -- 
 2.26.3
 
