@@ -2,134 +2,250 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41ECEC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:39:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34C1FCCA473
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:43:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356694AbiFUVjn (ORCPT
+        id S1356274AbiFUVnp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 17:39:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55250 "EHLO
+        Tue, 21 Jun 2022 17:43:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355412AbiFUVjQ (ORCPT
+        with ESMTP id S1356492AbiFUVne (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 17:39:16 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68C1A12614
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 14:38:57 -0700 (PDT)
-Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25LBQrlL010673;
-        Tue, 21 Jun 2022 16:38:06 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=PODMain02222019;
- bh=22fxRs36mOwLx01C6ew27/L9/hScJO9HrYMwPcvStzY=;
- b=Ascl+/HS4hQSBUcfjilvnyBrvzlaszZT8iFTOlHlsMsY4wdxsr0oIAheappp90DxwiEq
- kmPSngJDf26W8G6CZa320YqPMt1OvGoK44LwUnoXfNEM2ApGIEhGT1wN0Ob1v+6pdJUn
- weEMEAijkclEVXZlCEPoYJybX1b17OHzHVax0t/x/+16jIQQtyuoDOKQV09PoD58hOuI
- /IOEjmgRDeP0c9VblGLBo0/5EIF+9wl922VwJUU+la365S164UUL1e7GfXNrUmmsWKzU
- y1CGyFQ0NGmA7aHTHXcRu7/5SEJ2BFlwgxCodtP4Rj/CR6suY6cxtcNRC5TLYNjOlNPf QQ== 
-Received: from ediex02.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3gsc41c7yj-4
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 21 Jun 2022 16:38:06 -0500
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
- (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Tue, 21 Jun
- 2022 22:38:04 +0100
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.28 via Frontend
- Transport; Tue, 21 Jun 2022 22:38:04 +0100
-Received: from vitaly-Legion-7-16ACHg6.ad.cirrus.com (unknown [198.90.238.175])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id CBF9A475;
-        Tue, 21 Jun 2022 21:38:03 +0000 (UTC)
-From:   Vitaly Rodionov <vitalyr@opensource.cirrus.com>
-To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-        Mark Brown <broonie@kernel.org>
-CC:     <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
-        <linux-kernel@vger.kernel.org>,
-        Stefan Binding <sbinding@opensource.cirrus.com>
-Subject: [PATCH v6 06/14] ALSA: hda: cs35l41: Support reading subsystem id from ACPI
-Date:   Tue, 21 Jun 2022 22:37:53 +0100
-Message-ID: <20220621213801.2021097-7-vitalyr@opensource.cirrus.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220621213801.2021097-1-vitalyr@opensource.cirrus.com>
-References: <20220621213801.2021097-1-vitalyr@opensource.cirrus.com>
+        Tue, 21 Jun 2022 17:43:34 -0400
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E421917595
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 14:43:26 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id s14so10281198ljs.3
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 14:43:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RaH322YAfZ65JMqhLFboGn96Qf6ZOePhsZrijH5KbCY=;
+        b=D3/p22SjNtBkp5qEhE4PypZKC+l3FMV1mhcEN+p6jsNQhcEDuTDTjJxGGLOJxbogOF
+         1hFTZ9BOEVKlgp02OsdyaGnv3jsasAPBa/Cnnn2ZVpnyiylHmg6eMVeg4UOWSS0+p6zX
+         sdy+2066vX5/bbMcM3aRdbC1PfISSKXvU7NaQ/kzpQjqwI/qZveOUZN3ugQivMMRJkUd
+         767YoEBbRRZIM8FyEma3DgNG5SB6FMsF8zbh96yzu29kt8zP32y8BNiGjtAdoKvgo2HK
+         SJwOxxywLUJ1z091ovPz98tTKskg+w9ZxRTuR70p3dBhFgE3sxOSL5tGHMYs7Mh864Qz
+         uO2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RaH322YAfZ65JMqhLFboGn96Qf6ZOePhsZrijH5KbCY=;
+        b=tb1GX8YWCBQjYUgyBCuGli6vw40umc2cf23BmrWl6AS2Yfwmmii4LAEx1VNZH4wt4T
+         8X7tMSZO0ahtGn5wyRRH8dBXVzDeKLBDmrwUwVTRndGkT2o1Jimq/X8vzdj2QydkKESU
+         UBLxepVIvCn17J5a64JzRtqdHyStRSz/etIwXItuyo2IXIo00bgsHVqffWwPAn4Qkzyv
+         fo1LpShyWJx9yrBdWe1vhW6cQx2fEub0d2vqsd8B0by1yLvWKkMZQUyA/4tz0jYewgtX
+         djsuPQCROL4PlAuhbGi4v8jBbb4Y7VDPUBqjQGU7r2Le+zcPPdjwtEl0YPtn9avToEn/
+         OXTA==
+X-Gm-Message-State: AJIora/xTdcmlRCcFsUZ3AzV468+N2GNNWGiUqGpZq8gS+Qmx6E7eF7K
+        YVKgUKxfM0e9cq29C1r1Wlo1ivaNoq4o8OA+xKQGDw==
+X-Google-Smtp-Source: AGRyM1t5LrtreIfpkqHvv2yWX9Y68V+SEkl3eaqcL/xXhjiBuz27iIjbUSSQa72Yfnt0/LC6HDLYtul7ha0wfZsOe5Q=
+X-Received: by 2002:a2e:8805:0:b0:255:6e73:9a67 with SMTP id
+ x5-20020a2e8805000000b002556e739a67mr91486ljh.426.1655847804879; Tue, 21 Jun
+ 2022 14:43:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-GUID: EhAP18Rg7ulkxEBppA6JlKL7YYEMns6y
-X-Proofpoint-ORIG-GUID: EhAP18Rg7ulkxEBppA6JlKL7YYEMns6y
-X-Proofpoint-Spam-Reason: safe
+References: <cover.1655761627.git.ashish.kalra@amd.com> <a63de5e687c530849312099ee02007089b67e92f.1655761627.git.ashish.kalra@amd.com>
+In-Reply-To: <a63de5e687c530849312099ee02007089b67e92f.1655761627.git.ashish.kalra@amd.com>
+From:   Peter Gonda <pgonda@google.com>
+Date:   Tue, 21 Jun 2022 15:43:13 -0600
+Message-ID: <CAMkAt6qL_p8Fp=ED5hER665GHzQn=nwZQhFg4MwHt7QanS4wVw@mail.gmail.com>
+Subject: Re: [PATCH Part2 v6 13/49] crypto:ccp: Provide APIs to issue SEV-SNP commands
+To:     Ashish Kalra <Ashish.Kalra@amd.com>
+Cc:     "the arch/x86 maintainers" <x86@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        kvm list <kvm@vger.kernel.org>, linux-coco@lists.linux.dev,
+        linux-mm@kvack.org,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+        "Lendacky, Thomas" <thomas.lendacky@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Sergio Lopez <slp@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Dov Murik <dovmurik@linux.ibm.com>,
+        Tobin Feldman-Fitzthum <tobin@ibm.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Michael Roth <michael.roth@amd.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Andi Kleen <ak@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>, Marc Orr <marcorr@google.com>,
+        Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        Alper Gun <alpergun@google.com>,
+        "Dr. David Alan Gilbert" <dgilbert@redhat.com>, jarkko@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Binding <sbinding@opensource.cirrus.com>
+(
 
-On some laptop models, the ACPI contains the unique
-Subsystem ID, and this value should be preferred
-over the value from the HDA driver.
+On Mon, Jun 20, 2022 at 5:05 PM Ashish Kalra <Ashish.Kalra@amd.com> wrote:
+>
+> From: Brijesh Singh <brijesh.singh@amd.com>
+>
+> Provide the APIs for the hypervisor to manage an SEV-SNP guest. The
+> commands for SEV-SNP is defined in the SEV-SNP firmware specification.
+>
+> Signed-off-by: Brijesh Singh <brijesh.singh@amd.com>
+> ---
+>  drivers/crypto/ccp/sev-dev.c | 24 ++++++++++++
+>  include/linux/psp-sev.h      | 73 ++++++++++++++++++++++++++++++++++++
+>  2 files changed, 97 insertions(+)
+>
+> diff --git a/drivers/crypto/ccp/sev-dev.c b/drivers/crypto/ccp/sev-dev.c
+> index f1173221d0b9..35d76333e120 100644
+> --- a/drivers/crypto/ccp/sev-dev.c
+> +++ b/drivers/crypto/ccp/sev-dev.c
+> @@ -1205,6 +1205,30 @@ int sev_guest_df_flush(int *error)
+>  }
+>  EXPORT_SYMBOL_GPL(sev_guest_df_flush);
+>
+> +int snp_guest_decommission(struct sev_data_snp_decommission *data, int *error)
+> +{
+> +       return sev_do_cmd(SEV_CMD_SNP_DECOMMISSION, data, error);
+> +}
+> +EXPORT_SYMBOL_GPL(snp_guest_decommission);
+> +
+> +int snp_guest_df_flush(int *error)
+> +{
+> +       return sev_do_cmd(SEV_CMD_SNP_DF_FLUSH, NULL, error);
+> +}
+> +EXPORT_SYMBOL_GPL(snp_guest_df_flush);
 
-Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
-Signed-off-by: Vitaly Rodionov <vitalyr@opensource.cirrus.com>
----
- sound/pci/hda/cs35l41_hda.c | 36 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 36 insertions(+)
+Why not instead change sev_guest_df_flush() to be SNP aware? That way
+callers get the right behavior without having to know if SNP is
+enabled or not.
 
-diff --git a/sound/pci/hda/cs35l41_hda.c b/sound/pci/hda/cs35l41_hda.c
-index 7f0132694774..5f89a0462eb6 100644
---- a/sound/pci/hda/cs35l41_hda.c
-+++ b/sound/pci/hda/cs35l41_hda.c
-@@ -545,6 +545,36 @@ static int cs35l41_hda_apply_properties(struct cs35l41_hda *cs35l41)
- 	return cs35l41_hda_channel_map(cs35l41->dev, 0, NULL, 1, &hw_cfg->spk_pos);
- }
- 
-+static int cs35l41_get_acpi_sub_string(struct device *dev, struct acpi_device *adev,
-+				       const char **subsysid)
-+{
-+	struct acpi_buffer buffer = { ACPI_ALLOCATE_BUFFER, NULL };
-+	union acpi_object *obj;
-+	acpi_status status;
-+	int ret = 0;
-+
-+	status = acpi_evaluate_object(adev->handle, "_SUB", NULL, &buffer);
-+	if (ACPI_SUCCESS(status)) {
-+		obj = buffer.pointer;
-+		if (obj->type == ACPI_TYPE_STRING) {
-+			*subsysid = devm_kstrdup(dev, obj->string.pointer, GFP_KERNEL);
-+			if (*subsysid == NULL) {
-+				dev_err(dev, "Cannot allocate Subsystem ID");
-+				ret = -ENOMEM;
-+			}
-+		} else {
-+			dev_warn(dev, "Warning ACPI _SUB did not return a string\n");
-+			ret = -ENODEV;
-+		}
-+		acpi_os_free(buffer.pointer);
-+	} else {
-+		dev_dbg(dev, "Warning ACPI _SUB failed: %#x\n", status);
-+		ret = -ENODEV;
-+	}
-+
-+	return ret;
-+}
-+
- static int cs35l41_hda_read_acpi(struct cs35l41_hda *cs35l41, const char *hid, int id)
- {
- 	struct cs35l41_hw_cfg *hw_cfg = &cs35l41->hw_cfg;
-@@ -564,6 +594,12 @@ static int cs35l41_hda_read_acpi(struct cs35l41_hda *cs35l41, const char *hid, i
- 	physdev = get_device(acpi_get_first_physical_node(adev));
- 	acpi_dev_put(adev);
- 
-+	ret = cs35l41_get_acpi_sub_string(cs35l41->dev, adev, &cs35l41->acpi_subsystem_id);
-+	if (ret)
-+		dev_info(cs35l41->dev, "No Subsystem ID found in ACPI: %d", ret);
-+	else
-+		dev_dbg(cs35l41->dev, "Subsystem ID %s found", cs35l41->acpi_subsystem_id);
-+
- 	property = "cirrus,dev-index";
- 	ret = device_property_count_u32(physdev, property);
- 	if (ret <= 0)
--- 
-2.34.1
+int sev_guest_df_flush(int *error)
+{
+  if (!psp_master || !psp_master->sev_data)
+   return -EINVAL;
 
+  if (psp_master->sev_data->snp_inited)
+    return sev_do_cmd(SEV_CMD_SNP_DF_FLUSH, NULL, error);
+
+  return sev_do_cmd(SEV_CMD_DF_FLUSH, NULL, error);
+}
+
+> +int snp_guest_page_reclaim(struct sev_data_snp_page_reclaim *data, int *error)
+> +{
+> +       return sev_do_cmd(SEV_CMD_SNP_PAGE_RECLAIM, data, error);
+> +}
+> +EXPORT_SYMBOL_GPL(snp_guest_page_reclaim);
+> +
+> +int snp_guest_dbg_decrypt(struct sev_data_snp_dbg *data, int *error)
+> +{
+> +       return sev_do_cmd(SEV_CMD_SNP_DBG_DECRYPT, data, error);
+> +}
+> +EXPORT_SYMBOL_GPL(snp_guest_dbg_decrypt);
+> +
+>  static void sev_exit(struct kref *ref)
+>  {
+>         misc_deregister(&misc_dev->misc);
+> diff --git a/include/linux/psp-sev.h b/include/linux/psp-sev.h
+> index ef4d42e8c96e..9f921d221b75 100644
+> --- a/include/linux/psp-sev.h
+> +++ b/include/linux/psp-sev.h
+> @@ -881,6 +881,64 @@ int sev_guest_df_flush(int *error);
+>   */
+>  int sev_guest_decommission(struct sev_data_decommission *data, int *error);
+>
+> +/**
+> + * snp_guest_df_flush - perform SNP DF_FLUSH command
+> + *
+> + * @sev_ret: sev command return code
+> + *
+> + * Returns:
+> + * 0 if the sev successfully processed the command
+> + * -%ENODEV    if the sev device is not available
+> + * -%ENOTSUPP  if the sev does not support SEV
+> + * -%ETIMEDOUT if the sev command timed out
+> + * -%EIO       if the sev returned a non-zero return code
+> + */
+> +int snp_guest_df_flush(int *error);
+> +
+> +/**
+> + * snp_guest_decommission - perform SNP_DECOMMISSION command
+> + *
+> + * @decommission: sev_data_decommission structure to be processed
+> + * @sev_ret: sev command return code
+> + *
+> + * Returns:
+> + * 0 if the sev successfully processed the command
+> + * -%ENODEV    if the sev device is not available
+> + * -%ENOTSUPP  if the sev does not support SEV
+> + * -%ETIMEDOUT if the sev command timed out
+> + * -%EIO       if the sev returned a non-zero return code
+> + */
+> +int snp_guest_decommission(struct sev_data_snp_decommission *data, int *error);
+> +
+> +/**
+> + * snp_guest_page_reclaim - perform SNP_PAGE_RECLAIM command
+> + *
+> + * @decommission: sev_snp_page_reclaim structure to be processed
+> + * @sev_ret: sev command return code
+> + *
+> + * Returns:
+> + * 0 if the sev successfully processed the command
+> + * -%ENODEV    if the sev device is not available
+> + * -%ENOTSUPP  if the sev does not support SEV
+> + * -%ETIMEDOUT if the sev command timed out
+> + * -%EIO       if the sev returned a non-zero return code
+> + */
+> +int snp_guest_page_reclaim(struct sev_data_snp_page_reclaim *data, int *error);
+> +
+> +/**
+> + * snp_guest_dbg_decrypt - perform SEV SNP_DBG_DECRYPT command
+> + *
+> + * @sev_ret: sev command return code
+> + *
+> + * Returns:
+> + * 0 if the sev successfully processed the command
+> + * -%ENODEV    if the sev device is not available
+> + * -%ENOTSUPP  if the sev does not support SEV
+> + * -%ETIMEDOUT if the sev command timed out
+> + * -%EIO       if the sev returned a non-zero return code
+> + */
+> +int snp_guest_dbg_decrypt(struct sev_data_snp_dbg *data, int *error);
+> +
+>  void *psp_copy_user_blob(u64 uaddr, u32 len);
+>
+>  #else  /* !CONFIG_CRYPTO_DEV_SP_PSP */
+> @@ -908,6 +966,21 @@ sev_issue_cmd_external_user(struct file *filep, unsigned int id, void *data, int
+>
+>  static inline void *psp_copy_user_blob(u64 __user uaddr, u32 len) { return ERR_PTR(-EINVAL); }
+>
+> +static inline int
+> +snp_guest_decommission(struct sev_data_snp_decommission *data, int *error) { return -ENODEV; }
+> +
+> +static inline int snp_guest_df_flush(int *error) { return -ENODEV; }
+> +
+> +static inline int snp_guest_page_reclaim(struct sev_data_snp_page_reclaim *data, int *error)
+> +{
+> +       return -ENODEV;
+> +}
+> +
+> +static inline int snp_guest_dbg_decrypt(struct sev_data_snp_dbg *data, int *error)
+> +{
+> +       return -ENODEV;
+> +}
+> +
+>  #endif /* CONFIG_CRYPTO_DEV_SP_PSP */
+>
+>  #endif /* __PSP_SEV_H__ */
+> --
+> 2.25.1
+>
