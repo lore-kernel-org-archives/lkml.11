@@ -2,185 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37424C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 19:18:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52034C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 19:19:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353707AbiFUTSE (ORCPT
+        id S1353259AbiFUTTr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 15:18:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36824 "EHLO
+        Tue, 21 Jun 2022 15:19:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353438AbiFUTRN (ORCPT
+        with ESMTP id S1353270AbiFUTT3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 15:17:13 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AC1D1CB2F;
-        Tue, 21 Jun 2022 12:16:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655839002; x=1687375002;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=UwGnL3cKrVpIYdUCZi0g8IIvLiuF1HHfK1nv3YKvvvI=;
-  b=Pk1U1pWwT3Rce9cmXQWWOfWqeyXRMMm5Dg75YZL7KRTOIeLiVHLZBfYM
-   cU6TEG3Y565fyXAvgai8ybgBddzkccOEvW16Pz+zaT+wD1GX0S5F738AV
-   u5lq0y6HmxfN0Kn2lz+ltcHZPoJR9I9qz/XCS7Se83CTHjDEmi4l05wxl
-   GYMcZysMo9+VCvgATJQ5G9B5XVUG/o5IyoDTp+Trm2e5iZCtjtqJrIjkY
-   3wkH+7BHn+U4G7Ug+52jsrNuBZHCWUlnk+u3X/OLKb1P5iJCeU0lU/U9C
-   XVGGqH2QwuILK+8Ildo5cBzmzQnLaGFhjCMSxIbx43j3k7cx+uKyf5Na+
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="263247276"
-X-IronPort-AV: E=Sophos;i="5.92,210,1650956400"; 
-   d="scan'208";a="263247276"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 12:16:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,210,1650956400"; 
-   d="scan'208";a="833723127"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga006.fm.intel.com with ESMTP; 21 Jun 2022 12:16:19 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 25LJG7oG012650;
-        Tue, 21 Jun 2022 20:16:17 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Arnd Bergmann <arnd@arndb.de>, Yury Norov <yury.norov@gmail.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matt Turner <mattst88@gmail.com>,
-        Brian Cain <bcain@quicinc.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Kees Cook <keescook@chromium.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Marco Elver <elver@google.com>, Borislav Petkov <bp@suse.de>,
-        Tony Luck <tony.luck@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-alpha@vger.kernel.org, linux-hexagon@vger.kernel.org,
-        linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 7/8] bitmap: don't assume compiler evaluates small mem*() builtins calls
-Date:   Tue, 21 Jun 2022 21:15:52 +0200
-Message-Id: <20220621191553.69455-8-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220621191553.69455-1-alexandr.lobakin@intel.com>
-References: <20220621191553.69455-1-alexandr.lobakin@intel.com>
+        Tue, 21 Jun 2022 15:19:29 -0400
+Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F8062E6B7
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 12:18:46 -0700 (PDT)
+Received: from pps.filterd (m0134420.ppops.net [127.0.0.1])
+        by mx0b-002e3701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25LHcnrn026833;
+        Tue, 21 Jun 2022 19:18:38 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pps0720; bh=qs3PCzipYTgCGNDcxZz3wdl1JoNZIFh36ePeUX5Lz5E=;
+ b=CWNTQT1Q4GVDNzuAgVVmbmD6Xv6Q5qaDIxxHMn4IG/iwFZVB3VhYoO0Xspe2wNQV/f2W
+ pjwjFGHp1tw48/dciOCuq1LM33hJnaJW2NUibv2buxz/y55rY+jO4h5BBbRt2eRChtmY
+ V5LSxivix9X1yNU7pfgdaPswREbq0Q5n2/CXjG0vfOG5EGhVii1apM+3gm2VDELUNARO
+ x2WXmJ4mZMQaop3ORYWmuCrBANmTDMgi2euXkRT5VxX92fALGI3aHoyZ+vCVMWHmRGML
+ e906D81O6Cjk3Hv8KZLsa56TozK1DQfHFQCyBFZHnB5v0ryPzlqHR+bczBBqPjCEZNLt 6A== 
+Received: from p1lg14881.it.hpe.com (p1lg14881.it.hpe.com [16.230.97.202])
+        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3gu4ne0p09-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 21 Jun 2022 19:18:38 +0000
+Received: from p1lg14886.dc01.its.hpecorp.net (unknown [10.119.18.237])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by p1lg14881.it.hpe.com (Postfix) with ESMTPS id BF1408058CD;
+        Tue, 21 Jun 2022 19:18:36 +0000 (UTC)
+Received: from hpe.com (unknown [16.231.227.36])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by p1lg14886.dc01.its.hpecorp.net (Postfix) with ESMTPS id AFD04808A2D;
+        Tue, 21 Jun 2022 19:18:35 +0000 (UTC)
+Date:   Tue, 21 Jun 2022 14:18:33 -0500
+From:   Dimitri Sivanich <sivanich@hpe.com>
+To:     Jiang Jian <jiangjian@cdjrlc.com>
+Cc:     dimitri.sivanich@hpe.com, arnd@arndb.de,
+        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] misc: sgi-gru: grukservices: drop unexpected word "the"
+ in the comments
+Message-ID: <20220621191833.GA31015@hpe.com>
+References: <20220621123203.118488-1-jiangjian@cdjrlc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220621123203.118488-1-jiangjian@cdjrlc.com>
+X-Proofpoint-GUID: SIkKl7CGU4fE-yuDlhPezNFNyEII43B6
+X-Proofpoint-ORIG-GUID: SIkKl7CGU4fE-yuDlhPezNFNyEII43B6
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-21_08,2022-06-21_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ phishscore=0 malwarescore=0 adultscore=0 bulkscore=0 mlxlogscore=999
+ spamscore=0 mlxscore=0 clxscore=1011 suspectscore=0 priorityscore=1501
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206210078
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Intel kernel bot triggered the build bug on ARC architecture that
-in fact is as follows:
+Acked-by: Dimitri Sivanich <sivanich@hpe.com>
 
-	DECLARE_BITMAP(bitmap, BITS_PER_LONG);
-
-	bitmap_clear(bitmap, 0, BITS_PER_LONG);
-	BUILD_BUG_ON(!__builtin_constant_p(*bitmap));
-
-which can be expanded to:
-
-	unsigned long bitmap[1];
-
-	memset(bitmap, 0, sizeof(*bitmap));
-	BUILD_BUG_ON(!__builtin_constant_p(*bitmap));
-
-In most cases, a compiler is able to expand small/simple mem*()
-calls to simple assignments or bitops, in this case that would mean:
-
-	unsigned long bitmap[1] = { 0 };
-
-	BUILD_BUG_ON(!__builtin_constant_p(*bitmap));
-
-and on most architectures this works, but not on ARC, despite having
--O3 for every build.
-So, to make this work, in case when the last bit to modify is still
-within the first long (small_const_nbits()), just use plain
-assignments for the rest of bitmap_*() functions which still use
-mem*(), but didn't receive such compile-time optimizations yet.
-This doesn't have the same coverage as compilers provide, but at
-least something to start:
-
-text: add/remove: 3/7 grow/shrink: 43/78 up/down: 1848/-3370 (-1546)
-data: add/remove: 1/11 grow/shrink: 0/8 up/down: 4/-356 (-352)
-
-notably cpumask_*() family when NR_CPUS <= BITS_PER_LONG:
-
-netif_get_num_default_rss_queues              38       4     -34
-cpumask_copy                                  90       -     -90
-cpumask_clear                                146       -    -146
-
-and the abovementioned assertion started passing.
-
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
----
- include/linux/bitmap.h | 22 +++++++++++++++++++---
- 1 file changed, 19 insertions(+), 3 deletions(-)
-
-diff --git a/include/linux/bitmap.h b/include/linux/bitmap.h
-index 2e6cd5681040..a0f4f3af8d30 100644
---- a/include/linux/bitmap.h
-+++ b/include/linux/bitmap.h
-@@ -238,20 +238,32 @@ extern int bitmap_print_list_to_buf(char *buf, const unsigned long *maskp,
- static inline void bitmap_zero(unsigned long *dst, unsigned int nbits)
- {
- 	unsigned int len = BITS_TO_LONGS(nbits) * sizeof(unsigned long);
--	memset(dst, 0, len);
-+
-+	if (small_const_nbits(nbits))
-+		*dst = 0;
-+	else
-+		memset(dst, 0, len);
- }
- 
- static inline void bitmap_fill(unsigned long *dst, unsigned int nbits)
- {
- 	unsigned int len = BITS_TO_LONGS(nbits) * sizeof(unsigned long);
--	memset(dst, 0xff, len);
-+
-+	if (small_const_nbits(nbits))
-+		*dst = ~0UL;
-+	else
-+		memset(dst, 0xff, len);
- }
- 
- static inline void bitmap_copy(unsigned long *dst, const unsigned long *src,
- 			unsigned int nbits)
- {
- 	unsigned int len = BITS_TO_LONGS(nbits) * sizeof(unsigned long);
--	memcpy(dst, src, len);
-+
-+	if (small_const_nbits(nbits))
-+		*dst = *src;
-+	else
-+		memcpy(dst, src, len);
- }
- 
- /*
-@@ -431,6 +443,8 @@ static __always_inline void bitmap_set(unsigned long *map, unsigned int start,
- {
- 	if (__builtin_constant_p(nbits) && nbits == 1)
- 		__set_bit(start, map);
-+	else if (small_const_nbits(start + nbits))
-+		*map |= GENMASK(start + nbits - 1, start);
- 	else if (__builtin_constant_p(start & BITMAP_MEM_MASK) &&
- 		 IS_ALIGNED(start, BITMAP_MEM_ALIGNMENT) &&
- 		 __builtin_constant_p(nbits & BITMAP_MEM_MASK) &&
-@@ -445,6 +459,8 @@ static __always_inline void bitmap_clear(unsigned long *map, unsigned int start,
- {
- 	if (__builtin_constant_p(nbits) && nbits == 1)
- 		__clear_bit(start, map);
-+	else if (small_const_nbits(start + nbits))
-+		*map &= ~GENMASK(start + nbits - 1, start);
- 	else if (__builtin_constant_p(start & BITMAP_MEM_MASK) &&
- 		 IS_ALIGNED(start, BITMAP_MEM_ALIGNMENT) &&
- 		 __builtin_constant_p(nbits & BITMAP_MEM_MASK) &&
--- 
-2.36.1
-
+On Tue, Jun 21, 2022 at 08:32:03PM +0800, Jiang Jian wrote:
+> there is an unexpected word "the" in the comments that need to be dropped
+> file: drivers/misc/sgi-gru/grukservices.c
+> line: 39
+>  * reserved whenever the the kernel context for the blade is loaded. Note
+> changed to
+>  * reserved whenever the kernel context for the blade is loaded. Note
+> 
+> Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
+> ---
+>  drivers/misc/sgi-gru/grukservices.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/misc/sgi-gru/grukservices.c b/drivers/misc/sgi-gru/grukservices.c
+> index 19dbdad8ad8a..fa1f5a632e7f 100644
+> --- a/drivers/misc/sgi-gru/grukservices.c
+> +++ b/drivers/misc/sgi-gru/grukservices.c
+> @@ -36,7 +36,7 @@
+>   * kernel/user requirements.
+>   *
+>   * Blade percpu resources reserved for kernel use. These resources are
+> - * reserved whenever the the kernel context for the blade is loaded. Note
+> + * reserved whenever the kernel context for the blade is loaded. Note
+>   * that the kernel context is not guaranteed to be always available. It is
+>   * loaded on demand & can be stolen by a user if the user demand exceeds the
+>   * kernel demand. The kernel can always reload the kernel context but
+> -- 
+> 2.17.1
