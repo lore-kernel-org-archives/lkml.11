@@ -2,499 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA8BACCA473
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:40:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C0F0C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:40:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352938AbiFUPkL (ORCPT
+        id S1353070AbiFUPkf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 11:40:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50516 "EHLO
+        Tue, 21 Jun 2022 11:40:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352053AbiFUPkI (ORCPT
+        with ESMTP id S1352974AbiFUPkM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 11:40:08 -0400
-Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD1F32C125;
-        Tue, 21 Jun 2022 08:40:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-        d=metrotek.ru; s=mail;
-        h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding:
-         in-reply-to:references;
-        bh=yYhlWY1QxxKVnKvgjfJq7EXLhDxOq8mJ2/GtL3UScpE=;
-        b=SPek6uY2eiBxkTU1TLRLMyHhr8giWsefDWnJAUYmLLPUWozVcRmSY/nve+bqY6x7lrUc/U1qAYLRB
-         zo6wQtrCbqk/PivZbn4HqWdc3UJHVFNlWDsS7/fKSQP4yDszVe8qN2GCHuf4o9gHTlx0r8LapKj+/q
-         22ruYE9ca9JCXPhSOOeadfXnH16UqlTII5oh2/pUQ9jHCJ9+gm69rVtNyDdU9l2d028zMmDnSBDAhF
-         REC3toM39W5VJiOqxH33Ec1RTMb+MEfKazkb/VhwecmFzQU4MhVCTXES5XsY+Vd/7+v1T/6N+oCbah
-         qcIJ/h4D1uozYxzWK7cETfFZ/6AC/gA==
-X-Kerio-Anti-Spam:  Build: [Engines: 2.16.3.1424, Stamp: 3], Multi: [Enabled, t: (0.000010,0.042392)], BW: [Enabled, t: (0.000019,0.000001)], RTDA: [Enabled, t: (0.075207), Hit: No, Details: v2.40.0; Id: 15.52k8p4.1g63emrmg.1h4el; mclb], total: 0(700)
-X-Footer: bWV0cm90ZWsucnU=
-Received: from h-e2.ddg ([85.143.252.66])
-        (authenticated user i.bornyakov@metrotek.ru)
-        by mail.pr-group.ru with ESMTPSA
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
-        Tue, 21 Jun 2022 18:39:43 +0300
-From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
-To:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
-        trix@redhat.com, corbet@lwn.net
-Cc:     Ivan Bornyakov <i.bornyakov@metrotek.ru>,
-        conor.dooley@microchip.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-fpga@vger.kernel.org,
-        linux-doc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, system@metrotek.ru
-Subject: [PATCH v21 1/5] fpga: fpga-mgr: support bitstream offset in image buffer
-Date:   Tue, 21 Jun 2022 18:38:43 +0300
-Message-Id: <20220621153847.103052-2-i.bornyakov@metrotek.ru>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220621153847.103052-1-i.bornyakov@metrotek.ru>
-References: <20220621153847.103052-1-i.bornyakov@metrotek.ru>
+        Tue, 21 Jun 2022 11:40:12 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12D0A2C643
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:40:11 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id o9so10686686edt.12
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:40:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=1sFbExhS+OPLRXtZhG6HHO16GCs3zpUEDAo1KtqwhuU=;
+        b=WQGkyOh69T3rIJ9GhJep6gi1zgBYkO0OBKsIaFlY+6AZisg0V3xR73aaPs3OW44eku
+         iZWOjwrf100p6yo3l8E8v5hOW+GH3yJA5uKRG4XDKXJ+gLTDhEUS8GfWWzYhJWGfA6VC
+         LS+o7CtrxuSbhvNrlgpEL29B7aE5ENttCeCVqDmoYneLkjLqd71jeTE0hgfqWqxBwRfR
+         PSvyjcKzNSC8TiGVclA7Cb+V8S6/yK6zy9koJlgPvyz+pARkqDykE0wSnEI9tFrq+PHm
+         karQv1IJcNPCk0k6N430IaWslTnkrtyrPzoYJVoUeQlHOLnf9TIddhVCsVKtMgMP64Qw
+         WP3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=1sFbExhS+OPLRXtZhG6HHO16GCs3zpUEDAo1KtqwhuU=;
+        b=1lh2/D9jGlFkzR3cxKLnoUvzswNI2TNQiko/emhWoQ+FagttOzKdNRxjeh89CI705h
+         O718og/UFlxURFNrjoQaT5RNU8fpaeo6uTGBx265hFOZHLsMAcvx12q6l7TdUOgXn7z5
+         EYDYyhEOS9YLn8OwPKD8DbWUxQnAQz6jdgFiOrMcP7d6jqDgo5XKP1KnkkOSj32HJ0eQ
+         9McTSSc3PFpbSzGKTxawYECqKUMwm1zh9+qqN8Y6entjw7Gp/+uRqT/j5HCnV0Zuqp0+
+         A/l5jj/fIP1wiPZ9hKTVbvSLg6Wmd4CKZ7w025jEtRwF0jwnm/e8CCSknmq51YyZdQoP
+         +dIQ==
+X-Gm-Message-State: AJIora+wb3gA8du1Gcz5UyPIRk1pEIJNgeXcpOpf4PL55ElAELWt1uVZ
+        Zhk1oKbOL0eMFpgK9lVLW2GZLg==
+X-Google-Smtp-Source: AGRyM1tgLH2e5nkg+AVdA2b8Jkx7KfBK6e+fSRsOTK0URy9oXzrHdA0RHNt8rt1JcY6ND0eqmpRGiw==
+X-Received: by 2002:a05:6402:51d3:b0:431:6c7b:28d with SMTP id r19-20020a05640251d300b004316c7b028dmr35227379edd.281.1655826009584;
+        Tue, 21 Jun 2022 08:40:09 -0700 (PDT)
+Received: from [192.168.0.221] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id z6-20020a17090665c600b006feb6dee4absm7929479ejn.137.2022.06.21.08.40.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 21 Jun 2022 08:40:09 -0700 (PDT)
+Message-ID: <5832f7f1-3c8f-d88d-3b72-99effc1e2e83@linaro.org>
+Date:   Tue, 21 Jun 2022 17:40:07 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v4 05/18] dt-binding: clk: npcm845: Add binding for
+ Nuvoton NPCM8XX Clock
+Content-Language: en-US
+To:     Tomer Maimon <tmaimon77@gmail.com>, avifishman70@gmail.com,
+        tali.perry1@gmail.com, joel@jms.id.au, venture@google.com,
+        yuenn@google.com, benjaminfair@google.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com,
+        sboyd@kernel.org, p.zabel@pengutronix.de,
+        gregkh@linuxfoundation.org, daniel.lezcano@linaro.org,
+        tglx@linutronix.de, wim@linux-watchdog.org, linux@roeck-us.net,
+        catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
+        olof@lixom.net, jirislaby@kernel.org, shawnguo@kernel.org,
+        bjorn.andersson@linaro.org, geert+renesas@glider.be,
+        marcel.ziswiler@toradex.com, vkoul@kernel.org,
+        biju.das.jz@bp.renesas.com, nobuhiro1.iwamatsu@toshiba.co.jp,
+        robert.hancock@calian.com, j.neuschaefer@gmx.net, lkundrak@v3.sk
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-watchdog@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+References: <20220621131424.162355-1-tmaimon77@gmail.com>
+ <20220621131424.162355-6-tmaimon77@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220621131424.162355-6-tmaimon77@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-At the moment FPGA manager core loads to the device entire image
-provided to fpga_mgr_load(). But it is not always whole FPGA image
-buffer meant to be written to the device. In particular, .dat formatted
-image for Microchip MPF contains meta info in the header that is not
-meant to be written to the device. This is issue for those low level
-drivers that loads data to the device with write() fpga_manager_ops
-callback, since write() can be called in iterator over scatter-gather
-table, not only linear image buffer. On the other hand, write_sg()
-callback is provided with whole image in scatter-gather form and can
-decide itself which part should be sent to the device.
+On 21/06/2022 15:14, Tomer Maimon wrote:
+> Add binding for the Arbel BMC NPCM8XX Clock controller.
+> 
+> Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
+> ---
+>  .../bindings/clock/nuvoton,npcm845-clk.yaml   | 49 +++++++++++++++++++
+>  .../dt-bindings/clock/nuvoton,npcm845-clk.h   | 49 +++++++++++++++++++
+>  2 files changed, 98 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml
+>  create mode 100644 include/dt-bindings/clock/nuvoton,npcm845-clk.h
+> 
+> diff --git a/Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml b/Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml
+> new file mode 100644
+> index 000000000000..3d4fddc090ca
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml
+> @@ -0,0 +1,49 @@
+> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/clock/nuvoton,npcm845-clk.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Nuvoton NPCM8XX Clock Controller Binding
+> +
+> +maintainers:
+> +  - Tomer Maimon <tmaimon77@gmail.com>
+> +
+> +description: |
+> +  Nuvoton Arbel BMC NPCM8XX contains an integrated clock controller, which
+> +  generates and supplies clocks to all modules within the BMC.
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - nuvoton,npcm845-clk
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  '#clock-cells':
+> +    const: 1
+> +    description:
+> +      See include/dt-bindings/clock/nuvoton,npcm8xx-clock.h for the full
+> +      list of NPCM8XX clock IDs.
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - "#clock-cells"
 
-Add header_size and data_size to the fpga_image_info struct, add
-skip_header to the fpga_manager_ops struct and adjust fpga_mgr_write()
-callers with respect to them.
+You fixed one comment and ignore second. The same was with v3.
 
-  * info->header_size indicates part at the beginning of image buffer
-    that contains some meta info. It is optional and can be 0,
-    initialized with mops->initial_header_size.
-
-  * mops->skip_header tells fpga-mgr core whether write should start
-    from the beginning of image buffer or at the offset of header_size.
-
-  * info->data_size is the size of bitstream data that is meant to be
-    written to the device. It is also optional and can be 0, which
-    means bitstream data is up to the end of image buffer.
-
-Also add parse_header() callback to fpga_manager_ops, which purpose is
-to set info->header_size and info->data_size. At least
-initial_header_size bytes of image buffer will be passed into
-parse_header() first time. If it is not enough, parse_header() should
-set desired size into info->header_size and return -EAGAIN, then it will
-be called again with greater part of image buffer on the input.
-
-Suggested-by: Xu Yilun <yilun.xu@intel.com>
-Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
----
- drivers/fpga/fpga-mgr.c       | 225 ++++++++++++++++++++++++++++++----
- include/linux/fpga/fpga-mgr.h |  24 +++-
- 2 files changed, 222 insertions(+), 27 deletions(-)
-
-diff --git a/drivers/fpga/fpga-mgr.c b/drivers/fpga/fpga-mgr.c
-index 08dc85fcd511..d97df0bdc72b 100644
---- a/drivers/fpga/fpga-mgr.c
-+++ b/drivers/fpga/fpga-mgr.c
-@@ -74,6 +74,15 @@ static inline int fpga_mgr_write_complete(struct fpga_manager *mgr,
- 	return 0;
- }
- 
-+static inline int fpga_mgr_parse_header(struct fpga_manager *mgr,
-+					struct fpga_image_info *info,
-+					const char *buf, size_t count)
-+{
-+	if (mgr->mops->parse_header)
-+		return mgr->mops->parse_header(mgr, info, buf, count);
-+	return 0;
-+}
-+
- static inline int fpga_mgr_write_init(struct fpga_manager *mgr,
- 				      struct fpga_image_info *info,
- 				      const char *buf, size_t count)
-@@ -136,24 +145,141 @@ void fpga_image_info_free(struct fpga_image_info *info)
- EXPORT_SYMBOL_GPL(fpga_image_info_free);
- 
- /*
-- * Call the low level driver's write_init function.  This will do the
-+ * Call the low level driver's parse_header function with entire FPGA image
-+ * buffer on the input. This will set info->header_size and info->data_size.
-+ */
-+static int fpga_mgr_parse_header_mapped(struct fpga_manager *mgr,
-+					struct fpga_image_info *info,
-+					const char *buf, size_t count)
-+{
-+	int ret;
-+
-+	mgr->state = FPGA_MGR_STATE_PARSE_HEADER;
-+	ret = fpga_mgr_parse_header(mgr, info, buf, count);
-+
-+	if (info->header_size + info->data_size > count) {
-+		dev_err(&mgr->dev, "Bitsream data outruns FPGA image\n");
-+		ret = -EINVAL;
-+	}
-+
-+	if (ret) {
-+		dev_err(&mgr->dev, "Error while parsing FPGA image header\n");
-+		mgr->state = FPGA_MGR_STATE_PARSE_HEADER_ERR;
-+	}
-+
-+	return ret;
-+}
-+
-+/*
-+ * Call the low level driver's parse_header function with first fragment of
-+ * scattered FPGA image on the input. If header fits first fragment,
-+ * parse_header will set info->header_size and info->data_size. If it is not,
-+ * parse_header will set desired size to info->header_size and -EAGAIN will be
-+ * returned.
-+ */
-+static int fpga_mgr_parse_header_sg_first(struct fpga_manager *mgr,
-+					  struct fpga_image_info *info,
-+					  struct sg_table *sgt)
-+{
-+	struct sg_mapping_iter miter;
-+	int ret;
-+
-+	mgr->state = FPGA_MGR_STATE_PARSE_HEADER;
-+
-+	sg_miter_start(&miter, sgt->sgl, sgt->nents, SG_MITER_FROM_SG);
-+	if (sg_miter_next(&miter) &&
-+	    miter.length >= info->header_size)
-+		ret = fpga_mgr_parse_header(mgr, info, miter.addr, miter.length);
-+	else
-+		ret = -EAGAIN;
-+	sg_miter_stop(&miter);
-+
-+	if (ret && ret != -EAGAIN) {
-+		dev_err(&mgr->dev, "Error while parsing FPGA image header\n");
-+		mgr->state = FPGA_MGR_STATE_PARSE_HEADER_ERR;
-+	}
-+
-+	return ret;
-+}
-+
-+/*
-+ * Copy scattered FPGA image fragments to temporary buffer and call the
-+ * low level driver's parse_header function. This should be called after
-+ * fpga_mgr_parse_header_sg_first() returned -EAGAIN. In case of success,
-+ * pointer to the newly allocated image header copy will be returned and
-+ * its size will be set into *ret_size. Returned buffer needs to be freed.
-+ */
-+static void *fpga_mgr_parse_header_sg(struct fpga_manager *mgr,
-+				      struct fpga_image_info *info,
-+				      struct sg_table *sgt, size_t *ret_size)
-+{
-+	size_t len, new_header_size, header_size = 0;
-+	char *new_buf, *buf = NULL;
-+	int ret;
-+
-+	do {
-+		new_header_size = info->header_size;
-+		if (new_header_size <= header_size) {
-+			dev_err(&mgr->dev, "Requested invalid header size\n");
-+			ret = -EFAULT;
-+			break;
-+		}
-+
-+		new_buf = krealloc(buf, new_header_size, GFP_KERNEL);
-+		if (!new_buf) {
-+			ret = -ENOMEM;
-+			break;
-+		}
-+
-+		buf = new_buf;
-+
-+		len = sg_pcopy_to_buffer(sgt->sgl, sgt->nents,
-+					 buf + header_size,
-+					 new_header_size - header_size,
-+					 header_size);
-+		if (len != new_header_size - header_size) {
-+			ret = -EFAULT;
-+			break;
-+		}
-+
-+		header_size = new_header_size;
-+		ret = fpga_mgr_parse_header(mgr, info, buf, header_size);
-+	} while (ret == -EAGAIN);
-+
-+	if (ret) {
-+		dev_err(&mgr->dev, "Error while parsing FPGA image header\n");
-+		mgr->state = FPGA_MGR_STATE_PARSE_HEADER_ERR;
-+		kfree(buf);
-+		buf = ERR_PTR(ret);
-+	}
-+
-+	*ret_size = header_size;
-+
-+	return buf;
-+}
-+
-+/*
-+ * Call the low level driver's write_init function. This will do the
-  * device-specific things to get the FPGA into the state where it is ready to
-- * receive an FPGA image. The low level driver only gets to see the first
-- * initial_header_size bytes in the buffer.
-+ * receive an FPGA image. The low level driver gets to see at least first
-+ * info->header_size bytes in the buffer. If info->header_size is 0,
-+ * write_init will not get any bytes of image buffer.
-  */
- static int fpga_mgr_write_init_buf(struct fpga_manager *mgr,
- 				   struct fpga_image_info *info,
- 				   const char *buf, size_t count)
- {
-+	size_t header_size = info->header_size;
- 	int ret;
- 
- 	mgr->state = FPGA_MGR_STATE_WRITE_INIT;
--	if (!mgr->mops->initial_header_size) {
-+
-+	if (header_size > count)
-+		ret = -EINVAL;
-+	else if (!header_size)
- 		ret = fpga_mgr_write_init(mgr, info, NULL, 0);
--	} else {
--		count = min(mgr->mops->initial_header_size, count);
-+	else
- 		ret = fpga_mgr_write_init(mgr, info, buf, count);
--	}
- 
- 	if (ret) {
- 		dev_err(&mgr->dev, "Error preparing FPGA for writing\n");
-@@ -164,39 +290,50 @@ static int fpga_mgr_write_init_buf(struct fpga_manager *mgr,
- 	return 0;
- }
- 
--static int fpga_mgr_write_init_sg(struct fpga_manager *mgr,
--				  struct fpga_image_info *info,
--				  struct sg_table *sgt)
-+static int fpga_mgr_prepare_sg(struct fpga_manager *mgr,
-+			       struct fpga_image_info *info,
-+			       struct sg_table *sgt)
- {
- 	struct sg_mapping_iter miter;
- 	size_t len;
- 	char *buf;
- 	int ret;
- 
--	if (!mgr->mops->initial_header_size)
-+	/* Short path. Low level driver don't care about image header. */
-+	if (!mgr->mops->initial_header_size && !mgr->mops->parse_header)
- 		return fpga_mgr_write_init_buf(mgr, info, NULL, 0);
- 
- 	/*
- 	 * First try to use miter to map the first fragment to access the
- 	 * header, this is the typical path.
- 	 */
--	sg_miter_start(&miter, sgt->sgl, sgt->nents, SG_MITER_FROM_SG);
--	if (sg_miter_next(&miter) &&
--	    miter.length >= mgr->mops->initial_header_size) {
--		ret = fpga_mgr_write_init_buf(mgr, info, miter.addr,
--					      miter.length);
-+	ret = fpga_mgr_parse_header_sg_first(mgr, info, sgt);
-+	/* If 0, header fits first fragment, call write_init on it */
-+	if (!ret) {
-+		sg_miter_start(&miter, sgt->sgl, sgt->nents, SG_MITER_FROM_SG);
-+		if (sg_miter_next(&miter)) {
-+			ret = fpga_mgr_write_init_buf(mgr, info, miter.addr,
-+						      miter.length);
-+			sg_miter_stop(&miter);
-+			return ret;
-+		}
- 		sg_miter_stop(&miter);
-+	/*
-+	 * If -EAGAIN, more sg buffer is needed,
-+	 * otherwise an error has occurred.
-+	 */
-+	} else if (ret != -EAGAIN) {
- 		return ret;
- 	}
--	sg_miter_stop(&miter);
- 
--	/* Otherwise copy the fragments into temporary memory. */
--	buf = kmalloc(mgr->mops->initial_header_size, GFP_KERNEL);
--	if (!buf)
--		return -ENOMEM;
-+	/*
-+	 * Copy the fragments into temporary memory.
-+	 * Copying is done inside fpga_mgr_parse_header_sg().
-+	 */
-+	buf = fpga_mgr_parse_header_sg(mgr, info, sgt, &len);
-+	if (IS_ERR(buf))
-+		return PTR_ERR(buf);
- 
--	len = sg_copy_to_buffer(sgt->sgl, sgt->nents, buf,
--				mgr->mops->initial_header_size);
- 	ret = fpga_mgr_write_init_buf(mgr, info, buf, len);
- 
- 	kfree(buf);
-@@ -227,7 +364,7 @@ static int fpga_mgr_buf_load_sg(struct fpga_manager *mgr,
- {
- 	int ret;
- 
--	ret = fpga_mgr_write_init_sg(mgr, info, sgt);
-+	ret = fpga_mgr_prepare_sg(mgr, info, sgt);
- 	if (ret)
- 		return ret;
- 
-@@ -236,17 +373,37 @@ static int fpga_mgr_buf_load_sg(struct fpga_manager *mgr,
- 	if (mgr->mops->write_sg) {
- 		ret = fpga_mgr_write_sg(mgr, sgt);
- 	} else {
-+		size_t length, data_size = info->data_size;
- 		struct sg_mapping_iter miter;
-+		ssize_t count = 0;
- 
- 		sg_miter_start(&miter, sgt->sgl, sgt->nents, SG_MITER_FROM_SG);
-+
-+		if (mgr->mops->skip_header &&
-+		    !sg_miter_skip(&miter, info->header_size)) {
-+			ret = -EINVAL;
-+			sg_miter_stop(&miter);
-+			goto out;
-+		}
-+
- 		while (sg_miter_next(&miter)) {
--			ret = fpga_mgr_write(mgr, miter.addr, miter.length);
-+			if (data_size)
-+				length = min(miter.length, data_size - count);
-+			else
-+				length = miter.length;
-+
-+			ret = fpga_mgr_write(mgr, miter.addr, length);
- 			if (ret)
- 				break;
-+
-+			count += length;
-+			if (data_size && count >= data_size)
-+				break;
- 		}
- 		sg_miter_stop(&miter);
- 	}
- 
-+out:
- 	if (ret) {
- 		dev_err(&mgr->dev, "Error while writing image data to FPGA\n");
- 		mgr->state = FPGA_MGR_STATE_WRITE_ERR;
-@@ -262,10 +419,22 @@ static int fpga_mgr_buf_load_mapped(struct fpga_manager *mgr,
- {
- 	int ret;
- 
-+	ret = fpga_mgr_parse_header_mapped(mgr, info, buf, count);
-+	if (ret)
-+		return ret;
-+
- 	ret = fpga_mgr_write_init_buf(mgr, info, buf, count);
- 	if (ret)
- 		return ret;
- 
-+	if (mgr->mops->skip_header) {
-+		buf += info->header_size;
-+		count -= info->header_size;
-+	}
-+
-+	if (info->data_size)
-+		count = info->data_size;
-+
- 	/*
- 	 * Write the FPGA image to the FPGA.
- 	 */
-@@ -404,6 +573,8 @@ static int fpga_mgr_firmware_load(struct fpga_manager *mgr,
-  */
- int fpga_mgr_load(struct fpga_manager *mgr, struct fpga_image_info *info)
- {
-+	info->header_size = mgr->mops->initial_header_size;
-+
- 	if (info->sgt)
- 		return fpga_mgr_buf_load_sg(mgr, info, info->sgt);
- 	if (info->buf && info->count)
-@@ -424,6 +595,10 @@ static const char * const state_str[] = {
- 	[FPGA_MGR_STATE_FIRMWARE_REQ] =		"firmware request",
- 	[FPGA_MGR_STATE_FIRMWARE_REQ_ERR] =	"firmware request error",
- 
-+	/* Parse FPGA image header */
-+	[FPGA_MGR_STATE_PARSE_HEADER] =		"parse header",
-+	[FPGA_MGR_STATE_PARSE_HEADER_ERR] =	"parse header error",
-+
- 	/* Preparing FPGA to receive image */
- 	[FPGA_MGR_STATE_WRITE_INIT] =		"write init",
- 	[FPGA_MGR_STATE_WRITE_INIT_ERR] =	"write init error",
-diff --git a/include/linux/fpga/fpga-mgr.h b/include/linux/fpga/fpga-mgr.h
-index 0f9468771bb9..54f63459efd6 100644
---- a/include/linux/fpga/fpga-mgr.h
-+++ b/include/linux/fpga/fpga-mgr.h
-@@ -22,6 +22,8 @@ struct sg_table;
-  * @FPGA_MGR_STATE_RESET: FPGA in reset state
-  * @FPGA_MGR_STATE_FIRMWARE_REQ: firmware request in progress
-  * @FPGA_MGR_STATE_FIRMWARE_REQ_ERR: firmware request failed
-+ * @FPGA_MGR_STATE_PARSE_HEADER: parse FPGA image header
-+ * @FPGA_MGR_STATE_PARSE_HEADER_ERR: Error during PARSE_HEADER stage
-  * @FPGA_MGR_STATE_WRITE_INIT: preparing FPGA for programming
-  * @FPGA_MGR_STATE_WRITE_INIT_ERR: Error during WRITE_INIT stage
-  * @FPGA_MGR_STATE_WRITE: writing image to FPGA
-@@ -41,7 +43,9 @@ enum fpga_mgr_states {
- 	FPGA_MGR_STATE_FIRMWARE_REQ,
- 	FPGA_MGR_STATE_FIRMWARE_REQ_ERR,
- 
--	/* write sequence: init, write, complete */
-+	/* write sequence: parse header, init, write, complete */
-+	FPGA_MGR_STATE_PARSE_HEADER,
-+	FPGA_MGR_STATE_PARSE_HEADER_ERR,
- 	FPGA_MGR_STATE_WRITE_INIT,
- 	FPGA_MGR_STATE_WRITE_INIT_ERR,
- 	FPGA_MGR_STATE_WRITE,
-@@ -85,6 +89,9 @@ enum fpga_mgr_states {
-  * @sgt: scatter/gather table containing FPGA image
-  * @buf: contiguous buffer containing FPGA image
-  * @count: size of buf
-+ * @header_size: size of image header.
-+ * @data_size: size of image data to be sent to the device. If not specified,
-+ *	whole image will be used. Header may be skipped in either case.
-  * @region_id: id of target region
-  * @dev: device that owns this
-  * @overlay: Device Tree overlay
-@@ -98,6 +105,8 @@ struct fpga_image_info {
- 	struct sg_table *sgt;
- 	const char *buf;
- 	size_t count;
-+	size_t header_size;
-+	size_t data_size;
- 	int region_id;
- 	struct device *dev;
- #ifdef CONFIG_OF
-@@ -137,9 +146,16 @@ struct fpga_manager_info {
- 
- /**
-  * struct fpga_manager_ops - ops for low level fpga manager drivers
-- * @initial_header_size: Maximum number of bytes that should be passed into write_init
-+ * @initial_header_size: minimum number of bytes that should be passed into
-+ *	parse_header and write_init.
-+ * @skip_header: bool flag to tell fpga-mgr core whether it should skip
-+ *	info->header_size part at the beginning of the image when invoking
-+ *	write callback.
-  * @state: returns an enum value of the FPGA's state
-  * @status: returns status of the FPGA, including reconfiguration error code
-+ * @parse_header: parse FPGA image header to set info->header_size and
-+ *	info->data_size. In case the input buffer is not large enough, set
-+ *	required size to info->header_size and return -EAGAIN.
-  * @write_init: prepare the FPGA to receive configuration data
-  * @write: write count bytes of configuration data to the FPGA
-  * @write_sg: write the scatter list of configuration data to the FPGA
-@@ -153,8 +169,12 @@ struct fpga_manager_info {
-  */
- struct fpga_manager_ops {
- 	size_t initial_header_size;
-+	bool skip_header;
- 	enum fpga_mgr_states (*state)(struct fpga_manager *mgr);
- 	u64 (*status)(struct fpga_manager *mgr);
-+	int (*parse_header)(struct fpga_manager *mgr,
-+			    struct fpga_image_info *info,
-+			    const char *buf, size_t count);
- 	int (*write_init)(struct fpga_manager *mgr,
- 			  struct fpga_image_info *info,
- 			  const char *buf, size_t count);
--- 
-2.25.1
+This is still no. Implement all the comments you received. I have to
+double check your patchsets every time because I cannot trust that you
+implemented what I asked for.
 
 
+Best regards,
+Krzysztof
