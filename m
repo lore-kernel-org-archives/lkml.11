@@ -2,228 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BC00C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 09:29:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D1A0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 09:29:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349099AbiFUJ3H (ORCPT
+        id S1348787AbiFUJ3S (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 05:29:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40986 "EHLO
+        Tue, 21 Jun 2022 05:29:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348953AbiFUJ3D (ORCPT
+        with ESMTP id S1347043AbiFUJ2O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 05:29:03 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2062.outbound.protection.outlook.com [40.107.93.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC82D10A;
-        Tue, 21 Jun 2022 02:28:57 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YrpGaeF7KBCohxgPuxxETiYBRnRkwvFozGW04u1mDwahIq0PbeH5ymJTRmb2LOcQHbIyGPihHzdSkMXdzETGqVRwpadtF7CLD19T5N/ac6E/3lOMoeWaOMw73uRf0z3QCYDwzMIRSBo+eT1sRPmiheOAdfZTlyfHc0mCbtoACoOXyUg+oxgVz/yl2SSyM6bDrqNmurAnmt8g4FjtBC6QTpRPr5hWjkLXYfT3qCNd/yKP5vgtXMqA9I+pmwJ6u1fi6MdX/3p32FqaLkwP5UORscMt6uF9fNEyhtCMnM4PvyVPFf+t0zHDVXPuQmJY/Uw3zREmBc8aLqTb42Pyv4BGBA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=M7K0ILwbCgICfMtH8hwDNrdO38tn2hjPqx673jRl/rg=;
- b=QQv29e7RqEjDPXztNkgAdFH8lyn1l7u1SIbaalGTg/vfY/Auy4BJRdVdfpZRNQkZ/j/9sMgyXuosMrYnfW1dQrBdiy+9pWulxqkzVQyJb3Pc4BEAwv3rE7p9F7bQq5R5tA8r3PesSCPejvYxP7qLq8xrGQEKsWEwtq/hg5+RgJKn0juNK9xD9XXILiya0a6GKLreQT/s8rwEedYMH6DtUHISoWWBGfUF0ftspygMTwzpQIeCr7DRSEbGRgdEFuDRv9lDXVnyJLUD9s5vh5Qb0sS68+sxB32rN4Xy0+y/Ylj+xelLFyJXwe7YfN6xyGM6doekDF9hEPmy7ntn7eH+hQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.62.198) smtp.rcpttodomain=intel.com smtp.mailfrom=xilinx.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=M7K0ILwbCgICfMtH8hwDNrdO38tn2hjPqx673jRl/rg=;
- b=bvb0RSO57PIS91z7UOtJWPmvbg1vmI8S/PLV3sQmM1GSs7/Teng8VtBScSs/w5NAnaE1Svhtcl5ePGlwadlDMK/IFk1AaLillua2oWG2uPzO8W3hRCKXf+/0HB7kotL203FNGg53dyukTJZMKL5ovVeNiKtUPIPMDVp0YNpQX0M=
-Received: from SN6PR05CA0004.namprd05.prod.outlook.com (2603:10b6:805:de::17)
- by DM8PR02MB7991.namprd02.prod.outlook.com (2603:10b6:8:14::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.16; Tue, 21 Jun
- 2022 09:28:55 +0000
-Received: from SN1NAM02FT0048.eop-nam02.prod.protection.outlook.com
- (2603:10b6:805:de:cafe::85) by SN6PR05CA0004.outlook.office365.com
- (2603:10b6:805:de::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.9 via Frontend
- Transport; Tue, 21 Jun 2022 09:28:55 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
- smtp.mailfrom=xilinx.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
- 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com; pr=C
-Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
- SN1NAM02FT0048.mail.protection.outlook.com (10.97.4.223) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5353.14 via Frontend Transport; Tue, 21 Jun 2022 09:28:54 +0000
-Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
- xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Tue, 21 Jun 2022 02:28:53 -0700
-Received: from smtp.xilinx.com (172.19.127.95) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Tue, 21 Jun 2022 02:28:53 -0700
-Envelope-to: git@xilinx.com,
- hao.wu@intel.com,
- trix@redhat.com,
- mdf@kernel.org,
- yilun.xu@intel.com,
- gregkh@linuxfoundation.org,
- linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org,
- linux-fpga@vger.kernel.org
-Received: from [10.140.6.60] (port=45120 helo=xhdnavam40.xilinx.com)
-        by smtp.xilinx.com with esmtp (Exim 4.90)
-        (envelope-from <nava.manne@xilinx.com>)
-        id 1o3aBp-000DOt-16; Tue, 21 Jun 2022 02:28:53 -0700
-From:   Nava kishore Manne <nava.manne@xilinx.com>
-To:     <michal.simek@xilinx.com>, <hao.wu@intel.com>, <trix@redhat.com>,
-        <mdf@kernel.org>, <yilun.xu@intel.com>,
-        <gregkh@linuxfoundation.org>, <ronak.jain@xilinx.com>,
-        <rajan.vaja@xilinx.com>, <abhyuday.godhasara@xilinx.com>,
-        <nava.manne@xilinx.com>, <piyush.mehta@xilinx.com>,
-        <harsha.harsha@xilinx.com>,
-        <lakshmi.sai.krishna.potthuri@xilinx.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-fpga@vger.kernel.org>,
-        <git@xilinx.com>
-Subject: [PATCH v2 2/3] firmware: xilinx: Add pm api function for PL readback
-Date:   Tue, 21 Jun 2022 14:58:32 +0530
-Message-ID: <20220621092833.1057408-3-nava.manne@xilinx.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220621092833.1057408-1-nava.manne@xilinx.com>
-References: <20220621092833.1057408-1-nava.manne@xilinx.com>
+        Tue, 21 Jun 2022 05:28:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6E3B7300
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 02:27:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655803670;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=1/6eJspt/AVzBoz5mItJSgxql1F5f7nb/z62lzZC//s=;
+        b=h92MBdQ60YyfZtTbeTYIsHZWShRLkjKqTjvj2+fhkEzm8r35rgkMIsdzQo3u8IA9caCYqf
+        5pxhNmMkM6OnewRaPK1fLodCkqUaE5yz1EyXfayLo9+RONtmB/JSoZisruRS5D5+BQzVE2
+        ixudyhNSW9jUk8rYMuFumpZtVxYWyig=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-2-MQve9TMLMYyX3G1gVtvhfA-1; Tue, 21 Jun 2022 05:27:47 -0400
+X-MC-Unique: MQve9TMLMYyX3G1gVtvhfA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 539A280B70F;
+        Tue, 21 Jun 2022 09:27:46 +0000 (UTC)
+Received: from localhost (ovpn-12-183.pek2.redhat.com [10.72.12.183])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id A52A540CFD0A;
+        Tue, 21 Jun 2022 09:27:44 +0000 (UTC)
+Date:   Tue, 21 Jun 2022 17:27:40 +0800
+From:   Baoquan He <bhe@redhat.com>
+To:     Kefeng Wang <wangkefeng.wang@huawei.com>
+Cc:     Zhen Lei <thunder.leizhen@huawei.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Eric Biederman <ebiederm@xmission.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        devicetree@vger.kernel.org, Dave Young <dyoung@redhat.com>,
+        Vivek Goyal <vgoyal@redhat.com>, kexec@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Will Deacon <will@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Feng Zhou <zhoufeng.zf@bytedance.com>,
+        Chen Zhou <dingguo.cz@antgroup.com>,
+        John Donnelly <John.p.donnelly@oracle.com>,
+        Dave Kleikamp <dave.kleikamp@oracle.com>,
+        liushixin <liushixin2@huawei.com>
+Subject: Re: [PATCH 5/5] arm64: kdump: Don't defer the reservation of crash
+ high memory
+Message-ID: <YrGPDLea0ALMOqFV@MiWiFi-R3L-srv>
+References: <20220613080932.663-1-thunder.leizhen@huawei.com>
+ <20220613080932.663-6-thunder.leizhen@huawei.com>
+ <YrFYHYgX3mC//t2l@MiWiFi-R3L-srv>
+ <3f66323d-f371-b931-65fb-edfae0f01c88@huawei.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 34fef55a-902d-4ca3-5cbf-08da53687628
-X-MS-TrafficTypeDiagnostic: DM8PR02MB7991:EE_
-X-Microsoft-Antispam-PRVS: <DM8PR02MB799149DB4CCE40AD64FFD05CC2B39@DM8PR02MB7991.namprd02.prod.outlook.com>
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: fhKp4Att0VOw1AeK2WMldLgIc/8lLblbOpamG2a33awrJhk+oj8WymdQJqVesj+O2Z6BLT7I6WiXYFL1hEcYPpvoD1UgO6w5q+veMYHobjV9Re9zuO8KH4mBwy7JrdgsQ/Y8bkEreZ0wGp2PYkRdwW7ijZ18rqDbYJ5f61WOeP+k8PK7H3OKElm0W6hs12PHB4mE22eKKYCqN/QHkBinoCKXTlwTTzlYpHb5NuGH7ijFMisrzP5BBLa4zwT3YEqshqNyitW71x3Nn+em0cIj7d2uGtnqEZVaevBbzQKn5XEMzZUoIb0iCs/v0kuald4c468vvSn1RxSN3OKGw261+Y4o0HXADFT+q8cogZGl/R6mWbkHxy1QutPPx283x3SoG611yma+fXFVjd+xWc9808ehqlhBJKawuq7KFeJk6WVo+HXDviaYcR2WfI3md/wGGnAsTVRNeo/KzbUwjOPQYf9gzgc1EtgYU6m0r8sCFgWM02k/ZrzDHUYv8Gklkb0HIwzSjSKYwyCiPP3GBxnwuYhRs2fuTPVuMw5CnYznkIEZ8H2xDFVQezjyMWQx3q3GjCb/+deaxO6pFFzTOQMJydEevkSjb6aoF/P//9xZKOXnLECdYk/c25ttrMtq8yjK41evNnsK1GvnTkpzgkYYUqSo71+QCQxiygIDZamYjF9U6rxlxm9KI2tYXCbayNBiIh3OH7Q/Iy3x1TvgM0kwf1SUx7sX6lUE+8AaZ/tgV576ze9kPS2XMdE4gOb+9EumGHc/7lh3iBASen5pu9NFq4+aORwxxsTT0S25H7o5aa7wcwIxHH6iZeJqw7S9T05Z
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230016)(4636009)(346002)(136003)(39860400002)(396003)(376002)(46966006)(36840700001)(40470700004)(478600001)(6636002)(110136005)(2906002)(316002)(26005)(921005)(8676002)(5660300002)(36756003)(2616005)(41300700001)(70206006)(9786002)(70586007)(8936002)(47076005)(336012)(426003)(186003)(40460700003)(7636003)(82740400003)(6666004)(7696005)(356005)(36860700001)(40480700001)(82310400005)(83380400001)(1076003)(102446001)(2101003)(83996005);DIR:OUT;SFP:1101;
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jun 2022 09:28:54.9626
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 34fef55a-902d-4ca3-5cbf-08da53687628
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: SN1NAM02FT0048.eop-nam02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR02MB7991
+In-Reply-To: <3f66323d-f371-b931-65fb-edfae0f01c88@huawei.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adds PM API for performing PL configuration readback.
-It provides an interface to the pmufw to readback the
-FPGA configuration registers as well as configuration
-data.
+On 06/21/22 at 02:24pm, Kefeng Wang wrote:
+> 
+> On 2022/6/21 13:33, Baoquan He wrote:
+> > Hi,
+> > 
+> > On 06/13/22 at 04:09pm, Zhen Lei wrote:
+> > > If the crashkernel has both high memory above DMA zones and low memory
+> > > in DMA zones, kexec always loads the content such as Image and dtb to the
+> > > high memory instead of the low memory. This means that only high memory
+> > > requires write protection based on page-level mapping. The allocation of
+> > > high memory does not depend on the DMA boundary. So we can reserve the
+> > > high memory first even if the crashkernel reservation is deferred.
+> > > 
+> > > This means that the block mapping can still be performed on other kernel
+> > > linear address spaces, the TLB miss rate can be reduced and the system
+> > > performance will be improved.
+> > Ugh, this looks a little ugly, honestly.
+> > 
+> > If that's for sure arm64 can't split large page mapping of linear
+> > region, this patch is one way to optimize linear mapping. Given kdump
+> > setting is necessary on arm64 server, the booting speed is truly
+> > impacted heavily.
+> 
+> Is there some conclusion or discussion that arm64 can't split large page
+> mapping?
 
-For more detailed info related to the configuration
-registers and configuration data refer ug570.
+Yes, please see below commit log. 
+commit d27cfa1fc823 ("arm64: mm: set the contiguous bit for kernel mappings where appropriate")
 
-Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
----
-Changes for v2:
-              - None.
+> 
+> Could the crashkernel reservation (and Kfence pool) be splited dynamically?
 
- drivers/firmware/xilinx/zynqmp.c     | 33 ++++++++++++++++++++++++++++
- include/linux/firmware/xlnx-zynqmp.h | 14 ++++++++++++
- 2 files changed, 47 insertions(+)
+For crashkernel region, we have arch_kexec_protect_crashkres() to secure
+the region, and crash_shrink_memory() could be called to shrink it.
+While crahshkernel region could be crossig part of a block mapping or section
+mapping and the mapping need be splitted, that will cause TLB conflicts.
 
-diff --git a/drivers/firmware/xilinx/zynqmp.c b/drivers/firmware/xilinx/zynqmp.c
-index 7977a494a651..40b99299b662 100644
---- a/drivers/firmware/xilinx/zynqmp.c
-+++ b/drivers/firmware/xilinx/zynqmp.c
-@@ -927,6 +927,39 @@ int zynqmp_pm_fpga_get_status(u32 *value)
- }
- EXPORT_SYMBOL_GPL(zynqmp_pm_fpga_get_status);
- 
-+/**
-+ * zynqmp_pm_fpga_read - Perform the fpga configuration readback
-+ * @reg_numframes: Configuration register offset (or) Number of frames to read
-+ * @phys_address: Physical Address of the buffer
-+ * @readback_type: Type of fpga readback operation
-+ *                 0 - FPGA configuration register readback
-+ *                 1 - FPGA configuration data readback
-+ * @value: Value to read
-+ *
-+ * This function provides access to xilfpga library to perform
-+ * fpga configuration readback.
-+ *
-+ * Return:	Returns status, either success or error+reason
-+ */
-+int zynqmp_pm_fpga_read(const u32 reg_numframes, const phys_addr_t phys_address,
-+			bool readback_type, u32 *value)
-+{
-+	u32 ret_payload[PAYLOAD_ARG_CNT];
-+	int ret;
-+
-+	if (!value)
-+		return -EINVAL;
-+
-+	ret = zynqmp_pm_invoke_fn(PM_FPGA_READ, reg_numframes,
-+				  lower_32_bits(phys_address),
-+				  upper_32_bits(phys_address), readback_type,
-+				  ret_payload);
-+	*value = ret_payload[1];
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(zynqmp_pm_fpga_read);
-+
- /**
-  * zynqmp_pm_pinctrl_request - Request Pin from firmware
-  * @pin: Pin number to request
-diff --git a/include/linux/firmware/xlnx-zynqmp.h b/include/linux/firmware/xlnx-zynqmp.h
-index 1ec73d5352c3..7dc4981345dc 100644
---- a/include/linux/firmware/xlnx-zynqmp.h
-+++ b/include/linux/firmware/xlnx-zynqmp.h
-@@ -61,6 +61,10 @@
- #define PM_LOAD_PDI	0x701
- #define PDI_SRC_DDR	0xF
- 
-+/* FPGA readback type */
-+#define PM_FPGA_READ_CONFIG_REG		0x0U
-+#define PM_FPGA_READ_CONFIG_DATA	0x1U
-+
- /*
-  * Firmware FPGA Manager flags
-  * XILINX_ZYNQMP_PM_FPGA_FULL:	FPGA full reconfiguration
-@@ -116,6 +120,7 @@ enum pm_api_id {
- 	PM_CLOCK_GETRATE = 42,
- 	PM_CLOCK_SETPARENT = 43,
- 	PM_CLOCK_GETPARENT = 44,
-+	PM_FPGA_READ = 46,
- 	PM_SECURE_AES = 47,
- 	PM_FEATURE_CHECK = 63,
- };
-@@ -468,6 +473,8 @@ int zynqmp_pm_feature(const u32 api_id);
- int zynqmp_pm_is_function_supported(const u32 api_id, const u32 id);
- int zynqmp_pm_set_feature_config(enum pm_feature_config_id id, u32 value);
- int zynqmp_pm_get_feature_config(enum pm_feature_config_id id, u32 *payload);
-+int zynqmp_pm_fpga_read(const u32 reg_numframes, const phys_addr_t phys_address,
-+			bool readback_type, u32 *value);
- #else
- static inline int zynqmp_pm_get_api_version(u32 *version)
- {
-@@ -733,6 +740,13 @@ static inline int zynqmp_pm_get_feature_config(enum pm_feature_config_id id,
- {
- 	return -ENODEV;
- }
-+
-+static int zynqmp_pm_fpga_read(const u32 reg_numframes,
-+			       const phys_addr_t phys_address,
-+			       bool readback_type, u32 *value);
-+{
-+	return -ENODEV;
-+}
- #endif
- 
- #endif /* __FIRMWARE_ZYNQMP_H__ */
--- 
-2.25.1
+> 
+> I found Mark replay "arm64: remove page granularity limitation from
+> KFENCE"[1],
+> 
+>   "We also avoid live changes from block<->table mappings, since the
+>   archtitecture gives us very weak guarantees there and generally requires
+>   a Break-Before-Make sequence (though IIRC this was tightened up
+>   somewhat, so maybe going one way is supposed to work). Unless it's
+>   really necessary, I'd rather not split these block mappings while
+>   they're live."
+> 
+> Hi Mark and Catalin,  could you give some comment,  many thanks.
+> 
+> [1] https://lore.kernel.org/lkml/20210920101938.GA13863@C02TD0UTHF1T.local/T/#m1a7f974593f5545cbcfc0d21560df4e7926b1381
+> 
+> 
+> > 
+> > However, I would suggest letting it as is with below reasons:
+> > 
+> > 1) The code will complicate the crashkernel reservatoin code which
+> > is already difficult to understand.
+> > 2) It can only optimize the two cases, first is CONFIG_ZONE_DMA|DMA32
+> >    disabled, the other is crashkernel=,high is specified. While both
+> >    two cases are corner case, most of systems have CONFIG_ZONE_DMA|DMA32
+> >    enabled, and most of systems have crashkernel=xM which is enough.
+> >    Having them optimized won't bring benefit to most of systems.
+> > 3) Besides, the crashkernel=,high can be handled earlier because
+> >    arm64 alwasys have memblock.bottom_up == false currently, thus we
+> >    don't need worry arbout the lower limit of crashkernel,high
+> >    reservation for now. If memblock.bottom_up is set true in the future,
+> >    this patch doesn't work any more.
+> > 
+> > 
+> > ...
+> >          crash_base = memblock_phys_alloc_range(crash_size, CRASH_ALIGN,
+> >                                                 crash_base, crash_max);
+> > 
+> > So, in my opinion, we can leave the current NON_BLOCK|SECT mapping as
+> > is caused by crashkernel reserving, since no regression is brought.
+> > And meantime, turning to check if there's any way to make the contiguous
+> > linear mapping and later splitting work. The patch 4, 5 in this patchset
+> > doesn't make much sense to me, frankly speaking.
+> > 
+> > Thanks
+> > Baoquan
+> 
 
