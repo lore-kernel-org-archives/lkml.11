@@ -2,84 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 931E1C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 12:12:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0534CCA473
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 12:12:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349925AbiFUMME (ORCPT
+        id S1349755AbiFUMMq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 08:12:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49380 "EHLO
+        Tue, 21 Jun 2022 08:12:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350389AbiFUML6 (ORCPT
+        with ESMTP id S1348842AbiFUMMi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 08:11:58 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 946D12B26B;
-        Tue, 21 Jun 2022 05:11:57 -0700 (PDT)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 68146660174F;
-        Tue, 21 Jun 2022 13:11:55 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1655813516;
-        bh=eoqC+ap4P2hb2zlxPni+x1COpwjVm+TE+Yg1s60B24o=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=UuLs3CyL4DP3wA3w/BLytMrh3d+ohdDT7bB541UNpQ/xTyw0GngZf1uy4FRYbx6fT
-         ZJmlaEREL65aQTK0IVMVzCojsQQuihyF2LvjhUNWXpX1t/W6Uuo1PMODXKuhKk9op+
-         nZCKlbJWHMc/z4nUgk7yke1eCMl2t/ODiUuyh+HoB5oi8sxcoFxbhQj2yn2B8Ojh5H
-         YJ4h0OUfHHrMH0xWLpeNoKhMYc+vt4Tn0s3cGw2w8VLZxKKY+nSrHDgy03vDbWCT/Z
-         GjcwZw6T8r/pSwKzNPQHo1w/pgEpmkKoGys2G3lhGWGndd3QitxDUFDKr6nnNveQou
-         B1MraZh3CPq0A==
-Message-ID: <7e4ce7cc-365c-82ad-3517-f54e18589a74@collabora.com>
-Date:   Tue, 21 Jun 2022 14:11:52 +0200
+        Tue, 21 Jun 2022 08:12:38 -0400
+X-Greylist: delayed 1339 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 21 Jun 2022 05:12:36 PDT
+Received: from mx.kernkonzept.com (serv1.kernkonzept.com [159.69.200.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D15E2BB07;
+        Tue, 21 Jun 2022 05:12:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=kernkonzept.com; s=mx1; h=Content-Transfer-Encoding:MIME-Version:Message-Id
+        :Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=njJuoA2Sc/56TeF9U5fuCJ1Q1iYeeVXupfO3Z71rmfU=; b=N20iD1j4QJpCbcdtTtf0vx4SfS
+        v9vaHEUavFbJcnwamVJjVHTPAgSNlSJXTH6poPimDs9+bULGexIuzt+l9cAjUpktSS0RCyKacIuCp
+        7mkrrtulA3TPEdxbQGC4sc5Fem19JxPiWAcf5N2zGRLSh38enkeRCc5KY2ypcoD+ovxYLed2+JLKv
+        qD/IM8Xp/H194fGBE9LyVjxnqVy20zgwo5GUcbzjiUCR/QtX66QNX/o2nRLpjiZGWuqRSCMCEp5sY
+        Qwl4QveMpiaAd3HMniNlZ1tVnv3oVi371F+FhewiOTracn0ddYLjmA3dk5eXCF63MrB9E/zqurcjw
+        LYtHnsDA==;
+Received: from [10.22.3.24] (helo=kernkonzept.com)
+        by mx.kernkonzept.com with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim 4.94.2)
+        id 1o3cOK-005hVa-SB; Tue, 21 Jun 2022 13:49:56 +0200
+From:   Stephan Gerhold <stephan.gerhold@kernkonzept.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     Stephan Gerhold <stephan.gerhold@kernkonzept.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH net] virtio_net: fix xdp_rxq_info bug after suspend/resume
+Date:   Tue, 21 Jun 2022 13:48:44 +0200
+Message-Id: <20220621114845.3650258-1-stephan.gerhold@kernkonzept.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v13 01/14] dt-bindings: mediatek,dpi: Add DP_INTF
- compatible
-Content-Language: en-US
-To:     Bo-Chen Chen <rex-bc.chen@mediatek.com>, chunkuang.hu@kernel.org,
-        p.zabel@pengutronix.de, daniel@ffwll.ch, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
-        airlied@linux.ie
-Cc:     msp@baylibre.com, granquet@baylibre.com, jitao.shi@mediatek.com,
-        wenst@chromium.org, ck.hu@mediatek.com,
-        dri-devel@lists.freedesktop.org,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220621113732.11595-1-rex-bc.chen@mediatek.com>
- <20220621113732.11595-2-rex-bc.chen@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220621113732.11595-2-rex-bc.chen@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 21/06/22 13:37, Bo-Chen Chen ha scritto:
-> From: Markus Schneider-Pargmann <msp@baylibre.com>
-> 
-> DP_INTF is similar to DPI but does not have the exact same feature set
-> or register layouts.
-> 
-> DP_INTF is the sink of the display pipeline that is connected to the
-> DisplayPort controller and encoder unit. It takes the same clocks as
-> DPI.
-> 
-> In this patch, we also do these string replacement:
-> - s/mediatek/MediaTek/ in title.
-> - s/Mediatek/MediaTek/ in description.
-> 
-> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
-> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
-> [Bo-Chen: Modify reviewers' comments.]
-> Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+The following sequence currently causes a driver bug warning
+when using virtio_net:
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+  # ip link set eth0 up
+  # echo mem > /sys/power/state (or e.g. # rtcwake -s 10 -m mem)
+  <resume>
+  # ip link set eth0 down
+
+  Missing register, driver bug
+  WARNING: CPU: 0 PID: 375 at net/core/xdp.c:138 xdp_rxq_info_unreg+0x58/0x60
+  Call trace:
+   xdp_rxq_info_unreg+0x58/0x60
+   virtnet_close+0x58/0xac
+   __dev_close_many+0xac/0x140
+   __dev_change_flags+0xd8/0x210
+   dev_change_flags+0x24/0x64
+   do_setlink+0x230/0xdd0
+   ...
+
+This happens because virtnet_freeze() frees the receive_queue
+completely (including struct xdp_rxq_info) but does not call
+xdp_rxq_info_unreg(). Similarly, virtnet_restore() sets up the
+receive_queue again but does not call xdp_rxq_info_reg().
+
+Actually, parts of virtnet_freeze_down() and virtnet_restore_up()
+are almost identical to virtnet_close() and virtnet_open(): only
+the calls to xdp_rxq_info_(un)reg() are missing. This means that
+we can fix this easily and avoid such problems in the future by
+just calling virtnet_close()/open() from the freeze/restore handlers.
+
+Aside from adding the missing xdp_rxq_info calls the only difference
+is that the refill work is only cancelled if netif_running(). However,
+this should not make any functional difference since the refill work
+should only be active if the network interface is actually up.
+
+Fixes: 754b8a21a96d ("virtio_net: setup xdp_rxq_info")
+Signed-off-by: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
+---
+ drivers/net/virtio_net.c | 25 ++++++-------------------
+ 1 file changed, 6 insertions(+), 19 deletions(-)
+
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index db05b5e930be..969a67970e71 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -2768,7 +2768,6 @@ static const struct ethtool_ops virtnet_ethtool_ops = {
+ static void virtnet_freeze_down(struct virtio_device *vdev)
+ {
+ 	struct virtnet_info *vi = vdev->priv;
+-	int i;
+ 
+ 	/* Make sure no work handler is accessing the device */
+ 	flush_work(&vi->config_work);
+@@ -2776,14 +2775,8 @@ static void virtnet_freeze_down(struct virtio_device *vdev)
+ 	netif_tx_lock_bh(vi->dev);
+ 	netif_device_detach(vi->dev);
+ 	netif_tx_unlock_bh(vi->dev);
+-	cancel_delayed_work_sync(&vi->refill);
+-
+-	if (netif_running(vi->dev)) {
+-		for (i = 0; i < vi->max_queue_pairs; i++) {
+-			napi_disable(&vi->rq[i].napi);
+-			virtnet_napi_tx_disable(&vi->sq[i].napi);
+-		}
+-	}
++	if (netif_running(vi->dev))
++		virtnet_close(vi->dev);
+ }
+ 
+ static int init_vqs(struct virtnet_info *vi);
+@@ -2791,7 +2784,7 @@ static int init_vqs(struct virtnet_info *vi);
+ static int virtnet_restore_up(struct virtio_device *vdev)
+ {
+ 	struct virtnet_info *vi = vdev->priv;
+-	int err, i;
++	int err;
+ 
+ 	err = init_vqs(vi);
+ 	if (err)
+@@ -2800,15 +2793,9 @@ static int virtnet_restore_up(struct virtio_device *vdev)
+ 	virtio_device_ready(vdev);
+ 
+ 	if (netif_running(vi->dev)) {
+-		for (i = 0; i < vi->curr_queue_pairs; i++)
+-			if (!try_fill_recv(vi, &vi->rq[i], GFP_KERNEL))
+-				schedule_delayed_work(&vi->refill, 0);
+-
+-		for (i = 0; i < vi->max_queue_pairs; i++) {
+-			virtnet_napi_enable(vi->rq[i].vq, &vi->rq[i].napi);
+-			virtnet_napi_tx_enable(vi, vi->sq[i].vq,
+-					       &vi->sq[i].napi);
+-		}
++		err = virtnet_open(vi->dev);
++		if (err)
++			return err;
+ 	}
+ 
+ 	netif_tx_lock_bh(vi->dev);
+-- 
+2.30.2
 
