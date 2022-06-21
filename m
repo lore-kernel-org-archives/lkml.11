@@ -2,48 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C258CCA483
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:00:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAF84C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:00:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355683AbiFUVAu (ORCPT
+        id S1355577AbiFUVAy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 17:00:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55256 "EHLO
+        Tue, 21 Jun 2022 17:00:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355245AbiFUU6N (ORCPT
+        with ESMTP id S1355489AbiFUU6b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 16:58:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E04D732074;
-        Tue, 21 Jun 2022 13:51:06 -0700 (PDT)
+        Tue, 21 Jun 2022 16:58:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9090B326C2;
+        Tue, 21 Jun 2022 13:51:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1008961888;
-        Tue, 21 Jun 2022 20:50:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E82B1C341C6;
-        Tue, 21 Jun 2022 20:50:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 71AC761892;
+        Tue, 21 Jun 2022 20:51:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2705DC341C5;
+        Tue, 21 Jun 2022 20:51:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655844634;
-        bh=VoRNCj8yJXl3Edw7BHqzZY4v+pmBxp3Z1rfqaxKuHpE=;
+        s=k20201202; t=1655844670;
+        bh=lfZC+lVFAvSXtJSVdmb9j6eQHqF28S1Poh+pDUdcEYA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MOmi4f3/Zgio6HQVYN0X+yGmazNlhOhLJu2oicblkuCbZKWYsjWTFYTCXTE3S7fmX
-         2zzdikwFby+qmnNPPbUMJLWgI8Ifhlcuy9yaSO7qdY1V5rE6GfmEbiXvT1ecgxIgIK
-         DaWvvqwmK05+kJmb/o8tucYEMJLG5WpFEbWDBlK08gL5JuWnTFbDUNCPHiKUgVvQL9
-         RMIF6zUIlYNugpwODZmP2wYzSm18vSgZeNKYhDS0wNZ1yIk9Z/82d3m/LQoFYVxmHC
-         uYZPoeq0KOjkhXd+tPFfSVsU/ri9BjgIA189TQOsEBMCRK1HqH9Aju42l0io+nyfeo
-         zk7aGbIAdh27Q==
+        b=Ww/fKWeFVcUG6w5mq46lQ0oNL2+hGFdDW0lDvLRmuWUB8D5756F4Pkm5A7oP5lbjM
+         Evz5N2g9vbv0+SRkyyCcRKsGU4LbC+c97UoFesVS7NR96CmHNtBRYL1Ts9lJpsW+xd
+         Hrx0FQy6kEY8wbN1oFBXkSa59AaO6cZIXgsvGtm4md7YWkGg6btcnFM0fZAiicMnM+
+         H08cCDhWU/I7RqAGrvd9bbaf40Juc7XX9BOeXNcymGRatVzcAEX+TgQFJYAD8z1LKk
+         zN/unms1g5uYV0dCEVgZEDDMHwyQeYytawgFquwKZQJ1UUFU4LqbbY36zNSMAw7/ux
+         yecJiRJhGcYmg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jan Kara <jack@suse.cz>, Theodore Ts'o <tytso@mit.edu>,
-        Sasha Levin <sashal@kernel.org>, adilger.kernel@dilger.ca,
-        linux-ext4@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 15/20] ext4: improve write performance with disabled delalloc
-Date:   Tue, 21 Jun 2022 16:50:05 -0400
-Message-Id: <20220621205010.250185-15-sashal@kernel.org>
+Cc:     Keith Busch <kbusch@kernel.org>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Sasha Levin <sashal@kernel.org>, axboe@fb.com,
+        sagi@grimberg.me, linux-nvme@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.10 04/11] nvme-pci: add trouble shooting steps for timeouts
+Date:   Tue, 21 Jun 2022 16:50:58 -0400
+Message-Id: <20220621205105.250640-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220621205010.250185-1-sashal@kernel.org>
-References: <20220621205010.250185-1-sashal@kernel.org>
+In-Reply-To: <20220621205105.250640-1-sashal@kernel.org>
+References: <20220621205105.250640-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,44 +54,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Keith Busch <kbusch@kernel.org>
 
-[ Upstream commit 8d5459c11f548131ce48b2fbf45cccc5c382558f ]
+[ Upstream commit 4641a8e6e145f595059e695f0f8dbbe608134086 ]
 
-When delayed allocation is disabled (either through mount option or
-because we are running low on free space), ext4_write_begin() allocates
-blocks with EXT4_GET_BLOCKS_IO_CREATE_EXT flag. With this flag extent
-merging is disabled and since ext4_write_begin() is called for each page
-separately, we end up with a *lot* of 1 block extents in the extent tree
-and following writeback is writing 1 block at a time which results in
-very poor write throughput (4 MB/s instead of 200 MB/s). These days when
-ext4_get_block_unwritten() is used only by ext4_write_begin(),
-ext4_page_mkwrite() and inline data conversion, we can safely allow
-extent merging to happen from these paths since following writeback will
-happen on different boundaries anyway. So use
-EXT4_GET_BLOCKS_CREATE_UNRIT_EXT instead which restores the performance.
+Many users have encountered IO timeouts with a CSTS value of 0xffffffff,
+which indicates a failure to read the register. While there are various
+potential causes for this observation, faulty NVMe APST has been the
+culprit quite frequently. Add the recommended troubleshooting steps in
+the error output when this condition occurs.
 
-Signed-off-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220520111402.4252-1-jack@suse.cz
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Keith Busch <kbusch@kernel.org>
+Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/inode.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/nvme/host/pci.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
-index 0b85fca32ca9..263e1b1611f7 100644
---- a/fs/ext4/inode.c
-+++ b/fs/ext4/inode.c
-@@ -824,7 +824,7 @@ int ext4_get_block_unwritten(struct inode *inode, sector_t iblock,
- 	ext4_debug("ext4_get_block_unwritten: inode %lu, create flag %d\n",
- 		   inode->i_ino, create);
- 	return _ext4_get_block(inode, iblock, bh_result,
--			       EXT4_GET_BLOCKS_IO_CREATE_EXT);
-+			       EXT4_GET_BLOCKS_CREATE_UNWRIT_EXT);
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index 7de24a10dd92..26f451b70511 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -1252,6 +1252,14 @@ static void nvme_warn_reset(struct nvme_dev *dev, u32 csts)
+ 		dev_warn(dev->ctrl.device,
+ 			 "controller is down; will reset: CSTS=0x%x, PCI_STATUS read failed (%d)\n",
+ 			 csts, result);
++
++	if (csts != ~0)
++		return;
++
++	dev_warn(dev->ctrl.device,
++		 "Does your device have a faulty power saving mode enabled?\n");
++	dev_warn(dev->ctrl.device,
++		 "Try \"nvme_core.default_ps_max_latency_us=0 pcie_aspm=off\" and report a bug\n");
  }
  
- /* Maximum number of blocks we map for direct IO at once. */
+ static enum blk_eh_timer_return nvme_timeout(struct request *req, bool reserved)
 -- 
 2.35.1
 
