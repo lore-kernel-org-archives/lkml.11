@@ -2,67 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13925C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:22:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 716F6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:22:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352818AbiFUPWc (ORCPT
+        id S1352820AbiFUPWg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 11:22:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59946 "EHLO
+        Tue, 21 Jun 2022 11:22:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352789AbiFUPWS (ORCPT
+        with ESMTP id S1352791AbiFUPWS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 21 Jun 2022 11:22:18 -0400
 Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 63E822936D;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 63FEC29802;
         Tue, 21 Jun 2022 08:22:15 -0700 (PDT)
 Received: from uucp (helo=alpha)
         by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1o3fh4-0001zL-04; Tue, 21 Jun 2022 17:21:30 +0200
+        id 1o3fh4-0001zL-03; Tue, 21 Jun 2022 17:21:30 +0200
 Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 30F0AC01AA; Tue, 21 Jun 2022 17:15:48 +0200 (CEST)
-Date:   Tue, 21 Jun 2022 17:15:48 +0200
+        id D1C22C01AA; Tue, 21 Jun 2022 17:15:33 +0200 (CEST)
+Date:   Tue, 21 Jun 2022 17:15:33 +0200
 From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 To:     Liang He <windhl@126.com>
-Cc:     john@phrozen.org, xkernel.wang@foxmail.com,
+Cc:     john@phrozen.org, xkernel.wang@foxmail.com, wangborong@cdjrlc.com,
         linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mips: lantiq: xway: Fix refcount leak bug in sysctrl
-Message-ID: <20220621151548.GE12206@alpha.franken.de>
-References: <20220617122505.4048126-1-windhl@126.com>
+Subject: Re: [PATCH] mips: lantiq: falcon: Fix refcount leak bug in sysctrl
+Message-ID: <20220621151533.GD12206@alpha.franken.de>
+References: <20220617121958.4047910-1-windhl@126.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220617122505.4048126-1-windhl@126.com>
+In-Reply-To: <20220617121958.4047910-1-windhl@126.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 17, 2022 at 08:25:05PM +0800, Liang He wrote:
-> In ltq_soc_init(), of_find_compatible_node() will return a node
-> pointer with refcount incremented. We should use of_node_put() when
-> it is not used anymore.
+On Fri, Jun 17, 2022 at 08:19:58PM +0800, Liang He wrote:
+> In ltq_soc_init(), of_find_compatible_node() will return a node pointer
+> with refcount incremented. We should use of_node_put() when it is not
+> used anymore.
 > 
 > Signed-off-by: Liang He <windhl@126.com>
 > ---
->  arch/mips/lantiq/xway/sysctrl.c | 4 ++++
->  1 file changed, 4 insertions(+)
+>  arch/mips/lantiq/falcon/sysctrl.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
 > 
-> diff --git a/arch/mips/lantiq/xway/sysctrl.c b/arch/mips/lantiq/xway/sysctrl.c
-> index 084f6caba5f2..d444a1b98a72 100644
-> --- a/arch/mips/lantiq/xway/sysctrl.c
-> +++ b/arch/mips/lantiq/xway/sysctrl.c
-> @@ -441,6 +441,10 @@ void __init ltq_soc_init(void)
->  			of_address_to_resource(np_ebu, 0, &res_ebu))
+> diff --git a/arch/mips/lantiq/falcon/sysctrl.c b/arch/mips/lantiq/falcon/sysctrl.c
+> index 5204fc6d6d50..1187729d8cbb 100644
+> --- a/arch/mips/lantiq/falcon/sysctrl.c
+> +++ b/arch/mips/lantiq/falcon/sysctrl.c
+> @@ -208,6 +208,12 @@ void __init ltq_soc_init(void)
+>  			of_address_to_resource(np_sysgpe, 0, &res_sys[2]))
 >  		panic("Failed to get core resources");
 >  
-> +	of_node_put(np_pmu);
-> +	of_node_put(np_cgu);
+> +	of_node_put(np_status);
 > +	of_node_put(np_ebu);
+> +	of_node_put(np_sys1);
+> +	of_node_put(np_syseth);
+> +	of_node_put(np_sysgpe);
 > +
->  	if (!request_mem_region(res_pmu.start, resource_size(&res_pmu),
->  				res_pmu.name) ||
->  		!request_mem_region(res_cgu.start, resource_size(&res_cgu),
+>  	if ((request_mem_region(res_status.start, resource_size(&res_status),
+>  				res_status.name) < 0) ||
+>  		(request_mem_region(res_ebu.start, resource_size(&res_ebu),
 > -- 
 > 2.25.1
 
