@@ -2,82 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D31BEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 11:42:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CFD3C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 11:44:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349993AbiFULmx (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 07:42:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54744 "EHLO
+        id S231151AbiFULoK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 21 Jun 2022 07:44:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349833AbiFULmu (ORCPT
+        with ESMTP id S233085AbiFULoI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 07:42:50 -0400
-Received: from mx.kernkonzept.com (serv1.kernkonzept.com [IPv6:2a01:4f8:1c1c:b490::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FF37E48
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 04:42:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=kernkonzept.com; s=mx1; h=Content-Transfer-Encoding:MIME-Version:References
-        :In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=LcqlgrS7zj13sDDduNZ2hZFqVURpCBy3Ki4wyCilt+Q=; b=kMBGSmVw3QnKKa6d3FhfEYQw75
-        2TAOzLxlIbjHi+qMYl0ePadqRiBOW4EcqIx5L2SrHR1B8lj/fPJEVvekkzbYSukNRj1j25DrNvF0q
-        eC5LFrhAHq5CWgg1WNhPFmFFbPCQRrmrx9HEF5B1qbiFYNKgSt1RhtdxbmV7GNKQT/G16S1WhG57U
-        GkxwmduqFmF9D+XpnWQuemMZlZavWU5fitl4ODVsDtF7uyAKMtEc0INWvLcgyGTJunsoHTqwUUykO
-        5tdz2Xxm+Yvl9Am12r3J5g223E7lMCjMmnmqPLXTyN2Zcpn2dWyLZmWtJx9q6B/3MVZqUFyE9jmHP
-        VyVJT99A==;
-Received: from [10.22.3.24] (helo=kernkonzept.com)
-        by mx.kernkonzept.com with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim 4.94.2)
-        id 1o3blp-005hKr-CO; Tue, 21 Jun 2022 13:10:09 +0200
-From:   Stephan Gerhold <stephan.gerhold@kernkonzept.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>
-Cc:     virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org,
-        Stephan Gerhold <stephan.gerhold@kernkonzept.com>
-Subject: [PATCH 2/2] virtio_mmio: Restore guest page size on resume
-Date:   Tue, 21 Jun 2022 13:06:21 +0200
-Message-Id: <20220621110621.3638025-3-stephan.gerhold@kernkonzept.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220621110621.3638025-1-stephan.gerhold@kernkonzept.com>
-References: <20220621110621.3638025-1-stephan.gerhold@kernkonzept.com>
+        Tue, 21 Jun 2022 07:44:08 -0400
+Received: from relayaws-01.paragon-software.com (relayaws-01.paragon-software.com [35.157.23.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B8A2192BE;
+        Tue, 21 Jun 2022 04:44:07 -0700 (PDT)
+Received: from dlg2.mail.paragon-software.com (vdlg-exch-02.paragon-software.com [172.30.1.105])
+        by relayaws-01.paragon-software.com (Postfix) with ESMTPS id 8E20D1D46;
+        Tue, 21 Jun 2022 11:43:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paragon-software.com; s=mail; t=1655811796;
+        bh=SsPWLRwZ+YtjxwDE4Qg+SPcCuy/4HJXnRFWKkUo025w=;
+        h=Date:To:CC:From:Subject;
+        b=JFy4EqOugen0mS5Y99vJW0JdHQeOS9A/KsYZWk/zJdISab/R+WRcZqOvIvp3D9aA2
+         u118eR9sqBpzm90KUvGCO3m7WL6v/rfp48ig/rUR/CiQnt30ofJM1m07SAr3kW5zTY
+         CLfP5QKYJpQDPh3EIiFGMx13Qg4hQpmSVhykoo9c=
+Received: from [172.30.8.65] (172.30.8.65) by
+ vdlg-exch-02.paragon-software.com (172.30.1.105) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Tue, 21 Jun 2022 14:44:05 +0300
+Message-ID: <ab1c8348-acde-114f-eb66-0074045731a4@paragon-software.com>
+Date:   Tue, 21 Jun 2022 14:44:04 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Content-Language: en-US
+To:     <ntfs3@lists.linux.dev>
+CC:     <linux-kernel@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>
+From:   Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+Subject: [PATCH 0/2] fs/ntfs3: FALLOC_FL_INSERT_RANGE support
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [172.30.8.65]
+X-ClientProxiedBy: vdlg-exch-02.paragon-software.com (172.30.1.105) To
+ vdlg-exch-02.paragon-software.com (172.30.1.105)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Virtio devices might lose their state when the VMM is restarted
-after a suspend to disk (hibernation) cycle. This means that the
-guest page size register must be restored for the virtio_mmio legacy
-interface, since otherwise the virtio queues are not functional.
+Added support for FALLOC_FL_INSERT_RANGE
 
-This is particularly problematic for QEMU that currently still defaults
-to using the legacy interface for virtio_mmio. Write the guest page
-size register again in virtio_mmio_restore() to make legacy virtio_mmio
-devices work correctly after hibernation.
+Konstantin Komarov (2):
+   fs/ntfs3: Fallocate (FALLOC_FL_INSERT_RANGE) implementation
+   fs/ntfs3: Enable FALLOC_FL_INSERT_RANGE
 
-Signed-off-by: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
----
- drivers/virtio/virtio_mmio.c | 3 +++
- 1 file changed, 3 insertions(+)
+  fs/ntfs3/attrib.c  | 176 +++++++++++++++++++++++++++++++++++++++++++++
+  fs/ntfs3/file.c    |  97 ++++++++++++++-----------
+  fs/ntfs3/ntfs_fs.h |   4 +-
+  fs/ntfs3/run.c     |  43 +++++++++++
+  4 files changed, 277 insertions(+), 43 deletions(-)
 
-diff --git a/drivers/virtio/virtio_mmio.c b/drivers/virtio/virtio_mmio.c
-index 980dffd69586..083ff1eb743d 100644
---- a/drivers/virtio/virtio_mmio.c
-+++ b/drivers/virtio/virtio_mmio.c
-@@ -569,6 +569,9 @@ static int virtio_mmio_restore(struct device *dev)
- {
- 	struct virtio_mmio_device *vm_dev = dev_get_drvdata(dev);
- 
-+	if (vm_dev->version == 1)
-+		writel(PAGE_SIZE, vm_dev->base + VIRTIO_MMIO_GUEST_PAGE_SIZE);
-+
- 	return virtio_device_restore(&vm_dev->vdev);
- }
- 
 -- 
-2.30.2
+2.36.1
 
