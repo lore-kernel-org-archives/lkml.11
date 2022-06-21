@@ -2,122 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47AB8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:22:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13925C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:22:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352807AbiFUPWW (ORCPT
+        id S1352818AbiFUPWc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 11:22:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59882 "EHLO
+        Tue, 21 Jun 2022 11:22:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352755AbiFUPWM (ORCPT
+        with ESMTP id S1352789AbiFUPWS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 11:22:12 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92E0B252BD;
-        Tue, 21 Jun 2022 08:22:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655824931; x=1687360931;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Vsw8vB0d2PUw/2PgT1bcqVtYnj4HJ7f6+Ks30Hj4HkA=;
-  b=eUlRgUEwseOtHXmpgl4wIn5aymLTeY5JrrepKMaoLWwtbpDx8gvMZjp9
-   QYYxkmz/zf3q3x2QZ7zrisB489nfph1wYbQUjsAiQPTySd1iBZ7Lkooxe
-   2tDQBFwM+yvBX5+/DRTEisKjvRCw3X0P4ndwD3QSN1mvIv9ktMVmffDom
-   f7snYj2F1ZLBCxBH8HI7c+ZKoShbqmNyGigoci2zVawj4Vr1gCEivcY/i
-   oCTNCCxX4YNitDa8WTz9SI4znZzypLm829c5uQO5fiSPCj0Cg3osyVw6E
-   vCW39vO0xTE/5E+Hc6AjbjB9n0OrJLfQyjNir8ZmVdKfG6iaVCu1kDFLl
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="344137151"
-X-IronPort-AV: E=Sophos;i="5.92,209,1650956400"; 
-   d="scan'208";a="344137151"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 08:22:06 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,209,1650956400"; 
-   d="scan'208";a="677045221"
-Received: from lkp-server02.sh.intel.com (HELO a67cc04a5eeb) ([10.239.97.151])
-  by FMSMGA003.fm.intel.com with ESMTP; 21 Jun 2022 08:22:02 -0700
-Received: from kbuild by a67cc04a5eeb with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o3fhZ-00004e-M0;
-        Tue, 21 Jun 2022 15:22:01 +0000
-Date:   Tue, 21 Jun 2022 23:21:36 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Nava kishore Manne <nava.manne@xilinx.com>,
-        michal.simek@xilinx.com, hao.wu@intel.com, trix@redhat.com,
-        mdf@kernel.org, yilun.xu@intel.com, gregkh@linuxfoundation.org,
-        ronak.jain@xilinx.com, rajan.vaja@xilinx.com,
-        abhyuday.godhasara@xilinx.com, piyush.mehta@xilinx.com,
-        harsha.harsha@xilinx.com, lakshmi.sai.krishna.potthuri@xilinx.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-fpga@vger.kernel.org, git@xilinx.com
-Cc:     kbuild-all@lists.01.org
-Subject: Re: [PATCH v2 2/3] firmware: xilinx: Add pm api function for PL
- readback
-Message-ID: <202206212254.d7Dba7Nm-lkp@intel.com>
-References: <20220621092833.1057408-3-nava.manne@xilinx.com>
+        Tue, 21 Jun 2022 11:22:18 -0400
+Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 63E822936D;
+        Tue, 21 Jun 2022 08:22:15 -0700 (PDT)
+Received: from uucp (helo=alpha)
+        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
+        id 1o3fh4-0001zL-04; Tue, 21 Jun 2022 17:21:30 +0200
+Received: by alpha.franken.de (Postfix, from userid 1000)
+        id 30F0AC01AA; Tue, 21 Jun 2022 17:15:48 +0200 (CEST)
+Date:   Tue, 21 Jun 2022 17:15:48 +0200
+From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To:     Liang He <windhl@126.com>
+Cc:     john@phrozen.org, xkernel.wang@foxmail.com,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] mips: lantiq: xway: Fix refcount leak bug in sysctrl
+Message-ID: <20220621151548.GE12206@alpha.franken.de>
+References: <20220617122505.4048126-1-windhl@126.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220621092833.1057408-3-nava.manne@xilinx.com>
+In-Reply-To: <20220617122505.4048126-1-windhl@126.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Nava,
+On Fri, Jun 17, 2022 at 08:25:05PM +0800, Liang He wrote:
+> In ltq_soc_init(), of_find_compatible_node() will return a node
+> pointer with refcount incremented. We should use of_node_put() when
+> it is not used anymore.
+> 
+> Signed-off-by: Liang He <windhl@126.com>
+> ---
+>  arch/mips/lantiq/xway/sysctrl.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/arch/mips/lantiq/xway/sysctrl.c b/arch/mips/lantiq/xway/sysctrl.c
+> index 084f6caba5f2..d444a1b98a72 100644
+> --- a/arch/mips/lantiq/xway/sysctrl.c
+> +++ b/arch/mips/lantiq/xway/sysctrl.c
+> @@ -441,6 +441,10 @@ void __init ltq_soc_init(void)
+>  			of_address_to_resource(np_ebu, 0, &res_ebu))
+>  		panic("Failed to get core resources");
+>  
+> +	of_node_put(np_pmu);
+> +	of_node_put(np_cgu);
+> +	of_node_put(np_ebu);
+> +
+>  	if (!request_mem_region(res_pmu.start, resource_size(&res_pmu),
+>  				res_pmu.name) ||
+>  		!request_mem_region(res_cgu.start, resource_size(&res_cgu),
+> -- 
+> 2.25.1
 
-Thank you for the patch! Yet something to improve:
+applied to mips-fixes.
 
-[auto build test ERROR on linus/master]
-[also build test ERROR on v5.19-rc3 next-20220621]
-[cannot apply to xilinx-xlnx/master]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Nava-kishore-Manne/fpga-manager-change-status-api-prototype-don-t-use-older/20220621-183524
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 78ca55889a549a9a194c6ec666836329b774ab6d
-config: riscv-randconfig-r042-20220619 (https://download.01.org/0day-ci/archive/20220621/202206212254.d7Dba7Nm-lkp@intel.com/config)
-compiler: riscv32-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/6b66792a9e4acd718d58c0e5a33ca2426837be87
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Nava-kishore-Manne/fpga-manager-change-status-api-prototype-don-t-use-older/20220621-183524
-        git checkout 6b66792a9e4acd718d58c0e5a33ca2426837be87
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash drivers/crypto/xilinx/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from drivers/crypto/xilinx/zynqmp-aes-gcm.c:18:
->> include/linux/firmware/xlnx-zynqmp.h:747:1: error: expected identifier or '(' before '{' token
-     747 | {
-         | ^
-   include/linux/firmware/xlnx-zynqmp.h:744:12: warning: 'zynqmp_pm_fpga_read' declared 'static' but never defined [-Wunused-function]
-     744 | static int zynqmp_pm_fpga_read(const u32 reg_numframes,
-         |            ^~~~~~~~~~~~~~~~~~~
-
-
-vim +747 include/linux/firmware/xlnx-zynqmp.h
-
-   743	
-   744	static int zynqmp_pm_fpga_read(const u32 reg_numframes,
-   745				       const phys_addr_t phys_address,
-   746				       bool readback_type, u32 *value);
- > 747	{
-   748		return -ENODEV;
-   749	}
-   750	#endif
-   751	
+Thomas.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
+good idea.                                                [ RFC1925, 2.3 ]
