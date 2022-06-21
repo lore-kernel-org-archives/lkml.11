@@ -2,100 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2CD7C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 22:27:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50158C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 22:28:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349272AbiFUW1W (ORCPT
+        id S1352632AbiFUW2A (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 18:27:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58320 "EHLO
+        Tue, 21 Jun 2022 18:28:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231383AbiFUW1T (ORCPT
+        with ESMTP id S231383AbiFUW16 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 18:27:19 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA93E313B9
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 15:27:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655850438; x=1687386438;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=S9M+nxiGTqy+iOORAChUsI1bobjs+TvgVDkGk0n+jYU=;
-  b=nXoEudtReI5UEUBTl9vJGmUtFSLQKDWlOCPSvrvkYpr1O0if8PFsQmL+
-   tNdFlh9Y2ZbAJswixQ9TxNuDNFHEEWqxSo7NAHvqZSOsZUY10xqEpnSFk
-   XXcLGYvgW4hWjLiIyK9zuIGRyB+9eRVb3Tv+D992axrcDY9vF+RQBuF19
-   osEzXtsg9Ix6pDO/TjjTK5Os8yybBd7HKHWzCWDTKhOs7/YAHoWEDnLnv
-   2+VEd2FR2BuRIaoO4QSaSlxGM20kAsbGJtwx4Z17CUSJjm143rw/EC5Gf
-   F6PN24QMSjxxKbJg4O1NpupTqwUZ1gfrzEOVIaO8eKj/Oc8bH60zKiNNq
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="305703132"
-X-IronPort-AV: E=Sophos;i="5.92,210,1650956400"; 
-   d="scan'208";a="305703132"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 15:27:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,210,1650956400"; 
-   d="scan'208";a="586365078"
-Received: from lkp-server02.sh.intel.com (HELO a67cc04a5eeb) ([10.239.97.151])
-  by orsmga002.jf.intel.com with ESMTP; 21 Jun 2022 15:27:17 -0700
-Received: from kbuild by a67cc04a5eeb with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o3mL6-0000V7-JX;
-        Tue, 21 Jun 2022 22:27:16 +0000
-Date:   Wed, 22 Jun 2022 06:26:42 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jamie Iles <jamie@jamieiles.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Marc Zyngier <maz@kernel.org>
-Subject: /opt/cross/gcc-11.3.0-nolibc/s390x-linux/bin/s390x-linux-ld:
- irq-xilinx-intc.c:undefined reference to `iounmap'
-Message-ID: <202206220648.Ovoh9xpK-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+        Tue, 21 Jun 2022 18:27:58 -0400
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4061A2AD1;
+        Tue, 21 Jun 2022 15:27:56 -0700 (PDT)
+Received: by mail-io1-xd36.google.com with SMTP id d123so15741793iof.10;
+        Tue, 21 Jun 2022 15:27:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=fNGqJo+i9/6/f3kZZhedEKn3jNfO/JEUEuBNSE2ons8=;
+        b=Bsw5bU9aNfX0F844I1T/2Kq4vl6mJFjBGaNV9ZHdP3lfbUJ/NJmLvDw83lq1sZFFOk
+         jcxk50T2/0kg5pvZqxPXETFm7ri2eYeXWX6DleBI69HpzlTdwJPOtwNWsJItjFz8O79B
+         Z5VES7BJv+nUxwuzojgo6CCgZegw/ZBLHXB9TWjkWI6eWLIzO4nlq4KGdyoaaKMKFCX/
+         M69QnFTju+8iE/bwxLJFtsHzxqpssOEXchocaKHpI4dgQ/XeBdJsSco0UzSfmtL1hX3a
+         Eg52YGE/4lIAK4fPx8BV4Rz+0CiChofrVsBZPjeItE8yTJg1Uf4s4Vq1nIVl9mpNSrA6
+         8WJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=fNGqJo+i9/6/f3kZZhedEKn3jNfO/JEUEuBNSE2ons8=;
+        b=gB5ikzvQynttGT3J50uuSZIxutL/gvPNBnEcSW4E3r60DriRnIbXwH9Jfi9i9XOwHZ
+         fcpkbMenod7TCAq5eX1l7foQwulqm54ctJkKa/SvZkzs0t8+i1Bigb4oh1S7TaIQM5Fo
+         KA+LX9OCtDjkdZ0hd3grgLQjfO+j8tkSYLPg8FC0I9idUTJdeZpYTCmPlY3Er/ffWeD0
+         U46ZTbrrPC+NHNECvbKv/4e1puAhhq2m6/vjDM+u5812GSp7mpP85fIg4Qe0duhNPsFG
+         GS8lkPZLyRl8937IBWiEGFi35VvIvM2s2yGq3VMSvkVats2Pq26SN+Tj3WTv2L52eSpU
+         34RQ==
+X-Gm-Message-State: AJIora/AG7MeT4ijtjApez5AV45mOlypKxbPys7c9jbtCFCkYaO8w4g2
+        Xmg76OnK5OT1tM+fpISYpAs=
+X-Google-Smtp-Source: AGRyM1s7CtUuGPbwQO3uFbWyjsf6za/ECqC0G+2mNEFJEQFJ6RUGx/b3UQVkQauF8xeSlfZOHgzUag==
+X-Received: by 2002:a05:6638:1301:b0:331:f2f0:a17e with SMTP id r1-20020a056638130100b00331f2f0a17emr227630jad.141.1655850475088;
+        Tue, 21 Jun 2022 15:27:55 -0700 (PDT)
+Received: from localhost ([172.243.153.43])
+        by smtp.gmail.com with ESMTPSA id h18-20020a02c732000000b0032e3b0933c6sm7637267jao.162.2022.06.21.15.27.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Jun 2022 15:27:54 -0700 (PDT)
+Date:   Tue, 21 Jun 2022 15:27:46 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Roberto Sassu <roberto.sassu@huawei.com>, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kpsingh@kernel.org,
+        john.fastabend@gmail.com, songliubraving@fb.com, kafai@fb.com,
+        yhs@fb.com
+Cc:     dhowells@redhat.com, keyrings@vger.kernel.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Roberto Sassu <roberto.sassu@huawei.com>,
+        kernel test robot <lkp@intel.com>
+Message-ID: <62b245e22effa_1627420871@john.notmuch>
+In-Reply-To: <20220621163757.760304-4-roberto.sassu@huawei.com>
+References: <20220621163757.760304-1-roberto.sassu@huawei.com>
+ <20220621163757.760304-4-roberto.sassu@huawei.com>
+Subject: RE: [PATCH v5 3/5] bpf: Add bpf_verify_pkcs7_signature() helper
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   ca1fdab7fd27eb069df1384b2850dcd0c2bebe8d
-commit: b84dc7f0e3646d480b6972c5f25586215c5f33e2 irqchip/xilinx: Remove microblaze+zynq dependency
-date:   12 days ago
-config: s390-randconfig-r021-20220622 (https://download.01.org/0day-ci/archive/20220622/202206220648.Ovoh9xpK-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project af6d2a0b6825e71965f3e2701a63c239fa0ad70f)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install s390 cross compiling tool for clang build
-        # apt-get install binutils-s390x-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=b84dc7f0e3646d480b6972c5f25586215c5f33e2
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout b84dc7f0e3646d480b6972c5f25586215c5f33e2
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash
+Roberto Sassu wrote:
+> Add the bpf_verify_pkcs7_signature() helper, to give eBPF security modules
+> the ability to check the validity of a signature against supplied data, by
+> using user-provided or system-provided keys as trust anchor.
+> 
+> The new helper makes it possible to enforce mandatory policies, as eBPF
+> programs might be allowed to make security decisions only based on data
+> sources the system administrator approves.
+> 
+> The caller should provide both the data to be verified and the signature as
+> eBPF dynamic pointers (to minimize the number of parameters).
+> 
+> The caller should also provide a keyring pointer obtained with
+> bpf_lookup_user_key() or, alternatively, a keyring ID with values defined
+> in verification.h. While the first choice gives users more flexibility, the
+> second offers better security guarantees, as the keyring selection will not
+> depend on possibly untrusted user space but on the kernel itself.
+> 
+> Defined keyring IDs are: 0 for the primary keyring (immutable keyring of
+> system keys); 1 for both the primary and secondary keyring (where keys can
+> be added only if they are vouched for by existing keys in those keyrings);
+> 2 for the platform keyring (primarily used by the integrity subsystem to
+> verify a kexec'ed kerned image and, possibly, the initramfs signature).
+> 
+> Note: since the keyring ID assignment is understood only by
+> verify_pkcs7_signature(), it must be passed directly to the corresponding
+> helper, rather than to a separate new helper returning a struct key pointer
+> with the keyring ID as a pointer value. If such pointer is passed to any
+> other helper which does not check its validity, an illegal memory access
+> could occur.
+> 
+> Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+> Reported-by: kernel test robot <lkp@intel.com> (cast warning)
+> ---
+>  include/uapi/linux/bpf.h       | 17 +++++++++++++++
+>  kernel/bpf/bpf_lsm.c           | 39 ++++++++++++++++++++++++++++++++++
+>  tools/include/uapi/linux/bpf.h | 17 +++++++++++++++
+>  3 files changed, 73 insertions(+)
+> 
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 7bbcf2cd105d..524bed4d7170 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -5339,6 +5339,22 @@ union bpf_attr {
+>   *		bpf_lookup_user_key() helper.
+>   *	Return
+>   *		0
+> + *
+> + * long bpf_verify_pkcs7_signature(struct bpf_dynptr *data_ptr, struct bpf_dynptr *sig_ptr, struct key *trusted_keys, unsigned long keyring_id)
+> + *	Description
+> + *		Verify the PKCS#7 signature *sig* against the supplied *data*
+> + *		with keys in *trusted_keys* or in a keyring with ID
+> + *		*keyring_id*.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Would be nice to give precedence here so that its obvious order between
+trusted_keys and keyring_id. 
 
-All errors (new ones prefixed by >>):
-
-   /opt/cross/gcc-11.3.0-nolibc/s390x-linux/bin/s390x-linux-ld: kernel/dma/coherent.o: in function `dma_declare_coherent_memory':
-   coherent.c:(.text+0x13a): undefined reference to `memunmap'
-   /opt/cross/gcc-11.3.0-nolibc/s390x-linux/bin/s390x-linux-ld: kernel/dma/coherent.o: in function `dma_init_coherent_memory':
-   coherent.c:(.text+0x1e8): undefined reference to `memremap'
-   /opt/cross/gcc-11.3.0-nolibc/s390x-linux/bin/s390x-linux-ld: coherent.c:(.text+0x36c): undefined reference to `memunmap'
-   /opt/cross/gcc-11.3.0-nolibc/s390x-linux/bin/s390x-linux-ld: drivers/irqchip/irq-al-fic.o: in function `al_fic_init_dt':
-   irq-al-fic.c:(.init.text+0x3a): undefined reference to `of_iomap'
-   /opt/cross/gcc-11.3.0-nolibc/s390x-linux/bin/s390x-linux-ld: irq-al-fic.c:(.init.text+0x4c0): undefined reference to `iounmap'
-   /opt/cross/gcc-11.3.0-nolibc/s390x-linux/bin/s390x-linux-ld: drivers/irqchip/irq-xilinx-intc.o: in function `xilinx_intc_of_init':
-   irq-xilinx-intc.c:(.init.text+0xa6): undefined reference to `of_iomap'
->> /opt/cross/gcc-11.3.0-nolibc/s390x-linux/bin/s390x-linux-ld: irq-xilinx-intc.c:(.init.text+0x1fc): undefined reference to `iounmap'
-   /opt/cross/gcc-11.3.0-nolibc/s390x-linux/bin/s390x-linux-ld: drivers/misc/open-dice.o: in function `open_dice_write':
-   open-dice.c:(.text+0x170): undefined reference to `devm_memremap'
-   /opt/cross/gcc-11.3.0-nolibc/s390x-linux/bin/s390x-linux-ld: open-dice.c:(.text+0x21e): undefined reference to `devm_memunmap'
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> + *
+> + *		*keyring_id* can have the following values defined in
+> + *		verification.h: 0 for the primary keyring (immutable keyring of
+> + *		system keys); 1 for both the primary and secondary keyring
+> + *		(where keys can be added only if they are vouched for by
+> + *		existing keys in those keyrings); 2 for the platform keyring
+> + *		(primarily used by the integrity subsystem to verify a kexec'ed
+> + *		kerned image and, possibly, the initramfs signature).
+> + *	Return
+> + *		0 on success, a negative value on error.
+>   */
