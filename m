@@ -2,91 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96D6EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:21:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A140C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:22:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352717AbiFUPV6 (ORCPT
+        id S1352721AbiFUPWA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 11:21:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59622 "EHLO
+        Tue, 21 Jun 2022 11:22:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350448AbiFUPVz (ORCPT
+        with ESMTP id S1352670AbiFUPV5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 11:21:55 -0400
+        Tue, 21 Jun 2022 11:21:57 -0400
 Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EA50D252BD;
-        Tue, 21 Jun 2022 08:21:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E821D252BD;
+        Tue, 21 Jun 2022 08:21:56 -0700 (PDT)
 Received: from uucp (helo=alpha)
         by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1o3fh4-0001zL-06; Tue, 21 Jun 2022 17:21:30 +0200
+        id 1o3fh4-0001zL-02; Tue, 21 Jun 2022 17:21:30 +0200
 Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 349D9C01AA; Tue, 21 Jun 2022 17:19:45 +0200 (CEST)
-Date:   Tue, 21 Jun 2022 17:19:45 +0200
+        id F264BC01AA; Tue, 21 Jun 2022 17:14:57 +0200 (CEST)
+Date:   Tue, 21 Jun 2022 17:14:57 +0200
 From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        paul@crapouillou.net, linux-mips@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 1/2] mips: dts: ingenic: Add TCU clock to x1000/x1830
- tcu device node
-Message-ID: <20220621151945.GA12322@alpha.franken.de>
-References: <20220617121805.738157-1-aidanmacdonald.0x0@gmail.com>
- <20220617121805.738157-2-aidanmacdonald.0x0@gmail.com>
+To:     Liang He <windhl@126.com>
+Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] mips: mti-malta: Fix refcount leak in malta-time.c
+Message-ID: <20220621151457.GC12206@alpha.franken.de>
+References: <20220616142756.3987475-1-windhl@126.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220617121805.738157-2-aidanmacdonald.0x0@gmail.com>
+In-Reply-To: <20220616142756.3987475-1-windhl@126.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 17, 2022 at 01:18:05PM +0100, Aidan MacDonald wrote:
-> This clock is a gate for the TCU hardware block on these SoCs, but
-> it wasn't included in the device tree since the ingenic-tcu driver
-> erroneously did not request it.
+On Thu, Jun 16, 2022 at 10:27:56PM +0800, Liang He wrote:
+> In update_gic_frequency_dt(), of_find_compatible_node() will return
+> a node pointer with refcount incremented. We should use of_node_put()
+> when it is not used anymore.
 > 
-> Reviewed-by: Paul Cercueil <paul@crapouillou.net>
-> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+> Signed-off-by: Liang He <windhl@126.com>
 > ---
->  arch/mips/boot/dts/ingenic/x1000.dtsi | 5 +++--
->  arch/mips/boot/dts/ingenic/x1830.dtsi | 5 +++--
->  2 files changed, 6 insertions(+), 4 deletions(-)
+>  arch/mips/mti-malta/malta-time.c | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
-> diff --git a/arch/mips/boot/dts/ingenic/x1000.dtsi b/arch/mips/boot/dts/ingenic/x1000.dtsi
-> index b0a034b468bb..42e69664efd9 100644
-> --- a/arch/mips/boot/dts/ingenic/x1000.dtsi
-> +++ b/arch/mips/boot/dts/ingenic/x1000.dtsi
-> @@ -111,8 +111,9 @@ tcu: timer@10002000 {
+> diff --git a/arch/mips/mti-malta/malta-time.c b/arch/mips/mti-malta/malta-time.c
+> index bbf1e38e1431..2cb708cdf01a 100644
+> --- a/arch/mips/mti-malta/malta-time.c
+> +++ b/arch/mips/mti-malta/malta-time.c
+> @@ -214,6 +214,8 @@ static void update_gic_frequency_dt(void)
 >  
->  		clocks = <&cgu X1000_CLK_RTCLK>,
->  			 <&cgu X1000_CLK_EXCLK>,
-> -			 <&cgu X1000_CLK_PCLK>;
-> -		clock-names = "rtc", "ext", "pclk";
-> +			 <&cgu X1000_CLK_PCLK>,
-> +			 <&cgu X1000_CLK_TCU>;
-> +		clock-names = "rtc", "ext", "pclk", "tcu";
+>  	if (of_update_property(node, &gic_frequency_prop) < 0)
+>  		pr_err("error updating gic frequency property\n");
+> +
+> +	of_node_put(node);
+>  }
 >  
->  		interrupt-controller;
->  		#interrupt-cells = <1>;
-> diff --git a/arch/mips/boot/dts/ingenic/x1830.dtsi b/arch/mips/boot/dts/ingenic/x1830.dtsi
-> index dbf21afaccb1..65a5da71c199 100644
-> --- a/arch/mips/boot/dts/ingenic/x1830.dtsi
-> +++ b/arch/mips/boot/dts/ingenic/x1830.dtsi
-> @@ -104,8 +104,9 @@ tcu: timer@10002000 {
->  
->  		clocks = <&cgu X1830_CLK_RTCLK>,
->  			 <&cgu X1830_CLK_EXCLK>,
-> -			 <&cgu X1830_CLK_PCLK>;
-> -		clock-names = "rtc", "ext", "pclk";
-> +			 <&cgu X1830_CLK_PCLK>,
-> +			 <&cgu X1830_CLK_TCU>;
-> +		clock-names = "rtc", "ext", "pclk", "tcu";
->  
->  		interrupt-controller;
->  		#interrupt-cells = <1>;
+>  #endif
 > -- 
-> 2.35.1
+> 2.25.1
 
 applied to mips-fixes.
 
