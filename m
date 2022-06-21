@@ -2,122 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51BB2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:15:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D793C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:18:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355224AbiFUVP2 (ORCPT
+        id S1355467AbiFUVSm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 17:15:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33882 "EHLO
+        Tue, 21 Jun 2022 17:18:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356700AbiFUVOL (ORCPT
+        with ESMTP id S1355354AbiFUVS1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 17:14:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20FA3344D7;
-        Tue, 21 Jun 2022 14:01:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1EB9660E17;
-        Tue, 21 Jun 2022 21:01:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80709C3411C;
-        Tue, 21 Jun 2022 21:01:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655845263;
-        bh=WT4SOxCLaIR0gYHkVAL25jmyZOnuo2xSnBmePJjtpcw=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=l5PqjmlAOTto2xaG15RwrnEcOogpugolWBH0n4c3mOytGz46EH8i/lhp5y4BVI8IE
-         qbQnOSFqxn2oB3xSWSVE0KgOtWEoifbD4+i/GcnZkXgKn7FAHoR+AcZ+VyK8+Jy40B
-         l4g+duaq4NnY4yknd9ia9kuLwynS5qO2SstmrlYre5i9KlQa0jviCAgRIvnhZTv6jZ
-         kdWLDB+VA7kGaZVNp+xBcEl1J88HdAXIiEm5uK6qOep9DjbBW/TqzvW1z5/RRPixEl
-         6OZAc1LmnG/vd7bIFF1snYLc7xgMMMlnOvXgz4B5/aLCdqVvC116Nnofj+Q5A51Awf
-         9CNWe+Us1XcaQ==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 184435C0AE0; Tue, 21 Jun 2022 14:01:03 -0700 (PDT)
-Date:   Tue, 21 Jun 2022 14:01:03 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     rcu@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-team@fb.com, rostedt@goodmis.org
-Subject: Re: [PATCH rcu 11/12] torture: Flush printk() buffers before
- powering off
-Message-ID: <20220621210103.GO1790663@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20220620225814.GA3842995@paulmck-ThinkPad-P17-Gen-1>
- <20220620225817.3843106-11-paulmck@kernel.org>
- <8735fyc42v.fsf@jogness.linutronix.de>
- <20220620232838.GZ1790663@paulmck-ThinkPad-P17-Gen-1>
- <87v8suphdy.fsf@jogness.linutronix.de>
- <20220621181335.GJ1790663@paulmck-ThinkPad-P17-Gen-1>
- <87ilotagdw.fsf@jogness.linutronix.de>
+        Tue, 21 Jun 2022 17:18:27 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 028D835260;
+        Tue, 21 Jun 2022 14:03:56 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id x6-20020a1c7c06000000b003972dfca96cso7879725wmc.4;
+        Tue, 21 Jun 2022 14:03:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=references:from:to:cc:subject:in-reply-to:date:message-id
+         :mime-version;
+        bh=v2qblIOiEq3IV+Rw5HWdpUsMOXZ3HPIB/MKM16Vrm1A=;
+        b=fwTohF+N5txaueZetr08UocKNsHSlc0pzESbB1F/y7wPIx38EW4abh69DjLIIjg/mK
+         PU5/PAH62EX7TRCqSDP8SsNK5QMFUusTly5FVdavQPdaKxAMzKjYBMDAGreFR6ilv4x4
+         Q9rSo5W3HuGDB4NIyUy4Zy9cXxhJnNXFdpWoE0dRh5GS0J/K7eqtjcrwyZq0CH6X+1Y0
+         mIk+D/RxPlF8lPrxMUpcP798DAj0/aM/TM0peucKs2oabnmprSy/oo94jxdJiLKNHOgW
+         GMSyJCSCHgyPxF2XER+hKCvjGlgXmLCvJq8G4/sS5aro8+uViOglPu+6dioavbEmSzZY
+         9VEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:references:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=v2qblIOiEq3IV+Rw5HWdpUsMOXZ3HPIB/MKM16Vrm1A=;
+        b=tP1L5X1S1cs3B+CvPpZU9l89GbLpknmeh5/C04EWASwLt9FsSAQjLwu2fFHaAxAamG
+         H8zG4ATpI3dobVHzId67YXjaIp9r4UYsvQ/XKSFtgBepcgcCcwUkKR9JN+4+18VhJ7Mm
+         thYw/HVrj8lWXlZaStmJeX/WIuh4B3aZPRDSZD4X0uIFWSjJsQ1lWTEM7cqgCNkSYh+K
+         I3RYCAVVcRnuv31lk+JTQOVXivAH9oKhge6Nr8u8yGaw0pwmYJNw8z3JWYHGWB+MBs/+
+         y/0cJ7eewcQIahZz51hgUP12lofamdnrgkoImQfHT8rm4PbLmQ2auACgXSgzIxrrELsS
+         hqzQ==
+X-Gm-Message-State: AJIora8m7bpQ4jZbofQJBHjK8LWxHMYHrvXqImSAL/HRjgAdSXAApR/y
+        /Dz3pgwteoK6hsCZbyBDXR8=
+X-Google-Smtp-Source: AGRyM1seawZlN42pmJSLDQJ3ijOHsGsLAxYpv/JRO9LAGuWDU9AGN2HjpN9wo6nVNwoUmKfzn+8ozg==
+X-Received: by 2002:a7b:cf2a:0:b0:39c:4eef:29e with SMTP id m10-20020a7bcf2a000000b0039c4eef029emr117762wmg.28.1655845434599;
+        Tue, 21 Jun 2022 14:03:54 -0700 (PDT)
+Received: from localhost (92.40.168.123.threembb.co.uk. [92.40.168.123])
+        by smtp.gmail.com with ESMTPSA id w3-20020adfec43000000b0021b89c07b6asm11227967wrn.108.2022.06.21.14.03.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Jun 2022 14:03:54 -0700 (PDT)
+References: <20220620200644.1961936-1-aidanmacdonald.0x0@gmail.com>
+ <YrH7JurP2LAl1uYU@sirena.org.uk>
+From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org,
+        srinivas.kandagatla@linaro.org, bgoswami@codeaurora.org,
+        gregkh@linuxfoundation.org, rafael@kernel.org,
+        cw00.choi@samsung.com, krzysztof.kozlowski@linaro.org,
+        b.zolnierkie@samsung.com, myungjoo.ham@samsung.com,
+        michael@walle.cc, linus.walleij@linaro.org, brgl@bgdev.pl,
+        tglx@linutronix.de, maz@kernel.org, lee.jones@linaro.org,
+        mani@kernel.org, cristian.ciocaltea@gmail.com, wens@csie.org,
+        tharvey@gateworks.com, rjones@gateworks.com,
+        mazziesaccount@gmail.com, orsonzhai@gmail.com,
+        baolin.wang7@gmail.com, zhang.lyra@gmail.com,
+        jernej.skrabec@gmail.com, samuel@sholland.org, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com, linux-kernel@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-actions@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        alsa-devel@alsa-project.org
+Subject: Re: [PATCH 00/49] regmap-irq cleanups and refactoring
+In-reply-to: <YrH7JurP2LAl1uYU@sirena.org.uk>
+Date:   Tue, 21 Jun 2022 22:04:59 +0100
+Message-ID: <oewDtaKXJJctSx2HcLTI4xuAmbzWo8Vb@localhost>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87ilotagdw.fsf@jogness.linutronix.de>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 21, 2022 at 10:58:27PM +0206, John Ogness wrote:
-> On 2022-06-21, "Paul E. McKenney" <paulmck@kernel.org> wrote:
-> > The patch below will cause rcutorture to implicitly test this
-> > functionality, unless told otherwise, for example, by using the
-> > --bootargs "torture.printk_shutdown_bug_workaround" kvm.sh
-> > argument.
-> >
-> > Thoughts?
-> 
-> I feel like this is dirtying the torture.* bootarg namespace a
-> bit. Also, I am not sure how useful it is as a dynamic option. I assume
-> that users would generally avoid using it, so its very existence might
-> just be more noise in the documentation and code. It is an unusual
-> feature:
-> 
-> "In case some bug shows up, here is a flag to avoid it."
-> 
-> I personally would just drop the patch and rely on a correctly
-> functional kernel. But I am also not an rcutorture user. If _you_ think
-> that such a flag is useful, feel free to include the patch.
 
-Fair points!
+Mark Brown <broonie@kernel.org> writes:
 
-The main value to me is to avoid me having to pile through code to relearn
-the incantation pr_flush(1000, true).  Which, now that you mention it,
-could be dealt with by adding a comment:
+> On Mon, Jun 20, 2022 at 09:05:55PM +0100, Aidan MacDonald wrote:
+>
+>> Here's a bunch of cleanups for regmap-irq focused on simplifying the API
+>> and generalizing it a bit. It's broken up into three refactors, focusing
+>> on one area at a time.
+>
+> This series is very large and the way it is interleaving patches for
+> several different subsystems adds to the difficulty managing it.  As
+> you've identified there's several different subserieses in here, if you
+> need to resend any of this (I've not even started looking at the actual
+> patches yet) it would be easier to digest with some combination of
+> sending as separate serieses and reordering things so that all the
+> things for each subsystem are grouped together.  That'd help with both
+> review and with merging, both large serieses and cross subsystem
+> dependencies tend to slow things down.
 
-	// pr_flush(1000, true); // If needed to flush printk() buffers.
+Thanks for the advice. After reading this and some of Andy's comments I
+think I understand how to organize this better.
 
-This definitely will not go into the upcoming merge window, so there is
-plenty of time to give it some thought.
-
-> > commit 204bf1e2a5a2fb68c15b4b64793ad0896db6f705
-> > Author: Paul E. McKenney <paulmck@kernel.org>
-> > Date:   Tue Jun 21 11:02:25 2022 -0700
-> >
-> >     torture: Optionally flush printk() buffers before powering off
-> >     
-> >     The rcutorture test suite produces quite a bit of console output at
-> >     the end of a test.  This means that the new-in-2022 printk() kthreads
-> >     are likely to be in the process of flushing output at the time of the
-> >     torture_shutdown() function's call to kernel_power_off().  Normally,
-> >     rcutorture relies on printk() to flush any pending output upon shutdown,
-> >     the better to detect bugs in this area, for example, the one introduced
-> >     by 8e274732115f ("printk: extend console_lock for per-console locking").
-> >     However, once such a bug is detected and reported, it is necessary to
-> >     test the rest of the system, without noise from the already-reported bug.
-> >     
-> >     This commit therefore adds a torture.printk_shutdown_bug_workaround
-> >     kernel parameter, which causes torture_shutdown() to invoke pr_flush(),
-> >     and print an informative message on the console, immediately before
-> >     invoking kernel_power_off().  When this kernel parameter is not specified,
-> >     it is up to printk() to flush its own buffers.
-> >     
-> >     Suggested-by: John Ogness <john.ogness@linutronix.de>
-> >     Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-> 
-> Reviewed-by: John Ogness <john.ogness@linutronix.de>
-
-Thank you!
-
-							Thanx, Paul
+I'll send a trimmed down series including only regmap changes, and
+instead of removing things right away I'll just mark them deprecated.
+Then the driver patches can go by subsystem (one series per subsystem?)
+and once everything is merged the deprecated stuff in regmap-irq can be
+removed at a later date.
