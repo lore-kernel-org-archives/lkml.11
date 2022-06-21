@@ -2,173 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB703C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 07:52:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9CDBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 07:52:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347552AbiFUHwF (ORCPT
+        id S1347601AbiFUHw2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 03:52:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48876 "EHLO
+        Tue, 21 Jun 2022 03:52:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229605AbiFUHwD (ORCPT
+        with ESMTP id S229605AbiFUHw0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 03:52:03 -0400
-Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDD57245AB
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 00:52:02 -0700 (PDT)
-Received: by mail-qv1-xf2c.google.com with SMTP id y14so13896824qvs.10
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 00:52:02 -0700 (PDT)
+        Tue, 21 Jun 2022 03:52:26 -0400
+Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B109823BCB
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 00:52:25 -0700 (PDT)
+Received: by mail-qv1-xf2e.google.com with SMTP id i17so12531444qvo.13
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 00:52:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=oBi1GtdcKMWmT1bDHc11If7BFUljocWb98H7N/H6xs0=;
-        b=SGPJ5m4tvIHRyjwwdQIIal8VjxuNUxpv23Qai8KBUFCze0qz9KMZRvu8ZUqU3eN3Ku
-         fl4o56SOitD/EI4WXS5RhK3oGUbWPgnOyKgfDrGciUttk7igTulNAjflhz1fpUnQN4lX
-         aRimKlcstTq4qTa0Gf9IOTzFsnalN0nboEJh3CcPDXUjN0h8kDOh8EpqDRKAC+ZOB7cn
-         FHXXrWylD4MypmamELDdF1j65iVrsu5e9H3g2wQ6mOaVmFOdv6gw/bEleMWXTm7wQea1
-         2u+2YtFlgloF51zN4dc7ehszwNHr+Vw4YfOlPRw55uWxOJjFdXbhGorhz6P8E1OuNeTd
-         91sQ==
+        bh=g9k1mThYScIf9A8X5kP43MLMYKCbH4t5dz1jSbySjwE=;
+        b=l5HiTUmI2JUEzJjhrUuq9RgwOOdemlWj2crpupJB8TUxFRp//h5bJDRus8P+fXp/yK
+         N3Euxma5PIExGPbNR8xbsQMDbigXcRNK6Fjv1vIDlvZEZyQ2Ex3EJ5JX3DezkUhjIG42
+         KT+z6Xn5dmORbcgX0/3QL6tPBzQKddiImkKnmV47+2gLy7/bP3IazmYyNIunej4Rugvb
+         oEmhFkBzHXcphWon9RykZMATfy0qtCxRZ5i+bskVddoHBr5VwLYDBJK03LbbceK46P11
+         49tJQgM5o5bkfzANgtgjFCeb4dWxDrNNXynKRg0z+n8u1k4XTpIFHRsH77WOHXMVQFmI
+         Yg7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=oBi1GtdcKMWmT1bDHc11If7BFUljocWb98H7N/H6xs0=;
-        b=KNykt835viq/pVUKTOJcML70Mxjdn/QiSZJeBLNWqyxc07qu5woWpD9B9JWsFSGxMA
-         C9qYFE3UX+d8649aVofQGjYHDXOOvL8PQHcS9Kpvk1y7y9LN47qSDPLYD66xOex3TAyp
-         7Ztx0jLhGy7iwZjYYhO0kAMJxIk8X/QFYG0cbRAotQh4h4hCViqszJ5TyzHoz7nCIusF
-         q2yt0wvmIUsmlYUwyzeiHBlKv0+lflkMyzyBy+YlnOpFqClIbK1DnQ28AcvFOFPzLNV+
-         V59g8rSGvCVI3bbpCm/i8eqjArKpD1Ex/ct9CmVD82PoQa1rv7K0gm4oWMfukGgWJSB3
-         LHwg==
-X-Gm-Message-State: AJIora8Txjr4i0wkAMllf8hQYmCS/9RUJoFID8QfnoD+OP1aScAbXOiy
-        KQfjJdLlAq1p4sIQ2HJb3Q==
-X-Google-Smtp-Source: AGRyM1uldbQ+FF0ReOT1dCERxSwSqnUWwf/gHG/zCBzt2IGMN+ewK96Jq0luXf2dgWYAW+ncZVhwDw==
-X-Received: by 2002:a05:6214:5199:b0:464:58c0:3926 with SMTP id kl25-20020a056214519900b0046458c03926mr21833952qvb.48.1655797921656;
-        Tue, 21 Jun 2022 00:52:01 -0700 (PDT)
+        bh=g9k1mThYScIf9A8X5kP43MLMYKCbH4t5dz1jSbySjwE=;
+        b=NH1rXOVVYty1Z8pC/uQFuyX5/I+AV/4Rnfhf6WAcyMdxNNaGp9hkWi3eNDiIuneeAl
+         t6H1r4Qstx8HcyFI+el/kf5/CqUadJpODqYjSrRxSMbBhb7ZO03czIl6ozSAgUsiO+sj
+         3Ah5kzK3JBmRAqnVYt+ImzloP1ovmSfz5jTVyeXCdWoB2fiqDCIVfMceIYq0J8RU7TWN
+         QBoupo15PpXgh5W3Gnnn04vXBe2TBTRU8RdmI3PDVZxfTPbFUlegDQ3TqwDEf+SLFmFZ
+         QxhxdfC1HOBg71VgSJZRzEcjMOffwiyC0Y6iBbmyGg2Zaz4yaSeeBLyb7RyIhN205Cx2
+         6hWw==
+X-Gm-Message-State: AJIora/zFpPH/wT6WeZ7BkIfRNbWUSjvQ4uWDT7Dgp/TGsekIKnbdX4D
+        2gqs5h62HTC2KCNSuiznkQ==
+X-Google-Smtp-Source: AGRyM1u23QhEKWlxDri4U4bL6I/zAwKZbFgPfNf8rArvK8DElQyjUq4DyhWWlWvGazGD2PkS+RFFQQ==
+X-Received: by 2002:a05:6214:21e6:b0:46e:4f35:b07c with SMTP id p6-20020a05621421e600b0046e4f35b07cmr22241046qvj.12.1655797944888;
+        Tue, 21 Jun 2022 00:52:24 -0700 (PDT)
 Received: from localhost (c-73-219-103-14.hsd1.vt.comcast.net. [73.219.103.14])
-        by smtp.gmail.com with ESMTPSA id l16-20020a05620a28d000b006a6cadd89efsm14678198qkp.82.2022.06.21.00.52.00
+        by smtp.gmail.com with ESMTPSA id j6-20020a05620a410600b006a6d3a6d597sm14563997qko.71.2022.06.21.00.52.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jun 2022 00:52:00 -0700 (PDT)
-Date:   Tue, 21 Jun 2022 03:51:59 -0400
+        Tue, 21 Jun 2022 00:52:24 -0700 (PDT)
+Date:   Tue, 21 Jun 2022 03:52:23 -0400
 From:   Kent Overstreet <kent.overstreet@gmail.com>
 To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>
 Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org, pmladek@suse.com,
         rostedt@goodmis.org, enozhatsky@chromium.org, willy@infradead.org
-Subject: Re: [PATCH v4 05/34] vsprintf: %pf(%p)
-Message-ID: <20220621075159.m67qzftqulvphivw@moria.home.lan>
+Subject: Re: [PATCH v4 13/34] test_printf: Drop requirement that sprintf not
+ write past nul
+Message-ID: <20220621075223.qpiatsusjbu6zj7a@moria.home.lan>
 References: <20220620004233.3805-1-kent.overstreet@gmail.com>
- <20220620004233.3805-6-kent.overstreet@gmail.com>
- <f9224687-ce0c-b41b-f158-1b679a70c2d5@rasmusvillemoes.dk>
+ <20220620004233.3805-14-kent.overstreet@gmail.com>
+ <ef7276bd-c5ce-af98-bd49-051e24528426@rasmusvillemoes.dk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <f9224687-ce0c-b41b-f158-1b679a70c2d5@rasmusvillemoes.dk>
+In-Reply-To: <ef7276bd-c5ce-af98-bd49-051e24528426@rasmusvillemoes.dk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 21, 2022 at 09:04:38AM +0200, Rasmus Villemoes wrote:
+On Tue, Jun 21, 2022 at 09:19:55AM +0200, Rasmus Villemoes wrote:
 > On 20/06/2022 02.42, Kent Overstreet wrote:
-> > +Note that a pretty-printer may not sleep, if called from printk(). If called
-> > +from pr_buf() or sprintf() there are no such restrictions.
+> > The current test code checks that sprintf never writes past the
+> > terminating nul. This is a rather strange requirement, completely
+> > separate from writing past the end of the buffer, which of course we
+> > can't do
 > 
-> I know what you're trying to say, but if the sprintf() call itself is
-> from a non-sleepable context this is obviously not true. So please just
-> make the rule "A pretty-printer must not sleep.". That's much simpler
-> and less error-prone. Otherwise I guarantee you that somebody is going
-> to add a sleeping pretty-printer for their own need, use it in a couple
-> of safe places, and then somebody wants to add a printk() in that driver
-> and sees "hey, I can get all this state dumped very easily with this
-> pretty-printer".
+> And which of course you don't check anymore. So any statement about "all
+> tests passing after these patches" is not worth much.
+> 
+> So NAK in this form, but perhaps if/when my year-old patch gets picked
+> up (or you could include it in the series) we can talk about eliminating
+> the check for past-nul-before-end-of-buffer writes.
 
-Kernel programmers are used to having to consider the context they're in and
-what the functions they're calling might do, a pretty-printer being called
-indirectly via sprintf() is absolutely no different. 
-
-> >  struct printf_spec {
-> > @@ -2520,7 +2521,16 @@ int format_decode(const char *fmt, struct printf_spec *spec)
-> >  		return ++fmt - start;
-> >  
-> >  	case 'p':
-> > -		spec->type = FORMAT_TYPE_PTR;
-> > +		fmt++;
-> > +		if (fmt[0] == 'f' &&
-> > +		    fmt[1] == '(') {
-> > +			fmt += 2;
-> > +			spec->type = FORMAT_TYPE_FN;
-> > +		} else
-> > +			spec->type = FORMAT_TYPE_PTR;
-> > +		return fmt - start;
-> > +	case '(':
-> > +		spec->type = FORMAT_TYPE_FN;
-> >  		return ++fmt - start;
-> 
-> NAK. Don't implement something that will never be tested nor used.
-> There's not a snowball's chance in hell that we'll ever build the kernel
-> without -Wformat.
-
-We're not stopping here. Matthew is taking this to WG14 and I'll be working on
-adding this functionality to glibc next, and %() is the syntax we intend to take
-to the working group.
-
-But the working group is naturally going to want to see that a working
-implementation of it exists.
-
-> Sorry, but this is way too ugly, and the prospect of at some point in
-> the future invoking libffi to do something even naster... eww. We do not
-> need more functions with completely generic prototypes with no
-> typechecking and making it extremely hard to teach one of our static
-> analyzers (smatch has some %pX checking) to do that typechecking.
-> 
-> There are at least two ways you can achieve this passing of a variable
-> number of arguments with proper types.
-> 
-> (1) Each pretty-printer comes with a struct wrapping up its real
-> arguments and a macro for creating a compound literal passing those
-> arguments.
-> 
-> struct foo_pp {
->   void (*func)(struct printbuf *pb, void *ctx); /* always first */
->   int x;
->   long y;
-> };
-> void foo_pp(struct printbuf *pb, void *ctx)
-> {
->   struct foo_pp *f = ctx;
->   pr_printf(pb, "%d %ld", f->x, f->y);
-> }
-> 
-> #define FOO_PP(_x, _y) (struct foo_pp){.func = foo_pp, .x = (_x), .y = (_y)}
-> 
-> printk("bla bla %pf\n", &FOO_PP(aa, bb));
-
-Hellllllllll no.
-
-All that's missing right now is gcc checking that the function signature matches
-the args specified within the (). That will come. No way in hell am I going to
-implement some half baked hacked up macro crap - I intend to do this right.
-
-> (2) Let the pretty-printer itself extract the varargs it expects. To
-> portably pass around a va_list by reference it needs to be wrapped, so
-> this would be
-> 
-> struct wva { va_list ap; };
-> 
-> void foo_pp(struct printbuf *pb, struct wva *w)
-> {
->   int x = va_arg(w->ap, int);
->   long y = va_arg(w->ap, long);
->   pr_printf(pb, "%d %ld", x, y);
-> }
-> 
-> printk("bla bla %pf(%d, %ld)\n", foo_pp, aa, bb)
-> 
-> with the core printf implementation internally using such a wrapped
-> va_list, and after a %pf( relying on the pretty-printer having consumed
-> the arguments up until the closing ). It would probably be a good idea
-> to give the pretty-printer a pointer to that opening '(' or one-past-it
-> as well so it could do a sanity check.
-
-Also no. Varargs is terrible in most situations, and should only be used for
-functions that actually want to take variable numbers of arguments - that
-doesn't apply to pretty printers.
+I'm more than happy to pick up your patch, please send it to me.
