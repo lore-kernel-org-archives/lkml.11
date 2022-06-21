@@ -2,159 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BF68C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 12:40:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14FB3C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 12:42:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350552AbiFUMkI (ORCPT
+        id S1350533AbiFUMme (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 08:40:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40992 "EHLO
+        Tue, 21 Jun 2022 08:42:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350512AbiFUMju (ORCPT
+        with ESMTP id S1350512AbiFUMma (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 08:39:50 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F93924F17
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 05:39:49 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id ej4so15228732edb.7
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 05:39:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=V78a4T+XxMalGYKe1sIzEqFdtRWisjMfkHNLxFh+Xuk=;
-        b=USYW0p//evI6FmwwoomQYK1kmu7U+jM2to1UOgYGvAZmu9YJV48sYKlssNA1bxE3Q9
-         ehN0vy0xceUsqbYpvhE7OCKxffLkmpTFER0fm0bAzPrS/BOct2K6FevtBDwnb46eL4K7
-         uOkAMNcv+n/lDS9hna9RMNUwo10pQGuvaOPJ8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=V78a4T+XxMalGYKe1sIzEqFdtRWisjMfkHNLxFh+Xuk=;
-        b=qThagQpXDDP2+g88Qf2o9ag3smyuVKOBtKh6VvX2cHPToIzQcmhBT6QkfstemO0Pvm
-         G6+f90bId21wj0hUT1RFETWlje7AoMCZmg3Uo6sOi6DXF7E4drAI7jifXZyuTZ1wYATD
-         K4nAeUNzRROMWQNRocaXRlWTTi8BkZc7dKTGs77moO5kiWipUUH/E60RK0Tj8xb1+EoU
-         nA1RfGsu2prPNdNU7AZuy5obZCaH/KPjuiXFLC9kq237GQLLB3I9osW24ygH06sLEGbc
-         CBISC8DmJe3ORgCBTl16HtU41VuuY1n1frlprkx77t3VKIisAoRPnDOb1ngdqdH9z7UZ
-         lIsw==
-X-Gm-Message-State: AJIora/KqhjXh4XP0P6K0tzMkB+M3xq8EVr0pkrf2ZtXrea9N/VyCcAs
-        54F63s2blqUGOc0Mb+9G+HA+TeFjQYJqjQ==
-X-Google-Smtp-Source: AGRyM1tqJZXy3HO6L1prVRBXforWwXZTvSEoQrPQS7azVRlaTF2uVcyV4OQWSqZtRH1yyLBhUIxWCA==
-X-Received: by 2002:aa7:c542:0:b0:435:75e:8a7b with SMTP id s2-20020aa7c542000000b00435075e8a7bmr29236378edr.108.1655815187550;
-        Tue, 21 Jun 2022 05:39:47 -0700 (PDT)
-Received: from dario-ThinkPad-T14s-Gen-2i.homenet.telecomitalia.it (host-80-116-90-174.pool80116.interbusiness.it. [80.116.90.174])
-        by smtp.gmail.com with ESMTPSA id c19-20020aa7c753000000b004357063bf60sm8003945eds.41.2022.06.21.05.39.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jun 2022 05:39:47 -0700 (PDT)
-From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Dario Binacchi <dario.binacchi@amarulasolutions.com>,
-        Michael Trimarchi <michael@amarulasolutions.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Marco Felsch <m.felsch@pengutronix.de>,
-        Oliver Graute <oliver.graute@kococonnector.com>,
-        linux-input@vger.kernel.org
-Subject: [RESEND PATCH v4 6/6] Input: edt-ft5x06 - show crc and header errors by sysfs
-Date:   Tue, 21 Jun 2022 14:39:37 +0200
-Message-Id: <20220621123937.1330389-7-dario.binacchi@amarulasolutions.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220621123937.1330389-1-dario.binacchi@amarulasolutions.com>
-References: <20220621123937.1330389-1-dario.binacchi@amarulasolutions.com>
+        Tue, 21 Jun 2022 08:42:30 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F4D029802;
+        Tue, 21 Jun 2022 05:42:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655815349; x=1687351349;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=B5CMJ7yoq4UuraH9/OxxfGuGPXrbCc4PcL00oM5amPk=;
+  b=HHSz4LY8TJ1eQyxwuJ0cEHl9ojBIF0X6HfcACWolIXmSoM/CqC8VN87e
+   1eHVrS11j2w0mQuTc+FndotV15/TGNCqeRsEYJXUJZSfdVgKkcwEs3W8u
+   o4tmnbh2eKjUaxUhcm71u1IZHz7LUD/BdEbciWMfapAzWsQPgY2rST5PI
+   cXESdwjYa5IlT7jhrakLby/eBMde/uUGcJ/jpkZMcknq85+Ewg2Zglsq5
+   vNEMp52n2Q7GJLfPrazzxnXLmF5Kk9j9w3blCQHCLQERhey+tL4/8NLfm
+   RW5F5qbYqxSQ3SQqBQ+El9kD7sLGr16WkgmhQkG+LWlz0x7ewUA52LO4f
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10384"; a="341791822"
+X-IronPort-AV: E=Sophos;i="5.92,209,1650956400"; 
+   d="scan'208";a="341791822"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 05:42:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,209,1650956400"; 
+   d="scan'208";a="643607352"
+Received: from unknown (HELO localhost.localdomain.sh.intel.com) ([10.238.175.107])
+  by fmsmga008.fm.intel.com with ESMTP; 21 Jun 2022 05:42:26 -0700
+From:   Tianfei Zhang <tianfei.zhang@intel.com>
+To:     ssantosh@kernel.org, krzysztof.kozlowski@linaro.org
+Cc:     trix@redhat.com, yilun.xu@intel.com, russell.h.weight@intel.com,
+        linux-fpga@vger.kernel.org, linux-kernel@vger.kernel.org,
+        matthew.gerlach@linux.intel.com,
+        Debarati Biswas <debaratix.biswas@intel.com>,
+        Tianfei Zhang <tianfei.zhang@intel.com>
+Subject: [PATCH v1] memory: dfl-emif: Update the dfl emif driver support revision 1
+Date:   Tue, 21 Jun 2022 08:38:54 -0400
+Message-Id: <20220621123854.8686-1-tianfei.zhang@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-M06 sends packets with header and crc for data verification. Now you can
-check at runtime how many packets have been dropped.
+From: Debarati Biswas <debaratix.biswas@intel.com>
 
-Co-developed-by: Michael Trimarchi <michael@amarulasolutions.com>
-Signed-off-by: Michael Trimarchi <michael@amarulasolutions.com>
-Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+The next generation (revision 1) of the DFL EMIF feature device requires
+support for more than 4 memory banks. It does not support the selective
+clearing of memory banks. A capability register replaces the previous
+control register, and contains a bitmask to indicate the presence of each
+memory bank. This bitmask aligns with the previous control register
+bitmask that served the same purpose. The control and capability
+registers are treated like a C Union structure in order to support both
+the new and old revisions of the EMIF device.
 
+Signed-off-by: Debarati Biswas <debaratix.biswas@intel.com>
+Signed-off-by: Russ Weight <russell.h.weight@intel.com>
+Signed-off-by: Tianfei Zhang <tianfei.zhang@intel.com>
 ---
+ drivers/memory/dfl-emif.c | 62 +++++++++++++++++++++++++++++++++++----
+ 1 file changed, 57 insertions(+), 5 deletions(-)
 
-(no changes since v2)
-
-Changes in v2:
-- Add Oliver Graute's 'Acked-by' tag to:
-  * Input: edt-ft5x06 - show model name by sysfs
-  * Input: edt-ft5x06 - show firmware version by sysfs
-- Fix yaml file. Tested with `make DT_CHECKER_FLAGS=-m dt_binding_check'.
-
- drivers/input/touchscreen/edt-ft5x06.c | 30 ++++++++++++++++++++++++++
- 1 file changed, 30 insertions(+)
-
-diff --git a/drivers/input/touchscreen/edt-ft5x06.c b/drivers/input/touchscreen/edt-ft5x06.c
-index bab92344b2ea..3deb66d67469 100644
---- a/drivers/input/touchscreen/edt-ft5x06.c
-+++ b/drivers/input/touchscreen/edt-ft5x06.c
-@@ -133,6 +133,8 @@ struct edt_ft5x06_ts_data {
+diff --git a/drivers/memory/dfl-emif.c b/drivers/memory/dfl-emif.c
+index 3f719816771d..da06cd30a016 100644
+--- a/drivers/memory/dfl-emif.c
++++ b/drivers/memory/dfl-emif.c
+@@ -24,11 +24,24 @@
+ #define EMIF_STAT_CLEAR_BUSY_SFT	16
+ #define EMIF_CTRL			0x10
+ #define EMIF_CTRL_CLEAR_EN_SFT		0
+-#define EMIF_CTRL_CLEAR_EN_MSK		GENMASK_ULL(3, 0)
++#define EMIF_CTRL_CLEAR_EN_MSK		GENMASK_ULL(7, 0)
  
- 	struct edt_reg_addr reg_addr;
- 	enum edt_ver version;
-+	unsigned int crc_errors;
-+	unsigned int header_errors;
+ #define EMIF_POLL_INVL			10000 /* us */
+ #define EMIF_POLL_TIMEOUT		5000000 /* us */
+ 
++/*
++ * The Capability Register replaces the Control Register (at the same
++ * offset) for EMIF feature revisions > 0. The bitmask that indicates
++ * the presence of memory channels exists in both the Capability Register
++ * and Control Register definitions. These can be thought of as a C union.
++ * The Capability Register definitions are used to check for the existence
++ * of a memory channel, and the Control Register definitions are used for
++ * managing the memory-clear functionality in revision 0.
++ */
++#define EMIF_CAPABILITY_BASE		0x10
++#define EMIF_CAPABILITY_CHN_MSK_V0	GENMASK_ULL(3, 0)
++#define EMIF_CAPABILITY_CHN_MSK		GENMASK_ULL(7, 0)
++
+ struct dfl_emif {
+ 	struct device *dev;
+ 	void __iomem *base;
+@@ -106,16 +119,30 @@ emif_state_attr(init_done, EMIF_STAT_INIT_DONE_SFT, 0);
+ emif_state_attr(init_done, EMIF_STAT_INIT_DONE_SFT, 1);
+ emif_state_attr(init_done, EMIF_STAT_INIT_DONE_SFT, 2);
+ emif_state_attr(init_done, EMIF_STAT_INIT_DONE_SFT, 3);
++emif_state_attr(init_done, EMIF_STAT_INIT_DONE_SFT, 4);
++emif_state_attr(init_done, EMIF_STAT_INIT_DONE_SFT, 5);
++emif_state_attr(init_done, EMIF_STAT_INIT_DONE_SFT, 6);
++emif_state_attr(init_done, EMIF_STAT_INIT_DONE_SFT, 7);
+ 
+ emif_state_attr(cal_fail, EMIF_STAT_CALC_FAIL_SFT, 0);
+ emif_state_attr(cal_fail, EMIF_STAT_CALC_FAIL_SFT, 1);
+ emif_state_attr(cal_fail, EMIF_STAT_CALC_FAIL_SFT, 2);
+ emif_state_attr(cal_fail, EMIF_STAT_CALC_FAIL_SFT, 3);
++emif_state_attr(cal_fail, EMIF_STAT_CALC_FAIL_SFT, 4);
++emif_state_attr(cal_fail, EMIF_STAT_CALC_FAIL_SFT, 5);
++emif_state_attr(cal_fail, EMIF_STAT_CALC_FAIL_SFT, 6);
++emif_state_attr(cal_fail, EMIF_STAT_CALC_FAIL_SFT, 7);
++
+ 
+ emif_clear_attr(0);
+ emif_clear_attr(1);
+ emif_clear_attr(2);
+ emif_clear_attr(3);
++emif_clear_attr(4);
++emif_clear_attr(5);
++emif_clear_attr(6);
++emif_clear_attr(7);
++
+ 
+ static struct attribute *dfl_emif_attrs[] = {
+ 	&emif_attr_inf0_init_done.attr.attr,
+@@ -134,6 +161,22 @@ static struct attribute *dfl_emif_attrs[] = {
+ 	&emif_attr_inf3_cal_fail.attr.attr,
+ 	&emif_attr_inf3_clear.attr.attr,
+ 
++	&emif_attr_inf4_init_done.attr.attr,
++	&emif_attr_inf4_cal_fail.attr.attr,
++	&emif_attr_inf4_clear.attr.attr,
++
++	&emif_attr_inf5_init_done.attr.attr,
++	&emif_attr_inf5_cal_fail.attr.attr,
++	&emif_attr_inf5_clear.attr.attr,
++
++	&emif_attr_inf6_init_done.attr.attr,
++	&emif_attr_inf6_cal_fail.attr.attr,
++	&emif_attr_inf6_clear.attr.attr,
++
++	&emif_attr_inf7_init_done.attr.attr,
++	&emif_attr_inf7_cal_fail.attr.attr,
++	&emif_attr_inf7_clear.attr.attr,
++
+ 	NULL,
  };
  
- struct edt_i2c_chip_data {
-@@ -181,6 +183,7 @@ static bool edt_ft5x06_ts_check_crc(struct edt_ft5x06_ts_data *tsdata,
- 		crc ^= buf[i];
+@@ -143,15 +186,24 @@ static umode_t dfl_emif_visible(struct kobject *kobj,
+ 	struct dfl_emif *de = dev_get_drvdata(kobj_to_dev(kobj));
+ 	struct emif_attr *eattr = container_of(attr, struct emif_attr,
+ 					       attr.attr);
++	struct dfl_device *ddev = to_dfl_dev(de->dev);
+ 	u64 val;
  
- 	if (crc != buf[buflen-1]) {
-+		tsdata->crc_errors++;
- 		dev_err_ratelimited(&tsdata->client->dev,
- 				    "crc error: 0x%02x expected, got 0x%02x\n",
- 				    crc, buf[buflen-1]);
-@@ -238,6 +241,7 @@ static irqreturn_t edt_ft5x06_ts_isr(int irq, void *dev_id)
- 	if (tsdata->version == EDT_M06) {
- 		if (rdbuf[0] != 0xaa || rdbuf[1] != 0xaa ||
- 			rdbuf[2] != datalen) {
-+			tsdata->header_errors++;
- 			dev_err_ratelimited(dev,
- 					"Unexpected header: %02x%02x%02x!\n",
- 					rdbuf[0], rdbuf[1], rdbuf[2]);
-@@ -552,6 +556,30 @@ static ssize_t fw_version_show(struct device *dev,
+ 	/*
+-	 * This device supports upto 4 memory interfaces, but not all
++	 * This device supports up to 8 memory interfaces, but not all
+ 	 * interfaces are used on different platforms. The read out value of
+-	 * CLEAN_EN field (which is a bitmap) could tell how many interfaces
+-	 * are available.
++	 * CAPABILITY_CHN_MSK field (which is a bitmap) indicates which
++	 * interfaces are available.
+ 	 */
+-	val = FIELD_GET(EMIF_CTRL_CLEAR_EN_MSK, readq(de->base + EMIF_CTRL));
++	if (ddev->revision > 0 && strstr(attr->name, "_clear"))
++		return 0;
++
++	if (ddev->revision == 0)
++		val = FIELD_GET(EMIF_CAPABILITY_CHN_MSK_V0,
++				readq(de->base + EMIF_CAPABILITY_BASE));
++	else
++		val = FIELD_GET(EMIF_CAPABILITY_CHN_MSK,
++				readq(de->base + EMIF_CAPABILITY_BASE));
  
- static DEVICE_ATTR_RO(fw_version);
- 
-+/* m06 only */
-+static ssize_t header_errors_show(struct device *dev,
-+				  struct device_attribute *attr, char *buf)
-+{
-+	struct i2c_client *client = to_i2c_client(dev);
-+	struct edt_ft5x06_ts_data *tsdata = i2c_get_clientdata(client);
-+
-+	return scnprintf(buf, PAGE_SIZE, "%d\n", tsdata->header_errors);
-+}
-+
-+static DEVICE_ATTR_RO(header_errors);
-+
-+/* m06 only */
-+static ssize_t crc_errors_show(struct device *dev,
-+			       struct device_attribute *attr, char *buf)
-+{
-+	struct i2c_client *client = to_i2c_client(dev);
-+	struct edt_ft5x06_ts_data *tsdata = i2c_get_clientdata(client);
-+
-+	return scnprintf(buf, PAGE_SIZE, "%d\n", tsdata->crc_errors);
-+}
-+
-+static DEVICE_ATTR_RO(crc_errors);
-+
- static struct attribute *edt_ft5x06_attrs[] = {
- 	&edt_ft5x06_attr_gain.dattr.attr,
- 	&edt_ft5x06_attr_offset.dattr.attr,
-@@ -561,6 +589,8 @@ static struct attribute *edt_ft5x06_attrs[] = {
- 	&edt_ft5x06_attr_report_rate.dattr.attr,
- 	&dev_attr_model.attr,
- 	&dev_attr_fw_version.attr,
-+	&dev_attr_header_errors.attr,
-+	&dev_attr_crc_errors.attr,
- 	NULL
- };
- 
+ 	return (val & BIT_ULL(eattr->index)) ? attr->mode : 0;
+ }
 -- 
-2.32.0
+2.26.2
 
