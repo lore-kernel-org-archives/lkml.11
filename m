@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF6EFC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 20:56:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C1B3C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 20:56:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355218AbiFUU4p (ORCPT
+        id S1355107AbiFUU4x (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 16:56:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55030 "EHLO
+        Tue, 21 Jun 2022 16:56:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355089AbiFUU4H (ORCPT
+        with ESMTP id S1355094AbiFUU4H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 21 Jun 2022 16:56:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 587DF31521;
-        Tue, 21 Jun 2022 13:50:19 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 394F33151F;
+        Tue, 21 Jun 2022 13:50:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BFA2861874;
-        Tue, 21 Jun 2022 20:49:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A66AC3411C;
-        Tue, 21 Jun 2022 20:49:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 77F9561853;
+        Tue, 21 Jun 2022 20:50:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 264B6C341C5;
+        Tue, 21 Jun 2022 20:50:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655844589;
-        bh=MLsaPkWl4pwEb56jRphAPhW21owYM+eoMh1VETT6uFc=;
+        s=k20201202; t=1655844602;
+        bh=mYs+OySSMf8z50zoQS53kzfaW17qerZ2Jx2a5WUQwFM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EgwC5tEmVdGWRBDptbYYAMAgIFGdS/TZWUjxnoo4GjPJbi16+ujK5MxVXhxX5HCDY
-         /33ihcNcFU27nWBZZ1uyGSJKXlph7fsBqzPyulgMlOdCL8kP7WyzgJhJ0KlfH/Co1l
-         qFm2DtcIASblXsPLhTxvOpnR/3Sh7cPTWE113qbQV34GK2SUIhp+1jDccm4HM/dE74
-         Qw2sSQ4de2S9lM90r8rxJ9RrVQm0E4YVFMkTCjr692ubV3YPkyepspTNWyIyOfX77y
-         S6wYncEBBLkw7V76i1t16qHhbcTWqoG8ck+Pq0LMr5/DjckiDF1raVbA35AHhQdu/t
-         JAjWK0ZHRlH8w==
+        b=N1du+P5rGQM+9aCNzACsZoIeMvmbcfuj3vuGaTFpDfzFTZqXhA5BSK1kZC6GqBzJg
+         JcLZdbUp/NQgiq7pqQYKFNEjm2FDmbjdn0saV3DR6WkHlZkEi73b8PiD389nLPQq3H
+         EyIs+AgkzjGqyvHnEindyQSaYlpa/VLz81N54HHf05oWddYgw3J4ief9jhmC7H/d4c
+         IKEEwkYcZufSDfi9oIRltRfCvRjUubp6KxwGJMr7vmJgXAU7zD/XYA+I0T90ULF0r1
+         j77t3OGSWQkA3mDjoGtokWFq6R92AthnozgythNpHi+Rv3E8pJcJOizVR9WWccOnaN
+         k5NR4GfOaRs4A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Keith Busch <kbusch@kernel.org>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Sasha Levin <sashal@kernel.org>, axboe@fb.com,
-        sagi@grimberg.me, linux-nvme@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.18 07/22] nvme-pci: add trouble shooting steps for timeouts
-Date:   Tue, 21 Jun 2022 16:49:13 -0400
-Message-Id: <20220621204928.249907-7-sashal@kernel.org>
+Cc:     Zhang Yi <yi.zhang@huawei.com>, Hulk Robot <hulkci@huawei.com>,
+        Jan Kara <jack@suse.cz>,
+        Ritesh Harjani <ritesh.list@gmail.com>,
+        Theodore Ts'o <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>,
+        adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 16/22] ext4: fix warning when submitting superblock in ext4_commit_super()
+Date:   Tue, 21 Jun 2022 16:49:22 -0400
+Message-Id: <20220621204928.249907-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220621204928.249907-1-sashal@kernel.org>
 References: <20220621204928.249907-1-sashal@kernel.org>
@@ -54,43 +54,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Keith Busch <kbusch@kernel.org>
+From: Zhang Yi <yi.zhang@huawei.com>
 
-[ Upstream commit 4641a8e6e145f595059e695f0f8dbbe608134086 ]
+[ Upstream commit 15baa7dcadf1c4f0b4f752dc054191855ff2d78e ]
 
-Many users have encountered IO timeouts with a CSTS value of 0xffffffff,
-which indicates a failure to read the register. While there are various
-potential causes for this observation, faulty NVMe APST has been the
-culprit quite frequently. Add the recommended troubleshooting steps in
-the error output when this condition occurs.
+We have already check the io_error and uptodate flag before submitting
+the superblock buffer, and re-set the uptodate flag if it has been
+failed to write out. But it was lockless and could be raced by another
+ext4_commit_super(), and finally trigger '!uptodate' WARNING when
+marking buffer dirty. Fix it by submit buffer directly.
 
-Signed-off-by: Keith Busch <kbusch@kernel.org>
-Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Zhang Yi <yi.zhang@huawei.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Ritesh Harjani <ritesh.list@gmail.com>
+Link: https://lore.kernel.org/r/20220520023216.3065073-1-yi.zhang@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/pci.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ fs/ext4/super.c | 22 ++++++++++++++++------
+ 1 file changed, 16 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index 37e05c83786d..a4393c5ca8db 100644
---- a/drivers/nvme/host/pci.c
-+++ b/drivers/nvme/host/pci.c
-@@ -1334,6 +1334,14 @@ static void nvme_warn_reset(struct nvme_dev *dev, u32 csts)
- 		dev_warn(dev->ctrl.device,
- 			 "controller is down; will reset: CSTS=0x%x, PCI_STATUS read failed (%d)\n",
- 			 csts, result);
+diff --git a/fs/ext4/super.c b/fs/ext4/super.c
+index a0c79304f92f..9e89cbc0eec6 100644
+--- a/fs/ext4/super.c
++++ b/fs/ext4/super.c
+@@ -6022,7 +6022,6 @@ static void ext4_update_super(struct super_block *sb)
+ static int ext4_commit_super(struct super_block *sb)
+ {
+ 	struct buffer_head *sbh = EXT4_SB(sb)->s_sbh;
+-	int error = 0;
+ 
+ 	if (!sbh)
+ 		return -EINVAL;
+@@ -6031,6 +6030,13 @@ static int ext4_commit_super(struct super_block *sb)
+ 
+ 	ext4_update_super(sb);
+ 
++	lock_buffer(sbh);
++	/* Buffer got discarded which means block device got invalidated */
++	if (!buffer_mapped(sbh)) {
++		unlock_buffer(sbh);
++		return -EIO;
++	}
 +
-+	if (csts != ~0)
-+		return;
-+
-+	dev_warn(dev->ctrl.device,
-+		 "Does your device have a faulty power saving mode enabled?\n");
-+	dev_warn(dev->ctrl.device,
-+		 "Try \"nvme_core.default_ps_max_latency_us=0 pcie_aspm=off\" and report a bug\n");
+ 	if (buffer_write_io_error(sbh) || !buffer_uptodate(sbh)) {
+ 		/*
+ 		 * Oh, dear.  A previous attempt to write the
+@@ -6045,17 +6051,21 @@ static int ext4_commit_super(struct super_block *sb)
+ 		clear_buffer_write_io_error(sbh);
+ 		set_buffer_uptodate(sbh);
+ 	}
+-	BUFFER_TRACE(sbh, "marking dirty");
+-	mark_buffer_dirty(sbh);
+-	error = __sync_dirty_buffer(sbh,
+-		REQ_SYNC | (test_opt(sb, BARRIER) ? REQ_FUA : 0));
++	get_bh(sbh);
++	/* Clear potential dirty bit if it was journalled update */
++	clear_buffer_dirty(sbh);
++	sbh->b_end_io = end_buffer_write_sync;
++	submit_bh(REQ_OP_WRITE,
++		  REQ_SYNC | (test_opt(sb, BARRIER) ? REQ_FUA : 0), sbh);
++	wait_on_buffer(sbh);
+ 	if (buffer_write_io_error(sbh)) {
+ 		ext4_msg(sb, KERN_ERR, "I/O error while writing "
+ 		       "superblock");
+ 		clear_buffer_write_io_error(sbh);
+ 		set_buffer_uptodate(sbh);
++		return -EIO;
+ 	}
+-	return error;
++	return 0;
  }
  
- static enum blk_eh_timer_return nvme_timeout(struct request *req, bool reserved)
+ /*
 -- 
 2.35.1
 
