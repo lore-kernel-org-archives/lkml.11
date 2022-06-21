@@ -2,89 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5F17C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 14:05:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49A32C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 14:08:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350471AbiFUOFe (ORCPT
+        id S1350636AbiFUOIz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 10:05:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53938 "EHLO
+        Tue, 21 Jun 2022 10:08:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229626AbiFUOFc (ORCPT
+        with ESMTP id S1350568AbiFUOIx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 10:05:32 -0400
-Received: from smtpbg.qq.com (smtpbg138.qq.com [106.55.201.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CD6012D05
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 07:05:23 -0700 (PDT)
-X-QQ-mid: bizesmtp87t1655820118t1d9qvzk
-Received: from ubuntu.localdomain ( [106.117.99.68])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 21 Jun 2022 22:01:54 +0800 (CST)
-X-QQ-SSF: 0100000000700060B000D00A0000000
-X-QQ-FEAT: ZHWZeLXy+8fquXre98dmHnwnqcZlbbq/MHyNm4/DjXuN4jYRiDxUhXrUdiM3b
-        8XyattiSZBYFtSCxlDD7uc2MfIlVKyEPgiWZDh3kWO2fqSo2eHjd6uu7u4Yn1Cs6+Ez53+t
-        0u2svRNIgS3TwD5XKzFPSK/Ygv0BjubJRT7TqIvVlps0InNjNcIdQeUUcazhs5B91bEMCiq
-        PRRk5hx1YXtGWlRbm3/lglTJTvD237apRk2PRfD8DShDF3Tr2nuXwpAH05lv9/ryOP3DVaF
-        MyQtxcO936M1ZSule0xThBORc+cYqheUk2/1DzVxJvcQxrHethzeCI7f9/hYLJpXYyz7stZ
-        BoMC4VEjYsuhbRa8cfLUI2z440TjnLnMRPmeH1j
-X-QQ-GoodBg: 0
-From:   Jiang Jian <jiangjian@cdjrlc.com>
-To:     linus.walleij@linaro.org, thierry.reding@gmail.com
-Cc:     sam@ravnborg.org, airlied@linux.ie, daniel@ffwll.ch,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Jiang Jian <jiangjian@cdjrlc.com>
-Subject: [PATCH] drm/panel: nt35510: Remove duplicate 'the' in two places.
-Date:   Tue, 21 Jun 2022 22:01:51 +0800
-Message-Id: <20220621140151.14404-1-jiangjian@cdjrlc.com>
-X-Mailer: git-send-email 2.17.1
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam10
+        Tue, 21 Jun 2022 10:08:53 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60C75201BB;
+        Tue, 21 Jun 2022 07:08:52 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id lw20so5439777ejb.4;
+        Tue, 21 Jun 2022 07:08:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=mQG2kFC6sca6rA/f7INQsblCLnW/IWpeSGsMk6bXM4s=;
+        b=Ev6nwGN3/gWEcJlfXWIkrbioZNZnAetkcmIeqMDZQxkokhC1RCYup9RU287cRXstmg
+         YAM0m4ePeG0Uu4Vy1+SZ3OLpNDL3v8aTFJo/AnAg4uQMnAx3yX0tme3A3R1RsQGMqBGY
+         uk+AVb12OM6ge7TFsKuELxTBkRXvuLjwDKo70iIJbLmZT9mNQwrV93lVgygdzgrKOI87
+         T0X2jr8OzFhxhmbhiyNi8N/+/xgtpv5tV52jF74A+weZNBBOqBGOcWcad/q2RttgnpbW
+         SbQvAZEijJAjjjtdwRhkzf2EuUH69ywAQoTz0AhZYw+RYGxfmGPDROh7Y4vojnK0c2VD
+         PsNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mQG2kFC6sca6rA/f7INQsblCLnW/IWpeSGsMk6bXM4s=;
+        b=Bej7NUpQrm2gTWlrAKl4U2UQ+azGmbyP9ksZpt7BZ32GugQGg0xcozz2toFrxA+yi2
+         yBv98n/Nlj8hioqB7Cj8Ae8t+yeYq9Q7D5ORLEr+0CG5CEQAZSMxAPRm1crJ+JbB51Z7
+         zSMnhw33OB+vaLC3LOx+a8fRDQ3JCDwFxfjIKX6kcT49CTw1POmtunQtZ2V3nclSOyui
+         3m5j0Kg1Qs9W5kVvnPCpecKMEgXc/NMPxAcw4M1AGYAYSN8ufmPRFaHWgQq/22baZ2CF
+         zJrhIgV+P27+flsde9ppPB4nsUVLA69GIloV8dUZWbP+ZeFv+0VKB2dRpwEmBx4xj16j
+         cYEQ==
+X-Gm-Message-State: AJIora+RBdCdky+MlwNZrXHtHbAXRQ1MKlZqCRACuGpwMBXDpCV0v9h4
+        4Y4rJPOUFsfsjFd44AlviD3bcW41MRFAym2vDTs=
+X-Google-Smtp-Source: AGRyM1srtXDuySbBqeVGVmkAovCjNpTRwOL5wi5lPmSzkEF81MAKsve+VnUWQo9PXtsGZV8pX4Apl/RXh6bLTxP8/R0=
+X-Received: by 2002:a17:906:434f:b0:711:eb76:c320 with SMTP id
+ z15-20020a170906434f00b00711eb76c320mr25938171ejm.636.1655820530793; Tue, 21
+ Jun 2022 07:08:50 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220621092319.69598-1-jiangjian@cdjrlc.com>
+In-Reply-To: <20220621092319.69598-1-jiangjian@cdjrlc.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 21 Jun 2022 16:08:14 +0200
+Message-ID: <CAHp75Veau14x1_8oauUZ=d4TxqJ9wcRyAQF6dR9YrwuTKjP3rQ@mail.gmail.com>
+Subject: Re: [PATCH] iio: dac: ad5380: aligned '*' each line and drop unneeded
+ blank line
+To:     Jiang Jian <jiangjian@cdjrlc.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-file: ./drivers/gpu/drm/panel/panel-novatek-nt35510.c
-line: 193,214,253
-* amplification for the the step-up circuit:
-changed to
-* amplification for the step-up circuit:
+On Tue, Jun 21, 2022 at 11:26 AM Jiang Jian <jiangjian@cdjrlc.com> wrote:
+>
+> Consider '*' alignment in the comments of struct ad5380_chip_info declaration.
 
-Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
----
- drivers/gpu/drm/panel/panel-novatek-nt35510.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Next time don't forget to bump the version of the patch (use -vX, X =
+0,1, ..., with the `git format-patch`) and add a changelog (after
+cutter '---' line).
 
-diff --git a/drivers/gpu/drm/panel/panel-novatek-nt35510.c b/drivers/gpu/drm/panel/panel-novatek-nt35510.c
-index 873cbd38e6d3..40ea41b0a5dd 100644
---- a/drivers/gpu/drm/panel/panel-novatek-nt35510.c
-+++ b/drivers/gpu/drm/panel/panel-novatek-nt35510.c
-@@ -190,7 +190,7 @@ struct nt35510_config {
- 	 * 6 = Hsync x 2
- 	 * 7 = Hsync x 4
- 	 * bits 4..6 in the upper nibble controls BTP, the boosting
--	 * amplification for the the step-up circuit:
-+	 * amplification for the step-up circuit:
- 	 * 0 = Disable
- 	 * 1 = 1.5 x VDDB
- 	 * 2 = 1.66 x VDDB
-@@ -211,7 +211,7 @@ struct nt35510_config {
- 	 * bits 0..2 in the lower nibble controls NCK, the booster clock
- 	 * frequency, the values are the same as for PCK in @bt1ctr.
- 	 * bits 4..5 in the upper nibble controls BTN, the boosting
--	 * amplification for the the step-up circuit.
-+	 * amplification for the step-up circuit.
- 	 * 0 = Disable
- 	 * 1 = -1.5 x VDDB
- 	 * 2 = -2 x VDDB
-@@ -250,7 +250,7 @@ struct nt35510_config {
- 	 * bits 0..2 in the lower nibble controls LCK, the booster clock
- 	 * frequency, the values are the same as for PCK in @bt1ctr.
- 	 * bits 4..5 in the upper nibble controls BTL, the boosting
--	 * amplification for the the step-up circuit.
-+	 * amplification for the step-up circuit.
- 	 * 0 = AVEE + VCL
- 	 * 1 = AVEE - AVDD
- 	 * 2 = AVEE + VCL - AVDD
--- 
-2.17.1
+> ...
+> >   * @channel_template:  channel specification template
+> >   * @num_channels:      number of channels
+> >   * @int_vref:          internal vref in uV
+> > -*/
+> > + */
+> >
+> While at it, drop the unneeded blank line here.
+> >  struct ad5380_chip_info {
+> ...
+> }
 
+This should be replaced by something simpler, like:
+While at it, drop the unneeded blank lines.
+
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+
+I do not think you need to resend this simplest patch and Jonathan
+will help you this time, but consider the above for future
+contributions, thanks!
+
+> Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
+> ---
+>  drivers/iio/dac/ad5380.c | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
+>
+> diff --git a/drivers/iio/dac/ad5380.c b/drivers/iio/dac/ad5380.c
+> index a44c83242fb1..81775152aac6 100644
+> --- a/drivers/iio/dac/ad5380.c
+> +++ b/drivers/iio/dac/ad5380.c
+> @@ -36,8 +36,7 @@
+>   * @channel_template:  channel specification template
+>   * @num_channels:      number of channels
+>   * @int_vref:          internal vref in uV
+> -*/
+> -
+> + */
+>  struct ad5380_chip_info {
+>         struct iio_chan_spec    channel_template;
+>         unsigned int            num_channels;
+> @@ -53,7 +52,6 @@ struct ad5380_chip_info {
+>   * @pwr_down:          whether the chip is currently in power down mode
+>   * @lock:              lock to protect the data buffer during regmap ops
+>   */
+> -
+>  struct ad5380_state {
+>         struct regmap                   *regmap;
+>         const struct ad5380_chip_info   *chip_info;
+> --
+> 2.17.1
+>
+
+
+--
+With Best Regards,
+Andy Shevchenko
