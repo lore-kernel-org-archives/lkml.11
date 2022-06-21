@@ -2,134 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72131C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 19:34:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A787C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 19:34:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354001AbiFUTeP (ORCPT
+        id S1354015AbiFUTec (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 15:34:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53566 "EHLO
+        Tue, 21 Jun 2022 15:34:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353555AbiFUTeO (ORCPT
+        with ESMTP id S1353394AbiFUTeb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 15:34:14 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F282B21E38
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 12:34:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655840053; x=1687376053;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=YBoCVbeBdJSh8NO5hiSopuZoPLZH9R9aCRx5PpVAHZA=;
-  b=XrewSYjuXbe0cRCDUFWqGnVndtYGyN7To29clgp9Vg5dBB/vwiVjcD5q
-   X3BnstSpqgUGgx9YTk4qf0aBNYTvVhlPvHsOrFxZEnJ2NqomLDCwHXdkl
-   v3dIJqKDiRZX7SR/HZFW15W3fmvqFLFrW4AE6Z25ULxAF2m4iqzSlUhLj
-   InrtwkEciaWk/GV9gozZ/FJ1z8AQ37MctEUoC7I1P/Bg8oe8TMqUH5onU
-   2W47pXrp1JTYQFHDZocV0hY3AaNgtBIIJO2+AlJETdffeL5q7ByGNkpg8
-   6QjmmP+cSR9kPwcTouH0aO/gmvDqtjutAVYpcsOZiBvAHFySUZi8o75wT
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="281285813"
-X-IronPort-AV: E=Sophos;i="5.92,210,1650956400"; 
-   d="scan'208";a="281285813"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 12:34:13 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,210,1650956400"; 
-   d="scan'208";a="833730297"
-Received: from lkp-server02.sh.intel.com (HELO a67cc04a5eeb) ([10.239.97.151])
-  by fmsmga006.fm.intel.com with ESMTP; 21 Jun 2022 12:34:11 -0700
-Received: from kbuild by a67cc04a5eeb with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o3jda-0000KX-QA;
-        Tue, 21 Jun 2022 19:34:10 +0000
-Date:   Wed, 22 Jun 2022 03:34:00 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     David Howells <dhowells@redhat.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:dhowells/linux-fs/rxrpc-multiqueue 3/5]
- fs/afs/rxrpc.c:155:6: warning: variable 'o' is used uninitialized whenever
- 'if' condition is false
-Message-ID: <202206220318.jPFg84u7-lkp@intel.com>
+        Tue, 21 Jun 2022 15:34:31 -0400
+Received: from bmailout2.hostsharing.net (bmailout2.hostsharing.net [IPv6:2a01:37:3000::53df:4ef0:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B30B25C76
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 12:34:29 -0700 (PDT)
+Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by bmailout2.hostsharing.net (Postfix) with ESMTPS id 82EDA2800B3C7;
+        Tue, 21 Jun 2022 21:34:27 +0200 (CEST)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id 6B9162732F7; Tue, 21 Jun 2022 21:34:27 +0200 (CEST)
+Date:   Tue, 21 Jun 2022 21:34:27 +0200
+From:   Lukas Wunner <lukas@wunner.de>
+To:     Dan Williams <dan.j.williams@intel.com>
+Cc:     ira.weiny@intel.com, Bjorn Helgaas <bhelgaas@google.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alison Schofield <alison.schofield@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Ben Widawsky <bwidawsk@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-cxl@vger.kernel.org,
+        linux-pci@vger.kernel.org
+Subject: Re: [PATCH V11 5/8] cxl/port: Read CDAT table
+Message-ID: <20220621193427.GA25003@wunner.de>
+References: <20220610202259.3544623-1-ira.weiny@intel.com>
+ <20220610202259.3544623-6-ira.weiny@intel.com>
+ <62ad1fb69d742_8920729490@dwillia2-xfh.notmuch>
+ <62b2178bdcf5d_89207294ac@dwillia2-xfh.notmuch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <62b2178bdcf5d_89207294ac@dwillia2-xfh.notmuch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/rxrpc-multiqueue
-head:   f37988fef6da3fdc3545e5a65eb9241f82f539f2
-commit: 928631b5285b0aaebed61025256868cd126c9281 [3/5] rxrpc: Allow UDP socket sharing for AF_RXRPC service sockets
-config: i386-randconfig-a015 (https://download.01.org/0day-ci/archive/20220622/202206220318.jPFg84u7-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project af6d2a0b6825e71965f3e2701a63c239fa0ad70f)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/928631b5285b0aaebed61025256868cd126c9281
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/rxrpc-multiqueue
-        git checkout 928631b5285b0aaebed61025256868cd126c9281
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash fs/afs/
+On Tue, Jun 21, 2022 at 12:10:03PM -0700, Dan Williams wrote:
+> It is really the interrupt setup that makes this an awkward fit all
+> around. The PCI core knows how to handle capabilities with interrupts,
+> but only for PCIe port services. DOE is both a PCIe port service *and*
+> and "endpoint service" like VPD (pci_vpd_init()). The more I think about
+> this the closer I get to the recommendation from Lukas which is that
+> DOE is more like pci_vpd_init() than pci_aer_init(), or a custom
+> enabling per driver.
+> 
+> If the DOE enumeration moves to a sub-function of
+> pci_init_capabilities() then the cxl_pci and/or cxl_port drivers just
+> look those up and use them. The DOE instances would remain in polled
+> mode unless and until a PCI driver added interrupt support late. In
+> other words, DOE can follow the VPD init model as long as interrupts are
+> not involved, and if interrupts are desired it requires late allocation
+> of IRQ vectors.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Thomas Gleixner has been working on dynamic allocation of MSI-X vectors.
+We should probably just build on that and let the PCI core allocate
+vectors for DOE mailboxes independently from drivers.
 
-All warnings (new ones prefixed by >>):
+To conserve vectors, I'd delay allocation for a DOE mailbox until
+it is first used.  There may be mailboxes that are never used.
 
->> fs/afs/rxrpc.c:155:6: warning: variable 'o' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
-           if (!prealloc)
-               ^~~~~~~~~
-   fs/afs/rxrpc.c:157:48: note: uninitialized use occurs here
-           trace_afs_call(call, afs_call_trace_alloc, 1, o,
-                                                         ^
-   fs/afs/rxrpc.c:155:2: note: remove the 'if' if its condition is always true
-           if (!prealloc)
-           ^~~~~~~~~~~~~~
-   fs/afs/rxrpc.c:140:7: note: initialize the variable 'o' to silence this warning
-           int o;
-                ^
-                 = 0
-   1 warning generated.
+DOE requires MSI-X or MSI.  We could probably leave MSI unsupported
+until a device with broken MSI-X support shows up.  I envision that
+with MSI, the onus is on the driver to allocate vectors for mailboxes
+it intends to use and it would then have to "donate" those vectors
+to the PCI core via a library function.
 
+As for portdrv, that's a driver but Bjorn has expressed a desire
+for a long time to move its functionality into the PCI core.
+It shouldn't be allowed to unbind portdrv via sysfs and thus break
+DPC etc, as is currently possible.
 
-vim +155 fs/afs/rxrpc.c
+The question with regards to this series is, do we get *something*
+merged and perfect it over time once it's in the tree, or do we
+keep iterating on the mailing list.  I deliberately only provided
+a single, comprehensive review and then stayed mum because I feel
+bad for Ira having to keep reacting to more and more feedback
+despite being at v11 already (or v12?  I've lost count).
+Particularly because I suspect (I might be mistaken) that Ira's
+natural habitat is actually CXL not PCI, so it might be a burden for him.
+I'd be fine to implement suggestions I've made myself after Ira's
+series lands.  No need for him to keep iterating ad infinitum.
 
-   131	
-   132	/*
-   133	 * Allocate a call.
-   134	 */
-   135	static struct afs_call *afs_alloc_call(struct afs_net *net,
-   136					       const struct afs_call_type *type,
-   137					       bool prealloc, gfp_t gfp)
-   138	{
-   139		struct afs_call *call;
-   140		int o;
-   141	
-   142		call = kzalloc(sizeof(*call), gfp);
-   143		if (!call)
-   144			return NULL;
-   145	
-   146		call->type = type;
-   147		call->net = net;
-   148		call->debug_id = atomic_inc_return(&rxrpc_debug_id);
-   149		atomic_set(&call->usage, 1);
-   150		INIT_WORK(&call->async_work, afs_process_async_call);
-   151		init_waitqueue_head(&call->waitq);
-   152		spin_lock_init(&call->state_lock);
-   153		call->iter = &call->def_iter;
-   154	
- > 155		if (!prealloc)
-   156			o = atomic_inc_return(&net->nr_outstanding_calls);
-   157		trace_afs_call(call, afs_call_trace_alloc, 1, o,
-   158			       __builtin_return_address(0));
-   159		return call;
-   160	}
-   161	
+Thanks,
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Lukas
