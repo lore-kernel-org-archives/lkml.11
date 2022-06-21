@@ -2,164 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26F31C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 19:34:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F538C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 19:36:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354035AbiFUTeu (ORCPT
+        id S1354052AbiFUTgq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 15:34:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54048 "EHLO
+        Tue, 21 Jun 2022 15:36:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352672AbiFUTes (ORCPT
+        with ESMTP id S1348473AbiFUTgp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 15:34:48 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 239752D1ED
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 12:34:41 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id v81so26281533ybe.0
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 12:34:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=GXndJbSr9Ys4cj6udGMJGPkAdQ+tLqQg3olnN64ieEQ=;
-        b=hs0LBDjDT9OlV72N7fBe49gCxiWYUZOxcBIws2Wgn8BN3WqTsnKUdVz0Q6ampLmXSV
-         5NkiSMbN9ezJtAmWUjyXVIOyvmB3tJWzCQSXBR+AO4tHEKCswdhBhhSG3vkBJZtJUVht
-         3JKyU0RJ2Ra5mCUJKBEJL8bG3wIYavBkn/AC2/Ch3FvXau57I9pfQARkPbGSgaJEoyGe
-         lTYcqa0zN/847nKzFl1WJjYqvmR1XHqpgkTYKwx4e2Qa8R6Ns1pVO3swtmqqCxrKN2V9
-         Bfty4fIeIEEKkVxTaMUi8q3bxkgjiWSJm0iXnvkRaHi2W0O9dPMwDc0y+T+TfR/UJ6Ei
-         2AEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GXndJbSr9Ys4cj6udGMJGPkAdQ+tLqQg3olnN64ieEQ=;
-        b=BdW5TsgX1nuRi9SAgBVl4FNBg98jijHkVfyviwSf8LESMtqsHYpXWD0TXlW0QDDzvh
-         pduJugxWFSZbvVKOGaBb54Ql5bdYRNAf8a4e1z3tCpsHNn9gmuUTfy3m4Tx7OzOtWWZ1
-         nXAzjO+6YawBA8d6bEOsMNFCBN8c+IuoPIIGErnyzN144GGXJeBcpki8dxRiujGFl2Kj
-         MnCdaKlS17p0/g91LXL7RHSOa9nyzll5z23daL5TYKcyGI/r4GJHPQpvc1cOxiiLCSLa
-         ymYiNbcabkGGxIinL4ff+MoK1Fogqwyo0L961d/+RJPzsWtgRa+gpAO+buiBZBZYZXqY
-         7Ffg==
-X-Gm-Message-State: AJIora9xME2Oyd1lQ5TR3McTGB6fBQWYsLVm+ftI0bxBDHfbAUkl4pKh
-        2uBDL5vycyNATK6XU+BlxQWTa3+h6EeMmGhBug4cCg==
-X-Google-Smtp-Source: AGRyM1u+tZKGrSW1cGi362mrQj+GEMsoaxrv0rYK4Hl9mC2GWlTK9NyKv5qqlRv1HupVfSdChNkUORkFSlefFHsLXRY=
-X-Received: by 2002:a25:9947:0:b0:663:ec43:61eb with SMTP id
- n7-20020a259947000000b00663ec4361ebmr32241009ybo.115.1655840080076; Tue, 21
- Jun 2022 12:34:40 -0700 (PDT)
+        Tue, 21 Jun 2022 15:36:45 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CE292D1D0;
+        Tue, 21 Jun 2022 12:36:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id E0BE0CE1C1F;
+        Tue, 21 Jun 2022 19:36:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0076AC341C4;
+        Tue, 21 Jun 2022 19:36:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655840201;
+        bh=/fhO8DKOPNqPlZBEyqMbHF7H/mKy0R9KV9oyQ1GuVeM=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=he2Za5EBD/5TYylCuV5tsn3rzYx4ZTNI9Vw3J556c18n/dhFyh2bGZZ0/rFMNQCQC
+         0oUWBhtdFJAmRsiOz4aInOhQ0t/RybZ/YA1R1+Ap0V5/mkRsxvGTXzzb1EqeoJgmw1
+         eCL2WiVJdMp+YvrnQPHTcOUE2ABoJscI9GeCh53IdT9luyTWu+k+nqKFTmb/uvC/uy
+         mM3MCJ3aumWB1UljHJmgcmlHELtHVm9CtzJ0giiwKnDr5V2pl1Z3wdpDTBfKzr1DDD
+         kW9IQmru1yithHauxeBYf/p7Wb1/TOfGRlSsg3pJAJ+yRkNQ8Ehxwq6qhvVQn1sZ4Q
+         g54LuYWML2jbA==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 936E45C0500; Tue, 21 Jun 2022 12:36:40 -0700 (PDT)
+Date:   Tue, 21 Jun 2022 12:36:40 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Cc:     "rcu@vger.kernel.org" <rcu@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kernel-team@fb.com" <kernel-team@fb.com>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        Zhangfei Gao <zhangfei.gao@linaro.org>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: Re: [PATCH rcu 12/12] srcu: Block less aggressively for expedited
+ grace periods
+Message-ID: <20220621193640.GN1790663@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220620222022.GA3839466@paulmck-ThinkPad-P17-Gen-1>
+ <20220620222032.3839547-12-paulmck@kernel.org>
+ <fef4fbd55b88481490d52cbd65e1b1f8@huawei.com>
 MIME-Version: 1.0
-References: <20220601070707.3946847-1-saravanak@google.com>
- <20220601070707.3946847-2-saravanak@google.com> <YrFzK6EiVvXmzVG6@atomide.com>
-In-Reply-To: <YrFzK6EiVvXmzVG6@atomide.com>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Tue, 21 Jun 2022 12:34:03 -0700
-Message-ID: <CAGETcx_1USPRbFKV5j00qkQ-QXJkp7=FAfnFcfiNnM4J5KF1cQ@mail.gmail.com>
-Subject: Re: [PATCH v2 1/9] PM: domains: Delete usage of driver_deferred_probe_check_state()
-To:     Tony Lindgren <tony@atomide.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-gpio@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <fef4fbd55b88481490d52cbd65e1b1f8@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 21, 2022 at 12:28 AM Tony Lindgren <tony@atomide.com> wrote:
->
-> Hi,
->
-> * Saravana Kannan <saravanak@google.com> [700101 02:00]:
-> > Now that fw_devlink=on by default and fw_devlink supports
-> > "power-domains" property, the execution will never get to the point
-> > where driver_deferred_probe_check_state() is called before the supplier
-> > has probed successfully or before deferred probe timeout has expired.
-> >
-> > So, delete the call and replace it with -ENODEV.
->
-> Looks like this causes omaps to not boot in Linux next.
+On Tue, Jun 21, 2022 at 07:43:08AM +0000, Shameerali Kolothum Thodi wrote:
+> 
+> 
+> > -----Original Message-----
+> > From: Paul E. McKenney [mailto:paulmck@kernel.org]
+> > Sent: 20 June 2022 23:21
+> > To: rcu@vger.kernel.org
+> > Cc: linux-kernel@vger.kernel.org; kernel-team@fb.com;
+> > rostedt@goodmis.org; Paul E. McKenney <paulmck@kernel.org>; Zhangfei
+> > Gao <zhangfei.gao@linaro.org>; Shameerali Kolothum Thodi
+> > <shameerali.kolothum.thodi@huawei.com>; Paolo Bonzini
+> > <pbonzini@redhat.com>
+> > Subject: [PATCH rcu 12/12] srcu: Block less aggressively for expedited grace
+> > periods
+> > 
+> > Commit 282d8998e997 ("srcu: Prevent expedited GPs and blocking readers
+> > from consuming CPU") fixed a problem where a long-running expedited
+> > SRCU
+> > grace period could block kernel live patching.  It did so by giving up
+> > on expediting once a given SRCU expedited grace period grew too old.
+> > 
+> > Unfortunately, this added excessive delays to boots of embedded systems
+> > running on qemu that use the ARM IORT RMR feature. 
+> 
+> As pointed out here[0]/[1], this delay has nothing to do with ARM IORT RMR
+> feature. The delay is due to the "-bios QEMU_EFI.fd" line which emulates flash
+> devices and requires excessive memslot ops during boot.
 
-Can you please point me to an example DTS I could use for debugging
-this? I'm assuming you are leaving fw_devlink=on and not turning it
-off or putting it in permissive mode.
+Good eyes, and I will update.
 
-> With this
-> simple-pm-bus fails to probe initially as the power-domain is not
-> yet available.
+Are we stuck with the excessive memslot ops?  If not, great.
 
-Before we get to late_initcall(), I'd expect this series to not have
-any impact because both fw_devlink and
-driver_deferred_probe_check_state() should be causing the device's
-probe to get deferred until the PM domain device comes up.
+If we are stuck with them, there probably needs to be a way of adjusting
+the SRCU delay parameters.  Making "-bios QEMU_EFI.fd" go quickly seems
+to require quite a bit of spinning, more than is likely to be helpful
+in general.
 
-To double check this, without this series, can you give me the list of
-"supplier:*" symlinks under a simple-pm-bus device's sysfs folder
-that's having problems with this series? And for all those symlinks,
-cat the "status" file under that directory?
+							Thanx, Paul
 
-In the system where this is failing, is the PM domain driver loaded as
-a module at a later point?
-
-Couple of other things to try (with the patches) to narrow this down:
-* Can you set driver_probe_timeout=0 in the command line and see if that helps?
-* Can you set it to something high like 30 or even larger and see if it helps?
-
-> On platform_probe() genpd_get_from_provider() returns
-> -ENOENT.
-
-This error is with the series I assume?
-
-> Seems like other stuff is potentially broken too, any ideas on
-> how to fix this?
-
-I'll want to understand the issue first. It's not yet clear to me why
-fw_devlink isn't blocking the probe of the simple-pm-bus device until
-the PM domain device shows up. And if it is not blocking, then why and
-at what point in boot it's giving up and letting the probe get to this
-point where there's an error.
-
--Saravana
-
->
->
-> >
-> > Signed-off-by: Saravana Kannan <saravanak@google.com>
+> Thanks,
+> Shameer
+> 
+> [0] https://lore.kernel.org/all/110bbec5cee74efba0aad64360069a12@huawei.com/
+> [1] https://lore.kernel.org/all/8735g649ew.wl-maz@kernel.org/
+> 
+> 
+>  This commit
+> > therefore
+> > makes the transition away from expediting less aggressive, increasing
+> > the per-grace-period phase number of non-sleeping polls of readers from
+> > one to three and increasing the required grace-period age from one jiffy
+> > (actually from zero to one jiffies) to two jiffies (actually from one
+> > to two jiffies).
+> > 
+> > Fixes: 282d8998e997 ("srcu: Prevent expedited GPs and blocking readers
+> > from consuming CPU")
+> > Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+> > Reported-by: Zhangfei Gao <zhangfei.gao@linaro.org>
+> > Reported-by: chenxiang (M)" <chenxiang66@hisilicon.com>
+> > Cc: Shameerali Kolothum Thodi  <shameerali.kolothum.thodi@huawei.com>
+> > Cc: Paolo Bonzini <pbonzini@redhat.com>
+> > Link:
+> > https://lore.kernel.org/all/20615615-0013-5adc-584f-2b1d5c03ebfc@linaro
+> > .org/
 > > ---
-> >  drivers/base/power/domain.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/base/power/domain.c b/drivers/base/power/domain.c
-> > index 739e52cd4aba..3e86772d5fac 100644
-> > --- a/drivers/base/power/domain.c
-> > +++ b/drivers/base/power/domain.c
-> > @@ -2730,7 +2730,7 @@ static int __genpd_dev_pm_attach(struct device *dev, struct device *base_dev,
-> >               mutex_unlock(&gpd_list_lock);
-> >               dev_dbg(dev, "%s() failed to find PM domain: %ld\n",
-> >                       __func__, PTR_ERR(pd));
-> > -             return driver_deferred_probe_check_state(base_dev);
-> > +             return -ENODEV;
-> >       }
-> >
-> >       dev_dbg(dev, "adding to PM domain %s\n", pd->name);
+> >  kernel/rcu/srcutree.c | 20 +++++++++++++-------
+> >  1 file changed, 13 insertions(+), 7 deletions(-)
+> > 
+> > diff --git a/kernel/rcu/srcutree.c b/kernel/rcu/srcutree.c
+> > index 50ba70f019dea..0db7873f4e95b 100644
+> > --- a/kernel/rcu/srcutree.c
+> > +++ b/kernel/rcu/srcutree.c
+> > @@ -513,7 +513,7 @@ static bool srcu_readers_active(struct srcu_struct
+> > *ssp)
+> > 
+> >  #define SRCU_INTERVAL		1	// Base delay if no expedited GPs
+> > pending.
+> >  #define SRCU_MAX_INTERVAL	10	// Maximum incremental delay from
+> > slow readers.
+> > -#define SRCU_MAX_NODELAY_PHASE	1	// Maximum per-GP-phase
+> > consecutive no-delay instances.
+> > +#define SRCU_MAX_NODELAY_PHASE	3	// Maximum per-GP-phase
+> > consecutive no-delay instances.
+> >  #define SRCU_MAX_NODELAY	100	// Maximum consecutive no-delay
+> > instances.
+> > 
+> >  /*
+> > @@ -522,16 +522,22 @@ static bool srcu_readers_active(struct srcu_struct
+> > *ssp)
+> >   */
+> >  static unsigned long srcu_get_delay(struct srcu_struct *ssp)
+> >  {
+> > +	unsigned long gpstart;
+> > +	unsigned long j;
+> >  	unsigned long jbase = SRCU_INTERVAL;
+> > 
+> >  	if (ULONG_CMP_LT(READ_ONCE(ssp->srcu_gp_seq),
+> > READ_ONCE(ssp->srcu_gp_seq_needed_exp)))
+> >  		jbase = 0;
+> > -	if (rcu_seq_state(READ_ONCE(ssp->srcu_gp_seq)))
+> > -		jbase += jiffies - READ_ONCE(ssp->srcu_gp_start);
+> > -	if (!jbase) {
+> > -		WRITE_ONCE(ssp->srcu_n_exp_nodelay,
+> > READ_ONCE(ssp->srcu_n_exp_nodelay) + 1);
+> > -		if (READ_ONCE(ssp->srcu_n_exp_nodelay) >
+> > SRCU_MAX_NODELAY_PHASE)
+> > -			jbase = 1;
+> > +	if (rcu_seq_state(READ_ONCE(ssp->srcu_gp_seq))) {
+> > +		j = jiffies - 1;
+> > +		gpstart = READ_ONCE(ssp->srcu_gp_start);
+> > +		if (time_after(j, gpstart))
+> > +			jbase += j - gpstart;
+> > +		if (!jbase) {
+> > +			WRITE_ONCE(ssp->srcu_n_exp_nodelay,
+> > READ_ONCE(ssp->srcu_n_exp_nodelay) + 1);
+> > +			if (READ_ONCE(ssp->srcu_n_exp_nodelay) >
+> > SRCU_MAX_NODELAY_PHASE)
+> > +				jbase = 1;
+> > +		}
+> >  	}
+> >  	return jbase > SRCU_MAX_INTERVAL ? SRCU_MAX_INTERVAL : jbase;
+> >  }
 > > --
-> > 2.36.1.255.ge46751e96f-goog
-> >
->
-> --
-> To unsubscribe from this group and stop receiving emails from it, send an email to kernel-team+unsubscribe@android.com.
->
+> > 2.31.1.189.g2e36527f23
+> 
