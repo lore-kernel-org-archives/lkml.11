@@ -2,123 +2,242 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6411DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 09:09:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BAF3CCA473
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 09:12:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348817AbiFUJJ6 (ORCPT
+        id S1348199AbiFUJMm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 05:09:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54154 "EHLO
+        Tue, 21 Jun 2022 05:12:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348736AbiFUJJ4 (ORCPT
+        with ESMTP id S1347566AbiFUJMk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 05:09:56 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 444B1A45E
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 02:09:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655802594;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=p6YYqoeBYUlu/VJufYNPYGtqIyaJ1M+ZkJJuqhZoIco=;
-        b=buxwxhJ2HnOB3Nwo8otDSl47pX6cJ3lKQygPquU8hFCnEwSKbEQRNCtxIY1COMeEMusDQp
-        4Iou0/W7hQhq8P2XT05OdisJNvI/KBG+JfU8spFiZhqkcDIGZ1GTyL2zR8j5BZi4QSWS2P
-        bt8jpDogaBaSazHOpOreZfrH3VcdYzQ=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-359-unZr_BQmMVuHXRPADCDddQ-1; Tue, 21 Jun 2022 05:09:53 -0400
-X-MC-Unique: unZr_BQmMVuHXRPADCDddQ-1
-Received: by mail-wm1-f72.google.com with SMTP id k32-20020a05600c1ca000b0039c4cf75023so8150576wms.9
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 02:09:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=p6YYqoeBYUlu/VJufYNPYGtqIyaJ1M+ZkJJuqhZoIco=;
-        b=jdIInuqWLA5nWp8ys3CiyeKN9vw/THBol8wPcD4/pwXrbS/J9mQUj16BGYPB3uGbLn
-         JPTGA5dag2d/7UgqXO6AkPFVVI7sh3H4B9RYFtOXluLbLhwa/t9gd1e5WYMsCaH3wkUl
-         FIlen0VxvUMlpjfeQsWdzZcREPpaNOY9ss3LW9C+O+LOgEZ30vnXo4/ScyXh8AHvLcsy
-         ERg9b5xk+k9yG+58mMJACuJBZitsgOLkXE2SZmFi+YWX3p3EyDsoJHWpsyQfW8hGVQoA
-         KzJA+9UsYjeprwTqkWLL8ughFu73VbCiXHcss8fd+PGq3S+7lV8TjztmG7A5CBnqtbv8
-         8MfA==
-X-Gm-Message-State: AJIora9xTnfrnQNiHgpc/WduNspc+xKwmZrgqix25uvGL8qLTbrEyJQa
-        jssPKxnw609uK7uUGH2r0Y6Rtk9LhyrVenb5EFq3hm9cHyM4JxDURXY8yK0/Z3f+SAceNwQGfAN
-        MEN6OeqVhB+4TBCSFTNMCVGZY
-X-Received: by 2002:adf:eecd:0:b0:21b:7f2d:47bd with SMTP id a13-20020adfeecd000000b0021b7f2d47bdmr19757779wrp.26.1655802592043;
-        Tue, 21 Jun 2022 02:09:52 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tDQqiFdsiM0RmmM6T7X/6TbXNmyK6Rjm0rXyvCFabqXryy8DMxqQmhHjyF/YbQWw5GjbYaEw==
-X-Received: by 2002:adf:eecd:0:b0:21b:7f2d:47bd with SMTP id a13-20020adfeecd000000b0021b7f2d47bdmr19757755wrp.26.1655802591829;
-        Tue, 21 Jun 2022 02:09:51 -0700 (PDT)
-Received: from ?IPV6:2003:d8:2f04:2500:cdb0:9b78:d423:43f? (p200300d82f042500cdb09b78d423043f.dip0.t-ipconnect.de. [2003:d8:2f04:2500:cdb0:9b78:d423:43f])
-        by smtp.gmail.com with ESMTPSA id y16-20020a5d6150000000b0021b932de5d6sm3880603wrt.39.2022.06.21.02.09.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Jun 2022 02:09:51 -0700 (PDT)
-Message-ID: <f7e9b2a7-9ec8-3922-ee06-eea0e26a26dd@redhat.com>
-Date:   Tue, 21 Jun 2022 11:09:50 +0200
+        Tue, 21 Jun 2022 05:12:40 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F33AE5F52;
+        Tue, 21 Jun 2022 02:12:38 -0700 (PDT)
+X-UUID: 569f04be88c94d0c8d93606e26cfe7c8-20220621
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.6,REQID:515177c1-c430-4adf-a027-b7c69ff31e57,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:45
+X-CID-INFO: VERSION:1.1.6,REQID:515177c1-c430-4adf-a027-b7c69ff31e57,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
+        N:release,TS:45
+X-CID-META: VersionHash:b14ad71,CLOUDID:44f5a22d-1756-4fa3-be7f-474a6e4be921,C
+        OID:c6e029c02700,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:0,File:nil,QS:nil,BEC:nil,COL:0
+X-UUID: 569f04be88c94d0c8d93606e26cfe7c8-20220621
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+        (envelope-from <ck.hu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 2044660626; Tue, 21 Jun 2022 17:12:36 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Tue, 21 Jun 2022 17:12:34 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Tue, 21 Jun 2022 17:12:34 +0800
+Message-ID: <59a4bdf0800afc445f223d07aac8b5335d6e36e8.camel@mediatek.com>
+Subject: Re: [PATCH v12 14/14] drm/mediatek: dpi: Add matrix_sel helper
+From:   CK Hu <ck.hu@mediatek.com>
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, <chunkuang.hu@kernel.org>,
+        <p.zabel@pengutronix.de>, <daniel@ffwll.ch>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <matthias.bgg@gmail.com>,
+        <airlied@linux.ie>
+CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
+        <jitao.shi@mediatek.com>, <wenst@chromium.org>,
+        <angelogioacchino.delregno@collabora.com>,
+        <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Tue, 21 Jun 2022 17:12:34 +0800
+In-Reply-To: <5907e3fc6a690bb79c2ad9b20f6e353b2ba8c774.camel@mediatek.com>
+References: <20220620121028.29234-1-rex-bc.chen@mediatek.com>
+         <20220620121028.29234-15-rex-bc.chen@mediatek.com>
+         <76d86558adba1e043e50ab0e18403038450b8099.camel@mediatek.com>
+         <5907e3fc6a690bb79c2ad9b20f6e353b2ba8c774.camel@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH] maple_tree: Make mas_prealloc() error checking more
- generic
-Content-Language: en-US
-To:     Liam Howlett <liam.howlett@oracle.com>,
-        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-References: <20220615174213.738849-1-Liam.Howlett@oracle.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <20220615174213.738849-1-Liam.Howlett@oracle.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 15.06.22 19:42, Liam Howlett wrote:
-> Return the error regardless of what it is.  This is a safer option.
+Hi, Rex:
+
+On Tue, 2022-06-21 at 16:41 +0800, Rex-BC Chen wrote:
+> On Tue, 2022-06-21 at 11:33 +0800, CK Hu wrote:
+> > Hi, Bo-Chen:
+> > 
+> > On Mon, 2022-06-20 at 20:10 +0800, Bo-Chen Chen wrote:
+> > > From: Guillaume Ranquet <granquet@baylibre.com>
+> > > 
+> > > Matrix selection is a new feature for both dpi and dpintf of
+> > > MT8195.
+> > > Add a mtk_dpi_matrix_sel() helper to update the DPI_MATRIX_SET
+> > > register depending on the color format.
+> > 
+> > Describe more about what this do.
+> > 
 > 
-> Signed-off-by: Liam R. Howlett <Liam.Howlett@oracle.com>
-> ---
->  lib/maple_tree.c | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
+> this feature is color format transfer.
+> For mt8195, the input format is RGB888 andd output format could be
+> YUV422. do you think I should squash this patch into [v12,12/14]
+> drm/mediatek: dpi: Add YUV422 output support?
+
+OK, squash these two patches and add this description into commit
+message. For RGB input and RGB output, I think this function should be
+disabled.
+
+Regards,
+CK
+
 > 
-> diff --git a/lib/maple_tree.c b/lib/maple_tree.c
-> index f413b6f0da2b..89ff5ef7ee28 100644
-> --- a/lib/maple_tree.c
-> +++ b/lib/maple_tree.c
-> @@ -5670,16 +5670,15 @@ void mas_store_prealloc(struct ma_state *mas, void *entry)
->   */
->  int mas_preallocate(struct ma_state *mas, void *entry, gfp_t gfp)
->  {
-> -
->  	mas_set_alloc_req(mas, 1 + mas_mt_height(mas) * 3);
->  	mas_alloc_nodes(mas, gfp);
-> -	if (likely(mas->node != MA_ERROR(-ENOMEM)))
-> +	if (likely(!mas_is_err(mas)))
->  		return 0;
->  
->  	mas_set_alloc_req(mas, 0);
->  	mas_destroy(mas);
->  	mas->node = MAS_START;
-> -	return -ENOMEM;
-> +	return xa_err(mas->node);
->  }
->  
->  /*
-
-Liam, (as asked privately before, I was just too busy to respond :) )
-once all known issues are fixed, can we have a new version posted to
-ease review? That would make my life easier to see what needs review and
-in which order patches apply. Thanks!
-
--- 
-Thanks,
-
-David / dhildenb
+> > > 
+> > > Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+> > > Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+> > > ---
+> > >  drivers/gpu/drm/mediatek/mtk_dpi.c      | 29
+> > > +++++++++++++++++++++++++
+> > >  drivers/gpu/drm/mediatek/mtk_dpi_regs.h |  3 +++
+> > >  2 files changed, 32 insertions(+)
+> > > 
+> > > diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c
+> > > b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> > > index 220e9b18e2cd..8a9151cb1622 100644
+> > > --- a/drivers/gpu/drm/mediatek/mtk_dpi.c
+> > > +++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> > > @@ -135,6 +135,7 @@ struct mtk_dpi_conf {
+> > >  	u32 channel_swap_shift;
+> > >  	u32 yuv422_en_bit;
+> > >  	u32 csc_enable_bit;
+> > > +	bool matrx_sel_support;
+> > >  };
+> > >  
+> > >  static void mtk_dpi_mask(struct mtk_dpi *dpi, u32 offset, u32
+> > > val,
+> > > u32 mask)
+> > > @@ -398,6 +399,31 @@ static void
+> > > mtk_dpi_config_disable_edge(struct
+> > > mtk_dpi *dpi)
+> > >  		mtk_dpi_mask(dpi, dpi->conf->reg_h_fre_con, 0,
+> > > EDGE_SEL_EN);
+> > >  }
+> > >  
+> > > +static void mtk_dpi_matrix_sel(struct mtk_dpi *dpi,
+> > > +			       enum mtk_dpi_out_color_format format)
+> > > +{
+> > > +	u32 matrix_sel = 0;
+> > > +
+> > > +	if (!dpi->conf->matrx_sel_support) {
+> > > +		dev_info(dpi->dev, "matrix_sel is not supported.\n");
+> > 
+> > So for this SoC, there would be something wrong? I still does not
+> > understand what this feature is.
+> > 
+> > static const struct of_device_id mtk_dpi_of_ids[] = {
+> > 	{ .compatible = "mediatek,mt2701-dpi",
+> > 	  .data = &mt2701_conf,
+> > 	},
+> > 	{ .compatible = "mediatek,mt8173-dpi",
+> > 	  .data = &mt8173_conf,
+> > 	},
+> > 	{ .compatible = "mediatek,mt8183-dpi",
+> > 	  .data = &mt8183_conf,
+> > 	},
+> > 	{ .compatible = "mediatek,mt8192-dpi",
+> > 	  .data = &mt8192_conf,
+> > 	},
+> > 	{ },
+> > };
+> > 
+> > > +		return;
+> > > +	}
+> > > +
+> > > +	switch (format) {
+> > > +	case MTK_DPI_COLOR_FORMAT_YCBCR_422:
+> > > +	case MTK_DPI_COLOR_FORMAT_YCBCR_422_FULL:
+> > > +	case MTK_DPI_COLOR_FORMAT_YCBCR_444:
+> > > +	case MTK_DPI_COLOR_FORMAT_YCBCR_444_FULL:
+> > > +	case MTK_DPI_COLOR_FORMAT_XV_YCC:
+> > > +		if (dpi->mode.hdisplay <= 720)
+> > > +			matrix_sel = 0x2;
+> > 
+> > Symbolize 0x2.
+> > 
+> > > +		break;
+> > > +	default:
+> > 
+> > If format is MTK_DPI_COLOR_FORMAT_YCBCR_422 first, then format
+> > change
+> > to MTK_DPI_COLOR_FORMAT_RGB and matrix_sel would still be 0x2. Is
+> > this
+> > correct?
+> > 
+> > Regards,
+> > CK
+> > 
+> > > +		break;
+> > > +	}
+> > > +	mtk_dpi_mask(dpi, DPI_MATRIX_SET, matrix_sel,
+> > > INT_MATRIX_SEL_MASK);
+> > > +}
+> > > +
+> > >  static void mtk_dpi_config_color_format(struct mtk_dpi *dpi,
+> > >  					enum mtk_dpi_out_color_format
+> > > format)
+> > >  {
+> > > @@ -405,6 +431,7 @@ static void
+> > > mtk_dpi_config_color_format(struct
+> > > mtk_dpi *dpi,
+> > >  	    (format == MTK_DPI_COLOR_FORMAT_YCBCR_444_FULL)) {
+> > >  		mtk_dpi_config_yuv422_enable(dpi, false);
+> > >  		mtk_dpi_config_csc_enable(dpi, true);
+> > > +		mtk_dpi_matrix_sel(dpi, format);
+> > >  		if (dpi->conf->swap_input_support)
+> > >  			mtk_dpi_config_swap_input(dpi, false);
+> > >  		mtk_dpi_config_channel_swap(dpi,
+> > > MTK_DPI_OUT_CHANNEL_SWAP_BGR);
+> > > @@ -412,6 +439,7 @@ static void
+> > > mtk_dpi_config_color_format(struct
+> > > mtk_dpi *dpi,
+> > >  		   (format == MTK_DPI_COLOR_FORMAT_YCBCR_422_FULL)) {
+> > >  		mtk_dpi_config_yuv422_enable(dpi, true);
+> > >  		mtk_dpi_config_csc_enable(dpi, true);
+> > > +		mtk_dpi_matrix_sel(dpi, format);
+> > >  		if (dpi->conf->swap_input_support)
+> > >  			mtk_dpi_config_swap_input(dpi, true);
+> > >  		else
+> > > @@ -951,6 +979,7 @@ static const struct mtk_dpi_conf
+> > > mt8195_dpintf_conf = {
+> > >  	.channel_swap_shift = DPINTF_CH_SWAP,
+> > >  	.yuv422_en_bit = DPINTF_YUV422_EN,
+> > >  	.csc_enable_bit = DPINTF_CSC_ENABLE,
+> > > +	.matrx_sel_support = true,
+> > >  };
+> > >  
+> > >  static int mtk_dpi_probe(struct platform_device *pdev)
+> > > diff --git a/drivers/gpu/drm/mediatek/mtk_dpi_regs.h
+> > > b/drivers/gpu/drm/mediatek/mtk_dpi_regs.h
+> > > index f7f0272dbd6a..96c117202d0d 100644
+> > > --- a/drivers/gpu/drm/mediatek/mtk_dpi_regs.h
+> > > +++ b/drivers/gpu/drm/mediatek/mtk_dpi_regs.h
+> > > @@ -230,4 +230,7 @@
+> > >  #define EDGE_SEL_EN			BIT(5)
+> > >  #define H_FRE_2N			BIT(25)
+> > >  
+> > > +#define DPI_MATRIX_SET		0xB4
+> > > +#define INT_MATRIX_SEL_MASK	(0x1F << 0)
+> > > +
+> > >  #endif /* __MTK_DPI_REGS_H */
+> > 
+> > 
+> 
+> 
 
