@@ -2,146 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C0F0C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:40:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 058E7C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:40:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353070AbiFUPkf (ORCPT
+        id S1353051AbiFUPkc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 11:40:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50642 "EHLO
+        Tue, 21 Jun 2022 11:40:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352974AbiFUPkM (ORCPT
+        with ESMTP id S1352885AbiFUPkI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 11:40:12 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12D0A2C643
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:40:11 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id o9so10686686edt.12
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:40:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=1sFbExhS+OPLRXtZhG6HHO16GCs3zpUEDAo1KtqwhuU=;
-        b=WQGkyOh69T3rIJ9GhJep6gi1zgBYkO0OBKsIaFlY+6AZisg0V3xR73aaPs3OW44eku
-         iZWOjwrf100p6yo3l8E8v5hOW+GH3yJA5uKRG4XDKXJ+gLTDhEUS8GfWWzYhJWGfA6VC
-         LS+o7CtrxuSbhvNrlgpEL29B7aE5ENttCeCVqDmoYneLkjLqd71jeTE0hgfqWqxBwRfR
-         PSvyjcKzNSC8TiGVclA7Cb+V8S6/yK6zy9koJlgPvyz+pARkqDykE0wSnEI9tFrq+PHm
-         karQv1IJcNPCk0k6N430IaWslTnkrtyrPzoYJVoUeQlHOLnf9TIddhVCsVKtMgMP64Qw
-         WP3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=1sFbExhS+OPLRXtZhG6HHO16GCs3zpUEDAo1KtqwhuU=;
-        b=1lh2/D9jGlFkzR3cxKLnoUvzswNI2TNQiko/emhWoQ+FagttOzKdNRxjeh89CI705h
-         O718og/UFlxURFNrjoQaT5RNU8fpaeo6uTGBx265hFOZHLsMAcvx12q6l7TdUOgXn7z5
-         EYDYyhEOS9YLn8OwPKD8DbWUxQnAQz6jdgFiOrMcP7d6jqDgo5XKP1KnkkOSj32HJ0eQ
-         9McTSSc3PFpbSzGKTxawYECqKUMwm1zh9+qqN8Y6entjw7Gp/+uRqT/j5HCnV0Zuqp0+
-         A/l5jj/fIP1wiPZ9hKTVbvSLg6Wmd4CKZ7w025jEtRwF0jwnm/e8CCSknmq51YyZdQoP
-         +dIQ==
-X-Gm-Message-State: AJIora+wb3gA8du1Gcz5UyPIRk1pEIJNgeXcpOpf4PL55ElAELWt1uVZ
-        Zhk1oKbOL0eMFpgK9lVLW2GZLg==
-X-Google-Smtp-Source: AGRyM1tgLH2e5nkg+AVdA2b8Jkx7KfBK6e+fSRsOTK0URy9oXzrHdA0RHNt8rt1JcY6ND0eqmpRGiw==
-X-Received: by 2002:a05:6402:51d3:b0:431:6c7b:28d with SMTP id r19-20020a05640251d300b004316c7b028dmr35227379edd.281.1655826009584;
-        Tue, 21 Jun 2022 08:40:09 -0700 (PDT)
-Received: from [192.168.0.221] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id z6-20020a17090665c600b006feb6dee4absm7929479ejn.137.2022.06.21.08.40.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Jun 2022 08:40:09 -0700 (PDT)
-Message-ID: <5832f7f1-3c8f-d88d-3b72-99effc1e2e83@linaro.org>
-Date:   Tue, 21 Jun 2022 17:40:07 +0200
+        Tue, 21 Jun 2022 11:40:08 -0400
+Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCC7027B32;
+        Tue, 21 Jun 2022 08:40:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+        d=metrotek.ru; s=mail;
+        h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding:
+         in-reply-to:references;
+        bh=XNWqwDT8OLiBMyF06PjFh1gIXEFKaOZYcVPPTh5+6oY=;
+        b=dKdetUPtuywS7FQaEaBvXZgrkJsquUzuXfqW7wFpmJZ1l6WKG5HqgawMPLHl87ChPzimf0QG6qwfD
+         xU60NblYCW1n4rNHiiM7cwpIgJfKk8kNHmb445rS0GXBAh8i3aZIck+FFs/zj0yzfu/XD9TL/G2xec
+         +xoRNIdRmbKFhgD2ScypEU33Igfd09HNe8no+cKntF8je3+kO2TvsiQXBDP1tCvUvTrWBvBRuL5TfB
+         V4BLEFWe5dZwqcIdnYNBDHBXbvlt+LyptKz8vxLpEyjQgCbQfo05vWANREHIZdzPjlaCmiBkiv7lWb
+         RF/iaG3Nqu9qY+AVphuwN2/1+TLG00Q==
+X-Kerio-Anti-Spam:  Build: [Engines: 2.16.3.1424, Stamp: 3], Multi: [Enabled, t: (0.000009,0.008053)], BW: [Enabled, t: (0.000019,0.000001)], RTDA: [Enabled, t: (0.070316), Hit: No, Details: v2.40.0; Id: 15.52k0bu.1g63emviq.1g9vs; mclb], total: 0(700)
+X-Footer: bWV0cm90ZWsucnU=
+Received: from h-e2.ddg ([85.143.252.66])
+        (authenticated user i.bornyakov@metrotek.ru)
+        by mail.pr-group.ru with ESMTPSA
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
+        Tue, 21 Jun 2022 18:39:46 +0300
+From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
+To:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
+        trix@redhat.com, corbet@lwn.net
+Cc:     Ivan Bornyakov <i.bornyakov@metrotek.ru>,
+        conor.dooley@microchip.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-fpga@vger.kernel.org,
+        linux-doc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, system@metrotek.ru,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v21 4/5] dt-bindings: fpga: add binding doc for microchip-spi fpga mgr
+Date:   Tue, 21 Jun 2022 18:38:46 +0300
+Message-Id: <20220621153847.103052-5-i.bornyakov@metrotek.ru>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220621153847.103052-1-i.bornyakov@metrotek.ru>
+References: <20220621153847.103052-1-i.bornyakov@metrotek.ru>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v4 05/18] dt-binding: clk: npcm845: Add binding for
- Nuvoton NPCM8XX Clock
-Content-Language: en-US
-To:     Tomer Maimon <tmaimon77@gmail.com>, avifishman70@gmail.com,
-        tali.perry1@gmail.com, joel@jms.id.au, venture@google.com,
-        yuenn@google.com, benjaminfair@google.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com,
-        sboyd@kernel.org, p.zabel@pengutronix.de,
-        gregkh@linuxfoundation.org, daniel.lezcano@linaro.org,
-        tglx@linutronix.de, wim@linux-watchdog.org, linux@roeck-us.net,
-        catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
-        olof@lixom.net, jirislaby@kernel.org, shawnguo@kernel.org,
-        bjorn.andersson@linaro.org, geert+renesas@glider.be,
-        marcel.ziswiler@toradex.com, vkoul@kernel.org,
-        biju.das.jz@bp.renesas.com, nobuhiro1.iwamatsu@toshiba.co.jp,
-        robert.hancock@calian.com, j.neuschaefer@gmx.net, lkundrak@v3.sk
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-watchdog@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-References: <20220621131424.162355-1-tmaimon77@gmail.com>
- <20220621131424.162355-6-tmaimon77@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220621131424.162355-6-tmaimon77@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 21/06/2022 15:14, Tomer Maimon wrote:
-> Add binding for the Arbel BMC NPCM8XX Clock controller.
-> 
-> Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
-> ---
->  .../bindings/clock/nuvoton,npcm845-clk.yaml   | 49 +++++++++++++++++++
->  .../dt-bindings/clock/nuvoton,npcm845-clk.h   | 49 +++++++++++++++++++
->  2 files changed, 98 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml
->  create mode 100644 include/dt-bindings/clock/nuvoton,npcm845-clk.h
-> 
-> diff --git a/Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml b/Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml
-> new file mode 100644
-> index 000000000000..3d4fddc090ca
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml
-> @@ -0,0 +1,49 @@
-> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/clock/nuvoton,npcm845-clk.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Nuvoton NPCM8XX Clock Controller Binding
-> +
-> +maintainers:
-> +  - Tomer Maimon <tmaimon77@gmail.com>
-> +
-> +description: |
-> +  Nuvoton Arbel BMC NPCM8XX contains an integrated clock controller, which
-> +  generates and supplies clocks to all modules within the BMC.
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - nuvoton,npcm845-clk
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  '#clock-cells':
-> +    const: 1
-> +    description:
-> +      See include/dt-bindings/clock/nuvoton,npcm8xx-clock.h for the full
-> +      list of NPCM8XX clock IDs.
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - "#clock-cells"
+Add Device Tree Binding doc for Microchip Polarfire FPGA Manager using
+slave SPI to load .dat formatted bitstream image.
 
-You fixed one comment and ignore second. The same was with v3.
+Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Acked-by: Xu Yilun <yilun.xu@intel.com>
+---
+ .../fpga/microchip,mpf-spi-fpga-mgr.yaml      | 44 +++++++++++++++++++
+ 1 file changed, 44 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
 
-This is still no. Implement all the comments you received. I have to
-double check your patchsets every time because I cannot trust that you
-implemented what I asked for.
+diff --git a/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml b/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
+new file mode 100644
+index 000000000000..aee45cb15592
+--- /dev/null
++++ b/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
+@@ -0,0 +1,44 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/fpga/microchip,mpf-spi-fpga-mgr.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Microchip Polarfire FPGA manager.
++
++maintainers:
++  - Ivan Bornyakov <i.bornyakov@metrotek.ru>
++
++description:
++  Device Tree Bindings for Microchip Polarfire FPGA Manager using slave SPI to
++  load the bitstream in .dat format.
++
++properties:
++  compatible:
++    enum:
++      - microchip,mpf-spi-fpga-mgr
++
++  reg:
++    description: SPI chip select
++    maxItems: 1
++
++  spi-max-frequency: true
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    spi {
++            #address-cells = <1>;
++            #size-cells = <0>;
++
++            fpga_mgr@0 {
++                    compatible = "microchip,mpf-spi-fpga-mgr";
++                    spi-max-frequency = <20000000>;
++                    reg = <0>;
++            };
++    };
+-- 
+2.25.1
 
 
-Best regards,
-Krzysztof
