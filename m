@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEB24C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:02:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23856C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:02:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355905AbiFUVCi (ORCPT
+        id S1355914AbiFUVCk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 17:02:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38872 "EHLO
+        Tue, 21 Jun 2022 17:02:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355902AbiFUU7J (ORCPT
+        with ESMTP id S1355946AbiFUU7M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 16:59:09 -0400
+        Tue, 21 Jun 2022 16:59:12 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CBAF3337A;
-        Tue, 21 Jun 2022 13:51:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 610E233898;
+        Tue, 21 Jun 2022 13:51:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3783F61884;
-        Tue, 21 Jun 2022 20:51:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 157ABC36AE2;
-        Tue, 21 Jun 2022 20:51:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EE8D861883;
+        Tue, 21 Jun 2022 20:51:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB553C341C4;
+        Tue, 21 Jun 2022 20:51:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655844662;
-        bh=wuwlQqYU2Q0SetwhNRVtAbUs3o+sTJP/YdYjFmeP0nM=;
+        s=k20201202; t=1655844674;
+        bh=pnS4lZGvDYSAiT+SmS4wMHR5MMPLdIlUEMpSkyYg3pM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nqeQ4QDL5Rj3V5AGssC8Xe4ZSE5xa6ae8sSNndFaL0ifKZ5oDee8L71xB3MR4ZLlW
-         SYhli1JBo0ZyYsIJznUJYdDZifLohn9n8eJOjhau1mRuUxbcRw9BDYXSa6VIdo5OpG
-         CcL11S5fOXBs/i0deXSh/GrCm5LP9JWHskkJiQqBI49P2h0oeZdgHTBCoUNhs63T4S
-         yiNzo8jQjkd6u5mEzC/eNtqOl0P7JIgVLjmKCfdONaqCWmw5hcSSi/ssnS0xBBgXpq
-         zI92O2CfvifSh9FQM7iG4LvZV4btGZzLRpRUReT4wUSBbF6s6iT2hS/g+MV+Y9bFTQ
-         bvra/e9sv1SAw==
+        b=VCCD4qqja0Lc324EvVDfu5e8iNDVEhqgQH+Id1EewiUnoFt498vS8XmOArS7ihOeY
+         Xth45kzf4x++DscFBUVf9TJi2ZI1Wz6K9PL1ql/IhA38FKnpM4IT8FznSRVORgIkEx
+         JAFef/DSXQkeiL/MzVAoHVZpyuCdil3hkCJ1RUb3zCAMq+TXbkAyyY8NMOphEKmAy0
+         8ZZwrUjLX2xAn5D31ypM/XfgLoFEt329Dex1HPiughQ+5klBEb3AQPRlqSQWOshxdZ
+         lzkwmixq5GmDZqMvNduXZghstkFAjZkhRQFNSODeyNvOlsyRBxbpTQkTIDIF+ZAaBA
+         XgwK3X1HPQpdg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ming Lei <ming.lei@redhat.com>, Christoph Hellwig <hch@lst.de>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>,
-        linux-block@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 15/17] blk-mq: protect q->elevator by ->sysfs_lock in blk_mq_elv_switch_none
-Date:   Tue, 21 Jun 2022 16:50:38 -0400
-Message-Id: <20220621205041.250426-15-sashal@kernel.org>
+Cc:     Keith Busch <kbusch@kernel.org>, Christoph Hellwig <hch@lst.de>,
+        Sasha Levin <sashal@kernel.org>, axboe@fb.com,
+        sagi@grimberg.me, linux-nvme@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.10 07/11] nvme-pci: sk hynix p31 has bogus namespace ids
+Date:   Tue, 21 Jun 2022 16:51:01 -0400
+Message-Id: <20220621205105.250640-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220621205041.250426-1-sashal@kernel.org>
-References: <20220621205041.250426-1-sashal@kernel.org>
+In-Reply-To: <20220621205105.250640-1-sashal@kernel.org>
+References: <20220621205105.250640-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,43 +52,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ming Lei <ming.lei@redhat.com>
+From: Keith Busch <kbusch@kernel.org>
 
-[ Upstream commit 5fd7a84a09e640016fe106dd3e992f5210e23dc7 ]
+[ Upstream commit c4f01a776b28378f4f61b53f8cb0e358f4fa3721 ]
 
-elevator can be tore down by sysfs switch interface or disk release, so
-hold ->sysfs_lock before referring to q->elevator, then potential
-use-after-free can be avoided.
+Add the quirk.
 
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Ming Lei <ming.lei@redhat.com>
-Link: https://lore.kernel.org/r/20220616014401.817001-2-ming.lei@redhat.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=216049
+Signed-off-by: Keith Busch <kbusch@kernel.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/blk-mq.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/nvme/host/pci.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/block/blk-mq.c b/block/blk-mq.c
-index b70488e4db94..95da44063e65 100644
---- a/block/blk-mq.c
-+++ b/block/blk-mq.c
-@@ -3683,12 +3683,14 @@ static bool blk_mq_elv_switch_none(struct list_head *head,
- 	if (!qe)
- 		return false;
- 
-+	/* q->elevator needs protection from ->sysfs_lock */
-+	mutex_lock(&q->sysfs_lock);
-+
- 	INIT_LIST_HEAD(&qe->node);
- 	qe->q = q;
- 	qe->type = q->elevator->type;
- 	list_add(&qe->node, head);
- 
--	mutex_lock(&q->sysfs_lock);
- 	/*
- 	 * After elevator_switch_mq, the previous elevator_queue will be
- 	 * released by elevator_release. The reference of the io scheduler
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index 610cf8c2a6a8..1c9fd718cd8a 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -3263,6 +3263,8 @@ static const struct pci_device_id nvme_id_table[] = {
+ 				NVME_QUIRK_IGNORE_DEV_SUBNQN, },
+ 	{ PCI_DEVICE(0x1c5c, 0x1504),   /* SK Hynix PC400 */
+ 		.driver_data = NVME_QUIRK_DISABLE_WRITE_ZEROES, },
++	{ PCI_DEVICE(0x1c5c, 0x174a),   /* SK Hynix P31 SSD */
++		.driver_data = NVME_QUIRK_BOGUS_NID, },
+ 	{ PCI_DEVICE(0x15b7, 0x2001),   /*  Sandisk Skyhawk */
+ 		.driver_data = NVME_QUIRK_DISABLE_WRITE_ZEROES, },
+ 	{ PCI_DEVICE(0x2646, 0x2262),   /* KINGSTON SKC2000 NVMe SSD */
 -- 
 2.35.1
 
