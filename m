@@ -2,87 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 139B1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 09:27:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1170C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 09:28:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348386AbiFUJ1g (ORCPT
+        id S1348656AbiFUJ2I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 05:27:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39056 "EHLO
+        Tue, 21 Jun 2022 05:28:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347480AbiFUJ1d (ORCPT
+        with ESMTP id S1347480AbiFUJ2C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 05:27:33 -0400
-Received: from outbound-smtp55.blacknight.com (outbound-smtp55.blacknight.com [46.22.136.239])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32171248DA
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 02:27:32 -0700 (PDT)
-Received: from mail.blacknight.com (pemlinmail05.blacknight.ie [81.17.254.26])
-        by outbound-smtp55.blacknight.com (Postfix) with ESMTPS id B4102FAFE7
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 10:27:30 +0100 (IST)
-Received: (qmail 7506 invoked from network); 21 Jun 2022 09:27:30 -0000
-Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.198.246])
-  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 21 Jun 2022 09:27:30 -0000
-Date:   Tue, 21 Jun 2022 10:27:28 +0100
-From:   Mel Gorman <mgorman@techsingularity.net>
-To:     Vlastimil Babka <vbabka@suse.cz>
-Cc:     Yu Zhao <yuzhao@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Hugh Dickins <hughd@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>
-Subject: Re: [PATCH 7/7] mm/page_alloc: Replace local_lock with normal
- spinlock
-Message-ID: <20220621092728.GE15453@techsingularity.net>
-References: <20220613125622.18628-1-mgorman@techsingularity.net>
- <20220613125622.18628-8-mgorman@techsingularity.net>
- <43033655-2e78-621b-cc76-c3dc53024d00@suse.cz>
- <CAOUHufaHV9Aua3sneOnQvPhrtuxxDuJ5+c+A-zy8RufoDkmeMQ@mail.gmail.com>
- <8354ba5b-d1ce-90c7-be76-328ab9321550@suse.cz>
+        Tue, 21 Jun 2022 05:28:02 -0400
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D932CBB4
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 02:27:53 -0700 (PDT)
+Received: by mail-lj1-x22d.google.com with SMTP id b23so6137486ljh.7
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 02:27:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=8e6CPzPX9uApajCNlf3OZqOW+gA8MhL7WPc0wiikTqU=;
+        b=il/sljDYx3y2Rj9aqTxNbHbIQ6aPBlIM7Pdno2uuS3KhdGKi1EZgd2FZY9hkCiRxUf
+         tXXC5pVQluIx7hzrqJkyWQa8PUsf0LJEY1Ckb5XU825NXkHH39idMeeWYYKj8nx3j9ov
+         AVbtVZ20G4hmmd8vqMhW2AI7pWnxAilWfxN8qOYRJ8JpVhXsc4uZLRjZa/oRuq1Ek4Sq
+         +NfhopYiugeI1pVHBPe7y9TDcyBtvwaAB6nO9UYiHGVr7CxQDXuXLfNpVecYHKp31Ryx
+         lOS1h5CPu7upadyDALbWKNDakfbwsuKkASE6Xre2cbymdQ6fljJLXzGYJ8RPK+fnUTP9
+         WVyw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=8e6CPzPX9uApajCNlf3OZqOW+gA8MhL7WPc0wiikTqU=;
+        b=3ZgYTG01g1qta3uU02uhBVSnfru9GMMXJ4c5fMjcgdFFYOHKgBPux9CgrSjk9hPj6w
+         2uSXOXSHq3p58AKFwQWh1vm/Uzinf4CxcpSLxYPNLAKVsiGBnyfYyBT7TWmryP1cnLRU
+         zVB/0sXrnsCEPxolZFZC3GuYrcswE8EeUo280Cae9F9QM9PhVZXxU3UltBkufRgi7Jcl
+         MtPZNfkCBpInDdvRLq7BB7h8Q2AeymWPJG2uqzCME0Woaaub3HRbGGO267Ca3x2UbP6F
+         lfxaIoJ0DPmKzA3kAMnAauubMxeKnq6L8rCzvDpUqLo6i4f/Rph4rcWQw1GdX2Gbcd7M
+         Hx5g==
+X-Gm-Message-State: AJIora8TOxWwehqvgWeGMfmvukcZx8V9v72n/2OM22hSfBfA5VJA9qkR
+        MXpdNJhQz7zmPUk0QBR5Cg2zJ1Xfnh8ZpehVI6WN0Q==
+X-Google-Smtp-Source: AGRyM1sBSSnPQfUNpVkNAnJ/02rMsTXl7DvXUFqZ5omPctSopVyLOUzYU7be4FE/ZwsUBD8Qkkc/Jkri0LrTRGe/ZjQ=
+X-Received: by 2002:a2e:a58d:0:b0:25a:6348:9595 with SMTP id
+ m13-20020a2ea58d000000b0025a63489595mr7562439ljp.72.1655803672117; Tue, 21
+ Jun 2022 02:27:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
-Content-Disposition: inline
-In-Reply-To: <8354ba5b-d1ce-90c7-be76-328ab9321550@suse.cz>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220620150225.1307946-1-mw@semihalf.com> <20220620150225.1307946-4-mw@semihalf.com>
+ <YrCxUfTDmvm9zLXq@smile.fi.intel.com>
+In-Reply-To: <YrCxUfTDmvm9zLXq@smile.fi.intel.com>
+From:   Marcin Wojtas <mw@semihalf.com>
+Date:   Tue, 21 Jun 2022 11:27:43 +0200
+Message-ID: <CAPv3WKch9hC3ZjZE0f4JntqFDY04PUpQ1yzsgShThmhkqV01-g@mail.gmail.com>
+Subject: Re: [net-next: PATCH 03/12] net: dsa: switch to device_/fwnode_ APIs
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        vivien.didelot@gmail.com, Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Grzegorz Bernacki <gjb@semihalf.com>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>,
+        Tomasz Nowicki <tn@semihalf.com>,
+        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
+        upstream@semihalf.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 17, 2022 at 09:57:06AM +0200, Vlastimil Babka wrote:
-> On 6/16/22 23:07, Yu Zhao wrote:
-> > On Thu, Jun 16, 2022 at 11:02 AM Vlastimil Babka <vbabka@suse.cz> wrote:
-> >>
-> >>
-> >> > @@ -3794,19 +3805,29 @@ static struct page *rmqueue_pcplist(struct zone *preferred_zone,
-> >> >       struct list_head *list;
-> >> >       struct page *page;
-> >> >       unsigned long flags;
-> >> > +     unsigned long __maybe_unused UP_flags;
-> >> >
-> >> > -     local_lock_irqsave(&pagesets.lock, flags);
-> >> > +     /*
-> >> > +      * spin_trylock_irqsave is not necessary right now as it'll only be
-> >> > +      * true when contending with a remote drain. It's in place as a
-> >> > +      * preparation step before converting pcp locking to spin_trylock
-> >> > +      * to protect against IRQ reentry.
-> >> > +      */
-> >> > +     pcp_trylock_prepare(UP_flags);
-> >> > +     pcp = pcp_spin_trylock_irqsave(zone->per_cpu_pageset, flags);
-> >> > +     if (!pcp)
-> >>
-> >> Besides the missing unpin Andrew fixed, I think also this is missing
-> >> pcp_trylock_finish(UP_flags); ?
-> > 
-> > spin_trylock only fails when trylock_finish is a NOP.
-> 
-> True, so it's not an active bug, but I would still add it, so it's not
-> confusing and depending on non-obvious details that might later change and
-> break the code.
+pon., 20 cze 2022 o 19:41 Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> napisa=C5=82(a):
+>
+> On Mon, Jun 20, 2022 at 05:02:16PM +0200, Marcin Wojtas wrote:
+> > In order to support both ACPI and DT, modify the generic
+> > DSA code to use device_/fwnode_ equivalent routines.
+> > No functional change is introduced by this patch.
+>
+> ...
+>
+> >       struct device_node      *dn;
+>
+> What prevents us from removing this?
 
-Yes. Even though it may work, it's still wrong.
+I left it to satisfy possible issues with backward compatibility - I
+migrated mv88e6xxx, other DSA drivers still rely on of_* and may use
+this field.
 
--- 
-Mel Gorman
-SUSE Labs
+>
+> > +     struct fwnode_handle    *fwnode;
+>
+> ...
+>
+> > -             dn =3D of_get_child_by_name(ds->dev->of_node, "mdio");
+> > +             fwnode =3D fwnode_get_named_child_node(ds->dev->fwnode, "=
+mdio");
+>
+> The rule of thumb is avoid dereferencing fwnode from struct device. So
+> dev_fwnode(), but here it would be achieved by device_get_named_child_nod=
+e().
+>
+
+Ok, thanks - will do for all occurences.
+
+> ...
+>
+> > -static int dsa_switch_parse_of(struct dsa_switch *ds, struct device_no=
+de *dn)
+> > +static int dsa_switch_parse_of(struct dsa_switch *ds, struct fwnode_ha=
+ndle *fwnode)
+>
+> Shouldn't _of suffix be replaced by, let's say, _fw?
+>
+
+I thought about it and can perform such naming update in next iteration.
+
+> ...
+>
+> > -     return dsa_switch_parse_ports_of(ds, dn);
+> > +     return dsa_switch_parse_ports_of(ds, fwnode);
+>
+> Ditto.
+>
+> ...
+>
+> > +     fwnode =3D ds->dev->fwnode;
+>
+> dev_fwnode() or corresponding device_property_ API.
+>
+
+OK.
+
+> ...
+>
+> >       slave_dev->dev.of_node =3D port->dn;
+> > +     slave_dev->dev.fwnode =3D port->fwnode;
+>
+> device_set_node()
+>
+
+OK.
+
+Thanks,
+Marcin
