@@ -2,68 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28628C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 11:52:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A468C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 11:53:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350131AbiFULw5 (ORCPT
+        id S1350153AbiFULxE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 07:52:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35256 "EHLO
+        Tue, 21 Jun 2022 07:53:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350119AbiFULwy (ORCPT
+        with ESMTP id S1350132AbiFULxD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 07:52:54 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60218B4
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 04:52:51 -0700 (PDT)
-Received: from kwepemi500023.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LS4b731Xdz1K9mX;
-        Tue, 21 Jun 2022 19:50:43 +0800 (CST)
-Received: from huawei.com (10.175.112.208) by kwepemi500023.china.huawei.com
- (7.221.188.76) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 21 Jun
- 2022 19:52:48 +0800
-From:   Peng Wu <wupeng58@huawei.com>
-To:     <matthias.bgg@gmail.com>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <liwei391@huawei.com>,
-        <wupeng58@huawei.com>
-Subject: [PATCH] soc: mediatek: fix missing clk_disable_unprepare() on err in svs_resume()
-Date:   Tue, 21 Jun 2022 11:46:58 +0000
-Message-ID: <20220621114658.10054-1-wupeng58@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 21 Jun 2022 07:53:03 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B6DC219C;
+        Tue, 21 Jun 2022 04:53:02 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id lw20so4596675ejb.4;
+        Tue, 21 Jun 2022 04:53:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=Euwp5N+3NI2BdvzXjSxZwpJ8MC0XY7297caCI5aXQwc=;
+        b=caoosVB+ji/MBF4QNxdPDrMTdE+RUfJFeYCOK51Ypxol8hOyopUeoHDcgG2cbvKL4j
+         AQmpw8fYkkLcmWdn7JrNqEJUN1XOFaZNi1WH3u+KUXQs3zS8jmYbIpFoJt8VnvzSFCGa
+         v7DB2WqSA1tLqrvbIR/Ku+XBmc6Q4Q/IGU7x6WsGcHltS8tae/crxVqBxvu4Kmhw5PcJ
+         HsDB6B4CcR5HmcYiQpX29eNqdhRoho8PxnWbjHWqOdvhLymRaQ8oGcAOGolNNACmwbkQ
+         DtXi7l5LbraKTByoHzYTHJiJU8WBEjV5zXDJBjccuJktBSwOEg8+yP08sb2ya3ue2nzy
+         NDxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=Euwp5N+3NI2BdvzXjSxZwpJ8MC0XY7297caCI5aXQwc=;
+        b=O0LGx2EoN57icvH5GFSKhjZridzHkI7sDeUxvmkNHBk4hnT7Js5UgyJf2qt6/TEbj7
+         84CwlQtkBo+WpRQu3tKeJIAf3wTUllwqSx0XivzLpQHZNIAk4aBLPcBBxPpb72bvCisF
+         c88ec8yyiXa1lLUWolDkzK2Q/4bouimWYNGJJoGRl9yeWAFe9LBmQJeFRVVVkiaV/P2k
+         jDyOm0A6ilg19lY7FWLL0zyMrKCbKn2pBc4GYc0dv1msNSLniUnPWWs/ZALkGJGdATF+
+         wbch0Z1awRQYHtySPuquTRW/8GLX/LlFJ5zyO0uVhF0lvW8x7Qpxb/4bcwmccJ38iXAa
+         w0ZA==
+X-Gm-Message-State: AJIora/BUO0aC5Yd/8yPTBAzlq/UMsKwZd/4wvjQRwFhvd1VIYuZg8Dg
+        nBZFnzTM+Gy0fZguPwhPVWU=
+X-Google-Smtp-Source: AGRyM1uWvOjhc8Wie+uhS1amwH9iINJ7y4JcksVrZ5QJ7wQCVhIldTXXHZ1puT3SYqw8WkYWZhe6mQ==
+X-Received: by 2002:a17:906:530b:b0:715:7867:1033 with SMTP id h11-20020a170906530b00b0071578671033mr25797519ejo.683.1655812380816;
+        Tue, 21 Jun 2022 04:53:00 -0700 (PDT)
+Received: from skbuf ([188.25.159.210])
+        by smtp.gmail.com with ESMTPSA id f16-20020a17090631d000b006f3ef214d9fsm7453537ejf.5.2022.06.21.04.52.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Jun 2022 04:53:00 -0700 (PDT)
+Date:   Tue, 21 Jun 2022 14:52:58 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     =?utf-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?utf-8?Q?Miqu=C3=A8l?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v8 14/16] ARM: dts: r9a06g032: describe switch
+Message-ID: <20220621115258.grihuonqjncjy7tk@skbuf>
+References: <20220620110846.374787-1-clement.leger@bootlin.com>
+ <20220620110846.374787-15-clement.leger@bootlin.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.208]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemi500023.china.huawei.com (7.221.188.76)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220620110846.374787-15-clement.leger@bootlin.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the missing clk_disable_unprepare() before return
-from svs_resume() in the error handling case.
+On Mon, Jun 20, 2022 at 01:08:44PM +0200, Clément Léger wrote:
+> Add description of the switch that is present on the RZ/N1 SoC. This
+> description includes ethernet-ports description for all the ports that
+> are present on the switch along with their connection to the MII
+> converter ports and to the GMAC for the CPU port.
+> 
+> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+> ---
 
-Signed-off-by: Peng Wu <wupeng58@huawei.com>
-Reported-by: Hulk Robot <hulkci@huawei.com>
----
- drivers/soc/mediatek/mtk-svs.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/soc/mediatek/mtk-svs.c b/drivers/soc/mediatek/mtk-svs.c
-index 606a00a2e57d..1b5c297aaec5 100644
---- a/drivers/soc/mediatek/mtk-svs.c
-+++ b/drivers/soc/mediatek/mtk-svs.c
-@@ -1525,6 +1525,7 @@ static int svs_resume(struct device *dev)
- 
- 	ret = reset_control_deassert(svsp->rst);
- 	if (ret) {
-+		clk_disable_unprepare(svsp->main_clk);
- 		dev_err(svsp->dev, "cannot deassert reset %d\n", ret);
- 		return ret;
- 	}
--- 
-2.17.1
-
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
