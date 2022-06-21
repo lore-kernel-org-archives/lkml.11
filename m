@@ -2,147 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6EC0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 10:46:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F822CCA473
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 10:47:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345243AbiFUKpc (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 06:45:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49720 "EHLO
+        id S232100AbiFUKqn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 21 Jun 2022 06:46:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349091AbiFUKNZ (ORCPT
+        with ESMTP id S1347789AbiFUKqZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 06:13:25 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E729286D6
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 03:13:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655806405; x=1687342405;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version:content-transfer-encoding;
-  bh=mR5Un6+9WKGYeywFJRvZiZCin9Uu7YE1gj2wX8VDPHE=;
-  b=FXibfh9HV9WY5pUfCY1SBaOyWZde+hf7EsFcBR0F5dbDqvY0JdE//tti
-   cNTuOHEktTfmH5Z4KyKg/g3+bPjnrVSDz2C9ShQwhYcRfzBjDb0SW/Axi
-   8Wt1hYHJyIxBDIMFcjwpOO2BpdZhI4O10tlAt9+BA85/Z3/IL+DxR+4eZ
-   7VTuvtNOZNU7Njxa6ekvEQeQiG1utRVoggNgmJowsQGSWXhpqx+A92JgZ
-   v+K0vV4xS5gKfb/OJoA50uLLnQ8TeWyuwjIEgk+/bF4u3KaZUXzUtHPGg
-   CD4kD+VpnFVAiN3KGoZgLW1vzy85rhbGZZrkBHU9lcCQrw80d1lYeiHnA
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10384"; a="305525615"
-X-IronPort-AV: E=Sophos;i="5.92,209,1650956400"; 
-   d="scan'208";a="305525615"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 03:13:24 -0700
-X-IronPort-AV: E=Sophos;i="5.92,209,1650956400"; 
-   d="scan'208";a="591589620"
-Received: from rgrotewx-mobl1.ger.corp.intel.com (HELO localhost) ([10.252.35.153])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 03:13:21 -0700
-From:   Jani Nikula <jani.nikula@intel.com>
-To:     Thomas Zimmermann <tzimmermann@suse.de>,
-        David Gow <davidgow@google.com>,
-        =?utf-8?Q?Jos=C3=A9_Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-Cc:     dri-devel@lists.freedesktop.org, magalilemes00@gmail.com,
-        David Airlie <airlied@linux.ie>,
-        =?utf-8?Q?Ma=C3=ADra?= Canal <maira.canal@usp.br>,
-        Daniel Latypov <dlatypov@google.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        tales.aparecida@gmail.com, Isabella Basso <isabbasso@riseup.net>,
-        KUnit Development <kunit-dev@googlegroups.com>
-Subject: Re: [PATCH v4 1/3] drm/rect: Add DRM_RECT_INIT() macro
-In-Reply-To: <045f480b-9f47-6f10-9e5d-4436335b272e@suse.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <20220620160640.3790-1-jose.exposito89@gmail.com>
- <20220620160640.3790-2-jose.exposito89@gmail.com>
- <CABVgOSmPfxdcxuU6xtuT2sN75ivs+Atgmt=2PNcdWqnMcrnbEQ@mail.gmail.com>
- <045f480b-9f47-6f10-9e5d-4436335b272e@suse.de>
-Date:   Tue, 21 Jun 2022 13:13:18 +0300
-Message-ID: <87fsjys4sh.fsf@intel.com>
+        Tue, 21 Jun 2022 06:46:25 -0400
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9B1829358
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 03:46:23 -0700 (PDT)
+Received: by mail-lj1-x232.google.com with SMTP id g12so8863466ljk.11
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 03:46:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Vh0naLXKfGaI/wz1sI7ad1anZ++dFGVS52fTgaAz/6E=;
+        b=HT2UAEe9XjNzlZC0Jge5wXtsGk3r7Ou0lNZHdRCJxt1CKHh0xNbVVZ2sCb/OMbCZnO
+         AhTyHfgX2ho38pqkyWYeDIozfGnxQId49Wy1P0/cwrWKuPkCasw4gf3hGwzffILNw0eg
+         4VrVBAQYEQdhGtv/WOYkndEJnIYWVrfnAHdyA8YdmtLoaCyPAGtKNoLhNBi1p45UU55h
+         3EWLdSLEauCoBx9KtoCqhjdTb+q8niKB+Fo6ZsklKdz/MYMgxY+QR05xK2GVNbmd/m1y
+         lL2IqN5ibfu4txDaMWxbybmRAbT5h8pcxgLjfHdLLMzqf1IXWq9fZZJFhm/bymYWUlMg
+         /cyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Vh0naLXKfGaI/wz1sI7ad1anZ++dFGVS52fTgaAz/6E=;
+        b=Yp1LnNdZZww5gQdJriE3HO8h2qCJei8GYuKyatTpLplLAeM8+DBoPY7/kdx/rhqfz3
+         imaB563hI9XSrU2ywMvRp5C1VKc+5VqpmCtcNsT9E0MOOq2sbxpkl7hw+I1VwmnLXpUI
+         ZPp8olCTe5UTuvPH6adfofkNKZtBLvbFEjn9z7oZBTT7En5LndlrhhUlDNCt/a7X6p9a
+         SE6ldeTRrORmVvKXegbPBXupkcKqEni0iyawkUm0lQF8jNLYyJJ5cdt5CiTO1kJB1Wlg
+         lCnTAqcQF38+DGzv8mUklXbG8ElArMfoNTCiy+It14suE8ZdFT1M396IpAwaKvSc8eEI
+         wnuw==
+X-Gm-Message-State: AJIora9Jhj43NbX+vKgkPjEJDF0AT4NEcHgY7/tXbM6wpLZwQsqS7tQx
+        FyJjbpRdJsUUxnWUZbxOjAoMiTyrMjNK63OaaHnNdw==
+X-Google-Smtp-Source: AGRyM1u4pNhKRXPU7turpV43qj5j4SCI7wxYPpigMhjEiOUNKwaSVRP7sTkjHuF9/qLr0cqmYlLNjnQSFP2vzpnThbY=
+X-Received: by 2002:a2e:a58d:0:b0:25a:6348:9595 with SMTP id
+ m13-20020a2ea58d000000b0025a63489595mr7729873ljp.72.1655808381943; Tue, 21
+ Jun 2022 03:46:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+References: <20220620150225.1307946-1-mw@semihalf.com> <YrC0oKdDSjQTgUtM@lunn.ch>
+ <YrC3ZKsMQK3PYKkR@smile.fi.intel.com> <YrDAMcGg1uF9m/L+@lunn.ch>
+In-Reply-To: <YrDAMcGg1uF9m/L+@lunn.ch>
+From:   Marcin Wojtas <mw@semihalf.com>
+Date:   Tue, 21 Jun 2022 12:46:12 +0200
+Message-ID: <CAPv3WKeeZwNAs06thrYvgXaTPA9KP-9dQZNZsYWx3UXS8LStAQ@mail.gmail.com>
+Subject: Re: [net-next: PATCH 00/12] ACPI support for DSA
+To:     Andrew Lunn <andrew@lunn.ch>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, vivien.didelot@gmail.com,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Grzegorz Bernacki <gjb@semihalf.com>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>,
+        Tomasz Nowicki <tn@semihalf.com>,
+        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
+        upstream@semihalf.com, Jon Nettleton <jon@solid-run.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 21 Jun 2022, Thomas Zimmermann <tzimmermann@suse.de> wrote:
-> Hi
+pon., 20 cze 2022 o 20:45 Andrew Lunn <andrew@lunn.ch> napisa=C5=82(a):
 >
-> Am 21.06.22 um 11:38 schrieb David Gow:
->> On Tue, Jun 21, 2022 at 12:06 AM Jos=C3=A9 Exp=C3=B3sito
->> <jose.exposito89@gmail.com> wrote:
->>>
->>> Add a helper macro to initialize a rectangle from x, y, width and
->>> height information.
->>>
->>> Reviewed-by: Jani Nikula <jani.nikula@intel.com>
->>> Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
->>> Signed-off-by: Jos=C3=A9 Exp=C3=B3sito <jose.exposito89@gmail.com>
->>> ---
->>=20
->> This looks good to me, though I have one minor concern about the macro
->> name. (But if it's okay with the DRM folks, which it seems to be, I
->> won't object.)
->>=20
->> Either way,
->> Reviewed-by: David Gow <davidgow@google.com>
->>=20
->>>   include/drm/drm_rect.h | 16 ++++++++++++++++
->>>   1 file changed, 16 insertions(+)
->>>
->>> diff --git a/include/drm/drm_rect.h b/include/drm/drm_rect.h
->>> index 6f6e19bd4dac..e8d94fca2703 100644
->>> --- a/include/drm/drm_rect.h
->>> +++ b/include/drm/drm_rect.h
->>> @@ -47,6 +47,22 @@ struct drm_rect {
->>>          int x1, y1, x2, y2;
->>>   };
->>>
->>> +/**
->>> + * DRM_RECT_INIT - initialize a rectangle from x/y/w/h
->>> + * @x: x coordinate
->>> + * @y: y coordinate
->>> + * @w: width
->>> + * @h: height
->>> + *
->>> + * RETURNS:
->>> + * A new rectangle of the specified size.
->>> + */
->>> +#define DRM_RECT_INIT(x, y, w, h) ((struct drm_rect){ \
->>> +               .x1 =3D (x), \
->>> +               .y1 =3D (y), \
->>> +               .x2 =3D (x) + (w), \
->>> +               .y2 =3D (y) + (h) })
->>> +
->>=20
->> My only slight concern here is that it might be a little bit confusing
->> that a macro called DRM_RECT_INIT() accepts x/y/w/h, whereas the
->> actual struct drm_rect is x1/y1/x2/y2. If the macro were called
->> something like DRM_RECT_INIT_FROM_XYWH() or similar.
+> > You beat me up to this. I also was about to mention that the problem wi=
+th such
+> > conversions (like this series does) is not in the code. It's simplest p=
+art. The
+> > problem is bindings and how you get them to be a standard (at least de =
+facto).
 >
-> The existing drm_rect_init() function uses xywh arguments. So the=20
-> current name is consistent with existing practice. I don't think we=20
-> refer to x2,y2 much, if ever.
-
-Agreed, and if we initialized with x1,y1,x2,y2 we wouldn't need the
-function/macro in the first place.
-
-BR,
-Jani.
-
+> De facto is easy. Get it merged. After that, i will simply refuse
+> anything else, the same way i and other Maintainers would refuse a
+> different DT binding.
 >
-> Best regards
-> Thomas
+> If the ACPI committee approve and publish a binding, we will naturally
+> accept that as well. So in the end we might have two bindings. But so
+> far in this whole ACPI for networking story, i've not heard anybody
+> say they are going to submit anything for standardisation. So this
+> might be a mute point.
 >
->>=20
->>=20
->>>   /**
->>>    * DRM_RECT_FMT - printf string for &struct drm_rect
->>>    */
->>> --
->>> 2.25.1
->>>
 
---=20
-Jani Nikula, Intel Open Source Graphics Center
+I understand your concern and of course it's better to be on a safe
+side from the beginning. Based on the hitherto discussion under this
+patchset, I would split the question about standardization to 2
+orthogonal topics:
+
+1. Relation to the bus and enumeration:
+  * As pointed out in another patch some switches can be attached to
+    SPI or I2C. In such a case this is simple - SPISerialBus /
+I2CSerialBus structures
+    in _CRS are included in the ACPI Spec. They allow to comprise more
+bus specific
+    information and the code in acpi/scan.c marks those child devices
+as to be enumerated
+    by parent bus.
+  * MDIO bus doesn't have its own _CRS macro in the Spec, on the other
+hand the _ADR
+    seems to be the only object required for proper operation - this
+was my base for
+    proposed solution in patch 06/12.
+
+2. The device description (unrelated to which bus it is attached)
+  * In Linux and other OS's there is a great amount of devices
+conforming the guidelines
+    and using only the standard device identification/configuration
+objects as per [1].
+  * Above do not contain custom items and entire information can be obtaine=
+d by
+    existing, generic ACPI accessors - those devices (e.g. NICs,
+SD/MMC controllers and
+    many others) are not explicitly mentioned in official standards.
+  * The question, also related to this DSA case - is the ACPI device()
+hierarchical
+    structure of this kind a subject for standardization for including
+in official ACPI specification?
+  * In case not, where to document it? Is Linux' Documentation enough?
+    I agree that in the moment of merge it becomes de facto standard ABI an=
+d
+    it's worth to sort it out.
+
+Rafael, Len, any other ACPI expert - I would appreciate your inputs
+and clarification
+of the above. Your recommendation would be extremely helpful.
+
+Best regards,
+Marcin
