@@ -2,151 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C83C5C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:23:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF533CCA482
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:25:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352838AbiFUPXr (ORCPT
+        id S1350994AbiFUPZI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 11:23:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33402 "EHLO
+        Tue, 21 Jun 2022 11:25:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352669AbiFUPXn (ORCPT
+        with ESMTP id S1352822AbiFUPZA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 11:23:43 -0400
-Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com [209.85.128.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 397971C12A;
-        Tue, 21 Jun 2022 08:23:42 -0700 (PDT)
-Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-3178ea840easo96466527b3.13;
-        Tue, 21 Jun 2022 08:23:42 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/a0pyIcOYl26db8m1sX/0Miiqmbj2FyPnWoXKC6/IHU=;
-        b=g0w5kGTY86P3tO+QmLjzxBN7Z6Bx7ndVmKP2hJatbTxmVPXwGOTom/w0EDI2hUkbZQ
-         ZNtTUnpSDJCK6KcXlQi4P5475Vj8+xUjLuuvp8yCNKD889gIZ+28W60ZVS6XVfm7WliD
-         rkw9sfo276sqWlSpdg3lmtcU3ziXrR/IGtDXqG0m8cqen3OeO8D998vXonXHQCRMij7e
-         W0UQn8axosIVtlD73V8+ilAIVQZBY2gpDGpO9DURW9FjyIgKCmmAj0Z08/iRrPZ1qtcJ
-         X4DAAqC4VK/62HSNQLZjNPvaNR/EAgD9ppwsFn5MG2YnmN0n/21Fc/+bBuD5bgRbKjmg
-         wo5g==
-X-Gm-Message-State: AJIora80p1swhpGhS22vaWnEYyyLofNuRXNukb89txO1wlKMuPuE6qSX
-        kN0YLBDF301sn4o2och8qpHRpN5hHMF39g+FxWU=
-X-Google-Smtp-Source: AGRyM1txVWd3v4xkkUJjohiG0OwsIZ4IxwRt8xwyYZx7y1E2PBGXu6kiZPccXqu3bztJTOOCNJhfl+ogYL62bpFx9O0=
-X-Received: by 2002:a81:68d7:0:b0:318:11df:a40d with SMTP id
- d206-20020a8168d7000000b0031811dfa40dmr4140039ywc.196.1655825021450; Tue, 21
- Jun 2022 08:23:41 -0700 (PDT)
+        Tue, 21 Jun 2022 11:25:00 -0400
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D58432AE1A;
+        Tue, 21 Jun 2022 08:24:57 -0700 (PDT)
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25LDgiiZ018406;
+        Tue, 21 Jun 2022 17:24:39 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=selector1;
+ bh=RsE/APcQQK1texPnT6NzF71SOQYNfmPJVFG9QWYVjZ0=;
+ b=Uq1MZd9ZRFg/93798ERfOAyo8icRfma+0na5gh4sJkGiijX+DS31l7zYxY8ej04A70mc
+ T3et5S6+EDMwYgdUzrbnf/cXZgN0iKytiykYI0bkEnMiJQx69FuAUYlU2T8OEhbg6SxF
+ 5WljxvyrKnlTdW1WHrN1fvp8YQPaule9Yw/fAgAFMi2cW+rcK3EexP6ftfMnt6scw/JJ
+ slQB6uSFeF9XfDzH/263a8jiG3EPkPYw36+FODB6uDmlhLgqlukUXV8KxYcQozQGr+lz
+ NA/7v3JlLobYNrgeywXoENCbj8zpLHWDsjC+7MX6e5Z4NXqpR3+/bgzdEM+8vgLKoPeN uQ== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3guau52emq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 21 Jun 2022 17:24:39 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id C82AA100038;
+        Tue, 21 Jun 2022 17:24:37 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id C34EB22ECD3;
+        Tue, 21 Jun 2022 17:24:37 +0200 (CEST)
+Received: from localhost (10.75.127.49) by SHFDAG1NODE2.st.com (10.75.129.70)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Tue, 21 Jun
+ 2022 17:24:36 +0200
+From:   Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+To:     <hminas@synopsys.com>, <gregkh@linuxfoundation.org>,
+        <robh+dt@kernel.org>
+CC:     <stern@rowland.harvard.edu>, <krzysztof.kozlowski+dt@linaro.org>,
+        <devicetree@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <amelie.delaunay@foss.st.com>, <fabrice.gasnier@foss.st.com>
+Subject: [PATCH v2 3/4] dt-bindings: usb: dwc2: document TPL support
+Date:   Tue, 21 Jun 2022 17:23:49 +0200
+Message-ID: <20220621152350.145745-4-fabrice.gasnier@foss.st.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220621152350.145745-1-fabrice.gasnier@foss.st.com>
+References: <20220621152350.145745-1-fabrice.gasnier@foss.st.com>
 MIME-Version: 1.0
-References: <20220620150225.1307946-1-mw@semihalf.com> <20220620150225.1307946-10-mw@semihalf.com>
- <20220621094556.5ev3nencnw7a5xwv@bogus> <YrGoXXBgHvyifny3@smile.fi.intel.com>
- <YrGqg5fHB4s+Y7wx@lunn.ch> <20220621132836.wiyexi4y6vjeumrv@bogus>
-In-Reply-To: <20220621132836.wiyexi4y6vjeumrv@bogus>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Tue, 21 Jun 2022 17:23:30 +0200
-Message-ID: <CAJZ5v0gJPdWnu7u5+zxKbGvGvRrOeh6OxsHTXxvBaP7MOb1coA@mail.gmail.com>
-Subject: Re: [net-next: PATCH 09/12] Documentation: ACPI: DSD: introduce DSA description
-To:     Sudeep Holla <sudeep.holla@arm.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Grzegorz Bernacki <gjb@semihalf.com>,
-        Grzegorz Jaszczyk <jaz@semihalf.com>,
-        Tomasz Nowicki <tn@semihalf.com>,
-        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
-        upstream@semihalf.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.49]
+X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE2.st.com
+ (10.75.129.70)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-21_08,2022-06-21_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 21, 2022 at 3:28 PM Sudeep Holla <sudeep.holla@arm.com> wrote:
->
-> On Tue, Jun 21, 2022 at 01:24:51PM +0200, Andrew Lunn wrote:
-> > On Tue, Jun 21, 2022 at 02:15:41PM +0300, Andy Shevchenko wrote:
-> > > On Tue, Jun 21, 2022 at 10:45:56AM +0100, Sudeep Holla wrote:
-> > > > On Mon, Jun 20, 2022 at 05:02:22PM +0200, Marcin Wojtas wrote:
-> > > > > Describe the Distributed Switch Architecture (DSA) - compliant
-> > > > > MDIO devices. In ACPI world they are represented as children
-> > > > > of the MDIO busses, which are responsible for their enumeration
-> > > > > based on the standard _ADR fields and description in _DSD objects
-> > > > > under device properties UUID [1].
-> > > > >
-> > > > > [1] http://www.uefi.org/sites/default/files/resources/_DSD-device-properties-UUID.pdf
-> > >
-> > > > Why is this document part of Linux code base ?
-> > >
-> > > It's fine, but your are right with your latter questions.
-> > >
-> > > > How will the other OSes be aware of this ?
-> > >
-> > > Should be a standard somewhere.
-> > >
-> > > > I assume there was some repository to maintain such DSDs so that it
-> > > > is accessible for other OSes. I am not agreeing or disagreeing on the
-> > > > change itself, but I am concerned about this present in the kernel
-> > > > code.
-> > >
-> > > I dunno we have a such, but the closest I may imagine is MIPI standardization,
-> > > that we have at least for cameras and sound.
-> > >
-> > > I would suggest to go and work with MIPI for network / DSA / etc area, so
-> > > everybody else will be aware of the standard.
-> >
-> > It is the same argument as for DT. Other OSes and bootloaders seem to
-> > manage digging around in Linux for DT binding documentation. I don't
-> > see why bootloaders and other OSes can not also dig around in Linux
-> > for ACPI binding documentations.
-> >
->
-> Theoretically you are right. But in DT case majority of non-standard(by
-> standard I am referring to the one's in Open Firmware specification) are
-> in the kernel. But that is not true for ACPI. And that is the reason for
-> objecting it. One of the main other OS using ACPI may not look here for
-> any ACPI bindings(we may not care, but still OS neutral place is better
-> for this).
->
-> > Ideally, somebody will submit all this for acceptance into ACPI, but
-> > into somebody does, i suspect it will just remain a defacto standard
-> > in Linux.
-> >
->
-> DSD is not integral part of ACPI spec, so the process is never clear.
-> However there is this project[1], IIUC it is just guidance and doesn't
-> include any bindings IIUC. But we need something similar here for better
-> visibility and to remain OS agnostic. Even with DT, there is a strong
-> desire to separate it out, but it has grown so much that it is getting
-> harder to do that with every release. I was just trying to avoid getting
-> into that situation.
->
-> [1] https://github.com/UEFI/DSD-Guide
+The target peripheral list (TPL) is used to identify targeted devices
+during Embedded Host compliance testing. The user can add "tpl-support"
+in the device tree to enable it.
+Document TPL support as described in usb-hcd.yaml.
 
-Here's my personal take on this.
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+---
+ Documentation/devicetree/bindings/usb/dwc2.yaml | 3 +++
+ 1 file changed, 3 insertions(+)
 
-This patch series essentially makes the kernel recognize a few generic
-(that is, not tied on any specific device ID) device properties
-supplied by the firmware via _DSD.  They are generic, because there is
-some library code in the kernel that can consume them and that library
-code is used in multiple places (and it is better to supply data from
-the firmware directly to it).
+diff --git a/Documentation/devicetree/bindings/usb/dwc2.yaml b/Documentation/devicetree/bindings/usb/dwc2.yaml
+index 8d22a9843ba58..1bfbc6ef16eb5 100644
+--- a/Documentation/devicetree/bindings/usb/dwc2.yaml
++++ b/Documentation/devicetree/bindings/usb/dwc2.yaml
+@@ -11,6 +11,7 @@ maintainers:
+ 
+ allOf:
+   - $ref: usb-drd.yaml#
++  - $ref: usb-hcd.yaml#
+ 
+ properties:
+   compatible:
+@@ -161,6 +162,8 @@ properties:
+       property is used.
+     $ref: /schemas/graph.yaml#/properties/port
+ 
++  tpl-support: true
++
+ dependencies:
+   port: [ usb-role-switch ]
+   role-switch-default-mode: [ usb-role-switch ]
+-- 
+2.25.1
 
-If we all agree that it is a good idea for the kernel to allow these
-properties to be supplied via _DSD this way, there is no reason to
-avoid admitting that fact in the kernel documentation.
-
-IMV, there's nothing wrong with stating officially that these
-properties are recognized by the kernel and what they are used for and
-it has no bearing on whether or not they are also used by someone
-else.
