@@ -2,295 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B756C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 12:59:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13211C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 12:59:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351294AbiFUM7i (ORCPT
+        id S1351311AbiFUM7q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 08:59:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56866 "EHLO
+        Tue, 21 Jun 2022 08:59:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351017AbiFUM6X (ORCPT
+        with ESMTP id S1351014AbiFUM6X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 21 Jun 2022 08:58:23 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 605D6B2C
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 05:57:57 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id x4so6705063pfq.2
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 05:57:57 -0700 (PDT)
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 609B5BC3
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 05:58:07 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id l4so13021911pgh.13
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 05:58:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bytedance-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=6Y6NgpPc42NYBvW73tDuppRYStJt3qQWgJd6fl6Oef4=;
-        b=uF9OogsqG1RyhL7U+jblJtPj5YWhZ4AiZjE+EQ8j0xRHnV/O89W7gU9jS5UW7Ou5bk
-         ZD/BJsWxtuzMf2V5MCtrrLDGRQKEb68PPNjcqskQI1e8ES4jEzP5uvODBovx4ljRpfFm
-         URbzN150jWgQm4hYBvEsrmj8rhGXLX85rM84Iu+JLS+u0dihChhDk+5OZJPSxxf/Oqad
-         VeEhlbrM6KTndZCc9GE36AjtfHdnyNwn4fq45ma+q1Ua0zo9M43j5cWF8tG4wN4FA4LC
-         nFGonUPSl7pV6F76pm3vWS+XdEQak09XaD2SO1sRKIBVG64sz0Zi2lGZomsjaCGKNCBu
-         NHFA==
+        bh=JQmNu1Pi61kiVMPJr8aGyJU8VoXoYJEPNAmwcIY/MLE=;
+        b=uRoZYgA2WDdO9ticBdRw4R7/aUXk5r9fqjKxKJCs1SkEG4UdxhjFsO/X/PheSrZDg+
+         Q23F5hcZd9t0a7k63chGSWb3GHjtfCKitwmgpkZIMzFXmeCoTtJZt1WI45hmjAbSNvjU
+         /5wRPFqGLSXBhc/RogtGwjV9RN90CBGRxKIoHDUJysh3Wr6Y4yJWuUtBVejjCQihuCj0
+         CtlKQVvYF4ukD9CjCMcdRjlepscIFcl4DKR7BS4rzRSK7Mf6uRzcc1U6qlPUu8rUerNI
+         JY12moVGemqnvgCfDy9ZpJmjCyPFcuQ5O6SQvqUei19rSVIpmLCFjVox8NrK4WND0BYX
+         Cqsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=6Y6NgpPc42NYBvW73tDuppRYStJt3qQWgJd6fl6Oef4=;
-        b=J9ROyvJ6iTMTe96GZxlbKWO6i6eqL3PYa0twCsbSn15LdUe+KMRSMMD0pPA/V10ccP
-         J9MGHcnyu2ODekrPTPtMaOf7Z+i2x7pKc/KlJru8X9D7qv7Fxug581pN/w0PICidP4wF
-         18LTq1u5B3LW4JOX8AIsUoxyAV40ATC2JVdp7NIsVOwYK4AzfjCuJhq3hY8etUeMLH7C
-         AWv+3TNp4ywTRY4O43PYnAPOvIMZBpAc0pWp6tM/wP9SnnICvYf+a5RjuvB3zHEgdMSz
-         w6JKjI3zpmVLr6V2NHQWmk8rFiOvf57YwlzxJH+E5VZ7LRRDalK5LiuMdavq507iRn4+
-         YSfg==
-X-Gm-Message-State: AJIora8+gjt5Y4QVvtWZRQOb5cjoi46cNoUCHcg0mxvAkB8fdeU4/lEy
-        BIX8VZZ07ewQlHYkqJW4JsFzfA==
-X-Google-Smtp-Source: AGRyM1sQC5dliKs7RaIb0VSNxBH7/RLYnMsWURiGVbZONIJEcJX14MVUbAJGDDw7hQbIAjk0G7rmSA==
-X-Received: by 2002:aa7:88cc:0:b0:51c:319e:772c with SMTP id k12-20020aa788cc000000b0051c319e772cmr30033261pff.41.1655816276884;
-        Tue, 21 Jun 2022 05:57:56 -0700 (PDT)
+        bh=JQmNu1Pi61kiVMPJr8aGyJU8VoXoYJEPNAmwcIY/MLE=;
+        b=hXQXhRNPbXPGKxii4LYiSjD7h6371sa6KljonwGGoU5LSOFiFlDpW0SNoiITXEpyaF
+         WgS/qoDWe5oMiAX+jRVeipszKAGvGUF8m/YCVEW6boWjjUiicy/5wYSwKOcWXLVgPjkL
+         DFL8faUmtWZKutPlsnCxP72dPaisoQ4fW7tfPDPuIwpbsgnXyx+IcteWT70ZTGlrdnFD
+         Kbev258jC3lSOkxyCsd48OA9P8oRCii1JpmNsXGLmO8j2ogcRx0XazV6k1NgXNmqOfRN
+         oxQjQ9CTrSbwv/ewIRkhNoxTvPLaM5o8s+xRb23cWe5eaDGa5/SfDJteuiseE/kcKtP3
+         KvzA==
+X-Gm-Message-State: AJIora+7jqFtDLkXpKA5NHPi0GTRnOyKQaIAEsmD+vpbwDyJb1dBn8ai
+        tEoyZ8juHxug+7AtZ3gergMwfg==
+X-Google-Smtp-Source: AGRyM1upaoIcJWVsnc39MXQBtGK/kVVeFupBrAq4ZDu6K/3ZNA+9pZV71aSGLs8BkJ4IPnyCNTw3hA==
+X-Received: by 2002:a63:2b16:0:b0:3fa:faf9:e6d7 with SMTP id r22-20020a632b16000000b003fafaf9e6d7mr25873846pgr.325.1655816286866;
+        Tue, 21 Jun 2022 05:58:06 -0700 (PDT)
 Received: from FVFYT0MHHV2J.bytedance.net ([139.177.225.255])
-        by smtp.gmail.com with ESMTPSA id e3-20020a170903240300b0015ea3a491a1sm10643134plo.191.2022.06.21.05.57.50
+        by smtp.gmail.com with ESMTPSA id e3-20020a170903240300b0015ea3a491a1sm10643134plo.191.2022.06.21.05.58.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jun 2022 05:57:56 -0700 (PDT)
+        Tue, 21 Jun 2022 05:58:06 -0700 (PDT)
 From:   Muchun Song <songmuchun@bytedance.com>
 To:     akpm@linux-foundation.org, hannes@cmpxchg.org, longman@redhat.com,
         mhocko@kernel.org, roman.gushchin@linux.dev, shakeelb@google.com
 Cc:     cgroups@vger.kernel.org, duanxiongchun@bytedance.com,
         linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Muchun Song <songmuchun@bytedance.com>,
-        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>
-Subject: [PATCH v6 03/11] mm: memcontrol: prepare objcg API for non-kmem usage
-Date:   Tue, 21 Jun 2022 20:56:50 +0800
-Message-Id: <20220621125658.64935-4-songmuchun@bytedance.com>
+        Muchun Song <songmuchun@bytedance.com>
+Subject: [PATCH v6 05/11] mm: vmscan: rework move_pages_to_lru()
+Date:   Tue, 21 Jun 2022 20:56:52 +0800
+Message-Id: <20220621125658.64935-6-songmuchun@bytedance.com>
 X-Mailer: git-send-email 2.32.1 (Apple Git-133)
 In-Reply-To: <20220621125658.64935-1-songmuchun@bytedance.com>
 References: <20220621125658.64935-1-songmuchun@bytedance.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Pagecache pages are charged at the allocation time and holding a
-reference to the original memory cgroup until being reclaimed.
-Depending on the memory pressure, specific patterns of the page
-sharing between different cgroups and the cgroup creation and
-destruction rates, a large number of dying memory cgroups can be
-pinned by pagecache pages. It makes the page reclaim less efficient
-and wastes memory.
-
-We can convert LRU pages and most other raw memcg pins to the objcg
-direction to fix this problem, and then the page->memcg will always
-point to an object cgroup pointer.
-
-Therefore, the infrastructure of objcg no longer only serves
-CONFIG_MEMCG_KMEM. In this patch, we move the infrastructure of the
-objcg out of the scope of the CONFIG_MEMCG_KMEM so that the LRU pages
-can reuse it to charge pages.
-
-We know that the LRU pages are not accounted at the root level. But
-the page->memcg_data points to the root_mem_cgroup. So the
-page->memcg_data of the LRU pages always points to a valid pointer.
-But the root_mem_cgroup dose not have an object cgroup. If we use
-obj_cgroup APIs to charge the LRU pages, we should set the
-page->memcg_data to a root object cgroup. So we also allocate an
-object cgroup for the root_mem_cgroup.
+In the later patch, we will reparent the LRU pages. The pages moved to
+appropriate LRU list can be reparented during the process of the
+move_pages_to_lru(). So holding a lruvec lock by the caller is wrong, we
+should use the more general interface of folio_lruvec_relock_irq() to
+acquire the correct lruvec lock.
 
 Signed-off-by: Muchun Song <songmuchun@bytedance.com>
 Acked-by: Johannes Weiner <hannes@cmpxchg.org>
-Reviewed-by: Michal Koutný <mkoutny@suse.com>
 Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
 ---
- include/linux/memcontrol.h |  2 +-
- mm/memcontrol.c            | 56 +++++++++++++++++++++++++++-------------------
- 2 files changed, 34 insertions(+), 24 deletions(-)
+ mm/vmscan.c | 39 +++++++++++++++++++--------------------
+ 1 file changed, 19 insertions(+), 20 deletions(-)
 
-diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-index d0c0da7cafb7..111eda6ff1ce 100644
---- a/include/linux/memcontrol.h
-+++ b/include/linux/memcontrol.h
-@@ -321,10 +321,10 @@ struct mem_cgroup {
- 
- #ifdef CONFIG_MEMCG_KMEM
- 	int kmemcg_id;
-+#endif
- 	struct obj_cgroup __rcu *objcg;
- 	/* list of inherited objcgs, protected by objcg_lock */
- 	struct list_head objcg_list;
--#endif
- 
- 	MEMCG_PADDING(_pad2_);
- 
-diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index fc706d6fc265..3c489651d312 100644
---- a/mm/memcontrol.c
-+++ b/mm/memcontrol.c
-@@ -252,9 +252,9 @@ struct mem_cgroup *vmpressure_to_memcg(struct vmpressure *vmpr)
- 	return container_of(vmpr, struct mem_cgroup, vmpressure);
- }
- 
--#ifdef CONFIG_MEMCG_KMEM
- static DEFINE_SPINLOCK(objcg_lock);
- 
-+#ifdef CONFIG_MEMCG_KMEM
- bool mem_cgroup_kmem_disabled(void)
+diff --git a/mm/vmscan.c b/mm/vmscan.c
+index 6a554712ef5d..697656151431 100644
+--- a/mm/vmscan.c
++++ b/mm/vmscan.c
+@@ -2312,23 +2312,26 @@ static int too_many_isolated(struct pglist_data *pgdat, int file,
+  * move_pages_to_lru() moves folios from private @list to appropriate LRU list.
+  * On return, @list is reused as a list of folios to be freed by the caller.
+  *
+- * Returns the number of pages moved to the given lruvec.
++ * Returns the number of pages moved to the appropriate LRU list.
++ *
++ * Note: The caller must not hold any lruvec lock.
+  */
+-static unsigned int move_pages_to_lru(struct lruvec *lruvec,
+-				      struct list_head *list)
++static unsigned int move_pages_to_lru(struct list_head *list)
  {
- 	return cgroup_memory_nokmem;
-@@ -263,12 +263,10 @@ bool mem_cgroup_kmem_disabled(void)
- static void obj_cgroup_uncharge_pages(struct obj_cgroup *objcg,
- 				      unsigned int nr_pages);
+ 	int nr_pages, nr_moved = 0;
++	struct lruvec *lruvec = NULL;
+ 	LIST_HEAD(folios_to_free);
  
--static void obj_cgroup_release(struct percpu_ref *ref)
-+static void obj_cgroup_release_bytes(struct obj_cgroup *objcg)
- {
--	struct obj_cgroup *objcg = container_of(ref, struct obj_cgroup, refcnt);
- 	unsigned int nr_bytes;
- 	unsigned int nr_pages;
--	unsigned long flags;
+ 	while (!list_empty(list)) {
+ 		struct folio *folio = lru_to_folio(list);
  
++		lruvec = folio_lruvec_relock_irq(folio, lruvec);
+ 		VM_BUG_ON_FOLIO(folio_test_lru(folio), folio);
+ 		list_del(&folio->lru);
+ 		if (unlikely(!folio_evictable(folio))) {
+-			spin_unlock_irq(&lruvec->lru_lock);
++			lruvec_unlock_irq(lruvec);
+ 			folio_putback_lru(folio);
+-			spin_lock_irq(&lruvec->lru_lock);
++			lruvec = NULL;
+ 			continue;
+ 		}
+ 
+@@ -2349,19 +2352,15 @@ static unsigned int move_pages_to_lru(struct lruvec *lruvec,
+ 			__folio_clear_lru_flags(folio);
+ 
+ 			if (unlikely(folio_test_large(folio))) {
+-				spin_unlock_irq(&lruvec->lru_lock);
++				lruvec_unlock_irq(lruvec);
+ 				destroy_large_folio(folio);
+-				spin_lock_irq(&lruvec->lru_lock);
++				lruvec = NULL;
+ 			} else
+ 				list_add(&folio->lru, &folios_to_free);
+ 
+ 			continue;
+ 		}
+ 
+-		/*
+-		 * All pages were isolated from the same lruvec (and isolation
+-		 * inhibits memcg migration).
+-		 */
+ 		VM_BUG_ON_FOLIO(!folio_matches_lruvec(folio, lruvec), folio);
+ 		lruvec_add_folio(lruvec, folio);
+ 		nr_pages = folio_nr_pages(folio);
+@@ -2370,6 +2369,8 @@ static unsigned int move_pages_to_lru(struct lruvec *lruvec,
+ 			workingset_age_nonresident(lruvec, nr_pages);
+ 	}
+ 
++	if (lruvec)
++		lruvec_unlock_irq(lruvec);
  	/*
- 	 * At this point all allocated objects are freed, and
-@@ -282,9 +280,9 @@ static void obj_cgroup_release(struct percpu_ref *ref)
- 	 * 3) CPU1: a process from another memcg is allocating something,
- 	 *          the stock if flushed,
- 	 *          objcg->nr_charged_bytes = PAGE_SIZE - 92
--	 * 5) CPU0: we do release this object,
-+	 * 4) CPU0: we do release this object,
- 	 *          92 bytes are added to stock->nr_bytes
--	 * 6) CPU0: stock is flushed,
-+	 * 5) CPU0: stock is flushed,
- 	 *          92 bytes are added to objcg->nr_charged_bytes
- 	 *
- 	 * In the result, nr_charged_bytes == PAGE_SIZE.
-@@ -296,6 +294,19 @@ static void obj_cgroup_release(struct percpu_ref *ref)
+ 	 * To save our caller's stack, now use input list for pages to free.
+ 	 */
+@@ -2440,16 +2441,16 @@ shrink_inactive_list(unsigned long nr_to_scan, struct lruvec *lruvec,
  
- 	if (nr_pages)
- 		obj_cgroup_uncharge_pages(objcg, nr_pages);
-+}
-+#else
-+static inline void obj_cgroup_release_bytes(struct obj_cgroup *objcg)
-+{
-+}
-+#endif
-+
-+static void obj_cgroup_release(struct percpu_ref *ref)
-+{
-+	struct obj_cgroup *objcg = container_of(ref, struct obj_cgroup, refcnt);
-+	unsigned long flags;
-+
-+	obj_cgroup_release_bytes(objcg);
+ 	nr_reclaimed = shrink_page_list(&page_list, pgdat, sc, &stat, false);
  
- 	spin_lock_irqsave(&objcg_lock, flags);
- 	list_del(&objcg->list);
-@@ -324,10 +335,10 @@ static struct obj_cgroup *obj_cgroup_alloc(void)
- 	return objcg;
- }
+-	spin_lock_irq(&lruvec->lru_lock);
+-	move_pages_to_lru(lruvec, &page_list);
++	move_pages_to_lru(&page_list);
  
--static void memcg_reparent_objcgs(struct mem_cgroup *memcg,
--				  struct mem_cgroup *parent)
-+static void memcg_reparent_objcgs(struct mem_cgroup *memcg)
- {
- 	struct obj_cgroup *objcg, *iter;
-+	struct mem_cgroup *parent = parent_mem_cgroup(memcg);
++	local_irq_disable();
+ 	__mod_node_page_state(pgdat, NR_ISOLATED_ANON + file, -nr_taken);
+ 	item = current_is_kswapd() ? PGSTEAL_KSWAPD : PGSTEAL_DIRECT;
+ 	if (!cgroup_reclaim(sc))
+ 		__count_vm_events(item, nr_reclaimed);
+ 	__count_memcg_events(lruvec_memcg(lruvec), item, nr_reclaimed);
+ 	__count_vm_events(PGSTEAL_ANON + file, nr_reclaimed);
+-	spin_unlock_irq(&lruvec->lru_lock);
++	local_irq_enable();
  
- 	objcg = rcu_replace_pointer(memcg->objcg, NULL, true);
- 
-@@ -346,6 +357,7 @@ static void memcg_reparent_objcgs(struct mem_cgroup *memcg,
- 	percpu_ref_kill(&objcg->refcnt);
- }
- 
-+#ifdef CONFIG_MEMCG_KMEM
- /*
-  * A lot of the calls to the cache allocation functions are expected to be
-  * inlined by the compiler. Since the calls to memcg_slab_pre_alloc_hook() are
-@@ -3651,21 +3663,12 @@ static u64 mem_cgroup_read_u64(struct cgroup_subsys_state *css,
- #ifdef CONFIG_MEMCG_KMEM
- static int memcg_online_kmem(struct mem_cgroup *memcg)
- {
--	struct obj_cgroup *objcg;
+ 	lru_note_cost(lruvec, file, stat.nr_pageout);
+ 	mem_cgroup_uncharge_list(&page_list);
+@@ -2578,18 +2579,16 @@ static void shrink_active_list(unsigned long nr_to_scan,
+ 	/*
+ 	 * Move folios back to the lru list.
+ 	 */
+-	spin_lock_irq(&lruvec->lru_lock);
 -
- 	if (cgroup_memory_nokmem)
- 		return 0;
+-	nr_activate = move_pages_to_lru(lruvec, &l_active);
+-	nr_deactivate = move_pages_to_lru(lruvec, &l_inactive);
++	nr_activate = move_pages_to_lru(&l_active);
++	nr_deactivate = move_pages_to_lru(&l_inactive);
+ 	/* Keep all free folios in l_active list */
+ 	list_splice(&l_inactive, &l_active);
  
- 	if (unlikely(mem_cgroup_is_root(memcg)))
- 		return 0;
- 
--	objcg = obj_cgroup_alloc();
--	if (!objcg)
--		return -ENOMEM;
++	local_irq_disable();
+ 	__count_vm_events(PGDEACTIVATE, nr_deactivate);
+ 	__count_memcg_events(lruvec_memcg(lruvec), PGDEACTIVATE, nr_deactivate);
 -
--	objcg->memcg = memcg;
--	rcu_assign_pointer(memcg->objcg, objcg);
--
- 	static_branch_enable(&memcg_kmem_enabled_key);
+ 	__mod_node_page_state(pgdat, NR_ISOLATED_ANON + file, -nr_taken);
+-	spin_unlock_irq(&lruvec->lru_lock);
++	local_irq_enable();
  
- 	memcg->kmemcg_id = memcg->id.id;
-@@ -3675,17 +3678,13 @@ static int memcg_online_kmem(struct mem_cgroup *memcg)
- 
- static void memcg_offline_kmem(struct mem_cgroup *memcg)
- {
--	struct mem_cgroup *parent;
--
- 	if (cgroup_memory_nokmem)
- 		return;
- 
- 	if (unlikely(mem_cgroup_is_root(memcg)))
- 		return;
- 
--	parent = parent_mem_cgroup(memcg);
--	memcg_reparent_objcgs(memcg, parent);
--	memcg_reparent_list_lrus(memcg, parent);
-+	memcg_reparent_list_lrus(memcg, parent_mem_cgroup(memcg));
- }
- #else
- static int memcg_online_kmem(struct mem_cgroup *memcg)
-@@ -5190,8 +5189,8 @@ static struct mem_cgroup *mem_cgroup_alloc(void)
- 	memcg->socket_pressure = jiffies;
- #ifdef CONFIG_MEMCG_KMEM
- 	memcg->kmemcg_id = -1;
--	INIT_LIST_HEAD(&memcg->objcg_list);
- #endif
-+	INIT_LIST_HEAD(&memcg->objcg_list);
- #ifdef CONFIG_CGROUP_WRITEBACK
- 	INIT_LIST_HEAD(&memcg->cgwb_list);
- 	for (i = 0; i < MEMCG_CGWB_FRN_CNT; i++)
-@@ -5256,6 +5255,7 @@ mem_cgroup_css_alloc(struct cgroup_subsys_state *parent_css)
- static int mem_cgroup_css_online(struct cgroup_subsys_state *css)
- {
- 	struct mem_cgroup *memcg = mem_cgroup_from_css(css);
-+	struct obj_cgroup *objcg;
- 
- 	if (memcg_online_kmem(memcg))
- 		goto remove_id;
-@@ -5268,6 +5268,13 @@ static int mem_cgroup_css_online(struct cgroup_subsys_state *css)
- 	if (alloc_shrinker_info(memcg))
- 		goto offline_kmem;
- 
-+	objcg = obj_cgroup_alloc();
-+	if (!objcg)
-+		goto free_shrinker;
-+
-+	objcg->memcg = memcg;
-+	rcu_assign_pointer(memcg->objcg, objcg);
-+
- 	/* Online state pins memcg ID, memcg ID pins CSS */
- 	refcount_set(&memcg->id.ref, 1);
- 	css_get(css);
-@@ -5276,6 +5283,8 @@ static int mem_cgroup_css_online(struct cgroup_subsys_state *css)
- 		queue_delayed_work(system_unbound_wq, &stats_flush_dwork,
- 				   2UL*HZ);
- 	return 0;
-+free_shrinker:
-+	free_shrinker_info(memcg);
- offline_kmem:
- 	memcg_offline_kmem(memcg);
- remove_id:
-@@ -5303,6 +5312,7 @@ static void mem_cgroup_css_offline(struct cgroup_subsys_state *css)
- 	page_counter_set_min(&memcg->memory, 0);
- 	page_counter_set_low(&memcg->memory, 0);
- 
-+	memcg_reparent_objcgs(memcg);
- 	memcg_offline_kmem(memcg);
- 	reparent_shrinker_deferred(memcg);
- 	wb_memcg_offline(memcg);
+ 	mem_cgroup_uncharge_list(&l_active);
+ 	free_unref_page_list(&l_active);
 -- 
 2.11.0
 
