@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48136C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 20:57:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B485FCCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 20:57:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355137AbiFUU5D (ORCPT
+        id S1355278AbiFUU5F (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 16:57:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55170 "EHLO
+        Tue, 21 Jun 2022 16:57:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355119AbiFUU4V (ORCPT
+        with ESMTP id S1355123AbiFUU4V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 21 Jun 2022 16:56:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00DDE31532;
-        Tue, 21 Jun 2022 13:50:24 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F391F31900;
+        Tue, 21 Jun 2022 13:50:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 74261B81B38;
-        Tue, 21 Jun 2022 20:49:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C27CC341C5;
-        Tue, 21 Jun 2022 20:49:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0250AB81B47;
+        Tue, 21 Jun 2022 20:50:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1316EC3411C;
+        Tue, 21 Jun 2022 20:50:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655844595;
-        bh=3POKS7eqdY7o25MR6JJowXEP8imSIiQYhNPSKvJWOXI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i88MvBhaXVnPg7hyQSEKxEVXnCSpfCzCyqEZ7vDxoAykmoFRQv10cCCWSHN/HZt4t
-         5NjpXglkH81CkHYp3UR/5G9jovZFnu1xNCfeMoG0eW31FUgBwYIhY+n9fEmoNIlTuS
-         utprI14GgZE7RpCnoXwxDUK+PbilofXwuzXLNWcb0ULRuPc4XcO6PsMFCrjqSKx6jj
-         nop9AO6f3/hYBbWGLl3CUwALM8fCqM6bPwqCJWC6ctfa3OxhWQ81jcX8jA6I1wLTeZ
-         R/ceQbiLdF6JeFmummn9oCyk7n3qwFaitFcSHPlQP05te81ga0KE+KooypNrPoscgV
-         LqEaD5CzMB7ew==
+        s=k20201202; t=1655844612;
+        bh=HybSNgxAqWPIYE+OjXn6sumEAN4hWRD1Ra0CL5xuTak=;
+        h=From:To:Cc:Subject:Date:From;
+        b=CxSLALsqZomrdG1wxo4MkLKDxjnhwcJKBwpmuant2USu3rFgb9GEzzErliR4rtwMk
+         ztlnZK9T7H41QGjg3h06xt7brmePvEb9Ej9/vlgHoIexYSsyFBigXr9TqxmvAD/kHY
+         wJURoV9VbUqHPjyse6XMmSVeXmBFa4g++jIs55mwHVqDqiDJ+CywIoGNSCwfyGyKI6
+         gNIWCoTJ32d2CWvzhOMiC+FhJZbB5+H6vOkg0ObXXyiDSY6tmsHx82LENWdqHcLm1r
+         ltcdQmcyzUwtu3cMb1Y+76k0oTh6IB7Tm5kNOYANEOpupwjCsAngcegDqxvGCKNkRf
+         47m1vdo8p0/lQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ning Wang <ningwang35@outlook.com>, Christoph Hellwig <hch@lst.de>,
-        Sasha Levin <sashal@kernel.org>, kbusch@kernel.org,
-        axboe@fb.com, sagi@grimberg.me, linux-nvme@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.18 12/22] nvme-pci: avoid the deepest sleep state on ZHITAI TiPro7000 SSDs
-Date:   Tue, 21 Jun 2022 16:49:18 -0400
-Message-Id: <20220621204928.249907-12-sashal@kernel.org>
+Cc:     Marc Zyngier <maz@kernel.org>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Liu Ying <victor.liu@nxp.com>, Sasha Levin <sashal@kernel.org>,
+        tglx@linutronix.de
+Subject: [PATCH AUTOSEL 5.17 01/20] genirq: PM: Use runtime PM for chained interrupts
+Date:   Tue, 21 Jun 2022 16:49:51 -0400
+Message-Id: <20220621205010.250185-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220621204928.249907-1-sashal@kernel.org>
-References: <20220621204928.249907-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,62 +51,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ning Wang <ningwang35@outlook.com>
+From: Marc Zyngier <maz@kernel.org>
 
-[ Upstream commit 6b961bce50e489186232cef51036ddb8d672bc3b ]
+[ Upstream commit 668a9fe5c6a1bcac6b65d5e9b91a9eca86f782a3 ]
 
-When ZHITAI TiPro7000 SSDs entered deepest power state(ps4)
-it has the same APST sleep problem as Kingston A2000.
-by chance the system crashes and displays the same dmesg info:
+When requesting an interrupt, we correctly call into the runtime
+PM framework to guarantee that the underlying interrupt controller
+is up and running.
 
-https://bugzilla.kernel.org/show_bug.cgi?id=195039#c65
+However, we fail to do so for chained interrupt controllers, as
+the mux interrupt is not requested along the same path.
 
-As the Archlinux wiki suggest (enlat + exlat) < 25000 is fine
-and my testing shows no system crashes ever since.
-Therefore disabling the deepest power state will fix the APST sleep issue.
+Augment __irq_do_set_handler() to call into the runtime PM code
+in this case, making sure the PM flow is the same for all interrupts.
 
-https://wiki.archlinux.org/title/Solid_state_drive/NVMe
-
-This is the APST data from 'nvme id-ctrl /dev/nvme1'
-
-NVME Identify Controller:
-vid       : 0x1e49
-ssvid     : 0x1e49
-sn        : [...]
-mn        : ZHITAI TiPro7000 1TB
-fr        : ZTA32F3Y
-[...]
-ps    0 : mp:3.50W operational enlat:5 exlat:5 rrt:0 rrl:0
-          rwt:0 rwl:0 idle_power:- active_power:-
-ps    1 : mp:3.30W operational enlat:50 exlat:100 rrt:1 rrl:1
-          rwt:1 rwl:1 idle_power:- active_power:-
-ps    2 : mp:2.80W operational enlat:50 exlat:200 rrt:2 rrl:2
-          rwt:2 rwl:2 idle_power:- active_power:-
-ps    3 : mp:0.1500W non-operational enlat:500 exlat:5000 rrt:3 rrl:3
-          rwt:3 rwl:3 idle_power:- active_power:-
-ps    4 : mp:0.0200W non-operational enlat:2000 exlat:60000 rrt:4 rrl:4
-          rwt:4 rwl:4 idle_power:- active_power:-
-
-Signed-off-by: Ning Wang <ningwang35@outlook.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reported-by: Lucas Stach <l.stach@pengutronix.de>
+Tested-by: Liu Ying <victor.liu@nxp.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/26973cddee5f527ea17184c0f3fccb70bc8969a0.camel@pengutronix.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/pci.c | 2 ++
- 1 file changed, 2 insertions(+)
+ kernel/irq/chip.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index 6f9672e92b9c..7d5e40f5a993 100644
---- a/drivers/nvme/host/pci.c
-+++ b/drivers/nvme/host/pci.c
-@@ -3486,6 +3486,8 @@ static const struct pci_device_id nvme_id_table[] = {
- 		.driver_data = NVME_QUIRK_BOGUS_NID, },
- 	{ PCI_DEVICE(0x1cc1, 0x5350),   /* ADATA XPG GAMMIX S50 */
- 		.driver_data = NVME_QUIRK_BOGUS_NID, },
-+	{ PCI_DEVICE(0x1e49, 0x0041),   /* ZHITAI TiPro7000 NVMe SSD */
-+		.driver_data = NVME_QUIRK_NO_DEEPEST_PS, },
- 	{ PCI_DEVICE(PCI_VENDOR_ID_AMAZON, 0x0061),
- 		.driver_data = NVME_QUIRK_DMA_ADDRESS_BITS_48, },
- 	{ PCI_DEVICE(PCI_VENDOR_ID_AMAZON, 0x0065),
+diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
+index c09324663088..b171355eb57e 100644
+--- a/kernel/irq/chip.c
++++ b/kernel/irq/chip.c
+@@ -1009,8 +1009,10 @@ __irq_do_set_handler(struct irq_desc *desc, irq_flow_handler_t handle,
+ 		if (desc->irq_data.chip != &no_irq_chip)
+ 			mask_ack_irq(desc);
+ 		irq_state_set_disabled(desc);
+-		if (is_chained)
++		if (is_chained) {
+ 			desc->action = NULL;
++			WARN_ON(irq_chip_pm_put(irq_desc_get_irq_data(desc)));
++		}
+ 		desc->depth = 1;
+ 	}
+ 	desc->handle_irq = handle;
+@@ -1036,6 +1038,7 @@ __irq_do_set_handler(struct irq_desc *desc, irq_flow_handler_t handle,
+ 		irq_settings_set_norequest(desc);
+ 		irq_settings_set_nothread(desc);
+ 		desc->action = &chained_action;
++		WARN_ON(irq_chip_pm_get(irq_desc_get_irq_data(desc)));
+ 		irq_activate_and_startup(desc, IRQ_RESEND);
+ 	}
+ }
 -- 
 2.35.1
 
