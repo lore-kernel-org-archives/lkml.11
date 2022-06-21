@@ -2,87 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84AB0C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 10:26:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A505CC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 10:26:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348565AbiFUK0i (ORCPT
+        id S1348685AbiFUK0r (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 06:26:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58466 "EHLO
+        Tue, 21 Jun 2022 06:26:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346086AbiFUK0h (ORCPT
+        with ESMTP id S1348627AbiFUK0p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 06:26:37 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 112AC28726;
-        Tue, 21 Jun 2022 03:26:35 -0700 (PDT)
-X-IronPort-AV: E=McAfee;i="6400,9594,10384"; a="281144103"
-X-IronPort-AV: E=Sophos;i="5.92,209,1650956400"; 
-   d="scan'208";a="281144103"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 03:26:35 -0700
-X-IronPort-AV: E=Sophos;i="5.92,209,1650956400"; 
-   d="scan'208";a="729778749"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 03:26:32 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andy.shevchenko@gmail.com>)
-        id 1o3b5Z-000qvj-Kg;
-        Tue, 21 Jun 2022 13:26:29 +0300
-Date:   Tue, 21 Jun 2022 13:26:29 +0300
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-To:     Fabio Estevam <festevam@gmail.com>
-Cc:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        NXP Linux Team <linux-imx@nxp.com>
-Subject: Re: [PATCH v1 1/1] iio: adc: mxs-lradc-adc: Get rid of OF specifics
-Message-ID: <YrGc1WKpZ/ik3Bt+@smile.fi.intel.com>
-References: <20220530173324.921-1-andriy.shevchenko@linux.intel.com>
- <CAOMZO5CtjkjsbOTaNF7+Hwswsn-fs2WNK=zyFL53JnBBpS8=0Q@mail.gmail.com>
- <CAHp75Vd9yah3D8dUOPinhj=nm9GQs3xOsWZRL=6CvaROZC3OCQ@mail.gmail.com>
- <CAOMZO5Bp83NSWPmbwp4uzrGSVkW2xQ+pRMFHaghs_XN+j32fcw@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAOMZO5Bp83NSWPmbwp4uzrGSVkW2xQ+pRMFHaghs_XN+j32fcw@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+        Tue, 21 Jun 2022 06:26:45 -0400
+X-Greylist: delayed 323 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 21 Jun 2022 03:26:43 PDT
+Received: from sym2.noone.org (sym.noone.org [178.63.92.236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60BA428726
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 03:26:43 -0700 (PDT)
+Received: by sym2.noone.org (Postfix, from userid 1002)
+        id 4LS2by14Kczvjfm; Tue, 21 Jun 2022 12:21:18 +0200 (CEST)
+From:   Tobias Klauser <tklauser@distanz.ch>
+To:     Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>
+Cc:     linux-um@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] um: remove unused mm_copy_segments
+Date:   Tue, 21 Jun 2022 12:21:18 +0200
+Message-Id: <20220621102118.15803-1-tklauser@distanz.ch>
+X-Mailer: git-send-email 2.11.0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 20, 2022 at 06:56:27PM -0300, Fabio Estevam wrote:
-> On Mon, Jun 20, 2022 at 6:34 PM Andy Shevchenko
-> <andy.shevchenko@gmail.com> wrote:
-> 
-> > Still? Does it mean you have it before my patch? If no, I will be very puzzled...
-> 
-> Yes, the warning is present before your patch.
-> 
-> > Otherwise does the touchscreen work?
-> 
-> I cannot test touchscreen at the moment.
-> 
-> >> Any suggestions?
-> >
-> > Perhaps, but we need to eliminate the proposed change from the  equation
-> 
-> If you send a v2 with "#include <linux/property.h>" then you can add:
+It was already removed by commit c17c02040bf0 ("arch: remove unused
+*_segments() macros/functions") but seems to have been accidentally
+reintroduced by commit 0500871f21b2 ("Construct init thread stack in the
+linker script rather than by union"). Remove it for good.
 
-Actually the entire thingy with setting node is not needed in this driver.
+Signed-off-by: Tobias Klauser <tklauser@distanz.ch>
+---
+ arch/um/include/asm/processor-generic.h | 5 -----
+ 1 file changed, 5 deletions(-)
 
-> Tested-by: Fabio Estevam <festevam@gmail.com>
-
-Thanks!
-
+diff --git a/arch/um/include/asm/processor-generic.h b/arch/um/include/asm/processor-generic.h
+index 6a4fe8b4e686..d0fc1862da95 100644
+--- a/arch/um/include/asm/processor-generic.h
++++ b/arch/um/include/asm/processor-generic.h
+@@ -59,11 +59,6 @@ static inline void release_thread(struct task_struct *task)
+ {
+ }
+ 
+-static inline void mm_copy_segments(struct mm_struct *from_mm,
+-				    struct mm_struct *new_mm)
+-{
+-}
+-
+ /*
+  * User space process size: 3GB (default).
+  */
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.36.1
 
