@@ -2,163 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 959ACC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 12:57:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C167BCCA473
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 12:57:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350812AbiFUM5N (ORCPT
+        id S1350864AbiFUM5n (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 08:57:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55526 "EHLO
+        Tue, 21 Jun 2022 08:57:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240281AbiFUM5K (ORCPT
+        with ESMTP id S229921AbiFUM5l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 08:57:10 -0400
-Received: from APC01-TYZ-obe.outbound.protection.outlook.com (mail-tyzapc01on2119.outbound.protection.outlook.com [40.107.117.119])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 679601409A;
-        Tue, 21 Jun 2022 05:57:09 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Z5bWUrz5+dLf5YHx1YRGHyyiVg9mSX4pnwSHs0yVZm0W6kAOWyJ2+ySDuedY90cwIqBnTPdpmBF1lofczx25knlq501DzQyuXG0h5eUfnJTM/ghOg3Fspm5CbtfMb4UQq64DH71U7aU0OsRiLg5qyTEmaJfLcLHNz7jIv+ZYrMJmKGadf2iTi9HT409O51kvMT3s/eP959n7mrhs6rjRv6YpZpg8D994hx7QF6G1txMd44znwHevXG9+NKClQyjlIJZEFuyUs2DcJ3w1SGIPn8Urn6PqHR6LXk4ow/z5gf/4Qnv4ef1pvHZr0UbGdglnZSI9AF4+2lALpXss5mOaXA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Q8LIvp/0UKx5Ib1btm+RxZY2UH9uF871iqAz0MknzTI=;
- b=FdiLXo5QQoQFQ/Fu/1Ez4dfhmyCqO8hjJvX1O9y+/EJdX93YQaT6Zfov9ouLV1CAvpl4MSQk4g71nU65x9JzYdROssuwMnv9AWl3beCXhYz2uyroIUb2+bc+TdtoUa1VShxEYjXvDa8br+Q9AZHRVy+dp4k7pU9AiXx2OLdCCSERBKJtD6KQ+5cxyY0qaSHK+2XiIbvAJzZcXO5FmzGrx2r7QdRHU1CHU1p02OiOoJB6UNCO7eVbeKVBvlnkVrv9ysLgwkWu9gz1yeyeVtgJSEKnpbPS68UOEveSSfzAcI3UJaiavJ7vwSJ7mezccEpuT86Zgp/WF6buQazAfKZOkw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
- dkim=pass header.d=vivo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
- s=selector2-vivo0-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Q8LIvp/0UKx5Ib1btm+RxZY2UH9uF871iqAz0MknzTI=;
- b=HDRIcSpKLn4FZ9AbrYypmKwtT4hJRlIYPy/7bOsRtT4Pv7x3mynii+PrJckqPGbBm6ZOQrw21Vvp5SXiPCKyFp2dX2JQ8P/ABot8al7Na82El7YSQNkJcw45ZuiTe8lHiQjLTvhJY8MZMKI/saQO6f9dffAr0pNpvMQbGjqONtA=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vivo.com;
-Received: from SL2PR06MB3017.apcprd06.prod.outlook.com (2603:1096:100:3a::16)
- by SG2PR06MB3872.apcprd06.prod.outlook.com (2603:1096:4:de::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.13; Tue, 21 Jun
- 2022 12:57:04 +0000
-Received: from SL2PR06MB3017.apcprd06.prod.outlook.com
- ([fe80::9c97:b22a:d5d5:d670]) by SL2PR06MB3017.apcprd06.prod.outlook.com
- ([fe80::9c97:b22a:d5d5:d670%5]) with mapi id 15.20.5353.022; Tue, 21 Jun 2022
- 12:57:04 +0000
-From:   wubo <11123156@vivo.com>
-To:     miklos@szeredi.hu
-Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Wu Bo <bo.wu@vivo.com>
-Subject: [PATCH] fuse: force sync attr when inode is invalidated
-Date:   Tue, 21 Jun 2022 20:56:51 +0800
-Message-Id: <20220621125651.14954-1-11123156@vivo.com>
-X-Mailer: git-send-email 2.36.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SG2PR06CA0202.apcprd06.prod.outlook.com (2603:1096:4:1::34)
- To SL2PR06MB3017.apcprd06.prod.outlook.com (2603:1096:100:3a::16)
+        Tue, 21 Jun 2022 08:57:41 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 365331836F
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 05:57:40 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id s185so7310885pgs.3
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 05:57:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zBbBzk5qNVWvdANVbcpsxhRISEYlb3XpSAVuXts7Xh4=;
+        b=6MoJL7uhwVZV1hnFe7vkgxTK88ZUcybzyABVvpzKz95L1WzNjJHhh8UeaZQwTFlIB9
+         gjQDQllwWuHYWUzGW1XlH+MA1mw1JFDKyaFWyy5qoWTXxL2NENkl0g04VVD3HnE3Lh7C
+         JjEC+a25WrPJtQtXRG1Q4lquerDcPkaFMEF4ECPFdhTaAJGBjqL7iGxS6p5lH5gnu679
+         VU6t95ibSvKGXommF2zRro/qr/SIJ+frLgB7BLGSARKV1swHUXGnQkzmi38oD+gDyaLl
+         arZkpqbNvbX+/lr1icurCA3SpGJq0w6vIatDK2YKUNlBisrRy9CVW+jCGI4ouFIoSb5Y
+         18fA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zBbBzk5qNVWvdANVbcpsxhRISEYlb3XpSAVuXts7Xh4=;
+        b=ysDgi+s/7ZWwdAitA1Tt6kHxl+tyt3veLwSC6zBtUZHR68uQsfJUts7iFNxalrGf8v
+         v9Y1y056i7IiE9ECutF9NjyZpNoVcKLskJJEIWobhHBLK3soVsudkdfxdsJdHCfvXhZQ
+         I4qToG5jW84P+FZGd4LRzjljKKsDyYE2IG7hqK2UG3Q2p6KSSyM+e6GA7GjnRbgKs/8L
+         Q38hSGLdfSLW+vpasUdZl99V8EMGjNsnyqxdKy3GogHQbSTqBwGG+FIl9nBlBHN73y+I
+         yDrYG9vplwKSqLG1MsLMsEAAe21o4UM4jmbPznsEN5lgBHQmLN/ca/+HC5qk+H9N1h3q
+         LxZA==
+X-Gm-Message-State: AJIora8/h8yHGWObgUSqEFLDDskLpnrhta6w+77WSP2h0YASnJ5e12jP
+        CUajZxCNgRTIQBQMlxMjVBhPLQ==
+X-Google-Smtp-Source: AGRyM1tOKOkj3OXQi+e852TokjNeUtxVSDvQrx0/P6r55jkGP0XYhd0cU59yqlMBaqINI3zmgaXk3g==
+X-Received: by 2002:a05:6a00:24c1:b0:518:c52f:f5 with SMTP id d1-20020a056a0024c100b00518c52f00f5mr30351831pfv.15.1655816259702;
+        Tue, 21 Jun 2022 05:57:39 -0700 (PDT)
+Received: from FVFYT0MHHV2J.bytedance.net ([139.177.225.255])
+        by smtp.gmail.com with ESMTPSA id e3-20020a170903240300b0015ea3a491a1sm10643134plo.191.2022.06.21.05.57.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Jun 2022 05:57:39 -0700 (PDT)
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     akpm@linux-foundation.org, hannes@cmpxchg.org, longman@redhat.com,
+        mhocko@kernel.org, roman.gushchin@linux.dev, shakeelb@google.com
+Cc:     cgroups@vger.kernel.org, duanxiongchun@bytedance.com,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: [PATCH v6 00/11] Use obj_cgroup APIs to charge the LRU pages
+Date:   Tue, 21 Jun 2022 20:56:47 +0800
+Message-Id: <20220621125658.64935-1-songmuchun@bytedance.com>
+X-Mailer: git-send-email 2.32.1 (Apple Git-133)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ba761d1d-98c3-439d-e7be-08da538589f7
-X-MS-TrafficTypeDiagnostic: SG2PR06MB3872:EE_
-X-Microsoft-Antispam-PRVS: <SG2PR06MB387218309BB3AD0C42814EF592B39@SG2PR06MB3872.apcprd06.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: atIGXEN1gWqqQ05iNg9dyGEyBqCZajqF8dwJMrfYyD+xIJwY6nVshdqikibz2H5nP07c71+l2MYpBXvtzD8pbt2GbcmClLklyazZ8H46BB2HEk3gtOYXhfZt1xPAzsiU+/vxJeVtClzlBNnR9C94DRFLRdx7KQmztqJEhxEe1tQlvy9xo3fvXvMkjUVYTF2EjzHb/ObJhb4foI0vZmEZGTL4Z/OQl2kuvz6lgmyBtqJUIHS8GCnW4FxXvC8/TvaN6hYdCsxSfPfmwuIdAxRtduRXyTgBOG/eIC9etvtH85Z9/FHv8Fm8ci9B2RgS8ndspCfBcbk+qnxY8IPKpfWQMQCnZh/hlkx1CcHWcBMXFZUjTQOkVaKHmwCn+QSVcbhRfvNUZOXaitQi8CHrF7zcETJvgmOxs0ltxT4AkX5AkNdIr7dpC+0gwIdW17Cp4lNoRDd3wrKrm8WbwPZUDkyQI3xxM0vWCfW8Pa5pEmoY8tzkqEElAb9zO1cr96ExjZ9CGeZuC3zLa4z6Y2HdNpGpW5SD7vaqZ+mdRtJv8ogmyptUG/Zj5sWBm8pEfuY175WMGckWQfbDIIn8cZ7auZMOVkbv/irLpqNf2YLp2SS7MEbAu0sTkeohEHQrTi8WxRE4r/6uignMZQZe4/lHpMgIE7eInkSpquhGBffw6xk0yR312UmlJ8cXLkwXXEcBrbEGTteIRxblJzYfDqdvpvzFZ9h/3yVOY5Ts/ktC21vXxTIDRSRK4hZSmQJ/8nj1Hzgg
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SL2PR06MB3017.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(136003)(366004)(346002)(396003)(376002)(52116002)(107886003)(316002)(8936002)(6666004)(2616005)(6506007)(186003)(41300700001)(26005)(1076003)(38350700002)(38100700002)(6512007)(83380400001)(6916009)(36756003)(4326008)(66946007)(66556008)(6486002)(478600001)(5660300002)(66476007)(8676002)(2906002)(43062005)(81742002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?4Jxq2C4M93Wh9Hng8C0jWsVeBL1X1tQIzEsh6f2uPm3h/Z/imcvR2UrNqUUj?=
- =?us-ascii?Q?0PZWlF5HkLrCYaDB0Br+tM7439SSl1Y29QhmGKuEoijIFn8LD1ebagArH5Bi?=
- =?us-ascii?Q?y4G+2GYR5TmHp3zhOwIRnTrYv/XGMVZuQrJez4byOtFGMuzh00BaoUffo01n?=
- =?us-ascii?Q?j+kKJfHPf2dA4EFBTrKKd1n4VJgb+k4qvu+AaOuAz0MdlXUnP81z7slYo//m?=
- =?us-ascii?Q?B0xx/sKuJSyYnDDCZpwd/p2Su0Khoa8LcB9vLOf2klLblynoR+hN4BNg3jJJ?=
- =?us-ascii?Q?CClir5YA4AcfvIGNv6jAgPWLhROcvZ8bP/tmAK/B7cKzwtN5cRP3lYh6rApk?=
- =?us-ascii?Q?mbNeI+3ywVYossMG0DK9QGCprdFiWOCP0xNMH97jZ5qwEw5rZS9WNIOINfZ9?=
- =?us-ascii?Q?rnfScXnFlgXhzUtg4U4e8CTmcADhHD7tF2lUs1rsbhKETC5An6RUg7ear/gl?=
- =?us-ascii?Q?VWjazqaI82h7z0gJ5wd7Jik1bl3JHwDyTms4EkzcGMKbgMuD/K3otrG0014e?=
- =?us-ascii?Q?diE+mOHE2wtSIgzspsyLzHISpVpyCg27Ag4vhyamrOjz5M1s7p5rSRGP4erw?=
- =?us-ascii?Q?GmpZBy9k90w4gI0BEvEs0K4prtbOQzIwjSXf+NJQ0aJNdxRoFLZItoo/FEfe?=
- =?us-ascii?Q?B2F2afygK20TXy9NYk60BAlHPEa4nSmr8Hm3bpLquxRGBOOXY4MnN1AfUt5z?=
- =?us-ascii?Q?qAtjxVAauMChXPyHB757qt6NiEQ3sSMk3LEtivusB5XBGaN+JI7Z0IGZN1Gt?=
- =?us-ascii?Q?CCpqgmdkA4S0jHoELlYWETxxwJF3AE8I1X8AM5B4j6Ri/88P86hWapuQd+E+?=
- =?us-ascii?Q?B2rbMDQyXQ5U5BX2alD7SIwjDiJsyEoupsJc6aT0fPUXqRIlnSoKvkD73fUd?=
- =?us-ascii?Q?ArvnXjJPl/6iYps/Yv60++xKV9wNiTwGPtFWj4U1scJ0jnr4DjhQvVWCO0IU?=
- =?us-ascii?Q?Lqpa5bg+ClzI7gx3/p5ymo8hSVqAtLWC+qCu6li9V7/sUpj9PZeQQGgU/BTp?=
- =?us-ascii?Q?E+SZSFn2UzrRaF3/oDCZHkAXlNyI/U+PYGsLlBv0Ru1+oDhtuQdCsdb4NPBK?=
- =?us-ascii?Q?jdgTWNocaVrWqR6Sd+gs0/Fc14MWgu8yuVX+HJ8aRnE8CxEH4PPf70RFnZe4?=
- =?us-ascii?Q?YE5yImvD8x4K48OCjlB+qYRuCsf/HlqnE7WeGy8QCwTC+9KYCbgI4UEJWulO?=
- =?us-ascii?Q?nWQUtf34hEt5w+VDWE2AIqiQDuxLRV/kae7SwWQITsSYF72TLmtIaFi7ohxo?=
- =?us-ascii?Q?AVRBs5yLyYaCWJdL673bCSS9keY9UC5dUA+I2gEiM/p+g1+hcSuLsUpmJ/Ui?=
- =?us-ascii?Q?0xtD/kTvUuOLQ6++1EQ91otGIWHR5NyBt0EUf9dh4l7GbO4RdJ4I25AFTFR7?=
- =?us-ascii?Q?LqTbYHTzRLc6J4ZVGqE2DH3p+tq8FqTvtTogxCfsc/g7LGs/wOpZBCUdeiu7?=
- =?us-ascii?Q?U1D/xUYRRbsJGhrhJVd3vrJNEOREADzj9hqsux2bEoaSqbXbtKDJJpqw3tS8?=
- =?us-ascii?Q?Xt64kRkTPTjeOKh8BON3Mk+9R39mza56S9eAAUbEYxrWctbpFaNf6Z7xHJHU?=
- =?us-ascii?Q?JEBSlaKa4YU+Yy8aiyaMss7efPePxbiEVsL8vW36vSnHbnCu5fFhM+hLUnxn?=
- =?us-ascii?Q?6I9M59urspkaO1mnPCjNUd71zFtfeQKVnqvOZGukDZnqzofSQOE7wPQ31QtD?=
- =?us-ascii?Q?E0TxuXWXimDhl/bpNfzomxvkJd5lEw+LkG8gboBejnJTv6fOKuG2Ji3fflGm?=
- =?us-ascii?Q?BRoc05Qd0g=3D=3D?=
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ba761d1d-98c3-439d-e7be-08da538589f7
-X-MS-Exchange-CrossTenant-AuthSource: SL2PR06MB3017.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jun 2022 12:57:03.8702
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: IDCnSjyP4Sd78EFUqWrIJJXaMQHYmIG7rb1HmHoNszctXO1ffzV6j7JbtKmRcsUP2XlZy6u/zbNDEW4vmCbHww==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SG2PR06MB3872
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wu Bo <bo.wu@vivo.com>
+This version is rebased on mm-unstable. Hopefully, Andrew can get this series
+into mm-unstable which will help to determine whether there is a problem or
+degradation. I am also doing some benchmark tests in parallel.
 
-Now the fuse driver only trust it's local inode size when
-writeback_cache is enabled. Even the userspace server tell the driver
-the inode cache is invalidated, the size attrabute will not update. And
-will keep it's out-of-date size till the inode cache is dropped. This is
-not reasonable.
+Since the following patchsets applied. All the kernel memory are charged
+with the new APIs of obj_cgroup.
 
-Signed-off-by: Wu Bo <bo.wu@vivo.com>
----
- fs/fuse/inode.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+	commit f2fe7b09a52b ("mm: memcg/slab: charge individual slab objects instead of pages")
+	commit b4e0b68fbd9d ("mm: memcontrol: use obj_cgroup APIs to charge kmem pages")
 
-diff --git a/fs/fuse/inode.c b/fs/fuse/inode.c
-index 8c0665c5dff8..a4e62c7f2b83 100644
---- a/fs/fuse/inode.c
-+++ b/fs/fuse/inode.c
-@@ -162,6 +162,11 @@ static ino_t fuse_squash_ino(u64 ino64)
- 	return ino;
- }
- 
-+static bool fuse_force_sync(struct fuse_inode *fi)
-+{
-+	return fi->i_time == 0;
-+}
-+
- void fuse_change_attributes_common(struct inode *inode, struct fuse_attr *attr,
- 				   u64 attr_valid, u32 cache_mask)
- {
-@@ -222,8 +227,10 @@ void fuse_change_attributes_common(struct inode *inode, struct fuse_attr *attr,
- u32 fuse_get_cache_mask(struct inode *inode)
- {
- 	struct fuse_conn *fc = get_fuse_conn(inode);
-+	struct fuse_inode *fi = get_fuse_inode(inode);
-+	bool is_force_sync = fuse_force_sync(fi);
- 
--	if (!fc->writeback_cache || !S_ISREG(inode->i_mode))
-+	if (!fc->writeback_cache || !S_ISREG(inode->i_mode) || is_force_sync)
- 		return 0;
- 
- 	return STATX_MTIME | STATX_CTIME | STATX_SIZE;
-@@ -437,6 +444,7 @@ int fuse_reverse_inval_inode(struct fuse_conn *fc, u64 nodeid,
- 	fi = get_fuse_inode(inode);
- 	spin_lock(&fi->lock);
- 	fi->attr_version = atomic64_inc_return(&fc->attr_version);
-+	fi->i_time = 0;
- 	spin_unlock(&fi->lock);
- 
- 	fuse_invalidate_attr(inode);
+But user memory allocations (LRU pages) pinning memcgs for a long time -
+it exists at a larger scale and is causing recurring problems in the real
+world: page cache doesn't get reclaimed for a long time, or is used by the
+second, third, fourth, ... instance of the same job that was restarted into
+a new cgroup every time. Unreclaimable dying cgroups pile up, waste memory,
+and make page reclaim very inefficient.
+
+We can convert LRU pages and most other raw memcg pins to the objcg direction
+to fix this problem, and then the LRU pages will not pin the memcgs.
+
+This patchset aims to make the LRU pages to drop the reference to memory
+cgroup by using the APIs of obj_cgroup. Finally, we can see that the number
+of the dying cgroups will not increase if we run the following test script.
+
+```bash
+#!/bin/bash
+
+dd if=/dev/zero of=temp bs=4096 count=1
+cat /proc/cgroups | grep memory
+
+for i in {0..2000}
+do
+	mkdir /sys/fs/cgroup/memory/test$i
+	echo $$ > /sys/fs/cgroup/memory/test$i/cgroup.procs
+	cat temp >> log
+	echo $$ > /sys/fs/cgroup/memory/cgroup.procs
+	rmdir /sys/fs/cgroup/memory/test$i
+done
+
+cat /proc/cgroups | grep memory
+
+rm -f temp log
+```
+
+v5: https://lore.kernel.org/all/20220530074919.46352-1-songmuchun@bytedance.com/
+v4: https://lore.kernel.org/all/20220524060551.80037-1-songmuchun@bytedance.com/
+v3: https://lore.kernel.org/all/20220216115132.52602-1-songmuchun@bytedance.com/
+v2: https://lore.kernel.org/all/20210916134748.67712-1-songmuchun@bytedance.com/
+v1: https://lore.kernel.org/all/20210814052519.86679-1-songmuchun@bytedance.com/
+RFC v4: https://lore.kernel.org/all/20210527093336.14895-1-songmuchun@bytedance.com/
+RFC v3: https://lore.kernel.org/all/20210421070059.69361-1-songmuchun@bytedance.com/
+RFC v2: https://lore.kernel.org/all/20210409122959.82264-1-songmuchun@bytedance.com/
+RFC v1: https://lore.kernel.org/all/20210330101531.82752-1-songmuchun@bytedance.com/
+
+v6:
+ - Collect Acked-by and Reviewed-by from Roman and Michal Koutný. Thanks.
+ - Rebase to mm-unstable.
+
+v5:
+ - Lots of improvements from Johannes, Roman and Waiman.
+ - Fix lockdep warning reported by kernel test robot.
+ - Add two new patches to do code cleanup.
+ - Collect Acked-by and Reviewed-by from Johannes and Roman.
+ - I didn't replace local_irq_disable/enable() to local_lock/unlock_irq() since
+   local_lock/unlock_irq() takes an parameter, it needs more thinking to transform
+   it to local_lock.  It could be an improvement in the future.
+
+v4:
+ - Resend and rebased on v5.18.
+
+v3:
+ - Removed the Acked-by tags from Roman since this version is based on
+   the folio relevant.
+
+v2:
+ - Rename obj_cgroup_release_kmem() to obj_cgroup_release_bytes() and the
+   dependencies of CONFIG_MEMCG_KMEM (suggested by Roman, Thanks).
+ - Rebase to linux 5.15-rc1.
+ - Add a new pacth to cleanup mem_cgroup_kmem_disabled().
+
+v1:
+ - Drop RFC tag.
+ - Rebase to linux next-20210811.
+
+RFC v4:
+ - Collect Acked-by from Roman.
+ - Rebase to linux next-20210525.
+ - Rename obj_cgroup_release_uncharge() to obj_cgroup_release_kmem().
+ - Change the patch 1 title to "prepare objcg API for non-kmem usage".
+ - Convert reparent_ops_head to an array in patch 8.
+
+Thanks for Roman's review and suggestions.
+
+RFC v3:
+ - Drop the code cleanup and simplification patches. Gather those patches
+   into a separate series[1].
+ - Rework patch #1 suggested by Johannes.
+
+RFC v2:
+ - Collect Acked-by tags by Johannes. Thanks.
+ - Rework lruvec_holds_page_lru_lock() suggested by Johannes. Thanks.
+ - Fix move_pages_to_lru().
+
+Muchun Song (11):
+  mm: memcontrol: remove dead code and comments
+  mm: rename unlock_page_lruvec{_irq, _irqrestore} to
+    lruvec_unlock{_irq, _irqrestore}
+  mm: memcontrol: prepare objcg API for non-kmem usage
+  mm: memcontrol: make lruvec lock safe when LRU pages are reparented
+  mm: vmscan: rework move_pages_to_lru()
+  mm: thp: make split queue lock safe when LRU pages are reparented
+  mm: memcontrol: make all the callers of {folio,page}_memcg() safe
+  mm: memcontrol: introduce memcg_reparent_ops
+  mm: memcontrol: use obj_cgroup APIs to charge the LRU pages
+  mm: lru: add VM_WARN_ON_ONCE_FOLIO to lru maintenance function
+  mm: lru: use lruvec lock to serialize memcg changes
+
+ fs/buffer.c                      |   4 +-
+ fs/fs-writeback.c                |  23 +-
+ include/linux/memcontrol.h       | 218 +++++++++------
+ include/linux/mm_inline.h        |   6 +
+ include/trace/events/writeback.h |   5 +
+ mm/compaction.c                  |  39 ++-
+ mm/huge_memory.c                 | 153 ++++++++--
+ mm/memcontrol.c                  | 584 +++++++++++++++++++++++++++------------
+ mm/migrate.c                     |   4 +
+ mm/mlock.c                       |   2 +-
+ mm/page_io.c                     |   5 +-
+ mm/swap.c                        |  49 ++--
+ mm/vmscan.c                      |  66 ++---
+ 13 files changed, 776 insertions(+), 382 deletions(-)
+
+
+base-commit: 882be1ed6b1b5073fc88552181b99bd2b9c0031f
 -- 
-2.35.1
+2.11.0
 
