@@ -2,118 +2,392 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4407ECCA482
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:59:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5E3CC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:59:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353298AbiFUP7T (ORCPT
+        id S1353413AbiFUP71 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 11:59:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43402 "EHLO
+        Tue, 21 Jun 2022 11:59:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353446AbiFUP6k (ORCPT
+        with ESMTP id S1353449AbiFUP6k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 21 Jun 2022 11:58:40 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ED65B38B4
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:58:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655827118;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=OnM6LWqbySomFL+MYIQvAUbrzoQzHU8UBGdR/EPQFvc=;
-        b=Z+sF8UTB5STn2iOH13ZNfZx43lC0bdhn+sO1t6uvilubGUJocIA65y4TOAy3ob1sqkV5Si
-        W4svIV5lsaF4HZTPCFO2r6Z9G8R2Fc0ZFZTLjuFFSXlXIX83Jl4hdzjrdOaejHR1L2Gbwk
-        nouwJYn0rk30pvVJker9zE+LrtuI2zo=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-347-EI-eceqAOPqCr-ag0dv3CQ-1; Tue, 21 Jun 2022 11:58:34 -0400
-X-MC-Unique: EI-eceqAOPqCr-ag0dv3CQ-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id F17B0811E75;
-        Tue, 21 Jun 2022 15:58:33 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.195.134])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E80F42026985;
-        Tue, 21 Jun 2022 15:58:31 +0000 (UTC)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 00/11] KVM: VMX: Support TscScaling and EnclsExitingBitmap whith eVMCS
-Date:   Tue, 21 Jun 2022 17:58:19 +0200
-Message-Id: <20220621155830.60115-1-vkuznets@redhat.com>
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 423D0B60;
+        Tue, 21 Jun 2022 08:58:38 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id h23so28417140ejj.12;
+        Tue, 21 Jun 2022 08:58:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qeoXftpe/v0Ob6pn0xGP28lf443O/cJj2rmN7pKOsSU=;
+        b=prVwloim5i7s5Ov3T72osn8Q9AP2iJPYlriRF5nrOn+qaeohDofWQo73IiKzGuHacb
+         B1a366Cxgv/2I0Q1Rrov2/m1lal3+OZrAIbV2+jtf1guwp1CsxIf6GOVb8PIZnIyKKDh
+         86Nx8Pq14miesYB6nPyQzH5M4F1kE5P495TtgCcwV4G6K02fThG5kw52QY9DZdoUz5Xb
+         PzP5fJ+SfyIhKUmWgohl18k0EfDT3BI5eAAqp2DNdfwGU7yLdRs8EwLJSnv/ifTad/Sp
+         IYLxIEQIe3lIl6RgId1X04dvlo9R3jpKwuakOAfVBcePkk1DQql4edF+x4xmGsMU6WQ5
+         x3Cw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qeoXftpe/v0Ob6pn0xGP28lf443O/cJj2rmN7pKOsSU=;
+        b=FiERoGtn26CcQFhYHq3/BDofspZaHNLJOT3sF8eROnMPFK/71qM+uFydMWZtsmamm2
+         wh1c0x3m2UH5FNt24/0kcjR35jf/YU+ZV/OdRDfcVR5NMi8INmZvItz+lRKLD+zO2hAh
+         vrahEHuT5mDVsZzOTw+A/XHgOAQfMst2C/GycLXoxaRXo0MMOWtiMAeVi+2vJxIn/0Ft
+         VUXdMzzIxuXHwSwNZkhuGhU8ofCgK4zGRMCMSTW8aQ3KUedP7rgdiM2d9JLn9iWh/eEn
+         33Txn14t9z9GNYyN9R4XHPIMyIj9vuakAvqzeerHVRpm0iZZABCzI9CTE2BGAxuo8GoP
+         5vIg==
+X-Gm-Message-State: AJIora9O8E2g4PB4UMJrM3h+uAWkKoUkAiSBaZITdzuRTJvvL50vMwln
+        EYPcSOEMKHvhxnO+PXsdhwunNr3vpHIVMqkLeN1AX/9nuEA=
+X-Google-Smtp-Source: AGRyM1tuixytD1BV2iu/4WAs6E7wdhAg3Z4XL70+jyiNH4Bu0etWkl+a4tsUxcryF1qr5jDlIiLoL/8eEXfeNZTKtf4=
+X-Received: by 2002:a17:907:8b06:b0:711:e7f6:1728 with SMTP id
+ sz6-20020a1709078b0600b00711e7f61728mr26047927ejc.32.1655827116395; Tue, 21
+ Jun 2022 08:58:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
+References: <20220616123150.5890-1-aford173@gmail.com> <CAPY8ntCmov0OY3tBabf7ndSVCNgeYeSy+e4E0sdaW54zZpoauw@mail.gmail.com>
+In-Reply-To: <CAPY8ntCmov0OY3tBabf7ndSVCNgeYeSy+e4E0sdaW54zZpoauw@mail.gmail.com>
+From:   Adam Ford <aford173@gmail.com>
+Date:   Tue, 21 Jun 2022 10:58:25 -0500
+Message-ID: <CAHCN7xKGhFn0NHEdjMg9kuPVOB_p_CL4FEiZczbGsPcob-Tv8Q@mail.gmail.com>
+Subject: Re: [PATCH V2 1/2] media: i2c: imx219: Split common registers from
+ mode tables
+To:     Dave Stevenson <dave.stevenson@raspberrypi.com>
+Cc:     Linux Media Mailing List <linux-media@vger.kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Adam Ford-BE <aford@beaconembedded.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enlightened VMCS v1 definition was updates to include fields for the
-following features:
-    - PerfGlobalCtrl
-    - EnclsExitingBitmap
-    - TSC scaling
-    - GuestLbrCtl
-    - CET
-    - SSP
+On Tue, Jun 21, 2022 at 10:46 AM Dave Stevenson
+<dave.stevenson@raspberrypi.com> wrote:
+>
+> Hi Adam
+>
+> Thanks for the patch, and sorry it's taken me a few days to get to it.
+>
+> On Thu, 16 Jun 2022 at 13:31, Adam Ford <aford173@gmail.com> wrote:
+> >
+> > There are four modes, and each mode has a table of registers.
+> > Some of the registers are common to all modes, so create new
+> > tables for these common registers to reduce duplicate code.
+> >
+> > Signed-off-by: Adam Ford <aford173@gmail.com>
+> > ---
+> > V2:  Merge the PLL table into the common table instead of having
+> >      two separate, common tables.
+> >
+> > diff --git a/drivers/media/i2c/imx219.c b/drivers/media/i2c/imx219.c
+> > index e10af3f74b38..a43eed143999 100644
+> > --- a/drivers/media/i2c/imx219.c
+> > +++ b/drivers/media/i2c/imx219.c
+> > @@ -145,23 +145,60 @@ struct imx219_mode {
+> >         struct imx219_reg_list reg_list;
+> >  };
+> >
+> > -/*
+> > - * Register sets lifted off the i2C interface from the Raspberry Pi firmware
+> > - * driver.
+> > - * 3280x2464 = mode 2, 1920x1080 = mode 1, 1640x1232 = mode 4, 640x480 = mode 7.
+> > - */
+> > -static const struct imx219_reg mode_3280x2464_regs[] = {
+> > -       {0x0100, 0x00},
+> > +/* To Access Addresses 3000-5fff, send the following commands */
+> > +static const struct imx219_reg imx219_common_regs[] = {
+> > +       {0x0100, 0x00}, /* Mode Select */
+> > +
+> > +       /* Access Command Sequence */
+> >         {0x30eb, 0x0c},
+> >         {0x30eb, 0x05},
+> >         {0x300a, 0xff},
+> >         {0x300b, 0xff},
+> >         {0x30eb, 0x05},
+> >         {0x30eb, 0x09},
+> > -       {0x0114, 0x01},
+> > -       {0x0128, 0x00},
+> > -       {0x012a, 0x18},
+> > +
+> > +       /* PLL Clock Table */
+> > +       {0x0301, 0x05}, /* VTPXCK_DIV */
+> > +       {0x0303, 0x01}, /* VTSYSCK_DIV */
+> > +       {0x0304, 0x03}, /* PREPLLCK_VT_DIV 0x03 = AUTO set */
+> > +       {0x0305, 0x03}, /* PREPLLCK_OP_DIV 0x03 = AUTO set */
+> > +       {0x0306, 0x00}, /* PLL_VT_MPY */
+> > +       {0x0307, 0x39},
+> > +       {0x030b, 0x01}, /* OP_SYS_CLK_DIV */
+> > +       {0x030c, 0x00}, /* PLL_OP_MPY */
+> > +       {0x030d, 0x72},
+> > +
+> > +       /* Undocumented registers */
+> > +       {0x455e, 0x00},
+> > +       {0x471e, 0x4b},
+> > +       {0x4767, 0x0f},
+> > +       {0x4750, 0x14},
+> > +       {0x4540, 0x00},
+> > +       {0x47b4, 0x14},
+> > +       {0x4713, 0x30},
+> > +       {0x478b, 0x10},
+> > +       {0x478f, 0x10},
+> > +       {0x4793, 0x10},
+> > +       {0x4797, 0x0e},
+> > +       {0x479b, 0x0e},
+> > +
+> > +       /* Frame Bank Register Group "A" */
+> > +       {0x0162, 0x0d}, /* Line_Length_A */
+> > +       {0x0163, 0x78},
+>
+> Registers 0x0170 and 0x171 for X_ODD_INC_A and Y_ODD_INC_A are also
+> common to all modes as 0x01. You could have modes with skipping, but
+> currently there are none.
+>
+> > +
+> > +       /* Output setup registers */
+> > +       {0x0114, 0x01}, /* CSI 2-Lane Mode */
+> > +       {0x0128, 0x00}, /* DPHY Auto Mode */
+> > +       {0x012a, 0x18}, /* EXCK_Freq */
+> >         {0x012b, 0x00},
+> > +};
+> > +
+> > +/*
+> > + * Register sets lifted off the i2C interface from the Raspberry Pi firmware
+> > + * driver.
+> > + * 3280x2464 = mode 2, 1920x1080 = mode 1, 1640x1232 = mode 4, 640x480 = mode 7.
+> > + */
+> > +static const struct imx219_reg mode_3280x2464_regs[] = {
+> >         {0x0164, 0x00},
+> >         {0x0165, 0x00},
+> >         {0x0166, 0x0c},
+> > @@ -176,51 +213,15 @@ static const struct imx219_reg mode_3280x2464_regs[] = {
+> >         {0x016f, 0xa0},
+> >         {0x0170, 0x01},
+> >         {0x0171, 0x01},
+> > -       {0x0174, 0x00},
+> > +       {0x0174, 0x00}, /* No-Binning */
+> >         {0x0175, 0x00},
+> > -       {0x0301, 0x05},
+> > -       {0x0303, 0x01},
+> > -       {0x0304, 0x03},
+> > -       {0x0305, 0x03},
+> > -       {0x0306, 0x00},
+> > -       {0x0307, 0x39},
+> > -       {0x030b, 0x01},
+> > -       {0x030c, 0x00},
+> > -       {0x030d, 0x72},
+> >         {0x0624, 0x0c},
+> >         {0x0625, 0xd0},
+> >         {0x0626, 0x09},
+> >         {0x0627, 0xa0},
+> > -       {0x455e, 0x00},
+> > -       {0x471e, 0x4b},
+> > -       {0x4767, 0x0f},
+> > -       {0x4750, 0x14},
+> > -       {0x4540, 0x00},
+> > -       {0x47b4, 0x14},
+> > -       {0x4713, 0x30},
+> > -       {0x478b, 0x10},
+> > -       {0x478f, 0x10},
+> > -       {0x4793, 0x10},
+> > -       {0x4797, 0x0e},
+> > -       {0x479b, 0x0e},
+> > -       {0x0162, 0x0d},
+> > -       {0x0163, 0x78},
+> >  };
+> >
+> >  static const struct imx219_reg mode_1920_1080_regs[] = {
+> > -       {0x0100, 0x00},
+> > -       {0x30eb, 0x05},
+> > -       {0x30eb, 0x0c},
+> > -       {0x300a, 0xff},
+> > -       {0x300b, 0xff},
+> > -       {0x30eb, 0x05},
+> > -       {0x30eb, 0x09},
+> > -       {0x0114, 0x01},
+> > -       {0x0128, 0x00},
+> > -       {0x012a, 0x18},
+> > -       {0x012b, 0x00},
+> > -       {0x0162, 0x0d},
+> > -       {0x0163, 0x78},
+> >         {0x0164, 0x02},
+> >         {0x0165, 0xa8},
+> >         {0x0166, 0x0a},
+> > @@ -235,47 +236,15 @@ static const struct imx219_reg mode_1920_1080_regs[] = {
+> >         {0x016f, 0x38},
+> >         {0x0170, 0x01},
+> >         {0x0171, 0x01},
+> > -       {0x0174, 0x00},
+> > +       {0x0174, 0x00}, /* No-Binning */
+> >         {0x0175, 0x00},
+> > -       {0x0301, 0x05},
+> > -       {0x0303, 0x01},
+> > -       {0x0304, 0x03},
+> > -       {0x0305, 0x03},
+> > -       {0x0306, 0x00},
+> > -       {0x0307, 0x39},
+> > -       {0x030b, 0x01},
+> > -       {0x030c, 0x00},
+> > -       {0x030d, 0x72},
+> >         {0x0624, 0x07},
+> >         {0x0625, 0x80},
+> >         {0x0626, 0x04},
+> >         {0x0627, 0x38},
+> > -       {0x455e, 0x00},
+> > -       {0x471e, 0x4b},
+> > -       {0x4767, 0x0f},
+> > -       {0x4750, 0x14},
+> > -       {0x4540, 0x00},
+> > -       {0x47b4, 0x14},
+> > -       {0x4713, 0x30},
+> > -       {0x478b, 0x10},
+> > -       {0x478f, 0x10},
+> > -       {0x4793, 0x10},
+> > -       {0x4797, 0x0e},
+> > -       {0x479b, 0x0e},
+> >  };
+> >
+> >  static const struct imx219_reg mode_1640_1232_regs[] = {
+> > -       {0x0100, 0x00},
+> > -       {0x30eb, 0x0c},
+> > -       {0x30eb, 0x05},
+> > -       {0x300a, 0xff},
+> > -       {0x300b, 0xff},
+> > -       {0x30eb, 0x05},
+> > -       {0x30eb, 0x09},
+> > -       {0x0114, 0x01},
+> > -       {0x0128, 0x00},
+> > -       {0x012a, 0x18},
+> > -       {0x012b, 0x00},
+> >         {0x0164, 0x00},
+> >         {0x0165, 0x00},
+> >         {0x0166, 0x0c},
+> > @@ -290,51 +259,15 @@ static const struct imx219_reg mode_1640_1232_regs[] = {
+> >         {0x016f, 0xd0},
+> >         {0x0170, 0x01},
+> >         {0x0171, 0x01},
+> > -       {0x0174, 0x01},
+> > +       {0x0174, 0x01}, /* x2-Binning */
+> >         {0x0175, 0x01},
+> > -       {0x0301, 0x05},
+> > -       {0x0303, 0x01},
+> > -       {0x0304, 0x03},
+> > -       {0x0305, 0x03},
+> > -       {0x0306, 0x00},
+> > -       {0x0307, 0x39},
+> > -       {0x030b, 0x01},
+> > -       {0x030c, 0x00},
+> > -       {0x030d, 0x72},
+> >         {0x0624, 0x06},
+> >         {0x0625, 0x68},
+> >         {0x0626, 0x04},
+> >         {0x0627, 0xd0},
+> > -       {0x455e, 0x00},
+> > -       {0x471e, 0x4b},
+> > -       {0x4767, 0x0f},
+> > -       {0x4750, 0x14},
+> > -       {0x4540, 0x00},
+> > -       {0x47b4, 0x14},
+> > -       {0x4713, 0x30},
+> > -       {0x478b, 0x10},
+> > -       {0x478f, 0x10},
+> > -       {0x4793, 0x10},
+> > -       {0x4797, 0x0e},
+> > -       {0x479b, 0x0e},
+> > -       {0x0162, 0x0d},
+> > -       {0x0163, 0x78},
+> >  };
+> >
+> >  static const struct imx219_reg mode_640_480_regs[] = {
+> > -       {0x0100, 0x00},
+> > -       {0x30eb, 0x05},
+> > -       {0x30eb, 0x0c},
+> > -       {0x300a, 0xff},
+> > -       {0x300b, 0xff},
+> > -       {0x30eb, 0x05},
+> > -       {0x30eb, 0x09},
+> > -       {0x0114, 0x01},
+> > -       {0x0128, 0x00},
+> > -       {0x012a, 0x18},
+> > -       {0x012b, 0x00},
+> > -       {0x0162, 0x0d},
+> > -       {0x0163, 0x78},
+> >         {0x0164, 0x03},
+> >         {0x0165, 0xe8},
+> >         {0x0166, 0x08},
+> > @@ -349,33 +282,12 @@ static const struct imx219_reg mode_640_480_regs[] = {
+> >         {0x016f, 0xe0},
+> >         {0x0170, 0x01},
+> >         {0x0171, 0x01},
+> > -       {0x0174, 0x03},
+> > +       {0x0174, 0x03}, /* x2-analog binning */
+> >         {0x0175, 0x03},
+> > -       {0x0301, 0x05},
+> > -       {0x0303, 0x01},
+> > -       {0x0304, 0x03},
+> > -       {0x0305, 0x03},
+> > -       {0x0306, 0x00},
+> > -       {0x0307, 0x39},
+> > -       {0x030b, 0x01},
+> > -       {0x030c, 0x00},
+> > -       {0x030d, 0x72},
+> >         {0x0624, 0x06},
+> >         {0x0625, 0x68},
+> >         {0x0626, 0x04},
+> >         {0x0627, 0xd0},
+> > -       {0x455e, 0x00},
+> > -       {0x471e, 0x4b},
+> > -       {0x4767, 0x0f},
+> > -       {0x4750, 0x14},
+> > -       {0x4540, 0x00},
+> > -       {0x47b4, 0x14},
+> > -       {0x4713, 0x30},
+> > -       {0x478b, 0x10},
+> > -       {0x478f, 0x10},
+> > -       {0x4793, 0x10},
+> > -       {0x4797, 0x0e},
+> > -       {0x479b, 0x0e},
+> >  };
+> >
+> >  static const struct imx219_reg raw8_framefmt_regs[] = {
+> > @@ -1041,6 +953,13 @@ static int imx219_start_streaming(struct imx219 *imx219)
+> >         if (ret < 0)
+> >                 return ret;
+> >
+> > +       /* Send the Manufacturing Header common to all modes */
+>
+> It's a table of common settings, not a manufacturing header.
+> s/Send the Manufacturing Header/Send all registers that are
 
-Add support for EnclsExitingBitmap and TSC scaling to KVM. PerfGlobalCtrl 
-doesn't work correctly with Win11, don't enable it yet. SSP, CET and 
-GuestLbrCtl are not currently supported by KVM.
+I used that term because the data sheet shows the following sequence:
 
-Note: adding new field for KVM on Hyper-V case is easy but adding them to
-Hyper-V on KVM requires some work to not break live migration as we never
-expected this to happen without eVMCS version update. The series introduces
-new KVM_CAP_HYPERV_ENLIGHTENED_VMCS2 capability and a notion of KVM 
-internal 'Enlightened VMCS revision'.
+{0x30eb, 0x0c},
+{0x30eb, 0x05},
+{0x300a, 0xff},
+{0x300b, 0xff},
+{0x30eb, 0x05},
+{0x30eb, 0x09},
 
-Example QEMU enablement patch for the new capability will be sent as a 
-follow-up to the series.
+It's listed as "Manufacturer Specific Registers" to access
+0x3000-5fff, the specific sequence as specified in 3-4.  The entire
+table is common, but I tried to put comments into the sections to
+explain what they do.
 
-Vitaly Kuznetsov (11):
-  KVM: x86: hyper-v: Expose access to debug MSRs in the partition
-    privilege flags
-  x86/hyperv: Fix 'struct hv_enlightened_vmcs' definition
-  x86/hyperv: Update 'struct hv_enlightened_vmcs' definition
-  KVM: VMX: Define VMCS-to-EVMCS conversion for the new fields
-  KVM: nVMX: Support several new fields in eVMCSv1
-  KVM: nVMX: Introduce KVM_CAP_HYPERV_ENLIGHTENED_VMCS2
-  KVM: selftests: Switch to KVM_CAP_HYPERV_ENLIGHTENED_VMCS2
-  KVM: VMX: Support TSC scaling with enlightened VMCS
-  KVM: selftests: Add ENCLS_EXITING_BITMAP{,HIGH} VMCS fields
-  KVM: selftests: Switch to updated eVMCSv1 definition
-  KVM: selftests: Enable TSC scaling in evmcs selftest
 
- Documentation/virt/kvm/api.rst                |  42 ++++++-
- arch/x86/include/asm/hyperv-tlfs.h            |  19 ++-
- arch/x86/include/asm/kvm_host.h               |   2 +-
- arch/x86/kvm/hyperv.c                         |   1 +
- arch/x86/kvm/vmx/evmcs.c                      | 116 ++++++++++++++----
- arch/x86/kvm/vmx/evmcs.h                      |  28 +++--
- arch/x86/kvm/vmx/nested.c                     |  43 ++++++-
- arch/x86/kvm/vmx/vmx.c                        |   4 +-
- arch/x86/kvm/vmx/vmx.h                        |  15 +--
- arch/x86/kvm/x86.c                            |  15 ++-
- include/asm-generic/hyperv-tlfs.h             |   2 +
- include/uapi/linux/kvm.h                      |   3 +-
- .../selftests/kvm/include/kvm_util_base.h     |   8 ++
- .../selftests/kvm/include/x86_64/evmcs.h      |  46 ++++++-
- .../selftests/kvm/include/x86_64/vmx.h        |   2 +
- tools/testing/selftests/kvm/lib/x86_64/vmx.c  |   5 +-
- .../testing/selftests/kvm/x86_64/evmcs_test.c |  33 ++++-
- .../selftests/kvm/x86_64/hyperv_cpuid.c       |   2 +-
- .../kvm/x86_64/vmx_set_nested_state_test.c    |   2 +-
- 19 files changed, 321 insertions(+), 67 deletions(-)
-
--- 
-2.35.3
-
+>
+>  Dave
+>
+> > +       ret = imx219_write_regs(imx219, imx219_common_regs, ARRAY_SIZE(imx219_common_regs));
+> > +       if (ret) {
+> > +               dev_err(&client->dev, "%s failed to send mfg header\n", __func__);
+> > +               goto err_rpm_put;
+> > +       }
+> > +
+> >         /* Apply default values of current mode */
+> >         reg_list = &imx219->mode->reg_list;
+> >         ret = imx219_write_regs(imx219, reg_list->regs, reg_list->num_of_regs);
+> > --
+> > 2.34.1
+> >
