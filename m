@@ -2,70 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F40FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:42:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0092C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:43:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353009AbiFUPmq (ORCPT
+        id S1353033AbiFUPnv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 11:42:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53724 "EHLO
+        Tue, 21 Jun 2022 11:43:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352981AbiFUPmk (ORCPT
+        with ESMTP id S1353074AbiFUPnZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 11:42:40 -0400
-Received: from smtpbg.qq.com (smtpbg139.qq.com [175.27.65.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B642F2B27A;
-        Tue, 21 Jun 2022 08:42:35 -0700 (PDT)
-X-QQ-mid: bizesmtp84t1655826148tzkp4njf
-Received: from ubuntu.localdomain ( [106.117.99.68])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 21 Jun 2022 23:42:24 +0800 (CST)
-X-QQ-SSF: 0100000000700080B000E00A0000000
-X-QQ-FEAT: HoyAXBWgsknanSWZcWN00IISLxs+jEQAg/Ts8xjC0YrVNWLL5zWmCO+pKLt/g
-        HLqNsVNOLfPhRiOusn8F0tDBxlm3rR2YSKe/8WQ89s6Ob7ymF2SvdC6pbFQYrkAkzS2pcW7
-        sZVSJ1rknkYrsjRpKerdjcBZ1f5zyLSQMaJer2MLRZAk/UPbS6S4qJH4ZcUM7W1qpe6DpwM
-        EWc6yvZ8XN9bx/wM8icJVkeQEj3J/xG+VRS/8LrPnJLcKIQnSZhYxWcBYIUu6+oVyhulNBb
-        9jkm03vwQ6lTXal8MuowaA0u1sQHU377NrPcJY1ryEHyi4+IK3UlYw5+4IUMj8qqqyIzmPH
-        Vk+FPdB
-X-QQ-GoodBg: 0
-From:   Jiang Jian <jiangjian@cdjrlc.com>
-To:     robh+dt@kernel.org, frowand.list@gmail.com
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiang Jian <jiangjian@cdjrlc.com>
-Subject: [PATCH] of: device - Remove duplicate 'of' in two places.
-Date:   Tue, 21 Jun 2022 23:42:22 +0800
-Message-Id: <20220621154222.13714-1-jiangjian@cdjrlc.com>
-X-Mailer: git-send-email 2.17.1
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam6
+        Tue, 21 Jun 2022 11:43:25 -0400
+Received: from mail-0301.mail-europe.com (mail-0301.mail-europe.com [188.165.51.139])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F2CE220DC
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:43:23 -0700 (PDT)
+Date:   Tue, 21 Jun 2022 15:43:10 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
+        s=protonmail3; t=1655826199; x=1656085399;
+        bh=Fdb4fVtMroR7Gm/kLYIj7bIlDlM/5YAm1cGt21st2Ww=;
+        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:
+         References:Feedback-ID:From:To:Cc:Date:Subject:Reply-To:
+         Feedback-ID:Message-ID;
+        b=FCLamuiguLKbBrChIaZAkrA1fOt9w3ae9qcpHGTqqTt+O7rRxjSgVx9e79mNbu14b
+         7Lt0+5IDjiFRExSylGSco0gy63X9Yc7dLPerK6wE+coERFbSjlbD3Vk5h4nO9sIejs
+         ORLJx6ck8bebt6ajdes8olHhvbU6fTuqFIRaXc/gsMLZebkz3pI05pPsG9LJZVynx5
+         LdzNL1scd/3LiHRs0AFxp3r+fXXvE8BpbQnd8Eumvp39EYeKETRN1S/sZey2euhMIS
+         Oe1Xskzd4g6lqR9HQ144dcMtidBiLj5iXyd0YbbH4ar3zGW6ja6xh4usEL1W0WBj1r
+         LW4BCgmGNjFXg==
+To:     Bernd Petrovitsch <bernd@petrovitsch.priv.at>
+From:   "Ryan P. Nicholl" <rnicholl@protonmail.com>
+Cc:     linux-kernel <linux-kernel@vger.kernel.org>
+Reply-To: "Ryan P. Nicholl" <rnicholl@protonmail.com>
+Subject: Re: Networking Question
+Message-ID: <yaXzQ-VgbQxXxbv_b8c4kQRbIG5MGXsnQHf8-yqT___iT2bMmYpXlqi_L5ml14y1KcFhYSkc22-L1nOeJRECv355it-XgjLwjg0DGvUQJ64=@protonmail.com>
+In-Reply-To: <b6d8611a-714c-4fb0-5027-584884bb66a1@petrovitsch.priv.at>
+References: <6_nVwntZEyEq2Gn0PYDz5w_yuD20E9Je_Bk2rJHsOersGq3v2x3_6hXnyjNm-X83-OTl1KKo4eLoHzyBVM_nzCcDrpPtz4dz3_71A3QezfI=@protonmail.com> <b6d8611a-714c-4fb0-5027-584884bb66a1@petrovitsch.priv.at>
+Feedback-ID: 15386781:user:proton
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-file: ./drivers/of/device.c
-line: 22
- * @matches: array of of device match structures to search in
-changed to
- * @matches: array of device match structures to search in
+Thanks for taking time to respond to this question, but unfortunately Linux=
+'s shutdown(2) cannot do what I need. This isn't a general question since P=
+OSIX has no standard async API other than AIO which isn't implemented effic=
+iently in GNU/Linux, and I don't think the kernel supports any aio calls di=
+rectly, instead exposing clone and epoll_* facilities to solve the concurre=
+ncy issues. However; none of them do what I need efficiently.
 
-Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
----
- drivers/of/device.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+In theory, shutdown(2) could be used, the problem is that it's just not eff=
+iciently scalable to 100s of thousands or millions of connections. I'm not =
+speaking on behalf of my employeer, but I work for a financial company that=
+ processes a lot of network traffic.
 
-diff --git a/drivers/of/device.c b/drivers/of/device.c
-index 874f031442dc..1582388156a9 100644
---- a/drivers/of/device.c
-+++ b/drivers/of/device.c
-@@ -19,7 +19,7 @@
- 
- /**
-  * of_match_device - Tell if a struct device matches an of_device_id list
-- * @matches: array of of device match structures to search in
-+ * @matches: array of device match structures to search in
-  * @dev: the of device structure to match against
-  *
-  * Used by a driver to check whether an platform_device present in the
--- 
-2.17.1
+What I want essentially is similar to TIME_WAIT but instead of sending an R=
+ST packet I want to be notified when the tcp connection is actually drained=
+.
 
+If you call shutdown, my understanding is that you get one of two behaviors=
+:
+1. You send RST and immediately discard the send buffer.
+2. The call blocks for the SO_LINGER timeout.
+
+Option 1 isn't acceptable because it gives the wrong behavior. Option 2 can=
+ be made to work but the downside is that Linux only exposes a synchronous =
+API for it which requires me to have at least 1 thread per shutdown operati=
+on. So it could be quite bad if the network is very congested. Unfortunatel=
+y threads are many times more expensive than sockets/tcp connections. So id=
+eally having few threads and many sockets gives the best use of resources.
+
+
+
+--
+Ryan P. Nicholl
+
+
+------- Original Message -------
+On Tuesday, June 21st, 2022 at 3:02 AM, Bernd Petrovitsch <bernd@petrovitsc=
+h.priv.at> wrote:
+
+
+> Hi all!
+>
+> On 21/06/2022 02:29, Ryan P. Nicholl wrote:
+>
+> > I've been unable to find any Linux API for asynchronously waiting for t=
+he TCP send buffer to drain.
+> >
+> > The problem I have, in a nutshell, is noted in this part of the documen=
+tation:
+> >
+> > If fildes refers to a socket, close() shall cause the socket to
+> > be destroyed. If the socket is in connection-mode, and the
+>
+>
+> That's not really a Linux kernel question as such (because that should
+> work that way on all TCP connections anywhere) but the shutdown()
+> syscall is probably what you need:
+> - your side shuts down the sending part of the socket.
+> - the other side reads data and gets eventually EOF
+> - the other side call shutdown() for it's sending side when it's done.
+> - your side gets EOF.
+> And then your side knows that no data is in flight.
+> - finally, you clean up with close(). You can shutdown() the receiving
+> side too but doesn't change anything.
+>
+> [ deleted SO_LINGER stuff - that's for something completelly different ..=
+. ]
+>
+> Kind regards,
+> Bernd
+> --
+> Bernd Petrovitsch Email : bernd@petrovitsch.priv.at
+> There is NO CLOUD, just other people's computers. - FSFE
+> LUGA : http://www.luga.at
