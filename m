@@ -2,122 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8F72CCA473
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 12:02:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 140E7C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 12:03:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349760AbiFUMCG (ORCPT
+        id S1350382AbiFUMDl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 08:02:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43334 "EHLO
+        Tue, 21 Jun 2022 08:03:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231252AbiFUMCE (ORCPT
+        with ESMTP id S1350297AbiFUMDj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 08:02:04 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 667BD2B1B1;
-        Tue, 21 Jun 2022 05:02:03 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Tue, 21 Jun 2022 08:03:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B3A02AE0A
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 05:03:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 2140D1F8A3;
-        Tue, 21 Jun 2022 12:02:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1655812922; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=uU2jiNk6Ug60ZbuSPO6zGopTbMqjO7aR6mTRO4CzwJg=;
-        b=j60xuo3mlUkeVlZ0C46eHEJwpKdE9M7ag0GKfxhoJoPWEyBl/IshNczI8+QXPnbalYIc48
-        64gC+gHfpUNhd9KaS/SD44DIvReFkLqiBFPURtWLpvOsJGmD5Q+je1k5KwCVkRHUJaG2t1
-        RJMTSTGe4/Qcc/hPG4fSXKvTJCsRnvI=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1655812922;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=uU2jiNk6Ug60ZbuSPO6zGopTbMqjO7aR6mTRO4CzwJg=;
-        b=l6PIt3b/6fWF1z3LBUP/Ez7zJNMHL1V2ZccxhDw7dVRnN2O8rKAH9kHDoeExpdUPSTHM8m
-        ZcBq+h5bHnXNZuDA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 046E913638;
-        Tue, 21 Jun 2022 12:02:01 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id vTmVOjmzsWJ7ewAAMHmgww
-        (envelope-from <chrubis@suse.cz>); Tue, 21 Jun 2022 12:02:01 +0000
-From:   Cyril Hrubis <chrubis@suse.cz>
-To:     linux-kernel@vger.kernel.org
-Cc:     linux-arch@vger.kernel.org, linux-api@vger.kernel.org,
-        libc-alpha@sourceware.org, arnd@arndb.de, ltp@lists.linux.it,
-        David.Laight@aculab.com, zack@owlfolio.org, dhowells@redhat.com,
-        Cyril Hrubis <chrubis@suse.cz>
-Subject: [PATCH v3] uapi: Make __{u,s}64 match {u,}int64_t in userspace
-Date:   Tue, 21 Jun 2022 14:03:55 +0200
-Message-Id: <20220621120355.2903-1-chrubis@suse.cz>
-X-Mailer: git-send-email 2.35.1
+        by ams.source.kernel.org (Postfix) with ESMTPS id 865D0B8175F
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 12:03:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C353C3411C;
+        Tue, 21 Jun 2022 12:03:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655813016;
+        bh=x0F8lQOWpfyP6V0sr7PF7lDJooRfhL/Hx6J8uYMt0yQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=L4tvklvjUzFvOF906LQj+6uhge9ejd2hL+BDBvEOkG8gNJSW/iAEmc/auhdaqnZjt
+         g5VhIzxt2L7krqpoxN/5TGWAmiH8ImDTP/yfASWx2BJ5p7Ia3NlnhY/yad++YpEHY6
+         ElKC+TfhCa9oqzra6++kW84uCgH20CwFR0oMxROfkykUnln30GHOpAo0mJn+DUy/d3
+         7CeACcrofZ8DFulkNfJNFyu4LksvAeDrL4dXtrLePmHqGkCubjLD0Fj0u4AchKp8t/
+         bazZ+7U5rpoPmyuW14r1CLqXzHqoAXl4oyMsJlR59WMfhZnNY5vt0hWPAUwgAqfMQD
+         h0OH/aZ68X9ew==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1o3cbS-0006Bu-Ex; Tue, 21 Jun 2022 14:03:30 +0200
+Date:   Tue, 21 Jun 2022 14:03:30 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     =?utf-8?B?5pm65a6L?= <zhi.song@bytedance.com>
+Cc:     gregkh@linuxfoundation.org, rafael@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] node: put_device after failing to device_register
+Message-ID: <YrGzkuFtna+blmA6@hovoldconsulting.com>
+References: <20220615151738.1766206-1-zhi.song@bytedance.com>
+ <YrB8bIJj3fvvsCHg@hovoldconsulting.com>
+ <C6760D95-B26F-47AE-A8F6-F80129135A6C@bytedance.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <C6760D95-B26F-47AE-A8F6-F80129135A6C@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This changes the __u64 and __s64 in userspace on 64bit platforms from
-long long (unsigned) int to just long (unsigned) int in order to match
-the uint64_t and int64_t size in userspace for C code.
+On Tue, Jun 21, 2022 at 06:17:22PM +0800, 智宋 wrote:
+> > On Jun 20, 2022, at 21:55, Johan Hovold <johan@kernel.org> wrote:
 
-We cannot make the change for C++ since that would be non-backwards
-compatible change and may cause possible regressions and even
-compilation failures, e.g. overloaded function may no longer find a
-correct match.
+> > That's a pretty obvious use-after-free you just added here. You can't
+> > access dev after you've just freed it.
+> > 
+> > The name is freed along with the rest of the struct device so you need
+> > to remove the second explicit free. And you should rename the label too.
+> > 
+> >> free:
+> >> 	kfree(access_node);
+> > 
+> > But here's another use after free... The put_device() call you added
+> > will have freed access_node by calling node_access_release().
 
-This allows us to use the kernel structure definitions in userspace in C
-code. For example we can use PRIu64 and PRId64 modifiers in printf() to
-print structure membere. Morever with this there would be no need to
-redefine these structures in an libc implementations as it is done now.
+> dev_set_name() allocates new space to dev->name and assigns the address of space to dev->name if it allocates successfully. But if we fail to allocate space, there isn’t any new space for dev->name. Therefore, there’s no need for calling kfree_const(dev->kobj.name) in dev_set_name()’s error handling.
 
-Consider for example the newly added statx() syscall. If we use the
-header from uapi we will get warnings when attempting to print it's
-members as:
+Note that your mails are being rejected by the mailing list since they
+include HTML. Can you see if you can fix your mail client to send as
+text instead?
 
-	printf("%" PRIu64 "\n", stx.stx_size);
-
-We get:
-
-	warning: format '%lu' expects argument of type 'long unsigned int',
-	         but argument 5 has type '__u64' {aka 'long long unsigned int'}
-
-Signed-off-by: Cyril Hrubis <chrubis@suse.cz>
----
- include/uapi/asm-generic/types.h | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
-
-v2: Make sure we do not break C++ applications
-v3: Update commit message to explain C++ exclusion
-
-diff --git a/include/uapi/asm-generic/types.h b/include/uapi/asm-generic/types.h
-index dfaa50d99d8f..11e468a39d1e 100644
---- a/include/uapi/asm-generic/types.h
-+++ b/include/uapi/asm-generic/types.h
-@@ -1,9 +1,16 @@
- /* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
- #ifndef _ASM_GENERIC_TYPES_H
- #define _ASM_GENERIC_TYPES_H
-+
-+#include <asm/bitsperlong.h>
-+
- /*
-- * int-ll64 is used everywhere now.
-+ * int-ll64 is used everywhere in kernel now.
-  */
--#include <asm-generic/int-ll64.h>
-+#if !defined(__KERNEL__) && !defined(__cplusplus) && __BITSPERLONG == 64
-+# include <asm-generic/int-l64.h>
-+#else
-+# include <asm-generic/int-ll64.h>
-+#endif
+That may fix lack line breaks too (break lines at 72 columns or so).
  
- #endif /* _ASM_GENERIC_TYPES_H */
--- 
-2.35.1
+> If we fail to do device_register(dev), we just need to put_device(dev) which will do free access_node, kobj.name and other cleanup.
+> 
+> Maybe the code is: 
+> 
+> --- a/drivers/base/node.c
+> +++ b/drivers/base/node.c
+> @@ -144,21 +144,19 @@ static struct node_access_nodes *node_init_node_access(struct node *node,
+>         dev->parent = &node->dev;
+>         dev->release = node_access_release;
+>         dev->groups = node_access_node_groups;
+> -       if (dev_set_name(dev, "access%u", access))
+> -               goto free;
+> +       if (dev_set_name(dev, "access%u", access)) {
+> +               kfree(access_node);
+> +               return NULL;
+> +       }
+>  
+> -       if (device_register(dev))
+> -               goto free_name;
+> +       if (device_register(dev)) {
+> +               put_device(dev);
+> +               return NULL;
+> +       }
+>  
+>         pm_runtime_no_callbacks(dev);
+>         list_add_tail(&access_node->list_node, &node->access_list);
+>         return access_node;
+> -free_name:
+> -       put_device(dev);
+> -       kfree_const(dev->kobj.name);
+> -free:
+> -       kfree(access_node);
+> -       return NULL;
+>  }
 
+The above fix looks correct now.
+
+> Thanks for your patience. :)
+
+You're welcome. Thanks for finding and fixing the bug.
+
+Johan
