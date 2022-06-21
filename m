@@ -2,155 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A337C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 11:00:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 331EAC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 11:01:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237858AbiFULAt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 07:00:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51740 "EHLO
+        id S235429AbiFULBD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 21 Jun 2022 07:01:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229668AbiFULAr (ORCPT
+        with ESMTP id S1347085AbiFULBA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 07:00:47 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA89429834;
-        Tue, 21 Jun 2022 04:00:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655809247; x=1687345247;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ZdbxRsGGheu6GBHdOyV1uGckiP8Rrf2B1AVqMjy5upc=;
-  b=mxSemFqrZKmyc3bfydc9MHjFl4Hu4f4OwXcuWRvhLo7w1LpJGEfh1r5P
-   E5xYg6Xcg1ZqqIJWm3Gzsaiv6pUlyZcDYO5wR6H8r/duMzig8D2ZiQzJP
-   4Aqc3RPf4kmCpUA0lh5mWGRD10cLPGTv55x0yqgWlpIqryvSopqD89X1C
-   tjlJ0BRluowb9e0rtWL26HQwxMRO+jk9Pq9Z4VsF8ZzxmnuH1jddloXLA
-   JkU+3jschHJiYw7AyVUHF8tFLV2ZaERPuEi+eLcFmU2SaCdn9eiqsr0yS
-   mySF0CqGgEu4Ifl/drcB8KYYfsqPc5mUyNPXRd6fcKVOqTRoZDRrILkYk
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10384"; a="263123838"
-X-IronPort-AV: E=Sophos;i="5.92,209,1650956400"; 
-   d="scan'208";a="263123838"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 04:00:34 -0700
-X-IronPort-AV: E=Sophos;i="5.92,209,1650956400"; 
-   d="scan'208";a="655092970"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 04:00:30 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1o3baK-000qwz-Ou;
-        Tue, 21 Jun 2022 13:58:16 +0300
-Date:   Tue, 21 Jun 2022 13:58:16 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Fabio Estevam <festevam@gmail.com>,
-        Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
-        Marek Vasut <marex@denx.de>
-Cc:     linux-iio@vger.kernel.org,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        NXP Linux Team <linux-imx@nxp.com>
-Subject: Re: [PATCH v1 1/1] iio: adc: mxs-lradc-adc: Get rid of OF specifics
-Message-ID: <YrGkSMUsMzTqBEJz@smile.fi.intel.com>
-References: <20220530173324.921-1-andriy.shevchenko@linux.intel.com>
- <CAOMZO5CtjkjsbOTaNF7+Hwswsn-fs2WNK=zyFL53JnBBpS8=0Q@mail.gmail.com>
+        Tue, 21 Jun 2022 07:01:00 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B666229823
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 04:00:58 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id g4so9343659lfv.9
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 04:00:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YuiB2lEEMCk0w/w/b+ALLeZ6vsLYTAjuyX+rwIjOEXk=;
+        b=aqaw3+BMMU0j938NWoZbZ9UP6JuFL0AXN2pvwceLelhH1yoKvwXyL5EgVTxbpxmG/R
+         dJaah/AfgOMSCCDdDay6LYB+g2DIBrAXRsVD6wyNYMz2Qgn9rZSdUsSdmHAsm6f8+yVt
+         xoJLh5X56XJpSwV6KSW120800VS7yh/dEq5Lg5mzR9zek7I4hkavSCrRt16zo5E9tesf
+         CBD2UtOpTGjAU6jpobd4DH0BkziZWqNszjbJX7a+CMhhMig6iZnZboxy9aff3i5hyFey
+         /UDiMuL90ho1PdpiAjB5TEeZP0G+mf0yK/e+R5ukV90gvqYwxrTYAIMOVJ6stF8NfVSr
+         afBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YuiB2lEEMCk0w/w/b+ALLeZ6vsLYTAjuyX+rwIjOEXk=;
+        b=P9hlke3HcUAsl4mNbVB4+KlFF+Hmdk4Z+bfS5T2cOLHitY3hAc1+la8DiAzlBM4XxS
+         q398ePq4E3xLSF5BdK5N3Ct1GsvavSJ0RR1tYg2DGaXyMTTHRUOeQuRE5L+qi1nkhUD4
+         6kflwMVQHKrzXTngb75XqPzTCMDZEALYG/nhtbQshtkaGEqE1hXcqYC/mNR7iucw7IMO
+         T5SdXR1H5Lalvax338mlzWi+e9QU8Ywl8n7C9DXtvLvuvi5yZbtkT6F5K11iD51E84jr
+         3HP1a63VWiJ/t4OByo2+eZSVWb+Wp9Z05FgU05nJVPkUd3utfz5ZnXpygoKfMvi0Co1D
+         fHAA==
+X-Gm-Message-State: AJIora9oc9b4X30AC08Oka3B4UFvY68VN004/I0BxgfitJcb9shdOQYt
+        XIiNIA4tOI92qqfOGN+8R5sR0bPBlzzTecRnL8g=
+X-Google-Smtp-Source: AGRyM1vjPstPhMcfRgUwQXS8N/cl5cvZIXZ3mQrH7rDQ3i/dbq4zsOWG2nTOOO6P5X32unp502ZF7KykuNIxjSSVxyw=
+X-Received: by 2002:ac2:484d:0:b0:47f:7ebf:336 with SMTP id
+ 13-20020ac2484d000000b0047f7ebf0336mr1677240lfy.130.1655809256871; Tue, 21
+ Jun 2022 04:00:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAOMZO5CtjkjsbOTaNF7+Hwswsn-fs2WNK=zyFL53JnBBpS8=0Q@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <1653447164-15017-1-git-send-email-zhaoyang.huang@unisoc.com>
+ <CAB8ipk9cAoP6yV_-Gn8bwbn5ezCZujLeMpioa0TiNU5=akBaug@mail.gmail.com>
+ <Yq+PMWlARgDhv8uL@pc638.lan> <CAGWkznHPdk_yqn2GWPDJaT32+4MnFLnRjdjBkaFv9BLMh4yM=g@mail.gmail.com>
+ <CA+KHdyXpdow7SYsbq_7F0zDd5-nYGi6db7R11R3--g3gUu-59w@mail.gmail.com>
+ <CAGWkznE5cFfdtmQ2j57goWtpfPGYPsd5Oi3pvb9vcfifodR9OQ@mail.gmail.com> <YrGO4cae/03r3PzP@pc638.lan>
+In-Reply-To: <YrGO4cae/03r3PzP@pc638.lan>
+From:   Zhaoyang Huang <huangzhaoyang@gmail.com>
+Date:   Tue, 21 Jun 2022 19:00:27 +0800
+Message-ID: <CAGWkznFdZ1_jrSWSOPkSDyLY1OSodZBy6MTfdwPKo3VoW67GBg@mail.gmail.com>
+Subject: Re: [PATCH] mm: fix racing of vb->va when kasan enabled
+To:     Uladzislau Rezki <urezki@gmail.com>
+Cc:     "zhaoyang.huang" <zhaoyang.huang@unisoc.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "open list:MEMORY MANAGEMENT" <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ke Wang <ke.wang@unisoc.com>, Christoph Hellwig <hch@lst.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 20, 2022 at 06:13:53PM -0300, Fabio Estevam wrote:
-> On Mon, May 30, 2022 at 2:33 PM Andy Shevchenko
-> <andriy.shevchenko@linux.intel.com> wrote:
-
-...
-
-> I tried to apply the same change inside
-> drivers/input/touchscreen/mxs-lradc-ts.c:
-> 
-> --- a/drivers/input/touchscreen/mxs-lradc-ts.c
-> +++ b/drivers/input/touchscreen/mxs-lradc-ts.c
-> @@ -675,11 +675,9 @@ static int mxs_lradc_ts_probe(struct platform_device *pdev)
->                 if (irq < 0)
->                         return irq;
-> 
-> -               virq = irq_of_parse_and_map(node, irq);
-> -
->                 mxs_lradc_ts_stop(ts);
-> 
-> -               ret = devm_request_irq(dev, virq,
-> +               ret = devm_request_irq(dev, irq,
->                                        mxs_lradc_ts_handle_irq,
->                                        0, mxs_lradc_ts_irq_names[i], ts);
->                 if (ret)
-> 
-> but I still get the following warning:
-
-So just to be sure. You got it before the above change applied, correct?
-
-I'm wondering how this all LRADC was supposed to work. The IRQs are assigned
-based on abstract numbering without any IRQ domain behind it. This is not how
-it's designed in Linux. Adding Ksenija and Marek to shed a light.
-
-> [    6.135583] ------------[ cut here ]------------
-> [    6.140366] WARNING: CPU: 0 PID: 1 at drivers/base/platform.c:449
-> __platform_get_irq_byname+0x74/0x90
-> [    6.151053] 0 is an invalid IRQ number
-> [    6.155201] Modules linked in:
-> [    6.158444] CPU: 0 PID: 1 Comm: swapper Not tainted
-> 5.18.5-00001-g3e38be7e4832 #108
-> [    6.166537] Hardware name: Freescale MXS (Device Tree)
-> [    6.172040]  unwind_backtrace from show_stack+0x10/0x14
-> [    6.177503]  show_stack from __warn+0xc4/0x1cc
-> [    6.182356]  __warn from warn_slowpath_fmt+0x90/0xc8
-> [    6.187549]  warn_slowpath_fmt from __platform_get_irq_byname+0x74/0x90
-> [    6.194698]  __platform_get_irq_byname from platform_get_irq_byname+0x10/0x30
-> [    6.202286]  platform_get_irq_byname from mxs_lradc_ts_probe+0x19c/0x380
-> [    6.209216]  mxs_lradc_ts_probe from platform_probe+0x58/0xb8
-> [    6.215383]  platform_probe from really_probe+0xfc/0x288
-> [    6.220907]  really_probe from __driver_probe_device+0x80/0xe4
-> [    6.227145]  __driver_probe_device from driver_probe_device+0x30/0xd8
-> [    6.234010]  driver_probe_device from __driver_attach+0x70/0xf4
-> [    6.240137]  __driver_attach from bus_for_each_dev+0x74/0xc0
-> [    6.246195]  bus_for_each_dev from bus_add_driver+0x154/0x1e8
-> [    6.252359]  bus_add_driver from driver_register+0x74/0x108
-> [    6.258131]  driver_register from do_one_initcall+0x8c/0x2fc
-> [    6.264198]  do_one_initcall from kernel_init_freeable+0x184/0x210
-> [    6.270588]  kernel_init_freeable from kernel_init+0x10/0x108
-> [    6.276756]  kernel_init from ret_from_fork+0x14/0x3c
-> [    6.282224] Exception stack(0xc8819fb0 to 0xc8819ff8)
-> [    6.287444] 9fa0:                                     00000000
-> 00000000 00000000 00000000
-> [    6.295988] 9fc0: 00000000 00000000 00000000 00000000 00000000
-> 00000000 00000000 00000000
-> [    6.304631] 9fe0: 00000000 00000000 00000000 00000000 00000013 00000000
-> [    6.311392] irq event stamp: 128211
-> [    6.315220] hardirqs last  enabled at (128221): [<c0069c44>]
-> __up_console_sem+0x54/0x64
-> [    6.323632] hardirqs last disabled at (128230): [<c0069c30>]
-> __up_console_sem+0x40/0x64
-> [    6.331821] softirqs last  enabled at (128200): [<c00098e4>]
-> __do_softirq+0x31c/0x4bc
-> [    6.340041] softirqs last disabled at (128191): [<c0020f04>]
-> irq_exit+0x150/0x18c
-> [    6.347913] ---[ end trace 0000000000000000 ]---
-> [    6.364587] input: mxs-lradc-ts as
-> /devices/soc0/80000000.apb/80040000.apbx/80050000.lradc/mxs-lradc-ts/input/input0
-> 
-> Any suggestions?
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+On Tue, Jun 21, 2022 at 5:27 PM Uladzislau Rezki <urezki@gmail.com> wrote:
+>
+> > On Mon, Jun 20, 2022 at 6:44 PM Uladzislau Rezki <urezki@gmail.com> wrote:
+> > >
+> > > > > >
+> > > > > Is it easy to reproduce? If so could you please describe the steps? As i see
+> > > > > the freeing of the "vb" is RCU safe whereas vb->va is not. But from the first
+> > > > > glance i do not see how it can accessed twice. Hm..
+> > > > It was raised from a monkey test on A13_k515 system and got 1/20 pcs
+> > > > failed. IMO, vb->va which out of vmap_purge_lock protection could race
+> > > > with a concurrent ra freeing within __purge_vmap_area_lazy.
+> > > >
+> > > Do you have exact steps how you run "monkey" test?
+> > There are about 30+ kos inserted during startup which could be a
+> > specific criteria for reproduction. Do you have doubts about the test
+> > result or the solution?
+> > >
+> I do not have any doubt about your test results, so if you can trigger it
+> then there is an issue at least on the 5.4.161-android12 kernel.
+>
+> 1. With your fix we get expanded mutex range, thus the worst case of vmalloc
+> allocation can be increased when it fails and repeat. Because it also invokes
+> the purge_vmap_area_lazy() that access the same mutex.
+I am not sure I get your point. _vm_unmap_aliases calls
+_purge_vmap_area_lazy instead of purge_vmap_area_lazy. Do you have any
+other solutions? I really don't think my patch is the best way as I
+don't have a full view of vmalloc mechanism.
+>
+> 2. You run 5.4.161-android12 kernel what is quite old. Could you please
+> retest with latest kernel? I am asking because on the latest kernel with
+> CONFIG_KASAN i am not able to reproduce it.
+>
+> I do a lot of: vm_map_ram()/vm_unmap_ram()/vmalloc()/vfree() in parallel
+> by 64 kthreads on my 64 CPUs test system.
+The failure generates at 20s from starting up, I think it is a rare timing.
+>
+> Could you please confirm that you can trigger an issue on the latest kernel?
+Sorry, I don't have an available latest kernel for now.
+>
+> Thanks!
+>
+> --
+> Uladzislau Rezki
