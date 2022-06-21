@@ -2,89 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11D1DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 06:05:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FA76C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 06:12:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345437AbiFUGFv (ORCPT
+        id S1345548AbiFUGL6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 02:05:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36606 "EHLO
+        Tue, 21 Jun 2022 02:11:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229480AbiFUGFt (ORCPT
+        with ESMTP id S229547AbiFUGL4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 02:05:49 -0400
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E54F615A1F
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 23:05:47 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 25L65SXf121737;
-        Tue, 21 Jun 2022 01:05:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1655791528;
-        bh=Ap0E3scOD56YBw0wixxDNJ51SA2kU8j9amKsGfVLewc=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=N2GAXK6+v4JCbCskex3KsAVG3xV023TmieBob3Z1wGAGB6SCbjA+LW+1r5+MSB+TL
-         55vcCGid2z3fsC7E8mzFPd8eBr40n2+lZfu+vl2ZF3ccf3BKmnq2GipGfEFDi67oRh
-         NbNACo5kCAk7U2G3weMPsopwh/IiFYK7StLp86pY=
-Received: from DLEE115.ent.ti.com (dlee115.ent.ti.com [157.170.170.26])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 25L65SkV121374
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 21 Jun 2022 01:05:28 -0500
-Received: from DLEE112.ent.ti.com (157.170.170.23) by DLEE115.ent.ti.com
- (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 21
- Jun 2022 01:05:28 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE112.ent.ti.com
- (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 21 Jun 2022 01:05:28 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 25L65RZM067872;
-        Tue, 21 Jun 2022 01:05:27 -0500
-Date:   Tue, 21 Jun 2022 11:35:26 +0530
-From:   Rahul T R <r-ravikumar@ti.com>
-To:     Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
-CC:     <dri-devel@lists.freedesktop.org>, <andrzej.hajda@intel.com>,
-        <narmstrong@baylibre.com>, <robert.foss@linaro.org>,
-        <jonas@kwiboo.se>, <jernej.skrabec@gmail.com>, <airlied@linux.ie>,
-        <daniel@ffwll.ch>, <p.zabel@pengutronix.de>,
-        <laurent.pinchart@ideasonboard.com>,
-        <linux-kernel@vger.kernel.org>, <jpawar@cadence.com>,
-        <sjakhade@cadence.com>, <mparab@cadence.com>, <a-bhatia1@ti.com>
-Subject: Re: [PATCH v2] drm/bridge: cdns-dsi: Add support for J721E wrapper
-Message-ID: <20220621060525.kvm5wojt6kmfqhqv@uda0490373>
-References: <20220619140158.30881-1-r-ravikumar@ti.com>
- <042c77d5-7db1-fa09-4be4-74dbfa85b5e2@ideasonboard.com>
+        Tue, 21 Jun 2022 02:11:56 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A46015728
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 23:11:54 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id w20so20591822lfa.11
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 23:11:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rasmusvillemoes.dk; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=/eWGanGXRvTxAEKEXyRihaY2pmewsuWfoiE7kWqZzJ0=;
+        b=WVwPcq7Xs7ZNJvmdOwoL0VOQi8Mil0u7MwlIhaIoQcbaiMQUIm4+G94MZmxriqIY4j
+         sV2HKZzyRbS6wVzIVm7eo1QgVhFOcaQyIx2eK+lNIVFRXHFowBHbJhOh1XLGsQIjRYEv
+         KW2fQu5F2EqkKsoLxCiuG4vmvj3cnNFXD9yps=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=/eWGanGXRvTxAEKEXyRihaY2pmewsuWfoiE7kWqZzJ0=;
+        b=nu0R4KN49urPjj7yYCrEFFSisQeEWQ0hfMyF28bt+oCIceDhfpXhju9H6v4ZTHtVrZ
+         IXoi/fbv3Pe44B8Y49XF3MAUlnKGFvOiVeHZNoWnb17+yk8xA6/9+YsOba+LtQZxjLiG
+         HWolFFul+JVgwfEvp0f2qQct3e9JOWqC6MmZfuGWu7PvsoTG6EAXFHwwJJ4wm8kmuaCq
+         PJt5lyqSYyIZcb4NVrEZoX5kOgyZ6ojriuqyiUR+PguJC/bnEWJN9yY3NVcSCSnFyC9N
+         TKaO4h9KNHTZoOqrYgGt8pWP2yQoIGTmpA3ynNBD/yq/h8Xh+rLS+E6/MGl3JwFfpulK
+         SWjQ==
+X-Gm-Message-State: AJIora9Nugobw1o/pVM2ABuAhUVC7Pi2OxU1zL6W48DZTZ5GBT07Sz2b
+        vkJIgV6fg3Y346hKPQyscepd+w==
+X-Google-Smtp-Source: AGRyM1tWCSbAFWcWkf2MV6dy2EN4XakvOogG8V/zDwtSKUO4DFfYU461zGuKRDDUF8c74V6lnOxmJw==
+X-Received: by 2002:a05:6512:1307:b0:47f:67ab:4064 with SMTP id x7-20020a056512130700b0047f67ab4064mr6958436lfu.106.1655791912587;
+        Mon, 20 Jun 2022 23:11:52 -0700 (PDT)
+Received: from [172.16.11.74] ([81.216.59.226])
+        by smtp.gmail.com with ESMTPSA id z16-20020a056512371000b0047255d21173sm2042889lfr.162.2022.06.20.23.11.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Jun 2022 23:11:51 -0700 (PDT)
+Message-ID: <46fcdf08-4646-afa0-c112-76d9335adb6c@rasmusvillemoes.dk>
+Date:   Tue, 21 Jun 2022 08:11:49 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <042c77d5-7db1-fa09-4be4-74dbfa85b5e2@ideasonboard.com>
-User-Agent: NeoMutt/20171215
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v4 00/34] Printbufs - new data structure for building
+ strings
+Content-Language: en-US
+To:     Kent Overstreet <kent.overstreet@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org, pmladek@suse.com
+Cc:     rostedt@goodmis.org, enozhatsky@chromium.org, willy@infradead.org
+References: <20220620004233.3805-1-kent.overstreet@gmail.com>
+From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
+In-Reply-To: <20220620004233.3805-1-kent.overstreet@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13:02-20220620, Tomi Valkeinen wrote:
-> Hi,
-> 
-> On 19/06/2022 17:01, Rahul T R wrote:
-> > Add support for wrapper settings for DSI bridge on
-> > j721e. Also set the DPI input to DPI0
-> > 
-> > Signed-off-by: Rahul T R <r-ravikumar@ti.com>
-> > ---
-> 
-> Nack... This wouldn't work with some other SoC using CDNS DSI.
-> 
-> See cdns-mhdp8546 for an example of a bit more generic wrapper support.
-> 
->  Tomi
+On 20/06/2022 02.41, Kent Overstreet wrote:
 
-Thanks Tomi,
+>   Rasmus pointed out that -fno-strict-aliasing is going to cause gcc to generate
+>   nasty code, and indeed it unfortunately does but according to worst case
+>   scenario microbenchmarks it's not a problem for actual performance. 
 
-I have sent a respin with making changes similar to cdns-mhdp8546
-please review
+Well, that's not how I interpreted those numbers, but, except if they
+showed an improvement, how much is acceptable is of course always a
+matter of judgment.
 
-Regards
-Rahul T R
+However, what's really annoying and somewhat dishonest is that you're
+not including those numbers, nor the methodology, in either the cover
+letter or commit itself.
+
+Rasmus
