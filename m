@@ -2,76 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC389C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 13:00:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6528ECCA481
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 13:01:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351056AbiFUNAx (ORCPT
+        id S1351320AbiFUNBA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 09:00:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58752 "EHLO
+        Tue, 21 Jun 2022 09:01:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351022AbiFUNA2 (ORCPT
+        with ESMTP id S1350994AbiFUNAl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 09:00:28 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B9702C119;
-        Tue, 21 Jun 2022 05:59:57 -0700 (PDT)
-Received: from kwepemi500015.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LS6334vNNzSgwV;
-        Tue, 21 Jun 2022 20:56:31 +0800 (CST)
-Received: from huawei.com (10.175.127.227) by kwepemi500015.china.huawei.com
- (7.221.188.92) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 21 Jun
- 2022 20:59:54 +0800
-From:   Zheng Bin <zhengbin13@huawei.com>
-To:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <boon.leong.ong@intel.com>,
-        <rmk+kernel@armlinux.org.uk>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <zhengbin13@huawei.com>, <gaochao49@huawei.com>
-Subject: [PATCH -next] net: pcs: pcs-xpcs: Fix build error when CONFIG_PCS_XPCS=y && CONFIG_PHYLINK=m
-Date:   Tue, 21 Jun 2022 21:12:51 +0800
-Message-ID: <20220621131251.3357104-1-zhengbin13@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Tue, 21 Jun 2022 09:00:41 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F3C72C649;
+        Tue, 21 Jun 2022 06:00:03 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id o9so10014703edt.12;
+        Tue, 21 Jun 2022 06:00:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=8INa2kPyzcZH9CnKwbMbKSxmSgTkhO3NBae7S1rnzH0=;
+        b=BcsQb3hSoUxdwromvNkIlPo20H2WIW07ZuKzSAP+jxxg3wjsoboTyA54fN6c1X//aN
+         r9mYAukOItGxApr48zCs3ixk51quGi9PeOddGoakJMvjLOE2o3sGxyf0FzS36lINjV/1
+         BDndAbmi0Bj2Mo0oPkvLZLKg7hdQt/gOY6zORp02MxHbNDuaTSm5SoZ34hLngNPfDR7m
+         m74DevLtfCxsWh1XOcKQcEv0UWGEzYFMTwkze8lGTKYiGAMW8YmW+kB8I/T7AxMRsjxz
+         +aL2/m3ArpUigXD+F14kIWrbGfpLzAyTb4+7yqn74ch5dSFzC0UVDVnufy6pQgqPAlT4
+         pteA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=8INa2kPyzcZH9CnKwbMbKSxmSgTkhO3NBae7S1rnzH0=;
+        b=x+iCawcEQ+C6sMBu8WGdJN7zBseqOmGt27/rzFzGaLex0UuNXbRYwnu7DRjI3kz1eX
+         Zqq4q1wbArPU+LFOMoyRo0KHVSckH1YJc2wjHlZA3LRou0lrdRYKu9D5kt/ZqTSs442p
+         tweFJ1x6KNjouSy/NMUmwhzpLf1xOTy+s4zOAaG4el8x5ClxPEGYoJT3L1+W9OiyfddL
+         Iv6iCutf0s34qfukizHq0txjF0xJ8Xh7Wx9lvoZUd+/gfMyEbXNnGTLQyxxhWRs1QjJJ
+         sGyoIkGbUb/IVX+6fTxIfbCnJ/KWd1xn6r7iCnUOLc5zU10xisxCqKsStMPSYyVK6/k3
+         WFXQ==
+X-Gm-Message-State: AJIora8cDQeO1MiMWY8TAod9M1j7xRts2AQzRLr96p28zmXzBrjiBk4E
+        iWy4CyXAb31w3IiTTluvbmY=
+X-Google-Smtp-Source: AGRyM1tWDNdc5MQ+KQjo8sIQcgGuNcU5pOGpPXY9E4OF+8Sp9L5OJLj+DKUL/9kMSDxoxfDYnDprEg==
+X-Received: by 2002:a05:6402:5c9:b0:420:aac6:257b with SMTP id n9-20020a05640205c900b00420aac6257bmr34865206edx.128.1655816401127;
+        Tue, 21 Jun 2022 06:00:01 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:9af8:e5f5:7516:fa89? ([2001:b07:6468:f312:9af8:e5f5:7516:fa89])
+        by smtp.googlemail.com with ESMTPSA id b16-20020a056402351000b0042de8155fa1sm13140776edd.0.2022.06.21.05.59.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 21 Jun 2022 06:00:00 -0700 (PDT)
+Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
+Message-ID: <e22c7352-bafa-3ebf-c842-ed706579a619@redhat.com>
+Date:   Tue, 21 Jun 2022 14:59:58 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemi500015.china.huawei.com (7.221.188.92)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v7 17/39] KVM: x86: hyper-v: L2 TLB flush
+Content-Language: en-US
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        Yuan Yao <yuan.yao@linux.intel.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220613133922.2875594-1-vkuznets@redhat.com>
+ <20220613133922.2875594-18-vkuznets@redhat.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220613133922.2875594-18-vkuznets@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If CONFIG_PCS_XPCS=y, CONFIG_PHYLINK=m, bulding fails:
+On 6/13/22 15:39, Vitaly Kuznetsov wrote:
+> -	tlb_flush_fifo = kvm_hv_get_tlb_flush_fifo(vcpu);
+> +	tlb_flush_fifo = kvm_hv_get_tlb_flush_fifo(vcpu, is_guest_mode(vcpu));
+>   
 
-drivers/net/pcs/pcs-xpcs.o: in function `xpcs_do_config':
-pcs-xpcs.c:(.text+0x64f): undefined reference to `phylink_mii_c22_pcs_encode_advertisement'
-drivers/net/pcs/pcs-xpcs.o: in function `xpcs_get_state':
-pcs-xpcs.c:(.text+0x10f8): undefined reference to `phylink_mii_c22_pcs_decode_state
+Any reason to add this parameter?  It is always set to 
+is_guest_mode(vcpu) and, even if it wasn't, I would add the parameter 
+directly in patch 11.
 
-Make PCS_XPCS depends on PHYLINK to fix this.
-
-Fixes: b47aec885bcd ("net: pcs: xpcs: add CL37 1000BASE-X AN support")
-Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
----
- drivers/net/pcs/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/pcs/Kconfig b/drivers/net/pcs/Kconfig
-index 22ba7b0b476d..faec931b1e65 100644
---- a/drivers/net/pcs/Kconfig
-+++ b/drivers/net/pcs/Kconfig
-@@ -8,6 +8,7 @@ menu "PCS device drivers"
- config PCS_XPCS
- 	tristate "Synopsys DesignWare XPCS controller"
- 	depends on MDIO_DEVICE && MDIO_BUS
-+	depends on PHYLINK
- 	help
- 	  This module provides helper functions for Synopsys DesignWare XPCS
- 	  controllers.
---
-2.31.1
-
+Paolo
