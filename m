@@ -2,101 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5423C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 08:39:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26279C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 08:41:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347700AbiFUIjz (ORCPT
+        id S1347526AbiFUIlC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 04:39:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55972 "EHLO
+        Tue, 21 Jun 2022 04:41:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229895AbiFUIjx (ORCPT
+        with ESMTP id S229829AbiFUIlA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 04:39:53 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43E7925EA1;
-        Tue, 21 Jun 2022 01:39:53 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id z19so1515080edb.11;
-        Tue, 21 Jun 2022 01:39:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=u7YnhhQYtJ0M3xC7HRSVT7bml8DDqb3tmwKspbCUexU=;
-        b=eUtaQ659iBtSbi6vx63Og3HtODbQYAQNj9VhsS1EgSNPlkbhr3W2Smwq8h15cEzVSG
-         AU5o3Zziy2/7i+ADUyCHgY9NACZI/PP/iRX77JwlroSG52F7gaEofiDYzobfPorXQZds
-         GnpxTc6zz3co2reobFDW2tKMoR0uMm8n8/kgHPmZ9PvR/+dsSAuVx8IonB4s34v8G0sr
-         qJSpx6voJhP1DXSV50ZhODltR4I1Txx38t5S010s+9bhgs1xxG5x//GZqlf8Tg8YtAp1
-         ljaBdGWGL5GZHBxo2lOjZVaUgtiLF9+hbbExtMPb+ATTNKwVPFUBQKLgFd05vMGwr0LX
-         OoqQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=u7YnhhQYtJ0M3xC7HRSVT7bml8DDqb3tmwKspbCUexU=;
-        b=dl0/C8nLz4BsiETwpFyTUmHMyVKa51fXt5Wi/WDfvkC+MmyrmiyQiZBOPV0iS6SPhs
-         Iem02dS3/5RLR7UR6Hpw3oyux0xAQko4UV9afU1WU0vE+SysEcT68xFjlOJ2jfRnaYYI
-         kVgaAZf4nKsOQjGZG9QWNq5wBVVCW+APgN6TmFppnX6Buy+z1cwr2fxYnTBH0Vv8mt5+
-         bNYCi3a/7cq+9XTzPX0j/aOSsZvRADduOfhGrklhT4+S0ioMSu59dT7whzQ3Ph40jnIb
-         U/m0YKvOh7VBOfWfPJ26+IH5jt5vxIWbKPh4ErqVD5f07MTkjmc0+OXede/Lp+648yLz
-         aHvw==
-X-Gm-Message-State: AJIora+qb2xSPkPD390CfHk8b6pCF3wzAGtz4EUjg0iaadj7aFnVDavb
-        qlRJwHjvvno18q7Z0DuvW8JOoHzTUcVwEMptqBNTyp2hCnRdTg==
-X-Google-Smtp-Source: AGRyM1u036K32l8dIMmb+DtsESrvBm19v/53EQEeKlkfk4W9ujWKMBWfDMHU0NzTObCZaXkVciq+YiTxlEluNjfpGbc=
-X-Received: by 2002:a05:6402:2790:b0:431:4bb6:a6dc with SMTP id
- b16-20020a056402279000b004314bb6a6dcmr34533918ede.48.1655800791735; Tue, 21
- Jun 2022 01:39:51 -0700 (PDT)
+        Tue, 21 Jun 2022 04:41:00 -0400
+Received: from nksmu.kylinos.cn (mailgw.kylinos.cn [123.150.8.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0294A25EBA;
+        Tue, 21 Jun 2022 01:40:58 -0700 (PDT)
+X-UUID: 3d5c3b1c444f432aaf165b63d2ee9f5a-20220621
+X-UUID: 3d5c3b1c444f432aaf165b63d2ee9f5a-20220621
+Received: from cs2c.com.cn [(172.17.111.24)] by nksmu.kylinos.cn
+        (envelope-from <xiehongyu1@kylinos.cn>)
+        (Generic MTA)
+        with ESMTP id 1520558665; Tue, 21 Jun 2022 16:43:16 +0800
+X-ns-mid: postfix-62B18413-1929898908
+Received: from [172.20.4.10] (unknown [172.20.4.10])
+        by cs2c.com.cn (NSMail) with ESMTPSA id E10173848654;
+        Tue, 21 Jun 2022 16:40:50 +0800 (CST)
+Message-ID: <13e54c18-7a58-b6bd-0399-273a109ee42e@kylinos.cn>
+Date:   Tue, 21 Jun 2022 16:40:50 +0800
 MIME-Version: 1.0
-References: <20220621070224.1231039-1-zhangshida@kylinos.cn> <20220621073943.GQ227878@dread.disaster.area>
-In-Reply-To: <20220621073943.GQ227878@dread.disaster.area>
-From:   Stephen Zhang <starzhangzsd@gmail.com>
-Date:   Tue, 21 Jun 2022 16:39:15 +0800
-Message-ID: <CANubcdVW8cje_3MEAZsWN8TFKMO8kTe8VuNFAxsBxTh7haV8vg@mail.gmail.com>
-Subject: Re: [PATCH v2] xfs: add check before calling xfs_mod_fdblocks
-To:     Dave Chinner <david@fromorbit.com>
-Cc:     djwong@kernel.org, dchinner@redhat.com,
-        zhangshida <zhangshida@kylinos.cn>, linux-kernel@vger.kernel.org,
-        linux-xfs@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v5 -next] usb: xhci: disable irq during initialization
+Content-Language: en-US
+To:     Mathias Nyman <mathias.nyman@linux.intel.com>,
+        Hongyu Xie <xy521521@gmail.com>, mathias.nyman@intel.com,
+        gregkh@linuxfoundation.org
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        125707942@qq.com, wangqi@kylinos.cn, xiongxin@kylinos.cn
+References: <20220616083852.1264261-1-xiehongyu1@kylinos.cn>
+ <bf133cfd-8d9a-474e-989e-48fe383ecfbd@linux.intel.com>
+From:   =?UTF-8?B?6LCi5rOT5a6H?= <xiehongyu1@kylinos.cn>
+In-Reply-To: <bf133cfd-8d9a-474e-989e-48fe383ecfbd@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dave Chinner <david@fromorbit.com> =E4=BA=8E2022=E5=B9=B46=E6=9C=8821=E6=97=
-=A5=E5=91=A8=E4=BA=8C 15:39=E5=86=99=E9=81=93=EF=BC=9A
->
-> On Tue, Jun 21, 2022 at 03:02:24PM +0800, Shida Zhang wrote:
-> > Checks are missing when delta equals 0 in __xfs_ag_resv_free() and
-> > __xfs_ag_resv_init().
->
-> This describes what the patch does, not the problem being solved is.
->
-> i.e. This doesn't tell the reader why the delta can be zero in these
-> places, nor does it tell them what the impact of it being zero is.
-> We can't use this information to identify a system that is having
-> problems due to this issue because they havent' been described.
->
-> Hence when I ask for more detail about how something occurs, what I'm
-> asking for is a description of the how the problem was found, what
-> the impact of the problem has on systems, how the problem is
-> reproduced, etc.
->
-> Something led you to finding this problem - tell us the story so we
-> also know what you know and so can understand why the change needs
-> to be made. A good commit description tells the reader everything
-> you know about the problem that needs to be fixed, the code change
-> itself will then describe how the problem was fixed...
->
-> Cheers,
->
-> Dave.
-> --
-> Dave Chinner
-> david@fromorbit.com
+Hi,
 
-Thanks for your suggestion. I will try to rephrase the description.
+It looks fine.
+Thanks for all the advices and cleanups.
 
-Cheers,
-
-Stephen.
+On 2022/6/21 16:25, Mathias Nyman wrote:
+> Hi
+> 
+> On 16.6.2022 11.38, Hongyu Xie wrote:
+>> irq is disabled in xhci_quiesce(called by xhci_halt, with bit:2 cleared
+>> in USBCMD register), but xhci_run(called by usb_add_hcd) re-enable it.
+>> It's possible that you will receive thousands of interrupt requests
+>> after initialization for 2.0 roothub. And you will get a lot of
+>> warning like, "xHCI dying, ignoring interrupt. Shouldn't IRQs be
+>> disabled?". This amount of interrupt requests will cause the entire
+>> system to freeze.
+>> This problem was first found on a device with ASM2142 host controller
+>> on it.
+>>
+>> Signed-off-by: Hongyu Xie <xiehongyu1@kylinos.cn>
+>> --
+> Thanks, added.
+> Did some non-functional cleanups, mostly to the old debug messages this patch
+> moves around:
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/mnyman/xhci.git/commit/?h=for-usb-linus&id=2d1fa9b0b08bb841fde9136c249f632eb04a1e00
+> 
+> Let me know if you disagree with the changes
+> 
+> -Mathias
+  -Hongyu
