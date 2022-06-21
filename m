@@ -2,108 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D793C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:18:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E323C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:19:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355467AbiFUVSm (ORCPT
+        id S1355541AbiFUVTP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 17:18:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34110 "EHLO
+        Tue, 21 Jun 2022 17:19:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355354AbiFUVS1 (ORCPT
+        with ESMTP id S1355790AbiFUVTA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 17:18:27 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 028D835260;
-        Tue, 21 Jun 2022 14:03:56 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id x6-20020a1c7c06000000b003972dfca96cso7879725wmc.4;
-        Tue, 21 Jun 2022 14:03:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=references:from:to:cc:subject:in-reply-to:date:message-id
-         :mime-version;
-        bh=v2qblIOiEq3IV+Rw5HWdpUsMOXZ3HPIB/MKM16Vrm1A=;
-        b=fwTohF+N5txaueZetr08UocKNsHSlc0pzESbB1F/y7wPIx38EW4abh69DjLIIjg/mK
-         PU5/PAH62EX7TRCqSDP8SsNK5QMFUusTly5FVdavQPdaKxAMzKjYBMDAGreFR6ilv4x4
-         Q9rSo5W3HuGDB4NIyUy4Zy9cXxhJnNXFdpWoE0dRh5GS0J/K7eqtjcrwyZq0CH6X+1Y0
-         mIk+D/RxPlF8lPrxMUpcP798DAj0/aM/TM0peucKs2oabnmprSy/oo94jxdJiLKNHOgW
-         GMSyJCSCHgyPxF2XER+hKCvjGlgXmLCvJq8G4/sS5aro8+uViOglPu+6dioavbEmSzZY
-         9VEA==
+        Tue, 21 Jun 2022 17:19:00 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3E4173526D
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 14:04:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655845462;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6KcRH4/KUHtf5xpIj4aJVy42n1FCoQeasRmMHkO/WZY=;
+        b=Qt5LTOXlYE83qQIlY9uXeg0NSio4kzTD5sD2z1meOpp5+/htVZ9s/FSSUGW1lBQR9jzs7R
+        /869uxLv166UfwxArOUE/onpxRNBRyvNx1wf+CGrm3mtXInCz9kGCI3yrF7WOTzjRSmkuC
+        4Jwp4eQn0saKjdh8im+BFBA/UtTsK4g=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-668-cEr2j4qbOVa_-EGnshGRsw-1; Tue, 21 Jun 2022 17:04:20 -0400
+X-MC-Unique: cEr2j4qbOVa_-EGnshGRsw-1
+Received: by mail-wm1-f72.google.com with SMTP id l3-20020a05600c1d0300b0039c7efa2526so6741964wms.3
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 14:04:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=v2qblIOiEq3IV+Rw5HWdpUsMOXZ3HPIB/MKM16Vrm1A=;
-        b=tP1L5X1S1cs3B+CvPpZU9l89GbLpknmeh5/C04EWASwLt9FsSAQjLwu2fFHaAxAamG
-         H8zG4ATpI3dobVHzId67YXjaIp9r4UYsvQ/XKSFtgBepcgcCcwUkKR9JN+4+18VhJ7Mm
-         thYw/HVrj8lWXlZaStmJeX/WIuh4B3aZPRDSZD4X0uIFWSjJsQ1lWTEM7cqgCNkSYh+K
-         I3RYCAVVcRnuv31lk+JTQOVXivAH9oKhge6Nr8u8yGaw0pwmYJNw8z3JWYHGWB+MBs/+
-         y/0cJ7eewcQIahZz51hgUP12lofamdnrgkoImQfHT8rm4PbLmQ2auACgXSgzIxrrELsS
-         hqzQ==
-X-Gm-Message-State: AJIora8m7bpQ4jZbofQJBHjK8LWxHMYHrvXqImSAL/HRjgAdSXAApR/y
-        /Dz3pgwteoK6hsCZbyBDXR8=
-X-Google-Smtp-Source: AGRyM1seawZlN42pmJSLDQJ3ijOHsGsLAxYpv/JRO9LAGuWDU9AGN2HjpN9wo6nVNwoUmKfzn+8ozg==
-X-Received: by 2002:a7b:cf2a:0:b0:39c:4eef:29e with SMTP id m10-20020a7bcf2a000000b0039c4eef029emr117762wmg.28.1655845434599;
-        Tue, 21 Jun 2022 14:03:54 -0700 (PDT)
-Received: from localhost (92.40.168.123.threembb.co.uk. [92.40.168.123])
-        by smtp.gmail.com with ESMTPSA id w3-20020adfec43000000b0021b89c07b6asm11227967wrn.108.2022.06.21.14.03.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jun 2022 14:03:54 -0700 (PDT)
-References: <20220620200644.1961936-1-aidanmacdonald.0x0@gmail.com>
- <YrH7JurP2LAl1uYU@sirena.org.uk>
-From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     agross@kernel.org, bjorn.andersson@linaro.org,
-        srinivas.kandagatla@linaro.org, bgoswami@codeaurora.org,
-        gregkh@linuxfoundation.org, rafael@kernel.org,
-        cw00.choi@samsung.com, krzysztof.kozlowski@linaro.org,
-        b.zolnierkie@samsung.com, myungjoo.ham@samsung.com,
-        michael@walle.cc, linus.walleij@linaro.org, brgl@bgdev.pl,
-        tglx@linutronix.de, maz@kernel.org, lee.jones@linaro.org,
-        mani@kernel.org, cristian.ciocaltea@gmail.com, wens@csie.org,
-        tharvey@gateworks.com, rjones@gateworks.com,
-        mazziesaccount@gmail.com, orsonzhai@gmail.com,
-        baolin.wang7@gmail.com, zhang.lyra@gmail.com,
-        jernej.skrabec@gmail.com, samuel@sholland.org, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, linux-kernel@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-actions@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        alsa-devel@alsa-project.org
-Subject: Re: [PATCH 00/49] regmap-irq cleanups and refactoring
-In-reply-to: <YrH7JurP2LAl1uYU@sirena.org.uk>
-Date:   Tue, 21 Jun 2022 22:04:59 +0100
-Message-ID: <oewDtaKXJJctSx2HcLTI4xuAmbzWo8Vb@localhost>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=6KcRH4/KUHtf5xpIj4aJVy42n1FCoQeasRmMHkO/WZY=;
+        b=UgnIZlSKASWaaOUmjtlwihFogJix0pmbgtSD9OoWwavag6FXewZc0jT5/2E5SlAQ04
+         0cvn+nsezebW1rIf6xtzKQJ8qTmyu3/4LvKGPUBh+Xxplu881AR+6bkChrzTO4/MDFGU
+         pQjliI5+1XcnXpEwQet/xXkxHO/uwyfFw+XUvMcO1nteLK4OqX4HhgHjfm0IFZ5/569G
+         0WzX+Hzn880H2/HxGF8WO49pSByTo0EfGghoyoKvQy/UKjdauyJOizQDOz8erp3N+0Of
+         Nny4AgswIBD18lXIjJYHdgRqofU7G0AWz9GJCM5/fDS15C2eYguqh4lovpiWY/cIYKpb
+         fgDg==
+X-Gm-Message-State: AOAM530AuIUk3w8+16X3Syl5zkvVKt9IYXMvC/8YJMoQIltcEeJ6ROW4
+        Hn3xUwG5vIryLXRJpN/1HwO4FkJluIACIH99YRjzr8rbsRFWjnZXEK+6GqbH2Q6N5EcpjReJdRz
+        YHe1ju+2K6RPa/L/GxvAOnMRn
+X-Received: by 2002:a1c:7411:0:b0:39c:8e4c:9704 with SMTP id p17-20020a1c7411000000b0039c8e4c9704mr42808297wmc.52.1655845459381;
+        Tue, 21 Jun 2022 14:04:19 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwm+wwv4IGBrN3CJ2eLl14IUYzF8AfIDUJBjL++7SCmt5nepLdvMx+y2Kx/kdCIkOHLNxnIWg==
+X-Received: by 2002:a1c:7411:0:b0:39c:8e4c:9704 with SMTP id p17-20020a1c7411000000b0039c8e4c9704mr42808282wmc.52.1655845459151;
+        Tue, 21 Jun 2022 14:04:19 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c705:bc00:a63c:7e37:6061:1706? (p200300cbc705bc00a63c7e3760611706.dip0.t-ipconnect.de. [2003:cb:c705:bc00:a63c:7e37:6061:1706])
+        by smtp.gmail.com with ESMTPSA id b3-20020a5d5503000000b0021b881c4c5csm10872237wrv.53.2022.06.21.14.04.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 21 Jun 2022 14:04:18 -0700 (PDT)
+Message-ID: <e25cb58c-464c-8bd4-c7da-9ab80b49f3bb@redhat.com>
+Date:   Tue, 21 Jun 2022 23:04:18 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v10 11/69] mm/mmap: use the maple tree in find_vma()
+ instead of the rbtree.
+Content-Language: en-US
+To:     Liam Howlett <liam.howlett@oracle.com>,
+        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "damon @ lists . linux . dev" <damon@lists.linux.dev>,
+        SeongJae Park <sj@kernel.org>
+References: <20220621204632.3370049-1-Liam.Howlett@oracle.com>
+ <20220621204632.3370049-12-Liam.Howlett@oracle.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20220621204632.3370049-12-Liam.Howlett@oracle.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 21.06.22 22:46, Liam Howlett wrote:
+> From: "Liam R. Howlett" <Liam.Howlett@Oracle.com>
+> 
+> Using the maple tree interface mt_find() will handle the RCU locking and
+> will start searching at the address up to the limit, ULONG_MAX in this
+> case.
+> 
+> Add kernel documentation to this API.
+> 
+> Link: https://lkml.kernel.org/r/20220504010716.661115-13-Liam.Howlett@oracle.com
+> Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
+> Acked-by: Vlastimil Babka <vbabka@suse.cz>
+> Cc: Catalin Marinas <catalin.marinas@arm.com>
+> Cc: David Howells <dhowells@redhat.com>
+> Cc: "Matthew Wilcox (Oracle)" <willy@infradead.org>
+> Cc: SeongJae Park <sj@kernel.org>
+> Cc: Will Deacon <will@kernel.org>
+> Cc: Davidlohr Bueso <dave@stgolabs.net>
+> Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+> ---
+>  mm/mmap.c | 28 ++++++++++------------------
+>  1 file changed, 10 insertions(+), 18 deletions(-)
+> 
+> diff --git a/mm/mmap.c b/mm/mmap.c
+> index d7e6baa2f40f..fdb61252448f 100644
+> --- a/mm/mmap.c
+> +++ b/mm/mmap.c
+> @@ -2486,11 +2486,18 @@ get_unmapped_area(struct file *file, unsigned long addr, unsigned long len,
+>  
+>  EXPORT_SYMBOL(get_unmapped_area);
+>  
+> -/* Look up the first VMA which satisfies  addr < vm_end,  NULL if none. */
+> +/**
+> + * find_vma() - Find the VMA for a given address, or the next vma.
+> + * @mm: The mm_struct to check
+> + * @addr: The address
+> + *
+> + * Returns: The VMA associated with addr, or the next vma.
+> + * May return %NULL in the case of no vma at addr or above.
 
-Mark Brown <broonie@kernel.org> writes:
+Nit: inconsistent use of VMA vs. vma.
 
-> On Mon, Jun 20, 2022 at 09:05:55PM +0100, Aidan MacDonald wrote:
->
->> Here's a bunch of cleanups for regmap-irq focused on simplifying the API
->> and generalizing it a bit. It's broken up into three refactors, focusing
->> on one area at a time.
->
-> This series is very large and the way it is interleaving patches for
-> several different subsystems adds to the difficulty managing it.  As
-> you've identified there's several different subserieses in here, if you
-> need to resend any of this (I've not even started looking at the actual
-> patches yet) it would be easier to digest with some combination of
-> sending as separate serieses and reordering things so that all the
-> things for each subsystem are grouped together.  That'd help with both
-> review and with merging, both large serieses and cross subsystem
-> dependencies tend to slow things down.
+> + */
+>  struct vm_area_struct *find_vma(struct mm_struct *mm, unsigned long addr)
+>  {
+> -	struct rb_node *rb_node;
+>  	struct vm_area_struct *vma;
+> +	unsigned long index = addr;
+>  
+>  	mmap_assert_locked(mm);
+>  	/* Check the cache first. */
+> @@ -2498,22 +2505,7 @@ struct vm_area_struct *find_vma(struct mm_struct *mm, unsigned long addr)
+>  	if (likely(vma))
+>  		return vma;
+>  
+> -	rb_node = mm->mm_rb.rb_node;
+> -
+> -	while (rb_node) {
+> -		struct vm_area_struct *tmp;
+> -
+> -		tmp = rb_entry(rb_node, struct vm_area_struct, vm_rb);
+> -
+> -		if (tmp->vm_end > addr) {
+> -			vma = tmp;
+> -			if (tmp->vm_start <= addr)
+> -				break;
+> -			rb_node = rb_node->rb_left;
+> -		} else
+> -			rb_node = rb_node->rb_right;
+> -	}
+> -
+> +	vma = mt_find(&mm->mm_mt, &index, ULONG_MAX);
 
-Thanks for the advice. After reading this and some of Andy's comments I
-think I understand how to organize this better.
+I guess it would be handy to have a mt_find() variant that simply
+consumes an address, because for example here, we don't actually care
+about the output semantics? Does anything speak against such a utility
+function or is this here really just a corner case?
 
-I'll send a trimmed down series including only regmap changes, and
-instead of removing things right away I'll just mark them deprecated.
-Then the driver patches can go by subsystem (one series per subsystem?)
-and once everything is merged the deprecated stuff in regmap-irq can be
-removed at a later date.
+That would make that code *even easier* to read.
+
+>  	if (vma)
+>  		vmacache_update(addr, vma);
+>  	return vma;
+
+Reviewed-by: David Hildenbrand <david@redhat.com>
+
+-- 
+Thanks,
+
+David / dhildenb
+
