@@ -2,151 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0935AC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 16:39:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6C2CC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 16:39:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229821AbiFUQjQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 12:39:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52144 "EHLO
+        id S1352681AbiFUQji (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 21 Jun 2022 12:39:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351923AbiFUQi5 (ORCPT
+        with ESMTP id S1352267AbiFUQj1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 12:38:57 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57FC617AA7;
-        Tue, 21 Jun 2022 09:38:56 -0700 (PDT)
-Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LSBxQ4GYhz6H6n7;
-        Wed, 22 Jun 2022 00:36:58 +0800 (CST)
-Received: from roberto-ThinkStation-P620.huawei.com (10.204.63.22) by
- fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 21 Jun 2022 18:38:53 +0200
-From:   Roberto Sassu <roberto.sassu@huawei.com>
-To:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
-        <kpsingh@kernel.org>, <john.fastabend@gmail.com>,
-        <songliubraving@fb.com>, <kafai@fb.com>, <yhs@fb.com>
-CC:     <dhowells@redhat.com>, <keyrings@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Roberto Sassu <roberto.sassu@huawei.com>
-Subject: [PATCH v5 4/5] selftests/bpf: Add test for unreleased key references
-Date:   Tue, 21 Jun 2022 18:37:56 +0200
-Message-ID: <20220621163757.760304-5-roberto.sassu@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220621163757.760304-1-roberto.sassu@huawei.com>
-References: <20220621163757.760304-1-roberto.sassu@huawei.com>
+        Tue, 21 Jun 2022 12:39:27 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 406F02AE33;
+        Tue, 21 Jun 2022 09:39:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 25849CE1717;
+        Tue, 21 Jun 2022 16:39:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 598C3C341CB;
+        Tue, 21 Jun 2022 16:39:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655829546;
+        bh=VCez7PoXmCq8OMYH5lrZaxn9tW18j0vO8IsYehW8qjE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=cqDERhBlOPWY9Uixv94FxXcDJO1cNoL77AaV3Nf4hqRaRHaymiHwNgFz6e0nCiAzW
+         KypAvopdtIM0Nr9R/cgYG3yJdn6kLp73lKhwmpwXRC/59LFjlaqtaFrt0yY3qisKGS
+         uC6CNf31ufJwcOvL3eniLgGO7LvSF/YpJ4JiaYO8LKWWspf1io19+0ziIeMaBDz09E
+         91oNEoWqOkbQMFMiJ/lBD4xbXx1wPSHqLT26pBxmNHeUyN6Mn3OkpZf3qqmiQM+4da
+         m2a02bFNUuoj3pyfNmHKW1nvglyZwpR3RvnQcZ07+iqlFwm/v3onxVtup/rbAnUiCm
+         74P8Wz/qDFZuw==
+Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <maz@kernel.org>)
+        id 1o3gu6-0026pW-QV;
+        Tue, 21 Jun 2022 17:39:02 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.204.63.22]
-X-ClientProxiedBy: lhreml754-chm.china.huawei.com (10.201.108.204) To
- fraeml714-chm.china.huawei.com (10.206.15.33)
-X-CFilter-Loop: Reflected
+Date:   Tue, 21 Jun 2022 17:39:02 +0100
+From:   Marc Zyngier <maz@kernel.org>
+To:     Fabio Estevam <festevam@gmail.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        Marek Vasut <marex@denx.de>,
+        Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        linux-input@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>
+Subject: Re: mxs_lradc_ts: Warning due to "0 is an invalid IRQ number"
+In-Reply-To: <CAOMZO5B6606rwWoG-ydEz2UQpnj9QhUK2b5dCHRtp9u=Pe4new@mail.gmail.com>
+References: <CAOMZO5D7z=Eg=WYgzrpqn9VoU8HxMeBbEZiv9KLjMVD1_kRo+w@mail.gmail.com>
+ <20200701224145.GA3616172@bjorn-Precision-5520>
+ <YrHPA+TBKZU/RuSz@smile.fi.intel.com> <87o7ym2fcv.wl-maz@kernel.org>
+ <CAOMZO5B6606rwWoG-ydEz2UQpnj9QhUK2b5dCHRtp9u=Pe4new@mail.gmail.com>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <128b8f7dffe45dc241ad571e8a273a2e@kernel.org>
+X-Sender: maz@kernel.org
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 51.254.78.96
+X-SA-Exim-Rcpt-To: festevam@gmail.com, andriy.shevchenko@intel.com, helgaas@kernel.org, marex@denx.de, ksenija.stanojevic@gmail.com, dmitry.torokhov@gmail.com, linux-input@vger.kernel.org, linux-kernel@vger.kernel.org, robh+dt@kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Ensure that the verifier detects the attempt of acquiring a reference of a
-key through the helper bpf_lookup_user_key(), without releasing that
-reference with bpf_key_put(), and refuses to load the program.
+Hi Fabio,
 
-Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
----
- .../prog_tests/lookup_user_key_norelease.c    | 52 +++++++++++++++++++
- .../progs/test_lookup_user_key_norelease.c    | 24 +++++++++
- 2 files changed, 76 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/lookup_user_key_norelease.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_lookup_user_key_norelease.c
+On 2022-06-21 17:23, Fabio Estevam wrote:
+> Hi Marc,
+> 
+> On Tue, Jun 21, 2022 at 12:41 PM Marc Zyngier <maz@kernel.org> wrote:
+> 
+>> Something like the hack below could potentially make things less
+>> broken, but I'm not holding my breath. If nobody cares, let's remove
+>> the code altogether.
+> 
+> With your patch applied, the warning is gone, thanks.
+> 
+> The touchscreen is registered:
+> 
+> [    8.207461] input: mxs-lradc-ts as
+> /devices/soc0/80000000.apb/80040000.apbx/80050000.lradc/mxs-lradc-ts/input/input0
+> 
+> but when I run  "cat /dev/input/event0" and touch the screen, no irq
+> event is generated.
+> 
+> Looking at cat /proc/interrupts shows that no mxs-lradc-touchscreen
+> irq happened:
+> 
+> 216:          0         -  10 Edge      mxs-lradc-touchscreen
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/lookup_user_key_norelease.c b/tools/testing/selftests/bpf/prog_tests/lookup_user_key_norelease.c
-new file mode 100644
-index 000000000000..6753c4f591e3
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/lookup_user_key_norelease.c
-@@ -0,0 +1,52 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+/*
-+ * Copyright (C) 2022 Huawei Technologies Duesseldorf GmbH
-+ *
-+ * Author: Roberto Sassu <roberto.sassu@huawei.com>
-+ */
-+
-+#include <test_progs.h>
-+
-+#include "test_lookup_user_key_norelease.skel.h"
-+
-+#define LOG_BUF_SIZE 16384
-+
-+void test_lookup_user_key_norelease(void)
-+{
-+	char *buf = NULL, *result;
-+	struct test_lookup_user_key_norelease *skel = NULL;
-+	int ret;
-+
-+	LIBBPF_OPTS(bpf_object_open_opts, opts);
-+
-+	buf = malloc(LOG_BUF_SIZE);
-+	if (!ASSERT_OK_PTR(buf, "malloc"))
-+		goto close_prog;
-+
-+	opts.kernel_log_buf = buf;
-+	opts.kernel_log_size = LOG_BUF_SIZE;
-+	opts.kernel_log_level = 1;
-+
-+	skel = test_lookup_user_key_norelease__open_opts(&opts);
-+	if (!ASSERT_OK_PTR(skel, "test_lookup_user_key_norelease__open_opts"))
-+		goto close_prog;
-+
-+	ret = test_lookup_user_key_norelease__load(skel);
-+	if (!ASSERT_LT(ret, 0, "test_lookup_user_key_norelease__load\n"))
-+		goto close_prog;
-+
-+	if (strstr(buf, "unknown func bpf_lookup_user_key")) {
-+		printf("%s:SKIP:bpf_lookup_user_key() helper not supported\n",
-+		       __func__);
-+		test__skip();
-+		goto close_prog;
-+	}
-+
-+	result = strstr(buf, "Unreleased reference");
-+	ASSERT_OK_PTR(result, "Error message not found");
-+
-+close_prog:
-+	free(buf);
-+	test_lookup_user_key_norelease__destroy(skel);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_lookup_user_key_norelease.c b/tools/testing/selftests/bpf/progs/test_lookup_user_key_norelease.c
-new file mode 100644
-index 000000000000..cfe474c77886
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_lookup_user_key_norelease.c
-@@ -0,0 +1,24 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+/*
-+ * Copyright (C) 2022 Huawei Technologies Duesseldorf GmbH
-+ *
-+ * Author: Roberto Sassu <roberto.sassu@huawei.com>
-+ */
-+
-+#include <errno.h>
-+#include <stdlib.h>
-+#include <limits.h>
-+#include <linux/bpf.h>
-+#include <linux/keyctl.h>
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+
-+char _license[] SEC("license") = "GPL";
-+
-+SEC("lsm.s/bpf")
-+int BPF_PROG(bpf, int cmd, union bpf_attr *attr, unsigned int size)
-+{
-+	bpf_lookup_user_key(KEY_SPEC_SESSION_KEYRING, 0);
-+	return 0;
-+}
+I'm not sure I can help you further on that. '10' seems to be
+the correct interrupt for the interrupt number (irq index 0 in
+the lradc device).
+
+You'll have to debug it further, I'm afraid.
+
+         M.
 -- 
-2.25.1
-
+Jazz is not dead. It just smells funny...
