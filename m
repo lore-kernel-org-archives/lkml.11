@@ -2,121 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D579DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 17:17:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 369F7CCA473
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 17:18:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353087AbiFURR2 (ORCPT
+        id S1353223AbiFURST (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 13:17:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50406 "EHLO
+        Tue, 21 Jun 2022 13:18:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353066AbiFURQe (ORCPT
+        with ESMTP id S1353074AbiFURSP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 13:16:34 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C19FF2B1BE
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 10:16:31 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id t21so7418230pfq.1
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 10:16:31 -0700 (PDT)
+        Tue, 21 Jun 2022 13:18:15 -0400
+Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA1EC2711
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 10:18:14 -0700 (PDT)
+Received: by mail-qk1-x72c.google.com with SMTP id p63so10607640qkd.10
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 10:18:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Fs5s4JcJ+7OVLy6dPnCaAHxh/LbeQw/mzmnVnCYs5jU=;
-        b=dTV2dYwI90sJL6IoPQwX2ej+S7VZ0SyJsWgey+NbaI5ofhR3zEw2DefJAen04k9Bf/
-         8Wbdf/wdCU6paRVelxfwltwLeinGaVF4WZ26I3QQNVNrFo1w0q4WocCbjHjuqoMyRYHL
-         NFcwgy+gvux8h+Tz82Cs6CzPjxyU3h+7loAV2LE3bLF3YoiCcW/yR92Vtu1AaOg7MNBm
-         RGin2ZSr4RMDAq/Cq7MWnYTOXskxlj1JjdcNWVy9zW0fEZ6gYQTnKcyl4Joir26m2v73
-         T4CmIpL2CeipqaS/KcmSntty89ZdcT88PPS9+8lVnr+tp7AVUS2iZOjjjMHV3Oz4EmOl
-         LFng==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qwgcxcNcyUJ2NZcZ15e/v3/JFQqPvu5+AV1dXV2vsco=;
+        b=TRn64fJDhOElfdcTPwyz6sItOyqoiDKFp52IyHdMNOTBQcCEhFotFhbieaj7qSREL8
+         3kGY1lhmsXg3/711w7p4yz2xDmezK97ZjDhH25hVdCPA/4g4FUTMDfgN2vSWX/ZhArl0
+         nNZETnIyH2zeO4mPe268fsAerKKK5cWu6jwDZJaN4Y1VTofp0cWGYy7YtPNfrcyKxeX1
+         y2CUij5/SY1Qv53A/TY/LJpo4tbrvweyd9Evb7XGjxNlMjDc/es/LordtDmcKhzYuguh
+         xSlzNflRpZl8OppZX6apzOLrVnhL2PUvipQoqWarhBbf7mk012ZXQ8zb+/Kj8HpdvrbZ
+         41Lw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Fs5s4JcJ+7OVLy6dPnCaAHxh/LbeQw/mzmnVnCYs5jU=;
-        b=DyIXwgVK0o1p76MPi20V2qVnVf8lvIklGA5DDh2sQlhHu4FFNFAYiMpg2zT83vXxol
-         2MuRaMv+uelTUMsLuA2xYwAFyAcJwo7dXQDOVEBOI6C5niDRcHGVa6MbdoQm5JmbHTGj
-         jl/6CXroV5ESwYtRfnQ3HhUfE43xdBO66sCxi3YHTQd0x1xLGhU7ZWLNQ4kC9eRLRmSm
-         FfBv3VxPvfWyK8exJDLivCLfLHs01FaFAEY3jYI0rGF/oOCIdGYU3Frd+GHxk7TZ/6QP
-         zBCwzTUyDZvD8S3CbI+Tq4Kh2lPd1B+XItBucWcZjFssrQovCZyjmaEYKoZw98PDJDbu
-         82Nw==
-X-Gm-Message-State: AJIora+fUhsq0Me2YHx9WPVO5j05Dj2l2812lnbVqnIMGHAu9iTz0HRc
-        62qKl55Dzn1LvxZDHxr9oqzQ9kktzHjxiWR5
-X-Google-Smtp-Source: AGRyM1savgryE5QvJxpt5RmEz7m9ePaP9HX/xUs1NQ3VOCvtR0kEFvkWxqI2Q0V2e2NKSPT7xG3kuw==
-X-Received: by 2002:a63:7785:0:b0:40c:c07d:6c21 with SMTP id s127-20020a637785000000b0040cc07d6c21mr9867927pgc.7.1655831791084;
-        Tue, 21 Jun 2022 10:16:31 -0700 (PDT)
-Received: from n131-251-240.byted.org ([121.30.179.156])
-        by smtp.gmail.com with ESMTPSA id cp15-20020a170902e78f00b001664d88aab3sm10843899plb.240.2022.06.21.10.16.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jun 2022 10:16:30 -0700 (PDT)
-From:   Zhi Song <zhi.song@bytedance.com>
-To:     gregkh@linuxfoundation.org, rafael@kernel.org,
-        Jonathan.Cameron@huawei.com, kbusch@kernel.org
-Cc:     linux-kernel@vger.kernel.org, Zhi Song <zhi.song@bytedance.com>
-Subject: [PATCH v4] node: fix error handling in node_init_node_access
-Date:   Wed, 22 Jun 2022 01:16:23 +0800
-Message-Id: <20220621171623.1959231-1-zhi.song@bytedance.com>
-X-Mailer: git-send-email 2.30.2
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qwgcxcNcyUJ2NZcZ15e/v3/JFQqPvu5+AV1dXV2vsco=;
+        b=jd53UXXpMWfZTSx2h028Xpv4zEnPKz8Htd4f7YNej4jBBpY8Da47kbZlJnN7zTBjIm
+         L5MB9hvXD7tFYwdJpCJ7phNXjgdPAKQkADVJHRkh2uQAPZ9fghuYvriCO1I0e67YKC0f
+         IDbsqfDUlLwnPZDU2pXKxFeyXDALUbSIgO4yXjd6t9/L5UpxpEkNBIaLvbhDKGUGkkkx
+         Z6EZ5jirocm4/+rkaA/onf6LlhNJ2+iSCcND8eMb+xFbdd0j/v8XfwIzuM5mfPgq550/
+         OX7GVqZ5Gmiv6xl+JzwGuhbUkJI+CIseg3vUTKO/iZD7fVDgTu8KPfHkabIJ12pcr8mx
+         LwLw==
+X-Gm-Message-State: AJIora/awiakroA2z86wyNTowGdIORtNuXWR8eqibMIyGY3lHoJ1ZhsP
+        q1kc+HDBrzqffXdhgZenTpkY4YU/Zf0XEaimdQ97yw==
+X-Google-Smtp-Source: AGRyM1smc0gwmosrHI+DQL1uoC4Ig2j2XwTOLwa6CjLVbxx4AvthhD2XSWSsKcJldKX7/++f3DvVCyYjrta4Yu1yNpk=
+X-Received: by 2002:a05:620a:4156:b0:6a6:f8d2:6d9e with SMTP id
+ k22-20020a05620a415600b006a6f8d26d9emr21165057qko.30.1655831893778; Tue, 21
+ Jun 2022 10:18:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <1655830891-19025-1-git-send-email-quic_khsieh@quicinc.com> <1655830891-19025-3-git-send-email-quic_khsieh@quicinc.com>
+In-Reply-To: <1655830891-19025-3-git-send-email-quic_khsieh@quicinc.com>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Date:   Tue, 21 Jun 2022 20:18:02 +0300
+Message-ID: <CAA8EJppZSuEOAh_K-wqQtC4Zx-W5ig02Oe7ZukJnF_Z=6pEDfA@mail.gmail.com>
+Subject: Re: [PATCH v15 2/3] phy: qcom-qmp: add regulator_set_load to dp phy
+To:     Kuogee Hsieh <quic_khsieh@quicinc.com>
+Cc:     dri-devel@lists.freedesktop.org, robdclark@gmail.com,
+        sean@poorly.run, swboyd@chromium.org, dianders@chromium.org,
+        vkoul@kernel.org, daniel@ffwll.ch, airlied@linux.ie,
+        agross@kernel.org, bjorn.andersson@linaro.org,
+        quic_abhinavk@quicinc.com, quic_aravindh@quicinc.com,
+        quic_sbillaka@quicinc.com, freedreno@lists.freedesktop.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-dev_set_name() allocates new space to dev->name if it allocates
-successfully. But if we failed to allocate space, there won't be any
-new space for dev->name. Therefore, there's no need for calling
-kfree_const(dev->kobj.name) in dev_set_name()'s error handling.
+On Tue, 21 Jun 2022 at 20:02, Kuogee Hsieh <quic_khsieh@quicinc.com> wrote:
+>
+> This patch add regulator_set_load() before enable regulator at
+> DP phy driver.
+>
+> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+> Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+> Reviewed-by: Douglas Anderson <dianders@chromium.org>
 
-If we failed to calling device_register(dev), we just need to call
-put_device(dev) which will do access_node freeing, kobj.name freeing
-and other cleanup.
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-Fixes: 08d9dbe72b1f ("node: Link memory nodes to their compute nodes")
-Signed-off-by: Zhi Song <zhi.song@bytedance.com>
----
-V1 -> V2: Fix up the changelog text correct.
-V2 -> V3: Add a fixes tag line specifying the commit where this bug was
-introduced.
-V3 -> V4: Fix the error handling for dev_set_name() and
-device_register() to perform cleanup correctly.
----
- drivers/base/node.c | 17 ++++++++---------
- 1 file changed, 8 insertions(+), 9 deletions(-)
+> ---
+>  drivers/phy/qualcomm/phy-qcom-qmp-combo.c | 43 ++++++++++++++++++++++++-------
+>  1 file changed, 33 insertions(+), 10 deletions(-)
+>
 
-diff --git a/drivers/base/node.c b/drivers/base/node.c
-index 0ac6376ef7a1..0946931f113d 100644
---- a/drivers/base/node.c
-+++ b/drivers/base/node.c
-@@ -144,20 +144,19 @@ static struct node_access_nodes *node_init_node_access(struct node *node,
- 	dev->parent = &node->dev;
- 	dev->release = node_access_release;
- 	dev->groups = node_access_node_groups;
--	if (dev_set_name(dev, "access%u", access))
--		goto free;
-+	if (dev_set_name(dev, "access%u", access)) {
-+		kfree(access_node);
-+		return NULL;
-+	}
- 
--	if (device_register(dev))
--		goto free_name;
-+	if (device_register(dev)) {
-+		put_device(dev);
-+		return NULL;
-+	}
- 
- 	pm_runtime_no_callbacks(dev);
- 	list_add_tail(&access_node->list_node, &node->access_list);
- 	return access_node;
--free_name:
--	kfree_const(dev->kobj.name);
--free:
--	kfree(access_node);
--	return NULL;
- }
- 
- #ifdef CONFIG_HMEM_REPORTING
 -- 
-2.30.2
-
+With best wishes
+Dmitry
