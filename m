@@ -2,62 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDF1EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 14:24:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F765C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 14:25:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351500AbiFUOYd (ORCPT
+        id S1351529AbiFUOZJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 10:24:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37140 "EHLO
+        Tue, 21 Jun 2022 10:25:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349421AbiFUOYb (ORCPT
+        with ESMTP id S1349421AbiFUOZI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 10:24:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5932A18E25;
-        Tue, 21 Jun 2022 07:24:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DB49EB81821;
-        Tue, 21 Jun 2022 14:24:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22398C341C7;
-        Tue, 21 Jun 2022 14:24:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655821467;
-        bh=350SJzImgIdaQO22/bjHSMxrvFtKkYmGp2AdM9fujMU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=xxCobeWV9PFpl1ZnS9rM84etHQCLfr61o3fPRFUyc8MvOdlikTDRjxIEwitXu/AHr
-         T87HxR5UfXRfbZWidBvNqqDt8LFrpzy+PwrGo8QBshRqBVanJ+ykcqKtUkTQCjGRcI
-         EaC8VOHo78caHZARBfV27O9sJNshdS1vPjQ1XMTM=
-Date:   Tue, 21 Jun 2022 16:24:24 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Cc:     hminas@synopsys.com, stern@rowland.harvard.edu,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        amelie.delaunay@foss.st.com
-Subject: Re: [PATCH 3/3] usb: dwc2: host: add TPL support
-Message-ID: <YrHUmIpydvNYeRou@kroah.com>
-References: <20220621130506.85424-1-fabrice.gasnier@foss.st.com>
- <20220621130506.85424-4-fabrice.gasnier@foss.st.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220621130506.85424-4-fabrice.gasnier@foss.st.com>
+        Tue, 21 Jun 2022 10:25:08 -0400
+Received: from smtpbg.qq.com (smtpbg139.qq.com [175.27.65.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C56515FCC;
+        Tue, 21 Jun 2022 07:25:03 -0700 (PDT)
+X-QQ-mid: bizesmtp80t1655821432tiv9c18h
+Received: from ubuntu.localdomain ( [106.117.99.68])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 21 Jun 2022 22:23:48 +0800 (CST)
+X-QQ-SSF: 0100000000700060B000D00A0000000
+X-QQ-FEAT: rCzLTtzQ0gcnji6xLlhDR/w4nX/P79abYLkOaTRlAZW+wnQmI3CnF4k3BiJRn
+        /FybuJcViTGqzAXrxQh6GT/w8faNPbGatL4ajOsZR0bFL2y824RF+sfVSbDPa94jEZxoOfo
+        W/g5/kSspCQDaYsuy/Icf4UNTpHN4/SQylFw8RjnTxGEmLZFqfbGQN+i0B37Wq8w/N8/z5/
+        McUbIzwztGBFmE6gaFiBExFsjR+9jOPfijNQ/RDPjACnRi1Hv51ciXyYlf0gdUfvE+Rh8Wf
+        tAsr2VLekeGarmlD6sYi35h0z9cr3EbOtqjzWCHliMYtuFPIOb7q5c25I9cwcqKOAqU+oHo
+        6Os9Pok+VvaiJ0y8TgnXX9TSG/dIg==
+X-QQ-GoodBg: 0
+From:   Jiang Jian <jiangjian@cdjrlc.com>
+To:     jejb@linux.ibm.com, martin.petersen@oracle.com
+Cc:     aacraid@microsemi.com, linux-scsi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jiang Jian <jiangjian@cdjrlc.com>
+Subject: [PATCH] scsi: aacraid: Remove duplicate 'the' in two places.
+Date:   Tue, 21 Jun 2022 22:23:46 +0800
+Message-Id: <20220621142346.6429-1-jiangjian@cdjrlc.com>
+X-Mailer: git-send-email 2.17.1
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 21, 2022 at 03:05:06PM +0200, Fabrice Gasnier wrote:
-> From: Amelie Delaunay <amelie.delaunay@foss.st.com>
-> 
-> The TPL support is used to identify targeted devices during EH compliance
-> test. The user can add "tpl-support" in the device tree to enable it.
+file: drivers/scsi/aacraid/aachba.c
+line: 1053
+* The LSB is the the end.
+chaned to
+* The LSB is the end.
 
-Is that already documented in the proper bindings somewhere?
+Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
+---
+ drivers/scsi/aacraid/aachba.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-thanks,
+diff --git a/drivers/scsi/aacraid/aachba.c b/drivers/scsi/aacraid/aachba.c
+index 81462f4ddb90..4d4cb47b3846 100644
+--- a/drivers/scsi/aacraid/aachba.c
++++ b/drivers/scsi/aacraid/aachba.c
+@@ -1050,7 +1050,7 @@ static void get_container_serial_callback(void *context, struct fib * fibptr)
+ 				vpdpage83data.type1.productid));
+ 
+ 			/* Convert to ascii based serial number.
+-			 * The LSB is the the end.
++			 * The LSB is the end.
+ 			 */
+ 			for (i = 0; i < 8; i++) {
+ 				u8 temp =
+-- 
+2.17.1
 
-greg k-h
