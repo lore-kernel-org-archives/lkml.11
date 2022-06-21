@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0F0BCCA47E
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:01:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7798C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:01:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355777AbiFUVBK (ORCPT
+        id S1356283AbiFUU7t (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 17:01:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38778 "EHLO
+        Tue, 21 Jun 2022 16:59:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355548AbiFUU6k (ORCPT
+        with ESMTP id S1355271AbiFUU5E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 16:58:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D39A9326E7;
-        Tue, 21 Jun 2022 13:51:21 -0700 (PDT)
+        Tue, 21 Jun 2022 16:57:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86ACD31DE6;
+        Tue, 21 Jun 2022 13:50:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BE3D86188D;
-        Tue, 21 Jun 2022 20:50:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61FE5C3411C;
-        Tue, 21 Jun 2022 20:50:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0BDE061856;
+        Tue, 21 Jun 2022 20:50:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B155AC36AE7;
+        Tue, 21 Jun 2022 20:50:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655844652;
-        bh=F/Q8v9xOna4LqCh0X9VxEmi6WL3SrcJg/w9zCVR4nzk=;
+        s=k20201202; t=1655844633;
+        bh=zTc71AuLufQbigBDl05XBboY/sm7cbQibGWJrX8hjrI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Cib0Io00dFaRfZihQSko8Jc3oODIigIWlymexCwa/NDFV3DWKQhGJzppwrgrJQa3j
-         xTt/FptiUk9snCGN+ZTqKL8uk2vYYWCBFuaHMCf0Fe56sDB52CPWkpJwUTYDr8N3Mn
-         bZVcA7MA78TuoJixSAuvKG7r1/i9Isk5LrrvSkQy1Jk/MHMcv+FabjD4vdUKDio06C
-         DcZkIRt/1Xkj8gSjXFlhU01mWb57oEKP+e8eGgDNGknmm9Umvyr13ca5bn3ZrBsQco
-         L9W669aD3/bqJy82ntK0GlUkFiUV3ikeYwFvT7ftnQIQIMGkLk76hRw50ZwVY9gT/W
-         BkHuNI/8Yzpig==
+        b=CYooJ2q5vJwdVTyYM5WWvWbfcvASUzAvx+y+iFH0lB5OhqRp6jcfA5d6RFrQBgs+d
+         q4K8vcLuxJQSkGjGFkAHZnhuUq+xzApI6MgOAc2B3veMVTDGz6ezoTg+9UKmei937p
+         CxqQNufQFTtDQL4GGk599CtjLsOb+v4ZnM9/JTqUVHuhIQ20LFsDBJ0atVKE+RnP2U
+         CSR/oFwPJ7bE80uVRgFbHgmTtzfquHhZcWIS91PMhJteOqlySGDjRMOGzCGPNAl+A1
+         rfOt/kGRP8BE1/LbFTEWdIPirWRKdtsOsgHtoiPtlgiPzGbKxQd+S5EERwbn/XfnwG
+         iffXFSfcCM7CA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Stefan Reiter <stefan@pimaker.at>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Sasha Levin <sashal@kernel.org>, kbusch@kernel.org,
-        axboe@fb.com, sagi@grimberg.me, linux-nvme@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 06/17] nvme-pci: add NVME_QUIRK_BOGUS_NID for ADATA XPG GAMMIX S50
-Date:   Tue, 21 Jun 2022 16:50:29 -0400
-Message-Id: <20220621205041.250426-6-sashal@kernel.org>
+Cc:     Zhang Yi <yi.zhang@huawei.com>, Hulk Robot <hulkci@huawei.com>,
+        Jan Kara <jack@suse.cz>,
+        Ritesh Harjani <ritesh.list@gmail.com>,
+        Theodore Ts'o <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>,
+        adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 14/20] ext4: fix warning when submitting superblock in ext4_commit_super()
+Date:   Tue, 21 Jun 2022 16:50:04 -0400
+Message-Id: <20220621205010.250185-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220621205041.250426-1-sashal@kernel.org>
-References: <20220621205041.250426-1-sashal@kernel.org>
+In-Reply-To: <20220621205010.250185-1-sashal@kernel.org>
+References: <20220621205010.250185-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,35 +54,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Reiter <stefan@pimaker.at>
+From: Zhang Yi <yi.zhang@huawei.com>
 
-[ Upstream commit 3765fad508964f433ac111c127d6bedd19bdfa04 ]
+[ Upstream commit 15baa7dcadf1c4f0b4f752dc054191855ff2d78e ]
 
-ADATA XPG GAMMIX S50 drives report bogus eui64 values that appear to
-be the same across drives in one system. Quirk them out so they are
-not marked as "non globally unique" duplicates.
+We have already check the io_error and uptodate flag before submitting
+the superblock buffer, and re-set the uptodate flag if it has been
+failed to write out. But it was lockless and could be raced by another
+ext4_commit_super(), and finally trigger '!uptodate' WARNING when
+marking buffer dirty. Fix it by submit buffer directly.
 
-Signed-off-by: Stefan Reiter <stefan@pimaker.at>
-Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Zhang Yi <yi.zhang@huawei.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Ritesh Harjani <ritesh.list@gmail.com>
+Link: https://lore.kernel.org/r/20220520023216.3065073-1-yi.zhang@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/pci.c | 2 ++
- 1 file changed, 2 insertions(+)
+ fs/ext4/super.c | 22 ++++++++++++++++------
+ 1 file changed, 16 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index e0accbf40f49..700857af5b79 100644
---- a/drivers/nvme/host/pci.c
-+++ b/drivers/nvme/host/pci.c
-@@ -3368,6 +3368,8 @@ static const struct pci_device_id nvme_id_table[] = {
- 		.driver_data = NVME_QUIRK_BOGUS_NID, },
- 	{ PCI_DEVICE(0x1e4B, 0x1202),   /* MAXIO MAP1202 */
- 		.driver_data = NVME_QUIRK_BOGUS_NID, },
-+	{ PCI_DEVICE(0x1cc1, 0x5350),   /* ADATA XPG GAMMIX S50 */
-+		.driver_data = NVME_QUIRK_BOGUS_NID, },
- 	{ PCI_DEVICE(PCI_VENDOR_ID_AMAZON, 0x0061),
- 		.driver_data = NVME_QUIRK_DMA_ADDRESS_BITS_48, },
- 	{ PCI_DEVICE(PCI_VENDOR_ID_AMAZON, 0x0065),
+diff --git a/fs/ext4/super.c b/fs/ext4/super.c
+index 3e6e618019a2..5da37cbe1176 100644
+--- a/fs/ext4/super.c
++++ b/fs/ext4/super.c
+@@ -6006,7 +6006,6 @@ static void ext4_update_super(struct super_block *sb)
+ static int ext4_commit_super(struct super_block *sb)
+ {
+ 	struct buffer_head *sbh = EXT4_SB(sb)->s_sbh;
+-	int error = 0;
+ 
+ 	if (!sbh)
+ 		return -EINVAL;
+@@ -6015,6 +6014,13 @@ static int ext4_commit_super(struct super_block *sb)
+ 
+ 	ext4_update_super(sb);
+ 
++	lock_buffer(sbh);
++	/* Buffer got discarded which means block device got invalidated */
++	if (!buffer_mapped(sbh)) {
++		unlock_buffer(sbh);
++		return -EIO;
++	}
++
+ 	if (buffer_write_io_error(sbh) || !buffer_uptodate(sbh)) {
+ 		/*
+ 		 * Oh, dear.  A previous attempt to write the
+@@ -6029,17 +6035,21 @@ static int ext4_commit_super(struct super_block *sb)
+ 		clear_buffer_write_io_error(sbh);
+ 		set_buffer_uptodate(sbh);
+ 	}
+-	BUFFER_TRACE(sbh, "marking dirty");
+-	mark_buffer_dirty(sbh);
+-	error = __sync_dirty_buffer(sbh,
+-		REQ_SYNC | (test_opt(sb, BARRIER) ? REQ_FUA : 0));
++	get_bh(sbh);
++	/* Clear potential dirty bit if it was journalled update */
++	clear_buffer_dirty(sbh);
++	sbh->b_end_io = end_buffer_write_sync;
++	submit_bh(REQ_OP_WRITE,
++		  REQ_SYNC | (test_opt(sb, BARRIER) ? REQ_FUA : 0), sbh);
++	wait_on_buffer(sbh);
+ 	if (buffer_write_io_error(sbh)) {
+ 		ext4_msg(sb, KERN_ERR, "I/O error while writing "
+ 		       "superblock");
+ 		clear_buffer_write_io_error(sbh);
+ 		set_buffer_uptodate(sbh);
++		return -EIO;
+ 	}
+-	return error;
++	return 0;
+ }
+ 
+ /*
 -- 
 2.35.1
 
