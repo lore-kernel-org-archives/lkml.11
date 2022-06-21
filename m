@@ -2,129 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D499C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 17:26:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01954C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 17:31:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353185AbiFUR0R (ORCPT
+        id S1353807AbiFUR30 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 13:26:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58442 "EHLO
+        Tue, 21 Jun 2022 13:29:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352406AbiFUR0N (ORCPT
+        with ESMTP id S1353724AbiFUR3N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 13:26:13 -0400
-Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 841AE2D1F2
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 10:26:12 -0700 (PDT)
-Received: by mail-qk1-x72f.google.com with SMTP id 68so10632799qkk.9
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 10:26:12 -0700 (PDT)
+        Tue, 21 Jun 2022 13:29:13 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E59BA1707E;
+        Tue, 21 Jun 2022 10:29:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rX/peAHmhyZwy77vQ2JcNhxgJXXBgZnIyQj7eweojrA=;
-        b=fwypcRYdV1D8yWcf3IT9AiP9ODRtAGU+W+qLoiQFpNS34IWuY4vYKa1mjkpHQOFt8J
-         pc7ymvs97JBiS2T5w4KusAoQ0s78r5pshZ0Nao/vhrzmzZRFeZqMn4xld9ZBr/5LbUlH
-         pF62bCdEY1ttEbY5WjbhM2J5HRQ9ncfKyxkFjMdOgDzq9zLkvmqKObnrxNRuVZ11H5tH
-         hJgJPss08/uELByIHex4h2I3QiGIvrrIMAMxFuM6wbaDJDp7CFOWXeXlUTWxO+vRdT49
-         CEZEPYEk7RhOIb2xpkC2wnpwN6SjUe2PzdakfC236eczhf0NuZ3OP0vb/Z1zdByI7HtV
-         x4GA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rX/peAHmhyZwy77vQ2JcNhxgJXXBgZnIyQj7eweojrA=;
-        b=6XUQToHNse4y2T//pBHN+bUcVMfTPpAp+HVPUeIBzcTjUUihDb4Jll8OiKGI4eSnzx
-         /t+A0c+eaNHmaIzpp/HJ2sej7pJ/HuwevmXqI8HnquKftE7TEHsgRBD2pwtd/x0AqWKz
-         +bkbN9kobNl1QBT+n9tW2VJNqSKk4kn9FsHDNMGdETR1rAmKQhdYP0G/wsvkFUFQ9aZ8
-         9HyvP3egD93GLLzR0CHSaeqHBhHafuR/cFGR1gAZD07Y5EMIk3/Se8BMZCPJBMXhjI/h
-         vVXn6nsDtE9VfXFJOy/GmkNIlwbU/ejS8pdk7VIXytvpn3XXOfZ38u19GGw/R5T+s7mG
-         5Tqw==
-X-Gm-Message-State: AJIora8fQqdqm/ts7BXOPpsY8R5sLo3d60fGYgVxWppu1kcdk5RRJh4g
-        kBXxorLzG+exKRQBxZlXhFQCWEc59g0jYEi6nVgIoA==
-X-Google-Smtp-Source: AGRyM1tBlLWy/IzZYwrazH4Rk/tiu8x4mgf+qRApIeKdfuVwyySYOqQDFSnqtGWbl6uTf14jc0HkDInSpl6gsgXe+xQ=
-X-Received: by 2002:a05:620a:4156:b0:6a6:f8d2:6d9e with SMTP id
- k22-20020a05620a415600b006a6f8d26d9emr21197020qko.30.1655832371507; Tue, 21
- Jun 2022 10:26:11 -0700 (PDT)
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1655832553; x=1687368553;
+  h=message-id:date:mime-version:subject:to:references:from:
+   in-reply-to:content-transfer-encoding;
+  bh=sPVAYqaPJFR/Z0gzjofpTzSyW3DOh5RTZIFv+zTXtgI=;
+  b=fQ7iswdvBUt3NeHNbX4OTRmBJ2PyJSnJO6QPVR2ahAvJQTWjOd6ViPSt
+   TmQsdRanScFq2sA0sNPsNuVNL4H0RMeep2rMBl/e/Yw1F1pIPIMAAGZrT
+   amopytQghE38GtYbKP3iECe3v3c4EItdx3tQSF4ziwngQ2MN5C4nteAwD
+   A=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 21 Jun 2022 10:29:13 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 10:29:12 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 21 Jun 2022 10:29:11 -0700
+Received: from [10.38.247.150] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 21 Jun
+ 2022 10:29:09 -0700
+Message-ID: <a9d3568d-bf0d-ee01-7e8a-b35466c963b4@quicinc.com>
+Date:   Tue, 21 Jun 2022 10:29:07 -0700
 MIME-Version: 1.0
-References: <20220621111818.447452-1-robimarko@gmail.com> <20220621111818.447452-2-robimarko@gmail.com>
-In-Reply-To: <20220621111818.447452-2-robimarko@gmail.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date:   Tue, 21 Jun 2022 20:26:00 +0300
-Message-ID: <CAA8EJposq4796b33jkovDDQdzQsrp733kN5tQYAhFow4G8hvow@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] phy: qcom-qmp-pcie: add IPQ8074 PCIe Gen3 QMP PHY support
-To:     Robert Marko <robimarko@gmail.com>
-Cc:     agross@kernel.org, bjorn.andersson@linaro.org, kishon@ti.com,
-        vkoul@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-arm-msm@vger.kernel.org,
-        linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH] drm/msm: Use div64_ul instead of do_div
+Content-Language: en-US
+To:     Wan Jiabing <wanjiabing@vivo.com>, Rob Clark <robdclark@gmail.com>,
+        "Sean Paul" <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        <linux-arm-msm@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        <freedreno@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>
+References: <20220426132126.686447-1-wanjiabing@vivo.com>
+From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
+In-Reply-To: <20220426132126.686447-1-wanjiabing@vivo.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 21 Jun 2022 at 14:18, Robert Marko <robimarko@gmail.com> wrote:
->
-> IPQ8074 has 2 different single lane PCIe PHY-s, one Gen2 and one Gen3.
-> Gen2 one is already supported, so add the support for the Gen3 one.
-> It uses the same register layout as IPQ6018.
->
-> Signed-off-by: Robert Marko <robimarko@gmail.com>
+
+
+On 4/26/2022 6:21 AM, Wan Jiabing wrote:
+> Fix following coccicheck warning:
+> drivers/gpu/drm/msm/msm_gpu_devfreq.c:72:1-7: WARNING: do_div() does a 64-by-32 division, please consider using div64_ul instead.
+> 
+> Use div64_ul instead of do_div to avoid a possible truncation.
+> 
+> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
 > ---
-> Changes in v2:
-> * Rebase onto next-20220621 to apply on the refactored driver
-> * Remove non existant has_phy_com_ctrl and has_lane_rst
-> ---
->  drivers/phy/qualcomm/phy-qcom-qmp-pcie.c | 171 ++++++++++++++++++++++-
->  1 file changed, 169 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/phy/qualcomm/phy-qcom-qmp-pcie.c b/drivers/phy/qualcomm/phy-qcom-qmp-pcie.c
-> index b2cd0cf965d8..b4836417b2c0 100644
-> --- a/drivers/phy/qualcomm/phy-qcom-qmp-pcie.c
-> +++ b/drivers/phy/qualcomm/phy-qcom-qmp-pcie.c
-
-[skipped]
-
-> @@ -2121,8 +2277,16 @@ static int phy_pipe_clk_register(struct qcom_qmp *qmp, struct device_node *np)
->
->         init.ops = &clk_fixed_rate_ops;
->
-> -       /* controllers using QMP phys use 125MHz pipe clock interface */
-> -       fixed->fixed_rate = 125000000;
-> +       /*
-> +        * Controllers using QMP PHY-s use 125MHz pipe clock interface
-> +        * unless other frequency is specified in the DTS.
-> +        */
-> +       ret = of_property_read_u32(np, "clock-output-rate", &rate);
-
-The clock-output-rate is a new property, which doesn't exist yet. If
-the rate is peculiar to your platform/PHY, I'd suggest adding a field
-to the qmp configuration instead.
-
-> +       if (ret)
-> +               fixed->fixed_rate = 125000000;
-> +       else
-> +               fixed->fixed_rate = rate;
-> +
->         fixed->hw.init = &init;
->
->         ret = devm_clk_hw_register(qmp->dev, &fixed->hw);
-> @@ -2255,6 +2419,9 @@ static const struct of_device_id qcom_qmp_phy_pcie_of_match_table[] = {
->         }, {
->                 .compatible = "qcom,ipq8074-qmp-pcie-phy",
->                 .data = &ipq8074_pciephy_cfg,
-> +       }, {
-> +               .compatible = "qcom,ipq8074-qmp-gen3-pcie-phy",
-> +               .data = &ipq8074_pciephy_gen3_cfg,
->         }, {
->                 .compatible = "qcom,ipq6018-qmp-pcie-phy",
->                 .data = &ipq6018_pciephy_cfg,
-> --
-> 2.36.1
->
-
-
--- 
-With best wishes
-Dmitry
+>   drivers/gpu/drm/msm/msm_gpu_devfreq.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/gpu/drm/msm/msm_gpu_devfreq.c b/drivers/gpu/drm/msm/msm_gpu_devfreq.c
+> index d2539ca78c29..c2ea978c8921 100644
+> --- a/drivers/gpu/drm/msm/msm_gpu_devfreq.c
+> +++ b/drivers/gpu/drm/msm/msm_gpu_devfreq.c
+> @@ -69,7 +69,7 @@ static void get_raw_dev_status(struct msm_gpu *gpu,
+>   	df->time = time;
+>   
+>   	busy_time *= USEC_PER_SEC;
+> -	do_div(busy_time, sample_rate);
+> +	busy_time = div64_ul(busy_time, sample_rate);
+>   	if (WARN_ON(busy_time > ~0LU))
+>   		busy_time = ~0LU;
+>   
