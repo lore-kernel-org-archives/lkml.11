@@ -2,74 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEB6CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 14:19:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61779C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 14:20:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351269AbiFUOTp (ORCPT
+        id S1351303AbiFUOUd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 10:19:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32986 "EHLO
+        Tue, 21 Jun 2022 10:20:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351157AbiFUOTo (ORCPT
+        with ESMTP id S1350589AbiFUOUa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 10:19:44 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CF79140CD;
-        Tue, 21 Jun 2022 07:19:42 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id u12so27827569eja.8;
-        Tue, 21 Jun 2022 07:19:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nJcEJHgKYHK2ge32KOPbngb4fap2zLy6k+L71+xMqxs=;
-        b=S3SY5NmCA/58ZV14ZhEQ/wsmZTHR1vM9olmXvgWLfT0N+hSpNza8wPf/Pc5y50FEF4
-         EDXBGt66/jSQ/Uwq/Z5pcPpvA6N9YCO7mUJZs5aRd2SOPCGUWmV96e3FXXXVd5XuNXc+
-         6N+TLGPYXdTL156LjoEgyN/q3914nRfv0Qa8wmc39U92r91M5UZjXm9JeWxhd7iOftB/
-         yzxugvBNbgpL13YRFBYzDr501On8GR8THDL25DagnAx7VecOkKu2HV3EQljswXMzzlEU
-         xjWkv+HQYIuf8KoiRGE3eLvmVSMoaee7kyt/b2FNunwoCTlmKKNMUgyxeMlJL7BW8rDe
-         XnWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nJcEJHgKYHK2ge32KOPbngb4fap2zLy6k+L71+xMqxs=;
-        b=CkVui3zD0L3/gMzAG9A2nPJvgbBbYJRaApyiqtTVCB7djnCdMXRSIKeB5kbQdno/bq
-         wCjihgv3Is+7uMvl2rzzeWoKFGCh/jVdrLiao1YFKlpDCAkrQrK7gxGqJTbWPEEJXztv
-         lXmcKZJxmb9Ojs54Sm7hu0jrwasbsLxwdheWxklqha1mnQrrBYwBIHejyiizA26vAako
-         o5oqOB/eHOvMcTu3dt1MrzZn4xdA1r3e/KA61Yq3iuLndX5Igze3Y2EJCNq643M2P/wc
-         slw36f7A2MK7AgPuHsl4q0HvDaHZ6SFbdxTr720mediYrRH64XO3YZ0NG0MrPrbWgQXb
-         bW+g==
-X-Gm-Message-State: AJIora992DIeGo3HQgpkHKBpVAHi5UUsSPCZi/Fr9203BLvdM14vJH6w
-        KUZDHDPWlq+VFVrHRoc6k7f6QnxvkRK1QYCPhjo=
-X-Google-Smtp-Source: AGRyM1s3MYxLF4VXs6SuFJ5MAGaGHHsLRrY1E8crXVHyz2Zq2/PF5L4GyO7D8f2YZyKvy5clBI40DZnclYMfnONR0pw=
-X-Received: by 2002:a17:906:c7c1:b0:711:d2e9:99d0 with SMTP id
- dc1-20020a170906c7c100b00711d2e999d0mr26117746ejb.639.1655821180915; Tue, 21
- Jun 2022 07:19:40 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220621065502.28868-1-jiangjian@cdjrlc.com>
-In-Reply-To: <20220621065502.28868-1-jiangjian@cdjrlc.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 21 Jun 2022 16:19:04 +0200
-Message-ID: <CAHp75VfKEu2T+DjCTEGnmME3OCX0Lezy4KxdXezALUH9+sg97g@mail.gmail.com>
-Subject: Re: [PATCH] media: usb: gspca: aligned '*' each line
-To:     Jiang Jian <jiangjian@cdjrlc.com>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Hans Verkuil <hverkuil@xs4all.nl>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 21 Jun 2022 10:20:30 -0400
+Received: from smtpbg.qq.com (smtpbg136.qq.com [106.55.201.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCCD3140CD;
+        Tue, 21 Jun 2022 07:20:24 -0700 (PDT)
+X-QQ-mid: bizesmtp87t1655821217tp8rfu89
+Received: from ubuntu.localdomain ( [106.117.99.68])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 21 Jun 2022 22:20:14 +0800 (CST)
+X-QQ-SSF: 0100000000700060B000D00A0000000
+X-QQ-FEAT: RKCwGdK8Yfg7VxFNpIqXTE0grhkMICdJ+CsRucJlPWC1m9niPrQ9sW1JDn21B
+        6RVWkPULMyA/QOh2SXDdLb5c5nsd57IznTuJp+KlQQSK1mMN2Q7CH4qBzNESwVJBhjZzszS
+        ohr8bxrhRIpGGB7C/dzy+qZxuZez1M3lsbWqFr6kslf8id1tlcR4HmieH/7m8UJ9GZiJxJr
+        grdKtzMY044sVBLe32+AgVqH4/XVbADzGod32P/xhv9yM8EL56RWml8LwjTVXWGlPRjLi+9
+        aI/XUUueipg2mveaL7x5iayAAXH7GvMkNHmp7AqhM0jSF9k0c0F6SoQxr+YtmHRL3CENm0c
+        AMjcxG7iCyEBL3m1l2BwXNDMfqD7a2dWWR/eeI0
+X-QQ-GoodBg: 0
+From:   Jiang Jian <jiangjian@cdjrlc.com>
+To:     martin.petersen@oracle.com
+Cc:     linux-scsi@vger.kernel.org, target-devel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jiang Jian <jiangjian@cdjrlc.com>
+Subject: [PATCH] scsi: target: Remove duplicate 'the' in two places.
+Date:   Tue, 21 Jun 2022 22:20:12 +0800
+Message-Id: <20220621142012.4622-1-jiangjian@cdjrlc.com>
+X-Mailer: git-send-email 2.17.1
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 21, 2022 at 9:01 AM Jiang Jian <jiangjian@cdjrlc.com> wrote:
->
-> Consider "*" alignment in comments
+file: drivers/target/target_core_alua.c
+line: 388
+ * the Target Port in question for the the incoming
+changed to
+ * the Target Port in question for the incoming
 
-In a similar way as I commented on your IIO contribution, do changes
-for all similar patches.
+Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
+---
+ drivers/target/target_core_alua.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/target/target_core_alua.c b/drivers/target/target_core_alua.c
+index b56ef8af66e7..58df0145e8d0 100644
+--- a/drivers/target/target_core_alua.c
++++ b/drivers/target/target_core_alua.c
+@@ -385,7 +385,7 @@ target_emulate_set_target_port_groups(struct se_cmd *cmd)
+ 
+ 			/*
+ 			 * Extract the RELATIVE TARGET PORT IDENTIFIER to identify
+-			 * the Target Port in question for the the incoming
++			 * the Target Port in question for the incoming
+ 			 * SET_TARGET_PORT_GROUPS op.
+ 			 */
+ 			rtpi = get_unaligned_be16(ptr + 2);
 -- 
-With Best Regards,
-Andy Shevchenko
+2.17.1
+
