@@ -2,78 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFE95C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 10:35:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A198C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 10:35:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231974AbiFUKfw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 06:35:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35172 "EHLO
+        id S232507AbiFUKfy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 21 Jun 2022 06:35:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229464AbiFUKfu (ORCPT
+        with ESMTP id S245168AbiFUKfw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 06:35:50 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50FC213DD1;
-        Tue, 21 Jun 2022 03:35:50 -0700 (PDT)
-X-IronPort-AV: E=McAfee;i="6400,9594,10384"; a="278856732"
-X-IronPort-AV: E=Sophos;i="5.92,209,1650956400"; 
-   d="scan'208";a="278856732"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 03:35:50 -0700
-X-IronPort-AV: E=Sophos;i="5.92,209,1650956400"; 
-   d="scan'208";a="729782212"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 03:35:47 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andy.shevchenko@gmail.com>)
-        id 1o3bEW-000qw8-M5;
-        Tue, 21 Jun 2022 13:35:44 +0300
-Date:   Tue, 21 Jun 2022 13:35:44 +0300
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-To:     Fabio Estevam <festevam@gmail.com>
-Cc:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        NXP Linux Team <linux-imx@nxp.com>
-Subject: Re: [PATCH v1 1/1] iio: adc: mxs-lradc-adc: Get rid of OF specifics
-Message-ID: <YrGfAD/zNdsH4cw/@smile.fi.intel.com>
-References: <20220530173324.921-1-andriy.shevchenko@linux.intel.com>
- <CAOMZO5CtjkjsbOTaNF7+Hwswsn-fs2WNK=zyFL53JnBBpS8=0Q@mail.gmail.com>
- <CAHp75Vd9yah3D8dUOPinhj=nm9GQs3xOsWZRL=6CvaROZC3OCQ@mail.gmail.com>
- <CAOMZO5Bp83NSWPmbwp4uzrGSVkW2xQ+pRMFHaghs_XN+j32fcw@mail.gmail.com>
- <YrGc1WKpZ/ik3Bt+@smile.fi.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YrGc1WKpZ/ik3Bt+@smile.fi.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+        Tue, 21 Jun 2022 06:35:52 -0400
+Received: from smtpbg.qq.com (smtpbg139.qq.com [175.27.65.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FFC128992
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 03:35:47 -0700 (PDT)
+X-QQ-mid: bizesmtp78t1655807680tu7c5k5i
+Received: from ubuntu.localdomain ( [106.117.99.68])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 21 Jun 2022 18:34:36 +0800 (CST)
+X-QQ-SSF: 0100000000700030B000B00A0000000
+X-QQ-FEAT: BVRItfLxsF60sewxQlmNIbCQKJzt9PHky+nXrmRX40dRKOpU98J+BuCrtPdSx
+        vrQdQ+sjk9rdtUtmVzVrCmYGxzsNXyRDNJxJbJDbGX2aX4bj5Hf+uH8jJ5NB2H+iFr1XoBm
+        QEgdTcmrbBq0s/IXsXGCTfY6fyz/IoeVd+cdUODSoI7OLOf9Qfe50LW2owC+yuUDY2WlocW
+        OHmTTLrQK0dQV8CVqiRs+Zk2CpCwIWj8FWIOp/5VeMiI/0p343DydbBlwlN4wDWbIk317a2
+        U5FxIgClHAol2V3kPMgjCdAv+0HIaayiqouCasLLWPjyJXCFmL83OOTXcy3KuSvwASo5Y8b
+        LfJ1yS+TYPCboTuF+k=
+X-QQ-GoodBg: 0
+From:   Jiang Jian <jiangjian@cdjrlc.com>
+To:     jassisinghbrar@gmail.com
+Cc:     linux-kernel@vger.kernel.org, jiangjian@cdjrlc.com
+Subject: [PATCH] mailbox: Kconfig - drop unexpected word "the" in the comments
+Date:   Tue, 21 Jun 2022 18:34:34 +0800
+Message-Id: <20220621103434.93916-1-jiangjian@cdjrlc.com>
+X-Mailer: git-send-email 2.17.1
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 21, 2022 at 01:26:29PM +0300, Andy Shevchenko wrote:
-> On Mon, Jun 20, 2022 at 06:56:27PM -0300, Fabio Estevam wrote:
-> > On Mon, Jun 20, 2022 at 6:34 PM Andy Shevchenko
-> > <andy.shevchenko@gmail.com> wrote:
+there is an unexpected word "the" in the comments that need to be dropped
 
-...
+Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
+---
+ drivers/mailbox/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> > If you send a v2 with "#include <linux/property.h>" then you can add:
-> 
-> Actually the entire thingy with setting node is not needed in this driver.
-
-I stand corrected, the fwnode assignment is done fore the IIO parent's parent,
-it's needed...
-
-
+diff --git a/drivers/mailbox/Kconfig b/drivers/mailbox/Kconfig
+index 05d6fae800e3..089ef39a71fa 100644
+--- a/drivers/mailbox/Kconfig
++++ b/drivers/mailbox/Kconfig
+@@ -66,7 +66,7 @@ config ARMADA_37XX_RWTM_MBOX
+ 	depends on ARCH_MVEBU || COMPILE_TEST
+ 	depends on OF
+ 	help
+-	  Mailbox implementation for communication with the the firmware
++	  Mailbox implementation for communication with the firmware
+ 	  running on the Cortex-M3 rWTM secure processor of the Armada 37xx
+ 	  SOC. Say Y here if you are building for such a device (for example
+ 	  the Turris Mox router).
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.17.1
 
