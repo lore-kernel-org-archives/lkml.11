@@ -2,95 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E575C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 00:59:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C6A9C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 01:14:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243940AbiFUA7Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 20:59:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33592 "EHLO
+        id S240638AbiFUBOd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 20 Jun 2022 21:14:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245609AbiFUA56 (ORCPT
+        with ESMTP id S232030AbiFUBO3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 20:57:58 -0400
-Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96ED426CE
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 17:57:55 -0700 (PDT)
-Received: by mail-qv1-xf2b.google.com with SMTP id c1so17906037qvi.11
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 17:57:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=s9yCSknvivXOCDzx6BY6FbW8mnwWGLGgsKhyrZCinWU=;
-        b=njxx+bhrRN/d5D7pBWAqvtB9LH64qZRgC9Gy2Dx0mKfxea66YfdkKR/lbtJqUMQWo2
-         wov/9mpBSRKVHW2zx9B6goeBTkv9JV5gRBPu+F4y4t3KNuohdWHD0w34la+Oox2lpMn+
-         l4aZQ2932xzeENYlbyBciutU4JI3If5eoO8QfDhbloYysYSvSskjyxMgxnvbRtCMeYP3
-         gugcalew2eu7Zpj+JADT65hTXyLiD5wpKs/DMuBWEQaWas9Yh5xuszdlO2/3/7ZAsAH6
-         cp7rrBvtPiv0OEffiOMlBRGKTmsolwzWK/I6r6milsfKq1ZXWYVM4whADlyBNN0qYyFC
-         kQ/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=s9yCSknvivXOCDzx6BY6FbW8mnwWGLGgsKhyrZCinWU=;
-        b=frSs41iaZVob94MBSqChi+2NHiZzoy7/LqtCn4GCMcWdk22dSvIeI0yCbTGJxOtBqB
-         Z2OrO355DaIPbR6dR2VHI8toB7fmC8B9VaNYZ80WaQyvatxI9bLs9HKJfn0IcUkPojAJ
-         jYAW8vPuaARuyZV0HsJC4FqT65vaMeu94RLAZOmZo9cvVNeYWI9TZfDztlaVBBkDCqNo
-         7QhLTQqhAS0c27h0NVaKzfy5sVAlm0tAdJmZjANYng5RXRPA1vxyiiTjiHnohvfka5V3
-         2dUD2EVPSd/2duA0Po0ToKZmKe8ymE9YoJuaq2uuCAujs/J0kYDX3A1wO6HboeEGUc2J
-         7uBw==
-X-Gm-Message-State: AJIora9b2BUYihoXyI4gspDerN3fb4SNHEKZU7VAd6gu7LNYm4iGqP3w
-        gA3g+uKGel6LSZ8QjomoZg==
-X-Google-Smtp-Source: AGRyM1slrO9xwd2Aonm9UtY5AjVCx98e+png+gulVl2ecfSSdz90oZc4bznkwHR/J1H4BTOpBXgzWA==
-X-Received: by 2002:ac8:5790:0:b0:305:bd1:f7b0 with SMTP id v16-20020ac85790000000b003050bd1f7b0mr21931700qta.94.1655773074740;
-        Mon, 20 Jun 2022 17:57:54 -0700 (PDT)
-Received: from localhost (c-73-219-103-14.hsd1.vt.comcast.net. [73.219.103.14])
-        by smtp.gmail.com with ESMTPSA id r8-20020a05622a034800b00304e4bbc369sm12057403qtw.10.2022.06.20.17.57.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jun 2022 17:57:53 -0700 (PDT)
-Date:   Mon, 20 Jun 2022 20:57:52 -0400
-From:   Kent Overstreet <kent.overstreet@gmail.com>
-To:     Joe Perches <joe@perches.com>
-Cc:     David Laight <David.Laight@ACULAB.COM>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "pmladek@suse.com" <pmladek@suse.com>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "enozhatsky@chromium.org" <enozhatsky@chromium.org>,
-        "linux@rasmusvillemoes.dk" <linux@rasmusvillemoes.dk>,
-        "willy@infradead.org" <willy@infradead.org>
-Subject: Re: [PATCH v4 00/34] Printbufs - new data structure for building
- strings
-Message-ID: <20220621005752.ohiq5besmy3r5rjo@moria.home.lan>
-References: <20220620004233.3805-1-kent.overstreet@gmail.com>
- <0a5901f8460f452a89c9b0cda32fb833@AcuMS.aculab.com>
- <20220620150514.3tjy5dv7pv5frcwd@moria.home.lan>
- <53d77ae6101a0f24cfb694174d4c7699424c57e8.camel@perches.com>
+        Mon, 20 Jun 2022 21:14:29 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56822140AB
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 18:14:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655774068; x=1687310068;
+  h=from:to:cc:subject:references:date:in-reply-to:
+   message-id:mime-version;
+  bh=b00p+JPCNLBqBtIBRmsVShSdYPWHF1lrMDDwHIhXKXY=;
+  b=Lfi8V1zTtOGIuPz+Sk19Cmy+glMO9ZFnOkF6Ce42UC8kls8DIJl0Rqtp
+   QlPh39SsPknbvm6XLxIDo/iLrQfAKDd8URqv8cZxsliJDHwFX+TdUAlbI
+   rEwdIIPNbfq8XZCuTPVmlfMEcT0kaEbbznHzBX33JL+6Y0qPOQzJ9IVCx
+   NClcrqh2cAbzhTD5/pMPZzmU+IhABuPb5a+p7CnMh798JuDKgABAIXbY1
+   Vc6w6DBk2ncQxl7E2lmbe4a77ca3CT90dqeHFLNRne/xvxPCTGc/1nP+M
+   YFF11cGnXOVr3FMMrKwF1EIhnZaj+2JF2kfVSg0pXVamSdUTmVVu8JgAf
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10384"; a="366322946"
+X-IronPort-AV: E=Sophos;i="5.92,207,1650956400"; 
+   d="scan'208";a="366322946"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 18:14:28 -0700
+X-IronPort-AV: E=Sophos;i="5.92,207,1650956400"; 
+   d="scan'208";a="833333958"
+Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.239.13.94])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 18:14:26 -0700
+From:   "Huang, Ying" <ying.huang@intel.com>
+To:     Qian Cai <quic_qiancai@quicinc.com>,
+        Miaohe Lin <linmiaohe@huawei.com>
+Cc:     Muchun Song <songmuchun@bytedance.com>,
+        <akpm@linux-foundation.org>, <david@redhat.com>,
+        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 2/3] mm/swapfile: fix possible data races of inuse_pages
+References: <20220608144031.829-1-linmiaohe@huawei.com>
+        <20220608144031.829-3-linmiaohe@huawei.com>
+        <87edzjrcq8.fsf@yhuang6-desk2.ccr.corp.intel.com>
+        <13414d6a-9e72-fb6c-f0a8-8b83ba0455de@huawei.com>
+        <YrA8kxavqsDfH5R7@FVFYT0MHHV2J.usts.net>
+        <09ffac27-7fe9-0977-cb33-30433e78e662@huawei.com>
+        <b61771ad-9daa-741e-27e4-fdb50a7c5e38@huawei.com>
+        <YrB6R5uHQaz1adhK@qian> <YrCCFwgoLKhDn7Fo@FVFYT0MHHV2J.usts.net>
+        <YrDob8+9Xgig6mZw@qian>
+Date:   Tue, 21 Jun 2022 09:14:00 +0800
+In-Reply-To: <YrDob8+9Xgig6mZw@qian> (Qian Cai's message of "Mon, 20 Jun 2022
+        17:36:47 -0400")
+Message-ID: <87pmj2q0mf.fsf@yhuang6-desk2.ccr.corp.intel.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <53d77ae6101a0f24cfb694174d4c7699424c57e8.camel@perches.com>
+Content-Type: text/plain; charset=ascii
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 20, 2022 at 05:38:51PM -0700, Joe Perches wrote:
-> On Mon, 2022-06-20 at 11:07 -0400, Kent Overstreet wrote:
-> > On Mon, Jun 20, 2022 at 04:19:31AM +0000, David Laight wrote:
-> > > I really think that is a bad idea.
-> > > printk() already uses a lot of stack, anything doing a recursive
-> > > call is just making that worse.
-> > > Especially since these calls can often be in error paths
-> > > which are not often tested and can already be on deep stacks.
-> > 
-> > We went over this before - this patch series drastically reduces stack usage of
-> > sprintf by eliminating a bunch of stack allocated buffers. Do try to keep up...
-> 
-> I generally agree with David.
-> 
-> I think Kent has not provided data that this actually _reduces_
-> stack usage.
+Qian Cai <quic_qiancai@quicinc.com> writes:
 
-I think the people who are comfortable with reading C can discern that when
-large stack allocated character arrays are deleted, frame size and stack usage
-go down.
+> On Mon, Jun 20, 2022 at 10:20:07PM +0800, Muchun Song wrote:
+>> The lock does not protect the read sides. So the write side should be
+>> fixed by WRITTE_ONCE().
+>
+> https://lwn.net/Articles/816854/
+>
+> "Unmarked writes (aligned and up to word size) can be treated as if they had
+> used WRITE_ONCE() by building with
+> CONFIG_KCSAN_ASSUME_PLAIN_WRITES_ATOMIC=y (also selected by default).
+> Experience has shown that compilers are much less likely to destructively
+> optimize in-kernel writes than reads. Some developers might therefore
+> choose to use READ_ONCE() but omit the corresponding WRITE_ONCE(). Other
+> developers might prefer the documentation benefits and long-term peace of
+> mind accruing from explicit use of WRITE_ONCE()..."
+
+Thanks for pointing me to this great article.  So although not required
+by KCSAN strictly, WRITE_ONCE() is still good for documentation, etc.
+Just like we have done for swap_info_struct->highest_bit, etc.
+
+Best Regards,
+Huang, Ying
