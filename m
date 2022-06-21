@@ -2,92 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E46F0C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 22:36:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37E57C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 22:39:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354735AbiFUWgv (ORCPT
+        id S1354769AbiFUWjq convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 18:36:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39022 "EHLO
+        Tue, 21 Jun 2022 18:39:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354582AbiFUWgu (ORCPT
+        with ESMTP id S232016AbiFUWjm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 18:36:50 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C616731DD9
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 15:36:49 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1o3mUH-00072Y-BQ; Wed, 22 Jun 2022 00:36:45 +0200
-Received: from pengutronix.de (2a03-f580-87bc-d400-ad3c-d4a3-b7b8-663d.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:ad3c:d4a3:b7b8:663d])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id D10FB9BC62;
-        Tue, 21 Jun 2022 22:36:42 +0000 (UTC)
-Date:   Wed, 22 Jun 2022 00:36:42 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Liang He <windhl@126.com>
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] can: Remove extra of_node_get in grcan
-Message-ID: <20220621223642.zovfknmkl46d3lrs@pengutronix.de>
-References: <20220619070257.4067022-1-windhl@126.com>
+        Tue, 21 Jun 2022 18:39:42 -0400
+Received: from sender4-of-o58.zoho.com (sender4-of-o58.zoho.com [136.143.188.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8F1A326C0;
+        Tue, 21 Jun 2022 15:39:40 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1655851167; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=DpfRmAmcd5mOiaI/BVsDkSresW5F0yc0PWRGqoQnFCTXk7ismPOjFenzh4n7/H6WGHB8acyI/oSN6/d081h2AdTsSTcwm33R/WET57bTT4NL6PZ1TV4GxIFwwNb2QOA0dFgDcC/MlrOcXUkgSxS12lV1hD45E1uLcWR98w52ltc=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1655851167; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=D5000dkqlphKbBwJP/zZBoyInN3JBjDwNO6ElbGMMt0=; 
+        b=AZiheP3R58glqWX/26Vzg3PUuhLzgUaLIrCnwZpKY5nKBLGDONOb6BT+5JKu3CIZG9nW6uztqsacurxXRylGQQ2KccwFKmLVG7+PrNRog1KCOc+rKpyhCM4FIG5PzIRmB01xi9mbrtnQ5jRl4C74cqY7uN01WW3N3iWdOW5VV5M=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        spf=pass  smtp.mailfrom=linux@mniewoehner.de;
+        dmarc=pass header.from=<linux@mniewoehner.de>
+Received: from z3r0.lan (185.31.62.161 [185.31.62.161]) by mx.zohomail.com
+        with SMTPS id 1655851160852616.1806560446596; Tue, 21 Jun 2022 15:39:20 -0700 (PDT)
+Message-ID: <822cad1aa73867ea36c5428cb929a00aa0e82bc9.camel@mniewoehner.de>
+Subject: Re: [PATCH v6 9/9] tpm, tpm_tis: Enable interrupt test
+From:   Michael =?ISO-8859-1?Q?Niew=F6hner?= <linux@mniewoehner.de>
+To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>, peterhuewe@gmx.de,
+        jarkko@kernel.org, jgg@ziepe.ca
+Cc:     stefanb@linux.vnet.ibm.com, linux-integrity@vger.kernel.org,
+        linux-kernel@vger.kernel.org, l.sanfilippo@kunbus.com,
+        lukas@wunner.de, p.rosenberger@kunbus.com
+In-Reply-To: <20220621132447.16281-10-LinoSanfilippo@gmx.de>
+References: <20220621132447.16281-1-LinoSanfilippo@gmx.de>
+         <20220621132447.16281-10-LinoSanfilippo@gmx.de>
+Content-Type: text/plain; charset="UTF-8"
+Date:   Wed, 22 Jun 2022 00:39:17 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="7hp4pruqbs2u4bdq"
-Content-Disposition: inline
-In-Reply-To: <20220619070257.4067022-1-windhl@126.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+User-Agent: Evolution 3.42.2 
+Content-Transfer-Encoding: 8BIT
+X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, 2022-06-21 at 15:24 +0200, Lino Sanfilippo wrote:
+> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+> 
+> The test for interrupts in tpm_tis_send() is skipped if the flag
+> TPM_CHIP_FLAG_IRQ is not set. Since the current code never sets the flag
+> initially the test is never executed.
+> 
+> Fix this by setting the flag in tpm_tis_gen_interrupt() right after
+> interrupts have been enabled and before the test is executed.
+> 
+> Signed-off-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+> ---
+>  drivers/char/tpm/tpm_tis_core.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/drivers/char/tpm/tpm_tis_core.c b/drivers/char/tpm/tpm_tis_core.c
+> index 1f7663ac1fc4..650c202d2f50 100644
+> --- a/drivers/char/tpm/tpm_tis_core.c
+> +++ b/drivers/char/tpm/tpm_tis_core.c
+> @@ -775,11 +775,16 @@ static int tpm_tis_gen_interrupt(struct tpm_chip *chip)
+>         if (ret < 0)
+>                 return ret;
+>  
+> +       chip->flags |= TPM_CHIP_FLAG_IRQ;
+> +
+>         if (chip->flags & TPM_CHIP_FLAG_TPM2)
+>                 ret = tpm2_get_tpm_pt(chip, 0x100, &cap2, desc);
+>         else
+>                 ret = tpm1_getcap(chip, TPM_CAP_PROP_TIS_TIMEOUT, &cap, desc,
+> 0);
+>  
+> +       if (ret)
+> +               chip->flags &= ~TPM_CHIP_FLAG_IRQ;
+> +
+>         tpm_tis_release_locality(chip, 0);
+>  
+>         return ret;
 
---7hp4pruqbs2u4bdq
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On 19.06.2022 15:02:57, Liang He wrote:
-> In grcan_probe(), of_find_node_by_path() has increased the refcount.
-> There is no need to call of_node_get() again.
->=20
-> Fixes: 1e93ed26acf0 (can: grcan: grcan_probe(): fix broken system id chec=
-k for errata workaround needs)
->=20
-> Signed-off-by: Liang He <windhl@126.com>
-
-Applied to linux-can/testing.
-
-Thanks,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---7hp4pruqbs2u4bdq
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKyR/cACgkQrX5LkNig
-012j4QgAil42H+AKdjYOmRnYwjdDdSVagPnwXJ8o1Xy8K5dBH9r/qNWyLdcOKHhH
-0M0D/R/uNtFDGhXFkWz5pH9K/04BPpwZN9s3Je6vHsWvj6vULUDcOyW4I+SzdZaE
-EMszknbppkNEJBg9C6OmapupzYMOq553CxYEIZPv7pXUAxe/ONDPZi7u8zstXFNp
-n1f7MV+PdKYZ+v35EJtWIAqYr5TezaEzzcrwJE8ZtbGXT7l7Yg44JN30y6052mbj
-fr33Lblwi/GT3y0SIdgmXoZnvNLYAq4CJVdpifUzA5tL+BeJRrRGkmtKYuNdAMZM
-4HlThHfSdTNgSqjlUaXw42GTzOjPhQ==
-=u3Xx
------END PGP SIGNATURE-----
-
---7hp4pruqbs2u4bdq--
+Tested-by: Michael Niewöhner <linux@mniewoehner.de>
