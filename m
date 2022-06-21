@@ -2,128 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A79A3C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 02:30:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A144C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 02:31:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344281AbiFUCa3 (ORCPT
+        id S1344080AbiFUCby (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 22:30:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48370 "EHLO
+        Mon, 20 Jun 2022 22:31:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344166AbiFUCaS (ORCPT
+        with ESMTP id S235958AbiFUCbt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 22:30:18 -0400
-Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AE22193D8;
-        Mon, 20 Jun 2022 19:30:18 -0700 (PDT)
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 1EC811A1262;
-        Tue, 21 Jun 2022 04:30:17 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id C70D51A1254;
-        Tue, 21 Jun 2022 04:30:16 +0200 (CEST)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id A3D49180222B;
-        Tue, 21 Jun 2022 10:30:15 +0800 (+08)
-From:   Shengjiu Wang <shengjiu.wang@nxp.com>
-To:     robh+dt@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
-        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Cc:     shengjiu.wang@gmail.com
-Subject: [PATCH v3 3/3] arm64: dts: imx8mn-evk: add bt-sco sound card support
-Date:   Tue, 21 Jun 2022 10:16:03 +0800
-Message-Id: <1655777763-21153-4-git-send-email-shengjiu.wang@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1655777763-21153-1-git-send-email-shengjiu.wang@nxp.com>
-References: <1655777763-21153-1-git-send-email-shengjiu.wang@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Mon, 20 Jun 2022 22:31:49 -0400
+Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 731B01F2F2
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 19:31:48 -0700 (PDT)
+Received: by mail-qv1-xf30.google.com with SMTP id g18so10986387qvn.2
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 19:31:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Bug3LXi1Aq6PRwRUvNUaWDOJ1zcASuYiUSH1Dvw5rS4=;
+        b=ZIzAarIJwUG1UzRAc3XDmaIU7ID4JLGGYXAYm45TtviKkBsscq8QgmwifNWFchnYsf
+         kZ7aDg6JPZdcip5nRIkOV+QktfEQwpIGIlfGjRyQGLdISvmn2qslg0C2zn4SdiIsIWuu
+         wOT1sQ4FThObehTU+RRWq8NO31TfOkb9NghyML0dl+bg590te3b1+vs0UyW/4Rgxw4Nh
+         O5xUOu7dXpGsdlymDtrI0rkfAPMqN0Ajdmk46xLfZQCk8YJjMwC7qANzbM4wBB4FH5b2
+         IN3puqtBFxr9LDY1Fe/9//DQw6aE3gBvUz2PCeOmKYP1IMgm5OmXciod12YXm5KPrhfl
+         00Wg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Bug3LXi1Aq6PRwRUvNUaWDOJ1zcASuYiUSH1Dvw5rS4=;
+        b=lnS+vMpceiXli+a//5i1r+PO77EidoJt5NW4f0gf6UGiLqbpWsvPkEb/s9zB+1wQ9i
+         4NgTGRHXU0NRMQx9Dl1Ti4uweDmB9HR02jPYEgtahoy6R49M12yddZliQokj4ovinzZQ
+         tpvybSk8x39lyhKI18wdUzo9dS4jGzr+RVEq22yadcqLebZQdQxLo9oPKsoslwHJtb5K
+         jSylxppWOInqTquxDNL3BYH8qmX283sU9TJr8KuNO3oOHH77T/KM4MejXSjv/yTH3WRG
+         h7EXcdA/CbME7aUgivIy1bcQ+j1VixjrfLTFXccAocrqj2PxuwFjsfAwcfqTvmcBl+ec
+         l7DA==
+X-Gm-Message-State: AJIora8v69hpnkhizUtslLBwSpKS++eWY9Z15Wr1ys2VCFku3vwdqRDF
+        7meoEgUsQsW9zqGxMHjjQg==
+X-Google-Smtp-Source: AGRyM1sKLR8mPrR5c57iQz1Ki3yWj3lrFksqjFTf0n2kFU/SXQfh7Deltq59LjbB2sU05EnmqWNPuw==
+X-Received: by 2002:ac8:4e90:0:b0:304:fe09:6c32 with SMTP id 16-20020ac84e90000000b00304fe096c32mr22037211qtp.157.1655778707596;
+        Mon, 20 Jun 2022 19:31:47 -0700 (PDT)
+Received: from localhost (c-73-219-103-14.hsd1.vt.comcast.net. [73.219.103.14])
+        by smtp.gmail.com with ESMTPSA id b64-20020a376743000000b006a5d4f32e5dsm12819128qkc.128.2022.06.20.19.31.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Jun 2022 19:31:46 -0700 (PDT)
+Date:   Mon, 20 Jun 2022 22:31:45 -0400
+From:   Kent Overstreet <kent.overstreet@gmail.com>
+To:     Joe Perches <joe@perches.com>
+Cc:     David Laight <David.Laight@ACULAB.COM>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "pmladek@suse.com" <pmladek@suse.com>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "enozhatsky@chromium.org" <enozhatsky@chromium.org>,
+        "linux@rasmusvillemoes.dk" <linux@rasmusvillemoes.dk>,
+        "willy@infradead.org" <willy@infradead.org>
+Subject: Re: [PATCH v4 00/34] Printbufs - new data structure for building
+ strings
+Message-ID: <20220621023145.sx3o3txbmbsa3br6@moria.home.lan>
+References: <20220620004233.3805-1-kent.overstreet@gmail.com>
+ <0a5901f8460f452a89c9b0cda32fb833@AcuMS.aculab.com>
+ <20220620150514.3tjy5dv7pv5frcwd@moria.home.lan>
+ <53d77ae6101a0f24cfb694174d4c7699424c57e8.camel@perches.com>
+ <20220621005752.ohiq5besmy3r5rjo@moria.home.lan>
+ <a795818f9a49ed401bffc7c38ca7e39ae449e9e0.camel@perches.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a795818f9a49ed401bffc7c38ca7e39ae449e9e0.camel@perches.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add bt-sco sound card, which supports wb profile as default
+On Mon, Jun 20, 2022 at 06:26:58PM -0700, Joe Perches wrote:
+> On Mon, 2022-06-20 at 20:57 -0400, Kent Overstreet wrote:
+> > On Mon, Jun 20, 2022 at 05:38:51PM -0700, Joe Perches wrote:
+> > > On Mon, 2022-06-20 at 11:07 -0400, Kent Overstreet wrote:
+> > > > On Mon, Jun 20, 2022 at 04:19:31AM +0000, David Laight wrote:
+> > > > > I really think that is a bad idea.
+> > > > > printk() already uses a lot of stack, anything doing a recursive
+> > > > > call is just making that worse.
+> > > > > Especially since these calls can often be in error paths
+> > > > > which are not often tested and can already be on deep stacks.
+> > > > 
+> > > > We went over this before - this patch series drastically reduces stack usage of
+> > > > sprintf by eliminating a bunch of stack allocated buffers. Do try to keep up...
+> > > 
+> > > I generally agree with David.
+> > > 
+> > > I think Kent has not provided data that this actually _reduces_
+> > > stack usage.
+> > 
+> > I think the people who are comfortable with reading C can discern that when
+> > large stack allocated character arrays are deleted, frame size and stack usage
+> > go down.
+> 
+> I am very comfortable reading C.
+> 
+> You have not provided any data.
 
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
----
- arch/arm64/boot/dts/freescale/imx8mn-evk.dtsi | 43 +++++++++++++++++++
- 1 file changed, 43 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/freescale/imx8mn-evk.dtsi b/arch/arm64/boot/dts/freescale/imx8mn-evk.dtsi
-index d1f6cccfa00d..89e8ec010f1b 100644
---- a/arch/arm64/boot/dts/freescale/imx8mn-evk.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mn-evk.dtsi
-@@ -47,6 +47,11 @@
- 		linux,autosuspend-period = <125>;
- 	};
- 
-+	audio_codec_bt_sco: audio-codec-bt-sco {
-+		compatible = "linux,bt-sco";
-+		#sound-dai-cells = <1>;
-+	};
-+
- 	wm8524: audio-codec {
- 		#sound-dai-cells = <0>;
- 		compatible = "wlf,wm8524";
-@@ -57,6 +62,25 @@
- 		clock-names = "mclk";
- 	};
- 
-+	sound-bt-sco {
-+		compatible = "simple-audio-card";
-+		simple-audio-card,name = "bt-sco-audio";
-+		simple-audio-card,format = "dsp_a";
-+		simple-audio-card,bitclock-inversion;
-+		simple-audio-card,frame-master = <&btcpu>;
-+		simple-audio-card,bitclock-master = <&btcpu>;
-+
-+		btcpu: simple-audio-card,cpu {
-+			sound-dai = <&sai2>;
-+			dai-tdm-slot-num = <2>;
-+			dai-tdm-slot-width = <16>;
-+		};
-+
-+		simple-audio-card,codec {
-+			sound-dai = <&audio_codec_bt_sco 1>;
-+		};
-+	};
-+
- 	sound-wm8524 {
- 		compatible = "fsl,imx-audio-wm8524";
- 		model = "wm8524-audio";
-@@ -183,6 +207,16 @@
- 	};
- };
- 
-+&sai2 {
-+	#sound-dai-cells = <0>;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_sai2>;
-+	assigned-clocks = <&clk IMX8MN_CLK_SAI2>;
-+	assigned-clock-parents = <&clk IMX8MN_AUDIO_PLL1_OUT>;
-+	assigned-clock-rates = <24576000>;
-+	status = "okay";
-+};
-+
- &sai3 {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&pinctrl_sai3>;
-@@ -354,6 +388,15 @@
- 		>;
- 	};
- 
-+	pinctrl_sai2: sai2grp {
-+		fsl,pins = <
-+			MX8MN_IOMUXC_SAI2_TXC_SAI2_TX_BCLK      0xd6
-+			MX8MN_IOMUXC_SAI2_TXFS_SAI2_TX_SYNC     0xd6
-+			MX8MN_IOMUXC_SAI2_TXD0_SAI2_TX_DATA0    0xd6
-+			MX8MN_IOMUXC_SAI2_RXD0_SAI2_RX_DATA0    0xd6
-+		>;
-+	};
-+
- 	pinctrl_sai3: sai3grp {
- 		fsl,pins = <
- 			MX8MN_IOMUXC_SAI3_TXFS_SAI3_TX_SYNC     0xd6
--- 
-2.17.1
-
+It seems like neither of you have even bothered to check stack frame size in the
+current code, and you guys are the one asserting that this is an issue. 
