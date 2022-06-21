@@ -2,175 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C096CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 03:10:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7E57C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 03:11:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344133AbiFUDKE (ORCPT
+        id S1344198AbiFUDLK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 23:10:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39724 "EHLO
+        Mon, 20 Jun 2022 23:11:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232901AbiFUDKB (ORCPT
+        with ESMTP id S232901AbiFUDLF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 23:10:01 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 77E4E1A802
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 20:10:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655780999;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=5I/A1okM/VsKaRtsTRbiZ/e/0xvi8RkHlF5r4h4SXBQ=;
-        b=PUscAvNReY2b2bu/IM4OhImtzky4+BeDf5R/1deiiPzd08H0rSSFbCJofgyNTIlcro9imx
-        J0i0sDNrronqedO9v3/vz79DNhNoILNHi3HP9A5AJ5Bog8YUT6sCW9yPJatWAnC3kUxmyR
-        ptPvorJtfAfaYP1tUZ3SByHMGq9Lreg=
-Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
- [209.85.167.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-527-WZtoqsa8NIyeERaQJo28dQ-1; Mon, 20 Jun 2022 23:09:58 -0400
-X-MC-Unique: WZtoqsa8NIyeERaQJo28dQ-1
-Received: by mail-lf1-f71.google.com with SMTP id bi38-20020a0565120ea600b0047f640eaee0so2976362lfb.4
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 20:09:57 -0700 (PDT)
+        Mon, 20 Jun 2022 23:11:05 -0400
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54A711C109
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 20:11:03 -0700 (PDT)
+Received: by mail-qk1-x732.google.com with SMTP id d128so9151639qkg.8
+        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 20:11:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=VwtrkCyUs94Mby5M4DxsvnJMAG0rgaBoGLdHEt+Fwzo=;
+        b=IT7i6qpkzPP+/B8tR3+2O0f/z5jek6NcrA1b8mQf14+DJksUQjM32sIi6dVwNFOpMw
+         9cuKnA/jlIqlFcda0c72VqV5MJXOVPPflMokzlYZQD1bMNpjDWpr05TVOkOKZ/l0WB03
+         ea+Hl16MM3s+Bg4l7AMwnTbci7t+tzE5ftuu75m4Vc0xFR6pTCYiPsbUt+QupQTSOrHb
+         0HZLrKryjd1McRzKDcFKU8eQsO2Vkur3hlWvxNy33L2Fovzv2MnggsozuUnXaO6xE1cc
+         Pb0VqyffkjSNGPT/sbysr1Ks9z5mxZTLe0Z2lYQw67Mg871s3zWiCHcNfFKFBepxaZff
+         2Avw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5I/A1okM/VsKaRtsTRbiZ/e/0xvi8RkHlF5r4h4SXBQ=;
-        b=LWh0wtmtiMCd/LU9OP8fT350Bi4it7RSqJKVBudndoDW61NhS5G7WkBYfjJ/1UwkjN
-         wBdLKBCLHijFByHgik2rMH8ILPm2neHD2gD8dg4Osld3KcilCEwRVvXKE17339XDLLAE
-         2ibtzjGzsyppt/8UpB9zjBq4sfHV48jgdKOP2c0bMjrTOfc/QuUTe059uMVM4xn6Lza+
-         Ev47t+i3k49iL+9fZDTxe1pK2vndaGDGV8F1D7OCSp4tWwN/5C2sJmZOnmbXaXrXMNIY
-         bDKlMj03QGF06hqbFrkpysJYfs0n0rQxPRcM7yWZjZc+/5KytSybXZKqutz/E2++evJv
-         5aqg==
-X-Gm-Message-State: AJIora+BEQe/2v4JRAFEwZ4W0Z1etPw6Tbf/hUiSb4AJod4oProuZdum
-        QKmCDB6EWiFj8wc5yrr+rqOgdJRsSGNV47dOUkj3t2xVBHrYekditx6Yk6c7A9BMNpQk3wE3SIq
-        +m89jin0UzxfMFxBOrSC8J78qd9mg1Obrh1fMb9/h
-X-Received: by 2002:a05:6512:3f0f:b0:47f:6f89:326 with SMTP id y15-20020a0565123f0f00b0047f6f890326mr4639287lfa.124.1655780996574;
-        Mon, 20 Jun 2022 20:09:56 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1ue+R/3XG0+CAI6OS7Ckr2jK0FXWYnX/c2+y3CX07qDkE24gA6WB9ZJH62m4USzgEMZO/3NXKymWjN8StBbZr4=
-X-Received: by 2002:a05:6512:3f0f:b0:47f:6f89:326 with SMTP id
- y15-20020a0565123f0f00b0047f6f890326mr4639277lfa.124.1655780996353; Mon, 20
- Jun 2022 20:09:56 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=VwtrkCyUs94Mby5M4DxsvnJMAG0rgaBoGLdHEt+Fwzo=;
+        b=ZQQbpZHZ+1WWJvfv0TlSXSAyvsRHd6YUvbiKGYBUknM2UkIIgVQpwP0QFXuJaiXDVj
+         MVGU9lDHeKxkNjhitsdZ48CqXr4tqAOanSPp2yGMAxr+bvAtGWRPqnyOCO3j+EkSE5xs
+         WP1IfbTSkhfCI6xjjyFan7sMxBHvQB3pI21hEkOWx4+nsblZxNEp6uekDUEI8Pcw/+3u
+         KwlbPDRnpy1sq8Uf6CWY7KUYVQW67Ndgr15VJNuCg5uiw/WEHJlJ+d8F2GJyiiC7JITe
+         jXqCLtlt/hJO+yj/SiLz2CWGjvkYz2k6CoGvkhZUlEdidYIKcuC/lbTt8QC35FArwnUM
+         ecsQ==
+X-Gm-Message-State: AJIora/gnp7sxg2th/dVCew5mdj7a1ADB7EkAmcOcjVhS6+oyWBw5fg1
+        Sshe5n3eZR9HBWh+DA/p/w==
+X-Google-Smtp-Source: AGRyM1u6rlI+7jxlDfwReGjJwiNc3ZmlhiTHDLDcH9/FMxzHU+kQWUvCmtXlItRTLwc/8HvCK17Igg==
+X-Received: by 2002:a05:620a:1336:b0:6a6:b5fe:44cf with SMTP id p22-20020a05620a133600b006a6b5fe44cfmr17941191qkj.525.1655781062424;
+        Mon, 20 Jun 2022 20:11:02 -0700 (PDT)
+Received: from localhost (c-73-219-103-14.hsd1.vt.comcast.net. [73.219.103.14])
+        by smtp.gmail.com with ESMTPSA id t9-20020a37ea09000000b006a6be577535sm13767332qkj.85.2022.06.20.20.11.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Jun 2022 20:11:01 -0700 (PDT)
+Date:   Mon, 20 Jun 2022 23:11:01 -0400
+From:   Kent Overstreet <kent.overstreet@gmail.com>
+To:     David Laight <David.Laight@ACULAB.COM>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "pmladek@suse.com" <pmladek@suse.com>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "enozhatsky@chromium.org" <enozhatsky@chromium.org>,
+        "linux@rasmusvillemoes.dk" <linux@rasmusvillemoes.dk>,
+        "willy@infradead.org" <willy@infradead.org>
+Subject: Re: [PATCH v4 00/34] Printbufs - new data structure for building
+ strings
+Message-ID: <20220621031101.ex3qwbyywwyy5ctk@moria.home.lan>
+References: <20220620004233.3805-1-kent.overstreet@gmail.com>
+ <0a5901f8460f452a89c9b0cda32fb833@AcuMS.aculab.com>
 MIME-Version: 1.0
-References: <20220620051115.3142-1-jasowang@redhat.com> <20220620051115.3142-4-jasowang@redhat.com>
- <20220620050446-mutt-send-email-mst@kernel.org> <CACGkMEsEq3mu6unXx1VZuEFgDCotOc9v7fcwJG-kXEqs6hXYYg@mail.gmail.com>
- <20220620061607-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20220620061607-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Tue, 21 Jun 2022 11:09:45 +0800
-Message-ID: <CACGkMEu7k2X6S0tSsuGOb-Ta+MzzYE5NzHgrhR2H1vgmcLqjCw@mail.gmail.com>
-Subject: Re: [PATCH 3/3] caif_virtio: fix the race between reset and netdev unregister
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        davem <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
-        erwan.yvin@stericsson.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0a5901f8460f452a89c9b0cda32fb833@AcuMS.aculab.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 20, 2022 at 6:18 PM Michael S. Tsirkin <mst@redhat.com> wrote:
->
-> On Mon, Jun 20, 2022 at 05:18:29PM +0800, Jason Wang wrote:
-> > On Mon, Jun 20, 2022 at 5:09 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > >
-> > > On Mon, Jun 20, 2022 at 01:11:15PM +0800, Jason Wang wrote:
-> > > > We use to do the following steps during .remove():
-> > >
-> > > We currently do
-> > >
-> > >
-> > > > static void cfv_remove(struct virtio_device *vdev)
-> > > > {
-> > > >       struct cfv_info *cfv = vdev->priv;
-> > > >
-> > > >       rtnl_lock();
-> > > >       dev_close(cfv->ndev);
-> > > >       rtnl_unlock();
-> > > >
-> > > >       tasklet_kill(&cfv->tx_release_tasklet);
-> > > >       debugfs_remove_recursive(cfv->debugfs);
-> > > >
-> > > >       vringh_kiov_cleanup(&cfv->ctx.riov);
-> > > >       virtio_reset_device(vdev);
-> > > >       vdev->vringh_config->del_vrhs(cfv->vdev);
-> > > >       cfv->vr_rx = NULL;
-> > > >       vdev->config->del_vqs(cfv->vdev);
-> > > >       unregister_netdev(cfv->ndev);
-> > > > }
-> > > > This is racy since device could be re-opened after dev_close() but
-> > > > before unregister_netdevice():
-> > > >
-> > > > 1) RX vringh is cleaned before resetting the device, rx callbacks that
-> > > >    is called after the vringh_kiov_cleanup() will result a UAF
-> > > > 2) Network stack can still try to use TX virtqueue even if it has been
-> > > >    deleted after dev_vqs()
-> > > >
-> > > > Fixing this by unregistering the network device first to make sure not
-> > > > device access from both TX and RX side.
-> > > >
-> > > > Fixes: 0d2e1a2926b18 ("caif_virtio: Introduce caif over virtio")
-> > > > Signed-off-by: Jason Wang <jasowang@redhat.com>
-> > > > ---
-> > > >  drivers/net/caif/caif_virtio.c | 6 ++----
-> > > >  1 file changed, 2 insertions(+), 4 deletions(-)
-> > > >
-> > > > diff --git a/drivers/net/caif/caif_virtio.c b/drivers/net/caif/caif_virtio.c
-> > > > index 66375bea2fcd..a29f9b2df5b1 100644
-> > > > --- a/drivers/net/caif/caif_virtio.c
-> > > > +++ b/drivers/net/caif/caif_virtio.c
-> > > > @@ -752,9 +752,8 @@ static void cfv_remove(struct virtio_device *vdev)
-> > > >  {
-> > > >       struct cfv_info *cfv = vdev->priv;
-> > > >
-> > > > -     rtnl_lock();
-> > > > -     dev_close(cfv->ndev);
-> > > > -     rtnl_unlock();
-> > > > +     /* Make sure NAPI/TX won't try to access the device */
-> > > > +     unregister_netdev(cfv->ndev);
-> > > >
-> > > >       tasklet_kill(&cfv->tx_release_tasklet);
-> > > >       debugfs_remove_recursive(cfv->debugfs);
-> > > > @@ -764,7 +763,6 @@ static void cfv_remove(struct virtio_device *vdev)
-> > > >       vdev->vringh_config->del_vrhs(cfv->vdev);
-> > > >       cfv->vr_rx = NULL;
-> > > >       vdev->config->del_vqs(cfv->vdev);
-> > > > -     unregister_netdev(cfv->ndev);
-> > > >  }
-> > >
-> > >
-> > > This gives me pause, callbacks can now trigger after device
-> > > has been unregistered. Are we sure this is safe?
-> >
-> > It looks safe, for RX NAPI is disabled. For TX, tasklet is disabled
-> > after tasklet_kill(). I can add a comment to explain this.
->
-> that waits for outstanding tasklets but does it really prevent
-> future ones?
+On Mon, Jun 20, 2022 at 04:19:31AM +0000, David Laight wrote:
+> I really think that is a bad idea.
+> printk() already uses a lot of stack, anything doing a recursive
+> call is just making that worse.
+> Especially since these calls can often be in error paths
+> which are not often tested and can already be on deep stacks.
 
-I think so, it tries to test and set TASKLET_STATE_SCHED which blocks
-the future scheduling of a tasklet.
+So it seems this is something you never actually checked, and I naively assumed
+that you might actually know what you were talking about - an understandable
+mistake, I think, because vsprintf.c is _a fucking mess_ and high stack usage
+would be believable.
 
-Thanks
+But the main part we're concerned with here, snprint() or prt_printf(), has no
+such stack usage problems. On v5.18, the frame size is under 64 bytes. On my
+branch, it's 72 bytes - higher because we do need to save arguments on the stack
+for the pretty-printer invocation, and there's no way around that without
+dropping to asm - although I'm allowing up to 8 arguments (besides the printbuf
+itself), which is probably excessive.
 
->
-> > > Won't it be safer to just keep the rtnl_lock around
-> > > the whole process?
-> >
-> > It looks to me we rtnl_lock can't help in synchronizing with the
-> > callbacks, anything I miss?
-> >
-> > Thanks
->
-> good point.
->
->
-> > >
-> > > >  static struct virtio_device_id id_table[] = {
-> > > > --
-> > > > 2.25.1
-> > >
->
+So I'm not seeing what you're talking about.
 
+In the leaf functions, the individual pretty-printers/%p extensions, those are
+doing completely ridiculous things and I have fixed them all except
+symbol_string() on my branch, and I'll get to that one.
+
+Having a proper string library with useful helpers really makes things easier,
+it turns out.
+
+As for recursive %pf() invocations blowing the stack? I seriously fucking doubt
+it, once you're in a pretty-printer where you've already got a printbuf you can
+output to there's not much reason to be doing recursive calls to prt_printf()
+passing it yet another pretty printer - that's not where %pf() is convenient,
+what it makes convenient is using pretty printers when you're calling printk()
+directly. In a pretty printer fuction, if you want to do recursive
+pretty-printer calls you'd just call it directly! prt_printf(out, "%pf(%p)"),
+foo_to_text, foo) is silly when you can just call foo_to_text(out, foo).
+
+Now, I ask both of you please take your bureaucratic nitpicky nonsense and,
+kindly, pretty please with sugar on top - stuff it. I much prefer to work with
+people who don't waste my time, and who have actual _taste_.
