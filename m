@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FBADC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0330CCA486
 	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:01:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356361AbiFUU76 (ORCPT
+        id S1356399AbiFUVAE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 16:59:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55324 "EHLO
+        Tue, 21 Jun 2022 17:00:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355265AbiFUU5E (ORCPT
+        with ESMTP id S1355171AbiFUU5V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 16:57:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39B8331DE4;
-        Tue, 21 Jun 2022 13:50:50 -0700 (PDT)
+        Tue, 21 Jun 2022 16:57:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC58631DF2;
+        Tue, 21 Jun 2022 13:50:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 17B4CB81B44;
-        Tue, 21 Jun 2022 20:50:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28E85C341CC;
-        Tue, 21 Jun 2022 20:50:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CD846618BC;
+        Tue, 21 Jun 2022 20:50:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94911C341C7;
+        Tue, 21 Jun 2022 20:50:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655844609;
-        bh=dYeMXC/I1UG+a3arq2DtrBxIkqqwzlUENAaahKPMSeU=;
+        s=k20201202; t=1655844644;
+        bh=M5ZujuZ0mG33Rr/sqbkSj4dYDw6RrPY7vPQnXkZ/t0s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ltDgMi9wZP2GkooHTcuXTbbQIiy/PJOIoKH7lLhgaaxoZay6I9dqMEF2nCuHZJuNB
-         RDsQmJJPu6gQ7sgHyzn+1EzBIw49ipShwub8t1FsCqCqDKqOrq2bNI6TyRoW2K425Y
-         6TIS7id8363X8wPiRtIz7quJ6sgaTV/Z2aTpsmorNzWS63ra9MsH+uITZsu+9h31Yh
-         QLootXIr0eVwer3fYMuGc6AesRoan9TQvUv+SQwj7903fgfyQ+NWs8fyU8rTa+uov8
-         TYCTJIem9c2F0rJ3iityfnD7uVdVBKsqmO3d/Fzs9lc3llbDEDFHSDPlAsY/tvaIGp
-         5N7n23JGZMazA==
+        b=XrpR/9xiDHxi+iO5S33OTDTsVqTo7L2Kre0eotKOimzHAeLz0m8tkyQR2mBE05dtl
+         HRH50XGX375YjHwYNhsDqnOb6YDAXaSxLMkvTdz8LAv4+9swRY4NQaon8/pJqDpWvs
+         jGzQ92ZKhTYZyluZBj7hsBWrmJZlp6+lDeoP5/VtNFVs3meZLh4utwm+kimMXyB0mI
+         SQKjkzpUO80DtFcpGdp4+bzu6FfDFQmPSd4YJuer7v7tWZ7mr8ki2HjJmyD3V706lM
+         cK22btl/ywPDZaFH6iLmuDXor4RbBdzVyG0YbBMJOsvxEYBWKUXO3N1Ow2lpXR0Qj3
+         uEWHoi8SCPxFw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Baokun Li <libaokun1@huawei.com>,
-        Ritesh Harjani <ritesh.list@gmail.com>,
-        Theodore Ts'o <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>,
-        adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 22/22] ext4: correct the judgment of BUG in ext4_mb_normalize_request
-Date:   Tue, 21 Jun 2022 16:49:28 -0400
-Message-Id: <20220621204928.249907-22-sashal@kernel.org>
+Cc:     Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        tglx@linutronix.de, mhiramat@kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.15 02/17] irqchip/uniphier-aidet: Add compatible string for NX1 SoC
+Date:   Tue, 21 Jun 2022 16:50:25 -0400
+Message-Id: <20220621205041.250426-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220621204928.249907-1-sashal@kernel.org>
-References: <20220621204928.249907-1-sashal@kernel.org>
+In-Reply-To: <20220621205041.250426-1-sashal@kernel.org>
+References: <20220621205041.250426-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,53 +53,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baokun Li <libaokun1@huawei.com>
+From: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
 
-[ Upstream commit cf4ff938b47fc5c00b0ccce53a3b50eca9b32281 ]
+[ Upstream commit e3f056a7aafabe4ac3ad4b7465ba821b44a7e639 ]
 
-ext4_mb_normalize_request() can move logical start of allocated blocks
-to reduce fragmentation and better utilize preallocation. However logical
-block requested as a start of allocation (ac->ac_o_ex.fe_logical) should
-always be covered by allocated blocks so we should check that by
-modifying and to or in the assertion.
+Add the compatible string to support UniPhier NX1 SoC, which has the same
+kinds of controls as the other UniPhier SoCs.
 
-Signed-off-by: Baokun Li <libaokun1@huawei.com>
-Reviewed-by: Ritesh Harjani <ritesh.list@gmail.com>
-Link: https://lore.kernel.org/r/20220528110017.354175-3-libaokun1@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/1653023822-19229-3-git-send-email-hayashi.kunihiko@socionext.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/mballoc.c | 17 ++++++++++++++++-
- 1 file changed, 16 insertions(+), 1 deletion(-)
+ drivers/irqchip/irq-uniphier-aidet.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/fs/ext4/mballoc.c b/fs/ext4/mballoc.c
-index 87d85ce04d58..2ab01cbc0936 100644
---- a/fs/ext4/mballoc.c
-+++ b/fs/ext4/mballoc.c
-@@ -4179,7 +4179,22 @@ ext4_mb_normalize_request(struct ext4_allocation_context *ac,
- 	}
- 	rcu_read_unlock();
+diff --git a/drivers/irqchip/irq-uniphier-aidet.c b/drivers/irqchip/irq-uniphier-aidet.c
+index 89121b39be26..716b1bb88bf2 100644
+--- a/drivers/irqchip/irq-uniphier-aidet.c
++++ b/drivers/irqchip/irq-uniphier-aidet.c
+@@ -237,6 +237,7 @@ static const struct of_device_id uniphier_aidet_match[] = {
+ 	{ .compatible = "socionext,uniphier-ld11-aidet" },
+ 	{ .compatible = "socionext,uniphier-ld20-aidet" },
+ 	{ .compatible = "socionext,uniphier-pxs3-aidet" },
++	{ .compatible = "socionext,uniphier-nx1-aidet" },
+ 	{ /* sentinel */ }
+ };
  
--	if (start + size <= ac->ac_o_ex.fe_logical &&
-+	/*
-+	 * In this function "start" and "size" are normalized for better
-+	 * alignment and length such that we could preallocate more blocks.
-+	 * This normalization is done such that original request of
-+	 * ac->ac_o_ex.fe_logical & fe_len should always lie within "start" and
-+	 * "size" boundaries.
-+	 * (Note fe_len can be relaxed since FS block allocation API does not
-+	 * provide gurantee on number of contiguous blocks allocation since that
-+	 * depends upon free space left, etc).
-+	 * In case of inode pa, later we use the allocated blocks
-+	 * [pa_start + fe_logical - pa_lstart, fe_len/size] from the preallocated
-+	 * range of goal/best blocks [start, size] to put it at the
-+	 * ac_o_ex.fe_logical extent of this inode.
-+	 * (See ext4_mb_use_inode_pa() for more details)
-+	 */
-+	if (start + size <= ac->ac_o_ex.fe_logical ||
- 			start > ac->ac_o_ex.fe_logical) {
- 		ext4_msg(ac->ac_sb, KERN_ERR,
- 			 "start %lu, size %lu, fe_logical %lu",
 -- 
 2.35.1
 
