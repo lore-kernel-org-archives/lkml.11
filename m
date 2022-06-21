@@ -2,117 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 588DFCCA473
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 09:07:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D415C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 09:07:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348645AbiFUJHA (ORCPT
+        id S1348683AbiFUJHw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 05:07:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50956 "EHLO
+        Tue, 21 Jun 2022 05:07:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348583AbiFUJGz (ORCPT
+        with ESMTP id S1348086AbiFUJHt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 05:06:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E31719F97;
-        Tue, 21 Jun 2022 02:06:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 21 Jun 2022 05:07:49 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49E08186D0;
+        Tue, 21 Jun 2022 02:07:48 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A185061572;
-        Tue, 21 Jun 2022 09:06:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FECFC341C4;
-        Tue, 21 Jun 2022 09:06:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655802414;
-        bh=N3p+7KlMfefdfn/ZBHvMoWcodfs7abt2FrfWbGO/KsI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=AUYhA0zhMP1sbp1Fo5+zjviMRMEknLfVukO7ghaNxa82h23l6lmM9/mngfqqtGpFi
-         jTwkXfKIjKb0La+IhkkgQbVwjYMx/xe6oVp/qT4a9lMWlZhc9eus3TA0IVryDCWYCp
-         I6OVCTnH3zkG4HZhah+VSJgLb+6MnWLYEICKxPcg=
-Date:   Tue, 21 Jun 2022 11:06:51 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Johan Hovold <johan@kernel.org>
-Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        charles-yeh@prolific.com.tw, Charles Yeh <charlesyeh522@gmail.com>,
-        stable@vger.kernel.org
-Subject: Re: [PATCH] USB: serial: pl2303: add support for more HXN (G) types
-Message-ID: <YrGKK7Ua20Boz1oZ@kroah.com>
-References: <20220621085855.6252-1-johan@kernel.org>
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 055391FADF;
+        Tue, 21 Jun 2022 09:07:47 +0000 (UTC)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D895613A88;
+        Tue, 21 Jun 2022 09:07:46 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id qOaSMmKKsWKFHAAAMHmgww
+        (envelope-from <chrubis@suse.cz>); Tue, 21 Jun 2022 09:07:46 +0000
+From:   Cyril Hrubis <metan@ucw.cz>
+To:     linux-kernel@vger.kernel.org
+Cc:     linux-arch@vger.kernel.org, linux-api@vger.kernel.org,
+        libc-alpha@sourceware.org, arnd@arndb.de, ltp@lists.linux.it,
+        David.Laight@aculab.com, zack@owlfolio.org, dhowells@redhat.com,
+        Cyril Hrubis <chrubis@suse.cz>
+Subject: [PATCH v2] uapi: Make __{u,s}64 match {u,}int64_t in userspace
+Date:   Tue, 21 Jun 2022 11:09:51 +0200
+Message-Id: <20220621090951.29911-1-metan@ucw.cz>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220621085855.6252-1-johan@kernel.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 21, 2022 at 10:58:55AM +0200, Johan Hovold wrote:
-> Add support for further HXN (G) type devices (GT variant, GL variant, GS
-> variant and GR) and document the bcdDevice mapping.
-> 
-> Note that the TA and TB types use the same bcdDevice as some GT and GE
-> variants, respectively, but that the HX status request can be used to
-> determine which is which.
-> 
-> Also note that we currently do not distinguish between the various HXN
-> (G) types in the driver but that this may change eventually (e.g. when
-> adding GPIO support).
-> 
-> Reported-by: Charles Yeh <charlesyeh522@gmail.com>
-> Link: https://lore.kernel.org/r/YrF77b9DdeumUAee@hovoldconsulting.com
-> Cc: stable@vger.kernel.org	# 5.13
-> Signed-off-by: Johan Hovold <johan@kernel.org>
-> ---
->  drivers/usb/serial/pl2303.c | 29 +++++++++++++++++------------
->  1 file changed, 17 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/usb/serial/pl2303.c b/drivers/usb/serial/pl2303.c
-> index 3506c47e1eef..40b1ab3d284d 100644
-> --- a/drivers/usb/serial/pl2303.c
-> +++ b/drivers/usb/serial/pl2303.c
-> @@ -436,22 +436,27 @@ static int pl2303_detect_type(struct usb_serial *serial)
->  		break;
->  	case 0x200:
->  		switch (bcdDevice) {
-> -		case 0x100:
-> +		case 0x100:	/* GC */
->  		case 0x105:
-> +			return TYPE_HXN;
-> +		case 0x300:	/* GT / TA */
-> +			if (pl2303_supports_hx_status(serial))
-> +				return TYPE_TA;
-> +			fallthrough;
->  		case 0x305:
-> +		case 0x400:	/* GL */
->  		case 0x405:
-> +			return TYPE_HXN;
-> +		case 0x500:	/* GE / TB */
-> +			if (pl2303_supports_hx_status(serial))
-> +				return TYPE_TB;
-> +			fallthrough;
-> +		case 0x505:
-> +		case 0x600:	/* GS */
->  		case 0x605:
-> -			/*
-> -			 * Assume it's an HXN-type if the device doesn't
-> -			 * support the old read request value.
-> -			 */
-> -			if (!pl2303_supports_hx_status(serial))
-> -				return TYPE_HXN;
-> -			break;
-> -		case 0x300:
-> -			return TYPE_TA;
-> -		case 0x500:
-> -			return TYPE_TB;
-> +		case 0x700:	/* GR */
-> +		case 0x705:
-> +			return TYPE_HXN;
->  		}
->  		break;
->  	}
-> -- 
-> 2.35.1
-> 
+From: Cyril Hrubis <chrubis@suse.cz>
 
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This changes the __u64 and __s64 in userspace on 64bit platforms from
+long long (unsigned) int to just long (unsigned) int in order to match
+the uint64_t and int64_t size in userspace.
+
+This allows us to use the kernel structure definitions in userspace.
+
+For example we can use PRIu64 and PRId64 modifiers in printf() to print
+structure membere. Morever with this there would be no need to redefine
+these structures in an libc implementations as it is done now.
+
+Consider for example the newly added statx() syscall. If we use the
+header from uapi we will get warnings when attempting to print it's
+members as:
+
+	printf("%" PRIu64 "\n", stx.stx_size);
+
+We get:
+
+	warning: format '%lu' expects argument of type 'long unsigned int',
+	         but argument 5 has type '__u64' {aka 'long long unsigned int'}
+
+Signed-off-by: Cyril Hrubis <chrubis@suse.cz>
+---
+ include/uapi/asm-generic/types.h | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+v2: Make sure we do not break C++ applications
+
+diff --git a/include/uapi/asm-generic/types.h b/include/uapi/asm-generic/types.h
+index dfaa50d99d8f..11e468a39d1e 100644
+--- a/include/uapi/asm-generic/types.h
++++ b/include/uapi/asm-generic/types.h
+@@ -1,9 +1,16 @@
+ /* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ #ifndef _ASM_GENERIC_TYPES_H
+ #define _ASM_GENERIC_TYPES_H
++
++#include <asm/bitsperlong.h>
++
+ /*
+- * int-ll64 is used everywhere now.
++ * int-ll64 is used everywhere in kernel now.
+  */
+-#include <asm-generic/int-ll64.h>
++#if !defined(__KERNEL__) && !defined(__cplusplus) && __BITSPERLONG == 64
++# include <asm-generic/int-l64.h>
++#else
++# include <asm-generic/int-ll64.h>
++#endif
+ 
+ #endif /* _ASM_GENERIC_TYPES_H */
+-- 
+2.35.1
+
