@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C9C3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 20:57:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 174FBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 20:57:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355229AbiFUU5e (ORCPT
+        id S1355372AbiFUU5h (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 16:57:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55482 "EHLO
+        Tue, 21 Jun 2022 16:57:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354870AbiFUU4e (ORCPT
+        with ESMTP id S1355201AbiFUU4j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 16:56:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A6D62DD58;
-        Tue, 21 Jun 2022 13:50:37 -0700 (PDT)
+        Tue, 21 Jun 2022 16:56:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD9233192A;
+        Tue, 21 Jun 2022 13:50:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F4227B81A9A;
-        Tue, 21 Jun 2022 20:50:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 051FFC385A9;
-        Tue, 21 Jun 2022 20:50:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D87BAB81B37;
+        Tue, 21 Jun 2022 20:50:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14837C3411C;
+        Tue, 21 Jun 2022 20:50:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655844607;
-        bh=muuLMwyq22RXpPtWQ8HWF194/A0xd8vK/W1Fo8RCJE4=;
+        s=k20201202; t=1655844627;
+        bh=LjDz06T0wPjVN5BW1zCEoJ98B7dQW9Y7mc49ZoBwNy0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j3YZTplrizLP/1cdM+3t+6QJQby6y8v9hE1iswZ4Prw0Jx/6K8ouNwa6hVPOcz7TX
-         5yq9H2LdYGXPxDyBddcOByEXpW2L6tplvBpRHedaKoRAkk1Rn7XHaGQ+Jini/KOFv4
-         5J85DgaXk9Hm6k0Gk6dNZptIHkuI5cbt4BDeEX3H0dLUBBKSmgPeRn+p4WvjHDNN1k
-         GVF3QgSVSF4XBaw9kk2KwUn9o6HwfOQi3KUhAnKXrZiAH7AOmU4JWAn/ryh3aXNnCd
-         kPeXAFPDHgaVysUFSxPh7k3fCt/RQEvaReOHfkDEW81ASim0Ua4WqlsPti5Y6uKMdH
-         8Dw1ZfreQT4qw==
+        b=ghxsneW3k+VSe1mAlGsST5URu82YIi8x3sBoICzv7hUGJ08Rf6skNgG0IaoLLkQ+M
+         andgtR3/PgWEvGJVFQg9TA39HxG+ZbCZmLAtIHTI3XOm4erUpBQWlFpYZLFDUldVUO
+         hedh3RDTXmgYHPggzdwyXukZSZ/daaKQuIB5a4WdFLJ0borALCbUjKEovsXF/eSW5A
+         dY0j867/kepUXJ7ySq7kF220opiU5OYMX5R4zMJw1SShWBGwdHOs+bCDZw5NSEaHHe
+         svHXyBNrGcnmoB2+fDzbbBfvnhQDNJ40AekmkgjcF95xSJNBzLKhM2UECeH5U/c2/f
+         wHWyKKcah7i2Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ming Lei <ming.lei@redhat.com>, Christoph Hellwig <hch@lst.de>,
-        Yu Kuai <yukuai3@huawei.com>, Jens Axboe <axboe@kernel.dk>,
-        Sasha Levin <sashal@kernel.org>, linux-block@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 20/22] blk-mq: don't clear flush_rq from tags->rqs[]
-Date:   Tue, 21 Jun 2022 16:49:26 -0400
-Message-Id: <20220621204928.249907-20-sashal@kernel.org>
+Cc:     Keith Busch <kbusch@kernel.org>, Christoph Hellwig <hch@lst.de>,
+        Sasha Levin <sashal@kernel.org>, axboe@fb.com,
+        sagi@grimberg.me, linux-nvme@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.17 09/20] nvme-pci: smi has bogus namespace ids
+Date:   Tue, 21 Jun 2022 16:49:59 -0400
+Message-Id: <20220621205010.250185-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220621204928.249907-1-sashal@kernel.org>
-References: <20220621204928.249907-1-sashal@kernel.org>
+In-Reply-To: <20220621205010.250185-1-sashal@kernel.org>
+References: <20220621205010.250185-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,48 +52,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ming Lei <ming.lei@redhat.com>
+From: Keith Busch <kbusch@kernel.org>
 
-[ Upstream commit 6cfeadbff3f8905f2854735ebb88e581402c16c4 ]
+[ Upstream commit c98a879312caf775c9768faed25ce1c013b4df04 ]
 
-commit 364b61818f65 ("blk-mq: clearing flush request reference in
-tags->rqs[]") is added to clear the to-be-free flush request from
-tags->rqs[] for avoiding use-after-free on the flush rq.
+Add the quirk.
 
-Yu Kuai reported that blk_mq_clear_flush_rq_mapping() slows down boot time
-by ~8s because running scsi probe which may create and remove lots of
-unpresent LUNs on megaraid-sas which uses BLK_MQ_F_TAG_HCTX_SHARED and
-each request queue has lots of hw queues.
-
-Improve the situation by not running blk_mq_clear_flush_rq_mapping if
-disk isn't added when there can't be any flush request issued.
-
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Reported-by: Yu Kuai <yukuai3@huawei.com>
-Signed-off-by: Ming Lei <ming.lei@redhat.com>
-Link: https://lore.kernel.org/r/20220616014401.817001-4-ming.lei@redhat.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=216096
+Signed-off-by: Keith Busch <kbusch@kernel.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/blk-mq.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/nvme/host/pci.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/block/blk-mq.c b/block/blk-mq.c
-index 78f67bf19564..c9c7bc359c74 100644
---- a/block/blk-mq.c
-+++ b/block/blk-mq.c
-@@ -3427,8 +3427,9 @@ static void blk_mq_exit_hctx(struct request_queue *q,
- 	if (blk_mq_hw_queue_mapped(hctx))
- 		blk_mq_tag_idle(hctx);
- 
--	blk_mq_clear_flush_rq_mapping(set->tags[hctx_idx],
--			set->queue_depth, flush_rq);
-+	if (blk_queue_init_done(q))
-+		blk_mq_clear_flush_rq_mapping(set->tags[hctx_idx],
-+				set->queue_depth, flush_rq);
- 	if (set->ops->exit_request)
- 		set->ops->exit_request(set, flush_rq, hctx_idx);
- 
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index ce2b3906431c..666746e3bcb6 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -3419,7 +3419,8 @@ static const struct pci_device_id nvme_id_table[] = {
+ 	{ PCI_VDEVICE(REDHAT, 0x0010),	/* Qemu emulated controller */
+ 		.driver_data = NVME_QUIRK_BOGUS_NID, },
+ 	{ PCI_DEVICE(0x126f, 0x2263),	/* Silicon Motion unidentified */
+-		.driver_data = NVME_QUIRK_NO_NS_DESC_LIST, },
++		.driver_data = NVME_QUIRK_NO_NS_DESC_LIST |
++				NVME_QUIRK_BOGUS_NID, },
+ 	{ PCI_DEVICE(0x1bb1, 0x0100),   /* Seagate Nytro Flash Storage */
+ 		.driver_data = NVME_QUIRK_DELAY_BEFORE_CHK_RDY |
+ 				NVME_QUIRK_NO_NS_DESC_LIST, },
 -- 
 2.35.1
 
