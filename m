@@ -2,104 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7687DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 13:06:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 289D4CCA473
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 13:06:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351283AbiFUNGG (ORCPT
+        id S1350821AbiFUNGq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 09:06:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36778 "EHLO
+        Tue, 21 Jun 2022 09:06:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350821AbiFUNF6 (ORCPT
+        with ESMTP id S1350066AbiFUNGn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 09:05:58 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B5C5237F2;
-        Tue, 21 Jun 2022 06:05:57 -0700 (PDT)
-Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25LCFCs4032492;
-        Tue, 21 Jun 2022 15:05:34 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=selector1;
- bh=kGFdEOd4Hn+bp4L8O4UHs/GgLmuaX/4g+RGps8zypXM=;
- b=0Tf5P62jv13J/ItGHFfVm9NGBAcYfEZ67Mlz8icx/CwLABbG6IlNp26/tiRRNNz9s0tT
- lAY0X0P62tNOZyWp1rOieE1zwSe53I4EvY+TpA9Xw1Kcg/skj+z1oQDZ/IPzX9mf7yD0
- dLvEKaEC+R5TIYGNdX4xa6MW2VEtyUIyDy4Be2LXUqbtGe63+tjhP/6+kR/iicQLk4K1
- 2px2luFv6F0soSyv3DVCvgpxRhb8W11lJ+bWEw2QzfiEtxfm6YuSzPEPH+YlZbo4mA2k
- zqtiQN/EdZAx7+tdHAIkkSpPRJPRac8qqQu78HvvvJTTIl6CIZpmVLJqIbI1QaBWPbCh nQ== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3gu9vcj2n1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 21 Jun 2022 15:05:34 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 8503E100034;
-        Tue, 21 Jun 2022 15:05:33 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 805682248AA;
-        Tue, 21 Jun 2022 15:05:33 +0200 (CEST)
-Received: from localhost (10.75.127.119) by SHFDAG1NODE2.st.com (10.75.129.70)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Tue, 21 Jun
- 2022 15:05:33 +0200
-From:   Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-To:     <hminas@synopsys.com>, <gregkh@linuxfoundation.org>,
-        <stern@rowland.harvard.edu>
-CC:     <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <amelie.delaunay@foss.st.com>, <fabrice.gasnier@foss.st.com>
-Subject: [PATCH 3/3] usb: dwc2: host: add TPL support
-Date:   Tue, 21 Jun 2022 15:05:06 +0200
-Message-ID: <20220621130506.85424-4-fabrice.gasnier@foss.st.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220621130506.85424-1-fabrice.gasnier@foss.st.com>
-References: <20220621130506.85424-1-fabrice.gasnier@foss.st.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.119]
-X-ClientProxiedBy: GPXDAG2NODE5.st.com (10.75.127.69) To SHFDAG1NODE2.st.com
- (10.75.129.70)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-06-21_06,2022-06-21_01,2022-02-23_01
+        Tue, 21 Jun 2022 09:06:43 -0400
+Received: from smtpbg.qq.com (smtpbg136.qq.com [106.55.201.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CDEB2612D
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 06:06:35 -0700 (PDT)
+X-QQ-mid: bizesmtp82t1655816536tegru2l3
+Received: from ubuntu.localdomain ( [106.117.99.68])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 21 Jun 2022 21:02:12 +0800 (CST)
+X-QQ-SSF: 0100000000700050B000B00A0000000
+X-QQ-FEAT: xoS364mEyr2lrJLrObarZ620j5HzhnGsAxRGEt30W2QTeCOW0f4X+LfQXscqK
+        f+JJxJBcSHehUERB7aUQzczaJeG7LmUbUFgTpMcKsMVMrCxL5IhHfe6ZPBqsE6XX8hVdcHV
+        FnfkxIFR4nADKqxvescYikqkjJr6ebnWk6+DIdvBvwkkqWfBHh3qD+fTVPpdTVLsf8in2nW
+        plK8W1V85hYCxJVz82AsbN6FPd4gtDuLrcN7SjwBPIhBJY4CfsWczOBSUxxaiqXe/gwtQjr
+        VSVmAB6Ryd+50MmnCLH+Ncpu1C8eYRMQdQ3aoxcQJ+DNfKO2R9gCCQV2Wi/uOg3y/K2BWc1
+        9+g/dhGfs2e63I6GxDz3aq1Y0eg3A==
+X-QQ-GoodBg: 0
+From:   Jiang Jian <jiangjian@cdjrlc.com>
+To:     maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+        tzimmermann@suse.de
+Cc:     airlied@linux.ie, daniel@ffwll.ch, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, Jiang Jian <jiangjian@cdjrlc.com>
+Subject: [PATCH] drm/prime: drop unexpected word "the" in the comments
+Date:   Tue, 21 Jun 2022 21:02:10 +0800
+Message-Id: <20220621130210.125461-1-jiangjian@cdjrlc.com>
+X-Mailer: git-send-email 2.17.1
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amelie Delaunay <amelie.delaunay@foss.st.com>
+there is an unexpected word "the" in the comments that need to be dropped
 
-The TPL support is used to identify targeted devices during EH compliance
-test. The user can add "tpl-support" in the device tree to enable it.
+file: drivers/gpu/drm/drm_prime.c
+line: 842
+* of the the buffer described by the provided sg_table.
+changed to
+* of the buffer described by the provided sg_table.
 
-Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
-Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
 ---
- drivers/usb/dwc2/hcd.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/gpu/drm/drm_prime.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/usb/dwc2/hcd.c b/drivers/usb/dwc2/hcd.c
-index f63a27d11fac8..4567f3c24d225 100644
---- a/drivers/usb/dwc2/hcd.c
-+++ b/drivers/usb/dwc2/hcd.c
-@@ -52,6 +52,7 @@
- 
- #include <linux/usb/hcd.h>
- #include <linux/usb/ch11.h>
-+#include <linux/usb/of.h>
- 
- #include "core.h"
- #include "hcd.h"
-@@ -5339,6 +5340,8 @@ int dwc2_hcd_init(struct dwc2_hsotg *hsotg)
- 	/* Don't support SG list at this point */
- 	hcd->self.sg_tablesize = 0;
- 
-+	hcd->tpl_support = of_usb_host_tpl_support(hsotg->dev->of_node);
-+
- 	if (!IS_ERR_OR_NULL(hsotg->uphy))
- 		otg_set_host(hsotg->uphy->otg, &hcd->self);
- 
+diff --git a/drivers/gpu/drm/drm_prime.c b/drivers/gpu/drm/drm_prime.c
+index e3f09f18110c..a3f180653b8b 100644
+--- a/drivers/gpu/drm/drm_prime.c
++++ b/drivers/gpu/drm/drm_prime.c
+@@ -839,7 +839,7 @@ EXPORT_SYMBOL(drm_prime_pages_to_sg);
+  * @sgt: sg_table describing the buffer to check
+  *
+  * This helper calculates the contiguous size in the DMA address space
+- * of the the buffer described by the provided sg_table.
++ * of the buffer described by the provided sg_table.
+  *
+  * This is useful for implementing
+  * &drm_gem_object_funcs.gem_prime_import_sg_table.
 -- 
-2.25.1
+2.17.1
 
