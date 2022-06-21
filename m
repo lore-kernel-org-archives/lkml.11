@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C79BCCA473
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 20:56:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6962DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 20:56:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355159AbiFUU4Y (ORCPT
+        id S1355175AbiFUU4c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 16:56:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55152 "EHLO
+        Tue, 21 Jun 2022 16:56:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355671AbiFUUyk (ORCPT
+        with ESMTP id S1355719AbiFUUyp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 16:54:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0265C313A4;
-        Tue, 21 Jun 2022 13:50:01 -0700 (PDT)
+        Tue, 21 Jun 2022 16:54:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4C3D313B8;
+        Tue, 21 Jun 2022 13:50:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 16517B81B2E;
-        Tue, 21 Jun 2022 20:49:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D04BC341C6;
-        Tue, 21 Jun 2022 20:49:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 69D4561888;
+        Tue, 21 Jun 2022 20:49:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3826EC3411C;
+        Tue, 21 Jun 2022 20:49:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655844587;
-        bh=BR1HAj6K/jdDr3B8GY7a3yhVgwEikZfitTZ05ctiO18=;
+        s=k20201202; t=1655844592;
+        bh=o9ka0BQwNnLsVyQViUO2LojYyCDJ+t64ufBsUO4vjU4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ih0S/KXBNAPMWYCS/MwuZ/mmpqz2xJCmFUXpI4nkgS3fngYhRKS2+LoQn856cst8+
-         Wo5jClprY9QLcvHREFpVFVJOfkoC8cIk3b6Svkve5Q6iPyWPQgHcIXvXmwvRLHFOQs
-         1n7kfRzM6RcUlZShTBRXS4NT+CfyhrhSsCQKCILtM2rmYSqyWgnn5MmAfYR+v/8+95
-         N1X5Pq83YMWB54xY3kpUK0g6+vT3qfG3dAVXZmFjALfX2J5FUJLAp4erAeWEAt5kMR
-         9BJvTL0iml+5gzu+vB8oRK8rL9THDvpzLT4dqo4bUiT0otOvt/uhgD/G8izUqWtLnE
-         Fv3P0WU/bNJ3w==
+        b=iCNDO/fB1+zTFYT7N3Zwb18JEXqElw4aASrZrlw/sWjBYaTbtYcD+K9RVLN59+QKE
+         mIs4GpWhBxlARVU45tdM5WBFZJTTB8gKKY7jNblURcJSUF3I/kygQb3FwGErWSdXHI
+         9QNq72JjP6L1F6Zh9cCe8pF7JZyd/bCqn5IduvtlaxOUnM/l3R955dRsx8QUqvr5go
+         SrVtYXX3kyK0GNAsTdKORWFNvDCQobmwBISBuYI15eU4GkxYpGgIc+1vV/bt86uXFG
+         xG2NlTD6+m+HByvy+oT59UxaEZLGCnzBXQsQtkakoN4B4Cz1gYKHzZ9JYBnkfEwDDC
+         HBgxJxWWW4AmQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Keith Busch <kbusch@kernel.org>, Christoph Hellwig <hch@lst.de>,
         Sasha Levin <sashal@kernel.org>, axboe@fb.com,
         sagi@grimberg.me, linux-nvme@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.18 06/22] nvme: add bug report info for global duplicate id
-Date:   Tue, 21 Jun 2022 16:49:12 -0400
-Message-Id: <20220621204928.249907-6-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.18 10/22] nvme-pci: smi has bogus namespace ids
+Date:   Tue, 21 Jun 2022 16:49:16 -0400
+Message-Id: <20220621204928.249907-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220621204928.249907-1-sashal@kernel.org>
 References: <20220621204928.249907-1-sashal@kernel.org>
@@ -54,113 +54,32 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Keith Busch <kbusch@kernel.org>
 
-[ Upstream commit 2f0dad1719cbbd690e916a42d937b7605ee63964 ]
+[ Upstream commit c98a879312caf775c9768faed25ce1c013b4df04 ]
 
-The recent global id check is finding poorly implemented devices in the
-wild. Include relavant device information in the output to help quicken
-an appropriate quirk patch.
+Add the quirk.
 
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=216096
 Signed-off-by: Keith Busch <kbusch@kernel.org>
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/core.c |  1 +
- drivers/nvme/host/nvme.h | 28 ++++++++++++++++++++++++++++
- drivers/nvme/host/pci.c  | 16 ++++++++++++++++
- 3 files changed, 45 insertions(+)
+ drivers/nvme/host/pci.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 2d6a01853109..0e18f8b38081 100644
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -3803,6 +3803,7 @@ static int nvme_init_ns_head(struct nvme_ns *ns, unsigned nsid,
- 	if (ret) {
- 		dev_err(ctrl->device,
- 			"globally duplicate IDs for nsid %d\n", nsid);
-+		nvme_print_device_info(ctrl);
- 		return ret;
- 	}
- 
-diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index a2b53ca63335..764dd1d88777 100644
---- a/drivers/nvme/host/nvme.h
-+++ b/drivers/nvme/host/nvme.h
-@@ -502,6 +502,7 @@ struct nvme_ctrl_ops {
- 	void (*submit_async_event)(struct nvme_ctrl *ctrl);
- 	void (*delete_ctrl)(struct nvme_ctrl *ctrl);
- 	int (*get_address)(struct nvme_ctrl *ctrl, char *buf, int size);
-+	void (*print_device_info)(struct nvme_ctrl *ctrl);
- };
- 
- /*
-@@ -547,6 +548,33 @@ static inline struct request *nvme_cid_to_rq(struct blk_mq_tags *tags,
- 	return blk_mq_tag_to_rq(tags, nvme_tag_from_cid(command_id));
- }
- 
-+/*
-+ * Return the length of the string without the space padding
-+ */
-+static inline int nvme_strlen(char *s, int len)
-+{
-+	while (s[len - 1] == ' ')
-+		len--;
-+	return len;
-+}
-+
-+static inline void nvme_print_device_info(struct nvme_ctrl *ctrl)
-+{
-+	struct nvme_subsystem *subsys = ctrl->subsys;
-+
-+	if (ctrl->ops->print_device_info) {
-+		ctrl->ops->print_device_info(ctrl);
-+		return;
-+	}
-+
-+	dev_err(ctrl->device,
-+		"VID:%04x model:%.*s firmware:%.*s\n", subsys->vendor_id,
-+		nvme_strlen(subsys->model, sizeof(subsys->model)),
-+		subsys->model, nvme_strlen(subsys->firmware_rev,
-+					   sizeof(subsys->firmware_rev)),
-+		subsys->firmware_rev);
-+}
-+
- #ifdef CONFIG_FAULT_INJECTION_DEBUG_FS
- void nvme_fault_inject_init(struct nvme_fault_inject *fault_inj,
- 			    const char *dev_name);
 diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index 17aeb7d5c485..37e05c83786d 100644
+index a14f204b07c1..6c862259b381 100644
 --- a/drivers/nvme/host/pci.c
 +++ b/drivers/nvme/host/pci.c
-@@ -2970,6 +2970,21 @@ static int nvme_pci_get_address(struct nvme_ctrl *ctrl, char *buf, int size)
- 	return snprintf(buf, size, "%s\n", dev_name(&pdev->dev));
- }
- 
-+
-+static void nvme_pci_print_device_info(struct nvme_ctrl *ctrl)
-+{
-+	struct pci_dev *pdev = to_pci_dev(to_nvme_dev(ctrl)->dev);
-+	struct nvme_subsystem *subsys = ctrl->subsys;
-+
-+	dev_err(ctrl->device,
-+		"VID:DID %04x:%04x model:%.*s firmware:%.*s\n",
-+		pdev->vendor, pdev->device,
-+		nvme_strlen(subsys->model, sizeof(subsys->model)),
-+		subsys->model, nvme_strlen(subsys->firmware_rev,
-+					   sizeof(subsys->firmware_rev)),
-+		subsys->firmware_rev);
-+}
-+
- static const struct nvme_ctrl_ops nvme_pci_ctrl_ops = {
- 	.name			= "pcie",
- 	.module			= THIS_MODULE,
-@@ -2981,6 +2996,7 @@ static const struct nvme_ctrl_ops nvme_pci_ctrl_ops = {
- 	.free_ctrl		= nvme_pci_free_ctrl,
- 	.submit_async_event	= nvme_pci_submit_async_event,
- 	.get_address		= nvme_pci_get_address,
-+	.print_device_info	= nvme_pci_print_device_info,
- };
- 
- static int nvme_dev_map(struct nvme_dev *dev)
+@@ -3439,7 +3439,8 @@ static const struct pci_device_id nvme_id_table[] = {
+ 	{ PCI_VDEVICE(REDHAT, 0x0010),	/* Qemu emulated controller */
+ 		.driver_data = NVME_QUIRK_BOGUS_NID, },
+ 	{ PCI_DEVICE(0x126f, 0x2263),	/* Silicon Motion unidentified */
+-		.driver_data = NVME_QUIRK_NO_NS_DESC_LIST, },
++		.driver_data = NVME_QUIRK_NO_NS_DESC_LIST |
++				NVME_QUIRK_BOGUS_NID, },
+ 	{ PCI_DEVICE(0x1bb1, 0x0100),   /* Seagate Nytro Flash Storage */
+ 		.driver_data = NVME_QUIRK_DELAY_BEFORE_CHK_RDY |
+ 				NVME_QUIRK_NO_NS_DESC_LIST, },
 -- 
 2.35.1
 
