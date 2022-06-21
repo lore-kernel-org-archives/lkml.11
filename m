@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B485FCCA47E
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 20:57:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F4FDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 20:57:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355278AbiFUU5F (ORCPT
+        id S1355284AbiFUU5H (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 16:57:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55230 "EHLO
+        Tue, 21 Jun 2022 16:57:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355123AbiFUU4V (ORCPT
+        with ESMTP id S1355151AbiFUU4X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 16:56:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F391F31900;
-        Tue, 21 Jun 2022 13:50:27 -0700 (PDT)
+        Tue, 21 Jun 2022 16:56:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA78B3190C;
+        Tue, 21 Jun 2022 13:50:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0250AB81B47;
-        Tue, 21 Jun 2022 20:50:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1316EC3411C;
-        Tue, 21 Jun 2022 20:50:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 025B6B80F63;
+        Tue, 21 Jun 2022 20:50:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14DFCC341C6;
+        Tue, 21 Jun 2022 20:50:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655844612;
-        bh=HybSNgxAqWPIYE+OjXn6sumEAN4hWRD1Ra0CL5xuTak=;
-        h=From:To:Cc:Subject:Date:From;
-        b=CxSLALsqZomrdG1wxo4MkLKDxjnhwcJKBwpmuant2USu3rFgb9GEzzErliR4rtwMk
-         ztlnZK9T7H41QGjg3h06xt7brmePvEb9Ej9/vlgHoIexYSsyFBigXr9TqxmvAD/kHY
-         wJURoV9VbUqHPjyse6XMmSVeXmBFa4g++jIs55mwHVqDqiDJ+CywIoGNSCwfyGyKI6
-         gNIWCoTJ32d2CWvzhOMiC+FhJZbB5+H6vOkg0ObXXyiDSY6tmsHx82LENWdqHcLm1r
-         ltcdQmcyzUwtu3cMb1Y+76k0oTh6IB7Tm5kNOYANEOpupwjCsAngcegDqxvGCKNkRf
-         47m1vdo8p0/lQ==
+        s=k20201202; t=1655844601;
+        bh=dIM7iEccu207ZB7h7nXDFCY96ISltuBe6kC/RN40lTk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=cGNK90eqggrBIzYtpOUPNZliC5gJr5zsIC4gCIenw5WBv0sp4oDPUV+o1V3Jf5pk6
+         1/jS3ccirum1uPWrnNaZLm69BkBu+w7Q1IUPE/T4TogwLG7+bD0saRU/gOiYzpi61w
+         a7F+1hUwTAuZsOtYJeq4a+ObNn4L/zX6dXUxbGvgQw5LqJ1mr/kMv7FOCQh/RY68Il
+         c8S6rQht/ZW0Avbkjs9nNdteY1Om9TQ3sXMFTb2foFIKH4wYIEDEVln6kOWoXizVs0
+         XaXPZdLXGe8VZZrBUawBV3vq5u8/SeCAtkz1/iUv6yYY1l0i+0hP0gywRbxs1g8pF9
+         LyZFyGI/5dPPw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Marc Zyngier <maz@kernel.org>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Liu Ying <victor.liu@nxp.com>, Sasha Levin <sashal@kernel.org>,
-        tglx@linutronix.de
-Subject: [PATCH AUTOSEL 5.17 01/20] genirq: PM: Use runtime PM for chained interrupts
-Date:   Tue, 21 Jun 2022 16:49:51 -0400
-Message-Id: <20220621205010.250185-1-sashal@kernel.org>
+Cc:     Ye Bin <yebin10@huawei.com>, Jan Kara <jack@suse.cz>,
+        Sasha Levin <sashal@kernel.org>, jack@suse.com,
+        linux-ext4@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 15/22] ext2: fix fs corruption when trying to remove a non-empty directory with IO error
+Date:   Tue, 21 Jun 2022 16:49:21 -0400
+Message-Id: <20220621204928.249907-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220621204928.249907-1-sashal@kernel.org>
+References: <20220621204928.249907-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -51,53 +52,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <maz@kernel.org>
+From: Ye Bin <yebin10@huawei.com>
 
-[ Upstream commit 668a9fe5c6a1bcac6b65d5e9b91a9eca86f782a3 ]
+[ Upstream commit 27cfa258951a465e3eae63ee1e715e902cd45578 ]
 
-When requesting an interrupt, we correctly call into the runtime
-PM framework to guarantee that the underlying interrupt controller
-is up and running.
+We got issue as follows:
+[home]# mount  /dev/sdd  test
+[home]# cd test
+[test]# ls
+dir1  lost+found
+[test]# rmdir  dir1
+ext2_empty_dir: inject fault
+[test]# ls
+lost+found
+[test]# cd ..
+[home]# umount test
+[home]# fsck.ext2 -fn  /dev/sdd
+e2fsck 1.42.9 (28-Dec-2013)
+Pass 1: Checking inodes, blocks, and sizes
+Inode 4065, i_size is 0, should be 1024.  Fix? no
 
-However, we fail to do so for chained interrupt controllers, as
-the mux interrupt is not requested along the same path.
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Unconnected directory inode 4065 (/???)
+Connect to /lost+found? no
 
-Augment __irq_do_set_handler() to call into the runtime PM code
-in this case, making sure the PM flow is the same for all interrupts.
+'..' in ... (4065) is / (2), should be <The NULL inode> (0).
+Fix? no
 
-Reported-by: Lucas Stach <l.stach@pengutronix.de>
-Tested-by: Liu Ying <victor.liu@nxp.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/26973cddee5f527ea17184c0f3fccb70bc8969a0.camel@pengutronix.de
+Pass 4: Checking reference counts
+Inode 2 ref count is 3, should be 4.  Fix? no
+
+Inode 4065 ref count is 2, should be 3.  Fix? no
+
+Pass 5: Checking group summary information
+
+/dev/sdd: ********** WARNING: Filesystem still has errors **********
+
+/dev/sdd: 14/128016 files (0.0% non-contiguous), 18477/512000 blocks
+
+Reason is same with commit 7aab5c84a0f6. We can't assume directory
+is empty when read directory entry failed.
+
+Link: https://lore.kernel.org/r/20220615090010.1544152-1-yebin10@huawei.com
+Signed-off-by: Ye Bin <yebin10@huawei.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/irq/chip.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ fs/ext2/dir.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
 
-diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
-index c09324663088..b171355eb57e 100644
---- a/kernel/irq/chip.c
-+++ b/kernel/irq/chip.c
-@@ -1009,8 +1009,10 @@ __irq_do_set_handler(struct irq_desc *desc, irq_flow_handler_t handle,
- 		if (desc->irq_data.chip != &no_irq_chip)
- 			mask_ack_irq(desc);
- 		irq_state_set_disabled(desc);
--		if (is_chained)
-+		if (is_chained) {
- 			desc->action = NULL;
-+			WARN_ON(irq_chip_pm_put(irq_desc_get_irq_data(desc)));
-+		}
- 		desc->depth = 1;
- 	}
- 	desc->handle_irq = handle;
-@@ -1036,6 +1038,7 @@ __irq_do_set_handler(struct irq_desc *desc, irq_flow_handler_t handle,
- 		irq_settings_set_norequest(desc);
- 		irq_settings_set_nothread(desc);
- 		desc->action = &chained_action;
-+		WARN_ON(irq_chip_pm_get(irq_desc_get_irq_data(desc)));
- 		irq_activate_and_startup(desc, IRQ_RESEND);
- 	}
- }
+diff --git a/fs/ext2/dir.c b/fs/ext2/dir.c
+index 2c2f179b6977..43de293cef56 100644
+--- a/fs/ext2/dir.c
++++ b/fs/ext2/dir.c
+@@ -672,17 +672,14 @@ int ext2_empty_dir (struct inode * inode)
+ 	void *page_addr = NULL;
+ 	struct page *page = NULL;
+ 	unsigned long i, npages = dir_pages(inode);
+-	int dir_has_error = 0;
+ 
+ 	for (i = 0; i < npages; i++) {
+ 		char *kaddr;
+ 		ext2_dirent * de;
+-		page = ext2_get_page(inode, i, dir_has_error, &page_addr);
++		page = ext2_get_page(inode, i, 0, &page_addr);
+ 
+-		if (IS_ERR(page)) {
+-			dir_has_error = 1;
+-			continue;
+-		}
++		if (IS_ERR(page))
++			goto not_empty;
+ 
+ 		kaddr = page_addr;
+ 		de = (ext2_dirent *)kaddr;
 -- 
 2.35.1
 
