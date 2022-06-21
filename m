@@ -2,156 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE5BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 08:21:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8E20CCA473
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 08:24:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229826AbiFUIVH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 04:21:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39722 "EHLO
+        id S1348305AbiFUIYr (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 21 Jun 2022 04:24:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348745AbiFUIUt (ORCPT
+        with ESMTP id S1348110AbiFUIYH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 04:20:49 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41FC1201A9
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 01:20:48 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LRztz0GP0zkWL0;
-        Tue, 21 Jun 2022 16:19:07 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 21 Jun 2022 16:20:17 +0800
-Subject: Re: [PATCH v2 1/3] mm/swapfile: make security_vm_enough_memory_mm()
- work as expected
-To:     "Huang, Ying" <ying.huang@intel.com>
-CC:     <akpm@linux-foundation.org>, <david@redhat.com>,
-        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>
-References: <20220608144031.829-1-linmiaohe@huawei.com>
- <20220608144031.829-2-linmiaohe@huawei.com>
- <87r13jrdst.fsf@yhuang6-desk2.ccr.corp.intel.com>
- <a384f290-dff3-6dad-f1d3-8ec245b9bebd@huawei.com>
- <87letqpzm1.fsf@yhuang6-desk2.ccr.corp.intel.com>
- <463fe0cd-504a-f887-0201-691bacd9e69d@huawei.com>
- <87pmj2ea3g.fsf@yhuang6-desk2.ccr.corp.intel.com>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <bfc135d7-6cbc-5491-417b-9a46e2efe5cd@huawei.com>
-Date:   Tue, 21 Jun 2022 16:20:17 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Tue, 21 Jun 2022 04:24:07 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CF856140D4
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 01:23:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655799817;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=XGU7mDtKklVPCqn8Uk3bMEFXs2W9T3w03LpqwdG17/Y=;
+        b=gGO1aDgYqdOwsKkrCMRJ5ZG5N9Br+8SqnRw8z+OrIPfX1XA8cUsrvwWnfgaOCsC7VMxX6D
+        rVnpCcBA73U9bhNRDGnfXD1WN8/Rw5JrqRr0ZNUrNFjRnK+LI9SpXVDCay3ZG4AkDKXRSt
+        k1EaOGUBuaeUCLLBKYlETSuk21+GLEE=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-596-__CdZBpwP7uXeupJBYCqrg-1; Tue, 21 Jun 2022 04:23:35 -0400
+X-MC-Unique: __CdZBpwP7uXeupJBYCqrg-1
+Received: by mail-wm1-f71.google.com with SMTP id k32-20020a05600c1ca000b0039c4cf75023so8100803wms.9
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 01:23:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=XGU7mDtKklVPCqn8Uk3bMEFXs2W9T3w03LpqwdG17/Y=;
+        b=Yv/QsMQ5iizaueSiUge82P6ViRq08WFRuKQvYLXAnbEVLQZHspq/lGBAkBU0jJu/Cm
+         WJ/4qqdPfVbrIoSPoB24CHAqt/XcNaSFmcufx+81M/UoaNHuf2HckxhWXurQ680l8kTp
+         hSUGi9cKqmA5t4T0A7FFT6ItEMdy8mnfbdDv/5EtiizNL9UzZjpxBltlXckJJmkAV3B4
+         6ODmNF98moM60Eg52TGJz8/NJY+G3YYIhFNxVB/Mq038xyTuZMRK1UaK2VgaFnCHFeAH
+         jPTf7y9G67YRSmTG7ZPO5GqZNU8xPH2gvY/bHXihxvQV9ePJD/zJQSLnsZannqTmY6p9
+         u9tg==
+X-Gm-Message-State: AJIora/Txa95LJ1YB19AD55vVD+OzdQTLyjBuJJi9DS06AJSPWEV7AQS
+        FSu8dSftg5y5acOxwLX727xZ1rGvXF5EOVdmeihODwC4/SSjuR8nDJIbh7wJcQkc9g8OdiVATMH
+        iHqWKMvjKVRBujpAKVvejtrW7
+X-Received: by 2002:a7b:c758:0:b0:39c:44ce:f00f with SMTP id w24-20020a7bc758000000b0039c44cef00fmr28512313wmk.167.1655799814490;
+        Tue, 21 Jun 2022 01:23:34 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sUotCk+6rcFy05ZeXu+qAjpL3NaHybbZ2BoBeUtiL7/zNAYd2GvpjFdw35xlTwbym9LSrXXg==
+X-Received: by 2002:a7b:c758:0:b0:39c:44ce:f00f with SMTP id w24-20020a7bc758000000b0039c44cef00fmr28512300wmk.167.1655799814242;
+        Tue, 21 Jun 2022 01:23:34 -0700 (PDT)
+Received: from ?IPV6:2003:d8:2f04:2500:cdb0:9b78:d423:43f? (p200300d82f042500cdb09b78d423043f.dip0.t-ipconnect.de. [2003:d8:2f04:2500:cdb0:9b78:d423:43f])
+        by smtp.gmail.com with ESMTPSA id j11-20020a05600c190b00b0039c5328ad92sm24367503wmq.41.2022.06.21.01.23.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 21 Jun 2022 01:23:33 -0700 (PDT)
+Message-ID: <212f8b31-e470-d62c-0090-537d0d60add9@redhat.com>
+Date:   Tue, 21 Jun 2022 10:23:32 +0200
 MIME-Version: 1.0
-In-Reply-To: <87pmj2ea3g.fsf@yhuang6-desk2.ccr.corp.intel.com>
-Content-Type: text/plain; charset="windows-1252"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH RFC 1/4] mm/gup: Add FOLL_INTERRUPTIBLE
 Content-Language: en-US
+To:     Peter Xu <peterx@redhat.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
+        Linux MM Mailing List <linux-mm@kvack.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+References: <20220617014147.7299-1-peterx@redhat.com>
+ <20220617014147.7299-2-peterx@redhat.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20220617014147.7299-2-peterx@redhat.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/6/21 15:42, Huang, Ying wrote:
-> Miaohe Lin <linmiaohe@huawei.com> writes:
+On 17.06.22 03:41, Peter Xu wrote:
+> We have had FAULT_FLAG_INTERRUPTIBLE but it was never applied to GUPs.  One
+> issue with it is that not all GUP paths are able to handle signal delivers
+> besides SIGKILL.
 > 
->> On 2022/6/21 9:35, Huang, Ying wrote:
->>> Miaohe Lin <linmiaohe@huawei.com> writes:
->>>
->>>> On 2022/6/20 15:31, Huang, Ying wrote:
->>>>> Miaohe Lin <linmiaohe@huawei.com> writes:
->>>>>
->>>>>> security_vm_enough_memory_mm() checks whether a process has enough memory
->>>>>> to allocate a new virtual mapping. And total_swap_pages is considered as
->>>>>> available memory while swapoff tries to make sure there's enough memory
->>>>>> that can hold the swapped out memory. But total_swap_pages contains the
->>>>>> swap space that is being swapoff. So security_vm_enough_memory_mm() will
->>>>>> success even if there's no memory to hold the swapped out memory because
->>>>>> total_swap_pages always greater than or equal to p->pages.
->>>>>
->>>>> Per my understanding, swapoff will not allocate virtual mapping by
->>>>> itself.  But after swapoff, the overcommit limit could be exceeded.
->>>>> security_vm_enough_memory_mm() is used to check that.  For example, in a
->>>>> system with 4GB memory and 8GB swap, and 10GB is in use,
->>>>>
->>>>> CommitLimit:    4+8 = 12GB
->>>>> Committed_AS:   10GB
->>>>>
->>>>> security_vm_enough_memory_mm() in swapoff() will fail because
->>>>> 10+8 = 18 > 12.  This is expected because after swapoff, the overcommit
->>>>> limit will be exceeded.
->>>>>
->>>>> If 3GB is in use,
->>>>>
->>>>> CommitLimit:    4+8 = 12GB
->>>>> Committed_AS:   3GB
->>>>>
->>>>> security_vm_enough_memory_mm() in swapoff() will succeed because
->>>>> 3+8 = 11 < 12.  This is expected because after swapoff, the overcommit
->>>>> limit will not be exceeded.
->>>>
->>>> In OVERCOMMIT_NEVER scene, I think you're right.
->>>>
->>>>>
->>>>> So, what's the real problem of the original implementation?  Can you
->>>>> show it with an example as above?
->>>>
->>>> In OVERCOMMIT_GUESS scene, in a system with 4GB memory and 8GB swap, and 10GB is in use,
->>>> pages below is 8GB, totalram_pages() + total_swap_pages is 12GB, so swapoff() will succeed
->>>> instead of expected failure because 8 < 12. The overcommit limit is always *ignored* in the
->>>> below case.
->>>>
->>>> 	if (sysctl_overcommit_memory == OVERCOMMIT_GUESS) {
->>>> 		if (pages > totalram_pages() + total_swap_pages)
->>>> 			goto error;
->>>> 		return 0;
->>>> 	}
->>>>
->>>> Or am I miss something?
->>>
->>> Per my understanding, with OVERCOMMIT_GUESS, the number of in-use pages
->>> isn't checked at all.  The only restriction is that the size of the
->>> virtual mapping created should be less than total RAM + total swap
->>
->> Do you mean the only restriction is that the size of the virtual mapping
->> *created every time* should be less than total RAM + total swap pages but
->> *total virtual mapping* is not limited in OVERCOMMIT_GUESS scene? If so,
->> the current behavior should be sane and I will drop this patch.
+> That's not ideal for the GUP users who are actually able to handle these
+> cases, like KVM.
 > 
-> Yes.  This is my understanding.
+> KVM uses GUP extensively on faulting guest pages, during which we've got
+> existing infrastructures to retry a page fault at a later time.  Allowing
+> the GUP to be interrupted by generic signals can make KVM related threads
+> to be more responsive.  For examples:
+> 
+>   (1) SIGUSR1: which QEMU/KVM uses to deliver an inter-process IPI,
+>       e.g. when the admin issues a vm_stop QMP command, SIGUSR1 can be
+>       generated to kick the vcpus out of kernel context immediately,
+> 
+>   (2) SIGINT: which can be used with interactive hypervisor users to stop a
+>       virtual machine with Ctrl-C without any delays/hangs,
+> 
+>   (3) SIGTRAP: which grants GDB capability even during page faults that are
+>       stuck for a long time.
+> 
+> Normally hypervisor will be able to receive these signals properly, but not
+> if we're stuck in a GUP for a long time for whatever reason.  It happens
+> easily with a stucked postcopy migration when e.g. a network temp failure
+> happens, then some vcpu threads can hang death waiting for the pages.  With
+> the new FOLL_INTERRUPTIBLE, we can allow GUP users like KVM to selectively
+> enable the ability to trap these signals.
 
-I see. Thank you.
+This makes sense to me. I assume relevant callers will detect "GUP
+failed" but also "well, there is a signal to handle" and cleanly back
+off, correct?
 
-> 
-> Best Regards,
-> Huang, Ying
-> 
->> Thanks!
->>
->>> pages.  Because swapoff() will not create virtual mapping, so it's
->>> expected that security_vm_enough_memory_mm() in swapoff() always
->>> succeeds.
->>>
->>> Best Regards,
->>> Huang, Ying
->>>
->>>>
->>>> Thanks!
->>>>
->>>>>
->>>>>> In order to fix it, p->pages should be retracted from total_swap_pages
->>>>>> first and then check whether there's enough memory for inuse swap pages.
->>>>>>
->>>>>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
->>>>>
->>>>> [snip]
->>>>>
->>>>> .
->>>>>
->>>
->>> .
->>>
-> 
-> .
-> 
+-- 
+Thanks,
+
+David / dhildenb
 
