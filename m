@@ -2,113 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B53F2C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 03:11:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15249C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 03:11:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344747AbiFUDLM (ORCPT
+        id S1344814AbiFUDL1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 23:11:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40326 "EHLO
+        Mon, 20 Jun 2022 23:11:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343763AbiFUDLF (ORCPT
+        with ESMTP id S1344803AbiFUDL0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 23:11:05 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 227641A3B6
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 20:11:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655781061;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=EdpCZK5YFtstuCi2QX+uYzJSDoVANaPvA4APSBU2SK0=;
-        b=C+4KzIN7ykQRgWnGxyh+Nd2KUEEN+O0iv43NfnbN9SgguynI9ts0NpTtI/o/QY80EtTNkM
-        5nkcQfs+60MUSyMkdjCaynf2ZurmcgLCFm+k2UNbszUxpgDNE4AAmq8/9lF/pVLloSB3qF
-        X4IYGIczqJxUDjVSW13X3P7PLCr5dR8=
-Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
- [209.85.167.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-458-HLXdUdqGMfeu7NnUbxknJg-1; Mon, 20 Jun 2022 23:10:59 -0400
-X-MC-Unique: HLXdUdqGMfeu7NnUbxknJg-1
-Received: by mail-lf1-f71.google.com with SMTP id cf10-20020a056512280a00b0047f5a295656so3718464lfb.15
-        for <linux-kernel@vger.kernel.org>; Mon, 20 Jun 2022 20:10:59 -0700 (PDT)
+        Mon, 20 Jun 2022 23:11:26 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A47631FCC9;
+        Mon, 20 Jun 2022 20:11:23 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id 73-20020a17090a0fcf00b001eaee69f600so12011028pjz.1;
+        Mon, 20 Jun 2022 20:11:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tec/+3ICzBjemtamjAZhwJmmbovsB9vXjrr7CbXvID8=;
+        b=MSfF43jlB5pC5ITVnWcT+6zEqF5p9hWljG5e/Su18a5n4rusiODM9L0KAEQynU0AZm
+         +qCs8DM2sJVG2Z4+W9Dq3lxDPfececHXhTdfLLO3Qu4HGJ/qDdJRG+7ImD7Oy+KhKx9J
+         Z8v5DTcFFzVBCKfk4qLvqoHYeZpdP2Wzh2QA+dj3qhTUQGmKKTrI4GijctdmzCCz5M58
+         b5Sx7QmItomCE5qIh7b6VogQx/jltsGP66yCjnHQQbqHxF4pMA5tmVYQLY8GV/ROl9D4
+         0XL289A9s4Btcng91EhPXimSOOsylc9yBPuVLoovthL572buV3RD9Wna/o4GlvFuxSfT
+         9t7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EdpCZK5YFtstuCi2QX+uYzJSDoVANaPvA4APSBU2SK0=;
-        b=nbZXsgniPbbDKlffZtQaTqMTYKij0O8T6erEriZ5J5tbJ5aFdHZBx5wzMv7zvc5gNK
-         z2lkq+yIayJAdnMDBWFsGmdTv/++Rwf+kEIzGbmyxCedtvmggBNsEE5j3TgeyJS107iT
-         55YjTZIDDxUpuO2jrWv/7UNTaj2kNEiJfyZzA5tKwAYqylwU4REZEu/VOWhiVNu/gKlk
-         T8app9OGO/R/SX8Quh4BGcfC36It8D/Wr+W9FNFt16KPIF8fo2F/wuxKTqFT3igVu84o
-         K79gsOtBqT9VnIFXZyxUg9Lt2axfiWb1PufVR3kyu6Ly4TOn3OTK0vfpPQsZHKgkzJHW
-         CLOw==
-X-Gm-Message-State: AJIora9qnTwVvudfa+HyiL5E7IPd3LjnIsH8vORySbAxaVgZSzkVauT8
-        U2gp/xfD1hFRzjsW0rpYl3OSSe+/YcwQimItNezla4b9xHdKXU7teJ4mtG28eg3sYWzeNbC9dj2
-        wYROfd72BxjHbG88SnHFABEjuT3VSuEjA72OriwuZ
-X-Received: by 2002:a05:6512:304d:b0:47d:c236:566f with SMTP id b13-20020a056512304d00b0047dc236566fmr15182891lfb.641.1655781057883;
-        Mon, 20 Jun 2022 20:10:57 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1sDlyveDd4kkO7R/2wVYhsz9VSHaScartSDvQ7pU3gjvhEpwg2QMiSarFPEK8dLL2Rno1Exik4lPxtAh7+7x9A=
-X-Received: by 2002:a05:6512:304d:b0:47d:c236:566f with SMTP id
- b13-20020a056512304d00b0047dc236566fmr15182886lfb.641.1655781057700; Mon, 20
- Jun 2022 20:10:57 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tec/+3ICzBjemtamjAZhwJmmbovsB9vXjrr7CbXvID8=;
+        b=nKDGmbeNy8J8BTiPED25aE7Cdp3QDsqW1P9+kqCMrG47JAEsLszCYJBM6LvaCC3nQO
+         1n9MWwpukjZ77+UOOjKisGNkCiClXT5JWDWjEGormrlHIugOnCH3tzg7v3niVuE8KxVR
+         YPRuNXxGWfnKRnvseW/OptVIARyCGTcMyrJ23FQsX4ZXr4kzu6nBa3/14KxqbOGXJRt8
+         o8diQvqFSkx4H5hovZMPXXwJlhhSlb5eOcsA8DYqsNp0EQLdaJSGOAqnqhr/WBEeAbP8
+         R9IA/bWWon+82yGU/6JHN9nfbVtLqfGJ631DgxhRlolWjjfB8+aten5DDgTBbuczdo31
+         wgyw==
+X-Gm-Message-State: AJIora9zXKE+HrnRfRY8ZHcQqkHLbiJXeqCNEnjgeagfxKpT5zUaE9ld
+        5zwNSm3EDbRZsz96OK79p8A=
+X-Google-Smtp-Source: AGRyM1v5RUBw/72/m5bgdvic9ut/hQUE8DuiyD09+3a6dKfvWxBlcOh5zSBw6qb69X3/cYCjhMeD6w==
+X-Received: by 2002:a17:90b:1e42:b0:1e8:7669:8a1c with SMTP id pi2-20020a17090b1e4200b001e876698a1cmr30387495pjb.206.1655781082935;
+        Mon, 20 Jun 2022 20:11:22 -0700 (PDT)
+Received: from localhost.localdomain ([178.173.230.211])
+        by smtp.gmail.com with ESMTPSA id jh20-20020a170903329400b00168b113f222sm4027844plb.173.2022.06.20.20.11.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Jun 2022 20:11:22 -0700 (PDT)
+From:   Shida Zhang <starzhangzsd@gmail.com>
+X-Google-Original-From: Shida Zhang <zhangshida@kylinos.cn>
+To:     djwong@kernel.org
+Cc:     zhangshida@kylinos.cn, starzhangzsd@gmail.com,
+        linux-kernel@vger.kernel.org, linux-xfs@vger.kernel.org
+Subject: [PATCH] xfs: return when delta equals 0 in xfs_mod_freecounter
+Date:   Tue, 21 Jun 2022 11:11:13 +0800
+Message-Id: <20220621031113.1222877-1-zhangshida@kylinos.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220620051115.3142-1-jasowang@redhat.com> <20220620051115.3142-2-jasowang@redhat.com>
- <20220620050044-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20220620050044-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Tue, 21 Jun 2022 11:10:46 +0800
-Message-ID: <CACGkMEsd3r043LYSfC7ntNon-VktWOoDsFvRxMxJSSojJ_GRrg@mail.gmail.com>
-Subject: Re: [PATCH 1/3] caif_virtio: remove virtqueue_disable_cb() in probe
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        davem <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
-        erwan.yvin@stericsson.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 20, 2022 at 5:02 PM Michael S. Tsirkin <mst@redhat.com> wrote:
->
-> On Mon, Jun 20, 2022 at 01:11:13PM +0800, Jason Wang wrote:
-> > This disabling is a just a hint with best effort, there's no guarantee
-> > that device doesn't send notification. The driver should survive with
-> > that, so let's remove it.
-> >
-> > Signed-off-by: Jason Wang <jasowang@redhat.com>
->
-> I guess, but frankly this change feels gratituous, and just might
-> uncover latent bugs. Which would be fine if we were out to
-> find and fix them, but given this was compile-tested only,
-> I'm not sure that's the case.
+There are cases that xfs_mod_freecounter() will get called when delta
+equals 0 while it's unnecessary.
 
-Ok, let me drop this from the next version (no way to test).
+Signed-off-by: Shida Zhang <zhangshida@kylinos.cn>
+---
+ fs/xfs/xfs_mount.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Thanks
-
->
->
-> > ---
-> >  drivers/net/caif/caif_virtio.c | 3 ---
-> >  1 file changed, 3 deletions(-)
-> >
-> > diff --git a/drivers/net/caif/caif_virtio.c b/drivers/net/caif/caif_virtio.c
-> > index 5458f57177a0..c677ded81133 100644
-> > --- a/drivers/net/caif/caif_virtio.c
-> > +++ b/drivers/net/caif/caif_virtio.c
-> > @@ -705,9 +705,6 @@ static int cfv_probe(struct virtio_device *vdev)
-> >       netdev->needed_headroom = cfv->tx_hr;
-> >       netdev->needed_tailroom = cfv->tx_tr;
-> >
-> > -     /* Disable buffer release interrupts unless we have stopped TX queues */
-> > -     virtqueue_disable_cb(cfv->vq_tx);
-> > -
-> >       netdev->mtu = cfv->mtu - cfv->tx_tr;
-> >       vdev->priv = cfv;
-> >
-> > --
-> > 2.25.1
->
+diff --git a/fs/xfs/xfs_mount.c b/fs/xfs/xfs_mount.c
+index daa8d29c46b4..a3db932fd1fc 100644
+--- a/fs/xfs/xfs_mount.c
++++ b/fs/xfs/xfs_mount.c
+@@ -1129,6 +1129,9 @@ xfs_mod_freecounter(
+ 	if (rsvd)
+ 		ASSERT(has_resv_pool);
+ 
++	if (delta == 0)
++		return 0;
++
+ 	if (delta > 0) {
+ 		/*
+ 		 * If the reserve pool is depleted, put blocks back into it
+-- 
+2.25.1
 
