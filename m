@@ -2,142 +2,211 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93E27C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 14:47:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84E46C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 14:48:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351725AbiFUOrg (ORCPT
+        id S1351743AbiFUOsH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 10:47:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53330 "EHLO
+        Tue, 21 Jun 2022 10:48:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350580AbiFUOre (ORCPT
+        with ESMTP id S1350580AbiFUOsG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 10:47:34 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCE441CB1E;
-        Tue, 21 Jun 2022 07:47:33 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id m14so12744923plg.5;
-        Tue, 21 Jun 2022 07:47:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=liIeHdPGNjU8bYPqknTA8U4F+aVaqOI8sJWxJcW9D0E=;
-        b=jpfvcOG0Tp7GekMlmMm5FMSSTBE9ocH6SrPC4j9kGiO76LBt5JG/nTVjjLvk7pIXgc
-         5WXjsraLQ6qZBUdZW90eKqnWLH0DyOq67URagf7R1uZaU33630JI+SPZgTBic7z7yE2u
-         SrVIPg65RDtHD4LzoyK/tP0bpujacgL/f4cFMM0dpaLFymXjGCZhCXJ8o4YQA+fc6+qm
-         Q4INMBDYC/AzC+JsdQcJbxH/eENGtFInkaMvChdDjuHJGx7HnE4MX0Jf3lB19xQVrOEA
-         Dwr3eDFH1B6APEFsRSLUWkseuJ/PJqHSVKNtowbGH/G3PamTX1ImRxz3laoV/PxjTNL9
-         I/ng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=liIeHdPGNjU8bYPqknTA8U4F+aVaqOI8sJWxJcW9D0E=;
-        b=zmdAptM48BjhAI+nKYYW8wODSvsK1F+VOg2mcvageTlvbtTlW+SAYVrghFqmf9rzZ5
-         8XjyJfJAC50gqOlVkXHqYofRoS1sK1dDF981IyTCKidm2rl/+ukfvau3D+0ylQPGchbm
-         Z/UoMRrtHW1bpbEiZe9/eBugu3mmwhhUyK/Dgn2r7dOJPvR4nn5SaWh+KKeO2YAGUGUP
-         S50n5gmo3mfVxCQ/bsVkyx87MpWppP4RTsK6SOwoVVni15g531zEA4AuwvhyxUGz0Wj8
-         Qyb/xSsqWa5xMUHhnxo2ULLyqgbfl5rj3fm7k5v2zMtXFhvU/gAYvztFTNGD19bSvxrF
-         GGGQ==
-X-Gm-Message-State: AJIora+Ji0qMgn0xAifUxIR7Z/5Jhg7Xz4D0CLSmX7WP4CMZ+9+cXzao
-        oe0jObJ1Wp7rRXx2uclu+FM=
-X-Google-Smtp-Source: AGRyM1vAMGeDob1urLIoFhqrrm8UjWodEUKRFvrla+pWll4alKdJnlcwu2x3ouxr/ay8BxUppuHvmw==
-X-Received: by 2002:a17:90b:180e:b0:1ec:d129:708 with SMTP id lw14-20020a17090b180e00b001ecd1290708mr2436517pjb.235.1655822853166;
-        Tue, 21 Jun 2022 07:47:33 -0700 (PDT)
-Received: from localhost ([2601:642:4c0a:44a6:9ce0:31c2:d9f5:8b25])
-        by smtp.gmail.com with ESMTPSA id j11-20020aa7928b000000b005251ce498cfsm5331270pfa.191.2022.06.21.07.47.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jun 2022 07:47:32 -0700 (PDT)
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Huacai Chen <chenhuacai@kernel.org>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Mao Bibo <maobibo@loongson.cn>,
-        =?UTF-8?q?Philippe=20Mathieu-Daud=C3=A9?= <f4bug@amsat.org>,
-        WANG Xuerui <kernel@xen0n.name>, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org
-Cc:     Yury Norov <yury.norov@gmail.com>
-Subject: [PATCH] mips: micro-optimize calculate_cpu_foreign_map()
-Date:   Tue, 21 Jun 2022 07:47:29 -0700
-Message-Id: <20220621144729.533026-1-yury.norov@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        Tue, 21 Jun 2022 10:48:06 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 457425F8E
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 07:48:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655822885; x=1687358885;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=fu8/GjqKi9Ni4wzzQ55YeDYb5M22/TNQdg9Rxma6pTE=;
+  b=PPJ3trsotGwMbHkE3uU8rSS/cCuA5PAzi0x7Cx9LLRDOLUxSxZhGuDlk
+   73IK6qibJIwx7450pA4G+I+4+D3JyDo3WzRDW9HRj4r1wsG0O71ziiWWL
+   X6uE32L92XWBXgl6My3T0/VjXbVFYvg5uZQ6IMS8Ps08u/12S7ugO9xpN
+   R1NG5cCp8wzGHdtpB1l9xHdsLtFNJ3nfxFVAkUnB8MOJwO9PllLHQ+TAo
+   jBDA0FxF/8TLxKFfs0XmttjZGIUh9scFvYaaSiR2WeJywrVN4iO/KYu9y
+   MQ9nIU6kM/GFa9EGtnmnwujyFzRn6t+IYHpBTSIgcqVtPBqX2C5XTSgPg
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10384"; a="305579703"
+X-IronPort-AV: E=Sophos;i="5.92,209,1650956400"; 
+   d="scan'208";a="305579703"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 07:48:04 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,209,1650956400"; 
+   d="scan'208";a="643659174"
+Received: from allen-box.sh.intel.com ([10.239.159.48])
+  by fmsmga008.fm.intel.com with ESMTP; 21 Jun 2022 07:48:00 -0700
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+To:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Vinod Koul <vkoul@kernel.org>
+Cc:     Eric Auger <eric.auger@redhat.com>, Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        iommu@lists.linux-foundation.org, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v9 00/11] iommu: SVA and IOPF refactoring
+Date:   Tue, 21 Jun 2022 22:43:42 +0800
+Message-Id: <20220621144353.17547-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The inner loop in calculate_cpu_foreign_map() walks the whole
-cpumask to check if we have siblings for a given cpu.
+Hi folks,
 
-We can just break after a 1st match and avoid useless traversing
-the rest of mask.
+The former part of this series refactors the IOMMU SVA code by assigning
+an SVA type of iommu_domain to a shared virtual address and replacing
+sva_bind/unbind iommu ops with set/block_dev_pasid domain ops.
 
-Loongarch has an identical function, so fix it here as well.
+The latter part changes the existing I/O page fault handling framework
+from only serving SVA to a generic one. Any driver or component could
+handle the I/O page faults for its domain in its own way by installing
+an I/O page fault handler.
 
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
----
+This series has been functionally tested on an x86 machine and compile
+tested for all architectures.
 
-It looks like loongarch copied quite a lot from arch/mips/kernel/smp.c.
-For loongarch folks: Guys, can you consider moving shared code into a
-shared file(s)?
+This series is also available on github:
+[2] https://github.com/LuBaolu/intel-iommu/commits/iommu-sva-refactoring-v9
 
- arch/loongarch/kernel/smp.c | 7 +++----
- arch/mips/kernel/smp.c      | 7 +++----
- 2 files changed, 6 insertions(+), 8 deletions(-)
+Please review and suggest.
 
-diff --git a/arch/loongarch/kernel/smp.c b/arch/loongarch/kernel/smp.c
-index b8c53b755a25..c1c91df3c8ac 100644
---- a/arch/loongarch/kernel/smp.c
-+++ b/arch/loongarch/kernel/smp.c
-@@ -463,17 +463,16 @@ static inline void set_cpu_core_map(int cpu)
-  */
- void calculate_cpu_foreign_map(void)
- {
--	int i, k, core_present;
-+	int i, k;
- 	cpumask_t temp_foreign_map;
- 
- 	/* Re-calculate the mask */
- 	cpumask_clear(&temp_foreign_map);
- 	for_each_online_cpu(i) {
--		core_present = 0;
- 		for_each_cpu(k, &temp_foreign_map)
- 			if (cpus_are_siblings(i, k))
--				core_present = 1;
--		if (!core_present)
-+				break;
-+		if (k >= nr_cpu_ids)
- 			cpumask_set_cpu(i, &temp_foreign_map);
- 	}
- 
-diff --git a/arch/mips/kernel/smp.c b/arch/mips/kernel/smp.c
-index 1d93b85271ba..a2ce641f5f18 100644
---- a/arch/mips/kernel/smp.c
-+++ b/arch/mips/kernel/smp.c
-@@ -115,17 +115,16 @@ static inline void set_cpu_core_map(int cpu)
-  */
- void calculate_cpu_foreign_map(void)
- {
--	int i, k, core_present;
-+	int i, k;
- 	cpumask_t temp_foreign_map;
- 
- 	/* Re-calculate the mask */
- 	cpumask_clear(&temp_foreign_map);
- 	for_each_online_cpu(i) {
--		core_present = 0;
- 		for_each_cpu(k, &temp_foreign_map)
- 			if (cpus_are_siblings(i, k))
--				core_present = 1;
--		if (!core_present)
-+				break;
-+		if (k >= nr_cpu_ids)
- 			cpumask_set_cpu(i, &temp_foreign_map);
- 	}
- 
+Best regards,
+baolu
+
+Change log:
+v9:
+ - Some minor changes on comments and function names.
+ - Simplify dev_iommu_get_max_pasids().
+
+v8:
+ - https://lore.kernel.org/linux-iommu/20220607014942.3954894-1-baolu.lu@linux.intel.com/
+ - Add support for calculating the max pasids that a device could
+   consume.
+ - Replace container_of_safe() with container_of.
+ - Remove iommu_ops->sva_domain_ops and make sva support through the
+   generic domain_alloc/free() interfaces.
+ - [Robin] It would be logical to pass IOMMU_DOMAIN_SVA to the normal
+   domain_alloc call, so that driver-internal stuff like context
+   descriptors can be still be hung off the domain as usual (rather than
+   all drivers having to implement some extra internal lookup mechanism 
+   to handle all the SVA domain ops).
+ - [Robin] I'd just stick the mm pointer in struct iommu_domain, in a
+   union with the fault handler stuff those are mutually exclusive with
+   SVA.
+ - https://lore.kernel.org/linux-iommu/f3170016-4d7f-e78e-db48-68305f683349@arm.com/
+
+v7:
+ - https://lore.kernel.org/linux-iommu/20220519072047.2996983-1-baolu.lu@linux.intel.com/
+ - Remove duplicate array for sva domain.
+ - Rename detach_dev_pasid to block_dev_pasid.
+ - Add raw device driver interfaces for iommufd.
+ - Other misc refinements and patch reorganization.
+ - Drop "dmaengine: idxd: Separate user and kernel pasid enabling" which
+   has been picked for dmaengine tree.
+
+v6:
+ - https://lore.kernel.org/linux-iommu/20220510061738.2761430-1-baolu.lu@linux.intel.com/
+ - Refine the SVA basic data structures.
+   Link: https://lore.kernel.org/linux-iommu/YnFv0ps0Ad8v+7uH@myrica/
+ - Refine arm smmuv3 sva domain allocation.
+ - Fix a possible lock issue.
+   Link: https://lore.kernel.org/linux-iommu/YnFydE8j8l7Q4m+b@myrica/
+
+v5:
+ - https://lore.kernel.org/linux-iommu/20220502014842.991097-1-baolu.lu@linux.intel.com/
+ - Address review comments from Jean-Philippe Brucker. Very appreciated!
+ - Remove redundant pci aliases check in
+   device_group_immutable_singleton().
+ - Treat all buses except PCI as static in immutable singleton check.
+ - As the sva_bind/unbind() have already guaranteed sva domain free only
+   after iopf_queue_flush_dev(), remove the unnecessary domain refcount.
+ - Move domain get() out of the list iteration in iopf_handle_group().
+
+v4:
+ - https://lore.kernel.org/linux-iommu/20220421052121.3464100-1-baolu.lu@linux.intel.com/
+ - Solve the overlap with another series and make this series
+   self-contained.
+ - No objection to the abstraction of data structure during v3 review.
+   Hence remove the RFC subject prefix.
+ - Refine the immutable singleton group code according to Kevin's
+   comments.
+
+v3:
+ - https://lore.kernel.org/linux-iommu/20220410102443.294128-1-baolu.lu@linux.intel.com/
+ - Rework iommu_group_singleton_lockdown() by adding a flag to the group
+   that positively indicates the group can never have more than one
+   member, even after hot plug.
+ - Abstract the data structs used for iommu sva in a separated patches to
+   make it easier for review.
+ - I still keep the RFC prefix in this series as above two significant
+   changes need at least another round review to be finalized.
+ - Several misc refinements.
+
+v2:
+ - https://lore.kernel.org/linux-iommu/20220329053800.3049561-1-baolu.lu@linux.intel.com/
+ - Add sva domain life cycle management to avoid race between unbind and
+   page fault handling.
+ - Use a single domain for each mm.
+ - Return a single sva handler for the same binding.
+ - Add a new helper to meet singleton group requirement.
+ - Rework the SVA domain allocation for arm smmu v3 driver and move the
+   pasid_bit initialization to device probe.
+ - Drop the patch "iommu: Handle IO page faults directly".
+ - Add mmget_not_zero(mm) in SVA page fault handler.
+
+v1:
+ - https://lore.kernel.org/linux-iommu/20220320064030.2936936-1-baolu.lu@linux.intel.com/
+ - Initial post.
+
+*** BLURB HERE ***
+
+Lu Baolu (11):
+  iommu: Add max_pasids field in struct iommu_device
+  iommu: Add max_pasids field in struct dev_iommu
+  iommu: Remove SVM_FLAG_SUPERVISOR_MODE support
+  iommu: Add sva iommu_domain support
+  iommu/vt-d: Add SVA domain support
+  arm-smmu-v3/sva: Add SVA domain support
+  iommu/sva: Refactoring iommu_sva_bind/unbind_device()
+  iommu: Remove SVA related callbacks from iommu ops
+  iommu: Prepare IOMMU domain for IOPF
+  iommu: Per-domain I/O page fault handling
+  iommu: Rename iommu-sva-lib.{c,h}
+
+ include/linux/intel-iommu.h                   |  12 +-
+ include/linux/intel-svm.h                     |  13 -
+ include/linux/iommu.h                         | 128 +++++++---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  19 +-
+ .../iommu/{iommu-sva-lib.h => iommu-sva.h}    |  14 +-
+ drivers/dma/idxd/cdev.c                       |   3 +-
+ drivers/dma/idxd/init.c                       |  25 +-
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 112 +++++----
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |   9 +-
+ drivers/iommu/intel/dmar.c                    |   7 +
+ drivers/iommu/intel/iommu.c                   |   7 +-
+ drivers/iommu/intel/svm.c                     | 149 +++++------
+ drivers/iommu/io-pgfault.c                    |  73 ++----
+ drivers/iommu/iommu-sva-lib.c                 |  71 ------
+ drivers/iommu/iommu-sva.c                     | 229 +++++++++++++++++
+ drivers/iommu/iommu.c                         | 237 +++++++++++-------
+ drivers/misc/uacce/uacce.c                    |   2 +-
+ drivers/iommu/Makefile                        |   2 +-
+ 18 files changed, 649 insertions(+), 463 deletions(-)
+ rename drivers/iommu/{iommu-sva-lib.h => iommu-sva.h} (83%)
+ delete mode 100644 drivers/iommu/iommu-sva-lib.c
+ create mode 100644 drivers/iommu/iommu-sva.c
+
 -- 
-2.32.0
+2.25.1
 
