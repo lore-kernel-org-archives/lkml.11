@@ -2,102 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32CC1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 17:03:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB45EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 17:03:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352907AbiFURDF (ORCPT
+        id S1350572AbiFURDu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 13:03:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41494 "EHLO
+        Tue, 21 Jun 2022 13:03:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352975AbiFURDA (ORCPT
+        with ESMTP id S235198AbiFURDq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 13:03:00 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7965A335;
-        Tue, 21 Jun 2022 10:02:59 -0700 (PDT)
+        Tue, 21 Jun 2022 13:03:46 -0400
+Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9426261C
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 10:03:43 -0700 (PDT)
+Received: by mail-qv1-xf33.google.com with SMTP id y14so15985692qvs.10
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 10:03:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1655830979; x=1687366979;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=nJHBxlki7xBusN9WbMQaZGSGICyDe4cDDnDPCPOE2+Y=;
-  b=VaQoqEdYrFTrNgC+xct33u5EuIDOApSBW3zXGZJHwlW3wX4vjopOKRDt
-   m09M4n87o/FdalybJ+3a5xpw/RPE8sYXCJ/2+BR3ZYP3FQ8kP3SC2jarM
-   ZyO+qICLFZ35IYlbEysiGeGNH7Ppxadv2NhiVvQQKbPdtsPAEFqVhbbu8
-   Q=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 21 Jun 2022 10:02:59 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 10:02:32 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 21 Jun 2022 10:01:51 -0700
-Received: from khsieh-linux1.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 21 Jun 2022 10:01:50 -0700
-From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
-To:     <dri-devel@lists.freedesktop.org>, <robdclark@gmail.com>,
-        <sean@poorly.run>, <swboyd@chromium.org>, <dianders@chromium.org>,
-        <vkoul@kernel.org>, <daniel@ffwll.ch>, <airlied@linux.ie>,
-        <agross@kernel.org>, <dmitry.baryshkov@linaro.org>,
-        <bjorn.andersson@linaro.org>
-CC:     Kuogee Hsieh <quic_khsieh@quicinc.com>,
-        <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
-        <quic_sbillaka@quicinc.com>, <freedreno@lists.freedesktop.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v15 1/3] phy: qcom-edp: add regulator_set_load to edp phy
-Date:   Tue, 21 Jun 2022 10:01:29 -0700
-Message-ID: <1655830891-19025-2-git-send-email-quic_khsieh@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1655830891-19025-1-git-send-email-quic_khsieh@quicinc.com>
-References: <1655830891-19025-1-git-send-email-quic_khsieh@quicinc.com>
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=otHAQMGBki30O8G3WQ2qD0HC1niObfFAQ/YC4kJuOxM=;
+        b=Ri86gshcJeKctBZlI05AbwORrhtBo/PXn8xiXVmdcE4c19v/tljvYnSqYqxmuz11rA
+         GczySvWKSJTZ97Neva9xi4RX4b7UmYWYadlzQ5hcfyPfUtMBZkwQzwRVSeNUpTxmksQL
+         XtUsDNB74r66Hm2rWvz+6/2Ccjt0WabnKaDET1whkfhSO7EFJMbdCCx7LGFm+Nd+AzI7
+         T2N/A6Go1OPRzmxfdT2p5wix1FT3wBSDlVU0mhv1R77H+dyH3uIoutqGypVtDqNygTb8
+         wn3z93IvtKdp6+NHn3Laz9DgVuKUionF+gsPYAJFPtwzWKhMtiHgoe83JqmNVMWGQ7Be
+         ypDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=otHAQMGBki30O8G3WQ2qD0HC1niObfFAQ/YC4kJuOxM=;
+        b=oUWOmexAlKga3n5nGM0rUPLYAjmfvLIGGHa1gA704mq4qnu2E3AwJqWsSzfYqT6yry
+         X4+syp7C9YfEre4T4thFHc6ChXcio6ie5IBRTjmtezZYHi81KtT/tliyS2/mfg77dtjs
+         U6qVqAmSBD0cTByaqfy3cBTUJl1V0k/f4LIYzWISi7bN7ZacfBCNK2rIRCYE3wiunLIk
+         Ca21pnPPEcBPTC4kGS0abU18IhmP+zvm/XUFnCIOmX0zj6iYK/2m31Q25wkG/EDEGcrn
+         hRx1MQWc8mitWtsnLu0jVKUhqyIbQxJGwSMuLbPFsR3RcPy5MD2c2g+KuFAeI+WzdDRL
+         ShUg==
+X-Gm-Message-State: AJIora/t9BAB97eI5K4ctFpksK4NRNeMUAShOIDLi+KEQqjEzNG6LjBN
+        B9yMtBPAkJ8ymA/PjNGljHPWstjZhlOnSe6PZueOtA==
+X-Google-Smtp-Source: AGRyM1u6Sanhm8QCp8G4R0SmNtvWaO+gorH1OCF+HnrqyQOiBhlDLaiFQQGApf2HAFSXTErWbYPEoZA6tCMYCKLIbDQ=
+X-Received: by 2002:a05:622a:34a:b0:304:f25a:ecf0 with SMTP id
+ r10-20020a05622a034a00b00304f25aecf0mr24825990qtw.62.1655831022984; Tue, 21
+ Jun 2022 10:03:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+References: <20220621160621.24415-1-y.oudjana@protonmail.com> <20220621160621.24415-4-y.oudjana@protonmail.com>
+In-Reply-To: <20220621160621.24415-4-y.oudjana@protonmail.com>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Date:   Tue, 21 Jun 2022 20:03:31 +0300
+Message-ID: <CAA8EJpogcM6nRVwUysTOuDJJPpNi5z3n_GySsEdJkaew=nJZEw@mail.gmail.com>
+Subject: Re: [PATCH 3/6] clk: qcom: msm8996-cpu: Unify cluster order
+To:     Yassine Oudjana <yassine.oudjana@gmail.com>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Yassine Oudjana <y.oudjana@protonmail.com>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Martin Botka <martin.botka@somainline.org>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        Jami Kettunen <jami.kettunen@somainline.org>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch add regulator_set_load() before enable regulator at
-eDP phy driver.
+On Tue, 21 Jun 2022 at 19:07, Yassine Oudjana <yassine.oudjana@gmail.com> wrote:
+>
+> From: Yassine Oudjana <y.oudjana@protonmail.com>
+>
+> The power cluster comes before the performance cluster. Make
+> everything in the driver follow this order.
+>
+> Signed-off-by: Yassine Oudjana <y.oudjana@protonmail.com>
 
-Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
 Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
----
- drivers/phy/qualcomm/phy-qcom-edp.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
 
-diff --git a/drivers/phy/qualcomm/phy-qcom-edp.c b/drivers/phy/qualcomm/phy-qcom-edp.c
-index cacd32f..7e357078 100644
---- a/drivers/phy/qualcomm/phy-qcom-edp.c
-+++ b/drivers/phy/qualcomm/phy-qcom-edp.c
-@@ -639,6 +639,18 @@ static int qcom_edp_phy_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
- 
-+	ret = regulator_set_load(edp->supplies[0].consumer, 21800); /* 1.2 V vdda-phy */
-+	if (ret) {
-+		dev_err(dev, "failed to set load at %s\n", edp->supplies[0].supply);
-+		return ret;
-+	}
-+
-+	ret = regulator_set_load(edp->supplies[1].consumer, 36000); /* 0.9 V vdda-pll */
-+	if (ret) {
-+		dev_err(dev, "failed to set load at %s\n", edp->supplies[1].supply);
-+		return ret;
-+	}
-+
- 	ret = qcom_edp_clks_register(edp, pdev->dev.of_node);
- 	if (ret)
- 		return ret;
+> ---
+>  drivers/clk/qcom/clk-cpu-8996.c | 36 ++++++++++++++++-----------------
+>  1 file changed, 18 insertions(+), 18 deletions(-)
+
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
-
+With best wishes
+Dmitry
