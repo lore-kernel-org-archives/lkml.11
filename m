@@ -2,103 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2240C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 11:15:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CED8CCA482
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 11:18:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348844AbiFULPz (ORCPT
+        id S1349102AbiFULS1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 07:15:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60616 "EHLO
+        Tue, 21 Jun 2022 07:18:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231209AbiFULPw (ORCPT
+        with ESMTP id S1349061AbiFULSY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 07:15:52 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 016B329C9E;
-        Tue, 21 Jun 2022 04:15:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655810152; x=1687346152;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=T9u4NQStwqgT/FP8Ox1SftRm7jpPdpysrGAUgD9ZRjc=;
-  b=jI6VRD9GRDbsv3Akw1drAKKPQ21dMtKU9nfmw53ZDJFHzB8cQXiO5yZX
-   H4An/jembi6KUNHb26jF1Khrg1lcfJ1HCLH/6IjJcji30MTx/NtWhPqNl
-   v3vzQ8v+edg1KwP1eIfFOXIeq5XDu5R0f5OVup6xm4LEwP9Nd7yAprR47
-   HOfc4bWPwoIE3NT5aWne1eVuFD6eGJWTIf00JC3P+b1B/LgxG0lLcDzrX
-   4S5Jz49VaIQ2xgoyjmuovetKYgbP6nl4Uwgfy9B600ddyGd6BJYaHLqkh
-   LnuIvAqeSTYftGQOB52sZUUEICOX3gt/XdrJ1x8aAiS/gAJ6LgXoXXazd
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10384"; a="259914733"
-X-IronPort-AV: E=Sophos;i="5.92,209,1650956400"; 
-   d="scan'208";a="259914733"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 04:15:51 -0700
-X-IronPort-AV: E=Sophos;i="5.92,209,1650956400"; 
-   d="scan'208";a="614710772"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 04:15:45 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1o3brC-000qy0-7b;
-        Tue, 21 Jun 2022 14:15:42 +0300
-Date:   Tue, 21 Jun 2022 14:15:41 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Sudeep Holla <sudeep.holla@arm.com>
-Cc:     Marcin Wojtas <mw@semihalf.com>, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, netdev@vger.kernel.org,
-        rafael@kernel.org, lenb@kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux@armlinux.org.uk, hkallweit1@gmail.com,
-        gjb@semihalf.com, jaz@semihalf.com, tn@semihalf.com,
-        Samer.El-Haj-Mahmoud@arm.com, upstream@semihalf.com
-Subject: Re: [net-next: PATCH 09/12] Documentation: ACPI: DSD: introduce DSA
- description
-Message-ID: <YrGoXXBgHvyifny3@smile.fi.intel.com>
-References: <20220620150225.1307946-1-mw@semihalf.com>
- <20220620150225.1307946-10-mw@semihalf.com>
- <20220621094556.5ev3nencnw7a5xwv@bogus>
+        Tue, 21 Jun 2022 07:18:24 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D407027FE6;
+        Tue, 21 Jun 2022 04:18:23 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id o10so18895560edi.1;
+        Tue, 21 Jun 2022 04:18:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=v7nxHvlawisf1+yiWy1FwkyOpuVc183YG++a4GngDmg=;
+        b=k8kgSfSqpz4vdo2wbxKrJU85FLNZ8v/bI9PXo+y9KI/dhCGuPwYzTeZiDdJnsCD0Jh
+         RzMqbKjDufSesLdcXfredMI5zxB43WU8LRGAjgFvDRZ+05doGEtkKZpj5VjDjLVZBqG0
+         +egaSeByeYTobiRwEjMM1YfUyOti+MmspmEik+rjsb0DUYOuSIzaUcRgK6hm5+JDV+TT
+         fejvmPtoQyag964WuObuXh3Rxgh4Iz14l59oMVxHZId7KBPuoKpsWevd00/CsJpoEAfZ
+         +dzb1JHB63C8vXAQ/w6BRq7q62cDiQzKBlyGXNPfpNwsBjx+VPckrP5FSQ/CWG2UjxKR
+         bmfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=v7nxHvlawisf1+yiWy1FwkyOpuVc183YG++a4GngDmg=;
+        b=dGZXUhEaejzTyPwMwOoEqkunVpJurt16vd3SXrdZIV6MdMkqojE/HMxfJv3DyvQ0tG
+         hMh74N8n+hWo0RopHrw3DDyNd691W/sHiiWRHr6QUqyMmDtxtFl5m+hJyaB8BcK/FgoK
+         peSpv5NPGFsTTRGJT1njYX5Q75VW7+DweutOo5p0UlR6r2OhziJQ9WfPu4Xf6erP9Jxu
+         eIxrGot3pqmVWgxWnc/ZuLRDU0h3ju3DZj/srR/fePj0HRO0WxgPXLw0+FC+Tp+OdvdY
+         8TA42GGJvY/dyjrAWkMfYxaLfJFO91aOeI2WK+h2N0/HVIW2Et0MWnJ+Z7BOtCGa02RY
+         ypDQ==
+X-Gm-Message-State: AJIora9YUnT7VIBSI1v39Oe4CNvqT+RkiImLKG0P9hhHsj0dD4osdi5j
+        MTo+usCRh2l8u+3Ez116pMzmjxCQDWE=
+X-Google-Smtp-Source: AGRyM1uOXGc3Fg4VuwVFdAiuaxJzSz066rV0cx1EG856h7qraoEOp+CrttjskSMpN0foOQElXk7dnw==
+X-Received: by 2002:a05:6402:51c7:b0:42d:f4ea:c09 with SMTP id r7-20020a05640251c700b0042df4ea0c09mr34199959edd.319.1655810302306;
+        Tue, 21 Jun 2022 04:18:22 -0700 (PDT)
+Received: from fedora.robimarko.hr (dh207-98-140.xnet.hr. [88.207.98.140])
+        by smtp.googlemail.com with ESMTPSA id 15-20020a170906300f00b006f3ef214dd9sm7513063ejz.63.2022.06.21.04.18.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Jun 2022 04:18:21 -0700 (PDT)
+From:   Robert Marko <robimarko@gmail.com>
+To:     agross@kernel.org, bjorn.andersson@linaro.org, kishon@ti.com,
+        vkoul@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-arm-msm@vger.kernel.org,
+        linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Robert Marko <robimarko@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v2 1/2] dt-bindings: phy: qcom,qmp: add IPQ8074 PCIe Gen3 PHY binding
+Date:   Tue, 21 Jun 2022 13:18:17 +0200
+Message-Id: <20220621111818.447452-1-robimarko@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220621094556.5ev3nencnw7a5xwv@bogus>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 21, 2022 at 10:45:56AM +0100, Sudeep Holla wrote:
-> On Mon, Jun 20, 2022 at 05:02:22PM +0200, Marcin Wojtas wrote:
-> > Describe the Distributed Switch Architecture (DSA) - compliant
-> > MDIO devices. In ACPI world they are represented as children
-> > of the MDIO busses, which are responsible for their enumeration
-> > based on the standard _ADR fields and description in _DSD objects
-> > under device properties UUID [1].
-> > 
-> > [1] http://www.uefi.org/sites/default/files/resources/_DSD-device-properties-UUID.pdf
+IPQ8074 has 2 different single lane PCIe PHY-s, one Gen2 and one Gen3.
+Gen2 one is already supported, document the bindings for the Gen3 one.
 
-> Why is this document part of Linux code base ?
+Signed-off-by: Robert Marko <robimarko@gmail.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-It's fine, but your are right with your latter questions.
-
-> How will the other OSes be aware of this ?
-
-Should be a standard somewhere.
-
-> I assume there was some repository to maintain such DSDs so that it
-> is accessible for other OSes. I am not agreeing or disagreeing on the
-> change itself, but I am concerned about this present in the kernel
-> code.
-
-I dunno we have a such, but the closest I may imagine is MIPI standardization,
-that we have at least for cameras and sound.
-
-I would suggest to go and work with MIPI for network / DSA / etc area, so
-everybody else will be aware of the standard.
-
+diff --git a/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
+index 8b850c5ab116..220788ce215f 100644
+--- a/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
++++ b/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
+@@ -19,6 +19,7 @@ properties:
+     enum:
+       - qcom,ipq6018-qmp-pcie-phy
+       - qcom,ipq6018-qmp-usb3-phy
++      - qcom,ipq8074-qmp-gen3-pcie-phy
+       - qcom,ipq8074-qmp-pcie-phy
+       - qcom,ipq8074-qmp-usb3-phy
+       - qcom,msm8996-qmp-pcie-phy
+@@ -312,6 +313,7 @@ allOf:
+           contains:
+             enum:
+               - qcom,ipq6018-qmp-pcie-phy
++              - qcom,ipq8074-qmp-gen3-pcie-phy
+               - qcom,ipq8074-qmp-pcie-phy
+     then:
+       properties:
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.36.1
 
