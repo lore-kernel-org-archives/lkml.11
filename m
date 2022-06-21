@@ -2,133 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C770C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:19:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E816AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:20:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355849AbiFUVTW (ORCPT
+        id S1355292AbiFUVUE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 17:19:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33900 "EHLO
+        Tue, 21 Jun 2022 17:20:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355816AbiFUVTC (ORCPT
+        with ESMTP id S1355902AbiFUVTp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 17:19:02 -0400
-Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56D7A2F3A9
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 14:04:38 -0700 (PDT)
-Received: from in01.mta.xmission.com ([166.70.13.51]:59736)
-        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1o3l2y-008PZ1-37; Tue, 21 Jun 2022 15:04:28 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:57252 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1o3l2w-00G9Ba-OZ; Tue, 21 Jun 2022 15:04:27 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Cc:     Derek Bruening <bruening@google.com>,
-        Kevin Malachowski <chowski@google.com>,
-        Alexander Mikhalitsyn <alexander@mihalicyn.com>,
-        Florian Weimer <fw@deneb.enyo.de>,
-        Carlos O'Donell <carlos@redhat.com>,
-        Paul Turner <pjt@google.com>,
-        Simon Marchi <simon.marchi@efficios.com>,
-        Peter Oskolkov <posk@posk.io>,
-        Chris Kennelly <ckennelly@google.com>,
-        Pedro Alves <palves@redhat.com>,
-        Bui Quang Minh <minhquangbui99@gmail.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        x86 <x86@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Valentin Schneider <vschneid@redhat.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Kees Cook <keescook@chromium.org>,
-        "Chang S. Bae" <chang.seok.bae@intel.com>,
-        Brian Gerst <brgerst@gmail.com>,
-        Andrei Vagin <avagin@gmail.com>,
-        Pavel Tikhomirov <ptikhomirov@virtuozzo.com>
-References: <20220618182515.95831-1-minhquangbui99@gmail.com>
-        <258546133.12151.1655739550814.JavaMail.zimbra@efficios.com>
-        <CAJqdLroJ6eTD02dAi8Nnb63Sog5x9Pwt9CDwXaUeBQe1Sn2EBg@mail.gmail.com>
-        <648712158.13199.1655748645141.JavaMail.zimbra@efficios.com>
-        <CAJqdLrpKLO8Wh_AytFS9XPMkaq22cOJ+fPi06kyJY55yQUpScg@mail.gmail.com>
-        <CAB=H8NXaMvNU+0Z02VPnLmQde-F8pdw2Ms2SqiOzWtuTcyNjaA@mail.gmail.com>
-        <CAO1ikSbnEbN1-=rY+aOUbjvPS=i9AFJaGBpmbkGR-9UinNKbKw@mail.gmail.com>
-        <87y1xper17.fsf@email.froward.int.ebiederm.org>
-        <871717002.20576.1655841912053.JavaMail.zimbra@efficios.com>
-Date:   Tue, 21 Jun 2022 16:04:18 -0500
-In-Reply-To: <871717002.20576.1655841912053.JavaMail.zimbra@efficios.com>
-        (Mathieu Desnoyers's message of "Tue, 21 Jun 2022 16:05:12 -0400
-        (EDT)")
-Message-ID: <87pmj1enjh.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Tue, 21 Jun 2022 17:19:45 -0400
+Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99D2135A9E;
+        Tue, 21 Jun 2022 14:05:30 -0700 (PDT)
+Received: by mail-qk1-x731.google.com with SMTP id c83so11127973qke.3;
+        Tue, 21 Jun 2022 14:05:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HeP7RDe/WRpFOY2lnHR3tmueb25njNH1IUveff2RKuw=;
+        b=RNn2c0pBugaiXV6bz9gavvC/w8yIBIIHbIyYCrjfQW0kPPaZGrUfvMCZM+vlZtSq46
+         xbkJiHnOQ8U9AZ5bJALjEDIgvghARiuR1y+r7tHE5q0RemuV/DIOvO3ylhMj0QI3n8ol
+         wrlFvdzyyBm8O6LU7LWWcjYJ+sf5wU/qQ5EkVmFuZd8XPB/J3xb6xjnOGJxtMD/jB6pf
+         tZRzvd37kq2B+tHdDdh/bBlVOjXWa9p+XKqEiJw5I5aysYUZnpD5UuoDZFU5x1QDAK1P
+         muMB3ab7gsVimZJEjSe6ctpLJg/NewPf4IIzqX7dGL3Q2Q0DJc0+btEokJVeItBnotPl
+         WmQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HeP7RDe/WRpFOY2lnHR3tmueb25njNH1IUveff2RKuw=;
+        b=KrpWcJEd/q2Tsjlb/3x8aQonpeBI2OdyZlDdv2UbxpieCV9ekKR6nFGuUSPhGwAZJQ
+         jo8xK7WPA7J9UGg1EZYu4NuCBOS4yy721hZ3EKMcbsgLeRYlpYPggRFlgcQZ9huWQUTh
+         QVUxb6W5MxgMrrAdA43HaWgPhJSC0jeVz/ifFBZ1pGF9nle2OnsgX148bwfymw79BncF
+         Il8R1uLFWhJNE+NISwO3DttAvtQd1VfN7iCo3fd+Lmf5aFl9CzuDohaAv3XLWQ3GYZCf
+         F06RQGVRxeTHp5adiQFEHuk45UMaXflOPtXMWg0CuNSAkv73tNKHy8zhwwYibpcLEqlw
+         O7uw==
+X-Gm-Message-State: AJIora8FKQo2wnmTXIyaDnskUkBpdtYHNF4mnY227fouEfXXn4Gfwg4N
+        gKGSjJvjRejvSkF+5ycpkEGPMsIpqdT7m8s5JnR/uFTRnoo=
+X-Google-Smtp-Source: AGRyM1sSz3lGLVvNvrBZVOZaQYqXP7lJyPtshZ2BVHVzuAw+yQapRXKEcg7t/xS1RXtwoheTfAdGz+DbTHKsHhr6cWY=
+X-Received: by 2002:a05:620a:2450:b0:6a6:d264:2b88 with SMTP id
+ h16-20020a05620a245000b006a6d2642b88mr21180101qkn.25.1655845528278; Tue, 21
+ Jun 2022 14:05:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1o3l2w-00G9Ba-OZ;;;mid=<87pmj1enjh.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX18zc+rDFOEBT4bWBnCryNsw5KoKma6AAho=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH] rseq: x86: Fix rseq_cs get cleared when returning from
- signal handler
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+References: <20220621112330.448754-1-robimarko@gmail.com> <20220621203211.GA1330530@bhelgaas>
+In-Reply-To: <20220621203211.GA1330530@bhelgaas>
+From:   Robert Marko <robimarko@gmail.com>
+Date:   Tue, 21 Jun 2022 23:05:17 +0200
+Message-ID: <CAOX2RU7idTVcW6ivqs3V_Ep33RoHZs1zt0jav-_z2D7xpKJstw@mail.gmail.com>
+Subject: Re: [PATCH v2] PCI: qcom: fix IPQ8074 Gen2 support
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     svarbanov@mm-sol.com, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        lpieralisi@kernel.org, Rob Herring <robh@kernel.org>, kw@linux.com,
+        Bjorn Helgaas <bhelgaas@google.com>, p.zabel@pengutronix.de,
+        jingoohan1@gmail.com, linux-pci@vger.kernel.org,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        johan+linaro@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Mathieu Desnoyers <mathieu.desnoyers@efficios.com> writes:
+On Tue, 21 Jun 2022 at 22:32, Bjorn Helgaas <helgaas@kernel.org> wrote:
+>
+> On Tue, Jun 21, 2022 at 01:23:30PM +0200, Robert Marko wrote:
+> > IPQ8074 has one Gen2 and one Gen3 port, currently the Gen2 port will
+> > cause the system to hang as its using DBI registers in the .init
+> > and those are only accesible after phy_power_on().
+>
+> Is the fact that IPQ8074 has both a Gen2 and a Gen3 port relevant to
+> this patch?  I don't see the connection.
 
-> ----- On Jun 21, 2022, at 3:48 PM, Eric W. Biederman ebiederm@xmission.com wrote:
->
->> Derek Bruening <bruening@google.com> writes:
->> 
->>> From the viewpoint of dynamic binary translation/instrumentation and
->>> memtrace (go/memtrace), removing those RSEQ_CS_FLAG_NO_RESTART_ON_* flags
->>> is a good thing as it reduces complexity and makes it easier to handle rseq
->>> (which is painful enough to handle already).
->> 
->> It sounds like there is consensus.
->> 
->> Does someone want to code up a simple patch that detects when
->> RSEQ_CS_NO_RESTART_ON_SIGNAL and does a WARN_ON_ONCE and fails if
->> someone uses so it can be set to Linus in the next merge window.
->> 
->> After no one screams at that patch it should be safe to remove the
->> functionality, because you have empirical proof that no one uses
->> that functionality.
->
-> Sure, I can whip up something.
->
-> I'll send it to Peter Zijlstra shortly.
->
-> I plan to, as you suggest, WARN_ON_ONCE() when this happens, and return
-> an error when the rseq flags or rseq_cs flags contain either of the
-> RSEQ_CS_FLAG_NO_RESTART_ON_* flags. This error is handled by forcing a
-> killing the process with sigsegv:
->
-> __rseq_handle_notify_resume()
-> [...]
-> error:
->         sig = ksig ? ksig->sig : 0;
->         force_sigsegv(sig);
->
-> Does it look acceptable ?
+Hi Bjorn,
+Not really, I can remove it from the description as this only affects the Gen2
+port, Gen3 support is dependant on the IPQ6018 support getting merged as
+it uses the same controller.
 
-I think so.  force_sigsegv preps things so that when you go into
-exit_to_user_mode_loop the signal handler kills the process.
+>
+> I see that qcom_pcie_host_init() does:
+>
+>   qcom_pcie_host_init
+>     pcie->cfg->ops->init(pcie)
+>     phy_power_on(pcie->phy)
+>     pcie->cfg->ops->post_init(pcie)
+>
+> and that you're moving DBI register accesses from
+> qcom_pcie_init_2_3_3() to qcom_pcie_post_init_2_3_3().
+>
+> But I also see DBI register accesses in other .init() functions:
+>
+>   qcom_pcie_init_2_1_0
+>   qcom_pcie_init_1_0_0      (oddly out of order)
+>   qcom_pcie_init_2_3_2
+>   qcom_pcie_init_2_4_0
+>
+> Why do these accesses not need to be moved?  I assume it's because
+> pcie->phy is an optional PHY and phy_power_on() does nothing on those
+> controllers?
 
-So assuming that happens after force_sigsegv that looks good.
+As far as I could figure out from QCA-s 5.4 kernel, various commits, and QCA-s
+attempts to solve this already upstream the Gen2 controller in IPQ8074 is a bit
+special and requires the PHY to be powered on before DBI could be accessed or
+else the board will hang as it does for me.
 
-Eric
+I can only assume that this is an IPQ8074-specific quirk and other IP-s are not
+affected like this, so they were not broken.
+
+>
+> Whatever the reason, I think the DBI accesses should be done
+> consistently in .post_init().  I see that Dmitry's previous patches
+> removed all those .post_init() functions, but I think the consistency
+> is worth having.
+>
+> Perhaps we could reorder the patches so this patch comes first, moves
+> the DBI accesses into .post_init(), then Dmitry's patches could be
+> rebased on top to drop the clock handling?
+>
+> > So solve this by splitting the DBI read/writes to .post_init.
+
+I am open to anything to get this fixed properly, you are gonna need
+to point me in the right direction
+as I am really new to PCI.
+
+Regards,
+Robert
+> >
+> > Fixes: a0fd361db8e5 ("PCI: dwc: Move "dbi", "dbi2", and "addr_space" resource setup into common code")
+> > Signed-off-by: Robert Marko <robimarko@gmail.com>
+> > ---
+> > Changes in v2:
+> > * Rebase onto next-20220621
+> > ---
+> >  drivers/pci/controller/dwc/pcie-qcom.c | 48 +++++++++++++++-----------
+> >  1 file changed, 28 insertions(+), 20 deletions(-)
+> >
+> > diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
+> > index 51fed83484af..da6d79d61397 100644
+> > --- a/drivers/pci/controller/dwc/pcie-qcom.c
+> > +++ b/drivers/pci/controller/dwc/pcie-qcom.c
+> > @@ -1061,9 +1061,7 @@ static int qcom_pcie_init_2_3_3(struct qcom_pcie *pcie)
+> >       struct qcom_pcie_resources_2_3_3 *res = &pcie->res.v2_3_3;
+> >       struct dw_pcie *pci = pcie->pci;
+> >       struct device *dev = pci->dev;
+> > -     u16 offset = dw_pcie_find_capability(pci, PCI_CAP_ID_EXP);
+> >       int i, ret;
+> > -     u32 val;
+> >
+> >       for (i = 0; i < ARRAY_SIZE(res->rst); i++) {
+> >               ret = reset_control_assert(res->rst[i]);
+> > @@ -1120,6 +1118,33 @@ static int qcom_pcie_init_2_3_3(struct qcom_pcie *pcie)
+> >               goto err_clk_aux;
+> >       }
+> >
+> > +     return 0;
+> > +
+> > +err_clk_aux:
+> > +     clk_disable_unprepare(res->ahb_clk);
+> > +err_clk_ahb:
+> > +     clk_disable_unprepare(res->axi_s_clk);
+> > +err_clk_axi_s:
+> > +     clk_disable_unprepare(res->axi_m_clk);
+> > +err_clk_axi_m:
+> > +     clk_disable_unprepare(res->iface);
+> > +err_clk_iface:
+> > +     /*
+> > +      * Not checking for failure, will anyway return
+> > +      * the original failure in 'ret'.
+> > +      */
+> > +     for (i = 0; i < ARRAY_SIZE(res->rst); i++)
+> > +             reset_control_assert(res->rst[i]);
+> > +
+> > +     return ret;
+> > +}
+> > +
+> > +static int qcom_pcie_post_init_2_3_3(struct qcom_pcie *pcie)
+> > +{
+> > +     struct dw_pcie *pci = pcie->pci;
+> > +     u16 offset = dw_pcie_find_capability(pci, PCI_CAP_ID_EXP);
+> > +     u32 val;
+> > +
+> >       writel(SLV_ADDR_SPACE_SZ,
+> >               pcie->parf + PCIE20_v3_PARF_SLV_ADDR_SPACE_SIZE);
+> >
+> > @@ -1147,24 +1172,6 @@ static int qcom_pcie_init_2_3_3(struct qcom_pcie *pcie)
+> >               PCI_EXP_DEVCTL2);
+> >
+> >       return 0;
+> > -
+> > -err_clk_aux:
+> > -     clk_disable_unprepare(res->ahb_clk);
+> > -err_clk_ahb:
+> > -     clk_disable_unprepare(res->axi_s_clk);
+> > -err_clk_axi_s:
+> > -     clk_disable_unprepare(res->axi_m_clk);
+> > -err_clk_axi_m:
+> > -     clk_disable_unprepare(res->iface);
+> > -err_clk_iface:
+> > -     /*
+> > -      * Not checking for failure, will anyway return
+> > -      * the original failure in 'ret'.
+> > -      */
+> > -     for (i = 0; i < ARRAY_SIZE(res->rst); i++)
+> > -             reset_control_assert(res->rst[i]);
+> > -
+> > -     return ret;
+> >  }
+> >
+> >  static int qcom_pcie_get_resources_2_7_0(struct qcom_pcie *pcie)
+> > @@ -1598,6 +1605,7 @@ static const struct qcom_pcie_ops ops_2_4_0 = {
+> >  static const struct qcom_pcie_ops ops_2_3_3 = {
+> >       .get_resources = qcom_pcie_get_resources_2_3_3,
+> >       .init = qcom_pcie_init_2_3_3,
+> > +     .post_init = qcom_pcie_post_init_2_3_3,
+> >       .deinit = qcom_pcie_deinit_2_3_3,
+> >       .ltssm_enable = qcom_pcie_2_3_2_ltssm_enable,
+> >  };
+> > --
+> > 2.36.1
+> >
