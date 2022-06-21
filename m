@@ -2,83 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C390C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 10:00:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15A1CCCA473
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 10:02:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229630AbiFUKAe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 06:00:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39662 "EHLO
+        id S229656AbiFUKCF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 21 Jun 2022 06:02:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347547AbiFUKAI (ORCPT
+        with ESMTP id S229462AbiFUKCD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 06:00:08 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CAA3D27FC3
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 03:00:05 -0700 (PDT)
-Received: from linux.localdomain (unknown [113.200.148.30])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9DxX06hlrFi26RRAA--.25344S3;
-        Tue, 21 Jun 2022 18:00:03 +0800 (CST)
-From:   Tiezhu Yang <yangtiezhu@loongson.cn>
-To:     Huacai Chen <chenhuacai@kernel.org>,
-        WANG Xuerui <kernel@xen0n.name>
-Cc:     Xuefeng Li <lixuefeng@loongson.cn>,
-        Jianmin Lv <lvjianmin@loongson.cn>, Jun Yi <yijun@loongson.cn>,
-        Rui Wang <wangrui@loongson.cn>, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/2] LoongArch: Add TI_SYSCALL in output_thread_info_defines()
-Date:   Tue, 21 Jun 2022 18:00:00 +0800
-Message-Id: <1655805601-16677-2-git-send-email-yangtiezhu@loongson.cn>
-X-Mailer: git-send-email 2.1.0
-In-Reply-To: <1655805601-16677-1-git-send-email-yangtiezhu@loongson.cn>
-References: <1655805601-16677-1-git-send-email-yangtiezhu@loongson.cn>
-X-CM-TRANSID: AQAAf9DxX06hlrFi26RRAA--.25344S3
-X-Coremail-Antispam: 1UD129KBjvdXoW7Wr48Ww17Xw43JF4UCw1rJFb_yoWkArg_Wr
-        nrGwn8GFW8JrWIq3Wvyw4fXr4jya4vkFyrXrZ7CrWxtwnrtry5Jr4rZ348Cr1kKrWkGrs8
-        C3ykW3Wkur1jkjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbSkFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI8067AKxVWUGwA2048vs2IY02
-        0Ec7CjxVAFwI0_JFI_Gr1l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xv
-        wVC0I7IYx2IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVWxJVW8Jr1l84
-        ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1le2I2
-        62IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcV
-        AFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r4j6F4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG
-        0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6r4DMxAIw28Icx
-        kI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2Iq
-        xVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0EwIxGrwCI42
-        IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY
-        6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aV
-        CY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUjq-eDUUUUU==
-X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
+        Tue, 21 Jun 2022 06:02:03 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78911275D7;
+        Tue, 21 Jun 2022 03:02:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=CebAnGs2I4e+XopgqgMPynRsVklLyL9H2XvsgpMCH3A=; b=1XHoW/tBFaJiaNKU4sevkeQHAT
+        wzUfAxdFftsUy5g5L9/JF4dxs7GL+VOQbvh9kbNbOhX+4Z0Dk6MK1XuRFVV1Uc0nCTbXndIkQJc/V
+        fwbyHU2KTxvyHKNGA6gBBeuO/455fTuUXYM0dFbEg37zaZG+VPpP0SeJqJzdnrOQTlpbRRBOoeaYA
+        up/T//k0ritMvyTsQS6847SkS55N2B0Yi/8FucBKE+t4PaP6z2/awQDssBq7Mb7g/DRmvLmZ4y6By
+        WWSgQ9hM3rgxBf1g95BU/wLA2wFBAsd+pJb2t6V6Fh5HJnn9mr0xVhiiVqxFEFhhmMrzguYTPIPpo
+        TNbTmF3Q==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:32960)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1o3ahq-0002AF-2D; Tue, 21 Jun 2022 11:01:57 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1o3ahl-0005w5-HX; Tue, 21 Jun 2022 11:01:53 +0100
+Date:   Tue, 21 Jun 2022 11:01:53 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Marcin Wojtas <mw@semihalf.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Len Brown <lenb@kernel.org>, vivien.didelot@gmail.com,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Grzegorz Bernacki <gjb@semihalf.com>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>,
+        Tomasz Nowicki <tn@semihalf.com>,
+        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
+        upstream@semihalf.com
+Subject: Re: [net-next: PATCH 01/12] net: phy: fixed_phy: switch to fwnode_
+ API
+Message-ID: <YrGXEReoc3qweU1S@shell.armlinux.org.uk>
+References: <20220620150225.1307946-1-mw@semihalf.com>
+ <20220620150225.1307946-2-mw@semihalf.com>
+ <YrC1gEf4HpRp5zkh@lunn.ch>
+ <CAPv3WKe3vBJ9r=6tMEtPj-3c0E3MBpW4Csf8zjS0jG03C35ycg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAPv3WKe3vBJ9r=6tMEtPj-3c0E3MBpW4Csf8zjS0jG03C35ycg@mail.gmail.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The initial idea was to store the syscall number in PT_R11,
-and then we can get the syscall number from PT_R11 to check
-before RESTORE in handle_syscall, but we know PT_R11 may be
-overwritten by the signal handler and the syscall number
-will be lost.
+On Tue, Jun 21, 2022 at 11:56:06AM +0200, Marcin Wojtas wrote:
+> pon., 20 cze 2022 o 19:59 Andrew Lunn <andrew@lunn.ch> napisał(a):
+> >
+> > On Mon, Jun 20, 2022 at 05:02:14PM +0200, Marcin Wojtas wrote:
+> > > This patch allows to use fixed_phy driver and its helper
+> > > functions without Device Tree dependency, by swtiching from
+> > > of_ to fwnode_ API.
+> >
+> > Do you actually need this? phylink does not use this code, it has its
+> > own fixed link implementation. And that implementation is not limited
+> > to 1G.
+> >
+> 
+> Yes, phylink has its own fixed-link handling, however the
+> net/dsa/port.c relies on fixed_phy helpers these are not 1:1
+> equivalents. I assumed this migration (fixed_phy -> phylink) is not
+> straightforward and IMO should be handled separately. Do you recall
+> justification for not using phylink in this part of net/dsa/*?
 
-Add TI_SYSCALL in output_thread_info_defines(), then we can
-store the syscall number in TI_SYSCALL. This is preparation
-for later patch.
+All modern DSA drivers use phylink and not fixed-phy as far as I'm
+aware - there are a number that still implement the .adjust_link
+callback, but note in dsa_port_link_register_of():
 
-Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
----
- arch/loongarch/kernel/asm-offsets.c | 1 +
- 1 file changed, 1 insertion(+)
+        if (!ds->ops->adjust_link) {
+	...
+		return 0;
+	}
 
-diff --git a/arch/loongarch/kernel/asm-offsets.c b/arch/loongarch/kernel/asm-offsets.c
-index bfb65eb..4757ebe 100644
---- a/arch/loongarch/kernel/asm-offsets.c
-+++ b/arch/loongarch/kernel/asm-offsets.c
-@@ -81,6 +81,7 @@ void output_thread_info_defines(void)
- 	OFFSET(TI_CPU, thread_info, cpu);
- 	OFFSET(TI_PRE_COUNT, thread_info, preempt_count);
- 	OFFSET(TI_REGS, thread_info, regs);
-+	OFFSET(TI_SYSCALL, thread_info, syscall);
- 	DEFINE(_THREAD_SIZE, THREAD_SIZE);
- 	DEFINE(_THREAD_MASK, THREAD_MASK);
- 	DEFINE(_IRQ_STACK_SIZE, IRQ_STACK_SIZE);
+	dev_warn(ds->dev,
+		 "Using legacy PHYLIB callbacks. Please migrate to PHYLINK!\n");
+
+It's really just that they haven't been migrated.
+
 -- 
-2.1.0
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
