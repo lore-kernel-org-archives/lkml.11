@@ -2,123 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 867C4C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 09:39:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96784C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 09:41:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349193AbiFUJjX (ORCPT
+        id S1349381AbiFUJle (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 05:39:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51086 "EHLO
+        Tue, 21 Jun 2022 05:41:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348826AbiFUJjV (ORCPT
+        with ESMTP id S1349157AbiFUJlJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 05:39:21 -0400
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C7BC275D4
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 02:39:20 -0700 (PDT)
-Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1o3aLu-0000JA-E6; Tue, 21 Jun 2022 11:39:18 +0200
-Message-ID: <4457efae-2c74-4251-f0db-88cfc833b591@leemhuis.info>
-Date:   Tue, 21 Jun 2022 11:39:18 +0200
+        Tue, 21 Jun 2022 05:41:09 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A036A27B08;
+        Tue, 21 Jun 2022 02:40:58 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id g27so11430492wrb.10;
+        Tue, 21 Jun 2022 02:40:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=D6IK5qAM4+nwclszfBVvija52kRu/tgoXBUL0u5OmCY=;
+        b=pokqe+qJlupAZ6NDZWZTOzTmPSkQX0pnKIlKWIFLPw7D7bEIplTLUWtftCEvj+4bhy
+         +q7T4liTwQnyFHfrA8hoUEe6lcMFBir6bZIdgccQOXOWcdSO1eQIipzMaaBIX+gedT/+
+         1avlXrLpJLG8gPuPQbZR3KeFBT1RF9/ys9A3Q4UvfJ6F3H38+XgDgXpFvgizBSrxxyti
+         LbcGMQWcCkEyWXtjMkyoKTonoMgGMIRGvdjIyJR54RUaT6JJYI37+Q9N6NksJ/r2gRCS
+         rZ2OOUmkWMidhWalQv8+FMROir2WjfPS1f+FKn/3C3g2Ue6TqXi9M+tIn76g0d3uCUU3
+         quOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=D6IK5qAM4+nwclszfBVvija52kRu/tgoXBUL0u5OmCY=;
+        b=EisEpKanvDq/RIePrhATZ9fboXlLwQei4cPwnBc7JX+uQAiMjs+SQ686LTuD+MWw4o
+         Chn4Jys4RaowyCzhu2IFLvs0lYe5KY0BT/Gn7u4a91JrvBYYm9ZaKb5A8Ftnv2PchDjR
+         Mu0JlWn9lWXRQQlBy0ajX6Ecm9Lvg7raLd91stPzjqQssJyC06hsCUgSHgSuuz+GMed6
+         GEuCQjw0WqtfaQDvN2FXY+3JN4EAN40MVPJDjWHOBAWmfXmyNo8XJXnbhmhMzwB8KPwT
+         yk8ui59SxL/ds0xiLFCkopVPgQlrd2WPTkVEC4S8vZw4nyBFaCur2qQK7gTwU7xR9Dej
+         Ii8g==
+X-Gm-Message-State: AJIora8ssfPuqQSp78XKkXvPiu3+Qiq9OwvieY2Mz1FujwYL/myV1ed3
+        vsIYudam5TO7CRY+UpX0Qt0=
+X-Google-Smtp-Source: AGRyM1sl9n1DtRD9NWfc5sYeDqoTz2KL+YuK8EO5rctUOc41AD0GQ4xvno+14k9KMxlCQ3/jXiinPQ==
+X-Received: by 2002:a5d:5588:0:b0:21b:9572:6f56 with SMTP id i8-20020a5d5588000000b0021b95726f56mr4385859wrv.566.1655804457025;
+        Tue, 21 Jun 2022 02:40:57 -0700 (PDT)
+Received: from debian (host-78-150-47-22.as13285.net. [78.150.47.22])
+        by smtp.gmail.com with ESMTPSA id m14-20020adfdc4e000000b0021a3c960214sm14575154wrj.6.2022.06.21.02.40.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Jun 2022 02:40:56 -0700 (PDT)
+Date:   Tue, 21 Jun 2022 10:40:54 +0100
+From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, slade@sladewatkins.com
+Subject: Re: [PATCH 5.15 000/106] 5.15.49-rc1 review
+Message-ID: <YrGSJv2FShIunIkt@debian>
+References: <20220620124724.380838401@linuxfoundation.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: Boot stall regression from "printk for 5.19" merge
-Content-Language: en-US
-To:     linux-kernel@vger.kernel.org
-References: <20220619204949.50d9154d@thinkpad>
-Cc:     "regressions@lists.linux.dev" <regressions@lists.linux.dev>
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-In-Reply-To: <20220619204949.50d9154d@thinkpad>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1655804360;0ed4c12f;
-X-HE-SMSGID: 1o3aLu-0000JA-E6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[TLDR: I'm adding this regression report to the list of tracked
-regressions; all text from me you find below is based on a few templates
-paragraphs you might have encountered already already in similar form.]
+Hi Greg,
 
-Hi, this is your Linux kernel regression tracker.
+On Mon, Jun 20, 2022 at 02:50:19PM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.15.49 release.
+> There are 106 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 22 Jun 2022 12:47:02 +0000.
+> Anything received after that time might be too late.
 
-On 19.06.22 20:49, Marek Behún wrote:
-> Hello Linus, Petr, John,
-> 
-> the series
-> https://lore.kernel.org/linux-kernel/YouKQw72H7y9EJQK@alley/
-> merged by commit 537e62c865dc ("Merge tag 'printk-for-5.19' of
-> git://git.kernel.org/pub/scm/linux/kernel/git/printk/linux")
-> 
-> and in particular the commit 09c5ba0aa2fc ("printk: add kthread console
-> printers")
-> 
-> causes a regression on arm64 (Marvell CN9130-CRB board) where the
-> system boot freezes in most cases (and is unusable until restarted by
-> watchdog), or, in some cases boots, but the console output gets mangled
-> for a while (the serial console spits garbage characters).
-> 
-> The stall example:
-> 
->   ...
->   [    1.108141] io scheduler mq-deadline registered
->   [    1.108143] io scheduler kyber registered
->   [    1.163484] armada-ap806-pinctrl f06f4000.system-controller:pinctrl: registered pinctrl driver
->   [
-> 
-> Or another:
-> 
->   ...
->   [    1.108155] io scheduler mq-deadline registered
->   [    1.108156] io scheduler kyber registered
->   [    1.162991] armada-ap806-pinctrl f06f4000.system-controller:pinctrl: registered pinctrl driver
->   [    1.163361] armada-cp110-pinctrl f2440000.system-controller:pinctrl: registered pinctrl driver
->   [    1.180827] mv_xor_v2 f0400000.xor: Marvell Version 2 XOR driver
->   [  
-> 
-> The garbage example:
-> 
->   ...
->   [    0.920951] raid6: using neon recovery algorithm
->   [    0.921228] iommu: Default domain type: Translated
->   %
-> 
->           gb@k+cFL/[    4.954974] DSA: tree 0 setup
->   [    4.955286] cfg80211: Loading compiled-in X.509 certificates for regulatory database
-> 
-> I did not have time to look at the contents of the commit yet to try to
-> fix it myself, and won't have time for another two weeks. But I thought
-> I should let you know now.
+Build test (gcc version 11.3.1 20220612):
+mips: 62 configs -> no failure
+arm: 99 configs -> no failure
+arm64: 3 configs -> no failure
+x86_64: 4 configs -> no failure
+alpha allmodconfig -> no failure
+csky allmodconfig -> no failure
+powerpc allmodconfig -> no failure
+riscv allmodconfig -> no failure
+s390 allmodconfig -> no failure
+xtensa allmodconfig -> no failure
 
-CCing the regression mailing list, as it should be in the loop for all
-regressions, as explained here:
-https://www.kernel.org/doc/html/latest/admin-guide/reporting-issues.html
+Boot test:
+x86_64: Booted on my test laptop. No regression.
+x86_64: Booted on qemu. No regression. [1]
+arm64: Booted on rpi4b (4GB model). No regression. [2]
+mips: Booted on ci20 board. No regression. [3]
 
-Thanks for the report. To be sure below issue doesn't fall through the
-cracks unnoticed, I'm adding it to regzbot, my Linux kernel regression
-tracking bot:
+[1]. https://openqa.qa.codethink.co.uk/tests/1362
+[2]. https://openqa.qa.codethink.co.uk/tests/1365
+[3]. https://openqa.qa.codethink.co.uk/tests/1367
 
-#regzbot ^introduced v5.18..v5.19-rc3
-#regzbot ignore-activity
+Tested-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
 
-This isn't a regression? This issue or a fix for it are already
-discussed somewhere else? It was fixed already? You want to clarify when
-the regression started to happen? Or point out I got the title or
-something else totally wrong? Then just reply -- ideally with also
-telling regzbot about it, as explained here:
-https://linux-regtracking.leemhuis.info/tracked-regression/
-
-Reminder for developers: When fixing the issue, add 'Link:' tags
-pointing to the report (the mail this one replies to), as explained for
-in the Linux kernel's documentation; above webpage explains why this is
-important for tracked regressions.
-
-Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
-
-P.S.: As the Linux kernel's regression tracker I deal with a lot of
-reports and sometimes miss something important when writing mails like
-this. If that's the case here, don't hesitate to tell me in a public
-reply, it's in everyone's interest to set the public record straight.
+--
+Regards
+Sudip
