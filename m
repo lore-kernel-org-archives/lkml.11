@@ -2,120 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76BC5C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 09:43:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4300C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 09:44:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232374AbiFUJn5 convert rfc822-to-8bit (ORCPT
+        id S1349492AbiFUJoR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 05:43:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56544 "EHLO
+        Tue, 21 Jun 2022 05:44:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349619AbiFUJng (ORCPT
+        with ESMTP id S1349499AbiFUJoO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 05:43:36 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0C7FC1A07A
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 02:43:34 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-168-bVQTvNNEM_uczimQWYB4OA-1; Tue, 21 Jun 2022 10:43:32 +0100
-X-MC-Unique: bVQTvNNEM_uczimQWYB4OA-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.36; Tue, 21 Jun 2022 10:43:31 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.036; Tue, 21 Jun 2022 10:43:31 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Petr Mladek' <pmladek@suse.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-CC:     John Ogness <john.ogness@linutronix.de>,
-        Marco Elver <elver@google.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Sergey Senozhatsky" <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: RE: [PATCH v3] printk: allow direct console printing to be enabled
- always
-Thread-Topic: [PATCH v3] printk: allow direct console printing to be enabled
- always
-Thread-Index: AQHYhMbxDgh8TJZ3TESIjSW/xv0YW61Zm+IA
-Date:   Tue, 21 Jun 2022 09:43:31 +0000
-Message-ID: <182076f58e5943af88f38e5202942d41@AcuMS.aculab.com>
-References: <Yq+xGcBO06ILMUFy@zx2c4.com>
- <20220619233302.601092-1-Jason@zx2c4.com> <YrCnJTIB/7MexV3K@alley>
-In-Reply-To: <YrCnJTIB/7MexV3K@alley>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Tue, 21 Jun 2022 05:44:14 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C389727B14;
+        Tue, 21 Jun 2022 02:44:11 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id o16so18100962wra.4;
+        Tue, 21 Jun 2022 02:44:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=jS1rEjLMcqfKzC2GqwuyA8mjgGxCKj8kM3xv8QlDsyM=;
+        b=EWEmO3mSkOUv9ADbKI4Bz+hdff9y1BFIt132WuXO7afOJT89MGDJH4TPKMwf7Cct4S
+         OrrmkiOTBFYHFDxLWHW26epdyRE0e/2JKnQ7AzpWWhOCk3Vuxs+tOnTaRpzO0Y1U4gTM
+         Wj3RaRMeuEWvq4XqvXjquFSmQxijTK2ph8uGb/mAfbsNiyWf4YYDl4aiQVz2ewJkuylZ
+         o6qKFDGNnqssx6NWii2k2wGb7nDm8sNzIiX+cTLF5s0NyQV2kbzHutmTaZfRsFv5rYkF
+         cYoCm/QCZj4tOil89Z0I9LDWUAV/T56z4wcm7/F5/BzYd+idu2brnU/1yUo1UyXlhkG5
+         DJaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=jS1rEjLMcqfKzC2GqwuyA8mjgGxCKj8kM3xv8QlDsyM=;
+        b=TtrKyoM1rE4Xl8+UcGn83KR59sNHygz+ZVthwvoXrzDIu9PC04+BpqJMEEgOROQYdZ
+         2M9H17rVyeXBDriBaMta94LsW/DWZvqDdvshddx6CQ99CITjTWaW6+E1eocyQ4CAZQEx
+         SGV7bfMaojvCqYh439c0T3cYlNEFj31u/GxT1XQZG6b/eIdiZVurkYD0ddJB6o9H6CoT
+         Q9IF3WKmTtvX3hqvPW8kE6fvtYv/EovowbnTvPRoCw5svldsFhSZbwnJscHfaGFMPGrn
+         x1FKT/IEe1D42EzFsVBaSknurd3vD4ZhMipIsiYCfKBp0AuGxMPv7CFevU/Vfy0LV9p8
+         oQLg==
+X-Gm-Message-State: AJIora+kGnk9bYc9JpRJ0udy5jOIxlqPjGjpQanqA+hQGfcfCx65qh/K
+        sLYp4N4pSKRv0EE8z91c9BQ=
+X-Google-Smtp-Source: AGRyM1tQlgwGlCsWKiiY9eL1XT0ZUNO3ukZmsa4jqqKKaaj82hubqdZ0U8oUhsWGmUeGofyO9Lo7WA==
+X-Received: by 2002:a05:6000:186f:b0:213:4ece:4086 with SMTP id d15-20020a056000186f00b002134ece4086mr27973254wri.438.1655804650270;
+        Tue, 21 Jun 2022 02:44:10 -0700 (PDT)
+Received: from debian (host-78-150-47-22.as13285.net. [78.150.47.22])
+        by smtp.gmail.com with ESMTPSA id n8-20020a5d4008000000b00210352bf36fsm15377877wrp.33.2022.06.21.02.44.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Jun 2022 02:44:09 -0700 (PDT)
+Date:   Tue, 21 Jun 2022 10:44:08 +0100
+From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, slade@sladewatkins.com
+Subject: Re: [PATCH 5.4 000/240] 5.4.200-rc1 review
+Message-ID: <YrGS6BqGx7DkIqI2@debian>
+References: <20220620124737.799371052@linuxfoundation.org>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220620124737.799371052@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Petr Mladek
-> Sent: 20 June 2022 17:58
-> 
-> On Mon 2022-06-20 01:33:02, Jason A. Donenfeld wrote:
-> > In 5.19, there are some changes in printk message ordering /
-> > interleaving which leads to confusion. The most obvious (and benign)
-> > example appears on system boot, in which the "Run /init as init process"
-> > message gets intermixed with the messages that init actually writes() to
-> > stdout. For example, here's a snippet from build.wireguard.com:
-> >
-> > --- a/lib/Kconfig.debug
-> > +++ b/lib/Kconfig.debug
-> > @@ -35,6 +35,18 @@ config PRINTK_CALLER
-> >  	  no option to enable/disable at the kernel command line parameter or
-> >  	  sysfs interface.
-> >
-> > +config PRINTK_DIRECT
-> > +	bool "Attempt to flush printk output immediately"
-> > +	depends on PRINTK
-> > +	help
-> > +	  Rather than using kthreads for printk output, always attempt to write
-> > +	  to the console immediately. This has performance implications, but
-> > +	  will result in a more faithful ordering and interleaving with other
-> > +	  processes writing to the console.
-> > +
-> > +	  Say N here unless you really need this. This may also be controlled
-> > +	  at boot time with printk.direct=0/1.
-> > +
-> 
-> I am fine with the patch except for the config option. Is there
-> any particular reason why we need it, please?
-> 
-> We should be careful to add new build options in general because they
-> make building the kernel more complicated. People need to understand
-> what each option is about and what they want.
+Hi Greg,
 
-Especially since most people use pre-built kernels.
-I suspect that kernels only get build for very big and
-very small/embedded systems.
-For the latter you may want to completely remove using kthreads
-for printk in order to shrink the kernel size.
-But that doesn't look like what this option is for.
-
-	David
-
-> Kernel parameters are less intrusive. People need to care about
-> it only when they need some special behavior. And everyone has
-> its own default command line anyway. For example, I always use
-> ignore_loglevel.
+On Mon, Jun 20, 2022 at 02:48:21PM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.4.200 release.
+> There are 240 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 > 
-> Best Regards,
-> Petr
+> Responses should be made by Wed, 22 Jun 2022 12:47:02 +0000.
+> Anything received after that time might be too late.
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+Build test (gcc version 11.3.1 20220612):
+mips: 65 configs -> no failure
+arm: 106 configs -> no failure
+arm64: 2 configs -> no failure
+x86_64: 4 configs -> no failure
+alpha allmodconfig -> no failure
+powerpc allmodconfig -> no failure
+riscv allmodconfig -> no failure
+s390 allmodconfig -> no failure
+xtensa allmodconfig -> no failure
+
+
+Boot test:
+x86_64: Booted on my test laptop. No regression.
+x86_64: Booted on qemu. No regression. [1]
+
+[1]. https://openqa.qa.codethink.co.uk/tests/1360
+
+
+Tested-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+
+--
+Regards
+Sudip
 
