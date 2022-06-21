@@ -2,103 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEC75CCA473
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 12:39:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86472C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 12:39:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350493AbiFUMjs (ORCPT
+        id S1350515AbiFUMjw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 08:39:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40824 "EHLO
+        Tue, 21 Jun 2022 08:39:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350258AbiFUMjp (ORCPT
+        with ESMTP id S1350480AbiFUMjq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 08:39:45 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BF0D24F17
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 05:39:42 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id n20so20428479ejz.10
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 05:39:42 -0700 (PDT)
+        Tue, 21 Jun 2022 08:39:46 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5EAC24099
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 05:39:44 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id g26so5828272ejb.5
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 05:39:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=amarulasolutions.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fjBt4PhnxyvpQZHwHALGbz1X5a0xwh6G7fjizoTyXiA=;
-        b=eKK2Ss68RzMEMLLhInjk9Sk5Pa7z7rmuUWKu9+SZnuKWe4qM7gbP73qz0k+0u22niv
-         eb+w5qkIBnVo1/QdYtfmHsGDDIrmRlW2DAgJ+7pL/j29za858EuqL++UQ8CBjFy1fGFi
-         vBi+vixQAS2jVjNwmTUZnFV4Spgf1aqGJgKbM=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=5FXIG1Rp9D4NgAZ2oOx6JgdhKdrDvM+0LjdQT4OHOI8=;
+        b=nqeYuagDG4VYaSbzaCmy1tqZMz4yp8N0hl1ERuPdogW+lf6Y9/K1Y2I2Xx5BZufqh0
+         +ZxOWPo83uLZX9jfNahcgB3YaOLeN5Viv+5gt0YC/3DOWL3dtcwSE6yNLgwjZlzE0ehx
+         XMmS5FKcAkTdcjPzYcqBZasbpYKnp2NeTomi0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fjBt4PhnxyvpQZHwHALGbz1X5a0xwh6G7fjizoTyXiA=;
-        b=ivfMVCFJfdD1rjaf2kawGFQ9CXGbQ0K06lOPGKq5OZBRvB6DL3JKpM+P+y1OgnWTaV
-         BfSKlnBfR9lRoXs03pfe3ZdI+z7MaKilyaFIkEPXi5SKC0sjCDRnaPAaHP/fvV9kstF9
-         X/uwWWDiL9cz97wE+OqJ+BV1zQfoE+UG4AESTrF2NzAgeyErdr3vHJ+S0RRa3P9wU1Xc
-         gOWCuYKuXqgTLtnK1A0MqAO2J0K9C4t+xD8Dqq6DgWDAHPN65sYEE7IfAz5qptisBojU
-         irGqP4xVCtk05WofgLEBIxtF6VaTeLy5f8hW2Ge3COosUfVwyPSalcibo+IxNFSpduix
-         ooJw==
-X-Gm-Message-State: AJIora+JtaNwRphZwkJ6DXquTnJ9PFzK10Of95J6ctDE95fPXAiCtP4T
-        ekWP0/uSLr+Df1SghEfJbqP07A4qhkjc2g==
-X-Google-Smtp-Source: AGRyM1sAWmqa3RsSBvYW/RttYeKcIBN4HDy9kjb49X/P/roUWJ68SolbmiDPG4tyPsDMkNhqnEn7kw==
-X-Received: by 2002:a17:906:779a:b0:715:790f:715c with SMTP id s26-20020a170906779a00b00715790f715cmr24274064ejm.707.1655815180886;
-        Tue, 21 Jun 2022 05:39:40 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=5FXIG1Rp9D4NgAZ2oOx6JgdhKdrDvM+0LjdQT4OHOI8=;
+        b=55bAqXuWvuBi1yyGCJiGi36/aGEdoJbn+XxLHsGeI/iPvhm/uhpRz2aDzjPHCRb6km
+         98JKTnxXD3gq8ZsriRfNbRbab5Ok8Hpt2uSPLQ3qfJo9PwFq43R0gW4Qfw8aCWgA+Ce4
+         3RxEK3r/QxBASz/9Gm3TIyIoNkkxqQxxQ/LIdAIsQjFCWAolxcMq8bjtgEu9jf3LD2Or
+         hHgnV/qusFmjZHjRpfKOweQgAtjYqR7QZfJzj0AHcnIFOQnOSQyGPB0BQ5b7pNb4pBbX
+         esDdvlncSOzS6DTZY5D8yM/XY6Rtaejz6XyERyknNvxarjeB0XVayiTrGQN2NBs0xMtP
+         qP+w==
+X-Gm-Message-State: AJIora/RMpaSDFAtq3gXKUZj3AGqKwZ7u700/g021bU7HNyhuLSUZWkg
+        Ezgh/5f/VuHhzInCFsLeiNADpa8LHr68kg==
+X-Google-Smtp-Source: AGRyM1snl4Lq8GimgUfgjaF2BN5Pglx7SsqDhORPMHpswAOut39kUfL6kVlUcNgUJ5cXMSx+m6Ioiw==
+X-Received: by 2002:a17:907:c202:b0:710:8d0c:6e89 with SMTP id ti2-20020a170907c20200b007108d0c6e89mr25577538ejc.141.1655815183056;
+        Tue, 21 Jun 2022 05:39:43 -0700 (PDT)
 Received: from dario-ThinkPad-T14s-Gen-2i.homenet.telecomitalia.it (host-80-116-90-174.pool80116.interbusiness.it. [80.116.90.174])
-        by smtp.gmail.com with ESMTPSA id c19-20020aa7c753000000b004357063bf60sm8003945eds.41.2022.06.21.05.39.39
+        by smtp.gmail.com with ESMTPSA id c19-20020aa7c753000000b004357063bf60sm8003945eds.41.2022.06.21.05.39.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jun 2022 05:39:40 -0700 (PDT)
+        Tue, 21 Jun 2022 05:39:42 -0700 (PDT)
 From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Dario Binacchi <dario.binacchi@amarulasolutions.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Marco Felsch <m.felsch@pengutronix.de>,
         Michael Trimarchi <michael@amarulasolutions.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Marco Felsch <m.felsch@pengutronix.de>,
         Oliver Graute <oliver.graute@kococonnector.com>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
         linux-input@vger.kernel.org
-Subject: [RESEND PATCH v4 0/6] Input: edt-ft5x06 - Improve configuration
-Date:   Tue, 21 Jun 2022 14:39:31 +0200
-Message-Id: <20220621123937.1330389-1-dario.binacchi@amarulasolutions.com>
+Subject: [RESEND PATCH v4 2/6] Input: edt-ft5x06 - get/set M12 report rate by sysfs
+Date:   Tue, 21 Jun 2022 14:39:33 +0200
+Message-Id: <20220621123937.1330389-3-dario.binacchi@amarulasolutions.com>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220621123937.1330389-1-dario.binacchi@amarulasolutions.com>
+References: <20220621123937.1330389-1-dario.binacchi@amarulasolutions.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The series was born from the analysis and mitigation of a crc problem
-raised by an M06 type device. The added sysfs attributes were helpful
-in debugging the problem. Patches that change the report rate on driver
-probing, mitigated crc errors on kernel bootup. The patch to get/set
-report rate by sysfs for an M12 device, has been tested.
+Add support for reading/writing scan rate (SC) register for M12 by
+sysfs. The register value is equal to the SC (Hz), unlike M06, where
+instead it is equal to SC / 10.
 
-Changes in v4:
-- Add Rob Herring 'Acked-by' tag.
+Co-developed-by: Michael Trimarchi <michael@amarulasolutions.com>
+Signed-off-by: Michael Trimarchi <michael@amarulasolutions.com>
+Tested-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+---
 
-Changes in v3:
-- Add hz unit suffix.
-- Add '|' to description.
-- Check the lower and upper limits of the report-rate-hz value
-- Convert the M06 report-rate-hz value
+(no changes since v1)
 
-Changes in v2:
-- Add Oliver Graute's 'Acked-by' tag to:
-  * Input: edt-ft5x06 - show model name by sysfs
-  * Input: edt-ft5x06 - show firmware version by sysfs
-- Fix yaml file. Tested with `make DT_CHECKER_FLAGS=-m dt_binding_check'.
+ drivers/input/touchscreen/edt-ft5x06.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-Dario Binacchi (6):
-  dt-bindings: input: touchscreen: edt-ft5x06: add report-rate-hz
-  Input: edt-ft5x06 - get/set M12 report rate by sysfs
-  Input: edt-ft5x06 - set report rate by dts property
-  Input: edt-ft5x06 - show model name by sysfs
-  Input: edt-ft5x06 - show firmware version by sysfs
-  Input: edt-ft5x06 - show crc and header errors by sysfs
-
- .../input/touchscreen/edt-ft5x06.yaml         |   8 ++
- drivers/input/touchscreen/edt-ft5x06.c        | 103 ++++++++++++++++--
- 2 files changed, 103 insertions(+), 8 deletions(-)
-
+diff --git a/drivers/input/touchscreen/edt-ft5x06.c b/drivers/input/touchscreen/edt-ft5x06.c
+index bb2e1cbffba7..77f061af5c61 100644
+--- a/drivers/input/touchscreen/edt-ft5x06.c
++++ b/drivers/input/touchscreen/edt-ft5x06.c
+@@ -47,6 +47,8 @@
+ #define M09_REGISTER_NUM_X		0x94
+ #define M09_REGISTER_NUM_Y		0x95
+ 
++#define M12_REGISTER_REPORT_RATE	0x88
++
+ #define EV_REGISTER_THRESHOLD		0x40
+ #define EV_REGISTER_GAIN		0x41
+ #define EV_REGISTER_OFFSET_Y		0x45
+@@ -523,9 +525,9 @@ static EDT_ATTR(offset_y, S_IWUSR | S_IRUGO, NO_REGISTER, NO_REGISTER,
+ /* m06: range 20 to 80, m09: range 0 to 30, m12: range 1 to 255... */
+ static EDT_ATTR(threshold, S_IWUSR | S_IRUGO, WORK_REGISTER_THRESHOLD,
+ 		M09_REGISTER_THRESHOLD, EV_REGISTER_THRESHOLD, 0, 255);
+-/* m06: range 3 to 14, m12: (0x64: 100Hz) */
++/* m06: range 3 to 14, m12: range 1 to 255 */
+ static EDT_ATTR(report_rate, S_IWUSR | S_IRUGO, WORK_REGISTER_REPORT_RATE,
+-		NO_REGISTER, NO_REGISTER, 0, 255);
++		M12_REGISTER_REPORT_RATE, NO_REGISTER, 0, 255);
+ 
+ static struct attribute *edt_ft5x06_attrs[] = {
+ 	&edt_ft5x06_attr_gain.dattr.attr,
+@@ -1030,7 +1032,8 @@ static void edt_ft5x06_ts_set_regs(struct edt_ft5x06_ts_data *tsdata)
+ 	case EDT_M09:
+ 	case EDT_M12:
+ 		reg_addr->reg_threshold = M09_REGISTER_THRESHOLD;
+-		reg_addr->reg_report_rate = NO_REGISTER;
++		reg_addr->reg_report_rate = tsdata->version == EDT_M12 ?
++			M12_REGISTER_REPORT_RATE : NO_REGISTER;
+ 		reg_addr->reg_gain = M09_REGISTER_GAIN;
+ 		reg_addr->reg_offset = M09_REGISTER_OFFSET;
+ 		reg_addr->reg_offset_x = NO_REGISTER;
 -- 
 2.32.0
 
