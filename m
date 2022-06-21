@@ -2,151 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E023C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:38:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4EF6C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:38:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356103AbiFUViv (ORCPT
+        id S1356026AbiFUViz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 17:38:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54642 "EHLO
+        Tue, 21 Jun 2022 17:38:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354116AbiFUViZ (ORCPT
+        with ESMTP id S1353965AbiFUViZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 21 Jun 2022 17:38:25 -0400
 Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A6A011A23
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2689A11A0A
         for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 14:38:24 -0700 (PDT)
 Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25LBDkxR018841;
-        Tue, 21 Jun 2022 16:38:03 -0500
+        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25LBDkxX018841;
+        Tue, 21 Jun 2022 16:38:07 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=PODMain02222019;
- bh=hG2O0Ae/l3SL3nlV1NIEggjHFsZlf5b9gTGrlsyn3l4=;
- b=Bu4ooekZl5jJQknOn9U7PDN8QoGfuFsQt3hRGQv6Uh4YtxW+5sAn7KGuBVYL23/XgENA
- qEBtaIAA6FPrH7tBJSvx+tnKK50UU64nqnkI3s6uPn9DrzhDtRb6evMdKiFfmLW51Rpz
- s/tj40mf6hr53+ZboK0GfCm1bzC4wcOVl0F0IdJvVeF+LOgFzQGDiVqu6IaMYKPLiy0J
- +JGre7pfZ8sOqy9iHMrwB3oKmQxblaoIEqUlyfkRgZhAScgZXgOZ3dj+oIuWISUFdF45
- sJOj7VHKaaySIcGlGyV+S1xUC/IJk7OsFpkx+jxVYW2rcO0fNs0F4gzrl/I8VfJIt0C2 VQ== 
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=PODMain02222019;
+ bh=0fK09WSPqLJ843WJS+jSWz9TO+bRzFkM+vnHmi+bF70=;
+ b=CpGerZCAyNCWBC+D8NHpuo4ja1haWu+siKwzUDjYsJKvMCt9Of3IwnEV9fBFaB2MryPZ
+ O3Esf+ULsnnlXUEuzOhxiIkbn8Vd9OTRclOwfIIvz5dTplGg3feCwaMtWl7wJb88TCV/
+ CeAr3LyLiQCOCYQIL2RUAawL8O4hr1GAeIGVDuzr/E/I2wWQ+MfHpOCA6A0+omQ6YJq0
+ Zdl/DIfIrcm0a5bflRkzhzRezS9ESK1ihsTSyaHYfApqnF9iKDbQRCKAtcqbJmUeCe+H
+ yGBvfe0GZBC/lxG40T/T3OT7/6f6XOUgZLbEikApiraBKeQFwxMGVGxMqhataN3CTkr8 Cg== 
 Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3gsb4p45ae-1
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3gsb4p45ae-7
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 21 Jun 2022 16:38:03 -0500
+        Tue, 21 Jun 2022 16:38:07 -0500
 Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
  (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Tue, 21 Jun
- 2022 22:38:01 +0100
+ 2022 22:38:05 +0100
 Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
  (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.28 via Frontend
- Transport; Tue, 21 Jun 2022 22:38:01 +0100
+ Transport; Tue, 21 Jun 2022 22:38:05 +0100
 Received: from vitaly-Legion-7-16ACHg6.ad.cirrus.com (unknown [198.90.238.175])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id A4CDE7C;
-        Tue, 21 Jun 2022 21:38:01 +0000 (UTC)
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 94A32475;
+        Tue, 21 Jun 2022 21:38:05 +0000 (UTC)
 From:   Vitaly Rodionov <vitalyr@opensource.cirrus.com>
 To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
         Mark Brown <broonie@kernel.org>
 CC:     <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH v6 00/14] ALSA: hda: cirrus: Add initial DSP support and firmware loading
-Date:   Tue, 21 Jun 2022 22:37:47 +0100
-Message-ID: <20220621213801.2021097-1-vitalyr@opensource.cirrus.com>
+        <linux-kernel@vger.kernel.org>,
+        Stefan Binding <sbinding@opensource.cirrus.com>
+Subject: [PATCH v6 11/14] ALSA: hda: hda_cs_dsp_ctl: Add fw id strings
+Date:   Tue, 21 Jun 2022 22:37:58 +0100
+Message-ID: <20220621213801.2021097-12-vitalyr@opensource.cirrus.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220621213801.2021097-1-vitalyr@opensource.cirrus.com>
+References: <20220621213801.2021097-1-vitalyr@opensource.cirrus.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-GUID: gG0iVWVAeW7MjEtaGc-yHvIAM3QJCkHe
-X-Proofpoint-ORIG-GUID: gG0iVWVAeW7MjEtaGc-yHvIAM3QJCkHe
+X-Proofpoint-GUID: Yg3XOzqz_ykYaHLDTi1wxawzfGr5yqfE
+X-Proofpoint-ORIG-GUID: Yg3XOzqz_ykYaHLDTi1wxawzfGr5yqfE
 X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The CS35L41 Amplifier contains a DSP, capable of running firmware.
-The firmware can run algorithms such as Speaker Protection, to ensure
-that playback at high gains do not harm the speakers.
-Adding support for CS35L41 firmware into the CS35L41 HDA driver also
-allows us to support several extra features, such as hiberation 
-and interrupts.
+From: Stefan Binding <sbinding@opensource.cirrus.com>
 
-The chain adds support in stages:
-- General fixes to improve generalization and code re-use inside
-  the CS35L41 HDA driver.
-- Add support for interrupts into the driver, which is required
-  for complete support of the firmware.
-- Refactor ASoC CS35L41 code which deals with firmware to allow
-  for code re-use inside the CS35L41 HDA driver.
-- Add support for loading firmware and tuning files from file system,
-  and creating alsa controls to control it.
-- Support firmware load paths for different hardware systems.
-- Support suspend/resume in the driver when using firmware. The firmware
-  supports hibernation, which allows the CS35L41 to drop into a low
-  power mode during suspend.
-- Support the ability to unload firmware, swap and reload the firmware.
-  This is to allow different firmware to run during calibration.
+This will be used to define the firmware names.
 
-The intended use-case is to load the firmware once on boot, and the driver
-autmatically tries to load the firmware after it binds to the HDA driver.
-This behaviour can be switched off using a kconfig, if desired.
+Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
+Signed-off-by: Vitaly Rodionov <vitalyr@opensource.cirrus.com>
+---
+ sound/pci/hda/hda_cs_dsp_ctl.c | 8 ++++++++
+ sound/pci/hda/hda_cs_dsp_ctl.h | 2 ++
+ 2 files changed, 10 insertions(+)
 
-changes since v5:
- - Fix warning by kernel test robot <lkp@intel.com>
+diff --git a/sound/pci/hda/hda_cs_dsp_ctl.c b/sound/pci/hda/hda_cs_dsp_ctl.c
+index 6131fcfe21e5..f4f3b0a249f4 100644
+--- a/sound/pci/hda/hda_cs_dsp_ctl.c
++++ b/sound/pci/hda/hda_cs_dsp_ctl.c
+@@ -28,6 +28,14 @@ static const char * const hda_cs_dsp_fw_text[HDA_CS_DSP_NUM_FW] = {
+ 	[HDA_CS_DSP_FW_MISC] =     "Misc",
+ };
  
-changes since v4:
-- Fully remove tlv remnants from control add apis
-- Remove unnecessary debug
-- Rename variable to be more generic
-- Remove redundent length check from read/write control apis
-
-
-- Use SNDRV_CTL_ELEM_IFACE_CARD for firmware load controls
-- Make kcontrol add/remove synchronous
-- Load firmware asynchronous when loading via control
-- Used cached controls when reloading firmware; only delete
-controls when removing the driver itself
-
-
-- Improve kcontrol remove
-- Fix control write + notify
-- Cleanup of unnecessary code
-- Fix race condition when loading firmware before playback
-- Ensure errors are properly propogated
-- Fix include for Module parameters
-
-Stefan Binding (13):
-  ALSA: hda: hda_cs_dsp_ctl: Add Library to support CS_DSP ALSA controls
-  ALSA: hda: hda_cs_dsp_ctl: Add apis to write the controls directly
-  ALSA: hda: cs35l41: Save codec object inside component struct
-  ALSA: hda: cs35l41: Save Subsystem ID inside CS35L41 Driver
-  ALSA: hda: cs35l41: Support reading subsystem id from ACPI
-  ALSA: hda: cs35l41: Support multiple load paths for firmware
-  ALSA: hda: cs35l41: Support Speaker ID for laptops
-  ALSA: hda: cs35l41: Support Hibernation during Suspend
-  ALSA: hda: cs35l41: Read Speaker Calibration data from UEFI variables
-  ALSA: hda: hda_cs_dsp_ctl: Add fw id strings
-  ALSA: hda: cs35l41: Add defaulted values into dsp bypass config
-    sequence
-  ALSA: hda: cs35l41: Support Firmware switching and reloading
-  ALSA: hda: cs35l41: Add module parameter to control firmware load
-
-Vitaly Rodionov (1):
-  ALSA: hda: cs35l41: Add initial DSP support and firmware loading
-
- MAINTAINERS                     |   1 +
- include/sound/cs35l41.h         |   4 +
- sound/pci/hda/Kconfig           |   8 +
- sound/pci/hda/Makefile          |   2 +
- sound/pci/hda/cs35l41_hda.c     | 902 +++++++++++++++++++++++++++++++-
- sound/pci/hda/cs35l41_hda.h     |  39 ++
- sound/pci/hda/cs35l41_hda_i2c.c |   1 +
- sound/pci/hda/cs35l41_hda_spi.c |   1 +
- sound/pci/hda/hda_component.h   |   4 +
- sound/pci/hda/hda_cs_dsp_ctl.c  | 254 +++++++++
- sound/pci/hda/hda_cs_dsp_ctl.h  |  39 ++
- sound/pci/hda/patch_realtek.c   |  27 +-
- 12 files changed, 1277 insertions(+), 5 deletions(-)
- create mode 100644 sound/pci/hda/hda_cs_dsp_ctl.c
- create mode 100644 sound/pci/hda/hda_cs_dsp_ctl.h
-
++const char * const hda_cs_dsp_fw_ids[HDA_CS_DSP_NUM_FW] = {
++	[HDA_CS_DSP_FW_SPK_PROT] = "spk-prot",
++	[HDA_CS_DSP_FW_SPK_CALI] = "spk-cali",
++	[HDA_CS_DSP_FW_SPK_DIAG] = "spk-diag",
++	[HDA_CS_DSP_FW_MISC] =     "misc",
++};
++EXPORT_SYMBOL_NS_GPL(hda_cs_dsp_fw_ids, SND_HDA_CS_DSP_CONTROLS);
++
+ static int hda_cs_dsp_coeff_info(struct snd_kcontrol *kctl, struct snd_ctl_elem_info *uinfo)
+ {
+ 	struct hda_cs_dsp_coeff_ctl *ctl = (struct hda_cs_dsp_coeff_ctl *)kctl->private_value;
+diff --git a/sound/pci/hda/hda_cs_dsp_ctl.h b/sound/pci/hda/hda_cs_dsp_ctl.h
+index c65bfd6878fd..4babc69cf2f0 100644
+--- a/sound/pci/hda/hda_cs_dsp_ctl.h
++++ b/sound/pci/hda/hda_cs_dsp_ctl.h
+@@ -27,6 +27,8 @@ struct hda_cs_dsp_ctl_info {
+ 	const char *device_name;
+ };
+ 
++extern const char * const hda_cs_dsp_fw_ids[HDA_CS_DSP_NUM_FW];
++
+ int hda_cs_dsp_control_add(struct cs_dsp_coeff_ctl *cs_ctl, struct hda_cs_dsp_ctl_info *info);
+ void hda_cs_dsp_control_remove(struct cs_dsp_coeff_ctl *cs_ctl);
+ int hda_cs_dsp_write_ctl(struct cs_dsp *dsp, const char *name, int type,
 -- 
 2.34.1
 
