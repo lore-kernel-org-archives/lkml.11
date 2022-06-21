@@ -2,109 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2922C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 07:35:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6FE7C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 07:37:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346822AbiFUHfL (ORCPT
+        id S1346999AbiFUHhe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 03:35:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36828 "EHLO
+        Tue, 21 Jun 2022 03:37:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346241AbiFUHfI (ORCPT
+        with ESMTP id S1346241AbiFUHh3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 03:35:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C25E12E
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 00:35:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 05D516137C
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 07:35:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AE2FC3411D;
-        Tue, 21 Jun 2022 07:35:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655796906;
-        bh=Cf7UCTgdKrrveRQ6rnVuV7I2bwM9cUPoyl/dpCzA7Rs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=JDiNHc/wz9cKB0EyxkN9ub41k+GYGmYW7aDZJEDYHvV/9pRguXP+VeYCSfqH/2ayh
-         a0knthkHjyPZlgid8OnVlk9Tf7EnL8g8s1xmKRhoqhtEn1VsrW++2Wd+YiwpxRaZX7
-         GnpadbssiFj48hOgkg4cz3iZGSkEeDzVSuYAPeYKqlgKi7m3yRKEr3YByelw82crMq
-         1Ead1u+46GfA+7GCs5ufnJj5Joyq/tvNGu/q0PxvXNzt2GiC/8SgNfggKYsXBcPhmm
-         13H1o0t1Kqjk8g078Oae0d3v/e0kUJbgkC7FHSoRoq1Dv7oWs4EhLSvXKPc8jMM1Z3
-         XfbGJ9d9RLFwg==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1o3YPb-0005XB-QX; Tue, 21 Jun 2022 09:34:59 +0200
-Date:   Tue, 21 Jun 2022 09:34:59 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Bo Liu <liubo03@inspur.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] gnss: Remove usage of the deprecated ida_simple_xxx API
-Message-ID: <YrF0ozJgjCch7cC6@hovoldconsulting.com>
-References: <20220616044733.3605-1-liubo03@inspur.com>
- <0ce75f78-4a67-efce-938f-634dc981fbd6@wanadoo.fr>
+        Tue, 21 Jun 2022 03:37:29 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC5D5E1C
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 00:37:27 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LRywS1bWyz1KC5C;
+        Tue, 21 Jun 2022 15:35:20 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 21 Jun 2022 15:37:25 +0800
+Subject: Re: [PATCH v2 1/3] mm/swapfile: make security_vm_enough_memory_mm()
+ work as expected
+To:     "Huang, Ying" <ying.huang@intel.com>
+CC:     <akpm@linux-foundation.org>, <david@redhat.com>,
+        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>
+References: <20220608144031.829-1-linmiaohe@huawei.com>
+ <20220608144031.829-2-linmiaohe@huawei.com>
+ <87r13jrdst.fsf@yhuang6-desk2.ccr.corp.intel.com>
+ <a384f290-dff3-6dad-f1d3-8ec245b9bebd@huawei.com>
+ <87letqpzm1.fsf@yhuang6-desk2.ccr.corp.intel.com>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <463fe0cd-504a-f887-0201-691bacd9e69d@huawei.com>
+Date:   Tue, 21 Jun 2022 15:37:25 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <0ce75f78-4a67-efce-938f-634dc981fbd6@wanadoo.fr>
+In-Reply-To: <87letqpzm1.fsf@yhuang6-desk2.ccr.corp.intel.com>
+Content-Type: text/plain; charset="windows-1252"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 16, 2022 at 09:18:37PM +0200, Christophe JAILLET wrote:
-> Le 16/06/2022 à 06:47, Bo Liu a écrit :
-> > Use ida_alloc_xxx()/ida_free() instead of
-> > ida_simple_get()/ida_simple_remove().
-> > The latter is deprecated and more verbose.
-> > 
-> > Signed-off-by: Bo Liu <liubo03@inspur.com>
-
-> even if a more detailed description about the reason of the added -1 
-> would be welcomed:
+On 2022/6/21 9:35, Huang, Ying wrote:
+> Miaohe Lin <linmiaohe@huawei.com> writes:
 > 
-> Reviewed-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+>> On 2022/6/20 15:31, Huang, Ying wrote:
+>>> Miaohe Lin <linmiaohe@huawei.com> writes:
+>>>
+>>>> security_vm_enough_memory_mm() checks whether a process has enough memory
+>>>> to allocate a new virtual mapping. And total_swap_pages is considered as
+>>>> available memory while swapoff tries to make sure there's enough memory
+>>>> that can hold the swapped out memory. But total_swap_pages contains the
+>>>> swap space that is being swapoff. So security_vm_enough_memory_mm() will
+>>>> success even if there's no memory to hold the swapped out memory because
+>>>> total_swap_pages always greater than or equal to p->pages.
+>>>
+>>> Per my understanding, swapoff will not allocate virtual mapping by
+>>> itself.  But after swapoff, the overcommit limit could be exceeded.
+>>> security_vm_enough_memory_mm() is used to check that.  For example, in a
+>>> system with 4GB memory and 8GB swap, and 10GB is in use,
+>>>
+>>> CommitLimit:    4+8 = 12GB
+>>> Committed_AS:   10GB
+>>>
+>>> security_vm_enough_memory_mm() in swapoff() will fail because
+>>> 10+8 = 18 > 12.  This is expected because after swapoff, the overcommit
+>>> limit will be exceeded.
+>>>
+>>> If 3GB is in use,
+>>>
+>>> CommitLimit:    4+8 = 12GB
+>>> Committed_AS:   3GB
+>>>
+>>> security_vm_enough_memory_mm() in swapoff() will succeed because
+>>> 3+8 = 11 < 12.  This is expected because after swapoff, the overcommit
+>>> limit will not be exceeded.
+>>
+>> In OVERCOMMIT_NEVER scene, I think you're right.
+>>
+>>>
+>>> So, what's the real problem of the original implementation?  Can you
+>>> show it with an example as above?
+>>
+>> In OVERCOMMIT_GUESS scene, in a system with 4GB memory and 8GB swap, and 10GB is in use,
+>> pages below is 8GB, totalram_pages() + total_swap_pages is 12GB, so swapoff() will succeed
+>> instead of expected failure because 8 < 12. The overcommit limit is always *ignored* in the
+>> below case.
+>>
+>> 	if (sysctl_overcommit_memory == OVERCOMMIT_GUESS) {
+>> 		if (pages > totalram_pages() + total_swap_pages)
+>> 			goto error;
+>> 		return 0;
+>> 	}
+>>
+>> Or am I miss something?
+> 
+> Per my understanding, with OVERCOMMIT_GUESS, the number of in-use pages
+> isn't checked at all.  The only restriction is that the size of the
+> virtual mapping created should be less than total RAM + total swap
 
-I agree, that should have been mentioned. And thanks for reviewing.
+Do you mean the only restriction is that the size of the virtual mapping
+*created every time* should be less than total RAM + total swap pages but
+*total virtual mapping* is not limited in OVERCOMMIT_GUESS scene? If so,
+the current behavior should be sane and I will drop this patch.
 
-> > ---
-> >   drivers/gnss/core.c | 4 ++--
-> >   1 file changed, 2 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/gnss/core.c b/drivers/gnss/core.c
-> > index e6f94501cb28..1e82b7967570 100644
-> > --- a/drivers/gnss/core.c
-> > +++ b/drivers/gnss/core.c
-> > @@ -217,7 +217,7 @@ static void gnss_device_release(struct device *dev)
-> >   
-> >   	kfree(gdev->write_buf);
-> >   	kfifo_free(&gdev->read_fifo);
-> > -	ida_simple_remove(&gnss_minors, gdev->id);
-> > +	ida_free(&gnss_minors, gdev->id);
-> >   	kfree(gdev);
-> >   }
-> >   
-> > @@ -232,7 +232,7 @@ struct gnss_device *gnss_allocate_device(struct device *parent)
-> >   	if (!gdev)
-> >   		return NULL;
-> >   
-> > -	id = ida_simple_get(&gnss_minors, 0, GNSS_MINORS, GFP_KERNEL);
-> > +	id = ida_alloc_max(&gnss_minors, GNSS_MINORS - 1, GFP_KERNEL);
+Thanks!
 
-I'm also not sure about the claim that the new interface is less
-verbose.
+> pages.  Because swapoff() will not create virtual mapping, so it's
+> expected that security_vm_enough_memory_mm() in swapoff() always
+> succeeds.
+> 
+> Best Regards,
+> Huang, Ying
+> 
+>>
+>> Thanks!
+>>
+>>>
+>>>> In order to fix it, p->pages should be retracted from total_swap_pages
+>>>> first and then check whether there's enough memory for inuse swap pages.
+>>>>
+>>>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+>>>
+>>> [snip]
+>>>
+>>> .
+>>>
+> 
+> .
+> 
 
-The above line is exactly as long as the old one, but somewhat harder to
-read due to the inclusive upper bound and the various allocator flavors
-(ε, max, min, range).
-
-> >   	if (id < 0) {
-> >   		kfree(gdev);
-> >   		return NULL;
-
-Now applied with an amended commit message:
-
-	https://git.kernel.org/pub/scm/linux/kernel/git/johan/gnss.git/commit/?h=gnss-next&id=c0c725d7350ec8b8453257676a440bb4b2df2422
-
-Johan
