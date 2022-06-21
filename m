@@ -2,49 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87E5CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:02:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F29DCC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:02:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355641AbiFUVCa (ORCPT
+        id S1355843AbiFUVCd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 17:02:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38556 "EHLO
+        Tue, 21 Jun 2022 17:02:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355843AbiFUU7F (ORCPT
+        with ESMTP id S1355866AbiFUU7H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 16:59:05 -0400
+        Tue, 21 Jun 2022 16:59:07 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5285833352;
-        Tue, 21 Jun 2022 13:51:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA65D3335F;
+        Tue, 21 Jun 2022 13:51:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CD285B81B2F;
-        Tue, 21 Jun 2022 20:51:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A9B7C341C8;
-        Tue, 21 Jun 2022 20:51:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 80000B81B37;
+        Tue, 21 Jun 2022 20:50:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 563A2C385A2;
+        Tue, 21 Jun 2022 20:50:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655844703;
-        bh=bd/KPa0a6+0M9iaMh9nwFkxRjg/cFio+lqQpyCG3vKM=;
+        s=k20201202; t=1655844658;
+        bh=Ys4344i7yl5IrKH8TEcfIDgjDtLHOs/OfwvRmh0U35E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y6tlb92YL5gVdbOT6pTN72Oe2JT5lQvCzDbozjj4iTihht9NUQ6+0kT+gEht+rkd0
-         B+6hcduPIECvRCUyI3adWr2AV90OVa6d/PcOmw7/9y7mAT1YjXaF+X/dzE42NmXchB
-         Y+udApNmUSs8cU1Co2N2+ve33SJRBlZfOswKndlTivGeiXnaQRxqJzdAhLuWia35VL
-         0jm8mDzULqEWIVMUVkEWcluMJv1LmWmofW7km/X17UoLCsYMMuaCGRMvyT4cwDqD0U
-         dQSkRfed0cjTjGMnBMXukehEYH9iICczJqjG9/PkAZbXKskFeezZ0j1eIz75MNp3Dp
-         dY5sM3VR3OGpA==
+        b=PO0noLBq6y2iP6gy5TR+ZLnL0QVkwMvclN1nPaRsHvlh2lseB6yjuFQX+X1cQfDRC
+         PTkoFnydye/Ts+vrbSqXXM4zkPyjB5GV3OxQ0MAAGWx6/El3w6ydKyO+BuVrL7k5WN
+         KhwKBxpNApJPY7qILH3pokvf4+EaI420EiVOBSmqQ7PIO7NOspLJuX/nSH0qHu6iyI
+         rm3dCEZa+A3flXg5Aq8HxV/Pvfp6ieu/BNCgnjdAXlI9Mg5hyUJjpR8BOQlE50ZkpA
+         Y8idE3YvTtrR88cRbX3liZlgBWAkdSesJo684jcxza6WT+X3I1EGLPw94xHhRnMqMS
+         5jFQ3TIZkXLDg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexander Usyskin <alexander.usyskin@intel.com>,
-        Tomas Winkler <tomas.winkler@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.14 2/5] mei: me: set internal pg flag to off on hardware reset
-Date:   Tue, 21 Jun 2022 16:51:36 -0400
-Message-Id: <20220621205140.250968-2-sashal@kernel.org>
+Cc:     "rasheed.hsueh" <rasheed.hsueh@lcfc.corp-partner.google.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Sasha Levin <sashal@kernel.org>, kbusch@kernel.org,
+        axboe@fb.com, sagi@grimberg.me, linux-nvme@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.15 11/17] nvme-pci: disable write zeros support on UMIC and Samsung SSDs
+Date:   Tue, 21 Jun 2022 16:50:34 -0400
+Message-Id: <20220621205041.250426-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220621205140.250968-1-sashal@kernel.org>
-References: <20220621205140.250968-1-sashal@kernel.org>
+In-Reply-To: <20220621205041.250426-1-sashal@kernel.org>
+References: <20220621205041.250426-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,39 +54,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Usyskin <alexander.usyskin@intel.com>
+From: "rasheed.hsueh" <rasheed.hsueh@lcfc.corp-partner.google.com>
 
-[ Upstream commit 9f4639373e6756e1ccf0029f861f1061db3c3616 ]
+[ Upstream commit 43047e082b90ead395c44b0e8497bc853bd13845 ]
 
-Link reset flow is always performed in the runtime resumed state.
-The internal PG state may be left as ON after the suspend
-and will not be updated upon the resume if the D0i3 is not supported.
+Like commit 5611ec2b9814 ("nvme-pci: prevent SK hynix PC400 from using
+Write Zeroes command"), UMIS and Samsung has the same issue:
+[ 6305.633887] blk_update_request: operation not supported error,
+dev nvme0n1, sector 340812032 op 0x9:(WRITE_ZEROES) flags 0x0
+phys_seg 0 prio class 0
 
-Ensure that the internal PG state is set to the right value on the flow
-entrance in case the firmware does not support D0i3.
+So also disable Write Zeroes command on UMIS and Samsung.
 
-Signed-off-by: Alexander Usyskin <alexander.usyskin@intel.com>
-Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
-Link: https://lore.kernel.org/r/20220606144225.282375-1-tomas.winkler@intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: rasheed.hsueh <rasheed.hsueh@lcfc.corp-partner.google.com>
+Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/mei/hw-me.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/nvme/host/pci.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/misc/mei/hw-me.c b/drivers/misc/mei/hw-me.c
-index 10dcf4ff99a5..7a708c58e435 100644
---- a/drivers/misc/mei/hw-me.c
-+++ b/drivers/misc/mei/hw-me.c
-@@ -1125,6 +1125,8 @@ static int mei_me_hw_reset(struct mei_device *dev, bool intr_enable)
- 			ret = mei_me_d0i3_exit_sync(dev);
- 			if (ret)
- 				return ret;
-+		} else {
-+			hw->pg_state = MEI_PG_OFF;
- 		}
- 	}
- 
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index 9847a20f9623..4a07fb8bacfb 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -3365,6 +3365,14 @@ static const struct pci_device_id nvme_id_table[] = {
+ 		.driver_data = NVME_QUIRK_DISABLE_WRITE_ZEROES, },
+ 	{ PCI_DEVICE(0x1d97, 0x2263),   /* SPCC */
+ 		.driver_data = NVME_QUIRK_DISABLE_WRITE_ZEROES, },
++	{ PCI_DEVICE(0x144d, 0xa80b),   /* Samsung PM9B1 256G and 512G */
++		.driver_data = NVME_QUIRK_DISABLE_WRITE_ZEROES, },
++	{ PCI_DEVICE(0x144d, 0xa809),   /* Samsung MZALQ256HBJD 256G */
++		.driver_data = NVME_QUIRK_DISABLE_WRITE_ZEROES, },
++	{ PCI_DEVICE(0x1cc4, 0x6303),   /* UMIS RPJTJ512MGE1QDY 512G */
++		.driver_data = NVME_QUIRK_DISABLE_WRITE_ZEROES, },
++	{ PCI_DEVICE(0x1cc4, 0x6302),   /* UMIS RPJTJ256MGE1QDY 256G */
++		.driver_data = NVME_QUIRK_DISABLE_WRITE_ZEROES, },
+ 	{ PCI_DEVICE(0x2646, 0x2262),   /* KINGSTON SKC2000 NVMe SSD */
+ 		.driver_data = NVME_QUIRK_NO_DEEPEST_PS, },
+ 	{ PCI_DEVICE(0x2646, 0x2263),   /* KINGSTON A2000 NVMe SSD  */
 -- 
 2.35.1
 
