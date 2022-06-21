@@ -2,104 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA390C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 10:22:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51050C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 10:24:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230449AbiFUKW2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 06:22:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55012 "EHLO
+        id S1347189AbiFUKYA (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 21 Jun 2022 06:24:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229497AbiFUKWZ (ORCPT
+        with ESMTP id S229497AbiFUKX6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 06:22:25 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D38242899F;
-        Tue, 21 Jun 2022 03:22:22 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id g4so18206620wrh.11;
-        Tue, 21 Jun 2022 03:22:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nFKOWnxfMAvpfuR5nZvfo/PJZQyBNJd8pSCg3peeMzU=;
-        b=PS1CvUmfj+YgU/b5s3RHKMSGeq25FnBJ908QsNFw9En7udzmO5KWpI87Fxrz7cBCP2
-         M2b9eOiapgceBX3JBUOGXwsuO368zVhC/SL8YP/Op3i6NFfG1zDNg/KwAHfdkbJmI2lb
-         O+ogXD9IU1W5rytIxgWHMlX/2SofhA841OyaEHNBnT2edKBa9lD5y45EXkzgmoOu7YYQ
-         PvBlHX+7wd63wZAmEW021ZnD8kGY2023HmEU9Yr4wF58bJsOGCCw+v7sV8JCZWq1y6WD
-         5VT3LCPDRZ1Np+Dy8RyNwiTdDogQ+c7VvDkGUrqtUuJEwv1zdV3FmofzDfOUD9BUnNNX
-         7K7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nFKOWnxfMAvpfuR5nZvfo/PJZQyBNJd8pSCg3peeMzU=;
-        b=NFuh6s89PwucEuKCVjuhWx06tW8JJ+On9dQxo0l433T1jQsZgC4uWWKYwITxf1ZXzl
-         ETX85mualIgunL6Udk+DOE4I279YbpiCeI8H6AeefWo48WNmwgacFZbY4erp1gy1XkzK
-         t81XfoHzTQ5+qJPwuXhMrr8y5uytXJmH1J3kj6GTAZlS/9LpdXhk/Y8rMur+yQJVj5Fh
-         P3c7e816JBRC9JgGa3AcCq3I08fyytOl5rJVfs0jIoUfr5UQfHTSEmKqWycryqRSvFIm
-         YPLbe2CkFjoV7L3F9LveS6vsIPY7BYZpqLPNC5si7+acaqj8VELwApkTt9D6oh7OWgqF
-         CTJA==
-X-Gm-Message-State: AJIora8cVlaD80yc6Dmgf7vtLeHqMe8hVbT4k7NoKK4tXnjbR4TG4tel
-        Q07Mm2ueGAo7Frifqgho1DDa2SOZnNX9phZJSZFasHaLgig=
-X-Google-Smtp-Source: AGRyM1uvf4LHU1HU49uZEE55Xvve6Ulm83LVZnbey7RZpGVfRK8TyarjNw9QuE1f9s0fM3kEJoVkyDixZGpKfisVAJQ=
-X-Received: by 2002:adf:e0c3:0:b0:21a:39f3:e6f6 with SMTP id
- m3-20020adfe0c3000000b0021a39f3e6f6mr23433295wri.98.1655806941204; Tue, 21
- Jun 2022 03:22:21 -0700 (PDT)
+        Tue, 21 Jun 2022 06:23:58 -0400
+Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19BD928726
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 03:23:58 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: marcan@marcan.st)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 7E1F641E41;
+        Tue, 21 Jun 2022 10:23:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=marcan.st; s=default;
+        t=1655807036; bh=or2jYBTvHc5DC00QfKzgpoKQ0q2+qSrljcosOMp58s0=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=nNp6hEF5OMRy6s8WXZshEwtAOMi+5ztEyZCTyFxJoNg7qV3PsXc9xDZ4OvF8Etvss
+         I6dWT4ArvPtiLu0qobyMWnvsu49cj8lv1RwqsAeEIdtT6kJCl01z/TKXzYS2CcALak
+         6v/1vAzkzm3nbZgtBYitB2hfRORXC4WSe1fEYSd+LlDC9zMfu0Xnn9EW4wzpnkVRfj
+         UTxiVXYbXMFxdLtxlibCJEB4X79tbEqN3OVm+WVXpyb5rIPqMYHD9EfPesVxgf5GxM
+         PyK/Yso6z62NCxd1Vaycxj2Ch5oGTpd6/NcoesEWjr/2aSDuUGNH4ELq9zRDe/5Ze8
+         cT4Mly7yoVuMQ==
+Message-ID: <6644a632-9f63-b2a7-15fb-92e7c7613e1b@marcan.st>
+Date:   Tue, 21 Jun 2022 19:23:52 +0900
 MIME-Version: 1.0
-References: <CAMZm_C=o-rc4a+u_8-pFJtmL_2drwczASMRTqszamrks5Zm_OA@mail.gmail.com>
- <CAG48ez2PVMs-CeLoZtvPq2EeQqOg05mm3AuvEE_pr9Sog0O5og@mail.gmail.com>
- <CAMZm_CmW7pHwfEfCQfXRJPiHOjeGviQunfwxY_1ejrihKab5rA@mail.gmail.com> <CAG48ez2OcfTQ4SRbY89uHDJG6QujSfChaO4B3=zgGpj=9J8bdA@mail.gmail.com>
-In-Reply-To: <CAG48ez2OcfTQ4SRbY89uHDJG6QujSfChaO4B3=zgGpj=9J8bdA@mail.gmail.com>
-From:   Federico Di Pierro <nierro92@gmail.com>
-Date:   Tue, 21 Jun 2022 12:22:10 +0200
-Message-ID: <CAMZm_C=5sNVxB6vE83zcrhv+b0JhYT9hL8i4o_6rwRuwm_ggVg@mail.gmail.com>
-Subject: Re: pgprot_encrypted macro is broken
-To:     Jann Horn <jannh@google.com>
-Cc:     Linux API <linux-api@vger.kernel.org>,
-        kernel list <linux-kernel@vger.kernel.org>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        "the arch/x86 maintainers" <x86@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH -next] irqchip/apple-aic: Make symbol 'use_fast_ipi'
+ static
+Content-Language: es-ES
+To:     Wei Yongjun <weiyongjun1@huawei.com>,
+        Sven Peter <sven@svenpeter.dev>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, Hulk Robot <hulkci@huawei.com>
+References: <20220618072824.562350-1-weiyongjun1@huawei.com>
+From:   Hector Martin <marcan@marcan.st>
+In-Reply-To: <20220618072824.562350-1-weiyongjun1@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi!
+On 18/06/2022 16.28, Wei Yongjun wrote:
+> The sparse tool complains as follows:
+> 
+> drivers/irqchip/irq-apple-aic.c:231:1: warning:
+>  symbol 'use_fast_ipi' was not declared. Should it be static?
+> 
+> This symbol is not used outside of irq-apple-aic.c, so marks it static.
+> 
+> Fixes: 2cf68211664a ("irqchip/apple-aic: Add Fast IPI support")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+> ---
+>  drivers/irqchip/irq-apple-aic.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/irqchip/irq-apple-aic.c b/drivers/irqchip/irq-apple-aic.c
+> index 5ac83185ff47..1c2813ad8bbe 100644
+> --- a/drivers/irqchip/irq-apple-aic.c
+> +++ b/drivers/irqchip/irq-apple-aic.c
+> @@ -228,7 +228,7 @@
+>  #define AIC_TMR_EL02_PHYS	AIC_TMR_GUEST_PHYS
+>  #define AIC_TMR_EL02_VIRT	AIC_TMR_GUEST_VIRT
+>  
+> -DEFINE_STATIC_KEY_TRUE(use_fast_ipi);
+> +static DEFINE_STATIC_KEY_TRUE(use_fast_ipi);
+>  
+>  struct aic_info {
+>  	int version;
+> 
+> 
 
-Thank you very much for your hints and for your time!
-I solved the issue and I agree that we should not have used that macro
-in the first place.
+Reviewed-by: Hector Martin <marcan@marcan.st>
 
-Again, thank you very much for your help,
-Regards
-Federico
-
-Il giorno lun 20 giu 2022 alle ore 13:32 Jann Horn <jannh@google.com>
-ha scritto:
->
-> On Mon, Jun 20, 2022 at 9:39 AM Federico Di Pierro <nierro92@gmail.com> wrote:
-> > > Why does your driver need to use that macro? pgprot_encrypted() is
-> > > mostly only directly used by core kernel code, not by drivers... and
-> > > if memory encryption is enabled, almost all memory mappings created by
-> > > the kernel should be marked as encrypted automatically.
-> >
-> > This is interesting; i don't really know the history behind our piece
-> > of code; as far as i understand,
-> > we have a shared ring buffer with userspace, onto which we push tracing events,
-> > and we must mark it as encrypted when
-> > the kmod runs on an AMD SME enabled kernel to allow userspace to grab sane data.
-> >
-> > This is the commit that introduced the change (if you wish to give it a look):
-> > https://github.com/falcosecurity/libs/commit/0333501cf429c045c61aaf5909812156f090786e
-> >
-> > Do you see any workaround not involving `pgprot_encrypted` ?
->
-> If you do have to use remap_pfn_range() to map normal kernel memory,
-> then you might want to use vma->vm_page_prot instead, like a few other
-> places in the kernel do.
->
-> (Alternatively you might want to use remap_vmalloc_range() to map
-> vmalloc pages into userspace, but note that that has very different
-> semantics - I believe that installs a normal page reference rather
-> than a raw PFN reference, so that would permit get_user_pages() calls
-> on the range.)
+-- 
+Hector Martin (marcan@marcan.st)
+Public Key: https://mrcn.st/pub
