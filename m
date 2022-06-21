@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12387CCA488
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3059FCCA489
 	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 10:54:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348896AbiFUKyX (ORCPT
+        id S1349080AbiFUKy2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 06:54:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46872 "EHLO
+        Tue, 21 Jun 2022 06:54:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229660AbiFUKxu (ORCPT
+        with ESMTP id S1348520AbiFUKxv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 06:53:50 -0400
+        Tue, 21 Jun 2022 06:53:51 -0400
 Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64DE41A067;
-        Tue, 21 Jun 2022 03:53:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DC3E1A067;
+        Tue, 21 Jun 2022 03:53:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1655808829; x=1687344829;
+  t=1655808831; x=1687344831;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references;
-  bh=CfxCnLkx8qDNg+hw34ZntdovidZpeIyItmpLtPTt2cA=;
-  b=mJYUMNZl0GgZp4nzqxma16zjMGV+QF5LWCT9HtFQwxD7g5vwP0nKZOMG
-   KBZT17DKx2Q5XzGmXUyISvOeZTJv3Fzg/BkF0iUm0nRsc5kJh8SWm9SCW
-   U7sWAD4khK4yptocUdTyvp4R14s/9rI0rtnYEmvX6rY6TeIYagHKYS+Iz
-   I=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 21 Jun 2022 03:53:49 -0700
+  bh=dZDQioJhqAAnVzolayL++MwCQCZ30SK0hCfhavz7Mbw=;
+  b=unMjySIK+fq7F2rmLPBRWQ73Uo6kgAETsD3qbSHS1pJDOh+J5rtApfrT
+   Y1+UD3LeeU3KsOtxO1HAUY2bPwjjvHKyFJ+RcXyuLZrvbQRJWN5hQlAx5
+   I6jpwXWYvd0+Kjb7+55vQBgKLFTKP0RQVtR9fdvzhsoGjkMlIwrfnle6I
+   Y=;
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 21 Jun 2022 03:53:50 -0700
 X-QCInternal: smtphost
 Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 21 Jun 2022 03:53:47 -0700
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 21 Jun 2022 03:53:49 -0700
 X-QCInternal: smtphost
 Received: from vpolimer-linux.qualcomm.com ([10.204.67.235])
   by ironmsg01-blr.qualcomm.com with ESMTP; 21 Jun 2022 16:23:31 +0530
 Received: by vpolimer-linux.qualcomm.com (Postfix, from userid 463814)
-        id A28683D58; Tue, 21 Jun 2022 16:23:30 +0530 (IST)
+        id 6CA633AE4; Tue, 21 Jun 2022 16:23:30 +0530 (IST)
 From:   Vinod Polimera <quic_vpolimer@quicinc.com>
 To:     y@qualcomm.com, dri-devel@lists.freedesktop.org,
         linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org,
@@ -45,9 +45,9 @@ Cc:     Vinod Polimera <quic_vpolimer@quicinc.com>,
         dianders@chromium.org, swboyd@chromium.org,
         quic_kalyant@quicinc.com, dmitry.baryshkov@linaro.org,
         quic_sbillaka@quicinc.com
-Subject: [v3 4/5] drm/msm/disp/dpu1: use atomic enable/disable callbacks for encoder functions
-Date:   Tue, 21 Jun 2022 16:23:19 +0530
-Message-Id: <1655808800-3996-5-git-send-email-quic_vpolimer@quicinc.com>
+Subject: [v3 2/5] drm/bridge: use atomic enable/disable callbacks for panel bridge functions
+Date:   Tue, 21 Jun 2022 16:23:17 +0530
+Message-Id: <1655808800-3996-3-git-send-email-quic_vpolimer@quicinc.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1655808800-3996-1-git-send-email-quic_vpolimer@quicinc.com>
 References: <y>
@@ -56,51 +56,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use atomic variants for encoder callback functions such that
+Use atomic variants for panel bridge callback functions such that
 certain states like self-refresh can be accessed as part of
 enable/disable sequence.
 
-Signed-off-by: Kalyan Thota <quic_kalyant@quicinc.com>
 Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
 ---
- drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/bridge/panel.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-index 52516eb..cc2809b 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
-@@ -1130,7 +1130,8 @@ void dpu_encoder_virt_runtime_resume(struct drm_encoder *drm_enc)
- 	mutex_unlock(&dpu_enc->enc_lock);
+diff --git a/drivers/gpu/drm/bridge/panel.c b/drivers/gpu/drm/bridge/panel.c
+index 0ee563e..59a3496 100644
+--- a/drivers/gpu/drm/bridge/panel.c
++++ b/drivers/gpu/drm/bridge/panel.c
+@@ -108,28 +108,28 @@ static void panel_bridge_detach(struct drm_bridge *bridge)
+ 		drm_connector_cleanup(connector);
  }
  
--static void dpu_encoder_virt_enable(struct drm_encoder *drm_enc)
-+static void dpu_encoder_virt_atomic_enable(struct drm_encoder *drm_enc,
-+					struct drm_atomic_state *state)
+-static void panel_bridge_pre_enable(struct drm_bridge *bridge)
++static void panel_bridge_atomic_pre_enable(struct drm_bridge *bridge)
  {
- 	struct dpu_encoder_virt *dpu_enc = NULL;
- 	int ret = 0;
-@@ -1166,7 +1167,8 @@ static void dpu_encoder_virt_enable(struct drm_encoder *drm_enc)
- 	mutex_unlock(&dpu_enc->enc_lock);
+ 	struct panel_bridge *panel_bridge = drm_bridge_to_panel_bridge(bridge);
+ 
+ 	drm_panel_prepare(panel_bridge->panel);
  }
  
--static void dpu_encoder_virt_disable(struct drm_encoder *drm_enc)
-+static void dpu_encoder_virt_atomic_disable(struct drm_encoder *drm_enc,
-+					struct drm_atomic_state *state)
+-static void panel_bridge_enable(struct drm_bridge *bridge)
++static void panel_bridge_atomic_enable(struct drm_bridge *bridge)
  {
- 	struct dpu_encoder_virt *dpu_enc = NULL;
- 	int i = 0;
-@@ -2332,8 +2334,8 @@ static void dpu_encoder_frame_done_timeout(struct timer_list *t)
+ 	struct panel_bridge *panel_bridge = drm_bridge_to_panel_bridge(bridge);
  
- static const struct drm_encoder_helper_funcs dpu_encoder_helper_funcs = {
- 	.atomic_mode_set = dpu_encoder_virt_atomic_mode_set,
--	.disable = dpu_encoder_virt_disable,
--	.enable = dpu_encoder_virt_enable,
-+	.atomic_disable = dpu_encoder_virt_atomic_disable,
-+	.atomic_enable = dpu_encoder_virt_atomic_enable,
- 	.atomic_check = dpu_encoder_virt_atomic_check,
- };
+ 	drm_panel_enable(panel_bridge->panel);
+ }
  
+-static void panel_bridge_disable(struct drm_bridge *bridge)
++static void panel_bridge_atomic_disable(struct drm_bridge *bridge)
+ {
+ 	struct panel_bridge *panel_bridge = drm_bridge_to_panel_bridge(bridge);
+ 
+ 	drm_panel_disable(panel_bridge->panel);
+ }
+ 
+-static void panel_bridge_post_disable(struct drm_bridge *bridge)
++static void panel_bridge_atomic_post_disable(struct drm_bridge *bridge)
+ {
+ 	struct panel_bridge *panel_bridge = drm_bridge_to_panel_bridge(bridge);
+ 
+@@ -158,10 +158,10 @@ static void panel_bridge_debugfs_init(struct drm_bridge *bridge,
+ static const struct drm_bridge_funcs panel_bridge_bridge_funcs = {
+ 	.attach = panel_bridge_attach,
+ 	.detach = panel_bridge_detach,
+-	.pre_enable = panel_bridge_pre_enable,
+-	.enable = panel_bridge_enable,
+-	.disable = panel_bridge_disable,
+-	.post_disable = panel_bridge_post_disable,
++	.atomic_pre_enable = panel_bridge_atomic_pre_enable,
++	.atomic_enable = panel_bridge_atomic_enable,
++	.atomic_disable = panel_bridge_atomic_disable,
++	.atomic_post_disable = panel_bridge_atomic_post_disable,
+ 	.get_modes = panel_bridge_get_modes,
+ 	.atomic_reset = drm_atomic_helper_bridge_reset,
+ 	.atomic_duplicate_state = drm_atomic_helper_bridge_duplicate_state,
 -- 
 2.7.4
 
