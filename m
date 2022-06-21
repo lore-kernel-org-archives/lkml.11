@@ -2,213 +2,292 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3564CCA47E
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:05:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28DD0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:06:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355801AbiFUVFR (ORCPT
+        id S1355998AbiFUVG0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 17:05:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51168 "EHLO
+        Tue, 21 Jun 2022 17:06:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356805AbiFUVEw (ORCPT
+        with ESMTP id S1356938AbiFUVFB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 17:04:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 671926400;
-        Tue, 21 Jun 2022 13:53:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BF0F4B81A9A;
-        Tue, 21 Jun 2022 20:53:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E70BC3411C;
-        Tue, 21 Jun 2022 20:53:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1655844811;
-        bh=20N4ZigNt3ywDZXkpxWcD1TBryesu5HI23JwFB7LT6Y=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Ki9Ly2I17JqvfHtT9RHEyv92O0rFsOjs8eDP3o2/BGTxMObJIPpQZgeqVnU/Vn8VT
-         +qrGnD6sUvLGN1MjXJtGByEvIB0XWyBMMCbt0IuJN1hocwlnH54YS62IhyT+LYf+is
-         01mlP/9fWSPpl+j6bDoLXjDXLRZzJ8Df5WNTKDDE=
-Date:   Tue, 21 Jun 2022 13:53:13 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Muchun Song <songmuchun@bytedance.com>
-Cc:     corbet@lwn.net, david@redhat.com, mike.kravetz@oracle.com,
-        osalvador@suse.de, paulmck@kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        duanxiongchun@bytedance.com, smuchun@gmail.com
-Subject: Re: [PATCH v5 0/2] make hugetlb_optimize_vmemmap compatible with
- memmap_on_memory
-Message-Id: <20220621135313.ae6fbc28338f1220328694f7@linux-foundation.org>
-In-Reply-To: <20220620110616.12056-1-songmuchun@bytedance.com>
-References: <20220620110616.12056-1-songmuchun@bytedance.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        Tue, 21 Jun 2022 17:05:01 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDE502FFED
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 13:54:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655844847; x=1687380847;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=rCK33wHiwXXfEe1g+x7+z+TkND+SGqMzDT8MqJchkn8=;
+  b=aUGhNHVZQbQASZTLo08Pg0hFhTpteiZB0vGNGlOcWtbr1p/Yi4ihOTg9
+   tHTGUZYRRENnICP0TFZl4Hn3t2iDPn/xQECpCUsy/kyNgCoG4j50MNg5p
+   KBOMTPwHSm4PoB+XsYlTEvMM8QIrR+AHYAYCfs10vWzevD3/OccPrNcLJ
+   opRJNgLjjLYSVoIfZNH+645jybfrUw8/Jr6aC+3mF01E324NlH6r7piiB
+   cKgp9xKQD6ZL0qfsy+Vy1wA3CtQQaCznCvWyPrA2u3j9IAxMnbcmNDNCO
+   T/SY7cAa6tGy7i7jlvlOkZT53PfjEhyMMHiuAHYcjpdvKLh7/LIMq1V7F
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="279003791"
+X-IronPort-AV: E=Sophos;i="5.92,210,1650956400"; 
+   d="scan'208";a="279003791"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 13:52:15 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,210,1650956400"; 
+   d="scan'208";a="655318118"
+Received: from lkp-server02.sh.intel.com (HELO a67cc04a5eeb) ([10.239.97.151])
+  by fmsmga004.fm.intel.com with ESMTP; 21 Jun 2022 13:52:14 -0700
+Received: from kbuild by a67cc04a5eeb with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o3kr7-0000Q5-Ua;
+        Tue, 21 Jun 2022 20:52:13 +0000
+Date:   Wed, 22 Jun 2022 04:52:12 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [paulmck-rcu:dev.2022.06.17a] BUILD SUCCESS
+ c09ca10d879bae4a8df842dbe8d6bd8b87830633
+Message-ID: <62b22f7c.dEXaNqXuq3aBWKzX%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 20 Jun 2022 19:06:14 +0800 Muchun Song <songmuchun@bytedance.com> wrote:
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git dev.2022.06.17a
+branch HEAD: c09ca10d879bae4a8df842dbe8d6bd8b87830633  rcu/nocb: Choose the right rcuog/rcuop kthreads to output
 
-> This series makes hugetlb_optimize_vmemmap compatible with memmap_on_memory
-> and is based on mm-stable.  The reason refers to the patch 2's commit log.
-> 
-> v5:
->  - Replace enum to defines per David.
->  - Walk vmemmap page tables to avoid false-positive.
+elapsed time: 4630m
 
-I can't see this second change in the v3->v5 deltas?
+configs tested: 213
+configs skipped: 6
 
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
+gcc tested configs:
+arm                              allmodconfig
+arm                              allyesconfig
+arm64                            allyesconfig
+arm                                 defconfig
+arm64                               defconfig
+mips                 randconfig-c004-20220619
+i386                          randconfig-c001
+arm                         axm55xx_defconfig
+powerpc                  storcenter_defconfig
+mips                           xway_defconfig
+openrisc                  or1klitex_defconfig
+sh                               j2_defconfig
+arc                          axs101_defconfig
+powerpc                   motionpro_defconfig
+mips                       bmips_be_defconfig
+m68k                          sun3x_defconfig
+m68k                        mvme16x_defconfig
+parisc                generic-64bit_defconfig
+mips                        vocore2_defconfig
+sparc                       sparc64_defconfig
+m68k                          multi_defconfig
+alpha                            alldefconfig
+arc                              alldefconfig
+m68k                                defconfig
+mips                         rt305x_defconfig
+um                             i386_defconfig
+arm                         assabet_defconfig
+arm                          pxa910_defconfig
+arm                            mps2_defconfig
+arc                        nsimosci_defconfig
+powerpc                 mpc8540_ads_defconfig
+powerpc                     taishan_defconfig
+powerpc                mpc7448_hpc2_defconfig
+m68k                          hp300_defconfig
+arc                        vdk_hs38_defconfig
+sh                          landisk_defconfig
+xtensa                       common_defconfig
+powerpc                         wii_defconfig
+sh                              ul2_defconfig
+nios2                            alldefconfig
+arm                       imx_v6_v7_defconfig
+um                                  defconfig
+powerpc                       ppc64_defconfig
+xtensa                  audio_kc705_defconfig
+arm                        multi_v7_defconfig
+sh                           se7705_defconfig
+powerpc                       eiger_defconfig
+arm                            pleb_defconfig
+mips                     loongson1b_defconfig
+m68k                       m5249evb_defconfig
+arm64                            alldefconfig
+parisc                              defconfig
+arm                     eseries_pxa_defconfig
+sh                           se7343_defconfig
+mips                           ci20_defconfig
+xtensa                  nommu_kc705_defconfig
+m68k                       m5275evb_defconfig
+m68k                          amiga_defconfig
+sh                            migor_defconfig
+sh                         apsh4a3a_defconfig
+arm                           h3600_defconfig
+powerpc                 mpc837x_mds_defconfig
+arm                         cm_x300_defconfig
+m68k                           virt_defconfig
+powerpc                        warp_defconfig
+m68k                           sun3_defconfig
+powerpc                     asp8347_defconfig
+sh                 kfr2r09-romimage_defconfig
+xtensa                generic_kc705_defconfig
+powerpc                       holly_defconfig
+mips                  decstation_64_defconfig
+sh                        sh7763rdp_defconfig
+m68k                             alldefconfig
+ia64                            zx1_defconfig
+nios2                         10m50_defconfig
+parisc                generic-32bit_defconfig
+powerpc                   currituck_defconfig
+sh                            titan_defconfig
+mips                          rb532_defconfig
+powerpc                     tqm8548_defconfig
+powerpc                           allnoconfig
+powerpc                     redwood_defconfig
+powerpc                 linkstation_defconfig
+mips                            gpr_defconfig
+arm                         lubbock_defconfig
+m68k                        mvme147_defconfig
+sh                          rsk7201_defconfig
+sh                           sh2007_defconfig
+x86_64                           alldefconfig
+x86_64                        randconfig-c001
+arm                  randconfig-c002-20220619
+ia64                                defconfig
+ia64                             allmodconfig
+ia64                             allyesconfig
+riscv                             allnoconfig
+m68k                             allyesconfig
+m68k                             allmodconfig
+arc                              allyesconfig
+nios2                               defconfig
+csky                                defconfig
+nios2                            allyesconfig
+alpha                               defconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+mips                             allyesconfig
+powerpc                          allmodconfig
+s390                             allmodconfig
+parisc                           allyesconfig
+s390                                defconfig
+s390                             allyesconfig
+parisc64                            defconfig
+sparc                               defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+i386                                defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allmodconfig
+powerpc                          allyesconfig
+x86_64               randconfig-a004-20220620
+x86_64               randconfig-a006-20220620
+x86_64               randconfig-a001-20220620
+x86_64               randconfig-a005-20220620
+x86_64               randconfig-a002-20220620
+x86_64               randconfig-a003-20220620
+i386                 randconfig-a005-20220620
+i386                 randconfig-a001-20220620
+i386                 randconfig-a006-20220620
+i386                 randconfig-a004-20220620
+i386                 randconfig-a003-20220620
+i386                 randconfig-a002-20220620
+i386                          randconfig-a001
+i386                          randconfig-a003
+i386                          randconfig-a005
+i386                          randconfig-a014
+i386                          randconfig-a012
+i386                          randconfig-a016
+arc                  randconfig-r043-20220619
+riscv                randconfig-r042-20220619
+s390                 randconfig-r044-20220619
+arc                  randconfig-r043-20220620
+x86_64                        randconfig-a004
+x86_64                        randconfig-a002
+x86_64                        randconfig-a006
+riscv                    nommu_virt_defconfig
+riscv                          rv32_defconfig
+riscv                    nommu_k210_defconfig
+riscv                               defconfig
+riscv                            allmodconfig
+riscv                            allyesconfig
+x86_64                    rhel-8.3-kselftests
+um                           x86_64_defconfig
+x86_64                              defconfig
+x86_64                           allyesconfig
+x86_64                               rhel-8.3
+x86_64                                  kexec
+x86_64                         rhel-8.3-kunit
+x86_64                          rhel-8.3-func
+x86_64                           rhel-8.3-syz
 
-From: Muchun Song <songmuchun@bytedance.com>
-Subject: mm-memory_hotplug-enumerate-all-supported-section-flags-v5
-Date: Mon, 20 Jun 2022 19:06:15 +0800
+clang tested configs:
+arm                          pcm027_defconfig
+powerpc                    gamecube_defconfig
+powerpc                     tqm8560_defconfig
+mips                       rbtx49xx_defconfig
+powerpc                 mpc8272_ads_defconfig
+arm                            mmp2_defconfig
+powerpc                  mpc885_ads_defconfig
+powerpc                     ksi8560_defconfig
+riscv                          rv32_defconfig
+powerpc                     mpc512x_defconfig
+arm64                            allyesconfig
+powerpc                       ebony_defconfig
+arm                        vexpress_defconfig
+powerpc                    mvme5100_defconfig
+powerpc                      ppc44x_defconfig
+arm                         shannon_defconfig
+arm                        multi_v5_defconfig
+mips                          malta_defconfig
+arm                        magician_defconfig
+powerpc                 mpc836x_mds_defconfig
+arm                       aspeed_g4_defconfig
+powerpc                 mpc8313_rdb_defconfig
+mips                      malta_kvm_defconfig
+x86_64                        randconfig-k001
+x86_64                        randconfig-a005
+x86_64                        randconfig-a003
+x86_64                        randconfig-a001
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+x86_64               randconfig-a013-20220620
+x86_64               randconfig-a012-20220620
+x86_64               randconfig-a016-20220620
+x86_64               randconfig-a015-20220620
+x86_64               randconfig-a011-20220620
+x86_64               randconfig-a014-20220620
+i386                 randconfig-a014-20220620
+i386                 randconfig-a011-20220620
+i386                 randconfig-a012-20220620
+i386                 randconfig-a015-20220620
+i386                 randconfig-a016-20220620
+i386                 randconfig-a013-20220620
+i386                          randconfig-a013
+i386                          randconfig-a011
+i386                          randconfig-a015
+hexagon              randconfig-r045-20220619
+hexagon              randconfig-r041-20220619
+hexagon              randconfig-r041-20220622
+s390                 randconfig-r044-20220622
+hexagon              randconfig-r045-20220622
+riscv                randconfig-r042-20220622
 
-replace enum with defines per David
- 
-Link: https://lkml.kernel.org/r/20220620110616.12056-2-songmuchun@bytedance.com
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
----
-
- include/linux/mmzone.h |   13 +++++--------
- 1 file changed, 5 insertions(+), 8 deletions(-)
-
---- a/include/linux/mmzone.h~mm-memory_hotplug-enumerate-all-supported-section-flags-v5
-+++ a/include/linux/mmzone.h
-@@ -1439,16 +1439,13 @@ enum {
- 	SECTION_MAP_LAST_BIT,
- };
- 
--enum {
--	SECTION_MARKED_PRESENT		= BIT(SECTION_MARKED_PRESENT_BIT),
--	SECTION_HAS_MEM_MAP		= BIT(SECTION_HAS_MEM_MAP_BIT),
--	SECTION_IS_ONLINE		= BIT(SECTION_IS_ONLINE_BIT),
--	SECTION_IS_EARLY		= BIT(SECTION_IS_EARLY_BIT),
-+#define SECTION_MARKED_PRESENT		BIT(SECTION_MARKED_PRESENT_BIT)
-+#define SECTION_HAS_MEM_MAP		BIT(SECTION_HAS_MEM_MAP_BIT)
-+#define SECTION_IS_ONLINE		BIT(SECTION_IS_ONLINE_BIT)
-+#define SECTION_IS_EARLY		BIT(SECTION_IS_EARLY_BIT)
- #ifdef CONFIG_ZONE_DEVICE
--	SECTION_TAINT_ZONE_DEVICE	= BIT(SECTION_TAINT_ZONE_DEVICE_BIT),
-+#define SECTION_TAINT_ZONE_DEVICE	BIT(SECTION_TAINT_ZONE_DEVICE_BIT)
- #endif
--};
--
- #define SECTION_MAP_MASK		(~(BIT(SECTION_MAP_LAST_BIT) - 1))
- #define SECTION_NID_SHIFT		SECTION_MAP_LAST_BIT
- 
-_
-
-
-
-
-From: Muchun Song <songmuchun@bytedance.com>
-Subject: mm-memory_hotplug-make-hugetlb_optimize_vmemmap-compatible-with-memmap_on_memory-v5
-Date: Mon, 20 Jun 2022 19:06:16 +0800
-
-walk vmemmap page tables to avoid false-positive
-
-Link: https://lkml.kernel.org/r/20220620110616.12056-3-songmuchun@bytedance.com
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-Co-developed-by: Oscar Salvador <osalvador@suse.de>
-Signed-off-by: Oscar Salvador <osalvador@suse.de>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
----
-
- mm/hugetlb_vmemmap.c |   69 ++++++++++++++++++++++++++---------------
- 1 file changed, 44 insertions(+), 25 deletions(-)
-
---- a/mm/hugetlb_vmemmap.c~mm-memory_hotplug-make-hugetlb_optimize_vmemmap-compatible-with-memmap_on_memory-v5
-+++ a/mm/hugetlb_vmemmap.c
-@@ -10,6 +10,7 @@
-  */
- #define pr_fmt(fmt)	"HugeTLB: " fmt
- 
-+#include <linux/memory.h>
- #include "hugetlb_vmemmap.h"
- 
- /*
-@@ -99,34 +100,52 @@ int hugetlb_vmemmap_alloc(struct hstate
- static unsigned int vmemmap_optimizable_pages(struct hstate *h,
- 					      struct page *head)
- {
--	struct mem_section *ms;
--	struct page *vmemmap_page;
--	unsigned long pfn = page_to_pfn(head);
--
- 	if (READ_ONCE(vmemmap_optimize_mode) == VMEMMAP_OPTIMIZE_OFF)
- 		return 0;
- 
--	ms = __pfn_to_section(pfn);
--	vmemmap_page = sparse_decode_mem_map(ms->section_mem_map,
--					     pfn_to_section_nr(pfn));
--	/*
--	 * Only the vmemmap pages' vmemmap may be marked as VmemmapSelfHosted.
--	 *
--	 * Due to HugeTLB alignment requirements, and the vmemmap pages being
--	 * at the start of the hotplugged memory region. Checking any vmemmap
--	 * page's vmemmap is fine.
--	 *
--	 * [      hotplugged memory     ]
--	 * [ vmemmap ][  usable memory  ]
--	 *   ^   |      |            |
--	 *   +---+      |            |
--	 *     ^        |            |
--	 *     +--------+            |
--	 *         ^                 |
--	 *         +-----------------+
--	 */
--	if (PageVmemmapSelfHosted(vmemmap_page))
--		return 0;
-+	if (IS_ENABLED(CONFIG_MEMORY_HOTPLUG)) {
-+		pmd_t *pmdp, pmd;
-+		struct page *vmemmap_page;
-+		unsigned long vaddr = (unsigned long)head;
-+
-+		/*
-+		 * Only the vmemmap page's vmemmap page can be self-hosted.
-+		 * Walking the page tables to find the backing page of the
-+		 * vmemmap page.
-+		 */
-+		pmdp = pmd_off_k(vaddr);
-+		/*
-+		 * The READ_ONCE() is used to stabilize *pmdp in a register or
-+		 * on the stack so that it will stop changing under the code.
-+		 * The only concurrent operation where it can be changed is
-+		 * split_vmemmap_huge_pmd() (*pmdp will be stable after this
-+		 * operation).
-+		 */
-+		pmd = READ_ONCE(*pmdp);
-+		if (pmd_leaf(pmd))
-+			vmemmap_page = pmd_page(pmd) + pte_index(vaddr);
-+		else
-+			vmemmap_page = pte_page(*pte_offset_kernel(pmdp, vaddr));
-+		/*
-+		 * Due to HugeTLB alignment requirements and the vmemmap pages
-+		 * being at the start of the hotplugged memory region in
-+		 * memory_hotplug.memmap_on_memory case. Checking any vmemmap
-+		 * page's vmemmap page if it is marked as VmemmapSelfHosted is
-+		 * sufficient.
-+		 *
-+		 * [                  hotplugged memory                  ]
-+		 * [        section        ][...][        section        ]
-+		 * [ vmemmap ][              usable memory               ]
-+		 *   ^   |     |                                        |
-+		 *   +---+     |                                        |
-+		 *     ^       |                                        |
-+		 *     +-------+                                        |
-+		 *          ^                                           |
-+		 *          +-------------------------------------------+
-+		 */
-+		if (PageVmemmapSelfHosted(vmemmap_page))
-+			return 0;
-+	}
- 
- 	return hugetlb_optimize_vmemmap_pages(h);
- }
-_
-
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
