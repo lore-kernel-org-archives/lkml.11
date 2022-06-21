@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0330CCA486
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:01:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EAEECCA488
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:01:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356399AbiFUVAE (ORCPT
+        id S1356421AbiFUVAI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 17:00:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58282 "EHLO
+        Tue, 21 Jun 2022 17:00:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355171AbiFUU5V (ORCPT
+        with ESMTP id S1355342AbiFUU50 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 16:57:21 -0400
+        Tue, 21 Jun 2022 16:57:26 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC58631DF2;
-        Tue, 21 Jun 2022 13:50:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9192932047;
+        Tue, 21 Jun 2022 13:50:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CD846618BC;
-        Tue, 21 Jun 2022 20:50:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94911C341C7;
-        Tue, 21 Jun 2022 20:50:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 580B061853;
+        Tue, 21 Jun 2022 20:50:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43F0AC341C8;
+        Tue, 21 Jun 2022 20:50:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655844644;
-        bh=M5ZujuZ0mG33Rr/sqbkSj4dYDw6RrPY7vPQnXkZ/t0s=;
+        s=k20201202; t=1655844649;
+        bh=o7GtAnFp/eA+jMqpHc462Q5+pf/HTA4jz7vqpzuX2VY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XrpR/9xiDHxi+iO5S33OTDTsVqTo7L2Kre0eotKOimzHAeLz0m8tkyQR2mBE05dtl
-         HRH50XGX375YjHwYNhsDqnOb6YDAXaSxLMkvTdz8LAv4+9swRY4NQaon8/pJqDpWvs
-         jGzQ92ZKhTYZyluZBj7hsBWrmJZlp6+lDeoP5/VtNFVs3meZLh4utwm+kimMXyB0mI
-         SQKjkzpUO80DtFcpGdp4+bzu6FfDFQmPSd4YJuer7v7tWZ7mr8ki2HjJmyD3V706lM
-         cK22btl/ywPDZaFH6iLmuDXor4RbBdzVyG0YbBMJOsvxEYBWKUXO3N1Ow2lpXR0Qj3
-         uEWHoi8SCPxFw==
+        b=Qv7pIvOMY53QWO8BRFSWw5pE3FH9IN5QjLQ+63N/R7E3eBKMzdI4xecK/9qB0LrVh
+         8R2uusPy9xDCJAcHbraTukpXJ7GTp/0FsLw3jxvC7RpVnJS51wKN3wO4Qf07U24lyJ
+         HJ8VmDlmNBy20GB51DO0RWQq+WoAqG5Ym7/g6IhA0B7C9PUsBeBFuljrkjGD+y0wd5
+         DfzdRiXaatcPmFQWT5zS9NY4b+rtIMvJpiLri+gPZUm4luwysTtYHVsZLB92+KIdPv
+         jx5g0Ojv1BTC7l1py964oAhm06ZpdtC13PPUPRH7ae6oiMXxWDnSrChOm65DFAr92f
+         kX9QiQliPEvVg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        tglx@linutronix.de, mhiramat@kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 02/17] irqchip/uniphier-aidet: Add compatible string for NX1 SoC
-Date:   Tue, 21 Jun 2022 16:50:25 -0400
-Message-Id: <20220621205041.250426-2-sashal@kernel.org>
+Cc:     Alexander Usyskin <alexander.usyskin@intel.com>,
+        Tomas Winkler <tomas.winkler@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.15 04/17] mei: me: set internal pg flag to off on hardware reset
+Date:   Tue, 21 Jun 2022 16:50:27 -0400
+Message-Id: <20220621205041.250426-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220621205041.250426-1-sashal@kernel.org>
 References: <20220621205041.250426-1-sashal@kernel.org>
@@ -53,32 +53,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+From: Alexander Usyskin <alexander.usyskin@intel.com>
 
-[ Upstream commit e3f056a7aafabe4ac3ad4b7465ba821b44a7e639 ]
+[ Upstream commit 9f4639373e6756e1ccf0029f861f1061db3c3616 ]
 
-Add the compatible string to support UniPhier NX1 SoC, which has the same
-kinds of controls as the other UniPhier SoCs.
+Link reset flow is always performed in the runtime resumed state.
+The internal PG state may be left as ON after the suspend
+and will not be updated upon the resume if the D0i3 is not supported.
 
-Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/1653023822-19229-3-git-send-email-hayashi.kunihiko@socionext.com
+Ensure that the internal PG state is set to the right value on the flow
+entrance in case the firmware does not support D0i3.
+
+Signed-off-by: Alexander Usyskin <alexander.usyskin@intel.com>
+Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
+Link: https://lore.kernel.org/r/20220606144225.282375-1-tomas.winkler@intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/irqchip/irq-uniphier-aidet.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/misc/mei/hw-me.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/irqchip/irq-uniphier-aidet.c b/drivers/irqchip/irq-uniphier-aidet.c
-index 89121b39be26..716b1bb88bf2 100644
---- a/drivers/irqchip/irq-uniphier-aidet.c
-+++ b/drivers/irqchip/irq-uniphier-aidet.c
-@@ -237,6 +237,7 @@ static const struct of_device_id uniphier_aidet_match[] = {
- 	{ .compatible = "socionext,uniphier-ld11-aidet" },
- 	{ .compatible = "socionext,uniphier-ld20-aidet" },
- 	{ .compatible = "socionext,uniphier-pxs3-aidet" },
-+	{ .compatible = "socionext,uniphier-nx1-aidet" },
- 	{ /* sentinel */ }
- };
+diff --git a/drivers/misc/mei/hw-me.c b/drivers/misc/mei/hw-me.c
+index fbc4c9581864..ffe0da1ad58f 100644
+--- a/drivers/misc/mei/hw-me.c
++++ b/drivers/misc/mei/hw-me.c
+@@ -1154,6 +1154,8 @@ static int mei_me_hw_reset(struct mei_device *dev, bool intr_enable)
+ 			ret = mei_me_d0i3_exit_sync(dev);
+ 			if (ret)
+ 				return ret;
++		} else {
++			hw->pg_state = MEI_PG_OFF;
+ 		}
+ 	}
  
 -- 
 2.35.1
