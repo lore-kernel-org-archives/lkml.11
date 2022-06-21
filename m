@@ -2,51 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41D7BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:02:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF74CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:02:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355846AbiFUVCF (ORCPT
+        id S1355699AbiFUVCI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 17:02:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38920 "EHLO
+        Tue, 21 Jun 2022 17:02:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355751AbiFUU66 (ORCPT
+        with ESMTP id S1355745AbiFUU65 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 16:58:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A249C32EE2;
-        Tue, 21 Jun 2022 13:51:40 -0700 (PDT)
+        Tue, 21 Jun 2022 16:58:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DDBB32EDF;
+        Tue, 21 Jun 2022 13:51:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 64A5B618C1;
-        Tue, 21 Jun 2022 20:50:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AF03C341C5;
-        Tue, 21 Jun 2022 20:50:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C68C618A8;
+        Tue, 21 Jun 2022 20:51:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15B97C385A5;
+        Tue, 21 Jun 2022 20:51:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655844648;
-        bh=UuFhUl4vF9VERPH2Y+GiPCjf7uTaIG3fyCT8TXt7Ed4=;
+        s=k20201202; t=1655844668;
+        bh=M5ZujuZ0mG33Rr/sqbkSj4dYDw6RrPY7vPQnXkZ/t0s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N0/DI3Ucl34oFhkYEgRtQ7yxh4UneCqPbPIThWxSnWVWGb5qTBRANBf0RVCXJfkzg
-         5Fs31YsWhIxTr7tjCtNa7t3k6sHTdrVE3Bek5uCTfF0BquOhnM9UCO90y61cWfv9CV
-         wQRrgkIc7qOTEcV/SLra6nskPvAB/2ElBFO1lc365IFL4QID/XYZw/SlxZLJZXdqzm
-         jbU8b9ufu2QOBR4DssfE2hV2O1VdRsWBhMYx6cP/vPJtzH4bwz/yp8iUj5hQqBCqf+
-         pfpFAxONDdbyrTIZnaD3GHr2cWnCo7MS1bgc9gvEDULr9X5ZajpgobBkp+W2vj+aX/
-         +42BcRLshqEJw==
+        b=HOEOe0Stqkyv40fEZUBezDNJ0Nk0Q0RifZnhO3VP0igTH7EzsXFkowjndDqtVP5nz
+         22LHrDW6CWrP4P2l+4sHkFzy/MkFxo7Ton7l30HK5wd9yx5xq0QSLYN4ZnxyZIS9Dh
+         Lo9IKvMvt9aTE44xJ6ikioNUHpXqzd3+mnNNDVnhQR6nzPdHQ1Syd0UFq9Et6j2IXd
+         fqotmGsszTkkrwDk8GBb/yQj6fxts0XsD5BK8tE4u79vYi+AYNvx/v031RDnPxO+Gx
+         nxFGHJO95qrJWViPgOg0Xa/D7GOxMxjJ5SPPWc6GM0w+ZQHszp/mYVErXzOZRsDAis
+         2s4EqFw9L5P7g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kees Cook <keescook@chromium.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Fabio Aiuto <fabioaiuto83@gmail.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        linux-staging@lists.linux.dev, Sasha Levin <sashal@kernel.org>,
-        straube.linux@gmail.com, arnd@arndb.de
-Subject: [PATCH AUTOSEL 5.15 03/17] staging: rtl8723bs: Allocate full pwep structure
-Date:   Tue, 21 Jun 2022 16:50:26 -0400
-Message-Id: <20220621205041.250426-3-sashal@kernel.org>
+Cc:     Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        tglx@linutronix.de, mhiramat@kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.10 02/11] irqchip/uniphier-aidet: Add compatible string for NX1 SoC
+Date:   Tue, 21 Jun 2022 16:50:56 -0400
+Message-Id: <20220621205105.250640-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220621205041.250426-1-sashal@kernel.org>
-References: <20220621205041.250426-1-sashal@kernel.org>
+In-Reply-To: <20220621205105.250640-1-sashal@kernel.org>
+References: <20220621205105.250640-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,54 +53,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
 
-[ Upstream commit 67ea0a2adbf667cd6da4965fbcfd0da741035084 ]
+[ Upstream commit e3f056a7aafabe4ac3ad4b7465ba821b44a7e639 ]
 
-The pwep allocation was always being allocated smaller than the true
-structure size. Avoid this by always allocating the full structure.
-Found with GCC 12 and -Warray-bounds:
+Add the compatible string to support UniPhier NX1 SoC, which has the same
+kinds of controls as the other UniPhier SoCs.
 
-../drivers/staging/rtl8723bs/os_dep/ioctl_linux.c: In function 'rtw_set_encryption':
-../drivers/staging/rtl8723bs/os_dep/ioctl_linux.c:591:29: warning: array subscript 'struct ndis_802_11_wep[0]' is partly outside array bounds of 'void[25]' [-Warray-bounds]
-  591 |                         pwep->length = wep_total_len;
-      |                             ^~
-
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Fabio Aiuto <fabioaiuto83@gmail.com>
-Cc: Hans de Goede <hdegoede@redhat.com>
-Cc: linux-staging@lists.linux.dev
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/20220608215512.1070847-1-keescook@chromium.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/1653023822-19229-3-git-send-email-hayashi.kunihiko@socionext.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/rtl8723bs/os_dep/ioctl_linux.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/irqchip/irq-uniphier-aidet.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/staging/rtl8723bs/os_dep/ioctl_linux.c b/drivers/staging/rtl8723bs/os_dep/ioctl_linux.c
-index 295121c268bd..4ec3910d1fcf 100644
---- a/drivers/staging/rtl8723bs/os_dep/ioctl_linux.c
-+++ b/drivers/staging/rtl8723bs/os_dep/ioctl_linux.c
-@@ -104,7 +104,8 @@ static int wpa_set_encryption(struct net_device *dev, struct ieee_param *param,
- 		if (wep_key_len > 0) {
- 			wep_key_len = wep_key_len <= 5 ? 5 : 13;
- 			wep_total_len = wep_key_len + FIELD_OFFSET(struct ndis_802_11_wep, key_material);
--			pwep = kzalloc(wep_total_len, GFP_KERNEL);
-+			/* Allocate a full structure to avoid potentially running off the end. */
-+			pwep = kzalloc(sizeof(*pwep), GFP_KERNEL);
- 			if (!pwep) {
- 				ret = -ENOMEM;
- 				goto exit;
-@@ -596,7 +597,8 @@ static int rtw_set_encryption(struct net_device *dev, struct ieee_param *param,
- 		if (wep_key_len > 0) {
- 			wep_key_len = wep_key_len <= 5 ? 5 : 13;
- 			wep_total_len = wep_key_len + FIELD_OFFSET(struct ndis_802_11_wep, key_material);
--			pwep = kzalloc(wep_total_len, GFP_KERNEL);
-+			/* Allocate a full structure to avoid potentially running off the end. */
-+			pwep = kzalloc(sizeof(*pwep), GFP_KERNEL);
- 			if (!pwep)
- 				goto exit;
+diff --git a/drivers/irqchip/irq-uniphier-aidet.c b/drivers/irqchip/irq-uniphier-aidet.c
+index 89121b39be26..716b1bb88bf2 100644
+--- a/drivers/irqchip/irq-uniphier-aidet.c
++++ b/drivers/irqchip/irq-uniphier-aidet.c
+@@ -237,6 +237,7 @@ static const struct of_device_id uniphier_aidet_match[] = {
+ 	{ .compatible = "socionext,uniphier-ld11-aidet" },
+ 	{ .compatible = "socionext,uniphier-ld20-aidet" },
+ 	{ .compatible = "socionext,uniphier-pxs3-aidet" },
++	{ .compatible = "socionext,uniphier-nx1-aidet" },
+ 	{ /* sentinel */ }
+ };
  
 -- 
 2.35.1
