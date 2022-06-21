@@ -2,68 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 603C0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 07:24:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F21AC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 07:25:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346546AbiFUHYk (ORCPT
+        id S1346739AbiFUHZd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 03:24:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54944 "EHLO
+        Tue, 21 Jun 2022 03:25:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345320AbiFUHYj (ORCPT
+        with ESMTP id S1346703AbiFUHZb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 03:24:39 -0400
-Received: from smtpbg.qq.com (smtpbg138.qq.com [106.55.201.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD2A419FB3;
-        Tue, 21 Jun 2022 00:24:33 -0700 (PDT)
-X-QQ-mid: bizesmtp70t1655796261th7gvsn9
-Received: from ubuntu.localdomain ( [106.117.99.68])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 21 Jun 2022 15:24:07 +0800 (CST)
-X-QQ-SSF: 01000000007000109000B00A0000000
-X-QQ-FEAT: FCUjxTjsuSIbhoALcgPlqmFKLwSQeShLqrw7une5wOgn2fiyfbUrMxl4ompzA
-        O7EE75Dq/2p1CTybtiDJo+a4wSjxGlKWRdZJy42dA7adtWzB4J3zhAKOxEkwlsSYTpoOUvS
-        yDGpn/sAWUblz67j8qoPx5TvqZIemvfZJ3mZzN7Z82gnebP5UzifbjbFSzPM6ZBVXZ/Ow30
-        yohVW8rzt/7Z0ysf5B7lGmbpaopqQeS3MGxs9N1fErje3b0+WG0fqKJt4zJLV5z98R0leNi
-        XkLAUtPAggCEleJwij2W6ZxK3Jf37ZZxq1WiLt0/kknEFafgKfozEXT9FQtVuBYGGm0wCvI
-        jmyhw26QyUum/dNK4A=
-X-QQ-GoodBg: 0
-From:   Jiang Jian <jiangjian@cdjrlc.com>
-To:     jejb@linux.ibm.com, martin.petersen@oracle.com
-Cc:     john.garry@huawei.com, linux-scsi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, jiangjian@cdjrlc.com
-Subject: [PATCH] scsi: hisi_sas: aligned "*" each line
-Date:   Tue, 21 Jun 2022 15:24:05 +0800
-Message-Id: <20220621072405.34394-1-jiangjian@cdjrlc.com>
-X-Mailer: git-send-email 2.17.1
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam10
+        Tue, 21 Jun 2022 03:25:31 -0400
+X-Greylist: delayed 399 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 21 Jun 2022 00:25:29 PDT
+Received: from soltyk.jannau.net (soltyk.jannau.net [144.76.91.90])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92A9022B05;
+        Tue, 21 Jun 2022 00:25:29 -0700 (PDT)
+Received: from coburn.home.jannau.net (p579ad988.dip0.t-ipconnect.de [87.154.217.136])
+        by soltyk.jannau.net (Postfix) with ESMTPSA id 463C626ED16;
+        Tue, 21 Jun 2022 09:18:49 +0200 (CEST)
+From:   Janne Grunau <j@jannau.net>
+To:     iommu@lists.linux-foundation.org
+Cc:     Konrad Dybcio <konrad.dybcio@somainline.org>,
+        asahi@lists.linux.dev, Sven Peter <sven@svenpeter.dev>,
+        Rob Herring <robh@kernel.org>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Hector Martin <marcan@marcan.st>,
+        Joerg Roedel <joro@8bytes.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Mark Kettenis <mark.kettenis@xs4all.nl>,
+        Rob Herring <robh+dt@kernel.org>,
+        Will Deacon <will@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 1/5] dt-bindings: iommu: dart: add t6000 compatible
+Date:   Tue, 21 Jun 2022 09:18:44 +0200
+Message-Id: <20220621071848.14834-2-j@jannau.net>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220621071848.14834-1-j@jannau.net>
+References: <20220621071848.14834-1-j@jannau.net>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Consider * alignment in comments
+From: Sven Peter <sven@svenpeter.dev>
 
-Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
+The M1 Max/Pro SoCs come with a new DART variant that is incompatible with
+the previous one. Add a new compatible for those.
+
+Signed-off-by: Sven Peter <sven@svenpeter.dev>
+Acked-by: Rob Herring <robh@kernel.org>
+
+Signed-off-by: Janne Grunau <j@jannau.net>
 ---
- drivers/scsi/hisi_sas/hisi_sas_v2_hw.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/hisi_sas/hisi_sas_v2_hw.c b/drivers/scsi/hisi_sas/hisi_sas_v2_hw.c
-index 455d49299ddf..18297ab5a32b 100644
---- a/drivers/scsi/hisi_sas/hisi_sas_v2_hw.c
-+++ b/drivers/scsi/hisi_sas/hisi_sas_v2_hw.c
-@@ -805,8 +805,8 @@ slot_index_alloc_quirk_v2_hw(struct hisi_hba *hisi_hba,
- 			return -SAS_QUEUE_FULL;
- 		}
- 		/*
--		  * SAS IPTT bit0 should be 1, and SATA IPTT bit0 should be 0.
--		  */
-+		 * SAS IPTT bit0 should be 1, and SATA IPTT bit0 should be 0.
-+		 */
- 		if (sata_dev ^ (start & 1))
- 			break;
- 		start++;
+(no changes since v2)
+
+Changes in v2:
+- added Rob's Acked-by:
+
+ Documentation/devicetree/bindings/iommu/apple,dart.yaml | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/iommu/apple,dart.yaml b/Documentation/devicetree/bindings/iommu/apple,dart.yaml
+index 82ad669feef7..06af2bacbe97 100644
+--- a/Documentation/devicetree/bindings/iommu/apple,dart.yaml
++++ b/Documentation/devicetree/bindings/iommu/apple,dart.yaml
+@@ -22,7 +22,9 @@ description: |+
+ 
+ properties:
+   compatible:
+-    const: apple,t8103-dart
++    enum:
++      - apple,t8103-dart
++      - apple,t6000-dart
+ 
+   reg:
+     maxItems: 1
 -- 
-2.17.1
+2.35.1
 
