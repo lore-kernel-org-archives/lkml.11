@@ -2,135 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4E5DCCA473
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 12:44:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30E4DC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 12:45:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350798AbiFUMoz (ORCPT
+        id S1350804AbiFUMpA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 08:44:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45222 "EHLO
+        Tue, 21 Jun 2022 08:45:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350774AbiFUMos (ORCPT
+        with ESMTP id S1350334AbiFUMox (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 08:44:48 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46C3618E16;
-        Tue, 21 Jun 2022 05:44:46 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LS5mq61WDzDqnP;
-        Tue, 21 Jun 2022 20:44:11 +0800 (CST)
-Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 21 Jun 2022 20:44:43 +0800
-Received: from thunder-town.china.huawei.com (10.174.178.55) by
- dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 21 Jun 2022 20:44:42 +0800
-From:   Zhen Lei <thunder.leizhen@huawei.com>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        <x86@kernel.org>, "H . Peter Anvin" <hpa@zytor.com>,
-        Eric Biederman <ebiederm@xmission.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        <devicetree@vger.kernel.org>, Dave Young <dyoung@redhat.com>,
-        Baoquan He <bhe@redhat.com>, Vivek Goyal <vgoyal@redhat.com>,
-        <kexec@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Jonathan Corbet <corbet@lwn.net>, <linux-doc@vger.kernel.org>
-CC:     Zhen Lei <thunder.leizhen@huawei.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Feng Zhou <zhoufeng.zf@bytedance.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Chen Zhou <dingguo.cz@antgroup.com>,
-        "John Donnelly" <John.p.donnelly@oracle.com>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>
-Subject: [PATCH v2 2/3] arm64: kdump: Support crashkernel=X fall back to reserve region above DMA zones
-Date:   Tue, 21 Jun 2022 20:42:47 +0800
-Message-ID: <20220621124249.1315-3-thunder.leizhen@huawei.com>
-X-Mailer: git-send-email 2.26.0.windows.1
-In-Reply-To: <20220621124249.1315-1-thunder.leizhen@huawei.com>
-References: <20220621124249.1315-1-thunder.leizhen@huawei.com>
+        Tue, 21 Jun 2022 08:44:53 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AD294192BF
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 05:44:51 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 09B6E165C;
+        Tue, 21 Jun 2022 05:44:51 -0700 (PDT)
+Received: from [10.57.85.30] (unknown [10.57.85.30])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0EAD03F534;
+        Tue, 21 Jun 2022 05:44:48 -0700 (PDT)
+Message-ID: <45ef3221-8f27-0ae7-8cd9-48575812d797@arm.com>
+Date:   Tue, 21 Jun 2022 13:44:44 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.174.178.55]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500006.china.huawei.com (7.185.36.236)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2] drm/sun4i: Add DMA mask and segment size
+Content-Language: en-GB
+To:     Jernej Skrabec <jernej.skrabec@gmail.com>, mripard@kernel.org,
+        wens@csie.org
+Cc:     airlied@linux.ie, daniel@ffwll.ch, samuel@sholland.org,
+        dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+References: <20220620181333.650301-1-jernej.skrabec@gmail.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220620181333.650301-1-jernej.skrabec@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For crashkernel=X without '@offset', select a region within DMA zones
-first, and fall back to reserve region above DMA zones. This allows
-users to use the same configuration on multiple platforms.
+On 2022-06-20 19:13, Jernej Skrabec wrote:
+> Kernel occasionally complains that there is mismatch in segment size
+> when trying to render HW decoded videos and rendering them directly with
+> sun4i DRM driver. Following message can be observed on H6 SoC:
+> 
+> [  184.298308] ------------[ cut here ]------------
+> [  184.298326] DMA-API: sun4i-drm display-engine: mapping sg segment longer than device claims to support [len=6144000] [max=65536]
+> [  184.298364] WARNING: CPU: 1 PID: 382 at kernel/dma/debug.c:1162 debug_dma_map_sg+0x2b0/0x350
+> [  184.322997] CPU: 1 PID: 382 Comm: ffmpeg Not tainted 5.19.0-rc1+ #1331
+> [  184.329533] Hardware name: Tanix TX6 (DT)
+> [  184.333544] pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+> [  184.340512] pc : debug_dma_map_sg+0x2b0/0x350
+> [  184.344882] lr : debug_dma_map_sg+0x2b0/0x350
+> [  184.349250] sp : ffff800009f33a50
+> [  184.352567] x29: ffff800009f33a50 x28: 0000000000010000 x27: ffff000001b86c00
+> [  184.359725] x26: ffffffffffffffff x25: ffff000005d8cc80 x24: 0000000000000000
+> [  184.366879] x23: ffff80000939ab18 x22: 0000000000000001 x21: 0000000000000001
+> [  184.374031] x20: 0000000000000000 x19: ffff0000018a7410 x18: ffffffffffffffff
+> [  184.381186] x17: 0000000000000000 x16: 0000000000000000 x15: ffffffffffffffff
+> [  184.388338] x14: 0000000000000001 x13: ffff800009534e86 x12: 6f70707573206f74
+> [  184.395493] x11: 20736d69616c6320 x10: 000000000000000a x9 : 0000000000010000
+> [  184.402647] x8 : ffff8000093b6d40 x7 : ffff800009f33850 x6 : 000000000000000c
+> [  184.409800] x5 : ffff0000bf997940 x4 : 0000000000000000 x3 : 0000000000000027
+> [  184.416953] x2 : 0000000000000000 x1 : 0000000000000000 x0 : ffff000003960e80
+> [  184.424106] Call trace:
+> [  184.426556]  debug_dma_map_sg+0x2b0/0x350
+> [  184.430580]  __dma_map_sg_attrs+0xa0/0x110
+> [  184.434687]  dma_map_sgtable+0x28/0x4c
+> [  184.438447]  vb2_dc_dmabuf_ops_map+0x60/0xcc
+> [  184.442729]  __map_dma_buf+0x2c/0xd4
+> [  184.446321]  dma_buf_map_attachment+0xa0/0x130
+> [  184.450777]  drm_gem_prime_import_dev+0x7c/0x18c
+> [  184.455410]  drm_gem_prime_fd_to_handle+0x1b8/0x214
+> [  184.460300]  drm_prime_fd_to_handle_ioctl+0x2c/0x40
+> [  184.465190]  drm_ioctl_kernel+0xc4/0x174
+> [  184.469123]  drm_ioctl+0x204/0x420
+> [  184.472534]  __arm64_sys_ioctl+0xac/0xf0
+> [  184.476474]  invoke_syscall+0x48/0x114
+> [  184.480240]  el0_svc_common.constprop.0+0x44/0xec
+> [  184.484956]  do_el0_svc+0x2c/0xc0
+> [  184.488283]  el0_svc+0x2c/0x84
+> [  184.491354]  el0t_64_sync_handler+0x11c/0x150
+> [  184.495723]  el0t_64_sync+0x18c/0x190
+> [  184.499397] ---[ end trace 0000000000000000 ]---
+> 
+> Fix that by setting DMA mask and segment size.
+> 
+> Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+> ---
+> Changes from v1:
+> - added comment
+> - updated commit message with kernel report
+> 
+>   drivers/gpu/drm/sun4i/sun4i_drv.c | 8 ++++++++
+>   1 file changed, 8 insertions(+)
+> 
+> diff --git a/drivers/gpu/drm/sun4i/sun4i_drv.c b/drivers/gpu/drm/sun4i/sun4i_drv.c
+> index 275f7e4a03ae..f135a6b3cadb 100644
+> --- a/drivers/gpu/drm/sun4i/sun4i_drv.c
+> +++ b/drivers/gpu/drm/sun4i/sun4i_drv.c
+> @@ -7,6 +7,7 @@
+>    */
+>   
+>   #include <linux/component.h>
+> +#include <linux/dma-mapping.h>
+>   #include <linux/kfifo.h>
+>   #include <linux/module.h>
+>   #include <linux/of_graph.h>
+> @@ -367,6 +368,13 @@ static int sun4i_drv_probe(struct platform_device *pdev)
+>   
+>   	INIT_KFIFO(list.fifo);
+>   
+> +	/*
+> +	 * DE2 and DE3 cores actually supports 40-bit addresses, but
+> +	 * driver does not.
+> +	 */
+> +	dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
+> +	dma_set_max_seg_size(&pdev->dev, DMA_BIT_MASK(32));
 
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-Acked-by: Baoquan He <bhe@redhat.com>
----
- Documentation/admin-guide/kernel-parameters.txt |  2 +-
- arch/arm64/mm/init.c                            | 16 +++++++++++++++-
- 2 files changed, 16 insertions(+), 2 deletions(-)
+Nit: this one is a number, not a bitmask, so UINT_MAX would be more 
+appropriate semantically.
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 65a2c3a22a4b57d..cb6a346419a1fe0 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -823,7 +823,7 @@
- 			memory region [offset, offset + size] for that kernel
- 			image. If '@offset' is omitted, then a suitable offset
- 			is selected automatically.
--			[KNL, X86-64] Select a region under 4G first, and
-+			[KNL, X86-64, ARM64] Select a region under 4G first, and
- 			fall back to reserve region above 4G when '@offset'
- 			hasn't been specified.
- 			See Documentation/admin-guide/kdump/kdump.rst for further details.
-diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-index 5390f361208ccf7..8539598f9e58b4d 100644
---- a/arch/arm64/mm/init.c
-+++ b/arch/arm64/mm/init.c
-@@ -138,6 +138,7 @@ static void __init reserve_crashkernel(void)
- 	unsigned long long crash_max = CRASH_ADDR_LOW_MAX;
- 	char *cmdline = boot_command_line;
- 	int ret;
-+	bool fixed_base;
- 
- 	if (!IS_ENABLED(CONFIG_KEXEC_CORE))
- 		return;
-@@ -166,15 +167,28 @@ static void __init reserve_crashkernel(void)
- 		return;
- 	}
- 
-+	fixed_base = !!crash_base;
- 	crash_size = PAGE_ALIGN(crash_size);
- 
- 	/* User specifies base address explicitly. */
--	if (crash_base)
-+	if (fixed_base)
- 		crash_max = crash_base + crash_size;
- 
-+retry:
- 	crash_base = memblock_phys_alloc_range(crash_size, CRASH_ALIGN,
- 					       crash_base, crash_max);
- 	if (!crash_base) {
-+		/*
-+		 * Attempt to fully allocate low memory failed, fall back
-+		 * to high memory, the minimum required low memory will be
-+		 * reserved later.
-+		 */
-+		if (!fixed_base && (crash_max == CRASH_ADDR_LOW_MAX)) {
-+			crash_max = CRASH_ADDR_HIGH_MAX;
-+			crash_low_size = DEFAULT_CRASH_KERNEL_LOW_SIZE;
-+			goto retry;
-+		}
-+
- 		pr_warn("cannot allocate crashkernel (size:0x%llx)\n",
- 			crash_size);
- 		return;
--- 
-2.25.1
+Thanks,
+Robin.
 
+> +
+>   	for (i = 0;; i++) {
+>   		struct device_node *pipeline = of_parse_phandle(np,
+>   								"allwinner,pipelines",
