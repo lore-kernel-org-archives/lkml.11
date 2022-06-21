@@ -2,139 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42E6CCCA480
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 07:39:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2373CCA480
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 07:40:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347322AbiFUHjR (ORCPT
+        id S1347738AbiFUHjw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 03:39:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38778 "EHLO
+        Tue, 21 Jun 2022 03:39:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346958AbiFUHiR (ORCPT
+        with ESMTP id S1347700AbiFUHjl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 03:38:17 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0D945FAF
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 00:38:15 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id l6so3621077plg.11
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 00:38:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=nk+fdQE93FqPegDOLztKBITezax/oNzcyKzefYaORp8=;
-        b=fg3yA65YsHeVetLshPkg44ZoS0+r4kYz2gK82/9ZhWuhbuhVCG8b1IdASjgMLW9F8P
-         wo5ttxvpAXD/hkkxsxLIM3+CBiBChOIsQ3RNAzLUsbHjSWRRQ1JoPJeddxJmPypYwIDm
-         uLgUOck8sGg5x8fOxEN70TWDH9gWl9Wbnv+6R/mh1fTzZBKh+XeoxxFhRJgG5PZUK9DW
-         nqfEtw30mbezb6SjSdTry30MQ96gE3J2Hddk1ntmpTBAhiKYHRFYBolJEKTxUXGTeuu/
-         YfE/BdyNZZwSOCsxvcz1u38p0OwiwbgnrM79Hvr5UZyx3obezETo8+t91kh276rwrnYH
-         KUvA==
+        Tue, 21 Jun 2022 03:39:41 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2FE741274F
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 00:39:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655797177;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=N9tiKnq6phB8o+3F1BeH/xJoEGEmyesclfjwFxkzgCE=;
+        b=JVyQemiRW1Znf96EWsJ/UAn3lvPM+TU+f1rog4pNvpZvgALi85R6U10DRBjbwOeDOcDGLl
+        jLNyTqNxAK+D41bbvZl7+a5xSqZ+9p71BnuYbnNawXzE2+YIqxMYLMolVL+YEruabwC7Kx
+        7Hhe8rTDuk+50cL7kiP56u0GwJhVFkA=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-247-Wo9B4HvDNQGG97TBPUWeyw-1; Tue, 21 Jun 2022 03:39:35 -0400
+X-MC-Unique: Wo9B4HvDNQGG97TBPUWeyw-1
+Received: by mail-wr1-f70.google.com with SMTP id z11-20020adfc00b000000b0021a3ab8ec82so2787723wre.23
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 00:39:35 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=nk+fdQE93FqPegDOLztKBITezax/oNzcyKzefYaORp8=;
-        b=YpnD5eqjl1hEf/IYEj9HiW0qBTnH/wwZ7yqR09bxtGCgQXtdHEaw4+8rngrWAgaA0r
-         iYRqwv7k2MML4/3eK4v+m0qavwUFVnRIGkmcadRMVdGXgPEHC1xTfiStWYe2/6o4zgcy
-         KzSUprBhHfspIj89BwF3aZGoYncc85r25ASxC4JJH5sGB8M2FX3F9/FHQaIeYZF4jwLa
-         3muG1KyFEJDG4MluGmeJy66Vgi3Up/L0sxjKShICDI0jWp0Imqg6XT1oy03jJHiS9y8u
-         r5hAuhhJpa8tzDUiBW1b82Cuw26wmk3gHWyzYsxAueUQ7m0RiVt4mUf6MzBEFGYrwtbt
-         KrFQ==
-X-Gm-Message-State: AJIora+v/vzTr5m8ucOnvtDaP1PlgDyJQ/HILEiwmNHxWkrZsiaKnEu9
-        aB2mJXyUqmc8d8PCcKJ0b1GSsQ==
-X-Google-Smtp-Source: AGRyM1tzcOchkt7DypAfKrCwXNSUY5s5v3wBe6Pw1F/TJ4XsfE6hlLD+8GcyGAve96CoC88+Qgh+mw==
-X-Received: by 2002:a17:902:728d:b0:168:d0cf:2246 with SMTP id d13-20020a170902728d00b00168d0cf2246mr27711694pll.74.1655797095238;
-        Tue, 21 Jun 2022 00:38:15 -0700 (PDT)
-Received: from [10.97.0.6] ([199.101.192.33])
-        by smtp.gmail.com with ESMTPSA id z4-20020a17090a66c400b001e345c579d5sm9463008pjl.26.2022.06.21.00.38.12
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=N9tiKnq6phB8o+3F1BeH/xJoEGEmyesclfjwFxkzgCE=;
+        b=lu2nTJxUGQYDEZt2FddNupGuulI0CUR7/bu8pHCKc+jOCy/VSa698Nooa5a9UiZXfs
+         mLQqQAdBlJtAT/9Xqml33WVYkPZopPmMHFJ8AlKHhxifw8W/w/L5cjpYFZMUyB5qMuUs
+         rUpItjc1xV3GoEUKlQkaP91oXR4oIxa3Nm7c9PdUBLGvtL8EMfAvKwshYSdkivSD72RZ
+         H1ckm3+ipeZ29mTGSJ6zoYSKeVvIbUdbnF1ueN+mpYdCyV/+Q7PNVWBf68UeAitrH6Ob
+         VuFWpHHdEgBTTEyBEqSZ4TWhNUE9IkAo6rkjVSrDq3TwFArAO1MF6BSvB+DOZuwkNUWB
+         nKeg==
+X-Gm-Message-State: AJIora+5Uto2d2XM61o0PmhMTUYwDA9EfrcQ6SxpIiO7vrg9XVTodh/T
+        bdkwXjhIDeWYcykDYm3gOFBJj/0fgcp8C7HjYhoGTAzIx5C5wI9AYG8U07ZjgJB7FKtVBUooAj/
+        JLjHMjj1nMWAangDpSC11zM45
+X-Received: by 2002:adf:e491:0:b0:213:ba6b:b017 with SMTP id i17-20020adfe491000000b00213ba6bb017mr2244119wrm.652.1655797174146;
+        Tue, 21 Jun 2022 00:39:34 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vOMmayQmvf7SIYR8lv3P/I4QUP1e869MPBj5r5k76l2FUw/Qwk9oItuc7MizEnliZ9dC4/YQ==
+X-Received: by 2002:adf:e491:0:b0:213:ba6b:b017 with SMTP id i17-20020adfe491000000b00213ba6bb017mr2244092wrm.652.1655797173867;
+        Tue, 21 Jun 2022 00:39:33 -0700 (PDT)
+Received: from ?IPV6:2003:d8:2f04:2500:cdb0:9b78:d423:43f? (p200300d82f042500cdb09b78d423043f.dip0.t-ipconnect.de. [2003:d8:2f04:2500:cdb0:9b78:d423:43f])
+        by smtp.gmail.com with ESMTPSA id n15-20020a5d4c4f000000b0021b966abc19sm1468962wrt.19.2022.06.21.00.39.32
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Jun 2022 00:38:14 -0700 (PDT)
-Subject: Re: [PATCH] uacce: fix concurrency of fops_open and uacce_remove
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Wangzhou <wangzhou1@hisilicon.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        linux-accelerators@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        linux-crypto@vger.kernel.org, iommu@lists.linux-foundation.org,
-        Yang Shen <shenyang39@huawei.com>
-References: <20220610123423.27496-1-zhangfei.gao@linaro.org>
- <Yqn3spLZHpAkQ9Us@myrica> <fdc8d8b0-4e04-78f5-1e8a-4cf44c89a37f@linaro.org>
- <YqrmdKNrYTCiS/MC@myrica> <d90e8ea5-2f18-2eda-b4b2-711083aa7ecd@linaro.org>
- <YrB1D9rv9G4h/BYU@myrica> <YrB30M9yAbUbPFrG@kroah.com>
-From:   Zhangfei Gao <zhangfei.gao@linaro.org>
-Message-ID: <b5011dd2-e8ec-a307-1b43-5aff6cbb6891@linaro.org>
-Date:   Tue, 21 Jun 2022 15:37:31 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Tue, 21 Jun 2022 00:39:33 -0700 (PDT)
+Message-ID: <b01d66f5-67c9-95a4-7dc7-ec7645560214@redhat.com>
+Date:   Tue, 21 Jun 2022 09:39:31 +0200
 MIME-Version: 1.0
-In-Reply-To: <YrB30M9yAbUbPFrG@kroah.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v5 1/2] mm: memory_hotplug: enumerate all supported
+ section flags
 Content-Language: en-US
+To:     Muchun Song <songmuchun@bytedance.com>, akpm@linux-foundation.org,
+        corbet@lwn.net, mike.kravetz@oracle.com, osalvador@suse.de,
+        paulmck@kernel.org
+Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, duanxiongchun@bytedance.com, smuchun@gmail.com
+References: <20220620110616.12056-1-songmuchun@bytedance.com>
+ <20220620110616.12056-2-songmuchun@bytedance.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20220620110616.12056-2-songmuchun@bytedance.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 20.06.22 13:06, Muchun Song wrote:
+> We are almost running out of section flags, only one bit is available in
+> the worst case (powerpc with 256k pages).  However, there are still some
+> free bits (in ->section_mem_map) on other architectures (e.g. x86_64 has
+> 10 bits available, arm64 has 8 bits available with worst case of 64K
+> pages).  We have hard coded those numbers in code, it is inconvenient to
+> use those bits on other architectures except powerpc.  So transfer those
+> section flags to enumeration to make it easy to add new section flags in
+> the future. Also, move SECTION_TAINT_ZONE_DEVICE into the scope of
+> CONFIG_ZONE_DEVICE to save a bit on non-zone-device case.
+> 
+> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
 
+Reviewed-by: David Hildenbrand <david@redhat.com>
 
-On 2022/6/20 下午9:36, Greg Kroah-Hartman wrote:
-> On Mon, Jun 20, 2022 at 02:24:31PM +0100, Jean-Philippe Brucker wrote:
->> On Fri, Jun 17, 2022 at 02:05:21PM +0800, Zhangfei Gao wrote:
->>>> The refcount only ensures that the uacce_device object is not freed as
->>>> long as there are open fds. But uacce_remove() can run while there are
->>>> open fds, or fds in the process of being opened. And atfer uacce_remove()
->>>> runs, the uacce_device object still exists but is mostly unusable. For
->>>> example once the module is freed, uacce->ops is not valid anymore. But
->>>> currently uacce_fops_open() may dereference the ops in this case:
->>>>
->>>> 	uacce_fops_open()
->>>> 	 if (!uacce->parent->driver)
->>>> 	 /* Still valid, keep going */		
->>>> 	 ...					rmmod
->>>> 						 uacce_remove()
->>>> 	 ...					 free_module()
->>>> 	 uacce->ops->get_queue() /* BUG */
->>> uacce_remove should wait for uacce->queues_lock, until fops_open release the
->>> lock.
->>> If open happen just after the uacce_remove: unlock, uacce_bind_queue in open
->>> should fail.
->> Ah yes sorry, I lost sight of what this patch was adding. But we could
->> have the same issue with the patch, just in a different order, no?
->>
->> 	uacce_fops_open()
->> 	 uacce = xa_load()
->> 	 ...					rmmod
-> Um, how is rmmod called if the file descriptor is open?
->
-> That should not be possible if the owner of the file descriptor is
-> properly set.  Please fix that up.
-Thanks Greg
+-- 
+Thanks,
 
-Set cdev owner or use module_get/put can block rmmod once fops_open.
--       uacce->cdev->owner = THIS_MODULE;
-+       uacce->cdev->owner = uacce->parent->driver->owner;
+David / dhildenb
 
-However, still not find good method to block removing parent pci device.
-
-$ echo 1 > /sys/bus/pci/devices/0000:00:02.0/remove &
-
-[   32.563350]  uacce_remove+0x6c/0x148
-[   32.563353]  hisi_qm_uninit+0x12c/0x178
-[   32.563356]  hisi_zip_remove+0xa0/0xd0 [hisi_zip]
-[   32.563361]  pci_device_remove+0x44/0xd8
-[   32.563364]  device_remove+0x54/0x88
-[   32.563367]  device_release_driver_internal+0xec/0x1a0
-[   32.563370]  device_release_driver+0x20/0x30
-[   32.563372]  pci_stop_bus_device+0x8c/0xe0
-[   32.563375]  pci_stop_and_remove_bus_device_locked+0x28/0x60
-[   32.563378]  remove_store+0x9c/0xb0
-[   32.563379]  dev_attr_store+0x20/0x38
-
-mutex_lock(&dev->device_lock) can be used, which used in 
-device_release_driver_internal.
-Or use internal mutex.
-
-Thanks
