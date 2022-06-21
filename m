@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1393CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:25:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95A50C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:25:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352937AbiFUPZV (ORCPT
+        id S1352921AbiFUPZZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 11:25:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35784 "EHLO
+        Tue, 21 Jun 2022 11:25:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352675AbiFUPZE (ORCPT
+        with ESMTP id S1352881AbiFUPZF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 11:25:04 -0400
+        Tue, 21 Jun 2022 11:25:05 -0400
 Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1571D2AC4C;
-        Tue, 21 Jun 2022 08:25:00 -0700 (PDT)
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25LCNK2r006621;
-        Tue, 21 Jun 2022 17:24:39 +0200
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4498D2B1A2;
+        Tue, 21 Jun 2022 08:25:01 -0700 (PDT)
+Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25LCQIIO032482;
+        Tue, 21 Jun 2022 17:24:37 +0200
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=selector1;
- bh=Y8yGwGuxXDAU0ksP6EFGL3UGPBuTR8ZUSlyw8NNdFDM=;
- b=iqUTgU67XPhZdW9v918PlV4ouqj3lTFOrmN59xl12pm5xTib9yXpYDD90YAwSy7JcaK/
- MqgMj02u+Dh8YitIk+JwOp7sDH9VUMRbDhwA7TziiQEkSeu3JhpwVVCnPA7oVqA/T2OW
- /V0YVD/utHV+zN6FwgnL3V1Cxp9VWcLPF04zenPUqTnH3/cuzZoojqlx7y9rMswPbldf
- ZaPMFnagMzLwg5k1v6229i2ynvIKeLtgewZHW7msU0yun4K63JW/Q7gWrqqhOIoEsvWF
- tdUtHonk4KwpGeLd7jq69zoqenSqU+SOh6ZYufkobuwYeYLvxqyReMtTvQ3kpqEMtN/t uw== 
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=selector1;
+ bh=1DjHc8YrbaZYa2K0821Lb5I79I/6OnNRBe5v5W+s1JU=;
+ b=Pq2DYeD/8pUdcymCVVOeGSCBbH1/E4xbkBFva0+FbL8lZo1k/0Q14hP4PHN7gtAnbt+J
+ op+pEHSTIcNhbKzPvtCyp1yEqjJRNEPlnY9g4tkF3Ezr/iavQT/pQy7IEjSBlzSMc/Xh
+ rYNMAsd5e82qL3fbIKld2Nyelu3I0Wz24gNLEgGtMb5YVIUgQcZLciZBGQ4RFu+ZzKsm
+ 8gFNK67iBklzO9x+UYcy/bMYz1eoZt4f1ihdD2bibq8ox3UPlJeusxd3W0mpHUboZk/S
+ AyQKp/E1yyfWYkmGuNMc1KcF/IW2DjaVFSqqiuH763Sn1wrPm0sD+akLy8F0lfh4kStL yg== 
 Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3gua1n2rb4-1
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3gu9vcjtxx-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 21 Jun 2022 17:24:39 +0200
+        Tue, 21 Jun 2022 17:24:37 +0200
 Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id CBCAB10002A;
-        Tue, 21 Jun 2022 17:24:38 +0200 (CEST)
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 95E70100034;
+        Tue, 21 Jun 2022 17:24:36 +0200 (CEST)
 Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id C662922ECD3;
-        Tue, 21 Jun 2022 17:24:38 +0200 (CEST)
-Received: from localhost (10.75.127.48) by SHFDAG1NODE2.st.com (10.75.129.70)
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 8FB2722ECD8;
+        Tue, 21 Jun 2022 17:24:36 +0200 (CEST)
+Received: from localhost (10.75.127.50) by SHFDAG1NODE2.st.com (10.75.129.70)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Tue, 21 Jun
- 2022 17:24:37 +0200
+ 2022 17:24:34 +0200
 From:   Fabrice Gasnier <fabrice.gasnier@foss.st.com>
 To:     <hminas@synopsys.com>, <gregkh@linuxfoundation.org>,
         <robh+dt@kernel.org>
@@ -51,16 +51,14 @@ CC:     <stern@rowland.harvard.edu>, <krzysztof.kozlowski+dt@linaro.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-stm32@st-md-mailman.stormreply.com>,
         <amelie.delaunay@foss.st.com>, <fabrice.gasnier@foss.st.com>
-Subject: [PATCH v2 4/4] usb: dwc2: host: add TPL support
-Date:   Tue, 21 Jun 2022 17:23:50 +0200
-Message-ID: <20220621152350.145745-5-fabrice.gasnier@foss.st.com>
+Subject: [PATCH v2 0/4] usb: host: add TPL support to ehci ohci and dwc2
+Date:   Tue, 21 Jun 2022 17:23:46 +0200
+Message-ID: <20220621152350.145745-1-fabrice.gasnier@foss.st.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220621152350.145745-1-fabrice.gasnier@foss.st.com>
-References: <20220621152350.145745-1-fabrice.gasnier@foss.st.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.75.127.48]
+X-Originating-IP: [10.75.127.50]
 X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE2.st.com
  (10.75.129.70)
 X-Proofpoint-Virus-Version: vendor=baseguard
@@ -70,43 +68,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amelie Delaunay <amelie.delaunay@foss.st.com>
+The Target Peripheral List (TPL) support is used to identify targeted
+devices during Embedded Host (EH) compliance testing. Add TPL support
+setting from device tree on ehci-platform, ohci-platform and dwc2 drivers.
+Also document TPL support in DWC2 dt-bindings.
 
-The Target Peripheral List (TPL) is used to identify targeted devices
-during Embedded Host compliance testing. The user can add "tpl-support"
-in the device tree to enable it.
-
-Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
-Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
----
 Changes in v2:
-- added dt-bindings precursor patch
-- update commit message to clarify TPL and EH meaning
----
- drivers/usb/dwc2/hcd.c | 3 +++
- 1 file changed, 3 insertions(+)
+- Document TPL support in DWC2 dt-bindings
+- Spell TPL and EH
+- Add collected ack
 
-diff --git a/drivers/usb/dwc2/hcd.c b/drivers/usb/dwc2/hcd.c
-index f63a27d11fac8..4567f3c24d225 100644
---- a/drivers/usb/dwc2/hcd.c
-+++ b/drivers/usb/dwc2/hcd.c
-@@ -52,6 +52,7 @@
- 
- #include <linux/usb/hcd.h>
- #include <linux/usb/ch11.h>
-+#include <linux/usb/of.h>
- 
- #include "core.h"
- #include "hcd.h"
-@@ -5339,6 +5340,8 @@ int dwc2_hcd_init(struct dwc2_hsotg *hsotg)
- 	/* Don't support SG list at this point */
- 	hcd->self.sg_tablesize = 0;
- 
-+	hcd->tpl_support = of_usb_host_tpl_support(hsotg->dev->of_node);
-+
- 	if (!IS_ERR_OR_NULL(hsotg->uphy))
- 		otg_set_host(hsotg->uphy->otg, &hcd->self);
- 
+Amelie Delaunay (3):
+  usb: host: ohci-platform: add TPL support
+  usb: host: ehci-platform: add TPL support
+  usb: dwc2: host: add TPL support
+
+Fabrice Gasnier (1):
+  dt-bindings: usb: dwc2: document TPL support
+
+ Documentation/devicetree/bindings/usb/dwc2.yaml | 3 +++
+ drivers/usb/dwc2/hcd.c                          | 3 +++
+ drivers/usb/host/ehci-platform.c                | 2 ++
+ drivers/usb/host/ohci-platform.c                | 3 +++
+ 4 files changed, 11 insertions(+)
+
 -- 
 2.25.1
 
