@@ -2,76 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B98E3CCA481
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 14:19:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEB6CC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 14:19:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351102AbiFUOTj (ORCPT
+        id S1351269AbiFUOTp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 10:19:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32882 "EHLO
+        Tue, 21 Jun 2022 10:19:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351157AbiFUOTg (ORCPT
+        with ESMTP id S1351157AbiFUOTo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 10:19:36 -0400
-X-Greylist: delayed 966 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 21 Jun 2022 07:19:32 PDT
-Received: from smtp28.bhosted.nl (smtp28.bhosted.nl [IPv6:2a02:9e0:8000::40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 586E31F2FD
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 07:19:31 -0700 (PDT)
+        Tue, 21 Jun 2022 10:19:44 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CF79140CD;
+        Tue, 21 Jun 2022 07:19:42 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id u12so27827569eja.8;
+        Tue, 21 Jun 2022 07:19:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=protonic.nl; s=202111;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc:to:from:
-         from;
-        bh=B9lL9OqSXc2eVWzkrNe9zxYlTNTyMllYa44sGFVBFnM=;
-        b=RODBEiWX5dtF8x+goNia8bLTbClkx28ml6ZqLOtfb6b5jNhYKKBlu0kzzpJzI3PKlDnh1iEhLLcMl
-         EtsDQCR4H7jTZkEWtQfOVEjUqYDiHF5EkFkJBHsTg5asxOZ+49q45Eo5UYW4J2hbHMae8hthpLbBZE
-         bBSFum1bXO3jD0UbhwdzKPMvpWWRRPrI26gyUoCTC9Xcq02awdYWTPIFs0/Lb0afJYOlB5t127UnlZ
-         GyZDDO4gRo57YrryMXh3ITlGvASLK7HSCrgrxiFvC14zEVK1Gz+zQ6ObtBtTnjMm03/A/3+spNyQTT
-         hGnyxWAo/9Ti5/cWUxpk8ugDUx5zyTA==
-X-MSG-ID: ea2d0624-f16a-11ec-8a45-0050569d11ae
-From:   Robin van der Gracht <robin@protonic.nl>
-To:     Rob Herring <robh+dt@kernel.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, David Jander <david@protonic.nl>,
-        Robin van der Gracht <robin@protonic.nl>
-Subject: [PATCH] ARM: dts: imx6qdl-prti6q.dtsi: Add applicable properties to usdhc3
-Date:   Tue, 21 Jun 2022 16:03:34 +0200
-Message-Id: <20220621140334.568446-1-robin@protonic.nl>
-X-Mailer: git-send-email 2.34.1
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=nJcEJHgKYHK2ge32KOPbngb4fap2zLy6k+L71+xMqxs=;
+        b=S3SY5NmCA/58ZV14ZhEQ/wsmZTHR1vM9olmXvgWLfT0N+hSpNza8wPf/Pc5y50FEF4
+         EDXBGt66/jSQ/Uwq/Z5pcPpvA6N9YCO7mUJZs5aRd2SOPCGUWmV96e3FXXXVd5XuNXc+
+         6N+TLGPYXdTL156LjoEgyN/q3914nRfv0Qa8wmc39U92r91M5UZjXm9JeWxhd7iOftB/
+         yzxugvBNbgpL13YRFBYzDr501On8GR8THDL25DagnAx7VecOkKu2HV3EQljswXMzzlEU
+         xjWkv+HQYIuf8KoiRGE3eLvmVSMoaee7kyt/b2FNunwoCTlmKKNMUgyxeMlJL7BW8rDe
+         XnWA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=nJcEJHgKYHK2ge32KOPbngb4fap2zLy6k+L71+xMqxs=;
+        b=CkVui3zD0L3/gMzAG9A2nPJvgbBbYJRaApyiqtTVCB7djnCdMXRSIKeB5kbQdno/bq
+         wCjihgv3Is+7uMvl2rzzeWoKFGCh/jVdrLiao1YFKlpDCAkrQrK7gxGqJTbWPEEJXztv
+         lXmcKZJxmb9Ojs54Sm7hu0jrwasbsLxwdheWxklqha1mnQrrBYwBIHejyiizA26vAako
+         o5oqOB/eHOvMcTu3dt1MrzZn4xdA1r3e/KA61Yq3iuLndX5Igze3Y2EJCNq643M2P/wc
+         slw36f7A2MK7AgPuHsl4q0HvDaHZ6SFbdxTr720mediYrRH64XO3YZ0NG0MrPrbWgQXb
+         bW+g==
+X-Gm-Message-State: AJIora992DIeGo3HQgpkHKBpVAHi5UUsSPCZi/Fr9203BLvdM14vJH6w
+        KUZDHDPWlq+VFVrHRoc6k7f6QnxvkRK1QYCPhjo=
+X-Google-Smtp-Source: AGRyM1s3MYxLF4VXs6SuFJ5MAGaGHHsLRrY1E8crXVHyz2Zq2/PF5L4GyO7D8f2YZyKvy5clBI40DZnclYMfnONR0pw=
+X-Received: by 2002:a17:906:c7c1:b0:711:d2e9:99d0 with SMTP id
+ dc1-20020a170906c7c100b00711d2e999d0mr26117746ejb.639.1655821180915; Tue, 21
+ Jun 2022 07:19:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220621065502.28868-1-jiangjian@cdjrlc.com>
+In-Reply-To: <20220621065502.28868-1-jiangjian@cdjrlc.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 21 Jun 2022 16:19:04 +0200
+Message-ID: <CAHp75VfKEu2T+DjCTEGnmME3OCX0Lezy4KxdXezALUH9+sg97g@mail.gmail.com>
+Subject: Re: [PATCH] media: usb: gspca: aligned '*' each line
+To:     Jiang Jian <jiangjian@cdjrlc.com>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Hans Verkuil <hverkuil@xs4all.nl>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The usdhc3 interface is connected to a soldered eMMC chip on all boards
-that import this dtsi. Adding these properties speeds up the device probe
-during boot.
+On Tue, Jun 21, 2022 at 9:01 AM Jiang Jian <jiangjian@cdjrlc.com> wrote:
+>
+> Consider "*" alignment in comments
 
-Signed-off-by: Robin van der Gracht <robin@protonic.nl>
----
- arch/arm/boot/dts/imx6qdl-prti6q.dtsi | 3 +++
- 1 file changed, 3 insertions(+)
+In a similar way as I commented on your IIO contribution, do changes
+for all similar patches.
 
-diff --git a/arch/arm/boot/dts/imx6qdl-prti6q.dtsi b/arch/arm/boot/dts/imx6qdl-prti6q.dtsi
-index 19578f660b09..f0db0d4471f4 100644
---- a/arch/arm/boot/dts/imx6qdl-prti6q.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-prti6q.dtsi
-@@ -94,6 +94,9 @@ &usdhc3 {
- 	pinctrl-0 = <&pinctrl_usdhc3>;
- 	bus-width = <8>;
- 	non-removable;
-+	no-1-8-v;
-+	no-sd;
-+	no-sdio;
- 	status = "okay";
- };
- 
 -- 
-2.34.1
-
+With Best Regards,
+Andy Shevchenko
