@@ -2,75 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B210CCA47E
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 02:29:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E65A5C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 02:30:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344002AbiFUC3p (ORCPT
+        id S1344131AbiFUCaR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 20 Jun 2022 22:29:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47962 "EHLO
+        Mon, 20 Jun 2022 22:30:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243210AbiFUC3o (ORCPT
+        with ESMTP id S242831AbiFUCaQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 20 Jun 2022 22:29:44 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77A8C14094;
-        Mon, 20 Jun 2022 19:29:43 -0700 (PDT)
-Received: from kwepemi500011.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LRr5M4x1BzhYZH;
-        Tue, 21 Jun 2022 10:27:35 +0800 (CST)
-Received: from [127.0.0.1] (10.67.102.125) by kwepemi500011.china.huawei.com
- (7.221.188.124) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 21 Jun
- 2022 10:29:41 +0800
-Message-ID: <62B12D14.1010003@hisilicon.com>
-Date:   Tue, 21 Jun 2022 10:29:40 +0800
-From:   Wei Xu <xuwei5@hisilicon.com>
-User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:24.0) Gecko/20100101 Thunderbird/24.2.0
-MIME-Version: 1.0
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        <soc@kernel.org>, Olof Johansson <olof@lixom.net>,
-        <arm@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>
-Subject: Re: [PATCH] arm64: dts: hisilicon: adjust whitespace around '='
-References: <20220526204453.832681-1-krzysztof.kozlowski@linaro.org> <165541242280.9040.2541894516124804642.b4-ty@linaro.org>
-In-Reply-To: <165541242280.9040.2541894516124804642.b4-ty@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.102.125]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemi500011.china.huawei.com (7.221.188.124)
-X-CFilter-Loop: Reflected
+        Mon, 20 Jun 2022 22:30:16 -0400
+Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB1B518E24;
+        Mon, 20 Jun 2022 19:30:15 -0700 (PDT)
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 7A9042012C0;
+        Tue, 21 Jun 2022 04:30:14 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 2E3122012A8;
+        Tue, 21 Jun 2022 04:30:14 +0200 (CEST)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 718FC1802183;
+        Tue, 21 Jun 2022 10:30:12 +0800 (+08)
+From:   Shengjiu Wang <shengjiu.wang@nxp.com>
+To:     robh+dt@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
+        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Cc:     shengjiu.wang@gmail.com
+Subject: [PATCH v3 0/3] add bt-sco sound card support for i.MX8MQ/MM/MN
+Date:   Tue, 21 Jun 2022 10:16:00 +0800
+Message-Id: <1655777763-21153-1-git-send-email-shengjiu.wang@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzysztof,
+add bt-sco sound card support for i.MX8MQ/MM/MN
 
-On 2022/6/17 4:47, Krzysztof Kozlowski wrote:
-> On Thu, 26 May 2022 22:44:53 +0200, Krzysztof Kozlowski wrote:
->> Fix whitespace coding style: use single space instead of tabs or
->> multiple spaces around '=' sign in property assignment.  No functional
->> changes (same DTB).
->>
->>
-> 
-> Applied, thanks!
+changes in v3:
+- move compatible property to be first
 
-Thanks!
+changes in v2
+- update note name of bt-sco codec
 
-Best Regards,
-Wei
+Shengjiu Wang (3):
+  arm64: dts: imx8mm-evk: add bt-sco sound card support
+  arm64: dts: imx8mq-evk: add bt-sco sound card support
+  arm64: dts: imx8mn-evk: add bt-sco sound card support
 
-> 
-> [1/1] arm64: dts: hisilicon: adjust whitespace around '='
->       https://git.kernel.org/krzk/linux/c/11357f103f2e641e2744d527886ff248dbef13d8
-> 
-> Best regards,
-> 
+ arch/arm64/boot/dts/freescale/imx8mm-evk.dtsi | 43 +++++++++++++++++++
+ arch/arm64/boot/dts/freescale/imx8mn-evk.dtsi | 43 +++++++++++++++++++
+ arch/arm64/boot/dts/freescale/imx8mq-evk.dts  | 43 +++++++++++++++++++
+ 3 files changed, 129 insertions(+)
+
+-- 
+2.17.1
 
