@@ -2,98 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE0B9C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 10:07:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 028CFC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 10:08:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231805AbiFUKHN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 06:07:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45418 "EHLO
+        id S1346846AbiFUKIA (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 21 Jun 2022 06:08:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229535AbiFUKHL (ORCPT
+        with ESMTP id S1345203AbiFUKH7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 06:07:11 -0400
-Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 395C027FEB
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 03:07:09 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: marcan@marcan.st)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id DE18A41DF4;
-        Tue, 21 Jun 2022 10:07:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=marcan.st; s=default;
-        t=1655806027; bh=mENta8LrzbYHKgS3y0BpqM4Nb7jfJxw8OCgUAYE0nlk=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=p8C3ksm6LXw1QNi98fXAdAcOkNhopVRn2G7HrRekhs3u0CmEbepH5iOgVmRkCFmLd
-         KHtajS5pw6+ebcwMSbU4MNtAOKIpUY+Xmp4XBn45lJyXpF8vpA1qz2qzl/AiO+/BY2
-         nUJhKf/BSZRI4HacI4K6Ojq1S3ZHw/Crw+1kLT3oNzFLgeV47CuYdGfzi1TvtIlWl7
-         XMf1oID/q/NEv/oBjPIjV1ka6ltDMKDFEloEvhzngU/ozuLLIxT4gOnyxMV0hOTvb8
-         0hxcUQLP5ENUdKiJLDbQ1ipi4uGREhdNJhAQNoHOh3gZ2ebl0Xyb6p0x6DkbPSvdSE
-         Qpj04li02/Mrw==
-Message-ID: <9d683b37-abb0-a0d6-417a-b5f7c97673c5@marcan.st>
-Date:   Tue, 21 Jun 2022 19:07:02 +0900
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 1/2] arm64: dts: apple: Re-parent ANS2 power domains
-Content-Language: es-ES
-To:     Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220602174213.2737-1-sven@svenpeter.dev>
-From:   Hector Martin <marcan@marcan.st>
-In-Reply-To: <20220602174213.2737-1-sven@svenpeter.dev>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Tue, 21 Jun 2022 06:07:59 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C7E682609
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 03:07:57 -0700 (PDT)
+Received: from linux.localdomain (unknown [113.200.148.30])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9DxT957mLFifqhRAA--.24852S3;
+        Tue, 21 Jun 2022 18:07:56 +0800 (CST)
+From:   Tiezhu Yang <yangtiezhu@loongson.cn>
+To:     Huacai Chen <chenhuacai@kernel.org>,
+        WANG Xuerui <kernel@xen0n.name>
+Cc:     Xuefeng Li <lixuefeng@loongson.cn>,
+        Jianmin Lv <lvjianmin@loongson.cn>, Jun Yi <yijun@loongson.cn>,
+        Rui Wang <wangrui@loongson.cn>, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 1/2] LoongArch: Add TI_SYSCALL in output_thread_info_defines()
+Date:   Tue, 21 Jun 2022 18:07:53 +0800
+Message-Id: <1655806074-17454-2-git-send-email-yangtiezhu@loongson.cn>
+X-Mailer: git-send-email 2.1.0
+In-Reply-To: <1655806074-17454-1-git-send-email-yangtiezhu@loongson.cn>
+References: <1655806074-17454-1-git-send-email-yangtiezhu@loongson.cn>
+X-CM-TRANSID: AQAAf9DxT957mLFifqhRAA--.24852S3
+X-Coremail-Antispam: 1UD129KBjvdXoW7Wr48Ww17Xw43JF4UCw1rJFb_yoWkArg_Wr
+        nrGwn8GFW8JrWIq3Wvyw4fXr4jya4vkFyrXrZ7CrWxtwnrtry5Jr4rZ348Cr1kKrWkGrs8
+        C3ykW3Wkur1jkjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbgxFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI8067AKxVWUGwA2048vs2IY02
+        0Ec7CjxVAFwI0_JFI_Gr1l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xv
+        wVC0I7IYx2IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM2
+        8EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AI
+        xVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20x
+        vE14v26r106r15McIj6I8E87Iv67AKxVW8JVWxJwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xv
+        r2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkF7I0En4kS14v26r126r1DMx
+        kIecxEwVAFwVW8twCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s02
+        6c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF
+        0_Jw1lIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvE
+        c7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14
+        v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x
+        0JUfGYXUUUUU=
+X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 03/06/2022 02.42, Sven Peter wrote:
-> From: Hector Martin <marcan@marcan.st>
-> 
-> Turns out that the APCIE_ST*_SYS domains do hard-depend on ANS2, so
-> without this they refuse to power up.
-> 
-> Signed-off-by: Hector Martin <marcan@marcan.st>
-> Reviewed-by: Sven Peter <sven@svenpeter.dev>
-> Signed-off-by: Sven Peter <sven@svenpeter.dev>
-> ---
->  arch/arm64/boot/dts/apple/t8103-pmgr.dtsi | 7 +------
->  1 file changed, 1 insertion(+), 6 deletions(-)
-> 
-> diff --git a/arch/arm64/boot/dts/apple/t8103-pmgr.dtsi b/arch/arm64/boot/dts/apple/t8103-pmgr.dtsi
-> index fc51bc872468..a6dbb1f485d8 100644
-> --- a/arch/arm64/boot/dts/apple/t8103-pmgr.dtsi
-> +++ b/arch/arm64/boot/dts/apple/t8103-pmgr.dtsi
-> @@ -725,11 +725,6 @@ ps_ans2: power-controller@3f0 {
->  		#power-domain-cells = <0>;
->  		#reset-cells = <0>;
->  		label = "ans2";
-> -		/*
-> -		 * The ADT makes ps_apcie_st depend on ps_ans2 instead, but this
-> -		 * doesn't make much sense since ANS2 uses APCIE_ST.
-> -		 */
-> -		power-domains = <&ps_apcie_st>;
->  	};
->  
->  	ps_gfx: power-controller@3f8 {
-> @@ -836,7 +831,7 @@ ps_apcie_st: power-controller@418 {
->  		#power-domain-cells = <0>;
->  		#reset-cells = <0>;
->  		label = "apcie_st";
-> -		power-domains = <&ps_apcie>;
-> +		power-domains = <&ps_apcie>, <&ps_ans2>;
->  	};
->  
->  	ps_ane_sys: power-controller@470 {
+The initial idea was to store the syscall number in PT_R11,
+and then we can get the syscall number from PT_R11 to check
+before RESTORE in handle_syscall, but we know PT_R11 may be
+overwritten by the signal handler and the syscall number
+will be lost.
 
-Applied both patches to asahi-soc/dt. Thanks!
+Add TI_SYSCALL in output_thread_info_defines(), then we can
+store the syscall number in TI_SYSCALL. This is preparation
+for later patch.
 
+Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+---
+ arch/loongarch/kernel/asm-offsets.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/loongarch/kernel/asm-offsets.c b/arch/loongarch/kernel/asm-offsets.c
+index bfb65eb..4757ebe 100644
+--- a/arch/loongarch/kernel/asm-offsets.c
++++ b/arch/loongarch/kernel/asm-offsets.c
+@@ -81,6 +81,7 @@ void output_thread_info_defines(void)
+ 	OFFSET(TI_CPU, thread_info, cpu);
+ 	OFFSET(TI_PRE_COUNT, thread_info, preempt_count);
+ 	OFFSET(TI_REGS, thread_info, regs);
++	OFFSET(TI_SYSCALL, thread_info, syscall);
+ 	DEFINE(_THREAD_SIZE, THREAD_SIZE);
+ 	DEFINE(_THREAD_MASK, THREAD_MASK);
+ 	DEFINE(_IRQ_STACK_SIZE, IRQ_STACK_SIZE);
 -- 
-Hector Martin (marcan@marcan.st)
-Public Key: https://mrcn.st/pub
+2.1.0
+
