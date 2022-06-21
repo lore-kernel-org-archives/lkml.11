@@ -2,102 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6EA3CCA473
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6EACC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 07:41:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347701AbiFUHky (ORCPT
+        id S1347797AbiFUHk4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 03:40:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39452 "EHLO
+        Tue, 21 Jun 2022 03:40:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347813AbiFUHka (ORCPT
+        with ESMTP id S1347837AbiFUHki (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 03:40:30 -0400
-Received: from soltyk.jannau.net (soltyk.jannau.net [144.76.91.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8751412AEA;
-        Tue, 21 Jun 2022 00:40:29 -0700 (PDT)
-Received: from coburn.home.jannau.net (p579ad988.dip0.t-ipconnect.de [87.154.217.136])
-        by soltyk.jannau.net (Postfix) with ESMTPSA id A803826ED15;
-        Tue, 21 Jun 2022 09:18:48 +0200 (CEST)
-From:   Janne Grunau <j@jannau.net>
-To:     iommu@lists.linux-foundation.org
-Cc:     Konrad Dybcio <konrad.dybcio@somainline.org>,
-        asahi@lists.linux.dev, Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Georgi Djakov <quic_c_gdjako@quicinc.com>,
-        Hector Martin <marcan@marcan.st>,
-        "Isaac J. Manjarres" <isaacm@codeaurora.org>,
-        Joerg Roedel <joro@8bytes.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Mark Kettenis <mark.kettenis@xs4all.nl>,
-        Rob Herring <robh+dt@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Sven Peter <sven@svenpeter.dev>, Will Deacon <will@kernel.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 0/5] iommu: M1 Pro/Max DART support
-Date:   Tue, 21 Jun 2022 09:18:43 +0200
-Message-Id: <20220621071848.14834-1-j@jannau.net>
-X-Mailer: git-send-email 2.35.1
+        Tue, 21 Jun 2022 03:40:38 -0400
+Received: from forward500o.mail.yandex.net (forward500o.mail.yandex.net [IPv6:2a02:6b8:0:1a2d::610])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D777F23BDC
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 00:40:35 -0700 (PDT)
+Received: from myt6-93965afc2133.qloud-c.yandex.net (myt6-93965afc2133.qloud-c.yandex.net [IPv6:2a02:6b8:c12:5525:0:640:9396:5afc])
+        by forward500o.mail.yandex.net (Yandex) with ESMTP id CD00D940DAC;
+        Tue, 21 Jun 2022 10:40:33 +0300 (MSK)
+Received: from myt5-01d0fbe499ab.qloud-c.yandex.net (myt5-01d0fbe499ab.qloud-c.yandex.net [2a02:6b8:c12:4619:0:640:1d0:fbe4])
+        by myt6-93965afc2133.qloud-c.yandex.net (mxback/Yandex) with ESMTP id DqjiMbBwxe-eWh05tEC;
+        Tue, 21 Jun 2022 10:40:33 +0300
+X-Yandex-Fwd: 2
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=maquefel.me; s=mail; t=1655797233;
+        bh=RdX/+yTKrxFGxvASlWbAzAdqYEzzocthfBSsMMgNr3Y=;
+        h=In-Reply-To:Subject:Cc:To:From:References:Date:Message-ID;
+        b=Qy4sYZrHWLy5aniM2Q8DLanUFI2lgGMlIcLBMZOvtbwlm7YyrxUEHTcfljkQpY0id
+         q89bdZ8psW9qhCz159ety4bcuXPib6E965hdu9hgKWU5MWpeAOg6n/PQa0bz2W7e4A
+         KgXh1+wx9D3ICmQgv+YD//brfOeeNQ0JECFWaJ44=
+Authentication-Results: myt6-93965afc2133.qloud-c.yandex.net; dkim=pass header.i=@maquefel.me
+Received: by myt5-01d0fbe499ab.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id zSjiCSJHOL-eVMWsID8;
+        Tue, 21 Jun 2022 10:40:32 +0300
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (Client certificate not present)
+Date:   Tue, 21 Jun 2022 10:40:30 +0300
+From:   Nikita Shubin <nikita.shubin@maquefel.me>
+To:     Anup Patel <apatel@ventanamicro.com>
+Cc:     Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Atish Patra <atishp@atishpatra.org>,
+        Heinrich Schuchardt <heinrich.schuchardt@canonical.com>,
+        Anup Patel <anup@brainfault.org>,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] RISC-V: Add mvendorid, marchid, and mimpid to
+ /proc/cpuinfo output
+Message-ID: <20220621104030.349c570b@redslave.neermore.group>
+In-Reply-To: <20220620115549.1529597-1-apatel@ventanamicro.com>
+References: <20220620115549.1529597-1-apatel@ventanamicro.com>
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hej,
+Hello Anup!
 
-this is the next attempt adding support for the DART found in Apple's
-M1 Pro/Max/Ultra. This adds a separate io-pgtable implementation for
-DART. As already mentioned in v2 the pte format is not fully compatible
-with io-pgtable-arm. Especially the 2nd least significant bit is used
-and is not available to tag tables/pages.
-io-pgtable-dart.c is copied from io-pgtable-arm.c and support for
-unused features is removed. Support for 4k IO pages is left for A7 to
-A11 SoCs as there's work underway to run Linux on them.
+On Mon, 20 Jun 2022 17:25:49 +0530
+Anup Patel <apatel@ventanamicro.com> wrote:
 
-The incompatibilities between both Apple DART pte seems manageable in
-their own io-pgtable implementation. A short list of the known
-differences:
+> Identifying the underlying RISC-V implementation can be important
+> for some of the user space applications. For example, the perf tool
+> uses arch specific CPU implementation id (i.e. CPUID) to select a
+> JSON file describing custom perf events on a CPU.
+> 
+> Currently, there is no way to identify RISC-V implementation so we
+> add mvendorid, marchid, and mimpid to /proc/cpuinfo output.
 
- - the physical addresses are shifted left by 4 bits and and have 2 more
-   bits inside the PTE entries
- - the read/write protection flags are at a different position
- - the subpage protection feature is now mandatory. For Linux we can
-   just configure it to always allow access to the entire page.
- - BIT(1) tags "uncached" mappings (used for the display controller)
+Tested on Sifive Unmatched:
 
-There is second type of DART (t8110) present on M1 Pro/Max SoCs which
-uses the same PTE format as t6000.
+localhost / # cat /proc/cpuinfo 
+processor       : 0
+hart            : 4
+isa             : rv64imafdc
+mmu             : sv39
+uarch           : sifive,bullet0
+mvendorid       : 0x489
+marchid         : 0x8000000000000007
+mimpid          : 0x20181004
 
-Changes in v3:
-- move APPLE_DART to its own io-pgtable implementation, copied from
-  io-pgtable-arm and simplified
+processor       : 1
+hart            : 1
+isa             : rv64imafdc
+mmu             : sv39
+uarch           : sifive,bullet0
+mvendorid       : 0x489
+marchid         : 0x8000000000000007
+mimpid          : 0x20181004
 
-Changes in v2:
-- added Rob's Acked-by:
-- add APPLE_DART2 io-pgtable format
+processor       : 2
+hart            : 2
+isa             : rv64imafdc
+mmu             : sv39
+uarch           : sifive,bullet0
+mvendorid       : 0x489
+marchid         : 0x8000000000000007
+mimpid          : 0x20181004
 
-Janne Grunau (1):
-  iommu/io-pgtable: Move Apple DART support to its own file
+processor       : 3
+hart            : 3
+isa             : rv64imafdc
+mmu             : sv39
+uarch           : sifive,bullet0
+mvendorid       : 0x489
+marchid         : 0x8000000000000007
+mimpid          : 0x20181004
 
-Sven Peter (4):
-  dt-bindings: iommu: dart: add t6000 compatible
-  iommu/io-pgtable: Add DART subpage protection support
-  iommu/io-pgtable-dart: Add DART PTE support for t6000
-  iommu: dart: Support t6000 variant
+mvendorid, marchid values match the register description in u74 manual.
 
- .../devicetree/bindings/iommu/apple,dart.yaml |   4 +-
- MAINTAINERS                                   |   1 +
- drivers/iommu/Kconfig                         |   1 -
- drivers/iommu/Makefile                        |   2 +-
- drivers/iommu/apple-dart.c                    |  24 +-
- drivers/iommu/io-pgtable-arm.c                |  63 --
- drivers/iommu/io-pgtable-dart.c               | 623 ++++++++++++++++++
- drivers/iommu/io-pgtable.c                    |   3 +
- include/linux/io-pgtable.h                    |   1 +
- 9 files changed, 653 insertions(+), 69 deletions(-)
- create mode 100644 drivers/iommu/io-pgtable-dart.c
+mimpid seems to be ok, through i can't find exact in U74/Unmatched docs.
 
--- 
-2.35.1
+Tested-by: Nikita Shubin <n.shubin@yadro.com>
+
+> 
+> Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+> ---
+>  arch/riscv/kernel/cpu.c | 51
+> +++++++++++++++++++++++++++++++++++++++++ 1 file changed, 51
+> insertions(+)
+> 
+> diff --git a/arch/riscv/kernel/cpu.c b/arch/riscv/kernel/cpu.c
+> index fba9e9f46a8c..c037b8691bbb 100644
+> --- a/arch/riscv/kernel/cpu.c
+> +++ b/arch/riscv/kernel/cpu.c
+> @@ -3,10 +3,13 @@
+>   * Copyright (C) 2012 Regents of the University of California
+>   */
+>  
+> +#include <linux/cpu.h>
+>  #include <linux/init.h>
+>  #include <linux/seq_file.h>
+>  #include <linux/of.h>
+> +#include <asm/csr.h>
+>  #include <asm/hwcap.h>
+> +#include <asm/sbi.h>
+>  #include <asm/smp.h>
+>  #include <asm/pgtable.h>
+>  
+> @@ -64,6 +67,50 @@ int riscv_of_parent_hartid(struct device_node
+> *node) }
+>  
+>  #ifdef CONFIG_PROC_FS
+> +
+> +struct riscv_cpuinfo {
+> +	unsigned long mvendorid;
+> +	unsigned long marchid;
+> +	unsigned long mimpid;
+> +};
+> +static DEFINE_PER_CPU(struct riscv_cpuinfo, riscv_cpuinfo);
+> +
+> +static int riscv_cpuinfo_starting(unsigned int cpu)
+> +{
+> +	struct riscv_cpuinfo *ci = this_cpu_ptr(&riscv_cpuinfo);
+> +
+> +#if defined(CONFIG_RISCV_SBI)
+> +	ci->mvendorid = sbi_spec_is_0_1() ? 0 : sbi_get_mvendorid();
+> +	ci->marchid = sbi_spec_is_0_1() ? 0 : sbi_get_marchid();
+> +	ci->mimpid = sbi_spec_is_0_1() ? 0 : sbi_get_mimpid();
+> +#elif defined(CONFIG_RISCV_M_MODE)
+> +	ci->mvendorid = csr_read(CSR_MVENDORID);
+> +	ci->marchid = csr_read(CSR_MARCHID);
+> +	ci->mimpid = csr_read(CSR_MIMPID);
+> +#else
+> +	ci->mvendorid = 0;
+> +	ci->marchid = 0;
+> +	ci->mimpid = 0;
+> +#endif
+> +
+> +	return 0;
+> +}
+> +
+> +static int __init riscv_cpuinfo_init(void)
+> +{
+> +	int ret;
+> +
+> +	ret = cpuhp_setup_state(CPUHP_AP_ONLINE_DYN,
+> "riscv/cpuinfo:starting",
+> +				riscv_cpuinfo_starting, NULL);
+> +	if (ret < 0) {
+> +		pr_err("cpuinfo: failed to register hotplug
+> callbacks.\n");
+> +		return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +device_initcall(riscv_cpuinfo_init);
+> +
+>  #define __RISCV_ISA_EXT_DATA(UPROP, EXTID) \
+>  	{							\
+>  		.uprop = #UPROP,				\
+> @@ -178,6 +225,7 @@ static int c_show(struct seq_file *m, void *v)
+>  {
+>  	unsigned long cpu_id = (unsigned long)v - 1;
+>  	struct device_node *node = of_get_cpu_node(cpu_id, NULL);
+> +	struct riscv_cpuinfo *ci = per_cpu_ptr(&riscv_cpuinfo,
+> cpu_id); const char *compat, *isa;
+>  
+>  	seq_printf(m, "processor\t: %lu\n", cpu_id);
+> @@ -188,6 +236,9 @@ static int c_show(struct seq_file *m, void *v)
+>  	if (!of_property_read_string(node, "compatible", &compat)
+>  	    && strcmp(compat, "riscv"))
+>  		seq_printf(m, "uarch\t\t: %s\n", compat);
+> +	seq_printf(m, "mvendorid\t: 0x%lx\n", ci->mvendorid);
+> +	seq_printf(m, "marchid\t\t: 0x%lx\n", ci->marchid);
+> +	seq_printf(m, "mimpid\t\t: 0x%lx\n", ci->mimpid);
+>  	seq_puts(m, "\n");
+>  	of_node_put(node);
+>  
 
