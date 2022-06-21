@@ -2,41 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F424C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6EC0C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 10:46:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347324AbiFUKpg (ORCPT
+        id S1345243AbiFUKpc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 06:45:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41474 "EHLO
+        Tue, 21 Jun 2022 06:45:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231461AbiFUKp0 (ORCPT
+        with ESMTP id S1349091AbiFUKNZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 06:45:26 -0400
-Received: from mail.toke.dk (mail.toke.dk [45.145.95.4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 753A7286D4;
-        Tue, 21 Jun 2022 03:45:20 -0700 (PDT)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
-        t=1655808316; bh=vx8h6+L8D85x6Ka256LnDLW4qNsUpfvpPspaIzHFpGk=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=e+qfih2jGoL2toeWj/c92mCBpTjOlkg3YVUTP6GSpnNASHlOpycpatqoOVZPW4mD8
-         NZc7vynp0Pt9ssULEYXujCX4WwsCLS8sYUFc4nPfF2n5OL+PVG63GEj7eJFdnP4yZB
-         388lsVUV9AuBM1c6BXtJBWkJDHD4QfwOtur88AtEPLW9ZElggyBZ1TpRMzUHJEcLpb
-         t/x3dOz+13mjgkF4CjGlOzTeVEjUNjgkC+zelTnfcMEBS1A18d3PhhAZVuX4ImcVRy
-         3PGWQQESUsNwFUir4JUH5lNl4d0KZ2CuWU7ERvX0JySx7o+ea3pftne6/j1RGLSjl6
-         XF/cLo6lP+SUw==
-To:     Jiang Jian <jiangjian@cdjrlc.com>
-Cc:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jiangjian@cdjrlc.com
-Subject: Re: [PATCH] ath9k: remove unexpected words "the" in comments
-In-Reply-To: <20220621080240.42198-1-jiangjian@cdjrlc.com>
-References: <20220621080240.42198-1-jiangjian@cdjrlc.com>
-Date:   Tue, 21 Jun 2022 12:45:16 +0200
-X-Clacks-Overhead: GNU Terry Pratchett
-Message-ID: <87pmj2b8hv.fsf@toke.dk>
+        Tue, 21 Jun 2022 06:13:25 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E729286D6
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 03:13:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655806405; x=1687342405;
+  h=from:to:cc:subject:in-reply-to:references:date:
+   message-id:mime-version:content-transfer-encoding;
+  bh=mR5Un6+9WKGYeywFJRvZiZCin9Uu7YE1gj2wX8VDPHE=;
+  b=FXibfh9HV9WY5pUfCY1SBaOyWZde+hf7EsFcBR0F5dbDqvY0JdE//tti
+   cNTuOHEktTfmH5Z4KyKg/g3+bPjnrVSDz2C9ShQwhYcRfzBjDb0SW/Axi
+   8Wt1hYHJyIxBDIMFcjwpOO2BpdZhI4O10tlAt9+BA85/Z3/IL+DxR+4eZ
+   7VTuvtNOZNU7Njxa6ekvEQeQiG1utRVoggNgmJowsQGSWXhpqx+A92JgZ
+   v+K0vV4xS5gKfb/OJoA50uLLnQ8TeWyuwjIEgk+/bF4u3KaZUXzUtHPGg
+   CD4kD+VpnFVAiN3KGoZgLW1vzy85rhbGZZrkBHU9lcCQrw80d1lYeiHnA
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10384"; a="305525615"
+X-IronPort-AV: E=Sophos;i="5.92,209,1650956400"; 
+   d="scan'208";a="305525615"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 03:13:24 -0700
+X-IronPort-AV: E=Sophos;i="5.92,209,1650956400"; 
+   d="scan'208";a="591589620"
+Received: from rgrotewx-mobl1.ger.corp.intel.com (HELO localhost) ([10.252.35.153])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 03:13:21 -0700
+From:   Jani Nikula <jani.nikula@intel.com>
+To:     Thomas Zimmermann <tzimmermann@suse.de>,
+        David Gow <davidgow@google.com>,
+        =?utf-8?Q?Jos=C3=A9_Exp=C3=B3sito?= <jose.exposito89@gmail.com>
+Cc:     dri-devel@lists.freedesktop.org, magalilemes00@gmail.com,
+        David Airlie <airlied@linux.ie>,
+        =?utf-8?Q?Ma=C3=ADra?= Canal <maira.canal@usp.br>,
+        Daniel Latypov <dlatypov@google.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        tales.aparecida@gmail.com, Isabella Basso <isabbasso@riseup.net>,
+        KUnit Development <kunit-dev@googlegroups.com>
+Subject: Re: [PATCH v4 1/3] drm/rect: Add DRM_RECT_INIT() macro
+In-Reply-To: <045f480b-9f47-6f10-9e5d-4436335b272e@suse.de>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20220620160640.3790-1-jose.exposito89@gmail.com>
+ <20220620160640.3790-2-jose.exposito89@gmail.com>
+ <CABVgOSmPfxdcxuU6xtuT2sN75ivs+Atgmt=2PNcdWqnMcrnbEQ@mail.gmail.com>
+ <045f480b-9f47-6f10-9e5d-4436335b272e@suse.de>
+Date:   Tue, 21 Jun 2022 13:13:18 +0300
+Message-ID: <87fsjys4sh.fsf@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
@@ -44,10 +66,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Jiang Jian <jiangjian@cdjrlc.com> writes:
-
-> there is unexpected word "the" in comments need to remove
+On Tue, 21 Jun 2022, Thomas Zimmermann <tzimmermann@suse.de> wrote:
+> Hi
 >
-> Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
+> Am 21.06.22 um 11:38 schrieb David Gow:
+>> On Tue, Jun 21, 2022 at 12:06 AM Jos=C3=A9 Exp=C3=B3sito
+>> <jose.exposito89@gmail.com> wrote:
+>>>
+>>> Add a helper macro to initialize a rectangle from x, y, width and
+>>> height information.
+>>>
+>>> Reviewed-by: Jani Nikula <jani.nikula@intel.com>
+>>> Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
+>>> Signed-off-by: Jos=C3=A9 Exp=C3=B3sito <jose.exposito89@gmail.com>
+>>> ---
+>>=20
+>> This looks good to me, though I have one minor concern about the macro
+>> name. (But if it's okay with the DRM folks, which it seems to be, I
+>> won't object.)
+>>=20
+>> Either way,
+>> Reviewed-by: David Gow <davidgow@google.com>
+>>=20
+>>>   include/drm/drm_rect.h | 16 ++++++++++++++++
+>>>   1 file changed, 16 insertions(+)
+>>>
+>>> diff --git a/include/drm/drm_rect.h b/include/drm/drm_rect.h
+>>> index 6f6e19bd4dac..e8d94fca2703 100644
+>>> --- a/include/drm/drm_rect.h
+>>> +++ b/include/drm/drm_rect.h
+>>> @@ -47,6 +47,22 @@ struct drm_rect {
+>>>          int x1, y1, x2, y2;
+>>>   };
+>>>
+>>> +/**
+>>> + * DRM_RECT_INIT - initialize a rectangle from x/y/w/h
+>>> + * @x: x coordinate
+>>> + * @y: y coordinate
+>>> + * @w: width
+>>> + * @h: height
+>>> + *
+>>> + * RETURNS:
+>>> + * A new rectangle of the specified size.
+>>> + */
+>>> +#define DRM_RECT_INIT(x, y, w, h) ((struct drm_rect){ \
+>>> +               .x1 =3D (x), \
+>>> +               .y1 =3D (y), \
+>>> +               .x2 =3D (x) + (w), \
+>>> +               .y2 =3D (y) + (h) })
+>>> +
+>>=20
+>> My only slight concern here is that it might be a little bit confusing
+>> that a macro called DRM_RECT_INIT() accepts x/y/w/h, whereas the
+>> actual struct drm_rect is x1/y1/x2/y2. If the macro were called
+>> something like DRM_RECT_INIT_FROM_XYWH() or similar.
+>
+> The existing drm_rect_init() function uses xywh arguments. So the=20
+> current name is consistent with existing practice. I don't think we=20
+> refer to x2,y2 much, if ever.
 
-Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@toke.dk>
+Agreed, and if we initialized with x1,y1,x2,y2 we wouldn't need the
+function/macro in the first place.
+
+BR,
+Jani.
+
+>
+> Best regards
+> Thomas
+>
+>>=20
+>>=20
+>>>   /**
+>>>    * DRM_RECT_FMT - printf string for &struct drm_rect
+>>>    */
+>>> --
+>>> 2.25.1
+>>>
+
+--=20
+Jani Nikula, Intel Open Source Graphics Center
