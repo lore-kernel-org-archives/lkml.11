@@ -2,158 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0534CCA473
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 12:12:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01C63C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 12:14:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349755AbiFUMMq (ORCPT
+        id S1349316AbiFUMOD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 08:12:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50388 "EHLO
+        Tue, 21 Jun 2022 08:14:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348842AbiFUMMi (ORCPT
+        with ESMTP id S229921AbiFUMOC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 08:12:38 -0400
-X-Greylist: delayed 1339 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 21 Jun 2022 05:12:36 PDT
-Received: from mx.kernkonzept.com (serv1.kernkonzept.com [159.69.200.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D15E2BB07;
-        Tue, 21 Jun 2022 05:12:36 -0700 (PDT)
+        Tue, 21 Jun 2022 08:14:02 -0400
+Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 297311003;
+        Tue, 21 Jun 2022 05:13:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=kernkonzept.com; s=mx1; h=Content-Transfer-Encoding:MIME-Version:Message-Id
-        :Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=njJuoA2Sc/56TeF9U5fuCJ1Q1iYeeVXupfO3Z71rmfU=; b=N20iD1j4QJpCbcdtTtf0vx4SfS
-        v9vaHEUavFbJcnwamVJjVHTPAgSNlSJXTH6poPimDs9+bULGexIuzt+l9cAjUpktSS0RCyKacIuCp
-        7mkrrtulA3TPEdxbQGC4sc5Fem19JxPiWAcf5N2zGRLSh38enkeRCc5KY2ypcoD+ovxYLed2+JLKv
-        qD/IM8Xp/H194fGBE9LyVjxnqVy20zgwo5GUcbzjiUCR/QtX66QNX/o2nRLpjiZGWuqRSCMCEp5sY
-        Qwl4QveMpiaAd3HMniNlZ1tVnv3oVi371F+FhewiOTracn0ddYLjmA3dk5eXCF63MrB9E/zqurcjw
-        LYtHnsDA==;
-Received: from [10.22.3.24] (helo=kernkonzept.com)
-        by mx.kernkonzept.com with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim 4.94.2)
-        id 1o3cOK-005hVa-SB; Tue, 21 Jun 2022 13:49:56 +0200
-From:   Stephan Gerhold <stephan.gerhold@kernkonzept.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     Stephan Gerhold <stephan.gerhold@kernkonzept.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH net] virtio_net: fix xdp_rxq_info bug after suspend/resume
-Date:   Tue, 21 Jun 2022 13:48:44 +0200
-Message-Id: <20220621114845.3650258-1-stephan.gerhold@kernkonzept.com>
-X-Mailer: git-send-email 2.30.2
+        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
+        Content-ID:Content-Description;
+        bh=WnC8/sVEqcV82ARt6NQG9FTjINSGhbQW6PZRwnbLprs=; b=AAKg5CtcGYAQc9VOmfGncdP/qy
+        6KjzYJBG9pPPuAL1pfNLPIvsq9t4K9dmbW045BGri0Pg98M4q4YD5Urjbxi00ARrcQQ+pMtoPGsr1
+        V79EVcO1N6WvMsaAPEScCpL/a6qpOlcoBkhNuLZq11+sFCxHeZgB/emEqoCSGO9qnCkHgnHF4jO/g
+        nWuBHSN91RpR76Ls6IjuajnytXDjwgOstNIFA+ZKxzpzwNotfWbYQk3VqBRuogPVPHyry3B51Lh4v
+        CkNkjP+h6j/diRO+MYb6LHBMHIl/NvrufiWNDIx++xVJivhGSh64QsRA3qHpH0Klykj5d9Pk/wPHV
+        xaPQ01H+09Z1834SWCS1go4rXN8Yb68Mk5B9ilJg6Lwu65bgrhCNFJDJl2eKoFDVTaz8/tPhCJzfD
+        1OQXLchwjmRWMaBzFwMQR815ufEt282WjYZHJBz94QU/kTz4jgdcVUwAuLUIpYywATXqaC/6pLsXC
+        dwgDAfVDgwYtTbViLcxMs2xZICitDOVDePPyqrwroF1VqiZScUZ1DJl3T/uLaix42zD65DfGiyR+L
+        WIpfKcvqehqVpkzSM8r6AnmyTq7pilgFlioy12g4EImGmUrnTOHaFhZwjN1zcpWOto+4H+hFL4VjG
+        lBMbs8eqfdeTKUOe7/qFLiqvRyDGKuW8NYEAHejrA=;
+From:   Christian Schoenebeck <linux_oss@crudebyte.com>
+To:     Dominique Martinet <asmadeus@codewreck.org>
+Cc:     Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        David Howells <dhowells@redhat.com>, stable@vger.kernel.org,
+        v9fs-developer@lists.sourceforge.net, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] 9p: fix EBADF errors in cached mode
+Date:   Tue, 21 Jun 2022 14:13:51 +0200
+Message-ID: <25475559.V594D4LmdM@silver>
+In-Reply-To: <YrDZ3nlTFwJ4ytl8@codewreck.org>
+References: <15767273.MGizftpLG7@silver> <1902408.H94Nh90b8Q@silver>
+ <YrDZ3nlTFwJ4ytl8@codewreck.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following sequence currently causes a driver bug warning
-when using virtio_net:
+On Montag, 20. Juni 2022 22:34:38 CEST Dominique Martinet wrote:
+> Christian Schoenebeck wrote on Mon, Jun 20, 2022 at 02:47:24PM +0200:
+> > Some more tests this weekend; all looks fine. It appears that this also
+> > fixed the performance degradation that I reported early in this thread.
+> 
+> wow, I wouldn't have expected the EBADF fix patch to have any impact on
+> performance. Maybe the build just behaved differently enough to take
+> more time with the errors?
 
-  # ip link set eth0 up
-  # echo mem > /sys/power/state (or e.g. # rtcwake -s 10 -m mem)
-  <resume>
-  # ip link set eth0 down
+Maybe. It could also be less overhead using writeback_fid vs. dedicated fid, 
+i.e. no walking and fid cloning required when just using the writeback_fid 
+which is already there (reduced latency).
 
-  Missing register, driver bug
-  WARNING: CPU: 0 PID: 375 at net/core/xdp.c:138 xdp_rxq_info_unreg+0x58/0x60
-  Call trace:
-   xdp_rxq_info_unreg+0x58/0x60
-   virtnet_close+0x58/0xac
-   __dev_close_many+0xac/0x140
-   __dev_change_flags+0xd8/0x210
-   dev_change_flags+0x24/0x64
-   do_setlink+0x230/0xdd0
-   ...
+Probably also overall reduced total amount of fids might have some (smaller) 
+impact, as on QEMU 9p server side we still have a simple linked list for fids 
+which is iterated on each fid lookup. A proc-like interface for statistics 
+(e.g. max. amount of fids) would be useful.
 
-This happens because virtnet_freeze() frees the receive_queue
-completely (including struct xdp_rxq_info) but does not call
-xdp_rxq_info_unreg(). Similarly, virtnet_restore() sets up the
-receive_queue again but does not call xdp_rxq_info_reg().
+But honestly, all these things still don't really explain to me such a 
+difference from performance PoV in regards to this patch, as the particular 
+case handled by this patch does not appear to happen often.
 
-Actually, parts of virtnet_freeze_down() and virtnet_restore_up()
-are almost identical to virtnet_close() and virtnet_open(): only
-the calls to xdp_rxq_info_(un)reg() are missing. This means that
-we can fix this easily and avoid such problems in the future by
-just calling virtnet_close()/open() from the freeze/restore handlers.
+Anyway, my plan is to identify performance bottlenecks in general more 
+analytically this year. Now that we have macOS support for 9p in QEMU, I'll 
+probably use Xcode's "Instruments" tool which really has a great way to 
+graphically investigate complex performance aspects in a very intuitive and 
+customizable way, which goes beyond standard profiling. Then I can hunt down 
+performance issues by weight.
 
-Aside from adding the missing xdp_rxq_info calls the only difference
-is that the refill work is only cancelled if netif_running(). However,
-this should not make any functional difference since the refill work
-should only be active if the network interface is actually up.
+Best regards,
+Christian Schoenebeck
 
-Fixes: 754b8a21a96d ("virtio_net: setup xdp_rxq_info")
-Signed-off-by: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
----
- drivers/net/virtio_net.c | 25 ++++++-------------------
- 1 file changed, 6 insertions(+), 19 deletions(-)
-
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index db05b5e930be..969a67970e71 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -2768,7 +2768,6 @@ static const struct ethtool_ops virtnet_ethtool_ops = {
- static void virtnet_freeze_down(struct virtio_device *vdev)
- {
- 	struct virtnet_info *vi = vdev->priv;
--	int i;
- 
- 	/* Make sure no work handler is accessing the device */
- 	flush_work(&vi->config_work);
-@@ -2776,14 +2775,8 @@ static void virtnet_freeze_down(struct virtio_device *vdev)
- 	netif_tx_lock_bh(vi->dev);
- 	netif_device_detach(vi->dev);
- 	netif_tx_unlock_bh(vi->dev);
--	cancel_delayed_work_sync(&vi->refill);
--
--	if (netif_running(vi->dev)) {
--		for (i = 0; i < vi->max_queue_pairs; i++) {
--			napi_disable(&vi->rq[i].napi);
--			virtnet_napi_tx_disable(&vi->sq[i].napi);
--		}
--	}
-+	if (netif_running(vi->dev))
-+		virtnet_close(vi->dev);
- }
- 
- static int init_vqs(struct virtnet_info *vi);
-@@ -2791,7 +2784,7 @@ static int init_vqs(struct virtnet_info *vi);
- static int virtnet_restore_up(struct virtio_device *vdev)
- {
- 	struct virtnet_info *vi = vdev->priv;
--	int err, i;
-+	int err;
- 
- 	err = init_vqs(vi);
- 	if (err)
-@@ -2800,15 +2793,9 @@ static int virtnet_restore_up(struct virtio_device *vdev)
- 	virtio_device_ready(vdev);
- 
- 	if (netif_running(vi->dev)) {
--		for (i = 0; i < vi->curr_queue_pairs; i++)
--			if (!try_fill_recv(vi, &vi->rq[i], GFP_KERNEL))
--				schedule_delayed_work(&vi->refill, 0);
--
--		for (i = 0; i < vi->max_queue_pairs; i++) {
--			virtnet_napi_enable(vi->rq[i].vq, &vi->rq[i].napi);
--			virtnet_napi_tx_enable(vi, vi->sq[i].vq,
--					       &vi->sq[i].napi);
--		}
-+		err = virtnet_open(vi->dev);
-+		if (err)
-+			return err;
- 	}
- 
- 	netif_tx_lock_bh(vi->dev);
--- 
-2.30.2
 
