@@ -2,66 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE639C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 08:16:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D49DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 08:21:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346521AbiFUIQq (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 04:16:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37870 "EHLO
+        id S229756AbiFUIVD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 21 Jun 2022 04:21:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347889AbiFUIQo (ORCPT
+        with ESMTP id S1348763AbiFUIUw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 04:16:44 -0400
-Received: from smtpbg.qq.com (smtpbg136.qq.com [106.55.201.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1367424BC3;
-        Tue, 21 Jun 2022 01:16:39 -0700 (PDT)
-X-QQ-mid: bizesmtp80t1655799388tgzcyz03
-Received: from ubuntu.localdomain ( [106.117.99.68])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 21 Jun 2022 16:16:18 +0800 (CST)
-X-QQ-SSF: 01000000007000109000B00A0000000
-X-QQ-FEAT: Z953UCsBqO6atZV269AMCwt/nSVDocI2xqHilqIIqsqy6Ps32uNHKQJen4OdJ
-        K6Mz92k0vbO4bgN9j9z+d014PX+G6Kn9mEJxA5PLQcUQ7E8SH6+SW65gesBV8Rlp6pp2qL0
-        Oa7z6fuA93hOg/BQBajFUUsS+QbUe4jClZe2qJYYbhbsB9RpOAJc9xPqYjJ/RSU8rDxyzLP
-        ScNfaQQiBMITWrip6NtoMY/aUHkEYG3C60lhzsR4vkSL5Oq1cNR5wKaj+4VZYQMlnSjAfni
-        SECveFyom3wVF9g89j+hgu4ji7phasBl2TkqoDmzWJVMIIYPKgJYwrZXF4cWhXHGrs+Jtqa
-        wguXQVI9N3ymLs0DoM=
-X-QQ-GoodBg: 0
-From:   Jiang Jian <jiangjian@cdjrlc.com>
-To:     lenb@kernel.org
-Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiang Jian <jiangjian@cdjrlc.com>
-Subject: [PATCH] tools: remove unexpected word "the"
-Date:   Tue, 21 Jun 2022 16:16:17 +0800
-Message-Id: <20220621081617.47300-1-jiangjian@cdjrlc.com>
-X-Mailer: git-send-email 2.17.1
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam7
+        Tue, 21 Jun 2022 04:20:52 -0400
+Received: from gproxy4-pub.mail.unifiedlayer.com (gproxy4-pub.mail.unifiedlayer.com [69.89.23.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7013D201A9
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 01:20:51 -0700 (PDT)
+Received: from cmgw10.mail.unifiedlayer.com (unknown [10.0.90.125])
+        by progateway6.mail.pro1.eigbox.com (Postfix) with ESMTP id ED10D10047FB4
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:20:50 +0000 (UTC)
+Received: from box5620.bluehost.com ([162.241.219.59])
+        by cmsmtp with ESMTP
+        id 3Z7yoXWzaNVEz3Z7yo9iB2; Tue, 21 Jun 2022 08:20:50 +0000
+X-Authority-Reason: nr=8
+X-Authority-Analysis: v=2.4 cv=I5+g+Psg c=1 sm=1 tr=0 ts=62b17f62
+ a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
+ a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
+ a=JPEYwPQDsx4A:10:nop_rcvd_month_year
+ a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
+ a=HaFmDPmJAAAA:8 a=49j0FZ7RFL9ueZfULrUA:9 a=QEXdDO2ut3YA:10:nop_charset_2
+ a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
+        s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
+        Message-ID:From:In-Reply-To:References:Cc:To:Subject:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=WuRbsktduSQNDRbYs5+HiduR5WXh5fT39TkKjCEX16k=; b=HIgU+gtTkz+QueDwrR+ho+1kQl
+        FqR/7N1pNDjRpSmi8g2wrJtvlGGD5q8KuC3EJZb/fVOuQaTfLtdYi/NMk0735Xl5vD97jPuGFT/uB
+        jkYbvgunmNOlJmpbHnT4o5dg86c+uEoYLjpR13vBBFhYQ+TH6xPVKy7RixsbP55UpapnvVwAS6xpJ
+        JbCCt6LW8qT7TWULsjcJiICxbMWETM3aSBAQgBqvrHEMdhkYdVJY3VWw4IcfgMSTq5FCZwxhATK1Q
+        BLEzNwj1WNi2hrGCd+ZUsjHDnlyCWrb4RBXgeK8wd2lZurQCidtLs/iXH+cyPQ6l8S6ORyIk7tBQ9
+        YmBW909w==;
+Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:45110 helo=[10.0.1.48])
+        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <re@w6rz.net>)
+        id 1o3Z7x-0043vn-GR;
+        Tue, 21 Jun 2022 02:20:49 -0600
+Subject: Re: [PATCH 5.15 000/106] 5.15.49-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+References: <20220620124724.380838401@linuxfoundation.org>
+In-Reply-To: <20220620124724.380838401@linuxfoundation.org>
+From:   Ron Economos <re@w6rz.net>
+Message-ID: <abbb7693-f497-62d5-17c3-bdcd3846fab3@w6rz.net>
+Date:   Tue, 21 Jun 2022 01:20:47 -0700
+User-Agent: Mozilla/5.0 (X11; Linux armv7l; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - box5620.bluehost.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - w6rz.net
+X-BWhitelist: no
+X-Source-IP: 73.162.232.9
+X-Source-L: No
+X-Exim-ID: 1o3Z7x-0043vn-GR
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.48]) [73.162.232.9]:45110
+X-Source-Auth: re@w6rz.net
+X-Email-Count: 2
+X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-there is unexpected word "the" in comments need to remove
+On 6/20/22 5:50 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.15.49 release.
+> There are 106 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Wed, 22 Jun 2022 12:47:02 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.49-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
----
- tools/power/x86/turbostat/turbostat.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
 
-diff --git a/tools/power/x86/turbostat/turbostat.c b/tools/power/x86/turbostat/turbostat.c
-index ede31a4287a0..ad4c9b79c051 100644
---- a/tools/power/x86/turbostat/turbostat.c
-+++ b/tools/power/x86/turbostat/turbostat.c
-@@ -5398,7 +5398,7 @@ void print_dev_latency(void)
- }
- 
- /*
-- * Linux-perf manages the the HW instructions-retired counter
-+ * Linux-perf manages the HW instructions-retired counter
-  * by enabling when requested, and hiding rollover
-  */
- void linux_perf_init(void)
--- 
-2.17.1
+Tested-by: Ron Economos <re@w6rz.net>
 
