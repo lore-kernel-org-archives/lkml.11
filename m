@@ -2,205 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CB32C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 12:34:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A17DC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 12:35:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349923AbiFUMej (ORCPT
+        id S1350420AbiFUMfZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 08:34:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34800 "EHLO
+        Tue, 21 Jun 2022 08:35:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349319AbiFUMcg (ORCPT
+        with ESMTP id S1350445AbiFUMfO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 08:32:36 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C1C3205D9
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 05:32:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655814755; x=1687350755;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Q4Hbv5QJrl2Kvi0tpSwqYgCPP0t2luD+USznuaeTmeM=;
-  b=jy04T6n144XbLNs1p7KYFUIHdNKYko6A2filXY2Cv1k0a6O+8W92f6j7
-   W18RPmCcvStHlBsiwszp6+EQZzZl9+QlU3A5kpGC4OY6Gx3M2AtnUKoJd
-   akRNF6EvdNAwAB1z8wXiSWKvkpAPVvu6Ua/2JsOuZxVo8u6RkoqchuN9K
-   ZBnjLLwpeLiQPHDvJWOCJw72B/GEGKdd8KR5WoEIB5hGvKHJOPsE7FCyI
-   5f3JXhXf0Ut9RaNV5J8jJ5tGomp/i91YJDEWRDap99hjyCPYipfOGSF41
-   OClHr01RcMD9PBZm/GGqrj01anZO1PUvCBd8FC1ipiKCrF6Ux1J+DXL7r
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10384"; a="263139496"
-X-IronPort-AV: E=Sophos;i="5.92,209,1650956400"; 
-   d="scan'208";a="263139496"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 05:32:34 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,209,1650956400"; 
-   d="scan'208";a="620463426"
-Received: from lkp-server02.sh.intel.com (HELO afd2e3565656) ([10.239.97.151])
-  by orsmga001.jf.intel.com with ESMTP; 21 Jun 2022 05:32:33 -0700
-Received: from kbuild by afd2e3565656 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o3d3Y-00005F-IB;
-        Tue, 21 Jun 2022 12:32:32 +0000
-Date:   Tue, 21 Jun 2022 20:31:46 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jan Kara <jack@suse.cz>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        0day robot <lkp@intel.com>
-Subject: arch/x86/include/asm/current.h:18:17: warning: passing argument 1 of
- '__get_task_ioprio' makes integer from pointer without a cast
-Message-ID: <202206212036.ElLkh5Sy-lkp@intel.com>
+        Tue, 21 Jun 2022 08:35:14 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D59828999
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 05:33:36 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id s185so7256087pgs.3
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 05:33:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=heitbaum.com; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=nnytQ1/ffqTsaS1FtzsCOYrd2Ew04ibpssFxI3aXf+o=;
+        b=S7i9eupIHzFHB5KN8Z3gSiF3ofQv0ujfsgVNY9U5wLCD662ABpSnLw2ittUAnPf8Cf
+         4o+W/mhi7nfTsdN1pARWMedKzARy/KFcPOBFL2io7bEq9FqqolcYGV+XHeQmdDLUYxo+
+         Ad8OaKogjXrB9SQCLmQgepv4rOMBXciWFES7U=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=nnytQ1/ffqTsaS1FtzsCOYrd2Ew04ibpssFxI3aXf+o=;
+        b=70V0iHfI8byqTUbrUvtHmSd+bhlRJnbsWHwMWv9sKAC3g2CJo9Tn69vkVoaIsOilPm
+         jNvxrQ7T6gY810MF4no7RFiGmC1j5hpRqVYAgiweAme9lt5XYA0k9EcGvr1F+ZvAQZWy
+         Z6iECFP/fqELXNi3rZb5c6rVJ9Yp5ieb57PQULStFN8WETfL5yUSpsArhDEG4CACk4tp
+         6Fh70f2w14CaYiZTR8QQgh4WfnlA8YUei1A3G2PJuqAxnpsLlElcsVrPa7xk1wteW5Bb
+         IBjNm111kB4ZuJnh+ba11eh+Losji6+WwXwV6oOmmJ6Yhqr2yf16dbMuEiAB+LpY6fh+
+         SpNA==
+X-Gm-Message-State: AJIora/Fx4TNxIkqgCIxNOEG5gajPhAcIUNhcb8s7mRKTs+G3jg9UAO7
+        F0Q8/JpuPxwnVa5qek0hSwcWxQ==
+X-Google-Smtp-Source: AGRyM1s5Hq05EtE0xvSbYDisIVMCshaUq1aFG2xwRyYLnsWFK1yNfOYvPbWsL2i+HzYZvWUk1SUzHw==
+X-Received: by 2002:a63:bf43:0:b0:40c:dc14:ed26 with SMTP id i3-20020a63bf43000000b0040cdc14ed26mr5716464pgo.51.1655814815963;
+        Tue, 21 Jun 2022 05:33:35 -0700 (PDT)
+Received: from 54bcea96c890 ([203.220.223.63])
+        by smtp.gmail.com with ESMTPSA id ik15-20020a170902ab0f00b0015e8d4eb2d8sm10508035plb.290.2022.06.21.05.33.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Jun 2022 05:33:35 -0700 (PDT)
+Date:   Tue, 21 Jun 2022 12:33:27 +0000
+From:   Rudi Heitbaum <rudi@heitbaum.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.18 000/141] 5.18.6-rc1 review
+Message-ID: <20220621123327.GA12@54bcea96c890>
+References: <20220620124729.509745706@linuxfoundation.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/intel-lab-lkp/linux/commits/Jan-Kara/block-Fix-IO-priority-mess/20220621-182732
-head:   6f52abf6ff185567f8a06db898db11e011fbf05e
-commit: 0a092365687a0a4f7e0b4cae345e554ae654f024 block: Generalize get_current_ioprio() for any task
-date:   2 hours ago
-config: i386-tinyconfig (https://download.01.org/0day-ci/archive/20220621/202206212036.ElLkh5Sy-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/0a092365687a0a4f7e0b4cae345e554ae654f024
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Jan-Kara/block-Fix-IO-priority-mess/20220621-182732
-        git checkout 0a092365687a0a4f7e0b4cae345e554ae654f024
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 prepare
+On Mon, Jun 20, 2022 at 02:48:58PM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.18.6 release.
+> There are 141 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 22 Jun 2022 12:47:02 +0000.
+> Anything received after that time might be too late.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Hi Greg,
 
-All warnings (new ones prefixed by >>):
+5.18.6-rc1 tested.
 
-   In file included from include/linux/thread_info.h:23,
-                    from arch/x86/include/asm/preempt.h:7,
-                    from include/linux/preempt.h:78,
-                    from include/linux/spinlock.h:55,
-                    from include/linux/mmzone.h:8,
-                    from include/linux/gfp.h:6,
-                    from include/linux/slab.h:15,
-                    from include/linux/crypto.h:20,
-                    from arch/x86/kernel/asm-offsets.c:9:
-   include/linux/ioprio.h: In function 'get_current_ioprio':
->> arch/x86/include/asm/current.h:18:17: warning: passing argument 1 of '__get_task_ioprio' makes integer from pointer without a cast [-Wint-conversion]
-      18 | #define current get_current()
-         |                 ^~~~~~~~~~~~~
-         |                 |
-         |                 struct task_struct *
-   include/linux/ioprio.h:60:34: note: in expansion of macro 'current'
-      60 |         return __get_task_ioprio(current);
-         |                                  ^~~~~~~
-   In file included from include/linux/fs.h:38,
-                    from include/linux/cgroup.h:17,
-                    from include/linux/memcontrol.h:13,
-                    from include/linux/swap.h:9,
-                    from include/linux/suspend.h:5,
-                    from arch/x86/kernel/asm-offsets.c:13:
-   include/linux/ioprio.h:52:41: note: expected 'int' but argument is of type 'struct task_struct *'
-      52 | static inline int __get_task_ioprio(int ioprio)
-         |                                     ~~~~^~~~~~
+Run tested on:
+- Allwinner H6 (Tanix TX6)
+- Intel Tiger Lake x86_64 (nuc11 i7-1165G7)
+
+In addition - build tested for:
+- Allwinner A64
+- Allwinner H3
+- Allwinner H5
+- NXP iMX6
+- NXP iMX8
+- Qualcomm Dragonboard
+- Rockchip RK3288
+- Rockchip RK3328
+- Rockchip RK3399pro
+- Samsung Exynos
+
+Tested-by: Rudi Heitbaum <rudi@heitbaum.com>
 --
-   In file included from include/linux/sched.h:12,
-                    from arch/x86/entry/common.c:11:
-   include/linux/ioprio.h: In function 'get_current_ioprio':
->> arch/x86/include/asm/current.h:18:17: warning: passing argument 1 of '__get_task_ioprio' makes integer from pointer without a cast [-Wint-conversion]
-      18 | #define current get_current()
-         |                 ^~~~~~~~~~~~~
-         |                 |
-         |                 struct task_struct *
-   include/linux/ioprio.h:60:34: note: in expansion of macro 'current'
-      60 |         return __get_task_ioprio(current);
-         |                                  ^~~~~~~
-   In file included from include/linux/fs.h:38,
-                    from include/linux/huge_mm.h:8,
-                    from include/linux/mm.h:700,
-                    from include/linux/pid_namespace.h:7,
-                    from include/linux/ptrace.h:10,
-                    from include/linux/entry-common.h:6,
-                    from arch/x86/entry/common.c:13:
-   include/linux/ioprio.h:52:41: note: expected 'int' but argument is of type 'struct task_struct *'
-      52 | static inline int __get_task_ioprio(int ioprio)
-         |                                     ~~~~^~~~~~
-   arch/x86/entry/common.c: At top level:
-   arch/x86/entry/common.c:119:24: warning: no previous prototype for 'do_int80_syscall_32' [-Wmissing-prototypes]
-     119 | __visible noinstr void do_int80_syscall_32(struct pt_regs *regs)
-         |                        ^~~~~~~~~~~~~~~~~~~
-   arch/x86/entry/common.c:186:24: warning: no previous prototype for 'do_fast_syscall_32' [-Wmissing-prototypes]
-     186 | __visible noinstr long do_fast_syscall_32(struct pt_regs *regs)
-         |                        ^~~~~~~~~~~~~~~~~~
-   arch/x86/entry/common.c:238:24: warning: no previous prototype for 'do_SYSENTER_32' [-Wmissing-prototypes]
-     238 | __visible noinstr long do_SYSENTER_32(struct pt_regs *regs)
-         |                        ^~~~~~~~~~~~~~
---
-   In file included from include/linux/thread_info.h:23,
-                    from arch/x86/include/asm/preempt.h:7,
-                    from include/linux/preempt.h:78,
-                    from include/linux/spinlock.h:55,
-                    from include/linux/mmzone.h:8,
-                    from include/linux/gfp.h:6,
-                    from include/linux/mm.h:7,
-                    from arch/x86/entry/vdso/vma.c:7:
-   include/linux/ioprio.h: In function 'get_current_ioprio':
->> arch/x86/include/asm/current.h:18:17: warning: passing argument 1 of '__get_task_ioprio' makes integer from pointer without a cast [-Wint-conversion]
-      18 | #define current get_current()
-         |                 ^~~~~~~~~~~~~
-         |                 |
-         |                 struct task_struct *
-   include/linux/ioprio.h:60:34: note: in expansion of macro 'current'
-      60 |         return __get_task_ioprio(current);
-         |                                  ^~~~~~~
-   In file included from include/linux/fs.h:38,
-                    from include/linux/huge_mm.h:8,
-                    from include/linux/mm.h:700,
-                    from arch/x86/entry/vdso/vma.c:7:
-   include/linux/ioprio.h:52:41: note: expected 'int' but argument is of type 'struct task_struct *'
-      52 | static inline int __get_task_ioprio(int ioprio)
-         |                                     ~~~~^~~~~~
-   arch/x86/entry/vdso/vma.c: At top level:
-   arch/x86/entry/vdso/vma.c:35:19: warning: no previous prototype for 'arch_get_vdso_data' [-Wmissing-prototypes]
-      35 | struct vdso_data *arch_get_vdso_data(void *vvar_page)
-         |                   ^~~~~~~~~~~~~~~~~~
---
-   In file included from include/linux/thread_info.h:23,
-                    from arch/x86/include/asm/preempt.h:7,
-                    from include/linux/preempt.h:78,
-                    from include/linux/spinlock.h:55,
-                    from include/linux/mmzone.h:8,
-                    from include/linux/gfp.h:6,
-                    from include/linux/slab.h:15,
-                    from include/linux/crypto.h:20,
-                    from arch/x86/kernel/asm-offsets.c:9:
-   include/linux/ioprio.h: In function 'get_current_ioprio':
->> arch/x86/include/asm/current.h:18:17: warning: passing argument 1 of '__get_task_ioprio' makes integer from pointer without a cast [-Wint-conversion]
-      18 | #define current get_current()
-         |                 ^~~~~~~~~~~~~
-         |                 |
-         |                 struct task_struct *
-   include/linux/ioprio.h:60:34: note: in expansion of macro 'current'
-      60 |         return __get_task_ioprio(current);
-         |                                  ^~~~~~~
-   In file included from include/linux/fs.h:38,
-                    from include/linux/cgroup.h:17,
-                    from include/linux/memcontrol.h:13,
-                    from include/linux/swap.h:9,
-                    from include/linux/suspend.h:5,
-                    from arch/x86/kernel/asm-offsets.c:13:
-   include/linux/ioprio.h:52:41: note: expected 'int' but argument is of type 'struct task_struct *'
-      52 | static inline int __get_task_ioprio(int ioprio)
-         |                                     ~~~~^~~~~~
-
-
-vim +/__get_task_ioprio +18 arch/x86/include/asm/current.h
-
-f0766440dda7ac include/asm-x86/current.h      Christoph Lameter 2008-05-09  17  
-c6f5e0acd5d12e arch/x86/include/asm/current.h Brian Gerst       2009-01-19 @18  #define current get_current()
-f0766440dda7ac include/asm-x86/current.h      Christoph Lameter 2008-05-09  19  
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Rudi
