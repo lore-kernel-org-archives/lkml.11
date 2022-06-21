@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CC9AC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 20:01:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AABEC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 20:01:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354148AbiFUUBa (ORCPT
+        id S1354178AbiFUUBd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 16:01:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41412 "EHLO
+        Tue, 21 Jun 2022 16:01:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230467AbiFUUBT (ORCPT
+        with ESMTP id S1351072AbiFUUBZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 16:01:19 -0400
+        Tue, 21 Jun 2022 16:01:25 -0400
 Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28B5A29375
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 13:01:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B35CA2A703
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 13:01:16 -0700 (PDT)
 Received: from hermes-devbox.fritz.box (82-71-8-225.dsl.in-addr.zen.co.uk [82.71.8.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: bbeckett)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 9814266017A7;
-        Tue, 21 Jun 2022 21:01:12 +0100 (BST)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 50DB6660183C;
+        Tue, 21 Jun 2022 21:01:15 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1655841672;
-        bh=KHg3eOnYqUoUcg57EXhLlpoQHXoJLlQC7w8GyVbN4OU=;
+        s=mail; t=1655841675;
+        bh=4aLhOjNbnMWEd5TE2kdvFPY0DN2hydFT2IvNHlkBa+w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lL6WldoeobFzLwX9XwfZyPDkVCi01W5Adrqci6zXH7kLKCW74xatTgF24NGx/oTx8
-         Lmd0+LLnMhvde2FT/h7Zo2+bfD9UnAgakVztMUsTyACJie5irB/wEzBrsmHbqw/sy+
-         V2JCy6/F7U0eflmJARn6fusJ2O6tjbDtI4dxTHp1NLyeXu1V3KXQMgVcAEBWc8tSJR
-         KjcWMvHjmHq0ONiRAa3+N3Jm1hikxslYQXFceNqlJJMc3zN2X7LMNqhtuM0/5rtSTe
-         uEzen/BtZhW6CcMngtP1U93GvcE66wDutFOEkGQgBsxewt4an9id6damYSK1A5n3K2
-         6cey8WLSGuukw==
+        b=YvCD0K/XPoYH0tx3Gogj5YpyR7uG1VVqDV+tGkv0NoWS93A40MLTfB9cBsWNZrOEa
+         7Epty8sVdQIXc+ro6EBiY0xSj6d/aVMVI7Y5vvO+kcllROzS6ZxAj5P6KY1TqT5rWo
+         Kgx+xKtEmyoeI0kXvDqxfCOyKgHRTpkNpoHVchV268FWRvh25rKKGQdPlAys4pN3j9
+         6fraV1r3dYdv73sIMBIXBUan7bson7nV0lex9SxdTILgMx2llAu+Md4j2lZ2eSyiq3
+         FbOcQvMDLRZWV1tqg8MYOBckbh6CNiJFCWENFISNmVpy9vF/unhB0W7R/gjK4Z2+1Q
+         KiOmQPYulYwIA==
 From:   Robert Beckett <bob.beckett@collabora.com>
 To:     dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
         Jani Nikula <jani.nikula@linux.intel.com>,
@@ -45,95 +45,123 @@ Cc:     kernel@collabora.com, Robert Beckett <bob.beckett@collabora.com>,
         Matthew Auld <matthew.auld@intel.com>,
         =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
         <thomas.hellstrom@linux.intel.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH v8 01/10] drm/i915/ttm: dont trample cache_level overrides during ttm move
-Date:   Tue, 21 Jun 2022 20:00:49 +0000
-Message-Id: <20220621200058.3536182-2-bob.beckett@collabora.com>
+Subject: [PATCH v8 05/10] drm/i915: instantiate ttm ranger manager for stolen memory
+Date:   Tue, 21 Jun 2022 20:00:53 +0000
+Message-Id: <20220621200058.3536182-6-bob.beckett@collabora.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220621200058.3536182-1-bob.beckett@collabora.com>
 References: <20220621200058.3536182-1-bob.beckett@collabora.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Various places within the driver override the default chosen cache_level.
-Before ttm, these overrides were permanent until explicitly changed again
-or for the lifetime of the buffer.
-
-TTM movement code came along and decided that it could make that
-decision at that time, which is usually well after object creation, so
-overrode the cache_level decision and reverted it back to its default
-decision.
-
-Add logic to indicate whether the caching mode has been set by anything
-other than the move logic. If so, assume that the code that overrode the
-defaults knows best and keep it.
+prepare for ttm based stolen region by using ttm range manager
+as the resource manager for stolen region.
 
 Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
+Reviewed-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
 ---
- drivers/gpu/drm/i915/gem/i915_gem_object.c       | 1 +
- drivers/gpu/drm/i915/gem/i915_gem_object_types.h | 1 +
- drivers/gpu/drm/i915/gem/i915_gem_ttm.c          | 1 +
- drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c     | 9 ++++++---
- 4 files changed, 9 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c |  6 ++--
+ drivers/gpu/drm/i915/intel_region_ttm.c      | 31 +++++++++++++++-----
+ 2 files changed, 27 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_object.c b/drivers/gpu/drm/i915/gem/i915_gem_object.c
-index 06b1b188ce5a..519887769c08 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_object.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_object.c
-@@ -125,6 +125,7 @@ void i915_gem_object_set_cache_coherency(struct drm_i915_gem_object *obj,
- 	struct drm_i915_private *i915 = to_i915(obj->base.dev);
- 
- 	obj->cache_level = cache_level;
-+	obj->ttm.cache_level_override = true;
- 
- 	if (cache_level != I915_CACHE_NONE)
- 		obj->cache_coherent = (I915_BO_CACHE_COHERENT_FOR_READ |
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_object_types.h b/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
-index 2c88bdb8ff7c..6632ed52e919 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
-@@ -605,6 +605,7 @@ struct drm_i915_gem_object {
- 		struct i915_gem_object_page_iter get_io_page;
- 		struct drm_i915_gem_object *backup;
- 		bool created:1;
-+		bool cache_level_override:1;
- 	} ttm;
- 
- 	/*
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-index 4c25d9b2f138..27d59639177f 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-@@ -1241,6 +1241,7 @@ int __i915_gem_ttm_object_init(struct intel_memory_region *mem,
- 	i915_gem_object_init_memory_region(obj, mem);
- 	i915_ttm_adjust_domains_after_move(obj);
- 	i915_ttm_adjust_gem_after_move(obj);
-+	obj->ttm.cache_level_override = false;
- 	i915_gem_object_unlock(obj);
- 
- 	return 0;
 diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
-index a10716f4e717..4c1de0b4a10f 100644
+index 40249fa28a7a..675e9ab30396 100644
 --- a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
 +++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
-@@ -123,9 +123,12 @@ void i915_ttm_adjust_gem_after_move(struct drm_i915_gem_object *obj)
- 	obj->mem_flags |= i915_ttm_cpu_maps_iomem(bo->resource) ? I915_BO_FLAG_IOMEM :
- 		I915_BO_FLAG_STRUCT_PAGE;
+@@ -60,11 +60,13 @@ i915_ttm_region(struct ttm_device *bdev, int ttm_mem_type)
+ 	struct drm_i915_private *i915 = container_of(bdev, typeof(*i915), bdev);
  
--	cache_level = i915_ttm_cache_level(to_i915(bo->base.dev), bo->resource,
--					   bo->ttm);
--	i915_gem_object_set_cache_coherency(obj, cache_level);
-+	if (!obj->ttm.cache_level_override) {
-+		cache_level = i915_ttm_cache_level(to_i915(bo->base.dev),
-+						   bo->resource, bo->ttm);
-+		i915_gem_object_set_cache_coherency(obj, cache_level);
-+		obj->ttm.cache_level_override = false;
+ 	/* There's some room for optimization here... */
+-	GEM_BUG_ON(ttm_mem_type != I915_PL_SYSTEM &&
+-		   ttm_mem_type < I915_PL_LMEM0);
++	GEM_BUG_ON(ttm_mem_type == I915_PL_GGTT);
++
+ 	if (ttm_mem_type == I915_PL_SYSTEM)
+ 		return intel_memory_region_lookup(i915, INTEL_MEMORY_SYSTEM,
+ 						  0);
++	if (ttm_mem_type == I915_PL_STOLEN)
++		return i915->mm.stolen_region;
+ 
+ 	return intel_memory_region_lookup(i915, INTEL_MEMORY_LOCAL,
+ 					  ttm_mem_type - I915_PL_LMEM0);
+diff --git a/drivers/gpu/drm/i915/intel_region_ttm.c b/drivers/gpu/drm/i915/intel_region_ttm.c
+index fd2ecfdd8fa1..694e9acb69e2 100644
+--- a/drivers/gpu/drm/i915/intel_region_ttm.c
++++ b/drivers/gpu/drm/i915/intel_region_ttm.c
+@@ -54,7 +54,7 @@ void intel_region_ttm_device_fini(struct drm_i915_private *dev_priv)
+ 
+ /*
+  * Map the i915 memory regions to TTM memory types. We use the
+- * driver-private types for now, reserving TTM_PL_VRAM for stolen
++ * driver-private types for now, reserving I915_PL_STOLEN for stolen
+  * memory and TTM_PL_TT for GGTT use if decided to implement this.
+  */
+ int intel_region_to_ttm_type(const struct intel_memory_region *mem)
+@@ -63,11 +63,17 @@ int intel_region_to_ttm_type(const struct intel_memory_region *mem)
+ 
+ 	GEM_BUG_ON(mem->type != INTEL_MEMORY_LOCAL &&
+ 		   mem->type != INTEL_MEMORY_MOCK &&
+-		   mem->type != INTEL_MEMORY_SYSTEM);
++		   mem->type != INTEL_MEMORY_SYSTEM &&
++		   mem->type != INTEL_MEMORY_STOLEN_SYSTEM &&
++		   mem->type != INTEL_MEMORY_STOLEN_LOCAL);
+ 
+ 	if (mem->type == INTEL_MEMORY_SYSTEM)
+ 		return TTM_PL_SYSTEM;
+ 
++	if (mem->type == INTEL_MEMORY_STOLEN_SYSTEM ||
++	    mem->type == INTEL_MEMORY_STOLEN_LOCAL)
++		return I915_PL_STOLEN;
++
+ 	type = mem->instance + TTM_PL_PRIV;
+ 	GEM_BUG_ON(type >= TTM_NUM_MEM_TYPES);
+ 
+@@ -91,10 +97,16 @@ int intel_region_ttm_init(struct intel_memory_region *mem)
+ 	int mem_type = intel_region_to_ttm_type(mem);
+ 	int ret;
+ 
+-	ret = i915_ttm_buddy_man_init(bdev, mem_type, false,
+-				      resource_size(&mem->region),
+-				      mem->io_size,
+-				      mem->min_page_size, PAGE_SIZE);
++	if (mem_type == I915_PL_STOLEN) {
++		ret = ttm_range_man_init(bdev, mem_type, false,
++					 resource_size(&mem->region) >> PAGE_SHIFT);
++		mem->is_range_manager = true;
++	} else {
++		ret = i915_ttm_buddy_man_init(bdev, mem_type, false,
++					      resource_size(&mem->region),
++					      mem->io_size,
++					      mem->min_page_size, PAGE_SIZE);
 +	}
- }
+ 	if (ret)
+ 		return ret;
  
- /**
+@@ -114,6 +126,7 @@ int intel_region_ttm_init(struct intel_memory_region *mem)
+ int intel_region_ttm_fini(struct intel_memory_region *mem)
+ {
+ 	struct ttm_resource_manager *man = mem->region_private;
++	int mem_type = intel_region_to_ttm_type(mem);
+ 	int ret = -EBUSY;
+ 	int count;
+ 
+@@ -144,8 +157,10 @@ int intel_region_ttm_fini(struct intel_memory_region *mem)
+ 	if (ret || !man)
+ 		return ret;
+ 
+-	ret = i915_ttm_buddy_man_fini(&mem->i915->bdev,
+-				      intel_region_to_ttm_type(mem));
++	if (mem_type == I915_PL_STOLEN)
++		ret = ttm_range_man_fini(&mem->i915->bdev, mem_type);
++	else
++		ret = i915_ttm_buddy_man_fini(&mem->i915->bdev, mem_type);
+ 	GEM_WARN_ON(ret);
+ 	mem->region_private = NULL;
+ 
 -- 
 2.25.1
 
