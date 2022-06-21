@@ -2,98 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97974CCA485
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:21:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96D6EC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:21:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352687AbiFUPV5 (ORCPT
+        id S1352717AbiFUPV6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 11:21:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59624 "EHLO
+        Tue, 21 Jun 2022 11:21:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352670AbiFUPVz (ORCPT
+        with ESMTP id S1350448AbiFUPVz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 21 Jun 2022 11:21:55 -0400
 Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 788A9252BE;
-        Tue, 21 Jun 2022 08:21:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EA50D252BD;
+        Tue, 21 Jun 2022 08:21:53 -0700 (PDT)
 Received: from uucp (helo=alpha)
         by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1o3fh4-0001zL-00; Tue, 21 Jun 2022 17:21:30 +0200
+        id 1o3fh4-0001zL-06; Tue, 21 Jun 2022 17:21:30 +0200
 Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 14293C0170; Tue, 21 Jun 2022 17:14:11 +0200 (CEST)
-Date:   Tue, 21 Jun 2022 17:14:11 +0200
+        id 349D9C01AA; Tue, 21 Jun 2022 17:19:45 +0200 (CEST)
+Date:   Tue, 21 Jun 2022 17:19:45 +0200
 From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     Genjian Zhang <zhanggenjian123@gmail.com>
-Cc:     linus.walleij@linaro.org, brgl@bgdev.pl, f.fainelli@gmail.com,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-gpio@vger.kernel.org, huhai <huhai@kylinos.cn>,
-        k2ci <kernel-bot@kylinos.cn>,
-        Genjian Zhang <zhanggenjian@kylinos.cn>
-Subject: Re: [PATCH v4] MIPS: Remove repetitive increase irq_err_count
-Message-ID: <20220621151410.GA12206@alpha.franken.de>
-References: <20220525043916.584850-1-zhanggenjian@kylinos.cn>
- <20220610111420.1520410-1-zhanggenjian@kylinos.cn>
+To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        paul@crapouillou.net, linux-mips@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 1/2] mips: dts: ingenic: Add TCU clock to x1000/x1830
+ tcu device node
+Message-ID: <20220621151945.GA12322@alpha.franken.de>
+References: <20220617121805.738157-1-aidanmacdonald.0x0@gmail.com>
+ <20220617121805.738157-2-aidanmacdonald.0x0@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220610111420.1520410-1-zhanggenjian@kylinos.cn>
+In-Reply-To: <20220617121805.738157-2-aidanmacdonald.0x0@gmail.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 10, 2022 at 07:14:20PM +0800, Genjian Zhang wrote:
-> From: huhai <huhai@kylinos.cn>
+On Fri, Jun 17, 2022 at 01:18:05PM +0100, Aidan MacDonald wrote:
+> This clock is a gate for the TCU hardware block on these SoCs, but
+> it wasn't included in the device tree since the ingenic-tcu driver
+> erroneously did not request it.
 > 
-> commit 979934da9e7a ("[PATCH] mips: update IRQ handling for vr41xx") added
-> a function irq_dispatch, and it'll increase irq_err_count when the get_irq
-> callback returns a negative value, but increase irq_err_count in get_irq
-> was not removed.
-> 
-> And also, modpost complains once gpio-vr41xx drivers become modules.
->   ERROR: modpost: "irq_err_count" [drivers/gpio/gpio-vr41xx.ko] undefined!
-> 
-> So it would be a good idea to remove repetitive increase irq_err_count in
-> get_irq callback.
-> 
-> Fixes: 27fdd325dace ("MIPS: Update VR41xx GPIO driver to use gpiolib")
-> Fixes: 979934da9e7a ("[PATCH] mips: update IRQ handling for vr41xx")
-> Reported-by: k2ci <kernel-bot@kylinos.cn>
-> Signed-off-by: huhai <huhai@kylinos.cn>
-> Signed-off-by: Genjian Zhang <zhanggenjian@kylinos.cn>
+> Reviewed-by: Paul Cercueil <paul@crapouillou.net>
+> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
 > ---
->  arch/mips/vr41xx/common/icu.c | 2 --
->  drivers/gpio/gpio-vr41xx.c    | 2 --
->  2 files changed, 4 deletions(-)
+>  arch/mips/boot/dts/ingenic/x1000.dtsi | 5 +++--
+>  arch/mips/boot/dts/ingenic/x1830.dtsi | 5 +++--
+>  2 files changed, 6 insertions(+), 4 deletions(-)
 > 
-> diff --git a/arch/mips/vr41xx/common/icu.c b/arch/mips/vr41xx/common/icu.c
-> index 7b7f25b4b057..9240bcdbe74e 100644
-> --- a/arch/mips/vr41xx/common/icu.c
-> +++ b/arch/mips/vr41xx/common/icu.c
-> @@ -640,8 +640,6 @@ static int icu_get_irq(unsigned int irq)
+> diff --git a/arch/mips/boot/dts/ingenic/x1000.dtsi b/arch/mips/boot/dts/ingenic/x1000.dtsi
+> index b0a034b468bb..42e69664efd9 100644
+> --- a/arch/mips/boot/dts/ingenic/x1000.dtsi
+> +++ b/arch/mips/boot/dts/ingenic/x1000.dtsi
+> @@ -111,8 +111,9 @@ tcu: timer@10002000 {
 >  
->  	printk(KERN_ERR "spurious ICU interrupt: %04x,%04x\n", pend1, pend2);
+>  		clocks = <&cgu X1000_CLK_RTCLK>,
+>  			 <&cgu X1000_CLK_EXCLK>,
+> -			 <&cgu X1000_CLK_PCLK>;
+> -		clock-names = "rtc", "ext", "pclk";
+> +			 <&cgu X1000_CLK_PCLK>,
+> +			 <&cgu X1000_CLK_TCU>;
+> +		clock-names = "rtc", "ext", "pclk", "tcu";
 >  
-> -	atomic_inc(&irq_err_count);
-> -
->  	return -1;
->  }
+>  		interrupt-controller;
+>  		#interrupt-cells = <1>;
+> diff --git a/arch/mips/boot/dts/ingenic/x1830.dtsi b/arch/mips/boot/dts/ingenic/x1830.dtsi
+> index dbf21afaccb1..65a5da71c199 100644
+> --- a/arch/mips/boot/dts/ingenic/x1830.dtsi
+> +++ b/arch/mips/boot/dts/ingenic/x1830.dtsi
+> @@ -104,8 +104,9 @@ tcu: timer@10002000 {
 >  
-> diff --git a/drivers/gpio/gpio-vr41xx.c b/drivers/gpio/gpio-vr41xx.c
-> index 98cd715ccc33..8d09b619c166 100644
-> --- a/drivers/gpio/gpio-vr41xx.c
-> +++ b/drivers/gpio/gpio-vr41xx.c
-> @@ -217,8 +217,6 @@ static int giu_get_irq(unsigned int irq)
->  	printk(KERN_ERR "spurious GIU interrupt: %04x(%04x),%04x(%04x)\n",
->  	       maskl, pendl, maskh, pendh);
+>  		clocks = <&cgu X1830_CLK_RTCLK>,
+>  			 <&cgu X1830_CLK_EXCLK>,
+> -			 <&cgu X1830_CLK_PCLK>;
+> -		clock-names = "rtc", "ext", "pclk";
+> +			 <&cgu X1830_CLK_PCLK>,
+> +			 <&cgu X1830_CLK_TCU>;
+> +		clock-names = "rtc", "ext", "pclk", "tcu";
 >  
-> -	atomic_inc(&irq_err_count);
-> -
->  	return -EINVAL;
->  }
->  
+>  		interrupt-controller;
+>  		#interrupt-cells = <1>;
 > -- 
-> 2.25.1
+> 2.35.1
 
 applied to mips-fixes.
 
