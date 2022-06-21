@@ -2,72 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20CE9C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 07:40:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6EA3CCA473
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 07:41:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347780AbiFUHkW (ORCPT
+        id S1347701AbiFUHky (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 03:40:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39202 "EHLO
+        Tue, 21 Jun 2022 03:40:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347701AbiFUHjr (ORCPT
+        with ESMTP id S1347813AbiFUHka (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 03:39:47 -0400
-Received: from mail105.syd.optusnet.com.au (mail105.syd.optusnet.com.au [211.29.132.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 75CE911440;
-        Tue, 21 Jun 2022 00:39:46 -0700 (PDT)
-Received: from dread.disaster.area (pa49-181-2-147.pa.nsw.optusnet.com.au [49.181.2.147])
-        by mail105.syd.optusnet.com.au (Postfix) with ESMTPS id EFE6010E7E86;
-        Tue, 21 Jun 2022 17:39:44 +1000 (AEST)
-Received: from dave by dread.disaster.area with local (Exim 4.92.3)
-        (envelope-from <david@fromorbit.com>)
-        id 1o3YUB-009E86-8e; Tue, 21 Jun 2022 17:39:43 +1000
-Date:   Tue, 21 Jun 2022 17:39:43 +1000
-From:   Dave Chinner <david@fromorbit.com>
-To:     Shida Zhang <starzhangzsd@gmail.com>
-Cc:     djwong@kernel.org, dchinner@redhat.com, zhangshida@kylinos.cn,
-        linux-kernel@vger.kernel.org, linux-xfs@vger.kernel.org
-Subject: Re: [PATCH v2] xfs: add check before calling xfs_mod_fdblocks
-Message-ID: <20220621073943.GQ227878@dread.disaster.area>
-References: <20220621070224.1231039-1-zhangshida@kylinos.cn>
+        Tue, 21 Jun 2022 03:40:30 -0400
+Received: from soltyk.jannau.net (soltyk.jannau.net [144.76.91.90])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8751412AEA;
+        Tue, 21 Jun 2022 00:40:29 -0700 (PDT)
+Received: from coburn.home.jannau.net (p579ad988.dip0.t-ipconnect.de [87.154.217.136])
+        by soltyk.jannau.net (Postfix) with ESMTPSA id A803826ED15;
+        Tue, 21 Jun 2022 09:18:48 +0200 (CEST)
+From:   Janne Grunau <j@jannau.net>
+To:     iommu@lists.linux-foundation.org
+Cc:     Konrad Dybcio <konrad.dybcio@somainline.org>,
+        asahi@lists.linux.dev, Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Georgi Djakov <quic_c_gdjako@quicinc.com>,
+        Hector Martin <marcan@marcan.st>,
+        "Isaac J. Manjarres" <isaacm@codeaurora.org>,
+        Joerg Roedel <joro@8bytes.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Mark Kettenis <mark.kettenis@xs4all.nl>,
+        Rob Herring <robh+dt@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Sven Peter <sven@svenpeter.dev>, Will Deacon <will@kernel.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3 0/5] iommu: M1 Pro/Max DART support
+Date:   Tue, 21 Jun 2022 09:18:43 +0200
+Message-Id: <20220621071848.14834-1-j@jannau.net>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220621070224.1231039-1-zhangshida@kylinos.cn>
-X-Optus-CM-Score: 0
-X-Optus-CM-Analysis: v=2.4 cv=OJNEYQWB c=1 sm=1 tr=0 ts=62b175c1
-        a=ivVLWpVy4j68lT4lJFbQgw==:117 a=ivVLWpVy4j68lT4lJFbQgw==:17
-        a=kj9zAlcOel0A:10 a=JPEYwPQDsx4A:10 a=7-415B0cAAAA:8
-        a=scJOnP1jaRTltI4sJEwA:9 a=CjuIK1q_8ugA:10 a=biEYGPWJfzWAr4FL6Ov7:22
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 21, 2022 at 03:02:24PM +0800, Shida Zhang wrote:
-> Checks are missing when delta equals 0 in __xfs_ag_resv_free() and
-> __xfs_ag_resv_init().
+Hej,
 
-This describes what the patch does, not the problem being solved is. 
+this is the next attempt adding support for the DART found in Apple's
+M1 Pro/Max/Ultra. This adds a separate io-pgtable implementation for
+DART. As already mentioned in v2 the pte format is not fully compatible
+with io-pgtable-arm. Especially the 2nd least significant bit is used
+and is not available to tag tables/pages.
+io-pgtable-dart.c is copied from io-pgtable-arm.c and support for
+unused features is removed. Support for 4k IO pages is left for A7 to
+A11 SoCs as there's work underway to run Linux on them.
 
-i.e. This doesn't tell the reader why the delta can be zero in these
-places, nor does it tell them what the impact of it being zero is.
-We can't use this information to identify a system that is having
-problems due to this issue because they havent' been described.
+The incompatibilities between both Apple DART pte seems manageable in
+their own io-pgtable implementation. A short list of the known
+differences:
 
-Hence when I ask for more detail about how something occurs, what I'm
-asking for is a description of the how the problem was found, what
-the impact of the problem has on systems, how the problem is
-reproduced, etc.
+ - the physical addresses are shifted left by 4 bits and and have 2 more
+   bits inside the PTE entries
+ - the read/write protection flags are at a different position
+ - the subpage protection feature is now mandatory. For Linux we can
+   just configure it to always allow access to the entire page.
+ - BIT(1) tags "uncached" mappings (used for the display controller)
 
-Something led you to finding this problem - tell us the story so we
-also know what you know and so can understand why the change needs
-to be made. A good commit description tells the reader everything
-you know about the problem that needs to be fixed, the code change
-itself will then describe how the problem was fixed...
+There is second type of DART (t8110) present on M1 Pro/Max SoCs which
+uses the same PTE format as t6000.
 
-Cheers,
+Changes in v3:
+- move APPLE_DART to its own io-pgtable implementation, copied from
+  io-pgtable-arm and simplified
 
-Dave.
+Changes in v2:
+- added Rob's Acked-by:
+- add APPLE_DART2 io-pgtable format
+
+Janne Grunau (1):
+  iommu/io-pgtable: Move Apple DART support to its own file
+
+Sven Peter (4):
+  dt-bindings: iommu: dart: add t6000 compatible
+  iommu/io-pgtable: Add DART subpage protection support
+  iommu/io-pgtable-dart: Add DART PTE support for t6000
+  iommu: dart: Support t6000 variant
+
+ .../devicetree/bindings/iommu/apple,dart.yaml |   4 +-
+ MAINTAINERS                                   |   1 +
+ drivers/iommu/Kconfig                         |   1 -
+ drivers/iommu/Makefile                        |   2 +-
+ drivers/iommu/apple-dart.c                    |  24 +-
+ drivers/iommu/io-pgtable-arm.c                |  63 --
+ drivers/iommu/io-pgtable-dart.c               | 623 ++++++++++++++++++
+ drivers/iommu/io-pgtable.c                    |   3 +
+ include/linux/io-pgtable.h                    |   1 +
+ 9 files changed, 653 insertions(+), 69 deletions(-)
+ create mode 100644 drivers/iommu/io-pgtable-dart.c
+
 -- 
-Dave Chinner
-david@fromorbit.com
+2.35.1
+
