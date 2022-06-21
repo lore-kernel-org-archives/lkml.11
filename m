@@ -2,138 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F5EAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 10:03:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE0B9C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 10:07:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348534AbiFUKDC (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 06:03:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43036 "EHLO
+        id S231805AbiFUKHN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 21 Jun 2022 06:07:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245415AbiFUKC7 (ORCPT
+        with ESMTP id S229535AbiFUKHL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 06:02:59 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEC94BD0
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 03:02:57 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id g4so9109929lfv.9
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 03:02:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=WgpvJ+ZYQ9wNJ1RH7x/Iyee2F28bg23N2XRimN8MYRQ=;
-        b=ktPF7cOnTQ+f5ss8vA4ne+IqJ1N2aK8YJDV120+3TE5Y/PumvHgTI9YFgKCc/emtfo
-         Rpk77hxnFVp2OoD6JZTZahD5WNhRB58jXTzOyhiGI26jAuV0LO2rsYzX++z/fM1OTXPe
-         RvxfAcSAdUUJr28uLmAby0mBoPAvpNkCR/jGF056uSrC9GxTDf84J4UvIMjPZ/z/OVKr
-         YDXRK3FKeW9eCGLazvBoG9I5pbF0iliNKlnaV6bPxaVInkUTftHN9losZCQKB5WVxwz0
-         CEByZvkr8RrFrC80CCL3NKulB9MQXNa9Lh31KJaecljsfW2TK0XIlIiHubuZfpeb4y2v
-         U5ng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=WgpvJ+ZYQ9wNJ1RH7x/Iyee2F28bg23N2XRimN8MYRQ=;
-        b=3CM0VhcitrKf0VfqYBniKkrL7O0NkUZKfRpcsIrR3LGtTugVuJu7u5s3wBHVbTwG+D
-         QrQPa1zyTdlJoh1pPZ/m6pwXjsd4lRy+DGjaJZQGBzt2G5v6nZ/y7rsmAIBvInYfVTw3
-         WzQ3SeGozeRwWprMOMqkedUh7acj7fnGhtEh/zqhEv5lK911/A46yV3+AOFDlCMYn5rd
-         063wxn5/n04YhxnZFzeWyFazK2YWk1C9PgMCq5aq3u3Fjg3fzGclDffWNypPgJlpKkiU
-         bSCOmP+Xxv2LUIfmCnyWHF+ULTh5pJdTxWP8iPNDpQOEov/Oj6LzCKQFrb2IK1clYq6L
-         9usA==
-X-Gm-Message-State: AJIora9/abuwIrXyeZUB39S/aI00lbv6yUp8ojCROW6NmR4xzMKU+HaW
-        9Cq9x+sRkII3pe0gShqcJkUdMNvcuUZN0vR5QvVtvA==
-X-Google-Smtp-Source: AGRyM1vJyn4HX+l1jRaEx/IuJ8VvUq21x67APPtICLlcI6h1PNZNhnGzvCIIh/0z7vZgyTr7dsdpoFugsC0f3Mg2usE=
-X-Received: by 2002:a05:6512:118f:b0:47f:6a1a:20d4 with SMTP id
- g15-20020a056512118f00b0047f6a1a20d4mr7197196lfr.428.1655805776035; Tue, 21
- Jun 2022 03:02:56 -0700 (PDT)
+        Tue, 21 Jun 2022 06:07:11 -0400
+Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 395C027FEB
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 03:07:09 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: marcan@marcan.st)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id DE18A41DF4;
+        Tue, 21 Jun 2022 10:07:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=marcan.st; s=default;
+        t=1655806027; bh=mENta8LrzbYHKgS3y0BpqM4Nb7jfJxw8OCgUAYE0nlk=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=p8C3ksm6LXw1QNi98fXAdAcOkNhopVRn2G7HrRekhs3u0CmEbepH5iOgVmRkCFmLd
+         KHtajS5pw6+ebcwMSbU4MNtAOKIpUY+Xmp4XBn45lJyXpF8vpA1qz2qzl/AiO+/BY2
+         nUJhKf/BSZRI4HacI4K6Ojq1S3ZHw/Crw+1kLT3oNzFLgeV47CuYdGfzi1TvtIlWl7
+         XMf1oID/q/NEv/oBjPIjV1ka6ltDMKDFEloEvhzngU/ozuLLIxT4gOnyxMV0hOTvb8
+         0hxcUQLP5ENUdKiJLDbQ1ipi4uGREhdNJhAQNoHOh3gZ2ebl0Xyb6p0x6DkbPSvdSE
+         Qpj04li02/Mrw==
+Message-ID: <9d683b37-abb0-a0d6-417a-b5f7c97673c5@marcan.st>
+Date:   Tue, 21 Jun 2022 19:07:02 +0900
 MIME-Version: 1.0
-References: <20220620150225.1307946-1-mw@semihalf.com> <YrCsgIxOmXQcjy+B@smile.fi.intel.com>
-In-Reply-To: <YrCsgIxOmXQcjy+B@smile.fi.intel.com>
-From:   Marcin Wojtas <mw@semihalf.com>
-Date:   Tue, 21 Jun 2022 12:02:46 +0200
-Message-ID: <CAPv3WKdJ_zoraG=gpOOSWHJcoMTKkkH8=N21aXX2RrusjWWD9g@mail.gmail.com>
-Subject: Re: [net-next: PATCH 00/12] ACPI support for DSA
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        vivien.didelot@gmail.com, Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Grzegorz Bernacki <gjb@semihalf.com>,
-        Grzegorz Jaszczyk <jaz@semihalf.com>,
-        Tomasz Nowicki <tn@semihalf.com>,
-        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
-        upstream@semihalf.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 1/2] arm64: dts: apple: Re-parent ANS2 power domains
+Content-Language: es-ES
+To:     Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220602174213.2737-1-sven@svenpeter.dev>
+From:   Hector Martin <marcan@marcan.st>
+In-Reply-To: <20220602174213.2737-1-sven@svenpeter.dev>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-pon., 20 cze 2022 o 19:21 Andy Shevchenko
-<andriy.shevchenko@linux.intel.com> napisa=C5=82(a):
->
-> On Mon, Jun 20, 2022 at 05:02:13PM +0200, Marcin Wojtas wrote:
-> > Hi!
-> >
-> > This patchset introduces the support for DSA in ACPI world. A couple of
-> > words about the background and motivation behind those changes:
-> >
-> > The DSA code is strictly dependent on the Device Tree and Open Firmware
-> > (of_*) interface, both in the drivers and the common high-level net/dsa=
- API.
-> > The only alternative is to pass the information about the topology via
-> > platform data - a legacy approach used by older systems that compiled t=
-he
-> > board description into the kernel.
-> >
-> > The above constraint is problematic for the embedded devices based e.g.=
- on
-> > x86_64 SoCs, which are described by ACPI tables - to use DSA, some tric=
-ks
-> > and workarounds have to be applied. Addition of switch description to
-> > DSDT/SSDT tables would help to solve many similar cases and use unmodif=
-ied
-> > kernel modules. It also enables this feature for ARM64 ACPI users.
-> >
-> > The key enablements allowing for adding ACPI support for DSA in Linux w=
-ere
-> > NIC drivers, MDIO, PHY, and phylink modifications =E2=80=93 the latter =
-three merged
-> > in 2021. I thought it would be worth to experiment with DSA, which seem=
-ed
-> > to be a natural follow-up challenge.
-> >
-> > It turned out that without much hassle it is possible to describe
-> > DSA-compliant switches as child devices of the MDIO busses, which are
-> > responsible for their enumeration based on the standard _ADR fields and
-> > description in _DSD objects under 'device properties' UUID [1].
-> > The vast majority of required changes were simple of_* to fwnode_*
-> > transition, as the DT and ACPI topolgies are analogous, except for
-> > 'ports' and 'mdio' subnodes naming, as they don't conform ACPI
-> > namespace constraints [2].
->
-> ...
->
-> > Note that for now cascade topology remains unsupported in ACPI world
-> > (based on "dsa" label and "link" property values). It seems to be feasi=
-ble,
-> > but would extend this patchset due to necessity of of_phandle_iterator
-> > migration to fwnode_. Leave it as a possible future step.
->
-> Wondering if this can be done using fwnode graph.
->
+On 03/06/2022 02.42, Sven Peter wrote:
+> From: Hector Martin <marcan@marcan.st>
+> 
+> Turns out that the APCIE_ST*_SYS domains do hard-depend on ANS2, so
+> without this they refuse to power up.
+> 
+> Signed-off-by: Hector Martin <marcan@marcan.st>
+> Reviewed-by: Sven Peter <sven@svenpeter.dev>
+> Signed-off-by: Sven Peter <sven@svenpeter.dev>
+> ---
+>  arch/arm64/boot/dts/apple/t8103-pmgr.dtsi | 7 +------
+>  1 file changed, 1 insertion(+), 6 deletions(-)
+> 
+> diff --git a/arch/arm64/boot/dts/apple/t8103-pmgr.dtsi b/arch/arm64/boot/dts/apple/t8103-pmgr.dtsi
+> index fc51bc872468..a6dbb1f485d8 100644
+> --- a/arch/arm64/boot/dts/apple/t8103-pmgr.dtsi
+> +++ b/arch/arm64/boot/dts/apple/t8103-pmgr.dtsi
+> @@ -725,11 +725,6 @@ ps_ans2: power-controller@3f0 {
+>  		#power-domain-cells = <0>;
+>  		#reset-cells = <0>;
+>  		label = "ans2";
+> -		/*
+> -		 * The ADT makes ps_apcie_st depend on ps_ans2 instead, but this
+> -		 * doesn't make much sense since ANS2 uses APCIE_ST.
+> -		 */
+> -		power-domains = <&ps_apcie_st>;
+>  	};
+>  
+>  	ps_gfx: power-controller@3f8 {
+> @@ -836,7 +831,7 @@ ps_apcie_st: power-controller@418 {
+>  		#power-domain-cells = <0>;
+>  		#reset-cells = <0>;
+>  		label = "apcie_st";
+> -		power-domains = <&ps_apcie>;
+> +		power-domains = <&ps_apcie>, <&ps_ans2>;
+>  	};
+>  
+>  	ps_ane_sys: power-controller@470 {
 
-Probably yes. It's a general question whether to follow iterating over
-phandles pointed by properties, like DT with a minimal code change or
-do something completely different.
+Applied both patches to asahi-soc/dt. Thanks!
 
-Best regards,
-Marcin
+-- 
+Hector Martin (marcan@marcan.st)
+Public Key: https://mrcn.st/pub
