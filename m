@@ -2,377 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BDF8C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 22:14:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F612C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 22:17:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229846AbiFUWOA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 18:14:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50110 "EHLO
+        id S230434AbiFUWRI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 21 Jun 2022 18:17:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231335AbiFUWNi (ORCPT
+        with ESMTP id S229521AbiFUWRD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 18:13:38 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A135F2FFC6
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 15:13:36 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id g4so12292923lfv.9
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 15:13:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FhT6OgEtSRMHYL/iMsKO81waTMS99DUORODlB8eMUM8=;
-        b=a7hoFAhgQmpKSok/Lhi54i4SFrBkg28yrGhZvbu5aYam+yowAkMrXoahazNTU2k2Up
-         TXmLEe5TeVQ3YZxcvE/4fpKCLU7CpV6rwYS0EPHxp0gsSJmx/zfSZrwHiM0ExWf27/a3
-         tmPrrDXnR3tSW+DPFtzWDEIdPYLa1yH5n+Lv/SEVTDJXRpJ7dqsP4Y/br0cURQsxWx+D
-         tz2KHFJsYXNc1xSxHdbAVJ2i4LXyEllM/BFHxTvjyAc2f25ZGyFyRFwsiTgfTlbnKICs
-         KrRb9HI2BL2mcHkcYgVklHZWmMMYkoW+ZrYVxnle/SG3fJuYDf6VOS6jB3DrV8WwcSzV
-         ep3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FhT6OgEtSRMHYL/iMsKO81waTMS99DUORODlB8eMUM8=;
-        b=YdBHLs5uOzuvFQUPGWDe6/A6aVGq1p6fAcFr0gI4NsdvVDn+Abh1TIaPNsZpgj2VWb
-         4iv4CfanljmshTOBajEtDVAv3EaH4OVlLkh4K6YXAJMjisGPni3BX2n5nutVKxN1T146
-         ynHCTzgNubeeZRnb7o68USrlGcimf8YdQtG0D5fJO2+iZEmKy8B1WqQGBI3pH4R6VOmP
-         +SqtLWFzmEEUzR+mhwoHnb7Z6Owvie0qIa1HwR/vFWe05rDt9PrqLdSla9CDhP9pgVrh
-         ccbY+R2XAxAEghKG3j7mC78x4BO+D8MW6MuR7rAQAAm4xxourjouJUVH9Aw3Z+srY4jT
-         y5YQ==
-X-Gm-Message-State: AJIora8aEG6Gxhj7Rv6BmVfxEHQmNcpSIPUuQQ25dIg3wl/KO1/m0mFt
-        wm/SxMUELgNKoNbZLKuByK/nQzDkDVUpU0FwrZj4rw==
-X-Google-Smtp-Source: AGRyM1vZzONrGhIdryRXMBvMBWgyMydFB/KNCIogQq5HGQtB2z3xPzoZumHyfUXbMaC9I0J80N3eYKZKpITx63fF3Ik=
-X-Received: by 2002:a05:6512:a94:b0:47f:6621:cf2a with SMTP id
- m20-20020a0565120a9400b0047f6621cf2amr250041lfu.193.1655849614508; Tue, 21
- Jun 2022 15:13:34 -0700 (PDT)
+        Tue, 21 Jun 2022 18:17:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B6CE30F7C;
+        Tue, 21 Jun 2022 15:17:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CB1346171B;
+        Tue, 21 Jun 2022 22:17:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 352DFC3411D;
+        Tue, 21 Jun 2022 22:17:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655849821;
+        bh=eAPR7iWjyiUmY6H0O4buVVeyi0I34ruyb5/gJDTQtF4=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=QzywVmsIkAfi9LCySImCB4DJuCT3LX1op3hFQ1G1ZIIPtEmg711bI8Js7ZtUbkXIa
+         2KqxT5A8db3Ba2DNZVj7zsTURpM/1vdVkIWAsd/JwHLoDcU41ON0zubG3qkC5Nxm2s
+         o79aj8Yd5d+XXKkQ1qx4AHWAe/RbCHqdkN4cpclkkT9LQO6aNf2MK5uaJs869ctcQi
+         Yq5SqgBYfukVR2sRRT9xOzED1oUi1Hnv7QOOyiCwLLGLWQsfbx7p3slup12GhuHb+Z
+         F/YXtVPgyNhcjSK72GqLt6cJllg5T78dIZvv0UqxRCY7CmqR8B4/yPLIlDZ74Dl1g6
+         /XEVWA5AFyC5A==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id D849E5C0AE0; Tue, 21 Jun 2022 15:17:00 -0700 (PDT)
+Date:   Tue, 21 Jun 2022 15:17:00 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Marco Elver <elver@google.com>
+Cc:     Neeraj Upadhyay <quic_neeraju@quicinc.com>, rcu@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-team@fb.com,
+        rostedt@goodmis.org, Johannes Berg <johannes.berg@intel.com>,
+        Dmitry Vyukov <dvyukov@google.com>
+Subject: Re: [PATCH rcu 07/12] rcu: tiny: Record kvfree_call_rcu() call stack
+ for KASAN
+Message-ID: <20220621221700.GP1790663@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220620222022.GA3839466@paulmck-ThinkPad-P17-Gen-1>
+ <20220620222032.3839547-7-paulmck@kernel.org>
+ <00f3eb47-2529-a493-ee67-c0c0219937a3@quicinc.com>
+ <20220621193135.GM1790663@paulmck-ThinkPad-P17-Gen-1>
+ <CANpmjNOBD6B_hY-rGCtdk2+fFox6DhsLE_bp9Q8sU=AQZs9ySQ@mail.gmail.com>
 MIME-Version: 1.0
-References: <cover.1655761627.git.ashish.kalra@amd.com> <d325cb5d7961f015400999dda7ee8e08e4ca2ec6.1655761627.git.ashish.kalra@amd.com>
-In-Reply-To: <d325cb5d7961f015400999dda7ee8e08e4ca2ec6.1655761627.git.ashish.kalra@amd.com>
-From:   Peter Gonda <pgonda@google.com>
-Date:   Tue, 21 Jun 2022 16:13:22 -0600
-Message-ID: <CAMkAt6okrB57pwWu1RCRA1BqTzosD52KFHn7XD6DoJNFo1N72A@mail.gmail.com>
-Subject: Re: [PATCH Part2 v6 17/49] crypto: ccp: Add the SNP_{SET,GET}_EXT_CONFIG
- command
-To:     Ashish Kalra <Ashish.Kalra@amd.com>
-Cc:     "the arch/x86 maintainers" <x86@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        kvm list <kvm@vger.kernel.org>, linux-coco@lists.linux.dev,
-        linux-mm@kvack.org,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
-        "Lendacky, Thomas" <thomas.lendacky@amd.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Sergio Lopez <slp@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Dov Murik <dovmurik@linux.ibm.com>,
-        Tobin Feldman-Fitzthum <tobin@ibm.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Michael Roth <michael.roth@amd.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Andi Kleen <ak@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>, Marc Orr <marcorr@google.com>,
-        Sathyanarayanan Kuppuswamy 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        Alper Gun <alpergun@google.com>,
-        "Dr. David Alan Gilbert" <dgilbert@redhat.com>, jarkko@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANpmjNOBD6B_hY-rGCtdk2+fFox6DhsLE_bp9Q8sU=AQZs9ySQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 20, 2022 at 5:06 PM Ashish Kalra <Ashish.Kalra@amd.com> wrote:
->
-> From: Brijesh Singh <brijesh.singh@amd.com>
->
-> The SEV-SNP firmware provides the SNP_CONFIG command used to set the
-> system-wide configuration value for SNP guests. The information includes
-> the TCB version string to be reported in guest attestation reports.
->
-> Version 2 of the GHCB specification adds an NAE (SNP extended guest
-> request) that a guest can use to query the reports that include additional
-> certificates.
->
-> In both cases, userspace provided additional data is included in the
-> attestation reports. The userspace will use the SNP_SET_EXT_CONFIG
-> command to give the certificate blob and the reported TCB version string
-> at once. Note that the specification defines certificate blob with a
-> specific GUID format; the userspace is responsible for building the
-> proper certificate blob. The ioctl treats it an opaque blob.
->
-> While it is not defined in the spec, but let's add SNP_GET_EXT_CONFIG
-> command that can be used to obtain the data programmed through the
-> SNP_SET_EXT_CONFIG.
->
-> Signed-off-by: Brijesh Singh <brijesh.singh@amd.com>
-> ---
->  Documentation/virt/coco/sevguest.rst |  27 +++++++
->  drivers/crypto/ccp/sev-dev.c         | 115 +++++++++++++++++++++++++++
->  drivers/crypto/ccp/sev-dev.h         |   3 +
->  include/uapi/linux/psp-sev.h         |  17 ++++
->  4 files changed, 162 insertions(+)
->
-> diff --git a/Documentation/virt/coco/sevguest.rst b/Documentation/virt/coco/sevguest.rst
-> index 11ea67c944df..3014de47e4ce 100644
-> --- a/Documentation/virt/coco/sevguest.rst
-> +++ b/Documentation/virt/coco/sevguest.rst
-> @@ -145,6 +145,33 @@ The SNP_PLATFORM_STATUS command is used to query the SNP platform status. The
->  status includes API major, minor version and more. See the SEV-SNP
->  specification for further details.
->
-> +2.5 SNP_SET_EXT_CONFIG
-> +----------------------
-> +:Technology: sev-snp
-> +:Type: hypervisor ioctl cmd
-> +:Parameters (in): struct sev_data_snp_ext_config
-> +:Returns (out): 0 on success, -negative on error
-> +
-> +The SNP_SET_EXT_CONFIG is used to set the system-wide configuration such as
-> +reported TCB version in the attestation report. The command is similar to
-> +SNP_CONFIG command defined in the SEV-SNP spec. The main difference is the
-> +command also accepts an additional certificate blob defined in the GHCB
-> +specification.
-> +
-> +If the certs_address is zero, then previous certificate blob will deleted.
+On Tue, Jun 21, 2022 at 11:14:04PM +0200, Marco Elver wrote:
+> On Tue, 21 Jun 2022 at 21:31, Paul E. McKenney <paulmck@kernel.org> wrote:
+> >
+> > On Tue, Jun 21, 2022 at 12:01:29PM +0530, Neeraj Upadhyay wrote:
+> > >
+> > >
+> > > On 6/21/2022 3:50 AM, Paul E. McKenney wrote:
+> > > > From: Johannes Berg <johannes.berg@intel.com>
+> > > >
+> > > > When running KASAN with Tiny RCU (e.g. under ARCH=um, where
+> > > > a working KASAN patch is now available), we don't get any
+> > > > information on the original kfree_rcu() (or similar) caller
+> > > > when a problem is reported, as Tiny RCU doesn't record this.
+> > > >
+> > > > Add the recording, which required pulling kvfree_call_rcu()
+> > > > out of line for the KASAN case since the recording function
+> > > > (kasan_record_aux_stack_noalloc) is neither exported, nor
+> > > > can we include kasan.h into rcutiny.h.
+> > > >
+> > > > without KASAN, the patch has no size impact (ARCH=um kernel):
+> > > >      text       data         bss         dec        hex    filename
+> > > >   6151515    4423154    33148520    43723189    29b29b5    linux
+> > > >   6151515    4423154    33148520    43723189    29b29b5    linux + patch
+> > > >
+> > > > with KASAN, the impact on my build was minimal:
+> > > >      text       data         bss         dec        hex    filename
+> > > > 13915539    7388050    33282304    54585893    340ea25    linux
+> > > > 13911266    7392114    33282304    54585684    340e954    linux + patch
+> > > >     -4273      +4064         +-0        -209
+> > > >
+> > > > Acked-by: Dmitry Vyukov <dvyukov@google.com>
+> > > > Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+> > > > Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+> > > > ---
+> > > >   include/linux/rcutiny.h | 11 ++++++++++-
+> > > >   kernel/rcu/tiny.c       | 14 ++++++++++++++
+> > > >   2 files changed, 24 insertions(+), 1 deletion(-)
+> > > >
+> > > > diff --git a/include/linux/rcutiny.h b/include/linux/rcutiny.h
+> > > > index 5fed476f977f6..d84e13f2c3848 100644
+> > > > --- a/include/linux/rcutiny.h
+> > > > +++ b/include/linux/rcutiny.h
+> > > > @@ -38,7 +38,7 @@ static inline void synchronize_rcu_expedited(void)
+> > > >    */
+> > > >   extern void kvfree(const void *addr);
+> > > > -static inline void kvfree_call_rcu(struct rcu_head *head, rcu_callback_t func)
+> > > > +static inline void __kvfree_call_rcu(struct rcu_head *head, rcu_callback_t func)
+> > > >   {
+> > > >     if (head) {
+> > > >             call_rcu(head, func);
+> > > > @@ -51,6 +51,15 @@ static inline void kvfree_call_rcu(struct rcu_head *head, rcu_callback_t func)
+> > > >     kvfree((void *) func);
+> > > >   }
+> > > > +#ifdef CONFIG_KASAN_GENERIC
+> > > > +void kvfree_call_rcu(struct rcu_head *head, rcu_callback_t func);
+> > > > +#else
+> > > > +static inline void kvfree_call_rcu(struct rcu_head *head, rcu_callback_t func)
+> > > > +{
+> > > > +   __kvfree_call_rcu(head, func);
+> > > > +}
+> > > > +#endif
+> > > > +
+> > > >   void rcu_qs(void);
+> > > >   static inline void rcu_softirq_qs(void)
+> > > > diff --git a/kernel/rcu/tiny.c b/kernel/rcu/tiny.c
+> > > > index 340b3f8b090d4..58ff3721d975c 100644
+> > > > --- a/kernel/rcu/tiny.c
+> > > > +++ b/kernel/rcu/tiny.c
+> > > > @@ -217,6 +217,20 @@ bool poll_state_synchronize_rcu(unsigned long oldstate)
+> > > >   }
+> > > >   EXPORT_SYMBOL_GPL(poll_state_synchronize_rcu);
+> > > > +#ifdef CONFIG_KASAN_GENERIC
+> > > > +void kvfree_call_rcu(struct rcu_head *head, rcu_callback_t func)
+> > > > +{
+> > > > +   if (head) {
+> > > > +           void *ptr = (void *) head - (unsigned long) func;
+> > > > +
+> > > > +           kasan_record_aux_stack_noalloc(ptr);
+> > > > +   }
+> > >
+> > > For the !head case; similar to Tree RCU's kvfree_call_rcu() implementation,
+> > > we do not need to record 'ptr' (which will be 'func')?
+> >
+> > My understanding is that we do not need to record in that case
+> > because __kvfree_call_rcu() will simply invoke the almost-zero-cost
+> > synchronize_rcu() and then invoke kfree().
+> >
+> > Johannes, Dmitry, Marco, anything that I am missing?
+> 
+> As-is looks sensible - doing kasan_record_aux_stack_noalloc() only
+> makes sense if the actual kfree() is not done with a callstack that
+> will point at the kvfree_call_rcu() caller. Otherwise we're doing
+> redundant work and just polluting the aux stack storage slots. So in
+> the case where kvfree_call_rcu() does synchronize_rcu() and kfree()
+> the kvfree_call_rcu() caller is in the callstack, and would be shown
+> on use-after-free bugs.
 
-... then the previous certificate blob will be deleted.
+Thank you for checking and for confirmation!
 
-> +For more information on the certificate blob layout, see the GHCB spec
-> +(extended guest request message).
-> +
-> +2.6 SNP_GET_EXT_CONFIG
-> +----------------------
-> +:Technology: sev-snp
-> +:Type: hypervisor ioctl cmd
-> +:Parameters (in): struct sev_data_snp_ext_config
-> +:Returns (out): 0 on success, -negative on error
-> +
-> +The SNP_SET_EXT_CONFIG is used to query the system-wide configuration set
-> +through the SNP_SET_EXT_CONFIG.
-> +
->  3. SEV-SNP CPUID Enforcement
->  ============================
->
-> diff --git a/drivers/crypto/ccp/sev-dev.c b/drivers/crypto/ccp/sev-dev.c
-> index b9b6fab31a82..97b479d5aa86 100644
-> --- a/drivers/crypto/ccp/sev-dev.c
-> +++ b/drivers/crypto/ccp/sev-dev.c
-> @@ -1312,6 +1312,10 @@ static int __sev_snp_shutdown_locked(int *error)
->         if (!sev->snp_inited)
->                 return 0;
->
-> +       /* Free the memory used for caching the certificate data */
-> +       kfree(sev->snp_certs_data);
-> +       sev->snp_certs_data = NULL;
-> +
->         /* SHUTDOWN requires the DF_FLUSH */
->         wbinvd_on_all_cpus();
->         __sev_do_cmd_locked(SEV_CMD_SNP_DF_FLUSH, NULL, NULL);
-> @@ -1616,6 +1620,111 @@ static int sev_ioctl_snp_platform_status(struct sev_issue_cmd *argp)
->         return ret;
->  }
->
-> +static int sev_ioctl_snp_get_config(struct sev_issue_cmd *argp)
-> +{
-> +       struct sev_device *sev = psp_master->sev_data;
-> +       struct sev_user_data_ext_snp_config input;
-
-Lets memset |input| to zero to avoid leaking kernel memory, see
-"crypto: ccp - Use kzalloc for sev ioctl interfaces to prevent kernel
-memory leak"
-
-> +       int ret;
-> +
-> +       if (!sev->snp_inited || !argp->data)
-> +               return -EINVAL;
-> +
-> +       if (copy_from_user(&input, (void __user *)argp->data, sizeof(input)))
-> +               return -EFAULT;
-> +
-> +       /* Copy the TCB version programmed through the SET_CONFIG to userspace */
-> +       if (input.config_address) {
-> +               if (copy_to_user((void * __user)input.config_address,
-> +                                &sev->snp_config, sizeof(struct sev_user_data_snp_config)))
-> +                       return -EFAULT;
-> +       }
-> +
-> +       /* Copy the extended certs programmed through the SNP_SET_CONFIG */
-> +       if (input.certs_address && sev->snp_certs_data) {
-> +               if (input.certs_len < sev->snp_certs_len) {
-> +                       /* Return the certs length to userspace */
-> +                       input.certs_len = sev->snp_certs_len;
-> +
-> +                       ret = -ENOSR;
-> +                       goto e_done;
-> +               }
-> +
-> +               if (copy_to_user((void * __user)input.certs_address,
-> +                                sev->snp_certs_data, sev->snp_certs_len))
-> +                       return -EFAULT;
-> +       }
-> +
-> +       ret = 0;
-> +
-> +e_done:
-> +       if (copy_to_user((void __user *)argp->data, &input, sizeof(input)))
-> +               ret = -EFAULT;
-> +
-> +       return ret;
-> +}
-> +
-> +static int sev_ioctl_snp_set_config(struct sev_issue_cmd *argp, bool writable)
-> +{
-> +       struct sev_device *sev = psp_master->sev_data;
-> +       struct sev_user_data_ext_snp_config input;
-> +       struct sev_user_data_snp_config config;
-> +       void *certs = NULL;
-> +       int ret = 0;
-> +
-> +       if (!sev->snp_inited || !argp->data)
-> +               return -EINVAL;
-> +
-> +       if (!writable)
-> +               return -EPERM;
-> +
-> +       if (copy_from_user(&input, (void __user *)argp->data, sizeof(input)))
-> +               return -EFAULT;
-> +
-> +       /* Copy the certs from userspace */
-> +       if (input.certs_address) {
-> +               if (!input.certs_len || !IS_ALIGNED(input.certs_len, PAGE_SIZE))
-> +                       return -EINVAL;
-> +
-> +               certs = psp_copy_user_blob(input.certs_address, input.certs_len);
-
-I see that psp_copy_user_blob() uses memdup_user() which tracks the
-allocated memory to GFP_USER. Given this memory is long lived and now
-belongs to the PSP driver in perpetuity, should this be tracked with
-GFP_KERNEL?
-
-> +               if (IS_ERR(certs))
-> +                       return PTR_ERR(certs);
-> +       }
-> +
-> +       /* Issue the PSP command to update the TCB version using the SNP_CONFIG. */
-> +       if (input.config_address) {
-> +               if (copy_from_user(&config,
-> +                                  (void __user *)input.config_address, sizeof(config))) {
-> +                       ret = -EFAULT;
-> +                       goto e_free;
-> +               }
-> +
-> +               ret = __sev_do_cmd_locked(SEV_CMD_SNP_CONFIG, &config, &argp->error);
-> +               if (ret)
-> +                       goto e_free;
-> +
-> +               memcpy(&sev->snp_config, &config, sizeof(config));
-> +       }
-> +
-> +       /*
-> +        * If the new certs are passed then cache it else free the old certs.
-> +        */
-> +       if (certs) {
-> +               kfree(sev->snp_certs_data);
-> +               sev->snp_certs_data = certs;
-> +               sev->snp_certs_len = input.certs_len;
-> +       } else {
-> +               kfree(sev->snp_certs_data);
-> +               sev->snp_certs_data = NULL;
-> +               sev->snp_certs_len = 0;
-> +       }
-
-Do we need another lock here? When I look at 18/49 it seems like
-snp_guest_ext_guest_request() it seems like we have a race for
-|sev->snp_certs_data|
-
-> +
-> +       return 0;
-> +
-> +e_free:
-> +       kfree(certs);
-> +       return ret;
-> +}
-> +
->  static long sev_ioctl(struct file *file, unsigned int ioctl, unsigned long arg)
->  {
->         void __user *argp = (void __user *)arg;
-> @@ -1670,6 +1779,12 @@ static long sev_ioctl(struct file *file, unsigned int ioctl, unsigned long arg)
->         case SNP_PLATFORM_STATUS:
->                 ret = sev_ioctl_snp_platform_status(&input);
->                 break;
-> +       case SNP_SET_EXT_CONFIG:
-> +               ret = sev_ioctl_snp_set_config(&input, writable);
-> +               break;
-> +       case SNP_GET_EXT_CONFIG:
-> +               ret = sev_ioctl_snp_get_config(&input);
-> +               break;
->         default:
->                 ret = -EINVAL;
->                 goto out;
-> diff --git a/drivers/crypto/ccp/sev-dev.h b/drivers/crypto/ccp/sev-dev.h
-> index fe5d7a3ebace..d2fe1706311a 100644
-> --- a/drivers/crypto/ccp/sev-dev.h
-> +++ b/drivers/crypto/ccp/sev-dev.h
-> @@ -66,6 +66,9 @@ struct sev_device {
->
->         bool snp_inited;
->         struct snp_host_map snp_host_map[MAX_SNP_HOST_MAP_BUFS];
-> +       void *snp_certs_data;
-> +       u32 snp_certs_len;
-> +       struct sev_user_data_snp_config snp_config;
-
-Since this gets copy_to_user'd can we memset this to 0 to prevent
-leaking kernel uninitialized memory? Similar to recent patches with
-kzalloc and __GPF_ZERO usage.
-
-
->  };
->
->  int sev_dev_init(struct psp_device *psp);
-> diff --git a/include/uapi/linux/psp-sev.h b/include/uapi/linux/psp-sev.h
-> index ffd60e8b0a31..60e7a8d1a18e 100644
-> --- a/include/uapi/linux/psp-sev.h
-> +++ b/include/uapi/linux/psp-sev.h
-> @@ -29,6 +29,8 @@ enum {
->         SEV_GET_ID,     /* This command is deprecated, use SEV_GET_ID2 */
->         SEV_GET_ID2,
->         SNP_PLATFORM_STATUS,
-> +       SNP_SET_EXT_CONFIG,
-> +       SNP_GET_EXT_CONFIG,
->
->         SEV_MAX,
->  };
-> @@ -190,6 +192,21 @@ struct sev_user_data_snp_config {
->         __u8 rsvd[52];
->  } __packed;
->
-> +/**
-> + * struct sev_data_snp_ext_config - system wide configuration value for SNP.
-> + *
-> + * @config_address: address of the struct sev_user_data_snp_config or 0 when
-> + *             reported_tcb does not need to be updated.
-> + * @certs_address: address of extended guest request certificate chain or
-> + *              0 when previous certificate should be removed on SNP_SET_EXT_CONFIG.
-> + * @certs_len: length of the certs
-> + */
-> +struct sev_user_data_ext_snp_config {
-> +       __u64 config_address;           /* In */
-> +       __u64 certs_address;            /* In */
-> +       __u32 certs_len;                /* In */
-> +};
-> +
->  /**
->   * struct sev_issue_cmd - SEV ioctl parameters
->   *
-> --
-> 2.25.1
->
+							Thanx, Paul
