@@ -2,97 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05C1BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 09:21:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8A4BC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 09:21:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347355AbiFUJVX (ORCPT
+        id S1347680AbiFUJVh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 05:21:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33224 "EHLO
+        Tue, 21 Jun 2022 05:21:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345332AbiFUJVW (ORCPT
+        with ESMTP id S1347604AbiFUJVf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 05:21:22 -0400
-Received: from outbound-smtp20.blacknight.com (outbound-smtp20.blacknight.com [46.22.139.247])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22A401AF1A
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 02:21:20 -0700 (PDT)
-Received: from mail.blacknight.com (pemlinmail05.blacknight.ie [81.17.254.26])
-        by outbound-smtp20.blacknight.com (Postfix) with ESMTPS id A81641C4684
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 10:21:18 +0100 (IST)
-Received: (qmail 19133 invoked from network); 21 Jun 2022 09:21:18 -0000
-Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.198.246])
-  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 21 Jun 2022 09:21:18 -0000
-Date:   Tue, 21 Jun 2022 10:21:16 +0100
-From:   Mel Gorman <mgorman@techsingularity.net>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Marek Szyprowski <m.szyprowski@samsung.com>,
-        Yu Zhao <yuzhao@google.com>,
-        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Michal Hocko <mhocko@kernel.org>,
-        Hugh Dickins <hughd@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>
-Subject: Re: [PATCH 7/7] mm/page_alloc: Replace local_lock with normal
- spinlock
-Message-ID: <20220621092116.GC15453@techsingularity.net>
-References: <20220613125622.18628-1-mgorman@techsingularity.net>
- <20220613125622.18628-8-mgorman@techsingularity.net>
- <CGME20220615224855eucas1p1ea6d90c23ec9423dfe04b267f6dddd2a@eucas1p1.samsung.com>
- <e1c73640-3f29-bf57-b98d-84b1800cf4e3@samsung.com>
- <20220615160446.be1f75fd256d67e57b27a9fc@linux-foundation.org>
+        Tue, 21 Jun 2022 05:21:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BCD41AF1A
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 02:21:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E6C756155C
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 09:21:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50DB3C3411C;
+        Tue, 21 Jun 2022 09:21:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655803293;
+        bh=tLFl3NPsWZx6U7LiKRVGtumSH0CZrXn2AYNCegSzJwk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=H2pPcLSE1yTCq8tTzqno+Z8p282Zk+f+DmIhtq8KzlmT/Muz+4bASepBPc1bFvVdG
+         +X/SO5ykm3h+MsrZfUltWVX55N1kiUDZzEzqB0OPUjir0mMkpe5vq1zO9bww1+XzCI
+         qtdI1z09qGYvZqQCpEyLupa48QZ37rdB3RYh8qHbC04runRXaPgqdESlFCMGk1N5dg
+         CcLdTTxxgQj3FtArEFVesrp5xPc1iaTFfubKAFurl02UM3yCE8KAc9D7m4fn3qr3Bp
+         WzQxRIDPKOz0IcNKrFbs5bMiRx64fA8IDBui4H/56rRYrom9jVwefG4x+QHY56NpB6
+         vmf8OqB0/p4eA==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1o3a4d-0001m4-Dd; Tue, 21 Jun 2022 11:21:27 +0200
+Date:   Tue, 21 Jun 2022 11:21:27 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     keliu <liuke94@huawei.com>
+Cc:     elder@kernel.org, gregkh@linuxfoundation.org,
+        greybus-dev@lists.linaro.org, linux-kernel@vger.kernel.org
+Subject: Re: [greybus-dev] [PATCH] drivers: greybus: Directly use
+ ida_alloc()/free()
+Message-ID: <YrGNlwxsI7SH0Bqr@hovoldconsulting.com>
+References: <20220527111348.3444003-1-liuke94@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220615160446.be1f75fd256d67e57b27a9fc@linux-foundation.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220527111348.3444003-1-liuke94@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 04:04:46PM -0700, Andrew Morton wrote:
-> On Thu, 16 Jun 2022 00:48:55 +0200 Marek Szyprowski <m.szyprowski@samsung.com> wrote:
+On Fri, May 27, 2022 at 11:13:48AM +0000, keliu wrote:
+
+Please drop "drivers: " from Subject and use a more descriptive summary
+like:
+
+	greybus: replace ida_simple interface
+
+> Use ida_alloc()/ida_free() instead of deprecated
+> ida_simple_get()/ida_simple_remove() .
 > 
-> > In the logs I see lots of errors like:
-> > 
-> > BUG: sleeping function called from invalid context at 
-> > ./include/linux/sched/mm.h:274
-> > 
-> > BUG: scheduling while atomic: systemd-udevd/288/0x00000002
-> > 
-> > BUG: sleeping function called from invalid context at mm/filemap.c:2647
-> > 
-> > however there are also a fatal ones like:
-> > 
-> > Unable to handle kernel paging request at virtual address 00000000017a87b4
-> > 
-> > 
-> > The issues seems to be a bit random. Looks like memory trashing. 
-> > Reverting $subject on top of current linux-next fixes all those issues.
-> > 
-> > 
+> Signed-off-by: keliu <liuke94@huawei.com>
+
+Again, this needs to be a full (legal) name.
+
+> ---
+>  drivers/greybus/es2.c       |  4 ++--
+>  drivers/greybus/hd.c        | 12 ++++++------
+>  drivers/greybus/interface.c |  8 ++++----
+>  3 files changed, 12 insertions(+), 12 deletions(-)
 > 
-> This?
-> 
-> --- a/mm/page_alloc.c~mm-page_alloc-replace-local_lock-with-normal-spinlock-fix
-> +++ a/mm/page_alloc.c
-> @@ -183,8 +183,10 @@ static DEFINE_MUTEX(pcp_batch_high_lock)
->  	type *_ret;							\
->  	pcpu_task_pin();						\
->  	_ret = this_cpu_ptr(ptr);					\
-> -	if (!spin_trylock_irqsave(&_ret->member, flags))		\
-> +	if (!spin_trylock_irqsave(&_ret->member, flags)) {		\
-> +		pcpu_task_unpin();					\
->  		_ret = NULL;						\
-> +	}								\
->  	_ret;								\
->  })
+> diff --git a/drivers/greybus/es2.c b/drivers/greybus/es2.c
+> index e89cca015095..c861fb2acd8a 100644
+> --- a/drivers/greybus/es2.c
+> +++ b/drivers/greybus/es2.c
+> @@ -522,7 +522,7 @@ static int es2_cport_allocate(struct gb_host_device *hd, int cport_id,
+>  		return -EINVAL;
+>  	}
 >  
+> -	return ida_simple_get(id_map, ida_start, ida_end, GFP_KERNEL);
+> +	return ida_alloc_range(id_map, ida_start, ida_end - 1, GFP_KERNEL);
 
-This is the correct fix. I *had* a fix for this but in a patch that was
-not posted that drops irqsave :(
+Please mention in the commit message that the upper bound is inclusive
+in the new API.
 
--- 
-Mel Gorman
-SUSE Labs
+>  }
+>  
+>  static void es2_cport_release(struct gb_host_device *hd, u16 cport_id)
+> @@ -535,7 +535,7 @@ static void es2_cport_release(struct gb_host_device *hd, u16 cport_id)
+>  		return;
+>  	}
+>  
+> -	ida_simple_remove(&hd->cport_id_map, cport_id);
+> +	ida_free(&hd->cport_id_map, cport_id);
+>  }
+>  
+>  static int cport_enable(struct gb_host_device *hd, u16 cport_id,
+> diff --git a/drivers/greybus/hd.c b/drivers/greybus/hd.c
+> index 72b21bf2d7d3..6ff5b0cfd539 100644
+> --- a/drivers/greybus/hd.c
+> +++ b/drivers/greybus/hd.c
+> @@ -50,7 +50,7 @@ int gb_hd_cport_reserve(struct gb_host_device *hd, u16 cport_id)
+>  	struct ida *id_map = &hd->cport_id_map;
+>  	int ret;
+>  
+> -	ret = ida_simple_get(id_map, cport_id, cport_id + 1, GFP_KERNEL);
+> +	ret = ida_alloc_range(id_map, cport_id, cport_id, GFP_KERNEL);
+>  	if (ret < 0) {
+>  		dev_err(&hd->dev, "failed to reserve cport %u\n", cport_id);
+>  		return ret;
+> @@ -64,7 +64,7 @@ void gb_hd_cport_release_reserved(struct gb_host_device *hd, u16 cport_id)
+>  {
+>  	struct ida *id_map = &hd->cport_id_map;
+>  
+> -	ida_simple_remove(id_map, cport_id);
+> +	ida_free(id_map, cport_id);
+>  }
+>  EXPORT_SYMBOL_GPL(gb_hd_cport_release_reserved);
+>  
+> @@ -89,7 +89,7 @@ int gb_hd_cport_allocate(struct gb_host_device *hd, int cport_id,
+>  		return -EINVAL;
+>  	}
+>  
+> -	return ida_simple_get(id_map, ida_start, ida_end, GFP_KERNEL);
+> +	return ida_alloc_range(id_map, ida_start, ida_end - 1, GFP_KERNEL);
+>  }
+>  
+>  /* Locking: Caller guarantees serialisation */
+> @@ -100,7 +100,7 @@ void gb_hd_cport_release(struct gb_host_device *hd, u16 cport_id)
+>  		return;
+>  	}
+>  
+> -	ida_simple_remove(&hd->cport_id_map, cport_id);
+> +	ida_free(&hd->cport_id_map, cport_id);
+>  }
+>  
+>  static void gb_hd_release(struct device *dev)
+> @@ -111,7 +111,7 @@ static void gb_hd_release(struct device *dev)
+>  
+>  	if (hd->svc)
+>  		gb_svc_put(hd->svc);
+> -	ida_simple_remove(&gb_hd_bus_id_map, hd->bus_id);
+> +	ida_free(&gb_hd_bus_id_map, hd->bus_id);
+>  	ida_destroy(&hd->cport_id_map);
+>  	kfree(hd);
+>  }
+> @@ -162,7 +162,7 @@ struct gb_host_device *gb_hd_create(struct gb_hd_driver *driver,
+>  	if (!hd)
+>  		return ERR_PTR(-ENOMEM);
+>  
+> -	ret = ida_simple_get(&gb_hd_bus_id_map, 1, 0, GFP_KERNEL);
+> +	ret = ida_alloc_min(&gb_hd_bus_id_map, 1, GFP_KERNEL);
+>  	if (ret < 0) {
+>  		kfree(hd);
+>  		return ERR_PTR(ret);
+> diff --git a/drivers/greybus/interface.c b/drivers/greybus/interface.c
+> index 9ec949a438ef..f685e5f7b7b1 100644
+> --- a/drivers/greybus/interface.c
+> +++ b/drivers/greybus/interface.c
+> @@ -131,8 +131,8 @@ static int gb_interface_route_create(struct gb_interface *intf)
+>  	int ret;
+>  
+>  	/* Allocate an interface device id. */
+> -	ret = ida_simple_get(&svc->device_id_map,
+> -			     GB_SVC_DEVICE_ID_MIN, GB_SVC_DEVICE_ID_MAX + 1,
+> +	ret = ida_alloc_range(&svc->device_id_map,
+> +			     GB_SVC_DEVICE_ID_MIN, GB_SVC_DEVICE_ID_MAX,
+>  			     GFP_KERNEL);
+>  	if (ret < 0) {
+>  		dev_err(&intf->dev, "failed to allocate device id: %d\n", ret);
+> @@ -165,7 +165,7 @@ static int gb_interface_route_create(struct gb_interface *intf)
+>  	 * XXX anymore.
+>  	 */
+>  err_ida_remove:
+> -	ida_simple_remove(&svc->device_id_map, device_id);
+> +	ida_free(&svc->device_id_map, device_id);
+>  
+>  	return ret;
+>  }
+> @@ -178,7 +178,7 @@ static void gb_interface_route_destroy(struct gb_interface *intf)
+>  		return;
+>  
+>  	gb_svc_route_destroy(svc, svc->ap_intf_id, intf->interface_id);
+> -	ida_simple_remove(&svc->device_id_map, intf->device_id);
+> +	ida_free(&svc->device_id_map, intf->device_id);
+>  	intf->device_id = GB_INTERFACE_DEVICE_ID_BAD;
+>  }
+
+Looks good otherwise.
+
+Johan
