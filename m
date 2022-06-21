@@ -2,50 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60F09C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 20:56:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF6EFC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 20:56:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355208AbiFUU4m (ORCPT
+        id S1355218AbiFUU4p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 16:56:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55458 "EHLO
+        Tue, 21 Jun 2022 16:56:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354880AbiFUUz3 (ORCPT
+        with ESMTP id S1355089AbiFUU4H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 16:55:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1C2A2EA0A;
-        Tue, 21 Jun 2022 13:50:13 -0700 (PDT)
+        Tue, 21 Jun 2022 16:56:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 587DF31521;
+        Tue, 21 Jun 2022 13:50:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C88F4B81B2F;
-        Tue, 21 Jun 2022 20:49:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83DD6C3411C;
-        Tue, 21 Jun 2022 20:49:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BFA2861874;
+        Tue, 21 Jun 2022 20:49:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A66AC3411C;
+        Tue, 21 Jun 2022 20:49:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655844586;
-        bh=fhvJE/MOPjuPqFu5fB7/aejLFfTugL1Dz3jS91mlPco=;
+        s=k20201202; t=1655844589;
+        bh=MLsaPkWl4pwEb56jRphAPhW21owYM+eoMh1VETT6uFc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pS7jK9SKJu/iUqcy3ZVB/MtA7IvOH4YeDUwzxIJ0AIxwFTLgACEy6kHbqWTvkd73j
-         W6kTPXqfYXYVPpD1gag/XzWhINrMugtPAJ5q11a1dEp5VlfiWA7W7FfAABa3ztP3ax
-         +BFLHcjFrDCQ3vzUVX8LXyoTZOcRw1jYjqeaz5yogSUVRnza1mjI2phwS3g9G25IIu
-         znk9Dm1Smtjh3aI2mItCeenjMZAol6Or6HEOYd6xaTRtTRElXqOl6Cqh2QmFkFZ/h1
-         NzCzT1yaW98GPyaTu/7tzjjNbitljpKI02PlpMkADjDxc9hOePD8gdaI9TGcfr/q5W
-         xZMq3ZfHVN9Bw==
+        b=EgwC5tEmVdGWRBDptbYYAMAgIFGdS/TZWUjxnoo4GjPJbi16+ujK5MxVXhxX5HCDY
+         /33ihcNcFU27nWBZZ1uyGSJKXlph7fsBqzPyulgMlOdCL8kP7WyzgJhJ0KlfH/Co1l
+         qFm2DtcIASblXsPLhTxvOpnR/3Sh7cPTWE113qbQV34GK2SUIhp+1jDccm4HM/dE74
+         Qw2sSQ4de2S9lM90r8rxJ9RrVQm0E4YVFMkTCjr692ubV3YPkyepspTNWyIyOfX77y
+         S6wYncEBBLkw7V76i1t16qHhbcTWqoG8ck+Pq0LMr5/DjckiDF1raVbA35AHhQdu/t
+         JAjWK0ZHRlH8w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Brad Bishop <bradleyb@fuzziesquirrel.com>,
-        Eddie James <eajames@linux.ibm.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>,
-        andriy.shevchenko@linux.intel.com, keescook@chromium.org,
-        christophe.leroy@csgroup.eu, ralph.siemsen@linaro.org,
-        broonie@kernel.org
-Subject: [PATCH AUTOSEL 5.18 05/22] eeprom: at25: Split reads into chunks and cap write size
-Date:   Tue, 21 Jun 2022 16:49:11 -0400
-Message-Id: <20220621204928.249907-5-sashal@kernel.org>
+Cc:     Keith Busch <kbusch@kernel.org>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Sasha Levin <sashal@kernel.org>, axboe@fb.com,
+        sagi@grimberg.me, linux-nvme@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.18 07/22] nvme-pci: add trouble shooting steps for timeouts
+Date:   Tue, 21 Jun 2022 16:49:13 -0400
+Message-Id: <20220621204928.249907-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220621204928.249907-1-sashal@kernel.org>
 References: <20220621204928.249907-1-sashal@kernel.org>
@@ -57,156 +54,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brad Bishop <bradleyb@fuzziesquirrel.com>
+From: Keith Busch <kbusch@kernel.org>
 
-[ Upstream commit 0a35780c755ccec097d15c6b4ff8b246a89f1689 ]
+[ Upstream commit 4641a8e6e145f595059e695f0f8dbbe608134086 ]
 
-Make use of spi_max_transfer_size to avoid requesting transfers that are
-too large for some spi controllers.
+Many users have encountered IO timeouts with a CSTS value of 0xffffffff,
+which indicates a failure to read the register. While there are various
+potential causes for this observation, faulty NVMe APST has been the
+culprit quite frequently. Add the recommended troubleshooting steps in
+the error output when this condition occurs.
 
-Signed-off-by: Brad Bishop <bradleyb@fuzziesquirrel.com>
-Signed-off-by: Eddie James <eajames@linux.ibm.com>
-Signed-off-by: Joel Stanley <joel@jms.id.au>
-Link: https://lore.kernel.org/r/20220524215142.60047-1-eajames@linux.ibm.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Keith Busch <kbusch@kernel.org>
+Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/eeprom/at25.c | 93 ++++++++++++++++++++++----------------
- 1 file changed, 53 insertions(+), 40 deletions(-)
+ drivers/nvme/host/pci.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/misc/eeprom/at25.c b/drivers/misc/eeprom/at25.c
-index 8d169a35cf13..c9c56fd194c1 100644
---- a/drivers/misc/eeprom/at25.c
-+++ b/drivers/misc/eeprom/at25.c
-@@ -79,6 +79,11 @@ static int at25_ee_read(void *priv, unsigned int offset,
- {
- 	struct at25_data *at25 = priv;
- 	char *buf = val;
-+	size_t max_chunk = spi_max_transfer_size(at25->spi);
-+	size_t num_msgs = DIV_ROUND_UP(count, max_chunk);
-+	size_t nr_bytes = 0;
-+	unsigned int msg_offset;
-+	size_t msg_count;
- 	u8			*cp;
- 	ssize_t			status;
- 	struct spi_transfer	t[2];
-@@ -92,54 +97,59 @@ static int at25_ee_read(void *priv, unsigned int offset,
- 	if (unlikely(!count))
- 		return -EINVAL;
- 
--	cp = at25->command;
-+	msg_offset = (unsigned int)offset;
-+	msg_count = min(count, max_chunk);
-+	while (num_msgs) {
-+		cp = at25->command;
- 
--	instr = AT25_READ;
--	if (at25->chip.flags & EE_INSTR_BIT3_IS_ADDR)
--		if (offset >= BIT(at25->addrlen * 8))
--			instr |= AT25_INSTR_BIT3;
-+		instr = AT25_READ;
-+		if (at25->chip.flags & EE_INSTR_BIT3_IS_ADDR)
-+			if (msg_offset >= BIT(at25->addrlen * 8))
-+				instr |= AT25_INSTR_BIT3;
- 
--	mutex_lock(&at25->lock);
-+		mutex_lock(&at25->lock);
- 
--	*cp++ = instr;
--
--	/* 8/16/24-bit address is written MSB first */
--	switch (at25->addrlen) {
--	default:	/* case 3 */
--		*cp++ = offset >> 16;
--		fallthrough;
--	case 2:
--		*cp++ = offset >> 8;
--		fallthrough;
--	case 1:
--	case 0:	/* can't happen: for better code generation */
--		*cp++ = offset >> 0;
--	}
-+		*cp++ = instr;
- 
--	spi_message_init(&m);
--	memset(t, 0, sizeof(t));
-+		/* 8/16/24-bit address is written MSB first */
-+		switch (at25->addrlen) {
-+		default:	/* case 3 */
-+			*cp++ = msg_offset >> 16;
-+			fallthrough;
-+		case 2:
-+			*cp++ = msg_offset >> 8;
-+			fallthrough;
-+		case 1:
-+		case 0:	/* can't happen: for better code generation */
-+			*cp++ = msg_offset >> 0;
-+		}
- 
--	t[0].tx_buf = at25->command;
--	t[0].len = at25->addrlen + 1;
--	spi_message_add_tail(&t[0], &m);
-+		spi_message_init(&m);
-+		memset(t, 0, sizeof(t));
- 
--	t[1].rx_buf = buf;
--	t[1].len = count;
--	spi_message_add_tail(&t[1], &m);
-+		t[0].tx_buf = at25->command;
-+		t[0].len = at25->addrlen + 1;
-+		spi_message_add_tail(&t[0], &m);
- 
--	/*
--	 * Read it all at once.
--	 *
--	 * REVISIT that's potentially a problem with large chips, if
--	 * other devices on the bus need to be accessed regularly or
--	 * this chip is clocked very slowly.
--	 */
--	status = spi_sync(at25->spi, &m);
--	dev_dbg(&at25->spi->dev, "read %zu bytes at %d --> %zd\n",
--		count, offset, status);
-+		t[1].rx_buf = buf + nr_bytes;
-+		t[1].len = msg_count;
-+		spi_message_add_tail(&t[1], &m);
- 
--	mutex_unlock(&at25->lock);
--	return status;
-+		status = spi_sync(at25->spi, &m);
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index 37e05c83786d..a4393c5ca8db 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -1334,6 +1334,14 @@ static void nvme_warn_reset(struct nvme_dev *dev, u32 csts)
+ 		dev_warn(dev->ctrl.device,
+ 			 "controller is down; will reset: CSTS=0x%x, PCI_STATUS read failed (%d)\n",
+ 			 csts, result);
 +
-+		mutex_unlock(&at25->lock);
++	if (csts != ~0)
++		return;
 +
-+		if (status)
-+			return status;
-+
-+		--num_msgs;
-+		msg_offset += msg_count;
-+		nr_bytes += msg_count;
-+	}
-+
-+	dev_dbg(&at25->spi->dev, "read %zu bytes at %d\n",
-+		count, offset);
-+	return 0;
++	dev_warn(dev->ctrl.device,
++		 "Does your device have a faulty power saving mode enabled?\n");
++	dev_warn(dev->ctrl.device,
++		 "Try \"nvme_core.default_ps_max_latency_us=0 pcie_aspm=off\" and report a bug\n");
  }
  
- /* Read extra registers as ID or serial number */
-@@ -190,6 +200,7 @@ ATTRIBUTE_GROUPS(sernum);
- static int at25_ee_write(void *priv, unsigned int off, void *val, size_t count)
- {
- 	struct at25_data *at25 = priv;
-+	size_t maxsz = spi_max_transfer_size(at25->spi);
- 	const char *buf = val;
- 	int			status = 0;
- 	unsigned		buf_size;
-@@ -253,6 +264,8 @@ static int at25_ee_write(void *priv, unsigned int off, void *val, size_t count)
- 		segment = buf_size - (offset % buf_size);
- 		if (segment > count)
- 			segment = count;
-+		if (segment > maxsz)
-+			segment = maxsz;
- 		memcpy(cp, buf, segment);
- 		status = spi_write(at25->spi, bounce,
- 				segment + at25->addrlen + 1);
+ static enum blk_eh_timer_return nvme_timeout(struct request *req, bool reserved)
 -- 
 2.35.1
 
