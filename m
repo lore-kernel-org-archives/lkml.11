@@ -2,170 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0616AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 14:00:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEC2EC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 14:03:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350061AbiFUOAo (ORCPT
+        id S1345600AbiFUODM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 10:00:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50952 "EHLO
+        Tue, 21 Jun 2022 10:03:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345600AbiFUOAm (ORCPT
+        with ESMTP id S229626AbiFUODJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 10:00:42 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 765A41CFC0;
-        Tue, 21 Jun 2022 07:00:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655820041; x=1687356041;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=HaIHmdDuWNWs5ZY/z5rbTpXTCQ5tcbRSe3Xe+h2LBBU=;
-  b=dK0yhS23np6whT1VvrB459g+eiuGTeT4eXwjq9+jkr0IjTWBnJJPVP/j
-   EGc/YL/qwwoiDZh3QThJtdzbnGcoWXrBieH1GuCZyF+0oOUrivjUhPvm8
-   FIzr1u/W/4pa4DbCzLj9NQ87pn33FLDuAxg/z8MJJDec1ciln7nsL0MkU
-   y4j71WYW/H5F74FoiwVYOX5BUmZmZ8bLyxeRP5CHiQJ34s34FvwN06AfJ
-   Um0HNPl37T3wFF4WRB9jsYiWst6mkRa0Ffw7Ysb+3Ai/SlaefCm7rP6bv
-   z3S3PjWToBERizN1gsVaIg7a3XMpHM+d6M/vzCmBE91aMY6T4LoRvn+sN
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10384"; a="277672115"
-X-IronPort-AV: E=Sophos;i="5.92,209,1650956400"; 
-   d="scan'208";a="277672115"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 07:00:41 -0700
-X-IronPort-AV: E=Sophos;i="5.92,209,1650956400"; 
-   d="scan'208";a="714983313"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 07:00:38 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@intel.com>)
-        id 1o3eQl-000rZF-Rb;
-        Tue, 21 Jun 2022 17:00:35 +0300
-Date:   Tue, 21 Jun 2022 17:00:35 +0300
-From:   Andy Shevchenko <andriy.shevchenko@intel.com>
-To:     Bjorn Helgaas <helgaas@kernel.org>, Marc Zyngier <maz@kernel.org>
-Cc:     Fabio Estevam <festevam@gmail.com>, Marek Vasut <marex@denx.de>,
-        Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>
-Subject: Re: mxs_lradc_ts: Warning due to "0 is an invalid IRQ number"
-Message-ID: <YrHPA+TBKZU/RuSz@smile.fi.intel.com>
-References: <CAOMZO5D7z=Eg=WYgzrpqn9VoU8HxMeBbEZiv9KLjMVD1_kRo+w@mail.gmail.com>
- <20200701224145.GA3616172@bjorn-Precision-5520>
+        Tue, 21 Jun 2022 10:03:09 -0400
+Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D6FA63E3;
+        Tue, 21 Jun 2022 07:03:08 -0700 (PDT)
+Received: from in02.mta.xmission.com ([166.70.13.52]:42324)
+        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1o3eT9-007YSV-M1; Tue, 21 Jun 2022 08:03:03 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:57152 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1o3eT2-00BntC-2F; Tue, 21 Jun 2022 08:02:59 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Alexander Gordeev <agordeev@linux.ibm.com>
+Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net,
+        Oleg Nesterov <oleg@redhat.com>, mingo@kernel.org,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
+        Will Deacon <will@kernel.org>, tj@kernel.org,
+        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
+        Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org
+References: <87a6bv6dl6.fsf_-_@email.froward.int.ebiederm.org>
+        <20220505182645.497868-12-ebiederm@xmission.com>
+        <YrHA5UkJLornOdCz@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
+Date:   Tue, 21 Jun 2022 09:02:05 -0500
+In-Reply-To: <YrHA5UkJLornOdCz@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
+        (Alexander Gordeev's message of "Tue, 21 Jun 2022 15:00:21 +0200")
+Message-ID: <877d5ajesi.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200701224145.GA3616172@bjorn-Precision-5520>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain
+X-XM-SPF: eid=1o3eT2-00BntC-2F;;;mid=<877d5ajesi.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX18WDlOVTfLo23xUO8OdWc5uH3Zom8RvcAo=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: [PATCH v4 12/12] sched,signal,ptrace: Rework TASK_TRACED,
+ TASK_STOPPED state
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-+Cc: Marc in case I'm utterly wrong in my conclusion below.
+Alexander Gordeev <agordeev@linux.ibm.com> writes:
 
-On Wed, Jul 01, 2020 at 05:41:45PM -0500, Bjorn Helgaas wrote:
-> On Wed, Jul 01, 2020 at 12:32:48PM -0300, Fabio Estevam wrote:
-> > On Tue, Jun 16, 2020 at 8:52 PM Fabio Estevam <festevam@gmail.com> wrote:
-> > > I am seeing the following warning on a imx28-evk running linux-next:
-> > >
-> > > [    7.625012] ------------[ cut here ]------------
-> > > [    7.630111] WARNING: CPU: 0 PID: 1 at drivers/base/platform.c:317
-> > > __platform_get_irq_byname+0x74/0x90
-> > > [    7.639692] 0 is an invalid IRQ number
-> > > [    7.643540] Modules linked in:
-> > > [    7.646961] CPU: 0 PID: 1 Comm: swapper Not tainted
-> > > 5.8.0-rc1-next-20200616-dirty #92
-> > > [    7.654896] Hardware name: Freescale MXS (Device Tree)
-> > > [    7.660434] [<c00105ec>] (unwind_backtrace) from [<c000e070>]
-> > > (show_stack+0x10/0x14)
-> > > [    7.668591] [<c000e070>] (show_stack) from [<c001aa90>] (__warn+0xe4/0x108)
-> > > [    7.675941] [<c001aa90>] (__warn) from [<c001ab20>]
-> > > (warn_slowpath_fmt+0x6c/0xb8)
-> > > [    7.683575] [<c001ab20>] (warn_slowpath_fmt) from [<c0491b44>]
-> > > (__platform_get_irq_byname+0x74/0x90)
-> > > [    7.693101] [<c0491b44>] (__platform_get_irq_byname) from
-> > > [<c0491b70>] (platform_get_irq_byname+0x10/0x48)
-> > > [    7.703154] [<c0491b70>] (platform_get_irq_byname) from
-> > > [<c056e234>] (mxs_lradc_ts_probe+0x190/0x384)
-> > > [    7.712771] [<c056e234>] (mxs_lradc_ts_probe) from [<c0491850>]
-> > > (platform_drv_probe+0x48/0x98)
-> > > [    7.722806] [<c0491850>] (platform_drv_probe) from [<c048f7f0>]
-> > > (really_probe+0x218/0x348)
-> > > [    7.731530] [<c048f7f0>] (really_probe) from [<c048fa28>]
-> > > (driver_probe_device+0x58/0xb4)
-> > > [    7.740189] [<c048fa28>] (driver_probe_device) from [<c048fc2c>]
-> > > (device_driver_attach+0x58/0x60)
-> > > [    7.749471] [<c048fc2c>] (device_driver_attach) from [<c048fcb8>]
-> > > (__driver_attach+0x84/0xc0)
-> > > [    7.758394] [<c048fcb8>] (__driver_attach) from [<c048db28>]
-> > > (bus_for_each_dev+0x70/0xb4)
-> > > [    7.766977] [<c048db28>] (bus_for_each_dev) from [<c048eb24>]
-> > > (bus_add_driver+0x154/0x1e0)
-> > > [    7.775385] [<c048eb24>] (bus_add_driver) from [<c0490774>]
-> > > (driver_register+0x74/0x108)
-> > > [    7.783872] [<c0490774>] (driver_register) from [<c000a2fc>]
-> > > (do_one_initcall+0x68/0x268)
-> > > [    7.792467] [<c000a2fc>] (do_one_initcall) from [<c0a00fa0>]
-> > > (kernel_init_freeable+0x160/0x1f4)
-> > > [    7.801661] [<c0a00fa0>] (kernel_init_freeable) from [<c0720c58>]
-> > > (kernel_init+0x8/0xf4)
-> > > [    7.810165] [<c0720c58>] (kernel_init) from [<c0008510>]
-> > > (ret_from_fork+0x14/0x24)
-> > > [    7.818101] Exception stack(0xc748dfb0 to 0xc748dff8)
-> > > [    7.823273] dfa0:                                     00000000
-> > > 00000000 00000000 00000000
-> > > [    7.831815] dfc0: 00000000 00000000 00000000 00000000 00000000
-> > > 00000000 00000000 00000000
-> > > [    7.840351] dfe0: 00000000 00000000 00000000 00000000 00000013 00000000
-> > > [    7.847322] irq event stamp: 273303
-> > > [    7.850940] hardirqs last  enabled at (273311): [<c0066ed8>]
-> > > console_unlock+0x390/0x534
-> > > [    7.859314] hardirqs last disabled at (273328): [<c0066b8c>]
-> > > console_unlock+0x44/0x534
-> > > [    7.867605] softirqs last  enabled at (273344): [<c00097fc>]
-> > > __do_softirq+0x2d4/0x450
-> > > [    7.875817] softirqs last disabled at (273355): [<c001fe48>]
-> > > irq_exit+0x150/0x174
-> > > [    7.883472] ---[ end trace ddb222ada5cbf5cd ]---
-> > > [    7.900004] input: mxs-lradc-ts as
-> > > /devices/soc0/80000000.apb/80040000.apbx/80050000.lradc/mxs-lradc-ts/input/input0
-> > >
-> > > The touchscreen irq is defined as:
-> > >
-> > > enum mx28_lradc_irqs {
-> > > MX28_LRADC_TS_IRQ = 0,
-> > >
-> > > Shouldn't we retrieve the IRQ number from the device tree instead?
-> 
->   mxs_lradc_ts_probe()
->   {
->     ...
->     irq = platform_get_irq_byname(pdev, mxs_lradc_ts_irq_names[i]);
->     if (irq < 0)
-> 	    return irq;
-> 
->     virq = irq_of_parse_and_map(node, irq);
->     ...
->   }
-> 
-> That's not right, is it?  irq_of_parse_and_map() takes an *index*, but
-> we're passing an IRQ.
-> 
-> mxs_lradc_adc_probe() also has the same pattern.
+> On Thu, May 05, 2022 at 01:26:45PM -0500, Eric W. Biederman wrote:
+>> From: Peter Zijlstra <peterz@infradead.org>
+>> 
+>> Currently ptrace_stop() / do_signal_stop() rely on the special states
+>> TASK_TRACED and TASK_STOPPED resp. to keep unique state. That is, this
+>> state exists only in task->__state and nowhere else.
+>> 
+>> There's two spots of bother with this:
+>> 
+>>  - PREEMPT_RT has task->saved_state which complicates matters,
+>>    meaning task_is_{traced,stopped}() needs to check an additional
+>>    variable.
+>> 
+>>  - An alternative freezer implementation that itself relies on a
+>>    special TASK state would loose TASK_TRACED/TASK_STOPPED and will
+>>    result in misbehaviour.
+>> 
+>> As such, add additional state to task->jobctl to track this state
+>> outside of task->__state.
+>> 
+>> NOTE: this doesn't actually fix anything yet, just adds extra state.
+>> 
+>> --EWB
+>>   * didn't add a unnecessary newline in signal.h
+>>   * Update t->jobctl in signal_wake_up and ptrace_signal_wake_up
+>>     instead of in signal_wake_up_state.  This prevents the clearing
+>>     of TASK_STOPPED and TASK_TRACED from getting lost.
+>>   * Added warnings if JOBCTL_STOPPED or JOBCTL_TRACED are not cleared
+>
+> Hi Eric, Peter,
+>
+> On s390 this patch triggers warning at kernel/ptrace.c:272 when
+> kill_child testcase from strace tool is repeatedly used (the source
+> is attached for reference):
+>
+> while :; do
+> 	strace -f -qq -e signal=none -e trace=sched_yield,/kill ./kill_child
+> done
+>
+> It normally takes few minutes to cause the warning in -rc3, but FWIW
+> it hits almost immediately for ptrace_stop-cleanup-for-v5.19 tag of
+> git://git.kernel.org/pub/scm/linux/kernel/git/ebiederm/user-namespace.
+>
+> Commit 7b0fe1367ef2 ("ptrace: Document that wait_task_inactive can't
+> fail") suggests this WARN_ON_ONCE() is not really expected, yet we
+> observe a child in __TASK_TRACED state. Could you please comment here?
+>
 
-Yeah, you are right. This code is broken by design. But the issue is that MFD
-driver supplies _index_ and not vIRQ from proper IRQ domain. I dunno how it's
-supposed to work without dirty tricks in the GIC (or whatever interrupt
-controller is there).
+For clarity the warning is that the child is not in __TASK_TRACED state.
 
-Since there is no response to this thread by the authors of the code, I would
-mark it as BROKEN and perhaps remove from the kernel if no-one steps in to fix
-this mess.
+The code is waiting for the code to stop in the scheduler in the
+__TASK_TRACED state so that it can safely read and change the
+processes state.  Some of that state is not even saved until the
+process is scheduled out so we have to wait until the process
+is stopped in the scheduler.
 
--- 
-With Best Regards,
-Andy Shevchenko
+At least on s390 it looks like there is a race between SIGKILL and
+ptrace_check_attach.  That isn't good.
+
+Reading the code below there is something missing because I don't see
+anything making ptrace calls, and ptrace_check_attach (which contains
+the warning) only happens in the ptrace syscall.
+
+Eric
 
 
+
+> Thanks!
+>
+> /*
+>  * Check for the corner case that previously lead to segfault
+>  * due to an attempt to access unitialised tcp->s_ent.
+>  *
+>  * 13994 ????( <unfinished ...>
+>  * ...
+>  * 13994 <... ???? resumed>) = ?
+>  *
+>  * Copyright (c) 2019 The strace developers.
+>  * All rights reserved.
+>  *
+>  * SPDX-License-Identifier: GPL-2.0-or-later
+>  */
+>
+> #include "tests.h"
+>
+> #include <sched.h>
+> #include <signal.h>
+> #include <unistd.h>
+> #include <sys/mman.h>
+> #include <sys/wait.h>
+>
+> #define ITERS    10000
+> #define SC_ITERS 10000
+>
+> int
+> main(void)
+> {
+> 	volatile sig_atomic_t *const mem =
+> 		mmap(NULL, get_page_size(), PROT_READ | PROT_WRITE,
+> 		     MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+> 	if (mem == MAP_FAILED)
+> 		perror_msg_and_fail("mmap");
+>
+> 	for (unsigned int i = 0; i < ITERS; ++i) {
+> 		mem[0] = mem[1] = 0;
+>
+> 		const pid_t pid = fork();
+> 		if (pid < 0)
+> 			perror_msg_and_fail("fork");
+>
+> 		if (!pid) {
+> 			/* wait for the parent */
+> 			while (!mem[0])
+> 				;
+> 			/* let the parent know we are running */
+> 			mem[1] = 1;
+>
+> 			for (unsigned int j = 0; j < SC_ITERS; j++)
+> 				sched_yield();
+>
+> 			pause();
+> 			return 0;
+> 		}
+>
+> 		/* let the child know we are running */
+> 		mem[0] = 1;
+> 		/* wait for the child */
+> 		while (!mem[1])
+> 			;
+>
+> 		if (kill(pid, SIGKILL))
+> 			perror_msg_and_fail("kill");
+> 		if (wait(NULL) != pid)
+> 			perror_msg_and_fail("wait");
+> 	}
+>
+> 	return 0;
+> }
