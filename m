@@ -2,117 +2,232 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6058BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:42:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F79FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:42:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353095AbiFUPmU (ORCPT
+        id S1352967AbiFUPml (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 11:42:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52488 "EHLO
+        Tue, 21 Jun 2022 11:42:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353106AbiFUPlc (ORCPT
+        with ESMTP id S243753AbiFUPmj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 11:41:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 377EC2C109;
-        Tue, 21 Jun 2022 08:41:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D72E3B819FA;
-        Tue, 21 Jun 2022 15:41:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D16E9C3411C;
-        Tue, 21 Jun 2022 15:41:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655826079;
-        bh=8Ke5wnlYDkO5jPYi69LudjpjdoAfCY+krxfC23GY2ms=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=fwruP7zsGpMFJhfm8Non/bFVTOXtlqHamCiwlE9yJj/tQKuNZGvv2SLft8rd/961w
-         8ep7HcVCZuZt37AK3G4nJjtt0ftBxBvq3b9lnqr0Akjt4yy5/6vTiMy9vcHSo9z1LR
-         IMtVs4ZaD8T/WmSxEbpcU9rIerz5lEcTTcBAGiyI=
-Date:   Tue, 21 Jun 2022 17:41:16 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Conor.Dooley@microchip.com
-Cc:     b-liu@ti.com, Daire.McNamara@microchip.com,
-        Valentina.FernandezAlanis@microchip.com,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-riscv@lists.infradead.org, ben.dooks@codethink.co.uk,
-        heinrich.schuchardt@canonical.com, Nicolas.Ferre@microchip.com,
-        Cristian.Birsan@microchip.com
-Subject: Re: [PATCH v2 0/2] Add support for PolarFire SoC's musb controller
-Message-ID: <YrHmnND30o1Rjmcp@kroah.com>
-References: <20220613114642.1615292-1-conor.dooley@microchip.com>
- <YrHXZYe4e4vlCHh3@kroah.com>
- <6c9001fa-5315-c9f4-b7b9-05248635750d@microchip.com>
+        Tue, 21 Jun 2022 11:42:39 -0400
+Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B92DF2C643
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:42:37 -0700 (PDT)
+Received: by mail-qk1-x734.google.com with SMTP id p63so10382665qkd.10
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:42:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ndufresne-ca.20210112.gappssmtp.com; s=20210112;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :content-transfer-encoding:user-agent:mime-version;
+        bh=j+TmZokpENwEZtYw+9zpADRR+ouuJfl5CqudgyGGVMI=;
+        b=rYLR4rn00kFhjq3jMMRY7EV3DBXR7qIPak/L8qbBz7KbspyXsDYwanSNawW1tKwOFH
+         ewJrprj9XAeaMHMnCVlg1mhbGk8X6etye45/t42emj4n96CBFUyK5gOLOtftDOcdpZMh
+         908EbU0jMLl63DlEFVUzOjzrIiEDup69vNvC3BVREh9cTbfasxeL2JzuFMVynhfUHn98
+         SGF8a9JKO8Pf8V6BWlSMg2+9tMhrZdQC/G3V+w+lJ0Ok91h8ogWI0K7twjgTqZVkmTxE
+         6XVNDuCjL70HX8cR/4q2TUO+k8WZac1WO63xDQo9PTA6W60gd87FacoEKmclkA3dwS9D
+         TH+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:content-transfer-encoding:user-agent:mime-version;
+        bh=j+TmZokpENwEZtYw+9zpADRR+ouuJfl5CqudgyGGVMI=;
+        b=61XLGlpFJAnOlW7z6S5gHtHZecPUONFc9SwHx3C1cv93drIoewTvQ0q1IWG1XJZtiI
+         2JxWUWtxkiRnpg2K6z//ygQvLfSHxA7JEwfWSSDkrdnaCA4Iz84ibPmasRrOas6pnjCT
+         z5Z5taVZhA03xiPrnx4X0YezIya3H2QoS94J+fAryy9DrEUDyNt97Th8biMkOhhiO9oM
+         9hA2d3HD6ARg/ueiD3BzEvo9iNZM/FP5qZv9XrSNktjBcDFalpThtVnT/pezj0eLHuqH
+         YZEGWEMi6TRnEjh/9JZQZkfOPdtZ6W0PnNdNhOXZ9pRWnzX05b1RJJZkamCbUtsNme0m
+         LlmQ==
+X-Gm-Message-State: AJIora81msEgB03sYMSw6pu29zoqAqTgkXQwCjKpHV+UTkOwhebwQl6b
+        x0PyCkTAy1qZ/hWZOz6nd3di0EwqNSRDOzGv
+X-Google-Smtp-Source: AGRyM1vE+SSLFEkr3ihfgV0r8gtNBCmLkJBjCPAUN5aHdi7vF4C6XWO85PiLvuKGcwPkdcTuFdcspg==
+X-Received: by 2002:a05:620a:280d:b0:67d:2480:fdea with SMTP id f13-20020a05620a280d00b0067d2480fdeamr20435321qkp.157.1655826156800;
+        Tue, 21 Jun 2022 08:42:36 -0700 (PDT)
+Received: from nicolas-tpx395.localdomain (192-222-136-102.qc.cable.ebox.net. [192.222.136.102])
+        by smtp.gmail.com with ESMTPSA id w10-20020a05620a424a00b006a79d8c8198sm14389324qko.135.2022.06.21.08.42.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Jun 2022 08:42:36 -0700 (PDT)
+Message-ID: <2aabc41c8432d09b7ceeb8e67144a639d3d86c72.camel@ndufresne.ca>
+Subject: Re: DMA-buf and uncached system memory
+From:   Nicolas Dufresne <nicolas@ndufresne.ca>
+To:     Christian =?ISO-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        "Andy.Hsieh" <andy.hsieh@mediatek.com>,
+        linux-media <linux-media@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        linaro-mm-sig@lists.linaro.org, lkml <linux-kernel@vger.kernel.org>
+Cc:     Sumit Semwal <sumit.semwal@linaro.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        "Sharma, Shashank" <Shashank.Sharma@amd.com>
+Date:   Tue, 21 Jun 2022 11:42:35 -0400
+In-Reply-To: <39f7f41a-af8d-4700-37da-9401455afb98@amd.com>
+References: <91ff0bbb-ea3a-2663-3453-dea96ccd6dd8@amd.com>
+         <cdb508e49eb1439f4e4c327d2a6738f219e04bf8.camel@ndufresne.ca>
+         <5822b325-766e-ce3c-50eb-d7f54f14fd0b@mediatek.com>
+         <39f7f41a-af8d-4700-37da-9401455afb98@amd.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.2 (3.44.2-1.fc36) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <6c9001fa-5315-c9f4-b7b9-05248635750d@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 21, 2022 at 03:16:49PM +0000, Conor.Dooley@microchip.com wrote:
-> 
-> 
-> On 21/06/2022 15:36, Greg Kroah-Hartman wrote:
-> > On Mon, Jun 13, 2022 at 12:46:41PM +0100, Conor Dooley wrote:
-> >> Hey Bin, Greg,
-> >> Short series here adding support for USB on Microchip PolarFire SoC FPGAs.
-> >> The kconfig dependency for INVENTRA_DMA has become a bit of a mouthful,
-> >> is there a better way of dealing with that?
-> >> Thanks,
-> >> Conor.
-> >>
-> >> Changes since v1:
-> >> - Drop unneeded resource copying as per Rob's changes to the other drivers
-> >> - Drop the dts patch
-> >>
-> >> Conor Dooley (2):
-> >>   usb: musb: Add support for PolarFire SoC's musb controller
-> >>   MAINTAINERS: add musb to PolarFire SoC entry
-> >>
-> >>  MAINTAINERS               |   1 +
-> >>  drivers/usb/musb/Kconfig  |  13 +-
-> >>  drivers/usb/musb/Makefile |   1 +
-> >>  drivers/usb/musb/mpfs.c   | 265 ++++++++++++++++++++++++++++++++++++++
-> >>  4 files changed, 279 insertions(+), 1 deletion(-)
-> >>  create mode 100644 drivers/usb/musb/mpfs.c
-> >>
-> >>
-> >> base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
-> >> -- 
-> >> 2.36.1
-> >>
-> > 
-> > Any chance you can get your company to fix up their email settings:
-> > 
-> > Grabbing thread from lore.kernel.org/all/20220613114642.1615292-1-conor.dooley%40microchip.com/t.mbox.gz
-> > Analyzing 4 messages in the thread
-> > Checking attestation on all messages, may take a moment...
-> > ---
-> >   ✗ [PATCH v2 1/2] usb: musb: Add support for PolarFire SoC's musb controller
-> >   ✗ [PATCH v2 2/2] MAINTAINERS: add musb to PolarFire SoC entry
-> >   ---
-> >   ✗ BADSIG: DKIM/microchip.com
-> > ---
-> > Total patches: 2
-> > 
-> > If I didn't know better, I would think you were spoofing the address...
-> 
-> Great, thanks. I was honestly hoping you would make this complaint.
-> I brought it up with our IT before & nothing has happened yet.
+Hi Christian and Andy,
 
-It's amazing that your company emails are even making it to many systems
-these days with that broken.
+Le mardi 21 juin 2022 =C3=A0 12:34 +0200, Christian K=C3=B6nig a =C3=A9crit=
+=C2=A0:
+> =C2=A0Hi Andy,
+> =C2=A0
+> =C2=A0Am 21.06.22 um 12:17 schrieb Andy.Hsieh:
+> =C2=A0
+> > On 2/16/21 4:39 AM, Nicolas Dufresne wrote:
+> > > Le lundi 15 f=C3=A9vrier 2021 =C3=A0 09:58 +0100, Christian K=C3=B6ni=
+g a =C3=A9crit=C2=A0:
+> > > > Hi guys,
+> > > >=20
+> > > > we are currently working an Freesync and direct scan out from syste=
+m=20
+> > > > memory on AMD APUs in A+A laptops.
+> > > >=20
+> > > > On problem we stumbled over is that our display hardware needs to s=
+can=20
+> > > > out from uncached system memory and we currently don't have a way t=
+o=20
+> > > > communicate that through DMA-buf.
+> > > >=20
+> > > > For our specific use case at hand we are going to implement somethi=
+ng=20
+> > > > driver specific, but the question is should we have something more=
+=20
+> > > > generic for this?
+> > >=20
+> > > Hopefully I'm getting this right, but this makes me think of a long
+> > > standing
+> > > issue I've met with Intel DRM and UVC driver. If I let the UVC driver
+> > > allocate
+> > > the buffer, and import the resulting DMABuf (cacheable memory written=
+ with
+> > > a cpu
+> > > copy in the kernel) into DRM, we can see cache artifact being display=
+ed.
+> > > While
+> > > if I use the DRM driver memory (dumb buffer in that case) it's clean
+> > > because
+> > > there is a driver specific solution to that.
+> > >=20
+> > > There is no obvious way for userspace application to know what's is
+> > > right/wrong
+> > > way and in fact it feels like the kernel could solve this somehow wit=
+hout
+> > > having
+> > > to inform userspace (perhaps).
+> > >=20
+> > > >=20
+> > > > After all the system memory access pattern is a PCIe extension and =
+as=20
+> > > > such something generic.
+> > > >=20
+> > > > Regards,
+> > > > Christian.
+> > >=20
+> > >=20
+> >=20
+> > Hi All,
+> >=20
+> > We also encountered the UVC cache issue on ARMv8 CPU in Mediatek SoC wh=
+en
+> > using UVC dmabuf-export and feeding the dmabuf to the DRM display by th=
+e
+> > following GStreamer command:
+> >=20
+> > # gst-launch-1.0 v4l2src device=3D/dev/video0 io-mode=3Ddmabuf ! kmssin=
+k
+> >=20
+> > UVC driver uses videobuf2-vmalloc to allocate buffers and is able to ex=
+port
+> > them as dmabuf. But UVC uses memcpy() to fill the frame buffer by CPU
+> > without
+> > flushing the cache. So if the display hardware directly uses the buffer=
+, the
+> > image shown on the screen will be dirty.
+> >=20
+> > Here are some experiments:
+> >=20
+> > 1. By doing some memory operations (e.g. devmem) when streaming the UVC=
+,
+> > =C2=A0=C2=A0=C2=A0the issue is mitigated. I guess the cache is swapped =
+rapidly.
+> > 2. By replacing the memcpy() with memcpy_flushcache() in the UVC driver=
+,
+> > =C2=A0=C2=A0=C2=A0the issue disappears.
+> > 3. By adding .finish callback in videobuf2-vmalloc.c to flush the cache
+> > =C2=A0=C2=A0=C2=A0before returning the buffer, the issue disappears.
+> >=20
+> > It seems to lack a cache flush stage in either UVC or Display. We may a=
+lso
+> > need communication between the producer and consumer. Then, they can de=
+cide
+> > who is responsible for the flushing to avoid flushing cache uncondition=
+ally
+> > leading to the performance impact.
+> =C2=A0
+> =C2=A0Well, that's not what this mail thread was all about.
+> =C2=A0
+> =C2=A0The issue you are facing is that somebody is forgetting to flush ca=
+ches, but
+> the issue discussed in this thread here is that we have hardware which
+> bypasses caches altogether.
+> =C2=A0
+> =C2=A0As far as I can see in your case UVC just allocates normal cached s=
+ystem
+> memory through videobuf2-vmalloc() and it is perfectly valid to fill that
+> using memcpy().
+> =C2=A0
+> =C2=A0If some hardware then accesses those buffers bypassing CPU caches t=
+hen it is
+> the responsibility of the importing driver and/or DMA subsystem to flush =
+the
+> caches accordingly.
 
-> At least now I have the direct complaint to forward :)
+I've tracked this down to videobuf2-vmalloc.c failing to look for coherency
+during "attach()". It is also missing begin_/end access implementation for =
+the
+case it get attached to a non-coherent device. Seems fixable though, but "I=
+'m
+far from an expert", but more some random person reading code and comments.
 
-Please do, and tell them that in the future, some of us will probably
-start requiring this to pass as I doubt they want just anyone to spoof
-patches from your domain :)
+regards,
+Nicolas
 
-thanks,
+> =C2=A0
+> =C2=A0Regards,
+> =C2=A0Christian.
+> =C2=A0
+> =C2=A0
+> >=20
+> > Regards,
+> > Andy Hsieh
+> >=20
+> > ************* MEDIATEK Confidentiality Notice ********************
+> > The information contained in this e-mail message (including any=20
+> > attachments) may be confidential, proprietary, privileged, or otherwise
+> > exempt from disclosure under applicable laws. It is intended to be=20
+> > conveyed only to the designated recipient(s). Any use, dissemination,=
+=20
+> > distribution, printing, retaining or copying of this e-mail (including =
+its=20
+> > attachments) by unintended recipient(s) is strictly prohibited and may=
+=20
+> > be unlawful. If you are not an intended recipient of this e-mail, or be=
+lieve
+> > that you have received this e-mail in error, please notify the sender=
+=20
+> > immediately (by replying to this e-mail), delete any and all copies of=
+=20
+> > this e-mail (including any attachments) from your system, and do not
+> > disclose the content of this e-mail to any other person. Thank you!
+> =C2=A0
+> =C2=A0
 
-greg k-h
