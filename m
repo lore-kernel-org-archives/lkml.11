@@ -2,108 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 427C2C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 08:45:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4F59C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 08:45:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348387AbiFUIpi (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 04:45:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60862 "EHLO
+        id S230048AbiFUIpp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 21 Jun 2022 04:45:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346674AbiFUIpg (ORCPT
+        with ESMTP id S1346674AbiFUIpk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 04:45:36 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F93825EAF;
-        Tue, 21 Jun 2022 01:45:34 -0700 (PDT)
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25L7u7eV006621;
-        Tue, 21 Jun 2022 10:45:18 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=selector1;
- bh=2OyBIvFq+cbqc84GuaJEdZ2RqadPrXQDktccoEX4tyw=;
- b=YG8k6IgOGCpOqcO56I4GnWgsxNUvRpkvSbNJUa0NzXbZbwSDTquS6TUJakri3vIvhoym
- CHVkqJt+Lygzt9yIFZCASFqpE/Yg5pyPxJcFh5hqYjIZ0JDqOMtYZ1HrkyDhkFfwzOGo
- CC2xE33Mb9jjF/+FBp/dxbIhquEoXqBGJcpiUSS6LCygY4UKCI05GzPHB0xGDEY4OWx1
- 0rrL0AvGHcp7AQ2m0jLr22EiAyEicZdCBVgY4OQ/dPoZuDDyuRv2+POBbeYhakUoKodm
- fYQagkyuBD3W4puQAtzKFOzHcwefZz/SIZmaXPZYrBZS8V/C3rbMlyLYT1iNma1oe0j/ OA== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3gua1n0atj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 21 Jun 2022 10:45:18 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 309D9100034;
-        Tue, 21 Jun 2022 10:45:18 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 1A12721515D;
-        Tue, 21 Jun 2022 10:45:18 +0200 (CEST)
-Received: from localhost (10.75.127.50) by SHFDAG1NODE2.st.com (10.75.129.70)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Tue, 21 Jun
- 2022 10:45:17 +0200
-From:   Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-To:     <alexandre.torgue@foss.st.com>, <robh+dt@kernel.org>
-CC:     <amelie.delaunay@foss.st.com>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <fabrice.gasnier@foss.st.com>
-Subject: [PATCH] ARM: dts: stm32: add missing usbh clock and fix clk order on stm32mp15
-Date:   Tue, 21 Jun 2022 10:45:09 +0200
-Message-ID: <20220621084509.407451-1-fabrice.gasnier@foss.st.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 21 Jun 2022 04:45:40 -0400
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F59625EAF;
+        Tue, 21 Jun 2022 01:45:38 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R921e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VH0dWR7_1655801131;
+Received: from 30.97.48.73(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VH0dWR7_1655801131)
+          by smtp.aliyun-inc.com;
+          Tue, 21 Jun 2022 16:45:32 +0800
+Message-ID: <f79ad32f-50a3-be1a-0cac-d00f579e7077@linux.alibaba.com>
+Date:   Tue, 21 Jun 2022 16:45:39 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.50]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE2.st.com
- (10.75.129.70)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-06-21_03,2022-06-17_01,2022-02-23_01
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] mm/damon: Use set_huge_pte_at() to make huge pte old
+To:     SeongJae Park <sj@kernel.org>
+Cc:     akpm@linux-foundation.org, mike.kravetz@oracle.com,
+        songmuchun@bytedance.com, damon@lists.linux.dev,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+References: <20220620172742.48766-1-sj@kernel.org>
+From:   Baolin Wang <baolin.wang@linux.alibaba.com>
+In-Reply-To: <20220620172742.48766-1-sj@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The USBH composed of EHCI and OHCI controllers needs the PHY clock to be
-initialized first, before enabling (gating) them. The reverse is also
-required when going to suspend.
-So, add USBPHY clock as 1st entry in both controllers, so the USBPHY PLL
-gets enabled 1st upon controller init. Upon suspend/resume, this also makes
-the clock to be disabled/re-enabled in the correct order.
-This fixes some IRQ storm conditions seen when going to low-power, due to
-PHY PLL being disabled before all clocks are cleanly gated.
+Hi SeongJae,
 
-Fixes: 949a0c0dec85 ("ARM: dts: stm32: add USB Host (USBH) support to stm32mp157c")
-Fixes: db7be2cb87ae ("ARM: dts: stm32: use usbphyc ck_usbo_48m as USBH OHCI clock on stm32mp151")
-Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
----
- arch/arm/boot/dts/stm32mp151.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+On 6/21/2022 1:27 AM, SeongJae Park wrote:
+> Hi Baolin,
+> 
+> On Mon, 20 Jun 2022 10:34:42 +0800 Baolin Wang <baolin.wang@linux.alibaba.com> wrote:
+> 
+>> The huge_ptep_set_access_flags() can not make the huge pte old according
+>> to the discussion [1], that means we will always mornitor the young state
+>> of the hugetlb though we stopped accessing the hugetlb, as a result DAMON
+>> will get inaccurate accessing statistics.
+>>
+>> So changing to use set_huge_pte_at() to make the huge pte old to fix this
+>> issue.
+>>
+>> [1] https://lore.kernel.org/all/Yqy97gXI4Nqb7dYo@arm.com/
+>>
+>> Fixes: 49f4203aae06 ("mm/damon: add access checking for hugetlb pages")
+> 
+> As the commit has merged in from v5.17, I guess it would be better to do below?
+> 
+> Cc: <stable@vger.kernel.org>
 
-diff --git a/arch/arm/boot/dts/stm32mp151.dtsi b/arch/arm/boot/dts/stm32mp151.dtsi
-index edc0a1641c7b..9e2226430802 100644
---- a/arch/arm/boot/dts/stm32mp151.dtsi
-+++ b/arch/arm/boot/dts/stm32mp151.dtsi
-@@ -1473,7 +1473,7 @@ stmmac_axi_config_0: stmmac-axi-config {
- 		usbh_ohci: usb@5800c000 {
- 			compatible = "generic-ohci";
- 			reg = <0x5800c000 0x1000>;
--			clocks = <&rcc USBH>, <&usbphyc>;
-+			clocks = <&usbphyc>, <&rcc USBH>;
- 			resets = <&rcc USBH_R>;
- 			interrupts = <GIC_SPI 74 IRQ_TYPE_LEVEL_HIGH>;
- 			status = "disabled";
-@@ -1482,7 +1482,7 @@ usbh_ohci: usb@5800c000 {
- 		usbh_ehci: usb@5800d000 {
- 			compatible = "generic-ehci";
- 			reg = <0x5800d000 0x1000>;
--			clocks = <&rcc USBH>;
-+			clocks = <&usbphyc>, <&rcc USBH>;
- 			resets = <&rcc USBH_R>;
- 			interrupts = <GIC_SPI 75 IRQ_TYPE_LEVEL_HIGH>;
- 			companion = <&usbh_ohci>;
--- 
-2.25.1
+Yes, thanks for reminding. Hope Andrew can help to add the stable tag 
+when picking up this patch.
 
+> 
+>> Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+> 
+> Other than that,
+> 
+> Reviewed-by: SeongJae Park <sj@kernel.org>
+
+Thanks.
