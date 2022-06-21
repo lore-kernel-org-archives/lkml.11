@@ -2,69 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B242C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 10:29:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3A00C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 10:32:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349019AbiFUK3I (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 06:29:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60058 "EHLO
+        id S230185AbiFUKco (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 21 Jun 2022 06:32:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348964AbiFUK2v (ORCPT
+        with ESMTP id S229464AbiFUKcl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 06:28:51 -0400
-Received: from smtpbg.qq.com (smtpbg139.qq.com [175.27.65.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7852F28706;
-        Tue, 21 Jun 2022 03:28:47 -0700 (PDT)
-X-QQ-mid: bizesmtp83t1655807260t088i07k
+        Tue, 21 Jun 2022 06:32:41 -0400
+Received: from smtpbg.qq.com (smtpbg138.qq.com [106.55.201.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D411A28735;
+        Tue, 21 Jun 2022 03:32:36 -0700 (PDT)
+X-QQ-mid: bizesmtp69t1655807486tz9qxx2r
 Received: from ubuntu.localdomain ( [106.117.99.68])
         by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 21 Jun 2022 18:27:36 +0800 (CST)
+        id ; Tue, 21 Jun 2022 18:31:22 +0800 (CST)
 X-QQ-SSF: 0100000000700030B000B00A0000000
-X-QQ-FEAT: YBQGNezXUiwIqjxaWcZ7SUz+aJX8MC3LAZMxrfwx1SwdXzk/7fTg3ChCOUkAJ
-        m3oykKjZs0+5/bYtl+zA5bcbFVSw05V4WPN81w2ysTJMCV68vglZLefu7yrJYkNiyDPIjsR
-        KrImtoLgIy/blkQQcJv1lHpibda2kL+wPibfiaZpGsP314b3vNwJ2OrZGG4vbEbEMOJV2Ej
-        4DI9qTWEnt5+qz+nMCqM9A6Mj6K0jMDKRO0UD0q/Cm+vNLvPxc1fz4F/2rvUOFYb5owXJUm
-        CpKi3h4Yyhlfy49I2mSDgt+qQt6BmQBeLiIEX4I2F+Gr58A+LlHhGHxvyRC0TDkrbfEAkAe
-        Vb86h7bvduVSsSe+krwQfnMKcxb9A==
+X-QQ-FEAT: 12WmTNdz4A2GoaWCvcCF9Kah1F9MRC/IaBdPf9aTvkOpMYtufAJDkWffRNh3h
+        qrqNocBrembt7PJ0yWatRyXwzsXs0qCSM0hrPTn/jfF+kafDyFygUK8AGq9mpV7vrPV8qjL
+        4hva569l3L4icTGQ/kUN+/4wk9Sc5CYFyipqVMGWugUim9qlWSUtHoM0uAeH8nlJLi2gs/n
+        X+woROn6C21lOVJw1FHlDFDCNmJwZXP3o2zuCeyXJ9NlJg1VonDYFeFA9NdPnG/43w0lhxP
+        40hVxY8ZI6xCqkg0nRrm6CXS62Zb9cb5sCamXhFUyQQD4Dd7Gv5Uk0u7YeTj58IRJjt2DnF
+        p0EyJ7BfOwdz7N/ukLjXj6xFpViEg==
 X-QQ-GoodBg: 0
 From:   Jiang Jian <jiangjian@cdjrlc.com>
-To:     herbert@gondor.apana.org.au, davem@davemloft.net
-Cc:     Julia.Lawall@inria.fr, jiangjian@cdjrlc.com, hanyihao@vivo.com,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] crypto: ux500/hash - drop unexpected word "the"
-Date:   Tue, 21 Jun 2022 18:27:33 +0800
-Message-Id: <20220621102733.88445-1-jiangjian@cdjrlc.com>
+To:     sathya.prakash@broadcom.com, sreekanth.reddy@broadcom.com,
+        suganath-prabu.subramani@broadcom.com
+Cc:     MPT-FusionLinux.pdl@broadcom.com, linux-scsi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, jiangjian@cdjrlc.com
+Subject: [PATCH] scsi: message: fusion: drop unexpected word "the"
+Date:   Tue, 21 Jun 2022 18:31:19 +0800
+Message-Id: <20220621103119.91492-1-jiangjian@cdjrlc.com>
 X-Mailer: git-send-email 2.17.1
 X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam6
+Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 there is an unexpected word "the" in the comments that need to be dropped
 
->-  * specified in the the hw design spec. Either due to incorrect info in the
->+  * specified in the hw design spec. Either due to incorrect info in the
+>-   *  Update the target negotiation parameters based on the the Inquiry
+>+   *  Update the target negotiation parameters based on the Inquiry
 
 Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
 ---
- drivers/crypto/ux500/hash/hash_core.c | 2 +-
+ drivers/message/fusion/mptspi.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/crypto/ux500/hash/hash_core.c b/drivers/crypto/ux500/hash/hash_core.c
-index 265ef3e96fdd..f104e8a43036 100644
---- a/drivers/crypto/ux500/hash/hash_core.c
-+++ b/drivers/crypto/ux500/hash/hash_core.c
-@@ -421,7 +421,7 @@ static int hash_get_device_data(struct hash_ctx *ctx,
-  * @keylen:		The lengt of the key.
+diff --git a/drivers/message/fusion/mptspi.c b/drivers/message/fusion/mptspi.c
+index 388675cc1765..4c87a6b986f6 100644
+--- a/drivers/message/fusion/mptspi.c
++++ b/drivers/message/fusion/mptspi.c
+@@ -101,7 +101,7 @@ static u8	mptspiInternalCtx = MPT_MAX_PROTOCOL_DRIVERS; /* Used only for interna
+  *	@target: per target private data
+  *	@sdev: SCSI device
   *
-  * Note! This function DOES NOT write to the NBLW registry, even though
-- * specified in the the hw design spec. Either due to incorrect info in the
-+ * specified in the hw design spec. Either due to incorrect info in the
-  * spec or due to a bug in the hw.
-  */
- static void hash_hw_write_key(struct hash_device_data *device_data,
+- * 	Update the target negotiation parameters based on the the Inquiry
++ * 	Update the target negotiation parameters based on the Inquiry
+  *	data, adapter capabilities, and NVRAM settings.
+  **/
+ static void
 -- 
 2.17.1
 
