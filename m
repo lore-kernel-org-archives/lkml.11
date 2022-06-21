@@ -2,113 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 888A5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 07:02:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79FECC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 07:03:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346543AbiFUHCl (ORCPT
+        id S1346561AbiFUHDU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 03:02:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39006 "EHLO
+        Tue, 21 Jun 2022 03:03:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346302AbiFUHCk (ORCPT
+        with ESMTP id S1346490AbiFUHDT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 03:02:40 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E50771F625;
-        Tue, 21 Jun 2022 00:02:39 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id k7so11723466plg.7;
-        Tue, 21 Jun 2022 00:02:39 -0700 (PDT)
+        Tue, 21 Jun 2022 03:03:19 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A156C64DC;
+        Tue, 21 Jun 2022 00:03:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wP9kY1WLbTW1UUbmBJofW8GbuL6xle8PjzjvugZSxOg=;
-        b=SLV71dKUg3TQYNZ8Ov1PzCQj/KlKFftSY4Elu8YMPPFvpS43VsZa3GnP7e+gmuBo4/
-         diOHtXnjRDfe/yMonBX4hc2qURDLdQikcTvxwpH5DUsufrgoI+k5oanXVjLM/16+R10L
-         vu6dP0U7M/27ARt8/vf81kvSe8cj9iUMMMUyJDo873tNPzQGra//6xwXO4nDD0a2XkbM
-         aeOKwmsPyo1mKSBCwj3yLzPM7MKlEZLfB3TGx2cSvD9JBVKoS1Xe7dI4geKr5h+gMLVx
-         ZwRtXx83cQo0R120KKbewu2Cl3dZumo8xmJJAQcAJf4V9dVJCCfL/gKjsWBs3h059vkP
-         EX9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wP9kY1WLbTW1UUbmBJofW8GbuL6xle8PjzjvugZSxOg=;
-        b=fhEI8NO8wa0mG5irEwFjTHBrnIJTQgsd0HmKTA5NyhYFE6b89UUAFG/AD2f5Ujku0B
-         dUCqhxm9Xb/ODtiB60RktDY6hfESBXvhqjS6PKxWa7OLX7vCD5P2jN5eh3g0xm3d2OAU
-         E/ODVj6bwlpAIs3xz6bXI/yogK1dxh+ukzggXGpkla/g6cbXFou7YPF/55B10f+kju2d
-         myBx91LHIxLDzxkir2HeIYZNRQ0GUDCbuKAqEUqCUoaHPcvYPZ3s+guF6F72dYmRj0GB
-         2rgOXxtySl6vQgxeci9Mnh2ahzACti+3pSTe5K7JGUwbOF1GmmnV6tfbVDd+NhOjNpM0
-         biTA==
-X-Gm-Message-State: AJIora/ubKQVPAt32QBrwuO0jWvx1xjKDjh1WEOE3ii4s1MHVg0UbvRr
-        HujlQQe6uGh2wZe8By5mfhA=
-X-Google-Smtp-Source: AGRyM1t3BNK6v69eKX4WKcobj7IS/1nTrq976lTNyPKRkLdkjl7F/QjYJKOnACZGunK544a3XGG5ng==
-X-Received: by 2002:a17:90b:682:b0:1e3:142:a562 with SMTP id m2-20020a17090b068200b001e30142a562mr41217624pjz.91.1655794959392;
-        Tue, 21 Jun 2022 00:02:39 -0700 (PDT)
-Received: from localhost.localdomain ([178.173.230.211])
-        by smtp.gmail.com with ESMTPSA id p9-20020a63ab09000000b00408a9264b36sm10454082pgf.3.2022.06.21.00.02.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jun 2022 00:02:38 -0700 (PDT)
-From:   Shida Zhang <starzhangzsd@gmail.com>
-X-Google-Original-From: Shida Zhang <zhangshida@kylinos.cn>
-To:     djwong@kernel.org, dchinner@redhat.com
-Cc:     zhangshida@kylinos.cn, starzhangzsd@gmail.com,
-        linux-kernel@vger.kernel.org, linux-xfs@vger.kernel.org
-Subject: [PATCH v2] xfs: add check before calling xfs_mod_fdblocks
-Date:   Tue, 21 Jun 2022 15:02:24 +0800
-Message-Id: <20220621070224.1231039-1-zhangshida@kylinos.cn>
-X-Mailer: git-send-email 2.25.1
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1655794998; x=1687330998;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Jukm3d+VxnW0QHCLY6N8dPRZFsIaWVH93a5NTyWgsdg=;
+  b=GqFYnr/beDz1kWNMYZmmLb+QSSHivMsqh8QrBWSHRbnnmR66aRXOYYy9
+   RU6ZJGb3xU9RA129AFmiuk08m9HGtq9YVqyGdwzuTv+u09W341gXeoXsW
+   IXlC0myjdFXG3Lpd3PTi8kp3PzlOFd43/fUtMgHQbU1reohFphRxGjw6L
+   c=;
+Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 21 Jun 2022 00:03:18 -0700
+X-QCInternal: smtphost
+Received: from nasanex01b.na.qualcomm.com ([10.46.141.250])
+  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 00:03:18 -0700
+Received: from [10.50.44.13] (10.80.80.8) by nasanex01b.na.qualcomm.com
+ (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 21 Jun
+ 2022 00:03:15 -0700
+Message-ID: <5fa27044-9515-f8fa-511c-64014479e875@quicinc.com>
+Date:   Tue, 21 Jun 2022 12:33:12 +0530
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH rcu 08/12] rcu: Cleanup RCU urgency state for offline CPU
+Content-Language: en-US
+To:     "Paul E. McKenney" <paulmck@kernel.org>, <rcu@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <kernel-team@fb.com>,
+        <rostedt@goodmis.org>, Zqiang <qiang1.zhang@intel.com>
+References: <20220620222022.GA3839466@paulmck-ThinkPad-P17-Gen-1>
+ <20220620222032.3839547-8-paulmck@kernel.org>
+From:   Neeraj Upadhyay <quic_neeraju@quicinc.com>
+In-Reply-To: <20220620222032.3839547-8-paulmck@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01b.na.qualcomm.com (10.46.141.250)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Checks are missing when delta equals 0 in __xfs_ag_resv_free() and
-__xfs_ag_resv_init().
 
-Signed-off-by: Shida Zhang <zhangshida@kylinos.cn>
----
- Changes from v1:
- -Add checks before calling xfs_mod_fdblocks instead.
 
- fs/xfs/libxfs/xfs_ag_resv.c | 16 +++++++++++++---
- 1 file changed, 13 insertions(+), 3 deletions(-)
+On 6/21/2022 3:50 AM, Paul E. McKenney wrote:
+> From: Zqiang <qiang1.zhang@intel.com>
+> 
+> When a CPU is slow to provide a quiescent state for a given grace
+> period, RCU takes steps to encourage that CPU to get with the
+> quiescent-state program in a more timely fashion.  These steps
+> include these flags in the rcu_data structure:
+> 
+> 1.	->rcu_urgent_qs, which causes the scheduling-clock interrupt to
+> 	request an otherwise pointless context switch from the scheduler.
+> 
+> 2.	->rcu_need_heavy_qs, which causes both cond_resched() and RCU's
+> 	context-switch hook to do an immediate momentary quiscent state.
+> 
+> 3.	->rcu_need_heavy_qs, which causes the scheduler-clock tick to
 
-diff --git a/fs/xfs/libxfs/xfs_ag_resv.c b/fs/xfs/libxfs/xfs_ag_resv.c
-index fe94058d4e9e..c8fa032e4b00 100644
---- a/fs/xfs/libxfs/xfs_ag_resv.c
-+++ b/fs/xfs/libxfs/xfs_ag_resv.c
-@@ -149,7 +149,12 @@ __xfs_ag_resv_free(
- 		oldresv = resv->ar_orig_reserved;
- 	else
- 		oldresv = resv->ar_reserved;
--	error = xfs_mod_fdblocks(pag->pag_mount, oldresv, true);
-+
-+	if (oldresv)
-+		error = xfs_mod_fdblocks(pag->pag_mount, oldresv, true);
-+	else
-+		error = 0;
-+
- 	resv->ar_reserved = 0;
- 	resv->ar_asked = 0;
- 	resv->ar_orig_reserved = 0;
-@@ -215,8 +220,13 @@ __xfs_ag_resv_init(
- 
- 	if (XFS_TEST_ERROR(false, mp, XFS_ERRTAG_AG_RESV_FAIL))
- 		error = -ENOSPC;
--	else
--		error = xfs_mod_fdblocks(mp, -(int64_t)hidden_space, true);
-+	else {
-+		error = 0;
-+		if (hidden_space)
-+			error = xfs_mod_fdblocks(mp, -(int64_t)hidden_space,
-+						true);
-+	}
-+
- 	if (error) {
- 		trace_xfs_ag_resv_init_error(pag->pag_mount, pag->pag_agno,
- 				error, _RET_IP_);
--- 
-2.25.1
+nit: s/->rcu_need_heavy_qs/->rcu_forced_tick/ ?
 
+> 	be enabled even on nohz_full CPUs with only one runnable task.
+> 
+> These flags are of course cleared once the corresponding CPU has passed
+> through a quiescent state.  Unless that quiescent state is the CPU
+> going offline, which means that when the CPU comes back online, it will
+> needlessly consume additional CPU time and incur additional latency,
+> which constitutes a minor but very real performance bug.
+> 
+> This commit therefore adds the call to rcu_disable_urgency_upon_qs()
+> that clears these flags to the CPU-hotplug offlining code path.
+> 
+> Signed-off-by: Zqiang <qiang1.zhang@intel.com>
+> Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+> ---
+
+
+Reviewed-by: Neeraj Upadhyay <quic_neeraju@quicinc.com>
+
+
+
+
+Thanks
+Neeraj
+
+>   kernel/rcu/tree.c | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
+> index f4a37f2032664..5445b19b48408 100644
+> --- a/kernel/rcu/tree.c
+> +++ b/kernel/rcu/tree.c
+> @@ -4446,6 +4446,7 @@ void rcu_report_dead(unsigned int cpu)
+>   	rdp->rcu_ofl_gp_flags = READ_ONCE(rcu_state.gp_flags);
+>   	if (rnp->qsmask & mask) { /* RCU waiting on outgoing CPU? */
+>   		/* Report quiescent state -before- changing ->qsmaskinitnext! */
+> +		rcu_disable_urgency_upon_qs(rdp);
+>   		rcu_report_qs_rnp(mask, rnp, rnp->gp_seq, flags);
+>   		raw_spin_lock_irqsave_rcu_node(rnp, flags);
+>   	}
