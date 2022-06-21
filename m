@@ -2,19 +2,19 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F342C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:11:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 279A5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:11:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352537AbiFUPLQ (ORCPT
+        id S1352555AbiFUPLT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 11:11:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45524 "EHLO
+        Tue, 21 Jun 2022 11:11:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351786AbiFUPKy (ORCPT
+        with ESMTP id S1351771AbiFUPKx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 11:10:54 -0400
+        Tue, 21 Jun 2022 11:10:53 -0400
 Received: from mail.kapsi.fi (mail.kapsi.fi [IPv6:2001:67c:1be8::25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1933C2936F;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 603E42A425;
         Tue, 21 Jun 2022 08:10:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
         s=20161220; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
@@ -22,17 +22,17 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=ahW4iZmMaeHR2imkET+ZUEfD0C88QvD2NHELBTx02Vw=; b=hEowqs6xALfi+0Zsjt4YBVMhtV
-        H6Yi4Fq9GZKKNQpRwNcQuCjIHx3fNx7cDS8s/IWhz8Q+jnjK/vq/4PnroR9MKgDPHknAYYu3QOOac
-        iTH+9iH1agba5HVfmOp+NVlhz763i7h15xdfm1Ta70Xy1zimVo4qS1aVd5sqUHEIPwU3zJX4EKTJN
-        ZMVH9KBI/yB9mqSrRXdL4KV+d3m50RJ0ZfZ/x7FPT5Tw/YR8MNuE1OsKpiqcok3JPI1BlWTbCc/wL
-        GV1DdYS6rwpQ2QMUJ0tcWfYsZRrJTv1mtV5dpriV/VgZju8SoIFLP3ptBB1eDGai5kRsruZS/XxXY
-        iyo/H/ow==;
+        bh=ksIHmlKSMU37+Zo3znbjONqVsnNwDJ3NzqXq/aV3oCA=; b=au5zbtdn7wKZPe2dJRJ/gZlMy1
+        3z17b4S6Z4+f1cD4Fz/zl6QYb6PTVjVuikWuLBy8hiSzgtKiFT8nGGYUJV7WrizuyeamPl8Sot5G7
+        iuHfQZpDx5vAFZj5zVzgExGEHe5BEFcbSmpWmUxqdy2wl3oj50aLfQnmccc6nZhbIgm5wDxgcZyjk
+        UKHX/hiBQd7dsI1vPfb1JpjiJcYkD3IozU7IRYUdJq0zE04OoRONYEHaVORoKphS2aRseSLKEp3lL
+        rxPKLPFF5zd8MUtsuf5UnF6QdiJSnFbJPgPvES9rSmK9I/idDVbFq340xixydZ5tpXWj0Huo65GyV
+        Zr/ZIL2w==;
 Received: from 91-158-25-70.elisa-laajakaista.fi ([91.158.25.70] helo=toshino.localdomain)
         by mail.kapsi.fi with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <cyndis@kapsi.fi>)
-        id 1o3fWU-00Ea3F-Au; Tue, 21 Jun 2022 18:10:34 +0300
+        id 1o3fWU-00Ea3F-14; Tue, 21 Jun 2022 18:10:34 +0300
 From:   Mikko Perttunen <cyndis@kapsi.fi>
 To:     thierry.reding@gmail.com, jonathanh@nvidia.com, joro@8bytes.org,
         will@kernel.org, robin.murphy@arm.com, robh+dt@kernel.org,
@@ -40,10 +40,11 @@ To:     thierry.reding@gmail.com, jonathanh@nvidia.com, joro@8bytes.org,
 Cc:     linux-tegra@vger.kernel.org, dri-devel@lists.freedesktop.org,
         iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Mikko Perttunen <mperttunen@nvidia.com>
-Subject: [PATCH v6 06/10] arm64: tegra: Add Host1x context stream IDs on Tegra186+
-Date:   Tue, 21 Jun 2022 18:10:18 +0300
-Message-Id: <20220621151022.1416300-7-cyndis@kapsi.fi>
+        Mikko Perttunen <mperttunen@nvidia.com>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v6 03/10] dt-bindings: host1x: Add iommu-map property
+Date:   Tue, 21 Jun 2022 18:10:15 +0300
+Message-Id: <20220621151022.1416300-4-cyndis@kapsi.fi>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220621151022.1416300-1-cyndis@kapsi.fi>
 References: <20220621151022.1416300-1-cyndis@kapsi.fi>
@@ -58,69 +59,37 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Mikko Perttunen <mperttunen@nvidia.com>
 
-Add Host1x context stream IDs on systems that support Host1x context
-isolation. Host1x and attached engines can use these stream IDs to
-allow isolation between memory used by different processes.
-
-The specified stream IDs must match those configured by the hypervisor,
-if one is present.
+Add schema information for specifying context stream IDs. This uses
+the standard iommu-map property.
 
 Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Acked-by: Rob Herring <robh@kernel.org>
 ---
-v2:
-* Added context devices on T194.
-* Use iommu-map instead of custom property.
+v3:
+* New patch
 v4:
 * Remove memory-contexts subnode.
 ---
- arch/arm64/boot/dts/nvidia/tegra186.dtsi | 11 +++++++++++
- arch/arm64/boot/dts/nvidia/tegra194.dtsi | 11 +++++++++++
- 2 files changed, 22 insertions(+)
+ .../bindings/display/tegra/nvidia,tegra20-host1x.yaml        | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/nvidia/tegra186.dtsi b/arch/arm64/boot/dts/nvidia/tegra186.dtsi
-index 0e9afc3e2f26..5f560f13ed93 100644
---- a/arch/arm64/boot/dts/nvidia/tegra186.dtsi
-+++ b/arch/arm64/boot/dts/nvidia/tegra186.dtsi
-@@ -1461,6 +1461,17 @@ host1x@13e00000 {
+diff --git a/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-host1x.yaml b/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-host1x.yaml
+index 4fd513efb0f7..0adeb03b9e3a 100644
+--- a/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-host1x.yaml
++++ b/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-host1x.yaml
+@@ -144,6 +144,11 @@ allOf:
+         reset-names:
+           maxItems: 1
  
- 		iommus = <&smmu TEGRA186_SID_HOST1X>;
- 
-+		/* Context isolation domains */
-+		iommu-map = <
-+			0 &smmu TEGRA186_SID_HOST1X_CTX0 1
-+			1 &smmu TEGRA186_SID_HOST1X_CTX1 1
-+			2 &smmu TEGRA186_SID_HOST1X_CTX2 1
-+			3 &smmu TEGRA186_SID_HOST1X_CTX3 1
-+			4 &smmu TEGRA186_SID_HOST1X_CTX4 1
-+			5 &smmu TEGRA186_SID_HOST1X_CTX5 1
-+			6 &smmu TEGRA186_SID_HOST1X_CTX6 1
-+			7 &smmu TEGRA186_SID_HOST1X_CTX7 1>;
++        iommu-map:
++          description: Specification of stream IDs available for memory context device
++            use. Should be a mapping of IDs 0..n to IOMMU entries corresponding to
++            usable stream IDs.
 +
- 		dpaux1: dpaux@15040000 {
- 			compatible = "nvidia,tegra186-dpaux";
- 			reg = <0x15040000 0x10000>;
-diff --git a/arch/arm64/boot/dts/nvidia/tegra194.dtsi b/arch/arm64/boot/dts/nvidia/tegra194.dtsi
-index d1f8248c00f4..613fd71dec25 100644
---- a/arch/arm64/boot/dts/nvidia/tegra194.dtsi
-+++ b/arch/arm64/boot/dts/nvidia/tegra194.dtsi
-@@ -1769,6 +1769,17 @@ host1x@13e00000 {
- 			interconnect-names = "dma-mem";
- 			iommus = <&smmu TEGRA194_SID_HOST1X>;
+       required:
+         - reg-names
  
-+			/* Context isolation domains */
-+			iommu-map = <
-+				0 &smmu TEGRA194_SID_HOST1X_CTX0 1
-+				1 &smmu TEGRA194_SID_HOST1X_CTX1 1
-+				2 &smmu TEGRA194_SID_HOST1X_CTX2 1
-+				3 &smmu TEGRA194_SID_HOST1X_CTX3 1
-+				4 &smmu TEGRA194_SID_HOST1X_CTX4 1
-+				5 &smmu TEGRA194_SID_HOST1X_CTX5 1
-+				6 &smmu TEGRA194_SID_HOST1X_CTX6 1
-+				7 &smmu TEGRA194_SID_HOST1X_CTX7 1>;
-+
- 			nvdec@15140000 {
- 				compatible = "nvidia,tegra194-nvdec";
- 				reg = <0x15140000 0x00040000>;
 -- 
 2.36.1
 
