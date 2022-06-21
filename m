@@ -2,417 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 967BDC43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3455C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:53:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353429AbiFUPxU (ORCPT
+        id S1353447AbiFUPx0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 11:53:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33958 "EHLO
+        Tue, 21 Jun 2022 11:53:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353182AbiFUPv5 (ORCPT
+        with ESMTP id S1353296AbiFUPwV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 11:51:57 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 494952C67C;
-        Tue, 21 Jun 2022 08:51:56 -0700 (PDT)
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25LFOjPm019976;
-        Tue, 21 Jun 2022 15:51:55 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=nBloUJ+Su90N18fOcGpDM6MWkRGyQX19LrZmmNNmWVc=;
- b=B5VCAQu7doSIW3Dz9D29A5eggJSdagMoHjtIEIOoGf4QYITgRv2nsg49m69Ey3q0xdWx
- DoTvbDkRodgWSCY6kE/1OnEZSTrng80WUVI+4XZ2Hf66g4C7yNmEyI+RINaDTz+pxYda
- MgqRe7HycJiySC1EiBuA+Z7647aeDYLjgcF+/YsMdSTCP0PbRMgxDyhUWZVMzasc2TI5
- ysOFvOBDBaR1HWvMKCCfYl32lxoCVwv7USiU1Z5WDNGtfdXuM3ypuceu7PuoqZrkMjrn
- 7UF0jlA3JtQ0lfRt0pqaCfhDaNSYvp0YAfhVJxaUShXsITWScdtp78LMkl2nxnQv0bfW UQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gugkxgwwr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 21 Jun 2022 15:51:55 +0000
-Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25LFoABI003391;
-        Tue, 21 Jun 2022 15:51:54 GMT
-Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gugkxgwwd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 21 Jun 2022 15:51:54 +0000
-Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
-        by ppma03wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25LFZONu014744;
-        Tue, 21 Jun 2022 15:51:53 GMT
-Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
-        by ppma03wdc.us.ibm.com with ESMTP id 3gs6bacw2s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 21 Jun 2022 15:51:53 +0000
-Received: from b03ledav002.gho.boulder.ibm.com (b03ledav002.gho.boulder.ibm.com [9.17.130.233])
-        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25LFpqd929491588
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 21 Jun 2022 15:51:52 GMT
-Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 29443136059;
-        Tue, 21 Jun 2022 15:51:52 +0000 (GMT)
-Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 245F2136053;
-        Tue, 21 Jun 2022 15:51:51 +0000 (GMT)
-Received: from li-fed795cc-2ab6-11b2-a85c-f0946e4a8dff.ibm.com.com (unknown [9.160.18.227])
-        by b03ledav002.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Tue, 21 Jun 2022 15:51:51 +0000 (GMT)
-From:   Tony Krowiak <akrowiak@linux.ibm.com>
-To:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Cc:     jjherne@linux.ibm.com, freude@linux.ibm.com,
-        borntraeger@de.ibm.com, cohuck@redhat.com, mjrosato@linux.ibm.com,
-        pasic@linux.ibm.com, alex.williamson@redhat.com,
-        kwankhede@nvidia.com, fiuczy@linux.ibm.com
-Subject: [PATCH v20 14/20] s390/vfio-ap: reset queues after adapter/domain unassignment
-Date:   Tue, 21 Jun 2022 11:51:28 -0400
-Message-Id: <20220621155134.1932383-15-akrowiak@linux.ibm.com>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220621155134.1932383-1-akrowiak@linux.ibm.com>
-References: <20220621155134.1932383-1-akrowiak@linux.ibm.com>
+        Tue, 21 Jun 2022 11:52:21 -0400
+Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2132.outbound.protection.outlook.com [40.107.104.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D1DB2DAAC;
+        Tue, 21 Jun 2022 08:52:14 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=l2C86r06DXLlLwsrhnqx34HFn1vJ6nfogzPtmAmTx0TbGMurrX6D6neJX8lEMXNKH0Gm3fONkHssaNh0idxmIfqgCl02v8naLxgsW5kqq4n6XOVhhBaH0TTCF7VzlP2ia++9rdDiNDxdPwSbkESqXhZbc54Xge6/5+bTWzUdjvDvsUKa06lvgn3uxkq7rGtxy6M3kRkBDWxvtU3FuighMRfyzGa4HCkHtDDwxjsSux/BwU3+g8ujJaVFevEolO27sBLEkvI0aGnf+4ImSzCHZwApgzzFMSEhZm8kJrn06wgErOxZ1wS5VUbk9KU6h4Ma+2eqj3qKuG7t3yIOwQ829A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=oz8/K3b7lMRzN36hDal9e9zqNn+6fdQT/qGG2kg4jKs=;
+ b=njDp3SglpIH+XEjNhFMpuXqX07y2/+H97KnTodQCqGmHsd2NGSvoQfZfx8aOw3Hh6rlhxQaTMpYby5cDS+eMtDiaF0NRKBwZ532ah6BDXQK2taoH7c5LOoSL7pNjTCoe6T4MKms7vmREyk13kBOgtn2WzuB6o1c3nAiEa6Ab718jnLiE6RT3Gu0EAI1mONpCrdWMRTEyNLqoHaYoptILS8SbBY4ktzATypW3x/XtjfdfWUe9ZJ449Rbnkt9zwZOw4ZH6w38A+wh+MeGZ9MuFo+ysRfrR1tlz5wlrAhQULhLU3kj92bXizzJOLtA+iBnlmUMBdNG87HRULKvQuOn1Hw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=esd.eu; dmarc=pass action=none header.from=esd.eu; dkim=pass
+ header.d=esd.eu; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=esdhannover.onmicrosoft.com; s=selector1-esdhannover-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=oz8/K3b7lMRzN36hDal9e9zqNn+6fdQT/qGG2kg4jKs=;
+ b=F/zGm3icddiw2XNWudUfyr/tuZmNW0f+KYyu5Mr3W9D5q9D7LVymHBT+Q5UfHMTJp/8cdK+w7qYW1yPNpILIh9VI+7Efk5+2EygNYwR/bXDC47JyR2eMsCkGV/x9lWeMNNe9WwJlTAT5O2RegVUfE+dcFWAAyfFfzQNXE1JtSLU=
+Received: from AS4PR03MB8436.eurprd03.prod.outlook.com (2603:10a6:20b:51b::5)
+ by AM6PR03MB4422.eurprd03.prod.outlook.com (2603:10a6:20b:10::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.22; Tue, 21 Jun
+ 2022 15:52:11 +0000
+Received: from AS4PR03MB8436.eurprd03.prod.outlook.com
+ ([fe80::8858:49c4:6976:51c9]) by AS4PR03MB8436.eurprd03.prod.outlook.com
+ ([fe80::8858:49c4:6976:51c9%7]) with mapi id 15.20.5353.016; Tue, 21 Jun 2022
+ 15:52:11 +0000
+From:   Frank Jungclaus <Frank.Jungclaus@esd.eu>
+To:     "mkl@pengutronix.de" <mkl@pengutronix.de>
+CC:     =?iso-8859-15?Q?Stefan_M=E4tje?= <Stefan.Maetje@esd.eu>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        "wg@grandegger.com" <wg@grandegger.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "mailhol.vincent@wanadoo.fr" <mailhol.vincent@wanadoo.fr>
+Subject: Re: [PATCH 0/1] can/esd_usb2: Added support for esd CAN-USB/3
+Thread-Topic: [PATCH 0/1] can/esd_usb2: Added support for esd CAN-USB/3
+Thread-Index: AQHYhOP3yq7RQNsW6EGORRWfCWoTWa1ZaEmAgACbqgA=
+Date:   Tue, 21 Jun 2022 15:52:11 +0000
+Message-ID: <6dc713b8f502857388e411103bf0d31e4c15dd65.camel@esd.eu>
+References: <20220620202603.2069841-1-frank.jungclaus@esd.eu>
+         <20220621063501.wxxpotw6vck42gsn@pengutronix.de>
+In-Reply-To: <20220621063501.wxxpotw6vck42gsn@pengutronix.de>
+Accept-Language: en-001, de-DE, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.36.5-0ubuntu1 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=esd.eu;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 0ef46267-1402-497b-109d-08da539e0123
+x-ms-traffictypediagnostic: AM6PR03MB4422:EE_
+x-microsoft-antispam-prvs: <AM6PR03MB44226642EA71424F692F491F96B39@AM6PR03MB4422.eurprd03.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: +cZLO0Gxmc4Lkd7P9QbgF7yGXl0NLep5NkkA3ZSHgb2VcowZ0+Y9j60rfam7tWZIw2ZaHcqhBjR4S3AeV70UPKXs/rIDA0/nZeFQ+MVPRnnz78wtMqKBG5Wxdx/6ylKaOWxLH1Cbujo2HuKlMS7IDv518pMyH1LR+KVYhfDkPvZZye9aJnCcnzPn1tGoc/mN8PG4AvS1Mtmy+oVainUPbrf+jlghXrbjfU96isvmxWK+VsmvLkVRco6gOwdIFbU9h9rOoprq8VnoVp3m6R3jc0laWt91Dl/R6Z0XGbapPpZcUEjGjb7MnSsYjCJKNYTn+gnOZbtHeexWW6weck+GR34uRklNPkBkhzxuD0V2fo9YAI60rpWF6wJKAy9qyHpVIf33vE0W/fjN3qtxAt3ARvETcWFcrERehlXoL8/I8oJP5YMLtRXk7+Vpmt25mDi1L9MjGZ6bco9vYVQ4zYPX7l3qM/jqJ3CVyCjp5RHyd9uYfrNGReu5II6gRXBIUP1OsJyfCeWZwODthGuNTnsG/9XNqOhSEOBfOW1QkZ/hycEXNLYfBnKMs3fUrf+Q/7qr9ZUG4dS6RxrkTm4IKEi3CbQ7VkaXdKzGlC74Z3CvTSy35hmgGmNw47AAu1F35ArrrbajLY+0zfjvSw3hzCy3zID0zDu/2uIce2Pas0di8CkpDcNf2woZ+9PxuF6JhT8PvQJPYgoTiW/3dfEFSr4liw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR03MB8436.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39840400004)(376002)(346002)(366004)(396003)(136003)(6486002)(66476007)(6512007)(6916009)(71200400001)(2906002)(54906003)(53546011)(86362001)(8936002)(5660300002)(478600001)(8676002)(76116006)(316002)(4326008)(66556008)(66946007)(91956017)(26005)(2616005)(41300700001)(66446008)(64756008)(122000001)(83380400001)(186003)(38100700002)(36756003)(38070700005)(6506007);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-15?Q?KS58TmqbJD4Qx4FBQk7Q7O7qZZVw+82nn+pye9UEirwOKVcklzgAS75N8?=
+ =?iso-8859-15?Q?bSxnjxirg0gbXgKUy51liQV1OX2snUEPPfpiWOPMhcXrzOFceEhwgEO7H?=
+ =?iso-8859-15?Q?LKTHXZsSmoAnM+cOEsJRZgUvTD8hcWULN1t7VP/7a5MGASJP49i1QfjcV?=
+ =?iso-8859-15?Q?xUZzwFFLmH4LlNmw2Gp3YtoLrZ3O6gP0h/Cu5+7QkhPZ+rYCR7OP9pObK?=
+ =?iso-8859-15?Q?3PnRuAVnyFDoWWX2MF52IMA7OlQNlb5VALQR0T2G/UczPV8g4G1vUxgU2?=
+ =?iso-8859-15?Q?qOUl1RpAkqM4fuDtgSrogpuShzOXIGopIg/3clXuUNTfUmR8EfexGoFOi?=
+ =?iso-8859-15?Q?V6BkPg92qziPWqgOo/XAzr6Sn5BFeEoEMxVfk486RMjOyGj1HqqCNvYfd?=
+ =?iso-8859-15?Q?ZVe8vuwn33+K/JvdygAhRlxJO1MDayCGyAfq0m7yPi+upSDed1qiHbE27?=
+ =?iso-8859-15?Q?X7IiTHkcxHVCQ+xZVPlE39cgOSU85WdbCoZV5cw3tKI36rDh4CK1sTj/F?=
+ =?iso-8859-15?Q?p/WU3UeSlRDBf4vPXCdSw7I9rup4jD+ABW+8vaDmyr6XRKrdVqaJB2i+q?=
+ =?iso-8859-15?Q?L4Jr4jscrNES4UViaDimZDhlLBK6QZUWFLl0pR/G4k2fHJ2xSKD5bEGBi?=
+ =?iso-8859-15?Q?nOfV7DBmNsp9UATVssFid24HW25O9sJWMMJsb3uHqsiKCt99eHspsm4n6?=
+ =?iso-8859-15?Q?sOO2wPPB+qAWz5UoRHg69cfFrVlTKk5SqteTJvYkhDIFh8oEdoaSHcHHa?=
+ =?iso-8859-15?Q?h7H19CUddAhiDtX3glrzmGxsZF9Kde9F/lZkRWkbGnPFB4U6bPfc7l66y?=
+ =?iso-8859-15?Q?QmmQG82ChkSnkX1Nq7g6f7OCgsegidpPqYy0U/9rV9rSdjSaij+lB3c2h?=
+ =?iso-8859-15?Q?bnsLp/TDvCgzr6ddN9cH/Qi/J36om45t7RplgGdVDbv9SVtlRuMz8vFij?=
+ =?iso-8859-15?Q?yonJnqLD1KwOg5Qz487Ipc53pFtW8txPQjbcHlG0PkfC0PPBGkcCNuPLy?=
+ =?iso-8859-15?Q?wUzzcGGy3TCGqWITZrcHOiJsFS9rKITubM1HpdMIhN+SYXs8q4Fa/TPwx?=
+ =?iso-8859-15?Q?wLwOy6Z2UXj+VY5OSOUyTdqpfR81P/Xf1+c8Zjqk4PPTv6an2kkhaSBwE?=
+ =?iso-8859-15?Q?yFC/yGQXaJyBvPfNREgMu34S2D8SOvARC3dx5Mgv7vxaA2shGBcLG06B2?=
+ =?iso-8859-15?Q?ruQ4hD6w24Zo+PJKZeQlyNJdbuHMlXYYpuZZXhziOjfhzQ6qAsboTxS6u?=
+ =?iso-8859-15?Q?6u3gogL7a4cRL4wmVh2I/3m/F0Xuwc/EQSb2hRrvmwxjN5uPU45fbklNH?=
+ =?iso-8859-15?Q?YSRQAU2Jqx5ZmmiMc9fBNiy/onmew8kqerZ0PpZMtLZ2MjQ673oEB+msG?=
+ =?iso-8859-15?Q?BtOlsM45cHHt3J3A+e5W/DNoG23P/f90Xe56X8J996o4nSMH0FuS+t+q7?=
+ =?iso-8859-15?Q?zOXESv9KHP7zIL9FeA86DFJtkng7PkNlAh2o960xdS4xK7LGVl/39mxw+?=
+ =?iso-8859-15?Q?IbKlaKVgfBKZFCxcUJJfWRZZPXNwQ+pjF0bj4PTWnL6iPLbti2dh+zEui?=
+ =?iso-8859-15?Q?mnyXNFOFSwE7C2+TSFE5APKD1ZX12AKcVHVwW3VAHAgJ9jGPQIXC/A68T?=
+ =?iso-8859-15?Q?MrupPX0mgXkWEsPxyEcEvZ0rjGHha9bGduycWRC/SiUPfBvL5a2kP4lLB?=
+ =?iso-8859-15?Q?YOLl0CPSFu+nvNBq7pLcmiuHP8EvaRnS/gHQ+inIs5EuDzFVB3F4Lf+vM?=
+ =?iso-8859-15?Q?VxNY2XeLD3JLfiJfgG9iHR27xdymm72f/GFToWqbGcLaqbmD3ah5JM9e3?=
+ =?iso-8859-15?Q?UBjX8CVo5STOYD/cNlFn9e8PLhmX3yuByI5o22qYwK3J3n+wUK2ZpBzuq?=
+ =?iso-8859-15?Q?FnPc=3D?=
+Content-Type: text/plain; charset="iso-8859-15"
+Content-ID: <BECA7D16E6E99246AFAFE9202D22D02A@eurprd03.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: -g674oGU0xcySXO9K7K9V2D7RgHuD4u6
-X-Proofpoint-GUID: Eajadv1zB7CskP8jnfWWj0NaW_jjjk-O
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-06-21_08,2022-06-21_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 clxscore=1015
- malwarescore=0 mlxlogscore=999 suspectscore=0 spamscore=0
- lowpriorityscore=0 bulkscore=0 mlxscore=0 phishscore=0 priorityscore=1501
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206210066
+X-OriginatorOrg: esd.eu
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AS4PR03MB8436.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0ef46267-1402-497b-109d-08da539e0123
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jun 2022 15:52:11.5203
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 5a9c3a1d-52db-4235-b74c-9fd851db2e6b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: zDaTAYFwur9uWVZ94ZUdkyH58jFz8u9tsB8P6T7+EFI/BTMDFFghOBZSZSOYm0zSTujfw1288RLDY52a+YFN/Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR03MB4422
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When an adapter or domain is unassigned from an mdev attached to a KVM
-guest, one or more of the guest's queues may get dynamically removed. Since
-the removed queues could get re-assigned to another mdev, they need to be
-reset. So, when an adapter or domain is unassigned from the mdev, the
-queues that are removed from the guest's AP configuration (APCB) will be
-reset.
+On Tue, 2022-06-21 at 08:35 +0200, Marc Kleine-Budde wrote:
+> Hello Frank,
+>=20
+> thanks for your patch!
+>=20
+> On 20.06.2022 22:26:02, Frank Jungclaus wrote:
+> > This patch adds support for the newly available esd CAN-USB/3.
+> >=20
+> > The USB protocol for the CAN-USB/3 is similar to the protocol used
+> > for the CAN-USB/2 and the CAN-USB/Micro, so most of the code can be
+> > shared for all three platforms.
+> > Due to the fact that the CAN-USB/3 additionally supports CAN FD
+> > some new functionality / functions are introduced.
+> > Each occurrence of the term "usb2" within variables, function names,
+> > etc. is changed to "usb" where it is shared for all three platforms.
+>=20
+> Can you split the patch into several ones. Please do the renaming first.
+> There's some seemingly unrelated reformatting, this could be a separate
+> patch, too. If this is too much work, you might take this into the
+> renaming patch. Then add the new device. This makes reviewing a lot
+> easier.
+>=20
+> > The patch has been tested against / should apply to Marc's=20
+> > current testing branch:
+> > commit 934135149578 ("Merge branch 'document-polarfire-soc-can-controll=
+er'")
+>=20
+> Note: Better use the linux-can-next/master branch as a base, it will be
+> only fast forwarded. The testing branch will be rebased. As you don't
+> depend on any new features, it doesn't make any difference for you.
+>=20
+> regards,
+> Marc
+>=20
+Hello Marc, hello Vincent,
 
-Signed-off-by: Tony Krowiak <akrowiak@linux.ibm.com>
-Reviewed-by: Jason J. Herne <jjherne@linux.ibm.com>
----
- drivers/s390/crypto/vfio_ap_ops.c     | 152 +++++++++++++++++++-------
- drivers/s390/crypto/vfio_ap_private.h |   2 +
- 2 files changed, 114 insertions(+), 40 deletions(-)
+I did not expect to get a response that fast ;)
 
-diff --git a/drivers/s390/crypto/vfio_ap_ops.c b/drivers/s390/crypto/vfio_ap_ops.c
-index 090e033cff69..479e83e54cce 100644
---- a/drivers/s390/crypto/vfio_ap_ops.c
-+++ b/drivers/s390/crypto/vfio_ap_ops.c
-@@ -30,9 +30,10 @@
- #define AP_QUEUE_UNASSIGNED "unassigned"
- #define AP_QUEUE_IN_USE "in use"
- 
--static int vfio_ap_mdev_reset_queues(struct ap_matrix_mdev *matrix_mdev);
-+static int vfio_ap_mdev_reset_queues(struct ap_queue_table *qtable);
- static struct vfio_ap_queue *vfio_ap_find_queue(int apqn);
- static const struct vfio_device_ops vfio_ap_matrix_dev_ops;
-+static int vfio_ap_mdev_reset_queue(struct vfio_ap_queue *q, unsigned int retry);
- 
- /**
-  * get_update_locks_for_kvm: Acquire the locks required to dynamically update a
-@@ -644,6 +645,7 @@ static bool vfio_ap_mdev_filter_matrix(unsigned long *apm, unsigned long *aqm,
- 	unsigned long apid, apqi, apqn;
- 	DECLARE_BITMAP(prev_shadow_apm, AP_DEVICES);
- 	DECLARE_BITMAP(prev_shadow_aqm, AP_DOMAINS);
-+	struct vfio_ap_queue *q;
- 
- 	ret = ap_qci(&matrix_dev->info);
- 	if (ret)
-@@ -674,8 +676,8 @@ static bool vfio_ap_mdev_filter_matrix(unsigned long *apm, unsigned long *aqm,
- 			 * hardware device.
- 			 */
- 			apqn = AP_MKQID(apid, apqi);
--
--			if (!vfio_ap_mdev_get_queue(matrix_mdev, apqn)) {
-+			q = vfio_ap_mdev_get_queue(matrix_mdev, apqn);
-+			if (!q || q->reset_rc) {
- 				clear_bit_inv(apid,
- 					      matrix_mdev->shadow_apcb.apm);
- 				break;
-@@ -755,12 +757,6 @@ static void vfio_ap_unlink_mdev_fr_queue(struct vfio_ap_queue *q)
- 	q->matrix_mdev = NULL;
- }
- 
--static void vfio_ap_mdev_unlink_queue(struct vfio_ap_queue *q)
--{
--	vfio_ap_unlink_queue_fr_mdev(q);
--	vfio_ap_unlink_mdev_fr_queue(q);
--}
--
- static void vfio_ap_mdev_unlink_fr_queues(struct ap_matrix_mdev *matrix_mdev)
- {
- 	struct vfio_ap_queue *q;
-@@ -785,7 +781,7 @@ static void vfio_ap_mdev_remove(struct mdev_device *mdev)
- 
- 	mutex_lock(&matrix_dev->guests_lock);
- 	mutex_lock(&matrix_dev->mdevs_lock);
--	vfio_ap_mdev_reset_queues(matrix_mdev);
-+	vfio_ap_mdev_reset_queues(&matrix_mdev->qtable);
- 	vfio_ap_mdev_unlink_fr_queues(matrix_mdev);
- 	list_del(&matrix_mdev->node);
- 	mutex_unlock(&matrix_dev->mdevs_lock);
-@@ -999,18 +995,70 @@ static ssize_t assign_adapter_store(struct device *dev,
- }
- static DEVICE_ATTR_WO(assign_adapter);
- 
-+static struct vfio_ap_queue
-+*vfio_ap_unlink_apqn_fr_mdev(struct ap_matrix_mdev *matrix_mdev,
-+			     unsigned long apid, unsigned long apqi)
-+{
-+	struct vfio_ap_queue *q = NULL;
-+
-+	q = vfio_ap_mdev_get_queue(matrix_mdev, AP_MKQID(apid, apqi));
-+	/* If the queue is assigned to the matrix mdev, unlink it. */
-+	if (q)
-+		vfio_ap_unlink_queue_fr_mdev(q);
-+
-+	return q;
-+}
-+
-+/**
-+ * vfio_ap_mdev_unlink_adapter - unlink all queues associated with unassigned
-+ *				 adapter from the matrix mdev to which the
-+ *				 adapter was assigned.
-+ * @matrix_mdev: the matrix mediated device to which the adapter was assigned.
-+ * @apid: the APID of the unassigned adapter.
-+ * @qtable: table for storing queues associated with unassigned adapter.
-+ */
- static void vfio_ap_mdev_unlink_adapter(struct ap_matrix_mdev *matrix_mdev,
--					unsigned long apid)
-+					unsigned long apid,
-+					struct ap_queue_table *qtable)
- {
- 	unsigned long apqi;
- 	struct vfio_ap_queue *q;
- 
- 	for_each_set_bit_inv(apqi, matrix_mdev->matrix.aqm, AP_DOMAINS) {
--		q = vfio_ap_mdev_get_queue(matrix_mdev, AP_MKQID(apid, apqi));
-+		q = vfio_ap_unlink_apqn_fr_mdev(matrix_mdev, apid, apqi);
-+
-+		if (q && qtable) {
-+			if (test_bit_inv(apid, matrix_mdev->shadow_apcb.apm) &&
-+			    test_bit_inv(apqi, matrix_mdev->shadow_apcb.aqm))
-+				hash_add(qtable->queues, &q->mdev_qnode,
-+					 q->apqn);
-+		}
-+	}
-+}
-+
-+static void vfio_ap_mdev_hot_unplug_adapter(struct ap_matrix_mdev *matrix_mdev,
-+					    unsigned long apid)
-+{
-+	int loop_cursor;
-+	struct vfio_ap_queue *q;
-+	struct ap_queue_table *qtable = kzalloc(sizeof(*qtable), GFP_KERNEL);
-+
-+	hash_init(qtable->queues);
-+	vfio_ap_mdev_unlink_adapter(matrix_mdev, apid, qtable);
-+
-+	if (test_bit_inv(apid, matrix_mdev->shadow_apcb.apm)) {
-+		clear_bit_inv(apid, matrix_mdev->shadow_apcb.apm);
-+		vfio_ap_mdev_update_guest_apcb(matrix_mdev);
-+	}
-+
-+	vfio_ap_mdev_reset_queues(qtable);
- 
--		if (q)
--			vfio_ap_mdev_unlink_queue(q);
-+	hash_for_each(qtable->queues, loop_cursor, q, mdev_qnode) {
-+		vfio_ap_unlink_mdev_fr_queue(q);
-+		hash_del(&q->mdev_qnode);
- 	}
-+
-+	kfree(qtable);
- }
- 
- /**
-@@ -1048,13 +1096,7 @@ static ssize_t unassign_adapter_store(struct device *dev,
- 	}
- 
- 	clear_bit_inv((unsigned long)apid, matrix_mdev->matrix.apm);
--	vfio_ap_mdev_unlink_adapter(matrix_mdev, apid);
--
--	if (test_bit_inv(apid, matrix_mdev->shadow_apcb.apm)) {
--		clear_bit_inv(apid, matrix_mdev->shadow_apcb.apm);
--		vfio_ap_mdev_update_guest_apcb(matrix_mdev);
--	}
--
-+	vfio_ap_mdev_hot_unplug_adapter(matrix_mdev, apid);
- 	ret = count;
- done:
- 	release_update_locks_for_mdev(matrix_mdev);
-@@ -1147,19 +1189,49 @@ static ssize_t assign_domain_store(struct device *dev,
- static DEVICE_ATTR_WO(assign_domain);
- 
- static void vfio_ap_mdev_unlink_domain(struct ap_matrix_mdev *matrix_mdev,
--				       unsigned long apqi)
-+				       unsigned long apqi,
-+				       struct ap_queue_table *qtable)
- {
- 	unsigned long apid;
- 	struct vfio_ap_queue *q;
- 
- 	for_each_set_bit_inv(apid, matrix_mdev->matrix.apm, AP_DEVICES) {
--		q = vfio_ap_mdev_get_queue(matrix_mdev, AP_MKQID(apid, apqi));
-+		q = vfio_ap_unlink_apqn_fr_mdev(matrix_mdev, apid, apqi);
- 
--		if (q)
--			vfio_ap_mdev_unlink_queue(q);
-+		if (q && qtable) {
-+			if (test_bit_inv(apid, matrix_mdev->shadow_apcb.apm) &&
-+			    test_bit_inv(apqi, matrix_mdev->shadow_apcb.aqm))
-+				hash_add(qtable->queues, &q->mdev_qnode,
-+					 q->apqn);
-+		}
- 	}
- }
- 
-+static void vfio_ap_mdev_hot_unplug_domain(struct ap_matrix_mdev *matrix_mdev,
-+					   unsigned long apqi)
-+{
-+	int loop_cursor;
-+	struct vfio_ap_queue *q;
-+	struct ap_queue_table *qtable = kzalloc(sizeof(*qtable), GFP_KERNEL);
-+
-+	hash_init(qtable->queues);
-+	vfio_ap_mdev_unlink_domain(matrix_mdev, apqi, qtable);
-+
-+	if (test_bit_inv(apqi, matrix_mdev->shadow_apcb.aqm)) {
-+		clear_bit_inv(apqi, matrix_mdev->shadow_apcb.aqm);
-+		vfio_ap_mdev_update_guest_apcb(matrix_mdev);
-+	}
-+
-+	vfio_ap_mdev_reset_queues(qtable);
-+
-+	hash_for_each(qtable->queues, loop_cursor, q, mdev_qnode) {
-+		vfio_ap_unlink_mdev_fr_queue(q);
-+		hash_del(&q->mdev_qnode);
-+	}
-+
-+	kfree(qtable);
-+}
-+
- /**
-  * unassign_domain_store - parses the APQI from @buf and clears the
-  * corresponding bit in the mediated matrix device's AQM
-@@ -1195,13 +1267,7 @@ static ssize_t unassign_domain_store(struct device *dev,
- 	}
- 
- 	clear_bit_inv((unsigned long)apqi, matrix_mdev->matrix.aqm);
--	vfio_ap_mdev_unlink_domain(matrix_mdev, apqi);
--
--	if (test_bit_inv(apqi, matrix_mdev->shadow_apcb.aqm)) {
--		clear_bit_inv(apqi, matrix_mdev->shadow_apcb.aqm);
--		vfio_ap_mdev_update_guest_apcb(matrix_mdev);
--	}
--
-+	vfio_ap_mdev_hot_unplug_domain(matrix_mdev, apqi);
- 	ret = count;
- 
- done:
-@@ -1486,7 +1552,7 @@ static void vfio_ap_mdev_unset_kvm(struct ap_matrix_mdev *matrix_mdev)
- 		get_update_locks_for_kvm(kvm);
- 
- 		kvm_arch_crypto_clear_masks(kvm);
--		vfio_ap_mdev_reset_queues(matrix_mdev);
-+		vfio_ap_mdev_reset_queues(&matrix_mdev->qtable);
- 		kvm_put_kvm(kvm);
- 		matrix_mdev->kvm = NULL;
- 
-@@ -1520,9 +1586,9 @@ static int vfio_ap_mdev_reset_queue(struct vfio_ap_queue *q,
- 
- 	if (!q)
- 		return 0;
--
- retry_zapq:
- 	status = ap_zapq(q->apqn);
-+	q->reset_rc = status.response_code;
- 	switch (status.response_code) {
- 	case AP_RESPONSE_NORMAL:
- 		ret = 0;
-@@ -1537,12 +1603,17 @@ static int vfio_ap_mdev_reset_queue(struct vfio_ap_queue *q,
- 	case AP_RESPONSE_Q_NOT_AVAIL:
- 	case AP_RESPONSE_DECONFIGURED:
- 	case AP_RESPONSE_CHECKSTOPPED:
--		WARN_ON_ONCE(status.irq_enabled);
-+		WARN_ONCE(status.irq_enabled,
-+			  "PQAP/ZAPQ for %02x.%04x failed with rc=%u while IRQ enabled",
-+			  AP_QID_CARD(q->apqn), AP_QID_QUEUE(q->apqn),
-+			  status.response_code);
- 		ret = -EBUSY;
- 		goto free_resources;
- 	default:
- 		/* things are really broken, give up */
--		WARN(true, "PQAP/ZAPQ completed with invalid rc (%x)\n",
-+		WARN(true,
-+		     "PQAP/ZAPQ for %02x.%04x failed with invalid rc=%u\n",
-+		     AP_QID_CARD(q->apqn), AP_QID_QUEUE(q->apqn),
- 		     status.response_code);
- 		return -EIO;
- 	}
-@@ -1554,7 +1625,8 @@ static int vfio_ap_mdev_reset_queue(struct vfio_ap_queue *q,
- 		msleep(20);
- 		status = ap_tapq(q->apqn, NULL);
- 	}
--	WARN_ON_ONCE(retry2 <= 0);
-+	WARN_ONCE(retry2 <= 0, "unable to verify reset of queue %02x.%04x",
-+		  AP_QID_CARD(q->apqn), AP_QID_QUEUE(q->apqn));
- 
- free_resources:
- 	vfio_ap_free_aqic_resources(q);
-@@ -1562,12 +1634,12 @@ static int vfio_ap_mdev_reset_queue(struct vfio_ap_queue *q,
- 	return ret;
- }
- 
--static int vfio_ap_mdev_reset_queues(struct ap_matrix_mdev *matrix_mdev)
-+static int vfio_ap_mdev_reset_queues(struct ap_queue_table *qtable)
- {
- 	int ret, loop_cursor, rc = 0;
- 	struct vfio_ap_queue *q;
- 
--	hash_for_each(matrix_mdev->qtable.queues, loop_cursor, q, mdev_qnode) {
-+	hash_for_each(qtable->queues, loop_cursor, q, mdev_qnode) {
- 		ret = vfio_ap_mdev_reset_queue(q, 1);
- 		/*
- 		 * Regardless whether a queue turns out to be busy, or
-@@ -1651,7 +1723,7 @@ static ssize_t vfio_ap_mdev_ioctl(struct vfio_device *vdev,
- 		ret = vfio_ap_mdev_get_device_info(arg);
- 		break;
- 	case VFIO_DEVICE_RESET:
--		ret = vfio_ap_mdev_reset_queues(matrix_mdev);
-+		ret = vfio_ap_mdev_reset_queues(&matrix_mdev->qtable);
- 		break;
- 	default:
- 		ret = -EOPNOTSUPP;
-diff --git a/drivers/s390/crypto/vfio_ap_private.h b/drivers/s390/crypto/vfio_ap_private.h
-index 82ac74e83e13..7110288fab68 100644
---- a/drivers/s390/crypto/vfio_ap_private.h
-+++ b/drivers/s390/crypto/vfio_ap_private.h
-@@ -126,6 +126,7 @@ struct ap_matrix_mdev {
-  * @apqn: the APQN of the AP queue device
-  * @saved_isc: the guest ISC registered with the GIB interface
-  * @mdev_qnode: allows the vfio_ap_queue struct to be added to a hashtable
-+ * @reset_rc: the status response code from the last reset of the queue
-  */
- struct vfio_ap_queue {
- 	struct ap_matrix_mdev *matrix_mdev;
-@@ -134,6 +135,7 @@ struct vfio_ap_queue {
- #define VFIO_AP_ISC_INVALID 0xff
- 	unsigned char saved_isc;
- 	struct hlist_node mdev_qnode;
-+	unsigned int reset_rc;
- };
- 
- int vfio_ap_mdev_register(void);
--- 
-2.35.3
+Thanks a lot for all your annotation work, suggestions and remarks.
+I'll try to take them all into account. Than I'll send a series of
+separate and much smaller and easier to handle patches.
+
+Regards, Frank
 
