@@ -2,50 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EDF6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:01:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C898C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:01:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355584AbiFUVBu (ORCPT
+        id S1355585AbiFUVBy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 17:01:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39150 "EHLO
+        Tue, 21 Jun 2022 17:01:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355627AbiFUU6s (ORCPT
+        with ESMTP id S1355634AbiFUU6s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 21 Jun 2022 16:58:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD9E43207D;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55D862F3A3;
         Tue, 21 Jun 2022 13:51:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 35D9BB81B31;
-        Tue, 21 Jun 2022 20:50:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 336FDC341C4;
-        Tue, 21 Jun 2022 20:50:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DBC4D61874;
+        Tue, 21 Jun 2022 20:50:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE5A0C341C5;
+        Tue, 21 Jun 2022 20:50:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655844650;
-        bh=JeBr1bFqE2A6C5zJTr/9zSU6USgH72iHiRljlSjX1VE=;
+        s=k20201202; t=1655844640;
+        bh=n2+txuHaV0luaEh0g/RCXVIJELBEjdQC7YwHKghk+XA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lQiEhxgm2O9Lnv7mVkec0arstDyR/qZXK8cXEyCJEVHCyL1bw5DU2tGoC6ATc6fIL
-         uj0racNchQ07lSaEmHxvjxgPqkxxpYvHguubeJFkHcv/hgYNi7f9FC6wX01IAIIR67
-         sniEZM39DVupRAvkfw/IuPzuMvoBtpGaN8JD1xGmj1BRbEOcU9QftACmvwZ55Ku13C
-         w7q4Q732vDdsm4l9p7x+NFK28KsOwBUglzfTguddGhFrYTzyJkHfXyS3M3uafPrey3
-         y/3DEQFz9ngjsIT7Xazy9874GbDeVB21agJ9lUDBgmy+botbhoOehNHN0hGPN3aeov
-         rsMnmMptQP8Xg==
+        b=Y0z9IYEUhml9fk+rIzLaED4+Wvelq92+1VLC2ji+RtMnzVROk5+l7QV01vlrU6JWt
+         6vYTL09uJXFTg6tHKBy22pcUJ08M+Mz1D9g/Xvsj9AtcX2rBRVcO2QcLIsuUx1Sf4u
+         U/oe6ljZU/V62Cn9/7q70SJYTUBSDNVImehPGZ/0Kks3+mpMU+nyekPKjIza6kmPM9
+         yZJAslYzDbTzYQEtSxP8Doj39E0zzdG93He0E4nEMYbo+0hQZwnqwvCKFTnsTMHPEM
+         wS0PH/2MrzUv9SduSg9Yb7E/xYZl+YnwRDmyylE/IcLU4fPFf6Hu1NvuBzaoPPxalq
+         e5KYlL5rOxMSw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Keith Busch <kbusch@kernel.org>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Sasha Levin <sashal@kernel.org>, axboe@fb.com,
-        sagi@grimberg.me, linux-nvme@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 05/17] nvme-pci: add trouble shooting steps for timeouts
-Date:   Tue, 21 Jun 2022 16:50:28 -0400
-Message-Id: <20220621205041.250426-5-sashal@kernel.org>
+Cc:     Baokun Li <libaokun1@huawei.com>,
+        Ritesh Harjani <ritesh.list@gmail.com>,
+        Theodore Ts'o <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>,
+        adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 20/20] ext4: correct the judgment of BUG in ext4_mb_normalize_request
+Date:   Tue, 21 Jun 2022 16:50:10 -0400
+Message-Id: <20220621205010.250185-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220621205041.250426-1-sashal@kernel.org>
-References: <20220621205041.250426-1-sashal@kernel.org>
+In-Reply-To: <20220621205010.250185-1-sashal@kernel.org>
+References: <20220621205010.250185-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,43 +53,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Keith Busch <kbusch@kernel.org>
+From: Baokun Li <libaokun1@huawei.com>
 
-[ Upstream commit 4641a8e6e145f595059e695f0f8dbbe608134086 ]
+[ Upstream commit cf4ff938b47fc5c00b0ccce53a3b50eca9b32281 ]
 
-Many users have encountered IO timeouts with a CSTS value of 0xffffffff,
-which indicates a failure to read the register. While there are various
-potential causes for this observation, faulty NVMe APST has been the
-culprit quite frequently. Add the recommended troubleshooting steps in
-the error output when this condition occurs.
+ext4_mb_normalize_request() can move logical start of allocated blocks
+to reduce fragmentation and better utilize preallocation. However logical
+block requested as a start of allocation (ac->ac_o_ex.fe_logical) should
+always be covered by allocated blocks so we should check that by
+modifying and to or in the assertion.
 
-Signed-off-by: Keith Busch <kbusch@kernel.org>
-Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
+Reviewed-by: Ritesh Harjani <ritesh.list@gmail.com>
+Link: https://lore.kernel.org/r/20220528110017.354175-3-libaokun1@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/pci.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ fs/ext4/mballoc.c | 17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index 3ddd24a42043..e0accbf40f49 100644
---- a/drivers/nvme/host/pci.c
-+++ b/drivers/nvme/host/pci.c
-@@ -1241,6 +1241,14 @@ static void nvme_warn_reset(struct nvme_dev *dev, u32 csts)
- 		dev_warn(dev->ctrl.device,
- 			 "controller is down; will reset: CSTS=0x%x, PCI_STATUS read failed (%d)\n",
- 			 csts, result);
-+
-+	if (csts != ~0)
-+		return;
-+
-+	dev_warn(dev->ctrl.device,
-+		 "Does your device have a faulty power saving mode enabled?\n");
-+	dev_warn(dev->ctrl.device,
-+		 "Try \"nvme_core.default_ps_max_latency_us=0 pcie_aspm=off\" and report a bug\n");
- }
+diff --git a/fs/ext4/mballoc.c b/fs/ext4/mballoc.c
+index 47a560d60d3e..1f328a5e2e3d 100644
+--- a/fs/ext4/mballoc.c
++++ b/fs/ext4/mballoc.c
+@@ -4171,7 +4171,22 @@ ext4_mb_normalize_request(struct ext4_allocation_context *ac,
+ 	}
+ 	rcu_read_unlock();
  
- static enum blk_eh_timer_return nvme_timeout(struct request *req, bool reserved)
+-	if (start + size <= ac->ac_o_ex.fe_logical &&
++	/*
++	 * In this function "start" and "size" are normalized for better
++	 * alignment and length such that we could preallocate more blocks.
++	 * This normalization is done such that original request of
++	 * ac->ac_o_ex.fe_logical & fe_len should always lie within "start" and
++	 * "size" boundaries.
++	 * (Note fe_len can be relaxed since FS block allocation API does not
++	 * provide gurantee on number of contiguous blocks allocation since that
++	 * depends upon free space left, etc).
++	 * In case of inode pa, later we use the allocated blocks
++	 * [pa_start + fe_logical - pa_lstart, fe_len/size] from the preallocated
++	 * range of goal/best blocks [start, size] to put it at the
++	 * ac_o_ex.fe_logical extent of this inode.
++	 * (See ext4_mb_use_inode_pa() for more details)
++	 */
++	if (start + size <= ac->ac_o_ex.fe_logical ||
+ 			start > ac->ac_o_ex.fe_logical) {
+ 		ext4_msg(ac->ac_sb, KERN_ERR,
+ 			 "start %lu, size %lu, fe_logical %lu",
 -- 
 2.35.1
 
