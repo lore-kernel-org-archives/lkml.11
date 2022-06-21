@@ -2,101 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6261C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 13:29:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61D3BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 13:34:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351707AbiFUN3L (ORCPT
+        id S1348739AbiFUNeS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 09:29:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55530 "EHLO
+        Tue, 21 Jun 2022 09:34:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351724AbiFUN27 (ORCPT
+        with ESMTP id S1351745AbiFUNbI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 09:28:59 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8884E25C69
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 06:24:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655817861;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=u736UGku/JrRJ1DksO+V4OLlrYIRIw9y+gv92kWBcJM=;
-        b=IuMxgONpExw7RBnnK/cC9wGbnTcWbCFvoOKnND2sIqdZA2OaE+IySx+dDz3cqpHPdIP3xV
-        kUfe8r9OC82VULiTWCAx9++xN3DV42NJZJA18+8huu3yxn3O8B+9dQ779/ekzd7bkezDHJ
-        45+ydW9qLt4I+IvoT0SebLyhUKUaolw=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-661-RRkKvLFoPD2Uur9kxuC0Fw-1; Tue, 21 Jun 2022 09:24:19 -0400
-X-MC-Unique: RRkKvLFoPD2Uur9kxuC0Fw-1
-Received: by mail-wm1-f72.google.com with SMTP id c185-20020a1c35c2000000b0039db3e56c39so8438347wma.5
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 06:24:19 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=u736UGku/JrRJ1DksO+V4OLlrYIRIw9y+gv92kWBcJM=;
-        b=YrXVrtFLuBmabf7sLlyZTA7UmAbDegiiHMrqaRhopReKDSIrgpyRjYRB5eRgRdat3g
-         h4IaoQcWTaYnAqSOrHnJ/18oUrPpMrHx5+DNft7cTwjvARLW/Bsv5LxwzhW5nDMO0KCu
-         R2Z6hdXE5Q6LR0Bn8AK9ZGNs2h/P2gOUyAsd9lbghHXQHP5vz2jlYmtqjd4XEesu1lU4
-         Lb0Gs3ZxN6EEJbiuKwopPzQ9Fm12RPkuQvWY/yIq27oRB+b+bZWqs+uri0dClpRPpkk2
-         AQy5K2l6HP4oMdjO2gfnHw1IzUdkgbLHJ1woxBmDAkbCRcFFEAzcTtSPHu5AUR9xwBOQ
-         xrRQ==
-X-Gm-Message-State: AOAM533pnuWoHIj7Jr2DGxZeYwKCN7RajT6JDwCnB9sSvgBpE2CUp52L
-        eF2q6qe0Akh4MJu8JG28xRQz+hB+eH6hR3gVZF3gEZT9dRldEcJAacSQ4QdsSUlrAZPS3d54MlM
-        VM0+80BkjcgavGoSCGbmA69e3ry8bJDknE7m29tmGIHxxDYs9bo6ffET0QEVM+Dt4cHo1m3NBer
-        NT
-X-Received: by 2002:a05:600c:1f05:b0:39c:51c6:7c85 with SMTP id bd5-20020a05600c1f0500b0039c51c67c85mr41896749wmb.33.1655817858831;
-        Tue, 21 Jun 2022 06:24:18 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx2vHsz7ni0WNOKWRzoORK2MuOU/fyqYFPbMjIK0vgwy2HJOf9+5BNaiEvUfNHK0WjXot0RhQ==
-X-Received: by 2002:a05:600c:1f05:b0:39c:51c6:7c85 with SMTP id bd5-20020a05600c1f0500b0039c51c67c85mr41896715wmb.33.1655817858571;
-        Tue, 21 Jun 2022 06:24:18 -0700 (PDT)
-Received: from fedora (nat-2.ign.cz. [91.219.240.2])
-        by smtp.gmail.com with ESMTPSA id e7-20020a5d5947000000b0021b95bcaf7fsm2737151wri.59.2022.06.21.06.24.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jun 2022 06:24:18 -0700 (PDT)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        Yuan Yao <yuan.yao@linux.intel.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v7 17/39] KVM: x86: hyper-v: L2 TLB flush
-In-Reply-To: <e22c7352-bafa-3ebf-c842-ed706579a619@redhat.com>
-References: <20220613133922.2875594-1-vkuznets@redhat.com>
- <20220613133922.2875594-18-vkuznets@redhat.com>
- <e22c7352-bafa-3ebf-c842-ed706579a619@redhat.com>
-Date:   Tue, 21 Jun 2022 15:24:17 +0200
-Message-ID: <87wnda40am.fsf@redhat.com>
+        Tue, 21 Jun 2022 09:31:08 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EB3941AF1F;
+        Tue, 21 Jun 2022 06:28:41 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B48F6165C;
+        Tue, 21 Jun 2022 06:28:41 -0700 (PDT)
+Received: from bogus (e103737-lin.cambridge.arm.com [10.1.197.49])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CA5FB3F7D7;
+        Tue, 21 Jun 2022 06:28:38 -0700 (PDT)
+Date:   Tue, 21 Jun 2022 14:28:36 +0100
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Marcin Wojtas <mw@semihalf.com>, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, netdev@vger.kernel.org,
+        rafael@kernel.org, lenb@kernel.org, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        Sudeep Holla <sudeep.holla@arm.com>, linux@armlinux.org.uk,
+        hkallweit1@gmail.com, gjb@semihalf.com, jaz@semihalf.com,
+        tn@semihalf.com, Samer.El-Haj-Mahmoud@arm.com,
+        upstream@semihalf.com
+Subject: Re: [net-next: PATCH 09/12] Documentation: ACPI: DSD: introduce DSA
+ description
+Message-ID: <20220621132836.wiyexi4y6vjeumrv@bogus>
+References: <20220620150225.1307946-1-mw@semihalf.com>
+ <20220620150225.1307946-10-mw@semihalf.com>
+ <20220621094556.5ev3nencnw7a5xwv@bogus>
+ <YrGoXXBgHvyifny3@smile.fi.intel.com>
+ <YrGqg5fHB4s+Y7wx@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YrGqg5fHB4s+Y7wx@lunn.ch>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Paolo Bonzini <pbonzini@redhat.com> writes:
-
-> On 6/13/22 15:39, Vitaly Kuznetsov wrote:
->> -	tlb_flush_fifo = kvm_hv_get_tlb_flush_fifo(vcpu);
->> +	tlb_flush_fifo = kvm_hv_get_tlb_flush_fifo(vcpu, is_guest_mode(vcpu));
->>   
+On Tue, Jun 21, 2022 at 01:24:51PM +0200, Andrew Lunn wrote:
+> On Tue, Jun 21, 2022 at 02:15:41PM +0300, Andy Shevchenko wrote:
+> > On Tue, Jun 21, 2022 at 10:45:56AM +0100, Sudeep Holla wrote:
+> > > On Mon, Jun 20, 2022 at 05:02:22PM +0200, Marcin Wojtas wrote:
+> > > > Describe the Distributed Switch Architecture (DSA) - compliant
+> > > > MDIO devices. In ACPI world they are represented as children
+> > > > of the MDIO busses, which are responsible for their enumeration
+> > > > based on the standard _ADR fields and description in _DSD objects
+> > > > under device properties UUID [1].
+> > > > 
+> > > > [1] http://www.uefi.org/sites/default/files/resources/_DSD-device-properties-UUID.pdf
+> > 
+> > > Why is this document part of Linux code base ?
+> > 
+> > It's fine, but your are right with your latter questions.
+> > 
+> > > How will the other OSes be aware of this ?
+> > 
+> > Should be a standard somewhere.
+> > 
+> > > I assume there was some repository to maintain such DSDs so that it
+> > > is accessible for other OSes. I am not agreeing or disagreeing on the
+> > > change itself, but I am concerned about this present in the kernel
+> > > code.
+> > 
+> > I dunno we have a such, but the closest I may imagine is MIPI standardization,
+> > that we have at least for cameras and sound.
+> > 
+> > I would suggest to go and work with MIPI for network / DSA / etc area, so
+> > everybody else will be aware of the standard.
 >
-> Any reason to add this parameter?  
+> It is the same argument as for DT. Other OSes and bootloaders seem to
+> manage digging around in Linux for DT binding documentation. I don't
+> see why bootloaders and other OSes can not also dig around in Linux
+> for ACPI binding documentations.
+>
 
-Yes) Other users (all from kvm_hv_flush_tlb()) set this parameter based
-on whether the calling vCPU (*not* the destination vCPU, which is the
-first parameter) is in guest mode or not.
+Theoretically you are right. But in DT case majority of non-standard(by
+standard I am referring to the one's in Open Firmware specification) are
+in the kernel. But that is not true for ACPI. And that is the reason for
+objecting it. One of the main other OS using ACPI may not look here for
+any ACPI bindings(we may not care, but still OS neutral place is better
+for this).
 
-> It is always set to is_guest_mode(vcpu) and, even if it wasn't, I
-> would add the parameter directly in patch 11.
+> Ideally, somebody will submit all this for acceptance into ACPI, but
+> into somebody does, i suspect it will just remain a defacto standard
+> in Linux.
+>
 
-I can move to Patch11 if necessary.
+DSD is not integral part of ACPI spec, so the process is never clear.
+However there is this project[1], IIUC it is just guidance and doesn't
+include any bindings IIUC. But we need something similar here for better
+visibility and to remain OS agnostic. Even with DT, there is a strong
+desire to separate it out, but it has grown so much that it is getting
+harder to do that with every release. I was just trying to avoid getting
+into that situation.
 
 -- 
-Vitaly
+Regards,
+Sudeep
 
+[1] https://github.com/UEFI/DSD-Guide
