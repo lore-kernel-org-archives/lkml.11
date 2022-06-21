@@ -2,79 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0543C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 14:19:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC1D2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 14:19:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350456AbiFUOT3 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 10:19:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60976 "EHLO
+        id S230327AbiFUOTh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 21 Jun 2022 10:19:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349027AbiFUOT1 (ORCPT
+        with ESMTP id S1349027AbiFUOT3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 10:19:27 -0400
-Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 4525B13EAA
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 07:19:26 -0700 (PDT)
-Received: (qmail 876385 invoked by uid 1000); 21 Jun 2022 10:19:25 -0400
-Date:   Tue, 21 Jun 2022 10:19:25 -0400
-From:   Alan Stern <stern@rowland.harvard.edu>
-To:     Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Cc:     hminas@synopsys.com, gregkh@linuxfoundation.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        amelie.delaunay@foss.st.com
-Subject: Re: [PATCH 1/3] usb: host: ohci-platform: add TPL support
-Message-ID: <YrHTba9s2NhBfQT2@rowland.harvard.edu>
-References: <20220621130506.85424-1-fabrice.gasnier@foss.st.com>
- <20220621130506.85424-2-fabrice.gasnier@foss.st.com>
+        Tue, 21 Jun 2022 10:19:29 -0400
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22214140CD;
+        Tue, 21 Jun 2022 07:19:29 -0700 (PDT)
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id 4474368AFE; Tue, 21 Jun 2022 16:19:25 +0200 (CEST)
+Date:   Tue, 21 Jun 2022 16:19:24 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     Mark Hounschell <markh@compro.net>
+Cc:     Christoph Hellwig <hch@lst.de>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Linux-kernel <linux-kernel@vger.kernel.org>,
+        dmaengine@vger.kernel.org
+Subject: Re: [BUG] dma-mapping: remove CONFIG_DMA_REMAP
+Message-ID: <20220621141924.GA8348@lst.de>
+References: <c32d2da1-9122-66bd-12fc-916be79b33fd@compro.net> <20220621134837.GA8025@lst.de> <9de341bc-fe8d-1820-187a-46455e4b9bf2@compro.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220621130506.85424-2-fabrice.gasnier@foss.st.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <9de341bc-fe8d-1820-187a-46455e4b9bf2@compro.net>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 21, 2022 at 03:05:04PM +0200, Fabrice Gasnier wrote:
-> From: Amelie Delaunay <amelie.delaunay@foss.st.com>
-> 
-> The TPL support is used to identify targeted devices during EH compliance
-> test. The user can add "tpl-support" in the device tree to enable it.
-> 
-> Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
-> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-> ---
+On Tue, Jun 21, 2022 at 10:06:59AM -0400, Mark Hounschell wrote:
+> On 6/21/22 09:48, Christoph Hellwig wrote:
+>> On Tue, Jun 21, 2022 at 09:43:18AM -0400, Mark Hounschell wrote:
+>>> Revert that commit and all works like normal. This commit breaks user land.
+>>
+>> No.  We had that discussion before.  It exposeѕ how broken your out of
+>> tree driver is, which you don't bother to fix despite Robin even taking
+>> the pains to explain you how.
+>
+> No, this is not the original issue and we never actually had a discussion. 
+> That original issue was about using Set/ClearPageReserved. You nor Robin 
+> even tried to explain why it was wrong to use it. It was never an issue in 
+> previous kernels. Why now? In any case I have removed that code. This is 
+> what happens now.
+>
+> What is it you think I am doing wrong. Except for using 
+> Set/ClearPageReserved you have not explained anything to me.
 
-For this patch and the 2/3 ehci-platform patch:
+Which part of "you must not call virt_to_page on the result that is
+very clearly stated in the documentation and has been explained to
+you repeatly" is still not clear to you?
 
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
+Which part of "if your of tree modules stops working, this does not
+constitute userspace breakage" is not clear to you?
 
->  drivers/usb/host/ohci-platform.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/drivers/usb/host/ohci-platform.c b/drivers/usb/host/ohci-platform.c
-> index 47dfbfe9e5190..0adae62651276 100644
-> --- a/drivers/usb/host/ohci-platform.c
-> +++ b/drivers/usb/host/ohci-platform.c
-> @@ -28,6 +28,7 @@
->  #include <linux/usb/ohci_pdriver.h>
->  #include <linux/usb.h>
->  #include <linux/usb/hcd.h>
-> +#include <linux/usb/of.h>
->  
->  #include "ohci.h"
->  
-> @@ -210,6 +211,8 @@ static int ohci_platform_probe(struct platform_device *dev)
->  	hcd->rsrc_start = res_mem->start;
->  	hcd->rsrc_len = resource_size(res_mem);
->  
-> +	hcd->tpl_support = of_usb_host_tpl_support(dev->dev.of_node);
-> +
->  	err = usb_add_hcd(hcd, irq, IRQF_SHARED);
->  	if (err)
->  		goto err_power;
-> -- 
-> 2.25.1
-> 
+I'm done with this, please stop bothering me.
