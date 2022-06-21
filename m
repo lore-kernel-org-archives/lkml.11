@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60CDEC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:02:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05529C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:02:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355925AbiFUVCr (ORCPT
+        id S1355938AbiFUVCt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 17:02:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38322 "EHLO
+        Tue, 21 Jun 2022 17:02:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355957AbiFUU7P (ORCPT
+        with ESMTP id S1355974AbiFUU7Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 16:59:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65DEE3389F;
-        Tue, 21 Jun 2022 13:51:55 -0700 (PDT)
+        Tue, 21 Jun 2022 16:59:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9038E338AE;
+        Tue, 21 Jun 2022 13:51:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E1678B81B38;
-        Tue, 21 Jun 2022 20:51:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21E23C341C5;
-        Tue, 21 Jun 2022 20:51:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 69988B81B49;
+        Tue, 21 Jun 2022 20:51:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C146C3411C;
+        Tue, 21 Jun 2022 20:51:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655844676;
-        bh=YbsLAT3tktdLaPAALolgRpEJbCL8RMPiOc3tLt/KCuU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g9T/pzVH+wDLg5FoF0ABtb0jM95Mj+SCrPBQut/9ghVlku3zy2Ng1Fro0ajHVDkGc
-         Vg9H+Zqy2/Zi8AmkYIhzVgMDhZNL1GwENM0S883nf/UhSEQASaoM9ae8zCZSAFT5CU
-         y0OyxjNQ504HpicDJor5XBDCCfwH/BhD9MgP0K/gG/uNzcvsDnQGsl2CuoS4VFMSe6
-         FHht4hFfwr2fZHp7xlGBgQckhGP/14JqUtwodh05Z9aTFdELztXcOGqXnJogt2seAD
-         jJ+MAp2LuVQTMKCISj0kmP/GTcIYIGWbcgj4+XuwokWKRJtX2Hj6Gc+r4exc9u2dmI
-         zmNs9i/K8ChGQ==
+        s=k20201202; t=1655844682;
+        bh=WMwQI82qrPySLJpvgH1Pnx3EfMGI0nW/9Hefsb0RfDE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=sxI6sHVdRxyZE70bSBuXfYGHmswGIuddNp1xbUldZ8SafgKbJ9RYsG07Q8012Fca3
+         f1Rvt9nwNLc5bf7PJuXFkgD8L5gz4r337Auw5dQAm0oH8eMKOBxEXNkKDcZd0B9Hkg
+         UK4py75OdMfOgm5VF9grBOEzjKVgr2Ky62I9aH5IQ/d0R8UhTuBjqIWXrYVHqE5hf3
+         42d/Nzl1fmjNDAKzMecL6OE7PSd3XExQit8Nn8XQ3nkldRRSmpHRVsWAdgr/yRMpZP
+         XvaGUaSKlj//DBTxgMl34PgRELPTaYhR/rq6fNs36H8D3L1XdHZAvAgNX9XmBHfXGy
+         o5VfVtEhJiu6Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ming Lei <ming.lei@redhat.com>, Christoph Hellwig <hch@lst.de>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>,
-        linux-block@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 09/11] blk-mq: protect q->elevator by ->sysfs_lock in blk_mq_elv_switch_none
-Date:   Tue, 21 Jun 2022 16:51:03 -0400
-Message-Id: <20220621205105.250640-9-sashal@kernel.org>
+Cc:     Marc Zyngier <maz@kernel.org>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Liu Ying <victor.liu@nxp.com>, Sasha Levin <sashal@kernel.org>,
+        tglx@linutronix.de
+Subject: [PATCH AUTOSEL 5.4 1/7] genirq: PM: Use runtime PM for chained interrupts
+Date:   Tue, 21 Jun 2022 16:51:13 -0400
+Message-Id: <20220621205120.250779-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220621205105.250640-1-sashal@kernel.org>
-References: <20220621205105.250640-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,43 +51,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ming Lei <ming.lei@redhat.com>
+From: Marc Zyngier <maz@kernel.org>
 
-[ Upstream commit 5fd7a84a09e640016fe106dd3e992f5210e23dc7 ]
+[ Upstream commit 668a9fe5c6a1bcac6b65d5e9b91a9eca86f782a3 ]
 
-elevator can be tore down by sysfs switch interface or disk release, so
-hold ->sysfs_lock before referring to q->elevator, then potential
-use-after-free can be avoided.
+When requesting an interrupt, we correctly call into the runtime
+PM framework to guarantee that the underlying interrupt controller
+is up and running.
 
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Ming Lei <ming.lei@redhat.com>
-Link: https://lore.kernel.org/r/20220616014401.817001-2-ming.lei@redhat.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+However, we fail to do so for chained interrupt controllers, as
+the mux interrupt is not requested along the same path.
+
+Augment __irq_do_set_handler() to call into the runtime PM code
+in this case, making sure the PM flow is the same for all interrupts.
+
+Reported-by: Lucas Stach <l.stach@pengutronix.de>
+Tested-by: Liu Ying <victor.liu@nxp.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/26973cddee5f527ea17184c0f3fccb70bc8969a0.camel@pengutronix.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/blk-mq.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ kernel/irq/chip.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/block/blk-mq.c b/block/blk-mq.c
-index 15a11a217cd0..d5979cfcf8d8 100644
---- a/block/blk-mq.c
-+++ b/block/blk-mq.c
-@@ -3641,12 +3641,14 @@ static bool blk_mq_elv_switch_none(struct list_head *head,
- 	if (!qe)
- 		return false;
- 
-+	/* q->elevator needs protection from ->sysfs_lock */
-+	mutex_lock(&q->sysfs_lock);
-+
- 	INIT_LIST_HEAD(&qe->node);
- 	qe->q = q;
- 	qe->type = q->elevator->type;
- 	list_add(&qe->node, head);
- 
--	mutex_lock(&q->sysfs_lock);
- 	/*
- 	 * After elevator_switch_mq, the previous elevator_queue will be
- 	 * released by elevator_release. The reference of the io scheduler
+diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
+index 856f0297dc73..7a7abd6859cd 100644
+--- a/kernel/irq/chip.c
++++ b/kernel/irq/chip.c
+@@ -1022,8 +1022,10 @@ __irq_do_set_handler(struct irq_desc *desc, irq_flow_handler_t handle,
+ 		if (desc->irq_data.chip != &no_irq_chip)
+ 			mask_ack_irq(desc);
+ 		irq_state_set_disabled(desc);
+-		if (is_chained)
++		if (is_chained) {
+ 			desc->action = NULL;
++			WARN_ON(irq_chip_pm_put(irq_desc_get_irq_data(desc)));
++		}
+ 		desc->depth = 1;
+ 	}
+ 	desc->handle_irq = handle;
+@@ -1049,6 +1051,7 @@ __irq_do_set_handler(struct irq_desc *desc, irq_flow_handler_t handle,
+ 		irq_settings_set_norequest(desc);
+ 		irq_settings_set_nothread(desc);
+ 		desc->action = &chained_action;
++		WARN_ON(irq_chip_pm_get(irq_desc_get_irq_data(desc)));
+ 		irq_activate_and_startup(desc, IRQ_RESEND);
+ 	}
+ }
 -- 
 2.35.1
 
