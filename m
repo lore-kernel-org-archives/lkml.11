@@ -2,70 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 780A3C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 16:34:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D153DCCA489
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 16:39:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353036AbiFUQeh (ORCPT
+        id S1352253AbiFUQi5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 12:34:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49474 "EHLO
+        Tue, 21 Jun 2022 12:38:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352255AbiFUQef (ORCPT
+        with ESMTP id S230177AbiFUQiz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 12:34:35 -0400
-Received: from smtpbg.qq.com (smtpbg138.qq.com [106.55.201.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E0BB2A255;
-        Tue, 21 Jun 2022 09:34:29 -0700 (PDT)
-X-QQ-mid: bizesmtp63t1655829264t0lhf7ki
-Received: from ubuntu.localdomain ( [106.117.99.68])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 22 Jun 2022 00:34:20 +0800 (CST)
-X-QQ-SSF: 0100000000700090B000B00A0000000
-X-QQ-FEAT: 02HFykG0jkup+85GMAaiRJnteUauInFYoONzz0C96M2bxHG4Kzt1gHgwesaPh
-        4gqLyT12vJ9YtuELRSLJcnTPkFSw5tWWC8LLMKV1xQrA/T4E3fpIpKXfLk6awVa8ijl2P7I
-        SUqCjWaC1mupL8pGP1V/7vQhnPItcbGYheLDyq6nnmdKG7q606oGdB7hstXAi13mQ6cA7PE
-        ay5IzVHwDf5pfoxgkCSuwCtTJBXKZQlFhg7HrsYbFTg+ePgOo+r/UWF8+euegTGjMZSw9Yw
-        8ZMOdx8CPSiYIbZ6eRQAVh9ljHW5wZHeIXB6E7CtiiAWD/dIJ8+rjvK7vdelSkCNE5gRiek
-        JLbsZktBS0aius6TTU=
-X-QQ-GoodBg: 0
-From:   Jiang Jian <jiangjian@cdjrlc.com>
-To:     tsbogend@alpha.franken.de
-Cc:     jiangjian@cdjrlc.com, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH]  MIPS: Alchemy: devboards: Remove duplicate 'the' in two places.
-Date:   Wed, 22 Jun 2022 00:34:18 +0800
-Message-Id: <20220621163418.28663-1-jiangjian@cdjrlc.com>
-X-Mailer: git-send-email 2.17.1
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam10
+        Tue, 21 Jun 2022 12:38:55 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B71C1929E;
+        Tue, 21 Jun 2022 09:38:53 -0700 (PDT)
+Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LSBz80lLDz6801q;
+        Wed, 22 Jun 2022 00:38:28 +0800 (CST)
+Received: from roberto-ThinkStation-P620.huawei.com (10.204.63.22) by
+ fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 21 Jun 2022 18:38:50 +0200
+From:   Roberto Sassu <roberto.sassu@huawei.com>
+To:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kpsingh@kernel.org>, <john.fastabend@gmail.com>,
+        <songliubraving@fb.com>, <kafai@fb.com>, <yhs@fb.com>
+CC:     <dhowells@redhat.com>, <keyrings@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Roberto Sassu <roberto.sassu@huawei.com>,
+        Joanne Koong <joannelkoong@gmail.com>
+Subject: [PATCH v5 1/5] bpf: Export bpf_dynptr_get_size()
+Date:   Tue, 21 Jun 2022 18:37:53 +0200
+Message-ID: <20220621163757.760304-2-roberto.sassu@huawei.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220621163757.760304-1-roberto.sassu@huawei.com>
+References: <20220621163757.760304-1-roberto.sassu@huawei.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.204.63.22]
+X-ClientProxiedBy: lhreml754-chm.china.huawei.com (10.201.108.204) To
+ fraeml714-chm.china.huawei.com (10.206.15.33)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-file: ./arch/mips/alchemy/devboards/pm.c
-line: 20
- * sources and configure the timeout after which the the TOYMATCH2 irq
-changed to
- * sources and configure the timeout after which the TOYMATCH2 irq
+Export bpf_dynptr_get_size(), so that kernel code dealing with eBPF dynamic
+pointers can obtain the real size of data carried by this data structure.
 
-Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
+Reviewed-by: Joanne Koong <joannelkoong@gmail.com>
+Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
 ---
- arch/mips/alchemy/devboards/pm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/bpf.h  | 1 +
+ kernel/bpf/helpers.c | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/mips/alchemy/devboards/pm.c b/arch/mips/alchemy/devboards/pm.c
-index 73c77814687a..b17a0d199851 100644
---- a/arch/mips/alchemy/devboards/pm.c
-+++ b/arch/mips/alchemy/devboards/pm.c
-@@ -17,7 +17,7 @@
-  * Generic suspend userspace interface for Alchemy development boards.
-  * This code exports a few sysfs nodes under /sys/power/db1x/ which
-  * can be used by userspace to en/disable all au1x-provided wakeup
-- * sources and configure the timeout after which the the TOYMATCH2 irq
-+ * sources and configure the timeout after which the TOYMATCH2 irq
-  * is to trigger a wakeup.
-  */
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index d05e1495a06e..3ec0f167e9d7 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -2521,5 +2521,6 @@ void bpf_dynptr_init(struct bpf_dynptr_kern *ptr, void *data,
+ 		     enum bpf_dynptr_type type, u32 offset, u32 size);
+ void bpf_dynptr_set_null(struct bpf_dynptr_kern *ptr);
+ int bpf_dynptr_check_size(u32 size);
++u32 bpf_dynptr_get_size(struct bpf_dynptr_kern *ptr);
  
+ #endif /* _LINUX_BPF_H */
+diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+index a1c84d256f83..3f5ff8dbd3cb 100644
+--- a/kernel/bpf/helpers.c
++++ b/kernel/bpf/helpers.c
+@@ -1430,7 +1430,7 @@ static void bpf_dynptr_set_type(struct bpf_dynptr_kern *ptr, enum bpf_dynptr_typ
+ 	ptr->size |= type << DYNPTR_TYPE_SHIFT;
+ }
+ 
+-static u32 bpf_dynptr_get_size(struct bpf_dynptr_kern *ptr)
++u32 bpf_dynptr_get_size(struct bpf_dynptr_kern *ptr)
+ {
+ 	return ptr->size & DYNPTR_SIZE_MASK;
+ }
 -- 
-2.17.1
+2.25.1
 
