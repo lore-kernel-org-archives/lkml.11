@@ -2,126 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22553C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 07:29:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03299C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 07:29:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347275AbiFUH3J (ORCPT
+        id S1347783AbiFUH3E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 03:29:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59464 "EHLO
+        Tue, 21 Jun 2022 03:29:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347630AbiFUH2j (ORCPT
+        with ESMTP id S1347520AbiFUH2V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 03:28:39 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E22355B4
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 00:28:36 -0700 (PDT)
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LRyhc61h7zSh3j;
-        Tue, 21 Jun 2022 15:25:04 +0800 (CST)
-Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 21 Jun 2022 15:27:00 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 21 Jun 2022 15:26:58 +0800
-From:   Tong Tiangen <tongtiangen@huawei.com>
-To:     Mark Rutland <mark.rutland@arm.com>,
-        James Morse <james.morse@arm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>, <x86@kernel.org>,
-        "H . Peter Anvin" <hpa@zytor.com>
-CC:     <linuxppc-dev@lists.ozlabs.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Xie XiuQi <xiexiuqi@huawei.com>,
-        Guohanjun <guohanjun@huawei.com>,
-        Tong Tiangen <tongtiangen@huawei.com>
-Subject: [PATCH -next v6 07/10] Add generic fallback version of copy_mc_to_user()
-Date:   Tue, 21 Jun 2022 07:26:35 +0000
-Message-ID: <20220621072638.1273594-8-tongtiangen@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220621072638.1273594-1-tongtiangen@huawei.com>
-References: <20220621072638.1273594-1-tongtiangen@huawei.com>
+        Tue, 21 Jun 2022 03:28:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F09423BD9;
+        Tue, 21 Jun 2022 00:28:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 369AB61377;
+        Tue, 21 Jun 2022 07:28:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9537C3411D;
+        Tue, 21 Jun 2022 07:28:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655796498;
+        bh=Syta5Z85Gz/VJ18PoP33wJ3ShJaizNkbKNlaAurnU2c=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=n0jdNJ7j+kIeupqvaKE82aMEckkudYupVu6e931OlprcKHlA//jMbrVejBxkNdymx
+         nhBevP863cKDLM5tpjb0xqK0mlWx35abBvRslKPDfzwfGQ2tPHYF/dRXWqKO2xW/m8
+         NF2893+59BaRwNPwIdz+WwAnkQvXmVq0q9ldyk2kwADA9RgR6B1yw3bxYZJd4TbV/M
+         KvNwTxqyJL5FlBIz+E2qNEczniu2P4oXcm2xdWnGnRtuafQpGEXzlzX1jhE4p4EzRr
+         3bXFkJn1OXnbT0XSVeMXhxTe9x02Bq2THHGDH5qwG6VJW73qw4CWsQtKpexe4WCYHU
+         lCeL+WM/y/dkw==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Baligh Gasmi <gasmibal@gmail.com>
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH v4 2/3] mac80211: add periodic monitor for channel busy time
+References: <20220601112903.2346319-1-gasmibal@gmail.com>
+        <20220601112903.2346319-3-gasmibal@gmail.com>
+Date:   Tue, 21 Jun 2022 10:28:11 +0300
+In-Reply-To: <20220601112903.2346319-3-gasmibal@gmail.com> (Baligh Gasmi's
+        message of "Wed, 1 Jun 2022 13:29:02 +0200")
+Message-ID: <87r13ipjas.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemm600017.china.huawei.com (7.193.23.234)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-x86/powerpc has it's implementation of copy_mc_to_user(), we add generic
-fallback in include/linux/uaccess.h prepare for other architechures to
-enable CONFIG_ARCH_HAS_COPY_MC.
+Baligh Gasmi <gasmibal@gmail.com> writes:
 
-Signed-off-by: Tong Tiangen <tongtiangen@huawei.com>
-Acked-by: Michael Ellerman <mpe@ellerman.id.au>
----
- arch/powerpc/include/asm/uaccess.h | 1 +
- arch/x86/include/asm/uaccess.h     | 1 +
- include/linux/uaccess.h            | 9 +++++++++
- 3 files changed, 11 insertions(+)
+> Add a worker scheduled periodicaly to calculate the busy time average of
+> the current channel.
+>
+> This will be used in the estimation for expected throughput.
+>
+> Signed-off-by: Baligh Gasmi <gasmibal@gmail.com>
 
-diff --git a/arch/powerpc/include/asm/uaccess.h b/arch/powerpc/include/asm/uaccess.h
-index 9b82b38ff867..58dbe8e2e318 100644
---- a/arch/powerpc/include/asm/uaccess.h
-+++ b/arch/powerpc/include/asm/uaccess.h
-@@ -358,6 +358,7 @@ copy_mc_to_user(void __user *to, const void *from, unsigned long n)
- 
- 	return n;
- }
-+#define copy_mc_to_user copy_mc_to_user
- #endif
- 
- extern long __copy_from_user_flushcache(void *dst, const void __user *src,
-diff --git a/arch/x86/include/asm/uaccess.h b/arch/x86/include/asm/uaccess.h
-index 913e593a3b45..64ba7f723ddf 100644
---- a/arch/x86/include/asm/uaccess.h
-+++ b/arch/x86/include/asm/uaccess.h
-@@ -512,6 +512,7 @@ copy_mc_to_kernel(void *to, const void *from, unsigned len);
- 
- unsigned long __must_check
- copy_mc_to_user(void *to, const void *from, unsigned len);
-+#define copy_mc_to_user copy_mc_to_user
- #endif
- 
- /*
-diff --git a/include/linux/uaccess.h b/include/linux/uaccess.h
-index 5a328cf02b75..07e9faeb14b5 100644
---- a/include/linux/uaccess.h
-+++ b/include/linux/uaccess.h
-@@ -174,6 +174,15 @@ copy_mc_to_kernel(void *dst, const void *src, size_t cnt)
- }
- #endif
- 
-+#ifndef copy_mc_to_user
-+static inline unsigned long __must_check
-+copy_mc_to_user(void *dst, const void *src, size_t cnt)
-+{
-+	check_object_size(src, cnt, true);
-+	return raw_copy_to_user(dst, src, cnt);
-+}
-+#endif
-+
- static __always_inline void pagefault_disabled_inc(void)
- {
- 	current->pagefault_disabled++;
+[...]
+
+> --- a/net/mac80211/iface.c
+> +++ b/net/mac80211/iface.c
+> @@ -1970,6 +1970,64 @@ static void ieee80211_assign_perm_addr(struct ieee80211_local *local,
+>  	mutex_unlock(&local->iflist_mtx);
+>  }
+>  
+> +#define DEFAULT_MONITOR_INTERVAL_MS 1000
+
+I'm worried that polling every second affects power consumption.
+
 -- 
-2.25.1
+https://patchwork.kernel.org/project/linux-wireless/list/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
