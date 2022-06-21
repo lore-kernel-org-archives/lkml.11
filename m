@@ -2,172 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 040E5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 22:52:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B133CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 22:53:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346474AbiFUWwC (ORCPT
+        id S1354953AbiFUWxM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 18:52:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48096 "EHLO
+        Tue, 21 Jun 2022 18:53:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354853AbiFUWv7 (ORCPT
+        with ESMTP id S1354897AbiFUWxG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 18:51:59 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1763E31DDB;
-        Tue, 21 Jun 2022 15:51:53 -0700 (PDT)
-X-UUID: c04db7f580fa40d2b9b608109c8c9ce5-20220622
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.6,REQID:d82d7fd8-68cf-49b0-9104-196a679d57cd,OB:10,L
-        OB:0,IP:0,URL:5,TC:0,Content:3,EDM:0,RT:0,SF:51,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:59
-X-CID-INFO: VERSION:1.1.6,REQID:d82d7fd8-68cf-49b0-9104-196a679d57cd,OB:10,LOB
-        :0,IP:0,URL:5,TC:0,Content:3,EDM:0,RT:0,SF:51,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:59
-X-CID-META: VersionHash:b14ad71,CLOUDID:db4ead2d-1756-4fa3-be7f-474a6e4be921,C
-        OID:f9af49f95651,Recheck:0,SF:28|17|19|48,TC:nil,Content:3,EDM:-3,IP:nil,U
-        RL:1,File:nil,QS:nil,BEC:nil,COL:0
-X-UUID: c04db7f580fa40d2b9b608109c8c9ce5-20220622
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
-        (envelope-from <sean.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 372402516; Wed, 22 Jun 2022 06:51:47 +0800
-Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Wed, 22 Jun 2022 06:51:45 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 22 Jun 2022 06:51:45 +0800
-Received: from mtkswgap22.mediatek.inc (172.21.77.33) by
- mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Wed, 22 Jun 2022 06:51:45 +0800
-From:   <sean.wang@mediatek.com>
-To:     <pmenzel@molgen.mpg.de>
-CC:     <marcel@holtmann.org>, <johan.hedberg@gmail.com>,
-        <sean.wang@mediatek.com>, <Soul.Huang@mediatek.com>,
-        <YN.Chen@mediatek.com>, <Leon.Yen@mediatek.com>,
-        <Eric-SY.Chang@mediatek.com>, <Deren.Wu@mediatek.com>,
-        <km.lin@mediatek.com>, <robin.chiu@mediatek.com>,
-        <Eddie.Chen@mediatek.com>, <ch.yeh@mediatek.com>,
-        <posh.sun@mediatek.com>, <ted.huang@mediatek.com>,
-        <Eric.Liang@mediatek.com>, <Stella.Chang@mediatek.com>,
-        <Tom.Chou@mediatek.com>, <steve.lee@mediatek.com>,
-        <jsiuda@google.com>, <frankgor@google.com>,
-        <abhishekpandit@google.com>, <michaelfsun@google.com>,
-        <mcchou@chromium.org>, <shawnku@google.com>,
-        <linux-bluetooth@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] Bluetooth: btmtksdio: Add in-band wakeup support
-Date:   Wed, 22 Jun 2022 06:51:44 +0800
-Message-ID: <1655851904-15022-1-git-send-email-sean.wang@mediatek.com>
-X-Mailer: git-send-email 1.7.9.5
-In-Reply-To: <1472eccd-429b-0a18-565c-7de2e5ed44f2@molgen.mpg.de--annotate>
-References: <1472eccd-429b-0a18-565c-7de2e5ed44f2@molgen.mpg.de--annotate>
+        Tue, 21 Jun 2022 18:53:06 -0400
+Received: from bee.birch.relay.mailchannels.net (bee.birch.relay.mailchannels.net [23.83.209.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E82D8636B;
+        Tue, 21 Jun 2022 15:53:04 -0700 (PDT)
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+        by relay.mailchannels.net (Postfix) with ESMTP id 6AE88820ED0;
+        Tue, 21 Jun 2022 22:53:03 +0000 (UTC)
+Received: from pdx1-sub0-mail-a237.dreamhost.com (unknown [127.0.0.6])
+        (Authenticated sender: dreamhost)
+        by relay.mailchannels.net (Postfix) with ESMTPA id C007F820E8B;
+        Tue, 21 Jun 2022 22:53:02 +0000 (UTC)
+ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1655851983; a=rsa-sha256;
+        cv=none;
+        b=PF9HA+66TC3A4hl6jKjHZ8gU0KsxS7GyiIVMYKn2B+VnMcIwYa2ZwAgUlPMo9mEJACqq1M
+        KbQh7oM4oyAfSkn/S8yITWdB5Cm+g8TrOUd1i/89ju/gQh1lDsDnlA7nVF/iboy0bba2K/
+        1AoE5geHYFKP5MjdyfzgLxrk678hgHJdgzFvdPRDd0jHk43r6sq/XZJ9ZEE0WRNOyQYJHR
+        FbMpIM86SD+L6iEjTlDaHZXTUycBHl3B0nlkWfX0GNeXFmGQJnsxG+kekTleX75tPMKvF9
+        z1bsQoAgWnt6gc6ClB+rqnMmt3htVk5HmFvc7kNRGOp9Vo0REgmBoLK8SXOqBA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+        s=arc-2022; t=1655851983;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references:dkim-signature;
+        bh=DuRoRhUDaZz2pGPqMmDaVozhJJ1+RdhvflafaG1sedQ=;
+        b=5stPAB+iMY6QqAi79Dq22/kEsF8Figc0seLjtnDe7NkLlGMbLCQrxo6tYbKlKnWwVbO/BJ
+        JdDh9GJcPuMdOS/Abxp4Zw4i8t63jMSpUJN2WeqHMDqUQh3xyvfIY34bgOJNviTHvzi8iz
+        CmfTnhhxYoG1sPu26xqb3t7E2bV2MTa5uNPVc+4afTTdfgc/FAcqYLHd+2vFEimI70zWjP
+        uRjhWMBLjRc6Z+3mVG06qLMss6YZC64q96o5GxxwIPtOWzN7Gcswa7hPTsLp6tjaINbcdX
+        3Tvv9zhdHGzbF0DhDwIV1vUBURODsUbLA7+iJY2TXHDoudoPic6dVbsMVuO+uA==
+ARC-Authentication-Results: i=1;
+        rspamd-848669fb87-w6m4h;
+        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
+X-MailChannels-Auth-Id: dreamhost
+X-Thoughtful-Towering: 68ad26a17b01508e_1655851983210_907247294
+X-MC-Loop-Signature: 1655851983210:2905729898
+X-MC-Ingress-Time: 1655851983209
+Received: from pdx1-sub0-mail-a237.dreamhost.com (pop.dreamhost.com
+ [64.90.62.162])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+        by 100.116.106.98 (trex/6.7.1);
+        Tue, 21 Jun 2022 22:53:03 +0000
+Received: from offworld (unknown [104.36.31.105])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: dave@stgolabs.net)
+        by pdx1-sub0-mail-a237.dreamhost.com (Postfix) with ESMTPSA id 4LSMHK248Mz29;
+        Tue, 21 Jun 2022 15:53:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
+        s=dreamhost; t=1655851982;
+        bh=DuRoRhUDaZz2pGPqMmDaVozhJJ1+RdhvflafaG1sedQ=;
+        h=Date:From:To:Cc:Subject:Content-Type;
+        b=dL4fPV+GH8+lxgeE42JwEz0Gzk2h8DEsKoYimsk3UP6d6XyHYJ9qyrPFU9qpWu0tT
+         ivdl2onbnmgOKJyyX9Cyjm5Oy88bHf11z7fCB1u//ZvTA8cDLZPDQOW2a7lge49qr4
+         eqKaMiEdPsJlR+SXk5sQwT392J1fWcq0T6qvgI51eXStYMIqy9+fv0HZCNRluNid3f
+         AC2I1ZiF89wt9MThlIKfb7FBfO0BQya868AXZiRtv03fla7zDHekpyvn5xHrolnBCx
+         +9+O6J9HbG5fCvzdhuJN9Q9BA4R2ma41NjHa7+CVs0g2wO+BKjKoLeC/Py/UCanVHh
+         5LGkb++4PcXzQ==
+Date:   Tue, 21 Jun 2022 15:38:29 -0700
+From:   Davidlohr Bueso <dave@stgolabs.net>
+To:     Dan Williams <dan.j.williams@intel.com>
+Cc:     linux-cxl@vger.kernel.org, alison.schofield@intel.com,
+        bwidawsk@kernel.org, ira.weiny@intel.com, vishal.l.verma@intel.com,
+        a.manzanares@samsung.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] cxl/acpi: Verify CHBS consistency
+Message-ID: <20220621223829.zdyqoej76kyfut4o@offworld>
+References: <20220621201259.1547474-1-dave@stgolabs.net>
+ <62b230881a77_8920729456@dwillia2-xfh.notmuch>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <62b230881a77_8920729456@dwillia2-xfh.notmuch>
+User-Agent: NeoMutt/20220429
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Wang <sean.wang@mediatek.com>
+On Tue, 21 Jun 2022, Dan Williams wrote:
 
->Dear Sean,
+>For cxl_port objects this happens "for free" as a side effect of the:
 >
+>        crb = devm_cxl_iomap_block(dev, port->component_reg_phys,
+>                                   CXL_COMPONENT_REG_BLOCK_SIZE);
 >
->Thank you for the patch.
->
->Am 10.06.22 um 02:17 schrieb sean.wang@mediatek.com:
->> From: Sean Wang <sean.wang@mediatek.com>
->>
->> 'ce64b3e94919 ("Bluetooth: mt7921s: Support wake on bluetooth")'
->> have added the waken-on-bluetooth via dedicated GPIO.
->
->Maybe:
->
->Commit ce64b3e94919 ("Bluetooth: mt7921s: Support wake on bluetooth") adds the wake on bluethooth via a dedicated GPIO.
+>...call in devm_cxl_setup_hdm(), where it tries to exclusively claim the
+>component register block for that cxl_port driver instance.
 
-Thanks! Look good to me. I will add it in the next version.
+Fair enough, I had noticed this.
 
 >
->> The patch extends the function to the waken-on-bluetooth via SDIO DAT1
->> pin (inband wakeup) when the SDIO host driver is able to support.
->
->Maybe:
->
->Extend the wake-on-bluetooth to use the SDIO DAT1 pin (in-band wakeup), when supported by the SDIO host driver.
->
+>I.e. if the CHBS provides overlapping / duplicated ranges the failure is
+>localized to the cxl_port_probe() event for that port, and can be
+>debugged further by disabling one of the conflicts.
 
-Thanks! Look good to me. I will add it in the next version.
+Ok. Although imo it does make sense for failing directly in the cxl_acpi
+driver at an early stage instead of bogusly passing it down the hierarchy.
 
->How did you test this? In what datasheet is it documented?
+So is a v2 still worth it without this check?
 
-We tested it on the MT8186 platform with wakening up by the keyboard or mouse when the platform is in the suspend state.
-
-We can see the details on SDIO DAT1 pin in SDIO specification ver 3.00 section 8.2 Asynchronous Interrupt:
-During the asynchronous interrupt period, the host can stop providing an SD clock to the card and the card
-can generate an interrupt via SDIO DATA1 without SD clock.
-
-or you can check the patch ("mmc: mediatek: add support for SDIO eint wakup IRQ")
-in https://patchwork.kernel.org/project/linux-arm-kernel/patch/20220523074017.12649-4-axe.yang@mediatek.com/
-that is the actual patch btmtksdio was tested against on MT8186 platfrom.
-
->
->> Co-developed-by: Yake Yang <yake.yang@mediatek.com>
->> Signed-off-by: Yake Yang <yake.yang@mediatek.com>
->> Signed-off-by: Sean Wang <sean.wang@mediatek.com>
->> ---
->>   drivers/bluetooth/btmtksdio.c | 8 ++++++++
->>   1 file changed, 8 insertions(+)
->>
->> diff --git a/drivers/bluetooth/btmtksdio.c
->> b/drivers/bluetooth/btmtksdio.c index d6700efcfe8c..9ed3af4ba51a
->> 100644
->> --- a/drivers/bluetooth/btmtksdio.c
->> +++ b/drivers/bluetooth/btmtksdio.c
->> @@ -118,6 +118,7 @@ MODULE_DEVICE_TABLE(sdio, btmtksdio_table);
->>   #define BTMTKSDIO_FUNC_ENABLED		3
->>   #define BTMTKSDIO_PATCH_ENABLED		4
->>   #define BTMTKSDIO_HW_RESET_ACTIVE	5
->> +#define BTMTKSDIO_INBAND_WAKEUP		6
->>
->>   struct mtkbtsdio_hdr {
->>	__le16	len;
->> @@ -1294,6 +1295,9 @@ static bool btmtksdio_sdio_wakeup(struct hci_dev *hdev)
->>		.wakeup_delay = cpu_to_le16(0x20),
->>	};
->>
->> +	if (test_bit(BTMTKSDIO_INBAND_WAKEUP, &bdev->tx_state))
->> +		return may_wakeup;
->> +
->>	if (may_wakeup && bdev->data->chipid == 0x7921) {
->>		struct sk_buff *skb;
->>
->> @@ -1384,6 +1388,10 @@ static int btmtksdio_probe(struct sdio_func *func,
->>	 */
->>	pm_runtime_put_noidle(bdev->dev);
->>
->> +	/* Mark if the mmc host can support waken by SDIO */
->
->Maybe:
->
->Mark if MMC host supports wake on bluetooth by SDIO
-
-Thanks! Look good to me. I will add it in the next version.
-
->
->> +	if (device_can_wakeup(func->card->host->parent))
->> +		set_bit(BTMTKSDIO_INBAND_WAKEUP, &bdev->tx_state);
->> +
->>	err = device_init_wakeup(bdev->dev, true);
->>	if (err)
->>		bt_dev_err(hdev, "failed to initialize device wakeup");
->
->
->Kind regards,
->
->Paul
->
->
+Thanks,
+Davidlohr
