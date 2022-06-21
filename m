@@ -2,85 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1963CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 12:56:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 866EFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 12:56:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350683AbiFUM4I (ORCPT
+        id S1350693AbiFUM4b (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 08:56:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54698 "EHLO
+        Tue, 21 Jun 2022 08:56:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240281AbiFUM4G (ORCPT
+        with ESMTP id S240281AbiFUM42 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 08:56:06 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 233D813F35;
-        Tue, 21 Jun 2022 05:56:02 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id C9CB321C3F;
-        Tue, 21 Jun 2022 12:56:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1655816160;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=sSjZbPkqQdR6EElLUxJxClG+/12pLCezNC9VmSqWelM=;
-        b=G6ipTntU+hsV178Qy2wOI7IMYjIKqZgMNOvJVhPEKvUMhFkgXc1nvI6Lhv1v8cIoUDgFos
-        fTNChfs+bIugOOnr9319VTwHOjcNXBtfreoYVp4KsTXNd5bv1LDCVqAzEhbk0RjvoY2R09
-        35wVIDNr71L5qo5S5++HgpQbod+yBRU=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1655816160;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=sSjZbPkqQdR6EElLUxJxClG+/12pLCezNC9VmSqWelM=;
-        b=myOiY6Sgfr//h2jZqcThrUO4W3hLtIXS+EeKqDiNEYJWHED450SdbpakUvBN62logeMEkU
-        x0zY+eQUpp1RyNAg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id A786813A88;
-        Tue, 21 Jun 2022 12:56:00 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id o0rvJ+C/sWIAGwAAMHmgww
-        (envelope-from <dsterba@suse.cz>); Tue, 21 Jun 2022 12:56:00 +0000
-Date:   Tue, 21 Jun 2022 14:51:23 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     David Sterba <dsterba@suse.com>,
-        linux-btrfs <linux-btrfs@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [GIT PULL] Fixes for btrfs 5.19-rc4
-Message-ID: <20220621125123.GV20633@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        David Sterba <dsterba@suse.com>,
-        linux-btrfs <linux-btrfs@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <cover.1655815078.git.dsterba@suse.com>
- <CAHk-=whAd6NRL1JcFnqrxJ2JMhNM3mRRzN4iv7anG+F-+xKNmw@mail.gmail.com>
+        Tue, 21 Jun 2022 08:56:28 -0400
+X-Greylist: delayed 400 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 21 Jun 2022 05:56:27 PDT
+Received: from mellanox.co.il (mail-il-dmz.mellanox.com [193.47.165.129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 469C313FAD
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 05:56:26 -0700 (PDT)
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from asmaa@mellanox.com)
+        with SMTP; 21 Jun 2022 15:49:41 +0300
+Received: from bu-vnc02.mtbu.labs.mlnx (bu-vnc02.mtbu.labs.mlnx [10.15.2.65])
+        by mtbu-labmailer.labs.mlnx (8.14.4/8.14.4) with ESMTP id 25LCneLV012801;
+        Tue, 21 Jun 2022 08:49:40 -0400
+Received: (from asmaa@localhost)
+        by bu-vnc02.mtbu.labs.mlnx (8.14.7/8.13.8/Submit) id 25LCndIU023883;
+        Tue, 21 Jun 2022 08:49:39 -0400
+From:   Asmaa Mnebhi <asmaa@nvidia.com>
+To:     sebastian.reichel@collabora.com, sre@kernel.org,
+        linux-kernel@vger.kernel.org, sfr@canb.auug.org.au,
+        linux-next@vger.kernel.org
+Cc:     Asmaa Mnebhi <asmaa@nvidia.com>
+Subject: [PATCH v1 1/1] linux-next: Fix build failure in pwr-mlxbf.c
+Date:   Tue, 21 Jun 2022 08:49:30 -0400
+Message-Id: <20220621124930.23758-1-asmaa@nvidia.com>
+X-Mailer: git-send-email 2.30.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=whAd6NRL1JcFnqrxJ2JMhNM3mRRzN4iv7anG+F-+xKNmw@mail.gmail.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 21, 2022 at 07:48:12AM -0500, Linus Torvalds wrote:
-> On Tue, Jun 21, 2022 at 7:45 AM David Sterba <dsterba@suse.com> wrote:
-> >
-> >   git://git.kernel.org/pub/scm/linux/kernel/git/kdave/linux.git for-5.19-rc3-tag
-> 
-> ENOSUCHTAG.
-> 
-> Forgot to push?
+The build failure is at line 67: implicit declaration of
+function 'devm_work_autocancel'.
+So declare library for devm_work_autocancel.
 
-Yeah sorry, now pushed.
+Signed-off-by: Asmaa Mnebhi <asmaa@nvidia.com>
+---
+ drivers/power/reset/pwr-mlxbf.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/power/reset/pwr-mlxbf.c b/drivers/power/reset/pwr-mlxbf.c
+index c1f9987834a2..1c4904c0e1f5 100644
+--- a/drivers/power/reset/pwr-mlxbf.c
++++ b/drivers/power/reset/pwr-mlxbf.c
+@@ -6,6 +6,7 @@
+ 
+ #include <linux/acpi.h>
+ #include <linux/device.h>
++#include <linux/devm-helpers.h>
+ #include <linux/interrupt.h>
+ #include <linux/kernel.h>
+ #include <linux/mod_devicetable.h>
+-- 
+2.30.1
+
