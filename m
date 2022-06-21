@@ -2,119 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBD6EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 13:35:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4D9AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 13:35:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351280AbiFUNfM (ORCPT
+        id S1350671AbiFUNfU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 09:35:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57836 "EHLO
+        Tue, 21 Jun 2022 09:35:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351611AbiFUNeL (ORCPT
+        with ESMTP id S1351724AbiFUNbC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 09:34:11 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 719F5E72
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 06:34:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655818449;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=97r4nb+6YDmj9qEHE13vmcMBxY84qaiGZ9+orHa4Vtc=;
-        b=eWIDV6gClWVhyzO/MY4riOrJevfmLzpHze/CSoyFf/o7bEOzMnrM+ebkatgcuBRvinQ7Gd
-        wMX7yNuKgC0Ut+nvz4GK3BZN1EMDsKFQYhKca75ljO/7Zx3CE0CW4N8/tLgcdUHCurloUL
-        obW42DvNFabgeErAWuwgXS6e+ELyS0o=
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
- [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-669-h6SzaM2oNOaC6zetPSWK4w-1; Tue, 21 Jun 2022 09:34:06 -0400
-X-MC-Unique: h6SzaM2oNOaC6zetPSWK4w-1
-Received: by mail-qv1-f71.google.com with SMTP id m1-20020a0cf181000000b0046e65e564cfso14321714qvl.17
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 06:34:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=97r4nb+6YDmj9qEHE13vmcMBxY84qaiGZ9+orHa4Vtc=;
-        b=37WZgpXGTwiLc/d+NLTHVTYtAbOHA5AQr3gA8/SCc4kzal3MzM/gE1KAqKJyRY7QQO
-         FmgDoC1bIcOaXjCh0kGI6sxtIqR/zZRlZkTev9qCbJ4Uz+6VzlW0tT6ozSRTbIPxKIuy
-         EPg0uxWcwqFrRAoq68uuOi2z3tZST4XW6fE8akZq9V/XRtD2wITMY7YnaINydd77ofXh
-         XI9DBxJnBuGAB+y2dyDmQ7H8KtX6P89u+yu2qExdsx+0whaX7Dz8qxJoKIdmpDivUfXr
-         15zDyZ7nu/5/tVARigLTyfZGF68VbXTdS6NjNR0cxQ6W+HFR3MRpmJ7IiDu3bDO7kALL
-         gaxQ==
-X-Gm-Message-State: AJIora+4R6122F71FsAG2ZZwCnkuBS4RwAyk7YYTDlCMNiuAb3ci7quK
-        gxXeNTehPaD/17S9AJcgD9BesF06BRjknalYRBwwSzz9OhlG4TJKNLJGF8lbIHusvn3lW1NWfYk
-        ZQk4uhGC4YSsjj9xR4OcDlnfZ
-X-Received: by 2002:a05:622a:4c7:b0:306:69bf:d1f8 with SMTP id q7-20020a05622a04c700b0030669bfd1f8mr23975810qtx.68.1655818445804;
-        Tue, 21 Jun 2022 06:34:05 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vN9l87oObdmFwig7dlyIvhe7i9Qpoa8feNQP5vgBbzmJSwwtTTmYXVRLZYn7OG2pk+1YLUAg==
-X-Received: by 2002:a05:622a:4c7:b0:306:69bf:d1f8 with SMTP id q7-20020a05622a04c700b0030669bfd1f8mr23975763qtx.68.1655818445388;
-        Tue, 21 Jun 2022 06:34:05 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-113-202.dyn.eolo.it. [146.241.113.202])
-        by smtp.gmail.com with ESMTPSA id x9-20020a05620a448900b006a6a904c0a5sm14347236qkp.107.2022.06.21.06.34.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jun 2022 06:34:05 -0700 (PDT)
-Message-ID: <30a683ae5375ca67d10563fe8475074baeb3d7d3.camel@redhat.com>
-Subject: Re: [PATCH -next] net: pcs: pcs-xpcs: Fix build error when
- CONFIG_PCS_XPCS=y && CONFIG_PHYLINK=m
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Zheng Bin <zhengbin13@huawei.com>, andrew@lunn.ch,
-        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, boon.leong.ong@intel.com,
-        rmk+kernel@armlinux.org.uk, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     gaochao49@huawei.com
-Date:   Tue, 21 Jun 2022 15:34:01 +0200
-In-Reply-To: <20220621131251.3357104-1-zhengbin13@huawei.com>
-References: <20220621131251.3357104-1-zhengbin13@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        Tue, 21 Jun 2022 09:31:02 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8D5E2AE21;
+        Tue, 21 Jun 2022 06:25:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1655817939;
+        bh=DoyUOUgtLRmwTXrdCxwv4uyz3gneFIuw1ykEwqWoKmk=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=fKg0FPNJ+QhuxDvoyU3GWxbPagIh+fqfozdg45qiBM1ujcKUBvGVyX8zWJyky5j2b
+         eLXYb88XLPKAlX26vudyjkr9ZtuK6ThqhaUgdAI6gNx4qJH6tQnkQTa7io1Aiuy5lc
+         RntGorcb7dvVPmijjti9Od+JGUUqc17ecrvuYMEk=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from Venus.fritz.box ([46.223.2.162]) by mail.gmx.net (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MPXhA-1oHKym33tC-00MbLS; Tue, 21
+ Jun 2022 15:25:38 +0200
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+To:     peterhuewe@gmx.de, jarkko@kernel.org, jgg@ziepe.ca
+Cc:     stefanb@linux.vnet.ibm.com, linux@mniewoehner.de,
+        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+        l.sanfilippo@kunbus.com, LinoSanfilippo@gmx.de, lukas@wunner.de,
+        p.rosenberger@kunbus.com
+Subject: [PATCH v6 7/9] tpm, tpm_tis: Request threaded interrupt handler
+Date:   Tue, 21 Jun 2022 15:24:45 +0200
+Message-Id: <20220621132447.16281-8-LinoSanfilippo@gmx.de>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220621132447.16281-1-LinoSanfilippo@gmx.de>
+References: <20220621132447.16281-1-LinoSanfilippo@gmx.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+X-Provags-ID: V03:K1:LSFolzDTqrxzG241zWlFs0bZTJW6YP2K+0p264Voigwvs6X3g10
+ q0izPBl+f62rpvBvWkR85sAtIJ6jkhKx7SuTO2J2V8OQwTM+jasC/tNC8/o6GkrX6QOqBG4
+ 8KdTq/5fg9muaZU5cdFH1Ipjp15NUfsxdHPzlaaFvS8d+mYsyGbW5bG5UpiJtVKMqfMuVDD
+ yiUGKm8fWBqgmSKdHEeAQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:uDSmFMLF+R8=:yWUtSU9WlaxR4aBz2TGW40
+ vCM7msOYbff7lyc3E+x8BaFtCWUMMtcFt1o6/7SdNatkZlNQVSplvhRFRiQ+gY6M8BAQUNj0C
+ zIpQr8MxD3K+htr1ZWs2CEDjca79TQ8+VcBUnWTPojJzTcc8LZqZzNxe/yjx5MlSfEC3bgQKJ
+ r1f5QmPdxGk8/W4aWBTbpYfS75BpETH+nr2jA2MmXvwfMcz9E6xY/JPdfDOI8BEcb+SfS0/ug
+ jX6NAXq0AdF/2TOR7yvmuJvlyzFubII6OS1pI8EWuRCNBMlJZcipyLrWaewwmFWuCbpbctQXF
+ mAHl4FVFz4TmfsLJiAMMXcz1ZLlQsRwM21IbfoMipWiGq6a70OefkUiRORGiOcJfzLsPq839B
+ 8gatpyy2SNYSkPhJapkmxvNwhBljEaJtA9gQJOnas8NCqrgI2yrNy0Ov5kIeuk0hJeSa8QqbL
+ k6W/YYvKIgVkhMIQ4jUuysvxKIYnWhvAgPUtIGwMAs9FqypVmPXAlHMHG/JGV3oTeZK84F3NH
+ 5YQBsapUrieHBXQhYWDCUjfNPl96d0rMOAkzUCUFYN1pH0uSTVgPaiy7YO0pOVja95jniX/Kj
+ 4HplBtRZzsnD0FBPAG4zzcuQUN63UWnSkfFp8lt3O0FzVo/AX2sQW6S1Gj0/0S/z8NrA972Rd
+ SFmJazzzMELlBEWlqPzu7UHjgTvrY2XqgYLwynxjp3uEN9crkWKAsPp2JVGkngyzN98V5J2p9
+ FdrJqrwKsNxNcynJ1mVNNZ4CQfb/DoaYMOQhhylSDEg5O8tSQ6kNxHcYZh4Mxg5KJXb73U2RN
+ HqD0Sq9SGIGf3/lwQ+/E46C4kmX6A6gSdwuSCdq6RzGKMRcUiUxJgScZtw3pfDCmlpYpA5lrV
+ PXs8Ag5MtMG2w4t6p5OrE1rvNq6Jp60ZwJk9bj2QUuqhcW1s4n/m+AL2L26lBjQPwDh6BvJHx
+ FY8gGbDDuUjU4hHtaVrbeX7FZHi27V0dabJEcd24VEeaC22j9N8RPGUwP253KsbjO8idYih5L
+ uQjmHidrbcqxvctrLhcw5YOeFWYY1ncyYNR9bqmBSH6QFh2H5MPwpKHVievc5t15RCzsUSSja
+ PpitHFfj4r87z3SlZOleds5CFCMMwW8qG1jjdOtPko2+Z6+Ajx5fkKLsQ==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
-
-On Tue, 2022-06-21 at 21:12 +0800, Zheng Bin wrote:
-> If CONFIG_PCS_XPCS=y, CONFIG_PHYLINK=m, bulding fails:
-> 
-> drivers/net/pcs/pcs-xpcs.o: in function `xpcs_do_config':
-> pcs-xpcs.c:(.text+0x64f): undefined reference to `phylink_mii_c22_pcs_encode_advertisement'
-> drivers/net/pcs/pcs-xpcs.o: in function `xpcs_get_state':
-> pcs-xpcs.c:(.text+0x10f8): undefined reference to `phylink_mii_c22_pcs_decode_state
-> 
-> Make PCS_XPCS depends on PHYLINK to fix this.
-> 
-> Fixes: b47aec885bcd ("net: pcs: xpcs: add CL37 1000BASE-X AN support")
-> Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
-> ---
->  drivers/net/pcs/Kconfig | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/net/pcs/Kconfig b/drivers/net/pcs/Kconfig
-> index 22ba7b0b476d..faec931b1e65 100644
-> --- a/drivers/net/pcs/Kconfig
-> +++ b/drivers/net/pcs/Kconfig
-> @@ -8,6 +8,7 @@ menu "PCS device drivers"
->  config PCS_XPCS
->  	tristate "Synopsys DesignWare XPCS controller"
->  	depends on MDIO_DEVICE && MDIO_BUS
-> +	depends on PHYLINK
->  	help
->  	  This module provides helper functions for Synopsys DesignWare XPCS
->  	  controllers.
-> --
-> 2.31.1
-
-Thank you for the patch. There is already a similar fix pending:
-
-https://patchwork.kernel.org/project/netdevbpf/patch/6959a6a51582e8bc2343824d0cee56f1db246e23.1655797997.git.pabeni@redhat.com/
-
-Cheers,
-
-Paolo
-
+RnJvbTogTGlubyBTYW5maWxpcHBvIDxsLnNhbmZpbGlwcG9Aa3VuYnVzLmNvbT4KClRoZSBUSVMg
+aW50ZXJydXB0IGhhbmRsZXIgYXQgbGVhc3QgaGFzIHRvIHJlYWQgYW5kIHdyaXRlIHRoZSBpbnRl
+cnJ1cHQKc3RhdHVzIHJlZ2lzdGVyLiBJbiBjYXNlIG9mIFNQSSBib3RoIG9wZXJhdGlvbnMgcmVz
+dWx0IGluIGEgY2FsbCB0bwp0cG1fdGlzX3NwaV90cmFuc2ZlcigpIHdoaWNoIHVzZXMgdGhlIGJ1
+c19sb2NrX211dGV4IG9mIHRoZSBzcGkgZGV2aWNlCmFuZCB0aHVzIG11c3Qgb25seSBiZSBjYWxs
+ZWQgZnJvbSBhIHNsZWVwYWJsZSBjb250ZXh0LgoKVG8gZW5zdXJlIHRoaXMgcmVxdWVzdCBhIHRo
+cmVhZGVkIGludGVycnVwdCBoYW5kbGVyLgoKU2lnbmVkLW9mZi1ieTogTGlubyBTYW5maWxpcHBv
+IDxsLnNhbmZpbGlwcG9Aa3VuYnVzLmNvbT4KLS0tCiBkcml2ZXJzL2NoYXIvdHBtL3RwbV90aXNf
+Y29yZS5jIHwgNyArKysrKy0tCiAxIGZpbGUgY2hhbmdlZCwgNSBpbnNlcnRpb25zKCspLCAyIGRl
+bGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvY2hhci90cG0vdHBtX3Rpc19jb3JlLmMg
+Yi9kcml2ZXJzL2NoYXIvdHBtL3RwbV90aXNfY29yZS5jCmluZGV4IDYzOTgzOGM1Y2ZlMy4uMDhh
+NGU4MmY3NmExIDEwMDY0NAotLS0gYS9kcml2ZXJzL2NoYXIvdHBtL3RwbV90aXNfY29yZS5jCisr
+KyBiL2RyaXZlcnMvY2hhci90cG0vdHBtX3Rpc19jb3JlLmMKQEAgLTc5NSw4ICs3OTUsMTEgQEAg
+c3RhdGljIGludCB0cG1fdGlzX3Byb2JlX2lycV9zaW5nbGUoc3RydWN0IHRwbV9jaGlwICpjaGlw
+LCB1MzIgaW50bWFzaywKIAlpbnQgcmM7CiAJdTMyIGludF9zdGF0dXM7CiAKLQlpZiAoZGV2bV9y
+ZXF1ZXN0X2lycShjaGlwLT5kZXYucGFyZW50LCBpcnEsIHRpc19pbnRfaGFuZGxlciwgZmxhZ3Ms
+Ci0JCQkgICAgIGRldl9uYW1lKCZjaGlwLT5kZXYpLCBjaGlwKSAhPSAwKSB7CisKKwlyYyA9IGRl
+dm1fcmVxdWVzdF90aHJlYWRlZF9pcnEoY2hpcC0+ZGV2LnBhcmVudCwgaXJxLCBOVUxMLAorCQkJ
+CSAgICAgICB0aXNfaW50X2hhbmRsZXIsIElSUUZfT05FU0hPVCB8IGZsYWdzLAorCQkJCSAgICAg
+ICBkZXZfbmFtZSgmY2hpcC0+ZGV2KSwgY2hpcCk7CisJaWYgKHJjKSB7CiAJCWRldl9pbmZvKCZj
+aGlwLT5kZXYsICJVbmFibGUgdG8gcmVxdWVzdCBpcnE6ICVkIGZvciBwcm9iZVxuIiwKIAkJCSBp
+cnEpOwogCQlyZXR1cm4gLTE7Ci0tIAoyLjM2LjEKCg==
