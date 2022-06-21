@@ -2,247 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3DA7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 09:44:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BADC8C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 09:44:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349530AbiFUJoU (ORCPT
+        id S1349618AbiFUJof (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 05:44:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57150 "EHLO
+        Tue, 21 Jun 2022 05:44:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349448AbiFUJoR (ORCPT
+        with ESMTP id S1349529AbiFUJoT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 05:44:17 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C202018349;
+        Tue, 21 Jun 2022 05:44:19 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 78F5A25E83
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 02:44:18 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 57AC3165C;
+        Tue, 21 Jun 2022 02:44:18 -0700 (PDT)
+Received: from [10.162.41.7] (unknown [10.162.41.7])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 380563F5A1;
         Tue, 21 Jun 2022 02:44:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655804655; x=1687340655;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=5L1it2vpXGyCRiNGFQ0l7VLsmcCjvwkwvLiu7b9TDkk=;
-  b=PAoSfZiwf7fLUkaK+g33jnvLq5IGKY68tJ/1nFrsaOHBfZMPf9mEyVEL
-   /XeB6MQW/xRAgSW7KmmdAMB5s1GKYsOJpd76a90VjqeCSSfhngXLm02MV
-   jabX0Z61Ysaa4SB/RoQ2hmFMUE630MVkLSG3+B3dezriEDS2pu3NDq+0O
-   XgZ0+yuwDaVlTK4c3Hs1cJAhEbGrMrpwzYsxhBM8UCc9Rg7YENcpOH+fo
-   I+QUxMFlAJBkNRZoAQvBX/Q0EnHRKAOzrpPpJvc9GiVMPJFwB9+AhuatF
-   jqLh6JovL8ZUHZcSN4LzaghpEQdPKr/FN5/QzRBBiEzQlrSgDxVwOhi/q
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10384"; a="259899812"
-X-IronPort-AV: E=Sophos;i="5.92,209,1650956400"; 
-   d="scan'208";a="259899812"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 02:44:15 -0700
-X-IronPort-AV: E=Sophos;i="5.92,209,1650956400"; 
-   d="scan'208";a="643546859"
-Received: from gao-cwp.sh.intel.com (HELO gao-cwp) ([10.239.159.23])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 02:44:10 -0700
-Date:   Tue, 21 Jun 2022 17:43:56 +0800
-From:   Chao Gao <chao.gao@intel.com>
-To:     "Tian, Kevin" <kevin.tian@intel.com>
-Cc:     "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        "Christopherson,, Sean" <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "x86@kernel.org" <x86@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>
-Subject: Re: [PATCH] KVM: x86/vmx: Suppress posted interrupt notification
- when CPU is in host
-Message-ID: <20220621094351.GA24443@gao-cwp>
-References: <20220617114641.146243-1-chao.gao@intel.com>
- <BN9PR11MB52766B74ADFBAEC0AA205E298CB39@BN9PR11MB5276.namprd11.prod.outlook.com>
+Message-ID: <8c143d11-2371-23db-0476-0df569faaff9@arm.com>
+Date:   Tue, 21 Jun 2022 15:14:13 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB52766B74ADFBAEC0AA205E298CB39@BN9PR11MB5276.namprd11.prod.outlook.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH V3 1/2] mm/mmap: Restrict generic protection_map[] array
+ visibility
+Content-Language: en-US
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>
+Cc:     "hch@infradead.org" <hch@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Christoph Hellwig <hch@lst.de>
+References: <20220616040924.1022607-1-anshuman.khandual@arm.com>
+ <20220616040924.1022607-2-anshuman.khandual@arm.com>
+ <4830e415-cdbb-7050-ebd6-7480493655ef@csgroup.eu>
+ <cecd8c0c-ebd8-91f1-bfe4-cc5da02b4223@arm.com>
+ <2ade2595-d03b-6027-f93a-fa8f7c39654e@csgroup.eu>
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+In-Reply-To: <2ade2595-d03b-6027-f93a-fa8f7c39654e@csgroup.eu>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 21, 2022 at 02:59:10PM +0800, Tian, Kevin wrote:
->> From: Chao Gao <chao.gao@intel.com>
->> Sent: Friday, June 17, 2022 7:47 PM
->>
->> PIN (Posted interrupt notification) is useless to host as KVM always syncs
->> pending guest interrupts in PID to guest's vAPIC before each VM entry. In
->> fact, Sending PINs to a CPU running in host will lead to additional
->> overhead due to interrupt handling.
->>
->> Currently, software path, vmx_deliver_posted_interrupt(), is optimized to
->> issue PINs only if target vCPU is in IN_GUEST_MODE. But hardware paths
->> (VT-d and Intel IPI virtualization) aren't optimized.
->>
->> Set PID.SN right after VM exits and clear it before VM entry to minimize
->> the chance of hardware issuing PINs to a CPU when it's in host.
->>
->> Also honour PID.SN bit in vmx_deliver_posted_interrupt().
->>
->> When IPI virtualization is enabled, this patch increases "perf bench" [*]
->> by 4% from 8.12 us/ops to 7.80 us/ops.
->>
->> [*] test cmd: perf bench sched pipe -T. Note that we change the source
->> code to pin two threads to two different vCPUs so that it can reproduce
->> stable results.
->>
->> Signed-off-by: Chao Gao <chao.gao@intel.com>
->> ---
->>  arch/x86/kvm/vmx/posted_intr.c | 28 ++--------------------------
->>  arch/x86/kvm/vmx/vmx.c         | 24 +++++++++++++++++++++++-
->>  2 files changed, 25 insertions(+), 27 deletions(-)
->>
->> diff --git a/arch/x86/kvm/vmx/posted_intr.c
->> b/arch/x86/kvm/vmx/posted_intr.c
->> index 237a1f40f939..a0458f72df99 100644
->> --- a/arch/x86/kvm/vmx/posted_intr.c
->> +++ b/arch/x86/kvm/vmx/posted_intr.c
->> @@ -70,12 +70,6 @@ void vmx_vcpu_pi_load(struct kvm_vcpu *vcpu, int
->> cpu)
->>        * needs to be changed.
->>        */
->>       if (pi_desc->nv != POSTED_INTR_WAKEUP_VECTOR && vcpu->cpu ==
->> cpu) {
->> -             /*
->> -              * Clear SN if it was set due to being preempted.  Again, do
->> -              * this even if there is no assigned device for simplicity.
->> -              */
->> -             if (pi_test_and_clear_sn(pi_desc))
->> -                     goto after_clear_sn;
->>               return;
->>       }
->>
->> @@ -99,12 +93,8 @@ void vmx_vcpu_pi_load(struct kvm_vcpu *vcpu, int
->> cpu)
->>       do {
->>               old.control = new.control = READ_ONCE(pi_desc->control);
->>
->> -             /*
->> -              * Clear SN (as above) and refresh the destination APIC ID to
->> -              * handle task migration (@cpu != vcpu->cpu).
->> -              */
->>               new.ndst = dest;
->> -             new.sn = 0;
->> +             new.sn = 1;
->
->A comment is appreciated.
 
-Will add a comment like:
-/*
- * Set SN and refresh the destination APIC ID to handle task migration
- * (@cpu != vcpu->cpu).
- *
- * SN was cleared when a vCPU goes to blocked state so that KVM can wake
- * up the blocked vCPU on receving a notification. For a running/runnable
- * vCPU, such notifications are useless. Set SN bit to suppress them.
- */
 
->there is a problem a few lines downwards:
->
->        /*
->         * Send a wakeup IPI to this CPU if an interrupt may have been posted
->         * before the notification vector was updated, in which case the IRQ
->         * will arrive on the non-wakeup vector.  An IPI is needed as calling
->         * try_to_wake_up() from ->sched_out() isn't allowed (IRQs are not
->         * enabled until it is safe to call try_to_wake_up() on the task being
->         * scheduled out).
->         */
->        if (pi_test_on(&new))
->                apic->send_IPI_self(POSTED_INTR_WAKEUP_VECTOR);
->
->'on' is not set when SN is set. This is different from original assumption
->which has SN cleared in above window. In this case pi_test_on()
->should be replaced with pi_is_pir_empty().
-
-Nice catch. Will fix it.
-
->
->There is another simplification possible in vmx_vcpu_pi_put():
->
->        if (kvm_vcpu_is_blocking(vcpu) && !vmx_interrupt_blocked(vcpu))
->                pi_enable_wakeup_handler(vcpu);
->
->        /*
->         * Set SN when the vCPU is preempted.  Note, the vCPU can both be seen
->         * as blocking and preempted, e.g. if it's preempted between setting
->         * its wait state and manually scheduling out.
->         */
->        if (vcpu->preempted)
->                pi_set_sn(pi_desc);
->
->With this patch 'sn' is already set when a runnable vcpu is preempted
->hence above is required only for a blocking vcpu. And in the
-
-There are two corner cases to be fixed before we can assume this.
-
-Currently, this patch clears SN bit in vmx_deliver_posted_interrupt().
-If kvm decides to cancel vCPU entry (i.e., bail out) after one of two call sites
-of it in vcpu_enter_guest(), SN is cleared for a running vCPU.
-I was thinking a running vCPU with SN cleared won't have any functional
-issue. So I didn't add a new static_call for SN bit and manipulate it
-when KVM decides to cancel vCPU entry.
-
->blocking case if the notification is anyway suppressed it's pointless to
->further change the notification vector. Then it could be simplified as:
->
->        if (!vcpu->preempted && kvm_vcpu_is_blocking(vcpu) &&
->                !vmx_interrupt_blocked(vcpu))
->                pi_enable_wakeup_handler(vcpu);
->
->>       /*
->> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
->> index a3c5504601a8..fa915b1680eb 100644
->> --- a/arch/x86/kvm/vmx/vmx.c
->> +++ b/arch/x86/kvm/vmx/vmx.c
->> @@ -4036,6 +4036,9 @@ static int vmx_deliver_posted_interrupt(struct
->> kvm_vcpu *vcpu, int vector)
->>       if (pi_test_and_set_pir(vector, &vmx->pi_desc))
->>               return 0;
+On 6/20/22 12:11, Christophe Leroy wrote:
+> 
+> 
+> Le 20/06/2022 à 07:16, Anshuman Khandual a écrit :
 >>
->> +     if (pi_test_sn(&vmx->pi_desc))
->> +             return 0;
->> +
->>       /* If a previous notification has sent the IPI, nothing to do.  */
->>       if (pi_test_and_set_on(&vmx->pi_desc))
->>               return 0;
->> @@ -6520,8 +6523,17 @@ static int vmx_sync_pir_to_irr(struct kvm_vcpu
->> *vcpu)
->>       if (KVM_BUG_ON(!enable_apicv, vcpu->kvm))
->>               return -EIO;
 >>
->> -     if (pi_test_on(&vmx->pi_desc)) {
->> +     if (pi_test_on(&vmx->pi_desc) || pi_test_sn(&vmx->pi_desc)) {
->
->this has potential side-effect in vmexit/vmentry path where pi_desc is
->always scanned now. While reducing interrupts help the IPC test case,
->do you observe any impact on other scenarios where interrupts are not
->the main cause of vmexits?
+>> On 6/16/22 11:05, Christophe Leroy wrote:
+>>>
+>>> Le 16/06/2022 à 06:09, Anshuman Khandual a écrit :
+>>>> Restrict generic protection_map[] array visibility only for platforms which
+>>>> do not enable ARCH_HAS_VM_GET_PAGE_PROT. For other platforms that do define
+>>>> their own vm_get_page_prot() enabling ARCH_HAS_VM_GET_PAGE_PROT, could have
+>>>> their private static protection_map[] still implementing an array look up.
+>>>> These private protection_map[] array could do without __PXXX/__SXXX macros,
+>>>> making them redundant and dropping them off as well.
+>>>>
+>>>> But platforms which do not define their custom vm_get_page_prot() enabling
+>>>> ARCH_HAS_VM_GET_PAGE_PROT, will still have to provide __PXXX/__SXXX macros.
+>>>>
+>>>> Cc: Andrew Morton <akpm@linux-foundation.org>
+>>>> Cc: linux-mm@kvack.org
+>>>> Cc: linux-kernel@vger.kernel.org
+>>>> Acked-by: Christoph Hellwig <hch@lst.de>
+>>>> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+>>>> ---
+>>>>    arch/arm64/include/asm/pgtable-prot.h | 18 ------------------
+>>>>    arch/arm64/mm/mmap.c                  | 21 +++++++++++++++++++++
+>>>>    arch/powerpc/include/asm/pgtable.h    |  2 ++
+>>>>    arch/powerpc/mm/book3s64/pgtable.c    | 20 ++++++++++++++++++++
+>>>>    arch/sparc/include/asm/pgtable_64.h   | 19 -------------------
+>>>>    arch/sparc/mm/init_64.c               |  3 +++
+>>>>    arch/x86/include/asm/pgtable_types.h  | 19 -------------------
+>>>>    arch/x86/mm/pgprot.c                  | 19 +++++++++++++++++++
+>>>>    include/linux/mm.h                    |  2 ++
+>>>>    mm/mmap.c                             |  2 +-
+>>>>    10 files changed, 68 insertions(+), 57 deletions(-)
+>>>>
+>>>> diff --git a/arch/powerpc/include/asm/pgtable.h b/arch/powerpc/include/asm/pgtable.h
+>>>> index d564d0ecd4cd..8ed2a80c896e 100644
+>>>> --- a/arch/powerpc/include/asm/pgtable.h
+>>>> +++ b/arch/powerpc/include/asm/pgtable.h
+>>>> @@ -21,6 +21,7 @@ struct mm_struct;
+>>>>    #endif /* !CONFIG_PPC_BOOK3S */
+>>>>    
+>>>>    /* Note due to the way vm flags are laid out, the bits are XWR */
+>>>> +#ifndef CONFIG_ARCH_HAS_VM_GET_PAGE_PROT
+>>> This ifdef if not necessary for now, it doesn't matter if __P000 etc
+>>> still exist thought not used.
+>>>
+>>>>    #define __P000	PAGE_NONE
+>>>>    #define __P001	PAGE_READONLY
+>>>>    #define __P010	PAGE_COPY
+>>>> @@ -38,6 +39,7 @@ struct mm_struct;
+>>>>    #define __S101	PAGE_READONLY_X
+>>>>    #define __S110	PAGE_SHARED_X
+>>>>    #define __S111	PAGE_SHARED_X
+>>>> +#endif
+>>>>    
+>>>>    #ifndef __ASSEMBLY__
+>>>>    
+>>>> diff --git a/arch/powerpc/mm/book3s64/pgtable.c b/arch/powerpc/mm/book3s64/pgtable.c
+>>>> index 7b9966402b25..d3b019b95c1d 100644
+>>>> --- a/arch/powerpc/mm/book3s64/pgtable.c
+>>>> +++ b/arch/powerpc/mm/book3s64/pgtable.c
+>>>> @@ -551,6 +551,26 @@ unsigned long memremap_compat_align(void)
+>>>>    EXPORT_SYMBOL_GPL(memremap_compat_align);
+>>>>    #endif
+>>>>    
+>>>> +/* Note due to the way vm flags are laid out, the bits are XWR */
+>>>> +static const pgprot_t protection_map[16] = {
+>>>> +	[VM_NONE]					= PAGE_NONE,
+>>>> +	[VM_READ]					= PAGE_READONLY,
+>>>> +	[VM_WRITE]					= PAGE_COPY,
+>>>> +	[VM_WRITE | VM_READ]				= PAGE_COPY,
+>>>> +	[VM_EXEC]					= PAGE_READONLY_X,
+>>>> +	[VM_EXEC | VM_READ]				= PAGE_READONLY_X,
+>>>> +	[VM_EXEC | VM_WRITE]				= PAGE_COPY_X,
+>>>> +	[VM_EXEC | VM_WRITE | VM_READ]			= PAGE_COPY_X,
+>>>> +	[VM_SHARED]					= PAGE_NONE,
+>>>> +	[VM_SHARED | VM_READ]				= PAGE_READONLY,
+>>>> +	[VM_SHARED | VM_WRITE]				= PAGE_SHARED,
+>>>> +	[VM_SHARED | VM_WRITE | VM_READ]		= PAGE_SHARED,
+>>>> +	[VM_SHARED | VM_EXEC]				= PAGE_READONLY_X,
+>>>> +	[VM_SHARED | VM_EXEC | VM_READ]			= PAGE_READONLY_X,
+>>>> +	[VM_SHARED | VM_EXEC | VM_WRITE]		= PAGE_SHARED_X,
+>>>> +	[VM_SHARED | VM_EXEC | VM_WRITE | VM_READ]	= PAGE_SHARED_X
+>>>> +};
+>>>> +
+>>> There is not much point is first additing that here and then move it
+>>> elsewhere in the second patch.
+>>>
+>>> I think with my suggestion to use #ifdef __P000 as a guard, the powerpc
+>>> changes could go in a single patch.
+>>>
+>>>>    pgprot_t vm_get_page_prot(unsigned long vm_flags)
+>>>>    {
+>>>>    	unsigned long prot = pgprot_val(protection_map[vm_flags &
+>>>> diff --git a/mm/mmap.c b/mm/mmap.c
+>>>> index 61e6135c54ef..e66920414945 100644
+>>>> --- a/mm/mmap.c
+>>>> +++ b/mm/mmap.c
+>>>> @@ -101,6 +101,7 @@ static void unmap_region(struct mm_struct *mm,
+>>>>     *								w: (no) no
+>>>>     *								x: (yes) yes
+>>>>     */
+>>>> +#ifndef CONFIG_ARCH_HAS_VM_GET_PAGE_PROT
+>>> You should use #ifdef __P000 instead, that way you could migrate
+>>> architectures one by one.
+>>
+>> If vm_get_page_prot() gets moved into all platforms, wondering what would be
+>> the preferred method to organize this patch series ?
+>>
+>> 1. Move protection_map[] inside platforms with ARCH_HAS_VM_PAGE_PROT (current patch 1)
+>> 2. Convert remaining platforms to use ARCH_HAS_VM_PAGE_PROT one after the other
+>> 3. Drop ARCH_HAS_VM_PAGE_PROT completely
+>>
+>> Using "#ifdef __P000" for wrapping protection_map[] will leave two different #ifdefs
+>> in flight i.e __P000, ARCH_HAS_VM_PAGE_PROT in the generic mmap code, until both gets
+>> dropped eventually. But using "#ifdef __P000" does enable splitting the first patch
+>> into multiple changes for each individual platforms.
+> 
+>  From previous discussions and based on Christoph's suggestion, I guess 
+> we now aim at getting vm_get_page_prot() moved into all platforms 
+> together with protection_map[]. Therefore the use of #ifdef __P000 could 
+> be very temporary at the begining of the series:
+> 1. Guard generic protection_map[] with #ifdef ___P000
+> 2. Move protection_map[] into architecture and drop __Pxxx/__Sxxx  for arm64
+> 3. Same for sparc
+> 4. Same for x86
+> 5. Convert entire powerpc to ARCH_HAS_VM_PAGE_PROT and move 
+> protection_map[] into architecture and drop __Pxxx/__Sxxx
+> 6. Replace #ifdef __P000 by #ifdef CONFIG_ARCH_HAS_VM_PAGE_PROT
+> 7. Convert all remaining platforms to CONFIG_ARCH_HAS_VM_PAGE_PROT one 
+> by one (but keep a protection_map[] table, don't use switch/case)
+> 8. Drop ARCH_HAS_VM_PAGE_PROT completely.
+> 
+> Eventually you can squash step 6 into step 8.
 
-Good question. I will run cpuid loop tests to measure the impact.
-SN/ON/IRR are in the same cacheline. So, supposing the impact would be
-negligible.
-
->
->>               pi_clear_on(&vmx->pi_desc);
->> +
->> +             /*
->> +              * IN_GUEST_MODE means we are about to enter vCPU.
->> Allow
->> +              * PIN (posted interrupt notification) to deliver is key
->> +              * to interrupt posting. Clear PID.SN.
->> +              */
->> +             if (vcpu->mode == IN_GUEST_MODE)
->> +                     pi_clear_sn(&vmx->pi_desc);
->
->I wonder whether it makes more sense to have 'sn' closely sync-ed
->with vcpu->mode, e.g. having a kvm_x86_set_vcpu_mode() ops
->to translate vcpu->mode into vmx/svm specific hardware bits like
->'sn' here. Then call it in common place when vcpu->mode is changed.
-
-It makes sense to me because it can fix the two corner cases described above.
+Keeping individual platform changes in a separate patch will make
+the series cleaner, and also much easier to review. But the flow
+explained above sounds good to me. I will work on these changes.
