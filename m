@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C1B3C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 20:56:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48136C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 20:57:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355107AbiFUU4x (ORCPT
+        id S1355137AbiFUU5D (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 16:56:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55018 "EHLO
+        Tue, 21 Jun 2022 16:57:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355094AbiFUU4H (ORCPT
+        with ESMTP id S1355119AbiFUU4V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 16:56:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 394F33151F;
-        Tue, 21 Jun 2022 13:50:18 -0700 (PDT)
+        Tue, 21 Jun 2022 16:56:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00DDE31532;
+        Tue, 21 Jun 2022 13:50:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 77F9561853;
-        Tue, 21 Jun 2022 20:50:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 264B6C341C5;
-        Tue, 21 Jun 2022 20:50:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 74261B81B38;
+        Tue, 21 Jun 2022 20:49:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C27CC341C5;
+        Tue, 21 Jun 2022 20:49:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655844602;
-        bh=mYs+OySSMf8z50zoQS53kzfaW17qerZ2Jx2a5WUQwFM=;
+        s=k20201202; t=1655844595;
+        bh=3POKS7eqdY7o25MR6JJowXEP8imSIiQYhNPSKvJWOXI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N1du+P5rGQM+9aCNzACsZoIeMvmbcfuj3vuGaTFpDfzFTZqXhA5BSK1kZC6GqBzJg
-         JcLZdbUp/NQgiq7pqQYKFNEjm2FDmbjdn0saV3DR6WkHlZkEi73b8PiD389nLPQq3H
-         EyIs+AgkzjGqyvHnEindyQSaYlpa/VLz81N54HHf05oWddYgw3J4ief9jhmC7H/d4c
-         IKEEwkYcZufSDfi9oIRltRfCvRjUubp6KxwGJMr7vmJgXAU7zD/XYA+I0T90ULF0r1
-         j77t3OGSWQkA3mDjoGtokWFq6R92AthnozgythNpHi+Rv3E8pJcJOizVR9WWccOnaN
-         k5NR4GfOaRs4A==
+        b=i88MvBhaXVnPg7hyQSEKxEVXnCSpfCzCyqEZ7vDxoAykmoFRQv10cCCWSHN/HZt4t
+         5NjpXglkH81CkHYp3UR/5G9jovZFnu1xNCfeMoG0eW31FUgBwYIhY+n9fEmoNIlTuS
+         utprI14GgZE7RpCnoXwxDUK+PbilofXwuzXLNWcb0ULRuPc4XcO6PsMFCrjqSKx6jj
+         nop9AO6f3/hYBbWGLl3CUwALM8fCqM6bPwqCJWC6ctfa3OxhWQ81jcX8jA6I1wLTeZ
+         R/ceQbiLdF6JeFmummn9oCyk7n3qwFaitFcSHPlQP05te81ga0KE+KooypNrPoscgV
+         LqEaD5CzMB7ew==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zhang Yi <yi.zhang@huawei.com>, Hulk Robot <hulkci@huawei.com>,
-        Jan Kara <jack@suse.cz>,
-        Ritesh Harjani <ritesh.list@gmail.com>,
-        Theodore Ts'o <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>,
-        adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 16/22] ext4: fix warning when submitting superblock in ext4_commit_super()
-Date:   Tue, 21 Jun 2022 16:49:22 -0400
-Message-Id: <20220621204928.249907-16-sashal@kernel.org>
+Cc:     Ning Wang <ningwang35@outlook.com>, Christoph Hellwig <hch@lst.de>,
+        Sasha Levin <sashal@kernel.org>, kbusch@kernel.org,
+        axboe@fb.com, sagi@grimberg.me, linux-nvme@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.18 12/22] nvme-pci: avoid the deepest sleep state on ZHITAI TiPro7000 SSDs
+Date:   Tue, 21 Jun 2022 16:49:18 -0400
+Message-Id: <20220621204928.249907-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220621204928.249907-1-sashal@kernel.org>
 References: <20220621204928.249907-1-sashal@kernel.org>
@@ -54,80 +52,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhang Yi <yi.zhang@huawei.com>
+From: Ning Wang <ningwang35@outlook.com>
 
-[ Upstream commit 15baa7dcadf1c4f0b4f752dc054191855ff2d78e ]
+[ Upstream commit 6b961bce50e489186232cef51036ddb8d672bc3b ]
 
-We have already check the io_error and uptodate flag before submitting
-the superblock buffer, and re-set the uptodate flag if it has been
-failed to write out. But it was lockless and could be raced by another
-ext4_commit_super(), and finally trigger '!uptodate' WARNING when
-marking buffer dirty. Fix it by submit buffer directly.
+When ZHITAI TiPro7000 SSDs entered deepest power state(ps4)
+it has the same APST sleep problem as Kingston A2000.
+by chance the system crashes and displays the same dmesg info:
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Zhang Yi <yi.zhang@huawei.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Reviewed-by: Ritesh Harjani <ritesh.list@gmail.com>
-Link: https://lore.kernel.org/r/20220520023216.3065073-1-yi.zhang@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+https://bugzilla.kernel.org/show_bug.cgi?id=195039#c65
+
+As the Archlinux wiki suggest (enlat + exlat) < 25000 is fine
+and my testing shows no system crashes ever since.
+Therefore disabling the deepest power state will fix the APST sleep issue.
+
+https://wiki.archlinux.org/title/Solid_state_drive/NVMe
+
+This is the APST data from 'nvme id-ctrl /dev/nvme1'
+
+NVME Identify Controller:
+vid       : 0x1e49
+ssvid     : 0x1e49
+sn        : [...]
+mn        : ZHITAI TiPro7000 1TB
+fr        : ZTA32F3Y
+[...]
+ps    0 : mp:3.50W operational enlat:5 exlat:5 rrt:0 rrl:0
+          rwt:0 rwl:0 idle_power:- active_power:-
+ps    1 : mp:3.30W operational enlat:50 exlat:100 rrt:1 rrl:1
+          rwt:1 rwl:1 idle_power:- active_power:-
+ps    2 : mp:2.80W operational enlat:50 exlat:200 rrt:2 rrl:2
+          rwt:2 rwl:2 idle_power:- active_power:-
+ps    3 : mp:0.1500W non-operational enlat:500 exlat:5000 rrt:3 rrl:3
+          rwt:3 rwl:3 idle_power:- active_power:-
+ps    4 : mp:0.0200W non-operational enlat:2000 exlat:60000 rrt:4 rrl:4
+          rwt:4 rwl:4 idle_power:- active_power:-
+
+Signed-off-by: Ning Wang <ningwang35@outlook.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/super.c | 22 ++++++++++++++++------
- 1 file changed, 16 insertions(+), 6 deletions(-)
+ drivers/nvme/host/pci.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/fs/ext4/super.c b/fs/ext4/super.c
-index a0c79304f92f..9e89cbc0eec6 100644
---- a/fs/ext4/super.c
-+++ b/fs/ext4/super.c
-@@ -6022,7 +6022,6 @@ static void ext4_update_super(struct super_block *sb)
- static int ext4_commit_super(struct super_block *sb)
- {
- 	struct buffer_head *sbh = EXT4_SB(sb)->s_sbh;
--	int error = 0;
- 
- 	if (!sbh)
- 		return -EINVAL;
-@@ -6031,6 +6030,13 @@ static int ext4_commit_super(struct super_block *sb)
- 
- 	ext4_update_super(sb);
- 
-+	lock_buffer(sbh);
-+	/* Buffer got discarded which means block device got invalidated */
-+	if (!buffer_mapped(sbh)) {
-+		unlock_buffer(sbh);
-+		return -EIO;
-+	}
-+
- 	if (buffer_write_io_error(sbh) || !buffer_uptodate(sbh)) {
- 		/*
- 		 * Oh, dear.  A previous attempt to write the
-@@ -6045,17 +6051,21 @@ static int ext4_commit_super(struct super_block *sb)
- 		clear_buffer_write_io_error(sbh);
- 		set_buffer_uptodate(sbh);
- 	}
--	BUFFER_TRACE(sbh, "marking dirty");
--	mark_buffer_dirty(sbh);
--	error = __sync_dirty_buffer(sbh,
--		REQ_SYNC | (test_opt(sb, BARRIER) ? REQ_FUA : 0));
-+	get_bh(sbh);
-+	/* Clear potential dirty bit if it was journalled update */
-+	clear_buffer_dirty(sbh);
-+	sbh->b_end_io = end_buffer_write_sync;
-+	submit_bh(REQ_OP_WRITE,
-+		  REQ_SYNC | (test_opt(sb, BARRIER) ? REQ_FUA : 0), sbh);
-+	wait_on_buffer(sbh);
- 	if (buffer_write_io_error(sbh)) {
- 		ext4_msg(sb, KERN_ERR, "I/O error while writing "
- 		       "superblock");
- 		clear_buffer_write_io_error(sbh);
- 		set_buffer_uptodate(sbh);
-+		return -EIO;
- 	}
--	return error;
-+	return 0;
- }
- 
- /*
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index 6f9672e92b9c..7d5e40f5a993 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -3486,6 +3486,8 @@ static const struct pci_device_id nvme_id_table[] = {
+ 		.driver_data = NVME_QUIRK_BOGUS_NID, },
+ 	{ PCI_DEVICE(0x1cc1, 0x5350),   /* ADATA XPG GAMMIX S50 */
+ 		.driver_data = NVME_QUIRK_BOGUS_NID, },
++	{ PCI_DEVICE(0x1e49, 0x0041),   /* ZHITAI TiPro7000 NVMe SSD */
++		.driver_data = NVME_QUIRK_NO_DEEPEST_PS, },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_AMAZON, 0x0061),
+ 		.driver_data = NVME_QUIRK_DMA_ADDRESS_BITS_48, },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_AMAZON, 0x0065),
 -- 
 2.35.1
 
