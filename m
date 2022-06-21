@@ -2,93 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC485C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 08:33:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BBACC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 08:34:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347619AbiFUIdp (ORCPT
+        id S1348204AbiFUIeS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 04:33:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50732 "EHLO
+        Tue, 21 Jun 2022 04:34:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345984AbiFUIdn (ORCPT
+        with ESMTP id S1345984AbiFUIeR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 04:33:43 -0400
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 559D315A18
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 01:33:41 -0700 (PDT)
-Received: by mail-lj1-x231.google.com with SMTP id n15so2938694ljg.8
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 01:33:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=HMKX9HopiKiPvhGo8pRtwogz/OTxkYemMdhWmz/2mng=;
-        b=Qy2mzGsKIMehWP2l4RPCwSuNW+/nhWmw8gGlz2O7rBIkrT240/SyYyCXOPOPSc2jXQ
-         hcvzdO1PoMRu6jnYKih17cqn8UEq6g28qgu8F5/Arna5pgwPtEkr+FZthih0/xMBosCF
-         RTonsFPXUDXZ3GmXXTszStcZ/v+ulqFzTDOpQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=HMKX9HopiKiPvhGo8pRtwogz/OTxkYemMdhWmz/2mng=;
-        b=sRpvAW1ou5JN385t/N98uTxwD4nRuJcIZ4nZEqHyymnOgsJg9y23TMcUpsFeEf1e5x
-         u+udPSkV2tY4a1h/+kYYkujx/Dk5Nun1YbM8BprXgMJ0ZAWvKyNjxARCH4LuU+8pL+AR
-         CYWwiQv/S9ND8oFG1UVPinSdSQR8/ateaOj6TXepC6FX6nZJBzLO/6g4qADvZA7crnZE
-         irc8Z5z44NR1fwtYBD6BrLZSEUCG8rP1WuD7GSTBB+t9Alh6GlqR9MnuZyMOBlCTpDNw
-         gtS6gZKYF4ZjPEA28EYgAWNi+nK1O/ZoAjT4LNsSs2sHr9MbozpHh7Ed9xvCJSIYmIsj
-         l3Zw==
-X-Gm-Message-State: AJIora9I+nrDNZouFh2EWpn6QiKNCG6i4jKa2o/vSeXcolPSwaLPRNDe
-        UrXfj9gtRuyqccoufI4pmNdxOGNQKGboUL+z
-X-Google-Smtp-Source: AGRyM1tX4NfXPaR20sBdTb9CuobI/w5VS8VApwR8FCZHn6goqQEMtbYP6TXg974CHIdGDzMuVmycvg==
-X-Received: by 2002:a05:651c:50c:b0:25a:4504:95c with SMTP id o12-20020a05651c050c00b0025a4504095cmr13635771ljp.90.1655800419657;
-        Tue, 21 Jun 2022 01:33:39 -0700 (PDT)
-Received: from [172.16.11.74] ([81.216.59.226])
-        by smtp.gmail.com with ESMTPSA id p12-20020ac24ecc000000b0047f7419de4asm605982lfr.180.2022.06.21.01.33.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Jun 2022 01:33:38 -0700 (PDT)
-Message-ID: <82fb021d-31bb-4545-cbcc-a7622dbd2e0a@rasmusvillemoes.dk>
-Date:   Tue, 21 Jun 2022 10:33:37 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v4 11/34] vsprintf: Improve number()
-Content-Language: en-US
-To:     Kent Overstreet <kent.overstreet@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org, pmladek@suse.com
-Cc:     rostedt@goodmis.org, enozhatsky@chromium.org, willy@infradead.org
-References: <20220620004233.3805-1-kent.overstreet@gmail.com>
- <20220620004233.3805-12-kent.overstreet@gmail.com>
-From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
-In-Reply-To: <20220620004233.3805-12-kent.overstreet@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Tue, 21 Jun 2022 04:34:17 -0400
+Received: from smtpbg.qq.com (smtpbg123.qq.com [175.27.65.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3331C15A18;
+        Tue, 21 Jun 2022 01:34:13 -0700 (PDT)
+X-QQ-mid: bizesmtp84t1655800307tp96dari
+Received: from ubuntu.localdomain ( [106.117.99.68])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 21 Jun 2022 16:31:42 +0800 (CST)
+X-QQ-SSF: 01000000007000209000B00A0000000
+X-QQ-FEAT: 0VgNaGdhy9i3VEgTjda6YTeTUjwUfOcImznDL6T2LXaZA2NbnSfXY1kzYj4wX
+        t4P4vhDP0uFEgNKYWsiYzOWMCHw/oep9gTTRwmXEi+9fjX+I2c73H0oaXT3LQ4/fbPX8kDd
+        48m7ZLETi83rkgCTaPCq5BbS5BmIlP29LhhA7xL5ua1kiuKqYg8lzawQ20Rtr0Uy0reliM2
+        ndcX/2Luky4X4Pb9dsOIVx67CvUzjnLs5CWsFN47jR98iH8N3KLLGFgycF8usTl4QuS4dlK
+        NOw5CnXyy2nqCB/fviIu1Rc5iqmHa6h7gMaS7k80Gyd4Ynti4HaNZWm3362I4A2QMxrWn99
+        206wO8pIWtxTJWS/XI=
+X-QQ-GoodBg: 0
+From:   Jiang Jian <jiangjian@cdjrlc.com>
+To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, intel-wired-lan@lists.osuosl.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jiangjian@cdjrlc.com
+Subject: [PATCH] igb: remove unexpected word "the"
+Date:   Tue, 21 Jun 2022 16:31:40 +0800
+Message-Id: <20220621083140.54004-1-jiangjian@cdjrlc.com>
+X-Mailer: git-send-email 2.17.1
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 20/06/2022 02.42, Kent Overstreet wrote:
+there is an unexpected word "the" in the comments that need to be removed
 
->  	/* generate full string in tmp[], in reverse order */
-> -	i = 0;
-> -	if (num < spec.base)
-> -		tmp[i++] = hex_asc_upper[num] | locase;
+Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
+---
+ drivers/net/ethernet/intel/igb/e1000_82575.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Please don't remove that optimization in a patch titled "improve number()".
+diff --git a/drivers/net/ethernet/intel/igb/e1000_82575.c b/drivers/net/ethernet/intel/igb/e1000_82575.c
+index cbe92fd23a70..8d6e44ee1895 100644
+--- a/drivers/net/ethernet/intel/igb/e1000_82575.c
++++ b/drivers/net/ethernet/intel/igb/e1000_82575.c
+@@ -2207,7 +2207,7 @@ s32 igb_write_phy_reg_82580(struct e1000_hw *hw, u32 offset, u16 data)
+  *  igb_reset_mdicnfg_82580 - Reset MDICNFG destination and com_mdio bits
+  *  @hw: pointer to the HW structure
+  *
+- *  This resets the the MDICNFG.Destination and MDICNFG.Com_MDIO bits based on
++ *  This resets the MDICNFG.Destination and MDICNFG.Com_MDIO bits based on
+  *  the values found in the EEPROM.  This addresses an issue in which these
+  *  bits are not restored from EEPROM after reset.
+  **/
+-- 
+2.17.1
 
-> -	else if (spec.base != 10) { /* 8 or 16 */
-> +	if (spec.base == 10) {
-> +		nr_digits = put_dec(tmp, num) - tmp;
-> +	} else { /* 8 or 16 */
->  		int mask = spec.base - 1;
-> -		int shift = 3;
-> +		int shift = ilog2((unsigned) spec.base);
->  
-> -		if (spec.base == 16)
-> -			shift = 4;
-
-So avoiding a branch here may be a good idea, but I'm not sure ilog2()
-is very efficient on all arches. Since we know that base is either 8 or
-16, we could do "shift = (spec.base/8) + 2".
-
-Rasmus
