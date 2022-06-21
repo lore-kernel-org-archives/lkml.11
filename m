@@ -2,163 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA84AC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 10:02:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF8D2C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 10:03:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237689AbiFUKCq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 06:02:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42476 "EHLO
+        id S1346829AbiFUKC7 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 21 Jun 2022 06:02:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231847AbiFUKCm (ORCPT
+        with ESMTP id S1343738AbiFUKC6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 06:02:42 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF3CD27FE6;
-        Tue, 21 Jun 2022 03:02:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1655805761; x=1687341761;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=QVzdBNyMcQCp/AEcPlHdcIajijCDUBwKc+Y/v0orBkM=;
-  b=eqnyOnIjL/YKQUBORWQy/F+HIltdSWTHTpqzj57zBW+s6AG7Mv5mHdQJ
-   N/VQrsW+WcAOtjmldSSDLC+IIfQCBgABxsEaGcbdSEe+IFwOXLPZkQXgx
-   V5XjpUfqbpnvzB+sAJ/4SUpKj8PuuaaiNm6iQR61TRsOZ/r0+zUOzjbX0
-   w=;
-Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 21 Jun 2022 03:02:41 -0700
-X-QCInternal: smtphost
-Received: from nasanex01b.na.qualcomm.com ([10.46.141.250])
-  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 03:02:41 -0700
-Received: from [10.50.44.13] (10.80.80.8) by nasanex01b.na.qualcomm.com
- (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 21 Jun
- 2022 03:02:39 -0700
-Message-ID: <e70c457c-0ac6-174d-fa0f-807d8e563f40@quicinc.com>
-Date:   Tue, 21 Jun 2022 15:32:36 +0530
+        Tue, 21 Jun 2022 06:02:58 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94C01E54;
+        Tue, 21 Jun 2022 03:02:56 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LS2Bj6zsmz4xYC;
+        Tue, 21 Jun 2022 20:02:53 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1655805775;
+        bh=vctygf8n4bMBEsR+8Tbon08BtTT5coxCQgJQe+wLYnw=;
+        h=Date:From:To:Cc:Subject:From;
+        b=HW2aODsXHbc8KTMopkMU77zhdxzUJWxN/ThLWhscOqWSGRUGIRkzVSFoREO/8MRsT
+         nb+ZJl1P/JzaRsDXhEEt32Tv0pVCtq051okP77TT9B566u1pKY1XfJQVE/V4LA47YI
+         6AG39K1+mKj+Mbrfmn0hCQDnn0FmnUqw2Ecnnq8KJKqUP5QczzlkVRTy1+vmVn5Ceb
+         fSMusu30ukKaPJYUCpiiMcSpOljhY+Ew97bPSzMk07vDdcqBurRpBskuRqrLz6Pr29
+         c3VOU+xrDDiVuz6nrR8IHppqDV/uescplByWQhswQDezD7qZDkzRDBfE54rKlgFrc/
+         luHuz4Ca+CJoA==
+Date:   Tue, 21 Jun 2022 20:02:53 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Kalle Valo <kvalo@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Wireless <linux-wireless@vger.kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build warning after merge of the wireless-next tree
+Message-ID: <20220621200253.60ecf025@canb.auug.org.au>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH rcu 09/12] rcu/kvfree: Remove useless monitor_todo flag
-Content-Language: en-US
-To:     "Paul E. McKenney" <paulmck@kernel.org>, <rcu@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <kernel-team@fb.com>,
-        <rostedt@goodmis.org>,
-        "Joel Fernandes (Google)" <joel@joelfernandes.org>,
-        Uladzislau Rezki <urezki@gmail.com>
-References: <20220620222022.GA3839466@paulmck-ThinkPad-P17-Gen-1>
- <20220620222032.3839547-9-paulmck@kernel.org>
-From:   Neeraj Upadhyay <quic_neeraju@quicinc.com>
-In-Reply-To: <20220620222032.3839547-9-paulmck@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01b.na.qualcomm.com (10.46.141.250)
+Content-Type: multipart/signed; boundary="Sig_/zisjvhq+e3EwuX6MFCMZBsK";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+--Sig_/zisjvhq+e3EwuX6MFCMZBsK
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
+Hi all,
 
-On 6/21/2022 3:50 AM, Paul E. McKenney wrote:
-> From: "Joel Fernandes (Google)" <joel@joelfernandes.org>
-> 
-> monitor_todo is not needed as the work struct already tracks
-> if work is pending. Just use that to know if work is pending
-> using schedule_delayed_work() helper.
-> 
-> Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
-> Signed-off-by: Uladzislau Rezki (Sony) <urezki@gmail.com>
-> Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-> ---
+After merging the wireless-next tree, today's linux-next build (htmldocs)
+produced this warning:
 
-Reviewed-by: Neeraj Upadhyay <quic_neeraju@quicinc.com>
+include/net/cfg80211.h:5741: warning: Function parameter or member 'u' not =
+described in 'wireless_dev'
+include/net/cfg80211.h:5741: warning: Function parameter or member 'links' =
+not described in 'wireless_dev'
+include/net/cfg80211.h:5741: warning: Function parameter or member 'valid_l=
+inks' not described in 'wireless_dev'
 
+Introduced by commit
 
-Thanks
-Neeraj
+  7b0a0e3c3a88 ("wifi: cfg80211: do some rework towards MLO link APIs")
 
->   kernel/rcu/tree.c | 33 ++++++++++++++++-----------------
->   1 file changed, 16 insertions(+), 17 deletions(-)
-> 
-> diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
-> index 5445b19b48408..7919d7b48fa6a 100644
-> --- a/kernel/rcu/tree.c
-> +++ b/kernel/rcu/tree.c
-> @@ -3216,7 +3216,6 @@ struct kfree_rcu_cpu_work {
->    * @krw_arr: Array of batches of kfree_rcu() objects waiting for a grace period
->    * @lock: Synchronize access to this structure
->    * @monitor_work: Promote @head to @head_free after KFREE_DRAIN_JIFFIES
-> - * @monitor_todo: Tracks whether a @monitor_work delayed work is pending
->    * @initialized: The @rcu_work fields have been initialized
->    * @count: Number of objects for which GP not started
->    * @bkvcache:
-> @@ -3241,7 +3240,6 @@ struct kfree_rcu_cpu {
->   	struct kfree_rcu_cpu_work krw_arr[KFREE_N_BATCHES];
->   	raw_spinlock_t lock;
->   	struct delayed_work monitor_work;
-> -	bool monitor_todo;
->   	bool initialized;
->   	int count;
->   
-> @@ -3421,6 +3419,18 @@ static void kfree_rcu_work(struct work_struct *work)
->   	}
->   }
->   
-> +static bool
-> +need_offload_krc(struct kfree_rcu_cpu *krcp)
-> +{
-> +	int i;
-> +
-> +	for (i = 0; i < FREE_N_CHANNELS; i++)
-> +		if (krcp->bkvhead[i])
-> +			return true;
-> +
-> +	return !!krcp->head;
-> +}
-> +
->   /*
->    * This function is invoked after the KFREE_DRAIN_JIFFIES timeout.
->    */
-> @@ -3477,9 +3487,7 @@ static void kfree_rcu_monitor(struct work_struct *work)
->   	// of the channels that is still busy we should rearm the
->   	// work to repeat an attempt. Because previous batches are
->   	// still in progress.
-> -	if (!krcp->bkvhead[0] && !krcp->bkvhead[1] && !krcp->head)
-> -		krcp->monitor_todo = false;
-> -	else
-> +	if (need_offload_krc(krcp))
->   		schedule_delayed_work(&krcp->monitor_work, KFREE_DRAIN_JIFFIES);
->   
->   	raw_spin_unlock_irqrestore(&krcp->lock, flags);
-> @@ -3667,11 +3675,8 @@ void kvfree_call_rcu(struct rcu_head *head, rcu_callback_t func)
->   	WRITE_ONCE(krcp->count, krcp->count + 1);
->   
->   	// Set timer to drain after KFREE_DRAIN_JIFFIES.
-> -	if (rcu_scheduler_active == RCU_SCHEDULER_RUNNING &&
-> -	    !krcp->monitor_todo) {
-> -		krcp->monitor_todo = true;
-> +	if (rcu_scheduler_active == RCU_SCHEDULER_RUNNING)
->   		schedule_delayed_work(&krcp->monitor_work, KFREE_DRAIN_JIFFIES);
-> -	}
->   
->   unlock_return:
->   	krc_this_cpu_unlock(krcp, flags);
-> @@ -3746,14 +3751,8 @@ void __init kfree_rcu_scheduler_running(void)
->   		struct kfree_rcu_cpu *krcp = per_cpu_ptr(&krc, cpu);
->   
->   		raw_spin_lock_irqsave(&krcp->lock, flags);
-> -		if ((!krcp->bkvhead[0] && !krcp->bkvhead[1] && !krcp->head) ||
-> -				krcp->monitor_todo) {
-> -			raw_spin_unlock_irqrestore(&krcp->lock, flags);
-> -			continue;
-> -		}
-> -		krcp->monitor_todo = true;
-> -		schedule_delayed_work_on(cpu, &krcp->monitor_work,
-> -					 KFREE_DRAIN_JIFFIES);
-> +		if (need_offload_krc(krcp))
-> +			schedule_delayed_work_on(cpu, &krcp->monitor_work, KFREE_DRAIN_JIFFIES);
->   		raw_spin_unlock_irqrestore(&krcp->lock, flags);
->   	}
->   }
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/zisjvhq+e3EwuX6MFCMZBsK
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKxl00ACgkQAVBC80lX
+0Gxibgf/QvCAuVYrPU11+cCIqs42lXGA6HlCOC1YdPUcj1TQk61pnxhPRkcqT4L0
+Z3x88lNn65d1CKnMk2fohj0K1VwDuwDZMa7SwoyXt/PrFHUCjMFGkeYub34hl8cI
+imxZLbl0IX3gnwA4Vcz64V3PBRDOh0XsU6erMtfPKjdyi3thI6sWZLnuDdNFVsK5
+6z+QytOm2ViM3qoM6DZGUuo354xi9bZsuvif3Y3GOasaopAFs5uzV4vRHRphzZ1S
+vxC3K3CJ0kL+pnKHsW+Q7LiTYYp8LiGEZfmaOV2RXPVBJA+RZplhqzlaAJMREqDt
+7JMB3Ny6jZZmBjU3sxNJqTVufkydOw==
+=8B0e
+-----END PGP SIGNATURE-----
+
+--Sig_/zisjvhq+e3EwuX6MFCMZBsK--
