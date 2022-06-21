@@ -2,134 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 556E5C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:15:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 035C4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:15:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352703AbiFUPPH (ORCPT
+        id S1352482AbiFUPPZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 11:15:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46060 "EHLO
+        Tue, 21 Jun 2022 11:15:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352393AbiFUPOu (ORCPT
+        with ESMTP id S1352700AbiFUPPH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 11:14:50 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7AF052CDE2
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:13:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655824410;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:  content-type:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=g+NJjQlOAcWg6eecPG318LXJkkwF2T/JikgaYlmjCB0=;
-        b=SLadtdZo+8FmCPL9dpKpI/eBt/UXwBCywi/Eyv4dX/i8Dt279B+9FIwmcsJTpIotei2EtB
-        7Oz8PrVFHOaC+SEpRuzmwNLgJqoteNjCx60MQ3md0AwhPulxhJtmYOTfXMvkGQF2cXC+bL
-        oW193DvJRi6sU8G9Xs5n9DnbdOMrdog=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-202-jsuBXvaFMpaGcNfVXLOasQ-1; Tue, 21 Jun 2022 11:13:29 -0400
-X-MC-Unique: jsuBXvaFMpaGcNfVXLOasQ-1
-Received: by mail-qk1-f199.google.com with SMTP id r6-20020a05620a298600b006a98e988ba4so16742995qkp.3
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:13:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=g+NJjQlOAcWg6eecPG318LXJkkwF2T/JikgaYlmjCB0=;
-        b=EE8eZ85AU0KLwiZ6DbAzTmZXc+pV+f+8bpHm/R0B9T8Z7rOqgGswoj7gdclFnXaICm
-         51lYQrhu8nZeHA+s5WG0jYapXLb1ANLi1jXQ/X6hNL5y25v/9c41DJGqM+FriXMqfS3R
-         6e//EvG+ync6PwPBy4MnogGe+vz94hKDeJ3EkvnwFVn7Tq0GKcypxiqptt/a53GfS08q
-         QlFN4MpaphSX9qBYzuanRFASiBcyXQrNokpe3+8QOU+goHFuyTINRtIUNQFD0UMR3B+Q
-         ZY5Lwt6CEpnvjUlhON3/p4eyuuipQtg0ilq+1GvMl2ElQbd3uQ2lYzt5xEz5Mu0zJ5GY
-         UtGw==
-X-Gm-Message-State: AJIora8K6a/HJMy92ZXDHJEn5e5WsHt7wGz+Y4BexIIc4AIeKURy64nJ
-        hQEkTMaDC8v/o18LcvLDO3KiMZr6Ir8+9NhHo2dY8WxuClTwDSlUHE8X83Xh7RS3UEpgJ69g1QR
-        MJ+aKPA+fkS97se64f7IbHor/
-X-Received: by 2002:ac8:5b50:0:b0:305:3275:b9bf with SMTP id n16-20020ac85b50000000b003053275b9bfmr24129985qtw.498.1655824408577;
-        Tue, 21 Jun 2022 08:13:28 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1sRyiOcUjGsF9W5x9EpD8vRzkOvogV2aC9PWkgpGX0OePdiWEiVSVq+pFjtElx+Cae1c1QL1Q==
-X-Received: by 2002:ac8:5b50:0:b0:305:3275:b9bf with SMTP id n16-20020ac85b50000000b003053275b9bfmr24129957qtw.498.1655824408277;
-        Tue, 21 Jun 2022 08:13:28 -0700 (PDT)
-Received: from step1.redhat.com (host-79-46-200-40.retail.telecomitalia.it. [79.46.200.40])
-        by smtp.gmail.com with ESMTPSA id z13-20020a05622a060d00b00304eb8e880dsm14266895qta.23.2022.06.21.08.13.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jun 2022 08:13:27 -0700 (PDT)
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     virtualization@lists.linux-foundation.org
-Cc:     linux-kernel@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Gautam Dawar <gautam.dawar@xilinx.com>,
-        Stefano Garzarella <sgarzare@redhat.com>
-Subject: [PATCH] vdpa_sim_blk: set number of address spaces and virtqueue groups
-Date:   Tue, 21 Jun 2022 17:13:23 +0200
-Message-Id: <20220621151323.190431-1-sgarzare@redhat.com>
-X-Mailer: git-send-email 2.36.1
+        Tue, 21 Jun 2022 11:15:07 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0F59D2AC6E
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:14:36 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F1E8D165C;
+        Tue, 21 Jun 2022 08:14:35 -0700 (PDT)
+Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id DA8B13F66F;
+        Tue, 21 Jun 2022 08:14:34 -0700 (PDT)
+From:   Robin Murphy <robin.murphy@arm.com>
+To:     joro@8bytes.org, will@kernel.org
+Cc:     iommu@lists.linux-foundation.org, iommu@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 0/3] iommu: More internal ops cleanup
+Date:   Tue, 21 Jun 2022 16:14:24 +0100
+Message-Id: <cover.1655822151.git.robin.murphy@arm.com>
+X-Mailer: git-send-email 2.36.1.dirty
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-type: text/plain
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit bda324fd037a ("vdpasim: control virtqueue support") added two
-new fields (nas, ngroups) to vdpasim_dev_attr, but we forgot to
-initialize them for vdpa_sim_blk.
+Hi all,
 
-When creating a new vdpa_sim_blk device this causes the kernel
-to panic in this way:
-    $ vdpa dev add mgmtdev vdpasim_blk name blk0
-    BUG: kernel NULL pointer dereference, address: 0000000000000030
-    ...
-    RIP: 0010:vhost_iotlb_add_range_ctx+0x41/0x220 [vhost_iotlb]
-    ...
-    Call Trace:
-     <TASK>
-     vhost_iotlb_add_range+0x11/0x800 [vhost_iotlb]
-     vdpasim_map_range+0x91/0xd0 [vdpa_sim]
-     vdpasim_alloc_coherent+0x56/0x90 [vdpa_sim]
-     ...
+Here are a few more thematically-related patches from my develompent
+stack that don't depend on the rest, so may as well get some exposure
+sooner rather than later.
 
-This happens because vdpasim->iommu[0] is not initialized when
-dev_attr.nas is 0.
+Thanks,
+Robin.
 
-Let's fix this issue by initializing both (nas, ngroups) to 1 for
-vdpa_sim_blk.
 
-Fixes: bda324fd037a ("vdpasim: control virtqueue support")
-Cc: gautam.dawar@xilinx.com
-Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
----
- drivers/vdpa/vdpa_sim/vdpa_sim_blk.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+Robin Murphy (3):
+  iommu: Use dev_iommu_ops() for probe_finalize
+  iommu: Make .release_device optional
+  iommu: Clean up release_device checks
 
-diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c b/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c
-index 42d401d43911..03a28def8eee 100644
---- a/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c
-+++ b/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c
-@@ -34,7 +34,11 @@
- #define VDPASIM_BLK_CAPACITY	0x40000
- #define VDPASIM_BLK_SIZE_MAX	0x1000
- #define VDPASIM_BLK_SEG_MAX	32
-+
-+/* 1 virtqueue, 1 address space, 1 virtqueue group */
- #define VDPASIM_BLK_VQ_NUM	1
-+#define VDPASIM_BLK_AS_NUM	1
-+#define VDPASIM_BLK_GROUP_NUM	1
- 
- static char vdpasim_blk_id[VIRTIO_BLK_ID_BYTES] = "vdpa_blk_sim";
- 
-@@ -260,6 +264,8 @@ static int vdpasim_blk_dev_add(struct vdpa_mgmt_dev *mdev, const char *name,
- 	dev_attr.id = VIRTIO_ID_BLOCK;
- 	dev_attr.supported_features = VDPASIM_BLK_FEATURES;
- 	dev_attr.nvqs = VDPASIM_BLK_VQ_NUM;
-+	dev_attr.ngroups = VDPASIM_BLK_GROUP_NUM;
-+	dev_attr.nas = VDPASIM_BLK_AS_NUM;
- 	dev_attr.config_size = sizeof(struct virtio_blk_config);
- 	dev_attr.get_config = vdpasim_blk_get_config;
- 	dev_attr.work_fn = vdpasim_blk_work;
+ drivers/iommu/apple-dart.c                  |  3 ---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  8 +-------
+ drivers/iommu/arm/arm-smmu/arm-smmu.c       | 14 +++-----------
+ drivers/iommu/arm/arm-smmu/qcom_iommu.c     | 11 -----------
+ drivers/iommu/exynos-iommu.c                |  3 ---
+ drivers/iommu/fsl_pamu_domain.c             |  5 -----
+ drivers/iommu/iommu.c                       |  9 ++++++---
+ drivers/iommu/msm_iommu.c                   |  5 -----
+ drivers/iommu/mtk_iommu.c                   |  5 -----
+ drivers/iommu/mtk_iommu_v1.c                |  5 -----
+ drivers/iommu/sprd-iommu.c                  | 11 -----------
+ drivers/iommu/sun50i-iommu.c                |  3 ---
+ drivers/iommu/tegra-gart.c                  |  5 -----
+ drivers/iommu/tegra-smmu.c                  |  3 ---
+ drivers/iommu/virtio-iommu.c                |  8 +-------
+ 15 files changed, 11 insertions(+), 87 deletions(-)
+
 -- 
-2.36.1
+2.36.1.dirty
 
