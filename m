@@ -2,114 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61D3BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 13:34:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E1F6CCA473
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 13:34:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348739AbiFUNeS (ORCPT
+        id S1350576AbiFUNeY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 09:34:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55206 "EHLO
+        Tue, 21 Jun 2022 09:34:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351745AbiFUNbI (ORCPT
+        with ESMTP id S1351717AbiFUNbC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 09:31:08 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EB3941AF1F;
-        Tue, 21 Jun 2022 06:28:41 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B48F6165C;
-        Tue, 21 Jun 2022 06:28:41 -0700 (PDT)
-Received: from bogus (e103737-lin.cambridge.arm.com [10.1.197.49])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CA5FB3F7D7;
-        Tue, 21 Jun 2022 06:28:38 -0700 (PDT)
-Date:   Tue, 21 Jun 2022 14:28:36 +0100
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Marcin Wojtas <mw@semihalf.com>, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, netdev@vger.kernel.org,
-        rafael@kernel.org, lenb@kernel.org, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        Sudeep Holla <sudeep.holla@arm.com>, linux@armlinux.org.uk,
-        hkallweit1@gmail.com, gjb@semihalf.com, jaz@semihalf.com,
-        tn@semihalf.com, Samer.El-Haj-Mahmoud@arm.com,
-        upstream@semihalf.com
-Subject: Re: [net-next: PATCH 09/12] Documentation: ACPI: DSD: introduce DSA
- description
-Message-ID: <20220621132836.wiyexi4y6vjeumrv@bogus>
-References: <20220620150225.1307946-1-mw@semihalf.com>
- <20220620150225.1307946-10-mw@semihalf.com>
- <20220621094556.5ev3nencnw7a5xwv@bogus>
- <YrGoXXBgHvyifny3@smile.fi.intel.com>
- <YrGqg5fHB4s+Y7wx@lunn.ch>
+        Tue, 21 Jun 2022 09:31:02 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FC5E2AE16;
+        Tue, 21 Jun 2022 06:25:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1655817936;
+        bh=AJ+180dznoEA6GFcYRGs+pxZHzuEPVBLARmJQDdqHuk=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=PxWr2MxMRKM798e4UPZowIcHUIM0eHCAOgT6T7aUcG4KqGkfJJPkk6I4avKmeYGBk
+         hfIuZy7s+tB7F4FXlf6liuF33nMpf3RdK+VttT25ftcIS69Y87YNrRylNTH+D0SaSo
+         xgUyDzy6LSAXs4q1W0owlTjpiY8P2SBKpGOoKhcA=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from Venus.fritz.box ([46.223.2.162]) by mail.gmx.net (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MZCb5-1o7kbh20lV-00V5fh; Tue, 21
+ Jun 2022 15:25:36 +0200
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+To:     peterhuewe@gmx.de, jarkko@kernel.org, jgg@ziepe.ca
+Cc:     stefanb@linux.vnet.ibm.com, linux@mniewoehner.de,
+        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+        l.sanfilippo@kunbus.com, LinoSanfilippo@gmx.de, lukas@wunner.de,
+        p.rosenberger@kunbus.com
+Subject: [PATCH v6 1/9] tpm, tpm_tis: Avoid cache incoherency in test for interrupts
+Date:   Tue, 21 Jun 2022 15:24:39 +0200
+Message-Id: <20220621132447.16281-2-LinoSanfilippo@gmx.de>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220621132447.16281-1-LinoSanfilippo@gmx.de>
+References: <20220621132447.16281-1-LinoSanfilippo@gmx.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YrGqg5fHB4s+Y7wx@lunn.ch>
+Content-Transfer-Encoding: base64
+X-Provags-ID: V03:K1:ydDLXptmfcLAO/E27Nv0MJjCMUB8vODQDtUVlD0CVUVqJGkEKje
+ bBJxR2Wz8SN0gcLqnWx2UMAS0FKXNMkfj+N9u8C4IyTQw/q13Trfq+GyufUEKP1EABgyxbj
+ OQMgm7qIj1C/71s43ZFdk9L7T/dlOuzoiuw31Dr+NQCqxyCFD34knBqV2hX/BxV3QzgIgak
+ 4b8KkKm2PdT+dyGu5L45A==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:43wHtPHvTCk=:vBjlaBEvHG0EVYiPFiPoPZ
+ 4K8b0BFfBaR/NH88eJcKifrc6oiHk2HaT+g00UbtHSyJ4MVwDDS7lFFi4GN9o6omfkwB7iCyU
+ PqeVXzJgPllFvdbtf9LJq2WUMjykbgkg5zw/CIOaEVkGABQemIm2hEL+dz7q4MQWaWhkA2u2F
+ VIo8f08TG2UAgUqTdyJg0QMx6mPETMiV0DBUo42hjRmbWgoHQEntpAeK1pskpTcZdSbi5jG34
+ HxTDn6P/ztWa/BAiK2vApvOFz/nRL8EdspegXOSUpFJ/5vJ8nnhdqxnq2eTWTANk8vdRSHyo0
+ tUijNB50X6PTgqcd5KmQwbA88eTzCJFkQHnjTKdsvAe9ByqxPwO08laEM7M224Fzb7GlmV2RF
+ jDKju/tZQvJsu7Jqh2I41VgJNO2qBZb5ki0Mi606RiJ6zcHMxebLlPIBQhEWYJDA5jCQLvtfx
+ PLxDT5PygztVBKI9J5rfgMgm86skDtWomDKiqTz5ykv6lj8o7bYEZ1o398NhIBjONYx+Mq1bS
+ 72vppkTFCGLSmbPQQlDfFg3Z6OCRqB6XVWu3Y4xV9+c1TweA8E4FdY+5NKLTi1fhuOPQf/AwF
+ S7SOliyxXYWTuuCDVRJ7BUi0/V6WW7vX5yak9bdAgQgGUW9ElKLt9B9glOPX8+3qLLuZs/P84
+ Hh5tqDO2DybpBfcXfKJ/Eh/UNLBFpg76AdIcBza9fF4PnCgW2g6l7yy5Z3R6WZYwPvLsPnWNJ
+ X4MlgT6LnQA3HTjabJeD9F3aRdBNBtd8lHI3292rp4vq0dXQ/bbyN/6nQFSl8xL7xSwjEoyWw
+ 76WuYpILR8nO6ac3jl/p+9q9cBYztPrr9ykZQdebgpOkXVzcL8h8wuieNDhrkaIws8xB09EP9
+ Oj0cJ3VKMwEIcg1FbO9lNq3QnVmEWE9zGOrslWaHYKeuWmfkcwYQh3BZBIAmLwe5O5+d9lJkJ
+ /K8H0vxL0ozIkBn55nJcUDrhXWt9DSEEVC5j4+wC1xMSGXoP7bDyebQjhZySMrJ1gOM7rE7+Q
+ B29HfbGLNnyQIJcj0xvSL90qTmW1Uwi+WCXfCVyuhguUxBTlT18YxzAbrIFY1idUEe3MlRIzI
+ PlPxUzAjh2n50uHY/TqFDly9sbZwFJbzOIV5XbXB/NBWf5msv7BuUHtng==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 21, 2022 at 01:24:51PM +0200, Andrew Lunn wrote:
-> On Tue, Jun 21, 2022 at 02:15:41PM +0300, Andy Shevchenko wrote:
-> > On Tue, Jun 21, 2022 at 10:45:56AM +0100, Sudeep Holla wrote:
-> > > On Mon, Jun 20, 2022 at 05:02:22PM +0200, Marcin Wojtas wrote:
-> > > > Describe the Distributed Switch Architecture (DSA) - compliant
-> > > > MDIO devices. In ACPI world they are represented as children
-> > > > of the MDIO busses, which are responsible for their enumeration
-> > > > based on the standard _ADR fields and description in _DSD objects
-> > > > under device properties UUID [1].
-> > > > 
-> > > > [1] http://www.uefi.org/sites/default/files/resources/_DSD-device-properties-UUID.pdf
-> > 
-> > > Why is this document part of Linux code base ?
-> > 
-> > It's fine, but your are right with your latter questions.
-> > 
-> > > How will the other OSes be aware of this ?
-> > 
-> > Should be a standard somewhere.
-> > 
-> > > I assume there was some repository to maintain such DSDs so that it
-> > > is accessible for other OSes. I am not agreeing or disagreeing on the
-> > > change itself, but I am concerned about this present in the kernel
-> > > code.
-> > 
-> > I dunno we have a such, but the closest I may imagine is MIPI standardization,
-> > that we have at least for cameras and sound.
-> > 
-> > I would suggest to go and work with MIPI for network / DSA / etc area, so
-> > everybody else will be aware of the standard.
->
-> It is the same argument as for DT. Other OSes and bootloaders seem to
-> manage digging around in Linux for DT binding documentation. I don't
-> see why bootloaders and other OSes can not also dig around in Linux
-> for ACPI binding documentations.
->
-
-Theoretically you are right. But in DT case majority of non-standard(by
-standard I am referring to the one's in Open Firmware specification) are
-in the kernel. But that is not true for ACPI. And that is the reason for
-objecting it. One of the main other OS using ACPI may not look here for
-any ACPI bindings(we may not care, but still OS neutral place is better
-for this).
-
-> Ideally, somebody will submit all this for acceptance into ACPI, but
-> into somebody does, i suspect it will just remain a defacto standard
-> in Linux.
->
-
-DSD is not integral part of ACPI spec, so the process is never clear.
-However there is this project[1], IIUC it is just guidance and doesn't
-include any bindings IIUC. But we need something similar here for better
-visibility and to remain OS agnostic. Even with DT, there is a strong
-desire to separate it out, but it has grown so much that it is getting
-harder to do that with every release. I was just trying to avoid getting
-into that situation.
-
--- 
-Regards,
-Sudeep
-
-[1] https://github.com/UEFI/DSD-Guide
+RnJvbTogTGlubyBTYW5maWxpcHBvIDxsLnNhbmZpbGlwcG9Aa3VuYnVzLmNvbT4KClRoZSBpbnRl
+cnJ1cHQgaGFuZGxlciB0aGF0IHNldHMgdGhlIGJvb2xlYW4gdmFyaWFibGUgaXJxX3Rlc3RlZCBt
+YXkgcnVuIG9uCmFub3RoZXIgQ1BVIGFzIHRoZSB0aHJlYWQgdGhhdCBjaGVja3MgaXJxX3Rlc3Rl
+ZCBhcyBwYXJ0IG9mIHRoZSBpcnEgdGVzdCBpbgp0bXBfdGlzX3NlbmQoKS4KClNpbmNlIG5vdGhp
+bmcgZ3VhcmFudGVlcyBjYWNoZSBjb2hlcmVuY3kgYmV0d2VlbiBDUFVzIGZvciB1bnN5bmNocm9u
+aXplZAphY2Nlc3NlcyB0byBib29sZWFuIHZhcmlhYmxlcyB0aGUgdGVzdGluZyB0aHJlYWQgbWln
+aHQgbm90IHBlcmNlaXZlIHRoZQp2YWx1ZSBjaGFuZ2UgZG9uZSBpbiB0aGUgaW50ZXJydXB0IGhh
+bmRsZXIuCgpBdm9pZCB0aGlzIGlzc3VlIGJ5IHNldHRpbmcgdGhlIGJpdCBUUE1fVElTX0lSUV9U
+RVNURUQgaW4gdGhlIGZsYWdzIGZpZWxkCm9mIHRoZSB0cG1fdGlzX2RhdGEgc3RydWN0IGFuZCBi
+eSBhY2Nlc3NpbmcgdGhpcyBmaWVsZCB3aXRoIHRoZSBiaXQKbWFuaXB1bGF0aW5nIGZ1bmN0aW9u
+cyB0aGF0IHByb3ZpZGUgY2FjaGUgY29oZXJlbmN5LgoKQWxzbyBjb252ZXJ0IGFsbCBvdGhlciBl
+eGlzdGluZyBzaXRlcyB0byB1c2UgdGhlIHByb3BlciBtYWNyb3Mgd2hlbgphY2Nlc3NpbmcgdGhp
+cyBiaXRmaWVsZC4KClNpZ25lZC1vZmYtYnk6IExpbm8gU2FuZmlsaXBwbyA8bC5zYW5maWxpcHBv
+QGt1bmJ1cy5jb20+Ci0tLQogZHJpdmVycy9jaGFyL3RwbS90cG1fdGlzLmMgICAgICB8ICAyICst
+CiBkcml2ZXJzL2NoYXIvdHBtL3RwbV90aXNfY29yZS5jIHwgMjEgKysrKysrKysrKystLS0tLS0t
+LS0tCiBkcml2ZXJzL2NoYXIvdHBtL3RwbV90aXNfY29yZS5oIHwgIDIgKy0KIDMgZmlsZXMgY2hh
+bmdlZCwgMTMgaW5zZXJ0aW9ucygrKSwgMTIgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvZHJp
+dmVycy9jaGFyL3RwbS90cG1fdGlzLmMgYi9kcml2ZXJzL2NoYXIvdHBtL3RwbV90aXMuYwppbmRl
+eCBiY2ZmNjQyOWUwYjQuLmNlNDM0MTJlYjM5OCAxMDA2NDQKLS0tIGEvZHJpdmVycy9jaGFyL3Rw
+bS90cG1fdGlzLmMKKysrIGIvZHJpdmVycy9jaGFyL3RwbS90cG1fdGlzLmMKQEAgLTIyNiw3ICsy
+MjYsNyBAQCBzdGF0aWMgaW50IHRwbV90aXNfaW5pdChzdHJ1Y3QgZGV2aWNlICpkZXYsIHN0cnVj
+dCB0cG1faW5mbyAqdHBtX2luZm8pCiAJCWlycSA9IHRwbV9pbmZvLT5pcnE7CiAKIAlpZiAoaXRw
+bSB8fCBpc19pdHBtKEFDUElfQ09NUEFOSU9OKGRldikpKQotCQlwaHktPnByaXYuZmxhZ3MgfD0g
+VFBNX1RJU19JVFBNX1dPUktBUk9VTkQ7CisJCXNldF9iaXQoVFBNX1RJU19JVFBNX1dPUktBUk9V
+TkQsICZwaHktPnByaXYuZmxhZ3MpOwogCiAJcmV0dXJuIHRwbV90aXNfY29yZV9pbml0KGRldiwg
+JnBoeS0+cHJpdiwgaXJxLCAmdHBtX3RjZywKIAkJCQkgQUNQSV9IQU5ETEUoZGV2KSk7CmRpZmYg
+LS1naXQgYS9kcml2ZXJzL2NoYXIvdHBtL3RwbV90aXNfY29yZS5jIGIvZHJpdmVycy9jaGFyL3Rw
+bS90cG1fdGlzX2NvcmUuYwppbmRleCBkYzU2Yjk3NmQ4MTYuLmI1ZmQ0ZmY0NjY2NiAxMDA2NDQK
+LS0tIGEvZHJpdmVycy9jaGFyL3RwbS90cG1fdGlzX2NvcmUuYworKysgYi9kcml2ZXJzL2NoYXIv
+dHBtL3RwbV90aXNfY29yZS5jCkBAIC0zNDMsNyArMzQzLDcgQEAgc3RhdGljIGludCB0cG1fdGlz
+X3NlbmRfZGF0YShzdHJ1Y3QgdHBtX2NoaXAgKmNoaXAsIGNvbnN0IHU4ICpidWYsIHNpemVfdCBs
+ZW4pCiAJc3RydWN0IHRwbV90aXNfZGF0YSAqcHJpdiA9IGRldl9nZXRfZHJ2ZGF0YSgmY2hpcC0+
+ZGV2KTsKIAlpbnQgcmMsIHN0YXR1cywgYnVyc3RjbnQ7CiAJc2l6ZV90IGNvdW50ID0gMDsKLQli
+b29sIGl0cG0gPSBwcml2LT5mbGFncyAmIFRQTV9USVNfSVRQTV9XT1JLQVJPVU5EOworCWJvb2wg
+aXRwbSA9IHRlc3RfYml0KFRQTV9USVNfSVRQTV9XT1JLQVJPVU5ELCAmcHJpdi0+ZmxhZ3MpOwog
+CiAJc3RhdHVzID0gdHBtX3Rpc19zdGF0dXMoY2hpcCk7CiAJaWYgKChzdGF0dXMgJiBUUE1fU1RT
+X0NPTU1BTkRfUkVBRFkpID09IDApIHsKQEAgLTQ3MCw3ICs0NzAsOCBAQCBzdGF0aWMgaW50IHRw
+bV90aXNfc2VuZChzdHJ1Y3QgdHBtX2NoaXAgKmNoaXAsIHU4ICpidWYsIHNpemVfdCBsZW4pCiAJ
+aW50IHJjLCBpcnE7CiAJc3RydWN0IHRwbV90aXNfZGF0YSAqcHJpdiA9IGRldl9nZXRfZHJ2ZGF0
+YSgmY2hpcC0+ZGV2KTsKIAotCWlmICghKGNoaXAtPmZsYWdzICYgVFBNX0NISVBfRkxBR19JUlEp
+IHx8IHByaXYtPmlycV90ZXN0ZWQpCisJaWYgKCEoY2hpcC0+ZmxhZ3MgJiBUUE1fQ0hJUF9GTEFH
+X0lSUSkgfHwKKwkgICAgIHRlc3RfYml0KFRQTV9USVNfSVJRX1RFU1RFRCwgJnByaXYtPmZsYWdz
+KSkKIAkJcmV0dXJuIHRwbV90aXNfc2VuZF9tYWluKGNoaXAsIGJ1ZiwgbGVuKTsKIAogCS8qIFZl
+cmlmeSByZWNlaXB0IG9mIHRoZSBleHBlY3RlZCBJUlEgKi8KQEAgLTQ4MCwxMSArNDgxLDExIEBA
+IHN0YXRpYyBpbnQgdHBtX3Rpc19zZW5kKHN0cnVjdCB0cG1fY2hpcCAqY2hpcCwgdTggKmJ1Ziwg
+c2l6ZV90IGxlbikKIAlyYyA9IHRwbV90aXNfc2VuZF9tYWluKGNoaXAsIGJ1ZiwgbGVuKTsKIAlw
+cml2LT5pcnEgPSBpcnE7CiAJY2hpcC0+ZmxhZ3MgfD0gVFBNX0NISVBfRkxBR19JUlE7Ci0JaWYg
+KCFwcml2LT5pcnFfdGVzdGVkKQorCWlmICghdGVzdF9iaXQoVFBNX1RJU19JUlFfVEVTVEVELCAm
+cHJpdi0+ZmxhZ3MpKQogCQl0cG1fbXNsZWVwKDEpOwotCWlmICghcHJpdi0+aXJxX3Rlc3RlZCkK
+KwlpZiAoIXRlc3RfYml0KFRQTV9USVNfSVJRX1RFU1RFRCwgJnByaXYtPmZsYWdzKSkKIAkJZGlz
+YWJsZV9pbnRlcnJ1cHRzKGNoaXApOwotCXByaXYtPmlycV90ZXN0ZWQgPSB0cnVlOworCXNldF9i
+aXQoVFBNX1RJU19JUlFfVEVTVEVELCAmcHJpdi0+ZmxhZ3MpOwogCXJldHVybiByYzsKIH0KIApA
+QCAtNjI3LDcgKzYyOCw3IEBAIHN0YXRpYyBpbnQgcHJvYmVfaXRwbShzdHJ1Y3QgdHBtX2NoaXAg
+KmNoaXApCiAJc2l6ZV90IGxlbiA9IHNpemVvZihjbWRfZ2V0dGlja3MpOwogCXUxNiB2ZW5kb3I7
+CiAKLQlpZiAocHJpdi0+ZmxhZ3MgJiBUUE1fVElTX0lUUE1fV09SS0FST1VORCkKKwlpZiAodGVz
+dF9iaXQoVFBNX1RJU19JVFBNX1dPUktBUk9VTkQsICZwcml2LT5mbGFncykpCiAJCXJldHVybiAw
+OwogCiAJcmMgPSB0cG1fdGlzX3JlYWQxNihwcml2LCBUUE1fRElEX1ZJRCgwKSwgJnZlbmRvcik7
+CkBAIC02NDcsMTMgKzY0OCwxMyBAQCBzdGF0aWMgaW50IHByb2JlX2l0cG0oc3RydWN0IHRwbV9j
+aGlwICpjaGlwKQogCiAJdHBtX3Rpc19yZWFkeShjaGlwKTsKIAotCXByaXYtPmZsYWdzIHw9IFRQ
+TV9USVNfSVRQTV9XT1JLQVJPVU5EOworCXNldF9iaXQoVFBNX1RJU19JVFBNX1dPUktBUk9VTkQs
+ICZwcml2LT5mbGFncyk7CiAKIAlyYyA9IHRwbV90aXNfc2VuZF9kYXRhKGNoaXAsIGNtZF9nZXR0
+aWNrcywgbGVuKTsKIAlpZiAocmMgPT0gMCkKIAkJZGV2X2luZm8oJmNoaXAtPmRldiwgIkRldGVj
+dGVkIGFuIGlUUE0uXG4iKTsKIAllbHNlIHsKLQkJcHJpdi0+ZmxhZ3MgJj0gflRQTV9USVNfSVRQ
+TV9XT1JLQVJPVU5EOworCQljbGVhcl9iaXQoVFBNX1RJU19JVFBNX1dPUktBUk9VTkQsICZwcml2
+LT5mbGFncyk7CiAJCXJjID0gLUVGQVVMVDsKIAl9CiAKQEAgLTY5Myw3ICs2OTQsNyBAQCBzdGF0
+aWMgaXJxcmV0dXJuX3QgdGlzX2ludF9oYW5kbGVyKGludCBkdW1teSwgdm9pZCAqZGV2X2lkKQog
+CWlmIChpbnRlcnJ1cHQgPT0gMCkKIAkJcmV0dXJuIElSUV9OT05FOwogCi0JcHJpdi0+aXJxX3Rl
+c3RlZCA9IHRydWU7CisJc2V0X2JpdChUUE1fVElTX0lSUV9URVNURUQsICZwcml2LT5mbGFncyk7
+CiAJaWYgKGludGVycnVwdCAmIFRQTV9JTlRGX0RBVEFfQVZBSUxfSU5UKQogCQl3YWtlX3VwX2lu
+dGVycnVwdGlibGUoJnByaXYtPnJlYWRfcXVldWUpOwogCWlmIChpbnRlcnJ1cHQgJiBUUE1fSU5U
+Rl9MT0NBTElUWV9DSEFOR0VfSU5UKQpAQCAtNzc5LDcgKzc4MCw3IEBAIHN0YXRpYyBpbnQgdHBt
+X3Rpc19wcm9iZV9pcnFfc2luZ2xlKHN0cnVjdCB0cG1fY2hpcCAqY2hpcCwgdTMyIGludG1hc2ss
+CiAJaWYgKHJjIDwgMCkKIAkJcmV0dXJuIHJjOwogCi0JcHJpdi0+aXJxX3Rlc3RlZCA9IGZhbHNl
+OworCWNsZWFyX2JpdChUUE1fVElTX0lSUV9URVNURUQsICZwcml2LT5mbGFncyk7CiAKIAkvKiBH
+ZW5lcmF0ZSBhbiBpbnRlcnJ1cHQgYnkgaGF2aW5nIHRoZSBjb3JlIGNhbGwgdGhyb3VnaCB0bwog
+CSAqIHRwbV90aXNfc2VuZApkaWZmIC0tZ2l0IGEvZHJpdmVycy9jaGFyL3RwbS90cG1fdGlzX2Nv
+cmUuaCBiL2RyaXZlcnMvY2hhci90cG0vdHBtX3Rpc19jb3JlLmgKaW5kZXggNmMyMDNmMzZiOGEx
+Li5iZjA3Mzc5ZGVhNDIgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvY2hhci90cG0vdHBtX3Rpc19jb3Jl
+LmgKKysrIGIvZHJpdmVycy9jaGFyL3RwbS90cG1fdGlzX2NvcmUuaApAQCAtODYsMTMgKzg2LDEz
+IEBAIGVudW0gdGlzX2RlZmF1bHRzIHsKIGVudW0gdHBtX3Rpc19mbGFncyB7CiAJVFBNX1RJU19J
+VFBNX1dPUktBUk9VTkQJCT0gQklUKDApLAogCVRQTV9USVNfSU5WQUxJRF9TVEFUVVMJCT0gQklU
+KDEpLAorCVRQTV9USVNfSVJRX1RFU1RFRAkJPSBCSVQoMiksCiB9OwogCiBzdHJ1Y3QgdHBtX3Rp
+c19kYXRhIHsKIAl1MTYgbWFudWZhY3R1cmVyX2lkOwogCWludCBsb2NhbGl0eTsKIAlpbnQgaXJx
+OwotCWJvb2wgaXJxX3Rlc3RlZDsKIAl1bnNpZ25lZCBsb25nIGZsYWdzOwogCXZvaWQgX19pb21l
+bSAqaWxiX2Jhc2VfYWRkcjsKIAl1MTYgY2xrcnVuX2VuYWJsZWQ7Ci0tIAoyLjM2LjEKCg==
