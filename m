@@ -2,86 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33F5CCCA481
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:41:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA124C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:42:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352994AbiFUPkN (ORCPT
+        id S1353200AbiFUPmA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 11:40:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50490 "EHLO
+        Tue, 21 Jun 2022 11:42:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352773AbiFUPkI (ORCPT
+        with ESMTP id S1353223AbiFUPlx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 11:40:08 -0400
-Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCBBF19286;
-        Tue, 21 Jun 2022 08:40:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-        d=metrotek.ru; s=mail;
-        h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding:
-         in-reply-to:references;
-        bh=4Ik1qUdS4+QkCdU36XYMTDimWksi8zUBnoBPB0cv7hU=;
-        b=kAtusXuQQ/pkEGEQiteES0intNB9Cv3EPKtJ63NWw4QBgJQBh+feCN6NV1LldygK1erQFCdNlZz1h
-         NEJjP4ddQmA57zs7v0EceocrrBKXE4qpwF+wbbqNA9d+x4I3irmZJkDbX9T1qkqfFVIgz4vUktK+YN
-         5h4iHUsIUYQSfMFEzFsK0srXYwAQ9DFZAsu86+Z61Jrb2Ij8vb6uJxUC2lVQEJbxp8s6QP2snhCfFU
-         r9a//xaYtsxzkTSMDff/ads+gukptBSQ6wav+f9byyFNomr5n+ya2WdFAnrZypRD3L29o2vA29Y5Is
-         BOpdFCdcLkdarMs0H5A4EhSW3R+L5Yg==
-X-Kerio-Anti-Spam:  Build: [Engines: 2.16.3.1424, Stamp: 3], Multi: [Enabled, t: (0.000007,0.005504)], BW: [Enabled, t: (0.000015,0.000001)], RTDA: [Enabled, t: (0.071756), Hit: No, Details: v2.40.0; Id: 15.52k0tm.1g63emviq.1fdrp; mclb], total: 0(700)
-X-Footer: bWV0cm90ZWsucnU=
-Received: from h-e2.ddg ([85.143.252.66])
-        (authenticated user i.bornyakov@metrotek.ru)
-        by mail.pr-group.ru with ESMTPSA
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
-        Tue, 21 Jun 2022 18:39:48 +0300
-From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
-To:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
-        trix@redhat.com, corbet@lwn.net
-Cc:     Ivan Bornyakov <i.bornyakov@metrotek.ru>,
-        conor.dooley@microchip.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-fpga@vger.kernel.org,
-        linux-doc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, system@metrotek.ru
-Subject: [PATCH v21 5/5] MAINTAINERS: add Microchip PolarFire FPGA drivers entry
-Date:   Tue, 21 Jun 2022 18:38:47 +0300
-Message-Id: <20220621153847.103052-6-i.bornyakov@metrotek.ru>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220621153847.103052-1-i.bornyakov@metrotek.ru>
-References: <20220621153847.103052-1-i.bornyakov@metrotek.ru>
+        Tue, 21 Jun 2022 11:41:53 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 491DF2C675
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:41:51 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id lw20so6017847ejb.4
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:41:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=RMRIR+HgYGPk4kqlGjQLW42tNRD3LRift0BoWoXmUl4=;
+        b=PJhWavQQw1jz0WHXyX0ZMJ8eR94uUvT1OrTkOanzF8eCB9cRoiHlLFkzlXwgvLP1n3
+         V+w0eQKQSencR01efMvM+CLx2hpLOKijSklYzMrRkzLvX77UTUutFGU6uJfiZB1pc98e
+         VgYJdmbvnx1PUtVmTp+5NFI05o1TbHCDlbCQjnkikoTILqTKd6MV8Ho+yBGn8ZPN8hEJ
+         sCMUvZdkn9wipxnotVkWIriVN5jdQ2mYy29rx649+igSQ202WUBmFIWDarvr2HGs4tJm
+         xwmC6Jif32cg5AO1lfdsSE8Kh6DFfzyaj9s8iJixRwkpwtevMnkmSpC2/G3dP/aFLb1B
+         NT0g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=RMRIR+HgYGPk4kqlGjQLW42tNRD3LRift0BoWoXmUl4=;
+        b=cOP5pG/y/vQ/HDo53kG8k+Z6eMDa7x5j+7QU5bIGSsBafsIMx46oL3MhHuVYI27SJ7
+         /dVqk1j0D/8TjLjJ6zrFJXEuOTasvsZayajJr5uBq0AQfNJAcn7JDnBnQAmMRcznmumA
+         UGFWzNI5cX5YiyFCtA8FQ2z56MNEnus1z7znGKTq6i4OZdrDMaclsBuZYzAq/GMyTl4U
+         +vqf60id+gyy0uu+S9bsgjglkq7Wi0rQjxo5lt35dHcLCHDKWBMkAin2LvtAQyB80Zvq
+         8AqaUbLLrIKLJvIc48+u4jCqnngnVEWO1k4hG4JohgQqnY+MVc14LOOy6RMmoNGdmaMA
+         cQjA==
+X-Gm-Message-State: AJIora+asWqU/zsYB9H3UrimisG2U2wMbXrYVzwN/3Ul4XvtYhBkjPh/
+        725zsepn7Wy8vhl/8y2NfjCxww==
+X-Google-Smtp-Source: AGRyM1ukaYxWxV49I7X4K/AxawnLaQ11uVqfavd6zhGXdlYd80VACHz45P5IFtZP8yM2ASJC8c4z9Q==
+X-Received: by 2002:a17:907:3f97:b0:711:d61d:df9 with SMTP id hr23-20020a1709073f9700b00711d61d0df9mr26593417ejc.644.1655826109691;
+        Tue, 21 Jun 2022 08:41:49 -0700 (PDT)
+Received: from [192.168.0.221] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id l2-20020a056402124200b004357738e04esm6977188edw.21.2022.06.21.08.41.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 21 Jun 2022 08:41:49 -0700 (PDT)
+Message-ID: <b1472a38-75e5-9711-3e25-7ca9a74109e2@linaro.org>
+Date:   Tue, 21 Jun 2022 17:41:47 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v4 07/18] dt-bindings: reset: npcm: add GCR syscon
+ property
+Content-Language: en-US
+To:     Tomer Maimon <tmaimon77@gmail.com>, avifishman70@gmail.com,
+        tali.perry1@gmail.com, joel@jms.id.au, venture@google.com,
+        yuenn@google.com, benjaminfair@google.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com,
+        sboyd@kernel.org, p.zabel@pengutronix.de,
+        gregkh@linuxfoundation.org, daniel.lezcano@linaro.org,
+        tglx@linutronix.de, wim@linux-watchdog.org, linux@roeck-us.net,
+        catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
+        olof@lixom.net, jirislaby@kernel.org, shawnguo@kernel.org,
+        bjorn.andersson@linaro.org, geert+renesas@glider.be,
+        marcel.ziswiler@toradex.com, vkoul@kernel.org,
+        biju.das.jz@bp.renesas.com, nobuhiro1.iwamatsu@toshiba.co.jp,
+        robert.hancock@calian.com, j.neuschaefer@gmx.net, lkundrak@v3.sk
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-watchdog@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+References: <20220621131424.162355-1-tmaimon77@gmail.com>
+ <20220621131424.162355-8-tmaimon77@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220621131424.162355-8-tmaimon77@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add MAINTAINERS entry for the newly added Microchip PolarFire (MPF) FPGA
-manager. Add myself as a reviewer and Conor Dooley as a maintainer.
-
-Suggested-by: Conor Dooley <conor.dooley@microchip.com>
-Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
----
- MAINTAINERS | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index b774f21828f7..ed2517574804 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -7884,6 +7884,14 @@ S:	Maintained
- F:	Documentation/ABI/testing/sysfs-driver-intel-m10-bmc-sec-update
- F:	drivers/fpga/intel-m10-bmc-sec-update.c
- 
-+MICROCHIP POLARFIRE FPGA DRIVERS
-+M:	Conor Dooley <conor.dooley@microchip.com>
-+R:	Ivan Bornyakov <i.bornyakov@metrotek.ru>
-+L:	linux-fpga@vger.kernel.org
-+S:	Supported
-+F:	Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
-+F:	drivers/fpga/microchip-spi.c
-+
- FPU EMULATOR
- M:	Bill Metzenthen <billm@melbpc.org.au>
- S:	Maintained
--- 
-2.25.1
+On 21/06/2022 15:14, Tomer Maimon wrote:
+> Describe syscon property that handles general control registers (GCR) in
+> Nuvoton BMC NPCM reset driver.
+> 
+> Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
+> ---
+>  .../devicetree/bindings/reset/nuvoton,npcm750-reset.yaml    | 6 ++++++
+>  1 file changed, 6 insertions(+)
 
 
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+
+Best regards,
+Krzysztof
