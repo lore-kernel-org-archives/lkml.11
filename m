@@ -2,107 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 478B9C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 20:23:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0EE5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 20:25:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354041AbiFUUXm (ORCPT
+        id S1354044AbiFUUZR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 16:23:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58670 "EHLO
+        Tue, 21 Jun 2022 16:25:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354334AbiFUUXV (ORCPT
+        with ESMTP id S232397AbiFUUZQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 16:23:21 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE3B722536
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 13:23:17 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id lw20so7525835ejb.4
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 13:23:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MhJQcMlSnFoacV2KwcdFXpjtba+IaB/sZyuFW7tBT+c=;
-        b=epbu3P3cY++CvsJWFX9rqxwKCIZ1HaftiAiLiPKOBX/SuNxREsfwYANixXlw73aJoD
-         YeSiKTf/2tQl+U/ndTBwzMKwyRcfRbfGJQYyCGQheC+iSe7QGhr+yOInJxXAPDdgxMwn
-         8azIXpbuQbkO2keBtOuDV5cOiHCaZ2eHLPSofuGcChQDzjNB37jSujXaFs/efxWfjhPa
-         5ccm25uoo7LlIhqoL2UDRepNfaqqo2EQqIU2Sc/EGRhbcViiNdLTtWAr9ggYGWqdv6OH
-         nEr/og2fbKcTY/8Uj3GZ6+T6IxWfFROA8Z0i5HxCY9NvKeXQcb7A6FR6NarbeSee6hC2
-         ahmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MhJQcMlSnFoacV2KwcdFXpjtba+IaB/sZyuFW7tBT+c=;
-        b=DTWxYjXj+JEULWHYJutQ4OQtQZ81EkOVgoZEaXupWRzuUmsog1guurN/fskb0JPAGP
-         CPpeiSBzHOnafaTWlXPdxscFl9KBW8bh2WbkHVMWBBOmyzMtX5oxBvCY5sKFNzxrPp2a
-         gRN1H1i+MKXHo8ejbnolIhs3Xp02JHPQaAc59GGjjGMOdL+0Y3ibLOeMGrvso/X3ZbaH
-         84zRlNGanO1Xl/hjvE7qfNmNc0p5GzWYXfmoi4UnycM8VN1Llx+100TeXtdMBvwFdL8L
-         o879HFycH1bElh/qY6qGWS54jwQ5wicp6RFanXlxGiQDdN8oRsYsP4aev8tGSlTvu8pp
-         eY/w==
-X-Gm-Message-State: AJIora8Fqo3GZewxoQZP2dZ4ktKDXyUoxkNCeN7Wzo9r1Pi6yrjhKUpP
-        R+7bCibxMZLD9I7q5eLhUotRiKyJEXf4uSE69+LePg==
-X-Google-Smtp-Source: AGRyM1syldNCsF4yTG1CqNeyR+d//+kPIDUAn8FkfXpI6Ib8/JA3UGUsecd0zG+9GJgtedGAH6mxDaNCH8juW6fW3Jg=
-X-Received: by 2002:a17:906:c193:b0:718:d076:df7 with SMTP id
- g19-20020a170906c19300b00718d0760df7mr28212396ejz.358.1655842996119; Tue, 21
- Jun 2022 13:23:16 -0700 (PDT)
+        Tue, 21 Jun 2022 16:25:16 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DF5724F12
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 13:25:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655843115; x=1687379115;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=7e+ir0VyaDL/t9/cJ3Sqhdxf9f68AWW8rKGLisVcpJ8=;
+  b=Hzik7xqGvRZEfgpKnQAWFpPvs02/gWLjMENuRtYsi9H8/fjXz+uwRiQP
+   5OXOWNPq8G5c+ov14g2mZwxDo0R3017d6FE2nuMWZQSpRr62iuaL0IhJ1
+   ZvLBp09LfSd+bEk7Zkm41QxU3/hZZPlJuFULUQIrL7rQK8usjXZVqBtaI
+   ouswc/D6B18E+pIDbKLPOq28wW0WR4wVMXSzXzRvYj/wnEPN2B88oUopT
+   B0vSwlpm7oGz2sb0e/8ZyMPBRUvf4kgLf3Pg81zv7b6XSKG8SU/gI/k3Q
+   ldYHvrQceTpID6IV8Qj/uWUqCnPgdQU8Ja1KRmN+/sIOB/At503UAt8PV
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="341912449"
+X-IronPort-AV: E=Sophos;i="5.92,210,1650956400"; 
+   d="scan'208";a="341912449"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 13:25:15 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,210,1650956400"; 
+   d="scan'208";a="591818035"
+Received: from lkp-server02.sh.intel.com (HELO a67cc04a5eeb) ([10.239.97.151])
+  by fmsmga007.fm.intel.com with ESMTP; 21 Jun 2022 13:25:13 -0700
+Received: from kbuild by a67cc04a5eeb with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o3kQy-0000O9-WC;
+        Tue, 21 Jun 2022 20:25:12 +0000
+Date:   Wed, 22 Jun 2022 04:25:02 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ville =?iso-8859-1?Q?Syrj=E4l=E4?= <ville.syrjala@linux.intel.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [drm-misc:drm-misc-next 3/4]
+ drivers/gpu/drm/xlnx/zynqmp_disp.c:1260:3: error: call to undeclared
+ function 'drm_plane_create_zpos_immutable_property'; ISO C99 and later do
+ not support implicit function declarations
+Message-ID: <202206220449.j02XFvCg-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220621085345.603820-1-davidgow@google.com> <20220621085345.603820-4-davidgow@google.com>
-In-Reply-To: <20220621085345.603820-4-davidgow@google.com>
-From:   Daniel Latypov <dlatypov@google.com>
-Date:   Tue, 21 Jun 2022 13:23:04 -0700
-Message-ID: <CAGS_qxpXkTZiebd=zqJTY8wvSs1TuBvBuDdxYkPEjwnkQ+ir2g@mail.gmail.com>
-Subject: Re: [PATCH v2 3/5] thunderbolt: test: Use kunit_test_suite() macro
-To:     David Gow <davidgow@google.com>
-Cc:     Brendan Higgins <brendanhiggins@google.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Jeremy Kerr <jk@codeconstruct.com.au>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Longpeng <longpeng2@huawei.com>, Paraschiv@google.com,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        =?UTF-8?B?TWHDrXJhIENhbmFs?= <maira.canal@usp.br>,
-        linux-mmc@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
-        openbmc@lists.ozlabs.org, linux-usb@vger.kernel.org,
-        linux-modules@vger.kernel.org,
-        Matt Johnston <matt@codeconstruct.com.au>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 21, 2022 at 1:54 AM David Gow <davidgow@google.com> wrote:
->
-> The new implementation of kunit_test_suite() for modules no longer
-> conflicts with module_init, so can now be used by the thunderbolt tests.
->
-> Also update the Kconfig entry to enable the test when KUNIT_ALL_TESTS is
-> enabled.
->
-> This means that kunit_tool can now successfully run and parse the test
-> results with, for example:
->         ./tools/testing/kunit/kunit.py run --arch=x86_64 \
->         --kconfig_add CONFIG_PCI=y --kconfig_add CONFIG_USB4=y \
->         'thunderbolt'
+tree:   git://anongit.freedesktop.org/drm/drm-misc drm-misc-next
+head:   87a3451e346be3f9a5d8943ae094888044314631
+commit: 90bb087f66745ca48f6f5e43df99a1212d89e712 [3/4] drm: Drop drm_blend.h from drm_crtc.h
+config: powerpc-buildonly-randconfig-r002-20220622 (https://download.01.org/0day-ci/archive/20220622/202206220449.j02XFvCg-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project af6d2a0b6825e71965f3e2701a63c239fa0ad70f)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install powerpc cross compiling tool for clang build
+        # apt-get install binutils-powerpc-linux-gnu
+        git remote add drm-misc git://anongit.freedesktop.org/drm/drm-misc
+        git fetch --no-tags drm-misc drm-misc-next
+        git checkout 90bb087f66745ca48f6f5e43df99a1212d89e712
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash drivers/gpu/drm/xlnx/
 
-With this, we can maybe revive
-https://lore.kernel.org/lkml/20220214184104.1710107-1-dlatypov@google.com
-by tacking it onto this series if a v3 goes out.
-There is the open question of whether we should put UML-specific
-config options in the file, though.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-If we decide we don't want that, then we can defer it until I send out
-the patches for "repeatable --kunitconfig" and we can add the
-uml_pci.config file.
+Note: the drm-misc/drm-misc-next HEAD 87a3451e346be3f9a5d8943ae094888044314631 builds fine.
+      It only hurts bisectability.
 
->
-> Acked-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-> Signed-off-by: David Gow <davidgow@google.com>
+All errors (new ones prefixed by >>):
 
-Acked-by: Daniel Latypov <dlatypov@google.com>
+>> drivers/gpu/drm/xlnx/zynqmp_disp.c:1260:3: error: call to undeclared function 'drm_plane_create_zpos_immutable_property'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+                   drm_plane_create_zpos_immutable_property(&layer->plane, i);
+                   ^
+   drivers/gpu/drm/xlnx/zynqmp_disp.c:1260:3: note: did you mean 'drm_plane_create_scaling_filter_property'?
+   include/drm/drm_plane.h:908:5: note: 'drm_plane_create_scaling_filter_property' declared here
+   int drm_plane_create_scaling_filter_property(struct drm_plane *plane,
+       ^
+>> drivers/gpu/drm/xlnx/zynqmp_disp.c:1262:4: error: call to undeclared function 'drm_plane_create_alpha_property'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+                           drm_plane_create_alpha_property(&layer->plane);
+                           ^
+   drivers/gpu/drm/xlnx/zynqmp_disp.c:1262:4: note: did you mean 'drm_plane_create_color_properties'?
+   include/drm/drm_color_mgmt.h:90:5: note: 'drm_plane_create_color_properties' declared here
+   int drm_plane_create_color_properties(struct drm_plane *plane,
+       ^
+   2 errors generated.
 
-LGTM.
+
+vim +/drm_plane_create_zpos_immutable_property +1260 drivers/gpu/drm/xlnx/zynqmp_disp.c
+
+d76271d22694e8 Hyun Kwon        2018-07-07  1226  
+d76271d22694e8 Hyun Kwon        2018-07-07  1227  static int zynqmp_disp_create_planes(struct zynqmp_disp *disp)
+d76271d22694e8 Hyun Kwon        2018-07-07  1228  {
+d76271d22694e8 Hyun Kwon        2018-07-07  1229  	unsigned int i, j;
+d76271d22694e8 Hyun Kwon        2018-07-07  1230  	int ret;
+d76271d22694e8 Hyun Kwon        2018-07-07  1231  
+d76271d22694e8 Hyun Kwon        2018-07-07  1232  	for (i = 0; i < ZYNQMP_DISP_NUM_LAYERS; i++) {
+d76271d22694e8 Hyun Kwon        2018-07-07  1233  		struct zynqmp_disp_layer *layer = &disp->layers[i];
+d76271d22694e8 Hyun Kwon        2018-07-07  1234  		enum drm_plane_type type;
+d76271d22694e8 Hyun Kwon        2018-07-07  1235  		u32 *drm_formats;
+d76271d22694e8 Hyun Kwon        2018-07-07  1236  
+d76271d22694e8 Hyun Kwon        2018-07-07  1237  		drm_formats = drmm_kcalloc(disp->drm, sizeof(*drm_formats),
+d76271d22694e8 Hyun Kwon        2018-07-07  1238  					   layer->info->num_formats,
+d76271d22694e8 Hyun Kwon        2018-07-07  1239  					   GFP_KERNEL);
+d76271d22694e8 Hyun Kwon        2018-07-07  1240  		if (!drm_formats)
+d76271d22694e8 Hyun Kwon        2018-07-07  1241  			return -ENOMEM;
+d76271d22694e8 Hyun Kwon        2018-07-07  1242  
+d76271d22694e8 Hyun Kwon        2018-07-07  1243  		for (j = 0; j < layer->info->num_formats; ++j)
+d76271d22694e8 Hyun Kwon        2018-07-07  1244  			drm_formats[j] = layer->info->formats[j].drm_fmt;
+d76271d22694e8 Hyun Kwon        2018-07-07  1245  
+d76271d22694e8 Hyun Kwon        2018-07-07  1246  		/* Graphics layer is primary, and video layer is overlay. */
+1e42874b0df79a Quanyang Wang    2021-05-18  1247  		type = zynqmp_disp_layer_is_video(layer)
+1e42874b0df79a Quanyang Wang    2021-05-18  1248  		     ? DRM_PLANE_TYPE_OVERLAY : DRM_PLANE_TYPE_PRIMARY;
+d76271d22694e8 Hyun Kwon        2018-07-07  1249  		ret = drm_universal_plane_init(disp->drm, &layer->plane, 0,
+d76271d22694e8 Hyun Kwon        2018-07-07  1250  					       &zynqmp_disp_plane_funcs,
+d76271d22694e8 Hyun Kwon        2018-07-07  1251  					       drm_formats,
+d76271d22694e8 Hyun Kwon        2018-07-07  1252  					       layer->info->num_formats,
+d76271d22694e8 Hyun Kwon        2018-07-07  1253  					       NULL, type, NULL);
+d76271d22694e8 Hyun Kwon        2018-07-07  1254  		if (ret)
+d76271d22694e8 Hyun Kwon        2018-07-07  1255  			return ret;
+d76271d22694e8 Hyun Kwon        2018-07-07  1256  
+d76271d22694e8 Hyun Kwon        2018-07-07  1257  		drm_plane_helper_add(&layer->plane,
+d76271d22694e8 Hyun Kwon        2018-07-07  1258  				     &zynqmp_disp_plane_helper_funcs);
+650f12042b8532 Laurent Pinchart 2021-03-07  1259  
+8c772f0b2b8e94 Laurent Pinchart 2021-03-07 @1260  		drm_plane_create_zpos_immutable_property(&layer->plane, i);
+650f12042b8532 Laurent Pinchart 2021-03-07  1261  		if (zynqmp_disp_layer_is_gfx(layer))
+650f12042b8532 Laurent Pinchart 2021-03-07 @1262  			drm_plane_create_alpha_property(&layer->plane);
+d76271d22694e8 Hyun Kwon        2018-07-07  1263  	}
+d76271d22694e8 Hyun Kwon        2018-07-07  1264  
+d76271d22694e8 Hyun Kwon        2018-07-07  1265  	return 0;
+d76271d22694e8 Hyun Kwon        2018-07-07  1266  }
+d76271d22694e8 Hyun Kwon        2018-07-07  1267  
+
+:::::: The code at line 1260 was first introduced by commit
+:::::: 8c772f0b2b8e94bfd68f9bf19d7aba293332e4bf drm: xlnx: zynqmp_dpsub: Expose plane ordering to userspace
+
+:::::: TO: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+:::::: CC: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
