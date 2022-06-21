@@ -2,98 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E5F7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:47:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F203CCCA47E
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 21:47:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354661AbiFUVrN (ORCPT
+        id S1355374AbiFUVrt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 17:47:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33580 "EHLO
+        Tue, 21 Jun 2022 17:47:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345358AbiFUVrL (ORCPT
+        with ESMTP id S1345358AbiFUVrr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 17:47:11 -0400
-Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A87901839B
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 14:47:10 -0700 (PDT)
-Received: by mail-oi1-x231.google.com with SMTP id w16so18780710oie.5
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 14:47:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=4B7aVbqWFzGCq33NlsEkQcm/jsegAOEwkVb1IKw6lso=;
-        b=AgNp04iAHOZAOiJfs5ixkzSdzmxRvKgddI5dpUPe5SR+uEBpkQSirGBFzgnh6QDnFL
-         4bvN5ztV1PnHepFE4q9tUXpxmEZY6+p1sze068GCjOmfSkk/X1Jj6yhU2xbMTkUnCFgr
-         /zlRPXWhXC8iSz/GGI/tQr0g6dXs2PieZr8N8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=4B7aVbqWFzGCq33NlsEkQcm/jsegAOEwkVb1IKw6lso=;
-        b=DBBt6UfoIRIwbyIrYRQmYZj8oUpxEIBDFtBYGwnKcf+ijTmDaFUQg/wixyR+fLPIfk
-         51p/SeUSRr1+Uwqa6daFKX3tPKtl2Z45yN64geJOWeGTHmt/smtkxtPEUeIP4SM7932o
-         fTRRepjk4dchELUX3uef+NraxohX1bTCBj1OHHV5WHB+IWVr79OrpDHdTQy/9xfDKNCq
-         tfk6Yevj8BPv1h0Y7+WuvGPbFsp0GwIRCkFEpw8+6nKpQu9bfLPSA0hNnkPwoNoZwtqD
-         tXdd7qSKn1LX1wGx4ghTXaekhkPfXRl8NGbrTIVGzqdDha//V/6ZD+Xf2P/E996NlTDY
-         cfRg==
-X-Gm-Message-State: AOAM530/wOpsJ6s3z6Ptf/bhFCHrB0q98vOZEYanUxJeM7LX7WKmQ0gh
-        D7n+fZcBMbwK+FM+P13rP0uR2Q==
-X-Google-Smtp-Source: ABdhPJx4WApb4tVvFpAl3IVaT8gTGCiCAY6M+HpL9AEayoZQWpPPp9vMeqHivLHHHXXPkwqJInndog==
-X-Received: by 2002:a05:6808:1999:b0:32f:2fc:aed1 with SMTP id bj25-20020a056808199900b0032f02fcaed1mr20685051oib.255.1655848029871;
-        Tue, 21 Jun 2022 14:47:09 -0700 (PDT)
-Received: from [192.168.1.128] ([38.15.45.1])
-        by smtp.gmail.com with ESMTPSA id q7-20020a9d6307000000b0060bff068228sm10038190otk.66.2022.06.21.14.47.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Jun 2022 14:47:09 -0700 (PDT)
-Subject: Re: [PATCH 5.18 000/141] 5.18.6-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220620124729.509745706@linuxfoundation.org>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <447c09a3-7697-9fe8-b475-d75cfc7bd95e@linuxfoundation.org>
-Date:   Tue, 21 Jun 2022 15:47:06 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Tue, 21 Jun 2022 17:47:47 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33DBA186E1
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 14:47:47 -0700 (PDT)
+From:   John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1655848065;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=MW31G5kbLu7/Ci0H2MhhDew+fQAgETw4RoigY7kMdHg=;
+        b=XDBfijn0gdcFhbScEOcVU21nKf/td+AsNM2biCOYygacdDxoAJwlaYC3i4lAJUwVIbl59Z
+        Y7XFJ51Xt4ocAQk5T43Nh0WKqIgNGlaJRmDWqgAz7fkLSJk5h46BI90fhi/SsBjwUPakXi
+        XELp0SGBxFqUrIeJb1PArKIsHoJThxp5fbErz6X8tKlriCTSqeOING9LztUr7KGuhRaLHf
+        ERuE/N/rWVFsCvImB2T2gZPSWlRRGkVCLPGZdwHBHJDtmfTnTneBXgPhRaRVf0Eg3v0l1R
+        tlgAAJSQDoWU6nAR5dXughhiH6pPdo7xGnTtZGEf0ta8f/ZUpI2t/8cMY7Sz4A==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1655848065;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=MW31G5kbLu7/Ci0H2MhhDew+fQAgETw4RoigY7kMdHg=;
+        b=reFnj+hQ8X0HNAgyXwNbv8GWk81hcdrqWxrZ71D00HbfBDtrheru8sdeIBDhJCUCE/udWG
+        QeSgrlQQgahjp4CA==
+To:     Sergey Senozhatsky <senozhatsky@chromium.org>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Petr Mladek <pmladek@suse.com>, Marco Elver <elver@google.com>,
+        linux-kernel@vger.kernel.org,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [PATCH v2] printk: allow direct console printing to be enabled
+ always
+In-Reply-To: <YrAC8F8lDc1JNkoq@google.com>
+References: <Yq+Jjoyn/wj7yzeQ@zx2c4.com>
+ <20220619204326.556923-1-Jason@zx2c4.com>
+ <87letsw8en.fsf@jogness.linutronix.de> <YrAC8F8lDc1JNkoq@google.com>
+Date:   Tue, 21 Jun 2022 23:53:44 +0206
+Message-ID: <875yktadtr.fsf@jogness.linutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/20/22 6:48 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.18.6 release.
-> There are 141 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Wed, 22 Jun 2022 12:47:02 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.6-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.18.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-> 
+On 2022-06-20, Sergey Senozhatsky <senozhatsky@chromium.org> wrote:
+> would it make sense/be possible/etc. to look into possibility
+> to address that "deferred kthread vs IRQ" race by moving prb entries
+> emit to the same IRQ handler that emits chars from uart xmit buffer?
 
-Compiled and booted on my test system. No dmesg regressions.
+I think this is an interesting idea. We could have a function that would
+allow serial drivers (if they had a console on them) to flush any
+pending printk messages for their console.
 
-Tested-by: Shuah Khan <skhan@linuxfoundation.org>
+Each driver would need to call this function for themselves. And also
+the driver would need to ensure that it is not holding any locks that
+the console-part of the driver will need. And it would need to be best
+effort, because the related kthread may already be in the process of
+printing. But in general I think it could be a nice feature to improve
+the sort-of-synchronous behavior of printk for drivers that use it.
 
-thanks,
--- Shuah
+John Ogness
