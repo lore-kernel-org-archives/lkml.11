@@ -2,129 +2,687 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B991BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 16:40:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB1AAC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 16:40:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353988AbiFUQkC (ORCPT
+        id S1352582AbiFUQkU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 12:40:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53602 "EHLO
+        Tue, 21 Jun 2022 12:40:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353383AbiFUQjv (ORCPT
+        with ESMTP id S1352267AbiFUQkL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 12:39:51 -0400
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 475B51C107;
-        Tue, 21 Jun 2022 09:39:30 -0700 (PDT)
-Received: by mail-lj1-x234.google.com with SMTP id s10so16085292ljh.12;
-        Tue, 21 Jun 2022 09:39:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=mhIiUkoVFz0wPW9tQouAUPqb2d9trqlO1mA9uf8w0Ks=;
-        b=FIjnHKZ++BZwbnW/IETfzzE9HdfruXLMCZ2afU8f8Ol9x8E7l51cySVPm4KWm5juQG
-         gvX77m5NrkZGy6opdeOW3LRwfEVZD3UiZOrJaMZQjx5mhQWDWWBzAgbL+4P6dmqW4Ybr
-         pnJWoWI7QHQJSteAPaPBGKo0nX8KMOGEJJStZWmxp4DZK/wrdSA5PXIfblpzcGzawRa1
-         MeB9sdH+if74n2gTXbLRxglLSaNkv5FQLHhjr8l1loJCZtcGUyvXakvtZV7uSTRiacct
-         DlG37LBGraBOSPqB4o8FlEBG3UbFB1lHDbrO6892U8ZlIb6y/14e/lKA5JIfPI67jtMv
-         Uu5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=mhIiUkoVFz0wPW9tQouAUPqb2d9trqlO1mA9uf8w0Ks=;
-        b=TxdL8F/6NPd303tIJ8YeoHX5EUUNqfu8DhQU66Pbw4hpZCdhF2qTSFAhQIw1uiAPZ9
-         lTvNQPX8qdw+LnaaB0Dtu0uWJzZdZT2OgP0vpaV4wqDe94mXLW/ZVhlMWAftpVcK4cty
-         bPa8B8sid+NMP6QfVlqnmDs7HwxQ2+UQ253VhaUxyrq+hTKDbS6RuSzPRXnPcatxSAh/
-         3RkR/GF03ViZSxXJ8m6Y/AN3EOjt+Uvu9WzBQ+ugrcWn+p/hhiiBDgSyduual7JlTQOW
-         V4YpzYg5knYKam0DuT8IBE66LvYCb7yT1baqxX5ix9drdVRJWIb9B9ftssbdlkNo4Xe0
-         O4Ig==
-X-Gm-Message-State: AJIora94dO/37qy/99ItgO/KHUR31dJHauIo7tvfxbgJd3sErPDH1biO
-        +0AdvisoSP5XsiZmhx3SoIk=
-X-Google-Smtp-Source: AGRyM1tTeVIJS0PV6ghwi5oLN82VfE9B8lRb5DRIlTC+FNYEK1w9sU215ZQ3z+wF7iT6GuEnyQM6mw==
-X-Received: by 2002:a05:651c:160a:b0:25a:62a4:9085 with SMTP id f10-20020a05651c160a00b0025a62a49085mr8422999ljq.214.1655829568510;
-        Tue, 21 Jun 2022 09:39:28 -0700 (PDT)
-Received: from [192.168.2.145] (109-252-136-92.dynamic.spd-mgts.ru. [109.252.136.92])
-        by smtp.googlemail.com with ESMTPSA id y19-20020a2e3213000000b0025a69521bbdsm1106096ljy.121.2022.06.21.09.39.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Jun 2022 09:39:27 -0700 (PDT)
-Message-ID: <c1d7b5f0-32e0-df37-e447-c525e3a84253@gmail.com>
-Date:   Tue, 21 Jun 2022 19:39:21 +0300
+        Tue, 21 Jun 2022 12:40:11 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B9042E693;
+        Tue, 21 Jun 2022 09:40:10 -0700 (PDT)
+Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LSC0d03fFz67yQq;
+        Wed, 22 Jun 2022 00:39:45 +0800 (CST)
+Received: from roberto-ThinkStation-P620.huawei.com (10.204.63.22) by
+ fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 21 Jun 2022 18:40:07 +0200
+From:   Roberto Sassu <roberto.sassu@huawei.com>
+To:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kpsingh@kernel.org>, <john.fastabend@gmail.com>,
+        <songliubraving@fb.com>, <kafai@fb.com>, <yhs@fb.com>
+CC:     <dhowells@redhat.com>, <keyrings@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Roberto Sassu <roberto.sassu@huawei.com>
+Subject: [PATCH v5 5/5] selftests/bpf: Add test for bpf_verify_pkcs7_signature() helper
+Date:   Tue, 21 Jun 2022 18:37:57 +0200
+Message-ID: <20220621163757.760304-6-roberto.sassu@huawei.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220621163757.760304-1-roberto.sassu@huawei.com>
+References: <20220621163757.760304-1-roberto.sassu@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v6 17/22] drm/shmem-helper: Add generic memory shrinker
-Content-Language: en-US
-To:     Rob Clark <robdclark@gmail.com>,
-        Dmitry Osipenko <dmitry.osipenko@collabora.com>
-Cc:     David Airlie <airlied@linux.ie>, Gerd Hoffmann <kraxel@redhat.com>,
-        Gurchetan Singh <gurchetansingh@chromium.org>,
-        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-        Daniel Almeida <daniel.almeida@collabora.com>,
-        Gert Wollny <gert.wollny@collabora.com>,
-        Gustavo Padovan <gustavo.padovan@collabora.com>,
-        Daniel Stone <daniel@fooishbar.org>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Rob Herring <robh@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
-        Emil Velikov <emil.l.velikov@gmail.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Qiang Yu <yuq825@gmail.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        linux-tegra@vger.kernel.org, linux-media@vger.kernel.org,
-        linaro-mm-sig@lists.linaro.org, amd-gfx@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org, kernel@collabora.com
-References: <20220526235040.678984-1-dmitry.osipenko@collabora.com>
- <20220526235040.678984-18-dmitry.osipenko@collabora.com>
- <CAF6AEGt=EqeF+3UaYjxQCCFEabRFJwLbiWN9brGveYoHTYyZ7w@mail.gmail.com>
-From:   Dmitry Osipenko <digetx@gmail.com>
-In-Reply-To: <CAF6AEGt=EqeF+3UaYjxQCCFEabRFJwLbiWN9brGveYoHTYyZ7w@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.204.63.22]
+X-ClientProxiedBy: lhreml754-chm.china.huawei.com (10.201.108.204) To
+ fraeml714-chm.china.huawei.com (10.206.15.33)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-20.06.2022 18:37, Rob Clark пишет:
->> +static unsigned long
->> +drm_gem_shmem_shrinker_scan_objects(struct shrinker *shrinker,
->> +                                   struct shrink_control *sc)
->> +{
->> +       unsigned long nr_to_scan = sc->nr_to_scan;
->> +       bool lock_contention = false;
->> +       unsigned long freed;
->> +
->> +       /* purge as many objects as we can */
->> +       freed = drm_gem_shmem_shrinker_run_objects_scan(shrinker, nr_to_scan,
->> +                                                       &lock_contention, false);
->> +
->> +       /* evict as many objects as we can */
->> +       if (freed < nr_to_scan)
-> oh, one other small note, both in scan_objects() and count_objects(),
-> you should check that get_nr_swap_pages()>0 before counting
-> evictable/willneed objects.  (And you probably want to keep separate
-> LRUs for dontneed vs willneed to accomplish that.)  At least for CrOS,
-> inside the VM there is no swap enabled (but instead we rely on zram
-> swap in the host.. plus vm-balloon to balance memory pressure between
-> host and guest)
+Ensure that signature verification is performed successfully from an eBPF
+program, with the new bpf_verify_pkcs7_signature() helper.
 
-Noted, thank you!
+Generate a testing signature key and compile sign-file from scripts/, so
+that the test is selfcontained. Also, try to verify an existing kernel
+module.
+
+Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+---
+ tools/testing/selftests/bpf/Makefile          |  14 +-
+ tools/testing/selftests/bpf/config            |   2 +
+ .../bpf/prog_tests/verify_pkcs7_sig.c         | 341 ++++++++++++++++++
+ .../bpf/progs/test_verify_pkcs7_sig.c         |  90 +++++
+ .../testing/selftests/bpf/verify_sig_setup.sh | 104 ++++++
+ 5 files changed, 548 insertions(+), 3 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/verify_pkcs7_sig.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_verify_pkcs7_sig.c
+ create mode 100755 tools/testing/selftests/bpf/verify_sig_setup.sh
+
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+index cb8e552e1418..bacd97808ad5 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -14,6 +14,7 @@ BPFTOOLDIR := $(TOOLSDIR)/bpf/bpftool
+ APIDIR := $(TOOLSINCDIR)/uapi
+ GENDIR := $(abspath ../../../../include/generated)
+ GENHDR := $(GENDIR)/autoconf.h
++HOSTPKG_CONFIG := pkg-config
+ 
+ ifneq ($(wildcard $(GENHDR)),)
+   GENFLAGS := -DHAVE_GENHDR
+@@ -75,7 +76,7 @@ TEST_PROGS := test_kmod.sh \
+ 	test_xsk.sh
+ 
+ TEST_PROGS_EXTENDED := with_addr.sh \
+-	with_tunnels.sh ima_setup.sh \
++	with_tunnels.sh ima_setup.sh verify_sig_setup.sh \
+ 	test_xdp_vlan.sh test_bpftool.py
+ 
+ # Compile but not part of 'make run_tests'
+@@ -84,7 +85,7 @@ TEST_GEN_PROGS_EXTENDED = test_sock_addr test_skb_cgroup_id_user \
+ 	test_lirc_mode2_user xdping test_cpp runqslower bench bpf_testmod.ko \
+ 	xdpxceiver xdp_redirect_multi xdp_synproxy
+ 
+-TEST_CUSTOM_PROGS = $(OUTPUT)/urandom_read
++TEST_CUSTOM_PROGS = $(OUTPUT)/urandom_read $(OUTPUT)/sign-file
+ 
+ # Emit succinct information message describing current building step
+ # $1 - generic step name (e.g., CC, LINK, etc);
+@@ -189,6 +190,12 @@ $(OUTPUT)/urandom_read: urandom_read.c urandom_read_aux.c $(OUTPUT)/liburandom_r
+ 		     -fuse-ld=$(LLD) -Wl,-znoseparate-code		       \
+ 		     -Wl,-rpath=. -Wl,--build-id=sha1 -o $@
+ 
++$(OUTPUT)/sign-file: ../../../../scripts/sign-file.c
++	$(call msg,SIGN-FILE,,$@)
++	$(Q)$(CC) $(shell $(HOSTPKG_CONFIG)--cflags libcrypto 2> /dev/null) \
++		  $< -o $@ \
++		  $(shell $(HOSTPKG_CONFIG) --libs libcrypto 2> /dev/null || echo -lcrypto)
++
+ $(OUTPUT)/bpf_testmod.ko: $(VMLINUX_BTF) $(wildcard bpf_testmod/Makefile bpf_testmod/*.[ch])
+ 	$(call msg,MOD,,$@)
+ 	$(Q)$(RM) bpf_testmod/bpf_testmod.ko # force re-compilation
+@@ -512,7 +519,8 @@ TRUNNER_EXTRA_SOURCES := test_progs.c cgroup_helpers.c trace_helpers.c	\
+ TRUNNER_EXTRA_FILES := $(OUTPUT)/urandom_read $(OUTPUT)/bpf_testmod.ko	\
+ 		       $(OUTPUT)/liburandom_read.so			\
+ 		       $(OUTPUT)/xdp_synproxy				\
+-		       ima_setup.sh					\
++		       $(OUTPUT)/sign-file				\
++		       ima_setup.sh verify_sig_setup.sh			\
+ 		       $(wildcard progs/btf_dump_test_case_*.c)
+ TRUNNER_BPF_BUILD_RULE := CLANG_BPF_BUILD_RULE
+ TRUNNER_BPF_CFLAGS := $(BPF_CFLAGS) $(CLANG_CFLAGS) -DENABLE_ATOMICS_TESTS
+diff --git a/tools/testing/selftests/bpf/config b/tools/testing/selftests/bpf/config
+index c05904d631ec..76b65acd897e 100644
+--- a/tools/testing/selftests/bpf/config
++++ b/tools/testing/selftests/bpf/config
+@@ -63,3 +63,5 @@ CONFIG_NETFILTER_XT_MATCH_STATE=y
+ CONFIG_IP_NF_FILTER=y
+ CONFIG_IP_NF_TARGET_SYNPROXY=y
+ CONFIG_IP_NF_RAW=y
++CONFIG_MODULE_SIG=y
++CONFIG_KEYS=y
+diff --git a/tools/testing/selftests/bpf/prog_tests/verify_pkcs7_sig.c b/tools/testing/selftests/bpf/prog_tests/verify_pkcs7_sig.c
+new file mode 100644
+index 000000000000..bdf5b48e7837
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/verify_pkcs7_sig.c
+@@ -0,0 +1,341 @@
++// SPDX-License-Identifier: GPL-2.0
++
++/*
++ * Copyright (C) 2022 Huawei Technologies Duesseldorf GmbH
++ *
++ * Author: Roberto Sassu <roberto.sassu@huawei.com>
++ */
++
++#include <stdio.h>
++#include <errno.h>
++#include <stdlib.h>
++#include <unistd.h>
++#include <endian.h>
++#include <limits.h>
++#include <sys/stat.h>
++#include <sys/wait.h>
++#include <sys/mman.h>
++#include <linux/keyctl.h>
++#include <test_progs.h>
++
++#include "test_verify_pkcs7_sig.skel.h"
++
++#define MAX_DATA_SIZE (1024 * 1024)
++#define MAX_SIG_SIZE 1024
++#define LOG_BUF_SIZE 16384
++
++/* In stripped ARM and x86-64 modules, ~ is surprisingly rare. */
++#define MODULE_SIG_STRING "~Module signature appended~\n"
++
++/*
++ * Module signature information block.
++ *
++ * The constituents of the signature section are, in order:
++ *
++ *	- Signer's name
++ *	- Key identifier
++ *	- Signature data
++ *	- Information block
++ */
++struct module_signature {
++	u8	algo;		/* Public-key crypto algorithm [0] */
++	u8	hash;		/* Digest algorithm [0] */
++	u8	id_type;	/* Key identifier type [PKEY_ID_PKCS7] */
++	u8	signer_len;	/* Length of signer's name [0] */
++	u8	key_id_len;	/* Length of key identifier [0] */
++	u8	__pad[3];
++	__be32	sig_len;	/* Length of signature data */
++};
++
++struct data {
++	u8 data[MAX_DATA_SIZE];
++	u32 data_len;
++	u8 sig[MAX_SIG_SIZE];
++	u32 sig_len;
++};
++
++static int _run_setup_process(const char *setup_dir, const char *cmd)
++{
++	int child_pid, child_status;
++
++	child_pid = fork();
++	if (child_pid == 0) {
++		execlp("./verify_sig_setup.sh", "./verify_sig_setup.sh", cmd,
++		       setup_dir, NULL);
++		exit(errno);
++
++	} else if (child_pid > 0) {
++		waitpid(child_pid, &child_status, 0);
++		return WEXITSTATUS(child_status);
++	}
++
++	return -EINVAL;
++}
++
++static int populate_data_item_str(const char *tmp_dir, struct data *data_item)
++{
++	struct stat st;
++	char data_template[] = "/tmp/dataXXXXXX";
++	char path[PATH_MAX];
++	int ret, fd, child_status, child_pid;
++
++	data_item->data_len = 4;
++	memcpy(data_item->data, "test", data_item->data_len);
++
++	fd = mkstemp(data_template);
++	if (fd == -1)
++		return -errno;
++
++	ret = write(fd, data_item->data, data_item->data_len);
++
++	close(fd);
++
++	if (ret != data_item->data_len) {
++		ret = -EIO;
++		goto out;
++	}
++
++	child_pid = fork();
++
++	if (child_pid == -1) {
++		ret = -errno;
++		goto out;
++	}
++
++	if (child_pid == 0) {
++		snprintf(path, sizeof(path), "%s/signing_key.pem", tmp_dir);
++
++		return execlp("./sign-file", "./sign-file", "-d", "sha256",
++			      path, path, data_template, NULL);
++	}
++
++	waitpid(child_pid, &child_status, 0);
++
++	ret = WEXITSTATUS(child_status);
++	if (ret)
++		goto out;
++
++	snprintf(path, sizeof(path), "%s.p7s", data_template);
++
++	ret = stat(path, &st);
++	if (ret == -1) {
++		ret = -errno;
++		goto out;
++	}
++
++	if (st.st_size > sizeof(data_item->sig)) {
++		ret = -EINVAL;
++		goto out_sig;
++	}
++
++	data_item->sig_len = st.st_size;
++
++	fd = open(path, O_RDONLY);
++	if (fd == -1) {
++		ret = -errno;
++		goto out_sig;
++	}
++
++	ret = read(fd, data_item->sig, data_item->sig_len);
++
++	close(fd);
++
++	if (ret != data_item->sig_len) {
++		ret = -EIO;
++		goto out_sig;
++	}
++
++	ret = 0;
++out_sig:
++	unlink(path);
++out:
++	unlink(data_template);
++	return ret;
++}
++
++static int populate_data_item_mod(struct data *data_item)
++{
++	char mod_path[PATH_MAX], *mod_path_ptr;
++	struct stat st;
++	void *mod;
++	FILE *fp;
++	struct module_signature ms;
++	int ret, fd, modlen, marker_len, sig_len;
++
++	data_item->data_len = 0;
++
++	if (stat("/lib/modules", &st) == -1)
++		return 0;
++
++	/* Requires CONFIG_TCP_CONG_BIC=m. */
++	fp = popen("find /lib/modules/$(uname -r) -name tcp_bic.ko", "r");
++	if (!fp)
++		return 0;
++
++	mod_path_ptr = fgets(mod_path, sizeof(mod_path), fp);
++	pclose(fp);
++
++	if (!mod_path_ptr)
++		return 0;
++
++	mod_path_ptr = strchr(mod_path, '\n');
++	if (!mod_path_ptr)
++		return 0;
++
++	*mod_path_ptr = '\0';
++
++	if (stat(mod_path, &st) == -1)
++		return 0;
++
++	modlen = st.st_size;
++	marker_len = sizeof(MODULE_SIG_STRING) - 1;
++
++	fd = open(mod_path, O_RDONLY);
++	if (fd == -1)
++		return -errno;
++
++	mod = mmap(NULL, st.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
++
++	close(fd);
++
++	if (mod == MAP_FAILED)
++		return -errno;
++
++	if (strncmp(mod + modlen - marker_len, MODULE_SIG_STRING, marker_len)) {
++		ret = -EINVAL;
++		goto out;
++	}
++
++	modlen -= marker_len;
++
++	memcpy(&ms, mod + (modlen - sizeof(ms)), sizeof(ms));
++
++	sig_len = __be32_to_cpu(ms.sig_len);
++	modlen -= sig_len + sizeof(ms);
++
++	if (modlen > sizeof(data_item->data)) {
++		ret = -E2BIG;
++		goto out;
++	}
++
++	memcpy(data_item->data, mod, modlen);
++	data_item->data_len = modlen;
++
++	if (sig_len > sizeof(data_item->sig)) {
++		ret = -E2BIG;
++		goto out;
++	}
++
++	memcpy(data_item->sig, mod + modlen, sig_len);
++	data_item->sig_len = sig_len;
++	ret = 0;
++out:
++	munmap(mod, st.st_size);
++	return ret;
++}
++
++void test_verify_pkcs7_sig(void)
++{
++	char tmp_dir_template[] = "/tmp/verify_sigXXXXXX";
++	char *tmp_dir;
++	char *buf = NULL;
++	struct test_verify_pkcs7_sig *skel = NULL;
++	struct bpf_map *map;
++	struct data data;
++	int ret, zero = 0;
++
++	LIBBPF_OPTS(bpf_object_open_opts, opts);
++
++	/* Trigger creation of session keyring. */
++	syscall(__NR_request_key, "keyring", "_uid.0", NULL,
++		KEY_SPEC_SESSION_KEYRING);
++
++	tmp_dir = mkdtemp(tmp_dir_template);
++	if (!ASSERT_OK_PTR(tmp_dir, "mkdtemp"))
++		return;
++
++	ret = _run_setup_process(tmp_dir, "setup");
++	if (!ASSERT_OK(ret, "_run_setup_process"))
++		goto close_prog;
++
++	buf = malloc(LOG_BUF_SIZE);
++	if (!ASSERT_OK_PTR(buf, "malloc"))
++		goto close_prog;
++
++	opts.kernel_log_buf = buf;
++	opts.kernel_log_size = LOG_BUF_SIZE;
++	opts.kernel_log_level = 1;
++
++	skel = test_verify_pkcs7_sig__open_opts(&opts);
++	if (!ASSERT_OK_PTR(skel, "test_verify_pkcs7_sig__open_opts"))
++		goto close_prog;
++
++	ret = test_verify_pkcs7_sig__load(skel);
++
++	if (ret < 0 && strstr(buf, "unknown func bpf_verify_pkcs7_signature")) {
++		printf(
++		  "%s:SKIP:bpf_verify_pkcs7_signature() helper not supported\n",
++		  __func__);
++		test__skip();
++		goto close_prog;
++	}
++
++	if (!ASSERT_OK(ret, "test_verify_pkcs7_sig__load\n"))
++		goto close_prog;
++
++	ret = test_verify_pkcs7_sig__attach(skel);
++	if (!ASSERT_OK(ret, "test_verify_pkcs7_sig__attach\n"))
++		goto close_prog;
++
++	map = bpf_object__find_map_by_name(skel->obj, "data_input");
++	if (!ASSERT_OK_PTR(map, "data_input not found"))
++		goto close_prog;
++
++	ret = populate_data_item_str(tmp_dir, &data);
++	if (!ASSERT_OK(ret, "populate_data_item_str\n"))
++		goto close_prog;
++
++	skel->bss->monitored_pid = getpid();
++	skel->bss->keyring_serial = KEY_SPEC_SESSION_KEYRING;
++	skel->bss->keyring_id = -1;
++
++	ret = bpf_map_update_elem(bpf_map__fd(map), &zero, &data, BPF_ANY);
++	if (!ASSERT_OK(ret, "bpf_map_update_elem\n"))
++		goto close_prog;
++
++	/* Search the verification key in the testing keyring. */
++	skel->bss->keyring_serial = syscall(__NR_request_key, "keyring",
++					    "ebpf_testing_keyring", NULL,
++					    KEY_SPEC_SESSION_KEYRING);
++
++	ret = bpf_map_update_elem(bpf_map__fd(map), &zero, &data, BPF_ANY);
++	if (!ASSERT_OK(ret, "bpf_map_update_elem\n"))
++		goto close_prog;
++
++	/* Corrupt data (signature verification should fail). */
++	data.data[0] = 'a';
++	ret = bpf_map_update_elem(bpf_map__fd(map), &zero, &data, BPF_ANY);
++	if (!ASSERT_LT(ret, 0, "bpf_map_update_elem data_input\n"))
++		goto close_prog;
++
++	ret = populate_data_item_mod(&data);
++	if (!ASSERT_OK(ret, "populate_data_item_mod\n"))
++		goto close_prog;
++
++	if (data.data_len) {
++		skel->bss->keyring_id = 1;
++		ret = bpf_map_update_elem(bpf_map__fd(map), &zero, &data,
++					  BPF_ANY);
++		ASSERT_OK(ret, "bpf_map_update_elem\n");
++	}
++
++close_prog:
++	_run_setup_process(tmp_dir, "cleanup");
++	free(buf);
++
++	if (!skel)
++		return;
++
++	skel->bss->monitored_pid = 0;
++	test_verify_pkcs7_sig__destroy(skel);
++}
+diff --git a/tools/testing/selftests/bpf/progs/test_verify_pkcs7_sig.c b/tools/testing/selftests/bpf/progs/test_verify_pkcs7_sig.c
+new file mode 100644
+index 000000000000..5d99fcbcb26d
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/test_verify_pkcs7_sig.c
+@@ -0,0 +1,90 @@
++// SPDX-License-Identifier: GPL-2.0
++
++/*
++ * Copyright (C) 2022 Huawei Technologies Duesseldorf GmbH
++ *
++ * Author: Roberto Sassu <roberto.sassu@huawei.com>
++ */
++
++#include <errno.h>
++#include <stdlib.h>
++#include <limits.h>
++#include <linux/bpf.h>
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_tracing.h>
++
++#define MAX_DATA_SIZE (1024 * 1024)
++#define MAX_SIG_SIZE 1024
++
++typedef __u8 u8;
++typedef __u16 u16;
++typedef __u32 u32;
++typedef __u64 u64;
++
++u32 monitored_pid;
++u32 keyring_serial;
++int keyring_id;
++
++struct data {
++	u8 data[MAX_DATA_SIZE];
++	u32 data_len;
++	u8 sig[MAX_SIG_SIZE];
++	u32 sig_len;
++};
++
++struct {
++	__uint(type, BPF_MAP_TYPE_ARRAY);
++	__uint(max_entries, 1);
++	__type(key, __u32);
++	__type(value, struct data);
++} data_input SEC(".maps");
++
++char _license[] SEC("license") = "GPL";
++
++SEC("lsm.s/bpf")
++int BPF_PROG(bpf, int cmd, union bpf_attr *attr, unsigned int size)
++{
++	struct bpf_dynptr data_ptr, sig_ptr;
++	struct data *data_val;
++	struct key *trusted_keys = NULL;
++	u32 sig_len;
++	u32 pid;
++	u64 value;
++	int ret, zero = 0, lookup = 0;
++
++	pid = bpf_get_current_pid_tgid() >> 32;
++	if (pid != monitored_pid)
++		return 0;
++
++	data_val = bpf_map_lookup_elem(&data_input, &zero);
++	if (!data_val)
++		return 0;
++
++	bpf_probe_read(&value, sizeof(value), &attr->value);
++
++	bpf_copy_from_user(data_val, sizeof(struct data),
++			   (void *)(unsigned long)value);
++
++	if (data_val->data_len > sizeof(data_val->data))
++		return -EINVAL;
++
++	bpf_dynptr_from_mem(data_val->data, data_val->data_len, 0, &data_ptr);
++
++	if (data_val->sig_len > sizeof(data_val->sig))
++		return -EINVAL;
++
++	bpf_dynptr_from_mem(data_val->sig, data_val->sig_len, 0, &sig_ptr);
++
++	if (keyring_id == -1) {
++		trusted_keys = bpf_lookup_user_key(keyring_serial, 0);
++		lookup = 1;
++	}
++
++	ret = bpf_verify_pkcs7_signature(&data_ptr, &sig_ptr, trusted_keys,
++					 keyring_id);
++
++	if (lookup && trusted_keys)
++		bpf_key_put(trusted_keys);
++
++	return ret;
++}
+diff --git a/tools/testing/selftests/bpf/verify_sig_setup.sh b/tools/testing/selftests/bpf/verify_sig_setup.sh
+new file mode 100755
+index 000000000000..ba08922b4a27
+--- /dev/null
++++ b/tools/testing/selftests/bpf/verify_sig_setup.sh
+@@ -0,0 +1,104 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++
++set -e
++set -u
++set -o pipefail
++
++VERBOSE="${SELFTESTS_VERBOSE:=0}"
++LOG_FILE="$(mktemp /tmp/verify_sig_setup.log.XXXXXX)"
++
++x509_genkey_content="\
++[ req ]
++default_bits = 2048
++distinguished_name = req_distinguished_name
++prompt = no
++string_mask = utf8only
++x509_extensions = myexts
++
++[ req_distinguished_name ]
++CN = eBPF Signature Verification Testing Key
++
++[ myexts ]
++basicConstraints=critical,CA:FALSE
++keyUsage=digitalSignature
++subjectKeyIdentifier=hash
++authorityKeyIdentifier=keyid
++"
++
++usage()
++{
++	echo "Usage: $0 <setup|cleanup <existing_tmp_dir>"
++	exit 1
++}
++
++setup()
++{
++	local tmp_dir="$1"
++
++	echo "${x509_genkey_content}" > ${tmp_dir}/x509.genkey
++
++	openssl req -new -nodes -utf8 -sha256 -days 36500 \
++			-batch -x509 -config ${tmp_dir}/x509.genkey \
++			-outform PEM -out ${tmp_dir}/signing_key.pem \
++			-keyout ${tmp_dir}/signing_key.pem 2>&1
++
++	openssl x509 -in ${tmp_dir}/signing_key.pem -out \
++		${tmp_dir}/signing_key.der -outform der
++
++	key_id=$(cat ${tmp_dir}/signing_key.der | keyctl padd asymmetric ebpf_testing_key @s)
++
++	keyring_id=$(keyctl newring ebpf_testing_keyring @s)
++	keyctl link $key_id $keyring_id
++}
++
++cleanup() {
++	local tmp_dir="$1"
++
++	keyctl unlink $(keyctl search @s asymmetric ebpf_testing_key) @s
++	keyctl unlink $(keyctl search @s keyring ebpf_testing_keyring) @s
++	rm -rf ${tmp_dir}
++}
++
++catch()
++{
++	local exit_code="$1"
++	local log_file="$2"
++
++	if [[ "${exit_code}" -ne 0 ]]; then
++		cat "${log_file}" >&3
++	fi
++
++	rm -f "${log_file}"
++	exit ${exit_code}
++}
++
++main()
++{
++	[[ $# -ne 2 ]] && usage
++
++	local action="$1"
++	local tmp_dir="$2"
++
++	[[ ! -d "${tmp_dir}" ]] && echo "Directory ${tmp_dir} doesn't exist" && exit 1
++
++	if [[ "${action}" == "setup" ]]; then
++		setup "${tmp_dir}"
++	elif [[ "${action}" == "cleanup" ]]; then
++		cleanup "${tmp_dir}"
++	else
++		echo "Unknown action: ${action}"
++		exit 1
++	fi
++}
++
++trap 'catch "$?" "${LOG_FILE}"' EXIT
++
++if [[ "${VERBOSE}" -eq 0 ]]; then
++	# Save the stderr to 3 so that we can output back to
++	# it incase of an error.
++	exec 3>&2 1>"${LOG_FILE}" 2>&1
++fi
++
++main "$@"
++rm -f "${LOG_FILE}"
+-- 
+2.25.1
+
