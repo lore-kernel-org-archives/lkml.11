@@ -2,104 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAC80C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 16:03:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1945C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 16:05:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353675AbiFUQDP (ORCPT
+        id S1351186AbiFUQFE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 12:03:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45248 "EHLO
+        Tue, 21 Jun 2022 12:05:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353555AbiFUQC6 (ORCPT
+        with ESMTP id S238552AbiFUQFB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 12:02:58 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BED752DAA7
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 09:02:13 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id fu3so28474776ejc.7
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 09:02:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ajIufaZS31L5JGgBZ3aj5H5ZSklCRI8PNMvHL2oafFw=;
-        b=TbjJf5zpVMUIhuON7L5caOsWN1RSMkNH4eTucjnQ+TOGgUGSs/J9dl7n8G9Z3uOLsS
-         go4x+wTu3yJfXNZGli7paJzK232anQdm/Vgn99gPxnrBXve8mMhkbq79K0OgMxmAVz3R
-         MHiXrUBpOS82MmyxyTzEqrcy+yhbH4RBMk6nlbwaJw3RnverxVBR8BLnfoYeFYhLo75/
-         jcnBZOLdzu+ZhL6IGsw7BG8uXxBU0JVyi4YsanybY5+GXzqihbZhZ7CzlyWdH9ZKBU3Z
-         50f2wP4+jn2U4ey4kK3rqtzKsh/8Igz38hUURZVF2Dzph0sojs1K/lmbQDpLVQzEyXyl
-         B3OQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ajIufaZS31L5JGgBZ3aj5H5ZSklCRI8PNMvHL2oafFw=;
-        b=1gl/T15FoOSmu1BPs3eeFoW2D9q5hSdj8rT9linVX7t/TobPyZfVLha6+BohGZZmp9
-         eEVkCKGWSGpdrW1gnwVCN+XsNPBDQCBkfUV0UiEFsRFtss9V/ExDpPDQPINhBBOJMcuW
-         pCwwC+cM0shiYKj2MHwKTrDWztCVl/HOPPZeOOHDX71wmqAw1kuCREAN+HVJiD9x2U9r
-         LTIh4xSFiZwWNzQXVB3RkyVZosKflfC3J/1pZI5YxJGsp8oihPSOa1TrqeQ/PDFY6Lb4
-         7ZZHcrCablSaUvrLjvyNdcScXLseWrXPNh1N6J879Lm1d8GEIdemKzhDlH0FowhQjxE5
-         IAqw==
-X-Gm-Message-State: AJIora/GRtjlTJrDdSvWKSyRDw67q8eeMK1larLydw7gpT5Qe0Dt0dpI
-        76/FtOYRXz3N2q8ah58P9t8gaw==
-X-Google-Smtp-Source: AGRyM1tJ7negbS1AH/+t/TmQDM/W7Td5eE5Db99BDGFKcNAC3cPdeq3N/XH0C1NPOygluBZ3K/vcSQ==
-X-Received: by 2002:a17:906:9c82:b0:6df:c5f0:d456 with SMTP id fj2-20020a1709069c8200b006dfc5f0d456mr26930081ejc.287.1655827332290;
-        Tue, 21 Jun 2022 09:02:12 -0700 (PDT)
-Received: from [192.168.0.221] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id z15-20020a1709060f0f00b006ff19354f9fsm7821657eji.215.2022.06.21.09.02.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Jun 2022 09:02:11 -0700 (PDT)
-Message-ID: <94152e7d-184a-6b7a-6468-2678de410883@linaro.org>
-Date:   Tue, 21 Jun 2022 18:02:10 +0200
+        Tue, 21 Jun 2022 12:05:01 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C26B226;
+        Tue, 21 Jun 2022 09:04:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
+        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=E2A5u8QnSoMuLSc5EffUox9oGwY+67AbE7UeaWIqBa0=; b=jVTclS4fLpxKLJMGDBlW0xO1Vd
+        lawqGsyENs/93M71b4W1moKdogZEArIvMitxBhpmz+0XLVPhoGV+VmTnLXTSnMMp8AYgDKOCn1tGa
+        cwrsCFEvN03D4f7XuVHFomvs8wpU34WjbmnTQjYf+T3lDlOUip7av9mQjc5G7Vw1hN5EgKLXqIHn9
+        nUsVQRxKkFBQlznowevdLf5OpyZeLf3tgV5pW5i0M0pdIbUYa4UWRq5LO+cUxE67bxQL8udNqVomQ
+        QlVa6wR2XwpN739g9Cmfqz5C9w8JAx/WGiI4yNiu3PvGF51j95mqG2d4B0znzhtd8IUfUZwqa7fEX
+        xN0Y11Bg==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o3gID-00AUbS-E0; Tue, 21 Jun 2022 16:00:43 +0000
+Message-ID: <7933e208-cd4f-2234-58cb-2e5b40e795d8@infradead.org>
+Date:   Tue, 21 Jun 2022 08:59:42 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.10.0
-Subject: Re: [PATCH 1/9] dt-bindings: arm: qcom: fix Alcatel OneTouch Idol 3
- compatibles
+Subject: Re: [PATCH] sched: RT bandwidth interface for cgroup unified
+ hierarchy
 Content-Language: en-US
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        Stephen Boyd <sboyd@codeaurora.org>,
-        Rob Herring <robh@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Stephan Gerhold <stephan@gerhold.net>,
+To:     Chengming Zhou <zhouchengming@bytedance.com>, mingo@redhat.com,
+        peterz@infradead.org, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, tj@kernel.org,
+        lizefan.x@bytedance.com, hannes@cmpxchg.org, corbet@lwn.net
+Cc:     cgroups@vger.kernel.org, linux-doc@vger.kernel.org,
         linux-kernel@vger.kernel.org
-References: <20220520123252.365762-1-krzysztof.kozlowski@linaro.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220520123252.365762-1-krzysztof.kozlowski@linaro.org>
+References: <20220621123542.1444-1-zhouchengming@bytedance.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20220621123542.1444-1-zhouchengming@bytedance.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 20/05/2022 14:32, Krzysztof Kozlowski wrote:
-> The MSM8916 Alcatel OneTouch Idol 3 does not use MTP fallbacks in
-> compatibles:
-> 
->   msm8916-alcatel-idol347.dtb: /: compatible: 'oneOf' conditional failed, one must be fixed:
->     ['alcatel,idol347', 'qcom,msm8916'] is too short
-> 
-> Reported-by: Rob Herring <robh@kernel.org>
-> Fixes: e9dd2f7204ed ("dt-bindings: arm: qcom: Document alcatel,idol347 board")
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> ---
->  Documentation/devicetree/bindings/arm/qcom.yaml | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-> 
+Hi--
 
-I pinged about the patchset two weeks ago. There were no responses, but
-this one here is actually a fix.  Others document missing stuff, which
-although is not a fix, but still necessary to reduce amount of dtbs
-check warnings.
+On 6/21/22 05:35, Chengming Zhou wrote:
+> diff --git a/Documentation/admin-guide/cgroup-v2.rst b/Documentation/admin-guide/cgroup-v2.rst
+> index 176298f2f4de..3d2949e16e04 100644
+> --- a/Documentation/admin-guide/cgroup-v2.rst
+> +++ b/Documentation/admin-guide/cgroup-v2.rst
+> @@ -1055,6 +1055,19 @@ All time durations are in microseconds.
+>  
+>  	The burst in the range [0, $MAX].
+>  
+> +  cpu.max.rt
+> +	A read-write two value file which exists on all cgroups when
 
-Shall I treat the silence as this won't be picked up? I can take it
-instead, but it will create some conflicts because several people are
-doing similar as here...
+	             two-value
 
-Best regards,
-Krzysztof
+> +	CONFIG_RT_GROUP_SCHED enabled, to control CPU bandwidth for
+
+	                      is enabled,
+
+> +	RT threads in the task group.
+> +
+> +	The maximum bandwidth limit.  It's in the following format::
+> +
+> +	  $MAX $PERIOD
+> +
+> +	which indicates that RT threads in the group may consume upto
+
+	                                                         up to
+
+> +	$MAX in each $PERIOD duration.  "max" for $MAX indicates no
+> +	limit.  If only one number is written, $MAX is updated.
+
+-- 
+~Randy
