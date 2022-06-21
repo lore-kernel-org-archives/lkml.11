@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36B06C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 11:38:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F63EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 11:38:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349889AbiFULiO (ORCPT
+        id S1349896AbiFULiR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 07:38:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48662 "EHLO
+        Tue, 21 Jun 2022 07:38:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349679AbiFULhr (ORCPT
+        with ESMTP id S1349694AbiFULhr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 21 Jun 2022 07:37:47 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C69772A25D;
-        Tue, 21 Jun 2022 04:37:44 -0700 (PDT)
-X-UUID: 0eae45cb74d54230bdcb355a755eaf7b-20220621
-X-CID-P-RULE: Spam_GS6885AD
-X-CID-O-INFO: VERSION:1.1.6,REQID:612c3822-abda-47d5-8be1-a955fd9831ee,OB:0,LO
-        B:30,IP:0,URL:25,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS6885A
-        D,ACTION:quarantine,TS:115
-X-CID-INFO: VERSION:1.1.6,REQID:612c3822-abda-47d5-8be1-a955fd9831ee,OB:0,LOB:
-        30,IP:0,URL:25,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,
-        ACTION:quarantine,TS:115
-X-CID-META: VersionHash:b14ad71,CLOUDID:09bb1238-5e4b-44d7-80b2-bb618cb09d29,C
-        OID:6bf2b48ae077,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D10C2A26B;
+        Tue, 21 Jun 2022 04:37:45 -0700 (PDT)
+X-UUID: 0463a35f0f9e4ea7a0f847aaf89aa356-20220621
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.6,REQID:553c9220-2a23-4660-8f22-17a40ff4a315,OB:0,LO
+        B:0,IP:0,URL:5,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,AC
+        TION:release,TS:95
+X-CID-INFO: VERSION:1.1.6,REQID:553c9220-2a23-4660-8f22-17a40ff4a315,OB:0,LOB:
+        0,IP:0,URL:5,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,AC
+        TION:quarantine,TS:95
+X-CID-META: VersionHash:b14ad71,CLOUDID:9d23a62d-1756-4fa3-be7f-474a6e4be921,C
+        OID:8accb7ca7b5c,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
         RL:1,File:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 0eae45cb74d54230bdcb355a755eaf7b-20220621
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
+X-UUID: 0463a35f0f9e4ea7a0f847aaf89aa356-20220621
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
         (envelope-from <rex-bc.chen@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 120342192; Tue, 21 Jun 2022 19:37:34 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Tue, 21 Jun 2022 19:37:33 +0800
+        with ESMTP id 1866086705; Tue, 21 Jun 2022 19:37:35 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.185) by
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Tue, 21 Jun 2022 19:37:33 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
  mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
  15.2.792.3 via Frontend Transport; Tue, 21 Jun 2022 19:37:33 +0800
@@ -53,9 +53,9 @@ CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
         <linux-arm-kernel@lists.infradead.org>,
         <Project_Global_Chrome_Upstream_Group@mediatek.com>,
         Bo-Chen Chen <rex-bc.chen@mediatek.com>
-Subject: [PATCH v13 01/14] dt-bindings: mediatek,dpi: Add DP_INTF compatible
-Date:   Tue, 21 Jun 2022 19:37:19 +0800
-Message-ID: <20220621113732.11595-2-rex-bc.chen@mediatek.com>
+Subject: [PATCH v13 04/14] drm/mediatek: dpi: implement a CK/DE pol toggle in SoC config
+Date:   Tue, 21 Jun 2022 19:37:22 +0800
+Message-ID: <20220621113732.11595-5-rex-bc.chen@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20220621113732.11595-1-rex-bc.chen@mediatek.com>
 References: <20220621113732.11595-1-rex-bc.chen@mediatek.com>
@@ -66,69 +66,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Markus Schneider-Pargmann <msp@baylibre.com>
+From: Guillaume Ranquet <granquet@baylibre.com>
 
-DP_INTF is similar to DPI but does not have the exact same feature set
-or register layouts.
+Dp_intf does not support CK/DE polarity because the polarity information
+is not used for eDP and DP while dp_intf is only for eDP and DP.
+Therefore, we add a bit of flexibility to support SoCs without CK/DE pol
+support.
 
-DP_INTF is the sink of the display pipeline that is connected to the
-DisplayPort controller and encoder unit. It takes the same clocks as
-DPI.
-
-In this patch, we also do these string replacement:
-- s/mediatek/MediaTek/ in title.
-- s/Mediatek/MediaTek/ in description.
-
-Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
 Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
-[Bo-Chen: Modify reviewers' comments.]
+[Bo-Chen: Add modification reason in commit message.]
 Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+Reviewed-by: CK Hu <ck.hu@mediatek.com>
 ---
- .../bindings/display/mediatek/mediatek,dpi.yaml       | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ drivers/gpu/drm/mediatek/mtk_dpi.c | 23 ++++++++++++++++++-----
+ 1 file changed, 18 insertions(+), 5 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml
-index 77ee1b923991..5bb23e97cf33 100644
---- a/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml
-+++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,dpi.yaml
-@@ -4,16 +4,16 @@
- $id: http://devicetree.org/schemas/display/mediatek/mediatek,dpi.yaml#
- $schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c b/drivers/gpu/drm/mediatek/mtk_dpi.c
+index 24f4b5618276..fc2ef10bef31 100644
+--- a/drivers/gpu/drm/mediatek/mtk_dpi.c
++++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
+@@ -126,6 +126,7 @@ struct mtk_dpi_yc_limit {
+  * @edge_sel_en: Enable of edge selection.
+  * @output_fmts: Array of supported output formats.
+  * @num_output_fmts: Quantity of supported output formats.
++ * @is_ck_de_pol: Support CK/DE polarity.
+  */
+ struct mtk_dpi_conf {
+ 	unsigned int (*cal_factor)(int clock);
+@@ -134,6 +135,7 @@ struct mtk_dpi_conf {
+ 	bool edge_sel_en;
+ 	const u32 *output_fmts;
+ 	u32 num_output_fmts;
++	bool is_ck_de_pol;
+ };
  
--title: mediatek DPI Controller Device Tree Bindings
-+title: MediaTek DPI and DP_INTF Controller
+ static void mtk_dpi_mask(struct mtk_dpi *dpi, u32 offset, u32 val, u32 mask)
+@@ -219,13 +221,20 @@ static void mtk_dpi_config_pol(struct mtk_dpi *dpi,
+ 			       struct mtk_dpi_polarities *dpi_pol)
+ {
+ 	unsigned int pol;
++	unsigned int mask;
  
- maintainers:
-   - CK Hu <ck.hu@mediatek.com>
-   - Jitao shi <jitao.shi@mediatek.com>
+-	pol = (dpi_pol->ck_pol == MTK_DPI_POLARITY_RISING ? 0 : CK_POL) |
+-	      (dpi_pol->de_pol == MTK_DPI_POLARITY_RISING ? 0 : DE_POL) |
+-	      (dpi_pol->hsync_pol == MTK_DPI_POLARITY_RISING ? 0 : HSYNC_POL) |
++	mask = HSYNC_POL | VSYNC_POL;
++	pol = (dpi_pol->hsync_pol == MTK_DPI_POLARITY_RISING ? 0 : HSYNC_POL) |
+ 	      (dpi_pol->vsync_pol == MTK_DPI_POLARITY_RISING ? 0 : VSYNC_POL);
+-	mtk_dpi_mask(dpi, DPI_OUTPUT_SETTING, pol,
+-		     CK_POL | DE_POL | HSYNC_POL | VSYNC_POL);
++	if (dpi->conf->is_ck_de_pol) {
++		mask |= CK_POL | DE_POL;
++		pol |= (dpi_pol->ck_pol == MTK_DPI_POLARITY_RISING ?
++			0 : CK_POL) |
++		       (dpi_pol->de_pol == MTK_DPI_POLARITY_RISING ?
++			0 : DE_POL);
++	}
++
++	mtk_dpi_mask(dpi, DPI_OUTPUT_SETTING, pol, mask);
+ }
  
- description: |
--  The Mediatek DPI function block is a sink of the display subsystem and
--  provides 8-bit RGB/YUV444 or 8/10/10-bit YUV422 pixel data on a parallel
--  output bus.
-+  The MediaTek DPI and DP_INTF function blocks are a sink of the display
-+  subsystem and provides 8-bit RGB/YUV444 or 8/10/10-bit YUV422 pixel data on a
-+  parallel output bus.
+ static void mtk_dpi_config_3d(struct mtk_dpi *dpi, bool en_3d)
+@@ -813,6 +822,7 @@ static const struct mtk_dpi_conf mt8173_conf = {
+ 	.max_clock_khz = 300000,
+ 	.output_fmts = mt8173_output_fmts,
+ 	.num_output_fmts = ARRAY_SIZE(mt8173_output_fmts),
++	.is_ck_de_pol = true,
+ };
  
- properties:
-   compatible:
-@@ -24,6 +24,7 @@ properties:
-       - mediatek,mt8183-dpi
-       - mediatek,mt8186-dpi
-       - mediatek,mt8192-dpi
-+      - mediatek,mt8195-dp-intf
+ static const struct mtk_dpi_conf mt2701_conf = {
+@@ -822,6 +832,7 @@ static const struct mtk_dpi_conf mt2701_conf = {
+ 	.max_clock_khz = 150000,
+ 	.output_fmts = mt8173_output_fmts,
+ 	.num_output_fmts = ARRAY_SIZE(mt8173_output_fmts),
++	.is_ck_de_pol = true,
+ };
  
-   reg:
-     maxItems: 1
-@@ -55,7 +56,7 @@ properties:
-     $ref: /schemas/graph.yaml#/properties/port
-     description:
-       Output port node. This port should be connected to the input port of an
--      attached HDMI or LVDS encoder chip.
-+      attached HDMI, LVDS or DisplayPort encoder chip.
+ static const struct mtk_dpi_conf mt8183_conf = {
+@@ -830,6 +841,7 @@ static const struct mtk_dpi_conf mt8183_conf = {
+ 	.max_clock_khz = 100000,
+ 	.output_fmts = mt8183_output_fmts,
+ 	.num_output_fmts = ARRAY_SIZE(mt8183_output_fmts),
++	.is_ck_de_pol = true,
+ };
  
- required:
-   - compatible
+ static const struct mtk_dpi_conf mt8192_conf = {
+@@ -838,6 +850,7 @@ static const struct mtk_dpi_conf mt8192_conf = {
+ 	.max_clock_khz = 150000,
+ 	.output_fmts = mt8183_output_fmts,
+ 	.num_output_fmts = ARRAY_SIZE(mt8183_output_fmts),
++	.is_ck_de_pol = true,
+ };
+ 
+ static int mtk_dpi_probe(struct platform_device *pdev)
 -- 
 2.18.0
 
