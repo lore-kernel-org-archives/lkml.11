@@ -2,126 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B86CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 16:56:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98ECCC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 16:59:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352331AbiFUQ4K (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 12:56:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36472 "EHLO
+        id S234914AbiFUQ7d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 21 Jun 2022 12:59:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230491AbiFUQ4J (ORCPT
+        with ESMTP id S231492AbiFUQ7a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 12:56:09 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7981221E27
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 09:56:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655830568; x=1687366568;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=IqVaXVAhUiszl3qJo7uuOGds65md3km2SF/RMtbFfKc=;
-  b=KC5EEF1CiM0wzHYHaUcbUjjMFLUIeHAFSDTYIHoOAZ8lTllsD8SH0yv/
-   uoc9Br2yQG2j2VdHL0V8Hw9h3+H2MJevQMDqm1oAuoMaaMT5BpFGIGVGD
-   de5UyHi1GQLZE6jvzkTnTqg9ykLN6jdsQmEpSVYHYaCyjoDNxyqjNoVoU
-   GXFLVmMfBFvZaoS8PQOrZUlUqhDL/2SrOXe2V7EJiVu+sHLELowhgZ0al
-   +WLzrr0HvJw5UIRTnMh2CA4QidAuuA/uvdOdHFHHgPDvbGnfFcbeKdn0a
-   vCc/KHfbD4sDu5GuyAj9n0LZGW9yd/u1ZRkcBjctyHR6LyHkA2fmRKq0+
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="344162385"
-X-IronPort-AV: E=Sophos;i="5.92,209,1650956400"; 
-   d="scan'208";a="344162385"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 09:56:07 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,209,1650956400"; 
-   d="scan'208";a="643717673"
-Received: from lkp-server02.sh.intel.com (HELO a67cc04a5eeb) ([10.239.97.151])
-  by fmsmga008.fm.intel.com with ESMTP; 21 Jun 2022 09:56:06 -0700
-Received: from kbuild by a67cc04a5eeb with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o3hAb-0000C7-Lu;
-        Tue, 21 Jun 2022 16:56:05 +0000
-Date:   Wed, 22 Jun 2022 00:56:00 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:x86/misc] BUILD SUCCESS
- 229e73d46994f15314f58b2d39bf952111d89193
-Message-ID: <62b1f820.EM3mLkwqdZQ+tQj0%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Tue, 21 Jun 2022 12:59:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 811B720F52
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 09:59:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0E9B9B81AB2
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 16:59:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DAD2C3411C;
+        Tue, 21 Jun 2022 16:59:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655830766;
+        bh=gz5wvjLREIHx/PcjdvwdM3efMCKqQmb35YJK7xuaEyQ=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=dWDVvb0w24LzUtfi+7R0D41bEpMfhRNyrtZiLkHV/ks0pBQLMb6tLiJtdQugmYK9t
+         OAiX+XmTyG1pG46Y6r176B1iBf0FG8fEiApZcTS/EySP5+kIjOivluCK9Tu4rKq3/x
+         dIQUtlx9tftnh3vkxUcyLvFVpgYevuDmSBC630VZUoswDc3tfo08ka8pKN2W0Id84j
+         fyzssS+5bheE3zt6tIKq3fIkcgqa63iOxhoIZjcWVJ+jSjrsWYQiVOJbI4NFq9XTYC
+         ZDh2zmb7xza9aDqqeu4zQwrwyV2ubIhECie3Sjfx0A/dVx6i9Tg2W6SGrbJupedU8y
+         3gifDCRNWkrug==
+From:   Mark Brown <broonie@kernel.org>
+To:     ckeepax@opensource.cirrus.com
+Cc:     david.rhodes@cirrus.com, linux-kernel@vger.kernel.org,
+        patches@opensource.cirrus.com, james.schulman@cirrus.com,
+        lgirdwood@gmail.com, alsa-devel@alsa-project.org
+In-Reply-To: <20220621102041.1713504-1-ckeepax@opensource.cirrus.com>
+References: <20220621102041.1713504-1-ckeepax@opensource.cirrus.com>
+Subject: Re: [PATCH 1/4] ASoC: wm_adsp: Fix event for preloader
+Message-Id: <165583076515.271995.18026911532153153999.b4-ty@kernel.org>
+Date:   Tue, 21 Jun 2022 17:59:25 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/misc
-branch HEAD: 229e73d46994f15314f58b2d39bf952111d89193  x86/pmem: Fix platform-device leak in error path
+On Tue, 21 Jun 2022 11:20:38 +0100, Charles Keepax wrote:
+> The preloader controls on ADSP should return a value of 1 if the
+> preloader value was changed, update to correct this.
+> 
+> 
 
-elapsed time: 733m
+Applied to
 
-configs tested: 49
-configs skipped: 81
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+Thanks!
 
-gcc tested configs:
-arm64                               defconfig
-arm64                            allyesconfig
-arm                              allmodconfig
-arm                                 defconfig
-arm                              allyesconfig
-m68k                          hp300_defconfig
-arc                        vdk_hs38_defconfig
-sh                          landisk_defconfig
-m68k                          sun3x_defconfig
-m68k                          multi_defconfig
-xtensa                       common_defconfig
-m68k                       m5249evb_defconfig
-arm64                            alldefconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-xtensa                           allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-i386                                defconfig
-i386                             allyesconfig
-nios2                               defconfig
-arc                              allyesconfig
-mips                             allmodconfig
-i386                 randconfig-a005-20220620
-i386                 randconfig-a001-20220620
-i386                 randconfig-a006-20220620
-i386                 randconfig-a004-20220620
-i386                 randconfig-a003-20220620
-i386                 randconfig-a002-20220620
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_k210_defconfig
-riscv                             allnoconfig
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                                  kexec
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                               rhel-8.3
-x86_64                          rhel-8.3-func
-x86_64                           rhel-8.3-syz
-x86_64                    rhel-8.3-kselftests
-x86_64                         rhel-8.3-kunit
+[1/4] ASoC: wm_adsp: Fix event for preloader
+      commit: 81d74ddae83fbd85c9006835f36c362114127a7a
+[2/4] ASoC: wm5110: Fix DRE control
+      commit: 630cc5983740d784a1a6458f9dc2112c43fe0931
+[3/4] ASoC: cs35l41: Correct some control names
+      commit: 87912e97a1678d62877aab353ecfd201bc92b372
+[4/4] ASoC: core: Add new SOC_DOUBLE_SX_TLV macro
+      commit: 6b183919f7051294dc5fc331bb608d5d7f29f5da
 
-clang tested configs:
-x86_64                        randconfig-k001
-hexagon              randconfig-r041-20220621
-hexagon              randconfig-r045-20220621
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
