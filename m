@@ -2,66 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65612C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 07:01:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 888A5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 07:02:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346509AbiFUHB4 (ORCPT
+        id S1346543AbiFUHCl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 03:01:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38580 "EHLO
+        Tue, 21 Jun 2022 03:02:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346388AbiFUHBz (ORCPT
+        with ESMTP id S1346302AbiFUHCk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 03:01:55 -0400
-Received: from smtpbg.qq.com (smtpbg139.qq.com [175.27.65.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FC311EAD8;
-        Tue, 21 Jun 2022 00:01:50 -0700 (PDT)
-X-QQ-mid: bizesmtp67t1655794842tb8g352o
-Received: from ubuntu.localdomain ( [106.117.99.68])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 21 Jun 2022 15:00:34 +0800 (CST)
-X-QQ-SSF: 01000000007000109000B00A0000000
-X-QQ-FEAT: hR9GyqeohShu5QCuxfz/nAdLMul1wuwlaGMI42ANkYK1+WZjRITiEeI6UBiAT
-        my+KrgxsuojZIWPi8hR+CG5a9r/I665n+y6wnOBrkAS7DYteilWGHDGHj3ZO2Z47vGn0brt
-        2AIwBn4Y+iY7SKtyc3U6okU9q7wJXT9TlX4Fnoerp0lKzJLqSMW4SJctHeT/JKFjXCSupmY
-        Un8m+c2RY50IM/mS6OyC1RXFnQIHd6tosXF0mExZO4gk3C+yAv4ANkwL0mGv5JKSlEbw+PC
-        Hs3SRlwh4RJTyryJY5yaXFU5sEKhz/1xOB9StStUowOs3c9k5AiZsT+wpYjT599y3V9oYfg
-        N41NGH2MIi3GDEO4dw=
-X-QQ-GoodBg: 0
-From:   Jiang Jian <jiangjian@cdjrlc.com>
-To:     dmitry.torokhov@gmail.com
-Cc:     jiangjian@cdjrlc.com, linux-input@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] Input: cyapa_gen6 - aligned "*" each line
-Date:   Tue, 21 Jun 2022 15:00:32 +0800
-Message-Id: <20220621070032.30072-1-jiangjian@cdjrlc.com>
-X-Mailer: git-send-email 2.17.1
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam6
+        Tue, 21 Jun 2022 03:02:40 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E50771F625;
+        Tue, 21 Jun 2022 00:02:39 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id k7so11723466plg.7;
+        Tue, 21 Jun 2022 00:02:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wP9kY1WLbTW1UUbmBJofW8GbuL6xle8PjzjvugZSxOg=;
+        b=SLV71dKUg3TQYNZ8Ov1PzCQj/KlKFftSY4Elu8YMPPFvpS43VsZa3GnP7e+gmuBo4/
+         diOHtXnjRDfe/yMonBX4hc2qURDLdQikcTvxwpH5DUsufrgoI+k5oanXVjLM/16+R10L
+         vu6dP0U7M/27ARt8/vf81kvSe8cj9iUMMMUyJDo873tNPzQGra//6xwXO4nDD0a2XkbM
+         aeOKwmsPyo1mKSBCwj3yLzPM7MKlEZLfB3TGx2cSvD9JBVKoS1Xe7dI4geKr5h+gMLVx
+         ZwRtXx83cQo0R120KKbewu2Cl3dZumo8xmJJAQcAJf4V9dVJCCfL/gKjsWBs3h059vkP
+         EX9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wP9kY1WLbTW1UUbmBJofW8GbuL6xle8PjzjvugZSxOg=;
+        b=fhEI8NO8wa0mG5irEwFjTHBrnIJTQgsd0HmKTA5NyhYFE6b89UUAFG/AD2f5Ujku0B
+         dUCqhxm9Xb/ODtiB60RktDY6hfESBXvhqjS6PKxWa7OLX7vCD5P2jN5eh3g0xm3d2OAU
+         E/ODVj6bwlpAIs3xz6bXI/yogK1dxh+ukzggXGpkla/g6cbXFou7YPF/55B10f+kju2d
+         myBx91LHIxLDzxkir2HeIYZNRQ0GUDCbuKAqEUqCUoaHPcvYPZ3s+guF6F72dYmRj0GB
+         2rgOXxtySl6vQgxeci9Mnh2ahzACti+3pSTe5K7JGUwbOF1GmmnV6tfbVDd+NhOjNpM0
+         biTA==
+X-Gm-Message-State: AJIora/ubKQVPAt32QBrwuO0jWvx1xjKDjh1WEOE3ii4s1MHVg0UbvRr
+        HujlQQe6uGh2wZe8By5mfhA=
+X-Google-Smtp-Source: AGRyM1t3BNK6v69eKX4WKcobj7IS/1nTrq976lTNyPKRkLdkjl7F/QjYJKOnACZGunK544a3XGG5ng==
+X-Received: by 2002:a17:90b:682:b0:1e3:142:a562 with SMTP id m2-20020a17090b068200b001e30142a562mr41217624pjz.91.1655794959392;
+        Tue, 21 Jun 2022 00:02:39 -0700 (PDT)
+Received: from localhost.localdomain ([178.173.230.211])
+        by smtp.gmail.com with ESMTPSA id p9-20020a63ab09000000b00408a9264b36sm10454082pgf.3.2022.06.21.00.02.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Jun 2022 00:02:38 -0700 (PDT)
+From:   Shida Zhang <starzhangzsd@gmail.com>
+X-Google-Original-From: Shida Zhang <zhangshida@kylinos.cn>
+To:     djwong@kernel.org, dchinner@redhat.com
+Cc:     zhangshida@kylinos.cn, starzhangzsd@gmail.com,
+        linux-kernel@vger.kernel.org, linux-xfs@vger.kernel.org
+Subject: [PATCH v2] xfs: add check before calling xfs_mod_fdblocks
+Date:   Tue, 21 Jun 2022 15:02:24 +0800
+Message-Id: <20220621070224.1231039-1-zhangshida@kylinos.cn>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Consider * alignment in comments
+Checks are missing when delta equals 0 in __xfs_ag_resv_free() and
+__xfs_ag_resv_init().
 
-Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
+Signed-off-by: Shida Zhang <zhangshida@kylinos.cn>
 ---
- drivers/input/mouse/cyapa_gen6.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Changes from v1:
+ -Add checks before calling xfs_mod_fdblocks instead.
 
-diff --git a/drivers/input/mouse/cyapa_gen6.c b/drivers/input/mouse/cyapa_gen6.c
-index 812edfced86e..0caaf3e64215 100644
---- a/drivers/input/mouse/cyapa_gen6.c
-+++ b/drivers/input/mouse/cyapa_gen6.c
-@@ -57,7 +57,7 @@ struct pip_app_resp_head {
- 	 * The value of data_status can be the first byte of data or
- 	 * the command status or the unsupported command code depending on the
- 	 * requested command code.
--	*/
-+	 */
- 	u8 data_status;
- } __packed;
+ fs/xfs/libxfs/xfs_ag_resv.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
+
+diff --git a/fs/xfs/libxfs/xfs_ag_resv.c b/fs/xfs/libxfs/xfs_ag_resv.c
+index fe94058d4e9e..c8fa032e4b00 100644
+--- a/fs/xfs/libxfs/xfs_ag_resv.c
++++ b/fs/xfs/libxfs/xfs_ag_resv.c
+@@ -149,7 +149,12 @@ __xfs_ag_resv_free(
+ 		oldresv = resv->ar_orig_reserved;
+ 	else
+ 		oldresv = resv->ar_reserved;
+-	error = xfs_mod_fdblocks(pag->pag_mount, oldresv, true);
++
++	if (oldresv)
++		error = xfs_mod_fdblocks(pag->pag_mount, oldresv, true);
++	else
++		error = 0;
++
+ 	resv->ar_reserved = 0;
+ 	resv->ar_asked = 0;
+ 	resv->ar_orig_reserved = 0;
+@@ -215,8 +220,13 @@ __xfs_ag_resv_init(
  
+ 	if (XFS_TEST_ERROR(false, mp, XFS_ERRTAG_AG_RESV_FAIL))
+ 		error = -ENOSPC;
+-	else
+-		error = xfs_mod_fdblocks(mp, -(int64_t)hidden_space, true);
++	else {
++		error = 0;
++		if (hidden_space)
++			error = xfs_mod_fdblocks(mp, -(int64_t)hidden_space,
++						true);
++	}
++
+ 	if (error) {
+ 		trace_xfs_ag_resv_init_error(pag->pag_mount, pag->pag_agno,
+ 				error, _RET_IP_);
 -- 
-2.17.1
+2.25.1
 
