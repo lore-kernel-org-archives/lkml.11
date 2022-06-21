@@ -2,64 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C387C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 14:23:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 032A7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 14:24:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351453AbiFUOXn (ORCPT
+        id S1351375AbiFUOYU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 10:23:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36534 "EHLO
+        Tue, 21 Jun 2022 10:24:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351375AbiFUOX0 (ORCPT
+        with ESMTP id S1349421AbiFUOYT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 10:23:26 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1EB312AC5;
-        Tue, 21 Jun 2022 07:23:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 18AF9CE1985;
-        Tue, 21 Jun 2022 14:23:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0FBFC3411C;
-        Tue, 21 Jun 2022 14:23:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655821402;
-        bh=/7FHu/l1P2AIpjzv1z9rW00tsNnYYhYf7Z3/9CtVBlQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=r77Y8UbJMdEM3NMc6q4lW0erRfnRQ+oZlU55aji2tP5hf/74PGWUSvRUhveaAoZMM
-         dT4kymsdwPSXz723uWyKJThFv4YEi07+N+OW5JGT2oV436sPZRhAN/obp2A+vT9k6R
-         7PuzlLTk7/pa+yFHPfevNuY/HCA1Gtm9pdIddA6c=
-Date:   Tue, 21 Jun 2022 16:23:19 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Cc:     hminas@synopsys.com, stern@rowland.harvard.edu,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        amelie.delaunay@foss.st.com
-Subject: Re: [PATCH 1/3] usb: host: ohci-platform: add TPL support
-Message-ID: <YrHUV2MeCQ0vAnfd@kroah.com>
-References: <20220621130506.85424-1-fabrice.gasnier@foss.st.com>
- <20220621130506.85424-2-fabrice.gasnier@foss.st.com>
+        Tue, 21 Jun 2022 10:24:19 -0400
+Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 3FB7D186E1
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 07:24:18 -0700 (PDT)
+Received: (qmail 876587 invoked by uid 1000); 21 Jun 2022 10:24:17 -0400
+Date:   Tue, 21 Jun 2022 10:24:17 -0400
+From:   Alan Stern <stern@rowland.harvard.edu>
+To:     Paul =?iso-8859-1?Q?Heidekr=FCger?= <Paul.Heidekrueger@in.tum.de>
+Cc:     llvm@lists.linux.dev, linux-toolchains@vger.kernel.org,
+        Andrea Parri <parri.andrea@gmail.com>,
+        Will Deacon <will@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        David Howells <dhowells@redhat.com>,
+        Jade Alglave <j.alglave@ucl.ac.uk>,
+        Luc Maranget <luc.maranget@inria.fr>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Akira Yokosawa <akiyks@gmail.com>,
+        Daniel Lustig <dlustig@nvidia.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, Palmer Dabbelt <palmer@dabbelt.com>,
+        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        Marco Elver <elver@google.com>,
+        Charalampos Mainas <charalampos.mainas@gmail.com>,
+        Pramod Bhatotia <pramod.bhatotia@in.tum.de>,
+        Soham Chakraborty <s.s.chakraborty@tudelft.nl>,
+        Martin Fink <martin.fink@in.tum.de>
+Subject: Re: [PATCH RFC] tools/memory-model: Adjust ctrl dependency definition
+Message-ID: <YrHUkfDWsexHRUKj@rowland.harvard.edu>
+References: <20220615114330.2573952-1-paul.heidekrueger@in.tum.de>
+ <YqnpshlsAHg7Uf9G@rowland.harvard.edu>
+ <50B9D7C1-B11D-4583-9814-BFFF2C80D8CA@in.tum.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20220621130506.85424-2-fabrice.gasnier@foss.st.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <50B9D7C1-B11D-4583-9814-BFFF2C80D8CA@in.tum.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 21, 2022 at 03:05:04PM +0200, Fabrice Gasnier wrote:
-> From: Amelie Delaunay <amelie.delaunay@foss.st.com>
+On Tue, Jun 21, 2022 at 01:59:27PM +0200, Paul Heidekrüger wrote:
+> OK. So, LKMM limits the scope of control dependencies to its arm(s), hence
+> there is a control dependency from the last READ_ONCE() before the loop
+> exists to the WRITE_ONCE().
 > 
-> The TPL support is used to identify targeted devices during EH compliance
-> test. The user can add "tpl-support" in the device tree to enable it.
+> But then what about the following:
+> 
+> > int *x, *y;
+> > 
+> > int foo()
+> > {
+> > 	/* More code */
+> > 
+> > 	if(READ_ONCE(x))
+> > 		return 42;
+> > 
+> > 	/* More code */
+> > 
+> > 	WRITE_ONCE(y, 42);
+> > 
+> > 	/* More code */
+> > 
+> > 	return 0;
+> > }
+> 
+> The READ_ONCE() determines whether the WRITE_ONCE() will be executed at all,
+> but the WRITE_ONCE() doesn't lie in the if condition's arm.
 
-What is "TPL" support?  What is "EH"?
+So in this case the LKMM would not recognize that there's a control 
+dependency, even though it clearly exists.
 
-Please spell things out.
+>   However, by
+> "inverting" the if, we get the following equivalent code:
+> 
+> > if(!READ_ONCE(x)) {
+> > 	/* More code */
+> > 
+> > 	WRITE_ONCE(y, 42);
+> > 
+> > 	/* More code */
+> > 
+> > 	return 0;
+> > }
+> > 
+> > return 42;
+> 
+> Now, the WRITE_ONCE() is in the if's arm, and there is clearly a control
+> dependency.
 
-thanks,
+Correct.
 
-greg k-h
+> Similar cases:
+> 
+> > if(READ_ONCE())
+> > 	foo(); /* WRITE_ONCE() in foo() */
+> > return 42;
+> 
+> or
+> 
+> > if(READ_ONCE())
+> >     goto foo; /* WRITE_ONCE() after foo */
+> > return 42;
+> 
+> In both cases, the WRITE_ONCE() again isn't in the if's arm syntactically
+> speaking, but again, with rewriting, you can end up with a control
+> dependency; in the first case via inlining, in the second case by simply
+> copying the code after the "foo" marker.
+
+Again, correct.  The LKMM isn't always consistent, and it behaves this 
+way to try to avoid presuming too much about the optimizations that 
+compilers may apply.
+
+Alan
