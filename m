@@ -2,270 +2,236 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 949BFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:19:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 321D6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:20:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352449AbiFUPTA (ORCPT
+        id S1352625AbiFUPUO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 11:19:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57120 "EHLO
+        Tue, 21 Jun 2022 11:20:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352650AbiFUPSZ (ORCPT
+        with ESMTP id S1352464AbiFUPUK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 11:18:25 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8B472720;
-        Tue, 21 Jun 2022 08:18:24 -0700 (PDT)
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25LEsZK6001310;
-        Tue, 21 Jun 2022 15:15:55 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=pp1; bh=sFLFw+BKj342kHxB0ScRZy4YnJ9mxAqKjzp3VRkzRvY=;
- b=YTYhO9QKYofD0qg/XJDhjFoQWDZrPNIZ85E1iSc4oVK/eQAroG/bek0CR+llv10GAhjY
- COHKbSHnEzzrQ8A7sF7PiYMddGf1hAykb89vWu6HMgnO7Hgv7ucp+ZRTL7948ZgQ1m4X
- VkjFCSbLeZqeQIkcCzwXPga7VHSWALmYYNpqItMrgiP4DsKKYHQzn0yalESv+Kns7rbL
- tusMegR4UWucPYwPYf0f/1apYXOnQiBfcXG8e7YWw2Emq5PqPK2o4A5ZDlqWPrbtabzv
- XMZPgv52Vm3g39cqxIsLFEBPTClKDnRdsrj9UyLhnbK7WZEWoGLp7utzZtF1+Sp2nkJb Bg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gug5t0pjg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 21 Jun 2022 15:15:55 +0000
-Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25LF6wDP008159;
-        Tue, 21 Jun 2022 15:15:54 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gug5t0ph6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 21 Jun 2022 15:15:54 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25LF6pHa017543;
-        Tue, 21 Jun 2022 15:15:52 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma06ams.nl.ibm.com with ESMTP id 3gs5yhm8jw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 21 Jun 2022 15:15:52 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25LFFonZ22479266
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 21 Jun 2022 15:15:50 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1DD23AE051;
-        Tue, 21 Jun 2022 15:15:50 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id CEF8FAE045;
-        Tue, 21 Jun 2022 15:15:48 +0000 (GMT)
-Received: from li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com (unknown [9.145.144.178])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Tue, 21 Jun 2022 15:15:48 +0000 (GMT)
-Date:   Tue, 21 Jun 2022 17:15:47 +0200
-From:   Alexander Gordeev <agordeev@linux.ibm.com>
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     linux-kernel@vger.kernel.org, rjw@rjwysocki.net,
-        Oleg Nesterov <oleg@redhat.com>, mingo@kernel.org,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, mgorman@suse.de, bigeasy@linutronix.de,
-        Will Deacon <will@kernel.org>, tj@kernel.org,
-        linux-pm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-um@lists.infradead.org, Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-xtensa@linux-xtensa.org, Kees Cook <keescook@chromium.org>,
-        Jann Horn <jannh@google.com>, linux-ia64@vger.kernel.org
-Subject: Re: [PATCH v4 12/12] sched,signal,ptrace: Rework TASK_TRACED,
- TASK_STOPPED state
-Message-ID: <YrHgo8GKFPWwoBoJ@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
-References: <87a6bv6dl6.fsf_-_@email.froward.int.ebiederm.org>
- <20220505182645.497868-12-ebiederm@xmission.com>
- <YrHA5UkJLornOdCz@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
- <877d5ajesi.fsf@email.froward.int.ebiederm.org>
+        Tue, 21 Jun 2022 11:20:10 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 140F61F2CB
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:20:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655824808;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=P1aTQGCdCd/WCCg+CdRK2dqhWGiAOwiqqFPLYHWnZ4I=;
+        b=gRxB6WDhbl+5LsBxxDdZmpCXqzr9RyN+nkmdg4in3Cc9AOZnREh/kdZ80+g6W5kQOgL8Yb
+        m9PitzdL64PO9xfavzon8Xgj/ghI9ne7dTnGl+XE9fHVSxLCp76ve95+dznX2OsG6o7bJi
+        23J5dyTX0ONoVTsuTiKQPoz/0UDzeYg=
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
+ [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-418--UDbsASrPQWR2rkwQyHfrA-1; Tue, 21 Jun 2022 11:20:06 -0400
+X-MC-Unique: -UDbsASrPQWR2rkwQyHfrA-1
+Received: by mail-qk1-f199.google.com with SMTP id k188-20020a37a1c5000000b006a6c4ce2623so16763021qke.6
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:20:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=P1aTQGCdCd/WCCg+CdRK2dqhWGiAOwiqqFPLYHWnZ4I=;
+        b=4MjyddfbT9O2h52sbiVdugJACVkMFbbSEFVYrx23+LGoK2FixTP2sgnNAcrBu5/aKL
+         ULQOnjkfE/pN88spa/QVD227UhP7OfBfuJ/wv4EYCOoFVlYUroo20SaaJsMrW0zcg30E
+         Oty6hmLpZgtmPpZbuIiNLdDXJuO8bLu9DgqPDuvSRFjzeEodaoUtlvIX/6jt5fXINfl4
+         Km4cl28doZWO+RMOI62OWaFlvXNw5JbVg+s0sZCa3XNufJ4F5FFrZoE2XxB3wY84ABsL
+         ORZgIC2iVuIWh7CAEMa8e3Mi1QtrbalsbSde42Lr9TjcnROB8z7mL7iKOz07Bqoeg+xV
+         Rbpg==
+X-Gm-Message-State: AJIora+VL6yZDKRhJhgeDPpRkPPpk/N1Ip/pGjRVzHjmyL7tzSWBISr7
+        feuTjEe64/A2BJfhdfgpSNGAMcUQWRlz6DVXlhGN91eTTLjbI4GXEHau+T+7V+6fhgKpH1sStxR
+        scmZJv7TzRBNgil08bkuUQn3w
+X-Received: by 2002:a05:622a:f:b0:304:ea08:4227 with SMTP id x15-20020a05622a000f00b00304ea084227mr24100691qtw.620.1655824806128;
+        Tue, 21 Jun 2022 08:20:06 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1ugXnBnBHfSF1q+MNVy/kX/HyG2xqvUeAd8GBefFNsnB10JRRI6pctEPRk+wurKNpL2uMxC1Q==
+X-Received: by 2002:a05:622a:f:b0:304:ea08:4227 with SMTP id x15-20020a05622a000f00b00304ea084227mr24100667qtw.620.1655824805766;
+        Tue, 21 Jun 2022 08:20:05 -0700 (PDT)
+Received: from sgarzare-redhat (host-79-46-200-40.retail.telecomitalia.it. [79.46.200.40])
+        by smtp.gmail.com with ESMTPSA id bl38-20020a05620a1aa600b006a6bbc2725esm14686589qkb.118.2022.06.21.08.19.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Jun 2022 08:20:05 -0700 (PDT)
+Date:   Tue, 21 Jun 2022 17:19:53 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Gautam Dawar <gautam.dawar@xilinx.com>,
+        Jason Wang <jasowang@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Xie Yongji <xieyongji@bytedance.com>,
+        Gautam Dawar <gdawar@xilinx.com>,
+        Longpeng <longpeng2@huawei.com>, Eli Cohen <elic@nvidia.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Linux Virtualization <virtualization@lists.linux-foundation.org>,
+        kernel list <linux-kernel@vger.kernel.org>,
+        kvm <kvm@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
+        Martin Petrus Hubertus Habets <martinh@xilinx.com>,
+        Harpreet Singh Anand <hanand@xilinx.com>,
+        martinpo@xilinx.com, pabloc@xilinx.com, dinang@xilinx.com,
+        "Kamde, Tanuj" <tanuj.kamde@amd.com>, habetsm.xilinx@gmail.com,
+        ecree.xilinx@gmail.com, Eugenio Perez Martin <eperezma@redhat.com>,
+        Wu Zongyong <wuzongyong@linux.alibaba.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Zhu Lingshan <lingshan.zhu@intel.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Zhang Min <zhang.min9@zte.com.cn>
+Subject: Re: [PATCH v2 19/19] vdpasim: control virtqueue support
+Message-ID: <CAGxU2F6OO108oHsrLBWJnYRG2yRU8QnRxAdjJhUUcp8AqaAP-g@mail.gmail.com>
+References: <20220330180436.24644-1-gdawar@xilinx.com>
+ <20220330180436.24644-20-gdawar@xilinx.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <877d5ajesi.fsf@email.froward.int.ebiederm.org>
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: rJMiJBfBjWWdvb3mtiPQ-gnOYpFaD8J9
-X-Proofpoint-ORIG-GUID: cSNjQG5_nEXNScHXpWdbu8FUjZnN09QQ
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
-MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-06-21_08,2022-06-21_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- impostorscore=0 spamscore=0 mlxlogscore=970 lowpriorityscore=0
- clxscore=1015 adultscore=0 suspectscore=0 mlxscore=0 bulkscore=0
- malwarescore=0 phishscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2204290000 definitions=main-2206210065
+In-Reply-To: <20220330180436.24644-20-gdawar@xilinx.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 21, 2022 at 09:02:05AM -0500, Eric W. Biederman wrote:
-> Alexander Gordeev <agordeev@linux.ibm.com> writes:
-> 
-> > On Thu, May 05, 2022 at 01:26:45PM -0500, Eric W. Biederman wrote:
-> >> From: Peter Zijlstra <peterz@infradead.org>
-> >> 
-> >> Currently ptrace_stop() / do_signal_stop() rely on the special states
-> >> TASK_TRACED and TASK_STOPPED resp. to keep unique state. That is, this
-> >> state exists only in task->__state and nowhere else.
-> >> 
-> >> There's two spots of bother with this:
-> >> 
-> >>  - PREEMPT_RT has task->saved_state which complicates matters,
-> >>    meaning task_is_{traced,stopped}() needs to check an additional
-> >>    variable.
-> >> 
-> >>  - An alternative freezer implementation that itself relies on a
-> >>    special TASK state would loose TASK_TRACED/TASK_STOPPED and will
-> >>    result in misbehaviour.
-> >> 
-> >> As such, add additional state to task->jobctl to track this state
-> >> outside of task->__state.
-> >> 
-> >> NOTE: this doesn't actually fix anything yet, just adds extra state.
-> >> 
-> >> --EWB
-> >>   * didn't add a unnecessary newline in signal.h
-> >>   * Update t->jobctl in signal_wake_up and ptrace_signal_wake_up
-> >>     instead of in signal_wake_up_state.  This prevents the clearing
-> >>     of TASK_STOPPED and TASK_TRACED from getting lost.
-> >>   * Added warnings if JOBCTL_STOPPED or JOBCTL_TRACED are not cleared
-> >
-> > Hi Eric, Peter,
-> >
-> > On s390 this patch triggers warning at kernel/ptrace.c:272 when
-> > kill_child testcase from strace tool is repeatedly used (the source
-> > is attached for reference):
-> >
-> > while :; do
-> > 	strace -f -qq -e signal=none -e trace=sched_yield,/kill ./kill_child
-> > done
-> >
-> > It normally takes few minutes to cause the warning in -rc3, but FWIW
-> > it hits almost immediately for ptrace_stop-cleanup-for-v5.19 tag of
-> > git://git.kernel.org/pub/scm/linux/kernel/git/ebiederm/user-namespace.
-> >
-> > Commit 7b0fe1367ef2 ("ptrace: Document that wait_task_inactive can't
-> > fail") suggests this WARN_ON_ONCE() is not really expected, yet we
-> > observe a child in __TASK_TRACED state. Could you please comment here?
-> >
-> 
-> For clarity the warning is that the child is not in __TASK_TRACED state.
-> 
-> The code is waiting for the code to stop in the scheduler in the
-> __TASK_TRACED state so that it can safely read and change the
-> processes state.  Some of that state is not even saved until the
-> process is scheduled out so we have to wait until the process
-> is stopped in the scheduler.
+Hi Gautam,
 
-So I assume (checked actually) the return 0 below from kernel/sched/core.c:
-wait_task_inactive() is where it bails out:
-
-3303                 while (task_running(rq, p)) {
-3304                         if (match_state && unlikely(READ_ONCE(p->__state) != match_state))
-3305                                 return 0;
-3306                         cpu_relax();
-3307                 }
-
-Yet, the child task is always found in __TASK_TRACED state (as seen
-in crash dumps):
-
-> 101447  11342  13      ce3a8100      RU   0.0   10040   4412  strace
-  101450  101447   0      bb04b200      TR   0.0    2272   1136  kill_child
-  108261  101447   2      d0b10100      TR   0.0    2272    532  kill_child
-crash> task bb04b200 __state
-PID: 101450  TASK: bb04b200          CPU: 0   COMMAND: "kill_child"
-  __state = 8,
-
-crash> task d0b10100 __state
-PID: 108261  TASK: d0b10100          CPU: 2   COMMAND: "kill_child"
-  __state = 8,
-
-> At least on s390 it looks like there is a race between SIGKILL and
-> ptrace_check_attach.  That isn't good.
+On Wed, Mar 30, 2022 at 8:21 PM Gautam Dawar <gautam.dawar@xilinx.com> wrote:
 >
-> Reading the code below there is something missing because I don't see
-> anything making ptrace calls, and ptrace_check_attach (which contains
-> the warning) only happens in the ptrace syscall.
+> This patch introduces the control virtqueue support for vDPA
+> simulator. This is a requirement for supporting advanced features like
+> multiqueue.
+>
+> A requirement for control virtqueue is to isolate its memory access
+> from the rx/tx virtqueues. This is because when using vDPA device
+> for VM, the control virqueue is not directly assigned to VM. Userspace
+> (Qemu) will present a shadow control virtqueue to control for
+> recording the device states.
+>
+> The isolation is done via the virtqueue groups and ASID support in
+> vDPA through vhost-vdpa. The simulator is extended to have:
+>
+> 1) three virtqueues: RXVQ, TXVQ and CVQ (control virtqueue)
+> 2) two virtqueue groups: group 0 contains RXVQ and TXVQ; group 1
+>    contains CVQ
+> 3) two address spaces and the simulator simply implements the address
+>    spaces by mapping it 1:1 to IOTLB.
+>
+> For the VM use cases, userspace(Qemu) may set AS 0 to group 0 and AS 1
+> to group 1. So we have:
+>
+> 1) The IOTLB for virtqueue group 0 contains the mappings of guest, so
+>    RX and TX can be assigned to guest directly.
+> 2) The IOTLB for virtqueue group 1 contains the mappings of CVQ which
+>    is the buffers that allocated and managed by VMM only. So CVQ of
+>    vhost-vdpa is visible to VMM only. And Guest can not access the CVQ
+>    of vhost-vdpa.
+>
+> For the other use cases, since AS 0 is associated to all virtqueue
+> groups by default. All virtqueues share the same mapping by default.
+>
+> To demonstrate the function, VIRITO_NET_F_CTRL_MACADDR is
+> implemented in the simulator for the driver to set mac address.
+>
+> Signed-off-by: Jason Wang <jasowang@redhat.com>
+> Signed-off-by: Gautam Dawar <gdawar@xilinx.com>
+> ---
+>  drivers/vdpa/vdpa_sim/vdpa_sim.c     | 91 ++++++++++++++++++++++------
+>  drivers/vdpa/vdpa_sim/vdpa_sim.h     |  2 +
+>  drivers/vdpa/vdpa_sim/vdpa_sim_net.c | 88 ++++++++++++++++++++++++++-
+>  3 files changed, 161 insertions(+), 20 deletions(-)
+>
+> diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.c b/drivers/vdpa/vdpa_sim/vdpa_sim.c
+> index 659e2e2e4b0c..51bd0bafce06 100644
+> --- a/drivers/vdpa/vdpa_sim/vdpa_sim.c
+> +++ b/drivers/vdpa/vdpa_sim/vdpa_sim.c
+> @@ -96,11 +96,17 @@ static void vdpasim_do_reset(struct vdpasim *vdpasim)
+>  {
+>         int i;
+>
+> -       for (i = 0; i < vdpasim->dev_attr.nvqs; i++)
+> +       spin_lock(&vdpasim->iommu_lock);
+> +
+> +       for (i = 0; i < vdpasim->dev_attr.nvqs; i++) {
+>                 vdpasim_vq_reset(vdpasim, &vdpasim->vqs[i]);
+> +               vringh_set_iotlb(&vdpasim->vqs[i].vring, &vdpasim->iommu[0],
+> +                                &vdpasim->iommu_lock);
+> +       }
+> +
+> +       for (i = 0; i < vdpasim->dev_attr.nas; i++)
+> +               vhost_iotlb_reset(&vdpasim->iommu[i]);
+>
+> -       spin_lock(&vdpasim->iommu_lock);
+> -       vhost_iotlb_reset(vdpasim->iommu);
+>         spin_unlock(&vdpasim->iommu_lock);
+>
+>         vdpasim->features = 0;
+> @@ -145,7 +151,7 @@ static dma_addr_t vdpasim_map_range(struct vdpasim *vdpasim, phys_addr_t paddr,
+>         dma_addr = iova_dma_addr(&vdpasim->iova, iova);
+>
+>         spin_lock(&vdpasim->iommu_lock);
+> -       ret = vhost_iotlb_add_range(vdpasim->iommu, (u64)dma_addr,
+> +       ret = vhost_iotlb_add_range(&vdpasim->iommu[0], (u64)dma_addr,
+>                                     (u64)dma_addr + size - 1, (u64)paddr, perm);
+>         spin_unlock(&vdpasim->iommu_lock);
+>
+> @@ -161,7 +167,7 @@ static void vdpasim_unmap_range(struct vdpasim *vdpasim, dma_addr_t dma_addr,
+>                                 size_t size)
+>  {
+>         spin_lock(&vdpasim->iommu_lock);
+> -       vhost_iotlb_del_range(vdpasim->iommu, (u64)dma_addr,
+> +       vhost_iotlb_del_range(&vdpasim->iommu[0], (u64)dma_addr,
+>                               (u64)dma_addr + size - 1);
+>         spin_unlock(&vdpasim->iommu_lock);
+>
+> @@ -250,8 +256,9 @@ struct vdpasim *vdpasim_create(struct vdpasim_dev_attr *dev_attr)
+>         else
+>                 ops = &vdpasim_config_ops;
+>
+> -       vdpasim = vdpa_alloc_device(struct vdpasim, vdpa, NULL, ops, 1,
+> -                                   1, dev_attr->name, false);
+> +       vdpasim = vdpa_alloc_device(struct vdpasim, vdpa, NULL, ops,
+> +                                   dev_attr->ngroups, dev_attr->nas,
+> +                                   dev_attr->name, false);
+>         if (IS_ERR(vdpasim)) {
+>                 ret = PTR_ERR(vdpasim);
+>                 goto err_alloc;
+> @@ -278,16 +285,20 @@ struct vdpasim *vdpasim_create(struct vdpasim_dev_attr *dev_attr)
+>         if (!vdpasim->vqs)
+>                 goto err_iommu;
+>
+> -       vdpasim->iommu = vhost_iotlb_alloc(max_iotlb_entries, 0);
+> +       vdpasim->iommu = kmalloc_array(vdpasim->dev_attr.nas,
+> +                                      sizeof(*vdpasim->iommu), GFP_KERNEL);
+>         if (!vdpasim->iommu)
+>                 goto err_iommu;
+>
+> +       for (i = 0; i < vdpasim->dev_attr.nas; i++)
+> +               vhost_iotlb_init(&vdpasim->iommu[i], 0, 0);
+> +
+>         vdpasim->buffer = kvmalloc(dev_attr->buffer_size, GFP_KERNEL);
+>         if (!vdpasim->buffer)
+>                 goto err_iommu;
+>
+>         for (i = 0; i < dev_attr->nvqs; i++)
+> -               vringh_set_iotlb(&vdpasim->vqs[i].vring, vdpasim->iommu,
+> +               vringh_set_iotlb(&vdpasim->vqs[i].vring, &vdpasim->iommu[0],
+>                                  &vdpasim->iommu_lock);
+>
+>         ret = iova_cache_get();
+> @@ -401,7 +412,11 @@ static u32 vdpasim_get_vq_align(struct vdpa_device *vdpa)
+>
+>  static u32 vdpasim_get_vq_group(struct vdpa_device *vdpa, u16 idx)
+>  {
+> -       return 0;
+> +       /* RX and TX belongs to group 0, CVQ belongs to group 1 */
+> +       if (idx == 2)
+> +               return 1;
+> +       else
+> +               return 0;
 
-That is what I believe strace does when calling that code:
+This code only works for the vDPA-net simulator, since 
+vdpasim_get_vq_group() is also shared with other simulators (e.g.  
+vdpa_sim_blk), should we move this net-specific code into 
+vdpa_sim_net.c, maybe adding a callback implemented by the different 
+simulators?
 
- 	strace -f -qq -e signal=none -e trace=sched_yield,/kill ./kill_child
+Thanks,
+Stefano
 
-> Eric
-> 
-> 
-> 
-> > Thanks!
-> >
-> > /*
-> >  * Check for the corner case that previously lead to segfault
-> >  * due to an attempt to access unitialised tcp->s_ent.
-> >  *
-> >  * 13994 ????( <unfinished ...>
-> >  * ...
-> >  * 13994 <... ???? resumed>) = ?
-> >  *
-> >  * Copyright (c) 2019 The strace developers.
-> >  * All rights reserved.
-> >  *
-> >  * SPDX-License-Identifier: GPL-2.0-or-later
-> >  */
-> >
-> > #include "tests.h"
-> >
-> > #include <sched.h>
-> > #include <signal.h>
-> > #include <unistd.h>
-> > #include <sys/mman.h>
-> > #include <sys/wait.h>
-> >
-> > #define ITERS    10000
-> > #define SC_ITERS 10000
-> >
-> > int
-> > main(void)
-> > {
-> > 	volatile sig_atomic_t *const mem =
-> > 		mmap(NULL, get_page_size(), PROT_READ | PROT_WRITE,
-> > 		     MAP_SHARED | MAP_ANONYMOUS, -1, 0);
-> > 	if (mem == MAP_FAILED)
-> > 		perror_msg_and_fail("mmap");
-> >
-> > 	for (unsigned int i = 0; i < ITERS; ++i) {
-> > 		mem[0] = mem[1] = 0;
-> >
-> > 		const pid_t pid = fork();
-> > 		if (pid < 0)
-> > 			perror_msg_and_fail("fork");
-> >
-> > 		if (!pid) {
-> > 			/* wait for the parent */
-> > 			while (!mem[0])
-> > 				;
-> > 			/* let the parent know we are running */
-> > 			mem[1] = 1;
-> >
-> > 			for (unsigned int j = 0; j < SC_ITERS; j++)
-> > 				sched_yield();
-> >
-> > 			pause();
-> > 			return 0;
-> > 		}
-> >
-> > 		/* let the child know we are running */
-> > 		mem[0] = 1;
-> > 		/* wait for the child */
-> > 		while (!mem[1])
-> > 			;
-> >
-> > 		if (kill(pid, SIGKILL))
-> > 			perror_msg_and_fail("kill");
-> > 		if (wait(NULL) != pid)
-> > 			perror_msg_and_fail("wait");
-> > 	}
-> >
-> > 	return 0;
-> > }
