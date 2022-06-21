@@ -2,269 +2,265 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0105C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:15:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23E8BC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 21 Jun 2022 15:16:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352700AbiFUPPi (ORCPT
+        id S1351869AbiFUPQm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 11:15:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46348 "EHLO
+        Tue, 21 Jun 2022 11:16:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352471AbiFUPPJ (ORCPT
+        with ESMTP id S1351786AbiFUPQi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 11:15:09 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5E1901182E
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:14:41 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2D01C1692;
-        Tue, 21 Jun 2022 08:14:41 -0700 (PDT)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 1F9D43F66F;
-        Tue, 21 Jun 2022 08:14:40 -0700 (PDT)
-From:   Robin Murphy <robin.murphy@arm.com>
-To:     joro@8bytes.org, will@kernel.org
-Cc:     iommu@lists.linux-foundation.org, iommu@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 3/3] iommu: Clean up release_device checks
-Date:   Tue, 21 Jun 2022 16:14:27 +0100
-Message-Id: <02671dbfad7a3343fc25a44222350efcb455fe3c.1655822151.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.36.1.dirty
-In-Reply-To: <cover.1655822151.git.robin.murphy@arm.com>
-References: <cover.1655822151.git.robin.murphy@arm.com>
+        Tue, 21 Jun 2022 11:16:38 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44C573BE
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:16:36 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id p5so7577694pjt.2
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 08:16:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=utQUa+oF9fWRDaamZZaPnhYaPJL6WgW8Mf9WbzgxH3I=;
+        b=mVwRJ+OHn3pHTr7BcfAsDudznGjmNVWCdAAW5BiPqut1VfsBM1G9xlrrf5JBTLaiWY
+         B9SBmZDnUQzEW6LWc3VhRxYVXOcE/Wb3DBLwpT//TvBcVT16IcE2yaF9L5G4gnFH13Hs
+         QV11RmR2nJ9fX82P9091/AfdZKWrdMx1pR4tzRhh50vT4uXW9Z7YmQi1Gdh45Ppb7z3D
+         PefaCEAlIJ6rQIaV6ATrrX+W00vtzLwuDV/WLAxaYdERVBF18vek019AG1fPM0k+derJ
+         KKEvJyO91J/upkSo5zr/BhmLqeGRkpbrCjwgZEysmfutg35i497XY+uADaEM/UPJda1y
+         7Yow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=utQUa+oF9fWRDaamZZaPnhYaPJL6WgW8Mf9WbzgxH3I=;
+        b=kKg9gA7UgIrHGJ7MdOGVWFXOdedZgfnQvI++zvrTeFKuavrrl5RQMj/FS4dlg0lDF3
+         UlLAHpain2Yz5RuicP+EUQsjWTZiNGt5QlIVj2PFiOoRg12bk8ZtJnjemLgA2DJqAhtd
+         nG3sIWCns8LmaqYtkL3nIiT4Q5x5kMplI22SDP87JRIg7F+r+DhN6IyZvWifCY9rNU7O
+         f0mSAfIy7EpbiXzZq18o6f1xEQ0Jt8rZc5SKPT5Q4i6j45rVNTYTzlgmBwT6XTC2EV69
+         GTdTFzMeGx98CT8aSKgdRA/FESZmU2WQB7pfivIXiHX0Aov9SEikZ7yDdmvd3PdVZuQ6
+         O2PQ==
+X-Gm-Message-State: AJIora/ucG5rGCVqy+ptqnMBnO9fKtdDeB79rX0ACAJHWEXNTF1qXpGy
+        77rU497SAkHhi+pOAy2xchi4
+X-Google-Smtp-Source: AGRyM1u3X+1HZeOndQv31glaYp1I/VYCqt3Ev7SKHvEavA7rUIWAe7snUi+5/aQnqFlJu5f/kj4tuw==
+X-Received: by 2002:a17:902:f78b:b0:16a:4ad:f359 with SMTP id q11-20020a170902f78b00b0016a04adf359mr22896128pln.99.1655824595664;
+        Tue, 21 Jun 2022 08:16:35 -0700 (PDT)
+Received: from thinkpad ([117.193.212.116])
+        by smtp.gmail.com with ESMTPSA id h3-20020a170902680300b001651562eb16sm10909798plk.124.2022.06.21.08.16.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Jun 2022 08:16:35 -0700 (PDT)
+Date:   Tue, 21 Jun 2022 20:46:26 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Lizhi Hou <lizhi.hou@xilinx.com>
+Cc:     linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
+        robh@kernel.org, yilun.xu@intel.com, maxz@xilinx.com,
+        sonal.santan@xilinx.com, yliu@xilinx.com, michal.simek@xilinx.com,
+        stefanos@xilinx.com, trix@redhat.com, mdf@kernel.org,
+        dwmw2@infradead.org, linux-kernel@vger.kernel.org,
+        Max Zhen <max.zhen@xilinx.com>, kishon@ti.com
+Subject: Re: [PATCH V1 RESEND 3/4] fpga: xrt: management physical function
+ driver
+Message-ID: <20220621151626.GA32306@thinkpad>
+References: <20220305052304.726050-1-lizhi.hou@xilinx.com>
+ <20220305052304.726050-4-lizhi.hou@xilinx.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220305052304.726050-4-lizhi.hou@xilinx.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since .release_device is now called through per-device ops, any call
-which gets as far as a driver definitely *is* for that driver, for a
-device which has successfully passed .probe_device, so all the checks to
-that effect are now redundant and can be removed. In the same vein we
-can also skip freeing fwspecs which are now managed by core code.
++ Kishon
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
- drivers/iommu/apple-dart.c                  |  3 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  8 +-------
- drivers/iommu/arm/arm-smmu/arm-smmu.c       | 14 +++-----------
- drivers/iommu/arm/arm-smmu/qcom_iommu.c     | 11 -----------
- drivers/iommu/exynos-iommu.c                |  3 ---
- drivers/iommu/mtk_iommu.c                   |  5 -----
- drivers/iommu/mtk_iommu_v1.c                |  5 -----
- drivers/iommu/sprd-iommu.c                  | 11 -----------
- drivers/iommu/virtio-iommu.c                |  8 +-------
- 9 files changed, 5 insertions(+), 63 deletions(-)
+On Fri, Mar 04, 2022 at 09:23:03PM -0800, Lizhi Hou wrote:
+> The PCIe device driver which attaches to management function on Alveo
+> devices. The first version of this driver demonstrates calling PCIe
+> interface to create device tree node.
+> 
 
-diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
-index 8af0242a90d9..e87d3cf54ed6 100644
---- a/drivers/iommu/apple-dart.c
-+++ b/drivers/iommu/apple-dart.c
-@@ -564,9 +564,6 @@ static void apple_dart_release_device(struct device *dev)
- {
- 	struct apple_dart_master_cfg *cfg = dev_iommu_priv_get(dev);
- 
--	if (!cfg)
--		return;
--
- 	dev_iommu_priv_set(dev, NULL);
- 	kfree(cfg);
- }
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 88817a3376ef..382f3120e27b 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2691,20 +2691,14 @@ static struct iommu_device *arm_smmu_probe_device(struct device *dev)
- 
- static void arm_smmu_release_device(struct device *dev)
- {
--	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
--	struct arm_smmu_master *master;
-+	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
- 
--	if (!fwspec || fwspec->ops != &arm_smmu_ops)
--		return;
--
--	master = dev_iommu_priv_get(dev);
- 	if (WARN_ON(arm_smmu_master_sva_enabled(master)))
- 		iopf_queue_remove_device(master->smmu->evtq.iopf, dev);
- 	arm_smmu_detach_dev(master);
- 	arm_smmu_disable_pasid(master);
- 	arm_smmu_remove_master(master);
- 	kfree(master);
--	iommu_fwspec_free(dev);
- }
- 
- static struct iommu_group *arm_smmu_device_group(struct device *dev)
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index 2ed3594f384e..7c2a99862fd3 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -1432,27 +1432,19 @@ static struct iommu_device *arm_smmu_probe_device(struct device *dev)
- static void arm_smmu_release_device(struct device *dev)
- {
- 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
--	struct arm_smmu_master_cfg *cfg;
--	struct arm_smmu_device *smmu;
-+	struct arm_smmu_master_cfg *cfg = dev_iommu_priv_get(dev);
- 	int ret;
- 
--	if (!fwspec || fwspec->ops != &arm_smmu_ops)
--		return;
--
--	cfg  = dev_iommu_priv_get(dev);
--	smmu = cfg->smmu;
--
--	ret = arm_smmu_rpm_get(smmu);
-+	ret = arm_smmu_rpm_get(cfg->smmu);
- 	if (ret < 0)
- 		return;
- 
- 	arm_smmu_master_free_smes(cfg, fwspec);
- 
--	arm_smmu_rpm_put(smmu);
-+	arm_smmu_rpm_put(cfg->smmu);
- 
- 	dev_iommu_priv_set(dev, NULL);
- 	kfree(cfg);
--	iommu_fwspec_free(dev);
- }
- 
- static void arm_smmu_probe_finalize(struct device *dev)
-diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-index 4c077c38fbd6..4a922c7b69ee 100644
---- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-+++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-@@ -532,16 +532,6 @@ static struct iommu_device *qcom_iommu_probe_device(struct device *dev)
- 	return &qcom_iommu->iommu;
- }
- 
--static void qcom_iommu_release_device(struct device *dev)
--{
--	struct qcom_iommu_dev *qcom_iommu = to_iommu(dev);
--
--	if (!qcom_iommu)
--		return;
--
--	iommu_fwspec_free(dev);
--}
--
- static int qcom_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
- {
- 	struct qcom_iommu_dev *qcom_iommu;
-@@ -591,7 +581,6 @@ static const struct iommu_ops qcom_iommu_ops = {
- 	.capable	= qcom_iommu_capable,
- 	.domain_alloc	= qcom_iommu_domain_alloc,
- 	.probe_device	= qcom_iommu_probe_device,
--	.release_device	= qcom_iommu_release_device,
- 	.device_group	= generic_device_group,
- 	.of_xlate	= qcom_iommu_of_xlate,
- 	.pgsize_bitmap	= SZ_4K | SZ_64K | SZ_1M | SZ_16M,
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 71f2018e23fe..1d6808d6e190 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -1251,9 +1251,6 @@ static void exynos_iommu_release_device(struct device *dev)
- 	struct exynos_iommu_owner *owner = dev_iommu_priv_get(dev);
- 	struct sysmmu_drvdata *data;
- 
--	if (!has_sysmmu(dev))
--		return;
--
- 	if (owner->domain) {
- 		struct iommu_group *group = iommu_group_get(dev);
- 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index bb9dd92c9898..5c3d9366c25c 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -819,17 +819,12 @@ static void mtk_iommu_release_device(struct device *dev)
- 	struct device *larbdev;
- 	unsigned int larbid;
- 
--	if (!fwspec || fwspec->ops != &mtk_iommu_ops)
--		return;
--
- 	data = dev_iommu_priv_get(dev);
- 	if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_MM)) {
- 		larbid = MTK_M4U_TO_LARB(fwspec->ids[0]);
- 		larbdev = data->larb_imu[larbid].dev;
- 		device_link_remove(dev, larbdev);
- 	}
--
--	iommu_fwspec_free(dev);
- }
- 
- static int mtk_iommu_get_group_id(struct device *dev, const struct mtk_iommu_plat_data *plat_data)
-diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-index e1cb51b9866c..128c7a3f1778 100644
---- a/drivers/iommu/mtk_iommu_v1.c
-+++ b/drivers/iommu/mtk_iommu_v1.c
-@@ -532,15 +532,10 @@ static void mtk_iommu_v1_release_device(struct device *dev)
- 	struct device *larbdev;
- 	unsigned int larbid;
- 
--	if (!fwspec || fwspec->ops != &mtk_iommu_v1_ops)
--		return;
--
- 	data = dev_iommu_priv_get(dev);
- 	larbid = mt2701_m4u_to_larb(fwspec->ids[0]);
- 	larbdev = data->larb_imu[larbid].dev;
- 	device_link_remove(dev, larbdev);
--
--	iommu_fwspec_free(dev);
- }
- 
- static int mtk_iommu_v1_hw_init(const struct mtk_iommu_v1_data *data)
-diff --git a/drivers/iommu/sprd-iommu.c b/drivers/iommu/sprd-iommu.c
-index bd409bab6286..511959c8a14d 100644
---- a/drivers/iommu/sprd-iommu.c
-+++ b/drivers/iommu/sprd-iommu.c
-@@ -383,16 +383,6 @@ static struct iommu_device *sprd_iommu_probe_device(struct device *dev)
- 	return &sdev->iommu;
- }
- 
--static void sprd_iommu_release_device(struct device *dev)
--{
--	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
--
--	if (!fwspec || fwspec->ops != &sprd_iommu_ops)
--		return;
--
--	iommu_fwspec_free(dev);
--}
--
- static struct iommu_group *sprd_iommu_device_group(struct device *dev)
- {
- 	struct sprd_iommu_device *sdev = dev_iommu_priv_get(dev);
-@@ -417,7 +407,6 @@ static int sprd_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
- static const struct iommu_ops sprd_iommu_ops = {
- 	.domain_alloc	= sprd_iommu_domain_alloc,
- 	.probe_device	= sprd_iommu_probe_device,
--	.release_device	= sprd_iommu_release_device,
- 	.device_group	= sprd_iommu_device_group,
- 	.of_xlate	= sprd_iommu_of_xlate,
- 	.pgsize_bitmap	= ~0UL << SPRD_IOMMU_PAGE_SHIFT,
-diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-index 25be4b822aa0..55337796a5f8 100644
---- a/drivers/iommu/virtio-iommu.c
-+++ b/drivers/iommu/virtio-iommu.c
-@@ -981,13 +981,7 @@ static void viommu_probe_finalize(struct device *dev)
- 
- static void viommu_release_device(struct device *dev)
- {
--	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
--	struct viommu_endpoint *vdev;
--
--	if (!fwspec || fwspec->ops != &viommu_ops)
--		return;
--
--	vdev = dev_iommu_priv_get(dev);
-+	struct viommu_endpoint *vdev = dev_iommu_priv_get(dev);
- 
- 	generic_iommu_put_resv_regions(dev, &vdev->resv_regions);
- 	kfree(vdev);
+I'm assuming that this driver implements the PCI endpoint functions. Then this
+driver should be under drivers/pci/endpoint/functions/ making use of the
+existing PCI endpoint subsystem.
+
+Thanks,
+Mani
+
+> Signed-off-by: Sonal Santan <sonal.santan@xilinx.com>
+> Signed-off-by: Max Zhen <max.zhen@xilinx.com>
+> Signed-off-by: Lizhi Hou <lizhi.hou@xilinx.com>
+> ---
+>  drivers/fpga/Kconfig              |  3 ++
+>  drivers/fpga/Makefile             |  3 ++
+>  drivers/fpga/xrt/Kconfig          | 24 ++++++++++++
+>  drivers/fpga/xrt/Makefile         |  8 ++++
+>  drivers/fpga/xrt/mgmt/Makefile    | 12 ++++++
+>  drivers/fpga/xrt/mgmt/xmgmt-drv.c | 63 +++++++++++++++++++++++++++++++
+>  6 files changed, 113 insertions(+)
+>  create mode 100644 drivers/fpga/xrt/Kconfig
+>  create mode 100644 drivers/fpga/xrt/Makefile
+>  create mode 100644 drivers/fpga/xrt/mgmt/Makefile
+>  create mode 100644 drivers/fpga/xrt/mgmt/xmgmt-drv.c
+> 
+> diff --git a/drivers/fpga/Kconfig b/drivers/fpga/Kconfig
+> index 991b3f361ec9..93ae387c97c5 100644
+> --- a/drivers/fpga/Kconfig
+> +++ b/drivers/fpga/Kconfig
+> @@ -243,4 +243,7 @@ config FPGA_MGR_VERSAL_FPGA
+>  	  configure the programmable logic(PL).
+>  
+>  	  To compile this as a module, choose M here.
+> +
+> +source "drivers/fpga/xrt/Kconfig"
+> +
+>  endif # FPGA
+> diff --git a/drivers/fpga/Makefile b/drivers/fpga/Makefile
+> index 0bff783d1b61..81ea43c40c64 100644
+> --- a/drivers/fpga/Makefile
+> +++ b/drivers/fpga/Makefile
+> @@ -49,3 +49,6 @@ obj-$(CONFIG_FPGA_DFL_NIOS_INTEL_PAC_N3000)	+= dfl-n3000-nios.o
+>  
+>  # Drivers for FPGAs which implement DFL
+>  obj-$(CONFIG_FPGA_DFL_PCI)		+= dfl-pci.o
+> +
+> +# XRT drivers for Xilinx Alveo platforms
+> +obj-$(CONFIG_FPGA_XRT)		+= xrt/
+> diff --git a/drivers/fpga/xrt/Kconfig b/drivers/fpga/xrt/Kconfig
+> new file mode 100644
+> index 000000000000..47efc8f71cec
+> --- /dev/null
+> +++ b/drivers/fpga/xrt/Kconfig
+> @@ -0,0 +1,24 @@
+> +
+> +# XRT Alveo FPGA device configuration
+> +#
+> +
+> +config FPGA_XRT
+> +	tristate "XRT Alveo Drivers"
+> +	depends on OF
+> +	select OF_EMPTY_ROOT
+> +	select OF_OVERLAY
+> +	help
+> +	  Select this option to enable Xilinx XRT Alveo drivers. Xilinx Alveo
+> +	  card is PCIe device and has two PCIe functions. The first function
+> +	  performs board manangement and XRT management driver will be attached
+> +	  to it. The second function performs data movement, compute unit
+> +	  scheduling etc. And an XRT user driver will be attached to it.
+> +
+> +config FPGA_XRT_XMGMT
+> +	tristate "Xilinx Alveo Management Driver"
+> +	depends on FPGA_XRT
+> +	help
+> +	  Select this option to enable XRT PCIe driver for Xilinx Alveo FPGA.
+> +	  This driver provides interfaces for userspace application to access
+> +	  Alveo FPGA device, such as: downloading FPGA bitstream, query card
+> +	  information, hot reset card etc.
+> diff --git a/drivers/fpga/xrt/Makefile b/drivers/fpga/xrt/Makefile
+> new file mode 100644
+> index 000000000000..2d251b5653bb
+> --- /dev/null
+> +++ b/drivers/fpga/xrt/Makefile
+> @@ -0,0 +1,8 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +#
+> +# Copyright (C) 2020-2022 Xilinx, Inc. All rights reserved.
+> +#
+> +# Authors: Lizhi.Hou@xilinx.com
+> +#
+> +
+> +obj-$(CONFIG_FPGA_XRT_XMGMT) += mgmt/
+> diff --git a/drivers/fpga/xrt/mgmt/Makefile b/drivers/fpga/xrt/mgmt/Makefile
+> new file mode 100644
+> index 000000000000..b893c7293d70
+> --- /dev/null
+> +++ b/drivers/fpga/xrt/mgmt/Makefile
+> @@ -0,0 +1,12 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +#
+> +# Copyright (C) 2020-2022 Xilinx, Inc. All rights reserved.
+> +#
+> +# Authors: Sonal.Santan@xilinx.com
+> +#          Lizhi.Hou@xilinx.com
+> +#
+> +
+> +obj-$(CONFIG_FPGA_XRT_XMGMT) += xrt-mgmt.o
+> +
+> +xrt-mgmt-objs :=		\
+> +	xmgmt-drv.o
+> diff --git a/drivers/fpga/xrt/mgmt/xmgmt-drv.c b/drivers/fpga/xrt/mgmt/xmgmt-drv.c
+> new file mode 100644
+> index 000000000000..60742a478a43
+> --- /dev/null
+> +++ b/drivers/fpga/xrt/mgmt/xmgmt-drv.c
+> @@ -0,0 +1,63 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Xilinx Alveo Management Function Driver
+> + *
+> + * Copyright (C) 2020-2022 Xilinx, Inc.
+> + *
+> + * Authors:
+> + *     Cheng Zhen <maxz@xilinx.com>
+> + *     Lizhi Hou <lizhih@xilinx.com>
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/pci.h>
+> +#include <linux/aer.h>
+> +#include <linux/vmalloc.h>
+> +#include <linux/delay.h>
+> +#include <linux/of_pci.h>
+> +
+> +#define XMGMT_MODULE_NAME	"xrt-mgmt"
+> +
+> +/* PCI Device IDs */
+> +#define PCI_DEVICE_ID_U50	0x5020
+> +static const struct pci_device_id xmgmt_pci_ids[] = {
+> +	{ PCI_DEVICE(PCI_VENDOR_ID_XILINX, PCI_DEVICE_ID_U50), }, /* Alveo U50 */
+> +	{ 0, }
+> +};
+> +
+> +static int xmgmt_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+> +{
+> +	devm_of_pci_create_bus_endpoint(pdev);
+> +
+> +	return 0;
+> +}
+> +
+> +static struct pci_driver xmgmt_driver = {
+> +	.name = XMGMT_MODULE_NAME,
+> +	.id_table = xmgmt_pci_ids,
+> +	.probe = xmgmt_probe,
+> +};
+> +
+> +static int __init xmgmt_init(void)
+> +{
+> +	int res;
+> +
+> +	res = pci_register_driver(&xmgmt_driver);
+> +	if (res)
+> +		return res;
+> +
+> +	return 0;
+> +}
+> +
+> +static __exit void xmgmt_exit(void)
+> +{
+> +	pci_unregister_driver(&xmgmt_driver);
+> +}
+> +
+> +module_init(xmgmt_init);
+> +module_exit(xmgmt_exit);
+> +
+> +MODULE_DEVICE_TABLE(pci, xmgmt_pci_ids);
+> +MODULE_AUTHOR("XRT Team <runtime@xilinx.com>");
+> +MODULE_DESCRIPTION("Xilinx Alveo management function driver");
+> +MODULE_LICENSE("GPL v2");
+> -- 
+> 2.27.0
+> 
+
 -- 
-2.36.1.dirty
-
+மணிவண்ணன் சதாசிவம்
