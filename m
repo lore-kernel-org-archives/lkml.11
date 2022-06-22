@@ -2,113 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0E50C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 19:19:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DADBC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 19:22:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233919AbiFVTTr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 15:19:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58426 "EHLO
+        id S235959AbiFVTWH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 15:22:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229824AbiFVTTq (ORCPT
+        with ESMTP id S229824AbiFVTWD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 15:19:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A1EC3587E;
-        Wed, 22 Jun 2022 12:19:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3A821B820DF;
-        Wed, 22 Jun 2022 19:19:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47F12C34114;
-        Wed, 22 Jun 2022 19:19:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1655925582;
-        bh=/mqJhZHnFZv4yLcCic7/bc1inkKszgYj0JD8prJIpjk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=qjWwYVRfzc+N/uWK1DpW6CQ1YtCEOGV22eBql0f6AWWGbzOZS1IgM/pjtupsLc42h
-         ta0txrydZ00LBL7/oBed2qA17Gp2fr41qccvrNnizD0i9RH0wCeQC//+fWo2G90mHl
-         9zKKVEDbrzi7kVNmY0rEi2WI55V7CHa6d6G4mfM4=
-Date:   Wed, 22 Jun 2022 12:19:30 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Sergey Senozhatsky <senozhatsky@chromium.org>
-Cc:     Minchan Kim <minchan@kernel.org>, Nitin Gupta <ngupta@vflare.org>,
-        linux-kernel@vger.kernel.org, linux-block@vger.kernel.org
-Subject: Re: [PATCH] zram: do not lookup algorithm in backends table
-Message-Id: <20220622121930.4f8d3f882bb2b0520fd6917c@linux-foundation.org>
-In-Reply-To: <YrMzJSNb4b+tODqR@google.com>
-References: <20220622023501.517125-1-senozhatsky@chromium.org>
-        <YrMzJSNb4b+tODqR@google.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Wed, 22 Jun 2022 15:22:03 -0400
+X-Greylist: delayed 529 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 22 Jun 2022 12:21:59 PDT
+Received: from vmicros1.altlinux.org (vmicros1.altlinux.org [194.107.17.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 12BF738D8A
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 12:21:59 -0700 (PDT)
+Received: from mua.local.altlinux.org (mua.local.altlinux.org [192.168.1.14])
+        by vmicros1.altlinux.org (Postfix) with ESMTP id 4C2D972C8B1;
+        Wed, 22 Jun 2022 22:13:09 +0300 (MSK)
+Received: by mua.local.altlinux.org (Postfix, from userid 508)
+        id 3796D7CF60C; Wed, 22 Jun 2022 22:13:09 +0300 (MSK)
+Date:   Wed, 22 Jun 2022 22:13:09 +0300
+From:   "Dmitry V. Levin" <ldv@altlinux.org>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>,
+        Vitaly Chikunov <vt@altlinux.org>,
+        Mikhail Gordeev <obirvalger@altlinux.org>,
+        Hendrik Brueckner <brueckner@linux.vnet.ibm.com>,
+        Ian Rogers <irogers@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/1 FYI] perf trace beauty: Fix generation of errno
+ id->str table on ALT Linux
+Message-ID: <20220622191308.GA2045@altlinux.org>
+References: <YrNCLzNGsvizMhdW@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YrNCLzNGsvizMhdW@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 23 Jun 2022 00:20:05 +0900 Sergey Senozhatsky <senozhatsky@chromium.org> wrote:
+Hi,
 
-> On (22/06/22 11:35), Sergey Senozhatsky wrote:
-> > Always use crypto_has_comp() so that crypto can lookup module,
-> > call usermodhelper to load the modules, wait for usermodhelper
-> > to finish and so on. Otherwise crypto will do all of these steps
-> > under CPU hot-plug lock and this looks like too much stuff to
-> > handle under the CPU hot-plug lock. Besides this can end up in
-> > a deadlock when usermodhelper triggers a code path that attempts
-> > to lock the CPU hot-plug lock, that zram already holds.
+On Wed, Jun 22, 2022 at 01:24:15PM -0300, Arnaldo Carvalho de Melo wrote:
+> Fyi, I'm carrying this on my perf tools tree to keep building on:
 > 
-> And we think that we (not exactly "we", our partners) actually
-> see a deadlock. It goes something like this:
+> [perfbuilder@five sisyphus]$ podman pull alt:sisyphus
+> Trying to pull docker.io/library/alt:sisyphus...
+> Getting image source signatures
+> Copying blob 2b39ef1520dd skipped: already exists
+> Copying blob 12717fd4baa0 skipped: already exists
+> Copying config 6d48f46445 done
+> Writing manifest to image destination
+> Storing signatures
+> 6d48f4644518cd96ffe1de6cd0333d2abc8312c0e4449e03b58b1d480f0f5905
+> [perfbuilder@five sisyphus]$ dsh .
+> sh-4.4# bash
+> [root@b8318c77142b /]# cat /etc/os-release
+> NAME="starter kit"
+> VERSION="p10 (Hypericum)"
+> ID=altlinux
+> VERSION_ID=p10
+> PRETTY_NAME="ALT Starterkit (Hypericum)"
+> ANSI_COLOR="1;33"
+> CPE_NAME="cpe:/o:alt:starterkit:p10"
+> HOME_URL="http://en.altlinux.org/starterkits"
+> BUG_REPORT_URL="https://bugs.altlinux.org/"
+> [root@b8318c77142b /]# rpm -qi bash
+> Name        : bash
+> Version     : 4.4.23
+> Release     : alt1
+> DistTag     : sisyphus+221902.500.4.1
+> Architecture: noarch
+> Install Date: Fri Jun  3 23:03:32 2022
+> Group       : Shells
+> Size        : 0
+> License     : None
+> Signature   : DSA/SHA1, Tue Feb 19 14:40:44 2019, Key ID 95c584d5ae4ae412
+> Source RPM  : bash-defaults-4.4.23-alt1.src.rpm
+> Build Date  : Tue Feb 19 14:40:42 2019
+> Build Host  : ldv-sisyphus.hasher.altlinux.org
+> Relocations : (not relocatable)
+> Packager    : Dmitry V. Levin <ldv@altlinux.org>
+> Vendor      : ALT Linux Team
+> Summary     : The GNU Bourne Again SHell (/bin/bash)
+> Description :
+> This package provides default setup for the GNU Bourne Again SHell (/bin/bash).
+> [root@b8318c77142b /]#
 > 
-> - path A. zram grabs CPU hot-plug lock, execs /sbin/modprobe from crypto
->   and waits for modprobe to finish
+> Perf uses that script to generate an id->str errno table for all arches,
+> implemented in:
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=0337cf74ccf2a43437bff2e23b278e4f2dc4c6e2
+> 
+> But it is failing on:
+> 
+>   10    62.99 alt:p8                        : Ok   x86_64-alt-linux-gcc (GCC) 5.3.1 20151207 (ALT p8 5.3.1-alt3.M80P.1) , clang version 3.8.0 (tags/RELEASE_380/final)
+>   11    91.50 alt:p9                        : Ok   x86_64-alt-linux-gcc (GCC) 8.4.1 20200305 (ALT p9 8.4.1-alt0.p9.1) , clang version 10.0.0
+>   12    89.80 alt:p10                       : Ok   x86_64-alt-linux-gcc (GCC) 10.3.1 20210703 (ALT Sisyphus 10.3.1-alt2) , clang version 11.0.1
+>   13     8.99 alt:sisyphus                  : FAIL gcc version 12.1.1 20220518 (ALT Sisyphus 12.1.1-alt1) (GCC)
+>         |         ^~~~
+>     442 |         case 47: return "EL3RST";
+>         |         ^~~~
+>     443 |         case 48: return "ELNRNG";
+> 
+> The generated file lacks the function start/end due to some strange
+> glitch:
+> 
+> http://vger.kernel.org/~acme/perf/generated-altlinux-sisyphus-arch_errno_name_array.c
+> 
+> So I'm adding this workaround, can you please check why this is
+> happening?
 
-Nope, can't do that.
+arch_errno_names.sh uses here-documents which are implemented in bash
+using temporary files.  Looks like it couldn't create a temporary file,
+e.g. because $TMPDIR points to a directory that doesn't exist or not
+writable.  If there was some "cannot create temp file for here-document"
+diagnostics in stderr, that's it.  If that's the case, it's not a problem
+in the script but in the environment.
 
-> disksize_store
->  zcomp_create
->   __cpuhp_state_add_instance
->    __cpuhp_state_add_instance_cpuslocked
->     zcomp_cpu_up_prepare
->      crypto_alloc_base
->       crypto_alg_mod_lookup
->        call_usermodehelper_exec
->         wait_for_completion_killable
->          do_wait_for_common
->           schedule
+I've Cc'ed more people, maybe they could have a look.
 
-The usermode helper is free to do anything it wants, including
-operations that take the CPU hotplug lock.  Or operations which might
-in the future be changed to take that lock.
 
-> - path B. async work kthread that brings in scsi device. It wants to
->   register CPUHP states at some point, and it needs the CPU hot-plug
->   lock for that, which is owned by zram.
-> 
-> async_run_entry_fn
->  scsi_probe_and_add_lun
->   scsi_mq_alloc_queue
->    blk_mq_init_queue
->     blk_mq_init_allocated_queue
->      blk_mq_realloc_hw_ctxs
->       __cpuhp_state_add_instance
->        __cpuhp_state_add_instance_cpuslocked
->         mutex_lock
->          schedule
-> 
-> - path C. modprobe sleeps, waiting for all aync works to finish.
-> 
-> load_module
->  do_init_module
->   async_synchronize_full
->    async_synchronize_cookie_domain
->     schedule
-> 
-> And none can make any progress.
-> 
-> So I think we need to move crypto_alg_mod_lookup()->call_usermodehelper_exec()
-> out of CPU hot-plug lock and pre-load modules in advance, before we grab the
-> hot-plug lock.
-
-If the locking is fixed, why is there still a need to preload modules?
+-- 
+ldv
