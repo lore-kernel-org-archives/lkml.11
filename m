@@ -2,85 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8162AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 14:29:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1F28CCA47D
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 14:30:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358370AbiFVO3i (ORCPT
+        id S1358558AbiFVOav (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 10:29:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53522 "EHLO
+        Wed, 22 Jun 2022 10:30:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358474AbiFVO2u (ORCPT
+        with ESMTP id S1358469AbiFVOa3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 10:28:50 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB9BF2CC82;
-        Wed, 22 Jun 2022 07:28:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=Q+GTgV1Myt9PfoB6iV4UxseRxbapfjpXe+rtPY77PCI=; b=tyaa/dkVMyBsD6vkyFVEEv23MS
-        zo+cEx1xYRceiEVyKiQ8P6GRD6r1OBMuWYAmcWHgXZsnkIDYzKE8Z+E6TPn41MT8VHR4cRELd4Zw3
-        /Lj0zcNglNEFVb35/8JZ4bXdfWLlvj6voLwu0c97nFsb2OQOzeK4i0c5ys9K7sEtrWPX2F9p9rWKK
-        dwKcpIBO6TfzEM/luJy+LNReAfCmgMeE9kPg22exGmIIYLY+mf6h6fsETWFbR2636T2YCsVwMngLT
-        D/MzRWNhfJcayPOKyyeVOb1YMnUsnrTnUHK/6wKr/aQnyyV8b1fMX161fWxH3oo06tZy2Rb/Yvgvi
-        IeqLn85A==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o41LS-00741h-3X; Wed, 22 Jun 2022 14:28:38 +0000
-Message-ID: <d2112863-bd28-d6db-c353-1b7b94b45fcb@infradead.org>
-Date:   Wed, 22 Jun 2022 07:28:34 -0700
+        Wed, 22 Jun 2022 10:30:29 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54A1F3CFFA;
+        Wed, 22 Jun 2022 07:29:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655908194; x=1687444194;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=PtAWVcHQ/OeCLHQhF7OJWPRZK21owRko6PYyYGt05D0=;
+  b=cYTpoAibFQ2jX6j3PsmcxQkuRqTGuO1ZhzvQ8psHCkryLTqxGuoct+10
+   Po08TgQxAJXJasWuc1PkOMt793izvjuusJNkA2Jp1wBvcbHDVDh+H11A5
+   9Rkn6JL0HtjBmnJkpeCiyFfURLZ2rIT+Woi/iOtQ02/QPfLmxR9+wWSx7
+   ByqQDA6QdL46cHBmKai+ZUEG8ts4GMlyisxLUMq7pA8tXWOA9StYK09Xy
+   Hy6gIyfvgGIkB3anodSu0WXXPcXWjpoJqeDOOp0GECKZ9IhKFDo1Qxaho
+   080nZ6pizcsb7/58E7bxqg92cPmvSs0hedKn5yrKUdjCZdgXPJrh1K+B0
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="260860668"
+X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
+   d="scan'208";a="260860668"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 07:29:51 -0700
+X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
+   d="scan'208";a="677571663"
+Received: from bshakya-mobl.amr.corp.intel.com (HELO [10.212.188.76]) ([10.212.188.76])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 07:29:49 -0700
+Message-ID: <25be3068-be13-a451-86d4-ff4cc12ddb23@intel.com>
+Date:   Wed, 22 Jun 2022 07:29:31 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH] MIPS: Fix 2 typos
+ Thunderbird/91.9.1
+Subject: Re: [PATCH Part2 v6 05/49] x86/sev: Add RMP entry lookup helpers
 Content-Language: en-US
-To:     Zhang Jiaming <jiaming@nfschina.com>, tsbogend@alpha.franken.de
-Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        liqiong@nfschina.com, renyu@nfschina.com
-References: <20220622090713.24370-1-jiaming@nfschina.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220622090713.24370-1-jiaming@nfschina.com>
+To:     "Kalra, Ashish" <Ashish.Kalra@amd.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>
+Cc:     "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "jroedel@suse.de" <jroedel@suse.de>,
+        "Lendacky, Thomas" <Thomas.Lendacky@amd.com>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "ardb@kernel.org" <ardb@kernel.org>,
+        "pbonzini@redhat.com" <pbonzini@redhat.com>,
+        "seanjc@google.com" <seanjc@google.com>,
+        "vkuznets@redhat.com" <vkuznets@redhat.com>,
+        "jmattson@google.com" <jmattson@google.com>,
+        "luto@kernel.org" <luto@kernel.org>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "slp@redhat.com" <slp@redhat.com>,
+        "pgonda@google.com" <pgonda@google.com>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "srinivas.pandruvada@linux.intel.com" 
+        <srinivas.pandruvada@linux.intel.com>,
+        "rientjes@google.com" <rientjes@google.com>,
+        "dovmurik@linux.ibm.com" <dovmurik@linux.ibm.com>,
+        "tobin@ibm.com" <tobin@ibm.com>, "bp@alien8.de" <bp@alien8.de>,
+        "Roth, Michael" <Michael.Roth@amd.com>,
+        "vbabka@suse.cz" <vbabka@suse.cz>,
+        "kirill@shutemov.name" <kirill@shutemov.name>,
+        "ak@linux.intel.com" <ak@linux.intel.com>,
+        "tony.luck@intel.com" <tony.luck@intel.com>,
+        "marcorr@google.com" <marcorr@google.com>,
+        "sathyanarayanan.kuppuswamy@linux.intel.com" 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        "alpergun@google.com" <alpergun@google.com>,
+        "dgilbert@redhat.com" <dgilbert@redhat.com>,
+        "jarkko@kernel.org" <jarkko@kernel.org>
+References: <cover.1655761627.git.ashish.kalra@amd.com>
+ <8f63961f00fd170ba0e561f499292175f3155d26.1655761627.git.ashish.kalra@amd.com>
+ <cc0c6bd1-a1e3-82ee-8148-040be21cad5c@intel.com>
+ <BYAPR12MB2759A8F48D6D68EE879EEF648EB29@BYAPR12MB2759.namprd12.prod.outlook.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <BYAPR12MB2759A8F48D6D68EE879EEF648EB29@BYAPR12MB2759.namprd12.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 6/22/22 07:22, Kalra, Ashish wrote:
+> As I replied previously on the same subject: Architectural implies
+> that it is defined in the APM and shouldn't change in such a way as
+> to not be backward compatible. I probably think the wording here
+> should be architecture independent or more precisely platform
+> independent.
+Yeah, arch-independent and non-architectural are quite different concepts.
 
+At Intel, at least, when someone says "not architectural" mean that the
+behavior is implementation-specific.  That, combined with the
+model/family/stepping gave me the wrong impression about what was going on.
 
-On 6/22/22 02:07, Zhang Jiaming wrote:
-> Change 'modifed' to 'modified'.
-> Change 'relys' to 'relays'.
-> 
-> Signed-off-by: Zhang Jiaming <jiaming@nfschina.com>
-> ---
->  arch/mips/cavium-octeon/executive/cvmx-helper-board.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/mips/cavium-octeon/executive/cvmx-helper-board.c b/arch/mips/cavium-octeon/executive/cvmx-helper-board.c
-> index 1daa0c6b6f4e..82c51f015ea3 100644
-> --- a/arch/mips/cavium-octeon/executive/cvmx-helper-board.c
-> +++ b/arch/mips/cavium-octeon/executive/cvmx-helper-board.c
-> @@ -282,9 +282,9 @@ union cvmx_helper_link_info __cvmx_helper_board_link_get(int ipd_port)
->   * support and should return the number of actual ports on the
->   * board.
->   *
-> - * This function must be modifed for every new Octeon board.
-> + * This function must be modified for every new Octeon board.
->   * Internally it uses switch statements based on the cvmx_sysinfo
-> - * data to determine board types and revisions. It relys on the
-
-                                                      relies
-
-But it would be better to restrict this barrage (or swarm) of patches
-to Kconfig help text problems and/or strings that are printed to users.
-
-> + * data to determine board types and revisions. It relays on the
->   * fact that every Octeon board receives a unique board type
->   * enumeration from the bootloader.
->   *
-
--- 
-~Randy
+Some more clarity would be greatly appreciated.
