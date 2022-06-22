@@ -2,235 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C91C3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 17:43:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 945ABC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 17:43:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377373AbiFVRnA (ORCPT
+        id S1377406AbiFVRn5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 13:43:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48180 "EHLO
+        Wed, 22 Jun 2022 13:43:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377369AbiFVRm6 (ORCPT
+        with ESMTP id S1377461AbiFVRng (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 13:42:58 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D57DF11
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 10:42:55 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id f65so16721973pgc.7
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 10:42:55 -0700 (PDT)
+        Wed, 22 Jun 2022 13:43:36 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40F7E2664
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 10:43:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Ptqr6Gt87GBK7ogASDiLHOYZ5B9Dk9q5REfKiGiBgc0=;
-        b=Jfqg6JJQ7G9ltX2drICxGwUWHhxKuHKFf0kGAkjHl5ZR83RxlZZKlkVyQk7lHOUkJR
-         rIkr9D5BVoYSsT+kdOmkw0b39O7tOqw5bSq64v9u3wiRrrBpi9CAK7IE+rSkL/Hj1irC
-         2JDLTpQG/8Saf/Ut1zRwrROffMF8vajmdPNaA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Ptqr6Gt87GBK7ogASDiLHOYZ5B9Dk9q5REfKiGiBgc0=;
-        b=XX8bqH6ylm62KGRqE6n/szGdMkmkJ4Zf1LqGiag4NKhQTeXCKxzRj/MbyiqFY9L98v
-         cNPJnYVXHs8OOOSfunPt9o5xm/5dsSCDezA3PiyWARhWbj7e5HtQ/lo0RKreVpJsgCXU
-         GpZcfR+U8iwqDocVSbgUSpIKqGHOJLITVwB1nKxrOTZqShiZQjPO9RRGz7uddcBh4VUT
-         57Vj7SGxof9ZYmV3clhBZJiPal64OKyLYgiwoT25UCRTpI4OFvg+7hlyaUPmHsXdGZax
-         mY+nwi8FyWTBIy9FYq7O6diO9Gnhvb07o+rwKivjU58MHddIY9lFqPojJ1juAE/ltNlX
-         npew==
-X-Gm-Message-State: AJIora+kW+0A/FAB3eggSTrcjoeN1FtKqyy0achGRLBgZHmaXBXcEGu5
-        2v+TECQxivmWpiCwQ3cDMPXQlNHB/bAMhg==
-X-Google-Smtp-Source: AGRyM1tKf6IK4rTXOn4QslrbCdg6CX/PumJ0UUDKbKt9Vz/2UQqZ89g2VS9gjz2ZhpbdipD5/qLGqw==
-X-Received: by 2002:a63:5703:0:b0:408:b2c3:8df9 with SMTP id l3-20020a635703000000b00408b2c38df9mr3767997pgb.247.1655919774471;
-        Wed, 22 Jun 2022 10:42:54 -0700 (PDT)
-Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id l17-20020a17090b079100b001ece55aec38sm35470pjz.30.2022.06.22.10.42.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jun 2022 10:42:53 -0700 (PDT)
-From:   Prashant Malani <pmalani@chromium.org>
-To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
-Cc:     bleung@chromium.org, swboyd@chromium.org,
-        heikki.krogerus@linux.intel.com,
-        Pin-Yen Lin <treapking@chromium.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        =?UTF-8?q?N=C3=ADcolas=20F=20=2E=20R=20=2E=20A=20=2E=20Prado?= 
-        <nfraprado@collabora.com>, Prashant Malani <pmalani@chromium.org>,
-        Allen Chen <allen.chen@ite.com.tw>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
-        DEVICE TREE BINDINGS),
-        dri-devel@lists.freedesktop.org (open list:DRM DRIVERS),
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Xin Ji <xji@analogixsemi.com>
-Subject: [PATCH v5 5/9] drm/bridge: anx7625: Add typec_mux_set callback function
-Date:   Wed, 22 Jun 2022 17:34:34 +0000
-Message-Id: <20220622173605.1168416-6-pmalani@chromium.org>
-X-Mailer: git-send-email 2.37.0.rc0.104.g0611611a94-goog
-In-Reply-To: <20220622173605.1168416-1-pmalani@chromium.org>
-References: <20220622173605.1168416-1-pmalani@chromium.org>
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1655919815; x=1687455815;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=b9SPsk3t0xbrveGWmLHcEXLujqBGzaDu8B9b4Vfmh8w=;
+  b=KmedKUC3/ipcajH6Dtg66fbB/I1s1E37aHBFA++6SfrHDnXM8NBAE25S
+   1WLITj2cIFkUowJ331ScNYvByLaYkB/FAw8wO22Hz4SFMvuowxjewZZ4B
+   vfnLkHGyDWP6d8ZTOifNzZQs5XDhF/EuXNZ8njd+UMtD2guehYLGGzyab
+   4=;
+Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 22 Jun 2022 10:43:35 -0700
+X-QCInternal: smtphost
+Received: from nasanex01b.na.qualcomm.com ([10.46.141.250])
+  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 10:43:34 -0700
+Received: from [10.71.110.111] (10.80.80.8) by nasanex01b.na.qualcomm.com
+ (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 22 Jun
+ 2022 10:43:34 -0700
+Message-ID: <cb4b9ffe-ef4c-3925-af69-2c8cd541ff06@quicinc.com>
+Date:   Wed, 22 Jun 2022 10:43:33 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [Freedreno] [PATCH] drm/msm/dpu: Increment vsync_cnt before
+ waking up userspace
+Content-Language: en-US
+To:     Stephen Boyd <swboyd@chromium.org>,
+        Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+CC:     Sean Paul <sean@poorly.run>, Mark Yacoub <markyacoub@chromium.org>,
+        <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        <patches@lists.linux.dev>, <freedreno@lists.freedesktop.org>
+References: <20220622023855.2970913-1-swboyd@chromium.org>
+From:   Jessica Zhang <quic_jesszhan@quicinc.com>
+In-Reply-To: <20220622023855.2970913-1-swboyd@chromium.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01b.na.qualcomm.com (10.46.141.250)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pin-Yen Lin <treapking@chromium.org>
 
-Add the callback function when the driver receives state
-changes of the Type-C port. The callback function configures the
-crosspoint switch of the anx7625 bridge chip, which can change the
-output pins of the signals according to the port state.
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Signed-off-by: Pin-Yen Lin <treapking@chromium.org>
-Signed-off-by: Prashant Malani <pmalani@chromium.org>
----
+On 6/21/2022 7:38 PM, Stephen Boyd wrote:
+> The 'vsync_cnt' is used to count the number of frames for a crtc.
+> Unfortunately, we increment the count after waking up userspace via
+> dpu_crtc_vblank_callback() calling drm_crtc_handle_vblank().
+> drm_crtc_handle_vblank() wakes up userspace processes that have called
+> drm_wait_vblank_ioctl(), and if that ioctl is expecting the count to
+> increase it won't.
+> 
+> Increment the count before calling into the drm APIs so that we don't
+> have to worry about ordering the increment with anything else in drm.
+> This fixes a software video decode test that fails to see frame counts
+> increase on Trogdor boards.
+> 
+> Cc: Mark Yacoub <markyacoub@chromium.org>
+> Cc: Jessica Zhang <quic_jesszhan@quicinc.com>
+> Fixes: 885455d6bf82 ("drm/msm: Change dpu_crtc_get_vblank_counter to use vsync count.")
+> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
 
-Changes since v4:
-- Patch moved to 5/9 position (since Patch v4 1/7 and 2/7 were
-  applied to usb-next).
+Tested-by: Jessica Zhang <quic_jesszhan@quicinc.com> # Trogdor (sc7180)
 
-Changes since v3:
-- Added Reviewed-by tag from Angelo.
-
-Changes since v2:
-- Moved num_typec_switches check to beginning of function
-- Made dp_connected assignments fit on one line (and removed unnecessary
-  parentheses)
-- Added Reviewed-by and Tested-by tags.
-
-Changes since v1:
-- No changes.
-
- drivers/gpu/drm/bridge/analogix/anx7625.c | 56 +++++++++++++++++++++++
- drivers/gpu/drm/bridge/analogix/anx7625.h | 13 ++++++
- 2 files changed, 69 insertions(+)
-
-diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
-index bd21f159b973..5992fc8beeeb 100644
---- a/drivers/gpu/drm/bridge/analogix/anx7625.c
-+++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
-@@ -15,6 +15,7 @@
- #include <linux/regulator/consumer.h>
- #include <linux/slab.h>
- #include <linux/types.h>
-+#include <linux/usb/typec_dp.h>
- #include <linux/usb/typec_mux.h>
- #include <linux/workqueue.h>
- 
-@@ -2582,9 +2583,64 @@ static void anx7625_runtime_disable(void *data)
- 	pm_runtime_disable(data);
- }
- 
-+static void anx7625_set_crosspoint_switch(struct anx7625_data *ctx,
-+					  enum typec_orientation orientation)
-+{
-+	if (orientation == TYPEC_ORIENTATION_NORMAL) {
-+		anx7625_reg_write(ctx, ctx->i2c.tcpc_client, TCPC_SWITCH_0,
-+				  SW_SEL1_SSRX_RX1 | SW_SEL1_DPTX0_RX2);
-+		anx7625_reg_write(ctx, ctx->i2c.tcpc_client, TCPC_SWITCH_1,
-+				  SW_SEL2_SSTX_TX1 | SW_SEL2_DPTX1_TX2);
-+	} else if (orientation == TYPEC_ORIENTATION_REVERSE) {
-+		anx7625_reg_write(ctx, ctx->i2c.tcpc_client, TCPC_SWITCH_0,
-+				  SW_SEL1_SSRX_RX2 | SW_SEL1_DPTX0_RX1);
-+		anx7625_reg_write(ctx, ctx->i2c.tcpc_client, TCPC_SWITCH_1,
-+				  SW_SEL2_SSTX_TX2 | SW_SEL2_DPTX1_TX1);
-+	}
-+}
-+
-+static void anx7625_typec_two_ports_update(struct anx7625_data *ctx)
-+{
-+	if (ctx->typec_ports[0].dp_connected && ctx->typec_ports[1].dp_connected)
-+		/* Both ports available, do nothing to retain the current one. */
-+		return;
-+	else if (ctx->typec_ports[0].dp_connected)
-+		anx7625_set_crosspoint_switch(ctx, TYPEC_ORIENTATION_NORMAL);
-+	else if (ctx->typec_ports[1].dp_connected)
-+		anx7625_set_crosspoint_switch(ctx, TYPEC_ORIENTATION_REVERSE);
-+}
-+
- static int anx7625_typec_mux_set(struct typec_mux_dev *mux,
- 				 struct typec_mux_state *state)
- {
-+	struct anx7625_port_data *data = typec_mux_get_drvdata(mux);
-+	struct anx7625_data *ctx = data->ctx;
-+	struct device *dev = &ctx->client->dev;
-+	bool new_dp_connected, old_dp_connected;
-+
-+	if (ctx->num_typec_switches == 1)
-+		return 0;
-+
-+	old_dp_connected = ctx->typec_ports[0].dp_connected || ctx->typec_ports[1].dp_connected;
-+
-+	dev_dbg(dev, "mux_set dp_connected: c0=%d, c1=%d\n",
-+		ctx->typec_ports[0].dp_connected, ctx->typec_ports[1].dp_connected);
-+
-+	data->dp_connected = (state->alt && state->alt->svid == USB_TYPEC_DP_SID &&
-+			      state->alt->mode == USB_TYPEC_DP_MODE);
-+
-+	new_dp_connected = ctx->typec_ports[0].dp_connected || ctx->typec_ports[1].dp_connected;
-+
-+	/* dp on, power on first */
-+	if (!old_dp_connected && new_dp_connected)
-+		pm_runtime_get_sync(dev);
-+
-+	anx7625_typec_two_ports_update(ctx);
-+
-+	/* dp off, power off last */
-+	if (old_dp_connected && !new_dp_connected)
-+		pm_runtime_put_sync(dev);
-+
- 	return 0;
- }
- 
-diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.h b/drivers/gpu/drm/bridge/analogix/anx7625.h
-index 76cfc64f7574..7d6c6fdf9a3a 100644
---- a/drivers/gpu/drm/bridge/analogix/anx7625.h
-+++ b/drivers/gpu/drm/bridge/analogix/anx7625.h
-@@ -55,6 +55,18 @@
- #define HPD_STATUS_CHANGE 0x80
- #define HPD_STATUS 0x80
- 
-+#define TCPC_SWITCH_0 0xB4
-+#define SW_SEL1_DPTX0_RX2 BIT(0)
-+#define SW_SEL1_DPTX0_RX1 BIT(1)
-+#define SW_SEL1_SSRX_RX2 BIT(4)
-+#define SW_SEL1_SSRX_RX1 BIT(5)
-+
-+#define TCPC_SWITCH_1 0xB5
-+#define SW_SEL2_DPTX1_TX2 BIT(0)
-+#define SW_SEL2_DPTX1_TX1 BIT(1)
-+#define SW_SEL2_SSTX_TX2 BIT(4)
-+#define SW_SEL2_SSTX_TX1 BIT(5)
-+
- /******** END of I2C Address 0x58 ********/
- 
- /***************************************************************/
-@@ -444,6 +456,7 @@ struct anx7625_i2c_client {
- };
- 
- struct anx7625_port_data {
-+	bool dp_connected;
- 	struct typec_mux_dev *typec_mux;
- 	struct anx7625_data *ctx;
- };
--- 
-2.37.0.rc0.104.g0611611a94-goog
-
+> ---
+>   drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c | 3 ++-
+>   1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+> index 3a462e327e0e..a1b8c4592943 100644
+> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+> @@ -1251,12 +1251,13 @@ static void dpu_encoder_vblank_callback(struct drm_encoder *drm_enc,
+>   	DPU_ATRACE_BEGIN("encoder_vblank_callback");
+>   	dpu_enc = to_dpu_encoder_virt(drm_enc);
+>   
+> +	atomic_inc(&phy_enc->vsync_cnt);
+> +
+>   	spin_lock_irqsave(&dpu_enc->enc_spinlock, lock_flags);
+>   	if (dpu_enc->crtc)
+>   		dpu_crtc_vblank_callback(dpu_enc->crtc);
+>   	spin_unlock_irqrestore(&dpu_enc->enc_spinlock, lock_flags);
+>   
+> -	atomic_inc(&phy_enc->vsync_cnt);
+>   	DPU_ATRACE_END("encoder_vblank_callback");
+>   }
+>   
+> 
+> base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
+> -- 
+> https://chromeos.dev
+> 
