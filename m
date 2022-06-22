@@ -2,64 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E110C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 13:21:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3335FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 13:21:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353850AbiFVNVS (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 09:21:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42122 "EHLO
+        id S232954AbiFVNVc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 09:21:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232455AbiFVNVQ (ORCPT
+        with ESMTP id S1349975AbiFVNV1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 09:21:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D15D2F01F
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 06:21:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 22 Jun 2022 09:21:27 -0400
+X-Greylist: delayed 521 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 22 Jun 2022 06:21:24 PDT
+Received: from mail.turbocat.net (turbocat.net [IPv6:2a01:4f8:c17:6c4b::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 825AF3122C;
+        Wed, 22 Jun 2022 06:21:24 -0700 (PDT)
+Received: from [10.36.2.165] (unknown [178.232.223.95])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9AAD2B81E81
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 13:21:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02FEBC34114;
-        Wed, 22 Jun 2022 13:21:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655904073;
-        bh=XPeefldeWzVHWZ+odjgCZnRDW8+RxfcMoP983LsW+k4=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=BZJXRsYxOVmdQeiCNS9zsS87ptVZ+z9ATiduX6Y7eh8IPiEFCkNlgh5FAap/I0yB6
-         c0ScG7ud+SQsrVEYVuz4N6wtNHZFj7gb8Thny5vMudxOINJqHVxLSBGPvNpPEOxhzv
-         IUU4ak+76hDq5W9zwlcChscIx33Yv1wi9iIke/RD6+FU78ZBhIdrwbBe+eC6Tntk9n
-         W047yXuUzy+QpTEzbOBdSWTDS2WvyPdhymL3kAK5Bav2UqW2r4FX5hkmMciN0U5Fx+
-         gV5QfsEn7ZcB66BiYiRMoitodVPyVvTFcRHI/DNCXD0nA1XiOSk5eW9/YDNkXSXywX
-         dTTGkid4W2F3A==
-Message-ID: <b4861302-a4bc-9022-c1b3-084f16d8ee87@kernel.org>
-Date:   Wed, 22 Jun 2022 21:21:10 +0800
+        by mail.turbocat.net (Postfix) with ESMTPSA id B9F7726021A;
+        Wed, 22 Jun 2022 15:12:38 +0200 (CEST)
+Message-ID: <4883f0a7-6a1b-31bd-33fe-db8f6dcf73fa@selasky.org>
+Date:   Wed, 22 Jun 2022 15:12:32 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (X11; FreeBSD amd64; rv:91.0) Gecko/20100101
  Thunderbird/91.10.0
-Subject: Re: [PATCH v3 2/2] resize.f2fs: update man page for options -i, -s
- and -V
+Subject: Re: [PATCH] media: dvb_ringbuffer : Fix a bug in dvb_ringbuffer.c
 Content-Language: en-US
-To:     qixiaoyu1 <qxy65535@gmail.com>
-Cc:     Jaegeuk Kim <jaegeuk@kernel.org>,
-        linux-f2fs-devel@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, liuchao12@xiaomi.com,
-        qixiaoyu1 <qixiaoyu1@xiaomi.com>
-References: <5627a654-d605-6840-a133-e583c804aadd@kernel.org>
- <20220620115629.9169-1-qixiaoyu1@xiaomi.com>
- <20220620115629.9169-2-qixiaoyu1@xiaomi.com>
-From:   Chao Yu <chao@kernel.org>
-In-Reply-To: <20220620115629.9169-2-qixiaoyu1@xiaomi.com>
+To:     Kieran Bingham <kieran.bingham@ideasonboard.com>,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        mchehab@kernel.org,
+        =?UTF-8?B?7Jyg7Jqp7IiY?= <yongsuyoo0215@gmail.com>
+References: <CANXPkT6mYusYe8O0dbq3vW+24SsUZ19PqhOL+wLFRnbFXwu0Zg@mail.gmail.com>
+ <CANXPkT7nOhH+5bD0ycyRBT9FKQBBszCVuWkqp4tFtVRf2+8DFg@mail.gmail.com>
+ <CANXPkT5k9Pw4ka6CihyCg0oTd-32Te-ox=f3=9rtCphVgrdctA@mail.gmail.com>
+ <165590120140.1149771.2257818527859865760@Monstersaurus>
+From:   Hans Petter Selasky <hps@selasky.org>
+In-Reply-To: <165590120140.1149771.2257818527859865760@Monstersaurus>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/6/20 19:56, qixiaoyu1 wrote:
-> Signed-off-by: qixiaoyu1 <qixiaoyu1@xiaomi.com>
+Hi Kieran,
 
-Reviewed-by: Chao Yu <chao@kernel.org>
+The consumed variable should not be negative. This bug has been there 
+since the beginning of the GIT at Linux from what I can see.
 
-Thanks,
++1
+
+--HPS
+
+ From 108c6acb2cc4bc4314b96f6f254a04b2873a096c Mon Sep 17 00:00:00 2001
+From: YongSu Yoo <yongsuyoo0215@gmail.com>
+Date: Sun, 22 May 2022 04:53:12 +0000
+Subject: [PATCH] media: dvb_ringbuffer : Fix a bug in dvb_ringbuffer.c
+
+Signed-off-by:Yongsu Yoo <yongsuyoo0215@gmail.com>
+
+The function dvb_ringbuffer_pkt_next in
+/linux-next/drviers/media/dvb-core/dvb_ringbuffer.c,
+which searches the idx of the next valid packet in the ring
+buffer of the ca->slot_info[slot].rx_buffer at
+/linux-next/drivers/media/dvb-core/dvb_ca_en50221.c,
+has the following problem.
+In calculating the amounts of the consumed address of the ring
+buffer, if the read address(rbuf->pread) of the ring buffer is
+smaller than the idx, the amounts of the searched address
+should be (idx - rbuf->pread),
+whereas if the read address(rbuf->pread) of the ring buffer is
+larger than the idx, the amounts of the consumed address should
+be (idx - rbuf->pread + rbug->size). But there exists an
+incorrect logic that the rbug-size was not properly added on
+(idx - rbug->pread) in the later case. With this commit, we
+fixed this bug.
+---
+  drivers/media/dvb-core/dvb_ringbuffer.c | 4 +++-
+  1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/media/dvb-core/dvb_ringbuffer.c 
+b/drivers/media/dvb-core/dvb_ringbuffer.c
+index d1d471af0636..7d4558de8e83 100644
+--- a/drivers/media/dvb-core/dvb_ringbuffer.c
++++ b/drivers/media/dvb-core/dvb_ringbuffer.c
+@@ -335,7 +335,9 @@ ssize_t dvb_ringbuffer_pkt_next(struct 
+dvb_ringbuffer *rbuf, size_t idx, size_t*
+  		idx = (idx + curpktlen + DVB_RINGBUFFER_PKTHDRSIZE) % rbuf->size;
+  	}
+
+-	consumed = (idx - rbuf->pread) % rbuf->size;
++	consumed = (idx - rbuf->pread);
++	if (consumed < 0)
++		consumed += rbuf->size;
+
+  	while((dvb_ringbuffer_avail(rbuf) - consumed) > 
+DVB_RINGBUFFER_PKTHDRSIZE) {
+
+-- 
+2.17.1
