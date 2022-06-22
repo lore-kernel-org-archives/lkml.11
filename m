@@ -2,102 +2,238 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3335FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 13:21:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF535CCA47D
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 13:22:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232954AbiFVNVc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 09:21:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42328 "EHLO
+        id S1354522AbiFVNWh (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 09:22:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349975AbiFVNV1 (ORCPT
+        with ESMTP id S236201AbiFVNWb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 09:21:27 -0400
-X-Greylist: delayed 521 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 22 Jun 2022 06:21:24 PDT
-Received: from mail.turbocat.net (turbocat.net [IPv6:2a01:4f8:c17:6c4b::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 825AF3122C;
-        Wed, 22 Jun 2022 06:21:24 -0700 (PDT)
-Received: from [10.36.2.165] (unknown [178.232.223.95])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Wed, 22 Jun 2022 09:22:31 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A0823121F;
+        Wed, 22 Jun 2022 06:22:30 -0700 (PDT)
+Received: from notapiano (unknown [194.36.25.10])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.turbocat.net (Postfix) with ESMTPSA id B9F7726021A;
-        Wed, 22 Jun 2022 15:12:38 +0200 (CEST)
-Message-ID: <4883f0a7-6a1b-31bd-33fe-db8f6dcf73fa@selasky.org>
-Date:   Wed, 22 Jun 2022 15:12:32 +0200
+        (Authenticated sender: nfraprado)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 17BDC66017B3;
+        Wed, 22 Jun 2022 14:22:24 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1655904148;
+        bh=QGer2+WExG8zvGaah1wIlZ38pfIs0JV+iFqSuscS98w=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Bg9jN1q4MqLcePbJVH15YQvXfV+TiSmR6IMIqxnXBapnL/C8uo+tx+ruFIXNEVT8M
+         M96gdCtX+gsWrui7vwRbxImJHDHcVw8kLrQvX0IuoZLc+1YMRsncEB0CpiQm3cVmwJ
+         Ie6dRKu2vyiFEKgnTrSEINfl8iP4UrB8T7vrmBFhbtKUpHumPyNPleoQPfs//nXCcG
+         g9kmBIsAHTYZ1IQTmPMzSspPechoh6Sm8KBLSZpIH3YQ65xSuAjaKp5mBide0Pc1CT
+         ElNlhLpoF0Fpi4CQo4VQBIqM6iKe9cGz0ox44PNOixqj1Akug37n628Lwh7MSFqAGu
+         u27BAThLBZL3w==
+Date:   Wed, 22 Jun 2022 09:22:19 -0400
+From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
+        <nfraprado@collabora.com>
+To:     Wenbin Mei <wenbin.mei@mediatek.com>
+Cc:     Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>, kernel@collabora.com,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-usb@vger.kernel.org
+Subject: Re: [PATCH 2/3] dt-bindings: usb: mtk-xhci: Allow middle optional
+ clocks to be missing
+Message-ID: <20220622132219.36rvznhip2egujec@notapiano>
+References: <20220617222916.2435618-3-nfraprado@collabora.com>
+ <8639e64d-c659-7090-2d0a-078fd96cfbd4@linaro.org>
+ <bb460aa483cc888ffa36709d9e9c1f2e3be0e000.camel@mediatek.com>
+ <bc5458fe-083c-d679-9fcb-95810a290da8@linaro.org>
+ <af50210b95d0cd8b2e3103b3d4a9702aeeba9452.camel@mediatek.com>
+ <a24c24e6-fdee-df79-fd2f-6a71540bd9b3@linaro.org>
+ <20220620155057.a6qilnhm7snzhapa@notapiano>
+ <afae6179-3681-f5c6-4615-3228f16f1271@linaro.org>
+ <ba6cccfa05aed087d14f5adc6db06496547a5094.camel@mediatek.com>
+ <2705069844be7b3152a810e21b9f737a88d0302d.camel@mediatek.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; FreeBSD amd64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH] media: dvb_ringbuffer : Fix a bug in dvb_ringbuffer.c
-Content-Language: en-US
-To:     Kieran Bingham <kieran.bingham@ideasonboard.com>,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        mchehab@kernel.org,
-        =?UTF-8?B?7Jyg7Jqp7IiY?= <yongsuyoo0215@gmail.com>
-References: <CANXPkT6mYusYe8O0dbq3vW+24SsUZ19PqhOL+wLFRnbFXwu0Zg@mail.gmail.com>
- <CANXPkT7nOhH+5bD0ycyRBT9FKQBBszCVuWkqp4tFtVRf2+8DFg@mail.gmail.com>
- <CANXPkT5k9Pw4ka6CihyCg0oTd-32Te-ox=f3=9rtCphVgrdctA@mail.gmail.com>
- <165590120140.1149771.2257818527859865760@Monstersaurus>
-From:   Hans Petter Selasky <hps@selasky.org>
-In-Reply-To: <165590120140.1149771.2257818527859865760@Monstersaurus>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <2705069844be7b3152a810e21b9f737a88d0302d.camel@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kieran,
+On Wed, Jun 22, 2022 at 02:10:55PM +0800, Wenbin Mei wrote:
+> On Wed, 2022-06-22 at 09:57 +0800, Chunfeng Yun wrote:
+> > On Tue, 2022-06-21 at 09:14 +0200, Krzysztof Kozlowski wrote:
+> > > On 20/06/2022 17:50, Nícolas F. R. A. Prado wrote:
+> > > > On Mon, Jun 20, 2022 at 10:50:57AM +0200, Krzysztof Kozlowski
+> > > > wrote:
+> > > > > On 20/06/2022 08:59, Chunfeng Yun wrote:
+> > > > > > On Sun, 2022-06-19 at 14:05 +0200, Krzysztof Kozlowski wrote:
+> > > > > > > On 19/06/2022 09:46, Chunfeng Yun wrote:
+> > > > > > > > On Fri, 2022-06-17 at 18:25 -0700, Krzysztof Kozlowski
+> > > > > > > > wrote:
+> > > > > > > > > On 17/06/2022 15:29, Nícolas F. R. A. Prado wrote:
+> > > > > > > > > > The current clock list in the binding doesn't allow
+> > > > > > > > > > for
+> > > > > > > > > > one of
+> > > > > > > > > > the
+> > > > > > > > > > optional clocks to be missing and a subsequent clock
+> > > > > > > > > > to
+> > > > > > > > > > be
+> > > > > > > > > > present.
+> > > > > > > > > > An
+> > > > > > > > > > example where this is an issue is in mt8192.dtsi,
+> > > > > > > > > > which
+> > > > > > > > > > has
+> > > > > > > > > > "sys_ck",
+> > > > > > > > > > "ref_ck", "xhci_ck" and would cause dtbs_check
+> > > > > > > > > > warnings.
+> > > > > > > > > > 
+> > > > > > > > > > Change the clock list in a way that allows the middle
+> > > > > > > > > > optional
+> > > > > > > > > > clocks to
+> > > > > > > > > > be missing, while still guaranteeing a fixed order.
+> > > > > > > > > > The
+> > > > > > > > > > "ref_ck" is
+> > > > > > > > > > kept
+> > > > > > > > > > as a const even though it is optional for simplicity,
+> > > > > > > > > > since it
+> > > > > > > > > > is
+> > > > > > > > > > present in all current dts files.
+> > > > > > > > > > 
+> > > > > > > > > > Signed-off-by: Nícolas F. R. A. Prado <
+> > > > > > > > > > nfraprado@collabora.com>
+> > > > > > > > > > ---
+> > > > > > > > > > 
+> > > > > > > > > >  .../devicetree/bindings/usb/mediatek,mtk-
+> > > > > > > > > > xhci.yaml       | 9
+> > > > > > > > > > +++++++--
+> > > > > > > > > >  1 file changed, 7 insertions(+), 2 deletions(-)
+> > > > > > > > > > 
+> > > > > > > > > > diff --git
+> > > > > > > > > > a/Documentation/devicetree/bindings/usb/mediatek,mtk-
+> > > > > > > > > > xhci.yaml
+> > > > > > > > > > b/Documentation/devicetree/bindings/usb/mediatek,mtk-
+> > > > > > > > > > xhci.yaml
+> > > > > > > > > > index 63cbc2b62d18..99a1b233ec90 100644
+> > > > > > > > > > ---
+> > > > > > > > > > a/Documentation/devicetree/bindings/usb/mediatek,mtk-
+> > > > > > > > > > xhci.yaml
+> > > > > > > > > > +++
+> > > > > > > > > > b/Documentation/devicetree/bindings/usb/mediatek,mtk-
+> > > > > > > > > > xhci.yaml
+> > > > > > > > > > @@ -80,8 +80,13 @@ properties:
+> > > > > > > > > >      items:
+> > > > > > > > > >        - const: sys_ck  # required, the following
+> > > > > > > > > > ones
+> > > > > > > > > > are
+> > > > > > > > > > optional
+> > > > > > > > > >        - const: ref_ck
+> > > > > > > > > > -      - const: mcu_ck
+> > > > > > > > > > -      - const: dma_ck
+> > > > > > > > > > +      - enum:
+> > > > > > > > > > +          - mcu_ck
+> > > > > > > > > > +          - dma_ck
+> > > > > > > > > > +          - xhci_ck
+> > > > > > > > > > +      - enum:
+> > > > > > > > > > +          - dma_ck
+> > > > > > > > > > +          - xhci_ck
+> > > > > > > > > >        - const: xhci_ck
+> > > > > > > > > 
+> > > > > > > > > You allow now almost any order here, including
+> > > > > > > > > incorrect
+> > > > > > > > > like
+> > > > > > > > > sys,ref,xhci,xhci,xhci.
+> > > > > > > > > 
+> > > > > > > > > The order of clocks has to be fixed and we cannot allow
+> > > > > > > > > flexibility.
+> > > > > > > > > Are
+> > > > > > > > > you sure that these clocks are actually optional (not
+> > > > > > > > > wired to
+> > > > > > > > > the
+> > > > > > > > > device)?
+> > > > > > > > 
+> > > > > > > > In fact, these optional clocks are fixed, due to no gates
+> > > > > > > > are
+> > > > > > > > provided,
+> > > > > > > > SW can't control them by CCF;
+> > > > > > > > In this case, I usually use a fixed clock, or ignore it.
+> > > > > > > 
+> > > > > > > But in some versions these clocks are controllable or not?
+> > > > > > 
+> > > > > > Some SoCs are controllable, some ones are not (fixed clock).
+> > > > > 
+> > > > > Thanks for confirming. Then I would prefer to make these clocks
+> > > > > required
+> > > > > (not optional) and always provide them - via common clock
+> > > > > framework or
+> > > > > fixed-clock.
+> > > > 
+> > > > Hi Krzysztof and Chunfeng,
+> > > > 
+> > > > thank you both for the feedback.
+> > > > 
+> > > > Since the solution I proposed in this patch is not acceptable I
+> > > > see
+> > > > two options:
+> > > > 1. Split the clocks in several if blocks matched by compatibles
+> > > > 2. Make the clocks required and use fixed-clock nodes for the
+> > > > missing clocks in
+> > > >    the DT
+> > > > 
+> > > > My understanding is that 1 is the desirable solution if the clock
+> > > > is really
+> > > > missing in some hardware variants, while 2 is desirable if all
+> > > > hardware variants
+> > > > really receive all the clocks, only that on some variants they're
+> > > > fixed and not
+> > > > controlable by SW.
+> > > > 
+> > > > From what I'm reading of this discussion it seems that the latter
+> > > > is the case
+> > > > here and thus we should go for 2. Is this correct?
+> > > 
+> > > This is how I understood it as well, so correct from my side.
+> > 
+> > Also right for me.
+> > 
+> > > 
+> > > > 
+> > > > Also Chunfeng, do you have information on whether the same is
+> > > > true
+> > > > for the MMC
+> > > > HW block? I recently submitted some changes to that binding [1]
+> > > > but
+> > > > I followed
+> > > > approach 1 there instead. However if all the clocks are present
+> > > > in
+> > > > the HW level
+> > > > there as well it would make more sense for me to change it to
+> > > > follow approach 2.
+> > 
+> > I discussed it with Wenbin, MMC seems a little different with USB,
+> > 
+> > Hi Wenbin,
+> > 
+> >    Please give some comments about MMC, thanks
+> > 
+> Hi Chunfeng,
+> 
+> As we discussed, the following change is the desirable solution for the
+> Mediatek MMC HW.
+> 
+> https://lists.infradead.org/pipermail/linux-mediatek/2022-June/043691.html
 
-The consumed variable should not be negative. This bug has been there 
-since the beginning of the GIT at Linux from what I can see.
+Got it, thank you both. I'll keep that approach for MMC then, and change the one
+here for USB.
 
-+1
-
---HPS
-
- From 108c6acb2cc4bc4314b96f6f254a04b2873a096c Mon Sep 17 00:00:00 2001
-From: YongSu Yoo <yongsuyoo0215@gmail.com>
-Date: Sun, 22 May 2022 04:53:12 +0000
-Subject: [PATCH] media: dvb_ringbuffer : Fix a bug in dvb_ringbuffer.c
-
-Signed-off-by:Yongsu Yoo <yongsuyoo0215@gmail.com>
-
-The function dvb_ringbuffer_pkt_next in
-/linux-next/drviers/media/dvb-core/dvb_ringbuffer.c,
-which searches the idx of the next valid packet in the ring
-buffer of the ca->slot_info[slot].rx_buffer at
-/linux-next/drivers/media/dvb-core/dvb_ca_en50221.c,
-has the following problem.
-In calculating the amounts of the consumed address of the ring
-buffer, if the read address(rbuf->pread) of the ring buffer is
-smaller than the idx, the amounts of the searched address
-should be (idx - rbuf->pread),
-whereas if the read address(rbuf->pread) of the ring buffer is
-larger than the idx, the amounts of the consumed address should
-be (idx - rbuf->pread + rbug->size). But there exists an
-incorrect logic that the rbug-size was not properly added on
-(idx - rbug->pread) in the later case. With this commit, we
-fixed this bug.
----
-  drivers/media/dvb-core/dvb_ringbuffer.c | 4 +++-
-  1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/media/dvb-core/dvb_ringbuffer.c 
-b/drivers/media/dvb-core/dvb_ringbuffer.c
-index d1d471af0636..7d4558de8e83 100644
---- a/drivers/media/dvb-core/dvb_ringbuffer.c
-+++ b/drivers/media/dvb-core/dvb_ringbuffer.c
-@@ -335,7 +335,9 @@ ssize_t dvb_ringbuffer_pkt_next(struct 
-dvb_ringbuffer *rbuf, size_t idx, size_t*
-  		idx = (idx + curpktlen + DVB_RINGBUFFER_PKTHDRSIZE) % rbuf->size;
-  	}
-
--	consumed = (idx - rbuf->pread) % rbuf->size;
-+	consumed = (idx - rbuf->pread);
-+	if (consumed < 0)
-+		consumed += rbuf->size;
-
-  	while((dvb_ringbuffer_avail(rbuf) - consumed) > 
-DVB_RINGBUFFER_PKTHDRSIZE) {
-
--- 
-2.17.1
+Thanks,
+Nícolas
