@@ -2,162 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2E3AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 10:54:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23D96C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 10:54:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356049AbiFVKyC (ORCPT
+        id S1356224AbiFVKyG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 06:54:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39140 "EHLO
+        Wed, 22 Jun 2022 06:54:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355122AbiFVKxi (ORCPT
+        with ESMTP id S1356021AbiFVKyC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 06:53:38 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 613123B57B;
-        Wed, 22 Jun 2022 03:53:36 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 25MArL3l020508;
-        Wed, 22 Jun 2022 05:53:21 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1655895201;
-        bh=09m75uj4VJKcv8qDIqXsO3yJrvrISC65hIrs8N9FE4I=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=UdGmC5fmkakApd7lqlK57Rq/M3yjOL6hddo7ojONKa/oiclikRntxdiEBnte9g5rR
-         UxFS6ILTmwJNCm3zG57nVCffL93pAvbxujM61dRD5tIt4Tm+3fSUev6wAAZg8xW55m
-         wxoUTrxwOX27wOqLC0WwDZ/ZFm5+ph32ielFgkNg=
-Received: from DLEE103.ent.ti.com (dlee103.ent.ti.com [157.170.170.33])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 25MArLPh026681
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 22 Jun 2022 05:53:21 -0500
-Received: from DLEE115.ent.ti.com (157.170.170.26) by DLEE103.ent.ti.com
- (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 22
- Jun 2022 05:53:20 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE115.ent.ti.com
- (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 22 Jun 2022 05:53:20 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 25MArJ2P016904;
-        Wed, 22 Jun 2022 05:53:19 -0500
-From:   Rahul T R <r-ravikumar@ti.com>
-To:     <linux-phy@lists.infradead.org>, <kishon@ti.com>,
-        <vkoul@kernel.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>,
-        <laurent.pinchart@ideasonboard.com>
-CC:     <p.yadav@ti.com>, <tomi.valkeinen@ideasonboard.com>,
-        <linux-kernel@vger.kernel.org>, <jpawar@cadence.com>,
-        <sjakhade@cadence.com>, <mparab@cadence.com>,
-        <devicetree@vger.kernel.org>, <vigneshr@ti.com>,
-        <lee.jones@linaro.org>, Rahul T R <r-ravikumar@ti.com>
-Subject: [PATCH v3 2/3] phy: cdns-dphy: Add band config for dphy tx
-Date:   Wed, 22 Jun 2022 16:23:10 +0530
-Message-ID: <20220622105311.21415-3-r-ravikumar@ti.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220622105311.21415-1-r-ravikumar@ti.com>
-References: <20220622105311.21415-1-r-ravikumar@ti.com>
+        Wed, 22 Jun 2022 06:54:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 317BA3BA69
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 03:54:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C1F0E6128E
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 10:54:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C635C34114;
+        Wed, 22 Jun 2022 10:53:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655895241;
+        bh=G4XroPUQxa6e/wOY4UG53P8PsXH1RZHdojRCRxtIFkk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=rYovtcRPdYqEUX1Yg7P6xGKNzlkeHiuI8UBV2EJsEeVSqkz0989+AH4S/1o3VfUC8
+         p1UFB8Ycr54oZ2Y5Mm1LPKyXTMD4CIf+bp13SgdufvpiqCqGwLhwFsAkuOlPHxMTvf
+         g/j3fKfAf+oQ805lgMLxegAaE2H3V3ujhgKbdzLm1brWB0sxgkBufBup+s/QNjG13J
+         yM/h1pNKs7fLedLBxqkk2Oze5iTqBXWbXJW8nR+OMZY0RTRc1WSwr/EeVuvXUn9gd9
+         WiQkL/7orpicNW2QwOWP9tSsMxrhB2e/RWtwyvL/M/yOy9Cl/qMjjTUToUCLuNvNR9
+         y3NeBX07/dQeQ==
+Date:   Wed, 22 Jun 2022 11:53:55 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Chen-Yu Tsai <wens@kernel.org>
+Cc:     judyhsiao@chromium.org,
+        Heiko =?iso-8859-1?Q?St=FCbner?= <heiko@sntech.de>,
+        Jaroslav Kysela <perex@perex.cz>,
+        linux-kernel <linux-kernel@vger.kernel.org>, wenst@chromium.org,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        briannorris@chromium.org, Rob Herring <robh+dt@kernel.org>,
+        Linux-ALSA <alsa-devel@alsa-project.org>
+Subject: Re: (subset) [PATCH v4 0/3] ASoC: rockchip: i2s: switch BCLK to GPIO
+Message-ID: <YrL0wzzfeQwmyHfK@sirena.org.uk>
+References: <20220619095324.492678-1-judyhsiao@chromium.org>
+ <165583076931.271995.9857794745310978104.b4-ty@kernel.org>
+ <CAGb2v66+ZjKFvCfq-H3F_ZdyxiKHY6=7juhSCmHPK3o8kgw+Og@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="4AruQWY53Tdw7RRr"
+Content-Disposition: inline
+In-Reply-To: <CAGb2v66+ZjKFvCfq-H3F_ZdyxiKHY6=7juhSCmHPK3o8kgw+Og@mail.gmail.com>
+X-Cookie: Truckers welcome.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for band ctrl config for dphy tx.
 
-Signed-off-by: Rahul T R <r-ravikumar@ti.com>
----
- drivers/phy/cadence/cdns-dphy.c | 40 ++++++++++++++++++++++++++++++++-
- 1 file changed, 39 insertions(+), 1 deletion(-)
+--4AruQWY53Tdw7RRr
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-diff --git a/drivers/phy/cadence/cdns-dphy.c b/drivers/phy/cadence/cdns-dphy.c
-index ba042e39cfaf..14f951013b4f 100644
---- a/drivers/phy/cadence/cdns-dphy.c
-+++ b/drivers/phy/cadence/cdns-dphy.c
-@@ -3,6 +3,7 @@
-  * Copyright: 2017-2018 Cadence Design Systems, Inc.
-  */
- 
-+#include <linux/bitfield.h>
- #include <linux/bitops.h>
- #include <linux/clk.h>
- #include <linux/io.h>
-@@ -45,6 +46,10 @@
- #define DPHY_CMN_OPDIV_FROM_REG		BIT(6)
- #define DPHY_CMN_OPDIV(x)		((x) << 7)
- 
-+#define DPHY_BAND_CFG			DPHY_PCS(0x0)
-+#define DPHY_BAND_CFG_LEFT_BAND		GENMASK(4, 0)
-+#define DPHY_BAND_CFG_RIGHT_BAND	GENMASK(9, 5)
-+
- #define DPHY_PSM_CFG			DPHY_PCS(0x4)
- #define DPHY_PSM_CFG_FROM_REG		BIT(0)
- #define DPHY_PSM_CLK_DIV(x)		((x) << 1)
-@@ -92,6 +97,12 @@ struct cdns_dphy {
- 	struct phy *phy;
- };
- 
-+/* Order of bands is important since the index is the band number. */
-+static const unsigned int tx_bands[] = {
-+	80, 100, 120, 160, 200, 240, 320, 390, 450, 510, 560, 640, 690, 770,
-+	870, 950, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2500
-+};
-+
- static int cdns_dsi_get_dphy_pll_cfg(struct cdns_dphy *dphy,
- 				     struct cdns_dphy_cfg *cfg,
- 				     struct phy_configure_opts_mipi_dphy *opts,
-@@ -232,6 +243,24 @@ static int cdns_dphy_config_from_opts(struct phy *phy,
- 	return 0;
- }
- 
-+static int cdns_dphy_tx_get_band_ctrl(unsigned long hs_clk_rate)
-+{
-+	unsigned int rate;
-+	int i;
-+
-+	rate = hs_clk_rate / 1000000UL;
-+
-+	if (rate < tx_bands[0])
-+		return -EOPNOTSUPP;
-+
-+	for (i = 0; i < ARRAY_SIZE(tx_bands) - 1; i++) {
-+		if (rate >= tx_bands[i] && rate < tx_bands[i + 1])
-+			return i;
-+	}
-+
-+	return -EOPNOTSUPP;
-+}
-+
- static int cdns_dphy_validate(struct phy *phy, enum phy_mode mode, int submode,
- 			      union phy_configure_opts *opts)
- {
-@@ -247,7 +276,8 @@ static int cdns_dphy_configure(struct phy *phy, union phy_configure_opts *opts)
- {
- 	struct cdns_dphy *dphy = phy_get_drvdata(phy);
- 	struct cdns_dphy_cfg cfg = { 0 };
--	int ret;
-+	int ret, band_ctrl;
-+	unsigned int reg;
- 
- 	ret = cdns_dphy_config_from_opts(phy, &opts->mipi_dphy, &cfg);
- 	if (ret)
-@@ -276,6 +306,14 @@ static int cdns_dphy_configure(struct phy *phy, union phy_configure_opts *opts)
- 	 */
- 	cdns_dphy_set_pll_cfg(dphy, &cfg);
- 
-+	band_ctrl = cdns_dphy_tx_get_band_ctrl(opts->mipi_dphy.hs_clk_rate);
-+	if (band_ctrl < 0)
-+		return band_ctrl;
-+
-+	reg = FIELD_PREP(DPHY_BAND_CFG_LEFT_BAND, band_ctrl) |
-+	      FIELD_PREP(DPHY_BAND_CFG_RIGHT_BAND, band_ctrl);
-+	writel(reg, dphy->regs + DPHY_BAND_CFG);
-+
- 	return 0;
- }
- 
--- 
-2.36.1
+On Wed, Jun 22, 2022 at 01:58:40AM +0800, Chen-Yu Tsai wrote:
+> On Wed, Jun 22, 2022 at 1:00 AM Mark Brown <broonie@kernel.org> wrote:
+> > On Sun, 19 Jun 2022 09:53:21 +0000, Judy Hsiao wrote:
 
+> > [1/3] ASoC: rockchip: i2s: switch BCLK to GPIO
+> >       commit: 44f362c2cc6dd0c5e3cb499c4fb4ed45b63a6196
+
+> Seems you applied v1 instead of v4?
+
+b4 will reply to anything it knows about that thinks is close enough to
+something that got applied.
+
+--4AruQWY53Tdw7RRr
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKy9MIACgkQJNaLcl1U
+h9COkgf9HKKAvRzjNs2p5CEqeFNtnVzhD95omRkCIyXAyPgMzsXQ86HrXzkr7Qf6
+6aty2J1RMF1ryi1b4Jw+B8DfhbDCjmS9nB7H4IV/GlQCmkoUzbFmCdf8qSPLuQNk
+bVTyLRDSCh0FUFJXvc894JrLpg1DkjGqfTKmT3OWmAENtixWknby7elcr+CnNAqM
+hZujXhxdwazBRH5RtQLO+z8cMOnLgpEWoklHTmzsPrW7EPGMzgBaCbFe4fNac1oI
+teB7zkGZqX242LJoeBs9m/yIzPhQYGBAtAie5witncajUnxnAFaWx+Zrbr7PTGci
+LOU8M7FkgC0tpcUbs+Eec0tfnEZLsA==
+=nzIr
+-----END PGP SIGNATURE-----
+
+--4AruQWY53Tdw7RRr--
