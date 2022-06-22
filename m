@@ -2,96 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53F61CCA482
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 05:11:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA533C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 05:11:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356677AbiFVFLB (ORCPT
+        id S1356774AbiFVFLE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 01:11:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51224 "EHLO
+        Wed, 22 Jun 2022 01:11:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237181AbiFVFK7 (ORCPT
+        with ESMTP id S1356667AbiFVFLB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 01:10:59 -0400
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFC8235DC1;
-        Tue, 21 Jun 2022 22:10:58 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 25M5AlX3046837;
-        Wed, 22 Jun 2022 00:10:47 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1655874647;
-        bh=DrZQGD4CPguty23X5d/nt0agTy8fsBIfOiO5YBoPvw8=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=Qd3b+IQ3DoQyt4rNSzOQZJz0ssieZLV9V3l0telKS4KENOkt/SIfLo274MZKi/avO
-         sxVteNJ9EXiZQgVT9DiKTh0e4AksPDOVZav+k9mHjtufASRXBrJTscHE2xbCW06mmP
-         i8k/wYNzi4rwEIADLTzF8maQsUet8u/zvCKRYbA4=
-Received: from DFLE102.ent.ti.com (dfle102.ent.ti.com [10.64.6.23])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 25M5AlEu037496
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 22 Jun 2022 00:10:47 -0500
-Received: from DFLE108.ent.ti.com (10.64.6.29) by DFLE102.ent.ti.com
- (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 22
- Jun 2022 00:10:47 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE108.ent.ti.com
- (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 22 Jun 2022 00:10:47 -0500
-Received: from [10.24.69.159] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 25M5Ah6t022819;
-        Wed, 22 Jun 2022 00:10:44 -0500
-Message-ID: <4bc63a00-a220-e9b8-49ff-8c2d783b55f5@ti.com>
-Date:   Wed, 22 Jun 2022 10:40:42 +0530
+        Wed, 22 Jun 2022 01:11:01 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49C0E35DC1;
+        Tue, 21 Jun 2022 22:11:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1655874660; x=1687410660;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=IUXjddSYc3lc18pbT0qmDyWfIkOKQ+bd9LurAEtuui0=;
+  b=Do9MpXwLl3w/oK6V3CvL9UGCTybzyEZv6dQjxpvnBAiH8iFZVDd9fQnf
+   mz0M7vniv3JyFpJP9mM8ZkqLWb5g//gW7N4x6mWWXKPZ+l/r6HOtNyds6
+   oOFEQPIecYX8VwB3J9fc3+8B/eWXh1QYOQYpvnhBzzQ81o0Sa0wgIfV+w
+   o=;
+Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 21 Jun 2022 22:11:00 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 22:10:59 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 21 Jun 2022 22:10:59 -0700
+Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 21 Jun 2022 22:10:55 -0700
+From:   Satya Priya <quic_c_skakit@quicinc.com>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+CC:     Lee Jones <lee.jones@linaro.org>,
+        Satya Priya <quic_c_skakit@quicinc.com>,
+        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-rtc@vger.kernel.org>,
+        <quic_tsoni@quicinc.com>
+Subject: [PATCH 0/2] Update the binding documents with latest mail ID
+Date:   Wed, 22 Jun 2022 10:40:37 +0530
+Message-ID: <1655874639-11273-1-git-send-email-quic_c_skakit@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] PCI: endpoint: Don't stop EP controller by EP function
-Content-Language: en-US
-To:     Shunsuke Mie <mie@igel.co.jp>
-CC:     Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Hou Zhiqiang <Zhiqiang.Hou@nxp.com>,
-        Li Chen <lchen@ambarella.com>, <linux-pci@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220622040924.113279-1-mie@igel.co.jp>
-From:   Kishon Vijay Abraham I <kishon@ti.com>
-In-Reply-To: <20220622040924.113279-1-mie@igel.co.jp>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Satya Priya (2):
+  dt-bindings: mfd: qcom-pm8xxx: Update the maintainers section
+  dt-bindings: rtc: qcom-pm8xxx-rtc: Update the maintainers section
 
+ Documentation/devicetree/bindings/mfd/qcom-pm8xxx.yaml     | 2 +-
+ Documentation/devicetree/bindings/rtc/qcom-pm8xxx-rtc.yaml | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-On 22/06/22 09:39, Shunsuke Mie wrote:
-> For multi-function endpoint device, an ep function shouldn't stop EP
-> controller. Nomally the controller is stopped via configfs.
+-- 
+2.7.4
 
-%s/Nomally/Normally/
-> 
-> Fixes: 349e7a85b25f ("PCI: endpoint: functions: Add an EP function to test PCI")
-> Signed-off-by: Shunsuke Mie <mie@igel.co.jp>
-
-Thank you for the fix!
-
-Acked-by: Kishon Vijay Abraham I <kishon@ti.com>
-> ---
->  drivers/pci/endpoint/functions/pci-epf-test.c | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/drivers/pci/endpoint/functions/pci-epf-test.c b/drivers/pci/endpoint/functions/pci-epf-test.c
-> index 5b833f00e980..a5ed779b0a51 100644
-> --- a/drivers/pci/endpoint/functions/pci-epf-test.c
-> +++ b/drivers/pci/endpoint/functions/pci-epf-test.c
-> @@ -627,7 +627,6 @@ static void pci_epf_test_unbind(struct pci_epf *epf)
->  
->  	cancel_delayed_work(&epf_test->cmd_handler);
->  	pci_epf_test_clean_dma_chan(epf_test);
-> -	pci_epc_stop(epc);
->  	for (bar = 0; bar < PCI_STD_NUM_BARS; bar++) {
->  		epf_bar = &epf->bar[bar];
->  
