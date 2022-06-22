@@ -2,121 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5549CCCA47F
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 20:18:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28E10C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 20:26:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231600AbiFVUSR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 16:18:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49398 "EHLO
+        id S233779AbiFVU0y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 16:26:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231239AbiFVUSP (ORCPT
+        with ESMTP id S229473AbiFVU0r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 16:18:15 -0400
-Received: from mail.mutex.one (mail.mutex.one [62.77.152.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C208E12A91;
-        Wed, 22 Jun 2022 13:18:14 -0700 (PDT)
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by mail.mutex.one (Postfix) with ESMTP id 5E13C16C007C;
-        Wed, 22 Jun 2022 23:18:13 +0300 (EEST)
-X-Virus-Scanned: Debian amavisd-new at mail.mutex.one
-Received: from mail.mutex.one ([127.0.0.1])
-        by localhost (mail.mutex.one [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 7D_hW6evEOEl; Wed, 22 Jun 2022 23:18:13 +0300 (EEST)
-From:   Marian Postevca <posteuca@mutex.one>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mutex.one; s=default;
-        t=1655929093; bh=xwvGetNLY6Ram85X3IvCg95rBMf6H7m9uiOQq0V+Otg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=mdzceMJ+9vLqkHphFpLbUsH/tmEWbC5/9CTIwhGmXZoE8xiA+JzqmIj/cyiD9/jkX
-         mI2KWpNqOoQfQg7sSITw9+QM4S1Z6GgdFAzuYxCgWisbgVLRmg9Pf6aUdSRNYyMCib
-         04IUBNHJbGBVoMy6RdmCDLc52ud0oujI9Vrj4Zvs=
-To:     Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Marian Postevca <posteuca@mutex.one>,
-        Maximilian Senftleben <kernel@mail.msdigital.de>,
-        stable@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 5.15] usb: gadget: u_ether: fix regression in setting fixed MAC address
-Date:   Wed, 22 Jun 2022 23:18:04 +0300
-Message-Id: <20220622201805.4315-1-posteuca@mutex.one>
+        Wed, 22 Jun 2022 16:26:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A85A136682;
+        Wed, 22 Jun 2022 13:26:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0470061738;
+        Wed, 22 Jun 2022 20:26:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2427CC34114;
+        Wed, 22 Jun 2022 20:26:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655929605;
+        bh=kXEUTw/N4tbohAVX+9EPs5JvigCwZ5p1wSKw76VkLGg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=LxVMS/Q/AXjq/CFLjx4GJiLjQKJ1DETmISnpLERNDTg2bTZi4w9aDIBxvLnuWHHlP
+         uMOqpinUDwRQ+HTyi7KMHnZXBnVNrcnH/UxO8QsTWuwAJ7kdPuCvRgke06RfZxQZt7
+         QgEL+qw7tt9eRLTpjPoy7ssl0bW/Tyjx5mt1eNzRdQ+1zLOSY0fxJbjLJDF8D0cahZ
+         nDWudeSbzuQUmMQ4tlgD5EEkUGAZ1IJ66qk3fgaONAN4C8A/znTSv2/BJZuhZJtOGZ
+         b5OYUF+e4/fmbJ4zisPg/pv7Mlrd0UahYo0SSImMXQ5rb4mVfhbixGAom1IIeVs0wR
+         niIalZUMbk1mQ==
+Date:   Wed, 22 Jun 2022 15:26:43 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Robert Marko <robimarko@gmail.com>
+Cc:     Stanimir Varbanov <svarbanov@mm-sol.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        lpieralisi@kernel.org, Rob Herring <robh@kernel.org>, kw@linux.com,
+        Bjorn Helgaas <bhelgaas@google.com>, p.zabel@pengutronix.de,
+        jingoohan1@gmail.com, linux-pci@vger.kernel.org,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        johan+linaro@kernel.org
+Subject: Re: [PATCH v2] PCI: qcom: fix IPQ8074 Gen2 support
+Message-ID: <20220622202643.GA1387264@bhelgaas>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAOX2RU6isNEF4LYRDUEjnKwOcsEoPJR2ekn2kD9RjKFwusF4DA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-commit b337af3a4d6147000b7ca6b3438bf5c820849b37 upstream.
+On Wed, Jun 22, 2022 at 04:23:49PM +0200, Robert Marko wrote:
+> On Tue, 21 Jun 2022 at 23:43, Bjorn Helgaas <helgaas@kernel.org> wrote:
+> > On Tue, Jun 21, 2022 at 11:05:17PM +0200, Robert Marko wrote:
+> > > On Tue, 21 Jun 2022 at 22:32, Bjorn Helgaas <helgaas@kernel.org> wrote:
+> > > > On Tue, Jun 21, 2022 at 01:23:30PM +0200, Robert Marko wrote:
+> > > > > IPQ8074 has one Gen2 and one Gen3 port, currently the Gen2 port will
+> > > > > cause the system to hang as its using DBI registers in the .init
+> > > > > and those are only accesible after phy_power_on().
+> ...
 
-In systemd systems setting a fixed MAC address through
-the "dev_addr" module argument fails systematically.
-When checking the MAC address after the interface is created
-it always has the same but different MAC address to the one
-supplied as argument.
+> > Unless there's a reason *not* to move the DBI accesses for other
+> > variants, I think we should move them all to .post_init().  Otherwise
+> > it's just magic -- there's no indication in the code about why IPQ8074
+> > needs to be different from all the rest.
+> 
+> I am not sure how to do it properly, especially for the 2.1.0 IP that
+> IPQ8064 uses
+> and that is already filled with tweaks to get it properly working.
+> 
+> As far as I can tell, the reason why it works for all of the others
+> is that they dont use a PHY driver at all (2.1.0 in IPQ8064 and
+> 2.4.0 in IPQ4019), 1.1.0 in APQ8084 appears to be unused completely
+> as its compatible is not used in any of the DTS-es.  2.3.2 in
+> MSM8996 and MSM8998 also use QMP, so I am not sure why these work.
+> ...
 
-This is partially caused by systemd which by default will
-set an internally generated permanent MAC address for interfaces
-that are marked as having a randomly generated address.
+> This patch applies to 5.19 as well, though I will send a v4 with the
+> updated description.  Like, I said, I am not sure how to move DBI
+> accesses in other IP-s without breaking them.
 
-Commit 890d5b40908bfd1a ("usb: gadget: u_ether: fix race in
-setting MAC address in setup phase") didn't take into account
-the fact that the interface must be marked as having a set
-MAC address when it's set as module argument.
+Why would they break?  I don't see anything that indicates the DBI
+accesses are required to be before phy_power_on() or would fail after
+phy_power_on().
 
-Fixed by marking the interface with NET_ADDR_SET when
-the "dev_addr" module argument is supplied.
+I agree there's always a risk of unintended breakage.  It just doesn't
+seem very likely.
 
-Reported-by: Maximilian Senftleben <kernel@mail.msdigital.de>
-Cc: stable@vger.kernel.org
-Fixes: 890d5b40908bfd1a ("usb: gadget: u_ether: fix race in setting MAC address in setup phase")
-Signed-off-by: Marian Postevca <posteuca@mutex.one>
----
- drivers/usb/gadget/function/u_ether.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/usb/gadget/function/u_ether.c b/drivers/usb/gadget/function/u_ether.c
-index d15a54f6c24b9..ef253599dcf96 100644
---- a/drivers/usb/gadget/function/u_ether.c
-+++ b/drivers/usb/gadget/function/u_ether.c
-@@ -774,9 +774,13 @@ struct eth_dev *gether_setup_name(struct usb_gadget *g,
- 	dev->qmult = qmult;
- 	snprintf(net->name, sizeof(net->name), "%s%%d", netname);
- 
--	if (get_ether_addr(dev_addr, net->dev_addr))
-+	if (get_ether_addr(dev_addr, net->dev_addr)) {
-+		net->addr_assign_type = NET_ADDR_RANDOM;
- 		dev_warn(&g->dev,
- 			"using random %s ethernet address\n", "self");
-+	} else {
-+		net->addr_assign_type = NET_ADDR_SET;
-+	}
- 	if (get_ether_addr(host_addr, dev->host_mac))
- 		dev_warn(&g->dev,
- 			"using random %s ethernet address\n", "host");
-@@ -833,6 +837,9 @@ struct net_device *gether_setup_name_default(const char *netname)
- 	INIT_LIST_HEAD(&dev->tx_reqs);
- 	INIT_LIST_HEAD(&dev->rx_reqs);
- 
-+	/* by default we always have a random MAC address */
-+	net->addr_assign_type = NET_ADDR_RANDOM;
-+
- 	skb_queue_head_init(&dev->rx_frames);
- 
- 	/* network device setup */
-@@ -869,7 +876,6 @@ int gether_register_netdev(struct net_device *net)
- 	dev = netdev_priv(net);
- 	g = dev->gadget;
- 
--	net->addr_assign_type = NET_ADDR_RANDOM;
- 	eth_hw_addr_set(net, dev->dev_mac);
- 
- 	status = register_netdev(net);
-@@ -910,6 +916,7 @@ int gether_set_dev_addr(struct net_device *net, const char *dev_addr)
- 	if (get_ether_addr(dev_addr, new_addr))
- 		return -EINVAL;
- 	memcpy(dev->dev_mac, new_addr, ETH_ALEN);
-+	net->addr_assign_type = NET_ADDR_SET;
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(gether_set_dev_addr);
--- 
-2.35.1
-
+Bjorn
