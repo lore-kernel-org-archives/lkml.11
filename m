@@ -2,132 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2D8FC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 18:54:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EF15C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 18:54:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377751AbiFVSyB (ORCPT
+        id S1377673AbiFVSyF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 14:54:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40518 "EHLO
+        Wed, 22 Jun 2022 14:54:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377677AbiFVSxq (ORCPT
+        with ESMTP id S1376945AbiFVSxr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 14:53:46 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9C72B1CFF7
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 11:53:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655924024;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NUxlW/j88Epc56MqOmmJqiwjv7RfINKqkJmwCtsv0gI=;
-        b=QDaZ5P8DshskWRrjqcaX4KGnJwZLhHCMb8cX+ez7ORlSs1EV8n0GyrHOviAqif6wjOvFe7
-        Whr69xdEjgnFq45fe/oF0YuEzE0gPIs0crBwR8B0TNOznhPIVXESEwRq+VWIn2NFd2NCsj
-        1AvooyAC46vQgUjiP1XDDEVb0fqXJbA=
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
- [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-301-onFgk-dENiKAGlRK0wTWUA-1; Wed, 22 Jun 2022 14:53:43 -0400
-X-MC-Unique: onFgk-dENiKAGlRK0wTWUA-1
-Received: by mail-qk1-f197.google.com with SMTP id t15-20020a05620a450f00b006a75bf35680so20946757qkp.1
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 11:53:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=NUxlW/j88Epc56MqOmmJqiwjv7RfINKqkJmwCtsv0gI=;
-        b=cg1krGQo0Ji0nT1fhqB95fP9xuOXKtlm2BgG3RlsbdRiB9JFYcaI6yTtHJE7KEN0VV
-         5sdkQAR/89YAaSzFpAZO+558f7hNlIZw9ImgKVaSegrMKCKa1N985lJ2Uiov9ly05Jdk
-         yOPpvnAdRtofo0QntzLUBMCQk1BYZRA9NcEscsbX0iHapfGQbSytSy+x/fJm9iCLueHT
-         UnIxcrpFLcNttHUUyRdF5tyRyrwrUrc41Jabp3DjgLVcp790yUorfB99utBYDWHoJPZs
-         GsH/iAAaDLjxgyJl/v7d35bNLKvRL7IyL42z7E99VwJ8OKyp0LqPBxQl3JLo1MdvSICC
-         AbRA==
-X-Gm-Message-State: AJIora9k32HYGvcUR1x6hkPSwlzoGRKp9frRWG8TQTn6WgYxnioZvNUw
-        MPDWE1RHf5kPb0l9Cafqef8TMM2T+k8UacSd00Ylhar+TlZKBPKAI3Te4+21UIitMpIPPd3liV1
-        3z12aYmQkAxydWPQOElRcj283xROHbUQHEzPfFIvt
-X-Received: by 2002:ac8:598f:0:b0:305:8f8:2069 with SMTP id e15-20020ac8598f000000b0030508f82069mr4463233qte.370.1655924022281;
-        Wed, 22 Jun 2022 11:53:42 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vito0RGMmoO0PY0tCMLhEJ3EtZsz9CJl1GiY/Z98Qu2Yy5UsxoSjB8deyHpN0/O8c0wv8vm/DAfiRMBO7J3Y4=
-X-Received: by 2002:ac8:598f:0:b0:305:8f8:2069 with SMTP id
- e15-20020ac8598f000000b0030508f82069mr4463221qte.370.1655924022071; Wed, 22
- Jun 2022 11:53:42 -0700 (PDT)
+        Wed, 22 Jun 2022 14:53:47 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2FE9167E9;
+        Wed, 22 Jun 2022 11:53:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655924026; x=1687460026;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=VlUd8xPPF+2RmdPfGjg1Rkn/e8F3oCkg6LjzT2/3Llk=;
+  b=lAOCYAHSUuVBDa7N9oxyv41eqJ7xxePlpPRdcoK1f+kBa7OCjOwBE68L
+   4rMf6hWv7QKU4sg6YJRrgYMeqOmdaL9ALdUKsZKlFW7cXRXo0p6IBHByB
+   13RuYfCH77pMe48MGgTk0p+nL06diAsWYMw8Xg5CemZ60yi7Uz5Pp5bwi
+   zdWDZ5yDdRrTpfZoQfxpXrGGvK+78+MHQfAKr38vIZu00vci4DziIN8Jr
+   bHnAp5R8pAOCP4oJHrWzYXl8+YUJCg01BYz4XEu7ISi5gosJFJ81A3VaX
+   tlk+Q2KaT5lwhkGWxWz0HQ8ki0xBwKYQ4V7OMh5iRx9s7hOKHl+Fi76Gq
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="260949227"
+X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
+   d="scan'208";a="260949227"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 11:53:46 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
+   d="scan'208";a="834264887"
+Received: from bwalker-desk.ch.intel.com ([143.182.136.162])
+  by fmsmga006.fm.intel.com with ESMTP; 22 Jun 2022 11:53:46 -0700
+From:   Ben Walker <benjamin.walker@intel.com>
+To:     vkoul@kernel.org
+Cc:     dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mporter@kernel.crashing.org
+Subject: [PATCH v3 06/15] rapidio: Use dmaengine_async_is_tx_complete
+Date:   Wed, 22 Jun 2022 11:53:42 -0700
+Message-Id: <20220622185342.3043582-1-benjamin.walker@intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220622151407.51232-1-sgarzare@redhat.com>
-In-Reply-To: <20220622151407.51232-1-sgarzare@redhat.com>
-From:   Eugenio Perez Martin <eperezma@redhat.com>
-Date:   Wed, 22 Jun 2022 20:53:06 +0200
-Message-ID: <CAJaqyWf6BKK1=KBwHufVY-eLt0JFz9V4-kK-pPLU0tuDc7uGgQ@mail.gmail.com>
-Subject: Re: [PATCH] vhost-vdpa: call vhost_vdpa_cleanup during the release
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     virtualization <virtualization@lists.linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Jason Wang <jasowang@redhat.com>,
-        Gautam Dawar <gautam.dawar@xilinx.com>,
-        kvm list <kvm@vger.kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 5:14 PM Stefano Garzarella <sgarzare@redhat.com> wr=
-ote:
->
-> Before commit 3d5698793897 ("vhost-vdpa: introduce asid based IOTLB")
-> we call vhost_vdpa_iotlb_free() during the release to clean all regions
-> mapped in the iotlb.
->
-> That commit removed vhost_vdpa_iotlb_free() and added vhost_vdpa_cleanup(=
-)
-> to do some cleanup, including deleting all mappings, but we forgot to cal=
-l
-> it in vhost_vdpa_release().
->
-> This causes that if an application does not remove all mappings explicitl=
-y
-> (or it crashes), the mappings remain in the iotlb and subsequent
-> applications may fail if they map the same addresses.
->
+Replace dma_async_is_tx_complete with dmaengine_async_is_tx_complete.
+The previous API will be removed in favor of the new one.
 
-I tested this behavior even by sending SIGKILL to qemu. The failed map
-is reproducible easily before applying this patch and applying it
-fixes the issue properly.
+Signed-off-by: Ben Walker <benjamin.walker@intel.com>
+---
+ drivers/rapidio/devices/rio_mport_cdev.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-> Calling vhost_vdpa_cleanup() also fixes a memory leak since we are not
-> freeing `v->vdev.vqs` during the release from the same commit.
->
-> Since vhost_vdpa_cleanup() calls vhost_dev_cleanup() we can remove its
-> call from vhost_vdpa_release().
->
-
-Tested-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
-
-> Fixes: 3d5698793897 ("vhost-vdpa: introduce asid based IOTLB")
-> Cc: gautam.dawar@xilinx.com
-> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> ---
->  drivers/vhost/vdpa.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> index 5ad2596c6e8a..23dcbfdfa13b 100644
-> --- a/drivers/vhost/vdpa.c
-> +++ b/drivers/vhost/vdpa.c
-> @@ -1209,7 +1209,7 @@ static int vhost_vdpa_release(struct inode *inode, =
-struct file *filep)
->         vhost_dev_stop(&v->vdev);
->         vhost_vdpa_free_domain(v);
->         vhost_vdpa_config_put(v);
-> -       vhost_dev_cleanup(&v->vdev);
-> +       vhost_vdpa_cleanup(v);
->         mutex_unlock(&d->mutex);
->
->         atomic_dec(&v->opened);
-> --
-> 2.36.1
->
+diff --git a/drivers/rapidio/devices/rio_mport_cdev.c b/drivers/rapidio/devices/rio_mport_cdev.c
+index 2cdc054e53a53..d4108ff2bb74c 100644
+--- a/drivers/rapidio/devices/rio_mport_cdev.c
++++ b/drivers/rapidio/devices/rio_mport_cdev.c
+@@ -597,8 +597,7 @@ static void dma_xfer_callback(void *param)
+ 	struct mport_dma_req *req = (struct mport_dma_req *)param;
+ 	struct mport_cdev_priv *priv = req->priv;
+ 
+-	req->status = dma_async_is_tx_complete(priv->dmach, req->cookie,
+-					       NULL, NULL);
++	req->status = dmaengine_async_is_tx_complete(priv->dmach, req->cookie);
+ 	complete(&req->req_comp);
+ 	kref_put(&req->refcount, dma_req_free);
+ }
+-- 
+2.35.1
 
