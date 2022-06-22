@@ -2,125 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73938C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 19:13:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AD9FC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 19:14:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377702AbiFVTM6 (ORCPT
+        id S1377458AbiFVTOV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 15:12:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54248 "EHLO
+        Wed, 22 Jun 2022 15:14:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231967AbiFVTMz (ORCPT
+        with ESMTP id S1355581AbiFVTOR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 15:12:55 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9600F2BE3
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 12:12:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655925173;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=zhjwqkPhJ9xw/9qovQS6fJqX4XywzD52eVaz4HaaZtQ=;
-        b=IyDlSK5caWluxhX1Iqmer4g3X3vPDBm3bZx0FHfdj7D96LKJAhQx7fX+hbBx4OEIrwnBst
-        ky3BkMB2qf8XO+rgt6AdFxJyw0Yz9+/XNHP+tsBUB5YaDj1SM+b9S5gU0D7Cp3MCrlD2Nj
-        cltJPHPW2D/RSsl8mUkIrTuvP+0lv5I=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-527-ObPU_-5HOVCXrIW5SrZAtw-1; Wed, 22 Jun 2022 15:12:52 -0400
-X-MC-Unique: ObPU_-5HOVCXrIW5SrZAtw-1
-Received: by mail-qv1-f69.google.com with SMTP id g29-20020a0caadd000000b004702ed3c3f5so12437460qvb.11
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 12:12:52 -0700 (PDT)
+        Wed, 22 Jun 2022 15:14:17 -0400
+Received: from mail-vs1-xe35.google.com (mail-vs1-xe35.google.com [IPv6:2607:f8b0:4864:20::e35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 584A13703E
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 12:14:16 -0700 (PDT)
+Received: by mail-vs1-xe35.google.com with SMTP id w187so3769874vsb.1
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 12:14:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NoREZ7M189g66OG8lXhmFj3468Kg13OaxkXYT1yDuy0=;
+        b=SM1g3aqxVrUaMGMy35p/7jhCtE+8kqqQRHT0rNEpJZWkxmz4NQfVQ1vS4wsE5PXkOm
+         BEZzyiYQ9qTsNlIKMkPD0oHcL2GUWxwBBHLoynI5Ds2O+cAiVGROk0Fp7TiczG9v5gtA
+         1SL3+zTzEYdIBq9lYISUPU6KPgjBhrWz7rTOjN5jkLLGjYUECl0BLXZnl1kQlj2bs6wh
+         ZQUkcj9kA6Vn7kEhQ5dlzhgBd4Punbj32qMSkl9RtN2V+81sL0ilnVR/INN094vIJfMW
+         aA5cI2rG+Ilvpy47D1tla5NCzP8r2O5D4gzSXUj6MGR/wp85LYyBAWPUZhug62RQQbv3
+         A8tw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=zhjwqkPhJ9xw/9qovQS6fJqX4XywzD52eVaz4HaaZtQ=;
-        b=nLrzTYVdl1N6P4iRTqoSZSeYVa1zTLDhzZSCNiVgb2ZxkrbPr84GqJlcgBNBoSimcx
-         uJdz2Lfc88z9Eaecb9H4H49EHZJ0tTg2Ay/YBl2DmsPIG2kyu9OdjOaTn5nlbBoUXF2+
-         BE6/PuD1Hfvv09/UUD3yFIdr2sAp0JtDGKN1NHtdoyJ7juHnkidkvpbpWkTIWBe67SUR
-         fV4bQO2sU3qyLtkeX1n0ez2aTB7/vK3ejVjuNups02YQ/ivHw/hS3it116q+g9jiA4M6
-         LnFDc0FvEaK3HD/LqGuou0KS6MeXsyzJvg4G/Rnw1EyWaWBi5c1DTTynf5VdjGkc99VN
-         8vxg==
-X-Gm-Message-State: AJIora8Aj5PHEoSsHppK6OrZz4lpHxM6MPj1VVwlc+GR3mE2knylRYKO
-        vFV2bbPux8QnwU4NyAaA9f0RhzTLtLQfDydUlzCsvmWmSv29N+/7cpel0+dw1RJx3BXDHI5C2mj
-        s7QTTu//GvP/aEHBTFn/KqeO7
-X-Received: by 2002:ac8:570b:0:b0:305:e83:af43 with SMTP id 11-20020ac8570b000000b003050e83af43mr4620304qtw.416.1655925171815;
-        Wed, 22 Jun 2022 12:12:51 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1u2yK6CJukE0PWUjhgIUO/v1rQGRwOO/j+saV7GVNjDPEvsJ8FGIj5m8+xhCHJwjmfYxEXiRg==
-X-Received: by 2002:ac8:570b:0:b0:305:e83:af43 with SMTP id 11-20020ac8570b000000b003050e83af43mr4620282qtw.416.1655925171532;
-        Wed, 22 Jun 2022 12:12:51 -0700 (PDT)
-Received: from t14s.localdomain (c-73-69-212-193.hsd1.ma.comcast.net. [73.69.212.193])
-        by smtp.gmail.com with ESMTPSA id bb33-20020a05622a1b2100b00304ea0a86cesm14906820qtb.81.2022.06.22.12.12.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jun 2022 12:12:50 -0700 (PDT)
-Message-ID: <4a9629d0e8f14afbbb3c342c17c1633c9e882e9a.camel@redhat.com>
-Subject: Re: Plumbers conf presentation on -fanalyze?
-From:   David Malcolm <dmalcolm@redhat.com>
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     "Jose E. Marchesi" <jemarch@gnu.org>,
-        clang-built-linux <llvm@lists.linux.dev>,
-        LKML <linux-kernel@vger.kernel.org>
-Date:   Wed, 22 Jun 2022 15:12:49 -0400
-In-Reply-To: <CAKwvOdmJgU_MZjwuVXz5QvFdA4+eTHKqxT06HMAq=Hau03ar9Q@mail.gmail.com>
-References: <CAKwvOdnb-DiAnq4bT7XiJpFtqyJYpWNw1shEp8gWYpVmUpRBaA@mail.gmail.com>
-         <8c5012c88989a8f05a3b67540b9172336c57ddf7.camel@redhat.com>
-         <CAKwvOdmJgU_MZjwuVXz5QvFdA4+eTHKqxT06HMAq=Hau03ar9Q@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NoREZ7M189g66OG8lXhmFj3468Kg13OaxkXYT1yDuy0=;
+        b=g1OnkUIvpxIow4zR7Og4b/6Dpbnep19MsbT5+cnF+WXt7SjgYS2c+8tfUi3aPTJAQQ
+         zAb0Dt/vReg4iPomHiLxTPuB5b3tgbry2dnA0KP8w+N6byM+xF3AvtNEHBePo/JndTli
+         75e9FL3eR27s1FtDYh61d740d+WYe9X9L8P3Ert6J/R4sTnlU+JxKFU71Dv5CJpgjOCt
+         RqUAKLa7eGEX8GSKh385drcPohucpye8jTrsJn2yjlC60yra/anayC5erhrivjLkrHtO
+         ZgU0vFtBWf7iPSIMhAo9XvwEC/CBJJV5SYe5jsOfLcRweI8gDBal8KgxRodmuTqe4v4P
+         woBg==
+X-Gm-Message-State: AJIora+YNpO5jJzstpy4s+XPO+h3RUJCYSjGRNi5aoEwRT8PIiAZWqN1
+        zEyRsJ6yfuVjvxvHRTNPSxby5GxLHfYmT1Qmku5k/Q==
+X-Google-Smtp-Source: AGRyM1tqzfn/eGooe7rVyqLakJqYPnRIyJ7e5Hcfdor2BRQlRrkwrn6OyhG0ItwgwFDnmhbwVkV/LdlAgMONSUwHn8Q=
+X-Received: by 2002:a67:fa01:0:b0:354:3ce9:4537 with SMTP id
+ i1-20020a67fa01000000b003543ce94537mr6735666vsq.50.1655925255299; Wed, 22 Jun
+ 2022 12:14:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220614071650.206064-1-yuzhao@google.com> <20220614071650.206064-13-yuzhao@google.com>
+ <214db251-827c-715c-54cf-9c0e9bb5fe30@bytedance.com>
+In-Reply-To: <214db251-827c-715c-54cf-9c0e9bb5fe30@bytedance.com>
+From:   Yu Zhao <yuzhao@google.com>
+Date:   Wed, 22 Jun 2022 13:13:39 -0600
+Message-ID: <CAOUHufZ8xaVKZD7LNeo8AZv_xywvwef4P8CjdO+npijLHEUfWg@mail.gmail.com>
+Subject: Re: [PATCH v12 12/14] mm: multi-gen LRU: debugfs interface
+To:     Qi Zheng <zhengqi.arch@bytedance.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Michael Larabel <Michael@michaellarabel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Tejun Heo <tj@kernel.org>, Vlastimil Babka <vbabka@suse.cz>,
+        Will Deacon <will@kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Kernel Page Reclaim v2 <page-reclaim@google.com>,
+        Brian Geffon <bgeffon@google.com>,
+        Jan Alexander Steffens <heftig@archlinux.org>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Steven Barrett <steven@liquorix.net>,
+        Suleiman Souhlal <suleiman@google.com>,
+        Daniel Byrne <djbyrne@mtu.edu>,
+        Donald Carr <d@chaos-reins.com>,
+        =?UTF-8?Q?Holger_Hoffst=C3=A4tte?= <holger@applied-asynchrony.com>,
+        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
+        Shuang Zhai <szhai2@cs.rochester.edu>,
+        Sofia Trinh <sofia.trinh@edi.works>,
+        Vaibhav Jain <vaibhav@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-06-21 at 15:06 -0700, Nick Desaulniers wrote:
-> On Thu, Apr 14, 2022 at 3:08 PM David Malcolm <dmalcolm@redhat.com>
-> wrote:
-> > 
-> > On Thu, 2022-04-14 at 14:42 -0700, Nick Desaulniers wrote:
-> > > Hi David,
-> > > Jose and I are currently in the planning process to put together
-> > > a
-> > > Kernel+Toolchain microconference track at Linux Plumbers
-> > > Conference
-> > > this year (Sept 12-14) in Dublin, Ireland.
-> > > 
-> > > We had seen
-> > >  
-> > > https://developers.redhat.com/articles/2022/04/12/state-static-analysis-gcc-12-compiler#scaling_up_the_analyzer
-> > > particularly the section on The Linux kernel and were wondering
-> > > if
-> > > you'd be interested in presenting more information about -
-> > > fanalyze to
-> > > kernel and toolchain developers there?
-> > 
-> > Thanks!  I'm very much interested, but am not yet sure about travel
-> > (both in terms of (a) budget and (b) possible new virus strains). 
-> > Is
-> > this conference going to be purely in-person, or hybrid virtual/in-
-> > person?
-> 
-> Hi David,
-> If you're still considering attending Linux Plumbers conf, please
-> submit a proposal:
-> https://lpc.events/event/16/abstracts/
-> Please make sure to select "Toolchains Track" as the "Track" after
-> clicking on "Submit new abstract."
-> 
+On Wed, Jun 22, 2022 at 3:16 AM Qi Zheng <zhengqi.arch@bytedance.com> wrote:
 
-Hi Nick
+> > +static ssize_t lru_gen_seq_write(struct file *file, const char __user *src,
+> > +                              size_t len, loff_t *pos)
+> > +{
+> > +     void *buf;
+> > +     char *cur, *next;
+> > +     unsigned int flags;
+> > +     struct blk_plug plug;
+> > +     int err = -EINVAL;
+> > +     struct scan_control sc = {
+> > +             .may_writepage = true,
+> > +             .may_unmap = true,
+> > +             .may_swap = true,
+> > +             .reclaim_idx = MAX_NR_ZONES - 1,
+> > +             .gfp_mask = GFP_KERNEL,
+> > +     };
+> > +
+> > +     buf = kvmalloc(len + 1, GFP_KERNEL);
+> > +     if (!buf)
+> > +             return -ENOMEM;
+> > +
+> > +     if (copy_from_user(buf, src, len)) {
+> > +             kvfree(buf);
+> > +             return -EFAULT;
+> > +     }
+> > +
+> > +     if (!set_mm_walk(NULL)) {
+>
+> The current->reclaim_state will be dereferenced in set_mm_walk(), so
+> calling set_mm_walk() before set_task_reclaim_state(current,
+> &sc.reclaim_state) will cause panic:
+>
+> [ 1861.154916] BUG: kernel NULL pointer dereference, address:
+> 0000000000000008
 
-Thanks, I've registered to attend, and have submitted this abstract:
+Thanks.
 
-  https://lpc.events/event/16/abstracts/1293/
+Apparently I shot myself in the foot by one of the nits between v11 and v12.
 
-("GCC's -fanalyzer and the Linux kernel" #177)
+> > +             kvfree(buf);
+> > +             return -ENOMEM;
+> > +     }
+> > +
+> > +     set_task_reclaim_state(current, &sc.reclaim_state);
+> > +     flags = memalloc_noreclaim_save();
+> > +     blk_start_plug(&plug);
+> > +
+> > +     next = buf;
+> > +     next[len] = '\0';
+> > +
+> > +     while ((cur = strsep(&next, ",;\n"))) {
+> > +             int n;
+> > +             int end;
+> > +             char cmd;
+> > +             unsigned int memcg_id;
+> > +             unsigned int nid;
+> > +             unsigned long seq;
+> > +             unsigned int swappiness = -1;
+> > +             unsigned long opt = -1;
+> > +
+> > +             cur = skip_spaces(cur);
+> > +             if (!*cur)
+> > +                     continue;
+> > +
+> > +             n = sscanf(cur, "%c %u %u %lu %n %u %n %lu %n", &cmd, &memcg_id, &nid,
+> > +                        &seq, &end, &swappiness, &end, &opt, &end);
+> > +             if (n < 4 || cur[end]) {
+> > +                     err = -EINVAL;
+> > +                     break;
+> > +             }
+> > +
+> > +             err = run_cmd(cmd, memcg_id, nid, seq, &sc, swappiness, opt);
+> > +             if (err)
+> > +                     break;
+> > +     }
+> > +
+> > +     blk_finish_plug(&plug);
+> > +     memalloc_noreclaim_restore(flags);
+> > +     set_task_reclaim_state(current, NULL);
+> > +
+> > +     clear_mm_walk();
+>
+> Ditto, we can't call clear_mm_walk() after
+> set_task_reclaim_state(current, NULL).
+>
+> Maybe it can be modified as follows:
+>
+> diff --git a/mm/vmscan.c b/mm/vmscan.c
+> index 2422edc786eb..552e6ae5243e 100644
+> --- a/mm/vmscan.c
+> +++ b/mm/vmscan.c
+> @@ -5569,12 +5569,12 @@ static ssize_t lru_gen_seq_write(struct file
+> *file, const char __user *src,
+>                  return -EFAULT;
+>          }
+>
+> +       set_task_reclaim_state(current, &sc.reclaim_state);
+>          if (!set_mm_walk(NULL)) {
+>                  kvfree(buf);
+>                  return -ENOMEM;
+>          }
+>
+> -       set_task_reclaim_state(current, &sc.reclaim_state);
 
-Hope the above looks good.
-
-Dave
-
-
+We need a `goto` because otherwise we leave a dangling
+`current->reclaim_state`. (I swear I had one.)
