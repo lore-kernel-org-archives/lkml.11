@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C9CFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 17:13:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43E9CC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 17:13:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377288AbiFVRNF (ORCPT
+        id S1377206AbiFVRNN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 13:13:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50442 "EHLO
+        Wed, 22 Jun 2022 13:13:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377221AbiFVRMu (ORCPT
+        with ESMTP id S1377209AbiFVRMp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 13:12:50 -0400
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2043.outbound.protection.outlook.com [40.107.237.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06B25E0CB
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 10:12:42 -0700 (PDT)
+        Wed, 22 Jun 2022 13:12:45 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2062.outbound.protection.outlook.com [40.107.223.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CB7F1169
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 10:12:43 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TgrtsCw4YTQWUii2Tc+nVO6ggqebO/C2t25eTUSb8WYj/0N+5gz1aoOC4y7oO1lV3nSPP7rAp2IQw/6VcTnsGLoyHyFl3ngFRXyqR27YGPk1NwsWlW/xWKQTzGitPvsSTtdKPa8sGN+E1w5FSwF9Wh0qhqLd8k52fDLrq17BVzlXq7UcmnEk7+F9C4TOCvVcIfEOaR7hgcikRVhkgQoJFI7XmnBXaDxNi8FCwxrfQYh0fdgIoAEq2cXPYdYfAfoG7b004I9MuBeOw1DwrOD6OGr738UkK8wwljQze25qnA48tZBXJX5s2NlMEAXgAj98zUi8JnUMlMYVFBVBhjJI4Q==
+ b=jyMAf99CaIjdV4Ki+zY5ba7TB34JVJo6l/YVz1E3VlJY5nBG62nk47iEt7j3rNRlW+BDLLebwam7bveMpYY5X+81UeFH6suy1zOnrRxf2dfvku5UeUGELuZEZndI8spuKpuOkRnZNJDez/Gvhed5VtusF2AKwTNOmOdyxJLoMzwV5ou7BWGhlG1CMx0WOszlNdOMfsdc9kIU3N34mqDME+wZsa/m1tRusyrUV48zR2hwwZBPOKUpJnYZ44YiFewM2avEWeCERk+A/0zMy4N+duxdZddvt38Z4SFQyK4flIQQpwwd+eHLeKGWBBQ6Ktoxv5Pi36Xt6h//kvnZp9prfg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lQKZevV/tsi5ff9hKQfENyQ/xU8fqECb42RcR8Ld8f0=;
- b=RhaY+G9mznCxiG3qu2ZFTKzd59Zd8lsN0ZAYvZm5kAdlBMNcEbqmXvAWU5ocxQbqCYPeqL+OURRl8BOwJPGMQ84fi9hJ0TfC97mB4AXRA5ULfK8foRbCh2khXN5QbvtD/9WcOjEpfHOvUBXmG8oQbQC04LrTFnV4BBLftnuc2pcDhIR8MtG7VmWeSZ2kcvSu/UOgSUOxFHZt1WVm4bxWc/UvMMj5gSgTyn05cqnLRlX+nWASuNyHd4xerCiVAvZp82DBZwReQAcabW7q1wABrlaZIe0nwmYFK1I5mYPUdjb3LWIymUckjwuHdxoLqrJHrLMK9AtmMQgSKIPgJmdYAg==
+ bh=SpJ7bkErcFqXegMKSsjREmOcNrSuahL+cgRI3UL9bro=;
+ b=BehQ3VK2PjyYz9nWkGmZYf1et0/Qu+svi4/8XLLj+pB8vBqDiY8PboR8SFvXIN0aw1Mf4UarOLSxGMl62apzT80fHRODabO3weoqlf+tZVx5O9gOlqbDlLmvVNWblkORbg39oGzf1gG8kJWBnMh87U8Gi8cCYQfG4CAovbDhWeJtd+8u/L5AID7UWhsdRlHMvoVqnZgHAKlQvPVkuD6m+F7kZK6KgLmGnx2i95k98sKHRMWIAIRNmgo/DTtgK8V7vVe+U/yTgy/U3SopgyA1vbDf6MYijTH6+cc47OfuIjbkXBUeN+U65sWu7wK18ifhOYMo893JPCC318lURX0x0A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lQKZevV/tsi5ff9hKQfENyQ/xU8fqECb42RcR8Ld8f0=;
- b=nZttiw044LCrtbc5gsppbwtqN17+bJSazMTpNVyU3dFWzh5ZuZQRwFdEMcjotBNZ/Y0I0Z5suBpxJBw19liKevO/lJunNW1prbaNrVLqdLtTx7Ezjatvkmoe4ZHGrVUImyUPmbb7atI/FVVcZ2z2KyDsoz9oWYAFNxwUeBu3S5g=
-Received: from MWHPR08CA0056.namprd08.prod.outlook.com (2603:10b6:300:c0::30)
- by CY4PR12MB1734.namprd12.prod.outlook.com (2603:10b6:903:121::16) with
+ bh=SpJ7bkErcFqXegMKSsjREmOcNrSuahL+cgRI3UL9bro=;
+ b=pUFPS6tTHYSEw0kK1U+UHR5GAOGYKc6v5qDtCX3BK6lXUb41spgW+FCCc5f0cbSYGNzUgnQCG2tdhbgpQ3CAqVSa80MPTefz7xCVjw5tLX6WSiY9F6iFqp3TOocnm1qfvmtik4B8wDA8zuyULh+6ol2fcPGN34F2Oii51t0r4EM=
+Received: from MWHPR08CA0038.namprd08.prod.outlook.com (2603:10b6:300:c0::12)
+ by CY4PR12MB1527.namprd12.prod.outlook.com (2603:10b6:910:5::23) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.18; Wed, 22 Jun
- 2022 17:12:39 +0000
+ 2022 17:12:41 +0000
 Received: from CO1NAM11FT005.eop-nam11.prod.protection.outlook.com
- (2603:10b6:300:c0:cafe::6) by MWHPR08CA0056.outlook.office365.com
- (2603:10b6:300:c0::30) with Microsoft SMTP Server (version=TLS1_2,
+ (2603:10b6:300:c0:cafe::b6) by MWHPR08CA0038.outlook.office365.com
+ (2603:10b6:300:c0::12) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.14 via Frontend
- Transport; Wed, 22 Jun 2022 17:12:39 +0000
+ Transport; Wed, 22 Jun 2022 17:12:41 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -50,19 +50,19 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
  CO1NAM11FT005.mail.protection.outlook.com (10.13.174.147) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5353.14 via Frontend Transport; Wed, 22 Jun 2022 17:12:39 +0000
+ 15.20.5353.14 via Frontend Transport; Wed, 22 Jun 2022 17:12:40 +0000
 Received: from sp5-759chost.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Wed, 22 Jun
- 2022 12:12:35 -0500
+ 2022 12:12:36 -0500
 From:   Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 To:     <linux-kernel@vger.kernel.org>, <iommu@lists.linux-foundation.org>
 CC:     <joro@8bytes.org>, <robin.murphy@arm.com>, <ashish.kalra@amd.com>,
         <vasant.hegde@amd.com>, <thomas.lendacky@amd.com>,
         Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Subject: [PATCH v3 5/7] iommu/amd: Set translation valid bit only when IO page tables are in use
-Date:   Wed, 22 Jun 2022 12:11:29 -0500
-Message-ID: <20220622171131.11870-6-suravee.suthikulpanit@amd.com>
+Subject: [PATCH v3 7/7] iommu/amd: Do not support IOMMUv2 APIs when SNP is enabled
+Date:   Wed, 22 Jun 2022 12:11:31 -0500
+Message-ID: <20220622171131.11870-8-suravee.suthikulpanit@amd.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220622171131.11870-1-suravee.suthikulpanit@amd.com>
 References: <20220622171131.11870-1-suravee.suthikulpanit@amd.com>
@@ -74,94 +74,55 @@ X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 82e9f8b7-ef1a-4ee2-3bd4-08da5472694c
-X-MS-TrafficTypeDiagnostic: CY4PR12MB1734:EE_
-X-Microsoft-Antispam-PRVS: <CY4PR12MB173491C6720F46FC43AFAB0FF3B29@CY4PR12MB1734.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 13066489-84b4-4d34-0697-08da54726a1e
+X-MS-TrafficTypeDiagnostic: CY4PR12MB1527:EE_
+X-Microsoft-Antispam-PRVS: <CY4PR12MB1527E47A04242997818D674EF3B29@CY4PR12MB1527.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: bdvM/S5bFLx5JLhyyCf1kh/aycBq62acvicKbXLOmnvX+fd6Htl/qPltFOgNBClrFwrL2Kc4ETpql+itrh1SR5Ckl/c88uURYi1UeCv56YwItzRRzu8Bttb7JJCOPZn1XB5YXh2+PwcsvxJHQErBLA0TqISblXMzjOdE6MikhcYt1VuCSj3GLC8kNgNsi+EYH4YwBH1grdBLZFz4xZRYs9gmdXgPL9q6j3cmFLOhfNIL+Xsjs8Qvub9drylbNsl3pooxO2MdYr2tjfEaeO/wFEIOLoIx14JK1+zYkIp6tdkUiwKfGRtWoyCJcvam6mEfqXFKjxeiosAFKRxeui6gR/tvV3UU5hfegVDn+C48wKzzS0WSVzU2nq6qu5p1t83zWqaoEaMmns4oDEHtSI0/b5zhFNZvXh5bsO+NgXV+tibS+zJ4iuYrgQVbx8aKRexLzAq2y5W7axxWOeE1eqIbEKG3IEs36P0K3gxFKJ/D7wI0coqzqxRW0UDyxU6mN0bVBfmsjSBu9Z64B+cyxHoTkkN90tx7kXdGuISH6jQuNTIf0x6ma2wCwmbA1ezEAtrHQ5OMPzYd13zgvZQlsjaP1014xD+uUFxN3hJWoiNp3rUAeQi/4aNFwzKiu6ReofwQK0RDBQSv4Gg/7VDwDi58rqih9opH6csAtKnUFuItCIhM5fZTRcMlcMG7ZGmjlf+oCKzT+EWCGYeeqpn+pFKKX3YdB44bQQPVLUDEN2W3/5vPEA2tLdZChsJJukywfbJT5uoAHxgUvN7CNFeDR+RhSUTHGNYa77YBNKIV026m8V4=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(136003)(396003)(346002)(376002)(36840700001)(40470700004)(46966006)(82740400003)(2616005)(41300700001)(1076003)(36860700001)(336012)(4326008)(82310400005)(70586007)(426003)(47076005)(356005)(316002)(40460700003)(44832011)(16526019)(186003)(40480700001)(36756003)(8676002)(83380400001)(110136005)(26005)(70206006)(81166007)(86362001)(8936002)(6666004)(478600001)(54906003)(5660300002)(7696005)(2906002)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: wfFVSakdbJ2V2l40tZL8ehWdN/CbCJYpVSCt3i0s7Rx89p5ZW/z3FxJjnIo5PRVmQgYhH8cB5XIm4YPmpWCHaevwlOnTpgKxRDO9m/zjGUPYv9KMqvOsKqJxf5qqTfPK9/CIGhVe4I2he0FhgOJh68pxoDTcU+Y5dQPBrRDJ/3JzwDIZYMd1fVIuihRaHuNsqnfxPBpaNI/1RLMokH/H4xmyk4ZZa8kUwv4xFnDDEY8eDUTfeI2MyonUFdnReDbDm74OmL2vK6V8HyYSbBDYA7u1VZBsn2hDnti8QQdVDYiLXY/5/rMz2SQEx4jx0plLZsIhKSz4ZwwgboRrBROgJkm+vQzz7curTR7Lhu60Tw4EVvc2iyWGSv0NyD1l96ugusr94sf6qF8foOirEeuOnolMN9yvVctuuIiZYbZe3QrQ5lVFdtcYm252cWJuo+JiqZi2wuY7O2Eyocpw5TH7+e9UPMq9F+GqiB+2dCCjrsHIMJ2MvZCEqOXdzq6rW+I6/eEzACLppofizIdWcETXz9CPGpop1sXX1Bzw0RqiwXZ+7xPxFqPkTwOPSdFpmuwbuuM01dq3gtlxXtWhRJ2zOkWRatW1fG2wic3tmrDGs/Jc5kd0aXCfu3s2WfBIt670lipu7vBLHNvgF30IU+fPkp6nGn4i3LrEh4p+nc5dhsjUbHHdZAXdzKvzDzhYRwW23983tGLZBmbXq7Hyi7hCAkB2vROI49tBjI2mJlRKkB6clQeq81qT0GolO/EKkEP+/p+oRJ49+CwZgf6xmYKXWDBNcsFwmVPIZx2tPqZv3MI=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(376002)(396003)(136003)(346002)(39860400002)(36840700001)(46966006)(40470700004)(41300700001)(82310400005)(83380400001)(186003)(1076003)(81166007)(16526019)(426003)(2616005)(40480700001)(36860700001)(336012)(356005)(47076005)(82740400003)(70586007)(40460700003)(4326008)(36756003)(110136005)(26005)(5660300002)(4744005)(8676002)(2906002)(8936002)(7696005)(316002)(54906003)(70206006)(44832011)(86362001)(478600001)(6666004)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jun 2022 17:12:39.4080
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jun 2022 17:12:40.7829
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 82e9f8b7-ef1a-4ee2-3bd4-08da5472694c
+X-MS-Exchange-CrossTenant-Network-Message-Id: 13066489-84b4-4d34-0697-08da54726a1e
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT005.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1734
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1527
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On AMD system with SNP enabled, IOMMU hardware checks the host translation
-valid (TV) and guest translation valid (GV) bits in the device table entry
-(DTE) before accessing the corresponded page tables.
-
-However, current IOMMU driver sets the TV bit for all devices regardless
-of whether the host page table is in use. This results in
-ILLEGAL_DEV_TABLE_ENTRY event for devices, which do not the host page
-table root pointer set up.
-
-Thefore, when SNP is enabled, only set TV bit when DMA remapping is not
-used, which is when domain ID in the AMD IOMMU device table entry (DTE)
-is zero.
+The IOMMUv2 APIs (for supporting shared virtual memory with PASID)
+configures the domain with IOMMU v2 page table, and sets DTE[Mode]=0.
+This configuration cannot be supported on SNP-enabled system.
 
 Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 ---
- drivers/iommu/amd/init.c  |  3 ++-
- drivers/iommu/amd/iommu.c | 15 +++++++++++++--
- 2 files changed, 15 insertions(+), 3 deletions(-)
+ drivers/iommu/amd/init.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index c62fb4470519..f5695ccb7c81 100644
+index f5695ccb7c81..4c9b96160a8b 100644
 --- a/drivers/iommu/amd/init.c
 +++ b/drivers/iommu/amd/init.c
-@@ -2544,7 +2544,8 @@ static void init_device_table_dma(struct amd_iommu_pci_seg *pci_seg)
+@@ -3448,7 +3448,12 @@ __setup("ivrs_acpihid",		parse_ivrs_acpihid);
  
- 	for (devid = 0; devid <= pci_seg->last_bdf; ++devid) {
- 		__set_dev_entry_bit(dev_table, devid, DEV_ENTRY_VALID);
--		__set_dev_entry_bit(dev_table, devid, DEV_ENTRY_TRANSLATION);
-+		if (!amd_iommu_snp_en)
-+			__set_dev_entry_bit(dev_table, devid, DEV_ENTRY_TRANSLATION);
- 	}
- }
- 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 0792cd618dba..4f4571d3ff61 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -1563,7 +1563,14 @@ static void set_dte_entry(struct amd_iommu *iommu, u16 devid,
- 	    (domain->flags & PD_GIOV_MASK))
- 		pte_root |= DTE_FLAG_GIOV;
- 
--	pte_root |= DTE_FLAG_IR | DTE_FLAG_IW | DTE_FLAG_V | DTE_FLAG_TV;
-+	pte_root |= DTE_FLAG_IR | DTE_FLAG_IW | DTE_FLAG_V;
-+
+ bool amd_iommu_v2_supported(void)
+ {
+-	return amd_iommu_v2_present;
 +	/*
-+	 * When SNP is enabled, Only set TV bit when IOMMU
-+	 * page translation is in use.
++	 * Since DTE[Mode]=0 is prohibited on SNP-enabled system
++	 * (i.e. EFR[SNPSup]=1), IOMMUv2 page table cannot be used without
++	 * setting up IOMMUv1 page table.
 +	 */
-+	if (!amd_iommu_snp_en || (domain->id != 0))
-+		pte_root |= DTE_FLAG_TV;
++	return amd_iommu_v2_present && !amd_iommu_snp_en;
+ }
+ EXPORT_SYMBOL(amd_iommu_v2_supported);
  
- 	flags = dev_table[devid].data[1];
- 
-@@ -1625,7 +1632,11 @@ static void clear_dte_entry(struct amd_iommu *iommu, u16 devid)
- 	struct dev_table_entry *dev_table = get_dev_table(iommu);
- 
- 	/* remove entry from the device table seen by the hardware */
--	dev_table[devid].data[0]  = DTE_FLAG_V | DTE_FLAG_TV;
-+	dev_table[devid].data[0]  = DTE_FLAG_V;
-+
-+	if (!amd_iommu_snp_en)
-+		dev_table[devid].data[0] |= DTE_FLAG_TV;
-+
- 	dev_table[devid].data[1] &= DTE_FLAG_MASK;
- 
- 	amd_iommu_apply_erratum_63(iommu, devid);
 -- 
 2.32.0
 
