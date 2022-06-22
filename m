@@ -2,220 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AB1DC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 10:29:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08F06C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 10:29:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352513AbiFVK3D (ORCPT
+        id S1355008AbiFVK3u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 06:29:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49056 "EHLO
+        Wed, 22 Jun 2022 06:29:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354748AbiFVK2u (ORCPT
+        with ESMTP id S233390AbiFVK3s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 06:28:50 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E65D531201;
-        Wed, 22 Jun 2022 03:28:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655893730; x=1687429730;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=dj28N6SLVUB4mV+mjREMiUuxJGVVRloqCn6LP2R95QY=;
-  b=lb5VlZYmpFdBmRZmxjnu27chn8+phMMHlj14j4qg/s9M7iAVCD57jCQL
-   sq35iQaYhbS9Au360Q5RsRd2tfsGlHJXPq4/d1HgZOfYppo7/ndMzcd4K
-   bgm6yv4CMd2ZRH64KGFT3BpZIvGicj4hBhBimNrzKYEHjKzzXSp+wEVM5
-   Aa2U6djPtxPJ5L91c0CD5wQ9p2HJO2yNsMqX/gsBqRdfEPO/mmz+G7bEr
-   4DYD3K9ji49OM39ACNXrSgS1PTIgWZg37ykQk9piGs3spgaov5T+q7c3l
-   qqLqVWlkwiNM72WtTjyh7J6nbDnmy5wKZuBQYuXQRM6mU3gOCOUWyoSVZ
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="269099673"
-X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="269099673"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 03:28:49 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="592120346"
-Received: from lkp-server02.sh.intel.com (HELO a67cc04a5eeb) ([10.239.97.151])
-  by fmsmga007.fm.intel.com with ESMTP; 22 Jun 2022 03:28:43 -0700
-Received: from kbuild by a67cc04a5eeb with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o3xbG-00018z-Gn;
-        Wed, 22 Jun 2022 10:28:42 +0000
-Date:   Wed, 22 Jun 2022 18:27:57 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Jose Abreu <joabreu@synopsys.com>
-Cc:     kbuild-all@lists.01.org,
-        =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?iso-8859-1?Q?Miqu=E8l?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v8 05/16] net: pcs: add Renesas MII converter
- driver
-Message-ID: <202206221821.YTh0dW9N-lkp@intel.com>
-References: <20220620110846.374787-6-clement.leger@bootlin.com>
+        Wed, 22 Jun 2022 06:29:48 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D222739BB1
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 03:29:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655893786;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=dPImrDmzKVBbb0HXU+86u9rvHqc6doxrZkENPaWv+QY=;
+        b=CWAEH04ER8lmTxxDc7bjPRjUufNiTbBN9oC/6X8pWh1/DqObuZjKCnHznxA9TYLEY2qHua
+        M3S7CHONHR4Kd1FuA0+Nf+wx+gNAj+KtnkoloRMZLRNrqyeyUAz+3AVStlbFLEK3uql2Qt
+        otWnudY8mwgdA0MdhQKV8rY3sMDwykY=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-583-o0_2WJcVMYe6AJdMp6GKiw-1; Wed, 22 Jun 2022 06:29:45 -0400
+X-MC-Unique: o0_2WJcVMYe6AJdMp6GKiw-1
+Received: by mail-wm1-f71.google.com with SMTP id l17-20020a05600c4f1100b0039c860db521so7627639wmq.5
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 03:29:45 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=dPImrDmzKVBbb0HXU+86u9rvHqc6doxrZkENPaWv+QY=;
+        b=KcSp02Fyt9JuvZRfrhrF4F/ZOBok0F/Ji97oAtACg8OWFHVcbANxm6lFrn/Qzec6YX
+         Rzv6JhT01ssZ70qrNUrQzjO0wwWCyOzNoza4Q2GSUXB6ak4wCUblbYJooCyVREN8wNN5
+         WxdR2HD1iFa16bcQwdC03vAH+iWE7rZ/yZpfS4Ct/iLMqn7s0yQ+MVoBmWs4pL+AJb1C
+         Qpxinu1QRmy3vD6XQLrt8h05Q9JKkmSUPoDotUklqSzrwW4FJJwYycnUTLS/ytmbzMQe
+         LXkpy+CSvHmvK0H7L8dU8gz/uVUDH2pX0r1yY6KncFqZU7y5ySRHH6qs2ujLMdA+ElxU
+         /UOQ==
+X-Gm-Message-State: AJIora9EI9l/q6Qodviw3tLzP85CoBsGos2lpBtQdNmmAKTA+GpThDI2
+        KAS8l7en9whhUNLftmtzxcfPj1SGUnejUTw/Tu7/Tv+J4iI9uOsjaHXdyC7crg7QlvoEEIAmcWd
+        Ja6prfUzptD4cMQMydRs0ktu/
+X-Received: by 2002:a1c:4409:0:b0:39e:f584:e2ad with SMTP id r9-20020a1c4409000000b0039ef584e2admr24330410wma.84.1655893784572;
+        Wed, 22 Jun 2022 03:29:44 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1u1XHiUDfVPnZUYfKY/mgems8JmFfwFlb/wgGrZRelp3hn61XNeDuU8hnDLBQxhmGsrnR5hBg==
+X-Received: by 2002:a1c:4409:0:b0:39e:f584:e2ad with SMTP id r9-20020a1c4409000000b0039ef584e2admr24330379wma.84.1655893784355;
+        Wed, 22 Jun 2022 03:29:44 -0700 (PDT)
+Received: from work-vm (cpc109025-salf6-2-0-cust480.10-2.cable.virginm.net. [82.30.61.225])
+        by smtp.gmail.com with ESMTPSA id e5-20020adfef05000000b0021b99efceb6sm4112539wro.22.2022.06.22.03.29.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jun 2022 03:29:43 -0700 (PDT)
+Date:   Wed, 22 Jun 2022 11:29:40 +0100
+From:   "Dr. David Alan Gilbert" <dgilbert@redhat.com>
+To:     Ashish Kalra <Ashish.Kalra@amd.com>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        linux-coco@lists.linux.dev, linux-mm@kvack.org,
+        linux-crypto@vger.kernel.org, tglx@linutronix.de, mingo@redhat.com,
+        jroedel@suse.de, thomas.lendacky@amd.com, hpa@zytor.com,
+        ardb@kernel.org, pbonzini@redhat.com, seanjc@google.com,
+        vkuznets@redhat.com, jmattson@google.com, luto@kernel.org,
+        dave.hansen@linux.intel.com, slp@redhat.com, pgonda@google.com,
+        peterz@infradead.org, srinivas.pandruvada@linux.intel.com,
+        rientjes@google.com, dovmurik@linux.ibm.com, tobin@ibm.com,
+        bp@alien8.de, michael.roth@amd.com, vbabka@suse.cz,
+        kirill@shutemov.name, ak@linux.intel.com, tony.luck@intel.com,
+        marcorr@google.com, sathyanarayanan.kuppuswamy@linux.intel.com,
+        alpergun@google.com, jarkko@kernel.org
+Subject: Re: [PATCH Part2 v6 27/49] KVM: SVM: Mark the private vma unmerable
+ for SEV-SNP guests
+Message-ID: <YrLvFB+cyBbXMbrB@work-vm>
+References: <cover.1655761627.git.ashish.kalra@amd.com>
+ <bb10f0a4c5eb13a5338f77ef34f08f1190d4ae30.1655761627.git.ashish.kalra@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220620110846.374787-6-clement.leger@bootlin.com>
+In-Reply-To: <bb10f0a4c5eb13a5338f77ef34f08f1190d4ae30.1655761627.git.ashish.kalra@amd.com>
+User-Agent: Mutt/2.2.5 (2022-05-16)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi "Clément,
+* Ashish Kalra (Ashish.Kalra@amd.com) wrote:
+> From: Brijesh Singh <brijesh.singh@amd.com>
+> 
+> When SEV-SNP is enabled, the guest private pages are added in the RMP
+> table; while adding the pages, the rmp_make_private() unmaps the pages
+> from the direct map. If KSM attempts to access those unmapped pages then
+> it will trigger #PF (page-not-present).
+> 
+> Encrypted guest pages cannot be shared between the process, so an
+> userspace should not mark the region mergeable but to be safe, mark the
+> process vma unmerable before adding the pages in the RMP table.
+                   ^
+                   Typo 'unmergable' (also in title)
 
-I love your patch! Perhaps something to improve:
-
-[auto build test WARNING on net-next/master]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Cl-ment-L-ger/add-support-for-Renesas-RZ-N1-ethernet-subsystem-devices/20220620-191343
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git dbca1596bbb08318f5e3b3b99f8ca0a0d3830a65
-config: ia64-randconfig-r003-20220622 (https://download.01.org/0day-ci/archive/20220622/202206221821.YTh0dW9N-lkp@intel.com/config)
-compiler: ia64-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/fd8100fa88a9cffefe76f27b683803108d39c253
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Cl-ment-L-ger/add-support-for-Renesas-RZ-N1-ethernet-subsystem-devices/20220620-191343
-        git checkout fd8100fa88a9cffefe76f27b683803108d39c253
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=ia64 SHELL=/bin/bash drivers/net/pcs/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   drivers/net/pcs/pcs-rzn1-miic.c:501:34: warning: 'miic_of_mtable' defined but not used [-Wunused-const-variable=]
-     501 | static const struct of_device_id miic_of_mtable[] = {
-         |                                  ^~~~~~~~~~~~~~
-   drivers/net/pcs/pcs-rzn1-miic.c: In function 'miic_probe':
->> drivers/net/pcs/pcs-rzn1-miic.c:430:19: warning: 'conf' is used uninitialized [-Wuninitialized]
-     430 |         dt_val[0] = conf;
-         |         ~~~~~~~~~~^~~~~~
-   drivers/net/pcs/pcs-rzn1-miic.c:424:13: note: 'conf' was declared here
-     424 |         u32 conf;
-         |             ^~~~
-
-
-vim +/conf +430 drivers/net/pcs/pcs-rzn1-miic.c
-
-   418	
-   419	static int miic_parse_dt(struct device *dev, u32 *mode_cfg)
-   420	{
-   421		s8 dt_val[MIIC_MODCTRL_CONF_CONV_NUM];
-   422		struct device_node *np = dev->of_node;
-   423		struct device_node *conv;
-   424		u32 conf;
-   425		int port;
-   426	
-   427		memset(dt_val, MIIC_MODCTRL_CONF_NONE, sizeof(dt_val));
-   428	
-   429		of_property_read_u32(np, "renesas,miic-switch-portin", &conf);
- > 430		dt_val[0] = conf;
-   431	
-   432		for_each_child_of_node(np, conv) {
-   433			if (of_property_read_u32(conv, "reg", &port))
-   434				continue;
-   435	
-   436			if (!of_device_is_available(conv))
-   437				continue;
-   438	
-   439			if (of_property_read_u32(conv, "renesas,miic-input", &conf) == 0)
-   440				dt_val[port] = conf;
-   441		}
-   442	
-   443		return miic_match_dt_conf(dev, dt_val, mode_cfg);
-   444	}
-   445	
-   446	static int miic_probe(struct platform_device *pdev)
-   447	{
-   448		struct device *dev = &pdev->dev;
-   449		struct miic *miic;
-   450		u32 mode_cfg;
-   451		int ret;
-   452	
-   453		ret = miic_parse_dt(dev, &mode_cfg);
-   454		if (ret < 0)
-   455			return -EINVAL;
-   456	
-   457		miic = devm_kzalloc(dev, sizeof(*miic), GFP_KERNEL);
-   458		if (!miic)
-   459			return -ENOMEM;
-   460	
-   461		spin_lock_init(&miic->lock);
-   462		miic->dev = dev;
-   463		miic->base = devm_platform_ioremap_resource(pdev, 0);
-   464		if (!miic->base)
-   465			return -EINVAL;
-   466	
-   467		ret = devm_pm_runtime_enable(dev);
-   468		if (ret < 0)
-   469			return ret;
-   470	
-   471		ret = pm_runtime_resume_and_get(dev);
-   472		if (ret < 0)
-   473			return ret;
-   474	
-   475		ret = miic_init_hw(miic, mode_cfg);
-   476		if (ret)
-   477			goto disable_runtime_pm;
-   478	
-   479		/* miic_create() relies on that fact that data are attached to the
-   480		 * platform device to determine if the driver is ready so this needs to
-   481		 * be the last thing to be done after everything is initialized
-   482		 * properly.
-   483		 */
-   484		platform_set_drvdata(pdev, miic);
-   485	
-   486		return 0;
-   487	
-   488	disable_runtime_pm:
-   489		pm_runtime_put(dev);
-   490	
-   491		return ret;
-   492	}
-   493	
-   494	static int miic_remove(struct platform_device *pdev)
-   495	{
-   496		pm_runtime_put(&pdev->dev);
-   497	
-   498		return 0;
-   499	}
-   500	
- > 501	static const struct of_device_id miic_of_mtable[] = {
-   502		{ .compatible = "renesas,rzn1-miic" },
-   503		{ /* sentinel */ },
-   504	};
-   505	MODULE_DEVICE_TABLE(of, miic_of_mtable);
-   506	
-
+> Signed-off-by: Brijesh Singh <brijesh.singh@amd.com>
+> ---
+>  arch/x86/kvm/svm/sev.c | 32 ++++++++++++++++++++++++++++++++
+>  1 file changed, 32 insertions(+)
+> 
+> diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
+> index b5f0707d7ed6..a9461d352eda 100644
+> --- a/arch/x86/kvm/svm/sev.c
+> +++ b/arch/x86/kvm/svm/sev.c
+> @@ -19,11 +19,13 @@
+>  #include <linux/trace_events.h>
+>  #include <linux/hugetlb.h>
+>  #include <linux/sev.h>
+> +#include <linux/ksm.h>
+>  
+>  #include <asm/pkru.h>
+>  #include <asm/trapnr.h>
+>  #include <asm/fpu/xcr.h>
+>  #include <asm/sev.h>
+> +#include <asm/mman.h>
+>  
+>  #include "x86.h"
+>  #include "svm.h"
+> @@ -1965,6 +1967,30 @@ static bool is_hva_registered(struct kvm *kvm, hva_t hva, size_t len)
+>  	return false;
+>  }
+>  
+> +static int snp_mark_unmergable(struct kvm *kvm, u64 start, u64 size)
+> +{
+> +	struct vm_area_struct *vma;
+> +	u64 end = start + size;
+> +	int ret;
+> +
+> +	do {
+> +		vma = find_vma_intersection(kvm->mm, start, end);
+> +		if (!vma) {
+> +			ret = -EINVAL;
+> +			break;
+> +		}
+> +
+> +		ret = ksm_madvise(vma, vma->vm_start, vma->vm_end,
+> +				  MADV_UNMERGEABLE, &vma->vm_flags);
+> +		if (ret)
+> +			break;
+> +
+> +		start = vma->vm_end;
+> +	} while (end > vma->vm_end);
+> +
+> +	return ret;
+> +}
+> +
+>  static int snp_launch_update(struct kvm *kvm, struct kvm_sev_cmd *argp)
+>  {
+>  	struct kvm_sev_info *sev = &to_kvm_svm(kvm)->sev_info;
+> @@ -1989,6 +2015,12 @@ static int snp_launch_update(struct kvm *kvm, struct kvm_sev_cmd *argp)
+>  	if (!is_hva_registered(kvm, params.uaddr, params.len))
+>  		return -EINVAL;
+>  
+> +	mmap_write_lock(kvm->mm);
+> +	ret = snp_mark_unmergable(kvm, params.uaddr, params.len);
+> +	mmap_write_unlock(kvm->mm);
+> +	if (ret)
+> +		return -EFAULT;
+> +
+>  	/*
+>  	 * The userspace memory is already locked so technically we don't
+>  	 * need to lock it again. Later part of the function needs to know
+> -- 
+> 2.25.1
+> 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Dr. David Alan Gilbert / dgilbert@redhat.com / Manchester, UK
+
