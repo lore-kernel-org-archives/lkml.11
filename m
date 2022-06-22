@@ -2,51 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FD59C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 19:39:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97DD3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 19:39:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359746AbiFVTjJ (ORCPT
+        id S1359186AbiFVTjP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 15:39:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47598 "EHLO
+        Wed, 22 Jun 2022 15:39:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359141AbiFVTi0 (ORCPT
+        with ESMTP id S1359422AbiFVTie (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 15:38:26 -0400
+        Wed, 22 Jun 2022 15:38:34 -0400
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E44DD3DDCF;
-        Wed, 22 Jun 2022 12:38:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A5333FBDC;
+        Wed, 22 Jun 2022 12:38:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655926705; x=1687462705;
+  t=1655926707; x=1687462707;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=SrqNYLhrIYTbLf+pLr5lA6vQS1PpkyYUL/1WuAbc1Ag=;
-  b=MWs9LiOujiOhIkjSbaPy0AgY2djnX7OKK8nIHXn3OJNlTePcNtF6SrZF
-   aPXp4JJvGES4MhmS7yHnHb8nXUIQqIPRPcrWKTaaYIGJza7+D3ASkzN0g
-   9SOnvIOxzpuTtAfH3XS17EollcgsYkCWzYDNNPBD6n4SqyMMeH1Y5zwB6
-   oyhPmoB1BCtUMRie5FkgQkNrYKQ9s652wfapJ5zHSc2DOzlt1il+maInm
-   4Zy2tCmOahIqLrOFO6w+4x4KYOts/QRZXIJyshQ1rkVnvolRkHSSdZx6N
-   ymeCtjN/dTN7XPU9wo14/d9w4EsW0303h1B2c+teSSUs2QXvnCmPtR9SA
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="305983072"
+  bh=rxtiNyNtO5EyD9cgkO5xlvGIWGQfoth0aAfPim6bRtk=;
+  b=Zz/xgudcs9GuUm5GHzhGvnww0QTGSv4PeIQOBuRggsKN2zwzAAxmtOYO
+   0ZjoyvREB5uVHEugoVpAt2oozlou0eYeH4Lai20vJtKjkdjCvNUhRPD9f
+   ghep/E3sYffz8QAZ4whKhTBMPMJD/nbh5/n5iX+M+C98JeCSBFCfDC3Sf
+   Hlc+UTz4wh8hF7zRc4gPdam0moUaQ/spTSOGiwad/+JhqsX7LwTWS5hCs
+   nH+P9YU86sBfk/e53WOpc1ssHB0NV6ayf+xrNFAfC8xsu8sPjVI1tpS3W
+   sAAPb0TVXQV2nxH0soH0yIwblmwU+sx6RnZ6YuzZmmMDUGB0tEQYLhil9
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="305983085"
 X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="305983072"
+   d="scan'208";a="305983085"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 12:38:24 -0700
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 12:38:26 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="715542081"
+   d="scan'208";a="715542088"
 Received: from bwalker-desk.ch.intel.com ([143.182.136.162])
-  by orsmga004.jf.intel.com with ESMTP; 22 Jun 2022 12:38:23 -0700
+  by orsmga004.jf.intel.com with ESMTP; 22 Jun 2022 12:38:26 -0700
 From:   Ben Walker <benjamin.walker@intel.com>
 To:     vkoul@kernel.org
 Cc:     dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-crypto@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com
-Subject: [PATCH v4 04/15] crypto: stm32/hash: Use dmaengine_async_is_tx_complete
-Date:   Wed, 22 Jun 2022 12:37:42 -0700
-Message-Id: <20220622193753.3044206-5-benjamin.walker@intel.com>
+        mporter@kernel.crashing.org
+Subject: [PATCH v4 06/15] rapidio: Use dmaengine_async_is_tx_complete
+Date:   Wed, 22 Jun 2022 12:37:44 -0700
+Message-Id: <20220622193753.3044206-7-benjamin.walker@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220622193753.3044206-1-benjamin.walker@intel.com>
 References: <20220503200728.2321188-1-benjamin.walker@intel.com>
@@ -60,27 +59,26 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 Replace dma_async_is_tx_complete with dmaengine_async_is_tx_complete.
 The previous API will be removed in favor of the new one.
 
-Cc: linux-crypto@vger.kernel.org
-Cc: linux-stm32@st-md-mailman.stormreply.com
+Cc: mporter@kernel.crashing.org
 Signed-off-by: Ben Walker <benjamin.walker@intel.com>
 ---
- drivers/crypto/stm32/stm32-hash.c | 3 +--
+ drivers/rapidio/devices/rio_mport_cdev.c | 3 +--
  1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/crypto/stm32/stm32-hash.c b/drivers/crypto/stm32/stm32-hash.c
-index d33006d43f761..aef447847c499 100644
---- a/drivers/crypto/stm32/stm32-hash.c
-+++ b/drivers/crypto/stm32/stm32-hash.c
-@@ -453,8 +453,7 @@ static int stm32_hash_xmit_dma(struct stm32_hash_dev *hdev,
- 					 msecs_to_jiffies(100)))
- 		err = -ETIMEDOUT;
+diff --git a/drivers/rapidio/devices/rio_mport_cdev.c b/drivers/rapidio/devices/rio_mport_cdev.c
+index 2cdc054e53a53..d4108ff2bb74c 100644
+--- a/drivers/rapidio/devices/rio_mport_cdev.c
++++ b/drivers/rapidio/devices/rio_mport_cdev.c
+@@ -597,8 +597,7 @@ static void dma_xfer_callback(void *param)
+ 	struct mport_dma_req *req = (struct mport_dma_req *)param;
+ 	struct mport_cdev_priv *priv = req->priv;
  
--	if (dma_async_is_tx_complete(hdev->dma_lch, cookie,
--				     NULL, NULL) != DMA_COMPLETE)
-+	if (dmaengine_async_is_tx_complete(hdev->dma_lch, cookie) != DMA_COMPLETE)
- 		err = -ETIMEDOUT;
- 
- 	if (err) {
+-	req->status = dma_async_is_tx_complete(priv->dmach, req->cookie,
+-					       NULL, NULL);
++	req->status = dmaengine_async_is_tx_complete(priv->dmach, req->cookie);
+ 	complete(&req->req_comp);
+ 	kref_put(&req->refcount, dma_req_free);
+ }
 -- 
 2.35.1
 
