@@ -2,79 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E51B8C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 07:46:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FCAAC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 07:47:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353811AbiFVHqp (ORCPT
+        id S1349995AbiFVHrS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 03:46:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47136 "EHLO
+        Wed, 22 Jun 2022 03:47:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229559AbiFVHqn (ORCPT
+        with ESMTP id S1349866AbiFVHrO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 03:46:43 -0400
-Received: from mail-qv1-f47.google.com (mail-qv1-f47.google.com [209.85.219.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61FF136E25
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 00:46:43 -0700 (PDT)
-Received: by mail-qv1-f47.google.com with SMTP id 59so1290439qvb.3
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 00:46:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dmGPFZPTP5s26NzZgE/CmdswraC7MuQTQKrQzx6Alt0=;
-        b=qYz8dw2MDKWewIJlPv73htqcT/nBgQWXhh6HNSyhUaJste/v+rGURh6ZzMHrIaZfXI
-         eog0ahZI71gHtEriEWumkS5rv5Oyj/sEGWBwncAJGCNv+3P8TqZuy7kGH6t7OexQTYax
-         D1l/97jHKn5txz0FYtS4KH2QF6nh4DKtE3cpuBBccqjL+AcSq7dW++MtlC6t3BMPu+cM
-         kuH63GwC4xy2nElkEMrsKMLpCS9m5+CINwDq0HmT2XpXqD2Cju5x+FxEasdohOtSyJLA
-         7g65/whZ55sADb29a1YH/xS4bfB8IeBheDoJNuPJWZ40RWHvQIcOet2FDLdKy4G9R5bc
-         2zEg==
-X-Gm-Message-State: AJIora95B2I0rgZil9QXeIKUDT4QKA+vkKqwGafhDkGEQauIif1VUpLb
-        GjPHwZJ2QoXzAJZm1nJGT9Ln1OG4MwARhA==
-X-Google-Smtp-Source: AGRyM1twNnQ997S9aPwcJNSG4DL1HZyg5iSTcNNM8MZWsJBwfoH3ygFJDEeoU6S0d+PDDoe1Wp8w5A==
-X-Received: by 2002:a05:622a:1803:b0:304:ef17:7532 with SMTP id t3-20020a05622a180300b00304ef177532mr1755868qtc.110.1655884002227;
-        Wed, 22 Jun 2022 00:46:42 -0700 (PDT)
-Received: from mail-yb1-f181.google.com (mail-yb1-f181.google.com. [209.85.219.181])
-        by smtp.gmail.com with ESMTPSA id w6-20020ac87e86000000b003164efd0a5fsm371364qtj.41.2022.06.22.00.46.41
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Jun 2022 00:46:41 -0700 (PDT)
-Received: by mail-yb1-f181.google.com with SMTP id e4so16086159ybq.7
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 00:46:41 -0700 (PDT)
-X-Received: by 2002:a05:6902:120e:b0:634:6f29:6b84 with SMTP id
- s14-20020a056902120e00b006346f296b84mr2322150ybu.604.1655884001424; Wed, 22
- Jun 2022 00:46:41 -0700 (PDT)
+        Wed, 22 Jun 2022 03:47:14 -0400
+Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6076F37A14
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 00:47:12 -0700 (PDT)
+Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
+        by mx0a-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25M5nidX032367;
+        Wed, 22 Jun 2022 02:46:57 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=PODMain02222019;
+ bh=VCfSQqByA7jNBXTSiZFxlNUN/rTeTM0AlDQs0otcWSg=;
+ b=GATqspGdEpi06VV0io8ZvKA76qG5QJj9en6yUY3C3OrVsI1PGrqdvvEsdCeOx1dcoU1W
+ AnQmK1JKuxd5vUc+ZqfgNzaYAksC+5AFb5G2RfkXYMR0eyaCokVDMRFEdEJxMBvUaJ/z
+ ShDY36C9O5A64pzO92YYk0K/z3utgjo/3Tw6A1QJCNAKzu/R+voIcQJSbfLIMJpGEcYa
+ 6uPpr9M++gPABmkvJzwFSMwyN4lRxJRBfM8wsNOQYlTbiz+SNS1a663oJlmf8AcIbW19
+ 1SeX3HvaPqTSLrZVrdBaDOLclfR/OER5PiWjClc5nve+fMwr/mikOY0i2AFQW/AXsSxV qQ== 
+Received: from ediex01.ad.cirrus.com ([84.19.233.68])
+        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3gsc41cqh2-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 22 Jun 2022 02:46:57 -0500
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Wed, 22 Jun
+ 2022 08:46:55 +0100
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.28 via Frontend
+ Transport; Wed, 22 Jun 2022 08:46:55 +0100
+Received: from vitaly-Legion-7-16ACHg6.ad.cirrus.com (unknown [198.90.238.175])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id D61D57C;
+        Wed, 22 Jun 2022 07:46:54 +0000 (UTC)
+From:   Vitaly Rodionov <vitalyr@opensource.cirrus.com>
+To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+        Mark Brown <broonie@kernel.org>
+CC:     <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
+        <linux-kernel@vger.kernel.org>,
+        Stefan Binding <sbinding@opensource.cirrus.com>
+Subject: [PATCH v7 03/14] ALSA: hda: cs35l41: Save codec object inside component struct
+Date:   Wed, 22 Jun 2022 08:46:42 +0100
+Message-ID: <20220622074653.179078-4-vitalyr@opensource.cirrus.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220622074653.179078-1-vitalyr@opensource.cirrus.com>
+References: <20220622074653.179078-1-vitalyr@opensource.cirrus.com>
 MIME-Version: 1.0
-References: <20220622073553.64991-1-yuanjilin@cdjrlc.com>
-In-Reply-To: <20220622073553.64991-1-yuanjilin@cdjrlc.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 22 Jun 2022 09:46:30 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdUjsSwMwKjuKQ+h-ki_SwUThNJksALXK5cNoOikY0M-Fw@mail.gmail.com>
-Message-ID: <CAMuHMdUjsSwMwKjuKQ+h-ki_SwUThNJksALXK5cNoOikY0M-Fw@mail.gmail.com>
-Subject: Re: [PATCH] m68k:coldfire:Fix typos in comments
-To:     yuanjilin@cdjrlc.com
-Cc:     Greg Ungerer <gerg@linux-m68k.org>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-GUID: mhus3BjgP_rz4Qi0NknL8g6wCIYzp619
+X-Proofpoint-ORIG-GUID: mhus3BjgP_rz4Qi0NknL8g6wCIYzp619
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 9:36 AM Jilin Yuan <yuanjilin@cdjrlc.com> wrote:
-> The "the" should be replaced by "of" instead.
->
-> Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
+From: Stefan Binding <sbinding@opensource.cirrus.com>
 
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+This is required for ALSA control support.
 
-Gr{oetje,eeting}s,
+Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
+Signed-off-by: Vitaly Rodionov <vitalyr@opensource.cirrus.com>
+---
+ sound/pci/hda/cs35l41_hda.c   | 1 +
+ sound/pci/hda/cs35l41_hda.h   | 1 +
+ sound/pci/hda/hda_component.h | 1 +
+ sound/pci/hda/patch_realtek.c | 1 +
+ 4 files changed, 4 insertions(+)
 
-                        Geert
+diff --git a/sound/pci/hda/cs35l41_hda.c b/sound/pci/hda/cs35l41_hda.c
+index cce27a86267f..bbbaafac50c3 100644
+--- a/sound/pci/hda/cs35l41_hda.c
++++ b/sound/pci/hda/cs35l41_hda.c
+@@ -117,6 +117,7 @@ static int cs35l41_hda_bind(struct device *dev, struct device *master, void *mas
+ 		return -EBUSY;
+ 
+ 	comps->dev = dev;
++	cs35l41->codec = comps->codec;
+ 	strscpy(comps->name, dev_name(dev), sizeof(comps->name));
+ 	comps->playback_hook = cs35l41_hda_playback_hook;
+ 
+diff --git a/sound/pci/hda/cs35l41_hda.h b/sound/pci/hda/cs35l41_hda.h
+index a52ffd1f7999..aaf9e16684c2 100644
+--- a/sound/pci/hda/cs35l41_hda.h
++++ b/sound/pci/hda/cs35l41_hda.h
+@@ -32,6 +32,7 @@ struct cs35l41_hda {
+ 	struct regmap *regmap;
+ 	struct gpio_desc *reset_gpio;
+ 	struct cs35l41_hw_cfg hw_cfg;
++	struct hda_codec *codec;
+ 
+ 	int irq;
+ 	int index;
+diff --git a/sound/pci/hda/hda_component.h b/sound/pci/hda/hda_component.h
+index e26c896a13f3..534e845b9cd1 100644
+--- a/sound/pci/hda/hda_component.h
++++ b/sound/pci/hda/hda_component.h
+@@ -14,5 +14,6 @@
+ struct hda_component {
+ 	struct device *dev;
+ 	char name[HDA_MAX_NAME_SIZE];
++	struct hda_codec *codec;
+ 	void (*playback_hook)(struct device *dev, int action);
+ };
+diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
+index ff9a09a670ed..923c0d498d54 100644
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -6654,6 +6654,7 @@ static void cs35l41_generic_fixup(struct hda_codec *cdc, int action, const char
+ 					      "%s-%s:00-cs35l41-hda.%d", bus, hid, i);
+ 			if (!name)
+ 				return;
++			spec->comps[i].codec = cdc;
+ 			component_match_add(dev, &spec->match, component_compare_dev_name, name);
+ 		}
+ 		ret = component_master_add_with_match(dev, &comp_master_ops, spec->match);
+-- 
+2.34.1
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
