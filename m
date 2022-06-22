@@ -2,207 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0DA9C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 20:57:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D2FDC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 20:57:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242755AbiFVU5b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 16:57:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39236 "EHLO
+        id S245049AbiFVU5k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 16:57:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229701AbiFVU5W (ORCPT
+        with ESMTP id S229701AbiFVU5g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 16:57:22 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FD8E183B3
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 13:57:21 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id eo8so25674604edb.0
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 13:57:21 -0700 (PDT)
+        Wed, 22 Jun 2022 16:57:36 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4059418E17
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 13:57:35 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id o10so25624245edi.1
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 13:57:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kxnuHmLGyITyuJDC4SS30IEft3M8dZ4Ya6gP8MJhMNg=;
-        b=QFSFaEaeJQxCaHLKIP2QqHitJCIMZXiIsfGS1ifVx/IfRhI7Tkpengt7pNtBzu3mLg
-         6WJw0biLZF/o031nUuEOuDsgWl1zKjsSSJC7fzYjAE1Jq3QhY2HYgkgihpTWUPq1zkbH
-         +xVK+tDAjIKhEcS96aqjzvEUOnT6hrAa3Zk0Y=
+        d=linbit-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ElFrXwSwCVPRAW+hNoFiRlLykLfaXSBn/Xpo3VMfLLk=;
+        b=Efok5NV3PznOUwdj5HBUpm2llYRESRyUMgoC5pD+Wpp8dirSeZAM0D9mHNp9LkA4lL
+         cnSkDRGmKIczuA/wDuTFdlJmu3SmVKE0YChzqmYSM58BjHAH16OF6pqIK9W32YqipqmX
+         dI8JR8genlIiRMeCFGOCZKejLksLdnNQPfSVoZbOyY2mhSjdNFOnFBnkEMgsjZoRw7wH
+         MX1u7g4TiG+btgHspYWIL12N1P5slDFrTf7PUgK2QWhtCzkyHeW7ZDtqdcS48gGglzSq
+         S4cgXWD9B0D+6BhwZbvyBIr3fj5IpW85b1NKXjDZwutoxcCl0uZoOKFu7EiA/9zAMZCc
+         rzyw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kxnuHmLGyITyuJDC4SS30IEft3M8dZ4Ya6gP8MJhMNg=;
-        b=I17QjPp0VYzW8lMliSYh6M7TbVq+wMmsPa0Mj5G584qks9piONnuG3ksuHunWJuphP
-         pnD3e5uHY/XyyZgoP7X+buQUkeFLdpBjAxrASUFL69Tj21/1hWfBJzgIZ3W9jpsNnlOG
-         pZNc/tSyLS1tw7/smm0RvxbEgZ3WKF1XEI5fkWeHobOSGRC35nmpTyXSDaBwM0Gi6GsZ
-         SUCcgCkQduBauTm5P8A3isH5zCl7oh7Ig9RCeIxVh402Q62z2zzqx1owqv2ZEu1RQhvt
-         E9Le0gKO75hd+yB3H8nsU4ctb1BJTUtf1kkFgRFtuwKsb4nwNLCuXI20ePCwH/AkKBZO
-         iMWQ==
-X-Gm-Message-State: AJIora/bs3RkbOlDWXkEfH7J9JYmwwzJOqubxRg5PQFCwn54wQoeFEC8
-        Y5u8UApEf/+kf6nX3SIngkLoNiBdL3qE/V4OXaU=
-X-Google-Smtp-Source: AGRyM1sQqcW20VdcFvM21t/04hbb57/iYujLU5H+l3PzFJrkmFEvCMzTH6VumA7gZwXbXcqUl1Rkjw==
-X-Received: by 2002:a05:6402:238c:b0:435:8eb8:48dd with SMTP id j12-20020a056402238c00b004358eb848ddmr6382104eda.301.1655931439902;
-        Wed, 22 Jun 2022 13:57:19 -0700 (PDT)
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com. [209.85.221.41])
-        by smtp.gmail.com with ESMTPSA id ky4-20020a170907778400b006fe921fcb2dsm9871280ejc.49.2022.06.22.13.57.18
-        for <linux-kernel@vger.kernel.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ElFrXwSwCVPRAW+hNoFiRlLykLfaXSBn/Xpo3VMfLLk=;
+        b=f4EWPdAvFPW81jH/kU6M9TjOdrcR073POHvV0tioWc0tO3ffMPHOtJbStYEyor8GcT
+         UcW3oXqH73MvyjNez+3530aWzxRn+V0kDqZC3/ZKqw3CbPq94m5WS0CL4q7mubUdhwcO
+         MOwuTpetiBuxcUzh+jPWQousF+KDlQVHUoxM+kwk70aYSgCtvHXN6zbDZfEQy+1mGxkh
+         PwcXmf7eNTjpJbVdWDeNSltB319mMH5UBeqhb4NZYHKh0b4/mhGBxwFx/auzydB8Cor9
+         +d3INr/pCSvb6nPcIyb0B3HURvfOfEmElc3NOMWtSCCLcZIOIgOe7WvOeCUkm4UTAyIM
+         LRtA==
+X-Gm-Message-State: AJIora/oW22NgQeJ9MDhDy5IWNfSqfDvxodYFLnVSQ2c1dwHksLXIhsR
+        3B7+4LFwvq4AzzZvtvE4yK1F/Q==
+X-Google-Smtp-Source: AGRyM1upVwjgt9V6koh5c+6kvyMccavSbjHn9yi1EVuTbS5UDByI2R5SzZFO798xd+xGxS7lQZCThA==
+X-Received: by 2002:a05:6402:d5c:b0:435:6e2f:245b with SMTP id ec28-20020a0564020d5c00b004356e2f245bmr6482479edb.145.1655931453857;
+        Wed, 22 Jun 2022 13:57:33 -0700 (PDT)
+Received: from [192.168.178.55] (h082218028181.host.wavenet.at. [82.218.28.181])
+        by smtp.gmail.com with ESMTPSA id r17-20020a1709061bb100b00711d88ae162sm9788042ejg.24.2022.06.22.13.57.33
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Jun 2022 13:57:19 -0700 (PDT)
-Received: by mail-wr1-f41.google.com with SMTP id k22so18656067wrd.6
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 13:57:18 -0700 (PDT)
-X-Received: by 2002:adf:fb12:0:b0:20c:79b2:a200 with SMTP id
- c18-20020adffb12000000b0020c79b2a200mr5248141wrr.617.1655931438474; Wed, 22
- Jun 2022 13:57:18 -0700 (PDT)
+        Wed, 22 Jun 2022 13:57:33 -0700 (PDT)
+Message-ID: <0308c92a-0e10-35a4-928b-8f715a7bae44@linbit.com>
+Date:   Wed, 22 Jun 2022 22:57:32 +0200
 MIME-Version: 1.0
-References: <20220621053351.650431-1-joebar@chromium.org> <20220620223345.v9.4.I41e2c2dc12961fe000ebc4d4ef6f0bc5da1259ea@changeid>
-In-Reply-To: <20220620223345.v9.4.I41e2c2dc12961fe000ebc4d4ef6f0bc5da1259ea@changeid>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Wed, 22 Jun 2022 13:57:06 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=WS0dQyNe6X3+baCztM2bZbYBzdRoAir09Ad1otWtz9ag@mail.gmail.com>
-Message-ID: <CAD=FV=WS0dQyNe6X3+baCztM2bZbYBzdRoAir09Ad1otWtz9ag@mail.gmail.com>
-Subject: Re: [PATCH v9 4/5] arm64: dts: qcom: sc7180: Add pazquel dts files
-To:     "Joseph S. Barrera III" <joebar@chromium.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Alexandru M Stan <amstan@chromium.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] block: drbd: drbd_state: Fix typo in comments
+Content-Language: en-US
+To:     Jiang Jian <jiangjian@cdjrlc.com>
+Cc:     philipp.reisner@linbit.com, lars.ellenberg@linbit.com,
+        drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, axboe@kernel.dk
+References: <20220622155220.8704-1-jiangjian@cdjrlc.com>
+From:   =?UTF-8?Q?Christoph_B=c3=b6hmwalder?= 
+        <christoph.boehmwalder@linbit.com>
+In-Reply-To: <20220622155220.8704-1-jiangjian@cdjrlc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-On Mon, Jun 20, 2022 at 10:35 PM Joseph S. Barrera III
-<joebar@chromium.org> wrote:
->
-> Pazquel is a trogdor-based board. These dts files are unchanged copies
-> from the downstream Chrome OS 5.4 kernel.
->
-> Signed-off-by: Joseph S. Barrera III <joebar@chromium.org>
+Am 22.06.22 um 17:52 schrieb Jiang Jian:
+> Replace 'is' with 'it'
+> 
+> file: drivers/block/drbd/drbd_state.c
+> line: 1900
+> 
+> * But is is still not save to dreference ldev here, since
+> 
+> changed to:
+> 
+> * But it is still not save to dreference ldev here, since
+> 
+> Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
 > ---
->
-> Changes in v9:
-> - Restore two lines accidentally removed from ap_sar_sensor.
-> - Simplify trackpad enabling (51d30402be75).
->
-> Changes in v7:
-> - Only include sc7180.dtsi in sc7180-trogdor.dtsi (19794489fa24).
-> - Simplify spi0/spi6 labeling (d277cab7afc7).
-> - Remove #include of <arm/cros-ec-keyboard.dtsi>.
-> - Accidentally removed two lines from ap_sar_sensor.
->
-> Changes in v6:
-> - Copy changes to ap_sar_sensor from v5.4.
-> - Add #include of <arm/cros-ec-keyboard.dtsi>.
->
-> Changes in v4:
-> - Fix description (no downstream bits removed).
-> - Add missing version history.
->
-> Changes in v3:
-> - First inclusion in series.
->
->  arch/arm64/boot/dts/qcom/Makefile             |   4 +
->  .../sc7180-trogdor-pazquel-lte-parade.dts     |  22 ++
->  .../qcom/sc7180-trogdor-pazquel-lte-ti.dts    |  22 ++
->  .../qcom/sc7180-trogdor-pazquel-parade.dts    |  17 ++
->  .../dts/qcom/sc7180-trogdor-pazquel-ti.dts    |  17 ++
->  .../boot/dts/qcom/sc7180-trogdor-pazquel.dtsi | 221 ++++++++++++++++++
->  6 files changed, 303 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-lte-parade.dts
->  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-lte-ti.dts
->  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-parade.dts
->  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-ti.dts
->  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel.dtsi
->
-> diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
-> index 5cfd6316768c..dc26704dfe34 100644
-> --- a/arch/arm64/boot/dts/qcom/Makefile
-> +++ b/arch/arm64/boot/dts/qcom/Makefile
-> @@ -79,6 +79,10 @@ dtb-$(CONFIG_ARCH_QCOM)      += sc7180-trogdor-mrbland-rev0-auo.dtb
->  dtb-$(CONFIG_ARCH_QCOM)        += sc7180-trogdor-mrbland-rev0-boe.dtb
->  dtb-$(CONFIG_ARCH_QCOM)        += sc7180-trogdor-mrbland-rev1-auo.dtb
->  dtb-$(CONFIG_ARCH_QCOM)        += sc7180-trogdor-mrbland-rev1-boe.dtb
-> +dtb-$(CONFIG_ARCH_QCOM)        += sc7180-trogdor-pazquel-lte-parade.dtb
-> +dtb-$(CONFIG_ARCH_QCOM)        += sc7180-trogdor-pazquel-lte-ti.dtb
-> +dtb-$(CONFIG_ARCH_QCOM)        += sc7180-trogdor-pazquel-parade.dtb
-> +dtb-$(CONFIG_ARCH_QCOM)        += sc7180-trogdor-pazquel-ti.dtb
->  dtb-$(CONFIG_ARCH_QCOM)        += sc7180-trogdor-pompom-r1.dtb
->  dtb-$(CONFIG_ARCH_QCOM)        += sc7180-trogdor-pompom-r1-lte.dtb
->  dtb-$(CONFIG_ARCH_QCOM)        += sc7180-trogdor-pompom-r2.dtb
-> diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-lte-parade.dts b/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-lte-parade.dts
-> new file mode 100644
-> index 000000000000..ecedab8d1662
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-lte-parade.dts
-> @@ -0,0 +1,22 @@
-> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-> +/*
-> + * Google Pazquel board device tree source
-> + *
-> + * Copyright 2021 Google LLC.
-> + */
-> +
-> +/dts-v1/;
-> +
-> +#include "sc7180.dtsi"
+>  drivers/block/drbd/drbd_state.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/block/drbd/drbd_state.c b/drivers/block/drbd/drbd_state.c
+> index 3f7bf9f2d874..99927c44f0c3 100644
+> --- a/drivers/block/drbd/drbd_state.c
+> +++ b/drivers/block/drbd/drbd_state.c
+> @@ -1897,7 +1897,7 @@ static void after_state_ch(struct drbd_device *device, union drbd_state os,
+>  		int was_io_error = 0;
+>  		/* corresponding get_ldev was in _drbd_set_state, to serialize
+>  		 * our cleanup here with the transition to D_DISKLESS.
+> -		 * But is is still not save to dreference ldev here, since
+> +		 * But it is still not save to dreference ldev here, since
+>  		 * we might come from an failed Attach before ldev was set. */
+>  		if (device->ldev) {
+>  			rcu_read_lock();
 
-Repeating my comment from v8:
+I agree with James here, I do not think this provides much value.
 
-This is not good and was an important part of "Simplify!" sc7180.dtsi
-should only be included by sc7180-trogdor.dtsi.
+In fact, the *same* line you are changing contains two more spelling
+mistakes ("save" and "dreference").
 
+My opinion is that trivial patches like this are fine as a starting
+point for new contributors, which is why I acked the previous patch from
+you guys. However, if we start getting two of these every week it just
+adds more maintenance burden than it's worth.
 
-> diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel.dtsi b/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel.dtsi
-> new file mode 100644
-> index 000000000000..5485f50f89ad
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel.dtsi
-> @@ -0,0 +1,221 @@
-> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-> +/*
-> + * Google Pazquel board device tree source
-> + *
-> + * Copyright 2021 Google LLC.
-> + */
-> +
-> +#include "sc7180-trogdor.dtsi"
-> +
-> +&ap_sar_sensor {
-> +       compatible = "semtech,sx9324";
-> +       semtech,ph0-pin = <1 3 3>;
-> +       semtech,ph1-pin = <3 1 3>;
-> +       semtech,ph2-pin = <1 3 3>;
-> +       semtech,ph3-pin = <0 0 0>;
-> +       semtech,ph01-resolution = <1024>;
-> +       semtech,ph23-resolution = <1024>;
-> +       semtech,startup-sensor = <1>;
-> +       semtech,ph01-proxraw-strength = <3>;
-> +       semtech,ph23-proxraw-strength = <1>;
-> +       semtech,avg-pos-strength = <128>;
-> +       semtech,input-analog-gain = <0>;
-> +       semtech,cs-idle-sleep = "gnd";
-> +
-> +       /delete-property/ svdd-supply;
-> +       vdd-supply = <&pp1800_prox>;
-> +};
-> +
-> +/delete-node/&trackpad;
-> +&ap_tp_i2c {
+So thanks for the contribution, but it's a NAK from me.
 
-You need status = "okay"; here since Stephen's "Simplify!" patch
-series means that the i2c node itself is now disabled by default.
-
-
-> +       trackpad: trackpad@15 {
-> +               status = "okay";
-
-You _don't_ need the status = "okay"; here.
-
-
--Doug
+-- 
+Christoph Böhmwalder
+LINBIT | Keeping the Digital World Running
+DRBD HA —  Disaster Recovery — Software defined Storage
