@@ -2,99 +2,253 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 146FDC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 17:46:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B55B3C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 17:47:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377416AbiFVRqX (ORCPT
+        id S1377266AbiFVRrZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 13:46:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51066 "EHLO
+        Wed, 22 Jun 2022 13:47:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358743AbiFVRqV (ORCPT
+        with ESMTP id S1377425AbiFVRrV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 13:46:21 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A754E3467E
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 10:46:19 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id f65so16730026pgc.7
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 10:46:19 -0700 (PDT)
+        Wed, 22 Jun 2022 13:47:21 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CECD635AAB
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 10:47:19 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id l4so16713636pgh.13
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 10:47:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=EpgE2jvIQSFQgAN8WwXX/5vPgLEXVBbuCYjMWpqhCMs=;
-        b=QBt8d0UvvlahctWqyz9WVkxT0d4SOTK0NzVBYWVTJPxbLp5UNpIslqwUBSx8/KBBsq
-         A+Zw0xj6Cb/ehzhESIgmA9cwUHsw3Lf8BxRs09qsgbPtGdNYaUcbLW8l5EWPwkZ0AQ5g
-         iGESoRZXgqDD1vdCkXNbLWk/HCn9nRHSub86qFFPaZYSu/vy+4VR5E0vXlQHak7s1i8O
-         a5FQABvTZhyh9Uyq1WBQj3JvkensqX0mcupgMm8ueALkWiZdB97G75hdreUpxIhT5uA0
-         TA6dzh2C6/mSYctThb5VLyOmgIq2lFVNGbkMhROrYhHZTzQbRWLNXQ1rFhthz1aNZEQ+
-         Lsnw==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ozFhzYmR4E95kB5IvCCZ7Zhda6htukA9ft1DlgyNV/o=;
+        b=CawAhneHC/p+xXOIC1j1y4DXWjBHk+xdf6T6b/IRcKfJO4W8BAHwZpeasTZ1klNF3/
+         xT1GD6SgQ4uPMuEjxQ0Lo+dOzXTfddCoudLE/Ty7XjhN2tAQkL6oX2e1sDtRfIbGMTrI
+         0iuXYklU8zG8BWpFmjtnIFTnAVshfx6NdPHB4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=EpgE2jvIQSFQgAN8WwXX/5vPgLEXVBbuCYjMWpqhCMs=;
-        b=sb+v50jpqQ+M7Q2WeKN/KZpyp5AWArd5ne7Pg5SFbfCi9GUxPMsACDXPbNWxMYGFQY
-         X9vOarqGeCOL9nFoTz202C+EE9vSkXek5a7yfmDVLIJfdBlaCMQ42ECQRHEH9QP4Eubl
-         bjTLsDnUcCc1aGQuu9kwNcWhi397SUQWv5SdjIdLXdtnodDI3zbuk1DteZ2e9uEaO7rX
-         oai8+T/VmJcglo4XMFo0K1l8QOP66F2WYMnY1sv84jBYScfckGB/dacQQhIPRIp2D0AR
-         9IZr4gkh6iCcLWAszrWd8A0QwO+oevVdhyLquXcxrpYSuPJoIo5/bJC/ss4gm/Hlrwtu
-         /EIw==
-X-Gm-Message-State: AJIora/kSKEsyiOi4jXGPAB5CogcDcPbjrGMYwY89oEQE7JzJHp238+S
-        St0vuaU1422vNlBc6IklTMneIg==
-X-Google-Smtp-Source: AGRyM1vvmEv/0t0GsVemfxrvCV9s3hxYmKfiYakDddtSica5aCNDyttDzA/GvdXDpYo1Yp0jqBBf6w==
-X-Received: by 2002:a05:6a00:15c1:b0:525:2db4:2a2c with SMTP id o1-20020a056a0015c100b005252db42a2cmr13485017pfu.30.1655919979228;
-        Wed, 22 Jun 2022 10:46:19 -0700 (PDT)
-Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
-        by smtp.gmail.com with ESMTPSA id j7-20020a17090a7e8700b001ec4f258028sm29034pjl.55.2022.06.22.10.46.17
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ozFhzYmR4E95kB5IvCCZ7Zhda6htukA9ft1DlgyNV/o=;
+        b=JPkx5JzUjokf4w+XC5b3DMxwRd6NAkTZYV6A338jT2vc1K2XRclVB+nZIxddEPCc2q
+         TRmMjiL7ZuYUlFLWMXNF7QC24HB0s5sGhetW7DcDbgeEww45/sGsaGOpGBcp7b2Fouhi
+         b5Z97BVWS4O7x6dIEV5IeQj7th0FrhJgSIOvZgynfmjiCXPsUGMMX4xxHqZqgVh71o8G
+         0w571SPcua53bLs2cW7ZIskv3xA1C8Y5dUqV9zOgHMNFhhaN2m/2maE2vAKUke1h6IZ0
+         CFH0sxYD7z9PR2ATHE8GQDUA4pC/kLLQrhOsVeE0glgkUyKZ2pLApqmqWQy4JdZlZA71
+         UeDQ==
+X-Gm-Message-State: AJIora8pLnM1OK3bASwP6BT4Kp+NTtLzh5tlbUP3RbKLM0E5hTW0cBDm
+        enbpyO2VtSEmgeesPvnfk/pxyVWilNus5A==
+X-Google-Smtp-Source: AGRyM1tBbILrL9IcBn2sx8C63vhIXgPha/EGUevChjROlBAs1HDcrrQphyTY41RUJ1/FuutnDCyUnA==
+X-Received: by 2002:a63:8842:0:b0:40d:4365:907f with SMTP id l63-20020a638842000000b0040d4365907fmr1254341pgd.568.1655920039161;
+        Wed, 22 Jun 2022 10:47:19 -0700 (PDT)
+Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id l17-20020a17090b079100b001ece55aec38sm35470pjz.30.2022.06.22.10.47.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jun 2022 10:46:18 -0700 (PDT)
-Date:   Wed, 22 Jun 2022 11:46:16 -0600
-From:   Mathieu Poirier <mathieu.poirier@linaro.org>
-To:     Saud Farooqui <farooqui_saud@hotmail.com>
-Cc:     bjorn.andersson@linaro.org, linux-remoteproc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] rpmsg: strcpy is not safe, use strncpy
-Message-ID: <20220622174616.GD1606016@p14s>
-References: <PA4P189MB1421005C22E46EBD708EBA798BA49@PA4P189MB1421.EURP189.PROD.OUTLOOK.COM>
+        Wed, 22 Jun 2022 10:47:18 -0700 (PDT)
+From:   Prashant Malani <pmalani@chromium.org>
+To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
+Cc:     bleung@chromium.org, swboyd@chromium.org,
+        heikki.krogerus@linux.intel.com,
+        Pin-Yen Lin <treapking@chromium.org>,
+        Prashant Malani <pmalani@chromium.org>,
+        Allen Chen <allen.chen@ite.com.tw>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
+        DEVICE TREE BINDINGS),
+        dri-devel@lists.freedesktop.org (open list:DRM DRIVERS),
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
+        <nfraprado@collabora.com>, Robert Foss <robert.foss@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Xin Ji <xji@analogixsemi.com>
+Subject: [PATCH v5 8/9] drm/bridge: it6505: Register Type-C mode switches
+Date:   Wed, 22 Jun 2022 17:34:37 +0000
+Message-Id: <20220622173605.1168416-9-pmalani@chromium.org>
+X-Mailer: git-send-email 2.37.0.rc0.104.g0611611a94-goog
+In-Reply-To: <20220622173605.1168416-1-pmalani@chromium.org>
+References: <20220622173605.1168416-1-pmalani@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <PA4P189MB1421005C22E46EBD708EBA798BA49@PA4P189MB1421.EURP189.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Saud,
+From: Pin-Yen Lin <treapking@chromium.org>
 
-On Wed, Jun 08, 2022 at 11:43:30PM +0500, Saud Farooqui wrote:
-> Replace strcpy with strncpy for copying the rpmsg
-> device name in rpmsg_register_device_override
-> 
-> Signed-off-by: Saud Farooqui <farooqui_saud@hotmail.com>
-> ---
->  drivers/rpmsg/rpmsg_core.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/rpmsg/rpmsg_core.c b/drivers/rpmsg/rpmsg_core.c
-> index 290c1f02da10..d3b29c19715d 100644
-> --- a/drivers/rpmsg/rpmsg_core.c
-> +++ b/drivers/rpmsg/rpmsg_core.c
-> @@ -604,7 +604,7 @@ int rpmsg_register_device_override(struct rpmsg_device *rpdev,
->  	int ret;
->  
->  	if (driver_override)
-> -		strcpy(rpdev->id.name, driver_override);
-> +		strncpy(rpdev->id.name, driver_override, sizeof(rpdev->id.name));
+When the DT node has "switches" available, register a Type-C mode-switch
+for each listed "switch". This allows the driver to receive state
+information about what operating mode a Type-C port and its connected
+peripherals are in, as well as status information (like VDOs) related to
+that state.
 
-Please use strscpy_pad() instead of strncpy().
+The callback function is currently a stub, but subsequent patches will
+implement the required functionality.
 
-Thanks,
-Mathieu
+Signed-off-by: Pin-Yen Lin <treapking@chromium.org>
+Signed-off-by: Prashant Malani <pmalani@chromium.org>
+---
 
->  
->  	dev_set_name(dev, "%s.%s.%d.%d", dev_name(dev->parent),
->  		     rpdev->id.name, rpdev->src, rpdev->dst);
-> -- 
-> 2.25.1
-> 
+v5 is the first version for this patch.
+
+ drivers/gpu/drm/bridge/ite-it6505.c | 85 ++++++++++++++++++++++++++++-
+ 1 file changed, 82 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/gpu/drm/bridge/ite-it6505.c b/drivers/gpu/drm/bridge/ite-it6505.c
+index b259f9f367f6..cb1dd4cbd33b 100644
+--- a/drivers/gpu/drm/bridge/ite-it6505.c
++++ b/drivers/gpu/drm/bridge/ite-it6505.c
+@@ -17,6 +17,7 @@
+ #include <linux/regmap.h>
+ #include <linux/regulator/consumer.h>
+ #include <linux/types.h>
++#include <linux/usb/typec_mux.h>
+ #include <linux/wait.h>
+ 
+ #include <crypto/hash.h>
+@@ -402,6 +403,11 @@ struct debugfs_entries {
+ 	const struct file_operations *fops;
+ };
+ 
++struct it6505_port_data {
++	struct typec_mux_dev *typec_mux;
++	struct it6505 *it6505;
++};
++
+ struct it6505 {
+ 	struct drm_dp_aux aux;
+ 	struct drm_bridge bridge;
+@@ -453,6 +459,7 @@ struct it6505 {
+ 	struct it6505_audio_data audio;
+ 	struct dentry *debugfs;
+ 	int num_typec_switches;
++	struct it6505_port_data *typec_ports;
+ 
+ 	/* it6505 driver hold option */
+ 	bool enable_drv_hold;
+@@ -3230,9 +3237,59 @@ static void it6505_shutdown(struct i2c_client *client)
+ 		it6505_lane_off(it6505);
+ }
+ 
++static int it6505_typec_mux_set(struct typec_mux_dev *mux,
++				struct typec_mux_state *state)
++{
++	return 0;
++}
++
++static int it6505_register_mode_switch(struct device *dev, struct device_node *node,
++					struct it6505 *it6505)
++{
++	struct it6505_port_data *port_data;
++	struct typec_mux_desc mux_desc = {};
++	char name[32];
++	u32 port_num;
++	int ret;
++
++	ret = of_property_read_u32(node, "reg", &port_num);
++	if (ret)
++		return ret;
++
++	if (port_num >= it6505->num_typec_switches) {
++		dev_err(dev, "Invalid port number specified: %d\n", port_num);
++		return -EINVAL;
++	}
++
++	port_data = &it6505->typec_ports[port_num];
++	port_data->it6505 = it6505;
++	mux_desc.fwnode = &node->fwnode;
++	mux_desc.drvdata = port_data;
++	snprintf(name, sizeof(name), "%s-%u", node->name, port_num);
++	mux_desc.name = name;
++	mux_desc.set = it6505_typec_mux_set;
++
++	port_data->typec_mux = typec_mux_register(dev, &mux_desc);
++	if (IS_ERR(port_data->typec_mux)) {
++		ret = PTR_ERR(port_data->typec_mux);
++		dev_err(dev, "Mode switch register for port %d failed: %d", port_num, ret);
++	}
++
++	return ret;
++}
++
++static void it6505_unregister_typec_switches(struct it6505 *it6505)
++{
++	int i;
++
++	for (i = 0; i < it6505->num_typec_switches; i++)
++		typec_mux_unregister(it6505->typec_ports[i].typec_mux);
++}
++
+ static int it6505_register_typec_switches(struct device *device, struct it6505 *it6505)
+ {
+-	struct device_node *of;
++	struct device_node *of, *sw;
++	int ret = 0;
+ 
+ 	of = of_get_child_by_name(device->of_node, "switches");
+ 	if (!of)
+@@ -3241,8 +3298,28 @@ static int it6505_register_typec_switches(struct device *device, struct it6505 *
+ 	it6505->num_typec_switches = of_get_child_count(of);
+ 	if (it6505->num_typec_switches <= 0)
+ 		return -ENODEV;
++	it6505->typec_ports = devm_kzalloc(device,
++					   it6505->num_typec_switches *
++					   sizeof(struct it6505_port_data),
++					   GFP_KERNEL);
++	if (!it6505->typec_ports)
++		return -ENOMEM;
+ 
+-	return 0;
++	/* Register switches for each connector. */
++	for_each_available_child_of_node(of, sw) {
++		if (!of_property_read_bool(sw, "mode-switch"))
++			continue;
++		ret = it6505_register_mode_switch(device, sw, it6505);
++		if (ret) {
++			dev_err(device, "Failed to register mode switch: %d\n", ret);
++			break;
++		}
++	}
++
++	if (ret)
++		it6505_unregister_typec_switches(it6505);
++
++	return ret;
+ }
+ 
+ static int it6505_i2c_probe(struct i2c_client *client,
+@@ -3280,7 +3357,8 @@ static int it6505_i2c_probe(struct i2c_client *client,
+ 
+ 	ret = it6505_register_typec_switches(dev, it6505);
+ 	if (ret) {
+-		dev_dbg(dev, "Didn't register Type C switches, err: %d", ret);
++		if (ret != -ENODEV)
++			dev_warn(dev, "Didn't register Type C switches, err: %d", ret);
+ 		if (!it6505->extcon) {
+ 			dev_err(dev, "Both extcon and typec-switch are not registered.");
+ 			return -EINVAL;
+@@ -3350,6 +3428,7 @@ static int it6505_i2c_remove(struct i2c_client *client)
+ 	drm_dp_aux_unregister(&it6505->aux);
+ 	it6505_debugfs_remove(it6505);
+ 	it6505_poweroff(it6505);
++	it6505_unregister_typec_switches(it6505);
+ 
+ 	return 0;
+ }
+-- 
+2.37.0.rc0.104.g0611611a94-goog
+
