@@ -2,127 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97DC4C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 06:21:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4CBECCA47A
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 06:22:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233993AbiFVGVr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 02:21:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38536 "EHLO
+        id S1347789AbiFVGWQ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 02:22:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346528AbiFVGVg (ORCPT
+        with ESMTP id S235967AbiFVGWO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 02:21:36 -0400
-Received: from mail-m975.mail.163.com (mail-m975.mail.163.com [123.126.97.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5A5B02F380;
-        Tue, 21 Jun 2022 23:21:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=UD322
-        BUk78+thKcSE3P4/OwKjkRfw/qsc7uMSsGIU4M=; b=Jc8j3JlttaHNFZdijmVL+
-        Ag1wnn5iPSIoQxuTjAWr1BE9hxM2c5v7bDZ4+EzHi/wbolAMV9FiOEFE+yK3rpcr
-        vPDnwLuIvXM8UZpCNqJrPM39h25ZKe/c+xpFoURYHUDIUM8FgM/7CyRVs8NeXIYX
-        J1sPh9PtcRjVznPi+dbUHo=
-Received: from localhost.localdomain (unknown [112.97.63.176])
-        by smtp5 (Coremail) with SMTP id HdxpCgDHWhLctLJiJI2+KQ--.3868S2;
-        Wed, 22 Jun 2022 14:21:18 +0800 (CST)
-From:   Slark Xiao <slark_xiao@163.com>
-To:     johan@kernel.org
-Cc:     gregkh@linuxfoundation.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Slark Xiao <slark_xiao@163.com>
-Subject: [PATCH v2] USB: serial: use kmemdup instead of kmalloc + memcpy
-Date:   Wed, 22 Jun 2022 14:21:13 +0800
-Message-Id: <20220622062113.8762-1-slark_xiao@163.com>
+        Wed, 22 Jun 2022 02:22:14 -0400
+Received: from m15113.mail.126.com (m15113.mail.126.com [220.181.15.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 238E62F02F
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 23:22:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=KNm6r
+        djgI3fZb458Vh2B3XGihON4TOae3lbBQT12LPA=; b=GihQyMCj7YH0xlL/cIptn
+        4at0fGwV485O97ItxX/Jh9s//WrsQFurBvfAoReP8kYTkb8ynNpvqBFauiO3nbn6
+        9gQtFoEbAs8qAncGijF5A6zRpx5/jQop0mz3rLbicwKxphTG2X5Fw595vaEAS33e
+        VKt92U23z7/ZitrCWBY5g0=
+Received: from localhost.localdomain (unknown [124.16.139.61])
+        by smtp3 (Coremail) with SMTP id DcmowADH953ztLJi_i9QDw--.64468S2;
+        Wed, 22 Jun 2022 14:21:40 +0800 (CST)
+From:   Liang He <windhl@126.com>
+To:     tglx@linutronix.de, maz@kernel.org, linux-kernel@vger.kernel.org,
+        windhl@126.com
+Subject: [PATCH] irqchip: Add missing of_ndoe_get() in its_of_probe()
+Date:   Wed, 22 Jun 2022 14:21:38 +0800
+Message-Id: <20220622062138.4095598-1-windhl@126.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: HdxpCgDHWhLctLJiJI2+KQ--.3868S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWxWFyrWw15Xry8Kw17XrWxCrg_yoW5XrykpF
-        4Fgayjqr18tr13Xr1DCrs8Z3W5WanFgry2k347C3yavr43twnag3WxtF90gr10yr97Jr1S
-        qw4v9rW0kF1xKw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zRJ5r3UUUUU=
-X-Originating-IP: [112.97.63.176]
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/xtbCdQYoZGBbD9PNagAAs-
+X-CM-TRANSID: DcmowADH953ztLJi_i9QDw--.64468S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrtF4UtryDuw4fGr17Zr18Zrb_yoWkWFc_Cr
+        18WF9rXr40kF4rt393ZF43ZFn8Jw4vgrWrur4Iyas3Xa42v3W7GFZrJr97XayrWF42vryf
+        Grs0vr4Ykr17ujkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xR_hL03UUUUU==
+X-Originating-IP: [124.16.139.61]
+X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi7RQoF1pEAQOF6gAAs1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For code neat purpose, we can use kmemdup to replace
-kmalloc + memcpy.
+We need to add missing of_node_get() for of_find_matching_node() to
+keep refcount balance.
 
-Signed-off-by: Slark Xiao <slark_xiao@163.com>
----
-v2: Add garmin_gps.c
----
- drivers/usb/serial/garmin_gps.c | 4 +---
- drivers/usb/serial/opticon.c    | 4 +---
- drivers/usb/serial/sierra.c     | 4 +---
- 3 files changed, 3 insertions(+), 9 deletions(-)
+Note: of_find_matching_node() will decrease the refcount of its first
+arg.
 
-diff --git a/drivers/usb/serial/garmin_gps.c b/drivers/usb/serial/garmin_gps.c
-index e5c75944ebb7..f1a8d8343623 100644
---- a/drivers/usb/serial/garmin_gps.c
-+++ b/drivers/usb/serial/garmin_gps.c
-@@ -988,7 +988,7 @@ static int garmin_write_bulk(struct usb_serial_port *port,
- 	garmin_data_p->flags &= ~FLAGS_DROP_DATA;
- 	spin_unlock_irqrestore(&garmin_data_p->lock, flags);
- 
--	buffer = kmalloc(count, GFP_ATOMIC);
-+	buffer = kmemdup(buf, count, GFP_ATOMIC);
- 	if (!buffer)
- 		return -ENOMEM;
- 
-@@ -998,8 +998,6 @@ static int garmin_write_bulk(struct usb_serial_port *port,
- 		return -ENOMEM;
+Signed-off-by: Liang He <windhl@126.com>
+---
+ drivers/irqchip/irq-gic-v3-its.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
+index 5ff09de6c48f..829893cc5e10 100644
+--- a/drivers/irqchip/irq-gic-v3-its.c
++++ b/drivers/irqchip/irq-gic-v3-its.c
+@@ -5309,6 +5309,7 @@ static int __init its_of_probe(struct device_node *node)
+ 	 * reset, don't even try to go any further, as this could
+ 	 * result in something even worse.
+ 	 */
++	of_node_get(node);
+ 	for (np = of_find_matching_node(node, its_device_id); np;
+ 	     np = of_find_matching_node(np, its_device_id)) {
+ 		int err;
+@@ -5323,6 +5324,7 @@ static int __init its_of_probe(struct device_node *node)
+ 			return err;
  	}
  
--	memcpy(buffer, buf, count);
--
- 	usb_serial_debug_data(&port->dev, __func__, count, buffer);
- 
- 	usb_fill_bulk_urb(urb, serial->dev,
-diff --git a/drivers/usb/serial/opticon.c b/drivers/usb/serial/opticon.c
-index aed28c35caff..bca6766a63e6 100644
---- a/drivers/usb/serial/opticon.c
-+++ b/drivers/usb/serial/opticon.c
-@@ -208,7 +208,7 @@ static int opticon_write(struct tty_struct *tty, struct usb_serial_port *port,
- 	priv->outstanding_bytes += count;
- 	spin_unlock_irqrestore(&priv->lock, flags);
- 
--	buffer = kmalloc(count, GFP_ATOMIC);
-+	buffer = kmemdup(buf, count, GFP_ATOMIC);
- 	if (!buffer)
- 		goto error_no_buffer;
- 
-@@ -216,8 +216,6 @@ static int opticon_write(struct tty_struct *tty, struct usb_serial_port *port,
- 	if (!urb)
- 		goto error_no_urb;
- 
--	memcpy(buffer, buf, count);
--
- 	usb_serial_debug_data(&port->dev, __func__, count, buffer);
- 
- 	/* The connected devices do not have a bulk write endpoint,
-diff --git a/drivers/usb/serial/sierra.c b/drivers/usb/serial/sierra.c
-index 9d56138133a9..865d1237d611 100644
---- a/drivers/usb/serial/sierra.c
-+++ b/drivers/usb/serial/sierra.c
-@@ -453,7 +453,7 @@ static int sierra_write(struct tty_struct *tty, struct usb_serial_port *port,
- 		goto error_simple;
- 	}
- 
--	buffer = kmalloc(writesize, GFP_ATOMIC);
-+	buffer = kmemdup(buf, writesize, GFP_ATOMIC);
- 	if (!buffer) {
- 		retval = -ENOMEM;
- 		goto error_no_buffer;
-@@ -465,8 +465,6 @@ static int sierra_write(struct tty_struct *tty, struct usb_serial_port *port,
- 		goto error_no_urb;
- 	}
- 
--	memcpy(buffer, buf, writesize);
--
- 	usb_serial_debug_data(&port->dev, __func__, writesize, buffer);
- 
- 	usb_fill_bulk_urb(urb, serial->dev,
++	of_node_get(node);
+ 	for (np = of_find_matching_node(node, its_device_id); np;
+ 	     np = of_find_matching_node(np, its_device_id)) {
+ 		if (!of_device_is_available(np))
 -- 
 2.25.1
 
