@@ -2,191 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6D0CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 11:46:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F15F1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 11:47:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357731AbiFVLqt (ORCPT
+        id S1357756AbiFVLrV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 07:46:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57056 "EHLO
+        Wed, 22 Jun 2022 07:47:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355742AbiFVLqr (ORCPT
+        with ESMTP id S1355742AbiFVLrT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 07:46:47 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06B1E33A23;
-        Wed, 22 Jun 2022 04:46:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1655898406; x=1687434406;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=PLePtGK/nNadtMrdup55F1Wn755t1dKBv+FuXP1GQkU=;
-  b=GWizppB8KtezXisVGMan2u3AF3nfi6qc8eW4/6Nblq5Dur8u7c/DcF6C
-   Oc6uwviUvHiLJNtJISaLWEvc2PevYt7vJVM/g86Bxql55R9ZsaiSeoeah
-   pCYgwzLVO+5tsZsuZTMN1ZoG/AAxuf8R81Z28yYulfKSDO2NxLXsiLc+p
-   Y=;
-Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 22 Jun 2022 04:46:45 -0700
-X-QCInternal: smtphost
-Received: from nasanex01b.na.qualcomm.com ([10.46.141.250])
-  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 04:46:45 -0700
-Received: from [10.50.44.13] (10.80.80.8) by nasanex01b.na.qualcomm.com
- (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 22 Jun
- 2022 04:46:43 -0700
-Message-ID: <65e9c3bf-af54-3726-dff5-208a70473f65@quicinc.com>
-Date:   Wed, 22 Jun 2022 17:16:39 +0530
+        Wed, 22 Jun 2022 07:47:19 -0400
+Received: from mail-yb1-f182.google.com (mail-yb1-f182.google.com [209.85.219.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8B7335256;
+        Wed, 22 Jun 2022 04:47:17 -0700 (PDT)
+Received: by mail-yb1-f182.google.com with SMTP id u9so19580412ybq.3;
+        Wed, 22 Jun 2022 04:47:17 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9G0m5h5tEL+v3rqcpmcGX0SX814uyxHrxPQmImDaRts=;
+        b=WlJaD6vtA5MtJAwFtitGUPSzlmlJ1BS4V1u78iX5kPv5q0zLykM8eKVAKoem25tJAf
+         syBh8O2kcXNVXNwY+51Dbe2vLwlhoXZOlvhlEgyrenNNyHMzRxWHT1bSxxnfYTze7x4q
+         yMVh0iRZEwtiCbN/VqoOrfuyN15GDA4ikTGEngffnCnJQ+sQR3DwMrwTCOULf3BIVXb8
+         cIu+w270nhKwbE+wqq0YxfEycDbM+FCj8nCAG10dVQvs8yhHVzu1kSg6EaZEuzJgyQqe
+         403scAfyM1n0juBOKJxoH49wIgaD8AlCrNHBbFJJF35DTo+3I/QAUXHioMVw/73mQFdM
+         tfmg==
+X-Gm-Message-State: AJIora+vJXC0s1gBExVVWDx7oN9Qob775TrroKPH1kOkBk94RQxG6UEz
+        osJQiO/RVBs1X2h7L+aZ6o51ui0ShKZg92MfiTM=
+X-Google-Smtp-Source: AGRyM1uQpWaGytZj64Anw2lr4RSLcvw2joZ2mbIGJ5VWxqoBTAcGKfxy4p98mpKgqE/LwF+k96Tkcc5Whw/4hlteUGA=
+X-Received: by 2002:a25:d841:0:b0:668:ab2f:7b01 with SMTP id
+ p62-20020a25d841000000b00668ab2f7b01mr3256535ybg.482.1655898437141; Wed, 22
+ Jun 2022 04:47:17 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH rcu 01/12] rcu: Decrease FQS scan wait time in case of
- callback overloading
-Content-Language: en-US
-To:     <paulmck@kernel.org>
-CC:     <rcu@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <kernel-team@fb.com>, <rostedt@goodmis.org>
-References: <20220620222022.GA3839466@paulmck-ThinkPad-P17-Gen-1>
- <20220620222032.3839547-1-paulmck@kernel.org>
- <87c17e9a-565a-d717-3534-83a4c506b984@quicinc.com>
- <20220621221925.GQ1790663@paulmck-ThinkPad-P17-Gen-1>
-From:   Neeraj Upadhyay <quic_neeraju@quicinc.com>
-In-Reply-To: <20220621221925.GQ1790663@paulmck-ThinkPad-P17-Gen-1>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01b.na.qualcomm.com (10.46.141.250)
+References: <20220621192034.3332546-1-sudeep.holla@arm.com> <20220621192034.3332546-2-sudeep.holla@arm.com>
+In-Reply-To: <20220621192034.3332546-2-sudeep.holla@arm.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Wed, 22 Jun 2022 13:47:06 +0200
+Message-ID: <CAJZ5v0huqb1+RGD8De0EDM4xbjqin6wCBUsh6pcR=W9rXWw8JA@mail.gmail.com>
+Subject: Re: [PATCH v4 01/20] ACPI: PPTT: Use table offset as fw_token instead
+ of virtual address
+To:     Sudeep Holla <sudeep.holla@arm.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Atish Patra <atishp@atishpatra.org>,
+        Atish Patra <atishp@rivosinc.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Qing Wang <wangqing@vivo.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Ionela Voinescu <ionela.voinescu@arm.com>,
+        Pierre Gondois <pierre.gondois@arm.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, Jun 21, 2022 at 9:20 PM Sudeep Holla <sudeep.holla@arm.com> wrote:
+>
+> There is need to use the cache sharing information quite early during
+> the boot before the secondary cores are up and running. The permanent
+> memory map for all the ACPI tables(via acpi_permanent_mmap) is turned
+> on in acpi_early_init() which is quite late for the above requirement.
+>
+> As a result there is possibility that the ACPI PPTT gets mapped to
+> different virtual addresses. In such scenarios, using virtual address as
+> fw_token before the acpi_permanent_mmap is enabled results in different
+> fw_token for the same cache entity and hence wrong cache sharing
+> information will be deduced based on the same.
+>
+> Instead of using virtual address, just use the table offset as the
+> unique firmware token for the caches. The same offset is used as
+> ACPI identifiers if the firmware has not set a valid one for other
+> entries in the ACPI PPTT.
+>
+> Cc: linux-acpi@vger.kernel.org
+> Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
+> ---
+>  drivers/acpi/pptt.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>
+> Hi Rafael,
+>
+> If you are happy with this change, can you provide Ack, so that it can be
+> merged together with other changes ?
 
+No objections:
 
-On 6/22/2022 3:49 AM, Paul E. McKenney wrote:
-> On Tue, Jun 21, 2022 at 10:59:58AM +0530, Neeraj Upadhyay wrote:
->>
->>
->> On 6/21/2022 3:50 AM, Paul E. McKenney wrote:
->>> The force-quiesce-state loop function rcu_gp_fqs_loop() checks for
->>> callback overloading and does an immediate initial scan for idle CPUs
->>> if so.  However, subsequent rescans will be carried out at as leisurely a
->>> rate as they always are, as specified by the rcutree.jiffies_till_next_fqs
->>> module parameter.  It might be tempting to just continue immediately
->>> rescanning, but this turns the RCU grace-period kthread into a CPU hog.
->>> It might also be tempting to reduce the time between rescans to a single
->>> jiffy, but this can be problematic on larger systems.
->>>
->>> This commit therefore divides the normal time between rescans by three,
->>> rounding up.  Thus a small system running at HZ=1000 that is suffering
->>> from callback overload will wait only one jiffy instead of the normal
->>> three between rescans.
->>>
->>> Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
->>> ---
->>>    kernel/rcu/tree.c | 5 +++++
->>>    1 file changed, 5 insertions(+)
->>>
->>> diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
->>> index c25ba442044a6..c19d5926886fb 100644
->>> --- a/kernel/rcu/tree.c
->>> +++ b/kernel/rcu/tree.c
->>> @@ -1993,6 +1993,11 @@ static noinline_for_stack void rcu_gp_fqs_loop(void)
->>>    			WRITE_ONCE(rcu_state.jiffies_kick_kthreads,
->>>    				   jiffies + (j ? 3 * j : 2));
->>>    		}
->>> +		if (rcu_state.cbovld) {
->>> +			j = (j + 2) / 3;
->>> +			if (j <= 0)
->>> +				j = 1;
->>> +		}
->>
->> We update 'j' here, after setting rcu_state.jiffies_force_qs
->>
->>      WRITE_ONCE(rcu_state.jiffies_force_qs, jiffies + j)
->>
->> So, we return from swait_event_idle_timeout_exclusive after 1/3 time
->> duration.
->>
->>      swait_event_idle_timeout_exclusive(rcu_state.gp_wq,
->> 				 rcu_gp_fqs_check_wake(&gf), j);
->>
->> This can result in !timer_after check to return false and we will
->> enter the 'else' (stray signal block) code?
->>
->> This might not matter for first 2 fqs loop iterations, where
->> RCU_GP_FLAG_OVLD is set in 'gf', but subsequent iterations won't benefit
->> from this patch?
->>
->>
->> if (!time_after(rcu_state.jiffies_force_qs, jiffies) ||
->> 	(gf & (RCU_GP_FLAG_FQS | RCU_GP_FLAG_OVLD))) {
->> 			...
->> } else {
->> 	/* Deal with stray signal. */
->> }
->>
->>
->> So, do we need to move this calculation above the 'if' block which sets
->> rcu_state.jiffies_force_qs?
->> 		if (!ret) {
->>
->> 			WRITE_ONCE(rcu_state.jiffies_force_qs, jiffies +
->> 						j);...
->> 		}
-> 
-> Good catch, thank you!  How about the updated patch shown below?
-> 
+Acked-by: Rafael J. Wysocki <rafael@kernel.org>
 
-Looks good to me.
-
-
-Thanks
-Neeraj
-
-> 							Thanx, Paul
-> 
-> ------------------------------------------------------------------------
-> 
-> commit 77de092c78f549b5c28075bfee9998a525d21f84
-> Author: Paul E. McKenney <paulmck@kernel.org>
-> Date:   Tue Apr 12 15:08:14 2022 -0700
-> 
->      rcu: Decrease FQS scan wait time in case of callback overloading
->      
->      The force-quiesce-state loop function rcu_gp_fqs_loop() checks for
->      callback overloading and does an immediate initial scan for idle CPUs
->      if so.  However, subsequent rescans will be carried out at as leisurely a
->      rate as they always are, as specified by the rcutree.jiffies_till_next_fqs
->      module parameter.  It might be tempting to just continue immediately
->      rescanning, but this turns the RCU grace-period kthread into a CPU hog.
->      It might also be tempting to reduce the time between rescans to a single
->      jiffy, but this can be problematic on larger systems.
->      
->      This commit therefore divides the normal time between rescans by three,
->      rounding up.  Thus a small system running at HZ=1000 that is suffering
->      from callback overload will wait only one jiffy instead of the normal
->      three between rescans.
->      
->      [ paulmck: Apply Neeraj Upadhyay feedback. ]
->      
->      Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-> 
-> diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
-> index c25ba442044a6..52094e72866e5 100644
-> --- a/kernel/rcu/tree.c
-> +++ b/kernel/rcu/tree.c
-> @@ -1983,7 +1983,12 @@ static noinline_for_stack void rcu_gp_fqs_loop(void)
->   		gf = RCU_GP_FLAG_OVLD;
->   	ret = 0;
->   	for (;;) {
-> -		if (!ret) {
-> +		if (rcu_state.cbovld) {
-> +			j = (j + 2) / 3;
-> +			if (j <= 0)
-> +				j = 1;
-> +		}
-> +		if (!ret || time_before(jiffies + j, rcu_state.jiffies_force_qs)) {
->   			WRITE_ONCE(rcu_state.jiffies_force_qs, jiffies + j);
->   			/*
->   			 * jiffies_force_qs before RCU_GP_WAIT_FQS state
+> diff --git a/drivers/acpi/pptt.c b/drivers/acpi/pptt.c
+> index 701f61c01359..763f021d45e6 100644
+> --- a/drivers/acpi/pptt.c
+> +++ b/drivers/acpi/pptt.c
+> @@ -437,7 +437,8 @@ static void cache_setup_acpi_cpu(struct acpi_table_header *table,
+>                 pr_debug("found = %p %p\n", found_cache, cpu_node);
+>                 if (found_cache)
+>                         update_cache_properties(this_leaf, found_cache,
+> -                                               cpu_node, table->revision);
+> +                                               ACPI_TO_POINTER(ACPI_PTR_DIFF(cpu_node, table)),
+> +                                               table->revision);
+>
+>                 index++;
+>         }
+> --
+> 2.36.1
+>
