@@ -2,132 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F299C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 14:27:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B5E2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 14:29:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357637AbiFVO13 (ORCPT
+        id S1358365AbiFVO3O (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 10:27:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51280 "EHLO
+        Wed, 22 Jun 2022 10:29:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356938AbiFVO1Q (ORCPT
+        with ESMTP id S234575AbiFVO3G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 10:27:16 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AB9D3A19B;
-        Wed, 22 Jun 2022 07:27:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655908035; x=1687444035;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=vySRlmuNAAv4jlQBiztxT2Pq5CPlKHqWqSX5MtbK29c=;
-  b=JctRdgxDB4LQNgp0SMzAXtyQ64cjOQu8SoP3Vk+ogUtkaEWLwaolzvV0
-   OAzcgFLW7qw+2wvNINseo38fk6zhVODTRo9iuvPRwortfOX9QuO6BirO8
-   yd7kpLPstzB0Zt0qEXg2H2xsjMlXoC7J4khwva/7gmOTfFFGHRC9HL+YV
-   3Efasdw5X7ml5T23B8qU+MX3QAg8RZ2VoPei6PuBWke5zhFTo10t0qPte
-   9z5RNSaSTRkDnsZVau1udLj1CIuQR2c0/qidq3mE+Vbb5OShA1bvzLr2X
-   CPk2RjPvSYxGAfjHRnKXnGGH1aH6fjBsd87/FYz6fnE3uWXoplY4NMK9P
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="281504950"
-X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="281504950"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 07:27:13 -0700
-X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="834137199"
-Received: from xzhan99-mobl1.ccr.corp.intel.com (HELO [10.249.172.26]) ([10.249.172.26])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 07:27:10 -0700
-Message-ID: <339eb9cc-e65d-eaf7-e4fa-44a99797e026@linux.intel.com>
-Date:   Wed, 22 Jun 2022 22:27:08 +0800
+        Wed, 22 Jun 2022 10:29:06 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 252B631DFD
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 07:29:05 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id z19so7334139edb.11
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 07:29:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=eY6hl7x2OmQan4PYUD1Bjl8LlhVtyhv+gi/IBaGVvk0=;
+        b=i3ZR2WI0WybHw6Ud95ax651bUgjBXx7D2e/cL+4L9Pa4tohtPtl+zZ2Ou1ft+cC8ye
+         g/gsFaHRK6KB/KtjAjC3Jf2ucw4oIuy6GBfr7V8r83/JfljSuZRcfnkNWA0UqCEd4a47
+         6a14DYRD8+bW/RNoj6kM5Ay5nsQi5bvfb0dIQBn/DImeaJ+Kyru2ENkUFlRCsW0MjOI+
+         KiJpOiTOjFWV3hO3k5fApEu7LZ7ZowWgJOuMhlOvNRRyYj/kvKMtMxZJypCsdLEcCHiy
+         0rlNzif5MF4qcSBUn8yt1NRtESbuVrWXYDG7yUPqVyAyySbJFtVQ/cyKah1GVIC6LF73
+         iJoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=eY6hl7x2OmQan4PYUD1Bjl8LlhVtyhv+gi/IBaGVvk0=;
+        b=3h0WQLh8RqeTg4G1Kl1fa8PkpDunNZqIbPmcDOkQ+X4qu22Pe7EDZzFx0+VBfQ6zJ3
+         uFHq0PIcNMf+yUwO8cz7frCzRGwF8iV8LUKgeln0yaftR57rsIKV4alI0DEokdfV+Ypl
+         pTygow1TddaEHOylUkostqR/NpT7xsCiJGTC7mCZLNF4bXg4HeMTRvCjDljnF7S3hGFm
+         2n2TNjgk08JeifPquYxhjy7/0/tHM82jpjt6sg6Za7U+/576DK1RNmx0MZbBRm1vBVwZ
+         k2/LyaaPsphQB07XO7/r9EaCpsFe6WQ4HfP/hJL7eWoUMuORKC88dGgsBIziYgv3SSu3
+         jqEQ==
+X-Gm-Message-State: AJIora//lxvrJQHqv6b7vVxih8Gq+GtLq4FnrwmcxqHxs6DUozgSJ87n
+        6p16qLt1/blyZ9VAxQqqaF3lNw==
+X-Google-Smtp-Source: AGRyM1srgj2iJtoHexTQ9IsSqs2aSBpb/QKqY7iWJ8uB+/1bmVRho+nrxcHIX3oN0e2HZIqTmd1j6g==
+X-Received: by 2002:aa7:c38d:0:b0:435:9257:99a5 with SMTP id k13-20020aa7c38d000000b00435925799a5mr4476690edq.204.1655908143688;
+        Wed, 22 Jun 2022 07:29:03 -0700 (PDT)
+Received: from [192.168.0.225] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id s2-20020a1709060d6200b006f3ef214e2csm9700954ejh.146.2022.06.22.07.29.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Jun 2022 07:29:03 -0700 (PDT)
+Message-ID: <7c707d16-1237-e587-3768-245b710e0663@linaro.org>
+Date:   Wed, 22 Jun 2022 16:29:01 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Cc:     baolu.lu@linux.intel.com, Chenyi Qiang <chenyi.qiang@intel.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        iommu@lists.linux-foundation.org, iommu@lists.linux.dev,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH v2 1/1] iommu/vt-d: Fix RID2PASID setup failure
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v3 1/3] phy: dt-bindings: cdns,dphy: Add compatible for
+ dphy on j721e
 Content-Language: en-US
-To:     Ethan Zhao <haifeng.zhao@linux.intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>
-References: <20220622044120.21813-1-baolu.lu@linux.intel.com>
- <b7834cb5-4836-fb2d-1570-a46440341bed@linux.intel.com>
-From:   Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <b7834cb5-4836-fb2d-1570-a46440341bed@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+To:     Rahul T R <r-ravikumar@ti.com>, linux-phy@lists.infradead.org,
+        kishon@ti.com, vkoul@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org,
+        laurent.pinchart@ideasonboard.com
+Cc:     p.yadav@ti.com, tomi.valkeinen@ideasonboard.com,
+        linux-kernel@vger.kernel.org, jpawar@cadence.com,
+        sjakhade@cadence.com, mparab@cadence.com,
+        devicetree@vger.kernel.org, vigneshr@ti.com, lee.jones@linaro.org
+References: <20220622105311.21415-1-r-ravikumar@ti.com>
+ <20220622105311.21415-2-r-ravikumar@ti.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220622105311.21415-2-r-ravikumar@ti.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/6/22 17:09, Ethan Zhao wrote:
+On 22/06/2022 12:53, Rahul T R wrote:
+> Add compatible to support dphy tx on j721e
 > 
-> 在 2022/6/22 12:41, Lu Baolu 写道:
->> The IOMMU driver shares the pasid table for PCI alias devices. When the
->> RID2PASID entry of the shared pasid table has been filled by the first
->> device, the subsequent devices will encounter the "DMAR: Setup RID2PASID
->> failed" failure as the pasid entry has already been marked as present. As
->> the result, the IOMMU probing process will be aborted.
->>
->> This fixes it by skipping RID2PASID setting if the pasid entry has been
->> populated. This works because the IOMMU core ensures that only the same
->> IOMMU domain can be attached to all PCI alias devices at the same time.
->> Therefore the subsequent devices just try to setup the RID2PASID entry
->> with the same domain, which is negligible. This also adds domain validity
->> checks for more confidence anyway.
->>
->> Fixes: ef848b7e5a6a0 ("iommu/vt-d: Setup pasid entry for RID2PASID 
->> support")
->> Reported-by: Chenyi Qiang <chenyi.qiang@intel.com>
->> Cc: stable@vger.kernel.org
->> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->> ---
->>   drivers/iommu/intel/pasid.c | 22 ++++++++++++++++------
->>   1 file changed, 16 insertions(+), 6 deletions(-)
->>
->> Change log:
->> v2:
->>   - Add domain validity check in RID2PASID entry setup.
->>
->> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
->> index cb4c1d0cf25c..4f3525f3346f 100644
->> --- a/drivers/iommu/intel/pasid.c
->> +++ b/drivers/iommu/intel/pasid.c
->> @@ -575,6 +575,19 @@ static inline int pasid_enable_wpe(struct 
->> pasid_entry *pte)
->>       return 0;
->>   };
->> +/*
->> + * Return true if @pasid is RID2PASID and the domain @did has already
->> + * been setup to the @pte. Otherwise, return false. PCI alias devices
->> + * probably share the single RID2PASID pasid entry in the shared pasid
->> + * table. It's reasonable that those devices try to set a share domain
->> + * in their probe paths.
->> + */
-> 
-> I am thinking about the counter-part, the intel_pasid_tear_down_entry(),
-> 
-> Multi devices share the same PASID entry, then one was detached from the 
-> domain,
-> 
-> so the entry doesn't exist anymore, while another devices don't know 
-> about the change,
-> 
-> and they are using the mapping, is it possible case ？shared thing, no 
-> refer-counter,
-> 
-> am I missing something ?
+> Signed-off-by: Rahul T R <r-ravikumar@ti.com>
+> Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+> ---
 
-No. You are right. When any alias device is hot-removed from the system,
-the shared RID2PASID will be cleared without any notification to other
-devices. Hence any DMAs from those devices are blocked.
 
-We still have a lot to do for sharing pasid table among alias devices.
-Before we arrive there, let's remove it for now.
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
 
 Best regards,
-baolu
+Krzysztof
