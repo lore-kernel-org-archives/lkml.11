@@ -2,81 +2,227 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFFF4C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 17:44:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51357C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 17:44:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377426AbiFVRoB (ORCPT
+        id S1377410AbiFVRoe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 13:44:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49200 "EHLO
+        Wed, 22 Jun 2022 13:44:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377389AbiFVRn6 (ORCPT
+        with ESMTP id S1377384AbiFVRob (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 13:43:58 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE9C02664
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 10:43:57 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id q140so16720123pgq.6
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 10:43:57 -0700 (PDT)
+        Wed, 22 Jun 2022 13:44:31 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDA7A3465E
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 10:44:23 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id w24so8257639pjg.5
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 10:44:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
-        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bUXnsJdEFiCG+SMWEsd2jUVr6VH+u5NdRqQetyt+5jU=;
-        b=aN6cVYuVa2RBa6c0SK9DmWxymPrXYFhusiNe2XjgzwcSz3tFcnwgegQGnVn8Rk0G3E
-         no/B9vS8HejD4uV/kTwhBryE8MQqA/mKcM8jcYpwuN/DLI/ojwXxm+1Zj+WXiRhM6Wg5
-         Sek+ZSoMOhzJu9YYMxDVdFTUh7ea94tuidVaTJKWNcW/RbEBv2vpG92zlXVqviRUBnlT
-         b2GGoPNqlsPGG2lO/yN198G3z7+TLGKLeL/fm+d6mUVJ3iX2EhQt9MtUjj1MjVO/C+R8
-         GPKx97BL/HW+CXxCNfhLaSCU7n+8vNktRPyt5xKylDD/7+NZAH2sDsV1KM6Yh7oMVbrA
-         Anjg==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=OYDYAsce/lvf/QfGm3jCkG+AP6MQ1L8nhfe2kq87L58=;
+        b=RaJ3sON5zAZxk49VCqlnWjZ6D/CiNIfYanugUfOUgXy47wCRqi8FawzM30EIoAuqQr
+         Trnk685D9hf5f1zQVJSkepSnxFReFzXW7Rhj72iUpjjAwpYWLeuKvohYlKrK9PfXj8pP
+         f/22wwHIgwY2IfA9Iw6qFGZMoj3u7M+NaI6/8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
-         :mime-version:content-transfer-encoding;
-        bh=bUXnsJdEFiCG+SMWEsd2jUVr6VH+u5NdRqQetyt+5jU=;
-        b=XsSgeEVIB66ww4wHjH3ZxOD4s2LDRiJ4y8wrGojl+GIE55NsPFsaS9Ly1rfWTWQkVX
-         ShIvdnWz3QH8iJVEw6G8pcqS999quGfAv4c8cfDtYTZlDuB9jQn/KCdICfPP5k8tFFYn
-         BXkZnFjhd8A/v9PQZNj1zHTvRd2LdEEjVhmN7OuFoTIMZP9LUmfr+3nwiJJ3KRByc/Oo
-         cnwjeU5yWS9Ou/SwwbwOMiLqCjo8N40P7/ZoFd2fIOA50py4dKl1gk7xZptDY9DvcDnG
-         uP6nGEGnOpJK7GHeYrr1mrRK01pF0EhU27iHbZBnRfHCdZaMrN9o6x+nPP+hwqeAcKLt
-         bWXw==
-X-Gm-Message-State: AJIora9LVzVpGa9oasLUa05Ycx9p/74sQDz0jZe+vYPxHj2lkE6ytcEW
-        J3VmTy5yrPxODj+2JTrbVxXm+5zNO/d9Wg==
-X-Google-Smtp-Source: AGRyM1uhuLVklzd1mZvWuHmjdudBMSsPGdfyvcUOZW4m0ZDtiPRFEmT62FqhS2XMIWcf8orqboT4kQ==
-X-Received: by 2002:a05:6a00:170b:b0:525:4e88:f7ec with SMTP id h11-20020a056a00170b00b005254e88f7ecmr1938154pfc.2.1655919837319;
-        Wed, 22 Jun 2022 10:43:57 -0700 (PDT)
-Received: from localhost ([12.3.194.138])
-        by smtp.gmail.com with ESMTPSA id d4-20020a170902e14400b001637997d0d4sm12932432pla.206.2022.06.22.10.43.55
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=OYDYAsce/lvf/QfGm3jCkG+AP6MQ1L8nhfe2kq87L58=;
+        b=yS/o2qnH4dBQY4/Hd6fjr/X3CSgoIn0U7oos2WQj5deppDvDhq5zXJtmTgDU8p9OEe
+         CQFFof4FvX2RYzUH7YA+/pOfQT/NkGJ+4mUemQ8h2l+n4AXQluEKPXpSFKWlUHQta+Jh
+         05yDou6ubSLE6HRXy1LYRuVSvLQwXxDNFkWRVMQOHrdB28I12h4WhFK+IrSuvjiXZx5J
+         yEKig7KOLp80epy/KRL5HXhNgnM7E9nBzUfpqvBp7bEg5n1d1HP3MFM09PMvX/himXTL
+         P5/zzGq/c72bOpu07ZG/6NuB/uiPK3iTeHKcUGWAoc0v7Ga6BPvVhDW9MOja/J7phdZF
+         TfjQ==
+X-Gm-Message-State: AJIora9e/6Ium332yvrP4i16BtKHFYrBn8G8rxyNWUGwiHMLgJzi0dv1
+        w/MZfgkHF9EmX1AockW/608Z29Wz69dWIQ==
+X-Google-Smtp-Source: AGRyM1ty31aam1ZaSwmYgBtv3dtTfaMuAS4USae3mq7FEmOSNketiQDrk6OZDlI6edoaR+3QgyKZww==
+X-Received: by 2002:a17:90b:314b:b0:1e3:1033:f555 with SMTP id ip11-20020a17090b314b00b001e31033f555mr50517081pjb.245.1655919863147;
+        Wed, 22 Jun 2022 10:44:23 -0700 (PDT)
+Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id l17-20020a17090b079100b001ece55aec38sm35470pjz.30.2022.06.22.10.44.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jun 2022 10:43:55 -0700 (PDT)
-Date:   Wed, 22 Jun 2022 10:43:55 -0700 (PDT)
-X-Google-Original-Date: Wed, 22 Jun 2022 10:43:52 PDT (-0700)
-Subject:     Re: [PING^2][PATCH] RISC-V: PCI: Avoid handing out address 0 to devices
-In-Reply-To: <alpine.DEB.2.21.2206221202590.57474@angie.orcam.me.uk>
-CC:     Paul Walmsley <paul.walmsley@sifive.com>, aou@eecs.berkeley.edu,
-        bhelgaas@google.com, linux-riscv@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-From:   Palmer Dabbelt <palmer@dabbelt.com>
-To:     macro@orcam.me.uk
-Message-ID: <mhng-a0733eea-8220-4bf6-b1da-9de3139dbae3@palmer-ri-x1c9>
-Mime-Version: 1.0 (MHng)
-Content-Type: text/plain; charset=utf-8; format=flowed
+        Wed, 22 Jun 2022 10:44:22 -0700 (PDT)
+From:   Prashant Malani <pmalani@chromium.org>
+To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
+Cc:     bleung@chromium.org, swboyd@chromium.org,
+        heikki.krogerus@linux.intel.com,
+        Pin-Yen Lin <treapking@chromium.org>,
+        Prashant Malani <pmalani@chromium.org>,
+        Allen Chen <allen.chen@ite.com.tw>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
+        DEVICE TREE BINDINGS),
+        dri-devel@lists.freedesktop.org (open list:DRM DRIVERS),
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
+        <nfraprado@collabora.com>, Robert Foss <robert.foss@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Xin Ji <xji@analogixsemi.com>
+Subject: [PATCH v5 6/9] dt/bindings: drm/bridge: it6505: Add mode-switch support
+Date:   Wed, 22 Jun 2022 17:34:35 +0000
+Message-Id: <20220622173605.1168416-7-pmalani@chromium.org>
+X-Mailer: git-send-email 2.37.0.rc0.104.g0611611a94-goog
+In-Reply-To: <20220622173605.1168416-1-pmalani@chromium.org>
+References: <20220622173605.1168416-1-pmalani@chromium.org>
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 22 Jun 2022 04:04:09 PDT (-0700), macro@orcam.me.uk wrote:
-> On Wed, 27 Apr 2022, Maciej W. Rozycki wrote:
->
->> Therefore avoid handing out address 0, by bumping the lowest address
->> available to PCI via PCIBIOS_MIN_IO and PCIBIOS_MIN_MEM up by 4 and 16
->> respectively, which is the minimum allocation size for I/O and memory
->> BARs.
->
->  Ping for:
-> <https://lore.kernel.org/lkml/alpine.DEB.2.21.2204271207590.9383@angie.orcam.me.uk/>
+From: Pin-Yen Lin <treapking@chromium.org>
 
-Sorry, I got this mixed up with the non-RISC-V patch.  David poked me 
-about it, this is on for-next.  It's passing my tests, but they're just 
-QEMU so probably not all that exciting here.
+ITE IT6505 can be used in systems to switch USB Type-C DisplayPort
+alternate mode lane traffic between 2 Type-C ports.
+
+Update the binding to accommodate this usage by introducing a switch
+property.
+
+Signed-off-by: Pin-Yen Lin <treapking@chromium.org>
+Signed-off-by: Prashant Malani <pmalani@chromium.org>
+---
+
+v5 is the first version for this patch.
+
+ .../bindings/display/bridge/ite,it6505.yaml   | 97 ++++++++++++++++++-
+ 1 file changed, 96 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/display/bridge/ite,it6505.yaml b/Documentation/devicetree/bindings/display/bridge/ite,it6505.yaml
+index 833d11b2303a..86bb6dc5ae6f 100644
+--- a/Documentation/devicetree/bindings/display/bridge/ite,it6505.yaml
++++ b/Documentation/devicetree/bindings/display/bridge/ite,it6505.yaml
+@@ -56,13 +56,46 @@ properties:
+     $ref: /schemas/graph.yaml#/properties/port
+     description: A port node pointing to DPI host port node
+ 
++  switches:
++    type: object
++    description: Set of switches controlling DisplayPort traffic on
++      outgoing RX/TX lanes to Type C ports.
++    additionalProperties: false
++
++    properties:
++      '#address-cells':
++        const: 1
++
++      '#size-cells':
++        const: 0
++
++    patternProperties:
++      '^switch@[01]$':
++        $ref: /schemas/usb/typec-switch.yaml#
++        unevaluatedProperties: false
++
++        properties:
++          reg:
++            maxItems: 1
++
++        required:
++          - reg
++
++    required:
++      - switch@0
++
+ required:
+   - compatible
+   - ovdd-supply
+   - pwr18-supply
+   - interrupts
+   - reset-gpios
+-  - extcon
++
++oneOf:
++  - required:
++      - extcon
++  - required:
++      - switches
+ 
+ additionalProperties: false
+ 
+@@ -92,3 +125,65 @@ examples:
+             };
+         };
+     };
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    i2c3 {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        it6505dptx: it6505dptx@5c {
++            compatible = "ite,it6505";
++            interrupts = <8 IRQ_TYPE_LEVEL_LOW 8 0>;
++            reg = <0x5c>;
++            pinctrl-names = "default";
++            pinctrl-0 = <&it6505_pins>;
++            ovdd-supply = <&mt6366_vsim2_reg>;
++            pwr18-supply = <&pp1800_dpbrdg_dx>;
++            reset-gpios = <&pio 177 0>;
++
++            port {
++                it6505_dp_in: endpoint {
++                    remote-endpoint = <&dpi_out>;
++                };
++            };
++
++            switches {
++                #address-cells = <1>;
++                #size-cells = <0>;
++                switch@0 {
++                    compatible = "typec-switch";
++                    reg = <0>;
++                    mode-switch;
++
++                    ports {
++                        #address-cells = <1>;
++                        #size-cells = <0>;
++                        port@0 {
++                            reg = <0>;
++                            ite_typec0: endpoint {
++                                remote-endpoint = <&typec_port0>;
++                            };
++                        };
++                    };
++                };
++
++                switch@1 {
++                    compatible = "typec-switch";
++                    reg = <1>;
++                    mode-switch;
++
++                    ports {
++                        #address-cells = <1>;
++                        #size-cells = <0>;
++                        port@0 {
++                            reg = <0>;
++                            ite_typec1: endpoint {
++                                remote-endpoint = <&typec_port1>;
++                            };
++                        };
++                    };
++                };
++            };
++        };
++    };
+-- 
+2.37.0.rc0.104.g0611611a94-goog
+
