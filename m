@@ -2,84 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5C5AC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 14:48:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2A2FC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 14:48:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234468AbiFVOst (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 10:48:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46640 "EHLO
+        id S1357706AbiFVOs5 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 10:48:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230349AbiFVOsp (ORCPT
+        with ESMTP id S1357373AbiFVOsu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 10:48:45 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3F2338BE3
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 07:48:44 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id mf9so14447452ejb.0
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 07:48:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=HH079LRyJTHmM+5gTDBKSJiZpHcFCkFjE8Gfy06llCc=;
-        b=H9tP4SI9QupeqEThyhbGj6fshmasD8PmJFGVHL7k7YByj2aMUy03B5eYGHNd2eMY74
-         XR6LRJmw/8PPwjk6xlbKZhXYFTke5A70dFaOHoRFyi0lz2OaJ7M18rhdJCLCZ0/wxbGk
-         2nmdaSa2GBf+qpEuUSSz22bLq6H++ga00KwHWt6bSRuUt+Uza96Cg/wz38LJt466nUXu
-         1WZtDG0wVI91nnt2oYicf3RRPGWW6/XnAQr/KP0pwHh9GHJjMdsk1dztKssfodFT/Mmk
-         N+y7mt5XpoPQirdnyo6H5Wf8MZCeuhId3dHCXz6A3f2jGvvj4/MzDkYCRFZR8WXm30GN
-         SPuA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=HH079LRyJTHmM+5gTDBKSJiZpHcFCkFjE8Gfy06llCc=;
-        b=O7zmG7yNqY4ohZpRvgI1o18vcJoN0BilmXuj+l+UotaPbNf8a4zMNxGsdVlITgeWuz
-         jwoX8lChzHHDHGFsWd68r+8O+QYqFvtsFyK/76hd+VBaHLuc7oTC0RJh95Qt9UL9qndu
-         zRIxBoILuW1OIKzY3mx34YnMwgfN9C66AYAbeHFJ0ia+VYQmh30296/UhMWKewpFk9Bo
-         Bg7VyX9FyX44ZtNVi0hqYIF5Tulr3kXHejXbshivtB9nUUDPROVZPR0YNOHSYl3P6x0i
-         EV6+VKU3ekCw5ttPkl5vTRnO7Z9edexSzQJzC6++dudJJyw9JPEUhm8gn5JJuNJk2CKi
-         qq+A==
-X-Gm-Message-State: AJIora+/F5rq1HDfw5cgwNClZQnrVyOcuhpxralJaNy2l/1ri9DzO94E
-        g57TbTztGQI9UqnwFUJLFAoKUg==
-X-Google-Smtp-Source: AGRyM1tTU8sGWhE5uoJlmgoqQlCvu0Bo0iKSowkNVd8F9534/qg8dpEzj0RucSD0a2PdldIeeIU+3g==
-X-Received: by 2002:a17:907:a427:b0:71b:6f0b:8beb with SMTP id sg39-20020a170907a42700b0071b6f0b8bebmr3434300ejc.496.1655909323287;
-        Wed, 22 Jun 2022 07:48:43 -0700 (PDT)
-Received: from [192.168.0.226] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id gg19-20020a170906899300b00715705dd23asm9286292ejc.89.2022.06.22.07.48.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Jun 2022 07:48:42 -0700 (PDT)
-Message-ID: <fbf2251a-8df7-7bb3-bfda-8359b6d151be@linaro.org>
-Date:   Wed, 22 Jun 2022 16:48:41 +0200
+        Wed, 22 Jun 2022 10:48:50 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 386453CA7E
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 07:48:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655909329;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=BfzGA2BfgEmm4tcaB5rbMih4mJIyv5Ggi+5ejPnvGzs=;
+        b=dce/0J5FNyVc+yIPOMNPhr7hriBEP8Py+Z4ktIbsJLZV6oGXn1VsZEt2hNXqr2lbsP6UCg
+        3CVlfTMmn3nMAzLLlBHr+BFIVpK69l59dhrcvmlyGHkdXugGOTceXJHSpO+UGzcSIZ16Hl
+        eRXx2/5IlcnLO6abspZ1P96VU1026QU=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-474-N2RvB7y5NLeqzs-ommWDCA-1; Wed, 22 Jun 2022 10:48:46 -0400
+X-MC-Unique: N2RvB7y5NLeqzs-ommWDCA-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6AE6418A6534;
+        Wed, 22 Jun 2022 14:48:28 +0000 (UTC)
+Received: from localhost.localdomain (unknown [10.40.194.180])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1365A40E80E1;
+        Wed, 22 Jun 2022 14:48:21 +0000 (UTC)
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     "Chang S. Bae" <chang.seok.bae@intel.com>,
+        Jiri Olsa <jolsa@kernel.org>, linux-perf-users@vger.kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Borislav Petkov <bp@alien8.de>,
+        Kees Cook <keescook@chromium.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Tim Chen <tim.c.chen@linux.intel.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        x86@kernel.org (maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)),
+        Jane Malalane <jane.malalane@citrix.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        linux-crypto@vger.kernel.org (open list:CRYPTO API),
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 0/4] x86: cpuid: improve support for broken CPUID configurations
+Date:   Wed, 22 Jun 2022 17:48:16 +0300
+Message-Id: <20220622144820.751402-1-mlevitsk@redhat.com>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2 1/4] dt-binding: mfd: Add Richtek RT5120 PMIC support
-Content-Language: en-US
-To:     cy_huang <u0084500@gmail.com>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, lee.jones@linaro.org,
-        broonie@kernel.org, dmitry.torokhov@gmail.com
-Cc:     lgirdwood@gmail.com, cy_huang@richtek.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-input@vger.kernel.org
-References: <1655892104-10874-1-git-send-email-u0084500@gmail.com>
- <1655892104-10874-2-git-send-email-u0084500@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <1655892104-10874-2-git-send-email-u0084500@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22/06/2022 12:01, cy_huang wrote:
-> From: ChiYuan Huang <cy_huang@richtek.com>
-> 
-> Add Richtek RT5120 PMIC devicetree document.
-> 
-> Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
+This patch series aims to harden the cpuid code against the case when=0D
+the hypervisor exposes a broken CPUID configuration to the guest,=0D
+in the form of having a feature disabled but not features that depend on it=
+.=0D
+=0D
+This is the more generic way to fix kernel panic in aes-ni kernel driver,=0D
+which was triggered by CPUID configuration in which AVX is disabled but=0D
+not AVX2.=0D
+=0D
+https://lore.kernel.org/all/20211103145231.GA4485@gondor.apana.org.au/T/=0D
+=0D
+This was tested by booting a guest with AVX disabled and not AVX2,=0D
+and observing that both a warning is now printed in dmesg, and=0D
+that avx2 is gone from /proc/cpuinfo.=0D
+=0D
+Best regards,=0D
+	Maxim Levitsky=0D
+=0D
+Maxim Levitsky (4):=0D
+  perf/x86/intel/lbr: use setup_clear_cpu_cap instead of clear_cpu_cap=0D
+  x86/cpuid: refactor setup_clear_cpu_cap/clear_feature=0D
+  x86/cpuid: move filter_cpuid_features to cpuid-deps.c=0D
+  x86/cpuid: check for dependencies violations in CPUID and attempt to=0D
+    fix them=0D
+=0D
+ arch/x86/events/intel/lbr.c       |  2 +-=0D
+ arch/x86/include/asm/cpufeature.h |  1 +=0D
+ arch/x86/kernel/cpu/common.c      | 50 +-----------------=0D
+ arch/x86/kernel/cpu/cpuid-deps.c  | 84 +++++++++++++++++++++++++++----=0D
+ 4 files changed, 78 insertions(+), 59 deletions(-)=0D
+=0D
+-- =0D
+2.26.3=0D
+=0D
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
-Best regards,
-Krzysztof
