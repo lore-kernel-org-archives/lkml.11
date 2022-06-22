@@ -2,65 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE681C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 10:24:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF902C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 10:27:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235528AbiFVKYX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 06:24:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44950 "EHLO
+        id S238999AbiFVK1G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 06:27:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349493AbiFVKXu (ORCPT
+        with ESMTP id S235031AbiFVK07 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 06:23:50 -0400
-Received: from smtpbg.qq.com (smtpbg138.qq.com [106.55.201.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 108D517E07;
-        Wed, 22 Jun 2022 03:23:42 -0700 (PDT)
-X-QQ-mid: bizesmtp74t1655893353tybiuful
-Received: from localhost.localdomain ( [223.104.103.173])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 22 Jun 2022 18:21:56 +0800 (CST)
-X-QQ-SSF: 01000000008000B0B000D00A0000000
-X-QQ-FEAT: Rjen8GRx79XiI4aq3GaeUSz/ZbBRBW/664EOYTaqKClkSkpjh331iBDBQ/w9E
-        7wtb4fApnboC9GOvKsqcm4+xpe0Ktd3GorNE4yhYtXBArVZMtircvYcu7IWPUS2BO+rcHYE
-        V5apFYu3TBy1trfkgA7RQzconYDy6bb8k/tErrkOuDONT2S0CuWSTLGMBwwgCyrZS1Z42ZD
-        algS7bmIIx9veoHbzfdeZaKptmH4Lj0IeJ3aBGaj4rIfoOvdsSS0iWtVzv8XLQLakj4ACbj
-        j+7QBMHFxBVEEdIxx3x9fz222DwHuc8+2ZihDSNTFTcXCWN7j0LRWTU7yTeCiOWsw0rFAV6
-        kjpYHQMJl5aBAP72PJDLSrnmiyOk9ChZAcgU8TU
-X-QQ-GoodBg: 0
-From:   Jiang Jian <jiangjian@cdjrlc.com>
-To:     mathias.nyman@intel.com, gregkh@linuxfoundation.org
-Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiang Jian <jiangjian@cdjrlc.com>
-Subject: [PATCH] xhci: drop unexpected word "the" in the comments
-Date:   Wed, 22 Jun 2022 18:21:46 +0800
-Message-Id: <20220622102146.3960-1-jiangjian@cdjrlc.com>
-X-Mailer: git-send-email 2.17.1
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam10
+        Wed, 22 Jun 2022 06:26:59 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D37683A5D5;
+        Wed, 22 Jun 2022 03:26:57 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id eq6so15895608edb.6;
+        Wed, 22 Jun 2022 03:26:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=37rSlhRpHHWymSWDtV1LKUaah1wVrGYKsjIbHejy7lI=;
+        b=HSqzpI56Wd/maCsUqAm6GW+vL3gDlxXpbeI5QmlV2sj6irWKRsz51o7VAbYl1Wpn7u
+         9Qvs50rqTlPfin6a86lUOvc2lOY1nAAwv0y+4iOmYDOd0x5QutPpPYamxVm6TgPELYmi
+         gzCgiliyXbrOuvFzQa4gIqPdvnpa8kEENRl1NiSetyJHJ7s5F81a4xyM1HKRhbhxAyJf
+         VniU9LZPctrAhCMMfajUERbfulXQabhYVLoue398el8ZQgWqWiiGg560nHtTFI4rtuvQ
+         zAIy5xLcytDz1ZutL5bs3KTPb5FK91rPHo6D2lBA0kgj5CEwk59d7KwiaVNiW2o2eyy2
+         r6Lg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=37rSlhRpHHWymSWDtV1LKUaah1wVrGYKsjIbHejy7lI=;
+        b=GJHss/V5Ioy93Ju5vgyYr0k8xpq5mYQMzU7GXQaSbCabUjxecNzH1bjesBlOqnKWuf
+         JOe1GzeEERMUQZzDuAYOUmiHpRt6YNRUEWhmEPm6mNPatPOW8uiOH+UE20jOBFJpHwFQ
+         y8gh2sMoudcjU+DkTWP511tcyCZsZovSIUmI35wogXLo3rEQDHTPYwPiSTuGzqTG1RNh
+         QjE5xHmTYtOQiRbsP0nZ+p/pman9CikvOfB+/fURMqqOoVUadPR2RiLlF76w0ZuB8IQh
+         zxUZqhLxA6Ny0eJapklJYcvSDTlK2IYP7omQEJ97FBgZHw8vG1P1SFmZFkhijFl3yE8E
+         yv9Q==
+X-Gm-Message-State: AJIora/aJrHIGdsiTx7BOg9gaEHMlqx3Vo4MfyuVeNlO3uP2waHK+Peg
+        A9Z2nSYtJ//IZ5x/1rYI9RPEwYzY2BSuTTVfQeY=
+X-Google-Smtp-Source: AGRyM1v4azWWigiOn++l1Dtbx1fdOaa+R6QIGQ/aTOrCshjNUsBD3TDZWJE10f1vEBfdq0j3iu2c+b/URbfaYfSI9+k=
+X-Received: by 2002:a05:6402:f8d:b0:435:6df2:68a with SMTP id
+ eh13-20020a0564020f8d00b004356df2068amr3330060edb.209.1655893616422; Wed, 22
+ Jun 2022 03:26:56 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220622094233.3681843-1-clg@kaod.org> <20220622094233.3681843-2-clg@kaod.org>
+In-Reply-To: <20220622094233.3681843-2-clg@kaod.org>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 22 Jun 2022 12:26:19 +0200
+Message-ID: <CAHp75VdBO1yPVH6NCEj8ZSYF2-6q0soE=8qNGrh7G=t7adRBZw@mail.gmail.com>
+Subject: Re: [PATCH v2 1/2] spi: aspeed: Add pr_debug in aspeed_spi_dirmap_create()
+To:     =?UTF-8?Q?C=C3=A9dric_Le_Goater?= <clg@kaod.org>
+Cc:     linux-spi <linux-spi@vger.kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Pratyush Yadav <p.yadav@ti.com>,
+        "moderated list:ARM/ASPEED MACHINE SUPPORT" 
+        <linux-aspeed@lists.ozlabs.org>,
+        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-there is an unexpected word "the" in the comments that need to be dropped.
+On Wed, Jun 22, 2022 at 11:46 AM C=C3=A9dric Le Goater <clg@kaod.org> wrote=
+:
+>
+> It helps to analyze the default setting of the control register.
 
-Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
----
- drivers/usb/host/xhci-ring.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Replace "It" with a slightly more descriptive "what is it?".
 
-diff --git a/drivers/usb/host/xhci-ring.c b/drivers/usb/host/xhci-ring.c
-index 46d0b9ad6f74..ad81e9a508b1 100644
---- a/drivers/usb/host/xhci-ring.c
-+++ b/drivers/usb/host/xhci-ring.c
-@@ -1964,7 +1964,7 @@ static void handle_port_status(struct xhci_hcd *xhci,
- 
- 	/*
- 	 * Check to see if xhci-hub.c is waiting on RExit to U0 transition (or
--	 * RExit to a disconnect state).  If so, let the the driver know it's
-+	 * RExit to a disconnect state).  If so, let the driver know it's
- 	 * out of the RExit state.
- 	 */
- 	if (!DEV_SUPERSPEED_ANY(portsc) && hcd->speed < HCD_USB3 &&
--- 
-2.17.1
+Also make the subject aligned with the contents of the patch.
 
+--=20
+With Best Regards,
+Andy Shevchenko
