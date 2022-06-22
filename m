@@ -2,75 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A76DAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 03:45:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EF6AC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 03:47:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356637AbiFVDo7 (ORCPT
+        id S1356558AbiFVDr3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 23:44:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56198 "EHLO
+        Tue, 21 Jun 2022 23:47:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356633AbiFVDou (ORCPT
+        with ESMTP id S230220AbiFVDr1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 23:44:50 -0400
-Received: from ZXSHCAS2.zhaoxin.com (ZXSHCAS2.zhaoxin.com [210.0.225.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1A0E3055C;
-        Tue, 21 Jun 2022 20:44:48 -0700 (PDT)
-Received: from zxbjmbx1.zhaoxin.com (10.29.252.163) by ZXSHCAS2.zhaoxin.com
- (10.28.252.162) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.27; Wed, 22 Jun
- 2022 11:29:44 +0800
-Received: from [10.32.56.37] (10.32.56.37) by zxbjmbx1.zhaoxin.com
- (10.29.252.163) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.27; Wed, 22 Jun
- 2022 11:29:42 +0800
-To:     <rafael@kernel.org>, <len.brown@intel.com>, <pavel@ucw.cz>,
-        <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
-        <dave.hansen@linux.intel.com>, <x86@kernel.org>, <hpa@zytor.com>,
-        <linux-pm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <CobeChen@zhaoxin.com>, <TimGuo@zhaoxin.com>,
-        <LindaChai@zhaoxin.com>, <LeoLiu@zhaoxin.com>
-From:   Tony W Wang-oc <TonyWWang-oc@zhaoxin.com>
-Subject: [PATCH] x86/cstate: Add Zhaoxin ACPI Cx FFH MWAIT support
-Message-ID: <bccae278-e735-4681-cb3a-41359e42032b@zhaoxin.com>
-Date:   Wed, 22 Jun 2022 11:29:41 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Tue, 21 Jun 2022 23:47:27 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 944DC19C03
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 20:47:25 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 51DDB1F985;
+        Wed, 22 Jun 2022 03:47:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1655869644; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=cE0rQjAA42eU80dv5qRJXXM0yGtnKl5fWjJdWhwMZOs=;
+        b=wyzwtDz8nUgOOSUThBQLx/THMAKUiRlAZDiQFl9VFGiUenMabY0x2WFp1dTCiOc59o0s52
+        8sUvx9LCwIZ5wu2+VwZIG7agReZu4oMZx+oRdk/McQ0NmCTBISGPHOnOf/uyFnIwcUHMQO
+        AxlMCAAT56ew/JQprKMjXPo81/XUHTk=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1655869644;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=cE0rQjAA42eU80dv5qRJXXM0yGtnKl5fWjJdWhwMZOs=;
+        b=26jW/p2hSSQdrcX8rpve2Sq/al99Jctb0vc9NvLsDVipsyzYA6iLcVOllw+6CLRXN4SO9f
+        pnXWkcHl1Qu2yIBA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id EC955134A9;
+        Wed, 22 Jun 2022 03:47:23 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id M0jQNsuQsmJSEAAAMHmgww
+        (envelope-from <osalvador@suse.de>); Wed, 22 Jun 2022 03:47:23 +0000
+Date:   Wed, 22 Jun 2022 05:47:22 +0200
+From:   Oscar Salvador <osalvador@suse.de>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Michal Hocko <mhocko@kernel.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] mm/page_alloc: Do not calculate node's total
+ pages and memmap pages when empty
+Message-ID: <YrKQyhwDwMvueOUc@localhost.localdomain>
+References: <20220621041717.6355-1-osalvador@suse.de>
+ <20220621041717.6355-2-osalvador@suse.de>
+ <506203e3-1de0-1187-5234-7afc66d4ddfe@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.32.56.37]
-X-ClientProxiedBy: ZXSHCAS1.zhaoxin.com (10.28.252.161) To
- zxbjmbx1.zhaoxin.com (10.29.252.163)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <506203e3-1de0-1187-5234-7afc66d4ddfe@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Recent Zhaoxin CPUs support X86_FEATURE_MWAIT that implies the
-MONITOR/MWAIT instructions can be used for ACPI Cx state. The BIOS
-declares Cx state in _CST object to use FFH on Zhaoxin systems. So
-let function ffh_cstate_init() support Zhaoxin too.
+On Tue, Jun 21, 2022 at 09:44:47AM +0200, David Hildenbrand wrote:
+> 
+> 
+> It's worth noting that the check in pgdat_is_empty() is slightly
+> different. I *think* it doesn't matter in practice, yet I wonder if we
+> should simply fixup (currently unused) pgdat_is_empty().
 
-Signed-off-by: Tony W Wang-oc <TonyWWang-oc@zhaoxin.com>
----
-  arch/x86/kernel/acpi/cstate.c | 4 +++-
-  1 file changed, 3 insertions(+), 1 deletion(-)
+I guess we could change it to
 
-diff --git a/arch/x86/kernel/acpi/cstate.c b/arch/x86/kernel/acpi/cstate.c
-index 7945eae..d4185e1 100644
---- a/arch/x86/kernel/acpi/cstate.c
-+++ b/arch/x86/kernel/acpi/cstate.c
-@@ -213,7 +213,9 @@ static int __init ffh_cstate_init(void)
+ static inline bool pgdat_is_empty(pg_data_t *pgdat)
+ {
+	 return node_start_pfn(pgdat->node_id) == node_end_pfn(pgdat->node_id)
+ }
 
-  	if (c->x86_vendor != X86_VENDOR_INTEL &&
-  	    c->x86_vendor != X86_VENDOR_AMD &&
--	    c->x86_vendor != X86_VENDOR_HYGON)
-+	    c->x86_vendor != X86_VENDOR_HYGON &&
-+	    c->x86_vendor != X86_VENDOR_CENTAUR &&
-+	    c->x86_vendor != X86_VENDOR_ZHAOXIN)
-  		return -1;
+? And maybe even rename it to to node_is_empty (not sure why but I tend to like
+that more than pgdat) 
 
-  	cpu_cstate_entry = alloc_percpu(struct cstate_entry);
+I could squeeze a "fixup" patch for that before this one. 
+
+> 
+> Anyhow
+> 
+> Reviewed-by: David Hildenbrand <david@redhat.com>
+
+Thanks!
+
+
 -- 
-2.7.4
+Oscar Salvador
+SUSE Labs
