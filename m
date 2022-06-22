@@ -2,90 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 625BDC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 18:59:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 839CAC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 18:59:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377189AbiFVS7D (ORCPT
+        id S1377356AbiFVS7g (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 14:59:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46600 "EHLO
+        Wed, 22 Jun 2022 14:59:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377797AbiFVS7A (ORCPT
+        with ESMTP id S235707AbiFVS7c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 14:59:00 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E379D1A38F
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 11:58:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655924338; x=1687460338;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=LlltW24ySiskehtC8pnURPF7rl62uQLUH72akN1+Mnw=;
-  b=NntoIvutqLgjmzbK+aGoXhVrrI2gCyp97gHA1VhNWyUFphMvo1v+iVAx
-   xBZ18FLnATTp9bYO95inbz4g5kx/EvkKyVed6f5sigLKLmf4VRB/f5z5t
-   xrsdmTcjoQGeM8AnLtluKXLLe5GT0sGJ90BCfJCpNXWh0yaeRFsmU938G
-   MQLonmlLn7nUupLKZQ5MBwkBmWSu4K2MYaBfN9HwMjjihXoV3Ej/tK0xm
-   WR9t5uKcMelz9LR+69n5t32AKsz60aU+QofbmvIOv8yaWHcwDcosPifv/
-   Jy1xMT9hM4zZBK5CL+lo8XE1pfguMAQr/byyq/DXemOkl3+YEGrngOGa1
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="366837775"
-X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="366837775"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 11:58:58 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="834267165"
-Received: from lkp-server02.sh.intel.com (HELO a67cc04a5eeb) ([10.239.97.151])
-  by fmsmga006.fm.intel.com with ESMTP; 22 Jun 2022 11:58:57 -0700
-Received: from kbuild by a67cc04a5eeb with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o45Z2-0001a4-MA;
-        Wed, 22 Jun 2022 18:58:56 +0000
-Date:   Thu, 23 Jun 2022 02:58:14 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Nick Terrell <terrelln@fb.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: ERROR: modpost: "__ld_r13_to_r24_ret" [lib/zstd/zstd_decompress.ko]
- undefined!
-Message-ID: <202206230225.eMycxeLU-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+        Wed, 22 Jun 2022 14:59:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABC012E0B3;
+        Wed, 22 Jun 2022 11:59:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4639261D55;
+        Wed, 22 Jun 2022 18:59:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C59DAC34114;
+        Wed, 22 Jun 2022 18:59:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1655924370;
+        bh=QQ6cuo8RAZmbdEridoZ6FW1VaSlmNyzCEQ2IWmydrZY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=p0B7D55DYDaSLRTKdFR6id2nhj2h3mTjIemRLAhadA4QcFGmJZz9h5CYOCk/opCWk
+         zREnGfkqG/Vx65TSSBYVQ3w8SsRrk4w7UQoYnOfJDs+5TFWM8Y+SbTpaQikwGyZ0dG
+         gIluXlq+P9vA3WDqZ4jAlpX4vqCAiteNB6bJPuhA=
+Date:   Wed, 22 Jun 2022 11:59:17 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Muchun Song <songmuchun@bytedance.com>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Matthew Wilcox <willy@infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: manual merge of the mm tree with the folio tree
+Message-Id: <20220622115917.5268aeea70b22a566c90be8c@linux-foundation.org>
+In-Reply-To: <CAMZfGtVQr=7pUevVbbNK9teskfGsjcoif2sfHQ-YrDx5qHNiXg@mail.gmail.com>
+References: <20220622153815.6f2e671a@canb.auug.org.au>
+        <CAMZfGtVQr=7pUevVbbNK9teskfGsjcoif2sfHQ-YrDx5qHNiXg@mail.gmail.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Nick,
+On Wed, 22 Jun 2022 15:22:35 +0800 Muchun Song <songmuchun@bytedance.com> wrote:
 
-FYI, the error/warning still remains.
+> > Today's linux-next merge of the mm tree got a conflict in:
+> >
+> >   mm/vmscan.c
+> >
+> > between commit:
+> >
+> >   15077be8badc ("vmscan: Add check_move_unevictable_folios()")
+> 
+> Sorry for the conflicts, I didn't see this change in the mm-unstable branch
+> yesterday. Based on this commit, I have reworked the following commit
+> (see attachment, mainly changes are about check_move_unevictable_folios()).
+> Andrew can pick it up if he wants to replace the original patch with
+> the new one.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   3abc3ae553c7ed73365b385b9a4cffc5176aae45
-commit: 7416cdc9b9c10968c57b1f73be5d48b3ecdaf3c8 lib: zstd: Don't add -O3 to cflags
-date:   7 months ago
-config: arc-buildonly-randconfig-r006-20220622 (https://download.01.org/0day-ci/archive/20220623/202206230225.eMycxeLU-lkp@intel.com/config)
-compiler: arceb-elf-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=7416cdc9b9c10968c57b1f73be5d48b3ecdaf3c8
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 7416cdc9b9c10968c57b1f73be5d48b3ecdaf3c8
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash
+Your comments in
+https://lkml.kernel.org/r/YrM2XCwzu65cb81r@FVFYT0MHHV2J.googleapis.com
+make me wonder whether simply dropping cca700a8e695 ("mm: lru: use
+lruvec lock to serialize memcg changes") would be best?
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>, old ones prefixed by <<):
-
->> ERROR: modpost: "__ld_r13_to_r24_ret" [lib/zstd/zstd_decompress.ko] undefined!
->> ERROR: modpost: "__st_r13_to_r24" [lib/zstd/zstd_decompress.ko] undefined!
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
