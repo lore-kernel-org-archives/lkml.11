@@ -2,34 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61C1EC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 12:36:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0328AC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 12:36:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236553AbiFVMgF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 08:36:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37094 "EHLO
+        id S230256AbiFVMgI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 08:36:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231873AbiFVMfw (ORCPT
+        with ESMTP id S232239AbiFVMfx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 08:35:52 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E27B22B35;
-        Wed, 22 Jun 2022 05:35:51 -0700 (PDT)
+        Wed, 22 Jun 2022 08:35:53 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91A6035AB7;
+        Wed, 22 Jun 2022 05:35:52 -0700 (PDT)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id D05CA22248;
-        Wed, 22 Jun 2022 14:35:48 +0200 (CEST)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 9B98622249;
+        Wed, 22 Jun 2022 14:35:50 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1655901349;
+        t=1655901350;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=vATlMTEkReM5stqHgM0MtSkPV42XLwNMpxK49S0i0o4=;
-        b=lEDJkgOj9TV/yY+psfXTiBm3V9hd4TPdj7c3GZdCkjn6TaYyaEikxBqi1urTcRUCGSpUl0
-        MRf8e/Ae4EtgkTJ5rD1WLKQIwdT6Q8owexQ4f7ZCe8R0vNK5xtJu1oV2KNh86PQeKckTvl
-        d0rnv9+OZcksm6oBwdHMZ8zi0kYexkg=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=z2rA0W5MQEkSqYtlT4qSoC6M5wvdwN+5pEfR1Vnrrfw=;
+        b=fEscaRrS0S8pfj/seZ8BNUWdQ8uycvqEZsvctzKo1x7DaSt8P/uSJYX77paBf38R3XxGI0
+        BmNhYwfm+cbap3apAf48oMkb09mdHWhU0zFYZFQnUdJJY1qSfXphkJzNTHxQESZr3Oxke+
+        GIx938sHesGUKLhrYvji7qUOfmJtSM4=
 From:   Michael Walle <michael@walle.cc>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -41,29 +42,49 @@ To:     Andrew Lunn <andrew@lunn.ch>,
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Guenter Roeck <linux@roeck-us.net>,
         Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next 0/2] net: use new hwmon_sanitize_name()
-Date:   Wed, 22 Jun 2022 14:35:41 +0200
-Message-Id: <20220622123543.3463209-1-michael@walle.cc>
+Subject: [PATCH net-next 2/2] net: phy: nxp-tja11xx: use devm_hwmon_sanitize_name()
+Date:   Wed, 22 Jun 2022 14:35:43 +0200
+Message-Id: <20220622123543.3463209-3-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220622123543.3463209-1-michael@walle.cc>
+References: <20220622123543.3463209-1-michael@walle.cc>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-These are the remaining patches of my former series [1] which were hold
-back because it would have required a stable branch between the subsystems.
+Instead of open-coding the bad characters replacement in the hwmon name,
+use the new devm_hwmon_sanitize_name().
 
-[1] https://lore.kernel.org/r/20220405092452.4033674-1-michael@walle.cc/
-
-Michael Walle (2):
-  net: sfp: use hwmon_sanitize_name()
-  net: phy: nxp-tja11xx: use devm_hwmon_sanitize_name()
-
+Signed-off-by: Michael Walle <michael@walle.cc>
+---
  drivers/net/phy/nxp-tja11xx.c | 11 +++--------
- drivers/net/phy/sfp.c         | 10 +++-------
- 2 files changed, 6 insertions(+), 15 deletions(-)
+ 1 file changed, 3 insertions(+), 8 deletions(-)
 
+diff --git a/drivers/net/phy/nxp-tja11xx.c b/drivers/net/phy/nxp-tja11xx.c
+index 9944cc501806..2a8195c50d14 100644
+--- a/drivers/net/phy/nxp-tja11xx.c
++++ b/drivers/net/phy/nxp-tja11xx.c
+@@ -444,15 +444,10 @@ static int tja11xx_hwmon_register(struct phy_device *phydev,
+ 				  struct tja11xx_priv *priv)
+ {
+ 	struct device *dev = &phydev->mdio.dev;
+-	int i;
+-
+-	priv->hwmon_name = devm_kstrdup(dev, dev_name(dev), GFP_KERNEL);
+-	if (!priv->hwmon_name)
+-		return -ENOMEM;
+ 
+-	for (i = 0; priv->hwmon_name[i]; i++)
+-		if (hwmon_is_bad_char(priv->hwmon_name[i]))
+-			priv->hwmon_name[i] = '_';
++	priv->hwmon_name = devm_hwmon_sanitize_name(dev, dev_name(dev));
++	if (IS_ERR(priv->hwmon_name))
++		return PTR_ERR(priv->hwmon_name);
+ 
+ 	priv->hwmon_dev =
+ 		devm_hwmon_device_register_with_info(dev, priv->hwmon_name,
 -- 
 2.30.2
 
