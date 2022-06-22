@@ -2,220 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26413C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 14:33:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 564E3C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 14:34:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358415AbiFVOdz (ORCPT
+        id S1358616AbiFVOeB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 10:33:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59850 "EHLO
+        Wed, 22 Jun 2022 10:34:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358586AbiFVOdp (ORCPT
+        with ESMTP id S1358337AbiFVOdu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 10:33:45 -0400
-Received: from mail.xenproject.org (mail.xenproject.org [104.130.215.37])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C705CFD16;
-        Wed, 22 Jun 2022 07:33:44 -0700 (PDT)
-Received: from xenbits.xenproject.org ([104.239.192.120])
-        by mail.xenproject.org with esmtp (Exim 4.92)
-        (envelope-from <pdurrant@amazon.com>)
-        id 1o41Q5-0006GT-AF; Wed, 22 Jun 2022 14:33:25 +0000
-Received: from 54-240-197-231.amazon.com ([54.240.197.231] helo=debian.cbg12.amazon.com)
-        by xenbits.xenproject.org with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <pdurrant@amazon.com>)
-        id 1o41Q4-0001QB-Uo; Wed, 22 Jun 2022 14:33:25 +0000
-From:   Paul Durrant <pdurrant@amazon.com>
-To:     x86@kernel.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Paul Durrant <pdurrant@amazon.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
+        Wed, 22 Jun 2022 10:33:50 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A1B1FD16;
+        Wed, 22 Jun 2022 07:33:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655908429; x=1687444429;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=aXLF+dVyOqByhAMWSuHsqHusLn0tcw4Nn2wxRn7aL6U=;
+  b=eSsAOf7o3JdYNYrv9XVaAAP5fTfG8LxpPaYkzIgmJPerOGdVtIWQNvIi
+   j8OciQROyfm2Dfx5eXhDSUp75cXUBYJTYzDahSeKBuq/w8THW04Qp8W6X
+   cqSpajjTjyCGYnRjwzUgr+Zb74H3Np/jS2ps2f5DYOZl88pF/2sacn1nG
+   iqkCHOPvUEcwzoPOrDLg/fNdbKa+bWZjy1oUqvQTCQ7Ai/hLEm27iRios
+   M6UEYL7b0v3U3CTF5fCq4znMO3hLyXMFTY3OODjFBoI+Mafg3Vy60kDKF
+   2jTbObHixV1m46PrGmgXCwogknMKQtgxDU7Vt0e0v07X4+czflD/imRbs
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="279200077"
+X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
+   d="scan'208";a="279200077"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 07:33:49 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
+   d="scan'208";a="644225480"
+Received: from xpf.sh.intel.com ([10.239.182.112])
+  by fmsmga008.fm.intel.com with ESMTP; 22 Jun 2022 07:33:46 -0700
+From:   Pengfei Xu <pengfei.xu@intel.com>
+To:     Shuah Khan <skhan@linuxfoundation.org>,
+        linux-kselftest <linux-kselftest@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Cc:     Pengfei Xu <pengfei.xu@intel.com>, Heng Su <heng.su@intel.com>,
+        Hansen Dave <dave.hansen@intel.com>,
+        Luck Tony <tony.luck@intel.com>,
+        Mehta Sohil <sohil.mehta@intel.com>,
+        Chen Yu C <yu.c.chen@intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Borislav Petkov <bp@suse.de>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>
-Subject: [PATCH v3] KVM: x86/xen: Update Xen CPUID Leaf 4 (tsc info) sub-leaves, if present
-Date:   Wed, 22 Jun 2022 15:33:06 +0100
-Message-Id: <20220622143306.13248-1-pdurrant@amazon.com>
-X-Mailer: git-send-email 2.20.1
+        Bae Chang Seok <chang.seok.bae@intel.com>
+Subject: [PATCH v10 0/2] Introduce XSAVE feature self-test
+Date:   Wed, 22 Jun 2022 22:33:11 +0800
+Message-Id: <cover.1655906573.git.pengfei.xu@intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The scaling information in sub-leaf 1 should match the values in the
-'vcpu_info' sub-structure 'time_info' (a.k.a. pvclock_vcpu_time_info) which
-is shared with the guest. The offset values are not set since a TSC offset
-is already applied.
-The host TSC frequency should also be set in sub-leaf 2.
+The XSAVE feature set supports the saving and restoring of xstate components.
+XSAVE feature has been used for process context switching. XSAVE components
+include x87 state for FP execution environment, SSE state, AVX state and so on.
 
-This patch adds a new kvm_xen_set_cpuid() function that scans for the
-relevant CPUID leaf when the CPUID information is updated by the VMM and
-stashes pointers to the sub-leaves in the kvm_vcpu_xen structure.
-The values are then updated by a call to the, also new,
-kvm_xen_setup_tsc_info() function made at the end of
-kvm_guest_time_update() just before entering the guest.
+In order to ensure that XSAVE works correctly, add XSAVE most basic test for
+XSAVE architecture functionality.
 
-Signed-off-by: Paul Durrant <pdurrant@amazon.com>
----
-Cc: David Woodhouse <dwmw2@infradead.org>
+This patch tests "FP, SSE(XMM), AVX2(YMM), AVX512_OPMASK/AVX512_ZMM_Hi256/
+AVX512_Hi16_ZMM and PKRU parts" xstates with following cases:
+1. The contents of these xstates in the process should not change after the
+   signal handling.
+2. The contents of these xstates in the child process should be the same as
+   the contents of the xstate in the parent process after the fork syscall.
+3. The contents of xstates in the parent process should not change after
+   the context switch.
 
-v2:
- - Make sure sub-leaf pointers are NULLed if the time leaf is removed
+Because xstate like XMM will not be preserved across function calls, fork() and
+raise() are implemented and inlined.
+To prevent GCC from generating any FP/SSE(XMM)/AVX/PKRU code, add
+"-mno-sse -mno-mmx -mno-sse2 -mno-avx -mno-pku" compiler arguments. stdlib.h
+can not be used because of the "-mno-sse" option.
+Thanks Dave, Hansen for the above suggestion!
+Thanks Chen Yu; Shuah Khan; Chatre Reinette and Tony Luck's comments!
+Thanks to Bae, Chang Seok for a bunch of comments!
 
-v3:
- - Add leaf limit check in kvm_xen_set_cpuid()
----
- arch/x86/include/asm/kvm_host.h |  2 ++
- arch/x86/kvm/cpuid.c            |  2 ++
- arch/x86/kvm/x86.c              |  1 +
- arch/x86/kvm/xen.c              | 49 +++++++++++++++++++++++++++++++++
- arch/x86/kvm/xen.h              | 10 +++++++
- 5 files changed, 64 insertions(+)
+========
+- Change from v9 to v10
+  - Remove the small function if the function will be called once and there
+    is no good reason. (Shuah Khan)
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 1038ccb7056a..f77a4940542f 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -638,6 +638,8 @@ struct kvm_vcpu_xen {
- 	struct hrtimer timer;
- 	int poll_evtchn;
- 	struct timer_list poll_timer;
-+	struct kvm_cpuid_entry2 *tsc_info_1;
-+	struct kvm_cpuid_entry2 *tsc_info_2;
- };
- 
- struct kvm_vcpu_arch {
-diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
-index d47222ab8e6e..eb6cd88c974a 100644
---- a/arch/x86/kvm/cpuid.c
-+++ b/arch/x86/kvm/cpuid.c
-@@ -25,6 +25,7 @@
- #include "mmu.h"
- #include "trace.h"
- #include "pmu.h"
-+#include "xen.h"
- 
- /*
-  * Unlike "struct cpuinfo_x86.x86_capability", kvm_cpu_caps doesn't need to be
-@@ -310,6 +311,7 @@ static void kvm_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
- 	    __cr4_reserved_bits(guest_cpuid_has, vcpu);
- 
- 	kvm_hv_set_cpuid(vcpu);
-+	kvm_xen_set_cpuid(vcpu);
- 
- 	/* Invoke the vendor callback only after the above state is updated. */
- 	static_call(kvm_x86_vcpu_after_set_cpuid)(vcpu);
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 00e23dc518e0..8b45f9975e45 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -3123,6 +3123,7 @@ static int kvm_guest_time_update(struct kvm_vcpu *v)
- 	if (vcpu->xen.vcpu_time_info_cache.active)
- 		kvm_setup_guest_pvclock(v, &vcpu->xen.vcpu_time_info_cache, 0);
- 	kvm_hv_setup_tsc_page(v->kvm, &vcpu->hv_clock);
-+	kvm_xen_setup_tsc_info(v);
- 	return 0;
- }
- 
-diff --git a/arch/x86/kvm/xen.c b/arch/x86/kvm/xen.c
-index 610beba35907..08e65ec6c793 100644
---- a/arch/x86/kvm/xen.c
-+++ b/arch/x86/kvm/xen.c
-@@ -10,6 +10,9 @@
- #include "xen.h"
- #include "hyperv.h"
- #include "lapic.h"
-+#include "cpuid.h"
-+
-+#include <asm/xen/cpuid.h>
- 
- #include <linux/eventfd.h>
- #include <linux/kvm_host.h>
-@@ -1855,3 +1858,49 @@ void kvm_xen_destroy_vm(struct kvm *kvm)
- 	if (kvm->arch.xen_hvm_config.msr)
- 		static_branch_slow_dec_deferred(&kvm_xen_enabled);
- }
-+
-+void kvm_xen_set_cpuid(struct kvm_vcpu *vcpu)
-+{
-+	u32 base = 0;
-+	u32 limit;
-+	u32 function;
-+
-+	vcpu->arch.xen.tsc_info_1 = NULL;
-+	vcpu->arch.xen.tsc_info_2 = NULL;
-+
-+	for_each_possible_hypervisor_cpuid_base(function) {
-+		struct kvm_cpuid_entry2 *entry = kvm_find_cpuid_entry(vcpu, function, 0);
-+
-+		if (entry &&
-+		    entry->ebx == XEN_CPUID_SIGNATURE_EBX &&
-+		    entry->ecx == XEN_CPUID_SIGNATURE_ECX &&
-+		    entry->edx == XEN_CPUID_SIGNATURE_EDX) {
-+			base = function;
-+			limit = entry->eax;
-+			break;
-+		}
-+	}
-+	if (!base)
-+		return;
-+
-+	function = base | XEN_CPUID_LEAF(3);
-+	if (function > limit)
-+		return;
-+
-+	vcpu->arch.xen.tsc_info_1 = kvm_find_cpuid_entry(vcpu, function, 1);
-+	vcpu->arch.xen.tsc_info_2 = kvm_find_cpuid_entry(vcpu, function, 2);
-+}
-+
-+void kvm_xen_setup_tsc_info(struct kvm_vcpu *vcpu)
-+{
-+	struct kvm_cpuid_entry2 *entry = vcpu->arch.xen.tsc_info_1;
-+
-+	if (entry) {
-+		entry->ecx = vcpu->arch.hv_clock.tsc_to_system_mul;
-+		entry->edx = vcpu->arch.hv_clock.tsc_shift;
-+	}
-+
-+	entry = vcpu->arch.xen.tsc_info_2;
-+	if (entry)
-+		entry->eax = vcpu->arch.hw_tsc_khz;
-+}
-diff --git a/arch/x86/kvm/xen.h b/arch/x86/kvm/xen.h
-index 532a535a9e99..1afb663318a9 100644
---- a/arch/x86/kvm/xen.h
-+++ b/arch/x86/kvm/xen.h
-@@ -32,6 +32,8 @@ int kvm_xen_set_evtchn_fast(struct kvm_xen_evtchn *xe,
- int kvm_xen_setup_evtchn(struct kvm *kvm,
- 			 struct kvm_kernel_irq_routing_entry *e,
- 			 const struct kvm_irq_routing_entry *ue);
-+void kvm_xen_set_cpuid(struct kvm_vcpu *vcpu);
-+void kvm_xen_setup_tsc_info(struct kvm_vcpu *vcpu);
- 
- static inline bool kvm_xen_msr_enabled(struct kvm *kvm)
- {
-@@ -135,6 +137,14 @@ static inline bool kvm_xen_timer_enabled(struct kvm_vcpu *vcpu)
- {
- 	return false;
- }
-+
-+static inline void kvm_xen_set_cpuid(struct kvm_vcpu *vcpu)
-+{
-+}
-+
-+static inline void kvm_xen_setup_tsc_info(struct kvm_vcpu *vcpu)
-+{
-+}
- #endif
- 
- int kvm_xen_hypercall(struct kvm_vcpu *vcpu);
+- Change from v8 to v9
+  - Use function pointers to make it more structured. (Hansen, Dave)
+  - Improve the function name: xstate_tested -> xstate_in_test. (Chang S. Bae)
+  - Break this test up into two pieces: keep the xstate key test steps with
+    "-mno-sse" and no stdlib.h, keep others in xstate.c file. (Hansen, Dave)
+  - Use kselftest infrastructure for xstate.c file. (Hansen, Dave)
+  - Use instruction back to populate fp xstate buffer. (Hansen, Dave)
+  - Will skip the test if cpu could not support xsave. (Chang S. Bae)
+  - Use __cpuid_count() helper in kselftest.h. (Reinette, Chatre)
+
+- Change from v7 to v8
+  Many thanks to Bae, Chang Seok for a bunch of comments as follow:
+  - Use the filling buffer way to prepare the xstate buffer, and use xrstor
+    instruction way to load the tested xstates.
+  - Remove useless dump_buffer, compare_buffer functions.
+  - Improve the struct of xstate_info.
+  - Added AVX512_ZMM_Hi256 and AVX512_Hi16_ZMM components in xstate test.
+  - Remove redundant xstate_info.xstate_mask, xstate_flag[], and
+    xfeature_test_mask, use xstate_info.mask instead.
+  - Check if xfeature is supported outside of fill_xstate_buf() , this change
+    is easier to read and understand.
+  - Remove useless wrpkru, only use filling all tested xstate buffer in
+    fill_xstates_buf().
+  - Improve a bunch of function names and variable names.
+  - Improve test steps flow for readability.
+
+- Change from v6 to v7:
+  - Added the error number and error description of the reason for the
+    failure, thanks Shuah Khan's suggestion.
+  - Added a description of what these tests are doing in the head comments.
+  - Added changes update in the head comments.
+  - Added description of the purpose of the function. thanks Shuah Khan.
+
+- Change from v5 to v6:
+  - In order to prevent GCC from generating any FP code by mistake,
+    "-mno-sse -mno-mmx -mno-sse2 -mno-avx -mno-pku" compiler parameter was
+    added, it's referred to the parameters for compiling the x86 kernel. Thanks
+    Dave Hansen's suggestion.
+  - Removed the use of "kselftest.h", because kselftest.h included <stdlib.h>,
+    and "stdlib.h" would use sse instructions in it's libc, and this *XSAVE*
+    test needed to be compiled without libc sse instructions(-mno-sse).
+  - Improved the description in commit header, thanks Chen Yu's suggestion.
+  - Becasue test code could not use buildin xsave64 in libc without sse, added
+    xsave function by instruction way.
+  - Every key test action would not use libc(like printf) except syscall until
+    it's failed or done. If it's failed, then it would print the failed reason.
+  - Used __cpuid_count() instead of native_cpuid(), becasue __cpuid_count()
+    was a macro definition function with one instruction in libc and did not
+    change xstate. Thanks Chatre Reinette, Shuah Khan.
+    https://lore.kernel.org/linux-sgx/8b7c98f4-f050-bc1c-5699-fa598ecc66a2@linuxfoundation.org/
+
+- Change from v4 to v5:
+  - Moved code files into tools/testing/selftests/x86.
+  - Delete xsave instruction test, becaue it's not related to kernel.
+  - Improved case description.
+  - Added AVX512 opmask change and related XSAVE content verification.
+  - Added PKRU part xstate test into instruction and signal handling test.
+  - Added XSAVE process swich test for FPU, AVX2, AVX512 opmask and PKRU part.
+
+- Change from v3 to v4:
+  - Improve the comment in patch 1.
+
+- Change from v2 to v3:
+  - Improve the description of patch 2 git log.
+
+- Change from v1 to v2:
+  - Improve the cover-letter. Thanks Dave Hansen's suggestion.
+
+Pengfei Xu (2):
+  selftests/x86/xstate: Add xstate signal handling test for XSAVE
+    feature
+  selftests/x86/xstate: Add xstate fork test for XSAVE feature
+
+ tools/testing/selftests/x86/.gitignore       |   1 +
+ tools/testing/selftests/x86/Makefile         |  11 +-
+ tools/testing/selftests/x86/xstate.c         | 208 +++++++++++++++
+ tools/testing/selftests/x86/xstate.h         | 262 +++++++++++++++++++
+ tools/testing/selftests/x86/xstate_helpers.c | 209 +++++++++++++++
+ tools/testing/selftests/x86/xstate_helpers.h |  10 +
+ 6 files changed, 699 insertions(+), 2 deletions(-)
+ create mode 100644 tools/testing/selftests/x86/xstate.c
+ create mode 100644 tools/testing/selftests/x86/xstate.h
+ create mode 100644 tools/testing/selftests/x86/xstate_helpers.c
+ create mode 100644 tools/testing/selftests/x86/xstate_helpers.h
+
 -- 
-2.20.1
+2.31.1
 
