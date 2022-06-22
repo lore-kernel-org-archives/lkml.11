@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97C9CC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 19:30:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67E68C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 19:31:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359739AbiFVTaD (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 15:30:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33426 "EHLO
+        id S232214AbiFVT3i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 15:29:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237187AbiFVT13 (ORCPT
+        with ESMTP id S1357852AbiFVT12 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 15:27:29 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B548A3B2B8
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 12:27:27 -0700 (PDT)
+        Wed, 22 Jun 2022 15:27:28 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B25113FBF7
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 12:27:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655926046;
+        s=mimecast20190719; t=1655926042;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=PtZNTZPWfsMWYTlAEBsLU5lpYkmjIuplCyLvnN6roN8=;
-        b=J/DxGHI6IwmKiPc2dyAI/DooD+/sPl54IdqwUnp5iySMkPyRuPaZYKjbmEtebh5wk51OO1
-        sWt/WKx+vZyuamUA0kWnlj3zWjcMg+wMeXfArP1A+e1lnmN5hQS+79aKzHRjLfOGgN8sq8
-        OOTsReB0uurxpGRlGZeoHVDUSbruA0A=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=etp7F+nHZLGC2FUtxJOh/TJ4hbdw8PGhFaNHreYRQAk=;
+        b=eSFWQu+Nl4QFZd6KL8ZXzW7G6owF7n+O02BvMOIUYqwvZMaEZh+0TJN521AKjhShtnpTFD
+        VC62ytxpV58Jje2JqRZ0u4w5lSIViFSfNHAa+I8aW7ScrFdatmGf/U2igYCBSkXJVRQiHA
+        Hx+BBF1hhwhURJ2BcwvWscId0mAIBco=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-153-p9sVOKGTNd-Hjl1hFwF5Jw-1; Wed, 22 Jun 2022 15:27:21 -0400
-X-MC-Unique: p9sVOKGTNd-Hjl1hFwF5Jw-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+ us-mta-2-AdnGv48ePD-TYpFwLVRxow-1; Wed, 22 Jun 2022 15:27:19 -0400
+X-MC-Unique: AdnGv48ePD-TYpFwLVRxow-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 589571C0518C;
-        Wed, 22 Jun 2022 19:27:20 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B0548811E80;
+        Wed, 22 Jun 2022 19:27:18 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 01FD61121314;
-        Wed, 22 Jun 2022 19:27:19 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5B3F1141510C;
+        Wed, 22 Jun 2022 19:27:18 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     maz@kernel.org, anup@brainfault.org, seanjc@google.com,
@@ -46,127 +45,81 @@ Cc:     maz@kernel.org, anup@brainfault.org, seanjc@google.com,
         kvmarm@lists.cs.columbia.edu, linux-mips@vger.kernel.org,
         kvm-riscv@lists.infradead.org, pfeiner@google.com,
         jiangshanlai@gmail.com, dmatlack@google.com
-Subject: [PATCH v7 23/23] KVM: x86/mmu: Avoid unnecessary flush on eager page split
-Date:   Wed, 22 Jun 2022 15:27:10 -0400
-Message-Id: <20220622192710.2547152-24-pbonzini@redhat.com>
+Subject: [PATCH v7 19/23] KVM: x86/mmu: Zap collapsible SPTEs in shadow MMU at all possible levels
+Date:   Wed, 22 Jun 2022 15:27:06 -0400
+Message-Id: <20220622192710.2547152-20-pbonzini@redhat.com>
 In-Reply-To: <20220622192710.2547152-1-pbonzini@redhat.com>
 References: <20220622192710.2547152-1-pbonzini@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The TLB flush before installing the newly-populated lower level
-page table is unnecessary if the lower-level page table maps
-the huge page identically.  KVM knows it is if it did not reuse
-an existing shadow page table, tell drop_large_spte() to skip
-the flush in that case.
+From: David Matlack <dmatlack@google.com>
 
-Extracted from a patch by David Matlack.
+Currently KVM only zaps collapsible 4KiB SPTEs in the shadow MMU. This
+is fine for now since KVM never creates intermediate huge pages during
+dirty logging. In other words, KVM always replaces 1GiB pages directly
+with 4KiB pages, so there is no reason to look for collapsible 2MiB
+pages.
 
+However, this will stop being true once the shadow MMU participates in
+eager page splitting. During eager page splitting, each 1GiB is first
+split into 2MiB pages and then those are split into 4KiB pages. The
+intermediate 2MiB pages may be left behind if an error condition causes
+eager page splitting to bail early.
+
+No functional change intended.
+
+Reviewed-by: Peter Xu <peterx@redhat.com>
+Signed-off-by: David Matlack <dmatlack@google.com>
+Message-Id: <20220516232138.1783324-20-dmatlack@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/mmu/mmu.c | 32 ++++++++++++++++++++------------
- 1 file changed, 20 insertions(+), 12 deletions(-)
+ arch/x86/kvm/mmu/mmu.c | 21 ++++++++++++++-------
+ 1 file changed, 14 insertions(+), 7 deletions(-)
 
 diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 22681931921f..79c6a821ea0d 100644
+index 13a059ad5dc7..36bc49f08d60 100644
 --- a/arch/x86/kvm/mmu/mmu.c
 +++ b/arch/x86/kvm/mmu/mmu.c
-@@ -1135,7 +1135,7 @@ static void drop_spte(struct kvm *kvm, u64 *sptep)
- 		rmap_remove(kvm, sptep);
+@@ -6154,18 +6154,25 @@ static bool kvm_mmu_zap_collapsible_spte(struct kvm *kvm,
+ 	return need_tlb_flush;
  }
  
--static void drop_large_spte(struct kvm *kvm, u64 *sptep)
-+static void drop_large_spte(struct kvm *kvm, u64 *sptep, bool flush)
- {
- 	struct kvm_mmu_page *sp;
- 
-@@ -1143,7 +1143,9 @@ static void drop_large_spte(struct kvm *kvm, u64 *sptep)
- 	WARN_ON(sp->role.level == PG_LEVEL_4K);
- 
- 	drop_spte(kvm, sptep);
--	kvm_flush_remote_tlbs_with_address(kvm, sp->gfn,
++static void kvm_rmap_zap_collapsible_sptes(struct kvm *kvm,
++					   const struct kvm_memory_slot *slot)
++{
++	/*
++	 * Note, use KVM_MAX_HUGEPAGE_LEVEL - 1 since there's no need to zap
++	 * pages that are already mapped at the maximum possible level.
++	 */
++	if (slot_handle_level(kvm, slot, kvm_mmu_zap_collapsible_spte,
++			      PG_LEVEL_4K, KVM_MAX_HUGEPAGE_LEVEL - 1,
++			      true))
++		kvm_arch_flush_remote_tlbs_memslot(kvm, slot);
++}
 +
-+	if (flush)
-+		kvm_flush_remote_tlbs_with_address(kvm, sp->gfn,
- 			KVM_PAGES_PER_HPAGE(sp->role.level));
- }
- 
-@@ -2283,7 +2285,7 @@ static void shadow_walk_next(struct kvm_shadow_walk_iterator *iterator)
- 
- static void __link_shadow_page(struct kvm *kvm,
- 			       struct kvm_mmu_memory_cache *cache, u64 *sptep,
--			       struct kvm_mmu_page *sp)
-+			       struct kvm_mmu_page *sp, bool flush)
+ void kvm_mmu_zap_collapsible_sptes(struct kvm *kvm,
+ 				   const struct kvm_memory_slot *slot)
  {
- 	u64 spte;
- 
-@@ -2291,10 +2293,11 @@ static void __link_shadow_page(struct kvm *kvm,
- 
- 	/*
- 	 * If an SPTE is present already, it must be a leaf and therefore
--	 * a large one.  Drop it and flush the TLB before installing sp.
-+	 * a large one.  Drop it, and flush the TLB if needed, before
-+	 * installing sp.
- 	 */
- 	if (is_shadow_present_pte(*sptep))
--		drop_large_spte(kvm, sptep);
-+		drop_large_spte(kvm, sptep, flush);
- 
- 	spte = make_nonleaf_spte(sp->spt, sp_ad_disabled(sp));
- 
-@@ -2309,7 +2312,7 @@ static void __link_shadow_page(struct kvm *kvm,
- static void link_shadow_page(struct kvm_vcpu *vcpu, u64 *sptep,
- 			     struct kvm_mmu_page *sp)
- {
--	__link_shadow_page(vcpu->kvm, &vcpu->arch.mmu_pte_list_desc_cache, sptep, sp);
-+	__link_shadow_page(vcpu->kvm, &vcpu->arch.mmu_pte_list_desc_cache, sptep, sp, true);
- }
- 
- static void validate_direct_spte(struct kvm_vcpu *vcpu, u64 *sptep,
-@@ -6172,6 +6175,7 @@ static void shadow_mmu_split_huge_page(struct kvm *kvm,
- 	struct kvm_mmu_memory_cache *cache = &kvm->arch.split_desc_cache;
- 	u64 huge_spte = READ_ONCE(*huge_sptep);
- 	struct kvm_mmu_page *sp;
-+	bool flush = false;
- 	u64 *sptep, spte;
- 	gfn_t gfn;
- 	int index;
-@@ -6189,20 +6193,24 @@ static void shadow_mmu_split_huge_page(struct kvm *kvm,
- 		 * gfn-to-pfn translation since the SP is direct, so no need to
- 		 * modify them.
- 		 *
--		 * If a given SPTE points to a lower level page table, installing
--		 * such SPTEs would effectively unmap a potion of the huge page.
--		 * This is not an issue because __link_shadow_page() flushes the TLB
--		 * when the passed sp replaces a large SPTE.
-+		 * However, if a given SPTE points to a lower level page table,
-+		 * that lower level page table may only be partially populated.
-+		 * Installing such SPTEs would effectively unmap a potion of the
-+		 * huge page. Unmapping guest memory always requires a TLB flush
-+		 * since a subsequent operation on the unmapped regions would
-+		 * fail to detect the need to flush.
- 		 */
--		if (is_shadow_present_pte(*sptep))
-+		if (is_shadow_present_pte(*sptep)) {
-+			flush |= !is_last_spte(*sptep, sp->role.level);
- 			continue;
-+		}
- 
- 		spte = make_huge_page_split_spte(kvm, huge_spte, sp->role, index);
- 		mmu_spte_set(sptep, spte);
- 		__rmap_add(kvm, cache, slot, sptep, gfn, sp->role.access);
+ 	if (kvm_memslots_have_rmaps(kvm)) {
+ 		write_lock(&kvm->mmu_lock);
+-		/*
+-		 * Zap only 4k SPTEs since the legacy MMU only supports dirty
+-		 * logging at a 4k granularity and never creates collapsible
+-		 * 2m SPTEs during dirty logging.
+-		 */
+-		if (slot_handle_level_4k(kvm, slot, kvm_mmu_zap_collapsible_spte, true))
+-			kvm_arch_flush_remote_tlbs_memslot(kvm, slot);
++		kvm_rmap_zap_collapsible_sptes(kvm, slot);
+ 		write_unlock(&kvm->mmu_lock);
  	}
  
--	__link_shadow_page(kvm, cache, huge_sptep, sp);
-+	__link_shadow_page(kvm, cache, huge_sptep, sp, flush);
- }
- 
- static int shadow_mmu_try_split_huge_page(struct kvm *kvm,
 -- 
 2.31.1
+
 
