@@ -2,76 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6478FC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 18:49:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00E47C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 18:53:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377296AbiFVStt (ORCPT
+        id S1377318AbiFVSxD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 14:49:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37314 "EHLO
+        Wed, 22 Jun 2022 14:53:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376918AbiFVStr (ORCPT
+        with ESMTP id S1359098AbiFVSxB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 14:49:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B205313BF;
-        Wed, 22 Jun 2022 11:49:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C9482B8208E;
-        Wed, 22 Jun 2022 18:49:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A37FC34114;
-        Wed, 22 Jun 2022 18:49:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1655923782;
-        bh=UGwK8U1CCaVfUgZAsLw+SYJ97g3dLCKIIomeuZiBQ1w=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=bZVT9UVsA84wtb28RRbkCP0+NC6uhTn6OwNN8hldf7jfAOb4e8eihS1G4q19GfWvm
-         aRdf7WUvX08IC68x4Slo5jEg54I5AYWVjqIr/WQyDwyLgQOeuIxP4uxlaBeYMdU58e
-         cXCLzglwW9AfkLEPqvNsN0YZ8ut6Uek+6XAR7TLA=
-Date:   Wed, 22 Jun 2022 11:49:30 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Mike Kravetz <mike.kravetz@oracle.com>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build warning after merge of the mm tree
-Message-Id: <20220622114930.c907cbd361a7f71fb83eaf8f@linux-foundation.org>
-In-Reply-To: <YrNF0i01rU/r3yQn@monkey>
-References: <20220622155408.3ba2a9b7@canb.auug.org.au>
-        <20220622171117.70850960@canb.auug.org.au>
-        <YrNF0i01rU/r3yQn@monkey>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Wed, 22 Jun 2022 14:53:01 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E319BBCA7;
+        Wed, 22 Jun 2022 11:52:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655923980; x=1687459980;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=/jbAjt44pNdw2EPdmHuXf3wGiQ3od3Q+gNDKXfIaZ3c=;
+  b=FhZeww4nICkLd1YFn3XFZdH2xvTxs7+QDk0Cm8Ib39m3IImaMAzWTgY3
+   8cQjGidIuw3ZhIuCQlh6PpoeLtqtxffcV0Po3Sjk5YbNZeu3Qjl5a51EB
+   lhGhi/3KVrEM2Z+ve5l2lg4lsLl1rnpZY4uCq31rzIbIB7Yc5pLu5Ri0X
+   js21ZFsh9nwMiZiZvaOken29XD3bvtwhOR1Oysk15uTGMP9KfhQ8rjxBU
+   2xW4KKzfWvhFEYX7z+LHaKvDGWZk7g32isNIf+3A2htmyv+eQBONCZcDZ
+   8bXR52xmsjjJiwDPnHYQFOwYfbi36cvF89gnkAfdZvksNSyBKbmaVA8B+
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="344505027"
+X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
+   d="scan'208";a="344505027"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 11:52:59 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
+   d="scan'208";a="715528336"
+Received: from bwalker-desk.ch.intel.com ([143.182.136.162])
+  by orsmga004.jf.intel.com with ESMTP; 22 Jun 2022 11:52:59 -0700
+From:   Ben Walker <benjamin.walker@intel.com>
+To:     vkoul@kernel.org
+Cc:     dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-crypto@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-media@vger.kernel.org, mporter@kernel.crashing.org
+Subject: [PATCH v3 00/15] dmaengine: Support polling for out of order completions
+Date:   Wed, 22 Jun 2022 11:52:48 -0700
+Message-Id: <20220622185248.3043534-1-benjamin.walker@intel.com>
+X-Mailer: git-send-email 2.35.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 22 Jun 2022 09:39:46 -0700 Mike Kravetz <mike.kravetz@oracle.com> wrote:
+This series adds support for polling async transactions for completion
+even if interrupts are disabled and transactions can complete out of
+order.
 
-> > --- a/mm/hugetlb.c
-> > +++ b/mm/hugetlb.c
-> > @@ -6905,10 +6905,8 @@ unsigned long hugetlb_mask_last_page(struct hstate *h)
-> >  /* See description above.  Architectures can provide their own version. */
-> >  __weak unsigned long hugetlb_mask_last_page(struct hstate *h)
-> >  {
-> > -	unsigned long hp_size = huge_page_size(h);
-> > -
-> >  #ifdef CONFIG_ARCH_WANT_HUGE_PMD_SHARE
-> > -	if (hp_size == PMD_SIZE)
-> > +	if (huge_page_size(h) == PMD_SIZE)
-> >  		return PUD_SIZE - PMD_SIZE;
-> >  #endif
-> >  	return 0UL;
-> > -- 
-> 
-> Thanks Stephen,  my bad for not building !CONFIG_ARCH_WANT_HUGE_PMD_SHARE and,
-> the error is pretty obvious. :(
-> 
-> Andrew, do you want me to send an updated version of the patch?  Or,
-> would you prefer to include Stephen's fix?
+To do this, all DMA client assumptions about the behavior of
+dma_cookie_t have to be removed. Prior to this series, dma_cookie_t was
+a monotonically increasing integer and cookies could be compared to one
+another to determine if earlier operations had completed (up until the
+cookie wraps around, then it would break).
 
-I added Stephen's fix, thanks.
+Fortunately, only one out of the many, many DMA clients had any
+dependency on dma_cookie_t being anything more than an opaque handle.
+This is the pxa_camera driver and it is dealt with in patch 7 of this
+series.
+
+The series also does some API clean up and documents how dma_cookie_t
+should behave (i.e. there are no rules, it's just a handle).
+
+This closes out by adding support for .device_tx_status() to the idxd
+driver and then reverting the DMA_OUT_OF_ORDER patch that previously
+allowed idxd to opt-out of support for polling, which I think is a nice
+overall simplification to the dmaengine API.
+
+Changes since version 2:
+ - None. Rebased as requested without conflict.
+
+Changes since version 1:
+ - Broke up the change to remove dma_async_is_tx_complete into a single
+   patch for each driver
+ - Renamed dma_async_is_tx_complete to dmaengine_async_is_tx_complete.
+
+Ben Walker (15):
+  dmaengine: Remove dma_async_is_complete from client API
+  dmaengine: Move dma_set_tx_state to the provider API header
+  dmaengine: Add dmaengine_async_is_tx_complete
+  crypto: stm32/hash: Use dmaengine_async_is_tx_complete
+  media: omap_vout: Use dmaengine_async_is_tx_complete
+  rapidio: Use dmaengine_async_is_tx_complete
+  media: pxa_camera: Use dmaengine_async_is_tx_complete
+  dmaengine: Remove dma_async_is_tx_complete
+  dmaengine: Remove last, used from dma_tx_state
+  dmaengine: Providers should prefer dma_set_residue over
+    dma_set_tx_state
+  dmaengine: Remove dma_set_tx_state
+  dmaengine: Add provider documentation on cookie assignment
+  dmaengine: idxd: idxd_desc.id is now a u16
+  dmaengine: idxd: Support device_tx_status
+  dmaengine: Revert "cookie bypass for out of order completion"
+
+ Documentation/driver-api/dmaengine/client.rst | 24 ++----
+ .../driver-api/dmaengine/provider.rst         | 64 ++++++++------
+ drivers/crypto/stm32/stm32-hash.c             |  3 +-
+ drivers/dma/amba-pl08x.c                      |  1 -
+ drivers/dma/at_hdmac.c                        |  3 +-
+ drivers/dma/dmaengine.c                       |  2 +-
+ drivers/dma/dmaengine.h                       | 12 ++-
+ drivers/dma/dmatest.c                         | 14 +--
+ drivers/dma/idxd/device.c                     |  1 +
+ drivers/dma/idxd/dma.c                        | 86 ++++++++++++++++++-
+ drivers/dma/idxd/idxd.h                       |  3 +-
+ drivers/dma/imx-sdma.c                        |  3 +-
+ drivers/dma/mmp_tdma.c                        |  3 +-
+ drivers/dma/mxs-dma.c                         |  3 +-
+ drivers/media/platform/intel/pxa_camera.c     | 15 +++-
+ .../media/platform/ti/omap/omap_vout_vrfb.c   |  2 +-
+ drivers/rapidio/devices/rio_mport_cdev.c      |  3 +-
+ include/linux/dmaengine.h                     | 58 +------------
+ 18 files changed, 164 insertions(+), 136 deletions(-)
+
+-- 
+2.35.1
+
