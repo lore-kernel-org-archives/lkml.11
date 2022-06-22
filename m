@@ -2,127 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DADBC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 19:22:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28821CCA47F
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 19:27:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235959AbiFVTWH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 15:22:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59298 "EHLO
+        id S239923AbiFVT12 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 15:27:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229824AbiFVTWD (ORCPT
+        with ESMTP id S229824AbiFVT1Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 15:22:03 -0400
-X-Greylist: delayed 529 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 22 Jun 2022 12:21:59 PDT
-Received: from vmicros1.altlinux.org (vmicros1.altlinux.org [194.107.17.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 12BF738D8A
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 12:21:59 -0700 (PDT)
-Received: from mua.local.altlinux.org (mua.local.altlinux.org [192.168.1.14])
-        by vmicros1.altlinux.org (Postfix) with ESMTP id 4C2D972C8B1;
-        Wed, 22 Jun 2022 22:13:09 +0300 (MSK)
-Received: by mua.local.altlinux.org (Postfix, from userid 508)
-        id 3796D7CF60C; Wed, 22 Jun 2022 22:13:09 +0300 (MSK)
-Date:   Wed, 22 Jun 2022 22:13:09 +0300
-From:   "Dmitry V. Levin" <ldv@altlinux.org>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>,
-        Vitaly Chikunov <vt@altlinux.org>,
-        Mikhail Gordeev <obirvalger@altlinux.org>,
-        Hendrik Brueckner <brueckner@linux.vnet.ibm.com>,
-        Ian Rogers <irogers@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/1 FYI] perf trace beauty: Fix generation of errno
- id->str table on ALT Linux
-Message-ID: <20220622191308.GA2045@altlinux.org>
-References: <YrNCLzNGsvizMhdW@kernel.org>
+        Wed, 22 Jun 2022 15:27:16 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E27AFDAD
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 12:27:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655926034;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=UetEegWFrSI4DxaQkVqPZAaYbNMpqePnjSLMmI2uAtM=;
+        b=Kaif2yG83Ff/NpnEo43LLDR6iE+sDojc/nGfkVLBb/ezn+ifyI246VDIb0u8E2nAgn0kz8
+        +wvR3nZBBA/j62UOZE/uxurXt0tfuoUxnu4NEM5DsZXZaxWb4Y/cqN1RxQ9YBguAeiivPb
+        5jhXoFI2ZJruEnEJo5pb0BPN7WAtq7o=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-464-nl_lej8DNwCY7ROTjZCaaA-1; Wed, 22 Jun 2022 15:27:12 -0400
+X-MC-Unique: nl_lej8DNwCY7ROTjZCaaA-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8D5ED102F0C1;
+        Wed, 22 Jun 2022 19:27:11 +0000 (UTC)
+Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 36C8B1121314;
+        Wed, 22 Jun 2022 19:27:11 +0000 (UTC)
+From:   Paolo Bonzini <pbonzini@redhat.com>
+To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     maz@kernel.org, anup@brainfault.org, seanjc@google.com,
+        bgardon@google.com, peterx@redhat.com, maciej.szmigiero@oracle.com,
+        kvmarm@lists.cs.columbia.edu, linux-mips@vger.kernel.org,
+        kvm-riscv@lists.infradead.org, pfeiner@google.com,
+        jiangshanlai@gmail.com, dmatlack@google.com
+Subject: [PATCH v7 01/23] KVM: x86/mmu: Optimize MMU page cache lookup for all direct SPs
+Date:   Wed, 22 Jun 2022 15:26:48 -0400
+Message-Id: <20220622192710.2547152-2-pbonzini@redhat.com>
+In-Reply-To: <20220622192710.2547152-1-pbonzini@redhat.com>
+References: <20220622192710.2547152-1-pbonzini@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YrNCLzNGsvizMhdW@kernel.org>
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+From: David Matlack <dmatlack@google.com>
 
-On Wed, Jun 22, 2022 at 01:24:15PM -0300, Arnaldo Carvalho de Melo wrote:
-> Fyi, I'm carrying this on my perf tools tree to keep building on:
-> 
-> [perfbuilder@five sisyphus]$ podman pull alt:sisyphus
-> Trying to pull docker.io/library/alt:sisyphus...
-> Getting image source signatures
-> Copying blob 2b39ef1520dd skipped: already exists
-> Copying blob 12717fd4baa0 skipped: already exists
-> Copying config 6d48f46445 done
-> Writing manifest to image destination
-> Storing signatures
-> 6d48f4644518cd96ffe1de6cd0333d2abc8312c0e4449e03b58b1d480f0f5905
-> [perfbuilder@five sisyphus]$ dsh .
-> sh-4.4# bash
-> [root@b8318c77142b /]# cat /etc/os-release
-> NAME="starter kit"
-> VERSION="p10 (Hypericum)"
-> ID=altlinux
-> VERSION_ID=p10
-> PRETTY_NAME="ALT Starterkit (Hypericum)"
-> ANSI_COLOR="1;33"
-> CPE_NAME="cpe:/o:alt:starterkit:p10"
-> HOME_URL="http://en.altlinux.org/starterkits"
-> BUG_REPORT_URL="https://bugs.altlinux.org/"
-> [root@b8318c77142b /]# rpm -qi bash
-> Name        : bash
-> Version     : 4.4.23
-> Release     : alt1
-> DistTag     : sisyphus+221902.500.4.1
-> Architecture: noarch
-> Install Date: Fri Jun  3 23:03:32 2022
-> Group       : Shells
-> Size        : 0
-> License     : None
-> Signature   : DSA/SHA1, Tue Feb 19 14:40:44 2019, Key ID 95c584d5ae4ae412
-> Source RPM  : bash-defaults-4.4.23-alt1.src.rpm
-> Build Date  : Tue Feb 19 14:40:42 2019
-> Build Host  : ldv-sisyphus.hasher.altlinux.org
-> Relocations : (not relocatable)
-> Packager    : Dmitry V. Levin <ldv@altlinux.org>
-> Vendor      : ALT Linux Team
-> Summary     : The GNU Bourne Again SHell (/bin/bash)
-> Description :
-> This package provides default setup for the GNU Bourne Again SHell (/bin/bash).
-> [root@b8318c77142b /]#
-> 
-> Perf uses that script to generate an id->str errno table for all arches,
-> implemented in:
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=0337cf74ccf2a43437bff2e23b278e4f2dc4c6e2
-> 
-> But it is failing on:
-> 
->   10    62.99 alt:p8                        : Ok   x86_64-alt-linux-gcc (GCC) 5.3.1 20151207 (ALT p8 5.3.1-alt3.M80P.1) , clang version 3.8.0 (tags/RELEASE_380/final)
->   11    91.50 alt:p9                        : Ok   x86_64-alt-linux-gcc (GCC) 8.4.1 20200305 (ALT p9 8.4.1-alt0.p9.1) , clang version 10.0.0
->   12    89.80 alt:p10                       : Ok   x86_64-alt-linux-gcc (GCC) 10.3.1 20210703 (ALT Sisyphus 10.3.1-alt2) , clang version 11.0.1
->   13     8.99 alt:sisyphus                  : FAIL gcc version 12.1.1 20220518 (ALT Sisyphus 12.1.1-alt1) (GCC)
->         |         ^~~~
->     442 |         case 47: return "EL3RST";
->         |         ^~~~
->     443 |         case 48: return "ELNRNG";
-> 
-> The generated file lacks the function start/end due to some strange
-> glitch:
-> 
-> http://vger.kernel.org/~acme/perf/generated-altlinux-sisyphus-arch_errno_name_array.c
-> 
-> So I'm adding this workaround, can you please check why this is
-> happening?
+Commit fb58a9c345f6 ("KVM: x86/mmu: Optimize MMU page cache lookup for
+fully direct MMUs") skipped the unsync checks and write flood clearing
+for full direct MMUs. We can extend this further to skip the checks for
+all direct shadow pages. Direct shadow pages in indirect MMUs (i.e.
+shadow paging) are used when shadowing a guest huge page with smaller
+pages. Such direct shadow pages, like their counterparts in fully direct
+MMUs, are never marked unsynced or have a non-zero write-flooding count.
 
-arch_errno_names.sh uses here-documents which are implemented in bash
-using temporary files.  Looks like it couldn't create a temporary file,
-e.g. because $TMPDIR points to a directory that doesn't exist or not
-writable.  If there was some "cannot create temp file for here-document"
-diagnostics in stderr, that's it.  If that's the case, it's not a problem
-in the script but in the environment.
+Checking sp->role.direct also generates better code than checking
+direct_map because, due to register pressure, direct_map has to get
+shoved onto the stack and then pulled back off.
 
-I've Cc'ed more people, maybe they could have a look.
+No functional change intended.
 
+Reviewed-by: Lai Jiangshan <jiangshanlai@gmail.com>
+Reviewed-by: Sean Christopherson <seanjc@google.com>
+Reviewed-by: Peter Xu <peterx@redhat.com>
+Signed-off-by: David Matlack <dmatlack@google.com>
+Message-Id: <20220516232138.1783324-2-dmatlack@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+---
+ arch/x86/kvm/mmu/mmu.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index 27b2a5603496..c0afb4f1c8ae 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -2000,7 +2000,6 @@ static struct kvm_mmu_page *kvm_mmu_get_page(struct kvm_vcpu *vcpu,
+ 					     int direct,
+ 					     unsigned int access)
+ {
+-	bool direct_mmu = vcpu->arch.mmu->root_role.direct;
+ 	union kvm_mmu_page_role role;
+ 	struct hlist_head *sp_list;
+ 	unsigned quadrant;
+@@ -2060,7 +2059,8 @@ static struct kvm_mmu_page *kvm_mmu_get_page(struct kvm_vcpu *vcpu,
+ 			continue;
+ 		}
+ 
+-		if (direct_mmu)
++		/* unsync and write-flooding only apply to indirect SPs. */
++		if (sp->role.direct)
+ 			goto trace_get_page;
+ 
+ 		if (sp->unsync) {
 -- 
-ldv
+2.31.1
+
+
