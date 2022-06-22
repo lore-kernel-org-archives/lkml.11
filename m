@@ -2,247 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20608C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 09:39:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A35A0C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 09:42:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236923AbiFVJjw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 05:39:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37712 "EHLO
+        id S1352680AbiFVJmn (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 05:42:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233494AbiFVJjv (ORCPT
+        with ESMTP id S230443AbiFVJml (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 05:39:51 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6292039822
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 02:39:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655890789;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+        Wed, 22 Jun 2022 05:42:41 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96A1639B90;
+        Wed, 22 Jun 2022 02:42:39 -0700 (PDT)
+Date:   Wed, 22 Jun 2022 09:42:36 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1655890957;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=zGC3+hajwdWXYkAwBxTJS1WZ7tKXGTLNEGKHzh0auOk=;
-        b=CeJ8UO0WQN/Jkpw5j9qtrkVGyx/lk6ppQuWEIGrVhKcCVULsYOUYyJnC565u3N+9c32dFz
-        3vcAOZMVpe6SbcLn+EY+DHcPTYD12AVTQOiMzTQdTrQoid1QYCQOZphJYF6sy6YWdMSKxv
-        F0TMGzi6bd71gTtUVD66m5w+78aowHA=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-640-HPx72Z73OC-Mo0J3lnkK6w-1; Wed, 22 Jun 2022 05:39:47 -0400
-X-MC-Unique: HPx72Z73OC-Mo0J3lnkK6w-1
-Received: by mail-wr1-f72.google.com with SMTP id b10-20020adf9b0a000000b0021a0c74738aso3893948wrc.7
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 02:39:47 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=zGC3+hajwdWXYkAwBxTJS1WZ7tKXGTLNEGKHzh0auOk=;
-        b=xwUoiCWaJFAQ3LFFlQrOMwvkCh8PoeJXomcC3DR1CtZn5SDlMGGvESOm2gM05u66IX
-         VbMZq1L3eQXA3zKiWcB0RsIq6zpwm+1xj3+FrTDJ8/HQRNzov5qU+9qpPGqnn+ucndAN
-         wovu+oy8tdTlHzhznnpeW1pSquz+Cd1cSRdt1ogs8bV7/48jfozvM52z2yo+9XLJFSVn
-         mtGvBXEnb/NJTFqCkhGhD1rBfmvETiDoF90fLY88Bkr6cI9vhopaUR6u1HzbBe/vSc0K
-         aSpjGd/xQjz7igyUDgkY517ZXFVT2i2ZMKSQ/9A6tFeQ4bbgBTjCf9eLkG4I3Rv4m622
-         ESWw==
-X-Gm-Message-State: AJIora9BCFoZTUy+cq8pC2geSdhytB1pjwRuNSozAGDWaFU3ioZBUDdR
-        fyQ8GHLPj18p83yRU6kuZj1QT26sUBeK+qZscnyHxwsR2qYHUC5jo91n5/02FhnZ4DN9cALwtPm
-        6xzgUh3Q76rZxAUnFxTNaCyksyP9eL+oyKieIYubf47lfCe5GiqVq7zYan9eXJnpJLYtLO87unf
-        nq
-X-Received: by 2002:a5d:6309:0:b0:21b:9455:cf with SMTP id i9-20020a5d6309000000b0021b945500cfmr2430548wru.354.1655890786615;
-        Wed, 22 Jun 2022 02:39:46 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1sL4VhXlaGXQpTlLZlOBnHBP0ua+JV6dZROeb3F6ClKWm547YbFM5TeoUidB1jgo2ZaOL5BNw==
-X-Received: by 2002:a5d:6309:0:b0:21b:9455:cf with SMTP id i9-20020a5d6309000000b0021b945500cfmr2430501wru.354.1655890786239;
-        Wed, 22 Jun 2022 02:39:46 -0700 (PDT)
-Received: from fedora (nat-2.ign.cz. [91.219.240.2])
-        by smtp.gmail.com with ESMTPSA id y6-20020a5d6206000000b0021350f7b22esm20581038wru.109.2022.06.22.02.39.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jun 2022 02:39:45 -0700 (PDT)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     Paul Durrant <pdurrant@amazon.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] KVM: x86/xen: Update Xen CPUID Leaf 4 (tsc info)
- sub-leaves, if present
-In-Reply-To: <20220622092202.15548-1-pdurrant@amazon.com>
-References: <20220622092202.15548-1-pdurrant@amazon.com>
-Date:   Wed, 22 Jun 2022 11:39:44 +0200
-Message-ID: <87wnd9xcin.fsf@redhat.com>
+        bh=io8/PY4wsMsORkfLOYHpgOs3qLMv7ZBkKSxQmXu8GFU=;
+        b=WB1B4VvlocQ+VWbwv9/0uMHvoXS0MSYWbKjhfNEYtK8cQfOzMj0iS55yc3XHeupt4xWv1g
+        oBiEu0QYy+0MLK4eSWAcApYAlj11KsfmE2xPZy7anWKX5r4RSZw668CAf8ElLqDACPm26r
+        t7J9w75MBkX1FfRnjKtYF44gxYTL2mXTIC41Njgsu3ccrr240D78opoVXjFxrSP9gMj5TY
+        0CT02CuGENtOL/o6GxsA1tHj+4uJ42A/FTopXEq3aVX2mRf/7aFT/X8dBELbg7vRUv7WV4
+        bQn21sCwWTLvKt1SPkeIIlFip+XZhebnIo+fyOLwY7aMd9KZ6SqPnKs+NYxquQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1655890957;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=io8/PY4wsMsORkfLOYHpgOs3qLMv7ZBkKSxQmXu8GFU=;
+        b=t0n0bBOicDHOAAv50nCiKLaOv6ExUPGmJ408s16AVEZ3PcrDPCOJo4EV5Ul4FSkHtKVq3r
+        zA9rrtVIThtoh3Ag==
+From:   "tip-bot2 for Shreenidhi Shedi" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/vmware] x86/vmware: Use BIT() macro for shifting
+Cc:     Shreenidhi Shedi <sshedi@vmware.com>, Borislav Petkov <bp@suse.de>,
+        "Srivatsa S. Bhat (VMware)" <srivatsa@csail.mit.edu>,
+        x86@kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <20220601101820.535031-1-sshedi@vmware.com>
+References: <20220601101820.535031-1-sshedi@vmware.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Message-ID: <165589095635.4207.5855422927608587338.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Paul Durrant <pdurrant@amazon.com> writes:
+The following commit has been merged into the x86/vmware branch of tip:
 
-> The scaling information in sub-leaf 1 should match the values in the
-> 'vcpu_info' sub-structure 'time_info' (a.k.a. pvclock_vcpu_time_info) which
-> is shared with the guest. The offset values are not set since a TSC offset
-> is already applied.
-> The host TSC frequency should also be set in sub-leaf 2.
->
-> This patch adds a new kvm_xen_set_cpuid() function that scans for the
-> relevant CPUID leaf when the CPUID information is updated by the VMM and
-> stashes pointers to the sub-leaves in the kvm_vcpu_xen structure.
-> The values are then updated by a call to the, also new,
-> kvm_xen_setup_tsc_info() function made at the end of
-> kvm_guest_time_update() just before entering the guest.
->
-> Signed-off-by: Paul Durrant <pdurrant@amazon.com>
-> ---
->  arch/x86/include/asm/kvm_host.h |  2 ++
->  arch/x86/kvm/cpuid.c            |  2 ++
->  arch/x86/kvm/x86.c              |  1 +
->  arch/x86/kvm/xen.c              | 41 +++++++++++++++++++++++++++++++++
->  arch/x86/kvm/xen.h              | 10 ++++++++
->  5 files changed, 56 insertions(+)
->
-> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-> index 1038ccb7056a..f77a4940542f 100644
-> --- a/arch/x86/include/asm/kvm_host.h
-> +++ b/arch/x86/include/asm/kvm_host.h
-> @@ -638,6 +638,8 @@ struct kvm_vcpu_xen {
->  	struct hrtimer timer;
->  	int poll_evtchn;
->  	struct timer_list poll_timer;
-> +	struct kvm_cpuid_entry2 *tsc_info_1;
-> +	struct kvm_cpuid_entry2 *tsc_info_2;
->  };
->  
->  struct kvm_vcpu_arch {
-> diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
-> index d47222ab8e6e..eb6cd88c974a 100644
-> --- a/arch/x86/kvm/cpuid.c
-> +++ b/arch/x86/kvm/cpuid.c
-> @@ -25,6 +25,7 @@
->  #include "mmu.h"
->  #include "trace.h"
->  #include "pmu.h"
-> +#include "xen.h"
->  
->  /*
->   * Unlike "struct cpuinfo_x86.x86_capability", kvm_cpu_caps doesn't need to be
-> @@ -310,6 +311,7 @@ static void kvm_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
->  	    __cr4_reserved_bits(guest_cpuid_has, vcpu);
->  
->  	kvm_hv_set_cpuid(vcpu);
-> +	kvm_xen_set_cpuid(vcpu);
->  
->  	/* Invoke the vendor callback only after the above state is updated. */
->  	static_call(kvm_x86_vcpu_after_set_cpuid)(vcpu);
-> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> index 00e23dc518e0..8b45f9975e45 100644
-> --- a/arch/x86/kvm/x86.c
-> +++ b/arch/x86/kvm/x86.c
-> @@ -3123,6 +3123,7 @@ static int kvm_guest_time_update(struct kvm_vcpu *v)
->  	if (vcpu->xen.vcpu_time_info_cache.active)
->  		kvm_setup_guest_pvclock(v, &vcpu->xen.vcpu_time_info_cache, 0);
->  	kvm_hv_setup_tsc_page(v->kvm, &vcpu->hv_clock);
-> +	kvm_xen_setup_tsc_info(v);
->  	return 0;
->  }
->  
-> diff --git a/arch/x86/kvm/xen.c b/arch/x86/kvm/xen.c
-> index 610beba35907..a016ff85264d 100644
-> --- a/arch/x86/kvm/xen.c
-> +++ b/arch/x86/kvm/xen.c
-> @@ -10,6 +10,9 @@
->  #include "xen.h"
->  #include "hyperv.h"
->  #include "lapic.h"
-> +#include "cpuid.h"
-> +
-> +#include <asm/xen/cpuid.h>
->  
->  #include <linux/eventfd.h>
->  #include <linux/kvm_host.h>
-> @@ -1855,3 +1858,41 @@ void kvm_xen_destroy_vm(struct kvm *kvm)
->  	if (kvm->arch.xen_hvm_config.msr)
->  		static_branch_slow_dec_deferred(&kvm_xen_enabled);
->  }
-> +
-> +void kvm_xen_set_cpuid(struct kvm_vcpu *vcpu)
-> +{
-> +	u32 base = 0;
-> +	u32 function;
-> +
-> +	for_each_possible_hypervisor_cpuid_base(function) {
-> +		struct kvm_cpuid_entry2 *entry = kvm_find_cpuid_entry(vcpu, function, 0);
-> +
-> +		if (entry &&
-> +		    entry->ebx == XEN_CPUID_SIGNATURE_EBX &&
-> +		    entry->ecx == XEN_CPUID_SIGNATURE_ECX &&
-> +		    entry->edx == XEN_CPUID_SIGNATURE_EDX) {
-> +			base = function;
-> +			break;
-> +		}
-> +	}
-> +	if (!base)
-> +		return;
-> +
-> +	function = base | XEN_CPUID_LEAF(3);
-> +	vcpu->arch.xen.tsc_info_1 = kvm_find_cpuid_entry(vcpu, function, 1);
-> +	vcpu->arch.xen.tsc_info_2 = kvm_find_cpuid_entry(vcpu, function, 2);
-> +}
+Commit-ID:     4745ca43104b422354f06dc814d3f13661f217af
+Gitweb:        https://git.kernel.org/tip/4745ca43104b422354f06dc814d3f13661f217af
+Author:        Shreenidhi Shedi <sshedi@vmware.com>
+AuthorDate:    Wed, 01 Jun 2022 15:48:20 +05:30
+Committer:     Borislav Petkov <bp@suse.de>
+CommitterDate: Wed, 22 Jun 2022 11:23:14 +02:00
 
-Imagine the following scenario: CPUID data was supplied with Xen CPUID
-leaves first and then got updated with new information which doesn't
-have Xen CPUID info (e.g. has Hyper-V signature instead of Xen in the
-same 0x40000000 leaf). Won't arch.xen.tsc_info_1/arch.xen.tsc_info_2
-pointers become dangling here after we free the old CPUID data ...
+x86/vmware: Use BIT() macro for shifting
 
-> +
-> +void kvm_xen_setup_tsc_info(struct kvm_vcpu *vcpu)
-> +{
-> +	struct kvm_cpuid_entry2 *entry = vcpu->arch.xen.tsc_info_1;
-> +
-> +	if (entry) {
-> +		entry->ecx = vcpu->arch.hv_clock.tsc_to_system_mul;
-> +		entry->edx = vcpu->arch.hv_clock.tsc_shift;
+VMWARE_CMD_VCPU_RESERVED is bit 31 and that would mean undefined
+behavior when shifting an int but the kernel is built with
+-fno-strict-overflow which will wrap around using two's complement.
 
-... just to crash everything here?
+Use the BIT() macro to improve readability and avoid any potential
+overflow confusion because it uses an unsigned long.
 
-> +	}
-> +
-> +	entry = vcpu->arch.xen.tsc_info_2;
-> +	if (entry)
-> +		entry->eax = vcpu->arch.hw_tsc_khz;
-> +}
-> diff --git a/arch/x86/kvm/xen.h b/arch/x86/kvm/xen.h
-> index 532a535a9e99..1afb663318a9 100644
-> --- a/arch/x86/kvm/xen.h
-> +++ b/arch/x86/kvm/xen.h
-> @@ -32,6 +32,8 @@ int kvm_xen_set_evtchn_fast(struct kvm_xen_evtchn *xe,
->  int kvm_xen_setup_evtchn(struct kvm *kvm,
->  			 struct kvm_kernel_irq_routing_entry *e,
->  			 const struct kvm_irq_routing_entry *ue);
-> +void kvm_xen_set_cpuid(struct kvm_vcpu *vcpu);
-> +void kvm_xen_setup_tsc_info(struct kvm_vcpu *vcpu);
->  
->  static inline bool kvm_xen_msr_enabled(struct kvm *kvm)
->  {
-> @@ -135,6 +137,14 @@ static inline bool kvm_xen_timer_enabled(struct kvm_vcpu *vcpu)
->  {
->  	return false;
->  }
-> +
-> +static inline void kvm_xen_set_cpuid(struct kvm_vcpu *vcpu)
-> +{
-> +}
-> +
-> +static inline void kvm_xen_setup_tsc_info(struct kvm_vcpu *vcpu)
-> +{
-> +}
->  #endif
->  
->  int kvm_xen_hypercall(struct kvm_vcpu *vcpu);
+  [ bp: Clarify commit message. ]
 
--- 
-Vitaly
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+Link: https://lore.kernel.org/r/20220601101820.535031-1-sshedi@vmware.com
+---
+ arch/x86/kernel/cpu/vmware.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
+diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
+index c04b933..02039ec 100644
+--- a/arch/x86/kernel/cpu/vmware.c
++++ b/arch/x86/kernel/cpu/vmware.c
+@@ -476,8 +476,8 @@ static bool __init vmware_legacy_x2apic_available(void)
+ {
+ 	uint32_t eax, ebx, ecx, edx;
+ 	VMWARE_CMD(GETVCPU_INFO, eax, ebx, ecx, edx);
+-	return (eax & (1 << VMWARE_CMD_VCPU_RESERVED)) == 0 &&
+-	       (eax & (1 << VMWARE_CMD_LEGACY_X2APIC)) != 0;
++	return !(eax & BIT(VMWARE_CMD_VCPU_RESERVED)) &&
++		(eax & BIT(VMWARE_CMD_LEGACY_X2APIC));
+ }
+ 
+ #ifdef CONFIG_AMD_MEM_ENCRYPT
