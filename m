@@ -2,77 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76DEFC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 14:04:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6544FCCA47D
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 14:05:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357673AbiFVOEu (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 10:04:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54674 "EHLO
+        id S235596AbiFVOFP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 10:05:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239923AbiFVOEs (ORCPT
+        with ESMTP id S239923AbiFVOFN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 10:04:48 -0400
-Received: from smtpbg.qq.com (smtpbg139.qq.com [175.27.65.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1B132F66B
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 07:04:44 -0700 (PDT)
-X-QQ-mid: bizesmtp79t1655906315t7m9cd90
-Received: from ubuntu.localdomain ( [106.117.78.84])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 22 Jun 2022 21:58:31 +0800 (CST)
-X-QQ-SSF: 01000000008000B0B000B00A0000000
-X-QQ-FEAT: eTtJes0duVtiagenvj6h5EHoH3+bpCWSfJ+9c57vDG73WyQb93c0oVI0STkaS
-        ubkPgSL+uJw/jZ+9rrbBqEUT0QFBkZoAS/VKZ8XLYDo04KJmEOpA3tDQW3GR5d3YizHbyId
-        WMAmZsGBWN0Ow/r2yAAaZEzd8wTXy3Z/++xxPMVSiEp/YiV/jueKA1tCanj/oHX/38RGaY2
-        X8KlJk2I/ckg30gaUoqq5lAOXTfhSKTKUO/62b8YTZDHELwjv0gPaGGsL6wBKeR6BAgv7QY
-        2aTWUCRuhjtHGOzX++Ywq1+Eeg4jUQLPcATJHljGcXVfCZCg6lxYWDya2oM1L+b8dHWNFDx
-        VQi0bavIl4u6dEgjkhyvyWRpM39lz2h603FkzCS
-X-QQ-GoodBg: 0
-From:   Jiang Jian <jiangjian@cdjrlc.com>
-To:     mpe@ellerman.id.au
-Cc:     benh@kernel.crashing.org, paulus@samba.org, npiggin@gmail.com,
-        aik@ozlabs.ru, christophe.leroy@csgroup.eu, farosas@linux.ibm.com,
-        jiangjian@cdjrlc.com, dja@axtens.net,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] powerpc/64s: drop unexpected word 'and' in the comments
-Date:   Wed, 22 Jun 2022 21:58:28 +0800
-Message-Id: <20220622135828.4568-1-jiangjian@cdjrlc.com>
-X-Mailer: git-send-email 2.17.1
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam6
+        Wed, 22 Jun 2022 10:05:13 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89992326CF
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 07:05:11 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id mf9so14169591ejb.0
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 07:05:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=UE1r6lMX1LSKeFLb/8EsOLr5fmA/Z61QnVe45iog/zI=;
+        b=htE6GCh2vnEGMBL5lrnsbYR45vdl28LfLNMWLEEshX6SzWblWskBdUnGbX0nXtc7s3
+         y03iqpFLQUk27Aid5UzHoBlpYQ2rD6XgtMFLyxMgZlnRsU5kq5dlR8GkYaM8d52J8HBE
+         f7HvghdigHQ/njXsQmktBklyLfuoFNmocna1SID3my6jUrJNf8WlAKIIfy+Caxkb539M
+         Rwbc6Ydn3aqbM6Xl8FIW+Q6qaB7ks1mxR1EsQhKAANiZqzj/zGmCGGXYViAJeSymm1/F
+         BJjA/DzToixOcq2SJFD6bnS4vb8CvWD/HkP04sopNPmaNfkIcvNCiw9bZ/Ra9bVqcuzD
+         B1Sw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=UE1r6lMX1LSKeFLb/8EsOLr5fmA/Z61QnVe45iog/zI=;
+        b=dP6fWS6t7a1mXjDsNyj0bdIYKyig/KiROOt7qtwDj7sy2EIyT3MKFeYPw0awVIO4Mo
+         qVPE4ePBE+8GW12heOTz6Z5DmRNNIdpmHJs5teo/RWKKWBP+ZtIqeIAU+dPsOQEmL/xN
+         be/LhMEWkP6o5C9MVJSo8dKrHhNCaDz5AFili/vsiczAdI9732EhTjHUe5TgcAn8aHKW
+         e98bMzmN2k/pHNnhhfKJZbdL0n9N1+zZuCdh1fKNa74t00LbHAuBiD5agLRCzEC51nT+
+         KdBzToNmmOq2cZjULlLTEzmV+YrlXxYLUcOcjnyJNa6xs04YGKddVrouPdzPQgubKV8L
+         oTqQ==
+X-Gm-Message-State: AJIora8Mq1OCONf4IDnqh+Nx6Alnew3gIaodszArS827Rk59BrVWqnYA
+        XJpGISEbl1tty5zFq9oRws7LHA==
+X-Google-Smtp-Source: AGRyM1slfBibZDlu5JXLddr1PQXZ6Z5bDa5qcMSAicpyowa3br/kP6DsF2xLoR8e8QZUOJCOZQuQng==
+X-Received: by 2002:a17:906:5d08:b0:6ff:8ed:db63 with SMTP id g8-20020a1709065d0800b006ff08eddb63mr3262078ejt.408.1655906709967;
+        Wed, 22 Jun 2022 07:05:09 -0700 (PDT)
+Received: from [192.168.0.224] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id ek6-20020a056402370600b0042bdb6a3602sm14526265edb.69.2022.06.22.07.05.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Jun 2022 07:05:09 -0700 (PDT)
+Message-ID: <f32f6b2c-462a-da3f-d74a-cec7d42f7dac@linaro.org>
+Date:   Wed, 22 Jun 2022 16:05:08 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 1/6] dt-bindings: arm: qcom: Document additional
+ sc8280xp devices
+Content-Language: en-US
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     Manivannan Sadhasivam <mani@kernel.org>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220622041224.627803-1-bjorn.andersson@linaro.org>
+ <20220622041224.627803-2-bjorn.andersson@linaro.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220622041224.627803-2-bjorn.andersson@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-there is an unexpected word 'and' in the comments that need to be dropped
+On 22/06/2022 06:12, Bjorn Andersson wrote:
+> Add the CRD (Customer Reference Design?) and the Lenovo Thinkpad X13s to
+> the valid device compatibles found on the sc8280xp platform.
+> 
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-file: arch/powerpc/kernel/exceptions-64s.S
-line: 2782
 
-* - If it was a decrementer interrupt, we bump the dec to max and and return.
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-changed to:
 
-* - If it was a decrementer interrupt, we bump the dec to max and return.
-
-Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
----
- arch/powerpc/kernel/exceptions-64s.S | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/powerpc/kernel/exceptions-64s.S b/arch/powerpc/kernel/exceptions-64s.S
-index b66dd6f775a4..3d0dc133a9ae 100644
---- a/arch/powerpc/kernel/exceptions-64s.S
-+++ b/arch/powerpc/kernel/exceptions-64s.S
-@@ -2779,7 +2779,7 @@ EXC_COMMON_BEGIN(soft_nmi_common)
- 
- /*
-  * An interrupt came in while soft-disabled. We set paca->irq_happened, then:
-- * - If it was a decrementer interrupt, we bump the dec to max and and return.
-+ * - If it was a decrementer interrupt, we bump the dec to max and return.
-  * - If it was a doorbell we return immediately since doorbells are edge
-  *   triggered and won't automatically refire.
-  * - If it was a HMI we return immediately since we handled it in realmode
--- 
-2.17.1
-
+Best regards,
+Krzysztof
