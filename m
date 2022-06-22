@@ -2,101 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE2B3C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 18:14:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0024BC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 18:14:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377483AbiFVSOJ (ORCPT
+        id S1377484AbiFVSOP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 14:14:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41210 "EHLO
+        Wed, 22 Jun 2022 14:14:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359064AbiFVSOH (ORCPT
+        with ESMTP id S1359064AbiFVSOM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 14:14:07 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A95263C709
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 11:14:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655921646; x=1687457646;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=kWllMF9oZEgWO456YfAB4Nn12pwMbxEk0EnZ7zp587k=;
-  b=M5xsPx3qK7ovH7whY+vpYmplypSuyKNgkkWwrYGBsSfIpw9C2C7fFNpR
-   DRy7J4dhBcopc/A5HGU6FDV08iF0Y6k5drFHujKREPpQkxWYyGZrJId4i
-   S7JblaJWCgbIVR5zNCEN976oOT/aNRBqvqbm6k+F1y0QAKaESQ4YvbZEE
-   2C02SoZsR0zH+fq6qc6ROX1QhiRb2jaAfGcUJQRnFn0cSFedNgsoaorSc
-   oN8cv6N7A/YDqONj7j0XpCKAvIFE7zOvHesYDEfVmbDVIjmtPuLL+xMdj
-   /yKZFSe4LboXuA80VY9ht2gxyjlOlZABzWHYrMHJeMoaeAwxXfhntYowk
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="280543615"
-X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="280543615"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 10:47:57 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="588286532"
-Received: from lkp-server02.sh.intel.com (HELO a67cc04a5eeb) ([10.239.97.151])
-  by orsmga002.jf.intel.com with ESMTP; 22 Jun 2022 10:47:56 -0700
-Received: from kbuild by a67cc04a5eeb with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o44SJ-0001XX-DB;
-        Wed, 22 Jun 2022 17:47:55 +0000
-Date:   Thu, 23 Jun 2022 01:46:56 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Andi Kleen <ak@linux.intel.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>
-Subject: [jirislaby:lto 32/45] arch/x86/kernel/paravirt.c:123:15: warning: no
- previous prototype for function 'native_steal_clock'
-Message-ID: <202206230120.YLCB69tS-lkp@intel.com>
+        Wed, 22 Jun 2022 14:14:12 -0400
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D38723C71C
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 11:14:10 -0700 (PDT)
+Received: by mail-lj1-x22b.google.com with SMTP id d19so20360713lji.10
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 11:14:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=tOaTUPPd6PdnEExOp4k5WWfYtYj0K5ouhfpsiU0MJ+w=;
+        b=lMSz4dBNNkjwUgQVLw2XHuk6MaRJIayQLYaVfK4Jg5y35/dTMC79+wGsynebGHJPzu
+         oEke8IHC9DqEek694z88Vsyk9VHBG+98m0tvqwI6Gv47nFn7SaHIi8fIMqyZei/q7i9j
+         AbJBhCa8grNO6PMrhiSwdzC9AwDyUnhf8NbfvnKAo9XXUTs9MgsIpu5QHq2KPFWhjQJt
+         AdgoTxsY/5ooIOCtlABRvN19t8xjZwvlfqE1QDNAND/moluseFEqnsmhOJbTFZ0BGD5g
+         fBSCyKEgKo+avosEChFcl4zGwUtdyxowcDOPMKyiCrUhNOE8XRFAM60zzgB2Hwo4mOpK
+         ePzQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=tOaTUPPd6PdnEExOp4k5WWfYtYj0K5ouhfpsiU0MJ+w=;
+        b=s86ejL74jBfaSZaRGdHVwO6ofudPS82E0mCE843epmIeVVwg2P9A3HgYvtaNXYgpUS
+         bLAMM8DuGvfFKHGzl4kgR6Zoxb0rl4354RZLo5979Cac9ULQB15CmJxyIsdshbJugoX2
+         /rNfxD/mp+3HMc+HCLSJPJ7s8yCNx1mzWLPwzOSnB/BAv89pB+Uw+c0KlMrvTNfh0ijh
+         FZ2xDs79PAntkWZHeEHVeF8frBenWRSmKrr5AvfiA2MPFqiFL9QNrVed94lyYNHR2LDQ
+         Dqc1V6nF06Ovdb3NAd4L7beqeSZqgEUV14khgqVWKsqJHk2lexNQF+DJxe4o7i7Oi9BB
+         /b9g==
+X-Gm-Message-State: AJIora8caIbnE0pqZrshnVzQGz7rbA2G94+Wew2zUr3oCFWuYVzU9sWK
+        XsKOwUMyQzI/B27aaPDb26h5Tz9CeBuXugo/
+X-Google-Smtp-Source: AGRyM1sDZSQ9wOQc+S8b6FOus1k4rbB5EVldDN3tKv3CSF+uyrl2CuvZ7MLOW3KGU6zXdS6vurt5qw==
+X-Received: by 2002:a2e:a16f:0:b0:25a:7527:95ce with SMTP id u15-20020a2ea16f000000b0025a752795cemr2622679ljl.305.1655921649232;
+        Wed, 22 Jun 2022 11:14:09 -0700 (PDT)
+Received: from [192.168.1.212] ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id u1-20020a199201000000b0047255d210dbsm2641802lfd.10.2022.06.22.11.14.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Jun 2022 11:14:08 -0700 (PDT)
+Message-ID: <fb4310fd-61b1-08ab-c1fb-ed530684a390@linaro.org>
+Date:   Wed, 22 Jun 2022 21:14:07 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] drm/msm/dp: reset drm_dev to NULL at dp_display_unbind()
+Content-Language: en-GB
+To:     Kuogee Hsieh <quic_khsieh@quicinc.com>, robdclark@gmail.com,
+        sean@poorly.run, swboyd@chromium.org, dianders@chromium.org,
+        vkoul@kernel.org, daniel@ffwll.ch, airlied@linux.ie,
+        agross@kernel.org, bjorn.andersson@linaro.org
+Cc:     quic_abhinavk@quicinc.com, quic_aravindh@quicinc.com,
+        quic_sbillaka@quicinc.com, freedreno@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1655916845-31760-1-git-send-email-quic_khsieh@quicinc.com>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <1655916845-31760-1-git-send-email-quic_khsieh@quicinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git lto
-head:   8047611082d70c5263114fabce8c80a4c3d251fa
-commit: b2efc66d269d1bb2b1b2a8aac7e873ed266678ba [32/45] x86/paravirt/lto: Export native_steal_clock
-config: x86_64-randconfig-a005 (https://download.01.org/0day-ci/archive/20220623/202206230120.YLCB69tS-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 8b8d126598ce7bd5243da7f94f69fa1104288bee)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git/commit/?id=b2efc66d269d1bb2b1b2a8aac7e873ed266678ba
-        git remote add jirislaby https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git
-        git fetch --no-tags jirislaby lto
-        git checkout b2efc66d269d1bb2b1b2a8aac7e873ed266678ba
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/kernel/
+On 22/06/2022 19:54, Kuogee Hsieh wrote:
+> During msm initialize phase, dp_display_unbind() will be called to undo
+> initializations had been done by dp_display_bind() previously if there is
+> error happen at msm_drm_bind. Under this kind of circumstance, drm_device
+> may not be populated completed which causes system crash at drm_dev_dbg().
+> This patch reset drm_dev to NULL so that following drm_dev_dbg() will not
+> refer to any internal fields of drm_device to prevent system from crashing.
+> Below are panic stack trace,
+> 
+> [   53.584904] Unable to handle kernel paging request at virtual address 0000000070018001
+> .
+> [   53.702212] Hardware name: Qualcomm Technologies, Inc. sc7280 CRD platform (rev5+) (DT)
+> [   53.710445] pstate: 20400009 (nzCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+> [   53.717596] pc : string_nocheck+0x1c/0x64
+> [   53.721738] lr : string+0x54/0x60
+> [   53.725162] sp : ffffffc013d6b650
+> [   53.728590] pmr_save: 000000e0
+> [   53.731743] x29: ffffffc013d6b650 x28: 0000000000000002 x27: 0000000000ffffff
+> [   53.739083] x26: ffffffc013d6b710 x25: ffffffd07a066ae0 x24: ffffffd07a419f97
+> [   53.746420] x23: ffffffd07a419f99 x22: ffffff81fef360d4 x21: ffffff81fef364d4
+> [   53.753760] x20: ffffffc013d6b6f8 x19: ffffffd07a06683c x18: 0000000000000000
+> [   53.761093] x17: 4020386678302f30 x16: 00000000000000b0 x15: ffffffd0797523c8
+> [   53.768429] x14: 0000000000000004 x13: ffff0000ffffff00 x12: ffffffd07a066b2c
+> [   53.775780] x11: 0000000000000000 x10: 000000000000013c x9 : 0000000000000000
+> [   53.783117] x8 : ffffff81fef364d4 x7 : 0000000000000000 x6 : 0000000000000000
+> [   53.790445] x5 : 0000000000000000 x4 : ffff0a00ffffff04 x3 : ffff0a00ffffff04
+> [   53.797783] x2 : 0000000070018001 x1 : ffffffffffffffff x0 : ffffff81fef360d4
+> [   53.805136] Call trace:
+> [   53.807667]  string_nocheck+0x1c/0x64
+> [   53.811439]  string+0x54/0x60
+> [   53.814498]  vsnprintf+0x374/0x53c
+> [   53.818009]  pointer+0x3dc/0x40c
+> [   53.821340]  vsnprintf+0x398/0x53c
+> [   53.824854]  vscnprintf+0x3c/0x88
+> [   53.828274]  __trace_array_vprintk+0xcc/0x2d4
+> [   53.832768]  trace_array_printk+0x8c/0xb4
+> [   53.836900]  drm_trace_printf+0x74/0x9c
+> [   53.840875]  drm_dev_dbg+0xfc/0x1b8
+> [   53.844480]  dp_pm_suspend+0x70/0xf8
+> [   53.848164]  dpm_run_callback+0x60/0x1a0
+> [   53.852222]  __device_suspend+0x304/0x3f4
+> [   53.856363]  dpm_suspend+0xf8/0x3a8
+> [   53.859959]  dpm_suspend_start+0x8c/0xc0
+> 
+> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-All warnings (new ones prefixed by >>):
+> ---
+>   drivers/gpu/drm/msm/dp/dp_display.c | 2 ++
+>   1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
+> index 2b72639..02fff70 100644
+> --- a/drivers/gpu/drm/msm/dp/dp_display.c
+> +++ b/drivers/gpu/drm/msm/dp/dp_display.c
+> @@ -316,6 +316,8 @@ static void dp_display_unbind(struct device *dev, struct device *master,
+>   
+>   	dp_power_client_deinit(dp->power);
+>   	dp_aux_unregister(dp->aux);
+> +	dp->drm_dev = NULL;
+> +	dp->aux->drm_dev = NULL;
+>   	priv->dp[dp->id] = NULL;
+>   }
+>   
 
->> arch/x86/kernel/paravirt.c:123:15: warning: no previous prototype for function 'native_steal_clock' [-Wmissing-prototypes]
-   __visible u64 native_steal_clock(int cpu)
-                 ^
-   arch/x86/kernel/paravirt.c:123:11: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   __visible u64 native_steal_clock(int cpu)
-             ^
-             static 
-   1 warning generated.
-
-
-vim +/native_steal_clock +123 arch/x86/kernel/paravirt.c
-
-   122	
- > 123	__visible u64 native_steal_clock(int cpu)
-   124	{
-   125		return 0;
-   126	}
-   127	
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+With best wishes
+Dmitry
