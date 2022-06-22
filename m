@@ -2,76 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2552C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 19:39:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 150D3CCA479
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 19:39:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358756AbiFVTjF (ORCPT
+        id S1359570AbiFVTjH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 15:39:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47352 "EHLO
+        Wed, 22 Jun 2022 15:39:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358574AbiFVTi0 (ORCPT
+        with ESMTP id S1359276AbiFVTid (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 15:38:26 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76BF217E0E;
-        Wed, 22 Jun 2022 12:38:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
-        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=jzZ8niIo7Smg65/52ka6uwTAHWOyxG3OOMUtsy1PEeE=; b=frN2qRKLQlK5xMP5cQT3Lb9HVI
-        62WleJi7obpCi+3NJcwyjVzbqMUv/A6bothq/yL01s1j0b27k6EIsNFLe2zlnAZ3u/qyea7ep6jRG
-        OWdN4qSgIs4Kf8e1FPIGsnUKcLjCjPDdnPUHTX4Iu52F3zr8L4elecDhTr6fdmAT/ZObCJltnrtvc
-        VgpR65+FbzffP8eLhU+qX7j/2P851jaQhS4oZ9d6qJh1COdadmSJy6HZu3ls4Alk1xLSd8AaGVC7q
-        DtSW53jX8g8vvZ7FzFBDwnULpwRuY95QoTBBAvkW+Mxx23lGlNihpqne20stVeHbO+J1ImLxYljE/
-        JqUGhlzA==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o46AI-00BGiS-IS; Wed, 22 Jun 2022 19:38:16 +0000
-Message-ID: <afe8b072-466f-c180-eeef-5c501bf523e3@infradead.org>
-Date:   Wed, 22 Jun 2022 12:37:21 -0700
+        Wed, 22 Jun 2022 15:38:33 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAE1C1E3DF;
+        Wed, 22 Jun 2022 12:38:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655926705; x=1687462705;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=gbvWe3wuebpXvIG3UZFFzQ35e3K5lS8i3GMHJ5GABAs=;
+  b=GbL3x+4mUkmP8wU9N1DeXcOo18uu6Sp+I8+RXC0SOyf7MUY1e4gd9c7Q
+   3FLDEjf/3afHJzdQQDrm5bu0WA4eDZj25yLlI422pfozCkr9X2HddmTPY
+   kJfk6iqovFon69W55Nfotsj/5fd3WCO1sJmGIygsMl2LdAb4u+IuSxpx/
+   Xzf3a1qa9IFHOV/SiNwYcWgNLNNF3oDGMNG7Jv9KT9wVqpcf6JQpf4iG7
+   fw4Bjxj/5jrbBvIbnmlaVP3LlwAuhPr/lfrS48iv4xmk8SWruSAVxVH6Y
+   8LWm+0zsDzZvyr1bkaaGohA7jIllm+a3lscPAaI6GPO9y7rMRMS/KpKYK
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="305983081"
+X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
+   d="scan'208";a="305983081"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 12:38:25 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
+   d="scan'208";a="715542085"
+Received: from bwalker-desk.ch.intel.com ([143.182.136.162])
+  by orsmga004.jf.intel.com with ESMTP; 22 Jun 2022 12:38:25 -0700
+From:   Ben Walker <benjamin.walker@intel.com>
+To:     vkoul@kernel.org
+Cc:     dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org
+Subject: [PATCH v4 05/15] media: omap_vout: Use dmaengine_async_is_tx_complete
+Date:   Wed, 22 Jun 2022 12:37:43 -0700
+Message-Id: <20220622193753.3044206-6-benjamin.walker@intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220622193753.3044206-1-benjamin.walker@intel.com>
+References: <20220503200728.2321188-1-benjamin.walker@intel.com>
+ <20220622193753.3044206-1-benjamin.walker@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: =?UTF-8?B?UmU6IFtQQVRDSF0gQ29tbW9uIGNsb2NrOiDigIvigItUbyBsaXN0IGFj?=
- =?UTF-8?Q?tive_consumers_of_clocks?=
-Content-Language: en-US
-To:     Stephen Boyd <sboyd@kernel.org>, mturquette@baylibre.com,
-        inux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
-        badolevishal1116@gmail.com
-Cc:     chinmoyghosh2001@gmail.com, mintupatel89@gmail.com
-References: <CAEXpiVQihEadxsNodarz2-wxSAipfpzEaA8zKpnozszC+weYTQ@mail.gmail.com>
- <20220610194013.DD39DC34114@smtp.kernel.org> <20220622163209.GA6246@Mahakal>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220622163209.GA6246@Mahakal>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Replace dma_async_is_tx_complete with dmaengine_async_is_tx_complete.
+The previous API will be removed in favor of the new one.
 
+Cc: linux-media@vger.kernel.org
+Signed-off-by: Ben Walker <benjamin.walker@intel.com>
+---
+ drivers/media/platform/ti/omap/omap_vout_vrfb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-On 6/22/22 09:32, <Vishal Badole> wrote:
-> diff --git a/drivers/clk/Kconfig b/drivers/clk/Kconfig
-> index c44247d..549cdda 100644
-> --- a/drivers/clk/Kconfig
-> +++ b/drivers/clk/Kconfig
-> @@ -23,6 +23,14 @@ config COMMON_CLK
->  menu "Common Clock Framework"
->  	depends on COMMON_CLK
->  
-> +config DEBUG_CLK_CONSUMER
-> +	bool "Debug feature to list clocks and their active consumers"
-> +	depends on DEBUG_FS && COMMON_CLK
-> +	help
-> +	  Clock consumer debug feature supports for clock debugging. Chose y
-
-	                                                             Choose y
-
-> +	  to get debug entry in file system to list clocks and their active
-> +	  consumer devices.
-
+diff --git a/drivers/media/platform/ti/omap/omap_vout_vrfb.c b/drivers/media/platform/ti/omap/omap_vout_vrfb.c
+index 0cfa0169875f0..b9d252d5ced7a 100644
+--- a/drivers/media/platform/ti/omap/omap_vout_vrfb.c
++++ b/drivers/media/platform/ti/omap/omap_vout_vrfb.c
+@@ -289,7 +289,7 @@ int omap_vout_prepare_vrfb(struct omap_vout_device *vout,
+ 					 vout->vrfb_dma_tx.tx_status == 1,
+ 					 VRFB_TX_TIMEOUT);
+ 
+-	status = dma_async_is_tx_complete(chan, cookie, NULL, NULL);
++	status = dmaengine_async_is_tx_complete(chan, cookie);
+ 
+ 	if (vout->vrfb_dma_tx.tx_status == 0) {
+ 		pr_err("%s: Timeout while waiting for DMA\n", __func__);
 -- 
-~Randy
+2.35.1
+
