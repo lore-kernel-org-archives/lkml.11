@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9DCAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 11:19:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5945C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 11:19:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357633AbiFVLTl (ORCPT
+        id S1357648AbiFVLTo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 07:19:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58218 "EHLO
+        Wed, 22 Jun 2022 07:19:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357202AbiFVLTN (ORCPT
+        with ESMTP id S1357564AbiFVLTP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 07:19:13 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DE5E3BA79;
-        Wed, 22 Jun 2022 04:18:05 -0700 (PDT)
+        Wed, 22 Jun 2022 07:19:15 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2E1E3CA43;
+        Wed, 22 Jun 2022 04:18:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655896685; x=1687432685;
+  t=1655896688; x=1687432688;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=ntftiSqWbOB47rbOkwNsaejfB8DACjOwmAgRAleuan0=;
-  b=eqr2QxU9910XUNTcB5dwMU9i+4GYvmx28hNpNglSTM8FvEM2TmEaeCrA
-   MGrVkmI24lckxiHtcGyFuk7oEoXKH0Y2/Beon6dckMLoQoE6lLHEZGKNK
-   wsDZjFHuhb/YHTOagfG5CrsjfF6lZm5gFcHk0y2ZMo4jB+XuonQNn9PMo
-   KTmI9Q57YHIlV4Mn0mpKpa5hxqlb3lc1uvr1S8ZYNCCxVQUbKBi8yPlX7
-   FGjTaacF4ctrrgBokWYTGRH9Vp1zxBLWI5edaFXLfNpNr6XHtTvOisRGD
-   bLUSCQ+372Gcfz2BYpCpr0OV6AsbkhTImI/K5UBkRGJzprxGOXWUiMQ5N
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="366713436"
+  bh=xNPSVdToXKtUmSd8+2K4u5Tm3rdMWLpFdFZbw1UIUkQ=;
+  b=gOKW0ucG+3d3QnuKaPuSXL+LnHzg2GOaHhd98zZaKSizYosCMsjn/ptf
+   u7gNPchWBwluw1rrzUV/OwE+4tL1oI2vn01msEvxCZvCO+qFLdMiEced8
+   lir3jHiF6Q54VVJ5hM2ZcxZlDWl7ef6JobLHri1QtDi4sGnmWy9dx39/+
+   bZBg7WJaroxtez63sNlDoCsCqy6RxXryqTVhJCvO7g8vl6PXaJYavk8Zs
+   BDPeN08cIzCsTpb5b4dJP3/XxaTeq2v99B/dDpUcWnQ6oljOEE+MgWM4d
+   3z4+yWEJsmMJ0KYinwB1OlXFab4aeVC+0jSQIWta5yM0wp9Fw3qI4KixJ
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="305841141"
 X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="366713436"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 04:18:04 -0700
+   d="scan'208";a="305841141"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 04:17:43 -0700
 X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="834065936"
+   d="scan'208";a="730302322"
 Received: from jmatsis-mobl.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.209.178.197])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 04:18:01 -0700
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 04:17:40 -0700
 From:   Kai Huang <kai.huang@intel.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     seanjc@google.com, pbonzini@redhat.com, dave.hansen@intel.com,
@@ -47,9 +47,9 @@ Cc:     seanjc@google.com, pbonzini@redhat.com, dave.hansen@intel.com,
         kirill.shutemov@linux.intel.com,
         sathyanarayanan.kuppuswamy@linux.intel.com,
         isaku.yamahata@intel.com, kai.huang@intel.com
-Subject: [PATCH v5 21/22] x86/virt/tdx: Support kexec()
-Date:   Wed, 22 Jun 2022 23:17:49 +1200
-Message-Id: <9c0c25cbe70969e2aa3e68505cc7a7021a47a7ee.1655894131.git.kai.huang@intel.com>
+Subject: [PATCH v5 17/22] x86/virt/tdx: Reserve TDX module global KeyID
+Date:   Wed, 22 Jun 2022 23:17:06 +1200
+Message-Id: <ccebb1de365f7759a75e8753b02653a4e699196e.1655894131.git.kai.huang@intel.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1655894131.git.kai.huang@intel.com>
 References: <cover.1655894131.git.kai.huang@intel.com>
@@ -59,54 +59,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To support kexec(), if the TDX module is ever initialized, the kernel
-needs to flush all dirty cachelines associated with any TDX private
-KeyID, otherwise they may slightly corrupt the new kernel.
+TDX module initialization requires to use one TDX private KeyID as the
+global KeyID to protect the TDX module metadata.  The global KeyID is
+configured to the TDX module along with TDMRs.
 
-Following SME support, use wbinvd() to flush cache in stop_this_cpu().
-Theoretically, cache flush is only needed when the TDX module has been
-initialized.  However initializing the TDX module is done on demand at
-runtime, and it takes a mutex to read the module status.  Just check
-whether TDX is enabled by BIOS instead to flush cache.
-
-The current TDX module architecture doesn't play nicely with kexec().
-The TDX module can only be initialized once during its lifetime, and
-there is no SEAMCALL to reset the module to give a new clean slate to
-the new kernel.  Therefore, ideally, if the module is ever initialized,
-it's better to shut down the module.  The new kernel won't be able to
-use TDX anyway (as it needs to go through the TDX module initialization
-process which will fail immediately at the first step).
-
-However, there's no guarantee CPU is in VMX operation during kexec().
-This means it's impractical to shut down the module.  Just do nothing
-but leave the module open.
+Just reserve the first TDX private KeyID as the global KeyID.  Keep the
+global KeyID as a static variable as KVM will need to use it too.
 
 Signed-off-by: Kai Huang <kai.huang@intel.com>
 ---
- arch/x86/kernel/process.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ arch/x86/virt/vmx/tdx/tdx.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
-index dbaf12c43fe1..ff5449c23522 100644
---- a/arch/x86/kernel/process.c
-+++ b/arch/x86/kernel/process.c
-@@ -769,8 +769,15 @@ void __noreturn stop_this_cpu(void *dummy)
- 	 *
- 	 * Test the CPUID bit directly because the machine might've cleared
- 	 * X86_FEATURE_SME due to cmdline options.
-+	 *
-+	 * Similar to SME, if the TDX module is ever initialized, the
-+	 * cachelines associated with any TDX private KeyID must be
-+	 * flushed before transiting to the new kernel.  The TDX module
-+	 * is initialized on demand, and it takes the mutex to read it's
-+	 * status.  Just check whether TDX is enabled by BIOS instead to
-+	 * flush cache.
- 	 */
--	if (cpuid_eax(0x8000001f) & BIT(0))
-+	if (cpuid_eax(0x8000001f) & BIT(0) || platform_tdx_enabled())
- 		native_wbinvd();
- 	for (;;) {
- 		/*
+diff --git a/arch/x86/virt/vmx/tdx/tdx.c b/arch/x86/virt/vmx/tdx/tdx.c
+index 86d98c47bd37..df87a9f9ee24 100644
+--- a/arch/x86/virt/vmx/tdx/tdx.c
++++ b/arch/x86/virt/vmx/tdx/tdx.c
+@@ -55,6 +55,9 @@ static struct tdsysinfo_struct tdx_sysinfo;
+ static struct cmr_info tdx_cmr_array[MAX_CMRS] __aligned(CMR_INFO_ARRAY_ALIGNMENT);
+ static int tdx_cmr_num;
+ 
++/* TDX module global KeyID.  Used in TDH.SYS.CONFIG ABI. */
++static u32 tdx_global_keyid;
++
+ /* Detect whether CPU supports SEAM */
+ static int detect_seam(void)
+ {
+@@ -990,6 +993,12 @@ static int init_tdx_module(void)
+ 	if (ret)
+ 		goto out_free_tdmrs;
+ 
++	/*
++	 * Reserve the first TDX KeyID as global KeyID to protect
++	 * TDX module metadata.
++	 */
++	tdx_global_keyid = tdx_keyid_start;
++
+ 	/*
+ 	 * Return -EINVAL until all steps of TDX module initialization
+ 	 * process are done.
 -- 
 2.36.1
 
