@@ -2,91 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 632B4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 04:29:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C51E2C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 04:32:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356895AbiFVE3m (ORCPT
+        id S1356902AbiFVEcr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 00:29:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57388 "EHLO
+        Wed, 22 Jun 2022 00:32:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347603AbiFVE3a (ORCPT
+        with ESMTP id S1356131AbiFVEcp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 00:29:30 -0400
-Received: from m15113.mail.126.com (m15113.mail.126.com [220.181.15.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E02C53526A;
-        Tue, 21 Jun 2022 21:29:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=ZYSkR
-        3rG7wH/nIec2T2jB4hBZSj2bBCch1p+p9iuRxI=; b=OEsas6SQ0mmnZYcP1FE41
-        8YXLBWa2d4s9Hm0MUH1Ss6InD0oXQuKQygu/6JwEBf6Zw+6E0ccqyEeOIlrnBJJ4
-        R8m1q6aK8I2wXKM6P0H6SmULfQ2GKwvvQ3UokzDgFDOKhoyuxIWDwkh3NkgwCIma
-        QKF4iWjUsUUpOC24RmDLW0=
-Received: from localhost.localdomain (unknown [124.16.139.61])
-        by smtp3 (Coremail) with SMTP id DcmowABnB5lpmrJiaxZMDw--.63268S2;
-        Wed, 22 Jun 2022 12:28:26 +0800 (CST)
-From:   Liang He <windhl@126.com>
-To:     krzysztof.kozlowski@linaro.org, thierry.reding@gmail.com,
-        jonathanh@nvidia.com
-Cc:     windhl@126.com, linux-kernel@vger.kernel.org,
-        linux-tegra@vger.kernel.org
-Subject: [PATCH] memory/tegra: Add missing of_node_get() in tegra_emc_find_node_by_ram_code
-Date:   Wed, 22 Jun 2022 12:28:24 +0800
-Message-Id: <20220622042824.4094625-1-windhl@126.com>
+        Wed, 22 Jun 2022 00:32:45 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B5E435276;
+        Tue, 21 Jun 2022 21:32:44 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LSVlK6RjVzSgyD;
+        Wed, 22 Jun 2022 12:29:17 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 22 Jun 2022 12:32:41 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 22 Jun
+ 2022 12:32:41 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-media@vger.kernel.org>
+CC:     <mchehab@kernel.org>, <djrscally@gmail.com>,
+        <andriy.shevchenko@linux.intel.com>, <sakari.ailus@linux.intel.com>
+Subject: [PATCH -next v2] media: ov7251: add missing disable functions on error in ov7251_set_power_on()
+Date:   Wed, 22 Jun 2022 12:42:43 +0800
+Message-ID: <20220622044243.2900783-1-yangyingliang@huawei.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DcmowABnB5lpmrJiaxZMDw--.63268S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7ZryxWr4rJr1UCryUWr47twb_yoW8Gw1rpF
-        WDCrWYkrykW3yfWry8t34UCryfta48GFW7K3yfCas5Zwn8Jas0yr1YgFW5uFn8tFZ2ya13
-        Ja1jvF13Xa10qrJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pENtxnUUUUU=
-X-Originating-IP: [124.16.139.61]
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi2gooF1uwMQfyWAAAsY
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-of_find_node_by_name() will decrease the refcount of its first arg and
-we need to add a of_node_put() to keep refcount balance.
+Add the missing gpiod_set_value_cansleep() and clk_disable_unprepare()
+before return from ov7251_set_power_on() in the error handling case.
 
-Besides, during the 'for' loop execution, the refcount of 'np' will be
-automatically increased and decreased. There is no need to call
-of_node_put() again.
-
-Signed-off-by: Liang He <windhl@126.com>
+Fixes: 9e1d3012cc10 ("media: i2c: Remove .s_power() from ov7251")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 ---
- drivers/memory/tegra/tegra20-emc.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+v2:
+  - add gpiod_set_value_cansleep()
+  - also change the patch title and commit message
+---
+ drivers/media/i2c/ov7251.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/memory/tegra/tegra20-emc.c b/drivers/memory/tegra/tegra20-emc.c
-index 25ba3c5e4ad6..e43a5f8e188e 100644
---- a/drivers/memory/tegra/tegra20-emc.c
-+++ b/drivers/memory/tegra/tegra20-emc.c
-@@ -477,6 +477,7 @@ tegra_emc_find_node_by_ram_code(struct tegra_emc *emc)
- 
- 	ram_code = tegra_read_ram_code();
- 
-+	of_get_node(dev->of_node);
- 	for (np = of_find_node_by_name(dev->of_node, "emc-tables"); np;
- 	     np = of_find_node_by_name(np, "emc-tables")) {
- 		err = of_property_read_u32(np, "nvidia,ram-code", &value);
-@@ -484,6 +485,7 @@ tegra_emc_find_node_by_ram_code(struct tegra_emc *emc)
- 			struct device_node *lpddr2_np;
- 			bool cfg_mismatches = false;
- 
-+			of_node_get(np);
- 			lpddr2_np = of_find_node_by_name(np, "lpddr2");
- 			if (lpddr2_np) {
- 				const struct lpddr2_info *info;
-@@ -521,7 +523,6 @@ tegra_emc_find_node_by_ram_code(struct tegra_emc *emc)
- 			}
- 
- 			if (cfg_mismatches) {
--				of_node_put(np);
- 				continue;
- 			}
- 		}
+diff --git a/drivers/media/i2c/ov7251.c b/drivers/media/i2c/ov7251.c
+index 0e7be15bc20a..ad9689820ecc 100644
+--- a/drivers/media/i2c/ov7251.c
++++ b/drivers/media/i2c/ov7251.c
+@@ -934,6 +934,8 @@ static int ov7251_set_power_on(struct device *dev)
+ 					ARRAY_SIZE(ov7251_global_init_setting));
+ 	if (ret < 0) {
+ 		dev_err(ov7251->dev, "error during global init\n");
++		gpiod_set_value_cansleep(ov7251->enable_gpio, 0);
++		clk_disable_unprepare(ov7251->xclk);
+ 		ov7251_regulators_disable(ov7251);
+ 		return ret;
+ 	}
 -- 
 2.25.1
 
