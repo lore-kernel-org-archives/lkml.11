@@ -2,70 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4B41C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 00:55:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB851CCA473
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 00:55:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355513AbiFVAzN (ORCPT
+        id S1355639AbiFVAzR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 20:55:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52520 "EHLO
+        Tue, 21 Jun 2022 20:55:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355459AbiFVAzB (ORCPT
+        with ESMTP id S1355419AbiFVAzF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 20:55:01 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2075.outbound.protection.outlook.com [40.107.94.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6172930F50;
-        Tue, 21 Jun 2022 17:55:00 -0700 (PDT)
+        Tue, 21 Jun 2022 20:55:05 -0400
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2064.outbound.protection.outlook.com [40.107.93.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FE8830F7E;
+        Tue, 21 Jun 2022 17:55:04 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nHQhPdXNx0p8ocsFbtSlyyWEmSdzuAA1K1RPKxIUkCF0uUK9A2gsPFg9h37A6lm7dqt2/rqVAmZjHwAbfCwvXy1YQntzlB+88xm+KcLSSXYQVU6wvZUbEMaEhJbtG0KEd96PWKHj52Vz++5cm4HnND8aFQRxjJUCmelMjFOZdXu0BORuLAE10lrnkt/ecc1eM3C8sPq1D9y3blkBGLlmwfmxeG5ZH0KN1y53qGY2+zwb3ya/JzBy+XrW6jm+tsrEQ9oS6m5H+tAzuZBLyPe6Bi6fLOd8xOfBaALDnVIENwV37Ibhsu2wy3uzlHNiN82RsVBkGSKE3GJ1Ch6Q8C2tgQ==
+ b=YbkqFebNAkBMnpT9OZ4zJfc+2jGMTAvVQJsZZCzp9rPUzY7mv9K5RxKT/2Uk0si3zJsVgD9riWPxlSS9PPiXL4Ef9arulIs9Ahwm7+1gp4smiAdLN33nFEdCVVJm7RRD+47LKX9HhKsPrOOejyN5WUbKxmtBEHSB2/p/tpaW8Vk7bd9jNlTOVHVYNbl+eAyeoHCXqlMwGCBb4djSSWP0cCHIO3rksBc4KsUYLxuOPmZurlycMtdZ2D3a2HkJLqQGlP8J3eUhic7CDTh/ZnzhXFFTzdGXCTOZTXoKQpNMlBXRNidx0rLH5Im29YhHeAbFbhq2xaq6YCoiDKwLhCkpmg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ccIl/E+UF+vZ5VwPRBoaMcmya4evfUFZtd4XoHWCXwE=;
- b=Z1J8f8hwlOaRQ068BDUkrMWP8o7VzUIpfgcRJbOp3a13hlEvO3bF2ypbTSU/oOO7kduD9Unb/lGyNfYe76KLjjS22LCuz6BmN6PqqkVsLcA1kgrHsrlJu0hoyd9H0xRiaxYjRGcqwvAtqGhtkwxD4HZvPPTRYP6bPeGAGnfRGrkqTjb7CoP7pI0izFjcld4VKHNfCuciHy638KpBDnyn/rYKL1g1+EP6pD1HhxpNq5d+WPtD6Gs2bJnLwUB3b3e7gFNG1/eqRkFy/lC+XZRAcXrXu27hPgydwGdVYBzrEk3DzPb12j9y0hut+mUtw6OTTH0/yorZuxqP2KgOx2PEfA==
+ bh=M+gidTR64ir8kbPrzSZvcklZUAFYlf+10rXGAH65cA4=;
+ b=LXCTK3e7gfD0PvStpjhu1nQg4aheVTdDc7/1m98OOuoXCswtGsHiTrUrTSPr8i8Y0Lpa6ItxK6C+nOEVZoE10Pjg4BDLKylgYvJUNDicHPYhVCfi0V150AQyLV2lB+rTdvJN6Le4TWisbJxEqGzaH0zEHZNLpZShcg0DFsb38NtlY1BBM+qGSF8rMx3pcrWRnTX5BFkiUxl4zMWGt1fPNc8lcO8XQgycrr+bxZ82EYP9SOWt3bwc9rwgwGT7M0Y9+ZUCdUfWg+1REPpB1AKGmoOliMV0suKICAC3tdETrA5Opcxc+vKINnIVruKcd2yZ5LNi8piJUcYhjhmOEBRh3w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.235) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com; dmarc=pass
+ 12.22.5.234) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com; dmarc=pass
  (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
  (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ccIl/E+UF+vZ5VwPRBoaMcmya4evfUFZtd4XoHWCXwE=;
- b=HXYbpEZxdEixmax1P3aOEhcWS1SAQh6rJMSkSNMEeC7hxHOb6n9rHeUy/FrCT3XDLjNXqfZfihRWPn17uCAs/NNhL2l4UhgH3nIWv2WE6ETfPzoIDOnmq54B1yM7yg3kXrTdDFqpHV34F9wdVr9qu8U1mMMJj3uTsMMQ2ksGP4UWs6L47SrRw0SDKgRkbeHhaZCiw26kp1kbsmxgl+U4pTZ/t+bFWFxIHBSm7G2c9bf9f1/+zkcm9FBkKPFMXfV5vWeZE25Mch17SApw2u9HGPFxmGKbTcSevlfr88yqoLnwxxaYvCBqJwXEWcRiSJRrWxhEoZEoX+cYDBzxZ24hOQ==
-Received: from DS7PR06CA0007.namprd06.prod.outlook.com (2603:10b6:8:2a::25) by
- DM5PR1201MB2554.namprd12.prod.outlook.com (2603:10b6:3:ec::14) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5353.16; Wed, 22 Jun 2022 00:54:58 +0000
-Received: from DM6NAM11FT006.eop-nam11.prod.protection.outlook.com
- (2603:10b6:8:2a:cafe::e7) by DS7PR06CA0007.outlook.office365.com
- (2603:10b6:8:2a::25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.14 via Frontend
- Transport; Wed, 22 Jun 2022 00:54:58 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
+ bh=M+gidTR64ir8kbPrzSZvcklZUAFYlf+10rXGAH65cA4=;
+ b=lHrM+Am6khk4WVfK8w6iqX+l8y2EoXOMKHLbzlYYpH0rhuu50ayGjZjCIrprsiSm9TT6VWheiisFsF9502At9e6x98IkJE1mDKmwpbuE2EM6pzY0PVIlL/XFr2EFBSjQZitZ8DK/Tv5A0FVnilGTeXAbM4OF6IBOYykV0QjC85fGVFWv4H5roSaRZzlF+DnB54bVtXwJyJ//Ufb6GdKlEYYV2rmEymkNg5w4m8DtkHEfz6MdMHH+RVZeHT92YpLyIQrOF5yRRZUp5fjKiVcIdXImWYqORNAX1/3sHxYOicR1cg/E/IwzOIVs9G4E9phLPA5QVjGBzY0ngeL9TpP4Mw==
+Received: from BN9PR03CA0602.namprd03.prod.outlook.com (2603:10b6:408:106::7)
+ by CY4PR1201MB0165.namprd12.prod.outlook.com (2603:10b6:910:1c::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.18; Wed, 22 Jun
+ 2022 00:55:02 +0000
+Received: from BN8NAM11FT063.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:106:cafe::63) by BN9PR03CA0602.outlook.office365.com
+ (2603:10b6:408:106::7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.16 via Frontend
+ Transport; Wed, 22 Jun 2022 00:55:02 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.235; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.235) by
- DM6NAM11FT006.mail.protection.outlook.com (10.13.173.104) with Microsoft SMTP
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.234) by
+ BN8NAM11FT063.mail.protection.outlook.com (10.13.177.110) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5353.14 via Frontend Transport; Wed, 22 Jun 2022 00:54:58 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL107.nvidia.com
- (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Wed, 22 Jun
- 2022 00:54:57 +0000
+ 15.20.5373.15 via Frontend Transport; Wed, 22 Jun 2022 00:55:02 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL101.nvidia.com
+ (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Wed, 22 Jun
+ 2022 00:55:01 +0000
 Received: from foundations-user-AS-2114GT-DNR-C1-NC24B.nvidia.com
  (10.126.231.35) by rnnvmail201.nvidia.com (10.129.68.8) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 21 Jun 2022 17:54:56 -0700
+ 15.2.986.22; Tue, 21 Jun 2022 17:55:00 -0700
 From:   Kechen Lu <kechenl@nvidia.com>
 To:     <kvm@vger.kernel.org>, <pbonzini@redhat.com>
 CC:     <seanjc@google.com>, <chao.gao@intel.com>, <vkuznets@redhat.com>,
         <somduttar@nvidia.com>, <kechenl@nvidia.com>,
         <linux-kernel@vger.kernel.org>
-Subject: [RFC PATCH v4 4/7] KVM: x86: Let userspace re-enable previously disabled exits
-Date:   Tue, 21 Jun 2022 17:49:21 -0700
-Message-ID: <20220622004924.155191-5-kechenl@nvidia.com>
+Subject: [RFC PATCH v4 6/7] KVM: x86: Add a new guest_debug flag forcing exit to userspace
+Date:   Tue, 21 Jun 2022 17:49:23 -0700
+Message-ID: <20220622004924.155191-7-kechenl@nvidia.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220622004924.155191-1-kechenl@nvidia.com>
 References: <20220622004924.155191-1-kechenl@nvidia.com>
@@ -78,135 +79,107 @@ X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
  rnnvmail201.nvidia.com (10.129.68.8)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: fda30173-7991-4d5b-34a9-08da53e9d477
-X-MS-TrafficTypeDiagnostic: DM5PR1201MB2554:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR1201MB25540AC16E13286CD8988467CAB29@DM5PR1201MB2554.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 64b50cf6-682e-4b07-952a-08da53e9d6c1
+X-MS-TrafficTypeDiagnostic: CY4PR1201MB0165:EE_
+X-Microsoft-Antispam-PRVS: <CY4PR1201MB01657B6359C5C7E50F6E6CB4CAB29@CY4PR1201MB0165.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Kn/OA3VH6nNu+Z0gbRL7HpU9YLCHkDCCHNNjKtKt44hhIAk8lNB60okmNVFRzWs61HsED1PAz0bbOfjcL6lcypL6Cx5DSZKf99gR0jTd2Jk8+cZPtyRJjULpQmQWDBvmNUCePLNWKF8RvErJBJH/pyp/MsJo59S/jCHPB5Si10LRogZtyk5gubwYVAMA0otUNgwC48JtmuQvDvyS68WxoeiK79TQnNxIuBkqv2xRWg4q/2xptrMTvHW+mXv0tlD2DeptTJfcJqO+1jax0vdfAs0gis1MPfOD5ExKtUqQEkjxGBQ28afVeaoOqi79SMrKhn1qIeNs1KLVwGxk9m5PHyxueWqnObVPwQ5YjUpBdFFknuc5wGGuudfT62QNFuEXl3Fi8aBquYUwwxHGGaVsz4TAsbL2uCapNEKbp0bVICRHTGoX5RwKAIBhjyxjufV67vpsN2B4Qm31AJNuN57ZNeDpi6f+aZDfyEyd1B+LjtQ8fhF8VPOm22opuk3WMxlNR3tNZ4vYrd2q+PrUyCsBZjNhQ4/1FrHsiLLDuGRHXxembNrBh7G8gs+Jvjox9xFtYylSfJeYkTmgC1i1xfwBESiUrlCOSPzKM6OH6y47pnhFk7I6ZRKXb8+zo60lrzIG2pY+EhtVk3qa7DRPCOh0z342o3ibRr3X19PIm+7rZz3PJ7MQ0esN/SKSnOSDOnXoV0Oyp6D7M9t76/L90L8ES7od+IBAUQFtCK8OSARAuGg+y9nUSh1dLktVc36Chkk6
-X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(346002)(376002)(39860400002)(396003)(136003)(36840700001)(40470700004)(46966006)(110136005)(54906003)(2906002)(478600001)(4326008)(36756003)(26005)(5660300002)(8936002)(70206006)(316002)(2616005)(70586007)(41300700001)(426003)(40460700003)(86362001)(8676002)(83380400001)(1076003)(47076005)(336012)(16526019)(81166007)(7696005)(40480700001)(82310400005)(82740400003)(6666004)(356005)(36860700001)(186003)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: hAZ2TcOUEaj2vrKZfr1x8oE/gQsfkxqNlIB6wLqWShK4Znam17zawGtieg8IHDYQHZiax0DYywVOh8sdhM/g6UzELA9JGz8XEtYuJppmepRHaxAsr7nYiPq8agr12R8nObGxy8mDfP04TGqgnzngt3HgJTGiWYTpiFBqfhuCH+P2O4wt5ykQXK4ACjdWE4XD68pgnFJbFCL1sdUR9aAenVc16FXWXfCtm0NYq0IOiy9zIO4+rDmu5kZnjtP4KkkC7MuwIEB+ZMuqiifIyBmhAY0f5vJm1F4HP1uEaSmDPNeQqu7zqSIuodphF6UXHtCmD+3Cj7+dcWAiA5y6pJtvISZuSfn3d25tIOUhSrvK5WHoNhSNPw3pjdFy2GTpI35HE5X6vR66xuQVyKdMUGPoxFpguFklAeOkRqqzr6308IGM5dgobsCdQ2u4nROuI2n3yu/kJkQ/tF1lnrlESA+/E2r1tcf0/C+5Uiua7GS9ukPk/8BwwL/jtQ6BERCBmMAsrTWvtacZdSsSkix7xBiKLQnNj5wMXQV3rOnPMK9pWcnKQJl/NM3JfzcdmJcOubsikAJojnv4eeQ4pgHMQicpZ6jvwhkGGfsGfI0uQ7Sj7F6MNGXnJ0D441IUOXpUqBPNlRxdJcCEIhP/uyAc7VzOVRnYDGItuJrNjYSxFKsfqnXOrHQ6fefAnf7+ZVb7023Nor+/+RDu6cR5NJ0cTP6LI2AkpcKSZHmk6Bx5C0km/jTD3n7BHb4X4t49P04ICUul
+X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(136003)(39860400002)(346002)(376002)(396003)(40470700004)(46966006)(36840700001)(40460700003)(86362001)(36860700001)(82310400005)(5660300002)(81166007)(478600001)(8936002)(2906002)(316002)(356005)(70586007)(426003)(47076005)(54906003)(16526019)(8676002)(40480700001)(4326008)(70206006)(336012)(186003)(6666004)(83380400001)(82740400003)(7696005)(41300700001)(110136005)(2616005)(26005)(1076003)(36756003)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jun 2022 00:54:58.2164
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jun 2022 00:55:02.0124
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: fda30173-7991-4d5b-34a9-08da53e9d477
+X-MS-Exchange-CrossTenant-Network-Message-Id: 64b50cf6-682e-4b07-952a-08da53e9d6c1
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT006.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT063.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR1201MB2554
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1201MB0165
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+For debug and test purposes, there are needs to explicitly make
+instruction triggered exits could be trapped to userspace. Simply
+add a new flag for guest_debug interface could achieve this.
 
-Add an OVERRIDE flag to KVM_CAP_X86_DISABLE_EXITS allow userspace to
-re-enable exits and/or override previous settings.  There's no real use
-case for the the per-VM ioctl, but a future per-vCPU variant wants to let
-userspace toggle interception while the vCPU is running; add the OVERRIDE
-functionality now to provide consistent between between the per-VM and
-per-vCPU variants.
+This patch also fills the userspace accessible field
+vcpu->run->hw.hardware_exit_reason for userspace to determine the
+original triggered VM-exits.
 
-Signed-off-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Kechen Lu <kechenl@nvidia.com>
 ---
- Documentation/virt/kvm/api.rst |  5 +++++
- arch/x86/kvm/x86.c             | 32 ++++++++++++++++++++++++--------
- include/uapi/linux/kvm.h       |  4 +++-
- 3 files changed, 32 insertions(+), 9 deletions(-)
+ arch/x86/kvm/svm/svm.c         | 2 ++
+ arch/x86/kvm/vmx/vmx.c         | 1 +
+ arch/x86/kvm/x86.c             | 2 ++
+ include/uapi/linux/kvm.h       | 1 +
+ tools/include/uapi/linux/kvm.h | 1 +
+ 5 files changed, 7 insertions(+)
 
-diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
-index d0d8749591a8..89e13b6783b5 100644
---- a/Documentation/virt/kvm/api.rst
-+++ b/Documentation/virt/kvm/api.rst
-@@ -6941,6 +6941,7 @@ Valid bits in args[0] are::
-   #define KVM_X86_DISABLE_EXITS_HLT              (1 << 1)
-   #define KVM_X86_DISABLE_EXITS_PAUSE            (1 << 2)
-   #define KVM_X86_DISABLE_EXITS_CSTATE           (1 << 3)
-+  #define KVM_X86_DISABLE_EXITS_OVERRIDE         (1ull << 63)
+diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+index 7b3d64b3b901..e7ced6c3fbea 100644
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -3259,6 +3259,8 @@ int svm_invoke_exit_handler(struct kvm_vcpu *vcpu, u64 exit_code)
+ 	if (!svm_check_exit_valid(exit_code))
+ 		return svm_handle_invalid_exit(vcpu, exit_code);
  
- Enabling this capability on a VM provides userspace with a way to no
- longer intercept some instructions for improved latency in some
-@@ -6949,6 +6950,10 @@ physical CPUs.  More bits can be added in the future; userspace can
- just pass the KVM_CHECK_EXTENSION result to KVM_ENABLE_CAP to disable
- all such vmexits.
- 
-+By default, this capability only disables exits.  To re-enable an exit, or to
-+override previous settings, userspace can set KVM_X86_DISABLE_EXITS_OVERRIDE,
-+in which case KVM will enable/disable according to the mask (a '1' == disable).
++	vcpu->run->hw.hardware_exit_reason = exit_code;
 +
- Do not enable KVM_FEATURE_PV_UNHALT if you disable HLT exits.
+ #ifdef CONFIG_RETPOLINE
+ 	if (exit_code == SVM_EXIT_MSR)
+ 		return msr_interception(vcpu);
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index 2d000638cc9b..c32c20c4aa4d 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -6151,6 +6151,7 @@ static int __vmx_handle_exit(struct kvm_vcpu *vcpu, fastpath_t exit_fastpath)
  
- 7.14 KVM_CAP_S390_HPAGE_1M
+ 	if (exit_reason.basic >= kvm_vmx_max_exit_handlers)
+ 		goto unexpected_vmexit;
++	vcpu->run->hw.hardware_exit_reason = exit_reason.basic;
+ #ifdef CONFIG_RETPOLINE
+ 	if (exit_reason.basic == EXIT_REASON_MSR_WRITE)
+ 		return kvm_emulate_wrmsr(vcpu);
 diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 6ec01362a7d8..fe114e319a89 100644
+index 6165f0b046ed..91384a56ae0a 100644
 --- a/arch/x86/kvm/x86.c
 +++ b/arch/x86/kvm/x86.c
-@@ -5263,6 +5263,28 @@ static int kvm_vcpu_ioctl_device_attr(struct kvm_vcpu *vcpu,
+@@ -8349,6 +8349,8 @@ int kvm_skip_emulated_instruction(struct kvm_vcpu *vcpu)
+ 	 */
+ 	if (unlikely(rflags & X86_EFLAGS_TF))
+ 		r = kvm_vcpu_do_singlestep(vcpu);
++	r &= !(vcpu->guest_debug & KVM_GUESTDBG_EXIT_USERSPACE);
++
  	return r;
  }
- 
-+
-+#define kvm_ioctl_disable_exits(a, mask)				     \
-+({									     \
-+	if (!kvm_can_mwait_in_guest())                                       \
-+		(mask) &= KVM_X86_DISABLE_EXITS_MWAIT;                       \
-+	if ((mask) & KVM_X86_DISABLE_EXITS_OVERRIDE) {			     \
-+		(a).mwait_in_guest = (mask) & KVM_X86_DISABLE_EXITS_MWAIT;   \
-+		(a).hlt_in_guest = (mask) & KVM_X86_DISABLE_EXITS_HLT;	     \
-+		(a).pause_in_guest = (mask) & KVM_X86_DISABLE_EXITS_PAUSE;   \
-+		(a).cstate_in_guest = (mask) & KVM_X86_DISABLE_EXITS_CSTATE; \
-+	} else {							     \
-+		if ((mask) & KVM_X86_DISABLE_EXITS_MWAIT)		     \
-+			(a).mwait_in_guest = true;			     \
-+		if ((mask) & KVM_X86_DISABLE_EXITS_HLT)			     \
-+			(a).hlt_in_guest = true;			     \
-+		if ((mask) & KVM_X86_DISABLE_EXITS_PAUSE)		     \
-+			(a).pause_in_guest = true;			     \
-+		if ((mask) & KVM_X86_DISABLE_EXITS_CSTATE)		     \
-+			(a).cstate_in_guest = true;			     \
-+	}								     \
-+})
-+
- static int kvm_vcpu_ioctl_enable_cap(struct kvm_vcpu *vcpu,
- 				     struct kvm_enable_cap *cap)
- {
-@@ -6017,14 +6039,8 @@ int kvm_vm_ioctl_enable_cap(struct kvm *kvm,
- 		if (kvm->created_vcpus)
- 			goto disable_exits_unlock;
- 
--		if (cap->args[0] & KVM_X86_DISABLE_EXITS_MWAIT)
--			kvm->arch.mwait_in_guest = true;
--		if (cap->args[0] & KVM_X86_DISABLE_EXITS_HLT)
--			kvm->arch.hlt_in_guest = true;
--		if (cap->args[0] & KVM_X86_DISABLE_EXITS_PAUSE)
--			kvm->arch.pause_in_guest = true;
--		if (cap->args[0] & KVM_X86_DISABLE_EXITS_CSTATE)
--			kvm->arch.cstate_in_guest = true;
-+		kvm_ioctl_disable_exits(kvm->arch, cap->args[0]);
-+
- 		r = 0;
- disable_exits_unlock:
- 		mutex_unlock(&kvm->lock);
+ EXPORT_SYMBOL_GPL(kvm_skip_emulated_instruction);
 diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
-index 5088bd9f1922..f2e76e436be5 100644
+index f2e76e436be5..23c335a6a285 100644
 --- a/include/uapi/linux/kvm.h
 +++ b/include/uapi/linux/kvm.h
-@@ -814,10 +814,12 @@ struct kvm_ioeventfd {
- #define KVM_X86_DISABLE_EXITS_HLT            (1 << 1)
- #define KVM_X86_DISABLE_EXITS_PAUSE          (1 << 2)
- #define KVM_X86_DISABLE_EXITS_CSTATE         (1 << 3)
-+#define KVM_X86_DISABLE_EXITS_OVERRIDE	     (1ull << 63)
- #define KVM_X86_DISABLE_VALID_EXITS          (KVM_X86_DISABLE_EXITS_MWAIT | \
-                                               KVM_X86_DISABLE_EXITS_HLT | \
-                                               KVM_X86_DISABLE_EXITS_PAUSE | \
--                                              KVM_X86_DISABLE_EXITS_CSTATE)
-+                                              KVM_X86_DISABLE_EXITS_CSTATE | \
-+					      KVM_X86_DISABLE_EXITS_OVERRIDE)
+@@ -777,6 +777,7 @@ struct kvm_s390_irq_state {
  
- /* for KVM_ENABLE_CAP */
- struct kvm_enable_cap {
+ #define KVM_GUESTDBG_ENABLE		0x00000001
+ #define KVM_GUESTDBG_SINGLESTEP		0x00000002
++#define KVM_GUESTDBG_EXIT_USERSPACE	0x00000004
+ 
+ struct kvm_guest_debug {
+ 	__u32 control;
+diff --git a/tools/include/uapi/linux/kvm.h b/tools/include/uapi/linux/kvm.h
+index 6a184d260c7f..373b4a2b7fe9 100644
+--- a/tools/include/uapi/linux/kvm.h
++++ b/tools/include/uapi/linux/kvm.h
+@@ -773,6 +773,7 @@ struct kvm_s390_irq_state {
+ 
+ #define KVM_GUESTDBG_ENABLE		0x00000001
+ #define KVM_GUESTDBG_SINGLESTEP		0x00000002
++#define KVM_GUESTDBG_EXIT_USERSPACE	0x00000004
+ 
+ struct kvm_guest_debug {
+ 	__u32 control;
 -- 
 2.32.0
 
