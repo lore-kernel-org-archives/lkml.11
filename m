@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 371D7C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 22:00:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07A81C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 22:00:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358763AbiFVWAY (ORCPT
+        id S1358899AbiFVWA2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 18:00:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44192 "EHLO
+        Wed, 22 Jun 2022 18:00:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357335AbiFVV7j (ORCPT
+        with ESMTP id S1349116AbiFVV7b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 17:59:39 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82D023A1AA
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 14:59:26 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id i64so17277002pfc.8
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 14:59:26 -0700 (PDT)
+        Wed, 22 Jun 2022 17:59:31 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13FDA13F24
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 14:59:21 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id a11-20020a17090acb8b00b001eca0041455so2167508pju.1
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 14:59:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=1pdhObJ96JAdNQFR2R9fpWGMOXrHx/rMFv6zCCsOHAk=;
-        b=hVrctEGuVG5RsRxCqLMNa7VyAR77RxPywMJC0ts/2Tv/RtkdREBNccc2tLIg9h2/Hy
-         w64cbCFd8tk1LcJE4sC2dtKLvhuRyc+MUQOmTLlMNsp0uyaLhUwakkQhQZPZXiV72ATy
-         lkZXPjA+9Rv8jlfhnOmZEzYcZDmEawypUh47I=
+        bh=/HCZkBQUvOL343dE4cxY4+++wGcoTs8rO+O+El91LTM=;
+        b=kW7r+Hr5goKmdkkwlbucBFjHOSHV00M3UIeftMyBmX+LjMiNz5Yw3jQVOaD9F/pGuV
+         TpGWXjPX5C065ktYlTi7Jrpap+UZcbt63v1VDjBWgwj68U3GCXPFBO59G1nL/07Jkrgt
+         aa8sxKQ0ZWVpH1I59K25H1Ly25AWBNbr4jlis=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=1pdhObJ96JAdNQFR2R9fpWGMOXrHx/rMFv6zCCsOHAk=;
-        b=BwdlfidHgNCvdUZmnaoFoNj9LOwROBf378A20Z+yn/8KagLZVrE68gk3NII7wQEGCC
-         Vksg5Exc0mNqHbB+zWLqq58FYHUc1FwXytE+8CXRnz0g0p4ns1urYFngGXrN60xYTPYR
-         yDdoka7MiaCVmfJMYNGW0e7f7cLvuTR5S00DKqfQxl0+GMK+JLa0hQBWHvb88vWztoW7
-         oh6MFBfEaV/c6Yg4raHs8Kb+yXg97QerGbcXdKtO5zh/CwFzV65JjJBhOfb95HEDsYVp
-         X1ORMPnerEl2G5h/9+cN6IwS5YY+JuVH1h+93yg9kbCQu4Zwi8uTNelKVb4gwEt/NaAx
-         7F0g==
-X-Gm-Message-State: AJIora/+tpw82yymuR6H7eOzQQKhdNykl2x1vcK9dyMw5t0fTKtADM0U
-        Blz1zxfBwjdW1MfmapG1rcKNyxszQycBKg==
-X-Google-Smtp-Source: AGRyM1vf9pMP4Tou3fz1iLeTLO+gLSIOfI+g/h5s5a0eua2xRAP9kBxmB0nBOjXM0LMGaraNojvT9A==
-X-Received: by 2002:a65:6b8a:0:b0:3db:7dc5:fec2 with SMTP id d10-20020a656b8a000000b003db7dc5fec2mr4559579pgw.223.1655935165832;
-        Wed, 22 Jun 2022 14:59:25 -0700 (PDT)
+        bh=/HCZkBQUvOL343dE4cxY4+++wGcoTs8rO+O+El91LTM=;
+        b=SymTXMcLLQxJM2qZ+JrjKxfRAO8n1OYqqEzTS98S0M9YpbMLb8h3DdWmJWvEnKnybH
+         qmdCfzJkXzrK2MiKazXoKdfk5R3VJx7US2QfWWqsMt6W0WqOZ668Yu5qg0nrzvubVpV9
+         PtiklL+EJN0Koz7H9SEsXUMhADr2u7yWSURxrCnQB4/OKDQpzH8RhSU1SG3D6sw9loK0
+         AgBmLQeSUWohudyeqZiW3JceH+iovNYbXCDtDCxROlBj+V8+xZfjKEpIaE1+rKZox9hG
+         9qYYUfsl7Pfbj0lLP8oXWC5c0cByhcpucGvVCc4vU4DRSZAMmXYhyISCQjuy8BMHIiCx
+         /7iw==
+X-Gm-Message-State: AJIora8TBbujQD9OcPR7b1eurFOPfmR4up3noT+0keOvSq8b6pU/hG2p
+        Wqrby/vcFZPIwGMfMjHvQco06m5sPYBPxg==
+X-Google-Smtp-Source: AGRyM1umMrnbq3xU6zV1seTpM2R3LQtYo7/Tz5A05ezBa8LN7jxlWpzxadDuUTVFwJiEgdgpdIlX7w==
+X-Received: by 2002:a17:902:d542:b0:16a:5016:7a18 with SMTP id z2-20020a170902d54200b0016a50167a18mr3315594plf.94.1655935161228;
+        Wed, 22 Jun 2022 14:59:21 -0700 (PDT)
 Received: from joebar-glaptop.lan (c-71-202-34-56.hsd1.ca.comcast.net. [71.202.34.56])
-        by smtp.gmail.com with ESMTPSA id nk15-20020a17090b194f00b001ec9d45776bsm255916pjb.42.2022.06.22.14.59.24
+        by smtp.gmail.com with ESMTPSA id nk15-20020a17090b194f00b001ec9d45776bsm255916pjb.42.2022.06.22.14.59.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jun 2022 14:59:25 -0700 (PDT)
+        Wed, 22 Jun 2022 14:59:20 -0700 (PDT)
 From:   "Joseph S. Barrera III" <joebar@chromium.org>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Stephen Boyd <swboyd@chromium.org>,
@@ -57,9 +57,9 @@ Cc:     Stephen Boyd <swboyd@chromium.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
         linux-arm-msm@vger.kernel.org
-Subject: [PATCH v10 5/5] arm64: dts: qcom: sc7180: Add kingoftown dts files
-Date:   Wed, 22 Jun 2022 14:58:05 -0700
-Message-Id: <20220622145717.v10.5.Ib62291487a664a65066d18a3e83c5428a6d2cc6c@changeid>
+Subject: [PATCH v10 2/5] arm64: dts: qcom: sc7180: Add quackingstick dts files
+Date:   Wed, 22 Jun 2022 14:58:02 -0700
+Message-Id: <20220622145717.v10.2.I0977b1a08830d0caa8bfb1bdedb4ecceac709a7f@changeid>
 X-Mailer: git-send-email 2.31.0
 In-Reply-To: <20220622215805.1121982-1-joebar@chromium.org>
 References: <20220622215805.1121982-1-joebar@chromium.org>
@@ -69,157 +69,234 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Kingoftown is a trogdor-based board. These dts files are unchanged copies
-from the downstream Chrome OS 5.4 kernel.
+Quackingstick is a trogdor-based board. These dts files are copies from
+the downstream Chrome OS 5.4 kernel, but with downstream bits removed.
 
 Signed-off-by: Joseph S. Barrera III <joebar@chromium.org>
+
 ---
 
-Changes in v10:
-- Remove 'include sc7180.dtsi' from *all* sc7180-trogdor-kingoftown* files.
+(no changes since v8)
 
-Changes in v9:
-- Simplify trackpad enabling (51d30402be75).
+Changes in v8:
+- Incorporate the deletion of the usb_c1 node from 9f9fb70a7294.
 
 Changes in v7:
+- Restore changes requested by Doug.
+- Only include sc7180.dtsi in sc7180-trogdor.dtsi (19794489fa24).
 - Simplify spi0/spi6 labeling (d277cab7afc7).
-- Remove #include of <arm/cros-ec-keyboard.dtsi>.
+- Simplify trackpad enabling (51d30402be75).
 
 Changes in v6:
-- Add #include of <arm/cros-ec-keyboard.dtsi> from v5.4.
+- Accidentally deleted changes requested by Doug.
+
+Changes in v5:
+- Remove extra newline
+- Add comment that compatible will be filled in per-board
 
 Changes in v4:
-- Fix description (no downstream bits removed).
-- Add missing version history.
+- Add missing version history
 
-Changes in v2:
-- First inclusion in series.
+Changes in v3:
+- First inclusion in this series
 
  arch/arm64/boot/dts/qcom/Makefile             |   2 +
- .../dts/qcom/sc7180-trogdor-kingoftown-r0.dts |  43 ++++
- .../dts/qcom/sc7180-trogdor-kingoftown-r1.dts |  16 ++
- .../dts/qcom/sc7180-trogdor-kingoftown.dtsi   | 224 ++++++++++++++++++
- 4 files changed, 285 insertions(+)
- create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-kingoftown-r0.dts
- create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-kingoftown-r1.dts
- create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-kingoftown.dtsi
+ .../sc7180-trogdor-quackingstick-r0-lte.dts   |  38 +++
+ .../qcom/sc7180-trogdor-quackingstick-r0.dts  |  26 ++
+ .../qcom/sc7180-trogdor-quackingstick.dtsi    | 318 ++++++++++++++++++
+ 4 files changed, 384 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-quackingstick-r0-lte.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-quackingstick-r0.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-quackingstick.dtsi
 
 diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
-index dc26704dfe34..a9f2ad013179 100644
+index e4114e22548a..7268086f66e8 100644
 --- a/arch/arm64/boot/dts/qcom/Makefile
 +++ b/arch/arm64/boot/dts/qcom/Makefile
-@@ -60,6 +60,8 @@ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-coachz-r3-lte.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-homestar-r2.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-homestar-r3.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-homestar-r4.dtb
-+dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-kingoftown-r0.dtb
-+dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-kingoftown-r1.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-lazor-r0.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-lazor-r1.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-lazor-r1-kb.dtb
-diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-kingoftown-r0.dts b/arch/arm64/boot/dts/qcom/sc7180-trogdor-kingoftown-r0.dts
+@@ -81,6 +81,8 @@ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-pompom-r2.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-pompom-r2-lte.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-pompom-r3.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-pompom-r3-lte.dtb
++dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-quackingstick-r0.dtb
++dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-quackingstick-r0-lte.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-wormdingler-rev0-boe.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-wormdingler-rev0-inx.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-wormdingler-rev1-boe.dtb
+diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-quackingstick-r0-lte.dts b/arch/arm64/boot/dts/qcom/sc7180-trogdor-quackingstick-r0-lte.dts
 new file mode 100644
-index 000000000000..d9ee042a16d9
+index 000000000000..35e8945fc56d
 --- /dev/null
-+++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-kingoftown-r0.dts
-@@ -0,0 +1,43 @@
++++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-quackingstick-r0-lte.dts
+@@ -0,0 +1,38 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
-+ * Google Kingoftown board device tree source
++ * Google Quackingstick board device tree source
 + *
 + * Copyright 2021 Google LLC.
-+ */
-+
-+/dts-v1/;
-+
-+#include "sc7180-trogdor-ti-sn65dsi86.dtsi"
-+#include "sc7180-trogdor-kingoftown.dtsi"
-+
-+/ {
-+	model = "Google Kingoftown (rev0)";
-+	compatible = "google,kingoftown-rev0", "qcom,sc7180";
-+};
-+
-+/*
-+ * In rev1+, the enable pin of pp3300_fp_tp will be tied to pp1800_l10a
-+ * power rail instead, since kingoftown does not have FP.
-+ */
-+&pp3300_fp_tp {
-+	gpio = <&tlmm 74 GPIO_ACTIVE_HIGH>;
-+	enable-active-high;
-+
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&en_fp_rails>;
-+};
-+
-+&tlmm {
-+	en_fp_rails: en-fp-rails {
-+		pinmux {
-+			pins = "gpio74";
-+			function = "gpio";
-+		};
-+
-+		pinconf {
-+			pins = "gpio74";
-+			drive-strength = <2>;
-+			bias-disable;
-+		};
-+	};
-+};
-diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-kingoftown-r1.dts b/arch/arm64/boot/dts/qcom/sc7180-trogdor-kingoftown-r1.dts
-new file mode 100644
-index 000000000000..4c178696dd8f
---- /dev/null
-+++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-kingoftown-r1.dts
-@@ -0,0 +1,16 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-+/*
-+ * Google Kingoftown board device tree source
 + *
-+ * Copyright 2021 Google LLC.
++ * SKU: 0x600 => 1536
++ *  - bits 11..8: Panel ID: 0x6 (AUO)
 + */
 +
-+/dts-v1/;
-+
-+#include "sc7180-trogdor-parade-ps8640.dtsi"
-+#include "sc7180-trogdor-kingoftown.dtsi"
-+
-+/ {
-+	model = "Google Kingoftown (rev1+)";
-+	compatible = "google,kingoftown", "qcom,sc7180";
-+};
-diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-kingoftown.dtsi b/arch/arm64/boot/dts/qcom/sc7180-trogdor-kingoftown.dtsi
-new file mode 100644
-index 000000000000..2268f3e7b5f2
---- /dev/null
-+++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-kingoftown.dtsi
-@@ -0,0 +1,224 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-+/*
-+ * Google Kingoftown board device tree source
-+ *
-+ * Copyright 2021 Google LLC.
-+ */
-+
-+#include "sc7180-trogdor.dtsi"
++#include "sc7180-trogdor-quackingstick-r0.dts"
 +#include "sc7180-trogdor-lte-sku.dtsi"
 +
-+&alc5682 {
-+	compatible = "realtek,rt5682s";
-+	realtek,dmic1-clk-pin = <2>;
-+	realtek,dmic-clk-rate-hz = <2048000>;
++/ {
++	model = "Google Quackingstick (rev0+) with LTE";
++	compatible = "google,quackingstick-sku1536", "qcom,sc7180";
 +};
 +
-+&ap_tp_i2c {
++&ap_sar_sensor {
++	compatible = "semtech,sx9324";
++	semtech,ph0-pin = <3 1 3>;
++	semtech,ph1-pin = <2 1 2>;
++	semtech,ph2-pin = <3 3 1>;
++	semtech,ph3-pin = <1 3 3>;
++	semtech,ph01-resolution = <1024>;
++	semtech,ph23-resolution = <1024>;
++	semtech,startup-sensor = <1>;
++	semtech,ph01-proxraw-strength = <3>;
++	semtech,ph23-proxraw-strength = <3>;
++	semtech,avg-pos-strength = <256>;
++
++	/delete-property/ svdd-supply;
++	vdd-supply = <&pp1800_prox>;
++};
++
++&ap_sar_sensor_i2c {
++	status = "okay";
++};
+diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-quackingstick-r0.dts b/arch/arm64/boot/dts/qcom/sc7180-trogdor-quackingstick-r0.dts
+new file mode 100644
+index 000000000000..5c81e44ed4a5
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-quackingstick-r0.dts
+@@ -0,0 +1,26 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Google Quackingstick board device tree source
++ *
++ * Copyright 2021 Google LLC.
++ *
++ * SKU: 0x601 => 1537
++ *  - bits 11..8: Panel ID: 0x6 (AUO)
++ */
++
++#include "sc7180-trogdor-quackingstick.dtsi"
++
++/ {
++	model = "Google Quackingstick (rev0+)";
++	compatible = "google,quackingstick-sku1537", "qcom,sc7180";
++};
++
++&dsi_phy {
++	qcom,phy-rescode-offset-top = /bits/ 8 <(-13) (-13) (-13) (-13) (-13)>;
++	qcom,phy-rescode-offset-bot = /bits/ 8 <(-13) (-13) (-13) (-13) (-13)>;
++	qcom,phy-drive-ldo-level = <375>;
++};
++
++&panel {
++	compatible = "auo,b101uan08.3";
++};
+diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-quackingstick.dtsi b/arch/arm64/boot/dts/qcom/sc7180-trogdor-quackingstick.dtsi
+new file mode 100644
+index 000000000000..574b78eb4f28
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-quackingstick.dtsi
+@@ -0,0 +1,318 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Google Quackingstick board device tree source
++ *
++ * Copyright 2021 Google LLC.
++ */
++
++/dts-v1/;
++
++#include "sc7180-trogdor.dtsi"
++
++/* This board only has 1 USB Type-C port. */
++/delete-node/ &usb_c1;
++
++/ {
++	ppvar_lcd: ppvar-lcd {
++		compatible = "regulator-fixed";
++		regulator-name = "ppvar_lcd";
++
++		gpio = <&tlmm 88 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++		pinctrl-names = "default";
++		pinctrl-0 = <&ppvar_lcd_en>;
++
++		vin-supply = <&pp5000_a>;
++	};
++
++	v1p8_disp: v1p8-disp {
++		compatible = "regulator-fixed";
++		regulator-name = "v1p8_disp";
++
++		gpio = <&tlmm 86 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++		pinctrl-names = "default";
++		pinctrl-0 = <&pp1800_disp_on>;
++
++		vin-supply = <&pp3300_a>;
++	};
++};
++
++&backlight {
++	pwms = <&cros_ec_pwm 0>;
++};
++
++&camcc {
 +	status = "okay";
 +};
 +
-+ap_ts_pen_1v8: &i2c4 {
++&dsi0 {
++	panel: panel@0 {
++		/* Compatible will be filled in per-board */
++		reg = <0>;
++		enable-gpios = <&tlmm 87 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&lcd_rst>;
++		avdd-supply = <&ppvar_lcd>;
++		pp1800-supply = <&v1p8_disp>;
++		pp3300-supply = <&pp3300_dx_edp>;
++		backlight = <&backlight>;
++		rotation = <270>;
++
++		ports {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			port@0 {
++				reg = <0>;
++				panel_in: endpoint {
++					remote-endpoint = <&dsi0_out>;
++				};
++			};
++		};
++	};
++
++	ports {
++		port@1 {
++			endpoint {
++				remote-endpoint = <&panel_in>;
++				data-lanes = <0 1 2 3>;
++			};
++		};
++	};
++};
++
++&gpio_keys {
++	status = "okay";
++};
++
++&i2c4 {
 +	status = "okay";
 +	clock-frequency = <400000>;
 +
 +	ap_ts: touchscreen@10 {
-+		compatible = "elan,ekth3500";
++		compatible = "hid-over-i2c";
 +		reg = <0x10>;
 +		pinctrl-names = "default";
 +		pinctrl-0 = <&ts_int_l>, <&ts_reset_l>;
@@ -227,61 +304,49 @@ index 000000000000..2268f3e7b5f2
 +		interrupt-parent = <&tlmm>;
 +		interrupts = <9 IRQ_TYPE_LEVEL_LOW>;
 +
-+		vcc33-supply = <&pp3300_ts>;
++		post-power-on-delay-ms = <20>;
++		hid-descr-addr = <0x0001>;
 +
-+		reset-gpios = <&tlmm 8 GPIO_ACTIVE_LOW>;
++		vdd-supply = <&pp3300_ts>;
 +	};
 +};
 +
-+&keyboard_controller {
-+	function-row-physmap = <
-+		MATRIX_KEY(0x00, 0x02, 0)       /* T1 */
-+		MATRIX_KEY(0x03, 0x02, 0)       /* T2 */
-+		MATRIX_KEY(0x02, 0x02, 0)       /* T3 */
-+		MATRIX_KEY(0x01, 0x02, 0)       /* T4 */
-+		MATRIX_KEY(0x03, 0x04, 0)       /* T5 */
-+		MATRIX_KEY(0x02, 0x04, 0)       /* T6 */
-+		MATRIX_KEY(0x01, 0x04, 0)       /* T7 */
-+		MATRIX_KEY(0x02, 0x09, 0)       /* T8 */
-+		MATRIX_KEY(0x01, 0x09, 0)       /* T9 */
-+		MATRIX_KEY(0x00, 0x04, 0)       /* T10 */
-+	>;
-+	linux,keymap = <
-+		MATRIX_KEY(0x00, 0x02, KEY_BACK)
-+		MATRIX_KEY(0x03, 0x02, KEY_REFRESH)
-+		MATRIX_KEY(0x02, 0x02, KEY_ZOOM)
-+		MATRIX_KEY(0x01, 0x02, KEY_SCALE)
-+		MATRIX_KEY(0x03, 0x04, KEY_SYSRQ)
-+		MATRIX_KEY(0x02, 0x04, KEY_BRIGHTNESSDOWN)
-+		MATRIX_KEY(0x01, 0x04, KEY_BRIGHTNESSUP)
-+		MATRIX_KEY(0x02, 0x09, KEY_MUTE)
-+		MATRIX_KEY(0x01, 0x09, KEY_VOLUMEDOWN)
-+		MATRIX_KEY(0x00, 0x04, KEY_VOLUMEUP)
-+
-+		CROS_STD_MAIN_KEYMAP
-+	>;
++&sdhc_2 {
++	status = "okay";
 +};
 +
-+&panel {
-+	compatible = "edp-panel";
++&pp1800_uf_cam {
++	status = "okay";
 +};
 +
-+&pp3300_dx_edp {
++&pp1800_wf_cam {
++	status = "okay";
++};
++
++&pp2800_uf_cam {
++	status = "okay";
++};
++
++&pp2800_wf_cam {
++	status = "okay";
++};
++
++/*
++ * No eDP on this board but it's logically the same signal so just give it
++ * a new name and assign the proper GPIO.
++ */
++pp3300_disp_on: &pp3300_dx_edp {
 +	gpio = <&tlmm 67 GPIO_ACTIVE_HIGH>;
-+};
-+
-+&sound {
-+	compatible = "google,sc7180-trogdor";
-+	model = "sc7180-rt5682s-max98357a-1mic";
-+};
-+
-+&wifi {
-+	qcom,ath10k-calibration-variant = "GO_KINGOFTOWN";
 +};
 +
 +/* PINCTRL - modifications to sc7180-trogdor.dtsi */
 +
-+&en_pp3300_dx_edp {
++/*
++ * No eDP on this board but it's logically the same signal so just give it
++ * a new name and assign the proper GPIO.
++ */
++
++tp_en: &en_pp3300_dx_edp {
 +	pinmux {
 +		pins = "gpio67";
 +	};
@@ -294,48 +359,48 @@ index 000000000000..2268f3e7b5f2
 +/* PINCTRL - board-specific pinctrl */
 +
 +&tlmm {
-+	gpio-line-names = "TP_INT_L",		/* 0 */
++	gpio-line-names = "HUB_RST_L",
 +			  "AP_RAM_ID0",
 +			  "AP_SKU_ID2",
 +			  "AP_RAM_ID1",
 +			  "",
 +			  "AP_RAM_ID2",
-+			  "AP_TP_I2C_SDA",
-+			  "AP_TP_I2C_SCL",
++			  "UF_CAM_EN",
++			  "WF_CAM_EN",
 +			  "TS_RESET_L",
 +			  "TS_INT_L",
-+			  "",			/* 10 */
-+			  "EDP_BRIJ_IRQ",
++			  "",
++			  "",
 +			  "AP_EDP_BKLTEN",
-+			  "",
-+			  "",
++			  "UF_CAM_MCLK",
++			  "WF_CAM_CLK",
 +			  "EDP_BRIJ_I2C_SDA",
 +			  "EDP_BRIJ_I2C_SCL",
-+			  "HUB_RST_L",
-+			  "",
-+			  "",
-+			  "",			/* 20 */
++			  "UF_CAM_SDA",
++			  "UF_CAM_SCL",
++			  "WF_CAM_SDA",
++			  "WF_CAM_SCL",
 +			  "",
 +			  "",
 +			  "AMP_EN",
-+			  "",
-+			  "",
-+			  "",
++			  "P_SENSOR_INT_L",
++			  "AP_SAR_SENSOR_SDA",
++			  "AP_SAR_SENSOR_SCL",
 +			  "",
 +			  "HP_IRQ",
-+			  "",
-+			  "",			/* 30 */
++			  "WF_CAM_RST_L",
++			  "UF_CAM_RST_L",
 +			  "AP_BRD_ID2",
-+			  "BRIJ_SUSPEND",
++			  "",
 +			  "AP_BRD_ID0",
 +			  "AP_H1_SPI_MISO",
 +			  "AP_H1_SPI_MOSI",
 +			  "AP_H1_SPI_CLK",
 +			  "AP_H1_SPI_CS_L",
-+			  "BT_UART_CTS",
-+			  "BT_UART_RTS",
-+			  "BT_UART_TXD",	/* 40 */
-+			  "BT_UART_RXD",
++			  "",
++			  "",
++			  "",
++			  "",
 +			  "H1_AP_INT_ODL",
 +			  "",
 +			  "UART_AP_TX_DBG_RX",
@@ -343,10 +408,10 @@ index 000000000000..2268f3e7b5f2
 +			  "HP_I2C_SDA",
 +			  "HP_I2C_SCL",
 +			  "FORCED_USB_BOOT",
-+			  "AMP_BCLK",
-+			  "AMP_LRCLK",		/* 50 */
-+			  "AMP_DIN",
 +			  "",
++			  "",
++			  "AMP_DIN",
++			  "PEN_DET_ODL",
 +			  "HP_BCLK",
 +			  "HP_LRCLK",
 +			  "HP_DOUT",
@@ -354,7 +419,7 @@ index 000000000000..2268f3e7b5f2
 +			  "HP_MCLK",
 +			  "AP_SKU_ID0",
 +			  "AP_EC_SPI_MISO",
-+			  "AP_EC_SPI_MOSI",	/* 60 */
++			  "AP_EC_SPI_MOSI",
 +			  "AP_EC_SPI_CLK",
 +			  "AP_EC_SPI_CS_L",
 +			  "AP_SPI_CLK",
@@ -367,28 +432,28 @@ index 000000000000..2268f3e7b5f2
 +			  "AP_FLASH_WP_L",
 +			  "EN_PP3300_DX_EDP",
 +			  "AP_SPI_CS0_L",
-+			  "",
-+			  "",			/* 70 */
-+			  "",
++			  "SD_CD_ODL",
 +			  "",
 +			  "",
-+			  "EN_FP_RAILS",
++			  "",
++			  "",
++			  "",
 +			  "UIM2_DATA",
 +			  "UIM2_CLK",
 +			  "UIM2_RST",
 +			  "UIM2_PRESENT_L",
 +			  "UIM1_DATA",
-+			  "UIM1_CLK",		/* 80 */
++			  "UIM1_CLK",
 +			  "UIM1_RST",
 +			  "",
 +			  "CODEC_PWR_EN",
 +			  "HUB_EN",
 +			  "",
++			  "PP1800_DISP_ON",
++			  "LCD_RST",
++			  "PPVAR_LCD_EN",
 +			  "",
-+			  "",
-+			  "",
-+			  "",
-+			  "AP_SKU_ID1",		/* 90 */
++			  "AP_SKU_ID1",
 +			  "AP_RST_REQ",
 +			  "",
 +			  "AP_BRD_ID1",
@@ -398,25 +463,64 @@ index 000000000000..2268f3e7b5f2
 +			  "",
 +			  "",
 +			  "",
-+			  "",			/* 100 */
-+			  "",
-+			  "",
-+			  "",
-+			  "EDP_BRIJ_EN",
 +			  "",
 +			  "",
 +			  "",
 +			  "",
 +			  "",
-+			  "",			/* 110 */
 +			  "",
 +			  "",
 +			  "",
 +			  "",
-+			  "AP_TS_PEN_I2C_SDA",
-+			  "AP_TS_PEN_I2C_SCL",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "AP_TS_I2C_SDA",
++			  "AP_TS_I2C_SCL",
 +			  "DP_HOT_PLUG_DET",
 +			  "EC_IN_RW_ODL";
++
++	lcd_rst: lcd-rst {
++		pinmux {
++			pins = "gpio87";
++			function = "gpio";
++		};
++
++		pinconf {
++			pins = "gpio87";
++			drive-strength = <2>;
++			bias-disable;
++		};
++	};
++
++	ppvar_lcd_en: ppvar-lcd-en {
++		pinmux {
++			pins = "gpio88";
++			function = "gpio";
++		};
++
++		pinconf {
++			pins = "gpio88";
++			drive-strength = <2>;
++			bias-disable;
++		};
++	};
++
++	pp1800_disp_on: pp1800-disp-on {
++		pinmux {
++			pins = "gpio86";
++			function = "gpio";
++		};
++
++		pinconf {
++			pins = "gpio86";
++			drive-strength = <2>;
++			bias-disable;
++		};
++	};
 +};
 -- 
 2.31.0
