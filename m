@@ -2,111 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 105AACCA47E
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 18:11:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 009C4C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 18:12:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377190AbiFVSLz (ORCPT
+        id S1377249AbiFVSMu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 14:11:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39236 "EHLO
+        Wed, 22 Jun 2022 14:12:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358337AbiFVSLx (ORCPT
+        with ESMTP id S1358337AbiFVSMs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 14:11:53 -0400
-Received: from mail-qk1-f181.google.com (mail-qk1-f181.google.com [209.85.222.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31C7B3B00C;
-        Wed, 22 Jun 2022 11:11:52 -0700 (PDT)
-Received: by mail-qk1-f181.google.com with SMTP id b133so1328663qkc.6;
-        Wed, 22 Jun 2022 11:11:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mhD0MOrYe6T8ixwnqaaVek/KZReGo+sSJrdYPS9fFGA=;
-        b=zxc+UPeSoLSAg4zD0EnKH3Q6Fagnad1rSDF3x7BM1JnAd0BFaHJRz9XPetmBeFimxX
-         6qipss9+6jVKfNro0jy/WKuF7O/XgQkDlVWPXasoey9BjlGoLvuNZrLZHd0Nhg8ozD33
-         wmW4B8tSNrs1fxWzBZPt8bE1oBoQIzFtJDHkW3jeqMq+k0uYZg7OxC1WFcwi7ftd8K3K
-         uzaJ2M6Ffr3PL0z6gkaa07kh4BiEsmF1dZW3HdSJ1i5OFi2I3GA53ObaHBss0nrncKVA
-         ETHJAelTUOwcH6kZUxMMv7oErA9Ej0gwpJpYeTEPLvLOs8+DzkZO/XjVi0vlkySVUNhF
-         WOew==
-X-Gm-Message-State: AJIora+TN7c5ihpVpKhbIOml+SU3llQljahaNjdWNNpEt7vZ3Rtd+A2J
-        L8odygPdPrNZjC4zfvkF9gYhQOcS62kP3g==
-X-Google-Smtp-Source: AGRyM1vauPaQThk1rkTaI9N6Ov2YYKy7VCkXnDIx4Z/ZNPqxduL+MHYw8Mks7ZKrDn9IXUz2j1acyg==
-X-Received: by 2002:a05:620a:1aa5:b0:6a6:c208:fb94 with SMTP id bl37-20020a05620a1aa500b006a6c208fb94mr3408626qkb.434.1655921510648;
-        Wed, 22 Jun 2022 11:11:50 -0700 (PDT)
-Received: from mail-yw1-f177.google.com (mail-yw1-f177.google.com. [209.85.128.177])
-        by smtp.gmail.com with ESMTPSA id bx4-20020a05622a090400b002f3e2435ee2sm14869070qtb.63.2022.06.22.11.11.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Jun 2022 11:11:50 -0700 (PDT)
-Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-317710edb9dso171295337b3.0;
-        Wed, 22 Jun 2022 11:11:49 -0700 (PDT)
-X-Received: by 2002:a81:574c:0:b0:317:7c3a:45be with SMTP id
- l73-20020a81574c000000b003177c3a45bemr5877104ywb.316.1655921509513; Wed, 22
- Jun 2022 11:11:49 -0700 (PDT)
+        Wed, 22 Jun 2022 14:12:48 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 882773B024
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 11:12:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655921567; x=1687457567;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=ruEQ1sYPEmnsnegKdO1heCJGAKA+yF4yNjK475gQS3Y=;
+  b=AwDmcBKHAEa+j80sVz/v9v1LSlwO7il8wxhAJ9Mm717vAVjOoO60nNCV
+   3UtW+EVYcXB34lnCH+YeABepuHNyH23I4KlOToZe6nAqkQzgCfb7lUQlh
+   cNI48rr+Hyt/G0MqJTXdvJuya5Y2sKbteEMlikwe74vY9V1lt92q4GTOP
+   6o1N0ldYd1b95k//Dr5Wvo31S+T0tuf6l1BKBZVUithd1taVCmgluJ6qI
+   QsGYwKSKuqO+wyBlHV/oRRUF+aXdeJv+hPB1GG+id/H+9BsLq50F6oKtP
+   vmnDxvF6hKoh7URh8UDAU7GpPCJwa9HmWWuBySocbCp9CEKagKAWJr7/7
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="279265147"
+X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
+   d="scan'208";a="279265147"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 10:47:58 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
+   d="scan'208";a="644312402"
+Received: from lkp-server02.sh.intel.com (HELO a67cc04a5eeb) ([10.239.97.151])
+  by fmsmga008.fm.intel.com with ESMTP; 22 Jun 2022 10:47:56 -0700
+Received: from kbuild by a67cc04a5eeb with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o44SJ-0001XV-CQ;
+        Wed, 22 Jun 2022 17:47:55 +0000
+Date:   Thu, 23 Jun 2022 01:46:58 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Srikar Dronamraju <srikar@linux.vnet.ibm.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [stable:linux-5.10.y 499/6724] arch/powerpc/kernel/smp.c:1380:7:
+ error: variable 'ret' set but not used
+Message-ID: <202206230132.l8PRlnsA-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220622173614.12778-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20220622173614.12778-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <20220622173614.12778-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 22 Jun 2022 20:11:38 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdWbQ1VHH4ugQs2mamS2KGEj5AdWmNtmg=6eUJmyGRDTVw@mail.gmail.com>
-Message-ID: <CAMuHMdWbQ1VHH4ugQs2mamS2KGEj5AdWmNtmg=6eUJmyGRDTVw@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] mmc: renesas_sdhi: Fix typo's
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Pavel Machek <pavel@denx.de>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Prabhakar,
+Hi Srikar,
 
-On Wed, Jun 22, 2022 at 7:36 PM Lad Prabhakar
-<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> Fix typo's,
-> * difference -> different
-> * alignment -> aligned
->
-> While at it replaced 128-bytes -> 128 byte.
->
-> Reported-by: Pavel Machek <pavel@denx.de>
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+FYI, the error/warning still remains.
 
-Thanks for your patch!
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-5.10.y
+head:   4f3fee72a74c88c9039ce0405a715f6221791d06
+commit: e91077cf1780108dc586cedf1d19f65b44fa3870 [499/6724] powerpc/smp: Update cpu_core_map on all PowerPc systems
+config: powerpc-randconfig-r026-20220622 (https://download.01.org/0day-ci/archive/20220623/202206230132.l8PRlnsA-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 8b8d126598ce7bd5243da7f94f69fa1104288bee)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install powerpc cross compiling tool for clang build
+        # apt-get install binutils-powerpc-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git/commit/?id=e91077cf1780108dc586cedf1d19f65b44fa3870
+        git remote add stable https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
+        git fetch --no-tags stable linux-5.10.y
+        git checkout e91077cf1780108dc586cedf1d19f65b44fa3870
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash arch/powerpc/
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-> --- a/drivers/mmc/host/renesas_sdhi_internal_dmac.c
-> +++ b/drivers/mmc/host/renesas_sdhi_internal_dmac.c
-> @@ -355,7 +355,7 @@ renesas_sdhi_internal_dmac_map(struct tmio_mmc_host *host,
->
->         data->host_cookie = cookie;
->
-> -       /* This DMAC cannot handle if buffer is not 128-bytes alignment */
-> +       /* This DMAC cannot handle if buffer is not 128 byte aligned */
+All errors (new ones prefixed by >>):
 
-128-byte? ;-)
+>> arch/powerpc/kernel/smp.c:1380:7: error: variable 'ret' set but not used [-Werror,-Wunused-but-set-variable]
+           bool ret;
+                ^
+   1 error generated.
 
->         if (!IS_ALIGNED(sg_dma_address(data->sg), 128)) {
->                 renesas_sdhi_internal_dmac_unmap(host, data, cookie);
->                 return false;
 
-Gr{oetje,eeting}s,
+vim +/ret +1380 arch/powerpc/kernel/smp.c
 
-                        Geert
+b8a97cb4599cda2 Srikar Dronamraju 2020-09-21  1373  
+df52f6714071c49 Oliver O'Halloran 2017-06-29  1374  static void add_cpu_to_masks(int cpu)
+df52f6714071c49 Oliver O'Halloran 2017-06-29  1375  {
+bf6476152a0a084 Srikar Dronamraju 2021-04-15  1376  	struct cpumask *(*submask_fn)(int) = cpu_sibling_mask;
+df52f6714071c49 Oliver O'Halloran 2017-06-29  1377  	int first_thread = cpu_first_thread_sibling(cpu);
+bf6476152a0a084 Srikar Dronamraju 2021-04-15  1378  	int chip_id = cpu_to_chip_id(cpu);
+84dbf66c6347206 Srikar Dronamraju 2020-10-19  1379  	cpumask_var_t mask;
+bf6476152a0a084 Srikar Dronamraju 2021-04-15 @1380  	bool ret;
+df52f6714071c49 Oliver O'Halloran 2017-06-29  1381  	int i;
+df52f6714071c49 Oliver O'Halloran 2017-06-29  1382  
+df52f6714071c49 Oliver O'Halloran 2017-06-29  1383  	/*
+df52f6714071c49 Oliver O'Halloran 2017-06-29  1384  	 * This CPU will not be in the online mask yet so we need to manually
+df52f6714071c49 Oliver O'Halloran 2017-06-29  1385  	 * add it to it's own thread sibling mask.
+df52f6714071c49 Oliver O'Halloran 2017-06-29  1386  	 */
+df52f6714071c49 Oliver O'Halloran 2017-06-29  1387  	cpumask_set_cpu(cpu, cpu_sibling_mask(cpu));
+e91077cf1780108 Srikar Dronamraju 2021-08-26  1388  	cpumask_set_cpu(cpu, cpu_core_mask(cpu));
+df52f6714071c49 Oliver O'Halloran 2017-06-29  1389  
+df52f6714071c49 Oliver O'Halloran 2017-06-29  1390  	for (i = first_thread; i < first_thread + threads_per_core; i++)
+df52f6714071c49 Oliver O'Halloran 2017-06-29  1391  		if (cpu_online(i))
+df52f6714071c49 Oliver O'Halloran 2017-06-29  1392  			set_cpus_related(i, cpu, cpu_sibling_mask);
+df52f6714071c49 Oliver O'Halloran 2017-06-29  1393  
+425752c63b6f3fe Gautham R. Shenoy 2018-10-11  1394  	add_cpu_to_smallcore_masks(cpu);
+84dbf66c6347206 Srikar Dronamraju 2020-10-19  1395  
+84dbf66c6347206 Srikar Dronamraju 2020-10-19  1396  	/* In CPU-hotplug path, hence use GFP_ATOMIC */
+bf6476152a0a084 Srikar Dronamraju 2021-04-15  1397  	ret = alloc_cpumask_var_node(&mask, GFP_ATOMIC, cpu_to_node(cpu));
+84dbf66c6347206 Srikar Dronamraju 2020-10-19  1398  	update_mask_by_l2(cpu, &mask);
+2a636a56d2d3967 Oliver O'Halloran 2017-06-29  1399  
+b8a97cb4599cda2 Srikar Dronamraju 2020-09-21  1400  	if (has_coregroup_support())
+84dbf66c6347206 Srikar Dronamraju 2020-10-19  1401  		update_coregroup_mask(cpu, &mask);
+84dbf66c6347206 Srikar Dronamraju 2020-10-19  1402  
+bf6476152a0a084 Srikar Dronamraju 2021-04-15  1403  	if (shared_caches)
+bf6476152a0a084 Srikar Dronamraju 2021-04-15  1404  		submask_fn = cpu_l2_cache_mask;
+bf6476152a0a084 Srikar Dronamraju 2021-04-15  1405  
+bf6476152a0a084 Srikar Dronamraju 2021-04-15  1406  	/* Update core_mask with all the CPUs that are part of submask */
+bf6476152a0a084 Srikar Dronamraju 2021-04-15  1407  	or_cpumasks_related(cpu, cpu, submask_fn, cpu_core_mask);
+bf6476152a0a084 Srikar Dronamraju 2021-04-15  1408  
+bf6476152a0a084 Srikar Dronamraju 2021-04-15  1409  	/* Skip all CPUs already part of current CPU core mask */
+bf6476152a0a084 Srikar Dronamraju 2021-04-15  1410  	cpumask_andnot(mask, cpu_online_mask, cpu_core_mask(cpu));
+bf6476152a0a084 Srikar Dronamraju 2021-04-15  1411  
+e91077cf1780108 Srikar Dronamraju 2021-08-26  1412  	/* If chip_id is -1; limit the cpu_core_mask to within DIE*/
+e91077cf1780108 Srikar Dronamraju 2021-08-26  1413  	if (chip_id == -1)
+e91077cf1780108 Srikar Dronamraju 2021-08-26  1414  		cpumask_and(mask, mask, cpu_cpu_mask(cpu));
+e91077cf1780108 Srikar Dronamraju 2021-08-26  1415  
+bf6476152a0a084 Srikar Dronamraju 2021-04-15  1416  	for_each_cpu(i, mask) {
+bf6476152a0a084 Srikar Dronamraju 2021-04-15  1417  		if (chip_id == cpu_to_chip_id(i)) {
+bf6476152a0a084 Srikar Dronamraju 2021-04-15  1418  			or_cpumasks_related(cpu, i, submask_fn, cpu_core_mask);
+bf6476152a0a084 Srikar Dronamraju 2021-04-15  1419  			cpumask_andnot(mask, mask, submask_fn(i));
+bf6476152a0a084 Srikar Dronamraju 2021-04-15  1420  		} else {
+bf6476152a0a084 Srikar Dronamraju 2021-04-15  1421  			cpumask_andnot(mask, mask, cpu_core_mask(i));
+bf6476152a0a084 Srikar Dronamraju 2021-04-15  1422  		}
+bf6476152a0a084 Srikar Dronamraju 2021-04-15  1423  	}
+bf6476152a0a084 Srikar Dronamraju 2021-04-15  1424  
+84dbf66c6347206 Srikar Dronamraju 2020-10-19  1425  	free_cpumask_var(mask);
+a8a5356cd511db2 Paul Mackerras    2013-08-12  1426  }
+a8a5356cd511db2 Paul Mackerras    2013-08-12  1427  
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+:::::: The code at line 1380 was first introduced by commit
+:::::: bf6476152a0a084038b12b9d770e32717f54a6ab powerpc/smp: Reintroduce cpu_core_mask
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+:::::: TO: Srikar Dronamraju <srikar@linux.vnet.ibm.com>
+:::::: CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
