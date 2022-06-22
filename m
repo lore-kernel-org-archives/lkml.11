@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC224C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 16:49:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55CBCC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 16:49:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359718AbiFVQtO (ORCPT
+        id S1376920AbiFVQtS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 12:49:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48092 "EHLO
+        Wed, 22 Jun 2022 12:49:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376806AbiFVQsT (ORCPT
+        with ESMTP id S1376833AbiFVQsW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 12:48:19 -0400
+        Wed, 22 Jun 2022 12:48:22 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2716E403D4
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 09:47:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 34636403DB
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 09:47:36 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0A6C013D5;
-        Wed, 22 Jun 2022 09:47:31 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 235EF12FC;
+        Wed, 22 Jun 2022 09:47:36 -0700 (PDT)
 Received: from merodach.members.linode.com (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 825A03F792;
-        Wed, 22 Jun 2022 09:47:28 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9AF013F792;
+        Wed, 22 Jun 2022 09:47:33 -0700 (PDT)
 From:   James Morse <james.morse@arm.com>
 To:     x86@kernel.org, linux-kernel@vger.kernel.org
 Cc:     Fenghua Yu <fenghua.yu@intel.com>,
@@ -38,9 +38,9 @@ Cc:     Fenghua Yu <fenghua.yu@intel.com>,
         Cristian Marussi <cristian.marussi@arm.com>,
         Xin Hao <xhao@linux.alibaba.com>, xingxin.hx@openanolis.org,
         baolin.wang@linux.alibaba.com
-Subject: [PATCH v5 12/21] x86/resctrl: Calculate bandwidth from the previous __mon_event_count() chunks
-Date:   Wed, 22 Jun 2022 16:46:20 +0000
-Message-Id: <20220622164629.20795-13-james.morse@arm.com>
+Subject: [PATCH v5 14/21] x86/resctrl: Allow per-rmid arch private storage to be reset
+Date:   Wed, 22 Jun 2022 16:46:22 +0000
+Message-Id: <20220622164629.20795-15-james.morse@arm.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220622164629.20795-1-james.morse@arm.com>
 References: <20220622164629.20795-1-james.morse@arm.com>
@@ -50,25 +50,15 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-mbm_bw_count() is only called by the mbm_handle_overflow() worker once a
-second. It reads the hardware register, calculates the bandwidth and
-updates m->prev_bw_msr which is used to hold the previous hardware register
-value.
+To abstract the rmid counters into a helper that returns the number
+of bytes counted, architecture specific per-rmid state is needed.
 
-Operating directly on hardware register values makes it difficult to make
-this code architecture independent, so that it can be moved to /fs/,
-making the mba_sc feature something resctrl supports with no additional
-support from the architecture.
-Prior to calling mbm_bw_count(), mbm_update() reads from the same hardware
-register using __mon_event_count().
+It needs to be possible to reset this hidden state, as the values
+may outlive the life of an rmid, or the mount time of the filesystem.
 
-Change mbm_bw_count() to use the current chunks value most recently saved
-by __mon_event_count(). This removes an extra call to __rmid_read().
-Instead of using m->prev_msr to calculate the number of chunks seen,
-use the rr->val that was updated by __mon_event_count(). This removes an
-extra call to mbm_overflow_count() and get_corrected_mbm_count().
-Calculating bandwidth like this means mbm_bw_count() no longer operates
-on hardware register values directly.
+mon_event_read() is called with first = true when an rmid is first
+allocated in mkdir_mondata_subdir(). Add resctrl_arch_reset_rmid()
+and call it from __mon_event_count()'s rr->first check.
 
 Reviewed-by: Jamie Iles <quic_jiles@quicinc.com>
 Tested-by: Xin Hao <xhao@linux.alibaba.com>
@@ -76,110 +66,158 @@ Reviewed-by: Shaopeng Tan <tan.shaopeng@fujitsu.com>
 Tested-by: Shaopeng Tan <tan.shaopeng@fujitsu.com>
 Tested-by: Cristian Marussi <cristian.marussi@arm.com>
 Signed-off-by: James Morse <james.morse@arm.com>
+
 ---
-Changes since v3:
- * Reset rr.val before each use to avoid over counting.
- * Fixed typos in kerneldoc.
-
-Changes since v2:
- * Expanded commit message
-
 Changes since v1:
- * This patch was rewritten
+ * Aded WARN_ON_ONCE() for a case that should never happen.
 ---
- arch/x86/kernel/cpu/resctrl/internal.h |  4 ++--
- arch/x86/kernel/cpu/resctrl/monitor.c  | 25 ++++++++++++++++---------
- 2 files changed, 18 insertions(+), 11 deletions(-)
+ arch/x86/kernel/cpu/resctrl/internal.h | 18 ++++---------
+ arch/x86/kernel/cpu/resctrl/monitor.c  | 35 +++++++++++++++++++++++++-
+ include/linux/resctrl.h                | 23 +++++++++++++++++
+ 3 files changed, 62 insertions(+), 14 deletions(-)
 
 diff --git a/arch/x86/kernel/cpu/resctrl/internal.h b/arch/x86/kernel/cpu/resctrl/internal.h
-index 3b9e43ba7590..46062099d69e 100644
+index 4de8e5bb93e1..b34a1403f033 100644
 --- a/arch/x86/kernel/cpu/resctrl/internal.h
 +++ b/arch/x86/kernel/cpu/resctrl/internal.h
-@@ -289,7 +289,7 @@ struct rftype {
-  * struct mbm_state - status for each MBM counter in each domain
-  * @chunks:	Total data moved (multiply by rdt_group.mon_scale to get bytes)
-  * @prev_msr:	Value of IA32_QM_CTR for this RMID last time we read it
-- * @prev_bw_msr:Value of previous IA32_QM_CTR for bandwidth counting
-+ * @prev_bw_chunks: Previous chunks value read for bandwidth calculation
-  * @prev_bw:	The most recent bandwidth in MBps
-  * @delta_bw:	Difference between the current and previous bandwidth
-  * @delta_comp:	Indicates whether to compute the delta_bw
-@@ -297,7 +297,7 @@ struct rftype {
- struct mbm_state {
- 	u64	chunks;
- 	u64	prev_msr;
--	u64	prev_bw_msr;
-+	u64	prev_bw_chunks;
- 	u32	prev_bw;
- 	u32	delta_bw;
- 	bool	delta_comp;
+@@ -22,14 +22,6 @@
+ 
+ #define L2_QOS_CDP_ENABLE		0x01ULL
+ 
+-/*
+- * Event IDs are used to program IA32_QM_EVTSEL before reading event
+- * counter from IA32_QM_CTR
+- */
+-#define QOS_L3_OCCUP_EVENT_ID		0x01
+-#define QOS_L3_MBM_TOTAL_EVENT_ID	0x02
+-#define QOS_L3_MBM_LOCAL_EVENT_ID	0x03
+-
+ #define CQM_LIMBOCHECK_INTERVAL	1000
+ 
+ #define MBM_CNTR_WIDTH_BASE		24
+@@ -73,7 +65,7 @@ DECLARE_STATIC_KEY_FALSE(rdt_mon_enable_key);
+  * @list:		entry in &rdt_resource->evt_list
+  */
+ struct mon_evt {
+-	u32			evtid;
++	enum resctrl_event_id	evtid;
+ 	char			*name;
+ 	struct list_head	list;
+ };
+@@ -90,9 +82,9 @@ struct mon_evt {
+ union mon_data_bits {
+ 	void *priv;
+ 	struct {
+-		unsigned int rid	: 10;
+-		unsigned int evtid	: 8;
+-		unsigned int domid	: 14;
++		unsigned int rid		: 10;
++		enum resctrl_event_id evtid	: 8;
++		unsigned int domid		: 14;
+ 	} u;
+ };
+ 
+@@ -100,7 +92,7 @@ struct rmid_read {
+ 	struct rdtgroup		*rgrp;
+ 	struct rdt_resource	*r;
+ 	struct rdt_domain	*d;
+-	int			evtid;
++	enum resctrl_event_id	evtid;
+ 	bool			first;
+ 	u64			val;
+ };
 diff --git a/arch/x86/kernel/cpu/resctrl/monitor.c b/arch/x86/kernel/cpu/resctrl/monitor.c
-index 3e69386cfe00..2d81b6cd9632 100644
+index 2d81b6cd9632..e9755143492b 100644
 --- a/arch/x86/kernel/cpu/resctrl/monitor.c
 +++ b/arch/x86/kernel/cpu/resctrl/monitor.c
-@@ -315,7 +315,7 @@ static u64 __mon_event_count(u32 rmid, struct rmid_read *rr)
- 
- 	if (rr->first) {
- 		memset(m, 0, sizeof(struct mbm_state));
--		m->prev_bw_msr = m->prev_msr = tval;
-+		m->prev_msr = tval;
- 		return 0;
- 	}
- 
-@@ -329,27 +329,32 @@ static u64 __mon_event_count(u32 rmid, struct rmid_read *rr)
+@@ -137,7 +137,37 @@ static inline struct rmid_entry *__rmid_entry(u32 rmid)
+ 	return entry;
  }
  
- /*
-+ * mbm_bw_count() - Update bw count from values previously read by
-+ *		    __mon_event_count().
-+ * @rmid:	The rmid used to identify the cached mbm_state.
-+ * @rr:		The struct rmid_read populated by __mon_event_count().
-+ *
-  * Supporting function to calculate the memory bandwidth
-- * and delta bandwidth in MBps.
-+ * and delta bandwidth in MBps. The chunks value previously read by
-+ * __mon_event_count() is compared with the chunks value from the previous
-+ * invocation. This must be called once per second to maintain values in MBps.
-  */
- static void mbm_bw_count(u32 rmid, struct rmid_read *rr)
+-static u64 __rmid_read(u32 rmid, u32 eventid)
++static struct arch_mbm_state *get_arch_mbm_state(struct rdt_hw_domain *hw_dom,
++						 u32 rmid,
++						 enum resctrl_event_id eventid)
++{
++	switch (eventid) {
++	case QOS_L3_OCCUP_EVENT_ID:
++		return NULL;
++	case QOS_L3_MBM_TOTAL_EVENT_ID:
++		return &hw_dom->arch_mbm_total[rmid];
++	case QOS_L3_MBM_LOCAL_EVENT_ID:
++		return &hw_dom->arch_mbm_local[rmid];
++	}
++
++	/* Never expect to get here */
++	WARN_ON_ONCE(1);
++
++	return NULL;
++}
++
++void resctrl_arch_reset_rmid(struct rdt_resource *r, struct rdt_domain *d,
++			     u32 rmid, enum resctrl_event_id eventid)
++{
++	struct rdt_hw_domain *hw_dom = resctrl_to_arch_dom(d);
++	struct arch_mbm_state *am;
++
++	am = get_arch_mbm_state(hw_dom, rmid, eventid);
++	if (am)
++		memset(am, 0, sizeof(*am));
++}
++
++static u64 __rmid_read(u32 rmid, enum resctrl_event_id eventid)
  {
- 	struct rdt_hw_resource *hw_res = resctrl_to_arch_res(rr->r);
- 	struct mbm_state *m = &rr->d->mbm_local[rmid];
--	u64 tval, cur_bw, chunks;
-+	u64 cur_bw, chunks, cur_chunks;
+ 	u64 val;
  
--	tval = __rmid_read(rmid, rr->evtid);
--	if (tval & (RMID_VAL_ERROR | RMID_VAL_UNAVAIL))
--		return;
-+	cur_chunks = rr->val;
-+	chunks = cur_chunks - m->prev_bw_chunks;
-+	m->prev_bw_chunks = cur_chunks;
+@@ -291,6 +321,9 @@ static u64 __mon_event_count(u32 rmid, struct rmid_read *rr)
+ 	struct mbm_state *m;
+ 	u64 chunks, tval;
  
--	chunks = mbm_overflow_count(m->prev_bw_msr, tval, hw_res->mbm_width);
--	cur_bw = (get_corrected_mbm_count(rmid, chunks) * hw_res->mon_scale) >> 20;
-+	cur_bw = (chunks * hw_res->mon_scale) >> 20;
++	if (rr->first)
++		resctrl_arch_reset_rmid(rr->r, rr->d, rmid, rr->evtid);
++
+ 	tval = __rmid_read(rmid, rr->evtid);
+ 	if (tval & (RMID_VAL_ERROR | RMID_VAL_UNAVAIL)) {
+ 		return tval;
+diff --git a/include/linux/resctrl.h b/include/linux/resctrl.h
+index f4c9101df461..818456770176 100644
+--- a/include/linux/resctrl.h
++++ b/include/linux/resctrl.h
+@@ -32,6 +32,16 @@ enum resctrl_conf_type {
  
- 	if (m->delta_comp)
- 		m->delta_bw = abs(cur_bw - m->prev_bw);
- 	m->delta_comp = false;
- 	m->prev_bw = cur_bw;
--	m->prev_bw_msr = tval;
- }
+ #define CDP_NUM_TYPES	(CDP_DATA + 1)
  
- /*
-@@ -516,10 +521,12 @@ static void mbm_update(struct rdt_resource *r, struct rdt_domain *d, int rmid)
- 	 */
- 	if (is_mbm_total_enabled()) {
- 		rr.evtid = QOS_L3_MBM_TOTAL_EVENT_ID;
-+		rr.val = 0;
- 		__mon_event_count(rmid, &rr);
- 	}
- 	if (is_mbm_local_enabled()) {
- 		rr.evtid = QOS_L3_MBM_LOCAL_EVENT_ID;
-+		rr.val = 0;
- 		__mon_event_count(rmid, &rr);
++/*
++ * Event IDs, the values match those used to program IA32_QM_EVTSEL before
++ * reading IA32_QM_CTR on RDT systems.
++ */
++enum resctrl_event_id {
++	QOS_L3_OCCUP_EVENT_ID		= 0x01,
++	QOS_L3_MBM_TOTAL_EVENT_ID	= 0x02,
++	QOS_L3_MBM_LOCAL_EVENT_ID	= 0x03,
++};
++
+ /**
+  * struct resctrl_staged_config - parsed configuration to be applied
+  * @new_ctrl:		new ctrl value to be loaded
+@@ -210,4 +220,17 @@ u32 resctrl_arch_get_config(struct rdt_resource *r, struct rdt_domain *d,
+ int resctrl_online_domain(struct rdt_resource *r, struct rdt_domain *d);
+ void resctrl_offline_domain(struct rdt_resource *r, struct rdt_domain *d);
  
- 		/*
++/**
++ * resctrl_arch_reset_rmid() - Reset any private state associated with rmid
++ *			       and eventid.
++ * @r:		The domain's resource.
++ * @d:		The rmid's domain.
++ * @rmid:	The rmid whose counter values should be reset.
++ * @eventid:	The eventid whose counter values should be reset.
++ *
++ * This can be called from any CPU.
++ */
++void resctrl_arch_reset_rmid(struct rdt_resource *r, struct rdt_domain *d,
++			     u32 rmid, enum resctrl_event_id eventid);
++
+ #endif /* _RESCTRL_H */
 -- 
 2.30.2
 
