@@ -2,243 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A5F8C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 17:08:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1105CCA47D
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 17:08:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377114AbiFVRIA (ORCPT
+        id S1377036AbiFVRIq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 13:08:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44302 "EHLO
+        Wed, 22 Jun 2022 13:08:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359222AbiFVRHl (ORCPT
+        with ESMTP id S1377306AbiFVRIY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 13:07:41 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F0D440E74
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 10:06:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655917617; x=1687453617;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=KGKmBGHdKTdqm+Eo1VIi7aI14IRkohgCrxYSKNcLLDE=;
-  b=Pl0G3KlosxC9q0puSQjY+RVchQLmf2g13ILHOD2pEEzr7lEDCprkzxpf
-   8kw6ghyXCs98ntQe9r8JEnISbxp48kqysAUPSM6ejMfvuUuTm6JXj35ka
-   a3PPR4Fi7On94AQ2vuhdf3XL1bIRZIew58zjeGX5klUvhVoWKtT8YnSYz
-   zYzq2vkal6bDB/3l4pdOoVtM0z3I3PfRGVpANspl2j8R30D/BVc5Q15S9
-   QUbGCzR2z/6XZ/8UkhkKVCjDoRWdXBCmAavQUWzswFp8uZ6CuuvrISkBL
-   dnPTF125mBEZRpf5XGR2YrpK2YjBfdBt9ze6QNJveQjs9ings/YrSIWtc
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="260298121"
-X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="260298121"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 10:06:56 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="677651088"
-Received: from lkp-server02.sh.intel.com (HELO a67cc04a5eeb) ([10.239.97.151])
-  by FMSMGA003.fm.intel.com with ESMTP; 22 Jun 2022 10:06:55 -0700
-Received: from kbuild by a67cc04a5eeb with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o43oc-0001Vh-Ft;
-        Wed, 22 Jun 2022 17:06:54 +0000
-Date:   Thu, 23 Jun 2022 01:06:13 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Andi Kleen <ak@linux.intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jirislaby@kernel.org>
-Subject: [jirislaby:lto 12/45] kernel/time/posix-stubs.c:34:43: warning:
- 'sys_timer_create' alias between functions of incompatible types 'long
- int(clockid_t,  struct sigevent *, timer_t *)' {aka 'long int(int,  struct
- sigevent *, int *)'} and 'long int(void)'
-Message-ID: <202206230013.NOIqeuWz-lkp@intel.com>
+        Wed, 22 Jun 2022 13:08:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4639142496
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 10:07:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 242F661B89
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 17:07:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2992AC34114;
+        Wed, 22 Jun 2022 17:07:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655917639;
+        bh=jgUJecCzFXvnTsqrwru1uRnoQwtYzOYNC/yDvPGBGoU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=IhZwI4Q6iVlC+S04Q/J29TcboiwU+MljMXhoIKGg/AarqIIaTjhvPWG8Z5naLox1B
+         n9KzIptntxltqPY1UQX7h6+eshcKX5oThDpAfbbkf+5lPHZNJDhE22vQrk6ovDr6oN
+         6Y17fZSrph0Xy4r8ZUdj4pEGcqUwbIhTfj8ATiOakPESMDJzko75CuWYd/Zhi8KQpt
+         6VBVVsuA1I+MzepLJnoupAngeGMWvT1Jz8keDZX/TCuwguPcCsaBPRgu7Kgxak/iez
+         Grfx6FYsk6nAPs/Mx6RdBLf4M9kYE6s+/BCOLQj4HZkBCOSKpStEzvhVWHDEibsMvn
+         /cE+zahQqxROw==
+Date:   Wed, 22 Jun 2022 18:07:15 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Dong Aisheng <dongas86@gmail.com>
+Cc:     Aisheng Dong <aisheng.dong@nxp.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "l.stach@pengutronix.de" <l.stach@pengutronix.de>,
+        Peng Fan <peng.fan@nxp.com>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>
+Subject: Re: [PATCH RFC 1/2] regmap: add option to disable debugfs
+Message-ID: <YrNMQ1GLR03WX5IE@sirena.org.uk>
+References: <DB9PR04MB847785E1861525FC1E4AD97280B39@DB9PR04MB8477.eurprd04.prod.outlook.com>
+ <YrHkXH1M4NydBfQT@sirena.org.uk>
+ <DB9PR04MB84772F73D4AA1B49F87BECCF80B39@DB9PR04MB8477.eurprd04.prod.outlook.com>
+ <CAA+hA=RQVRHzdy_ZpwcC-ZB8mwUYuMYu_iLNAfuPcMCS1G9WXA@mail.gmail.com>
+ <YrMMzizzE7rIji5x@sirena.org.uk>
+ <CAA+hA=SA7BY8WxrbuRAOsuHyz+bx-EJq-UT_YLW5wYMS+io+pg@mail.gmail.com>
+ <YrNC3eHx7ARQy/Vd@sirena.org.uk>
+ <CAA+hA=SHgp1jZn1Qwrcu3fMnn22aaVimS4+Y2hPcWehS4zdRoA@mail.gmail.com>
+ <YrNH8/eaYHYeAWNJ@sirena.org.uk>
+ <CAA+hA=SsTeTF80dL6cT6Ef7Y9Q3Fhj4Jp0S-_nk=UK1HsZ4hYw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="8qqGhfl8w2IBtgLF"
 Content-Disposition: inline
+In-Reply-To: <CAA+hA=SsTeTF80dL6cT6Ef7Y9Q3Fhj4Jp0S-_nk=UK1HsZ4hYw@mail.gmail.com>
+X-Cookie: Truckers welcome.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git lto
-head:   8047611082d70c5263114fabce8c80a4c3d251fa
-commit: d6f8c88795ffd42d25c4d6c8634d9859d2b5ee57 [12/45] lto: Use C version for SYSCALL_ALIAS / cond_syscall
-config: arc-randconfig-r043-20220622 (https://download.01.org/0day-ci/archive/20220623/202206230013.NOIqeuWz-lkp@intel.com/config)
-compiler: arceb-elf-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git/commit/?id=d6f8c88795ffd42d25c4d6c8634d9859d2b5ee57
-        git remote add jirislaby https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git
-        git fetch --no-tags jirislaby lto
-        git checkout d6f8c88795ffd42d25c4d6c8634d9859d2b5ee57
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash kernel/time/
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+--8qqGhfl8w2IBtgLF
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-All warnings (new ones prefixed by >>):
+On Thu, Jun 23, 2022 at 01:01:12AM +0800, Dong Aisheng wrote:
+> On Thu, Jun 23, 2022 at 12:48 AM Mark Brown <broonie@kernel.org> wrote:
 
-   kernel/time/posix-stubs.c:25:17: warning: no previous prototype for 'sys_ni_posix_timers' [-Wmissing-prototypes]
-      25 | asmlinkage long sys_ni_posix_timers(void)
-         |                 ^~~~~~~~~~~~~~~~~~~
-   kernel/time/posix-stubs.c:73:5: warning: no previous prototype for 'do_clock_gettime' [-Wmissing-prototypes]
-      73 | int do_clock_gettime(clockid_t which_clock, struct timespec64 *tp)
-         |     ^~~~~~~~~~~~~~~~
-   In file included from kernel/time/posix-stubs.c:9:
->> kernel/time/posix-stubs.c:34:43: warning: 'sys_timer_create' alias between functions of incompatible types 'long int(clockid_t,  struct sigevent *, timer_t *)' {aka 'long int(int,  struct sigevent *, int *)'} and 'long int(void)' [-Wattribute-alias=]
-      34 | #define SYS_NI(name)  SYSCALL_ALIAS_PROTO(sys_##name, sys_ni_posix_timers)
-         |                                           ^~~~
-   kernel/time/posix-stubs.c:34:23: note: in expansion of macro 'SYSCALL_ALIAS_PROTO'
-      34 | #define SYS_NI(name)  SYSCALL_ALIAS_PROTO(sys_##name, sys_ni_posix_timers)
-         |                       ^~~~~~~~~~~~~~~~~~~
-   kernel/time/posix-stubs.c:41:1: note: in expansion of macro 'SYS_NI'
-      41 | SYS_NI(timer_create);
-         | ^~~~~~
-   kernel/time/posix-stubs.c:25:17: note: aliased declaration here
-      25 | asmlinkage long sys_ni_posix_timers(void)
-         |                 ^~~~~~~~~~~~~~~~~~~
-   In file included from kernel/time/posix-stubs.c:9:
->> kernel/time/posix-stubs.c:34:43: warning: 'sys_timer_gettime32' alias between functions of incompatible types 'long int(timer_t,  struct old_itimerspec32 *)' {aka 'long int(int,  struct old_itimerspec32 *)'} and 'long int(void)' [-Wattribute-alias=]
-      34 | #define SYS_NI(name)  SYSCALL_ALIAS_PROTO(sys_##name, sys_ni_posix_timers)
-         |                                           ^~~~
-   kernel/time/posix-stubs.c:34:23: note: in expansion of macro 'SYSCALL_ALIAS_PROTO'
-      34 | #define SYS_NI(name)  SYSCALL_ALIAS_PROTO(sys_##name, sys_ni_posix_timers)
-         |                       ^~~~~~~~~~~~~~~~~~~
-   kernel/time/posix-stubs.c:170:1: note: in expansion of macro 'SYS_NI'
-     170 | SYS_NI(timer_gettime32);
-         | ^~~~~~
-   kernel/time/posix-stubs.c:25:17: note: aliased declaration here
-      25 | asmlinkage long sys_ni_posix_timers(void)
-         |                 ^~~~~~~~~~~~~~~~~~~
-   In file included from kernel/time/posix-stubs.c:9:
->> kernel/time/posix-stubs.c:34:43: warning: 'sys_timer_settime32' alias between functions of incompatible types 'long int(timer_t,  int,  struct old_itimerspec32 *, struct old_itimerspec32 *)' {aka 'long int(int,  int,  struct old_itimerspec32 *, struct old_itimerspec32 *)'} and 'long int(void)' [-Wattribute-alias=]
-      34 | #define SYS_NI(name)  SYSCALL_ALIAS_PROTO(sys_##name, sys_ni_posix_timers)
-         |                                           ^~~~
-   kernel/time/posix-stubs.c:34:23: note: in expansion of macro 'SYSCALL_ALIAS_PROTO'
-      34 | #define SYS_NI(name)  SYSCALL_ALIAS_PROTO(sys_##name, sys_ni_posix_timers)
-         |                       ^~~~~~~~~~~~~~~~~~~
-   kernel/time/posix-stubs.c:169:1: note: in expansion of macro 'SYS_NI'
-     169 | SYS_NI(timer_settime32);
-         | ^~~~~~
-   kernel/time/posix-stubs.c:25:17: note: aliased declaration here
-      25 | asmlinkage long sys_ni_posix_timers(void)
-         |                 ^~~~~~~~~~~~~~~~~~~
-   In file included from kernel/time/posix-stubs.c:9:
->> kernel/time/posix-stubs.c:34:43: warning: 'sys_clock_adjtime32' alias between functions of incompatible types 'long int(clockid_t,  struct old_timex32 *)' {aka 'long int(int,  struct old_timex32 *)'} and 'long int(void)' [-Wattribute-alias=]
-      34 | #define SYS_NI(name)  SYSCALL_ALIAS_PROTO(sys_##name, sys_ni_posix_timers)
-         |                                           ^~~~
-   kernel/time/posix-stubs.c:34:23: note: in expansion of macro 'SYSCALL_ALIAS_PROTO'
-      34 | #define SYS_NI(name)  SYSCALL_ALIAS_PROTO(sys_##name, sys_ni_posix_timers)
-         |                       ^~~~~~~~~~~~~~~~~~~
-   kernel/time/posix-stubs.c:49:1: note: in expansion of macro 'SYS_NI'
-      49 | SYS_NI(clock_adjtime32);
-         | ^~~~~~
-   kernel/time/posix-stubs.c:25:17: note: aliased declaration here
-      25 | asmlinkage long sys_ni_posix_timers(void)
-         |                 ^~~~~~~~~~~~~~~~~~~
-   In file included from kernel/time/posix-stubs.c:9:
->> kernel/time/posix-stubs.c:34:43: warning: 'sys_setitimer' alias between functions of incompatible types 'long int(int,  struct __kernel_old_itimerval *, struct __kernel_old_itimerval *)' and 'long int(void)' [-Wattribute-alias=]
-      34 | #define SYS_NI(name)  SYSCALL_ALIAS_PROTO(sys_##name, sys_ni_posix_timers)
-         |                                           ^~~~
-   kernel/time/posix-stubs.c:34:23: note: in expansion of macro 'SYSCALL_ALIAS_PROTO'
-      34 | #define SYS_NI(name)  SYSCALL_ALIAS_PROTO(sys_##name, sys_ni_posix_timers)
-         |                       ^~~~~~~~~~~~~~~~~~~
-   kernel/time/posix-stubs.c:48:1: note: in expansion of macro 'SYS_NI'
-      48 | SYS_NI(setitimer);
-         | ^~~~~~
-   kernel/time/posix-stubs.c:25:17: note: aliased declaration here
-      25 | asmlinkage long sys_ni_posix_timers(void)
-         |                 ^~~~~~~~~~~~~~~~~~~
-   In file included from kernel/time/posix-stubs.c:9:
->> kernel/time/posix-stubs.c:34:43: warning: 'sys_getitimer' alias between functions of incompatible types 'long int(int,  struct __kernel_old_itimerval *)' and 'long int(void)' [-Wattribute-alias=]
-      34 | #define SYS_NI(name)  SYSCALL_ALIAS_PROTO(sys_##name, sys_ni_posix_timers)
-         |                                           ^~~~
-   kernel/time/posix-stubs.c:34:23: note: in expansion of macro 'SYSCALL_ALIAS_PROTO'
-      34 | #define SYS_NI(name)  SYSCALL_ALIAS_PROTO(sys_##name, sys_ni_posix_timers)
-         |                       ^~~~~~~~~~~~~~~~~~~
-   kernel/time/posix-stubs.c:47:1: note: in expansion of macro 'SYS_NI'
-      47 | SYS_NI(getitimer);
-         | ^~~~~~
-   kernel/time/posix-stubs.c:25:17: note: aliased declaration here
-      25 | asmlinkage long sys_ni_posix_timers(void)
-         |                 ^~~~~~~~~~~~~~~~~~~
-   In file included from kernel/time/posix-stubs.c:9:
->> kernel/time/posix-stubs.c:34:43: warning: 'sys_clock_adjtime' alias between functions of incompatible types 'long int(clockid_t,  struct __kernel_timex *)' {aka 'long int(int,  struct __kernel_timex *)'} and 'long int(void)' [-Wattribute-alias=]
-      34 | #define SYS_NI(name)  SYSCALL_ALIAS_PROTO(sys_##name, sys_ni_posix_timers)
-         |                                           ^~~~
-   kernel/time/posix-stubs.c:34:23: note: in expansion of macro 'SYSCALL_ALIAS_PROTO'
-      34 | #define SYS_NI(name)  SYSCALL_ALIAS_PROTO(sys_##name, sys_ni_posix_timers)
-         |                       ^~~~~~~~~~~~~~~~~~~
-   kernel/time/posix-stubs.c:46:1: note: in expansion of macro 'SYS_NI'
-      46 | SYS_NI(clock_adjtime);
-         | ^~~~~~
-   kernel/time/posix-stubs.c:25:17: note: aliased declaration here
-      25 | asmlinkage long sys_ni_posix_timers(void)
-         |                 ^~~~~~~~~~~~~~~~~~~
-   In file included from kernel/time/posix-stubs.c:9:
->> kernel/time/posix-stubs.c:34:43: warning: 'sys_timer_delete' alias between functions of incompatible types 'long int(timer_t)' {aka 'long int(int)'} and 'long int(void)' [-Wattribute-alias=]
-      34 | #define SYS_NI(name)  SYSCALL_ALIAS_PROTO(sys_##name, sys_ni_posix_timers)
-         |                                           ^~~~
-   kernel/time/posix-stubs.c:34:23: note: in expansion of macro 'SYSCALL_ALIAS_PROTO'
-      34 | #define SYS_NI(name)  SYSCALL_ALIAS_PROTO(sys_##name, sys_ni_posix_timers)
-         |                       ^~~~~~~~~~~~~~~~~~~
-   kernel/time/posix-stubs.c:45:1: note: in expansion of macro 'SYS_NI'
-      45 | SYS_NI(timer_delete);
-         | ^~~~~~
-   kernel/time/posix-stubs.c:25:17: note: aliased declaration here
-      25 | asmlinkage long sys_ni_posix_timers(void)
-         |                 ^~~~~~~~~~~~~~~~~~~
-   In file included from kernel/time/posix-stubs.c:9:
->> kernel/time/posix-stubs.c:34:43: warning: 'sys_timer_settime' alias between functions of incompatible types 'long int(timer_t,  int,  const struct __kernel_itimerspec *, struct __kernel_itimerspec *)' {aka 'long int(int,  int,  const struct __kernel_itimerspec *, struct __kernel_itimerspec *)'} and 'long int(void)' [-Wattribute-alias=]
-      34 | #define SYS_NI(name)  SYSCALL_ALIAS_PROTO(sys_##name, sys_ni_posix_timers)
-         |                                           ^~~~
-   kernel/time/posix-stubs.c:34:23: note: in expansion of macro 'SYSCALL_ALIAS_PROTO'
-      34 | #define SYS_NI(name)  SYSCALL_ALIAS_PROTO(sys_##name, sys_ni_posix_timers)
-         |                       ^~~~~~~~~~~~~~~~~~~
-   kernel/time/posix-stubs.c:44:1: note: in expansion of macro 'SYS_NI'
-      44 | SYS_NI(timer_settime);
-         | ^~~~~~
-   kernel/time/posix-stubs.c:25:17: note: aliased declaration here
-      25 | asmlinkage long sys_ni_posix_timers(void)
-         |                 ^~~~~~~~~~~~~~~~~~~
-   In file included from kernel/time/posix-stubs.c:9:
->> kernel/time/posix-stubs.c:34:43: warning: 'sys_timer_getoverrun' alias between functions of incompatible types 'long int(timer_t)' {aka 'long int(int)'} and 'long int(void)' [-Wattribute-alias=]
-      34 | #define SYS_NI(name)  SYSCALL_ALIAS_PROTO(sys_##name, sys_ni_posix_timers)
-         |                                           ^~~~
-   kernel/time/posix-stubs.c:34:23: note: in expansion of macro 'SYSCALL_ALIAS_PROTO'
-      34 | #define SYS_NI(name)  SYSCALL_ALIAS_PROTO(sys_##name, sys_ni_posix_timers)
-         |                       ^~~~~~~~~~~~~~~~~~~
-   kernel/time/posix-stubs.c:43:1: note: in expansion of macro 'SYS_NI'
-      43 | SYS_NI(timer_getoverrun);
-         | ^~~~~~
-   kernel/time/posix-stubs.c:25:17: note: aliased declaration here
-      25 | asmlinkage long sys_ni_posix_timers(void)
-         |                 ^~~~~~~~~~~~~~~~~~~
-   In file included from kernel/time/posix-stubs.c:9:
->> kernel/time/posix-stubs.c:34:43: warning: 'sys_timer_gettime' alias between functions of incompatible types 'long int(timer_t,  struct __kernel_itimerspec *)' {aka 'long int(int,  struct __kernel_itimerspec *)'} and 'long int(void)' [-Wattribute-alias=]
-      34 | #define SYS_NI(name)  SYSCALL_ALIAS_PROTO(sys_##name, sys_ni_posix_timers)
-         |                                           ^~~~
-   kernel/time/posix-stubs.c:34:23: note: in expansion of macro 'SYSCALL_ALIAS_PROTO'
-      34 | #define SYS_NI(name)  SYSCALL_ALIAS_PROTO(sys_##name, sys_ni_posix_timers)
-         |                       ^~~~~~~~~~~~~~~~~~~
-   kernel/time/posix-stubs.c:42:1: note: in expansion of macro 'SYS_NI'
-      42 | SYS_NI(timer_gettime);
-         | ^~~~~~
-   kernel/time/posix-stubs.c:25:17: note: aliased declaration here
-      25 | asmlinkage long sys_ni_posix_timers(void)
-         |                 ^~~~~~~~~~~~~~~~~~~
+> > Ah, right.  That makes sense - we should relax the check to only apply
+> > if there is actually a cache.
 
+> If we don't remove the WARN_ON in regcache_cache_only(), how
+> would you suggest the fix?
 
-vim +34 kernel/time/posix-stubs.c
+In exactly the manner I suggested above.
 
-    32	
-    33	#ifndef SYS_NI
-  > 34	#define SYS_NI(name)  SYSCALL_ALIAS_PROTO(sys_##name, sys_ni_posix_timers)
-    35	#endif
-    36	
+--8qqGhfl8w2IBtgLF
+Content-Type: application/pgp-signature; name="signature.asc"
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKzTEIACgkQJNaLcl1U
+h9Diqwf+Nz4r4ln8IKyQtWv2S6rFk5jVlzqo7clQkJiexuryvvBKMzraOfs4olcX
+a5kjTZUEH3b5yW8+xvIaTt2AXOxnNwqnWc0Z//7FrL3+SUv4JlRJUQQwzSZ7UE7v
+30Syy4I74zSePHlCMvXFz5Ji1lyAPuJgzLYKCh14+zj48JIfxCuY+Bbm+CRXqS84
+XuQFwTq90Re41/8i9Q7tKMnNHwWT4CMlxXt7zBpCEvuiYfWnIzOYWIHuok0BO5Fm
+cRSMsQ9N4xeFPicCu59mEd101vxejcC3lrtjKtGdVGFzoG9nFUnxze9ErMESG0LN
+08DQYKM4mPPMPNxGchA2Bqh001F/Dw==
+=NXAf
+-----END PGP SIGNATURE-----
+
+--8qqGhfl8w2IBtgLF--
