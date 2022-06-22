@@ -2,182 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35C3CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 18:55:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADF0CC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 18:57:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377441AbiFVSz0 (ORCPT
+        id S1376883AbiFVS5c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 14:55:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41482 "EHLO
+        Wed, 22 Jun 2022 14:57:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377412AbiFVSzE (ORCPT
+        with ESMTP id S235707AbiFVS5V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 14:55:04 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D57E040E5F;
-        Wed, 22 Jun 2022 11:54:34 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id t25so29299023lfg.7;
-        Wed, 22 Jun 2022 11:54:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=4iTcaXk/tA+WMboZAw/5+ow8rxvumME0LIzym3Yc6HI=;
-        b=dg3DvxL1zfeqKqkHs2XJQ4/0RziT3Uc/vHw5NiBfdatyveZYIbam9hjLjfn9h+0DTy
-         9u8h9cnINtfuaYjJekp+OImkzFFheCq7brPJmPZ4oeWB+6xwlSQhXwd7IQup6V5IHceg
-         FKOilHtPZ7Nco+n/LVKOnGwn9lNqPu37bPPftND/Rww7U2DlQVNWyK0CvJ7rvK02dU2q
-         ig4ZggOtfgJPwdZYSrfnFQuD08s9DH5EN/82MmKBRqwpMNjoqhlWs65bZ8WTdwckUw1L
-         pGJl6nvjYhUIZfVa/KF436UJ3FsaYc1uu5qNgmjfXD1SSAkbzOVeF/lg0bi+PmdOdx2f
-         LXcQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=4iTcaXk/tA+WMboZAw/5+ow8rxvumME0LIzym3Yc6HI=;
-        b=To0a3rlrHANbTeVHPxa9B7KX7zAHhGFh7DY27PbRH9yBSIiTeaJytXqnDfRi5BlBf0
-         bCncNe0PmZ4uEMy9A1u/+SNlU3hiXwbghg5fpx+w04map5Jg7gRFz3Olk5H1/hDop8vW
-         UmMlwfSm+U8155wUrWLG6ajuAmsnbpnZtySdkRKcnpy9OLslKu6BdtL2qMvbKc/z0kLl
-         OorrL2TOK1X4Fn58pbp0V0EkTw2fiOlLLAx1r1KnUgjwKBsHhU6k4nRmZUOVZvtgN0RO
-         AAU91d7glNexFwBjWeqAuxwg3NKwpnDvKP90SHm1m1qAsjIi4g1kZ1EcEn9ha2onH1AT
-         kdfQ==
-X-Gm-Message-State: AJIora9bQd4POjEnjl2BW1SeJrAKLcBaJQojrhDf2fw8oJuOwCqE/83w
-        E0QXn968/SZUAKy4BhXOLYo=
-X-Google-Smtp-Source: AGRyM1upUm0OzGmQc3AYVM26yT3dHzDTq51feO4Wd7o3VMKCxmkZO+tbeA1ZnKboqUXSRa8KrrklzQ==
-X-Received: by 2002:a05:6512:40b:b0:47f:8215:8bf9 with SMTP id u11-20020a056512040b00b0047f82158bf9mr2894785lfk.360.1655924072204;
-        Wed, 22 Jun 2022 11:54:32 -0700 (PDT)
-Received: from pc638.lan ([155.137.26.201])
-        by smtp.gmail.com with ESMTPSA id a15-20020a056512200f00b0047f8ec3ca4esm507499lfb.87.2022.06.22.11.54.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jun 2022 11:54:25 -0700 (PDT)
-From:   Uladzislau Rezki <urezki@gmail.com>
-X-Google-Original-From: Uladzislau Rezki <urezki@pc638.lan>
-Date:   Wed, 22 Jun 2022 20:54:22 +0200
-To:     Michal Hocko <mhocko@kernel.org>
-Cc:     rcu@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Michal Hocko <mhocko@suse.com>,
-        Uladzislau Rezki <urezki@gmail.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Joel Fernandes <joel@joelfernandes.org>
-Subject: Re: [RFC PATCH] rcu: back off on allocation failure in
- fill_page_cache_func
-Message-ID: <YrNlXkLfDpd+Ulxf@pc638.lan>
-References: <20220622114711.28154-1-mhocko@kernel.org>
+        Wed, 22 Jun 2022 14:57:21 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6478167E9;
+        Wed, 22 Jun 2022 11:57:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655924240; x=1687460240;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=GfUjOXbnbljOCWDgJqhlMo6F4sjejR8sLGNLfJqUuMw=;
+  b=Ic4I7KQ7uCh/cnUu7dQJNLJ/M0CGmP0n5uIaQB3egn2FaxL44w23QTKs
+   ALpmjdKHrdevzFyzCnWqf8g7DjTYQ5E6s0POAFlkSVoqPU0vM3iSXfbGW
+   cBCbTS78mu13FEhIv+8xR57FD2OSob/Dqh1qNsOIZMSSJybtTeIt981nF
+   k00r1oVPqHsNE5N5p7Cz+DYVAdNYTGI7oYBT1er2jNodaVJz+lDDWxpDu
+   0lbhBTI5aNDKI80bADTcc8wgRK7TUna0rDA8PDB+0+krEdOwqzF/t1Ti/
+   PlAN98Av25tIMb++f63fK0pNJqzefBCufIzfTjua4kE/XpeMvet7E73m/
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="281245147"
+X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
+   d="scan'208";a="281245147"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 11:57:20 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
+   d="scan'208";a="563141901"
+Received: from linux.intel.com ([10.54.29.200])
+  by orsmga006.jf.intel.com with ESMTP; 22 Jun 2022 11:57:20 -0700
+Received: from [10.252.208.245] (kliang2-MOBL.ccr.corp.intel.com [10.252.208.245])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by linux.intel.com (Postfix) with ESMTPS id F2A35580970;
+        Wed, 22 Jun 2022 11:57:16 -0700 (PDT)
+Message-ID: <4a635493-4e06-af5a-d4d7-e9e669051b08@linux.intel.com>
+Date:   Wed, 22 Jun 2022 14:57:15 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220622114711.28154-1-mhocko@kernel.org>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 1/4] perf/x86/intel/lbr: use setup_clear_cpu_cap instead
+ of clear_cpu_cap
+Content-Language: en-US
+To:     Dave Hansen <dave.hansen@intel.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        linux-kernel@vger.kernel.org
+Cc:     "Chang S. Bae" <chang.seok.bae@intel.com>,
+        Jiri Olsa <jolsa@kernel.org>, linux-perf-users@vger.kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Borislav Petkov <bp@alien8.de>,
+        Kees Cook <keescook@chromium.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Tim Chen <tim.c.chen@linux.intel.com>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        Jane Malalane <jane.malalane@citrix.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        "open list:CRYPTO API" <linux-crypto@vger.kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>
+References: <20220622144820.751402-1-mlevitsk@redhat.com>
+ <20220622144820.751402-2-mlevitsk@redhat.com>
+ <84c84de9-f5f1-1f8c-fa7c-6a416ea3373e@intel.com>
+From:   "Liang, Kan" <kan.liang@linux.intel.com>
+In-Reply-To: <84c84de9-f5f1-1f8c-fa7c-6a416ea3373e@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 01:47:11PM +0200, Michal Hocko wrote:
-> From: Michal Hocko <mhocko@suse.com>
-> 
-> fill_page_cache_func allocates couple of pages to store
-> kvfree_rcu_bulk_data. This is a lightweight (GFP_NORETRY) allocation
-> which can fail under memory pressure. The function will, however keep
-> retrying even when the previous attempt has failed.
-> 
-> While this is not really incorrect there is one thing to consider. This
-> allocation is invoked from the WQ context and that means that if the
-> memory reclaim gets stuck it can hog the worker for quite some time.
-> WQ concurrency is only triggered when the worker context sleeps and that
-> is not guaranteed for __GFP_NORETRY allocation attempts (see
-> should_reclaim_retry).
-> 
-> We have seen WQ lockups
-> kernel: BUG: workqueue lockup - pool cpus=93 node=1 flags=0x1 nice=0 stuck for 32s!
-> [...]
-> kernel: pool 74: cpus=37 node=0 flags=0x1 nice=0 hung=32s workers=2 manager: 2146
-> kernel:   pwq 498: cpus=249 node=1 flags=0x1 nice=0 active=4/256 refcnt=5
-> kernel:     in-flight: 1917:fill_page_cache_func
-> kernel:     pending: dbs_work_handler, free_work, kfree_rcu_monitor
-> 
-> Originaly, we thought that several retries with direct reclaim being
-> stuck is the underlying reason but we couldn't have confirmed that and
-> have seen a similar lockups detected even without any heavy memory
-> pressure so there is likely something else/more going on. On the other
-> hand failing the allocation shouldn't have a big impact and from the
-> code it is not really obvious why retrying is desirable so back off
-> after the allocation failure.
-> 
-> Cc: Uladzislau Rezki (Sony) <urezki@gmail.com>
-> Cc: "Paul E. McKenney" <paulmck@kernel.org>
-> Cc: Frederic Weisbecker <frederic@kernel.org>
-> Cc: Neeraj Upadhyay <quic_neeraju@quicinc.com>
-> Cc: Josh Triplett <josh@joshtriplett.org>
-> Cc: Steven Rostedt <rostedt@goodmis.org>
-> Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-> Cc: Lai Jiangshan <jiangshanlai@gmail.com>
-> Cc: Joel Fernandes <joel@joelfernandes.org>
-> Signed-off-by: Michal Hocko <mhocko@suse.com>
-> ---
-> 
-> Hi,
-> I am sending this as an RFC because I couldn't prove that the WQ
-> concurency issue as a result from the allocation retry is really a
-> problem. On the other hand I couldn't see a good reason to retry after a
-> previous failure. While the kswapd running in the background could have
-> released some memory this is a not really guaranteed and mostly a
-> wishful thinking.
-> 
-> I do not understand the code well enough so I could be easily missing
-> something. If the patch is a wrong thing to do then it would be really
-> nice to add a comment why the retry is desirable and a good thing to do.
-> 
-> The retry loop should be bound to rcu_min_cached_objs which is quite
-> small but configurable so this can get large in some setups.
-> 
-> Thanks
-> 
->  kernel/rcu/tree.c | 17 +++++++++--------
->  1 file changed, 9 insertions(+), 8 deletions(-)
-> 
-> diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
-> index c25ba442044a..54a3a19c4c0b 100644
-> --- a/kernel/rcu/tree.c
-> +++ b/kernel/rcu/tree.c
-> @@ -3508,15 +3508,16 @@ static void fill_page_cache_func(struct work_struct *work)
->  		bnode = (struct kvfree_rcu_bulk_data *)
->  			__get_free_page(GFP_KERNEL | __GFP_NORETRY | __GFP_NOMEMALLOC | __GFP_NOWARN);
->  
-> -		if (bnode) {
-> -			raw_spin_lock_irqsave(&krcp->lock, flags);
-> -			pushed = put_cached_bnode(krcp, bnode);
-> -			raw_spin_unlock_irqrestore(&krcp->lock, flags);
-> +		if (!bnode)
-> +			break;
->  
-> -			if (!pushed) {
-> -				free_page((unsigned long) bnode);
-> -				break;
-> -			}
-> +		raw_spin_lock_irqsave(&krcp->lock, flags);
-> +		pushed = put_cached_bnode(krcp, bnode);
-> +		raw_spin_unlock_irqrestore(&krcp->lock, flags);
-> +
-> +		if (!pushed) {
-> +			free_page((unsigned long) bnode);
-> +			break;
->  		}
->  	}
->  
-> -- 
-> 2.30.2
->
-OK. You would like to break the loop once an allocation does not succeed.
-To me it also makes sense, i mean there is no reason to repeat it several
-times that can lead to worqueue hogging.
 
-Reviewed-by: Uladzislau Rezki (Sony) <urezki@gmail.com>
 
-Thanks!
+On 6/22/2022 10:58 AM, Dave Hansen wrote:
+> On 6/22/22 07:48, Maxim Levitsky wrote:
+>> clear_cpu_cap(&boot_cpu_data) is very similar to setup_clear_cpu_cap
+>> except that the latter also sets a bit in 'cpu_caps_cleared' which
+>> later clears the same cap in secondary cpus, which is likely
+>> what is meant here.
+>>
+>> Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
+> 
+> Seems like a:
+> 
+> Fixes: 47125db27e47 ("perf/x86/intel/lbr: Support Architectural LBR")
+> 
+> would be in order.
+> 
+> Kan, does this change look right to you?
 
---
-Uladzislau Rezki
+For the current implementation, the Arch LBR feature should be either 
+supported by all the CPUs or disabled on all the CPUs. It cannot be only 
+enabled for partial CPUs, even in a hybrid platform.
+So the current code only check the boot CPU via static_cpu_has().
+
+Ideally, Yes, I think it may be better to clear the bit for all CPUs, 
+which makes the capability consistent among CPUs.
+
+Thanks,
+Kan
+> 
+>>   arch/x86/events/intel/lbr.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/arch/x86/events/intel/lbr.c b/arch/x86/events/intel/lbr.c
+>> index 13179f31fe10fa..b08715172309a7 100644
+>> --- a/arch/x86/events/intel/lbr.c
+>> +++ b/arch/x86/events/intel/lbr.c
+>> @@ -1860,7 +1860,7 @@ void __init intel_pmu_arch_lbr_init(void)
+>>   	return;
+>>   
+>>   clear_arch_lbr:
+>> -	clear_cpu_cap(&boot_cpu_data, X86_FEATURE_ARCH_LBR);
+>> +	setup_clear_cpu_cap(X86_FEATURE_ARCH_LBR);
+>>   }
+>>   
+>>   /**
+> 
