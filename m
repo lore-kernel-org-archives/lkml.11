@@ -2,19 +2,19 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28694CCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 481E8CCA481
 	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 19:28:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359391AbiFVT2d (ORCPT
+        id S1359552AbiFVT2h (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 15:28:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33536 "EHLO
+        Wed, 22 Jun 2022 15:28:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357491AbiFVT12 (ORCPT
+        with ESMTP id S1357544AbiFVT12 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 22 Jun 2022 15:27:28 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D1E0E387BE
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 44D493E0D5
         for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 12:27:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
         s=mimecast20190719; t=1655926041;
@@ -22,23 +22,23 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=WiKbqfUUhRGo5YzvopzGYLiqd6xk2vKNFeCsmwuxOPk=;
-        b=Y95R9sYlx0/jVMTS0cOE64mD6BeOzYnRxc0vhQzhwOHQngMI+yY3yjhEeRb+BIB3JktxOv
-        UqEURpdnxlXjzwZuHeM70ZRRcFO04io0QGdO40/lsjVU8fHJv8EHNJtrITTYVR+w+b8KZq
-        erSRH1bdp5ziq+9SkjkRxDsJFqnvtwc=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=7Qukz1qYkne3woLlBdlV01dlkueOorgqBCP+TMZrzAA=;
+        b=NAZjbLHJwrn+S7ugepkCgYwqdF8ZRP1MG7+UOm02c1/RYOUvv7sTHgUYN94tj9EqEURgoi
+        rHNyCN+ikKFLrQ40P0zZ3mS23kGnpU//HevdQTAQCmE2WNYOZFq3vIzpgfxxNb/KSZZQEf
+        8ucBo56R8dDGIx6sx4BQLt6PrAygL5M=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-645-EO7jKaghP_K-sBPTx6rTVg-1; Wed, 22 Jun 2022 15:27:18 -0400
-X-MC-Unique: EO7jKaghP_K-sBPTx6rTVg-1
+ us-mta-515--zCoJpWwNty5NjGASqve8Q-1; Wed, 22 Jun 2022 15:27:15 -0400
+X-MC-Unique: -zCoJpWwNty5NjGASqve8Q-1
 Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3038A801E80;
-        Wed, 22 Jun 2022 19:27:17 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2F7853C11720;
+        Wed, 22 Jun 2022 19:27:15 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CDF5C1410F3B;
-        Wed, 22 Jun 2022 19:27:16 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CD7B21410F3B;
+        Wed, 22 Jun 2022 19:27:14 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     maz@kernel.org, anup@brainfault.org, seanjc@google.com,
@@ -46,9 +46,9 @@ Cc:     maz@kernel.org, anup@brainfault.org, seanjc@google.com,
         kvmarm@lists.cs.columbia.edu, linux-mips@vger.kernel.org,
         kvm-riscv@lists.infradead.org, pfeiner@google.com,
         jiangshanlai@gmail.com, dmatlack@google.com
-Subject: [PATCH v7 15/23] KVM: x86/mmu: Decouple rmap_add() and link_shadow_page() from kvm_vcpu
-Date:   Wed, 22 Jun 2022 15:27:02 -0400
-Message-Id: <20220622192710.2547152-16-pbonzini@redhat.com>
+Subject: [PATCH v7 10/23] KVM: x86/mmu: Pass memory caches to allocate SPs separately
+Date:   Wed, 22 Jun 2022 15:26:57 -0400
+Message-Id: <20220622192710.2547152-11-pbonzini@redhat.com>
 In-Reply-To: <20220622192710.2547152-1-pbonzini@redhat.com>
 References: <20220622192710.2547152-1-pbonzini@redhat.com>
 MIME-Version: 1.0
@@ -61,151 +61,101 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: David Matlack <dmatlack@google.com>
 
-Allow adding new entries to the rmap and linking shadow pages without a
-struct kvm_vcpu pointer by moving the implementation of rmap_add() and
-link_shadow_page() into inner helper functions.
+Refactor kvm_mmu_alloc_shadow_page() to receive the caches from which it
+will allocate the various pieces of memory for shadow pages as a
+parameter, rather than deriving them from the vcpu pointer. This will be
+useful in a future commit where shadow pages are allocated during VM
+ioctls for eager page splitting, and thus will use a different set of
+caches.
+
+Preemptively pull the caches out all the way to
+kvm_mmu_get_shadow_page() since eager page splitting will not be calling
+kvm_mmu_alloc_shadow_page() directly.
 
 No functional change intended.
 
-Reviewed-by: Ben Gardon <bgardon@google.com>
-Reviewed-by: Peter Xu <peterx@redhat.com>
 Signed-off-by: David Matlack <dmatlack@google.com>
-Message-Id: <20220516232138.1783324-16-dmatlack@google.com>
+Message-Id: <20220516232138.1783324-11-dmatlack@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/mmu/mmu.c | 47 ++++++++++++++++++++++++++----------------
- 1 file changed, 29 insertions(+), 18 deletions(-)
+ arch/x86/kvm/mmu/mmu.c | 36 +++++++++++++++++++++++++++++-------
+ 1 file changed, 29 insertions(+), 7 deletions(-)
 
 diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 45a4e85c0b2c..a8cdbe2958d9 100644
+index 2602c3642f23..fab417e7bf6c 100644
 --- a/arch/x86/kvm/mmu/mmu.c
 +++ b/arch/x86/kvm/mmu/mmu.c
-@@ -673,11 +673,6 @@ static void mmu_free_memory_caches(struct kvm_vcpu *vcpu)
- 	kvm_mmu_free_memory_cache(&vcpu->arch.mmu_page_header_cache);
+@@ -2049,17 +2049,25 @@ static struct kvm_mmu_page *kvm_mmu_find_shadow_page(struct kvm_vcpu *vcpu,
+ 	return sp;
  }
  
--static struct pte_list_desc *mmu_alloc_pte_list_desc(struct kvm_vcpu *vcpu)
--{
--	return kvm_mmu_memory_cache_alloc(&vcpu->arch.mmu_pte_list_desc_cache);
--}
--
- static void mmu_free_pte_list_desc(struct pte_list_desc *pte_list_desc)
- {
- 	kmem_cache_free(pte_list_desc_cache, pte_list_desc);
-@@ -832,7 +827,7 @@ gfn_to_memslot_dirty_bitmap(struct kvm_vcpu *vcpu, gfn_t gfn,
- /*
-  * Returns the number of pointers in the rmap chain, not counting the new one.
-  */
--static int pte_list_add(struct kvm_vcpu *vcpu, u64 *spte,
-+static int pte_list_add(struct kvm_mmu_memory_cache *cache, u64 *spte,
- 			struct kvm_rmap_head *rmap_head)
- {
- 	struct pte_list_desc *desc;
-@@ -843,7 +838,7 @@ static int pte_list_add(struct kvm_vcpu *vcpu, u64 *spte,
- 		rmap_head->val = (unsigned long)spte;
- 	} else if (!(rmap_head->val & 1)) {
- 		rmap_printk("%p %llx 1->many\n", spte, *spte);
--		desc = mmu_alloc_pte_list_desc(vcpu);
-+		desc = kvm_mmu_memory_cache_alloc(cache);
- 		desc->sptes[0] = (u64 *)rmap_head->val;
- 		desc->sptes[1] = spte;
- 		desc->spte_count = 2;
-@@ -855,7 +850,7 @@ static int pte_list_add(struct kvm_vcpu *vcpu, u64 *spte,
- 		while (desc->spte_count == PTE_LIST_EXT) {
- 			count += PTE_LIST_EXT;
- 			if (!desc->more) {
--				desc->more = mmu_alloc_pte_list_desc(vcpu);
-+				desc->more = kvm_mmu_memory_cache_alloc(cache);
- 				desc = desc->more;
- 				desc->spte_count = 0;
- 				break;
-@@ -1556,8 +1551,10 @@ static bool kvm_test_age_rmapp(struct kvm *kvm, struct kvm_rmap_head *rmap_head,
- 
- #define RMAP_RECYCLE_THRESHOLD 1000
- 
--static void rmap_add(struct kvm_vcpu *vcpu, const struct kvm_memory_slot *slot,
--		     u64 *spte, gfn_t gfn)
-+static void __rmap_add(struct kvm *kvm,
-+		       struct kvm_mmu_memory_cache *cache,
-+		       const struct kvm_memory_slot *slot,
-+		       u64 *spte, gfn_t gfn)
++/* Caches used when allocating a new shadow page. */
++struct shadow_page_caches {
++	struct kvm_mmu_memory_cache *page_header_cache;
++	struct kvm_mmu_memory_cache *shadow_page_cache;
++	struct kvm_mmu_memory_cache *gfn_array_cache;
++};
++
+ static struct kvm_mmu_page *kvm_mmu_alloc_shadow_page(struct kvm_vcpu *vcpu,
++						      struct shadow_page_caches *caches,
+ 						      gfn_t gfn,
+ 						      struct hlist_head *sp_list,
+ 						      union kvm_mmu_page_role role)
  {
  	struct kvm_mmu_page *sp;
- 	struct kvm_rmap_head *rmap_head;
-@@ -1566,15 +1563,23 @@ static void rmap_add(struct kvm_vcpu *vcpu, const struct kvm_memory_slot *slot,
- 	sp = sptep_to_sp(spte);
- 	kvm_mmu_page_set_gfn(sp, spte - sp->spt, gfn);
- 	rmap_head = gfn_to_rmap(gfn, sp->role.level, slot);
--	rmap_count = pte_list_add(vcpu, spte, rmap_head);
-+	rmap_count = pte_list_add(cache, spte, rmap_head);
  
- 	if (rmap_count > RMAP_RECYCLE_THRESHOLD) {
--		kvm_unmap_rmapp(vcpu->kvm, rmap_head, NULL, gfn, sp->role.level, __pte(0));
-+		kvm_unmap_rmapp(kvm, rmap_head, NULL, gfn, sp->role.level, __pte(0));
- 		kvm_flush_remote_tlbs_with_address(
--				vcpu->kvm, sp->gfn, KVM_PAGES_PER_HPAGE(sp->role.level));
-+				kvm, sp->gfn, KVM_PAGES_PER_HPAGE(sp->role.level));
+-	sp = kvm_mmu_memory_cache_alloc(&vcpu->arch.mmu_page_header_cache);
+-	sp->spt = kvm_mmu_memory_cache_alloc(&vcpu->arch.mmu_shadow_page_cache);
++	sp = kvm_mmu_memory_cache_alloc(caches->page_header_cache);
++	sp->spt = kvm_mmu_memory_cache_alloc(caches->shadow_page_cache);
+ 	if (!role.direct)
+-		sp->gfns = kvm_mmu_memory_cache_alloc(&vcpu->arch.mmu_gfn_array_cache);
++		sp->gfns = kvm_mmu_memory_cache_alloc(caches->gfn_array_cache);
+ 
+ 	set_page_private(virt_to_page(sp->spt), (unsigned long)sp);
+ 
+@@ -2081,9 +2089,10 @@ static struct kvm_mmu_page *kvm_mmu_alloc_shadow_page(struct kvm_vcpu *vcpu,
+ 	return sp;
+ }
+ 
+-static struct kvm_mmu_page *kvm_mmu_get_shadow_page(struct kvm_vcpu *vcpu,
+-						    gfn_t gfn,
+-						    union kvm_mmu_page_role role)
++static struct kvm_mmu_page *__kvm_mmu_get_shadow_page(struct kvm_vcpu *vcpu,
++						      struct shadow_page_caches *caches,
++						      gfn_t gfn,
++						      union kvm_mmu_page_role role)
+ {
+ 	struct hlist_head *sp_list;
+ 	struct kvm_mmu_page *sp;
+@@ -2094,13 +2103,26 @@ static struct kvm_mmu_page *kvm_mmu_get_shadow_page(struct kvm_vcpu *vcpu,
+ 	sp = kvm_mmu_find_shadow_page(vcpu, gfn, sp_list, role);
+ 	if (!sp) {
+ 		created = true;
+-		sp = kvm_mmu_alloc_shadow_page(vcpu, gfn, sp_list, role);
++		sp = kvm_mmu_alloc_shadow_page(vcpu, caches, gfn, sp_list, role);
  	}
+ 
+ 	trace_kvm_mmu_get_page(sp, created);
+ 	return sp;
  }
  
-+static void rmap_add(struct kvm_vcpu *vcpu, const struct kvm_memory_slot *slot,
-+		     u64 *spte, gfn_t gfn)
++static struct kvm_mmu_page *kvm_mmu_get_shadow_page(struct kvm_vcpu *vcpu,
++						    gfn_t gfn,
++						    union kvm_mmu_page_role role)
 +{
-+	struct kvm_mmu_memory_cache *cache = &vcpu->arch.mmu_pte_list_desc_cache;
++	struct shadow_page_caches caches = {
++		.page_header_cache = &vcpu->arch.mmu_page_header_cache,
++		.shadow_page_cache = &vcpu->arch.mmu_shadow_page_cache,
++		.gfn_array_cache = &vcpu->arch.mmu_gfn_array_cache,
++	};
 +
-+	__rmap_add(vcpu->kvm, cache, slot, spte, gfn);
++	return __kvm_mmu_get_shadow_page(vcpu, &caches, gfn, role);
 +}
 +
- bool kvm_age_gfn(struct kvm *kvm, struct kvm_gfn_range *range)
+ static union kvm_mmu_page_role kvm_mmu_child_role(u64 *sptep, bool direct, unsigned int access)
  {
- 	bool young = false;
-@@ -1645,13 +1650,13 @@ static unsigned kvm_page_table_hashfn(gfn_t gfn)
- 	return hash_64(gfn, KVM_MMU_HASH_SHIFT);
- }
- 
--static void mmu_page_add_parent_pte(struct kvm_vcpu *vcpu,
-+static void mmu_page_add_parent_pte(struct kvm_mmu_memory_cache *cache,
- 				    struct kvm_mmu_page *sp, u64 *parent_pte)
- {
- 	if (!parent_pte)
- 		return;
- 
--	pte_list_add(vcpu, parent_pte, &sp->parent_ptes);
-+	pte_list_add(cache, parent_pte, &sp->parent_ptes);
- }
- 
- static void mmu_page_remove_parent_pte(struct kvm_mmu_page *sp,
-@@ -2247,8 +2252,8 @@ static void shadow_walk_next(struct kvm_shadow_walk_iterator *iterator)
- 	__shadow_walk_next(iterator, *iterator->sptep);
- }
- 
--static void link_shadow_page(struct kvm_vcpu *vcpu, u64 *sptep,
--			     struct kvm_mmu_page *sp)
-+static void __link_shadow_page(struct kvm_mmu_memory_cache *cache, u64 *sptep,
-+			       struct kvm_mmu_page *sp)
- {
- 	u64 spte;
- 
-@@ -2258,12 +2263,18 @@ static void link_shadow_page(struct kvm_vcpu *vcpu, u64 *sptep,
- 
- 	mmu_spte_set(sptep, spte);
- 
--	mmu_page_add_parent_pte(vcpu, sp, sptep);
-+	mmu_page_add_parent_pte(cache, sp, sptep);
- 
- 	if (sp->unsync_children || sp->unsync)
- 		mark_unsync(sptep);
- }
- 
-+static void link_shadow_page(struct kvm_vcpu *vcpu, u64 *sptep,
-+			     struct kvm_mmu_page *sp)
-+{
-+	__link_shadow_page(&vcpu->arch.mmu_pte_list_desc_cache, sptep, sp);
-+}
-+
- static void validate_direct_spte(struct kvm_vcpu *vcpu, u64 *sptep,
- 				   unsigned direct_access)
- {
+ 	struct kvm_mmu_page *parent_sp = sptep_to_sp(sptep);
 -- 
 2.31.1
 
