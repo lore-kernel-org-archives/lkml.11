@@ -2,232 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38093CCA480
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 23:24:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80E4CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 23:28:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376572AbiFVXYz (ORCPT
+        id S1358156AbiFVX2N (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 19:24:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39930 "EHLO
+        Wed, 22 Jun 2022 19:28:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358502AbiFVXYx (ORCPT
+        with ESMTP id S235713AbiFVX2J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 19:24:53 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D37E42486
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 16:24:52 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id d14so13748072pjs.3
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 16:24:52 -0700 (PDT)
+        Wed, 22 Jun 2022 19:28:09 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E8C34248F
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 16:27:50 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id eq6so18725068edb.6
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 16:27:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=chromium.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=ffIU4qD5x85d6iCQtZLq6rD/cyWC5Mkjs1IUQLDVtmU=;
-        b=SZiUakEUp/fRPbuLjnYU5tXFDGpBGsc7+ny5WQn9Dp9G2PJCoM5kFvXUzrMlLlDF4g
-         7teOPb905PvRwc/KPgtD+I73FGzZWvYETlPe4rDk5JWVkpGtdBMpI+TBUstC6yyTGvuB
-         BjT8+o4LtU86uDsWnaAAcI7NsVLUt3M0mIIcucXdLLfFNMEVhNmv42ontJ/1GzqiiKJF
-         zTIxkH1mALm3Zy/ScTw+M6+CJNbTaz38LNw3fY1y8oGohl/Pd39TIoSpNnZnB4FOxdbd
-         I5WyQwyN4Q0UshroRddJJocrgQANQeeem6oURxyfwEiVny8ETNlc6ELt/01TvRXEvQvg
-         A+Xw==
+        bh=VK59ppvNAiJ/BqQDWjHs5kPlL+7VW+la85t9HxpGspw=;
+        b=i79Ewbh/MDWrhPMU0J8coICO1Xbq4hjGXjKOc7ZiNonZM7LPBBTUFC/CnSroH6Kjp/
+         GZiX71vF89+3xiRP9xru0LcTft7EN0+UYSG87kQIUvwd8+eM/eZCP81zLU1k5LkyQesB
+         52JxZ1gqstIcdDxHongWFc8Z3jjHjo3vM7N1A=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ffIU4qD5x85d6iCQtZLq6rD/cyWC5Mkjs1IUQLDVtmU=;
-        b=ZoFTibEqAe7Y4tQ+q6cRvbc/3bm36Rx2VozhvGM3hskhs1LN7NaksyVUOOOEwUsZWe
-         xubzKuCEzzKLONpNWznu8l4RvRJK1OUD6bqqKRNALRn519XXA6L3brgsv/fLFmWE08tY
-         4IK1peET3ZkOlvUolGCozjPz7ROlINaaFy74Z47XtYjPAlrp6s+0KvbpQQzfMpiLrSyj
-         snWXHjHVG8q1f5amyrc44kpbGFg/GzE9c4sXVjXpElAewOeeOzOUrII32O755iSkZEy7
-         fp0RCWXC6LJX04+Q+LudYfG+5KKWrhL7SPhW/Y/EizmxyL/aIZGn9yMaV55XA14CNVaC
-         sGKA==
-X-Gm-Message-State: AJIora8M78JYEpfDygwu9Bnjf2SQUCoOf0nMbPPTNNDJoGdaE+LYyfu/
-        4WDc9rqpj/zGanvOXU0r07ZXgiDR0bSIsamVpvFwkQ==
-X-Google-Smtp-Source: AGRyM1vsB3XLvGTtSV+Qux0xWs8h5I+urr5qnu42v7p9Q5nB2HjwBLTOZs7N+aSdaVrJTMMCj8gnStu06k/O2W5vPpw=
-X-Received: by 2002:a17:90a:cc7:b0:1ea:3993:78f9 with SMTP id
- 7-20020a17090a0cc700b001ea399378f9mr812825pjt.179.1655940291540; Wed, 22 Jun
- 2022 16:24:51 -0700 (PDT)
+        bh=VK59ppvNAiJ/BqQDWjHs5kPlL+7VW+la85t9HxpGspw=;
+        b=rCR8OcQIQjET/fYMOc9oEJCm5Xcv74P3znyMDL6G0AdYa2yzPCwpjDUu5vowfV/tvR
+         RdEjDMyhoHOBWWeiR7yhvhCXWpdCp44rz189tICwSPgVFMcinCwWqmISR5eKcuMByjQV
+         4r2cnTR9N2i5kDrQVJzD5c+CFPl3sZzhHe/6rgJzojluhtmeMP8wdZxLOrNkTBXRtZlJ
+         DQCbD00Ngn8VtqzsmRCi//ejZdSDDbJkZZpNqvknmtCh7TSEF3cyyRcBFl6kGwgQW1io
+         JUGVHgUFtBe3nKJKRmV5pCvRRiJmAsx8qGjaTu3kTgpibQrBH1wUhu0meOgfHWYtxJG8
+         dgng==
+X-Gm-Message-State: AJIora9RsvgK6FooinOFapelrL5RM16nTYtHif1HQVwasv4gtVNSIE6k
+        548AY8e6wtgBgP49MGuAaMKZsIuL0chRn706Sp4=
+X-Google-Smtp-Source: AGRyM1uS9AWDjtWNLVAclPSvlc83ToXfJdRizRTPKtLmrloowJcwKjn01iqEdWCoanPA6aTJ6IALEA==
+X-Received: by 2002:a05:6402:3594:b0:431:4cb8:c7b6 with SMTP id y20-20020a056402359400b004314cb8c7b6mr7188670edc.334.1655940468804;
+        Wed, 22 Jun 2022 16:27:48 -0700 (PDT)
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com. [209.85.221.44])
+        by smtp.gmail.com with ESMTPSA id b6-20020aa7dc06000000b0042dc882c823sm16574784edu.70.2022.06.22.16.27.47
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Jun 2022 16:27:48 -0700 (PDT)
+Received: by mail-wr1-f44.google.com with SMTP id w17so25475972wrg.7
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 16:27:47 -0700 (PDT)
+X-Received: by 2002:a5d:4046:0:b0:21a:3a12:239e with SMTP id
+ w6-20020a5d4046000000b0021a3a12239emr5552466wrp.138.1655940467275; Wed, 22
+ Jun 2022 16:27:47 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220621233412.506768-1-robert.foss@linaro.org>
- <20220621233412.506768-5-robert.foss@linaro.org> <adf27e62-246a-9c5f-e517-f225d17fe1cd@somainline.org>
-In-Reply-To: <adf27e62-246a-9c5f-e517-f225d17fe1cd@somainline.org>
-From:   Robert Foss <robert.foss@linaro.org>
-Date:   Thu, 23 Jun 2022 01:24:40 +0200
-Message-ID: <CAG3jFytsDpoeuQ9GPYp+YJmORdi89SC5Ps6JQFPJOD8Sx6XYdA@mail.gmail.com>
-Subject: Re: [PATCH v6 4/6] clk: qcom: add support for SM8350 DISPCC
-To:     Konrad Dybcio <konrad.dybcio@somainline.org>
-Cc:     bjorn.andersson@linaro.org, agross@kernel.org,
-        mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
-        krzk+dt@kernel.org, jonathan@marek.ca,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+References: <20220622215805.1121982-1-joebar@chromium.org> <20220622145717.v10.4.I41e2c2dc12961fe000ebc4d4ef6f0bc5da1259ea@changeid>
+In-Reply-To: <20220622145717.v10.4.I41e2c2dc12961fe000ebc4d4ef6f0bc5da1259ea@changeid>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Wed, 22 Jun 2022 16:27:34 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=Wqv92G2Op8pf8+5BUcO12kXCzAWKhiPH5D6xYa9tfS_A@mail.gmail.com>
+Message-ID: <CAD=FV=Wqv92G2Op8pf8+5BUcO12kXCzAWKhiPH5D6xYa9tfS_A@mail.gmail.com>
+Subject: Re: [PATCH v10 4/5] arm64: dts: qcom: sc7180: Add pazquel dts files
+To:     "Joseph S. Barrera III" <joebar@chromium.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Alexandru M Stan <amstan@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 22 Jun 2022 at 12:22, Konrad Dybcio
-<konrad.dybcio@somainline.org> wrote:
->
->
->
-> On 22.06.2022 01:34, Robert Foss wrote:
-> > From: Jonathan Marek <jonathan@marek.ca>
-> >
-> > Add support to the SM8350 display clock controller by extending the SM8250
-> > display clock controller, which is almost identical but has some minor
-> > differences.
-> >
-> > Signed-off-by: Jonathan Marek <jonathan@marek.ca>
-> > Signed-off-by: Robert Foss <robert.foss@linaro.org>
-> > Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-> > ---
-> >
-> > Changes since v1
-> >  - Remove comment - Dmitry
-> >
-> > Changes since v2
-> >  - Add my SoB - Bjorn
-> >  - Remove CLK_ASSUME_ENABLED_WHEN_UNUSED flag
-> >
-> > Changes since v3
-> >  - Add kconfig dependency on SM_GCC_8350 - Konrad
-> >  - Change hex to lowercase - Konrad
-> >  - Split from dispcc-sm8250.c implementation
-> >  - Switch from .fw_name to .index
-> >
-> > Changes since v4
-> >  - Hex to lowercase - Konrad
-> >  - Remove bad match table entries - Konrad
-> >
-> > Changes since v5
-> >  - Reverted split from dispcc-sm8250
-> >  - Re-added tags from v3
-> >
-> >
-> >  drivers/clk/qcom/Kconfig         |  4 +--
-> >  drivers/clk/qcom/dispcc-sm8250.c | 60 +++++++++++++++++++++++++++++++-
-> >  2 files changed, 61 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/drivers/clk/qcom/Kconfig b/drivers/clk/qcom/Kconfig
-> > index b11235c21952..4c3d1a548b7a 100644
-> > --- a/drivers/clk/qcom/Kconfig
-> > +++ b/drivers/clk/qcom/Kconfig
-> > @@ -618,11 +618,11 @@ config SM_DISPCC_6125
-> >         splash screen
-> >
-> >  config SM_DISPCC_8250
-> > -     tristate "SM8150 and SM8250 Display Clock Controller"
-> > +     tristate "SM8150/SM8250/SM8350 Display Clock Controller"
-> >       depends on SM_GCC_8150 || SM_GCC_8250
-> || SM_GCC_8350
+Hi,
 
-Ack
-
+On Wed, Jun 22, 2022 at 2:59 PM Joseph S. Barrera III
+<joebar@chromium.org> wrote:
 >
-> >       help
-> >         Support for the display clock controller on Qualcomm Technologies, Inc
-> > -       SM8150 and SM8250 devices.
-> > +       SM8150/SM8250/SM8350 devices.
-> >         Say Y if you want to support display devices and functionality such as
-> >         splash screen.
-> >
-> > diff --git a/drivers/clk/qcom/dispcc-sm8250.c b/drivers/clk/qcom/dispcc-sm8250.c
-> > index db9379634fb2..4e101d584115 100644
-> > --- a/drivers/clk/qcom/dispcc-sm8250.c
-> > +++ b/drivers/clk/qcom/dispcc-sm8250.c
-> > @@ -43,6 +43,10 @@ static struct pll_vco vco_table[] = {
-> >       { 249600000, 2000000000, 0 },
-> >  };
-> >
-> > +static struct pll_vco lucid_5lpe_vco[] = {
-> > +     { 249600000, 1750000000, 0 },
-> > +};
-> > +
-> >  static struct alpha_pll_config disp_cc_pll0_config = {
-> >       .l = 0x47,
-> >       .alpha = 0xE000,
-> > @@ -1228,6 +1232,7 @@ static const struct of_device_id disp_cc_sm8250_match_table[] = {
-> >       { .compatible = "qcom,sc8180x-dispcc" },
-> >       { .compatible = "qcom,sm8150-dispcc" },
-> >       { .compatible = "qcom,sm8250-dispcc" },
-> > +     { .compatible = "qcom,sm8350-dispcc" },
-> >       { }
-> >  };
-> >  MODULE_DEVICE_TABLE(of, disp_cc_sm8250_match_table);
-> > @@ -1258,7 +1263,7 @@ static int disp_cc_sm8250_probe(struct platform_device *pdev)
-> >               return PTR_ERR(regmap);
-> >       }
-> >
-> > -     /* note: trion == lucid, except for the prepare() op */
-> > +     /* Apply differences for SM8150 and SM8350 */
-> I think both comments should stay, as the one you're adding doesn't explain the BUILD_BUG_ON()
-
-Ack
-
+> Pazquel is a trogdor-based board. These dts files are unchanged copies
+> from the downstream Chrome OS 5.4 kernel.
 >
+> Signed-off-by: Joseph S. Barrera III <joebar@chromium.org>
+> ---
 >
-> Konrad
-> >       BUILD_BUG_ON(CLK_ALPHA_PLL_TYPE_TRION != CLK_ALPHA_PLL_TYPE_LUCID);
-> >       if (of_device_is_compatible(pdev->dev.of_node, "qcom,sc8180x-dispcc") ||
-> >           of_device_is_compatible(pdev->dev.of_node, "qcom,sm8150-dispcc")) {
-> > @@ -1270,6 +1275,59 @@ static int disp_cc_sm8250_probe(struct platform_device *pdev)
-> >               disp_cc_pll1_config.config_ctl_hi1_val = 0x00000024;
-> >               disp_cc_pll1_config.user_ctl_hi1_val = 0x000000D0;
-> >               disp_cc_pll1_init.ops = &clk_alpha_pll_trion_ops;
-> > +     } else if (of_device_is_compatible(pdev->dev.of_node, "qcom,sm8350-dispcc")) {
-> > +             static struct clk_rcg2 * const rcgs[] = {
-> > +                     &disp_cc_mdss_byte0_clk_src,
-> > +                     &disp_cc_mdss_byte1_clk_src,
-> > +                     &disp_cc_mdss_dp_aux1_clk_src,
-> > +                     &disp_cc_mdss_dp_aux_clk_src,
-> > +                     &disp_cc_mdss_dp_link1_clk_src,
-> > +                     &disp_cc_mdss_dp_link_clk_src,
-> > +                     &disp_cc_mdss_dp_pixel1_clk_src,
-> > +                     &disp_cc_mdss_dp_pixel2_clk_src,
-> > +                     &disp_cc_mdss_dp_pixel_clk_src,
-> > +                     &disp_cc_mdss_esc0_clk_src,
-> > +                     &disp_cc_mdss_mdp_clk_src,
-> > +                     &disp_cc_mdss_pclk0_clk_src,
-> > +                     &disp_cc_mdss_pclk1_clk_src,
-> > +                     &disp_cc_mdss_rot_clk_src,
-> > +                     &disp_cc_mdss_vsync_clk_src,
-> > +             };
-> > +             static struct clk_regmap_div * const divs[] = {
-> > +                     &disp_cc_mdss_byte0_div_clk_src,
-> > +                     &disp_cc_mdss_byte1_div_clk_src,
-> > +                     &disp_cc_mdss_dp_link1_div_clk_src,
-> > +                     &disp_cc_mdss_dp_link_div_clk_src,
-> > +             };
-> > +             unsigned int i;
-> > +             static bool offset_applied;
-> > +
-> > +             /* only apply the offsets once (in case of deferred probe) */
-> > +             if (!offset_applied) {
-> > +                     for (i = 0; i < ARRAY_SIZE(rcgs); i++)
-> > +                             rcgs[i]->cmd_rcgr -= 4;
-> > +
-> > +                     for (i = 0; i < ARRAY_SIZE(divs); i++) {
-> > +                             divs[i]->reg -= 4;
-> > +                             divs[i]->width = 4;
-> > +                     }
-> > +
-> > +                     disp_cc_mdss_ahb_clk.halt_reg -= 4;
-> > +                     disp_cc_mdss_ahb_clk.clkr.enable_reg -= 4;
-> > +
-> > +                     offset_applied = true;
-> > +             }
-> > +
-> > +             disp_cc_mdss_ahb_clk_src.cmd_rcgr = 0x22a0;
-> > +
-> > +             disp_cc_pll0_config.config_ctl_hi1_val = 0x2a9a699c;
-> > +             disp_cc_pll0_config.test_ctl_hi1_val = 0x01800000;
-> > +             disp_cc_pll0_init.ops = &clk_alpha_pll_lucid_5lpe_ops;
-> > +             disp_cc_pll0.vco_table = lucid_5lpe_vco;
-> > +             disp_cc_pll1_config.config_ctl_hi1_val = 0x2a9a699c;
-> > +             disp_cc_pll1_config.test_ctl_hi1_val = 0x01800000;
-> > +             disp_cc_pll1_init.ops = &clk_alpha_pll_lucid_5lpe_ops;
-> > +             disp_cc_pll1.vco_table = lucid_5lpe_vco;
-> >       }
-> >
-> >       clk_lucid_pll_configure(&disp_cc_pll0, regmap, &disp_cc_pll0_config);
+> Changes in v10:
+> - Remove 'include sc7180.dtsi' from *all* sc7180-trogdor-pazquel* files.
+> - Move "okay" for ap_tp_i2c to proper location.
+>
+> Changes in v9:
+> - Restore two lines accidentally removed from ap_sar_sensor.
+> - Simplify trackpad enabling (51d30402be75).
+>
+> Changes in v7:
+> - Only include sc7180.dtsi in sc7180-trogdor.dtsi (19794489fa24).
+> - Simplify spi0/spi6 labeling (d277cab7afc7).
+> - Remove #include of <arm/cros-ec-keyboard.dtsi>.
+> - Accidentally removed two lines from ap_sar_sensor.
+>
+> Changes in v6:
+> - Copy changes to ap_sar_sensor from v5.4.
+> - Add #include of <arm/cros-ec-keyboard.dtsi>.
+>
+> Changes in v4:
+> - Fix description (no downstream bits removed).
+> - Add missing version history.
+>
+> Changes in v3:
+> - First inclusion in series.
+>
+>  arch/arm64/boot/dts/qcom/Makefile             |   4 +
+>  .../sc7180-trogdor-pazquel-lte-parade.dts     |  21 ++
+>  .../qcom/sc7180-trogdor-pazquel-lte-ti.dts    |  21 ++
+>  .../qcom/sc7180-trogdor-pazquel-parade.dts    |  16 ++
+>  .../dts/qcom/sc7180-trogdor-pazquel-ti.dts    |  16 ++
+>  .../boot/dts/qcom/sc7180-trogdor-pazquel.dtsi | 221 ++++++++++++++++++
+>  6 files changed, 299 insertions(+)
+>  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-lte-parade.dts
+>  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-lte-ti.dts
+>  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-parade.dts
+>  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-ti.dts
+>  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel.dtsi
+>
+> diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
+> index 5cfd6316768c..dc26704dfe34 100644
+> --- a/arch/arm64/boot/dts/qcom/Makefile
+> +++ b/arch/arm64/boot/dts/qcom/Makefile
+> @@ -79,6 +79,10 @@ dtb-$(CONFIG_ARCH_QCOM)      += sc7180-trogdor-mrbland-rev0-auo.dtb
+>  dtb-$(CONFIG_ARCH_QCOM)        += sc7180-trogdor-mrbland-rev0-boe.dtb
+>  dtb-$(CONFIG_ARCH_QCOM)        += sc7180-trogdor-mrbland-rev1-auo.dtb
+>  dtb-$(CONFIG_ARCH_QCOM)        += sc7180-trogdor-mrbland-rev1-boe.dtb
+> +dtb-$(CONFIG_ARCH_QCOM)        += sc7180-trogdor-pazquel-lte-parade.dtb
+> +dtb-$(CONFIG_ARCH_QCOM)        += sc7180-trogdor-pazquel-lte-ti.dtb
+> +dtb-$(CONFIG_ARCH_QCOM)        += sc7180-trogdor-pazquel-parade.dtb
+> +dtb-$(CONFIG_ARCH_QCOM)        += sc7180-trogdor-pazquel-ti.dtb
+>  dtb-$(CONFIG_ARCH_QCOM)        += sc7180-trogdor-pompom-r1.dtb
+>  dtb-$(CONFIG_ARCH_QCOM)        += sc7180-trogdor-pompom-r1-lte.dtb
+>  dtb-$(CONFIG_ARCH_QCOM)        += sc7180-trogdor-pompom-r2.dtb
+> diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-lte-parade.dts b/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-lte-parade.dts
+> new file mode 100644
+> index 000000000000..407adca19652
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-lte-parade.dts
+> @@ -0,0 +1,21 @@
+> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+> +/*
+> + * Google Pazquel board device tree source
+> + *
+> + * Copyright 2021 Google LLC.
+> + */
+> +
+> +/dts-v1/;
+> +
+> +#include "sc7180-trogdor-parade-ps8640.dtsi"
+> +#include "sc7180-trogdor-pazquel.dtsi"
+> +#include "sc7180-trogdor-lte-sku.dtsi"
+
+The includes are still not correct as far as I can tell. If you look
+at Stephen's solution in "Simplify!" plus his fixup that your series
+is based on, AKA ("arm64: dts: qcom: Remove duplicate sc7180-trogdor
+include on lazor/homestar") then I believe the correct thing to do
+here is:
+
+1. Go back to v9
+
+2. Remove the include of "sc7180-trogdor.dtsi" from the pazquel and
+kingoftown .dtsi files.
+
+3. Every place in pazquel and kingoftown that has an include of
+"sc7180.dtsi" replace that with "sc7180-trogdor.dtsi"
+
+
+I'm curious: did you try compiling your patches? Do they work? They
+don't seem to for me. It's expected that when you post patches that
+you have, at the very least, compile tested them. Given how much of
+trogdor works upstream I'd also expect you to have actually boot
+tested as many of the boards that you have hardware for.
+
+-Doug
