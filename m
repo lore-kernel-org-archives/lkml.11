@@ -2,63 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C674C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 13:25:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03B11CCA47D
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 13:25:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357585AbiFVNZE (ORCPT
+        id S1357168AbiFVNZ5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 09:25:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44590 "EHLO
+        Wed, 22 Jun 2022 09:25:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357031AbiFVNX1 (ORCPT
+        with ESMTP id S1357274AbiFVNYz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 09:23:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17F072FFEC;
-        Wed, 22 Jun 2022 06:23:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 25EC4B81ED4;
-        Wed, 22 Jun 2022 13:23:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D10BFC341C5;
-        Wed, 22 Jun 2022 13:23:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655904197;
-        bh=5pW9uFPMMRuVXKfUDNR4jaro/yLiJGQx0iXWkH4qaek=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=tWjO5rOsf9fenY8xqmU1m30lqhwPzNSn6SIZhjNFAxtUztorKyU0WKSa8rB2ISQ34
-         /BueaJrZBOgij+QzPf2gv2+hiNyS88NzsQBgQ2yRXGMJhJ4u8ci41vQNDFYp/q6VnS
-         vg1dlIyrJE02Z58pn1R5HHExMr2vRXvWu8sEsqA2sv9FdsK2CNMdGbkPZ01kj0bVua
-         ERQaknF/XgkY9bM85gliNmSgH51uSzlm+/r6AKVlJ5aoSYdRoIPniiHCkLIdNzs8Cz
-         QgAvSXcWI3gVg2RHcbKbOtWZuzpiqXy65CcS5BGqVcrzggWYdyMqrnmqBTG93lufI/
-         qTBwEuWx5S7HA==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1o40KA-0006M6-6m; Wed, 22 Jun 2022 15:23:14 +0200
-Date:   Wed, 22 Jun 2022 15:23:14 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Kushagra Verma <kushagra765@outlook.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] usb: serial: ark3116: Fix bare use of 'unsigned'
- checkpatch warning
-Message-ID: <YrMXws0UuIs1HhZG@hovoldconsulting.com>
-References: <HK0PR01MB2801789671F56BDA8DA12A83F8B29@HK0PR01MB2801.apcprd01.prod.exchangelabs.com>
+        Wed, 22 Jun 2022 09:24:55 -0400
+Received: from mail.kapsi.fi (mail.kapsi.fi [IPv6:2001:67c:1be8::25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8A4839145;
+        Wed, 22 Jun 2022 06:23:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
+        s=20161220; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
+        Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
+        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=9UM/4/gB5wcm+IeNSkrcMKxLYpue+oHqXAFXchZ+pMk=; b=0r5AesKWDN1uqFV2G3Dr4jNfz5
+        4+GKcUKfrkcbec28IioF2+XL4kP3oIdjdg92DNSWMSxMzMco+T721BB7xH0pGuKzcZPFUNibaZy1t
+        jBZ7E6DWqaGZTrE81ZwSRsQrESAwqdmpSifMPxYMGESJsbY93jJL/lZxPD92Qjj8DjSBay8Yk4UME
+        Giad3WHS34X5c1CX9pn+qYCV6ocsY1BjIFRjBXwq+UuHSvvmO8At4cJ8HFAR1VJBEn986AuF5Z6lw
+        mTkcSHMWPsS5V+PWxKAhUfgRAM6h7w9zfYCJE+7R7ZKJSzBmbXJjwxdYZeacNQwdv3f4gPcs03DQI
+        ufOqaXtQ==;
+Received: from 91-158-25-70.elisa-laajakaista.fi ([91.158.25.70] helo=toshino.localdomain)
+        by mail.kapsi.fi with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <cyndis@kapsi.fi>)
+        id 1o40Kl-000abh-6p; Wed, 22 Jun 2022 16:23:50 +0300
+From:   Mikko Perttunen <cyndis@kapsi.fi>
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>
+Cc:     Timo Alho <talho@nvidia.com>,
+        Mikko Perttunen <mperttunen@nvidia.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mian Yousaf Kaukab <ykaukab@suse.de>,
+        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] firmware: tegra: bpmp: do only aligned access to IPC memory area
+Date:   Wed, 22 Jun 2022 16:22:59 +0300
+Message-Id: <20220622132300.1746201-1-cyndis@kapsi.fi>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <HK0PR01MB2801789671F56BDA8DA12A83F8B29@HK0PR01MB2801.apcprd01.prod.exchangelabs.com>
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 91.158.25.70
+X-SA-Exim-Mail-From: cyndis@kapsi.fi
+X-SA-Exim-Scanned: No (on mail.kapsi.fi); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 06:47:50PM +0530, Kushagra Verma wrote:
-> Fixes the bare use of 'unsigned' checkpatch warning by changing 'unsigned'
-> to 'unsigned int'.
+From: Timo Alho <talho@nvidia.com>
 
-This is not something that needs "fixing" and you should not run
-checkpatch.pl on code that's already in the tree unless you're trying to
-learn how to create patches by working in drivers/staging.
+Use memcpy_toio and memcpy_fromio variants of memcpy to guarantee
+no unaligned access to IPC memory area. This is to allow the IPC
+memory to be mapped as Device memory to further suppress speculative
+reads from happening within the 64kB memory area above the IPC memory
+when 64kB memory pages are used.
 
-Johan
+Signed-off-by: Timo Alho <talho@nvidia.com>
+Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
+---
+ drivers/firmware/tegra/bpmp.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/firmware/tegra/bpmp.c b/drivers/firmware/tegra/bpmp.c
+index 5654c5e9862b..037db21de510 100644
+--- a/drivers/firmware/tegra/bpmp.c
++++ b/drivers/firmware/tegra/bpmp.c
+@@ -201,7 +201,7 @@ static ssize_t __tegra_bpmp_channel_read(struct tegra_bpmp_channel *channel,
+ 	int err;
+ 
+ 	if (data && size > 0)
+-		memcpy(data, channel->ib->data, size);
++		memcpy_fromio(data, channel->ib->data, size);
+ 
+ 	err = tegra_bpmp_ack_response(channel);
+ 	if (err < 0)
+@@ -245,7 +245,7 @@ static ssize_t __tegra_bpmp_channel_write(struct tegra_bpmp_channel *channel,
+ 	channel->ob->flags = flags;
+ 
+ 	if (data && size > 0)
+-		memcpy(channel->ob->data, data, size);
++		memcpy_toio(channel->ob->data, data, size);
+ 
+ 	return tegra_bpmp_post_request(channel);
+ }
+@@ -420,7 +420,7 @@ void tegra_bpmp_mrq_return(struct tegra_bpmp_channel *channel, int code,
+ 	channel->ob->code = code;
+ 
+ 	if (data && size > 0)
+-		memcpy(channel->ob->data, data, size);
++		memcpy_toio(channel->ob->data, data, size);
+ 
+ 	err = tegra_bpmp_post_response(channel);
+ 	if (WARN_ON(err < 0))
+-- 
+2.36.1
+
