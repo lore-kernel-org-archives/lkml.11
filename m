@@ -2,209 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2F3AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 09:59:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D56A9CCA47D
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 09:59:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236174AbiFVJ7O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 05:59:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51574 "EHLO
+        id S232719AbiFVJ72 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 05:59:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232779AbiFVJ7I (ORCPT
+        with ESMTP id S237443AbiFVJ7Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 05:59:08 -0400
-Received: from mail.xenproject.org (mail.xenproject.org [104.130.215.37])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63B6E3983C;
-        Wed, 22 Jun 2022 02:59:07 -0700 (PDT)
-Received: from xenbits.xenproject.org ([104.239.192.120])
-        by mail.xenproject.org with esmtp (Exim 4.92)
-        (envelope-from <pdurrant@amazon.com>)
-        id 1o3x8M-0001KN-Cq; Wed, 22 Jun 2022 09:58:50 +0000
-Received: from 54-240-197-231.amazon.com ([54.240.197.231] helo=debian.cbg12.amazon.com)
-        by xenbits.xenproject.org with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <pdurrant@amazon.com>)
-        id 1o3x8M-0003gP-1t; Wed, 22 Jun 2022 09:58:50 +0000
-From:   Paul Durrant <pdurrant@amazon.com>
-To:     x86@kernel.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Paul Durrant <pdurrant@amazon.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>
-Subject: [PATCH v2] KVM: x86/xen: Update Xen CPUID Leaf 4 (tsc info) sub-leaves, if present
-Date:   Wed, 22 Jun 2022 10:57:50 +0100
-Message-Id: <20220622095750.30563-1-pdurrant@amazon.com>
-X-Mailer: git-send-email 2.20.1
+        Wed, 22 Jun 2022 05:59:24 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D5F13A1AF;
+        Wed, 22 Jun 2022 02:59:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=UBYcbr5Blkb1m1XbSmhN6zU/XE1KbkQTUN0OktUTIP8=; b=H+
+        64lTmas6Byuhd/uije30ow2tTek3n1bIjT2R/eSXCX4uXU7gP+GlF4mu89gZr6rhnK/4rd18a6qgh
+        9C7r7PcdWKuFnHOZ0M+WwZAXGQq7x8O3dTh3NatD96pdKgtK/LSO8YXnXtlMWF7sijtW9Hw1aENzX
+        dwNNF+cFxmIeVz4=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1o3wal-007ppS-Mh; Wed, 22 Jun 2022 11:24:07 +0200
+Date:   Wed, 22 Jun 2022 11:24:07 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Marcin Wojtas <mw@semihalf.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, vivien.didelot@gmail.com,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Grzegorz Bernacki <gjb@semihalf.com>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>,
+        Tomasz Nowicki <tn@semihalf.com>,
+        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
+        upstream@semihalf.com
+Subject: Re: [net-next: PATCH 09/12] Documentation: ACPI: DSD: introduce DSA
+ description
+Message-ID: <YrLft+BrP2jI5lwp@lunn.ch>
+References: <20220620150225.1307946-1-mw@semihalf.com>
+ <20220620150225.1307946-10-mw@semihalf.com>
+ <YrDO05TMK8SVgnBP@lunn.ch>
+ <YrGm2jmR7ijHyQjJ@smile.fi.intel.com>
+ <YrGpDgtm4rPkMwnl@lunn.ch>
+ <YrGukfw4uiQz0NpW@smile.fi.intel.com>
+ <CAPv3WKf_2QYh0F2LEr1DeErvnMeQqT0M5t40ROP2G6HSUwKpQQ@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAPv3WKf_2QYh0F2LEr1DeErvnMeQqT0M5t40ROP2G6HSUwKpQQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The scaling information in sub-leaf 1 should match the values in the
-'vcpu_info' sub-structure 'time_info' (a.k.a. pvclock_vcpu_time_info) which
-is shared with the guest. The offset values are not set since a TSC offset
-is already applied.
-The host TSC frequency should also be set in sub-leaf 2.
+On Wed, Jun 22, 2022 at 11:08:13AM +0200, Marcin Wojtas wrote:
+> wt., 21 cze 2022 o 13:42 Andy Shevchenko
+> <andriy.shevchenko@linux.intel.com> napisał(a):
+> >
+> > On Tue, Jun 21, 2022 at 01:18:38PM +0200, Andrew Lunn wrote:
+> > > On Tue, Jun 21, 2022 at 02:09:14PM +0300, Andy Shevchenko wrote:
+> > > > On Mon, Jun 20, 2022 at 09:47:31PM +0200, Andrew Lunn wrote:
+> >
+> > ...
+> >
+> > > > > > +        Name (_CRS, ResourceTemplate ()
+> > > > > > +        {
+> > > > > > +            Memory32Fixed (ReadWrite,
+> > > > > > +                0xf212a200,
+> > > > > > +                0x00000010,
+> > > > >
+> > > > > What do these magic numbers mean?
+> > > >
+> > > > Address + Length, it's all described in the ACPI specification.
+> > >
+> > > The address+plus length of what? This device is on an MDIO bus. As
+> > > such, there is no memory! It probably makes sense to somebody who
+> > > knows ACPI, but to me i have no idea what it means.
+> >
+> > I see what you mean. Honestly I dunno what the device this description is for.
+> > For the DSA that's behind MDIO bus? Then it's definitely makes no sense and
+> > MDIOSerialBus() resources type is what would be good to have in ACPI
+> > specification.
+> >
+> 
+> It's not device on MDIO bus, but the MDIO controller's register itself
 
-This patch adds a new kvm_xen_set_cpuid() function that scans for the
-relevant CPUID leaf when the CPUID information is updated by the VMM and
-stashes pointers to the sub-leaves in the kvm_vcpu_xen structure.
-The values are then updated by a call to the, also new,
-kvm_xen_setup_tsc_info() function made at the end of
-kvm_guest_time_update() just before entering the guest.
+Ah. So this is equivalent to
 
-Signed-off-by: Paul Durrant <pdurrant@amazon.com>
----
+                CP11X_LABEL(mdio): mdio@12a200 {
+                        #address-cells = <1>;
+                        #size-cells = <0>;
+                        compatible = "marvell,orion-mdio";
+                        reg = <0x12a200 0x10>;
+                        clocks = <&CP11X_LABEL(clk) 1 9>, <&CP11X_LABEL(clk) 1 5>,
+                                 <&CP11X_LABEL(clk) 1 6>, <&CP11X_LABEL(clk) 1 18>;
+                        status = "disabled";
+                };
 
-v2:
- - Make sure sub-leaf pointers are NULLed if the time leaf is removed
----
- arch/x86/include/asm/kvm_host.h |  2 ++
- arch/x86/kvm/cpuid.c            |  2 ++
- arch/x86/kvm/x86.c              |  1 +
- arch/x86/kvm/xen.c              | 44 +++++++++++++++++++++++++++++++++
- arch/x86/kvm/xen.h              | 10 ++++++++
- 5 files changed, 59 insertions(+)
+DT seems a lot more readable, "marvell,orion-mdio" is a good hint that
+device this is. But maybe it is more readable because that is what i'm
+used to.
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 1038ccb7056a..f77a4940542f 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -638,6 +638,8 @@ struct kvm_vcpu_xen {
- 	struct hrtimer timer;
- 	int poll_evtchn;
- 	struct timer_list poll_timer;
-+	struct kvm_cpuid_entry2 *tsc_info_1;
-+	struct kvm_cpuid_entry2 *tsc_info_2;
- };
- 
- struct kvm_vcpu_arch {
-diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
-index d47222ab8e6e..eb6cd88c974a 100644
---- a/arch/x86/kvm/cpuid.c
-+++ b/arch/x86/kvm/cpuid.c
-@@ -25,6 +25,7 @@
- #include "mmu.h"
- #include "trace.h"
- #include "pmu.h"
-+#include "xen.h"
- 
- /*
-  * Unlike "struct cpuinfo_x86.x86_capability", kvm_cpu_caps doesn't need to be
-@@ -310,6 +311,7 @@ static void kvm_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
- 	    __cr4_reserved_bits(guest_cpuid_has, vcpu);
- 
- 	kvm_hv_set_cpuid(vcpu);
-+	kvm_xen_set_cpuid(vcpu);
- 
- 	/* Invoke the vendor callback only after the above state is updated. */
- 	static_call(kvm_x86_vcpu_after_set_cpuid)(vcpu);
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 00e23dc518e0..8b45f9975e45 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -3123,6 +3123,7 @@ static int kvm_guest_time_update(struct kvm_vcpu *v)
- 	if (vcpu->xen.vcpu_time_info_cache.active)
- 		kvm_setup_guest_pvclock(v, &vcpu->xen.vcpu_time_info_cache, 0);
- 	kvm_hv_setup_tsc_page(v->kvm, &vcpu->hv_clock);
-+	kvm_xen_setup_tsc_info(v);
- 	return 0;
- }
- 
-diff --git a/arch/x86/kvm/xen.c b/arch/x86/kvm/xen.c
-index 610beba35907..4f8d19df20f4 100644
---- a/arch/x86/kvm/xen.c
-+++ b/arch/x86/kvm/xen.c
-@@ -10,6 +10,9 @@
- #include "xen.h"
- #include "hyperv.h"
- #include "lapic.h"
-+#include "cpuid.h"
-+
-+#include <asm/xen/cpuid.h>
- 
- #include <linux/eventfd.h>
- #include <linux/kvm_host.h>
-@@ -1855,3 +1858,44 @@ void kvm_xen_destroy_vm(struct kvm *kvm)
- 	if (kvm->arch.xen_hvm_config.msr)
- 		static_branch_slow_dec_deferred(&kvm_xen_enabled);
- }
-+
-+void kvm_xen_set_cpuid(struct kvm_vcpu *vcpu)
-+{
-+	u32 base = 0;
-+	u32 function;
-+
-+	vcpu->arch.xen.tsc_info_1 = NULL;
-+	vcpu->arch.xen.tsc_info_2 = NULL;
-+
-+	for_each_possible_hypervisor_cpuid_base(function) {
-+		struct kvm_cpuid_entry2 *entry = kvm_find_cpuid_entry(vcpu, function, 0);
-+
-+		if (entry &&
-+		    entry->ebx == XEN_CPUID_SIGNATURE_EBX &&
-+		    entry->ecx == XEN_CPUID_SIGNATURE_ECX &&
-+		    entry->edx == XEN_CPUID_SIGNATURE_EDX) {
-+			base = function;
-+			break;
-+		}
-+	}
-+	if (!base)
-+		return;
-+
-+	function = base | XEN_CPUID_LEAF(3);
-+	vcpu->arch.xen.tsc_info_1 = kvm_find_cpuid_entry(vcpu, function, 1);
-+	vcpu->arch.xen.tsc_info_2 = kvm_find_cpuid_entry(vcpu, function, 2);
-+}
-+
-+void kvm_xen_setup_tsc_info(struct kvm_vcpu *vcpu)
-+{
-+	struct kvm_cpuid_entry2 *entry = vcpu->arch.xen.tsc_info_1;
-+
-+	if (entry) {
-+		entry->ecx = vcpu->arch.hv_clock.tsc_to_system_mul;
-+		entry->edx = vcpu->arch.hv_clock.tsc_shift;
-+	}
-+
-+	entry = vcpu->arch.xen.tsc_info_2;
-+	if (entry)
-+		entry->eax = vcpu->arch.hw_tsc_khz;
-+}
-diff --git a/arch/x86/kvm/xen.h b/arch/x86/kvm/xen.h
-index 532a535a9e99..1afb663318a9 100644
---- a/arch/x86/kvm/xen.h
-+++ b/arch/x86/kvm/xen.h
-@@ -32,6 +32,8 @@ int kvm_xen_set_evtchn_fast(struct kvm_xen_evtchn *xe,
- int kvm_xen_setup_evtchn(struct kvm *kvm,
- 			 struct kvm_kernel_irq_routing_entry *e,
- 			 const struct kvm_irq_routing_entry *ue);
-+void kvm_xen_set_cpuid(struct kvm_vcpu *vcpu);
-+void kvm_xen_setup_tsc_info(struct kvm_vcpu *vcpu);
- 
- static inline bool kvm_xen_msr_enabled(struct kvm *kvm)
- {
-@@ -135,6 +137,14 @@ static inline bool kvm_xen_timer_enabled(struct kvm_vcpu *vcpu)
- {
- 	return false;
- }
-+
-+static inline void kvm_xen_set_cpuid(struct kvm_vcpu *vcpu)
-+{
-+}
-+
-+static inline void kvm_xen_setup_tsc_info(struct kvm_vcpu *vcpu)
-+{
-+}
- #endif
- 
- int kvm_xen_hypercall(struct kvm_vcpu *vcpu);
--- 
-2.20.1
+Please could you add a lot more comments. Given that nobody currently
+actually does networking via ACPI, we have to assume everybody trying
+to use it is a newbie, and more comments are better than less.
 
+Thanks
+	Andrew
