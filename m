@@ -2,103 +2,318 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B53D7C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 11:17:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 674B6C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 11:17:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357428AbiFVLRO (ORCPT
+        id S1357217AbiFVLRW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 07:17:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56640 "EHLO
+        Wed, 22 Jun 2022 07:17:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357187AbiFVLQ5 (ORCPT
+        with ESMTP id S1357323AbiFVLRB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 07:16:57 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B7CD3BA79;
-        Wed, 22 Jun 2022 04:16:53 -0700 (PDT)
+        Wed, 22 Jun 2022 07:17:01 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 799323BFBC;
+        Wed, 22 Jun 2022 04:16:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655896614; x=1687432614;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=MLLOeP/ifnd8x8DPdN0jA/knFVmnzPBL5uESewLgq68=;
-  b=PxC13SO71uBEcv6m4uBD4RrUx9kzPQIiL3Y+8M0TtAas1pNwiRbjCbDP
-   FlA7jL1vjbcnj50X2p+YhMEK/3DJ7YT/XKgb9/hOfS3UU4Tf2Piv7mEbj
-   d8xCkfSpnj+yLNonKCpvzTOgdH5VR510OVdJnXSlo8BuPpkyDfNKSfVHZ
-   upfSr6MOxGLpcyBN0uityuDFoPcwUUoq33F2S5/6MHkN6pCKHqQVeggQP
-   eWyB4lAR0F6vZ7cdsDqBTR5ppzVfEFJgF/9BUe7pC7bUz8tJuPlXoAJgZ
-   oUilmYOU1ZeBbkhT+ELOwpqqpRAIUkEn0YCUhVhBaQKpl1Vhg9wWuJqTh
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="281120406"
+  t=1655896618; x=1687432618;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=0+Ia/Mrs6xjJ9gyYaF6VIrm6VlKPab2Ql2n9Y0pYkTE=;
+  b=JsRSGjvDMyYMKyUtAZZgMnaL+RLbzUnDNICooEDatr1fcHzagNB5+gMR
+   lUA+aC66nZT28v4iBzKIOM/N83uIGB/2oQcd9P08+jAyzRrdeinJOI5Vu
+   k9+A4lXrMpJV1ioRQ2gipQKGIPvFXTv4ANQCOCrWli2T996v/4afgY2ho
+   nixYeVE4A4ER5tO1jj5U5AeEV7Sfvbxssr0uW4nkQZdBh5u1RhNZRVnIf
+   99fI82vs7kcV8GB4xwlmVeuQX/8xefxFCqvy1UIxkktSyN2hOnnk2Z7p/
+   dFgBn97BdoTvY0xPVb8pr/b+xecYdYhHXu5PPrYbdZGHVQAq87c2sSxUE
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="344379984"
 X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="281120406"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 04:16:53 -0700
+   d="scan'208";a="344379984"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 04:16:58 -0700
 X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="677489669"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 04:16:50 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1o3yLn-000sHA-U0;
-        Wed, 22 Jun 2022 14:16:47 +0300
-Date:   Wed, 22 Jun 2022 14:16:47 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        mchehab@kernel.org, djrscally@gmail.com,
-        sakari.ailus@linux.intel.com
-Subject: Re: [PATCH -next v2] media: ov7251: add missing disable functions on
- error in ov7251_set_power_on()
-Message-ID: <YrL6H6Dfp/z3hNhl@smile.fi.intel.com>
-References: <20220622044243.2900783-1-yangyingliang@huawei.com>
+   d="scan'208";a="834065728"
+Received: from jmatsis-mobl.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.209.178.197])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 04:16:54 -0700
+From:   Kai Huang <kai.huang@intel.com>
+To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     seanjc@google.com, pbonzini@redhat.com, dave.hansen@intel.com,
+        len.brown@intel.com, tony.luck@intel.com,
+        rafael.j.wysocki@intel.com, reinette.chatre@intel.com,
+        dan.j.williams@intel.com, peterz@infradead.org, ak@linux.intel.com,
+        kirill.shutemov@linux.intel.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com,
+        isaku.yamahata@intel.com, kai.huang@intel.com
+Subject: [PATCH v5 06/22] x86/virt/tdx: Add skeleton to initialize TDX on demand
+Date:   Wed, 22 Jun 2022 23:16:29 +1200
+Message-Id: <c751d1ce046ccc139a8bb34e04d70b1d6bc34a8d.1655894131.git.kai.huang@intel.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <cover.1655894131.git.kai.huang@intel.com>
+References: <cover.1655894131.git.kai.huang@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220622044243.2900783-1-yangyingliang@huawei.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 12:42:43PM +0800, Yang Yingliang wrote:
-> Add the missing gpiod_set_value_cansleep() and clk_disable_unprepare()
-> before return from ov7251_set_power_on() in the error handling case.
+Before the TDX module can be used to create and run TD guests, it must
+be loaded into the isolated region pointed by the SEAMRR and properly
+initialized.  The TDX module is expected to be loaded by BIOS before
+booting to the kernel, and the kernel is expected to detect and
+initialize it.
 
-This makes sense to me from code flow perspective.
+The TDX module can be initialized only once in its lifetime.  Instead
+of always initializing it at boot time, this implementation chooses an
+on-demand approach to initialize TDX until there is a real need (e.g
+when requested by KVM).  This avoids consuming the memory that must be
+allocated by kernel and given to the TDX module as metadata (~1/256th of
+the TDX-usable memory), and also saves the time of initializing the TDX
+module (and the metadata) when TDX is not used at all.  Initializing the
+TDX module at runtime on-demand also is more flexible to support TDX
+module runtime updating in the future (after updating the TDX module, it
+needs to be initialized again).
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Add a placeholder tdx_init() to detect and initialize the TDX module on
+demand, with a state machine protected by mutex to support concurrent
+calls from multiple callers.
 
-> Fixes: 9e1d3012cc10 ("media: i2c: Remove .s_power() from ov7251")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> ---
-> v2:
->   - add gpiod_set_value_cansleep()
->   - also change the patch title and commit message
-> ---
->  drivers/media/i2c/ov7251.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/media/i2c/ov7251.c b/drivers/media/i2c/ov7251.c
-> index 0e7be15bc20a..ad9689820ecc 100644
-> --- a/drivers/media/i2c/ov7251.c
-> +++ b/drivers/media/i2c/ov7251.c
-> @@ -934,6 +934,8 @@ static int ov7251_set_power_on(struct device *dev)
->  					ARRAY_SIZE(ov7251_global_init_setting));
->  	if (ret < 0) {
->  		dev_err(ov7251->dev, "error during global init\n");
-> +		gpiod_set_value_cansleep(ov7251->enable_gpio, 0);
-> +		clk_disable_unprepare(ov7251->xclk);
->  		ov7251_regulators_disable(ov7251);
->  		return ret;
->  	}
-> -- 
-> 2.25.1
-> 
+The TDX module will be initialized in multi-steps defined by the TDX
+architecture:
 
+  1) Global initialization;
+  2) Logical-CPU scope initialization;
+  3) Enumerate the TDX module capabilities and platform configuration;
+  4) Configure the TDX module about usable memory ranges and global
+     KeyID information;
+  5) Package-scope configuration for the global KeyID;
+  6) Initialize usable memory ranges based on 4).
+
+The TDX module can also be shut down at any time during its lifetime.
+In case of any error during the initialization process, shut down the
+module.  It's pointless to leave the module in any intermediate state
+during the initialization.
+
+Signed-off-by: Kai Huang <kai.huang@intel.com>
+---
+
+- v3->v5 (no feedback on v4):
+
+ - Removed the check that SEAMRR and TDX KeyID have been detected on
+   all present cpus.
+ - Removed tdx_detect().
+ - Added num_online_cpus() to MADT-enabled CPUs check within the CPU
+   hotplug lock and return early with error message.
+ - Improved dmesg printing for TDX module detection and initialization.
+
+---
+ arch/x86/include/asm/tdx.h  |   2 +
+ arch/x86/virt/vmx/tdx/tdx.c | 153 ++++++++++++++++++++++++++++++++++++
+ 2 files changed, 155 insertions(+)
+
+diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
+index 97511b76c1ac..801f6e10b2db 100644
+--- a/arch/x86/include/asm/tdx.h
++++ b/arch/x86/include/asm/tdx.h
+@@ -90,8 +90,10 @@ static inline long tdx_kvm_hypercall(unsigned int nr, unsigned long p1,
+ 
+ #ifdef CONFIG_INTEL_TDX_HOST
+ bool platform_tdx_enabled(void);
++int tdx_init(void);
+ #else	/* !CONFIG_INTEL_TDX_HOST */
+ static inline bool platform_tdx_enabled(void) { return false; }
++static inline int tdx_init(void)  { return -ENODEV; }
+ #endif	/* CONFIG_INTEL_TDX_HOST */
+ 
+ #endif /* !__ASSEMBLY__ */
+diff --git a/arch/x86/virt/vmx/tdx/tdx.c b/arch/x86/virt/vmx/tdx/tdx.c
+index eb3294bf1b0a..1f9d8108eeea 100644
+--- a/arch/x86/virt/vmx/tdx/tdx.c
++++ b/arch/x86/virt/vmx/tdx/tdx.c
+@@ -10,17 +10,39 @@
+ #include <linux/types.h>
+ #include <linux/init.h>
+ #include <linux/printk.h>
++#include <linux/mutex.h>
++#include <linux/cpu.h>
++#include <linux/cpumask.h>
+ #include <asm/cpufeatures.h>
+ #include <asm/cpufeature.h>
+ #include <asm/msr-index.h>
+ #include <asm/msr.h>
++#include <asm/smp.h>
+ #include <asm/tdx.h>
+ #include <asm/coco.h>
+ #include "tdx.h"
+ 
++/*
++ * TDX module status during initialization
++ */
++enum tdx_module_status_t {
++	/* TDX module hasn't been detected and initialized */
++	TDX_MODULE_UNKNOWN,
++	/* TDX module is not loaded */
++	TDX_MODULE_NONE,
++	/* TDX module is initialized */
++	TDX_MODULE_INITIALIZED,
++	/* TDX module is shut down due to initialization error */
++	TDX_MODULE_SHUTDOWN,
++};
++
+ static u32 tdx_keyid_start __ro_after_init;
+ static u32 tdx_keyid_num __ro_after_init;
+ 
++static enum tdx_module_status_t tdx_module_status;
++/* Prevent concurrent attempts on TDX detection and initialization */
++static DEFINE_MUTEX(tdx_module_lock);
++
+ /* Detect whether CPU supports SEAM */
+ static int detect_seam(void)
+ {
+@@ -101,6 +123,84 @@ static int __init tdx_early_detect(void)
+ }
+ early_initcall(tdx_early_detect);
+ 
++/*
++ * Detect and initialize the TDX module.
++ *
++ * Return -ENODEV when the TDX module is not loaded, 0 when it
++ * is successfully initialized, or other error when it fails to
++ * initialize.
++ */
++static int init_tdx_module(void)
++{
++	/* The TDX module hasn't been detected */
++	return -ENODEV;
++}
++
++static void shutdown_tdx_module(void)
++{
++	/* TODO: Shut down the TDX module */
++	tdx_module_status = TDX_MODULE_SHUTDOWN;
++}
++
++static int __tdx_init(void)
++{
++	int ret;
++
++	/*
++	 * Initializing the TDX module requires running some code on
++	 * all MADT-enabled CPUs.  If not all MADT-enabled CPUs are
++	 * online, it's not possible to initialize the TDX module.
++	 *
++	 * For simplicity temporarily disable CPU hotplug to prevent
++	 * any CPU from going offline during the initialization.
++	 */
++	cpus_read_lock();
++
++	/*
++	 * Check whether all MADT-enabled CPUs are online and return
++	 * early with an explicit message so the user can be aware.
++	 *
++	 * Note ACPI CPU hotplug is prevented when TDX is enabled, so
++	 * num_processors always reflects all present MADT-enabled
++	 * CPUs during boot when disabled_cpus is 0.
++	 */
++	if (disabled_cpus || num_online_cpus() != num_processors) {
++		pr_err("Unable to initialize the TDX module when there's offline CPU(s).\n");
++		ret = -EINVAL;
++		goto out;
++	}
++
++	ret = init_tdx_module();
++	if (ret == -ENODEV) {
++		pr_info("TDX module is not loaded.\n");
++		goto out;
++	}
++
++	/*
++	 * Shut down the TDX module in case of any error during the
++	 * initialization process.  It's meaningless to leave the TDX
++	 * module in any middle state of the initialization process.
++	 *
++	 * Shutting down the module also requires running some code on
++	 * all MADT-enabled CPUs.  Do it while CPU hotplug is disabled.
++	 *
++	 * Return all errors during initialization as -EFAULT as
++	 * the TDX module is always shut down in such cases.
++	 */
++	if (ret) {
++		pr_info("Failed to initialize TDX module.  Shut it down.\n");
++		shutdown_tdx_module();
++		ret = -EFAULT;
++		goto out;
++	}
++
++	pr_info("TDX module initialized.\n");
++out:
++	cpus_read_unlock();
++
++	return ret;
++}
++
+ /**
+  * platform_tdx_enabled() - Return whether BIOS has enabled TDX
+  *
+@@ -111,3 +211,56 @@ bool platform_tdx_enabled(void)
+ {
+ 	return tdx_keyid_num >= 2;
+ }
++
++/**
++ * tdx_init - Initialize the TDX module
++ *
++ * Initialize the TDX module to make it ready to run TD guests.
++ *
++ * Caller to make sure all CPUs are online before calling this function.
++ * CPU hotplug is temporarily disabled internally to prevent any cpu
++ * from going offline.
++ *
++ * This function can be called in parallel by multiple callers.
++ *
++ * Return:
++ *
++ * * 0:		The TDX module has been successfully initialized.
++ * * -ENODEV:	The TDX module is not loaded, or TDX is not supported.
++ * * -EINVAL:	The TDX module cannot be initialized due to certain
++ *		conditions are not met (i.e. when not all MADT-enabled
++ *		CPUs are not online).
++ * * -EFAULT:	Other internal fatal errors, or the TDX module is in
++ *		shutdown mode due to it failed to initialize in previous
++ *		attempts.
++ */
++int tdx_init(void)
++{
++	int ret;
++
++	if (!platform_tdx_enabled())
++		return -ENODEV;
++
++	mutex_lock(&tdx_module_lock);
++
++	switch (tdx_module_status) {
++	case TDX_MODULE_UNKNOWN:
++		ret = __tdx_init();
++		break;
++	case TDX_MODULE_NONE:
++		ret = -ENODEV;
++		break;
++	case TDX_MODULE_INITIALIZED:
++		ret = 0;
++		break;
++	default:
++		WARN_ON_ONCE(tdx_module_status != TDX_MODULE_SHUTDOWN);
++		ret = -EFAULT;
++		break;
++	}
++
++	mutex_unlock(&tdx_module_lock);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(tdx_init);
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.36.1
 
