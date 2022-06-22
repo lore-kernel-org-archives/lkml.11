@@ -2,73 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87A0BC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 15:41:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F1DCC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 15:41:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359285AbiFVPlE (ORCPT
+        id S1359247AbiFVPls (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 11:41:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40814 "EHLO
+        Wed, 22 Jun 2022 11:41:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359247AbiFVPkw (ORCPT
+        with ESMTP id S236696AbiFVPlp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 11:40:52 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FA392ED76;
-        Wed, 22 Jun 2022 08:40:51 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id z9so9465352wmf.3;
-        Wed, 22 Jun 2022 08:40:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=6HvjioZHPtwBf4fSwa9wIuwFcez8I2M80JFO0QJMojs=;
-        b=dpZHPTmcfuFjzjJ0Lys34TeMfY59Nf1bKZM5XTxOYpqqCBsl7Y6AhxrXkzb+gPakMK
-         FloXTG3essSGnodFfCg3jtPf0tPM+4wamt0q6BPSfR89FBPb/HfsmktFXGDn/eile+Y8
-         /yK/eD6l6WjEX6SjenLshLSETc34Dq0GIAUxh5to/GL+FYMWttj7fc3sYov1tPtYCCOR
-         dBP/PX7cqo2YrMZAIB7/zxxxT0TtRBoETiX67M1AssNL8bCqTidpwSyWiO3dm0cdg1ES
-         JdHLImitJR/7Tnz6Cv6zOWfoqt9Zh8aGFUZVk+pLR7jGoIrbbaB8qllQxWmm2FDQhN5q
-         Yt4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=6HvjioZHPtwBf4fSwa9wIuwFcez8I2M80JFO0QJMojs=;
-        b=PA8F2uSqZZooPnDPLKJO+B75lJxoyIxtPni3WDIK3dJI+0Z7boygya/ye/Z+TnfPPt
-         mHMu0kDn8yi7Y+tRCYuseEX5jxg0SXDnw6kKlwjgJleo+rEDEzUmr4Ik/QdohVOv3Dg8
-         bHRrjJZgfDQ4Z4GV4CcaGfOBuznLSeQZGIJnE6ibgxsGa+KAXK/y8YfKZ7l40oBdfAQB
-         47RdJBKZzSvm4O9fNETwz1iHQvE9I/Ud7IsG0I1AHATwruhBEM9NeoozUO1rFL6XINMM
-         JU6bJDYwzqxA2CHkz4qEHU44S1NoQZMBc2duaHYqGCYECy5vehY3dlAmRUTGMG+dEDbF
-         zLvg==
-X-Gm-Message-State: AJIora/USaZmMK+7EboWDXmue9v04GyOGU+YO7eh7cAJVAlRxR8I8VAb
-        t9WJJR8w+nCFBMyPWoOvl5Q=
-X-Google-Smtp-Source: AGRyM1ulMlpI/C9yUV5vRRJTaw3SQd1l5jIXTUtRosaGOoW6+N4l7XU10IynPKr7U0RVMv8wVfr7bw==
-X-Received: by 2002:a7b:c402:0:b0:3a0:2ba7:1fa7 with SMTP id k2-20020a7bc402000000b003a02ba71fa7mr3160994wmi.152.1655912449594;
-        Wed, 22 Jun 2022 08:40:49 -0700 (PDT)
-Received: from [192.168.0.16] ([37.223.148.38])
-        by smtp.gmail.com with ESMTPSA id r64-20020a1c4443000000b003942a244f39sm31645408wma.18.2022.06.22.08.40.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Jun 2022 08:40:48 -0700 (PDT)
-Message-ID: <37fb545a-bc45-65b0-b67b-5ef1b0346777@gmail.com>
-Date:   Wed, 22 Jun 2022 17:40:43 +0200
+        Wed, 22 Jun 2022 11:41:45 -0400
+X-Greylist: delayed 548 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 22 Jun 2022 08:41:44 PDT
+Received: from mail1.trendhosting.net (mail1.trendhosting.net [195.8.117.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47A2032ECC
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 08:41:44 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail1.trendhosting.net (Postfix) with ESMTP id E69D2150E8
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 16:32:34 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+        d=softwarefreedom.institute; s=mail; t=1655911954;
+        bh=/HELNDiPI1g9otyQPILO38zDVEILv5s9FE+OT7wtZeM=;
+        h=To:From:Subject:Date:From;
+        b=fF++B+5jOxzQWV8Xr+XkFq5zH3fdM9ebK8yo/2NnWULIpB18pqPUSyVdXu6bsrogt
+         O3NpN+omE3waG+CrZ96C1dqRNcwp2FHHQ2vGgntbmZbNmdKI5ka6iJEKSejp6eJjMz
+         nlU94WHh6fsQjlxSGPtkQrOB1VpdZ0Vp+czm1mCb/dNnRh27K9pSo4kJwwADNG0kK0
+         ZbTEb845vwlliQbQ9NwFOePItjo4ct2MATorgmBtFaKwdsTk8bar0CJSXPxrN3NKFA
+         uliUuEwwJoXZjy1DECyCQB7r8AFmHDyzPFPgskxTvwSatK3lgxWDNa0bMGw5hUlRuk
+         6fHF+yLLVqFRA==
+Received: from mail1.trendhosting.net ([127.0.0.1])
+        by localhost (thp003.trendhosting.net [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id k76Kguvu1piA for <linux-kernel@vger.kernel.org>;
+        Wed, 22 Jun 2022 16:32:32 +0100 (BST)
+Received: from [IPv6:2001:1620:e61:0:1dab:714b:91b8:dab5] (unknown [IPv6:2001:1620:e61:0:1dab:714b:91b8:dab5])
+        by mail1.trendhosting.net (Postfix) with ESMTPSA id 48A8E150E7
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 16:32:32 +0100 (BST)
+To:     linux-kernel@vger.kernel.org
+From:   Daniel Pocock <daniel@softwarefreedom.institute>
+Subject: recognition of Linus Torvalds, Honorary Debian Developer
+Message-ID: <4e9ac05d-8963-d36d-12c9-4f87363785ad@softwarefreedom.institute>
+Date:   Wed, 22 Jun 2022 17:32:32 +0200
+User-Agent: Mozilla/5.0 (X11; Linux ppc64le; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v11 0/3] Add basic node support for MediaTek MT8186 SoC
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        Ryder Lee <ryder.lee@kernel.org>, hsinyi@chromium.org
-References: <20220520122217.30716-1-allen-kh.cheng@mediatek.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <20220520122217.30716-1-allen-kh.cheng@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -76,84 +54,30 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 
 
-On 20/05/2022 14:22, Allen-KH Cheng wrote:
-> MT8186 is a SoC based on 64bit ARMv8 architecture.
-> It contains 6 CA55 and 2 CA76 cores.
-> MT8186 share many HW IP with MT65xx series.
-> 
-> This patchset was tested on MT8186 evaluation board to shell.
-> 
+I've recently been able to acquire[1] the Debian trademark in Switzerland
 
-Applied, thanks!
+Using whatever authority comes with the trademark, I'm recognizing Linus
+Torvalds as an Honorary Debian Developer
 
-> Based on next-20220519, linux-next/master
-> 
-> changes since v9:
->   - remove some merged PATCHs from series
->   - reorder nodes in dts (cpu-map)
->   - remove okay status in auxadc
->   - remove unnecessary suffix node name for i2c
->   - add pwm node
->   - add dsi-phy node
->   - add dpi node
-> 
-> changes since v9:
->   - add one space before equal sign of drive-strength-adv
->   - corect compatible name for big cores (ca76)
->   - use upper case of address in pinctrl
->   - add pwrap node
->   - add pwm node
-> 
-> changes since v8:
->   - change name from pins_bus to pins-sda-scl
->   - correct email address
->   - add capacity-dmips-mhz for each CPU
->   - add ppi-partitions in gic node
->   - change name to power-domain
->   - remove status "okay" in scp node
->   - update timer and pericfg compatible in series
-> 
-> changes since v7:
->   - add scp&auxadc node
-> 
-> changes since v6:
->   - remove unnecessary blank line
-> 
-> changes since v5:
->   - replace Mediatek a to MediaTek
->   - use GPL-2.0-only OR BSD-2-Clause
-> 
-> changes since v4:
->   - correct driver clock of mt8186
->   - add power domains controller and clock controllers
->   - add pinctrl, usb host, spi and i2c nodes
->   - add node status in mt8186-evb.dts
->   - correct some dtbs_check warnings
-> 
-> changes since v3:
->   - remove serial, mmc and phy patch from series. (already merged)
->   - remove mcusysoff node
->   - move oscillator nodes at the head of dts
->   - change name from usb-phy to t-phy
-> 
-> changes since v2:
->   - add soc {} in mt8186.dtsi
-> 
-> changes since v1:
->   - add dt-bindings: arm: Add compatible for MediaTek MT8186
-> 
-> Allen-KH Cheng (3):
->    dt-bindings: arm: mediatek: Add mt8186 pericfg compatible
->    dt-bindings: arm: Add compatible for MediaTek MT8186
->    arm64: dts: Add MediaTek SoC MT8186 dts and evaluation board and
->      Makefile
-> 
->   .../devicetree/bindings/arm/mediatek.yaml     |    4 +
->   .../arm/mediatek/mediatek,pericfg.yaml        |    1 +
->   arch/arm64/boot/dts/mediatek/Makefile         |    1 +
->   arch/arm64/boot/dts/mediatek/mt8186-evb.dts   |  232 ++++
->   arch/arm64/boot/dts/mediatek/mt8186.dtsi      | 1016 +++++++++++++++++
->   5 files changed, 1254 insertions(+)
->   create mode 100644 arch/arm64/boot/dts/mediatek/mt8186-evb.dts
->   create mode 100644 arch/arm64/boot/dts/mediatek/mt8186.dtsi
-> 
+For safety, I revoked the Code of Conduct before[1] doing this.
+
+Thanks Linus, none of the competing Debian trademark registrations would
+exist without your efforts creating Linux in the first place.
+
+
+Regards,
+
+Daniel
+
+
+1. https://danielpocock.com/using-the-debian-trademark-for-good/
+
+
+
+
+-- 
+https://softwarefreedom.institute
+Software Freedom Institute SA, CHE-426.705.848
+c/o Impact Hub, rue du Jura 11
+1004 Lausanne, Switzerland
+tel:+41-21-552-7000
