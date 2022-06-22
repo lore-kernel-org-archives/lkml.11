@@ -2,132 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B251CCA47D
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 15:09:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44550C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 15:09:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359079AbiFVPIR (ORCPT
+        id S1359091AbiFVPJD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 11:08:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41972 "EHLO
+        Wed, 22 Jun 2022 11:09:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359014AbiFVPIJ (ORCPT
+        with ESMTP id S1359177AbiFVPIn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 11:08:09 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDB11186F2;
-        Wed, 22 Jun 2022 08:08:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655910487; x=1687446487;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=zh0phUUpaFOeqqrnhE09SGS410LKWAC5CpTN1a7yln4=;
-  b=ZWzzLnDuJyPkknFF+qVqyaJeA4B2VrnVbKgaiVnTY6zXWoujWtMkhbOh
-   OAdOix7ALM8YrypojxkOXBBy8PRq0vy7CnLhPxR7UyDNJVs592T76Bt5H
-   LfcDT1Rgar3h1npuWjGGYNbgJS0g4dFgV/N1pjzaQveGLKBLdgbXbLejH
-   IgTr4s8tEWrsNANSmDJHVm8s09FlMEry/HhuVV5EK4r4n+AbtomAy3BEB
-   kPCSodI2+hLKRv5g81UvXeMeWk+wpI4IHUhID7MjGEZ+/NiPcvar/22zF
-   qkraGbKNJo1/gJzS+ZUdM5yK/Q5QTfSekQTxxwvpE+7CiIiMVwoRBNzWC
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="342128826"
-X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="342128826"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 08:08:05 -0700
-X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="677596572"
-Received: from bshakya-mobl.amr.corp.intel.com (HELO [10.212.188.76]) ([10.212.188.76])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 08:08:04 -0700
-Message-ID: <6f83722d-d402-ca68-7d3e-77dca14a794b@intel.com>
-Date:   Wed, 22 Jun 2022 08:07:46 -0700
+        Wed, 22 Jun 2022 11:08:43 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E733A2DA9D
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 08:08:36 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id sb34so5848019ejc.11
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 08:08:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=GbOJQbCPXXFQWcBB2NA2p6q5ubRmVUJFNDbSoq8WWes=;
+        b=QpzQ8IqF4+E6u9y6gcaykwSNvt+WZSEw6Qm8CfS5bdebU8w50WYSD+LhSNsFo7IqYI
+         wc6naJWlvFAenLoP/BlvW5dhD6KEHEwxGVTL4aovxDOwzHZUJQPPGVXy61e4C/XKkKdU
+         Kj0LOS5tZAHOLgOhXpIi1ia4LgBZasqViFzA7H8j/KGZTq5ySkG+Z2SQflqKiPvI1vvB
+         DDro1YRWeEmG4AqXPWBvXtuAMDjaYfsjKbLpJ0Hbw1ha9rnwOkbmkawRS8jnTw4cuSu/
+         bbDs3dgNQx3IF+4QSKhdWaTGBcB2dmNpAyALq5zGTwlQ6iWqCnqw1CTkUz2ogTEKq9/o
+         InKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=GbOJQbCPXXFQWcBB2NA2p6q5ubRmVUJFNDbSoq8WWes=;
+        b=PtQdI/m7q+auJVQoKkU43VcVpOPYXf/K9XPovL1EdTie2FoK376fDtAyi59DaUuAjs
+         4NmhpIkfvCzJBwzwzGnJgEIbiWukXNe7WkfWnHm7rsw/jBKiqsz77RgBgosnfK7WVzxt
+         B+n0T/f6pcNwVgC7B87sZkmdFWom81vy9sPM/7bBXcTGQvEOzHJyXztItliszy2cgv+k
+         YQc0E4n71TKaWVMYGpovAjevPOAztU7n/pCDm2jkR90N4sRM99oOfoMKABkowsSsczcW
+         WDRKI7N3g9Wlev/h4Z39km4oHAr3dy+HF0gjcQGj5Y7ojb7Y6yuCtAG+01zWQ19WagAl
+         LWZA==
+X-Gm-Message-State: AJIora/FMF6Qk1d/cqxXcA5Y8CMKDEHyQeAyXm7624EqkGVQfR+jytbl
+        4WTU7G0SPKKL3L/BmqNiXhvILg==
+X-Google-Smtp-Source: AGRyM1uQtjqkSd7z3x0Z+zwX6gwY0VPrtqmnMZ43RgvyIsvA51gBRnK4Lr4IJG+qwTZA2wb7ORRFQQ==
+X-Received: by 2002:a17:906:5d0b:b0:722:ebcc:b10c with SMTP id g11-20020a1709065d0b00b00722ebccb10cmr3488593ejt.175.1655910515407;
+        Wed, 22 Jun 2022 08:08:35 -0700 (PDT)
+Received: from [192.168.0.226] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id t24-20020a056402021800b004356a647d08sm11299011edv.94.2022.06.22.08.08.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Jun 2022 08:08:35 -0700 (PDT)
+Message-ID: <c9ec14db-1ddd-7316-4ef6-9d57509f3fad@linaro.org>
+Date:   Wed, 22 Jun 2022 17:08:33 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 3/4] x86/cpuid: move filter_cpuid_features to cpuid-deps.c
+ Thunderbird/91.10.0
+Subject: Re: [PATCH V2 3/8] clk: qcom: Add Global Clock controller (GCC)
+ driver for IPQ5018
 Content-Language: en-US
-To:     Maxim Levitsky <mlevitsk@redhat.com>, linux-kernel@vger.kernel.org
-Cc:     "Chang S. Bae" <chang.seok.bae@intel.com>,
-        Jiri Olsa <jolsa@kernel.org>, linux-perf-users@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Borislav Petkov <bp@alien8.de>,
-        Kees Cook <keescook@chromium.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Tim Chen <tim.c.chen@linux.intel.com>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        Jane Malalane <jane.malalane@citrix.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        "open list:CRYPTO API" <linux-crypto@vger.kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>
-References: <20220622144820.751402-1-mlevitsk@redhat.com>
- <20220622144820.751402-4-mlevitsk@redhat.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <20220622144820.751402-4-mlevitsk@redhat.com>
+To:     Sricharan R <quic_srichara@quicinc.com>, agross@kernel.org,
+        bjorn.andersson@linaro.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, mturquette@baylibre.com,
+        sboyd@kernel.org, linus.walleij@linaro.org,
+        catalin.marinas@arm.com, p.zabel@pengutronix.de,
+        quic_varada@quicinc.com, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+References: <20220621161126.15883-1-quic_srichara@quicinc.com>
+ <20220621161126.15883-4-quic_srichara@quicinc.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220621161126.15883-4-quic_srichara@quicinc.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/22/22 07:48, Maxim Levitsky wrote:
-> No functional change intended.
+On 21/06/2022 18:11, Sricharan R wrote:
+> From: Varadarajan Narayanan <quic_varada@quicinc.com>
+> 
+> Add support for the global clock controller found on IPQ5018
+> based devices.
+> 
+> Co-developed-by: Sricharan R <quic_srichara@quicinc.com>
+> Signed-off-by: Sricharan R <quic_srichara@quicinc.com>
+> Signed-off-by: Varadarajan Narayanan <quic_varada@quicinc.com>
 
-It would be really nice to at least write a "why" sentence.  You wrote
-the "what" (move code), but I have no idea why you are moving it.
+Thank you for your patch. There is something to discuss/improve.
 
->  arch/x86/kernel/cpu/common.c      | 46 -----------------------------
->  arch/x86/kernel/cpu/cpuid-deps.c  | 48 +++++++++++++++++++++++++++++++
-
-That looks a wee bit odd for a code move.  Where did the 2 lines go?
-
-> diff --git a/arch/x86/include/asm/cpufeature.h b/arch/x86/include/asm/cpufeature.h
-> index ea34cc31b0474f..3eb5fe0d654e63 100644
-> --- a/arch/x86/include/asm/cpufeature.h
-> +++ b/arch/x86/include/asm/cpufeature.h
-> @@ -147,6 +147,7 @@ extern const char * const x86_bug_flags[NBUGINTS*32];
+> ---
+>  drivers/clk/qcom/Kconfig       |    7 +
+>  drivers/clk/qcom/Makefile      |    1 +
+>  drivers/clk/qcom/gcc-ipq5018.c | 3995 ++++++++++++++++++++++++++++++++
+>  3 files changed, 4003 insertions(+)
+>  create mode 100644 drivers/clk/qcom/gcc-ipq5018.c
+> 
+> diff --git a/drivers/clk/qcom/Kconfig b/drivers/clk/qcom/Kconfig
+> index d01436be6d7a..294fb975db85 100644
+> --- a/drivers/clk/qcom/Kconfig
+> +++ b/drivers/clk/qcom/Kconfig
+> @@ -172,6 +172,13 @@ config IPQ_GCC_8074
+>  	  i2c, USB, SD/eMMC, etc. Select this for the root clock
+>  	  of ipq8074.
 >  
->  extern void setup_clear_cpu_cap(unsigned int bit);
->  extern void clear_cpu_cap(struct cpuinfo_x86 *c, unsigned int bit);
-> +extern void filter_cpuid_features(struct cpuinfo_x86 *c, bool warn);
->  
->  #define setup_force_cpu_cap(bit) do { \
->  	set_cpu_cap(&boot_cpu_data, bit);	\
-> diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-> index 4730b0a58f24a5..4cc79971d2d847 100644
-> --- a/arch/x86/kernel/cpu/common.c
-> +++ b/arch/x86/kernel/cpu/common.c
-> @@ -620,52 +620,6 @@ __noendbr void cet_disable(void)
->  		wrmsrl(MSR_IA32_S_CET, 0);
->  }
->  
-> -/*
-...
-> -}
->  
->  /*
->   * Naming convention should be: <Name> [(<Codename>)]
-
-One, by leaving extra whitespace.
-
-> diff --git a/arch/x86/kernel/cpu/cpuid-deps.c b/arch/x86/kernel/cpu/cpuid-deps.c
-> index d6777d07ba3302..bcb091d02a754b 100644
-> --- a/arch/x86/kernel/cpu/cpuid-deps.c
-> +++ b/arch/x86/kernel/cpu/cpuid-deps.c
-> @@ -131,3 +131,51 @@ void setup_clear_cpu_cap(unsigned int feature)
->  {
->  	clear_cpu_cap(&boot_cpu_data, feature);
->  }
+> +config IPQ_GCC_5018
+> +	tristate "IPQ5018 Global Clock Controller"
+> +	help
+> +	 Support for global clock controller on ipq5018 devices.
+> +	 Say Y if you want to use peripheral devices such as UART, SPI,
+> +	 i2c, USB, SD/eMMC, etc.
 > +
-> +
-> +/*
+>  config MSM_GCC_8660
+>  	tristate "MSM8660 Global Clock Controller"
+>  	help
+> diff --git a/drivers/clk/qcom/Makefile b/drivers/clk/qcom/Makefile
+> index 671cf5821af1..33ab4ce9b863 100644
+> --- a/drivers/clk/qcom/Makefile
+> +++ b/drivers/clk/qcom/Makefile
+> @@ -26,6 +26,7 @@ obj-$(CONFIG_IPQ_GCC_4019) += gcc-ipq4019.o
+>  obj-$(CONFIG_IPQ_GCC_6018) += gcc-ipq6018.o
+>  obj-$(CONFIG_IPQ_GCC_806X) += gcc-ipq806x.o
+>  obj-$(CONFIG_IPQ_GCC_8074) += gcc-ipq8074.o
+> +obj-$(CONFIG_IPQ_GCC_5018) += gcc-ipq5018.o
+>  obj-$(CONFIG_IPQ_LCC_806X) += lcc-ipq806x.o
+>  obj-$(CONFIG_MDM_GCC_9607) += gcc-mdm9607.o
+>  obj-$(CONFIG_MDM_GCC_9615) += gcc-mdm9615.o
 
-Two, by adding extra whitespace.
+(...)
+
+> +
+> +static int gcc_ipq5018_probe(struct platform_device *pdev)
+> +{
+> +	int ret;
+> +	struct regmap *regmap;
+> +	struct qcom_cc_desc ipq5018_desc = gcc_ipq5018_desc;
+> +
+> +	regmap = qcom_cc_map(pdev, &ipq5018_desc);
+> +	if (IS_ERR(regmap))
+> +		return PTR_ERR(regmap);
+> +
+> +	clk_alpha_pll_configure(&ubi32_pll_main, regmap, &ubi32_pll_config);
+> +
+> +	ret = qcom_cc_really_probe(pdev, &ipq5018_desc, regmap);
+
+return qcom_cc_really_probe(....)
+
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "Failed to register ipq5018 GCC clocks\n");
+> +		return ret;
+> +	}
+> +
+> +	dev_info(&pdev->dev, "Registered ipq5018 GCC clocks provider");
+
+No probe success messages. This pollutes the log and there is other
+infrastructure to check for successful probe.
+
+> +
+> +	return ret;
+> +}
+> +
+> +static struct platform_driver gcc_ipq5018_driver = {
+> +	.probe = gcc_ipq5018_probe,
+> +	.driver = {
+> +		.name   = "qcom,gcc-ipq5018",
+> +		.owner  = THIS_MODULE,
+
+No need for owner.
+
+> +		.of_match_table = gcc_ipq5018_match_table,
+> +	},
+> +};
+> +
+> +static int __init gcc_ipq5018_init(void)
+> +{
+> +	return platform_driver_register(&gcc_ipq5018_driver);
+> +}
+> +core_initcall(gcc_ipq5018_init);
+> +
+> +static void __exit gcc_ipq5018_exit(void)
+> +{
+> +	platform_driver_unregister(&gcc_ipq5018_driver);
+> +}
+> +module_exit(gcc_ipq5018_exit);
+> +
+> +MODULE_DESCRIPTION("Qualcomm Technologies, Inc. GCC IPQ5018 Driver");
+> +MODULE_LICENSE("GPL v2");
+
+
+Best regards,
+Krzysztof
