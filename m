@@ -2,22 +2,22 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1796BC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 13:23:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ADBFCCA47D
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 13:24:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356235AbiFVNXx (ORCPT
+        id S1356878AbiFVNX7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 09:23:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43982 "EHLO
+        Wed, 22 Jun 2022 09:23:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355462AbiFVNXM (ORCPT
+        with ESMTP id S1354755AbiFVNXM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 22 Jun 2022 09:23:12 -0400
 Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AD2282FE77;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A51202FE56;
         Wed, 22 Jun 2022 06:23:09 -0700 (PDT)
 Received: from NTHCCAS01.nuvoton.com (NTHCCAS01.nuvoton.com [10.1.8.28])
-        by maillog.nuvoton.com (Postfix) with ESMTP id 9DD691C811F3;
+        by maillog.nuvoton.com (Postfix) with ESMTP id 8E02D1C811F2;
         Wed, 22 Jun 2022 21:23:06 +0800 (CST)
 Received: from NTHCCAS03.nuvoton.com (10.1.20.28) by NTHCCAS01.nuvoton.com
  (10.1.8.28) with Microsoft SMTP Server (version=TLS1_2,
@@ -31,7 +31,7 @@ Received: from taln60.nuvoton.co.il (10.191.1.180) by NTHCCAS01.nuvoton.com
  (10.1.12.25) with Microsoft SMTP Server id 15.1.2375.7 via Frontend
  Transport; Wed, 22 Jun 2022 21:23:05 +0800
 Received: by taln60.nuvoton.co.il (Postfix, from userid 10070)
-        id 0402F63A19; Wed, 22 Jun 2022 16:23:04 +0300 (IDT)
+        id 39D5363A4C; Wed, 22 Jun 2022 16:23:04 +0300 (IDT)
 From:   Tomer Maimon <tmaimon77@gmail.com>
 To:     <avifishman70@gmail.com>, <tali.perry1@gmail.com>,
         <joel@jms.id.au>, <venture@google.com>, <yuenn@google.com>,
@@ -51,10 +51,11 @@ CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-clk@vger.kernel.org>, <linux-serial@vger.kernel.org>,
         <linux-watchdog@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        Tomer Maimon <tmaimon77@gmail.com>
-Subject: [PATCH v5 05/18] dt-binding: clk: npcm845: Add binding for Nuvoton NPCM8XX Clock
-Date:   Wed, 22 Jun 2022 16:22:49 +0300
-Message-ID: <20220622132302.267010-6-tmaimon77@gmail.com>
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v5 10/18] dt-bindings: reset: npcm: Add support for NPCM8XX
+Date:   Wed, 22 Jun 2022 16:22:54 +0300
+Message-ID: <20220622132302.267010-11-tmaimon77@gmail.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220622132302.267010-1-tmaimon77@gmail.com>
 References: <20220622132302.267010-1-tmaimon77@gmail.com>
@@ -65,126 +66,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add binding for the Arbel BMC NPCM8XX Clock controller.
+Add binding document and device tree binding constants for Nuvoton BMC
+NPCM8XX reset controller.
 
 Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- .../bindings/clock/nuvoton,npcm845-clk.yaml   | 49 +++++++++++++++++++
- .../dt-bindings/clock/nuvoton,npcm845-clk.h   | 49 +++++++++++++++++++
- 2 files changed, 98 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml
- create mode 100644 include/dt-bindings/clock/nuvoton,npcm845-clk.h
+ .../devicetree/bindings/reset/nuvoton,npcm750-reset.yaml      | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml b/Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml
-new file mode 100644
-index 000000000000..771db2ddf026
---- /dev/null
-+++ b/Documentation/devicetree/bindings/clock/nuvoton,npcm845-clk.yaml
-@@ -0,0 +1,49 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/clock/nuvoton,npcm845-clk.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Nuvoton NPCM8XX Clock Controller Binding
-+
-+maintainers:
-+  - Tomer Maimon <tmaimon77@gmail.com>
-+
-+description: |
-+  Nuvoton Arbel BMC NPCM8XX contains an integrated clock controller, which
-+  generates and supplies clocks to all modules within the BMC.
-+
-+properties:
-+  compatible:
+diff --git a/Documentation/devicetree/bindings/reset/nuvoton,npcm750-reset.yaml b/Documentation/devicetree/bindings/reset/nuvoton,npcm750-reset.yaml
+index 43a6e77cbf4e..d82e65e37cc0 100644
+--- a/Documentation/devicetree/bindings/reset/nuvoton,npcm750-reset.yaml
++++ b/Documentation/devicetree/bindings/reset/nuvoton,npcm750-reset.yaml
+@@ -11,7 +11,9 @@ maintainers:
+ 
+ properties:
+   compatible:
+-    const: nuvoton,npcm750-reset
 +    enum:
-+      - nuvoton,npcm845-clk
-+
-+  reg:
-+    maxItems: 1
-+
-+  '#clock-cells':
-+    const: 1
-+    description:
-+      See include/dt-bindings/clock/nuvoton,npcm8xx-clock.h for the full
-+      list of NPCM8XX clock IDs.
-+
-+required:
-+  - compatible
-+  - reg
-+  - '#clock-cells'
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    ahb {
-+        #address-cells = <2>;
-+        #size-cells = <2>;
-+
-+        clock-controller@f0801000 {
-+            compatible = "nuvoton,npcm845-clk";
-+            reg = <0x0 0xf0801000 0x0 0x1000>;
-+            #clock-cells = <1>;
-+        };
-+    };
-+...
-diff --git a/include/dt-bindings/clock/nuvoton,npcm845-clk.h b/include/dt-bindings/clock/nuvoton,npcm845-clk.h
-new file mode 100644
-index 000000000000..e5cce08b00e1
---- /dev/null
-+++ b/include/dt-bindings/clock/nuvoton,npcm845-clk.h
-@@ -0,0 +1,49 @@
-+/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-+/*
-+ * Copyright (C) 2021 Nuvoton Technologies.
-+ * Author: Tomer Maimon <tomer.maimon@nuvoton.com>
-+ *
-+ * Device Tree binding constants for NPCM8XX clock controller.
-+ */
-+
-+#ifndef __DT_BINDINGS_CLOCK_NPCM8XX_H
-+#define __DT_BINDINGS_CLOCK_NPCM8XX_H
-+
-+#define NPCM8XX_CLK_CPU		0
-+#define NPCM8XX_CLK_GFX_PIXEL	1
-+#define NPCM8XX_CLK_MC		2
-+#define NPCM8XX_CLK_ADC		3
-+#define NPCM8XX_CLK_AHB		4
-+#define NPCM8XX_CLK_TIMER	5
-+#define NPCM8XX_CLK_UART	6
-+#define NPCM8XX_CLK_UART2	7
-+#define NPCM8XX_CLK_MMC		8
-+#define NPCM8XX_CLK_SPI3	9
-+#define NPCM8XX_CLK_PCI		10
-+#define NPCM8XX_CLK_AXI		11
-+#define NPCM8XX_CLK_APB4	12
-+#define NPCM8XX_CLK_APB3	13
-+#define NPCM8XX_CLK_APB2	14
-+#define NPCM8XX_CLK_APB1	15
-+#define NPCM8XX_CLK_APB5	16
-+#define NPCM8XX_CLK_CLKOUT	17
-+#define NPCM8XX_CLK_GFX		18
-+#define NPCM8XX_CLK_SU		19
-+#define NPCM8XX_CLK_SU48	20
-+#define NPCM8XX_CLK_SDHC	21
-+#define NPCM8XX_CLK_SPI0	22
-+#define NPCM8XX_CLK_SPI1	23
-+#define NPCM8XX_CLK_SPIX	24
-+#define NPCM8XX_CLK_RG		25
-+#define NPCM8XX_CLK_RCP		26
-+#define NPCM8XX_CLK_PRE_ADC	27
-+#define NPCM8XX_CLK_ATB		28
-+#define NPCM8XX_CLK_PRE_CLK	29
-+#define NPCM8XX_CLK_TH		30
-+#define NPCM8XX_CLK_REFCLK	31
-+#define NPCM8XX_CLK_SYSBYPCK	32
-+#define NPCM8XX_CLK_MCBYPCK	33
-+
-+#define NPCM8XX_NUM_CLOCKS	(NPCM8XX_CLK_MCBYPCK + 1)
-+
-+#endif
++      - nuvoton,npcm750-reset        # Poleg NPCM7XX SoC
++      - nuvoton,npcm845-reset        # Arbel NPCM8XX SoC
+ 
+   reg:
+     maxItems: 1
 -- 
 2.33.0
 
