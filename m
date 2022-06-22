@@ -2,86 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A73CC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 10:31:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47A9BC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 10:31:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353956AbiFVKbn (ORCPT
+        id S1354164AbiFVKbs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 06:31:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50624 "EHLO
+        Wed, 22 Jun 2022 06:31:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233390AbiFVKbi (ORCPT
+        with ESMTP id S234203AbiFVKbk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 06:31:38 -0400
-Received: from unicom146.biz-email.net (unicom146.biz-email.net [210.51.26.146])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 298333A716
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 03:31:35 -0700 (PDT)
-Received: from ([60.208.111.195])
-        by unicom146.biz-email.net ((D)) with ASMTP (SSL) id RIC00130;
-        Wed, 22 Jun 2022 18:31:30 +0800
-Received: from localhost.localdomain (10.200.104.82) by
- jtjnmail201610.home.langchao.com (10.100.2.10) with Microsoft SMTP Server id
- 15.1.2308.27; Wed, 22 Jun 2022 18:31:31 +0800
-From:   Deming Wang <wangdeming@inspur.com>
-To:     <mst@redhat.com>, <jasowang@redhat.com>
-CC:     <virtualization@lists.linux-foundation.org>,
-        <linux-kernel@vger.kernel.org>, Deming Wang <wangdeming@inspur.com>
-Subject: [PATCH] virtio_ring:Delete unused parameters for vring_alloc_desc_extra
-Date:   Wed, 22 Jun 2022 06:31:20 -0400
-Message-ID: <20220622103120.2297-1-wangdeming@inspur.com>
-X-Mailer: git-send-email 2.31.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.200.104.82]
-tUid:   2022622183130c5d7720eeff8bed9b350ae9b7aa08bbd
-X-Abuse-Reports-To: service@corp-email.com
-Abuse-Reports-To: service@corp-email.com
-X-Complaints-To: service@corp-email.com
-X-Report-Abuse-To: service@corp-email.com
+        Wed, 22 Jun 2022 06:31:40 -0400
+Received: from smtpbg.qq.com (smtpbg139.qq.com [175.27.65.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3356E39BB1;
+        Wed, 22 Jun 2022 03:31:35 -0700 (PDT)
+X-QQ-mid: bizesmtp73t1655893825t62hbayc
+Received: from ubuntu.localdomain ( [223.104.103.173])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Wed, 22 Jun 2022 18:30:06 +0800 (CST)
+X-QQ-SSF: 01000000008000B0B000D00A0000000
+X-QQ-FEAT: g1CXZ3gRPwwxz7vTC89bMjrwpJ+Kws0Nuv//IChJHXCIkddCnxshejeaW/Sf7
+        zXqUaB+Y0MbgHmzKn5TggDUcLRwWcjrsO8Ol1TWDPuAuFP6Zt1plmEnzbt+vqg82RMlvagq
+        YW1YTNcgOjKDl/A7HaaWnk6O5E26PFLw9FJ+Dz43e2nzRpFZ2+UY9qGdSyOlzPHe1HS8E80
+        5VgI5nUTx3T8fNdvRNS0SuOdtZ7icETUTCvEsOWR54d0yrDYsOIgMYYFE0rSts6FHijb18S
+        1gyUGquLqxKcBLdGEOlJcm9/VCVw7ZwWxYY/Uy3ZXMZIKCb+rXIuql4aA5PGjg89LklCvR5
+        yZQiB2pcF/bFsz0kgoG4UZ8htP9TnypWDqs57gQ
+X-QQ-GoodBg: 0
+From:   Jiang Jian <jiangjian@cdjrlc.com>
+To:     gregkh@linuxfoundation.org, u.kleine-koenig@pengutronix.de
+Cc:     l.stelmach@samsung.com, stefan@datenfreihafen.org,
+        mkl@pengutronix.de, mark.tomlinson@alliedtelesis.co.nz,
+        mailhol.vincent@wanadoo.fr, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jiang Jian <jiangjian@cdjrlc.com>
+Subject: [PATCH] usb: max-3421: drop unexpected word "the" in the comments
+Date:   Wed, 22 Jun 2022 18:30:03 +0800
+Message-Id: <20220622103003.5420-1-jiangjian@cdjrlc.com>
+X-Mailer: git-send-email 2.17.1
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-So far, no use of vq has been found.We should delete it.
+there is an unexpected word "the" in the comments that need to be dropped
+file: ./drivers/usb/host/max3421-hcd.c
+line: 315
 
-Signed-off-by: Deming Wang <wangdeming@inspur.com>
+  * reasonable overview of how control transfers use the the IN/OUT
+
+changed to:
+
+  * reasonable overview of how control transfers use the IN/OUT
+
+Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
 ---
- drivers/virtio/virtio_ring.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/usb/host/max3421-hcd.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-index 13a7348cedff..d30f18cab86b 100644
---- a/drivers/virtio/virtio_ring.c
-+++ b/drivers/virtio/virtio_ring.c
-@@ -1617,8 +1617,7 @@ static void *virtqueue_detach_unused_buf_packed(struct virtqueue *_vq)
- 	return NULL;
- }
+diff --git a/drivers/usb/host/max3421-hcd.c b/drivers/usb/host/max3421-hcd.c
+index 502a3ac5e35b..352e3ac2b377 100644
+--- a/drivers/usb/host/max3421-hcd.c
++++ b/drivers/usb/host/max3421-hcd.c
+@@ -312,7 +312,7 @@ static const int hrsl_to_error[] = {
  
--static struct vring_desc_extra *vring_alloc_desc_extra(struct vring_virtqueue *vq,
--						       unsigned int num)
-+static struct vring_desc_extra *vring_alloc_desc_extra(unsigned int num)
- {
- 	struct vring_desc_extra *desc_extra;
- 	unsigned int i;
-@@ -1736,7 +1735,7 @@ static struct virtqueue *vring_create_virtqueue_packed(
- 	/* Put everything in free lists. */
- 	vq->free_head = 0;
- 
--	vq->packed.desc_extra = vring_alloc_desc_extra(vq, num);
-+	vq->packed.desc_extra = vring_alloc_desc_extra(num);
- 	if (!vq->packed.desc_extra)
- 		goto err_desc_extra;
- 
-@@ -2217,7 +2216,7 @@ struct virtqueue *__vring_new_virtqueue(unsigned int index,
- 	if (!vq->split.desc_state)
- 		goto err_state;
- 
--	vq->split.desc_extra = vring_alloc_desc_extra(vq, vring.num);
-+	vq->split.desc_extra = vring_alloc_desc_extra(vring.num);
- 	if (!vq->split.desc_extra)
- 		goto err_extra;
- 
+ /*
+  * See https://www.beyondlogic.org/usbnutshell/usb4.shtml#Control for a
+- * reasonable overview of how control transfers use the the IN/OUT
++ * reasonable overview of how control transfers use the IN/OUT
+  * tokens.
+  */
+ #define MAX3421_HXFR_BULK_IN(ep)	(0x00 | (ep))	/* bulk or interrupt */
 -- 
-2.27.0
+2.17.1
 
