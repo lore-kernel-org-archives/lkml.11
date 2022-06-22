@@ -2,119 +2,272 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1492CC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 15:06:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6435DCCA481
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 15:07:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359039AbiFVPGm (ORCPT
+        id S1358955AbiFVPHF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 11:06:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39930 "EHLO
+        Wed, 22 Jun 2022 11:07:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358938AbiFVPGj (ORCPT
+        with ESMTP id S1343920AbiFVPHD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 11:06:39 -0400
-Received: from EUR03-AM5-obe.outbound.protection.outlook.com (mail-oln040092070012.outbound.protection.outlook.com [40.92.70.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D8483EB9D
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 08:06:37 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=f2dV6eyiP+0KFbWa8RA93DGz7nkTwoI8jNBskmhX1Fd9r6rhQcrmnw3uo5ot1+2Hk1fwyFLFHmEQ+JknES+xRpjbnzkGCmXEXvWSXDaxSL1h+yYDbygUP8Ey87dZNMQ6S96zCVbhYQP0isYn6QtGxlrs1Iu3MYp2WNjVLnxaJ1RTCyzWclhoD6jMwJuSKQrhwpoEIAV3aHTcpfUQaczmQxkycxRdrX3lxsHcrvoY2EB2hEptT9i/WL8Vk1BftLTg6x5LvXVNgegKmrleHDbUGWGfWsEa7dKukuOahdtudh7j9QE7pl7AZ2x/uRq19BIcVSRx9vOh3/WJvBERRzidNw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Fn4sEBEiEWUhZ/vsdXprt4Jb9PFngHHWNz2hgFdKAWU=;
- b=Y30ZawHd5uDAHkGL/RZo0nzAq27hIURvBfV2bzT4uBTiNsScqq3Ol9KFnn657vkluOt0t0yOy4d7yF72hEA2Aoz11exHxSWEhCoVlkaXyEt9vJNN2F0oXeTqlcmUiJ464wwfhm9Fvp3IbhcsMvMYWtOIiDOne+xxPmkhSOqivTICGGcfg+JdjZ+W5GtqH8nVQaSFj5PnXep84h4kLn4wD17Zj8RmDseElmx/OKD3jc5xtf9QEXkoWAoJ/0yvknU0+FoIIZCR89Jkr4T2DK4YqegpppPfd0iKU1qhGxjpoJPw9rIoegaeY/t5M9SjmP4tnOm5G7Vv0BmmqtEnaWmyeQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Fn4sEBEiEWUhZ/vsdXprt4Jb9PFngHHWNz2hgFdKAWU=;
- b=VoeNr9vZ8kz7uDWBanE2AwYMcjeWIY7d9qt3yvbDT7JjWj/7lPoRc/0MJnMOG1dfrRioLqxFHDFT++fP8od+3TwXPrHMTcD9h6Tl/by79OBKPWVXWpUvn6dkPsb1Vgrt4pi0VV5HQnUcbCJt/JsJ50IKIXgJRyGDBaEQM88LH+maJAnv2CNwzjjH9ormlvS4SsEzw37ltE8XWy0A7fEUfDh77qT5Umnj9vy/YgxYwSBfZMq0A65rphlQK6oomeEOk14oRNyWIfttRiyiNPGOWGPmHUMQOzPRAkovxYyMtFJyp9htcphoScu8GvGAxmOSlZWNPuUpipsZqiMH/fsv+w==
-Received: from AM9P190MB1299.EURP190.PROD.OUTLOOK.COM (2603:10a6:20b:267::9)
- by PAXP190MB1504.EURP190.PROD.OUTLOOK.COM (2603:10a6:102:1c7::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.15; Wed, 22 Jun
- 2022 15:06:35 +0000
-Received: from AM9P190MB1299.EURP190.PROD.OUTLOOK.COM
- ([fe80::c0f4:a98e:332a:2397]) by AM9P190MB1299.EURP190.PROD.OUTLOOK.COM
- ([fe80::c0f4:a98e:332a:2397%5]) with mapi id 15.20.5353.022; Wed, 22 Jun 2022
- 15:06:35 +0000
-From:   Felix Schlepper <f3sch.git@outlook.com>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 0/3] Staging: rtl8192e: Safer allocation and cleaner error handling
-Date:   Wed, 22 Jun 2022 17:06:30 +0200
-Message-ID: <AM9P190MB1299BE496801C92B735967A2A5B29@AM9P190MB1299.EURP190.PROD.OUTLOOK.COM>
-X-Mailer: git-send-email 2.36.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-TMN:  [einGLq8+dg/h+EUQt8gCEe8SZTeYrUNl]
-X-ClientProxiedBy: AM6PR04CA0051.eurprd04.prod.outlook.com
- (2603:10a6:20b:f0::28) To AM9P190MB1299.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:20b:267::9)
-X-Microsoft-Original-Message-ID: <cover.1655909205.git.f3sch.git@outlook.com>
+        Wed, 22 Jun 2022 11:07:03 -0400
+Received: from smtp-fw-80006.amazon.com (smtp-fw-80006.amazon.com [99.78.197.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC0E53EA8C;
+        Wed, 22 Jun 2022 08:07:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.co.uk; i=@amazon.co.uk; q=dns/txt;
+  s=amazon201209; t=1655910424; x=1687446424;
+  h=from:to:cc:date:message-id:references:in-reply-to:
+   content-transfer-encoding:mime-version:subject;
+  bh=6G8WM8QiGLd5SwFwWo6GYeAz8Aw25bmCmGy/37elBWs=;
+  b=veZEm3AfW5+t615Ei3vJpI3TTW88KYnmSWyEErrs9Qk44p806trI/jxg
+   xihCqhSI3Tl0D8lTGa5xxLtTdDofJMD5CGE2HUNJr+3tBG5dco+m31Sc7
+   FsuwXpNzTdRHXm1MNmQHUQhV0MHgQX84ZiHlo4D08K9yI29r5G+mASWPG
+   o=;
+X-IronPort-AV: E=Sophos;i="5.92,212,1650931200"; 
+   d="scan'208";a="100716768"
+Subject: RE: [PATCH] KVM: x86/xen: Update Xen CPUID Leaf 4 (tsc info) sub-leaves,
+ if present
+Thread-Topic: [PATCH] KVM: x86/xen: Update Xen CPUID Leaf 4 (tsc info) sub-leaves,
+ if present
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1d-f20e0c8b.us-east-1.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP; 22 Jun 2022 15:01:55 +0000
+Received: from EX13D32EUC004.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1d-f20e0c8b.us-east-1.amazon.com (Postfix) with ESMTPS id 46C6C816F7;
+        Wed, 22 Jun 2022 15:01:50 +0000 (UTC)
+Received: from EX13D32EUC003.ant.amazon.com (10.43.164.24) by
+ EX13D32EUC004.ant.amazon.com (10.43.164.121) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.36; Wed, 22 Jun 2022 15:01:48 +0000
+Received: from EX13D32EUC003.ant.amazon.com ([10.43.164.24]) by
+ EX13D32EUC003.ant.amazon.com ([10.43.164.24]) with mapi id 15.00.1497.036;
+ Wed, 22 Jun 2022 15:01:49 +0000
+From:   "Durrant, Paul" <pdurrant@amazon.co.uk>
+To:     Sean Christopherson <seanjc@google.com>
+CC:     "x86@kernel.org" <x86@kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        "Vitaly Kuznetsov" <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        "Jim Mattson" <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        "Thomas Gleixner" <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        "Borislav Petkov" <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>
+Thread-Index: AQHYhhnGr94/Tz5Zr06wX+PVouePzq1bgNUAgAAEIQA=
+Date:   Wed, 22 Jun 2022 15:01:49 +0000
+Message-ID: <834f41a88e9f49b6b72d9d3672d702e5@EX13D32EUC003.ant.amazon.com>
+References: <20220622092202.15548-1-pdurrant@amazon.com>
+ <YrMqtHzNSean+qkh@google.com>
+In-Reply-To: <YrMqtHzNSean+qkh@google.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.43.165.13]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1585eee6-83b4-4bda-8758-08da5460cc9d
-X-MS-TrafficTypeDiagnostic: PAXP190MB1504:EE_
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Jdk9e3P2zGIwauovSBPhlVLGx366WawxW+3MfO2mPP7+3jmzw3wVvzMwhgk9iFH8LAB+qtGeuH4rV4x0suoCL1nPrv3bUXG3rODLziRB6zViXWt8wMkSTUsFSBbi3q4ZWW+2lLzgRTtY/dc1ax7bo1QccWSwz5liWf4b5PCSmhN45deOg1edtFXIIVyqPGF9H9kJ2+sDIjqJPkx6Yvety+xGFOXjYhy0Ua7bYnFQENS0aElaU1bLeEa7eVTIEvWHspe+ITniWt6vS15jssy0Nrei18BxfnHmDTh+EuTi80ohPKY1BcWwgnnUta7igdbvi+Xd1IvsqUyihTcUkJlNMGT1LrwC9UKtLiu01zi2BHon5kcc2qx/gM0b4CRJW2bQtlgn+lPeUCBChUTFZels8GH5zM3uJDriPTQkKXp0i0u3PafggCGcvyoLPEoo1NzVzv7HV+L4N/iuFhSLZjWLMvC8Nzc6Fy7wgVWrQHjsyI8+xKG8IC2CHySirlJf4EcxEb+5gUT4IBb/NNKPdO9a8+80lae7PukiXmrtXp5Bg3XJZU+DX5nUj72YVycHk0jPLVT0ozEJC7atSif0xlUT7wOT/HQJdSDRW4XjaFByScqd/64RDqz2lH/6GlpWatWYVcGMCXnx3rIvp4ImLjYvpg==
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Mez89Z3aJyUK6bqn8/6tVqp6Ilf8QFcfM3u69CgEjdImWa3Kapb1AA58Wk+n?=
- =?us-ascii?Q?7wZavfF91RDavOYfma6ZweetALOf6pxxNBGL9x8DTSez8j3A2yarHmChEqEK?=
- =?us-ascii?Q?gQu5KA6cAV4Xw7ETht2yGrqvup3/K4D4DNx1ZE7bKPiYFxSm18rULeCfF0/E?=
- =?us-ascii?Q?p+6lxKVTmfFEVoGRXUGTbJ/UPrncgud1vzy31y3hk7P/UEM5oVDEuCRrKjZ1?=
- =?us-ascii?Q?szD282HTZzLGt0X3bn/1AKCgz2O+CdMBkLZJS4YO+F+YR7H02INiHGGvI8Sz?=
- =?us-ascii?Q?0YXdbgNTl249JLUdxJGFKJD6UOlwG4KRiXacDTOk4Rp1x49gNso8NumYqUEO?=
- =?us-ascii?Q?Ioolx6R9PTBKhbg9e6XnzP8KysfhoFTVcZqrQpwaJOH4td2W+6pIXNEQFR/O?=
- =?us-ascii?Q?utp3GrFceQFicEGV4rJzpsqz6QjLq6VeVikFLYXuetLTQfQcCERDw6n6L3W1?=
- =?us-ascii?Q?6kdl1hiKRe2uyG80z3myBfM2eAiAS6uQK+yPjhW3nTfEa4tMKhOswgMVgPN6?=
- =?us-ascii?Q?8HV1JT3VM4PdF5x3/HZAbi/eor4iNdfPjEs3UDi68xy0f4Y24NGf9ELUTD52?=
- =?us-ascii?Q?jiLmJTH1CswYUOgNyXmfYxuwPp+z/YLPMZfA4J65Kxheuty5EV2+DBYer+XM?=
- =?us-ascii?Q?lovMPhj7MaasofKMI/cO8Kr8pAKVCjCxXpo6vr+GLIT+H6q1GMV2ICuIt3oG?=
- =?us-ascii?Q?xMgizDslDgB60SopG7QrWyh0+13kItMQfZu7H2MVFcQak7yuX+qIatQ96Ao0?=
- =?us-ascii?Q?DpsUDBeyk21V2SZUDqUsSCd1d4zUimMVUR755bvpibZnb0ARvzd+hmf/vbem?=
- =?us-ascii?Q?IZWRN9TIXuVp7zcJ6saxFisXtFm6UYCWYDk476OU3KeUdg3YZEAQJtx6tTGZ?=
- =?us-ascii?Q?Kx1NU2BEcyHc+ulvJ2oUWqUBYGg4Ovc4MdWS5IUJrblMBD3blHs8Yrn1TrLp?=
- =?us-ascii?Q?awp2J+lw4F28d4PrGirgpJ7smHx289xU4x+aTS42+LaEAnMXKfo1tLQNs9sJ?=
- =?us-ascii?Q?QOKYlviKQZXb7QYpR9bLHjQnq3/IbimQh60R3sjUsZF90wHIVCkdbZ9r5DVN?=
- =?us-ascii?Q?pbA7eYhudmo3Eyir5qJjf+21BTvgY7ruQTKWk97ziugf09lF4gejvPCV1Idk?=
- =?us-ascii?Q?7Ucgpssx1NmSy6nEjqNeDgDhLdZlTOxjNhchwelLvE/C1Y7psYrgD3wL7AsG?=
- =?us-ascii?Q?pD4wBnbict/gQ7F1yisiTrbJ+8ExRBzKPi9gASzRhY/SvKtNhxA9noYql06f?=
- =?us-ascii?Q?j4IWi3x2GiX2Jgp9MFHCO7OI30CeTUAK5B7f4unIeZPAdIDyZpiNThmO3BDO?=
- =?us-ascii?Q?lo5i9Rg+JKpS6NqVZcqZ2UY0DwsDHLEqE4+njEf4Gdr8FRz6twl+Bnxx1Dbo?=
- =?us-ascii?Q?LIi46B33a9VFHCyw2DWHXd/DPkKL2X/WiSfjoGgAMCVPNzF1nsY2QzXclPMO?=
- =?us-ascii?Q?lJEriifCzyU=3D?=
-X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1585eee6-83b4-4bda-8758-08da5460cc9d
-X-MS-Exchange-CrossTenant-AuthSource: AM9P190MB1299.EURP190.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jun 2022 15:06:35.5003
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXP190MB1504
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-v2:
-  - replaced kmalloc with kzalloc against memory initialization defects,
-    thus also removing a memset
-  - made error handling more consistent
+> -----Original Message-----
+> From: Sean Christopherson <seanjc@google.com>
+> Sent: 22 June 2022 15:44
+> To: Durrant, Paul <pdurrant@amazon.co.uk>
+> Cc: x86@kernel.org; kvm@vger.kernel.org; linux-kernel@vger.kernel.org; Pa=
+olo Bonzini
+> <pbonzini@redhat.com>; Vitaly Kuznetsov <vkuznets@redhat.com>; Wanpeng Li=
+ <wanpengli@tencent.com>; Jim
+> Mattson <jmattson@google.com>; Joerg Roedel <joro@8bytes.org>; Thomas Gle=
+ixner <tglx@linutronix.de>;
+> Ingo Molnar <mingo@redhat.com>; Borislav Petkov <bp@alien8.de>; Dave Hans=
+en
+> <dave.hansen@linux.intel.com>; H. Peter Anvin <hpa@zytor.com>
+> Subject: RE: [EXTERNAL][PATCH] KVM: x86/xen: Update Xen CPUID Leaf 4 (tsc=
+ info) sub-leaves, if present
+>=20
+> CAUTION: This email originated from outside of the organization. Do not c=
+lick links or open
+> attachments unless you can confirm the sender and know the content is saf=
+e.
+>=20
+>=20
+>=20
+> On Wed, Jun 22, 2022, Paul Durrant wrote:
+> > The scaling information in sub-leaf 1 should match the values in the
+> > 'vcpu_info' sub-structure 'time_info' (a.k.a. pvclock_vcpu_time_info) w=
+hich
+> > is shared with the guest. The offset values are not set since a TSC off=
+set
+> > is already applied.
+> > The host TSC frequency should also be set in sub-leaf 2.
+>=20
+> Explain why this is KVM's problem, i.e. why userspace is unable to set th=
+e correct
+> values.
 
-v3:
-  - Split into smaller commits so that it's easier to review
+Ok, I'll explain that there is no interface for the VMM to acquire the time=
+_info.
 
-Felix Schlepper (3):
-  Staging: rtl8192e: Use struct_size
-  Staging: rtl8192e: Using kzalloc and delete memset
-  Staging: rtl8192e: Cleaning up error handling
+>=20
+> > This patch adds a new kvm_xen_set_cpuid() function that scans for the
+>=20
+> Please avoid "This patch".
+>=20
+> > relevant CPUID leaf when the CPUID information is updated by the VMM an=
+d
+> > stashes pointers to the sub-leaves in the kvm_vcpu_xen structure.
+> > The values are then updated by a call to the, also new,
+> > kvm_xen_setup_tsc_info() function made at the end of
+> > kvm_guest_time_update() just before entering the guest.
+>=20
+> This is not a helpful paragraph, it provides zero information that isn't =
+obvious
+> from the code.
+>=20
+> The changelog should read something like:
+>=20
+>   Update Xen CPUID leaves that expose TSC frequency and scaling informati=
+on
+>   to the guest <blah blah blah>.  Cache the leaves <blah blah blah>.
+>=20
 
- drivers/staging/rtl8192e/rtllib_tx.c | 23 ++++++++++-------------
- 1 file changed, 10 insertions(+), 13 deletions(-)
+Ok, sure.
 
---
-2.36.1
+  Paul
+
+> > Signed-off-by: Paul Durrant <pdurrant@amazon.com>
+> > ---
+> >  arch/x86/include/asm/kvm_host.h |  2 ++
+> >  arch/x86/kvm/cpuid.c            |  2 ++
+> >  arch/x86/kvm/x86.c              |  1 +
+> >  arch/x86/kvm/xen.c              | 41 +++++++++++++++++++++++++++++++++
+> >  arch/x86/kvm/xen.h              | 10 ++++++++
+> >  5 files changed, 56 insertions(+)
+> >
+> > diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm=
+_host.h
+> > index 1038ccb7056a..f77a4940542f 100644
+> > --- a/arch/x86/include/asm/kvm_host.h
+> > +++ b/arch/x86/include/asm/kvm_host.h
+> > @@ -638,6 +638,8 @@ struct kvm_vcpu_xen {
+> >       struct hrtimer timer;
+> >       int poll_evtchn;
+> >       struct timer_list poll_timer;
+> > +     struct kvm_cpuid_entry2 *tsc_info_1;
+> > +     struct kvm_cpuid_entry2 *tsc_info_2;
+> >  };
+> >
+> >  struct kvm_vcpu_arch {
+> > diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
+> > index d47222ab8e6e..eb6cd88c974a 100644
+> > --- a/arch/x86/kvm/cpuid.c
+> > +++ b/arch/x86/kvm/cpuid.c
+> > @@ -25,6 +25,7 @@
+> >  #include "mmu.h"
+> >  #include "trace.h"
+> >  #include "pmu.h"
+> > +#include "xen.h"
+> >
+> >  /*
+> >   * Unlike "struct cpuinfo_x86.x86_capability", kvm_cpu_caps doesn't ne=
+ed to be
+> > @@ -310,6 +311,7 @@ static void kvm_vcpu_after_set_cpuid(struct kvm_vcp=
+u *vcpu)
+> >           __cr4_reserved_bits(guest_cpuid_has, vcpu);
+> >
+> >       kvm_hv_set_cpuid(vcpu);
+> > +     kvm_xen_set_cpuid(vcpu);
+> >
+> >       /* Invoke the vendor callback only after the above state is updat=
+ed. */
+> >       static_call(kvm_x86_vcpu_after_set_cpuid)(vcpu);
+> > diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> > index 00e23dc518e0..8b45f9975e45 100644
+> > --- a/arch/x86/kvm/x86.c
+> > +++ b/arch/x86/kvm/x86.c
+> > @@ -3123,6 +3123,7 @@ static int kvm_guest_time_update(struct kvm_vcpu =
+*v)
+> >       if (vcpu->xen.vcpu_time_info_cache.active)
+> >               kvm_setup_guest_pvclock(v, &vcpu->xen.vcpu_time_info_cach=
+e, 0);
+> >       kvm_hv_setup_tsc_page(v->kvm, &vcpu->hv_clock);
+> > +     kvm_xen_setup_tsc_info(v);
+>=20
+> This can be called inside this if statement, no?
+>=20
+>         if (unlikely(vcpu->hw_tsc_khz !=3D tgt_tsc_khz)) {
+>=20
+>         }
+>=20
+> >       return 0;
+> >  }
+> >
+> > diff --git a/arch/x86/kvm/xen.c b/arch/x86/kvm/xen.c
+> > index 610beba35907..a016ff85264d 100644
+> > --- a/arch/x86/kvm/xen.c
+> > +++ b/arch/x86/kvm/xen.c
+> > @@ -10,6 +10,9 @@
+> >  #include "xen.h"
+> >  #include "hyperv.h"
+> >  #include "lapic.h"
+> > +#include "cpuid.h"
+> > +
+> > +#include <asm/xen/cpuid.h>
+> >
+> >  #include <linux/eventfd.h>
+> >  #include <linux/kvm_host.h>
+> > @@ -1855,3 +1858,41 @@ void kvm_xen_destroy_vm(struct kvm *kvm)
+> >       if (kvm->arch.xen_hvm_config.msr)
+> >               static_branch_slow_dec_deferred(&kvm_xen_enabled);
+> >  }
+> > +
+> > +void kvm_xen_set_cpuid(struct kvm_vcpu *vcpu)
+>=20
+> This is a very, very misleading name.  It does not "set" anything.  Given=
+ that
+> this patch adds "set" and "setup", I expected the "set" to you know, set =
+the CPUID
+> leaves and the "setup" to prepar for that, not the other way around.
+>=20
+> If the leaves really do need to be cached, kvm_xen_after_set_cpuid() is p=
+robably
+> the least awful name.
+>=20
+> > +{
+> > +     u32 base =3D 0;
+> > +     u32 function;
+> > +
+> > +     for_each_possible_hypervisor_cpuid_base(function) {
+> > +             struct kvm_cpuid_entry2 *entry =3D kvm_find_cpuid_entry(v=
+cpu, function, 0);
+> > +
+> > +             if (entry &&
+> > +                 entry->ebx =3D=3D XEN_CPUID_SIGNATURE_EBX &&
+> > +                 entry->ecx =3D=3D XEN_CPUID_SIGNATURE_ECX &&
+> > +                 entry->edx =3D=3D XEN_CPUID_SIGNATURE_EDX) {
+> > +                     base =3D function;
+> > +                     break;
+> > +             }
+> > +     }
+> > +     if (!base)
+> > +             return;
+> > +
+> > +     function =3D base | XEN_CPUID_LEAF(3);
+> > +     vcpu->arch.xen.tsc_info_1 =3D kvm_find_cpuid_entry(vcpu, function=
+, 1);
+> > +     vcpu->arch.xen.tsc_info_2 =3D kvm_find_cpuid_entry(vcpu, function=
+, 2);
+>=20
+> Is it really necessary to cache the leave?  Guest CPUID isn't optimized, =
+but it's
+> not _that_ slow, and unless I'm missing something updating the TSC freque=
+ncy and
+> scaling info should be uncommon, i.e. not performance critical.
