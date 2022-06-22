@@ -2,72 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE4E5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 12:17:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B41BC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 12:17:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235905AbiFVMQ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 08:16:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53286 "EHLO
+        id S236113AbiFVMRH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 08:17:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243716AbiFVMQp (ORCPT
+        with ESMTP id S235799AbiFVMQ4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 08:16:45 -0400
-Received: from smtpbg.qq.com (smtpbg139.qq.com [175.27.65.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 991383D482
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 05:16:37 -0700 (PDT)
-X-QQ-mid: bizesmtp80t1655900185tjv9mfxl
-Received: from ubuntu.localdomain ( [223.104.103.173])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 22 Jun 2022 20:16:21 +0800 (CST)
-X-QQ-SSF: 01000000008000B0B000B00A0000000
-X-QQ-FEAT: ZHWZeLXy+8eNRc6LoVbd8diuEGcYexDvpPzXtcbLFF5CF2z03xtRuZyndWyz4
-        oyvWu7GZ0JEPtFyn2kMI/3K061US4zBX6B1Ul+J+qQ/He3n6ZwOPn/2GddDHa9gGb9aNp9b
-        sn9cXopr1iLpDFbdC0ixcsYOhhqVJ6j2y7JS7uZKnEy+/nAgwYm7jqvW/ulcAGz/KhD9zuk
-        bD/3Mp3wmGTp4179mEAj1wKe/EWLgm8ThwViPcWcrvpJC/XO/WNcLom6JMxI2/mBx7TS+be
-        Uvpn6JCSSfAcNxCEZr+gEgg3CcPgxQ+8kFbSG9p6izMDvIad4+TrYpi8V/fZaeKJj5k3sSM
-        VjF3wKMWA99CHAT7/6uh3Jkz42d/Q==
-X-QQ-GoodBg: 0
-From:   Jiang Jian <jiangjian@cdjrlc.com>
-To:     mpe@ellerman.id.au
-Cc:     benh@kernel.crashing.org, paulus@samba.org, jiangjian@cdjrlc.com,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] powerpc/ptrace: drop unexpected word 'and' in the comments
-Date:   Wed, 22 Jun 2022 20:16:16 +0800
-Message-Id: <20220622121616.16243-1-jiangjian@cdjrlc.com>
-X-Mailer: git-send-email 2.17.1
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam6
+        Wed, 22 Jun 2022 08:16:56 -0400
+Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [217.70.178.231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DF88340C6;
+        Wed, 22 Jun 2022 05:16:53 -0700 (PDT)
+Received: (Authenticated sender: peter@korsgaard.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 5FCDB10000A;
+        Wed, 22 Jun 2022 12:16:47 +0000 (UTC)
+Received: from peko by dell.be.48ers.dk with local (Exim 4.94.2)
+        (envelope-from <peter@korsgaard.com>)
+        id 1o3zHr-0099t6-5Y; Wed, 22 Jun 2022 14:16:47 +0200
+From:   Peter Korsgaard <peter@korsgaard.com>
+To:     Nava kishore Manne <nava.manne@xilinx.com>
+Cc:     <michal.simek@xilinx.com>, <hao.wu@intel.com>, <trix@redhat.com>,
+        <mdf@kernel.org>, <yilun.xu@intel.com>,
+        <gregkh@linuxfoundation.org>, <ronak.jain@xilinx.com>,
+        <rajan.vaja@xilinx.com>, <abhyuday.godhasara@xilinx.com>,
+        <piyush.mehta@xilinx.com>, <harsha.harsha@xilinx.com>,
+        <lakshmi.sai.krishna.potthuri@xilinx.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-fpga@vger.kernel.org>,
+        <git@xilinx.com>
+Subject: Re: [PATCH v2 3/3] fpga: zynqmp-fpga: Adds status interface
+References: <20220621092833.1057408-1-nava.manne@xilinx.com>
+        <20220621092833.1057408-4-nava.manne@xilinx.com>
+Date:   Wed, 22 Jun 2022 14:16:47 +0200
+In-Reply-To: <20220621092833.1057408-4-nava.manne@xilinx.com> (Nava kishore
+        Manne's message of "Tue, 21 Jun 2022 14:58:33 +0530")
+Message-ID: <87edzg51w0.fsf@dell.be.48ers.dk>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+MIME-Version: 1.0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-there is an unexpected word 'and' in the comments that need to be dropped
+>>>>> "Nava" == Nava kishore Manne <nava.manne@xilinx.com> writes:
 
-file & line:
-arch/powerpc/kernel/ptrace/ptrace-vsx.c:74:
+ > Adds status interface for zynqmp-fpga, It's a read only
+ > interface which allows the user to get the PL status.
 
-* Currently to set and and get all the vsx state, you need to call
-changed to:
-* Currently to set and get all the vsx state, you need to call
+ > Usage:
+ > To read the PL configuration status
+ >         cat /sys/class/fpga_manager/<fpga>/status
 
-Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
----
- arch/powerpc/kernel/ptrace/ptrace-vsx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ > Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
+ > ---
+ > Changes for v2:
+ >               - Updated status messages handling logic as suggested by Xu Yilun.
 
-diff --git a/arch/powerpc/kernel/ptrace/ptrace-vsx.c b/arch/powerpc/kernel/ptrace/ptrace-vsx.c
-index 1da4303128ef..7df08004c47d 100644
---- a/arch/powerpc/kernel/ptrace/ptrace-vsx.c
-+++ b/arch/powerpc/kernel/ptrace/ptrace-vsx.c
-@@ -71,7 +71,7 @@ int fpr_set(struct task_struct *target, const struct user_regset *regset,
- }
+ >  drivers/fpga/zynqmp-fpga.c | 53 ++++++++++++++++++++++++++++++++++++++
+ >  1 file changed, 53 insertions(+)
+
+ > diff --git a/drivers/fpga/zynqmp-fpga.c b/drivers/fpga/zynqmp-fpga.c
+ > index c60f20949c47..e194bba91d3f 100644
+ > --- a/drivers/fpga/zynqmp-fpga.c
+ > +++ b/drivers/fpga/zynqmp-fpga.c
+ > @@ -14,6 +14,19 @@
  
- /*
-- * Currently to set and and get all the vsx state, you need to call
-+ * Currently to set and get all the vsx state, you need to call
-  * the fp and VMX calls as well.  This only get/sets the lower 32
-  * 128bit VSX registers.
-  */
--- 
-2.17.1
+ >  /* Constant Definitions */
+ >  #define IXR_FPGA_DONE_MASK	BIT(3)
+ > +#define READ_DMA_SIZE		256U
+ > +
+ > +/* Error Register */
+ > +#define IXR_FPGA_ERR_CRC_ERR		BIT(0)
+ > +#define IXR_FPGA_ERR_SECURITY_ERR	BIT(16)
+ > +
+ > +/* Signal Status Register. For details refer ug570 */
+ > +#define IXR_FPGA_END_OF_STARTUP		BIT(4)
+ > +#define IXR_FPGA_GST_CFG_B		BIT(5)
+ > +#define IXR_FPGA_INIT_B_INTERNAL	BIT(11)
+ > +#define IXR_FPGA_DONE_INTERNAL_SIGNAL	BIT(13)
+ > +
+ > +#define IXR_FPGA_CONFIG_STAT_OFFSET	7U
+ 
+ >  /**
+ >   * struct zynqmp_fpga_priv - Private data structure
+ > @@ -77,8 +90,48 @@ static enum fpga_mgr_states zynqmp_fpga_ops_state(struct fpga_manager *mgr)
+ >  	return FPGA_MGR_STATE_UNKNOWN;
+ >  }
+ 
+ > +static ssize_t zynqmp_fpga_ops_status(struct fpga_manager *mgr, char *buf)
+ > +{
+ > +	unsigned int *kbuf, reg_val;
+ > +	dma_addr_t dma_addr;
+ > +	ssize_t len = 0;
+ > +	int ret;
+ > +
+ > +	kbuf = dma_alloc_coherent(mgr->dev.parent, READ_DMA_SIZE,
+ > +				  &dma_addr, GFP_KERNEL);
+ > +	if (!kbuf)
+ > +		return -ENOMEM;
 
+What is kbuf used for? You don't seem to ever access it?
+
+-- 
+Bye, Peter Korsgaard
