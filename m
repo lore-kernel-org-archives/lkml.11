@@ -2,177 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A3CAC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 08:52:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC2BECCA47D
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 08:53:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355501AbiFVIwK (ORCPT
+        id S1355896AbiFVIxr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 04:52:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48610 "EHLO
+        Wed, 22 Jun 2022 04:53:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231873AbiFVIwI (ORCPT
+        with ESMTP id S1355561AbiFVIx1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 04:52:08 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A5D1393E5
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 01:52:07 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <l.stach@pengutronix.de>)
-        id 1o3w5l-00019i-PF; Wed, 22 Jun 2022 10:52:05 +0200
-Message-ID: <ee89fef24afc2b740aa126d734cd382d3d3f9c92.camel@pengutronix.de>
-Subject: Re: [PATCH] drm/etnaviv: print offender task information on
- hangcheck recovery
-From:   Lucas Stach <l.stach@pengutronix.de>
-To:     Christian Gmeiner <christian.gmeiner@gmail.com>,
-        linux-kernel@vger.kernel.org
-Cc:     David Airlie <airlied@linux.ie>,
-        "moderated list:DRM DRIVERS FOR VIVANTE GPU IP" 
-        <etnaviv@lists.freedesktop.org>,
-        "open list:DRM DRIVERS FOR VIVANTE GPU IP" 
-        <dri-devel@lists.freedesktop.org>, Daniel Vetter <daniel@ffwll.ch>,
-        Russell King <linux+etnaviv@armlinux.org.uk>
-Date:   Wed, 22 Jun 2022 10:52:04 +0200
-In-Reply-To: <20220603123706.678320-1-christian.gmeiner@gmail.com>
-References: <20220603123706.678320-1-christian.gmeiner@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
+        Wed, 22 Jun 2022 04:53:27 -0400
+Received: from mail-pj1-f66.google.com (mail-pj1-f66.google.com [209.85.216.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7985C31340;
+        Wed, 22 Jun 2022 01:53:27 -0700 (PDT)
+Received: by mail-pj1-f66.google.com with SMTP id go6so10592760pjb.0;
+        Wed, 22 Jun 2022 01:53:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2r2ZFcponVjH8EtFELgTwaVJcACpqBslCVvaRP6ArR8=;
+        b=c0buO3tXw2JqV+1jcfSMpcVFhozul/2CDEilKuO7vk+H4SENOSVqx7x3MQwBh1sYig
+         ayNyzbENvoO4sQVr6OXr5ia+KVR940+Rn7kGwjoRbsFvVhTocML/lNqoe80bkwacipOw
+         moT47KUKPSkajxdGJQSAi+PMN8g3HA4YLwHnQwnC2KH+ADut4qr1gk2yDTtDUOKmguVU
+         V4BMFyiVPBoZTJF1S+DzXtb/hMWWLiZsr/JUjmPzIyA8dEY/x1Ow/fSayWJkbROLLZjt
+         sEyF4+ER4FiKU1wN2b35BE+EPiiq/NcFWpZObmLcIrgAs+7GhYWdGNNfFdvIEPl2SKLC
+         DzXw==
+X-Gm-Message-State: AJIora9TGAno3UaEn9riyNo7+7hGLrS1Ag22g7ZlC3rnfl5LdVy4Zyk5
+        MaXwS5ZoWPDRcMHGoVdaqim68FrNjsGDcnI=
+X-Google-Smtp-Source: AGRyM1sAtgNHod1ODfWmeutcYo0td+h6hnidzgu+xq3pV8y4rST6tRmK0NBoNbncbyu7lFc4Q8U0dw==
+X-Received: by 2002:a17:902:d542:b0:16a:5016:7a18 with SMTP id z2-20020a170902d54200b0016a50167a18mr389410plf.94.1655888007025;
+        Wed, 22 Jun 2022 01:53:27 -0700 (PDT)
+Received: from localhost.localdomain ([156.146.53.107])
+        by smtp.gmail.com with ESMTPSA id p6-20020a62d006000000b0051b9a2d639dsm3464820pfg.43.2022.06.22.01.53.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jun 2022 01:53:26 -0700 (PDT)
+From:   sunliming <sunliming@kylinos.cn>
+To:     viro@zeniv.linux.org.uk
+Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        sunliming@kylinos.cn, kelulanainsley@gmail.com
+Subject: [PATCH] walk_component(): get inode in lookup_slow branch statement block
+Date:   Wed, 22 Jun 2022 16:53:17 +0800
+Message-Id: <20220622085317.444720-1-sunliming@kylinos.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: l.stach@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Christian,
+The inode variable is used as a parameter by the step_into function,
+but is not assigned a value in the sub-lookup_slow branch path. So
+get the inode in the sub-lookup_slow branch path.
 
-Am Freitag, dem 03.06.2022 um 14:37 +0200 schrieb Christian Gmeiner:
-> Track the pid per submit, so we can print the name and cmdline of
-> the task which submitted the batch that caused the gpu to hang.
-> 
-I really like the idea. I think the pid handling could be integrated
-into the scheduler, so we don't have to carry it on each submit, but
-not requesting any changes right now. I'm leaning toward taking this
-patch as-is and doing the scheduler integration as a second step.
+Signed-off-by: sunliming <sunliming@kylinos.cn>
+---
+ fs/namei.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Regards,
-Lucas
-
-> Signed-off-by: Christian Gmeiner <christian.gmeiner@gmail.com>
-> ---
->  drivers/gpu/drm/etnaviv/etnaviv_gem.h        |  1 +
->  drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c |  6 ++++++
->  drivers/gpu/drm/etnaviv/etnaviv_gpu.c        | 18 +++++++++++++++++-
->  drivers/gpu/drm/etnaviv/etnaviv_gpu.h        |  2 +-
->  drivers/gpu/drm/etnaviv/etnaviv_sched.c      |  2 +-
->  5 files changed, 26 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/etnaviv/etnaviv_gem.h b/drivers/gpu/drm/etnaviv/etnaviv_gem.h
-> index 63688e6e4580..baa81cbf701a 100644
-> --- a/drivers/gpu/drm/etnaviv/etnaviv_gem.h
-> +++ b/drivers/gpu/drm/etnaviv/etnaviv_gem.h
-> @@ -96,6 +96,7 @@ struct etnaviv_gem_submit {
->  	int out_fence_id;
->  	struct list_head node; /* GPU active submit list */
->  	struct etnaviv_cmdbuf cmdbuf;
-> +	struct pid *pid;       /* submitting process */
->  	bool runtime_resumed;
->  	u32 exec_state;
->  	u32 flags;
-> diff --git a/drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c b/drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c
-> index 1ac916b24891..1491159d0d20 100644
-> --- a/drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c
-> +++ b/drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c
-> @@ -399,6 +399,9 @@ static void submit_cleanup(struct kref *kref)
->  		mutex_unlock(&submit->gpu->fence_lock);
->  		dma_fence_put(submit->out_fence);
->  	}
-> +
-> +	put_pid(submit->pid);
-> +
->  	kfree(submit->pmrs);
->  	kfree(submit);
->  }
-> @@ -422,6 +425,7 @@ int etnaviv_ioctl_gem_submit(struct drm_device *dev, void *data,
->  	struct sync_file *sync_file = NULL;
->  	struct ww_acquire_ctx ticket;
->  	int out_fence_fd = -1;
-> +	struct pid *pid = get_pid(task_pid(current));
->  	void *stream;
->  	int ret;
->  
-> @@ -519,6 +523,8 @@ int etnaviv_ioctl_gem_submit(struct drm_device *dev, void *data,
->  		goto err_submit_ww_acquire;
->  	}
->  
-> +	submit->pid = pid;
-> +
->  	ret = etnaviv_cmdbuf_init(priv->cmdbuf_suballoc, &submit->cmdbuf,
->  				  ALIGN(args->stream_size, 8) + 8);
->  	if (ret)
-> diff --git a/drivers/gpu/drm/etnaviv/etnaviv_gpu.c b/drivers/gpu/drm/etnaviv/etnaviv_gpu.c
-> index 37018bc55810..7d9bf4673e2d 100644
-> --- a/drivers/gpu/drm/etnaviv/etnaviv_gpu.c
-> +++ b/drivers/gpu/drm/etnaviv/etnaviv_gpu.c
-> @@ -1045,12 +1045,28 @@ int etnaviv_gpu_debugfs(struct etnaviv_gpu *gpu, struct seq_file *m)
->  }
->  #endif
->  
-> -void etnaviv_gpu_recover_hang(struct etnaviv_gpu *gpu)
-> +void etnaviv_gpu_recover_hang(struct etnaviv_gem_submit *submit)
->  {
-> +	struct etnaviv_gpu *gpu = submit->gpu;
-> +	char *comm = NULL, *cmd = NULL;
-> +	struct task_struct *task;
->  	unsigned int i;
->  
->  	dev_err(gpu->dev, "recover hung GPU!\n");
->  
-> +	task = get_pid_task(submit->pid, PIDTYPE_PID);
-> +	if (task) {
-> +		comm = kstrdup(task->comm, GFP_KERNEL);
-> +		cmd = kstrdup_quotable_cmdline(task, GFP_KERNEL);
-> +		put_task_struct(task);
-> +	}
-> +
-> +	if (comm && cmd)
-> +		dev_err(gpu->dev, "offending task: %s (%s)\n", comm, cmd);
-> +
-> +	kfree(cmd);
-> +	kfree(comm);
-> +
->  	if (pm_runtime_get_sync(gpu->dev) < 0)
->  		goto pm_put;
->  
-> diff --git a/drivers/gpu/drm/etnaviv/etnaviv_gpu.h b/drivers/gpu/drm/etnaviv/etnaviv_gpu.h
-> index 85eddd492774..b3a0941d56fd 100644
-> --- a/drivers/gpu/drm/etnaviv/etnaviv_gpu.h
-> +++ b/drivers/gpu/drm/etnaviv/etnaviv_gpu.h
-> @@ -168,7 +168,7 @@ bool etnaviv_fill_identity_from_hwdb(struct etnaviv_gpu *gpu);
->  int etnaviv_gpu_debugfs(struct etnaviv_gpu *gpu, struct seq_file *m);
->  #endif
->  
-> -void etnaviv_gpu_recover_hang(struct etnaviv_gpu *gpu);
-> +void etnaviv_gpu_recover_hang(struct etnaviv_gem_submit *submit);
->  void etnaviv_gpu_retire(struct etnaviv_gpu *gpu);
->  int etnaviv_gpu_wait_fence_interruptible(struct etnaviv_gpu *gpu,
->  	u32 fence, struct drm_etnaviv_timespec *timeout);
-> diff --git a/drivers/gpu/drm/etnaviv/etnaviv_sched.c b/drivers/gpu/drm/etnaviv/etnaviv_sched.c
-> index 72e2553fbc98..d29f467eee13 100644
-> --- a/drivers/gpu/drm/etnaviv/etnaviv_sched.c
-> +++ b/drivers/gpu/drm/etnaviv/etnaviv_sched.c
-> @@ -67,7 +67,7 @@ static enum drm_gpu_sched_stat etnaviv_sched_timedout_job(struct drm_sched_job
->  
->  	/* get the GPU back into the init state */
->  	etnaviv_core_dump(submit);
-> -	etnaviv_gpu_recover_hang(gpu);
-> +	etnaviv_gpu_recover_hang(submit);
->  
->  	drm_sched_resubmit_jobs(&gpu->sched);
->  
-
+diff --git a/fs/namei.c b/fs/namei.c
+index 1f28d3f463c3..a1a3e9514f46 100644
+--- a/fs/namei.c
++++ b/fs/namei.c
+@@ -2014,6 +2014,8 @@ static const char *walk_component(struct nameidata *nd, int flags)
+ 		dentry = lookup_slow(&nd->last, nd->path.dentry, nd->flags);
+ 		if (IS_ERR(dentry))
+ 			return ERR_CAST(dentry);
++
++		inode = d_backing_inode(dentry);
+ 	}
+ 	if (!(flags & WALK_MORE) && nd->depth)
+ 		put_link(nd);
+-- 
+2.25.1
 
