@@ -2,128 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5190AC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 17:17:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 720D0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 17:17:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377313AbiFVRRC (ORCPT
+        id S1358862AbiFVRR4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 13:17:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55054 "EHLO
+        Wed, 22 Jun 2022 13:17:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377306AbiFVRQ6 (ORCPT
+        with ESMTP id S1358735AbiFVRRx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 13:16:58 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41C5F1159
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 10:16:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655918217; x=1687454217;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=n4yhqG+LU29ooFZAPH5woGAXIo4qRtzL2wSTnLiPG0Y=;
-  b=cFKUuahKMmd45WZIVqmnXVadZoCzycgauZsryIHEvntWxBC8q2UI+dQB
-   a7eJw4akmQ6zDWijXNex0aBF2bW6rgWwtmno3NCA2NG9Iv0m/MsiNh/xF
-   A+ui0vimkZsRqT7dSXWRciIJO7k3VmQnjuIuRxaLPuU7zfZmmnSf001lP
-   TeqdbO7gPwN7gWX58P2jZyYVI/ZCvt5K7xm9r1mzqbelpSm1GewZCTYi3
-   jwocBR3jQcTRnv5pnzvh4AtmSnj95uZ8tzqFPiXkr+pglND3GTVqrq/ZH
-   n9ER2qQ737n6o8Hx6Wr489bQIImMXdF8Ua5mWOXWvh+iFAwNYWdtEx4TJ
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="342166712"
-X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="342166712"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 10:16:56 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="690603560"
-Received: from lkp-server02.sh.intel.com (HELO a67cc04a5eeb) ([10.239.97.151])
-  by fmsmga002.fm.intel.com with ESMTP; 22 Jun 2022 10:16:55 -0700
-Received: from kbuild by a67cc04a5eeb with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o43yI-0001W5-Je;
-        Wed, 22 Jun 2022 17:16:54 +0000
-Date:   Thu, 23 Jun 2022 01:16:29 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Yury Norov <yury.norov@gmail.com>
-Subject: [norov:fns 7/19] include/linux/compiler_types.h:352:45: error: call
- to '__compiletime_assert_600' declared with attribute error: BUILD_BUG_ON
- failed: !__builtin_constant_p(res)
-Message-ID: <202206230121.wlBiPZcR-lkp@intel.com>
+        Wed, 22 Jun 2022 13:17:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13A051A1
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 10:17:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A64BE61BA6
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 17:17:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16193C34114;
+        Wed, 22 Jun 2022 17:17:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655918271;
+        bh=X5zHmARP4o9w5Als0RrcdIqb8TjGKy4BRH9KZCUBEl0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ciH6giKXozyPDS82RKGfyWHSbyB1w1IbONC/j50IW0bii2dJ5MsURoITpKeFXMwvI
+         IX71ob3yU28+KUS32zrFV/IsX6533KbkkmBBchnAo+88MHh7VbxNDmeJl4t1fa4zo5
+         SXtPJB7/35lwE+1zigwGcPNXJgveUnZUSJQDCNF5L3OsPeK7DX9VLrnuM5s1RX8F/B
+         /A17Y/QJYmmr+hyeSXmsM9RuatYmTZ0Lmw7gHkw5p/bGdQBFuCB6+6GOulgYCSHCYQ
+         zqnF/qBvHKg5HkUosAYeo2LUGCEumMOo2FnlA04TPBkc74F4LeXALkNf9sMbV9m+Y6
+         i3ks+2GwfJNhQ==
+From:   Mark Brown <broonie@kernel.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Dong Aisheng <dongas86@gmail.com>, Mark Brown <broonie@kernel.org>
+Subject: [PATCH] regmap: Don't warn about cache only mode for devices with no cache
+Date:   Wed, 22 Jun 2022 18:17:23 +0100
+Message-Id: <20220622171723.1235749-1-broonie@kernel.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1114; h=from:subject; bh=X5zHmARP4o9w5Als0RrcdIqb8TjGKy4BRH9KZCUBEl0=; b=owEBbQGS/pANAwAKASTWi3JdVIfQAcsmYgBis06B5RFEDqmaW/J9L4VaTdUXHiSq04nH81ud5S2y 9cCC/1OJATMEAAEKAB0WIQSt5miqZ1cYtZ/in+ok1otyXVSH0AUCYrNOgQAKCRAk1otyXVSH0DxSB/ 92mPU+4++0OlnB7T9dw5w6e+cmCQx8WhRmHJe4OJg0iPdY3bO3rqDgmaMFVkO431fKsdmMB3OyTDfP X4dd7wADpPn1oqtkPWPN1G4A1gLK1fTpUX0ftwp2ZQtroXqDuMTjOpydzXrFn4aTY7BT94L+73RyAX AC+qIshQsrLkEWx6vRAkR2xbZ6gUAt2kwOa/MUJELhYhzAeFYAiyqbiFDbym2CAjqjmEyx17fIKg5q 8HgCD0p1WPNfQnA5BhlRlvN1ZLVQL73QoYaF8UoR+TgJlPFWJtDDOA0s3p2qotR0XUyVE4GOn9c18A JDQJJjUxmyEszG/Tox2z5Xv8qW0syP
+X-Developer-Key: i=broonie@kernel.org; a=openpgp; fpr=3F2568AAC26998F9E813A1C5C3F436CA30F5D8EB
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/norov/linux fns
-head:   dc85542660535a9072c3b98819f4b80ff182b92a
-commit: 2f52f0373b1a1bcf54a4aedc202518f6bed4c74f [7/19] lib: test_bitmap: add compile-time optimization/evaluations assertions
-config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220623/202206230121.wlBiPZcR-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/norov/linux/commit/2f52f0373b1a1bcf54a4aedc202518f6bed4c74f
-        git remote add norov https://github.com/norov/linux
-        git fetch --no-tags norov fns
-        git checkout 2f52f0373b1a1bcf54a4aedc202518f6bed4c74f
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+For devices with no cache it can make sense to use cache only mode as a
+mechanism for trapping writes to hardware which is inaccessible but since
+no cache is equivalent to cache bypass we force such devices into bypass
+mode. This means that our check that bypass and cache only mode aren't both
+enabled simultanously is less sensible for devices without a cache so relax
+it.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+---
+ drivers/base/regmap/regcache.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-All errors (new ones prefixed by >>):
-
-   In file included from <command-line>:
-   lib/test_bitmap.c: In function 'test_bitmap_const_eval':
->> include/linux/compiler_types.h:352:45: error: call to '__compiletime_assert_600' declared with attribute error: BUILD_BUG_ON failed: !__builtin_constant_p(res)
-     352 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |                                             ^
-   include/linux/compiler_types.h:333:25: note: in definition of macro '__compiletime_assert'
-     333 |                         prefix ## suffix();                             \
-         |                         ^~~~~~
-   include/linux/compiler_types.h:352:9: note: in expansion of macro '_compiletime_assert'
-     352 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-      50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
-         |         ^~~~~~~~~~~~~~~~
-   lib/test_bitmap.c:904:9: note: in expansion of macro 'BUILD_BUG_ON'
-     904 |         BUILD_BUG_ON(!__builtin_constant_p(res));
-         |         ^~~~~~~~~~~~
-
-
-vim +/__compiletime_assert_600 +352 include/linux/compiler_types.h
-
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  338  
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  339  #define _compiletime_assert(condition, msg, prefix, suffix) \
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  340  	__compiletime_assert(condition, msg, prefix, suffix)
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  341  
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  342  /**
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  343   * compiletime_assert - break build and emit msg if condition is false
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  344   * @condition: a compile-time constant condition to check
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  345   * @msg:       a message to emit if condition is false
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  346   *
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  347   * In tradition of POSIX assert, this macro will break the build if the
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  348   * supplied condition is *false*, emitting the supplied error message if the
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  349   * compiler has support to do so.
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  350   */
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  351  #define compiletime_assert(condition, msg) \
-eb5c2d4b45e3d2d Will Deacon 2020-07-21 @352  	_compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  353  
-
-:::::: The code at line 352 was first introduced by commit
-:::::: eb5c2d4b45e3d2d5d052ea6b8f1463976b1020d5 compiler.h: Move compiletime_assert() macros into compiler_types.h
-
-:::::: TO: Will Deacon <will@kernel.org>
-:::::: CC: Will Deacon <will@kernel.org>
-
+diff --git a/drivers/base/regmap/regcache.c b/drivers/base/regmap/regcache.c
+index 2eaffd3224c9..ef62ec225d81 100644
+--- a/drivers/base/regmap/regcache.c
++++ b/drivers/base/regmap/regcache.c
+@@ -495,7 +495,8 @@ EXPORT_SYMBOL_GPL(regcache_drop_region);
+ void regcache_cache_only(struct regmap *map, bool enable)
+ {
+ 	map->lock(map->lock_arg);
+-	WARN_ON(map->cache_bypass && enable);
++	WARN_ON(map->cache_type != REGCACHE_NONE &&
++		map->cache_bypass && enable);
+ 	map->cache_only = enable;
+ 	trace_regmap_cache_only(map, enable);
+ 	map->unlock(map->lock_arg);
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.30.2
+
