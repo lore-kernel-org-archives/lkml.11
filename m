@@ -2,161 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DC76C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 07:24:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D231C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 07:25:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352855AbiFVHYx (ORCPT
+        id S1353096AbiFVHZI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 03:24:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57786 "EHLO
+        Wed, 22 Jun 2022 03:25:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352481AbiFVHYv (ORCPT
+        with ESMTP id S1353071AbiFVHZB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 03:24:51 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63A4436E1F
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 00:24:50 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1o3uj8-0006a9-Lb; Wed, 22 Jun 2022 09:24:38 +0200
-Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1o3uj5-00005j-TU; Wed, 22 Jun 2022 09:24:35 +0200
-Date:   Wed, 22 Jun 2022 09:24:35 +0200
-From:   Sascha Hauer <s.hauer@pengutronix.de>
-To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        shawnguo@kernel.org, festevam@gmail.com, linux-imx@nxp.com,
-        hvilleneuve@dimonoff.com, l.stach@pengutronix.de,
-        abbaraju.manojsai@amarulasolutions.com, jagan@amarulasolutions.com,
-        matteo.lisi@engicam.com, tharvey@gateworks.com, t.remmet@phytec.de,
-        u.kleine-koenig@pengutronix.de, t.remmet@phytec.deh,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Peng Fan <peng.fan@nxp.com>,
-        Saravana Kannan <saravanak@google.com>
-Subject: Re: [PATCH] arm64: dts: imx8mp: drop dmas property for uart console
-Message-ID: <20220622072435.GT1615@pengutronix.de>
-References: <20220622062027.994614-1-peng.fan@oss.nxp.com>
+        Wed, 22 Jun 2022 03:25:01 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 458F937012
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 00:24:57 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id j22so11627113ljg.0
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 00:24:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=YoxQ8bxKC0+9JiwXWf9XJ6/TU9qeci3gtMH9RdtmUOM=;
+        b=FVZppPq+HgRatwdw9mBhIyBcCuKYUO7KIg3b6WyzTtn+ieiK8qj+2cBHNMpm800a2U
+         SEw7Klt8bH3yx2pmX/BSp14akymYv4+pjfBJfk95Lojo3KD/vLL1QpRJ7bawo/okeOuc
+         HmVl6T87jKVCEdIyvTNTGl4wqdEgJsco7NxmDtpihocUGddJ1z9Z/HwJQLsrMYKqX1Ge
+         saeBBv6O30zdfGt+Dd+YXYjsJrvT4/7fbtSFwGFrcPWGc9LVhjc8Zm4EtGcetyMdJ4Ge
+         VOGV00WKkCRLVUExu3eXS4B257gR1+LxMorxZWsse67I3eByQH1lMR+j3WU4vf/jhpma
+         mDjw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=YoxQ8bxKC0+9JiwXWf9XJ6/TU9qeci3gtMH9RdtmUOM=;
+        b=Y0H1UDNBburYazc5GayYaCqfbnZNgyvrCx8Lz2MXSUVCBKHvJV6FHW1e44KVmTyjSS
+         c6ywZbf0iyJ60p2LdFCsvUfO4EiJKShDmPdr/hs73Wg+hHtn4cZb30fihNOTzcyB4WAx
+         oITIl4UpepkgPiEEXpCa2hz50qSk1reUSEQyzgme48XffeHuNLZYOvEN3jkH5XXGfzsV
+         IdzHXhjrD/AASXUGoUyGo1ICMqEDwF2n0Wr68PKr5ns7o1naYdsQWh2PQcHvB6ycFP5V
+         MnVOUtQbKilbE/Ulw+/4W09YWbr6+HmH2gmLjznR0CMVsQ8dtBE8SUfBOjAzaE5H3BfY
+         Kwjw==
+X-Gm-Message-State: AJIora97GsMb5P215BZM0FZZoDirBjMvIkSG11p2Ghxstnm6iwQn+d0f
+        jggC81JcUDv0BN1+0O9/fnzYBbD1vJRQM/3c
+X-Google-Smtp-Source: AGRyM1tJbMHkXYq5UeLE2gCpcSsVO14ibqDJLnV2+fNPbMOaQD6RYhO/nsbxzZgK41uH0WPuqTjCBg==
+X-Received: by 2002:a2e:8e94:0:b0:25a:83fd:eeec with SMTP id z20-20020a2e8e94000000b0025a83fdeeecmr1087524ljk.493.1655882695577;
+        Wed, 22 Jun 2022 00:24:55 -0700 (PDT)
+Received: from [192.168.1.211] ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id u9-20020a199209000000b0047da6e495b1sm2449615lfd.4.2022.06.22.00.24.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Jun 2022 00:24:55 -0700 (PDT)
+Message-ID: <48d83380-edb1-ad61-3878-5fa3ac3e5169@linaro.org>
+Date:   Wed, 22 Jun 2022 10:24:54 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220622062027.994614-1-peng.fan@oss.nxp.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: sha@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 2/3] drm/msm/dp: Remove pixel_rate from struct dp_ctrl
+Content-Language: en-GB
+To:     Stephen Boyd <swboyd@chromium.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Rob Clark <robdclark@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, patches@lists.linux.dev,
+        Sean Paul <sean@poorly.run>, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org,
+        Kuogee Hsieh <quic_khsieh@quicinc.com>
+References: <20220617204750.2347797-1-swboyd@chromium.org>
+ <20220617204750.2347797-3-swboyd@chromium.org>
+ <bb98ca29-8752-6864-ddbd-19547fb6f73b@linaro.org>
+ <CAE-0n51_zysbkktVEfhvXtGqpADTWcaPBAX7A7rD1FV+vcK3Uw@mail.gmail.com>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <CAE-0n51_zysbkktVEfhvXtGqpADTWcaPBAX7A7rD1FV+vcK3Uw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-+Cc Saravana Kannan <saravanak@google.com>, the author of 71066545b48e4
+On 22/06/2022 05:59, Stephen Boyd wrote:
+> Quoting Dmitry Baryshkov (2022-06-17 16:07:58)
+>> On 17/06/2022 23:47, Stephen Boyd wrote:
+>>> This struct member is stored to in the function that calls the function
+>>> which uses it. That's possible with a function argument instead of
+>>> storing to a struct member. Pass the pixel_rate as an argument instead
+>>> to simplify the code. Note that dp_ctrl_link_maintenance() was storing
+>>> the pixel_rate but never using it so we just remove the assignment from
+>>> there.
+>>>
+>>> Cc: Kuogee Hsieh <quic_khsieh@quicinc.com>
+>>> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+>>> ---
+>>>    drivers/gpu/drm/msm/dp/dp_ctrl.c | 57 ++++++++++++++++----------------
+>>>    drivers/gpu/drm/msm/dp/dp_ctrl.h |  1 -
+>>>    2 files changed, 28 insertions(+), 30 deletions(-)
+>>>
+>>> diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+>>> index bd445e683cfc..e114521af2e9 100644
+>>> --- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
+>>> +++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+>>> @@ -1336,7 +1336,7 @@ static void dp_ctrl_set_clock_rate(struct dp_ctrl_private *ctrl,
+>>>                                name, rate);
+>>>    }
+>>>
+>>> -static int dp_ctrl_enable_mainlink_clocks(struct dp_ctrl_private *ctrl)
+>>> +static int dp_ctrl_enable_mainlink_clocks(struct dp_ctrl_private *ctrl, unsigned long pixel_rate)
+>>
+>>
+>> I think we can read pixel_rate here rather than getting it as an
+>> argument. We'd need to move handling (DP_TEST_LINK_PHY_TEST_PATTERN &&
+>> !ctrl->panel->dp_mode.drm_mode.clock) case here from dp_ctrl_on_link().
+> 
+> This is also called from dp_ctrl_on_stream() and
+> dp_ctrl_reinitialize_mainlink(). In the dp_ctrl_on_stream() case we may
+> divide the pixel_rate by 2 with widebus. We could move the
+> dp_ctrl_on_link() code here, but then we also need to move widebus, and
+> then I'm not sure which pixel rate to use.
+> 
+> It looks like the test code doesn't care about widebus? And similarly,
+> we may run the pixel clk faster until we get a modeset and then divide
+> it for widebus.
 
-On Wed, Jun 22, 2022 at 02:20:27PM +0800, Peng Fan (OSS) wrote:
-> From: Peng Fan <peng.fan@nxp.com>
+Good question. I'll let Kuogee or somebody else from Qualcomm to comment 
+on test code vs widebus vs pixel rate, as I don't know these details.
+
+I'm not sure if we should halve the pixel clock in 
+dp_ctrl_on_stream_phy_test_report() or not if the widebus is supported.
+ From the current code I'd assume that we have to do this. Let's raise 
+this question in the corresponding patch discussion.
+
+> Is that why you're suggesting to check
+> !ctrl->panel->dp_mode.drm_mode.clock? I hesitate because it isn't a
+> direct conversion, instead it checks some other stashed struct member.
 > 
-> Commit 71066545b48e4("driver core: Set fw_devlink.strict=1 by default")
-> default set fw_devlink to true. This has a side effect to i.MX uart
-> console. The sdma will make the i.MX8MP uart driver defer probe for some
-> time (~10s with i.MX8MP-EVK board) until sdma ready, because sdma is a
-> supplier with property dmas set in device tree node.
+> I'll also note that dp_ctrl_enable_mainlink_clocks() doesn't really use
+> this argument except to print the value in drm_dbg_dp(). Maybe we should
+> simply remove it from here instead?
 
-I just tested this on an i.MX6 board and observed the same behaviour.
-The same will happen on any other i.MX board as well. This will also
-likely happen on any other SoC on which the UART driver uses dmaengine.
-
-> 
-> Since this uart is for console, we need log printed out as soon as
-> possible, so remove the dmas property for the uart console node.
-
-Fixing this at board level is not really an option because that means
-fixing each and every, at least i.MX board in the tree. Furthermore
-this would mean to bring the deleted property back in and to remove
-another dmas property should a user want to switch to another console
-port.
-
-For what it's worth: NACK for 71066545b48e4.
-
-Sascha
+Yes, do it please.
 
 > 
-> Signed-off-by: Peng Fan <peng.fan@nxp.com>
-> ---
+>>> @@ -1588,12 +1586,12 @@ static int dp_ctrl_on_stream_phy_test_report(struct dp_ctrl *dp_ctrl)
+>>>    {
+>>>        int ret;
+>>>        struct dp_ctrl_private *ctrl;
+>>> +     unsigned long pixel_rate;
+>>>
+>>>        ctrl = container_of(dp_ctrl, struct dp_ctrl_private, dp_ctrl);
+>>>
+>>> -     ctrl->dp_ctrl.pixel_rate = ctrl->panel->dp_mode.drm_mode.clock;
+>>> -
+>>> -     ret = dp_ctrl_enable_stream_clocks(ctrl);
+>>> +     pixel_rate = ctrl->panel->dp_mode.drm_mode.clock;
+>>> +     ret = dp_ctrl_enable_stream_clocks(ctrl, pixel_rate);
+>>
+>> I think we can take another step forward here. Read the
+>> ctrl->panel->dp_mode.drm_mode.clock from within the
+>> dp_ctrl_enable_stream_clocks() function. This removes the need to pass
+>> pixel_rate as an argument here.
 > 
-> V1:
->  The upper set fw_devlink.strict=1 patch is in linux-next tree.
-> 
->  arch/arm64/boot/dts/freescale/imx8mp-evk.dts                  | 2 ++
->  arch/arm64/boot/dts/freescale/imx8mp-icore-mx8mp-edimm2.2.dts | 2 ++
->  arch/arm64/boot/dts/freescale/imx8mp-phyboard-pollux-rdk.dts  | 2 ++
->  arch/arm64/boot/dts/freescale/imx8mp-venice-gw74xx.dts        | 2 ++
->  4 files changed, 8 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/freescale/imx8mp-evk.dts b/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
-> index fb11c03bc8b1..3fdb38bc0069 100644
-> --- a/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
-> +++ b/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
-> @@ -359,6 +359,8 @@ &uart2 {
->  	pinctrl-names = "default";
->  	pinctrl-0 = <&pinctrl_uart2>;
->  	status = "okay";
-> +	/delete-property/ dmas;
-> +	/delete-property/ dma-names;
->  };
->  
->  &usb3_phy1 {
-> diff --git a/arch/arm64/boot/dts/freescale/imx8mp-icore-mx8mp-edimm2.2.dts b/arch/arm64/boot/dts/freescale/imx8mp-icore-mx8mp-edimm2.2.dts
-> index dd703b6a5e17..fb2b44e94482 100644
-> --- a/arch/arm64/boot/dts/freescale/imx8mp-icore-mx8mp-edimm2.2.dts
-> +++ b/arch/arm64/boot/dts/freescale/imx8mp-icore-mx8mp-edimm2.2.dts
-> @@ -69,6 +69,8 @@ &uart2 {
->  	pinctrl-names = "default";
->  	pinctrl-0 = <&pinctrl_uart2>;
->  	status = "okay";
-> +	/delete-property/ dmas;
-> +	/delete-property/ dma-names;
->  };
->  
->  &usb3_phy0 {
-> diff --git a/arch/arm64/boot/dts/freescale/imx8mp-phyboard-pollux-rdk.dts b/arch/arm64/boot/dts/freescale/imx8mp-phyboard-pollux-rdk.dts
-> index 6aa720bafe28..68a478151292 100644
-> --- a/arch/arm64/boot/dts/freescale/imx8mp-phyboard-pollux-rdk.dts
-> +++ b/arch/arm64/boot/dts/freescale/imx8mp-phyboard-pollux-rdk.dts
-> @@ -99,6 +99,8 @@ &uart1 {
->  	pinctrl-names = "default";
->  	pinctrl-0 = <&pinctrl_uart1>;
->  	status = "okay";
-> +	/delete-property/ dmas;
-> +	/delete-property/ dma-names;
->  };
->  
->  /* SD-Card */
-> diff --git a/arch/arm64/boot/dts/freescale/imx8mp-venice-gw74xx.dts b/arch/arm64/boot/dts/freescale/imx8mp-venice-gw74xx.dts
-> index 521215520a0f..f90c1ac2791c 100644
-> --- a/arch/arm64/boot/dts/freescale/imx8mp-venice-gw74xx.dts
-> +++ b/arch/arm64/boot/dts/freescale/imx8mp-venice-gw74xx.dts
-> @@ -554,6 +554,8 @@ &uart2 {
->  	pinctrl-names = "default";
->  	pinctrl-0 = <&pinctrl_uart2>;
->  	status = "okay";
-> +	/delete-property/ dmas;
-> +	/delete-property/ dma-names;
->  };
->  
->  &uart4 {
-> -- 
-> 2.25.1
-> 
-> 
+> This is also affected by widebus and if the function is called from
+> dp_ctrl_on_stream() or dp_ctrl_on_stream_phy_test_report(). Maybe it
+> would be better to inline dp_ctrl_enable_stream_clocks() to the
+> callsites? That would probably simplify things because the function is
+> mostly a wrapper around a couple functions.
+
+Yes, this sounds good. Then we can drop the drm_dbg_dp from it (as it 
+nearly duplicates the data that was just printed.
+
 
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+With best wishes
+Dmitry
