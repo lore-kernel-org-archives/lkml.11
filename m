@@ -2,120 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1871CCA47D
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 14:25:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCBA6C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 14:25:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355089AbiFVOZY (ORCPT
+        id S1357761AbiFVOZ5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 10:25:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48608 "EHLO
+        Wed, 22 Jun 2022 10:25:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358527AbiFVOY4 (ORCPT
+        with ESMTP id S1357540AbiFVOZZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 10:24:56 -0400
-Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A27F2369C8;
-        Wed, 22 Jun 2022 07:24:53 -0700 (PDT)
+        Wed, 22 Jun 2022 10:25:25 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 386F93B558
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 07:25:18 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id c65so1130075edf.4
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 07:25:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.uk; i=@amazon.co.uk; q=dns/txt;
-  s=amazon201209; t=1655907893; x=1687443893;
-  h=from:to:cc:date:message-id:references:in-reply-to:
-   content-transfer-encoding:mime-version:subject;
-  bh=51C7STjo9soGVumHM19bbsfNeQcBRA/3OS6i/6pYTtM=;
-  b=Rwqzv0KEdznzNHrGlPBYxXT1HRP3Q/4v3mm5pEAAQ6kLkivu1aYOIG2s
-   DQiuPzaGSfOF1dyfssAgX1oajKjhZ/uezIqoUvDB4Tbs/QXeEz80AVk3C
-   P16T0qJ0x01a/FRI6cAA1lUht9Y2zw9OpOHlE6WbdabbNJkf+vpxP7AZw
-   8=;
-X-IronPort-AV: E=Sophos;i="5.92,212,1650931200"; 
-   d="scan'208";a="100777950"
-Subject: RE: [PATCH v2] KVM: x86/xen: Update Xen CPUID Leaf 4 (tsc info) sub-leaves,
- if present
-Thread-Topic: [PATCH v2] KVM: x86/xen: Update Xen CPUID Leaf 4 (tsc info) sub-leaves,
- if present
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-2c-388992e0.us-west-2.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP; 22 Jun 2022 14:22:10 +0000
-Received: from EX13D32EUC003.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-pdx-2c-388992e0.us-west-2.amazon.com (Postfix) with ESMTPS id DBFA6817BA;
-        Wed, 22 Jun 2022 14:22:09 +0000 (UTC)
-Received: from EX13D32EUC003.ant.amazon.com (10.43.164.24) by
- EX13D32EUC003.ant.amazon.com (10.43.164.24) with Microsoft SMTP Server (TLS)
- id 15.0.1497.36; Wed, 22 Jun 2022 14:22:08 +0000
-Received: from EX13D32EUC003.ant.amazon.com ([10.43.164.24]) by
- EX13D32EUC003.ant.amazon.com ([10.43.164.24]) with mapi id 15.00.1497.036;
- Wed, 22 Jun 2022 14:22:08 +0000
-From:   "Durrant, Paul" <pdurrant@amazon.co.uk>
-To:     David Woodhouse <dwmw2@infradead.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>
-Thread-Index: AQHYhh7hXAu4qxBonEWdTaRZ6uuulK1bcRwAgAAFCdA=
-Date:   Wed, 22 Jun 2022 14:22:07 +0000
-Message-ID: <2d939a362e384a28bcd576b4c21a0376@EX13D32EUC003.ant.amazon.com>
-References: <20220622095750.30563-1-pdurrant@amazon.com>
- <0b4c451c6967ffb7bd20b6e5bf7812628aa173c5.camel@infradead.org>
-In-Reply-To: <0b4c451c6967ffb7bd20b6e5bf7812628aa173c5.camel@infradead.org>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.43.165.13]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=o8BQszykOO01GSg6GqcelFQFdO6aAlqQ4V6nI9Ak9xU=;
+        b=PL/Jy2/6E29/4T6R7ah0BIsvf2/tYs4P99/RVkkS2epNWM1/8L0TeK4CyZUQChD/Nr
+         iwirMg82FxYllvVcN4WQY0tbm0ahAPbCNHooc8EK63IDLEns5AevQpDagl1dBBkeCPOp
+         5Uhgn47SVJ6GGggGu3qETpIKjween7omIMWy0YqWc8c426EerA5HwXHznhZxFW90h3Kc
+         HKWGmBe+PWvAl6/cMAS1mGBawpsmhyoUzct0G/iqk0vNcgoL9S6EF7cQ3JVESuqKZXG/
+         XqNuWNP/u51ZXZDWYltK6VXhHt8YTRoaQs4WqNLBvJJTOuAjNFBeLW3vedWgBCxb6CVG
+         EPPQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=o8BQszykOO01GSg6GqcelFQFdO6aAlqQ4V6nI9Ak9xU=;
+        b=Lz5jYA+OlCw4qA4yiBw8sp8REmOYneK6I6EtsediALuCIDmcSKZ8B1sBrhoXeEXjAh
+         jDcpVDlWjFZPW5qVJK6XhcOnUX8tHm5/ZWudaoQ9ksjkfb7kzftIh3dhKeESJly/oZzy
+         thuam0KZTntCBB8Ja2X7mGyCjzZefoYE0JS5tfs9zynl/eF9TRmsvW1em2sGuPAusAPc
+         7ehV3/zx9rhZTdgQ0Bbs+GtJl3kEwFZrSFiwtBBavU9hQEHlPwvpGfE6b9PNiAENYxMk
+         OFZpT9FZmLlIAxnIGiOeIsGAtd/hYGQqf31L9BK6fQYK8ryyRHk6jzbn2ZvTllySLiVP
+         1Rvw==
+X-Gm-Message-State: AJIora+/33/d4/eou9s3xLcun/aOrZsFfC8l2BiU03ufhWok0H4lHYR0
+        g3uOQQht5H44WypO1T/VlJ/INw==
+X-Google-Smtp-Source: AGRyM1usJfLNlqwF3SOJlrmxqF0s/Afh6Lg9nbMm7/FV4DlxjCxOcEI6qm1P5bDVYjGEghLhPUEdQw==
+X-Received: by 2002:a05:6402:278f:b0:435:9bd4:be9d with SMTP id b15-20020a056402278f00b004359bd4be9dmr4383865ede.154.1655907916760;
+        Wed, 22 Jun 2022 07:25:16 -0700 (PDT)
+Received: from [192.168.0.225] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id d4-20020a170906370400b006fec56c57f3sm9604429ejc.178.2022.06.22.07.25.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Jun 2022 07:25:16 -0700 (PDT)
+Message-ID: <56c45859-a4a4-07dd-6166-d4fa09769d8a@linaro.org>
+Date:   Wed, 22 Jun 2022 16:25:15 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 00/13] Host1x support on Tegra234
+Content-Language: en-US
+To:     Mikko Perttunen <cyndis@kapsi.fi>, thierry.reding@gmail.com,
+        jonathanh@nvidia.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, digetx@gmail.com
+Cc:     dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Mikko Perttunen <mperttunen@nvidia.com>
+References: <20220622113733.1710471-1-cyndis@kapsi.fi>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220622113733.1710471-1-cyndis@kapsi.fi>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBEYXZpZCBXb29kaG91c2UgPGR3
-bXcyQGluZnJhZGVhZC5vcmc+DQo+IFNlbnQ6IDIyIEp1bmUgMjAyMiAxNDo0OA0KPiBUbzogRHVy
-cmFudCwgUGF1bCA8cGR1cnJhbnRAYW1hem9uLmNvLnVrPjsgeDg2QGtlcm5lbC5vcmc7IGt2bUB2
-Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LQ0KPiBrZXJuZWxAdmdlci5rZXJuZWwub3JnDQo+IENjOiBQ
-YW9sbyBCb256aW5pIDxwYm9uemluaUByZWRoYXQuY29tPjsgU2VhbiBDaHJpc3RvcGhlcnNvbiA8
-c2VhbmpjQGdvb2dsZS5jb20+OyBWaXRhbHkgS3V6bmV0c292DQo+IDx2a3V6bmV0c0ByZWRoYXQu
-Y29tPjsgV2FucGVuZyBMaSA8d2FucGVuZ2xpQHRlbmNlbnQuY29tPjsgSmltIE1hdHRzb24gPGpt
-YXR0c29uQGdvb2dsZS5jb20+OyBKb2VyZw0KPiBSb2VkZWwgPGpvcm9AOGJ5dGVzLm9yZz47IFRo
-b21hcyBHbGVpeG5lciA8dGdseEBsaW51dHJvbml4LmRlPjsgSW5nbyBNb2xuYXIgPG1pbmdvQHJl
-ZGhhdC5jb20+Ow0KPiBCb3Jpc2xhdiBQZXRrb3YgPGJwQGFsaWVuOC5kZT47IERhdmUgSGFuc2Vu
-IDxkYXZlLmhhbnNlbkBsaW51eC5pbnRlbC5jb20+OyBILiBQZXRlciBBbnZpbg0KPiA8aHBhQHp5
-dG9yLmNvbT4NCj4gU3ViamVjdDogUkU6IFtFWFRFUk5BTF1bUEFUQ0ggdjJdIEtWTTogeDg2L3hl
-bjogVXBkYXRlIFhlbiBDUFVJRCBMZWFmIDQgKHRzYyBpbmZvKSBzdWItbGVhdmVzLCBpZg0KPiBw
-cmVzZW50DQo+IA0KPiBPbiBXZWQsIDIwMjItMDYtMjIgYXQgMTA6NTcgKzAxMDAsIFBhdWwgRHVy
-cmFudCB3cm90ZToNCj4gPiArdm9pZCBrdm1feGVuX3NldF9jcHVpZChzdHJ1Y3Qga3ZtX3ZjcHUg
-KnZjcHUpDQo+ID4gK3sNCj4gPiArCXUzMiBiYXNlID0gMDsNCj4gPiArCXUzMiBmdW5jdGlvbjsN
-Cj4gPiArDQo+ID4gKwl2Y3B1LT5hcmNoLnhlbi50c2NfaW5mb18xID0gTlVMTDsNCj4gPiArCXZj
-cHUtPmFyY2gueGVuLnRzY19pbmZvXzIgPSBOVUxMOw0KPiA+ICsNCj4gPiArCWZvcl9lYWNoX3Bv
-c3NpYmxlX2h5cGVydmlzb3JfY3B1aWRfYmFzZShmdW5jdGlvbikgew0KPiA+ICsJCXN0cnVjdCBr
-dm1fY3B1aWRfZW50cnkyICplbnRyeSA9IGt2bV9maW5kX2NwdWlkX2VudHJ5KHZjcHUsIGZ1bmN0
-aW9uLCAwKTsNCj4gPiArDQo+ID4gKwkJaWYgKGVudHJ5ICYmDQo+ID4gKwkJICAgIGVudHJ5LT5l
-YnggPT0gWEVOX0NQVUlEX1NJR05BVFVSRV9FQlggJiYNCj4gPiArCQkgICAgZW50cnktPmVjeCA9
-PSBYRU5fQ1BVSURfU0lHTkFUVVJFX0VDWCAmJg0KPiA+ICsJCSAgICBlbnRyeS0+ZWR4ID09IFhF
-Tl9DUFVJRF9TSUdOQVRVUkVfRURYKSB7DQo+ID4gKwkJCWJhc2UgPSBmdW5jdGlvbjsNCj4gPiAr
-CQkJYnJlYWs7DQo+ID4gKwkJfQ0KPiA+ICsJfQ0KPiANCj4gUGxlYXNlIG1ha2UgaXQgcmV0dXJu
-IGlmIGVudHJ5LT5lYXggPCAzIGhlcmUuIFRoZXJlIHByb2JhYmx5IGFyZW4ndCBhbnkNCj4gKmdv
-b2QqIHJlYXNvbnMgd2h5IGEgbGVhZiBhdCAweDQwMDAweDAzIHdvdWxkIGV4aXN0IGFuZCBiZWxv
-bmcgdG8gc29tZQ0KPiBvdGhlciBlbnRpdHkgKEh5cGVyLVYsIGV0Yy4pLiBUaG9zZSBvdGhlciBl
-eHRyYSByYW5nZXMgb2YgQ1BVSUQgYXJlDQo+IGdlbmVyYWxseSBhbGlnbmVkIGF0IG11bHRpcGxl
-cyBvZiAweDEwMCwgbm90IGp1c3QgdGhlICpuZXh0KiBhdmFpbGFibGUNCj4gbGVhZi4NCj4gDQo+
-IEJ1dCBJIGRvbid0IGNhcmUuIFVubGVzcyBlYXggb24gdGhlIG1haW4gWGVuIGxlYWYgaXMgMyBv
-ciBtb3JlLCB0aGUNCj4gbGVhZiBhdCBOKzMgaXNuJ3QgeW91cnMgdG8gcmVhc29uIGFib3V0IDop
-DQo+IA0KDQpBY2NvcmRpbmcgdG8gaHR0cHM6Ly9sd24ubmV0L0FydGljbGVzLzMwMTg4OCAod2hp
-Y2ggaXMgYW5jaWVudCksIHRoZSBNaWNyb3NvZnQgVExGUyBhbmQgbXkgY29weSBvZiB0aGUgWGVu
-IHNvdXJjZSBjb2RlLCBpdCBzZWVtcyBldmVyeW9uZSBkb2VzIGFncmVlIHRoYXQgdGhlIGh5cGVy
-dmlzb3IgYmFzZSBsZWFmIEVBWCBkb2VzIHNwZWNpZnkgdGhlIG1heGltdW0gbGVhZiAoaW4gYWJz
-b2x1dGUgdGVybXMgcmF0aGVyIHRoYW4gdGhlIG9mZnNldCkgc28gSSdsbCBhZGQgdGhhdCBjaGVj
-ayBpbnRvIHYzLg0KDQogIFBhdWwNCg0KPiA+ICsJaWYgKCFiYXNlKQ0KPiA+ICsJCXJldHVybjsN
-Cj4gPiArDQo+ID4gKwlmdW5jdGlvbiA9IGJhc2UgfCBYRU5fQ1BVSURfTEVBRigzKTsNCj4gPiAr
-CXZjcHUtPmFyY2gueGVuLnRzY19pbmZvXzEgPSBrdm1fZmluZF9jcHVpZF9lbnRyeSh2Y3B1LCBm
-dW5jdGlvbiwgMSk7DQo+ID4gKwl2Y3B1LT5hcmNoLnhlbi50c2NfaW5mb18yID0ga3ZtX2ZpbmRf
-Y3B1aWRfZW50cnkodmNwdSwgZnVuY3Rpb24sIDIpOw0KPiA+ICt9DQo+ID4gKw0K
+On 22/06/2022 13:37, Mikko Perttunen wrote:
+> From: Mikko Perttunen <mperttunen@nvidia.com>
+> 
+> -------------
+> Merging notes
+> -------------
+> 
+> This series should be applied on top of the Host1x context isolation
+> series.
+> 
+
+The dependency should be first merged into next, so automated tools can
+process it.
+
+Best regards,
+Krzysztof
