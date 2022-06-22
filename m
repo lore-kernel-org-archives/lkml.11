@@ -2,128 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8B3CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 10:24:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE681C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 10:24:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351766AbiFVKYI (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 06:24:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43712 "EHLO
+        id S235528AbiFVKYX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 06:24:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352653AbiFVKXP (ORCPT
+        with ESMTP id S1349493AbiFVKXu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 06:23:15 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 26A0E3A70E
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 03:23:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655893390;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=q4Vd5UfRrhClnRvajU2UKtAqYXeZzT2WxiMDDNQrFZ4=;
-        b=RcZNYMLf8autrN+pyEZhqCcfRFLhW+mbdz7WtsJOkVXE2eR+tO4i6rHdg5uE8crhrjV0X2
-        8FGmnzDEotc9yYj7b4PXTXyNVjHZfgNistKcSfhw9cTEO/Xm97nLv+xyNAjBvm8EMt4Ozj
-        jgj2IyDwkm+VgX5CZmTQyEpkS2xSKZ8=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-323-0bj_NfqfMX2AISMpBbLW5Q-1; Wed, 22 Jun 2022 06:23:09 -0400
-X-MC-Unique: 0bj_NfqfMX2AISMpBbLW5Q-1
-Received: by mail-ed1-f70.google.com with SMTP id g8-20020a056402090800b00433940d207eso13077472edz.1
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 03:23:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=q4Vd5UfRrhClnRvajU2UKtAqYXeZzT2WxiMDDNQrFZ4=;
-        b=Zby2lT03t4h0D3OUnZlKu3PCQvxhSBqT9X7aEd93T5OcWjAQVK60rewXqlSSXg89PW
-         KJxpSE74qu4g8kzGextdjYP7POT9IeGdg13PW7axQO2iZ5pBbF43YIrcDqH4TsAuKS57
-         jpjtid/5ZnfJrqMjgMhEEYWlpEu2+N7DcRlKR77jvn1YulKqs2k/Bksmxzo4VVR2hUav
-         ny9UcX96LXs956Fi3cqqzIap5lW1EqUEaDVOpR1FymkKS1ZIvSqBKv1bQ4yCOGW6Mht9
-         yfVRXpn2cTEyiUnwnjnf8QFKrdBGwvEPldjVTxBXUWtjKm3wMIfffD2rO7CFDDEF16AT
-         Uqxw==
-X-Gm-Message-State: AJIora8bmufaCSRbI9QPke5w3tc6TFF1s+kDkoZTfYb4+yh/o03A2BzG
-        Fwc16BDwENrD6zBKm+tL8VqYp+Z8jUg4WF4YpSudpoHICIE2edxGQLjz/+mdPmE4/jxv/R4qU4V
-        paIW7QKTBXp5wqFzMPbV01diS
-X-Received: by 2002:a05:6402:149:b0:431:7dde:9b59 with SMTP id s9-20020a056402014900b004317dde9b59mr3240980edu.339.1655893388216;
-        Wed, 22 Jun 2022 03:23:08 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uLmcag7vtQWJsjDk69I3LaddPH5DLFa9DAzI9sfx5/q9tJLuEQEmoAZ+f2nmyMAfvAz7d2DA==
-X-Received: by 2002:a05:6402:149:b0:431:7dde:9b59 with SMTP id s9-20020a056402014900b004317dde9b59mr3240961edu.339.1655893388064;
-        Wed, 22 Jun 2022 03:23:08 -0700 (PDT)
-Received: from [192.168.43.127] ([109.37.135.195])
-        by smtp.gmail.com with ESMTPSA id l2-20020a1709063d2200b006fecf74395bsm9039127ejf.8.2022.06.22.03.23.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Jun 2022 03:23:07 -0700 (PDT)
-Message-ID: <caaca84e-1cc4-bf81-f705-fdabe2313d71@redhat.com>
-Date:   Wed, 22 Jun 2022 12:23:06 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v1] platform/x86: intel/pmc: Add Alder Lake N support to
- PMC core driver
-Content-Language: en-US
-To:     Gayatri Kammela <gayatri.kammela@linux.intel.com>
-Cc:     irenic.rajneesh@gmail.com, markgross@kernel.org,
-        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Srinivas Pandruvada <srinivas.pandruvada@intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "David E . Box" <david.e.box@linux.intel.com>
-References: <20220615002751.3371730-1-gayatri.kammela@linux.intel.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <20220615002751.3371730-1-gayatri.kammela@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Wed, 22 Jun 2022 06:23:50 -0400
+Received: from smtpbg.qq.com (smtpbg138.qq.com [106.55.201.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 108D517E07;
+        Wed, 22 Jun 2022 03:23:42 -0700 (PDT)
+X-QQ-mid: bizesmtp74t1655893353tybiuful
+Received: from localhost.localdomain ( [223.104.103.173])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Wed, 22 Jun 2022 18:21:56 +0800 (CST)
+X-QQ-SSF: 01000000008000B0B000D00A0000000
+X-QQ-FEAT: Rjen8GRx79XiI4aq3GaeUSz/ZbBRBW/664EOYTaqKClkSkpjh331iBDBQ/w9E
+        7wtb4fApnboC9GOvKsqcm4+xpe0Ktd3GorNE4yhYtXBArVZMtircvYcu7IWPUS2BO+rcHYE
+        V5apFYu3TBy1trfkgA7RQzconYDy6bb8k/tErrkOuDONT2S0CuWSTLGMBwwgCyrZS1Z42ZD
+        algS7bmIIx9veoHbzfdeZaKptmH4Lj0IeJ3aBGaj4rIfoOvdsSS0iWtVzv8XLQLakj4ACbj
+        j+7QBMHFxBVEEdIxx3x9fz222DwHuc8+2ZihDSNTFTcXCWN7j0LRWTU7yTeCiOWsw0rFAV6
+        kjpYHQMJl5aBAP72PJDLSrnmiyOk9ChZAcgU8TU
+X-QQ-GoodBg: 0
+From:   Jiang Jian <jiangjian@cdjrlc.com>
+To:     mathias.nyman@intel.com, gregkh@linuxfoundation.org
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiang Jian <jiangjian@cdjrlc.com>
+Subject: [PATCH] xhci: drop unexpected word "the" in the comments
+Date:   Wed, 22 Jun 2022 18:21:46 +0800
+Message-Id: <20220622102146.3960-1-jiangjian@cdjrlc.com>
+X-Mailer: git-send-email 2.17.1
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+there is an unexpected word "the" in the comments that need to be dropped.
 
-On 6/15/22 02:27, Gayatri Kammela wrote:
-> Add Alder Lake N (ADL-N) to the list of the platforms that Intel's
-> PMC core driver supports. RocketLake reuses all the TigerLake PCH IPs.
-> 
-> Cc: Srinivas Pandruvada <srinivas.pandruvada@intel.com>
-> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Cc: David E. Box <david.e.box@linux.intel.com>
-> Signed-off-by: Gayatri Kammela <gayatri.kammela@linux.intel.com>
+Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
+---
+ drivers/usb/host/xhci-ring.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thank you for your patch, I've applied this patch to my review-hans 
-branch:
-https://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git/log/?h=review-hans
-
-Note it will show up in my review-hans branch once I've pushed my
-local branch there, which might take a while.
-
-Once I've run some tests on this branch the patches there will be
-added to the platform-drivers-x86/for-next branch and eventually
-will be included in the pdx86 pull-request to Linus for the next
-merge-window.
-
-Regards,
-
-Hans
-
-
-> ---
->  drivers/platform/x86/intel/pmc/core.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/platform/x86/intel/pmc/core.c b/drivers/platform/x86/intel/pmc/core.c
-> index 40183bda7894..a1fe1e0dcf4a 100644
-> --- a/drivers/platform/x86/intel/pmc/core.c
-> +++ b/drivers/platform/x86/intel/pmc/core.c
-> @@ -1911,6 +1911,7 @@ static const struct x86_cpu_id intel_pmc_core_ids[] = {
->  	X86_MATCH_INTEL_FAM6_MODEL(ATOM_TREMONT_L,	&icl_reg_map),
->  	X86_MATCH_INTEL_FAM6_MODEL(ROCKETLAKE,		&tgl_reg_map),
->  	X86_MATCH_INTEL_FAM6_MODEL(ALDERLAKE_L,		&tgl_reg_map),
-> +	X86_MATCH_INTEL_FAM6_MODEL(ALDERLAKE_N,		&tgl_reg_map),
->  	X86_MATCH_INTEL_FAM6_MODEL(ALDERLAKE,		&adl_reg_map),
->  	X86_MATCH_INTEL_FAM6_MODEL(RAPTORLAKE_P,        &tgl_reg_map),
->  	{}
-> 
-> base-commit: b13baccc3850ca8b8cccbf8ed9912dbaa0fdf7f3
+diff --git a/drivers/usb/host/xhci-ring.c b/drivers/usb/host/xhci-ring.c
+index 46d0b9ad6f74..ad81e9a508b1 100644
+--- a/drivers/usb/host/xhci-ring.c
++++ b/drivers/usb/host/xhci-ring.c
+@@ -1964,7 +1964,7 @@ static void handle_port_status(struct xhci_hcd *xhci,
+ 
+ 	/*
+ 	 * Check to see if xhci-hub.c is waiting on RExit to U0 transition (or
+-	 * RExit to a disconnect state).  If so, let the the driver know it's
++	 * RExit to a disconnect state).  If so, let the driver know it's
+ 	 * out of the RExit state.
+ 	 */
+ 	if (!DEV_SUPERSPEED_ANY(portsc) && hcd->speed < HCD_USB3 &&
+-- 
+2.17.1
 
