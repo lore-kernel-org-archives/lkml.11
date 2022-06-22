@@ -2,177 +2,260 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B144EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 15:34:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C588AC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 15:35:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358813AbiFVPeD (ORCPT
+        id S1359050AbiFVPfL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 11:34:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36718 "EHLO
+        Wed, 22 Jun 2022 11:35:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357141AbiFVPd7 (ORCPT
+        with ESMTP id S1357141AbiFVPfJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 11:33:59 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B48C0393F5
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 08:33:58 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id f65so16411679pgc.7
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 08:33:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=RXwf/7JkcWaT1IRzr2kx6bS4ycLeK+ZNTB+dlyU4xh8=;
-        b=2Tfg4m5w9Saco7OKn8up5/4aMelTZerwjvK3vPd9X+dN4Jy7w7tCmZVJaJRlsWrJ3E
-         XLhDgBeGy40VicRIaJ7kqr/EkOuarKwXYqCdDmwt6w94QlGk0rreY1uh+zbijQo9NZj1
-         iLvUeYzkEOvaBjkZYu9HolnewSsUjEuX4wK7Q0yVzqrRn9OCCCYrNvdnQues64E+C9BY
-         hzZ5Ow3X1De0GAl913hw+fyyrdZX8zDA+MwZshRayJKF8sHiMRdrhTr7KS9YVB5qCaiT
-         YKcFm+6u6VRO+6thSEKc6L6Lo8+QuXz3mQx2ccmeqK0Y7dh6uLU0a0kvht5HjiqOybAV
-         3TLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=RXwf/7JkcWaT1IRzr2kx6bS4ycLeK+ZNTB+dlyU4xh8=;
-        b=LAOGzHaohgrMtmltlaHNIVO/r6zOD7quPQnweClxCTunUr1V5DlvdkOS84wTXwwUk7
-         rtjMYR1PNkJth9kVXWWaH0ifBuGOW2JcTqzNGAkZ2zem5OQ2AA7Hyh/Fi2lhLLAjzdCY
-         nPVklc2fhEHkAnWir018XvD2ZxBPu1WA5Ptvqx+eWCLvy1ia1AEB+jf1YPrE4VEYznbc
-         Jq/O4+FfIBS1HB/un06flvcBKwCY36jRuWHLL00kK/RNKkkat2OYDock9N8s7T3cY/90
-         anpaO29l3OvB/r2w4pd/ipTd5K9UHu9X9Zbhr/bhBhwvfIh7r6aiFCu+Z98VMdoPuCiY
-         fZPA==
-X-Gm-Message-State: AJIora97OxDikaexPT3CpxWVIE5ouYnuh0yanlRYOVkpLgA3JLKC5xFZ
-        5wyZsrnb7+lxZSe8uA1WdilaqQ==
-X-Google-Smtp-Source: AGRyM1vHCjeCuwVlhow9RRnI14l8Li5ye9Z0Amr4Q+HiO9Z++ZxuKJ+shDCeREoLDyxsV46Ct87Pew==
-X-Received: by 2002:a05:6a02:10a:b0:3fd:da84:8859 with SMTP id bg10-20020a056a02010a00b003fdda848859mr3411759pgb.412.1655912038182;
-        Wed, 22 Jun 2022 08:33:58 -0700 (PDT)
-Received: from localhost ([2408:8207:18da:2310:6954:eb2b:9375:6970])
-        by smtp.gmail.com with ESMTPSA id f1-20020a170902684100b0016a3f9e4865sm2966430pln.148.2022.06.22.08.33.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jun 2022 08:33:57 -0700 (PDT)
-Date:   Wed, 22 Jun 2022 23:33:48 +0800
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     syzbot <syzbot+ec972d37869318fc3ffb@syzkaller.appspotmail.com>
-Cc:     akpm@linux-foundation.org, cgroups@vger.kernel.org,
-        hannes@cmpxchg.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, mhocko@kernel.org, roman.gushchin@linux.dev,
-        shakeelb@google.com, syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] WARNING in folio_lruvec_lock_irqsave
-Message-ID: <YrM2XCwzu65cb81r@FVFYT0MHHV2J.googleapis.com>
-References: <0000000000004b03c805e2099bf0@google.com>
+        Wed, 22 Jun 2022 11:35:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D44F4393EF;
+        Wed, 22 Jun 2022 08:35:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 72B2E6157C;
+        Wed, 22 Jun 2022 15:35:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7832C34114;
+        Wed, 22 Jun 2022 15:35:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655912106;
+        bh=+/rMeEOEoQRFKFM4Jeb3sAuEdZn2EC853ndEiNvvcQ8=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=CpEZqbVCoZ8/OiE3BkRYJy1J5SJ9E9QrQZjn8GVcMtzs4GLFtz267Z0qng5SD46/9
+         f09kiPCbtJdOCp9J4sc/b/bwwYoDIL0P6QH7wBiSYZ2ASwooato7hKWCCDe3OsxEBI
+         3y0wGCSLFmeou06qXhQAZdWq6vIVVQbcbaQ54R7X2b4nQZDZQa8YPdna97G0+X4edR
+         7NyiOZDFzJmmqfNFT5KjObixOEgEk+fZkvdGoMXvF8FmBfIBM70cRcoVc+TyVKgDrB
+         0NuqikqDuqambaC/DUQPcLZGZmZ+DsNZjWm1/549tSQwuNLQximJwPN0cYeluKX5VK
+         dF7N86GMQV2Og==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 713B55C0169; Wed, 22 Jun 2022 08:35:06 -0700 (PDT)
+Date:   Wed, 22 Jun 2022 08:35:06 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Neeraj Upadhyay <quic_neeraju@quicinc.com>
+Cc:     rcu@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-team@fb.com, rostedt@goodmis.org,
+        Patrick Wang <patrick.wang.shcn@gmail.com>
+Subject: Re: [PATCH rcu 02/12] rcu: Avoid tracing a few functions executed in
+ stop machine
+Message-ID: <20220622153506.GY1790663@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220620222022.GA3839466@paulmck-ThinkPad-P17-Gen-1>
+ <20220620222032.3839547-2-paulmck@kernel.org>
+ <9de7f497-a4cd-ebdb-e912-d4cd73b4a982@quicinc.com>
+ <20220621222147.GR1790663@paulmck-ThinkPad-P17-Gen-1>
+ <95e12a75-72c6-76c7-26cc-a24af1e8cce0@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <0000000000004b03c805e2099bf0@google.com>
+In-Reply-To: <95e12a75-72c6-76c7-26cc-a24af1e8cce0@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 06:49:31AM -0700, syzbot wrote:
-> Hello,
+On Wed, Jun 22, 2022 at 05:20:35PM +0530, Neeraj Upadhyay wrote:
 > 
-> syzbot found the following issue on:
 > 
-> HEAD commit:    ac0ba5454ca8 Add linux-next specific files for 20220622
-> git tree:       linux-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=14354c18080000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=12809dacb9e7c5e0
-> dashboard link: https://syzkaller.appspot.com/bug?extid=ec972d37869318fc3ffb
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> On 6/22/2022 3:51 AM, Paul E. McKenney wrote:
+> > On Tue, Jun 21, 2022 at 11:17:10AM +0530, Neeraj Upadhyay wrote:
+> > > 
+> > > 
+> > > On 6/21/2022 3:50 AM, Paul E. McKenney wrote:
+> > > > From: Patrick Wang <patrick.wang.shcn@gmail.com>
+> > > > 
+> > > > Stop-machine recently started calling additional functions while waiting:
+> > > > 
+> > > > ----------------------------------------------------------------
+> > > > Former stop machine wait loop:
+> > > > do {
+> > > >       cpu_relax(); => macro
+> > > >       ...
+> > > > } while (curstate != STOPMACHINE_EXIT);
+> > > > -----------------------------------------------------------------
+> > > > Current stop machine wait loop:
+> > > > do {
+> > > >       stop_machine_yield(cpumask); => function (notraced)
+> > > >       ...
+> > > >       touch_nmi_watchdog(); => function (notraced, inside calls also notraced)
+> > > >       ...
+> > > >       rcu_momentary_dyntick_idle(); => function (notraced, inside calls traced)
+> > > > } while (curstate != MULTI_STOP_EXIT);
+> > > > ------------------------------------------------------------------
+> > > > 
+> > > > These functions (and the functions that they call) must be marked
+> > > > notrace to prevent them from being updated while they are executing.
+> > > > The consequences of failing to mark these functions can be severe:
+> > > > 
+> > > >     rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
+> > > >     rcu: 	1-...!: (0 ticks this GP) idle=14f/1/0x4000000000000000 softirq=3397/3397 fqs=0
+> > > >     rcu: 	3-...!: (0 ticks this GP) idle=ee9/1/0x4000000000000000 softirq=5168/5168 fqs=0
+> > > >     	(detected by 0, t=8137 jiffies, g=5889, q=2 ncpus=4)
+> > > >     Task dump for CPU 1:
+> > > >     task:migration/1     state:R  running task     stack:    0 pid:   19 ppid:     2 flags:0x00000000
+> > > >     Stopper: multi_cpu_stop+0x0/0x18c <- stop_machine_cpuslocked+0x128/0x174
+> > > >     Call Trace:
+> > > >     Task dump for CPU 3:
+> > > >     task:migration/3     state:R  running task     stack:    0 pid:   29 ppid:     2 flags:0x00000000
+> > > >     Stopper: multi_cpu_stop+0x0/0x18c <- stop_machine_cpuslocked+0x128/0x174
+> > > >     Call Trace:
+> > > >     rcu: rcu_preempt kthread timer wakeup didn't happen for 8136 jiffies! g5889 f0x0 RCU_GP_WAIT_FQS(5) ->state=0x402
+> > > >     rcu: 	Possible timer handling issue on cpu=2 timer-softirq=594
+> > > >     rcu: rcu_preempt kthread starved for 8137 jiffies! g5889 f0x0 RCU_GP_WAIT_FQS(5) ->state=0x402 ->cpu=2
+> > > >     rcu: 	Unless rcu_preempt kthread gets sufficient CPU time, OOM is now expected behavior.
+> > > >     rcu: RCU grace-period kthread stack dump:
+> > > >     task:rcu_preempt     state:I stack:    0 pid:   14 ppid:     2 flags:0x00000000
+> > > >     Call Trace:
+> > > >       schedule+0x56/0xc2
+> > > >       schedule_timeout+0x82/0x184
+> > > >       rcu_gp_fqs_loop+0x19a/0x318
+> > > >       rcu_gp_kthread+0x11a/0x140
+> > > >       kthread+0xee/0x118
+> > > >       ret_from_exception+0x0/0x14
+> > > >     rcu: Stack dump where RCU GP kthread last ran:
+> > > >     Task dump for CPU 2:
+> > > >     task:migration/2     state:R  running task     stack:    0 pid:   24 ppid:     2 flags:0x00000000
+> > > >     Stopper: multi_cpu_stop+0x0/0x18c <- stop_machine_cpuslocked+0x128/0x174
+> > > >     Call Trace:
+> > > > 
+> > > > This commit therefore marks these functions notrace:
+> > > >    rcu_preempt_deferred_qs()
+> > > >    rcu_preempt_need_deferred_qs()
+> > > >    rcu_preempt_deferred_qs_irqrestore()
+> > > > 
+> > > 
+> > > Only the preemptible RCU definitions are updated; so, this change is not
+> > > required for non-preemptible RCU case?
+> > 
+> > It appears to me to be required.  How about as shown below?
+> > 
 > 
-> Unfortunately, I don't have any reproducer for this issue yet.
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+ec972d37869318fc3ffb@syzkaller.appspotmail.com
-> 
->  folio_put include/linux/mm.h:1227 [inline]
->  put_page+0x217/0x280 include/linux/mm.h:1279
->  unmap_and_move_huge_page mm/migrate.c:1343 [inline]
->  migrate_pages+0x3dc3/0x5a10 mm/migrate.c:1440
->  do_mbind mm/mempolicy.c:1332 [inline]
->  kernel_mbind+0x4d7/0x7d0 mm/mempolicy.c:1479
->  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->  entry_SYSCALL_64_after_hwframe+0x46/0xb0
-> page has been migrated, last migrate reason: mempolicy_mbind
-> ------------[ cut here ]------------
-> WARNING: CPU: 1 PID: 18925 at include/linux/memcontrol.h:800 folio_lruvec include/linux/memcontrol.h:800 [inline]
+> Looks good to me.
 
-The warning here is "VM_WARN_ON_ONCE_FOLIO(!memcg && !mem_cgroup_disabled(), folio)",
-the memcg returned by folio_memcg() seems to be NULL which has 2 possibility, one is
-that objcg returned by folio_objcg() is NULL, another is that obj_cgroup_memcg(objcg)
-returns NULL. However, obj_cgroup_memcg() always returns a valid memcg. So Most likely
-objcg is NULL meaning this page is not charged to memcg. Is this possible for LRU pages?
+Thank you!  May I apply your Reviewed-by to both of these?  (1/12 and
+2/12.)
 
-I am not sure if this issue is caused by my commit cca700a8e695 ("mm: lru: use lruvec
-lock to serialize memcg changes") since I have removed folio_test_clear_lru() check
-from folio_batch_move_lru(). We know that a non-lru page may be not charged to memcg.
-But is it possible for a non-lru page to be passed to folio_batch_move_lru()? Seems
-impossible. Right? I am not very confident about this commit, hopefully, someone can
-review it.
+							Thanx, Paul
 
-Thanks.
-
-> WARNING: CPU: 1 PID: 18925 at include/linux/memcontrol.h:800 folio_lruvec_lock_irqsave+0x2fd/0x4f0 mm/memcontrol.c:1424
-> Modules linked in:
-> CPU: 1 PID: 18925 Comm: syz-executor.3 Not tainted 5.19.0-rc3-next-20220622-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> RIP: 0010:folio_lruvec include/linux/memcontrol.h:800 [inline]
-> RIP: 0010:folio_lruvec_lock_irqsave+0x2fd/0x4f0 mm/memcontrol.c:1424
-> Code: 1f 44 00 00 45 31 e4 80 3d 06 3e da 0b 00 0f 85 01 fe ff ff 48 c7 c6 40 6f da 89 4c 89 f7 e8 0a 44 e2 ff c6 05 ea 3d da 0b 01 <0f> 0b e9 e4 fd ff ff e8 67 be ad 07 85 c0 0f 84 37 fd ff ff 80 3d
-> RSP: 0018:ffffc9000b84f2c8 EFLAGS: 00010246
-> RAX: 0000000000040000 RBX: fffff9400027e007 RCX: ffffc900135af000
-> RDX: 0000000000040000 RSI: ffffffff81ce36a6 RDI: fffff52001709e28
-> RBP: dffffc0000000000 R08: 000000000000003c R09: 0000000000000000
-> R10: 0000000080000001 R11: 0000000000000001 R12: 0000000000000000
-> R13: fffff9400027e000 R14: ffffea00013f0000 R15: 0000000000000000
-> FS:  00007f5cfbb96700(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 000000002073f000 CR3: 0000000074b9f000 CR4: 00000000003506e0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
->  <TASK>
->  folio_lruvec_relock_irqsave include/linux/memcontrol.h:1666 [inline]
->  folio_batch_move_lru+0xf9/0x500 mm/swap.c:242
->  folio_batch_add_and_move+0xd4/0x130 mm/swap.c:258
->  deactivate_file_folio+0x222/0x580 mm/swap.c:678
->  invalidate_mapping_pagevec+0x38d/0x5c0 mm/truncate.c:535
->  drop_pagecache_sb+0xcf/0x2a0 fs/drop_caches.c:39
->  iterate_supers+0x13c/0x290 fs/super.c:694
->  drop_caches_sysctl_handler+0xdb/0x110 fs/drop_caches.c:62
->  proc_sys_call_handler+0x4a1/0x6e0 fs/proc/proc_sysctl.c:611
->  call_write_iter include/linux/fs.h:2057 [inline]
->  do_iter_readv_writev+0x3d1/0x640 fs/read_write.c:742
->  do_iter_write+0x182/0x700 fs/read_write.c:868
->  vfs_iter_write+0x70/0xa0 fs/read_write.c:909
->  iter_file_splice_write+0x723/0xc70 fs/splice.c:689
->  do_splice_from fs/splice.c:767 [inline]
->  direct_splice_actor+0x110/0x180 fs/splice.c:936
->  splice_direct_to_actor+0x34b/0x8c0 fs/splice.c:891
->  do_splice_direct+0x1a7/0x270 fs/splice.c:979
->  do_sendfile+0xae0/0x1240 fs/read_write.c:1262
->  __do_sys_sendfile64 fs/read_write.c:1321 [inline]
->  __se_sys_sendfile64 fs/read_write.c:1313 [inline]
->  __x64_sys_sendfile64+0x149/0x210 fs/read_write.c:1313
->  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->  entry_SYSCALL_64_after_hwframe+0x46/0xb0
-> RIP: 0033:0x7f5cfaa89109
-> Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-> RSP: 002b:00007f5cfbb96168 EFLAGS: 00000246 ORIG_RAX: 0000000000000028
-> RAX: ffffffffffffffda RBX: 00007f5cfab9c030 RCX: 00007f5cfaa89109
-> RDX: 0000000020002080 RSI: 0000000000000005 RDI: 0000000000000006
-> RBP: 00007f5cfaae305d R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000000262 R11: 0000000000000246 R12: 0000000000000000
-> R13: 00007fff1ef394df R14: 00007f5cfbb96300 R15: 0000000000022000
->  </TASK>
+> Thanks
+> Neeraj
 > 
-> 
-> ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
-> 
-> syzbot will keep track of this issue. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> 
+> > 							Thanx, Paul
+> > 
+> > ------------------------------------------------------------------------
+> > 
+> > commit 06cfe0c675c93884c3ffc75ec24ece7d0acd7a32
+> > Author: Patrick Wang <patrick.wang.shcn@gmail.com>
+> > Date:   Tue Apr 26 18:45:02 2022 +0800
+> > 
+> >      rcu: Avoid tracing a few functions executed in stop machine
+> >      Stop-machine recently started calling additional functions while waiting:
+> >      ----------------------------------------------------------------
+> >      Former stop machine wait loop:
+> >      do {
+> >          cpu_relax(); => macro
+> >          ...
+> >      } while (curstate != STOPMACHINE_EXIT);
+> >      -----------------------------------------------------------------
+> >      Current stop machine wait loop:
+> >      do {
+> >          stop_machine_yield(cpumask); => function (notraced)
+> >          ...
+> >          touch_nmi_watchdog(); => function (notraced, inside calls also notraced)
+> >          ...
+> >          rcu_momentary_dyntick_idle(); => function (notraced, inside calls traced)
+> >      } while (curstate != MULTI_STOP_EXIT);
+> >      ------------------------------------------------------------------
+> >      These functions (and the functions that they call) must be marked
+> >      notrace to prevent them from being updated while they are executing.
+> >      The consequences of failing to mark these functions can be severe:
+> >        rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
+> >        rcu:  1-...!: (0 ticks this GP) idle=14f/1/0x4000000000000000 softirq=3397/3397 fqs=0
+> >        rcu:  3-...!: (0 ticks this GP) idle=ee9/1/0x4000000000000000 softirq=5168/5168 fqs=0
+> >              (detected by 0, t=8137 jiffies, g=5889, q=2 ncpus=4)
+> >        Task dump for CPU 1:
+> >        task:migration/1     state:R  running task     stack:    0 pid:   19 ppid:     2 flags:0x00000000
+> >        Stopper: multi_cpu_stop+0x0/0x18c <- stop_machine_cpuslocked+0x128/0x174
+> >        Call Trace:
+> >        Task dump for CPU 3:
+> >        task:migration/3     state:R  running task     stack:    0 pid:   29 ppid:     2 flags:0x00000000
+> >        Stopper: multi_cpu_stop+0x0/0x18c <- stop_machine_cpuslocked+0x128/0x174
+> >        Call Trace:
+> >        rcu: rcu_preempt kthread timer wakeup didn't happen for 8136 jiffies! g5889 f0x0 RCU_GP_WAIT_FQS(5) ->state=0x402
+> >        rcu:  Possible timer handling issue on cpu=2 timer-softirq=594
+> >        rcu: rcu_preempt kthread starved for 8137 jiffies! g5889 f0x0 RCU_GP_WAIT_FQS(5) ->state=0x402 ->cpu=2
+> >        rcu:  Unless rcu_preempt kthread gets sufficient CPU time, OOM is now expected behavior.
+> >        rcu: RCU grace-period kthread stack dump:
+> >        task:rcu_preempt     state:I stack:    0 pid:   14 ppid:     2 flags:0x00000000
+> >        Call Trace:
+> >          schedule+0x56/0xc2
+> >          schedule_timeout+0x82/0x184
+> >          rcu_gp_fqs_loop+0x19a/0x318
+> >          rcu_gp_kthread+0x11a/0x140
+> >          kthread+0xee/0x118
+> >          ret_from_exception+0x0/0x14
+> >        rcu: Stack dump where RCU GP kthread last ran:
+> >        Task dump for CPU 2:
+> >        task:migration/2     state:R  running task     stack:    0 pid:   24 ppid:     2 flags:0x00000000
+> >        Stopper: multi_cpu_stop+0x0/0x18c <- stop_machine_cpuslocked+0x128/0x174
+> >        Call Trace:
+> >      This commit therefore marks these functions notrace:
+> >       rcu_preempt_deferred_qs()
+> >       rcu_preempt_need_deferred_qs()
+> >       rcu_preempt_deferred_qs_irqrestore()
+> >      [ paulmck: Apply feedback from Neeraj Upadhyay. ]
+> >      Signed-off-by: Patrick Wang <patrick.wang.shcn@gmail.com>
+> >      Acked-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+> >      Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+> > 
+> > diff --git a/kernel/rcu/tree_plugin.h b/kernel/rcu/tree_plugin.h
+> > index c8ba0fe17267c..7a07f2ca153e2 100644
+> > --- a/kernel/rcu/tree_plugin.h
+> > +++ b/kernel/rcu/tree_plugin.h
+> > @@ -460,7 +460,7 @@ static bool rcu_preempt_has_tasks(struct rcu_node *rnp)
+> >    * be quite short, for example, in the case of the call from
+> >    * rcu_read_unlock_special().
+> >    */
+> > -static void
+> > +static notrace void
+> >   rcu_preempt_deferred_qs_irqrestore(struct task_struct *t, unsigned long flags)
+> >   {
+> >   	bool empty_exp;
+> > @@ -581,7 +581,7 @@ rcu_preempt_deferred_qs_irqrestore(struct task_struct *t, unsigned long flags)
+> >    * is disabled.  This function cannot be expected to understand these
+> >    * nuances, so the caller must handle them.
+> >    */
+> > -static bool rcu_preempt_need_deferred_qs(struct task_struct *t)
+> > +static notrace bool rcu_preempt_need_deferred_qs(struct task_struct *t)
+> >   {
+> >   	return (__this_cpu_read(rcu_data.cpu_no_qs.b.exp) ||
+> >   		READ_ONCE(t->rcu_read_unlock_special.s)) &&
+> > @@ -595,7 +595,7 @@ static bool rcu_preempt_need_deferred_qs(struct task_struct *t)
+> >    * evaluate safety in terms of interrupt, softirq, and preemption
+> >    * disabling.
+> >    */
+> > -static void rcu_preempt_deferred_qs(struct task_struct *t)
+> > +static notrace void rcu_preempt_deferred_qs(struct task_struct *t)
+> >   {
+> >   	unsigned long flags;
+> > @@ -926,7 +926,7 @@ static bool rcu_preempt_has_tasks(struct rcu_node *rnp)
+> >    * Because there is no preemptible RCU, there can be no deferred quiescent
+> >    * states.
+> >    */
+> > -static bool rcu_preempt_need_deferred_qs(struct task_struct *t)
+> > +static notrace bool rcu_preempt_need_deferred_qs(struct task_struct *t)
+> >   {
+> >   	return false;
+> >   }
+> > @@ -935,7 +935,7 @@ static bool rcu_preempt_need_deferred_qs(struct task_struct *t)
+> >   // period for a quiescent state from this CPU.  Note that requests from
+> >   // tasks are handled when removing the task from the blocked-tasks list
+> >   // below.
+> > -static void rcu_preempt_deferred_qs(struct task_struct *t)
+> > +static notrace void rcu_preempt_deferred_qs(struct task_struct *t)
+> >   {
+> >   	struct rcu_data *rdp = this_cpu_ptr(&rcu_data);
