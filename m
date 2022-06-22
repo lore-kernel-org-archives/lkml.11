@@ -2,113 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98D5AC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 16:54:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAAC7C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 16:55:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376716AbiFVQyi (ORCPT
+        id S1359540AbiFVQzU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 12:54:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58122 "EHLO
+        Wed, 22 Jun 2022 12:55:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377568AbiFVQyI (ORCPT
+        with ESMTP id S1377351AbiFVQxp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 12:54:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2280C39168;
-        Wed, 22 Jun 2022 09:53:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CF12FB8204C;
-        Wed, 22 Jun 2022 16:53:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FC87C34114;
-        Wed, 22 Jun 2022 16:53:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655916806;
-        bh=9Tsp3154yO2Z+AfH0+3B9Ry1RXBwikYidZBcM7W88zA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=kA2RuE7L1wBfeASH4Kj8cKdyVKTWPFYNkldRvtV9vKIBfHwEWWrvlXNBo+UeSSVK3
-         YJGREQ/ts3GXNN+atQU20DVFDrKuiPoSo+qbAN5ekdKmKmUw0kyzb/N3bC/tPZvxT3
-         tEvshJ+RNABGNLhenFCvEsrb993/g6j9XLlu7jbZRD0uLxIPEdQEEddieZR8yPJv+8
-         lnq+vp326qSw8U6cza+gJkkESjVxATFMwWjl0Pp5asINKFm7GkASjYcsolFXjwtgHT
-         d6ImWtNc087pqfhxYlhbj/EPvJeSu9VAzRyHXpuIVZMf7XTofI3GhERjYoH+QTrpBv
-         +f9CUbsYeEh2g==
-Date:   Wed, 22 Jun 2022 09:53:24 -0700
-From:   Jaegeuk Kim <jaegeuk@kernel.org>
-To:     linux-kernel@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net
-Cc:     stable@vger.kernel.org
-Subject: Re: [PATCH 1/3 v2] f2fs: attach inline_data after setting compression
-Message-ID: <YrNJBMGpjPdtwVY+@google.com>
-References: <20220617223106.3517374-1-jaegeuk@kernel.org>
+        Wed, 22 Jun 2022 12:53:45 -0400
+Received: from smtp-bc0a.mail.infomaniak.ch (smtp-bc0a.mail.infomaniak.ch [45.157.188.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DD134161B
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 09:52:06 -0700 (PDT)
+Received: from smtp-3-0000.mail.infomaniak.ch (unknown [10.4.36.107])
+        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4LSq3L32bczMqwg4;
+        Wed, 22 Jun 2022 18:44:14 +0200 (CEST)
+Received: from philippe-pc.toradex.int (unknown [31.10.206.125])
+        by smtp-3-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4LSq3J1hSjzlqV0V;
+        Wed, 22 Jun 2022 18:44:12 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=pschenker.ch;
+        s=20220412; t=1655916254;
+        bh=16ktisfcvBgIYLREi0tcTzW4w4C5ndQSyEJGx6PC66Q=;
+        h=From:To:Cc:Subject:Date:From;
+        b=vLCYOSQp/JhOUYEuL2eekc5smKl3lsAvjtBe8HdlSycjBnvJI0SvWlE4KLQ/6Chum
+         B9jAJMyb9WO04DPm1g/yk/i3Dxuv6mAkzRRLSC6Hgd0KE8FsuNo+5+uQqQ6hFeMpPi
+         qVwwL5zo3byiZpNN5/1tlB/pjHA3HWmNI0+ZNnoY=
+From:   Philippe Schenker <dev@pschenker.ch>
+To:     shawnguo@kernel.org, devicetree@vger.kernel.org
+Cc:     Philippe Schenker <philippe.schenker@toradex.com>,
+        Francesco Dolcini <francesco.dolcini@toradex.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] arm64: dts: imx8m{m,p}-verdin: use IT temperatures
+Date:   Wed, 22 Jun 2022 18:44:10 +0200
+Message-Id: <20220622164410.457249-1-dev@pschenker.ch>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220617223106.3517374-1-jaegeuk@kernel.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This fixes the below corruption.
+From: Philippe Schenker <philippe.schenker@toradex.com>
 
-[345393.335389] F2FS-fs (vdb): sanity_check_inode: inode (ino=6d0, mode=33206) should not have inline_data, run fsck to fix
+Use IT temperature threshold for critical/passive trip point
+on Verdin iMX8M Plus and Mini.
 
-Cc: <stable@vger.kernel.org>
-Fixes: 677a82b44ebf ("f2fs: fix to do sanity check for inline inode")
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Signed-off-by: Philippe Schenker <philippe.schenker@toradex.com>
+Reviewed-by: Francesco Dolcini <francesco.dolcini@toradex.com>
+
 ---
- fs/f2fs/namei.c | 17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
 
-diff --git a/fs/f2fs/namei.c b/fs/f2fs/namei.c
-index c549acb52ac4..bf00d5057abb 100644
---- a/fs/f2fs/namei.c
-+++ b/fs/f2fs/namei.c
-@@ -89,8 +89,6 @@ static struct inode *f2fs_new_inode(struct user_namespace *mnt_userns,
- 	if (test_opt(sbi, INLINE_XATTR))
- 		set_inode_flag(inode, FI_INLINE_XATTR);
+ arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi | 8 ++++++++
+ arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi | 8 ++++++++
+ 2 files changed, 16 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi
+index eafa88d980b3..a819ed43e727 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi
+@@ -154,6 +154,14 @@ &A53_3 {
+ 	cpu-supply = <&reg_vdd_arm>;
+ };
  
--	if (test_opt(sbi, INLINE_DATA) && f2fs_may_inline_data(inode))
--		set_inode_flag(inode, FI_INLINE_DATA);
- 	if (f2fs_may_inline_dentry(inode))
- 		set_inode_flag(inode, FI_INLINE_DENTRY);
- 
-@@ -107,10 +105,6 @@ static struct inode *f2fs_new_inode(struct user_namespace *mnt_userns,
- 
- 	f2fs_init_extent_tree(inode, NULL);
- 
--	stat_inc_inline_xattr(inode);
--	stat_inc_inline_inode(inode);
--	stat_inc_inline_dir(inode);
--
- 	F2FS_I(inode)->i_flags =
- 		f2fs_mask_flags(mode, F2FS_I(dir)->i_flags & F2FS_FL_INHERITED);
- 
-@@ -127,6 +121,14 @@ static struct inode *f2fs_new_inode(struct user_namespace *mnt_userns,
- 			set_compress_context(inode);
- 	}
- 
-+	/* Should enable inline_data after compression set */
-+	if (test_opt(sbi, INLINE_DATA) && f2fs_may_inline_data(inode))
-+		set_inode_flag(inode, FI_INLINE_DATA);
++&cpu_alert0 {
++	temperature = <95000>;
++};
 +
-+	stat_inc_inline_xattr(inode);
-+	stat_inc_inline_inode(inode);
-+	stat_inc_inline_dir(inode);
++&cpu_crit0 {
++	temperature = <105000>;
++};
 +
- 	f2fs_set_inode_flags(inode);
+ &ddrc {
+ 	operating-points-v2 = <&ddrc_opp_table>;
  
- 	trace_f2fs_new_inode(inode, 0);
-@@ -325,6 +327,9 @@ static void set_compress_inode(struct f2fs_sb_info *sbi, struct inode *inode,
- 		if (!is_extension_exist(name, ext[i], false))
- 			continue;
+diff --git a/arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi b/arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi
+index fb17e329cd37..7d8d8df569c5 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi
+@@ -146,6 +146,14 @@ reserved-memory {
+ 	};
+ };
  
-+		/* Do not use inline_data with compression */
-+		stat_dec_inline_inode(inode);
-+		clear_inode_flag(inode, FI_INLINE_DATA);
- 		set_compress_context(inode);
- 		return;
- 	}
++&cpu_alert0 {
++	temperature = <95000>;
++};
++
++&cpu_crit0 {
++	temperature = <105000>;
++};
++
+ /* Verdin SPI_1 */
+ &ecspi1 {
+ 	#address-cells = <1>;
 -- 
-2.37.0.rc0.104.g0611611a94-goog
+2.36.1
 
