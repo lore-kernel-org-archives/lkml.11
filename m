@@ -2,163 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81A9BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 04:41:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E8D6C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 04:44:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356925AbiFVElQ (ORCPT
+        id S1356929AbiFVEoi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 00:41:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35242 "EHLO
+        Wed, 22 Jun 2022 00:44:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229644AbiFVElO (ORCPT
+        with ESMTP id S229644AbiFVEog (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 00:41:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B278535848;
-        Tue, 21 Jun 2022 21:41:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63904B81B08;
-        Wed, 22 Jun 2022 04:41:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0657BC3411B;
-        Wed, 22 Jun 2022 04:41:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655872870;
-        bh=eEq1/2iPDzNz1B5Oou72nRfVOsUdg1B5WvvRswLKrBM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=b+QXBEoaieKF6aDG6vUNkd0kuxYfFerKo7EkAuTsOIK4VUAmqA9o6W1sMonggZy14
-         H4TVLn+gmLIIPFknf5xspz2pSX2gTsuSvmH/PFUVt/jkcRXnkxW15x11IbAwJm/wV4
-         2wenMK2FnO94kUXkHZrITh7Pvng3C9mjBe770eZgba2/qavFem6QLFZUVdWtq+LeHG
-         UO9J/lIJFDVBO3h0LTJwB+buoGcBJ1ZYTV7rFmRoSdgzCdktyFHWfreVsbn4mU/1Yb
-         PFhlUFdhJxYo4l3iFGiVmf48eJhV6rJl51Qa9qJIddgZlNa0Pta5llu7jyldip7AQJ
-         8sWYu8NS1Q9Aw==
-Date:   Tue, 21 Jun 2022 21:41:09 -0700
-From:   "Darrick J. Wong" <djwong@kernel.org>
-To:     Shida Zhang <starzhangzsd@gmail.com>
-Cc:     dchinner@redhat.com, zhangshida@kylinos.cn,
-        linux-kernel@vger.kernel.org, linux-xfs@vger.kernel.org
-Subject: Re: [PATCH v3] xfs: add check before calling xfs_mod_fdblocks
-Message-ID: <YrKdZc0fBBDWGjld@magnolia>
-References: <20220621084238.1235880-1-zhangshida@kylinos.cn>
+        Wed, 22 Jun 2022 00:44:36 -0400
+Received: from nautica.notk.org (nautica.notk.org [91.121.71.147])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5813333E17;
+        Tue, 21 Jun 2022 21:44:35 -0700 (PDT)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id 16CF8C01E; Wed, 22 Jun 2022 06:44:33 +0200 (CEST)
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id C1B91C009;
+        Wed, 22 Jun 2022 06:44:30 +0200 (CEST)
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id da68f758;
+        Wed, 22 Jun 2022 04:44:27 +0000 (UTC)
+Date:   Wed, 22 Jun 2022 13:44:12 +0900
+From:   Dominique Martinet <asmadeus@codewreck.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Christian Schoenebeck <linux_oss@crudebyte.com>,
+        Tyler Hicks <tyhicks@linux.microsoft.com>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        v9fs-developer@lists.sourceforge.net
+Subject: [GIT PULL] 9p fixes for 5.19-rc4
+Message-ID: <YrKeHMRfXTNw3vTE@codewreck.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220621084238.1235880-1-zhangshida@kylinos.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 21, 2022 at 04:42:38PM +0800, Shida Zhang wrote:
-> Checks are missing when delta equals 0 in __xfs_ag_resv_free() and
-> __xfs_ag_resv_init().
-> 
-> the case that the delta equals 0 is reachable with the command
-> sequence below:
-> 
->  # mkfs.xfs -f /dev/sdb5
->  # mount /dev/sdb5 /mnt/scratch/
-> 
-> where /dev/sdb5 is my disk for test. And if the patch below is
-> applied:
-> 
-> ====
-> xfs_mod_freecounter(
->         if (rsvd)
->                 ASSERT(has_resv_pool);
-> 
-> +       if (delta == 0)
-> +               dump_stack();
-> +
->         if (delta > 0) {
->                 /*
->                  * If the reserve pool is depleted, put blocks back into it
-> ====
-> 
-> the following stack will be shown in the message:
-> 
-> =>  xfs_mod_freecounter+0x84/0x2b8
-> =>  __xfs_ag_resv_free+0xc4/0x188
-> =>  xfs_ag_resv_free+0x24/0x50
-> =>  xfs_fs_unreserve_ag_blocks+0x40/0x160
-> =>  xfs_mountfs+0x500/0x900
-> =>  xfs_fs_fill_super+0x3d8/0x810
-> =>  get_tree_bdev+0x164/0x258
-> =>  xfs_fs_get_tree+0x20/0x30
-> =>  vfs_get_tree+0x30/0xf8
-> =>  path_mount+0x3c4/0xa58
-> =>  do_mount+0x74/0x98
-> 
-> =>  xfs_mod_freecounter+0x84/0x2b8
-> =>  __xfs_ag_resv_init+0x64/0x1d0
-> =>  xfs_ag_resv_init+0x108/0x1c8
-> =>  xfs_fs_reserve_ag_blocks+0x4c/0x110
-> =>  xfs_mountfs+0x57c/0x900
-> =>  xfs_fs_fill_super+0x3d8/0x810
-> =>  get_tree_bdev+0x164/0x258
-> =>  xfs_fs_get_tree+0x20/0x30
-> =>  vfs_get_tree+0x30/0xf8
-> =>  path_mount+0x3c4/0xa58
-> =>  do_mount+0x74/0x98
-> 
-> After applying this patch, we can avoid to call xfs_mod_fdblocks when
-> delta equals 0.
-> 
-> Signed-off-by: Shida Zhang <zhangshida@kylinos.cn>
-> ---
->  Changes from v1:
->  -Add checks before calling xfs_mod_fdblocks instead.
->  Changes from v2:
->  -Rephrase the commit description.
-> 
->  fs/xfs/libxfs/xfs_ag_resv.c | 16 +++++++++++++---
->  1 file changed, 13 insertions(+), 3 deletions(-)
-> 
-> diff --git a/fs/xfs/libxfs/xfs_ag_resv.c b/fs/xfs/libxfs/xfs_ag_resv.c
-> index fe94058d4e9e..c8fa032e4b00 100644
-> --- a/fs/xfs/libxfs/xfs_ag_resv.c
-> +++ b/fs/xfs/libxfs/xfs_ag_resv.c
-> @@ -149,7 +149,12 @@ __xfs_ag_resv_free(
->  		oldresv = resv->ar_orig_reserved;
->  	else
->  		oldresv = resv->ar_reserved;
-> -	error = xfs_mod_fdblocks(pag->pag_mount, oldresv, true);
-> +
-> +	if (oldresv)
-> +		error = xfs_mod_fdblocks(pag->pag_mount, oldresv, true);
-> +	else
-> +		error = 0;
-> +
->  	resv->ar_reserved = 0;
->  	resv->ar_asked = 0;
->  	resv->ar_orig_reserved = 0;
-> @@ -215,8 +220,13 @@ __xfs_ag_resv_init(
->  
->  	if (XFS_TEST_ERROR(false, mp, XFS_ERRTAG_AG_RESV_FAIL))
->  		error = -ENOSPC;
-> -	else
-> -		error = xfs_mod_fdblocks(mp, -(int64_t)hidden_space, true);
-> +	else {
-> +		error = 0;
-> +		if (hidden_space)
-> +			error = xfs_mod_fdblocks(mp, -(int64_t)hidden_space,
-> +						true);
 
-I understand that calling __xfs_ag_resv_init on an AG with a maximally
-sized data structure can result in @hidden_space being zero here, but
-why does that matter enough to change the code?  Are you experiencing
-problems when this happens?  Unnecessary slowdowns at mount time?
-Something else?
+Thanks to Tyler and Christian for the patch/reviews/tests!
 
-This is v3 of a patch and I still can't tell why I should care ...?
 
---D
+The following changes since commit b13baccc3850ca8b8cccbf8ed9912dbaa0fdf7f3:
 
-> +	}
-> +
->  	if (error) {
->  		trace_xfs_ag_resv_init_error(pag->pag_mount, pag->pag_agno,
->  				error, _RET_IP_);
-> -- 
-> 2.25.1
-> 
+  Linux 5.19-rc2 (2022-06-12 16:11:37 -0700)
+
+are available in the Git repository at:
+
+  https://github.com/martinetd/linux tags/9p-for-5.19-rc4
+
+for you to fetch changes up to b0017602fdf6bd3f344dd49eaee8b6ffeed6dbac:
+
+  9p: fix EBADF errors in cached mode (2022-06-17 06:03:30 +0900)
+
+----------------------------------------------------------------
+9p-for-5.19-rc4: fid refcount and fscache fixes
+
+This contains a couple of fixes:
+ - fid refcounting was incorrect in some corner cases and would
+leak resources, only freed at umount time. The first three commits
+fix three such cases
+ - cache=loose or fscache was broken when trying to write a partial
+page to a file with no read permission since the rework a few releases
+ago. The fix taken here is just to restore old behavior of using the
+special 'writeback_fid' for such reads, which is open as root/RDWR
+and such not get complains that we try to read on a WRONLY fid.
+Long-term it'd be nice to get rid of this and not issue the read at
+all (skip cache?) in such cases, but that direction hasn't progressed
+
+----------------------------------------------------------------
+Dominique Martinet (3):
+      9p: fix fid refcount leak in v9fs_vfs_atomic_open_dotl
+      9p: fix fid refcount leak in v9fs_vfs_get_link
+      9p: fix EBADF errors in cached mode
+
+Tyler Hicks (1):
+      9p: Fix refcounting during full path walks for fid lookups
+
+ fs/9p/fid.c            | 22 +++++++++-------------
+ fs/9p/vfs_addr.c       | 13 +++++++++++++
+ fs/9p/vfs_inode.c      |  8 ++++----
+ fs/9p/vfs_inode_dotl.c |  3 +++
+ 4 files changed, 29 insertions(+), 17 deletions(-)
+
+--
+Dominique
