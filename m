@@ -2,191 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93877C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 17:25:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB671C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 17:26:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376848AbiFVRZh (ORCPT
+        id S1359032AbiFVR0M (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 13:25:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33966 "EHLO
+        Wed, 22 Jun 2022 13:26:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376400AbiFVRZf (ORCPT
+        with ESMTP id S230476AbiFVR0J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 13:25:35 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 152D025C51
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 10:25:34 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id s37so16697022pfg.11
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 10:25:34 -0700 (PDT)
+        Wed, 22 Jun 2022 13:26:09 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9DB3289AF;
+        Wed, 22 Jun 2022 10:26:08 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id r7-20020a1c4407000000b003a02cc49774so67648wma.1;
+        Wed, 22 Jun 2022 10:26:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=F1h7Ij/RTr4Zg7zLZzpgB2ElBs7s3zrp84VdRnTR+Xc=;
-        b=laefo6G9MLDmi0wKtkaq0i7nGZ1aSPyQWj2RnlF/s1kuk2xAk3KSr6lXYrJVRXzD9Y
-         r6LIV49fQ9Ya7irW0bTDRDbWuPauJImCAIsyH2G6DiJpdD5ccwJ4ygcetLgg68ZRRROR
-         5Jl0BHaNSyrm4PkhMHPt/0yREML0hEExZypPwNmBdg4z28xhlFETMIbCXRmbtnp5fma9
-         AKSsv2Z2GjfXQBXK2X1EMRvoUAqdgDk9On16yr16I5aNpNyp0FdpcyLwHHf3zODIUuFS
-         p4CYF2tJFlHLkAnMFbKEv71zmir+GvJVdVaUfhORIsyjxIkuzEf/eLNuRLFQVMFCE4Z1
-         2KNg==
+        bh=gx8MHjBKLUDJNFsntdrDoHFHXszbdB+MLB7TwASONiA=;
+        b=CeIyY61ktnfWz5ZbciV0WOC5VFw8HGSJ+5WUxqk65+0qibR3nxZpsCHGt+0uY/W6YG
+         aVCLgfoBrS8qPA0lAjeyCnF4l+Dn63W6qPg9e/RQMPZ1xno+OFhTG1z1USQYjhZK0A84
+         yFOIrl6+lT2aSQnuKCZB/3ZHaBCzPi/7PZFq7bS+/81ZQv9mZ2az7KE1gTk6RbfO5xpb
+         WHjx2mDimZ9lV3WsC+ofhxJ6OuKamj+DjaIwQWb9YBP2FaszDDKfsJm1Muhux9Wto2Ww
+         heCbY7CG1/C4a8UUfKLjRsWkiQn17wuFNQo5FPa5Z2MSndckB9DnXZVkLoA4/ddOX43c
+         YgEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=F1h7Ij/RTr4Zg7zLZzpgB2ElBs7s3zrp84VdRnTR+Xc=;
-        b=BnYxFCI2SDkXR9SYKGNeFQt2ByE8nkBz+OKlD6jZCeejMHG0ChCiLL527C2Y6bE9f4
-         kIoh137U6RYB4Itxlk1QdHKBUb1ChQbPyOewjhzPDwKbMPO0tXNJi3yqCKCkpkyrusDp
-         8CemOM6tNVhgCPqBk5zoNrztbe9elWMOMIT4iAGtqwDdxyeuhia7rUuP7De4+aWnxe7T
-         XUKd509QvT8RtIZmWkU/mPw+7FeftI2SWkUdmcrFOyBwz5NIe7aIb/Rf0qCqxygMJI2d
-         ri8gtNxXhIzCwFkBkHfq8LWxUUHCSjFPTvSQ0oC3nxJOH0FbV3IbXBLTQoK2H08etPPF
-         S5qA==
-X-Gm-Message-State: AJIora+jKE+4P1b7zIq9gg6J22mIAdc2krNraknd9ecMMy9ZGIKxM0yJ
-        M4GoETeLbqHjYCtN2jaQg4IOdA==
-X-Google-Smtp-Source: AGRyM1vInwevu3tlVu6C5YUKTeIb1PSpcZfZEAyjD+A/y+J2jdqOYiiuX0FyQv9M7m4TkjDxkCSDvw==
-X-Received: by 2002:a63:c63:0:b0:3fe:e14b:b5a0 with SMTP id 35-20020a630c63000000b003fee14bb5a0mr3848548pgm.428.1655918733500;
-        Wed, 22 Jun 2022 10:25:33 -0700 (PDT)
-Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
-        by smtp.gmail.com with ESMTPSA id x15-20020a63b34f000000b0040d027e1f0fsm3434521pgt.25.2022.06.22.10.25.31
+        bh=gx8MHjBKLUDJNFsntdrDoHFHXszbdB+MLB7TwASONiA=;
+        b=OcGXQZOWxVz1Z7rcYGP0AvmmyKltykzMPTk29ep1Ze+6HK/LMoyUaA/EwKjuhNyhJQ
+         BYnUsUSMZDG9metb/OYUTPyEPa6FM9Qaklwc6W9917sApZhJW0u3nMbKOfGwKz2ddZsF
+         q5Zqeg2Q0fAVLcQCtisYBKPaAmNBwIgqXT90DWcGV+S5gXxvc+BraGs7meB4jhgHC5Bc
+         53IkFM3TQRt4NkP2TQ2Rx/rk5XpR+LeFq/mfjpltZdkSxfCHiojArtQg3gvp17wwi3sa
+         5CTFJkIA4f4R3qFvXbAmUfNV1DQFJUAeAjZPT3VOTzPaW7zhWLhje5pyDiOTRn1vypxD
+         OuUQ==
+X-Gm-Message-State: AOAM5325dvCXjpT0t9GLZMqLU8e2Y0OZ0uySq3kAcDR6MXi2LAm+QhY1
+        b3lTHvQ4eePPnDUXTlQL4FzF2Vsm5So=
+X-Google-Smtp-Source: ABdhPJw92zzWDOf4nX5co4h+yOaYfpvSE1lqWrAWyMnVuVIbDMJBNV5Z9nVcUfk7df9Z0MwcebHBGQ==
+X-Received: by 2002:a05:600c:2194:b0:39c:419c:1a24 with SMTP id e20-20020a05600c219400b0039c419c1a24mr47332513wme.186.1655918767173;
+        Wed, 22 Jun 2022 10:26:07 -0700 (PDT)
+Received: from debian (host-78-150-47-22.as13285.net. [78.150.47.22])
+        by smtp.gmail.com with ESMTPSA id t5-20020a05600001c500b0020d106c0386sm11482007wrx.89.2022.06.22.10.26.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jun 2022 10:25:32 -0700 (PDT)
-Date:   Wed, 22 Jun 2022 11:25:29 -0600
-From:   Mathieu Poirier <mathieu.poirier@linaro.org>
-To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-Cc:     bjorn.andersson@linaro.org, linux-remoteproc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Peng Fan <peng.fan@nxp.com>
-Subject: Re: [PATCH V5 2/2] remoteproc: support attach recovery after rproc
- crash
-Message-ID: <20220622172529.GC1606016@p14s>
-References: <20220615032048.465486-1-peng.fan@oss.nxp.com>
- <20220615032048.465486-3-peng.fan@oss.nxp.com>
+        Wed, 22 Jun 2022 10:26:06 -0700 (PDT)
+Date:   Wed, 22 Jun 2022 18:26:04 +0100
+From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Nathan Chancellor <nathan@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: mainline build failure due to 281d0c962752 ("fortify: Add Clang
+ support")
+Message-ID: <YrNQrPNF/XfriP99@debian>
+References: <YrLtpixBqWDmZT/V@debian>
+ <CAHk-=wiN1ujyVTgyt1GuZiyWAPfpLwwg-FY1V-J56saMyiA1Lg@mail.gmail.com>
+ <YrMu5bdhkPzkxv/X@dev-arch.thelio-3990X>
+ <CAHk-=wjTS9OJzggD8=tqtj0DoRCKhjjhpYWoB=bPQAv3QMa+eA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220615032048.465486-3-peng.fan@oss.nxp.com>
+In-Reply-To: <CAHk-=wjTS9OJzggD8=tqtj0DoRCKhjjhpYWoB=bPQAv3QMa+eA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 11:20:48AM +0800, Peng Fan (OSS) wrote:
-> From: Peng Fan <peng.fan@nxp.com>
+On Wed, Jun 22, 2022 at 11:21:09AM -0500, Linus Torvalds wrote:
+> On Wed, Jun 22, 2022 at 10:02 AM Nathan Chancellor <nathan@kernel.org> wrote:
+> >
+> > Right, we are working on a statically linked and optimized build of LLVM
+> > that people can use similar to the GCC builds provided on kernel.org,
+> > which should make the compile time problem not as bad as well as making
+> > it easier for developers to get access to a recent version of clang with
+> > all the fixes and improvements that we have made in upstream LLVM.
 > 
-> Current logic only support main processor to stop/start the remote
-> processor after rproc crash. However to SoC, such as i.MX8QM/QXP, the
-> remote processor could do attach recovery after crash and trigger watchdog
-> reboot. It does not need main processor to load image, or stop/start M4
-> core.
-> 
-> Introduce two functions: rproc_attach_recovery, rproc_firmware_recovery
-> for the two cases. Firmware recovery is as before, let main processor to
-> help recovery, while attach recovery is recover itself withou help.
-> To attach recovery, we only do detach and attach.
-> 
-> Signed-off-by: Peng Fan <peng.fan@nxp.com>
-> ---
->  drivers/remoteproc/remoteproc_core.c | 64 +++++++++++++++++++---------
->  1 file changed, 45 insertions(+), 19 deletions(-)
-> 
-> diff --git a/drivers/remoteproc/remoteproc_core.c b/drivers/remoteproc/remoteproc_core.c
-> index 02a04ab34a23..1c1c90176aff 100644
-> --- a/drivers/remoteproc/remoteproc_core.c
-> +++ b/drivers/remoteproc/remoteproc_core.c
-> @@ -1883,6 +1883,47 @@ static int __rproc_detach(struct rproc *rproc)
->  	return 0;
->  }
->  
-> +static int rproc_attach_recovery(struct rproc *rproc)
-> +{
-> +	int ret;
-> +
-> +	mutex_unlock(&rproc->lock);
-> +	ret = __rproc_detach(rproc);
-> +	mutex_lock(&rproc->lock);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return __rproc_attach(rproc);
-> +}
-> +
-> +static int rproc_firmware_recovery(struct rproc *rproc)
+> So I'm on the road, and will try to see how well I can do that
+> allmodconfig build on my poor laptop and see what else goes wrong for
+> now.
 
-s/rproc_firmware_recovery/rproc_boot_recovery
+Tried it after applying your patch. There was no build failure, but some warnings:
 
-> +{
-> +	const struct firmware *firmware_p;
-> +	struct device *dev = &rproc->dev;
-> +	int ret;
-> +
-> +	ret = rproc_stop(rproc, true);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* generate coredump */
-> +	rproc->ops->coredump(rproc);
-> +
-> +	/* load firmware */
-> +	ret = request_firmware(&firmware_p, rproc->firmware, dev);
-> +	if (ret < 0) {
-> +		dev_err(dev, "request_firmware failed: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	/* boot the remote processor up again */
-> +	ret = rproc_start(rproc, firmware_p);
-> +
-> +	release_firmware(firmware_p);
-> +
-> +	return ret;
-> +}
-> +
->  /**
->   * rproc_trigger_recovery() - recover a remoteproc
->   * @rproc: the remote processor
-> @@ -1897,7 +1938,6 @@ static int __rproc_detach(struct rproc *rproc)
->   */
->  int rproc_trigger_recovery(struct rproc *rproc)
->  {
-> -	const struct firmware *firmware_p;
->  	struct device *dev = &rproc->dev;
->  	int ret;
->  
-> @@ -1911,24 +1951,10 @@ int rproc_trigger_recovery(struct rproc *rproc)
->  
->  	dev_err(dev, "recovering %s\n", rproc->name);
->  
-> -	ret = rproc_stop(rproc, true);
-> -	if (ret)
-> -		goto unlock_mutex;
-> -
-> -	/* generate coredump */
-> -	rproc->ops->coredump(rproc);
-> -
-> -	/* load firmware */
-> -	ret = request_firmware(&firmware_p, rproc->firmware, dev);
-> -	if (ret < 0) {
-> -		dev_err(dev, "request_firmware failed: %d\n", ret);
-> -		goto unlock_mutex;
-> -	}
-> -
-> -	/* boot the remote processor up again */
-> -	ret = rproc_start(rproc, firmware_p);
-> -
-> -	release_firmware(firmware_p);
-> +	if (rproc_has_feature(rproc, RPROC_FEAT_ATTACH_ON_RECOVERY))
-> +		ret = rproc_attach_recovery(rproc);
-> +	else
-> +		ret = rproc_firmware_recovery(rproc);
+fs/reiserfs/reiserfs.o: warning: objtool: leaf_copy_items_entirely+0x7fd: stack state mismatch: cfa1=4+240 cfa2=4+232
+arch/x86/kvm/kvm.o: warning: objtool: emulator_cmpxchg_emulated+0x705: call to __ubsan_handle_load_invalid_value() with UACCESS enabled
+arch/x86/kvm/kvm.o: warning: objtool: paging64_update_accessed_dirty_bits+0x39e: call to __ubsan_handle_load_invalid_value() with UACCESS enabled
+arch/x86/kvm/kvm.o: warning: objtool: paging32_update_accessed_dirty_bits+0x390: call to __ubsan_handle_load_invalid_value() with UACCESS enabled
+arch/x86/kvm/kvm.o: warning: objtool: ept_update_accessed_dirty_bits+0x43f: call to __ubsan_handle_load_invalid_value() with UACCESS enabled
+drivers/video/fbdev/smscufx.o: warning: objtool: ufx_ops_write() falls through to next function ufx_ops_setcolreg()
+drivers/video/fbdev/udlfb.o: warning: objtool: dlfb_ops_write() falls through to next function dlfb_ops_setcolreg()
+drivers/soc/qcom/qcom_rpmh.o: warning: objtool: rpmh_rsc_write_ctrl_data() falls through to next function trace_raw_output_rpmh_tx_done()
+drivers/scsi/mpi3mr/mpi3mr.o: warning: objtool: mpi3mr_op_request_post() falls through to next function mpi3mr_check_rh_fault_ioc()
+drivers/gpu/drm/radeon/radeon.o: warning: objtool: sumo_dpm_set_power_state() falls through to next function sumo_dpm_post_set_power_state()
+drivers/net/ethernet/wiznet/w5100.o: warning: objtool: w5100_tx_skb() falls through to next function w5100_get_drvinfo()
+drivers/net/ethernet/wiznet/w5100.o: warning: objtool: w5100_rx_skb() falls through to next function w5100_mmio_probe()
+vmlinux.o: warning: objtool: __startup_64() falls through to next function startup_64_setup_env()
+vmlinux.o: warning: objtool: sync_regs+0x24: call to memcpy() leaves .noinstr.text section
+vmlinux.o: warning: objtool: vc_switch_off_ist+0xbe: call to memcpy() leaves .noinstr.text section
+vmlinux.o: warning: objtool: fixup_bad_iret+0x36: call to memset() leaves .noinstr.text section
+vmlinux.o: warning: objtool: __sev_get_ghcb+0xa0: call to memcpy() leaves .noinstr.text section
+vmlinux.o: warning: objtool: __sev_put_ghcb+0x35: call to memcpy() leaves .noinstr.text section
 
-This patch contains a serious flaw related to locking that should have been
-obvious when it was put together.  Please go back and carefully review the code you are submitting.  
+The build took 16 minutes 6 seconds on the build machines in my office (Codethink).
 
-I will not consider another revision of this set until July 15th.
 
-Thanks,
-Mathieu
-
->  
->  unlock_mutex:
->  	mutex_unlock(&rproc->lock);
-> -- 
-> 2.25.1
-> 
+--
+Regards
+Sudip
