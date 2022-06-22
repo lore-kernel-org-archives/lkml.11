@@ -2,108 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40F13C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 13:46:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6028EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 13:47:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357475AbiFVNqn (ORCPT
+        id S1356586AbiFVNrv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 09:46:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36846 "EHLO
+        Wed, 22 Jun 2022 09:47:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236962AbiFVNqm (ORCPT
+        with ESMTP id S236466AbiFVNrr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 09:46:42 -0400
-Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B582027B27
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 06:46:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=inria.fr; s=dc;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=bdqRyaN94a2F/toYtRRwW4KgpaJhL3mLLBaZfLKAwvc=;
-  b=IKyah0mNYTKZwqc7WA5l/lL6mD4r4+fRGjigyU7UmU6DawOTvXDMvN7S
-   nOM9+dB1v2ARmmirSy9yo/oJZNjK2XiI/HJTe39qeJ7V8aoRlCPd8RjQa
-   8/TATm2oxShA3vATMc9msSh8NKBEBu/yEcmJrvBNHD7Vu1yEerSKtgKyV
-   0=;
-Authentication-Results: mail3-relais-sop.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=julia.lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
-X-IronPort-AV: E=Sophos;i="5.92,212,1650924000"; 
-   d="scan'208";a="17503033"
-Received: from 71-51-165-43.chvl.centurylink.net (HELO hadrien.PK5001Z) ([71.51.165.43])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 15:46:37 +0200
-Date:   Wed, 22 Jun 2022 09:46:13 -0400 (EDT)
-From:   Julia Lawall <julia.lawall@inria.fr>
-X-X-Sender: julia@hadrien
-To:     Bagas Sanjaya <bagasdotme@gmail.com>
-cc:     Julia Lawall <julia.lawall@inria.fr>,
-        Shahab Vahedi <Shahab.Vahedi@synopsys.com>,
-        Jilin Yuan <yuanjilin@cdjrlc.com>,
-        "vgupta@kernel.org" <vgupta@kernel.org>,
-        "rdunlap@infradead.org" <rdunlap@infradead.org>,
-        "linux-snps-arc@lists.infradead.org" 
-        <linux-snps-arc@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] ARC:mm:Fix syntax errors in comments
-In-Reply-To: <1b34e0e5-23aa-96cd-c37f-1434884ff061@gmail.com>
-Message-ID: <alpine.DEB.2.22.394.2206220943200.6198@hadrien>
-References: <20220622080423.41570-1-yuanjilin@cdjrlc.com> <YrLTCXLrr3HB39lv@debian.me> <4cef89c9-3b27-11e8-2971-66b93b847ede@synopsys.com> <alpine.DEB.2.22.394.2206220513590.2646@hadrien> <46e4b588-d35b-ec50-ad1a-8502c2903677@synopsys.com>
- <alpine.DEB.2.22.394.2206220535300.2646@hadrien> <1b34e0e5-23aa-96cd-c37f-1434884ff061@gmail.com>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+        Wed, 22 Jun 2022 09:47:47 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B94F72F648;
+        Wed, 22 Jun 2022 06:47:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id F0D1ECE1F96;
+        Wed, 22 Jun 2022 13:47:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8695BC34114;
+        Wed, 22 Jun 2022 13:47:34 +0000 (UTC)
+Message-ID: <c1b8820d-5ff5-b6dd-bc22-35f8daf756db@xs4all.nl>
+Date:   Wed, 22 Jun 2022 15:47:33 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v10 0/5] media: atmel: atmel-isc: implement media
+ controller
+Content-Language: en-US
+To:     Eugen.Hristev@microchip.com, linux-arm-kernel@lists.infradead.org,
+        linux-media@vger.kernel.org
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Claudiu.Beznea@microchip.com, Nicolas.Ferre@microchip.com,
+        jacopo@jmondi.org
+References: <20220503095127.48710-1-eugen.hristev@microchip.com>
+ <1da61f9c-0605-dc9d-63a3-21c18fcb74c7@xs4all.nl>
+ <a19d9e72-7609-1daa-93eb-fdedcaa672c4@microchip.com>
+ <bc22469c-d1ab-72e2-8e9e-6bd42d66f3d9@microchip.com>
+From:   Hans Verkuil <hverkuil@xs4all.nl>
+In-Reply-To: <bc22469c-d1ab-72e2-8e9e-6bd42d66f3d9@microchip.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 22/06/2022 14:42, Eugen.Hristev@microchip.com wrote:
+> On 6/22/22 3:25 PM, Eugen Hristev - M18282 wrote:
+>> On 6/22/22 2:53 PM, Hans Verkuil wrote:
+>>> Hi Eugen,
+>>>
+>>> On 03/05/2022 11:51, Eugen Hristev wrote:
+>>>> This series is a split from the series :
+>>>> [PATCH v9 00/13] media: atmel: atmel-isc: implement media controller
+>>>> and it includes the media controller part.
+>>>> previous fixes were sent on a different patch series.
+>>>>
+>>>> As discussed on the ML, moving forward with having the media link validate at
+>>>> start/stop streaming call.
+>>>> I will test the patch :
+>>>> [RFC PATCHv2] vb2: add support for (un)prepare_streaming queue ops
+>>>> afterwards, but that patch requires moving my logic to the new vb2 callbacks.
+>>>
+>>> I'm looking at merging this series, but I would like to have the output of
+>>> 'v4l2-compliance -m /dev/mediaX' to verify that the MC links etc. is all
+>>> correct.
+>>
+>> Hello Hans,
+>>
+>> Please have a look at attached file . Unless you want me to add the
+>> whole output to the e-mail ?
+>>
+>> I also added output of media-ctl -p for your convenience.
+>> the subdev2 is a device and driver that is not upstream and has some
+>> compliance issues, they are reported by the v4l2-compliance tool, but
+>> they should not affect this series, it's a synopsys driver that was
+>> rejected on mainline a few years ago, I took it for internal usage, but
+>> it's not cleaned up nor worked a lot upon.
+>>
+>>>
+>>> And one more question which may have been answered already in the past:
+>>>
+>>> Changing to the MC will break existing applications, doesn't it? Or did I
+>>> miss something?
+>>>
+>>
+>> The existing applications will have to configure the pipeline now. It
+>> will no longer work by configuring just the top video node /dev/video0 .
+>> They would have to use media-ctl for it, something similar with this set
+>> of commands:
+> 
+> To add on top of that, actually, the reality is that without the MC 
+> support in atmel-isc , some of our platforms do not work at all, because 
+> the csi2dc driver which is in the middle of the pipeline, is a MC 
+> driver. So it will not work without configuring it with MC anyway. It 
+> used to work in a very preliminary version of the csi2dc driver which I 
+> sent a few years ago, but that way of handling things was rejected. 
+> Hence I changed the csi2dc to being full-MC driver (requested for new 
+> drivers) and now I am completing the conversion for the whole pipeline.
+> We are using this MC-centric approach in production for our products to 
+> be as close as possible to mainline, and backported it to our 5.15 
+> internal releases, which people are using right now.
 
+I'm not all that keen on breaking userspace for those who do NOT use the
+Atmel BSP. Basically some platforms are currently broken, and with this patch
+series some other platforms are broken, but at least can be fixed by changing
+userspace.
 
-On Wed, 22 Jun 2022, Bagas Sanjaya wrote:
+How feasible is it to do something similar that TI did for the cal driver?
+(drivers/media/platform/ti/cal)
 
-> On 6/22/22 16:38, Julia Lawall wrote:
-> >>> So code that is fine will have typos forever?  Fixing typos in comments
-> >>> doesn't break git blame for the following code.  And typos in comments
-> >>> give a bad impression about the state of the code in general.
-> >>
-> >> Of course not! Documentation is as important as the code, if not even more.
-> >> However, fixing typos to increase your commit counts to a reputable project
-> >> is not fine either. For instance, many of these proposed fixes are targeting
-> >> one single typo at a time. Couldn't they just be sent altogether!?!
-> >
-> > I have the impression that the person is just trying to figure out the
-> > patch submission process.  For example, the subject lines are not
-> > formatter in the standard way (I sent the person a private email about
-> > that).  Perhaps just let him know about how you would rather have received
-> > the patches.
->
-> In recent times I had seen many typofix patches sent to LKML. You can see most
-> of them by querying `s:"fix typo"` on lore.kernel.org. Some of these patches
-> have been merged, though.
->
-> What I say as starter thread is "ideal" scenario as described in
-> Documentation/process/2.Process.rst; that is we prefer to see these minor
-> fixes as part of real patches work (say refactoring), rather than just being
-> trivial patches.
->
-> But what most reviewers here missed is how these typos are found? I guess
-> these can be from codespell or some other tools, or even manual review,
-> then send the fixes en mass.
->
-> Take a look at "fix typo in a comment" aka "delete redundant word" patches
-> at [1], [2], [3]. and [4].
->
-> [1]: https://lore.kernel.org/lkml/20220618132659.17100-1-wangxiang@cdjrlc.com/
-> [2]: https://lore.kernel.org/lkml/20220618130349.11507-1-wangxiang@cdjrlc.com/
-> [3]: https://lore.kernel.org/lkml/20220616163830.11366-1-wangxiang@cdjrlc.com/
-> [4]: https://lore.kernel.org/lkml/20220606123419.29109-1-wangxiang@cdjrlc.com/
->
-> IMHO, these patches should have been in a single, consolidated patch, since
-> these strip duplicate (hence redundant) word (single logical change).
+I.e., based on a module option the MC is enabled or disabled. And if a
+csi2dc is present, then the MC API is always enabled.
 
-They go to different maintainers, so perhaps each one would prefer to get
-their own patches?  There was a trivial tree, but it is apparently not
-very active.
+Regards,
 
-It would indeed be good to indicate how the problems were found.  That
-could suggest whether the problem has been addressed comprehensively, or
-whether just some random issues have been detected.
+	Hans
 
-julia
+> 
+>>
+>> media-ctl -d /dev/media0 --set-v4l2 '"imx219
+>> 1-0010":0[fmt:SRGGB10_1X10/1920x1080]'
+>> media-ctl -d /dev/media0 --set-v4l2
+>> '"dw-csi.0":0[fmt:SRGGB10_1X10/1920x1080]'
+>> media-ctl -d /dev/media0 --set-v4l2 '"csi2dc":0[fmt:SRGGB10_1X10/1920x1080]'
+>> media-ctl -d /dev/media0 --set-v4l2
+>> '"atmel_isc_scaler":0[fmt:SRGGB10_1X10/1920x1080]'
+>>
+>> Thank you for taking care of this !
+>>
+>> Eugen
+>>
+>>> Regards,
+>>>
+>>>           Hans
+>>>
+>>>>
+>>>> Full series history:
+>>>>
+>>>> Changes in v10:
+>>>> -> split the series into this first fixes part.
+>>>> -> moved IO_MC addition from first patch to the second patch on the driver changes
+>>>> -> edited commit messages
+>>>> -> DT nodes now disabled by default.
+>>>>
+>>>> Changes in v9:
+>>>> -> kernel robot reported isc_link_validate is not static, changed to static.
+>>>>
+>>>> Changes in v8:
+>>>> -> scaler: modified crop bounds to have the exact source size
+>>>>
+>>>> Changes in v7:
+>>>> -> scaler: modified crop bounds to have maximum isc size
+>>>> -> format propagation: did small changes as per Jacopo review
+>>>>
+>>>>
+>>>> Changes in v6:
+>>>> -> worked a bit on scaler, added try crop and other changes as per Jacopo review
+>>>> -> worked on isc-base enum_fmt , reworked as per Jacopo review
+>>>>
+>>>> Changes in v5:
+>>>> -> removed patch that removed the 'stop' variable as it was still required
+>>>> -> added two new trivial patches
+>>>> -> reworked some parts of the scaler and format propagation after discussions with Jacopo
+>>>>
+>>>>
+>>>> Changes in v4:
+>>>> -> as reviewed by Hans, added new patch to remove the 'stop' variable and reworked
+>>>> one patch that was using it
+>>>> -> as reviewed by Jacopo, reworked some parts of the media controller implementation
+>>>>
+>>>>
+>>>> Changes in v3:
+>>>> - change in bindings, small fixes in csi2dc driver and conversion to mc
+>>>> for the isc-base.
+>>>> - removed some MAINTAINERS patches and used patterns in MAINTAINERS
+>>>>
+>>>> Changes in v2:
+>>>> - integrated many changes suggested by Jacopo in the review of the v1 series.
+>>>> - add a few new patches
+>>>>
+>>>> Eugen Hristev (5):
+>>>>     media: atmel: atmel-isc: prepare for media controller support
+>>>>     media: atmel: atmel-isc: implement media controller
+>>>>     ARM: dts: at91: sama7g5: add nodes for video capture
+>>>>     ARM: configs: at91: sama7: add xisc and csi2dc
+>>>>     ARM: multi_v7_defconfig: add atmel video pipeline modules
+>>>>
+>>>>    arch/arm/boot/dts/sama7g5.dtsi                |  51 ++
+>>>>    arch/arm/configs/multi_v7_defconfig           |   3 +
+>>>>    arch/arm/configs/sama7_defconfig              |   2 +
+>>>>    drivers/media/platform/atmel/Makefile         |   2 +-
+>>>>    drivers/media/platform/atmel/atmel-isc-base.c | 485 +++++++++---------
+>>>>    .../media/platform/atmel/atmel-isc-scaler.c   | 267 ++++++++++
+>>>>    drivers/media/platform/atmel/atmel-isc.h      |  50 +-
+>>>>    .../media/platform/atmel/atmel-sama5d2-isc.c  |  34 +-
+>>>>    .../media/platform/atmel/atmel-sama7g5-isc.c  |  32 +-
+>>>>    9 files changed, 685 insertions(+), 241 deletions(-)
+>>>>    create mode 100644 drivers/media/platform/atmel/atmel-isc-scaler.c
+>>>>
+>>>
+>>
+> 
+
