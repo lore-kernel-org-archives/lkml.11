@@ -2,98 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4327C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 07:30:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FF45C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 07:30:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353324AbiFVHaI (ORCPT
+        id S1353343AbiFVHap (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 03:30:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33592 "EHLO
+        Wed, 22 Jun 2022 03:30:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352669AbiFVH34 (ORCPT
+        with ESMTP id S1352669AbiFVHam (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 03:29:56 -0400
-Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C80D34645
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 00:29:55 -0700 (PDT)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.nyi.internal (Postfix) with ESMTP id F15865C00F7;
-        Wed, 22 Jun 2022 03:29:54 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute1.internal (MEProxy); Wed, 22 Jun 2022 03:29:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm1; t=1655882994; x=
-        1655969394; bh=FbbDHGfykC29vpo8q1S1GdxTzi9rhuenaGAuTzE9OM8=; b=A
-        r3ZAlKsZM2ih/FXS6EZgPWz3r9eI7r1DQQJD+9VpksiUG5KXeIU0M9VHLYMMfCAM
-        OOEeg8Bcx0FsnupA362KQmfdxUSveIjo+5cagjx94PQHKH5+ySU+FA7PsTRtiSQc
-        sEnUEJ77jRrjkvT8Q/3pq1tdKletutqzegWgerImbDszMWdI7viQM2H9mUQd2zWa
-        sKRum2tf3y/42guXwYqRaiDaXP55goBVX4x6+RuW/xWhZRvAgwhv6iSsXfBS/Npi
-        h1Fjbv+29qjBVFWimvGiCLFd8YMYY36ZR6S6RacH6b74whQ7XIAv7B0fWjiy+dls
-        pwwbAzupdUMLbc47CFGaQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:feedback-id:feedback-id:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1655882994; x=
-        1655969394; bh=FbbDHGfykC29vpo8q1S1GdxTzi9rhuenaGAuTzE9OM8=; b=u
-        s008JLqRZuUV3eDndqAHVE2WFSZskVm6nf3be4izr9DOlpdP7xVUonWUWjKSU0c1
-        2fz3ErFEIyuFXo2uwWpMIShHwDwiyotAbyli1I7izW7v4R9U0LO97pN93Zoe2zOo
-        rSoPGfLHmIU9+760a36h6wfR4jAFdeapxBpKMwcsrpwm7vkXrMHcnApcKTUzPwaF
-        CpdDHU1+UxbIhTT2KOaCwsHoGtQUTwtQYsKBb6PDpf6C/uN7v5r5xvJK5fukC8yR
-        5qgDcpyiihueD5f/dgaPyEIy3kDc+uTvkNNZSehx0iQYgBHN/PK17beHJZsIzjjG
-        FkIE2bfO+Ci0nCaCKwoUg==
-X-ME-Sender: <xms:8sSyYosVRlGhEXWXSE_MesvGdgae4IuQLb_NlbRLOXGDVh48FCgY7w>
-    <xme:8sSyYlcqTEBQZW1yRoyzd9YIuoT93azMf1l0nOdb-TdYMRyoFpp-auhwaog5Ne_Xd
-    p_wN0Oo6e2i3gEoVvM>
-X-ME-Received: <xmr:8sSyYjyJDEAIpeq0scNehnJEUfbyXElt2ZoFgwMObgKePqrqmTA0lF4TfWodhSxn3cYkqFQyuTOJGbAd02jyD6YVUH0REWQ5PwSXds0>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudefgedguddvudcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvvefufffkofgjfhggtgfgse
-    htkeertdertdejnecuhfhrohhmpeforgigihhmvgcutfhiphgrrhguuceomhgrgihimhgv
-    segtvghrnhhordhtvggthheqnecuggftrfgrthhtvghrnhepueeigefghfffffeifeehud
-    eiuedvteegueefffevgfetvdffheehkeffvedufeeinecuvehluhhsthgvrhfuihiivgep
-    tdenucfrrghrrghmpehmrghilhhfrhhomhepmhgrgihimhgvsegtvghrnhhordhtvggthh
-X-ME-Proxy: <xmx:8sSyYrPC1VhCmpIZrmIaYtn0FEDi2_ZvrD4TuuThg2ZmjGDTb9xhiA>
-    <xmx:8sSyYo98ONPuhilwKpLY9t6kL3270I1dDuJhSGIUxHyn3L6Q8USMsA>
-    <xmx:8sSyYjUfsAVdTc-03NgK5M9_LbJFjDcB5-wUH3EhTqfFMx50QPU3YQ>
-    <xmx:8sSyYlP4gK2wUsy5f-wzDzmewKuTXAsecIhVrhdWXBSMSqwXEo6UHw>
-Feedback-ID: i8771445c:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 22 Jun 2022 03:29:54 -0400 (EDT)
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     maarten.lankhorst@linux.intel.com, airlied@linux.ie,
-        jiangjian@cdjrlc.com, tzimmermann@suse.de, daniel@ffwll.ch,
-        mripard@kernel.org
-Cc:     Maxime Ripard <maxime@cerno.tech>, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: (subset) [PATCH] GPU: drm: drop unexpected word "the" in the comments
-Date:   Wed, 22 Jun 2022 09:29:44 +0200
-Message-Id: <165588297922.13818.8703754618322133004.b4-ty@cerno.tech>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220621135140.12200-1-jiangjian@cdjrlc.com>
-References: <20220621135140.12200-1-jiangjian@cdjrlc.com>
+        Wed, 22 Jun 2022 03:30:42 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D49737024
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 00:30:40 -0700 (PDT)
+Received: from kwepemi500016.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LSZk60kGMzhXZ7;
+        Wed, 22 Jun 2022 15:28:30 +0800 (CST)
+Received: from localhost.localdomain (10.175.127.227) by
+ kwepemi500016.china.huawei.com (7.221.188.220) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 22 Jun 2022 15:30:36 +0800
+From:   Zhang Wensheng <zhangwensheng5@huawei.com>
+To:     <gregkh@linuxfoundation.org>, <rafael@kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <yukuai3@huawei.com>,
+        <zhangwensheng5@huawei.com>
+Subject: [PATCH -next v2] driver core: fix deadlock in __driver_attach
+Date:   Wed, 22 Jun 2022 15:43:27 +0800
+Message-ID: <20220622074327.497102-1-zhangwensheng5@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemi500016.china.huawei.com (7.221.188.220)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 21 Jun 2022 21:51:40 +0800, Jiang Jian wrote:
-> there is an unexpected word "the" in the comments that need to be dropped
-> 
-> file: drivers/gpu/drm/drm_ioctl.c
-> line: 86
-> *    means the the unique name for the master node just opening is _not_ filled
-> changed to
-> *    means the unique name for the master node just opening is _not_ filled
-> 
-> [...]
+In __driver_attach function, There are also AA deadlock problem,
+like the commit b232b02bf3c2 ("driver core: fix deadlock in
+__device_attach").
 
-Applied to drm/drm-misc (drm-misc-next).
+stack like commit b232b02bf3c2 ("driver core: fix deadlock in
+__device_attach").
+list below:
+    In __driver_attach function, The lock holding logic is as follows:
+    ...
+    __driver_attach
+    if (driver_allows_async_probing(drv))
+      device_lock(dev)      // get lock dev
+        async_schedule_dev(__driver_attach_async_helper, dev); // func
+          async_schedule_node
+            async_schedule_node_domain(func)
+              entry = kzalloc(sizeof(struct async_entry), GFP_ATOMIC);
+              /* when fail or work limit, sync to execute func, but
+                 __driver_attach_async_helper will get lock dev as
+                 will, which will lead to A-A deadlock.  */
+              if (!entry || atomic_read(&entry_count) > MAX_WORK) {
+                func;
+              else
+                queue_work_node(node, system_unbound_wq, &entry->work)
+      device_unlock(dev)
 
-Thanks!
-Maxime
+    As above show, when it is allowed to do async probes, because of
+    out of memory or work limit, async work is not be allowed, to do
+    sync execute instead. it will lead to A-A deadlock because of
+    __driver_attach_async_helper getting lock dev.
+
+Reproduce:
+and it can be reproduce by make the condition
+(if (!entry || atomic_read(&entry_count) > MAX_WORK)) untenable, like
+below:
+
+[  370.785650] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables
+this message.
+[  370.787154] task:swapper/0       state:D stack:    0 pid:    1 ppid:
+0 flags:0x00004000
+[  370.788865] Call Trace:
+[  370.789374]  <TASK>
+[  370.789841]  __schedule+0x482/0x1050
+[  370.790613]  schedule+0x92/0x1a0
+[  370.791290]  schedule_preempt_disabled+0x2c/0x50
+[  370.792256]  __mutex_lock.isra.0+0x757/0xec0
+[  370.793158]  __mutex_lock_slowpath+0x1f/0x30
+[  370.794079]  mutex_lock+0x50/0x60
+[  370.794795]  __device_driver_lock+0x2f/0x70
+[  370.795677]  ? driver_probe_device+0xd0/0xd0
+[  370.796576]  __driver_attach_async_helper+0x1d/0xd0
+[  370.797318]  ? driver_probe_device+0xd0/0xd0
+[  370.797957]  async_schedule_node_domain+0xa5/0xc0
+[  370.798652]  async_schedule_node+0x19/0x30
+[  370.799243]  __driver_attach+0x246/0x290
+[  370.799828]  ? driver_allows_async_probing+0xa0/0xa0
+[  370.800548]  bus_for_each_dev+0x9d/0x130
+[  370.801132]  driver_attach+0x22/0x30
+[  370.801666]  bus_add_driver+0x290/0x340
+[  370.802246]  driver_register+0x88/0x140
+[  370.802817]  ? virtio_scsi_init+0x116/0x116
+[  370.803425]  scsi_register_driver+0x1a/0x30
+[  370.804057]  init_sd+0x184/0x226
+[  370.804533]  do_one_initcall+0x71/0x3a0
+[  370.805107]  kernel_init_freeable+0x39a/0x43a
+[  370.805759]  ? rest_init+0x150/0x150
+[  370.806283]  kernel_init+0x26/0x230
+[  370.806799]  ret_from_fork+0x1f/0x30
+
+To fix the deadlock, move the async_schedule_dev outside device_lock,
+as we can see, in async_schedule_node_domain, the parameter of
+queue_work_node is system_unbound_wq, so it can accept concurrent
+operations. which will also not change the code logic, and will
+not lead to deadlock.
+
+Fixes: ef0ff68351be ("driver core: Probe devices asynchronously instead of the driver")
+Signed-off-by: Zhang Wensheng <zhangwensheng5@huawei.com>
+---
+v2: add patch description
+v1: https://lore.kernel.org/lkml/YqNL6NPgP+cLOy%2FI@kroah.com/t/
+---
+ drivers/base/dd.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+index 11b0fb6414d3..b766968a873c 100644
+--- a/drivers/base/dd.c
++++ b/drivers/base/dd.c
+@@ -1115,6 +1115,7 @@ static void __driver_attach_async_helper(void *_dev, async_cookie_t cookie)
+ static int __driver_attach(struct device *dev, void *data)
+ {
+ 	struct device_driver *drv = data;
++	bool async = false;
+ 	int ret;
+ 
+ 	/*
+@@ -1153,9 +1154,11 @@ static int __driver_attach(struct device *dev, void *data)
+ 		if (!dev->driver && !dev->p->async_driver) {
+ 			get_device(dev);
+ 			dev->p->async_driver = drv;
+-			async_schedule_dev(__driver_attach_async_helper, dev);
++			async = true;
+ 		}
+ 		device_unlock(dev);
++		if (async)
++			async_schedule_dev(__driver_attach_async_helper, dev);
+ 		return 0;
+ 	}
+ 
+-- 
+2.31.1
+
