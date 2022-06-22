@@ -2,178 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B998C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 17:45:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 146FDC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 17:46:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377399AbiFVRp6 (ORCPT
+        id S1377416AbiFVRqX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 13:45:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50612 "EHLO
+        Wed, 22 Jun 2022 13:46:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377384AbiFVRpz (ORCPT
+        with ESMTP id S1358743AbiFVRqV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 13:45:55 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E26D3467E
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 10:45:54 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id t3-20020a17090a510300b001ea87ef9a3dso147712pjh.4
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 10:45:54 -0700 (PDT)
+        Wed, 22 Jun 2022 13:46:21 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A754E3467E
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 10:46:19 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id f65so16730026pgc.7
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 10:46:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=HUYHW95AtLLmO7V4imqn0bSxETrjySQOkszCKZgpB8c=;
-        b=lbchqIqZHE9CwsidR5WeollNQ6dBNgdTnBG0KNFSuSMHXIevxj6D7aC9O2Teg3vixK
-         WJ1Jr3arfzfufi6xxT/db/9/UlXuAuGrZ5BnHzfyMgsT3ULuzk/danAHku6hBy6TgC2+
-         7TZUUjQWMf/S6gPNFwmWDdi8AbH1Y1mJRKcXo=
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=EpgE2jvIQSFQgAN8WwXX/5vPgLEXVBbuCYjMWpqhCMs=;
+        b=QBt8d0UvvlahctWqyz9WVkxT0d4SOTK0NzVBYWVTJPxbLp5UNpIslqwUBSx8/KBBsq
+         A+Zw0xj6Cb/ehzhESIgmA9cwUHsw3Lf8BxRs09qsgbPtGdNYaUcbLW8l5EWPwkZ0AQ5g
+         iGESoRZXgqDD1vdCkXNbLWk/HCn9nRHSub86qFFPaZYSu/vy+4VR5E0vXlQHak7s1i8O
+         a5FQABvTZhyh9Uyq1WBQj3JvkensqX0mcupgMm8ueALkWiZdB97G75hdreUpxIhT5uA0
+         TA6dzh2C6/mSYctThb5VLyOmgIq2lFVNGbkMhROrYhHZTzQbRWLNXQ1rFhthz1aNZEQ+
+         Lsnw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=HUYHW95AtLLmO7V4imqn0bSxETrjySQOkszCKZgpB8c=;
-        b=zkXsxfUuq76YTd+YmJJjQazhOlnrnJ8Cg8cFcd5SNX2L5jHKkU6yPW68juKLYj94zj
-         PWrh+AWZ9SERRELuwAfgjL4w1AvzsSqvkeVxE7iDwmp8RFELxSOyMpiNKYVvezdJj0BF
-         Oq+c/JOBR3t7lHnj7Iv8r+ZMpV9cWQ3FCms93pqpRCl+adeO7C2asfbEimJmi62lx5E+
-         I11Nhlknom00rSlzjgyWgPbsVxD6vxUB2uiB2eI/AjOptLoIK6LvnXQhcZfYMx8QH69/
-         ZTpl7N8bXq14Xg8Ve8u/RfFHomfApBiVXnMRveVtoY3nt3g+CSVEA5hDppsjCFkS1JQy
-         +osQ==
-X-Gm-Message-State: AJIora9/4+6FJbXjFAGt/+Y8uCHc20ZMco8o/PR+k9FGgxRbv51/F5Pu
-        L02sgYB5mTSc+qiiiheIFpwpoFljYvfH2w==
-X-Google-Smtp-Source: AGRyM1sFxe9GH21t/auStPnBEkJHItewIiphX9U6txtmcstedWPu/2gRKDpmd2xjVTxW4cdMr9LGMw==
-X-Received: by 2002:a17:903:2285:b0:16a:2ee7:4779 with SMTP id b5-20020a170903228500b0016a2ee74779mr13121137plh.43.1655919953548;
-        Wed, 22 Jun 2022 10:45:53 -0700 (PDT)
-Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id l17-20020a17090b079100b001ece55aec38sm35470pjz.30.2022.06.22.10.45.52
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=EpgE2jvIQSFQgAN8WwXX/5vPgLEXVBbuCYjMWpqhCMs=;
+        b=sb+v50jpqQ+M7Q2WeKN/KZpyp5AWArd5ne7Pg5SFbfCi9GUxPMsACDXPbNWxMYGFQY
+         X9vOarqGeCOL9nFoTz202C+EE9vSkXek5a7yfmDVLIJfdBlaCMQ42ECQRHEH9QP4Eubl
+         bjTLsDnUcCc1aGQuu9kwNcWhi397SUQWv5SdjIdLXdtnodDI3zbuk1DteZ2e9uEaO7rX
+         oai8+T/VmJcglo4XMFo0K1l8QOP66F2WYMnY1sv84jBYScfckGB/dacQQhIPRIp2D0AR
+         9IZr4gkh6iCcLWAszrWd8A0QwO+oevVdhyLquXcxrpYSuPJoIo5/bJC/ss4gm/Hlrwtu
+         /EIw==
+X-Gm-Message-State: AJIora/kSKEsyiOi4jXGPAB5CogcDcPbjrGMYwY89oEQE7JzJHp238+S
+        St0vuaU1422vNlBc6IklTMneIg==
+X-Google-Smtp-Source: AGRyM1vvmEv/0t0GsVemfxrvCV9s3hxYmKfiYakDddtSica5aCNDyttDzA/GvdXDpYo1Yp0jqBBf6w==
+X-Received: by 2002:a05:6a00:15c1:b0:525:2db4:2a2c with SMTP id o1-20020a056a0015c100b005252db42a2cmr13485017pfu.30.1655919979228;
+        Wed, 22 Jun 2022 10:46:19 -0700 (PDT)
+Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
+        by smtp.gmail.com with ESMTPSA id j7-20020a17090a7e8700b001ec4f258028sm29034pjl.55.2022.06.22.10.46.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jun 2022 10:45:53 -0700 (PDT)
-From:   Prashant Malani <pmalani@chromium.org>
-To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
-Cc:     bleung@chromium.org, swboyd@chromium.org,
-        heikki.krogerus@linux.intel.com,
-        Pin-Yen Lin <treapking@chromium.org>,
-        Prashant Malani <pmalani@chromium.org>,
-        Allen Chen <allen.chen@ite.com.tw>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
-        DEVICE TREE BINDINGS),
-        dri-devel@lists.freedesktop.org (open list:DRM DRIVERS),
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
-        <nfraprado@collabora.com>, Robert Foss <robert.foss@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Xin Ji <xji@analogixsemi.com>
-Subject: [PATCH v5 7/9] drm/bridge: it6505: Register number of Type C switches
-Date:   Wed, 22 Jun 2022 17:34:36 +0000
-Message-Id: <20220622173605.1168416-8-pmalani@chromium.org>
-X-Mailer: git-send-email 2.37.0.rc0.104.g0611611a94-goog
-In-Reply-To: <20220622173605.1168416-1-pmalani@chromium.org>
-References: <20220622173605.1168416-1-pmalani@chromium.org>
+        Wed, 22 Jun 2022 10:46:18 -0700 (PDT)
+Date:   Wed, 22 Jun 2022 11:46:16 -0600
+From:   Mathieu Poirier <mathieu.poirier@linaro.org>
+To:     Saud Farooqui <farooqui_saud@hotmail.com>
+Cc:     bjorn.andersson@linaro.org, linux-remoteproc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] rpmsg: strcpy is not safe, use strncpy
+Message-ID: <20220622174616.GD1606016@p14s>
+References: <PA4P189MB1421005C22E46EBD708EBA798BA49@PA4P189MB1421.EURP189.PROD.OUTLOOK.COM>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <PA4P189MB1421005C22E46EBD708EBA798BA49@PA4P189MB1421.EURP189.PROD.OUTLOOK.COM>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pin-Yen Lin <treapking@chromium.org>
+Hi Saud,
 
-Parse the "switches" node, if available, and count and store the number
-of Type-C switches within it. The extcon registration is still
-supported, but we don't expect both extcon and typec-switch be
-registered at the same time.
+On Wed, Jun 08, 2022 at 11:43:30PM +0500, Saud Farooqui wrote:
+> Replace strcpy with strncpy for copying the rpmsg
+> device name in rpmsg_register_device_override
+> 
+> Signed-off-by: Saud Farooqui <farooqui_saud@hotmail.com>
+> ---
+>  drivers/rpmsg/rpmsg_core.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/rpmsg/rpmsg_core.c b/drivers/rpmsg/rpmsg_core.c
+> index 290c1f02da10..d3b29c19715d 100644
+> --- a/drivers/rpmsg/rpmsg_core.c
+> +++ b/drivers/rpmsg/rpmsg_core.c
+> @@ -604,7 +604,7 @@ int rpmsg_register_device_override(struct rpmsg_device *rpdev,
+>  	int ret;
+>  
+>  	if (driver_override)
+> -		strcpy(rpdev->id.name, driver_override);
+> +		strncpy(rpdev->id.name, driver_override, sizeof(rpdev->id.name));
 
-This patch sets a foundation for the actual registering of Type-C
-switches with the Type-C connector class framework.
+Please use strscpy_pad() instead of strncpy().
 
-Signed-off-by: Pin-Yen Lin <treapking@chromium.org>
-Signed-off-by: Prashant Malani <pmalani@chromium.org>
----
+Thanks,
+Mathieu
 
-v5 is the first version for this patch.
-
- drivers/gpu/drm/bridge/ite-it6505.c | 34 +++++++++++++++++++++++++----
- 1 file changed, 30 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/gpu/drm/bridge/ite-it6505.c b/drivers/gpu/drm/bridge/ite-it6505.c
-index 4b673c4792d7..b259f9f367f6 100644
---- a/drivers/gpu/drm/bridge/ite-it6505.c
-+++ b/drivers/gpu/drm/bridge/ite-it6505.c
-@@ -452,6 +452,7 @@ struct it6505 {
- 	struct delayed_work delayed_audio;
- 	struct it6505_audio_data audio;
- 	struct dentry *debugfs;
-+	int num_typec_switches;
- 
- 	/* it6505 driver hold option */
- 	bool enable_drv_hold;
-@@ -3229,13 +3230,28 @@ static void it6505_shutdown(struct i2c_client *client)
- 		it6505_lane_off(it6505);
- }
- 
-+static int it6505_register_typec_switches(struct device *device, struct it6505 *it6505)
-+{
-+	struct device_node *of;
-+
-+	of = of_get_child_by_name(device->of_node, "switches");
-+	if (!of)
-+		return -ENODEV;
-+
-+	it6505->num_typec_switches = of_get_child_count(of);
-+	if (it6505->num_typec_switches <= 0)
-+		return -ENODEV;
-+
-+	return 0;
-+}
-+
- static int it6505_i2c_probe(struct i2c_client *client,
- 			    const struct i2c_device_id *id)
- {
- 	struct it6505 *it6505;
- 	struct device *dev = &client->dev;
- 	struct extcon_dev *extcon;
--	int err, intp_irq;
-+	int err, intp_irq, ret;
- 
- 	it6505 = devm_kzalloc(&client->dev, sizeof(*it6505), GFP_KERNEL);
- 	if (!it6505)
-@@ -3255,11 +3271,21 @@ static int it6505_i2c_probe(struct i2c_client *client,
- 	if (PTR_ERR(extcon) == -EPROBE_DEFER)
- 		return -EPROBE_DEFER;
- 	if (IS_ERR(extcon)) {
--		dev_err(dev, "can not get extcon device!");
--		return PTR_ERR(extcon);
-+		if (PTR_ERR(extcon) != -ENODEV)
-+			dev_warn(dev, "Cannot get extcon device: %ld", PTR_ERR(extcon));
-+		it6505->extcon = NULL;
-+	} else {
-+		it6505->extcon = extcon;
- 	}
- 
--	it6505->extcon = extcon;
-+	ret = it6505_register_typec_switches(dev, it6505);
-+	if (ret) {
-+		dev_dbg(dev, "Didn't register Type C switches, err: %d", ret);
-+		if (!it6505->extcon) {
-+			dev_err(dev, "Both extcon and typec-switch are not registered.");
-+			return -EINVAL;
-+		}
-+	}
- 
- 	it6505->regmap = devm_regmap_init_i2c(client, &it6505_regmap_config);
- 	if (IS_ERR(it6505->regmap)) {
--- 
-2.37.0.rc0.104.g0611611a94-goog
-
+>  
+>  	dev_set_name(dev, "%s.%s.%d.%d", dev_name(dev->parent),
+>  		     rpdev->id.name, rpdev->src, rpdev->dst);
+> -- 
+> 2.25.1
+> 
