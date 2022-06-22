@@ -2,104 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A35A0C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 09:42:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 854BAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 09:42:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352680AbiFVJmn (ORCPT
+        id S1354206AbiFVJmx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 05:42:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39064 "EHLO
+        Wed, 22 Jun 2022 05:42:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230443AbiFVJml (ORCPT
+        with ESMTP id S1353024AbiFVJmu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 05:42:41 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96A1639B90;
-        Wed, 22 Jun 2022 02:42:39 -0700 (PDT)
-Date:   Wed, 22 Jun 2022 09:42:36 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1655890957;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=io8/PY4wsMsORkfLOYHpgOs3qLMv7ZBkKSxQmXu8GFU=;
-        b=WB1B4VvlocQ+VWbwv9/0uMHvoXS0MSYWbKjhfNEYtK8cQfOzMj0iS55yc3XHeupt4xWv1g
-        oBiEu0QYy+0MLK4eSWAcApYAlj11KsfmE2xPZy7anWKX5r4RSZw668CAf8ElLqDACPm26r
-        t7J9w75MBkX1FfRnjKtYF44gxYTL2mXTIC41Njgsu3ccrr240D78opoVXjFxrSP9gMj5TY
-        0CT02CuGENtOL/o6GxsA1tHj+4uJ42A/FTopXEq3aVX2mRf/7aFT/X8dBELbg7vRUv7WV4
-        bQn21sCwWTLvKt1SPkeIIlFip+XZhebnIo+fyOLwY7aMd9KZ6SqPnKs+NYxquQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1655890957;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=io8/PY4wsMsORkfLOYHpgOs3qLMv7ZBkKSxQmXu8GFU=;
-        b=t0n0bBOicDHOAAv50nCiKLaOv6ExUPGmJ408s16AVEZ3PcrDPCOJo4EV5Ul4FSkHtKVq3r
-        zA9rrtVIThtoh3Ag==
-From:   "tip-bot2 for Shreenidhi Shedi" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/vmware] x86/vmware: Use BIT() macro for shifting
-Cc:     Shreenidhi Shedi <sshedi@vmware.com>, Borislav Petkov <bp@suse.de>,
-        "Srivatsa S. Bhat (VMware)" <srivatsa@csail.mit.edu>,
-        x86@kernel.org, linux-kernel@vger.kernel.org
-In-Reply-To: <20220601101820.535031-1-sshedi@vmware.com>
-References: <20220601101820.535031-1-sshedi@vmware.com>
+        Wed, 22 Jun 2022 05:42:50 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5041B39B95;
+        Wed, 22 Jun 2022 02:42:47 -0700 (PDT)
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by gandalf.ozlabs.org (Postfix) with ESMTP id 4LSdj2219wz4xYD;
+        Wed, 22 Jun 2022 19:42:46 +1000 (AEST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LSdhv20GYz4xZb;
+        Wed, 22 Jun 2022 19:42:39 +1000 (AEST)
+From:   =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>
+To:     linux-spi@vger.kernel.org
+Cc:     Mark Brown <broonie@kernel.org>, Pratyush Yadav <p.yadav@ti.com>,
+        linux-aspeed@lists.ozlabs.org, openbmc@lists.ozlabs.org,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>
+Subject: [PATCH v2 0/2] spi: aspeed: Fix division by zero
+Date:   Wed, 22 Jun 2022 11:42:31 +0200
+Message-Id: <20220622094233.3681843-1-clg@kaod.org>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Message-ID: <165589095635.4207.5855422927608587338.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/vmware branch of tip:
+Hello,
 
-Commit-ID:     4745ca43104b422354f06dc814d3f13661f217af
-Gitweb:        https://git.kernel.org/tip/4745ca43104b422354f06dc814d3f13661f217af
-Author:        Shreenidhi Shedi <sshedi@vmware.com>
-AuthorDate:    Wed, 01 Jun 2022 15:48:20 +05:30
-Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Wed, 22 Jun 2022 11:23:14 +02:00
+Here is a small series adding some debug and fixing a division by zero
+on a board using normal speed reads.
 
-x86/vmware: Use BIT() macro for shifting
+Thanks,
 
-VMWARE_CMD_VCPU_RESERVED is bit 31 and that would mean undefined
-behavior when shifting an int but the kernel is built with
--fno-strict-overflow which will wrap around using two's complement.
+C.
 
-Use the BIT() macro to improve readability and avoid any potential
-overflow confusion because it uses an unsigned long.
 
-  [ bp: Clarify commit message. ]
+Cédric Le Goater (2):
+  spi: aspeed: Add pr_debug in aspeed_spi_dirmap_create()
+  spi: aspeed: Fix division by zero
 
-Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
-Link: https://lore.kernel.org/r/20220601101820.535031-1-sshedi@vmware.com
----
- arch/x86/kernel/cpu/vmware.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/spi/spi-aspeed-smc.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index c04b933..02039ec 100644
---- a/arch/x86/kernel/cpu/vmware.c
-+++ b/arch/x86/kernel/cpu/vmware.c
-@@ -476,8 +476,8 @@ static bool __init vmware_legacy_x2apic_available(void)
- {
- 	uint32_t eax, ebx, ecx, edx;
- 	VMWARE_CMD(GETVCPU_INFO, eax, ebx, ecx, edx);
--	return (eax & (1 << VMWARE_CMD_VCPU_RESERVED)) == 0 &&
--	       (eax & (1 << VMWARE_CMD_LEGACY_X2APIC)) != 0;
-+	return !(eax & BIT(VMWARE_CMD_VCPU_RESERVED)) &&
-+		(eax & BIT(VMWARE_CMD_LEGACY_X2APIC));
- }
- 
- #ifdef CONFIG_AMD_MEM_ENCRYPT
+-- 
+2.35.3
+
