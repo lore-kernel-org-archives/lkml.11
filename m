@@ -2,121 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B80FDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 16:50:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75AECC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 16:51:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376999AbiFVQuj (ORCPT
+        id S1377023AbiFVQvN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 12:50:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47422 "EHLO
+        Wed, 22 Jun 2022 12:51:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376825AbiFVQsz (ORCPT
+        with ESMTP id S1376887AbiFVQu5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 12:48:55 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B16673DDC2
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 09:48:14 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id i15so15877547plr.1
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 09:48:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=EPjBWJp4+cnUmhtsaExpC0uH3Ar9b7Yqno9YlbKDpEM=;
-        b=O/WI9RxqyY3j9zZPBjaivC4PBQRKM241XaCzEoMcdZCZTaGiYw5vhL0IzXVEeZ9/cu
-         AfzrnymnQw3E1bgnkaS1k+2DFHWec4a+AZuK3hAage/ENOYpm2dD8Z9M7e5BmGsmhX5M
-         cvZh0UuXxLxLDa1UHU6e2uVEKX93bEm5xoncoyPX6AqX9KyS7X9r4NOwTuBYMN3eSDVP
-         i2tOv6T/D30iwOCZdCgvOrVLW/fJ+JYJMS3WSKTk7Dp8La6AAiKBEK3z+eYYndqeVoZ9
-         5oLHSzh9t87UCBwDWN2LjbIb5ypDPhnPGz6qQsD75wgIuDAoMEVuOMdd3S/OHMKGCeIR
-         bwyw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=EPjBWJp4+cnUmhtsaExpC0uH3Ar9b7Yqno9YlbKDpEM=;
-        b=Jfin5JsUEoaGzePxA8Hv6z+HtpCpxXiol/c/z0cTzkSM0XoZerdhDZvwiDBHSksAz/
-         ZNJsuQiyHOXACOQxQBfkvaDtTEXzxAms+rlPCW6GzNDvNEOj08D0xqT80Wewn2zAgGh8
-         1cfHOoEgVHJv0t6By99Loq7sZLZj4IWWsxahGZyZbD0w1lvbzSklqD7tPgc/Kcb2BMfh
-         ebMwCS8gbTGQ2DV8wVnh5jORRczzo9gkDaDEPd4JouLbWzR6Liz+/2cI17/oHOGun3Q2
-         mPShg9HR+1TBL1BO4zE/u1paA+IJcKD2GqhtSYao8ZvBrG2/ke1xIyqFm0oYNR/JT1xe
-         gPbg==
-X-Gm-Message-State: AJIora+SLV9pQcIz2d5+bpNAwQKsrJgNwB8y3mGoXayxsBUXnFjsADfi
-        CsnKFQg82pUaw4GNNQYC0mMlog==
-X-Google-Smtp-Source: AGRyM1vZBhmsccGkxKPwH1Yo3egL09IVaEXsJhBfwL5fLkZIk1hFm8xi2xqkz2GE870z9R+SkO1ZgQ==
-X-Received: by 2002:a17:902:8689:b0:14e:f1a4:d894 with SMTP id g9-20020a170902868900b0014ef1a4d894mr35075563plo.65.1655916493753;
-        Wed, 22 Jun 2022 09:48:13 -0700 (PDT)
-Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
-        by smtp.gmail.com with ESMTPSA id x82-20020a627c55000000b0052089e1b88esm7425385pfc.192.2022.06.22.09.48.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jun 2022 09:48:12 -0700 (PDT)
-Date:   Wed, 22 Jun 2022 10:48:10 -0600
-From:   Mathieu Poirier <mathieu.poirier@linaro.org>
-To:     Miaoqian Lin <linmq006@gmail.com>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
+        Wed, 22 Jun 2022 12:50:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 497CC40E73
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 09:48:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DC4A961B1F
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 16:48:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF452C3411B;
+        Wed, 22 Jun 2022 16:48:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655916536;
+        bh=HKAwj6WqHsFCizeY3YQTqEfxSzWhZ074BWZUt4AykcE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gn07NX4XJW2TBPErhOJSQPWok8YUaMQHmpcwfee9PC84zM1ypWc/JkQCdfgXozvp8
+         1MrKfvqHUQRBW9kKHDbCIHoGblR9udb43LNsl1jgkF5A6onQVZLgMQdPk8L4xaFXf9
+         nZLW8BrU7y3bCxwDpYoUG8WmTttKiDgqeBNYJsHnfX5oLG3UI3MTdr3V2TmpChaEx/
+         Ek1YnHHx8FFM4ijCaBFSEDCOcQQqRCwluL7T9wizMdN9rzAZH1m4bm39Op3lE7TwFw
+         kBTqJ5E9n5Qqku5LaB9ujVZc77vKdKsyWZ1QmJRD8nmvP7sfrxWSxplUKwfHZZOT8E
+         lczUlS74UadJQ==
+Date:   Wed, 22 Jun 2022 17:48:51 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Dong Aisheng <dongas86@gmail.com>
+Cc:     Aisheng Dong <aisheng.dong@nxp.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "l.stach@pengutronix.de" <l.stach@pengutronix.de>,
         Peng Fan <peng.fan@nxp.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        linux-remoteproc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] remoteproc: imx_rproc: Fix refcount leak in
- imx_rproc_addr_init
-Message-ID: <20220622164810.GB1606016@p14s>
-References: <20220512045558.7142-1-linmq006@gmail.com>
+        "shawnguo@kernel.org" <shawnguo@kernel.org>
+Subject: Re: [PATCH RFC 1/2] regmap: add option to disable debugfs
+Message-ID: <YrNH8/eaYHYeAWNJ@sirena.org.uk>
+References: <DB9PR04MB8477CD99D5847291A629994180B09@DB9PR04MB8477.eurprd04.prod.outlook.com>
+ <YrCznap77OyHu4bO@sirena.org.uk>
+ <DB9PR04MB847785E1861525FC1E4AD97280B39@DB9PR04MB8477.eurprd04.prod.outlook.com>
+ <YrHkXH1M4NydBfQT@sirena.org.uk>
+ <DB9PR04MB84772F73D4AA1B49F87BECCF80B39@DB9PR04MB8477.eurprd04.prod.outlook.com>
+ <CAA+hA=RQVRHzdy_ZpwcC-ZB8mwUYuMYu_iLNAfuPcMCS1G9WXA@mail.gmail.com>
+ <YrMMzizzE7rIji5x@sirena.org.uk>
+ <CAA+hA=SA7BY8WxrbuRAOsuHyz+bx-EJq-UT_YLW5wYMS+io+pg@mail.gmail.com>
+ <YrNC3eHx7ARQy/Vd@sirena.org.uk>
+ <CAA+hA=SHgp1jZn1Qwrcu3fMnn22aaVimS4+Y2hPcWehS4zdRoA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="xDUxxgqnT7sUsrLu"
 Content-Disposition: inline
-In-Reply-To: <20220512045558.7142-1-linmq006@gmail.com>
+In-Reply-To: <CAA+hA=SHgp1jZn1Qwrcu3fMnn22aaVimS4+Y2hPcWehS4zdRoA@mail.gmail.com>
+X-Cookie: Truckers welcome.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 12, 2022 at 08:55:58AM +0400, Miaoqian Lin wrote:
-> of_parse_phandle() returns a node pointer with refcount
-> incremented, we should use of_node_put() on it when not needed anymore.
-> This function has two paths missing of_node_put().
-> 
-> Fixes: 6e962bfe56b9 ("remoteproc: imx_rproc: add missing of_node_put")
-> Fixes: a0ff4aa6f010 ("remoteproc: imx_rproc: add a NXP/Freescale imx_rproc driver")
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-> ---
->  drivers/remoteproc/imx_rproc.c | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/remoteproc/imx_rproc.c b/drivers/remoteproc/imx_rproc.c
-> index 7a096f1891e6..6363ed40854a 100644
-> --- a/drivers/remoteproc/imx_rproc.c
-> +++ b/drivers/remoteproc/imx_rproc.c
-> @@ -559,16 +559,17 @@ static int imx_rproc_addr_init(struct imx_rproc *priv,
->  
->  		node = of_parse_phandle(np, "memory-region", a);
->  		/* Not map vdevbuffer, vdevring region */
-> -		if (!strncmp(node->name, "vdev", strlen("vdev")))
-> +		if (!strncmp(node->name, "vdev", strlen("vdev"))) {
-> +			of_node_put(node);
->  			continue;
-> +		}
->  		err = of_address_to_resource(node, 0, &res);
-> +		of_node_put(node);
 
-Applied.
+--xDUxxgqnT7sUsrLu
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Thanks,
-Mathieu
+On Thu, Jun 23, 2022 at 12:42:51AM +0800, Dong Aisheng wrote:
+> On Thu, Jun 23, 2022 at 12:27 AM Mark Brown <broonie@kernel.org> wrote:
 
->  		if (err) {
->  			dev_err(dev, "unable to resolve memory region\n");
->  			return err;
->  		}
->  
-> -		of_node_put(node);
-> -
->  		if (b >= IMX_RPROC_MEM_MAX)
->  			break;
->  
-> -- 
-> 2.25.1
-> 
+> > cache_bypass is only going to be true if something enabled bypass, why
+> > would a device that doesn't use a cache enable bypass?  It does get
+> > turned on transiently by things like patching but those only make sense
+> > if the device can be accessed so caceh_only shouldn't be on then.
+
+> It was enabled by default according to the code:
+> __regmap_init -> regcache_init
+
+Ah, right.  That makes sense - we should relax the check to only apply
+if there is actually a cache.
+
+--xDUxxgqnT7sUsrLu
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKzR/IACgkQJNaLcl1U
+h9DGaQf/ZCq9VWO3ofHpZRx0yp3FDK4aUd7qAalJ1T73pWVSk7oN0B7WFLEEZUjp
+psfGcIzztckSoJIL7vxfGayS32ZsOXsetjkKDlRaitE2pHOx5nriGV3b888D1ysA
+6jJk43hzFnEjU17YONVOmlSMPrNs8PV0YvIedT9V2WofKY+YWIRCnLgS4Gc0GvgK
+4utsH9r12dYIQDtUkMcLWgrw/Sy7dw9SApe8NcbphkVKY2HVyf8ZFRjaIAIu3phI
+Q5sGhkVjAwrqOMocr+TEu+1tycGS53JpqrPSiIJJ/gITYfstLCd4hfZ4ciD0/xmF
+vnwAoLGLmg1EYxvvUYgm+C9meNyIQg==
+=Ke7G
+-----END PGP SIGNATURE-----
+
+--xDUxxgqnT7sUsrLu--
