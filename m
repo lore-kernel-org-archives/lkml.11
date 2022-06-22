@@ -2,78 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87FAACCA47E
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 07:30:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8647C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 07:30:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353228AbiFVHaA (ORCPT
+        id S1353347AbiFVHaG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 03:30:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33574 "EHLO
+        Wed, 22 Jun 2022 03:30:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350562AbiFVH3y (ORCPT
+        with ESMTP id S1350428AbiFVH3y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 22 Jun 2022 03:29:54 -0400
 Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA8C434645
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB2FA35870
         for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 00:29:52 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 75CEB5C00E6;
-        Wed, 22 Jun 2022 03:29:51 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Wed, 22 Jun 2022 03:29:51 -0400
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id 3C01B5C00D5;
+        Wed, 22 Jun 2022 03:29:49 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Wed, 22 Jun 2022 03:29:49 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
         :cc:content-transfer-encoding:content-type:date:date:from:from
         :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm1; t=1655882991; x=
-        1655969391; bh=pbobVvTrDvCWy60hjRxYkSgR6i7yeenNbIJBAiqpw+g=; b=q
-        /Zil05qJ33h7dpV3MibHup/v31TpMY/FtERQi64DfqdrWowZZDGNMfESGbj7Nl+A
-        jKF1V2pMk8Ju4Z6tmL2gTaODjhaE7mpelBgXzZLAEDHXzHkAfQAfEDIWi6WG8TSw
-        cR2U6/7OpEZoMkJiPgHRyEIMkPBuNdeNx+LIOH2bmQBySB9e6AX9ePjEPvhMlLHe
-        XX9kDlWSx1wSMZHY/2afOazzLgNdWxGSuYxTybxZqHls3J1mcA+OsldFD6mNGVHh
-        H8SsUTzIneeI4lGD1C1JnuJGQemuIQdTjfxy63zkIwelbyquc58Q3TMbDo0k85J7
-        eu3UjKn3gO5BzVH4GbDUw==
+        :reply-to:sender:subject:subject:to:to; s=fm1; t=1655882989; x=
+        1655969389; bh=qpQsXRejsI5099x61Mrfm6AobkDq+7MXCwHTQ9iVnz8=; b=2
+        CgCq34k2nBXyhUj3Udy0NS2MufzxpNTQFlDwGhgAKDFOafFIs3AdXACqqKWE++QE
+        Eul/E1CREI+rQalyY5r1Ljp1MPySRRCh/+xgYhwTAUd7o21IOuf8n5dGlxKSBGfd
+        SpD6DBQ+qMaB/BXB676xwVjniaDP0/2E9dQBliQ5fI5ZJAE01VzNZR1r3GOiMOYc
+        eEcgWb/7iUHpOr1QkO67dWhn3syCm1dm2QuE94OPnvZIMq/m6aN0lFVq5dnyxAkM
+        lepLA2w2q4tyWDdmQxuIh778INABM1sBEUhIKni499QBdh0X+cMNj2zxoMZpRI1o
+        WZQjH5aK/pXGD2QCPKuIg==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-transfer-encoding
         :content-type:date:date:feedback-id:feedback-id:from:from
         :in-reply-to:in-reply-to:message-id:mime-version:references
         :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1655882991; x=
-        1655969391; bh=pbobVvTrDvCWy60hjRxYkSgR6i7yeenNbIJBAiqpw+g=; b=K
-        tkUJWWvsRrG5DL3ztZ3ZmjB8RkCYXerkKnJTygmZ5wAmf2jcnsKoxqiiW/2BcUy7
-        Hnu/0o3GoO5nGbHDSJrR/mwuG1X/oACqdet061YbXyp/W3YrOdC6g8/SGrht6nkz
-        biVEoPAQQg+Sl58gw00q9ALLV9dvVBcgLVlO4mCbrwj2rLlYp1MUb2ndy8mN8dS5
-        VdnqdE23pFxV1fHmune2a9vFtjHR5Ba89hiN/CswIEu7w6ougc0q5+0Q+7WKsQJP
-        WwReLQx9YIgZqFC1M93QEymluAS5Q7U/2JKnNjrKEsRpAiFcGzV26og3KL6ssBD6
-        rCHCXwS9hlZCT1miG2n0A==
-X-ME-Sender: <xms:78SyYgr5mF1deCVOWBqAZvVLoI2k2aWhKvdDjiGzz_l3g4jLsp4kBA>
-    <xme:78SyYmohD9OsHXRsoXSWKnq4IfM1LJ0p16UOQS9twufx39sNu7zFGanIH05NntHMP
-    5P7LiS5G3IeMa7qacI>
-X-ME-Received: <xmr:78SyYlPOjibmMY53-5xTnLrfExwzB25KEW0kixmI_X5Wt8vReGwRbEwUH87DMyGMS3Iylh_IFFKYVTYav4Tphj-6L4OpxA94AZvdI1U>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudefgedguddvudcutefuodetggdotefrod
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1655882989; x=
+        1655969389; bh=qpQsXRejsI5099x61Mrfm6AobkDq+7MXCwHTQ9iVnz8=; b=W
+        MoEymr5od0X6+orniJreaujenHudYxcrsGVSjcljTuqX5TI9VEFok7VPkS3fwLh4
+        7wT0Uk7sps1SY49zN5cOPcIBh97M/Rjfch/MPfoq8FwdahG84iVdWnnR1lujGTt1
+        e/jSdBaRnzmVv0p45WFBCIt/8UKkdmy1Ow+TBxGD1F3Ue2pHteEvszz8nMU0WheW
+        OPhEK1icwjLY79v0EWSSru2XUz6i4RUaoKw4em5jRZey1TrWfIT/18xLP27Rmeak
+        2XTfjfyiPc1PIAlbId224wGL98nywR5Mk5pHVumb48kbiIuYr6OqIRlannIxrSw2
+        qqiJQTBSWY3LALLW8XW5w==
+X-ME-Sender: <xms:7MSyYkeZ8P-spzD8jGMKPn1C6MDrjAQ4sRCGFuLDYTSgHMnrrQaEIA>
+    <xme:7MSyYmMpkUrBoCGw4HsdxY_4EUd9QsoefM2CzhB3SMzYSYQCJiAGKQDWQvdJ2aU07
+    Fm4_uxly4d3wRSjXrA>
+X-ME-Received: <xmr:7MSyYljpoSNCrMN2LlRBdI-w4p38wFR-b6PmFrreLY7Ta2vsJCikObtYKDXUT32Z3Aelbzf8Q1VM1rwI-xbGQPMItv8j-1-qEAhXK1o>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudefgedguddvvdcutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
     necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvvefufffkofgjfhggtgfgse
     htkeertdertdejnecuhfhrohhmpeforgigihhmvgcutfhiphgrrhguuceomhgrgihimhgv
     segtvghrnhhordhtvggthheqnecuggftrfgrthhtvghrnhepueeigefghfffffeifeehud
     eiuedvteegueefffevgfetvdffheehkeffvedufeeinecuvehluhhsthgvrhfuihiivgep
     tdenucfrrghrrghmpehmrghilhhfrhhomhepmhgrgihimhgvsegtvghrnhhordhtvggthh
-X-ME-Proxy: <xmx:78SyYn7XkytEhS4DcBw_8aYoGHsU_bOQiwZiB11Odfugxy3iaWs5vA>
-    <xmx:78SyYv64-Yl232jl4V-AFcsm9wnK_nAX9DjdTNxQ2NPHdV9B2ECh3Q>
-    <xmx:78SyYniUlmrQSHISlHeDYcw5mNNL5GXifZsBemmTpGlFuK1Ws0Ix4Q>
-    <xmx:78SyYibai4saUMSu_0H8eT3YuZcFQL9JoRsuXNjwo34cofquYkkMYg>
+X-ME-Proxy: <xmx:7MSyYp_WmFVfY0bsEuGXgT2qzP5x68Swr9Tb7Gh-YptMfEeatD-1gQ>
+    <xmx:7MSyYgsAvruQiYusk_Yw1xBtZUjolIw6Rcwo3pEZhgHoCX3tGSGc1A>
+    <xmx:7MSyYgGD-rjguZOZB_1W5vGYKMsjhIWoz4Jgh9klzokMMinseZzkKQ>
+    <xmx:7cSyYl_Sc-SVJTj8hk1SaC7tRsNYlO3WlhrW676e3ENxbj-qnLr2CQ>
 Feedback-ID: i8771445c:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 22 Jun 2022 03:29:50 -0400 (EDT)
+ 22 Jun 2022 03:29:47 -0400 (EDT)
 From:   Maxime Ripard <maxime@cerno.tech>
-To:     jiangjian@cdjrlc.com, mripard@kernel.org,
-        maarten.lankhorst@linux.intel.com, tzimmermann@suse.de
+To:     maarten.lankhorst@linux.intel.com, airlied@linux.ie,
+        jiangjian@cdjrlc.com, tzimmermann@suse.de, daniel@ffwll.ch,
+        mripard@kernel.org
 Cc:     Maxime Ripard <maxime@cerno.tech>, dri-devel@lists.freedesktop.org,
-        daniel@ffwll.ch, linux-kernel@vger.kernel.org, airlied@linux.ie
-Subject: Re: (subset) [PATCH] drm/prime: drop unexpected word "the" in the comments
-Date:   Wed, 22 Jun 2022 09:29:42 +0200
-Message-Id: <165588297922.13818.13524716037059627396.b4-ty@cerno.tech>
+        linux-kernel@vger.kernel.org
+Subject: Re: (subset) [PATCH] drm: panel-orientation-quirks: drop unexpected word "the" in the comments
+Date:   Wed, 22 Jun 2022 09:29:41 +0200
+Message-Id: <165588297922.13818.16761232359247281668.b4-ty@cerno.tech>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220621130210.125461-1-jiangjian@cdjrlc.com>
-References: <20220621130210.125461-1-jiangjian@cdjrlc.com>
+In-Reply-To: <20220621134401.10290-1-jiangjian@cdjrlc.com>
+References: <20220621134401.10290-1-jiangjian@cdjrlc.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -81,14 +82,14 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 21 Jun 2022 21:02:10 +0800, Jiang Jian wrote:
+On Tue, 21 Jun 2022 21:44:01 +0800, Jiang Jian wrote:
 > there is an unexpected word "the" in the comments that need to be dropped
 > 
-> file: drivers/gpu/drm/drm_prime.c
-> line: 842
-> * of the the buffer described by the provided sg_table.
+> file: drivers/gpu/drm/drm_panel_orientation_quirks.c
+> line: 196
+> * GPD Pocket, note that the the DMI data is less generic then
 > changed to
-> * of the buffer described by the provided sg_table.
+> * GPD Pocket, note that the DMI data is less generic then
 > 
 > [...]
 
