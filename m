@@ -2,113 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF16AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 15:01:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1BE0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 15:02:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358797AbiFVPA7 (ORCPT
+        id S1357631AbiFVPCF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 11:00:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60498 "EHLO
+        Wed, 22 Jun 2022 11:02:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347638AbiFVPAy (ORCPT
+        with ESMTP id S235799AbiFVPCB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 11:00:54 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B387B3E0F7;
-        Wed, 22 Jun 2022 08:00:52 -0700 (PDT)
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25MEQdr5015397;
-        Wed, 22 Jun 2022 15:00:33 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=KA1JdRgtOjD40XyEB3YqySk4ezHovydA8xxcytIvEYQ=;
- b=NSBfEbpYDxi2EtzNLiGVV4uw1tjgyyVZdTF3fBoUUnpPsANoCAlYlzWhxtg5Oq+P4sTu
- 5m4PFGlO2NcWLddzGRSFyXitMpxqzZvNKN52q2zc0lm/jJ7/E151gitnra9uYlBlNnUQ
- fmJJ3y1HQJqtMnufByjLitBTsSjQ1Eg7aM0yngk2TnxOqtHpBKxM5s5555U5j65TPnJY
- 1O+GOj7sL7iVvrrW9itY1Qj5FWzEcYv28Cr776eCSkjsFf2LnsienjEtaIdhWVMRe+I9
- Ho6do+V7MIb2OjAj+THetnBcswJVH1ihve2C4/dumParYTlWwj1ccA9v9AXLjuoQroqg Bw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gv4uqh36s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 22 Jun 2022 15:00:32 +0000
-Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25MER0wW016225;
-        Wed, 22 Jun 2022 15:00:32 GMT
-Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gv4uqh35a-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 22 Jun 2022 15:00:32 +0000
-Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
-        by ppma02wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25MEZV2m007182;
-        Wed, 22 Jun 2022 15:00:31 GMT
-Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
-        by ppma02wdc.us.ibm.com with ESMTP id 3gs6babcy5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 22 Jun 2022 15:00:30 +0000
-Received: from b01ledav006.gho.pok.ibm.com (b01ledav006.gho.pok.ibm.com [9.57.199.111])
-        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25MExFXV6489080
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 22 Jun 2022 14:59:15 GMT
-Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B4E46AC05B;
-        Wed, 22 Jun 2022 14:59:15 +0000 (GMT)
-Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DC5DDAC05F;
-        Wed, 22 Jun 2022 14:59:14 +0000 (GMT)
-Received: from li-be644d4c-2c59-11b2-a85c-bc3dba3ed00b.ibm.com (unknown [9.160.24.26])
-        by b01ledav006.gho.pok.ibm.com (Postfix) with ESMTPS;
-        Wed, 22 Jun 2022 14:59:14 +0000 (GMT)
-Date:   Wed, 22 Jun 2022 09:59:13 -0500
-From:   "Paul A. Clarke" <pc@us.ibm.com>
-To:     Yang Jihong <yangjihong1@huawei.com>
-Cc:     peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
-        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
-        jolsa@kernel.org, namhyung@kernel.org,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
-Subject: Re: [RFC 00/13] perf: Add perf kwork
-Message-ID: <YrMuQXIn9DdhZl2w@li-be644d4c-2c59-11b2-a85c-bc3dba3ed00b.ibm.com>
-References: <20220613094605.208401-1-yangjihong1@huawei.com>
+        Wed, 22 Jun 2022 11:02:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67E5C3DA4A;
+        Wed, 22 Jun 2022 08:02:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C84460DCB;
+        Wed, 22 Jun 2022 15:02:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E66E3C34114;
+        Wed, 22 Jun 2022 15:01:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655910119;
+        bh=zyA4bB+WpmPfApZNiZtMY+3UsvHWTNMvaKlfuspt/KY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kFlK9pxh5ILbaWBtxVJa9Ts9c7WIAX0LptP9h8C7xyaf7CdVWUijzfQsyx2OBUP3K
+         JsLi+QjyZqiWl2XV3hG7wGkIkM6y0ZwMjN4oO1HupxQMFIOMoXD7sWE/E7nBt0jKSH
+         sCSvi8bfrnorwoNVQy9Xml+xYVGxNsV1UOOS/Z0JUi3yduP1xOjxawJomwVNz5bP+I
+         Pzd+8rlDg2ASd0/9R4oInrt3aE0YCsKxTHdiec56E/ZVVOiAMEif71JtH0j+epkAMR
+         /s7Lu3kjz4r9K92SiswGeu4NbwSRXxAzV2sp58tiE4s4/noxwxFzID39fXyrurWAN9
+         5F2tzuuLVGvkQ==
+Date:   Wed, 22 Jun 2022 08:01:57 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Kees Cook <keescook@chromium.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: mainline build failure due to 281d0c962752 ("fortify: Add Clang
+ support")
+Message-ID: <YrMu5bdhkPzkxv/X@dev-arch.thelio-3990X>
+References: <YrLtpixBqWDmZT/V@debian>
+ <CAHk-=wiN1ujyVTgyt1GuZiyWAPfpLwwg-FY1V-J56saMyiA1Lg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220613094605.208401-1-yangjihong1@huawei.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: AvCbPAo-d3UsCRqJ_ADSkvTZyHdcA9f6
-X-Proofpoint-GUID: aGQ6kEiRha3BkJ7E2zLkTpSiFgYZfmCj
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-06-22_04,2022-06-22_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- bulkscore=0 clxscore=1011 mlxscore=0 impostorscore=0 malwarescore=0
- phishscore=0 suspectscore=0 adultscore=0 mlxlogscore=799
- priorityscore=1501 spamscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2204290000 definitions=main-2206220074
+In-Reply-To: <CAHk-=wiN1ujyVTgyt1GuZiyWAPfpLwwg-FY1V-J56saMyiA1Lg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 05:45:52PM +0800, Yang Jihong wrote:
-> Sometimes, we need to analyze time properties of kernel work such as irq,
-> softirq, and workqueue, such as delay and running time of specific interrupts.
-> Currently, these events have kernel tracepoints, but perf tool does not
-> directly analyze the delay of these events
-> 
-> The perf-kwork tool is used to trace time properties of kernel work
-> (such as irq, softirq, and workqueue), including runtime, latency,
-> and timehist, using the infrastructure in the perf tools to allow
-> tracing extra targets
-> 
-> test case:
-> 
->   # perf kwork report
-> 
->     Kwork Name                | Cpu  | Total Runtime | Frequency | Max runtime   | Max runtime start   | Max runtime end     |
->    ---------------------------------------------------------------------------------------------------------------------------
->     (s)RCU:9                  | 0007 |      3.488 ms |      1258 |      0.145 ms |    3398384.220013 s |    3398384.220157 s |
->     (s)NET_RX:3               | 0003 |      1.866 ms |       156 |      0.042 ms |    3398385.629764 s |    3398385.629806 s |
->     (s)TIMER:1                | 0000 |      1.799 ms |       117 |      0.055 ms |    3398385.568033 s |    3398385.568088 s |
->     (w)0xffff9c66e563ee98     | 0006 |      1.561 ms |         5 |      0.351 ms |    3398384.060021 s |    3398384.060371 s |
+Hi Linus,
 
-What units are used for "Frequency"? It would be helpful to include somewhere.
+On Wed, Jun 22, 2022 at 08:47:22AM -0500, Linus Torvalds wrote:
+> On Wed, Jun 22, 2022 at 5:23 AM Sudip Mukherjee
+> <sudipm.mukherjee@gmail.com> wrote:
+> >
+> > I have recently (since yesterday) started building the mainline kernel
+> > with clang-14 and I am seeing a build failure with allmodconfig.
 
-PC
+Right, this is known. Kees sent a fix for that warning recently but it
+went to net-next instead of net it seems:
+
+https://git.kernel.org/netdev/net-next/c/2c0ab32b73cfe39a609192f338464e948fc39117
+
+I am not sure if that change could be cherry-picked or applied to net so
+that it could be fixed in mainline, I see the netdev maintainers are
+already on CC so maybe they can comment on that?
+
+> Yeah, the clang build has never been allmodconfig-clean, although I
+> think it's starting to get pretty close.
+
+Right, we are almost there with ARCH=arm64 and ARCH=x86_64. Both arm64
+and x86_64 suffer from the warning that Sudip reported and arm64 grew a
+new warning this release from commit 274d79e51875 ("ASoC: Intel: avs:
+Configure modules according to their type"):
+
+  sound/soc/intel/avs/path.c:815:18: error: stack frame size (2176) exceeds limit (2048) in 'avs_path_create' [-Werror,-Wframe-larger-than]
+  struct avs_path *avs_path_create(struct avs_dev *adev, u32 dma_id,
+                   ^
+  1 error generated.
+
+I haven't fully figured out what is going wrong with this one, I did
+write some analysis on our bug tracker if anyone is curious:
+
+https://github.com/ClangBuiltLinux/linux/issues/1642#issuecomment-1156815611
+
+With those two warnings fixed, arm64 and x86_64 allmodconfig become
+-Werror clean with clang-11 through clang-15 on mainline; 5.15 is
+already there.
+
+Other architectures aren't that far behind either, ARCH=arm is the worst
+one because of KASAN, which has been brought up a few times before
+without any real resolution.
+
+> I build the kernel I actually _use_ with clang, and make sure it's
+> clean in sane configurations, but my full allmodconfig build I do with
+> gcc.
+> 
+> Partly because of that "the clang build hasn't quite gotten there yet"
+> and partly because last I tried it was even slower to build (not a big
+> issue for my default config, but does matter for the allmodconfig
+> build, even on my beefy home machine)
+> 
+> I would love for people to start doing allmodconfig builds with clang
+> too, but it would require some initial work to fix it... Hint, hint.
+
+Right, we are working on a statically linked and optimized build of LLVM
+that people can use similar to the GCC builds provided on kernel.org,
+which should make the compile time problem not as bad as well as making
+it easier for developers to get access to a recent version of clang with
+all the fixes and improvements that we have made in upstream LLVM.
+
+> And in the case of this warning attribute case, the clang error messages are
+> 
+>  (a) verbose
+> 
+>  (b) useless
+> 
+> because they point to where the warning attribute is (I know where it
+> is), but don't point to where it's actually triggering (ie where it
+> was actually inlined and called from).
+> 
+> The gcc equivalent of that warning actually says exactly where the
+> problem is. The clang one is useless, which is probably part of why
+> people aren't fixing them, because even if they would want to, they
+> just give up.
+> 
+> Nick, Nathan, any chance of getting better error messages out of
+> clang? In some cases, they are very good, so it's not like clang does
+> bad error messages by default. But in this case, the error message
+> really is *entirely* useless.
+
+Right, known papercut :( Kees also noticed this and reported it on our
+issue tracker:
+
+https://github.com/ClangBuiltLinux/linux/issues/1571
+
+I don't do as much on the LLVM side as Nick so I'll let him comment on
+how feasible implementing that in clang will be, he already has some
+comments on the issue tracker there.
+
+Cheers,
+Nathan
