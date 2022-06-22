@@ -2,81 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A42F5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 10:40:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52DA6C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 10:41:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231415AbiFVKkl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 06:40:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58120 "EHLO
+        id S1348306AbiFVKl0 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 06:41:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229784AbiFVKki (ORCPT
+        with ESMTP id S1353850AbiFVK2Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 06:40:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B6DA3BA52
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 03:40:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1ED1F60F31
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 10:40:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E4EEC34114;
-        Wed, 22 Jun 2022 10:40:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655894436;
-        bh=GFrMnFZ+Th8WbgJcF2ZE18R6Cvj1UfF2VY0kpane+PY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=lC+7t+g4ROmC+BkVhSBwTBLwchV4VlwueOj5dh15jUiSTFOnBXTuwdbFWwONDsPDR
-         q4XwoOnAIFI0waJ+i/YvLyhIoMsg890HBzIBTCj+RmHYReoQqgkXqCpHfn/EPdo0GZ
-         YDaIJ+rXjcQntfuKwoV4CUDbDNROs/PaWJPKsOn1NEXuB1NwLx8CbT3mX+zohxHOYz
-         T1yk2ybZCuHzsr13qIxZT7HjNaHbXjXfLDs/BG8WhV+0Luwh7cj3UP/GWBsIZp3PaB
-         2iUohoxNauLUvi/miqVzQ5rMsM6EV2Ql9+2iHQx6ilPu4/eKRzPAlPpWBoJjhX+qRE
-         /1plOunZ3Z8fA==
-Date:   Wed, 22 Jun 2022 11:40:31 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Jilin Yuan <yuanjilin@cdjrlc.com>
-Cc:     catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
-        bigeasy@linutronix.de, geert+renesas@glider.be,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] arm64:kernel:Fix typo in comment
-Message-ID: <YrLxn14W7snJZRdY@sirena.org.uk>
-References: <20220622091443.51062-1-yuanjilin@cdjrlc.com>
+        Wed, 22 Jun 2022 06:28:25 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 456CEE4B;
+        Wed, 22 Jun 2022 03:28:23 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1o3xan-0002Cj-GJ; Wed, 22 Jun 2022 12:28:13 +0200
+Date:   Wed, 22 Jun 2022 12:28:13 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Ilya Maximets <i.maximets@ovn.org>,
+        netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, dev@openvswitch.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Florian Westphal <fw@strlen.de>
+Subject: Re: [PATCH net] net: ensure all external references are released in
+ deferred skbuffs
+Message-ID: <20220622102813.GA24844@breakpoint.cc>
+References: <20220619003919.394622-1-i.maximets@ovn.org>
+ <CANn89iL_EmkEgPAVdhNW4tyzwQbARyji93mUQ9E2MRczWpNm7g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="i2BWpgtofENy4SJ8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220622091443.51062-1-yuanjilin@cdjrlc.com>
-X-Cookie: Truckers welcome.
+In-Reply-To: <CANn89iL_EmkEgPAVdhNW4tyzwQbARyji93mUQ9E2MRczWpNm7g@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Eric Dumazet <edumazet@google.com> wrote:
+> On Sun, Jun 19, 2022 at 2:39 AM Ilya Maximets <i.maximets@ovn.org> wrote:
+> >
+> > Open vSwitch system test suite is broken due to inability to
+> > load/unload netfilter modules.  kworker thread is getting trapped
+> > in the infinite loop while running a net cleanup inside the
+> > nf_conntrack_cleanup_net_list, because deferred skbuffs are still
+> > holding nfct references and not being freed by their CPU cores.
+> >
+> > In general, the idea that we will have an rx interrupt on every
+> > CPU core at some point in a near future doesn't seem correct.
+> > Devices are getting created and destroyed, interrupts are getting
+> > re-scheduled, CPUs are going online and offline dynamically.
+> > Any of these events may leave packets stuck in defer list for a
+> > long time.  It might be OK, if they are just a piece of memory,
+> > but we can't afford them holding references to any other resources.
+> >
+> > In case of OVS, nfct reference keeps the kernel thread in busy loop
+> > while holding a 'pernet_ops_rwsem' semaphore.  That blocks the
+> > later modprobe request from user space:
+> >
+> >   # ps
+> >    299 root  R  99.3  200:25.89 kworker/u96:4+
+> >
+> >   # journalctl
+> >   INFO: task modprobe:11787 blocked for more than 1228 seconds.
+> >         Not tainted 5.19.0-rc2 #8
+> >   task:modprobe     state:D
+> >   Call Trace:
+> >    <TASK>
+> >    __schedule+0x8aa/0x21d0
+> >    schedule+0xcc/0x200
+> >    rwsem_down_write_slowpath+0x8e4/0x1580
+> >    down_write+0xfc/0x140
+> >    register_pernet_subsys+0x15/0x40
+> >    nf_nat_init+0xb6/0x1000 [nf_nat]
+> >    do_one_initcall+0xbb/0x410
+> >    do_init_module+0x1b4/0x640
+> >    load_module+0x4c1b/0x58d0
+> >    __do_sys_init_module+0x1d7/0x220
+> >    do_syscall_64+0x3a/0x80
+> >    entry_SYSCALL_64_after_hwframe+0x46/0xb0
+> >
+> > At this point OVS testsuite is unresponsive and never recover,
+> > because these skbuffs are never freed.
+> >
+> > Solution is to make sure no external references attached to skb
+> > before pushing it to the defer list.  Using skb_release_head_state()
+> > for that purpose.  The function modified to be re-enterable, as it
+> > will be called again during the defer list flush.
+> >
+> > Another approach that can fix the OVS use-case, is to kick all
+> > cores while waiting for references to be released during the net
+> > cleanup.  But that sounds more like a workaround for a current
+> > issue rather than a proper solution and will not cover possible
+> > issues in other parts of the code.
+> >
+> > Additionally checking for skb_zcopy() while deferring.  This might
+> > not be necessary, as I'm not sure if we can actually have zero copy
+> > packets on this path, but seems worth having for completeness as we
+> > should never defer such packets regardless.
+> >
+> > CC: Eric Dumazet <edumazet@google.com>
+> > Fixes: 68822bdf76f1 ("net: generalize skb freeing deferral to per-cpu lists")
+> > Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
+> > ---
+> >  net/core/skbuff.c | 16 +++++++++++-----
+> >  1 file changed, 11 insertions(+), 5 deletions(-)
+> 
+> I do not think this patch is doing the right thing.
+> 
+> Packets sitting in TCP receive queues should not hold state that is
+> not relevant for TCP recvmsg().
 
---i2BWpgtofENy4SJ8
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Agree, but tcp_v4/6_rcv() already call nf_reset_ct(), else it would
+not be possible to remove nf_conntrack module in practice.
 
-On Wed, Jun 22, 2022 at 05:14:43PM +0800, Jilin Yuan wrote:
-> Delete the redundant word 'in'.
->=20
-> Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
+I wonder where the deferred skbs are coming from, any and all
+queued skbs need the conntrack state dropped.
 
-Acked-by: Mark Brown <broonie@kernel.org>
-
---i2BWpgtofENy4SJ8
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKy8Z4ACgkQJNaLcl1U
-h9BLlgf/ZJ6IyiMLlvlkOaTw9MdIW8mimSEmZH268azEIUP6x62R8BqILd+tgPdV
-KGEfXQiGsDluN5eKyPYIVnRRmP8w9l1ekwtw4HzyFG8ZRFjXgz/IyqYRTmNHFe+k
-Hq3L4z6EgCZVLEYlChrOoQgxo5mEQby1/63/9FNs/IWtmBX/fYl+2nSFb/rJKESw
-RAeOUQcjBwdwVOpQ9f4pEEFTkWmJCE5nSxkC9+o2D3Fq9p0DxN6mmsHJmLPjipOL
-hBzciqdzQ5Lc4D1muM5fJ3qEhoO0yCSLdkdfjr4Nm0vZMWPZYLwTo31+ZLILGkf8
-u1eqzD3tg5ywicvn43/k2oF9ALBixQ==
-=kh+i
------END PGP SIGNATURE-----
-
---i2BWpgtofENy4SJ8--
+I don't mind a new helper that does a combined dst+ct release though.
