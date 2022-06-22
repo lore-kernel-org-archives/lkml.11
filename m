@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53FFFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 19:27:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 281B6C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 19:28:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358695AbiFVT1u (ORCPT
+        id S1358854AbiFVT2F (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 15:27:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33432 "EHLO
+        Wed, 22 Jun 2022 15:28:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233259AbiFVT1Y (ORCPT
+        with ESMTP id S1357066AbiFVT1Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 15:27:24 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8FFDF3B56E
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 12:27:19 -0700 (PDT)
+        Wed, 22 Jun 2022 15:27:25 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 99C3E3BF88
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 12:27:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655926038;
+        s=mimecast20190719; t=1655926039;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=6zgEwQpnSRTHM/MsdHbCsibTgUHGp5FG0Bz21Fto8qI=;
-        b=bvlIq1p4PrhMIJ1G+XcUMt1SAgWtLqWIBToCG0ReACvPoloF3llbtxBW4s2z0Dxdd0Us9S
-        Vs9O802VS+Xmf1tnNfY5BVMiEyEWKpdIfThn1H36JQ2qEq5SfYz5LfvF8ZKreIJmeSZQKF
-        Ny4Hg+G+XWZwE5nN9MigKJj+ZA4ySr8=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=VYUzovwXlyWEqHWEr/0eyCJlm/77MGoPfdijVMP4XpY=;
+        b=C3hbHiKNaiow2LYSss1f3jKR+VeDEK4tnt36oWTzmGhq9gOIS8vZEoFSKI+VEFG0s8m8dA
+        tM/9ykNnBjsgShFmEY5izHEoQHB4CMMkA5XqRfEUhbhVDubHMvAgbOogA3hJzLu8xeTXaW
+        7hMHfgvVoj7JnT55Z0LwoZeu/oWyvCk=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-577-gVPCiXUWPImCZVgU0xssfQ-1; Wed, 22 Jun 2022 15:27:15 -0400
-X-MC-Unique: gVPCiXUWPImCZVgU0xssfQ-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+ us-mta-248-4_a3NbfDPa6vyHqb9eMy7w-1; Wed, 22 Jun 2022 15:27:16 -0400
+X-MC-Unique: 4_a3NbfDPa6vyHqb9eMy7w-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4E1A5185A7B2;
-        Wed, 22 Jun 2022 19:27:14 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8B7ED3810782;
+        Wed, 22 Jun 2022 19:27:15 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id EAC481121314;
-        Wed, 22 Jun 2022 19:27:13 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 37719141510C;
+        Wed, 22 Jun 2022 19:27:15 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     maz@kernel.org, anup@brainfault.org, seanjc@google.com,
@@ -46,95 +46,75 @@ Cc:     maz@kernel.org, anup@brainfault.org, seanjc@google.com,
         kvmarm@lists.cs.columbia.edu, linux-mips@vger.kernel.org,
         kvm-riscv@lists.infradead.org, pfeiner@google.com,
         jiangshanlai@gmail.com, dmatlack@google.com
-Subject: [PATCH v7 08/23] KVM: x86/mmu: Rename shadow MMU functions that deal with shadow pages
-Date:   Wed, 22 Jun 2022 15:26:55 -0400
-Message-Id: <20220622192710.2547152-9-pbonzini@redhat.com>
+Subject: [PATCH v7 11/23] KVM: x86/mmu: Replace vcpu with kvm in kvm_mmu_alloc_shadow_page()
+Date:   Wed, 22 Jun 2022 15:26:58 -0400
+Message-Id: <20220622192710.2547152-12-pbonzini@redhat.com>
 In-Reply-To: <20220622192710.2547152-1-pbonzini@redhat.com>
 References: <20220622192710.2547152-1-pbonzini@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: David Matlack <dmatlack@google.com>
 
-Rename 2 functions:
-
-  kvm_mmu_get_page() -> kvm_mmu_get_shadow_page()
-  kvm_mmu_free_page() -> kvm_mmu_free_shadow_page()
-
-This change makes it clear that these functions deal with shadow pages
-rather than struct pages. It also aligns these functions with the naming
-scheme for kvm_mmu_find_shadow_page() and kvm_mmu_alloc_shadow_page().
-
-Prefer "shadow_page" over the shorter "sp" since these are core
-functions and the line lengths aren't terrible.
+The vcpu pointer in kvm_mmu_alloc_shadow_page() is only used to get the
+kvm pointer. So drop the vcpu pointer and just pass in the kvm pointer.
 
 No functional change intended.
 
-Reviewed-by: Sean Christopherson <seanjc@google.com>
 Signed-off-by: David Matlack <dmatlack@google.com>
-Message-Id: <20220516232138.1783324-9-dmatlack@google.com>
+Message-Id: <20220516232138.1783324-12-dmatlack@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/mmu/mmu.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ arch/x86/kvm/mmu/mmu.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 8b84cdd8c6cd..bd45364bf465 100644
+index fab417e7bf6c..c5a88e8d1b53 100644
 --- a/arch/x86/kvm/mmu/mmu.c
 +++ b/arch/x86/kvm/mmu/mmu.c
-@@ -1626,7 +1626,7 @@ static inline void kvm_mod_used_mmu_pages(struct kvm *kvm, long nr)
- 	percpu_counter_add(&kvm_total_used_mmu_pages, nr);
- }
+@@ -2056,7 +2056,7 @@ struct shadow_page_caches {
+ 	struct kvm_mmu_memory_cache *gfn_array_cache;
+ };
  
--static void kvm_mmu_free_page(struct kvm_mmu_page *sp)
-+static void kvm_mmu_free_shadow_page(struct kvm_mmu_page *sp)
- {
- 	MMU_WARN_ON(!is_empty_shadow_page(sp->spt));
- 	hlist_del(&sp->hash_link);
-@@ -2081,8 +2081,9 @@ static struct kvm_mmu_page *kvm_mmu_alloc_shadow_page(struct kvm_vcpu *vcpu,
+-static struct kvm_mmu_page *kvm_mmu_alloc_shadow_page(struct kvm_vcpu *vcpu,
++static struct kvm_mmu_page *kvm_mmu_alloc_shadow_page(struct kvm *kvm,
+ 						      struct shadow_page_caches *caches,
+ 						      gfn_t gfn,
+ 						      struct hlist_head *sp_list,
+@@ -2076,15 +2076,15 @@ static struct kvm_mmu_page *kvm_mmu_alloc_shadow_page(struct kvm_vcpu *vcpu,
+ 	 * depends on valid pages being added to the head of the list.  See
+ 	 * comments in kvm_zap_obsolete_pages().
+ 	 */
+-	sp->mmu_valid_gen = vcpu->kvm->arch.mmu_valid_gen;
+-	list_add(&sp->link, &vcpu->kvm->arch.active_mmu_pages);
+-	kvm_mod_used_mmu_pages(vcpu->kvm, +1);
++	sp->mmu_valid_gen = kvm->arch.mmu_valid_gen;
++	list_add(&sp->link, &kvm->arch.active_mmu_pages);
++	kvm_mod_used_mmu_pages(kvm, +1);
+ 
+ 	sp->gfn = gfn;
+ 	sp->role = role;
+ 	hlist_add_head(&sp->hash_link, sp_list);
+ 	if (sp_has_gptes(sp))
+-		account_shadowed(vcpu->kvm, sp);
++		account_shadowed(kvm, sp);
+ 
  	return sp;
  }
- 
--static struct kvm_mmu_page *kvm_mmu_get_page(struct kvm_vcpu *vcpu, gfn_t gfn,
--					     union kvm_mmu_page_role role)
-+static struct kvm_mmu_page *kvm_mmu_get_shadow_page(struct kvm_vcpu *vcpu,
-+						    gfn_t gfn,
-+						    union kvm_mmu_page_role role)
- {
- 	struct hlist_head *sp_list;
- 	struct kvm_mmu_page *sp;
-@@ -2146,7 +2147,7 @@ static struct kvm_mmu_page *kvm_mmu_get_child_sp(struct kvm_vcpu *vcpu,
- 	union kvm_mmu_page_role role;
- 
- 	role = kvm_mmu_child_role(sptep, direct, access);
--	return kvm_mmu_get_page(vcpu, gfn, role);
-+	return kvm_mmu_get_shadow_page(vcpu, gfn, role);
- }
- 
- static void shadow_walk_init_using_root(struct kvm_shadow_walk_iterator *iterator,
-@@ -2422,7 +2423,7 @@ static void kvm_mmu_commit_zap_page(struct kvm *kvm,
- 
- 	list_for_each_entry_safe(sp, nsp, invalid_list, link) {
- 		WARN_ON(!sp->role.invalid || sp->root_count);
--		kvm_mmu_free_page(sp);
-+		kvm_mmu_free_shadow_page(sp);
+@@ -2103,7 +2103,7 @@ static struct kvm_mmu_page *__kvm_mmu_get_shadow_page(struct kvm_vcpu *vcpu,
+ 	sp = kvm_mmu_find_shadow_page(vcpu, gfn, sp_list, role);
+ 	if (!sp) {
+ 		created = true;
+-		sp = kvm_mmu_alloc_shadow_page(vcpu, caches, gfn, sp_list, role);
++		sp = kvm_mmu_alloc_shadow_page(vcpu->kvm, caches, gfn, sp_list, role);
  	}
- }
  
-@@ -3415,7 +3416,7 @@ static hpa_t mmu_alloc_root(struct kvm_vcpu *vcpu, gfn_t gfn, int quadrant,
- 	WARN_ON_ONCE(quadrant && !role.has_4_byte_gpte);
- 	WARN_ON_ONCE(role.direct && role.has_4_byte_gpte);
- 
--	sp = kvm_mmu_get_page(vcpu, gfn, role);
-+	sp = kvm_mmu_get_shadow_page(vcpu, gfn, role);
- 	++sp->root_count;
- 
- 	return __pa(sp->spt);
+ 	trace_kvm_mmu_get_page(sp, created);
 -- 
 2.31.1
 
