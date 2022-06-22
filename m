@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC878C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 16:23:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D30C2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 16:23:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359207AbiFVQXM (ORCPT
+        id S1359814AbiFVQXx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 12:23:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58322 "EHLO
+        Wed, 22 Jun 2022 12:23:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376551AbiFVQWu (ORCPT
+        with ESMTP id S1376748AbiFVQX1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 12:22:50 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50F263F89D
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 09:22:47 -0700 (PDT)
+        Wed, 22 Jun 2022 12:23:27 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BC923FD9F
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 09:23:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655914967; x=1687450967;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=OChFIveiqJ9oJhDxBw4UZzfrhSKP5CJTbXz/rUdgIPw=;
-  b=h78V+TI6//c4pmfFX+D8q23p8Kzmg9xgrRHwwWtv7WS+4Jqs3nSCWekO
-   NLqI0gTRsxFseblVDbuZDn8ugNjk+Q21AJsfA2mPSoyGx7XZK9pvlMx0H
-   xixz3nbhVVTRs42tVQEB7waytphjiqSWAaC46Kaoh+aVLxK+cp3fxL0OI
-   nI2aXwN6iZO4nFlDbq+ciEkWCpKOwFUdyYKplNNxRt5UvP+W1ZH/kmySm
-   at/HzQ6B9kyieqH5xGpvVFiX6/+0dryqNU2ytFT0hQzw3EyZlp8LeQlqN
-   4RJ03t0LORxVDFddDgd4MOGCgXPp8FABH+OKQr208Iz+ZPT6VlBaoiR6f
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="278013495"
+  t=1655915002; x=1687451002;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=fAxSfMkPQOft5QNGEOKWIg4HNu6sOXze7SH9g6M0vDc=;
+  b=E+yl0BRZddZ2aSVaMhWjafda3f5NNkVN80YdxMATSSrhoA6IM6wPoCwC
+   vuwpVJ1Vkp2NxvQ524jSL+3AiMfSqCfkQa9Gy3IPwf1hpD9p1KqaDNBJO
+   BFtLYY84WoGUGRdmz4KD/sdii83lJvefrXiEuAmBW0jSPwf7XaluWQYns
+   3dz/oZrR+GuE6e/vfsjLwIYRO40PO5It2Aq5InFutrm1u5sWzVIPkEp2H
+   hHQRvk7zs+VufdpVd7Q1FudHJ4XXivPjSzik/kiWRKhr5Ci/1ktW/G0eL
+   ByvC1RU00T/9xnGU1r0H0wrV2GWPG5zF4wW0+iat/wCxdGAzNgTljI84U
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="260898746"
 X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="278013495"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 09:22:46 -0700
+   d="scan'208";a="260898746"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 09:22:41 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="592264461"
+   d="scan'208";a="620974438"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga007.fm.intel.com with ESMTP; 22 Jun 2022 09:22:42 -0700
+  by orsmga001.jf.intel.com with ESMTP; 22 Jun 2022 09:22:38 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 52A1F36A; Wed, 22 Jun 2022 19:22:43 +0300 (EEST)
+        id 1FCFB109; Wed, 22 Jun 2022 19:22:43 +0300 (EEST)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     Dave Hansen <dave.hansen@linux.intel.com>,
         Andy Lutomirski <luto@kernel.org>,
@@ -55,190 +55,115 @@ Cc:     x86@kernel.org, Kostya Serebryany <kcc@google.com>,
         Rick Edgecombe <rick.p.edgecombe@intel.com>,
         linux-mm@kvack.org, linux-kernel@vger.kernel.org,
         "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv4 5/8] x86/uaccess: Provide untagged_addr() and remove tags before address check
-Date:   Wed, 22 Jun 2022 19:22:27 +0300
-Message-Id: <20220622162230.83474-6-kirill.shutemov@linux.intel.com>
+Subject: [PATCHv4 0/8] Linear Address Masking enabling
+Date:   Wed, 22 Jun 2022 19:22:22 +0300
+Message-Id: <20220622162230.83474-1-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220622162230.83474-1-kirill.shutemov@linux.intel.com>
-References: <20220622162230.83474-1-kirill.shutemov@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-untagged_addr() is a helper used by the core-mm to strip tag bits and
-get the address to the canonical shape. In only handles userspace
-addresses. The untagging mask is stored in mmu_context and will be set
-on enabling LAM for the process.
+Linear Address Masking[1] (LAM) modifies the checking that is applied to
+64-bit linear addresses, allowing software to use of the untranslated
+address bits for metadata.
 
-The tags must not be included into check whether it's okay to access the
-userspace address.
+The patchset brings support for LAM for userspace addresses.
 
-Strip tags in access_ok().
+LAM_U48 enabling is controversial since it competes for bits with
+5-level paging. Its enabling isolated into an optional last patch that
+can be applied at maintainer's discretion.
 
-get_user() and put_user() don't use access_ok(), but check access
-against TASK_SIZE directly in assembly. Strip tags, before calling into
-the assembly helper.
+Please review and consider applying.
 
-Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
----
- arch/x86/include/asm/mmu.h         |  1 +
- arch/x86/include/asm/mmu_context.h | 11 ++++++++
- arch/x86/include/asm/uaccess.h     | 42 +++++++++++++++++++++++++++---
- arch/x86/kernel/process.c          |  3 +++
- 4 files changed, 54 insertions(+), 3 deletions(-)
+v4:
+  - Fix untagged_addr() for LAM_U48;
+  - Remove no-threads restriction on LAM enabling;
+  - Fix mm_struct access from /proc/$PID/arch_status
+  - Fix LAM handling in initialize_tlbstate_and_flush()
+  - Pack tlb_state better;
+  - Comments and commit messages;
+v3:
+  - Rebased onto v5.19-rc1
+  - Per-process enabling;
+  - API overhaul (again);
+  - Avoid branches and costly computations in the fast path;
+  - LAM_U48 is in optional patch.
+v2:
+  - Rebased onto v5.18-rc1
+  - New arch_prctl(2)-based API
+  - Expose status of LAM (or other thread features) in
+    /proc/$PID/arch_status
 
-diff --git a/arch/x86/include/asm/mmu.h b/arch/x86/include/asm/mmu.h
-index d150e92163b6..59c617fc7c6f 100644
---- a/arch/x86/include/asm/mmu.h
-+++ b/arch/x86/include/asm/mmu.h
-@@ -41,6 +41,7 @@ typedef struct {
- #ifdef CONFIG_X86_64
- 	unsigned short flags;
- 	u64 lam_cr3_mask;
-+	u64 untag_mask;
- #endif
- 
- 	struct mutex lock;
-diff --git a/arch/x86/include/asm/mmu_context.h b/arch/x86/include/asm/mmu_context.h
-index e6eac047c728..05821534aadc 100644
---- a/arch/x86/include/asm/mmu_context.h
-+++ b/arch/x86/include/asm/mmu_context.h
-@@ -100,6 +100,12 @@ static inline u64 mm_cr3_lam_mask(struct mm_struct *mm)
- static inline void dup_lam(struct mm_struct *oldmm, struct mm_struct *mm)
- {
- 	mm->context.lam_cr3_mask = oldmm->context.lam_cr3_mask;
-+	mm->context.untag_mask = oldmm->context.untag_mask;
-+}
-+
-+static inline void mm_reset_untag_mask(struct mm_struct *mm)
-+{
-+	mm->context.untag_mask = -1UL;
- }
- 
- #else
-@@ -112,6 +118,10 @@ static inline u64 mm_cr3_lam_mask(struct mm_struct *mm)
- static inline void dup_lam(struct mm_struct *oldmm, struct mm_struct *mm)
- {
- }
-+
-+static inline void mm_reset_untag_mask(struct mm_struct *mm)
-+{
-+}
- #endif
- 
- #define enter_lazy_tlb enter_lazy_tlb
-@@ -138,6 +148,7 @@ static inline int init_new_context(struct task_struct *tsk,
- 		mm->context.execute_only_pkey = -1;
- 	}
- #endif
-+	mm_reset_untag_mask(mm);
- 	init_new_context_ldt(mm);
- 	return 0;
- }
-diff --git a/arch/x86/include/asm/uaccess.h b/arch/x86/include/asm/uaccess.h
-index 913e593a3b45..803241dfc473 100644
---- a/arch/x86/include/asm/uaccess.h
-+++ b/arch/x86/include/asm/uaccess.h
-@@ -6,6 +6,7 @@
-  */
- #include <linux/compiler.h>
- #include <linux/kasan-checks.h>
-+#include <linux/mm_types.h>
- #include <linux/string.h>
- #include <asm/asm.h>
- #include <asm/page.h>
-@@ -20,6 +21,30 @@ static inline bool pagefault_disabled(void);
- # define WARN_ON_IN_IRQ()
- #endif
- 
-+#ifdef CONFIG_X86_64
-+/*
-+ * Mask out tag bits from the address.
-+ *
-+ * Magic with the 'sign' allows to untag userspace pointer without any branches
-+ * while leaving kernel addresses intact.
-+ */
-+#define untagged_addr(mm, addr)	({					\
-+	u64 __addr = (__force u64)(addr);				\
-+	s64 sign = (s64)__addr >> 63;					\
-+	__addr &= (mm)->context.untag_mask | sign;			\
-+	(__force __typeof__(addr))__addr;				\
-+})
-+
-+#define untagged_ptr(mm, ptr)	({					\
-+	u64 __ptrval = (__force u64)(ptr);				\
-+	__ptrval = untagged_addr(mm, __ptrval);				\
-+	(__force __typeof__(*(ptr)) *)__ptrval;				\
-+})
-+#else
-+#define untagged_addr(mm, addr)	(addr)
-+#define untagged_ptr(mm, ptr)	(ptr)
-+#endif
-+
- /**
-  * access_ok - Checks if a user space pointer is valid
-  * @addr: User space pointer to start of block to check
-@@ -40,7 +65,7 @@ static inline bool pagefault_disabled(void);
- #define access_ok(addr, size)					\
- ({									\
- 	WARN_ON_IN_IRQ();						\
--	likely(__access_ok(addr, size));				\
-+	likely(__access_ok(untagged_addr(current->mm, addr), size));	\
- })
- 
- #include <asm-generic/access_ok.h>
-@@ -125,7 +150,13 @@ extern int __get_user_bad(void);
-  * Return: zero on success, or -EFAULT on error.
-  * On error, the variable @x is set to zero.
-  */
--#define get_user(x,ptr) ({ might_fault(); do_get_user_call(get_user,x,ptr); })
-+#define get_user(x,ptr)							\
-+({									\
-+	__typeof__(*(ptr)) __user *__ptr_clean;				\
-+	__ptr_clean = untagged_ptr(current->mm, ptr);			\
-+	might_fault();							\
-+	do_get_user_call(get_user,x,__ptr_clean);			\
-+})
- 
- /**
-  * __get_user - Get a simple variable from user space, with less checking.
-@@ -222,7 +253,12 @@ extern void __put_user_nocheck_8(void);
-  *
-  * Return: zero on success, or -EFAULT on error.
-  */
--#define put_user(x, ptr) ({ might_fault(); do_put_user_call(put_user,x,ptr); })
-+#define put_user(x, ptr) ({						\
-+	__typeof__(*(ptr)) __user *__ptr_clean;				\
-+	__ptr_clean = untagged_ptr(current->mm, ptr);			\
-+	might_fault();							\
-+	do_put_user_call(put_user,x,__ptr_clean);			\
-+})
- 
- /**
-  * __put_user - Write a simple value into user space, with less checking.
-diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
-index 9b2772b7e1f3..18b2bfdf7b9b 100644
---- a/arch/x86/kernel/process.c
-+++ b/arch/x86/kernel/process.c
-@@ -47,6 +47,7 @@
- #include <asm/frame.h>
- #include <asm/unwind.h>
- #include <asm/tdx.h>
-+#include <asm/mmu_context.h>
- 
- #include "process.h"
- 
-@@ -367,6 +368,8 @@ void arch_setup_new_exec(void)
- 		task_clear_spec_ssb_noexec(current);
- 		speculation_ctrl_update(read_thread_flags());
- 	}
-+
-+	mm_reset_untag_mask(current->mm);
- }
- 
- #ifdef CONFIG_X86_IOPL_IOPERM
+[1] ISE, Chapter 14.
+https://software.intel.com/content/dam/develop/external/us/en/documents-tps/architecture-instruction-set-extensions-programming-reference.pdf
+
+Kirill A. Shutemov (8):
+  x86/mm: Fix CR3_ADDR_MASK
+  x86: CPUID and CR3/CR4 flags for Linear Address Masking
+  mm: Pass down mm_struct to untagged_addr()
+  x86/mm: Handle LAM on context switch
+  x86/uaccess: Provide untagged_addr() and remove tags before address
+    check
+  x86/mm: Provide ARCH_GET_UNTAG_MASK and ARCH_ENABLE_TAGGED_ADDR
+  x86: Expose untagging mask in /proc/$PID/arch_status
+  x86/mm: Extend LAM to support to LAM_U48
+
+ arch/arm64/include/asm/memory.h               |  4 +-
+ arch/arm64/include/asm/signal.h               |  2 +-
+ arch/arm64/include/asm/uaccess.h              |  4 +-
+ arch/arm64/kernel/hw_breakpoint.c             |  2 +-
+ arch/arm64/kernel/traps.c                     |  4 +-
+ arch/arm64/mm/fault.c                         | 10 +--
+ arch/sparc/include/asm/pgtable_64.h           |  2 +-
+ arch/sparc/include/asm/uaccess_64.h           |  2 +
+ arch/x86/include/asm/cpufeatures.h            |  1 +
+ arch/x86/include/asm/elf.h                    |  3 +-
+ arch/x86/include/asm/mmu.h                    |  2 +
+ arch/x86/include/asm/mmu_context.h            | 58 ++++++++++++++
+ arch/x86/include/asm/processor-flags.h        |  2 +-
+ arch/x86/include/asm/tlbflush.h               |  4 +
+ arch/x86/include/asm/uaccess.h                | 42 +++++++++-
+ arch/x86/include/uapi/asm/prctl.h             |  3 +
+ arch/x86/include/uapi/asm/processor-flags.h   |  6 ++
+ arch/x86/kernel/Makefile                      |  2 +
+ arch/x86/kernel/fpu/xstate.c                  | 47 -----------
+ arch/x86/kernel/proc.c                        | 60 ++++++++++++++
+ arch/x86/kernel/process.c                     |  3 +
+ arch/x86/kernel/process_64.c                  | 78 ++++++++++++++++++-
+ arch/x86/kernel/sys_x86_64.c                  |  5 +-
+ arch/x86/mm/hugetlbpage.c                     |  6 +-
+ arch/x86/mm/mmap.c                            |  9 ++-
+ arch/x86/mm/tlb.c                             | 68 ++++++++++++----
+ .../gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c  |  2 +-
+ drivers/gpu/drm/amd/amdgpu/amdgpu_gem.c       |  2 +-
+ drivers/gpu/drm/radeon/radeon_gem.c           |  2 +-
+ drivers/infiniband/hw/mlx4/mr.c               |  2 +-
+ drivers/media/common/videobuf2/frame_vector.c |  2 +-
+ drivers/media/v4l2-core/videobuf-dma-contig.c |  2 +-
+ .../staging/media/atomisp/pci/hmm/hmm_bo.c    |  2 +-
+ drivers/tee/tee_shm.c                         |  2 +-
+ drivers/vfio/vfio_iommu_type1.c               |  2 +-
+ fs/proc/task_mmu.c                            |  2 +-
+ include/linux/mm.h                            | 11 ---
+ include/linux/uaccess.h                       | 15 ++++
+ lib/strncpy_from_user.c                       |  2 +-
+ lib/strnlen_user.c                            |  2 +-
+ mm/gup.c                                      |  6 +-
+ mm/madvise.c                                  |  2 +-
+ mm/mempolicy.c                                |  6 +-
+ mm/migrate.c                                  |  2 +-
+ mm/mincore.c                                  |  2 +-
+ mm/mlock.c                                    |  4 +-
+ mm/mmap.c                                     |  2 +-
+ mm/mprotect.c                                 |  2 +-
+ mm/mremap.c                                   |  2 +-
+ mm/msync.c                                    |  2 +-
+ virt/kvm/kvm_main.c                           |  2 +-
+ 51 files changed, 385 insertions(+), 126 deletions(-)
+ create mode 100644 arch/x86/kernel/proc.c
+
 -- 
 2.35.1
 
