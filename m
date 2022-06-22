@@ -2,91 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE498C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 08:30:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AFE2C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 08:31:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352979AbiFVIaj (ORCPT
+        id S1351827AbiFVI3V (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 04:30:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55348 "EHLO
+        Wed, 22 Jun 2022 04:29:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353546AbiFVIaa (ORCPT
+        with ESMTP id S1354215AbiFVI2b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 04:30:30 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F65010BB
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 01:30:29 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id p6-20020a05600c1d8600b0039c630b8d96so468720wms.1
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 01:30:29 -0700 (PDT)
+        Wed, 22 Jun 2022 04:28:31 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43F1A39166
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 01:27:26 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id q9so22272976wrd.8
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 01:27:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=Ms/HKnagjpWOkTSuqrlOB4okpfVHQ9DTgJbAyIUZ6V4=;
-        b=K3zDe3mPlB00MLjcFS42DXpYKYf2TVGmfQ3L8zKJgwUqbSXfnDPEcFBgyHRdKgDFXF
-         WsBAZWWYEX5jzyiDDm2DMpIeXWkjx2wXt1wdHGcP1VnWaUH6spt4wZgKC2TH4MKD3zEk
-         P6R8ZEcEvYlrKyuRH8sTk5ZjWNmP1jJlFyASryr9LldFHKLV+LGX4VK5+Zpsz26/P0DP
-         rQ+v6cEdI9WP0jooa+fkrx2UUO/Xc9m9qkXW85yLtRb7mcw2ENOkj3tRu+O49LGOOJd2
-         4S9nLF6lqzajDSNtiTff1JmVj8JKk5UTIKhFstK7gzzcwlJxt/WoKitTHv0ZEUjn+o0r
-         4Gag==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=yHEkZ4f8EPJnKRi58/HD9Y5sbQwKZUo9tMe5hK1B3uM=;
+        b=djvq1G5LNo0VLBefGWrMkuEjf+FmzOFlU/laH4dizg7t8aPiRpSXSR/nA2db8bbc03
+         SxIXVGW7jQ2IHOd96Gt6nccU4AKYsAScPf0KJiObTCicw5Ym9B23j8JwkSBhABa7QwW+
+         RD5EHro7doNCDsSiGd6bkAK4nwDNAF7jbkOnl23Hzi6kVEypyGpJvlhBM8MQJ9LfPGTl
+         zbX1+/1620eJpyCWSFHX94C4dHTZo8g+RH8bnxFGgDIuTcIkDz+xX/SYzDe/6JVg3CXL
+         C4YJyynPnFPVqvNu1e/8B+lEoQwswodoj3fSqxBf8iEs0Y0yjZ3wmCD0JqdQSwTv40n+
+         KgNQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=Ms/HKnagjpWOkTSuqrlOB4okpfVHQ9DTgJbAyIUZ6V4=;
-        b=q+a8X1Lfv44owFunfhPSF4wyb6LVCZLrzA01L45i3XZroP9Tt4Qw7CLkuVGIXmpJPa
-         uEhFmU7P4jnfQki30nbtJ6nJJW8SCp/VosJSK0LMiwZEzJXCmR/wyqVmlxLNdx0X8hF6
-         C7haNlQ+PVAQJp1cw+L4JhetK+A1kktHpvvynwwPn9bd2D8HGNFiArCUzRibnEF4mfn1
-         gtPGxHVTLPXo7shg3Rn7keYxs4Y/fh2cr4yNUV8QByirNFUI0zofV13zoyUH9XyHUJ77
-         ZR5SyMHAL8k2CsfaMo5+2+fF1lzbRZGMWX+lX0SbEDAKLDpYOQ8GA3rdXixeo63gnFrj
-         2MAg==
-X-Gm-Message-State: AJIora9qABYN89gkweLeR2g8Mjdm82Twrno//HcHsYIhjSOp0ojycnyN
-        9azNeopFCU98g8MCfb613NIFZw==
-X-Google-Smtp-Source: AGRyM1tQ7QLdivgUmT4kY5FU+N9htHIPI5XIgL1dnBJAH1mNMWUvvNWGHru4x1XpllOOMXFcFsPe2Q==
-X-Received: by 2002:a1c:44c5:0:b0:3a0:2ae2:5277 with SMTP id r188-20020a1c44c5000000b003a02ae25277mr1741579wma.30.1655886627887;
-        Wed, 22 Jun 2022 01:30:27 -0700 (PDT)
-Received: from [192.168.0.223] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id y12-20020a5d620c000000b0021b866397a7sm12912224wru.1.2022.06.22.01.30.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Jun 2022 01:30:26 -0700 (PDT)
-Message-ID: <0a35d997-7e7e-8847-7c87-edd33719f7a3@linaro.org>
-Date:   Wed, 22 Jun 2022 10:30:25 +0200
+        bh=yHEkZ4f8EPJnKRi58/HD9Y5sbQwKZUo9tMe5hK1B3uM=;
+        b=Bi+ikc7D0dbux4JZy7whKksZAsjsXFXUlxnqNgvYAevCq/I/Z6cmwAahYUThwHyMse
+         rGbx+M7523TpGsB+imbnehiRp1HBpDkM6+Pdvt5nUwMmKH0wQshT0DMT9udXtQyddNyx
+         kZVujOzb6ijgkEkWuw3UCbdrvUKlWBarq5tr1sNZW8tKCXWUNlBdoeZ/D7COvXhCF2oN
+         k6i1mIzBq41ZwuG3ksZaoUD2fXkJO8PZRJsqdlsbbowOjM9sNozo3oKa62YxdUNdqn+V
+         7XxcvxdB4i1B3nxhGFgrdrjB/cEZeBUyA3LmqMD8ggCSU5E0K4JaX505bzCHMQ1ILpGc
+         8Mhw==
+X-Gm-Message-State: AJIora+9lyYQ3nblla+r4q0nbgoP8KhSrkn+MK7D279vdUYTNTuLSQyG
+        lRryO02CH78JRatTpdqRlqzAsA==
+X-Google-Smtp-Source: AGRyM1soJWg//Zzca+Z03MzWthu6TXIUlwOvwmKxduEf/gUdv2NVMtKrSG7Fur/W2gUv96vBiSkPNQ==
+X-Received: by 2002:a5d:52d2:0:b0:21b:8507:a68 with SMTP id r18-20020a5d52d2000000b0021b85070a68mr1998726wrv.643.1655886440423;
+        Wed, 22 Jun 2022 01:27:20 -0700 (PDT)
+Received: from joneslee-l.cable.virginm.net (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id x5-20020a5d54c5000000b0021b88ec99cesm11145871wrv.94.2022.06.22.01.27.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jun 2022 01:27:20 -0700 (PDT)
+From:   Lee Jones <lee.jones@linaro.org>
+To:     lee.jones@linaro.org
+Cc:     linux-kernel@vger.kernel.org, stable@kernel.org,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [RESEND 1/1] Bluetooth: Use chan_list_lock to protect the whole put/destroy invokation
+Date:   Wed, 22 Jun 2022 09:27:16 +0100
+Message-Id: <20220622082716.478486-1-lee.jones@linaro.org>
+X-Mailer: git-send-email 2.37.0.rc0.104.g0611611a94-goog
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 1/2] arm64: dts: qcom: adjust whitespace around '='
-Content-Language: en-US
-To:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        arm@kernel.org, soc@kernel.org, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220526204248.832139-1-krzysztof.kozlowski@linaro.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220526204248.832139-1-krzysztof.kozlowski@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 26/05/2022 22:42, Krzysztof Kozlowski wrote:
-> Fix whitespace coding style: use single space instead of tabs or
-> multiple spaces around '=' sign in property assignment.  No functional
-> changes (same DTB).
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> 
-> ---
-> 
-> Output compared with dtx_diff and fdtdump.
+This change prevents a use-after-free caused by one of the worker
+threads starting up (see below) *after* the final channel reference
+has been put() during sock_close() but *before* the references to the
+channel have been destroyed.
 
-Any comments on these two patches? If there are no objections I'll take
-them with rest of cleanups.
+  refcount_t: increment on 0; use-after-free.
+  BUG: KASAN: use-after-free in refcount_dec_and_test+0x20/0xd0
+  Read of size 4 at addr ffffffc114f5bf18 by task kworker/u17:14/705
 
+  CPU: 4 PID: 705 Comm: kworker/u17:14 Tainted: G S      W       4.14.234-00003-g1fb6d0bd49a4-dirty #28
+  Hardware name: Qualcomm Technologies, Inc. SM8150 V2 PM8150 Google Inc. MSM sm8150 Flame DVT (DT)
+  Workqueue: hci0 hci_rx_work
+  Call trace:
+   dump_backtrace+0x0/0x378
+   show_stack+0x20/0x2c
+   dump_stack+0x124/0x148
+   print_address_description+0x80/0x2e8
+   __kasan_report+0x168/0x188
+   kasan_report+0x10/0x18
+   __asan_load4+0x84/0x8c
+   refcount_dec_and_test+0x20/0xd0
+   l2cap_chan_put+0x48/0x12c
+   l2cap_recv_frame+0x4770/0x6550
+   l2cap_recv_acldata+0x44c/0x7a4
+   hci_acldata_packet+0x100/0x188
+   hci_rx_work+0x178/0x23c
+   process_one_work+0x35c/0x95c
+   worker_thread+0x4cc/0x960
+   kthread+0x1a8/0x1c4
+   ret_from_fork+0x10/0x18
 
-Best regards,
-Krzysztof
+Cc: stable@kernel.org
+Cc: Marcel Holtmann <marcel@holtmann.org>
+Cc: Johan Hedberg <johan.hedberg@gmail.com>
+Cc: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: linux-bluetooth@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+---
+ net/bluetooth/l2cap_core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
+index ae78490ecd3d4..82279c5919fd8 100644
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -483,9 +483,7 @@ static void l2cap_chan_destroy(struct kref *kref)
+ 
+ 	BT_DBG("chan %p", chan);
+ 
+-	write_lock(&chan_list_lock);
+ 	list_del(&chan->global_l);
+-	write_unlock(&chan_list_lock);
+ 
+ 	kfree(chan);
+ }
+@@ -501,7 +499,9 @@ void l2cap_chan_put(struct l2cap_chan *c)
+ {
+ 	BT_DBG("chan %p orig refcnt %u", c, kref_read(&c->kref));
+ 
++	write_lock(&chan_list_lock);
+ 	kref_put(&c->kref, l2cap_chan_destroy);
++	write_unlock(&chan_list_lock);
+ }
+ EXPORT_SYMBOL_GPL(l2cap_chan_put);
+ 
+-- 
+2.36.1.255.ge46751e96f-goog
+
