@@ -2,157 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9746CC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 16:50:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9037C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 16:50:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376896AbiFVQuW (ORCPT
+        id S1376701AbiFVQu3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 12:50:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48038 "EHLO
+        Wed, 22 Jun 2022 12:50:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359267AbiFVQs3 (ORCPT
+        with ESMTP id S1376762AbiFVQru (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 12:48:29 -0400
-Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFD4663F6
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 09:48:01 -0700 (PDT)
-Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-3185f5623edso8648727b3.1
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 09:48:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Kp/yh5bW8TY1dw8lD/1Ylcedrm+ARISJLh6F2D0W1cA=;
-        b=PWBElkZJqkDtHVG9XPIEPuTSazCJ9NORWl85Rkm97/RzMnzrcQgeO45lKXkqhn1Shp
-         5QNG+YIhtG/eQi/VWtkTOHwTTZ2vjJmMCzZ8yj68cfd8Pb1/ZuNa7MtPaRdPcpYTXKJN
-         j7WXElGkHxpgHHkWcwa/ZKm9/Zvdyi7nUm6oQ3zHuObjUfijkYjrxwDD/TY2t5zoXQ3o
-         BDaKDnl5jLDemAWp3iB44WExeyUrjCIoVik7pZkIrBEOeP3MVsCB8arbkG4XHzjKHyc9
-         geUWSL9Nnpk9FP+jlnd7alivOiB0Cs4pcpM+lbM4owjdJD5KP2T7A+dWAKPxq+4mW4jk
-         Ph5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Kp/yh5bW8TY1dw8lD/1Ylcedrm+ARISJLh6F2D0W1cA=;
-        b=yQjY6X8y+i2uqX68lQ2tRmh17JyI0/c1kUBK9YnB8R5O/611kQ0/ULLsrP8mIlTfU0
-         E55dPHqfZMma+RWx5F0VV1Ip4EMXOO8JPd6cXKdoXHtuiANCSo5e9LGtJtgnjzuzt6d/
-         oxuejNAdmKGaDKShQ0y94APqdbaB5UGf4Nif3KRqWnaL5gtdrG+9a4bP58O3q1kOIsBd
-         1jT1IT2kmjXQWHPGOIlJFkwMg/IFsYCEeKjfs7aFSlVblQadvIyKxWcpJINW8xvBpy7S
-         lCAIuMkx13QqPxgJ89tI/ZaFNm06FPpKebUpW72YzcP2JlHUUZVJMSmaHtvjZOmY0lUy
-         9zRA==
-X-Gm-Message-State: AJIora+raoh0G4ceDB1+oJcBX7jjV3bhAF7lmCk4+fsIqXHDby0f5KV5
-        81n+V8rpbejuocAFy/6VTHt9Gu+XTU5ayQeCq9Mjdg==
-X-Google-Smtp-Source: AGRyM1tWj+cwpVYjfap8gVH72OmUbiehYc/hbn491XF/tfwmgdAP1iGoGe1mWaa9dreJ/2rqLr6HwIcoB6qMIeBf6ak=
-X-Received: by 2002:a0d:fac6:0:b0:317:5202:b8c1 with SMTP id
- k189-20020a0dfac6000000b003175202b8c1mr5252536ywf.467.1655916480918; Wed, 22
- Jun 2022 09:48:00 -0700 (PDT)
+        Wed, 22 Jun 2022 12:47:50 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A8D243FD80
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 09:47:15 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 97B8912FC;
+        Wed, 22 Jun 2022 09:47:15 -0700 (PDT)
+Received: from merodach.members.linode.com (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1B4463F792;
+        Wed, 22 Jun 2022 09:47:13 -0700 (PDT)
+From:   James Morse <james.morse@arm.com>
+To:     x86@kernel.org, linux-kernel@vger.kernel.org
+Cc:     Fenghua Yu <fenghua.yu@intel.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        H Peter Anvin <hpa@zytor.com>,
+        Babu Moger <Babu.Moger@amd.com>,
+        James Morse <james.morse@arm.com>,
+        shameerali.kolothum.thodi@huawei.com,
+        D Scott Phillips OS <scott@os.amperecomputing.com>,
+        lcherian@marvell.com, bobo.shaobowang@huawei.com,
+        tan.shaopeng@fujitsu.com, Jamie Iles <quic_jiles@quicinc.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Xin Hao <xhao@linux.alibaba.com>, xingxin.hx@openanolis.org,
+        baolin.wang@linux.alibaba.com
+Subject: [PATCH v5 06/21] x86/resctrl: Remove set_mba_sc()s control array re-initialisation
+Date:   Wed, 22 Jun 2022 16:46:14 +0000
+Message-Id: <20220622164629.20795-7-james.morse@arm.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220622164629.20795-1-james.morse@arm.com>
+References: <20220622164629.20795-1-james.morse@arm.com>
 MIME-Version: 1.0
-References: <20220619003919.394622-1-i.maximets@ovn.org> <CANn89iL_EmkEgPAVdhNW4tyzwQbARyji93mUQ9E2MRczWpNm7g@mail.gmail.com>
- <20220622102813.GA24844@breakpoint.cc> <CANn89iLGKbeeBNoDQU9C7nPRCxc6FUsrwn0LfrAKrJiJ14PH+w@mail.gmail.com>
- <c7ab4a7b-a987-e74b-dd2d-ee2c8ca84147@ovn.org> <CANn89iLxqae9wZ-h5M-whSsmAZ_7hW1e_=krvSyF8x89Y6o76w@mail.gmail.com>
- <068ad894-c60f-c089-fd4a-5deda1c84cdd@ovn.org> <CANn89iJ=Xc57pdZ-NaRF7FXZnq2skh5MJ3aDtDCGp8RNG4oowA@mail.gmail.com>
- <CANn89i+yy3mL2BUT=uhhkACVviWXCA9fdE1mrG=ZMuSQKdK8SQ@mail.gmail.com>
-In-Reply-To: <CANn89i+yy3mL2BUT=uhhkACVviWXCA9fdE1mrG=ZMuSQKdK8SQ@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 22 Jun 2022 18:47:49 +0200
-Message-ID: <CANn89iLVHAE5aMwo0dow14mdFK0JjokE9y5KV+67AxKJdSjx=w@mail.gmail.com>
-Subject: Re: [PATCH net] net: ensure all external references are released in
- deferred skbuffs
-To:     Ilya Maximets <i.maximets@ovn.org>
-Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Florian Westphal <fw@strlen.de>,
-        netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, dev@openvswitch.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 6:39 PM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Wed, Jun 22, 2022 at 6:29 PM Eric Dumazet <edumazet@google.com> wrote:
-> >
-> > On Wed, Jun 22, 2022 at 4:26 PM Ilya Maximets <i.maximets@ovn.org> wrote:
-> > >
-> > > On 6/22/22 13:43, Eric Dumazet wrote:
-> >
-> > >
-> > > I tested the patch below and it seems to fix the issue seen
-> > > with OVS testsuite.  Though it's not obvious for me why this
-> > > happens.  Can you explain a bit more?
-> >
-> > Anyway, I am not sure we can call nf_reset_ct(skb) that early.
-> >
-> > git log seems to say that xfrm check needs to be done before
-> > nf_reset_ct(skb), I have no idea why.
->
-> Additional remark: In IPv6 side, xfrm6_policy_check() _is_ called
-> after nf_reset_ct(skb)
->
-> Steffen, do you have some comments ?
->
-> Some context:
-> commit b59c270104f03960069596722fea70340579244d
-> Author: Patrick McHardy <kaber@trash.net>
-> Date:   Fri Jan 6 23:06:10 2006 -0800
->
->     [NETFILTER]: Keep conntrack reference until IPsec policy checks are done
->
->     Keep the conntrack reference until policy checks have been performed for
->     IPsec NAT support. The reference needs to be dropped before a packet is
->     queued to avoid having the conntrack module unloadable.
->
->     Signed-off-by: Patrick McHardy <kaber@trash.net>
->     Signed-off-by: David S. Miller <davem@davemloft.net>
->
+set_mba_sc() enables the 'software controller' to regulate the
+bandwidth based on the byte counters. This can be managed entirely
+in the parts of resctrl that move to /fs/, without any extra
+support from the architecture specific code.
+set_mba_sc() is called by rdt_enable_ctx() during mount and
+umount. It currently resets the arch code's ctrl_val[] and mbps_val[]
+arrays.
 
-Oh well... __xfrm_policy_check() has :
+The ctrl_val[] was already reset when the domain was created,
+and by reset_all_ctrls() when the filesystem was last umounted.
+Doing the work in set_mba_sc() is not necessary as the values are
+already at their defaults due to the creation of the domain, or were
+previously reset during umount(), or are about to reset during umount().
 
-nf_nat_decode_session(skb, &fl, family);
+Add a reset of the mbps_val[] in reset_all_ctrls(), allowing the
+code in set_mba_sc() that reaches in to the architecture specific
+structures to be removed.
 
-This  answers my questions.
+Reviewed-by: Jamie Iles <quic_jiles@quicinc.com>
+Tested-by: Xin Hao <xhao@linux.alibaba.com>
+Reviewed-by: Shaopeng Tan <tan.shaopeng@fujitsu.com>
+Tested-by: Shaopeng Tan <tan.shaopeng@fujitsu.com>
+Tested-by: Cristian Marussi <cristian.marussi@arm.com>
+Signed-off-by: James Morse <james.morse@arm.com>
+---
+Changes since v3:
+ * Spelling mistakes in commit message.
 
-This means we are probably missing at least one XFRM check in TCP
-stack in some cases.
-(Only after adding this XFRM check we can call nf_reset_ct(skb))
+Changes since v2:
+ * Moved earlier in the series, added the reset in reset_all_ctrls().
+ * Rephrased commit message.
+---
+ arch/x86/kernel/cpu/resctrl/rdtgroup.c | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
 
->
-> >
-> > I suspect some incoming packets are not going through
-> > xfrm4_policy_check() and end up being stored in a TCP receive queue.
-> >
-> > Maybe something is missing before calling tcp_child_process()
-> >
-> >
-> > >
-> > > >
-> > > > I note that IPv6 does the nf_reset_ct() earlier, from ip6_protocol_deliver_rcu()
-> > > >
-> > > > diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-> > > > index fda811a5251f2d76ac24a036e6b4f4e7d7d96d6f..a06464f96fe0cc94dd78272738ddaab2c19e87db
-> > > > 100644
-> > > > --- a/net/ipv4/tcp_ipv4.c
-> > > > +++ b/net/ipv4/tcp_ipv4.c
-> > > > @@ -1919,6 +1919,8 @@ int tcp_v4_rcv(struct sk_buff *skb)
-> > > >         struct sock *sk;
-> > > >         int ret;
-> > > >
-> > > > +       nf_reset_ct(skb);
-> > > > +
-> > > >         drop_reason = SKB_DROP_REASON_NOT_SPECIFIED;
-> > > >         if (skb->pkt_type != PACKET_HOST)
-> > > >                 goto discard_it;
-> > > > @@ -2046,8 +2048,6 @@ int tcp_v4_rcv(struct sk_buff *skb)
-> > > >         if (drop_reason)
-> > > >                 goto discard_and_relse;
-> > > >
-> > > > -       nf_reset_ct(skb);
-> > > > -
-> > > >         if (tcp_filter(sk, skb)) {
-> > > >                 drop_reason = SKB_DROP_REASON_SOCKET_FILTER;
-> > > >                 goto discard_and_relse;
-> > >
+diff --git a/arch/x86/kernel/cpu/resctrl/rdtgroup.c b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
+index 5830905a92d2..b32ceff8325a 100644
+--- a/arch/x86/kernel/cpu/resctrl/rdtgroup.c
++++ b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
+@@ -1898,18 +1898,12 @@ void rdt_domain_reconfigure_cdp(struct rdt_resource *r)
+ static int set_mba_sc(bool mba_sc)
+ {
+ 	struct rdt_resource *r = &rdt_resources_all[RDT_RESOURCE_MBA].r_resctrl;
+-	struct rdt_hw_domain *hw_dom;
+-	struct rdt_domain *d;
+ 
+ 	if (!is_mbm_enabled() || !is_mba_linear() ||
+ 	    mba_sc == is_mba_sc(r))
+ 		return -EINVAL;
+ 
+ 	r->membw.mba_sc = mba_sc;
+-	list_for_each_entry(d, &r->domains, list) {
+-		hw_dom = resctrl_to_arch_dom(d);
+-		setup_default_ctrlval(r, hw_dom->ctrl_val, hw_dom->mbps_val);
+-	}
+ 
+ 	return 0;
+ }
+@@ -2327,8 +2321,10 @@ static int reset_all_ctrls(struct rdt_resource *r)
+ 		hw_dom = resctrl_to_arch_dom(d);
+ 		cpumask_set_cpu(cpumask_any(&d->cpu_mask), cpu_mask);
+ 
+-		for (i = 0; i < hw_res->num_closid; i++)
++		for (i = 0; i < hw_res->num_closid; i++) {
+ 			hw_dom->ctrl_val[i] = r->default_ctrl;
++			hw_dom->mbps_val[i] = MBA_MAX_MBPS;
++		}
+ 	}
+ 	cpu = get_cpu();
+ 	/* Update CBM on this cpu if it's in cpu_mask. */
+-- 
+2.30.2
+
