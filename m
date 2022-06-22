@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2DD0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 04:12:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE276C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 04:12:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356813AbiFVEMI (ORCPT
+        id S1356728AbiFVEMO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 00:12:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44018 "EHLO
+        Wed, 22 Jun 2022 00:12:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356846AbiFVELY (ORCPT
+        with ESMTP id S1356884AbiFVELY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 22 Jun 2022 00:11:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C5B134649
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 21:11:12 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB50D3464F
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 21:11:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7E7EEB81C0D
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 04:11:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49D3CC3411B;
-        Wed, 22 Jun 2022 04:11:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D7426190C
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 04:11:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA7DDC3411B;
+        Wed, 22 Jun 2022 04:11:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655871070;
-        bh=zWU7zFcTL4T6L1wZvGirAOoq71xYc+4bCfTaybkkAlM=;
+        s=k20201202; t=1655871072;
+        bh=jgvHyxo+huezbjxnLeeKMTrFXDzr8Qu8JPnogSqmjzU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=quYfJrYHUmuZ+AhU+871xttFH040ddFEL/6Fr3iGCXFAfe65jX8+8MpgEVwxCa61P
-         ci6+2fvebHkohtanHFFvCjGGZPj0kJzPPxvazu1ax7vdci3PftVGY3V4ENf/+eFkW6
-         pXdjktFpmYhyCm85g0sv+S9VS98jDiMnQKcB8QcJNKuU/OD4Zic/aB563gxsbMvswo
-         AybncbTtGEJ7M0SyMW6vn++U63teXSarL6tOBKHHVaHPZCbMzYLL5gnDpBGwPswe80
-         HpRqEe8DTXd5DmhEojS0DN8ZFnjLYuW0wI65KqyXEucsbkxThJA9+Ue2hB8AKVgV9Q
-         LbpSCcwPYyGeA==
+        b=sKV3rMKoi42+GbTD56ECKpsafDN6PUtobxCnqxiHImP7EEAT7FtI0X/e+L9hEB1Q6
+         zV2PL9/WKqkku2+QBoO/8zfw52kT6UewLBSGir8xD8A432yvHsBKsaJBwFjzih6HYR
+         Kk34s1Cdj0kli+w9owZ+Fl+yApLBkveGXIr2uoI/xhEQQk5RcFUUiwuU3hrKJMOdDD
+         beLEDFvq3peXB3HD3uGka3kPLjA5laQCYvq5noqPHZni1MpqDvblz2+oLPiNt50SQD
+         BpZSoQokX9BxtFXmehy3CRsAlK4O3LljAxEgFcvrlstLsVYQig8Ak9d1ppwn/gS2vt
+         uGjk07ZcRtvtw==
 From:   Tzung-Bi Shih <tzungbi@kernel.org>
 To:     bleung@chromium.org, groeck@chromium.org
 Cc:     chrome-platform@lists.linux.dev, tzungbi@kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 2/7] platform/chrome: cros_ec_proto: add Kunit test for cros_ec_map_error()
-Date:   Wed, 22 Jun 2022 04:10:35 +0000
-Message-Id: <20220622041040.202737-3-tzungbi@kernel.org>
+Subject: [PATCH 4/7] platform/chrome: cros_ec_proto: add Kunit tests for get_host_event
+Date:   Wed, 22 Jun 2022 04:10:37 +0000
+Message-Id: <20220622041040.202737-5-tzungbi@kernel.org>
 X-Mailer: git-send-email 2.37.0.rc0.104.g0611611a94-goog
 In-Reply-To: <20220622041040.202737-1-tzungbi@kernel.org>
 References: <20220622041040.202737-1-tzungbi@kernel.org>
@@ -49,81 +49,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-cros_ec_cmd_xfer_status() is the only exported function that calls
-static function cros_ec_map_error().
+cros_ec_get_host_event() performs some sanity checks, parses
+`ec_dev->event_data.data.host_event`, and returns bitmap of
+EC_HOST_EVENT_*.
 
-Add Kunit test for cros_ec_map_error() through calling
-cros_ec_cmd_xfer_status().
+Add Kunit tests for cros_ec_get_host_event().
 
 Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
 ---
- drivers/platform/chrome/cros_ec_proto_test.c | 49 ++++++++++++++++++++
- 1 file changed, 49 insertions(+)
+ drivers/platform/chrome/cros_ec_proto_test.c | 59 ++++++++++++++++++++
+ 1 file changed, 59 insertions(+)
 
 diff --git a/drivers/platform/chrome/cros_ec_proto_test.c b/drivers/platform/chrome/cros_ec_proto_test.c
-index 6464f6101fd3..be3ac77abdf9 100644
+index 64c4b79f7a0c..dce9fa3b9c8d 100644
 --- a/drivers/platform/chrome/cros_ec_proto_test.c
 +++ b/drivers/platform/chrome/cros_ec_proto_test.c
-@@ -2004,6 +2004,54 @@ static void cros_ec_proto_test_cmd_xfer_status_xfer_error(struct kunit *test)
- 	KUNIT_EXPECT_EQ(test, ret, -EPROTO);
+@@ -2312,6 +2312,61 @@ static void cros_ec_proto_test_get_next_event_mkbp_event_host_event_masked(struc
+ 	}
  }
  
-+static void cros_ec_proto_test_cmd_xfer_status_return_error(struct kunit *test)
++static void cros_ec_proto_test_get_host_event_no_mkbp_event(struct kunit *test)
 +{
 +	struct cros_ec_proto_test_priv *priv = test->priv;
 +	struct cros_ec_device *ec_dev = &priv->ec_dev;
-+	struct ec_xfer_mock *mock;
-+	int ret, i;
-+	struct cros_ec_command msg;
-+	static const int map[] = {
-+		[EC_RES_SUCCESS] = 0,
-+		[EC_RES_INVALID_COMMAND] = -EOPNOTSUPP,
-+		[EC_RES_ERROR] = -EIO,
-+		[EC_RES_INVALID_PARAM] = -EINVAL,
-+		[EC_RES_ACCESS_DENIED] = -EACCES,
-+		[EC_RES_INVALID_RESPONSE] = -EPROTO,
-+		[EC_RES_INVALID_VERSION] = -ENOPROTOOPT,
-+		[EC_RES_INVALID_CHECKSUM] = -EBADMSG,
-+		/*
-+		 * EC_RES_IN_PROGRESS is special because cros_ec_send_command() has extra logic to
-+		 * handle it.  Note that default cros_kunit_ec_xfer_mock_default_ret == 0 thus
-+		 * cros_ec_xfer_command() in cros_ec_wait_until_complete() returns 0.  As a result,
-+		 * it returns -EPROTO without calling cros_ec_map_error().
-+		 */
-+		[EC_RES_IN_PROGRESS] = -EPROTO,
-+		[EC_RES_UNAVAILABLE] = -ENODATA,
-+		[EC_RES_TIMEOUT] = -ETIMEDOUT,
-+		[EC_RES_OVERFLOW] = -EOVERFLOW,
-+		[EC_RES_INVALID_HEADER] = -EBADR,
-+		[EC_RES_REQUEST_TRUNCATED] = -EBADR,
-+		[EC_RES_RESPONSE_TOO_BIG] = -EFBIG,
-+		[EC_RES_BUS_ERROR] = -EFAULT,
-+		[EC_RES_BUSY] = -EBUSY,
-+		[EC_RES_INVALID_HEADER_VERSION] = -EBADMSG,
-+		[EC_RES_INVALID_HEADER_CRC] = -EBADMSG,
-+		[EC_RES_INVALID_DATA_CRC] = -EBADMSG,
-+		[EC_RES_DUP_UNAVAILABLE] = -ENODATA,
-+	};
++	int ret;
 +
-+	memset(&msg, 0, sizeof(msg));
++	ec_dev->mkbp_event_supported = 0;
 +
-+	for (i = 0; i < ARRAY_SIZE(map); ++i) {
-+		mock = cros_kunit_ec_xfer_mock_addx(test, 0, i, 0);
-+		KUNIT_ASSERT_PTR_NE(test, mock, NULL);
++	ret = cros_ec_get_host_event(ec_dev);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++}
 +
-+		ret = cros_ec_cmd_xfer_status(ec_dev, &msg);
-+		KUNIT_EXPECT_EQ(test, ret, map[i]);
-+	}
++static void cros_ec_proto_test_get_host_event_not_host_event(struct kunit *test)
++{
++	struct cros_ec_proto_test_priv *priv = test->priv;
++	struct cros_ec_device *ec_dev = &priv->ec_dev;
++	int ret;
++
++	ec_dev->mkbp_event_supported = 1;
++	ec_dev->event_data.event_type = EC_MKBP_EVENT_FINGERPRINT;
++
++	ret = cros_ec_get_host_event(ec_dev);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++}
++
++static void cros_ec_proto_test_get_host_event_wrong_event_size(struct kunit *test)
++{
++	struct cros_ec_proto_test_priv *priv = test->priv;
++	struct cros_ec_device *ec_dev = &priv->ec_dev;
++	int ret;
++
++	ec_dev->mkbp_event_supported = 1;
++	ec_dev->event_data.event_type = EC_MKBP_EVENT_HOST_EVENT;
++	ec_dev->event_size = 0xff;
++
++	ret = cros_ec_get_host_event(ec_dev);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++}
++
++static void cros_ec_proto_test_get_host_event_normal(struct kunit *test)
++{
++	struct cros_ec_proto_test_priv *priv = test->priv;
++	struct cros_ec_device *ec_dev = &priv->ec_dev;
++	int ret;
++
++	ec_dev->mkbp_event_supported = 1;
++	ec_dev->event_data.event_type = EC_MKBP_EVENT_HOST_EVENT;
++	ec_dev->event_size = sizeof(ec_dev->event_data.data.host_event);
++	put_unaligned_le32(EC_HOST_EVENT_MASK(EC_HOST_EVENT_RTC),
++			   &ec_dev->event_data.data.host_event);
++
++	ret = cros_ec_get_host_event(ec_dev);
++	KUNIT_EXPECT_EQ(test, ret, EC_HOST_EVENT_MASK(EC_HOST_EVENT_RTC));
 +}
 +
  static void cros_ec_proto_test_release(struct device *dev)
  {
  }
-@@ -2086,6 +2134,7 @@ static struct kunit_case cros_ec_proto_test_cases[] = {
- 	KUNIT_CASE(cros_ec_proto_test_cmd_xfer_in_progress_return0),
- 	KUNIT_CASE(cros_ec_proto_test_cmd_xfer_status_normal),
- 	KUNIT_CASE(cros_ec_proto_test_cmd_xfer_status_xfer_error),
-+	KUNIT_CASE(cros_ec_proto_test_cmd_xfer_status_return_error),
+@@ -2401,6 +2456,10 @@ static struct kunit_case cros_ec_proto_test_cases[] = {
+ 	KUNIT_CASE(cros_ec_proto_test_get_next_event_mkbp_event_version2),
+ 	KUNIT_CASE(cros_ec_proto_test_get_next_event_mkbp_event_host_event_rtc),
+ 	KUNIT_CASE(cros_ec_proto_test_get_next_event_mkbp_event_host_event_masked),
++	KUNIT_CASE(cros_ec_proto_test_get_host_event_no_mkbp_event),
++	KUNIT_CASE(cros_ec_proto_test_get_host_event_not_host_event),
++	KUNIT_CASE(cros_ec_proto_test_get_host_event_wrong_event_size),
++	KUNIT_CASE(cros_ec_proto_test_get_host_event_normal),
  	{}
  };
  
