@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66424C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 16:48:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30CF9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 16:49:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376829AbiFVQs4 (ORCPT
+        id S1376840AbiFVQs6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 12:48:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47550 "EHLO
+        Wed, 22 Jun 2022 12:48:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376767AbiFVQru (ORCPT
+        with ESMTP id S1376675AbiFVQru (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 22 Jun 2022 12:47:50 -0400
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 21F263C709
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 09:47:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 32FB43FD97
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 09:47:18 -0700 (PDT)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 11163150C;
-        Wed, 22 Jun 2022 09:47:13 -0700 (PDT)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2AD451477;
+        Wed, 22 Jun 2022 09:47:18 -0700 (PDT)
 Received: from merodach.members.linode.com (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 889453F792;
-        Wed, 22 Jun 2022 09:47:10 -0700 (PDT)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A21B63F792;
+        Wed, 22 Jun 2022 09:47:15 -0700 (PDT)
 From:   James Morse <james.morse@arm.com>
 To:     x86@kernel.org, linux-kernel@vger.kernel.org
 Cc:     Fenghua Yu <fenghua.yu@intel.com>,
@@ -38,9 +38,9 @@ Cc:     Fenghua Yu <fenghua.yu@intel.com>,
         Cristian Marussi <cristian.marussi@arm.com>,
         Xin Hao <xhao@linux.alibaba.com>, xingxin.hx@openanolis.org,
         baolin.wang@linux.alibaba.com
-Subject: [PATCH v5 05/21] x86/resctrl: Add domain offline callback for resctrl work
-Date:   Wed, 22 Jun 2022 16:46:13 +0000
-Message-Id: <20220622164629.20795-6-james.morse@arm.com>
+Subject: [PATCH v5 07/21] x86/resctrl: Abstract and use supports_mba_mbps()
+Date:   Wed, 22 Jun 2022 16:46:15 +0000
+Message-Id: <20220622164629.20795-8-james.morse@arm.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220622164629.20795-1-james.morse@arm.com>
 References: <20220622164629.20795-1-james.morse@arm.com>
@@ -50,17 +50,16 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Because domains are exposed to user-space via resctrl, the filesystem
-must update its state when CPU hotplug callbacks are triggered.
+To determine whether the mba_MBps option to resctrl should be supported,
+resctrl tests the boot CPUs' x86_vendor.
 
-Some of this work is common to any architecture that would support
-resctrl, but the work is tied up with the architecture code to
-free the memory.
+This isn't portable, and needs abstracting behind a helper so this check
+can be part of the filesystem code that moves to /fs/.
 
-Move the monitor subdir removal and the cancelling of the mbm/limbo
-works into a new resctrl_offline_domain() call. These bits are not
-specific to the architecture. Grouping them in one function allows
-that code to be moved to /fs/ and re-used by another architecture.
+Re-use the tests set_mba_sc() does to determine if the mba_sc is supported
+on this system. An 'alloc_capable' test is added so that support for the
+controls isn't implied by the 'delay_linear' property, which is always
+true for MPAM.
 
 Reviewed-by: Jamie Iles <quic_jiles@quicinc.com>
 Tested-by: Xin Hao <xhao@linux.alibaba.com>
@@ -69,158 +68,61 @@ Tested-by: Shaopeng Tan <tan.shaopeng@fujitsu.com>
 Tested-by: Cristian Marussi <cristian.marussi@arm.com>
 Signed-off-by: James Morse <james.morse@arm.com>
 ---
-Changes since v2:
- * Moved kfree()ing to domain_destroy_mon_state() for later re-use.
+Changes since v3:
+ * Added use in resctrle_online_domain()
 
 Changes since v1:
- * Removed a redundant mon_capable check
  * Capitalisation
- * Removed inline comment
- * Added to the commit message
+ * Added MPAM example in commit message
+ * Fixed supports_mba_mbps() logic error in rdt_parse_param()
 ---
- arch/x86/kernel/cpu/resctrl/core.c     | 26 ++-------------
- arch/x86/kernel/cpu/resctrl/internal.h |  2 --
- arch/x86/kernel/cpu/resctrl/rdtgroup.c | 45 +++++++++++++++++++++++---
- include/linux/resctrl.h                |  1 +
- 4 files changed, 44 insertions(+), 30 deletions(-)
+ arch/x86/kernel/cpu/resctrl/rdtgroup.c | 19 ++++++++++++++-----
+ 1 file changed, 14 insertions(+), 5 deletions(-)
 
-diff --git a/arch/x86/kernel/cpu/resctrl/core.c b/arch/x86/kernel/cpu/resctrl/core.c
-index e37889f7a1a5..f69182973175 100644
---- a/arch/x86/kernel/cpu/resctrl/core.c
-+++ b/arch/x86/kernel/cpu/resctrl/core.c
-@@ -523,27 +523,8 @@ static void domain_remove_cpu(int cpu, struct rdt_resource *r)
- 
- 	cpumask_clear_cpu(cpu, &d->cpu_mask);
- 	if (cpumask_empty(&d->cpu_mask)) {
--		/*
--		 * If resctrl is mounted, remove all the
--		 * per domain monitor data directories.
--		 */
--		if (static_branch_unlikely(&rdt_mon_enable_key))
--			rmdir_mondata_subdir_allrdtgrp(r, d->id);
-+		resctrl_offline_domain(r, d);
- 		list_del(&d->list);
--		if (r->mon_capable && is_mbm_enabled())
--			cancel_delayed_work(&d->mbm_over);
--		if (is_llc_occupancy_enabled() &&  has_busy_rmid(r, d)) {
--			/*
--			 * When a package is going down, forcefully
--			 * decrement rmid->ebusy. There is no way to know
--			 * that the L3 was flushed and hence may lead to
--			 * incorrect counts in rare scenarios, but leaving
--			 * the RMID as busy creates RMID leaks if the
--			 * package never comes back.
--			 */
--			__check_limbo(d, true);
--			cancel_delayed_work(&d->cqm_limbo);
--		}
- 
- 		/*
- 		 * rdt_domain "d" is going to be freed below, so clear
-@@ -551,11 +532,8 @@ static void domain_remove_cpu(int cpu, struct rdt_resource *r)
- 		 */
- 		if (d->plr)
- 			d->plr->d = NULL;
--
--		bitmap_free(d->rmid_busy_llc);
--		kfree(d->mbm_total);
--		kfree(d->mbm_local);
- 		domain_free(hw_dom);
-+
- 		return;
- 	}
- 
-diff --git a/arch/x86/kernel/cpu/resctrl/internal.h b/arch/x86/kernel/cpu/resctrl/internal.h
-index be48a682dbdb..e12b55f815bf 100644
---- a/arch/x86/kernel/cpu/resctrl/internal.h
-+++ b/arch/x86/kernel/cpu/resctrl/internal.h
-@@ -522,8 +522,6 @@ void free_rmid(u32 rmid);
- int rdt_get_mon_l3_config(struct rdt_resource *r);
- void mon_event_count(void *info);
- int rdtgroup_mondata_show(struct seq_file *m, void *arg);
--void rmdir_mondata_subdir_allrdtgrp(struct rdt_resource *r,
--				    unsigned int dom_id);
- void mon_event_read(struct rmid_read *rr, struct rdt_resource *r,
- 		    struct rdt_domain *d, struct rdtgroup *rdtgrp,
- 		    int evtid, int first);
 diff --git a/arch/x86/kernel/cpu/resctrl/rdtgroup.c b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
-index 030a70326ccc..5830905a92d2 100644
+index b32ceff8325a..49d9e2c3c743 100644
 --- a/arch/x86/kernel/cpu/resctrl/rdtgroup.c
 +++ b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
-@@ -2499,14 +2499,12 @@ static int mon_addfile(struct kernfs_node *parent_kn, const char *name,
-  * Remove all subdirectories of mon_data of ctrl_mon groups
-  * and monitor groups with given domain id.
-  */
--void rmdir_mondata_subdir_allrdtgrp(struct rdt_resource *r, unsigned int dom_id)
-+static void rmdir_mondata_subdir_allrdtgrp(struct rdt_resource *r,
-+					   unsigned int dom_id)
- {
- 	struct rdtgroup *prgrp, *crgrp;
- 	char name[32];
- 
--	if (!r->mon_capable)
--		return;
--
- 	list_for_each_entry(prgrp, &rdt_all_groups, rdtgroup_list) {
- 		sprintf(name, "mon_%s_%02d", r->name, dom_id);
- 		kernfs_remove_by_name(prgrp->mon.mon_data_kn, name);
-@@ -3233,6 +3231,45 @@ static int __init rdtgroup_setup_root(void)
- 	return ret;
+@@ -1890,17 +1890,26 @@ void rdt_domain_reconfigure_cdp(struct rdt_resource *r)
  }
  
-+static void domain_destroy_mon_state(struct rdt_domain *d)
+ /*
+- * Enable or disable the MBA software controller
+- * which helps user specify bandwidth in MBps.
+  * MBA software controller is supported only if
+  * MBM is supported and MBA is in linear scale.
+  */
++static bool supports_mba_mbps(void)
 +{
-+	bitmap_free(d->rmid_busy_llc);
-+	kfree(d->mbm_total);
-+	kfree(d->mbm_local);
++	struct rdt_resource *r = &rdt_resources_all[RDT_RESOURCE_MBA].r_resctrl;
++
++	return (is_mbm_enabled() &&
++		r->alloc_capable && is_mba_linear());
 +}
 +
-+void resctrl_offline_domain(struct rdt_resource *r, struct rdt_domain *d)
-+{
-+	lockdep_assert_held(&rdtgroup_mutex);
-+
-+	if (!r->mon_capable)
-+		return;
-+
-+	/*
-+	 * If resctrl is mounted, remove all the
-+	 * per domain monitor data directories.
-+	 */
-+	if (static_branch_unlikely(&rdt_mon_enable_key))
-+		rmdir_mondata_subdir_allrdtgrp(r, d->id);
-+
-+	if (is_mbm_enabled())
-+		cancel_delayed_work(&d->mbm_over);
-+	if (is_llc_occupancy_enabled() && has_busy_rmid(r, d)) {
-+		/*
-+		 * When a package is going down, forcefully
-+		 * decrement rmid->ebusy. There is no way to know
-+		 * that the L3 was flushed and hence may lead to
-+		 * incorrect counts in rare scenarios, but leaving
-+		 * the RMID as busy creates RMID leaks if the
-+		 * package never comes back.
-+		 */
-+		__check_limbo(d, true);
-+		cancel_delayed_work(&d->cqm_limbo);
-+	}
-+
-+	domain_destroy_mon_state(d);
-+}
-+
- static int domain_setup_mon_state(struct rdt_resource *r, struct rdt_domain *d)
++/*
++ * Enable or disable the MBA software controller
++ * which helps user specify bandwidth in MBps.
++ */
+ static int set_mba_sc(bool mba_sc)
  {
- 	size_t tsize;
-diff --git a/include/linux/resctrl.h b/include/linux/resctrl.h
-index d512455b4c3a..5d283bdd6162 100644
---- a/include/linux/resctrl.h
-+++ b/include/linux/resctrl.h
-@@ -193,5 +193,6 @@ int resctrl_arch_update_domains(struct rdt_resource *r, u32 closid);
- u32 resctrl_arch_get_config(struct rdt_resource *r, struct rdt_domain *d,
- 			    u32 closid, enum resctrl_conf_type type);
- int resctrl_online_domain(struct rdt_resource *r, struct rdt_domain *d);
-+void resctrl_offline_domain(struct rdt_resource *r, struct rdt_domain *d);
+ 	struct rdt_resource *r = &rdt_resources_all[RDT_RESOURCE_MBA].r_resctrl;
  
- #endif /* _RESCTRL_H */
+-	if (!is_mbm_enabled() || !is_mba_linear() ||
+-	    mba_sc == is_mba_sc(r))
++	if (!supports_mba_mbps() || mba_sc == is_mba_sc(r))
+ 		return -EINVAL;
+ 
+ 	r->membw.mba_sc = mba_sc;
+@@ -2255,7 +2264,7 @@ static int rdt_parse_param(struct fs_context *fc, struct fs_parameter *param)
+ 		ctx->enable_cdpl2 = true;
+ 		return 0;
+ 	case Opt_mba_mbps:
+-		if (boot_cpu_data.x86_vendor != X86_VENDOR_INTEL)
++		if (!supports_mba_mbps())
+ 			return -EINVAL;
+ 		ctx->enable_mba_mbps = true;
+ 		return 0;
 -- 
 2.30.2
 
