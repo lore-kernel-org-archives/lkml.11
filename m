@@ -2,87 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ACC5C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 01:16:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A03CAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 01:18:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355409AbiFVBQe (ORCPT
+        id S1355308AbiFVBSD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 21:16:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37044 "EHLO
+        Tue, 21 Jun 2022 21:18:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229990AbiFVBQd (ORCPT
+        with ESMTP id S229990AbiFVBSB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 21:16:33 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D331431513
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 18:16:31 -0700 (PDT)
-Received: from dggpeml500021.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LSQRT21M1zkWbq;
-        Wed, 22 Jun 2022 09:15:17 +0800 (CST)
-Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
- dggpeml500021.china.huawei.com (7.185.36.21) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 22 Jun 2022 09:16:29 +0800
-Received: from zelda.huawei.com (10.175.103.14) by
- dggpeml100012.china.huawei.com (7.185.36.121) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 22 Jun 2022 09:16:28 +0800
-From:   Jin Xiaoyun <jinxiaoyun2@huawei.com>
-To:     <matthias.bgg@gmail.com>,
-        <angelogioacchino.delregno@collabora.com>, <khilman@baylibre.com>,
-        <zhengbin13@huawei.com>, <gaochao49@huawei.com>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        "Jin Xiaoyun" <jinxiaoyun2@huawei.com>
-Subject: [PATCH -next] soc: mediatek: SVS: Make svs_resume and svs_suspend defined when CONFIG_PM_SLEEP is y
-Date:   Wed, 22 Jun 2022 09:34:10 +0800
-Message-ID: <20220622013410.2786760-1-jinxiaoyun2@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 21 Jun 2022 21:18:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C9597F22
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 18:17:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655860678;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=wuuPsrvpildfWMsTFBzbFCeyycT4LB8kmzw//Wg2WxM=;
+        b=jSd51UwGvncHsdhGX+pDJ52lhf22RyNaKa9oxoR76UegXr6pFsulKL/fq/z2Qx/Coz7Eze
+        mMCsNia5G2/BeWg5I2Kwdjoy6UREWgEijprOBcY6KvFCh5mZdtbDPNu33z/JME4XPJvpUs
+        AnqK6Q9ho8L0DSR9slLx+euFMYf/Q5w=
+Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
+ [209.85.167.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-178-QvCV9aB1NXeLXya_B2RoaA-1; Tue, 21 Jun 2022 21:17:56 -0400
+X-MC-Unique: QvCV9aB1NXeLXya_B2RoaA-1
+Received: by mail-lf1-f72.google.com with SMTP id j3-20020a05651231c300b0047dbea7b031so7695143lfe.19
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 18:17:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wuuPsrvpildfWMsTFBzbFCeyycT4LB8kmzw//Wg2WxM=;
+        b=FZpxudpVzVULuZqFwUdbDE1EsphfXsTlEvthvf+ewqJR2z4yJgu6bAEZBaZbowm9oj
+         C4hnMDdRqLwkCz68XTeQ05EZfWtVqXoH/nNNL3vaxaPwjCTGh7IdaDl/hqaeW+Y4r6Zp
+         mLgTQ2hKemRHXfOh4ggGe4fb6fxRewoSoLUTnEzj8amXo2M9S5vlN44Lx2tuE8LHDWmj
+         LDvjRj5kpNSdXDjF8d9kEsKUMfEqnlT4Km+x3jyNGAE7XxNJA64pOcSu2f30ZAz3PRKC
+         Y2i+hmsdR1PnH4053z+cqyamlQlFTJMToo1n/htAm8Uoco6s6IEsglNTqizfsFuVYNUI
+         amzA==
+X-Gm-Message-State: AJIora/5yNa2s2CENhXPrVOJRBkXPJ/RPVUPWCgxNnXH96OUl6Ra99cz
+        AzyHEh+c8BALHicR+5v9NHarinFjiuh348LpF6QIB0/XKnqXZ5Hf1fDfHCyBwHxYKAEcvkdieKh
+        kmFcZBQUEn/D+0WEnyyZjEv5PHNQwgrrcVuA/pNGI
+X-Received: by 2002:a2e:8417:0:b0:25a:7fa7:fe5a with SMTP id z23-20020a2e8417000000b0025a7fa7fe5amr446421ljg.323.1655860675085;
+        Tue, 21 Jun 2022 18:17:55 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1tQNlmQ8fPIImazbU50qDI+J7JfZUZ94bHEMA0uqALx+tS95NtR1kJrk5qBRHT/YHfDAiJWdNBd86xhIi+W7kQ=
+X-Received: by 2002:a2e:8417:0:b0:25a:7fa7:fe5a with SMTP id
+ z23-20020a2e8417000000b0025a7fa7fe5amr446411ljg.323.1655860674845; Tue, 21
+ Jun 2022 18:17:54 -0700 (PDT)
 MIME-Version: 1.0
+References: <20220620024158.2505-1-jasowang@redhat.com> <87y1xq8jgw.fsf@redhat.com>
+ <CACGkMEun6C9RgQVGq1B8BJMd9DyRQkSXj8shXVVhDymQYQLxgA@mail.gmail.com> <87sfny8hj8.fsf@redhat.com>
+In-Reply-To: <87sfny8hj8.fsf@redhat.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Wed, 22 Jun 2022 09:17:37 +0800
+Message-ID: <CACGkMEsg9791gQAtsz6fCM_=9_VmbqY=FehoTnpyiaJ7mCosDA@mail.gmail.com>
+Subject: Re: [PATCH V2] virtio: disable notification hardening by default
+To:     Cornelia Huck <cohuck@redhat.com>
+Cc:     Halil Pasic <pasic@linux.ibm.com>, mst <mst@redhat.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        linux-s390@vger.kernel.org,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        kvm <kvm@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.175.103.14]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpeml100012.china.huawei.com (7.185.36.121)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The svs_resume and svs_suspend is defined through SIMPLE_DEV_PM_OPS. If CONFIG_PM_SLEEP
-is not defined, SIMPLE_DEV_PM_OPS is equivalent to an empty function. In this case,
-the defination of svs_resume and svs_suspend is meaningless.
+On Tue, Jun 21, 2022 at 5:58 PM Cornelia Huck <cohuck@redhat.com> wrote:
+>
+> On Tue, Jun 21 2022, Jason Wang <jasowang@redhat.com> wrote:
+>
+> > On Tue, Jun 21, 2022 at 5:16 PM Cornelia Huck <cohuck@redhat.com> wrote:
+> >>
+> >> The ifdeffery looks a big ugly, but I don't have a better idea.
+> >
+> > I guess you meant the ccw part, I leave the spinlock here in V1, but
+> > Michael prefers to have that.
+>
+> Not doing the locking dance is good; I think the #ifdefs all over are a
+> bit ugly, but as I said, I can't think of a good, less-ugly way...
 
-Fix build error:
-drivers/soc/mediatek/mtk-svs.c:1515:12: error: ‘svs_resume’ defined but not used [-Werror=unused-function]
-drivers/soc/mediatek/mtk-svs.c:1481:12: error: ‘svs_suspend’ defined but not used [-Werror=unused-function]
+Probably, but this is the way that is used by other subsystems. E.g
+CONFIG_HARDEN_USERCOPY etc.
 
-Signed-off-by: Jin Xiaoyun <jinxiaoyun2@huawei.com>
----
- drivers/soc/mediatek/mtk-svs.c | 2 ++
- 1 file changed, 2 insertions(+)
+>
+> > In the future, we may consider removing that, one possible way is to
+> > have a per driver boolean for the hardening.
+>
+> As in "we've reviewed and tested this driver, so let's turn it on for
+> every device bound to it"?
 
-diff --git a/drivers/soc/mediatek/mtk-svs.c b/drivers/soc/mediatek/mtk-svs.c
-index 606a00a2e57d..8440058784dc 100644
---- a/drivers/soc/mediatek/mtk-svs.c
-+++ b/drivers/soc/mediatek/mtk-svs.c
-@@ -1478,6 +1478,7 @@ static int svs_start(struct svs_platform *svsp)
- 	return 0;
- }
+Right.
 
-+#ifdef CONFIG_PM_SLEEP
- static int svs_suspend(struct device *dev)
- {
- 	struct svs_platform *svsp = dev_get_drvdata(dev);
-@@ -1537,6 +1538,7 @@ static int svs_resume(struct device *dev)
+Thanks
 
- 	return 0;
- }
-+#endif
-
- static int svs_bank_resource_setup(struct svs_platform *svsp)
- {
---
-2.25.1
+>
 
