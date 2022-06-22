@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20976C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 09:29:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D3DBC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 09:29:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354732AbiFVJ3X (ORCPT
+        id S1355667AbiFVJ3m (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 05:29:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59150 "EHLO
+        Wed, 22 Jun 2022 05:29:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355742AbiFVJ3T (ORCPT
+        with ESMTP id S1356754AbiFVJ3c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 05:29:19 -0400
-Received: from mail-oi1-x244.google.com (mail-oi1-x244.google.com [IPv6:2607:f8b0:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 472223669F
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 02:29:18 -0700 (PDT)
-Received: by mail-oi1-x244.google.com with SMTP id k24so20427501oij.2
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 02:29:18 -0700 (PDT)
+        Wed, 22 Jun 2022 05:29:32 -0400
+Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDD8E396AE
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 02:29:24 -0700 (PDT)
+Received: by mail-ot1-x341.google.com with SMTP id s20-20020a056830439400b0060c3e43b548so12633982otv.7
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 02:29:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=xzFZy7EobE569rOuuG/ggjMqoyz7vEjB3IIrzWyAvt8=;
-        b=Yi2rupt2gqO0TXPAhwMzEoXicOGPWzkZYLtKaqwX5sv5fjgIYq3rZb3R/vgBXYmIjq
-         giyViDEHu+DCwEPCXcny9wrQgUo0AtT4tMBMiXpAlPLpARr1X5ZNFdxuf39m9miwt0QP
-         AOgTSvfi6Bn8v737usTipbLNyeA2oPBzM+vR/bVl4/ABFZT2VIarzXwTaunUbFYIpf+q
-         cmRrkYX4ZVJcBznk5CsEbbqXT9EC2zdVg/4CNrtbtZw9bN0IZS9h9FUXIiw9wtXveqO9
-         tgkGxhBfAgbSaOJQzWi/w0ERFqJyEmsof4c7r6ExDzYMEHlnMU/jd4khiWK3l5NUBxId
-         3wVg==
+        bh=DfXx6OUKFv9lmYSVpe2VK14vOIkFTYrGx9cnZE6j00U=;
+        b=mUFh8eRq4qQBRgjBDWi3lpzdhCpt1bXMCv9galxgsLml+K45xfP7UjqZXIy9RuhagS
+         XUqMzrrmcYIKCfsGkH0NOHLyUMo6/CtqoK9DOQJ7Piih2sJS5fbzWNK7EhTuyNaxx88r
+         MEBil20mlTGEWwTZxmnW8OVTQ8lvH4Fyxz/0Z2MwZMSpiva1vO21WL60Z9NjcLq6auQ6
+         PtmhFI+5TDJXLcFtOP3CT9FVrKte1y2v34vAf6r4xHQpaBrqlw9sbKuuiGmk99u7/oME
+         hhzzPILM94kzYPCu86ZDcYRQj1K20CBPaOHsHOgIVgoHg8kyO5E8mzgVTFXP6xOxbKFG
+         tJwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=xzFZy7EobE569rOuuG/ggjMqoyz7vEjB3IIrzWyAvt8=;
-        b=Un++GP1NdgsV0xOdac6+THx+6i9EDRcbUDyHh8o23DSCXZHa3eK1FrrQ+U1Eq+ESyP
-         f418HyNc6n06qA3WJyREC3+stjSt/PyH07iTkuHr+l2YoKQO2HVB+/H1EkjhXHxEDbZq
-         +ANJT/3E5EXDCjco+krfbmaTIjp/g/NMgyRDL6aWdYeQ3uk837sg37LdcGQ6cCsoq4Qi
-         h8OUOgyWPr60jnCH97cfw6S9QudLrQ3R/PKUSta97NlMOCVW4izbv12TVKupbJLbRxwF
-         2rRhu+yqmttBGCqMjIjwaHVbjFUeY52aiUkXQRLztTQP6OwYg7iI9AUPhZnmBge478FM
-         DQsA==
-X-Gm-Message-State: AOAM531+r3i/NnZoI4DrpJ4bqlCHsDFtXlOk3RG0NCKbhNZzGSLeihe+
-        dyEDMePM2O/Fz9VE/2ahWsIwqMY6GSY=
-X-Google-Smtp-Source: ABdhPJwXl4mJ3gLaWz5a2mal8GQQEvRZB4IXNkgmCdIoGKbfL20IbEcvlw+rsFyYz12pL5dSVHvcwg==
-X-Received: by 2002:a05:6808:1598:b0:32e:ff1f:1dbf with SMTP id t24-20020a056808159800b0032eff1f1dbfmr20777596oiw.259.1655890157618;
-        Wed, 22 Jun 2022 02:29:17 -0700 (PDT)
+        bh=DfXx6OUKFv9lmYSVpe2VK14vOIkFTYrGx9cnZE6j00U=;
+        b=xrBaL6mB28hZP1lLjuum5dZvfdn3CByMzdOmha2YfClvLECfA8wkKBsYo2sQHknSzf
+         btvaZkkuTRDxg70LEtEwQHfe+8CixFyQLS2gVYsSm06gJtKxxRDtsFXzB5EuZP7kkvuE
+         LQpiviUf5InimUsLkAHDIhgRidTtdfPjmK7+ndsSLpzEksmQngnhGPv7kolqKPfcLGD5
+         xN0UhdqepDtRiKjpbnGjLWzOWHxrdDEvKtoIyil447hVSCiefmPbEKkOGIMyEpEjE1D/
+         vssL+Dg3KNvRGmlfjBZX7CBycsNDkStg0wgIOWNAKExymWT8IJu2GzAwfVKpi+kg0Sp1
+         nZBQ==
+X-Gm-Message-State: AJIora9k1P1PHzAt4KnPa5tsY182JlQ9lPUxadCfUuG1UWJQXv9xWMCM
+        35dW1IkpZ+hOj8SGh35HiH40TlYQc40=
+X-Google-Smtp-Source: AGRyM1sVGvUWz0BD8tejsjDQkqxdmNwvMms1D0vqtRylPH4AAbRLuj4vjhqcFhAGnzGbBhtD8XX4gg==
+X-Received: by 2002:a05:6830:2016:b0:60c:468:e30 with SMTP id e22-20020a056830201600b0060c04680e30mr1065968otp.271.1655890164154;
+        Wed, 22 Jun 2022 02:29:24 -0700 (PDT)
 Received: from bertie (072-190-140-117.res.spectrum.com. [72.190.140.117])
-        by smtp.gmail.com with ESMTPSA id dt13-20020a0568705a8d00b00101afc7b263sm8584818oab.9.2022.06.22.02.29.17
+        by smtp.gmail.com with ESMTPSA id r23-20020a056830419700b0060c03836d04sm10867095otu.77.2022.06.22.02.29.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jun 2022 02:29:17 -0700 (PDT)
+        Wed, 22 Jun 2022 02:29:24 -0700 (PDT)
 From:   Rebecca Mckeever <remckee0@gmail.com>
 To:     Mike Rapoport <rppt@kernel.org>, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org
 Cc:     David Hildenbrand <david@redhat.com>,
         Rebecca Mckeever <remckee0@gmail.com>
-Subject: [PATCH v3 1/4] memblock tests: add user-provided arguments to Makefile
-Date:   Wed, 22 Jun 2022 04:29:06 -0500
-Message-Id: <b7e8e89dbbd7acdf41d62f1528f02d1dc2283e4b.1655889641.git.remckee0@gmail.com>
+Subject: [PATCH v3 3/4] memblock tests: set memblock_debug to enable memblock_dbg() messages
+Date:   Wed, 22 Jun 2022 04:29:08 -0500
+Message-Id: <39c5c97d2b5c1ab88b7bbbf02633f840fd5dfcdf.1655889641.git.remckee0@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <cover.1655889641.git.remckee0@gmail.com>
 References: <cover.1655889641.git.remckee0@gmail.com>
@@ -66,77 +66,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add VERBOSE and MEMBLOCK_DEBUG user-provided arguments. VERBOSE will
-enable verbose output from Memblock simulator. MEMBLOCK_DEBUG will enable
-memblock_dbg() messages.
+If Memblock simulator was compiled with MEMBLOCK_DEBUG=1, set
+memblock_debug to 1 so that memblock_dbg() will print debug information
+when memblock functions are tested in Memblock simulator.
 
-Update the help message to include VERBOSE and MEMBLOCK_DEBUG. Update
-the README to include VERBOSE. The README does not include all available
-options and refers to the help message for the remaining options.
-Therefore, omit MEMBLOCK_DEBUG from README.
-
-Reviewed-by: David Hildenbrand <david@redhat.com>
 Signed-off-by: Rebecca Mckeever <remckee0@gmail.com>
 ---
- tools/testing/memblock/Makefile                 |  4 ++++
- tools/testing/memblock/README                   | 10 +++++++++-
- tools/testing/memblock/scripts/Makefile.include | 10 ++++++++++
- 3 files changed, 23 insertions(+), 1 deletion(-)
+ tools/testing/memblock/internal.h | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/tools/testing/memblock/Makefile b/tools/testing/memblock/Makefile
-index a698e24b35e7..9fde49ad73bd 100644
---- a/tools/testing/memblock/Makefile
-+++ b/tools/testing/memblock/Makefile
-@@ -45,6 +45,10 @@ help:
- 	@echo  '  clean		  - Remove generated files and symlinks in the directory'
- 	@echo  ''
- 	@echo  'Configuration:'
-+	@echo  '  make VERBOSE=1            - enable verbose output, which includes the'
-+	@echo  '                              names of functions being tested and the'
-+	@echo  '                              number of test cases passing'
-+	@echo  '  make MEMBLOCK_DEBUG=1     - enable memblock_dbg() messages'
- 	@echo  '  make NUMA=1               - simulate enabled NUMA'
- 	@echo  '  make MOVABLE_NODE=1       - override `movable_node_is_enabled`'
- 	@echo  '                              definition to simulate movable NUMA nodes'
-diff --git a/tools/testing/memblock/README b/tools/testing/memblock/README
-index ca6afcff013a..058146b528a5 100644
---- a/tools/testing/memblock/README
-+++ b/tools/testing/memblock/README
-@@ -34,7 +34,15 @@ To run the tests, build the main target and run it:
- $ make && ./main
+diff --git a/tools/testing/memblock/internal.h b/tools/testing/memblock/internal.h
+index 94b52a8718b5..c2a492c05e0c 100644
+--- a/tools/testing/memblock/internal.h
++++ b/tools/testing/memblock/internal.h
+@@ -2,6 +2,13 @@
+ #ifndef _MM_INTERNAL_H
+ #define _MM_INTERNAL_H
  
- A successful run produces no output. It is also possible to override different
--configuration parameters. For example, to simulate enabled NUMA, use:
-+configuration parameters. For example, to include verbose output, specify the
-+VERBOSE flag when building the main target:
++/*
++ * Enable memblock_dbg() messages
++ */
++#ifdef MEMBLOCK_DEBUG
++static int memblock_debug = 1;
++#endif
 +
-+$ make VERBOSE=1
-+
-+This will print information about which functions are being tested and the
-+number of test cases that passed.
-+
-+To simulate enabled NUMA, use:
+ struct page {};
  
- $ make NUMA=1
- 
-diff --git a/tools/testing/memblock/scripts/Makefile.include b/tools/testing/memblock/scripts/Makefile.include
-index 641569ccb7b0..4401f79bed4c 100644
---- a/tools/testing/memblock/scripts/Makefile.include
-+++ b/tools/testing/memblock/scripts/Makefile.include
-@@ -17,3 +17,13 @@ ifeq ($(32BIT_PHYS_ADDR_T), 1)
- 	CFLAGS += -m32 -U CONFIG_PHYS_ADDR_T_64BIT
- 	LDFLAGS += -m32
- endif
-+
-+# Enable verbose testing output
-+ifeq ($(VERBOSE), 1)
-+	CFLAGS += -D VERBOSE
-+endif
-+
-+# Enable memblock_dbg() messages
-+ifeq ($(MEMBLOCK_DEBUG), 1)
-+	CFLAGS += -D MEMBLOCK_DEBUG
-+endif
+ void memblock_free_pages(struct page *page, unsigned long pfn,
 -- 
 2.34.1
 
