@@ -2,74 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13944C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 13:40:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A955AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 13:42:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354358AbiFVNkV (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 09:40:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59030 "EHLO
+        id S244393AbiFVNmW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 09:42:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353545AbiFVNkQ (ORCPT
+        with ESMTP id S1344776AbiFVNmN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 09:40:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 878E93701E
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 06:40:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4E7A0B81F2A
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 13:40:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19A54C34114;
-        Wed, 22 Jun 2022 13:40:11 +0000 (UTC)
-Message-ID: <489a9048-6559-dca6-a4a1-50cba7105820@linux-m68k.org>
-Date:   Wed, 22 Jun 2022 23:40:09 +1000
+        Wed, 22 Jun 2022 09:42:13 -0400
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AFBD2E0A5
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 06:42:12 -0700 (PDT)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+        id 314092D0; Wed, 22 Jun 2022 15:42:10 +0200 (CEST)
+Date:   Wed, 22 Jun 2022 15:42:08 +0200
+From:   Joerg Roedel <joro@8bytes.org>
+To:     Robin Murphy <robin.murphy@arm.com>
+Cc:     yf.wang@mediatek.com, Miles Chen <miles.chen@mediatek.com>,
+        wsd_upstream@mediatek.com,
+        open list <linux-kernel@vger.kernel.org>,
+        Libo Kang <Libo.Kang@mediatek.com>,
+        "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        Ning Li <ning.li@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Will Deacon <will@kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH] iommu/dma: Fix race condition during iova_domain
+ initialization
+Message-ID: <YrMcMOVSQtLqJ3kp@8bytes.org>
+References: <20220530120748.31733-1-yf.wang@mediatek.com>
+ <YrMPG4dIEnFkCbi9@8bytes.org>
+ <a0f0d3da-6992-7033-5262-156ffa5316e7@arm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] m68k:coldfire:Fix typos in comments
-Content-Language: en-US
-To:     Jilin Yuan <yuanjilin@cdjrlc.com>, geert@linux-m68k.org
-Cc:     linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org
-References: <20220622073553.64991-1-yuanjilin@cdjrlc.com>
-From:   Greg Ungerer <gerg@linux-m68k.org>
-In-Reply-To: <20220622073553.64991-1-yuanjilin@cdjrlc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a0f0d3da-6992-7033-5262-156ffa5316e7@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jilin,
-
-This same change was recently submitted by Xiang wangx, and that has
-been added to the m68knommu git tree (for-next branch). See:
-
-     https://lore.kernel.org/lkml/6fe2468a-9664-30f7-7f17-9093289eb4b6@linux-m68k.org/T/
-
-Regards
-Greg
-
-
-On 22/6/22 17:35, Jilin Yuan wrote:
-> The "the" should be replaced by "of" instead.
+On Wed, Jun 22, 2022 at 02:27:57PM +0100, Robin Murphy wrote:
+> Apologies, I did spot this before, I've just been tied up with other things
+> and dropping everything non-critical on the floor, so didn't get round to
+> replying before it slipped my mind again.
 > 
-> Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
-> ---
->   arch/m68k/coldfire/intc-2.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+> In summary, I hate it, but mostly because the whole situation of calling
+> iommu_probe_device off the back of driver probe is fundamentally broken. I'm
+> still a few steps away from fixing that properly, at which point I can just
+> as well rip all these little bodges out again. If it really does need
+> mitigating in the meantime (i.e. this is real-world async probe, not just
+> some contrived testcase), then I can't easily think of any cleaner hack, so,
 > 
-> diff --git a/arch/m68k/coldfire/intc-2.c b/arch/m68k/coldfire/intc-2.c
-> index 995093357c59..f74f0e473119 100644
-> --- a/arch/m68k/coldfire/intc-2.c
-> +++ b/arch/m68k/coldfire/intc-2.c
-> @@ -7,7 +7,7 @@
->    * family, the 5270, 5271, 5274, 5275, and the 528x family which have two such
->    * controllers, and the 547x and 548x families which have only one of them.
->    *
-> - * The external 7 fixed interrupts are part the the Edge Port unit of these
-> + * The external 7 fixed interrupts are part of the Edge Port unit of these
->    * ColdFire parts. They can be configured as level or edge triggered.
->    *
->    * (C) Copyright 2009-2011, Greg Ungerer <gerg@snapgear.com>
+> Acked-by: Robin Murphy <robin.murphy@arm.com>
+
+Alright, applied this now.
