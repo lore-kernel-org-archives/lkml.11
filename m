@@ -2,120 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE02AC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 08:32:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 644C5C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 08:32:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353428AbiFVIb7 (ORCPT
+        id S1353566AbiFVIci (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 04:31:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56990 "EHLO
+        Wed, 22 Jun 2022 04:32:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352151AbiFVIbx (ORCPT
+        with ESMTP id S1353208AbiFVIcg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 04:31:53 -0400
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D428F01
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 01:31:51 -0700 (PDT)
-Received: by mail-yb1-xb36.google.com with SMTP id l11so28897824ybu.13
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 01:31:51 -0700 (PDT)
+        Wed, 22 Jun 2022 04:32:36 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E29E10E3
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 01:32:35 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id h23so32559285ejj.12
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 01:32:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VFrveWQWOlqWcE+PwPZMC1GnolqDyvG7Ts1DbfGLvCQ=;
-        b=qMZCgEKp956uUcAUTe+B8J619t80BEuZ4z2ufxolLgnN0UpgjefaBLUZGLJ7MkQz+h
-         lZmtXys0aHG6vlihf1FYI4hX92qR1UVsa5kY7j05PkODaMym/k7HXP4MgUcM87+IwLKq
-         2BE+Vh+b6iIH6zWlQrdoli+7Pzc9dA25AYExTbtVZLPLDnmf0LMlCemZu38bJCLOeh2W
-         fOJfhrIap5ILiYtfWBHSHZ6NY0Fw/eQQTIUOy4fqOJkeqjvWnryd9yxqxsXZ4yHU87vu
-         uLDMAXGBNIHyETi/QArYYxjDj2jR49Pv/w9dCjoomBmaqabbZl9v76N3jHQd0Db1bTul
-         ZWPg==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=WIUcmFiN2jsL7oALDMp5YXGwCzJ0JqW4KnAxg4P/XMU=;
+        b=k9Gvq7+J9mhzaht3u87CbdlwP+NVlSPWWWYmFGGNQIro/etVMQlfRMzzkmHXJjZLPT
+         /2jU0et3pQJq3gG8wjqHhubqpZ8qBWdSe1957mW+R4AJtmASHzjgTyIApF3wYvyND+3g
+         aUkPpPsFP8scmGhOZVTm/rPjEO87fQrl1bQO8axt/Kl7rVfE4dxMUEG6fZ9/21JCvJWt
+         eNdIEIBF8HAoi8bZTGT83Q53cj1GvkbqS8Fshh5NyqUsWIhcjfRfAgm+IH2hC3VO5hn5
+         9pQojSP5EOT+qi4lWC6syDqO1phDO4rVqb5KHTHPSDlqUso+gb+q4uZYq+dGzs+svKB6
+         rUpQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VFrveWQWOlqWcE+PwPZMC1GnolqDyvG7Ts1DbfGLvCQ=;
-        b=ykZzHlBgiVYJCZnu7zuDzawK4qe0w7eo3W8YkYNB6ZZMtTtbt/lq8958nNefTSNQbQ
-         hVpPz04An4KQMvXpT6BHc0c+YhQhDhFOn2XegQ3zpnMNkvh/yphDGTc/ABzwR2XKuP4z
-         S+Sd20bUzBxinPL5oHpIWbPsrYsjiKGKNq1k0nZbKeZ1rmfxvj6BdaS4gMTqfoMLejhi
-         yNeZqp6Vpnq1UHeABS57WhlDKu0mIBBRh6EpQ5iRZk2ed314DL5DzLpfS5sQDN1SWPlF
-         kqw0qVgssX1pR/FVdI13gETPsgwwLHToVF9PvEMm8Ou4RARyDn/ccZhK6ZNEE2FmaCED
-         3YEA==
-X-Gm-Message-State: AJIora96U27soMaKmQIhiqrBo0YNCiyBm2kfuSC2QngHyAzkDjuXfk+f
-        G6p9aVhBL7tabMtlUnXOxTA09HWNnRRxIG3h9B+ZGNGl
-X-Google-Smtp-Source: AGRyM1s6E87UN9fAajyCnVuoFZYmpttt79hpuA32cQUOGZs0yCkUCL5v86qQ56q2D3KhgDJIaUGbrR9kQCZ2Zs9mAmE=
-X-Received: by 2002:a25:c60e:0:b0:668:b55e:4a2a with SMTP id
- k14-20020a25c60e000000b00668b55e4a2amr2634974ybf.372.1655886710409; Wed, 22
- Jun 2022 01:31:50 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=WIUcmFiN2jsL7oALDMp5YXGwCzJ0JqW4KnAxg4P/XMU=;
+        b=78k7uWCjRI/Wey8mjRclUyDTfU+q4KB5HtAWCMfk4UoDOW4t6YCgzF9FDUn3d1f98N
+         /YTcWKvsJ2aBScfKrQKWd6Cuf96udidUm308hncly9DkQZSD7YziaStV/Cv2xbXJze61
+         86D5Tty0aKqxvpwdpeOhJFL89/H4VD26me0i8ClHkLTJYQ2JvLbN37TOI+naj0iHx0+W
+         kOItlZe+C85+C70/eiqd5xPbvgEbZnp0lvKfNBonv7qT8BL8owAgq/GcROvYEv1dLW0r
+         Ia6ZBKgm8BuJw0js9D11FfU3UH1RFSc8aXK4+R+8PPpKo5ytUgLy99+1ouI2J+fC2JLM
+         s1Fg==
+X-Gm-Message-State: AJIora+VVrYl72ACsgZ87RB8NWPWyoNp4wVwl4JxlXDxdYbIZtcVAahG
+        tpzeNp25ktF22dt4wO8O222Jdg==
+X-Google-Smtp-Source: AGRyM1tkWJaPUpA9hMb6RtgYb3GvUnb8qwNoBsCBzv6suFeJmRITYuJ/8pOTGlbh5lQl9YoNbT7gSA==
+X-Received: by 2002:a17:906:2806:b0:70d:ed7a:ca5b with SMTP id r6-20020a170906280600b0070ded7aca5bmr2012582ejc.173.1655886753696;
+        Wed, 22 Jun 2022 01:32:33 -0700 (PDT)
+Received: from [192.168.0.223] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id y4-20020aa7ccc4000000b004316f94ec4esm14477994edt.66.2022.06.22.01.32.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Jun 2022 01:32:33 -0700 (PDT)
+Message-ID: <50ab1e83-f14b-6d2c-df31-60a255552c46@linaro.org>
+Date:   Wed, 22 Jun 2022 10:32:31 +0200
 MIME-Version: 1.0
-References: <20220622003140.30365-1-pgwipeout@gmail.com> <f252c182-e306-174e-dd32-51c9a406d3f7@sholland.org>
-In-Reply-To: <f252c182-e306-174e-dd32-51c9a406d3f7@sholland.org>
-From:   Peter Geis <pgwipeout@gmail.com>
-Date:   Wed, 22 Jun 2022 04:31:39 -0400
-Message-ID: <CAMdYzYqUsr+orVtSbD023=GAyNLg4VdP9Wcrg6gON+Ut9FdzZA@mail.gmail.com>
-Subject: Re: [PATCH] phy: rockchip-inno-usb2: Sync initial otg state
-To:     Samuel Holland <samuel@sholland.org>
-Cc:     Heiko Stuebner <heiko@sntech.de>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        "open list:GENERIC PHY FRAMEWORK" <linux-phy@lists.infradead.org>,
-        arm-mail-list <linux-arm-kernel@lists.infradead.org>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v3 11/40] arm64: dts: marvell: align gpio-key node names
+ with dtschema
+Content-Language: en-US
+To:     arm@kernel.org, soc@kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Olof Johansson <olof@lixom.net>, Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220616005224.18391-1-krzysztof.kozlowski@linaro.org>
+ <20220616005333.18491-11-krzysztof.kozlowski@linaro.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220616005333.18491-11-krzysztof.kozlowski@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 1:16 AM Samuel Holland <samuel@sholland.org> wrote:
->
-> On 6/21/22 7:31 PM, Peter Geis wrote:
-> > The initial otg state for the phy defaults to device mode. The actual
-> > state isn't detected until an ID IRQ fires. Fix this by syncing the ID
-> > state during initialization.
-> >
-> > Fixes: 51a9b2c03dd3 ("phy: rockchip-inno-usb2: Handle ID IRQ")
-> > Signed-off-by: Peter Geis <pgwipeout@gmail.com>
->
-> One comment below. Either way it fixes a bug, so:
->
-> Reviewed-by: Samuel Holland <samuel@sholland.org>
+On 16/06/2022 02:53, Krzysztof Kozlowski wrote:
+> The node names should be generic and DT schema expects certain pattern
+> (e.g. with key/button/switch).
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>  arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts     | 2 +-
+>  arch/arm64/boot/dts/marvell/armada-8040-clearfog-gt-8k.dts | 4 ++--
+>  2 files changed, 3 insertions(+), 3 deletions(-)
 
-Thanks!
+Andrew, Gregory, Sebastian,
 
->
-> > ---
-> >  drivers/phy/rockchip/phy-rockchip-inno-usb2.c | 6 ++++++
-> >  1 file changed, 6 insertions(+)
-> >
-> > diff --git a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
-> > index 6711659f727c..6e44069617df 100644
-> > --- a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
-> > +++ b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
-> > @@ -1162,6 +1162,12 @@ static int rockchip_usb2phy_otg_port_init(struct rockchip_usb2phy *rphy,
-> >                                       EXTCON_USB_HOST, &rport->event_nb);
-> >               if (ret)
-> >                       dev_err(rphy->dev, "register USB HOST notifier failed\n");
-> > +
-> > +             if (!of_property_read_bool(rphy->dev->of_node, "extcon")) {
->
-> Currently the IRQ handler does not care who created the extcon. We should at
-> least be consistent between here and there.
+Any comments on Marvel parts? Shall I grab them with rest of cleanups?
 
-We care in this instance because if there is an external extcon it is
-responsible for setting the initial state. Our ID pin may or may not
-be used in this case and if it isn't we would overwrite the initial
-state with an invalid one.
-
->
-> Regards,
-> Samuel
->
-> > +                     /* do initial sync of usb state */
-> > +                     ret = property_enabled(rphy->grf, &rport->port_cfg->utmi_id);
-> > +                     extcon_set_state_sync(rphy->edev, EXTCON_USB_HOST, !ret);
-> > +             }
-> >       }
-> >
-> >  out:
-> >
->
+Best regards,
+Krzysztof
