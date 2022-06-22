@@ -2,154 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC01FC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 17:36:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07169CCA483
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 17:36:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231352AbiFVRgY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 13:36:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42274 "EHLO
+        id S234861AbiFVRgd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 13:36:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230171AbiFVRgW (ORCPT
+        with ESMTP id S231609AbiFVRga (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 13:36:22 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EB1E31DFD
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 10:36:21 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id 184so16697170pga.12
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 10:36:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=EGSWfwuV6kDT1fwM+T4JAkD27EMrpSWAszwgosFVQVw=;
-        b=grWObt6Okfs3RafY2b0NVKjFrBhkE6C1/0vcWncE04tJrdoQojz3GOVtF8Mi2x1HRW
-         QkTbr6Qt7h5qJ8e/vypQSZl7HMB3jQbVCaxyGsro8g9N18Ao7HQs3SZy4ndhrH5S8Xx1
-         mP0WgDsVLIt/JclEEcE6snj1DLR5W92U6w6Qg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=EGSWfwuV6kDT1fwM+T4JAkD27EMrpSWAszwgosFVQVw=;
-        b=NqmNxa0fHouDwkvAmkw21hmQqlNn7Tlkhgrtb9X79JiE/UpK6hN8fd2rMWJhrOW54i
-         nLjJslvCOh81dEpveAeV5cUZ4eeVri0xb2n+O+gPZomEqyMftdNGA6AfslD9ZnlzscVw
-         /oU+PhX4ftfsqN+HQCaOK/0Vv9L2Wg5JeKboUIR1no0yNLwDRSnFgkdg5SgzJdya9Gls
-         5jL3lOIJkOIikMqkbmCp0fFZG38v33seacVUMh2EFjKzIsNbA9xahEY4IdC/PpSinCNs
-         fylFvUD/yNAHUoUBZyb8WI+cc3Wx5QA3ifzhIlSut++l1OaueDfsnbZxcqK/6CMqAtkm
-         l0qw==
-X-Gm-Message-State: AJIora8xD+3Odr4EdS3GroSSZQ3ZMYNuSk0sOKGEgC07oE4GeCnJW8Gs
-        +qLx5x47PBQQQT8I5ck10UQgsIu9lGMjwA==
-X-Google-Smtp-Source: AGRyM1sB1+bTIxsIF22HqeLedT3vzGfH5CbBlkgMvEj61XWLvZw7HZSjL+m1aKkDdcE5g72JbC97/A==
-X-Received: by 2002:a63:4a4e:0:b0:401:baa6:d695 with SMTP id j14-20020a634a4e000000b00401baa6d695mr3975223pgl.259.1655919380268;
-        Wed, 22 Jun 2022 10:36:20 -0700 (PDT)
-Received: from pmalani.c.googlers.com.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id l17-20020a17090b079100b001ece55aec38sm35470pjz.30.2022.06.22.10.36.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jun 2022 10:36:19 -0700 (PDT)
-From:   Prashant Malani <pmalani@chromium.org>
-To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
-Cc:     bleung@chromium.org, swboyd@chromium.org,
-        heikki.krogerus@linux.intel.com,
-        Prashant Malani <pmalani@chromium.org>,
-        Allen Chen <allen.chen@ite.com.tw>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
-        DEVICE TREE BINDINGS),
-        dri-devel@lists.freedesktop.org (open list:DRM DRIVERS),
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
-        <nfraprado@collabora.com>, Pin-Yen Lin <treapking@chromium.org>,
-        Robert Foss <robert.foss@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Xin Ji <xji@analogixsemi.com>
-Subject: [PATCH v5 0/9] usb: typec: Introduce typec-switch binding
-Date:   Wed, 22 Jun 2022 17:34:29 +0000
-Message-Id: <20220622173605.1168416-1-pmalani@chromium.org>
-X-Mailer: git-send-email 2.37.0.rc0.104.g0611611a94-goog
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Wed, 22 Jun 2022 13:36:30 -0400
+Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 628EC32EE7;
+        Wed, 22 Jun 2022 10:36:29 -0700 (PDT)
+X-IronPort-AV: E=Sophos;i="5.92,212,1650898800"; 
+   d="scan'208";a="123778458"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie5.idc.renesas.com with ESMTP; 23 Jun 2022 02:36:25 +0900
+Received: from localhost.localdomain (unknown [10.226.36.204])
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 1C33C4003892;
+        Thu, 23 Jun 2022 02:36:21 +0900 (JST)
+From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Pavel Machek <pavel@denx.de>, linux-mmc@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH v2 0/2] mmc: renesas_sdhi: Trivial fixes
+Date:   Wed, 22 Jun 2022 18:36:12 +0100
+Message-Id: <20220622173614.12778-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series introduces a binding for Type-C data lane switches. These
-control the routing and operating modes of USB Type-C data lanes based
-on the PD messaging from the Type-C port driver regarding connected
-peripherals.
+Hi All,
 
-The first 2 patches introduce the new "typec-switch" binding as
-well as one user of it (the ANX7625 drm bridge).
+This patch series adds trivial fixes to renesas mmc driver.
 
-Patches 3-5 add functionality to the anx7625 driver to
-register the mode-switches, as well as program its crosspoint
-switch depending on which Type-C port has a DisplayPort (DP) peripheral
-connected to it.
+v1->v2
+* Fixed review comments pointed by Geert and Wolfram.
 
-Patch 6-9 add similar bindings update and Type-C switch support to the
-it6505 driver.
+v1: https://patchwork.kernel.org/project/linux-renesas-soc/cover/
+20220404172322.32578-1-prabhakar.mahadev-lad.rj@bp.renesas.com/
 
-v4:
-https://lore.kernel.org/linux-usb/20220615172129.1314056-8-pmalani@chromium.org/
+Cheers,
+Prabhakar
 
-Changes in v5:
-- Rebased on usb-next, so removed Patch v4 1/7 and Patch v4 2/7 from
-  this version (v5) since they are already in usb-next.
-- Added newer Reviewed-by tags.
-- Added new patches (6-9) in this version for a 2nd example (it6505)
-  of a binding of the user.
+Lad Prabhakar (2):
+  mmc: renesas_sdhi: Get the reset handle early in the probe
+  mmc: renesas_sdhi: Fix typo's
 
-Patch submission suggestions:
-Option 1:
-- Bindings patches 1/9 and 2/9 can go through the USB repo (since they are
-  already reviewed from v4 [1]).
-- Bindings patch 6/9 can go through the USB repo, and the remaining patches
-  (3-5,7-9) can go through the DRM repo.
-  <or>
-- Patches 3-9 can all go through the DRM repo.
-
-Option 2:
-- All patches (1-9) go through the USB repo.
-
-(My apologies if I've made this confusing, and I appreciate any
-suggestions for better submission strategy).
-
-[1]: https://lore.kernel.org/linux-usb/YrMxFeMc0tk%2FK1qL@kroah.com/
-
-Pin-Yen Lin (5):
-  drm/bridge: anx7625: Add typec_mux_set callback function
-  dt/bindings: drm/bridge: it6505: Add mode-switch support
-  drm/bridge: it6505: Register number of Type C switches
-  drm/bridge: it6505: Register Type-C mode switches
-  drm/bridge: it6505: Add typec_mux_set callback function
-
-Prashant Malani (4):
-  dt-bindings: usb: Add Type-C switch binding
-  dt-bindings: drm/bridge: anx7625: Add mode-switch support
-  drm/bridge: anx7625: Register number of Type C switches
-  drm/bridge: anx7625: Register Type-C mode switches
-
- .../display/bridge/analogix,anx7625.yaml      |  64 +++++++
- .../bindings/display/bridge/ite,it6505.yaml   |  97 +++++++++-
- .../devicetree/bindings/usb/typec-switch.yaml |  74 ++++++++
- drivers/gpu/drm/bridge/analogix/anx7625.c     | 148 +++++++++++++++
- drivers/gpu/drm/bridge/analogix/anx7625.h     |  20 ++
- drivers/gpu/drm/bridge/ite-it6505.c           | 171 +++++++++++++++++-
- 6 files changed, 569 insertions(+), 5 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/usb/typec-switch.yaml
+ drivers/mmc/host/renesas_sdhi_core.c          | 8 ++++----
+ drivers/mmc/host/renesas_sdhi_internal_dmac.c | 4 ++--
+ 2 files changed, 6 insertions(+), 6 deletions(-)
 
 -- 
-2.37.0.rc0.104.g0611611a94-goog
+2.17.1
 
