@@ -2,122 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D56A9CCA47D
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 09:59:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C6A8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 10:00:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232719AbiFVJ72 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 05:59:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51732 "EHLO
+        id S233398AbiFVKAP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 06:00:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237443AbiFVJ7Y (ORCPT
+        with ESMTP id S231704AbiFVKAL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 05:59:24 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D5F13A1AF;
-        Wed, 22 Jun 2022 02:59:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=UBYcbr5Blkb1m1XbSmhN6zU/XE1KbkQTUN0OktUTIP8=; b=H+
-        64lTmas6Byuhd/uije30ow2tTek3n1bIjT2R/eSXCX4uXU7gP+GlF4mu89gZr6rhnK/4rd18a6qgh
-        9C7r7PcdWKuFnHOZ0M+WwZAXGQq7x8O3dTh3NatD96pdKgtK/LSO8YXnXtlMWF7sijtW9Hw1aENzX
-        dwNNF+cFxmIeVz4=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1o3wal-007ppS-Mh; Wed, 22 Jun 2022 11:24:07 +0200
-Date:   Wed, 22 Jun 2022 11:24:07 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marcin Wojtas <mw@semihalf.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, vivien.didelot@gmail.com,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Grzegorz Bernacki <gjb@semihalf.com>,
-        Grzegorz Jaszczyk <jaz@semihalf.com>,
-        Tomasz Nowicki <tn@semihalf.com>,
-        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
-        upstream@semihalf.com
-Subject: Re: [net-next: PATCH 09/12] Documentation: ACPI: DSD: introduce DSA
- description
-Message-ID: <YrLft+BrP2jI5lwp@lunn.ch>
-References: <20220620150225.1307946-1-mw@semihalf.com>
- <20220620150225.1307946-10-mw@semihalf.com>
- <YrDO05TMK8SVgnBP@lunn.ch>
- <YrGm2jmR7ijHyQjJ@smile.fi.intel.com>
- <YrGpDgtm4rPkMwnl@lunn.ch>
- <YrGukfw4uiQz0NpW@smile.fi.intel.com>
- <CAPv3WKf_2QYh0F2LEr1DeErvnMeQqT0M5t40ROP2G6HSUwKpQQ@mail.gmail.com>
+        Wed, 22 Jun 2022 06:00:11 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 53CA73A18D
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 03:00:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655892009;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=IkMvOPfdMWwswbFZMxK+E4fP6g4yd53+UQxz7jPKZx4=;
+        b=VfIzsMGs0AcTA/yWZxza3FpsgzubV/J0C6B/CMhRxkBuIpq+2DapCtGYTK1+zjlepKeapi
+        UYU0iK3iMy678Zhp8QZIJLo2nEBlfRV17/tOKiXCxQaQqmA0n/aMLqcI5gGVX19oqHYoaN
+        oCtkbizKyYesndADI5XcgahfTmbVvDg=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-496-fzhECZ5IOKWwwFrfOV2HOw-1; Wed, 22 Jun 2022 06:00:07 -0400
+X-MC-Unique: fzhECZ5IOKWwwFrfOV2HOw-1
+Received: by mail-wm1-f72.google.com with SMTP id k5-20020a05600c0b4500b003941ca130f9so5348721wmr.0
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 03:00:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=IkMvOPfdMWwswbFZMxK+E4fP6g4yd53+UQxz7jPKZx4=;
+        b=S7XUCedpkFvgNHrAzSlvkASGTt+j2Oh+wthW0k2diq3jMg28JDnNhUz8nGkFRTQ/PS
+         wP6BRhc/nocvWdnGg2LagEhXc2ATjKH+KIcKzpkbeqFBxfpnKpbICrajjhUD+DIKuVc8
+         8C90xx89F+/39gKL5fvBu4c178V/a5RazL++9VpOs/PfAtd2h7IJ5gTX2hGHNBwPYBwO
+         +JwKQ2ZI/jZ10PnxlaW5odOdG1lF+e9O8cpcgIyHQkFUL0MkE2Ni1/iCH6KQe6usux2j
+         30JuRGvSC/YvgRCElvCwqxoz2q0b15b72cGuBjacYurd+ZqU5SjEyWRw7TbQgRQBLTmQ
+         wHDA==
+X-Gm-Message-State: AJIora9eSf8FWMw5yKxbV37/mQui/11ci5UUkmsiRisAR44jRkpISNVf
+        22jyBQNT5gj01dLHf/TJnJOGEhrPBHiu44btYY2XXjWm79sSprx6AAi8L6mZNC9lNAdFmlW//Xy
+        vceorl618PsLdkhMvfCjdQFz3
+X-Received: by 2002:a05:600c:3d0e:b0:39e:fb96:7f21 with SMTP id bh14-20020a05600c3d0e00b0039efb967f21mr2993523wmb.133.1655892006757;
+        Wed, 22 Jun 2022 03:00:06 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1t8BYwFIA5ilB+fEglZ025uq/shC1UBoMOOlUTgU4/sXPxstdRr6VAUvRBbIySuyxGQP+Zs8Q==
+X-Received: by 2002:a05:600c:3d0e:b0:39e:fb96:7f21 with SMTP id bh14-20020a05600c3d0e00b0039efb967f21mr2993495wmb.133.1655892006453;
+        Wed, 22 Jun 2022 03:00:06 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c703:5100:9c77:ce13:2aeb:8748? (p200300cbc70351009c77ce132aeb8748.dip0.t-ipconnect.de. [2003:cb:c703:5100:9c77:ce13:2aeb:8748])
+        by smtp.gmail.com with ESMTPSA id bj19-20020a0560001e1300b0021b9f126fd3sm1649366wrb.14.2022.06.22.03.00.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Jun 2022 03:00:06 -0700 (PDT)
+Message-ID: <0754cefe-e8e1-6eec-cad0-35c081c880d7@redhat.com>
+Date:   Wed, 22 Jun 2022 12:00:05 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAPv3WKf_2QYh0F2LEr1DeErvnMeQqT0M5t40ROP2G6HSUwKpQQ@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v3 0/4] memblock tests: add VERBOSE and MEMBLOCK_DEBUG
+ Makefile options
+Content-Language: en-US
+To:     Rebecca Mckeever <remckee0@gmail.com>,
+        Mike Rapoport <rppt@kernel.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+References: <cover.1655889641.git.remckee0@gmail.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <cover.1655889641.git.remckee0@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 11:08:13AM +0200, Marcin Wojtas wrote:
-> wt., 21 cze 2022 o 13:42 Andy Shevchenko
-> <andriy.shevchenko@linux.intel.com> napisał(a):
-> >
-> > On Tue, Jun 21, 2022 at 01:18:38PM +0200, Andrew Lunn wrote:
-> > > On Tue, Jun 21, 2022 at 02:09:14PM +0300, Andy Shevchenko wrote:
-> > > > On Mon, Jun 20, 2022 at 09:47:31PM +0200, Andrew Lunn wrote:
-> >
-> > ...
-> >
-> > > > > > +        Name (_CRS, ResourceTemplate ()
-> > > > > > +        {
-> > > > > > +            Memory32Fixed (ReadWrite,
-> > > > > > +                0xf212a200,
-> > > > > > +                0x00000010,
-> > > > >
-> > > > > What do these magic numbers mean?
-> > > >
-> > > > Address + Length, it's all described in the ACPI specification.
-> > >
-> > > The address+plus length of what? This device is on an MDIO bus. As
-> > > such, there is no memory! It probably makes sense to somebody who
-> > > knows ACPI, but to me i have no idea what it means.
-> >
-> > I see what you mean. Honestly I dunno what the device this description is for.
-> > For the DSA that's behind MDIO bus? Then it's definitely makes no sense and
-> > MDIOSerialBus() resources type is what would be good to have in ACPI
-> > specification.
-> >
+On 22.06.22 11:29, Rebecca Mckeever wrote:
+> These patches add options VERBOSE and MEMBLOCK_DEBUG to Memblock
+> simulator, which can be specified when running make. These patches also
+> implement the functionality for these options.
 > 
-> It's not device on MDIO bus, but the MDIO controller's register itself
+> VERBOSE
+> Usage:
+> 
+> $ make VERBOSE=1
+> 
+> Passing VERBOSE=1 will enable verbose output from Memblock simulator. For
+> each test, the verbose output includes the name of the memblock function
+> being tested, the name of the test, and whether the test passed or failed.
+> Since all the tests in Memblock simulator run as one monolithic test, this
+> output is a quick way to get a summary of test results.
+> 
+> MEMBLOCK_DEBUG
+> Usage:
+> 
+> $ make MEMBLOCK_DEBUG=1
+> 
+> Passing MEMBLOCK_DEBUG=1 will enable memblock_dbg() messages. These
+> are debug messages built into several functions in memblock that include
+> information such as the name of the function and the size and start and
+> end addresses of the memblock region.
+> 
+> Rebecca Mckeever (4):
+>   memblock tests: add user-provided arguments to Makefile
+>   memblock tests: add verbose output to memblock tests
+>   memblock tests: set memblock_debug to enable memblock_dbg() messages
+>   memblock tests: remove completed TODO items
+> 
+>  tools/testing/memblock/Makefile               |   4 +
+>  tools/testing/memblock/README                 |  10 +-
+>  tools/testing/memblock/TODO                   |  14 +-
+>  tools/testing/memblock/internal.h             |   7 +
+>  .../testing/memblock/scripts/Makefile.include |  10 +
+>  tools/testing/memblock/tests/alloc_api.c      | 241 ++++++++----
+>  .../memblock/tests/alloc_helpers_api.c        | 135 +++++--
+>  tools/testing/memblock/tests/alloc_nid_api.c  | 371 ++++++++++++------
+>  tools/testing/memblock/tests/basic_api.c      | 365 ++++++++++++-----
+>  tools/testing/memblock/tests/common.c         |  58 +++
+>  tools/testing/memblock/tests/common.h         |  54 +++
+>  11 files changed, 913 insertions(+), 356 deletions(-)
+> 
+> ---
+> Changes
+> 
+> v1 -> v2
+> PATCH 2, in common.c:
+>   Remove #ifdef VERBOSE around prefixes and related constants
+>   Add __maybe_unused to prefixes
+>   Move PREFIXES_LEN_MAX, DELIM, and DELIM_LEN so that they are
+>     immediately after the other constants
+>   Add #ifdef VERBOSE around definitions for test_*() and prefix_*()
+> 
+> v2 -> v3
+> PATCH 1:
+>   Add Reviewed-by tag
+> ---
+> 
 
-Ah. So this is equivalent to
+Hi Rebecca,
 
-                CP11X_LABEL(mdio): mdio@12a200 {
-                        #address-cells = <1>;
-                        #size-cells = <0>;
-                        compatible = "marvell,orion-mdio";
-                        reg = <0x12a200 0x10>;
-                        clocks = <&CP11X_LABEL(clk) 1 9>, <&CP11X_LABEL(clk) 1 5>,
-                                 <&CP11X_LABEL(clk) 1 6>, <&CP11X_LABEL(clk) 1 18>;
-                        status = "disabled";
-                };
+no need to resend a new version that frequently; wait for more feedback
+first.
 
-DT seems a lot more readable, "marvell,orion-mdio" is a good hint that
-device this is. But maybe it is more readable because that is what i'm
-used to.
+Usually, people expect a new version when there hasn't been more review
+feedback for a few days.
 
-Please could you add a lot more comments. Given that nobody currently
-actually does networking via ACPI, we have to assume everybody trying
-to use it is a newbie, and more comments are better than less.
+Also, there is usually no need to send a new version when you get a
+rb/ack tag: the maintainer might just pick them up when applying the
+patches.
 
-Thanks
-	Andrew
+-- 
+Thanks,
+
+David / dhildenb
+
