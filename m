@@ -2,126 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21E25CCA47D
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 08:32:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C520BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 08:33:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354037AbiFVIcr (ORCPT
+        id S1350953AbiFVIdw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 04:32:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57956 "EHLO
+        Wed, 22 Jun 2022 04:33:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353596AbiFVIcp (ORCPT
+        with ESMTP id S1354053AbiFVIde (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 04:32:45 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 051D3267C
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 01:32:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655886763;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=kbGRJbqhqaDpYURUd1iIYFpog7R3QIPoGbLyON7y9kw=;
-        b=NxbF1xGA74jrkn6kNR3sV3M8u+EmpVZUrKaIxrXs8tDpmNdGwq+legna7k6HhnNyrATm9Z
-        H/mVEujZxp9k49ZW9SdKU12+BLMD76CjS5b/V/SlhMJSYjGF3Zo+iZYRTr3+4MTWnXxQzr
-        Qw3gKRoc2yviJgDE47aRNgcLObYEXts=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-607-iNEYmxvyPGeSc7eIoTibxA-1; Wed, 22 Jun 2022 04:32:29 -0400
-X-MC-Unique: iNEYmxvyPGeSc7eIoTibxA-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 54B5F1C04B49;
-        Wed, 22 Jun 2022 08:32:28 +0000 (UTC)
-Received: from localhost (unknown [10.39.192.153])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id DC7EA40C5BF;
-        Wed, 22 Jun 2022 08:32:27 +0000 (UTC)
-From:   Cornelia Huck <cohuck@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>, pasic@linux.ibm.com,
-        hca@linux.ibm.com, gor@linux.ibm.com, borntraeger@de.ibm.com,
-        agordeev@linux.ibm.com, mst@redhat.com, jasowang@redhat.com,
-        linux-s390@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     ben@decadent.org.uk, david@redhat.com
-Subject: Re: [PATCH V3] virtio: disable notification hardening by default
-In-Reply-To: <20220622012940.21441-1-jasowang@redhat.com>
-Organization: Red Hat GmbH
-References: <20220622012940.21441-1-jasowang@redhat.com>
-User-Agent: Notmuch/0.36 (https://notmuchmail.org)
-Date:   Wed, 22 Jun 2022 10:32:26 +0200
-Message-ID: <87h74d85et.fsf@redhat.com>
+        Wed, 22 Jun 2022 04:33:34 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E24436173
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 01:33:32 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id fd6so20065692edb.5
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 01:33:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=qRakZp5pSMYhL6XIJv26moqr0Al+sHh6pOGmxdJQIII=;
+        b=o2n9rxPaSrA4T+KJc8P6WKj85N0u6YbvtL8c9ZO8j6Ofr8tYdESYqjOnlqn3YTEb6t
+         ewwm0FT5KkFSAQdTRQvufxPG6NkZt/grwOruVj7u5Qhar+id93/l1h0mfpXnbBlNb4kd
+         GSFh/0pJ6IAT+kOpKBbzPz++6BxyDWh47cwoWZP0yfOhLIlYJ9rLZhY/YmWs0V9W9/a/
+         H6k8jU8EcEPbSIpFtQ/BsIPeZffKahhPOsF9UBM5VxocyUAYbGKXZC2I+JQIS98fHT3G
+         mA+EXb/LZXZgwggcUkQedgW4x22mrVPVy1oMt5rZUlKqOEGjFNReokhpu6WzJrvxnWmO
+         PPsw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=qRakZp5pSMYhL6XIJv26moqr0Al+sHh6pOGmxdJQIII=;
+        b=C0xDTUup2ljWnAYv+vSvv8KAep92hSWEJx6R69NJWbWdXmHEzgx2OmpbS+kzeAqqNB
+         DNZ1Ndf0EtFluRAnpnzztnpmkbSFOHPQyZf4cI1C+T9pGeE68HJDFNRJQ2iUuCuwojsq
+         KWrqOv/pvaxaBOjEY+ZjKddW0UV2xETd+1zOKMgc3VnZPDakWqFo1Ffh4Jq0v2o/slZU
+         P3H23sCjRCf4pVhjvLXVba2CYFzoCT1QI7FIlrqOKrhbwBfnF+UCZYS9veRSZ1yZAG/6
+         lms05qRX0XGU3zsQNEHE/TowgCQ7UQ/WpcBSiXQ00/7F1ZpX04pGP2cxIl4Uc5qGaC6i
+         42Pg==
+X-Gm-Message-State: AJIora/kYt2RoWwhccHiNBVIwF678xzZYFNiWpA9o7Vl0iqvuetaEema
+        kIJW426hbaqOvULv6dJaedorXA==
+X-Google-Smtp-Source: AGRyM1vZAfoRBSAbcGlOtrkZW9xrmbi2gm+avyL7ia7RJgDzQXicYVnr6RnRLuw7MjtdyfMoV1dGFw==
+X-Received: by 2002:a05:6402:278e:b0:431:73ab:49b9 with SMTP id b14-20020a056402278e00b0043173ab49b9mr2696567ede.415.1655886810677;
+        Wed, 22 Jun 2022 01:33:30 -0700 (PDT)
+Received: from [192.168.0.223] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id l2-20020a1709060cc200b006feed200464sm8902090ejh.131.2022.06.22.01.33.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Jun 2022 01:33:30 -0700 (PDT)
+Message-ID: <6aa08062-4587-edc7-1638-fed797874eaf@linaro.org>
+Date:   Wed, 22 Jun 2022 10:33:29 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v3 21/40] arm64: dts: qcom: align gpio-key node names with
+ dtschema
+Content-Language: en-US
+To:     arm@kernel.org, soc@kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Olof Johansson <olof@lixom.net>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220616005224.18391-1-krzysztof.kozlowski@linaro.org>
+ <20220616005333.18491-21-krzysztof.kozlowski@linaro.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220616005333.18491-21-krzysztof.kozlowski@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22 2022, Jason Wang <jasowang@redhat.com> wrote:
-
-> We try to harden virtio device notifications in 8b4ec69d7e09 ("virtio:
-> harden vring IRQ"). It works with the assumption that the driver or
-> core can properly call virtio_device_ready() at the right
-> place. Unfortunately, this seems to be not true and uncover various
-> bugs of the existing drivers, mainly the issue of using
-> virtio_device_ready() incorrectly.
->
-> So let's having a Kconfig option and disable it by default. It gives
-
-s/having/have/
-
-> us a breath to fix the drivers and then we can consider to enable it
-> by default.
->
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
+On 16/06/2022 02:53, Krzysztof Kozlowski wrote:
+> The node names should be generic and DT schema expects certain pattern
+> (e.g. with key/button/switch).
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 > ---
-> Changes since V2:
-> - Tweak the Kconfig help
-> - Add comment for the read_lock() pairing in virtio_ccw
-> ---
->  drivers/s390/virtio/virtio_ccw.c |  9 ++++++++-
->  drivers/virtio/Kconfig           | 13 +++++++++++++
->  drivers/virtio/virtio.c          |  2 ++
->  drivers/virtio/virtio_ring.c     | 12 ++++++++++++
->  include/linux/virtio_config.h    |  2 ++
->  5 files changed, 37 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/s390/virtio/virtio_ccw.c b/drivers/s390/virtio/virtio_ccw.c
-> index 97e51c34e6cf..1f6a358f65f0 100644
-> --- a/drivers/s390/virtio/virtio_ccw.c
-> +++ b/drivers/s390/virtio/virtio_ccw.c
-> @@ -1136,8 +1136,13 @@ static void virtio_ccw_int_handler(struct ccw_device *cdev,
->  			vcdev->err = -EIO;
->  	}
->  	virtio_ccw_check_activity(vcdev, activity);
-> -	/* Interrupts are disabled here */
-> +#ifdef CONFIG_VIRTIO_HARDEN_NOTIFICATION
-> +	/*
-> +	 * Paried with virtio_ccw_synchronize_cbs() and interrupts are
+>  arch/arm64/boot/dts/qcom/apq8096-db820c.dts   |  2 +-
+>  .../boot/dts/qcom/msm8916-alcatel-idol347.dts |  2 +-
+>  .../arm64/boot/dts/qcom/msm8916-asus-z00l.dts |  4 ++--
+>  .../arm64/boot/dts/qcom/msm8916-huawei-g7.dts |  2 +-
+>  .../boot/dts/qcom/msm8916-longcheer-l8150.dts |  2 +-
+>  .../boot/dts/qcom/msm8916-longcheer-l8910.dts |  2 +-
+>  .../qcom/msm8916-samsung-a2015-common.dtsi    |  6 +++---
+>  .../boot/dts/qcom/msm8916-samsung-j5.dts      |  4 ++--
+>  .../dts/qcom/msm8916-samsung-serranove.dts    |  6 +++---
+>  .../dts/qcom/msm8916-wingtech-wt88047.dts     |  2 +-
+>  .../boot/dts/qcom/msm8992-xiaomi-libra.dts    |  2 +-
+>  .../dts/qcom/msm8994-msft-lumia-octagon.dtsi  | 10 +++++-----
+>  .../qcom/msm8994-sony-xperia-kitakami.dtsi    |  2 +-
+>  .../boot/dts/qcom/msm8996-xiaomi-common.dtsi  |  6 +++---
+>  .../boot/dts/qcom/msm8998-fxtec-pro1.dts      | 20 +++++++++----------
+>  .../boot/dts/qcom/msm8998-oneplus-common.dtsi |  6 +++---
+>  .../dts/qcom/msm8998-sony-xperia-yoshino.dtsi |  8 ++++----
+>  arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi  |  2 +-
+>  arch/arm64/boot/dts/qcom/sc7280-idp.dtsi      |  2 +-
+>  .../dts/qcom/sdm630-sony-xperia-nile.dtsi     |  8 ++++----
+>  .../boot/dts/qcom/sdm632-fairphone-fp3.dts    |  2 +-
+>  .../boot/dts/qcom/sdm660-xiaomi-lavender.dts  |  2 +-
+>  arch/arm64/boot/dts/qcom/sdm845-cheza.dtsi    |  2 +-
+>  arch/arm64/boot/dts/qcom/sdm845-db845c.dts    |  4 ++--
+>  .../boot/dts/qcom/sdm845-oneplus-common.dtsi  |  4 ++--
+>  .../boot/dts/qcom/sdm845-shift-axolotl.dts    |  2 +-
+>  .../dts/qcom/sdm845-sony-xperia-tama.dtsi     |  2 +-
+>  .../boot/dts/qcom/sdm845-xiaomi-beryllium.dts |  2 +-
+>  .../boot/dts/qcom/sdm850-lenovo-yoga-c630.dts |  4 ++--
+>  .../qcom/sm6125-sony-xperia-seine-pdx201.dts  |  2 +-
+>  .../boot/dts/qcom/sm7225-fairphone-fp4.dts    |  2 +-
+>  arch/arm64/boot/dts/qcom/sm8150-hdk.dts       |  4 ++--
+>  .../dts/qcom/sm8150-microsoft-surface-duo.dts |  4 ++--
+>  arch/arm64/boot/dts/qcom/sm8250-hdk.dts       |  4 ++--
+>  .../boot/dts/qcom/sm8250-sony-xperia-edo.dtsi |  2 +-
+>  .../dts/qcom/sm8350-sony-xperia-sagami.dtsi   |  2 +-
+>  36 files changed, 71 insertions(+), 71 deletions(-)
+> 
 
-s/Paried/Paired/
+Bjorn,
 
-> +	 * disabled here.
-> +	 */
->  	read_lock(&vcdev->irq_lock);
-> +#endif
->  	for_each_set_bit(i, indicators(vcdev),
->  			 sizeof(*indicators(vcdev)) * BITS_PER_BYTE) {
->  		/* The bit clear must happen before the vring kick. */
-> @@ -1146,7 +1151,9 @@ static void virtio_ccw_int_handler(struct ccw_device *cdev,
->  		vq = virtio_ccw_vq_by_ind(vcdev, i);
->  		vring_interrupt(0, vq);
->  	}
-> +#ifdef CONFIG_VIRTIO_HARDEN_NOTIFICATION
->  	read_unlock(&vcdev->irq_lock);
-> +#endif
->  	if (test_bit(0, indicators2(vcdev))) {
->  		virtio_config_changed(&vcdev->vdev);
->  		clear_bit(0, indicators2(vcdev));
+Any comments on Qualcomm parts? Shall I grab them with rest of cleanups?
 
-
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-
+Best regards,
+Krzysztof
