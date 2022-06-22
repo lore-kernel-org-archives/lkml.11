@@ -2,85 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 598A9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 13:31:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42173C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 13:32:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232186AbiFVNb4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 09:31:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53462 "EHLO
+        id S236767AbiFVNcB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 09:32:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229804AbiFVNbx (ORCPT
+        with ESMTP id S229804AbiFVNb4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 09:31:53 -0400
-Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83D51616F
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 06:31:52 -0700 (PDT)
-Received: from fsav314.sakura.ne.jp (fsav314.sakura.ne.jp [153.120.85.145])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 25MDVTV7072219;
-        Wed, 22 Jun 2022 22:31:29 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav314.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav314.sakura.ne.jp);
- Wed, 22 Jun 2022 22:31:29 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav314.sakura.ne.jp)
-Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 25MDVTRu072216
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-        Wed, 22 Jun 2022 22:31:29 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Message-ID: <1a22993a-00c2-fdec-58e3-8c39159de67a@I-love.SAKURA.ne.jp>
-Date:   Wed, 22 Jun 2022 22:31:28 +0900
+        Wed, 22 Jun 2022 09:31:56 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAFD2616F;
+        Wed, 22 Jun 2022 06:31:55 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 5A94566017B3;
+        Wed, 22 Jun 2022 14:31:53 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1655904714;
+        bh=GXPW8eVZucPlabvBsj1O4A8AjaBWiHsVboTbgSoHxTA=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=JLPoC68GILDBMexQ17xPftwnfPgsXyisoN95ynJ5FFvZ+KnXtDVl1tkBCMu3nCIBo
+         P6SL0TVSKYV4VXFrD0QpYfYby2tCFSYtk/UiqurbS6d7G0WyJs25/jfhx+8MJ4EkN8
+         qKOLW/e6wDmsD1bfuViqWlt74K6dddUmyNxHdn+k5ORYLSZ4ZgJreaFdXtN/sU3oOA
+         ZAqyNQk08cdyUHIlbc6XOJwe8KbGEjjo8mZey708+TwvoFmLh64g2N0qDY4iZJ3dwV
+         TMC3FHkgOpsxy1NXG94K46X00EEHmc8P6HqnE3pzwBBbINCy80z5931SXOm8I4Vyfa
+         Eo71nviG5ZSXQ==
+Message-ID: <26854a9b-09c2-c14e-eabe-cfc574d6012e@collabora.com>
+Date:   Wed, 22 Jun 2022 15:31:51 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:91.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.10.0
-Subject: Re: [PATCH] ARM: spectre-v2: fix smp_processor_id() warning
+Subject: Re: [PATCH] soc: mediatek: mutex: add suffix 0 to
+ DDP_COMPONENT_DITHER for mt8395
 Content-Language: en-US
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Tony Lindgren <tony@atomide.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-References: <795c9463-452e-bf64-1cc0-c318ccecb1da@I-love.SAKURA.ne.jp>
- <YrL7LIfOqtEJMoTX@shell.armlinux.org.uk>
-From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-In-Reply-To: <YrL7LIfOqtEJMoTX@shell.armlinux.org.uk>
-Content-Type: text/plain; charset=UTF-8
+To:     "Jason-JH.Lin" <jason-jh.lin@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Fabien Parent <fparent@baylibre.com>
+Cc:     CK Hu <ck.hu@mediatek.com>, Rex-BC Chen <rex-bc.chen@mediatek.com>,
+        Nancy Lin <nancy.lin@mediatek.com>,
+        Singo Chang <singo.chang@mediatek.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220622131952.29583-1-jason-jh.lin@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220622131952.29583-1-jason-jh.lin@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/06/22 20:21, Russell King (Oracle) wrote:
->>  static inline void harden_branch_predictor(void)
->>  {
->> -	harden_branch_predictor_fn_t fn = per_cpu(harden_branch_predictor_fn,
->> -						  smp_processor_id());
->> +	harden_branch_predictor_fn_t fn;
->> +
->> +	preempt_disable_notrace();
->> +	fn = per_cpu(harden_branch_predictor_fn, raw_smp_processor_id());
->> +	preempt_enable_no_resched_notrace();
->>  	if (fn)
->>  		fn();
+Il 22/06/22 15:19, Jason-JH.Lin ha scritto:
+> Add suffix 0 to DDP_COMPONENT_DITHER for mt8395.
 > 
-> The idea is to get the function for the specific CPU, and then to run it
-> _on_ that CPU, and in theory the CPU that took the fault. However, I
-> seem to remember there are issues trying to achieve that, and I don't
-> have a solution for it.
+> Fixes: 141311b856d8 ("soc: mediatek: mutex: add MT8365 support")
+> Signed-off-by: Jason-JH.Lin <jason-jh.lin@mediatek.com>
 
-Hmm, since some ARM processors support Asymmetric Multiprocessing, whether
-invalidation is needed depends on which processor was assigned, and that's
-the reason smp_processor_id() is used?
 
-I'm not familiar with hardware, but if a CPU assigned to current thread
-changes, wouldn't sufficient invalidation take place? In other words, do
-we need to worry about fn() call if the CPU that took the fault and the CPU
-which runs the code after harden_branch_predictor() returned differs?
+Hello Jason-JH,
 
-If some instructions for CPU-A is not supported by CPU-B, I guess that
-reading instructions for CPU-A at per_cpu(harden_branch_predictor_fn) and
-executing instructions on CPU-B at fn() causes problems. Is it guaranteed
-that all instructions used by fn() are supported by all processors?
-If it is not guaranteed, we would need to make sure that fn() runs on a CPU
-which per_cpu(harden_branch_predictor_fn) was done for?
+you must've missed my commit, sent two days ago, which is doing the same:
+
+https://lore.kernel.org/lkml/20220620102454.131417-1-angelogioacchino.delregno@collabora.com/T/#u
+
+Anyway, I have avoided to rename the definition, as from what I understand
+MT8365 has only one dither mod and that's called "DITHER", not "DITHER0"...
+...but I've added the suffix to the array assignment, as that's what we have
+in the enumeration.
+
+I think that #define MT8365_MUTEX_MOD_DISP_DITHER should be kept as-is.
+
+Also... this commit is not fixing anything, as it was already working before,
+so the Fixes tag shouldn't be present.
+
+Regards,
+Angelo
+
+> ---
+>   drivers/soc/mediatek/mtk-mutex.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/soc/mediatek/mtk-mutex.c b/drivers/soc/mediatek/mtk-mutex.c
+> index fa8e0ba38803..3b25fd6b91aa 100644
+> --- a/drivers/soc/mediatek/mtk-mutex.c
+> +++ b/drivers/soc/mediatek/mtk-mutex.c
+> @@ -130,7 +130,7 @@
+>   #define MT8365_MUTEX_MOD_DISP_CCORR		13
+>   #define MT8365_MUTEX_MOD_DISP_AAL		14
+>   #define MT8365_MUTEX_MOD_DISP_GAMMA		15
+> -#define MT8365_MUTEX_MOD_DISP_DITHER		16
+> +#define MT8365_MUTEX_MOD_DISP_DITHER0		16
+>   #define MT8365_MUTEX_MOD_DISP_DSI0		17
+>   #define MT8365_MUTEX_MOD_DISP_PWM0		20
+>   #define MT8365_MUTEX_MOD_DISP_DPI0		22
+> @@ -358,7 +358,7 @@ static const unsigned int mt8365_mutex_mod[DDP_COMPONENT_ID_MAX] = {
+>   	[DDP_COMPONENT_AAL0] = MT8365_MUTEX_MOD_DISP_AAL,
+>   	[DDP_COMPONENT_CCORR] = MT8365_MUTEX_MOD_DISP_CCORR,
+>   	[DDP_COMPONENT_COLOR0] = MT8365_MUTEX_MOD_DISP_COLOR0,
+> -	[DDP_COMPONENT_DITHER] = MT8365_MUTEX_MOD_DISP_DITHER,
+> +	[DDP_COMPONENT_DITHER0] = MT8365_MUTEX_MOD_DISP_DITHER0,
+>   	[DDP_COMPONENT_DPI0] = MT8365_MUTEX_MOD_DISP_DPI0,
+>   	[DDP_COMPONENT_DSI0] = MT8365_MUTEX_MOD_DISP_DSI0,
+>   	[DDP_COMPONENT_GAMMA] = MT8365_MUTEX_MOD_DISP_GAMMA,
+
 
