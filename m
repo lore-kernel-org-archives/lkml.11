@@ -2,260 +2,244 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE341C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 15:05:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA9C7CCA481
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 15:05:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358967AbiFVPFf (ORCPT
+        id S1358939AbiFVPFq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 11:05:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38462 "EHLO
+        Wed, 22 Jun 2022 11:05:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358467AbiFVPF2 (ORCPT
+        with ESMTP id S1358969AbiFVPFl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 11:05:28 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2D31832069
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 08:05:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655910325;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=/2IQy+E40urhXFacB8Vj36ycB9yteHAjL3Hd6nT3fLI=;
-        b=Vokv8DTIhrQmfSx6OwfyQua+cd1PXOhnU4LCW9Bvhbjud8gpV556PwzrAetBNSJ7LpKAgK
-        2REaD32yjarYF6sfX1y0DODUWTI4EpHZb4WG57a3DFRwmpk4hyFOPZu/SMbYNGH4a8fn5c
-        fmuHsA+ehEskpVDaWIt0762dfj/8I9A=
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
- [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-43-BEKo-trQPKym2Bj7SMQhyg-1; Wed, 22 Jun 2022 11:05:23 -0400
-X-MC-Unique: BEKo-trQPKym2Bj7SMQhyg-1
-Received: by mail-qk1-f197.google.com with SMTP id bi36-20020a05620a31a400b006a79f0706e5so20270529qkb.2
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 08:05:22 -0700 (PDT)
+        Wed, 22 Jun 2022 11:05:41 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96B193DDE2;
+        Wed, 22 Jun 2022 08:05:39 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id d129so16339112pgc.9;
+        Wed, 22 Jun 2022 08:05:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=LuhiIv9CIZdNs/8xxOUuGG9SP8g2B8WP+UP2kknv5E4=;
+        b=LhNn4LgL8gxb98w0koQQ1pt8q+moy/PmTLkrqKJXS5iLbgs2r8PFFpTl7WJtjnJXTy
+         PGFQHtyWwNumPZVwabdojQV4B8BcQiGluDEKogAkLqTQpswo9trBSt012Vf4v/WbfI0J
+         n8pW0vAQBG+5rav6i6aN2/XDN6XpmUpR8UsIcca6MTsXuU0YiqiPCIrR7i40+GDLfEZ2
+         blEcxJDoJAW7ZpFz1gOH3ZHJ9q51IHp23ohmshwUfOwJCSrBZ0gATqzNhqLXTt5oVrXU
+         GTnVpRcW+JWAMP+vA23N5PcbqMhTgUgEQ0lOittB4W35S0rR79PNLv4cmz7y9dw8lqdW
+         aqmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/2IQy+E40urhXFacB8Vj36ycB9yteHAjL3Hd6nT3fLI=;
-        b=dO/fdvm1vi8bTXc79SbMPlwTiKli+kUAe/915SQgq/E/0xa933CYHl+mYg+MToN41l
-         eemIQBIGqjjj4X9n5LA6YUCtp5prsdGJXfPD02+E3Fan4roTJlh92bo32YpL4yz+ojHC
-         VgAJaIfrTvJrl+qwkBS55jV4WU01PItrbdqWnWTGMl1rqWUSq4ILHrv4qWPZHITCD/0b
-         4U55pSf0ijLngNiTbUfkdQA6mClWMwuF4S9lZf2Z8j1+g67VkXk4TIFuVEeFoMJsmlNF
-         4xNrJ05ePqKHgp2hwAtVodjglQe0yUupZqHilIfSj8qIpGqtPNUJzh/84ZqQIWvkXZXn
-         m79w==
-X-Gm-Message-State: AJIora95VL8wOb4qAunVQ2U2UNtzemXslZ8iXVvK2S4pdEYQRF5XFZvf
-        9UNRitfoNeiGZLENn7hW83rcyIo4bhc/jpzojR/WyyqqWX7JzAm6S+uFRcad2r3qZY4JhsVj9sR
-        gjqyY449BBjynNW/MTyqx81B3AhnituA0kz/UcKny
-X-Received: by 2002:a37:9e8d:0:b0:6ae:e97f:0 with SMTP id h135-20020a379e8d000000b006aee97f0000mr771683qke.255.1655910321124;
-        Wed, 22 Jun 2022 08:05:21 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1sQQ1h9P/HHEVYnAo2mvHU2BBI6pfbGjZhVCLCVPT5jR/q5Yw/ghpcZqC3xUNOJBIwMqEbn/hBb7fQQn1SmrVE=
-X-Received: by 2002:a37:9e8d:0:b0:6ae:e97f:0 with SMTP id h135-20020a379e8d000000b006aee97f0000mr771619qke.255.1655910320506;
- Wed, 22 Jun 2022 08:05:20 -0700 (PDT)
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition
+         :content-transfer-encoding:in-reply-to;
+        bh=LuhiIv9CIZdNs/8xxOUuGG9SP8g2B8WP+UP2kknv5E4=;
+        b=hYyv8NfCioXSjTbJ3vNfwgMZ45k5o3v1TRn8fAlrfFxyL0MFVY7dTWdn1hF6ABLH5O
+         aPrGv02qe6OhR8fU3ll9RapgWQi6R2bcAZ96IoUkK3g/R4C+YlxruEJtR9g1L1NVbGgt
+         c3vFTvQWLXtJeSygH5vwcsJ+2NBoZ4TKZasaSFGRC+71r8EqOfRYrTJhqvLDtvE7f3po
+         I6yA+hZTz8QjcLYR8LVwTBJsnvawLDZnjM5s9LhQX83rGH3PPuRh2TTWMREyX2zrbTlP
+         AIydLiU++XjH+bx85Daj+SxVu4Uy/Ihhwub4FPxF7u5TX4skDHTSyg90/us1b1NBS4JN
+         ikCg==
+X-Gm-Message-State: AJIora8ofOSl0W2TEcpy/k/aqr0rUEt+IKdRSF7Xlj459vo05Ll1DpXm
+        39dUJ6rCvxwY7iOApvwXdMQ=
+X-Google-Smtp-Source: AGRyM1sqBUgmDZnnoA/y3KUiDhcmIJ4+aKuO1UuBLYb2VT4x+kFV5dNZZzYnUTtbvjCaQB2PPZHVtw==
+X-Received: by 2002:a65:464a:0:b0:408:b022:877a with SMTP id k10-20020a65464a000000b00408b022877amr3272066pgr.78.1655910339009;
+        Wed, 22 Jun 2022 08:05:39 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id ok12-20020a17090b1d4c00b001ecb7643c0asm5219573pjb.36.2022.06.22.08.05.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jun 2022 08:05:38 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Wed, 22 Jun 2022 08:05:37 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Michael Walle <michael@walle.cc>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Xu Liang <lxu@maxlinear.com>,
+        Jean Delvare <jdelvare@suse.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org
+Subject: Re: [PATCH net-next] net: phy: mxl-gpy: add temperature sensor
+Message-ID: <20220622150537.GD1861763@roeck-us.net>
+References: <20220622141716.3517645-1-michael@walle.cc>
 MIME-Version: 1.0
-References: <20220330180436.24644-1-gdawar@xilinx.com> <20220330180436.24644-20-gdawar@xilinx.com>
- <CAGxU2F6OO108oHsrLBWJnYRG2yRU8QnRxAdjJhUUcp8AqaAP-g@mail.gmail.com> <CAJaqyWd8MR9vTRcCTktzC3VL054x5H5_sXy+MLVNewFDkjQUSw@mail.gmail.com>
-In-Reply-To: <CAJaqyWd8MR9vTRcCTktzC3VL054x5H5_sXy+MLVNewFDkjQUSw@mail.gmail.com>
-From:   Eugenio Perez Martin <eperezma@redhat.com>
-Date:   Wed, 22 Jun 2022 17:04:44 +0200
-Message-ID: <CAJaqyWc36adK-gUzc8tMgDDe5SoBPy7xN-UtcFA4=aDezdJ5LA@mail.gmail.com>
-Subject: Re: [PATCH v2 19/19] vdpasim: control virtqueue support
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     Gautam Dawar <gautam.dawar@xilinx.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        Gautam Dawar <gdawar@xilinx.com>,
-        Longpeng <longpeng2@huawei.com>, Eli Cohen <elic@nvidia.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Linux Virtualization <virtualization@lists.linux-foundation.org>,
-        kernel list <linux-kernel@vger.kernel.org>,
-        kvm <kvm@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
-        Martin Petrus Hubertus Habets <martinh@xilinx.com>,
-        Harpreet Singh Anand <hanand@xilinx.com>,
-        Martin Porter <martinpo@xilinx.com>,
-        Pablo Cascon Katchadourian <pabloc@xilinx.com>,
-        Dinan Gunawardena <dinang@xilinx.com>,
-        "Kamde, Tanuj" <tanuj.kamde@amd.com>, habetsm.xilinx@gmail.com,
-        ecree.xilinx@gmail.com, Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Zhu Lingshan <lingshan.zhu@intel.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Zhang Min <zhang.min9@zte.com.cn>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220622141716.3517645-1-michael@walle.cc>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 12:21 PM Eugenio Perez Martin
-<eperezma@redhat.com> wrote:
->
-> On Tue, Jun 21, 2022 at 5:20 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
-> >
-> > Hi Gautam,
-> >
-> > On Wed, Mar 30, 2022 at 8:21 PM Gautam Dawar <gautam.dawar@xilinx.com> wrote:
-> > >
-> > > This patch introduces the control virtqueue support for vDPA
-> > > simulator. This is a requirement for supporting advanced features like
-> > > multiqueue.
-> > >
-> > > A requirement for control virtqueue is to isolate its memory access
-> > > from the rx/tx virtqueues. This is because when using vDPA device
-> > > for VM, the control virqueue is not directly assigned to VM. Userspace
-> > > (Qemu) will present a shadow control virtqueue to control for
-> > > recording the device states.
-> > >
-> > > The isolation is done via the virtqueue groups and ASID support in
-> > > vDPA through vhost-vdpa. The simulator is extended to have:
-> > >
-> > > 1) three virtqueues: RXVQ, TXVQ and CVQ (control virtqueue)
-> > > 2) two virtqueue groups: group 0 contains RXVQ and TXVQ; group 1
-> > >    contains CVQ
-> > > 3) two address spaces and the simulator simply implements the address
-> > >    spaces by mapping it 1:1 to IOTLB.
-> > >
-> > > For the VM use cases, userspace(Qemu) may set AS 0 to group 0 and AS 1
-> > > to group 1. So we have:
-> > >
-> > > 1) The IOTLB for virtqueue group 0 contains the mappings of guest, so
-> > >    RX and TX can be assigned to guest directly.
-> > > 2) The IOTLB for virtqueue group 1 contains the mappings of CVQ which
-> > >    is the buffers that allocated and managed by VMM only. So CVQ of
-> > >    vhost-vdpa is visible to VMM only. And Guest can not access the CVQ
-> > >    of vhost-vdpa.
-> > >
-> > > For the other use cases, since AS 0 is associated to all virtqueue
-> > > groups by default. All virtqueues share the same mapping by default.
-> > >
-> > > To demonstrate the function, VIRITO_NET_F_CTRL_MACADDR is
-> > > implemented in the simulator for the driver to set mac address.
-> > >
-> > > Signed-off-by: Jason Wang <jasowang@redhat.com>
-> > > Signed-off-by: Gautam Dawar <gdawar@xilinx.com>
-> > > ---
-> > >  drivers/vdpa/vdpa_sim/vdpa_sim.c     | 91 ++++++++++++++++++++++------
-> > >  drivers/vdpa/vdpa_sim/vdpa_sim.h     |  2 +
-> > >  drivers/vdpa/vdpa_sim/vdpa_sim_net.c | 88 ++++++++++++++++++++++++++-
-> > >  3 files changed, 161 insertions(+), 20 deletions(-)
-> > >
-> > > diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.c b/drivers/vdpa/vdpa_sim/vdpa_sim.c
-> > > index 659e2e2e4b0c..51bd0bafce06 100644
-> > > --- a/drivers/vdpa/vdpa_sim/vdpa_sim.c
-> > > +++ b/drivers/vdpa/vdpa_sim/vdpa_sim.c
-> > > @@ -96,11 +96,17 @@ static void vdpasim_do_reset(struct vdpasim *vdpasim)
-> > >  {
-> > >         int i;
-> > >
-> > > -       for (i = 0; i < vdpasim->dev_attr.nvqs; i++)
-> > > +       spin_lock(&vdpasim->iommu_lock);
-> > > +
-> > > +       for (i = 0; i < vdpasim->dev_attr.nvqs; i++) {
-> > >                 vdpasim_vq_reset(vdpasim, &vdpasim->vqs[i]);
-> > > +               vringh_set_iotlb(&vdpasim->vqs[i].vring, &vdpasim->iommu[0],
-> > > +                                &vdpasim->iommu_lock);
-> > > +       }
-> > > +
-> > > +       for (i = 0; i < vdpasim->dev_attr.nas; i++)
-> > > +               vhost_iotlb_reset(&vdpasim->iommu[i]);
-> > >
-> > > -       spin_lock(&vdpasim->iommu_lock);
-> > > -       vhost_iotlb_reset(vdpasim->iommu);
-> > >         spin_unlock(&vdpasim->iommu_lock);
-> > >
-> > >         vdpasim->features = 0;
-> > > @@ -145,7 +151,7 @@ static dma_addr_t vdpasim_map_range(struct vdpasim *vdpasim, phys_addr_t paddr,
-> > >         dma_addr = iova_dma_addr(&vdpasim->iova, iova);
-> > >
-> > >         spin_lock(&vdpasim->iommu_lock);
-> > > -       ret = vhost_iotlb_add_range(vdpasim->iommu, (u64)dma_addr,
-> > > +       ret = vhost_iotlb_add_range(&vdpasim->iommu[0], (u64)dma_addr,
-> > >                                     (u64)dma_addr + size - 1, (u64)paddr, perm);
-> > >         spin_unlock(&vdpasim->iommu_lock);
-> > >
-> > > @@ -161,7 +167,7 @@ static void vdpasim_unmap_range(struct vdpasim *vdpasim, dma_addr_t dma_addr,
-> > >                                 size_t size)
-> > >  {
-> > >         spin_lock(&vdpasim->iommu_lock);
-> > > -       vhost_iotlb_del_range(vdpasim->iommu, (u64)dma_addr,
-> > > +       vhost_iotlb_del_range(&vdpasim->iommu[0], (u64)dma_addr,
-> > >                               (u64)dma_addr + size - 1);
-> > >         spin_unlock(&vdpasim->iommu_lock);
-> > >
-> > > @@ -250,8 +256,9 @@ struct vdpasim *vdpasim_create(struct vdpasim_dev_attr *dev_attr)
-> > >         else
-> > >                 ops = &vdpasim_config_ops;
-> > >
-> > > -       vdpasim = vdpa_alloc_device(struct vdpasim, vdpa, NULL, ops, 1,
-> > > -                                   1, dev_attr->name, false);
-> > > +       vdpasim = vdpa_alloc_device(struct vdpasim, vdpa, NULL, ops,
-> > > +                                   dev_attr->ngroups, dev_attr->nas,
-> > > +                                   dev_attr->name, false);
-> > >         if (IS_ERR(vdpasim)) {
-> > >                 ret = PTR_ERR(vdpasim);
-> > >                 goto err_alloc;
-> > > @@ -278,16 +285,20 @@ struct vdpasim *vdpasim_create(struct vdpasim_dev_attr *dev_attr)
-> > >         if (!vdpasim->vqs)
-> > >                 goto err_iommu;
-> > >
-> > > -       vdpasim->iommu = vhost_iotlb_alloc(max_iotlb_entries, 0);
-> > > +       vdpasim->iommu = kmalloc_array(vdpasim->dev_attr.nas,
-> > > +                                      sizeof(*vdpasim->iommu), GFP_KERNEL);
-> > >         if (!vdpasim->iommu)
-> > >                 goto err_iommu;
-> > >
-> > > +       for (i = 0; i < vdpasim->dev_attr.nas; i++)
-> > > +               vhost_iotlb_init(&vdpasim->iommu[i], 0, 0);
-> > > +
-> > >         vdpasim->buffer = kvmalloc(dev_attr->buffer_size, GFP_KERNEL);
-> > >         if (!vdpasim->buffer)
-> > >                 goto err_iommu;
-> > >
-> > >         for (i = 0; i < dev_attr->nvqs; i++)
-> > > -               vringh_set_iotlb(&vdpasim->vqs[i].vring, vdpasim->iommu,
-> > > +               vringh_set_iotlb(&vdpasim->vqs[i].vring, &vdpasim->iommu[0],
-> > >                                  &vdpasim->iommu_lock);
-> > >
-> > >         ret = iova_cache_get();
-> > > @@ -401,7 +412,11 @@ static u32 vdpasim_get_vq_align(struct vdpa_device *vdpa)
-> > >
-> > >  static u32 vdpasim_get_vq_group(struct vdpa_device *vdpa, u16 idx)
-> > >  {
-> > > -       return 0;
-> > > +       /* RX and TX belongs to group 0, CVQ belongs to group 1 */
-> > > +       if (idx == 2)
-> > > +               return 1;
-> > > +       else
-> > > +               return 0;
-> >
-> > This code only works for the vDPA-net simulator, since
-> > vdpasim_get_vq_group() is also shared with other simulators (e.g.
-> > vdpa_sim_blk),
->
-> That's totally right.
->
-> > should we move this net-specific code into
-> > vdpa_sim_net.c, maybe adding a callback implemented by the different
-> > simulators?
-> >
->
-> At this moment, VDPASIM_BLK_VQ_NUM is fixed to 1, so maybe the right
-> thing to do for the -rc phase is to check if idx > vdpasim.attr.nvqs?
-> It's a more general fix.
->
+On Wed, Jun 22, 2022 at 04:17:16PM +0200, Michael Walle wrote:
+> The GPY115 and GPY2xx PHYs contain an integrated temperature sensor. It
+> accuracy is +/- 5°C. Add support for it.
+> 
+> Signed-off-by: Michael Walle <michael@walle.cc>
 
-Actually, that is already checked by vhost/vdpa.c.
+Acked-by: Guenter Roeck <linux@roeck-us.net>
 
-Taking that into account, is it worth introducing the change for 5.19?
-I'm totally ok with the change for 5.20.
-
-Thanks!
-
-> For the general case, yes, a callback should be issued to the actual
-> simulator so it's not a surprise when VDPASIM_BLK_VQ_NUM increases,
-> either dynamically or by anyone testing it.
->
-> Thoughts?
->
-> Thanks!
-
+> ---
+>  drivers/net/phy/Kconfig   |   2 +
+>  drivers/net/phy/mxl-gpy.c | 106 ++++++++++++++++++++++++++++++++++++++
+>  2 files changed, 108 insertions(+)
+> 
+> diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+> index 9fee639ee5c8..09fa17796d4d 100644
+> --- a/drivers/net/phy/Kconfig
+> +++ b/drivers/net/phy/Kconfig
+> @@ -216,6 +216,8 @@ config MARVELL_88X2222_PHY
+>  
+>  config MAXLINEAR_GPHY
+>  	tristate "Maxlinear Ethernet PHYs"
+> +	select POLYNOMIAL if HWMON
+> +	depends on HWMON || HWMON=n
+>  	help
+>  	  Support for the Maxlinear GPY115, GPY211, GPY212, GPY215,
+>  	  GPY241, GPY245 PHYs.
+> diff --git a/drivers/net/phy/mxl-gpy.c b/drivers/net/phy/mxl-gpy.c
+> index 6c4da2f9e90a..5b99acf44337 100644
+> --- a/drivers/net/phy/mxl-gpy.c
+> +++ b/drivers/net/phy/mxl-gpy.c
+> @@ -8,7 +8,9 @@
+>  
+>  #include <linux/module.h>
+>  #include <linux/bitfield.h>
+> +#include <linux/hwmon.h>
+>  #include <linux/phy.h>
+> +#include <linux/polynomial.h>
+>  #include <linux/netdevice.h>
+>  
+>  /* PHY ID */
+> @@ -64,6 +66,10 @@
+>  #define VSPEC1_SGMII_ANEN_ANRS	(VSPEC1_SGMII_CTRL_ANEN | \
+>  				 VSPEC1_SGMII_CTRL_ANRS)
+>  
+> +/* Temperature sensor */
+> +#define VPSPEC1_TEMP_STA	0x0E
+> +#define VPSPEC1_TEMP_STA_DATA	GENMASK(9, 0)
+> +
+>  /* WoL */
+>  #define VPSPEC2_WOL_CTL		0x0E06
+>  #define VPSPEC2_WOL_AD01	0x0E08
+> @@ -80,6 +86,102 @@ static const struct {
+>  	{9, 0x73},
+>  };
+>  
+> +#if IS_ENABLED(CONFIG_HWMON)
+> +/* The original translation formulae of the temperature (in degrees of Celsius)
+> + * are as follows:
+> + *
+> + *   T = -2.5761e-11*(N^4) + 9.7332e-8*(N^3) + -1.9165e-4*(N^2) +
+> + *       3.0762e-1*(N^1) + -5.2156e1
+> + *
+> + * where [-52.156, 137.961]C and N = [0, 1023].
+> + *
+> + * They must be accordingly altered to be suitable for the integer arithmetics.
+> + * The technique is called 'factor redistribution', which just makes sure the
+> + * multiplications and divisions are made so to have a result of the operations
+> + * within the integer numbers limit. In addition we need to translate the
+> + * formulae to accept millidegrees of Celsius. Here what it looks like after
+> + * the alterations:
+> + *
+> + *   T = -25761e-12*(N^4) + 97332e-9*(N^3) + -191650e-6*(N^2) +
+> + *       307620e-3*(N^1) + -52156
+> + *
+> + * where T = [-52156, 137961]mC and N = [0, 1023].
+> + */
+> +static const struct polynomial poly_N_to_temp = {
+> +	.terms = {
+> +		{4,  -25761, 1000, 1},
+> +		{3,   97332, 1000, 1},
+> +		{2, -191650, 1000, 1},
+> +		{1,  307620, 1000, 1},
+> +		{0,  -52156,    1, 1}
+> +	}
+> +};
+> +
+> +static int gpy_hwmon_read(struct device *dev,
+> +			  enum hwmon_sensor_types type,
+> +			  u32 attr, int channel, long *value)
+> +{
+> +	struct phy_device *phydev = dev_get_drvdata(dev);
+> +	int ret;
+> +
+> +	ret = phy_read_mmd(phydev, MDIO_MMD_VEND1, VPSPEC1_TEMP_STA);
+> +	if (ret < 0)
+> +		return ret;
+> +	if (!ret)
+> +		return -ENODATA;
+> +
+> +	*value = polynomial_calc(&poly_N_to_temp,
+> +				 FIELD_GET(VPSPEC1_TEMP_STA_DATA, ret));
+> +
+> +	return 0;
+> +}
+> +
+> +static umode_t gpy_hwmon_is_visible(const void *data,
+> +				    enum hwmon_sensor_types type,
+> +				    u32 attr, int channel)
+> +{
+> +	return 0444;
+> +}
+> +
+> +static const struct hwmon_channel_info *gpy_hwmon_info[] = {
+> +	HWMON_CHANNEL_INFO(temp, HWMON_T_INPUT),
+> +	NULL
+> +};
+> +
+> +static const struct hwmon_ops gpy_hwmon_hwmon_ops = {
+> +	.is_visible	= gpy_hwmon_is_visible,
+> +	.read		= gpy_hwmon_read,
+> +};
+> +
+> +static const struct hwmon_chip_info gpy_hwmon_chip_info = {
+> +	.ops		= &gpy_hwmon_hwmon_ops,
+> +	.info		= gpy_hwmon_info,
+> +};
+> +
+> +static int gpy_hwmon_register(struct phy_device *phydev)
+> +{
+> +	struct device *dev = &phydev->mdio.dev;
+> +	struct device *hwmon_dev;
+> +	char *hwmon_name;
+> +
+> +	hwmon_name = devm_hwmon_sanitize_name(dev, dev_name(dev));
+> +	if (IS_ERR(hwmon_name))
+> +		return PTR_ERR(hwmon_name);
+> +
+> +	hwmon_dev = devm_hwmon_device_register_with_info(dev, hwmon_name,
+> +							 phydev,
+> +							 &gpy_hwmon_chip_info,
+> +							 NULL);
+> +
+> +	return PTR_ERR_OR_ZERO(hwmon_dev);
+> +}
+> +#else
+> +static int gpy_hwmon_register(struct phy_device *phydev)
+> +{
+> +	return 0;
+> +}
+> +#endif
+> +
+>  static int gpy_config_init(struct phy_device *phydev)
+>  {
+>  	int ret;
+> @@ -109,6 +211,10 @@ static int gpy_probe(struct phy_device *phydev)
+>  	if (ret < 0)
+>  		return ret;
+>  
+> +	ret = gpy_hwmon_register(phydev);
+> +	if (ret)
+> +		return ret;
+> +
+>  	phydev_info(phydev, "Firmware Version: 0x%04X (%s)\n", ret,
+>  		    (ret & PHY_FWV_REL_MASK) ? "release" : "test");
+>  
+> -- 
+> 2.30.2
+> 
