@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC83CC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 22:52:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDC31C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 22:52:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376420AbiFVWwA (ORCPT
+        id S1376482AbiFVWwC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 18:52:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45638 "EHLO
+        Wed, 22 Jun 2022 18:52:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358156AbiFVWvq (ORCPT
+        with ESMTP id S1358800AbiFVWvr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 18:51:46 -0400
-Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C205141302
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 15:51:44 -0700 (PDT)
-Received: by mail-qv1-xf30.google.com with SMTP id n15so23395363qvh.12
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 15:51:44 -0700 (PDT)
+        Wed, 22 Jun 2022 18:51:47 -0400
+Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 490084199E
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 15:51:46 -0700 (PDT)
+Received: by mail-qv1-xf33.google.com with SMTP id cs6so22935352qvb.6
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 15:51:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=joelfernandes.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=H+kSqBl3RB9I7OY9hm0XkeWhykcK3oDF7t29sGiTzsw=;
-        b=UXqJkdf/KUdA/7F69IfFzfqaGez+SJKEsYw7nuoWGBu0X1hTbSLO5mv5SvEHwxyffi
-         v6O/+XZ6kAy6ihIhq5dQgHhxeYv1dabpAGdmOWyyEl2imSX0RJXhmRwGEI5Yg9J0bB3R
-         MPHCpMk4uVaFRmEAqQ1tWKl/a8e4oKq/zkQgE=
+        bh=Vd4a4Sb5uy4qMpkEMdY0l97I8Oa96Mx9jouj7Tqv17A=;
+        b=m94cURFdCK6y/WgXeNVeJSsjpwtrlSDB3PxHYiJdPWnOgrL7pP1TMYNYz1W7b+MV+D
+         o4mjJJIuJZdtP6EZIKXzc4DK8WuAV8kIBrLtnHGBvt0N/j4sCit/6477vompbS+f68Rl
+         jrHVbbjKj6qyxBdoOzjlkNClgq4YCQxnGirjQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=H+kSqBl3RB9I7OY9hm0XkeWhykcK3oDF7t29sGiTzsw=;
-        b=D+g6STB0ZEVS039oJ2z+QwNmIftYd+f6wjdcI+IfbJzYW6Yzf4+plDok3bhwxdWQwW
-         Edpkq3eHx0bFU68mkUfleBT8BeT6pgXLlDjIIJg/qf81P5mPd13O2AExRvL5d/UhyO6a
-         5hRwmbeglhkM1YODgAv6KqokGmDaxvTSoGycqQxky3mGi+OM4xufPxrKZHQgBhL59wEI
-         eNhnFKLYYaHkr5HmHJAOlyHp4SG57WAn7vO/pY3RIU4sEaiH2VYKts3c3P43ltC9Js8S
-         bqUmeVuHg9VguzUxm/3VBVEJ8L0bux8QENBEqOls97b94SGQEYc7YB1ArWGMH3lJbFZp
-         ri5g==
-X-Gm-Message-State: AJIora/LC2CkCOtLdVmbGzc9gIqIBsVa2lqpqMi1jIdWwcoj9th7jRBw
-        s8xLbPjWOrll1/djaRq41k9I4g==
-X-Google-Smtp-Source: AGRyM1uuVGVPfaJ0Ie+qNySjbSbMPeGHjQQx1Ig5cgUKgMzyi+kfvrEg7TFmRbp9baN9SneC9y1kag==
-X-Received: by 2002:ac8:594d:0:b0:305:1a14:de6c with SMTP id 13-20020ac8594d000000b003051a14de6cmr5135737qtz.677.1655938303882;
-        Wed, 22 Jun 2022 15:51:43 -0700 (PDT)
+        bh=Vd4a4Sb5uy4qMpkEMdY0l97I8Oa96Mx9jouj7Tqv17A=;
+        b=PKhypLLQDk1HnxebfLhea+VW9veoR5wdbH1QcMbAq9yGFHrEBza4BfOGhPtamRaJ+q
+         OxqMaTKNcBVs7/CP08NEUI+vU5oIFCoYtZOvAaLYradMEDjDwcuF78lzNoF7yELSt9Tl
+         8IWpiLNrWbGVsSjvDZveoRk8JARgAZA0/wXydNWIvE/IkwgW/15EU/6+XHWQBCYU05jX
+         hb8gwFY7Pj32Ue6FSjBFlklT6ljPItU2Vw08PhLEExCG6sAP3xSKIAETg0ay6KLdk32u
+         u5YrNMthze0nu9VxorNUZtTuo9hlNvpGY64ZGMyc1QzszsmWqHmYFusCZs8uyRYiLE9a
+         Frcw==
+X-Gm-Message-State: AJIora9g2bxYv/NWHm6pSs8/nJbnLDQoKjhrgcvWplWzO0bxogU/7/Ob
+        A49SxDCC/nP41VFdJki34GDPBg==
+X-Google-Smtp-Source: AGRyM1sVrXdFvKoX00v5/yoAGUyGmQGrFinrp1P16vG+Qt7RLn229XFOM58LGmehXc+yFXMyMumP1g==
+X-Received: by 2002:a05:622a:148d:b0:305:1a61:1003 with SMTP id t13-20020a05622a148d00b003051a611003mr5335099qtx.269.1655938305958;
+        Wed, 22 Jun 2022 15:51:45 -0700 (PDT)
 Received: from joelboxx.c.googlers.com.com (228.221.150.34.bc.googleusercontent.com. [34.150.221.228])
-        by smtp.gmail.com with ESMTPSA id k66-20020a37a145000000b006ab91fd03fasm1794022qke.19.2022.06.22.15.51.43
+        by smtp.gmail.com with ESMTPSA id k66-20020a37a145000000b006ab91fd03fasm1794022qke.19.2022.06.22.15.51.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jun 2022 15:51:43 -0700 (PDT)
+        Wed, 22 Jun 2022 15:51:45 -0700 (PDT)
 From:   "Joel Fernandes (Google)" <joel@joelfernandes.org>
 To:     rcu@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, rushikesh.s.kadam@intel.com,
         urezki@gmail.com, neeraj.iitr10@gmail.com, frederic@kernel.org,
         paulmck@kernel.org, rostedt@goodmis.org, vineeth@bitbyteword.org,
         "Joel Fernandes (Google)" <joel@joelfernandes.org>
-Subject: [PATCH v2 3/8] fs: Move call_rcu() to call_rcu_lazy() in some paths
-Date:   Wed, 22 Jun 2022 22:50:57 +0000
-Message-Id: <20220622225102.2112026-5-joel@joelfernandes.org>
+Subject: [PATCH v2 5/8] rcu/nocb: Wake up gp thread when flushing
+Date:   Wed, 22 Jun 2022 22:50:59 +0000
+Message-Id: <20220622225102.2112026-7-joel@joelfernandes.org>
 X-Mailer: git-send-email 2.37.0.rc0.104.g0611611a94-goog
 In-Reply-To: <20220622225102.2112026-1-joel@joelfernandes.org>
 References: <20220622225102.2112026-1-joel@joelfernandes.org>
@@ -64,81 +64,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is required to prevent callbacks triggering RCU machinery too
-quickly and too often, which adds more power to the system.
-
-When testing, we found that these paths were invoked often when the
-system is not doing anything (screen is ON but otherwise idle).
+We notice that rcu_barrier() can take a really long time. It appears
+that this can happen when all CBs are lazy and the timer does not fire
+yet. So after flushing, nothing wakes up GP thread. This patch forces
+GP thread to wake when bypass flushing happens, this fixes the
+rcu_barrier() delays with lazy CBs.
 
 Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
 ---
- fs/dcache.c     | 4 ++--
- fs/eventpoll.c  | 2 +-
- fs/file_table.c | 2 +-
- fs/inode.c      | 2 +-
- 4 files changed, 5 insertions(+), 5 deletions(-)
+ kernel/rcu/tree_nocb.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/fs/dcache.c b/fs/dcache.c
-index 93f4f5ee07bf..7f51bac390c8 100644
---- a/fs/dcache.c
-+++ b/fs/dcache.c
-@@ -366,7 +366,7 @@ static void dentry_free(struct dentry *dentry)
- 	if (unlikely(dname_external(dentry))) {
- 		struct external_name *p = external_name(dentry);
- 		if (likely(atomic_dec_and_test(&p->u.count))) {
--			call_rcu(&dentry->d_u.d_rcu, __d_free_external);
-+			call_rcu_lazy(&dentry->d_u.d_rcu, __d_free_external);
- 			return;
- 		}
- 	}
-@@ -374,7 +374,7 @@ static void dentry_free(struct dentry *dentry)
- 	if (dentry->d_flags & DCACHE_NORCU)
- 		__d_free(&dentry->d_u.d_rcu);
- 	else
--		call_rcu(&dentry->d_u.d_rcu, __d_free);
-+		call_rcu_lazy(&dentry->d_u.d_rcu, __d_free);
+diff --git a/kernel/rcu/tree_nocb.h b/kernel/rcu/tree_nocb.h
+index 2f5da12811a5..b481f1ea57c0 100644
+--- a/kernel/rcu/tree_nocb.h
++++ b/kernel/rcu/tree_nocb.h
+@@ -325,6 +325,8 @@ static bool rcu_nocb_do_flush_bypass(struct rcu_data *rdp, struct rcu_head *rhp,
+ 	rcu_segcblist_insert_pend_cbs(&rdp->cblist, &rcl);
+ 	WRITE_ONCE(rdp->nocb_bypass_first, j);
+ 	rcu_nocb_bypass_unlock(rdp);
++
++	wake_nocb_gp(rdp, true);
+ 	return true;
  }
  
- /*
-diff --git a/fs/eventpoll.c b/fs/eventpoll.c
-index 971f98af48ff..57b3f781760c 100644
---- a/fs/eventpoll.c
-+++ b/fs/eventpoll.c
-@@ -729,7 +729,7 @@ static int ep_remove(struct eventpoll *ep, struct epitem *epi)
- 	 * ep->mtx. The rcu read side, reverse_path_check_proc(), does not make
- 	 * use of the rbn field.
- 	 */
--	call_rcu(&epi->rcu, epi_rcu_free);
-+	call_rcu_lazy(&epi->rcu, epi_rcu_free);
- 
- 	percpu_counter_dec(&ep->user->epoll_watches);
- 
-diff --git a/fs/file_table.c b/fs/file_table.c
-index 5424e3a8df5f..417f57e9cb30 100644
---- a/fs/file_table.c
-+++ b/fs/file_table.c
-@@ -56,7 +56,7 @@ static inline void file_free(struct file *f)
- 	security_file_free(f);
- 	if (!(f->f_mode & FMODE_NOACCOUNT))
- 		percpu_counter_dec(&nr_files);
--	call_rcu(&f->f_u.fu_rcuhead, file_free_rcu);
-+	call_rcu_lazy(&f->f_u.fu_rcuhead, file_free_rcu);
- }
- 
- /*
-diff --git a/fs/inode.c b/fs/inode.c
-index bd4da9c5207e..38fe040ddbd6 100644
---- a/fs/inode.c
-+++ b/fs/inode.c
-@@ -312,7 +312,7 @@ static void destroy_inode(struct inode *inode)
- 			return;
- 	}
- 	inode->free_inode = ops->free_inode;
--	call_rcu(&inode->i_rcu, i_callback);
-+	call_rcu_lazy(&inode->i_rcu, i_callback);
- }
- 
- /**
 -- 
 2.37.0.rc0.104.g0611611a94-goog
 
