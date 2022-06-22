@@ -2,123 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D8C6CCA47D
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 12:15:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4D0DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 12:15:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358354AbiFVMPa (ORCPT
+        id S1351765AbiFVMPe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 08:15:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51582 "EHLO
+        Wed, 22 Jun 2022 08:15:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358158AbiFVMOP (ORCPT
+        with ESMTP id S235190AbiFVMP0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 08:14:15 -0400
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81A4118B20;
-        Wed, 22 Jun 2022 05:14:13 -0700 (PDT)
-Received: (Authenticated sender: peter@korsgaard.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 157A0C0004;
-        Wed, 22 Jun 2022 12:14:07 +0000 (UTC)
-Received: from peko by dell.be.48ers.dk with local (Exim 4.94.2)
-        (envelope-from <peter@korsgaard.com>)
-        id 1o3zFG-0099lr-Vg; Wed, 22 Jun 2022 14:14:06 +0200
-From:   Peter Korsgaard <peter@korsgaard.com>
-To:     Nava kishore Manne <nava.manne@xilinx.com>
-Cc:     <michal.simek@xilinx.com>, <hao.wu@intel.com>, <trix@redhat.com>,
-        <mdf@kernel.org>, <yilun.xu@intel.com>,
-        <gregkh@linuxfoundation.org>, <ronak.jain@xilinx.com>,
-        <rajan.vaja@xilinx.com>, <abhyuday.godhasara@xilinx.com>,
-        <piyush.mehta@xilinx.com>, <harsha.harsha@xilinx.com>,
-        <lakshmi.sai.krishna.potthuri@xilinx.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-fpga@vger.kernel.org>,
-        <git@xilinx.com>
-Subject: Re: [PATCH v2 2/3] firmware: xilinx: Add pm api function for PL
- readback
-References: <20220621092833.1057408-1-nava.manne@xilinx.com>
-        <20220621092833.1057408-3-nava.manne@xilinx.com>
-Date:   Wed, 22 Jun 2022 14:14:06 +0200
-In-Reply-To: <20220621092833.1057408-3-nava.manne@xilinx.com> (Nava kishore
-        Manne's message of "Tue, 21 Jun 2022 14:58:32 +0530")
-Message-ID: <87ilos520h.fsf@dell.be.48ers.dk>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Wed, 22 Jun 2022 08:15:26 -0400
+Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01on2100.outbound.protection.outlook.com [40.107.255.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1812F33EA8;
+        Wed, 22 Jun 2022 05:15:25 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NveZQuCt3UMKrChfa8uGdmfCmOF80jNfrq8++KoOova0SLNFCN7MU718vX29tZ+7aBNMPIeDuEf2MoS94nOVne8hqaGB+vDiW2c90Lx5/v9fkxUQJ/lbdfKCAzTGNFWK92lk/CaBSPlkeQW0kqRJXCZ2O+f+tVTOA6JxqoSAJegDSOSlTPCREA81iDb7Hty6BxcBcmvfH0M/KZ6W1y4C1DOzdGM6hdQvdvQNyu0sPvekrFutBKU7+IMayyDUqMR+l0hU/A4KBd5iC4wtex5+iJyv4sTlNeymqVIktBB7IN3OBpkXNh09SlzAUzpwNJaZKvRL0GbuCNoitUxz7RstYg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=dG7+RKBF0BElCDMyDVP9v6ngXUoYoc0aOS0wDTbj9L8=;
+ b=hd9817bBW3/78uRP8c1DYphFqvnMuzfsFsDOz7kWLvX+TvJXsK56I8sPvBMxNUU/E0UmrU+ZHce3IA0Bq22PnoUXmSjox+OE8ZXeYcmOSYvegTfc2uF22q6oiTR7thelqU//mg20jsN3AQVJSohAM0EW44M8RRq3B8Bsb+ootJoGNjiuJa7DLhYaFchVOF6KS0ssvYL6GC2g5FIgWdA2PjspSVw2HqkGUn8bD2l539fnPuAjwGFF7kwBKBgn/AnkXunisPxC3+m010UdIKgg0Ex4fWtV2Gmor8V0OLD9ASVRFGnC6TuMFP34XJhP3Pf2o4RRZPShYzQubqz0hDwUvQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
+ dkim=pass header.d=vivo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
+ s=selector2-vivo0-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dG7+RKBF0BElCDMyDVP9v6ngXUoYoc0aOS0wDTbj9L8=;
+ b=P+L4zwx+aD7zwX4gXr7/wL1Lwmc35hXvqFRJRQcZ7auIu9LQj8RYONmrlQAjT+QWRqw3sdeZfPSRnlYtlXa9b+QSha5Sz0cBMxHKSKrfepR1vNKo6uj/0e1ZpOTkif/yVY14FfL+TQ6dq1h1BSQWFxSbSzrOfdRXGO/tnEOFZk0=
+Received: from SEZPR06MB5269.apcprd06.prod.outlook.com (2603:1096:101:78::6)
+ by SI2PR06MB3900.apcprd06.prod.outlook.com (2603:1096:4:fa::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.15; Wed, 22 Jun
+ 2022 12:15:19 +0000
+Received: from SEZPR06MB5269.apcprd06.prod.outlook.com
+ ([fe80::ac67:6f7c:3c88:eb8c]) by SEZPR06MB5269.apcprd06.prod.outlook.com
+ ([fe80::ac67:6f7c:3c88:eb8c%6]) with mapi id 15.20.5353.022; Wed, 22 Jun 2022
+ 12:15:19 +0000
+From:   =?utf-8?B?5p2O5oms6Z+s?= <frank.li@vivo.com>
+To:     Namjae Jeon <linkinjeon@kernel.org>
+CC:     "sj1557.seo@samsung.com" <sj1557.seo@samsung.com>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: =?utf-8?B?562U5aSNOiDnrZTlpI06IFtQQVRDSF0gZXhmYXQ6IGludG9yZHVjZSBza2lw?=
+ =?utf-8?B?X3N0cmVhbV9jaGVjayBtb3VudCBvcHQ=?=
+Thread-Topic: =?utf-8?B?562U5aSNOiBbUEFUQ0hdIGV4ZmF0OiBpbnRvcmR1Y2Ugc2tpcF9zdHJlYW1f?=
+ =?utf-8?Q?check_mount_opt?=
+Thread-Index: AQHYehlC77zhZwGEZ0yT3MKGsxe3Ha1H180AgADJdPCACJ+NgIAKLV+g
+Date:   Wed, 22 Jun 2022 12:15:19 +0000
+Message-ID: <SEZPR06MB5269F0E9CC90B06793906458E8B29@SEZPR06MB5269.apcprd06.prod.outlook.com>
+References: <20220607024942.811-1-frank.li@vivo.com>
+ <CAKYAXd99NAbQP6m93P3bcjvWTN-T8Qy59DHJyfyTHqdH-7aWBQ@mail.gmail.com>
+ <SEZPR06MB526945BC172186A13FA60B11E8A69@SEZPR06MB5269.apcprd06.prod.outlook.com>
+ <CAKYAXd_j-MAYP_8a3xEi2MmxZ9Po8t2di5_yi+7V1xXJuD006A@mail.gmail.com>
+In-Reply-To: <CAKYAXd_j-MAYP_8a3xEi2MmxZ9Po8t2di5_yi+7V1xXJuD006A@mail.gmail.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vivo.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 7e5e60ca-5670-4c30-06bd-08da5448dfc8
+x-ms-traffictypediagnostic: SI2PR06MB3900:EE_
+x-microsoft-antispam-prvs: <SI2PR06MB39005AF93893D21B4FF64F37E8B29@SI2PR06MB3900.apcprd06.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: y8SKB3qlSsShGpb7bCrvf7E0Qy18/G8pUk5huKPi5JZIcjCOICmE6gmx1/KWiHFD/+st6N1tYes8lDfvODcuhx98lFAoeadMxxcLSXjVvMZLWC+qmHP9+aMExDkA6VZ81V6gKTn1AxR+w8P/OSXaS5D1hS7LqXqOPDKzfwGBiR/bKNEmlhPAGYovIHrmS/FLVTyglgSzeoLtatBg2NqPNSUnSMTq/lqKFBBW6yYlMI1/8rFeTiGEE7jDDPa75Qh/IcjRcYWMo4ehulaNvaF3fm8QcrgrbK1AnVUVu+M8l7a8qiQCpQ9do/UhyswBQEgax6QgFvyvKER3azeP6nvt+8DrilqQAve2EM1EU4yjeN/l1ru/w0YREi8MLk8+H5+pYJaQn3xp1yqe8x4YaBfUh5/zWV9wWgiI0InsuvsYdaR+8ZeY22ar4hp+AfcduYikjV97apXkDTKSbWUtoneWbRgEZWs1VS2dAPAgOypHRSwxXi7j2T/2aLOfkOWxQ78QU5geD3l41qWwRATvetkbWuosotUtbnmREL5rlKcVnuZFhUi14h8/NVMfhtQf+RIWq3LV2cRB2MeBPg1k91wW8P0gkFTg+z5JtewG1BRUs95yp82wFoKNVYiaSjQKXkFWiwgMbQO5EQEbK6APEcEcbhG9u047L1yKYCXbzLjfyZOwUuT0lYAfOzVrS4cDezJtG8wUGTqjg1QPsqCp69izEu1pcBifz8WkgUCnodDx5ezkU/30YOEKX47nU5+QUiKPpmuH22KcnorqlRLvxH5wMw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SEZPR06MB5269.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(396003)(366004)(136003)(376002)(39860400002)(66476007)(86362001)(52536014)(66556008)(33656002)(478600001)(4326008)(66446008)(66946007)(64756008)(5660300002)(122000001)(71200400001)(8936002)(224303003)(76116006)(6916009)(54906003)(85182001)(316002)(38070700005)(9686003)(6506007)(26005)(41300700001)(558084003)(2906002)(7696005)(186003)(55016003)(38100700002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?RTNCclU0MkgyQklMd0ZNT0lrYUVrNUFGaGJnUlg4TTJ3MENXS0N5Y2NwSDBF?=
+ =?utf-8?B?eHBzKzY3amJYWGhma3RmdWNaV2twdHQ2QzMzdDhqQjdVMzFrdjFnYnNiM0Vi?=
+ =?utf-8?B?Q2dKR2hMbzh2NUlOYTVZVzRJbHI2TXA0VGVsNTlHRmZMN0s1WjVyU2dpWWRI?=
+ =?utf-8?B?RThiUE4za2hoRERRaXB0WFBKRW8rZWY0MU1oM08vcXRCNmRZbk1FWWFMOHZT?=
+ =?utf-8?B?RDV2Vm9sS0NPS1p5WUFIZ1pkQkJOME1SNDcyUVRKN3FSWDZLNTR5Qi9Cc1Jq?=
+ =?utf-8?B?NUFkdUFGbnVHUXNpWVlZVDJhaDJ6WFlPYmU5RTBTc3d1QS9aNkJSZkNJK0JM?=
+ =?utf-8?B?WmpiaHJwRkhhQm5acVJoS0gvRHU5OTdyODh6aGIycm9EWmZ0LzZlOVBaY1hF?=
+ =?utf-8?B?bCttTy92RW8yV3dBWDB3TGRKNzkvWFpjcWVTQkxWV0xwcUZyY1pncUFoeW5K?=
+ =?utf-8?B?RTBOL3dWWmRwT3ZaemtmU1hBckJBR0QxTm40SFJCanlCS3U0MGthN3h3Rzg3?=
+ =?utf-8?B?VGZXYXRGcGpxZk1pMnY1MjZPbEZwWGdUcy8zV2Y2YmR4RmRpenpwZ2FwWnpp?=
+ =?utf-8?B?Z3NJaTBvWldkTFlFRUlPMk03bUpYQUFYY3JwZUhBaVBLVkJRYSt4cmlSK1hz?=
+ =?utf-8?B?dHhFQStubis2ckpxK2tYdjNvUS9zSUhxQndLM1NCMGt0SEJ5QmhHOExmR2VR?=
+ =?utf-8?B?NHdxWERRMnlRNW5qOEN1ejZwN25rVEY3Sk5xWGZiK0Fwa3psMGVwV2xhNzIz?=
+ =?utf-8?B?SUJxTVNDcHFsODAzVEpoY3dWYTk1RVFnSGVhOVdZUXpJZmUvOVY1YlZQSEZO?=
+ =?utf-8?B?YXZlWlFucm9pQURWN1hHWk45MzQ3aVQ2RnJJRDFUb1pIVWVlcWZGWks3dnM3?=
+ =?utf-8?B?bFhPSjNnMnp1L3pmRms0MGlQSkhldHVkTjc0TzZRRWd1M0k5TndhL2wzNUdG?=
+ =?utf-8?B?ZTQ2RUllaW10RWh5K2FkNnkrY1FtTENPWjk0Qm1QRzhwYjB6ZnVjcUdWSW9Q?=
+ =?utf-8?B?SmFvZlJybThOaEMyOElQaERTb2F6RmpUcEZmcm9FYS9pMjJiUXhpKzZuUHBX?=
+ =?utf-8?B?S0RHSE0wb1JQY29NQ3BKbEpGWEg1RjhXUWRiTk8rRFlGWGhZc2x2K0ttUENp?=
+ =?utf-8?B?czZrOG5ZWlBVazN6U1Q4VkJ1VVNOSytQSzg2cmhzT1ZST3lsbFNPdkZUeURZ?=
+ =?utf-8?B?T1Q1Z2ZZN0lTV051aWp6L1kxUWlvQ21IU0NzZVVmak41d0ZEZHRKMG40MmN3?=
+ =?utf-8?B?VmU5d2FSTjQ2NnZVTEprbms4MVNJcFI2bzlOTE9Yc09Jbis5NTF6Mm45YkVn?=
+ =?utf-8?B?YVlNNy9EMTFKbExoZE96QmgrbnVPOGE3emxiVXNNRWVrQXlPTkltcFNtRXhP?=
+ =?utf-8?B?V29Td2lLM3BidldORFAxemJtZWxWZGlxOWZOZmhFSm9BNUtyT1M3WDF6NFE5?=
+ =?utf-8?B?SldPaGxVSkpxY2hpWTNmZWlrejVzRVhRa0ZPampacER4TWRxalpuYVNpWVZx?=
+ =?utf-8?B?MDhSVFNjUzMwcGhsSDRHRTg2YlJQMUhNMnFFem13Z3FLWmlOSUp3QlNLQWxp?=
+ =?utf-8?B?Q1l4V3NSS3pmb3ZYaEhxSVE0T2xNR2FhbjBjREUxZTI3Vlh5YnBIdWNWUFFD?=
+ =?utf-8?B?djBocmJHZUlDUVNjbHBBeGVxcWs3R3JPNjhtbkR2T29zNmNWSmoxTGxaZ3Vz?=
+ =?utf-8?B?WlNXaEVRUjVtWlZ6TEhkN245djhHWVBSK2F4YXl0TjEwaDVNVzlkbXNLYkow?=
+ =?utf-8?B?aG5odEMzbURPa1A3L0FKNnRXVkdML2Z2aWNQVkVTK25LM2s0ZHZjWW9KSVJS?=
+ =?utf-8?B?Mk1hSHNXSWh2Q1FZYjhLdUJ2VTZxMDM5ZFNxNERhQVpXd1hJVWVvVStGR2VZ?=
+ =?utf-8?B?M3dnS1J5Wk5ZS2I1Yzkray9RNkxYSmVEc0NpVWp3NmhmeTBYT1YySm92ZTl3?=
+ =?utf-8?B?YXhheEI5dGljcGxuVUdUVUJ5NXA2d0EwSXp3TWR6NnJxcVh5N1BKOXlEajFq?=
+ =?utf-8?B?RGFPUWluSnlYcy9NM3JlSDVZcC8xNE0vcXViRmxsNWhwR1BLVXZYeEJrWkhC?=
+ =?utf-8?B?aXBWQVdZY0t5OWl0bzFpRTR4TyswSFNOcnRnNjdobjNGZStCVUE1RkhuQUlD?=
+ =?utf-8?B?NkpQVCswL2gxWVE5UVZvYmczMmtGM1M4cEg3YlI0S1lyZFIvNXdHbDA0THdw?=
+ =?utf-8?B?VWU3NlB0WTUxdXV0UHpxYkhrV2pQaE9IRW0rcWtKZ2RyUlg3WmNDbU1SRjRX?=
+ =?utf-8?B?YjJXWGRySVYrSngrMlRMUk91TXJRK3A1OTladjEveXdVTXZ0TkQwUzJjRjBV?=
+ =?utf-8?B?MEcrSzljU2xjUHI1aW1ZczU5V3pzWDhPd2d1Z3AxeWFKRUpLVDBYdz09?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
+X-OriginatorOrg: vivo.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SEZPR06MB5269.apcprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7e5e60ca-5670-4c30-06bd-08da5448dfc8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Jun 2022 12:15:19.4997
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: iV6UFffSJL5pKVZnArqQsCzWiV+6mekaMWBIcdxZU5LHxrZtdEAmWl2R6l7+Wn3gylRa3EJRXJyxacQ4PyVtWw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SI2PR06MB3900
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
->>>>> "Nava" == Nava kishore Manne <nava.manne@xilinx.com> writes:
-
- > Adds PM API for performing PL configuration readback.
- > It provides an interface to the pmufw to readback the
- > FPGA configuration registers as well as configuration
- > data.
-
- > For more detailed info related to the configuration
- > registers and configuration data refer ug570.
-
- > Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
- > ---
- > Changes for v2:
- >               - None.
-
- >  drivers/firmware/xilinx/zynqmp.c     | 33 ++++++++++++++++++++++++++++
- >  include/linux/firmware/xlnx-zynqmp.h | 14 ++++++++++++
- >  2 files changed, 47 insertions(+)
-
- > diff --git a/drivers/firmware/xilinx/zynqmp.c b/drivers/firmware/xilinx/zynqmp.c
- > index 7977a494a651..40b99299b662 100644
- > --- a/drivers/firmware/xilinx/zynqmp.c
- > +++ b/drivers/firmware/xilinx/zynqmp.c
- > @@ -927,6 +927,39 @@ int zynqmp_pm_fpga_get_status(u32 *value)
- >  }
- >  EXPORT_SYMBOL_GPL(zynqmp_pm_fpga_get_status);
- 
- > +/**
- > + * zynqmp_pm_fpga_read - Perform the fpga configuration readback
- > + * @reg_numframes: Configuration register offset (or) Number of frames to read
-
-An offset OR a length? That sounds odd.
-
-
- > + * @phys_address: Physical Address of the buffer
- > + * @readback_type: Type of fpga readback operation
- > + *                 0 - FPGA configuration register readback
- > + *                 1 - FPGA configuration data readback
-
-readback_type is a boolean, so how about calling it `bool data` or
-something like that?
-
-
- > + * @value: Value to read
-
-what is the relation between phys_address and this value output
-argument?
-
- > + *
- > + * This function provides access to xilfpga library to perform
- > + * fpga configuration readback.
- > + *
- > + * Return:	Returns status, either success or error+reason
- > + */
- > +int zynqmp_pm_fpga_read(const u32 reg_numframes, const phys_addr_t phys_address,
- > +			bool readback_type, u32 *value)
- > +{
- > +	u32 ret_payload[PAYLOAD_ARG_CNT];
- > +	int ret;
- > +
- > +	if (!value)
- > +		return -EINVAL;
- > +
- > +	ret = zynqmp_pm_invoke_fn(PM_FPGA_READ, reg_numframes,
- > +				  lower_32_bits(phys_address),
- > +				  upper_32_bits(phys_address), readback_type,
-
-You are adding PM_FPGA_READ_CONFIG_ defines, so how about using them,
-E.G.
-
-data ? PM_FPGA_READ_CONFIG_DATA : PM_FPGA_READ_CONFIG_REG
-
--- 
-Bye, Peter Korsgaard
+PiBQcm9iYWJseSB5b3UgZG9uJ3Qgd2FudCB0aGUgb3ZlcmFsbCBwZXJmb3JtYW5jZSBkZWdyYWRl
+IGZvciBhIGZldyBjb3JydXB0ZWQgZmlsZXMuIFRoYW5rcyENCg0KV2h5IGlzIHRoZSBwZXJmb3Jt
+YW5jZSBkZWdyYWRlZCwgY2FuIHlvdSBkZXNjcmliZSB0aGUgcmVhc29ucyBhbmQgc2NlbmFyaW9z
+IG1vcmUgY2xlYXJseS4NCklzIHRoZXJlIGFueSBhY3R1YWwgdGVzdCBkYXRhLCBtYXliZSB3ZSBj
+YW4gYWN0dWFsbHkgdGVzdCB0aGUgaW1wYWN0Pw0KDQpUaHgsDQpZYW5ndGFvDQo=
