@@ -2,108 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64561C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 18:59:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF765C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 18:59:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377412AbiFVS7n (ORCPT
+        id S1377482AbiFVS7r (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 14:59:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46966 "EHLO
+        Wed, 22 Jun 2022 14:59:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377384AbiFVS7h (ORCPT
+        with ESMTP id S1377559AbiFVS7n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 14:59:37 -0400
-Received: from mail-vs1-xe35.google.com (mail-vs1-xe35.google.com [IPv6:2607:f8b0:4864:20::e35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DFC231227
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 11:59:36 -0700 (PDT)
-Received: by mail-vs1-xe35.google.com with SMTP id i186so18119397vsc.9
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 11:59:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=znYvHmQcO9pIRRv6Z8ozam49umE/VEVHtcAiw2I40Es=;
-        b=CLK0Sc/VIQrO0e0i4+me/g3XoHa0rzmIKIsq7EEwFczzkwg7MmJmjQtgOABsf+JhAj
-         rdt0AtJ9uvHEebNKgMI2tl7OzmOoGwYLZr1OeLh5aBeYBbjkw8E6v+OuEktc+sdw1Nec
-         13m88X9Nab1dyhzoVljcxP30x42qCsjqU6X0Z00ETL+oIY2ZgYndQ9Oj5qTT04s5pIg/
-         g9fPQh8DaGU4Zte5VhvuiY8Sem3CAAtxdhE5pRMwYtpUBLNFbgWgKlqyFL7Rrjx4moU/
-         8/tM3m0AusZI6GKOgQtIo/UHMUJ00DmKJZHSLtis09uIimKdBEbyyfEblHYNBCRAM+55
-         w/wA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=znYvHmQcO9pIRRv6Z8ozam49umE/VEVHtcAiw2I40Es=;
-        b=Qqj/tjC8leWaYVJScMWBwFoslFYifuyxalCPX2ItuBCDAcpiZbKlRRaFdTtRwxNRQ0
-         KhJkUBIWrtHoizQSa4r5zp7yVerRvgiatM5fUYrpQFiGJTVaxqbkylAd7hMOqi834jpg
-         DwtJ4wMtSbryBVwZ1SlL9UGpeKA0/gcxp1eMzoCHpwxRz6FWRamq3RH5EEPsmvs1nrMb
-         dyyVtOgTqixoUeZ5bFYQxfc2S4VXjQnrZHrW202TdM2A5qdg6Cyj1ZaY+KBnfSwTfsxQ
-         C3rCKZr2d2becpVt4v3nz/O9NKeLfF8UbM/Q/e199Hd57QzQLDSPlbypNRxo9fhtyAd7
-         3new==
-X-Gm-Message-State: AJIora9G+3lSLEkvD24V89snpZhH8WjKMTnfSBYvqEK9lNiKCiSwVk0r
-        lPoMxhhDJniM/GjPmGOs+0CzEQ57MUbc74xUnHAVUw==
-X-Google-Smtp-Source: AGRyM1uavjJLzM0cL61VD8DwjKtvC3vJEveEtmvdwbmLM160pNEVOUsFglLOn9gcHkO71FalVgfPg63k9+qdulgbh4w=
-X-Received: by 2002:a05:6102:32c8:b0:34c:2358:1824 with SMTP id
- o8-20020a05610232c800b0034c23581824mr17035693vss.65.1655924375399; Wed, 22
- Jun 2022 11:59:35 -0700 (PDT)
+        Wed, 22 Jun 2022 14:59:43 -0400
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BC7031227
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 11:59:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1655924195;
+    s=strato-dkim-0002; d=gerhold.net;
+    h=In-Reply-To:References:Message-ID:Subject:Cc:To:From:Date:Cc:Date:
+    From:Subject:Sender;
+    bh=0ka+e5CwrN5MVcA+6Ffzw9FiJob8j1H7d6oQqpb8Ud8=;
+    b=K6FD2FMfI6s/FXqzJb63CuyoSdVGtQzHaJ8gt8fsPtIJdrWUKLbQ0+nams0qXRGQ1x
+    JtSxMyYK0OwadcMjkZXhW5ur1O3uGey3rsc9Pw5XiAClzEPMxzjcrI823nac0G9zAeb2
+    oYEdA4CA7g2JDuO504iEZnXlFNKR+E/mOc24AM0ZGoqPQ1LKpCp7adePvJ0VM7TFu4Zv
+    tceP2buHrGkYGfpLmKn9YXdCPYqYHZusKnccn+Hdx4+VISLFK7OlogiqUH1M2Xu4AJ16
+    oVKqSjL1TrLReYl/VLMfoTbwG/ggQ5nwMoVWuymAlXr2yw5aKnl59hmanYQXO883KuzU
+    81vA==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVOQ/OcYgojyw4j34+u267FZF9PwpcNKLVrK88/6Y="
+X-RZG-CLASS-ID: mo00
+Received: from gerhold.net
+    by smtp.strato.de (RZmta 47.46.0 AUTH)
+    with ESMTPSA id g32597y5MIuZOtr
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Wed, 22 Jun 2022 20:56:35 +0200 (CEST)
+Date:   Wed, 22 Jun 2022 20:56:26 +0200
+From:   Stephan Gerhold <stephan@gerhold.net>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 3/6] arm64: dts: qcom: add SC8280XP platform
+Message-ID: <YrNl2jS3Stcl2DP8@gerhold.net>
+References: <20220622041224.627803-1-bjorn.andersson@linaro.org>
+ <20220622041224.627803-4-bjorn.andersson@linaro.org>
 MIME-Version: 1.0
-References: <20220614071650.206064-1-yuzhao@google.com> <CAOUHufbuqGJJ1pUJuYW8h6uB5+KpNSJotEd_WSzF5AK-S_6PoA@mail.gmail.com>
- <20220622114552.d878769ee7e3bc6a5240f430@linux-foundation.org>
-In-Reply-To: <20220622114552.d878769ee7e3bc6a5240f430@linux-foundation.org>
-From:   Yu Zhao <yuzhao@google.com>
-Date:   Wed, 22 Jun 2022 12:58:59 -0600
-Message-ID: <CAOUHufZw3g4Fpntmwir_Hy5FR7=xvzKoOiA3R24FCW_=tfvUkg@mail.gmail.com>
-Subject: Re: [PATCH v12 00/14] Multi-Gen LRU Framework
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Andi Kleen <ak@linux.intel.com>,
-        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Tejun Heo <tj@kernel.org>, Vlastimil Babka <vbabka@suse.cz>,
-        Will Deacon <will@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Kernel Page Reclaim v2 <page-reclaim@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220622041224.627803-4-bjorn.andersson@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 12:46 PM Andrew Morton
-<akpm@linux-foundation.org> wrote:
->
-> On Wed, 22 Jun 2022 00:21:47 -0600 Yu Zhao <yuzhao@google.com> wrote:
->
-> > > TLDR
-> > > ====
-> > > The current page reclaim is too expensive in terms of CPU usage and it
-> > > often makes poor choices about what to evict. This patchset offers an
-> > > alternative solution that is performant, versatile and
-> > > straightforward.
-> >
-> > I don't see any action items left for me. Are we good for the next merge window?
->
-> Qi Zheng just found an item ;)
+On Tue, Jun 21, 2022 at 09:12:21PM -0700, Bjorn Andersson wrote:
+> Introduce initial support for the Qualcomm SC8280XP platform, aka 8cx
+> Gen 3. This initial contribution supports SMP, CPUfreq, CPU cluster
+> idling, GCC, TLMM, SMMU, RPMh regulators, power-domains and clocks,
+> interconnects, some QUPs, UFS, remoteprocs, USB, watchdog, LLCC and
+> tsens.
+> 
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> 
+>  arch/arm64/boot/dts/qcom/sc8280xp.dtsi | 2145 ++++++++++++++++++++++++
+>  1 file changed, 2145 insertions(+)
+>  create mode 100644 arch/arm64/boot/dts/qcom/sc8280xp.dtsi
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
+> new file mode 100644
+> index 000000000000..ac13965a181e
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
+[...]
+> +	reserved-memory {
+> +		#address-cells = <2>;
+> +		#size-cells = <2>;
+> +		ranges;
+> +
+> +		memory@80000000 {
+> +			reg = <0 0x80000000 0 0x860000>;
+> +			no-map;
+> +		};
+> +
+> +		cmd_db: memory@80860000 {
+> +			compatible = "qcom,cmd-db";
+> +			reg = <0 0x80860000 0 0x20000>;
+> +			no-map;
+> +		};
+> +
+> +		memory@80880000 {
+> +			reg = <0 0x80880000 0 0x80000>;
+> +			no-map;
+> +		};
+> +
+> +		smem_mem: smem@80900000 {
+> +			compatible = "qcom,smem";
+> +			reg = <0 0x80900000 0 0x200000>;
+> +			no-map;
+> +			hwlocks = <&tcsr_mutex 3>;
+> +		};
+> +
+> +		memory@80b00000 {
+> +			reg = <0 0x80b00000 0 0x100000>;
+> +			no-map;
+> +		};
+> +
+> +		memory@83b00000 {
+> +			reg = <0 0x83b00000 0 0x1700000>;
+> +			no-map;
+> +		};
+> +
+> +		memory@85b00000 {
+> +			reg = <0 0x85b00000 0 0xc00000>;
+> +			no-map;
+> +		};
+> +
+> +		pil_adsp_mem: memory@86c00000 {
+> +			reg = <0 0x86c00000 0 0x2000000>;
+> +			no-map;
+> +		};
+> +
+> +		pil_nsp0_mem: memory@8a100000 {
+> +			reg = <0 0x8a100000 0 0x1e00000>;
+> +			no-map;
+> +		};
+> +
+> +		pil_nsp1_mem: memory@8c600000 {
+> +			reg = <0 0x8c600000 0 0x1e00000>;
+> +			no-map;
+> +		};
+> +
+> +		memory@aeb00000 {
+> +			reg = <0 0xaeb00000 0 0x16600000>;
+> +			no-map;
+> +		};
 
-Well, an embarrassing one, and I hope it's the last one :)
+Doesn't memory@ still cause the dtbs_check warnings? Similar to
 
-> Yes, I'd like to get this in soon.  I've been waiting for the mapletree work
-> to converge a bit further.
+> soc/qcom/qcom,smem.example.dt.yaml: memory@fa00000: 'device_type' is a required property
+>         From schema: dtschema/schemas/memory.yaml
 
-No worries. We are not in any rush, just planning ahead, since this
-patchset has conflicts with Muchun's LRU page reparenting work [1].
+as in [1]. If I understood it correctly there Rob said that memory@
+shouldn't be used for reserved-memory. Perhaps even reserved-memory@
+might be better then.
 
-[1] https://lore.kernel.org/linux-mm/20220621125658.64935-1-songmuchun@bytedance.com/
+The device tree specification on the other hand suggests using the
+purpose of the reserved memory, like we did on older SoCs:
+
+> 3.5.2 /reserved-memory/ child nodes
+> Following the generic-names recommended practice, node names should
+> reflect the purpose of the node (ie. “framebuffer” or “dma-pool”).
+
+[1]: https://lore.kernel.org/linux-arm-msm/CAL_Jsq+66j8Y5y+PQ+mezkaxN1pfHFKz524YUF4Lz_OU5E-mZQ@mail.gmail.com/
+
+> +		timer@17c20000 {
+> +			compatible = "arm,armv7-timer-mem";
+> +			#address-cells = <2>;
+> +			#size-cells = <2>;
+> +			ranges;
+> +			reg = <0x0 0x17c20000 0x0 0x1000>;
+> +			clock-frequency = <19200000>;
+[...]
+> +		};
+> +	timer {
+> +		compatible = "arm,armv8-timer";
+> +		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
+> +			     <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
+> +			     <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
+> +			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>;
+> +		clock-frequency = <19200000>;
+> +	};
+
+Is the "clock-frequency" really needed for these two?
+
+The binding docs are pretty clear that this should be configured by the
+firmware instead:
+
+> Should be present only where necessary to work around broken firmware
+> which does not configure CNTFRQ on all CPUs to a uniform correct
+> value. Use of this property is strongly discouraged; fix your firmware
+> unless absolutely impossible.
+
+I hope Qualcomm's firmware is actually improving on newer platforms
+and not making big steps backwards. :-)
+
+Thanks,
+Stephan
