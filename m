@@ -2,384 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65D49C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 06:44:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7639C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 06:45:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345930AbiFVGoq (ORCPT
+        id S1349332AbiFVGpM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 02:44:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55316 "EHLO
+        Wed, 22 Jun 2022 02:45:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229918AbiFVGon (ORCPT
+        with ESMTP id S1346353AbiFVGpJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 02:44:43 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C254134671;
-        Tue, 21 Jun 2022 23:44:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655880282; x=1687416282;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=wVQeln2dkvMuM8ka01YjjdzgLNavlQvJSBnXlKw/6D0=;
-  b=AV57/pPHpNz9uEzVXZMU+UMiBkP1gHnmSSHVMjOr03qVfXKkNXiv6bnU
-   t4K2GqQvgO7JCRUBhvO8QRQYqEn18VZJnJG289sg++v9gOWczDg/Z1HqL
-   FAG+9BjThgsqjqDwGR/1GQp6dEltbvPNwO2A9tYGMxKeg/gOE+qtDueEG
-   zfmv/yKSbed7OBu9qKR8MD/KqUn3CT//4WhdLJMLY8oXtMwaFBa1lXoOH
-   S99GCnMxlBEDBm5ZzGN+D1SStqmUGOBxrzdOzCiuLGX9yZscLVBawKSSR
-   DD0ELnvpwHA7w+zsDxCAhdqCwUuHss47dUUanr8xb05YWLTD/VoKtwISk
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="269049768"
-X-IronPort-AV: E=Sophos;i="5.92,211,1650956400"; 
-   d="scan'208";a="269049768"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 23:44:42 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,211,1650956400"; 
-   d="scan'208";a="764757898"
-Received: from orsmsx606.amr.corp.intel.com ([10.22.229.19])
-  by orsmga005.jf.intel.com with ESMTP; 21 Jun 2022 23:44:36 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Tue, 21 Jun 2022 23:44:33 -0700
-Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
- ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Tue, 21 Jun 2022 23:44:32 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Tue, 21 Jun 2022 23:44:32 -0700
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.170)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Tue, 21 Jun 2022 23:44:32 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=COc/AnVUW+mIV21NsIpFuE4b8Di74fM3LSb42eP2E7hTHlh0/5cBzm693YRzXJvFalMCQZ1tB+5ycHEDfO33MVYF24+9Cfh2LALxz7QKS88jSOCM4N4YBQK/8ZhwndDen+D1QkOmQpJjGll6QdvOo+qM56+1dwYaQuarOasxJ8mSGZUiWkeJF7vzegqY6fCzzKYRrCsXRM17coSoOYNV/vnBYPvlN1945+k1NZsua/fgmnibK6jDPiv/Wx/w/D3PN7Wti5zC8cBCuRUWns4mUbNfAYEEhrTwU+fNPRE9CNMyezX61MsHCiV2R0UQFh5bKEPtEyhaNdZcWwVHeJYMog==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=DJZCqEIyxlqOIiytaETHvB5t3i98wFoPqhaat8oLlzc=;
- b=IHaIZET0f2H7ufLRGwkqnoej3+yWMir6eA08TovGTmRenjubK3KwaDB3i+cKiWEf9KJYAf3zEvKDMJDMpMaRzZYFLS/uAunYM7glzAiXl2FtD3LWifKAyXusdAUtygJVWyk2lwp4jVgKJGc2FxgJ2IXezF0z8N3cfaIUCVHJohN3iQLTkPNAMUdNaxNvC37PQk3cAocpnncmM9zqnDkLIFJc9vTTBCyUhdQbazzSabuyTcyWQVuS4LuN9ECVAeAY4ODCSBmQLu4caksvQj3WsTTN4wscPGtzD1ziLzdxHICp/kALIpQvVCIwvVzOkPIDElVYhDCrB9B3XLhYqAELEg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from MN2PR11MB3870.namprd11.prod.outlook.com (2603:10b6:208:152::11)
- by SJ0PR11MB4943.namprd11.prod.outlook.com (2603:10b6:a03:2ad::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.15; Wed, 22 Jun
- 2022 06:44:30 +0000
-Received: from MN2PR11MB3870.namprd11.prod.outlook.com
- ([fe80::dd55:c9f5:fbc7:8a74]) by MN2PR11MB3870.namprd11.prod.outlook.com
- ([fe80::dd55:c9f5:fbc7:8a74%3]) with mapi id 15.20.5353.022; Wed, 22 Jun 2022
- 06:44:29 +0000
-Message-ID: <025806b0-7f62-6ae4-241b-7c084739b01c@intel.com>
-Date:   Wed, 22 Jun 2022 14:44:18 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.10.0
-Subject: Re: [RFC PATCH v4 7/7] KVM: selftests: Add tests for VM and vCPU cap
- KVM_CAP_X86_DISABLE_EXITS
-Content-Language: en-US
-To:     Kechen Lu <kechenl@nvidia.com>, <kvm@vger.kernel.org>,
-        <pbonzini@redhat.com>
-CC:     <seanjc@google.com>, <chao.gao@intel.com>, <vkuznets@redhat.com>,
-        <somduttar@nvidia.com>, <linux-kernel@vger.kernel.org>
-References: <20220622004924.155191-1-kechenl@nvidia.com>
- <20220622004924.155191-8-kechenl@nvidia.com>
-From:   "Huang, Shaoqin" <shaoqin.huang@intel.com>
-In-Reply-To: <20220622004924.155191-8-kechenl@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SGAP274CA0008.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b6::20)
- To MN2PR11MB3870.namprd11.prod.outlook.com (2603:10b6:208:152::11)
+        Wed, 22 Jun 2022 02:45:09 -0400
+X-Greylist: delayed 306 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 21 Jun 2022 23:45:08 PDT
+Received: from de-smtp-delivery-113.mimecast.com (de-smtp-delivery-113.mimecast.com [194.104.111.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 35FBE34678
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 23:45:07 -0700 (PDT)
+Received: from CHE01-GV0-obe.outbound.protection.outlook.com
+ (mail-gv0che01lp2040.outbound.protection.outlook.com [104.47.22.40]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ de-mta-33-Mm2W_fWMOdaMfLOIRUPAlQ-1; Wed, 22 Jun 2022 08:38:09 +0200
+X-MC-Unique: Mm2W_fWMOdaMfLOIRUPAlQ-1
+Received: from GVAP278MB0929.CHEP278.PROD.OUTLOOK.COM (2603:10a6:710:57::6) by
+ ZR0P278MB0604.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:3b::10) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5353.15; Wed, 22 Jun 2022 06:38:06 +0000
+Received: from GVAP278MB0929.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::7b:8f0a:1d7:60f2]) by GVAP278MB0929.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::7b:8f0a:1d7:60f2%5]) with mapi id 15.20.5353.022; Wed, 22 Jun 2022
+ 06:38:06 +0000
+Message-ID: <7d04c05771ded0f8302d716fa5289d94df27c8eb.camel@toradex.com>
+Subject: Re: [PATCH v1] arm64: dts: imx8mm-verdin: update CAN clock to 40MHz
+From:   Andrejs Cainikovs <andrejs.cainikovs@toradex.com>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        Francesco Dolcini <francesco.dolcini@toradex.com>
+Cc:     Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        linux-arm-kernel@lists.infradead.org
+Date:   Wed, 22 Jun 2022 08:38:04 +0200
+In-Reply-To: <20220621195046.rnv66d2333wjmtow@pengutronix.de>
+References: <20220512104019.19725-1-andrejs.cainikovs@toradex.com>
+         <20220621180749.GA22098@francesco-nb.int.toradex.com>
+         <20220621195046.rnv66d2333wjmtow@pengutronix.de>
+User-Agent: Evolution 3.44.1-0ubuntu1
+X-ClientProxiedBy: GV0P278CA0066.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:710:2a::17) To GVAP278MB0929.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:710:57::6)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8bbca191-0eeb-4806-ba40-08da541aa83f
-X-MS-TrafficTypeDiagnostic: SJ0PR11MB4943:EE_
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-Microsoft-Antispam-PRVS: <SJ0PR11MB4943250A12D74F24297C51ADF7B29@SJ0PR11MB4943.namprd11.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 3191f2a8-3eda-4d9e-bcb1-08da5419c3ce
+X-MS-TrafficTypeDiagnostic: ZR0P278MB0604:EE_
+X-Microsoft-Antispam-PRVS: <ZR0P278MB0604BDE48074DC4CA0591825E2B29@ZR0P278MB0604.CHEP278.PROD.OUTLOOK.COM>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: +N9R/9uyXdz+X4QF5SiqfOdHZ3U4ahvibItGf9HS780RRAEDYg/K9N2O6j6Lgokx3NKZYYc+JCzxpouMaA9R6yMBd4edkv9A0kxMupyS9tQdsg4biEF9N++lcY0gBslQz52DPnvcfECLilLToIVFsQFBh2dVKsXWgz2Noxz0IDAAnXiontCnOHbwuEiBjpY7ON76WS6zpQjOzZ490ZK1e37I7KtFFEzb1Pd5EERg6AIisCkmV1wtJGiYS48sfi2vOcTVNq6Ess6iqgVjOvs1vLtyddJ+4cMuYmOsXqld1m1syVLUS4GZeV7aMIGIoboh/eHW/7P6vy5f/2wj17AaHpUnAlaAvdFtjfEAqlWVNPiOcK/efJTW2lPDNEBOUTPuR4lHKLuWnENBQENjVHH/7oLb8ArKrHkAbOvhTbX6SDFm3OwRMBZY4kJGkHmOjYKFMOQvB+txPCnyoSSjCB5sL1LbskeSLKrk//D2X8uMhwmKezsmOCgQTURSAqRSqAKAUU2V+kG25zyM55270XdsOJQD1r6pQ1zo89DhDprClP47VRCN/bIlAKS+OV16R2sb+HPiH0Hqu1kIOQJGNXT6fvGnV5cG6RfUtQjrbtYusIKdPHxrEV0bxdNUhYQwr4b9aqXC2/zafDRgdUxTMNpF5r3Q525q3A7RsrRAJsIKVqQcymZgG69uZcmsOomcPQSaqOqrV0frBW7s9vkTmJctBym1jlxdhEjKqma2xUga+Vcegk3Ow3VMFxERLYxEsg4otWvJy2X4B1aG6IgRd35Wz4QzAsz8Y2jWfQgbv3QySvQ=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR11MB3870.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(346002)(39860400002)(376002)(366004)(396003)(66476007)(8676002)(6486002)(31696002)(66556008)(478600001)(4326008)(31686004)(83380400001)(2906002)(82960400001)(186003)(86362001)(316002)(38100700002)(6506007)(2616005)(41300700001)(53546011)(8936002)(5660300002)(36756003)(66946007)(26005)(6512007)(6666004)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam: BCL:0
+X-Microsoft-Antispam-Message-Info: 3yAaYGoCobPe7xzqXYzab7SVM+K5He0FUeWaheTP2VJtC15gmKkbPOLGAP607y0f60FChq9ufAVUn/MqPHeU7wAy11dLd6lLGwt1+1U7T5wQx39gOvHyLGfrDPKHao+n9a/ai1jvCTTV89E1DkW7J1APFtYpLaX+og+p83un+Grx+tel47K4gn0BkIh3S3LfeuifROQECmOgA9+PMl7AgOybTOETFnMGve5Y42wmY0RX+N8HyYLbcGD8onUyL5uNEmJ9Vnj7C7gaKdDHm04yZwfHW4tAoUfJEo6VLsRezxJVZ5/JFHiVc4Gn7AaHtXKcD86R8979vaP1+ctqQPd3dMK03RDwUdFMjgatFp45fKZsMsMpfXMBOGib9bxPDcnv5BKTWoiaMUqXdF6g4mCk25rD6y45+Zn7b2CULhgOK0UpjPg3ZNAcqhLduPHPezod6PCzwNuLi3/tEdqtok7v/LPLd6exIUDUyXXFDCZprL6xS5h9gQa18TLduNOzYs9y3Bup2y7IQ1EYWxSga3gxlQmyQQs05e/VcduPVXziL/n77MxgRra/o07b8uACXODsO4enBeVr4RWAx9xqsKjvnEQOCwqEouC3TDAVxWhNvDrsWJ3hfd3jUc9sVWMovEAzy1+uFUt/YQ11WUdvv3LhZ0hSfxcLxRjAD5Y9QWdhMf7RsiQPiVB7qOi6uqYHnYVtpS6UwRNZM8gxndjWuv7H+vj3+Um3rA+LGj9avs4U4yF6aacBQMlXQl0m1yXGHyq1iLJaRV1iBqqDfAsvv/SCdQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GVAP278MB0929.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(366004)(136003)(396003)(39840400004)(346002)(6486002)(54906003)(36756003)(316002)(6636002)(478600001)(4326008)(66556008)(8676002)(110136005)(2906002)(83380400001)(38350700002)(44832011)(66476007)(5660300002)(7416002)(15650500001)(52116002)(8936002)(2616005)(41300700001)(53546011)(186003)(6506007)(26005)(38100700002)(86362001)(6512007)(66946007)(32563001);DIR:OUT;SFP:1102
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?K25FZEZGWm9MWEp6VU5PWktwT1RCU2trRUVueVMxZ2VzdkZUMmQ2VjRDOTR2?=
- =?utf-8?B?Q1Y4cVdHbkhYNGNHRGYxODFLakNuTTNSbWUrYlpUMVI1K25JSHVEYmF0cjJz?=
- =?utf-8?B?ekwrNkJlVXIwWlhHNitVWFVtR0JkK0hFMld5OG85aXJxYWF3SEhsck8vc0V3?=
- =?utf-8?B?cDJNalN4WjFyelloa3dKdUdYOURmMGlTZGEwWEZ0TkFPd1F3VUx6aExjYUt3?=
- =?utf-8?B?V2paOWtNV3RNVVlnajJ2c0Y3ekplSWxoRlJoUlk3Znh3cFlNaFdWL3QvTGtW?=
- =?utf-8?B?WVRYOENtZFIzelJwOUJpVU1NVnJzeVJSYVlnMEJrczR0MFZKZkJzd05kWmk5?=
- =?utf-8?B?T3RyclkrRXFPaWtNSFd2ZzBDTEVWSDQ1elBRWUVxMVNSaVJLdkZpSTZud0dM?=
- =?utf-8?B?NkZtcVZ4R1oxZkkrTlYxY3BpNlNMNDUrTkZOdTk3SHpueGUxSDFGVVFzWS9l?=
- =?utf-8?B?Z0piNzBhelFZcE04Wm5ZMGlFeTRBcHY5WUVFeTJhYjEzc1ZUdUp3WnJ4V3FR?=
- =?utf-8?B?UEZzUnRzWHlrOGpXU1V3c0s1ZXRKOEU2eTZvLzJLRjhxZittbDFWK0hybXhq?=
- =?utf-8?B?LzQ5QUJBdmF2YUFHWUpUdm5RTVpQS3JlN3JGTFh2aEJsclppaDJkUjlyV0VC?=
- =?utf-8?B?QVEvRHp0cWd4NHIxR1Fab1dnS2x1d0gvVjRYMkJqSEUwR3Y4RkV1ak5MWlQv?=
- =?utf-8?B?dmt1ejNIUVVWT25yV20wR2tPaWlWMThNWHUydVp0VkR6U0poYVhIbTJUMEx3?=
- =?utf-8?B?dlVPbkEzQ0JKcDR6V0VtaUNyTUlOT0lWNWxTcm5LMHZadG9waEZBNmttOHVN?=
- =?utf-8?B?WTBjWlR5Ty9udlN5ZHF5UDFkVTNuVjVtQnEwUzREemx4V1VJVDViTktsNjhP?=
- =?utf-8?B?eWtLOHArb3grdVVLQ2ZwVU1xdmhwMGNMOENOY0QvMmNWS29sLzBST1lnNVlI?=
- =?utf-8?B?dXhKdFlnOUJPQWozN3R3ZUJXYkpoTkdQTWRtSzNGL0VGTmVQYkF0SGtEYXd6?=
- =?utf-8?B?R0thVjFORXNIRk9sMDBwYm5wRkJ4V0xiUVNOdlpMSURSVXRzMDlzWnNOWWw2?=
- =?utf-8?B?STg0NEFoek1XMFNRd3lDYzhKaEN2RnM3ajhReHA2WHVJRVJockhxTy9Rck1a?=
- =?utf-8?B?WkRrcVliV055UkFtcjl5cVFsVXZ5WlNRc0NLa0pPWHk5dkZvODkrRHdVcENS?=
- =?utf-8?B?Rlhta3pPeTkwamo2WnBObkZzTUFmQjA1cnk2ZWJDQ05vMEIyWTVzL0VVaTRj?=
- =?utf-8?B?V1IvNVFFa1NONk9YU1BxRUdhQzFwTTNWWlg2dHNzTStyajFhU3ZhdzRYd05N?=
- =?utf-8?B?NmhPaTZTVmJub3d3bHZvKzdHRDg0VFdTZHhOc1ZValZGclYzKytLUjRrT2Iz?=
- =?utf-8?B?T1AydHBTdDVxZXQxNUlQR0pUb2FPdU5oOHdld05ndHBrcDNzRmhjbEw2cm8w?=
- =?utf-8?B?SDZma2FRSHFDbWFNbVdtWXlUcTQ5d2pra2RybUswQUU0QTFQeXZlelY1M0JE?=
- =?utf-8?B?Y1RzMC8zQmtQRDBadUJBMXNFTFNoQm5tdithMEpVaTFZRnorSG9kQ3JveU1k?=
- =?utf-8?B?aEJyajlHRTk1eVBxVkFzMFNER3lXbGFtM0lPNWNIYXh2NE1zQnZ4QTJWZi9t?=
- =?utf-8?B?cWNXZUhRYWE2bUJRbG9IRzR1ejcrdWUwOXVva3krTEdPTlUwbCt6clFUTHNG?=
- =?utf-8?B?Z2wzR0YvWkdEU2lrZ3pqS1ppcGRuV0lXcjRic1pTbldoeUhWZ1BvZ1BFSDVW?=
- =?utf-8?B?MjhXRGtDdkhJZm9hOVA4YnNIUEFqZTB2UG9yUGJMMDhOemloZGpRR2VaMzIy?=
- =?utf-8?B?eGxIS3ZQME9CaHF6RWJCYTYwNmJBNDRHS3hIblVucEZoWG1YeHkxYzRXOURK?=
- =?utf-8?B?M1FEalQ2YWM0N0tvZTlZYThTSmliTlFGTTBkY0pJV2N6V09VakpETEIxVno4?=
- =?utf-8?B?cnJHbnE3ZjE4STJ5RnFNZS9zQStyamtobllKSFJzR1g4M3lGdnZlMzNra0c3?=
- =?utf-8?B?aXB1ZnNXWHRmTXFDWWtFM3VEalI2Qys5UWZxaCtFbXIxaGY4UmZBZDNmaDFj?=
- =?utf-8?B?d2ZOYlZYWWhtT1Z3TjV6bXB5OWJSRmNMbmZtai9CQ2RkcVorSFM4bnVlaUNH?=
- =?utf-8?B?OENtamlUbXhxNGVGMHI1bW9rSjVZeWlBTk0xTS9JejNJWHYvdG5kRy9vMHpn?=
- =?utf-8?B?K3Z3SFJFNTMyTHJkeURLUXQwQ3FTYWZyK1hRd1lsamdkSzY1ZVppdUZ6UFJu?=
- =?utf-8?B?R2R3b01CbWw2cVAxWGpCREkwRGdKUHVIRUJvVEpSRnF1dExTbGRpNU9LVkFa?=
- =?utf-8?B?QkF2alhBSGMyUmc2YlZTdmlOYWlXTUxrSGQ0MmkrRlY1cGp0dmdJV1hGU2Nx?=
- =?utf-8?Q?ZPjxOe6jZDIK1u4M=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8bbca191-0eeb-4806-ba40-08da541aa83f
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR11MB3870.namprd11.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ZUphZmlZQitVTENOK0FtNW44QVJnZTUxRk1pSmpkc3VycFcrQ1NJNTR5em14?=
+ =?utf-8?B?M0FOcGxkQnpYSmZ1aU9RSXdlMFVxUzFCNlBoZGFYdUt0MUx3eGhqRGJOakps?=
+ =?utf-8?B?NFlGN3dIQnNjWXQ4V2dCWCtvVTNJbjFLTTdqZjJhME03anpka2VxUVpleG40?=
+ =?utf-8?B?enBPWndhLzRzR0YrOXRIN0ZsdnpwOGE2N213OHRWYVY1cjBsOTZGenhBcW12?=
+ =?utf-8?B?SmJBcVkrYmhTNWYybFJzY3NlbVlZaHJBK0VnQVJHSThiREkzcEdSL3hmMytL?=
+ =?utf-8?B?Qzd5S1o5Wkp2NUlNQWJmbzROZU9MSmN6NGsrSDRSKzNtUDliSDRkSllJb2w4?=
+ =?utf-8?B?YnE2ZUxmZ21GNittcWJhQ1AxbkJrN2tSaVRNMjFTYkl1SW94MWdXK2xBbTAz?=
+ =?utf-8?B?bGhnK0xMRU0wZjJXMDlnNTJPMFZWZWgrRUlCUDZ5SlFOSnBIYUxkOHZWd3o3?=
+ =?utf-8?B?ajUyTVZHRTh6TUwvRHpjUTdCRStjdWhtZ3hsTVVhTEQwdU1SY1RHd1Vvd29Y?=
+ =?utf-8?B?eGVEbFZBRWFmVkpBeVVJSnVSRkhOekNVSHhlTVNRTm91WTE1ejRpMTBDczdT?=
+ =?utf-8?B?dUtmQVdTWENMSm95RGJGZjdNZ3NKUG1hV09idlMyT1o2WVpkM2w0RWg5UWZN?=
+ =?utf-8?B?OUI2WCt5QVppTmQwK1lHV1RJdENHSzR2YUR2MmNrVzNscmlYOVlxRjJFMmNX?=
+ =?utf-8?B?UnVzenFONW9JSkNwNnRDM21kcnZnSzErNVBuNEIxTSs2blV5Y0xSeTc5UURo?=
+ =?utf-8?B?SnpMbi9xbUdxd0hHd2J4bG1RRmlIYmN5dDFGYXVhVURCTlBibyt6ZkI3Q0E3?=
+ =?utf-8?B?Y0E3T3g3YlJZWjl0VGJjdkVYSFBMaTJvOVRRUWw5WFZZSGd2cUxYQ2RrTGJ5?=
+ =?utf-8?B?YnVPQjlRK2g3WjFpSG5TWGxLekIzV3RqNWQ4dlNtUURnY3ZBQjFYaU5KUHV1?=
+ =?utf-8?B?RG5vM0d2RGZreVNsMUxGWGl6US9oMllJY2UzUXpLbGtPRVltd2ttb29JTHVL?=
+ =?utf-8?B?OEZmNjBXN3hLZkpHcDR4dHU4UVdxcllndlRaSmt0T1F3TlRXS21rVEFTY1NT?=
+ =?utf-8?B?d1hWSjJsalRqcG9OQjlVQ0N5dU81MTZ5UDJzWlhSWHJxMTFOUzdnUEdLYlJG?=
+ =?utf-8?B?ZXlTTHFXSldRSm1pYVpjNHlLWUg4S2d6WllyOTFJQUVnaEFZUzBlSGw4RTN5?=
+ =?utf-8?B?ME5GM2JFUUdSd2hZWkEvcktKRGYvNVY1ZlFLblVDVktUWEtPVmg1d2NBYXoz?=
+ =?utf-8?B?MVkwc1EvZ2t2MlBtKzVIbjRUL2lKMWJFeFNmbjhyc2VOazIyN1hXMDBVUmhq?=
+ =?utf-8?B?NEg3ekp1eTdLK0tSYjVvbmhZclYycG9yR1JCYWFiMEVIVVBQc1l4Ry9aVEQz?=
+ =?utf-8?B?RnYyWEJtU2RlL3ZKMWxGcFN0bHNxdTdBYmlmelQ5c29lQ0RhSlVPNVdKZ01K?=
+ =?utf-8?B?bU0vM0FvT0hjQkVHS1VveVBBYm00TElWejVLZGJxSEJ0V2FPaTYvUWkyNHdW?=
+ =?utf-8?B?MEliYnVMQzFzUjhqOXlVektjWG5KNDlCVDFpR0J3T1IrUTlnN09ocFRpdVpB?=
+ =?utf-8?B?ako3Tk0vbjhCZ2svbTRENG9HWE01OTNUTUVxRkJ0M1MzMW1ueXFZNnlCeWRK?=
+ =?utf-8?B?R3pDNk1TN3NHc3JFTmU1UjltRGJZMWJ6V0hSb3VhWEdrQ1ZQak5iTHRWTHoz?=
+ =?utf-8?B?L0w5WUZzNWtlbWpQSDV0SlM5Sm5EbEtueWlhbWk4YUpxMU0xMFJJSkVqdFVa?=
+ =?utf-8?B?NzdJUWducE9QYUVma1RqaGxlZS82L0hhc1FuY2g1NzJYVXo0Z2xXZ2loQnRI?=
+ =?utf-8?B?YTJ4SzlqbUdGWDRaVkc5TDE0ci8yVUg4amlMbXVhSTlGNjE4VTRxOHlVQ04w?=
+ =?utf-8?B?cEdHSGZXVFlhY1RpeThQTW8xVitFQ1RVYVMxN3BZUHFIcXJNNHh2M09ENkxx?=
+ =?utf-8?B?MTFTTVhTQllBa0xhVlRwTWQ4ZytBZkQ4UW5xYVZjWDBKM09ncDZDcm00alJK?=
+ =?utf-8?B?WlhOcTlmbERhMEtGb1hNT09LdUFIcWVpemtmcThDZTZ6bWdwZ3dBNnRBTTVo?=
+ =?utf-8?B?d1lXbnZpa0wxNWxFWTZlMVhkTkJ6VEF5SUtFTzhNZWh6S1prU3NteUsydWlS?=
+ =?utf-8?B?MGJ0eGFJQyt6TFpxdC9UZS9iNE9RdFkzZHNJTzhLcEVOZWZWWGZGYVVVaVFj?=
+ =?utf-8?B?T2JNN0x0cjRaNk94cmo2U3EySE5ZZFRMNGtRSE0zMnlnWTNvN3pnUHpia2hN?=
+ =?utf-8?B?NVI0bCtDNkFZcGdjVnkwVGlwcloxRFBEZk1CZWc0bWR5NUNEc1pySW1pLzJp?=
+ =?utf-8?B?bXlRUHpvdHpqT0Q0a1YzNm1zK0FyUjNQVVFZMExwMW0xTFhEdkZQQ3MzNnEx?=
+ =?utf-8?Q?WZ4qEpljoH4ZsNYY=3D?=
+X-OriginatorOrg: toradex.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3191f2a8-3eda-4d9e-bcb1-08da5419c3ce
+X-MS-Exchange-CrossTenant-AuthSource: GVAP278MB0929.CHEP278.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jun 2022 06:44:29.8884
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jun 2022 06:38:06.4242
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: T8g/DqFHv+Cg0s++0lC5ub4DkQiIm1l7n+5ovtcdgebn49Ova32CfGxkvLUXivsaC6eYrYZLueQT6PNB9jv/RA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB4943
-X-OriginatorOrg: intel.com
+X-MS-Exchange-CrossTenant-UserPrincipalName: XwisvlwFFnqPfYRohmI8utQ7jWAbDZ5wF8jwR/IIh8PUdPS2wjqETiaIlECdldM+jhzp+T0qpYMbz9OIxCPMB5nE+5NlzLdZPsOKQEXkjJY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: ZR0P278MB0604
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CDE13A77 smtp.mailfrom=andrejs.cainikovs@toradex.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: toradex.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+T24gVHVlLCAyMDIyLTA2LTIxIGF0IDIxOjUwICswMjAwLCBNYXJjIEtsZWluZS1CdWRkZSB3cm90
+ZToKPiBPbiAyMS4wNi4yMDIyIDIwOjA3OjQ5LCBGcmFuY2VzY28gRG9sY2luaSB3cm90ZToKPiA+
+IEhlbGxvIFNoYXduLCBqdXN0IGEgcGluZyBvbiB0aGlzLgo+ID4gCj4gPiBGcmFuY2VzY28KPiA+
+IAo+ID4gT24gVGh1LCBNYXkgMTIsIDIwMjIgYXQgMTI6NDA6MTlQTSArMDIwMCwgQW5kcmVqcyBD
+YWluaWtvdnMgd3JvdGU6Cj4gPiA+IFVwZGF0ZSBTUEkgQ0FOIGNvbnRyb2xsZXIgY2xvY2sgdG8g
+bWF0Y2ggY3VycmVudCBoYXJkd2FyZSBkZXNpZ24uCj4gPiA+IAo+ID4gPiBTaWduZWQtb2ZmLWJ5
+OiBBbmRyZWpzIENhaW5pa292cyA8YW5kcmVqcy5jYWluaWtvdnNAdG9yYWRleC5jb20+Cj4gPiA+
+IC0tLQo+ID4gPiDCoGFyY2gvYXJtNjQvYm9vdC9kdHMvZnJlZXNjYWxlL2lteDhtbS12ZXJkaW4u
+ZHRzaSB8IDYgKysrLS0tCj4gPiA+IMKgMSBmaWxlIGNoYW5nZWQsIDMgaW5zZXJ0aW9ucygrKSwg
+MyBkZWxldGlvbnMoLSkKPiA+ID4gCj4gPiA+IGRpZmYgLS1naXQgYS9hcmNoL2FybTY0L2Jvb3Qv
+ZHRzL2ZyZWVzY2FsZS9pbXg4bW0tdmVyZGluLmR0c2kKPiA+ID4gYi9hcmNoL2FybTY0L2Jvb3Qv
+ZHRzL2ZyZWVzY2FsZS9pbXg4bW0tdmVyZGluLmR0c2kKPiA+ID4gaW5kZXggMGQ4NGQyOWU3MGYx
+Li5kMzA5YmMwYWI4ZjYgMTAwNjQ0Cj4gPiA+IC0tLSBhL2FyY2gvYXJtNjQvYm9vdC9kdHMvZnJl
+ZXNjYWxlL2lteDhtbS12ZXJkaW4uZHRzaQo+ID4gPiArKysgYi9hcmNoL2FybTY0L2Jvb3QvZHRz
+L2ZyZWVzY2FsZS9pbXg4bW0tdmVyZGluLmR0c2kKPiA+ID4gQEAgLTMyLDEwICszMiwxMCBAQCBi
+YWNrbGlnaHQ6IGJhY2tsaWdodCB7Cj4gPiA+IMKgwqDCoMKgwqDCoMKgwqB9Owo+ID4gPiDCoAo+
+ID4gPiDCoMKgwqDCoMKgwqDCoMKgLyogRml4ZWQgY2xvY2sgZGVkaWNhdGVkIHRvIFNQSSBDQU4g
+Y29udHJvbGxlciAqLwo+ID4gPiAtwqDCoMKgwqDCoMKgwqBjbGsyMG06IG9zY2lsbGF0b3Igewo+
+ID4gPiArwqDCoMKgwqDCoMKgwqBjbGs0MG06IG9zY2lsbGF0b3Igewo+ID4gPiDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoGNvbXBhdGlibGUgPSAiZml4ZWQtY2xvY2siOwo+ID4gPiDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCNjbG9jay1jZWxscyA9IDwwPjsKPiA+ID4g
+LcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoGNsb2NrLWZyZXF1ZW5jeSA9IDwyMDAwMDAw
+MD47Cj4gPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBjbG9jay1mcmVxdWVuY3kg
+PSA8NDAwMDAwMDA+Owo+ID4gPiDCoMKgwqDCoMKgwqDCoMKgfTsKPiA+ID4gwqAKPiA+ID4gwqDC
+oMKgwqDCoMKgwqDCoGdwaW8ta2V5cyB7Cj4gPiA+IEBAIC0xOTQsNyArMTk0LDcgQEAgJmVjc3Bp
+MyB7Cj4gPiA+IMKgCj4gPiA+IMKgwqDCoMKgwqDCoMKgwqBjYW4xOiBjYW5AMCB7Cj4gPiA+IMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgY29tcGF0aWJsZSA9ICJtaWNyb2NoaXAsbWNw
+MjUxeGZkIjsKPiA+ID4gLcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoGNsb2NrcyA9IDwm
+Y2xrMjBtPjsKPiA+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoGNsb2NrcyA9IDwm
+Y2xrNDBtPjsKPiA+ID4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBpbnRlcnJ1cHRz
+LWV4dGVuZGVkID0gPCZncGlvMSA2Cj4gPiA+IElSUV9UWVBFX0VER0VfRkFMTElORz47Cj4gCj4g
+WW91IGRvbid0IHdhbnQgdG8gdXNlIGFuIGVkZ2UgdHJpZ2dlcmVkIGludGVycnVwdCB3aXRoIHRo
+ZSBtY3AyNTF4ZmQKPiBjaGlwLiBZb3Ugd2lsbCBiZSBsb3NpbmcgaW50ZXJydXB0cywgYmV0dGVy
+IHVzZSBJUlFfVFlQRV9MRVZFTF9MT1cuCj4gCj4gcmVnYXJkcywKPiBNYXJjCj4gCkhpIE1hcmMs
+CgpUaGlzIHBhcnRpY3VsYXIgY2hhbmdlIGlzIG5vdCBhYm91dCBpbnRlcnJ1cHRzLiBCdXQgdGhh
+bmtzIGZvciBhIGhpbnQsCkknbGwgbWFrZSBzdXJlIHRoaXMgaXMgYWRkcmVzc2VkLgoKQmVzdCBy
+ZWdhcmRzLApBbmRyZWpzIENhaW5pa292cy4K
 
-
-On 6/22/2022 8:49 AM, Kechen Lu wrote:
-> Add tests for KVM cap KVM_CAP_X86_DISABLE_EXITS overriding flags
-> in VM and vCPU scope both works as expected.
-> 
-> Suggested-by: Chao Gao <chao.gao@intel.com>
-> Signed-off-by: Kechen Lu <kechenl@nvidia.com>
-> ---
->   tools/testing/selftests/kvm/.gitignore        |   1 +
->   tools/testing/selftests/kvm/Makefile          |   1 +
->   .../selftests/kvm/include/x86_64/svm_util.h   |   1 +
->   .../selftests/kvm/x86_64/disable_exits_test.c | 145 ++++++++++++++++++
->   4 files changed, 148 insertions(+)
->   create mode 100644 tools/testing/selftests/kvm/x86_64/disable_exits_test.c
-> 
-> diff --git a/tools/testing/selftests/kvm/.gitignore b/tools/testing/selftests/kvm/.gitignore
-> index 4509a3a7eeae..2b50170db9b2 100644
-> --- a/tools/testing/selftests/kvm/.gitignore
-> +++ b/tools/testing/selftests/kvm/.gitignore
-> @@ -15,6 +15,7 @@
->   /x86_64/cpuid_test
->   /x86_64/cr4_cpuid_sync_test
->   /x86_64/debug_regs
-> +/x86_64/disable_exits_test
->   /x86_64/evmcs_test
->   /x86_64/emulator_error_test
->   /x86_64/fix_hypercall_test
-> diff --git a/tools/testing/selftests/kvm/Makefile b/tools/testing/selftests/kvm/Makefile
-> index 22423c871ed6..de11d1f95700 100644
-> --- a/tools/testing/selftests/kvm/Makefile
-> +++ b/tools/testing/selftests/kvm/Makefile
-> @@ -115,6 +115,7 @@ TEST_GEN_PROGS_x86_64 += x86_64/xen_shinfo_test
->   TEST_GEN_PROGS_x86_64 += x86_64/xen_vmcall_test
->   TEST_GEN_PROGS_x86_64 += x86_64/sev_migrate_tests
->   TEST_GEN_PROGS_x86_64 += x86_64/amx_test
-> +TEST_GEN_PROGS_x86_64 += x86_64/disable_exits_test
->   TEST_GEN_PROGS_x86_64 += access_tracking_perf_test
->   TEST_GEN_PROGS_x86_64 += demand_paging_test
->   TEST_GEN_PROGS_x86_64 += dirty_log_test
-> diff --git a/tools/testing/selftests/kvm/include/x86_64/svm_util.h b/tools/testing/selftests/kvm/include/x86_64/svm_util.h
-> index a25aabd8f5e7..d8cad1cff578 100644
-> --- a/tools/testing/selftests/kvm/include/x86_64/svm_util.h
-> +++ b/tools/testing/selftests/kvm/include/x86_64/svm_util.h
-> @@ -17,6 +17,7 @@
->   #define CPUID_SVM		BIT_ULL(CPUID_SVM_BIT)
->   
->   #define SVM_EXIT_MSR		0x07c
-> +#define SVM_EXIT_HLT		0x078
-
-There has other people add the SVM_EXIT_HLT in the kvm/queue, so you may 
-not need to add it here.
-
->   #define SVM_EXIT_VMMCALL	0x081
->   
->   struct svm_test_data {
-> diff --git a/tools/testing/selftests/kvm/x86_64/disable_exits_test.c b/tools/testing/selftests/kvm/x86_64/disable_exits_test.c
-> new file mode 100644
-> index 000000000000..2811b07e8885
-> --- /dev/null
-> +++ b/tools/testing/selftests/kvm/x86_64/disable_exits_test.c
-> @@ -0,0 +1,145 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * Test per-VM and per-vCPU disable exits cap
-> + *
-> + */
-> +
-> +#define _GNU_SOURCE /* for program_invocation_short_name */
-> +#include <sys/ioctl.h>
-> +
-> +#include "test_util.h"
-> +#include "kvm_util.h"
-> +#include "svm_util.h"
-> +#include "vmx.h"
-> +#include "processor.h"
-> +
-> +#define VCPU_ID_1 0
-> +#define VCPU_ID_2 1
-> +
-> +static void guest_code_exits(void) {
-> +	asm volatile("sti; hlt; cli");
-> +}
-> +
-> +/* Set debug control for trapped instruction exiting to userspace */
-> +static void vcpu_set_debug_exit_userspace(struct kvm_vm *vm, int vcpu_id) {
-
-nit: you should make the code style consistent, please use the format:
-function()
-{
-
-}
-
-> +	struct kvm_guest_debug debug;
-> +	memset(&debug, 0, sizeof(debug));
-> +	debug.control = KVM_GUESTDBG_ENABLE | KVM_GUESTDBG_EXIT_USERSPACE;
-> +	vcpu_set_guest_debug(vm, vcpu_id, &debug);
-> +}
-> +
-> +static void test_vm_cap_disable_exits(void) {
-> +	struct kvm_enable_cap cap = {
-> +		.cap = KVM_CAP_X86_DISABLE_EXITS,
-> +		.args[0] = KVM_X86_DISABLE_EXITS_HLT|KVM_X86_DISABLE_EXITS_OVERRIDE,
-						    ^
-			nit: a space is much more clear here
-
-> +	};
-> +	struct kvm_vm *vm;
-> +	struct kvm_run *run;
-> +
-> +	/* Create VM */
-> +	vm = vm_create_without_vcpus(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES);
-> +
-> +	/* Test Case #1
-> +	 * Default without disabling HLT exits in VM scope
-> +	 */
-> +	vm_vcpu_add_default(vm, VCPU_ID_1, (void *)guest_code_exits);
-> +	vcpu_set_debug_exit_userspace(vm, VCPU_ID_1);
-> +	run = vcpu_state(vm, VCPU_ID_1);
-> +	vcpu_run(vm, VCPU_ID_1);
-> +	/* Exit reason should be HLT */
-> +	if (is_amd_cpu())
-> +		TEST_ASSERT(run->hw.hardware_exit_reason == SVM_EXIT_HLT,
-> +			"Got exit_reason other than HLT: 0x%llx\n",
-> +			run->hw.hardware_exit_reason);
-> +	else
-> +		TEST_ASSERT(run->hw.hardware_exit_reason == EXIT_REASON_HLT,
-> +			"Got exit_reason other than HLT: 0x%llx\n",
-> +			run->hw.hardware_exit_reason);
-> +
-> +	/* Test Case #2
-> +	 * Disabling HLT exits in VM scope
-> +	 */
-> +	vm_vcpu_add_default(vm, VCPU_ID_2, (void *)guest_code_exits);
-> +	vcpu_set_debug_exit_userspace(vm, VCPU_ID_2);
-> +	run = vcpu_state(vm, VCPU_ID_2);
-
-I think you can add more vcpu here to make sure after disabling HLT 
-exits in VM scope here, every vcpu will not exit due to the HLT.
-
-> +	/* Set VM scoped cap arg
-> +	 * KVM_X86_DISABLE_EXITS_HLT|KVM_X86_DISABLE_EXITS_OVERRIDE
-> +	 * after vCPUs creation so requiring override flag
-> +	 */
-> +	TEST_ASSERT(!vm_enable_cap(vm, &cap), "Failed to set KVM_CAP_X86_DISABLE_EXITS");
-> +	vcpu_run(vm, VCPU_ID_2);
-> +	/* Exit reason should not be HLT, would finish the guest
-> +	 * running and exit (e.g. SVM_EXIT_SHUTDOWN)
-> +	 */
-> +	if (is_amd_cpu())
-> +		TEST_ASSERT(run->hw.hardware_exit_reason != SVM_EXIT_HLT,
-> +			"Got exit_reason as HLT: 0x%llx\n",
-> +			run->hw.hardware_exit_reason);
-> +	else
-> +		TEST_ASSERT(run->hw.hardware_exit_reason != EXIT_REASON_HLT,
-> +			"Got exit_reason as HLT: 0x%llx\n",
-> +			run->hw.hardware_exit_reason);
-> +
-> +	kvm_vm_free(vm);
-> +}
-> +
-> +static void test_vcpu_cap_disable_exits(void) {
-> +	struct kvm_enable_cap cap = {
-> +		.cap = KVM_CAP_X86_DISABLE_EXITS,
-> +		.args[0] = KVM_X86_DISABLE_EXITS_HLT|KVM_X86_DISABLE_EXITS_OVERRIDE,
-> +	};
-> +	struct kvm_vm *vm;
-> +	struct kvm_run *run;
-> +
-> +	/* Create VM */
-> +	vm = vm_create_without_vcpus(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES);
-> +	vm_vcpu_add_default(vm, VCPU_ID_1, (void *)guest_code_exits);
-> +	vcpu_set_debug_exit_userspace(vm, VCPU_ID_1);
-> +	vm_vcpu_add_default(vm, VCPU_ID_2, (void *)guest_code_exits);
-> +	vcpu_set_debug_exit_userspace(vm, VCPU_ID_2);
-> +	/* Set vCPU 2 scoped cap arg
-> +	 * KVM_X86_DISABLE_EXITS_HLT|KVM_X86_DISABLE_EXITS_OVERRIDE
-> +	 */
-> +	TEST_ASSERT(!vcpu_enable_cap(vm, VCPU_ID_2, &cap), "Failed to set KVM_CAP_X86_DISABLE_EXITS");
-> +
-> +	/* Test Case #3
-> +	 * Default without disabling HLT exits in this vCPU 1
-> +	 */
-> +	run = vcpu_state(vm, VCPU_ID_1);
-> +	vcpu_run(vm, VCPU_ID_1);
-> +	/* Exit reason should be HLT */
-> +	if (is_amd_cpu())
-> +		TEST_ASSERT(run->hw.hardware_exit_reason == SVM_EXIT_HLT,
-> +			"Got exit_reason other than HLT: 0x%llx\n",
-> +			run->hw.hardware_exit_reason);
-> +	else
-> +		TEST_ASSERT(run->hw.hardware_exit_reason == EXIT_REASON_HLT,
-> +			"Got exit_reason other than HLT: 0x%llx\n",
-> +			run->hw.hardware_exit_reason);
-> +
-> +	/* Test Case #4
-> +	 * Disabling HLT exits in vCPU 2
-> +	 */
-> +	run = vcpu_state(vm, VCPU_ID_2);
-> +	vcpu_run(vm, VCPU_ID_2);
-> +	/* Exit reason should not be HLT, would finish the guest
-> +	 * running and exit (e.g. SVM_EXIT_SHUTDOWN)
-> +	 */
-> +	if (is_amd_cpu())
-> +		TEST_ASSERT(run->hw.hardware_exit_reason != SVM_EXIT_HLT,
-> +			"Got exit_reason as HLT: 0x%llx\n",
-> +			run->hw.hardware_exit_reason);
-> +	else
-> +		TEST_ASSERT(run->hw.hardware_exit_reason != EXIT_REASON_HLT,
-> +			"Got exit_reason as HLT: 0x%llx\n",
-> +			run->hw.hardware_exit_reason);
-> +
-> +	kvm_vm_free(vm);
-> +}
-> +
-> +int main(int argc, char *argv[])
-> +{
-> +	test_vm_cap_disable_exits();
-> +	test_vcpu_cap_disable_exits();
-> +	return 0;
-> +}
