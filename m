@@ -2,157 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEF79C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 00:18:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 479D5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 00:19:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347311AbiFVASb (ORCPT
+        id S1354228AbiFVATa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 20:18:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34804 "EHLO
+        Tue, 21 Jun 2022 20:19:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229575AbiFVAS3 (ORCPT
+        with ESMTP id S232356AbiFVATX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 20:18:29 -0400
-Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE4F1248D4
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 17:18:26 -0700 (PDT)
-Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-3137316bb69so147006397b3.10
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 17:18:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7oGTotRq4WT1s39cOcG1SCSH+1obZhPZeWPvkH3sdIY=;
-        b=pRiRdRZvjWOHeq131C46xsgsl6zJcY8C05hCjZzCa9c5mI+uxZS+aWO42sFaDVcz0b
-         nZ6JYvtfY+Dyq2C3cKgNrJEzQb345RwaajVb7ThwG5hC4/DO+seCNsOY5IrbWmSj93x2
-         odlhjOIH9KnXoJQSU0k/qCogGY7lOn36CEKee3zO/Hjmxp94lYh4Dbu3OZ2pdCN470GB
-         +pFf6fL2HolqA61KHmkwKp5hmNh6RdX/SFg+piwu9viA8TJy2VVclhV5fTeHJgt9D5mU
-         YbHFvldnFR/xTL31nImBrcfsqLyAFoBI+mjOIE5RD2EhoaF6AlCw0MOPtH1rTD4uNfEc
-         xIkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7oGTotRq4WT1s39cOcG1SCSH+1obZhPZeWPvkH3sdIY=;
-        b=pUhtIeNQuT9PZW3FHHhdkBlVyJkgAMX0XfbaLSlElqvz5RgruBnMUheZcCu9rDxfjc
-         HiJuRyjkbcx1VV5/qkeLK0LkOhaqPpLTO7O1NWIToZnf7JNyyg4PdUP3go+87K3EZHsT
-         f62V2Qt5/RFvTzBn61ItFFXdZUFI2Rlrraaf0wveqddADZrHTAh+rsIcwTeKSvheALaf
-         PeLFYGdZf/m18/dBNDWujp1toPRTLhQZBC5oLZ8R0Vq1UTp2yEUAn1cpdLNXvkKtPhM+
-         sWl/lIe8TTunoMTvUHwDeeAUcwTvtKc6y1ifMi02oqA7/ZELIYWtvV1xyWRJCTjmrdp1
-         pqQg==
-X-Gm-Message-State: AJIora/BFxj2BmM+y/KPzhT7vDe/RJEoT7+qMOXld1edcgyFWzgnSbkG
-        LsCIROdknajlTamCO/FP3vvCiCEXoOxsmZRjVOkuIg==
-X-Google-Smtp-Source: AGRyM1uZMeYsz5mgtXqZFmpIy7OI6WlLsf1bMvgdPOTGVewZvG7oLbOCHMIQXhvHTWsNX+x8sktVDLoJVaFNzPzXsDo=
-X-Received: by 2002:a0d:cd81:0:b0:2ff:aa45:4238 with SMTP id
- p123-20020a0dcd81000000b002ffaa454238mr984226ywd.155.1655857105884; Tue, 21
- Jun 2022 17:18:25 -0700 (PDT)
+        Tue, 21 Jun 2022 20:19:23 -0400
+Received: from sonic308-16.consmr.mail.ne1.yahoo.com (sonic308-16.consmr.mail.ne1.yahoo.com [66.163.187.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC35825C76
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 17:19:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1655857161; bh=LduUrw3eVyp6mK0CVKmYw4M59cd6hwNqy8Oc641QJFE=; h=Date:Subject:To:Cc:References:From:In-Reply-To:From:Subject:Reply-To; b=ga1vDngwiwM55nMY03lGZvtii8Fm1eWiG/k66DEH4EXprwPWRsKfEucaq2MabOP5YL7GTW2rcVgSdjbqTI6dD0tl73j1vJJs53Qj3ffhvDbIDrqfPHo5UbP/Q7PMzDnlilXIEhhI4VCvKm+saTnT5xlBbJH9hXfhyZfIwJ75BC6UqYFfcDkGlfxadVK2XWJl4ZISomM2+5pyBoBpshDOL0ijN8eK7tCYZndKM3c/GZvQEW4io7YDf1rfBVQ2Z0alYjBFaaseYj0/o7nfwnplJCVMCqPmRn9XcjRtm/HcTkNPGEm98lqMiad7GmEcxCnnjF3rq5LkQKjtMJ0592uj6Q==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1655857161; bh=Damb/FchBMGqo36QVmZilqPN1InpZOwIXasJWXsBfIC=; h=X-Sonic-MF:Date:Subject:To:From:From:Subject; b=HM3rHxxAduejaYdLVdLUx0+EYZl9v32YVS53OF38jaQTHFH2Rv8iHdL5PRsGN0SbtGnoYL+P7jPkzyUccqKHJpSUz9G3s14kcBOrlvzbEIPY5DGC+O721X3v7otbjQ06lMK/21PWFJymUTL68MwM8Ymt+9OPKktLA1yZc0HbReQwd5jFur4bRROl1J94BYxg9FOy2g2i9iAaXqRFyOhqe+yqsiNLeWw6pfo8WKAOwSXpDCVkYz/qOzWK8D+yof81dh7nn1zbGZtXS7yRvdQpdqeUD6No7avSOOxACBW+EaI23OXB1j3s8TJHSttTd1JrGNx/wTSVoJa4innJRA6djw==
+X-YMail-OSG: kTbEmRgVM1lycM4fN4Fo0k5USdwJrrQonPUOb9bDgKcBdzB.B1dR4UrLmmh4LNZ
+ FHC1kjd2FCK_si76YkFdeNQDgCsUG1zYndHE.krl.4KOlp5P4Inkcs8haXpNeLoYSUB0Zj7Ok4.h
+ 0_bdRSaacplsY3sgOphvlxvlN_whPBQYbwNLRBe3Vr3405fuayHKp44Zdm8ATQ9jZxrAj2JNiumV
+ npWlMRwWlFiN22DzHMUDTYXfJkxXchCbq5MVPlhp5Jf2dWJL9BCp8T_oZxlWK6emb4SQCFrOyIAx
+ lzBncDVnZaOoOf46d2OtQgfbgpZbo8X788o0Qm3GgnDWFgsOfaz2oy4HmnfB5g2eBkVGMZnHHpma
+ Zhb1nQsM9dctR3vd4fcJWtcmw241XXvwbL6Y32cMNybssfsrCE_kB_hyKAeWp8UwRPg6nZgqTPTh
+ ETonSXR2NamGGnN2eDluWyyPa3xXHdUAOJt2BzMTR3u8ukTnZdtg1LDTuPZ2aQgUON653.3Xik_r
+ 9t_jY32JPfHKlOa5oPGQn2CyxXYX9sO09E4zc6yeelv6QZFk0.hwYANtPYnt8O1FF1MntLflrnN0
+ yVmSWENGMaRagyI.Cs5wAG6Nt_f7R_z4a2xDU7o6Cwkt_CmHd131DZ53OUajshoSaf84X3ErqRhq
+ 5eDzAQDKXpoFfLnQPSVvhIZcZllxdUm6jPMD9cYWZGZISQvliX3bjAZZOL2aQtiUgLcCdVrEcFpc
+ HDVnWMGH6i3X4rwb_OF6UQ0P0gCVON9mxUGD_41cSFFIYBC5r1DOvTAN6LlGCo04jwdPHwxu9TM6
+ PO0AK4nckvxcZGZgLt701vOO_Ycuq1N7tGOu57D6nAm6DcfiGvAfPEB9CXZIE3K892rD5wM7KEpM
+ bOosOIlIKcuhYsPjYG_9slhBuXwAzESat2TNqsXggjkV_H0n6r.cVtITZsPoT01JsaiPRV24vhkd
+ yBo0_XOMfu89Zw_BEuwfJ23jB7Yh0xXoUymOEAAKe1xxGT4TANA1CL3z9I6fyI12iHJ5iwCo1Y.f
+ .VWHHi2R2na0ZSXG_RFp42AttcMjRPqLqfraaUd.z89BCFNrn7NBk6D7FwX0LvjEfRKKJFbLO_0n
+ XWOk55wmVrhNZTbr7EZaWF7pxQH5sRivoslQWdSIO4yNKyNzVy75SJskii7qIT0ZP8Dt.sCyLCNN
+ ZmuQVZfskm8NiWznmAEDC_vRsbtsKux7.S1TZizyhuZVaRwWC4QWLy34CplRQno9_n96iWw6pCcE
+ MtgbR34Otba5JiTL6kW4jG2amGCeHBtCjV3rrmZct1cMCg9ZKLNJKu_UD4ulFbc8j7gBpP3c9XUj
+ CRkI1xSrW7SfelzTG.Y4BTSZjxHP2UxWWLyamAux4mEgnETm3Xd7FA.bw7451.Ptn6Gnck1SBn30
+ vATtV1OyQ4ftbrfCc1FVh170v6xTcrJ7rITQ6ybLoOSuYb2HQsJ6KUAciCmjhGoRkbAfw.ABSMHS
+ qsOAoZ0WMm54hEqq9XZDSdJifHUjMnx5qB9hzJp.11JkGY_nUdVeFKQr2lEFUOGZPvHXc9.1OXuV
+ chitkUqWHTambDZMLkDDv4NGqAFNvAzhdPaEao8hE3eSS95pYA_hkD4CPmOAZQ3jjClZccu0xg0i
+ lOcZLwaJEBVwUkPIWixfrMMU1Vkk0prmbyWXuWClAp5.upWmvQoE_2UBV3w6nooKuQC.N0UAFKHM
+ pygv_D_MNOUSGRC6ZdnIlX0AedQ7ZePAoR4AOkDl2WPZxLUXCm2ZBykBtdtmnX06uq9836hXW.Fo
+ TXUtkPHWewUXts9V5TPEEbmcIvlwPFLD2frYYDcwau3TydYXioaJibz6kv.0in5qjsdk2jdkSzNE
+ Rmez0IZyxRR.iAL0je9GlPU8fI.bIYBpEfoWEZuHQ1uhaIwoCvMD0hP6AbKDc2Nk_.BA.P712Ekw
+ VWO0zaWAazBDeedF5f2pH_n3yMI5wZnllUoJdtFsRGT9Vhii7nidn8EkxWGahXqQOahVOMvKkcXD
+ a4lbu8Kvpcd_rp9d_.AnYhC1a.ICdvP6ZLqq96n3RPuLV0atC28qoRwEWfp1fdntKURaYXMB_lJe
+ K.nYkp_zK4AUuy7hhgzo6YFMfcU3o0DPICJTijBHc.au9ADC_o4xl9Ny1Lwd11xag1_zqSoSHCsH
+ QAYLxDBaVczxZQ1ZS12woM5wc9txPgaTF4ywnRg0ViSpHjSYb1rCAt5fVKd2fniRoGaoKXpjo9G8
+ vo8ilkcltbfKMHuZKsBMs6pOPfr3rLi0XiBpZtSRiC_bCKMOgDprLfdkSa434FXtfCO.sxkwx4BM
+ -
+X-Sonic-MF: <casey@schaufler-ca.com>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic308.consmr.mail.ne1.yahoo.com with HTTP; Wed, 22 Jun 2022 00:19:21 +0000
+Received: by hermes--canary-production-bf1-8bb76d6cf-xkxwt (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID caa03a9c3f5621a0acb91f535e7b9383;
+          Wed, 22 Jun 2022 00:19:18 +0000 (UTC)
+Message-ID: <ce1653b1-feb0-1a99-0e97-8dfb289eeb79@schaufler-ca.com>
+Date:   Tue, 21 Jun 2022 17:19:15 -0700
 MIME-Version: 1.0
-References: <20220616211016.4037482-1-dylanbhatch@google.com>
- <941e0991-eb3e-f988-8262-3d51ff8badad@linuxfoundation.org>
- <CADBMgpwt2ALzBTtEm7v6DLL_9pjUhVLDpBLHXn1b0bvVf2BSvg@mail.gmail.com>
- <47312e8a-87fe-c7dc-d354-74e81482bc1e@linuxfoundation.org>
- <CADBMgpx9hwHaWe=m2kQhKOJFWnLSejoWa6wz1VECEkLhWq4qog@mail.gmail.com> <a5f46e4e-a472-77ce-f61e-b2f9922bdd50@linuxfoundation.org>
-In-Reply-To: <a5f46e4e-a472-77ce-f61e-b2f9922bdd50@linuxfoundation.org>
-From:   Dylan Hatch <dylanbhatch@google.com>
-Date:   Tue, 21 Jun 2022 17:18:14 -0700
-Message-ID: <CADBMgpzyOKVO1ju_WkxYLhXGvwJjHoL6V-+Nw49UdTFoPY7NvQ@mail.gmail.com>
-Subject: Re: [PATCH] selftests/proc: Fix proc-pid-vm for vsyscall=xonly.
-To:     Shuah Khan <skhan@linuxfoundation.org>
-Cc:     Shuah Khan <shuah@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 0/2] Introduce security_create_user_ns()
+Content-Language: en-US
+To:     Frederick Lawler <fred@cloudflare.com>, kpsingh@kernel.org,
+        revest@chromium.org, jackmanb@chromium.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        jmorris@namei.org, serge@hallyn.com, bpf@vger.kernel.org,
+        linux-security-module@vger.kernel.org
+Cc:     brauner@kernel.org, paul@paul-moore.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-team@cloudflare.com,
+        Casey Schaufler <casey@schaufler-ca.com>
+References: <20220621233939.993579-1-fred@cloudflare.com>
+From:   Casey Schaufler <casey@schaufler-ca.com>
+In-Reply-To: <20220621233939.993579-1-fred@cloudflare.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Mailer: WebService/1.1.20280 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 17, 2022 at 3:27 PM Shuah Khan <skhan@linuxfoundation.org> wrote:
+On 6/21/2022 4:39 PM, Frederick Lawler wrote:
+> While creating a LSM BPF MAC policy to block user namespace creation, we
+> used the LSM cred_prepare hook because that is the closest hook to prevent
+> a call to create_user_ns().
 >
-> On 6/17/22 4:05 PM, Dylan Hatch wrote:
-> > On Fri, Jun 17, 2022 at 12:38 PM Shuah Khan <skhan@linuxfoundation.org> wrote:
-> >>
-> >> On 6/17/22 12:45 PM, Dylan Hatch wrote:
-> >>> On Thu, Jun 16, 2022 at 4:01 PM Shuah Khan <skhan@linuxfoundation.org> wrote:
-> >>>>
-> >
-> >>
-> >> It depends on the goal of the test. Is the test looking to see if the
-> >> probe fails with insufficient permissions, then you are changing the
-> >> test to not check for that condition.
-> >
-> > The goal of the test is to validate the output of /proc/$PID/maps, and
-> > the memory probe is only needed as setup to determine what the
-> > expected output should be. This used to be sufficient, but now it can
-> > no longer fully disambiguate it with the introduction of
-> > vsyscall=xonly. The solution proposed here is to disambiguate it by
-> > also checking the length read from /proc/$PID/maps.
-> >
-> >>
+> The calls look something like this:
 >
-> Makes sense. However the question is does this test need to be enhanced
-> with the addition of vsyscall=xonly?
+>      cred = prepare_creds()
+>          security_prepare_creds()
+>              call_int_hook(cred_prepare, ...
+>      if (cred)
+>          create_user_ns(cred)
 >
-> >> I would say in this case, the right approach would be to leave the test
-> >> as is and report expected fail and add other cases.
-> >>
-> >> The goal being adding more coverage and not necessarily opt for a simple
-> >> solution.
-> >
-> > What does it mean to report a test as expected fail? Is this a
-> > mechanism unique to kselftest? I agree adding another test case would
-> > work, but I'm unsure how to do it within the framework of kselftest.
-> > Ideally, there would be separate test cases for vsyscall=none,
-> > vsyscall=emulate, and vsyscall=xonly, but these options can be toggled
-> > both in the kernel config and on the kernel command line, meaning (to
-> > the best of my knowledge) these test cases would have to be built
-> > conditionally against the conflig options and also parse the command
-> > line for the 'vsyscall' option.
-> >
+> We noticed that error codes were not propagated from this hook and
+> introduced a patch [1] to propagate those errors.
 >
-> Expected fail isn't unique kselftest. It is a testing criteria where
-> a test is expected to fail. For example if a file can only be opened
-> with privileged user a test that runs and looks for failure is an
-> expected to fail case - we are looking for a failure.
+> The discussion notes that security_prepare_creds()
+> is not appropriate for MAC policies, and instead the hook is
+> meant for LSM authors to prepare credentials for mutation. [2]
 >
-> A complete battery of tests for vsyscall=none, vsyscall=emulate,
-> vsyscall=xonly would test for conditions that are expected to pass
-> and fail based on the config.
+> Ultimately, we concluded that a better course of action is to introduce
+> a new security hook for LSM authors. [3]
 >
-> tools/testing/selftests/proc/config doesn't have any config options
-> that are relevant to VSYSCALL
->
-> Can you please send me the how you are running the test and what the
-> failure output looks like?
+> This patch set first introduces a new security_create_user_ns() function
+> and create_user_ns LSM hook, then marks the hook as sleepable in BPF.
 
-I'm building a kernel with the following relevant configurations:
-
-$ cat .config | grep VSYSCALL
-CONFIG_GENERIC_TIME_VSYSCALL=y
-CONFIG_X86_VSYSCALL_EMULATION=y
-CONFIG_LEGACY_VSYSCALL_XONLY=y
-# CONFIG_LEGACY_VSYSCALL_NONE is not set
-
-Running the test without this change both in virtme and on real
-hardware gives the following error:
-
-# ./tools/testing/selftests/proc/proc-pid-vm
-proc-pid-vm: proc-pid-vm.c:328: int main(void): Assertion `rv == len' failed.
-Aborted
-
-This is because when CONFIG_LEGACY_VSYSCALL_XONLY=y a probe of the
-vsyscall page results in a segfault. This test was originally written
-before this option existed so it incorrectly assumes the vsyscall page
-isn't mapped at all, and the expected buffer length doesn't match the
-result.
-
-An alternate method of fixing this test could involve setting the
-expected result based on the config with #ifdef blocks, but I wasn't
-sure if that could be done for kernel config options in kselftest
-code. There's also the matter of checking the kernel command line for
-a `vsyscall=` arg, is parsing /proc/cmdline the best way to do this?
+Why restrict this hook to user namespaces? It seems that an LSM that
+chooses to preform controls on user namespaces may want to do so for
+network namespaces as well. Also, the hook seems backwards. You should
+decide if the creation of the namespace is allowed before you create it.
+Passing the new namespace to a function that checks to see creating a
+namespace is allowed doesn't make a lot off sense.
 
 >
-> thanks,
-> -- Shuah
-
-Thanks,
-Dylan
+> Links:
+> 1. https://lore.kernel.org/all/20220608150942.776446-1-fred@cloudflare.com/
+> 2. https://lore.kernel.org/all/87y1xzyhub.fsf@email.froward.int.ebiederm.org/
+> 3. https://lore.kernel.org/all/9fe9cd9f-1ded-a179-8ded-5fde8960a586@cloudflare.com/
+>
+> Frederick Lawler (2):
+>    security, lsm: Introduce security_create_user_ns()
+>    bpf-lsm: Make bpf_lsm_create_user_ns() sleepable
+>
+>   include/linux/lsm_hook_defs.h | 2 ++
+>   include/linux/lsm_hooks.h     | 5 +++++
+>   include/linux/security.h      | 8 ++++++++
+>   kernel/bpf/bpf_lsm.c          | 1 +
+>   kernel/user_namespace.c       | 5 +++++
+>   security/security.c           | 6 ++++++
+>   6 files changed, 27 insertions(+)
+>
+> --
+> 2.30.2
+>
