@@ -2,214 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C161C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 11:20:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B532AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 11:20:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357696AbiFVLUB (ORCPT
+        id S1357708AbiFVLUi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 07:20:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57812 "EHLO
+        Wed, 22 Jun 2022 07:20:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357511AbiFVLTS (ORCPT
+        with ESMTP id S1357484AbiFVLUO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 07:19:18 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48FDB3CA69;
-        Wed, 22 Jun 2022 04:18:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655896692; x=1687432692;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=lYZ0J/QJ0w2QknVOB8G43XbPW/02GAYwoVqrSVBVKU8=;
-  b=Q7oHsxtxsbMYeaUCoAmVHb4Rp9Geupbu9PcObvzir///TG4cUoSQjRML
-   aPBs/T3ph68jkrkK+XffcrIBd6lPN+I3rAq5T23Lc21O4kLmDtxWDmvRU
-   zDVAUOJhJqq8BL4VsO6yGe/XX92VWAKFFxhcoZOHx6Za1agK7BDW72wKB
-   oX9S9NmS97e2aYmK7GOnC4TFT7NJFZl2SDNrMqNb6XGg5NmtKJPAxfQ9b
-   JQAVDpFe644VIp1Yd+qr4wlOsFppuYYpIv8pfTn7YuqCz7ZooY8KL7KgT
-   A44V4DrfGE3CfZ0KP3+lS2lxJSSw40mHCHO3RJ2dLcdY7yS4YN1LBf4Gw
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="305841164"
-X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="305841164"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 04:17:50 -0700
-X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="730302351"
-Received: from jmatsis-mobl.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.209.178.197])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 04:17:46 -0700
-From:   Kai Huang <kai.huang@intel.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     seanjc@google.com, pbonzini@redhat.com, dave.hansen@intel.com,
-        len.brown@intel.com, tony.luck@intel.com,
-        rafael.j.wysocki@intel.com, reinette.chatre@intel.com,
-        dan.j.williams@intel.com, peterz@infradead.org, ak@linux.intel.com,
-        kirill.shutemov@linux.intel.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com,
-        isaku.yamahata@intel.com, kai.huang@intel.com
-Subject: [PATCH v5 19/22] x86/virt/tdx: Configure global KeyID on all packages
-Date:   Wed, 22 Jun 2022 23:17:08 +1200
-Message-Id: <756655ead5cb8307033409436cf74029c842dc09.1655894131.git.kai.huang@intel.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <cover.1655894131.git.kai.huang@intel.com>
-References: <cover.1655894131.git.kai.huang@intel.com>
+        Wed, 22 Jun 2022 07:20:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D53FD3DA77
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 04:18:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655896727;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=0sIsnfMpe4FJBTS0h3l7SV9v1TTfsWpjwvuPTBuEppw=;
+        b=KJUcuMCVKLPqzSs6nmHEGpLlHe6cYItDNUMLpEFho3YUxl1tlSO2TKKvQPlWDa6bKp06IU
+        nL5YncfTNB+kqNO4XqA0+qqXg2Jt27T8slikWPfN+2P2KGFHLlNu8YEAaLM4unqlo48cAm
+        r1M90xec0CrKrJYMO3BS/OV8xQCH0s8=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-226-MFN3ONSFMUuoINxGAeGjBw-1; Wed, 22 Jun 2022 07:18:44 -0400
+X-MC-Unique: MFN3ONSFMUuoINxGAeGjBw-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0D44383395C;
+        Wed, 22 Jun 2022 11:18:44 +0000 (UTC)
+Received: from [10.43.17.54] (unknown [10.43.17.54])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4E91840334F;
+        Wed, 22 Jun 2022 11:18:43 +0000 (UTC)
+Message-ID: <584ae788-05e3-5824-8c85-cbb833677850@redhat.com>
+Date:   Wed, 22 Jun 2022 13:18:42 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.10.0
+Content-Language: en-US
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     intel-gfx@lists.freedesktop.org, chris@chris-wilson.co.uk
+From:   Zdenek Kabelac <zkabelac@redhat.com>
+Subject: i915: crash with 5.19-rc2
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-After the array of TDMRs and the global KeyID are configured to the TDX
-module, use TDH.SYS.KEY.CONFIG to configure the key of the global KeyID
-on all packages.
+Hello
 
-TDH.SYS.KEY.CONFIG must be done on one (any) cpu for each package.  And
-it cannot run concurrently on different CPUs.  Implement a helper to
-run SEAMCALL on one cpu for each package one by one, and use it to
-configure the global KeyID on all packages.
+While somewhat oldish hw (T61, 4G, C2D) - I've now witnessed new crash with Xorg:
 
-Intel hardware doesn't guarantee cache coherency across different
-KeyIDs.  The kernel needs to flush PAMT's dirty cachelines (associated
-with KeyID 0) before the TDX module uses the global KeyID to access the
-PAMT.  Following the TDX module specification, flush cache before
-configuring the global KeyID on all packages.
+(happened while reopening iconified Firefox window  - running 'standard' 
+rawhide -nodebug kernel 5.19.0-0.rc2.21.fc37.x86_64)
 
-Given the PAMT size can be large (~1/256th of system RAM), just use
-WBINVD on all CPUs to flush.
+  page:00000000577758b3 refcount:0 mapcount:0 mapping:0000000000000000 
+index:0x1 pfn:0x1192cc
+  flags: 0x17ffffc0000000(node=0|zone=2|lastcpupid=0x1fffff)
+  raw: 0017ffffc0000000 ffffe683c47171c8 ffff8fa3f79377a8 0000000000000000
+  raw: 0000000000000001 0000000000000000 00000000ffffffff 0000000000000000
+  page dumped because: VM_BUG_ON_FOLIO(!folio_test_locked(folio))
+  ------------[ cut here ]------------
+  kernel BUG at mm/shmem.c:708!
+  invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
+  CPU: 1 PID: 42896 Comm: Xorg Not tainted 5.19.0-0.rc2.21.fc37.x86_64 #1
+  Hardware name: LENOVO 6464CTO/6464CTO, BIOS 7LETC9WW (2.29 ) 03/18/2011
+  RIP: 0010:shmem_add_to_page_cache+0x48e/0x500
+  Code: 01 0f 84 0a fc ff ff 48 8d 4a ff 31 d2 48 39 cb 0f 85 ff fb ff ff e9 
+f6 fb ff ff 48 c7 c6 70 01 64 bb 48 89 df e8 f2 99 01 00 <0f> 0b 48 c7 c6 a0 
+1b 64 bb 48 89 df e8 e1 99 01 00 0f 0b 48 8b 13
+  RSP: 0018:ffff9ce7c047f6b0 EFLAGS: 00010286
+  RAX: 000000000000003f RBX: ffffe683c464b300 RCX: 0000000000000000
+  RDX: 0000000000000001 RSI: ffffffffbb67b8e8 RDI: 00000000ffffffff
+  RBP: 0000000000023f97 R08: ffffffffbca122a0 R09: 64656b636f6c5f74
+  R10: 747365745f6f696c R11: 6f6621284f494c4f R12: 00000000001120d4
+  R13: ffff8fa2c6ae7890 R14: ffffe683c464b300 R15: 0000000000000001
+  FS:  00007fc1cea31380(0000) GS:ffff8fa3f7900000(0000) knlGS:0000000000000000
+  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+  CR2: 00007f6972e228c8 CR3: 0000000104ba8000 CR4: 00000000000006e0
+  Call Trace:
+  <TASK>
+  shmem_swapin_folio+0x274/0x980
+  shmem_getpage_gfp+0x234/0x990
+  shmem_read_mapping_page_gfp+0x36/0xf0
+  shmem_sg_alloc_table+0x11b/0x250 [i915]
+  shmem_get_pages+0xaa/0x310 [i915]
+  __i915_gem_object_get_pages+0x31/0x40 [i915]
+  i915_vma_pin_ww+0x69d/0x920 [i915]
+  eb_validate_vmas+0x17d/0x7a0 [i915]
+  ? eb_pin_engine+0x262/0x2d0 [i915]
+  i915_gem_do_execbuffer+0xd43/0x2c00 [i915]
+  ? refill_obj_stock+0x102/0x1a0
+  ? unix_stream_read_generic+0x1ea/0xa60
+  ? unix_stream_read_generic+0x1ea/0xa60
+  ? _raw_spin_lock_irqsave+0x23/0x50
+  ? _atomic_dec_and_lock_irqsave+0x38/0x60
+  ? __active_retire+0xb7/0x100 [i915]
+  ? _raw_spin_unlock_irqrestore+0x23/0x40
+  ? dma_fence_signal+0x39/0x50
+  ? dma_resv_iter_walk_unlocked.part.0+0x164/0x170
+  i915_gem_execbuffer2_ioctl+0x115/0x270 [i915]
+  ? i915_gem_do_execbuffer+0x2c00/0x2c00 [i915]
+  drm_ioctl_kernel+0x9b/0x140
+  ? __check_object_size+0x47/0x260
+  drm_ioctl+0x21c/0x410
+  ? i915_gem_do_execbuffer+0x2c00/0x2c00 [i915]
+  ? exit_to_user_mode_prepare+0x17d/0x1f0
+  __x64_sys_ioctl+0x8a/0xc0
+  do_syscall_64+0x58/0x80
+  ? syscall_exit_to_user_mode+0x17/0x40
+  ? do_syscall_64+0x67/0x80
+  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+  RIP: 0033:0x7fc1cf28da9f
+  Code: 00 48 89 44 24 18 31 c0 48 8d 44 24 60 c7 04 24 10 00 00 00 48 89 44 
+24 08 48 8d 44 24 20 48 89 44 24 10 b8 10 00 00 00 0f 05 <89> c2 3d 00 f0 ff 
+ff 77 18 48 8b 44 24 18 64 48 2b 04 25 28 00 00
+  RSP: 002b:00007ffe5f52e1c0 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+  RAX: ffffffffffffffda RBX: 00007ffe5f52e250 RCX: 00007fc1cf28da9f
+  RDX: 00007ffe5f52e250 RSI: 0000000040406469 RDI: 000000000000000d
+  RBP: 000000000000000d R08: 00007fc1ce938410 R09: 00007fc1cf2fa4c0
+  R10: 0000000000000000 R11: 0000000000000246 R12: 000055e2dde0d340
+  R13: 0000000000000114 R14: 00007ffe5f52e250 R15: 00007fc1cdc49000
+  </TASK>
+  Modules linked in: tls rfcomm snd_seq_dummy snd_hrtimer xt_CHECKSUM 
+xt_MASQUERADE xt_conntrack ipt_REJECT nf_reject_ipv4 ip6table_mangle 
+ip6table_nat ip6table_filter ip6_tables iptable_mangle iptable_nat nf_nat 
+nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 iptable_filter ip_tables bridge stp 
+llc bnep binfmt_misc btusb btrtl btbcm btintel btmtk bluetooth ecdh_generic 
+snd_hda_codec_analog snd_hda_codec_generic iwl3945 iwlegacy coretemp kvm_intel 
+mac80211 snd_hda_intel snd_intel_dspcfg snd_intel_sdw_acpi libarc4 kvm 
+iTCO_wdt snd_hda_codec intel_pmc_bxt iTCO_vendor_support snd_hda_core 
+snd_hwdep snd_seq snd_seq_device cfg80211 irqbypass snd_pcm thinkpad_acpi 
+pcspkr joydev i2c_i801 snd_timer i2c_smbus ledtrig_audio wmi_bmof r592 
+platform_profile snd memstick rfkill lpc_ich soundcore acpi_cpufreq nfsd 
+auth_rpcgss nfs_acl lockd grace sunrpc fuse zram i915 sdhci_pci cqhci sdhci 
+drm_buddy drm_display_helper e1000e mmc_core cec serio_raw yenta_socket ttm 
+wmi video ata_generic pata_acpi
+  scsi_dh_rdac scsi_dh_emc scsi_dh_alua dm_multipath
+  ---[ end trace 0000000000000000 ]---
+  RIP: 0010:shmem_add_to_page_cache+0x48e/0x500
+  Code: 01 0f 84 0a fc ff ff 48 8d 4a ff 31 d2 48 39 cb 0f 85 ff fb ff ff e9 
+f6 fb ff ff 48 c7 c6 70 01 64 bb 48 89 df e8 f2 99 01 00 <0f> 0b 48 c7 c6 a0 
+1b 64 bb 48 89 df e8 e1 99 01 00 0f 0b 48 8b 13
+  RSP: 0018:ffff9ce7c047f6b0 EFLAGS: 00010286
+  RAX: 000000000000003f RBX: ffffe683c464b300 RCX: 0000000000000000
+  RDX: 0000000000000001 RSI: ffffffffbb67b8e8 RDI: 00000000ffffffff
+  RBP: 0000000000023f97 R08: ffffffffbca122a0 R09: 64656b636f6c5f74
+  R10: 747365745f6f696c R11: 6f6621284f494c4f R12: 00000000001120d4
+  R13: ffff8fa2c6ae7890 R14: ffffe683c464b300 R15: 0000000000000001
+  FS:  00007fc1cea31380(0000) GS:ffff8fa3f7900000(0000) knlGS:0000000000000000
+  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+  CR2: 00007f6972e228c8 CR3: 0000000104ba8000 CR4: 00000000000006e0
 
-Signed-off-by: Kai Huang <kai.huang@intel.com>
----
- arch/x86/virt/vmx/tdx/tdx.c | 83 ++++++++++++++++++++++++++++++++++++-
- arch/x86/virt/vmx/tdx/tdx.h |  1 +
- 2 files changed, 82 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/virt/vmx/tdx/tdx.c b/arch/x86/virt/vmx/tdx/tdx.c
-index 06e26379b632..b9777a353835 100644
---- a/arch/x86/virt/vmx/tdx/tdx.c
-+++ b/arch/x86/virt/vmx/tdx/tdx.c
-@@ -194,6 +194,46 @@ static void seamcall_on_each_cpu(struct seamcall_ctx *sc)
- 	on_each_cpu(seamcall_smp_call_function, sc, true);
- }
- 
-+/*
-+ * Call one SEAMCALL on one (any) cpu for each physical package in
-+ * serialized way.  Return immediately in case of any error if
-+ * SEAMCALL fails on any cpu.
-+ *
-+ * Note for serialized calls 'struct seamcall_ctx::err' doesn't have
-+ * to be atomic, but for simplicity just reuse it instead of adding
-+ * a new one.
-+ */
-+static int seamcall_on_each_package_serialized(struct seamcall_ctx *sc)
-+{
-+	cpumask_var_t packages;
-+	int cpu, ret = 0;
-+
-+	if (!zalloc_cpumask_var(&packages, GFP_KERNEL))
-+		return -ENOMEM;
-+
-+	for_each_online_cpu(cpu) {
-+		if (cpumask_test_and_set_cpu(topology_physical_package_id(cpu),
-+					packages))
-+			continue;
-+
-+		ret = smp_call_function_single(cpu, seamcall_smp_call_function,
-+				sc, true);
-+		if (ret)
-+			break;
-+
-+		/*
-+		 * Doesn't have to use atomic_read(), but it doesn't
-+		 * hurt either.
-+		 */
-+		ret = atomic_read(&sc->err);
-+		if (ret)
-+			break;
-+	}
-+
-+	free_cpumask_var(packages);
-+	return ret;
-+}
-+
- /*
-  * Do TDX module global initialization.  It also detects whether the
-  * module has been loaded or not.
-@@ -964,6 +1004,21 @@ static int config_tdx_module(struct tdmr_info *tdmr_array, int tdmr_num,
- 	return ret ? -EFAULT : 0;
- }
- 
-+static int config_global_keyid(void)
-+{
-+	struct seamcall_ctx sc = { .fn = TDH_SYS_KEY_CONFIG };
-+
-+	/*
-+	 * Configure the key of the global KeyID on all packages by
-+	 * calling TDH.SYS.KEY.CONFIG on all packages.
-+	 *
-+	 * TDH.SYS.KEY.CONFIG may fail with entropy error (which is
-+	 * a recoverable error).  Assume this is exceedingly rare and
-+	 * just return error if encountered instead of retrying.
-+	 */
-+	return seamcall_on_each_package_serialized(&sc);
-+}
-+
- /*
-  * Detect and initialize the TDX module.
-  *
-@@ -1036,15 +1091,39 @@ static int init_tdx_module(void)
- 	if (ret)
- 		goto out_free_pamts;
- 
-+	/*
-+	 * Hardware doesn't guarantee cache coherency across different
-+	 * KeyIDs.  The kernel needs to flush PAMT's dirty cachelines
-+	 * (associated with KeyID 0) before the TDX module can use the
-+	 * global KeyID to access the PAMT.  Given PAMTs are potentially
-+	 * large (~1/256th of system RAM), just use WBINVD on all cpus
-+	 * to flush the cache.
-+	 *
-+	 * Follow the TDX spec to flush cache before configuring the
-+	 * global KeyID on all packages.
-+	 */
-+	wbinvd_on_all_cpus();
-+
-+	/* Config the key of global KeyID on all packages */
-+	ret = config_global_keyid();
-+	if (ret)
-+		goto out_free_pamts;
-+
- 	/*
- 	 * Return -EINVAL until all steps of TDX module initialization
- 	 * process are done.
- 	 */
- 	ret = -EINVAL;
- out_free_pamts:
--	if (ret)
-+	if (ret) {
-+		/*
-+		 * Part of PAMT may already have been initialized by
-+		 * TDX module.  Flush cache before returning PAMT back
-+		 * to the kernel.
-+		 */
-+		wbinvd_on_all_cpus();
- 		tdmrs_free_pamt_all(tdmr_array, tdmr_num);
--	else
-+	} else
- 		pr_info("%lu pages allocated for PAMT.\n",
- 				tdmrs_get_pamt_pages(tdmr_array, tdmr_num));
- out_free_tdmrs:
-diff --git a/arch/x86/virt/vmx/tdx/tdx.h b/arch/x86/virt/vmx/tdx/tdx.h
-index b9bc499b965b..2d25a93b89ef 100644
---- a/arch/x86/virt/vmx/tdx/tdx.h
-+++ b/arch/x86/virt/vmx/tdx/tdx.h
-@@ -49,6 +49,7 @@
- /*
-  * TDX module SEAMCALL leaf functions
-  */
-+#define TDH_SYS_KEY_CONFIG	31
- #define TDH_SYS_INFO		32
- #define TDH_SYS_INIT		33
- #define TDH_SYS_LP_INIT		35
--- 
-2.36.1
+Regards
+
+
+Zdenek
 
