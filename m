@@ -2,187 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D012CC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 08:37:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC651C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 08:39:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355080AbiFVIhd (ORCPT
+        id S1354509AbiFVIjB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 04:37:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33152 "EHLO
+        Wed, 22 Jun 2022 04:39:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354489AbiFVIhG (ORCPT
+        with ESMTP id S1355060AbiFVIiP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 04:37:06 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 999933982C;
-        Wed, 22 Jun 2022 01:36:43 -0700 (PDT)
+        Wed, 22 Jun 2022 04:38:15 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB0C038BD0;
+        Wed, 22 Jun 2022 01:37:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655887003; x=1687423003;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Asx2uLZqEWA1Ku8lHPlIL6BlvP7Vxo6bP4XGBrldJgE=;
-  b=nE1Y3T4p7z17RpcLYwdRpYzbWJF07mj0WUV8CYeX5vKZ3JdpZfhKLa9x
-   7Zx1H/2CT1QFgz/tt+XPwzZXaFaiE4sFI5oSLTwbRVM/hho51GHLmWiK+
-   mg0YrMrBAzsw6EWhpQRmJyifmmTeysCZ6307eIBpjh4lpak/WhRZOCKIi
-   h4AsTWnqk7CVqsQmLCPReLqdfbqZbHpwD/2lWUgK2vVTSHq0BZ0OKLeap
-   xFDmdWgE6pSaQMyMUToAzEFtAxTlFbw5qnnbRonG/C0Dmd//pXRAbhcF3
-   Qzh+e19VYIb/kZeRdr+qk6rMvGp+IzOJoei2MoYFjhGnz86Oh8+WEKWye
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="269075683"
+  t=1655887041; x=1687423041;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=X4zZjjAv44KljLRCOUf/T8tCTEA3aG+3U9GCPy0feiU=;
+  b=ZSxA0rjL78bf69/WAOpSxccKwAUVfJbqSV3MuFgQVuUdmTXYZ+BqLBiw
+   sd5+wFbhtk3g+zxQq7VjFZryD/khlYfqjeLWOY0TJ9Au5j8XAJPxmxPOz
+   L98zbetloTtiFuJywhlPvvzGdlWYQqg/6cKM8euwH8wDYsA23Ubd3OyuS
+   DImgxuzn4nRSmRDfbCxtcuSeqoC/iyGtrFoWIm8DflHBOLBCn0cglZGob
+   0+lIHnWwWf4LJAYQ1+i7IOh/A5zOlNFCBOffIrNAa0UtnGfE45/QmVGlp
+   eSjRpodd2xNXNxF+7oZMydfj2/6cRvk7qDpmxi0Mbg714xZWC3A9pH7Yr
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="279124538"
 X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="269075683"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 01:36:42 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="279124538"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 01:37:06 -0700
 X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="615080835"
-Received: from lkp-server02.sh.intel.com (HELO a67cc04a5eeb) ([10.239.97.151])
-  by orsmga008.jf.intel.com with ESMTP; 22 Jun 2022 01:36:40 -0700
-Received: from kbuild by a67cc04a5eeb with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o3vqp-00013U-Op;
-        Wed, 22 Jun 2022 08:36:39 +0000
-Date:   Wed, 22 Jun 2022 16:35:46 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Liang He <windhl@126.com>, krzysztof.kozlowski@linaro.org,
-        thierry.reding@gmail.com, jonathanh@nvidia.com
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, windhl@126.com,
-        linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org
-Subject: Re: [PATCH] memory/tegra: Add missing of_node_get() in
- tegra_emc_find_node_by_ram_code
-Message-ID: <202206221602.odN70SHs-lkp@intel.com>
-References: <20220622042824.4094625-1-windhl@126.com>
+   d="scan'208";a="644077804"
+Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.59.193])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 01:37:02 -0700
+Message-ID: <b7de807d-5ec3-3d8d-59ba-4058e1193a96@intel.com>
+Date:   Wed, 22 Jun 2022 11:36:58 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220622042824.4094625-1-windhl@126.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.9.1
+Subject: Re: [PATCH v2] perf: Adjust perf-inject output data offset for
+ backward compatibility
+Content-Language: en-US
+To:     Raul Silvera <rsilvera@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Colin Ian King <colin.king@intel.com>,
+        Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+Cc:     linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220621152725.2668041-1-rsilvera@google.com>
+From:   Adrian Hunter <adrian.hunter@intel.com>
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
+ Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+In-Reply-To: <20220621152725.2668041-1-rsilvera@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Liang,
+On 21/06/22 18:27, Raul Silvera wrote:
+> When perf inject creates a new file, it reuses the data offset from the
+> input file. If there has been a change on the size of the header, as
+> happened in v5.12 -> v5.13, the new offsets will be wrong, resulting in
+> a corrupted output file.
+> 
+> This change adds the function perf_session__data_offset to compute the
+> data offset based on the current header size, and uses that instead of
+> the offset from the original input file.
+> 
+> Signed-off-by: Raul Silvera <rsilvera@google.com>
 
-Thank you for the patch! Yet something to improve:
+Acked-by: Adrian Hunter <adrian.hunter@intel.com>
 
-[auto build test ERROR on tegra/for-next]
-[also build test ERROR on tegra-drm/drm/tegra/for-next linus/master v5.19-rc3 next-20220621]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+> ---
+> Changes since v1:
+>  - Use the adjusted header->data_offset in do_write_header instead of
+>    recomputing it.
+> ---
+>  tools/perf/builtin-inject.c |  2 +-
+>  tools/perf/util/header.c    | 14 ++++++++++++++
+>  tools/perf/util/header.h    |  2 ++
+>  3 files changed, 17 insertions(+), 1 deletion(-)
+> 
+> diff --git a/tools/perf/builtin-inject.c b/tools/perf/builtin-inject.c
+> index a75bf11585b5..1dfdcef36607 100644
+> --- a/tools/perf/builtin-inject.c
+> +++ b/tools/perf/builtin-inject.c
+> @@ -916,7 +916,7 @@ static int __cmd_inject(struct perf_inject *inject)
+>  		inject->tool.tracing_data = perf_event__repipe_tracing_data;
+>  	}
+>  
+> -	output_data_offset = session->header.data_offset;
+> +	output_data_offset = perf_session__data_offset(session->evlist);
+>  
+>  	if (inject->build_id_all) {
+>  		inject->tool.mmap	  = perf_event__repipe_buildid_mmap;
+> diff --git a/tools/perf/util/header.c b/tools/perf/util/header.c
+> index 53332da100e8..6ad629db63b7 100644
+> --- a/tools/perf/util/header.c
+> +++ b/tools/perf/util/header.c
+> @@ -3686,6 +3686,20 @@ int perf_session__write_header(struct perf_session *session,
+>  	return perf_session__do_write_header(session, evlist, fd, at_exit, NULL);
+>  }
+>  
+> +size_t perf_session__data_offset(const struct evlist *evlist)
+> +{
+> +	struct evsel *evsel;
+> +	size_t data_offset;
+> +
+> +	data_offset = sizeof(struct perf_file_header);
+> +	evlist__for_each_entry(evlist, evsel) {
+> +		data_offset += evsel->core.ids * sizeof(u64);
+> +	}
+> +	data_offset += evlist->core.nr_entries * sizeof(struct perf_file_attr);
+> +
+> +	return data_offset;
+> +}
+> +
+>  int perf_session__inject_header(struct perf_session *session,
+>  				struct evlist *evlist,
+>  				int fd,
+> diff --git a/tools/perf/util/header.h b/tools/perf/util/header.h
+> index 08563c1f1bff..56916dabce7b 100644
+> --- a/tools/perf/util/header.h
+> +++ b/tools/perf/util/header.h
+> @@ -136,6 +136,8 @@ int perf_session__inject_header(struct perf_session *session,
+>  				int fd,
+>  				struct feat_copier *fc);
+>  
+> +size_t perf_session__data_offset(const struct evlist *evlist);
+> +
+>  void perf_header__set_feat(struct perf_header *header, int feat);
+>  void perf_header__clear_feat(struct perf_header *header, int feat);
+>  bool perf_header__has_feat(const struct perf_header *header, int feat);
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Liang-He/memory-tegra-Add-missing-of_node_get-in-tegra_emc_find_node_by_ram_code/20220622-123052
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/tegra/linux.git for-next
-config: hexagon-randconfig-r041-20220622 (https://download.01.org/0day-ci/archive/20220622/202206221602.odN70SHs-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 8b8d126598ce7bd5243da7f94f69fa1104288bee)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/6f5dd7a2fb5c7d45a25cdf4409c5aa03c4df0a96
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Liang-He/memory-tegra-Add-missing-of_node_get-in-tegra_emc_find_node_by_ram_code/20220622-123052
-        git checkout 6f5dd7a2fb5c7d45a25cdf4409c5aa03c4df0a96
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/memory/tegra/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> drivers/memory/tegra/tegra20-emc.c:480:2: error: call to undeclared function 'of_get_node'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-           of_get_node(dev->of_node);
-           ^
-   1 error generated.
-
-
-vim +/of_get_node +480 drivers/memory/tegra/tegra20-emc.c
-
-   456	
-   457	static struct device_node *
-   458	tegra_emc_find_node_by_ram_code(struct tegra_emc *emc)
-   459	{
-   460		struct device *dev = emc->dev;
-   461		struct device_node *np;
-   462		u32 value, ram_code;
-   463		int err;
-   464	
-   465		if (emc->mrr_error) {
-   466			dev_warn(dev, "memory timings skipped due to MRR error\n");
-   467			return NULL;
-   468		}
-   469	
-   470		if (of_get_child_count(dev->of_node) == 0) {
-   471			dev_info_once(dev, "device-tree doesn't have memory timings\n");
-   472			return NULL;
-   473		}
-   474	
-   475		if (!of_property_read_bool(dev->of_node, "nvidia,use-ram-code"))
-   476			return of_node_get(dev->of_node);
-   477	
-   478		ram_code = tegra_read_ram_code();
-   479	
- > 480		of_get_node(dev->of_node);
-   481		for (np = of_find_node_by_name(dev->of_node, "emc-tables"); np;
-   482		     np = of_find_node_by_name(np, "emc-tables")) {
-   483			err = of_property_read_u32(np, "nvidia,ram-code", &value);
-   484			if (err || value != ram_code) {
-   485				struct device_node *lpddr2_np;
-   486				bool cfg_mismatches = false;
-   487	
-   488				of_node_get(np);
-   489				lpddr2_np = of_find_node_by_name(np, "lpddr2");
-   490				if (lpddr2_np) {
-   491					const struct lpddr2_info *info;
-   492	
-   493					info = of_lpddr2_get_info(lpddr2_np, dev);
-   494					if (info) {
-   495						if (info->manufacturer_id >= 0 &&
-   496						    info->manufacturer_id != emc->manufacturer_id)
-   497							cfg_mismatches = true;
-   498	
-   499						if (info->revision_id1 >= 0 &&
-   500						    info->revision_id1 != emc->revision_id1)
-   501							cfg_mismatches = true;
-   502	
-   503						if (info->revision_id2 >= 0 &&
-   504						    info->revision_id2 != emc->revision_id2)
-   505							cfg_mismatches = true;
-   506	
-   507						if (info->density != emc->basic_conf4.density)
-   508							cfg_mismatches = true;
-   509	
-   510						if (info->io_width != emc->basic_conf4.io_width)
-   511							cfg_mismatches = true;
-   512	
-   513						if (info->arch_type != emc->basic_conf4.arch_type)
-   514							cfg_mismatches = true;
-   515					} else {
-   516						dev_err(dev, "failed to parse %pOF\n", lpddr2_np);
-   517						cfg_mismatches = true;
-   518					}
-   519	
-   520					of_node_put(lpddr2_np);
-   521				} else {
-   522					cfg_mismatches = true;
-   523				}
-   524	
-   525				if (cfg_mismatches) {
-   526					continue;
-   527				}
-   528			}
-   529	
-   530			return np;
-   531		}
-   532	
-   533		dev_err(dev, "no memory timings for RAM code %u found in device tree\n",
-   534			ram_code);
-   535	
-   536		return NULL;
-   537	}
-   538	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
