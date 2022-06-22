@@ -2,183 +2,240 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7903C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 19:29:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 899A4CCA479
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 19:29:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359264AbiFVT3l (ORCPT
+        id S1359325AbiFVT3q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 15:29:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33662 "EHLO
+        Wed, 22 Jun 2022 15:29:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357869AbiFVT12 (ORCPT
+        with ESMTP id S1357949AbiFVT13 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 15:27:28 -0400
-Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A6E13FD8D
+        Wed, 22 Jun 2022 15:27:29 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 188593B024
         for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 12:27:24 -0700 (PDT)
-Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-3178acf2a92so139001947b3.6
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 12:27:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KkilKDpe8ThJRZsQJBgYTCpQiUJz1z4q2ZzFyMDTssQ=;
-        b=LFEgrMiixhjmjqAGOoh7j5oEeos/k5NQzAbkIIxEUX2OwntckqcTQESNwnXKhhmvky
-         45qUvKGOqU2sBjK1P4QNn4FBMGdBWVlZZc17iLU4Jsn1ghN3L9j/nsmjcL+tCzmfRkJx
-         gLHJLX0SmjzwcfP53dU4pvXiYqWMSEv/2c526aTelmrd3UFjIfMHuSLDbgSEsouZJZqe
-         qlkAQiB3k/jrr2XFu0JmtRp41lOT0aYnIhf4yEAtzNOFmr2TUMPzGSZyhdQ+edv5ja/3
-         Gj0b5hYMpRecL75lYmD8aYBqz+ILvQEa0WJnou428EjrJDXBJ+LEgBhA1Qk1J6M84FbO
-         DiAA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KkilKDpe8ThJRZsQJBgYTCpQiUJz1z4q2ZzFyMDTssQ=;
-        b=c76bx4aAvZ7b6rS8dO9Faw6yzZYXEOXdTONduXnOiQ9jvx5xdWrb0AvH559KTh6GTW
-         5Wx2aL7rKfrGjiDIGWvmGdESZg8L0hrrswDwp5er7+/UAZFAUpQMTSnTJWxn79WW2y6D
-         YSXgwHRXxwAoYtpuZRxS7HwRhPBZoRjKYejLVO3V2GqO2Lw212IhFR6bGDltLcuKGVS4
-         FdM8RAs5slmxnvuhir0pfrUE4MMX8iU1bbFOpC0GnDKc3JdbTw5t33a6gX9L0+QEa//q
-         Moe7PlUXrCzDt8vhYLkeW4mi2lB1K0N8f3toj4hbRg49XwlvpdJDgQ2X2/TfUJiVY4Fe
-         StwQ==
-X-Gm-Message-State: AJIora9k1ctpjdC32iLLj7xoXAzVQ70FWj1DKz7LulgPZYVfZWKHLp94
-        CGxlQvCWJXTR308jxO0GPIKhXql1GEkgFRGhsNXAABBPfN7PpQ==
-X-Google-Smtp-Source: AGRyM1uWJzq9bJkMQ1pmJ7AUys05351Q/UAG2IEXDZJps+uXjR1ALTZbBHtuU2Kn8gtdJoTfoL0G2uyddKHfKQ/zO/g=
-X-Received: by 2002:a0d:df50:0:b0:317:9c40:3b8b with SMTP id
- i77-20020a0ddf50000000b003179c403b8bmr6335286ywe.332.1655926042920; Wed, 22
- Jun 2022 12:27:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655926044;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=kNVgldTyS3PJ4ZE/gPt64ZM9nAJ1HaJiWQT9cl6zZ/E=;
+        b=WDNlmMBinBrBtXsq7aQmNRaDWHnw76eXjbEPU7x5A6lXOWNBQcrUyHCTnMBSSiI40o/j4F
+        RdBxpbkD5PuCJup160fbek7TsqSlus7YBD5sXG8DXoQB/ScIx+SsEIupK7edtF1QCcATnC
+        V4s8pFuKIik9liC9eDSJ5T5A8+lTe54=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-225-L5sKVtqpMq2Y7SR5QPPQDw-1; Wed, 22 Jun 2022 15:27:20 -0400
+X-MC-Unique: L5sKVtqpMq2Y7SR5QPPQDw-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 304EE811E75;
+        Wed, 22 Jun 2022 19:27:19 +0000 (UTC)
+Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CCD551121314;
+        Wed, 22 Jun 2022 19:27:18 +0000 (UTC)
+From:   Paolo Bonzini <pbonzini@redhat.com>
+To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     maz@kernel.org, anup@brainfault.org, seanjc@google.com,
+        bgardon@google.com, peterx@redhat.com, maciej.szmigiero@oracle.com,
+        kvmarm@lists.cs.columbia.edu, linux-mips@vger.kernel.org,
+        kvm-riscv@lists.infradead.org, pfeiner@google.com,
+        jiangshanlai@gmail.com, dmatlack@google.com
+Subject: [PATCH v7 20/23] KVM: x86/mmu: pull call to drop_large_spte() into __link_shadow_page()
+Date:   Wed, 22 Jun 2022 15:27:07 -0400
+Message-Id: <20220622192710.2547152-21-pbonzini@redhat.com>
+In-Reply-To: <20220622192710.2547152-1-pbonzini@redhat.com>
+References: <20220622192710.2547152-1-pbonzini@redhat.com>
 MIME-Version: 1.0
-References: <20220619003919.394622-1-i.maximets@ovn.org> <CANn89iL_EmkEgPAVdhNW4tyzwQbARyji93mUQ9E2MRczWpNm7g@mail.gmail.com>
- <20220622102813.GA24844@breakpoint.cc> <CANn89iLGKbeeBNoDQU9C7nPRCxc6FUsrwn0LfrAKrJiJ14PH+w@mail.gmail.com>
- <c7ab4a7b-a987-e74b-dd2d-ee2c8ca84147@ovn.org> <CANn89iLxqae9wZ-h5M-whSsmAZ_7hW1e_=krvSyF8x89Y6o76w@mail.gmail.com>
- <068ad894-c60f-c089-fd4a-5deda1c84cdd@ovn.org> <CANn89iJ=Xc57pdZ-NaRF7FXZnq2skh5MJ3aDtDCGp8RNG4oowA@mail.gmail.com>
- <CANn89i+yy3mL2BUT=uhhkACVviWXCA9fdE1mrG=ZMuSQKdK8SQ@mail.gmail.com>
- <CANn89iLVHAE5aMwo0dow14mdFK0JjokE9y5KV+67AxKJdSjx=w@mail.gmail.com>
- <CANn89i+5pWbXyFBnMqdfz6SqRV9enFNHbcd_2irJub1Ag7vxNw@mail.gmail.com>
- <673a6f2b-dab2-e00f-b37c-15f8775b2121@ovn.org> <CANn89i+a6nd=80X-7p+GLq9Tvx7QjRYHkHVJgrjJu_UO30+SDQ@mail.gmail.com>
-In-Reply-To: <CANn89i+a6nd=80X-7p+GLq9Tvx7QjRYHkHVJgrjJu_UO30+SDQ@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 22 Jun 2022 21:27:11 +0200
-Message-ID: <CANn89i+en=eU3L1kCcn41+-MRuoge0KHwcLHY3ah8TRmLMaMvg@mail.gmail.com>
-Subject: Re: [PATCH net] net: ensure all external references are released in
- deferred skbuffs
-To:     Ilya Maximets <i.maximets@ovn.org>
-Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Florian Westphal <fw@strlen.de>,
-        netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, dev@openvswitch.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 9:04 PM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Wed, Jun 22, 2022 at 8:19 PM Ilya Maximets <i.maximets@ovn.org> wrote:
-> >
-> > On 6/22/22 19:03, Eric Dumazet wrote:
-> > > On Wed, Jun 22, 2022 at 6:47 PM Eric Dumazet <edumazet@google.com> wrote:
-> > >>
-> > >> On Wed, Jun 22, 2022 at 6:39 PM Eric Dumazet <edumazet@google.com> wrote:
-> > >>>
-> > >>> On Wed, Jun 22, 2022 at 6:29 PM Eric Dumazet <edumazet@google.com> wrote:
-> > >>>>
-> > >>>> On Wed, Jun 22, 2022 at 4:26 PM Ilya Maximets <i.maximets@ovn.org> wrote:
-> > >>>>>
-> > >>>>> On 6/22/22 13:43, Eric Dumazet wrote:
-> > >>>>
-> > >>>>>
-> > >>>>> I tested the patch below and it seems to fix the issue seen
-> > >>>>> with OVS testsuite.  Though it's not obvious for me why this
-> > >>>>> happens.  Can you explain a bit more?
-> > >>>>
-> > >>>> Anyway, I am not sure we can call nf_reset_ct(skb) that early.
-> > >>>>
-> > >>>> git log seems to say that xfrm check needs to be done before
-> > >>>> nf_reset_ct(skb), I have no idea why.
-> > >>>
-> > >>> Additional remark: In IPv6 side, xfrm6_policy_check() _is_ called
-> > >>> after nf_reset_ct(skb)
-> > >>>
-> > >>> Steffen, do you have some comments ?
-> > >>>
-> > >>> Some context:
-> > >>> commit b59c270104f03960069596722fea70340579244d
-> > >>> Author: Patrick McHardy <kaber@trash.net>
-> > >>> Date:   Fri Jan 6 23:06:10 2006 -0800
-> > >>>
-> > >>>     [NETFILTER]: Keep conntrack reference until IPsec policy checks are done
-> > >>>
-> > >>>     Keep the conntrack reference until policy checks have been performed for
-> > >>>     IPsec NAT support. The reference needs to be dropped before a packet is
-> > >>>     queued to avoid having the conntrack module unloadable.
-> > >>>
-> > >>>     Signed-off-by: Patrick McHardy <kaber@trash.net>
-> > >>>     Signed-off-by: David S. Miller <davem@davemloft.net>
-> > >>>
-> > >>
-> > >> Oh well... __xfrm_policy_check() has :
-> > >>
-> > >> nf_nat_decode_session(skb, &fl, family);
-> > >>
-> > >> This  answers my questions.
-> > >>
-> > >> This means we are probably missing at least one XFRM check in TCP
-> > >> stack in some cases.
-> > >> (Only after adding this XFRM check we can call nf_reset_ct(skb))
-> > >>
-> > >
-> > > Maybe this will help ?
-> >
-> > I tested this patch and it seems to fix the OVS problem.
-> > I did not test the xfrm part of it.
-> >
-> > Will you post an official patch?
->
-> Yes I will. I need to double check we do not leak either the req, or the child.
->
-> Maybe the XFRM check should be done even earlier, on the listening socket ?
->
-> Or if we assume the SYNACK packet has been sent after the XFRM test
-> has been applied to the SYN,
-> maybe we could just call nf_reset_ct(skb) to lower risk of regressions.
->
-> With the last patch, it would be strange that we accept the 3WHS and
-> establish a socket,
-> but drop the payload in the 3rd packet...
+Before allocating a child shadow page table, all callers check
+whether the parent already points to a huge page and, if so, they
+drop that SPTE.  This is done by drop_large_spte().
 
-Ilya, can you test the following patch ?
-I think it makes more sense to let XFRM reject the packet earlier, and
-not complete the 3WHS,
-if for some reason this happens.
+However, the act that requires dropping the large SPTE is the
+installation of the sp that is returned by kvm_mmu_get_child_sp(),
+which happens in __link_shadow_page().  Move the call there
+instead of having it in each and every caller.
 
-Thanks !
+To ensure that the shadow page is not linked twice if it was
+present, do _not_ opportunistically make kvm_mmu_get_child_sp()
+idempotent: instead, return an error value if the shadow page
+already existed.  This is a bit more verbose, but clearer than
+NULL.
 
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index fe8f23b95d32ca4a35d05166d471327bc608fa91..da5a3c44c4fb70f1d3ecc596e694a86267f1c44a
-100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -1964,7 +1964,10 @@ int tcp_v4_rcv(struct sk_buff *skb)
-                struct sock *nsk;
+Now that the drop_large_spte() name is not taken anymore,
+remove the two underscores in front of __drop_large_spte().
 
-                sk = req->rsk_listener;
--               drop_reason = tcp_inbound_md5_hash(sk, skb,
-+               if (!xfrm4_policy_check(sk, XFRM_POLICY_IN, skb))
-+                       drop_reason = SKB_DROP_REASON_XFRM_POLICY;
-+               else
-+                       drop_reason = tcp_inbound_md5_hash(sk, skb,
-                                                   &iph->saddr, &iph->daddr,
-                                                   AF_INET, dif, sdif);
-                if (unlikely(drop_reason)) {
-@@ -2016,6 +2019,7 @@ int tcp_v4_rcv(struct sk_buff *skb)
-                        }
-                        goto discard_and_relse;
-                }
-+               nf_reset_ct(skb);
-                if (nsk == sk) {
-                        reqsk_put(req);
-                        tcp_v4_restore_cb(skb);
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+---
+ arch/x86/kvm/mmu/mmu.c         | 43 +++++++++++++++++-----------------
+ arch/x86/kvm/mmu/paging_tmpl.h | 31 +++++++++++-------------
+ 2 files changed, 35 insertions(+), 39 deletions(-)
+
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index 36bc49f08d60..bf1ae5ebf41b 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -1135,26 +1135,16 @@ static void drop_spte(struct kvm *kvm, u64 *sptep)
+ 		rmap_remove(kvm, sptep);
+ }
+ 
+-
+-static bool __drop_large_spte(struct kvm *kvm, u64 *sptep)
++static void drop_large_spte(struct kvm *kvm, u64 *sptep)
+ {
+-	if (is_large_pte(*sptep)) {
+-		WARN_ON(sptep_to_sp(sptep)->role.level == PG_LEVEL_4K);
+-		drop_spte(kvm, sptep);
+-		return true;
+-	}
+-
+-	return false;
+-}
++	struct kvm_mmu_page *sp;
+ 
+-static void drop_large_spte(struct kvm_vcpu *vcpu, u64 *sptep)
+-{
+-	if (__drop_large_spte(vcpu->kvm, sptep)) {
+-		struct kvm_mmu_page *sp = sptep_to_sp(sptep);
++	sp = sptep_to_sp(sptep);
++	WARN_ON(sp->role.level == PG_LEVEL_4K);
+ 
+-		kvm_flush_remote_tlbs_with_address(vcpu->kvm, sp->gfn,
++	drop_spte(kvm, sptep);
++	kvm_flush_remote_tlbs_with_address(kvm, sp->gfn,
+ 			KVM_PAGES_PER_HPAGE(sp->role.level));
+-	}
+ }
+ 
+ /*
+@@ -2221,6 +2211,9 @@ static struct kvm_mmu_page *kvm_mmu_get_child_sp(struct kvm_vcpu *vcpu,
+ {
+ 	union kvm_mmu_page_role role;
+ 
++	if (is_shadow_present_pte(*sptep) && !is_large_pte(*sptep))
++		return ERR_PTR(-EEXIST);
++
+ 	role = kvm_mmu_child_role(sptep, direct, access);
+ 	return kvm_mmu_get_shadow_page(vcpu, gfn, role);
+ }
+@@ -2288,13 +2281,21 @@ static void shadow_walk_next(struct kvm_shadow_walk_iterator *iterator)
+ 	__shadow_walk_next(iterator, *iterator->sptep);
+ }
+ 
+-static void __link_shadow_page(struct kvm_mmu_memory_cache *cache, u64 *sptep,
++static void __link_shadow_page(struct kvm *kvm,
++			       struct kvm_mmu_memory_cache *cache, u64 *sptep,
+ 			       struct kvm_mmu_page *sp)
+ {
+ 	u64 spte;
+ 
+ 	BUILD_BUG_ON(VMX_EPT_WRITABLE_MASK != PT_WRITABLE_MASK);
+ 
++	/*
++	 * If an SPTE is present already, it must be a leaf and therefore
++	 * a large one.  Drop it and flush the TLB before installing sp.
++	 */
++	if (is_shadow_present_pte(*sptep))
++		drop_large_spte(kvm, sptep);
++
+ 	spte = make_nonleaf_spte(sp->spt, sp_ad_disabled(sp));
+ 
+ 	mmu_spte_set(sptep, spte);
+@@ -2308,7 +2309,7 @@ static void __link_shadow_page(struct kvm_mmu_memory_cache *cache, u64 *sptep,
+ static void link_shadow_page(struct kvm_vcpu *vcpu, u64 *sptep,
+ 			     struct kvm_mmu_page *sp)
+ {
+-	__link_shadow_page(&vcpu->arch.mmu_pte_list_desc_cache, sptep, sp);
++	__link_shadow_page(vcpu->kvm, &vcpu->arch.mmu_pte_list_desc_cache, sptep, sp);
+ }
+ 
+ static void validate_direct_spte(struct kvm_vcpu *vcpu, u64 *sptep,
+@@ -3080,11 +3081,9 @@ static int __direct_map(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
+ 		if (it.level == fault->goal_level)
+ 			break;
+ 
+-		drop_large_spte(vcpu, it.sptep);
+-		if (is_shadow_present_pte(*it.sptep))
+-			continue;
+-
+ 		sp = kvm_mmu_get_child_sp(vcpu, it.sptep, base_gfn, true, ACC_ALL);
++		if (sp == ERR_PTR(-EEXIST))
++			continue;
+ 
+ 		link_shadow_page(vcpu, it.sptep, sp);
+ 		if (fault->is_tdp && fault->huge_page_disallowed &&
+diff --git a/arch/x86/kvm/mmu/paging_tmpl.h b/arch/x86/kvm/mmu/paging_tmpl.h
+index 24f292f3f93f..2448fa8d8438 100644
+--- a/arch/x86/kvm/mmu/paging_tmpl.h
++++ b/arch/x86/kvm/mmu/paging_tmpl.h
+@@ -648,15 +648,13 @@ static int FNAME(fetch)(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault,
+ 		gfn_t table_gfn;
+ 
+ 		clear_sp_write_flooding_count(it.sptep);
+-		drop_large_spte(vcpu, it.sptep);
+ 
+-		sp = NULL;
+-		if (!is_shadow_present_pte(*it.sptep)) {
+-			table_gfn = gw->table_gfn[it.level - 2];
+-			access = gw->pt_access[it.level - 2];
+-			sp = kvm_mmu_get_child_sp(vcpu, it.sptep, table_gfn,
+-						  false, access);
++		table_gfn = gw->table_gfn[it.level - 2];
++		access = gw->pt_access[it.level - 2];
++		sp = kvm_mmu_get_child_sp(vcpu, it.sptep, table_gfn,
++					  false, access);
+ 
++		if (sp != ERR_PTR(-EEXIST)) {
+ 			/*
+ 			 * We must synchronize the pagetable before linking it
+ 			 * because the guest doesn't need to flush tlb when
+@@ -685,7 +683,7 @@ static int FNAME(fetch)(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault,
+ 		if (FNAME(gpte_changed)(vcpu, gw, it.level - 1))
+ 			goto out_gpte_changed;
+ 
+-		if (sp)
++		if (sp != ERR_PTR(-EEXIST))
+ 			link_shadow_page(vcpu, it.sptep, sp);
+ 	}
+ 
+@@ -709,16 +707,15 @@ static int FNAME(fetch)(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault,
+ 
+ 		validate_direct_spte(vcpu, it.sptep, direct_access);
+ 
+-		drop_large_spte(vcpu, it.sptep);
++		sp = kvm_mmu_get_child_sp(vcpu, it.sptep, base_gfn,
++					  true, direct_access);
++		if (sp == ERR_PTR(-EEXIST))
++			continue;
+ 
+-		if (!is_shadow_present_pte(*it.sptep)) {
+-			sp = kvm_mmu_get_child_sp(vcpu, it.sptep, base_gfn,
+-						  true, direct_access);
+-			link_shadow_page(vcpu, it.sptep, sp);
+-			if (fault->huge_page_disallowed &&
+-			    fault->req_level >= it.level)
+-				account_huge_nx_page(vcpu->kvm, sp);
+-		}
++		link_shadow_page(vcpu, it.sptep, sp);
++		if (fault->huge_page_disallowed &&
++		    fault->req_level >= it.level)
++			account_huge_nx_page(vcpu->kvm, sp);
+ 	}
+ 
+ 	if (WARN_ON_ONCE(it.level != fault->goal_level))
+-- 
+2.31.1
+
+
