@@ -2,194 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B7BBCCA47E
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 19:39:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2552C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 19:39:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359287AbiFVTjB (ORCPT
+        id S1358756AbiFVTjF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 15:39:01 -0400
+        Wed, 22 Jun 2022 15:39:05 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358570AbiFVTiW (ORCPT
+        with ESMTP id S1358574AbiFVTi0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 15:38:22 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A840167FD;
+        Wed, 22 Jun 2022 15:38:26 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76BF217E0E;
         Wed, 22 Jun 2022 12:38:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655926701; x=1687462701;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=4QSuaH5P1V9uS0dSZnBNZ39kjP3dH2P2AHz6kFEzfGs=;
-  b=bUN2qYUmg4fm+obhzfm8gC5R5Z8LJDuWu+sObidG+l9J8GVxNN1h51GK
-   ihpnNewWe/W97vdhpZQVP3UsegUy2TpvRsDJAN97+juxxGHf5f18oc1ZF
-   H50BMz8csG7K6XeaxvnFHEdbGSigcsG9JqhgV5eSO8imxdcN/rUQQR+BH
-   OInYb9qCpyDJiUPwYPo7T7T9V+iBqHPMKW/IvrZ3nhSAzIpY3TsPo3ity
-   dwnBSQgev1ncHgHwcr1OpysaO2B/XuuGQjMfDeVGo4+Uru1OVye8F+w9C
-   qHPFMITG3mOXioZf1blHG0rRq0XKlnlssRVi26Mx8VbeHt0+YvngWg9cR
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="305983063"
-X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="305983063"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 12:38:20 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="715542075"
-Received: from bwalker-desk.ch.intel.com ([143.182.136.162])
-  by orsmga004.jf.intel.com with ESMTP; 22 Jun 2022 12:38:20 -0700
-From:   Ben Walker <benjamin.walker@intel.com>
-To:     vkoul@kernel.org
-Cc:     dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 03/15] dmaengine: Add dmaengine_async_is_tx_complete
-Date:   Wed, 22 Jun 2022 12:37:41 -0700
-Message-Id: <20220622193753.3044206-4-benjamin.walker@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220622193753.3044206-1-benjamin.walker@intel.com>
-References: <20220503200728.2321188-1-benjamin.walker@intel.com>
- <20220622193753.3044206-1-benjamin.walker@intel.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
+        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=jzZ8niIo7Smg65/52ka6uwTAHWOyxG3OOMUtsy1PEeE=; b=frN2qRKLQlK5xMP5cQT3Lb9HVI
+        62WleJi7obpCi+3NJcwyjVzbqMUv/A6bothq/yL01s1j0b27k6EIsNFLe2zlnAZ3u/qyea7ep6jRG
+        OWdN4qSgIs4Kf8e1FPIGsnUKcLjCjPDdnPUHTX4Iu52F3zr8L4elecDhTr6fdmAT/ZObCJltnrtvc
+        VgpR65+FbzffP8eLhU+qX7j/2P851jaQhS4oZ9d6qJh1COdadmSJy6HZu3ls4Alk1xLSd8AaGVC7q
+        DtSW53jX8g8vvZ7FzFBDwnULpwRuY95QoTBBAvkW+Mxx23lGlNihpqne20stVeHbO+J1ImLxYljE/
+        JqUGhlzA==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o46AI-00BGiS-IS; Wed, 22 Jun 2022 19:38:16 +0000
+Message-ID: <afe8b072-466f-c180-eeef-5c501bf523e3@infradead.org>
+Date:   Wed, 22 Jun 2022 12:37:21 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: =?UTF-8?B?UmU6IFtQQVRDSF0gQ29tbW9uIGNsb2NrOiDigIvigItUbyBsaXN0IGFj?=
+ =?UTF-8?Q?tive_consumers_of_clocks?=
+Content-Language: en-US
+To:     Stephen Boyd <sboyd@kernel.org>, mturquette@baylibre.com,
+        inux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
+        badolevishal1116@gmail.com
+Cc:     chinmoyghosh2001@gmail.com, mintupatel89@gmail.com
+References: <CAEXpiVQihEadxsNodarz2-wxSAipfpzEaA8zKpnozszC+weYTQ@mail.gmail.com>
+ <20220610194013.DD39DC34114@smtp.kernel.org> <20220622163209.GA6246@Mahakal>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20220622163209.GA6246@Mahakal>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the replacement for dma_async_is_tx_complete with two changes:
-1) The name prefix is 'dmaengine' as per convention
-2) It no longer reports the 'last' or 'used' cookie
 
-Drivers should convert to using dmaengine_async_is_tx_complete.
 
-Signed-off-by: Ben Walker <benjamin.walker@intel.com>
----
- Documentation/driver-api/dmaengine/client.rst | 19 ++++---------------
- .../driver-api/dmaengine/provider.rst         |  6 +++---
- drivers/dma/dmaengine.c                       |  2 +-
- drivers/dma/dmatest.c                         |  3 +--
- include/linux/dmaengine.h                     | 16 ++++++++++++++++
- 5 files changed, 25 insertions(+), 21 deletions(-)
+On 6/22/22 09:32, <Vishal Badole> wrote:
+> diff --git a/drivers/clk/Kconfig b/drivers/clk/Kconfig
+> index c44247d..549cdda 100644
+> --- a/drivers/clk/Kconfig
+> +++ b/drivers/clk/Kconfig
+> @@ -23,6 +23,14 @@ config COMMON_CLK
+>  menu "Common Clock Framework"
+>  	depends on COMMON_CLK
+>  
+> +config DEBUG_CLK_CONSUMER
+> +	bool "Debug feature to list clocks and their active consumers"
+> +	depends on DEBUG_FS && COMMON_CLK
+> +	help
+> +	  Clock consumer debug feature supports for clock debugging. Chose y
 
-diff --git a/Documentation/driver-api/dmaengine/client.rst b/Documentation/driver-api/dmaengine/client.rst
-index 85ecec2c40005..9ae489a4ca97f 100644
---- a/Documentation/driver-api/dmaengine/client.rst
-+++ b/Documentation/driver-api/dmaengine/client.rst
-@@ -259,8 +259,8 @@ The details of these operations are:
- 
-       dma_cookie_t dmaengine_submit(struct dma_async_tx_descriptor *desc)
- 
--   This returns a cookie can be used to check the progress of DMA engine
--   activity via other DMA engine calls not covered in this document.
-+   This returns a cookie that can be used to check the progress of a transaction
-+   via dmaengine_async_is_tx_complete().
- 
-    dmaengine_submit() will not start the DMA operation, it merely adds
-    it to the pending queue. For this, see step 5, dma_async_issue_pending.
-@@ -339,23 +339,12 @@ Further APIs
- 
-    .. code-block:: c
- 
--      enum dma_status dma_async_is_tx_complete(struct dma_chan *chan,
--		dma_cookie_t cookie, dma_cookie_t *last, dma_cookie_t *used)
--
--   This can be used to check the status of the channel. Please see
--   the documentation in include/linux/dmaengine.h for a more complete
--   description of this API.
-+      enum dma_status dmaengine_async_is_tx_complete(struct dma_chan *chan,
-+		dma_cookie_t cookie)
- 
-    This can be used with the cookie returned from dmaengine_submit()
-    to check for completion of a specific DMA transaction.
- 
--   .. note::
--
--      Not all DMA engine drivers can return reliable information for
--      a running DMA channel. It is recommended that DMA engine users
--      pause or stop (via dmaengine_terminate_all()) the channel before
--      using this API.
--
- 5. Synchronize termination API
- 
-    .. code-block:: c
-diff --git a/Documentation/driver-api/dmaengine/provider.rst b/Documentation/driver-api/dmaengine/provider.rst
-index 1e0f1f85d10e5..610309276bc9c 100644
---- a/Documentation/driver-api/dmaengine/provider.rst
-+++ b/Documentation/driver-api/dmaengine/provider.rst
-@@ -549,10 +549,10 @@ where to put them)
- 
- dma_cookie_t
- 
--- it's a DMA transaction ID that will increment over time.
-+- it's a DMA transaction ID.
- 
--- Not really relevant any more since the introduction of ``virt-dma``
--  that abstracts it away.
-+- The value can be chosen by the provider, or use the helper APIs
-+  such as dma_cookie_assign() and dma_cookie_complete().
- 
- DMA_CTRL_ACK
- 
-diff --git a/drivers/dma/dmaengine.c b/drivers/dma/dmaengine.c
-index e80feeea0e018..f67a13c29d3f9 100644
---- a/drivers/dma/dmaengine.c
-+++ b/drivers/dma/dmaengine.c
-@@ -523,7 +523,7 @@ enum dma_status dma_sync_wait(struct dma_chan *chan, dma_cookie_t cookie)
- 
- 	dma_async_issue_pending(chan);
- 	do {
--		status = dma_async_is_tx_complete(chan, cookie, NULL, NULL);
-+		status = dmaengine_async_is_tx_complete(chan, cookie);
- 		if (time_after_eq(jiffies, dma_sync_wait_timeout)) {
- 			dev_err(chan->device->dev, "%s: timeout!\n", __func__);
- 			return DMA_ERROR;
-diff --git a/drivers/dma/dmatest.c b/drivers/dma/dmatest.c
-index 0a2168a4ccb0c..3ee47a72bf9d7 100644
---- a/drivers/dma/dmatest.c
-+++ b/drivers/dma/dmatest.c
-@@ -838,8 +838,7 @@ static int dmatest_func(void *data)
- 					done->done,
- 					msecs_to_jiffies(params->timeout));
- 
--			status = dma_async_is_tx_complete(chan, cookie, NULL,
--							  NULL);
-+			status = dmaengine_async_is_tx_complete(chan, cookie);
- 		}
- 
- 		if (!done->done) {
-diff --git a/include/linux/dmaengine.h b/include/linux/dmaengine.h
-index f968f7671e22c..44eb1df433e61 100644
---- a/include/linux/dmaengine.h
-+++ b/include/linux/dmaengine.h
-@@ -1446,6 +1446,8 @@ static inline void dma_async_issue_pending(struct dma_chan *chan)
-  * @last: returns last completed cookie, can be NULL
-  * @used: returns last issued cookie, can be NULL
-  *
-+ * Note: This is deprecated. Use dmaengine_async_is_tx_complete instead.
-+ *
-  * If @last and @used are passed in, upon return they reflect the most
-  * recently submitted (used) cookie and the most recently completed
-  * cookie.
-@@ -1464,6 +1466,20 @@ static inline enum dma_status dma_async_is_tx_complete(struct dma_chan *chan,
- 	return status;
- }
- 
-+/**
-+ * dmaengine_async_is_tx_complete - poll for transaction completion
-+ * @chan: DMA channel
-+ * @cookie: transaction identifier to check status of
-+ *
-+ */
-+static inline enum dma_status dmaengine_async_is_tx_complete(struct dma_chan *chan,
-+	dma_cookie_t cookie)
-+{
-+	struct dma_tx_state state;
-+
-+	return chan->device->device_tx_status(chan, cookie, &state);
-+}
-+
- #ifdef CONFIG_DMA_ENGINE
- struct dma_chan *dma_find_channel(enum dma_transaction_type tx_type);
- enum dma_status dma_sync_wait(struct dma_chan *chan, dma_cookie_t cookie);
+	                                                             Choose y
+
+> +	  to get debug entry in file system to list clocks and their active
+> +	  consumer devices.
+
 -- 
-2.35.1
-
+~Randy
