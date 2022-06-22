@@ -2,62 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D02CC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 15:57:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6DCAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 15:59:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359736AbiFVP5i (ORCPT
+        id S1359822AbiFVP7X (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 11:57:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56500 "EHLO
+        Wed, 22 Jun 2022 11:59:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359858AbiFVP4I (ORCPT
+        with ESMTP id S1359765AbiFVP7I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 11:56:08 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A9EC73F899;
-        Wed, 22 Jun 2022 08:54:37 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2888712FC;
-        Wed, 22 Jun 2022 08:54:37 -0700 (PDT)
-Received: from bogus (unknown [10.57.36.82])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id F15B53F792;
-        Wed, 22 Jun 2022 08:54:33 -0700 (PDT)
-Date:   Wed, 22 Jun 2022 16:53:22 +0100
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Lukasz Luba <lukasz.luba@arm.com>
-Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        daniel.lezcano@linaro.org, amitk@kernel.org, rui.zhang@intel.com,
-        viresh.kumar@linaro.org, rafael@kernel.org,
-        dietmar.eggemann@arm.com, nm@ti.com, sboyd@kernel.org,
-        cristian.marussi@arm.com, matthias.bgg@gmail.com,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 3/4] firmware: arm_scmi: Get detailed power scale from
- perf
-Message-ID: <20220622155322.g2idz2623nxi6mu3@bogus>
-References: <20220622145802.13032-1-lukasz.luba@arm.com>
- <20220622145802.13032-4-lukasz.luba@arm.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220622145802.13032-4-lukasz.luba@arm.com>
+        Wed, 22 Jun 2022 11:59:08 -0400
+Received: from smtpbg.qq.com (smtpbg138.qq.com [106.55.201.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD4F94199A;
+        Wed, 22 Jun 2022 08:55:49 -0700 (PDT)
+X-QQ-mid: bizesmtp66t1655913147t3a158w9
+Received: from ubuntu.localdomain ( [106.117.78.84])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Wed, 22 Jun 2022 23:52:22 +0800 (CST)
+X-QQ-SSF: 01000000008000B0C000E00A0000000
+X-QQ-FEAT: F3yR32iATbiPoMYvaDYTFsBZP9QS13DHRUXxAF9nw2AecPV51DVC2kmloL/tk
+        2mNTwzMeXCZZ1SGC0+j0lExTrDTnubodTIzsw7t/2xgMnCj+mc7Fnvt+JPvh26zQYou9GQ9
+        0/BAqjpdfuvmkVwry71ZqbJpH636cOkrUwN9nQt2q49m0il6X/C2BaQQhhVc4j4TXjfzxlk
+        EvuXFFSjG2N7yeN6SSziicY4/yaosBlzJxmLNb1Qhg/f5RJsluE+lzbP+THkyVYGGsNNXkF
+        otiu1Gk8cA66+padPxGLebmT9OuKratvx95tMPZy1/qjN6qRGTU+XYYZSHARkLSRQ2Bl1+U
+        RhBgot9y9W9zx+hbpgHZpPb9Qf9GOcvT8w8o4hR
+X-QQ-GoodBg: 0
+From:   Jiang Jian <jiangjian@cdjrlc.com>
+To:     axboe@kernel.dk
+Cc:     philipp.reisner@linbit.com, lars.ellenberg@linbit.com,
+        christoph.boehmwalder@linbit.com, drbd-dev@lists.linbit.com,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiang Jian <jiangjian@cdjrlc.com>
+Subject: [PATCH] block: drbd: drbd_state: Fix typo in comments
+Date:   Wed, 22 Jun 2022 23:52:20 +0800
+Message-Id: <20220622155220.8704-1-jiangjian@cdjrlc.com>
+X-Mailer: git-send-email 2.17.1
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 03:58:01PM +0100, Lukasz Luba wrote:
-> In SCMI v3.1 the power scale can be in micro-Watts. The upper layers, e.g.
-> cpufreq and EM should handle received power values properly (upscale when
-> needed). Thus, provide an interface which allows to check what is the
-> scale for power values. The old interface allowed to distinguish between
-> bogo-Watts and milli-Watts only (which was good for older SCMI spec).
->
+Replace 'is' with 'it'
 
-Assuming you will take this as a series,
+file: drivers/block/drbd/drbd_state.c
+line: 1900
 
-Acked-by: Sudeep Holla <sudeep.holla@arm.com>
+* But is is still not save to dreference ldev here, since
 
+changed to:
+
+* But it is still not save to dreference ldev here, since
+
+Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
+---
+ drivers/block/drbd/drbd_state.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/block/drbd/drbd_state.c b/drivers/block/drbd/drbd_state.c
+index 3f7bf9f2d874..99927c44f0c3 100644
+--- a/drivers/block/drbd/drbd_state.c
++++ b/drivers/block/drbd/drbd_state.c
+@@ -1897,7 +1897,7 @@ static void after_state_ch(struct drbd_device *device, union drbd_state os,
+ 		int was_io_error = 0;
+ 		/* corresponding get_ldev was in _drbd_set_state, to serialize
+ 		 * our cleanup here with the transition to D_DISKLESS.
+-		 * But is is still not save to dreference ldev here, since
++		 * But it is still not save to dreference ldev here, since
+ 		 * we might come from an failed Attach before ldev was set. */
+ 		if (device->ldev) {
+ 			rcu_read_lock();
 -- 
-Regards,
-Sudeep
+2.17.1
+
