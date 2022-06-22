@@ -2,278 +2,363 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDEE4CCA47D
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 15:50:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36059CCA481
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 15:52:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359626AbiFVPuD (ORCPT
+        id S1359651AbiFVPwu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 11:50:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50234 "EHLO
+        Wed, 22 Jun 2022 11:52:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359597AbiFVPtr (ORCPT
+        with ESMTP id S1358390AbiFVPwr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 11:49:47 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8691510C0;
-        Wed, 22 Jun 2022 08:49:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1655912985; x=1687448985;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=kUTeDv3jRZp1mfKhi3bKdX3QaT4O++GRFTiDUTmzc34=;
-  b=dV9aykkCn0hEsFgD/SxMyc5wECMuCdgA7O96oSEHm10PNlmA29rwPyYy
-   2902DTI5hwKVHK4Oext8AQQ2Teggb23F7G1Q3d3nI6p0jxBz8Ra9i+W6a
-   SS7tDbC5Z2bE8I3HPXHVzGUhouaDF6ddaG2rC62IoCJkAGvA0VzJjVKoW
-   g=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 22 Jun 2022 08:49:44 -0700
-X-QCInternal: smtphost
-Received: from nasanex01b.na.qualcomm.com ([10.46.141.250])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 08:49:44 -0700
-Received: from [10.50.0.243] (10.80.80.8) by nasanex01b.na.qualcomm.com
- (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 22 Jun
- 2022 08:49:41 -0700
-Message-ID: <70238b0a-de88-c4b6-ba46-22754d8e7b48@quicinc.com>
-Date:   Wed, 22 Jun 2022 21:19:25 +0530
+        Wed, 22 Jun 2022 11:52:47 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DDC310D4;
+        Wed, 22 Jun 2022 08:52:44 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LSnvD5W9HzDsH1;
+        Wed, 22 Jun 2022 23:52:08 +0800 (CST)
+Received: from dggpemm500013.china.huawei.com (7.185.36.172) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 22 Jun 2022 23:52:42 +0800
+Received: from ubuntu1804.huawei.com (10.67.175.36) by
+ dggpemm500013.china.huawei.com (7.185.36.172) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 22 Jun 2022 23:52:42 +0800
+From:   Chen Zhongjin <chenzhongjin@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-arch@vger.kernel.org>,
+        <linuxppc-dev@lists.ozlabs.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kbuild@vger.kernel.org>, <live-patching@vger.kernel.org>
+CC:     <jpoimboe@kernel.org>, <peterz@infradead.org>,
+        <catalin.marinas@arm.com>, <will@kernel.org>,
+        <masahiroy@kernel.org>, <michal.lkml@markovi.net>,
+        <ndesaulniers@google.com>, <mark.rutland@arm.com>,
+        <pasha.tatashin@soleen.com>, <broonie@kernel.org>,
+        <chenzhongjin@huawei.com>, <rmk+kernel@armlinux.org.uk>,
+        <madvenka@linux.microsoft.com>, <christophe.leroy@csgroup.eu>
+Subject: [PATCH v5 02/33] objtool: arm64: Add base definition for arm64 backend
+Date:   Wed, 22 Jun 2022 23:48:49 +0800
+Message-ID: <20220622154920.95075-3-chenzhongjin@huawei.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220622154920.95075-1-chenzhongjin@huawei.com>
+References: <20220622154920.95075-1-chenzhongjin@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH rcu 02/12] rcu: Avoid tracing a few functions executed in
- stop machine
-Content-Language: en-US
-To:     <paulmck@kernel.org>
-CC:     <rcu@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <kernel-team@fb.com>, <rostedt@goodmis.org>,
-        Patrick Wang <patrick.wang.shcn@gmail.com>
-References: <20220620222022.GA3839466@paulmck-ThinkPad-P17-Gen-1>
- <20220620222032.3839547-2-paulmck@kernel.org>
- <9de7f497-a4cd-ebdb-e912-d4cd73b4a982@quicinc.com>
- <20220621222147.GR1790663@paulmck-ThinkPad-P17-Gen-1>
- <95e12a75-72c6-76c7-26cc-a24af1e8cce0@quicinc.com>
- <20220622153506.GY1790663@paulmck-ThinkPad-P17-Gen-1>
-From:   Neeraj Upadhyay <quic_neeraju@quicinc.com>
-In-Reply-To: <20220622153506.GY1790663@paulmck-ThinkPad-P17-Gen-1>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01b.na.qualcomm.com (10.46.141.250)
+Content-Type: text/plain
+X-Originating-IP: [10.67.175.36]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500013.china.huawei.com (7.185.36.172)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Provide needed definitions for a new architecture instruction decoder.
+No proper decoding is done yet.
 
+Signed-off-by: Julien Thierry <jthierry@redhat.com>
+Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
+---
+ tools/objtool/Makefile                        |   4 +
+ tools/objtool/arch/arm64/Build                |   8 +
+ tools/objtool/arch/arm64/decode.c             | 138 ++++++++++++++++++
+ .../arch/arm64/include/arch/cfi_regs.h        |  14 ++
+ tools/objtool/arch/arm64/include/arch/elf.h   |  12 ++
+ .../arch/arm64/include/arch/endianness.h      |   9 ++
+ .../objtool/arch/arm64/include/arch/special.h |  22 +++
+ tools/objtool/arch/arm64/special.c            |  21 +++
+ 8 files changed, 228 insertions(+)
+ create mode 100644 tools/objtool/arch/arm64/Build
+ create mode 100644 tools/objtool/arch/arm64/decode.c
+ create mode 100644 tools/objtool/arch/arm64/include/arch/cfi_regs.h
+ create mode 100644 tools/objtool/arch/arm64/include/arch/elf.h
+ create mode 100644 tools/objtool/arch/arm64/include/arch/endianness.h
+ create mode 100644 tools/objtool/arch/arm64/include/arch/special.h
+ create mode 100644 tools/objtool/arch/arm64/special.c
 
-On 6/22/2022 9:05 PM, Paul E. McKenney wrote:
-> On Wed, Jun 22, 2022 at 05:20:35PM +0530, Neeraj Upadhyay wrote:
->>
->>
->> On 6/22/2022 3:51 AM, Paul E. McKenney wrote:
->>> On Tue, Jun 21, 2022 at 11:17:10AM +0530, Neeraj Upadhyay wrote:
->>>>
->>>>
->>>> On 6/21/2022 3:50 AM, Paul E. McKenney wrote:
->>>>> From: Patrick Wang <patrick.wang.shcn@gmail.com>
->>>>>
->>>>> Stop-machine recently started calling additional functions while waiting:
->>>>>
->>>>> ----------------------------------------------------------------
->>>>> Former stop machine wait loop:
->>>>> do {
->>>>>        cpu_relax(); => macro
->>>>>        ...
->>>>> } while (curstate != STOPMACHINE_EXIT);
->>>>> -----------------------------------------------------------------
->>>>> Current stop machine wait loop:
->>>>> do {
->>>>>        stop_machine_yield(cpumask); => function (notraced)
->>>>>        ...
->>>>>        touch_nmi_watchdog(); => function (notraced, inside calls also notraced)
->>>>>        ...
->>>>>        rcu_momentary_dyntick_idle(); => function (notraced, inside calls traced)
->>>>> } while (curstate != MULTI_STOP_EXIT);
->>>>> ------------------------------------------------------------------
->>>>>
->>>>> These functions (and the functions that they call) must be marked
->>>>> notrace to prevent them from being updated while they are executing.
->>>>> The consequences of failing to mark these functions can be severe:
->>>>>
->>>>>      rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
->>>>>      rcu: 	1-...!: (0 ticks this GP) idle=14f/1/0x4000000000000000 softirq=3397/3397 fqs=0
->>>>>      rcu: 	3-...!: (0 ticks this GP) idle=ee9/1/0x4000000000000000 softirq=5168/5168 fqs=0
->>>>>      	(detected by 0, t=8137 jiffies, g=5889, q=2 ncpus=4)
->>>>>      Task dump for CPU 1:
->>>>>      task:migration/1     state:R  running task     stack:    0 pid:   19 ppid:     2 flags:0x00000000
->>>>>      Stopper: multi_cpu_stop+0x0/0x18c <- stop_machine_cpuslocked+0x128/0x174
->>>>>      Call Trace:
->>>>>      Task dump for CPU 3:
->>>>>      task:migration/3     state:R  running task     stack:    0 pid:   29 ppid:     2 flags:0x00000000
->>>>>      Stopper: multi_cpu_stop+0x0/0x18c <- stop_machine_cpuslocked+0x128/0x174
->>>>>      Call Trace:
->>>>>      rcu: rcu_preempt kthread timer wakeup didn't happen for 8136 jiffies! g5889 f0x0 RCU_GP_WAIT_FQS(5) ->state=0x402
->>>>>      rcu: 	Possible timer handling issue on cpu=2 timer-softirq=594
->>>>>      rcu: rcu_preempt kthread starved for 8137 jiffies! g5889 f0x0 RCU_GP_WAIT_FQS(5) ->state=0x402 ->cpu=2
->>>>>      rcu: 	Unless rcu_preempt kthread gets sufficient CPU time, OOM is now expected behavior.
->>>>>      rcu: RCU grace-period kthread stack dump:
->>>>>      task:rcu_preempt     state:I stack:    0 pid:   14 ppid:     2 flags:0x00000000
->>>>>      Call Trace:
->>>>>        schedule+0x56/0xc2
->>>>>        schedule_timeout+0x82/0x184
->>>>>        rcu_gp_fqs_loop+0x19a/0x318
->>>>>        rcu_gp_kthread+0x11a/0x140
->>>>>        kthread+0xee/0x118
->>>>>        ret_from_exception+0x0/0x14
->>>>>      rcu: Stack dump where RCU GP kthread last ran:
->>>>>      Task dump for CPU 2:
->>>>>      task:migration/2     state:R  running task     stack:    0 pid:   24 ppid:     2 flags:0x00000000
->>>>>      Stopper: multi_cpu_stop+0x0/0x18c <- stop_machine_cpuslocked+0x128/0x174
->>>>>      Call Trace:
->>>>>
->>>>> This commit therefore marks these functions notrace:
->>>>>     rcu_preempt_deferred_qs()
->>>>>     rcu_preempt_need_deferred_qs()
->>>>>     rcu_preempt_deferred_qs_irqrestore()
->>>>>
->>>>
->>>> Only the preemptible RCU definitions are updated; so, this change is not
->>>> required for non-preemptible RCU case?
->>>
->>> It appears to me to be required.  How about as shown below?
->>>
->>
->> Looks good to me.
-> 
-> Thank you!  May I apply your Reviewed-by to both of these?  (1/12 and
-> 2/12.)
-> 
+diff --git a/tools/objtool/Makefile b/tools/objtool/Makefile
+index 2b97720ab608..3f7c7b54c741 100644
+--- a/tools/objtool/Makefile
++++ b/tools/objtool/Makefile
+@@ -45,6 +45,10 @@ ifeq ($(SRCARCH),x86)
+ 	BUILD_ORC := y
+ endif
+ 
++ifeq ($(SRCARCH),arm64)
++	CFLAGS  += -Wno-nested-externs
++endif
++
+ export BUILD_ORC
+ export srctree OUTPUT CFLAGS SRCARCH AWK
+ include $(srctree)/tools/build/Makefile.include
+diff --git a/tools/objtool/arch/arm64/Build b/tools/objtool/arch/arm64/Build
+new file mode 100644
+index 000000000000..f3de3a50d541
+--- /dev/null
++++ b/tools/objtool/arch/arm64/Build
+@@ -0,0 +1,8 @@
++objtool-y += special.o
++objtool-y += decode.o
++
++objtool-y += libhweight.o
++
++$(OUTPUT)arch/arm64/libhweight.o: ../lib/hweight.c FORCE
++	$(call rule_mkdir)
++	$(call if_changed_dep,cc_o_c)
+diff --git a/tools/objtool/arch/arm64/decode.c b/tools/objtool/arch/arm64/decode.c
+new file mode 100644
+index 000000000000..afe22c4593c8
+--- /dev/null
++++ b/tools/objtool/arch/arm64/decode.c
+@@ -0,0 +1,138 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++
++#include <stdio.h>
++#include <stdlib.h>
++#include <stdint.h>
++
++#include <asm/insn.h>
++
++#include <objtool/check.h>
++#include <objtool/arch.h>
++#include <objtool/elf.h>
++#include <objtool/warn.h>
++#include <objtool/builtin.h>
++#include <arch/cfi_regs.h>
++
++#include "../../../arch/arm64/lib/insn.c"
++
++bool arch_callee_saved_reg(unsigned char reg)
++{
++	switch (reg) {
++	case AARCH64_INSN_REG_19:
++	case AARCH64_INSN_REG_20:
++	case AARCH64_INSN_REG_21:
++	case AARCH64_INSN_REG_22:
++	case AARCH64_INSN_REG_23:
++	case AARCH64_INSN_REG_24:
++	case AARCH64_INSN_REG_25:
++	case AARCH64_INSN_REG_26:
++	case AARCH64_INSN_REG_27:
++	case AARCH64_INSN_REG_28:
++	case AARCH64_INSN_REG_FP:
++	case AARCH64_INSN_REG_LR:
++		return true;
++	default:
++		return false;
++	}
++}
++
++void arch_initial_func_cfi_state(struct cfi_init_state *state)
++{
++	int i;
++
++	for (i = 0; i < CFI_NUM_REGS; i++) {
++		state->regs[i].base = CFI_UNDEFINED;
++		state->regs[i].offset = 0;
++	}
++
++	/* initial CFA (call frame address) */
++	state->cfa.base = CFI_SP;
++	state->cfa.offset = 0;
++}
++
++unsigned long arch_dest_reloc_offset(int addend)
++{
++	return addend;
++}
++
++unsigned long arch_jump_destination(struct instruction *insn)
++{
++	return insn->offset + insn->immediate;
++}
++
++const char *arch_nop_insn(int len)
++{
++	static u32 nop;
++
++	if (len != AARCH64_INSN_SIZE)
++		WARN("invalid NOP size: %d\n", len);
++
++	if (!nop)
++		nop = aarch64_insn_gen_nop();
++
++	return (const char *)&nop;
++}
++
++const char *arch_ret_insn(int len)
++{
++	static u32 ret;
++
++	if (len != AARCH64_INSN_SIZE)
++		WARN("invalid RET size: %d\n", len);
++
++	if (!ret) {
++		ret = aarch64_insn_gen_branch_reg(AARCH64_INSN_REG_LR,
++				AARCH64_INSN_BRANCH_RETURN);
++	}
++
++	return (const char *)&ret;
++}
++
++static int is_arm64(const struct elf *elf)
++{
++	switch (elf->ehdr.e_machine) {
++	case EM_AARCH64: //0xB7
++		return 1;
++	default:
++		WARN("unexpected ELF machine type %x",
++		     elf->ehdr.e_machine);
++		return 0;
++	}
++}
++
++int arch_decode_hint_reg(u8 sp_reg, int *base)
++{
++	return -1;
++}
++
++int arch_decode_instruction(struct objtool_file *file, const struct section *sec,
++			    unsigned long offset, unsigned int maxlen,
++			    unsigned int *len, enum insn_type *type,
++			    unsigned long *immediate,
++			    struct list_head *ops_list)
++{
++	const struct elf *elf = file->elf;
++	u32 insn;
++
++	if (!is_arm64(elf))
++		return -1;
++
++	if (maxlen < AARCH64_INSN_SIZE)
++		return 0;
++
++	*len = AARCH64_INSN_SIZE;
++	*immediate = 0;
++	*type = INSN_OTHER;
++
++	insn = *(u32 *)(sec->data->d_buf + offset);
++
++	switch (aarch64_get_insn_class(insn)) {
++	case AARCH64_INSN_CLS_UNKNOWN:
++		WARN("can't decode instruction at %s:0x%lx", sec->name, offset);
++		return -1;
++	default:
++		break;
++	}
++
++	return 0;
++}
+diff --git a/tools/objtool/arch/arm64/include/arch/cfi_regs.h b/tools/objtool/arch/arm64/include/arch/cfi_regs.h
+new file mode 100644
+index 000000000000..a5185649686b
+--- /dev/null
++++ b/tools/objtool/arch/arm64/include/arch/cfi_regs.h
+@@ -0,0 +1,14 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++
++#ifndef _OBJTOOL_CFI_REGS_H
++#define _OBJTOOL_CFI_REGS_H
++
++#include <asm/insn.h>
++
++#define CFI_BP			AARCH64_INSN_REG_FP
++#define CFI_RA			AARCH64_INSN_REG_LR
++#define CFI_SP			AARCH64_INSN_REG_SP
++
++#define CFI_NUM_REGS		32
++
++#endif /* _OBJTOOL_CFI_REGS_H */
+diff --git a/tools/objtool/arch/arm64/include/arch/elf.h b/tools/objtool/arch/arm64/include/arch/elf.h
+new file mode 100644
+index 000000000000..a59888a906b5
+--- /dev/null
++++ b/tools/objtool/arch/arm64/include/arch/elf.h
+@@ -0,0 +1,12 @@
++/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
++
++#ifndef _OBJTOOL_ARCH_ELF
++#define _OBJTOOL_ARCH_ELF
++
++#define R_NTYPE	-1
++#define R_NONE	R_AARCH64_NONE
++#define R_ABS64	R_AARCH64_ABS64
++#define R_REL32	R_AARCH64_PREL32
++#define R_PLT32	R_NTYPE
++
++#endif /* _OBJTOOL_ARCH_ELF */
+diff --git a/tools/objtool/arch/arm64/include/arch/endianness.h b/tools/objtool/arch/arm64/include/arch/endianness.h
+new file mode 100644
+index 000000000000..7c362527da20
+--- /dev/null
++++ b/tools/objtool/arch/arm64/include/arch/endianness.h
+@@ -0,0 +1,9 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++#ifndef _ARCH_ENDIANNESS_H
++#define _ARCH_ENDIANNESS_H
++
++#include <endian.h>
++
++#define __TARGET_BYTE_ORDER __LITTLE_ENDIAN
++
++#endif /* _ARCH_ENDIANNESS_H */
+diff --git a/tools/objtool/arch/arm64/include/arch/special.h b/tools/objtool/arch/arm64/include/arch/special.h
+new file mode 100644
+index 000000000000..63a705c622a4
+--- /dev/null
++++ b/tools/objtool/arch/arm64/include/arch/special.h
+@@ -0,0 +1,22 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++
++#ifndef _ARM64_ARCH_SPECIAL_H
++#define _ARM64_ARCH_SPECIAL_H
++
++#define EX_ENTRY_SIZE		12
++#define EX_ORIG_OFFSET		0
++#define EX_NEW_OFFSET		4
++
++#define JUMP_ENTRY_SIZE		16
++#define JUMP_ORIG_OFFSET	0
++#define JUMP_NEW_OFFSET		4
++#define JUMP_KEY_OFFSET		8
++
++#define ALT_ENTRY_SIZE		12
++#define ALT_ORIG_OFFSET		0
++#define ALT_NEW_OFFSET		4
++#define ALT_FEATURE_OFFSET	8
++#define ALT_ORIG_LEN_OFFSET	10
++#define ALT_NEW_LEN_OFFSET	11
++
++#endif /* _ARM64_ARCH_SPECIAL_H */
+diff --git a/tools/objtool/arch/arm64/special.c b/tools/objtool/arch/arm64/special.c
+new file mode 100644
+index 000000000000..45f283283091
+--- /dev/null
++++ b/tools/objtool/arch/arm64/special.c
+@@ -0,0 +1,21 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++
++#include <objtool/special.h>
++
++void arch_handle_alternative(unsigned short feature, struct special_alt *alt)
++{
++}
++
++bool arch_support_alt_relocation(struct special_alt *special_alt,
++				 struct instruction *insn,
++				 struct reloc *reloc)
++{
++	return false;
++}
++
++
++struct reloc *arch_find_switch_table(struct objtool_file *file,
++				     struct instruction *insn)
++{
++	return NULL;
++}
+-- 
+2.17.1
 
-Yes, sure.
-
-Reviewed-by: Neeraj Upadhyay <quic_neeraju@quicinc.com>
-
-
-Thanks
-Neeraj
-
-> 							Thanx, Paul
-> 
->> Thanks
->> Neeraj
->>
->>> 							Thanx, Paul
->>>
->>> ------------------------------------------------------------------------
->>>
->>> commit 06cfe0c675c93884c3ffc75ec24ece7d0acd7a32
->>> Author: Patrick Wang <patrick.wang.shcn@gmail.com>
->>> Date:   Tue Apr 26 18:45:02 2022 +0800
->>>
->>>       rcu: Avoid tracing a few functions executed in stop machine
->>>       Stop-machine recently started calling additional functions while waiting:
->>>       ----------------------------------------------------------------
->>>       Former stop machine wait loop:
->>>       do {
->>>           cpu_relax(); => macro
->>>           ...
->>>       } while (curstate != STOPMACHINE_EXIT);
->>>       -----------------------------------------------------------------
->>>       Current stop machine wait loop:
->>>       do {
->>>           stop_machine_yield(cpumask); => function (notraced)
->>>           ...
->>>           touch_nmi_watchdog(); => function (notraced, inside calls also notraced)
->>>           ...
->>>           rcu_momentary_dyntick_idle(); => function (notraced, inside calls traced)
->>>       } while (curstate != MULTI_STOP_EXIT);
->>>       ------------------------------------------------------------------
->>>       These functions (and the functions that they call) must be marked
->>>       notrace to prevent them from being updated while they are executing.
->>>       The consequences of failing to mark these functions can be severe:
->>>         rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
->>>         rcu:  1-...!: (0 ticks this GP) idle=14f/1/0x4000000000000000 softirq=3397/3397 fqs=0
->>>         rcu:  3-...!: (0 ticks this GP) idle=ee9/1/0x4000000000000000 softirq=5168/5168 fqs=0
->>>               (detected by 0, t=8137 jiffies, g=5889, q=2 ncpus=4)
->>>         Task dump for CPU 1:
->>>         task:migration/1     state:R  running task     stack:    0 pid:   19 ppid:     2 flags:0x00000000
->>>         Stopper: multi_cpu_stop+0x0/0x18c <- stop_machine_cpuslocked+0x128/0x174
->>>         Call Trace:
->>>         Task dump for CPU 3:
->>>         task:migration/3     state:R  running task     stack:    0 pid:   29 ppid:     2 flags:0x00000000
->>>         Stopper: multi_cpu_stop+0x0/0x18c <- stop_machine_cpuslocked+0x128/0x174
->>>         Call Trace:
->>>         rcu: rcu_preempt kthread timer wakeup didn't happen for 8136 jiffies! g5889 f0x0 RCU_GP_WAIT_FQS(5) ->state=0x402
->>>         rcu:  Possible timer handling issue on cpu=2 timer-softirq=594
->>>         rcu: rcu_preempt kthread starved for 8137 jiffies! g5889 f0x0 RCU_GP_WAIT_FQS(5) ->state=0x402 ->cpu=2
->>>         rcu:  Unless rcu_preempt kthread gets sufficient CPU time, OOM is now expected behavior.
->>>         rcu: RCU grace-period kthread stack dump:
->>>         task:rcu_preempt     state:I stack:    0 pid:   14 ppid:     2 flags:0x00000000
->>>         Call Trace:
->>>           schedule+0x56/0xc2
->>>           schedule_timeout+0x82/0x184
->>>           rcu_gp_fqs_loop+0x19a/0x318
->>>           rcu_gp_kthread+0x11a/0x140
->>>           kthread+0xee/0x118
->>>           ret_from_exception+0x0/0x14
->>>         rcu: Stack dump where RCU GP kthread last ran:
->>>         Task dump for CPU 2:
->>>         task:migration/2     state:R  running task     stack:    0 pid:   24 ppid:     2 flags:0x00000000
->>>         Stopper: multi_cpu_stop+0x0/0x18c <- stop_machine_cpuslocked+0x128/0x174
->>>         Call Trace:
->>>       This commit therefore marks these functions notrace:
->>>        rcu_preempt_deferred_qs()
->>>        rcu_preempt_need_deferred_qs()
->>>        rcu_preempt_deferred_qs_irqrestore()
->>>       [ paulmck: Apply feedback from Neeraj Upadhyay. ]
->>>       Signed-off-by: Patrick Wang <patrick.wang.shcn@gmail.com>
->>>       Acked-by: Steven Rostedt (Google) <rostedt@goodmis.org>
->>>       Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
->>>
->>> diff --git a/kernel/rcu/tree_plugin.h b/kernel/rcu/tree_plugin.h
->>> index c8ba0fe17267c..7a07f2ca153e2 100644
->>> --- a/kernel/rcu/tree_plugin.h
->>> +++ b/kernel/rcu/tree_plugin.h
->>> @@ -460,7 +460,7 @@ static bool rcu_preempt_has_tasks(struct rcu_node *rnp)
->>>     * be quite short, for example, in the case of the call from
->>>     * rcu_read_unlock_special().
->>>     */
->>> -static void
->>> +static notrace void
->>>    rcu_preempt_deferred_qs_irqrestore(struct task_struct *t, unsigned long flags)
->>>    {
->>>    	bool empty_exp;
->>> @@ -581,7 +581,7 @@ rcu_preempt_deferred_qs_irqrestore(struct task_struct *t, unsigned long flags)
->>>     * is disabled.  This function cannot be expected to understand these
->>>     * nuances, so the caller must handle them.
->>>     */
->>> -static bool rcu_preempt_need_deferred_qs(struct task_struct *t)
->>> +static notrace bool rcu_preempt_need_deferred_qs(struct task_struct *t)
->>>    {
->>>    	return (__this_cpu_read(rcu_data.cpu_no_qs.b.exp) ||
->>>    		READ_ONCE(t->rcu_read_unlock_special.s)) &&
->>> @@ -595,7 +595,7 @@ static bool rcu_preempt_need_deferred_qs(struct task_struct *t)
->>>     * evaluate safety in terms of interrupt, softirq, and preemption
->>>     * disabling.
->>>     */
->>> -static void rcu_preempt_deferred_qs(struct task_struct *t)
->>> +static notrace void rcu_preempt_deferred_qs(struct task_struct *t)
->>>    {
->>>    	unsigned long flags;
->>> @@ -926,7 +926,7 @@ static bool rcu_preempt_has_tasks(struct rcu_node *rnp)
->>>     * Because there is no preemptible RCU, there can be no deferred quiescent
->>>     * states.
->>>     */
->>> -static bool rcu_preempt_need_deferred_qs(struct task_struct *t)
->>> +static notrace bool rcu_preempt_need_deferred_qs(struct task_struct *t)
->>>    {
->>>    	return false;
->>>    }
->>> @@ -935,7 +935,7 @@ static bool rcu_preempt_need_deferred_qs(struct task_struct *t)
->>>    // period for a quiescent state from this CPU.  Note that requests from
->>>    // tasks are handled when removing the task from the blocked-tasks list
->>>    // below.
->>> -static void rcu_preempt_deferred_qs(struct task_struct *t)
->>> +static notrace void rcu_preempt_deferred_qs(struct task_struct *t)
->>>    {
->>>    	struct rcu_data *rdp = this_cpu_ptr(&rcu_data);
