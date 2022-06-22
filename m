@@ -2,58 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C1C1C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 14:57:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 465A2C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 14:59:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358352AbiFVO5N (ORCPT
+        id S1358634AbiFVO6P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 10:57:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56126 "EHLO
+        Wed, 22 Jun 2022 10:58:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358227AbiFVO5K (ORCPT
+        with ESMTP id S1358227AbiFVO6M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 10:57:10 -0400
-Received: from neon-v2.ccupm.upm.es (neon-v2.ccupm.upm.es [138.100.198.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B1F43D495;
-        Wed, 22 Jun 2022 07:57:09 -0700 (PDT)
-Received: from localhost (82-69-11-11.dsl.in-addr.zen.co.uk [82.69.11.11])
-        (user=adrianml@alumnos.upm.es mech=PLAIN bits=0)
-        by neon-v2.ccupm.upm.es (8.15.2/8.15.2/neon-v2-001) with ESMTPSA id 25MEoQsf031852
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 22 Jun 2022 14:50:26 GMT
-Date:   Wed, 22 Jun 2022 15:50:21 +0100
-From:   Adrian Larumbe <adrianml@alumnos.upm.es>
-To:     Vinod Koul <vkoul@kernel.org>
-Cc:     Christoph Hellwig <hch@lst.de>, michal.simek@xilinx.com,
-        dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Wed, 22 Jun 2022 10:58:12 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6FBED38AC;
+        Wed, 22 Jun 2022 07:58:11 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5F33213D5;
+        Wed, 22 Jun 2022 07:58:11 -0700 (PDT)
+Received: from e123648.arm.com (unknown [10.57.38.162])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 6B7AC3F792;
+        Wed, 22 Jun 2022 07:58:08 -0700 (PDT)
+From:   Lukasz Luba <lukasz.luba@arm.com>
+To:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
+Cc:     daniel.lezcano@linaro.org, amitk@kernel.org, rui.zhang@intel.com,
+        lukasz.luba@arm.com, viresh.kumar@linaro.org, rafael@kernel.org,
+        dietmar.eggemann@arm.com, nm@ti.com, sboyd@kernel.org,
+        sudeep.holla@arm.com, cristian.marussi@arm.com,
+        matthias.bgg@gmail.com, linux-mediatek@lists.infradead.org,
         linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH] dmaengine: remove DMA_MEMCPY_SG once again
-Message-ID: <20220622145021.r42vlkmokd3eqmqe@sobremesa>
-References: <20220606074733.622616-1-hch@lst.de>
- <Yp4/JW4P12s4siRz@matsya>
- <20220606195455.qmq3yu6mc6g4rmm2@sobremesa>
- <Yp7OFYFp7oyjyKx1@matsya>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <Yp7OFYFp7oyjyKx1@matsya>
-X-BitDefender-Scanner: Clean, Agent: BitDefender Milter 3.1.7 on neon-v2.ccupm.upm.es, sigver: 7.92179
+Subject: [PATCH 0/4] Energy Model power in micro-Watts and SCMI v3.1 alignment
+Date:   Wed, 22 Jun 2022 15:57:58 +0100
+Message-Id: <20220622145802.13032-1-lukasz.luba@arm.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07.06.2022 09:33, Vinod Koul wrote:
-> There are no clients in mainline which call this API. There is a driver
-> which implements this API, but no users...
-> 
-> $ git grep dmaengine_prep_dma_memcpy_sg
-> include/linux/dmaengine.h:static inline struct dma_async_tx_descriptor *dmaengine_prep_dma_memcpy_sg(
+Hi all,
 
-This is true, when I sent this I thought my at the time employer had already
-upstreamed their driver changes which make this of this API call, but apparently
-it never happened after I left.
+This is a patch set which changes Energy Model power values scale to
+micro-Watts. It also upgrades the SCMI performance layer + scmi-cpufreq
+driver to leverage the SCMI v3.1 spec and process micro-Watts power values
+coming from FW. The higher precision in EM power field solves an issue
+of a rounding error, which then can be misinterpreted as 'inefficient OPP'.
+An example rounding issue calculation is present in patch 1/4 description.
 
-In this wise, this change series should probably go away altogether, even if
-that means it leaves that driver feature unutilised.
+Regards,
+Lukasz Luba
 
-Adrian Larumbe
+Lukasz Luba (4):
+  PM: EM: convert power field to micro-Watts precision and align drivers
+  Documentation: EM: Switch to micro-Watts scale
+  firmware: arm_scmi: Get detailed power scale from perf
+  cpufreq: scmi: Support the power scale in micro-Watts in SCMI v3.1
+
+ Documentation/power/energy-model.rst  | 14 +++---
+ drivers/cpufreq/mediatek-cpufreq-hw.c |  7 +--
+ drivers/cpufreq/scmi-cpufreq.c        | 15 ++++++-
+ drivers/firmware/arm_scmi/perf.c      | 18 +++++---
+ drivers/opp/of.c                      | 15 ++++---
+ drivers/powercap/dtpm_cpu.c           |  5 +--
+ drivers/thermal/cpufreq_cooling.c     | 13 +++++-
+ drivers/thermal/devfreq_cooling.c     | 19 ++++++--
+ include/linux/energy_model.h          | 63 ++++++++++++++++++++-------
+ include/linux/scmi_protocol.h         |  8 +++-
+ kernel/power/energy_model.c           | 31 ++++++++-----
+ 11 files changed, 146 insertions(+), 62 deletions(-)
+
+-- 
+2.17.1
+
