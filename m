@@ -2,192 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 852EBC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 10:14:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25AD8CCA47D
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 10:14:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351027AbiFVKOD (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 06:14:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34314 "EHLO
+        id S240926AbiFVKOu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 06:14:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351214AbiFVKNz (ORCPT
+        with ESMTP id S230264AbiFVKOs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 06:13:55 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F14425280;
-        Wed, 22 Jun 2022 03:13:54 -0700 (PDT)
+        Wed, 22 Jun 2022 06:14:48 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 936B13A5F5
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 03:14:47 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id i10-20020a1c3b0a000000b003a0297a61ddso171544wma.2
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 03:14:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1655892834; x=1687428834;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=N444SvRB40SKbqAwsQm2TSEKlF7bTgWg3nWfEMVWa7E=;
-  b=fMjb4uD4tnc+HtMhW5eNqYvkMbxrIIMZfiFwDz8bp57MlPaQx2vxAqG7
-   EYUAlx9vSHIN/BFg+ai3UbM4XeTJDQPZ1uXKR7nkFz3TTMSHeZ0Eyk+P3
-   tDB/xiq3SSINoEQ/GeMacEh7/Eyf9dWNhRxLDenPb/g0WaYPgwwy2a6nO
-   A=;
-Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 22 Jun 2022 03:13:54 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 03:13:53 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 22 Jun 2022 03:13:52 -0700
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 22 Jun 2022 03:13:47 -0700
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
-        <quic_plai@quicinc.com>, <bgoswami@quicinc.com>, <perex@perex.cz>,
-        <tiwai@suse.com>, <srinivas.kandagatla@linaro.org>,
-        <quic_rohkumar@quicinc.com>, <linux-arm-msm@vger.kernel.org>,
-        <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
-        <swboyd@chromium.org>, <judyhsiao@chromium.org>,
-        <devicetree@vger.kernel.org>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Subject: [PATCH 2/2] ASoC: qcom: Add driver support for audioreach solution
-Date:   Wed, 22 Jun 2022 15:43:19 +0530
-Message-ID: <1655892799-29641-3-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1655892799-29641-1-git-send-email-quic_srivasam@quicinc.com>
-References: <1655892799-29641-1-git-send-email-quic_srivasam@quicinc.com>
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ZGMHT1uhjCKvxJm1ObjOuYivPXVQOnihHYXcGYcwvas=;
+        b=nKEBuDo2khsFXyhhiCOkz3xLQFq3fpyOaakLCcIfD0KQAYYeMqHG16/xfV/Jh5RvAh
+         M8m4z3dO2KOg2upsEK1hxI3CvHEsyBaeFn/Svcx/sepUahoZyVs9lMsnFu0REWnTl+kd
+         bMXxgXxU4oyqzJNctDhaCrhitdpZhCJHSmHqFNPFxjnhQz9SurO5mUjZtf9xatk5TSBA
+         ojl6+imXM7cXFJd8DipOpp1sfoofm2Itv9+eD3alkAbv/4rA2ihQD5QyhX694kNJIMP3
+         XM7D0ku5dxdl+h+JBX3bxtI4y9S2gNR5SUX4EDLy99hrnxo665PzGWJHzq0Ba6+wKyOY
+         kbtQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ZGMHT1uhjCKvxJm1ObjOuYivPXVQOnihHYXcGYcwvas=;
+        b=RdMo9puFDuEENroBXHAFGZjkMTe3PjHq3YQKdmicFv5DBmdrSjYq+C4icKHfu9KsDk
+         hChXNyVHVTvSSQgB5nbdlWfMqXRyj136b4kshOxyPSjXTAraGnM9if9yHE4gqRlI3aaf
+         UZdnJXCHws1924z6YY6bNcn6exxDJdxGa89Qy23GDcrJ2OUQzdw2RyntlhmKrsgj3f8n
+         vmE1t4NcD/e4MLohLKnJOELvD2tF0QkRqubqfqlVz4KYyLRQtWf4d2xKKrnqJZmyRML9
+         YqscUdgBAuu4tSKuqzowFoFL4c+7yp1gtKSvNTC9UR7bLMavarSs0ORRwGKcxSyhWhX/
+         sPKQ==
+X-Gm-Message-State: AJIora+YlIG+Bfll/VYDG6e85ZaJszv5tNOGN1nQCys6P0j22XvBHzKL
+        054QFr7Z7f+HvHfYvRrQhO7sveLMuN5fOA==
+X-Google-Smtp-Source: AGRyM1v007oGF6GyrHQNq0+BOyS4cdvxLvwNXS3/IfxgfWnvBjzy2ucrJT/HKxalC4BaUp9+fdNlSw==
+X-Received: by 2002:a7b:cb88:0:b0:39d:16a7:dac7 with SMTP id m8-20020a7bcb88000000b0039d16a7dac7mr3060353wmi.128.1655892886072;
+        Wed, 22 Jun 2022 03:14:46 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id w5-20020a05600018c500b00210320d9fbfsm22184549wrq.18.2022.06.22.03.14.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jun 2022 03:14:45 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     David_Wang6097@jabil.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        edward_chen@jabil.com, ben_pai@jabil.com
+Subject: Re: (subset) [PATCH v5 3/3] dt-bindings: arm: aspeed: document board compatibles
+Date:   Wed, 22 Jun 2022 12:14:43 +0200
+Message-Id: <165589284658.28441.5142469500178504592.b4-ty@linaro.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220531011100.882643-2-David_Wang6097@jabil.com>
+References: <20220531011100.882643-1-David_Wang6097@jabil.com> <20220531011100.882643-2-David_Wang6097@jabil.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add Machine driver support for audioreach solution, which uses
-ADSP in SC7280 based paltforms.
+On Tue, 31 May 2022 09:10:59 +0800, David Wang wrote:
+> Document jabil board compatible.
+> 
+> 
 
-Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
----
- sound/soc/qcom/sc7280.c | 34 ++++++++++++++++++++++++++++++++++
- 1 file changed, 34 insertions(+)
+Applied, thanks with fixing up the white space.
 
-diff --git a/sound/soc/qcom/sc7280.c b/sound/soc/qcom/sc7280.c
-index 34cdb99..abe261c 100644
---- a/sound/soc/qcom/sc7280.c
-+++ b/sound/soc/qcom/sc7280.c
-@@ -19,9 +19,11 @@
- #include "../codecs/rt5682s.h"
- #include "common.h"
- #include "lpass.h"
-+#include "qdsp6/q6afe.h"
- 
- #define DEFAULT_MCLK_RATE              19200000
- #define RT5682_PLL_FREQ (48000 * 512)
-+#define MI2S_BCLK_RATE		1536000
- 
- struct sc7280_snd_data {
- 	struct snd_soc_card card;
-@@ -79,6 +81,7 @@ static int sc7280_headset_init(struct snd_soc_pcm_runtime *rtd)
- 	case MI2S_PRIMARY:
- 	case LPASS_CDC_DMA_RX0:
- 	case LPASS_CDC_DMA_TX3:
-+	case TX_CODEC_DMA_TX_3:
- 		for_each_rtd_codec_dais(rtd, i, codec_dai) {
- 			rval = snd_soc_component_set_jack(component, &pdata->hs_jack, NULL);
- 			if (rval != 0 && rval != -ENOTSUPP) {
-@@ -164,10 +167,14 @@ static int sc7280_init(struct snd_soc_pcm_runtime *rtd)
- 	switch (cpu_dai->id) {
- 	case MI2S_PRIMARY:
- 	case LPASS_CDC_DMA_TX3:
-+	case TX_CODEC_DMA_TX_3:
- 		return sc7280_headset_init(rtd);
- 	case LPASS_CDC_DMA_RX0:
- 	case LPASS_CDC_DMA_VA_TX0:
- 	case MI2S_SECONDARY:
-+	case RX_CODEC_DMA_RX_0:
-+	case SECONDARY_MI2S_RX:
-+	case VA_CODEC_DMA_TX_0:
- 		return 0;
- 	case LPASS_DP_RX:
- 		return sc7280_hdmi_init(rtd);
-@@ -195,6 +202,10 @@ static int sc7280_snd_hw_params(struct snd_pcm_substream *substream,
- 	switch (cpu_dai->id) {
- 	case LPASS_CDC_DMA_TX3:
- 	case LPASS_CDC_DMA_RX0:
-+	case RX_CODEC_DMA_RX_0:
-+	case SECONDARY_MI2S_RX:
-+	case TX_CODEC_DMA_TX_3:
-+	case VA_CODEC_DMA_TX_0:
- 		for_each_rtd_codec_dais(rtd, i, codec_dai) {
- 			sruntime = snd_soc_dai_get_stream(codec_dai, substream->stream);
- 			if (sruntime != ERR_PTR(-ENOTSUPP))
-@@ -245,6 +256,9 @@ static int sc7280_snd_prepare(struct snd_pcm_substream *substream)
- 	switch (cpu_dai->id) {
- 	case LPASS_CDC_DMA_RX0:
- 	case LPASS_CDC_DMA_TX3:
-+	case RX_CODEC_DMA_RX_0:
-+	case TX_CODEC_DMA_TX_3:
-+	case VA_CODEC_DMA_TX_0:
- 		return sc7280_snd_swr_prepare(substream);
- 	default:
- 		break;
-@@ -263,6 +277,9 @@ static int sc7280_snd_hw_free(struct snd_pcm_substream *substream)
- 	switch (cpu_dai->id) {
- 	case LPASS_CDC_DMA_RX0:
- 	case LPASS_CDC_DMA_TX3:
-+	case RX_CODEC_DMA_RX_0:
-+	case TX_CODEC_DMA_TX_3:
-+	case VA_CODEC_DMA_TX_0:
- 		if (sruntime && data->stream_prepared[cpu_dai->id]) {
- 			sdw_disable_stream(sruntime);
- 			sdw_deprepare_stream(sruntime);
-@@ -291,6 +308,10 @@ static void sc7280_snd_shutdown(struct snd_pcm_substream *substream)
- 					       SNDRV_PCM_STREAM_PLAYBACK);
- 		}
- 		break;
-+	case SECONDARY_MI2S_RX:
-+		snd_soc_dai_set_sysclk(cpu_dai, Q6AFE_LPASS_CLK_ID_SEC_MI2S_IBIT,
-+					       0, SNDRV_PCM_STREAM_PLAYBACK);
-+		break;
- 	default:
- 		break;
- 	}
-@@ -298,14 +319,26 @@ static void sc7280_snd_shutdown(struct snd_pcm_substream *substream)
- 
- static int sc7280_snd_startup(struct snd_pcm_substream *substream)
- {
-+	unsigned int fmt = SND_SOC_DAIFMT_CBS_CFS;
-+	unsigned int codec_dai_fmt = SND_SOC_DAIFMT_CBS_CFS;
- 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
- 	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, 0);
-+	struct snd_soc_dai *codec_dai = asoc_rtd_to_codec(rtd, 0);
- 	int ret = 0;
- 
- 	switch (cpu_dai->id) {
- 	case MI2S_PRIMARY:
- 		ret = sc7280_rt5682_init(rtd);
- 		break;
-+	case SECONDARY_MI2S_RX:
-+		codec_dai_fmt |= SND_SOC_DAIFMT_NB_NF | SND_SOC_DAIFMT_I2S;
-+
-+		snd_soc_dai_set_sysclk(cpu_dai, Q6AFE_LPASS_CLK_ID_SEC_MI2S_IBIT,
-+			MI2S_BCLK_RATE, SNDRV_PCM_STREAM_PLAYBACK);
-+
-+		snd_soc_dai_set_fmt(cpu_dai, fmt);
-+		snd_soc_dai_set_fmt(codec_dai, codec_dai_fmt);
-+		break;
- 	default:
- 		break;
- 	}
-@@ -361,6 +394,7 @@ static int sc7280_snd_platform_probe(struct platform_device *pdev)
- 
- static const struct of_device_id sc7280_snd_device_id[]  = {
- 	{ .compatible = "google,sc7280-herobrine" },
-+	{ .compatible = "google,sc7280-audioreach-herobrine" },
- 	{}
- };
- MODULE_DEVICE_TABLE(of, sc7280_snd_device_id);
+Please be sure git format-patch and checkpatch do not complain on your patches.
+
+[3/3] dt-bindings: arm: aspeed: document board compatibles
+      https://git.kernel.org/krzk/linux-dt/c/ae8980247d5af8528145713e07f1338abc57a00d
+
+Best regards,
 -- 
-2.7.4
-
+Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
