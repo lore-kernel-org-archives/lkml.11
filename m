@@ -2,171 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 078D0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 18:49:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6478FC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 18:49:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377225AbiFVSt0 (ORCPT
+        id S1377296AbiFVStt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 14:49:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36926 "EHLO
+        Wed, 22 Jun 2022 14:49:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376918AbiFVStR (ORCPT
+        with ESMTP id S1376918AbiFVStr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 14:49:17 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E60BC31917;
-        Wed, 22 Jun 2022 11:49:15 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id o8so24706309wro.3;
-        Wed, 22 Jun 2022 11:49:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=DqFQG0CU8wtdroHFAZ6bAEVb5kwNC8YHs7EBfsOyGTE=;
-        b=dkGTYPc1bdYnSwGmeGjAEVF250w9M54Jr41s7xjjWmr1xoijLuaMIuTcb2t/eM35w6
-         HtlesbcBnA1t7vg6OptOG9oQ9X4j0pt5K+2k9/tDM5usGv1h4s3ErM+um0RuMdRY/Spm
-         R6IP2blAreFB1gSVp8T9iNdzucCIhcCY7C06RtESae+iE3xAAKiEDn9DNF1nUXxv9QHK
-         8RX2/hID9p695bZgAWgCTKegqssjF0dgGyQ8ycnC4CLFoQ2mSWFidn3Zcj+Zs4Bwu0Hu
-         e/ZSr50H183t5LPZ4SeCbHj5A4vOYppCgx4tiqrCfrin06OtWwV8tP9aOCojjtkoFx3O
-         w9Vw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=DqFQG0CU8wtdroHFAZ6bAEVb5kwNC8YHs7EBfsOyGTE=;
-        b=FXZ1IbxE6DOPrywf0GNR7jnil8mSg/wnkq4zq6L+2WTgnMvJrOij4Fog7pPDEqBIfM
-         iVMPhjwmT0dkvO5IDabl+hdInZECbYcsqWuzcj8BEOg/n2T4OtBfA0/SmpjFjXYG5E/B
-         4dJB23WgVnMXvIrZ4Nj/MLmxav9ryRymqJ00BZxXLydJbCOR7mSLFvZ6kZQbHUsn6BKd
-         HSpz91yj1N4qL3LMNPYUhATNmWSQH9uLwHzhsM+s8LDrREg8hFXNE8HUuDDAGLdiQBCx
-         EjdnNLhGWuo1C8xXRZuJEmLrWAVRpL7Ub2pqOVkebBst4sJq/hhn2+mow+37Sexu1qWN
-         kHBg==
-X-Gm-Message-State: AJIora+hfNx3nXc8abSxnV/6jejxFv2mUJQ+MqCrchCv72xwCNjfjw4O
-        l6TosR9vHe2mQy69FArYyok=
-X-Google-Smtp-Source: AGRyM1vkB15KESXtruheH66NvVNQPfrMR+Ebv7PozqjW0fgpTFmRvOOMoCed61LAjw+FsF1ZtIW/XA==
-X-Received: by 2002:a5d:4e83:0:b0:21b:9dee:d109 with SMTP id e3-20020a5d4e83000000b0021b9deed109mr4859661wru.430.1655923754540;
-        Wed, 22 Jun 2022 11:49:14 -0700 (PDT)
-Received: from localhost (92.40.170.233.threembb.co.uk. [92.40.170.233])
-        by smtp.gmail.com with ESMTPSA id 1-20020a05600c248100b0039c5ab7167dsm177431wms.48.2022.06.22.11.49.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jun 2022 11:49:13 -0700 (PDT)
-From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-To:     linus.walleij@linaro.org
-Cc:     paul@crapouillou.net, maz@kernel.org, andy.shevchenko@gmail.com,
-        linux-mips@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 2/2] pinctrl: ingenic: Convert to immutable irq chip
-Date:   Wed, 22 Jun 2022 19:50:10 +0100
-Message-Id: <20220622185010.2022515-3-aidanmacdonald.0x0@gmail.com>
-In-Reply-To: <20220622185010.2022515-1-aidanmacdonald.0x0@gmail.com>
-References: <20220622185010.2022515-1-aidanmacdonald.0x0@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Wed, 22 Jun 2022 14:49:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B205313BF;
+        Wed, 22 Jun 2022 11:49:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C9482B8208E;
+        Wed, 22 Jun 2022 18:49:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A37FC34114;
+        Wed, 22 Jun 2022 18:49:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1655923782;
+        bh=UGwK8U1CCaVfUgZAsLw+SYJ97g3dLCKIIomeuZiBQ1w=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=bZVT9UVsA84wtb28RRbkCP0+NC6uhTn6OwNN8hldf7jfAOb4e8eihS1G4q19GfWvm
+         aRdf7WUvX08IC68x4Slo5jEg54I5AYWVjqIr/WQyDwyLgQOeuIxP4uxlaBeYMdU58e
+         cXCLzglwW9AfkLEPqvNsN0YZ8ut6Uek+6XAR7TLA=
+Date:   Wed, 22 Jun 2022 11:49:30 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Mike Kravetz <mike.kravetz@oracle.com>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build warning after merge of the mm tree
+Message-Id: <20220622114930.c907cbd361a7f71fb83eaf8f@linux-foundation.org>
+In-Reply-To: <YrNF0i01rU/r3yQn@monkey>
+References: <20220622155408.3ba2a9b7@canb.auug.org.au>
+        <20220622171117.70850960@canb.auug.org.au>
+        <YrNF0i01rU/r3yQn@monkey>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update the driver to use an immutable IRQ chip to fix this warning:
+On Wed, 22 Jun 2022 09:39:46 -0700 Mike Kravetz <mike.kravetz@oracle.com> wrote:
 
-    "not an immutable chip, please consider fixing it!"
+> > --- a/mm/hugetlb.c
+> > +++ b/mm/hugetlb.c
+> > @@ -6905,10 +6905,8 @@ unsigned long hugetlb_mask_last_page(struct hstate *h)
+> >  /* See description above.  Architectures can provide their own version. */
+> >  __weak unsigned long hugetlb_mask_last_page(struct hstate *h)
+> >  {
+> > -	unsigned long hp_size = huge_page_size(h);
+> > -
+> >  #ifdef CONFIG_ARCH_WANT_HUGE_PMD_SHARE
+> > -	if (hp_size == PMD_SIZE)
+> > +	if (huge_page_size(h) == PMD_SIZE)
+> >  		return PUD_SIZE - PMD_SIZE;
+> >  #endif
+> >  	return 0UL;
+> > -- 
+> 
+> Thanks Stephen,  my bad for not building !CONFIG_ARCH_WANT_HUGE_PMD_SHARE and,
+> the error is pretty obvious. :(
+> 
+> Andrew, do you want me to send an updated version of the patch?  Or,
+> would you prefer to include Stephen's fix?
 
-Preserve per-chip labels by adding an ->irq_print_chip() callback.
-
-Acked-by: Marc Zyngier <maz@kernel.org>
-Reviewed-by: Paul Cercueil <paul@crapouillou.net>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
----
- drivers/pinctrl/pinctrl-ingenic.c | 41 ++++++++++++++++++++-----------
- 1 file changed, 27 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/pinctrl/pinctrl-ingenic.c b/drivers/pinctrl/pinctrl-ingenic.c
-index 69e0d88665d3..3a9ee9c8af11 100644
---- a/drivers/pinctrl/pinctrl-ingenic.c
-+++ b/drivers/pinctrl/pinctrl-ingenic.c
-@@ -21,6 +21,7 @@
- #include <linux/pinctrl/pinconf-generic.h>
- #include <linux/platform_device.h>
- #include <linux/regmap.h>
-+#include <linux/seq_file.h>
- #include <linux/slab.h>
- 
- #include "core.h"
-@@ -135,7 +136,6 @@ struct ingenic_pinctrl {
- struct ingenic_gpio_chip {
- 	struct ingenic_pinctrl *jzpc;
- 	struct gpio_chip gc;
--	struct irq_chip irq_chip;
- 	unsigned int irq, reg_base;
- };
- 
-@@ -3419,6 +3419,8 @@ static void ingenic_gpio_irq_enable(struct irq_data *irqd)
- 	struct ingenic_gpio_chip *jzgc = gpiochip_get_data(gc);
- 	irq_hw_number_t irq = irqd_to_hwirq(irqd);
- 
-+	gpiochip_enable_irq(gc, irq);
-+
- 	if (is_soc_or_above(jzgc->jzpc, ID_JZ4770))
- 		ingenic_gpio_set_bit(jzgc, JZ4770_GPIO_INT, irq, true);
- 	else if (is_soc_or_above(jzgc->jzpc, ID_JZ4740))
-@@ -3443,6 +3445,8 @@ static void ingenic_gpio_irq_disable(struct irq_data *irqd)
- 		ingenic_gpio_set_bit(jzgc, JZ4740_GPIO_SELECT, irq, false);
- 	else
- 		ingenic_gpio_set_bit(jzgc, JZ4730_GPIO_GPIER, irq, false);
-+
-+	gpiochip_disable_irq(gc, irq);
- }
- 
- static void ingenic_gpio_irq_ack(struct irq_data *irqd)
-@@ -3687,6 +3691,27 @@ static void ingenic_gpio_irq_release(struct irq_data *data)
- 	return gpiochip_relres_irq(gpio_chip, irq);
- }
- 
-+static void ingenic_gpio_irq_print_chip(struct irq_data *data, struct seq_file *p)
-+{
-+	struct gpio_chip *gpio_chip = irq_data_get_irq_chip_data(data);
-+
-+	seq_printf(p, "%s", gpio_chip->label);
-+}
-+
-+static const struct irq_chip ingenic_gpio_irqchip = {
-+	.irq_enable		= ingenic_gpio_irq_enable,
-+	.irq_disable		= ingenic_gpio_irq_disable,
-+	.irq_unmask		= ingenic_gpio_irq_unmask,
-+	.irq_mask		= ingenic_gpio_irq_mask,
-+	.irq_ack		= ingenic_gpio_irq_ack,
-+	.irq_set_type		= ingenic_gpio_irq_set_type,
-+	.irq_set_wake		= ingenic_gpio_irq_set_wake,
-+	.irq_request_resources	= ingenic_gpio_irq_request,
-+	.irq_release_resources	= ingenic_gpio_irq_release,
-+	.irq_print_chip		= ingenic_gpio_irq_print_chip,
-+	.flags			= IRQCHIP_MASK_ON_SUSPEND | IRQCHIP_IMMUTABLE,
-+};
-+
- static int ingenic_pinmux_set_pin_fn(struct ingenic_pinctrl *jzpc,
- 		int pin, int func)
- {
-@@ -4175,20 +4200,8 @@ static int __init ingenic_gpio_probe(struct ingenic_pinctrl *jzpc,
- 	if (!jzgc->irq)
- 		return -EINVAL;
- 
--	jzgc->irq_chip.name = jzgc->gc.label;
--	jzgc->irq_chip.irq_enable = ingenic_gpio_irq_enable;
--	jzgc->irq_chip.irq_disable = ingenic_gpio_irq_disable;
--	jzgc->irq_chip.irq_unmask = ingenic_gpio_irq_unmask;
--	jzgc->irq_chip.irq_mask = ingenic_gpio_irq_mask;
--	jzgc->irq_chip.irq_ack = ingenic_gpio_irq_ack;
--	jzgc->irq_chip.irq_set_type = ingenic_gpio_irq_set_type;
--	jzgc->irq_chip.irq_set_wake = ingenic_gpio_irq_set_wake;
--	jzgc->irq_chip.irq_request_resources = ingenic_gpio_irq_request;
--	jzgc->irq_chip.irq_release_resources = ingenic_gpio_irq_release;
--	jzgc->irq_chip.flags = IRQCHIP_MASK_ON_SUSPEND;
--
- 	girq = &jzgc->gc.irq;
--	girq->chip = &jzgc->irq_chip;
-+	gpio_irq_chip_set_chip(girq, &ingenic_gpio_irqchip);
- 	girq->parent_handler = ingenic_gpio_irq_handler;
- 	girq->num_parents = 1;
- 	girq->parents = devm_kcalloc(dev, 1, sizeof(*girq->parents),
--- 
-2.35.1
-
+I added Stephen's fix, thanks.
