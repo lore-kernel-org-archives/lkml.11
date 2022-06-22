@@ -2,125 +2,457 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CE85C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 22:00:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ED3CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 22:00:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358449AbiFVWAH (ORCPT
+        id S1358546AbiFVWAN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 18:00:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44194 "EHLO
+        Wed, 22 Jun 2022 18:00:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349226AbiFVV7f (ORCPT
+        with ESMTP id S1355951AbiFVV7h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 17:59:35 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7605714081
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 14:59:23 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2fed274f3fbso154272957b3.17
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 14:59:23 -0700 (PDT)
+        Wed, 22 Jun 2022 17:59:37 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3764E1B785
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 14:59:25 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id w19-20020a17090a8a1300b001ec79064d8dso696237pjn.2
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 14:59:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=Ah2iRj02YiwPhgw+fxQ8yR+iMVe2r8+mhYVV0rIvZow=;
-        b=i3p4bjKEtbMXzQEuzp8oUcL2dOBUx5t3ouIxH3WFaHxtQBesxVZ95zRpRsbv0rotKc
-         DCfLguFUFd9z7qjx0Dt8NAVaz0jRnB1K5Fh9Yi5/ZA7DG9FgX6RK9DwoMGuX/btXSeNY
-         jRizfq/806YnP4p7qCTtBJ9GK0YOoKEvQNuF2KL6ayR3OaHneYEgbFUH1cZ3RoYx5Y7f
-         2KbJ9cRY3K9bypygWX7MY4tpexszDMtIlE99YgGPEudPytCeem3ndf6dqYBx6cC19AlU
-         1k9DIcVe8I+qgmnTG95ADMGi1utSftyTTlGvgR8EUYa2yoeI/p7XaS4EVakP4MZtD+7U
-         xgkQ==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=uf+HuQ1ItIoNqZupwoKpU9pz3NkBB1lHPNxwiXXD+2w=;
+        b=hyxmfFfu07K7sLrUw5QkwMAAH5ndrOSwzb2F+Qa+rgiNxY+si7NLFnfB4OUCOWIn10
+         oN8ExJ2bMCOMfo4CtAEf+AfYnDH/WOFG3JKiDvfLcVhXnAVlySyYE+t+eUsGWusIEax9
+         wrzbT1hbSVVVYlWdmVa1sU+zx14CnhZTAgavA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=Ah2iRj02YiwPhgw+fxQ8yR+iMVe2r8+mhYVV0rIvZow=;
-        b=cag3vF4m1AqI3KALqiuNxRtMVEAjuuSvOLxqDq6xfXn7DWMb38Or4AeC8EXsfrd525
-         W3LVQQLuSgrnFFSB77EraW8ZNg8vYBvZg9+hWfuIxVTafGEVT+ROLCF/Dh5CMIVVn/DX
-         pLPbMWPZqOnSIlxsCLgXMow5D6FOisJLRCgk3KcpB0cwCGpoKPpxMtohxrF4ivhqR04t
-         VzXZqj3CUaD0za3Fwb+Sor1I3PIm0mhHEUzfu/4/krP/SdSHRyVwEy8iqqTF98V9Nk05
-         m5qsr2cjuLVO6VgzJo3DDNs4PqCHwz9X8IgBcmQnADQ2wOtklHvgoyNwi7cQis1FY+Uk
-         0h5A==
-X-Gm-Message-State: AJIora9OPU6NGQiy7xN0dsu/+U46QmkPwol5zVo34iiIXOV7rJVJMEhk
-        H5g/aEtLmklBsKuLUjJveBNzW3xLZ4NZtyM=
-X-Google-Smtp-Source: AGRyM1serWNuSMZl/j+NqgnonDe+81gNNUGvZ49e005IqIx08CvB3Gw4PJWEQaMJYGKoe5Xwjqr9aD6KRs6btJ0=
-X-Received: from saravanak.san.corp.google.com ([2620:15c:2d:3:be1f:89ac:a37d:6bb4])
- (user=saravanak job=sendgmr) by 2002:a25:6a46:0:b0:669:1da2:ba1d with SMTP id
- f67-20020a256a46000000b006691da2ba1dmr5894467ybc.163.1655935163161; Wed, 22
- Jun 2022 14:59:23 -0700 (PDT)
-Date:   Wed, 22 Jun 2022 14:59:11 -0700
-In-Reply-To: <20220622215912.550419-1-saravanak@google.com>
-Message-Id: <20220622215912.550419-3-saravanak@google.com>
-Mime-Version: 1.0
-References: <20220622215912.550419-1-saravanak@google.com>
-X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
-Subject: [PATCH v1 2/2] of: base: Avoid console probe delay when fw_devlink.strict=1
-From:   Saravana Kannan <saravanak@google.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Len Brown <lenb@kernel.org>,
-        Saravana Kannan <saravanak@google.com>
-Cc:     Sascha Hauer <sha@pengutronix.de>, Peng Fan <peng.fan@nxp.com>,
-        Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-gpio@vger.kernel.org, kernel@pengutronix.de,
-        devicetree@vger.kernel.org, linux-acpi@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=uf+HuQ1ItIoNqZupwoKpU9pz3NkBB1lHPNxwiXXD+2w=;
+        b=3giVc0KgdYsfroDAIfQprRkgaZ+gBNzJjM67/AJ4434f5wGkifGGtR9NxWqEB7SEEK
+         BN4aJYzJRbBX9K51iZMMbwfzpGYFoFN5KEfT6GgmmP69pxgrcj8DY/YMXdtfW63ttGkH
+         l0ATgBomxUFI4gp+k2WU77sMspEx1jNAEiO6Xxsjxe+xN1XoDb3BAVlj07wqccIsiJ5M
+         PuwxQxnHaIu6kiSyveJsEu6T+cq+GU3uLw7SJ90ffmx5rVgGMhH1vOSRUe8DM6+gM2KF
+         ON0s5CA7doVNbldD330RDGDbI3bO4fK8lLmm/0PsexL9uRQqDf03eJQx97AkR0VT6gRf
+         T3Rg==
+X-Gm-Message-State: AJIora+saYox+LO9VvQJsNeRUZZT0Z7pqz4G/66xrdcNe/VrrMfaZcNM
+        uhiPwk2qbWPeUlwfUzjk4D/qyHtYVRKw8w==
+X-Google-Smtp-Source: AGRyM1sYH7FA2SAitMGkc4Qvvg1WF3u1cjELIfHo5tVKuKUjc52erulNEgjNcztldxbzadeP7bTMIA==
+X-Received: by 2002:a17:903:228c:b0:16a:24d7:6a9e with SMTP id b12-20020a170903228c00b0016a24d76a9emr17618429plh.27.1655935164423;
+        Wed, 22 Jun 2022 14:59:24 -0700 (PDT)
+Received: from joebar-glaptop.lan (c-71-202-34-56.hsd1.ca.comcast.net. [71.202.34.56])
+        by smtp.gmail.com with ESMTPSA id nk15-20020a17090b194f00b001ec9d45776bsm255916pjb.42.2022.06.22.14.59.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jun 2022 14:59:23 -0700 (PDT)
+From:   "Joseph S. Barrera III" <joebar@chromium.org>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Stephen Boyd <swboyd@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Alexandru M Stan <amstan@chromium.org>,
+        "Joseph S. Barrera III" <joebar@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org
+Subject: [PATCH v10 4/5] arm64: dts: qcom: sc7180: Add pazquel dts files
+Date:   Wed, 22 Jun 2022 14:58:04 -0700
+Message-Id: <20220622145717.v10.4.I41e2c2dc12961fe000ebc4d4ef6f0bc5da1259ea@changeid>
+X-Mailer: git-send-email 2.31.0
+In-Reply-To: <20220622215805.1121982-1-joebar@chromium.org>
+References: <20220622215805.1121982-1-joebar@chromium.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 71066545b48e ("driver core: Set fw_devlink.strict=1 by default")
-enabled iommus and dmas dependency enforcement by default. On some
-systems, this caused the console device's probe to get delayed until the
-deferred_probe_timeout expires.
+Pazquel is a trogdor-based board. These dts files are unchanged copies
+from the downstream Chrome OS 5.4 kernel.
 
-We need consoles to work as soon as possible, so mark the console device
-node with FWNODE_FLAG_BEST_EFFORT so that fw_delink knows not to delay
-the probe of the console device for suppliers without drivers. The
-driver can then make the decision on where it can probe without those
-suppliers or defer its probe.
-
-Fixes: 71066545b48e ("driver core: Set fw_devlink.strict=1 by default")
-Reported-by: Sascha Hauer <sha@pengutronix.de>
-Reported-by: Peng Fan <peng.fan@nxp.com>
-Signed-off-by: Saravana Kannan <saravanak@google.com>
+Signed-off-by: Joseph S. Barrera III <joebar@chromium.org>
 ---
- drivers/of/base.c | 2 ++
- 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/of/base.c b/drivers/of/base.c
-index d4f98c8469ed..a19cd0c73644 100644
---- a/drivers/of/base.c
-+++ b/drivers/of/base.c
-@@ -1919,6 +1919,8 @@ void of_alias_scan(void * (*dt_alloc)(u64 size, u64 align))
- 			of_property_read_string(of_aliases, "stdout", &name);
- 		if (name)
- 			of_stdout = of_find_node_opts_by_path(name, &of_stdout_options);
-+		if (of_stdout)
-+			of_stdout->fwnode.flags |= FWNODE_FLAG_BEST_EFFORT;
- 	}
- 
- 	if (!of_aliases)
+Changes in v10:
+- Remove 'include sc7180.dtsi' from *all* sc7180-trogdor-pazquel* files.
+- Move "okay" for ap_tp_i2c to proper location.
+
+Changes in v9:
+- Restore two lines accidentally removed from ap_sar_sensor.
+- Simplify trackpad enabling (51d30402be75).
+
+Changes in v7:
+- Only include sc7180.dtsi in sc7180-trogdor.dtsi (19794489fa24).
+- Simplify spi0/spi6 labeling (d277cab7afc7).
+- Remove #include of <arm/cros-ec-keyboard.dtsi>.
+- Accidentally removed two lines from ap_sar_sensor.
+
+Changes in v6:
+- Copy changes to ap_sar_sensor from v5.4.
+- Add #include of <arm/cros-ec-keyboard.dtsi>.
+
+Changes in v4:
+- Fix description (no downstream bits removed).
+- Add missing version history.
+
+Changes in v3:
+- First inclusion in series.
+
+ arch/arm64/boot/dts/qcom/Makefile             |   4 +
+ .../sc7180-trogdor-pazquel-lte-parade.dts     |  21 ++
+ .../qcom/sc7180-trogdor-pazquel-lte-ti.dts    |  21 ++
+ .../qcom/sc7180-trogdor-pazquel-parade.dts    |  16 ++
+ .../dts/qcom/sc7180-trogdor-pazquel-ti.dts    |  16 ++
+ .../boot/dts/qcom/sc7180-trogdor-pazquel.dtsi | 221 ++++++++++++++++++
+ 6 files changed, 299 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-lte-parade.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-lte-ti.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-parade.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-ti.dts
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel.dtsi
+
+diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
+index 5cfd6316768c..dc26704dfe34 100644
+--- a/arch/arm64/boot/dts/qcom/Makefile
++++ b/arch/arm64/boot/dts/qcom/Makefile
+@@ -79,6 +79,10 @@ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-mrbland-rev0-auo.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-mrbland-rev0-boe.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-mrbland-rev1-auo.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-mrbland-rev1-boe.dtb
++dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-pazquel-lte-parade.dtb
++dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-pazquel-lte-ti.dtb
++dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-pazquel-parade.dtb
++dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-pazquel-ti.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-pompom-r1.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-pompom-r1-lte.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-pompom-r2.dtb
+diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-lte-parade.dts b/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-lte-parade.dts
+new file mode 100644
+index 000000000000..407adca19652
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-lte-parade.dts
+@@ -0,0 +1,21 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Google Pazquel board device tree source
++ *
++ * Copyright 2021 Google LLC.
++ */
++
++/dts-v1/;
++
++#include "sc7180-trogdor-parade-ps8640.dtsi"
++#include "sc7180-trogdor-pazquel.dtsi"
++#include "sc7180-trogdor-lte-sku.dtsi"
++
++/ {
++	model = "Google Pazquel (Parade,LTE)";
++	compatible = "google,pazquel-sku4", "qcom,sc7180";
++};
++
++&ap_sar_sensor_i2c {
++	status = "okay";
++};
+diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-lte-ti.dts b/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-lte-ti.dts
+new file mode 100644
+index 000000000000..857877cf1565
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-lte-ti.dts
+@@ -0,0 +1,21 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Google Pazquel board device tree source
++ *
++ * Copyright 2021 Google LLC.
++ */
++
++/dts-v1/;
++
++#include "sc7180-trogdor-ti-sn65dsi86.dtsi"
++#include "sc7180-trogdor-pazquel.dtsi"
++#include "sc7180-trogdor-lte-sku.dtsi"
++
++/ {
++	model = "Google Pazquel (TI,LTE)";
++	compatible = "google,pazquel-sku0", "google,pazquel-sku2", "qcom,sc7180";
++};
++
++&ap_sar_sensor_i2c {
++	status = "okay";
++};
+diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-parade.dts b/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-parade.dts
+new file mode 100644
+index 000000000000..f28c6c7f522c
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-parade.dts
+@@ -0,0 +1,16 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Google Pazquel board device tree source
++ *
++ * Copyright 2022 Google LLC.
++ */
++
++/dts-v1/;
++
++#include "sc7180-trogdor-parade-ps8640.dtsi"
++#include "sc7180-trogdor-pazquel.dtsi"
++
++/ {
++	model = "Google Pazquel (Parade)";
++	compatible = "google,pazquel-sku5", "qcom,sc7180";
++};
+diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-ti.dts b/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-ti.dts
+new file mode 100644
+index 000000000000..9f950f596fa1
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-ti.dts
+@@ -0,0 +1,16 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Google Pazquel board device tree source
++ *
++ * Copyright 2021 Google LLC.
++ */
++
++/dts-v1/;
++
++#include "sc7180-trogdor-ti-sn65dsi86.dtsi"
++#include "sc7180-trogdor-pazquel.dtsi"
++
++/ {
++	model = "Google Pazquel (TI)";
++	compatible = "google,pazquel-sku1", "qcom,sc7180";
++};
+diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel.dtsi b/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel.dtsi
+new file mode 100644
+index 000000000000..5e4731b24d34
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel.dtsi
+@@ -0,0 +1,221 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Google Pazquel board device tree source
++ *
++ * Copyright 2021 Google LLC.
++ */
++
++#include "sc7180-trogdor.dtsi"
++
++&ap_sar_sensor {
++	compatible = "semtech,sx9324";
++	semtech,ph0-pin = <1 3 3>;
++	semtech,ph1-pin = <3 1 3>;
++	semtech,ph2-pin = <1 3 3>;
++	semtech,ph3-pin = <0 0 0>;
++	semtech,ph01-resolution = <1024>;
++	semtech,ph23-resolution = <1024>;
++	semtech,startup-sensor = <1>;
++	semtech,ph01-proxraw-strength = <3>;
++	semtech,ph23-proxraw-strength = <1>;
++	semtech,avg-pos-strength = <128>;
++	semtech,input-analog-gain = <0>;
++	semtech,cs-idle-sleep = "gnd";
++
++	/delete-property/ svdd-supply;
++	vdd-supply = <&pp1800_prox>;
++};
++
++/delete-node/&trackpad;
++&ap_tp_i2c {
++	status = "okay";
++	trackpad: trackpad@15 {
++		compatible = "hid-over-i2c";
++		reg = <0x15>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&tp_int_odl>;
++
++		interrupt-parent = <&tlmm>;
++		interrupts = <0 IRQ_TYPE_EDGE_FALLING>;
++
++		vcc-supply = <&pp3300_fp_tp>;
++		post-power-on-delay-ms = <100>;
++		hid-descr-addr = <0x0001>;
++
++		wakeup-source;
++	};
++};
++
++&keyboard_controller {
++	function-row-physmap = <
++		MATRIX_KEY(0x00, 0x02, 0)	/* T1 */
++		MATRIX_KEY(0x03, 0x02, 0)	/* T2 */
++		MATRIX_KEY(0x02, 0x02, 0)	/* T3 */
++		MATRIX_KEY(0x01, 0x02, 0)	/* T4 */
++		MATRIX_KEY(0x03, 0x04, 0)	/* T5 */
++		MATRIX_KEY(0x02, 0x04, 0)	/* T6 */
++		MATRIX_KEY(0x01, 0x04, 0)	/* T7 */
++		MATRIX_KEY(0x02, 0x09, 0)	/* T8 */
++		MATRIX_KEY(0x01, 0x09, 0)	/* T9 */
++		MATRIX_KEY(0x00, 0x04, 0)	/* T10 */
++	>;
++	linux,keymap = <
++		MATRIX_KEY(0x00, 0x02, KEY_BACK)
++		MATRIX_KEY(0x03, 0x02, KEY_REFRESH)
++		MATRIX_KEY(0x02, 0x02, KEY_ZOOM)
++		MATRIX_KEY(0x01, 0x02, KEY_SCALE)
++		MATRIX_KEY(0x03, 0x04, KEY_SYSRQ)
++		MATRIX_KEY(0x02, 0x04, KEY_BRIGHTNESSDOWN)
++		MATRIX_KEY(0x01, 0x04, KEY_BRIGHTNESSUP)
++		MATRIX_KEY(0x02, 0x09, KEY_MUTE)
++		MATRIX_KEY(0x01, 0x09, KEY_VOLUMEDOWN)
++		MATRIX_KEY(0x00, 0x04, KEY_VOLUMEUP)
++		CROS_STD_MAIN_KEYMAP
++	>;
++};
++
++&panel {
++	compatible = "edp-panel";
++};
++
++&pp3300_dx_edp {
++	gpio = <&tlmm 67 GPIO_ACTIVE_HIGH>;
++};
++
++&en_pp3300_dx_edp {
++	pinmux {
++		pins = "gpio67";
++	};
++
++	pinconf {
++		pins = "gpio67";
++	};
++};
++
++/* PINCTRL - board-specific pinctrl */
++
++&tlmm {
++	gpio-line-names = "TP_INT_ODL",
++			  "AP_RAM_ID0",
++			  "AP_SKU_ID2",
++			  "AP_RAM_ID1",
++			  "",
++			  "AP_RAM_ID2",
++			  "AP_TP_I2C_SDA",
++			  "AP_TP_I2C_SCL",
++			  "TS_RESET_L",
++			  "TS_INT_L",
++			  "",
++			  "EDP_BRIJ_IRQ",
++			  "AP_EDP_BKLTEN",
++			  "",
++			  "",
++			  "EDP_BRIJ_I2C_SDA",
++			  "EDP_BRIJ_I2C_SCL",
++			  "HUB_RST_L",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "AMP_EN",
++			  "P_SENSOR_INT_L",
++			  "AP_SAR_SENSOR_SDA",
++			  "AP_SAR_SENSOR_SCL",
++			  "",
++			  "HP_IRQ",
++			  "",
++			  "",
++			  "AP_BRD_ID2",
++			  "BRIJ_SUSPEND",
++			  "AP_BRD_ID0",
++			  "AP_H1_SPI_MISO",
++			  "AP_H1_SPI_MOSI",
++			  "AP_H1_SPI_CLK",
++			  "AP_H1_SPI_CS_L",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "H1_AP_INT_ODL",
++			  "",
++			  "UART_AP_TX_DBG_RX",
++			  "UART_DBG_TX_AP_RX",
++			  "HP_I2C_SDA",
++			  "HP_I2C_SCL",
++			  "FORCED_USB_BOOT",
++			  "AMP_BCLK",
++			  "AMP_LRCLK",
++			  "AMP_DIN",
++			  "",
++			  "HP_BCLK",
++			  "HP_LRCLK",
++			  "HP_DOUT",
++			  "HP_DIN",
++			  "HP_MCLK",
++			  "AP_SKU_ID0",
++			  "AP_EC_SPI_MISO",
++			  "AP_EC_SPI_MOSI",
++			  "AP_EC_SPI_CLK",
++			  "AP_EC_SPI_CS_L",
++			  "AP_SPI_CLK",
++			  "AP_SPI_MOSI",
++			  "AP_SPI_MISO",
++			  /*
++			   * AP_FLASH_WP_L is crossystem ABI. Schematics
++			   * call it BIOS_FLASH_WP_L.
++			   */
++			  "AP_FLASH_WP_L",
++			  "EN_PP3300_DX_EDP",
++			  "AP_SPI_CS0_L",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "UIM2_DATA",
++			  "UIM2_CLK",
++			  "UIM2_RST",
++			  "UIM2_PRESENT",
++			  "UIM1_DATA",
++			  "UIM1_CLK",
++			  "UIM1_RST",
++			  "",
++			  "CODEC_PWR_EN",
++			  "HUB_EN",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "AP_SKU_ID1",
++			  "AP_RST_REQ",
++			  "",
++			  "AP_BRD_ID1",
++			  "AP_EC_INT_L",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "EDP_BRIJ_EN",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "AP_TS_PEN_I2C_SDA",
++			  "AP_TS_PEN_I2C_SCL",
++			  "DP_HOT_PLUG_DET",
++			  "EC_IN_RW_ODL";
++};
 -- 
-2.37.0.rc0.161.g10f37bed90-goog
+2.31.0
 
