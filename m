@@ -2,219 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5CAFC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 11:42:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A226CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 11:44:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346603AbiFVLmQ (ORCPT
+        id S1352332AbiFVLoP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 07:42:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53698 "EHLO
+        Wed, 22 Jun 2022 07:44:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229582AbiFVLmO (ORCPT
+        with ESMTP id S229582AbiFVLoM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 07:42:14 -0400
-Received: from mail-yb1-f180.google.com (mail-yb1-f180.google.com [209.85.219.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC9B8167D6;
-        Wed, 22 Jun 2022 04:42:12 -0700 (PDT)
-Received: by mail-yb1-f180.google.com with SMTP id 23so29698696ybe.8;
-        Wed, 22 Jun 2022 04:42:12 -0700 (PDT)
+        Wed, 22 Jun 2022 07:44:12 -0400
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D97D82F672
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 04:44:11 -0700 (PDT)
+Received: by mail-yb1-xb34.google.com with SMTP id e4so17047940ybq.7
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 04:44:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OcnPEYRdzl0aOq6x7VWebadpVMpiOdVfyZPypR1JmUo=;
+        b=Zgw4qPzrcEgkrDUOJ8jhIiOLREwmtiFZaKv8IsFB8V0tZ3BWq87VQnUoe59pv+0/qV
+         1OM97/QoYe9mkcPN7zCAElpEI2fUA9/B/sbipzD/x6J3ZmSYCdzknspycVd98t2RKS42
+         jLdQZlC/e2IxxSsCj+Q+Ff5lJxdQV1rYWi7qBnRSYIL1HMERxzCjxXZ0NrJipDLMvYaU
+         y8M4nW2A8iBdch0ffiLV3Xe5pF5GeDOY3S34zb7G4fQdj9KmQy0iUWO4ez7UhmvNRF30
+         UNBnGoqF9Mqs7ZWdaItG2ZdbTuj16yTC0QlR3oHMUCCKP9MWgVcMMst9LjY0XdkQcVuZ
+         QNEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=JCV2OlM0n75yGXq5Ao9M4QymaqH2JncanYB6RHIUZPs=;
-        b=5KxsD1k27CkrO/nDlmgGnk7hRTxzA7TxK47lcvSFr7XxCZJYc5vv+IA3XQbk7KFoWy
-         xeGnC6M78g7W1C0ia3jjMiCdS7c177xXI6oyfsbtQC4DGpevrp9T7/jdNJZbQe898nQt
-         s//GcgLlZ9PnDTeXuHPfQGQj0LHXzfgpU8hPz17twbCyNM5bAq9AvUHQhV0nT4+Z08gh
-         s1n5bBF4F7XmyeVBM3eI3B5v0KDqvgWHAOP0p2vUVsmWb55OOgX4dS3cQMLfVMQtyb3G
-         /Keut+hSTy1DUPO7dW6GySz1L78Ul1RZ+bqGh56+Iq/zplSUYwJ+Z8pZTN89yJ0gcwlY
-         nkmw==
-X-Gm-Message-State: AJIora997Lv+RXvSWAiRwlYH20smtYY/ooYb6jQOksuwyYz46GoEMglO
-        7NK21NrKBDclAFMO5gwZmpAl0L1VMyzq4XC1dpQ=
-X-Google-Smtp-Source: AGRyM1t+UjB+W2u6c+KuvcQjZuiaMyR3JXTBhu8MFDYNtSJKpufG9a3kUq98N60z/GIEsB/1Kw+FvYOnSJeztB9YtCI=
-X-Received: by 2002:a25:e910:0:b0:668:d4c6:8c2d with SMTP id
- n16-20020a25e910000000b00668d4c68c2dmr3091586ybd.81.1655898132092; Wed, 22
- Jun 2022 04:42:12 -0700 (PDT)
+        bh=OcnPEYRdzl0aOq6x7VWebadpVMpiOdVfyZPypR1JmUo=;
+        b=FbQohQSIj485MEBXYCKhtqGiPSDIhtVm8lk3Iz2a1hcWzEoma/eIOfxlVcb8eXypP+
+         TZQkVf/g5wqofTiQJJbpn7PmcowWqX4X8wuAYjiM7TUeKLBYUtfTxZCh8XJOhMbDKHpl
+         INuPYsHSeEcz4C7NfrBNl2aRBwhqM6fhg0F/9F+B03qJKnG4KTLFHS9X2+pRmI1S4p/Q
+         ZrCCOmf1iCuhBK1s+N1/snYYGFjt4/vjpUmxaophxOIyryeRs2EgsXKRPtxz1kxd6oUc
+         ekAT9n/iX8QaQADqxwP4oKzHs9MK9y6rVik3QC0GE/gJb23/KxIVBcLh1qgN0bfJ1sOO
+         oq2A==
+X-Gm-Message-State: AJIora+LUGB8shabayuI5l733BXDX81wmUtc1bL61O8RO8tElFI4JeHw
+        cSNnyXfQ+OPs9srGzsI6FEKS10H9uDh3u+vI5npegQ==
+X-Google-Smtp-Source: AGRyM1tN2pw0Xh60kKJY+6uutE90P+YERJMH0p8+4bE5jlRLnZ0I1ZZ69M0T24VCSZnr9rHIStS3Nc7kvcZi8mXH8mE=
+X-Received: by 2002:a25:ae23:0:b0:668:daf8:c068 with SMTP id
+ a35-20020a25ae23000000b00668daf8c068mr3209209ybj.427.1655898250759; Wed, 22
+ Jun 2022 04:44:10 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1655894131.git.kai.huang@intel.com> <f4bff93d83814ea1f54494f51ce3e5d954cf0f5b.1655894131.git.kai.huang@intel.com>
-In-Reply-To: <f4bff93d83814ea1f54494f51ce3e5d954cf0f5b.1655894131.git.kai.huang@intel.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Wed, 22 Jun 2022 13:42:01 +0200
-Message-ID: <CAJZ5v0jV8ODcxuLL+iSpYbW7w=GFtUSakN-n8CO5Zmun3K-Erg@mail.gmail.com>
-Subject: Re: [PATCH v5 02/22] cc_platform: Add new attribute to prevent ACPI
- CPU hotplug
-To:     Kai Huang <kai.huang@intel.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        kvm-devel <kvm@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Len Brown <len.brown@intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Rafael Wysocki <rafael.j.wysocki@intel.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        isaku.yamahata@intel.com, Tom Lendacky <thomas.lendacky@amd.com>,
-        Tianyu.Lan@microsoft.com, Randy Dunlap <rdunlap@infradead.org>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Yue Haibing <yuehaibing@huawei.com>, dongli.zhang@oracle.com
+References: <20220619003919.394622-1-i.maximets@ovn.org> <CANn89iL_EmkEgPAVdhNW4tyzwQbARyji93mUQ9E2MRczWpNm7g@mail.gmail.com>
+ <20220622102813.GA24844@breakpoint.cc> <CANn89iLGKbeeBNoDQU9C7nPRCxc6FUsrwn0LfrAKrJiJ14PH+w@mail.gmail.com>
+ <c7ab4a7b-a987-e74b-dd2d-ee2c8ca84147@ovn.org>
+In-Reply-To: <c7ab4a7b-a987-e74b-dd2d-ee2c8ca84147@ovn.org>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 22 Jun 2022 13:43:59 +0200
+Message-ID: <CANn89iLxqae9wZ-h5M-whSsmAZ_7hW1e_=krvSyF8x89Y6o76w@mail.gmail.com>
+Subject: Re: [PATCH net] net: ensure all external references are released in
+ deferred skbuffs
+To:     Ilya Maximets <i.maximets@ovn.org>
+Cc:     Florian Westphal <fw@strlen.de>, netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, dev@openvswitch.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 1:16 PM Kai Huang <kai.huang@intel.com> wrote:
+On Wed, Jun 22, 2022 at 1:32 PM Ilya Maximets <i.maximets@ovn.org> wrote:
 >
-> Platforms with confidential computing technology may not support ACPI
-> CPU hotplug when such technology is enabled by the BIOS.  Examples
-> include Intel platforms which support Intel Trust Domain Extensions
-> (TDX).
+> On 6/22/22 12:36, Eric Dumazet wrote:
+> > On Wed, Jun 22, 2022 at 12:28 PM Florian Westphal <fw@strlen.de> wrote:
+> >>
+> >> Eric Dumazet <edumazet@google.com> wrote:
+> >>> On Sun, Jun 19, 2022 at 2:39 AM Ilya Maximets <i.maximets@ovn.org> wrote:
+> >>>>
+> >>>> Open vSwitch system test suite is broken due to inability to
+> >>>> load/unload netfilter modules.  kworker thread is getting trapped
+> >>>> in the infinite loop while running a net cleanup inside the
+> >>>> nf_conntrack_cleanup_net_list, because deferred skbuffs are still
+> >>>> holding nfct references and not being freed by their CPU cores.
+> >>>>
+> >>>> In general, the idea that we will have an rx interrupt on every
+> >>>> CPU core at some point in a near future doesn't seem correct.
+> >>>> Devices are getting created and destroyed, interrupts are getting
+> >>>> re-scheduled, CPUs are going online and offline dynamically.
+> >>>> Any of these events may leave packets stuck in defer list for a
+> >>>> long time.  It might be OK, if they are just a piece of memory,
+> >>>> but we can't afford them holding references to any other resources.
+> >>>>
+> >>>> In case of OVS, nfct reference keeps the kernel thread in busy loop
+> >>>> while holding a 'pernet_ops_rwsem' semaphore.  That blocks the
+> >>>> later modprobe request from user space:
+> >>>>
+> >>>>   # ps
+> >>>>    299 root  R  99.3  200:25.89 kworker/u96:4+
+> >>>>
+> >>>>   # journalctl
+> >>>>   INFO: task modprobe:11787 blocked for more than 1228 seconds.
+> >>>>         Not tainted 5.19.0-rc2 #8
+> >>>>   task:modprobe     state:D
+> >>>>   Call Trace:
+> >>>>    <TASK>
+> >>>>    __schedule+0x8aa/0x21d0
+> >>>>    schedule+0xcc/0x200
+> >>>>    rwsem_down_write_slowpath+0x8e4/0x1580
+> >>>>    down_write+0xfc/0x140
+> >>>>    register_pernet_subsys+0x15/0x40
+> >>>>    nf_nat_init+0xb6/0x1000 [nf_nat]
+> >>>>    do_one_initcall+0xbb/0x410
+> >>>>    do_init_module+0x1b4/0x640
+> >>>>    load_module+0x4c1b/0x58d0
+> >>>>    __do_sys_init_module+0x1d7/0x220
+> >>>>    do_syscall_64+0x3a/0x80
+> >>>>    entry_SYSCALL_64_after_hwframe+0x46/0xb0
+> >>>>
+> >>>> At this point OVS testsuite is unresponsive and never recover,
+> >>>> because these skbuffs are never freed.
+> >>>>
+> >>>> Solution is to make sure no external references attached to skb
+> >>>> before pushing it to the defer list.  Using skb_release_head_state()
+> >>>> for that purpose.  The function modified to be re-enterable, as it
+> >>>> will be called again during the defer list flush.
+> >>>>
+> >>>> Another approach that can fix the OVS use-case, is to kick all
+> >>>> cores while waiting for references to be released during the net
+> >>>> cleanup.  But that sounds more like a workaround for a current
+> >>>> issue rather than a proper solution and will not cover possible
+> >>>> issues in other parts of the code.
+> >>>>
+> >>>> Additionally checking for skb_zcopy() while deferring.  This might
+> >>>> not be necessary, as I'm not sure if we can actually have zero copy
+> >>>> packets on this path, but seems worth having for completeness as we
+> >>>> should never defer such packets regardless.
+> >>>>
+> >>>> CC: Eric Dumazet <edumazet@google.com>
+> >>>> Fixes: 68822bdf76f1 ("net: generalize skb freeing deferral to per-cpu lists")
+> >>>> Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
+> >>>> ---
+> >>>>  net/core/skbuff.c | 16 +++++++++++-----
+> >>>>  1 file changed, 11 insertions(+), 5 deletions(-)
+> >>>
+> >>> I do not think this patch is doing the right thing.
+> >>>
+> >>> Packets sitting in TCP receive queues should not hold state that is
+> >>> not relevant for TCP recvmsg().
+> >>
+> >> Agree, but tcp_v4/6_rcv() already call nf_reset_ct(), else it would
+> >> not be possible to remove nf_conntrack module in practice.
+> >
+> > Well, existing nf_reset_ct() does not catch all cases, like TCP fastopen ?
 >
-> If the kernel ever receives ACPI CPU hotplug event, it is likely a BIOS
-> bug.  For ACPI CPU hot-add, the kernel should speak out this is a BIOS
-> bug and reject the new CPU.  For hot-removal, for simplicity just assume
-> the kernel cannot continue to work normally, and BUG().
->
-> Add a new attribute CC_ATTR_ACPI_CPU_HOTPLUG_DISABLED to indicate the
-> platform doesn't support ACPI CPU hotplug, so that kernel can handle
-> ACPI CPU hotplug events for such platform.  The existing attribute
-> CC_ATTR_HOTPLUG_DISABLED is for software CPU hotplug thus doesn't fit.
->
-> In acpi_processor_{add|remove}(), add early check against this attribute
-> and handle accordingly if it is set.
->
-> Also take this chance to rename existing CC_ATTR_HOTPLUG_DISABLED to
-> CC_ATTR_CPU_HOTPLUG_DISABLED as it is for software CPU hotplug.
->
-> Signed-off-by: Kai Huang <kai.huang@intel.com>
-> ---
->  arch/x86/coco/core.c          |  2 +-
->  drivers/acpi/acpi_processor.c | 23 +++++++++++++++++++++++
->  include/linux/cc_platform.h   | 15 +++++++++++++--
->  kernel/cpu.c                  |  2 +-
->  4 files changed, 38 insertions(+), 4 deletions(-)
->
-> diff --git a/arch/x86/coco/core.c b/arch/x86/coco/core.c
-> index 4320fadae716..1bde1af75296 100644
-> --- a/arch/x86/coco/core.c
-> +++ b/arch/x86/coco/core.c
-> @@ -20,7 +20,7 @@ static bool intel_cc_platform_has(enum cc_attr attr)
->  {
->         switch (attr) {
->         case CC_ATTR_GUEST_UNROLL_STRING_IO:
-> -       case CC_ATTR_HOTPLUG_DISABLED:
-> +       case CC_ATTR_CPU_HOTPLUG_DISABLED:
->         case CC_ATTR_GUEST_MEM_ENCRYPT:
->         case CC_ATTR_MEM_ENCRYPT:
->                 return true;
-> diff --git a/drivers/acpi/acpi_processor.c b/drivers/acpi/acpi_processor.c
-> index 6737b1cbf6d6..b960db864cd4 100644
-> --- a/drivers/acpi/acpi_processor.c
-> +++ b/drivers/acpi/acpi_processor.c
-> @@ -15,6 +15,7 @@
->  #include <linux/kernel.h>
->  #include <linux/module.h>
->  #include <linux/pci.h>
-> +#include <linux/cc_platform.h>
->
->  #include <acpi/processor.h>
->
-> @@ -357,6 +358,17 @@ static int acpi_processor_add(struct acpi_device *device,
->         struct device *dev;
->         int result = 0;
->
-> +       /*
-> +        * If the confidential computing platform doesn't support ACPI
-> +        * memory hotplug, the BIOS should never deliver such event to
-> +        * the kernel.  Report ACPI CPU hot-add as a BIOS bug and ignore
-> +        * the new CPU.
-> +        */
-> +       if (cc_platform_has(CC_ATTR_ACPI_CPU_HOTPLUG_DISABLED)) {
+> Yeah, that is kind of the main problem I have with the current
+> code.  It's very hard to find all the cases where skb has to be
+> cleaned up and almost impossible for someone who doesn't know
+> every aspect of every network subsystem in the kernel.  That's
+> why I went with the more or less bulletproof approach of cleaning
+> up while actually deferring.  I can try and test the code you
+> proposed in the other reply, but at least, I think, we need a
+> bunch of debug warnings in the skb_attempt_defer_free() to catch
+> possible issues.
 
-This will affect initialization, not just hotplug AFAICS.
+Debug warnings are expensive if they need to bring new cache lines.
 
-You should reset the .hotplug.enabled flag in processor_handler to
-false instead.
+So far skb_attempt_defer_free() is only used by TCP in well known conditions.
 
-> +               dev_err(&device->dev, "[BIOS bug]: Platform doesn't support ACPI CPU hotplug.  New CPU ignored.\n");
-> +               return -EINVAL;
-> +       }
-> +
->         pr = kzalloc(sizeof(struct acpi_processor), GFP_KERNEL);
->         if (!pr)
->                 return -ENOMEM;
-> @@ -434,6 +446,17 @@ static void acpi_processor_remove(struct acpi_device *device)
->         if (!device || !acpi_driver_data(device))
->                 return;
+
 >
-> +       /*
-> +        * The confidential computing platform is broken if ACPI memory
-> +        * hot-removal isn't supported but it happened anyway.  Assume
-> +        * it's not guaranteed that the kernel can continue to work
-> +        * normally.  Just BUG().
-> +        */
-> +       if (cc_platform_has(CC_ATTR_ACPI_CPU_HOTPLUG_DISABLED)) {
-> +               dev_err(&device->dev, "Platform doesn't support ACPI CPU hotplug. BUG().\n");
-> +               BUG();
-> +       }
-> +
->         pr = acpi_driver_data(device);
->         if (pr->id >= nr_cpu_ids)
->                 goto out;
-> diff --git a/include/linux/cc_platform.h b/include/linux/cc_platform.h
-> index 691494bbaf5a..9ce9256facc8 100644
-> --- a/include/linux/cc_platform.h
-> +++ b/include/linux/cc_platform.h
-> @@ -74,14 +74,25 @@ enum cc_attr {
->         CC_ATTR_GUEST_UNROLL_STRING_IO,
+> Also, what about cleaning up extensions?  IIUC, at least one
+> of them can hold external references.  SKB_EXT_SEC_PATH holds
+> xfrm_state.  We should, probably, free them as well?
+
+I do not know about this, I would ask XFRM maintainers
+
 >
->         /**
-> -        * @CC_ATTR_HOTPLUG_DISABLED: Hotplug is not supported or disabled.
-> +        * @CC_ATTR_CPU_HOTPLUG_DISABLED: CPU hotplug is not supported or
-> +        *                                disabled.
->          *
->          * The platform/OS is running as a guest/virtual machine does not
->          * support CPU hotplug feature.
->          *
->          * Examples include TDX Guest.
->          */
-> -       CC_ATTR_HOTPLUG_DISABLED,
-> +       CC_ATTR_CPU_HOTPLUG_DISABLED,
-> +
-> +       /**
-> +        * @CC_ATTR_ACPI_CPU_HOTPLUG_DISABLED: ACPI CPU hotplug is not
-> +        *                                     supported.
-> +        *
-> +        * The platform/OS does not support ACPI CPU hotplug.
-> +        *
-> +        * Examples include TDX platform.
-> +        */
-> +       CC_ATTR_ACPI_CPU_HOTPLUG_DISABLED,
->  };
->
->  #ifdef CONFIG_ARCH_HAS_CC_PLATFORM
-> diff --git a/kernel/cpu.c b/kernel/cpu.c
-> index edb8c199f6a3..966772cce063 100644
-> --- a/kernel/cpu.c
-> +++ b/kernel/cpu.c
-> @@ -1191,7 +1191,7 @@ static int cpu_down_maps_locked(unsigned int cpu, enum cpuhp_state target)
->          * If the platform does not support hotplug, report it explicitly to
->          * differentiate it from a transient offlining failure.
->          */
-> -       if (cc_platform_has(CC_ATTR_HOTPLUG_DISABLED))
-> +       if (cc_platform_has(CC_ATTR_CPU_HOTPLUG_DISABLED))
->                 return -EOPNOTSUPP;
->         if (cpu_hotplug_disabled)
->                 return -EBUSY;
-> --
-> 2.36.1
->
+> And what about zerocopy skb?  I think, we should still not
+> allow them to be deferred as they seem to hold HW resources.
+
+The point of skb_attempt_defer_free() i is to make the freeing happen
+at producer
+ much instead of consumer.
+
+I do not think there is anything special in this regard with zero
+copy. I would leave the current code as is.
+
+A simpler patch might be to move the existing nf_reset_ct() earlier,
+can you test this ?
+
+I note that IPv6 does the nf_reset_ct() earlier, from ip6_protocol_deliver_rcu()
+
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index fda811a5251f2d76ac24a036e6b4f4e7d7d96d6f..a06464f96fe0cc94dd78272738ddaab2c19e87db
+100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -1919,6 +1919,8 @@ int tcp_v4_rcv(struct sk_buff *skb)
+        struct sock *sk;
+        int ret;
+
++       nf_reset_ct(skb);
++
+        drop_reason = SKB_DROP_REASON_NOT_SPECIFIED;
+        if (skb->pkt_type != PACKET_HOST)
+                goto discard_it;
+@@ -2046,8 +2048,6 @@ int tcp_v4_rcv(struct sk_buff *skb)
+        if (drop_reason)
+                goto discard_and_relse;
+
+-       nf_reset_ct(skb);
+-
+        if (tcp_filter(sk, skb)) {
+                drop_reason = SKB_DROP_REASON_SOCKET_FILTER;
+                goto discard_and_relse;
