@@ -2,117 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C616C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 14:48:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5C5AC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 14:48:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357661AbiFVOsb (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 10:48:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46332 "EHLO
+        id S234468AbiFVOst (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 10:48:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236233AbiFVOsW (ORCPT
+        with ESMTP id S230349AbiFVOsp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 10:48:22 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF2FB366A0
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 07:48:20 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id e2so13317139edv.3
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 07:48:20 -0700 (PDT)
+        Wed, 22 Jun 2022 10:48:45 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3F2338BE3
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 07:48:44 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id mf9so14447452ejb.0
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 07:48:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=6G/ojy09xOD7Yk10IXx6XAWZEdv4ioy60C9A76FQFHw=;
-        b=gKFpOXoSswiKIyETZbbHGlP9RrX21keBgH0q9ZFLlbnXXmwv7IUyaEO8iocTlDUICb
-         kkombdr/22igQ8TePP03v7ChHNF9hrIHYxajnVCZr9YTL+wDCR+yTIs/b55QN8cU3xRW
-         5h4pypYGVa4zSqpky06UAiHlVBdfnHx23M3X7bd8V5oAbmoV/5j4QRqFRg57nVMGRbsw
-         KR8lKuQC+dxkLzcuyFIigB/6x4aLNOiOMXH/qYJqysP2O5ATwfkvG+zefEU27Y+k4sTc
-         WtMK9l2C4nGNNHh3bWTJkP+pIvtwAmi9IQkhPq40It2C1D224GloOSMrA+FGXCmYC1/A
-         d++w==
+        bh=HH079LRyJTHmM+5gTDBKSJiZpHcFCkFjE8Gfy06llCc=;
+        b=H9tP4SI9QupeqEThyhbGj6fshmasD8PmJFGVHL7k7YByj2aMUy03B5eYGHNd2eMY74
+         XR6LRJmw/8PPwjk6xlbKZhXYFTke5A70dFaOHoRFyi0lz2OaJ7M18rhdJCLCZ0/wxbGk
+         2nmdaSa2GBf+qpEuUSSz22bLq6H++ga00KwHWt6bSRuUt+Uza96Cg/wz38LJt466nUXu
+         1WZtDG0wVI91nnt2oYicf3RRPGWW6/XnAQr/KP0pwHh9GHJjMdsk1dztKssfodFT/Mmk
+         N+y7mt5XpoPQirdnyo6H5Wf8MZCeuhId3dHCXz6A3f2jGvvj4/MzDkYCRFZR8WXm30GN
+         SPuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=6G/ojy09xOD7Yk10IXx6XAWZEdv4ioy60C9A76FQFHw=;
-        b=CM9U+HLwTtoGckgyqG+ZgEgUsvoHqTdXSo3Uofw6ypYX54tYUK1r7KXZWfLjcRempY
-         XEezlwZomHoa3YhOx7Wy3aq+UjB6i4aIdpWYz6/PhI3lCy5rM/5yA75PoO6kyBKziupj
-         0vvEb3xwSoX05U8g7u1F79/MpdAbnbR2UO2DTEf31sQ9YTjjmCHx3vrBr/u7E2cUVafE
-         98BoCjX1mGzd1uzgxFI0L+CHoOIy2jeBaOtOZOdv1d2CsZFR0o89yk1ncnBgeDkPGB6I
-         +X/2SNHg/JSfwPALIjSdOdelHzMD1hvwEKdA7uWqn5pK2smPYB+YgOs2A15nxHctBTzq
-         yHPQ==
-X-Gm-Message-State: AJIora/ntdYD7PrrZE2V/GTX/gSys/707CHtQGNfMAjb5Hx2kR7oJemO
-        swiVZ/lw6yIOZIv1DV/anO4ApQ==
-X-Google-Smtp-Source: AGRyM1tepXVn3qZDFiUKLwEMJAiZepWcMEUbpTD17FAIjwRJXcma8VPMvtQzh93nwAj98NOdU0r3pg==
-X-Received: by 2002:aa7:c2cf:0:b0:435:6576:b7c0 with SMTP id m15-20020aa7c2cf000000b004356576b7c0mr4537554edp.18.1655909299272;
-        Wed, 22 Jun 2022 07:48:19 -0700 (PDT)
+        bh=HH079LRyJTHmM+5gTDBKSJiZpHcFCkFjE8Gfy06llCc=;
+        b=O7zmG7yNqY4ohZpRvgI1o18vcJoN0BilmXuj+l+UotaPbNf8a4zMNxGsdVlITgeWuz
+         jwoX8lChzHHDHGFsWd68r+8O+QYqFvtsFyK/76hd+VBaHLuc7oTC0RJh95Qt9UL9qndu
+         zRIxBoILuW1OIKzY3mx34YnMwgfN9C66AYAbeHFJ0ia+VYQmh30296/UhMWKewpFk9Bo
+         Bg7VyX9FyX44ZtNVi0hqYIF5Tulr3kXHejXbshivtB9nUUDPROVZPR0YNOHSYl3P6x0i
+         EV6+VKU3ekCw5ttPkl5vTRnO7Z9edexSzQJzC6++dudJJyw9JPEUhm8gn5JJuNJk2CKi
+         qq+A==
+X-Gm-Message-State: AJIora+/F5rq1HDfw5cgwNClZQnrVyOcuhpxralJaNy2l/1ri9DzO94E
+        g57TbTztGQI9UqnwFUJLFAoKUg==
+X-Google-Smtp-Source: AGRyM1tTU8sGWhE5uoJlmgoqQlCvu0Bo0iKSowkNVd8F9534/qg8dpEzj0RucSD0a2PdldIeeIU+3g==
+X-Received: by 2002:a17:907:a427:b0:71b:6f0b:8beb with SMTP id sg39-20020a170907a42700b0071b6f0b8bebmr3434300ejc.496.1655909323287;
+        Wed, 22 Jun 2022 07:48:43 -0700 (PDT)
 Received: from [192.168.0.226] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id sb6-20020a1709076d8600b0070aaad0a173sm9385739ejc.192.2022.06.22.07.48.18
+        by smtp.gmail.com with ESMTPSA id gg19-20020a170906899300b00715705dd23asm9286292ejc.89.2022.06.22.07.48.42
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Jun 2022 07:48:18 -0700 (PDT)
-Message-ID: <b2c9faf0-95a8-772f-c211-f1599b35f8f8@linaro.org>
-Date:   Wed, 22 Jun 2022 16:48:17 +0200
+        Wed, 22 Jun 2022 07:48:42 -0700 (PDT)
+Message-ID: <fbf2251a-8df7-7bb3-bfda-8359b6d151be@linaro.org>
+Date:   Wed, 22 Jun 2022 16:48:41 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.10.0
-Subject: Re: [PATCH v2 4/6] arm64: dts: qcom: sc8280xp: Add reference device
+Subject: Re: [PATCH v2 1/4] dt-binding: mfd: Add Richtek RT5120 PMIC support
 Content-Language: en-US
-To:     Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Johan Hovold <johan@kernel.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220622041224.627803-1-bjorn.andersson@linaro.org>
- <20220622041224.627803-5-bjorn.andersson@linaro.org>
- <099cc82f-d52f-315f-189d-bcc40c1afd49@somainline.org>
- <YrMccQXwsz/zC/gl@hovoldconsulting.com>
- <9d0c1897-195f-0548-ea5d-ffc35768f518@somainline.org>
+To:     cy_huang <u0084500@gmail.com>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, lee.jones@linaro.org,
+        broonie@kernel.org, dmitry.torokhov@gmail.com
+Cc:     lgirdwood@gmail.com, cy_huang@richtek.com,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-input@vger.kernel.org
+References: <1655892104-10874-1-git-send-email-u0084500@gmail.com>
+ <1655892104-10874-2-git-send-email-u0084500@gmail.com>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <9d0c1897-195f-0548-ea5d-ffc35768f518@somainline.org>
+In-Reply-To: <1655892104-10874-2-git-send-email-u0084500@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22/06/2022 16:36, Konrad Dybcio wrote:
+On 22/06/2022 12:01, cy_huang wrote:
+> From: ChiYuan Huang <cy_huang@richtek.com>
 > 
+> Add Richtek RT5120 PMIC devicetree document.
 > 
-> On 22.06.2022 15:43, Johan Hovold wrote:
->> On Wed, Jun 22, 2022 at 02:33:02PM +0200, Konrad Dybcio wrote:
->>> On 22.06.2022 06:12, Bjorn Andersson wrote:
->>
->>>> +&qup2_i2c5 {
->>>> +	clock-frequency = <400000>;
->>>> +
->>>> +	pinctrl-names = "default";
->>>> +	pinctrl-0 = <&qup2_i2c5_default>, <&kybd_default>, <&tpad_default>;
->>>> +
->>>> +	status = "okay";
->>>> +
->>> I think all device DTs generally have 'status = "okay"' at the beginning. Should we change that?
->>>
->>
->> No, quite the opposite, status go at the end.
-> Then all other device DTs should be updated, as in dts/qcom/
-> everybody keeps it first in non-SoC/PMIC files.
+> Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
 
-The word "should" is a bit too much here, but I agree, we can update all
-of them to match one, chosen approach.
-
-However the location for "status" property is more important for the
-definition of nodes in DTSI, because it's the least important piece
-there and also kind of expected - here go properties + I disable it. For
-me this is more important.
-
-For node redefinition in DTS, I see benefits in two approaches:
-1. Let me first enable the node and then configure it.
-2. Let me configure the node and enable it.
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
 Best regards,
 Krzysztof
