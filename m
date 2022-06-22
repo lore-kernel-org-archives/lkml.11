@@ -2,359 +2,292 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF126C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 09:03:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80D5DCCA47D
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 09:05:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355851AbiFVJDm (ORCPT
+        id S1355255AbiFVJF0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 05:03:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59852 "EHLO
+        Wed, 22 Jun 2022 05:05:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354955AbiFVJDc (ORCPT
+        with ESMTP id S232756AbiFVJFY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 05:03:32 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5692F13CE7
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 02:03:30 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id t25so26636239lfg.7
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 02:03:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=4UKmOtPuqR9ZV79ZF3RUEUPJlPzQswRYnZS88Bovo1w=;
-        b=nTUI5zRn9XS6bFDBR+nn0BgevUpzBla/1rPpk2D8wbRjchNnEZ4dQCt+Ds9Qr53GdN
-         aEtiOHS0r65exrhiuv5b2y8mPrUXKMFgPwGujno39obnVBN9gt+8aIyrnztYaRq3Fbui
-         JzzEUZwXoq4VsEp6JMDLpt+udclYKzaUjh/v+7ocMGsGRKGfxQuC4Fdu3Ls0KDfOmVmk
-         +QVTKT/p5bKbotHeUqjvhGo0ISegQdJeKSK25gt4IaFFQg2ZEqBN9pqu+m/5h8sK6LQ2
-         6N/qDT6zFeg/hN3960avfIIQiZrarFaQ9vZCrw+Yb1Iq3o6SygQNayDuyUdLwUUxww1U
-         1N+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=4UKmOtPuqR9ZV79ZF3RUEUPJlPzQswRYnZS88Bovo1w=;
-        b=x/SUEi53P0vrH/kWuXJHPVIw6jXjZ7zqQWbY3ioSVwXZlHBKebyuLTDfF81uUxPFen
-         vCkPof4IdS3tmhf/S+EknwPJQyXliobk6yGRzz4sGXd0fj6bFyWZuxSEMiX3qfW1udlx
-         nxiMditrZbVkCbslJNmgWUeeWPqeEPgOS//bH2H4eFSGLTccKUIuFLmxY7ykGLfrHt4w
-         q11Tr4KZkP8TkcJhPoV+2EcrnAkIF57F++Ij5C7aPwUis4unMAO22YbwdAhs+5fQKqf2
-         pEIP90TuyG/fb95dJ9JA3n0G6XIfI6RsfvZQa9TzV51NTvD4Xej66GcbeiIAsDbAVgLm
-         ajVA==
-X-Gm-Message-State: AJIora9ZQU3304LQ50lDp8hJszK+MeRxyTBwWFfPy3cSDjcs9SUFxGPi
-        KPH12LhgkJEvAgZdD5bzykc=
-X-Google-Smtp-Source: AGRyM1sukuX1vlem6ZPvfyVXPKMVb8vOqm4ADCvt+D12LzgOZZdGRu1UVCFtQUeaa8AXFbgvr2AMNg==
-X-Received: by 2002:a05:6512:3f6:b0:47f:6dff:dab9 with SMTP id n22-20020a05651203f600b0047f6dffdab9mr1563227lfq.645.1655888607690;
-        Wed, 22 Jun 2022 02:03:27 -0700 (PDT)
-Received: from [192.168.1.7] ([212.22.223.21])
-        by smtp.gmail.com with ESMTPSA id j5-20020a056512344500b0047f81438160sm547727lfr.112.2022.06.22.02.03.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Jun 2022 02:03:26 -0700 (PDT)
-Subject: Re: [PATCH v3 3/3] xen: don't require virtio with grants for non-PV
- guests
-To:     Juergen Gross <jgross@suse.com>, xen-devel@lists.xenproject.org,
-        x86@kernel.org, linux-kernel@vger.kernel.org
-Cc:     Stefano Stabellini <sstabellini@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Viresh Kumar <viresh.kumar@linaro.org>
-References: <20220622063838.8854-1-jgross@suse.com>
- <20220622063838.8854-4-jgross@suse.com>
-From:   Oleksandr <olekstysh@gmail.com>
-Message-ID: <a8ce8ad3-aa3b-ea87-34cf-6532a272e9d8@gmail.com>
-Date:   Wed, 22 Jun 2022 12:03:25 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-MIME-Version: 1.0
-In-Reply-To: <20220622063838.8854-4-jgross@suse.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+        Wed, 22 Jun 2022 05:05:24 -0400
+X-Greylist: delayed 75945 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 22 Jun 2022 02:05:19 PDT
+Received: from mailout2.rbg.tum.de (mailout2.rbg.tum.de [IPv6:2a09:80c0::202])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87E29CE;
+        Wed, 22 Jun 2022 02:05:19 -0700 (PDT)
+Received: from mailrelay1.rbg.tum.de (mailrelay1.in.tum.de [131.159.254.14])
+        by mailout2.rbg.tum.de (Postfix) with ESMTPS id 949814C0236;
+        Wed, 22 Jun 2022 11:05:16 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=in.tum.de;
+        s=20220209; t=1655888716;
+        bh=Yr78Voy6/ZWAI8Ex/Aure+xnmqoVC4pzJJ8L88wVTWw=;
+        h=Subject:From:In-Reply-To:Date:Cc:References:To:From;
+        b=foT1bnOBe3f+w23asVxwVtrsg/xXUnglKYhpV/et7W3LMwgtIBkuBCOYWq7Ly5hCF
+         5piqdFf+MdrGVM+5S8xjHK/I/x888WBgwp+3PiTgfyAooXOaPKYmY+gL1654gQXeKA
+         UmsDvOEIwcCHvc5oqBRTtOW0EpNn6hsE4TlT9J/5kwuwZ0GQRn879OcQMB8cnhc1qn
+         xgBT7HFcmxP81pm7ELlkj0O9lGrT4lvhlfCKo4vvW3Rk2Uw2Yvx34niU0I4TThlWp4
+         N9QO26urbRLHzVWsW0FdYzY61pphN2wJ3YKwmgJvDIOr62/KjXI/0tEBR/udn+TGER
+         YyBfrzd1hqgLg==
+Received: by mailrelay1.rbg.tum.de (Postfix, from userid 112)
+        id 83AC3DD; Wed, 22 Jun 2022 11:05:16 +0200 (CEST)
+Received: from mailrelay1.rbg.tum.de (localhost [127.0.0.1])
+        by mailrelay1.rbg.tum.de (Postfix) with ESMTP id 6159FD6;
+        Wed, 22 Jun 2022 11:05:16 +0200 (CEST)
+Received: from mail.in.tum.de (vmrbg426.in.tum.de [131.159.0.73])
+        by mailrelay1.rbg.tum.de (Postfix) with ESMTPS id 5C7ADCE;
+        Wed, 22 Jun 2022 11:05:16 +0200 (CEST)
+Received: by mail.in.tum.de (Postfix, from userid 112)
+        id 572E54A02E7; Wed, 22 Jun 2022 11:05:16 +0200 (CEST)
+Received: (Authenticated sender: heidekrp)
+        by mail.in.tum.de (Postfix) with ESMTPSA id 489D14A013B;
+        Wed, 22 Jun 2022 11:05:15 +0200 (CEST)
+        (Extended-Queue-bit xtech_yi@fff.in.tum.de)
+Content-Type: multipart/signed;
+        boundary="Apple-Mail=_60399BCD-725C-4105-B4F1-1543619E21D4";
+        protocol="application/pkcs7-signature";
+        micalg=sha-256
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.100.31\))
+Subject: Re: Dangerous addr to ctrl dependency transformation in
+ fs/nfs/delegation.c::nfs_server_return_marked_delegations()?
+From:   =?utf-8?Q?Paul_Heidekr=C3=BCger?= <Paul.Heidekrueger@in.tum.de>
+In-Reply-To: <CAKwvOdkrZbRTfrK_cFRseoONGi7qQ-_4vB=Zm9KH3Bb2KZ5tww@mail.gmail.com>
+Date:   Wed, 22 Jun 2022 11:05:15 +0200
+Cc:     "Jose E. Marchesi" <jemarch@gnu.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Andrea Parri <parri.andrea@gmail.com>,
+        Will Deacon <will@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        David Howells <dhowells@redhat.com>,
+        Jade Alglave <j.alglave@ucl.ac.uk>,
+        Luc Maranget <luc.maranget@inria.fr>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Akira Yokosawa <akiyks@gmail.com>,
+        Daniel Lustig <dlustig@nvidia.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        clang-built-linux <llvm@lists.linux.dev>,
+        Marco Elver <elver@google.com>,
+        Charalampos Mainas <charalampos.mainas@gmail.com>,
+        Pramod Bhatotia <pramod.bhatotia@in.tum.de>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <C90EF3D6-CB26-48D3-A600-A4237C4BE4EC@in.tum.de>
+References: <Yk7/T8BJITwz+Og1@Pauls-MacBook-Pro.local>
+ <CAKwvOdkEULT_OOeaaCneJjbrE=O3kC8SMDs2thFa9gBfpuo2Jg@mail.gmail.com>
+ <YmKF5tiH4W8AVdXe@Pauls-MacBook-Pro.local>
+ <CAKwvOd=yLgY_0SwfBuOAzo=+zeWNMu4FMp65y0bi_RM+1G3NWQ@mail.gmail.com>
+ <CAKwvOdkrZbRTfrK_cFRseoONGi7qQ-_4vB=Zm9KH3Bb2KZ5tww@mail.gmail.com>
+To:     Nick Desaulniers <ndesaulniers@google.com>
+X-Mailer: Apple Mail (2.3696.100.31)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
-On 22.06.22 09:38, Juergen Gross wrote:
-
-Hello Juergen
-
-> Commit fa1f57421e0b ("xen/virtio: Enable restricted memory access using
-> Xen grant mappings") introduced a new requirement for using virtio
-> devices: the backend now needs to support the VIRTIO_F_ACCESS_PLATFORM
-> feature.
->
-> This is an undue requirement for non-PV guests, as those can be operated
-> with existing backends without any problem, as long as those backends
-> are running in dom0.
->
-> Per default allow virtio devices without grant support for non-PV
-> guests.
->
-> On Arm require VIRTIO_F_ACCESS_PLATFORM for devices having been listed
-> in the device tree to use grants.
->
-> Add a new config item to always force use of grants for virtio.
->
-> Fixes: fa1f57421e0b ("xen/virtio: Enable restricted memory access using Xen grant mappings")
-> Reported-by: Viresh Kumar <viresh.kumar@linaro.org>
-> Signed-off-by: Juergen Gross <jgross@suse.com>
-> ---
-> V2:
-> - remove command line parameter (Christoph Hellwig)
-> V3:
-> - rebase to callback method
+--Apple-Mail=_60399BCD-725C-4105-B4F1-1543619E21D4
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain;
+	charset=utf-8
 
 
-Patch looks good, just one NIT ...
+> On 22. Jun 2022, at 00:05, Nick Desaulniers <ndesaulniers@google.com> =
+wrote:
+>=20
+> On Tue, May 17, 2022 at 3:29 PM Nick Desaulniers
+> <ndesaulniers@google.com> wrote:
+>> On Fri, Apr 22, 2022 at 3:39 AM Paul Heidekr=C3=BCger
+>> <paul.heidekrueger@in.tum.de> wrote:
+>>> On Thu, Apr 14, 2022 at 02:21:25PM -0700, Nick Desaulniers wrote:
+>>>> On Thu, Apr 7, 2022 at 8:22 AM Paul Heidekr=C3=BCger
+>>>> <paul.heidekrueger@in.tum.de> wrote:
+>>>>> Hi all,
+>>>>>=20
+>>>>> work on my dependency checker tool is progressing nicely, and it =
+is
+>>>>> flagging, what I believe is, a harmful addr to ctrl dependency
+>>>>> transformation. For context, see [1] and [2]. I'm using the Clang
+>>>>> compiler.
+>>>>> [1]: =
+https://linuxplumbersconf.org/event/7/contributions/821/attachments/598/10=
+75/LPC_2020_--_Dependency_ordering.pdf
+>>>>> [2]: =
+https://lore.kernel.org/llvm/YXknxGFjvaB46d%2Fp@Pauls-MacBook-Pro/T/#u
+>>>>=20
+>>>> Hi Paul,
+>>>> Thanks for the report and your (and your team's) work on this tool.
+>>>> Orthogonal to your report, Jose (cc'ed) and I are currently in the
+>>>> planning process to put together a Kernel+Toolchain microconference
+>>>> track at Linux Plumbers Conference [0] this year (Sept 12-14) in
+>>>> Dublin, Ireland. Would you or someone from your group be able and
+>>>> interested in presenting more information about your work to an
+>>>> audience of kernel and toolchain developers at such an event?
+>>>>=20
+>>>> Would others be interested in such a topic? (What do they say in
+>>>> Starship Troopers...?...Would you like to know more?)
+>>>>=20
+>>>> [0] https://lpc.events/event/16/
+>>>> --
+>>>> Thanks,
+>>>> ~Nick Desaulniers
+>>>=20
+>>> Hi Nick and Jose,
+>>>=20
+>>> Many thanks for inviting us! I would love to do a talk at LPC! =
+Hopefully
+>>> in person too.
+>>>=20
+>>> Given that there have been several talks around this topic at LPC
+>>> already, it seems very fitting, and we'll hopefully have more to =
+share
+>>> by then. Actually we have more to share already :-)
+>>>=20
+>>> =
+https://lore.kernel.org/all/YmKE%2FXgmRnGKrBbB@Pauls-MacBook-Pro.local/T/#=
+u
+>>>=20
+>>> I assume we will have to submit an abstract soon?
+>>=20
+>> Yes, if you go to: https://lpc.events/event/16/abstracts/
+>>=20
+>> click "Submit new abstract" in the bottom right.
+>>=20
+>> Under the "Track" dropdown, please select "Toolchains Track."
+>=20
+> Hi Paul, we'll need all proposals soon.
+> If you're still considering attending Linux Plumbers conf, please
+> submit a proposal:
+> https://lpc.events/event/16/abstracts/
+> Please make sure to select "Toolchains Track" as the "Track" after
+> clicking on "Submit new abstract."
 
+Hi Nick,
 
-> ---
->   arch/arm/xen/enlighten.c     |  4 +++-
->   arch/x86/xen/enlighten_hvm.c |  4 +++-
->   arch/x86/xen/enlighten_pv.c  |  5 ++++-
->   drivers/xen/Kconfig          |  9 +++++++++
->   drivers/xen/grant-dma-ops.c  | 10 ++++++++++
->   include/xen/xen-ops.h        |  6 ++++++
->   include/xen/xen.h            |  8 --------
->   7 files changed, 35 insertions(+), 11 deletions(-)
->
-> diff --git a/arch/arm/xen/enlighten.c b/arch/arm/xen/enlighten.c
-> index 1f9c3ba32833..93c8ccbf2982 100644
-> --- a/arch/arm/xen/enlighten.c
-> +++ b/arch/arm/xen/enlighten.c
-> @@ -34,6 +34,7 @@
->   #include <linux/timekeeping.h>
->   #include <linux/timekeeper_internal.h>
->   #include <linux/acpi.h>
-> +#include <linux/virtio_anchor.h>
->   
->   #include <linux/mm.h>
->   
-> @@ -443,7 +444,8 @@ static int __init xen_guest_init(void)
->   	if (!xen_domain())
->   		return 0;
->   
-> -	xen_set_restricted_virtio_memory_access();
-> +	if (IS_ENABLED(CONFIG_XEN_VIRTIO))
-> +		virtio_set_mem_acc_cb(xen_virtio_mem_acc);
->   
->   	if (!acpi_disabled)
->   		xen_acpi_guest_init();
-> diff --git a/arch/x86/xen/enlighten_hvm.c b/arch/x86/xen/enlighten_hvm.c
-> index 8b71b1dd7639..28762f800596 100644
-> --- a/arch/x86/xen/enlighten_hvm.c
-> +++ b/arch/x86/xen/enlighten_hvm.c
-> @@ -4,6 +4,7 @@
->   #include <linux/cpu.h>
->   #include <linux/kexec.h>
->   #include <linux/memblock.h>
-> +#include <linux/virtio_anchor.h>
->   
->   #include <xen/features.h>
->   #include <xen/events.h>
-> @@ -195,7 +196,8 @@ static void __init xen_hvm_guest_init(void)
->   	if (xen_pv_domain())
->   		return;
->   
-> -	xen_set_restricted_virtio_memory_access();
-> +	if (IS_ENABLED(CONFIG_XEN_VIRTIO_FORCE_GRANT))
-> +		virtio_set_mem_acc_cb(virtio_require_restricted_mem_acc);
->   
->   	init_hvm_pv_info();
->   
-> diff --git a/arch/x86/xen/enlighten_pv.c b/arch/x86/xen/enlighten_pv.c
-> index e3297b15701c..5aaae8a77f55 100644
-> --- a/arch/x86/xen/enlighten_pv.c
-> +++ b/arch/x86/xen/enlighten_pv.c
-> @@ -31,6 +31,7 @@
->   #include <linux/gfp.h>
->   #include <linux/edd.h>
->   #include <linux/reboot.h>
-> +#include <linux/virtio_anchor.h>
->   
->   #include <xen/xen.h>
->   #include <xen/events.h>
-> @@ -109,7 +110,9 @@ static DEFINE_PER_CPU(struct tls_descs, shadow_tls_desc);
->   
->   static void __init xen_pv_init_platform(void)
->   {
-> -	xen_set_restricted_virtio_memory_access();
-> +	/* PV guests can't operate virtio devices without grants. */
-> +	if (IS_ENABLED(CONFIG_XEN_VIRTIO))
-> +		virtio_set_mem_acc_cb(virtio_require_restricted_mem_acc);
->   
->   	populate_extra_pte(fix_to_virt(FIX_PARAVIRT_BOOTMAP));
->   
-> diff --git a/drivers/xen/Kconfig b/drivers/xen/Kconfig
-> index bfd5f4f706bc..a65bd92121a5 100644
-> --- a/drivers/xen/Kconfig
-> +++ b/drivers/xen/Kconfig
-> @@ -355,4 +355,13 @@ config XEN_VIRTIO
->   
->   	  If in doubt, say n.
->   
-> +config XEN_VIRTIO_FORCE_GRANT
-> +	bool "Require Xen virtio support to use grants"
-> +	depends on XEN_VIRTIO
-> +	help
-> +	  Require virtio for Xen guests to use grant mappings.
-> +	  This will avoid the need to give the backend the right to map all
-> +	  of the guest memory. This will need support on the backend side
-> +	  (e.g. qemu or kernel, depending on the virtio device types used).
-> +
->   endmenu
-> diff --git a/drivers/xen/grant-dma-ops.c b/drivers/xen/grant-dma-ops.c
-> index fc0142484001..8973fc1e9ccc 100644
-> --- a/drivers/xen/grant-dma-ops.c
-> +++ b/drivers/xen/grant-dma-ops.c
-> @@ -12,6 +12,8 @@
->   #include <linux/of.h>
->   #include <linux/pfn.h>
->   #include <linux/xarray.h>
-> +#include <linux/virtio_anchor.h>
-> +#include <linux/virtio.h>
->   #include <xen/xen.h>
->   #include <xen/xen-ops.h>
->   #include <xen/grant_table.h>
-> @@ -287,6 +289,14 @@ bool xen_is_grant_dma_device(struct device *dev)
->   	return has_iommu;
->   }
->   
-> +bool xen_virtio_mem_acc(struct virtio_device *dev)
-> +{
-> +	if (IS_ENABLED(CONFIG_XEN_VIRTIO_FORCE_GRANT))
-> +		return true;
-> +
-> +	return xen_is_grant_dma_device(dev->dev.parent);
-> +}
+Of course! :-)
 
+Sorry for taking so long, and thanks for reminding! I was under the
+impression the deadline was sometime mid-August and therefore hadn't
+prioritised it high enough - sorry!
 
-    ... I am thinking would it be better to move this to xen/xen-ops.h 
-as grant-dma-ops.c is generic (not only for virtio, although the virtio 
-is the first use-case)
+You'll have the proposal ASAP.
 
+Many thanks,
+Paul
 
-diff --git a/drivers/xen/grant-dma-ops.c b/drivers/xen/grant-dma-ops.c
-index 8973fc1..fc01424 100644
---- a/drivers/xen/grant-dma-ops.c
-+++ b/drivers/xen/grant-dma-ops.c
-@@ -12,8 +12,6 @@
-  #include <linux/of.h>
-  #include <linux/pfn.h>
-  #include <linux/xarray.h>
--#include <linux/virtio_anchor.h>
--#include <linux/virtio.h>
-  #include <xen/xen.h>
-  #include <xen/xen-ops.h>
-  #include <xen/grant_table.h>
-@@ -289,14 +287,6 @@ bool xen_is_grant_dma_device(struct device *dev)
-         return has_iommu;
-  }
+>> --
+>> Thanks,
+>> ~Nick Desaulniers
+>=20
+>=20
+>=20
+> --=20
+> Thanks,
+> ~Nick Desaulniers
 
--bool xen_virtio_mem_acc(struct virtio_device *dev)
--{
--       if (IS_ENABLED(CONFIG_XEN_VIRTIO_FORCE_GRANT))
--               return true;
--
--       return xen_is_grant_dma_device(dev->dev.parent);
--}
--
-  void xen_grant_setup_dma_ops(struct device *dev)
-  {
-         struct xen_grant_dma_data *data;
-diff --git a/include/xen/xen-ops.h b/include/xen/xen-ops.h
-index 98c399a..a9ae51b 100644
---- a/include/xen/xen-ops.h
-+++ b/include/xen/xen-ops.h
-@@ -6,6 +6,7 @@
-  #include <linux/notifier.h>
-  #include <linux/efi.h>
-  #include <linux/virtio_anchor.h>
-+#include <linux/virtio.h>
-  #include <xen/features.h>
-  #include <asm/xen/interface.h>
-  #include <xen/interface/vcpu.h>
-@@ -218,7 +219,13 @@ static inline void xen_preemptible_hcall_end(void) { }
-  #ifdef CONFIG_XEN_GRANT_DMA_OPS
-  void xen_grant_setup_dma_ops(struct device *dev);
-  bool xen_is_grant_dma_device(struct device *dev);
--bool xen_virtio_mem_acc(struct virtio_device *dev);
-+static inline bool xen_virtio_mem_acc(struct virtio_device *dev)
-+{
-+       if (IS_ENABLED(CONFIG_XEN_VIRTIO_FORCE_GRANT))
-+               return true;
-+
-+       return xen_is_grant_dma_device(dev->dev.parent);
-+}
-  #else
-  static inline void xen_grant_setup_dma_ops(struct device *dev)
-  {
+--Apple-Mail=_60399BCD-725C-4105-B4F1-1543619E21D4
+Content-Disposition: attachment;
+	filename=smime.p7s
+Content-Type: application/pkcs7-signature;
+	name=smime.p7s
+Content-Transfer-Encoding: base64
 
-
-> +
->   void xen_grant_setup_dma_ops(struct device *dev)
->   {
->   	struct xen_grant_dma_data *data;
-> diff --git a/include/xen/xen-ops.h b/include/xen/xen-ops.h
-> index 80546960f8b7..98c399a960a3 100644
-> --- a/include/xen/xen-ops.h
-> +++ b/include/xen/xen-ops.h
-> @@ -5,6 +5,7 @@
->   #include <linux/percpu.h>
->   #include <linux/notifier.h>
->   #include <linux/efi.h>
-> +#include <linux/virtio_anchor.h>
->   #include <xen/features.h>
->   #include <asm/xen/interface.h>
->   #include <xen/interface/vcpu.h>
-> @@ -217,6 +218,7 @@ static inline void xen_preemptible_hcall_end(void) { }
->   #ifdef CONFIG_XEN_GRANT_DMA_OPS
->   void xen_grant_setup_dma_ops(struct device *dev);
->   bool xen_is_grant_dma_device(struct device *dev);
-> +bool xen_virtio_mem_acc(struct virtio_device *dev);
->   #else
->   static inline void xen_grant_setup_dma_ops(struct device *dev)
->   {
-> @@ -225,6 +227,10 @@ static inline bool xen_is_grant_dma_device(struct device *dev)
->   {
->   	return false;
->   }
-> +static inline bool xen_virtio_mem_acc(struct virtio_device *dev)
-> +{
-> +	return false;
-> +}
->   #endif /* CONFIG_XEN_GRANT_DMA_OPS */
->   
->   #endif /* INCLUDE_XEN_OPS_H */
-> diff --git a/include/xen/xen.h b/include/xen/xen.h
-> index ac5a144c6a65..a99bab817523 100644
-> --- a/include/xen/xen.h
-> +++ b/include/xen/xen.h
-> @@ -52,14 +52,6 @@ bool xen_biovec_phys_mergeable(const struct bio_vec *vec1,
->   extern u64 xen_saved_max_mem_size;
->   #endif
->   
-> -#include <linux/virtio_anchor.h>
-> -
-> -static inline void xen_set_restricted_virtio_memory_access(void)
-> -{
-> -	if (IS_ENABLED(CONFIG_XEN_VIRTIO) && xen_domain())
-> -		virtio_set_mem_acc_cb(virtio_require_restricted_mem_acc);
-> -}
-> -
->   #ifdef CONFIG_XEN_UNPOPULATED_ALLOC
->   int xen_alloc_unpopulated_pages(unsigned int nr_pages, struct page **pages);
->   void xen_free_unpopulated_pages(unsigned int nr_pages, struct page **pages);
-
--- 
-Regards,
-
-Oleksandr Tyshchenko
-
+MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCEWow
+ggUSMIID+qADAgECAgkA4wvV+K8l2YEwDQYJKoZIhvcNAQELBQAwgYIxCzAJBgNVBAYTAkRFMSsw
+KQYDVQQKDCJULVN5c3RlbXMgRW50ZXJwcmlzZSBTZXJ2aWNlcyBHbWJIMR8wHQYDVQQLDBZULVN5
+c3RlbXMgVHJ1c3QgQ2VudGVyMSUwIwYDVQQDDBxULVRlbGVTZWMgR2xvYmFsUm9vdCBDbGFzcyAy
+MB4XDTE2MDIyMjEzMzgyMloXDTMxMDIyMjIzNTk1OVowgZUxCzAJBgNVBAYTAkRFMUUwQwYDVQQK
+EzxWZXJlaW4genVyIEZvZXJkZXJ1bmcgZWluZXMgRGV1dHNjaGVuIEZvcnNjaHVuZ3NuZXR6ZXMg
+ZS4gVi4xEDAOBgNVBAsTB0RGTi1QS0kxLTArBgNVBAMTJERGTi1WZXJlaW4gQ2VydGlmaWNhdGlv
+biBBdXRob3JpdHkgMjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMtg1/9moUHN0vqH
+l4pzq5lN6mc5WqFggEcVToyVsuXPztNXS43O+FZsFVV2B+pG/cgDRWM+cNSrVICxI5y+NyipCf8F
+XRgPxJiZN7Mg9mZ4F4fCnQ7MSjLnFp2uDo0peQcAIFTcFV9Kltd4tjTTwXS1nem/wHdN6r1ZB+Ba
+L2w8pQDcNb1lDY9/Mm3yWmpLYgHurDg0WUU2SQXaeMpqbVvAgWsRzNI8qIv4cRrKO+KA3Ra0Z3qL
+NupOkSk9s1FcragMvp0049ENF4N1xDkesJQLEvHVaY4l9Lg9K7/AjsMeO6W/VRCrKq4Xl14zzsjz
+9AkH4wKGMUZrAcUQDBHHWekCAwEAAaOCAXQwggFwMA4GA1UdDwEB/wQEAwIBBjAdBgNVHQ4EFgQU
+k+PYMiba1fFKpZFK4OpL4qIMz+EwHwYDVR0jBBgwFoAUv1kgNgB5oKAia4zV8mHSuCzLgkowEgYD
+VR0TAQH/BAgwBgEB/wIBAjAzBgNVHSAELDAqMA8GDSsGAQQBga0hgiwBAQQwDQYLKwYBBAGBrSGC
+LB4wCAYGZ4EMAQICMEwGA1UdHwRFMEMwQaA/oD2GO2h0dHA6Ly9wa2kwMzM2LnRlbGVzZWMuZGUv
+cmwvVGVsZVNlY19HbG9iYWxSb290X0NsYXNzXzIuY3JsMIGGBggrBgEFBQcBAQR6MHgwLAYIKwYB
+BQUHMAGGIGh0dHA6Ly9vY3NwMDMzNi50ZWxlc2VjLmRlL29jc3ByMEgGCCsGAQUFBzAChjxodHRw
+Oi8vcGtpMDMzNi50ZWxlc2VjLmRlL2NydC9UZWxlU2VjX0dsb2JhbFJvb3RfQ2xhc3NfMi5jZXIw
+DQYJKoZIhvcNAQELBQADggEBAIcL/z4Cm2XIVi3WO5qYi3FP2ropqiH5Ri71sqQPrhE4eTizDnS6
+dl2e6BiClmLbTDPo3flq3zK9LExHYFV/53RrtCyD2HlrtrdNUAtmB7Xts5et6u5/MOaZ/SLick0+
+hFvu+c+Z6n/XUjkurJgARH5pO7917tALOxrN5fcPImxHhPalR6D90Bo0fa3SPXez7vTXTf/D6OWS
+T1k+kEcQSrCFWMBvf/iu7QhCnh7U3xQuTY+8npTD5+32GPg8SecmqKc22CzeIs2LgtjZeOJVEqM7
+h0S2EQvVDFKvaYwPBt/QolOLV5h7z/0HJPT8vcP9SpIClxvyt7bPZYoaorVyGTkwggWsMIIElKAD
+AgECAgcbY7rQHiw9MA0GCSqGSIb3DQEBCwUAMIGVMQswCQYDVQQGEwJERTFFMEMGA1UEChM8VmVy
+ZWluIHp1ciBGb2VyZGVydW5nIGVpbmVzIERldXRzY2hlbiBGb3JzY2h1bmdzbmV0emVzIGUuIFYu
+MRAwDgYDVQQLEwdERk4tUEtJMS0wKwYDVQQDEyRERk4tVmVyZWluIENlcnRpZmljYXRpb24gQXV0
+aG9yaXR5IDIwHhcNMTYwNTI0MTEzODQwWhcNMzEwMjIyMjM1OTU5WjCBjTELMAkGA1UEBhMCREUx
+RTBDBgNVBAoMPFZlcmVpbiB6dXIgRm9lcmRlcnVuZyBlaW5lcyBEZXV0c2NoZW4gRm9yc2NodW5n
+c25ldHplcyBlLiBWLjEQMA4GA1UECwwHREZOLVBLSTElMCMGA1UEAwwcREZOLVZlcmVpbiBHbG9i
+YWwgSXNzdWluZyBDQTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJ07eRxH3h+Gy8Zp
+1xCeOdfZojDbchwFfylfS2jxrRnWTOFrG7ELf6Gr4HuLi9gtzm6IOhDuV+UefwRRNuu6cG1joL6W
+LkDh0YNMZj0cZGnlm6Stcq5oOVGHecwX064vXWNxSzl660Knl5BpBb+Q/6RAcL0D57+eGIgfn5mI
+TQ5HjUhfZZkQ0tkqSe3BuS0dnxLLFdM/fx5ULzquk1enfnjK1UriGuXtQX1TX8izKvWKMKztFwUk
+P7agCwf9TRqaA1KgNpzeJIdl5Of6x5ZzJBTN0OgbaJ4YWa52fvfRCng8h0uwN89Tyjo4EPPLR22M
+ZD08WkVKusqAfLjz56dMTM0CAwEAAaOCAgUwggIBMBIGA1UdEwEB/wQIMAYBAf8CAQEwDgYDVR0P
+AQH/BAQDAgEGMCkGA1UdIAQiMCAwDQYLKwYBBAGBrSGCLB4wDwYNKwYBBAGBrSGCLAEBBDAdBgNV
+HQ4EFgQUazqYi/nyU4na4K2yMh4JH+iqO3QwHwYDVR0jBBgwFoAUk+PYMiba1fFKpZFK4OpL4qIM
+z+EwgY8GA1UdHwSBhzCBhDBAoD6gPIY6aHR0cDovL2NkcDEucGNhLmRmbi5kZS9nbG9iYWwtcm9v
+dC1nMi1jYS9wdWIvY3JsL2NhY3JsLmNybDBAoD6gPIY6aHR0cDovL2NkcDIucGNhLmRmbi5kZS9n
+bG9iYWwtcm9vdC1nMi1jYS9wdWIvY3JsL2NhY3JsLmNybDCB3QYIKwYBBQUHAQEEgdAwgc0wMwYI
+KwYBBQUHMAGGJ2h0dHA6Ly9vY3NwLnBjYS5kZm4uZGUvT0NTUC1TZXJ2ZXIvT0NTUDBKBggrBgEF
+BQcwAoY+aHR0cDovL2NkcDEucGNhLmRmbi5kZS9nbG9iYWwtcm9vdC1nMi1jYS9wdWIvY2FjZXJ0
+L2NhY2VydC5jcnQwSgYIKwYBBQUHMAKGPmh0dHA6Ly9jZHAyLnBjYS5kZm4uZGUvZ2xvYmFsLXJv
+b3QtZzItY2EvcHViL2NhY2VydC9jYWNlcnQuY3J0MA0GCSqGSIb3DQEBCwUAA4IBAQCBeEWkTqR/
+DlXwCbFqPnjMaDWpHPOVnj/z+N9rOHeJLI21rT7H8pTNoAauusyosa0zCLYkhmI2THhuUPDVbmCN
+T1IxQ5dGdfBi5G5mUcFCMWdQ5UnnOR7Ln8qGSN4IFP8VSytmm6A4nwDO/afr0X9XLchMX9wQEZc+
+lgQCXISoKTlslPwQkgZ7nu7YRrQbtQMMONncsKk/cQYLsgMHM8KNSGMlJTx6e1du94oFOO+4oK4v
+9NsH1VuEGMGpuEvObJAaguS5Pfp38dIfMwK/U+d2+dwmJUFvL6Yb+qQTkPp8ftkLYF3sv8pBoGH7
+EUkp2KgtdRXYShjqFu9VNCIaE40GMIIGoDCCBYigAwIBAgIMJsvrSvlWNPKp0vJrMA0GCSqGSIb3
+DQEBCwUAMIGNMQswCQYDVQQGEwJERTFFMEMGA1UECgw8VmVyZWluIHp1ciBGb2VyZGVydW5nIGVp
+bmVzIERldXRzY2hlbiBGb3JzY2h1bmdzbmV0emVzIGUuIFYuMRAwDgYDVQQLDAdERk4tUEtJMSUw
+IwYDVQQDDBxERk4tVmVyZWluIEdsb2JhbCBJc3N1aW5nIENBMB4XDTIyMDYxNzEyMDQxM1oXDTIz
+MDgxMTE0MDM0OVowge4xCzAJBgNVBAYTAkRFMQ8wDQYDVQQIDAZCYXllcm4xETAPBgNVBAcMCE11
+ZW5jaGVuMSkwJwYDVQQKDCBUZWNobmlzY2hlIFVuaXZlcnNpdGFldCBNdWVuY2hlbjEiMCAGA1UE
+CwwZRmFrdWx0YWV0IGZ1ZXIgSW5mb3JtYXRpazEVMBMGA1UEBAwMSGVpZGVrcnVlZ2VyMQ0wCwYD
+VQQqDARQYXVsMRowGAYDVQQDDBFQYXVsIEhlaWRla3J1ZWdlcjEqMCgGCSqGSIb3DQEJARYbUGF1
+bC5IZWlkZWtydWVnZXJAaW4udHVtLmRlMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA
+s8gdDu7n1qQK6/QRJemihL7fh5yVIaGugo3Hn8qvlKzDwHfM9fHhXzrjBp8VHYSFRi6fPoHjV3OL
+UM7ZLqFEmNEcaoioH5prXfx+N686Vu4w3FsZyQd5/lQO5qD7AJ1zu0N78uJyBLMfnlv7mmMKupkz
+FmnLbKzurYdbpdiYxBHF0ej/h2oMJeOKI26sZ0ItW11cFxqBe4gD+DYQ4PIXzMXkqNbK4n7tIu5s
+uzZt3B3dW/52kNi1vjI+Fi373AhIseAE3mZ/zixFyI9Ib/tqtA2iXLZaINhPEm05+H/IdKYqdwAW
+NO/SiL6nXxnoHmOJzToqfiN9ERDaN7K3lzb3ewIDAQABo4ICmzCCApcwPgYDVR0gBDcwNTAPBg0r
+BgEEAYGtIYIsAQEEMBAGDisGAQQBga0hgiwBAQQKMBAGDisGAQQBga0hgiwCAQQKMAkGA1UdEwQC
+MAAwDgYDVR0PAQH/BAQDAgXgMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcDBDAdBgNVHQ4E
+FgQUA2y9lnfs17UBHlCWzGGaJ5gDAhMwHwYDVR0jBBgwFoAUazqYi/nyU4na4K2yMh4JH+iqO3Qw
+bQYDVR0RBGYwZIESaGVpZGVrcnBAaW4udHVtLmRlgRtQYXVsLkhlaWRla3J1ZWdlckBpbi50dW0u
+ZGWBE2hlaWRla3JwQGNzLnR1bS5lZHWBHFBhdWwuSGVpZGVrcnVlZ2VyQGNzLnR1bS5lZHUwgY0G
+A1UdHwSBhTCBgjA/oD2gO4Y5aHR0cDovL2NkcDEucGNhLmRmbi5kZS9kZm4tY2EtZ2xvYmFsLWcy
+L3B1Yi9jcmwvY2FjcmwuY3JsMD+gPaA7hjlodHRwOi8vY2RwMi5wY2EuZGZuLmRlL2Rmbi1jYS1n
+bG9iYWwtZzIvcHViL2NybC9jYWNybC5jcmwwgdsGCCsGAQUFBwEBBIHOMIHLMDMGCCsGAQUFBzAB
+hidodHRwOi8vb2NzcC5wY2EuZGZuLmRlL09DU1AtU2VydmVyL09DU1AwSQYIKwYBBQUHMAKGPWh0
+dHA6Ly9jZHAxLnBjYS5kZm4uZGUvZGZuLWNhLWdsb2JhbC1nMi9wdWIvY2FjZXJ0L2NhY2VydC5j
+cnQwSQYIKwYBBQUHMAKGPWh0dHA6Ly9jZHAyLnBjYS5kZm4uZGUvZGZuLWNhLWdsb2JhbC1nMi9w
+dWIvY2FjZXJ0L2NhY2VydC5jcnQwDQYJKoZIhvcNAQELBQADggEBAC1bKIVMA6w7eSFfxv+1vQXR
+YQ6WQujz3MVSfYeplJXWKgKkUzpSzI7juw5sT3OkqStl+CGjIKaJiyYhZ/uP6/YMEpifBncsygjw
++K+2K+L8lov4wokWMVaLSoaaPeGrP20rzkumyUSvsI1ILZzplggsDmdS8D4H/Vc66cMWkrUkeurt
+Diorn6fG0gfy18YCq9XGQV+NxozwRkAfxkmvF0fzviQnSJ/lkzs4AadJ8sH5AzZXHPzydIK/Lcle
+dc6wi287tsRDpDMh+UOR4xe73+72oZabULSwhuM3iD50vr8o+Tm8Sg+mWIPNFivjY/FkNKPleiTW
+y3z7OxbaF19HnEgxggOdMIIDmQIBATCBnjCBjTELMAkGA1UEBhMCREUxRTBDBgNVBAoMPFZlcmVp
+biB6dXIgRm9lcmRlcnVuZyBlaW5lcyBEZXV0c2NoZW4gRm9yc2NodW5nc25ldHplcyBlLiBWLjEQ
+MA4GA1UECwwHREZOLVBLSTElMCMGA1UEAwwcREZOLVZlcmVpbiBHbG9iYWwgSXNzdWluZyBDQQIM
+JsvrSvlWNPKp0vJrMA0GCWCGSAFlAwQCAQUAoIIBzzAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcB
+MBwGCSqGSIb3DQEJBTEPFw0yMjA2MjIwOTA1MTVaMC8GCSqGSIb3DQEJBDEiBCDcHusrtXVVwMq+
+e5SqAtQZNVAKO+X9++3/KFlY9JkVjDCBrwYJKwYBBAGCNxAEMYGhMIGeMIGNMQswCQYDVQQGEwJE
+RTFFMEMGA1UECgw8VmVyZWluIHp1ciBGb2VyZGVydW5nIGVpbmVzIERldXRzY2hlbiBGb3JzY2h1
+bmdzbmV0emVzIGUuIFYuMRAwDgYDVQQLDAdERk4tUEtJMSUwIwYDVQQDDBxERk4tVmVyZWluIEds
+b2JhbCBJc3N1aW5nIENBAgwmy+tK+VY08qnS8mswgbEGCyqGSIb3DQEJEAILMYGhoIGeMIGNMQsw
+CQYDVQQGEwJERTFFMEMGA1UECgw8VmVyZWluIHp1ciBGb2VyZGVydW5nIGVpbmVzIERldXRzY2hl
+biBGb3JzY2h1bmdzbmV0emVzIGUuIFYuMRAwDgYDVQQLDAdERk4tUEtJMSUwIwYDVQQDDBxERk4t
+VmVyZWluIEdsb2JhbCBJc3N1aW5nIENBAgwmy+tK+VY08qnS8mswDQYJKoZIhvcNAQELBQAEggEA
+F51R73UXQemY4Wkdf9CLIEBDtrx/WicfN7zj4wfIe7HPzdyDK7U4E3r+Kx4zIzYmOYNwaSC36aKH
+KvhADMP6hGBQZWW05JexiDyHcZcIRqWrZ9A0YMoPCKvBkThaGPxO2zczJ378FsKBFnKSi/hNUJdd
+/6Wu2abrHmAQcmrxdJI6l9gFENeWCZDo/KIjVoMpY7NHV82q9qnjyMth5GLWnZe+xEPp1GajEUht
+GGAtnAHbkFUVSxwb9JzS/ZM6K1wi5L5xT6+8+HwM5XFfQrEubX04voYKoEwQZkZRL7RmjutLGqOB
+jlOIxWi7DOS7E1lbsuigl+NsR8BdImSJhyDdRAAAAAAAAA==
+--Apple-Mail=_60399BCD-725C-4105-B4F1-1543619E21D4--
