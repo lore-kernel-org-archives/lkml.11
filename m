@@ -2,98 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3DD0C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 11:37:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B598ACCA483
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 11:37:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350774AbiFVLh0 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 07:37:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47820 "EHLO
+        id S233218AbiFVLh5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 07:37:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233017AbiFVLhW (ORCPT
+        with ESMTP id S233017AbiFVLhv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 07:37:22 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 185073B3FB
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 04:37:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655897842; x=1687433842;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=MtU2Y8dBdDnHq8H7yBgFCvaWxAPQx9yCl1KzbmITiaU=;
-  b=ZcHVA72wMRQv6n2p+0qgUGhhm7gmH1q8Xs+iu5NR7/hTHXXrirP+Qb0V
-   eSBb2qke1qzAaCDqmgiwwtl1gXk3IJ+8nOITw4UfgDIYd+3L4KcRG4n6W
-   pGOlqLDcCDZTM8ECAijqXwsNu45YZgdJGg4hKg+X7egPQDhd/u99aA5bM
-   v/0VeJgfITxThFEnHu9u/M8t6D/H9uIIKkKCdQnd97SvC43w3b7U8Q8mX
-   8Jl/0meuXtNvQsRcc7lG2pnl95hVDoLxJ/aJ+fNR5iW0jwXoTaDoJGpOL
-   7C6j2W+F05b7WXTChjgeFamy2ZX3PAwxv6f2uO0ChjqQoRuuGR6uLwTU1
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="366716617"
-X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="366716617"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 04:37:21 -0700
-X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="690457834"
-Received: from wterliko-mobl.ger.corp.intel.com (HELO [10.249.254.201]) ([10.249.254.201])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 04:37:19 -0700
-Message-ID: <5a190fb8c2e31ae434940f0d942debd32807b262.camel@linux.intel.com>
-Subject: Re: [PATCH v8 04/10] drm/i915/gem: selftest should not attempt mmap
- of private regions
-From:   Thomas =?ISO-8859-1?Q?Hellstr=F6m?= 
-        <thomas.hellstrom@linux.intel.com>
-To:     Robert Beckett <bob.beckett@collabora.com>,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     kernel@collabora.com, Matthew Auld <matthew.auld@intel.com>,
-        linux-kernel@vger.kernel.org
-Date:   Wed, 22 Jun 2022 13:37:16 +0200
-In-Reply-To: <20220621200058.3536182-5-bob.beckett@collabora.com>
-References: <20220621200058.3536182-1-bob.beckett@collabora.com>
-         <20220621200058.3536182-5-bob.beckett@collabora.com>
-Organization: Intel Sweden AB, Registration Number: 556189-6027
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-5.fc34) 
+        Wed, 22 Jun 2022 07:37:51 -0400
+Received: from mail.kapsi.fi (mail.kapsi.fi [IPv6:2001:67c:1be8::25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27B613B3FE;
+        Wed, 22 Jun 2022 04:37:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
+        s=20161220; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=pGQX1JKxanPmqedEue8d2htEoS8AyrUnifwuz1TiUYY=; b=yZHHvO2gAsgUTeABTWjkXK6I86
+        uL+FGvQ8hCleHf04RcwKn7ew5zDDjJmRCs9J5/TI86enbi60883jwpFqmqBqgU2TYJ87OmG3t2Bqp
+        roIC5dtquTKQ8EKdLQZ0zNXcuyHrTDZg7pCNkj7D8PI16GOA2uQva+Qb5VRGNay/cGm+gxxJxD3Lx
+        dF0emDMIES3Nrdf/5IByChBhvP8xv1s6NKz6YRvVOgKXJ324RiNMmZK+cInTd3JI0fJCgn/lq+RKy
+        mxV9V/LtTKek37spbZDN8qxONg+BXxEi3BTkVZDhRCz5kLIxpiDXmZufS5QgVLirs3c3ewbPYqQeZ
+        WPYE2lXQ==;
+Received: from 91-158-25-70.elisa-laajakaista.fi ([91.158.25.70] helo=toshino.localdomain)
+        by mail.kapsi.fi with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <cyndis@kapsi.fi>)
+        id 1o3yg4-0001Xl-9t; Wed, 22 Jun 2022 14:37:43 +0300
+From:   Mikko Perttunen <cyndis@kapsi.fi>
+To:     thierry.reding@gmail.com, jonathanh@nvidia.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, digetx@gmail.com
+Cc:     dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Mikko Perttunen <mperttunen@nvidia.com>
+Subject: [PATCH v2 12/13] gpu: host1x: Use RESTART_W to skip timed out jobs on Tegra186+
+Date:   Wed, 22 Jun 2022 14:37:32 +0300
+Message-Id: <20220622113733.1710471-13-cyndis@kapsi.fi>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220622113733.1710471-1-cyndis@kapsi.fi>
+References: <20220622113733.1710471-1-cyndis@kapsi.fi>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 91.158.25.70
+X-SA-Exim-Mail-From: cyndis@kapsi.fi
+X-SA-Exim-Scanned: No (on mail.kapsi.fi); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-06-21 at 20:00 +0000, Robert Beckett wrote:
-> During testing make can_mmap consider whether the region is private.
-> 
-> Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
+From: Mikko Perttunen <mperttunen@nvidia.com>
 
-LGTM.
-Reviewed-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+When MLOCK enforcement is enabled, the 0-word write currently done
+is rejected by the hardware outside of an MLOCK region. As such,
+on these chips, which also have the newer, more convenient RESTART_W
+opcode, use that instead to skip over the timed out job.
 
+Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
+---
+ drivers/gpu/host1x/cdma.c | 19 +++++++++++++++++--
+ 1 file changed, 17 insertions(+), 2 deletions(-)
 
-> ---
->  drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c
-> b/drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c
-> index 5bc93a1ce3e3..76181e28c75e 100644
-> --- a/drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c
-> +++ b/drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c
-> @@ -869,6 +869,9 @@ static bool can_mmap(struct drm_i915_gem_object
-> *obj, enum i915_mmap_type type)
->         struct drm_i915_private *i915 = to_i915(obj->base.dev);
->         bool no_map;
->  
-> +       if (obj->mm.region && obj->mm.region->private)
-> +               return false;
-> +
->         if (obj->ops->mmap_offset)
->                 return type == I915_MMAP_TYPE_FIXED;
->         else if (type == I915_MMAP_TYPE_FIXED)
-
+diff --git a/drivers/gpu/host1x/cdma.c b/drivers/gpu/host1x/cdma.c
+index 765e5aa64eb6..bb1f3c746be4 100644
+--- a/drivers/gpu/host1x/cdma.c
++++ b/drivers/gpu/host1x/cdma.c
+@@ -457,9 +457,24 @@ void host1x_cdma_update_sync_queue(struct host1x_cdma *cdma,
+ 				 * to offset 0xbad. This does nothing but
+ 				 * has a easily detected signature in debug
+ 				 * traces.
++				 *
++				 * On systems with MLOCK enforcement enabled,
++				 * the above 0 word writes would fall foul of
++				 * the enforcement. As such, in the first slot
++				 * put a RESTART_W opcode to the beginning
++				 * of the next job. We don't use this for older
++				 * chips since those only support the RESTART
++				 * opcode with inconvenient alignment requirements.
+ 				 */
+-				mapped[2*slot+0] = 0x1bad0000;
+-				mapped[2*slot+1] = 0x1bad0000;
++				if (i == 0 && host1x->info->has_wide_gather) {
++					unsigned int next_job = (job->first_get/8 + job->num_slots)
++						% HOST1X_PUSHBUFFER_SLOTS;
++					mapped[2*slot+0] = (0xd << 28) | (next_job * 2);
++					mapped[2*slot+1] = 0x0;
++				} else {
++					mapped[2*slot+0] = 0x1bad0000;
++					mapped[2*slot+1] = 0x1bad0000;
++				}
+ 			}
+ 
+ 			job->cancelled = true;
+-- 
+2.36.1
 
