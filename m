@@ -2,247 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD6EFC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 17:59:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 250C6C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 18:03:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376712AbiFVR7H (ORCPT
+        id S1376321AbiFVSDt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 13:59:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59694 "EHLO
+        Wed, 22 Jun 2022 14:03:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376786AbiFVR6c (ORCPT
+        with ESMTP id S233565AbiFVSDe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 13:58:32 -0400
-Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com [IPv6:2001:4860:4864:20::33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20F9F2656D
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 10:58:30 -0700 (PDT)
-Received: by mail-oa1-x33.google.com with SMTP id 586e51a60fabf-101d2e81bceso14611116fac.0
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 10:58:30 -0700 (PDT)
+        Wed, 22 Jun 2022 14:03:34 -0400
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7BDA3389A
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 11:03:30 -0700 (PDT)
+Received: by mail-lf1-x12f.google.com with SMTP id i18so15462626lfu.8
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 11:03:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language;
-        bh=zUajASBiQjHAZhnPOiOhijZT69w/khebQsFCRqwrBWg=;
-        b=dyCCzi1meBRMQu6ugcIRNgKFAUqiyWIwMRcVvFBCJ8C9U0Ih1bjpQz1f8setXQieRN
-         DI6LZYshkQ6PKYaavyfMtwa1rUjXyXyPOHuUDKDic/F/B07IE+juuttK4eXNefNbPSna
-         Ojpy5EBs87pUa/uKWlrwQV5036etVMQlBON6w=
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ZTlj82E6kifi0yQhK+5fXqesjcyWHjDoPKb8Xh0tWaM=;
+        b=YPs9zoXTZdCCgy6mwDaLLCe3YJ1nDLJYlFsLY0uB/WaPNWnUwxUBc+MtDtbsjeKocu
+         LMvnIlwFtpMsYsE8ZyHPS4PaLaP4HcMROBXckCicyevRV/cByI0U04OV77xamBr9ZugX
+         1vt1KR0NBizorFEvz6iPuh1BN6LmBC8qw97dqTbfg35KqhJCHB/BNpFz376kCDaeXsai
+         Txdp5bTI2FUlSimWgJ0MPsncJig43DS0TwRrnTbQaLWqRLPQP09fSwCEpKNJI/7E30mm
+         7L4+BEtYtm0MJ9ZJctR9TOLEinkeOnw1EU4gbPLbv4XCDftefTceaV2Tk7JOrppz9ByX
+         fY0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language;
-        bh=zUajASBiQjHAZhnPOiOhijZT69w/khebQsFCRqwrBWg=;
-        b=iiPMKs9iqWmCDLbisxnbzmWu9AQj5PaINmaASAWbynPZ/7+oRRir5q0+Zn9TdLqVKU
-         CfcE2nI1L6vMsDvdcY1vGeqVrLd5h1YxKjF2eJnkhhJJU/zPdZPzylxPHKzdO+B1mCL0
-         tQBSniQXwrYS0E9D+xpmwsBPUe0ERn5f2M6XZslgxaMqs/1TaxIF0gLgvdGXIk4rB2eC
-         5947QfjyCsvePKpSTHSEsBuFWoVO1SijixZH5iamKk+TCeXcxWQt4YOUAzKFKaDH1Z4V
-         1DQnYAYjn+89NxgxJGQxOwZMw9sgOLSWfO6sFtx54wK13OLTEdLhhkuByD7d+X/3VMHi
-         R9JA==
-X-Gm-Message-State: AJIora8a665Y4EnlXQd7FBgTKEoUyteAYjKRIZfNt6Z6/EgKv/ba9Hwo
-        2YbP8IecnzoY/Fe+Q+UssYmIwyY3oTH8Sw==
-X-Google-Smtp-Source: AGRyM1vUbtfCh50xzZtbEhJ6b0A3Z5MVSz7r1DkRc0PxGTKuuQq2qtOzJiN98nJqsdqgISApqkm9AQ==
-X-Received: by 2002:a05:6870:78f:b0:f2:c91f:1b0a with SMTP id en15-20020a056870078f00b000f2c91f1b0amr25471335oab.299.1655920709264;
-        Wed, 22 Jun 2022 10:58:29 -0700 (PDT)
-Received: from [192.168.1.128] ([38.15.45.1])
-        by smtp.gmail.com with ESMTPSA id bi6-20020a056808188600b0032e442f6a72sm11631440oib.40.2022.06.22.10.58.28
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ZTlj82E6kifi0yQhK+5fXqesjcyWHjDoPKb8Xh0tWaM=;
+        b=CrEKnhCsTK224yZfqJ/2vPwm9sKCWoMYNHf+PQhpgrzYcyn6dw59O3DGve81/qp98Q
+         tz90sFlfOo7ahMRFTMR3yy18b+YcKNRE9zmBHJO3Wmc3NVJWccpNqPf6aC04WhpH7FGH
+         6b2VGSIiGOnAOuQotjvTE/BiLindSVkvG+qhBeHe7y1Bz/r0gn2U8hIvLCrq/gGyu/Pm
+         Uaro76MwO7kH2H00RUuj0MxbaAc94QiTb1Ne8my/niZh/kqz1AoxsJ/b8t0BH1IeOJgL
+         4F8AwaPbicA0BJglCHm6GX7oktfUPEOO7TMoHy8u4/SIqjCIgKYTbS4Z0OMAbiEU4pbV
+         n43g==
+X-Gm-Message-State: AJIora+971nh5T6bc4qegVHc0dkEF1LpGkwllmPxLzf2g3jiW8SCjCT8
+        xPVQvMRyItYqA/JXSrvsSDnSdg==
+X-Google-Smtp-Source: AGRyM1um1hIN5A8SQyQ5l8LM5tA3p+87QUOIBbIhZVlEqLdUp6eNRJ1nKpR+IJ+6NHWSX/0tvLXbjg==
+X-Received: by 2002:a05:6512:16aa:b0:479:7df:cb68 with SMTP id bu42-20020a05651216aa00b0047907dfcb68mr2742433lfb.666.1655921009223;
+        Wed, 22 Jun 2022 11:03:29 -0700 (PDT)
+Received: from [192.168.1.212] ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id k6-20020ac257c6000000b004785b66a9a4sm1810904lfo.126.2022.06.22.11.03.28
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Jun 2022 10:58:28 -0700 (PDT)
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Shuah Khan <skhan@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Subject: [GIT PULL] Kselftest fixes update for Linux 5.19-rc4
-Message-ID: <477c2f03-a733-cd05-2551-759de9273cff@linuxfoundation.org>
-Date:   Wed, 22 Jun 2022 11:58:27 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Wed, 22 Jun 2022 11:03:28 -0700 (PDT)
+Message-ID: <8b751eb3-2e19-0e03-4c94-b26b3badd397@linaro.org>
+Date:   Wed, 22 Jun 2022 21:03:27 +0300
 MIME-Version: 1.0
-Content-Type: multipart/mixed;
- boundary="------------2F3D1A702E73BF4F538B8002"
-Content-Language: en-US
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v15 0/3] eDP/DP Phy vdda realted function
+Content-Language: en-GB
+To:     Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        dri-devel@lists.freedesktop.org, robdclark@gmail.com,
+        sean@poorly.run, swboyd@chromium.org, dianders@chromium.org,
+        vkoul@kernel.org, daniel@ffwll.ch, airlied@linux.ie,
+        agross@kernel.org, bjorn.andersson@linaro.org,
+        Kishon Vijay Abraham I <kishon@ti.com>
+Cc:     quic_abhinavk@quicinc.com, quic_aravindh@quicinc.com,
+        quic_sbillaka@quicinc.com, freedreno@lists.freedesktop.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-phy@lists.infradead.org
+References: <1655830891-19025-1-git-send-email-quic_khsieh@quicinc.com>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <1655830891-19025-1-git-send-email-quic_khsieh@quicinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is a multi-part message in MIME format.
---------------2F3D1A702E73BF4F538B8002
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+On 21/06/2022 20:01, Kuogee Hsieh wrote:
+> 0) rebase on https://git.kernel.org/pub/scm/linux/kernel/git/phy/linux-phy.git tree
+> 1) add regulator_set_load() to eDP phy
+> 2) add regulator_set_load() to DP phy
+> 3) remove vdda related function out of eDP/DP controller
+> 
+> Kuogee Hsieh (3):
+>    phy: qcom-edp: add regulator_set_load to edp phy
+>    phy: qcom-qmp: add regulator_set_load to dp phy
+>    drm/msm/dp: delete vdda regulator related functions from eDP/DP
+>      controller
 
-Hi Linus,
+Kishon, Vinod, how do we proceed with merging these patches?
 
-Please pull the following Kselftest fixes update for Linux 5.19-rc4
+> 
+>   drivers/gpu/drm/msm/dp/dp_parser.c        | 14 -----
+>   drivers/gpu/drm/msm/dp/dp_parser.h        |  8 ---
+>   drivers/gpu/drm/msm/dp/dp_power.c         | 95 +------------------------------
+>   drivers/phy/qualcomm/phy-qcom-edp.c       | 12 ++++
+>   drivers/phy/qualcomm/phy-qcom-qmp-combo.c | 43 ++++++++++----
+>   5 files changed, 47 insertions(+), 125 deletions(-)
+> 
 
-This Kselftest fixes update for Linux 5.19-rc4 consists of compile
-time fixes and run-time resources leaks.
 
--- Fix clang cross compilation
--- Fix resource leak when return error
--- fix compile error for dma_map_benchmark
--- Fix regression - make use of GUP_TEST_FILE macro
-
-diff is attached.
-
-thanks,
--- Shuah
-
-----------------------------------------------------------------
-The following changes since commit f2906aa863381afb0015a9eb7fefad885d4e5a56:
-
-   Linux 5.19-rc1 (2022-06-05 17:18:54 -0700)
-
-are available in the Git repository at:
-
-   git://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux-kselftest tags/linux-kselftest-fixes-5.19-rc4
-
-for you to fetch changes up to 9b4d5c01eb234f66a15a746b1c73e10209edb199:
-
-   selftests: make use of GUP_TEST_FILE macro (2022-06-16 17:05:50 -0600)
-
-----------------------------------------------------------------
-linux-kselftest-fixes-5.19-rc4
-
-This Kselftest fixes update for Linux 5.19-rc4 consists of compile
-time fixes and run-time resources leaks.
-
--- Fix clang cross compilation
--- Fix resource leak when return error
--- fix compile error for dma_map_benchmark
--- Fix regression - make use of GUP_TEST_FILE macro
-
-----------------------------------------------------------------
-Ding Xiang (1):
-       selftests: vm: Fix resource leak when return error
-
-Joel Savitz (1):
-       selftests: make use of GUP_TEST_FILE macro
-
-Mark Brown (1):
-       selftests: Fix clang cross compilation
-
-Yu Liao (1):
-       selftests dma: fix compile error for dma_map_benchmark
-
-  tools/testing/selftests/dma/Makefile            |  1 +
-  tools/testing/selftests/dma/dma_map_benchmark.c |  2 +-
-  tools/testing/selftests/lib.mk                  | 25 +++++++++++++++++++++++--
-  tools/testing/selftests/vm/gup_test.c           |  4 ++--
-  tools/testing/selftests/vm/ksm_tests.c          |  2 ++
-  5 files changed, 29 insertions(+), 5 deletions(-)
-
-----------------------------------------------------------------
-
---------------2F3D1A702E73BF4F538B8002
-Content-Type: text/x-patch; charset=UTF-8;
- name="linux-kselftest-fixes-5.19-rc4.diff"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
- filename="linux-kselftest-fixes-5.19-rc4.diff"
-
-diff --git a/tools/testing/selftests/dma/Makefile b/tools/testing/selftests/dma/Makefile
-index aa8e8b5b3864..cd8c5ece1cba 100644
---- a/tools/testing/selftests/dma/Makefile
-+++ b/tools/testing/selftests/dma/Makefile
-@@ -1,5 +1,6 @@
- # SPDX-License-Identifier: GPL-2.0
- CFLAGS += -I../../../../usr/include/
-+CFLAGS += -I../../../../include/
- 
- TEST_GEN_PROGS := dma_map_benchmark
- 
-diff --git a/tools/testing/selftests/dma/dma_map_benchmark.c b/tools/testing/selftests/dma/dma_map_benchmark.c
-index c3b3c09e995e..5c997f17fcbd 100644
---- a/tools/testing/selftests/dma/dma_map_benchmark.c
-+++ b/tools/testing/selftests/dma/dma_map_benchmark.c
-@@ -10,8 +10,8 @@
- #include <unistd.h>
- #include <sys/ioctl.h>
- #include <sys/mman.h>
--#include <linux/map_benchmark.h>
- #include <linux/types.h>
-+#include <linux/map_benchmark.h>
- 
- #define NSEC_PER_MSEC	1000000L
- 
-diff --git a/tools/testing/selftests/lib.mk b/tools/testing/selftests/lib.mk
-index 2a2d240cdc1b..1a5cc3cd97ec 100644
---- a/tools/testing/selftests/lib.mk
-+++ b/tools/testing/selftests/lib.mk
-@@ -7,10 +7,31 @@ else ifneq ($(filter -%,$(LLVM)),)
- LLVM_SUFFIX := $(LLVM)
- endif
- 
--CC := $(LLVM_PREFIX)clang$(LLVM_SUFFIX)
-+CLANG_TARGET_FLAGS_arm          := arm-linux-gnueabi
-+CLANG_TARGET_FLAGS_arm64        := aarch64-linux-gnu
-+CLANG_TARGET_FLAGS_hexagon      := hexagon-linux-musl
-+CLANG_TARGET_FLAGS_m68k         := m68k-linux-gnu
-+CLANG_TARGET_FLAGS_mips         := mipsel-linux-gnu
-+CLANG_TARGET_FLAGS_powerpc      := powerpc64le-linux-gnu
-+CLANG_TARGET_FLAGS_riscv        := riscv64-linux-gnu
-+CLANG_TARGET_FLAGS_s390         := s390x-linux-gnu
-+CLANG_TARGET_FLAGS_x86          := x86_64-linux-gnu
-+CLANG_TARGET_FLAGS              := $(CLANG_TARGET_FLAGS_$(ARCH))
-+
-+ifeq ($(CROSS_COMPILE),)
-+ifeq ($(CLANG_TARGET_FLAGS),)
-+$(error Specify CROSS_COMPILE or add '--target=' option to lib.mk
-+else
-+CLANG_FLAGS     += --target=$(CLANG_TARGET_FLAGS)
-+endif # CLANG_TARGET_FLAGS
-+else
-+CLANG_FLAGS     += --target=$(notdir $(CROSS_COMPILE:%-=%))
-+endif # CROSS_COMPILE
-+
-+CC := $(LLVM_PREFIX)clang$(LLVM_SUFFIX) $(CLANG_FLAGS) -fintegrated-as
- else
- CC := $(CROSS_COMPILE)gcc
--endif
-+endif # LLVM
- 
- ifeq (0,$(MAKELEVEL))
-     ifeq ($(OUTPUT),)
-diff --git a/tools/testing/selftests/vm/gup_test.c b/tools/testing/selftests/vm/gup_test.c
-index 6bb36ca71cb5..a309876d832f 100644
---- a/tools/testing/selftests/vm/gup_test.c
-+++ b/tools/testing/selftests/vm/gup_test.c
-@@ -209,7 +209,7 @@ int main(int argc, char **argv)
- 	if (write)
- 		gup.gup_flags |= FOLL_WRITE;
- 
--	gup_fd = open("/sys/kernel/debug/gup_test", O_RDWR);
-+	gup_fd = open(GUP_TEST_FILE, O_RDWR);
- 	if (gup_fd == -1) {
- 		switch (errno) {
- 		case EACCES:
-@@ -224,7 +224,7 @@ int main(int argc, char **argv)
- 			printf("check if CONFIG_GUP_TEST is enabled in kernel config\n");
- 			break;
- 		default:
--			perror("failed to open /sys/kernel/debug/gup_test");
-+			perror("failed to open " GUP_TEST_FILE);
- 			break;
- 		}
- 		exit(KSFT_SKIP);
-diff --git a/tools/testing/selftests/vm/ksm_tests.c b/tools/testing/selftests/vm/ksm_tests.c
-index 2fcf24312da8..f5e4e0bbd081 100644
---- a/tools/testing/selftests/vm/ksm_tests.c
-+++ b/tools/testing/selftests/vm/ksm_tests.c
-@@ -54,6 +54,7 @@ static int ksm_write_sysfs(const char *file_path, unsigned long val)
- 	}
- 	if (fprintf(f, "%lu", val) < 0) {
- 		perror("fprintf");
-+		fclose(f);
- 		return 1;
- 	}
- 	fclose(f);
-@@ -72,6 +73,7 @@ static int ksm_read_sysfs(const char *file_path, unsigned long *val)
- 	}
- 	if (fscanf(f, "%lu", val) != 1) {
- 		perror("fscanf");
-+		fclose(f);
- 		return 1;
- 	}
- 	fclose(f);
-
---------------2F3D1A702E73BF4F538B8002--
+-- 
+With best wishes
+Dmitry
