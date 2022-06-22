@@ -2,77 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC4B2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 14:19:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09058C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 14:20:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358148AbiFVOTE (ORCPT
+        id S1358244AbiFVOUP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 10:19:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37586 "EHLO
+        Wed, 22 Jun 2022 10:20:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358455AbiFVOSk (ORCPT
+        with ESMTP id S1358175AbiFVOUL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 10:18:40 -0400
-Received: from smtpbg.qq.com (smtpbg123.qq.com [175.27.65.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0B78CF7;
-        Wed, 22 Jun 2022 07:18:35 -0700 (PDT)
-X-QQ-mid: bizesmtp91t1655907398tszimgfg
-Received: from ubuntu.localdomain ( [106.117.78.84])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 22 Jun 2022 22:16:34 +0800 (CST)
-X-QQ-SSF: 01000000008000B0B000E00A0000000
-X-QQ-FEAT: ZHWZeLXy+8eGIpW5SgqC0vGxiIjhVdPeUkQEKaTB67jOjJuIlIxRSlAdrinK5
-        NwUieqAbkmu5XbUfuRVNyX3YhOZN/XXnSzc3wTrQ6M5S6SXN8XlFKO/LdPpTsaVtKI2ZpMv
-        n8rRpGpLJiiAjkHjoT3lheNTah2I+O+kDedhpLo8GaqB+BNx3IvidhQlPD3ZHKLgA6WiUwp
-        eunjwWknBtlZT16UcPZG1q/bzAIsVOInqJ33JqsCav0Wi20EUYNYFxoepOb8xuh6zdixSOZ
-        cW7EUByIYNZN7vH4BOc7gZQxhy2VnFZbwoRUI5yhRqbtg+84qdtAFttzDjqhLekf/xv8t6/
-        oZA1Qv1vxCHnlP4BofgR6mlNOkgDAcLxlynypbH
-X-QQ-GoodBg: 0
-From:   Jiang Jian <jiangjian@cdjrlc.com>
-To:     kashyap.desai@broadcom.com, sumit.saxena@broadcom.com,
-        shivasharan.srikanteshwara@broadcom.com
-Cc:     jejb@linux.ibm.com, martin.petersen@oracle.com,
-        megaraidlinux.pdl@broadcom.com, linux-scsi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jiang Jian <jiangjian@cdjrlc.com>
-Subject: [PATCH] scsi: megaraid_sas: drop unexpected word 'and' in the comments
-Date:   Wed, 22 Jun 2022 22:16:31 +0800
-Message-Id: <20220622141631.9249-1-jiangjian@cdjrlc.com>
-X-Mailer: git-send-email 2.17.1
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam8
+        Wed, 22 Jun 2022 10:20:11 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D009B5FB6;
+        Wed, 22 Jun 2022 07:20:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655907610; x=1687443610;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=FXE8o8UOWuK9nf2Bhh8e/wPro8z+x8Ye/C+F7s9tcSA=;
+  b=mBVZF5WJ8pfZYE1mUUrE6BpQ0086cxrsoLEVMR9k2evSljpavn7REb5T
+   z1v+Jnd0Go3z8sKSdW9YdrejUXclshYZMRuzZO5LuZPOO/L9urYVi7LZc
+   wox3Joq+3VAuvCvQ5EM5wCvYd1tXofNH8UEO426s6g204RHxrG6pqJHRr
+   nVHsDAaEuOywVTFTPnAv/d1D2/CcDxDgEMy87xEp3EXIGh3TPikFGM5Cu
+   BaFI7LC+Hdn+l/4ixreldOJKO9VC5veYxjY2Hu/CvWBwRpZQ3rp8nTeZZ
+   FF4d5GZWHvAMXXbqKmiLHBRoD+FgvtLf4bLDtFX7MUIzqvE3fPQoaLl2c
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="344418822"
+X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
+   d="scan'208";a="344418822"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 07:20:10 -0700
+X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
+   d="scan'208";a="730366946"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 07:20:05 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1o41D7-000sN3-B2;
+        Wed, 22 Jun 2022 17:20:01 +0300
+Date:   Wed, 22 Jun 2022 17:20:01 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Marcin Wojtas <mw@semihalf.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, vivien.didelot@gmail.com,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Grzegorz Bernacki <gjb@semihalf.com>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>,
+        Tomasz Nowicki <tn@semihalf.com>,
+        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
+        upstream@semihalf.com
+Subject: Re: [net-next: PATCH 09/12] Documentation: ACPI: DSD: introduce DSA
+ description
+Message-ID: <YrMlEcKwpTmR5qj6@smile.fi.intel.com>
+References: <20220620150225.1307946-1-mw@semihalf.com>
+ <20220620150225.1307946-10-mw@semihalf.com>
+ <YrDO05TMK8SVgnBP@lunn.ch>
+ <YrGm2jmR7ijHyQjJ@smile.fi.intel.com>
+ <YrGpDgtm4rPkMwnl@lunn.ch>
+ <YrGukfw4uiQz0NpW@smile.fi.intel.com>
+ <CAPv3WKf_2QYh0F2LEr1DeErvnMeQqT0M5t40ROP2G6HSUwKpQQ@mail.gmail.com>
+ <YrL3DQD92ijLam2V@smile.fi.intel.com>
+ <YrL7Z6/ghTO/9wlx@lunn.ch>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YrL7Z6/ghTO/9wlx@lunn.ch>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-there is an unexpected word 'and' in the comments that need to be dropped
+On Wed, Jun 22, 2022 at 01:22:15PM +0200, Andrew Lunn wrote:
+> > > It's not device on MDIO bus, but the MDIO controller's register itself
+> > > (this _CSR belongs to the parent, subnodes do not refer to it in any
+> > > way). The child device requires only _ADR (or whatever else is needed
+> > > for the case the DSA device is attached to SPI/I2C controllers).
+> > 
+> > More and more the idea of standardizing the MDIOSerialBus() resource looks
+> > plausible. The _ADR() usage is a bit grey area in ACPI specification. Maybe
+> > someone can also make it descriptive, so Microsoft and others won't utilize
+> > _ADR() in any level of weirdness.
+> 
+> I don't know if it makes any difference, but there are two protocols
+> spoken over MDIO, c22 and c45, specified in clause 22 and clause 45 of
+> the 802.3 specification. In some conditions, you need to specify which
+> protocol to speak to a device at a particular address. In DT we
+> indicate this with the compatible string, when maybe it should really
+> be considered as an extension of the address.
+> 
+> If somebody does produce a draft for MDIOSerialBus() i'm happy to
+> review it.
 
-file: drivers/scsi/megaraid/megaraid_sas_fusion.c
-line: 2551
+I also can review it. Marcin, would it be hard for you to prepare a formal
+proposal for ACPI specification?
 
-* megasas_stream_detect -	stream detection on read and and write IOs
-
-changed to:
-
-* megasas_stream_detect -	stream detection on read and write IOs
-
-Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
----
- drivers/scsi/megaraid/megaraid_sas_fusion.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/scsi/megaraid/megaraid_sas_fusion.c b/drivers/scsi/megaraid/megaraid_sas_fusion.c
-index 5b5885d9732b..d74a0e0e6d5d 100644
---- a/drivers/scsi/megaraid/megaraid_sas_fusion.c
-+++ b/drivers/scsi/megaraid/megaraid_sas_fusion.c
-@@ -2548,7 +2548,7 @@ megasas_set_pd_lba(struct MPI2_RAID_SCSI_IO_REQUEST *io_request, u8 cdb_len,
- }
- 
- /**
-- * megasas_stream_detect -	stream detection on read and and write IOs
-+ * megasas_stream_detect -	stream detection on read and write IOs
-  * @instance:		Adapter soft state
-  * @cmd:		    Command to be prepared
-  * @io_info:		IO Request info
 -- 
-2.17.1
+With Best Regards,
+Andy Shevchenko
+
 
