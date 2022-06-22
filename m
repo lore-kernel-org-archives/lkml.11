@@ -2,75 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79A27C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 17:12:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF7C0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 17:12:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377129AbiFVRMC (ORCPT
+        id S1377124AbiFVRMi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 13:12:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49578 "EHLO
+        Wed, 22 Jun 2022 13:12:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376705AbiFVRMA (ORCPT
+        with ESMTP id S236563AbiFVRMh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 13:12:00 -0400
-Received: from smtpbg.qq.com (smtpbg136.qq.com [106.55.201.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0338521AA;
-        Wed, 22 Jun 2022 10:11:54 -0700 (PDT)
-X-QQ-mid: bizesmtp77t1655917905tzg9x260
-Received: from ubuntu.localdomain ( [106.117.78.84])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 23 Jun 2022 01:11:39 +0800 (CST)
-X-QQ-SSF: 01000000008000B0C000B00A0000000
-X-QQ-FEAT: GF9U4x7uyA+sbgXxCB/IJoh76s4ARvWP+rfSzaz/GyEgG8x/0WyO+9mzOR9hq
-        B5Vex1e+Wfx8aB4xqPJG3ZWlGghRgArKwdLqiYHqDYubotU6mC1tqIrvpjHjvYIl3Wxau8U
-        0UWNvWmucdA7LWrLOIa+JhJsR/e9A0gfZaxZpHoHhYI8k8wY/9vItWRJ4yzm7h0qI2brRqV
-        HEkJemGXOoEKDnGYIVqb+IwHuw3K/nx+1LbFVAZ6pbQR9qdUoKdiFzBICIZmcuyA775oHtw
-        TcusrsyBIGwiRnNvba1xOTtGgnbn7hOaWEqdL+GCpR1Hf1rFsH042wP72d2yYbgkQ9MG5e2
-        SANkV5gEPlZSJJWIYs=
-X-QQ-GoodBg: 0
-From:   Jiang Jian <jiangjian@cdjrlc.com>
-To:     mchehab@kernel.org
-Cc:     hverkuil@xs4all.nl, jiangjian@cdjrlc.com,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] media: gspca: drop unexpected word 'is' in the comments
-Date:   Thu, 23 Jun 2022 01:11:37 +0800
-Message-Id: <20220622171137.4863-1-jiangjian@cdjrlc.com>
-X-Mailer: git-send-email 2.17.1
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam7
+        Wed, 22 Jun 2022 13:12:37 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 645246458
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 10:12:36 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id k7so15932451plg.7
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 10:12:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=yCvJ6j6iwtZyRl6d0jNgLD7Pn0GOxUGdw78rUerTkYQ=;
+        b=NdN4BCXu8o6umKrHeVvbOYwWPEVpQKSEax8z3H33VWV7QswzIxmX+T5PDstpTniJIA
+         rKi6kJ/IRaG60rq7gTRGX//+aC27cSBhAwY6pRR/zwfiVOlNNa0yc03LZiFM+MZSka21
+         be6u8q6WxaBojeGcp6t+HRj9G4T4wMp2YEmCxdPeeN7d43dAKj7JuCzxBKixQVRlanov
+         n/JX4IvCbf1ViFNjP5DfE8lGWUYdM28RPkwy0C1fKI3GbmqRiatoxSlJ5tN55NmsZTrO
+         RgsMA5Aoi2ZQf42N2KrpVU8qNDqLD8T+eW1AE0oJT5vnEeRqk/n7FFjvGka6z+PgxuJY
+         BSLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=yCvJ6j6iwtZyRl6d0jNgLD7Pn0GOxUGdw78rUerTkYQ=;
+        b=ucsy1U7JW4+sOx3WbMJJ6ADhIlZlP3PIzrMWSstBofE6Cgw/f82obhTagEseTau2Dk
+         giIW+7ezpLbmT+JOid/fdMI5hVFihvp7UUzAgQCuu4NoH1Pm+3ih4Mw7Pxajz+mely3W
+         U+cDgfVqFvE4bSi49AxRdqfzjhISU6weFOy/sMa96MgfESrqaiy0a2O4CH9Fak2C6uGA
+         enXHkXqOVK5i8NFakec4zDjEaxCq6L1abnOW2+fOP3C2HCkEPKhOaVTLEKF/oOX3QJDN
+         +n1OyEUiSRQcOQ2UlrGzN1qOtUO9ePy5A17eaYBzAY/lQvvXsmUMG89WQOUyiv1qAytb
+         oyTg==
+X-Gm-Message-State: AJIora+QMlEIKgJVDFkbCKiH5dsdZ0ORiFsM6Vf0nlH9TIIWrdO2zJal
+        6qHBE/kQMm33747lxKoS5qLf6ZUytb0FQw==
+X-Google-Smtp-Source: AGRyM1smrreNKZjFDEyDDY6VS+6kJoOsAn+jBUi1AKP7/9SukHChvTsFm8w9LnLLY0JwXhx6SsQ0tg==
+X-Received: by 2002:a17:903:120f:b0:15f:99f:9597 with SMTP id l15-20020a170903120f00b0015f099f9597mr34922215plh.45.1655917955933;
+        Wed, 22 Jun 2022 10:12:35 -0700 (PDT)
+Received: from smtpclient.apple ([139.177.225.235])
+        by smtp.gmail.com with ESMTPSA id n18-20020a056a00213200b005251f4596f0sm7592333pfj.107.2022.06.22.10.12.33
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 22 Jun 2022 10:12:35 -0700 (PDT)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.100.31\))
+Subject: Re: [External] [PATCH] node: put_device after failing to
+ device_register
+From:   Zhi Song <zhi.song@bytedance.com>
+In-Reply-To: <YqidROu44rHFaI6w@kroah.com>
+Date:   Thu, 23 Jun 2022 01:12:31 +0800
+Cc:     rafael@kernel.org, linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Message-Id: <2BE06D43-725A-4006-B035-ABCC0B1CEEC3@bytedance.com>
+References: <20220614143007.1730171-1-zhi.song@bytedance.com>
+ <YqidROu44rHFaI6w@kroah.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+X-Mailer: Apple Mail (2.3696.100.31)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-there is an unexpected word 'is' in the comments that need to be dropped
+> On Jun 14, 2022, at 22:37, Greg KH <gregkh@linuxfoundation.org> wrote:
+> 
+> On Tue, Jun 14, 2022 at 10:30:07PM +0800, Zhi Song wrote:
+>> device_register() is used to register a device with the system.
+>> 
+>> We cannot directly free dev after calling this function,
+>> even if it returns an error.
+> 
+> the device is not being freed, why say this?
+> 
+> And you do have a full 72 columns to use :)
+> 
+>> 
+>> We should use put_device() to give up the reference
+>> initialized in this function instead.
+> 
+> There is no "instead" happening here.  The patch looks correct, but this
+> changelog text does not.  Please fix up.
+> 
+> thanks,
+> 
+> greg k-h
 
-file - drivers/media/usb/gspca/spca501.c
-line - 491
+Hi Greg,
 
-* This is is for the 3com HomeConnect Lite which is spca501a based.
+I have submitted this fixed patch here:
+https://lore.kernel.org/all/20220621171623.1959231-1-zhi.song@bytedance
+.com/
+take a look if there's anything wrong. :)
 
-changed to:
+Thanks,
 
-* This is for the 3com HomeConnect Lite which is spca501a based.
-
-Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
----
- drivers/media/usb/gspca/spca501.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/media/usb/gspca/spca501.c b/drivers/media/usb/gspca/spca501.c
-index ecc97f807cfa..f7c75d7535c4 100644
---- a/drivers/media/usb/gspca/spca501.c
-+++ b/drivers/media/usb/gspca/spca501.c
-@@ -488,7 +488,7 @@ static const __u16 spca501_init_data[][3] = {
- 
- /* Data for video camera init before capture.
-  * Capture and decoding by Colin Peart.
-- * This is is for the 3com HomeConnect Lite which is spca501a based.
-+ * This is for the 3com HomeConnect Lite which is spca501a based.
-  */
- static const __u16 spca501_3com_open_data[][3] = {
- 	/* bmRequest,value,index */
--- 
-2.17.1
-
+Zhi
