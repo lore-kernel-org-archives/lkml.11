@@ -2,62 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D32AEC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 02:01:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CDF6C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 02:03:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356061AbiFVCBI convert rfc822-to-8bit (ORCPT
+        id S1355923AbiFVCD1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 22:01:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60406 "EHLO
+        Tue, 21 Jun 2022 22:03:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344874AbiFVCBG (ORCPT
+        with ESMTP id S1356009AbiFVCDY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 22:01:06 -0400
-Received: from relay.hostedemail.com (smtprelay0011.hostedemail.com [216.40.44.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 083EE33883
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 19:01:05 -0700 (PDT)
-Received: from omf04.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay07.hostedemail.com (Postfix) with ESMTP id 04B3F212D2;
-        Wed, 22 Jun 2022 02:01:02 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf04.hostedemail.com (Postfix) with ESMTPA id 1EC4A20028;
-        Wed, 22 Jun 2022 02:01:00 +0000 (UTC)
-Message-ID: <2795eb1388bb22122250f3886c2585a22d844106.camel@perches.com>
-Subject: Re: [PATCH] drm/nouveau/mmu: Fix a typo
-From:   Joe Perches <joe@perches.com>
-To:     Zhang Jiaming <jiaming@nfschina.com>, airlied@linux.ie,
-        daniel@ffwll.ch
-Cc:     lyude@redhat.com, kherbst@redhat.com, bskeggs@redhat.com,
-        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, liqiong@nfschina.com,
-        renyu@nfschina.com
-Date:   Tue, 21 Jun 2022 19:00:55 -0700
-In-Reply-To: <20220622015249.8390-1-jiaming@nfschina.com>
-References: <20220622015249.8390-1-jiaming@nfschina.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.44.1-0ubuntu1 
-MIME-Version: 1.0
-X-Rspamd-Queue-Id: 1EC4A20028
-X-Stat-Signature: imeduxfusbtqh6mhxt5pou7tpebnh9uh
-X-Rspamd-Server: rspamout06
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX1/G1juJFWadYNMhEC2gMuIwA4DXe0U4CVo=
-X-HE-Tag: 1655863260-877950
+        Tue, 21 Jun 2022 22:03:24 -0400
+Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2C21B30543;
+        Tue, 21 Jun 2022 19:03:23 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by mail.nfschina.com (Postfix) with ESMTP id 9C70D1E80CD1;
+        Wed, 22 Jun 2022 10:03:15 +0800 (CST)
+X-Virus-Scanned: amavisd-new at test.com
+Received: from mail.nfschina.com ([127.0.0.1])
+        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id B_IKXUawNFvw; Wed, 22 Jun 2022 10:03:13 +0800 (CST)
+Received: from localhost.localdomain (unknown [180.167.10.98])
+        (Authenticated sender: liqiong@nfschina.com)
+        by mail.nfschina.com (Postfix) with ESMTPA id 5DBFA1E80C7D;
+        Wed, 22 Jun 2022 10:03:12 +0800 (CST)
+From:   Li Qiong <liqiong@nfschina.com>
+To:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>
+Cc:     linux-crypto@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        yuzhe@nfschina.com, renyu@nfschina.com,
+        Li Qiong <liqiong@nfschina.com>
+Subject: [PATCH] crypto: stm32 - Handle failure of kmalloc_array()
+Date:   Wed, 22 Jun 2022 10:02:08 +0800
+Message-Id: <20220622020208.25776-1-liqiong@nfschina.com>
+X-Mailer: git-send-email 2.11.0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-06-22 at 09:52 +0800, Zhang Jiaming wrote:
-> There is a typo in comments. Change 'neeed' to 'need'.
-[]
-> diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/mmu/vmm.c b/drivers/gpu/drm/nouveau/nvkm/subdev/mmu/vmm.c
-[]
-> @@ -280,7 +280,7 @@ nvkm_vmm_unref_ptes(struct nvkm_vmm_iter *it, bool pfn, u32 ptei, u32 ptes)
->  	if (desc->type == SPT && (pgt->refs[0] || pgt->refs[1]))
->  		nvkm_vmm_unref_sptes(it, pgt, desc, ptei, ptes);
->  
-> -	/* PT no longer neeed?  Destroy it. */
-> +	/* PT no longer need?  Destroy it. */
+As the possible failure of the kmalloc_array(), therefore it
+should be better to check it and return '-ENOMEM' on error.
 
-needed
+Signed-off-by: Li Qiong <liqiong@nfschina.com>
+---
+ drivers/crypto/stm32/stm32-hash.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/crypto/stm32/stm32-hash.c b/drivers/crypto/stm32/stm32-hash.c
+index d33006d43f76..fc03e32e364f 100644
+--- a/drivers/crypto/stm32/stm32-hash.c
++++ b/drivers/crypto/stm32/stm32-hash.c
+@@ -970,6 +970,8 @@ static int stm32_hash_export(struct ahash_request *req, void *out)
+ 	rctx->hw_context = kmalloc_array(3 + HASH_CSR_REGISTER_NUMBER,
+ 					 sizeof(u32),
+ 					 GFP_KERNEL);
++	if (!rctx->hw_context)
++		return -ENOMEM;
+ 
+ 	preg = rctx->hw_context;
+ 
+-- 
+2.11.0
 
