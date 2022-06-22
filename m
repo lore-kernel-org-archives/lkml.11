@@ -2,79 +2,246 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 292DEC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 08:34:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF5D7C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 08:35:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235604AbiFVIeo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 04:34:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60292 "EHLO
+        id S238843AbiFVIfZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 04:35:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243470AbiFVIel (ORCPT
+        with ESMTP id S235752AbiFVIfX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 04:34:41 -0400
-Received: from m1550.mail.126.com (m1550.mail.126.com [220.181.15.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1A91B3878F
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 01:34:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=keVJx
-        ideL7zo39jGAWrquWLN4izWYfoDVnJA7Z3cP0s=; b=eYZxsp2UBo/n9HvIfyBKH
-        hXNa2lysKsaT0LSWPp2LvFV453/QPahH8fhYgH/nW7OJu2EJ7fJuC7k/fJAf11RC
-        L6lIt/AAXZxTsPpU1pgpI1ien0Kk7iVofQKlo0hPaFQyigBlm95Y3tTmvIoPTwug
-        FCkQ/qsZ+pG0+gqr8qKlqY=
-Received: from windhl$126.com ( [124.16.139.61] ) by ajax-webmail-wmsvr50
- (Coremail) ; Wed, 22 Jun 2022 16:34:25 +0800 (CST)
-X-Originating-IP: [124.16.139.61]
-Date:   Wed, 22 Jun 2022 16:34:25 +0800 (CST)
-From:   "Liang He" <windhl@126.com>
-To:     "Marc Zyngier" <maz@kernel.org>,
-        "Miaoqian Lin" <linmq006@gmail.com>
-Cc:     tglx@linutronix.de, linux-kernel@vger.kernel.org
-Subject: Re:Re: [PATCH] irqchip: Add missing of_ndoe_get() in its_of_probe()
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
- Copyright (c) 2002-2022 www.mailtech.cn 126com
-In-Reply-To: <87letp2j9e.wl-maz@kernel.org>
-References: <20220622062138.4095598-1-windhl@126.com>
- <87mte52khd.wl-maz@kernel.org>
- <229e8ea9.5a09.1818a7b7a35.Coremail.windhl@126.com>
- <87letp2j9e.wl-maz@kernel.org>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=GBK
+        Wed, 22 Jun 2022 04:35:23 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E715C381B4
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 01:35:21 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <l.stach@pengutronix.de>)
+        id 1o3vpW-0007nL-A9; Wed, 22 Jun 2022 10:35:18 +0200
+Message-ID: <a059f69470e39cf8928e53773ace6a97bb600821.camel@pengutronix.de>
+Subject: Re: [PATCH RFC 1/2] regmap: add option to disable debugfs
+From:   Lucas Stach <l.stach@pengutronix.de>
+To:     Aisheng Dong <aisheng.dong@nxp.com>,
+        Mark Brown <broonie@kernel.org>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "dongas86@gmail.com" <dongas86@gmail.com>,
+        Peng Fan <peng.fan@nxp.com>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>
+Date:   Wed, 22 Jun 2022 10:35:17 +0200
+In-Reply-To: <DB9PR04MB8477E77D4F6C8F7886418FD180B29@DB9PR04MB8477.eurprd04.prod.outlook.com>
+References: <20220620134758.1286480-1-aisheng.dong@nxp.com>
+         <20220620134758.1286480-2-aisheng.dong@nxp.com>
+         <YrCM0reni+x/KWsG@sirena.org.uk>
+         <DB9PR04MB84779EF2842D789FA66094C380B09@DB9PR04MB8477.eurprd04.prod.outlook.com>
+         <YrCXILblKsp6DuN3@sirena.org.uk>
+         <DB9PR04MB8477CD99D5847291A629994180B09@DB9PR04MB8477.eurprd04.prod.outlook.com>
+         <YrCznap77OyHu4bO@sirena.org.uk>
+         <DB9PR04MB847785E1861525FC1E4AD97280B39@DB9PR04MB8477.eurprd04.prod.outlook.com>
+         <YrHkXH1M4NydBfQT@sirena.org.uk>
+         <DB9PR04MB84772F73D4AA1B49F87BECCF80B39@DB9PR04MB8477.eurprd04.prod.outlook.com>
+         <abbc4d80377dcf5393afa143f9d3542cd2cd45a7.camel@pengutronix.de>
+         <DB9PR04MB8477E77D4F6C8F7886418FD180B29@DB9PR04MB8477.eurprd04.prod.outlook.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
 MIME-Version: 1.0
-Message-ID: <1b3e9050.5eb9.1818a8c64d3.Coremail.windhl@126.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: MsqowADnPPES1LJiZXo7AA--.4949W
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbizgcoF18RPWVO2wABs0
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: l.stach@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CgoKQXQgMjAyMi0wNi0yMiAxNjoyOTo0OSwgIk1hcmMgWnluZ2llciIgPG1hekBrZXJuZWwub3Jn
-PiB3cm90ZToKPk9uIFdlZCwgMjIgSnVuIDIwMjIgMDk6MTU6NTYgKzAxMDAsCj4iTGlhbmcgSGUi
-IDx3aW5kaGxAMTI2LmNvbT4gd3JvdGU6Cj4+IAo+PiAKPj4gCj4+IEF0IDIwMjItMDYtMjIgMTY6
-MDM6MjYsICJNYXJjIFp5bmdpZXIiIDxtYXpAa2VybmVsLm9yZz4gd3JvdGU6Cj4+ID4rIE1pYW9x
-aWFuIExpbgo+PiA+Cj4+ID5PbiBXZWQsIDIyIEp1biAyMDIyIDA3OjIxOjM4ICswMTAwLAo+PiA+
-TGlhbmcgSGUgPHdpbmRobEAxMjYuY29tPiB3cm90ZToKPj4gPj4gCj4+ID4+IFdlIG5lZWQgdG8g
-YWRkIG1pc3Npbmcgb2Zfbm9kZV9nZXQoKSBmb3Igb2ZfZmluZF9tYXRjaGluZ19ub2RlKCkgdG8K
-Pj4gPj4ga2VlcCByZWZjb3VudCBiYWxhbmNlLgo+PiA+PiAKPj4gPj4gTm90ZTogb2ZfZmluZF9t
-YXRjaGluZ19ub2RlKCkgd2lsbCBkZWNyZWFzZSB0aGUgcmVmY291bnQgb2YgaXRzIGZpcnN0Cj4+
-ID4+IGFyZy4KPj4gPj4gCj4+ID4+IFNpZ25lZC1vZmYtYnk6IExpYW5nIEhlIDx3aW5kaGxAMTI2
-LmNvbT4KPj4gPgo+PiA+Wy4uLl0KPj4gPgo+PiA+UGxlYXNlIHNlbmQgdGhlc2UgcmVmY291bnQg
-Zml4ZXMgYXMgYSBzZXJpZXMgZm9yIGFsbCB0aGUgaXJxY2hpcAo+PiA+ZHJpdmVycywgbm90IG9u
-ZSBldmVyeSBvdGhlciBkYXkuCj4+ID4KPj4gCj4+IFNvcnJ5LCBJIHdpbGwgZ3JvdXAgc2ltaWxh
-ciBidWdzICBpbiBmdXR1cmUuCj4+IAo+PiAKPj4gPkFuZCBwbGVhc2Ugc3luY2hyb25pc2Ugd2l0
-aCBNaWFvcWlhbiBMaW4sIGFzIHlvdSBhcmUgb2J2aW91c2x5IGJvdGgKPj4gPmNoYXNpbmcgdGhl
-IHNhbWUgYnVncy4KPj4gPgo+PiA+VGhhbmtzLAo+PiA+Cj4+ID4JTS4KPj4gCj4+IFllcywgYmVm
-b3JlIEkgc2VuZCBhbnkgbmV3IGJ1ZywgSSB3aWxsIGNvbmZpcm0gdGhhdCB0aGlzIGJ1ZyBoYXMg
-bm90Cj4+IGJlZW4gcmVwb3J0ZWQgaW4gbG9yZS5rZXJuZWwub3JnLgo+Cj5UaGlzIGlzIG5vdCB3
-aGF0IEkgbWVhbnQuIEkgYW0gYXNraW5nIHlvdSB0byBhY3RpdmVseSBjb29yZGluYXRlIHdpdGgK
-Pk1pYW9xaWFuLCB3b3JraW5nIHdpdGggdGhlbSBhcyBhIHRlYW0gaW5zdGVhZCBvZiB5b3UgYm90
-aCBzZW5kaW5nCj5jb21wZXRpbmcgc2VyaWVzLiBJIHdvdWxkIGxpa2UgdG8gc2VlIG9uZSBzZXJp
-ZXMgd2l0aCBwYXRjaGVzIGZyb20geW91Cj5ib3RoLgoKT0ssIEkgZ2V0IGl0LiBUaGlzIGRlcGVu
-ZHMgb24gTWlhb3FpYW4uCgpAbGlubTAwNkBnbWFpbC5jb20KCj4KPj4gQnkgdGhlIHdheSwgdGhp
-cyBpcyBhIGJ1ZyBtaXNzaW5nIHxHRVR8LCBub3QgfFBVVHwsIHdoaWNoIGlzCj4+IGRpZmZlcmVu
-dCB3aXRoIE1pYW9xaWFuJ3MgYW5kIG15IHBhdGNoZXMgYmVmb3JlLgo+Cj5XZWxsLCB5ZXQgYW5v
-dGhlciByZWFzb24gZm9yIHlvdSBib3RoIHRvIHdvcmsgdG9nZXRoZXIsIGFzIHlvdSBhcmUKPmNv
-bXBsZW1lbnRpbmcgZWFjaCBvdGhlci4KPgo+VGhhbmtzLAo+Cj4JTS4KPgo+LS0gCj5XaXRob3V0
-IGRldmlhdGlvbiBmcm9tIHRoZSBub3JtLCBwcm9ncmVzcyBpcyBub3QgcG9zc2libGUuCg==
+Am Mittwoch, dem 22.06.2022 um 08:18 +0000 schrieb Aisheng Dong:
+> > From: Lucas Stach <l.stach@pengutronix.de>
+> > Sent: Wednesday, June 22, 2022 4:08 PM
+> > 
+> > Hi Aisheng, hi Mark,
+> > 
+> > Am Dienstag, dem 21.06.2022 um 18:16 +0000 schrieb Aisheng Dong:
+> > > > From: Mark Brown <broonie@kernel.org>
+> > > > Sent: Tuesday, June 21, 2022 11:32 PM
+> > > > 
+> > > > On Tue, Jun 21, 2022 at 02:56:58PM +0000, Aisheng Dong wrote:
+> > > > 
+> > > > > > so if we can't satisfy the read from the cache then we'll
+> > > > > > hit
+> > > > > > the cache_only check and return -EBUSY before we start
+> > > > > > trying to
+> > > > > > do any physical I/O.  The debugfs code will handle that
+> > > > > > gracefully, indicating that it couldn't get a value for the
+> > > > > > volatile register by showing all Xs for the value.  If none
+> > > > > > of
+> > > > > > the registers are cached then the file won't be terribly
+> > > > > > useful
+> > > > > > but it at least shouldn't cause any
+> > > > errors with accessing the device when it's powered down.
+> > > > 
+> > > > > That means we have to use cache_only mode to workaround the
+> > > > > issue,
+> > > > > right?
+> > > > > I saw that cache_only mode has to be explicated
+> > > > > enable/disable by
+> > > > > driver, commonly used in device rpm in kernel right now.
+> > > > 
+> > > > Yes.
+> > > > 
+> > > > > However, things are a little bit complicated on i.MX that 1)
+> > > > > imx
+> > > > > blkctl needs follow strict registers r/w flow interleaved
+> > > > > with
+> > > > > handshakes with upstream gpc power operations and delay may
+> > > > > be
+> > > > > needed between registers writing
+> > > > > 2) blkctl itself does not enable runtime pm, it simply call
+> > > > > rpm to
+> > > > > resume upstream power domains devices and necessary clocks
+> > > > > before
+> > > > > r/w
+> > > > registers.
+> > > > 
+> > > > I'm not sure I fully understand the issue here?  If the driver
+> > > > can
+> > > > safely manage the hardware surely it can safely manage cache
+> > > > only
+> > > > mode too?  If there are duplicate resumes then cache only
+> > > > enable/disable is a boolean flag rather than refcounted so that
+> > > > shouldn't be a problem.
+> > > > 
+> > > 
+> > > I still can't see an easy and safe to way to do it.
+> > > What I'm wondering is whether it's worth to do it if need to
+> > > introducing considerable complexities in driver to overcome this
+> > > issue
+> > > if it can be simply disabled.
+> > > Anyway, I will try to investigate it.
+> > > 
+> > > > > Furthermore, current imx blkctl is a common driver used by
+> > > > > many
+> > > > > devices
+> > > > [1].
+> > > > > Introducing volatile registers and cache may bloat the driver
+> > > > > a
+> > > > > lot
+> > > > unnecessarily.
+> > > > 
+> > > > You don't actually need to have a cache to use cache only mode,
+> > > > if
+> > > > there are no cached registers then you'll just get -EBUSY on
+> > > > any
+> > > > access to the registers but that's hopefully fine since at the
+> > > > minute things will just fall over anyway.
+> > > > You shouldn't even need to flag registers as volatile if
+> > > > there's no
+> > > > cache since it's not really relevant without a cache.
+> > > > 
+> > > 
+> > > After a quick try initially, I found two issues:
+> > > 1. There's a warning dump if using cache_only without cache void
+> > > regcache_cache_only(struct regmap *map, bool enable) {
+> > >         map->lock(map->lock_arg);
+> > >         WARN_ON(map->cache_bypass && enable);
+> > >         ...
+> > > }
+> > > 2. It seems _regmap_write() did not handle cache_only case well
+> > > without cache.
+> > > It may still writes HW even for cache_only mode?
+> > > 
+> > > I guess we may need fix those two issues first before we can
+> > > safely
+> > > use it?
+> > > 
+> > Why would you write to a cache only regmap. The debugfs interface
+> > only
+> > allows to dump the registers, no?
+> 
+> I mean the _regmap_write() called in driver even we claim it's cache
+> only.
+> Not dumping registers from debugfs.
+
+That should obviously never happen, as the regmap should only be marked
+cache-only while the power domain is collapsed. Writing any register in
+this state is invalid usage and the WARN_ON is totally warranted.
+
+> 
+> > 
+> > I think it wouldn't be too hard to fix this for the blk-ctrl
+> > drivers.
+> > I'll give it a try today.
+> > 
+> 
+> Great, looking forward to see it.
+> 
+> > > > > The simplest way for i.MX case may be just disabling debugfs
+> > > > > as it
+> > > > > can't reflect the actually HW state without power. So we
+> > > > > would
+> > > > > wish the
+> > > > regmap core could provide an option to users.
+> > > > 
+> > > > The goal here is to describe the regmap itself so that there's
+> > > > less
+> > > > fragility as things change and we don't needlessly disable
+> > > > anything
+> > > > else that happens to be added to debugfs in the future due to
+> > > > having
+> > > > an overly generic flag, and we get the ability to directly
+> > > > catch
+> > > > access to the hardware that misses doing power management
+> > > > properly
+> > > > while we're at it.
+> > > > 
+> > > > We already have a way to describe it being unsafe to access the
+> > > > hardware, we may as well use it.
+> > > > 
+> > > > > And I noticed that syscon [2] seems have the same issue since
+> > > > > the
+> > > > > following
+> > > > commit:
+> > > > 
+> > > > > commit 9b947a13e7f6017f18470f665992dbae267852b3
+> > > > > Author: David Lechner <david@lechnology.com>
+> > > > > Date:   Mon Feb 19 15:43:02 2018 -0600
+> > > > 
+> > > > >     regmap: use debugfs even when no device
+> > > > 
+> > > > >     This registers regmaps with debugfs even when they do not
+> > > > > have
+> > > > > an
+> > > > >     associated device. For example, this is common for syscon
+> > > > > regmaps.
+> > > > 
+> > > > That's a different thing, that's due to us naming the directory
+> > > > after the struct device but syscons being created before we
+> > > > have
+> > > > that struct device available.
+> > > 
+> > > Yes, but syscon has the same issue that the system may hang if
+> > > dump
+> > > registers through debugfs without power on.
+> > > How would you suggest for this case as syscon is also a common
+> > > driver?
+> > > 
+> > This is a general issue. If something uses a syscon that is inside
+> > a
+> > power-domain where the runtime PM is controlled by some other
+> > entity, how
+> > is it safe to use the syscon at all? Every access might end up
+> > locking up the
+> > system. So those syscons really need to learn some kind of runtime
+> > PM
+> > handling.
+> 
+> The regmap core does not support runtime pm.
+> It may be unsafe to dumping registers through debugfs.
+
+Right, that is a general issue, not only for debugfs. Any access to a
+syscon inside a power-domain may hang the system, as the syscon has no
+way to ensure that the power domain is up.
+
+Regards,
+Lucas
+
