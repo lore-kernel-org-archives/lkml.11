@@ -2,161 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B36B0C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 18:17:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F484C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 18:18:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377656AbiFVSRy (ORCPT
+        id S1377679AbiFVSSA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 14:17:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44174 "EHLO
+        Wed, 22 Jun 2022 14:18:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377622AbiFVSRs (ORCPT
+        with ESMTP id S1377624AbiFVSRs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 22 Jun 2022 14:17:48 -0400
-Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9485B3EBBD;
-        Wed, 22 Jun 2022 11:17:44 -0700 (PDT)
-X-IronPort-AV: E=Sophos;i="5.92,212,1650898800"; 
-   d="scan'208";a="125315340"
-Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie6.idc.renesas.com with ESMTP; 23 Jun 2022 03:17:43 +0900
-Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 7689740C7F32;
-        Thu, 23 Jun 2022 03:17:40 +0900 (JST)
-From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH 2/2] clk: renesas: r9a07g043: Add support for RZ/Five SoC
-Date:   Wed, 22 Jun 2022 19:17:23 +0100
-Message-Id: <20220622181723.13033-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220622181723.13033-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20220622181723.13033-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F12F03EAB7;
+        Wed, 22 Jun 2022 11:17:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655921866; x=1687457866;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=L4w+G98hAtmvimBUATH9wqRh6U1vIpTCGqGsLMHPPA8=;
+  b=Oj9D0QUl6rs4FhNfkJUXZY9qCuh2WiaP7YwLyVVZyZ7UJdnpeuKdj/KO
+   cnucczxzO3o4JB/+Pof1Vxf4R7rd3NwF2V/0GQuPhCHGtf9t3iQ0q3JvV
+   1PZJ6P+Vgu3HXZrzCoiNrFQhmN+mwN3DEzuhbXwi3Vnk4hjFA6idkkaIx
+   tbDTT7BTeVY5ZZppx5juIXTQzg1cUEZG9psgT9C2RN+fcRK3WjcISH39T
+   25DbS+JcvUTQ23CCyfyPBVCWz8mImgHi1CLv9onuhCe34xMzzvBcM/Rba
+   S7c5XFhqgPuR8u8fDi8+5d8xuw5lLyxNIsd7SGIi+Y9sFUoA1VtUz6y1N
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="260319692"
+X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
+   d="scan'208";a="260319692"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 10:53:41 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
+   d="scan'208";a="592301764"
+Received: from linux.intel.com ([10.54.29.200])
+  by fmsmga007.fm.intel.com with ESMTP; 22 Jun 2022 10:53:41 -0700
+Received: from otcpl-manager.jf.intel.com (otcpl-manager.jf.intel.com [10.54.39.82])
+        by linux.intel.com (Postfix) with ESMTP id 1ED8F580A31;
+        Wed, 22 Jun 2022 10:53:41 -0700 (PDT)
+From:   Gayatri Kammela <gayatri.kammela@linux.intel.com>
+To:     hdegoede@redhat.com
+Cc:     irenic.rajneesh@gmail.com, markgross@kernel.org,
+        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Gayatri Kammela <gayatri.kammela@linux.intel.com>,
+        Srinivas Pandruvada <srinivas.pandruvada@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "David E . Box" <david.e.box@linux.intel.com>
+Subject: [PATCH v2] platform/x86: intel/pmc: Add Alder Lake N support to PMC core driver
+Date:   Wed, 22 Jun 2022 10:53:31 -0700
+Message-Id: <20220622175331.2520187-1-gayatri.kammela@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Renesas RZ/Five SoC has almost the same clock structure compared to the
-Renesas RZ/G2UL SoC, re-use the r9a07g043-cpg.c file to add support for
-RZ/Five SoC.
+Add Alder Lake N (ADL-N) to the list of the platforms that Intel's
+PMC core driver supports. Alder Lake N reuses all the TigerLake PCH IPs.
 
-This patch splits up the clocks and reset arrays for RZ/G2UL and RZ/Five
-SoC using #ifdef CONFIG_ARM64 and #ifdef CONFIG_RISCV checks.
-
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc: Srinivas Pandruvada <srinivas.pandruvada@intel.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: David E. Box <david.e.box@linux.intel.com>
+Reviewed-by: Rajneesh Bhardwaj <irenic.rajneesh@gmail.com>
+Signed-off-by: Gayatri Kammela <gayatri.kammela@linux.intel.com>
 ---
- drivers/clk/renesas/r9a07g043-cpg.c | 32 +++++++++++++++++++++++++++++
- 1 file changed, 32 insertions(+)
+Changes since v1:
+Fixed a typo pointed out by Rajneesh.
 
-diff --git a/drivers/clk/renesas/r9a07g043-cpg.c b/drivers/clk/renesas/r9a07g043-cpg.c
-index 33c2bd8df2e5..37475465100d 100644
---- a/drivers/clk/renesas/r9a07g043-cpg.c
-+++ b/drivers/clk/renesas/r9a07g043-cpg.c
-@@ -36,9 +36,11 @@ enum clk_ids {
- 	CLK_PLL3_DIV2_4_2,
- 	CLK_SEL_PLL3_3,
- 	CLK_DIV_PLL3_C,
-+#ifdef CONFIG_ARM64
- 	CLK_PLL5,
- 	CLK_PLL5_500,
- 	CLK_PLL5_250,
-+#endif
- 	CLK_PLL6,
- 	CLK_PLL6_250,
- 	CLK_P1_DIV2,
-@@ -100,9 +102,11 @@ static const struct cpg_core_clk r9a07g043_core_clks[] __initconst = {
- 	DEF_FIXED(".pll3_533", CLK_PLL3_533, CLK_PLL3, 1, 3),
- 	DEF_MUX_RO(".sel_pll3_3", CLK_SEL_PLL3_3, SEL_PLL3_3, sel_pll3_3),
- 	DEF_DIV("divpl3c", CLK_DIV_PLL3_C, CLK_SEL_PLL3_3, DIVPL3C, dtable_1_32),
-+#ifdef CONFIG_ARM64
- 	DEF_FIXED(".pll5", CLK_PLL5, CLK_EXTAL, 125, 1),
- 	DEF_FIXED(".pll5_500", CLK_PLL5_500, CLK_PLL5, 1, 6),
- 	DEF_FIXED(".pll5_250", CLK_PLL5_250, CLK_PLL5_500, 1, 2),
-+#endif
- 	DEF_FIXED(".pll6", CLK_PLL6, CLK_EXTAL, 125, 6),
- 	DEF_FIXED(".pll6_250", CLK_PLL6_250, CLK_PLL6, 1, 2),
- 
-@@ -126,12 +130,20 @@ static const struct cpg_core_clk r9a07g043_core_clks[] __initconst = {
- };
- 
- static struct rzg2l_mod_clk r9a07g043_mod_clks[] = {
-+#ifdef CONFIG_ARM64
- 	DEF_MOD("gic",		R9A07G043_GIC600_GICCLK, R9A07G043_CLK_P1,
- 				0x514, 0),
- 	DEF_MOD("ia55_pclk",	R9A07G043_IA55_PCLK, R9A07G043_CLK_P2,
- 				0x518, 0),
- 	DEF_MOD("ia55_clk",	R9A07G043_IA55_CLK, R9A07G043_CLK_P1,
- 				0x518, 1),
-+#endif
-+#ifdef CONFIG_RISCV
-+	DEF_MOD("iax45_pclk",	R9A07G043_IAX45_PCLK, R9A07G043_CLK_P2,
-+				0x518, 0),
-+	DEF_MOD("iax45_clk",	R9A07G043_IAX45_CLK, R9A07G043_CLK_P1,
-+				0x518, 1),
-+#endif
- 	DEF_MOD("dmac_aclk",	R9A07G043_DMAC_ACLK, R9A07G043_CLK_P1,
- 				0x52c, 0),
- 	DEF_MOD("dmac_pclk",	R9A07G043_DMAC_PCLK, CLK_P1_DIV2,
-@@ -243,9 +255,14 @@ static struct rzg2l_mod_clk r9a07g043_mod_clks[] = {
- };
- 
- static struct rzg2l_reset r9a07g043_resets[] = {
-+#ifdef CONFIG_ARM64
- 	DEF_RST(R9A07G043_GIC600_GICRESET_N, 0x814, 0),
- 	DEF_RST(R9A07G043_GIC600_DBG_GICRESET_N, 0x814, 1),
- 	DEF_RST(R9A07G043_IA55_RESETN, 0x818, 0),
-+#endif
-+#ifdef CONFIG_RISCV
-+	DEF_RST(R9A07G043_IAX45_RESETN, 0x818, 0),
-+#endif
- 	DEF_RST(R9A07G043_DMAC_ARESETN, 0x82c, 0),
- 	DEF_RST(R9A07G043_DMAC_RST_ASYNC, 0x82c, 1),
- 	DEF_RST(R9A07G043_OSTM0_PRESETZ, 0x834, 0),
-@@ -291,8 +308,13 @@ static struct rzg2l_reset r9a07g043_resets[] = {
- };
- 
- static const unsigned int r9a07g043_crit_mod_clks[] __initconst = {
-+#ifdef CONFIG_ARM64
- 	MOD_CLK_BASE + R9A07G043_GIC600_GICCLK,
- 	MOD_CLK_BASE + R9A07G043_IA55_CLK,
-+#endif
-+#ifdef CONFIG_RISCV
-+	MOD_CLK_BASE + R9A07G043_IAX45_CLK,
-+#endif
- 	MOD_CLK_BASE + R9A07G043_DMAC_ACLK,
- };
- 
-@@ -310,11 +332,21 @@ const struct rzg2l_cpg_info r9a07g043_cpg_info = {
- 	/* Module Clocks */
- 	.mod_clks = r9a07g043_mod_clks,
- 	.num_mod_clks = ARRAY_SIZE(r9a07g043_mod_clks),
-+#ifdef CONFIG_ARM64
- 	.num_hw_mod_clks = R9A07G043_TSU_PCLK + 1,
-+#endif
-+#ifdef CONFIG_RISCV
-+	.num_hw_mod_clks = R9A07G043_IAX45_PCLK + 1,
-+#endif
- 
- 	/* Resets */
- 	.resets = r9a07g043_resets,
-+#ifdef CONFIG_ARM64
- 	.num_resets = R9A07G043_TSU_PRESETN + 1, /* Last reset ID + 1 */
-+#endif
-+#ifdef CONFIG_RISCV
-+	.num_resets = R9A07G043_IAX45_RESETN + 1, /* Last reset ID + 1 */
-+#endif
- 
- 	.has_clk_mon_regs = true,
- };
+ drivers/platform/x86/intel/pmc/core.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/platform/x86/intel/pmc/core.c b/drivers/platform/x86/intel/pmc/core.c
+index 40183bda7894..a1fe1e0dcf4a 100644
+--- a/drivers/platform/x86/intel/pmc/core.c
++++ b/drivers/platform/x86/intel/pmc/core.c
+@@ -1911,6 +1911,7 @@ static const struct x86_cpu_id intel_pmc_core_ids[] = {
+ 	X86_MATCH_INTEL_FAM6_MODEL(ATOM_TREMONT_L,	&icl_reg_map),
+ 	X86_MATCH_INTEL_FAM6_MODEL(ROCKETLAKE,		&tgl_reg_map),
+ 	X86_MATCH_INTEL_FAM6_MODEL(ALDERLAKE_L,		&tgl_reg_map),
++	X86_MATCH_INTEL_FAM6_MODEL(ALDERLAKE_N,		&tgl_reg_map),
+ 	X86_MATCH_INTEL_FAM6_MODEL(ALDERLAKE,		&adl_reg_map),
+ 	X86_MATCH_INTEL_FAM6_MODEL(RAPTORLAKE_P,        &tgl_reg_map),
+ 	{}
+
+base-commit: a111daf0c53ae91e71fd2bfe7497862d14132e3e
 -- 
 2.25.1
 
