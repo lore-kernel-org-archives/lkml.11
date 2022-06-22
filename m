@@ -2,63 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FFF9C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 07:47:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 643A6C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 07:47:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348823AbiFVHr2 (ORCPT
+        id S1350144AbiFVHra (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 03:47:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47654 "EHLO
+        Wed, 22 Jun 2022 03:47:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353834AbiFVHrQ (ORCPT
+        with ESMTP id S1353866AbiFVHrR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 03:47:16 -0400
+        Wed, 22 Jun 2022 03:47:17 -0400
 Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7957837A1C
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 00:47:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28A7437A1F
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 00:47:14 -0700 (PDT)
 Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25M5nidW032367;
-        Wed, 22 Jun 2022 02:46:57 -0500
+        by mx0a-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25M5nidZ032367;
+        Wed, 22 Jun 2022 02:46:59 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=PODMain02222019;
- bh=RNYk4UBGUtNXwVtJjqkoxDLehd0DQef6Q3E9pMtrqrY=;
- b=EXoa0KMMlgw6zfYYJxEv1e12t+PCKDHso+qjtQ5uwHh3cEbiTMdTL4aKgrV36UlXPA+Y
- Z7rht0cWT4QzAA6v25FGcwPuDLP2E9HDf6DtWGKpMlVaOsjVHTy+bLPYQVI/HxnrZEi4
- iW7rA2RVnAcDGhYXuUZjka2Zg86gir7WFYK51ep9/OxJdDfSCRX2yQr0HIEv2qRG+7F+
- tklZkJAS2T2PnjpjRaZMYDgQlXUw9fHYOLujmT3GspKkmmk+3Eskx9Zb3HyEgWrg31SB
- 6tRzu38m4g3WjvvqRZ0DBqlrka/o32qeO/S7439YjTOXXMNBvCanXU2+8Hdbgy4LKN5P XA== 
+ bh=22fxRs36mOwLx01C6ew27/L9/hScJO9HrYMwPcvStzY=;
+ b=CsN0FVX8qWGBEs6jEBgned8gXqz6VMrDW3eOp5IL7JTKa6wY0MPsRUDYXMIZKqwvqA20
+ 9oju4WDQPbDLd9v7Hw6fd8XdaoiPYASkePGdd9ZKETnX5KcYfnK0DSikRsoP2yqEMx1k
+ tRLClce9XGfmxCpFT7DsGSG8oANh6R3iFQya0NNzQjueuwfbC4B5fsfkDKxXpddoEjP2
+ ZFL0qCNVev5fVGYqaUW6C2VT1Ju8EAOub6oey8V/RnFRnLqor+ayEC8JFROMhJalJ8zE
+ Lm1IDLjztZwDvOdsEaGIORBRp9s/AQo7L76S10gW6WUD5fn9JZ17Yfg5qG/ZYCEXp078 pg== 
 Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3gsc41cqh2-1
+        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3gsc41cqh2-4
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 22 Jun 2022 02:46:56 -0500
+        Wed, 22 Jun 2022 02:46:59 -0500
 Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
  (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Wed, 22 Jun
- 2022 08:46:54 +0100
+ 2022 08:46:56 +0100
 Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
  (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.28 via Frontend
- Transport; Wed, 22 Jun 2022 08:46:54 +0100
+ Transport; Wed, 22 Jun 2022 08:46:56 +0100
 Received: from vitaly-Legion-7-16ACHg6.ad.cirrus.com (unknown [198.90.238.175])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 880E6478;
-        Wed, 22 Jun 2022 07:46:54 +0000 (UTC)
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id B15E2478;
+        Wed, 22 Jun 2022 07:46:56 +0000 (UTC)
 From:   Vitaly Rodionov <vitalyr@opensource.cirrus.com>
 To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
         Mark Brown <broonie@kernel.org>
 CC:     <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
         <linux-kernel@vger.kernel.org>,
         Stefan Binding <sbinding@opensource.cirrus.com>
-Subject: [PATCH v7 02/14] ALSA: hda: hda_cs_dsp_ctl: Add apis to write the controls directly
-Date:   Wed, 22 Jun 2022 08:46:41 +0100
-Message-ID: <20220622074653.179078-3-vitalyr@opensource.cirrus.com>
+Subject: [PATCH v7 06/14] ALSA: hda: cs35l41: Support reading subsystem id from ACPI
+Date:   Wed, 22 Jun 2022 08:46:45 +0100
+Message-ID: <20220622074653.179078-7-vitalyr@opensource.cirrus.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220622074653.179078-1-vitalyr@opensource.cirrus.com>
 References: <20220622074653.179078-1-vitalyr@opensource.cirrus.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-GUID: esAER2oeOn3cMVmogS318zXP7xBlXlL_
-X-Proofpoint-ORIG-GUID: esAER2oeOn3cMVmogS318zXP7xBlXlL_
+X-Proofpoint-GUID: tDt8dgkqh7FuI2KRjUiMRInTDRDIjvLZ
+X-Proofpoint-ORIG-GUID: tDt8dgkqh7FuI2KRjUiMRInTDRDIjvLZ
 X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -66,83 +66,70 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Stefan Binding <sbinding@opensource.cirrus.com>
 
-DSP controls are exposed as ALSA controls, however,
-some of these controls are required to be accessed by
-the driver. Add apis which allow read/write of these
-controls. The write api will also notify the ALSA control
-on value change.
+On some laptop models, the ACPI contains the unique
+Subsystem ID, and this value should be preferred
+over the value from the HDA driver.
 
 Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
 Signed-off-by: Vitaly Rodionov <vitalyr@opensource.cirrus.com>
 ---
- sound/pci/hda/hda_cs_dsp_ctl.c | 39 ++++++++++++++++++++++++++++++++++
- sound/pci/hda/hda_cs_dsp_ctl.h |  4 ++++
- 2 files changed, 43 insertions(+)
+ sound/pci/hda/cs35l41_hda.c | 36 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 36 insertions(+)
 
-diff --git a/sound/pci/hda/hda_cs_dsp_ctl.c b/sound/pci/hda/hda_cs_dsp_ctl.c
-index 0f4f02e0a538..91e37cb916dd 100644
---- a/sound/pci/hda/hda_cs_dsp_ctl.c
-+++ b/sound/pci/hda/hda_cs_dsp_ctl.c
-@@ -202,6 +202,45 @@ void hda_cs_dsp_control_remove(struct cs_dsp_coeff_ctl *cs_ctl)
+diff --git a/sound/pci/hda/cs35l41_hda.c b/sound/pci/hda/cs35l41_hda.c
+index 7f0132694774..5f89a0462eb6 100644
+--- a/sound/pci/hda/cs35l41_hda.c
++++ b/sound/pci/hda/cs35l41_hda.c
+@@ -545,6 +545,36 @@ static int cs35l41_hda_apply_properties(struct cs35l41_hda *cs35l41)
+ 	return cs35l41_hda_channel_map(cs35l41->dev, 0, NULL, 1, &hw_cfg->spk_pos);
  }
- EXPORT_SYMBOL_NS_GPL(hda_cs_dsp_control_remove, SND_HDA_CS_DSP_CONTROLS);
  
-+int hda_cs_dsp_write_ctl(struct cs_dsp *dsp, const char *name, int type,
-+			 unsigned int alg, const void *buf, size_t len)
++static int cs35l41_get_acpi_sub_string(struct device *dev, struct acpi_device *adev,
++				       const char **subsysid)
 +{
-+	struct cs_dsp_coeff_ctl *cs_ctl;
-+	struct hda_cs_dsp_coeff_ctl *ctl;
-+	int ret;
++	struct acpi_buffer buffer = { ACPI_ALLOCATE_BUFFER, NULL };
++	union acpi_object *obj;
++	acpi_status status;
++	int ret = 0;
 +
-+	cs_ctl = cs_dsp_get_ctl(dsp, name, type, alg);
-+	if (!cs_ctl)
-+		return -EINVAL;
++	status = acpi_evaluate_object(adev->handle, "_SUB", NULL, &buffer);
++	if (ACPI_SUCCESS(status)) {
++		obj = buffer.pointer;
++		if (obj->type == ACPI_TYPE_STRING) {
++			*subsysid = devm_kstrdup(dev, obj->string.pointer, GFP_KERNEL);
++			if (*subsysid == NULL) {
++				dev_err(dev, "Cannot allocate Subsystem ID");
++				ret = -ENOMEM;
++			}
++		} else {
++			dev_warn(dev, "Warning ACPI _SUB did not return a string\n");
++			ret = -ENODEV;
++		}
++		acpi_os_free(buffer.pointer);
++	} else {
++		dev_dbg(dev, "Warning ACPI _SUB failed: %#x\n", status);
++		ret = -ENODEV;
++	}
 +
-+	ctl = cs_ctl->priv;
++	return ret;
++}
 +
-+	ret = cs_dsp_coeff_write_ctrl(cs_ctl, 0, buf, len);
+ static int cs35l41_hda_read_acpi(struct cs35l41_hda *cs35l41, const char *hid, int id)
+ {
+ 	struct cs35l41_hw_cfg *hw_cfg = &cs35l41->hw_cfg;
+@@ -564,6 +594,12 @@ static int cs35l41_hda_read_acpi(struct cs35l41_hda *cs35l41, const char *hid, i
+ 	physdev = get_device(acpi_get_first_physical_node(adev));
+ 	acpi_dev_put(adev);
+ 
++	ret = cs35l41_get_acpi_sub_string(cs35l41->dev, adev, &cs35l41->acpi_subsystem_id);
 +	if (ret)
-+		return ret;
++		dev_info(cs35l41->dev, "No Subsystem ID found in ACPI: %d", ret);
++	else
++		dev_dbg(cs35l41->dev, "Subsystem ID %s found", cs35l41->acpi_subsystem_id);
 +
-+	if (cs_ctl->flags & WMFW_CTL_FLAG_SYS)
-+		return 0;
-+
-+	snd_ctl_notify(ctl->card, SNDRV_CTL_EVENT_MASK_VALUE, &ctl->kctl->id);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_NS_GPL(hda_cs_dsp_write_ctl, SND_HDA_CS_DSP_CONTROLS);
-+
-+int hda_cs_dsp_read_ctl(struct cs_dsp *dsp, const char *name, int type,
-+			unsigned int alg, void *buf, size_t len)
-+{
-+	struct cs_dsp_coeff_ctl *cs_ctl;
-+
-+	cs_ctl = cs_dsp_get_ctl(dsp, name, type, alg);
-+	if (!cs_ctl)
-+		return -EINVAL;
-+
-+	return cs_dsp_coeff_read_ctrl(cs_ctl, 0, buf, len);
-+}
-+EXPORT_SYMBOL_NS_GPL(hda_cs_dsp_read_ctl, SND_HDA_CS_DSP_CONTROLS);
-+
- MODULE_DESCRIPTION("CS_DSP ALSA Control HDA Library");
- MODULE_AUTHOR("Stefan Binding, <sbinding@opensource.cirrus.com>");
- MODULE_LICENSE("GPL");
-diff --git a/sound/pci/hda/hda_cs_dsp_ctl.h b/sound/pci/hda/hda_cs_dsp_ctl.h
-index 1c6d0fc9a2cc..c65bfd6878fd 100644
---- a/sound/pci/hda/hda_cs_dsp_ctl.h
-+++ b/sound/pci/hda/hda_cs_dsp_ctl.h
-@@ -29,5 +29,9 @@ struct hda_cs_dsp_ctl_info {
- 
- int hda_cs_dsp_control_add(struct cs_dsp_coeff_ctl *cs_ctl, struct hda_cs_dsp_ctl_info *info);
- void hda_cs_dsp_control_remove(struct cs_dsp_coeff_ctl *cs_ctl);
-+int hda_cs_dsp_write_ctl(struct cs_dsp *dsp, const char *name, int type,
-+			 unsigned int alg, const void *buf, size_t len);
-+int hda_cs_dsp_read_ctl(struct cs_dsp *dsp, const char *name, int type,
-+			unsigned int alg, void *buf, size_t len);
- 
- #endif /*__HDA_CS_DSP_CTL_H__*/
+ 	property = "cirrus,dev-index";
+ 	ret = device_property_count_u32(physdev, property);
+ 	if (ret <= 0)
 -- 
 2.34.1
 
