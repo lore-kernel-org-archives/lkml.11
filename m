@@ -2,155 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FEBEC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 22:34:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5137C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 22:37:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359698AbiFVWej (ORCPT
+        id S1359733AbiFVWhZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 18:34:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37062 "EHLO
+        Wed, 22 Jun 2022 18:37:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359649AbiFVWec (ORCPT
+        with ESMTP id S241081AbiFVWhY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 18:34:32 -0400
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BCAB40921
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 15:34:27 -0700 (PDT)
-Received: by mail-yb1-xb2f.google.com with SMTP id x38so32675816ybd.9
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 15:34:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WKylA8pYtIvxwg5/dZiB/uZdIVVN/P980vi4sBmsa8g=;
-        b=J4pi/aKDOGnb+AER5hiC/Ur9ZSPqxLhl9mnB71A7+WIlfY2oiT/T5y5JfIyXfOCApX
-         pLilMQlV84wpeyWcdPvtM97nw68tnuZyysLqMtJ7DRRJ6ajeonNGzDXJprWOIg8xBf0y
-         NTH6Wl1a1nlYUaFdI4qtAMzn8cW7xPEjL5f7QJ94kT2HJ1ci6OAaAPqD1UX+0NL/zHh7
-         304JDEDsF/c/vE8OS7ScZ5S8psqurQ00bjxfdujGxOif8q+MEh1dX6y/brQOOJs5BypF
-         iAv8odstd+qJJe5X1KPMo+1qvBAD62prH31qb5OR0/0XW3vKz526q1m+3AN2s9rHhIps
-         PBRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WKylA8pYtIvxwg5/dZiB/uZdIVVN/P980vi4sBmsa8g=;
-        b=kqipz92WJo0xUYLbX4mN7t/i3L0QlQxG7J4/YeVyMLPDt93l4mwi6EM5qs+s+kKCyK
-         yqc3L2PxQcO4au3JYZeb7C5wV2rnmWDc2yniOqb7a6IMqraThYLDEqI3lUiBQ1o9ICs5
-         FPdoQEzVMMiKv/HSQQCOa7xmVleJJDSR9qME2RyUwxWJ/NB04RfViDf9z76mGUf5PVbM
-         llg0NKL2oya5c1mzuNvCwLS82WNQDqlPoOKRyVMP9Y1Mwa8xN78ZaNZVFh5dZKv3+caK
-         cia3oem80AFFNmg/wPnznnCYa1Z7sgyjUsTV17z15TvGeLBhQqqGaqHINKTX0Hdg6o8v
-         rFkA==
-X-Gm-Message-State: AJIora+ZIn91HVRlEqZtd/ryTzhCieMvKH0qdANYynsfFZQqLW/n6UBb
-        qREpAmANmNqMSu5xE3INegAteSV0Pb4tdndeZ/ErGA==
-X-Google-Smtp-Source: AGRyM1vtP8cTHTShZ6uWcl+OVMszNehOV5bCtDdbKW/msmtH+Wdf1HHxNjR1QJIjKUG41gGaaaYuCgB7moTXz8XY7EE=
-X-Received: by 2002:a25:d112:0:b0:669:17:8d98 with SMTP id i18-20020a25d112000000b0066900178d98mr6124766ybg.447.1655937266678;
- Wed, 22 Jun 2022 15:34:26 -0700 (PDT)
+        Wed, 22 Jun 2022 18:37:24 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BCD840A33
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 15:37:23 -0700 (PDT)
+From:   John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1655937435;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=8tSupLdVkgmkJxR6XWH1BaGWmi5B6LARumTOlnBjCLU=;
+        b=h2dsoGyMgLwZjzVS9szjvLRMkofizn2sHhCAgoKoil5WEmoTfKt5Sv98yHwN1uZtQngl1q
+        bHkdqeJ2H5Ld+Vw8Xl4WcZqMqM1ObX/byCfCH7MCKOIcPG/DvDGxH3GeqzDyEHtGlW2xHb
+        CiI8wSJuKIXzC1Ve+OEK4GQxdwBdMHE1Cp8ukuW7UApz0g0SiW3v9Xh4hbQfd/icYFzVxF
+        NKakt9z2rIMmjHHxJXxd8/DrtogxTSsLjEvxqaEDUq1JoV26ZhL/EBBPhR1dr3EDabFb3d
+        xx6PuwQSQRiaYJ8fc3w9YNTAy48otfvkej2CPHfhRCYQYrOIZ4jAxrdVGUUSYA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1655937435;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=8tSupLdVkgmkJxR6XWH1BaGWmi5B6LARumTOlnBjCLU=;
+        b=E8vgALv5rGfb7cjIr53AYf3otdbEMlM7X8s97Y88959INfA84zSQz6buqDJN519OKO9haJ
+        D05jBbsTXnSy3/Aw==
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>
+Subject: Re: [PATCH printk v5 1/1] printk: extend console_lock for
+ per-console locking
+In-Reply-To: <CAMuHMdWjzH6GGkaZ_5cjeC6stc80u9Ly+5rrBuk8rKMvM7==8w@mail.gmail.com>
+References: <20220421212250.565456-1-john.ogness@linutronix.de>
+ <20220421212250.565456-15-john.ogness@linutronix.de>
+ <878rrs6ft7.fsf@jogness.linutronix.de>
+ <CAMuHMdWjzH6GGkaZ_5cjeC6stc80u9Ly+5rrBuk8rKMvM7==8w@mail.gmail.com>
+Date:   Thu, 23 Jun 2022 00:43:15 +0206
+Message-ID: <87v8ssgw9w.fsf@jogness.linutronix.de>
 MIME-Version: 1.0
-References: <20220622215912.550419-1-saravanak@google.com> <DU0PR04MB941733BFD323D3542B7F75A888B29@DU0PR04MB9417.eurprd04.prod.outlook.com>
-In-Reply-To: <DU0PR04MB941733BFD323D3542B7F75A888B29@DU0PR04MB9417.eurprd04.prod.outlook.com>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Wed, 22 Jun 2022 15:33:50 -0700
-Message-ID: <CAGETcx-h4iDx+WG+HnN0_ej0qtLOp66oOXvkppm060TRCG3_Jg@mail.gmail.com>
-Subject: Re: [PATCH v1 0/2] Fix console probe delay due to fw_devlink
-To:     Peng Fan <peng.fan@nxp.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Len Brown <lenb@kernel.org>, Sascha Hauer <sha@pengutronix.de>,
-        Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        "kernel-team@android.com" <kernel-team@android.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 3:32 PM Peng Fan <peng.fan@nxp.com> wrote:
+On 2022-06-22, Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> I have bisected another intriguing issue to this commit: on SiPEED
+> MAiX BiT (Canaan K210 riscv), it no longer prints the line detecting
+> ttySIF0, i.e. the console output changes like:
 >
-> > Subject: [PATCH v1 0/2] Fix console probe delay due to fw_devlink
-> >
-> > fw_devlink.strict=1 has been enabled by default. This was delaying the probe
-> > of console devices. This series fixes that.
-> >
-> > Sasha/Peng,
-> >
-> > Can you test this please?
+>      spi-nor spi1.0: gd25lq128d (16384 Kbytes)
+>      i2c_dev: i2c /dev entries driver
+>      k210-fpioa 502b0000.pinmux: K210 FPIOA pin controller
+>     -38000000.serial: ttySIF0 at MMIO 0x38000000 (irq = 1, base_baud =
+> 115200) is a SiFive UART v0
+>      printk: console [ttySIF0] enabled
+>      printk: bootconsole [sifive0] disabled
+>      printk: console [ttySIF0] printing thread started
 >
-> Thanks, just give a test on i.MX8MP-EVK, works well now.
->
-> Tested-by: Peng Fan <peng.fan@nxp.com> #i.MX8MP-EVK
+> As this patch does not make any changes to drivers/tty/, and ttySIF0
+> does work (it's the console), I looked in /proc/kmsg, and bingo,
+> the missing line is there, so it is generated, but never printed.
 
-Lol, that was quick! Thanks!
+What is sifive0? Are you using the earlycon driver to create an early
+boot console? Can I see your boot args?
 
--Saravana
+There is a known issue the that earlycon does not synchronize with
+normal consoles. A patch was recently posted [0] on LKML.
 
->
-> Thanks,
-> Peng.
->
-> >
-> > -Saravana
-> >
-> > Cc: Sascha Hauer <sha@pengutronix.de>
-> > Cc: Peng Fan <peng.fan@nxp.com>
-> > Cc: Kevin Hilman <khilman@kernel.org>
-> > Cc: Ulf Hansson <ulf.hansson@linaro.org>
-> > Cc: Len Brown <len.brown@intel.com>
-> > Cc: Pavel Machek <pavel@ucw.cz>
-> > Cc: Joerg Roedel <joro@8bytes.org>
-> > Cc: Will Deacon <will@kernel.org>
-> > Cc: Andrew Lunn <andrew@lunn.ch>
-> > Cc: Heiner Kallweit <hkallweit1@gmail.com>
-> > Cc: Russell King <linux@armlinux.org.uk>
-> > Cc: "David S. Miller" <davem@davemloft.net>
-> > Cc: Eric Dumazet <edumazet@google.com>
-> > Cc: Jakub Kicinski <kuba@kernel.org>
-> > Cc: Paolo Abeni <pabeni@redhat.com>
-> > Cc: Linus Walleij <linus.walleij@linaro.org>
-> > Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-> > Cc: David Ahern <dsahern@kernel.org>
-> > Cc: kernel-team@android.com
-> > Cc: linux-kernel@vger.kernel.org
-> > Cc: linux-pm@vger.kernel.org
-> > Cc: iommu@lists.linux-foundation.org
-> > Cc: netdev@vger.kernel.org
-> > Cc: linux-gpio@vger.kernel.org
-> > Cc: kernel@pengutronix.de
-> >
-> > Saravana Kannan (2):
-> >   driver core: fw_devlink: Allow firmware to mark devices as best effort
-> >   of: base: Avoid console probe delay when fw_devlink.strict=1
-> >
-> >  drivers/base/core.c    | 3 ++-
-> >  drivers/of/base.c      | 2 ++
-> >  include/linux/fwnode.h | 4 ++++
-> >  3 files changed, 8 insertions(+), 1 deletion(-)
-> >
-> > --
-> > 2.37.0.rc0.161.g10f37bed90-goog
->
+> I tried taking the port spinlock in sifive_serial_startup(), as
+> suggested for the meson driver, but that doesn't make a difference.
+
+It may not have made a difference for you, but it should be there.
+sifive_serial_startup() is writing to SIFIVE_SERIAL_IE_OFFS without
+taking port->lock. sifive_serial_console_write() also writes to this
+register (under port->lock). This could lead to RX watermark interrupts
+being disabled for some time. The problem is not as bad as it was with
+the meson driver because __ssp_enable_rxwm() is updating the shadow
+copy. But still, it is a bug. And anyway we shouldn't have 2 CPUs
+writing to a register simultaneously.
+
+John Ogness
+
+[0] https://lore.kernel.org/lkml/20220621090900.GB7891@pathway.suse.cz
