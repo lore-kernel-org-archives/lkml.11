@@ -2,82 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6A91CCA47E
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 18:10:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 105AACCA47E
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 18:11:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377127AbiFVSKR (ORCPT
+        id S1377190AbiFVSLz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 14:10:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38298 "EHLO
+        Wed, 22 Jun 2022 14:11:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377046AbiFVSKO (ORCPT
+        with ESMTP id S1358337AbiFVSLx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 14:10:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 727043A1AB;
-        Wed, 22 Jun 2022 11:10:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1461B61CCA;
-        Wed, 22 Jun 2022 18:10:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 62C5AC3411D;
-        Wed, 22 Jun 2022 18:10:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655921412;
-        bh=RdMpY98Dovcj8Z5McfPbAv7/dxekKq/qt1Sdz8M2fns=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=M1lnBRZaS91Spw1v4oBV9+wAMRBYZpEKHBZlajh/I4BZwsxJzUq/TN9FYY7dTowck
-         7+XYe0koh8xbcF9qhQfI/hA1fEDchj3QWRnqtfkTv+9B5zIN9fueH47uAqbCy8rCxG
-         D5q0LIP7vLum99NLJIhVaCxA6s2PDrJmAR0YbcAebZVNwxWzZyR8qjtubKkKGDfeMw
-         MUtdS5clzwM/Vo28yYszTNtQbe8QjUXLvQQXc264lUxGBcPXZq5PaY36A8sq9caJG5
-         jFVzNz75LQxpk8mljr6k9eIbV6IOgQh84y+sPRut1RbPi55soJGFQJ5DX4Hgf77lR+
-         7RklIbc4+3DuA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 480A7E7386C;
-        Wed, 22 Jun 2022 18:10:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Wed, 22 Jun 2022 14:11:53 -0400
+Received: from mail-qk1-f181.google.com (mail-qk1-f181.google.com [209.85.222.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31C7B3B00C;
+        Wed, 22 Jun 2022 11:11:52 -0700 (PDT)
+Received: by mail-qk1-f181.google.com with SMTP id b133so1328663qkc.6;
+        Wed, 22 Jun 2022 11:11:52 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mhD0MOrYe6T8ixwnqaaVek/KZReGo+sSJrdYPS9fFGA=;
+        b=zxc+UPeSoLSAg4zD0EnKH3Q6Fagnad1rSDF3x7BM1JnAd0BFaHJRz9XPetmBeFimxX
+         6qipss9+6jVKfNro0jy/WKuF7O/XgQkDlVWPXasoey9BjlGoLvuNZrLZHd0Nhg8ozD33
+         wmW4B8tSNrs1fxWzBZPt8bE1oBoQIzFtJDHkW3jeqMq+k0uYZg7OxC1WFcwi7ftd8K3K
+         uzaJ2M6Ffr3PL0z6gkaa07kh4BiEsmF1dZW3HdSJ1i5OFi2I3GA53ObaHBss0nrncKVA
+         ETHJAelTUOwcH6kZUxMMv7oErA9Ej0gwpJpYeTEPLvLOs8+DzkZO/XjVi0vlkySVUNhF
+         WOew==
+X-Gm-Message-State: AJIora+TN7c5ihpVpKhbIOml+SU3llQljahaNjdWNNpEt7vZ3Rtd+A2J
+        L8odygPdPrNZjC4zfvkF9gYhQOcS62kP3g==
+X-Google-Smtp-Source: AGRyM1vauPaQThk1rkTaI9N6Ov2YYKy7VCkXnDIx4Z/ZNPqxduL+MHYw8Mks7ZKrDn9IXUz2j1acyg==
+X-Received: by 2002:a05:620a:1aa5:b0:6a6:c208:fb94 with SMTP id bl37-20020a05620a1aa500b006a6c208fb94mr3408626qkb.434.1655921510648;
+        Wed, 22 Jun 2022 11:11:50 -0700 (PDT)
+Received: from mail-yw1-f177.google.com (mail-yw1-f177.google.com. [209.85.128.177])
+        by smtp.gmail.com with ESMTPSA id bx4-20020a05622a090400b002f3e2435ee2sm14869070qtb.63.2022.06.22.11.11.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Jun 2022 11:11:50 -0700 (PDT)
+Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-317710edb9dso171295337b3.0;
+        Wed, 22 Jun 2022 11:11:49 -0700 (PDT)
+X-Received: by 2002:a81:574c:0:b0:317:7c3a:45be with SMTP id
+ l73-20020a81574c000000b003177c3a45bemr5877104ywb.316.1655921509513; Wed, 22
+ Jun 2022 11:11:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] hinic: Replace memcpy() with direct assignment
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165592141229.24504.12499679747935394239.git-patchwork-notify@kernel.org>
-Date:   Wed, 22 Jun 2022 18:10:12 +0000
-References: <20220616052312.292861-1-keescook@chromium.org>
-In-Reply-To: <20220616052312.292861-1-keescook@chromium.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, nathan@kernel.org, ndesaulniers@google.com,
-        trix@redhat.com, leon@kernel.org, jiri@nvidia.com,
-        olteanv@gmail.com, simon.horman@corigine.com,
-        netdev@vger.kernel.org, llvm@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+References: <20220622173614.12778-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20220622173614.12778-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20220622173614.12778-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 22 Jun 2022 20:11:38 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWbQ1VHH4ugQs2mamS2KGEj5AdWmNtmg=6eUJmyGRDTVw@mail.gmail.com>
+Message-ID: <CAMuHMdWbQ1VHH4ugQs2mamS2KGEj5AdWmNtmg=6eUJmyGRDTVw@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] mmc: renesas_sdhi: Fix typo's
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Pavel Machek <pavel@denx.de>,
+        Linux MMC List <linux-mmc@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+Hi Prabhakar,
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+On Wed, Jun 22, 2022 at 7:36 PM Lad Prabhakar
+<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> Fix typo's,
+> * difference -> different
+> * alignment -> aligned
+>
+> While at it replaced 128-bytes -> 128 byte.
+>
+> Reported-by: Pavel Machek <pavel@denx.de>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-On Wed, 15 Jun 2022 22:23:12 -0700 you wrote:
-> Under CONFIG_FORTIFY_SOURCE=y and CONFIG_UBSAN_BOUNDS=y, Clang is bugged
-> here for calculating the size of the destination buffer (0x10 instead of
-> 0x14). This copy is a fixed size (sizeof(struct fw_section_info_st)), with
-> the source and dest being struct fw_section_info_st, so the memcpy should
-> be safe, assuming the index is within bounds, which is UBSAN_BOUNDS's
-> responsibility to figure out.
-> 
-> [...]
+Thanks for your patch!
 
-Here is the summary with links:
-  - hinic: Replace memcpy() with direct assignment
-    https://git.kernel.org/netdev/net/c/1e70212e0315
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> --- a/drivers/mmc/host/renesas_sdhi_internal_dmac.c
+> +++ b/drivers/mmc/host/renesas_sdhi_internal_dmac.c
+> @@ -355,7 +355,7 @@ renesas_sdhi_internal_dmac_map(struct tmio_mmc_host *host,
+>
+>         data->host_cookie = cookie;
+>
+> -       /* This DMAC cannot handle if buffer is not 128-bytes alignment */
+> +       /* This DMAC cannot handle if buffer is not 128 byte aligned */
 
+128-byte? ;-)
 
+>         if (!IS_ALIGNED(sg_dma_address(data->sg), 128)) {
+>                 renesas_sdhi_internal_dmac_unmap(host, data, cookie);
+>                 return false;
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
