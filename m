@@ -2,130 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89092C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 19:55:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87415C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 19:59:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376858AbiFVTzn (ORCPT
+        id S1359167AbiFVT7E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 15:55:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34658 "EHLO
+        Wed, 22 Jun 2022 15:59:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233302AbiFVTzl (ORCPT
+        with ESMTP id S1359297AbiFVT7B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 15:55:41 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D065F2F034;
-        Wed, 22 Jun 2022 12:55:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1655927740; x=1687463740;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=2xf/FWcxnZUDXgio8gfJjR4b5NBPlvVQvX05MnYgdqs=;
-  b=akAU/4VRsayoDQ5cyWQW/u+D1AZ1MMOaf+Cl3hkOEK3vwrZvdekBDlen
-   I35yDvXCLetBRZdY+BkND0SACKq5Q3y2E3tK+b3RO8StL9SIJSLgQbYQj
-   V+Oa/R7auS0AUvQTxzx7YtiAF0GXY3Hv2bJUSLyO+2ReUV2bGShKLburn
-   s=;
-Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 22 Jun 2022 12:55:40 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 12:55:40 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 22 Jun 2022 12:55:39 -0700
-Received: from khsieh-linux1.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 22 Jun 2022 12:55:38 -0700
-From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
-To:     <robdclark@gmail.com>, <sean@poorly.run>, <swboyd@chromium.org>,
-        <dianders@chromium.org>, <vkoul@kernel.org>, <daniel@ffwll.ch>,
-        <airlied@linux.ie>, <agross@kernel.org>,
-        <dmitry.baryshkov@linaro.org>, <bjorn.andersson@linaro.org>
-CC:     <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
-        <quic_khsieh@quicinc.com>, <quic_sbillaka@quicinc.com>,
-        <freedreno@lists.freedesktop.org>,
-        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2] drm/msm/dp: reset drm_dev to NULL at dp_display_unbind()
-Date:   Wed, 22 Jun 2022 12:55:31 -0700
-Message-ID: <1655927731-22396-1-git-send-email-quic_khsieh@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Wed, 22 Jun 2022 15:59:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5725828705
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 12:58:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 72D0E617C6
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 19:58:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D48DAC34114;
+        Wed, 22 Jun 2022 19:58:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655927936;
+        bh=Mk8UkH00Iv4tnQ/lJDTlwij5t8KUPHSNP3z/g8AMvlI=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=TtDCC8odkXYCZ2mEBK/Y70Pzc2ZcDqogYtUbxUwL585GkndJpzGFj3AEqR7Zc+5sQ
+         pIoVi84+CwjC1Ui8EwLNwYx3/M7aleNuYX1Tvlb6gfxM2Qdp0pQXL3Dyq3OwqQFULw
+         2mrWukGpqco3ZGAuojl7QfC/PsZxrqKg2Cz6aEgdEyhKrKuB2ir7eegYuuCF9JUEfE
+         8Bv1NZ603T+c1nmPpS7bCLBLqpsjPebgD0aFQ/phzE5OBwMgVsiVqZYMCg0mFnzv01
+         6MJeFyevJuKmSnaf6D88HgoLfUdLIw1CnhQdMnyrVoTcsTdr0KMkCEjl/t7WA4AebW
+         ZDOmetTsB0WeQ==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 744F95C0169; Wed, 22 Jun 2022 12:58:56 -0700 (PDT)
+Date:   Wed, 22 Jun 2022 12:58:56 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Valentin Schneider <vschneid@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, mingo@redhat.com,
+        peterz@infradead.org, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
+        bristot@redhat.com
+Subject: Re: "Dying CPU not properly vacated" splat
+Message-ID: <20220622195856.GA1694215@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220421193821.GA173010@paulmck-ThinkPad-P17-Gen-1>
+ <xhsmh4k2h9m26.mognet@vschneid.remote.csb>
+ <20220425173320.GX4285@paulmck-ThinkPad-P17-Gen-1>
+ <xhsmh1qxkakof.mognet@vschneid.remote.csb>
+ <20220426000328.GY4285@paulmck-ThinkPad-P17-Gen-1>
+ <xhsmhy1zr99zt.mognet@vschneid.remote.csb>
+ <20220426162445.GG4285@paulmck-ThinkPad-P17-Gen-1>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220426162445.GG4285@paulmck-ThinkPad-P17-Gen-1>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-During msm initialize phase, dp_display_unbind() will be called to undo
-initializations had been done by dp_display_bind() previously if there is
-error happen at msm_drm_bind. Under this kind of circumstance, drm_device
-may not be populated completed which causes system crash at drm_dev_dbg().
-This patch reset drm_dev to NULL so that following drm_dev_dbg() will not
-refer to any internal fields of drm_device to prevent system from crashing.
-Below are panic stack trace,
+On Tue, Apr 26, 2022 at 09:24:45AM -0700, Paul E. McKenney wrote:
+> On Tue, Apr 26, 2022 at 03:48:06PM +0100, Valentin Schneider wrote:
+> > On 25/04/22 17:03, Paul E. McKenney wrote:
+> > > On Mon, Apr 25, 2022 at 10:59:44PM +0100, Valentin Schneider wrote:
+> > >> On 25/04/22 10:33, Paul E. McKenney wrote:
+> > >> >
+> > >> > So what did rcu_torture_reader() do wrong here?  ;-)
+> > >> >
+> > >>
+> > >> So on teardown, CPUHP_AP_SCHED_WAIT_EMPTY->sched_cpu_wait_empty() waits for
+> > >> the rq to be empty. Tasks must *not* be enqueued onto that CPU after that
+> > >> step has been run - if there are per-CPU tasks bound to that CPU, they must
+> > >> be unbound in their respective hotplug callback.
+> > >>
+> > >> For instance for workqueue.c, we have workqueue_offline_cpu() as a hotplug
+> > >> callback which invokes unbind_workers(cpu), the interesting bit being:
+> > >>
+> > >>                 for_each_pool_worker(worker, pool) {
+> > >>                         kthread_set_per_cpu(worker->task, -1);
+> > >>                         WARN_ON_ONCE(set_cpus_allowed_ptr(worker->task, cpu_possible_mask) < 0);
+> > >>                 }
+> > >>
+> > >> The rcu_torture_reader() kthreads aren't bound to any particular CPU are
+> > >> they? I can't find any code that would indicate they are - and in that case
+> > >> it means we have a problem with is_cpu_allowed() or related.
+> > >
+> > > I did not intend that the rcu_torture_reader() kthreads be bound, and
+> > > I am not seeing anything that binds them.
+> > >
+> > > Thoughts?  (Other than that validating any alleged fix will be quite
+> > > "interesting".)
+> > 
+> > IIUC the bogus scenario is is_cpu_allowed() lets one of those kthreads be
+> > enqueued on the outgoing CPU *after* CPUHP_AP_SCHED_WAIT_EMPTY.teardown() has
+> > been run, and hilarity ensues.
+> > 
+> > The cpu_dying() condition should prevent a regular kthread from getting
+> > enqueued there, most of the details have been evinced from my brain but I
+> > recall we got the ordering conditions right...
+> > 
+> > The only other "obvious" thing here is migrate_disable() which lets the
+> > enqueue happen, but then balance_push()->select_fallback_rq() should punt
+> > it away on context switch.
+> > 
+> > I need to rediscover those paths, I don't see any obvious clue right now.
+> 
+> Thank you for looking into this!
+> 
+> The only thought that came to me was to record that is_cpu_allowed()
+> returned true do to migration being disabled, and then use that in later
+> traces, printk()s or whatever.
+> 
+> My own favorite root-cause hypothesis was invalidated by the fact that
+> is_cpu_allowed() returns cpu_online(cpu) rather than just true.  ;-)
 
-[   53.584904] Unable to handle kernel paging request at virtual address 0000000070018001
-.
-[   53.702212] Hardware name: Qualcomm Technologies, Inc. sc7280 CRD platform (rev5+) (DT)
-[   53.710445] pstate: 20400009 (nzCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-[   53.717596] pc : string_nocheck+0x1c/0x64
-[   53.721738] lr : string+0x54/0x60
-[   53.725162] sp : ffffffc013d6b650
-[   53.728590] pmr_save: 000000e0
-[   53.731743] x29: ffffffc013d6b650 x28: 0000000000000002 x27: 0000000000ffffff
-[   53.739083] x26: ffffffc013d6b710 x25: ffffffd07a066ae0 x24: ffffffd07a419f97
-[   53.746420] x23: ffffffd07a419f99 x22: ffffff81fef360d4 x21: ffffff81fef364d4
-[   53.753760] x20: ffffffc013d6b6f8 x19: ffffffd07a06683c x18: 0000000000000000
-[   53.761093] x17: 4020386678302f30 x16: 00000000000000b0 x15: ffffffd0797523c8
-[   53.768429] x14: 0000000000000004 x13: ffff0000ffffff00 x12: ffffffd07a066b2c
-[   53.775780] x11: 0000000000000000 x10: 000000000000013c x9 : 0000000000000000
-[   53.783117] x8 : ffffff81fef364d4 x7 : 0000000000000000 x6 : 0000000000000000
-[   53.790445] x5 : 0000000000000000 x4 : ffff0a00ffffff04 x3 : ffff0a00ffffff04
-[   53.797783] x2 : 0000000070018001 x1 : ffffffffffffffff x0 : ffffff81fef360d4
-[   53.805136] Call trace:
-[   53.807667]  string_nocheck+0x1c/0x64
-[   53.811439]  string+0x54/0x60
-[   53.814498]  vsnprintf+0x374/0x53c
-[   53.818009]  pointer+0x3dc/0x40c
-[   53.821340]  vsnprintf+0x398/0x53c
-[   53.824854]  vscnprintf+0x3c/0x88
-[   53.828274]  __trace_array_vprintk+0xcc/0x2d4
-[   53.832768]  trace_array_printk+0x8c/0xb4
-[   53.836900]  drm_trace_printf+0x74/0x9c
-[   53.840875]  drm_dev_dbg+0xfc/0x1b8
-[   53.844480]  dp_pm_suspend+0x70/0xf8
-[   53.848164]  dpm_run_callback+0x60/0x1a0
-[   53.852222]  __device_suspend+0x304/0x3f4
-[   53.856363]  dpm_suspend+0xf8/0x3a8
-[   53.859959]  dpm_suspend_start+0x8c/0xc0
+And I hit this on two of fifteen TREE03 runs on a merge of -rcu with
+yesterday's linus/master.  Might be a fluke, but I thought I should
+at least report it.  This is the first time since my last email in
+this thread.
 
-Fixes: a65c95ff88f2 ("drm/msm/dp: stop event kernel thread when DP unbind")
-Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
----
- drivers/gpu/drm/msm/dp/dp_display.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-index 2b72639..02fff70 100644
---- a/drivers/gpu/drm/msm/dp/dp_display.c
-+++ b/drivers/gpu/drm/msm/dp/dp_display.c
-@@ -316,6 +316,8 @@ static void dp_display_unbind(struct device *dev, struct device *master,
- 
- 	dp_power_client_deinit(dp->power);
- 	dp_aux_unregister(dp->aux);
-+	dp->drm_dev = NULL;
-+	dp->aux->drm_dev = NULL;
- 	priv->dp[dp->id] = NULL;
- }
- 
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
-
+							Thanx, Paul
