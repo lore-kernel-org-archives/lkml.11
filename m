@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57B43CCA486
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 19:28:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B177C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 19:28:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359702AbiFVT2j (ORCPT
+        id S1358293AbiFVT2s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 15:28:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33430 "EHLO
+        Wed, 22 Jun 2022 15:28:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357243AbiFVT11 (ORCPT
+        with ESMTP id S1357400AbiFVT11 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 22 Jun 2022 15:27:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AC3193CFFF
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 12:27:20 -0700 (PDT)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A27E43DDF2
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 12:27:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655926039;
+        s=mimecast20190719; t=1655926040;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=xlRQ8mEQ9YvjZnUl++QqeZB4cfPsCz6OaymdUv9rICk=;
-        b=D1E7lTP6tsRuaQ7c3fyjlTyYyzNyUU9WPUE2CuATW/xavtC1Yoky8aoywM351FCMiwvY3Z
-        ggIz2cLU3ZrFx9Dz2AqXn8t3b2lQC++eU7yarauu5Pp7fV9QJ7pdOgt1+hPTVmvN5H7A2n
-        lKe2Gpi75lz39VfbDYaTMIWR9YeGI/Q=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=F73ZQSpJXAcM6JUMGTWxTim9jEMxT3dE24kf7MSiY/U=;
+        b=CiNaHmDmF17tKQI8Vh+wOZ80vly3nBWCi6NulS92g4kWYL1Vz8ucyhXzUTRM8SryaZ2rBU
+        hIBjoU6rpPpuD1dSYuEQMQNCU64JHZakFtWCHdspD1Eql+HZtKzwBiEA9z4v6RcAuDHHQ+
+        Txk+z39MJBIfGraggWQsbswsAOrZ1UA=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-647-ZKp3q13APJ6c8yNa5GJx3Q-1; Wed, 22 Jun 2022 15:27:17 -0400
-X-MC-Unique: ZKp3q13APJ6c8yNa5GJx3Q-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+ us-mta-88-MEOckTHDNae0HiQ4MeKbbw-1; Wed, 22 Jun 2022 15:27:15 -0400
+X-MC-Unique: MEOckTHDNae0HiQ4MeKbbw-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 697B518A6580;
-        Wed, 22 Jun 2022 19:27:16 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id AC726294EDC2;
+        Wed, 22 Jun 2022 19:27:14 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id F0554141510C;
-        Wed, 22 Jun 2022 19:27:15 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 562ED1121314;
+        Wed, 22 Jun 2022 19:27:14 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     maz@kernel.org, anup@brainfault.org, seanjc@google.com,
@@ -46,72 +46,68 @@ Cc:     maz@kernel.org, anup@brainfault.org, seanjc@google.com,
         kvmarm@lists.cs.columbia.edu, linux-mips@vger.kernel.org,
         kvm-riscv@lists.infradead.org, pfeiner@google.com,
         jiangshanlai@gmail.com, dmatlack@google.com
-Subject: [PATCH v7 13/23] KVM: x86/mmu: Allow NULL @vcpu in kvm_mmu_find_shadow_page()
-Date:   Wed, 22 Jun 2022 15:27:00 -0400
-Message-Id: <20220622192710.2547152-14-pbonzini@redhat.com>
+Subject: [PATCH v7 09/23] KVM: x86/mmu: Move guest PT write-protection to account_shadowed()
+Date:   Wed, 22 Jun 2022 15:26:56 -0400
+Message-Id: <20220622192710.2547152-10-pbonzini@redhat.com>
 In-Reply-To: <20220622192710.2547152-1-pbonzini@redhat.com>
 References: <20220622192710.2547152-1-pbonzini@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: David Matlack <dmatlack@google.com>
 
-Allow @vcpu to be NULL in kvm_mmu_find_shadow_page() (and its only
-caller __kvm_mmu_get_shadow_page()). @vcpu is only required to sync
-indirect shadow pages, so it's safe to pass in NULL when looking up
-direct shadow pages.
+Move the code that write-protects newly-shadowed guest page tables into
+account_shadowed(). This avoids a extra gfn-to-memslot lookup and is a
+more logical place for this code to live. But most importantly, this
+reduces kvm_mmu_alloc_shadow_page()'s reliance on having a struct
+kvm_vcpu pointer, which will be necessary when creating new shadow pages
+during VM ioctls for eager page splitting.
 
-This will be used for doing eager page splitting, which allocates direct
-shadow pages from the context of a VM ioctl without access to a vCPU
-pointer.
+Note, it is safe to drop the role.level == PG_LEVEL_4K check since
+account_shadowed() returns early if role.level > PG_LEVEL_4K.
 
+No functional change intended.
+
+Reviewed-by: Sean Christopherson <seanjc@google.com>
 Signed-off-by: David Matlack <dmatlack@google.com>
-Message-Id: <20220516232138.1783324-14-dmatlack@google.com>
+Message-Id: <20220516232138.1783324-10-dmatlack@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/mmu/mmu.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ arch/x86/kvm/mmu/mmu.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 88b3f3c2c8b1..a7748c5a2385 100644
+index bd45364bf465..2602c3642f23 100644
 --- a/arch/x86/kvm/mmu/mmu.c
 +++ b/arch/x86/kvm/mmu/mmu.c
-@@ -1975,6 +1975,12 @@ static void clear_sp_write_flooding_count(u64 *spte)
- 	__clear_sp_write_flooding_count(sptep_to_sp(spte));
+@@ -766,6 +766,9 @@ static void account_shadowed(struct kvm *kvm, struct kvm_mmu_page *sp)
+ 						    KVM_PAGE_TRACK_WRITE);
+ 
+ 	kvm_mmu_gfn_disallow_lpage(slot, gfn);
++
++	if (kvm_mmu_slot_gfn_write_protect(kvm, slot, gfn, PG_LEVEL_4K))
++		kvm_flush_remote_tlbs_with_address(kvm, gfn, 1);
  }
  
-+/*
-+ * The vCPU is required when finding indirect shadow pages; the shadow
-+ * page may already exist and syncing it needs the vCPU pointer in
-+ * order to read guest page tables.  Direct shadow pages are never
-+ * unsync, thus @vcpu can be NULL if @role.direct is true.
-+ */
- static struct kvm_mmu_page *kvm_mmu_find_shadow_page(struct kvm *kvm,
- 						     struct kvm_vcpu *vcpu,
- 						     gfn_t gfn,
-@@ -2013,6 +2019,9 @@ static struct kvm_mmu_page *kvm_mmu_find_shadow_page(struct kvm *kvm,
- 			goto out;
+ void account_huge_nx_page(struct kvm *kvm, struct kvm_mmu_page *sp)
+@@ -2072,11 +2075,8 @@ static struct kvm_mmu_page *kvm_mmu_alloc_shadow_page(struct kvm_vcpu *vcpu,
+ 	sp->gfn = gfn;
+ 	sp->role = role;
+ 	hlist_add_head(&sp->hash_link, sp_list);
+-	if (sp_has_gptes(sp)) {
++	if (sp_has_gptes(sp))
+ 		account_shadowed(vcpu->kvm, sp);
+-		if (role.level == PG_LEVEL_4K && kvm_vcpu_write_protect_gfn(vcpu, gfn))
+-			kvm_flush_remote_tlbs_with_address(vcpu->kvm, gfn, 1);
+-	}
  
- 		if (sp->unsync) {
-+			if (KVM_BUG_ON(!vcpu, kvm))
-+				break;
-+
- 			/*
- 			 * The page is good, but is stale.  kvm_sync_page does
- 			 * get the latest guest state, but (unlike mmu_unsync_children)
-@@ -2090,6 +2099,7 @@ static struct kvm_mmu_page *kvm_mmu_alloc_shadow_page(struct kvm *kvm,
  	return sp;
  }
- 
-+/* Note, @vcpu may be NULL if @role.direct is true; see kvm_mmu_find_shadow_page. */
- static struct kvm_mmu_page *__kvm_mmu_get_shadow_page(struct kvm *kvm,
- 						      struct kvm_vcpu *vcpu,
- 						      struct shadow_page_caches *caches,
 -- 
 2.31.1
 
