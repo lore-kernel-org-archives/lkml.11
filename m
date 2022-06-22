@@ -2,131 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 738CEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 14:49:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A3DFC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 14:49:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358576AbiFVOtg (ORCPT
+        id S1358693AbiFVOti (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 10:49:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46880 "EHLO
+        Wed, 22 Jun 2022 10:49:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358054AbiFVOtG (ORCPT
+        with ESMTP id S1358184AbiFVOtL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 10:49:06 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 048233DA53
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 07:49:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655909345;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XCWooTms+wWlHXZcDu8ZPg89E6H/2XmTErhXmxcvgaE=;
-        b=SfqTdGWfPWSid2AJt+zWa17rlGAqqDzIi4R1jSPIazaqWi3vXhbGKbbMnRF+e/d1gdwzu+
-        nnJRlAIJoBlzsbT3SXuXGiH2FN3usK1I7ReCTofJgguDclMAUFrypv/R6C0Hg6GnxCEIc/
-        SSEl3lHUWbb9GvFiv+P0oVtagDMhNGM=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-220-brYIksGeNkyLtuH1ievjYA-1; Wed, 22 Jun 2022 10:48:57 -0400
-X-MC-Unique: brYIksGeNkyLtuH1ievjYA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id BCECA2A2AD44;
-        Wed, 22 Jun 2022 14:48:39 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.40.194.180])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 96EDC40E80FF;
-        Wed, 22 Jun 2022 14:48:34 +0000 (UTC)
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     "Chang S. Bae" <chang.seok.bae@intel.com>,
-        Jiri Olsa <jolsa@kernel.org>, linux-perf-users@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Borislav Petkov <bp@alien8.de>,
-        Kees Cook <keescook@chromium.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Tim Chen <tim.c.chen@linux.intel.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        x86@kernel.org (maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)),
-        Jane Malalane <jane.malalane@citrix.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        linux-crypto@vger.kernel.org (open list:CRYPTO API),
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 2/4] x86/cpuid: refactor setup_clear_cpu_cap/clear_feature
-Date:   Wed, 22 Jun 2022 17:48:18 +0300
-Message-Id: <20220622144820.751402-3-mlevitsk@redhat.com>
-In-Reply-To: <20220622144820.751402-1-mlevitsk@redhat.com>
-References: <20220622144820.751402-1-mlevitsk@redhat.com>
+        Wed, 22 Jun 2022 10:49:11 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A1323DDE5
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 07:49:08 -0700 (PDT)
+Received: from fraeml738-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LSmV00NqVz689nQ;
+        Wed, 22 Jun 2022 22:48:40 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml738-chm.china.huawei.com (10.206.15.219) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 22 Jun 2022 16:49:06 +0200
+Received: from [10.202.227.197] (10.202.227.197) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 22 Jun 2022 15:49:05 +0100
+Message-ID: <fbfbb793-78ce-2b5a-307f-c6e78a926db3@huawei.com>
+Date:   Wed, 22 Jun 2022 15:49:02 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [aarch64] INFO: rcu_sched detected expedited stalls on CPUs/tasks
+To:     Bruno Goncalves <bgoncalv@redhat.com>
+CC:     Pierre Gondois <pierre.gondois@arm.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        CKI Project <cki-project@redhat.com>,
+        Ionela Voinescu <Ionela.Voinescu@arm.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>
+References: <CA+QYu4qTWaDzep2GGxm-63r-xJOFf2rFCCNhWupAgZdKE7HV6w@mail.gmail.com>
+ <99a207dc-93cd-1bea-2ffc-404a9f6587bf@arm.com>
+ <CA+QYu4o0OqdwZYFCgCzm2CMHA7pM3nQ+j0_VbHtpFcdJmkMbhw@mail.gmail.com>
+ <fe20591a-96bf-2ac5-c97f-442c2b36c455@arm.com>
+ <CA+QYu4rFB0-no98R0jfzDi2z1Q-aXsEyj1+j-G7RNBi1=3SLkQ@mail.gmail.com>
+ <90175f7e-0a2f-c83d-6fb5-916f885bbe81@huawei.com>
+ <CA+QYu4r9Z1X3b-PxqcQx3OkdASkon9OvPAVWJcqHLtc2uPkFtA@mail.gmail.com>
+From:   John Garry <john.garry@huawei.com>
+In-Reply-To: <CA+QYu4r9Z1X3b-PxqcQx3OkdASkon9OvPAVWJcqHLtc2uPkFtA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.202.227.197]
+X-ClientProxiedBy: lhreml734-chm.china.huawei.com (10.201.108.85) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Simplify the code a bit by always passing &boot_cpu_data
-in case the setup_clear_cpu_cap was called.
+On 22/06/2022 15:40, Bruno Goncalves wrote:
 
-Also unify clear_cpu_cap and do_clear_cpu_cap.
+Hi Bruno,
 
-Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
----
- arch/x86/kernel/cpu/cpuid-deps.c | 17 +++++------------
- 1 file changed, 5 insertions(+), 12 deletions(-)
+> With the config change that does not set
+> CONFIG_RCU_EXP_CPU_STALL_TIMEOUT the problem seems to be fixed for us.
+> The newer Fedora kernels already have the config fixed.
+> 
 
-diff --git a/arch/x86/kernel/cpu/cpuid-deps.c b/arch/x86/kernel/cpu/cpuid-deps.c
-index c881bcafba7d70..d6777d07ba3302 100644
---- a/arch/x86/kernel/cpu/cpuid-deps.c
-+++ b/arch/x86/kernel/cpu/cpuid-deps.c
-@@ -88,18 +88,16 @@ static inline void clear_feature(struct cpuinfo_x86 *c, unsigned int feature)
- 	 * rest of the cpufeature code uses atomics as well, so keep it for
- 	 * consistency. Cleanup all of it separately.
- 	 */
--	if (!c) {
--		clear_cpu_cap(&boot_cpu_data, feature);
-+	clear_bit(feature, (unsigned long *)c->x86_capability);
-+
-+	if (c == &boot_cpu_data)
- 		set_bit(feature, (unsigned long *)cpu_caps_cleared);
--	} else {
--		clear_bit(feature, (unsigned long *)c->x86_capability);
--	}
- }
- 
- /* Take the capabilities and the BUG bits into account */
- #define MAX_FEATURE_BITS ((NCAPINTS + NBUGINTS) * sizeof(u32) * 8)
- 
--static void do_clear_cpu_cap(struct cpuinfo_x86 *c, unsigned int feature)
-+void clear_cpu_cap(struct cpuinfo_x86 *c, unsigned int feature)
- {
- 	DECLARE_BITMAP(disable, MAX_FEATURE_BITS);
- 	const struct cpuid_dep *d;
-@@ -129,12 +127,7 @@ static void do_clear_cpu_cap(struct cpuinfo_x86 *c, unsigned int feature)
- 	} while (changed);
- }
- 
--void clear_cpu_cap(struct cpuinfo_x86 *c, unsigned int feature)
--{
--	do_clear_cpu_cap(c, feature);
--}
--
- void setup_clear_cpu_cap(unsigned int feature)
- {
--	do_clear_cpu_cap(NULL, feature);
-+	clear_cpu_cap(&boot_cpu_data, feature);
- }
--- 
-2.26.3
+OK, thanks for the info. Well those debug options I enabled didn't cause 
+problems previously. I'll see if it is one in particular and go from there.
 
+> 
+>> On v5.19-rc3 I just enabled some debug configs on a vanilla kernel and
+>> can easily reproduce a RCU stall on boot, as below.
+>>
+>> CONFIG_RCU_EXP_CPU_STALL_TIMEOUT=0 for me, that being the default.
+>>
+>>    Table To iBMC Success.
+>> GetVariable Status : Not Found.
+>> [    0.000000] Booting Linux on physical CPU 0x0000010000 [0x410fd082]
+>> [    0.000000] Linux version 5.19.0-rc3-00001-gd8610c1c16e8
+>> (john@debian) (gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU
+>> Binutils for Debian) 2.37) #187 SMP PREEMPT Wed Jun 22 14:08:56 BST 2022
+>> [    0.000000] Machine model: Hisilicon PhosphorV660 Development Board
+>> [    0.000000] efi: EFI v2.60 by EDK II
+>> [    0.000000] efi: SMBIOS=0x3eff0000 SMBIOS 3.0=0x39aa0000
+>> ACPI=0x39b70000 ACPI 2.0=0x39b70014 MEMATTR=0x3b8d0018
+>> MEMRESERVE=0x3a002d18
+
+Thanks!
