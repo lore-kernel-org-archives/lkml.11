@@ -2,86 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 696C1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 08:39:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AD3EC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 08:40:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355039AbiFVIjV (ORCPT
+        id S1355108AbiFVIkg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 04:39:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33064 "EHLO
+        Wed, 22 Jun 2022 04:40:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356104AbiFVIik (ORCPT
+        with ESMTP id S1354745AbiFVIke (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 04:38:40 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDAD538BC5;
-        Wed, 22 Jun 2022 01:38:38 -0700 (PDT)
+        Wed, 22 Jun 2022 04:40:34 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21FE938BD8
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 01:40:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655887118; x=1687423118;
+  t=1655887233; x=1687423233;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=E5/CE6oiD+TeTr6UfdQHhOw56DlRLSWQtW65jMArRVY=;
-  b=OjxV6xAwvw3V9LzqG32qI/Y0bDxrWo08+yrBc9S8ktvQJw9cMOolr7Eh
-   vKSsuM2NuIxLl6GqA5pXohVkHXQCjirL7dCXYqFOx+SdM8F/T7nfdq6fV
-   EDYsJAmWcOoexBmz2ZNu/jzvXiCkzAO8onpju04FIPl+VaeKULL9FYWuY
-   UG+lWnwLoJIXFiWuOuJZefjib3BzxMFFAE32R6b2zANBzA2LC3dUXkdzj
-   2HEzeQ7ukWyb9u/P/GM2aiyuZnpBoF7YKItgWewGeKU9A7yoUoNGe5f9a
-   J7W320SIOEjuOtokMcaLoY2E3UIgj3MdUq0w7yvKaUmaM6jSmWnvIfPW5
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="281430478"
+  bh=lfCre8ivv7Zd1IkJm7XBr2ruY993pMUvBr7MGHnoa5E=;
+  b=OnILg0MPQvb5OVLv5kxV/KQnQpmOUychfS5R3GhupR7X+Jsscy+oMZxj
+   GQ0/WNWmeY/32qUXiEIQLSBEv8wxh89lN8+0TOUNEfs8ghBymt2ugGaXY
+   O+OXTcMEr+pb7tXBYX39W6xanOrdxRjOuS/0rgxC4E0qesexrWK2WL1g1
+   NQnuQP2AGK76ITF4TMw0saqJFEekspDrOv8ktBaVlW11XJNax6K6WvBBw
+   CskufMmN8Csi1yMwX+JNWLR6XirCEiy0l0wwqSRzhxUnqDRuM+8SdWIJD
+   YV/tAh5P0je5wQR1Tg6bm2XsmZEG9wCcXBABKVsEtlATEClos8OJbkX5C
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="277904491"
 X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="281430478"
+   d="scan'208";a="277904491"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 01:38:38 -0700
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 01:40:32 -0700
 X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="644078281"
-Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.59.193])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 01:38:36 -0700
-Message-ID: <99892edc-fb90-cb68-271b-f978805256e5@intel.com>
-Date:   Wed, 22 Jun 2022 11:38:32 +0300
+   d="scan'208";a="644080043"
+Received: from aslawinx-mobl.ger.corp.intel.com (HELO [10.99.249.103]) ([10.99.249.103])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 01:40:31 -0700
+Message-ID: <c0bd4b10-f846-6a6e-06a4-57284f536a98@linux.intel.com>
+Date:   Wed, 22 Jun 2022 10:40:29 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.9.1
-Subject: Re: [PATCH] mmc: sdhci-acpi: remove unexpected word "the"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v7 05/14] ALSA: hda: cs35l41: Save Subsystem ID inside
+ CS35L41 Driver
 Content-Language: en-US
-To:     Jiang Jian <jiangjian@cdjrlc.com>, ulf.hansson@linaro.org
-Cc:     linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220621094459.80271-1-jiangjian@cdjrlc.com>
-From:   Adrian Hunter <adrian.hunter@intel.com>
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
- Business Identity Code: 0357606 - 4, Domiciled in Helsinki
-In-Reply-To: <20220621094459.80271-1-jiangjian@cdjrlc.com>
-Content-Type: text/plain; charset=UTF-8
+To:     Vitaly Rodionov <vitalyr@opensource.cirrus.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, Mark Brown <broonie@kernel.org>
+Cc:     patches@opensource.cirrus.com, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org,
+        Stefan Binding <sbinding@opensource.cirrus.com>
+References: <20220622074653.179078-1-vitalyr@opensource.cirrus.com>
+ <20220622074653.179078-6-vitalyr@opensource.cirrus.com>
+From:   =?UTF-8?Q?Amadeusz_S=c5=82awi=c5=84ski?= 
+        <amadeuszx.slawinski@linux.intel.com>
+In-Reply-To: <20220622074653.179078-6-vitalyr@opensource.cirrus.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 21/06/22 12:44, Jiang Jian wrote:
-> there is an unexpected word "the" in the comments that need to be removed
+On 6/22/2022 9:46 AM, Vitaly Rodionov wrote:
+> From: Stefan Binding <sbinding@opensource.cirrus.com>
 > 
-> *       instead use the the SDR104 preset register.
+> The Subsystem ID is read from the HDA driver, and will
+> be used by the CS35L41 driver to be able to uniquely
+> identify the laptop, which is required to be able to
+> define firmware to be used by specific models.
 > 
-> Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
-
-Acked-by: Adrian Hunter <adrian.hunter@intel.com>
-
+> Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
+> Signed-off-by: Vitaly Rodionov <vitalyr@opensource.cirrus.com>
 > ---
->  drivers/mmc/host/sdhci-acpi.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>   sound/pci/hda/cs35l41_hda.c   | 3 +++
+>   sound/pci/hda/cs35l41_hda.h   | 1 +
+>   sound/pci/hda/hda_component.h | 1 +
+>   sound/pci/hda/patch_realtek.c | 1 +
+>   4 files changed, 6 insertions(+)
 > 
-> diff --git a/drivers/mmc/host/sdhci-acpi.c b/drivers/mmc/host/sdhci-acpi.c
-> index c0350e9c03f3..93fe6e5a5f9f 100644
-> --- a/drivers/mmc/host/sdhci-acpi.c
-> +++ b/drivers/mmc/host/sdhci-acpi.c
-> @@ -648,7 +648,7 @@ static int sdhci_acpi_emmc_amd_probe_slot(struct platform_device *pdev,
->  	 *       in reading a garbage value and using the wrong presets.
->  	 *
->  	 *       Since HS400 and HS200 presets must be identical, we could
-> -	 *       instead use the the SDR104 preset register.
-> +	 *       instead use the SDR104 preset register.
->  	 *
->  	 *    If the above issues are resolved we could remove this quirk for
->  	 *    firmware that that has valid presets (i.e., SDR12 <= 12 MHz).
+> diff --git a/sound/pci/hda/cs35l41_hda.c b/sound/pci/hda/cs35l41_hda.c
+> index 92c6d8b7052e..7f0132694774 100644
+> --- a/sound/pci/hda/cs35l41_hda.c
+> +++ b/sound/pci/hda/cs35l41_hda.c
+> @@ -356,6 +356,9 @@ static int cs35l41_hda_bind(struct device *dev, struct device *master, void *mas
+>   		return -EBUSY;
+>   
+>   	comps->dev = dev;
+> +	if (!cs35l41->acpi_subsystem_id)
+> +		cs35l41->acpi_subsystem_id = devm_kasprintf(dev, GFP_KERNEL,
+> +							    "%.8x", comps->subsystem_id);
 
+Wouldn't comps->codec->core.subsystem_id instead of comps->subsystem_id 
+work here? You already added saving of codec in patch 3, and then you 
+don't need rest of this patch?
