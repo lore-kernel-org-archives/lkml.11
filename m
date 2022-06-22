@@ -2,107 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAAC7C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 16:55:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AF88CCA47D
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 16:56:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359540AbiFVQzU (ORCPT
+        id S1359679AbiFVQ4G (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 12:55:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57840 "EHLO
+        Wed, 22 Jun 2022 12:56:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377351AbiFVQxp (ORCPT
+        with ESMTP id S232856AbiFVQ4F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 12:53:45 -0400
-Received: from smtp-bc0a.mail.infomaniak.ch (smtp-bc0a.mail.infomaniak.ch [45.157.188.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DD134161B
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 09:52:06 -0700 (PDT)
-Received: from smtp-3-0000.mail.infomaniak.ch (unknown [10.4.36.107])
-        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4LSq3L32bczMqwg4;
-        Wed, 22 Jun 2022 18:44:14 +0200 (CEST)
-Received: from philippe-pc.toradex.int (unknown [31.10.206.125])
-        by smtp-3-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4LSq3J1hSjzlqV0V;
-        Wed, 22 Jun 2022 18:44:12 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=pschenker.ch;
-        s=20220412; t=1655916254;
-        bh=16ktisfcvBgIYLREi0tcTzW4w4C5ndQSyEJGx6PC66Q=;
-        h=From:To:Cc:Subject:Date:From;
-        b=vLCYOSQp/JhOUYEuL2eekc5smKl3lsAvjtBe8HdlSycjBnvJI0SvWlE4KLQ/6Chum
-         B9jAJMyb9WO04DPm1g/yk/i3Dxuv6mAkzRRLSC6Hgd0KE8FsuNo+5+uQqQ6hFeMpPi
-         qVwwL5zo3byiZpNN5/1tlB/pjHA3HWmNI0+ZNnoY=
-From:   Philippe Schenker <dev@pschenker.ch>
-To:     shawnguo@kernel.org, devicetree@vger.kernel.org
-Cc:     Philippe Schenker <philippe.schenker@toradex.com>,
-        Francesco Dolcini <francesco.dolcini@toradex.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] arm64: dts: imx8m{m,p}-verdin: use IT temperatures
-Date:   Wed, 22 Jun 2022 18:44:10 +0200
-Message-Id: <20220622164410.457249-1-dev@pschenker.ch>
-X-Mailer: git-send-email 2.36.1
+        Wed, 22 Jun 2022 12:56:05 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11372F5B3;
+        Wed, 22 Jun 2022 09:56:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1655916965; x=1687452965;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=M7Cq64BAkE+eEl9rbT26JfvPDx/MbnC1na+zs5QYfBw=;
+  b=dBI6ObX++9JNVs86amlPLiCuy03FxUBa3rxO3YRK1lgJwfPKbLIj+ock
+   1bRmbKbPzNGcNE8C15C5ro9/JmxjXbyWx5PZBG3JkT63twyQdDEMGpFcK
+   K0lurOQuGno2NktEf7nkDLqsb3uEJShBaqY4cM+ugA8GTj6qIpcOM7BeB
+   I=;
+Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 22 Jun 2022 09:56:04 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 09:56:03 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 22 Jun 2022 09:56:03 -0700
+Received: from khsieh-linux1.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 22 Jun 2022 09:56:02 -0700
+From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
+To:     <robdclark@gmail.com>, <sean@poorly.run>, <swboyd@chromium.org>,
+        <vkoul@kernel.org>, <agross@kernel.org>,
+        <bjorn.andersson@linaro.org>, <robh+dt@kernel.org>,
+        <devicetree@vger.kernel.org>
+CC:     <abhinavk@codeaurora.org>, <quic_aravindh@quicinc.com>,
+        <quic_khsieh@quicinc.com>, <freedreno@lists.freedesktop.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH] dt-bindings: msm: update maintainers list with proper id
+Date:   Wed, 22 Jun 2022 09:55:53 -0700
+Message-ID: <1655916953-32039-1-git-send-email-quic_khsieh@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Philippe Schenker <philippe.schenker@toradex.com>
+Use quic id instead of codeaurora id in maintainers list
+for display devicetree bindings.
 
-Use IT temperature threshold for critical/passive trip point
-on Verdin iMX8M Plus and Mini.
-
-Signed-off-by: Philippe Schenker <philippe.schenker@toradex.com>
-Reviewed-by: Francesco Dolcini <francesco.dolcini@toradex.com>
-
+Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
 ---
+ Documentation/devicetree/bindings/display/msm/dp-controller.yaml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi | 8 ++++++++
- arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi | 8 ++++++++
- 2 files changed, 16 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi
-index eafa88d980b3..a819ed43e727 100644
---- a/arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi
-@@ -154,6 +154,14 @@ &A53_3 {
- 	cpu-supply = <&reg_vdd_arm>;
- };
+diff --git a/Documentation/devicetree/bindings/display/msm/dp-controller.yaml b/Documentation/devicetree/bindings/display/msm/dp-controller.yaml
+index cd05cfd..c950710 100644
+--- a/Documentation/devicetree/bindings/display/msm/dp-controller.yaml
++++ b/Documentation/devicetree/bindings/display/msm/dp-controller.yaml
+@@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ title: MSM Display Port Controller
  
-+&cpu_alert0 {
-+	temperature = <95000>;
-+};
-+
-+&cpu_crit0 {
-+	temperature = <105000>;
-+};
-+
- &ddrc {
- 	operating-points-v2 = <&ddrc_opp_table>;
+ maintainers:
+-  - Kuogee Hsieh <khsieh@codeaurora.org>
++  - Kuogee Hsieh <quic_khsieh@quicinc.com>
  
-diff --git a/arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi b/arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi
-index fb17e329cd37..7d8d8df569c5 100644
---- a/arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi
-@@ -146,6 +146,14 @@ reserved-memory {
- 	};
- };
- 
-+&cpu_alert0 {
-+	temperature = <95000>;
-+};
-+
-+&cpu_crit0 {
-+	temperature = <105000>;
-+};
-+
- /* Verdin SPI_1 */
- &ecspi1 {
- 	#address-cells = <1>;
+ description: |
+   Device tree bindings for DisplayPort host controller for MSM targets
 -- 
-2.36.1
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
 
