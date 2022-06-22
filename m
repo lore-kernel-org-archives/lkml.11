@@ -2,156 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB273C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 01:58:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D32AEC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 02:01:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356013AbiFVB6o (ORCPT
+        id S1356061AbiFVCBI convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 21:58:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59076 "EHLO
+        Tue, 21 Jun 2022 22:01:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355919AbiFVB6m (ORCPT
+        with ESMTP id S1344874AbiFVCBG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 21:58:42 -0400
-Received: from conssluserg-06.nifty.com (conssluserg-06.nifty.com [210.131.2.91])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 274A133368;
-        Tue, 21 Jun 2022 18:58:41 -0700 (PDT)
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50]) (authenticated)
-        by conssluserg-06.nifty.com with ESMTP id 25M1wFRA011408;
-        Wed, 22 Jun 2022 10:58:16 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-06.nifty.com 25M1wFRA011408
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1655863096;
-        bh=xnd6kF0zhf65sr2NXr92ZM/d52MAYdhye7LUEr75tKw=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=wzXWeqKQZPBhmNIy25RWZW67t1rgrDwfkx8zMWLiSJ0S9pdLGXG+iEQ2QTEgkOcjo
-         8e5EDm6hFGqOVW0bGdLEgYsHBdQT4t0JDUJecGmvpw0k7pUaSc+vqS0nMWZEPmB48e
-         tAcVoLqmQIZp6QLNCpVCkiMYeCUeKKqTH1V0rFdaPDBntrmwXJ5YTuYuG2vgVHyxTu
-         QlI0EPEkPdwxc+7MuSNjv75aVYzbMfIJbBsrDoQ2zVWTab9EvMNz8OG4Ahs+QHc+FB
-         prYX0vHHP03sXBfF8gWZkdgz9BvIKSgoZ3oBhEQ1CNpzNXL+POSe/HDT818WHbCNlg
-         SJLGiWkf1KeSA==
-X-Nifty-SrcIP: [209.85.128.50]
-Received: by mail-wm1-f50.google.com with SMTP id l126-20020a1c2584000000b0039c1a10507fso8135405wml.1;
-        Tue, 21 Jun 2022 18:58:15 -0700 (PDT)
-X-Gm-Message-State: AJIora8jKptiyROnEnBdFm4SBAKdC7ZcYPQC6jho5epHF5KDj5ZbNAtS
-        XJk0Xia6P4s/SWJRU0Od3b0NHz07/aEr1sUtKFI=
-X-Google-Smtp-Source: AGRyM1t46gviljb+jOdiUVWa+yjIrK/SiwKA6FRFw+14MzIRIDZ1Nsce/tON8apaS7zFmPFang+jS3YA8haOHjJEUU4=
-X-Received: by 2002:a1c:4409:0:b0:39e:f586:6fd8 with SMTP id
- r9-20020a1c4409000000b0039ef5866fd8mr1042679wma.157.1655863094276; Tue, 21
- Jun 2022 18:58:14 -0700 (PDT)
+        Tue, 21 Jun 2022 22:01:06 -0400
+Received: from relay.hostedemail.com (smtprelay0011.hostedemail.com [216.40.44.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 083EE33883
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 19:01:05 -0700 (PDT)
+Received: from omf04.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay07.hostedemail.com (Postfix) with ESMTP id 04B3F212D2;
+        Wed, 22 Jun 2022 02:01:02 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf04.hostedemail.com (Postfix) with ESMTPA id 1EC4A20028;
+        Wed, 22 Jun 2022 02:01:00 +0000 (UTC)
+Message-ID: <2795eb1388bb22122250f3886c2585a22d844106.camel@perches.com>
+Subject: Re: [PATCH] drm/nouveau/mmu: Fix a typo
+From:   Joe Perches <joe@perches.com>
+To:     Zhang Jiaming <jiaming@nfschina.com>, airlied@linux.ie,
+        daniel@ffwll.ch
+Cc:     lyude@redhat.com, kherbst@redhat.com, bskeggs@redhat.com,
+        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, liqiong@nfschina.com,
+        renyu@nfschina.com
+Date:   Tue, 21 Jun 2022 19:00:55 -0700
+In-Reply-To: <20220622015249.8390-1-jiaming@nfschina.com>
+References: <20220622015249.8390-1-jiaming@nfschina.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.44.1-0ubuntu1 
 MIME-Version: 1.0
-References: <20220621133526.29662-1-mikoxyzzz@gmail.com> <CAKwvOd=Bmu40+_11GOBTeJBjToUf0LNG_RX0RiLcRLimUUkgcw@mail.gmail.com>
-In-Reply-To: <CAKwvOd=Bmu40+_11GOBTeJBjToUf0LNG_RX0RiLcRLimUUkgcw@mail.gmail.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Wed, 22 Jun 2022 10:57:34 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAT3FrpLnhSgfTo5bxk-9cHm6g1ti58wSY6W-fxMx+mUrA@mail.gmail.com>
-Message-ID: <CAK7LNAT3FrpLnhSgfTo5bxk-9cHm6g1ti58wSY6W-fxMx+mUrA@mail.gmail.com>
-Subject: Re: [PATCH 0/2] Kconfig: -O3 enablement
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Miko Larsson <mikoxyzzz@gmail.com>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Sean Christopherson <seanjc@google.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Chris Down <chris@chrisdown.name>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Elliot Berman <quic_eberman@quicinc.com>,
-        Oleksandr Natalenko <oleksandr@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+X-Rspamd-Queue-Id: 1EC4A20028
+X-Stat-Signature: imeduxfusbtqh6mhxt5pou7tpebnh9uh
+X-Rspamd-Server: rspamout06
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX1/G1juJFWadYNMhEC2gMuIwA4DXe0U4CVo=
+X-HE-Tag: 1655863260-877950
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 1:17 AM Nick Desaulniers
-<ndesaulniers@google.com> wrote:
->
-> On Tue, Jun 21, 2022 at 6:35 AM Miko Larsson <mikoxyzzz@gmail.com> wrote:
-> >
-> > Hi,
-> >
-> > This very small series allows -O3 to be used for all architectures. The
-> > first patch marks -O3 as experimental, with the reasoning being that it
-> > might expose unwanted regressions to users, and the second patch
-> > actually allows -O3 by removing the "depend on ARC" string.
->
-> I think we should just remove -O3 support from KCONFIG.
->
-> If someone wants to mess around with "experimental features," there's
-> nothing stopping you from doing:
->
-> $ make KCFLAGS=-O3
->
+On Wed, 2022-06-22 at 09:52 +0800, Zhang Jiaming wrote:
+> There is a typo in comments. Change 'neeed' to 'need'.
+[]
+> diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/mmu/vmm.c b/drivers/gpu/drm/nouveau/nvkm/subdev/mmu/vmm.c
+[]
+> @@ -280,7 +280,7 @@ nvkm_vmm_unref_ptes(struct nvkm_vmm_iter *it, bool pfn, u32 ptei, u32 ptes)
+>  	if (desc->type == SPT && (pgt->refs[0] || pgt->refs[1]))
+>  		nvkm_vmm_unref_sptes(it, pgt, desc, ptei, ptes);
+>  
+> -	/* PT no longer neeed?  Destroy it. */
+> +	/* PT no longer need?  Destroy it. */
 
-ARC uses -O3 since day1.
+needed
 
-"Generic build system uses -O2, we want -O3"
-in commit cfdbc2e16e65c1ec1c23057640607cee98d1a1bd
-
-If they want -O3, it is up to the ARC maintainer.
-
-
-
-If you want to say "use this option carefully",
-EXPERT might be another option.
-
-    depends on ARC || EXPERT
-
-
-
-
-
-
-
-> >
-> > The reasoning behind this series is to open up -O3 so that bugs related
-> > to it (both compiler-related and kernel-related) can be discovered by
-> > eyeballs wanting to improve the "-O3 experience," as that might be
-> > beneficial to both compilers and the kernel. This has been attempted
-> > before [1], but unfortunately nothing ever came of it.
-> >
-> > [1] https://lore.kernel.org/lkml/20191211104619.114557-1-oleksandr@redhat.com/
-> >
-> > Cc: linux-kbuild@vger.kernel.org
-> > Cc: x86@kernel.org
-> > Cc: Nathan Chancellor <nathan@kernel.org>
-> > Cc: Vlastimil Babka <vbabka@suse.cz>
-> > Cc: Nick Desaulniers <ndesaulniers@google.com>
-> > Cc: Thomas Gleixner <tglx@linutronix.de>
-> > Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> > Cc: Sean Christopherson <seanjc@google.com>
-> > Cc: "Gustavo A. R. Silva" <gustavoars@kernel.org>
-> > Cc: Arnd Bergmann <arnd@arndb.de>
-> > Cc: Chris Down <chris@chrisdown.name>
-> > Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-> > Cc: John Ogness <john.ogness@linutronix.de>
-> > Cc: Elliot Berman <quic_eberman@quicinc.com>
-> > Cc: Oleksandr Natalenko <oleksandr@redhat.com>
-> >
-> > Miko Larsson (2):
-> >   Kconfig: Mark -O3 as experimental
-> >   Kconfig: Allow -O3 for all architectures
-> >
-> >  init/Kconfig | 6 ++++--
-> >  1 file changed, 4 insertions(+), 2 deletions(-)
-> >
-> > --
-> > 2.36.1
-> >
->
->
-> --
-> Thanks,
-> ~Nick Desaulniers
-
-
-
--- 
-Best Regards
-Masahiro Yamada
