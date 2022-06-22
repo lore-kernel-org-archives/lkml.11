@@ -2,157 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56AE1CCA47D
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 15:40:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7928C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 15:40:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358948AbiFVPkr (ORCPT
+        id S1357795AbiFVPky (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 11:40:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40738 "EHLO
+        Wed, 22 Jun 2022 11:40:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357795AbiFVPko (ORCPT
+        with ESMTP id S1358974AbiFVPks (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 11:40:44 -0400
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 144D92EA1D
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 08:40:43 -0700 (PDT)
-Received: by mail-lj1-x232.google.com with SMTP id n15so8225756ljg.8
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 08:40:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=NafZMYQCxpTzzA44HRDjWFQLpFRFEgWuFrU/vn1P5ls=;
-        b=bIFbveGmaARo6DLnm9N7A7esU0afWho8khAtI5lMDMqriteCF6mqPo9ORENl9XeWai
-         hMmWwyZP6Sr2xnhY54rB+3dbauG3bYiGw1evjrRgG5o4T/wrPvOb9l1/O9kV7fkyAjSl
-         6iMdqlb2FRGMB1SfL8bR5ZH55d8rAbJMFZsC6ysVtiJ0s5xCxw6u/dynBJC6SFtxe4K3
-         soEqNoDY4eVhkpzFdW4W8wWLCcU2OvlXJjr84F6FLZc74VmXVhsCbKG4LUFxqjjybclN
-         E2M1kYnyZxh/NNZPpBX+8rqs9ZYUKuuCW6mXyk5g7gQExoCMM9RwIZGOua8cebxFB9pq
-         B+mw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=NafZMYQCxpTzzA44HRDjWFQLpFRFEgWuFrU/vn1P5ls=;
-        b=TOxHlWs8ax0/8bn8ymoDzOJUtOStYsSrCQda98yihplda9UBVl3VYwfP172yRSXgTh
-         I+geuYeEMRzMQYI8iev18Pt0RHrvi+BQ8gxSNOBIqaN4f68vYwKLZarmK1CypHqxuIJt
-         Ycaiw0Z/knmIKe1RuUweVkA+thqhveX6M7HAP+4fFrTedarm2Y0T1CG576F1O07YXSzj
-         EmHgVkxWBUFsUNBfTYafU994TVzwHv/I3qjIakyt6bKSOKhQnuxGBFUWuwB3Sk2Flie/
-         gNgPsfFNstRD8AyWud70bfITO2QDjwRaxlUES+MI57GN85erE9b8Vmvd4FhlUjYqGwG4
-         OobA==
-X-Gm-Message-State: AJIora+FrTkHT9f3mx0D5+cIeCf8ryHFJDrKD30RUmsPjg6H5zwZsB/u
-        sGxQykDk/ZesgAH4HTR0dpCK4VKvOW57blDhC76ipg==
-X-Google-Smtp-Source: AGRyM1sPC6AtPgAR9cfWXxYUkXfDlY7ikTcaR+WHRUCnvAtzUFnpmLIjZAWSxITLcS0xEfeFJH1gMeKxmqmuLnceAaQ=
-X-Received: by 2002:a2e:9581:0:b0:24f:2dc9:6275 with SMTP id
- w1-20020a2e9581000000b0024f2dc96275mr2236784ljh.486.1655912441217; Wed, 22
- Jun 2022 08:40:41 -0700 (PDT)
+        Wed, 22 Jun 2022 11:40:48 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3035E2E6A4;
+        Wed, 22 Jun 2022 08:40:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655912447; x=1687448447;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=XRv7WIIIaL148PgNEUbb+gM+rHVPsb681+eLBnV7MAk=;
+  b=eH/+SOVylhugFlaB4oZhBJh8TjRYCT5kgqjRb9nuChhctNbnmCd7f+H4
+   0m9UJY2g1XvdwwjjTu0pw+VB4jnKByoLBueR3Tp310JJ+wBxVppsxl8ON
+   FX4WANGB4cPUF0tBbEk3HoiwJ3sm9eGQ1oUZtcexplaFIwcs+qlgVbcGC
+   YePt+daUltUsfhactiuJfXUVz6LK+HIgQPLwGZ8QErObRdlsMluabyo6n
+   z3RrMFafcQgbBqtne/7/yzVHprEcdgDP1XaXezhQsewjcuqXDfrSovc1w
+   6BcIfcH+z6C2P23mi5mNPdnFNioUZd3snd/5oD2N+bDdoQ0cLvM5srMcS
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="280497603"
+X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
+   d="scan'208";a="280497603"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 08:32:58 -0700
+X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
+   d="scan'208";a="677607283"
+Received: from bshakya-mobl.amr.corp.intel.com (HELO [10.212.188.76]) ([10.212.188.76])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 08:32:56 -0700
+Message-ID: <c271cbf5-dfb5-c3dd-002b-9a358c90e984@intel.com>
+Date:   Wed, 22 Jun 2022 08:32:38 -0700
 MIME-Version: 1.0
-References: <20220620150225.1307946-1-mw@semihalf.com> <YrC0oKdDSjQTgUtM@lunn.ch>
- <YrC3ZKsMQK3PYKkR@smile.fi.intel.com> <YrDAMcGg1uF9m/L+@lunn.ch> <CAPv3WKeeZwNAs06thrYvgXaTPA9KP-9dQZNZsYWx3UXS8LStAQ@mail.gmail.com>
-In-Reply-To: <CAPv3WKeeZwNAs06thrYvgXaTPA9KP-9dQZNZsYWx3UXS8LStAQ@mail.gmail.com>
-From:   Marcin Wojtas <mw@semihalf.com>
-Date:   Wed, 22 Jun 2022 17:40:29 +0200
-Message-ID: <CAPv3WKeYBE=ybXQw_3Hn2NoLVzO0da1ecged73=frzQKhGh6OQ@mail.gmail.com>
-Subject: Re: [net-next: PATCH 00/12] ACPI support for DSA
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 4/4] x86/cpuid: check for dependencies violations in CPUID
+ and attempt to fix them
+Content-Language: en-US
+To:     Maxim Levitsky <mlevitsk@redhat.com>, linux-kernel@vger.kernel.org
+Cc:     "Chang S. Bae" <chang.seok.bae@intel.com>,
+        Jiri Olsa <jolsa@kernel.org>, linux-perf-users@vger.kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Grzegorz Bernacki <gjb@semihalf.com>,
-        Grzegorz Jaszczyk <jaz@semihalf.com>,
-        Tomasz Nowicki <tn@semihalf.com>,
-        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
-        upstream@semihalf.com, Jon Nettleton <jon@solid-run.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Borislav Petkov <bp@alien8.de>,
+        Kees Cook <keescook@chromium.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Tim Chen <tim.c.chen@linux.intel.com>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        Jane Malalane <jane.malalane@citrix.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        "open list:CRYPTO API" <linux-crypto@vger.kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>
+References: <20220622144820.751402-1-mlevitsk@redhat.com>
+ <20220622144820.751402-5-mlevitsk@redhat.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <20220622144820.751402-5-mlevitsk@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On 6/22/22 07:48, Maxim Levitsky wrote:
+> Due to configuration bugs, sometimes a CPU feature is disabled in CPUID,
+> but not features that depend on it.
+> 
+> While the above is not supported, the kernel should try to not crash,
+> and clearing the dependent cpu caps is the best way to do it.
 
-wt., 21 cze 2022 o 12:46 Marcin Wojtas <mw@semihalf.com> napisa=C5=82(a):
->
-> pon., 20 cze 2022 o 20:45 Andrew Lunn <andrew@lunn.ch> napisa=C5=82(a):
-> >
-> > > You beat me up to this. I also was about to mention that the problem =
-with such
-> > > conversions (like this series does) is not in the code. It's simplest=
- part. The
-> > > problem is bindings and how you get them to be a standard (at least d=
-e facto).
-> >
-> > De facto is easy. Get it merged. After that, i will simply refuse
-> > anything else, the same way i and other Maintainers would refuse a
-> > different DT binding.
-> >
-> > If the ACPI committee approve and publish a binding, we will naturally
-> > accept that as well. So in the end we might have two bindings. But so
-> > far in this whole ACPI for networking story, i've not heard anybody
-> > say they are going to submit anything for standardisation. So this
-> > might be a mute point.
-> >
->
-> I understand your concern and of course it's better to be on a safe
-> side from the beginning. Based on the hitherto discussion under this
-> patchset, I would split the question about standardization to 2
-> orthogonal topics:
->
-> 1. Relation to the bus and enumeration:
->   * As pointed out in another patch some switches can be attached to
->     SPI or I2C. In such a case this is simple - SPISerialBus /
-> I2CSerialBus structures
->     in _CRS are included in the ACPI Spec. They allow to comprise more
-> bus specific
->     information and the code in acpi/scan.c marks those child devices
-> as to be enumerated
->     by parent bus.
->   * MDIO bus doesn't have its own _CRS macro in the Spec, on the other
-> hand the _ADR
->     seems to be the only object required for proper operation - this
-> was my base for
->     proposed solution in patch 06/12.
->
-> 2. The device description (unrelated to which bus it is attached)
->   * In Linux and other OS's there is a great amount of devices
-> conforming the guidelines
->     and using only the standard device identification/configuration
-> objects as per [1].
->   * Above do not contain custom items and entire information can be obtai=
-ned by
->     existing, generic ACPI accessors - those devices (e.g. NICs,
-> SD/MMC controllers and
->     many others) are not explicitly mentioned in official standards.
->   * The question, also related to this DSA case - is the ACPI device()
-> hierarchical
->     structure of this kind a subject for standardization for including
-> in official ACPI specification?
->   * In case not, where to document it? Is Linux' Documentation enough?
->     I agree that in the moment of merge it becomes de facto standard ABI =
-and
->     it's worth to sort it out.
->
-> Rafael, Len, any other ACPI expert - I would appreciate your inputs
-> and clarification
-> of the above. Your recommendation would be extremely helpful.
->
+That's a rather paltry changelog.
 
-Thank you all for vivid discussions. As it may take some time for the
-MDIOSerialBus _CRS macro review and approval, for now I plan to submit
-v2 of_ -> fwnode_/device_ migration (patches 1-7,11/12) and skip
-ACPI-specific additions until it is unblocked by spec extension.
+If I remember correctly, there's a crystal clear problem:
 
-Best regards,
-Marcin
+	If a CPU enumerates support for AVX2 but AVX via CPUID, the
+	kernel crashes.
+
+There's also a follow-on problem.  The kernel has all the data it needs
+to fix this, but just doesn't consult it:
+
+	To make matters worse, the kernel _knows_ that this is an ill-
+	advised situation: The kernel prevents itself from clearing the
+	software representation of the AVX CPUID bit without also
+	clearing AVX2.
+
+	But, the kernel only consults this knowledge when it is clearing
+	cpu_cap bits.  It does not consult this information when it is
+	populating those cpu_cap bits.
+
+> diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
+> index 4cc79971d2d847..c83a8f447d6aed 100644
+> --- a/arch/x86/kernel/cpu/common.c
+> +++ b/arch/x86/kernel/cpu/common.c
+> @@ -1469,7 +1469,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
+>  			this_cpu->c_early_init(c);
+>  
+>  		c->cpu_index = 0;
+> -		filter_cpuid_features(c, false);
+> +		filter_cpuid_features(c, true);
+>  
+>  		if (this_cpu->c_bsp_init)
+>  			this_cpu->c_bsp_init(c);
+> @@ -1757,7 +1757,7 @@ static void identify_cpu(struct cpuinfo_x86 *c)
+>  	 */
+>  
+>  	/* Filter out anything that depends on CPUID levels we don't have */
+> -	filter_cpuid_features(c, true);
+> +	filter_cpuid_features(c, false);
+>  
+>  	/* If the model name is still unset, do table lookup. */
+>  	if (!c->x86_model_id[0]) {
+
+While we're at it, could we please rid ourselves of this unreadable
+mystery true/false gunk?
+
+> diff --git a/arch/x86/kernel/cpu/cpuid-deps.c b/arch/x86/kernel/cpu/cpuid-deps.c
+> index bcb091d02a754b..6d9c0e39851805 100644
+> --- a/arch/x86/kernel/cpu/cpuid-deps.c
+> +++ b/arch/x86/kernel/cpu/cpuid-deps.c
+> @@ -94,6 +94,11 @@ static inline void clear_feature(struct cpuinfo_x86 *c, unsigned int feature)
+>  		set_bit(feature, (unsigned long *)cpu_caps_cleared);
+>  }
+>  
+> +static inline bool test_feature(struct cpuinfo_x86 *c, unsigned int feature)
+> +{
+> +	return test_bit(feature, (unsigned long *)c->x86_capability);
+> +}
+> +
+>  /* Take the capabilities and the BUG bits into account */
+>  #define MAX_FEATURE_BITS ((NCAPINTS + NBUGINTS) * sizeof(u32) * 8)
+>  
+> @@ -127,6 +132,7 @@ void clear_cpu_cap(struct cpuinfo_x86 *c, unsigned int feature)
+>  	} while (changed);
+>  }
+>  
+> +
+>  void setup_clear_cpu_cap(unsigned int feature)
+
+More superfluous whitespace.
+
+>  {
+>  	clear_cpu_cap(&boot_cpu_data, feature);
+> @@ -137,6 +143,10 @@ void setup_clear_cpu_cap(unsigned int feature)
+>   * Some CPU features depend on higher CPUID levels, which may not always
+>   * be available due to CPUID level capping or broken virtualization
+>   * software.  Add those features to this table to auto-disable them.
+> + *
+> + * Also due to configuration bugs, some CPUID features might be present
+> + * while CPUID features that they depend on are not present,
+> + * e.g a AVX2 present but AVX is not present.
+>   */
+>  struct cpuid_dependent_feature {
+>  	u32 feature;
+> @@ -151,9 +161,10 @@ cpuid_dependent_features[] = {
+>  	{ 0, 0 }
+>  };
+>  
+> -void filter_cpuid_features(struct cpuinfo_x86 *c, bool warn)
+> +void filter_cpuid_features(struct cpuinfo_x86 *c, bool early)
+>  {
+
+I have at least an inkling what 'warn' could mean.  But, 'early'?  One
+man's 'early' is another one's 'late'.
+
+>  	const struct cpuid_dependent_feature *df;
+> +	const struct cpuid_dep *d;
+>  
+>  	for (df = cpuid_dependent_features; df->feature; df++) {
+>  
+> @@ -172,10 +183,22 @@ void filter_cpuid_features(struct cpuinfo_x86 *c, bool warn)
+>  			continue;
+>  
+>  		clear_cpu_cap(c, df->feature);
+> -		if (!warn)
+> +		if (early)
+>  			continue;
+
+Why is it that 'early' calls don't want warnings?
+
+>  		pr_warn("CPU: CPU feature " X86_CAP_FMT " disabled, no CPUID level 0x%x\n",
+>  			x86_cap_flag(df->feature), df->level);
+>  	}
+> +
+> +	for (d = cpuid_deps; d->feature; d++) {
+> +
+> +		if (!test_feature(c, d->feature) || test_feature(c, d->depends))
+> +			continue;
+> +
+> +		clear_feature(c, d->feature);
+> +
+> +		pr_warn("CPU: CPU feature " X86_CAP_FMT " disabled, because it depends on "
+> +			X86_CAP_FMT " which is not supported in CPUID\n",
+> +			x86_cap_flag(d->feature), x86_cap_flag(d->depends));
+> +	}
+>  }
+
+The do_clear_cpu_cap() does this with a loop, presumably because a later
+(higher index in the array) feature in cpuid_deps[] could theoretically
+clear an earlier (lower index) feature.
+
+Also, is that message strictly correct?  There might have been a
+clearcpuid= argument or even another dependency that ended up clearing a
+bit.  It might have nothing to do with CPUID itself.
