@@ -2,104 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAF76C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 17:51:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A652C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 17:52:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376827AbiFVRvr (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 13:51:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55296 "EHLO
+        id S242550AbiFVRwS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 13:52:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359437AbiFVRvo (ORCPT
+        with ESMTP id S236780AbiFVRwQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 13:51:44 -0400
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F3CD35241
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 10:51:43 -0700 (PDT)
-Received: by mail-lj1-x234.google.com with SMTP id a11so11509878ljb.5
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 10:51:43 -0700 (PDT)
+        Wed, 22 Jun 2022 13:52:16 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D342E344CF
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 10:52:15 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id a15so9564083pfv.13
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 10:52:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=lyHjNlGIepIT/t3IaYDnRx3eF0Wl2lezOvJ866alVNE=;
-        b=phpEogNR2Dg76Apl+C0m8n/9gUnfdkc6rnmv8hg35SveC82wohLJms9nr8qUFjSTrt
-         4Wqhfvb7TrbFI0PccZBegFGbM6GWr4WH60OyCtbhsxjLU5Gc19GKXWPP4ElsqfSX70r4
-         GI8QbEhNgxtYK4Xyzgo0aD4lxO8yoOXSP1ERqgttwcWrM9LBVriiDKrg6TWygQvTAYD1
-         gwUXdUJl30pALaY/eKtcdJDLVMhcpnDNUTG8kt/basq2l9yPy5n4cAJPiHRVjSyhApU7
-         AIhFhue8YAUjo6mD/YxRMnzlCFrk8+m/fUb1RIXRUrWefCqJsAgGjAgmDmmRQZi0niT4
-         eSPQ==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=CM4RfzBmVh3C+Iy74tc4MTRNqz/4SgRhoKdMoFuie3A=;
+        b=LT5VSzIFADk3yZFFJCf2grfn5gX10ZlwVQywoHo9oWynlEqhcFpZNIO7Vo7cdrI8IH
+         cqFVg3xMhjlIiXuobkgLZ74e7AMGUjGvhjaOXbuYdtufQLi4c1tIG4HR7fecgp+Anx0R
+         4SLy1Dpz+FlPvOuzvNETxs86OIdeBbr3TFGoR1iMWtiKqnzx/0+5b7oF+yUn1dbShqEM
+         H15faq3ZdwAYOArsI+7UpCcFaMEE03T0l7zfgPGghFvTUKAiX3c/3qiNAiauHDdGyiOd
+         C8i8pCUqe9FQkpKbyufo5Fme6LsdwY2alYOTxmk+z7uEHt3UEm7icsz1Bbn8h5DECPjw
+         3uqg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=lyHjNlGIepIT/t3IaYDnRx3eF0Wl2lezOvJ866alVNE=;
-        b=M6EQmjLsgHUGeOHn86cncyU9cTJcaSMUtNCQiq+0wl4rlxHHO+tzp/LFeSkxOrNfOH
-         grsiK8RbcxCDhRVzzY2j5V4f68lTOcTPgAAwh4oxiQlsV+DfLpt8plnsR5qecs0YDsN4
-         +Y6fd8D/r8kiW7mgmBTtL7DPTu6+HCM3JpXG9Rfu1iPv7ri8o73tiuqpFm02nqjwv55U
-         bw+pFlSVaXuVe4kA56LmuY6RWDelxO5SR5LK6n/w0627OoHNmtE9WriA4ic43c5VKLLI
-         32Phtm3cOLh28dXlug69+MLXsdZR45QzgBf7PmTtoTRGnww+XCpUkFZdT4xyo4QKQuE4
-         /7Ng==
-X-Gm-Message-State: AJIora8KeBqUCdIsLaZjgjpISNW5raG3q0GX3QGuxW7ZuvAoDXIQt8/i
-        S9RzlpLlouePkl09k/Hb6lDk1Q==
-X-Google-Smtp-Source: AGRyM1uqRH0eeNtScZfg9vgahrtzqeNiUZh3ZaiXJFRiWQWm4xvksCJ8mnE2AFxPxob07sW9BfcD1A==
-X-Received: by 2002:a05:651c:211e:b0:25a:88ca:d766 with SMTP id a30-20020a05651c211e00b0025a88cad766mr2448216ljq.230.1655920301613;
-        Wed, 22 Jun 2022 10:51:41 -0700 (PDT)
-Received: from [192.168.1.212] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id k1-20020a192d01000000b00478fc20dc88sm2628594lfj.73.2022.06.22.10.51.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Jun 2022 10:51:40 -0700 (PDT)
-Message-ID: <54ef4527-bb30-c7c6-ab74-0a2557c763cc@linaro.org>
-Date:   Wed, 22 Jun 2022 20:51:40 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH] dt-bindings: msm: update maintainers list with proper id
-Content-Language: en-GB
-To:     Kuogee Hsieh <quic_khsieh@quicinc.com>, robdclark@gmail.com,
-        sean@poorly.run, swboyd@chromium.org, vkoul@kernel.org,
-        agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
-        devicetree@vger.kernel.org
-Cc:     abhinavk@codeaurora.org, quic_aravindh@quicinc.com,
-        freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=CM4RfzBmVh3C+Iy74tc4MTRNqz/4SgRhoKdMoFuie3A=;
+        b=s8+MSGEZeaZCshJNri+3IU+LLvl1YnPDsw4AY45t89k+Qkfm6dpwtT3XZnNJ0oCXZc
+         353Ibeh7JtcYrpxHRQH6qiOAGYOJj4IV+/hhBCH29GbWqPH2eTC9AgT8SLjemESal1xp
+         DjN+SbiSms1DoPWaZC5VDjEIUq7fRWYZ+7/oaRf4mj30AnL4GmjdVrxM8wJ6A0x+/M/c
+         wSrf3RkXgSYAA9ZQRuVZxY7cmZ+/AB8ub59lRqwZgn31GX1UMYini6TSzR7gMCh0Pr9Y
+         U4DDQ4h9Ffxg9tpfZQ/sLBHnlH7QiU7oH/c+5UHcVPLrBFIzY4zJHPgdpzhNLojBkYTz
+         G/Vg==
+X-Gm-Message-State: AJIora+H+sAWTwk3+O9Z+4r5rzZ1QIQ+m4MbXLt7PbFt23ux5XV5v1Ct
+        DfC/jjXGDlDgJjjm76h30QhhVQr7igz1Qg==
+X-Google-Smtp-Source: AGRyM1sP84E1mBLGYiykEHXI+HnhMfce8TyrVRgWTitaAG6k8H6/gMN63LEbAINlAMsVgHqPwlevSQ==
+X-Received: by 2002:a63:ff19:0:b0:403:7c60:ae96 with SMTP id k25-20020a63ff19000000b004037c60ae96mr3756287pgi.466.1655920335023;
+        Wed, 22 Jun 2022 10:52:15 -0700 (PDT)
+Received: from google.com (55.212.185.35.bc.googleusercontent.com. [35.185.212.55])
+        by smtp.gmail.com with ESMTPSA id p8-20020aa78608000000b005183cf12184sm4033040pfn.133.2022.06.22.10.52.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jun 2022 10:52:14 -0700 (PDT)
+Date:   Wed, 22 Jun 2022 10:52:10 -0700
+From:   Zach O'Keefe <zokeefe@google.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Yang Shi <shy828301@gmail.com>, vbabka@suse.cz,
+        kirill.shutemov@linux.intel.com, willy@infradead.org,
+        linmiaohe@huawei.com, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org
-References: <1655916953-32039-1-git-send-email-quic_khsieh@quicinc.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <1655916953-32039-1-git-send-email-quic_khsieh@quicinc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: Re: [v5 PATCH 4/7] mm: thp: kill transparent_hugepage_active()
+Message-ID: <YrNWyqxIKsQq1ky5@google.com>
+References: <20220616174840.1202070-1-shy828301@gmail.com>
+ <20220616174840.1202070-5-shy828301@gmail.com>
+ <YrIU2iP0H5LQbV7R@google.com>
+ <20220621175412.02d90df5f381de0cd676adf8@linux-foundation.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220621175412.02d90df5f381de0cd676adf8@linux-foundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22/06/2022 19:55, Kuogee Hsieh wrote:
-> Use quic id instead of codeaurora id in maintainers list
-> for display devicetree bindings.
+On 21 Jun 17:54, Andrew Morton wrote:
+> On Tue, 21 Jun 2022 11:58:34 -0700 "Zach O'Keefe" <zokeefe@google.com> wrote:
 > 
-> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-
-> ---
->   Documentation/devicetree/bindings/display/msm/dp-controller.yaml | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+> > > -bool transparent_hugepage_active(struct vm_area_struct *vma)
+> > > +bool hugepage_vma_check(struct vm_area_struct *vma,
+> > > +			unsigned long vm_flags,
+> > > +			bool smaps)
+> > >  {
+> > > -	/* The addr is used to check if the vma size fits */
+> > > -	unsigned long addr = (vma->vm_end & HPAGE_PMD_MASK) - HPAGE_PMD_SIZE;
+> > > +	if (!transhuge_vma_enabled(vma, vm_flags))
+> > > +		return false;
+> > > +
+> > 
+> > During testing my work on top this patch, I found a small bug here.
+> > 
+> > Namely, transhuge_vma_enabled() will check vma->vm_mm->flags (to see if
+> > MMF_DISABLE_THP is set); however, for vDSO vmas, vma->vm_mm is NULL.
+> > 
+> > Previously, transparent_hugepage_active() in smaps path would check
+> > transhuge_vma_suitable() before checking these flags, which would fail for vDSO
+> > vma since we'd take the !vma_is_anonymous() branch and find the vma (most
+> > likely) wasn't suitably aligned (by chance ?).
+> > 
+> > Anyways, I think we need to check vma->vm_mm.
 > 
-> diff --git a/Documentation/devicetree/bindings/display/msm/dp-controller.yaml b/Documentation/devicetree/bindings/display/msm/dp-controller.yaml
-> index cd05cfd..c950710 100644
-> --- a/Documentation/devicetree/bindings/display/msm/dp-controller.yaml
-> +++ b/Documentation/devicetree/bindings/display/msm/dp-controller.yaml
-> @@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
->   title: MSM Display Port Controller
->   
->   maintainers:
-> -  - Kuogee Hsieh <khsieh@codeaurora.org>
-> +  - Kuogee Hsieh <quic_khsieh@quicinc.com>
->   
->   description: |
->     Device tree bindings for DisplayPort host controller for MSM targets
+> Like this?
+> 
+> --- a/mm/huge_memory.c~mm-thp-kill-transparent_hugepage_active-fix
+> +++ a/mm/huge_memory.c
+> @@ -73,6 +73,9 @@ bool hugepage_vma_check(struct vm_area_s
+>  			unsigned long vm_flags,
+>  			bool smaps)
+>  {
+> +	if (!vma->vm_mm)
+> +		return false;
+> +
+>  	if (!transhuge_vma_enabled(vma, vm_flags))
+>  		return false;
+>  
+> _
+> 
 
+Hey Andrew,
 
--- 
-With best wishes
-Dmitry
+In principle, yes that would fix this. I don't know precisely how this fix will
+be applied, but note that the subsequent patch "mm: thp: kill
+__transhuge_page_enabled()" won't apply on top of this automatically. Also, I
+wonder if we should add a comment for future travellers who wonder what kind of
+vmas don't have an associated mm (it was news to me); though, I'm not sure if
+vDSO is the only such case (though show_map_vma() seems to think so), or if this
+just asking for stale comments down the road. Maybe it's fine as is.
+
+Thanks,
+Zach
+
