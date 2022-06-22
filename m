@@ -2,102 +2,224 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8742ACCA47A
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 07:15:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0D66CCA482
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 07:16:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352488AbiFVHPV (ORCPT
+        id S1352600AbiFVHQT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 03:15:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51540 "EHLO
+        Wed, 22 Jun 2022 03:16:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350659AbiFVHPT (ORCPT
+        with ESMTP id S1352481AbiFVHQS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 03:15:19 -0400
-Received: from mail-qv1-f43.google.com (mail-qv1-f43.google.com [209.85.219.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFE2F36E1D;
-        Wed, 22 Jun 2022 00:15:18 -0700 (PDT)
-Received: by mail-qv1-f43.google.com with SMTP id n15so19900375qvh.12;
-        Wed, 22 Jun 2022 00:15:18 -0700 (PDT)
+        Wed, 22 Jun 2022 03:16:18 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CCAA36E2F
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 00:16:14 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id n1so21789512wrg.12
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 00:16:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CtSNoh45LEKsH5r4uELC6LtRueJ6snrKyNpfTTTNZ1Y=;
+        b=fA2zTCihmRV2WZbU3gqvzED0Fp8YWvXNRYw7aPaV19Ys6QazhFGijpJrid5c5UgJok
+         J4QktUfWvP2OaY6yRc3kFzSzLs9xtxlVDok9cBwPkX8NrcEjziBX6ZPxWCE57ibbMDUz
+         Gdi2j5k30MFYfycNxG9VcjEp2Ei4H1fbjPyVRO8K7pSvn4YCa4kijnvLKu20me83qluz
+         eyOlFHtKb3hnHohBVB1rJEHTed4QDvgHrIZqL4nB3knkrz0LBR545QpE8ftw55RX3Erx
+         7ejW6qZbPyL/th21G1Sw7B5H59xsqFbA0PXGB7znU2uiOe02dmfcCEc2BNRbCux7YwwS
+         IGcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=lHEhufuR0BCwdgBJ9UiDykLCzo+7fjj1KMdN8Y47avc=;
-        b=osZL6e19UyN+wUDEWFphga5cbgcSKq902CLx+IBBOgQH2ryjjvsrsV4gHRg0+jCvdM
-         l7+9VPhaDlDy/zOnPdxwiX39Tdpd3RloXlpAQZ1biUT6y/zwBSsR8ZqPERrcuYJNNUO1
-         yKJkh1Ek+AWj+CYKERuKtaZx866REk4LS+uRwkqC6eP1+TkUzLzQc5g/AVtN+WNAu64X
-         +Gb/52jCszcKvRO4gTLw/T+CSeFasnRwOMfghvVGHWfuWb+I0hOvBeWTsr8tol41haUv
-         7gv+mQdnlTMU9IIa5imCN+zyIo0WsljlQaIep6aUxfPKLruxR1Dq6wJBUpnDxFzahFdm
-         8ykA==
-X-Gm-Message-State: AJIora8pTZB0yxE7PjkuNhge68t5IfSVfBROPfCUfBfI7J2iKrJ5FdWZ
-        Dpe/nBLTJfYmhjGsEGexHYtL2PxEIudn0g==
-X-Google-Smtp-Source: AGRyM1vLlVlUEYkp6KfhJmCWmyg6tRO82+0hpeHTNPYk9pbj49uvmhJFD3QGvb+9g2InOcnCWzg2bQ==
-X-Received: by 2002:ac8:7dc2:0:b0:306:6881:2693 with SMTP id c2-20020ac87dc2000000b0030668812693mr1803460qte.16.1655882117867;
-        Wed, 22 Jun 2022 00:15:17 -0700 (PDT)
-Received: from mail-yw1-f182.google.com (mail-yw1-f182.google.com. [209.85.128.182])
-        by smtp.gmail.com with ESMTPSA id bp15-20020a05620a458f00b006a72b38e2ecsm15450053qkb.51.2022.06.22.00.15.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Jun 2022 00:15:17 -0700 (PDT)
-Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-3176b6ed923so153599027b3.11;
-        Wed, 22 Jun 2022 00:15:17 -0700 (PDT)
-X-Received: by 2002:a81:574c:0:b0:317:7c3a:45be with SMTP id
- l73-20020a81574c000000b003177c3a45bemr2586631ywb.316.1655882117218; Wed, 22
- Jun 2022 00:15:17 -0700 (PDT)
+        bh=CtSNoh45LEKsH5r4uELC6LtRueJ6snrKyNpfTTTNZ1Y=;
+        b=1N4t1d9RGiGEzO5NRx+NIJIoYk+7BRoLHa8AtCAt9jXLGZVqKQDQsBPu9HiBKnTDJK
+         /9k7PmxNzL4kSbs7M7l+c3agLbnJ7QrpjpRDXgNfHeU9MCHMQxHHdyefpCqwhoS/lkkK
+         v6Cybs889dG9KkXHDy4+5V49AxXDyo9C9wiaUIfzifDEoF+SpzlzxtCRBNWUsZRjt3z3
+         pdOoXzrkSaE6OcbianJeh87V0R3SWenyM4eTsInzNBwEZlYiR4fu/HIKazHy/ttOpirb
+         paVll1uknJYsKmC3Wzq3pGU5sgx9HMYjRTyVibkJnsqvLGPI3klDlJJ0DG53GVoaeE1u
+         uK0g==
+X-Gm-Message-State: AJIora+kgzg6QJLyywVOFJq9y27Dd84OJcIp8amn8x+j7E9eTakO3QYu
+        MDhVMP1oXsFSPGkmxcDCfkZo8YpMFW2tccbz0MKcQg==
+X-Google-Smtp-Source: AGRyM1tCZmF74NPe0ihlmXBCpgdH9Z16UD41QxdqlzJg3ptuyeQtd337BFOBJWJ5yCJ2w6VfBacRyIn19z00N7AB3LY=
+X-Received: by 2002:a5d:570e:0:b0:21b:9610:2dd7 with SMTP id
+ a14-20020a5d570e000000b0021b96102dd7mr1682277wrv.337.1655882173160; Wed, 22
+ Jun 2022 00:16:13 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220621204928.249907-1-sashal@kernel.org> <20220621204928.249907-5-sashal@kernel.org>
-In-Reply-To: <20220621204928.249907-5-sashal@kernel.org>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 22 Jun 2022 09:15:06 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdVmkr2sQ6-1pu=B7EscXWY-ZwONo=WGGwDOK_D6VxKc=A@mail.gmail.com>
-Message-ID: <CAMuHMdVmkr2sQ6-1pu=B7EscXWY-ZwONo=WGGwDOK_D6VxKc=A@mail.gmail.com>
-Subject: Re: [PATCH AUTOSEL 5.18 05/22] eeprom: at25: Split reads into chunks
- and cap write size
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        stable <stable@vger.kernel.org>,
-        Brad Bishop <bradleyb@fuzziesquirrel.com>,
-        Eddie James <eajames@linux.ibm.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Kees Cook <keescook@chromium.org>,
+References: <20220621085345.603820-1-davidgow@google.com> <20220621085345.603820-4-davidgow@google.com>
+In-Reply-To: <20220621085345.603820-4-davidgow@google.com>
+From:   David Gow <davidgow@google.com>
+Date:   Wed, 22 Jun 2022 15:16:01 +0800
+Message-ID: <CABVgOSm-bgjTzeWjEtDZ+3f-zJLxjywtgVSqWu2-cK_ScRLHwA@mail.gmail.com>
+Subject: Re: [PATCH v2 3/5] thunderbolt: test: Use kunit_test_suite() macro
+To:     Brendan Higgins <brendanhiggins@google.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Jeremy Kerr <jk@codeconstruct.com.au>,
+        Daniel Latypov <dlatypov@google.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Longpeng <longpeng2@huawei.com>
+Cc:     Paraschiv@google.com,
         Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Ralph Siemsen <ralph.siemsen@linaro.org>,
-        Mark Brown <broonie@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        KUnit Development <kunit-dev@googlegroups.com>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        =?UTF-8?B?TWHDrXJhIENhbmFs?= <maira.canal@usp.br>,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
+        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        linux-usb@vger.kernel.org, linux-modules@vger.kernel.org,
+        Matt Johnston <matt@codeconstruct.com.au>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="000000000000bd1f1305e2041c80"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Sasha,
+--000000000000bd1f1305e2041c80
+Content-Type: text/plain; charset="UTF-8"
 
-On Tue, Jun 21, 2022 at 10:57 PM Sasha Levin <sashal@kernel.org> wrote:
-> From: Brad Bishop <bradleyb@fuzziesquirrel.com>
+On Tue, Jun 21, 2022 at 4:54 PM David Gow <davidgow@google.com> wrote:
 >
-> [ Upstream commit 0a35780c755ccec097d15c6b4ff8b246a89f1689 ]
+> The new implementation of kunit_test_suite() for modules no longer
+> conflicts with module_init, so can now be used by the thunderbolt tests.
 >
-> Make use of spi_max_transfer_size to avoid requesting transfers that are
-> too large for some spi controllers.
+> Also update the Kconfig entry to enable the test when KUNIT_ALL_TESTS is
+> enabled.
 >
-> Signed-off-by: Brad Bishop <bradleyb@fuzziesquirrel.com>
-> Signed-off-by: Eddie James <eajames@linux.ibm.com>
-> Signed-off-by: Joel Stanley <joel@jms.id.au>
-> Link: https://lore.kernel.org/r/20220524215142.60047-1-eajames@linux.ibm.com
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> This means that kunit_tool can now successfully run and parse the test
+> results with, for example:
+>         ./tools/testing/kunit/kunit.py run --arch=x86_64 \
+>         --kconfig_add CONFIG_PCI=y --kconfig_add CONFIG_USB4=y \
+>         'thunderbolt'
+>
+> Acked-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+> Signed-off-by: David Gow <davidgow@google.com>
+> ---
+>
+> Changes since v1:
+> https://lore.kernel.org/linux-kselftest/20220618090310.1174932-4-davidgow@google.com/
+> - Actually include the Kconfig changes, which were mistakenly added to
+>   the next patch in the series in v1.
+> - Add Acked-by tag from Mika Westerberg
+>
+> ---
+>  drivers/thunderbolt/Kconfig  |  5 +++--
+>  drivers/thunderbolt/domain.c |  3 ---
+>  drivers/thunderbolt/tb.h     |  8 --------
+>  drivers/thunderbolt/test.c   | 12 +-----------
+>  4 files changed, 4 insertions(+), 24 deletions(-)
+>
+> diff --git a/drivers/thunderbolt/Kconfig b/drivers/thunderbolt/Kconfig
+> index 4bfec8a28064..2a063d344b94 100644
+> --- a/drivers/thunderbolt/Kconfig
+> +++ b/drivers/thunderbolt/Kconfig
+> @@ -28,8 +28,9 @@ config USB4_DEBUGFS_WRITE
+>           this for production systems or distro kernels.
+>
+>  config USB4_KUNIT_TEST
+> -       bool "KUnit tests"
+> -       depends on KUNIT=y
+> +       bool "KUnit tests" if !KUNIT_ALL_TESTS
+> +       depends on KUNIT
+> +       default KUNIT_ALL_TESTS
+>
 
-Please drop this, as it breaks operation on devices that don't need
-the split, and may cause a buffer overflow on those that do.
+FYI: It turns out we can't just replace the "depends on KUNIT=y" with
+"depends on KUNIT" here, as it's still possible to have CONFIG_USB4=y
+and CONFIG_KUNIT=m, which would lead to missing KUnit symbols during
+link.
 
-https://lore.kernel.org/r/7ae260778d2c08986348ea48ce02ef148100e088.1655817534.git.geert+renesas@glider.be/
+What does work is adding, in addition to "depends on KUNIT":
+depends on (USB4=m || KUNIT=y)
 
-Gr{oetje,eeting}s,
+Which will prevent the tests from being enabled in this situation.
 
-                        Geert
+I'll wait another day or so before sending out a v3 with this fixed,
+in case there are any other issues which arise.
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+Cheers,
+-- David
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+--000000000000bd1f1305e2041c80
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+MIIPnwYJKoZIhvcNAQcCoIIPkDCCD4wCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
+ggz5MIIEtjCCA56gAwIBAgIQeAMYYHb81ngUVR0WyMTzqzANBgkqhkiG9w0BAQsFADBMMSAwHgYD
+VQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UE
+AxMKR2xvYmFsU2lnbjAeFw0yMDA3MjgwMDAwMDBaFw0yOTAzMTgwMDAwMDBaMFQxCzAJBgNVBAYT
+AkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMSowKAYDVQQDEyFHbG9iYWxTaWduIEF0bGFz
+IFIzIFNNSU1FIENBIDIwMjAwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCvLe9xPU9W
+dpiHLAvX7kFnaFZPuJLey7LYaMO8P/xSngB9IN73mVc7YiLov12Fekdtn5kL8PjmDBEvTYmWsuQS
+6VBo3vdlqqXZ0M9eMkjcKqijrmDRleudEoPDzTumwQ18VB/3I+vbN039HIaRQ5x+NHGiPHVfk6Rx
+c6KAbYceyeqqfuJEcq23vhTdium/Bf5hHqYUhuJwnBQ+dAUcFndUKMJrth6lHeoifkbw2bv81zxJ
+I9cvIy516+oUekqiSFGfzAqByv41OrgLV4fLGCDH3yRh1tj7EtV3l2TngqtrDLUs5R+sWIItPa/4
+AJXB1Q3nGNl2tNjVpcSn0uJ7aFPbAgMBAAGjggGKMIIBhjAOBgNVHQ8BAf8EBAMCAYYwHQYDVR0l
+BBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMEMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFHzM
+CmjXouseLHIb0c1dlW+N+/JjMB8GA1UdIwQYMBaAFI/wS3+oLkUkrk1Q+mOai97i3Ru8MHsGCCsG
+AQUFBwEBBG8wbTAuBggrBgEFBQcwAYYiaHR0cDovL29jc3AyLmdsb2JhbHNpZ24uY29tL3Jvb3Ry
+MzA7BggrBgEFBQcwAoYvaHR0cDovL3NlY3VyZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvcm9vdC1y
+My5jcnQwNgYDVR0fBC8wLTAroCmgJ4YlaHR0cDovL2NybC5nbG9iYWxzaWduLmNvbS9yb290LXIz
+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
+z/tQRXr3iPeVmZCr7nttMEwGA1UdIARFMEMwQQYJKwYBBAGgMgEoMDQwMgYIKwYBBQUHAgEWJmh0
+dHBzOi8vd3d3Lmdsb2JhbHNpZ24uY29tL3JlcG9zaXRvcnkvMAwGA1UdEwEB/wQCMAAwgZoGCCsG
+AQUFBwEBBIGNMIGKMD4GCCsGAQUFBzABhjJodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9jYS9n
+c2F0bGFzcjNzbWltZWNhMjAyMDBIBggrBgEFBQcwAoY8aHR0cDovL3NlY3VyZS5nbG9iYWxzaWdu
+LmNvbS9jYWNlcnQvZ3NhdGxhc3Izc21pbWVjYTIwMjAuY3J0MB8GA1UdIwQYMBaAFHzMCmjXouse
+LHIb0c1dlW+N+/JjMEYGA1UdHwQ/MD0wO6A5oDeGNWh0dHA6Ly9jcmwuZ2xvYmFsc2lnbi5jb20v
+Y2EvZ3NhdGxhc3Izc21pbWVjYTIwMjAuY3JsMA0GCSqGSIb3DQEBCwUAA4IBAQAx+EQjLATc/sze
+VoZkH7OLz+/no1+y31x4BQ3wjW7lKfay9DAAVym896b7ECttSo95GEvS7pYMikzud57WypK7Bjpi
+ep8YLarLRDrvyyvBuYtyDrIewkuASHtV1oy5E6QZZe2VOxMm6e2oJnFFjbflot4A08D3SwqDwV0i
+OOYwT0BUtHYR/3903Dmdx5Alq+NDvUHDjozgo0f6oIkwDXT3yBV36utQ/jFisd36C8RD5mM+NFpu
+3aqLXARRbKtxw29ErCwulof2dcAonG7cd5j+gmS84sLhKU+BhL1OQVXnJ5tj7xZ5Ri5I23brcwk0
+lk/gWqfgs3ppT9Xk7zVit9q8MYICajCCAmYCAQEwaDBUMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQ
+R2xvYmFsU2lnbiBudi1zYTEqMCgGA1UEAxMhR2xvYmFsU2lnbiBBdGxhcyBSMyBTTUlNRSBDQSAy
+MDIwAhABh9LgIPnlfMFHR0Die8n7MA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCB1
+Mdw9axuh90nzbVhFE5gRjx4/lShMFfC1KFUOOrHCszAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcB
+MBwGCSqGSIb3DQEJBTEPFw0yMjA2MjIwNzE2MTNaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUD
+BAEqMAsGCWCGSAFlAwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsG
+CSqGSIb3DQEBBzALBglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEAf3I8xG1SnEmHZXnfmfTP
+awx1EH5au/l8uN//Zd4fylWYSxYSgJo/cDHyaiEdxFh4eqZZbMIYSPyk+1mZeBofz1sEkYvpIYhb
+IIoD1CBjrtM3ihfZDjiT7XnH1y/dusUcAmJlVZh9JrpH7zd9ZUqgM3I7KXMHSyjXK1B0yGxZMVIq
+7PTfM0fVQQPfrlndAtyQ3TFAWaYFzcT4eRIvoBMlSR/GpPEuew8n0LOI5I9TfKGvS9xEgCpHJDvr
+2cesuzmSjZaASJusIbCMZq/ZI/GRrqtN8+p2GgDD+8MXqiCnlFZlNuUMF55ZMctJgWghGx9oOCM+
+3OaLc/IGlqK8cowXmg==
+--000000000000bd1f1305e2041c80--
