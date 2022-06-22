@@ -2,115 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A2A5CCA47D
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 14:00:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 686BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 14:01:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351215AbiFVOAv (ORCPT
+        id S1357771AbiFVOBn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 10:00:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50352 "EHLO
+        Wed, 22 Jun 2022 10:01:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234575AbiFVOAq (ORCPT
+        with ESMTP id S234575AbiFVOBi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 10:00:46 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1673369C0;
-        Wed, 22 Jun 2022 07:00:45 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id i10so19796721wrc.0;
-        Wed, 22 Jun 2022 07:00:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=kUoPBZyP0axk6nRKrhH6g/mHLGZVisdHs+5kDGpekpo=;
-        b=k1Ju7wSZg82QWvOtXh5C+tGY8yQTX/08iv3KdTAcyuRnqE58hCx1JQexXSe+URDpdE
-         p0ImgnAGaHjE4JislySg6qecoHYrJEejC/GKLB6sT9jN3wrUP9rOG2XIOForITnd02x0
-         jhYNwfPB2Ui/+rtwPhJukncCC+3XlAS1L+lRz2bl36BP7Jua1NPToYPE73iRGmqhze51
-         o7wdeYArozyn8VTtFZYDGYT6lbHLJjuhRIUJRJsvCozJh1TMeIXHlFc7KREnPbjXtdY+
-         CfZiTET5VyMN8qT2QjXSp7TEVMHYK/7YO0SOSiusTq/eFQ92Wv1PlC+bAT9u9ZB3fSWN
-         vzXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=kUoPBZyP0axk6nRKrhH6g/mHLGZVisdHs+5kDGpekpo=;
-        b=Zwh8DngaovadWe5moBvxoMu2tq+eUVu1XA9rhxLq1nkPaV9ewPTFzNwS3UoxvBu3C6
-         NCfz9NYaxsHQ8bjiU3ptPor2ZvQCT1uEC3I5KkdsaSUTy2uh7h20nwvYvJF08BHDQv/r
-         LiP1wk7CA/7loK7xDwfVit5rOMt15Y8vnh/uw792HTRoRr1A+kUjYYZHuZqbcHXutZOD
-         4W1tCpCKEmJ4OK0U5PkngKRAb53vLyEnOsePpVBdfDd3HwiOTVv7u9N3NzqUlPBvxesr
-         8kap05B9e46t7vNhmC+INenr0CzhhgbxLWzwy3h/wFU0shNXta8UwYlpEyAbEcrx1J1d
-         PzWg==
-X-Gm-Message-State: AJIora8e9M0SoojE/6WjI6WvlMnWUPNrA4kpMxnTQHizvNGS48+XUKih
-        OwXxxbkuYIMH9yJfYSQE1lA=
-X-Google-Smtp-Source: AGRyM1tHnt/jgPsUPVHQvg5sU4veue4z+CecoIbCr7Phmv2bIYomTp7Bt+U4+PUBWvt0gfS8ohWH7g==
-X-Received: by 2002:adf:fb10:0:b0:207:af88:1eb9 with SMTP id c16-20020adffb10000000b00207af881eb9mr3598860wrr.238.1655906444093;
-        Wed, 22 Jun 2022 07:00:44 -0700 (PDT)
-Received: from orome (p200300e41f12c800f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f12:c800:f22f:74ff:fe1f:3a53])
-        by smtp.gmail.com with ESMTPSA id o4-20020adfcf04000000b0020ff877cfbdsm16655568wrj.87.2022.06.22.07.00.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jun 2022 07:00:43 -0700 (PDT)
-Date:   Wed, 22 Jun 2022 16:00:40 +0200
-From:   Thierry Reding <thierry.reding@gmail.com>
-To:     Fabien Parent <fparent@baylibre.com>
-Cc:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH v2 1/2] dt-bindings: pwm: add MT8365 SoC binding
-Message-ID: <YrMgiCPMsb3Y8Zd9@orome>
-References: <20220530205038.917431-1-fparent@baylibre.com>
+        Wed, 22 Jun 2022 10:01:38 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6DC6369E2;
+        Wed, 22 Jun 2022 07:01:37 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 83EF221C18;
+        Wed, 22 Jun 2022 14:01:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1655906496; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=YUedw22uTonupl5S/QuQDfVjYG8TUjcgcNCTZyOGnGE=;
+        b=ZJpLVCcp3pQ+pNJiwsh0FsMhcXDcJWNOu73JOqO+um4z3crgtaMcEtIAETajwojd6MS48H
+        DqWAILnUWNje2m+SZqpwueDpfbR0JpKrzoETnksDa3zcGXWnvuCHEZC93NJkDUjJ5NbunZ
+        FT9lCISK233TJHx2C9L4aSvv2Gqn/YM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1655906496;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=YUedw22uTonupl5S/QuQDfVjYG8TUjcgcNCTZyOGnGE=;
+        b=esfq23hcixQZ1wWVeJjTN87GXtpefgt1iutwZJocxJ22QJRRUWVHEaxVFoqKHRbTmi7vex
+        8e3F+6Sw5P0EpgAA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 34A2B134A9;
+        Wed, 22 Jun 2022 14:01:36 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id eezhC8Ags2IVRwAAMHmgww
+        (envelope-from <tzimmermann@suse.de>); Wed, 22 Jun 2022 14:01:36 +0000
+From:   Thomas Zimmermann <tzimmermann@suse.de>
+To:     alex.williamson@redhat.com, corbet@lwn.net,
+        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+        airlied@linux.ie, daniel@ffwll.ch, deller@gmx.de,
+        gregkh@linuxfoundation.org, javierm@redhat.com, lersek@redhat.com,
+        kraxel@redhat.com
+Cc:     linux-doc@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, Thomas Zimmermann <tzimmermann@suse.de>
+Subject: [PATCH v3 0/3] Improve vfio-pci primary GPU assignment behavior
+Date:   Wed, 22 Jun 2022 16:01:31 +0200
+Message-Id: <20220622140134.12763-1-tzimmermann@suse.de>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="iKffDT5KCf9O/u8c"
-Content-Disposition: inline
-In-Reply-To: <20220530205038.917431-1-fparent@baylibre.com>
-User-Agent: Mutt/2.2.4 (c3baa83e) (2022-04-30)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+(I'm taking over this patchset from Alex, [1] as we agreed that it should
+go through the drm-misc tree.)
 
---iKffDT5KCf9O/u8c
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+When assigning a primary graphics device to VM through vfio-pci device
+assignment, users often prevent binding of the native PCI graphics
+driver to avoid device initialization conflicts, however firmware
+console drivers may still be attached to the device which can often be
+cumbersome to manually unbind or exclude via cmdline options.
 
-On Mon, May 30, 2022 at 10:50:37PM +0200, Fabien Parent wrote:
-> Add binding documentation for the MT8365 SoC.
->=20
-> Signed-off-by: Fabien Parent <fparent@baylibre.com>
-> ---
-> v2: fix clock description (five -> three)
->=20
->  Documentation/devicetree/bindings/pwm/pwm-mediatek.txt | 2 ++
->  1 file changed, 2 insertions(+)
+This series proposes to move the DRM aperture helpers out to
+drivers/video/ to make it more accessible to drivers like vfio-pci,
+which have neither dependencies on DRM code nor a struct drm_driver
+to present to existing interfaces.  vfio-pci can then trivially call
+into the aperture helpers to remove conflicting drivers, rather than
+open coding it ourselves as was proposed with a new symbol export in
+v1 of this series. [2]
 
-Both patches applied, thanks.
+v3:
+	* add aperture_ prefix to all interfaces (Javier)
+	* improved documentation (Javier)
+	* update MAINTAINERS [3] and add aperture helpers
 
-Thierry
+[1] https://lore.kernel.org/all/165541020563.1955826.16350888595945658159.stgit@omen/
+[2] https://lore.kernel.org/all/165453797543.3592816.6381793341352595461.stgit@omen/
+[3] https://lore.kernel.org/all/20220518183006.14548-2-tzimmermann@suse.de/
 
---iKffDT5KCf9O/u8c
-Content-Type: application/pgp-signature; name="signature.asc"
+Alex Williamson (1):
+  vfio/pci: Remove console drivers
 
------BEGIN PGP SIGNATURE-----
+Thomas Zimmermann (2):
+  MAINTAINERS: Broaden scope of simpledrm entry
+  drm: Implement DRM aperture helpers under video/
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmKzIIgACgkQ3SOs138+
-s6EZwhAAtTbNvEnm90ZYyOiXMFI5+PaLF4vJyVAEMi3M8wnJERzD+fx6zlfpdey5
-HUOgg7d+R4Oma1wuGFo3HAMcIuG+/pel+eE8f7zGiYkcb2QNpzTrRsVQwBrjCPoY
-6upls6fu2Xhzebdkntda3Nnj+JqbPExxmAmrDVgudViBVXKGLLo8l+aFAf1xJYoZ
-AphfyPCLyxnC+MB4G0qrQVcPOdTQq433t+BnXZ9C4EnaEZA0vcjFk/CpIYXYme03
-sPbI06xJDZVuGluoEaoRq4O6r/v0foxfThn5tjZuwQJvSc2qEX5eJD0U1IFZdsj9
-3fJKnrmTQYA7zORslHNQV7aGCIRTtf9v87XvilY9G9P8n0Lp7rGiJrBQg0Kx/cXN
-Bb3j+0JnXQtzBB+v4226k/PMP/SDMviTKkQMp3Ls4DM4QOFb8Rn0pdGEhtKVV/FS
-ms3inwjO91jM11En+7DZgQHcA2Lm6fuHBhqiOzvyVTzRFj8BHrjg7iddjnhRW5uU
-I3V7ln95+aPaQzTQd0qFdg0cngmtc7Tgs04YmV2Rb1e2Nk4Db64h17jiOaeHsU03
-9gOBNpRUQ1neEkTRQ+dZCnXfUxnPgSeWHsOkrYIQgEmc4YrGAEIkgSFZUVSYQJFZ
-uCQYV9nCrnBcs+PoOwb7aX+5Bk3Cj+xeM0xp9KChkwt4Km/hM1E=
-=9amw
------END PGP SIGNATURE-----
+ Documentation/driver-api/aperture.rst |  13 +
+ Documentation/driver-api/index.rst    |   1 +
+ MAINTAINERS                           |   6 +-
+ drivers/gpu/drm/drm_aperture.c        | 178 +------------
+ drivers/gpu/drm/tiny/Kconfig          |   1 +
+ drivers/vfio/pci/vfio_pci_core.c      |   5 +
+ drivers/video/Kconfig                 |   6 +
+ drivers/video/Makefile                |   2 +
+ drivers/video/aperture.c              | 351 ++++++++++++++++++++++++++
+ drivers/video/console/Kconfig         |   1 +
+ drivers/video/fbdev/Kconfig           |   7 +-
+ include/linux/aperture.h              |  56 ++++
+ 12 files changed, 456 insertions(+), 171 deletions(-)
+ create mode 100644 Documentation/driver-api/aperture.rst
+ create mode 100644 drivers/video/aperture.c
+ create mode 100644 include/linux/aperture.h
 
---iKffDT5KCf9O/u8c--
+
+base-commit: 7025c1f111b7a057243de45bd56c14b906242a53
+-- 
+2.36.1
+
