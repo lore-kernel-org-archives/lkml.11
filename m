@@ -2,164 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BE2AC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 17:26:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE560C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 17:26:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376923AbiFVR0R (ORCPT
+        id S1376726AbiFVR0a (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 13:26:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34634 "EHLO
+        Wed, 22 Jun 2022 13:26:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376536AbiFVR0O (ORCPT
+        with ESMTP id S1377042AbiFVR0Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 13:26:14 -0400
-Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3EE12A40D;
-        Wed, 22 Jun 2022 10:26:13 -0700 (PDT)
-Received: by mail-qv1-xf2a.google.com with SMTP id i17so19482037qvo.13;
-        Wed, 22 Jun 2022 10:26:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=feedback-id:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=1FM/ZQ8a2ZHSH54UjftXe1OE1A5MBWIZme5bKp0p2VU=;
-        b=ltYQlE+ufZavWCAouqv1TW9vS56tCbDMQa++jPKFWEYtLWl8ACUnL4k9uEPqHBwUGW
-         prvthkK9L28PzIv7uXjkM8v9wnCRyuNu3ya1KX8RCk7AGR44NdOpW1iGvCqcrR9IE1Zc
-         yKhRnFv0idELEytDZVBPvlL1N2TMZvfD+Opj4QFBqCoker1VfDii6c2MwaIyeN+Rdy5N
-         MjC1ZlFmPSL2yJsOM7OBZn6+E4ZaTQW462yg/kfOblDH7yt2wX97oEx64jDPvyfZ25JI
-         Y9sjBjql49LnSHTlysm8ZzP1V3fW/3A0nN4ykHiKviQ/uvr62VgPwy0EP/fSWok1K8gP
-         ix4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:feedback-id:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=1FM/ZQ8a2ZHSH54UjftXe1OE1A5MBWIZme5bKp0p2VU=;
-        b=NNXrMMtiAAx1o/sIb9gfasGm0wlRUGVM5PJiKGmn5S7h2yH+V42pjHgi5JJsXir2Il
-         Q5bQ9L2iFsgsFHcsk1jfvaDa/vmPLoNsBi8Erh6mmgrDFGWAYG6BK08oKF7l1/jQ1OLj
-         Lyp3nJq1SD1e9XIVqUCHdtKgm3nMr+DjkGKLlFeo1QdzSmw66FwOy0cVeoSrH8zMeDSI
-         H+uTMYrWVkz6+hrZGXB5VRe0cT9RGghhCvACvc37msbNp2t7iHaTYhpbIu2D/x0diNSS
-         7GcEEvgGERJCxoLmnidcNVGw4sSW1QzJGXZMVZFvvmYT+jp4PHYWTLygtovsdaA7qbtP
-         d/2Q==
-X-Gm-Message-State: AJIora8jAVu2xsMZvijPTlQuZl00Kzlu3N2w6h4/lntLcUqIxrzMd4QZ
-        mK2W7oqEQ9sVyQCiTjpd26Q=
-X-Google-Smtp-Source: AGRyM1tJUeT6hrMp7b/MQ49U0FKbqJHVdoDBpKxJGSD7RszbsxLot3arstXwJB0ZRMZvUlnXsNC51w==
-X-Received: by 2002:ac8:5ad1:0:b0:305:864:2eb0 with SMTP id d17-20020ac85ad1000000b0030508642eb0mr3941296qtd.168.1655918772862;
-        Wed, 22 Jun 2022 10:26:12 -0700 (PDT)
-Received: from auth1-smtp.messagingengine.com (auth1-smtp.messagingengine.com. [66.111.4.227])
-        by smtp.gmail.com with ESMTPSA id bi20-20020a05620a319400b006a6dcd92eb3sm16277571qkb.121.2022.06.22.10.26.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jun 2022 10:26:12 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailauth.nyi.internal (Postfix) with ESMTP id B91F027C0054;
-        Wed, 22 Jun 2022 13:26:11 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Wed, 22 Jun 2022 13:26:11 -0400
-X-ME-Sender: <xms:s1CzYg13AjATueSEa-v8fUULMHcVJCQKokKildKzPgQ0fH9FDkREtw>
-    <xme:s1CzYrF69PXcVLeAxlQXqxpyr06HTWfMusxEWOUC0B0gnSJavBS6U7zzcoikTyiB1
-    -7jxJtxIr0Ayzkprw>
-X-ME-Received: <xmr:s1CzYo6b3--4ZLkLhuIK3nR7mpQRHFxtXvLIFhHJ6eqAsz-xr8gFT1QU-GoTFw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudefhedguddufecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecunecujfgurhepfffhvfevuffkfhggtggujgesth
-    dtrodttddtvdenucfhrhhomhepuehoqhhunhcuhfgvnhhguceosghoqhhunhdrfhgvnhhg
-    sehgmhgrihhlrdgtohhmqeenucggtffrrghtthgvrhhnpeeitdefvefhteeklefgtefhge
-    elkeefffelvdevhfehueektdevhfettddvteevvdenucevlhhushhtvghrufhiiigvpedt
-    necurfgrrhgrmhepmhgrihhlfhhrohhmpegsohhquhhnodhmvghsmhhtphgruhhthhhpvg
-    hrshhonhgrlhhithihqdeiledvgeehtdeigedqudejjeekheehhedvqdgsohhquhhnrdhf
-    vghngheppehgmhgrihhlrdgtohhmsehfihigmhgvrdhnrghmvg
-X-ME-Proxy: <xmx:s1CzYp07wtelxCjJCCBmcbQTOYiDr8RwtY6Wi0tOdylL8MDgxP0Rbw>
-    <xmx:s1CzYjE0QrZCgn7kfnqnv-f_eB8YKLEAmOQL-LX5s0fnV4LRXqmtaA>
-    <xmx:s1CzYi_bJjFCkGWp6z_vn8ODzx5BDPt3PkJkGbVx1aE3zKE7NDqAmg>
-    <xmx:s1CzYniVQofPCFsPbvqm9DeIL-Nm61H966j99bX4Lj0938OSznW-XQ>
-Feedback-ID: iad51458e:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 22 Jun 2022 13:26:11 -0400 (EDT)
-Date:   Wed, 22 Jun 2022 10:25:59 -0700
-From:   Boqun Feng <boqun.feng@gmail.com>
-To:     Zqiang <qiang1.zhang@intel.com>
-Cc:     paulmck@kernel.org, frederic@kernel.org, rcu@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] rcu: Add exp QS check in rcu_exp_handler() for
- no-preemptible expedited RCU
-Message-ID: <YrNQpxjIiNpxwyQh@boqun-archlinux>
-References: <20220622103549.2840087-1-qiang1.zhang@intel.com>
+        Wed, 22 Jun 2022 13:26:25 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1211B28E05;
+        Wed, 22 Jun 2022 10:26:23 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 9B0EF1F92F;
+        Wed, 22 Jun 2022 17:26:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1655918782; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Jml0n4rcqjuj+OPSJZyRw7ItN6cmTrfRr6AuCXrU/lE=;
+        b=vNbktpf1xKsoPuXRFhRhomPfTR6dR5KLyWvi9TFcnR+ZqXyNArdoJuXxTgbYme3q8UadJH
+        XKlk6G10CYi/ZJCtdhvOwXdtgJDAVAV0aB+qpx8o39KbwaMH4vjcH/zIBlR0OxMdF2R3Il
+        4x7uE3VXXiNbg7wXwktEv49H5kyWf0Q=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 7121213A5D;
+        Wed, 22 Jun 2022 17:26:22 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id GhLIGr5Qs2JrKgAAMHmgww
+        (envelope-from <mkoutny@suse.com>); Wed, 22 Jun 2022 17:26:22 +0000
+Date:   Wed, 22 Jun 2022 19:26:21 +0200
+From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
+To:     Yu Kuai <yukuai3@huawei.com>
+Cc:     tj@kernel.org, axboe@kernel.dk, ming.lei@redhat.com,
+        cgroups@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, yi.zhang@huawei.com
+Subject: Re: [PATCH -next v5 4/8] blk-throttle: fix io hung due to config
+ updates
+Message-ID: <20220622172621.GA28246@blackbody.suse.cz>
+References: <20220528064330.3471000-1-yukuai3@huawei.com>
+ <20220528064330.3471000-5-yukuai3@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="ZPt4rx8FFjLCG7dd"
 Content-Disposition: inline
-In-Reply-To: <20220622103549.2840087-1-qiang1.zhang@intel.com>
+In-Reply-To: <20220528064330.3471000-5-yukuai3@huawei.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
 
-On Wed, Jun 22, 2022 at 06:35:49PM +0800, Zqiang wrote:
-> In CONFIG_PREEMPT=n and CONFIG_PREEMPT_COUNT=y kernel, after a exp
-> grace period begins, if detected current CPU enters idle in
-> rcu_exp_handler() IPI handler, will immediately report the exp QS of the
-> current cpu, at this time, maybe not being in an RCU read-side critical
-> section, but need wait until rcu-softirq or sched-clock irq or sched-switch
-> occurs on current CPU to check and report exp QS.
-> 
+--ZPt4rx8FFjLCG7dd
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I think the idea is OK, however, this "optimization" is based on the
-implementation detail that rcu_read_lock() counts preempt_count when
-CONFIG_PREEMPT_COUNT=y, right? It's a little bit dangerous because the
-preempt_count when CONFIG_PREEMPT_COUNT=y and CONFIG_PREEMPT=n is mostly
-for debugging purposes IIUC, and in other words, _it could be gone_.
+(Apologies for taking so long before answering.)
 
-Also I'm not aware of any but there could be someone assuming that RCU
-read-side critical sections can be formed without
-rcu_read_{lock,unlock}() in CONFIG_PREEMPT=n kernel. For example, there
-might be "creative" code like the following:
+On Sat, May 28, 2022 at 02:43:26PM +0800, Yu Kuai <yukuai3@huawei.com> wrot=
+e:
+> Some simple test:
+> 1)
+> cd /sys/fs/cgroup/blkio/
+> echo $$ > cgroup.procs
+> echo "8:0 2048" > blkio.throttle.write_bps_device
+> {
+>         sleep 2
+>         echo "8:0 1024" > blkio.throttle.write_bps_device
+> } &
+> dd if=3D/dev/zero of=3D/dev/sda bs=3D8k count=3D1 oflag=3Ddirect
+>=20
+> 2)
+> cd /sys/fs/cgroup/blkio/
+> echo $$ > cgroup.procs
+> echo "8:0 1024" > blkio.throttle.write_bps_device
+> {
+>         sleep 4
+>         echo "8:0 2048" > blkio.throttle.write_bps_device
+> } &
+> dd if=3D/dev/zero of=3D/dev/sda bs=3D8k count=3D1 oflag=3Ddirect
+>=20
+> test results: io finish time
+> 	before this patch	with this patch
+> 1)	10s			6s
+> 2)	8s			6s
 
-	void do_something_only_in_nonpreempt(void)
-	{
-		int *p;
+I agree these are consistent and correct times.
 
-		// This function only gets called in PREEMPT=n kernel,
-		// which means everywhere is a RCU read-side critical
-		// section, let's save some lines of code.
+And the new implementation won't make it worse (in terms of delaying a
+bio) than configuring minimal limits from the beginning, AFACT.
 
-		p = rcu_dereference_check(gp, !IS_ENABLED(PREEMPT));
-		... // of course no schedule() here.
-		<access p>
-	}
+> @@ -801,7 +836,8 @@ static bool tg_with_in_iops_limit(struct throtl_grp *=
+tg, struct bio *bio,
+> =20
+>  	/* Round up to the next throttle slice, wait time must be nonzero */
+>  	jiffy_elapsed_rnd =3D roundup(jiffy_elapsed + 1, tg->td->throtl_slice);
+> -	io_allowed =3D calculate_io_allowed(iops_limit, jiffy_elapsed_rnd);
+> +	io_allowed =3D calculate_io_allowed(iops_limit, jiffy_elapsed_rnd) +
+> +		     tg->io_skipped[rw];
+>  	if (tg->io_disp[rw] + 1 <=3D io_allowed) {
+>  		if (wait)
+>  			*wait =3D 0;
+> @@ -838,7 +874,8 @@ static bool tg_with_in_bps_limit(struct throtl_grp *t=
+g, struct bio *bio,
+>  		jiffy_elapsed_rnd =3D tg->td->throtl_slice;
+> =20
+>  	jiffy_elapsed_rnd =3D roundup(jiffy_elapsed_rnd, tg->td->throtl_slice);
+> -	bytes_allowed =3D calculate_bytes_allowed(bps_limit, jiffy_elapsed_rnd);
+> +	bytes_allowed =3D calculate_bytes_allowed(bps_limit, jiffy_elapsed_rnd)=
+ +
+> +			tg->bytes_skipped[rw];
+>  	if (tg->bytes_disp[rw] + bio_size <=3D bytes_allowed) {
+>  		if (wait)
+>  			*wait =3D 0;
+>
 
-Again, I'm not aware of any existing code that does this but we need to
-be sure.
+Here we may allow to dispatch a bio above current slice's
+calculate_bytes_allowed() if bytes_skipped is already >0.
 
-Regards,
-Boqun
+bytes_disp + bio_size <=3D calculate_bytes_allowed() + bytes_skipped
 
-> This commit add a exp QS check in rcu_exp_handler(), when not being
-> in an RCU read-side critical section, report exp QS earlier.
-> 
-> Signed-off-by: Zqiang <qiang1.zhang@intel.com>
-> ---
->  kernel/rcu/tree_exp.h | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
-> 
-> diff --git a/kernel/rcu/tree_exp.h b/kernel/rcu/tree_exp.h
-> index be667583a554..34f08267410f 100644
-> --- a/kernel/rcu/tree_exp.h
-> +++ b/kernel/rcu/tree_exp.h
-> @@ -828,11 +828,14 @@ static void rcu_exp_handler(void *unused)
->  {
->  	struct rcu_data *rdp = this_cpu_ptr(&rcu_data);
->  	struct rcu_node *rnp = rdp->mynode;
-> +	bool preempt_bh_disabled =
-> +				!!(preempt_count() & (PREEMPT_MASK | SOFTIRQ_MASK));
->  
->  	if (!(READ_ONCE(rnp->expmask) & rdp->grpmask) ||
->  	    __this_cpu_read(rcu_data.cpu_no_qs.b.exp))
->  		return;
-> -	if (rcu_is_cpu_rrupt_from_idle()) {
-> +	if (rcu_is_cpu_rrupt_from_idle() ||
-> +			(IS_ENABLED(CONFIG_PREEMPT_COUNT) && !preempt_bh_disabled)) {
->  		rcu_report_exp_rdp(this_cpu_ptr(&rcu_data));
->  		return;
->  	}
-> -- 
-> 2.25.1
-> 
+Then on the next update
+
+> [shuffle]
+> +static void __tg_update_skipped(struct throtl_grp *tg, bool rw)
+> +{
+> +	unsigned long jiffy_elapsed =3D jiffies - tg->slice_start[rw];
+> +	u64 bps_limit =3D tg_bps_limit(tg, rw);
+> +	u32 iops_limit =3D tg_iops_limit(tg, rw);
+> +
+> +	if (bps_limit !=3D U64_MAX)
+> +		tg->bytes_skipped[rw] +=3D
+> +			calculate_bytes_allowed(bps_limit, jiffy_elapsed) -
+> +			tg->bytes_disp[rw];
+> +	if (iops_limit !=3D UINT_MAX)
+> +		tg->io_skipped[rw] +=3D
+> +			calculate_io_allowed(iops_limit, jiffy_elapsed) -
+> +			tg->io_disp[rw];
+> +}
+
+the difference(s) here could be negative. bytes_skipped should be
+reduced to account for the additionally dispatched bio.
+This is all unsigned so negative numbers underflow, however, we add them
+again to the unsigned, so thanks to modular arithmetics the result is
+correctly updated bytes_skipped.
+
+Maybe add a comment about this (unsigned) intention?
+
+(But can this happen? The discussed bio would have to outrun another bio
+(the one which defined the current slice_end) but since blk-throttle
+uses queues (FIFO) everywhere this shouldn't really happen. But it's
+good to know this works as intended.)
+
+This patch can have
+Reviewed-by: Michal Koutn=FD <mkoutny@suse.com>
+
+
+--ZPt4rx8FFjLCG7dd
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEARYIAB0WIQTrXXag4J0QvXXBmkMkDQmsBEOquQUCYrNQpAAKCRAkDQmsBEOq
+uZ3BAQCL8oobgb+B0o8EQKGsxtLcjkKWGAXteGs1+CHNsFrUGAD/V+B+r/Bv3hQR
+A5tMH+4VD4tzI0yNIrKNYH5LIKu2ZgU=
+=HsKx
+-----END PGP SIGNATURE-----
+
+--ZPt4rx8FFjLCG7dd--
