@@ -2,82 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A25EFC43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C369FCCA47D
 	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 09:01:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356536AbiFVI7Q (ORCPT
+        id S1356904AbiFVI73 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 04:59:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54418 "EHLO
+        Wed, 22 Jun 2022 04:59:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356021AbiFVI66 (ORCPT
+        with ESMTP id S1356396AbiFVI7J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 04:58:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 982902AA
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 01:58:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 52129B81CF0
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 08:58:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81E80C34114;
-        Wed, 22 Jun 2022 08:58:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655888335;
-        bh=zEDBJcc/hdKUEzKTw+o0NSo3+GElIveIOWIAX5Umga4=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=RrOb+Oxnpuv9oTXXSKoSc2qCWY6eMt1SluoCJ0PZeE7QYfgEU2rEa7S4qR/bcrj/F
-         DEC9M71KfVDqPI5SdJz5XYYofnAdYzTYv6hdqfoZhFDwWYDTx7pQFc0K2x25CQQTUc
-         Cwj2+DuZs5SQ+MwhHnvw4heHFkRQmwLt/W/g0oNXnfrd8qrnR5sUi/ZAdlseeuc7X4
-         ZhYrJeoAFUchAe21OHc0+X550LALA7nHwnfWZeZ73pqMAatUueVAs/Qc+5uG5bqkgY
-         PFQtLHW/m2+E0EOap+NJAFfrWVIVtIIjQjAZ5gosTA1WJBQvtwmvFXiFRCTmCQ7+4E
-         3Txko6QX5gOoA==
-Message-ID: <87dd706a-6777-374f-1d41-7d791727697f@kernel.org>
-Date:   Wed, 22 Jun 2022 10:58:49 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v3] arm/mm: Fix refcount leak bugs in cache
-Content-Language: en-US
-To:     Liang He <windhl@126.com>, linux@armlinux.org.uk,
-        rmk+kernel@armlinux.org.uk, wangkefeng.wang@huawei.com,
-        ardb@kernel.org, arnd@arndb.de, akpm@linux-foundation.org,
-        rppt@kernel.org
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220619013941.4061894-1-windhl@126.com>
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-In-Reply-To: <20220619013941.4061894-1-windhl@126.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Wed, 22 Jun 2022 04:59:09 -0400
+Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5F1C55B8
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 01:59:08 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046060;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VH5BRmX_1655888343;
+Received: from localhost(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VH5BRmX_1655888343)
+          by smtp.aliyun-inc.com;
+          Wed, 22 Jun 2022 16:59:04 +0800
+From:   Baolin Wang <baolin.wang@linux.alibaba.com>
+To:     akpm@linux-foundation.org
+Cc:     rppt@linux.ibm.com, willy@infradead.org,
+        baolin.wang@linux.alibaba.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: [RFC PATCH v2 1/3] mm: Factor out the pagetable pages account into new helper function
+Date:   Wed, 22 Jun 2022 16:58:52 +0800
+Message-Id: <e094c4a2e07ff66708f7a3a9f6b86eb694f33cf0.1655887440.git.baolin.wang@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <cover.1655887440.git.baolin.wang@linux.alibaba.com>
+References: <cover.1655887440.git.baolin.wang@linux.alibaba.com>
+In-Reply-To: <cover.1655887440.git.baolin.wang@linux.alibaba.com>
+References: <cover.1655887440.git.baolin.wang@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 19/06/2022 03:39, Liang He wrote:
-> In feroceon_of_init() and tauros2_init(), of_find_matching_node()
-> will return a node pointer with refcount incremented. We should
-> use of_node_put() in fail path or when it is not used anymore.
-> 
-> Signed-off-by: Liang He <windhl@126.com>
-> ---
->  changelog:
-> 
->  v3: (1) merge arm/mm leak bugs (2) fix bugs intro-ed by v2
->  v2: (1) use real name (2) normalize coding style
->  v1: (1) fix leak bug
-> 
+Factor out the pagetable pages account into new helper functions to avoid
+duplicated code. Meanwhile these helper functions also will be used to
+account pagetable pages which do not need split pagetale lock.
 
-Before applying the patch please check it carefully. Previous evidence
-[1][2] suggests that not it was not even compiled.
+Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+---
+ include/linux/mm.h | 24 ++++++++++++++++--------
+ 1 file changed, 16 insertions(+), 8 deletions(-)
 
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 6d4e9ce1..6da6634 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -2377,20 +2377,30 @@ static inline void pgtable_init(void)
+ 	pgtable_cache_init();
+ }
+ 
++static inline void pgtable_set_and_inc(struct page *page)
++{
++	__SetPageTable(page);
++	inc_lruvec_page_state(page, NR_PAGETABLE);
++}
++
++static inline void pgtable_clear_and_dec(struct page *page)
++{
++	__ClearPageTable(page);
++	dec_lruvec_page_state(page, NR_PAGETABLE);
++}
++
+ static inline bool pgtable_pte_page_ctor(struct page *page)
+ {
+ 	if (!ptlock_init(page))
+ 		return false;
+-	__SetPageTable(page);
+-	inc_lruvec_page_state(page, NR_PAGETABLE);
++	pgtable_set_and_inc(page);
+ 	return true;
+ }
+ 
+ static inline void pgtable_pte_page_dtor(struct page *page)
+ {
+ 	ptlock_free(page);
+-	__ClearPageTable(page);
+-	dec_lruvec_page_state(page, NR_PAGETABLE);
++	pgtable_clear_and_dec(page);
+ }
+ 
+ #define pte_offset_map_lock(mm, pmd, address, ptlp)	\
+@@ -2476,16 +2486,14 @@ static inline bool pgtable_pmd_page_ctor(struct page *page)
+ {
+ 	if (!pmd_ptlock_init(page))
+ 		return false;
+-	__SetPageTable(page);
+-	inc_lruvec_page_state(page, NR_PAGETABLE);
++	pgtable_set_and_inc(page);
+ 	return true;
+ }
+ 
+ static inline void pgtable_pmd_page_dtor(struct page *page)
+ {
+ 	pmd_ptlock_free(page);
+-	__ClearPageTable(page);
+-	dec_lruvec_page_state(page, NR_PAGETABLE);
++	pgtable_clear_and_dec(page);
+ }
+ 
+ /*
+-- 
+1.8.3.1
 
-
-[1] https://lore.kernel.org/all/202206221602.odN70SHs-lkp@intel.com/
-
-[2]
-https://lore.kernel.org/all/16f9a971.44e5.1817068ee3c.Coremail.windhl@126.com/
-
-
-Best regards,
-Krzysztof
