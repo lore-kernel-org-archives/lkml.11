@@ -2,190 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E7D3CCA481
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 11:47:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05C30C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 11:47:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357773AbiFVLrs (ORCPT
+        id S1357778AbiFVLr4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 07:47:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57878 "EHLO
+        Wed, 22 Jun 2022 07:47:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357760AbiFVLrr (ORCPT
+        with ESMTP id S1357785AbiFVLry (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 07:47:47 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27E16344D4;
-        Wed, 22 Jun 2022 04:47:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1655898466; x=1687434466;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=8tuqwvvGAA1I2+bfUhL95W2bszJ5rSEYU9bLqn3rgLU=;
-  b=kpxf8nih8GC03J/TzPE3SSaPwYkDiQ+vS8uVVjduZMs5ji/jMQWb8EMA
-   rSTSFsjVFYTvDnnoUOfgEgZJMcNfhs6wXu18/u5tI8DZiuEY3qb3Yu9sx
-   VYdNRGOnAdVmhaF3N+flQ4QWZiV1Jnrkn7UP8e68NO9vAFW1+rF6kL8l0
-   k=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 22 Jun 2022 04:47:45 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 04:47:45 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 22 Jun 2022 04:47:44 -0700
-Received: from [10.216.32.54] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 22 Jun
- 2022 04:47:39 -0700
-Message-ID: <bc423d7b-df03-d4e2-2898-0873db710943@quicinc.com>
-Date:   Wed, 22 Jun 2022 17:16:48 +0530
+        Wed, 22 Jun 2022 07:47:54 -0400
+Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21F4239807;
+        Wed, 22 Jun 2022 04:47:51 -0700 (PDT)
+Received: by mail-ed1-f54.google.com with SMTP id eo8so23565311edb.0;
+        Wed, 22 Jun 2022 04:47:50 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=unEr3IBeLbRfuTie0KZCBAqiK12CoDgMmUuwQlpyhLg=;
+        b=NG3QUuIDMvohVjJMZ1+2zT989w91r4Nb1HsldcN7QoQrmhVyTjbbBjvY+eO04GmEtQ
+         CCXbgVtfW4CxkA8x2TxJszCLX5/6ZYmjbRASkyv07pHVf6NCHgZBWUClzzvjVSrpQZYP
+         V1o+YKRjRI3BSVOt7CBsTqAzX2BIFh4umBHipqXWp2W+frg5fZAycX2AWIheoMMN1m2R
+         4pfEqesKmZdmTbpYwcpNfh4gh10i5i9GzHQId1W7YxBt7QDnUOD4brikit+tQi5dI9My
+         d6rm/F3B4vjDsW49FCTlFqA9bzyDviCm+l9/IFDv8YArwYvSbOLhPCNk7C7O5zrFRaSp
+         BAnQ==
+X-Gm-Message-State: AJIora+vHuwxHd7dnNjo047W+Tg2pqASvzouiObeQznFgcAmMI4rztgA
+        PnR8oHc1wBMXdKtk7MudYwSgD3xn35E=
+X-Google-Smtp-Source: AGRyM1tlyIgcyBf9g1gy9o30p1plgkRK8+Mj0aIrQot47xRCx5A9uW0I8RnVpGN8HNYDxN4pIIhuxQ==
+X-Received: by 2002:a05:6402:1854:b0:435:7f6e:e553 with SMTP id v20-20020a056402185400b004357f6ee553mr3677495edy.282.1655898469421;
+        Wed, 22 Jun 2022 04:47:49 -0700 (PDT)
+Received: from tiehlicka.suse.cz ([193.86.92.180])
+        by smtp.gmail.com with ESMTPSA id dz21-20020a0564021d5500b0043592bf496fsm4414866edb.38.2022.06.22.04.47.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jun 2022 04:47:48 -0700 (PDT)
+From:   Michal Hocko <mhocko@kernel.org>
+To:     rcu@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Michal Hocko <mhocko@suse.com>,
+        Uladzislau Rezki <urezki@gmail.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Joel Fernandes <joel@joelfernandes.org>
+Subject: [RFC PATCH] rcu: back off on allocation failure in fill_page_cache_func
+Date:   Wed, 22 Jun 2022 13:47:11 +0200
+Message-Id: <20220622114711.28154-1-mhocko@kernel.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v4 4/4] arm64: dts: qcom: sdm845: Add CPU BWMON
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        "Georgi Djakov" <djakov@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-pm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-CC:     Thara Gopinath <thara.gopinath@linaro.org>
-References: <20220601101140.170504-1-krzysztof.kozlowski@linaro.org>
- <20220601101140.170504-5-krzysztof.kozlowski@linaro.org>
-From:   Rajendra Nayak <quic_rjendra@quicinc.com>
-In-Reply-To: <20220601101140.170504-5-krzysztof.kozlowski@linaro.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Michal Hocko <mhocko@suse.com>
 
-On 6/1/2022 3:41 PM, Krzysztof Kozlowski wrote:
-> Add device node for CPU-memory BWMON device (bandwidth monitoring) on
-> SDM845 measuring bandwidth between CPU (gladiator_noc) and Last Level
-> Cache (memnoc).  Usage of this BWMON allows to remove fixed bandwidth
-> votes from cpufreq (CPU nodes) thus achieve high memory throughput even
-> with lower CPU frequencies.
-> 
-> Performance impact (SDM845-MTP RB3 board, linux next-20220422):
-> 1. No noticeable impact when running with schedutil or performance
->     governors.
-> 
-> 2. When comparing to customized kernel with synced interconnects and
->     without bandwidth votes from CPU freq, the sysbench memory tests
->     show significant improvement with bwmon for blocksizes past the L3
->     cache.  The results for such superficial comparison:
-> 
-> sysbench memory test, results in MB/s (higher is better)
->   bs kB |  type |    V  | V+no bw votes | bwmon | benefit %
->       1 | W/seq | 14795 |          4816 |  4985 |      3.5%
->      64 | W/seq | 41987 |         10334 | 10433 |      1.0%
->    4096 | W/seq | 29768 |          8728 | 32007 |    266.7%
->   65536 | W/seq | 17711 |          4846 | 18399 |    279.6%
-> 262144 | W/seq | 16112 |          4538 | 17429 |    284.1%
->      64 | R/seq | 61202 |         67092 | 66804 |     -0.4%
->    4096 | R/seq | 23871 |          5458 | 24307 |    345.4%
->   65536 | R/seq | 18554 |          4240 | 18685 |    340.7%
-> 262144 | R/seq | 17524 |          4207 | 17774 |    322.4%
->      64 | W/rnd |  2663 |          1098 |  1119 |      1.9%
->   65536 | W/rnd |   600 |           316 |   610 |     92.7%
->      64 | R/rnd |  4915 |          4784 |  4594 |     -4.0%
->   65536 | R/rnd |   664 |           281 |   678 |    140.7%
-> 
-> Legend:
-> bs kB: block size in KB (small block size means only L1-3 caches are
->        used
-> type: R - read, W - write, seq - sequential, rnd - random
-> V: vanilla (next-20220422)
-> V + no bw votes: vanilla without bandwidth votes from CPU freq
-> bwmon: bwmon without bandwidth votes from CPU freq
-> benefit %: difference between vanilla without bandwidth votes and bwmon
->             (higher is better)
-> 
-> Co-developed-by: Thara Gopinath <thara.gopinath@linaro.org>
-> Signed-off-by: Thara Gopinath <thara.gopinath@linaro.org>
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> ---
->   arch/arm64/boot/dts/qcom/sdm845.dtsi | 54 ++++++++++++++++++++++++++++
->   1 file changed, 54 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/qcom/sdm845.dtsi b/arch/arm64/boot/dts/qcom/sdm845.dtsi
-> index 83e8b63f0910..adffb9c70566 100644
-> --- a/arch/arm64/boot/dts/qcom/sdm845.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sdm845.dtsi
-> @@ -2026,6 +2026,60 @@ llcc: system-cache-controller@1100000 {
->   			interrupts = <GIC_SPI 582 IRQ_TYPE_LEVEL_HIGH>;
->   		};
->   
-> +		pmu@1436400 {
-> +			compatible = "qcom,sdm845-cpu-bwmon";
-> +			reg = <0 0x01436400 0 0x600>;
-> +
-> +			interrupts = <GIC_SPI 581 IRQ_TYPE_LEVEL_HIGH>;
-> +
-> +			interconnects = <&gladiator_noc MASTER_APPSS_PROC 3 &mem_noc SLAVE_EBI1 3>,
-> +					<&osm_l3 MASTER_OSM_L3_APPS &osm_l3 SLAVE_OSM_L3>;
-> +			interconnect-names = "ddr", "l3c";
+fill_page_cache_func allocates couple of pages to store
+kvfree_rcu_bulk_data. This is a lightweight (GFP_NORETRY) allocation
+which can fail under memory pressure. The function will, however keep
+retrying even when the previous attempt has failed.
 
-Is this the pmu/bwmon instance between the cpu and caches or the one between the caches and DDR?
-Depending on which one it is, shouldn;t we just be scaling either one and not both the interconnect paths?
+While this is not really incorrect there is one thing to consider. This
+allocation is invoked from the WQ context and that means that if the
+memory reclaim gets stuck it can hog the worker for quite some time.
+WQ concurrency is only triggered when the worker context sleeps and that
+is not guaranteed for __GFP_NORETRY allocation attempts (see
+should_reclaim_retry).
 
-> +
-> +			operating-points-v2 = <&cpu_bwmon_opp_table>;
-> +
-> +			cpu_bwmon_opp_table: opp-table {
-> +				compatible = "operating-points-v2";
-> +
-> +				/*
-> +				 * The interconnect paths bandwidths taken from
-> +				 * cpu4_opp_table bandwidth.
-> +				 * They also match different tables from
-> +				 * msm-4.9 downstream kernel:
-> +				 *  - the gladiator_noc-mem_noc from bandwidth
-> +				 *    table of qcom,llccbw (property qcom,bw-tbl);
-> +				 *    bus width: 4 bytes;
-> +				 *  - the OSM L3 from bandwidth table of
-> +				 *    qcom,cpu4-l3lat-mon (qcom,core-dev-table);
-> +				 *    bus width: 16 bytes;
-> +				 */
-> +				opp-0 {
-> +					opp-peak-kBps = <800000 4800000>;
-> +				};
-> +				opp-1 {
-> +					opp-peak-kBps = <1804000 9216000>;
-> +				};
-> +				opp-2 {
-> +					opp-peak-kBps = <2188000 11980800>;
-> +				};
-> +				opp-3 {
-> +					opp-peak-kBps = <3072000 15052800>;
-> +				};
-> +				opp-4 {
-> +					opp-peak-kBps = <4068000 19353600>;
-> +				};
-> +				opp-5 {
-> +					opp-peak-kBps = <5412000 20889600>;
-> +				};
-> +				opp-6 {
-> +					opp-peak-kBps = <6220000 22425600>;
-> +				};
-> +				opp-7 {
-> +					opp-peak-kBps = <7216000 25497600>;
-> +				};
-> +			};
-> +		};
-> +
->   		pcie0: pci@1c00000 {
->   			compatible = "qcom,pcie-sdm845";
->   			reg = <0 0x01c00000 0 0x2000>,
+We have seen WQ lockups
+kernel: BUG: workqueue lockup - pool cpus=93 node=1 flags=0x1 nice=0 stuck for 32s!
+[...]
+kernel: pool 74: cpus=37 node=0 flags=0x1 nice=0 hung=32s workers=2 manager: 2146
+kernel:   pwq 498: cpus=249 node=1 flags=0x1 nice=0 active=4/256 refcnt=5
+kernel:     in-flight: 1917:fill_page_cache_func
+kernel:     pending: dbs_work_handler, free_work, kfree_rcu_monitor
+
+Originaly, we thought that several retries with direct reclaim being
+stuck is the underlying reason but we couldn't have confirmed that and
+have seen a similar lockups detected even without any heavy memory
+pressure so there is likely something else/more going on. On the other
+hand failing the allocation shouldn't have a big impact and from the
+code it is not really obvious why retrying is desirable so back off
+after the allocation failure.
+
+Cc: Uladzislau Rezki (Sony) <urezki@gmail.com>
+Cc: "Paul E. McKenney" <paulmck@kernel.org>
+Cc: Frederic Weisbecker <frederic@kernel.org>
+Cc: Neeraj Upadhyay <quic_neeraju@quicinc.com>
+Cc: Josh Triplett <josh@joshtriplett.org>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Cc: Lai Jiangshan <jiangshanlai@gmail.com>
+Cc: Joel Fernandes <joel@joelfernandes.org>
+Signed-off-by: Michal Hocko <mhocko@suse.com>
+---
+
+Hi,
+I am sending this as an RFC because I couldn't prove that the WQ
+concurency issue as a result from the allocation retry is really a
+problem. On the other hand I couldn't see a good reason to retry after a
+previous failure. While the kswapd running in the background could have
+released some memory this is a not really guaranteed and mostly a
+wishful thinking.
+
+I do not understand the code well enough so I could be easily missing
+something. If the patch is a wrong thing to do then it would be really
+nice to add a comment why the retry is desirable and a good thing to do.
+
+The retry loop should be bound to rcu_min_cached_objs which is quite
+small but configurable so this can get large in some setups.
+
+Thanks
+
+ kernel/rcu/tree.c | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
+
+diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
+index c25ba442044a..54a3a19c4c0b 100644
+--- a/kernel/rcu/tree.c
++++ b/kernel/rcu/tree.c
+@@ -3508,15 +3508,16 @@ static void fill_page_cache_func(struct work_struct *work)
+ 		bnode = (struct kvfree_rcu_bulk_data *)
+ 			__get_free_page(GFP_KERNEL | __GFP_NORETRY | __GFP_NOMEMALLOC | __GFP_NOWARN);
+ 
+-		if (bnode) {
+-			raw_spin_lock_irqsave(&krcp->lock, flags);
+-			pushed = put_cached_bnode(krcp, bnode);
+-			raw_spin_unlock_irqrestore(&krcp->lock, flags);
++		if (!bnode)
++			break;
+ 
+-			if (!pushed) {
+-				free_page((unsigned long) bnode);
+-				break;
+-			}
++		raw_spin_lock_irqsave(&krcp->lock, flags);
++		pushed = put_cached_bnode(krcp, bnode);
++		raw_spin_unlock_irqrestore(&krcp->lock, flags);
++
++		if (!pushed) {
++			free_page((unsigned long) bnode);
++			break;
+ 		}
+ 	}
+ 
+-- 
+2.30.2
+
