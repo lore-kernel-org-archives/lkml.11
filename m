@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 308ABCCA47D
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 11:19:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9E9EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 11:19:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357665AbiFVLTr (ORCPT
+        id S1357679AbiFVLTv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 07:19:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56472 "EHLO
+        Wed, 22 Jun 2022 07:19:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357563AbiFVLTP (ORCPT
+        with ESMTP id S1357574AbiFVLTR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 07:19:15 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60CE03C73F;
-        Wed, 22 Jun 2022 04:18:07 -0700 (PDT)
+        Wed, 22 Jun 2022 07:19:17 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 604AE3CA47;
+        Wed, 22 Jun 2022 04:18:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655896687; x=1687432687;
+  t=1655896689; x=1687432689;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=3JGxoe6NHexl//cHqZzIWIKFvcAtKyhn1DljxO9aurQ=;
-  b=ZreCxMPSEdhDPf0yAvfKhQqEliGH+I8epmtCnye1iIzo0hNky424Xq0h
-   UooyAx9QEAQTTSVNLMnOU6c95lSJWfGD0P7/b/+aH1ToeRv1v7cpLQFYN
-   BAZJBauNNoUMQ2utvy8Cue8SbJaAYMRrYlwRBal+ZN0unwOr6abWPiJDg
-   qNc+bPjmh1ewdsJlEQNOP12+qGu+Nk3Sn881eBsFjLlrYH2AwEk2GOGeA
-   aQJZiznZ3TWLLR+T8mRSeCNBdcf/DEOLtI538s6qS41JtWpTK5i8ZJiHZ
-   Cdt52taNBQUEaAf6Es+wXeM2nRMRRn28/DGH+hFMMMsPcFMhwTu0GenuH
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="305841127"
+  bh=hTMxv5ATBtehYuUZfbLQ0w47uiDhHQy1BjaByM3jchE=;
+  b=A5bvEOt75outqNKvaj/S5Wca7/Lla6OkdkPz2Z2nD2ilmn3tnLhweeJH
+   tXoQlfSyJm0VQw5Pdol3VFB6MJRsNg/wcIRV3VkmFgFv2M78+XF2BQOmI
+   NelPGI3KmTOcsdOP2qZx7tX/GLGwAoLhhMeongQ0521urvhHkfeDrpjsw
+   +J0JT6qWAFLRtUeW5HHwKhXdKrpX3XvmXdU1UKPgmsL0wmvuDL9rmsRdF
+   I3Q8/xYCMOO7nsXuM2tsdY5gtdnTigDniqPmVcJgWOWzHP7eA+JHfm31v
+   T+jCXZH0XHZsCOO2hPxN5qZNeOgh0pR7rS6S3URdsadSF0ahdgxXfJw8x
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="366713447"
 X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="305841127"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 04:17:39 -0700
+   d="scan'208";a="366713447"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 04:18:08 -0700
 X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="730302302"
+   d="scan'208";a="834065982"
 Received: from jmatsis-mobl.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.209.178.197])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 04:17:36 -0700
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 04:18:05 -0700
 From:   Kai Huang <kai.huang@intel.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     seanjc@google.com, pbonzini@redhat.com, dave.hansen@intel.com,
@@ -47,9 +47,9 @@ Cc:     seanjc@google.com, pbonzini@redhat.com, dave.hansen@intel.com,
         kirill.shutemov@linux.intel.com,
         sathyanarayanan.kuppuswamy@linux.intel.com,
         isaku.yamahata@intel.com, kai.huang@intel.com
-Subject: [PATCH v5 16/22] x86/virt/tdx: Set up reserved areas for all TDMRs
-Date:   Wed, 22 Jun 2022 23:17:05 +1200
-Message-Id: <984ae2b9201876e9ac22399cf36d26ad6eff1007.1655894131.git.kai.huang@intel.com>
+Subject: [PATCH v5 22/22] Documentation/x86: Add documentation for TDX host support
+Date:   Wed, 22 Jun 2022 23:17:50 +1200
+Message-Id: <0712bc0b05a0c6c42437fba68f82d9268ab3113e.1655894131.git.kai.huang@intel.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1655894131.git.kai.huang@intel.com>
 References: <cover.1655894131.git.kai.huang@intel.com>
@@ -59,201 +59,296 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As the last step of constructing TDMRs, set up reserved areas for all
-TDMRs.  For each TDMR, put all memory holes within this TDMR to the
-reserved areas.  And for all PAMTs which overlap with this TDMR, put
-all the overlapping parts to reserved areas too.
+Add documentation for TDX host kernel support.  There is already one
+file Documentation/x86/tdx.rst containing documentation for TDX guest
+internals.  Also reuse it for TDX host kernel support.
+
+Introduce a new level menu "TDX Guest Support" and move existing
+materials under it, and add a new menu for TDX host kernel support.
 
 Signed-off-by: Kai Huang <kai.huang@intel.com>
 ---
- arch/x86/virt/vmx/tdx/tdx.c | 160 +++++++++++++++++++++++++++++++++++-
- 1 file changed, 158 insertions(+), 2 deletions(-)
+ Documentation/x86/tdx.rst | 190 +++++++++++++++++++++++++++++++++++---
+ 1 file changed, 179 insertions(+), 11 deletions(-)
 
-diff --git a/arch/x86/virt/vmx/tdx/tdx.c b/arch/x86/virt/vmx/tdx/tdx.c
-index 36260dd7e69f..86d98c47bd37 100644
---- a/arch/x86/virt/vmx/tdx/tdx.c
-+++ b/arch/x86/virt/vmx/tdx/tdx.c
-@@ -19,6 +19,7 @@
- #include <linux/memblock.h>
- #include <linux/gfp.h>
- #include <linux/align.h>
-+#include <linux/sort.h>
- #include <asm/cpufeatures.h>
- #include <asm/cpufeature.h>
- #include <asm/msr-index.h>
-@@ -748,6 +749,157 @@ static unsigned long tdmrs_get_pamt_pages(struct tdmr_info *tdmr_array,
- 	return pamt_npages;
- }
+diff --git a/Documentation/x86/tdx.rst b/Documentation/x86/tdx.rst
+index b8fa4329e1a5..6c6b09ca6ba4 100644
+--- a/Documentation/x86/tdx.rst
++++ b/Documentation/x86/tdx.rst
+@@ -10,6 +10,174 @@ encrypting the guest memory. In TDX, a special module running in a special
+ mode sits between the host and the guest and manages the guest/host
+ separation.
  
-+static int tdmr_add_rsvd_area(struct tdmr_info *tdmr, int *p_idx,
-+			      u64 addr, u64 size)
-+{
-+	struct tdmr_reserved_area *rsvd_areas = tdmr->reserved_areas;
-+	int idx = *p_idx;
++TDX Host Kernel Support
++=======================
 +
-+	/* Reserved area must be 4K aligned in offset and size */
-+	if (WARN_ON(addr & ~PAGE_MASK || size & ~PAGE_MASK))
-+		return -EINVAL;
++TDX introduces a new CPU mode called Secure Arbitration Mode (SEAM) and
++a new isolated range pointed by the SEAM Ranger Register (SEAMRR).  A
++CPU-attested software module called 'the TDX module' runs inside the new
++isolated range to provide the functionalities to manage and run protected
++VMs.
 +
-+	/* Cannot exceed maximum reserved areas supported by TDX */
-+	if (idx >= tdx_sysinfo.max_reserved_per_tdmr)
-+		return -E2BIG;
++TDX also leverages Intel Multi-Key Total Memory Encryption (MKTME) to
++provide crypto-protection to the VMs.  TDX reserves part of MKTME KeyIDs
++as TDX private KeyIDs, which are only accessible within the SEAM mode.
++BIOS is responsible for partitioning legacy MKTME KeyIDs and TDX KeyIDs.
 +
-+	rsvd_areas[idx].offset = addr - tdmr->base;
-+	rsvd_areas[idx].size = size;
++To enable TDX, BIOS configures SEAMRR and TDX private KeyIDs consistently
++across all CPU packages.  TDX doesn't trust BIOS.  The MCHECK verifies
++all configurations from BIOS are correct and enables SEAMRR.
 +
-+	*p_idx = idx + 1;
++After TDX is enabled in BIOS, the TDX module needs to be loaded into the
++SEAMRR range and properly initialized, before it can be used to create
++and run protected VMs.
 +
-+	return 0;
-+}
++The TDX architecture doesn't require BIOS to load the TDX module, but
++current kernel assumes it is loaded by BIOS (i.e. either directly or by
++some UEFI shell tool) before booting to the kernel.  Current kernel
++detects TDX and initializes the TDX module.
 +
-+/* Compare function called by sort() for TDMR reserved areas */
-+static int rsvd_area_cmp_func(const void *a, const void *b)
-+{
-+	struct tdmr_reserved_area *r1 = (struct tdmr_reserved_area *)a;
-+	struct tdmr_reserved_area *r2 = (struct tdmr_reserved_area *)b;
++TDX boot-time detection
++-----------------------
 +
-+	if (r1->offset + r1->size <= r2->offset)
-+		return -1;
-+	if (r1->offset >= r2->offset + r2->size)
-+		return 1;
++Kernel detects TDX and the TDX private KeyIDs during kernel boot.  User
++can see below dmesg if TDX is enabled by BIOS:
 +
-+	/* Reserved areas cannot overlap.  Caller should guarantee. */
-+	WARN_ON_ONCE(1);
-+	return -1;
-+}
++|  [..] tdx: SEAMRR enabled.
++|  [..] tdx: TDX private KeyID range: [16, 64).
++|  [..] tdx: TDX enabled by BIOS.
 +
-+/* Set up reserved areas for a TDMR, including memory holes and PAMTs */
-+static int tdmr_set_up_rsvd_areas(struct tdmr_info *tdmr,
-+				  struct tdmr_info *tdmr_array,
-+				  int tdmr_num)
-+{
-+	unsigned long start_pfn, end_pfn;
-+	int rsvd_idx, i, ret = 0;
-+	u64 prev_end;
++TDX module detection and initialization
++---------------------------------------
 +
-+	/* Mark holes between memory regions as reserved */
-+	rsvd_idx = 0;
-+	prev_end = tdmr_start(tdmr);
-+	memblock_for_each_tdx_mem_pfn_range(i, &start_pfn, &end_pfn, NULL) {
-+		u64 start, end;
++There is no CPUID or MSR to detect whether the TDX module.  The kernel
++detects the TDX module by initializing it.
 +
-+		start = start_pfn << PAGE_SHIFT;
-+		end = end_pfn << PAGE_SHIFT;
++The kernel talks to the TDX module via the new SEAMCALL instruction.  The
++TDX module implements SEAMCALL leaf functions to allow the kernel to
++initialize it.
 +
-+		/* Break if this region is after the TDMR */
-+		if (start >= tdmr_end(tdmr))
-+			break;
++Initializing the TDX module consumes roughly ~1/256th system RAM size to
++use it as 'metadata' for the TDX memory.  It also takes additional CPU
++time to initialize those metadata along with the TDX module itself.  Both
++are not trivial.  Current kernel doesn't choose to always initialize the
++TDX module during kernel boot, but provides a function tdx_init() to
++allow the caller to initialize TDX when it truly wants to use TDX:
 +
-+		/* Exclude regions before this TDMR */
-+		if (end < tdmr_start(tdmr))
-+			continue;
++        ret = tdx_init();
++        if (ret)
++                goto no_tdx;
++        // TDX is ready to use
 +
-+		/*
-+		 * Skip if no hole exists before this region. "<=" is
-+		 * used because one memory region might span two TDMRs
-+		 * (when the previous TDMR covers part of this region).
-+		 * In this case the start address of this region is
-+		 * smaller than the start address of the second TDMR.
-+		 *
-+		 * Update the prev_end to the end of this region where
-+		 * the possible memory hole starts.
-+		 */
-+		if (start <= prev_end) {
-+			prev_end = end;
-+			continue;
-+		}
++Initializing the TDX module requires all logical CPUs being online and
++are in VMX operation (requirement of making SEAMCALL) during tdx_init().
++Currently, KVM is the only user of TDX.  KVM always guarantees all online
++CPUs are in VMX operation when there's any VM.  Current kernel doesn't
++handle entering VMX operation in tdx_init() but leaves this to the
++caller.
 +
-+		/* Add the hole before this region */
-+		ret = tdmr_add_rsvd_area(tdmr, &rsvd_idx, prev_end,
-+				start - prev_end);
-+		if (ret)
-+			return ret;
++User can consult dmesg to see the presence of the TDX module, and whether
++it has been initialized.
 +
-+		prev_end = end;
-+	}
++If the TDX module is not loaded, dmesg shows below:
 +
-+	/* Add the hole after the last region if it exists. */
-+	if (prev_end < tdmr_end(tdmr)) {
-+		ret = tdmr_add_rsvd_area(tdmr, &rsvd_idx, prev_end,
-+				tdmr_end(tdmr) - prev_end);
-+		if (ret)
-+			return ret;
-+	}
++|  [..] tdx: TDX module is not loaded.
 +
-+	/*
-+	 * If any PAMT overlaps with this TDMR, the overlapping part
-+	 * must also be put to the reserved area too.  Walk over all
-+	 * TDMRs to find out those overlapping PAMTs and put them to
-+	 * reserved areas.
-+	 */
-+	for (i = 0; i < tdmr_num; i++) {
-+		struct tdmr_info *tmp = tdmr_array_entry(tdmr_array, i);
-+		u64 pamt_start, pamt_end;
++If the TDX module is initialized successfully, dmesg shows something
++like below:
 +
-+		pamt_start = tmp->pamt_4k_base;
-+		pamt_end = pamt_start + tmp->pamt_4k_size +
-+			tmp->pamt_2m_size + tmp->pamt_1g_size;
++|  [..] tdx: TDX module: vendor_id 0x8086, major_version 1, minor_version 0, build_date 20211209, build_num 160
++|  [..] tdx: 65667 pages allocated for PAMT.
++|  [..] tdx: TDX module initialized.
 +
-+		/* Skip PAMTs outside of the given TDMR */
-+		if ((pamt_end <= tdmr_start(tdmr)) ||
-+				(pamt_start >= tdmr_end(tdmr)))
-+			continue;
++If the TDX module failed to initialize, dmesg shows below:
 +
-+		/* Only mark the part within the TDMR as reserved */
-+		if (pamt_start < tdmr_start(tdmr))
-+			pamt_start = tdmr_start(tdmr);
-+		if (pamt_end > tdmr_end(tdmr))
-+			pamt_end = tdmr_end(tdmr);
++|  [..] tdx: Failed to initialize TDX module.  Shut it down.
 +
-+		ret = tdmr_add_rsvd_area(tdmr, &rsvd_idx, pamt_start,
-+				pamt_end - pamt_start);
-+		if (ret)
-+			return ret;
-+	}
++TDX Interaction to Other Kernel Components
++------------------------------------------
 +
-+	/* TDX requires reserved areas listed in address ascending order */
-+	sort(tdmr->reserved_areas, rsvd_idx, sizeof(struct tdmr_reserved_area),
-+			rsvd_area_cmp_func, NULL);
++CPU Hotplug
++~~~~~~~~~~~
 +
-+	return 0;
-+}
++TDX doesn't work with ACPI CPU hotplug.  To guarantee the security MCHECK
++verifies all logical CPUs for all packages during platform boot.  Any
++hot-added CPU is not verified thus cannot support TDX.  A non-buggy BIOS
++should never deliver ACPI CPU hot-add event to the kernel.  Such event is
++reported as BIOS bug and the hot-added CPU is rejected.
 +
-+static int tdmrs_set_up_rsvd_areas_all(struct tdmr_info *tdmr_array,
-+				      int tdmr_num)
-+{
-+	int i;
++TDX requires all boot-time verified logical CPUs being present until
++machine reset.  If kernel receives ACPI CPU hot-removal event, assume the
++kernel cannot continue to work normally so just BUG().
 +
-+	for (i = 0; i < tdmr_num; i++) {
-+		int ret;
++Note TDX works with CPU logical online/offline, thus the kernel still
++allows to offline logical CPU and online it again.
 +
-+		ret = tdmr_set_up_rsvd_areas(tdmr_array_entry(tdmr_array, i),
-+				tdmr_array, tdmr_num);
-+		if (ret)
-+			return ret;
-+	}
++Memory Hotplug
++~~~~~~~~~~~~~~
 +
-+	return 0;
-+}
++The TDX module reports a list of "Convertible Memory Region" (CMR) to
++indicate which memory regions are TDX-capable.  Those regions are
++generated by BIOS and verified by the MCHECK so that they are truly
++present during platform boot and can meet security guarantee.
 +
- /*
-  * Construct an array of TDMRs to cover all memory regions in memblock.
-  * This makes sure all pages managed by the page allocator are TDX
-@@ -766,8 +918,12 @@ static int construct_tdmrs_memeblock(struct tdmr_info *tdmr_array,
- 	if (ret)
- 		goto err;
++This means TDX doesn't work with ACPI memory hot-add.  A non-buggy BIOS
++should never deliver ACPI memory hot-add event to the kernel.  Such event
++is reported as BIOS bug and the hot-added memory is rejected.
++
++TDX also doesn't work with ACPI memory hot-removal.  If kernel receives
++ACPI memory hot-removal event, assume the kernel cannot continue to work
++normally so just BUG().
++
++Also, the kernel needs to choose which TDX-capable regions to use as TDX
++memory and pass those regions to the TDX module when it gets initialized.
++Once they are passed to the TDX module, the TDX-usable memory regions are
++fixed during module's lifetime.
++
++To avoid having to modify the page allocator to distinguish TDX and
++non-TDX memory allocation, current kernel guarantees all pages managed by
++the page allocator are TDX memory.  This means any hot-added memory to
++the page allocator will break such guarantee thus should be prevented.
++
++There are basically two memory hot-add cases that need to be prevented:
++ACPI memory hot-add and driver managed memory hot-add.  The kernel
++rejectes the driver managed memory hot-add too when TDX is enabled by
++BIOS.  For instance, dmesg shows below error when using kmem driver to
++add a legacy PMEM as system RAM:
++
++|  [..] tdx: Unable to add memory [0x580000000, 0x600000000) on TDX enabled platform.
++|  [..] kmem dax0.0: mapping0: 0x580000000-0x5ffffffff memory add failed
++
++However, adding new memory to ZONE_DEVICE should not be prevented as
++those pages are not managed by the page allocator.  Therefore,
++memremap_pages() variants are still allowed although they internally
++also uses memory hotplug functions.
++
++Kexec()
++~~~~~~~
++
++TDX (and MKTME) doesn't guarantee cache coherency among different KeyIDs.
++If the TDX module is ever initialized, the kernel needs to flush dirty
++cachelines associated with any TDX private KeyID, otherwise they may
++slightly corrupt the new kernel.
++
++Similar to SME support, the kernel uses wbinvd() to flush cache in
++stop_this_cpu().
++
++The current TDX module architecture doesn't play nicely with kexec().
++The TDX module can only be initialized once during its lifetime, and
++there is no SEAMCALL to reset the module to give a new clean slate to
++the new kernel.  Therefore, ideally, if the module is ever initialized,
++it's better to shut down the module.  The new kernel won't be able to
++use TDX anyway (as it needs to go through the TDX module initialization
++process which will fail immediately at the first step).
++
++However, there's no guarantee CPU is in VMX operation during kexec(), so
++it's impractical to shut down the module.  Current kernel just leaves the
++module in open state.
++
++TDX Guest Support
++=================
+ Since the host cannot directly access guest registers or memory, much
+ normal functionality of a hypervisor must be moved into the guest. This is
+ implemented using a Virtualization Exception (#VE) that is handled by the
+@@ -20,7 +188,7 @@ TDX includes new hypercall-like mechanisms for communicating from the
+ guest to the hypervisor or the TDX module.
  
--	/* Return -EINVAL until constructing TDMRs is done */
--	ret = -EINVAL;
-+	ret = tdmrs_set_up_rsvd_areas_all(tdmr_array, *tdmr_num);
-+	if (ret)
-+		goto err_free_pamts;
-+
-+	return 0;
-+err_free_pamts:
- 	tdmrs_free_pamt_all(tdmr_array, *tdmr_num);
- err:
- 	return ret;
+ New TDX Exceptions
+-==================
++------------------
+ 
+ TDX guests behave differently from bare-metal and traditional VMX guests.
+ In TDX guests, otherwise normal instructions or memory accesses can cause
+@@ -30,7 +198,7 @@ Instructions marked with an '*' conditionally cause exceptions.  The
+ details for these instructions are discussed below.
+ 
+ Instruction-based #VE
+----------------------
++~~~~~~~~~~~~~~~~~~~~~
+ 
+ - Port I/O (INS, OUTS, IN, OUT)
+ - HLT
+@@ -41,7 +209,7 @@ Instruction-based #VE
+ - CPUID*
+ 
+ Instruction-based #GP
+----------------------
++~~~~~~~~~~~~~~~~~~~~~
+ 
+ - All VMX instructions: INVEPT, INVVPID, VMCLEAR, VMFUNC, VMLAUNCH,
+   VMPTRLD, VMPTRST, VMREAD, VMRESUME, VMWRITE, VMXOFF, VMXON
+@@ -52,7 +220,7 @@ Instruction-based #GP
+ - RDMSR*,WRMSR*
+ 
+ RDMSR/WRMSR Behavior
+---------------------
++~~~~~~~~~~~~~~~~~~~~
+ 
+ MSR access behavior falls into three categories:
+ 
+@@ -73,7 +241,7 @@ trapping and handling in the TDX module.  Other than possibly being slow,
+ these MSRs appear to function just as they would on bare metal.
+ 
+ CPUID Behavior
+---------------
++~~~~~~~~~~~~~~
+ 
+ For some CPUID leaves and sub-leaves, the virtualized bit fields of CPUID
+ return values (in guest EAX/EBX/ECX/EDX) are configurable by the
+@@ -93,7 +261,7 @@ not know how to handle. The guest kernel may ask the hypervisor for the
+ value with a hypercall.
+ 
+ #VE on Memory Accesses
+-======================
++----------------------
+ 
+ There are essentially two classes of TDX memory: private and shared.
+ Private memory receives full TDX protections.  Its content is protected
+@@ -107,7 +275,7 @@ entries.  This helps ensure that a guest does not place sensitive
+ information in shared memory, exposing it to the untrusted hypervisor.
+ 
+ #VE on Shared Memory
+---------------------
++~~~~~~~~~~~~~~~~~~~~
+ 
+ Access to shared mappings can cause a #VE.  The hypervisor ultimately
+ controls whether a shared memory access causes a #VE, so the guest must be
+@@ -127,7 +295,7 @@ be careful not to access device MMIO regions unless it is also prepared to
+ handle a #VE.
+ 
+ #VE on Private Pages
+---------------------
++~~~~~~~~~~~~~~~~~~~~
+ 
+ An access to private mappings can also cause a #VE.  Since all kernel
+ memory is also private memory, the kernel might theoretically need to
+@@ -145,7 +313,7 @@ The hypervisor is permitted to unilaterally move accepted pages to a
+ to handle the exception.
+ 
+ Linux #VE handler
+-=================
++-----------------
+ 
+ Just like page faults or #GP's, #VE exceptions can be either handled or be
+ fatal.  Typically, an unhandled userspace #VE results in a SIGSEGV.
+@@ -167,7 +335,7 @@ While the block is in place, any #VE is elevated to a double fault (#DF)
+ which is not recoverable.
+ 
+ MMIO handling
+-=============
++-------------
+ 
+ In non-TDX VMs, MMIO is usually implemented by giving a guest access to a
+ mapping which will cause a VMEXIT on access, and then the hypervisor
+@@ -189,7 +357,7 @@ MMIO access via other means (like structure overlays) may result in an
+ oops.
+ 
+ Shared Memory Conversions
+-=========================
++-------------------------
+ 
+ All TDX guest memory starts out as private at boot.  This memory can not
+ be accessed by the hypervisor.  However, some kernel users like device
 -- 
 2.36.1
 
