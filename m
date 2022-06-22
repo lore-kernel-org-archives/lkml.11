@@ -2,89 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DBB1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 17:09:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD40BC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 17:10:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230001AbiFVRJb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 13:09:31 -0400
+        id S1377102AbiFVRKS (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 13:10:18 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355951AbiFVRJM (ORCPT
+        with ESMTP id S1377163AbiFVRKE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 13:09:12 -0400
+        Wed, 22 Jun 2022 13:10:04 -0400
 Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55BCD3EF30;
-        Wed, 22 Jun 2022 10:07:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CABA041F91;
+        Wed, 22 Jun 2022 10:09:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655917663; x=1687453663;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=2GUfLn3Tz3WxjmHe+ZnGNWrA4D2qWYVVfvVgDLrL0IQ=;
-  b=jPHKOqTR+Jra6Fa58yNrFvY8KnEZMZKWwqof2v8I0tQZo6yq56YiuKzl
-   jgGh+cNfUQ/DO39Xm8zzg11i1+mCZ/2f6yUHFbw8KfG80Kiy1y6DzURE9
-   m43AFqOBjTwbQVLwHLTi5Roya0OKlprKpRC/28SHfguvXERDN471uv31d
-   QLOWr4TEE65ER7X8+I6N3RRTOb9LfFrcFfdtoNKZtAAxWuT6wpo4rfAE6
-   KRFqde0IbcN2pOy4DC4v7E861Z7bbGqG9mTifuUWyiv7+kklJWwtIFkvK
-   A1qVYfI7CSuSa9r1kJuAXSqom6ueFBlSvhQA8V4zwhNyaZ/9E9mf4MX/G
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="278025906"
+  t=1655917752; x=1687453752;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=GuhujeoTeqcnmWPVCbag/SuSIX6nu8OxcQUPGZZah2E=;
+  b=NvxdOht+KONCsIYJrsOb4xikuq1b8c35EPdrp5drTN1H6v67mIC1dHXY
+   pxAmDshbaJOlFx23mbMpLi9MZoYl6jSriKTGIv2f9nuS5KaVPeHWZROdB
+   ySIbJDVRWIxTGfBennRivR01t9kHHvqj3KPyDccZMUm+yvFz4HAo1oHjc
+   tyTiq9DweDDd1dVbY77wq/eYMCbYTFXjQLMwqkZ6OeamwZHkR0JKPVD43
+   I7ypNOPA5/y1A+tFoIB/4z0RymjUD4k0ReOv1IvuQnN7WRmDnjYlrRR3j
+   LU1x8hJasge8AeovYbN+Ygs/YcH6GwaDKkIfpQYxujs9rqk2ZXtXkdgbR
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="278026643"
 X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="278025906"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 10:07:05 -0700
+   d="scan'208";a="278026643"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 10:09:12 -0700
 X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="585805521"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 10:07:01 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1o43of-000sUH-S5;
-        Wed, 22 Jun 2022 20:06:57 +0300
-Date:   Wed, 22 Jun 2022 20:06:57 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        ilpo.jarvinen@linux.intel.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, vz@mleia.com,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lukas@wunner.de, p.rosenberger@kunbus.com,
-        Lino Sanfilippo <l.sanfilippo@kunbus.com>
-Subject: Re: [PATCH 2/8] serial: core, 8250: set RS485 termination gpio in
- serial core
-Message-ID: <YrNMMQUYdgDz45Jc@smile.fi.intel.com>
-References: <20220622154659.8710-1-LinoSanfilippo@gmx.de>
- <20220622154659.8710-3-LinoSanfilippo@gmx.de>
+   d="scan'208";a="644296730"
+Received: from agluck-desk3.sc.intel.com ([172.25.222.78])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 10:09:12 -0700
+From:   Tony Luck <tony.luck@intel.com>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Darren Hart <darren@os.amperecomputing.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux ACPI <linux-acpi@vger.kernel.org>,
+        Len Brown <lenb@kernel.org>, James Morse <james.morse@arm.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Doug Rady <dcrady@os.amperecomputing.com>,
+        Tony Luck <tony.luck@intel.com>
+Subject: [PATCH] ACPI/APEI: Better fix to avoid spamming the console with old error logs
+Date:   Wed, 22 Jun 2022 10:09:06 -0700
+Message-Id: <20220622170906.33759-1-tony.luck@intel.com>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <YqpX9npa/wR7mafR@agluck-desk3.sc.intel.com>
+References: <YqpX9npa/wR7mafR@agluck-desk3.sc.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220622154659.8710-3-LinoSanfilippo@gmx.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 05:46:53PM +0200, Lino Sanfilippo wrote:
-> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-> 
-> In serial8250_em485_config() the termination GPIO is set with the uart_port
-> spinlock held. This is an issue if setting the GPIO line can sleep (e.g.
-> since the concerning GPIO expander is connected via SPI or I2C).
-> 
-> Fix this by setting the termination line outside of the uart_port spinlock
-> in the serial core.
+The fix in commit 3f8dec116210 ("ACPI/APEI: Limit printable size of BERT
+table data") does not work as intended on systems where the BIOS has a
+fixed size block of memory for the BERT table, relying on s/w to quit
+when it finds a record with estatus->block_status == 0. On these systems
+all errors are suppressed because the check:
 
-This doesn't describe that this patch is actually changing GPIO to support
-sleep mode. So, it doesn't fix anything. Please rephrase the commit message
-accordingly.
+	if (region_len < ACPI_BERT_PRINT_MAX_LEN)
 
-> This also makes setting the termination GPIO generic for all uart drivers.
+always fails.
 
-UART
+New scheme skips individual CPER records that are too large, and also
+limits the total number of records that will be printed to 5.
 
+Fixes: 3f8dec116210 ("ACPI/APEI: Limit printable size of BERT table data")
+Cc: stable@vger.kernel.org
+Signed-off-by: Tony Luck <tony.luck@intel.com>
+---
+
+Now in PATCH format with a real commit comment. This version fixes
+the issues seen by Intel's validation team.
+
+ drivers/acpi/apei/bert.c | 31 +++++++++++++++++++++++--------
+ 1 file changed, 23 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/acpi/apei/bert.c b/drivers/acpi/apei/bert.c
+index 598fd19b65fa..45973aa6e06d 100644
+--- a/drivers/acpi/apei/bert.c
++++ b/drivers/acpi/apei/bert.c
+@@ -29,16 +29,26 @@
+ 
+ #undef pr_fmt
+ #define pr_fmt(fmt) "BERT: " fmt
++
++#define ACPI_BERT_PRINT_MAX_RECORDS 5
+ #define ACPI_BERT_PRINT_MAX_LEN 1024
+ 
+ static int bert_disable;
+ 
++/*
++ * Print "all" the error records in the BERT table, but avoid huge spam to
++ * the console if the BIOS included oversize records, or too many records.
++ * Skipping some records here does not lose anything because the full
++ * data is available to user tools in:
++ *	/sys/firmware/acpi/tables/data/BERT
++ */
+ static void __init bert_print_all(struct acpi_bert_region *region,
+ 				  unsigned int region_len)
+ {
+ 	struct acpi_hest_generic_status *estatus =
+ 		(struct acpi_hest_generic_status *)region;
+ 	int remain = region_len;
++	int printed = 0, skipped = 0;
+ 	u32 estatus_len;
+ 
+ 	while (remain >= sizeof(struct acpi_bert_region)) {
+@@ -46,24 +56,26 @@ static void __init bert_print_all(struct acpi_bert_region *region,
+ 		if (remain < estatus_len) {
+ 			pr_err(FW_BUG "Truncated status block (length: %u).\n",
+ 			       estatus_len);
+-			return;
++			break;
+ 		}
+ 
+ 		/* No more error records. */
+ 		if (!estatus->block_status)
+-			return;
++			break;
+ 
+ 		if (cper_estatus_check(estatus)) {
+ 			pr_err(FW_BUG "Invalid error record.\n");
+-			return;
++			break;
+ 		}
+ 
+-		pr_info_once("Error records from previous boot:\n");
+-		if (region_len < ACPI_BERT_PRINT_MAX_LEN)
++		if (estatus_len < ACPI_BERT_PRINT_MAX_LEN &&
++		    printed < ACPI_BERT_PRINT_MAX_RECORDS) {
++			pr_info_once("Error records from previous boot:\n");
+ 			cper_estatus_print(KERN_INFO HW_ERR, estatus);
+-		else
+-			pr_info_once("Max print length exceeded, table data is available at:\n"
+-				     "/sys/firmware/acpi/tables/data/BERT");
++			printed++;
++		} else {
++			skipped++;
++		}
+ 
+ 		/*
+ 		 * Because the boot error source is "one-time polled" type,
+@@ -75,6 +87,9 @@ static void __init bert_print_all(struct acpi_bert_region *region,
+ 		estatus = (void *)estatus + estatus_len;
+ 		remain -= estatus_len;
+ 	}
++
++	if (skipped)
++		pr_info(HW_ERR "Skipped %d error records\n", skipped);
+ }
+ 
+ static int __init setup_bert_disable(char *str)
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.35.3
 
