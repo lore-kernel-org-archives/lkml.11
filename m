@@ -2,88 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C396AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 13:08:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DAB3CCA47D
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 13:10:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352086AbiFVNIT (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 09:08:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58470 "EHLO
+        id S241539AbiFVNKH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 09:10:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350879AbiFVNII (ORCPT
+        with ESMTP id S1352817AbiFVNJ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 09:08:08 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BC1611C0F;
-        Wed, 22 Jun 2022 06:08:05 -0700 (PDT)
-Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25M7FLQE012089;
-        Wed, 22 Jun 2022 08:07:54 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=PODMain02222019;
- bh=gBYOHgPVp12lYmk5v3IHB2WXYsDvG+/8wdG4s8qgEuQ=;
- b=fXUNsaIY8RSc18mWHMTird7xW4JaSQg4PwgrbLI7JYASOTkfOcLlgTwlpaA1FIGdfc4c
- NHjyXxwU2J3P+BIgYfAvDrDJwLVIe5yf25F45ioXc+ZmUksCoJLa04rps6ybeQb/NLPI
- 0n1BqHXAck3Wreoh4D7Ko1XWHBZ2B5UrbbFnpc1aRpyPd7D+lQVQPs5PzvjXkTZ0OQWn
- SWTT7mJ1AFG9Jj+RBs5kdQ+praPhcCQ3jLYnJX7dr+8ZYz1WQE2q/x3XTHxN6OZ3HfTd
- s4JC677o3XMmQjIW8Ncuhqnpoi79lFoYRQdZYdtbfUF7cpCQzWNhr+1CxiVryhcnzohJ XA== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3gsb4p4ybp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 22 Jun 2022 08:07:54 -0500
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Wed, 22 Jun
- 2022 14:07:53 +0100
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.28 via Frontend
- Transport; Wed, 22 Jun 2022 14:07:53 +0100
-Received: from sbinding-cirrus-dsktp.ad.cirrus.com (unknown [198.90.238.151])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id D69127C;
-        Wed, 22 Jun 2022 13:07:46 +0000 (UTC)
-From:   Stefan Binding <sbinding@opensource.cirrus.com>
-To:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, Mark Brown <broonie@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>
-CC:     <linux-acpi@vger.kernel.org>, <alsa-devel@alsa-project.org>,
-        <linux-kernel@vger.kernel.org>, <patches@opensource.cirrus.com>,
-        Stefan Binding <sbinding@opensource.cirrus.com>
-Subject: [PATCH v1 0/2] Read _SUB from ACPI to be able to identify firmware
-Date:   Wed, 22 Jun 2022 14:07:28 +0100
-Message-ID: <20220622130730.1573747-1-sbinding@opensource.cirrus.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 22 Jun 2022 09:09:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB63F3138B;
+        Wed, 22 Jun 2022 06:09:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7DF1CB81EB5;
+        Wed, 22 Jun 2022 13:09:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35158C34114;
+        Wed, 22 Jun 2022 13:09:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655903380;
+        bh=NsupuDvFVEzxG4bNGH8iGooT4sCes2l2/JfLnXk6bz4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=PP7SAnmb4sHFNgLrdLLGJ19baVNHJ4VTk3ITSLDUpbKhwYeDUe0S/QjOlAeu7FN5f
+         lPRkpXZKjER/jM77taOZ3Jdj6dIpBfjGJoXa9eJpzFsbZesSdtJ0usTlctNkULroC0
+         n6gw8NH8Sw0EHcSvkdnJFZuOiPstFiwFv5G3sfMPC8+ibMh+9TIlw8erPoshlBn4p6
+         zILpsElhWPVpKZ5ASpfUxWdAiSJDuzsb1zN4TsUMeacKCmVk7wkyiqa2g7DXjgg6KU
+         xiMcYeZ0b/CIWJpO7IaxH8mzqRku8LxAAZ/zklHDPbm0j2W5muAvmDKwuMlJXmVrQo
+         0w/82e3CzLWdQ==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1o406y-0006Fb-EU; Wed, 22 Jun 2022 15:09:37 +0200
+Date:   Wed, 22 Jun 2022 15:09:36 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 4/6] arm64: dts: qcom: sc8280xp: Add reference device
+Message-ID: <YrMUkL3fh2vcmo4l@hovoldconsulting.com>
+References: <20220622041224.627803-1-bjorn.andersson@linaro.org>
+ <20220622041224.627803-5-bjorn.andersson@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-GUID: pI4CQgaqMYeQBZynIB44jpdYyBigxKCt
-X-Proofpoint-ORIG-GUID: pI4CQgaqMYeQBZynIB44jpdYyBigxKCt
-X-Proofpoint-Spam-Reason: safe
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220622041224.627803-5-bjorn.andersson@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CS35L41 has a DSP which is able to run firmware, as well as a tuning file.
-Different systems may want to use different firmwares and tuning files, and
-some firmwares/tunings may not be compatible with other systems.
-To allow a system to select the correct fimware/tuning, we can read an _SUB
-from the ACPI. This _SUB can then be used to uniquely identify the system
-in the firmware/tuning file name.
+On Tue, Jun 21, 2022 at 09:12:22PM -0700, Bjorn Andersson wrote:
+> Add basic support for the SC8280XP reference device, which allows it to
+> boot to a shell (using EFIFB) with functional storage (UFS), USB,
+> keyboard, touchpad, touchscreen, backlight and remoteprocs.
+> 
+> The PMICs are, per socinfo, reused from other platforms. But given that
+> the address of the PMICs doesn't match other cases and that it's
+> desirable to label things according to the schematics a new dtsi file is
+> created to represent the reference combination of PMICs.
+> 
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> ---
+> 
+> Changes since v1:
+> - Reordered "status" last
+> - Fixed invalid PMIC gpio 0
+> - Replaced "hid" name with touchscreen, touchpad and keyboard
+> - Added &xo_board_clk frequency
 
-Add a helper function which reads the _SUB, so this can be used by other
-parts in the future.
-Add support inside the CS35L41 ASoC driver to read this _SUB, and save it
-appropriately.
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/qcom/sc8280xp-crd.dts
+> @@ -0,0 +1,432 @@
+> +// SPDX-License-Identifier: BSD-3-Clause
+> +/*
+> + * Copyright (c) 2021, The Linux Foundation. All rights reserved.
+> + * Copyright (c) 2022, Linaro Limited
+> + */
+> +
+> +/dts-v1/;
+> +
+> +#include <dt-bindings/gpio/gpio.h>
 
-Stefan Binding (2):
-  ACPI: utils: Add api to read _SUB from ACPI
-  ASoC: cs35l41: Read System Name from ACPI _SUB to identify firmware
+> +#include <dt-bindings/input/gpio-keys.h>
 
- drivers/acpi/utils.c       | 26 ++++++++++++++++++++++++++
- include/linux/acpi.h       |  8 ++++++++
- sound/soc/codecs/cs35l41.c | 27 +++++++++++++++++++++++++++
- 3 files changed, 61 insertions(+)
+This one is unused and should be dropped.
 
--- 
-2.25.1
+> +#include <dt-bindings/input/input.h>
 
+And this one belongs in sc8280xp-pmics.dtsi where it's used.
+
+> +#include <dt-bindings/regulator/qcom,rpmh-regulator.h>
+> +
+> +#include "sc8280xp.dtsi"
+> +#include "sc8280xp-pmics.dtsi"
+> +
+> +/ {
+> +	model = "Qualcomm SC8280XP CRD";
+> +	compatible = "qcom,sc8280xp-crd", "qcom,sc8280xp";
+> +
+> +	aliases {
+> +		serial0 = &qup2_uart17;
+> +	};
+> +
+> +	backlight {
+> +		compatible = "pwm-backlight";
+> +		pwms = <&pmc8280c_lpg 3 1000000>;
+> +		enable-gpios = <&pmc8280_1_gpios 8 GPIO_ACTIVE_HIGH>;
+> +		power-supply = <&vreg_edp_bl>;
+> +
+> +		pinctrl-names = "default";
+> +		pinctrl-0 = <&edp_bl_en>, <&edp_bl_pwm>;
+> +	};
+> +
+> +	chosen {
+> +		stdout-path = "serial0:115200n8";
+> +	};
+> +
+> +	vreg_edp_bl: edp-bl-regulator {
+
+The fixed regulator nodes should be renamed "regulator-edp-bl"...
+
+> +		compatible = "regulator-fixed";
+> +
+> +		regulator-name = "VREG_EDP_BL";
+> +		regulator-min-microvolt = <3600000>;
+> +		regulator-max-microvolt = <3600000>;
+> +
+> +		gpio = <&pmc8280_1_gpios 9 GPIO_ACTIVE_HIGH>;
+> +		enable-active-high;
+> +
+> +		pinctrl-names = "default";
+> +		pinctrl-0 = <&edp_bl_reg_en>;
+> +
+> +		regulator-boot-on;
+> +	};
+> +
+> +	vreg_misc_3p3: misc-3p3-regulator {
+
+...and "regulator-misc-3p3" (e.g. so we have a common prefix to sort
+by).
+
+> +		compatible = "regulator-fixed";
+> +
+> +		regulator-name = "VREG_MISC_3P3";
+> +		regulator-min-microvolt = <3300000>;
+> +		regulator-max-microvolt = <3300000>;
+> +
+> +		gpio = <&pmc8280_1_gpios 1 GPIO_ACTIVE_HIGH>;
+> +		enable-active-high;
+> +
+> +		pinctrl-names = "default";
+> +		pinctrl-0 = <&misc_3p3_reg_en>;
+> +
+> +		regulator-boot-on;
+> +		regulator-always-on;
+> +	};
+> +
+> +	reserved-memory {
+> +	};
+> +};
+
+Johan
