@@ -2,107 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0453BCCA47D
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 11:21:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D064C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 11:23:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357615AbiFVLVP (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 07:21:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56868 "EHLO
+        id S236577AbiFVLXA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 07:23:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357595AbiFVLUy (ORCPT
+        with ESMTP id S1357718AbiFVLWr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 07:20:54 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 780973CFC0
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 04:19:16 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1o3yNj-0002pw-5i; Wed, 22 Jun 2022 13:18:47 +0200
-Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1o3yNV-0004vY-2O; Wed, 22 Jun 2022 13:18:33 +0200
-Date:   Wed, 22 Jun 2022 13:18:33 +0200
-From:   Sascha Hauer <sha@pengutronix.de>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Pavel Machek <pavel@ucw.cz>, Will Deacon <will@kernel.org>,
-        Saravana Kannan <saravanak@google.com>,
-        Kevin Hilman <khilman@kernel.org>,
-        Joerg Roedel <joro@8bytes.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Android Kernel Team <kernel-team@android.com>,
-        Len Brown <len.brown@intel.com>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        David Ahern <dsahern@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
-        Sascha Hauer <kernel@pengutronix.de>,
-        netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH v2 7/9] driver core: Set fw_devlink.strict=1 by default
-Message-ID: <20220622111833.GW1615@pengutronix.de>
-References: <CAHp75VdqjCoWAHV4AyYrju0o8buREA8pM5wyf8TD=rCMTs-tEA@mail.gmail.com>
+        Wed, 22 Jun 2022 07:22:47 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DC283EF16
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 04:21:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=3PSaIfRzJISZsO0VEI6XQXwgCB4DT0qytDuqsciBimk=; b=uAnOZLdQ0Y1vfpR1o2AfyrXmnS
+        Hy6+YWGSkQPXZeiiqK0yHniTAFTDEDImcVW2mAbAVbNoVaX1lDBHZkRG7YGB+l7FaiITvdM5WCEMR
+        o5BQRTMk8eEXAqqxJtIcF4sCfyBYFCiqXJwfRXv/ujdtqKw+EsPGfaTkFCgh0ibtDBVHb+Ww+TDC6
+        gdmOwZW/CeWkfulvlMEa2XOOHXx22zMaju+XEM+ZP1bAjlVMzTo36P+X8iaiHzCgquFJkJKFvuLld
+        /sNs/83k6Ph3VkyvgYfBBinzTCuoQR5r+IjxEAMlLqP9SDO3nfXwpErD81bmvXA7I/r+4MN/sKxW8
+        y1iFl7Fw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:32978)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1o3yQB-0003So-Na; Wed, 22 Jun 2022 12:21:19 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1o3yQ8-0007Nl-NU; Wed, 22 Jun 2022 12:21:16 +0100
+Date:   Wed, 22 Jun 2022 12:21:16 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Cc:     Tony Lindgren <tony@atomide.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH] ARM: spectre-v2: fix smp_processor_id() warning
+Message-ID: <YrL7LIfOqtEJMoTX@shell.armlinux.org.uk>
+References: <795c9463-452e-bf64-1cc0-c318ccecb1da@I-love.SAKURA.ne.jp>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAHp75VdqjCoWAHV4AyYrju0o8buREA8pM5wyf8TD=rCMTs-tEA@mail.gmail.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: sha@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+In-Reply-To: <795c9463-452e-bf64-1cc0-c318ccecb1da@I-love.SAKURA.ne.jp>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 12:52:02PM +0200, Andy Shevchenko wrote:
-> On Wed, Jun 22, 2022 at 10:44 AM Linus Walleij <linus.walleij@linaro.org> wrote:
-> > On Wed, Jun 22, 2022 at 9:48 AM Sascha Hauer <sha@pengutronix.de> wrote:
+On Wed, Jun 22, 2022 at 03:49:21PM +0900, Tetsuo Handa wrote:
+> syzbot complains smp_processor_id() from harden_branch_predictor()
+>  from page fault path [1]. Explicitly disable preemption and use
+> raw_smp_processor_id().
 > 
-> ...
-> 
-> > > This patch has the effect that console UART devices which have "dmas"
-> > > properties specified in the device tree get deferred for 10 to 20
-> > > seconds. This happens on i.MX and likely on other SoCs as well. On i.MX
-> > > the dma channel is only requested at UART startup time and not at probe
-> > > time. dma is not used for the console. Nevertheless with this driver probe
-> > > defers until the dma engine driver is available.
-> > >
-> > > It shouldn't go in as-is.
-> >
-> > This affects all machines with the PL011 UART and DMAs specified as
-> > well.
-> >
-> > It would be best if the console subsystem could be treated special and
-> > not require DMA devlink to be satisfied before probing.
-> 
-> In 8250 we force disable DMA and PM on kernel consoles, because it's
-> so-o PITA and has a lot of corner cases we may never chase down.
+> Link: https://syzkaller.appspot.com/bug?extid=a7ee43e564223f195c84 [1]
+> Reported-by: syzbot <syzbot+a7ee43e564223f195c84@syzkaller.appspotmail.com>
+> Fixes: f5fe12b1eaee220c ("ARM: spectre-v2: harden user aborts in kernel space")
+> Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
 
-On i.MX this is done as well, but it doesn't help here. The driver is
-not even probed when the device node contains a "dmas" property.
+This may "fix" the warning, but...
 
-Sascha
+> ---
+> This patch is completely untested.
+> 
+>  arch/arm/include/asm/system_misc.h | 7 +++++--
+>  1 file changed, 5 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/arm/include/asm/system_misc.h b/arch/arm/include/asm/system_misc.h
+> index 98b37340376b..a92446769acd 100644
+> --- a/arch/arm/include/asm/system_misc.h
+> +++ b/arch/arm/include/asm/system_misc.h
+> @@ -20,8 +20,11 @@ typedef void (*harden_branch_predictor_fn_t)(void);
+>  DECLARE_PER_CPU(harden_branch_predictor_fn_t, harden_branch_predictor_fn);
+>  static inline void harden_branch_predictor(void)
+>  {
+> -	harden_branch_predictor_fn_t fn = per_cpu(harden_branch_predictor_fn,
+> -						  smp_processor_id());
+> +	harden_branch_predictor_fn_t fn;
+> +
+> +	preempt_disable_notrace();
+> +	fn = per_cpu(harden_branch_predictor_fn, raw_smp_processor_id());
+> +	preempt_enable_no_resched_notrace();
+>  	if (fn)
+>  		fn();
+
+The idea is to get the function for the specific CPU, and then to run it
+_on_ that CPU, and in theory the CPU that took the fault. However, I
+seem to remember there are issues trying to achieve that, and I don't
+have a solution for it.
 
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
