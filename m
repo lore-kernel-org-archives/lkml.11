@@ -2,246 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF5D7C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 08:35:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8DCCC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 08:35:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238843AbiFVIfZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 04:35:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60850 "EHLO
+        id S1344962AbiFVIfh (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 04:35:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235752AbiFVIfX (ORCPT
+        with ESMTP id S245146AbiFVIfb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 04:35:23 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E715C381B4
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 01:35:21 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <l.stach@pengutronix.de>)
-        id 1o3vpW-0007nL-A9; Wed, 22 Jun 2022 10:35:18 +0200
-Message-ID: <a059f69470e39cf8928e53773ace6a97bb600821.camel@pengutronix.de>
-Subject: Re: [PATCH RFC 1/2] regmap: add option to disable debugfs
-From:   Lucas Stach <l.stach@pengutronix.de>
-To:     Aisheng Dong <aisheng.dong@nxp.com>,
-        Mark Brown <broonie@kernel.org>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "dongas86@gmail.com" <dongas86@gmail.com>,
-        Peng Fan <peng.fan@nxp.com>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>
-Date:   Wed, 22 Jun 2022 10:35:17 +0200
-In-Reply-To: <DB9PR04MB8477E77D4F6C8F7886418FD180B29@DB9PR04MB8477.eurprd04.prod.outlook.com>
-References: <20220620134758.1286480-1-aisheng.dong@nxp.com>
-         <20220620134758.1286480-2-aisheng.dong@nxp.com>
-         <YrCM0reni+x/KWsG@sirena.org.uk>
-         <DB9PR04MB84779EF2842D789FA66094C380B09@DB9PR04MB8477.eurprd04.prod.outlook.com>
-         <YrCXILblKsp6DuN3@sirena.org.uk>
-         <DB9PR04MB8477CD99D5847291A629994180B09@DB9PR04MB8477.eurprd04.prod.outlook.com>
-         <YrCznap77OyHu4bO@sirena.org.uk>
-         <DB9PR04MB847785E1861525FC1E4AD97280B39@DB9PR04MB8477.eurprd04.prod.outlook.com>
-         <YrHkXH1M4NydBfQT@sirena.org.uk>
-         <DB9PR04MB84772F73D4AA1B49F87BECCF80B39@DB9PR04MB8477.eurprd04.prod.outlook.com>
-         <abbc4d80377dcf5393afa143f9d3542cd2cd45a7.camel@pengutronix.de>
-         <DB9PR04MB8477E77D4F6C8F7886418FD180B29@DB9PR04MB8477.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
+        Wed, 22 Jun 2022 04:35:31 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1A24738794
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 01:35:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655886929;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=FXbG8YAYtCcHZc9mu4c2Nm+a/RYeu4/cnHXEYuhco7U=;
+        b=VhIcEmy9j9x3FeabZaRe+8Fb+g75MHWMV5rjp1tm0TnzLfMLXUPGZi7c4KSfvK3FmpUCHI
+        szD3VnFlX2ThczSibQEPs8L3HlADRYFd92sBtaaOxQLetNLx4HgeZQCIe2asDGBLCaw7Ym
+        HyshX5dd0r/2CtD9g9qsyN9C9N02Tzs=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-44-MIsd6_-XM4S793yov44VGw-1; Wed, 22 Jun 2022 04:35:25 -0400
+X-MC-Unique: MIsd6_-XM4S793yov44VGw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 094F48001EA;
+        Wed, 22 Jun 2022 08:35:24 +0000 (UTC)
+Received: from localhost (ovpn-13-227.pek2.redhat.com [10.72.13.227])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 33F7CC28115;
+        Wed, 22 Jun 2022 08:35:22 +0000 (UTC)
+Date:   Wed, 22 Jun 2022 16:35:16 +0800
+From:   Baoquan He <bhe@redhat.com>
+To:     Catalin Marinas <catalin.marinas@arm.com>
+Cc:     Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Eric Biederman <ebiederm@xmission.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        devicetree@vger.kernel.org, Dave Young <dyoung@redhat.com>,
+        Vivek Goyal <vgoyal@redhat.com>, kexec@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Will Deacon <will@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Feng Zhou <zhoufeng.zf@bytedance.com>,
+        Chen Zhou <dingguo.cz@antgroup.com>,
+        John Donnelly <John.p.donnelly@oracle.com>,
+        Dave Kleikamp <dave.kleikamp@oracle.com>,
+        liushixin <liushixin2@huawei.com>
+Subject: Re: [PATCH 5/5] arm64: kdump: Don't defer the reservation of crash
+ high memory
+Message-ID: <YrLUREAoBMSZo7RR@MiWiFi-R3L-srv>
+References: <20220613080932.663-1-thunder.leizhen@huawei.com>
+ <20220613080932.663-6-thunder.leizhen@huawei.com>
+ <YrFYHYgX3mC//t2l@MiWiFi-R3L-srv>
+ <3f66323d-f371-b931-65fb-edfae0f01c88@huawei.com>
+ <YrIIJkhKWSuAqkCx@arm.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: l.stach@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+In-Reply-To: <YrIIJkhKWSuAqkCx@arm.com>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Mittwoch, dem 22.06.2022 um 08:18 +0000 schrieb Aisheng Dong:
-> > From: Lucas Stach <l.stach@pengutronix.de>
-> > Sent: Wednesday, June 22, 2022 4:08 PM
-> > 
-> > Hi Aisheng, hi Mark,
-> > 
-> > Am Dienstag, dem 21.06.2022 um 18:16 +0000 schrieb Aisheng Dong:
-> > > > From: Mark Brown <broonie@kernel.org>
-> > > > Sent: Tuesday, June 21, 2022 11:32 PM
-> > > > 
-> > > > On Tue, Jun 21, 2022 at 02:56:58PM +0000, Aisheng Dong wrote:
-> > > > 
-> > > > > > so if we can't satisfy the read from the cache then we'll
-> > > > > > hit
-> > > > > > the cache_only check and return -EBUSY before we start
-> > > > > > trying to
-> > > > > > do any physical I/O.  The debugfs code will handle that
-> > > > > > gracefully, indicating that it couldn't get a value for the
-> > > > > > volatile register by showing all Xs for the value.  If none
-> > > > > > of
-> > > > > > the registers are cached then the file won't be terribly
-> > > > > > useful
-> > > > > > but it at least shouldn't cause any
-> > > > errors with accessing the device when it's powered down.
-> > > > 
-> > > > > That means we have to use cache_only mode to workaround the
-> > > > > issue,
-> > > > > right?
-> > > > > I saw that cache_only mode has to be explicated
-> > > > > enable/disable by
-> > > > > driver, commonly used in device rpm in kernel right now.
-> > > > 
-> > > > Yes.
-> > > > 
-> > > > > However, things are a little bit complicated on i.MX that 1)
-> > > > > imx
-> > > > > blkctl needs follow strict registers r/w flow interleaved
-> > > > > with
-> > > > > handshakes with upstream gpc power operations and delay may
-> > > > > be
-> > > > > needed between registers writing
-> > > > > 2) blkctl itself does not enable runtime pm, it simply call
-> > > > > rpm to
-> > > > > resume upstream power domains devices and necessary clocks
-> > > > > before
-> > > > > r/w
-> > > > registers.
-> > > > 
-> > > > I'm not sure I fully understand the issue here?  If the driver
-> > > > can
-> > > > safely manage the hardware surely it can safely manage cache
-> > > > only
-> > > > mode too?  If there are duplicate resumes then cache only
-> > > > enable/disable is a boolean flag rather than refcounted so that
-> > > > shouldn't be a problem.
-> > > > 
-> > > 
-> > > I still can't see an easy and safe to way to do it.
-> > > What I'm wondering is whether it's worth to do it if need to
-> > > introducing considerable complexities in driver to overcome this
-> > > issue
-> > > if it can be simply disabled.
-> > > Anyway, I will try to investigate it.
-> > > 
-> > > > > Furthermore, current imx blkctl is a common driver used by
-> > > > > many
-> > > > > devices
-> > > > [1].
-> > > > > Introducing volatile registers and cache may bloat the driver
-> > > > > a
-> > > > > lot
-> > > > unnecessarily.
-> > > > 
-> > > > You don't actually need to have a cache to use cache only mode,
-> > > > if
-> > > > there are no cached registers then you'll just get -EBUSY on
-> > > > any
-> > > > access to the registers but that's hopefully fine since at the
-> > > > minute things will just fall over anyway.
-> > > > You shouldn't even need to flag registers as volatile if
-> > > > there's no
-> > > > cache since it's not really relevant without a cache.
-> > > > 
-> > > 
-> > > After a quick try initially, I found two issues:
-> > > 1. There's a warning dump if using cache_only without cache void
-> > > regcache_cache_only(struct regmap *map, bool enable) {
-> > >         map->lock(map->lock_arg);
-> > >         WARN_ON(map->cache_bypass && enable);
-> > >         ...
-> > > }
-> > > 2. It seems _regmap_write() did not handle cache_only case well
-> > > without cache.
-> > > It may still writes HW even for cache_only mode?
-> > > 
-> > > I guess we may need fix those two issues first before we can
-> > > safely
-> > > use it?
-> > > 
-> > Why would you write to a cache only regmap. The debugfs interface
-> > only
-> > allows to dump the registers, no?
-> 
-> I mean the _regmap_write() called in driver even we claim it's cache
-> only.
-> Not dumping registers from debugfs.
+Hi Catalin,
 
-That should obviously never happen, as the regmap should only be marked
-cache-only while the power domain is collapsed. Writing any register in
-this state is invalid usage and the WARN_ON is totally warranted.
+On 06/21/22 at 07:04pm, Catalin Marinas wrote:
+> On Tue, Jun 21, 2022 at 02:24:01PM +0800, Kefeng Wang wrote:
+> > On 2022/6/21 13:33, Baoquan He wrote:
+> > > On 06/13/22 at 04:09pm, Zhen Lei wrote:
+> > > > If the crashkernel has both high memory above DMA zones and low memory
+> > > > in DMA zones, kexec always loads the content such as Image and dtb to the
+> > > > high memory instead of the low memory. This means that only high memory
+> > > > requires write protection based on page-level mapping. The allocation of
+> > > > high memory does not depend on the DMA boundary. So we can reserve the
+> > > > high memory first even if the crashkernel reservation is deferred.
+> > > > 
+> > > > This means that the block mapping can still be performed on other kernel
+> > > > linear address spaces, the TLB miss rate can be reduced and the system
+> > > > performance will be improved.
+> > > 
+> > > Ugh, this looks a little ugly, honestly.
+> > > 
+> > > If that's for sure arm64 can't split large page mapping of linear
+> > > region, this patch is one way to optimize linear mapping. Given kdump
+> > > setting is necessary on arm64 server, the booting speed is truly
+> > > impacted heavily.
+> > 
+> > Is there some conclusion or discussion that arm64 can't split large page
+> > mapping?
+> > 
+> > Could the crashkernel reservation (and Kfence pool) be splited dynamically?
+> > 
+> > I found Mark replay "arm64: remove page granularity limitation from
+> > KFENCE"[1],
+> > 
+> > � "We also avoid live changes from block<->table mappings, since the
+> > � archtitecture gives us very weak guarantees there and generally requires
+> > � a Break-Before-Make sequence (though IIRC this was tightened up
+> > � somewhat, so maybe going one way is supposed to work). Unless it's
+> > � really necessary, I'd rather not split these block mappings while
+> > � they're live."
+> 
+> The problem with splitting is that you can end up with two entries in
+> the TLB for the same VA->PA mapping (e.g. one for a 4KB page and another
+> for a 2MB block). In the lucky case, the CPU will trigger a TLB conflict
+> abort (but can be worse like loss of coherency).
+
+Thanks for this explanation. Is this a drawback of arm64 design? X86
+code do the same thing w/o issue, is there way to overcome this on
+arm64 from hardware or software side?
+
+I ever got a arm64 server with huge memory, w or w/o crashkernel setting 
+have different bootup time. And the more often TLB miss and flush will
+cause performance cost. It is really a pity if we have very powerful
+arm64 cpu and system capacity, but bottlenecked by this drawback.
 
 > 
-> > 
-> > I think it wouldn't be too hard to fix this for the blk-ctrl
-> > drivers.
-> > I'll give it a try today.
-> > 
+> Prior to FEAT_BBM (added in ARMv8.4), such scenario was not allowed at
+> all, the software would have to unmap the range, TLBI, remap. With
+> FEAT_BBM (level 2), we can do this without tearing the mapping down but
+> we still need to handle the potential TLB conflict abort. The handler
+> only needs a TLBI but if it touches the memory range being changed it
+> risks faulting again. With vmap stacks and the kernel image mapped in
+> the vmalloc space, we have a small window where this could be handled
+> but we probably can't go into the C part of the exception handling
+> (tracing etc. may access a kmalloc'ed object for example).
 > 
-> Great, looking forward to see it.
+> Another option is to do a stop_machine() (if multi-processor at that
+> point), disable the MMUs, modify the page tables, re-enable the MMU but
+> it's also complicated.
 > 
-> > > > > The simplest way for i.MX case may be just disabling debugfs
-> > > > > as it
-> > > > > can't reflect the actually HW state without power. So we
-> > > > > would
-> > > > > wish the
-> > > > regmap core could provide an option to users.
-> > > > 
-> > > > The goal here is to describe the regmap itself so that there's
-> > > > less
-> > > > fragility as things change and we don't needlessly disable
-> > > > anything
-> > > > else that happens to be added to debugfs in the future due to
-> > > > having
-> > > > an overly generic flag, and we get the ability to directly
-> > > > catch
-> > > > access to the hardware that misses doing power management
-> > > > properly
-> > > > while we're at it.
-> > > > 
-> > > > We already have a way to describe it being unsafe to access the
-> > > > hardware, we may as well use it.
-> > > > 
-> > > > > And I noticed that syscon [2] seems have the same issue since
-> > > > > the
-> > > > > following
-> > > > commit:
-> > > > 
-> > > > > commit 9b947a13e7f6017f18470f665992dbae267852b3
-> > > > > Author: David Lechner <david@lechnology.com>
-> > > > > Date:   Mon Feb 19 15:43:02 2018 -0600
-> > > > 
-> > > > >     regmap: use debugfs even when no device
-> > > > 
-> > > > >     This registers regmaps with debugfs even when they do not
-> > > > > have
-> > > > > an
-> > > > >     associated device. For example, this is common for syscon
-> > > > > regmaps.
-> > > > 
-> > > > That's a different thing, that's due to us naming the directory
-> > > > after the struct device but syscons being created before we
-> > > > have
-> > > > that struct device available.
-> > > 
-> > > Yes, but syscon has the same issue that the system may hang if
-> > > dump
-> > > registers through debugfs without power on.
-> > > How would you suggest for this case as syscon is also a common
-> > > driver?
-> > > 
-> > This is a general issue. If something uses a syscon that is inside
-> > a
-> > power-domain where the runtime PM is controlled by some other
-> > entity, how
-> > is it safe to use the syscon at all? Every access might end up
-> > locking up the
-> > system. So those syscons really need to learn some kind of runtime
-> > PM
-> > handling.
+> -- 
+> Catalin
 > 
-> The regmap core does not support runtime pm.
-> It may be unsafe to dumping registers through debugfs.
-
-Right, that is a general issue, not only for debugfs. Any access to a
-syscon inside a power-domain may hang the system, as the syscon has no
-way to ensure that the power domain is up.
-
-Regards,
-Lucas
 
