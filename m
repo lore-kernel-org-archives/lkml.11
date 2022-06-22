@@ -2,113 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0750C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 18:16:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2869CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 18:17:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377552AbiFVSQt (ORCPT
+        id S1377563AbiFVSR1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 14:16:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43258 "EHLO
+        Wed, 22 Jun 2022 14:17:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359064AbiFVSQr (ORCPT
+        with ESMTP id S1359064AbiFVSRZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 14:16:47 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB2BB3D1DE;
-        Wed, 22 Jun 2022 11:16:46 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id g26so14615921ejb.5;
-        Wed, 22 Jun 2022 11:16:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jL28EuTE/B/IiDSFOCkATLCzsdUidgMrBdVWQUFs7cc=;
-        b=LO1pKYM/vuhd0Wi83BGq4mfQH8lRhD+ISzAR2tgKxQJ+kxQb6pjkhbr3A/qmFvVWnu
-         0r6Oo9NFm22z16iwHGOw7u05VmdQ+S6lAYhBGsD19N9ERNFJqa26wX41UTMFl+iDiLbW
-         FJWQHOvWHWH+NE9BvDGOmXlrDrMR0Sj1sisqBAEjicoQvmf/NpXH3hotAsnWYpteM54w
-         vR9YYH4h5ROLR+CZbcYrUYpGyI90zCwFZHg2PLLizGh6p6WSwrcm/iLnO03Aikfq29Bn
-         PUyghERuf/1VxsLw2S4PJwZCM6mcXot8RHrO5eCTgJ9BpuJPpzXsrs9TcoXMhu3UDTpJ
-         GGfg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jL28EuTE/B/IiDSFOCkATLCzsdUidgMrBdVWQUFs7cc=;
-        b=MUf27+kynOHU/8MU3kueQE7iJbSzNuLpkzRZZ8ZdEKH4mSPGS4BBW/m5n02qm5YsE+
-         LWgJKKo9Eh+gbv0mBK8EM8fkzgCh3L3+XV2bmhOCAvzPlGsFVzb7pi5dtcFCKpQXj9xB
-         0bhR4p98vwrrcn1DgJI80HlupHCHMkD5SaMjtn9Nm9kxzsMkWd+ITLrNwvJ91iOxrmrH
-         3UPplPTlu3ZVnryTAr4eVhim/w/pfg5qJK8tPXCRuCNc0YV6qmQN2DVpkbZSXIAzj2UC
-         DgabaTwRS37Ofw6jYrfUHGTGFJv1/6tRlLWwl8k8NXQ9oyQ25+WJ2a0654dHIpZ8el6b
-         4SUA==
-X-Gm-Message-State: AJIora+fRxvTd22ysaJTfkA3iocA4bFeR6DsG3i2T5BrDZrGaeO/CA1V
-        KV1ULuZNUnPmZF0TZJd8uktpakiaUBEeZPaToD4=
-X-Google-Smtp-Source: AGRyM1s2NQm5CtCjmV7w3PBB0JZBDufY6KUaCPSrMmnyss4GCO9gDFw/1aEM8lRPQyVLq8qHdlkDsM822R3dbfMN4eA=
-X-Received: by 2002:a17:906:5189:b0:722:dc81:222a with SMTP id
- y9-20020a170906518900b00722dc81222amr4375356ejk.502.1655921805322; Wed, 22
- Jun 2022 11:16:45 -0700 (PDT)
+        Wed, 22 Jun 2022 14:17:25 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6A983D4AE;
+        Wed, 22 Jun 2022 11:17:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655921844; x=1687457844;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=lSht4PBByyP05ZkoNDMizevybcxsq9Fjn4pGO9nBcrI=;
+  b=UkFSH5vnBamp+XTzUFGs920qg3LP2/mylMGJ/yDARlyrwH4rQ6fhIPSw
+   f/NB4dz9YeUey/tkaDGfHNeXpAB+e/TJHyKHM0xEsYBUoGRunrDVWnTs7
+   VPrioxWcb+xUtM+hQEnFujmO7KOHMA0dyh3wPAhmXQ5pLU3IwTSzsDYeO
+   Vh8HGtTU8DenVW7NJT3PpTjR7poUrf/xO+It5ocEuoRdcp/OWFgmR6cqs
+   QNIgylwuz5S67KOib3YI0ZCsfCTlm0po4K2U32WB7hUgrNhF5uLGIg2W9
+   N38q4dsGBa/QPVXiR5YJgDfc4SsKhJ2Khx625CIUH8dytBB7SSxYqmmuf
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="279267740"
+X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
+   d="scan'208";a="279267740"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 10:56:11 -0700
+X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
+   d="scan'208";a="592302891"
+Received: from gkammela-mobl.amr.corp.intel.com (HELO [10.212.111.3]) ([10.212.111.3])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 10:56:11 -0700
+Message-ID: <3fc73477-59e3-2935-489b-d3dbfd77eafc@linux.intel.com>
+Date:   Wed, 22 Jun 2022 10:56:10 -0700
 MIME-Version: 1.0
-References: <20220621163757.760304-1-roberto.sassu@huawei.com>
- <20220621163757.760304-6-roberto.sassu@huawei.com> <20220621223135.puwe3m55yznaevm5@macbook-pro-3.dhcp.thefacebook.com>
- <76c319d5ad1e4ac69ae5d3f71e9d62f7@huawei.com>
-In-Reply-To: <76c319d5ad1e4ac69ae5d3f71e9d62f7@huawei.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 22 Jun 2022 11:16:33 -0700
-Message-ID: <CAADnVQLLMOfXOchNqcTOR9_-ReXrTmNjMf40HD_ZtN+BO3J3fw@mail.gmail.com>
-Subject: Re: [PATCH v5 5/5] selftests/bpf: Add test for bpf_verify_pkcs7_signature()
- helper
-To:     Roberto Sassu <roberto.sassu@huawei.com>
-Cc:     "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "kpsingh@kernel.org" <kpsingh@kernel.org>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "songliubraving@fb.com" <songliubraving@fb.com>,
-        "kafai@fb.com" <kafai@fb.com>, "yhs@fb.com" <yhs@fb.com>,
-        "dhowells@redhat.com" <dhowells@redhat.com>,
-        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v1] platform/x86: intel/pmc: Add Alder Lake N support to
+ PMC core driver
+Content-Language: en-US
+To:     Hans de Goede <hdegoede@redhat.com>
+Cc:     irenic.rajneesh@gmail.com, markgross@kernel.org,
+        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Srinivas Pandruvada <srinivas.pandruvada@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "David E . Box" <david.e.box@linux.intel.com>
+References: <20220615002751.3371730-1-gayatri.kammela@linux.intel.com>
+ <caaca84e-1cc4-bf81-f705-fdabe2313d71@redhat.com>
+From:   "Kammela, Gayatri" <gayatri.kammela@linux.intel.com>
+In-Reply-To: <caaca84e-1cc4-bf81-f705-fdabe2313d71@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 12:06 AM Roberto Sassu <roberto.sassu@huawei.com> wrote:
->
-> > From: Alexei Starovoitov [mailto:alexei.starovoitov@gmail.com]
-> > Sent: Wednesday, June 22, 2022 12:32 AM
-> > On Tue, Jun 21, 2022 at 06:37:57PM +0200, Roberto Sassu wrote:
-> > > +   if (child_pid == 0) {
-> > > +           snprintf(path, sizeof(path), "%s/signing_key.pem", tmp_dir);
-> > > +
-> > > +           return execlp("./sign-file", "./sign-file", "-d", "sha256",
-> > > +                         path, path, data_template, NULL);
-> >
-> > Did you miss my earlier reply requesting not to do this module_signature append
-> > and use signature directly?
->
-> I didn't miss. sign-file is producing the raw PKCS#7 signature here (-d).
->
-> I'm doing something slightly different, to test the keyring ID part.
-> I'm retrieving an existing kernel module (actually this does not work
-> in the CI), parsing it to extract the raw signature, and passing it to the
-> eBPF program for verification.
+On 6/22/2022 3:23 AM, Hans de Goede wrote:
 
-We don't have signed modules in CI.
-When you make changes like this you have to explain that in the commit log.
-
-> Since the kernel module is signed with a key in the built-in keyring,
-> passing 1 or 0 as ID should work.
+> Hi,
 >
-> Roberto
+> On 6/15/22 02:27, Gayatri Kammela wrote:
+>> Add Alder Lake N (ADL-N) to the list of the platforms that Intel's
+>> PMC core driver supports. RocketLake reuses all the TigerLake PCH IPs.
+>>
+>> Cc: Srinivas Pandruvada <srinivas.pandruvada@intel.com>
+>> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+>> Cc: David E. Box <david.e.box@linux.intel.com>
+>> Signed-off-by: Gayatri Kammela <gayatri.kammela@linux.intel.com>
+> Thank you for your patch, I've applied this patch to my review-hans
+> branch:
+> https://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git/log/?h=review-hans
 >
-> (sorry, I have to keep the email signature by German law)
-
-I don't believe that's the case since plenty of people
-work from Germany and regularly contribute patches without
-such banners.
-
-> HUAWEI TECHNOLOGIES Duesseldorf GmbH, HRB 56063
-> Managing Director: Li Peng, Yang Xi, Li He
+> Note it will show up in my review-hans branch once I've pushed my
+> local branch there, which might take a while.
+>
+> Once I've run some tests on this branch the patches there will be
+> added to the platform-drivers-x86/for-next branch and eventually
+> will be included in the pdx86 pull-request to Linus for the next
+> merge-window.
+>
+> Regards,
+>
+> Hans
+Thank you Hans! I have sent v2 fixing the typo.
+>
+>> ---
+>>   drivers/platform/x86/intel/pmc/core.c | 1 +
+>>   1 file changed, 1 insertion(+)
+>>
+>> diff --git a/drivers/platform/x86/intel/pmc/core.c b/drivers/platform/x86/intel/pmc/core.c
+>> index 40183bda7894..a1fe1e0dcf4a 100644
+>> --- a/drivers/platform/x86/intel/pmc/core.c
+>> +++ b/drivers/platform/x86/intel/pmc/core.c
+>> @@ -1911,6 +1911,7 @@ static const struct x86_cpu_id intel_pmc_core_ids[] = {
+>>   	X86_MATCH_INTEL_FAM6_MODEL(ATOM_TREMONT_L,	&icl_reg_map),
+>>   	X86_MATCH_INTEL_FAM6_MODEL(ROCKETLAKE,		&tgl_reg_map),
+>>   	X86_MATCH_INTEL_FAM6_MODEL(ALDERLAKE_L,		&tgl_reg_map),
+>> +	X86_MATCH_INTEL_FAM6_MODEL(ALDERLAKE_N,		&tgl_reg_map),
+>>   	X86_MATCH_INTEL_FAM6_MODEL(ALDERLAKE,		&adl_reg_map),
+>>   	X86_MATCH_INTEL_FAM6_MODEL(RAPTORLAKE_P,        &tgl_reg_map),
+>>   	{}
+>>
+>> base-commit: b13baccc3850ca8b8cccbf8ed9912dbaa0fdf7f3
