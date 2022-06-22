@@ -2,103 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01B3FC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 07:06:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8A19C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 07:06:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351946AbiFVHGV (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 03:06:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43754 "EHLO
+        id S238032AbiFVHGl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 03:06:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230070AbiFVHGT (ORCPT
+        with ESMTP id S1351982AbiFVHGi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 03:06:19 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1CB436B4F
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 00:06:18 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1o3uRD-0004HY-5U; Wed, 22 Jun 2022 09:06:07 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1o3uR8-001z48-QP; Wed, 22 Jun 2022 09:06:04 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1o3uR9-000MZh-Dv; Wed, 22 Jun 2022 09:06:03 +0200
-Date:   Wed, 22 Jun 2022 09:06:00 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de, festevam@gmail.com,
-        linux-imx@nxp.com, hvilleneuve@dimonoff.com,
-        l.stach@pengutronix.de, abbaraju.manojsai@amarulasolutions.com,
-        jagan@amarulasolutions.com, matteo.lisi@engicam.com,
-        tharvey@gateworks.com, t.remmet@phytec.de, t.remmet@phytec.deh,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Peng Fan <peng.fan@nxp.com>
-Subject: Re: [PATCH 00/14] arm64: dts: imx8mp: correct pad settings
-Message-ID: <20220622070600.gb3wep7rltwdivkk@pengutronix.de>
-References: <20220622061410.853301-1-peng.fan@oss.nxp.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="lubhnzxzir5q7thf"
-Content-Disposition: inline
-In-Reply-To: <20220622061410.853301-1-peng.fan@oss.nxp.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+        Wed, 22 Jun 2022 03:06:38 -0400
+Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78C8536B61
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 00:06:32 -0700 (PDT)
+Received: from epcas2p3.samsung.com (unknown [182.195.41.55])
+        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220622070627epoutp01816c98ca9d249df68081cee2d5230af6~634fvgeq01666416664epoutp01T
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 07:06:27 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220622070627epoutp01816c98ca9d249df68081cee2d5230af6~634fvgeq01666416664epoutp01T
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1655881587;
+        bh=zeSvkutVhCwLhqpuMOBEA1bNHvXYgLmki1LCYFH8ryI=;
+        h=Subject:Reply-To:From:To:CC:In-Reply-To:Date:References:From;
+        b=tNRNaZpR7PT2bB9AQ0wUK8pSW7i5TFaixDhu9MrK9/ws189S+wyQayreMKHT7RncA
+         6YkSd+a/Ly7YE+CI18ICfNLneGlDeAwK+FkeJmzNPBB+gE6zt6ASPq+UropOBkCqc1
+         zOr/7Y0Gc8MHjAlBRbG5eVnlWSBg/TNp39VS4aWw=
+Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
+        epcas2p2.samsung.com (KnoxPortal) with ESMTP id
+        20220622070626epcas2p24cd717a2358840c3a44b92cb6bcacdd1~634d8kFfJ3086230862epcas2p2n;
+        Wed, 22 Jun 2022 07:06:26 +0000 (GMT)
+Received: from epsmges2p2.samsung.com (unknown [182.195.36.91]) by
+        epsnrtp2.localdomain (Postfix) with ESMTP id 4LSZDd4V6fz4x9QJ; Wed, 22 Jun
+        2022 07:06:25 +0000 (GMT)
+X-AuditID: b6c32a46-0a3ff700000025b2-8a-62b2bf71c064
+Received: from epcas2p1.samsung.com ( [182.195.41.53]) by
+        epsmges2p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        13.DD.09650.17FB2B26; Wed, 22 Jun 2022 16:06:25 +0900 (KST)
+Mime-Version: 1.0
+Subject: Re: [PATCH v3 2/5] dt-bindings: phy: Add ARTPEC-8 PCIe phy
+Reply-To: wangseok.lee@samsung.com
+Sender: Wangseok Lee <wangseok.lee@samsung.com>
+From:   Wangseok Lee <wangseok.lee@samsung.com>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+CC:     Krzysztof Kozlowski <krzk@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
+        "kishon@ti.com" <kishon@ti.com>,
+        "vkoul@kernel.org" <vkoul@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "jesper.nilsson@axis.com" <jesper.nilsson@axis.com>,
+        "lars.persson@axis.com" <lars.persson@axis.com>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "linux-phy@lists.infradead.org" <linux-phy@lists.infradead.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>,
+        "kw@linux.com" <kw@linux.com>,
+        "linux-arm-kernel@axis.com" <linux-arm-kernel@axis.com>,
+        "kernel@axis.com" <kernel@axis.com>,
+        Moon-Ki Jun <moonki.jun@samsung.com>,
+        Sang Min Kim <hypmean.kim@samsung.com>,
+        Dongjin Yang <dj76.yang@samsung.com>,
+        Yeeun Kim <yeeun119.kim@samsung.com>
+X-Priority: 3
+X-Content-Kind-Code: NORMAL
+In-Reply-To: <20220621211354.GA1332400@bhelgaas>
+X-CPGS-Detection: blocking_info_exchange
+X-Drm-Type: N,general
+X-Msg-Generator: Mail
+X-Msg-Type: PERSONAL
+X-Reply-Demand: N
+Message-ID: <20220622070625epcms2p27b8af447c871dba8219b5dd16c2860c7@epcms2p2>
+Date:   Wed, 22 Jun 2022 16:06:25 +0900
+X-CMS-MailID: 20220622070625epcms2p27b8af447c871dba8219b5dd16c2860c7
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+X-CPGSPASS: Y
+X-CPGSPASS: Y
+CMS-TYPE: 102P
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrNJsWRmVeSWpSXmKPExsWy7bCmqW7h/k1JBv9uKFosacqweHlI02L+
+        kXOsFrtnLGeyeHVmLZvFzKlnmC2eH5rFbPGpRdXiwtMeNouXs+6xWZw/v4HdoqHnN6vFkTcf
+        mS32H1/JZHF51xw2i7PzjrNZTFj1jcXize8X7BbnFmdatO49wm6x884JZotfW/8wOYh5rJm3
+        htHj+roAjwWbSj02repk83hyZTqTx+Yl9R59W1Yxehy/sZ3J4/MmuQDOqGybjNTElNQihdS8
+        5PyUzLx0WyXv4HjneFMzA0NdQ0sLcyWFvMTcVFslF58AXbfMHKD3lBTKEnNKgUIBicXFSvp2
+        NkX5pSWpChn5xSW2SqkFKTkF5gV6xYm5xaV56Xp5qSVWhgYGRqZAhQnZGR2z/zEXLNGt2Lzz
+        BnMDY59OFyMnh4SAicTuW9+Yuxi5OIQEdjBKvD3wl7GLkYODV0BQ4u8OYZAaYQFniV3/N7GB
+        2EICShI71sxjhojrS1xf0c0KYrMJ6Er8W/ySDaRVREBNoqs9FGQks8AOdom7b78zQuzilZjR
+        /pQFwpaW2L58K1icU8BAYs2LI0wQcQ2JH8t6mSFsUYmbq9+yw9jvj82HmiMi0XrvLFSNoMSD
+        n7uh4lISC54cYoWwqyX2//0NNbOBUaL/firIbRJAN++4bgwS5hXwlVj/4DsrSJhFQFWi5YM8
+        RLWLxO7mbrCJzALaEssWvmYGKWEW0JRYv0sfYoiyxJFbLDA/NWz8zY7OZhbgk+g4/BcuvmPe
+        E6hb1CTmrdzJPIFReRYilGch2TULYdcCRuZVjGKpBcW56anFRgVG8IhNzs/dxAhO5VpuOxin
+        vP2gd4iRiYPxEKMEB7OSCK8N94YkId6UxMqq1KL8+KLSnNTiQ4ymQE9OZJYSTc4HZpO8knhD
+        E0sDEzMzQ3MjUwNzJXFer5QNiUIC6YklqdmpqQWpRTB9TBycUg1MHqxRn/UW1VgslHsRU6vo
+        vSlCw6Xl1JU+rba0KvfAzGKVPxzPpusFudm1yf55ePnFi6LtKwy9jxT+mqapG+VgppTOrORt
+        tE3+8Wf9w/YmDuf8hdYtm7vR/wgLb5v4jGQTgxv2pgkhcS/PhvZ6y9nssJvw4cZfvkT/3kmd
+        mVXf3jh2zWsN3/V+9fpfK75uKjohnLhsX5CEWBz7ahaPv/prDyYzTPiv0c/H06t1XSfw3LYF
+        qyvaXfkeszNwfK6TsfOvSE04xCZdmtvauJ+LUfj9pIbnUxbdmHBWPrwn42v75wX6HTMnCwdx
+        Liv7lXdTg3tX81eGrd4uPydusp3Uav7660+xrb7r1DxcbpVMZFBiKc5INNRiLipOBADCFcZD
+        bgQAAA==
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220621212357epcas2p41ecf1ace5d207b154cc77dac79bc7e53
+References: <20220621211354.GA1332400@bhelgaas>
+        <CGME20220621212357epcas2p41ecf1ace5d207b154cc77dac79bc7e53@epcms2p2>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
---lubhnzxzir5q7thf
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Hello,
-
-On Wed, Jun 22, 2022 at 02:13:56PM +0800, Peng Fan (OSS) wrote:
-> From: Peng Fan <peng.fan@nxp.com>
->=20
-> i.MX8MP iomux pad BIT3 and BIT0 are reserved bits. Writing 1 to the
-> reserved bit will be ignored and reading will still return 0. Although
-> function not broken with reserved bits set, we should not set reserved
-> bits.
-
-I wonder how you found these. Some time ago I wrote a tool for such
-issues[1]. Currently it only supports i.MX25, i.MX6DL and i.MX6Q, but
-extending it for the other SoCs should be only some industious effort.
-
-Best regards
-Uwe
-
-[1] https://git.pengutronix.de/cgit/tools/dt-utils/tree/src/dtblint-imx-pin=
-mux.c
-
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---lubhnzxzir5q7thf
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmKyv1UACgkQwfwUeK3K
-7Ak5tQf+OE38jVlL1zck0KGSrmTkCjS5+6rj/je/5cZayMomqkMUgZOntcQtpNkA
-kmCVLSqHz0yu0zOAuHu0c0ka82B8le6jUvpC3LhbDpRnqeNXyBeMIR+U3AtlEpti
-uAA4VECVjHRwHIHmIdQ9FWEA2M+sJCjcQrSl0Xa8JXWnPxEF5vJ8USbzV54ku/oc
-yYvfLxwnoDrUVNN3APnAekj6O7JZLKGkCHe4SFr9wjeKMnPjH+L0t/uO6/Ype20z
-bUbVGC5dnp0i2+2Fi4q72BtWZmwK6wrwbcCpbMWCbps0e+Q1EAJ/XGuOUfB3cEjG
-6c0RlhF9h/FWG+hiZYCcdsoLGU32cg==
-=57EK
------END PGP SIGNATURE-----
-
---lubhnzxzir5q7thf--
+On=C2=A022/06/2022=C2=A006:23,=C2=A0Bjorn=20Helgaas=C2=A0wrote:=0D=0A>=20On=
+=C2=A0Mon,=C2=A0Jun=C2=A020,=C2=A02022=C2=A0at=C2=A005:38:21PM=C2=A0+0900,=
+=C2=A0Wangseok=C2=A0Lee=C2=A0wrote:=0D=0A>>=C2=A0On=C2=A017/06/2022=C2=A007=
+:59,=C2=A0Krzysztof=C2=A0Kozlowski=C2=A0wrote:=0D=0A>>=C2=A0>=C2=A0On=C2=A0=
+13/06/2022=C2=A018:29,=C2=A0Wangseok=C2=A0Lee=C2=A0wrote:=0D=0A>>=C2=A0>>=
+=C2=A0Add=C2=A0description=C2=A0to=C2=A0support=C2=A0Axis,=C2=A0ARTPEC-8=C2=
+=A0SoC.=0D=0A>>=C2=A0>>=C2=A0ARTPEC-8=C2=A0is=C2=A0the=C2=A0SoC=C2=A0platfo=
+rm=C2=A0of=C2=A0Axis=C2=A0Communications=0D=0A>>=C2=A0>>=C2=A0and=C2=A0PCIe=
+=C2=A0phy=C2=A0is=C2=A0designed=C2=A0based=C2=A0on=C2=A0SAMSUNG=C2=A0PHY.=
+=0D=0A>>=C2=A0>=C2=A0=0D=0A>>=C2=A0>=C2=A0No=C2=A0improvements=C2=A0here.=
+=C2=A0On=C2=A0v2=C2=A0I=C2=A0gave=C2=A0you=C2=A0link=C2=A0pointing=C2=A0to=
+=C2=A0specific=0D=0A>>=C2=A0>=C2=A0paragraph=C2=A0of=C2=A0our=C2=A0document=
+ation=C2=A0which=C2=A0you=C2=A0need=C2=A0to=C2=A0apply=C2=A0-=C2=A0wrong=C2=
+=A0wrapping.=0D=0A>>=C2=A0>=C2=A0Is=C2=A0there=C2=A0something=C2=A0unclear=
+=C2=A0here?=0D=0A>>=C2=A0>=C2=A0=0D=0A>>=C2=A0>=C2=A0Please=0D=0A>>=C2=A0>=
+=C2=A0do=0D=0A>>=C2=A0>=C2=A0not=0D=0A>>=C2=A0>=C2=A0wrap=0D=0A>>=C2=A0>=C2=
+=A0in=0D=0A>>=C2=A0>=C2=A0different=0D=0A>>=C2=A0>=C2=A0style.=0D=0A>>=C2=
+=A0=0D=0A>>=C2=A0I=C2=A0think=C2=A0i=C2=A0misunderstood=C2=A0your=C2=A0revi=
+ew=C2=A0comment.=0D=0A>=20=0D=0A>=20Krzysztof=C2=A0was=C2=A0pointing=C2=A0o=
+ut=C2=A0that=C2=A0your=C2=A0commit=C2=A0log:=0D=0A>=20=0D=0A>=20=C2=A0=C2=
+=A0Add=C2=A0description=C2=A0to=C2=A0support=C2=A0Axis,=C2=A0ARTPEC-8=C2=A0=
+SoC.=0D=0A>=20=C2=A0=C2=A0ARTPEC-8=C2=A0is=C2=A0the=C2=A0SoC=C2=A0platform=
+=C2=A0of=C2=A0Axis=C2=A0Communications=0D=0A>=20=C2=A0=C2=A0and=C2=A0PCIe=
+=C2=A0phy=C2=A0is=C2=A0designed=C2=A0based=C2=A0on=C2=A0SAMSUNG=C2=A0PHY.=
+=0D=0A>=20=0D=0A>=20only=C2=A0fills=C2=A0about=C2=A050=C2=A0columns,=C2=A0a=
+nd=C2=A0if=C2=A0you=C2=A0run=C2=A0=22git=C2=A0log=22,=C2=A0most=C2=A0commit=
+=C2=A0logs=0D=0A>=20fill=C2=A0about=C2=A075=C2=A0columns=C2=A0so=C2=A0that=
+=C2=A0when=C2=A0git=C2=A0adds=C2=A04=C2=A0spaces=C2=A0of=C2=A0indentation,=
+=C2=A0they=0D=0A>=20fit=C2=A0nicely=C2=A0in=C2=A0an=C2=A080-column=C2=A0ter=
+minal=C2=A0and=C2=A0take=C2=A0advantage=C2=A0of=C2=A0the=C2=A0whole=C2=A0wi=
+dth.=0D=0A>=20=0D=0A>=20It's=C2=A0easier=C2=A0to=C2=A0read=C2=A0when=C2=A0a=
+ll=C2=A0the=C2=A0commit=C2=A0logs=C2=A0are=C2=A0roughly=C2=A0the=C2=A0same=
+=0D=0A>=20width.=C2=A0=C2=A0So=C2=A0please=C2=A0wrap=C2=A0yours=C2=A0to=C2=
+=A0something=C2=A0like=C2=A0this:=0D=0A>=20=0D=0A>=20=C2=A0=C2=A0Add=C2=A0d=
+escription=C2=A0to=C2=A0support=C2=A0Axis,=C2=A0ARTPEC-8=C2=A0SoC.=C2=A0=C2=
+=A0ARTPEC-8=C2=A0is=C2=A0the=C2=A0SoC=0D=0A>=20=C2=A0=C2=A0platform=C2=A0of=
+=C2=A0Axis=C2=A0Communications=C2=A0and=C2=A0PCIe=C2=A0PHY=C2=A0is=C2=A0des=
+igned=C2=A0based=C2=A0on=C2=A0Samsung=0D=0A>=20=C2=A0=C2=A0PHY.=0D=0A>=20=
+=0D=0A>=20The=C2=A0PCI=C2=A0driver=C2=A0the=C2=A0commit=C2=A0log=C2=A0is:=
+=0D=0A>=20=0D=0A>=20=C2=A0=C2=A0Add=C2=A0support=C2=A0Axis,=C2=A0ARTPEC-8=
+=C2=A0SoC.=0D=0A>=20=C2=A0=C2=A0ARTPEC-8=C2=A0is=C2=A0the=C2=A0SoC=C2=A0pla=
+tform=C2=A0of=C2=A0Axis=C2=A0Communications.=0D=0A>=20=0D=0A>=20=C2=A0=C2=
+=A0This=C2=A0is=C2=A0based=C2=A0on=C2=A0arm64=C2=A0and=C2=A0support=C2=A0GE=
+N4=C2=A0&=C2=A02lane.=0D=0A>=20=C2=A0=C2=A0This=C2=A0PCIe=C2=A0controller=
+=C2=A0is=C2=A0based=C2=A0on=C2=A0DesignWare=C2=A0Hardware=C2=A0core=C2=A0an=
+d=C2=A0uses=C2=A0DesignWa=0D=0A>=20=C2=A0=C2=A0re=C2=A0core=C2=A0functions=
+=C2=A0to=C2=A0implement=C2=A0the=C2=A0driver.=0D=0A>=20=0D=0A>=20=C2=A0=C2=
+=A0=22pcie-artpec6.=C2=A0c=22=C2=A0supports=C2=A0artpec6=C2=A0and=C2=A0artp=
+ec7=C2=A0H/W.=0D=0A>=20=C2=A0=C2=A0artpec8=C2=A0can=C2=A0not=C2=A0be=C2=A0e=
+xpanded=C2=A0because=C2=A0H/W=C2=A0configuration=C2=A0is=C2=A0completely=C2=
+=A0differe=0D=0A>=20=C2=A0=C2=A0nt=C2=A0from=C2=A0artpec6/7.=0D=0A>=20=C2=
+=A0=C2=A0phy=C2=A0and=C2=A0sub=C2=A0controller=C2=A0are=C2=A0different.=0D=
+=0A>=20=0D=0A>=20This=C2=A0should=C2=A0be=C2=A0similarly=C2=A0rewrapped=C2=
+=A0to=C2=A0fill=C2=A075=C2=A0columns.=C2=A0=C2=A0The=C2=A0short=C2=A0lines=
+=C2=A0are=0D=0A>=20a=C2=A0signal=C2=A0to=C2=A0the=C2=A0reader=C2=A0that=C2=
+=A0=22this=C2=A0is=C2=A0the=C2=A0last=C2=A0line=C2=A0of=C2=A0a=C2=A0paragra=
+ph,=C2=A0so=0D=0A>=20expect=C2=A0a=C2=A0new=C2=A0paragraph=C2=A0to=C2=A0fol=
+low.=22=0D=0A>=20=0D=0A>=20But=C2=A0in=C2=A0commit=C2=A0logs,=C2=A0paragrap=
+hs=C2=A0are=C2=A0typically=C2=A0separated=C2=A0by=C2=A0blank=C2=A0lines,=C2=
+=A0so=C2=A0a=0D=0A>=20short=C2=A0line=C2=A0followed=C2=A0not=C2=A0by=C2=A0a=
+=C2=A0blank=C2=A0line=C2=A0but=C2=A0by=C2=A0text=C2=A0that=C2=A0*could*=C2=
+=A0fit=C2=A0on=C2=A0the=0D=0A>=20previous=C2=A0short=C2=A0line=C2=A0is=C2=
+=A0a=C2=A0confusing=C2=A0signal.=0D=0A>=20=0D=0A>=20This=C2=A0similar=C2=A0=
+to=C2=A0the=C2=A0Wikipedia=C2=A0style:=0D=0A>=20https://en.wikipedia.org/wi=
+ki/Wikipedia:Manual_of_Style/Layout=23Paragraphs=0D=0A>=20=0D=0A>=20The=C2=
+=A0PCI=C2=A0driver=C2=A0commit=C2=A0log=C2=A0should=C2=A0also=C2=A0join=C2=
+=A0=22DesignWare=22=C2=A0and=C2=A0=22different=22,=0D=0A>=20which=C2=A0are=
+=C2=A0currently=C2=A0split=C2=A0across=C2=A0lines.=0D=0A>=20=0D=0A>>=C2=A0I=
+=C2=A0will=C2=A0modify=C2=A0it=C2=A0as=C2=A0below.=0D=0A>>=C2=A0s/SAMSUNG=
+=C2=A0PHY/Samsung=C2=A0phy=0D=0A>=20=0D=0A>=20=22PHY=22=C2=A0is=C2=A0typica=
+lly=C2=A0all=C2=A0caps=C2=A0in=C2=A0English=C2=A0text,=C2=A0e.g.,=C2=A0see=
+=C2=A0examples=C2=A0here:=0D=0A>=20https://en.wikipedia.org/wiki/Physical_l=
+ayer=23PHY=0D=0A>=20=0D=0A>=20Bjorn=0D=0A=0D=0AThank=20you=20very=20much=20=
+for=20your=20detailed=20review.=0D=0AI=20will=20fix=20the=20commit=20msgs=
+=20as=20your=20description.=0D=0A=0D=0ABest=20regards,=0D=0AWangseok=20Lee
