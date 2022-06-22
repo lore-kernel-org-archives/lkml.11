@@ -2,59 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFDCBC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 15:59:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0B87C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 16:00:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359846AbiFVP75 (ORCPT
+        id S1376365AbiFVQA5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 11:59:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56100 "EHLO
+        Wed, 22 Jun 2022 12:00:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359817AbiFVP7m (ORCPT
+        with ESMTP id S1376304AbiFVQAm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 11:59:42 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 22561427EF;
-        Wed, 22 Jun 2022 08:56:19 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E385D12FC;
-        Wed, 22 Jun 2022 08:56:18 -0700 (PDT)
-Received: from bogus (unknown [10.57.36.82])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id F00FA3F792;
-        Wed, 22 Jun 2022 08:56:15 -0700 (PDT)
-Date:   Wed, 22 Jun 2022 16:55:04 +0100
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Lukasz Luba <lukasz.luba@arm.com>
-Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        daniel.lezcano@linaro.org, amitk@kernel.org, rui.zhang@intel.com,
-        viresh.kumar@linaro.org, rafael@kernel.org,
-        dietmar.eggemann@arm.com, nm@ti.com, sboyd@kernel.org,
-        cristian.marussi@arm.com, matthias.bgg@gmail.com,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 4/4] cpufreq: scmi: Support the power scale in
- micro-Watts in SCMI v3.1
-Message-ID: <20220622155504.bcggz7spw4n2ehyj@bogus>
-References: <20220622145802.13032-1-lukasz.luba@arm.com>
- <20220622145802.13032-5-lukasz.luba@arm.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220622145802.13032-5-lukasz.luba@arm.com>
+        Wed, 22 Jun 2022 12:00:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E89591CFCE;
+        Wed, 22 Jun 2022 08:58:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 86FE76197F;
+        Wed, 22 Jun 2022 15:58:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id EB551C34114;
+        Wed, 22 Jun 2022 15:58:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655913528;
+        bh=eJXLKQ3BYgNftB2DvfgHxogKBElNoxFmgA7Jbw3c6A4=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=lDanj8MFmMSAAWgwRBAE5PvgE6L0etVXvvng4lufcoK8jCY+eIBJqBh3Rjhs5U3Db
+         Er7/j4pol3nQI/x4U8FUZFRH+TkfE+PdaTzgf1GHQqwIxW7nsfOflQrhvpRUZCrCQu
+         AvTN0QXXV9ovcObREi8qDy20n/ww+od7WMRx5Vw4Fr/4tcsOdZOni3fmztkRZ79nkx
+         mtn0QZhWX2D+cjzh3sHA8DCHojAVGAig24TRabx9h5ie150o+SKtvKMDnVSVrmOjFC
+         JGv/UOJdwqqpKpFI4CkH/UX3GFxQTAHf4ntg7lQf6uvz8sKDC7Ou5zLg5ryJh3jiA1
+         gsXdNromFXzfQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D5260E574DA;
+        Wed, 22 Jun 2022 15:58:47 +0000 (UTC)
+Subject: Re: [GIT PULL] 9p fixes for 5.19-rc4
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <YrKeHMRfXTNw3vTE@codewreck.org>
+References: <YrKeHMRfXTNw3vTE@codewreck.org>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <YrKeHMRfXTNw3vTE@codewreck.org>
+X-PR-Tracked-Remote: https://github.com/martinetd/linux tags/9p-for-5.19-rc4
+X-PR-Tracked-Commit-Id: b0017602fdf6bd3f344dd49eaee8b6ffeed6dbac
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 3abc3ae553c7ed73365b385b9a4cffc5176aae45
+Message-Id: <165591352786.24413.10949630559737106168.pr-tracker-bot@kernel.org>
+Date:   Wed, 22 Jun 2022 15:58:47 +0000
+To:     Dominique Martinet <asmadeus@codewreck.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Christian Schoenebeck <linux_oss@crudebyte.com>,
+        Tyler Hicks <tyhicks@linux.microsoft.com>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        v9fs-developer@lists.sourceforge.net
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 03:58:02PM +0100, Lukasz Luba wrote:
-> The SCMI v3.1 adds support for power values in micro-Watts. They are not
-> always in milli-Watts anymore (ignoring the bogo-Watts). Thus, the power
-> must be converted conditionally before sending to Energy Model. Add the
-> logic which handles the needed checks and conversions.
->
+The pull request you sent on Wed, 22 Jun 2022 13:44:12 +0900:
 
-Acked-by: Sudeep Holla <sudeep.holla@arm.com>
+> https://github.com/martinetd/linux tags/9p-for-5.19-rc4
+
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/3abc3ae553c7ed73365b385b9a4cffc5176aae45
+
+Thank you!
 
 -- 
-Regards,
-Sudeep
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
