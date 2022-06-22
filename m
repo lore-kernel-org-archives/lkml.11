@@ -2,92 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51F3FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 02:10:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE8C3CCA473
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 02:14:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356242AbiFVCKn (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 22:10:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37300 "EHLO
+        id S237065AbiFVCOm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 21 Jun 2022 22:14:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356159AbiFVCKc (ORCPT
+        with ESMTP id S229734AbiFVCOj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 22:10:32 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AD31338AD;
-        Tue, 21 Jun 2022 19:10:32 -0700 (PDT)
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25M0J87t011411;
-        Wed, 22 Jun 2022 02:10:21 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=corp-2021-07-09;
- bh=oXSee4iT7qQ+pJvlSsNvU9u13UlTq+8lSOruPEuQFtI=;
- b=twmmd22VCEmKfeO+EN0oTMxqoxRTiZ29kF/AOkcFqJK2JoRifBiGVOo/alfY51yA9uot
- 2a6X3CQdoHU2/FycvKYkiLhrGLLwZZG/LZbf6i/Qb05cmChntnr+pcFb+CRma81tIJqt
- cZUDiYlImhlK1O22/7ufqadJ3xLWpuhEiWrljPUD0Jyr7qXjwc5DezZtx7CFM0qqM6ft
- hpOQ/d3U56QVmRU3C1smWdqCljAPI6bwDdLtYT4vuynrGroVHDe/6XFXO7wKoQVwhpqe
- KF4raPU8OKfA/quqwgGT3d6AWYLLR3TytYDpxQV+JOOBrVtpb2smO7grdqef8jNZFYdJ Ow== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3gs6kf72tx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 22 Jun 2022 02:10:20 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 25M26XoM037974;
-        Wed, 22 Jun 2022 02:10:19 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3gtd9usx41-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 22 Jun 2022 02:10:19 +0000
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 25M29Biq002724;
-        Wed, 22 Jun 2022 02:10:19 GMT
-Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3gtd9usx36-3;
-        Wed, 22 Jun 2022 02:10:18 +0000
-From:   "Martin K. Petersen" <martin.petersen@oracle.com>
-To:     jejb@linux.ibm.com, John Garry <john.garry@huawei.com>,
-        jinpu.wang@cloud.ionos.com
-Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
-        damien.lemoal@opensource.wdc.com, linux-scsi@vger.kernel.org,
-        Ajish.Koshy@microchip.com, hare@suse.de,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/4] pm8001 driver improvements
-Date:   Tue, 21 Jun 2022 22:10:13 -0400
-Message-Id: <165586371837.21830.8658237744694865778.b4-ty@oracle.com>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <1654879602-33497-1-git-send-email-john.garry@huawei.com>
-References: <1654879602-33497-1-git-send-email-john.garry@huawei.com>
+        Tue, 21 Jun 2022 22:14:39 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07D612B19A;
+        Tue, 21 Jun 2022 19:14:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
+        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=ORveCGym512RighQmyJ26uQ7Z38tEMS5jxlZdRzFA0Q=; b=Q7LfXcfM66qM2ZE6ZtDOCsVX9e
+        kMsBRa3Z3eceP8zsLvQg40WnFWBHhJQ6yxgoxnBy5WZTQVppD/4GxA/Kfu56zw6VZXCHH9MQmhQ75
+        TKDpfFYuTRTNtimXzdV4nwHmTDgFecSjLdynmneJsID+G1JByy83Y562K4jUhBO7SYjRymx9J5CTI
+        ceRuscfMK9Jvpog2Xi36ira6n1gF1Vdt7LHxe8g8sl/dxW1hk7keL33aNKMbKncWwxNbrjM7Wd8x9
+        ZMoBo0HluFzzqPppIgYBOeUotvAICwenA7LXtaFDCTfrpLp1aotWJLXU2aBdzLlI7N7P4JVRBpq+Z
+        iSYb03CQ==;
+Received: from [2601:1c0:6280:3f0::6c43]
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o3pmh-00AnHm-9p; Wed, 22 Jun 2022 02:09:20 +0000
+Message-ID: <862ed496-921f-b21e-48e8-123422b33b4a@infradead.org>
+Date:   Tue, 21 Jun 2022 19:06:50 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-ORIG-GUID: Fzy8DxTiGqm-AQ0-XQYTzsPG-ZEhcshT
-X-Proofpoint-GUID: Fzy8DxTiGqm-AQ0-XQYTzsPG-ZEhcshT
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2] sched: RT bandwidth interface for cgroup unified
+ hierarchy
+Content-Language: en-US
+To:     Chengming Zhou <zhouchengming@bytedance.com>, mingo@redhat.com,
+        peterz@infradead.org, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, tj@kernel.org,
+        lizefan.x@bytedance.com, hannes@cmpxchg.org, corbet@lwn.net
+Cc:     cgroups@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220622015557.7497-1-zhouchengming@bytedance.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20220622015557.7497-1-zhouchengming@bytedance.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 11 Jun 2022 00:46:38 +0800, John Garry wrote:
 
-> This small series includes the following:
-> - Rework how some shost values are set
-> - Fix a longstanding bug that the driver attempts to use tags before they
->   are configured
-> - Stop using {set, clear}_bit()
-> - Expose HW queues
+
+On 6/21/22 18:55, Chengming Zhou wrote:
+> We need to run RT threads in cgroup unified hierarchy, but we can't
+> since the default rt_bandwidth.rt_runtime of non-root task_group is 0
+> and we haven't interface to update it.
 > 
-> [...]
+> This patch add RT bandwidth interface "cpu.max.rt" and update the
+> documentation accordingly.
+> 
+> Signed-off-by: Chengming Zhou<zhouchengming@bytedance.com>
+> ---
+> v2:
+>   - minor fix for documentation per Randy's review. Thanks.
 
-Applied to 5.20/scsi-queue, thanks!
+Documentation changes look good. Thanks.
 
-[1/4] scsi: pm8001: Rework shost initial values
-      https://git.kernel.org/mkp/scsi/c/35a7e9dbff9a
-[2/4] scsi: pm8001: Setup tags before using them
-      https://git.kernel.org/mkp/scsi/c/98132d842d4d
-[3/4] scsi: pm8001: Use non-atomic bitmap ops for tag alloc + free
-      https://git.kernel.org/mkp/scsi/c/940f5efa6316
-[4/4] scsi: pm8001: Expose HW queues for pm80xx hw
-      https://git.kernel.org/mkp/scsi/c/42f22fe36d51
-
--- 
-Martin K. Petersen	Oracle Linux Engineering
+> ---
+>   Documentation/admin-guide/cgroup-v2.rst | 13 +++++++++++
+>   kernel/sched/core.c                     | 31 +++++++++++++++++++++++++
+>   kernel/sched/rt.c                       |  2 +-
+>   kernel/sched/sched.h                    |  1 +
+>   4 files changed, 46 insertions(+), 1 deletion(-)
