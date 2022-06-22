@@ -2,108 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2F24C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 20:01:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F08C5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 20:04:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376963AbiFVUBX (ORCPT
+        id S1359680AbiFVUEj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 16:01:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38752 "EHLO
+        Wed, 22 Jun 2022 16:04:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347203AbiFVUBV (ORCPT
+        with ESMTP id S234514AbiFVUEf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 16:01:21 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F39E3A5EC
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 13:01:21 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id y6so16310397plg.0
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 13:01:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=imArjx2CC9X+T7OtwdP7nd/oJLWqho7puwRUJOwdUT8=;
-        b=MViZAFQXGVYC8ncx+RyAmuOLrbrQZkX6x/0i6IbPnUzmrHMwoNAWgQS4XHuxNvI+Ci
-         G6JXbwx5pV7Meou0y8o9IBvISO8zmTXowV3V9P2irnnKMsGVqP2ehV4INCTMPClPqA9T
-         UFiZq2wQHQd6Hr/Ku3/eDJs7jCBMYBQmbFYR7WQGZCymCCe7p6AhjP03Dqz47GRL5rH5
-         f+LZzp22B67g0Z2MAbyj6tvEHOARn0SjtAVdFC/Lv0OhQ2NcoPUPc1PQ7eTfcFh0keMh
-         pRCinVl3h54HzmvTKGN13KRMeOlJc+ge4rJCP2hwYjfpU8AeuDvZz//wIM763N9IHfPL
-         XFUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=imArjx2CC9X+T7OtwdP7nd/oJLWqho7puwRUJOwdUT8=;
-        b=WZ7JCnhI1feB+4cEANa1LyibEReyrrbfOP/lKyFkqq5FHeLBDShcY0RKJ//DAMvlxc
-         wXgKK9a4eaDMR1aQ0k6N2lhQ5AirNCTwEaPxaTX6yhOlIgMemnZ3Vr8ozCmC5j6Kbjhm
-         Dob6x0me14Uzew5XWH+NVK9i/SZkvNbQlu36LHIake1T0APchyA3frdpYcafbsmMTi3Y
-         WYsVdcQs5/8gU7r3fp8bzXZy4iTDuWkAx/6c6zGygwS9cvRUy88nczwmpYG/eyDllFVr
-         x0rZxVxvh7MUY6maQdeaEZWQKGNQIWuDBJGtnhUh3EODCTXowX/CB/gBNRPVYIvT30oX
-         aJXA==
-X-Gm-Message-State: AJIora9HMHQuKXj1ar4md3Q/rX23eY37mXJhSqZm257st05S/yKHtZaS
-        PWH9sgNo0T+WuVDasTXvcRw=
-X-Google-Smtp-Source: AGRyM1uqe3yrSNaBQYKSnCgSfaWSU0jBjcHXa8DLATCqgVTKLngoQBW+pWUH+9RvwTZcnnbb/lzOgw==
-X-Received: by 2002:a17:90b:1d88:b0:1ec:d5f6:f141 with SMTP id pf8-20020a17090b1d8800b001ecd5f6f141mr55345pjb.119.1655928080240;
-        Wed, 22 Jun 2022 13:01:20 -0700 (PDT)
-Received: from [172.30.1.37] ([14.32.163.5])
-        by smtp.gmail.com with ESMTPSA id p9-20020a63ab09000000b00408a9264b36sm13798031pgf.3.2022.06.22.13.01.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Jun 2022 13:01:19 -0700 (PDT)
-Message-ID: <5f74021a-c838-fcdb-7486-ef2eee12f4ce@gmail.com>
-Date:   Thu, 23 Jun 2022 05:01:15 +0900
+        Wed, 22 Jun 2022 16:04:35 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BB853205C5
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 13:04:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655928270;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=azMoc3MuHzEFRLZqvDPUKx486juejRj8cxPvSP7WFUA=;
+        b=DrJHN2rGgGPWtP2Y6xPFXvaKTYwc7wnqlI5mu5o0/+vh0TqjG4oSzK5tkyub+b256z9FH6
+        Q/bSSVacBTFVMq82HePNZjb6J+plk26WforO6SGIRAhzwD3uSEaDu/Ltv0ukEQF8R3idmR
+        0g1ZoVSGG6BbAabtevT7zB4MNIV/5pE=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-587-T0_kzLE-Pp6zI8_NKfjStA-1; Wed, 22 Jun 2022 16:04:27 -0400
+X-MC-Unique: T0_kzLE-Pp6zI8_NKfjStA-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4F4DA29DD9AB;
+        Wed, 22 Jun 2022 20:04:27 +0000 (UTC)
+Received: from llong.com (dhcp-17-215.bos.redhat.com [10.18.17.215])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0DEE4492CA5;
+        Wed, 22 Jun 2022 20:04:27 +0000 (UTC)
+From:   Waiman Long <longman@redhat.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, john.p.donnelly@oracle.com,
+        Hillf Danton <hdanton@sina.com>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Waiman Long <longman@redhat.com>
+Subject: [PATCH v2] locking/rwsem: Allow slowpath writer to ignore handoff bit if not set by first waiter
+Date:   Wed, 22 Jun 2022 16:04:19 -0400
+Message-Id: <20220622200419.778799-1-longman@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] extcon: drop unexpected word "the" in the comments
-Content-Language: en-US
-To:     Jiang Jian <jiangjian@cdjrlc.com>, myungjoo.ham@samsung.com,
-        cw00.choi@samsung.com
-Cc:     linux-kernel@vger.kernel.org
-References: <20220621115003.109395-1-jiangjian@cdjrlc.com>
-From:   Chanwoo Choi <cwchoi00@gmail.com>
-In-Reply-To: <20220621115003.109395-1-jiangjian@cdjrlc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22. 6. 21. 20:50, Jiang Jian wrote:
-> there is an unexpected word "the" in the comments that need to be dropped
-> 
-> file: ./drivers/extcon/extcon.c
-> line: 250
-> 
-> /* Find the the index of extcon cable in edev->supported_cable */
-> changed to
-> /* Find the index of extcon cable in edev->supported_cable */
-> 
-> Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
-> ---
->  drivers/extcon/extcon.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/extcon/extcon.c b/drivers/extcon/extcon.c
-> index d3a32b806499..0e40418ad287 100644
-> --- a/drivers/extcon/extcon.c
-> +++ b/drivers/extcon/extcon.c
-> @@ -247,7 +247,7 @@ static int find_cable_index_by_id(struct extcon_dev *edev, const unsigned int id
->  {
->  	int i;
->  
-> -	/* Find the the index of extcon cable in edev->supported_cable */
-> +	/* Find the index of extcon cable in edev->supported_cable */
->  	for (i = 0; i < edev->max_supported; i++) {
->  		if (edev->supported_cable[i] == id)
->  			return i;
+With commit d257cc8cb8d5 ("locking/rwsem: Make handoff bit handling more
+consistent"), the writer that sets the handoff bit can be interrupted
+out without clearing the bit if the wait queue isn't empty. This disables
+reader and writer optimistic lock spinning and stealing.
 
-Use captitla letter of first char as following:
-- extcon: Drop unexpected word "the" in the comments
+Now if a non-first writer in the queue is somehow woken up or a new
+waiter enters the slowpath, it can't acquire the lock.  This is not the
+case before commit d257cc8cb8d5 as the writer that set the handoff bit
+will clear it when exiting out via the out_nolock path. This is less
+efficient as the busy rwsem stays in an unlock state for a longer time.
 
-Applied it.
+In some cases, this new behavior may cause lockups as shown in [1] and
+[2].
 
+This patch allows a non-first writer to ignore the handoff bit if it
+is not originally set or initiated by the first waiter. This patch is
+shown to be effective in fixing the lockup problem reported in [1].
+
+[1] https://lore.kernel.org/lkml/20220617134325.GC30825@techsingularity.net/
+[2] https://lore.kernel.org/lkml/3f02975c-1a9d-be20-32cf-f1d8e3dfafcc@oracle.com/
+
+Fixes: d257cc8cb8d5 ("locking/rwsem: Make handoff bit handling more consistent")
+Signed-off-by: Waiman Long <longman@redhat.com>
+Tested-by: Mel Gorman <mgorman@techsingularity.net>
+---
+ kernel/locking/rwsem.c | 30 ++++++++++++++++++++----------
+ 1 file changed, 20 insertions(+), 10 deletions(-)
+
+diff --git a/kernel/locking/rwsem.c b/kernel/locking/rwsem.c
+index 9d1db4a54d34..ffd6188d4a7c 100644
+--- a/kernel/locking/rwsem.c
++++ b/kernel/locking/rwsem.c
+@@ -335,8 +335,6 @@ struct rwsem_waiter {
+ 	struct task_struct *task;
+ 	enum rwsem_waiter_type type;
+ 	unsigned long timeout;
+-
+-	/* Writer only, not initialized in reader */
+ 	bool handoff_set;
+ };
+ #define rwsem_first_waiter(sem) \
+@@ -459,10 +457,12 @@ static void rwsem_mark_wake(struct rw_semaphore *sem,
+ 			 * to give up the lock), request a HANDOFF to
+ 			 * force the issue.
+ 			 */
+-			if (!(oldcount & RWSEM_FLAG_HANDOFF) &&
+-			    time_after(jiffies, waiter->timeout)) {
+-				adjustment -= RWSEM_FLAG_HANDOFF;
+-				lockevent_inc(rwsem_rlock_handoff);
++			if (time_after(jiffies, waiter->timeout)) {
++				if (!(oldcount & RWSEM_FLAG_HANDOFF)) {
++					adjustment -= RWSEM_FLAG_HANDOFF;
++					lockevent_inc(rwsem_rlock_handoff);
++				}
++				waiter->handoff_set = true;
+ 			}
+ 
+ 			atomic_long_add(-adjustment, &sem->count);
+@@ -599,7 +599,7 @@ rwsem_del_wake_waiter(struct rw_semaphore *sem, struct rwsem_waiter *waiter,
+ static inline bool rwsem_try_write_lock(struct rw_semaphore *sem,
+ 					struct rwsem_waiter *waiter)
+ {
+-	bool first = rwsem_first_waiter(sem) == waiter;
++	struct rwsem_waiter *first =  rwsem_first_waiter(sem);
+ 	long count, new;
+ 
+ 	lockdep_assert_held(&sem->wait_lock);
+@@ -609,11 +609,20 @@ static inline bool rwsem_try_write_lock(struct rw_semaphore *sem,
+ 		bool has_handoff = !!(count & RWSEM_FLAG_HANDOFF);
+ 
+ 		if (has_handoff) {
+-			if (!first)
++			/*
++			 * Honor handoff bit and yield only when the first
++			 * waiter is the one that set it. Otherwisee, we
++			 * still try to acquire the rwsem.
++			 */
++			if (first->handoff_set && (waiter != first))
+ 				return false;
+ 
+-			/* First waiter inherits a previously set handoff bit */
+-			waiter->handoff_set = true;
++			/*
++			 * First waiter can inherit a previously set handoff
++			 * bit and spin on rwsem if lock acquisition fails.
++			 */
++			if (waiter == first)
++				waiter->handoff_set = true;
+ 		}
+ 
+ 		new = count;
+@@ -1027,6 +1036,7 @@ rwsem_down_read_slowpath(struct rw_semaphore *sem, long count, unsigned int stat
+ 	waiter.task = current;
+ 	waiter.type = RWSEM_WAITING_FOR_READ;
+ 	waiter.timeout = jiffies + RWSEM_WAIT_TIMEOUT;
++	waiter.handoff_set = false;
+ 
+ 	raw_spin_lock_irq(&sem->wait_lock);
+ 	if (list_empty(&sem->wait_list)) {
 -- 
-Best Regards,
-Samsung Electronics
-Chanwoo Choi
+2.31.1
+
