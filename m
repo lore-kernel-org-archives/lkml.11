@@ -2,85 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B22D1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 16:44:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C55BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 16:44:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358263AbiFVQoR (ORCPT
+        id S1358972AbiFVQoo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 12:44:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46416 "EHLO
+        Wed, 22 Jun 2022 12:44:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236563AbiFVQoP (ORCPT
+        with ESMTP id S236563AbiFVQok (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 12:44:15 -0400
-Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FD8333E19
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 09:44:14 -0700 (PDT)
-Received: from in01.mta.xmission.com ([166.70.13.51]:57132)
-        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1o43Sd-00AWLN-1r; Wed, 22 Jun 2022 10:44:11 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:57362 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1o43Sa-001XTg-Lr; Wed, 22 Jun 2022 10:44:10 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Oleg Nesterov <oleg@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, mingo@kernel.org,
-        bigeasy@linutronix.de, Peter Zijlstra <peterz@infradead.org>,
-        Jann Horn <jannh@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Robert O'Callahan <roc@pernos.co>, Kyle Huey <khuey@pernos.co>,
-        Keno Fischer <keno@juliacomputing.com>
-References: <20220421150248.667412396@infradead.org>
-        <20220421150654.817117821@infradead.org>
-        <87czhap9dy.fsf@email.froward.int.ebiederm.org>
-        <878rrrh32q.fsf_-_@email.froward.int.ebiederm.org>
-        <87k0b7v9yk.fsf_-_@email.froward.int.ebiederm.org>
-        <87k0b0apne.fsf_-_@email.froward.int.ebiederm.org>
-        <87a6bv6dl6.fsf_-_@email.froward.int.ebiederm.org>
-Date:   Wed, 22 Jun 2022 11:43:37 -0500
-In-Reply-To: <87a6bv6dl6.fsf_-_@email.froward.int.ebiederm.org> (Eric
-        W. Biederman's message of "Thu, 05 May 2022 13:25:57 -0500")
-Message-ID: <87r13gd4xy.fsf_-_@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Wed, 22 Jun 2022 12:44:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BC0823617F
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 09:44:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655916278;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=nXInkxXdvpzKoIOUQRdrxKmFesJ62JJWfaKiG5PimjI=;
+        b=gf3AVFszlHZP0xbUee0yagUqbxJo3v41eNpihEgHiKW8G/rd7A8ZBEOWfNhRZlGirT4itf
+        +bmJ1ZdnKPYxgi6dMaxuajyLCey9GS5binEdjzoYQaHqLTfedy+Ttb4CetBzWkHPpRcC93
+        LrnF+7YQSPNOkPjEDpra5tCfbhE+TNI=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-191-QYI5K5ENM2KDmJd9UP0YeQ-1; Wed, 22 Jun 2022 12:44:35 -0400
+X-MC-Unique: QYI5K5ENM2KDmJd9UP0YeQ-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D8C61384F807;
+        Wed, 22 Jun 2022 16:44:34 +0000 (UTC)
+Received: from fedora.redhat.com (unknown [10.40.195.134])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1F96140CFD0A;
+        Wed, 22 Jun 2022 16:44:32 +0000 (UTC)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
+        Sean Christopherson <seanjc@google.com>
+Cc:     Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH RFC v1 00/10] KVM: nVMX: Use vmcs_config for setting up nested VMX MSRs
+Date:   Wed, 22 Jun 2022 18:44:22 +0200
+Message-Id: <20220622164432.194640-1-vkuznets@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-XM-SPF: eid=1o43Sa-001XTg-Lr;;;mid=<87r13gd4xy.fsf_-_@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX1+HUrQnJ1mzH6gsmI5jzL3UyqNu9wsYCv8=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: [PATCH 0/3] ptrace: Stop supporting SIGKILL for PTRACE_EVENT_EXIT
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+vmcs_config is a sanitized version of host VMX MSRs where some controls are
+filtered out (e.g. when Enlightened VMCS is enabled, some know bugs are 
+discovered, some inconsistencies in controls are detected,...) but
+nested_vmx_setup_ctls_msrs() uses raw host MSRs instead. This may end up
+in exposing undesired controls to L1. Switch to using vmcs_config instead.
 
-Recently I had a conversation where it was pointed out to me that
-SIGKILL sent to a tracee stropped in PTRACE_EVENT_EXIT is quite
-difficult for a tracer to handle.
+RFC part: vmcs_config's sanitization now is a mix of "what can't be enabled"
+and "what KVM doesn't want" and we need to separate these as for nested VMX
+MSRs only the first category makes sense. This gives vmcs_config a slightly
+different meaning "controls which can be (theoretically) used". An alternative
+approach would be to store sanitized host MSRs values separately, sanitize
+them and and use in nested_vmx_setup_ctls_msrs() but currently I don't see
+any benefits. Comments welcome!
 
-Keeping SIGKILL working for anything after the process has been killed
-is also a real pain from an implementation point of view.
+Very lightly tested with KVM selftests / kvm-unit-tests.
 
-So I am attempting to remove this wart in the userspace API and see
-if anyone cares.
+Vitaly Kuznetsov (10):
+  KVM: VMX: Move CPU_BASED_CR8_{LOAD,STORE}_EXITING filtering out of
+    setup_vmcs_config()
+  KVM: VMX: Add missing CPU based VM execution controls to vmcs_config
+  KVM: VMX: Move CPU_BASED_{CR3_LOAD,CR3_STORE,INVLPG}_EXITING filtering
+    out of setup_vmcs_config()
+  KVM: VMX: Add missing VMEXIT controls to vmcs_config
+  KVM: VMX: Add missing VMENTRY controls to vmcs_config
+  KVM: nVMX: Use sanitized allowed-1 bits for VMX control MSRs
+  KVM: VMX: Store required-1 VMX controls in vmcs_config
+  KVM: nVMX: Use sanitized required-1 bits for VMX control MSRs
+  KVM: VMX: Cache MSR_IA32_VMX_MISC in vmcs_config
+  KVM: nVMX: Use cached host MSR_IA32_VMX_MISC value for setting up
+    nested MSR
 
-Eric W. Biederman (3):
-      signal: Ensure SIGNAL_GROUP_EXIT gets set in do_group_exit
-      signal: Guarantee that SIGNAL_GROUP_EXIT is set on process exit
-      signal: Drop signals received after a fatal signal has been processed
+ arch/x86/kvm/vmx/capabilities.h | 16 +++---
+ arch/x86/kvm/vmx/nested.c       | 37 +++++---------
+ arch/x86/kvm/vmx/nested.h       |  2 +-
+ arch/x86/kvm/vmx/vmx.c          | 91 +++++++++++++++++++++++++--------
+ 4 files changed, 94 insertions(+), 52 deletions(-)
 
- fs/coredump.c                |  2 +-
- include/linux/sched/signal.h |  1 +
- kernel/exit.c                | 20 +++++++++++++++++++-
- kernel/fork.c                |  2 ++
- kernel/signal.c              |  3 ++-
- 5 files changed, 25 insertions(+), 3 deletions(-)
+-- 
+2.35.3
 
-Eric
