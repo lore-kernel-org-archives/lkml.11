@@ -2,131 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D26B0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 13:55:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40221C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 13:55:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357754AbiFVNzP (ORCPT
+        id S1357933AbiFVNzg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 09:55:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46370 "EHLO
+        Wed, 22 Jun 2022 09:55:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357744AbiFVNzN (ORCPT
+        with ESMTP id S1357786AbiFVNz0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 09:55:13 -0400
-Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com [209.85.219.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5296434641;
-        Wed, 22 Jun 2022 06:55:12 -0700 (PDT)
-Received: by mail-yb1-f169.google.com with SMTP id t1so30318853ybd.2;
-        Wed, 22 Jun 2022 06:55:12 -0700 (PDT)
+        Wed, 22 Jun 2022 09:55:26 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACBF634676
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 06:55:18 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id g27so16888364wrb.10
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 06:55:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=DiNCujgxYWYbz+UJ9ltziyWRFBz53VugMgkXPVyjSK4=;
+        b=hXlFgbhirmJiWHqqoRtimtjAjho/OAKlPLMalXL7BtlrRx8PkIhLF7xBBR5FV7SJmn
+         cqV5tB9SoymSQw7M+XYn5GL9fKXQsMfsZTbHWhdwSx4lCrY0F/wlAeqWai/KpXN+45A6
+         AokbjafQRmysNsE2/q2eJQwvHEKu1WDbab/J693X1FpSpGHBhCM4PBPmtBVUXdsUISb0
+         tJ+XhClEg93gx8J5mN88Y9EAfZCLB6h3vHWMG4EGjmyM7GoO5pZe9X36WkBKAXnPLYYz
+         Aorax0XZAoRwQDAmpIMB0Ac8Fc90KQYp9doswcAV66yhQWjtut1Tq/B28pBSk+Riq9xM
+         5mlw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=l+Te2BnivL/GDh47o/VHeU0l1HC9J0+Yk21/+4/HIRE=;
-        b=bd+szFrvexwX4QF3e367hnx8NGTV/mWXSaeOcmfsedAiRMEs8rvhv8EKyt7f+/wDsT
-         WFaAGUpcyDa6TZERpP2NGGJL2whYEvfZuhY0W/eqsapWKDMsOE/TNKZVqpMucTDEMwxS
-         MEfQknukqDPaXSSdlG4ypsyybbyM3af90mmkjdYUM4SCuciwlY0Cs5rhDHrdhztNuIW3
-         TJaIiH2r4hlrDTMQq1NE5vSZl/btBU079kRHVcP6mY0fgL4iacPLmXqPhBvzx1gPLwU5
-         yelxGjagk/cRyrrxEWJO69TLYDA6/ata3zliMAdg54dfZLmjiSaVUfpx5EkTAGNpu9ip
-         FXKg==
-X-Gm-Message-State: AJIora9Rk1dTPkJ7SjwGWTqAy0Bmn+/w1p+mamWSH8vD4/GmhQDZfLrp
-        Z/W82ZSokj4Bp5UZbg6ekcV23iCtOrHr7UnmLnk=
-X-Google-Smtp-Source: AGRyM1tvapLMkiK2jTWM8/8nhIRYdhtY7A1W5pRXs/vQD0eLsIOlkR/goPIutaoplkt+REApSulMtqh7Id6MzyM+6aI=
-X-Received: by 2002:a25:d841:0:b0:668:ab2f:7b01 with SMTP id
- p62-20020a25d841000000b00668ab2f7b01mr3854953ybg.482.1655906111500; Wed, 22
- Jun 2022 06:55:11 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=DiNCujgxYWYbz+UJ9ltziyWRFBz53VugMgkXPVyjSK4=;
+        b=nD3GUPyazd2m33ithDnQE2NcysAoD7791mpAszqnp2ZTaWLvngKdAXhLD2eeLwgh+P
+         MeAbkzUVIrFJ853Yn/cFhrLAjqXUapnLTL0wzTlwJTgFgBP7ytbts956yCaV2/y2AU4b
+         4hgPAaqdKkwECQvsaa/lVO/R6eI2UPorq4uiqUFACKUr/gO7FcGlrMdyDivxrYTfazvn
+         b+f1kDJC3LPTXGIKpDx/QQNqz1TfJP00sPqBEuDLMbbtExizWapJvwf3x+jqKX5fL656
+         tcTalQ0r/Kd2/UYTy2gOeZj4SpuLgPtneLbE/Fvv28xXLzRBDHxxyl5JfeK8/SfIqKI5
+         JV3g==
+X-Gm-Message-State: AJIora/T8xwaJODkJ+dplMOTgq1Cyv7FuQ+M+9Num9jt1jNBQOUGdiya
+        8jZjxanOsYOH1KRPy6Tosxk=
+X-Google-Smtp-Source: AGRyM1uSVoTrSb3lxzWtryBVzIlHC0hkxQGNcIYONajc9TiRn89bRMchU8vB48sqgrJYnhsmfPKn5w==
+X-Received: by 2002:a5d:5888:0:b0:218:733:4cd9 with SMTP id n8-20020a5d5888000000b0021807334cd9mr3680712wrf.619.1655906116801;
+        Wed, 22 Jun 2022 06:55:16 -0700 (PDT)
+Received: from [192.168.0.16] ([37.223.148.38])
+        by smtp.gmail.com with ESMTPSA id b5-20020a05600c4e0500b0039aef592ca0sm21879131wmq.35.2022.06.22.06.55.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Jun 2022 06:55:15 -0700 (PDT)
+Message-ID: <8f7868b7-ecac-0dcf-7a37-25ab57b51bf7@gmail.com>
+Date:   Wed, 22 Jun 2022 15:55:14 +0200
 MIME-Version: 1.0
-References: <20220620131953.16575-1-di.shen@unisoc.com>
-In-Reply-To: <20220620131953.16575-1-di.shen@unisoc.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Wed, 22 Jun 2022 15:55:00 +0200
-Message-ID: <CAJZ5v0j380_UEsy6qJ_KuRf8YbL3KtiY-h+RdkSsfd8SRCLy_A@mail.gmail.com>
-Subject: Re: [PATCH 1/1] thermal/sysfs: Clear the slot left in cooling_device_attr_groups
-To:     Di Shen <di.shen@unisoc.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        "Zhang, Rui" <rui.zhang@intel.com>, xuewen.yan@unisoc.com,
-        cindygm567@gmail.com, Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Lukasz Luba <lukasz.luba@arm.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH -next] soc: mediatek: SVS: Make svs_resume and svs_suspend
+ defined when CONFIG_PM_SLEEP is y
+Content-Language: en-US
+To:     Jin Xiaoyun <jinxiaoyun2@huawei.com>,
+        angelogioacchino.delregno@collabora.com, khilman@baylibre.com,
+        zhengbin13@huawei.com, gaochao49@huawei.com
+Cc:     linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220622013410.2786760-1-jinxiaoyun2@huawei.com>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <20220622013410.2786760-1-jinxiaoyun2@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 20, 2022 at 3:20 PM Di Shen <di.shen@unisoc.com> wrote:
->
-> There's a space allocated for cooling_device_stats_attr_group within co-
 
-Please don't break words in the changelog (and variable names in
-particular) like this.
 
-> oling_device_attr_groups. This space is shared by all cooling devices.
->
-> If not clear this space before cooling_device_stats_attr_group is initi-
-> alized, the next cooling device will still create stats sysfs file node.
-> At this time, read or write related nodes will cause kernel crash.
+On 22/06/2022 03:34, Jin Xiaoyun wrote:
+> The svs_resume and svs_suspend is defined through SIMPLE_DEV_PM_OPS. If CONFIG_PM_SLEEP
 
-A bit more of an explanation here wouldn't hurt IMV.  In particular,
-what does "the next cooling device" mean and what are "related nodes"?
+SIMPLE_DEV_PM_OPS is deprecated. The correct fix is to use 
+DEFINE_SIMPLE_DEV_PM_OPS().
 
-> [exception_reboot_reason]: kernel_crash
-> [exception_panic_reason]: Fatal exception
-> [exception_time]: 2022-06-07_06-32-25
-> [exception_file_info]: not-bugon
-> [exception_task_id]: 3154
-> [exception_task_family]: [cat, 3154][sh, 2597][sh, 2362][adbd, 1804]
-> [exception_pc_symbol]: [<747516ae>] _raw_spin_lock+0x20/0x60
-> [exception_stack_info]: [<4cbe9ac1>] prepare_exception_info+0x19c/0x1a4
-> [<03041be7>] sysdump_panic_event+0x57c/0x6f4
-> [<b16f865e>] atomic_notifier_call_chain+0x48/0x7c
-> [<5baac8d4>] panic+0x1b4/0x3c8
-> [<9d287b0f>] arm_notify_die+0x0/0x78
-> [<094fc22c>] __do_kernel_fault+0x94/0xa4
-> [<3b4b69a4>] do_page_fault+0xd4/0x364
-> [<23793e7a>] do_translation_fault+0x38/0xc0
-> [<6e5cc52a>] do_DataAbort+0x4c/0xd0
-> [<a28c16b8>] __dabt_svc+0x5c/0xa0
-> [<747516ae>] _raw_spin_lock+0x20/0x60
-> [<9a9e4cd4>] time_in_state_ms_show+0x28/0x148
-> [<cb78325e>] dev_attr_show+0x38/0x64
-> [<aea3e364>] sysfs_kf_seq_show+0x8c/0xf0
-> [<c0a843ab>] seq_read+0x244/0x620
-> [<b316b374>] vfs_read+0xd8/0x218
-> [<3aebf5fa>] sys_read+0x80/0xe4
-> [<7cf100f5>] ret_fast_syscall+0x0/0x28
-> [<08cbe22f>] 0xbe8c1198
->
-> So clear the slot left in cooling_device_attr_groups before cooling_dev-
-> ice_stats_attr_group is initialized to avoid kernel crash.
->
-> Signed-off-by: Di Shen <di.shen@unisoc.com>
+Regards,
+Matthias
+
+> is not defined, SIMPLE_DEV_PM_OPS is equivalent to an empty function. In this case,
+> the defination of svs_resume and svs_suspend is meaningless.
+> 
+> Fix build error:
+> drivers/soc/mediatek/mtk-svs.c:1515:12: error: ‘svs_resume’ defined but not used [-Werror=unused-function]
+> drivers/soc/mediatek/mtk-svs.c:1481:12: error: ‘svs_suspend’ defined but not used [-Werror=unused-function]
+> 
+> Signed-off-by: Jin Xiaoyun <jinxiaoyun2@huawei.com>
 > ---
->  drivers/thermal/thermal_sysfs.c | 5 +++++
->  1 file changed, 5 insertions(+)
->
-> diff --git a/drivers/thermal/thermal_sysfs.c b/drivers/thermal/thermal_sysfs.c
-> index 1c4aac8464a7..fbc3dbc85841 100644
-> --- a/drivers/thermal/thermal_sysfs.c
-> +++ b/drivers/thermal/thermal_sysfs.c
-> @@ -817,6 +817,11 @@ static void cooling_device_stats_setup(struct thermal_cooling_device *cdev)
->         unsigned long states;
->         int var;
->
-> +       /* Clear the slot left in cooling_device_attr_groups */
-
-The comment is a bit too vague IMO.  In particular, what slot do you mean?
-
-> +       var = ARRAY_SIZE(cooling_device_attr_groups) - 2;
-> +       if (cooling_device_attr_groups[var])
-> +               cooling_device_attr_groups[var] = NULL;
-
-The NULL check above is redundant (it can be cleared even if it is
-NULL already) and it all can be done in one code line.
-
-> +
->         if (cdev->ops->get_max_state(cdev, &states))
->                 return;
->
+>   drivers/soc/mediatek/mtk-svs.c | 2 ++
+>   1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/soc/mediatek/mtk-svs.c b/drivers/soc/mediatek/mtk-svs.c
+> index 606a00a2e57d..8440058784dc 100644
+> --- a/drivers/soc/mediatek/mtk-svs.c
+> +++ b/drivers/soc/mediatek/mtk-svs.c
+> @@ -1478,6 +1478,7 @@ static int svs_start(struct svs_platform *svsp)
+>   	return 0;
+>   }
+> 
+> +#ifdef CONFIG_PM_SLEEP
+>   static int svs_suspend(struct device *dev)
+>   {
+>   	struct svs_platform *svsp = dev_get_drvdata(dev);
+> @@ -1537,6 +1538,7 @@ static int svs_resume(struct device *dev)
+> 
+>   	return 0;
+>   }
+> +#endif
+> 
+>   static int svs_bank_resource_setup(struct svs_platform *svsp)
+>   {
 > --
+> 2.25.1
+> 
