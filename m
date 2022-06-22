@@ -2,154 +2,254 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FF45C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 07:30:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E826C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 07:31:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353343AbiFVHap (ORCPT
+        id S1352635AbiFVHbb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 03:30:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34410 "EHLO
+        Wed, 22 Jun 2022 03:31:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352669AbiFVHam (ORCPT
+        with ESMTP id S232675AbiFVHb1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 03:30:42 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D49737024
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 00:30:40 -0700 (PDT)
-Received: from kwepemi500016.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LSZk60kGMzhXZ7;
-        Wed, 22 Jun 2022 15:28:30 +0800 (CST)
-Received: from localhost.localdomain (10.175.127.227) by
- kwepemi500016.china.huawei.com (7.221.188.220) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 22 Jun 2022 15:30:36 +0800
-From:   Zhang Wensheng <zhangwensheng5@huawei.com>
-To:     <gregkh@linuxfoundation.org>, <rafael@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <yukuai3@huawei.com>,
-        <zhangwensheng5@huawei.com>
-Subject: [PATCH -next v2] driver core: fix deadlock in __driver_attach
-Date:   Wed, 22 Jun 2022 15:43:27 +0800
-Message-ID: <20220622074327.497102-1-zhangwensheng5@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Wed, 22 Jun 2022 03:31:27 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D3803701E
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 00:31:26 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id e4so18288789ljl.1
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 00:31:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=mRfcyZt+nnbGBIJgn9azMqSuPxdBFrJVag5LBfIwDKs=;
+        b=NqtZLW1cvxMKFd7JYa3zwD1lcbRcUChVmZTc9wPrBtXN2C5oHrOCRGVgEJApVNcQ23
+         IZ1J+SMdUYKxVBt8PRTVVpKSEcXJIz8dWz61jE56fPBqIT/UYx4dKB2VmyFj2x6xRaZy
+         FLAixflAtWuQB9nwgmP86YzZhnRg1ReJJz5T419/Exk/kov8nszkb/n+fqQ53FCbVqk9
+         YV9wLw/kHRz6MtYNJUpNHSOenPgZ0xInSeCFZbsD09flPRKVkTGFbz8W5MtwoFez2+c0
+         t0WbnzxbfHMpLNps73qRr0u4EnGU+33Wi4mOf2tozQqVKxlaASVl9NdObVLfS6y/IIet
+         NAJA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=mRfcyZt+nnbGBIJgn9azMqSuPxdBFrJVag5LBfIwDKs=;
+        b=EpVWNP4Z9JZZc9oIvfvWEETtqPiZtDhYHxzw154CfaKnuspqALbFIfekYhVheqwkSA
+         RafkR7BiRKdmwR1IYJbkuNqmDR9xU2NQ93zT5V0f8f6J6kjtp2++8zdohrSJxqe6fS89
+         iKOawcPYbrDQaWs03dmyNu4d4ryXlvW5AMzpM6wUKz2/RRsGsHTt8bdrfN0O7cI0RYr5
+         BnfOA+ObQm/A424eDQQK6/AupyZ9Bhx+bKP/uHfsppG7M6/ipQA6ReqqNXUnnzAFcXt4
+         BCDpE/NYzfMYao7Qy6IcVMbmvc/WmY0Tlv/Qgl6X71BKt4FDusuI6OHIfORInJ8+8ne1
+         DZoA==
+X-Gm-Message-State: AJIora/ZUjyQ0l6fHmyulXAjSQvuTsEE0FvlamsXaZrF9UPFdBJdCvkr
+        /4MbE32UEKVIQfcJjLY0lD6/5Q==
+X-Google-Smtp-Source: AGRyM1vSZt6sTbeMAihWpRwuOLqdKpTdFhhOfwhu3HhkjnPPM8QWKsD7uBUmfF4h/SxWQpv0WyqVTg==
+X-Received: by 2002:a2e:a7c7:0:b0:255:8ecd:14b0 with SMTP id x7-20020a2ea7c7000000b002558ecd14b0mr1104245ljp.472.1655883084375;
+        Wed, 22 Jun 2022 00:31:24 -0700 (PDT)
+Received: from [192.168.1.211] ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id s19-20020a056512215300b004796a17246esm1603388lfr.252.2022.06.22.00.31.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Jun 2022 00:31:23 -0700 (PDT)
+Message-ID: <0739a09c-1281-379f-98db-76ab395c0853@linaro.org>
+Date:   Wed, 22 Jun 2022 10:31:23 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemi500016.china.huawei.com (7.221.188.220)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 1/2] dt-bindings: arm: qcom: document qcom,msm-id and
+ qcom,board-id
+Content-Language: en-GB
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Amit Pundir <amit.pundir@linaro.org>,
+        Trilok Soni <quic_tsoni@quicinc.com>,
+        Rob Clark <robdclark@gmail.com>,
+        Stephan Gerhold <stephan@gerhold.net>,
+        Kumar Gala <galak@codeaurora.org>,
+        Stephen Boyd <sboyd@kernel.org>
+References: <20220621185649.37391-1-krzysztof.kozlowski@linaro.org>
+ <20220621185649.37391-2-krzysztof.kozlowski@linaro.org>
+ <609d1f0f-daca-4fde-3315-5d8e171ca5c4@linaro.org>
+ <7ef854a5-0e56-c71e-447a-f52cdcf51ef0@linaro.org>
+ <CAA8EJpp3HqsPOcz1t9W=cjExuddjEV2MaA10L5mMgcUrmqUmAQ@mail.gmail.com>
+ <70300b95-8b4d-5029-bfbb-544abbc64441@linaro.org>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <70300b95-8b4d-5029-bfbb-544abbc64441@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In __driver_attach function, There are also AA deadlock problem,
-like the commit b232b02bf3c2 ("driver core: fix deadlock in
-__device_attach").
+On 22/06/2022 10:00, Krzysztof Kozlowski wrote:
+> On 21/06/2022 21:49, Dmitry Baryshkov wrote:
+>> On Tue, 21 Jun 2022 at 22:32, Krzysztof Kozlowski
+>> <krzysztof.kozlowski@linaro.org> wrote:
+>>>
+>>> On 21/06/2022 21:26, Dmitry Baryshkov wrote:
+>>>> On 21/06/2022 21:56, Krzysztof Kozlowski wrote:
+>>>>> The top level qcom,msm-id and qcom,board-id properties are utilized by
+>>>>> bootloaders on Qualcomm MSM platforms to determine which device tree
+>>>>> should be used and passed to the kernel.
+>>>>>
+>>>>> The commit b32e592d3c28 ("devicetree: bindings: Document qcom board
+>>>>> compatible format") from 2015 was a consensus during discussion about
+>>>>> upstreaming qcom,msm-id and qcom,board-id fields.  There are however still
+>>>>> problems with that consensus:
+>>>>> 1. It was reached 7 years ago but it turned out its implementation did
+>>>>>      not reach all possible products.
+>>>>>
+>>>>> 2. Initially additional tool (dtbTool) was needed for parsing these
+>>>>>      fields to create a QCDT image consisting of multiple DTBs, later the
+>>>>>      bootloaders were improved and they use these qcom,msm-id and
+>>>>>      qcom,board-id properties directly.
+>>>>
+>>>> I might be mistaken here. I think it was expected that dtbTool would use
+>>>> board compat strings to generate qcom,msm-id and qcom,board-id
+>>>> properties. It's not that the bootloaders were improved.
+>>>
+>>> Don't ask me, I am new to this.
+>>>
+>>> https://lore.kernel.org/all/02ab0276-b078-fe66-8596-fcec4378722b@somainline.org/
+>>
+>>
+>>
+>>
+>>>
+>>>>
+>>>>>
+>>>>> 3. Extracting relevant information from the board compatible requires
+>>>>>      this additional tool (dtbTool), which makes the build process more
+>>>>>      complicated and not easily reproducible (DTBs are modified after the
+>>>>>      kernel build).
+>>>>>
+>>>>> 4. Some versions of Qualcomm bootloaders expect these properties even
+>>>>>      when booting with a single DTB.  The community is stuck with these
+>>>>>      bootloaders thus they require properties in the DTBs.
+>>>>>
+>>>>> Since several upstreamed Qualcomm SoC-based boards require these
+>>>>> properties to properly boot and the properties are reportedly used by
+>>>>> bootloaders, document them.
+>>>>>
+>>>>> Link: https://lore.kernel.org/r/a3c932d1-a102-ce18-deea-18cbbd05ecab@linaro.org/
+>>>>> Co-developed-by: Kumar Gala <galak@codeaurora.org>
+>>>>> Signed-off-by: Kumar Gala <galak@codeaurora.org>
+>>>>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>>>>> ---
+>>>>>    .../devicetree/bindings/arm/qcom.yaml         | 123 ++++++++++++++++++
+>>>>>    include/dt-bindings/arm/qcom,ids.h            |  30 +++++
+>>>>>    2 files changed, 153 insertions(+)
+>>>>>    create mode 100644 include/dt-bindings/arm/qcom,ids.h
+>>>>>
+>>>>> diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
+>>>>> index 6c38c1387afd..05b98cde4653 100644
+>>>>> --- a/Documentation/devicetree/bindings/arm/qcom.yaml
+>>>>> +++ b/Documentation/devicetree/bindings/arm/qcom.yaml
+>>>>> @@ -403,6 +403,129 @@ properties:
+>>>>>                  - qcom,sm8450-qrd
+>>>>>              - const: qcom,sm8450
+>>>>>
+>>>>> +  # Board compatibles go above
+>>>>> +
+>>>>> +  qcom,msm-id:
+>>>>> +    $ref: /schemas/types.yaml#/definitions/uint32-matrix
+>>>>> +    minItems: 1
+>>>>> +    maxItems: 8
+>>>>> +    items:
+>>>>> +      items:
+>>>>> +        - description: |
+>>>>> +            MSM chipset ID - an exact match value consisting of three bitfields::
+>>>>
+>>>> two bitfields
+>>>
+>>> Right, thanks.
+>>>
+>>>>
+>>>>> +             - bits 0-15  - The unique MSM chipset ID
+>>>>> +             - bits 16-31 - Reserved; should be 0
+>>>>> +        - description: |
+>>>>> +            Hardware revision ID - a chipset specific 32-bit ID representing
+>>>>> +            the version of the chipset.  It is best a match value - the
+>>>>> +            bootloader will look for the closest possible match.
+>>>>> +    deprecated: true
+>>>>> +    description:
+>>>>> +      The MSM chipset and hardware revision use by Qualcomm bootloaders.  It
+>>>>> +      can optionally be an array of these to indicate multiple hardware that
+>>>>> +      use the same device tree.  It is expected that the bootloader will use
+>>>>> +      this information at boot-up to decide which device tree to use when given
+>>>>> +      multiple device trees, some of which may not be compatible with the
+>>>>> +      actual hardware.  It is the bootloader's responsibility to pass the
+>>>>> +      correct device tree to the kernel.
+>>>>> +      The property is deprecated - it is not expected on newer boards
+>>>>> +      (starting with SM8350).
+>>>>
+>>>> Could you please elaborate this?
+>>>
+>>> Second paragraph:
+>>> https://lore.kernel.org/all/20220522195138.35943-1-konrad.dybcio@somainline.org/
+>>
+>> I think this is something peculiar to Sony. Public lahaina (sm8350)
+>> dts files contain both these properties:
+>>
+>> https://github.com/MiCode/kernel_devicetree/blob/zeus-s-oss/qcom/lahaina-hdk.dts
+>> https://github.com/MiCode/kernel_devicetree/blob/zeus-s-oss/qcom/lahaina-v2.1.dtsi
+>>
+>>>
+>>> Plus consensus with Rob:
+>>> https://lore.kernel.org/all/CAL_JsqKL-mtAQ8Q9H4vLGM8izVVzDPbUAVWSdS8AmGjN6X6kcA@mail.gmail.com/
+>>
+>> I'm not sure here. But sm8350 and sm8450 dtsi files use these
+>> properties. I've linked lahaina files above.
+>> The waiptio dtsi (sm8450) are present at the same URL.
+> 
+> If you did not like where the consensus is going during the discussion
+> last week, I would expect to join the discussion. Not to comment after I
+> implement it.
 
-stack like commit b232b02bf3c2 ("driver core: fix deadlock in
-__device_attach").
-list below:
-    In __driver_attach function, The lock holding logic is as follows:
-    ...
-    __driver_attach
-    if (driver_allows_async_probing(drv))
-      device_lock(dev)      // get lock dev
-        async_schedule_dev(__driver_attach_async_helper, dev); // func
-          async_schedule_node
-            async_schedule_node_domain(func)
-              entry = kzalloc(sizeof(struct async_entry), GFP_ATOMIC);
-              /* when fail or work limit, sync to execute func, but
-                 __driver_attach_async_helper will get lock dev as
-                 will, which will lead to A-A deadlock.  */
-              if (!entry || atomic_read(&entry_count) > MAX_WORK) {
-                func;
-              else
-                queue_work_node(node, system_unbound_wq, &entry->work)
-      device_unlock(dev)
+Please excuse me. I probably missed that part of the discussion. Yes, it 
+was my fault.
 
-    As above show, when it is allowed to do async probes, because of
-    out of memory or work limit, async work is not be allowed, to do
-    sync execute instead. it will lead to A-A deadlock because of
-    __driver_attach_async_helper getting lock dev.
+>>>> If the AOSP team were to add e.g.
+>>>> SM8350-HDK to their single RB3+RB5 images, they would still need the
+>>>> qcom,board-id/qcom,msm-id properties to let the bootloader choose proper
+>>>> DTB.
+>>>
+>>> If you have any email addresses in mind, please Cc them to invite in
+>>> discussions. Otherwise I am afraid it won't be allowed. The feedback I
+>>> got before was that SM8350 and newer do not require this property. Feel
+>>> free to propose other way to solve comments (see "consensus with Rob"
+>>> above).
+>>
+>> Amit is in CC list. In the past he used these properties to allow
+>> single-image booting of RB3 and RB5.
+>> In fact I might prefer adding more of these properties to the dts
+>> files, where it makes sense, to allow adding more dt files to the
+>> images we create.
+>> I'd really like to be able to boot a single image on all my boards
+>> (rb3, rb5, db410c, db820, ifc6560, etc).
+> 
+> You have several options here. Use the board-compatible-encoded-scheme,
+> which was merged like 6 years ago or something. Bootloader could parse
+> it, dtbTool as well. Add a generic property, like Rob wanted (and
+> probably fix bootloader). Or find any other way to satisfy Rob's
+> comments. These properties were not accepted 6 years ago and the board
+> compatible approach was merged instead. If 6 years is not enough to
+> change the bootloaders, nothing will happen here ever, so we need to
+> make some statement.
 
-Reproduce:
-and it can be reproduce by make the condition
-(if (!entry || atomic_read(&entry_count) > MAX_WORK)) untenable, like
-below:
+Let me respond to his email. Amit, you might have something to add there 
+too.
 
-[  370.785650] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables
-this message.
-[  370.787154] task:swapper/0       state:D stack:    0 pid:    1 ppid:
-0 flags:0x00004000
-[  370.788865] Call Trace:
-[  370.789374]  <TASK>
-[  370.789841]  __schedule+0x482/0x1050
-[  370.790613]  schedule+0x92/0x1a0
-[  370.791290]  schedule_preempt_disabled+0x2c/0x50
-[  370.792256]  __mutex_lock.isra.0+0x757/0xec0
-[  370.793158]  __mutex_lock_slowpath+0x1f/0x30
-[  370.794079]  mutex_lock+0x50/0x60
-[  370.794795]  __device_driver_lock+0x2f/0x70
-[  370.795677]  ? driver_probe_device+0xd0/0xd0
-[  370.796576]  __driver_attach_async_helper+0x1d/0xd0
-[  370.797318]  ? driver_probe_device+0xd0/0xd0
-[  370.797957]  async_schedule_node_domain+0xa5/0xc0
-[  370.798652]  async_schedule_node+0x19/0x30
-[  370.799243]  __driver_attach+0x246/0x290
-[  370.799828]  ? driver_allows_async_probing+0xa0/0xa0
-[  370.800548]  bus_for_each_dev+0x9d/0x130
-[  370.801132]  driver_attach+0x22/0x30
-[  370.801666]  bus_add_driver+0x290/0x340
-[  370.802246]  driver_register+0x88/0x140
-[  370.802817]  ? virtio_scsi_init+0x116/0x116
-[  370.803425]  scsi_register_driver+0x1a/0x30
-[  370.804057]  init_sd+0x184/0x226
-[  370.804533]  do_one_initcall+0x71/0x3a0
-[  370.805107]  kernel_init_freeable+0x39a/0x43a
-[  370.805759]  ? rest_init+0x150/0x150
-[  370.806283]  kernel_init+0x26/0x230
-[  370.806799]  ret_from_fork+0x1f/0x30
+Basically I think we should allow these properties to be used for all 
+the Qcom boards. Marking them as 'deprecated' is fine to me, thus we 
+would not endorse them. But we would still be able to use them when 
+needed/wanted (like AOSP requirements for the single boot image).
 
-To fix the deadlock, move the async_schedule_dev outside device_lock,
-as we can see, in async_schedule_node_domain, the parameter of
-queue_work_node is system_unbound_wq, so it can accept concurrent
-operations. which will also not change the code logic, and will
-not lead to deadlock.
-
-Fixes: ef0ff68351be ("driver core: Probe devices asynchronously instead of the driver")
-Signed-off-by: Zhang Wensheng <zhangwensheng5@huawei.com>
----
-v2: add patch description
-v1: https://lore.kernel.org/lkml/YqNL6NPgP+cLOy%2FI@kroah.com/t/
----
- drivers/base/dd.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/base/dd.c b/drivers/base/dd.c
-index 11b0fb6414d3..b766968a873c 100644
---- a/drivers/base/dd.c
-+++ b/drivers/base/dd.c
-@@ -1115,6 +1115,7 @@ static void __driver_attach_async_helper(void *_dev, async_cookie_t cookie)
- static int __driver_attach(struct device *dev, void *data)
- {
- 	struct device_driver *drv = data;
-+	bool async = false;
- 	int ret;
- 
- 	/*
-@@ -1153,9 +1154,11 @@ static int __driver_attach(struct device *dev, void *data)
- 		if (!dev->driver && !dev->p->async_driver) {
- 			get_device(dev);
- 			dev->p->async_driver = drv;
--			async_schedule_dev(__driver_attach_async_helper, dev);
-+			async = true;
- 		}
- 		device_unlock(dev);
-+		if (async)
-+			async_schedule_dev(__driver_attach_async_helper, dev);
- 		return 0;
- 	}
- 
 -- 
-2.31.1
-
+With best wishes
+Dmitry
