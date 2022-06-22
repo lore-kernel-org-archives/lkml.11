@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B177C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 19:28:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAEA4C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 19:29:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358293AbiFVT2s (ORCPT
+        id S1358560AbiFVT25 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 15:28:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33442 "EHLO
+        Wed, 22 Jun 2022 15:28:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357400AbiFVT11 (ORCPT
+        with ESMTP id S1357734AbiFVT12 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 15:27:27 -0400
+        Wed, 22 Jun 2022 15:27:28 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A27E43DDF2
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 12:27:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 446B73EAB8
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 12:27:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655926040;
+        s=mimecast20190719; t=1655926042;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=F73ZQSpJXAcM6JUMGTWxTim9jEMxT3dE24kf7MSiY/U=;
-        b=CiNaHmDmF17tKQI8Vh+wOZ80vly3nBWCi6NulS92g4kWYL1Vz8ucyhXzUTRM8SryaZ2rBU
-        hIBjoU6rpPpuD1dSYuEQMQNCU64JHZakFtWCHdspD1Eql+HZtKzwBiEA9z4v6RcAuDHHQ+
-        Txk+z39MJBIfGraggWQsbswsAOrZ1UA=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=s79FYBIMXt/xfR/BYP7Rgx7NPNiR6fmBmIixdnDaf6E=;
+        b=GwCozIw6XCHndRjoki9LPfl81ZHldukTlXuJksyuUps/uacI3h4HMx9KVEeSY+pHrQG6Eh
+        brYzA/F80P7OgS2kGJT6aXGYBojX+MAyve3+Ncct/Zhbye2JkDHrM4xkngcPnMFdg3QETy
+        CFDoe/UGJ/f4W8TTnWxJY+jOjyyofbE=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-88-MEOckTHDNae0HiQ4MeKbbw-1; Wed, 22 Jun 2022 15:27:15 -0400
-X-MC-Unique: MEOckTHDNae0HiQ4MeKbbw-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+ us-mta-418-3z5H9ysNMoepB2tICsIqMg-1; Wed, 22 Jun 2022 15:27:18 -0400
+X-MC-Unique: 3z5H9ysNMoepB2tICsIqMg-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id AC726294EDC2;
-        Wed, 22 Jun 2022 19:27:14 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8CA4B811E76;
+        Wed, 22 Jun 2022 19:27:17 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 562ED1121314;
-        Wed, 22 Jun 2022 19:27:14 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3838C141510C;
+        Wed, 22 Jun 2022 19:27:17 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     maz@kernel.org, anup@brainfault.org, seanjc@google.com,
@@ -46,68 +46,57 @@ Cc:     maz@kernel.org, anup@brainfault.org, seanjc@google.com,
         kvmarm@lists.cs.columbia.edu, linux-mips@vger.kernel.org,
         kvm-riscv@lists.infradead.org, pfeiner@google.com,
         jiangshanlai@gmail.com, dmatlack@google.com
-Subject: [PATCH v7 09/23] KVM: x86/mmu: Move guest PT write-protection to account_shadowed()
-Date:   Wed, 22 Jun 2022 15:26:56 -0400
-Message-Id: <20220622192710.2547152-10-pbonzini@redhat.com>
+Subject: [PATCH v7 16/23] KVM: x86/mmu: Update page stats in __rmap_add()
+Date:   Wed, 22 Jun 2022 15:27:03 -0400
+Message-Id: <20220622192710.2547152-17-pbonzini@redhat.com>
 In-Reply-To: <20220622192710.2547152-1-pbonzini@redhat.com>
 References: <20220622192710.2547152-1-pbonzini@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: David Matlack <dmatlack@google.com>
 
-Move the code that write-protects newly-shadowed guest page tables into
-account_shadowed(). This avoids a extra gfn-to-memslot lookup and is a
-more logical place for this code to live. But most importantly, this
-reduces kvm_mmu_alloc_shadow_page()'s reliance on having a struct
-kvm_vcpu pointer, which will be necessary when creating new shadow pages
-during VM ioctls for eager page splitting.
-
-Note, it is safe to drop the role.level == PG_LEVEL_4K check since
-account_shadowed() returns early if role.level > PG_LEVEL_4K.
+Update the page stats in __rmap_add() rather than at the call site. This
+will avoid having to manually update page stats when splitting huge
+pages in a subsequent commit.
 
 No functional change intended.
 
-Reviewed-by: Sean Christopherson <seanjc@google.com>
+Reviewed-by: Ben Gardon <bgardon@google.com>
+Reviewed-by: Peter Xu <peterx@redhat.com>
 Signed-off-by: David Matlack <dmatlack@google.com>
-Message-Id: <20220516232138.1783324-10-dmatlack@google.com>
+Message-Id: <20220516232138.1783324-17-dmatlack@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/mmu/mmu.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/x86/kvm/mmu/mmu.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index bd45364bf465..2602c3642f23 100644
+index a8cdbe2958d9..7cca28d89a85 100644
 --- a/arch/x86/kvm/mmu/mmu.c
 +++ b/arch/x86/kvm/mmu/mmu.c
-@@ -766,6 +766,9 @@ static void account_shadowed(struct kvm *kvm, struct kvm_mmu_page *sp)
- 						    KVM_PAGE_TRACK_WRITE);
+@@ -1562,6 +1562,8 @@ static void __rmap_add(struct kvm *kvm,
  
- 	kvm_mmu_gfn_disallow_lpage(slot, gfn);
+ 	sp = sptep_to_sp(spte);
+ 	kvm_mmu_page_set_gfn(sp, spte - sp->spt, gfn);
++	kvm_update_page_stats(kvm, sp->role.level, 1);
 +
-+	if (kvm_mmu_slot_gfn_write_protect(kvm, slot, gfn, PG_LEVEL_4K))
-+		kvm_flush_remote_tlbs_with_address(kvm, gfn, 1);
- }
+ 	rmap_head = gfn_to_rmap(gfn, sp->role.level, slot);
+ 	rmap_count = pte_list_add(cache, spte, rmap_head);
  
- void account_huge_nx_page(struct kvm *kvm, struct kvm_mmu_page *sp)
-@@ -2072,11 +2075,8 @@ static struct kvm_mmu_page *kvm_mmu_alloc_shadow_page(struct kvm_vcpu *vcpu,
- 	sp->gfn = gfn;
- 	sp->role = role;
- 	hlist_add_head(&sp->hash_link, sp_list);
--	if (sp_has_gptes(sp)) {
-+	if (sp_has_gptes(sp))
- 		account_shadowed(vcpu->kvm, sp);
--		if (role.level == PG_LEVEL_4K && kvm_vcpu_write_protect_gfn(vcpu, gfn))
--			kvm_flush_remote_tlbs_with_address(vcpu->kvm, gfn, 1);
--	}
+@@ -2783,7 +2785,6 @@ static int mmu_set_spte(struct kvm_vcpu *vcpu, struct kvm_memory_slot *slot,
  
- 	return sp;
- }
+ 	if (!was_rmapped) {
+ 		WARN_ON_ONCE(ret == RET_PF_SPURIOUS);
+-		kvm_update_page_stats(vcpu->kvm, level, 1);
+ 		rmap_add(vcpu, slot, sptep, gfn);
+ 	}
+ 
 -- 
 2.31.1
 
