@@ -2,259 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CD7DCCA47D
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 09:10:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DFCBCCA47E
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 09:10:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357289AbiFVJKI (ORCPT
+        id S1357182AbiFVJKR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 05:10:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34888 "EHLO
+        Wed, 22 Jun 2022 05:10:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357274AbiFVJJj (ORCPT
+        with ESMTP id S1357155AbiFVJJs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 05:09:39 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F13930F7D;
-        Wed, 22 Jun 2022 02:08:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1655888891; x=1687424891;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ex7EEdNA0l4W9ocblvz6P5Q2Ph8QUhH9oxSUyhLzrgE=;
-  b=YwDlQwOk3KpD3i6QUGflXXoovZfAFxvW4EcvtsocVxmNw+wgS/Y5FKq8
-   c+h5G1Dw+fNM6jx1nZQsXKOWm5wDz+sUsbPeAs7ldQhIIHEUKGTxLizEi
-   iAFi5LKPNR1Mhw9sSGeYD/oAeDXXSqy8GnkXtOXyOPx73VVbgQ++NW++U
-   7z4PHSTsWxAmYj6+RR2TuJEZxhuT+Z77SMVewS9/W1EyX94SXj6BNXoSw
-   1/r57XsS43KCpgdgHT52mgGzeJA0wyTzYiIznkIBmQ6sCdR3574CZirBk
-   xFHEQXxs0U7dcnfuWSNk7/0edtJCO4cUf37NkhireiHzPlrSRWHt8TONZ
-   g==;
-X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="179017287"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Jun 2022 02:08:11 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 22 Jun 2022 02:08:10 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Wed, 22 Jun 2022 02:08:06 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Woojung Huh <woojung.huh@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
+        Wed, 22 Jun 2022 05:09:48 -0400
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 316693982A
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 02:08:27 -0700 (PDT)
+Received: by mail-lj1-x22b.google.com with SMTP id a11so9765717ljb.5
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 02:08:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=zwKGgI8hUtI5va3wPSJUOFhw3ATUoJSW/f2ATiDG5G8=;
+        b=rC3FBYLiX6fFBi3tbH92J9KqPuX18ZzM5T8F13vXIgHu3hsGX37Z03/fxQylAI6yfA
+         MQTCWxqUpfSIRR4FO6BjxmvHCrYalH60w96MIwV4KvKGe/+B6pUczm0B7GMoU/NWAi4x
+         yvqBf0JNCu8CwmKXRFFKsUPymQw7O4YY+aZAOuZuIZECeZUUIv4CJ8kKMA88SresY7nM
+         7yuw2v97f29OQR42dKHO8Sdd9aAOjbZr/Rpc+CqiOgyue3Tc3evAH+U5aeFCEiVZX4m/
+         umuY20P2RQDQN3eClcw8KSZm9HIWxAYN0lrZHjZOxUGVjxOEcYMJTJxiOIeRA1K+eI8L
+         PGgA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=zwKGgI8hUtI5va3wPSJUOFhw3ATUoJSW/f2ATiDG5G8=;
+        b=2e4DNlsJ4sHEu/EuTwnfMXIThY0197aX83C8G0w0AVoJHWVEsMPYTTuiL3JAVPCiJo
+         jh5eegr2mYVcLdZT+u7Ld4BuTYmYmLrqMWITTcH9oWW4MFerX+cJxH9KXxgXkprbr2UU
+         m4gfUzB+IYg0qxPyOZ1ortbzUNAcNDt/SQtQTrJYDgHVjBzIp0D+raHt2yMp72AaYJFS
+         wd4Z6Eo7ygMzRBLew3JuPHzFEcBpEBNsi+FYJqKSFHFOAOtPe5k5Sy7wQoGrBXor3RXu
+         ajXCh+mJH94aZOi8+cT1qYRCqEXP1vFi6q3yFgXGaOZs3+SlygZ3KPUjkWaVhRNNZBFM
+         94pA==
+X-Gm-Message-State: AJIora8fEXw8anMPDaqXq2GPKfkMo7bBjOtFaLwJ7CYeM8WOC2UiRZN3
+        T8nwvbzW1hEf4ojHD+7QcjEVF7atYgUN1NaaU6Re7A==
+X-Google-Smtp-Source: AGRyM1uLAehIaM0118d07ZGVTcBN+8vUVlSuyEVYaYw4d4OUB3fyoJlWcBYQgw73vlkC4qLxOnnh+IXMEGFbdQtYokw=
+X-Received: by 2002:a2e:bf05:0:b0:247:b233:cfba with SMTP id
+ c5-20020a2ebf05000000b00247b233cfbamr1255843ljr.131.1655888905245; Wed, 22
+ Jun 2022 02:08:25 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220620150225.1307946-1-mw@semihalf.com> <20220620150225.1307946-10-mw@semihalf.com>
+ <YrDO05TMK8SVgnBP@lunn.ch> <YrGm2jmR7ijHyQjJ@smile.fi.intel.com>
+ <YrGpDgtm4rPkMwnl@lunn.ch> <YrGukfw4uiQz0NpW@smile.fi.intel.com>
+In-Reply-To: <YrGukfw4uiQz0NpW@smile.fi.intel.com>
+From:   Marcin Wojtas <mw@semihalf.com>
+Date:   Wed, 22 Jun 2022 11:08:13 +0200
+Message-ID: <CAPv3WKf_2QYh0F2LEr1DeErvnMeQqT0M5t40ROP2G6HSUwKpQQ@mail.gmail.com>
+Subject: Re: [net-next: PATCH 09/12] Documentation: ACPI: DSD: introduce DSA description
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, vivien.didelot@gmail.com,
         Florian Fainelli <f.fainelli@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Russell King" <linux@armlinux.org.uk>
-Subject: [Patch net-next 07/13] net: dsa: microchip: move start of switch to ksz_setup
-Date:   Wed, 22 Jun 2022 14:34:19 +0530
-Message-ID: <20220622090425.17709-8-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220622090425.17709-1-arun.ramadoss@microchip.com>
-References: <20220622090425.17709-1-arun.ramadoss@microchip.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+        Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Grzegorz Bernacki <gjb@semihalf.com>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>,
+        Tomasz Nowicki <tn@semihalf.com>,
+        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
+        upstream@semihalf.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch move the setting the start bit from the individual switch
-configuration to ksz_setup
+wt., 21 cze 2022 o 13:42 Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> napisa=C5=82(a):
+>
+> On Tue, Jun 21, 2022 at 01:18:38PM +0200, Andrew Lunn wrote:
+> > On Tue, Jun 21, 2022 at 02:09:14PM +0300, Andy Shevchenko wrote:
+> > > On Mon, Jun 20, 2022 at 09:47:31PM +0200, Andrew Lunn wrote:
+>
+> ...
+>
+> > > > > +        Name (_CRS, ResourceTemplate ()
+> > > > > +        {
+> > > > > +            Memory32Fixed (ReadWrite,
+> > > > > +                0xf212a200,
+> > > > > +                0x00000010,
+> > > >
+> > > > What do these magic numbers mean?
+> > >
+> > > Address + Length, it's all described in the ACPI specification.
+> >
+> > The address+plus length of what? This device is on an MDIO bus. As
+> > such, there is no memory! It probably makes sense to somebody who
+> > knows ACPI, but to me i have no idea what it means.
+>
+> I see what you mean. Honestly I dunno what the device this description is=
+ for.
+> For the DSA that's behind MDIO bus? Then it's definitely makes no sense a=
+nd
+> MDIOSerialBus() resources type is what would be good to have in ACPI
+> specification.
+>
 
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
----
- drivers/net/dsa/microchip/ksz8795_reg.h |  1 -
- drivers/net/dsa/microchip/ksz9477.c     |  3 ---
- drivers/net/dsa/microchip/ksz9477_reg.h |  1 -
- drivers/net/dsa/microchip/ksz_common.c  | 17 +++++++++++++++++
- drivers/net/dsa/microchip/ksz_common.h  |  3 +++
- 5 files changed, 20 insertions(+), 5 deletions(-)
+It's not device on MDIO bus, but the MDIO controller's register itself
+(this _CSR belongs to the parent, subnodes do not refer to it in any
+way). The child device requires only _ADR (or whatever else is needed
+for the case the DSA device is attached to SPI/I2C controllers).
 
-diff --git a/drivers/net/dsa/microchip/ksz8795_reg.h b/drivers/net/dsa/microchip/ksz8795_reg.h
-index f2b0399d69d1..32d985296520 100644
---- a/drivers/net/dsa/microchip/ksz8795_reg.h
-+++ b/drivers/net/dsa/microchip/ksz8795_reg.h
-@@ -16,7 +16,6 @@
- 
- #define SW_REVISION_M			0x0E
- #define SW_REVISION_S			1
--#define SW_START			0x01
- 
- #define KSZ8863_REG_SW_RESET		0x43
- 
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index 827e62b032d2..5fa5b3d09146 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -1287,9 +1287,6 @@ static int ksz9477_setup(struct dsa_switch *ds)
- 	/* enable global MIB counter freeze function */
- 	ksz_cfg(dev, REG_SW_MAC_CTRL_6, SW_MIB_COUNTER_FREEZE, true);
- 
--	/* start switch */
--	ksz_cfg(dev, REG_SW_OPERATION, SW_START, true);
--
- 	return 0;
- }
- 
-diff --git a/drivers/net/dsa/microchip/ksz9477_reg.h b/drivers/net/dsa/microchip/ksz9477_reg.h
-index 57e03dfcf869..c0ad83753b13 100644
---- a/drivers/net/dsa/microchip/ksz9477_reg.h
-+++ b/drivers/net/dsa/microchip/ksz9477_reg.h
-@@ -165,7 +165,6 @@
- 
- #define SW_DOUBLE_TAG			BIT(7)
- #define SW_RESET			BIT(1)
--#define SW_START			BIT(0)
- 
- #define REG_SW_MAC_ADDR_0		0x0302
- #define REG_SW_MAC_ADDR_1		0x0303
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 719fa1b0884e..6da4df520397 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -155,6 +155,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.stp_ctrl_reg = 0x02,
- 		.broadcast_ctrl_reg =  0x06,
- 		.multicast_ctrl_reg = 0x04,
-+		.start_ctrl_reg = 0x01,
- 		.supports_mii = {false, false, false, false, true},
- 		.supports_rmii = {false, false, false, false, true},
- 		.supports_rgmii = {false, false, false, false, true},
-@@ -190,6 +191,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.stp_ctrl_reg = 0x02,
- 		.broadcast_ctrl_reg =  0x06,
- 		.multicast_ctrl_reg = 0x04,
-+		.start_ctrl_reg = 0x01,
- 		.supports_mii = {false, false, false, false, true},
- 		.supports_rmii = {false, false, false, false, true},
- 		.supports_rgmii = {false, false, false, false, true},
-@@ -211,6 +213,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.stp_ctrl_reg = 0x02,
- 		.broadcast_ctrl_reg =  0x06,
- 		.multicast_ctrl_reg = 0x04,
-+		.start_ctrl_reg = 0x01,
- 		.supports_mii = {false, false, false, false, true},
- 		.supports_rmii = {false, false, false, false, true},
- 		.supports_rgmii = {false, false, false, false, true},
-@@ -231,6 +234,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.stp_ctrl_reg = 0x02,
- 		.broadcast_ctrl_reg =  0x06,
- 		.multicast_ctrl_reg = 0x04,
-+		.start_ctrl_reg = 0x01,
- 		.supports_mii = {false, false, true},
- 		.supports_rmii = {false, false, true},
- 		.internal_phy = {true, true, false},
-@@ -251,6 +255,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.stp_ctrl_reg = 0x0B04,
- 		.broadcast_ctrl_reg =  0x0332,
- 		.multicast_ctrl_reg = 0x0331,
-+		.start_ctrl_reg = 0x0300,
- 		.supports_mii	= {false, false, false, false,
- 				   false, true, false},
- 		.supports_rmii	= {false, false, false, false,
-@@ -276,6 +281,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.stp_ctrl_reg = 0x0B04,
- 		.broadcast_ctrl_reg =  0x0332,
- 		.multicast_ctrl_reg = 0x0331,
-+		.start_ctrl_reg = 0x0300,
- 		.supports_mii	= {false, false, false, false,
- 				   false, true, true},
- 		.supports_rmii	= {false, false, false, false,
-@@ -300,6 +306,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.stp_ctrl_reg = 0x0B04,
- 		.broadcast_ctrl_reg =  0x0332,
- 		.multicast_ctrl_reg = 0x0331,
-+		.start_ctrl_reg = 0x0300,
- 		.supports_mii = {false, false, true},
- 		.supports_rmii = {false, false, true},
- 		.supports_rgmii = {false, false, true},
-@@ -321,6 +328,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.stp_ctrl_reg = 0x0B04,
- 		.broadcast_ctrl_reg =  0x0332,
- 		.multicast_ctrl_reg = 0x0331,
-+		.start_ctrl_reg = 0x0300,
- 		.supports_mii	= {false, false, false, false,
- 				   false, true, true},
- 		.supports_rmii	= {false, false, false, false,
-@@ -345,6 +353,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.stp_ctrl_reg = 0x0B04,
- 		.broadcast_ctrl_reg =  0x0332,
- 		.multicast_ctrl_reg = 0x0331,
-+		.start_ctrl_reg = 0x0300,
- 		.supports_mii = {false, false, false, false, true},
- 		.supports_rmii = {false, false, false, false, true},
- 		.supports_rgmii = {false, false, false, false, true},
-@@ -365,6 +374,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.stp_ctrl_reg = 0x0B04,
- 		.broadcast_ctrl_reg =  0x0332,
- 		.multicast_ctrl_reg = 0x0331,
-+		.start_ctrl_reg = 0x0300,
- 		.supports_mii = {false, false, false, false, true, true},
- 		.supports_rmii = {false, false, false, false, true, true},
- 		.supports_rgmii = {false, false, false, false, true, true},
-@@ -385,6 +395,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.stp_ctrl_reg = 0x0B04,
- 		.broadcast_ctrl_reg =  0x0332,
- 		.multicast_ctrl_reg = 0x0331,
-+		.start_ctrl_reg = 0x0300,
- 		.supports_mii	= {false, false, false, false,
- 				   true, true, false, false},
- 		.supports_rmii	= {false, false, false, false,
-@@ -409,6 +420,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.stp_ctrl_reg = 0x0B04,
- 		.broadcast_ctrl_reg =  0x0332,
- 		.multicast_ctrl_reg = 0x0331,
-+		.start_ctrl_reg = 0x0300,
- 		.supports_mii	= {false, false, false, false,
- 				   true, true, false, false},
- 		.supports_rmii	= {false, false, false, false,
-@@ -433,6 +445,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.stp_ctrl_reg = 0x0B04,
- 		.broadcast_ctrl_reg =  0x0332,
- 		.multicast_ctrl_reg = 0x0331,
-+		.start_ctrl_reg = 0x0300,
- 		.supports_mii	= {false, false, false, false,
- 				   true, true, false, false},
- 		.supports_rmii	= {false, false, false, false,
-@@ -672,6 +685,10 @@ int ksz_setup(struct dsa_switch *ds)
- 			return ret;
- 	}
- 
-+	/* start switch */
-+	regmap_update_bits(dev->regmap[0], dev->info->start_ctrl_reg,
-+			   SW_START, SW_START);
-+
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(ksz_setup);
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 35d734ee932e..2cf8474ba626 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -49,6 +49,7 @@ struct ksz_chip_data {
- 	int stp_ctrl_reg;
- 	int broadcast_ctrl_reg;
- 	int multicast_ctrl_reg;
-+	int start_ctrl_reg;
- 	bool supports_mii[KSZ_MAX_NUM_PORTS];
- 	bool supports_rmii[KSZ_MAX_NUM_PORTS];
- 	bool supports_rgmii[KSZ_MAX_NUM_PORTS];
-@@ -429,6 +430,8 @@ static inline void ksz_regmap_unlock(void *__mtx)
- 
- #define MULTICAST_STORM_DISABLE		BIT(6)
- 
-+#define SW_START			0x01
-+
- /* Regmap tables generation */
- #define KSZ_SPI_OP_RD		3
- #define KSZ_SPI_OP_WR		2
--- 
-2.36.1
-
+Best regards,
+Marcin
