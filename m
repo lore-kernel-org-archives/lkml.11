@@ -2,118 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FACEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 17:52:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA53ECCA47E
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 17:52:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377470AbiFVRwW (ORCPT
+        id S1377457AbiFVRwo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 13:52:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55722 "EHLO
+        Wed, 22 Jun 2022 13:52:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236780AbiFVRwT (ORCPT
+        with ESMTP id S1377476AbiFVRwl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 13:52:19 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80D9135241;
-        Wed, 22 Jun 2022 10:52:16 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id D165C5FD04;
-        Wed, 22 Jun 2022 20:52:12 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1655920332;
-        bh=N634Zf56yv5/vkYfAq7VOSnfTEBvydl4YRfmE/8zL30=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=dqSYQ7LZD/baRFrXkuxGMrMSGpBh8WY5yyxHZP+rVD2qrww5N3qpsTt+uDxytZL/U
-         AN4/5M74dq9I3swXvml8kBII/5bGOJAFB18a5EsC/lvsFxAyTClgrYCwyhJgXzTShN
-         jpTeu6+kAGg+e2ShsEVveLQDNv79t+zahHajvGWxVKKCd1N8cg4HQromG03kxsY1tu
-         W+KK2thgZvftFFBu6ujr5m9Qp1bJHJ1QI8osTYirf7bWWDgQAgrVN+kz8kNY55bLvw
-         MFEL91nU2G1WQm/7R7Q2nqgYnP3hymCSYg2kpOUaKhC20zj7JBybZ5XKS2fIy5yJRe
-         9pFR7V0J8gj1Q==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Wed, 22 Jun 2022 20:52:12 +0300 (MSK)
-From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
-To:     Jonathan Cameron <jic23@kernel.org>
-CC:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
-        "noname.nuno@gmail.com" <noname.nuno@gmail.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "rockosov@gmail.com" <rockosov@gmail.com>
-Subject: Re: [PATCH v3] iio: trigger: warn about non-registered iio trigger
- getting attempt
-Thread-Topic: [PATCH v3] iio: trigger: warn about non-registered iio trigger
- getting attempt
-Thread-Index: AQHYep3lZdCBX5wfLkWR1miHp7T4Oq1Rmw8AgANrnICABpNhAA==
-Date:   Wed, 22 Jun 2022 17:51:56 +0000
-Message-ID: <20220622175206.ddyyex7bezzh4rd4@CAB-WSD-L081021.sigma.sbrf.ru>
-References: <20220607183907.20017-1-ddrokosov@sberdevices.ru>
- <20220616091308.miwqkdfc77mm72hz@CAB-WSD-L081021.sigma.sbrf.ru>
- <20220618142703.75025659@jic23-huawei>
-In-Reply-To: <20220618142703.75025659@jic23-huawei>
-Accept-Language: ru-RU, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <BBC3AE6F80A9864EBADE94B6544763F9@sberdevices.ru>
-Content-Transfer-Encoding: quoted-printable
+        Wed, 22 Jun 2022 13:52:41 -0400
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03EA63617E
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 10:52:38 -0700 (PDT)
+Received: by mail-yb1-xb29.google.com with SMTP id v81so31520427ybe.0
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 10:52:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fUSmK7RJ4lRM7Yk3nFFgboloKX+Bx0NQLAzjfaTQ4dE=;
+        b=STXFwg1mfBWfKxKHCbKBpyd0eW/G6gEkq9668fjCDL/iGMPvKtfKvYJyqyEhEwixak
+         kYRwtypdaZYxHUnduLk9aIAL9Vj0jJPwUTAiMBtvHQx0rp9UpqU5/dHF6qyaQByehRIV
+         PdtFoiFiWq32cVeHJ4A7EO6VsPgKncenjRIII=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fUSmK7RJ4lRM7Yk3nFFgboloKX+Bx0NQLAzjfaTQ4dE=;
+        b=4fSu+KanaXWmMjo+vrFEynjB++K4mzXgX8JtR/GJdsP7qiop4o5PpQeErxxiJ+7026
+         uOorYlYHO0conzTQD18M1pnWoIEEhuydok0uf15CUJhEx70QLlHz43gnthkMISGv/y+E
+         pwCQ8SRhtpFj6GOAtXj2PisuViHsB79+DnAdPeVgKqBAFBQD+l0/DKXFk9kFRQAp4vyZ
+         cyyUwEOTy8GmX5Gt6SOiEw93h/qeN4+CLrRjWXRyAev/8DaNiTu4O+PrlNsC1sS8zFsg
+         DBu8brttfKHQqgUqkrgtj1hns4osRNv4E83gzutnUx5DRYyPIC1/yAuWN40lyrW2utG1
+         1ydw==
+X-Gm-Message-State: AJIora+infUerhR8YjarMLS07OjXN7+XRMwdiUb9gXDSb3iitR8DYYdh
+        N/5R+KlI4TdkcGC62Ytxk0TdHGVmGfwBgfQ/1+8CoA==
+X-Google-Smtp-Source: AGRyM1uyljzuoQBj9S63poZWW7UCRBrOVn0dHy9ufWgOBUKqN0s1gOhcOj48rq/eqEA/zMp2QRFHFs2auD5Rhi+jzn4=
+X-Received: by 2002:a5b:8d1:0:b0:668:c6ca:7571 with SMTP id
+ w17-20020a5b08d1000000b00668c6ca7571mr4869130ybq.445.1655920358190; Wed, 22
+ Jun 2022 10:52:38 -0700 (PDT)
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/06/22 11:20:00 #19842104
-X-KSMG-AntiVirus-Status: Clean, skipped
+References: <20220615172129.1314056-1-pmalani@chromium.org>
+ <CACeCKaetgayTS+yX0cuNiK7j6Yqd4o2ziX6nCoGTt64A3jFT=g@mail.gmail.com>
+ <YrHE9KrF0HG9rVi/@kroah.com> <8f0501c5-84f2-10f1-ae06-4b3936c50b12@linaro.org>
+ <YrMxFeMc0tk/K1qL@kroah.com>
+In-Reply-To: <YrMxFeMc0tk/K1qL@kroah.com>
+From:   Prashant Malani <pmalani@chromium.org>
+Date:   Wed, 22 Jun 2022 10:52:27 -0700
+Message-ID: <CACeCKac0missZ84EzgHK0QJpmYUSqRaOtEJLdRs+dejybrp0cw@mail.gmail.com>
+Subject: Re: [PATCH v4 0/7] usb: typec: Introduce typec-switch binding
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        bleung@chromium.org, swboyd@chromium.org,
+        heikki.krogerus@linux.intel.com,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
+        <nfraprado@collabora.com>, Pin-Yen Lin <treapking@chromium.org>,
+        Robert Foss <robert.foss@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Xin Ji <xji@analogixsemi.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Jonathan,
+On Wed, Jun 22, 2022 at 8:11 AM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> On Wed, Jun 22, 2022 at 04:53:40PM +0200, Krzysztof Kozlowski wrote:
+> > On 21/06/2022 15:17, Greg Kroah-Hartman wrote:
+> > > On Wed, Jun 15, 2022 at 11:13:33AM -0700, Prashant Malani wrote:
+> > >> I should add:
+> > >>
+> > >> Series submission suggestions (of course, open to better suggestions too):
+> > >> - Patches 1-3 can go through the USB repo.
+> > >
+> > > I will take patches 1 and 2 now.
+> > >
+> > > seems the others need reworks or acks from the DT people.
+> >
+> > I just gave for patch 3 and before for 4, so you can grab these as well.
+>
+> They are gone from my queue, a resend with that ack would be good so
+> that I can pick it up easier.
 
-On Sat, Jun 18, 2022 at 02:27:03PM +0100, Jonathan Cameron wrote:
-> On Thu, 16 Jun 2022 09:13:00 +0000
-> Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
->=20
-> > Hello Jonathan,
-> >=20
-> > I notice the patchset from=20
-> > https://lore.kernel.org/all/20220524181150.9240-1-ddrokosov@sberdevices=
-.ru/
-> > is not merged to stable yet.
-> > I think if this WARN() patch is okay for you, maybe it's better to merg=
-e
-> > it together with the previous one. It will notify developers about this
-> > problem as you suggested before, and the previous patchset resolves the=
- issue
-> > in the all IIO drivers.
-> >=20
-> > What do you think about it?
->=20
-> It would be a stretch to take a defensive measure like this into stable,
-> so I'll just queue this up for the next merge window.  We might have
-> some exciting intermediate times where anyone actually using the togreg
-> branch directly will get drivers that will spit out the warning.
-> That should only be people active on the list though who will find
-> this quickly enough and understand what is gong on.
->=20
-> I'm fine with this and it's been on list long enough for anyone else to c=
-omment.
-> It'll be in a branch I'm happy to rebase for at few days anyway if there
-> are any last minute comments or tags.
->=20
-> Applied to the togreg branch of iio.git and pushed out as testing.
->=20
-> Hopefully I'll get a pull request out for the fixes-togreg branch
-> sometime this weekend.
+Thanks Greg. I've sent out v5 [1] which has the Reviewed-by tags from
+Krzysztof.
 
-Thanks a lot for such detailed clarification! I'm seeing this warn
-patchset in the linux-next already.
+[1] https://lore.kernel.org/linux-usb/20220622173605.1168416-1-pmalani@chromium.org/
 
---=20
-Thank you,
-Dmitry=
+Best regards,
+
+-Prashant
