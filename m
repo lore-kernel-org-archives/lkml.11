@@ -2,92 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66337C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 14:16:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CCA3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 14:18:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358199AbiFVOQS (ORCPT
+        id S1358261AbiFVOSX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 10:16:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37350 "EHLO
+        Wed, 22 Jun 2022 10:18:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358162AbiFVOPv (ORCPT
+        with ESMTP id S1358083AbiFVOSI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 10:15:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18F36393F5;
-        Wed, 22 Jun 2022 07:15:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BAE01B81F31;
-        Wed, 22 Jun 2022 14:15:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 824FEC34114;
-        Wed, 22 Jun 2022 14:15:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655907315;
-        bh=OR7xiTCWZs1tjxHWPG20iS6R15OoZpcmvJbr8d4jd0E=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=e+Iz6+HniIaTGnxsu76Y1gwTDILMFU8si5DqybZK+lWvIPucw/FbW2BM5nq0AbAOT
-         x05bP8sk04ZgZTR9lXHMq18vKi9rguum7xWKGJH8WNZTnSHrmzObQzPxwnh/l64WbL
-         AuGsHUk59tKIjzEKUtltV7E0oKQSCyOf90GxMZeEsNt3MoN4rpBBV9rkqdDToF0zRo
-         QeC+IMpB/AsuIAD/EtbhYPkqt9/iT0P8HZ5e5Hz9bZCvuyTUZd1idY23fk21sG6Znu
-         GlUHbPTpgR1qMmlCMnXXm7/mwYs6k7m9nB2uxwVGsTTqiMJdG6d7yJhtn2Qk4/TtnQ
-         RZW/yQX/FE2Lw==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1o418S-0006kJ-N9; Wed, 22 Jun 2022 16:15:12 +0200
-Date:   Wed, 22 Jun 2022 16:15:12 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 5/6] arm64: dts: qcom: add SA8540P and ADP
-Message-ID: <YrMj8HS2aMexHHLx@hovoldconsulting.com>
-References: <20220622041224.627803-1-bjorn.andersson@linaro.org>
- <20220622041224.627803-6-bjorn.andersson@linaro.org>
- <8fc661d7-6f75-59d8-fa19-76193ed2f4fe@somainline.org>
- <YrMc0Y7PIDQpP2xw@hovoldconsulting.com>
- <f7e066d0-3493-f531-3357-10dca20e1f95@linaro.org>
+        Wed, 22 Jun 2022 10:18:08 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3171B3C706;
+        Wed, 22 Jun 2022 07:17:28 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id u12so34557196eja.8;
+        Wed, 22 Jun 2022 07:17:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=kdeSlF5fWHZ3xXKBzKY62W+xebc6UMKioDmTRwyUM5I=;
+        b=a3an+DWnKpt2DOtE2474+dpyWuKuuqp8cZVdW/LNxjfmHudnzTYBQ5HGDjGCVHI6TK
+         0YV0twS6tEDlqOqIbncsXYNFrMZheYXU4f45+TlMmfeFRtipFBJYAYol6gd35vXM8nm8
+         21/TujgU7Bj63LzBSs/dwhtQvHlL2M4DHxSYsb7KjZ7DHD1uzVd5W8oG2CjyrrC4H6zK
+         ZTkfw06DnQzzHhjH8Jo2zsf4rdcxpeHiMWlUbV0EVoxy112jL3kXMCHfFpAg6cax4NN0
+         hlSZD8qc3NZfXs4/WV6vDg3bVSM1M5wUUL0THtu1GlnTBt8EHGQaDMMVy72ur6G1utWo
+         AnEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=kdeSlF5fWHZ3xXKBzKY62W+xebc6UMKioDmTRwyUM5I=;
+        b=cuLrnSirt8dGrtciiW0aZSULLKY3KhhQ3g+YxGFLnECMJUhpE8B0Q/1yGTOorEmiiP
+         J11W4NaY50htP2o72zbZcWecaao1c9gwdCx7JPU6Ep5dVBVRBq3V4BnDxouXbUbNNboD
+         gv1bal/1GqIkDWSVSEFV+PfzgGRSkfwjopMJIUXsmWAgdZuq4SxeIuKvFtmGDy2CZ0vL
+         nYcpk2chOraK+hGlpxr16YD6ynX/qQTirQRh2d62tYxsrab1MTgZ+uhdWeRi3Rbij305
+         gomfa0pfsYFdAG5pD9jKPbHHUEK5V9c1HpG9dZn+jlu+6xOcUJ8jmzKwCrzhKkiSPYAB
+         Semw==
+X-Gm-Message-State: AJIora9msSMzmKbYoPlkXzlCxBRDa5SU7uJVTsxcg98bKdFfJLQe9Qd0
+        db+cc8r4VD1RpCd5eulIFvE=
+X-Google-Smtp-Source: AGRyM1tzJAEA91jxTi42bg0jzLDgIiPpJr86EGq+c8M1jJUUBWaaiyXJ/8e9nNQgCTcL9ByigtTVdw==
+X-Received: by 2002:a17:907:1c07:b0:711:c966:f02e with SMTP id nc7-20020a1709071c0700b00711c966f02emr3441603ejc.221.1655907446732;
+        Wed, 22 Jun 2022 07:17:26 -0700 (PDT)
+Received: from [192.168.0.16] ([37.223.148.38])
+        by smtp.gmail.com with ESMTPSA id lb13-20020a170907784d00b006fe9ec4ba9esm9419558ejc.52.2022.06.22.07.17.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Jun 2022 07:17:25 -0700 (PDT)
+Message-ID: <ec6b910e-01fd-94ef-945c-31d48b2d47f7@gmail.com>
+Date:   Wed, 22 Jun 2022 16:17:24 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f7e066d0-3493-f531-3357-10dca20e1f95@linaro.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH] arm64: dts: mediatek: mt7622-rfb1: remove wrong gpio-keys
+ property
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220617232124.7022-1-krzysztof.kozlowski@linaro.org>
+ <834af774-ecdd-1929-86eb-6a814c5d774c@linaro.org>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <834af774-ecdd-1929-86eb-6a814c5d774c@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 04:11:15PM +0200, Krzysztof Kozlowski wrote:
-> On 22/06/2022 15:44, Johan Hovold wrote:
-> > On Wed, Jun 22, 2022 at 02:37:02PM +0200, Konrad Dybcio wrote:
-> >> On 22.06.2022 06:12, Bjorn Andersson wrote:
-> > 
-> >>> --- /dev/null
-> >>> +++ b/arch/arm64/boot/dts/qcom/sa8295p-adp.dts
-> >>> @@ -0,0 +1,427 @@
-> >>> +// SPDX-License-Identifier: BSD-3-Clause
-> >>> +/*
-> >>> + * Copyright (c) 2021, The Linux Foundation. All rights reserved.
-> >>> + * Copyright (c) 2022, Linaro Limited
-> >>> + */
-> >>> +
-> >>> +/dts-v1/;
-> >>> +
-> >>> +#include <dt-bindings/gpio/gpio.h>
-> >> Can be moved to SoC dtsi.
-> > 
-> > No, the SoC dtsi does not use any defines from that header file.
+
+
+On 18/06/2022 01:22, Krzysztof Kozlowski wrote:
+> On 17/06/2022 16:21, Krzysztof Kozlowski wrote:
+>> gpio-keys (regular, not polling) does not use "poll-interval" property.
+>>
+>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>>
+>> ---
+>>
+>> Changes since v3:
+>> 1. Correct commit msg (Matthias)
+>> ---
 > 
-> Even if the DTSI used these constants, it is a good practice to include
-> headers in each file using them. The same as we always do for C code.
+> Eh, jetlag hurts the brain. This should be [PATCH v4] in the subject.
 
-Yes, that's what I said in my slightly more verbose answer to the same
-comment to one of the other patches.
+No worries, applied now. Thanks!
 
-Johan
+> 
+> 
+> Best regards,
+> Krzysztof
