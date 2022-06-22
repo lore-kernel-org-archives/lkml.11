@@ -2,144 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AFE2C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 08:31:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A440C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 08:31:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351827AbiFVI3V (ORCPT
+        id S1353389AbiFVIbZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 04:29:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51184 "EHLO
+        Wed, 22 Jun 2022 04:31:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354215AbiFVI2b (ORCPT
+        with ESMTP id S1352995AbiFVIbT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 04:28:31 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43F1A39166
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 01:27:26 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id q9so22272976wrd.8
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 01:27:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=yHEkZ4f8EPJnKRi58/HD9Y5sbQwKZUo9tMe5hK1B3uM=;
-        b=djvq1G5LNo0VLBefGWrMkuEjf+FmzOFlU/laH4dizg7t8aPiRpSXSR/nA2db8bbc03
-         SxIXVGW7jQ2IHOd96Gt6nccU4AKYsAScPf0KJiObTCicw5Ym9B23j8JwkSBhABa7QwW+
-         RD5EHro7doNCDsSiGd6bkAK4nwDNAF7jbkOnl23Hzi6kVEypyGpJvlhBM8MQJ9LfPGTl
-         zbX1+/1620eJpyCWSFHX94C4dHTZo8g+RH8bnxFGgDIuTcIkDz+xX/SYzDe/6JVg3CXL
-         C4YJyynPnFPVqvNu1e/8B+lEoQwswodoj3fSqxBf8iEs0Y0yjZ3wmCD0JqdQSwTv40n+
-         KgNQ==
+        Wed, 22 Jun 2022 04:31:19 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EA003120
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 01:31:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655886678;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=XOgNTkwcAWagD+/8qHv42QL8TsgA9waoElQ8wVBi9FU=;
+        b=evkaqQbG9RLP9yO1TmL03Fs09k7fFX/0PRR6fjpuXQkEA3e3q5Hn/co64290oXBZktfbzq
+        i4SUlfdP5Yr9UUjlIvyng4bXvRh8pYXf4oAYXa2rwkXOgthhIvIiEIXE3KXrDia74VzRbT
+        f8c1cdB1vVoiIwDL+O+aRIgCyFfeIpM=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-492-ugOwdAPbNUuSbDvQXjwqJQ-1; Wed, 22 Jun 2022 04:31:15 -0400
+X-MC-Unique: ugOwdAPbNUuSbDvQXjwqJQ-1
+Received: by mail-wm1-f70.google.com with SMTP id v184-20020a1cacc1000000b0039c7efa3e95so5260966wme.3
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 01:31:15 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
          :content-transfer-encoding;
-        bh=yHEkZ4f8EPJnKRi58/HD9Y5sbQwKZUo9tMe5hK1B3uM=;
-        b=Bi+ikc7D0dbux4JZy7whKksZAsjsXFXUlxnqNgvYAevCq/I/Z6cmwAahYUThwHyMse
-         rGbx+M7523TpGsB+imbnehiRp1HBpDkM6+Pdvt5nUwMmKH0wQshT0DMT9udXtQyddNyx
-         kZVujOzb6ijgkEkWuw3UCbdrvUKlWBarq5tr1sNZW8tKCXWUNlBdoeZ/D7COvXhCF2oN
-         k6i1mIzBq41ZwuG3ksZaoUD2fXkJO8PZRJsqdlsbbowOjM9sNozo3oKa62YxdUNdqn+V
-         7XxcvxdB4i1B3nxhGFgrdrjB/cEZeBUyA3LmqMD8ggCSU5E0K4JaX505bzCHMQ1ILpGc
-         8Mhw==
-X-Gm-Message-State: AJIora+9lyYQ3nblla+r4q0nbgoP8KhSrkn+MK7D279vdUYTNTuLSQyG
-        lRryO02CH78JRatTpdqRlqzAsA==
-X-Google-Smtp-Source: AGRyM1soJWg//Zzca+Z03MzWthu6TXIUlwOvwmKxduEf/gUdv2NVMtKrSG7Fur/W2gUv96vBiSkPNQ==
-X-Received: by 2002:a5d:52d2:0:b0:21b:8507:a68 with SMTP id r18-20020a5d52d2000000b0021b85070a68mr1998726wrv.643.1655886440423;
-        Wed, 22 Jun 2022 01:27:20 -0700 (PDT)
-Received: from joneslee-l.cable.virginm.net (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id x5-20020a5d54c5000000b0021b88ec99cesm11145871wrv.94.2022.06.22.01.27.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jun 2022 01:27:20 -0700 (PDT)
-From:   Lee Jones <lee.jones@linaro.org>
-To:     lee.jones@linaro.org
-Cc:     linux-kernel@vger.kernel.org, stable@kernel.org,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [RESEND 1/1] Bluetooth: Use chan_list_lock to protect the whole put/destroy invokation
-Date:   Wed, 22 Jun 2022 09:27:16 +0100
-Message-Id: <20220622082716.478486-1-lee.jones@linaro.org>
-X-Mailer: git-send-email 2.37.0.rc0.104.g0611611a94-goog
+        bh=XOgNTkwcAWagD+/8qHv42QL8TsgA9waoElQ8wVBi9FU=;
+        b=GrS3eRRRfr63AyO5aE8VF3jV3g0gZU16Vh6+Iuyo+9vOHvylyrIFREvWxw9eD6la8I
+         iST0/G+uV9b4L3OU+DYtEl6ESjsLIIt/3fx0ofiae1Le6kbnikEEu/T9UcYs72dLLIoj
+         9gEdQtUqYFcA9c1z1jyUwkFpd6I+ozCx5VcfmwHZ9UFOm4G7p5jM4AuA2fNyPcjMHU1G
+         bgjHSWd8ear0m69h8wj8hH1KtTojgBWCeW79zWWJ2BgncsvrKv8nWJXEP0oU6QLbdhJo
+         Kg+KZtkCZKh/ETe9fwmg6gzcVJZ7+Um6WqJQNgUwRIQ+cO0mycQml0MpKWO5WX9NLwvQ
+         QJAQ==
+X-Gm-Message-State: AOAM532qroB/EsCAQPl+La4fTYFs6QS28xfCgKGZGTIxwn1Dwj1Gu689
+        47950RqUtw3Hk5mapBMz7WDW4ntvWU5VSt3qnd2dLAWK68x/7ppPuFfBFZJV6D+bKjorRkQZFyN
+        hLUbIavu+ZxPsHSdLlgROSzDV
+X-Received: by 2002:a05:600c:4f96:b0:39c:7bd0:d4c8 with SMTP id n22-20020a05600c4f9600b0039c7bd0d4c8mr44443166wmq.16.1655886673885;
+        Wed, 22 Jun 2022 01:31:13 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx16lJt7BskzRi2HcEZFHzW44YMI7gnzl0NsviMBJcoc315uKONdvJnnum5f8m+18ezKwpOWw==
+X-Received: by 2002:a05:600c:4f96:b0:39c:7bd0:d4c8 with SMTP id n22-20020a05600c4f9600b0039c7bd0d4c8mr44443139wmq.16.1655886673637;
+        Wed, 22 Jun 2022 01:31:13 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c703:5100:9c77:ce13:2aeb:8748? (p200300cbc70351009c77ce132aeb8748.dip0.t-ipconnect.de. [2003:cb:c703:5100:9c77:ce13:2aeb:8748])
+        by smtp.gmail.com with ESMTPSA id s7-20020a5d6a87000000b0021b8c99860asm9919631wru.115.2022.06.22.01.31.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Jun 2022 01:31:13 -0700 (PDT)
+Message-ID: <bb71d77e-583a-d216-1aae-2bc062318888@redhat.com>
+Date:   Wed, 22 Jun 2022 10:31:12 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v2 1/2] mm/page_alloc: Do not calculate node's total pages
+ and memmap pages when empty
+Content-Language: en-US
+To:     Muchun Song <songmuchun@bytedance.com>,
+        Oscar Salvador <osalvador@suse.de>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Michal Hocko <mhocko@kernel.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+References: <20220621041717.6355-1-osalvador@suse.de>
+ <20220621041717.6355-2-osalvador@suse.de>
+ <506203e3-1de0-1187-5234-7afc66d4ddfe@redhat.com>
+ <YrKQyhwDwMvueOUc@localhost.localdomain>
+ <YrKS6aFHKRyZzAwi@FVFYT0MHHV2J.usts.net>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <YrKS6aFHKRyZzAwi@FVFYT0MHHV2J.usts.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This change prevents a use-after-free caused by one of the worker
-threads starting up (see below) *after* the final channel reference
-has been put() during sock_close() but *before* the references to the
-channel have been destroyed.
+On 22.06.22 05:56, Muchun Song wrote:
+> On Wed, Jun 22, 2022 at 05:47:22AM +0200, Oscar Salvador wrote:
+>> On Tue, Jun 21, 2022 at 09:44:47AM +0200, David Hildenbrand wrote:
+>>>
+>>>
+>>> It's worth noting that the check in pgdat_is_empty() is slightly
+>>> different. I *think* it doesn't matter in practice, yet I wonder if we
+>>> should simply fixup (currently unused) pgdat_is_empty().
+>>
+>> I guess we could change it to
+>>
+>>  static inline bool pgdat_is_empty(pg_data_t *pgdat)
+>>  {
+>> 	 return node_start_pfn(pgdat->node_id) == node_end_pfn(pgdat->node_id)
+>>  }
+>>
+>> ? And maybe even rename it to to node_is_empty (not sure why but I tend to like
+> 
+> At least I like this name (node_is_empty) as well.
+> 
 
-  refcount_t: increment on 0; use-after-free.
-  BUG: KASAN: use-after-free in refcount_dec_and_test+0x20/0xd0
-  Read of size 4 at addr ffffffc114f5bf18 by task kworker/u17:14/705
+Let's try keeping it consistent. I think node_is_empty() might indicate
+that we're punching in a node id instead of a pgdat.
 
-  CPU: 4 PID: 705 Comm: kworker/u17:14 Tainted: G S      W       4.14.234-00003-g1fb6d0bd49a4-dirty #28
-  Hardware name: Qualcomm Technologies, Inc. SM8150 V2 PM8150 Google Inc. MSM sm8150 Flame DVT (DT)
-  Workqueue: hci0 hci_rx_work
-  Call trace:
-   dump_backtrace+0x0/0x378
-   show_stack+0x20/0x2c
-   dump_stack+0x124/0x148
-   print_address_description+0x80/0x2e8
-   __kasan_report+0x168/0x188
-   kasan_report+0x10/0x18
-   __asan_load4+0x84/0x8c
-   refcount_dec_and_test+0x20/0xd0
-   l2cap_chan_put+0x48/0x12c
-   l2cap_recv_frame+0x4770/0x6550
-   l2cap_recv_acldata+0x44c/0x7a4
-   hci_acldata_packet+0x100/0x188
-   hci_rx_work+0x178/0x23c
-   process_one_work+0x35c/0x95c
-   worker_thread+0x4cc/0x960
-   kthread+0x1a8/0x1c4
-   ret_from_fork+0x10/0x18
 
-Cc: stable@kernel.org
-Cc: Marcel Holtmann <marcel@holtmann.org>
-Cc: Johan Hedberg <johan.hedberg@gmail.com>
-Cc: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: linux-bluetooth@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
----
- net/bluetooth/l2cap_core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
-index ae78490ecd3d4..82279c5919fd8 100644
---- a/net/bluetooth/l2cap_core.c
-+++ b/net/bluetooth/l2cap_core.c
-@@ -483,9 +483,7 @@ static void l2cap_chan_destroy(struct kref *kref)
- 
- 	BT_DBG("chan %p", chan);
- 
--	write_lock(&chan_list_lock);
- 	list_del(&chan->global_l);
--	write_unlock(&chan_list_lock);
- 
- 	kfree(chan);
- }
-@@ -501,7 +499,9 @@ void l2cap_chan_put(struct l2cap_chan *c)
- {
- 	BT_DBG("chan %p orig refcnt %u", c, kref_read(&c->kref));
- 
-+	write_lock(&chan_list_lock);
- 	kref_put(&c->kref, l2cap_chan_destroy);
-+	write_unlock(&chan_list_lock);
- }
- EXPORT_SYMBOL_GPL(l2cap_chan_put);
- 
 -- 
-2.36.1.255.ge46751e96f-goog
+Thanks,
+
+David / dhildenb
 
