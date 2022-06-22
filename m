@@ -2,85 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D60DCC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 03:42:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 770D6C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 03:44:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356599AbiFVDmx (ORCPT
+        id S1356612AbiFVDo2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 23:42:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54666 "EHLO
+        Tue, 21 Jun 2022 23:44:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232276AbiFVDmv (ORCPT
+        with ESMTP id S232276AbiFVDo0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 23:42:51 -0400
-Received: from m15111.mail.126.com (m15111.mail.126.com [220.181.15.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9A1502FFD1
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 20:42:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=OblDE
-        bI6Vnx4aX5Y3rFJGJS4W15Uyfu6AFvbUOpbMY0=; b=UJVERuCkH6x66NmbsDoNW
-        NR5kWvbcGtaiGMIH0q0IOAvJVXVygYZ0C8uEEArbPCV32M3qXhQTUxlG7LIYNDwb
-        IEL0vL6Nuey2m0bMhBvlu9bz4rYMkWB6bJBB8j9kzMTt502LB3bbEz1SV0WI+R3y
-        uCn+qJ7bnExjfNdpNHGzjc=
-Received: from localhost.localdomain (unknown [124.16.139.61])
-        by smtp1 (Coremail) with SMTP id C8mowABnbzetj7Ji_HVhFA--.33457S2;
-        Wed, 22 Jun 2022 11:42:39 +0800 (CST)
-From:   Liang He <windhl@126.com>
-To:     zbr@ioremap.net, windhl@126.com, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] w1: Add missing of_node_put() and of_node_get()
-Date:   Wed, 22 Jun 2022 11:42:38 +0800
-Message-Id: <20220622034238.4093806-1-windhl@126.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 21 Jun 2022 23:44:26 -0400
+X-Greylist: delayed 903 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 21 Jun 2022 20:44:25 PDT
+Received: from ZXSHCAS2.zhaoxin.com (ZXSHCAS2.zhaoxin.com [210.0.225.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 051E519C03;
+        Tue, 21 Jun 2022 20:44:24 -0700 (PDT)
+Received: from zxbjmbx1.zhaoxin.com (10.29.252.163) by ZXSHCAS2.zhaoxin.com
+ (10.28.252.162) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.27; Wed, 22 Jun
+ 2022 11:29:10 +0800
+Received: from [10.32.56.37] (10.32.56.37) by zxbjmbx1.zhaoxin.com
+ (10.29.252.163) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.27; Wed, 22 Jun
+ 2022 11:29:09 +0800
+To:     <rafael@kernel.org>, <viresh.kumar@linaro.org>,
+        <linux-pm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <CobeChen@zhaoxin.com>, <TimGuo@zhaoxin.com>,
+        <LindaChai@zhaoxin.com>, <LeoLiu@zhaoxin.com>
+From:   Tony W Wang-oc <TonyWWang-oc@zhaoxin.com>
+Subject: [PATCH] cpufreq: Add Zhaoxin turbo boost control interface support
+Message-ID: <8b748cc6-09c9-081c-c0c5-2e75f017b032@zhaoxin.com>
+Date:   Wed, 22 Jun 2022 11:29:08 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: C8mowABnbzetj7Ji_HVhFA--.33457S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrtFW7tF18tryxJry7Aw1DKFg_yoWktwc_Cr
-        1ruF9rXr47Gw4kZ3ZagFsxu397WrsFgrsrWF1IqF97u34YqrsFgrs8ZryDJ3yUu3yxJFWa
-        krsxGrZ0yr4IgjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRMUDJDUUUUU==
-X-Originating-IP: [124.16.139.61]
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbizhAoF18RPWNc6gAAsH
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.32.56.37]
+X-ClientProxiedBy: ZXSHCAS1.zhaoxin.com (10.28.252.161) To
+ zxbjmbx1.zhaoxin.com (10.29.252.163)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In __w1_attach_slave_device(), we need to add the of_node_put() for
-the reference returned by of_find_matching_node() in fail path.
+Recent Zhaoxin CPUs support X86_FEATURE_IDA and the turbo boost can
+be dynamically enabled or disabled through MSR 0x1a0[38] in the same
+way as Intel. So add turbo boost control support for Zhaoxin too.
 
-Besides, we will also need a of_node_get() for the first argument of
-of_find_matching_node() which will decrease its refcount.
-
-Signed-off-by: Liang He <windhl@126.com>
+Signed-off-by: Tony W Wang-oc <TonyWWang-oc@zhaoxin.com>
 ---
- changelog:
+  drivers/cpufreq/acpi-cpufreq.c | 4 ++++
+  1 file changed, 4 insertions(+)
 
- v2: add missing put and get
- v1: only add missing put
+diff --git a/drivers/cpufreq/acpi-cpufreq.c b/drivers/cpufreq/acpi-cpufreq.c
+index 3d514b8..1bb2b90 100644
+--- a/drivers/cpufreq/acpi-cpufreq.c
++++ b/drivers/cpufreq/acpi-cpufreq.c
+@@ -78,6 +78,8 @@ static bool boost_state(unsigned int cpu)
 
- drivers/w1/w1.c | 3 +++
- 1 file changed, 3 insertions(+)
+  	switch (boot_cpu_data.x86_vendor) {
+  	case X86_VENDOR_INTEL:
++	case X86_VENDOR_CENTAUR:
++	case X86_VENDOR_ZHAOXIN:
+  		rdmsr_on_cpu(cpu, MSR_IA32_MISC_ENABLE, &lo, &hi);
+  		msr = lo | ((u64)hi << 32);
+  		return !(msr & MSR_IA32_MISC_ENABLE_TURBO_DISABLE);
+@@ -97,6 +99,8 @@ static int boost_set_msr(bool enable)
 
-diff --git a/drivers/w1/w1.c b/drivers/w1/w1.c
-index f2ae2e563dc5..378996d947cc 100644
---- a/drivers/w1/w1.c
-+++ b/drivers/w1/w1.c
-@@ -680,6 +680,8 @@ static int __w1_attach_slave_device(struct w1_slave *sl)
- 	sl->dev.bus = &w1_bus_type;
- 	sl->dev.release = &w1_slave_release;
- 	sl->dev.groups = w1_slave_groups;
-+
-+	of_node_get(sl->master->dev.of_node);
- 	sl->dev.of_node = of_find_matching_node(sl->master->dev.of_node,
- 						sl->family->of_match_table);
- 
-@@ -702,6 +704,7 @@ static int __w1_attach_slave_device(struct w1_slave *sl)
- 		dev_err(&sl->dev,
- 			"Device registration [%s] failed. err=%d\n",
- 			dev_name(&sl->dev), err);
-+		of_node_put(sl->dev.of_node);
- 		put_device(&sl->dev);
- 		return err;
- 	}
+  	switch (boot_cpu_data.x86_vendor) {
+  	case X86_VENDOR_INTEL:
++	case X86_VENDOR_CENTAUR:
++	case X86_VENDOR_ZHAOXIN:
+  		msr_addr = MSR_IA32_MISC_ENABLE;
+  		msr_mask = MSR_IA32_MISC_ENABLE_TURBO_DISABLE;
+  		break;
 -- 
-2.25.1
-
+2.7.4
