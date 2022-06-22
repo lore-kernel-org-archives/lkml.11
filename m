@@ -2,182 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80E4CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 23:28:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02CA4CCA486
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 23:29:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358156AbiFVX2N (ORCPT
+        id S1377320AbiFVX3D (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 19:28:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41154 "EHLO
+        Wed, 22 Jun 2022 19:29:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235713AbiFVX2J (ORCPT
+        with ESMTP id S1377507AbiFVX27 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 19:28:09 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E8C34248F
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 16:27:50 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id eq6so18725068edb.6
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 16:27:50 -0700 (PDT)
+        Wed, 22 Jun 2022 19:28:59 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8B43424A3
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 16:28:58 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id jb13so3083261plb.9
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 16:28:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VK59ppvNAiJ/BqQDWjHs5kPlL+7VW+la85t9HxpGspw=;
-        b=i79Ewbh/MDWrhPMU0J8coICO1Xbq4hjGXjKOc7ZiNonZM7LPBBTUFC/CnSroH6Kjp/
-         GZiX71vF89+3xiRP9xru0LcTft7EN0+UYSG87kQIUvwd8+eM/eZCP81zLU1k5LkyQesB
-         52JxZ1gqstIcdDxHongWFc8Z3jjHjo3vM7N1A=
+        d=linaro.org; s=google;
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=hLzS98auu4febZeywb1kJ/b/UaFrA5NEXBvc0oFVba0=;
+        b=Wh/vMBTt3XEkvprHbw60EglbKKQxjHIZaqP8BDnJKDPbvoEyoNTFF4LF4aWVddDbrp
+         eyP74K2cGHt4Jbw/U7ftg8DB7UNs10mtNy4Hm3EMdl0oEFVO6IIRfRAW8Kcgzzi1ls79
+         dgo/2uXBnOfrb/AEZ5F/PQbL3mqp0Xf6xHHNLH7XRhL2uxWDIpEZPcxRPh8k3vurKTtw
+         VYrMtTCCdUqVLvsGCk/fZsm0aAT+2skKA6oSo7+V8rZ8rppoMni8NR3qqXzwwuA1aQX2
+         nN1kY9SiCvvdN0PDdYRwrLz5oogA19B4islKsO0LlKoUD3joRdKDHAGiacf1D9LPh/4q
+         S+vw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VK59ppvNAiJ/BqQDWjHs5kPlL+7VW+la85t9HxpGspw=;
-        b=rCR8OcQIQjET/fYMOc9oEJCm5Xcv74P3znyMDL6G0AdYa2yzPCwpjDUu5vowfV/tvR
-         RdEjDMyhoHOBWWeiR7yhvhCXWpdCp44rz189tICwSPgVFMcinCwWqmISR5eKcuMByjQV
-         4r2cnTR9N2i5kDrQVJzD5c+CFPl3sZzhHe/6rgJzojluhtmeMP8wdZxLOrNkTBXRtZlJ
-         DQCbD00Ngn8VtqzsmRCi//ejZdSDDbJkZZpNqvknmtCh7TSEF3cyyRcBFl6kGwgQW1io
-         JUGVHgUFtBe3nKJKRmV5pCvRRiJmAsx8qGjaTu3kTgpibQrBH1wUhu0meOgfHWYtxJG8
-         dgng==
-X-Gm-Message-State: AJIora9RsvgK6FooinOFapelrL5RM16nTYtHif1HQVwasv4gtVNSIE6k
-        548AY8e6wtgBgP49MGuAaMKZsIuL0chRn706Sp4=
-X-Google-Smtp-Source: AGRyM1uS9AWDjtWNLVAclPSvlc83ToXfJdRizRTPKtLmrloowJcwKjn01iqEdWCoanPA6aTJ6IALEA==
-X-Received: by 2002:a05:6402:3594:b0:431:4cb8:c7b6 with SMTP id y20-20020a056402359400b004314cb8c7b6mr7188670edc.334.1655940468804;
-        Wed, 22 Jun 2022 16:27:48 -0700 (PDT)
-Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com. [209.85.221.44])
-        by smtp.gmail.com with ESMTPSA id b6-20020aa7dc06000000b0042dc882c823sm16574784edu.70.2022.06.22.16.27.47
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Jun 2022 16:27:48 -0700 (PDT)
-Received: by mail-wr1-f44.google.com with SMTP id w17so25475972wrg.7
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 16:27:47 -0700 (PDT)
-X-Received: by 2002:a5d:4046:0:b0:21a:3a12:239e with SMTP id
- w6-20020a5d4046000000b0021a3a12239emr5552466wrp.138.1655940467275; Wed, 22
- Jun 2022 16:27:47 -0700 (PDT)
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=hLzS98auu4febZeywb1kJ/b/UaFrA5NEXBvc0oFVba0=;
+        b=SvC644vDWfUwjazjrGJN5NdnUgqbB511pDtJNb6NCWbOJLZ05m3pSZNfWCRttZgrPl
+         BuFrgbcrzFWITT0WSf6O0X9L/WPi3IfFt2jBT0BJtUTpBubr0iAUZ7a/hmcOXlVr8jvt
+         e1Edf+PHrEwtzn61i18sU/kdHQds5g8UgyXg+oySPIASBnpX5+OnuP8jNmYSQ425CMc4
+         BHeKgPNIwFqR7jn/rvSUTMrkj919IuAZY2HMu9nLzZaH20ogcyEDA75WmGE30f9NiPwD
+         If732BNkfXSqcZHI2AZ1DUWIZfGeaDpJd49w4Wa28uimX1QqlrvVMFKDIoFZeKlvdvLs
+         87Rg==
+X-Gm-Message-State: AJIora+FrRBxuOOiVaj0yPQeGL9c7fGG9xZwl330onfR0yUujQcGSgb6
+        3UjJt/D5cgavgb1YpXOyu92Y4rmiuvoNR+1Y
+X-Google-Smtp-Source: AGRyM1tJ/WWBqLRMXSS7a7wJSUMu5X1d5KAVQn8BDVUxziPil6mW1PXgu2UCKjPQuAXZVj6DHF/M8g==
+X-Received: by 2002:a17:902:f689:b0:16a:4021:8848 with SMTP id l9-20020a170902f68900b0016a40218848mr8502195plg.23.1655940538097;
+        Wed, 22 Jun 2022 16:28:58 -0700 (PDT)
+Received: from prec5560.. (71-212-119-14.tukw.qwest.net. [71.212.119.14])
+        by smtp.gmail.com with ESMTPSA id h2-20020a170902f70200b001622c377c3esm13297863plo.117.2022.06.22.16.28.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jun 2022 16:28:57 -0700 (PDT)
+From:   Robert Foss <robert.foss@linaro.org>
+To:     bjorn.andersson@linaro.org, agross@kernel.org,
+        mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
+        krzk+dt@kernel.org, jonathan@marek.ca, robert.foss@linaro.org,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>
+Subject: [PATCH v7 1/6] arm64: dts: qcom: sm8350: Replace integers with rpmpd defines
+Date:   Thu, 23 Jun 2022 01:28:41 +0200
+Message-Id: <20220622232846.852771-2-robert.foss@linaro.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220622232846.852771-1-robert.foss@linaro.org>
+References: <20220622232846.852771-1-robert.foss@linaro.org>
 MIME-Version: 1.0
-References: <20220622215805.1121982-1-joebar@chromium.org> <20220622145717.v10.4.I41e2c2dc12961fe000ebc4d4ef6f0bc5da1259ea@changeid>
-In-Reply-To: <20220622145717.v10.4.I41e2c2dc12961fe000ebc4d4ef6f0bc5da1259ea@changeid>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Wed, 22 Jun 2022 16:27:34 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=Wqv92G2Op8pf8+5BUcO12kXCzAWKhiPH5D6xYa9tfS_A@mail.gmail.com>
-Message-ID: <CAD=FV=Wqv92G2Op8pf8+5BUcO12kXCzAWKhiPH5D6xYa9tfS_A@mail.gmail.com>
-Subject: Re: [PATCH v10 4/5] arm64: dts: qcom: sc7180: Add pazquel dts files
-To:     "Joseph S. Barrera III" <joebar@chromium.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Alexandru M Stan <amstan@chromium.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Replace &rpmhpd power domain integers with their respective defines
+in order to improve legibility.
 
-On Wed, Jun 22, 2022 at 2:59 PM Joseph S. Barrera III
-<joebar@chromium.org> wrote:
->
-> Pazquel is a trogdor-based board. These dts files are unchanged copies
-> from the downstream Chrome OS 5.4 kernel.
->
-> Signed-off-by: Joseph S. Barrera III <joebar@chromium.org>
-> ---
->
-> Changes in v10:
-> - Remove 'include sc7180.dtsi' from *all* sc7180-trogdor-pazquel* files.
-> - Move "okay" for ap_tp_i2c to proper location.
->
-> Changes in v9:
-> - Restore two lines accidentally removed from ap_sar_sensor.
-> - Simplify trackpad enabling (51d30402be75).
->
-> Changes in v7:
-> - Only include sc7180.dtsi in sc7180-trogdor.dtsi (19794489fa24).
-> - Simplify spi0/spi6 labeling (d277cab7afc7).
-> - Remove #include of <arm/cros-ec-keyboard.dtsi>.
-> - Accidentally removed two lines from ap_sar_sensor.
->
-> Changes in v6:
-> - Copy changes to ap_sar_sensor from v5.4.
-> - Add #include of <arm/cros-ec-keyboard.dtsi>.
->
-> Changes in v4:
-> - Fix description (no downstream bits removed).
-> - Add missing version history.
->
-> Changes in v3:
-> - First inclusion in series.
->
->  arch/arm64/boot/dts/qcom/Makefile             |   4 +
->  .../sc7180-trogdor-pazquel-lte-parade.dts     |  21 ++
->  .../qcom/sc7180-trogdor-pazquel-lte-ti.dts    |  21 ++
->  .../qcom/sc7180-trogdor-pazquel-parade.dts    |  16 ++
->  .../dts/qcom/sc7180-trogdor-pazquel-ti.dts    |  16 ++
->  .../boot/dts/qcom/sc7180-trogdor-pazquel.dtsi | 221 ++++++++++++++++++
->  6 files changed, 299 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-lte-parade.dts
->  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-lte-ti.dts
->  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-parade.dts
->  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-ti.dts
->  create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel.dtsi
->
-> diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
-> index 5cfd6316768c..dc26704dfe34 100644
-> --- a/arch/arm64/boot/dts/qcom/Makefile
-> +++ b/arch/arm64/boot/dts/qcom/Makefile
-> @@ -79,6 +79,10 @@ dtb-$(CONFIG_ARCH_QCOM)      += sc7180-trogdor-mrbland-rev0-auo.dtb
->  dtb-$(CONFIG_ARCH_QCOM)        += sc7180-trogdor-mrbland-rev0-boe.dtb
->  dtb-$(CONFIG_ARCH_QCOM)        += sc7180-trogdor-mrbland-rev1-auo.dtb
->  dtb-$(CONFIG_ARCH_QCOM)        += sc7180-trogdor-mrbland-rev1-boe.dtb
-> +dtb-$(CONFIG_ARCH_QCOM)        += sc7180-trogdor-pazquel-lte-parade.dtb
-> +dtb-$(CONFIG_ARCH_QCOM)        += sc7180-trogdor-pazquel-lte-ti.dtb
-> +dtb-$(CONFIG_ARCH_QCOM)        += sc7180-trogdor-pazquel-parade.dtb
-> +dtb-$(CONFIG_ARCH_QCOM)        += sc7180-trogdor-pazquel-ti.dtb
->  dtb-$(CONFIG_ARCH_QCOM)        += sc7180-trogdor-pompom-r1.dtb
->  dtb-$(CONFIG_ARCH_QCOM)        += sc7180-trogdor-pompom-r1-lte.dtb
->  dtb-$(CONFIG_ARCH_QCOM)        += sc7180-trogdor-pompom-r2.dtb
-> diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-lte-parade.dts b/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-lte-parade.dts
-> new file mode 100644
-> index 000000000000..407adca19652
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel-lte-parade.dts
-> @@ -0,0 +1,21 @@
-> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-> +/*
-> + * Google Pazquel board device tree source
-> + *
-> + * Copyright 2021 Google LLC.
-> + */
-> +
-> +/dts-v1/;
-> +
-> +#include "sc7180-trogdor-parade-ps8640.dtsi"
-> +#include "sc7180-trogdor-pazquel.dtsi"
-> +#include "sc7180-trogdor-lte-sku.dtsi"
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
+Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+---
 
-The includes are still not correct as far as I can tell. If you look
-at Stephen's solution in "Simplify!" plus his fixup that your series
-is based on, AKA ("arm64: dts: qcom: Remove duplicate sc7180-trogdor
-include on lazor/homestar") then I believe the correct thing to do
-here is:
-
-1. Go back to v9
-
-2. Remove the include of "sc7180-trogdor.dtsi" from the pazquel and
-kingoftown .dtsi files.
-
-3. Every place in pazquel and kingoftown that has an include of
-"sc7180.dtsi" replace that with "sc7180-trogdor.dtsi"
+Changes since v6
+ - Add r-b - Konrad
 
 
-I'm curious: did you try compiling your patches? Do they work? They
-don't seem to for me. It's expected that when you post patches that
-you have, at the very least, compile tested them. Given how much of
-trogdor works upstream I'd also expect you to have actually boot
-tested as many of the boards that you have hardware for.
 
--Doug
+ arch/arm64/boot/dts/qcom/sm8350.dtsi | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/sm8350.dtsi b/arch/arm64/boot/dts/qcom/sm8350.dtsi
+index c0137bdcf94b..52428b6df64e 100644
+--- a/arch/arm64/boot/dts/qcom/sm8350.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm8350.dtsi
+@@ -1656,8 +1656,8 @@ mpss: remoteproc@4080000 {
+ 			clocks = <&rpmhcc RPMH_CXO_CLK>;
+ 			clock-names = "xo";
+ 
+-			power-domains = <&rpmhpd 0>,
+-					<&rpmhpd 12>;
++			power-domains = <&rpmhpd SM8350_CX>,
++					<&rpmhpd SM8350_MSS>;
+ 			power-domain-names = "cx", "mss";
+ 
+ 			interconnects = <&mc_virt MASTER_LLCC &mc_virt SLAVE_EBI1>;
+@@ -2167,8 +2167,8 @@ slpi: remoteproc@5c00000 {
+ 			clocks = <&rpmhcc RPMH_CXO_CLK>;
+ 			clock-names = "xo";
+ 
+-			power-domains = <&rpmhpd 4>,
+-					<&rpmhpd 5>;
++			power-domains = <&rpmhpd SM8350_LCX>,
++					<&rpmhpd SM8350_LMX>;
+ 			power-domain-names = "lcx", "lmx";
+ 
+ 			memory-region = <&pil_slpi_mem>;
+@@ -2235,8 +2235,8 @@ cdsp: remoteproc@98900000 {
+ 			clocks = <&rpmhcc RPMH_CXO_CLK>;
+ 			clock-names = "xo";
+ 
+-			power-domains = <&rpmhpd 0>,
+-					<&rpmhpd 10>;
++			power-domains = <&rpmhpd SM8350_CX>,
++					<&rpmhpd SM8350_MXC>;
+ 			power-domain-names = "cx", "mxc";
+ 
+ 			interconnects = <&compute_noc MASTER_CDSP_PROC &mc_virt SLAVE_EBI1>;
+@@ -2540,8 +2540,8 @@ adsp: remoteproc@17300000 {
+ 			clocks = <&rpmhcc RPMH_CXO_CLK>;
+ 			clock-names = "xo";
+ 
+-			power-domains = <&rpmhpd 4>,
+-					<&rpmhpd 5>;
++			power-domains = <&rpmhpd SM8350_LCX>,
++					<&rpmhpd SM8350_LMX>;
+ 			power-domain-names = "lcx", "lmx";
+ 
+ 			memory-region = <&pil_adsp_mem>;
+-- 
+2.34.1
+
