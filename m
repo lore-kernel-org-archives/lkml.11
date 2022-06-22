@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B90B0CCA47E
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 19:27:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 932D0CCA47F
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 19:27:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358183AbiFVT1a (ORCPT
+        id S1357558AbiFVT1c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 15:27:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33288 "EHLO
+        Wed, 22 Jun 2022 15:27:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230376AbiFVT1U (ORCPT
+        with ESMTP id S237166AbiFVT1X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 15:27:20 -0400
+        Wed, 22 Jun 2022 15:27:23 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 64E50387BE
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 12:27:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0B0B5DAD
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 12:27:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655926035;
+        s=mimecast20190719; t=1655926037;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=Xf2w4YFMBo/KqjwPtBP8STHhW74PSmVHW8ZoSdl5DBs=;
-        b=N8qCoCy55iGa+j8ldeyMNZuBbpm8K1fXMXSgmpbccX/dber4yIRO4GbHvNzzIZvUYyPoCw
-        OSGZZGzNBylzVE2jYDV+66+Zys1NGzGgTcp8uyoy3u1UqBBxSXCimTe2o77Wb0qFJesCyl
-        CqKltdXit4uLFPygvYxmFTVpb9E+EaA=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=2kItQM/cRpS0FZ1TtSe+3txCMcE2niKoJ8Hcd5NrfAY=;
+        b=XMpoJrdj5Xxoj+oU9o1LJirkiu4RpdIM6TWCW9McxWAnXZeo/GaR2FZ7wkj9kajf2PP1ze
+        ibYFhtItZYetLs2y7oxZJQVdiBRqlQhO0GQalYB4uNOvxBdq8v+ALWAitYNw2g8zSBSgaY
+        PN0wTdYofo27vf/Q08pJ1M57ZcZtFG4=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-473-gprVsIPsOwqRQYeDQd_oYA-1; Wed, 22 Jun 2022 15:27:12 -0400
-X-MC-Unique: gprVsIPsOwqRQYeDQd_oYA-1
+ us-mta-463-GFk2Rc8VNGe5eImtWf-Tow-1; Wed, 22 Jun 2022 15:27:12 -0400
+X-MC-Unique: GFk2Rc8VNGe5eImtWf-Tow-1
 Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2E4E18001EA;
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id EFB7B294EDC5;
         Wed, 22 Jun 2022 19:27:11 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B71791121315;
-        Wed, 22 Jun 2022 19:27:10 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 95B7C1121314;
+        Wed, 22 Jun 2022 19:27:11 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     maz@kernel.org, anup@brainfault.org, seanjc@google.com,
@@ -45,9 +46,11 @@ Cc:     maz@kernel.org, anup@brainfault.org, seanjc@google.com,
         kvmarm@lists.cs.columbia.edu, linux-mips@vger.kernel.org,
         kvm-riscv@lists.infradead.org, pfeiner@google.com,
         jiangshanlai@gmail.com, dmatlack@google.com
-Subject: [PATCH v7 00/23] KVM: Extend Eager Page Splitting to the shadow MMU
-Date:   Wed, 22 Jun 2022 15:26:47 -0400
-Message-Id: <20220622192710.2547152-1-pbonzini@redhat.com>
+Subject: [PATCH v7 02/23] KVM: x86/mmu: Use a bool for direct
+Date:   Wed, 22 Jun 2022 15:26:49 -0400
+Message-Id: <20220622192710.2547152-3-pbonzini@redhat.com>
+In-Reply-To: <20220622192710.2547152-1-pbonzini@redhat.com>
+References: <20220622192710.2547152-1-pbonzini@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Content-Transfer-Encoding: 8bit
@@ -56,70 +59,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For the description of the "why" of this patch, I'll just direct you to
-David's excellent cover letter from v6, which can be found at
-https://lore.kernel.org/r/20220516232138.1783324-1-dmatlack@google.com.
+From: David Matlack <dmatlack@google.com>
 
-This version mostly does the following:
+The parameter "direct" can either be true or false, and all of the
+callers pass in a bool variable or true/false literal, so just use the
+type bool.
 
-- apply the feedback from Sean and other reviewers, which is mostly
-  aesthetic
+No functional change intended.
 
-- replace the refactoring of drop_large_spte()/__drop_large_spte()
-  with my own version.  The insight there is that drop_large_spte()
-  is always followed by {,__}link_shadow_page(), so the call is
-  moved there
+Reviewed-by: Lai Jiangshan <jiangshanlai@gmail.com>
+Reviewed-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: David Matlack <dmatlack@google.com>
+Message-Id: <20220516232138.1783324-3-dmatlack@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+---
+ arch/x86/kvm/mmu/mmu.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-- split the TLB flush optimization into a separate patch, mostly
-  to perform the previous refactoring independent of the optional
-  TLB flush
-
-- rename a few functions from *nested_mmu* to *shadow_mmu*
-
-David Matlack (21):
-  KVM: x86/mmu: Optimize MMU page cache lookup for all direct SPs
-  KVM: x86/mmu: Use a bool for direct
-  KVM: x86/mmu: Stop passing "direct" to mmu_alloc_root()
-  KVM: x86/mmu: Derive shadow MMU page role from parent
-  KVM: x86/mmu: Always pass 0 for @quadrant when gptes are 8 bytes
-  KVM: x86/mmu: Decompose kvm_mmu_get_page() into separate functions
-  KVM: x86/mmu: Consolidate shadow page allocation and initialization
-  KVM: x86/mmu: Rename shadow MMU functions that deal with shadow pages
-  KVM: x86/mmu: Move guest PT write-protection to account_shadowed()
-  KVM: x86/mmu: Pass memory caches to allocate SPs separately
-  KVM: x86/mmu: Replace vcpu with kvm in kvm_mmu_alloc_shadow_page()
-  KVM: x86/mmu: Pass kvm pointer separately from vcpu to
-    kvm_mmu_find_shadow_page()
-  KVM: x86/mmu: Allow NULL @vcpu in kvm_mmu_find_shadow_page()
-  KVM: x86/mmu: Pass const memslot to rmap_add()
-  KVM: x86/mmu: Decouple rmap_add() and link_shadow_page() from kvm_vcpu
-  KVM: x86/mmu: Update page stats in __rmap_add()
-  KVM: x86/mmu: Cache the access bits of shadowed translations
-  KVM: x86/mmu: Extend make_huge_page_split_spte() for the shadow MMU
-  KVM: x86/mmu: Zap collapsible SPTEs in shadow MMU at all possible
-    levels
-  KVM: Allow for different capacities in kvm_mmu_memory_cache structs
-  KVM: x86/mmu: Extend Eager Page Splitting to nested MMUs
-
-Paolo Bonzini (2):
-  KVM: x86/mmu: pull call to drop_large_spte() into __link_shadow_page()
-  KVM: x86/mmu: Avoid unnecessary flush on eager page split
-
- .../admin-guide/kernel-parameters.txt         |   3 +-
- arch/arm64/kvm/mmu.c                          |   2 +-
- arch/riscv/kvm/mmu.c                          |   5 +-
- arch/x86/include/asm/kvm_host.h               |  24 +-
- arch/x86/kvm/mmu/mmu.c                        | 719 ++++++++++++++----
- arch/x86/kvm/mmu/mmu_internal.h               |  17 +-
- arch/x86/kvm/mmu/paging_tmpl.h                |  43 +-
- arch/x86/kvm/mmu/spte.c                       |  15 +-
- arch/x86/kvm/mmu/spte.h                       |   4 +-
- arch/x86/kvm/mmu/tdp_mmu.c                    |   2 +-
- include/linux/kvm_host.h                      |   1 +
- include/linux/kvm_types.h                     |   6 +-
- virt/kvm/kvm_main.c                           |  33 +-
- 13 files changed, 666 insertions(+), 208 deletions(-)
-
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index c0afb4f1c8ae..844b58ddb3bb 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -1664,7 +1664,7 @@ static void drop_parent_pte(struct kvm_mmu_page *sp,
+ 	mmu_spte_clear_no_track(parent_pte);
+ }
+ 
+-static struct kvm_mmu_page *kvm_mmu_alloc_page(struct kvm_vcpu *vcpu, int direct)
++static struct kvm_mmu_page *kvm_mmu_alloc_page(struct kvm_vcpu *vcpu, bool direct)
+ {
+ 	struct kvm_mmu_page *sp;
+ 
+@@ -1997,7 +1997,7 @@ static struct kvm_mmu_page *kvm_mmu_get_page(struct kvm_vcpu *vcpu,
+ 					     gfn_t gfn,
+ 					     gva_t gaddr,
+ 					     unsigned level,
+-					     int direct,
++					     bool direct,
+ 					     unsigned int access)
+ {
+ 	union kvm_mmu_page_role role;
 -- 
 2.31.1
+
 
