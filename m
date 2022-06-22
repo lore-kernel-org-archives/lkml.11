@@ -2,124 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA6AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 15:09:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43D37C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 15:09:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359094AbiFVPJZ (ORCPT
+        id S1359104AbiFVPJx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 11:09:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42270 "EHLO
+        Wed, 22 Jun 2022 11:09:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359071AbiFVPIR (ORCPT
+        with ESMTP id S1358972AbiFVPJu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 11:08:17 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FC9E2BF3;
-        Wed, 22 Jun 2022 08:08:16 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id q15so9416867wmj.2;
-        Wed, 22 Jun 2022 08:08:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=mZxOn+wGDgrlZgu5R6pd78yHgsnhABm1ikEzbHnNwlo=;
-        b=pFG8rg6wtIF2HSc9z1qNlvDHz/ACH/3SyFxQgQQzpyq2IppbKs1km6zRfUFrkbDEHO
-         prqzoc2DhUyKHOCzomwpY/4tUzsf4dqdiAeRte6uZ5ieGtajl1E5tguHaywtw92tmffi
-         G1lyumoqRbHpBViIAe3gnjR1r2LFunCPi/cjrZ03XhTBo+EBF6txePEXGqGGWfUUopv/
-         rdanewfvKqghuZUptbB4pmhyfZgYj7I9wa/hAP/Y1acF0foZU0gQqMrn7NN68l5+nZyh
-         GjRBsLfaoMia3vavF9Um8JWjsPJMiw+F+vmcSpJ0827rwBluglAJ8mdAFr1oVEgVjJ2T
-         BSvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=mZxOn+wGDgrlZgu5R6pd78yHgsnhABm1ikEzbHnNwlo=;
-        b=1rDrzG5DMfdh9NYk+Od4To5peziPcGckAiSnOQy8+HwC4LNa65pIoRfD4pFQ8WhNi0
-         jDO2sFclZ7iTwvnxBbB3H4XkbA4OvBoc4LeCWEuoCmUPsHC++5LFqoToFA198evNXmxM
-         nRllv+Jf7xYp4jD6cxxryGSRaNN+cFpK4mLAipHZNM7fHzCEdEr2eGijZVH1lm48K7B/
-         N29K5sPWJOoWdfS1pAtNwmb286rm6WNcWcnCoKxoTosrmWDaWAHgfGwBy120P0MMrxF9
-         8RNNFBZkIKoFUHl6BvrGrsS3H3ja9qhUPRH7UnTmEfGM7tn1+uCOkNXn3/JnlhILCG0S
-         DNNw==
-X-Gm-Message-State: AOAM532tZb515pAnNPfLs3es7Skyih7kaMKPoCoYeDi10Kwe5ypS8flK
-        4Q25rNLKZgfOo4PVqS9s4dw=
-X-Google-Smtp-Source: ABdhPJyd68QRgFKL+CdJnQAxkQam33gqs5XxSyfigGKd7vlUvoEFMwo+8O33Sd8xbB7c6UcR4TWKdg==
-X-Received: by 2002:a05:600c:3847:b0:39c:6a85:d20c with SMTP id s7-20020a05600c384700b0039c6a85d20cmr47854662wmr.129.1655910494691;
-        Wed, 22 Jun 2022 08:08:14 -0700 (PDT)
-Received: from debian (host-78-150-47-22.as13285.net. [78.150.47.22])
-        by smtp.gmail.com with ESMTPSA id o15-20020a05600c4fcf00b0039c811077d3sm22954101wmq.22.2022.06.22.08.08.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jun 2022 08:08:14 -0700 (PDT)
-Date:   Wed, 22 Jun 2022 16:08:12 +0100
-From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: mainline build failure due to 281d0c962752 ("fortify: Add Clang
- support")
-Message-ID: <YrMwXAs9apFRdkVo@debian>
-References: <YrLtpixBqWDmZT/V@debian>
- <CAHk-=wiN1ujyVTgyt1GuZiyWAPfpLwwg-FY1V-J56saMyiA1Lg@mail.gmail.com>
+        Wed, 22 Jun 2022 11:09:50 -0400
+Received: from outbound-smtp14.blacknight.com (outbound-smtp14.blacknight.com [46.22.139.231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E879A3DDFA
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 08:09:48 -0700 (PDT)
+Received: from mail.blacknight.com (pemlinmail04.blacknight.ie [81.17.254.17])
+        by outbound-smtp14.blacknight.com (Postfix) with ESMTPS id 3F06B1C37B1
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 16:09:47 +0100 (IST)
+Received: (qmail 13388 invoked from network); 22 Jun 2022 15:09:47 -0000
+Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.198.246])
+  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 22 Jun 2022 15:09:46 -0000
+Date:   Wed, 22 Jun 2022 16:09:44 +0100
+From:   Mel Gorman <mgorman@techsingularity.net>
+To:     Waiman Long <longman@redhat.com>
+Cc:     Zhenhua Ma <mazhenhua@xiaomi.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Michal Hocko <mhocko@suse.com>
+Subject: Re: Lockups due to "locking/rwsem: Make handoff bit handling more
+ consistent"
+Message-ID: <20220622150944.GG15453@techsingularity.net>
+References: <20220617134325.GC30825@techsingularity.net>
+ <b92bdb56-bfed-9cd2-5eb2-0b96a68b21d8@redhat.com>
+ <20220620140950.GB15453@techsingularity.net>
+ <2c4084e3-9bd0-76ef-a11c-857de96a83e5@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-15
 Content-Disposition: inline
-In-Reply-To: <CAHk-=wiN1ujyVTgyt1GuZiyWAPfpLwwg-FY1V-J56saMyiA1Lg@mail.gmail.com>
+In-Reply-To: <2c4084e3-9bd0-76ef-a11c-857de96a83e5@redhat.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
-
-On Wed, Jun 22, 2022 at 08:47:22AM -0500, Linus Torvalds wrote:
-> On Wed, Jun 22, 2022 at 5:23 AM Sudip Mukherjee
-> <sudipm.mukherjee@gmail.com> wrote:
-> >
-> > I have recently (since yesterday) started building the mainline kernel
-> > with clang-14 and I am seeing a build failure with allmodconfig.
+On Tue, Jun 21, 2022 at 09:32:12PM -0400, Waiman Long wrote:
+> On 6/20/22 10:09, Mel Gorman wrote:
+> > On Fri, Jun 17, 2022 at 10:29:20AM -0400, Waiman Long wrote:
+> > > > The C file and shell script to run it are attached.
+> > > > 
+> > > Thanks for the reproducer and I will try to reproduce it locally.
+> > > 
+> > > It is a known issue that I have receive similar report from an Oracle
+> > > engineer. That is the reason I posted commit 1ee326196c66 ("locking/rwsem:
+> > > Always try to wake waiters in out_nolock path") that was merged in v5.19. I
+> > > believe it helps but it may not be able to eliminate all possible race
+> > > conditions. To make rwsem behave more like before commit d257cc8cb8d5
+> > > ("locking/rwsem: Make handoff bit handling more consistent"), I posted a
+> > > follow-up patch
+> > > 
+> > > https://lore.kernel.org/lkml/20220427173124.1428050-1-longman@redhat.com/
+> > > 
+> > > But it hasn't gotten review yet.
+> > > 
+> > FWIW, the patch passed the test case when applied to both 5.18 and
+> > 5.19-rc3.
 > 
-> Yeah, the clang build has never been allmodconfig-clean, although I
-> think it's starting to get pretty close.
+> Thanks for running the test. Do you mean that both 5.18 and 5.19-rc3 fail
+> the test and they pass only after applying the patch?
 > 
-> I build the kernel I actually _use_ with clang, and make sure it's
-> clean in sane configurations, but my full allmodconfig build I do with
-> gcc.
 
-After yesterday's stable report about clang build, I have now added clang
-to my nightly builds apart from running gcc also. Both x86_64 and arm64
-gave this error. Trying to add arm, mips, powerpc and riscv with clang
-also, which all failed due to some configuration issue and I might ask
-for help from Nick, Nathan if I can't figure that out.
+Yes.
 
+> Anyway, I am not able to reproduce the failure in both 5.18 and 5.19-rc3.
+> Perhaps it is due to the difference in the running environment, i.e. gcc,
+> glibc, etc. What operating environment (SuSE version) do you use to
+> reproduce the failure? I used RHEL8 which is the most convenient one for me.
 > 
-> Partly because of that "the clang build hasn't quite gotten there yet"
-> and partly because last I tried it was even slower to build (not a big
-> issue for my default config, but does matter for the allmodconfig
-> build, even on my beefy home machine)
 
-I am going to run them every night and will report back problems.
+It was reproduced on Leap 15.4 with a 2-socket machine with 40 cores
+(SMT-2). The kernel built was based on the distribution config. gcc
+version was based on 7.5.0.
 
+> BTW, do you mind if I put down your name with a "Tested-by:" tag to the
+> patch?
 > 
-> I would love for people to start doing allmodconfig builds with clang
-> too, but it would require some initial work to fix it... Hint, hint.
-> 
-> And in the case of this warning attribute case, the clang error messages are
-> 
->  (a) verbose
-> 
->  (b) useless
-> 
-> because they point to where the warning attribute is (I know where it
-> is), but don't point to where it's actually triggering (ie where it
-> was actually inlined and called from).
 
-Yeah, true. I had to check to find out its from the memcpy() in check_image_valid().
+No problem.
 
-
---
-Regards
-Sudip
+-- 
+Mel Gorman
+SUSE Labs
