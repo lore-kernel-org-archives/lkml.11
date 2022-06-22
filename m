@@ -2,217 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A2B7C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 16:47:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6E6EC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 16:47:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376700AbiFVQrM (ORCPT
+        id S1376672AbiFVQrv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 12:47:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47118 "EHLO
+        Wed, 22 Jun 2022 12:47:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376671AbiFVQqo (ORCPT
+        with ESMTP id S1376778AbiFVQr0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 12:46:44 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09E463FBE8
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 09:46:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655916360; x=1687452360;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=7ccKqyXYKVwJv71q5J9RKGEr3PdUchbiSLz0u5zwIT0=;
-  b=X9dn9pRAuaDSgdJkINoUtz299UEYaf+uFbDGSz5TmRpWBx8FzKPbF0p9
-   7BexeWJ8uTP8Kcb7f/4ENVIcEboXVxMOpEu+N4P/+F6uvaz6IB/eqJ4/1
-   S3ULaeU8JZhjshKymYZ6jdz8st+uB9bxeKdpqXw10XaoVE5tsN0hHrRp3
-   cFvwfraho3+NtcU9+7bS4s8o8pv9Pgh04d/bNFY7GptCvS1jdRtDnkAHy
-   qlr39B772SUIEx6iFBlqA3qtjkJa/T+S78O1Vp+ZiK/Nw8QMmoSPh8nHg
-   OqZ43kExlBvaS3rUJGG/FnIe5t8eLxCOZkySx3IGuPmAaKqJpNYpYjONn
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="278020182"
-X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="278020182"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 09:45:56 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="730433678"
-Received: from lkp-server02.sh.intel.com (HELO a67cc04a5eeb) ([10.239.97.151])
-  by fmsmga001.fm.intel.com with ESMTP; 22 Jun 2022 09:45:54 -0700
-Received: from kbuild by a67cc04a5eeb with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o43UH-0001UZ-VC;
-        Wed, 22 Jun 2022 16:45:53 +0000
-Date:   Thu, 23 Jun 2022 00:45:49 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     David Howells <dhowells@redhat.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:dhowells/linux-fs/rxrpc-multiqueue 5/9]
- net/rxrpc/af_rxrpc.c:948:2: warning: compat_setsockopt disappeared
-Message-ID: <202206230014.cPat244L-lkp@intel.com>
+        Wed, 22 Jun 2022 12:47:26 -0400
+Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3473440A17
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 09:46:33 -0700 (PDT)
+Received: from in02.mta.xmission.com ([166.70.13.52]:35050)
+        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1o43Uu-004yHi-8f; Wed, 22 Jun 2022 10:46:32 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:57374 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1o43Us-00FwBm-2Y; Wed, 22 Jun 2022 10:46:31 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Oleg Nesterov <oleg@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, mingo@kernel.org,
+        bigeasy@linutronix.de, Peter Zijlstra <peterz@infradead.org>,
+        Jann Horn <jannh@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Robert O'Callahan <roc@pernos.co>, Kyle Huey <khuey@pernos.co>,
+        Keno Fischer <keno@juliacomputing.com>
+References: <20220421150248.667412396@infradead.org>
+        <20220421150654.817117821@infradead.org>
+        <87czhap9dy.fsf@email.froward.int.ebiederm.org>
+        <878rrrh32q.fsf_-_@email.froward.int.ebiederm.org>
+        <87k0b7v9yk.fsf_-_@email.froward.int.ebiederm.org>
+        <87k0b0apne.fsf_-_@email.froward.int.ebiederm.org>
+        <87a6bv6dl6.fsf_-_@email.froward.int.ebiederm.org>
+        <87r13gd4xy.fsf_-_@email.froward.int.ebiederm.org>
+Date:   Wed, 22 Jun 2022 11:46:23 -0500
+In-Reply-To: <87r13gd4xy.fsf_-_@email.froward.int.ebiederm.org> (Eric
+        W. Biederman's message of "Wed, 22 Jun 2022 11:43:37 -0500")
+Message-ID: <87bkukd4tc.fsf_-_@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain
+X-XM-SPF: eid=1o43Us-00FwBm-2Y;;;mid=<87bkukd4tc.fsf_-_@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX1/WQCNlrCjNpy7h2EXBDC9Vav8tQ0hhtfU=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: [PATCH 2/3] signal: Guarantee that SIGNAL_GROUP_EXIT is set on
+ process exit
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/rxrpc-multiqueue
-head:   83e1620a43190584ecbc51e8afc8b94a7b14286c
-commit: 79ccb581e080d255dae79131e273d2db3cd5b51a [5/9] rxrpc: Allow the call to interact with to be preselected
-config: hexagon-randconfig-r041-20220622 (https://download.01.org/0day-ci/archive/20220623/202206230014.cPat244L-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 8b8d126598ce7bd5243da7f94f69fa1104288bee)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/79ccb581e080d255dae79131e273d2db3cd5b51a
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/rxrpc-multiqueue
-        git checkout 79ccb581e080d255dae79131e273d2db3cd5b51a
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash net/rxrpc/
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Track how many threads have not started exiting and when the last
+thread starts exiting set SIGNAL_GROUP_EXIT.
 
-All warnings (new ones prefixed by >>):
+This guarantees that SIGNAL_GROUP_EXIT will get set when a process
+exits.  In practice this achieves nothing as glibc's implementation of
+_exit calls sys_group_exit then sys_exit.  While glibc's implemenation
+of pthread_exit calls exit (which cleansup and calls _exit) if it is
+the last thread and sys_exit if it is the last thread.
 
->> net/rxrpc/af_rxrpc.c:948:2: warning: compat_setsockopt disappeared [-W#warnings]
-   #warning compat_setsockopt disappeared
-    ^
-   1 warning generated.
+This means the only way the kernel might observe a process that does
+not set call exit_group is if the language runtime does not use glibc.
 
+With more cleanups I hope to move the decrement of quick_threads
+earlier.
 
-vim +948 net/rxrpc/af_rxrpc.c
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+---
+ include/linux/sched/signal.h |  1 +
+ kernel/exit.c                | 18 ++++++++++++++++++
+ kernel/fork.c                |  2 ++
+ 3 files changed, 21 insertions(+)
 
-   848	
-   849	/*
-   850	 * set RxRPC socket options
-   851	 */
-   852	static int rxrpc_setsockopt(struct socket *sock, int level, int optname,
-   853				    sockptr_t optval, unsigned int optlen)
-   854	{
-   855		struct rxrpc_sock *rx = rxrpc_sk(sock->sk);
-   856		unsigned long long call_id;
-   857		unsigned int min_sec_level;
-   858		u16 service_upgrade[2];
-   859		int ret, fd;
-   860	
-   861		_enter(",%d,%d,,%d", level, optname, optlen);
-   862	
-   863		lock_sock(&rx->sk);
-   864		ret = -EOPNOTSUPP;
-   865	
-   866		if (level == SOL_RXRPC) {
-   867			switch (optname) {
-   868			case RXRPC_EXCLUSIVE_CONNECTION:
-   869				ret = -EINVAL;
-   870				if (optlen != 0)
-   871					goto error;
-   872				ret = -EISCONN;
-   873				if (rx->sk.sk_state != RXRPC_UNBOUND)
-   874					goto error;
-   875				rx->exclusive = true;
-   876				goto success;
-   877	
-   878			case RXRPC_SECURITY_KEY:
-   879				ret = -EINVAL;
-   880				if (rx->key)
-   881					goto error;
-   882				ret = -EISCONN;
-   883				if (rx->sk.sk_state != RXRPC_UNBOUND)
-   884					goto error;
-   885				ret = rxrpc_request_key(rx, optval, optlen);
-   886				goto error;
-   887	
-   888			case RXRPC_SECURITY_KEYRING:
-   889				ret = -EINVAL;
-   890				if (rx->key)
-   891					goto error;
-   892				ret = -EISCONN;
-   893				if (rx->sk.sk_state != RXRPC_UNBOUND)
-   894					goto error;
-   895				ret = rxrpc_server_keyring(rx, optval, optlen);
-   896				goto error;
-   897	
-   898			case RXRPC_MIN_SECURITY_LEVEL:
-   899				ret = -EINVAL;
-   900				if (optlen != sizeof(unsigned int))
-   901					goto error;
-   902				ret = -EISCONN;
-   903				if (rx->sk.sk_state != RXRPC_UNBOUND)
-   904					goto error;
-   905				ret = copy_from_sockptr(&min_sec_level, optval,
-   906					       sizeof(unsigned int));
-   907				if (ret < 0)
-   908					goto error;
-   909				ret = -EINVAL;
-   910				if (min_sec_level > RXRPC_SECURITY_MAX)
-   911					goto error;
-   912				rx->min_sec_level = min_sec_level;
-   913				goto success;
-   914	
-   915			case RXRPC_UPGRADEABLE_SERVICE:
-   916				ret = -EINVAL;
-   917				if (optlen != sizeof(service_upgrade))
-   918					goto error;
-   919				ret = -EISCONN;
-   920				if (rx->sk.sk_state != RXRPC_SERVER_BOUND)
-   921					goto error;
-   922				ret = -EFAULT;
-   923				if (copy_from_sockptr(service_upgrade, optval,
-   924						   sizeof(service_upgrade)) != 0)
-   925					goto error;
-   926				mutex_lock(&rx->local->services_lock);
-   927				ret = rxrpc_bind_service_upgrade(rx, service_upgrade[0],
-   928								 service_upgrade[1]);
-   929				mutex_unlock(&rx->local->services_lock);
-   930				if (ret < 0)
-   931					goto error;
-   932				goto success;
-   933	
-   934			case RXRPC_BIND_CHANNEL:
-   935				ret = -EINVAL;
-   936				if (optlen != sizeof(fd))
-   937					goto error;
-   938				ret = -EFAULT;
-   939				if (copy_from_sockptr(&fd, optval, sizeof(fd)) != 0)
-   940					goto error;
-   941				ret = rxrpc_bind_channel(rx, fd);
-   942				if (ret < 0)
-   943					goto error;
-   944				goto success;
-   945	
-   946			case RXRPC_SELECT_CALL_FOR_RECV:
-   947			case RXRPC_SELECT_CALL_FOR_SEND:
- > 948	#warning compat_setsockopt disappeared
-   949				ret = -EINVAL;
-   950				if (optlen != sizeof(call_id))
-   951					goto error;
-   952				ret = -EFAULT;
-   953				if (copy_from_sockptr(&call_id, optval,
-   954						      sizeof(call_id)) != 0)
-   955					goto error;
-   956				ret = rxrpc_set_select_call(rx, call_id, optname);
-   957				goto error;
-   958	
-   959			default:
-   960				goto error;
-   961			}
-   962		} else {
-   963			goto error;
-   964		}
-   965	
-   966	success:
-   967		ret = 0;
-   968	error:
-   969		release_sock(&rx->sk);
-   970		return ret;
-   971	}
-   972	
-
+diff --git a/include/linux/sched/signal.h b/include/linux/sched/signal.h
+index cafbe03eed01..20099268fa25 100644
+--- a/include/linux/sched/signal.h
++++ b/include/linux/sched/signal.h
+@@ -94,6 +94,7 @@ struct signal_struct {
+ 	refcount_t		sigcnt;
+ 	atomic_t		live;
+ 	int			nr_threads;
++	int			quick_threads;
+ 	struct list_head	thread_head;
+ 
+ 	wait_queue_head_t	wait_chldexit;	/* for wait4() */
+diff --git a/kernel/exit.c b/kernel/exit.c
+index 96e4b12edea8..beaedb867bd3 100644
+--- a/kernel/exit.c
++++ b/kernel/exit.c
+@@ -733,11 +733,29 @@ static void check_stack_usage(void)
+ static inline void check_stack_usage(void) {}
+ #endif
+ 
++static void synchronize_group_exit(struct task_struct *tsk, long code)
++{
++	struct sighand_struct *sighand = tsk->sighand;
++	struct signal_struct *signal = tsk->signal;
++
++	spin_lock_irq(&sighand->siglock);
++	signal->quick_threads--;
++	if ((signal->quick_threads == 0) &&
++	    !(signal->flags & SIGNAL_GROUP_EXIT)) {
++		signal->flags = SIGNAL_GROUP_EXIT;
++		signal->group_exit_code = code;
++		signal->group_stop_count = 0;
++	}
++	spin_unlock_irq(&sighand->siglock);
++}
++
+ void __noreturn do_exit(long code)
+ {
+ 	struct task_struct *tsk = current;
+ 	int group_dead;
+ 
++	synchronize_group_exit(tsk, code);
++
+ 	WARN_ON(tsk->plug);
+ 
+ 	kcov_task_exit(tsk);
+diff --git a/kernel/fork.c b/kernel/fork.c
+index 9d44f2d46c69..67813b25a567 100644
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -1692,6 +1692,7 @@ static int copy_signal(unsigned long clone_flags, struct task_struct *tsk)
+ 		return -ENOMEM;
+ 
+ 	sig->nr_threads = 1;
++	sig->quick_threads = 1;
+ 	atomic_set(&sig->live, 1);
+ 	refcount_set(&sig->sigcnt, 1);
+ 
+@@ -2444,6 +2445,7 @@ static __latent_entropy struct task_struct *copy_process(
+ 			__this_cpu_inc(process_counts);
+ 		} else {
+ 			current->signal->nr_threads++;
++			current->signal->quick_threads++;
+ 			atomic_inc(&current->signal->live);
+ 			refcount_inc(&current->signal->sigcnt);
+ 			task_join_group_stop(p);
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.35.3
+
