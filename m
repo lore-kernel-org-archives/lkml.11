@@ -2,272 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6435DCCA481
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 15:07:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C52FFCCA481
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 15:07:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358955AbiFVPHF (ORCPT
+        id S1359018AbiFVPH4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 11:07:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40612 "EHLO
+        Wed, 22 Jun 2022 11:07:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343920AbiFVPHD (ORCPT
+        with ESMTP id S1343920AbiFVPHx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 11:07:03 -0400
-Received: from smtp-fw-80006.amazon.com (smtp-fw-80006.amazon.com [99.78.197.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC0E53EA8C;
-        Wed, 22 Jun 2022 08:07:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.uk; i=@amazon.co.uk; q=dns/txt;
-  s=amazon201209; t=1655910424; x=1687446424;
-  h=from:to:cc:date:message-id:references:in-reply-to:
-   content-transfer-encoding:mime-version:subject;
-  bh=6G8WM8QiGLd5SwFwWo6GYeAz8Aw25bmCmGy/37elBWs=;
-  b=veZEm3AfW5+t615Ei3vJpI3TTW88KYnmSWyEErrs9Qk44p806trI/jxg
-   xihCqhSI3Tl0D8lTGa5xxLtTdDofJMD5CGE2HUNJr+3tBG5dco+m31Sc7
-   FsuwXpNzTdRHXm1MNmQHUQhV0MHgQX84ZiHlo4D08K9yI29r5G+mASWPG
-   o=;
-X-IronPort-AV: E=Sophos;i="5.92,212,1650931200"; 
-   d="scan'208";a="100716768"
-Subject: RE: [PATCH] KVM: x86/xen: Update Xen CPUID Leaf 4 (tsc info) sub-leaves,
- if present
-Thread-Topic: [PATCH] KVM: x86/xen: Update Xen CPUID Leaf 4 (tsc info) sub-leaves,
- if present
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1d-f20e0c8b.us-east-1.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP; 22 Jun 2022 15:01:55 +0000
-Received: from EX13D32EUC004.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1d-f20e0c8b.us-east-1.amazon.com (Postfix) with ESMTPS id 46C6C816F7;
-        Wed, 22 Jun 2022 15:01:50 +0000 (UTC)
-Received: from EX13D32EUC003.ant.amazon.com (10.43.164.24) by
- EX13D32EUC004.ant.amazon.com (10.43.164.121) with Microsoft SMTP Server (TLS)
- id 15.0.1497.36; Wed, 22 Jun 2022 15:01:48 +0000
-Received: from EX13D32EUC003.ant.amazon.com ([10.43.164.24]) by
- EX13D32EUC003.ant.amazon.com ([10.43.164.24]) with mapi id 15.00.1497.036;
- Wed, 22 Jun 2022 15:01:49 +0000
-From:   "Durrant, Paul" <pdurrant@amazon.co.uk>
-To:     Sean Christopherson <seanjc@google.com>
-CC:     "x86@kernel.org" <x86@kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        "Vitaly Kuznetsov" <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        "Jim Mattson" <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        "Thomas Gleixner" <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        "Borislav Petkov" <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>
-Thread-Index: AQHYhhnGr94/Tz5Zr06wX+PVouePzq1bgNUAgAAEIQA=
-Date:   Wed, 22 Jun 2022 15:01:49 +0000
-Message-ID: <834f41a88e9f49b6b72d9d3672d702e5@EX13D32EUC003.ant.amazon.com>
-References: <20220622092202.15548-1-pdurrant@amazon.com>
- <YrMqtHzNSean+qkh@google.com>
-In-Reply-To: <YrMqtHzNSean+qkh@google.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.43.165.13]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Wed, 22 Jun 2022 11:07:53 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51EBA393F7;
+        Wed, 22 Jun 2022 08:07:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655910471; x=1687446471;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=spGuvBmrzu5CQX1DEn7d16VfVTAFMeRLkLyRMCTgqtI=;
+  b=mIv24N/h1ry+ejUcipwuX0mrP4sXGlRLO3JloZ0FeZy8zbgYRUP2skWY
+   mQmrLK4o7rzGfG11aLljLKsZtUrU9SPmDm0q3PX/X0yrZrFL0PfTgLsaf
+   So/i93RKq3+CdXobkcm1TBKJW/1sIw2AaxvsFBtNorXi5yGKM9ZJCteZZ
+   VTzAEnEkptI7LWlEK2n4RWgUYSKi24E5UO48SyLX/UMYvmm3SLQgahCpC
+   Pf+dJmirTGVaFgVRfNM85HU57vFa8f/WV6MxuD5KRoznh3EFSP+KvZDfJ
+   KcKU1+TfAz74BduG1FnFLGWqELn3Mze5OhcPoPAmyrMxiC5Nu712u57aC
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="366763810"
+X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
+   d="scan'208";a="366763810"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 08:07:50 -0700
+X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
+   d="scan'208";a="677596461"
+Received: from bshakya-mobl.amr.corp.intel.com (HELO [10.212.188.76]) ([10.212.188.76])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 08:07:49 -0700
+Message-ID: <677c46db-02ef-24b8-c25f-762b41fb8bdb@intel.com>
+Date:   Wed, 22 Jun 2022 08:07:31 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 2/4] x86/cpuid: refactor setup_clear_cpu_cap/clear_feature
+Content-Language: en-US
+To:     Maxim Levitsky <mlevitsk@redhat.com>, linux-kernel@vger.kernel.org
+Cc:     "Chang S. Bae" <chang.seok.bae@intel.com>,
+        Jiri Olsa <jolsa@kernel.org>, linux-perf-users@vger.kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Borislav Petkov <bp@alien8.de>,
+        Kees Cook <keescook@chromium.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Tim Chen <tim.c.chen@linux.intel.com>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        Jane Malalane <jane.malalane@citrix.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        "open list:CRYPTO API" <linux-crypto@vger.kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>
+References: <20220622144820.751402-1-mlevitsk@redhat.com>
+ <20220622144820.751402-3-mlevitsk@redhat.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <20220622144820.751402-3-mlevitsk@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> -----Original Message-----
-> From: Sean Christopherson <seanjc@google.com>
-> Sent: 22 June 2022 15:44
-> To: Durrant, Paul <pdurrant@amazon.co.uk>
-> Cc: x86@kernel.org; kvm@vger.kernel.org; linux-kernel@vger.kernel.org; Pa=
-olo Bonzini
-> <pbonzini@redhat.com>; Vitaly Kuznetsov <vkuznets@redhat.com>; Wanpeng Li=
- <wanpengli@tencent.com>; Jim
-> Mattson <jmattson@google.com>; Joerg Roedel <joro@8bytes.org>; Thomas Gle=
-ixner <tglx@linutronix.de>;
-> Ingo Molnar <mingo@redhat.com>; Borislav Petkov <bp@alien8.de>; Dave Hans=
-en
-> <dave.hansen@linux.intel.com>; H. Peter Anvin <hpa@zytor.com>
-> Subject: RE: [EXTERNAL][PATCH] KVM: x86/xen: Update Xen CPUID Leaf 4 (tsc=
- info) sub-leaves, if present
->=20
-> CAUTION: This email originated from outside of the organization. Do not c=
-lick links or open
-> attachments unless you can confirm the sender and know the content is saf=
-e.
->=20
->=20
->=20
-> On Wed, Jun 22, 2022, Paul Durrant wrote:
-> > The scaling information in sub-leaf 1 should match the values in the
-> > 'vcpu_info' sub-structure 'time_info' (a.k.a. pvclock_vcpu_time_info) w=
-hich
-> > is shared with the guest. The offset values are not set since a TSC off=
-set
-> > is already applied.
-> > The host TSC frequency should also be set in sub-leaf 2.
->=20
-> Explain why this is KVM's problem, i.e. why userspace is unable to set th=
-e correct
-> values.
+On 6/22/22 07:48, Maxim Levitsky wrote:
+> Simplify the code a bit by always passing &boot_cpu_data
+> in case the setup_clear_cpu_cap was called.
+> 
+> Also unify clear_cpu_cap and do_clear_cpu_cap.
 
-Ok, I'll explain that there is no interface for the VMM to acquire the time=
-_info.
+Please always add a "()" suffix to functions.  "foo" is a variable, but
+"foo()" is a function.
 
->=20
-> > This patch adds a new kvm_xen_set_cpuid() function that scans for the
->=20
-> Please avoid "This patch".
->=20
-> > relevant CPUID leaf when the CPUID information is updated by the VMM an=
-d
-> > stashes pointers to the sub-leaves in the kvm_vcpu_xen structure.
-> > The values are then updated by a call to the, also new,
-> > kvm_xen_setup_tsc_info() function made at the end of
-> > kvm_guest_time_update() just before entering the guest.
->=20
-> This is not a helpful paragraph, it provides zero information that isn't =
-obvious
-> from the code.
->=20
-> The changelog should read something like:
->=20
->   Update Xen CPUID leaves that expose TSC frequency and scaling informati=
-on
->   to the guest <blah blah blah>.  Cache the leaves <blah blah blah>.
->=20
+I also really like when a changelog has a clear problem statement.  I
+_think_ the problem here is something along the lines of the 'c'
+argument to clear_feature() having different behavior when it is NULL
+versus '&boot_cpu_data'.
 
-Ok, sure.
+Basically, there's no reason to support clearing a bit in
+'&boot_cpu_data' without also setting that bit in 'cpu_caps_cleared'.
+>  {
+> -	do_clear_cpu_cap(NULL, feature);
+> +	clear_cpu_cap(&boot_cpu_data, feature);
+>  }
 
-  Paul
-
-> > Signed-off-by: Paul Durrant <pdurrant@amazon.com>
-> > ---
-> >  arch/x86/include/asm/kvm_host.h |  2 ++
-> >  arch/x86/kvm/cpuid.c            |  2 ++
-> >  arch/x86/kvm/x86.c              |  1 +
-> >  arch/x86/kvm/xen.c              | 41 +++++++++++++++++++++++++++++++++
-> >  arch/x86/kvm/xen.h              | 10 ++++++++
-> >  5 files changed, 56 insertions(+)
-> >
-> > diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm=
-_host.h
-> > index 1038ccb7056a..f77a4940542f 100644
-> > --- a/arch/x86/include/asm/kvm_host.h
-> > +++ b/arch/x86/include/asm/kvm_host.h
-> > @@ -638,6 +638,8 @@ struct kvm_vcpu_xen {
-> >       struct hrtimer timer;
-> >       int poll_evtchn;
-> >       struct timer_list poll_timer;
-> > +     struct kvm_cpuid_entry2 *tsc_info_1;
-> > +     struct kvm_cpuid_entry2 *tsc_info_2;
-> >  };
-> >
-> >  struct kvm_vcpu_arch {
-> > diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
-> > index d47222ab8e6e..eb6cd88c974a 100644
-> > --- a/arch/x86/kvm/cpuid.c
-> > +++ b/arch/x86/kvm/cpuid.c
-> > @@ -25,6 +25,7 @@
-> >  #include "mmu.h"
-> >  #include "trace.h"
-> >  #include "pmu.h"
-> > +#include "xen.h"
-> >
-> >  /*
-> >   * Unlike "struct cpuinfo_x86.x86_capability", kvm_cpu_caps doesn't ne=
-ed to be
-> > @@ -310,6 +311,7 @@ static void kvm_vcpu_after_set_cpuid(struct kvm_vcp=
-u *vcpu)
-> >           __cr4_reserved_bits(guest_cpuid_has, vcpu);
-> >
-> >       kvm_hv_set_cpuid(vcpu);
-> > +     kvm_xen_set_cpuid(vcpu);
-> >
-> >       /* Invoke the vendor callback only after the above state is updat=
-ed. */
-> >       static_call(kvm_x86_vcpu_after_set_cpuid)(vcpu);
-> > diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> > index 00e23dc518e0..8b45f9975e45 100644
-> > --- a/arch/x86/kvm/x86.c
-> > +++ b/arch/x86/kvm/x86.c
-> > @@ -3123,6 +3123,7 @@ static int kvm_guest_time_update(struct kvm_vcpu =
-*v)
-> >       if (vcpu->xen.vcpu_time_info_cache.active)
-> >               kvm_setup_guest_pvclock(v, &vcpu->xen.vcpu_time_info_cach=
-e, 0);
-> >       kvm_hv_setup_tsc_page(v->kvm, &vcpu->hv_clock);
-> > +     kvm_xen_setup_tsc_info(v);
->=20
-> This can be called inside this if statement, no?
->=20
->         if (unlikely(vcpu->hw_tsc_khz !=3D tgt_tsc_khz)) {
->=20
->         }
->=20
-> >       return 0;
-> >  }
-> >
-> > diff --git a/arch/x86/kvm/xen.c b/arch/x86/kvm/xen.c
-> > index 610beba35907..a016ff85264d 100644
-> > --- a/arch/x86/kvm/xen.c
-> > +++ b/arch/x86/kvm/xen.c
-> > @@ -10,6 +10,9 @@
-> >  #include "xen.h"
-> >  #include "hyperv.h"
-> >  #include "lapic.h"
-> > +#include "cpuid.h"
-> > +
-> > +#include <asm/xen/cpuid.h>
-> >
-> >  #include <linux/eventfd.h>
-> >  #include <linux/kvm_host.h>
-> > @@ -1855,3 +1858,41 @@ void kvm_xen_destroy_vm(struct kvm *kvm)
-> >       if (kvm->arch.xen_hvm_config.msr)
-> >               static_branch_slow_dec_deferred(&kvm_xen_enabled);
-> >  }
-> > +
-> > +void kvm_xen_set_cpuid(struct kvm_vcpu *vcpu)
->=20
-> This is a very, very misleading name.  It does not "set" anything.  Given=
- that
-> this patch adds "set" and "setup", I expected the "set" to you know, set =
-the CPUID
-> leaves and the "setup" to prepar for that, not the other way around.
->=20
-> If the leaves really do need to be cached, kvm_xen_after_set_cpuid() is p=
-robably
-> the least awful name.
->=20
-> > +{
-> > +     u32 base =3D 0;
-> > +     u32 function;
-> > +
-> > +     for_each_possible_hypervisor_cpuid_base(function) {
-> > +             struct kvm_cpuid_entry2 *entry =3D kvm_find_cpuid_entry(v=
-cpu, function, 0);
-> > +
-> > +             if (entry &&
-> > +                 entry->ebx =3D=3D XEN_CPUID_SIGNATURE_EBX &&
-> > +                 entry->ecx =3D=3D XEN_CPUID_SIGNATURE_ECX &&
-> > +                 entry->edx =3D=3D XEN_CPUID_SIGNATURE_EDX) {
-> > +                     base =3D function;
-> > +                     break;
-> > +             }
-> > +     }
-> > +     if (!base)
-> > +             return;
-> > +
-> > +     function =3D base | XEN_CPUID_LEAF(3);
-> > +     vcpu->arch.xen.tsc_info_1 =3D kvm_find_cpuid_entry(vcpu, function=
-, 1);
-> > +     vcpu->arch.xen.tsc_info_2 =3D kvm_find_cpuid_entry(vcpu, function=
-, 2);
->=20
-> Is it really necessary to cache the leave?  Guest CPUID isn't optimized, =
-but it's
-> not _that_ slow, and unless I'm missing something updating the TSC freque=
-ncy and
-> scaling info should be uncommon, i.e. not performance critical.
