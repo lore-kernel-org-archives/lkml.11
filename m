@@ -2,153 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D6A3C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 14:25:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1871CCA47D
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 14:25:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358305AbiFVOY7 (ORCPT
+        id S1355089AbiFVOZY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 10:24:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48614 "EHLO
+        Wed, 22 Jun 2022 10:25:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358370AbiFVOYt (ORCPT
+        with ESMTP id S1358527AbiFVOY4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 10:24:49 -0400
-Received: from mail-oa1-x36.google.com (mail-oa1-x36.google.com [IPv6:2001:4860:4864:20::36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2E073A5FD
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 07:24:35 -0700 (PDT)
-Received: by mail-oa1-x36.google.com with SMTP id 586e51a60fabf-101ec2d6087so12177188fac.3
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 07:24:35 -0700 (PDT)
+        Wed, 22 Jun 2022 10:24:56 -0400
+Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A27F2369C8;
+        Wed, 22 Jun 2022 07:24:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=RTCiI3z/FejuYZ8fuG7ALGW0XqlrQSjMbaE9qwJX9Cg=;
-        b=ZQVTbEN7aUSDEdVs2YzfZWlgi3LbLYER2SLB8yHQY9UzSHPRwUSbJ/NDygAsKrAd7J
-         aCH94nDm4GL5jbWvtBLV8vfQuiMl7/ZDQHOeePpUKtuiYYEaVMFgNk3doBxXIONUBjgv
-         I6Rp+PmtrGPbaTovYHGreme6UXJYrZb4m5Bjs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=RTCiI3z/FejuYZ8fuG7ALGW0XqlrQSjMbaE9qwJX9Cg=;
-        b=8KgUb2WefqnNG1g8p9egWSsYDSVFtWLL+EmaOtjSLSG+PXwDmX8x98NxV/dmI5/GH5
-         pShBircQOkDYtcPfvdPPGNaQNqM82dYeJmQpHdMZEIghnh+bV7SovPBvzUGBbBIBNoA2
-         h4DZQh7en3LxruaZmZZxemVrCsolrAniYDBg2TSEyFQC7pmgm6gNt4YlG+SPvXex2D5Q
-         oNVEPEv9AXFNDAanOfbaKHpqsX5lnVWXqbj2Vy1VQE7P85IXUNRDss0rlcDDsWdVL3Zb
-         /XwTumJn0nPGzeJPhZfDtRO5F4wbAqER5+H2c1mTbQvd4Mj1aDfAtnkTMMrPklrmfxLb
-         P/gQ==
-X-Gm-Message-State: AJIora9jL7TDkme/7QqGLKRxtMKJXU1zGm3I1gq8DXmP/gR4iVsRnyjg
-        EPN65nFojTKoGyTsWFWiYdpi8w==
-X-Google-Smtp-Source: AGRyM1v60GyMFZawKSzE9AV+dokDeZ2oOw03of096v2vdWHskT34HNJlwjkQbYpYkHqZslvi3hON/w==
-X-Received: by 2002:a05:6870:3320:b0:fd:a944:1abf with SMTP id x32-20020a056870332000b000fda9441abfmr24133333oae.251.1655907874821;
-        Wed, 22 Jun 2022 07:24:34 -0700 (PDT)
-Received: from [192.168.0.115] ([172.58.70.161])
-        by smtp.gmail.com with ESMTPSA id w25-20020a4a7659000000b0035eb4e5a6cesm11612512ooe.36.2022.06.22.07.24.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Jun 2022 07:24:34 -0700 (PDT)
-Message-ID: <b72c889a-4a50-3330-baae-3bbf065e7187@cloudflare.com>
-Date:   Wed, 22 Jun 2022 09:24:31 -0500
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 0/2] Introduce security_create_user_ns()
+  d=amazon.co.uk; i=@amazon.co.uk; q=dns/txt;
+  s=amazon201209; t=1655907893; x=1687443893;
+  h=from:to:cc:date:message-id:references:in-reply-to:
+   content-transfer-encoding:mime-version:subject;
+  bh=51C7STjo9soGVumHM19bbsfNeQcBRA/3OS6i/6pYTtM=;
+  b=Rwqzv0KEdznzNHrGlPBYxXT1HRP3Q/4v3mm5pEAAQ6kLkivu1aYOIG2s
+   DQiuPzaGSfOF1dyfssAgX1oajKjhZ/uezIqoUvDB4Tbs/QXeEz80AVk3C
+   P16T0qJ0x01a/FRI6cAA1lUht9Y2zw9OpOHlE6WbdabbNJkf+vpxP7AZw
+   8=;
+X-IronPort-AV: E=Sophos;i="5.92,212,1650931200"; 
+   d="scan'208";a="100777950"
+Subject: RE: [PATCH v2] KVM: x86/xen: Update Xen CPUID Leaf 4 (tsc info) sub-leaves,
+ if present
+Thread-Topic: [PATCH v2] KVM: x86/xen: Update Xen CPUID Leaf 4 (tsc info) sub-leaves,
+ if present
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-2c-388992e0.us-west-2.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP; 22 Jun 2022 14:22:10 +0000
+Received: from EX13D32EUC003.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-pdx-2c-388992e0.us-west-2.amazon.com (Postfix) with ESMTPS id DBFA6817BA;
+        Wed, 22 Jun 2022 14:22:09 +0000 (UTC)
+Received: from EX13D32EUC003.ant.amazon.com (10.43.164.24) by
+ EX13D32EUC003.ant.amazon.com (10.43.164.24) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.36; Wed, 22 Jun 2022 14:22:08 +0000
+Received: from EX13D32EUC003.ant.amazon.com ([10.43.164.24]) by
+ EX13D32EUC003.ant.amazon.com ([10.43.164.24]) with mapi id 15.00.1497.036;
+ Wed, 22 Jun 2022 14:22:08 +0000
+From:   "Durrant, Paul" <pdurrant@amazon.co.uk>
+To:     David Woodhouse <dwmw2@infradead.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+CC:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>
+Thread-Index: AQHYhh7hXAu4qxBonEWdTaRZ6uuulK1bcRwAgAAFCdA=
+Date:   Wed, 22 Jun 2022 14:22:07 +0000
+Message-ID: <2d939a362e384a28bcd576b4c21a0376@EX13D32EUC003.ant.amazon.com>
+References: <20220622095750.30563-1-pdurrant@amazon.com>
+ <0b4c451c6967ffb7bd20b6e5bf7812628aa173c5.camel@infradead.org>
+In-Reply-To: <0b4c451c6967ffb7bd20b6e5bf7812628aa173c5.camel@infradead.org>
+Accept-Language: en-GB, en-US
 Content-Language: en-US
-To:     Casey Schaufler <casey@schaufler-ca.com>, kpsingh@kernel.org,
-        revest@chromium.org, jackmanb@chromium.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        jmorris@namei.org, serge@hallyn.com, bpf@vger.kernel.org,
-        linux-security-module@vger.kernel.org
-Cc:     brauner@kernel.org, paul@paul-moore.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-team@cloudflare.com
-References: <20220621233939.993579-1-fred@cloudflare.com>
- <ce1653b1-feb0-1a99-0e97-8dfb289eeb79@schaufler-ca.com>
-From:   Frederick Lawler <fred@cloudflare.com>
-In-Reply-To: <ce1653b1-feb0-1a99-0e97-8dfb289eeb79@schaufler-ca.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.43.165.13]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Casey,
-
-On 6/21/22 7:19 PM, Casey Schaufler wrote:
-> On 6/21/2022 4:39 PM, Frederick Lawler wrote:
->> While creating a LSM BPF MAC policy to block user namespace creation, we
->> used the LSM cred_prepare hook because that is the closest hook to 
->> prevent
->> a call to create_user_ns().
->>
->> The calls look something like this:
->>
->>      cred = prepare_creds()
->>          security_prepare_creds()
->>              call_int_hook(cred_prepare, ...
->>      if (cred)
->>          create_user_ns(cred)
->>
->> We noticed that error codes were not propagated from this hook and
->> introduced a patch [1] to propagate those errors.
->>
->> The discussion notes that security_prepare_creds()
->> is not appropriate for MAC policies, and instead the hook is
->> meant for LSM authors to prepare credentials for mutation. [2]
->>
->> Ultimately, we concluded that a better course of action is to introduce
->> a new security hook for LSM authors. [3]
->>
->> This patch set first introduces a new security_create_user_ns() function
->> and create_user_ns LSM hook, then marks the hook as sleepable in BPF.
-> 
-> Why restrict this hook to user namespaces? It seems that an LSM that
-> chooses to preform controls on user namespaces may want to do so for
-> network namespaces as well.
-IIRC, CLONE_NEWUSER is the only namespace flag that does not require 
-CAP_SYS_ADMIN. There is a security use case to prevent this namespace 
-from being created within an unprivileged environment. I'm not opposed 
-to a more generic hook, but I don't currently have a use case to block 
-any others. We can also say the same is true for the other namespaces: 
-add this generic security function to these too.
-
-I'm curious what others think about this too.
-
-
-> Also, the hook seems backwards. You should
-> decide if the creation of the namespace is allowed before you create it.
-> Passing the new namespace to a function that checks to see creating a
-> namespace is allowed doesn't make a lot off sense.
-> 
-
-I think having more context to a security hook is a good thing. I 
-believe you brought up in the previous discussions that you'd like to 
-use this hook for xattr purposes. Doesn't that require a namespace?
-
->>
->> Links:
->> 1. 
->> https://lore.kernel.org/all/20220608150942.776446-1-fred@cloudflare.com/
->> 2. 
->> https://lore.kernel.org/all/87y1xzyhub.fsf@email.froward.int.ebiederm.org/ 
->>
->> 3. 
->> https://lore.kernel.org/all/9fe9cd9f-1ded-a179-8ded-5fde8960a586@cloudflare.com/ 
->>
->>
->> Frederick Lawler (2):
->>    security, lsm: Introduce security_create_user_ns()
->>    bpf-lsm: Make bpf_lsm_create_user_ns() sleepable
->>
->>   include/linux/lsm_hook_defs.h | 2 ++
->>   include/linux/lsm_hooks.h     | 5 +++++
->>   include/linux/security.h      | 8 ++++++++
->>   kernel/bpf/bpf_lsm.c          | 1 +
->>   kernel/user_namespace.c       | 5 +++++
->>   security/security.c           | 6 ++++++
->>   6 files changed, 27 insertions(+)
->>
->> -- 
->> 2.30.2
->>
-
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBEYXZpZCBXb29kaG91c2UgPGR3
+bXcyQGluZnJhZGVhZC5vcmc+DQo+IFNlbnQ6IDIyIEp1bmUgMjAyMiAxNDo0OA0KPiBUbzogRHVy
+cmFudCwgUGF1bCA8cGR1cnJhbnRAYW1hem9uLmNvLnVrPjsgeDg2QGtlcm5lbC5vcmc7IGt2bUB2
+Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LQ0KPiBrZXJuZWxAdmdlci5rZXJuZWwub3JnDQo+IENjOiBQ
+YW9sbyBCb256aW5pIDxwYm9uemluaUByZWRoYXQuY29tPjsgU2VhbiBDaHJpc3RvcGhlcnNvbiA8
+c2VhbmpjQGdvb2dsZS5jb20+OyBWaXRhbHkgS3V6bmV0c292DQo+IDx2a3V6bmV0c0ByZWRoYXQu
+Y29tPjsgV2FucGVuZyBMaSA8d2FucGVuZ2xpQHRlbmNlbnQuY29tPjsgSmltIE1hdHRzb24gPGpt
+YXR0c29uQGdvb2dsZS5jb20+OyBKb2VyZw0KPiBSb2VkZWwgPGpvcm9AOGJ5dGVzLm9yZz47IFRo
+b21hcyBHbGVpeG5lciA8dGdseEBsaW51dHJvbml4LmRlPjsgSW5nbyBNb2xuYXIgPG1pbmdvQHJl
+ZGhhdC5jb20+Ow0KPiBCb3Jpc2xhdiBQZXRrb3YgPGJwQGFsaWVuOC5kZT47IERhdmUgSGFuc2Vu
+IDxkYXZlLmhhbnNlbkBsaW51eC5pbnRlbC5jb20+OyBILiBQZXRlciBBbnZpbg0KPiA8aHBhQHp5
+dG9yLmNvbT4NCj4gU3ViamVjdDogUkU6IFtFWFRFUk5BTF1bUEFUQ0ggdjJdIEtWTTogeDg2L3hl
+bjogVXBkYXRlIFhlbiBDUFVJRCBMZWFmIDQgKHRzYyBpbmZvKSBzdWItbGVhdmVzLCBpZg0KPiBw
+cmVzZW50DQo+IA0KPiBPbiBXZWQsIDIwMjItMDYtMjIgYXQgMTA6NTcgKzAxMDAsIFBhdWwgRHVy
+cmFudCB3cm90ZToNCj4gPiArdm9pZCBrdm1feGVuX3NldF9jcHVpZChzdHJ1Y3Qga3ZtX3ZjcHUg
+KnZjcHUpDQo+ID4gK3sNCj4gPiArCXUzMiBiYXNlID0gMDsNCj4gPiArCXUzMiBmdW5jdGlvbjsN
+Cj4gPiArDQo+ID4gKwl2Y3B1LT5hcmNoLnhlbi50c2NfaW5mb18xID0gTlVMTDsNCj4gPiArCXZj
+cHUtPmFyY2gueGVuLnRzY19pbmZvXzIgPSBOVUxMOw0KPiA+ICsNCj4gPiArCWZvcl9lYWNoX3Bv
+c3NpYmxlX2h5cGVydmlzb3JfY3B1aWRfYmFzZShmdW5jdGlvbikgew0KPiA+ICsJCXN0cnVjdCBr
+dm1fY3B1aWRfZW50cnkyICplbnRyeSA9IGt2bV9maW5kX2NwdWlkX2VudHJ5KHZjcHUsIGZ1bmN0
+aW9uLCAwKTsNCj4gPiArDQo+ID4gKwkJaWYgKGVudHJ5ICYmDQo+ID4gKwkJICAgIGVudHJ5LT5l
+YnggPT0gWEVOX0NQVUlEX1NJR05BVFVSRV9FQlggJiYNCj4gPiArCQkgICAgZW50cnktPmVjeCA9
+PSBYRU5fQ1BVSURfU0lHTkFUVVJFX0VDWCAmJg0KPiA+ICsJCSAgICBlbnRyeS0+ZWR4ID09IFhF
+Tl9DUFVJRF9TSUdOQVRVUkVfRURYKSB7DQo+ID4gKwkJCWJhc2UgPSBmdW5jdGlvbjsNCj4gPiAr
+CQkJYnJlYWs7DQo+ID4gKwkJfQ0KPiA+ICsJfQ0KPiANCj4gUGxlYXNlIG1ha2UgaXQgcmV0dXJu
+IGlmIGVudHJ5LT5lYXggPCAzIGhlcmUuIFRoZXJlIHByb2JhYmx5IGFyZW4ndCBhbnkNCj4gKmdv
+b2QqIHJlYXNvbnMgd2h5IGEgbGVhZiBhdCAweDQwMDAweDAzIHdvdWxkIGV4aXN0IGFuZCBiZWxv
+bmcgdG8gc29tZQ0KPiBvdGhlciBlbnRpdHkgKEh5cGVyLVYsIGV0Yy4pLiBUaG9zZSBvdGhlciBl
+eHRyYSByYW5nZXMgb2YgQ1BVSUQgYXJlDQo+IGdlbmVyYWxseSBhbGlnbmVkIGF0IG11bHRpcGxl
+cyBvZiAweDEwMCwgbm90IGp1c3QgdGhlICpuZXh0KiBhdmFpbGFibGUNCj4gbGVhZi4NCj4gDQo+
+IEJ1dCBJIGRvbid0IGNhcmUuIFVubGVzcyBlYXggb24gdGhlIG1haW4gWGVuIGxlYWYgaXMgMyBv
+ciBtb3JlLCB0aGUNCj4gbGVhZiBhdCBOKzMgaXNuJ3QgeW91cnMgdG8gcmVhc29uIGFib3V0IDop
+DQo+IA0KDQpBY2NvcmRpbmcgdG8gaHR0cHM6Ly9sd24ubmV0L0FydGljbGVzLzMwMTg4OCAod2hp
+Y2ggaXMgYW5jaWVudCksIHRoZSBNaWNyb3NvZnQgVExGUyBhbmQgbXkgY29weSBvZiB0aGUgWGVu
+IHNvdXJjZSBjb2RlLCBpdCBzZWVtcyBldmVyeW9uZSBkb2VzIGFncmVlIHRoYXQgdGhlIGh5cGVy
+dmlzb3IgYmFzZSBsZWFmIEVBWCBkb2VzIHNwZWNpZnkgdGhlIG1heGltdW0gbGVhZiAoaW4gYWJz
+b2x1dGUgdGVybXMgcmF0aGVyIHRoYW4gdGhlIG9mZnNldCkgc28gSSdsbCBhZGQgdGhhdCBjaGVj
+ayBpbnRvIHYzLg0KDQogIFBhdWwNCg0KPiA+ICsJaWYgKCFiYXNlKQ0KPiA+ICsJCXJldHVybjsN
+Cj4gPiArDQo+ID4gKwlmdW5jdGlvbiA9IGJhc2UgfCBYRU5fQ1BVSURfTEVBRigzKTsNCj4gPiAr
+CXZjcHUtPmFyY2gueGVuLnRzY19pbmZvXzEgPSBrdm1fZmluZF9jcHVpZF9lbnRyeSh2Y3B1LCBm
+dW5jdGlvbiwgMSk7DQo+ID4gKwl2Y3B1LT5hcmNoLnhlbi50c2NfaW5mb18yID0ga3ZtX2ZpbmRf
+Y3B1aWRfZW50cnkodmNwdSwgZnVuY3Rpb24sIDIpOw0KPiA+ICt9DQo+ID4gKw0K
