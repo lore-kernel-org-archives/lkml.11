@@ -2,151 +2,243 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 225CDC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 03:30:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEF09C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 03:31:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356237AbiFVDaI (ORCPT
+        id S1356132AbiFVDbc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 23:30:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49234 "EHLO
+        Tue, 21 Jun 2022 23:31:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232865AbiFVDaC (ORCPT
+        with ESMTP id S232276AbiFVDb0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 23:30:02 -0400
-Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8108C33A02
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 20:30:01 -0700 (PDT)
-Received: by mail-oi1-x22f.google.com with SMTP id v143so19557744oie.13
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 20:30:01 -0700 (PDT)
+        Tue, 21 Jun 2022 23:31:26 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E92C338A7
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 20:31:25 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id q140so14914604pgq.6
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 20:31:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=O2Zo0/T+pbzGGqD3NX7uhkMxO+SgalY6CRu61yBvhTo=;
-        b=ClpWJcpyv/ij8ZnnpKV4ihKj9nqjSvWw/sdhvd/QJ+YFc0wFOcEbN7zE7y827fA3vQ
-         oBk1nw7kmYGrUCGAhnLPXNr//TQIAfDe7qUt3zl2sZp6fRf4r5kN+NZ/lWcc7nCNtHhp
-         z0FIVOKRdubi2aiN93jvP5lsgo7B/07M5S8yFkopGYMC28QbwEPhEoeRrLBMEiYZ1kge
-         y+wajf0NUfcKoZLB21L62Dpr5eopgsg3pnSnBKQWEfxPizdDkikd4Y6l7gE8RAADwlht
-         ChJabFrUcVfkBhY6KC65K4veTCvhW7x6JbNLopkKGxphd/3rmuU9f7Ne1xI9ddKp1keH
-         v+ZQ==
+        bh=zIckZjx7nBE8+LrtkYIITkN+RjWFo0BrzsFyrHjWsuE=;
+        b=HR2ehh1THOUQ/7sVD3IxlsNn5X9iiusHdkvQi2v7mCXaSiOlWuubLTsBInnuZSMIV1
+         yyrPoOAP2Ojg4Swx91s1XU/1zn/eLXNS8RszKuPDGFC8Iy92YzlnXAxGZOZR7QoG0sak
+         7M2SFRlLE3VXFhvX6AL9tDSdfz1SVkR6ozIAbwvGN6mXDiBDFtpnB0e1h4PXCUfpyaRx
+         Yhdv5wCO8sko56NAT6PKlZFhgDksALXFs3i3B5fU5SUnV9PjVtQvJkk00GU+tcuQYfJo
+         5VOUrjb0Gl+GWLXK46LHl20wuH6c/vfxp0U7E7RUTtvHxQL3Cvv9uxzcA3Wd9Iv1winU
+         V90A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=O2Zo0/T+pbzGGqD3NX7uhkMxO+SgalY6CRu61yBvhTo=;
-        b=fI9Z3vXJ4eb4lM8wDW9fBIcBeTCjquZ6jO7/LGyzz4KT0Igk6NWX8qBGJGcO5ijPne
-         1SbBeTBVk5TqYNttxQxWCqLzsHcupSsMuXZlXvr7G/loXtMqNlDVmsnAwO/91z6kaYeo
-         bXfjdGK3sBKgbCFiDk3a9G3G20WNtnMrRS3sQHa7VlPL2ToIWRXNBH8aiBUJu7+rM44f
-         hjc66JS4WRs1K9gRtoujCLYqwd00YkYPwa2potNbsJgsnJ5mJ8cw+sjnZpf24UI855dY
-         F+HRx1gHuTZY2QSlQL/TmncAOlwyr8fzDsqD3oUA/M1y+qlV+F1SvSuvOvirEiXKkpkK
-         u4wQ==
-X-Gm-Message-State: AJIora/eA+6jAsr4oEHFX+mHR5LV7rAhuTuC3L+7Sx9KZw0LU7MLyMqf
-        M2AgYs/G4KSN5PBWqgVz+GVs6w==
-X-Google-Smtp-Source: AGRyM1vIKICL8I66soG+AX2D+s7hDdneOCSmerHxCbCAMmmTzhge9cUZdcMd1x0kc1i8RZQY2Jq2UQ==
-X-Received: by 2002:a05:6808:150e:b0:331:39bf:2228 with SMTP id u14-20020a056808150e00b0033139bf2228mr761906oiw.9.1655868600831;
-        Tue, 21 Jun 2022 20:30:00 -0700 (PDT)
-Received: from ripper (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id s22-20020a056870e6d600b000f33ced2c50sm10025103oak.56.2022.06.21.20.29.59
+        bh=zIckZjx7nBE8+LrtkYIITkN+RjWFo0BrzsFyrHjWsuE=;
+        b=4B7it/+qbXCJhjlQSciaiHK9wjAv/rXZoieWhBkpuywyH5xgE2BuKTiM3HnWIe2zAB
+         livYTLBW4tNrN9NGTKJXQs9gCuHAFQITb5/LE4xqvldAoVeYZNGdOtQtgLo/4COFkQKQ
+         /fpBSKuiLK2wQT3xUWq4OQZR79FCnKH2PL4fbTw1GNoN3XrrB4AdGrJSZuLx5l8I2+eB
+         tomOI1CZlVdexz3j7TaIHJih9FQXVlixJk5fJAmlozxojuWg/LwsX3FxVdm2e3RUreOd
+         kNOraTsluTsMNHl+pQdg+03c56/6ze0V2/Y+VqkiMqWz4N9Hu1E4w4q2+K1c8pQ+ERk9
+         20Ww==
+X-Gm-Message-State: AJIora9xRGhm6C+ue3qJu35jgtNXp2iLCKp+X+sZWH/KrZdOQouG+8oY
+        azrVSkVicUOXaNQSUSugR0BQxQ==
+X-Google-Smtp-Source: AGRyM1t0+4a7W1b88iaY0mq5xGeMqBK/vj1Q19dBpqEycB3mZ15nOpLahQdSlpV+QlmyxdO9MwebXA==
+X-Received: by 2002:a63:8341:0:b0:40d:268f:d8ed with SMTP id h62-20020a638341000000b0040d268fd8edmr1145053pge.232.1655868685123;
+        Tue, 21 Jun 2022 20:31:25 -0700 (PDT)
+Received: from localhost ([2404:9dc0:cd01::13])
+        by smtp.gmail.com with ESMTPSA id t20-20020a17090a951400b001d903861194sm13194409pjo.30.2022.06.21.20.31.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jun 2022 20:30:00 -0700 (PDT)
-Date:   Tue, 21 Jun 2022 20:32:05 -0700
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        Johan Hovold <johan+linaro@kernel.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/4] arm64: dts: qcom: add SC8280XP platform
-Message-ID: <YrKNNQ2h6I8aseiW@ripper>
-References: <20220607214113.4057684-1-bjorn.andersson@linaro.org>
- <20220607214113.4057684-3-bjorn.andersson@linaro.org>
- <79443fb4-5c09-a33f-594d-71ac93cc0317@linaro.org>
- <YrE84tLOpJtzrNW4@builder.lan>
- <9a31a488-f4fe-33f5-84e7-fe4509769d7c@linaro.org>
+        Tue, 21 Jun 2022 20:31:24 -0700 (PDT)
+Date:   Wed, 22 Jun 2022 11:31:21 +0800
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     corbet@lwn.net, david@redhat.com, mike.kravetz@oracle.com,
+        osalvador@suse.de, paulmck@kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        duanxiongchun@bytedance.com, smuchun@gmail.com
+Subject: Re: [PATCH v5 0/2] make hugetlb_optimize_vmemmap compatible with
+ memmap_on_memory
+Message-ID: <YrKNCRHg6PCXzg3K@FVFYT0MHHV2J.usts.net>
+References: <20220620110616.12056-1-songmuchun@bytedance.com>
+ <20220621135313.ae6fbc28338f1220328694f7@linux-foundation.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <9a31a488-f4fe-33f5-84e7-fe4509769d7c@linaro.org>
+In-Reply-To: <20220621135313.ae6fbc28338f1220328694f7@linux-foundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 20 Jun 23:53 PDT 2022, Krzysztof Kozlowski wrote:
-
-> On 21/06/2022 05:37, Bjorn Andersson wrote:
-> > On Wed 08 Jun 03:18 CDT 2022, Krzysztof Kozlowski wrote:
-> > 
-> >> On 07/06/2022 23:41, Bjorn Andersson wrote:
-> >>> Introduce initial support for the Qualcomm SC8280XP platform, aka 8cx
-> >>> Gen 3. This initial contribution supports SMP, CPUfreq, CPU cluster
-> >>> idling, GCC, TLMM, SMMU, RPMh regulators, power-domains and clocks,
-> >>> interconnects, some QUPs, UFS, remoteprocs, USB, watchdog, LLCC and
-> >>> tsens.
-> >>>
-> >>> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> >>> ---
-> >>>  arch/arm64/boot/dts/qcom/sc8280xp.dtsi | 2195 ++++++++++++++++++++++++
-> >>>  1 file changed, 2195 insertions(+)
-> >>>  create mode 100644 arch/arm64/boot/dts/qcom/sc8280xp.dtsi
-> >>>
-> >>> diff --git a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
-> >>> new file mode 100644
-> >>> index 000000000000..4143813643ad
-> >>> --- /dev/null
-> >>> +++ b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
-> >>> @@ -0,0 +1,2195 @@
-> >>> +// SPDX-License-Identifier: BSD-3-Clause
-> >>> +/*
-> >>> + * Copyright (c) 2021, The Linux Foundation. All rights reserved.
-> >>> + * Copyright (c) 2022, Linaro Limited
-> >>> + */
-> >>> +
-> >>> +#include <dt-bindings/clock/qcom,gcc-sc8280xp.h>
-> >>> +#include <dt-bindings/clock/qcom,rpmh.h>
-> >>> +#include <dt-bindings/interrupt-controller/arm-gic.h>
-> >>> +#include <dt-bindings/interconnect/qcom,sc8280xp.h>
-> >>> +#include <dt-bindings/mailbox/qcom-ipcc.h>
-> >>> +#include <dt-bindings/power/qcom-rpmpd.h>
-> >>> +#include <dt-bindings/soc/qcom,rpmh-rsc.h>
-> >>> +#include <dt-bindings/thermal/thermal.h>
-> >>> +
-> >>> +/ {
-> >>> +	interrupt-parent = <&intc>;
-> >>> +
-> >>> +	#address-cells = <2>;
-> >>> +	#size-cells = <2>;
-> >>> +
-> >>> +	clocks {
-> >>> +		xo_board: xo-board {
-> >>
-> >> xo-board-clk
-> >>
-> >>> +			compatible = "fixed-clock";
-> >>> +			#clock-cells = <0>;
-> >>> +			clock-frequency = <38400000>;
-> >>
-> >> The clock is probably on the board, so the frequency should be rather
-> >> defined in DTS.
-> >>
-> > 
-> > It's an interesting question, but I don't think it's possible to change
-> > the rate of this clock from one board to another.
-> > 
-> > So I think it's best to keep this in the .dtsi, to avoid unnecessary
-> > duplication.
+On Tue, Jun 21, 2022 at 01:53:13PM -0700, Andrew Morton wrote:
+> On Mon, 20 Jun 2022 19:06:14 +0800 Muchun Song <songmuchun@bytedance.com> wrote:
 > 
-> It does not matter whether the frequency can be changed or not. This is
-> the same on almost every SoC and the same comments appear every time -
-> the clock is a property of the board, not of the SoC, so it should be in
-> the board DTSI. To avoid the duplication you can indeed keep here most
-> of the clock properties, but the frequency must be in board DTS.
+> > This series makes hugetlb_optimize_vmemmap compatible with memmap_on_memory
+> > and is based on mm-stable.  The reason refers to the patch 2's commit log.
+> > 
+> > v5:
+> >  - Replace enum to defines per David.
+> >  - Walk vmemmap page tables to avoid false-positive.
+> 
+> I can't see this second change in the v3->v5 deltas? 
 > 
 
-I find this to be a rather strict interpretation of "board specific",
-but I'm okay with it.
+My changlog is not clear, Let me clarify it here.
 
-Regards,
-Bjorn
+v3: Drop a section flag SECTION_CANNOT_OPTIMIZE_VMEMMAP and introduce a page
+    flag PageVmemmapSelfHosted to make both parameters compatible.
+v4: Fix compiling error when !CONFIG_MEMORY_HOTPLUG and a bug when memory block
+    spans multiple sections.
+v5: Fix a bug which PageVmemmapSelfHosted() check can be false-positive.
+
+Thanks.
+
+> From: Muchun Song <songmuchun@bytedance.com>
+> Subject: mm-memory_hotplug-enumerate-all-supported-section-flags-v5
+> Date: Mon, 20 Jun 2022 19:06:15 +0800
+> 
+> replace enum with defines per David
+>  
+> Link: https://lkml.kernel.org/r/20220620110616.12056-2-songmuchun@bytedance.com
+> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+> Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+> ---
+> 
+>  include/linux/mmzone.h |   13 +++++--------
+>  1 file changed, 5 insertions(+), 8 deletions(-)
+> 
+> --- a/include/linux/mmzone.h~mm-memory_hotplug-enumerate-all-supported-section-flags-v5
+> +++ a/include/linux/mmzone.h
+> @@ -1439,16 +1439,13 @@ enum {
+>  	SECTION_MAP_LAST_BIT,
+>  };
+>  
+> -enum {
+> -	SECTION_MARKED_PRESENT		= BIT(SECTION_MARKED_PRESENT_BIT),
+> -	SECTION_HAS_MEM_MAP		= BIT(SECTION_HAS_MEM_MAP_BIT),
+> -	SECTION_IS_ONLINE		= BIT(SECTION_IS_ONLINE_BIT),
+> -	SECTION_IS_EARLY		= BIT(SECTION_IS_EARLY_BIT),
+> +#define SECTION_MARKED_PRESENT		BIT(SECTION_MARKED_PRESENT_BIT)
+> +#define SECTION_HAS_MEM_MAP		BIT(SECTION_HAS_MEM_MAP_BIT)
+> +#define SECTION_IS_ONLINE		BIT(SECTION_IS_ONLINE_BIT)
+> +#define SECTION_IS_EARLY		BIT(SECTION_IS_EARLY_BIT)
+>  #ifdef CONFIG_ZONE_DEVICE
+> -	SECTION_TAINT_ZONE_DEVICE	= BIT(SECTION_TAINT_ZONE_DEVICE_BIT),
+> +#define SECTION_TAINT_ZONE_DEVICE	BIT(SECTION_TAINT_ZONE_DEVICE_BIT)
+>  #endif
+> -};
+> -
+>  #define SECTION_MAP_MASK		(~(BIT(SECTION_MAP_LAST_BIT) - 1))
+>  #define SECTION_NID_SHIFT		SECTION_MAP_LAST_BIT
+>  
+> _
+> 
+> 
+> 
+> 
+> From: Muchun Song <songmuchun@bytedance.com>
+> Subject: mm-memory_hotplug-make-hugetlb_optimize_vmemmap-compatible-with-memmap_on_memory-v5
+> Date: Mon, 20 Jun 2022 19:06:16 +0800
+> 
+> walk vmemmap page tables to avoid false-positive
+> 
+> Link: https://lkml.kernel.org/r/20220620110616.12056-3-songmuchun@bytedance.com
+> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+> Co-developed-by: Oscar Salvador <osalvador@suse.de>
+> Signed-off-by: Oscar Salvador <osalvador@suse.de>
+> Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+> ---
+> 
+>  mm/hugetlb_vmemmap.c |   69 ++++++++++++++++++++++++++---------------
+>  1 file changed, 44 insertions(+), 25 deletions(-)
+> 
+> --- a/mm/hugetlb_vmemmap.c~mm-memory_hotplug-make-hugetlb_optimize_vmemmap-compatible-with-memmap_on_memory-v5
+> +++ a/mm/hugetlb_vmemmap.c
+> @@ -10,6 +10,7 @@
+>   */
+>  #define pr_fmt(fmt)	"HugeTLB: " fmt
+>  
+> +#include <linux/memory.h>
+>  #include "hugetlb_vmemmap.h"
+>  
+>  /*
+> @@ -99,34 +100,52 @@ int hugetlb_vmemmap_alloc(struct hstate
+>  static unsigned int vmemmap_optimizable_pages(struct hstate *h,
+>  					      struct page *head)
+>  {
+> -	struct mem_section *ms;
+> -	struct page *vmemmap_page;
+> -	unsigned long pfn = page_to_pfn(head);
+> -
+>  	if (READ_ONCE(vmemmap_optimize_mode) == VMEMMAP_OPTIMIZE_OFF)
+>  		return 0;
+>  
+> -	ms = __pfn_to_section(pfn);
+> -	vmemmap_page = sparse_decode_mem_map(ms->section_mem_map,
+> -					     pfn_to_section_nr(pfn));
+> -	/*
+> -	 * Only the vmemmap pages' vmemmap may be marked as VmemmapSelfHosted.
+> -	 *
+> -	 * Due to HugeTLB alignment requirements, and the vmemmap pages being
+> -	 * at the start of the hotplugged memory region. Checking any vmemmap
+> -	 * page's vmemmap is fine.
+> -	 *
+> -	 * [      hotplugged memory     ]
+> -	 * [ vmemmap ][  usable memory  ]
+> -	 *   ^   |      |            |
+> -	 *   +---+      |            |
+> -	 *     ^        |            |
+> -	 *     +--------+            |
+> -	 *         ^                 |
+> -	 *         +-----------------+
+> -	 */
+> -	if (PageVmemmapSelfHosted(vmemmap_page))
+> -		return 0;
+> +	if (IS_ENABLED(CONFIG_MEMORY_HOTPLUG)) {
+> +		pmd_t *pmdp, pmd;
+> +		struct page *vmemmap_page;
+> +		unsigned long vaddr = (unsigned long)head;
+> +
+> +		/*
+> +		 * Only the vmemmap page's vmemmap page can be self-hosted.
+> +		 * Walking the page tables to find the backing page of the
+> +		 * vmemmap page.
+> +		 */
+> +		pmdp = pmd_off_k(vaddr);
+> +		/*
+> +		 * The READ_ONCE() is used to stabilize *pmdp in a register or
+> +		 * on the stack so that it will stop changing under the code.
+> +		 * The only concurrent operation where it can be changed is
+> +		 * split_vmemmap_huge_pmd() (*pmdp will be stable after this
+> +		 * operation).
+> +		 */
+> +		pmd = READ_ONCE(*pmdp);
+> +		if (pmd_leaf(pmd))
+> +			vmemmap_page = pmd_page(pmd) + pte_index(vaddr);
+> +		else
+> +			vmemmap_page = pte_page(*pte_offset_kernel(pmdp, vaddr));
+> +		/*
+> +		 * Due to HugeTLB alignment requirements and the vmemmap pages
+> +		 * being at the start of the hotplugged memory region in
+> +		 * memory_hotplug.memmap_on_memory case. Checking any vmemmap
+> +		 * page's vmemmap page if it is marked as VmemmapSelfHosted is
+> +		 * sufficient.
+> +		 *
+> +		 * [                  hotplugged memory                  ]
+> +		 * [        section        ][...][        section        ]
+> +		 * [ vmemmap ][              usable memory               ]
+> +		 *   ^   |     |                                        |
+> +		 *   +---+     |                                        |
+> +		 *     ^       |                                        |
+> +		 *     +-------+                                        |
+> +		 *          ^                                           |
+> +		 *          +-------------------------------------------+
+> +		 */
+> +		if (PageVmemmapSelfHosted(vmemmap_page))
+> +			return 0;
+> +	}
+>  
+>  	return hugetlb_optimize_vmemmap_pages(h);
+>  }
+> _
+> 
+> 
