@@ -2,50 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97DD3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 19:39:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75C71C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 19:39:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359186AbiFVTjP (ORCPT
+        id S1359861AbiFVTjR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 15:39:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47544 "EHLO
+        Wed, 22 Jun 2022 15:39:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359422AbiFVTie (ORCPT
+        with ESMTP id S1359565AbiFVTie (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 22 Jun 2022 15:38:34 -0400
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A5333FBDC;
-        Wed, 22 Jun 2022 12:38:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D7733FBF9;
+        Wed, 22 Jun 2022 12:38:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655926707; x=1687462707;
+  t=1655926708; x=1687462708;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=rxtiNyNtO5EyD9cgkO5xlvGIWGQfoth0aAfPim6bRtk=;
-  b=Zz/xgudcs9GuUm5GHzhGvnww0QTGSv4PeIQOBuRggsKN2zwzAAxmtOYO
-   0ZjoyvREB5uVHEugoVpAt2oozlou0eYeH4Lai20vJtKjkdjCvNUhRPD9f
-   ghep/E3sYffz8QAZ4whKhTBMPMJD/nbh5/n5iX+M+C98JeCSBFCfDC3Sf
-   Hlc+UTz4wh8hF7zRc4gPdam0moUaQ/spTSOGiwad/+JhqsX7LwTWS5hCs
-   nH+P9YU86sBfk/e53WOpc1ssHB0NV6ayf+xrNFAfC8xsu8sPjVI1tpS3W
-   sAAPb0TVXQV2nxH0soH0yIwblmwU+sx6RnZ6YuzZmmMDUGB0tEQYLhil9
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="305983085"
+  bh=22nHq2RPTYBl+xCBcNB+uv2lzSC2PKfcu0Pva/vEmZc=;
+  b=GQSw9aP6MDjJXW5KxwpLTNo/p1lL6J3To/XcPL3RNHjhLmnKKnXP3U2u
+   gcFmPSnBW5vUvInDo6XwETgeqQIqUeJGADJlmqvyocjRSiauYH2qxv94H
+   BwGiQ7YIvx3HNnaJvCw1V8eOzPSfxEV44OF8Y2PvwMxFl/esMfyMdfuzL
+   wrTTxIdy0P5TbjPzD03BBfH8lxZNbfSsjJYLUmLlCCKgONoZV976L/mBJ
+   PWwrr+qLXNHKt9wmzEfvtpAfwkIA8V7fpzlFu4ReAdeosh0iYzmXsfEhr
+   940SWRkBDM3NYDERjQ8vwBtty+E7TRWiL9AVL7R2LPBZ0YxQMtXGJ5905
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="305983099"
 X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="305983085"
+   d="scan'208";a="305983099"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 12:38:26 -0700
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 12:38:28 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="715542088"
+   d="scan'208";a="715542095"
 Received: from bwalker-desk.ch.intel.com ([143.182.136.162])
-  by orsmga004.jf.intel.com with ESMTP; 22 Jun 2022 12:38:26 -0700
+  by orsmga004.jf.intel.com with ESMTP; 22 Jun 2022 12:38:28 -0700
 From:   Ben Walker <benjamin.walker@intel.com>
 To:     vkoul@kernel.org
-Cc:     dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mporter@kernel.crashing.org
-Subject: [PATCH v4 06/15] rapidio: Use dmaengine_async_is_tx_complete
-Date:   Wed, 22 Jun 2022 12:37:44 -0700
-Message-Id: <20220622193753.3044206-7-benjamin.walker@intel.com>
+Cc:     dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v4 08/15] dmaengine: Remove dma_async_is_tx_complete
+Date:   Wed, 22 Jun 2022 12:37:46 -0700
+Message-Id: <20220622193753.3044206-9-benjamin.walker@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220622193753.3044206-1-benjamin.walker@intel.com>
 References: <20220503200728.2321188-1-benjamin.walker@intel.com>
@@ -56,29 +55,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace dma_async_is_tx_complete with dmaengine_async_is_tx_complete.
-The previous API will be removed in favor of the new one.
+Everything has now been converted over to
+dmaengine_async_is_tx_complete, so this can be removed.
 
-Cc: mporter@kernel.crashing.org
 Signed-off-by: Ben Walker <benjamin.walker@intel.com>
 ---
- drivers/rapidio/devices/rio_mport_cdev.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ include/linux/dmaengine.h | 27 ---------------------------
+ 1 file changed, 27 deletions(-)
 
-diff --git a/drivers/rapidio/devices/rio_mport_cdev.c b/drivers/rapidio/devices/rio_mport_cdev.c
-index 2cdc054e53a53..d4108ff2bb74c 100644
---- a/drivers/rapidio/devices/rio_mport_cdev.c
-+++ b/drivers/rapidio/devices/rio_mport_cdev.c
-@@ -597,8 +597,7 @@ static void dma_xfer_callback(void *param)
- 	struct mport_dma_req *req = (struct mport_dma_req *)param;
- 	struct mport_cdev_priv *priv = req->priv;
- 
--	req->status = dma_async_is_tx_complete(priv->dmach, req->cookie,
--					       NULL, NULL);
-+	req->status = dmaengine_async_is_tx_complete(priv->dmach, req->cookie);
- 	complete(&req->req_comp);
- 	kref_put(&req->refcount, dma_req_free);
+diff --git a/include/linux/dmaengine.h b/include/linux/dmaengine.h
+index 44eb1df433e61..c34f21d19c423 100644
+--- a/include/linux/dmaengine.h
++++ b/include/linux/dmaengine.h
+@@ -1439,33 +1439,6 @@ static inline void dma_async_issue_pending(struct dma_chan *chan)
+ 	chan->device->device_issue_pending(chan);
  }
+ 
+-/**
+- * dma_async_is_tx_complete - poll for transaction completion
+- * @chan: DMA channel
+- * @cookie: transaction identifier to check status of
+- * @last: returns last completed cookie, can be NULL
+- * @used: returns last issued cookie, can be NULL
+- *
+- * Note: This is deprecated. Use dmaengine_async_is_tx_complete instead.
+- *
+- * If @last and @used are passed in, upon return they reflect the most
+- * recently submitted (used) cookie and the most recently completed
+- * cookie.
+- */
+-static inline enum dma_status dma_async_is_tx_complete(struct dma_chan *chan,
+-	dma_cookie_t cookie, dma_cookie_t *last, dma_cookie_t *used)
+-{
+-	struct dma_tx_state state;
+-	enum dma_status status;
+-
+-	status = chan->device->device_tx_status(chan, cookie, &state);
+-	if (last)
+-		*last = state.last;
+-	if (used)
+-		*used = state.used;
+-	return status;
+-}
+-
+ /**
+  * dmaengine_async_is_tx_complete - poll for transaction completion
+  * @chan: DMA channel
 -- 
 2.35.1
 
