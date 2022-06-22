@@ -2,225 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C72FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 14:45:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66195C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 14:46:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357658AbiFVOpE (ORCPT
+        id S237361AbiFVOqQ convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 10:45:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43228 "EHLO
+        Wed, 22 Jun 2022 10:46:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359008AbiFVOo7 (ORCPT
+        with ESMTP id S231462AbiFVOqO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 10:44:59 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E7BD32EF3
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 07:44:58 -0700 (PDT)
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25ME17w2022747;
-        Wed, 22 Jun 2022 14:44:38 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=KcdRw3jHECLn6Ja+zzL/KO5AFIoIqhijGNWNoK3w2kE=;
- b=DN4akBKBkR+JXBgvBBe4MFYR6b3vJv64kpNPCEJpaD35tTMIjLrFS+gLG6Qv2b3j8kIc
- IOjsdUt9cCIXPo40Wwr124Nd+M2RsVhB6ufjUrtOnrsfnuzvQyrUo6w06gYJ2b4hLjpH
- LNECWhRS/VBnJOl3zS5l1+RcEH8gJldiQwZlqg8psrYKOW/+vH4/qcyA94fEYgr1JOWN
- BGGSHW7fc0jtC1G+iXhjXxYRF2GX5T0f8+xg5UFrJVeuxHehbmDbWOeGqHvRf+3/wcqe
- FKU2yOF9MjMpfUdQnVxILqlXwyn3zM2VDja4hYHQBx4QuuhqoDmybZ/bnANwdQD+9M2G qQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gv4fqs9yd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 22 Jun 2022 14:44:37 +0000
-Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25ME1PEV023383;
-        Wed, 22 Jun 2022 14:44:37 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gv4fqs9xj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 22 Jun 2022 14:44:37 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25MEZ2FY025249;
-        Wed, 22 Jun 2022 14:44:35 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma06ams.nl.ibm.com with ESMTP id 3gs5yhnte8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 22 Jun 2022 14:44:35 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25MEiX7p21823770
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 22 Jun 2022 14:44:33 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1F97EA4051;
-        Wed, 22 Jun 2022 14:44:33 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1A73FA404D;
-        Wed, 22 Jun 2022 14:44:32 +0000 (GMT)
-Received: from linux.ibm.com (unknown [9.145.80.189])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Wed, 22 Jun 2022 14:44:31 +0000 (GMT)
-Date:   Wed, 22 Jun 2022 09:44:29 -0500
-From:   Mike Rapoport <rppt@linux.ibm.com>
-To:     Baolin Wang <baolin.wang@linux.alibaba.com>
-Cc:     akpm@linux-foundation.org, willy@infradead.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v2 3/3] mm: Add kernel PTE level pagetable pages
- account
-Message-ID: <YrMqzWvc9x5HWm5v@linux.ibm.com>
-References: <cover.1655887440.git.baolin.wang@linux.alibaba.com>
- <7882bbf467440f9a3ebe41d96ba5b6f384081bb7.1655887440.git.baolin.wang@linux.alibaba.com>
+        Wed, 22 Jun 2022 10:46:14 -0400
+Received: from relay4.hostedemail.com (smtprelay0016.hostedemail.com [216.40.44.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 008C53CA4E
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 07:46:12 -0700 (PDT)
+Received: from omf14.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay08.hostedemail.com (Postfix) with ESMTP id 880A0211D8;
+        Wed, 22 Jun 2022 14:46:11 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf14.hostedemail.com (Postfix) with ESMTPA id 1E1AA38;
+        Wed, 22 Jun 2022 14:46:06 +0000 (UTC)
+Message-ID: <37d560bc5267408eb9cc806339025418094cf5bb.camel@perches.com>
+Subject: Re: [PATCH] MIPS: Fix 2 typos
+From:   Joe Perches <joe@perches.com>
+To:     Randy Dunlap <rdunlap@infradead.org>,
+        Zhang Jiaming <jiaming@nfschina.com>, tsbogend@alpha.franken.de
+Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        liqiong@nfschina.com, renyu@nfschina.com
+Date:   Wed, 22 Jun 2022 07:46:01 -0700
+In-Reply-To: <d2112863-bd28-d6db-c353-1b7b94b45fcb@infradead.org>
+References: <20220622090713.24370-1-jiaming@nfschina.com>
+         <d2112863-bd28-d6db-c353-1b7b94b45fcb@infradead.org>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.44.1-0ubuntu1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7882bbf467440f9a3ebe41d96ba5b6f384081bb7.1655887440.git.baolin.wang@linux.alibaba.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: YvciyFbpBTrApP-NTN2QL39zgrbVH3rH
-X-Proofpoint-ORIG-GUID: wqZgU3LuTvycAH--92Tkgk2hWQwUUNSm
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-06-22_04,2022-06-22_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0
- priorityscore=1501 clxscore=1015 impostorscore=0 suspectscore=0
- mlxlogscore=999 bulkscore=0 lowpriorityscore=0 spamscore=0 adultscore=0
- malwarescore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206220074
+X-Stat-Signature: abnynm7f41xexum4qqrwzek1ynrc653a
+X-Rspamd-Server: rspamout07
+X-Rspamd-Queue-Id: 1E1AA38
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX19lgcxluOxcGqjU5XTKXoTq92I4KprCEbA=
+X-HE-Tag: 1655909166-228282
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 04:58:54PM +0800, Baolin Wang wrote:
-> Now the kernel PTE level ptes are always protected by mm->page_table_lock
-> instead of split pagetable lock, so the kernel PTE level pagetable pages
-> are not accounted. Especially the vmalloc()/vmap() can consume lots of
-> kernel pagetable, so to get an accurate pagetable accounting, calling new
-> helpers pgtable_set_and_inc()/pgtable_clear_and_dec() when allocating or
-> freeing a kernel PTE level pagetable page.
-
-This patch only adds accounting to the page tables allocated after boot,
-please mention this in the changelog.
- 
-> Meanwhile converting architectures to use corresponding generic PTE pagetable
-> allocation and freeing functions.
+On Wed, 2022-06-22 at 07:28 -0700, Randy Dunlap wrote:
+> On 6/22/22 02:07, Zhang Jiaming wrote:
+> > Change 'modifed' to 'modified'.
+> > Change 'relys' to 'relays'.
+[]
+> > diff --git a/arch/mips/cavium-octeon/executive/cvmx-helper-board.c b/arch/mips/cavium-octeon/executive/cvmx-helper-board.c
+[]
+> > @@ -282,9 +282,9 @@ union cvmx_helper_link_info __cvmx_helper_board_link_get(int ipd_port)
+> >   * support and should return the number of actual ports on the
+> >   * board.
+> >   *
+> > - * This function must be modifed for every new Octeon board.
+> > + * This function must be modified for every new Octeon board.
+> >   * Internally it uses switch statements based on the cvmx_sysinfo
+> > - * data to determine board types and revisions. It relys on the
 > 
-> Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-> ---
->  arch/csky/include/asm/pgalloc.h |  2 +-
->  arch/microblaze/mm/pgtable.c    |  2 +-
->  arch/openrisc/mm/ioremap.c      |  2 +-
->  arch/x86/mm/pgtable.c           |  5 ++++-
->  include/asm-generic/pgalloc.h   | 14 ++++++++++++--
->  5 files changed, 19 insertions(+), 6 deletions(-)
+>                                                       relies
 > 
-> diff --git a/arch/csky/include/asm/pgalloc.h b/arch/csky/include/asm/pgalloc.h
-> index bbbd069..2443226 100644
-> --- a/arch/csky/include/asm/pgalloc.h
-> +++ b/arch/csky/include/asm/pgalloc.h
-> @@ -29,7 +29,7 @@ static inline pte_t *pte_alloc_one_kernel(struct mm_struct *mm)
->  	pte_t *pte;
->  	unsigned long i;
->  
-> -	pte = (pte_t *) __get_free_page(GFP_KERNEL);
-> +	pte = __pte_alloc_one_kernel(mm);
->  	if (!pte)
->  		return NULL;
->  
-> diff --git a/arch/microblaze/mm/pgtable.c b/arch/microblaze/mm/pgtable.c
-> index 9f73265..e96dd1b 100644
-> --- a/arch/microblaze/mm/pgtable.c
-> +++ b/arch/microblaze/mm/pgtable.c
-> @@ -245,7 +245,7 @@ unsigned long iopa(unsigned long addr)
->  __ref pte_t *pte_alloc_one_kernel(struct mm_struct *mm)
->  {
->  	if (mem_init_done)
-> -		return (pte_t *)__get_free_page(GFP_KERNEL | __GFP_ZERO);
-> +		return __pte_alloc_one_kernel(mm);
->  	else
->  		return memblock_alloc_try_nid(PAGE_SIZE, PAGE_SIZE,
->  					      MEMBLOCK_LOW_LIMIT,
-> diff --git a/arch/openrisc/mm/ioremap.c b/arch/openrisc/mm/ioremap.c
-> index daae13a..3453acc 100644
-> --- a/arch/openrisc/mm/ioremap.c
-> +++ b/arch/openrisc/mm/ioremap.c
-> @@ -118,7 +118,7 @@ pte_t __ref *pte_alloc_one_kernel(struct mm_struct *mm)
->  	pte_t *pte;
->  
->  	if (likely(mem_init_done)) {
-> -		pte = (pte_t *)get_zeroed_page(GFP_KERNEL);
-> +		pte = __pte_alloc_one_kernel(mm);
->  	} else {
->  		pte = memblock_alloc(PAGE_SIZE, PAGE_SIZE);
->  		if (!pte)
-> diff --git a/arch/x86/mm/pgtable.c b/arch/x86/mm/pgtable.c
-> index a8ab3f9..fc2b9ef 100644
-> --- a/arch/x86/mm/pgtable.c
-> +++ b/arch/x86/mm/pgtable.c
-> @@ -851,6 +851,7 @@ int pud_free_pmd_page(pud_t *pud, unsigned long addr)
->  int pmd_free_pte_page(pmd_t *pmd, unsigned long addr)
->  {
->  	pte_t *pte;
-> +	struct page *page;
->  
->  	pte = (pte_t *)pmd_page_vaddr(*pmd);
->  	pmd_clear(pmd);
-> @@ -858,7 +859,9 @@ int pmd_free_pte_page(pmd_t *pmd, unsigned long addr)
->  	/* INVLPG to clear all paging-structure caches */
->  	flush_tlb_kernel_range(addr, addr + PAGE_SIZE-1);
->  
-> -	free_page((unsigned long)pte);
-> +	page = virt_to_page(pte);
-> +	pgtable_clear_and_dec(page);
-> +	__free_page(page);
->  
->  	return 1;
->  }
-> diff --git a/include/asm-generic/pgalloc.h b/include/asm-generic/pgalloc.h
-> index 328a714..2e20e9e 100644
-> --- a/include/asm-generic/pgalloc.h
-> +++ b/include/asm-generic/pgalloc.h
-> @@ -18,7 +18,14 @@
->   */
->  static inline pte_t *__pte_alloc_one_kernel(struct mm_struct *mm)
->  {
-> -	return (pte_t *)__get_free_page(GFP_PGTABLE_KERNEL);
-> +	struct page *page;
-> +	gfp_t gfp = GFP_PGTABLE_KERNEL;
-> +
-> +	page = alloc_pages(gfp & ~__GFP_HIGHMEM, 0);
-> +	if (!page)
-> +		return NULL;
-> +	pgtable_set_and_inc(page);
-> +	return (pte_t *)page_address(page);
+> But it would be better to restrict this barrage (or swarm) of patches
+> to Kconfig help text problems and/or strings that are printed to users.
 
-{
-	pte_t *pte = (pte_t *)__get_free_page(GFP_PGTABLE_KERNEL);
+I believe fixing typos isn't a particular problem and is
+overall rather a good thing.
 
-	if (pte)
-		pgtable_set_and_inc(virt_to_page(pte));
+Though backporting these patches would be silly.
 
-	return pte;
-}
-
-looks simpler, doesn't it?
-
->  }
->  
->  #ifndef __HAVE_ARCH_PTE_ALLOC_ONE_KERNEL
-> @@ -41,7 +48,10 @@ static inline pte_t *pte_alloc_one_kernel(struct mm_struct *mm)
->   */
->  static inline void pte_free_kernel(struct mm_struct *mm, pte_t *pte)
->  {
-> -	free_page((unsigned long)pte);
-> +	struct page *page = virt_to_page(pte);
-> +
-> +	pgtable_clear_and_dec(page);
-> +	__free_page(page);
->  }
->  
->  /**
-> -- 
-> 1.8.3.1
-> 
-
--- 
-Sincerely yours,
-Mike.
