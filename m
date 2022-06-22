@@ -2,102 +2,385 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63DA0CCA47D
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 13:11:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38A46C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 13:11:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353150AbiFVNLR (ORCPT
+        id S1353295AbiFVNLS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 09:11:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60964 "EHLO
+        Wed, 22 Jun 2022 09:11:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352562AbiFVNLJ (ORCPT
+        with ESMTP id S1352481AbiFVNLL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 09:11:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F5C522B12;
+        Wed, 22 Jun 2022 09:11:11 -0400
+Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9BEA1D311;
         Wed, 22 Jun 2022 06:11:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C74C619EC;
-        Wed, 22 Jun 2022 13:11:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66655C34114;
-        Wed, 22 Jun 2022 13:11:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655903467;
-        bh=PJzXe925HCqsYaa0YKzQGk6/8QcoNdNCI3+zoH4oCOw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Z28Ejs30GtBeePmJS4SvW7mW4DuI0E3OIXcbvfMWglYmkX4vTXF2Tf7R4dTNOoR+h
-         XGe6lNq88FK8RORGj6TNsPQXZDdpb9Gl3rve+62Uo4wLb5ITFbXkwgPKuxZiCoRx64
-         xds5VDgmm2dQgBvwJ16YtWttHtXR+WXQmlMg50mmClzFPMvZkhvkKzwJij3n2GWKH9
-         vbdOZxh3JurBtFtFwWZToIy9wAXc/9QnZmAzzLpSeZWzEkikGEEbi2RbTEbcA3N+6S
-         T9UtObpuwuVJRjMvQ52H4w4pWWFoZ4s/NCKU+D0cKVGPRFRS6gvUZNF46+LnXH1T2v
-         O2P83DSIS7RmA==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1o408N-0006GG-ME; Wed, 22 Jun 2022 15:11:03 +0200
-Date:   Wed, 22 Jun 2022 15:11:03 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 5/6] arm64: dts: qcom: add SA8540P and ADP
-Message-ID: <YrMU56wa322hH/VR@hovoldconsulting.com>
-References: <20220622041224.627803-1-bjorn.andersson@linaro.org>
- <20220622041224.627803-6-bjorn.andersson@linaro.org>
+Received: (Authenticated sender: ash@heyquark.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 1DDECFF813;
+        Wed, 22 Jun 2022 13:10:58 +0000 (UTC)
+From:   Ash Logan <ash@heyquark.com>
+To:     paulus@samba.org, mpe@ellerman.id.au, christophe.leroy@csgroup.eu,
+        robh+dt@kernel.org, benh@kernel.crashing.org
+Cc:     linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        j.ne@posteo.net, linkmauve@linkmauve.fr,
+        rw-r-r-0644@protonmail.com, devicetree@vger.kernel.org
+Subject: [PATCH v2 02/12] powerpc: wiiu: device tree
+Date:   Wed, 22 Jun 2022 23:10:27 +1000
+Message-Id: <20220622131037.57604-3-ash@heyquark.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220622131037.57604-1-ash@heyquark.com>
+References: <20220302044406.63401-1-ash@heyquark.com>
+ <20220622131037.57604-1-ash@heyquark.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220622041224.627803-6-bjorn.andersson@linaro.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 21, 2022 at 09:12:23PM -0700, Bjorn Andersson wrote:
-> Introduce the Qualcomm SA8540P automotive platform and the SA8295P ADP
-> development board.
-> 
-> The SA8540P and SC8280XP are fairly similar, so the SA8540P is built
-> ontop of the SC8280XP dtsi to reduce duplication. As more advanced
-> features are integrated this might be re-evaluated.
-> 
-> This initial contribution supports SMP, CPUFreq, cluster idle, UFS, RPMh
-> regulators, debug UART, PMICs, remoteprocs (NSPs crashes shortly after
-> booting) and USB.
-> 
-> The SA8295P ADP contains four PM8450 PMICs, which according to their
-> revid are compatible with PM8150. They are defined within the ADP for
-> now, to avoid creating additional .dtsi files for PM8150 with just
-> addresses changed - and to allow using the labels from the schematics.
-> 
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Add a device tree source file for the Nintendo Wii U video game console.
 
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/qcom/sa8295p-adp.dts
-> @@ -0,0 +1,427 @@
-> +// SPDX-License-Identifier: BSD-3-Clause
-> +/*
-> + * Copyright (c) 2021, The Linux Foundation. All rights reserved.
-> + * Copyright (c) 2022, Linaro Limited
-> + */
-> +
-> +/dts-v1/;
-> +
-> +#include <dt-bindings/gpio/gpio.h>
+Signed-off-by: Ash Logan <ash@heyquark.com>
+Co-developed-by: Roberto Van Eeden <rw-r-r-0644@protonmail.com>
+Signed-off-by: Roberto Van Eeden <rw-r-r-0644@protonmail.com>
+Co-developed-by: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+Signed-off-by: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+---
+v1->v2: Style and formatting changes suggested by Rob Herring.
+License remains GPL-2.0 as the other powerpc dtses are the same, happy
+to change if there is a different preferred default.
+ arch/powerpc/boot/dts/wiiu.dts | 322 +++++++++++++++++++++++++++++++++
+ 1 file changed, 322 insertions(+)
+ create mode 100644 arch/powerpc/boot/dts/wiiu.dts
 
-> +#include <dt-bindings/input/gpio-keys.h>
-> +#include <dt-bindings/input/input.h>
+diff --git a/arch/powerpc/boot/dts/wiiu.dts b/arch/powerpc/boot/dts/wiiu.dts
+new file mode 100644
+index 000000000000..def648d4362d
+--- /dev/null
++++ b/arch/powerpc/boot/dts/wiiu.dts
+@@ -0,0 +1,322 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Nintendo Wii U Device Tree Source
++ *
++ * Copyright (C) 2022 The linux-wiiu Team
++ */
++
++/dts-v1/;
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/input/input.h>
++
++/ {
++	model = "nintendo,wiiu";
++	compatible = "nintendo,wiiu";
++
++	#address-cells = <1>;
++	#size-cells = <1>;
++
++	chosen {
++		bootargs = "root=/dev/sda1 rootwait";
++	};
++
++	memory {
++		device_type = "memory";
++		reg = <0x00000000 0x02000000	/* MEM1 - 32MiB */
++		       0x08000000 0x00300000	/* MEM0 - 3MiB  */
++		       0x10000000 0x80000000>;	/* MEM2 - 2GiB  */
++	};
++
++	cpus {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		/* TODO: Add SMP */
++		PowerPC,espresso@0 {
++			device_type = "cpu";
++			reg = <0>;
++			clock-frequency = <1243125000>;		/* 1.243125GHz */
++			bus-frequency = <248625000>;		/* 248.625MHz core-to-bus 5x */
++			timebase-frequency = <62156250>;	/* 1/4 of the bus clock */
++			i-cache-size = <32768>; /* 32K icache */
++			i-cache-line-size = <32>;
++			i-cache-block-size = <32>;
++			i-cache-sets = <128>;
++			d-cache-size = <32768>; /* 32K dcache */
++			d-cache-line-size = <32>;
++			d-cache-block-size = <32>;
++			d-cache-sets = <128>;
++			next-level-cache = <&L2_0>;
++			L2_0:l2-cache {
++				compatible = "cache";
++				cache-level = <2>;
++				cache-unified;
++				cache-size = <0x80000>; /* 512KB L2 */
++				cache-line-size = <64>;
++				cache-block-size = <32>;
++				cache-sets = <2048>;
++			};
++		};
++	};
++
++	latte {
++		#address-cells = <1>;
++		#size-cells = <1>;
++		compatible = "nintendo,latte";
++		ranges = <0x0c000000 0x0c000000 0x00400000	/* Espresso-only registers */
++			  0x0d000000 0x0d000000 0x00200000	/* Latte AHB deivces */
++			  0x0d800000 0x0d800000 0x00800000>;	/* Latte SoC registers */
++
++		gpu@c200000 {
++			compatible = "nintendo,latte-gpu7";
++			reg = <0x0c200000 0x80000>;
++			interrupts = <2>;
++			interrupt-parent = <&espresso_pic>;
++		};
++
++		espresso_pic: pic@c000078 {
++			#interrupt-cells = <1>;
++			interrupt-controller;
++
++			compatible = "nintendo,espresso-pic";
++			reg = <0x0c000078 0x18>;
++		};
++
++		latte_dsp: dsp@c005000 {
++			compatible = "nintendo,latte-dsp";
++			reg = <0x0c005000 0x200>;
++		};
++
++		ehci_0: usb@d040000 {
++			compatible = "nintendo,latte-usb-ehci", "usb-ehci";
++			reg = <0x0d040000 0x100>;
++			interrupts = <4>;
++			interrupt-parent = <&latte_pic>;
++			big-endian-regs;
++		};
++
++		ohci_0_0: usb@d050000 {
++			compatible = "nintendo,latte-usb-ohci";
++			reg = <0x0d050000 0x100>;
++			interrupts = <5>;
++			interrupt-parent = <&latte_pic>;
++
++			big-endian-regs;
++		};
++
++		ohci_0_1: usb@d060000 {
++			compatible = "nintendo,latte-usb-ohci";
++			reg = <0x0d060000 0x100>;
++			interrupts = <6>;
++			interrupt-parent = <&latte_pic>;
++
++			big-endian-regs;
++		};
++
++		ehci_1: usb@d120000 {
++			compatible = "nintendo,latte-usb-ehci", "usb-ehci";
++			reg = <0x0d120000 0x100>;
++			interrupts = <16>;
++			interrupt-parent = <&latte_pic>;
++			big-endian-regs;
++		};
++
++		ohci_1_0: usb@d130000 {
++			compatible = "nintendo,latte-usb-ohci";
++			reg = <0x0d130000 0x100>;
++			interrupts = <35>;
++			interrupt-parent = <&latte_pic>;
++
++			big-endian-regs;
++		};
++
++		ehci_2: usb@d140000 {
++			compatible = "nintendo,latte-usb-ehci", "usb-ehci";
++			reg = <0x0d140000 0x100>;
++			interrupts = <36>;
++			interrupt-parent = <&latte_pic>;
++			big-endian-regs;
++		};
++
++		ohci_2_0: usb@d150000 {
++			compatible = "nintendo,latte-usb-ohci";
++			reg = <0x0d150000 0x100>;
++			interrupts = <37>;
++			interrupt-parent = <&latte_pic>;
++
++			big-endian-regs;
++		};
++
++		sdcard_0: sdhci@d070000 {
++			compatible = "nintendo,latte-sdhci","sdhci";
++			reg = <0x0d070000 0x200>;
++			interrupts = <7>;
++			interrupt-parent = <&latte_pic>;
++		};
++
++		wifi_0: sdhci@d080000 {
++			compatible = "nintendo,latte-sdhci","sdhci";
++			reg = <0x0d080000 0x200>;
++			interrupts = <8>;
++			interrupt-parent = <&latte_pic>;
++		};
++
++		legacy_ipc: ipc@d800000 {
++			compatible = "nintendo,latte-ipc", "nintendo,hollywood-ipc";
++			reg = <0x0d800000 0x10>;
++			interrupts = <30 31>;
++			interrupt-parent = <&latte_pic>;
++		};
++
++		latte_otp: otp@d8001ec {
++			compatible = "nintendo,latte-otp";
++			reg = <0x0d8001ec 0x8>;
++		};
++
++		sata: ahci@d160400 {
++			compatible = "nintendo,latte-ahci";
++			reg = <0x0d160400 0x808>;
++
++			interrupt-parent = <&latte_pic>;
++			interrupts = <38 28>;
++		};
++
++		latte_pic: pic@d800440 {
++			#interrupt-cells = <1>;
++			interrupt-controller;
++
++			compatible = "nintendo,latte-pic";
++			reg = <0x0d800440 0x30>;
++			interrupt-parent = <&espresso_pic>;
++			interrupts = <24>;
++		};
++
++		gpio: gpio@d8000c0 {
++			#gpio-cells = <2>;
++			compatible = "nintendo,latte-gpio", "nintendo,hollywood-gpio";
++
++			reg = <0x0d8000c0 0x40>;
++			gpio-controller;
++			/* TODO: There are actually 31 AHBALL GPIOs */
++			ngpios = <24>;
++
++			gpio-line-names =
++				"POWER", "DWIFI", "FAN", "DC_DC",
++				"", "Esp10WorkAround", "", "",
++				"PADPD", "", "EEP_CS", "EEP_CLK",
++				"EEP_MOSI", "EEP_MISO", "AVE_SCL", "AVE_SDA",
++				"DEBUG0", "DEBUG1", "DEBUG2", "DEBUG3",
++				"DEBUG4", "DEBUG5", "DEBUG6", "DEBUG7";
++
++			interrupt-controller;
++			#interrupt-cells = <2>;
++			interrupts = <10>;
++			interrupt-parent = <&latte_pic>;
++		};
++
++		gpio2: gpio@d800520 {
++			#gpio-cells = <2>;
++			compatible = "nintendo,latte-gpio", "nintendo,hollywood-gpio";
++
++			reg = <0x0d800520 0x40>;
++			gpio-controller;
++			ngpios = <7>;
++
++			gpio-line-names =
++				"FANSPEED", "SMC_SCL", "SMC_SDA", "DC_DC2",
++				"AVE_INT", "", "AVE_RESET";
++
++			interrupt-controller;
++			#interrupt-cells = <2>;
++			interrupts = <10>;
++			interrupt-parent = <&latte_pic>;
++		};
++	};
++
++	spi_gpio: spi-gpio {
++		cs-gpios = <&gpio 10 GPIO_ACTIVE_HIGH>;
++		gpio-sck = <&gpio 11 GPIO_ACTIVE_HIGH>;
++		gpio-mosi = <&gpio 12 GPIO_ACTIVE_HIGH>;
++		gpio-miso = <&gpio 13 GPIO_ACTIVE_HIGH>;
++		num-chipselects = <1>;
++
++		eeprom@0 {
++			compatible = "atmel,at93c66";
++			reg = <0>;
++			spi-max-frequency = <1000000>;
++			spi-cs-high;
++			/* TODO: wiiubrew says this is 16-bit, but I only get the correct
++			 * values in 8-bit...
++			 */
++			data-size = <8>;
++			read-only;
++
++			#address-cells = <1>;
++			#size-cells = <1>;
++
++			/* https://wiiubrew.org/wiki/Hardware/SEEPROM */
++			rng_seed: rng@12 { reg = <0x012 8>; };
++			ppc_pvr: pvr@20 { reg = <0x020 4>; };
++			seeprom_ver_str: sver-str@24 { reg = <0x024 6>; };
++			seeprom_ver: sver@2a { reg = <0x02A 2>; };
++			otp_ver: over@2c { reg = <0x02C 2>; };
++			otp_rev: orev@2e { reg = <0x02E 2>; };
++			otp_ver_str: over-str@30 { reg = <0x030 8>; };
++
++			bc_crc: bc-crc@38 { reg = <0x038 4>; };
++			bc_sz: bc-sz@3c { reg = <0x03C 2>; };
++			bc_ver: bc-ver@3e { reg = <0x03E 2>; };
++			bc_boardtype: boardtype@42 { reg = <0x042 2>; };
++			bc_boardrev: boardrev@44 { reg = <0x044 2>; };
++			bc_bootsource: bootsource@46 { reg = <0x046 2>; };
++			bc_ddr3size: ddr3size@48 { reg = <0x048 2>; };
++			bc_ddr3speed: ddr3speed@4a { reg = <0x04A 2>; };
++			bc_ppcclockmul: ppcclockmul@4c { reg = <0x04C 2>; };
++			bc_iopclockmul: iopclockmul@46 { reg = <0x04E 2>; };
++			bc_video1080p: video1080p@50 { reg = <0x050 2>; };
++			bc_ddr3vendor: ddr3vendor@52 { reg = <0x052 2>; };
++			bc_movpassivereset: movpassivereset@54 { reg = <0x054 2>; };
++			bc_syspllspd: syspllspd@56 { reg = <0x056 2>; };
++			bc_satadevice: satadevice@58 { reg = <0x058 2>; };
++			bc_consoletype: consoletype@5a { reg = <0x05A 2>; };
++			bc_deviceprescence: deviceprescence@5c { reg = <0x05C 2>; };
++
++			drive_key: drvkey@80 { reg = <0x080 16>; };
++			factory_key: fackey@90 { reg = <0x090 16>; };
++			shdd_key: shddkey@a0 { reg = <0x0A0 16>; };
++			usb_key_seed: usbkeyseed@b0 { reg = <0x0B0 16>; };
++			drive_key_flag: drvkeyf@c0 { reg = <0x0C0 2>; };
++			usb_key_flag: udbkeyf@c2 { reg = <0x0C2 2>; };
++			shdd_key_flag: shddkeyf@c4 { reg = <0x0C4 2>; };
++
++			sysprod_version: sp_ver@140 { reg = <0x140 4>; };
++			sysprod_eeprom_version: sp_ee_ver@144 { reg = <0x144 4>; };
++			sysprod_product_area: sp_parea@148 { reg = <0x148 4>; };
++			sysprod_game_region: sp_region@14c { reg = <0x14C 4>; };
++			sysprod_ntsc_pal: sp_ntscpal@150 { reg = <0x150 4>; };
++			sysprod_5ghz_country: sp_5ghz_c@154 { reg = <0x154 2>; };
++			sysprod_5ghz_country_rev: sp_5ghz_crev@156 { reg = <0x156 2>; };
++			sysprod_code: sp_code@158 { reg = <0x158 8>; };
++			sysprod_serial: sp_serial@160 { reg = <0x160 16>; };
++			sysprod_model: sp_model@170 { reg = <0x170 16>; };
++
++			prod_year: pyear@188 { reg = <0x188 2>; };
++			prod_date: pdate@18a { reg = <0x18A 2>; };
++			prod_time: ptime@18c { reg = <0x18C 2>; };
++
++			boot_params: boot_params@1c0 { reg = <0x1C0 48>; };
++		};
++	};
++
++	/* TODO make this gpio-keyed once hollywood-gpio supports interrupts */
++	gpio-keys-polled {
++		poll-interval = <50>;
++		compatible = "gpio-keys-polled";
++
++		power {
++			label = "Power Button";
++			gpios = <&gpio 0 GPIO_ACTIVE_HIGH>;
++			linux,code = <KEY_POWER>;
++		};
++	};
++};
+-- 
+2.36.1
 
-Both of these are unused for ADP and should be removed.
-
-> +#include <dt-bindings/regulator/qcom,rpmh-regulator.h>
-> +#include <dt-bindings/spmi/spmi.h>
-> +
-> +#include "sa8540p.dtsi"
-
-Johan
