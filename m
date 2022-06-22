@@ -2,113 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E04CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 05:05:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53F61CCA482
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 05:11:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345329AbiFVFFj (ORCPT
+        id S1356677AbiFVFLB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 01:05:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48458 "EHLO
+        Wed, 22 Jun 2022 01:11:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232254AbiFVFFf (ORCPT
+        with ESMTP id S237181AbiFVFK7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 01:05:35 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8963935A90
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 22:05:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655874334; x=1687410334;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=VwbCg0Sy0q5tiIBKayXOxfAIqzRDKVC/3B3XYzTebAQ=;
-  b=PKpMADiXpxc7mnmrGRXW5Q8NIm3VyR73Sn3nqszGAlLVHn8Y1qzv6FNz
-   mCfqGYH0f5/FOn2mYVHStcMJB79r8PkJmX8xfq2VshA1hz4XEJUnh+muZ
-   +OVO2gKCj7VHtRKjjgrnqjgQp+oKz1UgX5Dv2wBIz4bUVORMyTOu7e/oB
-   +nZX8t9TtnQHPUf2NWxZ+6vgnxO55h1nhMJIEuKuBHC3uU0RfEhtzWB2u
-   XfJzfYqmDI0OcchWJmHQdC8QL60/bcVsM4qtOBqo8o6y2S6stJDb/+b4o
-   XHYY6orVQ1cKgTe+PMbiJsHDMjfUp2rZZxQNc1HfV492dYE3JMey/GJ7g
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="344305294"
-X-IronPort-AV: E=Sophos;i="5.92,211,1650956400"; 
-   d="scan'208";a="344305294"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 22:05:34 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,211,1650956400"; 
-   d="scan'208";a="643990164"
-Received: from lkp-server02.sh.intel.com (HELO a67cc04a5eeb) ([10.239.97.151])
-  by fmsmga008.fm.intel.com with ESMTP; 21 Jun 2022 22:05:32 -0700
-Received: from kbuild by a67cc04a5eeb with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o3sYW-0000rF-5t;
-        Wed, 22 Jun 2022 05:05:32 +0000
-Date:   Wed, 22 Jun 2022 13:04:36 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [rmk-arm:zii 35/107] drivers/net/phy/phylink.c:1328: warning:
- expecting prototype for phylink_set_fixe_linkd(). Prototype was for
- phylink_set_fixed_link() instead
-Message-ID: <202206221232.Go3hwcU6-lkp@intel.com>
+        Wed, 22 Jun 2022 01:10:59 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFC8235DC1;
+        Tue, 21 Jun 2022 22:10:58 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 25M5AlX3046837;
+        Wed, 22 Jun 2022 00:10:47 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1655874647;
+        bh=DrZQGD4CPguty23X5d/nt0agTy8fsBIfOiO5YBoPvw8=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=Qd3b+IQ3DoQyt4rNSzOQZJz0ssieZLV9V3l0telKS4KENOkt/SIfLo274MZKi/avO
+         sxVteNJ9EXiZQgVT9DiKTh0e4AksPDOVZav+k9mHjtufASRXBrJTscHE2xbCW06mmP
+         i8k/wYNzi4rwEIADLTzF8maQsUet8u/zvCKRYbA4=
+Received: from DFLE102.ent.ti.com (dfle102.ent.ti.com [10.64.6.23])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 25M5AlEu037496
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 22 Jun 2022 00:10:47 -0500
+Received: from DFLE108.ent.ti.com (10.64.6.29) by DFLE102.ent.ti.com
+ (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 22
+ Jun 2022 00:10:47 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE108.ent.ti.com
+ (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Wed, 22 Jun 2022 00:10:47 -0500
+Received: from [10.24.69.159] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 25M5Ah6t022819;
+        Wed, 22 Jun 2022 00:10:44 -0500
+Message-ID: <4bc63a00-a220-e9b8-49ff-8c2d783b55f5@ti.com>
+Date:   Wed, 22 Jun 2022 10:40:42 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] PCI: endpoint: Don't stop EP controller by EP function
+Content-Language: en-US
+To:     Shunsuke Mie <mie@igel.co.jp>
+CC:     Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Hou Zhiqiang <Zhiqiang.Hou@nxp.com>,
+        Li Chen <lchen@ambarella.com>, <linux-pci@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220622040924.113279-1-mie@igel.co.jp>
+From:   Kishon Vijay Abraham I <kishon@ti.com>
+In-Reply-To: <20220622040924.113279-1-mie@igel.co.jp>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.armlinux.org.uk/~rmk/linux-arm zii
-head:   aedc75cf78fca1c8b7052c5d59981354f47e2e48
-commit: 5c17680ea9fcb1a7cf664279fe1bcf51934dcdaa [35/107] net: phylink: add phylink_set_fixed_link()
-config: x86_64-randconfig-a016 (https://download.01.org/0day-ci/archive/20220622/202206221232.Go3hwcU6-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 8b8d126598ce7bd5243da7f94f69fa1104288bee)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        git remote add rmk-arm git://git.armlinux.org.uk/~rmk/linux-arm
-        git fetch --no-tags rmk-arm zii
-        git checkout 5c17680ea9fcb1a7cf664279fe1bcf51934dcdaa
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/net/phy/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/net/phy/phylink.c:1328: warning: expecting prototype for phylink_set_fixe_linkd(). Prototype was for phylink_set_fixed_link() instead
 
 
-vim +1328 drivers/net/phy/phylink.c
+On 22/06/22 09:39, Shunsuke Mie wrote:
+> For multi-function endpoint device, an ep function shouldn't stop EP
+> controller. Nomally the controller is stopped via configfs.
 
-  1317	
-  1318	/**
-  1319	 * phylink_set_fixe_linkd() - set a fixed link configuration for phylink
-  1320	 * @pl: a pointer to a &struct phylink returned from phylink_create()
-  1321	 * @speed: a SPEED_xx constant
-  1322	 * @duplex: DUPLEX_FULL or DUPLEX_HALF
-  1323	 *
-  1324	 * Set a fixed-link configuration for the phylink instance immediately
-  1325	 * after creation. Must not be used at any other time.
-  1326	 */
-  1327	int phylink_set_fixed_link(struct phylink *pl, int speed, int duplex)
-> 1328	{
-  1329		if (pl->cfg_link_an_mode != MLO_AN_PHY || pl->phydev || pl->sfp_bus)
-  1330			return -EINVAL;
-  1331	
-  1332		pl->link_config.speed = speed;
-  1333		pl->link_config.duplex = duplex;
-  1334		pl->link_config.link = 1;
-  1335		pl->cfg_link_an_mode = MLO_AN_FIXED;
-  1336		pl->cur_link_an_mode = MLO_AN_FIXED;
-  1337	
-  1338		return 0;
-  1339	}
-  1340	EXPORT_SYMBOL_GPL(phylink_set_fixed_link);
-  1341	
+%s/Nomally/Normally/
+> 
+> Fixes: 349e7a85b25f ("PCI: endpoint: functions: Add an EP function to test PCI")
+> Signed-off-by: Shunsuke Mie <mie@igel.co.jp>
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thank you for the fix!
+
+Acked-by: Kishon Vijay Abraham I <kishon@ti.com>
+> ---
+>  drivers/pci/endpoint/functions/pci-epf-test.c | 1 -
+>  1 file changed, 1 deletion(-)
+> 
+> diff --git a/drivers/pci/endpoint/functions/pci-epf-test.c b/drivers/pci/endpoint/functions/pci-epf-test.c
+> index 5b833f00e980..a5ed779b0a51 100644
+> --- a/drivers/pci/endpoint/functions/pci-epf-test.c
+> +++ b/drivers/pci/endpoint/functions/pci-epf-test.c
+> @@ -627,7 +627,6 @@ static void pci_epf_test_unbind(struct pci_epf *epf)
+>  
+>  	cancel_delayed_work(&epf_test->cmd_handler);
+>  	pci_epf_test_clean_dma_chan(epf_test);
+> -	pci_epc_stop(epc);
+>  	for (bar = 0; bar < PCI_STD_NUM_BARS; bar++) {
+>  		epf_bar = &epf->bar[bar];
+>  
