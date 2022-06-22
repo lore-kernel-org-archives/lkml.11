@@ -2,111 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EEA9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 14:07:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BB61C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 14:07:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357620AbiFVOHH (ORCPT
+        id S1357882AbiFVOHa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 10:07:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56398 "EHLO
+        Wed, 22 Jun 2022 10:07:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231863AbiFVOHE (ORCPT
+        with ESMTP id S233499AbiFVOH2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 10:07:04 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7F9A37BD3
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 07:07:03 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id z17so9317001wmi.1
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 07:07:03 -0700 (PDT)
+        Wed, 22 Jun 2022 10:07:28 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96486381B0
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 07:07:27 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id jb13so1910770plb.9
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 07:07:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=MzKWleynAfOZzr1G32uJu4jvVPYdSV6qOcoCG8BDdeI=;
-        b=Yybid874HpfGUBNJPUpQicuLtK79W9BMcpg+PcvVhrK/OVuHkXUoO2oqO3aymUPI4H
-         NjAF+XpIeU4InRKHibe6EaWdY1PBtBghxcvFcZXuZVWsn9dEfxEbD8kYZ16iQuS+7Fyg
-         5Do1T/02aka/OxICUl+TNKuG09evEQSRXIOv4Z4j2KYRCT1TZdJ8bK1xUhG65QOFVYKl
-         B1vUz+CI8CSimhaytO2075oJnFb5Ul6L+h55TV5yYgA3AM2r8zCFoF+BYCaiFfcbb4A+
-         W3XSyCT1SxqdvvpkDHFX5njMe7qafyIXIppomoQAG6PsniNW9eb3Bq5mX8l6dr+41RCS
-         pVgA==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=e9oD0W0ylRYnkIlTyiKZwIapNVPUeC7hKoZrwz+0k8Y=;
+        b=rc8s6ZIwt9RUA9gTUANp/tC0i4E9+YxpvS4tpGBDrQNBgjZ0eTnPSoj5FBbFcaxiWT
+         0sH3ckRQNBBTBzaa6Xyb4MLHztJGB3DX4RnZrlNEl+dohrhjX42bNi60gasOnADB6E+v
+         9lydJ6EKoFifKzMstT3ABLjNsuumcURA0fzgZzbD+7BmO9GYWVB990JViJcY+gaNXUnq
+         jTQ6hNdIZ9CaCOnsTEs6YMlbZFVXbYT2lA9/6D/+U8G5fnBL9YCmSMxtSlCxfUQHT65Z
+         dHOCQgXeFPw/LYlcme2wHVwPTOsVh7M7AcGFUFNbWnI6mM2dIRTztCnvJ/zM6wYAX4gg
+         TkDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=MzKWleynAfOZzr1G32uJu4jvVPYdSV6qOcoCG8BDdeI=;
-        b=SJCxIMK2PMkISV/qp1g1QwxOESvSkRkCWVOdGjI+LURz4l7QuUQ71ZPHZQvzRNR4ij
-         OOLF+yvxwZB+QL2BSiEVKyamohZfP0AG7nbUGe2uGkRzrusteOxbzl/WpALsfJwStHp4
-         iwXZ/5bHuP+etqFwZTFg5yhTwerurX63S+nvPX2MD0bX8LbW9EKuNNlPtSQhR9D60tVS
-         5FJwLJ6r/HNPb72/3WKPyqYax090BwcLj2WZzMYB4MJhiGT6ZLSelHRKA7TOkffcYqU8
-         yI+UB4dNp67hkaeJesU4KJMSOt8mF71hHOp0vDUwFakkP+3SURS59xJAkPqSVqaZxD6s
-         1CdA==
-X-Gm-Message-State: AOAM531+3u4p6JS7jGYN+GY7EUOIRJNsbyM0gl+9pvauuw0FiAWFZgn+
-        Dt5XLNgUZCjZ+BjKssiBhhI=
-X-Google-Smtp-Source: ABdhPJze2ccttYHD6Z+ReNpSXGvAL7/WlO9i1HO+wGVa0wB4egIBmMjI9h78jpnILe5ZX0+xYrulJA==
-X-Received: by 2002:a7b:c4cb:0:b0:39c:35b3:e8c1 with SMTP id g11-20020a7bc4cb000000b0039c35b3e8c1mr46816236wmk.183.1655906822523;
-        Wed, 22 Jun 2022 07:07:02 -0700 (PDT)
-Received: from [192.168.0.16] ([37.223.148.38])
-        by smtp.gmail.com with ESMTPSA id d7-20020adfef87000000b0021b9153f80fsm8644703wro.71.2022.06.22.07.07.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Jun 2022 07:07:01 -0700 (PDT)
-Message-ID: <d93c3721-8415-ad4d-2f68-2d55adbd1fff@gmail.com>
-Date:   Wed, 22 Jun 2022 16:06:59 +0200
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=e9oD0W0ylRYnkIlTyiKZwIapNVPUeC7hKoZrwz+0k8Y=;
+        b=n4F/ESNoCHClBekMSlPXWkYbd0W2VMKUCEX4++KsHshKKQLPs8pHIEN2ByjnYu8rOT
+         fZpRIqxZBMU+rVlj8MTSRvbKhv0h7Je8UPWiz6OxHLKmng+h0ai0B6KtYmDp6K4eQK3P
+         rmF51oNhpcPjvn4mRIhj3fALO99c8QCbDPeSo+YgaxVzx0kGYn0j5KGM9eihfKXprgTC
+         xJxU8JmmUMUZ7RGgIaUGmbDp2c2K5QckRNX8FbxAD3nqYl3kn1yCa2fvechycsgHupFI
+         MvO5dj3Mpf+C3gcuU/IdiPIz2kDTNl8+FVgQn3u+VI13mJcIqObEK5WjcCDtBNR/BqEc
+         tINQ==
+X-Gm-Message-State: AJIora96fIqjn6E6HrDLGzVl5RNwqGn43U1J4ZSwRuuhOvU57mWPTvZh
+        B1eNQXLw2FIS5bpQkiCGVIzagw==
+X-Google-Smtp-Source: AGRyM1tNiYBj57sFkmJtXiMiuQlgRK9d7swr7qhm/sS8KIyogJ13HhMpOsZ4wLTWDH7PPHj4ALFQBw==
+X-Received: by 2002:a17:902:e74b:b0:166:4d34:3be3 with SMTP id p11-20020a170902e74b00b001664d343be3mr34821376plf.102.1655906846962;
+        Wed, 22 Jun 2022 07:07:26 -0700 (PDT)
+Received: from localhost ([122.172.201.58])
+        by smtp.gmail.com with ESMTPSA id mp15-20020a17090b190f00b001ec92c52285sm7633207pjb.21.2022.06.22.07.07.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jun 2022 07:07:26 -0700 (PDT)
+Date:   Wed, 22 Jun 2022 19:37:23 +0530
+From:   Viresh Kumar <viresh.kumar@linaro.org>
+To:     Jon Hunter <jonathanh@nvidia.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
+        Stephen Boyd <sboyd@kernel.org>, linux-pm@vger.kernel.org,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        linux-kernel@vger.kernel.org,
+        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
+Subject: Re: [PATCH 3/8] OPP: Reuse _opp_compare_key() in _opp_add_static_v2()
+Message-ID: <20220622140723.msm3sxsuvtshotld@vireshk-i7>
+References: <cover.1654849214.git.viresh.kumar@linaro.org>
+ <2e335a6c263704a8d465bd02896fc5fff0533fdc.1654849214.git.viresh.kumar@linaro.org>
+ <eb9558fd-4f2d-4e83-f9a3-86ff5dd51784@nvidia.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH] soc: mediatek: mutex: Use DDP_COMPONENT_DITHER0 mod index
- for MT8365
-Content-Language: en-US
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Cc:     fparent@baylibre.com, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        "jason-jh.lin" <jason-jh.lin@mediatek.com>
-References: <20220620102454.131417-1-angelogioacchino.delregno@collabora.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <20220620102454.131417-1-angelogioacchino.delregno@collabora.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <eb9558fd-4f2d-4e83-f9a3-86ff5dd51784@nvidia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 20/06/2022 12:24, AngeloGioacchino Del Regno wrote:
-> In commit
-> 4e8988c634a1 ("soc: mediatek: add DDP_DOMPONENT_DITHER0 enum for mt8195 vdosys0")
-> the enum mtk_ddp_comp_id was modified to add an index number to the
-> DITHER component because some new SoCs have multiple dither blocks.
+On 22-06-22, 14:58, Jon Hunter wrote:
+> FYI ... if I checkout commit 00d776d33da9 ("OPP: Reuse
+> _opp_compare_key() in _opp_add_static_v2()") from next-20220622
+> it does not compile ...
 > 
-> As a result, all of the mutex mod arrays have been changed to use the
-> new definition instead of the old one (even if that's retained): for
-> consistency purposes, follow the same trend on the newly introduced
-> MT8365 mutex mod array.
+> drivers/opp/of.c: In function ‘_opp_add_static_v2’:
+> drivers/opp/of.c:933:25: error: passing argument 1 of ‘_opp_compare_key’ from incompatible pointer type [-Werror=incompatible-pointer-types]
+>     if (_opp_compare_key(opp_table, new_opp, opp_table->suspend_opp) == 1) {
+>                          ^~~~~~~~~
+> In file included from drivers/opp/of.c:22:0:
+> drivers/opp/opp.h:228:5: note: expected ‘struct dev_pm_opp *’ but argument is of type ‘struct opp_table *’
+>  int _opp_compare_key(struct dev_pm_opp *opp1, struct dev_pm_opp *opp2);
+>      ^~~~~~~~~~~~~~~~
+> drivers/opp/of.c:933:8: error: too many arguments to function ‘_opp_compare_key’
+>     if (_opp_compare_key(opp_table, new_opp, opp_table->suspend_opp) == 1) {
+>         ^~~~~~~~~~~~~~~~
+> In file included from drivers/opp/of.c:22:0:
+> drivers/opp/opp.h:228:5: note: declared here
+>  int _opp_compare_key(struct dev_pm_opp *opp1, struct dev_pm_opp *opp2);
+>      ^~~~~~~~~~~~~~~~
 > 
-> This commit brings no functional changes.
-> 
-> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> This breaks bisecting -next and so would be good to fix this.
 
-Applied, thanks!
+Yeah, this was reported yesterday and is already fixed in my branch, along with
+few more fixes.
 
-Matthias
+git://git.kernel.org/pub/scm/linux/kernel/git/vireshk/pm.git opp/linux-next
 
-> ---
->   drivers/soc/mediatek/mtk-mutex.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/soc/mediatek/mtk-mutex.c b/drivers/soc/mediatek/mtk-mutex.c
-> index fa8e0ba38803..2fd8318c3bdc 100644
-> --- a/drivers/soc/mediatek/mtk-mutex.c
-> +++ b/drivers/soc/mediatek/mtk-mutex.c
-> @@ -358,7 +358,7 @@ static const unsigned int mt8365_mutex_mod[DDP_COMPONENT_ID_MAX] = {
->   	[DDP_COMPONENT_AAL0] = MT8365_MUTEX_MOD_DISP_AAL,
->   	[DDP_COMPONENT_CCORR] = MT8365_MUTEX_MOD_DISP_CCORR,
->   	[DDP_COMPONENT_COLOR0] = MT8365_MUTEX_MOD_DISP_COLOR0,
-> -	[DDP_COMPONENT_DITHER] = MT8365_MUTEX_MOD_DISP_DITHER,
-> +	[DDP_COMPONENT_DITHER0] = MT8365_MUTEX_MOD_DISP_DITHER,
->   	[DDP_COMPONENT_DPI0] = MT8365_MUTEX_MOD_DISP_DPI0,
->   	[DDP_COMPONENT_DSI0] = MT8365_MUTEX_MOD_DISP_DSI0,
->   	[DDP_COMPONENT_GAMMA] = MT8365_MUTEX_MOD_DISP_GAMMA,
+It hasn't landed into linux-next/master yet though.
+
+-- 
+viresh
