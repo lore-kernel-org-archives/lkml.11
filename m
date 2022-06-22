@@ -2,115 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73E8AC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 09:28:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D4C9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 09:28:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355234AbiFVJ2N (ORCPT
+        id S1355755AbiFVJ24 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 05:28:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57000 "EHLO
+        Wed, 22 Jun 2022 05:28:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356378AbiFVJ1p (ORCPT
+        with ESMTP id S1357552AbiFVJ2w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 05:27:45 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73E6A37A14
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 02:27:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655890064; x=1687426064;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=iiFLOMxIIm5NPds5E0AcgENCgnumF65jA2ZbRysJsY0=;
-  b=lShDsCpPjFsjZfQz4wF5pUsm0Dg3VL/atre8FQI36rp7vINMxGmMlSjs
-   +flEP++N+EDhtPeqXHGK5d/+c6ZAX4Oy2+rxj3I665rhN8rblQ5Laeu7a
-   bkD6oBzzVYIZoLGXJ0rAFQ0XuuCFIgm3IV0NBFx6u1zH8lxpufX2yNuYr
-   ZPjHijQDlBpQW38XS/CAfTZ9K9atgVf0jEpUz1GRj/5nhUPYErv5FdAz0
-   BJt/L5EarPf0ef43/pXgzR3TQIVy+DxOe2391u68c87s5DpJMVhnyQQeP
-   ydJacvSQBaN1o3VDNQg4TwHHdLoxDM6FxOg7Ja+Jxiobd7b4H5SAYJEg/
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="263401180"
-X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="263401180"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 02:27:44 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="620835546"
-Received: from lkp-server02.sh.intel.com (HELO a67cc04a5eeb) ([10.239.97.151])
-  by orsmga001.jf.intel.com with ESMTP; 22 Jun 2022 02:27:41 -0700
-Received: from kbuild by a67cc04a5eeb with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o3weC-00015d-Ot;
-        Wed, 22 Jun 2022 09:27:40 +0000
-Date:   Wed, 22 Jun 2022 17:26:43 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Laurent Dufour <ldufour@linux.ibm.com>, mpe@ellerman.id.au,
-        benh@kernel.crashing.org, paulus@samba.org, nathanl@linux.ibm.com,
-        haren@linux.vnet.ibm.com, npiggin@gmail.com
-Cc:     kbuild-all@lists.01.org, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/4] powerpc/watchdog: introduce a LPM factor
-Message-ID: <202206221732.AujJ8kWm-lkp@intel.com>
-References: <20220614135414.37746-4-ldufour@linux.ibm.com>
+        Wed, 22 Jun 2022 05:28:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3740062FF
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 02:28:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BE461619B5
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 09:28:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 600ABC34114;
+        Wed, 22 Jun 2022 09:28:49 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="bRSs/AVI"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1655890127;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=yVnmJCBUJKAPqwoibTIejnNGbm66ojxv2vnN/zLU9XQ=;
+        b=bRSs/AVIHRDdO4hHRjos3GdgSjRMbi3HOr9NL9fvRvEyp0rvY5WHj7vu8ir71GVHAnv9jz
+        W/onECPc32ySeDu4qB89Z/LKOCicmS7WfT5cvmlzaMVfTtPWDl2Pn113riZCtWHTxgQwSL
+        +vvY0ZtG2gzDqyEo2g4M3A6B5zpydQQ=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id a27def2d (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Wed, 22 Jun 2022 09:28:47 +0000 (UTC)
+Date:   Wed, 22 Jun 2022 11:28:44 +0200
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     kernel test robot <oliver.sang@intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, lkp@lists.01.org, lkp@intel.com
+Subject: Re: [random]  31ac294037:
+ BUG:kernel_reboot-without-warning_in_test_sta
+Message-ID: <YrLgzJm7q3XbjXPQ@zx2c4.com>
+References: <YrK7W4HebAqkpw+z@xsang-OptiPlex-9020>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220614135414.37746-4-ldufour@linux.ibm.com>
+In-Reply-To: <YrK7W4HebAqkpw+z@xsang-OptiPlex-9020>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Laurent,
+On Wed, Jun 22, 2022 at 02:48:59PM +0800, kernel test robot wrote:
+> [ 61.471397][ T855] random: get_random_u32 called from arch_align_stack+0x33/0x4e with crng_init=0 
+> [ 61.471431][ T855] random: get_random_bytes called from create_elf_tables+0x14f/0x84c with crng_init=0 
+> [ 61.471493][ T855] random: get_random_u64 called from randomize_page+0x7f/0x93 with crng_init=0 
+> [ 61.474209][ T792] random: get_random_u32 called from arch_setup_additional_pages+0x9d/0xe1 with crng_init=0 
+> [ 61.474251][ T792] random: get_random_u32 called from arch_align_stack+0x33/0x4e with crng_init=0 
 
-Thank you for the patch! Yet something to improve:
+If the DEBUG option, CONFIG_WARN_ALL_UNSEEDED_RANDOM=y, is set, then
+this is exactly the intended behavior. Looking at your .config, it is
+set. So no issue here.
 
-[auto build test ERROR on powerpc/next]
-[also build test ERROR on linus/master v5.19-rc3 next-20220621]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Jason
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Laurent-Dufour/Extending-NMI-watchdog-during-LPM/20220614-215716
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/powerpc/linux.git next
-config: powerpc-mgcoge_defconfig (https://download.01.org/0day-ci/archive/20220622/202206221732.AujJ8kWm-lkp@intel.com/config)
-compiler: powerpc-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/368bca30c0737461c2ed32a788293018c25fc9c7
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Laurent-Dufour/Extending-NMI-watchdog-during-LPM/20220614-215716
-        git checkout 368bca30c0737461c2ed32a788293018c25fc9c7
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash arch/powerpc/kernel/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from arch/powerpc/kernel/traps.c:69:
->> arch/powerpc/include/asm/nmi.h:11:13: error: 'watchdog_nmi_set_lpm_factor' defined but not used [-Werror=unused-function]
-      11 | static void watchdog_nmi_set_lpm_factor(u64 factor) {}
-         |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-   cc1: all warnings being treated as errors
-
-
-vim +/watchdog_nmi_set_lpm_factor +11 arch/powerpc/include/asm/nmi.h
-
-     4	
-     5	#ifdef CONFIG_PPC_WATCHDOG
-     6	extern void arch_touch_nmi_watchdog(void);
-     7	long soft_nmi_interrupt(struct pt_regs *regs);
-     8	void watchdog_nmi_set_lpm_factor(u64 factor);
-     9	#else
-    10	static inline void arch_touch_nmi_watchdog(void) {}
-  > 11	static void watchdog_nmi_set_lpm_factor(u64 factor) {}
-    12	#endif
-    13	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
