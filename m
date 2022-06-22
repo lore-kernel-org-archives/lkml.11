@@ -2,73 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42DA3CCA47D
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 10:44:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74122C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 10:44:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355398AbiFVKn7 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 06:43:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60722 "EHLO
+        id S235054AbiFVKoD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 06:44:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356400AbiFVKnn (ORCPT
+        with ESMTP id S1356506AbiFVKnq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 06:43:43 -0400
-Received: from smtpbg.qq.com (smtpbg138.qq.com [106.55.201.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4260F17A8D;
-        Wed, 22 Jun 2022 03:43:38 -0700 (PDT)
-X-QQ-mid: bizesmtp71t1655894543tpupmw1j
-Received: from ubuntu.localdomain ( [223.104.103.173])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 22 Jun 2022 18:42:19 +0800 (CST)
-X-QQ-SSF: 01000000008000B0B000D00A0000000
-X-QQ-FEAT: ZOXnxASMPe5VRBWgokSLGXBTaMGzlhJqYKX2egOFszHMTGu2cDh1vfuVNM0/i
-        ObP6isGPyykUBTCAg1gRhkvP6BChVZduonyKGas1SOfEearuutvSWSX5x8XsB7agA3cDIfE
-        bf0fghZXbno+EP33ipXOdsrEMiW+L+6P1PDI5oWAErHuRNTIkRqqxzDo/GNAek76e1wFoOF
-        uiuHFrg22WNrU72lq371buW8mLb26DR+TuVSXSbl/JL9KPHQiR/mwQ+RpPcGqQ3KdfbOjKT
-        qoXxAbDRzdN41Ctwqf/yEDdRtyXAN5T84trruwx1DlpkkgP4Dz5IJUMf1cUq4LjVbmWyhuc
-        qt6u7NvPZk7BM/ysR8+aLGiPdJCGg==
-X-QQ-GoodBg: 0
-From:   Jiang Jian <jiangjian@cdjrlc.com>
-To:     johan@kernel.org
-Cc:     gregkh@linuxfoundation.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jiang Jian <jiangjian@cdjrlc.com>
-Subject: [PATCH] USB: serial: mos7720: drop unexpected word "the" in the comments
-Date:   Wed, 22 Jun 2022 18:42:17 +0800
-Message-Id: <20220622104217.7934-1-jiangjian@cdjrlc.com>
-X-Mailer: git-send-email 2.17.1
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam10
+        Wed, 22 Jun 2022 06:43:46 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B1DA167C4;
+        Wed, 22 Jun 2022 03:43:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=d9qh4ClogxgC0O6hF1eUSJPidsyvY/LbjmD7UJqICRw=; b=effxifTebkgcG6rotJpwJVDCEb
+        zxQ0vXZ8GXZVYpoyvSB61V6hix18oqpmTo90l9csCV6ATv+Pk5ieUQHdhOIdf47JOA0//38Gf5qcN
+        +jWUcehjbts8XSqtewFPNB1gT0HkHI07OrEc0IyqY8pa7JCbLaghfQtJ1HaGGalSBsAtgdwVgpDZa
+        cZJxQ0Kn7Ahhmy4ugrHuqxjX16mwkf6uZry8P3xVjNa4AsfUfsOURPtZCwuC/P1t81bzrtsN4q+VU
+        qC6NxfSLsSchTAyeOWpPZAJVDP4jvPMxwpqA28hLJF0jL/Omn3EzS0NFAeOsvMgfSRH0Bdn9obc/n
+        r50sqR7w==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o3xpj-009yMX-Ac; Wed, 22 Jun 2022 10:43:39 +0000
+Date:   Wed, 22 Jun 2022 03:43:39 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Dongli Zhang <dongli.zhang@oracle.com>
+Cc:     iommu@lists.linux-foundation.org, linux-doc@vger.kernel.org,
+        x86@kernel.org, linux-kernel@vger.kernel.org, joe.jin@oracle.com,
+        hch@infradead.org, m.szyprowski@samsung.com, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        corbet@lwn.net
+Subject: Re: [PATCH v1 0/4] swiotlb: some cleanup
+Message-ID: <YrLyWzL48no3a6cS@infradead.org>
+References: <20220611082514.37112-1-dongli.zhang@oracle.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220611082514.37112-1-dongli.zhang@oracle.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-there is an unexpected word "the" in the comments that need to be dropped
+Thanks,
 
-file: drivers/usb/serial/mos7720.c
-line: 829
-
-        * the endpoint descriptors here so that the the first and
-changed to:
-        * the endpoint descriptors here so that the first and
-
-Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
----
- drivers/usb/serial/mos7720.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/usb/serial/mos7720.c b/drivers/usb/serial/mos7720.c
-index 1e12b5f30dcc..23ccbba716c7 100644
---- a/drivers/usb/serial/mos7720.c
-+++ b/drivers/usb/serial/mos7720.c
-@@ -826,7 +826,7 @@ static int mos77xx_calc_num_ports(struct usb_serial *serial,
- 		/*
- 		 * The 7715 uses the first bulk in/out endpoint pair for the
- 		 * parallel port, and the second for the serial port. We swap
--		 * the endpoint descriptors here so that the the first and
-+		 * the endpoint descriptors here so that the first and
- 		 * only registered port structure uses the serial-port
- 		 * endpoints.
- 		 */
--- 
-2.17.1
-
+I've applied all 4 to the dma-mapping tree for Linux 5.20.
