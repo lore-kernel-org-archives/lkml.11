@@ -2,113 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DBFDC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 15:00:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF16AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 15:01:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358828AbiFVPAy (ORCPT
+        id S1358797AbiFVPA7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 11:00:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60120 "EHLO
+        Wed, 22 Jun 2022 11:00:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243581AbiFVPAl (ORCPT
+        with ESMTP id S1347638AbiFVPAy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 11:00:41 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C8C33CA58;
-        Wed, 22 Jun 2022 08:00:40 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id x1-20020a17090abc8100b001ec7f8a51f5so12959623pjr.0;
-        Wed, 22 Jun 2022 08:00:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=JsXlyqBaPp3xCgQddd3jvwlzgLQX53awFd5+l4wF4us=;
-        b=XicE5zXOG/2frJTDCOIvWvarGdV9iCuf5WuWdhJ0xXUVeeCZVbCunlCROKPvZb0L8d
-         QGSXduTbpjGQAZSO+wXS2p5IGQKqLlUEz3o12ZvaFOXua+H5Od6VT3HhFC+oJ1x8+5BW
-         efXXKLQzslXhwtRYiTs0VFQew8VK/rSYr17EocEHxuNdpMYzPjGuafb0isnaNpnphGJ7
-         rbhS3G+7dNfyP97Dpv5gMhBX5BZYYiWADdhJRm3Z6iXeeo4pYvuC/opx1SqpN9nFM7Pc
-         pYql5z9OYimaCzdvNF4BCWNB4SMXHb/ezjpC2JiesFw++M+vp7UghufAwyIDjG0pAMLA
-         a2Nw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=JsXlyqBaPp3xCgQddd3jvwlzgLQX53awFd5+l4wF4us=;
-        b=uVwg0MvFkLNmvSH4lAcdA/L6llMzujzYr6j2rXdLuUkmvNK3FpPQaBMVZH2u/Pcizf
-         WF2OJqYk7Uot5s9s83yHVS9ZHjuKAsIilrqdRl3c60n69qf//MXY4Rx7QEGAnCti/xiz
-         AOIxtTKYPFV3JIl04N2eLq0WuOCa2Gx21+DB5SJ8ZsH1SJp7CuNZ8oDQ/JVZWTrg5VKN
-         ghgULifABkd5vO2OXuUOjXk4kVCnfrE1kCWJnqO2vz7NGNwKaEq4arRNPw1SWIlAhw7d
-         cjx7hpfCTCIVw0jBW6Y912cAIY7Yusq88Uc+5PG0Ex5TZ7x+EuSrmZhFUOzB2uDw01lP
-         z8NA==
-X-Gm-Message-State: AJIora/CFwBSiVM4bTlEm4+3QZZvcJgzziw7/NIBURnSL81osS3x3NSY
-        BCf+vZzSOt097Yiklgj687o=
-X-Google-Smtp-Source: AGRyM1sNgcUVO4vcOjxoGA4pqoliJo7GsGQU2V+HOeOFa8vgNPUraJ5aDfVCdv8YhxOAIyvrcU3GnQ==
-X-Received: by 2002:a17:903:240e:b0:168:ea13:f9e0 with SMTP id e14-20020a170903240e00b00168ea13f9e0mr34925985plo.6.1655910039574;
-        Wed, 22 Jun 2022 08:00:39 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id b21-20020a170902d89500b0015e8d4eb2cdsm12838968plz.279.2022.06.22.08.00.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jun 2022 08:00:38 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Wed, 22 Jun 2022 08:00:37 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Michael Walle <michael@walle.cc>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 2/2] net: phy: nxp-tja11xx: use
- devm_hwmon_sanitize_name()
-Message-ID: <20220622150037.GB1861763@roeck-us.net>
-References: <20220622123543.3463209-1-michael@walle.cc>
- <20220622123543.3463209-3-michael@walle.cc>
+        Wed, 22 Jun 2022 11:00:54 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B387B3E0F7;
+        Wed, 22 Jun 2022 08:00:52 -0700 (PDT)
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25MEQdr5015397;
+        Wed, 22 Jun 2022 15:00:33 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=KA1JdRgtOjD40XyEB3YqySk4ezHovydA8xxcytIvEYQ=;
+ b=NSBfEbpYDxi2EtzNLiGVV4uw1tjgyyVZdTF3fBoUUnpPsANoCAlYlzWhxtg5Oq+P4sTu
+ 5m4PFGlO2NcWLddzGRSFyXitMpxqzZvNKN52q2zc0lm/jJ7/E151gitnra9uYlBlNnUQ
+ fmJJ3y1HQJqtMnufByjLitBTsSjQ1Eg7aM0yngk2TnxOqtHpBKxM5s5555U5j65TPnJY
+ 1O+GOj7sL7iVvrrW9itY1Qj5FWzEcYv28Cr776eCSkjsFf2LnsienjEtaIdhWVMRe+I9
+ Ho6do+V7MIb2OjAj+THetnBcswJVH1ihve2C4/dumParYTlWwj1ccA9v9AXLjuoQroqg Bw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gv4uqh36s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 22 Jun 2022 15:00:32 +0000
+Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25MER0wW016225;
+        Wed, 22 Jun 2022 15:00:32 GMT
+Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gv4uqh35a-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 22 Jun 2022 15:00:32 +0000
+Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
+        by ppma02wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25MEZV2m007182;
+        Wed, 22 Jun 2022 15:00:31 GMT
+Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
+        by ppma02wdc.us.ibm.com with ESMTP id 3gs6babcy5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 22 Jun 2022 15:00:30 +0000
+Received: from b01ledav006.gho.pok.ibm.com (b01ledav006.gho.pok.ibm.com [9.57.199.111])
+        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25MExFXV6489080
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 22 Jun 2022 14:59:15 GMT
+Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B4E46AC05B;
+        Wed, 22 Jun 2022 14:59:15 +0000 (GMT)
+Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id DC5DDAC05F;
+        Wed, 22 Jun 2022 14:59:14 +0000 (GMT)
+Received: from li-be644d4c-2c59-11b2-a85c-bc3dba3ed00b.ibm.com (unknown [9.160.24.26])
+        by b01ledav006.gho.pok.ibm.com (Postfix) with ESMTPS;
+        Wed, 22 Jun 2022 14:59:14 +0000 (GMT)
+Date:   Wed, 22 Jun 2022 09:59:13 -0500
+From:   "Paul A. Clarke" <pc@us.ibm.com>
+To:     Yang Jihong <yangjihong1@huawei.com>
+Cc:     peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
+        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
+        jolsa@kernel.org, namhyung@kernel.org,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
+Subject: Re: [RFC 00/13] perf: Add perf kwork
+Message-ID: <YrMuQXIn9DdhZl2w@li-be644d4c-2c59-11b2-a85c-bc3dba3ed00b.ibm.com>
+References: <20220613094605.208401-1-yangjihong1@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220622123543.3463209-3-michael@walle.cc>
+In-Reply-To: <20220613094605.208401-1-yangjihong1@huawei.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: AvCbPAo-d3UsCRqJ_ADSkvTZyHdcA9f6
+X-Proofpoint-GUID: aGQ6kEiRha3BkJ7E2zLkTpSiFgYZfmCj
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-06-22_04,2022-06-22_03,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ bulkscore=0 clxscore=1011 mlxscore=0 impostorscore=0 malwarescore=0
+ phishscore=0 suspectscore=0 adultscore=0 mlxlogscore=799
+ priorityscore=1501 spamscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2204290000 definitions=main-2206220074
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 02:35:43PM +0200, Michael Walle wrote:
-> Instead of open-coding the bad characters replacement in the hwmon name,
-> use the new devm_hwmon_sanitize_name().
+On Mon, Jun 13, 2022 at 05:45:52PM +0800, Yang Jihong wrote:
+> Sometimes, we need to analyze time properties of kernel work such as irq,
+> softirq, and workqueue, such as delay and running time of specific interrupts.
+> Currently, these events have kernel tracepoints, but perf tool does not
+> directly analyze the delay of these events
 > 
-> Signed-off-by: Michael Walle <michael@walle.cc>
+> The perf-kwork tool is used to trace time properties of kernel work
+> (such as irq, softirq, and workqueue), including runtime, latency,
+> and timehist, using the infrastructure in the perf tools to allow
+> tracing extra targets
+> 
+> test case:
+> 
+>   # perf kwork report
+> 
+>     Kwork Name                | Cpu  | Total Runtime | Frequency | Max runtime   | Max runtime start   | Max runtime end     |
+>    ---------------------------------------------------------------------------------------------------------------------------
+>     (s)RCU:9                  | 0007 |      3.488 ms |      1258 |      0.145 ms |    3398384.220013 s |    3398384.220157 s |
+>     (s)NET_RX:3               | 0003 |      1.866 ms |       156 |      0.042 ms |    3398385.629764 s |    3398385.629806 s |
+>     (s)TIMER:1                | 0000 |      1.799 ms |       117 |      0.055 ms |    3398385.568033 s |    3398385.568088 s |
+>     (w)0xffff9c66e563ee98     | 0006 |      1.561 ms |         5 |      0.351 ms |    3398384.060021 s |    3398384.060371 s |
 
-Acked-by: Guenter Roeck <linux@roeck-us.net>
+What units are used for "Frequency"? It would be helpful to include somewhere.
 
-> ---
->  drivers/net/phy/nxp-tja11xx.c | 11 +++--------
->  1 file changed, 3 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/net/phy/nxp-tja11xx.c b/drivers/net/phy/nxp-tja11xx.c
-> index 9944cc501806..2a8195c50d14 100644
-> --- a/drivers/net/phy/nxp-tja11xx.c
-> +++ b/drivers/net/phy/nxp-tja11xx.c
-> @@ -444,15 +444,10 @@ static int tja11xx_hwmon_register(struct phy_device *phydev,
->  				  struct tja11xx_priv *priv)
->  {
->  	struct device *dev = &phydev->mdio.dev;
-> -	int i;
-> -
-> -	priv->hwmon_name = devm_kstrdup(dev, dev_name(dev), GFP_KERNEL);
-> -	if (!priv->hwmon_name)
-> -		return -ENOMEM;
->  
-> -	for (i = 0; priv->hwmon_name[i]; i++)
-> -		if (hwmon_is_bad_char(priv->hwmon_name[i]))
-> -			priv->hwmon_name[i] = '_';
-> +	priv->hwmon_name = devm_hwmon_sanitize_name(dev, dev_name(dev));
-> +	if (IS_ERR(priv->hwmon_name))
-> +		return PTR_ERR(priv->hwmon_name);
->  
->  	priv->hwmon_dev =
->  		devm_hwmon_device_register_with_info(dev, priv->hwmon_name,
-> -- 
-> 2.30.2
-> 
+PC
