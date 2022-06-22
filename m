@@ -2,244 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA9C7CCA481
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 15:05:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53583C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 15:05:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358939AbiFVPFq (ORCPT
+        id S1358978AbiFVPFy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 11:05:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38666 "EHLO
+        Wed, 22 Jun 2022 11:05:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358969AbiFVPFl (ORCPT
+        with ESMTP id S1358934AbiFVPFr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 11:05:41 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96B193DDE2;
-        Wed, 22 Jun 2022 08:05:39 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id d129so16339112pgc.9;
-        Wed, 22 Jun 2022 08:05:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=LuhiIv9CIZdNs/8xxOUuGG9SP8g2B8WP+UP2kknv5E4=;
-        b=LhNn4LgL8gxb98w0koQQ1pt8q+moy/PmTLkrqKJXS5iLbgs2r8PFFpTl7WJtjnJXTy
-         PGFQHtyWwNumPZVwabdojQV4B8BcQiGluDEKogAkLqTQpswo9trBSt012Vf4v/WbfI0J
-         n8pW0vAQBG+5rav6i6aN2/XDN6XpmUpR8UsIcca6MTsXuU0YiqiPCIrR7i40+GDLfEZ2
-         blEcxJDoJAW7ZpFz1gOH3ZHJ9q51IHp23ohmshwUfOwJCSrBZ0gATqzNhqLXTt5oVrXU
-         GTnVpRcW+JWAMP+vA23N5PcbqMhTgUgEQ0lOittB4W35S0rR79PNLv4cmz7y9dw8lqdW
-         aqmA==
+        Wed, 22 Jun 2022 11:05:47 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 978E23EA9E
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 08:05:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655910340;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=jndzfVF++R7TsK3TV+yk+0zpm8yMa0Qnb1v8H83vdVo=;
+        b=H0cdfvo8huFhRnoSl9tTIo+ev6YZEsVj3/QUMxHLNP+Mo/YHyIPPpuZoKVL7nOgS+7ygZL
+        iGjPU238ZJuCxvtUEr3UIMeDMry1T/rHfJI44B4FrguG6hu36NPSs0X+HtEzsYm2Q4Z8nr
+        5Rixfm9t1UD+nebvl2v106rNOtvgmaA=
+Received: from mail-vk1-f200.google.com (mail-vk1-f200.google.com
+ [209.85.221.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-460-4ro_6ZUQPzKLcCf9ta8v8w-1; Wed, 22 Jun 2022 11:05:39 -0400
+X-MC-Unique: 4ro_6ZUQPzKLcCf9ta8v8w-1
+Received: by mail-vk1-f200.google.com with SMTP id p185-20020a1fd8c2000000b0036c453f2ea4so1264709vkg.18
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 08:05:39 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition
-         :content-transfer-encoding:in-reply-to;
-        bh=LuhiIv9CIZdNs/8xxOUuGG9SP8g2B8WP+UP2kknv5E4=;
-        b=hYyv8NfCioXSjTbJ3vNfwgMZ45k5o3v1TRn8fAlrfFxyL0MFVY7dTWdn1hF6ABLH5O
-         aPrGv02qe6OhR8fU3ll9RapgWQi6R2bcAZ96IoUkK3g/R4C+YlxruEJtR9g1L1NVbGgt
-         c3vFTvQWLXtJeSygH5vwcsJ+2NBoZ4TKZasaSFGRC+71r8EqOfRYrTJhqvLDtvE7f3po
-         I6yA+hZTz8QjcLYR8LVwTBJsnvawLDZnjM5s9LhQX83rGH3PPuRh2TTWMREyX2zrbTlP
-         AIydLiU++XjH+bx85Daj+SxVu4Uy/Ihhwub4FPxF7u5TX4skDHTSyg90/us1b1NBS4JN
-         ikCg==
-X-Gm-Message-State: AJIora8ofOSl0W2TEcpy/k/aqr0rUEt+IKdRSF7Xlj459vo05Ll1DpXm
-        39dUJ6rCvxwY7iOApvwXdMQ=
-X-Google-Smtp-Source: AGRyM1sqBUgmDZnnoA/y3KUiDhcmIJ4+aKuO1UuBLYb2VT4x+kFV5dNZZzYnUTtbvjCaQB2PPZHVtw==
-X-Received: by 2002:a65:464a:0:b0:408:b022:877a with SMTP id k10-20020a65464a000000b00408b022877amr3272066pgr.78.1655910339009;
-        Wed, 22 Jun 2022 08:05:39 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id ok12-20020a17090b1d4c00b001ecb7643c0asm5219573pjb.36.2022.06.22.08.05.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jndzfVF++R7TsK3TV+yk+0zpm8yMa0Qnb1v8H83vdVo=;
+        b=1yGCjGR2+7nVMpDgC434mWFOYp3bJWd9S/hU0NL02mqv5G8bczJDCvK4/FTqbAZv6C
+         4xGZjp08bCqfxgb/4DHwHnpKjGOBY3Vsiz2/quwiHQl5NjycM7KaucQbkRe6NQAF0aW8
+         bJh5jUDo2Pc1CrKfewZnEBFGD10IM8anC8FavYOY3umG3Ez3s6tHYCDREc5uMf0eZw6m
+         HMSJmDdrc6LbVRByXd9ACZ54e6V/wzWGKxqy5NLZrvon1nqx2musPQ2tBMVr20Xjp9QS
+         pcBi8AAvkOrUigljAZPq48P14kP72ncVQEY8LJYMPHMsptzhRBgx+oJe1I1CxEtu0V8r
+         7jbA==
+X-Gm-Message-State: AJIora/88qSxOoOfK+3TcQp2VagFcR6YcM/xf4hOFGSfOP0G0frWm+mm
+        v+thZxMpZZQrrTl53adggRQ3ChLtudDdK59bWgbq9VyIUsBWKBKWOGnYLtKp/jJcWIk6uiUj/AG
+        FXxf7SVCJvOGyFVJkPE5CU2DLOFew2kRi6TtpKDvd
+X-Received: by 2002:a67:ba09:0:b0:354:5d45:67ed with SMTP id l9-20020a67ba09000000b003545d4567edmr1745709vsn.18.1655910338974;
         Wed, 22 Jun 2022 08:05:38 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Wed, 22 Jun 2022 08:05:37 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Michael Walle <michael@walle.cc>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Xu Liang <lxu@maxlinear.com>,
-        Jean Delvare <jdelvare@suse.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org
-Subject: Re: [PATCH net-next] net: phy: mxl-gpy: add temperature sensor
-Message-ID: <20220622150537.GD1861763@roeck-us.net>
-References: <20220622141716.3517645-1-michael@walle.cc>
+X-Google-Smtp-Source: AGRyM1uCzYxtP8zvgG7hdrhhklfXqLiR9sESzuYsH1TCnGyeEZJ57pWTrteDT6pEJcJyySZ/ZdON06zXfSc9hwQVjtU=
+X-Received: by 2002:a67:ba09:0:b0:354:5d45:67ed with SMTP id
+ l9-20020a67ba09000000b003545d4567edmr1745672vsn.18.1655910338758; Wed, 22 Jun
+ 2022 08:05:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220622141716.3517645-1-michael@walle.cc>
+References: <9d6177ac-802f-eb11-4307-b0e49d8126b5@linux.intel.com>
+ <20220615183650.32075-1-steve.wahl@hpe.com> <96984350-3a04-812a-60f1-a09138014fac@linux.intel.com>
+In-Reply-To: <96984350-3a04-812a-60f1-a09138014fac@linux.intel.com>
+From:   Jerry Snitselaar <jsnitsel@redhat.com>
+Date:   Wed, 22 Jun 2022 08:05:12 -0700
+Message-ID: <CALzcdduhpOebY18hiOpMcXLcH83bY_u4fZT09pBcoz2ObqXnGg@mail.gmail.com>
+Subject: Re: [PATCH v3] iommu/vt-d: Make DMAR_UNITS_SUPPORTED a config setting
+To:     Baolu Lu <baolu.lu@linux.intel.com>
+Cc:     Steve Wahl <steve.wahl@hpe.com>, Joerg Roedel <jroedel@suse.de>,
+        Kyung Min Park <kyung.min.park@intel.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        iommu <iommu@lists.linux-foundation.org>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Mike Travis <mike.travis@hpe.com>,
+        Dimitri Sivanich <sivanich@hpe.com>,
+        Russ Anderson <russ.anderson@hpe.com>,
+        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 04:17:16PM +0200, Michael Walle wrote:
-> The GPY115 and GPY2xx PHYs contain an integrated temperature sensor. It
-> accuracy is +/- 5°C. Add support for it.
-> 
-> Signed-off-by: Michael Walle <michael@walle.cc>
+On Wed, Jun 22, 2022 at 7:52 AM Baolu Lu <baolu.lu@linux.intel.com> wrote:
+>
+> On 2022/6/16 02:36, Steve Wahl wrote:
+> > To support up to 64 sockets with 10 DMAR units each (640), make the
+> > value of DMAR_UNITS_SUPPORTED adjustable by a config variable,
+> > CONFIG_DMAR_UNITS_SUPPORTED, and make it's default 1024 when MAXSMP is
+> > set.
+> >
+> > If the available hardware exceeds DMAR_UNITS_SUPPORTED (previously set
+> > to MAX_IO_APICS, or 128), it causes these messages: "DMAR: Failed to
+> > allocate seq_id", "DMAR: Parse DMAR table failure.", and "x2apic: IRQ
+> > remapping doesn't support X2APIC mode x2apic disabled"; and the system
+> > fails to boot properly.
+> >
+> > Signed-off-by: Steve Wahl<steve.wahl@hpe.com>
+> > Reviewed-by: Kevin Tian<kevin.tian@intel.com>
+> > ---
+> >
+> > Note that we could not find a reason for connecting
+> > DMAR_UNITS_SUPPORTED to MAX_IO_APICS as was done previously.  Perhaps
+> > it seemed like the two would continue to match on earlier processors.
+> > There doesn't appear to be kernel code that assumes that the value of
+> > one is related to the other.
+> >
+> > v2: Make this value a config option, rather than a fixed constant.  The default
+> > values should match previous configuration except in the MAXSMP case.  Keeping the
+> > value at a power of two was requested by Kevin Tian.
+> >
+> > v3: Make the config option dependent upon DMAR_TABLE, as it is not used without this.
+> >
+> >   drivers/iommu/intel/Kconfig | 7 +++++++
+> >   include/linux/dmar.h        | 6 +-----
+> >   2 files changed, 8 insertions(+), 5 deletions(-)
+> >
+> > diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
+> > index 39a06d245f12..07aaebcb581d 100644
+> > --- a/drivers/iommu/intel/Kconfig
+> > +++ b/drivers/iommu/intel/Kconfig
+> > @@ -9,6 +9,13 @@ config DMAR_PERF
+> >   config DMAR_DEBUG
+> >       bool
+> >
+> > +config DMAR_UNITS_SUPPORTED
+> > +     int "Number of DMA Remapping Units supported"
+> > +     depends on DMAR_TABLE
+> > +     default 1024 if MAXSMP
+> > +     default 128  if X86_64
+> > +     default 64
+>
+> With this patch applied, the IOMMU configuration looks like:
+>
+> [*]   AMD IOMMU support
+> <M>     AMD IOMMU Version 2 driver
+> [*]     Enable AMD IOMMU internals in DebugFS
+> (1024) Number of DMA Remapping Units supported   <<<< NEW
+> [*]   Support for Intel IOMMU using DMA Remapping Devices
+> [*]     Export Intel IOMMU internals in Debugfs
+> [*]     Support for Shared Virtual Memory with Intel IOMMU
+> [*]     Enable Intel DMA Remapping Devices by default
+> [*]     Enable Intel IOMMU scalable mode by default
+> [*]   Support for Interrupt Remapping
+> [*]   OMAP IOMMU Support
+> [*]     Export OMAP IOMMU internals in DebugFS
+> [*]   Rockchip IOMMU Support
+>
+> The NEW item looks confusing. It looks to be a generic configurable
+> value though it's actually Intel DMAR specific. Any thoughts?
+>
+> Best regards,
+> baolu
+>
 
-Acked-by: Guenter Roeck <linux@roeck-us.net>
+Would moving it under INTEL_IOMMU at least have it show up below
+"Support for Intel IOMMU using DMA Remapping Devices"? I'm not sure it
+can be better than that, because IRQ_REMAP selects DMAR_TABLE, so we
+can't stick it in the if INTEL_IOMMU section.
 
-> ---
->  drivers/net/phy/Kconfig   |   2 +
->  drivers/net/phy/mxl-gpy.c | 106 ++++++++++++++++++++++++++++++++++++++
->  2 files changed, 108 insertions(+)
-> 
-> diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-> index 9fee639ee5c8..09fa17796d4d 100644
-> --- a/drivers/net/phy/Kconfig
-> +++ b/drivers/net/phy/Kconfig
-> @@ -216,6 +216,8 @@ config MARVELL_88X2222_PHY
->  
->  config MAXLINEAR_GPHY
->  	tristate "Maxlinear Ethernet PHYs"
-> +	select POLYNOMIAL if HWMON
-> +	depends on HWMON || HWMON=n
->  	help
->  	  Support for the Maxlinear GPY115, GPY211, GPY212, GPY215,
->  	  GPY241, GPY245 PHYs.
-> diff --git a/drivers/net/phy/mxl-gpy.c b/drivers/net/phy/mxl-gpy.c
-> index 6c4da2f9e90a..5b99acf44337 100644
-> --- a/drivers/net/phy/mxl-gpy.c
-> +++ b/drivers/net/phy/mxl-gpy.c
-> @@ -8,7 +8,9 @@
->  
->  #include <linux/module.h>
->  #include <linux/bitfield.h>
-> +#include <linux/hwmon.h>
->  #include <linux/phy.h>
-> +#include <linux/polynomial.h>
->  #include <linux/netdevice.h>
->  
->  /* PHY ID */
-> @@ -64,6 +66,10 @@
->  #define VSPEC1_SGMII_ANEN_ANRS	(VSPEC1_SGMII_CTRL_ANEN | \
->  				 VSPEC1_SGMII_CTRL_ANRS)
->  
-> +/* Temperature sensor */
-> +#define VPSPEC1_TEMP_STA	0x0E
-> +#define VPSPEC1_TEMP_STA_DATA	GENMASK(9, 0)
-> +
->  /* WoL */
->  #define VPSPEC2_WOL_CTL		0x0E06
->  #define VPSPEC2_WOL_AD01	0x0E08
-> @@ -80,6 +86,102 @@ static const struct {
->  	{9, 0x73},
->  };
->  
-> +#if IS_ENABLED(CONFIG_HWMON)
-> +/* The original translation formulae of the temperature (in degrees of Celsius)
-> + * are as follows:
-> + *
-> + *   T = -2.5761e-11*(N^4) + 9.7332e-8*(N^3) + -1.9165e-4*(N^2) +
-> + *       3.0762e-1*(N^1) + -5.2156e1
-> + *
-> + * where [-52.156, 137.961]C and N = [0, 1023].
-> + *
-> + * They must be accordingly altered to be suitable for the integer arithmetics.
-> + * The technique is called 'factor redistribution', which just makes sure the
-> + * multiplications and divisions are made so to have a result of the operations
-> + * within the integer numbers limit. In addition we need to translate the
-> + * formulae to accept millidegrees of Celsius. Here what it looks like after
-> + * the alterations:
-> + *
-> + *   T = -25761e-12*(N^4) + 97332e-9*(N^3) + -191650e-6*(N^2) +
-> + *       307620e-3*(N^1) + -52156
-> + *
-> + * where T = [-52156, 137961]mC and N = [0, 1023].
-> + */
-> +static const struct polynomial poly_N_to_temp = {
-> +	.terms = {
-> +		{4,  -25761, 1000, 1},
-> +		{3,   97332, 1000, 1},
-> +		{2, -191650, 1000, 1},
-> +		{1,  307620, 1000, 1},
-> +		{0,  -52156,    1, 1}
-> +	}
-> +};
-> +
-> +static int gpy_hwmon_read(struct device *dev,
-> +			  enum hwmon_sensor_types type,
-> +			  u32 attr, int channel, long *value)
-> +{
-> +	struct phy_device *phydev = dev_get_drvdata(dev);
-> +	int ret;
-> +
-> +	ret = phy_read_mmd(phydev, MDIO_MMD_VEND1, VPSPEC1_TEMP_STA);
-> +	if (ret < 0)
-> +		return ret;
-> +	if (!ret)
-> +		return -ENODATA;
-> +
-> +	*value = polynomial_calc(&poly_N_to_temp,
-> +				 FIELD_GET(VPSPEC1_TEMP_STA_DATA, ret));
-> +
-> +	return 0;
-> +}
-> +
-> +static umode_t gpy_hwmon_is_visible(const void *data,
-> +				    enum hwmon_sensor_types type,
-> +				    u32 attr, int channel)
-> +{
-> +	return 0444;
-> +}
-> +
-> +static const struct hwmon_channel_info *gpy_hwmon_info[] = {
-> +	HWMON_CHANNEL_INFO(temp, HWMON_T_INPUT),
-> +	NULL
-> +};
-> +
-> +static const struct hwmon_ops gpy_hwmon_hwmon_ops = {
-> +	.is_visible	= gpy_hwmon_is_visible,
-> +	.read		= gpy_hwmon_read,
-> +};
-> +
-> +static const struct hwmon_chip_info gpy_hwmon_chip_info = {
-> +	.ops		= &gpy_hwmon_hwmon_ops,
-> +	.info		= gpy_hwmon_info,
-> +};
-> +
-> +static int gpy_hwmon_register(struct phy_device *phydev)
-> +{
-> +	struct device *dev = &phydev->mdio.dev;
-> +	struct device *hwmon_dev;
-> +	char *hwmon_name;
-> +
-> +	hwmon_name = devm_hwmon_sanitize_name(dev, dev_name(dev));
-> +	if (IS_ERR(hwmon_name))
-> +		return PTR_ERR(hwmon_name);
-> +
-> +	hwmon_dev = devm_hwmon_device_register_with_info(dev, hwmon_name,
-> +							 phydev,
-> +							 &gpy_hwmon_chip_info,
-> +							 NULL);
-> +
-> +	return PTR_ERR_OR_ZERO(hwmon_dev);
-> +}
-> +#else
-> +static int gpy_hwmon_register(struct phy_device *phydev)
-> +{
-> +	return 0;
-> +}
-> +#endif
-> +
->  static int gpy_config_init(struct phy_device *phydev)
->  {
->  	int ret;
-> @@ -109,6 +211,10 @@ static int gpy_probe(struct phy_device *phydev)
->  	if (ret < 0)
->  		return ret;
->  
-> +	ret = gpy_hwmon_register(phydev);
-> +	if (ret)
-> +		return ret;
-> +
->  	phydev_info(phydev, "Firmware Version: 0x%04X (%s)\n", ret,
->  		    (ret & PHY_FWV_REL_MASK) ? "release" : "test");
->  
-> -- 
-> 2.30.2
-> 
+Regards,
+Jerry
+
