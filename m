@@ -2,94 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09B37C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 13:39:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F476C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 13:39:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355647AbiFVNjt (ORCPT
+        id S1356626AbiFVNjw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 09:39:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58316 "EHLO
+        Wed, 22 Jun 2022 09:39:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356463AbiFVNik (ORCPT
+        with ESMTP id S1357683AbiFVNjB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 09:38:40 -0400
-Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com [209.85.128.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A764F6579;
-        Wed, 22 Jun 2022 06:38:39 -0700 (PDT)
-Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-31780ad7535so136828197b3.8;
-        Wed, 22 Jun 2022 06:38:39 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SWQHo4/Ll0U0MjHnO1yt+1E/OpL+I/MzfVL3cp/Dgl4=;
-        b=bZ8egskKF1xMps8RZY/NhbRj+jYJx5az6SEnJkGDk+gBDfNbKROyAiI5fV/u2v6GHK
-         SGUa2Rv+jwJ2qTaVeS2dxpfzGmL+TI0mxFqhCLCilo2Wv5aiiTlJ0rtvSHf9OfvKWren
-         UyXXEu+hJCxHKBWeI0bv5sDM+A15578MhdXvFEPzbkXiKuYi0MS4MnUneylB2S1wWS/1
-         sj3d2LJmINdGvyTA+zKjGEpuEg9NfBBkiu6u/enxFe5jwBemwp++bF5Gd4VVFncqKA1s
-         Xd4l8q7i8VdMm4P/WK5XynBxrc71WUJGbtWAgk0P1Xl0UfSlYmqD2Y+UJm95dK+Q6q91
-         RLPw==
-X-Gm-Message-State: AJIora8yw0HDa58CGmtUKRHKLGBWvsiNLUgunE7sM2KtT9kQrcOiTy74
-        p6WKfdkhjExEQwwO52FyDPSywI4/u0flPO+F4uU=
-X-Google-Smtp-Source: AGRyM1vk7tKbl15XHzt37qDEAfj9o5qy9tpX7zdLtm/RWDK0PLTgSAq3saIwSXfd1oxViFMM8knkflnaLNY2oHXWeGg=
-X-Received: by 2002:a81:68d7:0:b0:318:11df:a40d with SMTP id
- d206-20020a8168d7000000b0031811dfa40dmr4453973ywc.196.1655905118755; Wed, 22
- Jun 2022 06:38:38 -0700 (PDT)
+        Wed, 22 Jun 2022 09:39:01 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A6B06579
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 06:39:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1655905141; x=1687441141;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=NOtcLQjYTnNg3cztWyQoeInOB4wkg5FDxYvL8BwSdPY=;
+  b=koXm/QFb8ioA/zLBxw2VYGUzeneuJxfJNfqAR9yHcJUVrYcoX5JranwN
+   wCS1XIjnuNiQDpKV/Tx/Kc40HkN4+qCSr3orm6u/1zZhtiYhEAqrYDcZ+
+   /QFGlGn8lnlNDf8l9jMsbasF0i98UB4R20E0smivpIwRUezoJZjVhmZj/
+   I=;
+Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 22 Jun 2022 06:39:00 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 06:38:58 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 22 Jun 2022 06:38:57 -0700
+Received: from ubuntu.qualcomm.com (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 22 Jun
+ 2022 06:38:57 -0700
+From:   Qian Cai <quic_qiancai@quicinc.com>
+To:     Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, Qian Cai <quic_qiancai@quicinc.com>
+Subject: [PATCH] arm64: defconfig: Select ARM_CMN=m
+Date:   Wed, 22 Jun 2022 09:38:27 -0400
+Message-ID: <20220622133827.140979-1-quic_qiancai@quicinc.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <bccae278-e735-4681-cb3a-41359e42032b@zhaoxin.com>
-In-Reply-To: <bccae278-e735-4681-cb3a-41359e42032b@zhaoxin.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Wed, 22 Jun 2022 15:38:27 +0200
-Message-ID: <CAJZ5v0i78UPYpc9epEOndigxAsj3YVXJJTrQDoX0Dw5p-zpgaQ@mail.gmail.com>
-Subject: Re: [PATCH] x86/cstate: Add Zhaoxin ACPI Cx FFH MWAIT support
-To:     Tony W Wang-oc <TonyWWang-oc@zhaoxin.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        CobeChen@zhaoxin.com, TimGuo@zhaoxin.com, LindaChai@zhaoxin.com,
-        LeoLiu@zhaoxin.com,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Please CC linux-acpi@vger.kernel.org on ACPI-related changes (added now).
+The arm cmn driver is fairly common on servers, so select it as a
+module.
 
-On Wed, Jun 22, 2022 at 5:29 AM Tony W Wang-oc <TonyWWang-oc@zhaoxin.com> wrote:
->
-> Recent Zhaoxin CPUs support X86_FEATURE_MWAIT that implies the
-> MONITOR/MWAIT instructions can be used for ACPI Cx state. The BIOS
-> declares Cx state in _CST object to use FFH on Zhaoxin systems. So
-> let function ffh_cstate_init() support Zhaoxin too.
->
-> Signed-off-by: Tony W Wang-oc <TonyWWang-oc@zhaoxin.com>
-> ---
->   arch/x86/kernel/acpi/cstate.c | 4 +++-
->   1 file changed, 3 insertions(+), 1 deletion(-)
->
-> diff --git a/arch/x86/kernel/acpi/cstate.c b/arch/x86/kernel/acpi/cstate.c
-> index 7945eae..d4185e1 100644
-> --- a/arch/x86/kernel/acpi/cstate.c
-> +++ b/arch/x86/kernel/acpi/cstate.c
-> @@ -213,7 +213,9 @@ static int __init ffh_cstate_init(void)
->
->         if (c->x86_vendor != X86_VENDOR_INTEL &&
->             c->x86_vendor != X86_VENDOR_AMD &&
-> -           c->x86_vendor != X86_VENDOR_HYGON)
-> +           c->x86_vendor != X86_VENDOR_HYGON &&
-> +           c->x86_vendor != X86_VENDOR_CENTAUR &&
-> +           c->x86_vendor != X86_VENDOR_ZHAOXIN)
+Signed-off-by: Qian Cai <quic_qiancai@quicinc.com>
+---
+ arch/arm64/configs/defconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-Centaur is not mentioned in the changelog and it should be.
+diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
+index 55811436adb8..55093bf341a2 100644
+--- a/arch/arm64/configs/defconfig
++++ b/arch/arm64/configs/defconfig
+@@ -68,6 +68,7 @@ CONFIG_ARCH_VISCONTI=y
+ CONFIG_ARCH_XGENE=y
+ CONFIG_ARCH_ZYNQMP=y
+ CONFIG_ARM64_VA_BITS_48=y
++CONFIG_ARM_CMN=m
+ CONFIG_SCHED_MC=y
+ CONFIG_SCHED_SMT=y
+ CONFIG_NUMA=y
+-- 
+2.34.1
 
->                 return -1;
->
->         cpu_cstate_entry = alloc_percpu(struct cstate_entry);
-> --
