@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D30C2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 16:23:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE358CCA481
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 16:23:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359814AbiFVQXx (ORCPT
+        id S1376531AbiFVQXz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 12:23:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59842 "EHLO
+        Wed, 22 Jun 2022 12:23:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376748AbiFVQX1 (ORCPT
+        with ESMTP id S1376875AbiFVQXj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 12:23:27 -0400
+        Wed, 22 Jun 2022 12:23:39 -0400
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BC923FD9F
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 09:23:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D35B3FBE5
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 09:23:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655915002; x=1687451002;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=fAxSfMkPQOft5QNGEOKWIg4HNu6sOXze7SH9g6M0vDc=;
-  b=E+yl0BRZddZ2aSVaMhWjafda3f5NNkVN80YdxMATSSrhoA6IM6wPoCwC
-   vuwpVJ1Vkp2NxvQ524jSL+3AiMfSqCfkQa9Gy3IPwf1hpD9p1KqaDNBJO
-   BFtLYY84WoGUGRdmz4KD/sdii83lJvefrXiEuAmBW0jSPwf7XaluWQYns
-   3dz/oZrR+GuE6e/vfsjLwIYRO40PO5It2Aq5InFutrm1u5sWzVIPkEp2H
-   hHQRvk7zs+VufdpVd7Q1FudHJ4XXivPjSzik/kiWRKhr5Ci/1ktW/G0eL
-   ByvC1RU00T/9xnGU1r0H0wrV2GWPG5zF4wW0+iat/wCxdGAzNgTljI84U
+  t=1655915011; x=1687451011;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=CU7rCkgXezI1vM2ho8MmDRIt7VouvlyZWqM/6FmVbeI=;
+  b=nnoNytrxZB+fqjpwNcP2EJB+dWIu0UCQeS7sF5e51yevoCTTyWxvn11T
+   ojloXzVX4RBeDLNskb/Fh/Ad9oenxkR66XsGmaFApHY/LLfsw14mKYLN+
+   ugBMJ+XlsvCGXtYwm+6aEEkGqWWoVB5+2EDR4bjIfku7A3tcTmUL9Tp8g
+   10K7axyybLtUxXcPRxY2gKGA+fqt93PjwdwF1GOcYi8CXhda20lkJIX7h
+   wMXbpN30mBzCu804EAbFLvA3ogyHZjV/m4r6hT68w4HI+vBRyQJchec3A
+   Vg6V+CnQgMkT5B6yViIF+Ra0MT8kQYQ2Q7DIoIL4QrTLIB5KmOdzn2URR
    A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="260898746"
+X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="260898822"
 X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="260898746"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 09:22:41 -0700
+   d="scan'208";a="260898822"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 09:22:47 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="620974438"
+   d="scan'208";a="764947851"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga001.jf.intel.com with ESMTP; 22 Jun 2022 09:22:38 -0700
+  by orsmga005.jf.intel.com with ESMTP; 22 Jun 2022 09:22:42 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 1FCFB109; Wed, 22 Jun 2022 19:22:43 +0300 (EEST)
+        id 6A3F813C; Wed, 22 Jun 2022 19:22:43 +0300 (EEST)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     Dave Hansen <dave.hansen@linux.intel.com>,
         Andy Lutomirski <luto@kernel.org>,
@@ -55,115 +55,200 @@ Cc:     x86@kernel.org, Kostya Serebryany <kcc@google.com>,
         Rick Edgecombe <rick.p.edgecombe@intel.com>,
         linux-mm@kvack.org, linux-kernel@vger.kernel.org,
         "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv4 0/8] Linear Address Masking enabling
-Date:   Wed, 22 Jun 2022 19:22:22 +0300
-Message-Id: <20220622162230.83474-1-kirill.shutemov@linux.intel.com>
+Subject: [PATCHv4 7/8] x86: Expose untagging mask in /proc/$PID/arch_status
+Date:   Wed, 22 Jun 2022 19:22:29 +0300
+Message-Id: <20220622162230.83474-8-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220622162230.83474-1-kirill.shutemov@linux.intel.com>
+References: <20220622162230.83474-1-kirill.shutemov@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Linear Address Masking[1] (LAM) modifies the checking that is applied to
-64-bit linear addresses, allowing software to use of the untranslated
-address bits for metadata.
+Add a line in /proc/$PID/arch_status to report untag_mask. It can be
+used to find out LAM status of the process from the outside. It is
+useful for debuggers.
 
-The patchset brings support for LAM for userspace addresses.
-
-LAM_U48 enabling is controversial since it competes for bits with
-5-level paging. Its enabling isolated into an optional last patch that
-can be applied at maintainer's discretion.
-
-Please review and consider applying.
-
-v4:
-  - Fix untagged_addr() for LAM_U48;
-  - Remove no-threads restriction on LAM enabling;
-  - Fix mm_struct access from /proc/$PID/arch_status
-  - Fix LAM handling in initialize_tlbstate_and_flush()
-  - Pack tlb_state better;
-  - Comments and commit messages;
-v3:
-  - Rebased onto v5.19-rc1
-  - Per-process enabling;
-  - API overhaul (again);
-  - Avoid branches and costly computations in the fast path;
-  - LAM_U48 is in optional patch.
-v2:
-  - Rebased onto v5.18-rc1
-  - New arch_prctl(2)-based API
-  - Expose status of LAM (or other thread features) in
-    /proc/$PID/arch_status
-
-[1] ISE, Chapter 14.
-https://software.intel.com/content/dam/develop/external/us/en/documents-tps/architecture-instruction-set-extensions-programming-reference.pdf
-
-Kirill A. Shutemov (8):
-  x86/mm: Fix CR3_ADDR_MASK
-  x86: CPUID and CR3/CR4 flags for Linear Address Masking
-  mm: Pass down mm_struct to untagged_addr()
-  x86/mm: Handle LAM on context switch
-  x86/uaccess: Provide untagged_addr() and remove tags before address
-    check
-  x86/mm: Provide ARCH_GET_UNTAG_MASK and ARCH_ENABLE_TAGGED_ADDR
-  x86: Expose untagging mask in /proc/$PID/arch_status
-  x86/mm: Extend LAM to support to LAM_U48
-
- arch/arm64/include/asm/memory.h               |  4 +-
- arch/arm64/include/asm/signal.h               |  2 +-
- arch/arm64/include/asm/uaccess.h              |  4 +-
- arch/arm64/kernel/hw_breakpoint.c             |  2 +-
- arch/arm64/kernel/traps.c                     |  4 +-
- arch/arm64/mm/fault.c                         | 10 +--
- arch/sparc/include/asm/pgtable_64.h           |  2 +-
- arch/sparc/include/asm/uaccess_64.h           |  2 +
- arch/x86/include/asm/cpufeatures.h            |  1 +
- arch/x86/include/asm/elf.h                    |  3 +-
- arch/x86/include/asm/mmu.h                    |  2 +
- arch/x86/include/asm/mmu_context.h            | 58 ++++++++++++++
- arch/x86/include/asm/processor-flags.h        |  2 +-
- arch/x86/include/asm/tlbflush.h               |  4 +
- arch/x86/include/asm/uaccess.h                | 42 +++++++++-
- arch/x86/include/uapi/asm/prctl.h             |  3 +
- arch/x86/include/uapi/asm/processor-flags.h   |  6 ++
- arch/x86/kernel/Makefile                      |  2 +
- arch/x86/kernel/fpu/xstate.c                  | 47 -----------
- arch/x86/kernel/proc.c                        | 60 ++++++++++++++
- arch/x86/kernel/process.c                     |  3 +
- arch/x86/kernel/process_64.c                  | 78 ++++++++++++++++++-
- arch/x86/kernel/sys_x86_64.c                  |  5 +-
- arch/x86/mm/hugetlbpage.c                     |  6 +-
- arch/x86/mm/mmap.c                            |  9 ++-
- arch/x86/mm/tlb.c                             | 68 ++++++++++++----
- .../gpu/drm/amd/amdgpu/amdgpu_amdkfd_gpuvm.c  |  2 +-
- drivers/gpu/drm/amd/amdgpu/amdgpu_gem.c       |  2 +-
- drivers/gpu/drm/radeon/radeon_gem.c           |  2 +-
- drivers/infiniband/hw/mlx4/mr.c               |  2 +-
- drivers/media/common/videobuf2/frame_vector.c |  2 +-
- drivers/media/v4l2-core/videobuf-dma-contig.c |  2 +-
- .../staging/media/atomisp/pci/hmm/hmm_bo.c    |  2 +-
- drivers/tee/tee_shm.c                         |  2 +-
- drivers/vfio/vfio_iommu_type1.c               |  2 +-
- fs/proc/task_mmu.c                            |  2 +-
- include/linux/mm.h                            | 11 ---
- include/linux/uaccess.h                       | 15 ++++
- lib/strncpy_from_user.c                       |  2 +-
- lib/strnlen_user.c                            |  2 +-
- mm/gup.c                                      |  6 +-
- mm/madvise.c                                  |  2 +-
- mm/mempolicy.c                                |  6 +-
- mm/migrate.c                                  |  2 +-
- mm/mincore.c                                  |  2 +-
- mm/mlock.c                                    |  4 +-
- mm/mmap.c                                     |  2 +-
- mm/mprotect.c                                 |  2 +-
- mm/mremap.c                                   |  2 +-
- mm/msync.c                                    |  2 +-
- virt/kvm/kvm_main.c                           |  2 +-
- 51 files changed, 385 insertions(+), 126 deletions(-)
+Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+---
+ arch/x86/include/asm/mmu_context.h | 10 +++++
+ arch/x86/kernel/Makefile           |  2 +
+ arch/x86/kernel/fpu/xstate.c       | 47 -----------------------
+ arch/x86/kernel/proc.c             | 60 ++++++++++++++++++++++++++++++
+ 4 files changed, 72 insertions(+), 47 deletions(-)
  create mode 100644 arch/x86/kernel/proc.c
 
+diff --git a/arch/x86/include/asm/mmu_context.h b/arch/x86/include/asm/mmu_context.h
+index 05821534aadc..a6cded0f5e64 100644
+--- a/arch/x86/include/asm/mmu_context.h
++++ b/arch/x86/include/asm/mmu_context.h
+@@ -103,6 +103,11 @@ static inline void dup_lam(struct mm_struct *oldmm, struct mm_struct *mm)
+ 	mm->context.untag_mask = oldmm->context.untag_mask;
+ }
+ 
++static inline unsigned long mm_untag_mask(struct mm_struct *mm)
++{
++	return mm->context.untag_mask;
++}
++
+ static inline void mm_reset_untag_mask(struct mm_struct *mm)
+ {
+ 	mm->context.untag_mask = -1UL;
+@@ -119,6 +124,11 @@ static inline void dup_lam(struct mm_struct *oldmm, struct mm_struct *mm)
+ {
+ }
+ 
++static inline unsigned long mm_untag_mask(struct mm_struct *mm)
++{
++	return -1UL;
++}
++
+ static inline void mm_reset_untag_mask(struct mm_struct *mm)
+ {
+ }
+diff --git a/arch/x86/kernel/Makefile b/arch/x86/kernel/Makefile
+index 4c8b6ae802ac..313f1d8e7783 100644
+--- a/arch/x86/kernel/Makefile
++++ b/arch/x86/kernel/Makefile
+@@ -141,6 +141,8 @@ obj-$(CONFIG_UNWINDER_GUESS)		+= unwind_guess.o
+ 
+ obj-$(CONFIG_AMD_MEM_ENCRYPT)		+= sev.o
+ 
++obj-$(CONFIG_PROC_FS)			+= proc.o
++
+ ###
+ # 64 bit specific files
+ ifeq ($(CONFIG_X86_64),y)
+diff --git a/arch/x86/kernel/fpu/xstate.c b/arch/x86/kernel/fpu/xstate.c
+index c8340156bfd2..838a6f0627fd 100644
+--- a/arch/x86/kernel/fpu/xstate.c
++++ b/arch/x86/kernel/fpu/xstate.c
+@@ -10,8 +10,6 @@
+ #include <linux/mman.h>
+ #include <linux/nospec.h>
+ #include <linux/pkeys.h>
+-#include <linux/seq_file.h>
+-#include <linux/proc_fs.h>
+ #include <linux/vmalloc.h>
+ 
+ #include <asm/fpu/api.h>
+@@ -1745,48 +1743,3 @@ long fpu_xstate_prctl(int option, unsigned long arg2)
+ 		return -EINVAL;
+ 	}
+ }
+-
+-#ifdef CONFIG_PROC_PID_ARCH_STATUS
+-/*
+- * Report the amount of time elapsed in millisecond since last AVX512
+- * use in the task.
+- */
+-static void avx512_status(struct seq_file *m, struct task_struct *task)
+-{
+-	unsigned long timestamp = READ_ONCE(task->thread.fpu.avx512_timestamp);
+-	long delta;
+-
+-	if (!timestamp) {
+-		/*
+-		 * Report -1 if no AVX512 usage
+-		 */
+-		delta = -1;
+-	} else {
+-		delta = (long)(jiffies - timestamp);
+-		/*
+-		 * Cap to LONG_MAX if time difference > LONG_MAX
+-		 */
+-		if (delta < 0)
+-			delta = LONG_MAX;
+-		delta = jiffies_to_msecs(delta);
+-	}
+-
+-	seq_put_decimal_ll(m, "AVX512_elapsed_ms:\t", delta);
+-	seq_putc(m, '\n');
+-}
+-
+-/*
+- * Report architecture specific information
+- */
+-int proc_pid_arch_status(struct seq_file *m, struct pid_namespace *ns,
+-			struct pid *pid, struct task_struct *task)
+-{
+-	/*
+-	 * Report AVX512 state if the processor and build option supported.
+-	 */
+-	if (cpu_feature_enabled(X86_FEATURE_AVX512F))
+-		avx512_status(m, task);
+-
+-	return 0;
+-}
+-#endif /* CONFIG_PROC_PID_ARCH_STATUS */
+diff --git a/arch/x86/kernel/proc.c b/arch/x86/kernel/proc.c
+new file mode 100644
+index 000000000000..9765b4d05ce4
+--- /dev/null
++++ b/arch/x86/kernel/proc.c
+@@ -0,0 +1,60 @@
++// SPDX-License-Identifier: GPL-2.0-only
++#include <linux/proc_fs.h>
++#include <linux/sched/mm.h>
++#include <linux/seq_file.h>
++#include <uapi/asm/prctl.h>
++#include <asm/mmu_context.h>
++
++/*
++ * Report the amount of time elapsed in millisecond since last AVX512
++ * use in the task.
++ */
++static void avx512_status(struct seq_file *m, struct task_struct *task)
++{
++	unsigned long timestamp = READ_ONCE(task->thread.fpu.avx512_timestamp);
++	long delta;
++
++	if (!timestamp) {
++		/*
++		 * Report -1 if no AVX512 usage
++		 */
++		delta = -1;
++	} else {
++		delta = (long)(jiffies - timestamp);
++		/*
++		 * Cap to LONG_MAX if time difference > LONG_MAX
++		 */
++		if (delta < 0)
++			delta = LONG_MAX;
++		delta = jiffies_to_msecs(delta);
++	}
++
++	seq_put_decimal_ll(m, "AVX512_elapsed_ms:\t", delta);
++	seq_putc(m, '\n');
++}
++
++/*
++ * Report architecture specific information
++ */
++int proc_pid_arch_status(struct seq_file *m, struct pid_namespace *ns,
++			struct pid *pid, struct task_struct *task)
++{
++	struct mm_struct *mm;
++	unsigned long untag_mask = -1UL;
++
++	/*
++	 * Report AVX512 state if the processor and build option supported.
++	 */
++	if (cpu_feature_enabled(X86_FEATURE_AVX512F))
++		avx512_status(m, task);
++
++	mm = get_task_mm(task);
++	if (mm) {
++		untag_mask = mm_untag_mask(task->mm);
++		mmput(mm);
++	}
++
++	seq_printf(m, "untag_mask:\t%#lx\n", untag_mask);
++
++	return 0;
++}
 -- 
 2.35.1
 
