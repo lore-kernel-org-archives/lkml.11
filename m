@@ -2,138 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B64AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 13:48:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 517A5C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 13:49:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357430AbiFVNs5 (ORCPT
+        id S1357357AbiFVNtJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 09:48:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38926 "EHLO
+        Wed, 22 Jun 2022 09:49:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357671AbiFVNsa (ORCPT
+        with ESMTP id S245383AbiFVNtF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 09:48:30 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10C722E9CB;
-        Wed, 22 Jun 2022 06:48:27 -0700 (PDT)
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LSl622Rl5zhXcb;
-        Wed, 22 Jun 2022 21:46:18 +0800 (CST)
-Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 22 Jun 2022 21:48:25 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 22 Jun 2022 21:48:25 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <edumazet@google.com>,
-        <pabeni@redhat.com>, <bpf@vger.kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
-        <chenhao288@hisilicon.com>
-Subject: [PATCH] net: page_pool: optimize page pool page allocation in NUMA scenario
-Date:   Wed, 22 Jun 2022 21:42:02 +0800
-Message-ID: <20220622134202.7591-1-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.33.0
+        Wed, 22 Jun 2022 09:49:05 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C86B2DF4;
+        Wed, 22 Jun 2022 06:49:04 -0700 (PDT)
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25MDArmE024447;
+        Wed, 22 Jun 2022 13:48:57 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=yqoJqnd9xUomrOebKVypCVBPsGWc5ALg73aN0cSqt4s=;
+ b=IU7kiSOkqGxcnlfPcPeiuN+q3LiZX8MYuvUIbyb4/ONq+V2lj2qTKJM56W6CdxvD6g79
+ wGI6pjpFdZlyxNkIklIIF+/nwFsyVqB/2LTtPb5fEZi2LkoU0jRjrTUGDv+gJYOJxD+H
+ 8zfE9JbBicpLAX+m3w8oB1nuUwxDfxox+3tYzoldsr3o7Be5sioWT6LGyQQ3BNW0aGRs
+ lmdax/NoyK8Mtm/9wBZhrv+WS8R/RJ3k7u+Mm218qdLI/vvOsaag5UMzPTwXxisAiLX8
+ 33xEAF4iqd0xveznR+mfrr7PBSNeFmLv88mchVHmZb07GK7cfX5nhgD757/iZg/bD/GW Dw== 
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gv30rjk2u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 22 Jun 2022 13:48:56 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25MDZZdZ016870;
+        Wed, 22 Jun 2022 13:48:54 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma03ams.nl.ibm.com with ESMTP id 3gs6b8wqn3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 22 Jun 2022 13:48:54 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25MDmp5J23396686
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 22 Jun 2022 13:48:51 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 61E7211C050;
+        Wed, 22 Jun 2022 13:48:51 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id DD9E811C04A;
+        Wed, 22 Jun 2022 13:48:50 +0000 (GMT)
+Received: from li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com (unknown [9.145.144.178])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Wed, 22 Jun 2022 13:48:50 +0000 (GMT)
+Date:   Wed, 22 Jun 2022 15:48:49 +0200
+From:   Alexander Gordeev <agordeev@linux.ibm.com>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        linux-s390@vger.kernel.org, Ilya Leoshkevich <iii@linux.ibm.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/3] s390/purgatory: remove duplicated build rule of
+ kexec-purgatory.o
+Message-ID: <YrMdwXwHE0qLRZLC@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
+References: <20220613170902.1775211-1-masahiroy@kernel.org>
+ <20220613170902.1775211-3-masahiroy@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemm600016.china.huawei.com (7.193.23.20)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220613170902.1775211-3-masahiroy@kernel.org>
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 9COnH_cmQ2jsqsy_JhWizitY4xL8iNbE
+X-Proofpoint-GUID: 9COnH_cmQ2jsqsy_JhWizitY4xL8iNbE
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-06-22_04,2022-06-22_03,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 mlxlogscore=884
+ clxscore=1015 impostorscore=0 malwarescore=0 mlxscore=0 priorityscore=1501
+ lowpriorityscore=0 adultscore=0 suspectscore=0 phishscore=0 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2204290000
+ definitions=main-2206220069
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jie Wang <wangjie125@huawei.com>
+On Tue, Jun 14, 2022 at 02:09:02AM +0900, Masahiro Yamada wrote:
+> This is equivalent to the pattern rule in scripts/Makefile.build.
+> 
+> Having the dependency on $(obj)/purgatory.ro is enough.
+> 
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> ---
+> 
+>  arch/s390/purgatory/Makefile | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/arch/s390/purgatory/Makefile b/arch/s390/purgatory/Makefile
+> index 3e2c17ba04de..d237bc6841cb 100644
+> --- a/arch/s390/purgatory/Makefile
+> +++ b/arch/s390/purgatory/Makefile
+> @@ -48,7 +48,6 @@ OBJCOPYFLAGS_purgatory.ro += --remove-section='.note.*'
+>  $(obj)/purgatory.ro: $(obj)/purgatory $(obj)/purgatory.chk FORCE
+>  		$(call if_changed,objcopy)
+>  
+> -$(obj)/kexec-purgatory.o: $(obj)/kexec-purgatory.S $(obj)/purgatory.ro FORCE
+> -	$(call if_changed_rule,as_o_S)
+> +$(obj)/kexec-purgatory.o: $(obj)/purgatory.ro
+>  
+>  obj-y += kexec-purgatory.o
 
-Currently NIC packet receiving performance based on page pool deteriorates
-occasionally. To analysis the causes of this problem page allocation stats
-are collected. Here are the stats when NIC rx performance deteriorates:
+Applied, thanks!
 
-bandwidth(Gbits/s)		16.8		6.91
-rx_pp_alloc_fast		13794308	21141869
-rx_pp_alloc_slow		108625		166481
-rx_pp_alloc_slow_h		0		0
-rx_pp_alloc_empty		8192		8192
-rx_pp_alloc_refill		0		0
-rx_pp_alloc_waive		100433		158289
-rx_pp_recycle_cached		0		0
-rx_pp_recycle_cache_full	0		0
-rx_pp_recycle_ring		362400		420281
-rx_pp_recycle_ring_full		6064893		9709724
-rx_pp_recycle_released_ref	0		0
-
-The rx_pp_alloc_waive count indicates that a large number of pages' numa
-node are inconsistent with the NIC device numa node. Therefore these pages
-can't be reused by the page pool. As a result, many new pages would be
-allocated by __page_pool_alloc_pages_slow which is time consuming. This
-causes the NIC rx performance fluctuations.
-
-The main reason of huge numa mismatch pages in page pool is that page pool
-uses alloc_pages_bulk_array to allocate original pages. This function is
-not suitable for page allocation in NUMA scenario. So this patch uses
-alloc_pages_bulk_array_node which has a NUMA id input parameter to ensure
-the NUMA consistent between NIC device and allocated pages.
-
-Repeated NIC rx performance tests are performed 40 times. NIC rx bandwidth
-is higher and more stable compared to the datas above. Here are three test
-stats, the rx_pp_alloc_waive count is zero and rx_pp_alloc_slow which
-indicates pages allocated from slow patch is relatively low.
-
-bandwidth(Gbits/s)		93		93.9		93.8
-rx_pp_alloc_fast		60066264	61266386	60938254
-rx_pp_alloc_slow		16512		16517		16539
-rx_pp_alloc_slow_ho		0		0		0
-rx_pp_alloc_empty		16512		16517		16539
-rx_pp_alloc_refill		473841		481910		481585
-rx_pp_alloc_waive		0		0		0
-rx_pp_recycle_cached		0		0		0
-rx_pp_recycle_cache_full	0		0		0
-rx_pp_recycle_ring		29754145	30358243	30194023
-rx_pp_recycle_ring_full		0		0		0
-rx_pp_recycle_released_ref	0		0		0
-
-Signed-off-by: Jie Wang <wangjie125@huawei.com>
----
- net/core/page_pool.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
-
-diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index b151772dd94b..d88c0c24041a 100644
---- a/net/core/page_pool.c
-+++ b/net/core/page_pool.c
-@@ -377,6 +377,7 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
- 	unsigned int pp_order = pool->p.order;
- 	struct page *page;
- 	int i, nr_pages;
-+	int pref_nid; /* preferred NUMA node */
- 
- 	/* Don't support bulk alloc for high-order pages */
- 	if (unlikely(pp_order))
-@@ -386,10 +387,18 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
- 	if (unlikely(pool->alloc.count > 0))
- 		return pool->alloc.cache[--pool->alloc.count];
- 
-+#ifdef CONFIG_NUMA
-+	pref_nid = (pool->p.nid == NUMA_NO_NODE) ? numa_mem_id() : pool->p.nid;
-+#else
-+	/* Ignore pool->p.nid setting if !CONFIG_NUMA, helps compiler */
-+	pref_nid = numa_mem_id(); /* will be zero like page_to_nid() */
-+#endif
-+
- 	/* Mark empty alloc.cache slots "empty" for alloc_pages_bulk_array */
- 	memset(&pool->alloc.cache, 0, sizeof(void *) * bulk);
- 
--	nr_pages = alloc_pages_bulk_array(gfp, bulk, pool->alloc.cache);
-+	nr_pages = alloc_pages_bulk_array_node(gfp, pref_nid, bulk,
-+					       pool->alloc.cache);
- 	if (unlikely(!nr_pages))
- 		return NULL;
- 
--- 
-2.30.0
-
+> -- 
+> 2.32.0
+> 
