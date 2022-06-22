@@ -2,115 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A17A1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 12:15:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26211C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 12:16:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240157AbiFVMPi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 08:15:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51878 "EHLO
+        id S234701AbiFVMQM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 08:16:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358341AbiFVMPW (ORCPT
+        with ESMTP id S229805AbiFVMQJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 08:15:22 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 47855340C5
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 05:15:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655900120;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=EQ0/S4hTGe/CYe8u/0j1fhgzO/f/h03uTX6vN/h92Tk=;
-        b=bMYnECgmd86SOKnLOzS/7vDaZLYXsKGssjQEpxQ20rBwl3wY+li/C3D7rIJFv0sno8ARfg
-        SbSnbKmoUCdekLhL+GB8VZrA4hsFzmsQ+6+juFlR/HPRVyww4UoV+Eshg6DWoK53S8iql9
-        kfXdwZjagPXB9rt9hwncReviXJuOx/g=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-253-Q_msMRW9Pe2umA16aVfbNg-1; Wed, 22 Jun 2022 08:15:17 -0400
-X-MC-Unique: Q_msMRW9Pe2umA16aVfbNg-1
-Received: by mail-wr1-f69.google.com with SMTP id y18-20020adfdf12000000b0021b94ba4c37so1647623wrl.11
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 05:15:16 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=EQ0/S4hTGe/CYe8u/0j1fhgzO/f/h03uTX6vN/h92Tk=;
-        b=mvraAc+Vtr+7zjrsOhmx7jhphcXwbnY0lZYm9agfCnmLeaB42k5mIQOsB8e8jtdnto
-         X73sQh7HKKGuH0C6s5zx8rBrPY0pg8BCxp72IS4eXv5WjTqQeThceB5OiHb9rSEOnIkd
-         UH5PaMhn//Zw0bBLQUf/AKF7+aTsdcV8UDfbUHgpAXVDsPrRYSV7ixczxNPa2SYenODI
-         H8ydDnTGhw3pXGo69FoqGCaJvj37d81ADJIeDoGwSDcYKQ0wWjWKKoHM6iplQEoZIRIQ
-         4WQ2UgXqxeY9a5p1HjxIldHXAS4xmh6t4kgm31u9tn8GNUy46jzRa6CGq+vYne0QbUti
-         Xv9w==
-X-Gm-Message-State: AJIora+yA7RcK5EXRn1rmpuFg5lQJCcVoDMhNbD6cWQhJ+qACyzcuidU
-        MGpwQfQwABnqVxGnDxCKOrdK3/hWthYacUvD14VGb+3JLHSsoy38kmc/7C6b6CvLN6bBzTftLsL
-        BH9qGKk4kAseqZGuNi6cxmQ6U
-X-Received: by 2002:adf:f7c7:0:b0:21b:9452:e8fe with SMTP id a7-20020adff7c7000000b0021b9452e8femr3211545wrq.640.1655900115861;
-        Wed, 22 Jun 2022 05:15:15 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uw/M5KspGlqskc/kFQvcJ3XkxHAQCDS3r8X8uIM7gfQdn0B5UzoYAktVnD2Jx/JTdYhXLqyA==
-X-Received: by 2002:adf:f7c7:0:b0:21b:9452:e8fe with SMTP id a7-20020adff7c7000000b0021b9452e8femr3211525wrq.640.1655900115574;
-        Wed, 22 Jun 2022 05:15:15 -0700 (PDT)
-Received: from redhat.com ([147.235.217.93])
-        by smtp.gmail.com with ESMTPSA id l15-20020a05600c2ccf00b003974a00697esm26140287wmc.38.2022.06.22.05.15.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jun 2022 05:15:14 -0700 (PDT)
-Date:   Wed, 22 Jun 2022 08:15:12 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Deming Wang <wangdeming@inspur.com>
-Cc:     jasowang@redhat.com, virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] virtio_ring: remove unnecessary to_vvq call in
- virtqueue_disable_cb_packed
-Message-ID: <20220622081411-mutt-send-email-mst@kernel.org>
-References: <20220622075052.1560-1-wangdeming@inspur.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220622075052.1560-1-wangdeming@inspur.com>
+        Wed, 22 Jun 2022 08:16:09 -0400
+X-Greylist: delayed 183 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 22 Jun 2022 05:16:05 PDT
+Received: from cmccmta2.chinamobile.com (cmccmta2.chinamobile.com [221.176.66.80])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A4C6C340C5;
+        Wed, 22 Jun 2022 05:16:05 -0700 (PDT)
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG: 00000000
+Received: from spf.mail.chinamobile.com (unknown[172.16.121.11])
+        by rmmx-syy-dmz-app06-12006 (RichMail) with SMTP id 2ee662b3074ae76-a6237;
+        Wed, 22 Jun 2022 20:12:58 +0800 (CST)
+X-RM-TRANSID: 2ee662b3074ae76-a6237
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG: 00000000
+Received: from localhost.localdomain (unknown[223.108.79.98])
+        by rmsmtp-syy-appsvr06-12006 (RichMail) with SMTP id 2ee662b30737662-b18ab;
+        Wed, 22 Jun 2022 20:12:58 +0800 (CST)
+X-RM-TRANSID: 2ee662b30737662-b18ab
+From:   liujing <liujing@cmss.chinamobile.com>
+To:     jhs@mojatatu.com
+Cc:     xiyou.wangcong@gmail.com, jiri@resnulli.us, shuah@kernel.org,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        liujing <liujing@cmss.chinamobile.com>
+Subject: [PATCH] tc-testing: gitignore, delete plugins directory
+Date:   Wed, 22 Jun 2022 08:12:37 -0400
+Message-Id: <20220622121237.5832-1-liujing@cmss.chinamobile.com>
+X-Mailer: git-send-email 2.18.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 03:50:52AM -0400, Deming Wang wrote:
-> It passes '_vq' to virtqueue_use_indirect(), which still calls
-> to_vvq to get 'vq', let's directly pass 'vq'. It can avoid
-> unnecessary call of to_vvq in hot path.
-> 
-> Signed-off-by: Deming Wang <wangdeming@inspur.com>
+when we modfying kernel, commit it to our environment building. we find a error
+that is "tools/testing/selftests/tc-testing/plugins" failed: No such file or directory"
 
-I do not see the point of any of these patches. Sorry.
-If this is supposed to be an optimization, post some numbers pls.
+we find plugins directory is ignored in
+"tools/testing/selftests/tc-testing/.gitignore", but the plugins directory
+is need in "tools/testing/selftests/tc-testing/Makefile"
+
+Signed-off-by: liujing <liujing@cmss.chinamobile.com>
+---
+ tools/testing/selftests/tc-testing/.gitignore | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/tools/testing/selftests/tc-testing/.gitignore b/tools/testing/selftests/tc-testing/.gitignore
+index d52f65de23b4..9fe1cef72728 100644
+--- a/tools/testing/selftests/tc-testing/.gitignore
++++ b/tools/testing/selftests/tc-testing/.gitignore
+@@ -1,7 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ __pycache__/
+ *.pyc
+-plugins/
+ *.xml
+ *.tap
+ tdc_config_local.py
+-- 
+2.18.2
 
 
-> ---
->  drivers/virtio/virtio_ring.c | 6 ++----
->  1 file changed, 2 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-> index 13a7348cedff..af2b7785ed77 100644
-> --- a/drivers/virtio/virtio_ring.c
-> +++ b/drivers/virtio/virtio_ring.c
-> @@ -1475,10 +1475,8 @@ static void *virtqueue_get_buf_ctx_packed(struct virtqueue *_vq,
->  	return ret;
->  }
->  
-> -static void virtqueue_disable_cb_packed(struct virtqueue *_vq)
-> +static void virtqueue_disable_cb_packed(struct vring_virtqueue *vq)
->  {
-> -	struct vring_virtqueue *vq = to_vvq(_vq);
-> -
->  	if (vq->packed.event_flags_shadow != VRING_PACKED_EVENT_FLAG_DISABLE) {
->  		vq->packed.event_flags_shadow = VRING_PACKED_EVENT_FLAG_DISABLE;
->  		vq->packed.vring.driver->flags =
-> @@ -2007,7 +2005,7 @@ void virtqueue_disable_cb(struct virtqueue *_vq)
->  		return;
->  
->  	if (vq->packed_ring)
-> -		virtqueue_disable_cb_packed(_vq);
-> +		virtqueue_disable_cb_packed(vq);
->  	else
->  		virtqueue_disable_cb_split(_vq);
->  }
-> -- 
-> 2.27.0
 
