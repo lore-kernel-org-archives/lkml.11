@@ -2,136 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15B47C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 09:06:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD312CCA47E
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 09:06:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357119AbiFVJG4 (ORCPT
+        id S1357133AbiFVJG6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 05:06:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33848 "EHLO
+        Wed, 22 Jun 2022 05:06:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356308AbiFVJGM (ORCPT
+        with ESMTP id S1356423AbiFVJGR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 05:06:12 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DFFB2251E;
-        Wed, 22 Jun 2022 02:06:07 -0700 (PDT)
-X-UUID: c50ded026a214356aade371bea5fc932-20220622
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.6,REQID:f81614f0-ff3f-4552-bf4e-6190cdfff317,OB:10,L
-        OB:30,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ham,
-        ACTION:release,TS:100
-X-CID-INFO: VERSION:1.1.6,REQID:f81614f0-ff3f-4552-bf4e-6190cdfff317,OB:10,LOB
-        :30,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D,
-        ACTION:quarantine,TS:100
-X-CID-META: VersionHash:b14ad71,CLOUDID:79ccbd2d-1756-4fa3-be7f-474a6e4be921,C
-        OID:9e1b96a75a71,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:0,File:nil,QS:nil,BEC:nil,COL:0
-X-UUID: c50ded026a214356aade371bea5fc932-20220622
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
-        (envelope-from <biao.huang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 699344263; Wed, 22 Jun 2022 17:06:02 +0800
-Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Wed, 22 Jun 2022 17:06:01 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 22 Jun 2022 17:06:00 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkmbs11n2.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Wed, 22 Jun 2022 17:05:59 +0800
-From:   Biao Huang <biao.huang@mediatek.com>
-To:     David Miller <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Fabien Parent <fparent@baylibre.com>
-CC:     Jakub Kicinski <kuba@kernel.org>, Felix Fietkau <nbd@nbd.name>,
-        "John Crispin" <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        Biao Huang <biao.huang@mediatek.com>,
-        Yinghua Pan <ot_yinghua.pan@mediatek.com>,
-        <srv_heupstream@mediatek.com>,
-        Macpaul Lin <macpaul.lin@mediatek.com>
-Subject: [PATCH net-next v3 10/10] net: ethernet: mtk-star-emac: enable half duplex hardware support
-Date:   Wed, 22 Jun 2022 17:05:45 +0800
-Message-ID: <20220622090545.23612-11-biao.huang@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220622090545.23612-1-biao.huang@mediatek.com>
-References: <20220622090545.23612-1-biao.huang@mediatek.com>
+        Wed, 22 Jun 2022 05:06:17 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 636C2275D2;
+        Wed, 22 Jun 2022 02:06:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1655888769; x=1687424769;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=cl43ewztgiqfA8qjSqqVU9/tRzcxq1NocInwS9WEa9M=;
+  b=TBAf5Dw2Vla9XCCQZ2Y71NZxzrrX5rtnotF1AUk2f/0Iu0zy0YIvMRFy
+   V259Dx43I+KWtfLq51Vp5TenPi9ZlUkxSV2jqLLlAvZ6CigR2UtZ8hP/C
+   DFkeWF86LbI/KJpywAOuHvDjuv2qxNkTtZIOZfiJmxS21IcWRpFoPMeay
+   SkhEAuLiIEe2JTHuFMpWz0YaAFXphxz/MYxCPDyQ8NSdX7XOHgLoNBVHw
+   ssob1IkPFAhjeuwF6vTOutS0BdvW041Dfab+DpA1js94vZqYwQ4rnJNbu
+   pbBE093XuUE9RpWpslIrRFLS6loiyleQX8+NflzbDxyuEYnUuKiBH7Vom
+   w==;
+X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
+   d="scan'208";a="179016996"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Jun 2022 02:06:08 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 22 Jun 2022 02:06:08 -0700
+Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Wed, 22 Jun 2022 02:06:03 -0700
+From:   Arun Ramadoss <arun.ramadoss@microchip.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     Woojung Huh <woojung.huh@microchip.com>,
+        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Russell King" <linux@armlinux.org.uk>
+Subject: [Patch net-next 00/13] net: dsa: microchip: common spi probe for the ksz series switches - part 2
+Date:   Wed, 22 Jun 2022 14:34:12 +0530
+Message-ID: <20220622090425.17709-1-arun.ramadoss@microchip.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Current driver don't support 100/10M duplex half function.
-This patch enable half duplex capability in hardware.
+This patch series aims to refactor the ksz_switch_register routine to have the
+common flow for the ksz series switch. And this is the follow up patch series.
 
-Signed-off-by: Biao Huang <biao.huang@mediatek.com>
-Signed-off-by: Yinghua Pan <ot_yinghua.pan@mediatek.com>
----
- drivers/net/ethernet/mediatek/mtk_star_emac.c | 30 ++++++++-----------
- 1 file changed, 12 insertions(+), 18 deletions(-)
+First, it tries moves the common implementation in the setup from individual
+files to ksz_setup. Then implements the common dsa_switch_ops structure instead
+of independent registration. And then moves the ksz_dev_ops to ksz_common.c,
+it allows the dynamic detection of which ksz_dev_ops to be used based on
+the switch detection function.
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_star_emac.c b/drivers/net/ethernet/mediatek/mtk_star_emac.c
-index 87e5bc9c343a..67e85705b770 100644
---- a/drivers/net/ethernet/mediatek/mtk_star_emac.c
-+++ b/drivers/net/ethernet/mediatek/mtk_star_emac.c
-@@ -883,32 +883,26 @@ static void mtk_star_phy_config(struct mtk_star_priv *priv)
- 	val <<= MTK_STAR_OFF_PHY_CTRL1_FORCE_SPD;
- 
- 	val |= MTK_STAR_BIT_PHY_CTRL1_AN_EN;
--	val |= MTK_STAR_BIT_PHY_CTRL1_FORCE_FC_RX;
--	val |= MTK_STAR_BIT_PHY_CTRL1_FORCE_FC_TX;
--	/* Only full-duplex supported for now. */
--	val |= MTK_STAR_BIT_PHY_CTRL1_FORCE_DPX;
--
--	regmap_write(priv->regs, MTK_STAR_REG_PHY_CTRL1, val);
--
- 	if (priv->pause) {
--		val = MTK_STAR_VAL_FC_CFG_SEND_PAUSE_TH_2K;
--		val <<= MTK_STAR_OFF_FC_CFG_SEND_PAUSE_TH;
--		val |= MTK_STAR_BIT_FC_CFG_UC_PAUSE_DIR;
-+		val |= MTK_STAR_BIT_PHY_CTRL1_FORCE_FC_RX;
-+		val |= MTK_STAR_BIT_PHY_CTRL1_FORCE_FC_TX;
-+		val |= MTK_STAR_BIT_PHY_CTRL1_FORCE_DPX;
- 	} else {
--		val = 0;
-+		val &= ~MTK_STAR_BIT_PHY_CTRL1_FORCE_FC_RX;
-+		val &= ~MTK_STAR_BIT_PHY_CTRL1_FORCE_FC_TX;
-+		val &= ~MTK_STAR_BIT_PHY_CTRL1_FORCE_DPX;
- 	}
-+	regmap_write(priv->regs, MTK_STAR_REG_PHY_CTRL1, val);
- 
-+	val = MTK_STAR_VAL_FC_CFG_SEND_PAUSE_TH_2K;
-+	val <<= MTK_STAR_OFF_FC_CFG_SEND_PAUSE_TH;
-+	val |= MTK_STAR_BIT_FC_CFG_UC_PAUSE_DIR;
- 	regmap_update_bits(priv->regs, MTK_STAR_REG_FC_CFG,
- 			   MTK_STAR_MSK_FC_CFG_SEND_PAUSE_TH |
- 			   MTK_STAR_BIT_FC_CFG_UC_PAUSE_DIR, val);
- 
--	if (priv->pause) {
--		val = MTK_STAR_VAL_EXT_CFG_SND_PAUSE_RLS_1K;
--		val <<= MTK_STAR_OFF_EXT_CFG_SND_PAUSE_RLS;
--	} else {
--		val = 0;
--	}
--
-+	val = MTK_STAR_VAL_EXT_CFG_SND_PAUSE_RLS_1K;
-+	val <<= MTK_STAR_OFF_EXT_CFG_SND_PAUSE_RLS;
- 	regmap_update_bits(priv->regs, MTK_STAR_REG_EXT_CFG,
- 			   MTK_STAR_MSK_EXT_CFG_SND_PAUSE_RLS, val);
- }
+Finally, the patch updates the ksz_spi probe function to be same for all the
+ksz_switches.
+
+Arun Ramadoss (13):
+  net: dsa: microchip: rename shutdown to reset in ksz_dev_ops
+  net: dsa: microchip: add config_cpu_port to struct ksz_dev_ops
+  net: dsa: microchip: add the enable_stp_addr pointer in ksz_dev_ops
+  net: dsa: microchip: move setup function to ksz_common
+  net: dsa: microchip: move broadcast rate limit to ksz_setup
+  net: dsa: microchip: move multicast enable to ksz_setup
+  net: dsa: microchip: move start of switch to ksz_setup
+  net: dsa: microchip: common dsa_switch_ops for ksz switches
+  net: dsa: microchip: ksz9477: separate phylink mode from switch
+    register
+  net: dsa: microchip: common menuconfig for ksz series switch
+  net: dsa: microchip: move ksz_dev_ops to ksz_common.c
+  net: dsa: microchip: remove the ksz8/ksz9477_switch_register
+  net: dsa: microchip: common ksz_spi_probe for ksz switches
+
+ drivers/net/dsa/microchip/Kconfig             |  42 +--
+ drivers/net/dsa/microchip/Makefile            |  10 +-
+ drivers/net/dsa/microchip/ksz8.h              |  48 +++
+ drivers/net/dsa/microchip/ksz8795.c           | 195 +++--------
+ drivers/net/dsa/microchip/ksz8795_reg.h       |  12 -
+ drivers/net/dsa/microchip/ksz8863_smi.c       |   2 +-
+ drivers/net/dsa/microchip/ksz9477.c           | 244 +++++--------
+ drivers/net/dsa/microchip/ksz9477.h           |  60 ++++
+ drivers/net/dsa/microchip/ksz9477_i2c.c       |   6 +-
+ drivers/net/dsa/microchip/ksz9477_reg.h       |  12 -
+ drivers/net/dsa/microchip/ksz9477_spi.c       | 150 --------
+ drivers/net/dsa/microchip/ksz_common.c        | 326 +++++++++++++-----
+ drivers/net/dsa/microchip/ksz_common.h        |  82 ++---
+ .../microchip/{ksz8795_spi.c => ksz_spi.c}    |  89 +++--
+ 14 files changed, 598 insertions(+), 680 deletions(-)
+ create mode 100644 drivers/net/dsa/microchip/ksz9477.h
+ delete mode 100644 drivers/net/dsa/microchip/ksz9477_spi.c
+ rename drivers/net/dsa/microchip/{ksz8795_spi.c => ksz_spi.c} (60%)
+
+
+base-commit: 8720bd951b8e8515ffd995c7631790fdabaa9265
 -- 
-2.25.1
+2.36.1
 
