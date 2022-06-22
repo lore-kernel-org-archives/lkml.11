@@ -2,76 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE8C3CCA473
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 02:14:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B59BC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 02:17:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237065AbiFVCOm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 22:14:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40054 "EHLO
+        id S1355942AbiFVCRv (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 21 Jun 2022 22:17:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229734AbiFVCOj (ORCPT
+        with ESMTP id S229734AbiFVCRt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 22:14:39 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07D612B19A;
-        Tue, 21 Jun 2022 19:14:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
-        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=ORveCGym512RighQmyJ26uQ7Z38tEMS5jxlZdRzFA0Q=; b=Q7LfXcfM66qM2ZE6ZtDOCsVX9e
-        kMsBRa3Z3eceP8zsLvQg40WnFWBHhJQ6yxgoxnBy5WZTQVppD/4GxA/Kfu56zw6VZXCHH9MQmhQ75
-        TKDpfFYuTRTNtimXzdV4nwHmTDgFecSjLdynmneJsID+G1JByy83Y562K4jUhBO7SYjRymx9J5CTI
-        ceRuscfMK9Jvpog2Xi36ira6n1gF1Vdt7LHxe8g8sl/dxW1hk7keL33aNKMbKncWwxNbrjM7Wd8x9
-        ZMoBo0HluFzzqPppIgYBOeUotvAICwenA7LXtaFDCTfrpLp1aotWJLXU2aBdzLlI7N7P4JVRBpq+Z
-        iSYb03CQ==;
-Received: from [2601:1c0:6280:3f0::6c43]
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o3pmh-00AnHm-9p; Wed, 22 Jun 2022 02:09:20 +0000
-Message-ID: <862ed496-921f-b21e-48e8-123422b33b4a@infradead.org>
-Date:   Tue, 21 Jun 2022 19:06:50 -0700
+        Tue, 21 Jun 2022 22:17:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8071230F5B;
+        Tue, 21 Jun 2022 19:17:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3C42DB81A94;
+        Wed, 22 Jun 2022 02:17:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 795D1C3411C;
+        Wed, 22 Jun 2022 02:17:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655864265;
+        bh=Hy9uGehsjDlrdBYoTgczfaFinnYGX3nIlRrm+aT86Og=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=noM6Oiz4Kaq06o4h5aJoVXOy0efNuPqWT5OzeXiF8OE5vs5tp70Zxmdl9WLlU3jq+
+         GDofdZOxO6pnNby1wq3vEL6RKRT+/VL0pwTkYQC9ao8dIdFnTJC9bv0ynQ3wBw2xHd
+         Jj0guKo7mojh6JO/tgvsCWNcj06xDX5JFuaXhwTUILmMsFvuUorzQYaxUok11prGXb
+         l9QxK69CWeyS/SxvL9h5RpuZS023g8aclu35BOAweLB0MkXrpmpfDAWTJNy5ArVdeA
+         /ZSV6GM20lshTmgHaGoHLzYLuD+qhX5ECG/qIiqZ7rz5GqIHIZRHL+gqb/CzUNYev+
+         r2cwiZcfbfQ7Q==
+Date:   Tue, 21 Jun 2022 19:17:43 -0700
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     Mimi Zohar <zohar@linux.ibm.com>
+Cc:     xiujianfeng <xiujianfeng@huawei.com>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        dmitry.kasatkin@gmail.com, jmorris@namei.org, serge@hallyn.com,
+        linux-integrity@vger.kernel.org,
+        linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH -next] evm: Use IS_ENABLED to initialize .enabled
+Message-ID: <YrJ7x3kCTy3ZutZ/@sol.localdomain>
+References: <20220606101042.89638-1-xiujianfeng@huawei.com>
+ <64511312-df94-c40b-689c-5fc3823e91f5@pengutronix.de>
+ <812c4ee9-56f7-900a-df48-f3ca3e15542f@huawei.com>
+ <5d0c291bb4a674a6733a18f9eb67cf40193732f4.camel@linux.ibm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2] sched: RT bandwidth interface for cgroup unified
- hierarchy
-Content-Language: en-US
-To:     Chengming Zhou <zhouchengming@bytedance.com>, mingo@redhat.com,
-        peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, tj@kernel.org,
-        lizefan.x@bytedance.com, hannes@cmpxchg.org, corbet@lwn.net
-Cc:     cgroups@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220622015557.7497-1-zhouchengming@bytedance.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220622015557.7497-1-zhouchengming@bytedance.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <5d0c291bb4a674a6733a18f9eb67cf40193732f4.camel@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 6/21/22 18:55, Chengming Zhou wrote:
-> We need to run RT threads in cgroup unified hierarchy, but we can't
-> since the default rt_bandwidth.rt_runtime of non-root task_group is 0
-> and we haven't interface to update it.
+On Tue, Jun 21, 2022 at 10:03:39AM -0400, Mimi Zohar wrote:
+> On Tue, 2022-06-21 at 18:58 +0800, xiujianfeng wrote:
+> > Hi, Ahmad
+> > 
+> > 在 2022/6/7 14:06, Ahmad Fatoum 写道:
+> > > On 06.06.22 12:10, Xiu Jianfeng wrote:
+> > >> Use IS_ENABLED(CONFIG_XXX) instead of #ifdef/#endif statements to
+> > >> initialize .enabled, minor simplicity improvement.
 > 
-> This patch add RT bandwidth interface "cpu.max.rt" and update the
-> documentation accordingly.
+> The difference between using ifdef's and IS_ENABLED is when the
+> decision is made - build time, run time.   Please update the patch
+> description providing an explanation for needing to make the decision
+> at run time.
 > 
-> Signed-off-by: Chengming Zhou<zhouchengming@bytedance.com>
-> ---
-> v2:
->   - minor fix for documentation per Randy's review. Thanks.
+> thanks,
 
-Documentation changes look good. Thanks.
+IS_ENABLED() is a compile time constant.  So the patch looks fine to me.
 
-> ---
->   Documentation/admin-guide/cgroup-v2.rst | 13 +++++++++++
->   kernel/sched/core.c                     | 31 +++++++++++++++++++++++++
->   kernel/sched/rt.c                       |  2 +-
->   kernel/sched/sched.h                    |  1 +
->   4 files changed, 46 insertions(+), 1 deletion(-)
+- Eric
