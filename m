@@ -2,127 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9589CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 07:25:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EA49C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 07:26:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352758AbiFVHZr (ORCPT
+        id S1350371AbiFVH0p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 03:25:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58904 "EHLO
+        Wed, 22 Jun 2022 03:26:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242604AbiFVHZm (ORCPT
+        with ESMTP id S229528AbiFVH0n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 03:25:42 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8213937009
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 00:25:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655882741; x=1687418741;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=8fyiOEj6UXqgECBF8WA2TpvzXotNKsxOEFLSCQo4M8I=;
-  b=M59hpnol7i9/iLSXhreD3BuI2Q65liZMkyKxH90nVhJjgqG0eqq0FNOw
-   9O5dNXtrZiDuhZtFF2UeIW8oGByXjw25w16wEtygB7h5jHHR+J0T4cIp1
-   f6u31E3F6eyzkDCVnIDMHOIYia3kTqoKx6A5CYykzhd74/tCQOS065+nN
-   nBFtYw/HDkKHnIo/NjMbPFHXsV4T2XAnNK+4iXFvq55NTPtOPcuP3YvqW
-   I0lyGPBALVkzaVdeyHnuU0/gzBVLyQ78BP3UCxjDWCZF4k2/rdOGPfzOI
-   uKauJ9DHlstDtAOcx1gGgRhUgibE+iFcQoUawU8nnXgDwrh/XmX4nH7ih
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="281071382"
-X-IronPort-AV: E=Sophos;i="5.92,211,1650956400"; 
-   d="scan'208";a="281071382"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 00:25:39 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,211,1650956400"; 
-   d="scan'208";a="655519227"
-Received: from lkp-server02.sh.intel.com (HELO a67cc04a5eeb) ([10.239.97.151])
-  by fmsmga004.fm.intel.com with ESMTP; 22 Jun 2022 00:25:37 -0700
-Received: from kbuild by a67cc04a5eeb with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o3uk5-0000zR-6F;
-        Wed, 22 Jun 2022 07:25:37 +0000
-Date:   Wed, 22 Jun 2022 15:24:37 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [alobakin:bitops 7/8] include/linux/bitmap.h:447:22: warning:
- 'possible_idx[0]' is used uninitialized
-Message-ID: <202206221502.VUxmhVnV-lkp@intel.com>
+        Wed, 22 Jun 2022 03:26:43 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 119EA3700E
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 00:26:42 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id t25so26270382lfg.7
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 00:26:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=nVINeQucA0hcOfl1Yl3NKcwENV+ClW7oKgC+Qvvycso=;
+        b=A+bC1zR9Iyi6DtY8D0mBXn29lLBQ6l0+WcVTYf82rCLB3Tf/CekLrKRsSco0GzqToP
+         TXXD+lu6JMBzvRoqrDnqWcuGOfWUDPdvJWCD5U0fM3BaWqebSVKPvnDuYFrGgWHB0BHr
+         x94eLHaGWSTI/jXa4reXZS0ILn6n5qtkmVlso0YP9war5DXgh58Ev2jS9JP5E1AY3X4E
+         agrVLRQH6RvaShxUuKX0agzdL582WLNOsePbY1XTEj3vyxxPhU7csSnP0ODVroLeAMkJ
+         l77VY29GRznM+B3ONJ6Gt5UfGu7oPNKXHg7L5+YIRna4RJzWNhNPAznRLCmyE47PkXlm
+         N/5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=nVINeQucA0hcOfl1Yl3NKcwENV+ClW7oKgC+Qvvycso=;
+        b=Kd1ftdGyTfwQwoyvAcFs4vwN48nv7FZj78SsPves+VN1m+xAX3t+LErMxoZf1Aiimx
+         lPzl+Rl5mY4eVH+bdqHwQVxxNymifoUVsKyEO+svyB2T89pSRWos2OkOwLASXlKBqRwC
+         o9QhuZ6B1YTrcHH1e28p3VEB83dyIMeZHS6db3J/mxZAYxQQcXZmiSHnJUw9CPhuyl+G
+         bnTS0TyU9B9hLhI5882aR2IIr34GAO6jcIjD0syYvYoGfPB0BmZIW4CX/xwsN+Wld3wm
+         dHfBr/jEAIE8HEtNvuONAS8vr6xSaH/fNe3VMNz5GowaTU0tXfTVIABpOJ92LzeOGhyh
+         hvrQ==
+X-Gm-Message-State: AJIora8iyBo3PCJUJrnJWF5DOjHSV+CG1QaAP5kec97263qTJgTbOaiM
+        yFvgQUZBAqVxGy5vrGs4Kc/KUw==
+X-Google-Smtp-Source: AGRyM1s9XrHyP76QQ25ODf9GWmEg2gHGYNQxgUj3tWjupzrc+W5EIBfAY6Kk3S4lbVzlo8jSPMtdsw==
+X-Received: by 2002:a05:6512:39d5:b0:47f:6e9a:5bf with SMTP id k21-20020a05651239d500b0047f6e9a05bfmr1314275lfu.580.1655882800383;
+        Wed, 22 Jun 2022 00:26:40 -0700 (PDT)
+Received: from [192.168.1.211] ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id s28-20020a19771c000000b0047f84ecae2esm488904lfc.236.2022.06.22.00.26.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Jun 2022 00:26:39 -0700 (PDT)
+Message-ID: <f127060a-5648-fa40-81a0-be1be05b3951@linaro.org>
+Date:   Wed, 22 Jun 2022 10:26:39 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v8 1/2] drm/msm/dp: force link training for display
+ resolution change
+Content-Language: en-GB
+To:     Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        dri-devel@lists.freedesktop.org, robdclark@gmail.com,
+        sean@poorly.run, swboyd@chromium.org, dianders@chromium.org,
+        vkoul@kernel.org, daniel@ffwll.ch, airlied@linux.ie,
+        agross@kernel.org, bjorn.andersson@linaro.org
+Cc:     quic_abhinavk@quicinc.com, quic_aravindh@quicinc.com,
+        quic_sbillaka@quicinc.com, freedreno@lists.freedesktop.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <1655399361-10842-1-git-send-email-quic_khsieh@quicinc.com>
+ <1655399361-10842-2-git-send-email-quic_khsieh@quicinc.com>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <1655399361-10842-2-git-send-email-quic_khsieh@quicinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/alobakin/linux bitops
-head:   53dc46e3f72d9b77c9c4ec23a3261d452b3bd67a
-commit: 37c8723a2d98c5edce8fb5e9c2e7b8e2d9b4291c [7/8] bitmap: don't assume compiler evaluates small mem*() builtins calls
-config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220622/202206221502.VUxmhVnV-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/alobakin/linux/commit/37c8723a2d98c5edce8fb5e9c2e7b8e2d9b4291c
-        git remote add alobakin https://github.com/alobakin/linux
-        git fetch --no-tags alobakin bitops
-        git checkout 37c8723a2d98c5edce8fb5e9c2e7b8e2d9b4291c
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/net/ethernet/intel/ice/
+On 16/06/2022 20:09, Kuogee Hsieh wrote:
+> Display resolution change is implemented through drm modeset. Older
+> modeset (resolution) has to be disabled first before newer modeset
+> (resolution) can be enabled. Display disable will turn off both
+> pixel clock and main link clock so that main link have to be
+> re-trained during display enable to have new video stream flow
+> again. At current implementation, display enable function manually
+> kicks up irq_hpd_handle which will read panel link status and start
+> link training if link status is not in sync state.
+> 
+> However, there is rare case that a particular panel links status keep
+> staying in sync for some period of time after main link had been shut
+> down previously at display disabled. In this case, main link retraining
+> will not be executed by irq_hdp_handle(). Hence video stream of newer
+> display resolution will fail to be transmitted to panel due to main
+> link is not in sync between host and panel.
+> 
+> This patch will bypass irq_hpd_handle() in favor of directly call
+> dp_ctrl_on_stream() to always perform link training in regardless of
+> main link status. So that no unexpected exception resolution change
+> failure cases will happen. Also this implementation are more efficient
+> than manual kicking off irq_hpd_handle function.
+> 
+> Changes in v2:
+> -- set force_link_train flag on DP only (is_edp == false)
+> 
+> Changes in v3:
+> -- revise commit  text
+> -- add Fixes tag
+> 
+> Changes in v4:
+> -- revise commit  text
+> 
+> Changes in v5:
+> -- fix spelling at commit text
+> 
+> Changes in v6:
+> -- split dp_ctrl_on_stream() for phy test case
+> -- revise commit text for modeset
+> 
+> Changes in v7:
+> -- drop 0 assignment at local variable (ret = 0)
+> 
+> Changes in v8:
+> -- add patch to remove pixel_rate from dp_ctrl
+> 
+> Fixes: 62671d2ef24b ("drm/msm/dp: fixes wrong connection state caused by failure of link train")
+> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+> ---
+>   drivers/gpu/drm/msm/dp/dp_ctrl.c    | 31 +++++++++++++++++++++++--------
+>   drivers/gpu/drm/msm/dp/dp_ctrl.h    |  3 ++-
+>   drivers/gpu/drm/msm/dp/dp_display.c | 13 ++++++-------
+>   3 files changed, 31 insertions(+), 16 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+> index af7a80c..01028b5 100644
+> --- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
+> +++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+> @@ -1551,7 +1551,7 @@ static int dp_ctrl_process_phy_test_request(struct dp_ctrl_private *ctrl)
+>   
+>   	ret = dp_ctrl_on_link(&ctrl->dp_ctrl);
+>   	if (!ret)
+> -		ret = dp_ctrl_on_stream(&ctrl->dp_ctrl);
+> +		ret = dp_ctrl_on_stream_phy_test_report(&ctrl->dp_ctrl);
+>   	else
+>   		DRM_ERROR("failed to enable DP link controller\n");
+>   
+> @@ -1807,7 +1807,27 @@ static int dp_ctrl_link_retrain(struct dp_ctrl_private *ctrl)
+>   	return dp_ctrl_setup_main_link(ctrl, &training_step);
+>   }
+>   
+> -int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl)
+> +int dp_ctrl_on_stream_phy_test_report(struct dp_ctrl *dp_ctrl)
+> +{
+> +	int ret;
+> +	struct dp_ctrl_private *ctrl;
+> +
+> +	ctrl = container_of(dp_ctrl, struct dp_ctrl_private, dp_ctrl);
+> +
+> +	ctrl->dp_ctrl.pixel_rate = ctrl->panel->dp_mode.drm_mode.clock;
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Stephen has raised an interesting question. Comparing this to the 
+dp_ctrl_on_stream(), he noticed that we do not halve the pixel clock 
+here (if the wide bus is supported). So, the question is if this is 
+correct or not.
 
-All warnings (new ones prefixed by >>):
+> +
+> +	ret = dp_ctrl_enable_stream_clocks(ctrl);
+> +	if (ret) {
+> +		DRM_ERROR("Failed to start pixel clocks. ret=%d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	dp_ctrl_send_phy_test_pattern(ctrl);
+> +
+> +	return 0;
+> +}
+> +
+> +int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl, bool force_link_train)
+>   {
+>   	int ret = 0;
+>   	bool mainlink_ready = false;
+> @@ -1843,12 +1863,7 @@ int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl)
+>   		goto end;
+>   	}
+>   
+> -	if (ctrl->link->sink_request & DP_TEST_LINK_PHY_TEST_PATTERN) {
+> -		dp_ctrl_send_phy_test_pattern(ctrl);
+> -		return 0;
+> -	}
+> -
+> -	if (!dp_ctrl_channel_eq_ok(ctrl))
+> +	if (force_link_train || !dp_ctrl_channel_eq_ok(ctrl))
+>   		dp_ctrl_link_retrain(ctrl);
+>   
+>   	/* stop txing train pattern to end link training */
 
-   In file included from include/linux/cpumask.h:12,
-                    from arch/x86/include/asm/cpumask.h:5,
-                    from arch/x86/include/asm/msr.h:11,
-                    from arch/x86/include/asm/processor.h:22,
-                    from arch/x86/include/asm/timex.h:5,
-                    from include/linux/timex.h:67,
-                    from include/linux/time32.h:13,
-                    from include/linux/time.h:60,
-                    from include/linux/stat.h:19,
-                    from include/linux/module.h:13,
-                    from drivers/net/ethernet/intel/ice/ice.h:10,
-                    from drivers/net/ethernet/intel/ice/ice_lib.h:7,
-                    from drivers/net/ethernet/intel/ice/ice_switch.c:4:
-   drivers/net/ethernet/intel/ice/ice_switch.c: In function 'ice_find_free_recp_res_idx.constprop':
->> include/linux/bitmap.h:447:22: warning: 'possible_idx[0]' is used uninitialized [-Wuninitialized]
-     447 |                 *map |= GENMASK(start + nbits - 1, start);
-         |                      ^~
-   In file included from drivers/net/ethernet/intel/ice/ice.h:7,
-                    from drivers/net/ethernet/intel/ice/ice_lib.h:7,
-                    from drivers/net/ethernet/intel/ice/ice_switch.c:4:
-   drivers/net/ethernet/intel/ice/ice_switch.c:4929:24: note: 'possible_idx[0]' was declared here
-    4929 |         DECLARE_BITMAP(possible_idx, ICE_MAX_FV_WORDS);
-         |                        ^~~~~~~~~~~~
-   include/linux/types.h:11:23: note: in definition of macro 'DECLARE_BITMAP'
-      11 |         unsigned long name[BITS_TO_LONGS(bits)]
-         |                       ^~~~
-
-
-vim +447 include/linux/bitmap.h
-
-   440	
-   441	static __always_inline void bitmap_set(unsigned long *map, unsigned int start,
-   442			unsigned int nbits)
-   443	{
-   444		if (__builtin_constant_p(nbits) && nbits == 1)
-   445			__set_bit(start, map);
-   446		else if (small_const_nbits(start + nbits))
- > 447			*map |= GENMASK(start + nbits - 1, start);
-   448		else if (__builtin_constant_p(start & BITMAP_MEM_MASK) &&
-   449			 IS_ALIGNED(start, BITMAP_MEM_ALIGNMENT) &&
-   450			 __builtin_constant_p(nbits & BITMAP_MEM_MASK) &&
-   451			 IS_ALIGNED(nbits, BITMAP_MEM_ALIGNMENT))
-   452			memset((char *)map + start / 8, 0xff, nbits / 8);
-   453		else
-   454			__bitmap_set(map, start, nbits);
-   455	}
-   456	
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+With best wishes
+Dmitry
