@@ -2,118 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C71D0C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 11:49:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 511DFC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 11:49:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357948AbiFVLtV (ORCPT
+        id S1358042AbiFVLtf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 07:49:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60098 "EHLO
+        Wed, 22 Jun 2022 07:49:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357915AbiFVLtG (ORCPT
+        with ESMTP id S1357933AbiFVLtR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 07:49:06 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D043E3CA79
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 04:49:04 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id e25so19159844wrc.13
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 04:49:04 -0700 (PDT)
+        Wed, 22 Jun 2022 07:49:17 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 326113CFD1;
+        Wed, 22 Jun 2022 04:49:15 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id i10so19271277wrc.0;
+        Wed, 22 Jun 2022 04:49:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=RLunSCvbgB4SAHfxR0BX8sJAyCnu/q208+BMCNpQwXs=;
-        b=o7eyXYocetRpm9cnaFSEDmG6CMxNgHbv5nFF/j4QGTWCAyXpbs1NAj0VHx4W/HS26U
-         Zw25Jr2tv2TKAsHnucevae2KsWd2KkNmuNhJuW5YTDMhvVTwJaUtD7hz6aKCmt4QWC1J
-         jH+eLe61nf+h1Faqo3Z4Bsws573FRuYq4QtbGtywvOz9RTXfPN4QTKWVOXK6fQoY2+2p
-         4Y3wK5IXljjPDsEG4TRYJNIzUAQ4HpIOioKl/PwV7Gj+EhYanm4M2dQuIupq6NS+U5vM
-         vVfChdoRvkQIctr4yg0CJafsmqly+Bzf3I+zp4lZpRbfT0RFI6wvr5Q+mQ1F+CL53e8T
-         9F4g==
+        bh=GeKRIUNZiapqoesYYpL5E5Sfq5smki4pt6O3TzGiQ/4=;
+        b=jua111Kog8jaHp20p506KaJdFl1RP1h0t2nNf39UCKCOzv6dP8nlt77vxiDs6oNnZt
+         2a51QMCR9hJFQYtuoMViaF/G9VjpkIRa09UNYerT9ghcjGLvlsR3fEszhSla5Cj2NFWq
+         BHuzlJbP2pNd+vjYsfL52qnuKg3wckW7PieNKzgWef0WWhpyEx8D4ydXzybKXQzw00rb
+         BwZg2NICx4hKFRAsFVKog0HCLieycERXbAT1N8mO9amRGLHY+M9Q5uHqZE3/NtouODw0
+         U61cWrpYk5VsWYWTxyYKwiIpcbn2q7LI8Orc4YtC6cnf14i5nIiGeJOCVHf6XPdZhDfX
+         qh1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=RLunSCvbgB4SAHfxR0BX8sJAyCnu/q208+BMCNpQwXs=;
-        b=AU0Sfi9n81N+Sv/HWKQxeSYC9nNS1St1+N6DM67WsuLD1fZxA97KFA9IOSUvXBAlYl
-         p4+B4pZzxjkHJ/vlsETXBEbCHvDUhR8iuk4ZuqsE9eGhtV6Dg8J2Qv8zRko90MUMjxW/
-         vlYITwKnpSH+qbx3VkI5WMOocPtynBA8c18JUm56gpXGmkhWB7vL2gOoYEkpjg9jxXSF
-         67MoAqdATcpp4dt5R/qBhjvM6YK/NGLQf9+Uh+60Vxgl7x75t0o3+WNxyYENTLeBzgcI
-         YkXGkModds8L2uNSU8imdBw3nT+Q3g0BFTR/wWO8ibxSkm6imgO5WHiijpmQt4MfVvP4
-         Lmsg==
-X-Gm-Message-State: AJIora9Msh5yW3Y4hJizl6DzHgsfw9p65iXncho4H7jkuXQfZiHxH9Gi
-        qyf5zvw/eBHZaToX5iPc2xTnaWFZVQIrIA==
-X-Google-Smtp-Source: AGRyM1up7MA4UMxZrT2FyQ4hZGnocAxpexb1X2+M59DoIb0NGqftX/NE2jVTGDMEy1W8mpBFx33Mtg==
-X-Received: by 2002:a5d:6e03:0:b0:20f:ca43:badc with SMTP id h3-20020a5d6e03000000b0020fca43badcmr2956303wrz.547.1655898543383;
-        Wed, 22 Jun 2022 04:49:03 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id p19-20020a05600c359300b0039c54bb28f2sm22448760wmq.36.2022.06.22.04.49.02
+        bh=GeKRIUNZiapqoesYYpL5E5Sfq5smki4pt6O3TzGiQ/4=;
+        b=144O50+bImh4GrCD7QblY5ah5ccA3UXJt4YH/5frGdEZw7/mO5XIxFzh8C6Ym6bex3
+         iWZC9m1Uq8rvL5ujduxMyiOkIkDKU2/WYODuptRc+n4uA2EQLhCbTO2HsZC4DUK2Iv8Y
+         MQ6Cvp944gZ35o08Mnjiij71teXy5Aoh+a+FG/IGoAqQy4GDKjmInrKmAx/Mxc2sdCFk
+         Kiu+gtjb+nDi0dquIQvX6qHCuGwse0I4MeKEKYT2du6dl20ANta4Urb8Mdy/ExlXqkZ2
+         opGoJbrYQQEZwQOwUC0aLLL4joyQFPro6T///dfrH6nf7oUSuDTi8x4usZi9qYKS1G+E
+         TTYg==
+X-Gm-Message-State: AJIora8tEujeidQGLeesFWU+74Z2Mm6TADqXuo5D5HfRRKIZqS/ZwLSq
+        aKjVo5yqMa//7sBPDrna62k=
+X-Google-Smtp-Source: AGRyM1uzLG/4PAZlFcKScgaPsiawG7aWBYZt5EYCDWMJ4XY7BWAmJ5MIAutRjvstEWMnTCAhyLGJ6w==
+X-Received: by 2002:a5d:452d:0:b0:21b:81f6:d91 with SMTP id j13-20020a5d452d000000b0021b81f60d91mr2861224wra.521.1655898553669;
+        Wed, 22 Jun 2022 04:49:13 -0700 (PDT)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id be8-20020a05600c1e8800b0039c235fb6a5sm21389158wmb.8.2022.06.22.04.49.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jun 2022 04:49:02 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Amit Pundir <amit.pundir@linaro.org>,
-        Trilok Soni <quic_tsoni@quicinc.com>,
-        Rob Clark <robdclark@gmail.com>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v3 0/2] dt-bindings: arm: qcom: qcom,board-id and qcom,msm-id
-Date:   Wed, 22 Jun 2022 13:48:54 +0200
-Message-Id: <20220622114856.6243-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
+        Wed, 22 Jun 2022 04:49:13 -0700 (PDT)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] raw: remove redundant pointers saddr and daddr
+Date:   Wed, 22 Jun 2022 12:49:12 +0100
+Message-Id: <20220622114912.18351-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Pointers saddr and daddr are being assigned and are never used. The
+pointers are redundant and can be removed.
 
-Changes since v2
-================
-1. Adjust description of new fields after review (Dmitry).
-2. Change name of msm8996 define (Dmitry).
-3. Add Rb tags.
+Cleans up clang scan-build warnings:
+net/ipv6/raw.c:348:3: warning: Value stored to 'saddr' is never read
+net/ipv6/raw.c:349:3: warning: Value stored to 'daddr' is never read
 
-Changes since v1
-================
-1. Make the qcom,board-id and qcom,msm-id properties deprecated and limited to
-   certain SoCs (Rob).
-2. Extend the qcom,board-id schema to match OnePlus variant - four elements -
-   and drop DTS patches splitting four into two touples (Stephan).
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ net/ipv6/raw.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-Description
-===========
-The discussion [1] brought several arguments for keeping the qcom,board-id and
-qcom,msm-id properties.  Keeping means we should document them, so the DT
-schema checks pass.
-
-I revived old patch [2] with several changes and improvements.  The commit msg
-hopefully collects feedback from the discussion.
-
-Best regards,
-Krzysztof
-
-[1] https://lore.kernel.org/r/a3c932d1-a102-ce18-deea-18cbbd05ecab@linaro.org/
-[2] https://lore.kernel.org/all/1425503602-24916-1-git-send-email-galak@codeaurora.org/
-
-Krzysztof Kozlowski (2):
-  dt-bindings: arm: qcom: document qcom,msm-id and qcom,board-id
-  arm64: dts: qcom: msm8992-xiaomi-libra: split qcom,msm-id into tuples
-
- .../devicetree/bindings/arm/qcom.yaml         | 121 ++++++++++++++++++
- .../boot/dts/qcom/msm8992-xiaomi-libra.dts    |   2 +-
- include/dt-bindings/arm/qcom,ids.h            |  30 +++++
- 3 files changed, 152 insertions(+), 1 deletion(-)
- create mode 100644 include/dt-bindings/arm/qcom,ids.h
-
+diff --git a/net/ipv6/raw.c b/net/ipv6/raw.c
+index 46b560aacc11..722de9dd0ff7 100644
+--- a/net/ipv6/raw.c
++++ b/net/ipv6/raw.c
+@@ -332,7 +332,6 @@ static void rawv6_err(struct sock *sk, struct sk_buff *skb,
+ void raw6_icmp_error(struct sk_buff *skb, int nexthdr,
+ 		u8 type, u8 code, int inner_offset, __be32 info)
+ {
+-	const struct in6_addr *saddr, *daddr;
+ 	struct net *net = dev_net(skb->dev);
+ 	struct hlist_nulls_head *hlist;
+ 	struct hlist_nulls_node *hnode;
+@@ -345,8 +344,6 @@ void raw6_icmp_error(struct sk_buff *skb, int nexthdr,
+ 	sk_nulls_for_each(sk, hnode, hlist) {
+ 		/* Note: ipv6_hdr(skb) != skb->data */
+ 		const struct ipv6hdr *ip6h = (const struct ipv6hdr *)skb->data;
+-		saddr = &ip6h->saddr;
+-		daddr = &ip6h->daddr;
+ 
+ 		if (!raw_v6_match(net, sk, nexthdr, &ip6h->saddr, &ip6h->daddr,
+ 				  inet6_iif(skb), inet6_iif(skb)))
 -- 
-2.34.1
+2.35.3
 
