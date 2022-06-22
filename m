@@ -2,155 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAB97C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 08:59:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24ED7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 08:59:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356319AbiFVI7Z (ORCPT
+        id S1355117AbiFVI74 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 04:59:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54494 "EHLO
+        Wed, 22 Jun 2022 04:59:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356401AbiFVI7K (ORCPT
+        with ESMTP id S234442AbiFVI7w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 04:59:10 -0400
-Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A0FB1146
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 01:59:08 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R351e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VH55S7r_1655888345;
-Received: from localhost(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VH55S7r_1655888345)
-          by smtp.aliyun-inc.com;
-          Wed, 22 Jun 2022 16:59:06 +0800
-From:   Baolin Wang <baolin.wang@linux.alibaba.com>
-To:     akpm@linux-foundation.org
-Cc:     rppt@linux.ibm.com, willy@infradead.org,
-        baolin.wang@linux.alibaba.com, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: [RFC PATCH v2 3/3] mm: Add kernel PTE level pagetable pages account
-Date:   Wed, 22 Jun 2022 16:58:54 +0800
-Message-Id: <7882bbf467440f9a3ebe41d96ba5b6f384081bb7.1655887440.git.baolin.wang@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <cover.1655887440.git.baolin.wang@linux.alibaba.com>
-References: <cover.1655887440.git.baolin.wang@linux.alibaba.com>
-In-Reply-To: <cover.1655887440.git.baolin.wang@linux.alibaba.com>
-References: <cover.1655887440.git.baolin.wang@linux.alibaba.com>
+        Wed, 22 Jun 2022 04:59:52 -0400
+Received: from EUR01-DB5-obe.outbound.protection.outlook.com (mail-oln040092064067.outbound.protection.outlook.com [40.92.64.67])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2705377EB
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 01:59:50 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ezPFbhReRsNUt5rQ7GIG+ow36YhMVs0/JnvFZ7G2sSEdWSayPX+QpDxu2HaNVl/mXRqu1TtNIq5mISy9Ug76eCRmSzdyX5J8B2YIzwCXdahS7k+xNPaNFSxVRqh2sRAivebAB/WmU6iPLaHRygVp5tqL0X9k4Lt16/9oO34z9UBa18cQq0Q4/6jHB7DpIfxkkdp2N6tnAo5rmLqyn4k0SAdttbuxnCMkSRXOs66sF9afYLCETCegV5C4WK/i96O89qA8Z/z2k3sEvG3xf8qpgP2skXHE7S/o42tbHBkeQOQ7MtGXTXb6TwLZPzUNhBM+yn0UP+Nlg1pU8LQB7n8ypg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=jlYfWqcehkuCqYfvCl75vzoEqBF58/9Km0uO2ucgjKo=;
+ b=jmsLcSBxXLDhyVWzx2uAXVjeZfozCx4DvrhPErYf5EiaZOQrWQBM1S5lPh+Z6cSqwGcXwe5eHz3HvAZ/zlVNTOJfpvHgG1qLH574PUrgrD8PrxNP1pvumZBFHclT64NfbmTa+LZQJIBLCVTEz5zirGq2sSSwFBzOGbZcOB2nfCOEAycSyQAGASPfut0P2AIMoT38M3kMM50x7TavnG2MRyZ85RFLfgQE/mdSWGD0NW4DeFdBW3caxxY60f73kLffBiFbZOJIGe0auCNZCrVg1Fod9Pbhgl9N/wNdnjEgrOc3MliXIqeKsE7CMLMpgq72nZu2IoLYSuhH3hBXSrZoIw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hotmail.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jlYfWqcehkuCqYfvCl75vzoEqBF58/9Km0uO2ucgjKo=;
+ b=Ir219wu+8Xa61YlaVeRpH8p9UcO2gg0N5aATNTxbjEIDEBRmn0pwMXuCjMMX1hN3uhkVr7RJMIIx9TspSV7P5FzA4zv7ur6TrQ6FFSxOWGJSjaWK4rD1qJ0OHuJngqM7FoxeRpnVu7JNPPbdmv65PORzmvfO+1PaXRdjhX5XQ+44yPOnGDgV1rnr3teDeFIOseMpzJxyExhJvwwiyXDGnG6FwpedSvVd6R18wSOI/ZRfP51MZZMVpGMZms0I++YmFOIar4tzlf0egfuKjarM/jtbBhAJw1cNINbofXhPaoHanHhfDRzz8zcQPWNWxbTgZyCavAZbagqXUbF4S3GYAg==
+Received: from PA4P189MB1421.EURP189.PROD.OUTLOOK.COM (2603:10a6:102:c2::10)
+ by PR3P189MB0876.EURP189.PROD.OUTLOOK.COM (2603:10a6:102:4f::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.15; Wed, 22 Jun
+ 2022 08:59:49 +0000
+Received: from PA4P189MB1421.EURP189.PROD.OUTLOOK.COM
+ ([fe80::5ae:1a99:f05c:b75d]) by PA4P189MB1421.EURP189.PROD.OUTLOOK.COM
+ ([fe80::5ae:1a99:f05c:b75d%6]) with mapi id 15.20.5353.022; Wed, 22 Jun 2022
+ 08:59:49 +0000
+From:   Saud Farooqui <farooqui_saud@hotmail.com>
+To:     maxime@cerno.tech
+Cc:     jernej.skrabec@gmail.com, samuel@sholland.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, wens@csie.org, daniel@ffwll.ch,
+        Saud Farooqui <farooqui_saud@hotmail.com>
+Subject: [PATCH v2] drm/sun4i: Return if frontend is not present
+Date:   Wed, 22 Jun 2022 13:59:17 +0500
+Message-ID: <PA4P189MB1421E93EF5F8E8E00E71B7878BB29@PA4P189MB1421.EURP189.PROD.OUTLOOK.COM>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220622075725.y6ws22ielpc4pmxw@houat>
+References: <20220622075725.y6ws22ielpc4pmxw@houat>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-TMN:  [9l+gw7X6QKdym1uGwsFiGk723WR1i2JA]
+X-ClientProxiedBy: DX1P273CA0030.AREP273.PROD.OUTLOOK.COM
+ (2603:1086:300:20::17) To PA4P189MB1421.EURP189.PROD.OUTLOOK.COM
+ (2603:10a6:102:c2::10)
+X-Microsoft-Original-Message-ID: <20220622085917.52763-1-farooqui_saud@hotmail.com>
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6449d71b-c352-491b-393c-08da542d8fb6
+X-MS-Exchange-SLBlob-MailProps: IABc8NJKQC4fPDSlkTx/2rDQ9dnENRFJ5o1quayWO0E+7QA8S9JkvyPktQSWLRV+NJSVCIaejQ58OrVMcXrqNt6GuOff5Jc5jDB6pnbLOMgk2ZJWQhy8zSKKWl7jh0QKFHVmpwj4zM/kqk8PynUyEerd8YEGLxmHMgOraK+AsZtqkyQTHiZGWer2RLlO2Hc0H4Cy7aAnWw3TLWI91CK8Cad35Yk5jgLZzJFqp57P65Pb5HdMs7TnZ6OKtT2pMkzcmoQUOgmdthPTODqKCOEXaDm+IPdrMRPzJ04wNM7wgn7siz8tfg3wihHXExUaYJ9Oi/EzI5GNjHcnM6lnSyr1UVXUJzN0UUxCf2DTZpyd/YmwyO/9cIxyIIs1Ax0/zLVEhqbWYsOoLOLTwZw/nDYWqCwDg/cYSxtmQtAV5zOHJ5yaUcgtJ2w0PG6BfVG7Dz5/RXcLTJekUcj6NIGzLU1RSaDQmL+qPrKSKUialuNcGyC3xEPi77vTI29Ss9qM++OGkA47icCCSlDoiU72vhLJkQMq7fqVZc9Z+04EmRtoMsy4+LQ5Z/ek9VV+gtRm330+cnryLkKSF+Z/5WGfkzO076TwqkUOVP7o2YI3y771TuHVMsIUCn25Blk8lHYItI0L/n9Y9udB1aMXNKwhfDjtR5Mo6FWxLUlJegWLH+6mSJqlyPY2xMJeqqXl12hAza2/OuOR6AYUiqOSwzgwnafpZV9/Pdbqlm0X
+X-MS-TrafficTypeDiagnostic: PR3P189MB0876:EE_
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: GMP2T1ugt6jST5NiCn2+in8OeBLadMYqO2a5IMlIrImdSESFT7RFNgGwgXc8+eekgUpZuiwY1fE/3bi7NMNig7MUr8zmo0iz7SvEJ7HqDS7/culyxxsukONtoMjT0LVGUEqFCkOJnXlivQISuKLt8uOdPKKpjJ1btbqtR8bmSZeh+9MzRN5vH5zYd7tTQnEG5zOcBEL86U7AimBc6bYs8ScAirWbewN3QyLgJlQHzW9ucIakNBNIKnu28lcU9CnKHaIaGpC/6XLL7mtbrv64wVvOx7HGIWrsNkNB/YJUwRdDQ9HIQ5opOXNytVY7DHIF54TpOL6sqc8JIIpQREQxvo1+Ys4EnxJAmvQeThll0n51KUBhJm6qSP1jAPDB4iF1GC1Fw5cMFC4XWR6JksohIG2V1jjZoiGRA2uHk8jSNj3gU/Z5uRd4TgM9SvfCtsufxKJ2DMxjZASEWFPdSHyIuaAjQy8xPQjmQJQslkv2NWW71msA7S4FyEl9YSGvUE+MGVqiWlt0XffzpB7h8HzceJYkRmRlwsQV5poeLywqlAlS5CnC1rwY99T3muCXmcLWX2lAm1Y5AMclUmsUqjcVhDj+BYeG0zXfkA3wTzq3L1z3Ksk8A4qGMqBZv8c06Xg+
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?tJQlQmQTt8vlU7uXkVH3hMUaLormcWjV+MjeqVAuOu03HrYJsBN00vls2Kt0?=
+ =?us-ascii?Q?sfVSeqm6V2/7VnI0Hrdk7fxXBEliZv50L2ufIlqUCgps7QA+a31hrkbXeerK?=
+ =?us-ascii?Q?4QpYL9jt0E84KiNUvN0jkL4u7rYvhBYElgSa7R6RJaP9LNNq41t2wJWJmjzS?=
+ =?us-ascii?Q?AFBD5r75S3/fNq4XJRvnRV73ppr3rctDI3se0DDBB2xgOM25SMLf9jpkjgIF?=
+ =?us-ascii?Q?1p9S+z4m52vQydd/I82YG5i4vq34Qq3r51k/CQqcnIaD7L3Bp97q+5coBsYc?=
+ =?us-ascii?Q?DOzI/rQyuy5kA7KwHir6yeP8Qy/0DawqZrBBHld0YhqhCzsqPbmZRv9ovgpW?=
+ =?us-ascii?Q?5iPOqFRv4b4H4bD2tHxXjDT9gZTS7hyPsjW5asih+g/0kE22w4H2zfflvMbL?=
+ =?us-ascii?Q?ReOMDwonu1FyNRrYoRyLauxAylbU2QwKO0Ef29BVCsVTq5G7cMuKkUdLqUB7?=
+ =?us-ascii?Q?NRetF1715j6+YqIUL4GnoBdj4pkdnQIabWH7coMrrWGTUxnbCkmqg+RrAyx9?=
+ =?us-ascii?Q?1c7YAufQcyHf9erRsJh138Uqjpzo9ibJWd20dSfo2WhxtzPBwgHn0KsryB3x?=
+ =?us-ascii?Q?eyG5fYicCa2KQUscg3aKM9w2EsSSFbmYZqSSDXty4a3J6ftooIeElNrau550?=
+ =?us-ascii?Q?L946q4qeh0YnCM2WV7i1v7FqhjoVFBCpeWg0Cspu37cg/lhBrnsBRWpAM5jr?=
+ =?us-ascii?Q?IMRcoZw5Gh+I5Am2YFnHamBvAXmDnqrZLiEoaj8l4OTqwjrXSOJop4B6W9iD?=
+ =?us-ascii?Q?haq2jgs+JQLFKO28QiGRuGICH3wifob49iz3kGIXzBdJcvv1h6kPD3rZUmdv?=
+ =?us-ascii?Q?0Q5+5oNnVoNc4p1oyPohJWLQJxfYARBSmUPKEb4GXoJXdLBLDSSBbOpqG01T?=
+ =?us-ascii?Q?8SKAICNH2NDWUoz02/mDBlwnQBSy/nbEZOfs+0h2g/foCbBxi7BGtI0hWszg?=
+ =?us-ascii?Q?26jftLiywglOKuTfjonJUhuWTrhVMi1i+f6E9o4dsrFq02U5sKfgxFgyR2jj?=
+ =?us-ascii?Q?h8FkhVGqK7rcylTJ1r6LlwGRC8+UGiBcOjvnbsVhcs51wLLhZv6oRuKfvOvk?=
+ =?us-ascii?Q?sTD/VbVssZEuVdl22kpDAuhByeWvOB7L9bwZIYmfcKw3zvb8OHP2M7ier4CO?=
+ =?us-ascii?Q?Goj635CSKB9hLbAEiYLNzkpXrIxndfcfnxQREWruWYc1qMLqZQ7qxZs+6cqY?=
+ =?us-ascii?Q?kNOFHoL2M+N6nZBuJ+AG310l/p6RRqZ0GNY3uQ2tiHtlvOCQ9V4oyraA1Opj?=
+ =?us-ascii?Q?shWD+tiU1UmdJrdXFFe1OeKkUdkp7GO0D6bn8AjOGcIhT4R0Wu2D7AiFD3JP?=
+ =?us-ascii?Q?eAw/GkGX5hwgLjJu9rsy9fjnBOiDwwCUT4B9+os8dQ1zkWNghrG1HfB/LZqy?=
+ =?us-ascii?Q?uDYSQowyeYxT0KwAol2RZ8DD3wca3ee57z/2LQo26jJM0spgU+lXp72fDG5q?=
+ =?us-ascii?Q?0nxsMgEUUYM=3D?=
+X-OriginatorOrg: sct-15-20-4734-24-msonline-outlook-c54b5.templateTenant
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6449d71b-c352-491b-393c-08da542d8fb6
+X-MS-Exchange-CrossTenant-AuthSource: PA4P189MB1421.EURP189.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jun 2022 08:59:49.1454
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PR3P189MB0876
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now the kernel PTE level ptes are always protected by mm->page_table_lock
-instead of split pagetable lock, so the kernel PTE level pagetable pages
-are not accounted. Especially the vmalloc()/vmap() can consume lots of
-kernel pagetable, so to get an accurate pagetable accounting, calling new
-helpers pgtable_set_and_inc()/pgtable_clear_and_dec() when allocating or
-freeing a kernel PTE level pagetable page.
+Added return statement in sun4i_layer_format_mod_supported()
+in case frontend is not present.
 
-Meanwhile converting architectures to use corresponding generic PTE pagetable
-allocation and freeing functions.
-
-Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
-Reported-by: kernel test robot <oliver.sang@intel.com>
+Signed-off-by: Saud Farooqui <farooqui_saud@hotmail.com>
 ---
- arch/csky/include/asm/pgalloc.h |  2 +-
- arch/microblaze/mm/pgtable.c    |  2 +-
- arch/openrisc/mm/ioremap.c      |  2 +-
- arch/x86/mm/pgtable.c           |  5 ++++-
- include/asm-generic/pgalloc.h   | 14 ++++++++++++--
- 5 files changed, 19 insertions(+), 6 deletions(-)
+ drivers/gpu/drm/sun4i/sun4i_layer.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/csky/include/asm/pgalloc.h b/arch/csky/include/asm/pgalloc.h
-index bbbd069..2443226 100644
---- a/arch/csky/include/asm/pgalloc.h
-+++ b/arch/csky/include/asm/pgalloc.h
-@@ -29,7 +29,7 @@ static inline pte_t *pte_alloc_one_kernel(struct mm_struct *mm)
- 	pte_t *pte;
- 	unsigned long i;
+diff --git a/drivers/gpu/drm/sun4i/sun4i_layer.c b/drivers/gpu/drm/sun4i/sun4i_layer.c
+index 6d43080791a0..85fb9e800ddf 100644
+--- a/drivers/gpu/drm/sun4i/sun4i_layer.c
++++ b/drivers/gpu/drm/sun4i/sun4i_layer.c
+@@ -117,7 +117,7 @@ static bool sun4i_layer_format_mod_supported(struct drm_plane *plane,
+ 	struct sun4i_layer *layer = plane_to_sun4i_layer(plane);
  
--	pte = (pte_t *) __get_free_page(GFP_KERNEL);
-+	pte = __pte_alloc_one_kernel(mm);
- 	if (!pte)
- 		return NULL;
+ 	if (IS_ERR_OR_NULL(layer->backend->frontend))
+-		sun4i_backend_format_is_supported(format, modifier);
++		return sun4i_backend_format_is_supported(format, modifier);
  
-diff --git a/arch/microblaze/mm/pgtable.c b/arch/microblaze/mm/pgtable.c
-index 9f73265..e96dd1b 100644
---- a/arch/microblaze/mm/pgtable.c
-+++ b/arch/microblaze/mm/pgtable.c
-@@ -245,7 +245,7 @@ unsigned long iopa(unsigned long addr)
- __ref pte_t *pte_alloc_one_kernel(struct mm_struct *mm)
- {
- 	if (mem_init_done)
--		return (pte_t *)__get_free_page(GFP_KERNEL | __GFP_ZERO);
-+		return __pte_alloc_one_kernel(mm);
- 	else
- 		return memblock_alloc_try_nid(PAGE_SIZE, PAGE_SIZE,
- 					      MEMBLOCK_LOW_LIMIT,
-diff --git a/arch/openrisc/mm/ioremap.c b/arch/openrisc/mm/ioremap.c
-index daae13a..3453acc 100644
---- a/arch/openrisc/mm/ioremap.c
-+++ b/arch/openrisc/mm/ioremap.c
-@@ -118,7 +118,7 @@ pte_t __ref *pte_alloc_one_kernel(struct mm_struct *mm)
- 	pte_t *pte;
- 
- 	if (likely(mem_init_done)) {
--		pte = (pte_t *)get_zeroed_page(GFP_KERNEL);
-+		pte = __pte_alloc_one_kernel(mm);
- 	} else {
- 		pte = memblock_alloc(PAGE_SIZE, PAGE_SIZE);
- 		if (!pte)
-diff --git a/arch/x86/mm/pgtable.c b/arch/x86/mm/pgtable.c
-index a8ab3f9..fc2b9ef 100644
---- a/arch/x86/mm/pgtable.c
-+++ b/arch/x86/mm/pgtable.c
-@@ -851,6 +851,7 @@ int pud_free_pmd_page(pud_t *pud, unsigned long addr)
- int pmd_free_pte_page(pmd_t *pmd, unsigned long addr)
- {
- 	pte_t *pte;
-+	struct page *page;
- 
- 	pte = (pte_t *)pmd_page_vaddr(*pmd);
- 	pmd_clear(pmd);
-@@ -858,7 +859,9 @@ int pmd_free_pte_page(pmd_t *pmd, unsigned long addr)
- 	/* INVLPG to clear all paging-structure caches */
- 	flush_tlb_kernel_range(addr, addr + PAGE_SIZE-1);
- 
--	free_page((unsigned long)pte);
-+	page = virt_to_page(pte);
-+	pgtable_clear_and_dec(page);
-+	__free_page(page);
- 
- 	return 1;
- }
-diff --git a/include/asm-generic/pgalloc.h b/include/asm-generic/pgalloc.h
-index 328a714..2e20e9e 100644
---- a/include/asm-generic/pgalloc.h
-+++ b/include/asm-generic/pgalloc.h
-@@ -18,7 +18,14 @@
-  */
- static inline pte_t *__pte_alloc_one_kernel(struct mm_struct *mm)
- {
--	return (pte_t *)__get_free_page(GFP_PGTABLE_KERNEL);
-+	struct page *page;
-+	gfp_t gfp = GFP_PGTABLE_KERNEL;
-+
-+	page = alloc_pages(gfp & ~__GFP_HIGHMEM, 0);
-+	if (!page)
-+		return NULL;
-+	pgtable_set_and_inc(page);
-+	return (pte_t *)page_address(page);
- }
- 
- #ifndef __HAVE_ARCH_PTE_ALLOC_ONE_KERNEL
-@@ -41,7 +48,10 @@ static inline pte_t *pte_alloc_one_kernel(struct mm_struct *mm)
-  */
- static inline void pte_free_kernel(struct mm_struct *mm, pte_t *pte)
- {
--	free_page((unsigned long)pte);
-+	struct page *page = virt_to_page(pte);
-+
-+	pgtable_clear_and_dec(page);
-+	__free_page(page);
- }
- 
- /**
+ 	return sun4i_backend_format_is_supported(format, modifier) ||
+ 	       sun4i_frontend_format_is_supported(format, modifier);
 -- 
-1.8.3.1
+2.25.1
 
