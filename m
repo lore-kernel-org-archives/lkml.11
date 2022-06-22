@@ -2,19 +2,19 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 281B6C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 19:28:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AA6BC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 19:28:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358854AbiFVT2F (ORCPT
+        id S1359011AbiFVT2Y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 15:28:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33586 "EHLO
+        Wed, 22 Jun 2022 15:28:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357066AbiFVT1Z (ORCPT
+        with ESMTP id S1357100AbiFVT1Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 22 Jun 2022 15:27:25 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 99C3E3BF88
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ABCF33CA74
         for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 12:27:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
         s=mimecast20190719; t=1655926039;
@@ -22,23 +22,23 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=VYUzovwXlyWEqHWEr/0eyCJlm/77MGoPfdijVMP4XpY=;
-        b=C3hbHiKNaiow2LYSss1f3jKR+VeDEK4tnt36oWTzmGhq9gOIS8vZEoFSKI+VEFG0s8m8dA
-        tM/9ykNnBjsgShFmEY5izHEoQHB4CMMkA5XqRfEUhbhVDubHMvAgbOogA3hJzLu8xeTXaW
-        7hMHfgvVoj7JnT55Z0LwoZeu/oWyvCk=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=vBDQ+Ux7UpzAbTw4UCwRkx++8KnilVl+Axd/GWC+/NY=;
+        b=B7LRdGP+z9tkrtKwTLbEB6KIvWdZ4UfhRc3Kt4ZtFGi3cd852i7jzmHTO/zBDp8R4VGgMk
+        FWhUTRefbQpqX8oihPNQqYiT0q8QRm+BCB9dk3RirdyqxRWGy2WFSAUxzqqPzCGqPFw+P0
+        1V3PtOVN8DQsy19lNIhYyGcc9N4huig=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-248-4_a3NbfDPa6vyHqb9eMy7w-1; Wed, 22 Jun 2022 15:27:16 -0400
-X-MC-Unique: 4_a3NbfDPa6vyHqb9eMy7w-1
+ us-mta-298-Xmy93p0rMEmSYEVzbpZ1oQ-1; Wed, 22 Jun 2022 15:27:17 -0400
+X-MC-Unique: Xmy93p0rMEmSYEVzbpZ1oQ-1
 Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8B7ED3810782;
-        Wed, 22 Jun 2022 19:27:15 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C5ACE18A6581;
+        Wed, 22 Jun 2022 19:27:16 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 37719141510C;
-        Wed, 22 Jun 2022 19:27:15 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 71A0F141510C;
+        Wed, 22 Jun 2022 19:27:16 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     maz@kernel.org, anup@brainfault.org, seanjc@google.com,
@@ -46,9 +46,9 @@ Cc:     maz@kernel.org, anup@brainfault.org, seanjc@google.com,
         kvmarm@lists.cs.columbia.edu, linux-mips@vger.kernel.org,
         kvm-riscv@lists.infradead.org, pfeiner@google.com,
         jiangshanlai@gmail.com, dmatlack@google.com
-Subject: [PATCH v7 11/23] KVM: x86/mmu: Replace vcpu with kvm in kvm_mmu_alloc_shadow_page()
-Date:   Wed, 22 Jun 2022 15:26:58 -0400
-Message-Id: <20220622192710.2547152-12-pbonzini@redhat.com>
+Subject: [PATCH v7 14/23] KVM: x86/mmu: Pass const memslot to rmap_add()
+Date:   Wed, 22 Jun 2022 15:27:01 -0400
+Message-Id: <20220622192710.2547152-15-pbonzini@redhat.com>
 In-Reply-To: <20220622192710.2547152-1-pbonzini@redhat.com>
 References: <20220622192710.2547152-1-pbonzini@redhat.com>
 MIME-Version: 1.0
@@ -61,60 +61,32 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: David Matlack <dmatlack@google.com>
 
-The vcpu pointer in kvm_mmu_alloc_shadow_page() is only used to get the
-kvm pointer. So drop the vcpu pointer and just pass in the kvm pointer.
+Constify rmap_add()'s @slot parameter; it is simply passed on to
+gfn_to_rmap(), which takes a const memslot.
 
 No functional change intended.
 
+Reviewed-by: Ben Gardon <bgardon@google.com>
 Signed-off-by: David Matlack <dmatlack@google.com>
-Message-Id: <20220516232138.1783324-12-dmatlack@google.com>
+Message-Id: <20220516232138.1783324-15-dmatlack@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/mmu/mmu.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ arch/x86/kvm/mmu/mmu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index fab417e7bf6c..c5a88e8d1b53 100644
+index a7748c5a2385..45a4e85c0b2c 100644
 --- a/arch/x86/kvm/mmu/mmu.c
 +++ b/arch/x86/kvm/mmu/mmu.c
-@@ -2056,7 +2056,7 @@ struct shadow_page_caches {
- 	struct kvm_mmu_memory_cache *gfn_array_cache;
- };
+@@ -1556,7 +1556,7 @@ static bool kvm_test_age_rmapp(struct kvm *kvm, struct kvm_rmap_head *rmap_head,
  
--static struct kvm_mmu_page *kvm_mmu_alloc_shadow_page(struct kvm_vcpu *vcpu,
-+static struct kvm_mmu_page *kvm_mmu_alloc_shadow_page(struct kvm *kvm,
- 						      struct shadow_page_caches *caches,
- 						      gfn_t gfn,
- 						      struct hlist_head *sp_list,
-@@ -2076,15 +2076,15 @@ static struct kvm_mmu_page *kvm_mmu_alloc_shadow_page(struct kvm_vcpu *vcpu,
- 	 * depends on valid pages being added to the head of the list.  See
- 	 * comments in kvm_zap_obsolete_pages().
- 	 */
--	sp->mmu_valid_gen = vcpu->kvm->arch.mmu_valid_gen;
--	list_add(&sp->link, &vcpu->kvm->arch.active_mmu_pages);
--	kvm_mod_used_mmu_pages(vcpu->kvm, +1);
-+	sp->mmu_valid_gen = kvm->arch.mmu_valid_gen;
-+	list_add(&sp->link, &kvm->arch.active_mmu_pages);
-+	kvm_mod_used_mmu_pages(kvm, +1);
+ #define RMAP_RECYCLE_THRESHOLD 1000
  
- 	sp->gfn = gfn;
- 	sp->role = role;
- 	hlist_add_head(&sp->hash_link, sp_list);
- 	if (sp_has_gptes(sp))
--		account_shadowed(vcpu->kvm, sp);
-+		account_shadowed(kvm, sp);
- 
- 	return sp;
- }
-@@ -2103,7 +2103,7 @@ static struct kvm_mmu_page *__kvm_mmu_get_shadow_page(struct kvm_vcpu *vcpu,
- 	sp = kvm_mmu_find_shadow_page(vcpu, gfn, sp_list, role);
- 	if (!sp) {
- 		created = true;
--		sp = kvm_mmu_alloc_shadow_page(vcpu, caches, gfn, sp_list, role);
-+		sp = kvm_mmu_alloc_shadow_page(vcpu->kvm, caches, gfn, sp_list, role);
- 	}
- 
- 	trace_kvm_mmu_get_page(sp, created);
+-static void rmap_add(struct kvm_vcpu *vcpu, struct kvm_memory_slot *slot,
++static void rmap_add(struct kvm_vcpu *vcpu, const struct kvm_memory_slot *slot,
+ 		     u64 *spte, gfn_t gfn)
+ {
+ 	struct kvm_mmu_page *sp;
 -- 
 2.31.1
 
