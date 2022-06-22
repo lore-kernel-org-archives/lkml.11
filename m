@@ -2,158 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC708C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 13:19:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFA6EC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 13:20:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352939AbiFVNT4 (ORCPT
+        id S1353684AbiFVNUQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 09:19:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41006 "EHLO
+        Wed, 22 Jun 2022 09:20:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242604AbiFVNTw (ORCPT
+        with ESMTP id S237523AbiFVNUL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 09:19:52 -0400
-Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com [209.85.128.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFAD82F01F;
-        Wed, 22 Jun 2022 06:19:51 -0700 (PDT)
-Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-31772f8495fso161616017b3.4;
-        Wed, 22 Jun 2022 06:19:51 -0700 (PDT)
+        Wed, 22 Jun 2022 09:20:11 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 908A22F02A
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 06:20:09 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id a14so6470399pgh.11
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 06:20:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=OSbRySHuWSrgsTpq6XAtnwt3bZpv/W9+tRxkj/bYpYs=;
+        b=Qwhp+OrdMAdNWOeOaJaEnz1qGNlP1dw9UtJoiaJQQD5M8tHpEVYjnMv5PIOaEENNVn
+         WIMSFX8UUPoIpa9ZoCurbMcI/uvZyYybXN1qTPAMowSR0iMvYbE6SS64TjlAUHLhaCQY
+         UA9jFy6GLmf7ExWpUViVxvicpba/Q3gahmfzUM6va7UJyzmH7Fg//bZbhnsZGQ5EOIZc
+         V3jB6BvBDVFZsQ0ci4KIOfSQkI/5CjY6TB543Z1sQBw5Z0Kel3k8MkV8CRpUszOpjbM4
+         vFhEshNEl/PCBoAxg6afEsOuHCXYn+8STPYm4ZYbmMfffIp0RJZC0CuMZNAaEZmfEn4G
+         GoZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=JqOQ1mRCFn6Ej3pl8pj+iDE9h6BQbGKpcTypXijaYr0=;
-        b=0tQ8NA9u/3hnZsK81/BvJnnUSvICkO0g/Wp0ibQM1F3Odcv7enRTgwzVAALGz4rYeh
-         C8MihQmlQMiN0Yk0d4+e3cVfMupzbyKvlc3K2ct48spQ7WTEdTqYMoOr/A7N8wbOpeet
-         D5c2BDN6q1iW1OJuv5PvYbArmcd5wOhrVUcIFew84qZWc9StjxLQxDiG+nTso0HNR1x8
-         Zx8Ty8GWq1QiIRaFf/HiXZI7m8jt+6NDSrGxZzChDRfIUUuWboXa1rOuvXiRuzc0jvsL
-         6VN7xjrtq23gNOOjWbffMIgg/7zjOoPIO2j12C9QnyE7ZbtiAJZhPXs0Nn2VTRCy3zj9
-         5PRA==
-X-Gm-Message-State: AJIora8SE7fkp9w1HUvTN7+Lf63bcKnkun4/A+orbxayWH3IrBebTeKw
-        BDs/c8rKzRaHmmXdNc6Y++obyTTSFjdEDHd4E8E=
-X-Google-Smtp-Source: AGRyM1sn53Rt6HkhjVlMSbjNcbNLgVPQ9GwJB20ZiQABo8pxntYhAsovfB2VWcuhTxwAeGHL8rNEKt8B/xh/xVXVPjM=
-X-Received: by 2002:a0d:ed83:0:b0:317:50bb:5463 with SMTP id
- w125-20020a0ded83000000b0031750bb5463mr4185434ywe.149.1655903990990; Wed, 22
- Jun 2022 06:19:50 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=OSbRySHuWSrgsTpq6XAtnwt3bZpv/W9+tRxkj/bYpYs=;
+        b=dnJ+8VFvJVA+fVtcmkbRXQqrQrCC/vJNec1tk0Qx8utCe1mtnj7JKapw80qzXJtl16
+         8v0zB8zklz7VWJPmdL1iulYNe5uMlDiewUHDxNlvTEItSNnH+Af3PjPkbVoG7516v5Iq
+         m7bMjhduy8cyYD6yHgH84dQqHjqBM1SYkS/14MxokqEFNmXqf69zFvotaXhY3mh9XHJM
+         7lxhPNXP9VbocaRPWVNH/fv5ztYDhz5JP955HecDdH0z+ROGsVqJa8lvhfC3ngXd4Jxd
+         DY+wkT5dzTe3YrGUJtiMBbulTnhNTWHrEnRD1wXc+5F89yZdISpUNtv8G3Qp3VtFt4c3
+         hBcg==
+X-Gm-Message-State: AJIora8BDJ1ko7bvQ4JsIPY0Fa/zK1cCaJdTytUo5xUNX3OBPM5BRW/Q
+        JvK20yq3qTxwfpSmVs1ZML5QDXQmYgg=
+X-Google-Smtp-Source: AGRyM1u3CuDYhKlMipHDVRcmY+JMnUFve2UiQB+/X+R5r7Xlr6SQoFTJgAy5rSwllcicH2sJtMdkCQ==
+X-Received: by 2002:aa7:8091:0:b0:525:27cb:19ef with SMTP id v17-20020aa78091000000b0052527cb19efmr13944086pff.37.1655904009021;
+        Wed, 22 Jun 2022 06:20:09 -0700 (PDT)
+Received: from [192.168.43.80] (subs02-180-214-232-83.three.co.id. [180.214.232.83])
+        by smtp.gmail.com with ESMTPSA id z6-20020a1709027e8600b0016a3b5a46efsm3400089pla.113.2022.06.22.06.20.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Jun 2022 06:20:07 -0700 (PDT)
+Message-ID: <1b34e0e5-23aa-96cd-c37f-1434884ff061@gmail.com>
+Date:   Wed, 22 Jun 2022 20:20:03 +0700
 MIME-Version: 1.0
-References: <20220622130730.1573747-1-sbinding@opensource.cirrus.com> <20220622130730.1573747-2-sbinding@opensource.cirrus.com>
-In-Reply-To: <20220622130730.1573747-2-sbinding@opensource.cirrus.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Wed, 22 Jun 2022 15:19:40 +0200
-Message-ID: <CAJZ5v0ij63HVTTWUBwv9WiWhCfKewJR48reUaGN3nvbzoS31tw@mail.gmail.com>
-Subject: Re: [PATCH v1 1/2] ACPI: utils: Add api to read _SUB from ACPI
-To:     Stefan Binding <sbinding@opensource.cirrus.com>
-Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, Mark Brown <broonie@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        "moderated list:SOUND - SOC LAYER / DYNAMIC AUDIO POWER MANAGEM..." 
-        <alsa-devel@alsa-project.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        patches@opensource.cirrus.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] ARC:mm:Fix syntax errors in comments
+Content-Language: en-US
+To:     Julia Lawall <julia.lawall@inria.fr>,
+        Shahab Vahedi <Shahab.Vahedi@synopsys.com>
+Cc:     Jilin Yuan <yuanjilin@cdjrlc.com>,
+        "vgupta@kernel.org" <vgupta@kernel.org>,
+        "rdunlap@infradead.org" <rdunlap@infradead.org>,
+        "linux-snps-arc@lists.infradead.org" 
+        <linux-snps-arc@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220622080423.41570-1-yuanjilin@cdjrlc.com>
+ <YrLTCXLrr3HB39lv@debian.me>
+ <4cef89c9-3b27-11e8-2971-66b93b847ede@synopsys.com>
+ <alpine.DEB.2.22.394.2206220513590.2646@hadrien>
+ <46e4b588-d35b-ec50-ad1a-8502c2903677@synopsys.com>
+ <alpine.DEB.2.22.394.2206220535300.2646@hadrien>
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+In-Reply-To: <alpine.DEB.2.22.394.2206220535300.2646@hadrien>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 3:08 PM Stefan Binding
-<sbinding@opensource.cirrus.com> wrote:
->
-> Add a wrapper function to read the _SUB string from ACPI.
->
-> Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
-> ---
->  drivers/acpi/utils.c | 26 ++++++++++++++++++++++++++
->  include/linux/acpi.h |  8 ++++++++
->  2 files changed, 34 insertions(+)
->
-> diff --git a/drivers/acpi/utils.c b/drivers/acpi/utils.c
-> index 3a9773a09e19..5d1bdb79e372 100644
-> --- a/drivers/acpi/utils.c
-> +++ b/drivers/acpi/utils.c
-> @@ -291,6 +291,32 @@ int acpi_get_local_address(acpi_handle handle, u32 *addr)
->  }
->  EXPORT_SYMBOL(acpi_get_local_address);
->
-> +int acpi_get_sub(acpi_handle handle, char *sub, size_t size)
+On 6/22/22 16:38, Julia Lawall wrote:
+>>> So code that is fine will have typos forever?  Fixing typos in comments
+>>> doesn't break git blame for the following code.  And typos in comments
+>>> give a bad impression about the state of the code in general.
+>>
+>> Of course not! Documentation is as important as the code, if not even more.
+>> However, fixing typos to increase your commit counts to a reputable project
+>> is not fine either. For instance, many of these proposed fixes are targeting
+>> one single typo at a time. Couldn't they just be sent altogether!?!
+> 
+> I have the impression that the person is just trying to figure out the
+> patch submission process.  For example, the subject lines are not
+> formatter in the standard way (I sent the person a private email about
+> that).  Perhaps just let him know about how you would rather have received
+> the patches.
 
-I'd call it acpi_get_subsystem_id().
+In recent times I had seen many typofix patches sent to LKML. You can see most
+of them by querying `s:"fix typo"` on lore.kernel.org. Some of these patches
+have been merged, though.
 
-> +{
-> +       struct acpi_buffer buffer = { ACPI_ALLOCATE_BUFFER, NULL };
-> +       union acpi_object *obj;
-> +       acpi_status status;
-> +       int ret;
-> +
-> +       status = acpi_evaluate_object(handle, METHOD_NAME__SUB, NULL, &buffer);
-> +       if (!ACPI_SUCCESS(status)) {
+What I say as starter thread is "ideal" scenario as described in
+Documentation/process/2.Process.rst; that is we prefer to see these minor
+fixes as part of real patches work (say refactoring), rather than just being
+trivial patches.
 
-Typically, ACPI_FAILURE() is used in checks like this.
+But what most reviewers here missed is how these typos are found? I guess
+these can be from codespell or some other tools, or even manual review,
+then send the fixes en mass.
 
-> +               acpi_handle_debug(handle, "Reading ACPI _SUB failed: %#x\n", status);
+Take a look at "fix typo in a comment" aka "delete redundant word" patches
+at [1], [2], [3]. and [4].
 
-It would be enough to say "_SUB evaluation failed".
+[1]: https://lore.kernel.org/lkml/20220618132659.17100-1-wangxiang@cdjrlc.com/
+[2]: https://lore.kernel.org/lkml/20220618130349.11507-1-wangxiang@cdjrlc.com/
+[3]: https://lore.kernel.org/lkml/20220616163830.11366-1-wangxiang@cdjrlc.com/
+[4]: https://lore.kernel.org/lkml/20220606123419.29109-1-wangxiang@cdjrlc.com/
 
-> +               return -ENOENT;
+IMHO, these patches should have been in a single, consolidated patch, since
+these strip duplicate (hence redundant) word (single logical change).
 
-Why not use -ENODATA here?
+Thanks.
 
-> +       }
-> +
-> +       obj = buffer.pointer;
-> +       if (obj->type == ACPI_TYPE_STRING) {
-> +               ret = strscpy(sub, obj->string.pointer, size);
-
-It may be simpler to allocate the memory here so that callers don't
-have to worry about it.
-
-Also, this is expected to be a proper device ID, not just a string, so
-maybe some validation checks could be made here?
-
-> +       } else {
-> +               acpi_handle_warn(handle, "Warning ACPI _SUB did not return a string\n");
-> +               ret = -EINVAL;
-> +       }
-> +       acpi_os_free(buffer.pointer);
-> +
-> +       return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(acpi_get_sub);
-> +
->  acpi_status
->  acpi_evaluate_reference(acpi_handle handle,
->                         acpi_string pathname,
-> diff --git a/include/linux/acpi.h b/include/linux/acpi.h
-> index 4f82a5bc6d98..9bf18adf5920 100644
-> --- a/include/linux/acpi.h
-> +++ b/include/linux/acpi.h
-> @@ -21,6 +21,8 @@
->  #endif
->  #include <acpi/acpi.h>
->
-> +#define ACPI_MAX_SUB_BUF_SIZE  9
-> +
->  #ifdef CONFIG_ACPI
->
->  #include <linux/list.h>
-> @@ -762,6 +764,7 @@ static inline u64 acpi_arch_get_root_pointer(void)
->  #endif
->
->  int acpi_get_local_address(acpi_handle handle, u32 *addr);
-> +int acpi_get_sub(acpi_handle handle, char *sub, size_t size);
->
->  #else  /* !CONFIG_ACPI */
->
-> @@ -1023,6 +1026,11 @@ static inline int acpi_get_local_address(acpi_handle handle, u32 *addr)
->         return -ENODEV;
->  }
->
-> +static int acpi_get_sub(acpi_handle handle, char *sub, size_t size)
-> +{
-> +       return -ENODEV;
-> +}
-> +
->  static inline int acpi_register_wakeup_handler(int wake_irq,
->         bool (*wakeup)(void *context), void *context)
->  {
-> --
+-- 
+An old man doll... just what I always wanted! - Clara
