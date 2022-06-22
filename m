@@ -2,44 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28B30C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 14:32:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A96EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 14:33:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232542AbiFVOc0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 10:32:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57920 "EHLO
+        id S1358104AbiFVOdQ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 10:33:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231616AbiFVOcY (ORCPT
+        with ESMTP id S1358158AbiFVOdN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 10:32:24 -0400
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D1823A71C
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 07:32:23 -0700 (PDT)
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id C985168AA6; Wed, 22 Jun 2022 16:32:19 +0200 (CEST)
-Date:   Wed, 22 Jun 2022 16:32:19 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     Steven Price <steven.price@arm.com>
-Cc:     Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org,
-        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Subject: Re: [PATCH] swiotlb: Remove redundant swiotlb_force
-Message-ID: <20220622143219.GA31314@lst.de>
-References: <20220622142952.320057-1-steven.price@arm.com>
+        Wed, 22 Jun 2022 10:33:13 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D810622537
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 07:33:12 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C7540D6E;
+        Wed, 22 Jun 2022 07:33:12 -0700 (PDT)
+Received: from [10.57.41.243] (unknown [10.57.41.243])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id F0FF23F792;
+        Wed, 22 Jun 2022 07:33:11 -0700 (PDT)
+Message-ID: <1e206563-4fb6-923c-9a3c-0d068d400ddf@arm.com>
+Date:   Wed, 22 Jun 2022 15:33:10 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220622142952.320057-1-steven.price@arm.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] swiotlb: Remove redundant swiotlb_force
+Content-Language: en-GB
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+References: <20220622142952.320057-1-steven.price@arm.com>
+ <20220622143219.GA31314@lst.de>
+From:   Steven Price <steven.price@arm.com>
+In-Reply-To: <20220622143219.GA31314@lst.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 03:29:52PM +0100, Steven Price wrote:
-> The variable (and enum) was removed in commit c6af2aa9ffc9 ("swiotlb:
-> make the swiotlb_init interface more useful") but the declaration was
-> left in swiotlb.h. Tidy up by removing the declaration as well.
+On 22/06/2022 15:32, Christoph Hellwig wrote:
+> On Wed, Jun 22, 2022 at 03:29:52PM +0100, Steven Price wrote:
+>> The variable (and enum) was removed in commit c6af2aa9ffc9 ("swiotlb:
+>> make the swiotlb_init interface more useful") but the declaration was
+>> left in swiotlb.h. Tidy up by removing the declaration as well.
+>>
+>> Signed-off-by: Steven Price <steven.price@arm.com>
 > 
-> Signed-off-by: Steven Price <steven.price@arm.com>
+> I just applied an identical patch from Dongli Zhang a few hours ago.
 
-I just applied an identical patch from Dongli Zhang a few hours ago.
+Ah, I missed that. Sorry for the noise!
+
+Steve
