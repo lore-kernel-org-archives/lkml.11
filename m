@@ -2,186 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D19A2C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 16:14:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C2F7C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 16:15:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376595AbiFVQOU (ORCPT
+        id S1359806AbiFVQPf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 12:14:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50536 "EHLO
+        Wed, 22 Jun 2022 12:15:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239261AbiFVQOM (ORCPT
+        with ESMTP id S1355693AbiFVQPb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 12:14:12 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1713231DE4;
-        Wed, 22 Jun 2022 09:14:07 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id mf9so14997017ejb.0;
-        Wed, 22 Jun 2022 09:14:06 -0700 (PDT)
+        Wed, 22 Jun 2022 12:15:31 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA4A731203;
+        Wed, 22 Jun 2022 09:15:30 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id fd6so21836828edb.5;
+        Wed, 22 Jun 2022 09:15:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=rzYR8E/Z4d+yIxT6wxjVdh3AUuQSp32xTOoEtVA33Ic=;
-        b=mHdOM2WoMZGuHTH9ibMduMO9iTX7wWF3RnKUIlwlF/f5maP3tJLzgD0LFBy0kaAFuu
-         LBf3pKzeW0j2ZXwFr9pBeNzHMx2XqTpPlzeVscunilw/mRu2jq7G2zOjNyV355hFIvF0
-         U7gQNfF4d93YXFZmss4Zw83fi4vc3s1D5OVDgj3RfV5YsI2DtORJ1F5/7Z9xed0lzd/3
-         QhOkLryhMlAtYOEAn2JmlUlJBeFcwFklSr+/2om0JKO/s5rPbeJWWDW0k59WSR8U+Bdc
-         kcFwZYPRsHhjRtQCJCihHT+tH3Ar+Z8cGRdw9z3H+Ko1XNahTyd3E3gq+JKRP3v5FvjE
-         u4pg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=DSUF0Z6t3P5aw01VlWaFHORMHJ/6zM1aeGUz9joqhm0=;
+        b=XiNfzk3th87p0A34Gi/ZxxC5jsmtSS/oXmK+DUvuWisaY6is9s1IOvLBEVi6W7L6hF
+         Ngba9AnDj2OrsYtI7rv3vpIV6jDr1dKVncX1HW0NFYOB2QN9JqeM/1VN5BxBNnxQgJkx
+         p24UBcrxF5ShLw8edDs+BZ5afLauerd0ElRUdcsx1ZCmjJvCSq0/HBafwFExXpNerkoD
+         zR8srdymn0if7NvprLm5x1NNtZgr2wxhLMUTtuD64GYqExktWd02o2PgEzt82uA80WgK
+         gZ6awwKw3RJQAEXfsLy6MvktxKf0hnjH8k5NEaf5pltirimTqTUZDOZ9jKWTptDazj2l
+         V+Dg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=rzYR8E/Z4d+yIxT6wxjVdh3AUuQSp32xTOoEtVA33Ic=;
-        b=VWs15fhJDLMOejRkaA3ipXZCUg6VweV0b5Yi0qdvxCE4ZsXSVjbUwF6FulZkHkoKq4
-         po+TfNCHjg8mjYfzPJmrABgGc37sWbGHCB4sQzkMAnJaUGZeerE3kryueWYMHLCEldHK
-         tN/AJp7Uyz44JEQq3v8iy6jkw/BwzZ7keAmYL6px07v7bPoUlbdZCBi6+zFAj1d5Hx9Q
-         FW/agoSgU3sT9jf2uT1rI0GGp+ONZJHDUTZx6APQFWxjv4da7N4IpnRe8dStFBxgAN7E
-         0xd1Zdjn3r+ZqgcS3oMZY0BUYratrJSNLflKYRsv539IKLXFrEA0XNcU8iQ9AXuBJ2MH
-         9IyA==
-X-Gm-Message-State: AJIora/wdTWD1oSphfa06OmyCjcuysU1He9uH9utWI3J/bqU2tLbCSaM
-        pLg4t+gp9kO3kJJ1p8+da4o=
-X-Google-Smtp-Source: AGRyM1tFNI8nzCzf1c3HbSPbmMDqjs4QMeRDCukz3KOrq4G1bBxyF6h6Icic02RBVljA/Fz0VS5r5A==
-X-Received: by 2002:a17:906:147:b0:712:1288:348f with SMTP id 7-20020a170906014700b007121288348fmr3774357ejh.324.1655914445528;
-        Wed, 22 Jun 2022 09:14:05 -0700 (PDT)
-Received: from localhost.localdomain ([185.107.95.225])
-        by smtp.gmail.com with ESMTPSA id sd14-20020a1709076e0e00b007072dc80e06sm9576036ejc.190.2022.06.22.09.13.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jun 2022 09:14:05 -0700 (PDT)
-From:   Yassine Oudjana <yassine.oudjana@gmail.com>
-X-Google-Original-From: Yassine Oudjana <y.oudjana@protonmail.com>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Banajit Goswami <bgoswami@quicinc.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
-Cc:     Yassine Oudjana <y.oudjana@protonmail.com>,
-        Yassine Oudjana <yassine.oudjana@gmail.com>,
-        devicetree@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-arm-msm@vger.kernel.org, phone-devel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 3/3] arm64: dts: qcom: Use WCD9335 DT bindings
-Date:   Wed, 22 Jun 2022 20:13:22 +0400
-Message-Id: <20220622161322.168017-4-y.oudjana@protonmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220622161322.168017-1-y.oudjana@protonmail.com>
-References: <20220622161322.168017-1-y.oudjana@protonmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=DSUF0Z6t3P5aw01VlWaFHORMHJ/6zM1aeGUz9joqhm0=;
+        b=t1yajpc4QwcoUKo8HlFD5rQSErBvhhxlYdr/dboqBHU7akJw0DeR9L7WcdcI3Xco3A
+         IZfbi57IEpqdP7ENqxh5kx22MUy3Fg69MNzSb1DrYJN8t/Krm7se2U5VjhmDJji00ww2
+         eY1VSCEEzz7GK2CV7DcblgzaIELcG/PK7FaVTas8H6yROV6FGImWE1cVbZhr+S4VC6HN
+         yze2mOPAXsVznK3eMLSCUziUKAsmq79JGOo7j1Gf11jwwThGAWQxyzM15lmbp8YQnzk/
+         uK5wUWAPqiyEfseYTLqku4McQjCro1R1Fagy3Yg+dm8+9zTBrVl5zO4B9Jr+oEba7v3i
+         ndHA==
+X-Gm-Message-State: AJIora9irJapvNxGwOiXiMNiGSeaGggOzGEdN2gGSB2U+fjALnswILKp
+        yFrvdvR2Aj1UkKZQ+5sApuD7BFz/RtIjWFeDzi0=
+X-Google-Smtp-Source: AGRyM1t42CP/tNJ0qgRF60DE5Ky7HpNN1sxeYXNMD1uMoBw8TOWf3heQWfg6TF9pUI0rUIibFtQWU/3WMBUx+ZfWNwk=
+X-Received: by 2002:a05:6402:f8d:b0:435:6df2:68a with SMTP id
+ eh13-20020a0564020f8d00b004356df2068amr5075901edb.209.1655914529131; Wed, 22
+ Jun 2022 09:15:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220620150225.1307946-1-mw@semihalf.com> <YrC0oKdDSjQTgUtM@lunn.ch>
+ <YrC3ZKsMQK3PYKkR@smile.fi.intel.com> <YrDAMcGg1uF9m/L+@lunn.ch>
+ <CAPv3WKeeZwNAs06thrYvgXaTPA9KP-9dQZNZsYWx3UXS8LStAQ@mail.gmail.com> <CAPv3WKeYBE=ybXQw_3Hn2NoLVzO0da1ecged73=frzQKhGh6OQ@mail.gmail.com>
+In-Reply-To: <CAPv3WKeYBE=ybXQw_3Hn2NoLVzO0da1ecged73=frzQKhGh6OQ@mail.gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 22 Jun 2022 18:14:52 +0200
+Message-ID: <CAHp75VeyeXpXLX4wG1ghozbujk3=riJ9O-PCpnD14q8hh5SiLw@mail.gmail.com>
+Subject: Re: [net-next: PATCH 00/12] ACPI support for DSA
+To:     Marcin Wojtas <mw@semihalf.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Grzegorz Bernacki <gjb@semihalf.com>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>,
+        Tomasz Nowicki <tn@semihalf.com>,
+        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
+        upstream@semihalf.com, Jon Nettleton <jon@solid-run.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yassine Oudjana <y.oudjana@protonmail.com>
+On Wed, Jun 22, 2022 at 5:44 PM Marcin Wojtas <mw@semihalf.com> wrote:
+>
+> Hi,
+>
+> wt., 21 cze 2022 o 12:46 Marcin Wojtas <mw@semihalf.com> napisa=C5=82(a):
+> >
+> > pon., 20 cze 2022 o 20:45 Andrew Lunn <andrew@lunn.ch> napisa=C5=82(a):
+> > >
+> > > > You beat me up to this. I also was about to mention that the proble=
+m with such
+> > > > conversions (like this series does) is not in the code. It's simple=
+st part. The
+> > > > problem is bindings and how you get them to be a standard (at least=
+ de facto).
+> > >
+> > > De facto is easy. Get it merged. After that, i will simply refuse
+> > > anything else, the same way i and other Maintainers would refuse a
+> > > different DT binding.
+> > >
+> > > If the ACPI committee approve and publish a binding, we will naturall=
+y
+> > > accept that as well. So in the end we might have two bindings. But so
+> > > far in this whole ACPI for networking story, i've not heard anybody
+> > > say they are going to submit anything for standardisation. So this
+> > > might be a mute point.
+> > >
+> >
+> > I understand your concern and of course it's better to be on a safe
+> > side from the beginning. Based on the hitherto discussion under this
+> > patchset, I would split the question about standardization to 2
+> > orthogonal topics:
+> >
+> > 1. Relation to the bus and enumeration:
+> >   * As pointed out in another patch some switches can be attached to
+> >     SPI or I2C. In such a case this is simple - SPISerialBus /
+> > I2CSerialBus structures
+> >     in _CRS are included in the ACPI Spec. They allow to comprise more
+> > bus specific
+> >     information and the code in acpi/scan.c marks those child devices
+> > as to be enumerated
+> >     by parent bus.
+> >   * MDIO bus doesn't have its own _CRS macro in the Spec, on the other
+> > hand the _ADR
+> >     seems to be the only object required for proper operation - this
+> > was my base for
+> >     proposed solution in patch 06/12.
+> >
+> > 2. The device description (unrelated to which bus it is attached)
+> >   * In Linux and other OS's there is a great amount of devices
+> > conforming the guidelines
+> >     and using only the standard device identification/configuration
+> > objects as per [1].
+> >   * Above do not contain custom items and entire information can be obt=
+ained by
+> >     existing, generic ACPI accessors - those devices (e.g. NICs,
+> > SD/MMC controllers and
+> >     many others) are not explicitly mentioned in official standards.
+> >   * The question, also related to this DSA case - is the ACPI device()
+> > hierarchical
+> >     structure of this kind a subject for standardization for including
+> > in official ACPI specification?
+> >   * In case not, where to document it? Is Linux' Documentation enough?
+> >     I agree that in the moment of merge it becomes de facto standard AB=
+I and
+> >     it's worth to sort it out.
+> >
+> > Rafael, Len, any other ACPI expert - I would appreciate your inputs
+> > and clarification
+> > of the above. Your recommendation would be extremely helpful.
+> >
+>
+> Thank you all for vivid discussions. As it may take some time for the
+> MDIOSerialBus _CRS macro review and approval, for now I plan to submit
+> v2 of_ -> fwnode_/device_ migration (patches 1-7,11/12) and skip
+> ACPI-specific additions until it is unblocked by spec extension.
 
-Replace DAI indices in codec nodes with definitions from the WCD9335
-DT bindings for devices that use WCD9335.
+Sounds good to me (as from fwnode perspective).
 
-Signed-off-by: Yassine Oudjana <y.oudjana@protonmail.com>
----
-Changes since v1:
- - Maintain the alphabetical order in msm8996-xiaomi-gemini includes
-
- arch/arm64/boot/dts/qcom/apq8096-db820c.dts         | 5 +++--
- arch/arm64/boot/dts/qcom/msm8996-xiaomi-gemini.dts  | 5 +++--
- arch/arm64/boot/dts/qcom/msm8996-xiaomi-scorpio.dts | 5 +++--
- 3 files changed, 9 insertions(+), 6 deletions(-)
-
-diff --git a/arch/arm64/boot/dts/qcom/apq8096-db820c.dts b/arch/arm64/boot/dts/qcom/apq8096-db820c.dts
-index 49afbb1a066a..ff915cd8e5a6 100644
---- a/arch/arm64/boot/dts/qcom/apq8096-db820c.dts
-+++ b/arch/arm64/boot/dts/qcom/apq8096-db820c.dts
-@@ -13,6 +13,7 @@
- #include <dt-bindings/pinctrl/qcom,pmic-gpio.h>
- #include <dt-bindings/sound/qcom,q6afe.h>
- #include <dt-bindings/sound/qcom,q6asm.h>
-+#include <dt-bindings/sound/qcom,wcd9335.h>
- 
- /*
-  * GPIO name legend: proper name = the GPIO line is used as GPIO
-@@ -1009,7 +1010,7 @@ platform {
- 	};
- 
- 		codec {
--			sound-dai = <&wcd9335 6>;
-+			sound-dai = <&wcd9335 AIF4_PB>;
- 		};
- 	};
- 
-@@ -1024,7 +1025,7 @@ platform {
- 		};
- 
- 		codec {
--			sound-dai = <&wcd9335 1>;
-+			sound-dai = <&wcd9335 AIF1_CAP>;
- 		};
- 	};
- };
-diff --git a/arch/arm64/boot/dts/qcom/msm8996-xiaomi-gemini.dts b/arch/arm64/boot/dts/qcom/msm8996-xiaomi-gemini.dts
-index 22978d06f85b..8cdae01aaa85 100644
---- a/arch/arm64/boot/dts/qcom/msm8996-xiaomi-gemini.dts
-+++ b/arch/arm64/boot/dts/qcom/msm8996-xiaomi-gemini.dts
-@@ -8,6 +8,7 @@
- #include "msm8996-xiaomi-common.dtsi"
- #include <dt-bindings/sound/qcom,q6afe.h>
- #include <dt-bindings/sound/qcom,q6asm.h>
-+#include <dt-bindings/sound/qcom,wcd9335.h>
- #include <dt-bindings/input/ti-drv260x.h>
- 
- / {
-@@ -193,7 +194,7 @@ platform {
- 		};
- 
- 		codec {
--			sound-dai = <&wcd9335 6>;
-+			sound-dai = <&wcd9335 AIF4_PB>;
- 		};
- 	};
- 
-@@ -208,7 +209,7 @@ platform {
- 		};
- 
- 		codec {
--			sound-dai = <&wcd9335 1>;
-+			sound-dai = <&wcd9335 AIF1_CAP>;
- 		};
- 	};
- };
-diff --git a/arch/arm64/boot/dts/qcom/msm8996-xiaomi-scorpio.dts b/arch/arm64/boot/dts/qcom/msm8996-xiaomi-scorpio.dts
-index 1e2dd6763ad1..c9f935cfb587 100644
---- a/arch/arm64/boot/dts/qcom/msm8996-xiaomi-scorpio.dts
-+++ b/arch/arm64/boot/dts/qcom/msm8996-xiaomi-scorpio.dts
-@@ -9,6 +9,7 @@
- #include "pmi8996.dtsi"
- #include <dt-bindings/sound/qcom,q6afe.h>
- #include <dt-bindings/sound/qcom,q6asm.h>
-+#include <dt-bindings/sound/qcom,wcd9335.h>
- 
- / {
- 	model = "Xiaomi Mi Note 2";
-@@ -171,7 +172,7 @@ platform {
- 		};
- 
- 		codec {
--			sound-dai = <&wcd9335 6>;
-+			sound-dai = <&wcd9335 AIF4_PB>;
- 		};
- 	};
- 
-@@ -186,7 +187,7 @@ platform {
- 		};
- 
- 		codec {
--			sound-dai = <&wcd9335 1>;
-+			sound-dai = <&wcd9335 AIF1_CAP>;
- 		};
- 	};
- };
--- 
-2.36.1
-
+--=20
+With Best Regards,
+Andy Shevchenko
