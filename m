@@ -2,84 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 533E1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 19:34:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56346C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 19:38:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358769AbiFVTej (ORCPT
+        id S1358086AbiFVTiK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 15:34:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43978 "EHLO
+        Wed, 22 Jun 2022 15:38:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358962AbiFVTeE (ORCPT
+        with ESMTP id S230075AbiFVTiH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 15:34:04 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AAB03DDC4
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 12:33:45 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id c4so29449068lfj.12
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 12:33:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NFbRch3MP4oYfAdvYfvFh8xRiPwpBI5r6t1BeeKJjDI=;
-        b=UzPfjg3Uhny7RcirHKXTpM6X1BLTfbOJLhkHD4gGRWY0a0tN5rFpv5odkr4cWEwqc9
-         +BpnwLCdTfIKXBzH3Oqa/vnt5dxjVrC1sSX6pk94EZgY6RyhOwotmjRHUW5N2F8QBBKQ
-         aHZRW5feO56dfBhra30Q3llLrK+qx0uQEiNGMLmCPxwaHfdIs9hzkre63BMLikRjbBGm
-         8GARYSOusQ7rMBtubyguN+EQVaGXKSwVm9udIECZQ8Yuq2dmzv12lUKqlF8MQQU1NOPV
-         9ARpkQMiexdqxfXbKQzuZphHMVhVN5OyQNSj16EpbExLMYi2j+4qRirHRTE9fv7WqEm/
-         Tipw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NFbRch3MP4oYfAdvYfvFh8xRiPwpBI5r6t1BeeKJjDI=;
-        b=SVtTtqzoN7s2PiAVSh0fWMagU7yZ2F7AKAbx9tfHR0QeGvh8scsbSzf2OhuFvK1aNK
-         ViWBjZrUYqcFQawUxOUZSNDENvk3pnc8Gm2oNYq/ejE74KB424lWAYcy680x6q2jpxQ2
-         qZ5Nqn4u+tl7l56gDQnjjUuZllqvhXYVN5YyISD/uUdcRdgoL+HftSAzqs/REOnCluWx
-         /0x2a4w78XHYyHFMoQSAwBjf2Lx0DemYBMpu5465ReWiy+/5Z/FsKAggJ/eQm11iumnf
-         IPAlI2QeFEPhoMUCmDhB+DO96jxUt/hlIyUoHRMLrwlwxP3GNT2EgL9lFewRXkbHsrkW
-         b9pQ==
-X-Gm-Message-State: AJIora98eie6wmiJNtAW+Lb0Vh+SS+xOuPiP9nWCAez6Ic+nZau3yBYE
-        +e1xwWgtJ6QmGjG1fSH/0G530PLYs3W1i/O3Kr10Ow==
-X-Google-Smtp-Source: AGRyM1t2HS4ZyWkAiJQg85nvcNXwFn3bkAAE5g1dd7le8l/22YRvukDaRru6XjTm1AhTsK/kCtarFzkU/1DaCx22dOc=
-X-Received: by 2002:a19:6449:0:b0:47f:86b3:f87b with SMTP id
- b9-20020a196449000000b0047f86b3f87bmr3043737lfj.644.1655926423674; Wed, 22
- Jun 2022 12:33:43 -0700 (PDT)
+        Wed, 22 Jun 2022 15:38:07 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DA6612A9E;
+        Wed, 22 Jun 2022 12:38:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655926686; x=1687462686;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=cHrCL4JWXzk2Mz/dlOWv5+b6kPn7/ZVdLbQR+KDXk7s=;
+  b=fMCfAhSh6jyLtYKaX6TqqDdhfK/mKRSbL/qkXDHf32jW99Tx/5mtHUjW
+   aaehpN3ERXsvONttCsg24Xg01eleA6ibPJ0H1j0bIDkTjo5ilGkJel5/N
+   unwazKjTu4+mWT+aF3WzIfxh4X65iHqMEAiIjbdcdiTTJt7RZNd/M5dcj
+   7gCymBrQlFuQLm456szPl5uDi7ikRtvipeWeJVcyL4m7Eo5bXa4sCfy7c
+   sg4hry+lVlj0IrooMXSRQ16nSOvUfPPHHMbg3t57Z7gV6c2P1bEud4pVc
+   MVERq7GCpOuSkHoOP6KpcLY630biH+A/ECI2+Shk0On+8JyySW87dYfnB
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="281255445"
+X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
+   d="scan'208";a="281255445"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 12:38:06 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
+   d="scan'208";a="715542046"
+Received: from bwalker-desk.ch.intel.com ([143.182.136.162])
+  by orsmga004.jf.intel.com with ESMTP; 22 Jun 2022 12:38:05 -0700
+From:   Ben Walker <benjamin.walker@intel.com>
+To:     vkoul@kernel.org
+Cc:     dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v4 00/15] dmaengine: Support polling for out of order completions
+Date:   Wed, 22 Jun 2022 12:37:38 -0700
+Message-Id: <20220622193753.3044206-1-benjamin.walker@intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220503200728.2321188-1-benjamin.walker@intel.com>
+References: <20220503200728.2321188-1-benjamin.walker@intel.com>
 MIME-Version: 1.0
-References: <20220617195141.2866706-1-pgonda@google.com> <Yqz+CZlGCoQo7lMQ@google.com>
-In-Reply-To: <Yqz+CZlGCoQo7lMQ@google.com>
-From:   Peter Gonda <pgonda@google.com>
-Date:   Wed, 22 Jun 2022 13:33:32 -0600
-Message-ID: <CAMkAt6p6U6G0N0UP-Dnatr1cLHnaU1DY-1gxvmYhvxjckhbx4g@mail.gmail.com>
-Subject: Re: [PATCH] KVM: SEV: Init target VMCBs in sev_migrate_from
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     kvm list <kvm@vger.kernel.org>, Marc Orr <marcorr@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> >
-> > +void sev_init_vmcb(struct vcpu_svm *svm)
-> > +{
-> > +     svm->vmcb->control.nested_ctl |= SVM_NESTED_CTL_SEV_ENABLE;
-> > +     clr_exception_intercept(svm, UD_VECTOR);
->
-> I don't love separating SEV and SEV-ES VMCB initialization, especially since they're
-> both doing RMW operations and not straight writes.  E.g. migration ends up reversing
-> the order between the two relatively to init_vmcb().  That's just asking for a subtle
-> bug to be introduced that affects only due to the ordering difference.
->
-> What about using common top-level flows for SEV and SEV-ES so that the sequencing
-> between SEV and SEV-ES is more rigid?  The resulting sev_migrate_from() is a little
-> gross, but IMO it's worth having a fixed sequence, and the flip side to the ugliness
-> it that it documents some of the differences between SEV and SEV-ES migration.
+This series adds support for polling async transactions for completion
+even if interrupts are disabled and transactions can complete out of
+order.
 
-Thanks for the suggestion Sean! I like your suggestion here. I'll test
-it out, clean it up and send it out as V2. I think the distinction
-between SEV and SEV-ES migration was largely due to how I split up the
-set of patches that enabled this feature.
+To do this, all DMA client assumptions about the behavior of
+dma_cookie_t have to be removed. Prior to this series, dma_cookie_t was
+a monotonically increasing integer and cookies could be compared to one
+another to determine if earlier operations had completed (up until the
+cookie wraps around, then it would break).
+
+Fortunately, only one out of the many, many DMA clients had any
+dependency on dma_cookie_t being anything more than an opaque handle.
+This is the pxa_camera driver and it is dealt with in patch 7 of this
+series.
+
+The series also does some API clean up and documents how dma_cookie_t
+should behave (i.e. there are no rules, it's just a handle).
+
+This closes out by adding support for .device_tx_status() to the idxd
+driver and then reverting the DMA_OUT_OF_ORDER patch that previously
+allowed idxd to opt-out of support for polling, which I think is a nice
+overall simplification to the dmaengine API.
+
+Changes since version 3:
+ - Fixed Message-Id in emails. Sorry they were all stripped! Won't
+   happen again.
+
+Changes since version 2:
+ - None. Rebased as requested without conflict.
+
+Changes since version 1:
+ - Broke up the change to remove dma_async_is_tx_complete into a single
+   patch for each driver
+ - Renamed dma_async_is_tx_complete to dmaengine_async_is_tx_complete.
+
+Ben Walker (15):
+  dmaengine: Remove dma_async_is_complete from client API
+  dmaengine: Move dma_set_tx_state to the provider API header
+  dmaengine: Add dmaengine_async_is_tx_complete
+  crypto: stm32/hash: Use dmaengine_async_is_tx_complete
+  media: omap_vout: Use dmaengine_async_is_tx_complete
+  rapidio: Use dmaengine_async_is_tx_complete
+  media: pxa_camera: Use dmaengine_async_is_tx_complete
+  dmaengine: Remove dma_async_is_tx_complete
+  dmaengine: Remove last, used from dma_tx_state
+  dmaengine: Providers should prefer dma_set_residue over
+    dma_set_tx_state
+  dmaengine: Remove dma_set_tx_state
+  dmaengine: Add provider documentation on cookie assignment
+  dmaengine: idxd: idxd_desc.id is now a u16
+  dmaengine: idxd: Support device_tx_status
+  dmaengine: Revert "cookie bypass for out of order completion"
+
+ Documentation/driver-api/dmaengine/client.rst | 24 ++----
+ .../driver-api/dmaengine/provider.rst         | 64 ++++++++------
+ drivers/crypto/stm32/stm32-hash.c             |  3 +-
+ drivers/dma/amba-pl08x.c                      |  1 -
+ drivers/dma/at_hdmac.c                        |  3 +-
+ drivers/dma/dmaengine.c                       |  2 +-
+ drivers/dma/dmaengine.h                       | 12 ++-
+ drivers/dma/dmatest.c                         | 14 +--
+ drivers/dma/idxd/device.c                     |  1 +
+ drivers/dma/idxd/dma.c                        | 86 ++++++++++++++++++-
+ drivers/dma/idxd/idxd.h                       |  3 +-
+ drivers/dma/imx-sdma.c                        |  3 +-
+ drivers/dma/mmp_tdma.c                        |  3 +-
+ drivers/dma/mxs-dma.c                         |  3 +-
+ drivers/media/platform/intel/pxa_camera.c     | 15 +++-
+ .../media/platform/ti/omap/omap_vout_vrfb.c   |  2 +-
+ drivers/rapidio/devices/rio_mport_cdev.c      |  3 +-
+ include/linux/dmaengine.h                     | 58 +------------
+ 18 files changed, 164 insertions(+), 136 deletions(-)
+
+Cc:linux-crypto@vger.kernel.org
+Cc:linux-stm32@st-md-mailman.stormreply.com
+Cc:linux-media@vger.kernel.org
+Cc:mporter@kernel.crashing.org
+-- 
+2.35.1
+
