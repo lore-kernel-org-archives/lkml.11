@@ -2,108 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92DB1CCA481
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 15:11:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C752DC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 15:11:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359179AbiFVPLA (ORCPT
+        id S1359289AbiFVPL2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 11:11:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44928 "EHLO
+        Wed, 22 Jun 2022 11:11:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359111AbiFVPKy (ORCPT
+        with ESMTP id S1359153AbiFVPLY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 11:10:54 -0400
-Received: from relay01.th.seeweb.it (relay01.th.seeweb.it [IPv6:2001:4b7a:2000:18::162])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CC663DDFA;
-        Wed, 22 Jun 2022 08:10:53 -0700 (PDT)
-Received: from [192.168.1.101] (abxi223.neoplus.adsl.tpnet.pl [83.9.2.223])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Wed, 22 Jun 2022 11:11:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A823F3E5CC;
+        Wed, 22 Jun 2022 08:11:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by m-r1.th.seeweb.it (Postfix) with ESMTPSA id 4C27420569;
-        Wed, 22 Jun 2022 17:10:51 +0200 (CEST)
-Message-ID: <51965fa3-d146-70f1-2ad8-db6197989348@somainline.org>
-Date:   Wed, 22 Jun 2022 17:10:50 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2 4/6] arm64: dts: qcom: sc8280xp: Add reference device
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Johan Hovold <johan@kernel.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
+        by ams.source.kernel.org (Postfix) with ESMTPS id 56E58B81F91;
+        Wed, 22 Jun 2022 15:11:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70E5BC34114;
+        Wed, 22 Jun 2022 15:11:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655910681;
+        bh=85kAYdDSM1kdzcUsEkD4BEv1Jp3ZVjaLheAWsW8yx+U=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Mkqi5YRlRB1xY9CLLZ3Zqqn/IxYC0/iNiDBFGMIqg/Pa1tW2zRU4VQmHJHQlM1Y9V
+         OOCfYTNT+rSKEGS8CU+6OBdgj1cXU5Ci8fV5GcAjgugELU+LRwOERTQhPWa4pwQlOk
+         97qTIqt103r7FlTA2nh9vozltw6hbAQ6jNwCMSO8=
+Date:   Wed, 22 Jun 2022 17:11:17 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Prashant Malani <pmalani@chromium.org>,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        bleung@chromium.org, swboyd@chromium.org,
+        heikki.krogerus@linux.intel.com,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        =?iso-8859-1?Q?Jos=E9_Exp=F3sito?= <jose.exposito89@gmail.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        =?iso-8859-1?Q?N=EDcolas_F=2E_R=2E_A=2E?= Prado 
+        <nfraprado@collabora.com>, Pin-Yen Lin <treapking@chromium.org>,
+        Robert Foss <robert.foss@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220622041224.627803-1-bjorn.andersson@linaro.org>
- <20220622041224.627803-5-bjorn.andersson@linaro.org>
- <099cc82f-d52f-315f-189d-bcc40c1afd49@somainline.org>
- <YrMccQXwsz/zC/gl@hovoldconsulting.com>
- <9d0c1897-195f-0548-ea5d-ffc35768f518@somainline.org>
- <b2c9faf0-95a8-772f-c211-f1599b35f8f8@linaro.org>
-From:   Konrad Dybcio <konrad.dybcio@somainline.org>
-In-Reply-To: <b2c9faf0-95a8-772f-c211-f1599b35f8f8@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Sam Ravnborg <sam@ravnborg.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Xin Ji <xji@analogixsemi.com>
+Subject: Re: [PATCH v4 0/7] usb: typec: Introduce typec-switch binding
+Message-ID: <YrMxFeMc0tk/K1qL@kroah.com>
+References: <20220615172129.1314056-1-pmalani@chromium.org>
+ <CACeCKaetgayTS+yX0cuNiK7j6Yqd4o2ziX6nCoGTt64A3jFT=g@mail.gmail.com>
+ <YrHE9KrF0HG9rVi/@kroah.com>
+ <8f0501c5-84f2-10f1-ae06-4b3936c50b12@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8f0501c5-84f2-10f1-ae06-4b3936c50b12@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 22.06.2022 16:48, Krzysztof Kozlowski wrote:
-> On 22/06/2022 16:36, Konrad Dybcio wrote:
->>
->>
->> On 22.06.2022 15:43, Johan Hovold wrote:
->>> On Wed, Jun 22, 2022 at 02:33:02PM +0200, Konrad Dybcio wrote:
->>>> On 22.06.2022 06:12, Bjorn Andersson wrote:
->>>
->>>>> +&qup2_i2c5 {
->>>>> +	clock-frequency = <400000>;
->>>>> +
->>>>> +	pinctrl-names = "default";
->>>>> +	pinctrl-0 = <&qup2_i2c5_default>, <&kybd_default>, <&tpad_default>;
->>>>> +
->>>>> +	status = "okay";
->>>>> +
->>>> I think all device DTs generally have 'status = "okay"' at the beginning. Should we change that?
->>>>
->>>
->>> No, quite the opposite, status go at the end.
->> Then all other device DTs should be updated, as in dts/qcom/
->> everybody keeps it first in non-SoC/PMIC files.
+On Wed, Jun 22, 2022 at 04:53:40PM +0200, Krzysztof Kozlowski wrote:
+> On 21/06/2022 15:17, Greg Kroah-Hartman wrote:
+> > On Wed, Jun 15, 2022 at 11:13:33AM -0700, Prashant Malani wrote:
+> >> I should add:
+> >>
+> >> Series submission suggestions (of course, open to better suggestions too):
+> >> - Patches 1-3 can go through the USB repo.
+> > 
+> > I will take patches 1 and 2 now.
+> > 
+> > seems the others need reworks or acks from the DT people.
 > 
-> The word "should" is a bit too much here, but I agree, we can update all
-> of them to match one, chosen approach.
-> 
-> However the location for "status" property is more important for the
-> definition of nodes in DTSI, because it's the least important piece
-> there and also kind of expected - here go properties + I disable it. For
-> me this is more important.
-> 
-> For node redefinition in DTS, I see benefits in two approaches:
-> 1. Let me first enable the node and then configure it.
-> 2. Let me configure the node and enable it.
-I looked around non-qcom device trees and it looks like the common
-consensus is 2. Although I personally visually prefer 1. and it's
-been used in all qcom arm64 DTs to date, I don't think there are any
-blockers for us to switch to 1. going forward to keep it consistent.
+> I just gave for patch 3 and before for 4, so you can grab these as well.
 
-That's if we want to clean up the existing ones, as changing the rules
-and not applying that to the older files will make for a huge mess as
-time goes on and will unnecessarily prolong the review process (as
-existing DTs are commonly a source of reference and people make
-certain choices based on those).
+They are gone from my queue, a resend with that ack would be good so
+that I can pick it up easier.
 
-I don't think the DTS specification or the Linux docs explicitly which
-one to choose though.
+thanks,
 
-Konrad
-> 
-> Best regards,
-> Krzysztof
+gre gk-h
