@@ -2,176 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 095A8C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 08:40:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A32D7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 08:41:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355355AbiFVIkv (ORCPT
+        id S1355353AbiFVIlf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 04:40:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39890 "EHLO
+        Wed, 22 Jun 2022 04:41:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355299AbiFVIks (ORCPT
+        with ESMTP id S1355299AbiFVIlc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 04:40:48 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 214EE38BE9
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 01:40:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655887247; x=1687423247;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=VfNo7yVTgFB/Svew6Oy6XyZl047DErTPyzcdQPMqbxE=;
-  b=Jlemc7/5LRzW1bd765bctCYxhNSuOvCjjLk9iO031xJv8pWKzlt1wcMn
-   PN/bPKGsaf14XH/Kv0lAY3t7TbcX+nHvHDPQR6bDBbDX+QrFn8PWS7QUX
-   o0D4+aQB+/9WM8+pcEyfCGvTx1pEj5dpvrL2A3yjvXqXe//PWjxYDq/BK
-   RjSyQgFPQZ7bEYiQO/SfZVG9iqQeODRepZGVxvzBt4ab+fHMcXnN6daCm
-   dxJsWqkuK2alUP5EJ6T2sEHe2gZSj27MJ1tZ8XXplztPIkLIwAIY1Q//s
-   THHU3RHyyXLskCzW/6XU3bSbmk/8gZRFTcowYpHElFTqD0aJlxMrHScuG
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="269076544"
-X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="269076544"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 01:40:24 -0700
-X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="644080007"
-Received: from aslawinx-mobl.ger.corp.intel.com (HELO [10.99.249.103]) ([10.99.249.103])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 01:40:22 -0700
-Message-ID: <d05c292e-f955-48df-50e3-55e36a956775@linux.intel.com>
-Date:   Wed, 22 Jun 2022 10:40:20 +0200
+        Wed, 22 Jun 2022 04:41:32 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00BDA387BF
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 01:41:30 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id o8so22353821wro.3
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 01:41:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=sz6VlNHiVjHixKsssl+TJXLUZqbxz+oP9ZVl9b0X04Q=;
+        b=zI2iX2goiGZ0Gj7PoNgF/dAyAFJPQV7L/o29pytA7SjhrmeMSqjizHh9LM7RA3nLpL
+         phtstWK4Oide9ApB3GfvIL1BjbjBb5QFYOe003kH4eGPP3ey8gmLgO64/tp4OhFnuEbF
+         yHWLYcwWDFgNg3VWdRH0e7MMFQzrjGNaGHS4lZt754GjBg7TK7Y6JgjsQ6YfZ61G08KB
+         gyrveMFT9VKbbqvhzlr3LuqmUqvUuQ76g0HidfhCn5r4nz5BGR6iQO4lUQ7lwDXQlh+B
+         bAo7bi8LH9Bbin0bi6s4MMtMeykr+R3L245W1VXlBDdHzR2C/Igp0ZApE+VdhHXUHWKt
+         /9YQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=sz6VlNHiVjHixKsssl+TJXLUZqbxz+oP9ZVl9b0X04Q=;
+        b=mVBB4kZtRKtuMWIJcEhd3RsP0wuYJrKZxcAK0OpHcb2CIGamA4dY8VDwgZCDIxIdKK
+         uRGMEGC7vTPtzu4szHd2xuIRq8gicdLnsHfISwovLO2dXggAmZqw3ZGDsllCl3jRnCjt
+         IdGg5gp3BoWMC2zvFxAdG9ZzOMi4IG9u77cNY258kpX3J9fcHGKXo/knkUS1regDwOQz
+         HWvURXkz9q6/iYwnICtBd8C4bIwBObjzqKojBntY3L/6GXsoz26S3ZPkfNQpRr3mZPoL
+         wasvnPiWFpaVHHQAyftXTWcg8wrl772Np02BfJ3wKGU6JyaIW3ki5WFPZ+s4AODn7gzT
+         h7Ig==
+X-Gm-Message-State: AJIora/vqsS5jVIq6wIv/WR9mEC847AxWUvaoJlFyM9G1lufXvmsw51y
+        f4g2cEeSmu9e3K1PpgB9tOJqow==
+X-Google-Smtp-Source: AGRyM1vN/2Yn5VoH1r/7PIIbeU5gLOIa16fFrvWUQSeTlBzbJrJqfD1H73MWRPrmSyRCWvuLBq1gaQ==
+X-Received: by 2002:a5d:5231:0:b0:21b:838e:65ba with SMTP id i17-20020a5d5231000000b0021b838e65bamr2099102wra.412.1655887289619;
+        Wed, 22 Jun 2022 01:41:29 -0700 (PDT)
+Received: from [192.168.0.223] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id a17-20020adffad1000000b0021b8749728dsm12525434wrs.73.2022.06.22.01.41.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Jun 2022 01:41:29 -0700 (PDT)
+Message-ID: <2f3e843e-b72b-ee71-7465-b2b6c8d51b0d@linaro.org>
+Date:   Wed, 22 Jun 2022 10:41:28 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v7 01/14] ALSA: hda: hda_cs_dsp_ctl: Add Library to
- support CS_DSP ALSA controls
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] memory/tegra: Add missing of_node_get() in
+ tegra_emc_find_node_by_ram_code
 Content-Language: en-US
-To:     Vitaly Rodionov <vitalyr@opensource.cirrus.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, Mark Brown <broonie@kernel.org>
-Cc:     patches@opensource.cirrus.com, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org,
-        Stefan Binding <sbinding@opensource.cirrus.com>
-References: <20220622074653.179078-1-vitalyr@opensource.cirrus.com>
- <20220622074653.179078-2-vitalyr@opensource.cirrus.com>
-From:   =?UTF-8?Q?Amadeusz_S=c5=82awi=c5=84ski?= 
-        <amadeuszx.slawinski@linux.intel.com>
-In-Reply-To: <20220622074653.179078-2-vitalyr@opensource.cirrus.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Liang He <windhl@126.com>, thierry.reding@gmail.com,
+        jonathanh@nvidia.com
+Cc:     linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org
+References: <20220622042824.4094625-1-windhl@126.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220622042824.4094625-1-windhl@126.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/22/2022 9:46 AM, Vitaly Rodionov wrote:
-> From: Stefan Binding <sbinding@opensource.cirrus.com>
+On 22/06/2022 06:28, Liang He wrote:
+> of_find_node_by_name() will decrease the refcount of its first arg and
+> we need to add a of_node_put() to keep refcount balance.
 > 
-> The cs35l41 part contains a DSP which is able to run firmware.
-> The cs_dsp library can be used to control the DSP.
-> These controls can be exposed to userspace using ALSA controls.
-> This library adds apis to be able to interface between
-> cs_dsp and hda drivers and expose the relevant controls as
-> ALSA controls.
+> Besides, during the 'for' loop execution, the refcount of 'np' will be
+> automatically increased and decreased. There is no need to call
+> of_node_put() again.
 > 
-> Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
-> Signed-off-by: Vitaly Rodionov <vitalyr@opensource.cirrus.com>
+> Signed-off-by: Liang He <windhl@126.com>
 > ---
->   MAINTAINERS                    |   1 +
->   sound/pci/hda/Kconfig          |   4 +
->   sound/pci/hda/Makefile         |   2 +
->   sound/pci/hda/hda_cs_dsp_ctl.c | 207 +++++++++++++++++++++++++++++++++
->   sound/pci/hda/hda_cs_dsp_ctl.h |  33 ++++++
->   5 files changed, 247 insertions(+)
->   create mode 100644 sound/pci/hda/hda_cs_dsp_ctl.c
->   create mode 100644 sound/pci/hda/hda_cs_dsp_ctl.h
+>  drivers/memory/tegra/tegra20-emc.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 > 
 
-...
+The patch was not even compiled... I consider it harmful approach. NAK.
+See: https://lwn.net/Articles/854645/
 
-> +
-> +static unsigned int wmfw_convert_flags(unsigned int in)
-> +{
-> +	unsigned int out, rd, wr, vol;
-> +
-> +	rd = SNDRV_CTL_ELEM_ACCESS_READ;
-> +	wr = SNDRV_CTL_ELEM_ACCESS_WRITE;
-> +	vol = SNDRV_CTL_ELEM_ACCESS_VOLATILE;
-> +
-> +	out = 0;
-> +
-> +	if (in) {
-> +		out |= rd;
-> +		if (in & WMFW_CTL_FLAG_WRITEABLE)
-> +			out |= wr;
-> +		if (in & WMFW_CTL_FLAG_VOLATILE)
-> +			out |= vol;
-> +	} else {
-> +		out |= rd | wr | vol;
-> +	}
-> +
-> +	return out;
-> +}
-
-This is more question of preference, so you can leave above function as 
-is, but you could also do something like the following, which is bit 
-shorter:
-static unsigned int wmfw_convert_flags(unsigned int in)
-{
-	unsigned int out = SNDRV_CTL_ELEM_ACCESS_READ;
-
-	if (!in)
-		return SNDRV_CTL_ELEM_ACCESS_READWRITE | SNDRV_CTL_ELEM_ACCESS_VOLATILE;
-
-	if (in & WMFW_CTL_FLAG_WRITEABLE)
-		out |= SNDRV_CTL_ELEM_ACCESS_WRITE;
-	if (in & WMFW_CTL_FLAG_VOLATILE)
-		out |= SNDRV_CTL_ELEM_ACCESS_VOLATILE;
-
-	return out;
-}
-
-> +
-> +static int hda_cs_dsp_add_kcontrol(struct hda_cs_dsp_coeff_ctl *ctl)
-> +{
-> +	struct cs_dsp_coeff_ctl *cs_ctl = ctl->cs_ctl;
-> +	struct snd_kcontrol_new *kcontrol;
-> +	struct snd_kcontrol *kctl;
-> +	int ret = 0;
-> +
-> +	if (cs_ctl->len > ADSP_MAX_STD_CTRL_SIZE) {
-> +		dev_err(cs_ctl->dsp->dev, "Control %s: length %zu exceeds maximum %d\n", ctl->name,
-> +			cs_ctl->len, ADSP_MAX_STD_CTRL_SIZE);
-> +		return -EINVAL;
-> +	}
-> +
-> +	kcontrol = kzalloc(sizeof(*kcontrol), GFP_KERNEL);
-> +	if (!kcontrol)
-> +		return -ENOMEM;
-> +
-> +	kcontrol->name = ctl->name;
-> +	kcontrol->info = hda_cs_dsp_coeff_info;
-> +	kcontrol->iface = SNDRV_CTL_ELEM_IFACE_MIXER;
-> +	kcontrol->private_value = (unsigned long)ctl;
-> +	kcontrol->access = wmfw_convert_flags(cs_ctl->flags);
-> +
-> +	kcontrol->get = hda_cs_dsp_coeff_get;
-> +	kcontrol->put = hda_cs_dsp_coeff_put;
-> +
-> +	kctl = snd_ctl_new1(kcontrol, NULL);
-
-Wouldn't
-kctl = snd_ctl_new1(kcontrol, ctl);
-work instead of
-kcontrol->private_value = (unsigned long)ctl;
-...
-kctl = snd_ctl_new1(kcontrol, NULL);
-?
-
-You can then get the value using  snd_kcontrol_chip()  macro, so instead 
-of doing quite long lines with casts like:
-struct hda_cs_dsp_coeff_ctl *ctl = (struct hda_cs_dsp_coeff_ctl 
-*)kctl->private_value;
-you could do
-struct hda_cs_dsp_coeff_ctl *ctl = snd_kcontrol_chip(kctl);
-
-
+Best regards,
+Krzysztof
