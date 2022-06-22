@@ -2,158 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1BD8C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 20:27:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E028C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 20:36:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234142AbiFVU1E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 16:27:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53448 "EHLO
+        id S235223AbiFVUgO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 16:36:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229473AbiFVU1C (ORCPT
+        with ESMTP id S229473AbiFVUgK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 16:27:02 -0400
-X-Greylist: delayed 476 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 22 Jun 2022 13:26:59 PDT
-Received: from vmicros1.altlinux.org (vmicros1.altlinux.org [194.107.17.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A8595369E6
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 13:26:59 -0700 (PDT)
-Received: from imap.altlinux.org (imap.altlinux.org [194.107.17.38])
-        by vmicros1.altlinux.org (Postfix) with ESMTP id 981EE72C8B1;
-        Wed, 22 Jun 2022 23:19:02 +0300 (MSK)
-Received: from altlinux.org (sole.flsd.net [185.75.180.6])
-        by imap.altlinux.org (Postfix) with ESMTPSA id 7AB604A474C;
-        Wed, 22 Jun 2022 23:19:02 +0300 (MSK)
-Date:   Wed, 22 Jun 2022 23:19:02 +0300
-From:   Vitaly Chikunov <vt@altlinux.org>
-To:     "Dmitry V. Levin" <ldv@altlinux.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Cc:     Gleb Fotengauer-Malinovskiy <glebfm@altlinux.org>,
-        Mikhail Gordeev <obirvalger@altlinux.org>,
-        Hendrik Brueckner <brueckner@linux.vnet.ibm.com>,
-        Ian Rogers <irogers@google.com>
-Subject: Re: [PATCH 1/1 FYI] perf trace beauty: Fix generation of errno
- id->str table on ALT Linux
-Message-ID: <20220622201902.j5owuabe4nwpi3jm@altlinux.org>
-References: <YrNCLzNGsvizMhdW@kernel.org>
- <20220622191308.GA2045@altlinux.org>
+        Wed, 22 Jun 2022 16:36:10 -0400
+Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBD0938BEA
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 13:36:03 -0700 (PDT)
+Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-3178ea840easo136720877b3.13
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 13:36:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=k0Q20J3OyFK4BXoHp26oZBRHT0NT/TPRkGHoG9EjHBM=;
+        b=AIh/u0M6R759JTz79TyCN93gK6bgpHDzPVQZ1c1GJ5mwFOuIeCYHJ4edi50jml847F
+         YlyEIG6KHqq8aPkZTHE9o8riSh+o+aPdQkAJtuBIbSQJ1Qvz8SxbjAaqCBGJVWgX2P/S
+         /lWL8gVqkrxuDaPOll9RogYmQJePhkDfIDDmdpqwgFqUaxnpkJlZlOJqH2LK8OYh0EHS
+         NkvT2u3I65Z8qEvtK4yyQHIJoLFYRlLWUJzUrck6e096qTWwpgSy4j4OJNJBxKuqt4cm
+         +0dfDWU9Ra9WoP4nC6yrNay035tCUQh6UFCC2SBvyjlcMQdeY4uW7Ka6L/TCcUlvjRXY
+         RbvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=k0Q20J3OyFK4BXoHp26oZBRHT0NT/TPRkGHoG9EjHBM=;
+        b=XYjxqVu+hfI6mBRJSyx3s2mAQeithydN1YVakghzKkB9n3GZE186E4V64DhBwOXftL
+         6ix0MZg37cZiKv1TWyLAGpNjNoRAxhCMw5Beq9FWYksvj4+IlfMvI9xP9guAGoCwC1Ol
+         VcSCQsl7Ij9YObduOpanzX2hLFZKUrbUcWNesGjxpd9IOfkT8elVyIcH/2Cn8ka+WN0c
+         2P0jQowcZXB15+0zWCjf2ysgrzXLQf4xJtFgdvFfIzZKdrNbebQqt2IdgF21erYl0H5A
+         +FOvSnRylQmMRnH94e5BZyfSBCwKWc7WCy3p0jwZmTF44b52ne/AHgkre6KhO9A/wnyJ
+         Ldow==
+X-Gm-Message-State: AJIora/hd4PlxIDMr4jI3PvDxEIXLmYH7G0oBffWFFFRXG9j4ddcnpvO
+        8dcYbwWPWnmiR0wuQsUSIP03sA5/eDtjn1dsc0If3w==
+X-Google-Smtp-Source: AGRyM1tZz2wdFHKMCQcrlrsexZuCcN2icaf5UPnPLdD9I4E6Eu6Q2ruY0h+nLZ4RTx4/aeKVzxa/AbO9gvemQvBe43c=
+X-Received: by 2002:a81:a095:0:b0:317:d4ce:38b6 with SMTP id
+ x143-20020a81a095000000b00317d4ce38b6mr6426893ywg.83.1655930162762; Wed, 22
+ Jun 2022 13:36:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=koi8-r
-Content-Disposition: inline
-In-Reply-To: <20220622191308.GA2045@altlinux.org>
+References: <20220601070707.3946847-1-saravanak@google.com>
+ <20220601070707.3946847-8-saravanak@google.com> <20220622074756.GA1647@pengutronix.de>
+ <CACRpkdYe=u9Ozj_dtLVr6GSau8yS5H7LnBNNrQHki1CJ1zST0A@mail.gmail.com> <CAGETcx_qm7DWbNVTLfF9jTgGA8uH8oAQzbPcMDh4L6+5mdRFog@mail.gmail.com>
+In-Reply-To: <CAGETcx_qm7DWbNVTLfF9jTgGA8uH8oAQzbPcMDh4L6+5mdRFog@mail.gmail.com>
+From:   Saravana Kannan <saravanak@google.com>
+Date:   Wed, 22 Jun 2022 13:35:26 -0700
+Message-ID: <CAGETcx8i9R51T-mGuV9_LUz-GXDCncpRWQ1Rj_7i2JrvCttq3w@mail.gmail.com>
+Subject: Re: [PATCH v2 7/9] driver core: Set fw_devlink.strict=1 by default
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     Sascha Hauer <sha@pengutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Kevin Hilman <khilman@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>, kernel-team@android.com,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-gpio@vger.kernel.org, kernel@pengutronix.de
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dmitry, Arnaldo,
+On Wed, Jun 22, 2022 at 12:40 PM Saravana Kannan <saravanak@google.com> wrote:
+>
+> On Wed, Jun 22, 2022 at 1:44 AM Linus Walleij <linus.walleij@linaro.org> wrote:
+> >
+> > On Wed, Jun 22, 2022 at 9:48 AM Sascha Hauer <sha@pengutronix.de> wrote:
+> >
+> > > This patch has the effect that console UART devices which have "dmas"
+> > > properties specified in the device tree get deferred for 10 to 20
+> > > seconds. This happens on i.MX and likely on other SoCs as well. On i.MX
+> > > the dma channel is only requested at UART startup time and not at probe
+> > > time. dma is not used for the console. Nevertheless with this driver probe
+> > > defers until the dma engine driver is available.
+>
+> FYI, if most of the drivers are built in, you could set
+> deferred_probe_timeout=1 to reduce the impact of this (should drop
+> down to 1 to 2 seconds). Is that an option until we figure out
+> something better?
+>
+> Actually, why isn't earlyconsole being used? That doesn't get blocked
+> on anything and the main point of that is to have console working from
+> really early on.
+>
+> > >
+> > > It shouldn't go in as-is.
+> >
+> > This affects all machines with the PL011 UART and DMAs specified as
+> > well.
+> >
+> > It would be best if the console subsystem could be treated special and
+> > not require DMA devlink to be satisfied before probing.
+>
+> If we can mark the console devices somehow before their drivers probe
+> them, I can make fw_devlink give them special treatment. Is there any
+> way I could identify them before their drivers probe?
+>
+> > It seems devlink is not quite aware of the concept of resources that are
+> > necessary to probe vs resources that are nice to have and might be
+> > added after probe.
+>
+> Correct, it can't tell them apart. Which is why it tries its best to
+> enforce them, get most of them ordered properly and then gives up
+> enforcing the rest after deferred_probe_timeout= expires. There's a
+> bit more nuance than what I explained here (explained in earlier
+> commit texts, LPC talks), but that's the gist of it. That's what's
+> going on in this case Sascha is pointing out.z
+>
+> > We need a strong devlink for the first category
+> > and maybe a weak devlink for the latter category.
+> >
+> > I don't know if this is a generic hardware property for all operating
+> > systems so it could be a DT property such as dma-weak-dependency?
+> >
+> > Or maybe compromize and add a linux,dma-weak-dependency;
+> > property?
+>
+> The linux,dma-weak-dependency might be an option, but then if the
+> kernel version changes and we want to enforce it because we now have a
+> dma driver (not related to Shasha's example) support, then the
+> fw_devlink still can't enforce it because of that property. But maybe
+> that's okay? The consumer can try to use dma and defer probe if it
+> fails?
+>
+> Another option is to mark console devices in DT with some property and
+> we can give special treatment for those without waiting for
+> deferred_probe_timeout= to expire.
 
-On Wed, Jun 22, 2022 at 10:13:09PM +0300, Dmitry V. Levin wrote:
-> Hi,
-> 
-> On Wed, Jun 22, 2022 at 01:24:15PM -0300, Arnaldo Carvalho de Melo wrote:
-> > Fyi, I'm carrying this on my perf tools tree to keep building on:
-> > 
-> > [perfbuilder@five sisyphus]$ podman pull alt:sisyphus
-> > Trying to pull docker.io/library/alt:sisyphus...
-> > Getting image source signatures
-> > Copying blob 2b39ef1520dd skipped: already exists
-> > Copying blob 12717fd4baa0 skipped: already exists
-> > Copying config 6d48f46445 done
-> > Writing manifest to image destination
-> > Storing signatures
-> > 6d48f4644518cd96ffe1de6cd0333d2abc8312c0e4449e03b58b1d480f0f5905
-> > [perfbuilder@five sisyphus]$ dsh .
-> > sh-4.4# bash
-> > [root@b8318c77142b /]# cat /etc/os-release
-> > NAME="starter kit"
-> > VERSION="p10 (Hypericum)"
-> > ID=altlinux
-> > VERSION_ID=p10
-> > PRETTY_NAME="ALT Starterkit (Hypericum)"
-> > ANSI_COLOR="1;33"
-> > CPE_NAME="cpe:/o:alt:starterkit:p10"
-> > HOME_URL="http://en.altlinux.org/starterkits"
-> > BUG_REPORT_URL="https://bugs.altlinux.org/"
-> > [root@b8318c77142b /]# rpm -qi bash
-> > Name        : bash
-> > Version     : 4.4.23
-> > Release     : alt1
-> > DistTag     : sisyphus+221902.500.4.1
-> > Architecture: noarch
-> > Install Date: Fri Jun  3 23:03:32 2022
-> > Group       : Shells
-> > Size        : 0
-> > License     : None
-> > Signature   : DSA/SHA1, Tue Feb 19 14:40:44 2019, Key ID 95c584d5ae4ae412
-> > Source RPM  : bash-defaults-4.4.23-alt1.src.rpm
-> > Build Date  : Tue Feb 19 14:40:42 2019
-> > Build Host  : ldv-sisyphus.hasher.altlinux.org
-> > Relocations : (not relocatable)
-> > Packager    : Dmitry V. Levin <ldv@altlinux.org>
-> > Vendor      : ALT Linux Team
-> > Summary     : The GNU Bourne Again SHell (/bin/bash)
-> > Description :
-> > This package provides default setup for the GNU Bourne Again SHell (/bin/bash).
-> > [root@b8318c77142b /]#
-> > 
-> > Perf uses that script to generate an id->str errno table for all arches,
-> > implemented in:
-> > 
-> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=0337cf74ccf2a43437bff2e23b278e4f2dc4c6e2
-> > 
-> > But it is failing on:
-> > 
-> >   10    62.99 alt:p8                        : Ok   x86_64-alt-linux-gcc (GCC) 5.3.1 20151207 (ALT p8 5.3.1-alt3.M80P.1) , clang version 3.8.0 (tags/RELEASE_380/final)
-> >   11    91.50 alt:p9                        : Ok   x86_64-alt-linux-gcc (GCC) 8.4.1 20200305 (ALT p9 8.4.1-alt0.p9.1) , clang version 10.0.0
-> >   12    89.80 alt:p10                       : Ok   x86_64-alt-linux-gcc (GCC) 10.3.1 20210703 (ALT Sisyphus 10.3.1-alt2) , clang version 11.0.1
-> >   13     8.99 alt:sisyphus                  : FAIL gcc version 12.1.1 20220518 (ALT Sisyphus 12.1.1-alt1) (GCC)
-> >         |         ^~~~
-> >     442 |         case 47: return "EL3RST";
-> >         |         ^~~~
-> >     443 |         case 48: return "ELNRNG";
-> > 
-> > The generated file lacks the function start/end due to some strange
-> > glitch:
-> > 
-> > http://vger.kernel.org/~acme/perf/generated-altlinux-sisyphus-arch_errno_name_array.c
-> > 
-> > So I'm adding this workaround, can you please check why this is
-> > happening?
-> 
-> arch_errno_names.sh uses here-documents which are implemented in bash
-> using temporary files.  Looks like it couldn't create a temporary file,
-> e.g. because $TMPDIR points to a directory that doesn't exist or not
-> writable.  If there was some "cannot create temp file for here-document"
-> diagnostics in stderr, that's it.  If that's the case, it's not a problem
-> in the script but in the environment.
-> 
-> I've Cc'ed more people, maybe they could have a look.
+Heh, looks like there's already a property for that: stdout-path.
 
-I cannot reproduce this, from Fedora 35 (Cloud Edition) virtual machine in QEMU[1],
-then using:
+Let me send a series that'll use that to give special treatment to
+console devices.
 
-  # podman run --security-opt label=disable -it -v $PWD/linux:/linux alt:sisyphus
-
-Where linux is v5.19-rc3-48-gde5c208d533a, then apt-get update & install gcc, then:
-
-  [root@3b364fe4fc22 linux]# tools/perf/trace/beauty/arch_errno_names.sh gcc tools/ | head
-  /* SPDX-License-Identifier: GPL-2.0 */
-
-  #include <string.h>
-
-  static const char *errno_to_name__generic(int err)
-  {
-	  switch (err) {
-	  case 1: return "EPERM";
-	  case 2: return "ENOENT";
-	  case 3: return "ESRCH";
-	  case 4: return "EINTR";
-	  case 5: return "EIO";
-
-Thanks,
-
-[1] https://github.com/Obirvalger/vml
-
-> 
-> 
-> -- 
-> ldv
+-Saravana
