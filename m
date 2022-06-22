@@ -2,73 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 734A5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 11:56:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71E45C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 11:57:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357448AbiFVL43 (ORCPT
+        id S1354486AbiFVL5T (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 07:56:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38532 "EHLO
+        Wed, 22 Jun 2022 07:57:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357293AbiFVL4U (ORCPT
+        with ESMTP id S236384AbiFVL5R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 07:56:20 -0400
-Received: from smtpbg.qq.com (smtpbg136.qq.com [106.55.201.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B86493D1F2;
-        Wed, 22 Jun 2022 04:56:13 -0700 (PDT)
-X-QQ-mid: bizesmtp68t1655898957tcalen1y
-Received: from ubuntu.localdomain ( [223.104.103.173])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 22 Jun 2022 19:55:52 +0800 (CST)
-X-QQ-SSF: 01000000008000B0B000B00A0000000
-X-QQ-FEAT: RMVj0UrY8cCFOea5C5ARBmv0k7vBcpfkzIQziTBbryMHCxKiCBHSQJn+bq9x9
-        GMVbFEThT1NEVg7Wfti3c1hpYxvR1iBZ02eEDPBT9YB+BSIt0gm7oF0IMIoIr9yXx9WtHc3
-        UjTWKBSXsESFfZgU2CquUtRbqKniZ2XHcX/etJOHAGvRDLU5LzUJsWoOUAg5UDTKZ2BKVuN
-        EjyXSnh3XE+IZbCflWkqht+4WfiyCRXuugQc9ftEqPionE8OFN9eAlJFfh6Oy6VNfWm4Uwh
-        Z3SMabF7w68Mazn/h4vLdjPbn6gBtRb0c3CnrZBbjAU/Rc64cGO1P1NPjfeY4TYiWeKyu9o
-        0Mswb6s5edJx/nwUdI99Qvq4w7TUR+uMTw799cI
-X-QQ-GoodBg: 0
-From:   Jiang Jian <jiangjian@cdjrlc.com>
-To:     jejb@linux.ibm.com, martin.petersen@oracle.com
-Cc:     hare@suse.de, linux-scsi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jiang Jian <jiangjian@cdjrlc.com>
-Subject: [PATCH] scsi: fcoe: drop unexpected word "the" in the comments
-Date:   Wed, 22 Jun 2022 19:55:49 +0800
-Message-Id: <20220622115549.14771-1-jiangjian@cdjrlc.com>
-X-Mailer: git-send-email 2.17.1
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam7
+        Wed, 22 Jun 2022 07:57:17 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28CAD1D306
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 04:57:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655899036; x=1687435036;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=q2XnILATBKEg2okUGd1tyEzLN3TTBjUfdFRatA/QoRs=;
+  b=iDqh7o5PmuOxDHvCLpe3QIYGad0bTy+9SGZ9sA46ieksLhdpFPKmBuCw
+   aPLTz1mmmHN6ShCJt8kuNXgQmVMPjIt5bL3g4N7nZWdoTHfsCIaIYggid
+   gp2md+8gcKL4kIdlCViBkQ6L3l8sipbpkFXxdmL3WR/rE3sOh3poOb9Ia
+   FQM6TKrn7jvZyaAYsjcgaMphFZe5TOrK2nqnSI1uT5KPQ6jNXNqqx0iBA
+   XRnsMrFSpRiC7yZ9sZFf0B+V62xiYpFvAzkwQ8GOoGILzNRl0H2joYuMe
+   a8wQpiXgBa0h+cU8frCxVxVIA8XSd1dsXOH6WvUljeo3sJGeKjeNTZ/jn
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="305847870"
+X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
+   d="scan'208";a="305847870"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 04:57:15 -0700
+X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
+   d="scan'208";a="834076732"
+Received: from xzhan99-mobl1.ccr.corp.intel.com (HELO [10.249.172.26]) ([10.249.172.26])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 04:57:14 -0700
+Message-ID: <3ce651de-f375-176e-3435-735365dd3d8f@linux.intel.com>
+Date:   Wed, 22 Jun 2022 19:57:12 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Cc:     baolu.lu@linux.intel.com, iommu@lists.linux-foundation.org,
+        iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/3] iommu: Clean up release_device checks
+Content-Language: en-US
+To:     Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org,
+        will@kernel.org
+References: <cover.1655822151.git.robin.murphy@arm.com>
+ <02671dbfad7a3343fc25a44222350efcb455fe3c.1655822151.git.robin.murphy@arm.com>
+ <59002dbd-d72a-4f9c-7ad8-808ee8d2ff05@linux.intel.com>
+ <bc4add1b-8b89-7989-5afb-df6b5338eb3d@arm.com>
+From:   Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <bc4add1b-8b89-7989-5afb-df6b5338eb3d@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-there is an unexpected word "the" in the comments that need to be dropped
+On 2022/6/22 15:17, Robin Murphy wrote:
+> On 2022-06-22 02:36, Baolu Lu wrote:
+>> On 2022/6/21 23:14, Robin Murphy wrote:
+>>> Since .release_device is now called through per-device ops, any call
+>>> which gets as far as a driver definitely*is*  for that driver, for a
+>>> device which has successfully passed .probe_device, so all the checks to
+>>> that effect are now redundant and can be removed. In the same vein we
+>>> can also skip freeing fwspecs which are now managed by core code.
+>>
+>> Does this depend on any other series? I didn't see iommu_fwspec_free()
+>> called in the core code. Or I missed anything?
+> 
+> dev_iommu_free() cleans up param->fwspec directly (see b54240ad4943). 
+> FWIW the plan is that iommu_fwspec_free() should eventually go away - of 
+> the remaining uses after this, two are in fact similarly redundant 
+> already, since there's also a dev_iommu_free() in the probe failure 
+> path, and the other two should disappear in part 2 of fixing the bus 
+> probing mess (wherein the of_xlate step gets pulled into 
+> iommu_probe_device as well, and finally works correctly again).
 
-file: drivers/scsi/fcoe/fcoe_ctlr.c
-line: 208
+Yes, it is. Thanks for the explanation.
 
-      * age_fcfs are protected by the the fcoe_ctlr's mutex.
-changed to:
-      * age_fcfs are protected by the fcoe_ctlr's mutex.
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 
-Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
----
- drivers/scsi/fcoe/fcoe_ctlr.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/scsi/fcoe/fcoe_ctlr.c b/drivers/scsi/fcoe/fcoe_ctlr.c
-index 39e16eab47aa..28e8b9f1e1a4 100644
---- a/drivers/scsi/fcoe/fcoe_ctlr.c
-+++ b/drivers/scsi/fcoe/fcoe_ctlr.c
-@@ -205,7 +205,7 @@ static int fcoe_sysfs_fcf_add(struct fcoe_fcf *new)
- 		 * that doesn't have a priv (fcf was deleted). However,
- 		 * libfcoe will always delete FCFs before trying to add
- 		 * them. This is ensured because both recv_adv and
--		 * age_fcfs are protected by the the fcoe_ctlr's mutex.
-+		 * age_fcfs are protected by the fcoe_ctlr's mutex.
- 		 * This means that we should never get a FCF with a
- 		 * non-NULL priv pointer.
- 		 */
--- 
-2.17.1
-
+Best regards,
+baolu
