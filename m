@@ -2,85 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B935AC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 00:37:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92D72C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 00:52:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355057AbiFVAhO (ORCPT
+        id S1355227AbiFVAwo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 21 Jun 2022 20:37:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44598 "EHLO
+        Tue, 21 Jun 2022 20:52:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230028AbiFVAhL (ORCPT
+        with ESMTP id S229832AbiFVAwm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 21 Jun 2022 20:37:11 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0550130548;
-        Tue, 21 Jun 2022 17:37:10 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id p5so8741556pjt.2;
-        Tue, 21 Jun 2022 17:37:10 -0700 (PDT)
+        Tue, 21 Jun 2022 20:52:42 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 190372F65A;
+        Tue, 21 Jun 2022 17:52:42 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id p14so8947539pfh.6;
+        Tue, 21 Jun 2022 17:52:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=43e0IMJkjwy0ez4+pVCyAXyrlo7v5WsBoPt9azMbqOk=;
-        b=gL4iUzmu9T/qhWz70ZhTjiS/0csbHdH7qEdMoUbLERr4rAdjRG3C+PtKX5x4fgTaeT
-         +Sor7Q/ICkFVC79rddPRjSoIWcQ8VmYv09dLlX5HMQS4Azhlq5dzmbW2O48OpvCbhSS0
-         1o8N3iRAm2DhqBSJr8MqAA+STjzka+QLEPCiLlUioTdKuvcHkysaa+UHlY0KhQfW7xnT
-         kdKPdLIh+cpE7E/QkVfKAms2nc3Qm7HFXRT1XEjQPQAsiyNPVm0o4+zHjzMail1/UgTa
-         Jr2xgajwjj3zxFaCC2DTYKfPY0MteilAUDhfcW0ofYq9GOvC4HgaS1POLbFNGzGCLMiA
-         Rb6w==
+        bh=R51V46L5H474iQWOx55vyXgPirIa+jsNedihdZg+XOY=;
+        b=OJmlsdjqYbfvCdREgJsIEucxQfDkXAFRpW2mF/g8caOlahtmM/T3mxdl8wdJghMKwk
+         Nrs/O5mx/AtyHq3HdwPxJZIfZ51iX7AA3oGrBns4O5G+MiYAaMASQlLJXeMzPWHV+HId
+         oUnVcOblyTii6o/mVIC1jJivqRVEecj/6vW7AlyoNhL3R3Q4ZYlvon38GYU1ZV8ipGsL
+         E4lQe6togFkBTyX4NW5Ha/boAACuyVyQRoj8ta1JlYY5K9IywG3+MYNh6w7Y1c0ElT3c
+         IjGL3BxYcE+unIXDh65Wsxlmr0fnh4NIPEItIxnmUDRDPd0vz04Y2QOi9iq1Z03xYxWe
+         zByQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=43e0IMJkjwy0ez4+pVCyAXyrlo7v5WsBoPt9azMbqOk=;
-        b=l4jJHj+PFu+dqEdU1CdrFqZJVJIe2x5svBky2qQerr7dTW6I+jeXT6aJdKGfGcC4QD
-         nDLRMfb1Oa0OSz1/Z0MbT5MG/tmZjkPAR83/jXX4ASDlRiOd8WUythrNPQuX4gUPEbiM
-         6B/ncUgvRde1TdB0OEVFVr5VyQJbUGlZ0Sp/L/L+qc61jdtoRCHx8m6fJqiH57ueH3p1
-         7eoAPheQD86iYPi0OMizHY2k9+OG3mRmdEfWPCAXLPxj2GTy7NNBlviIE3UTMToKv06Q
-         tWMyrWRK9Unj7sLJXX954boL/wBfJyU/eQVQSwarVvhJDpf/fQppt8SRtoX86wxV/nH8
-         Tl8g==
-X-Gm-Message-State: AJIora/apk0kWZ3ujIUoABQnTsscu/oAWxC8LBXk9i3mgnuuZ9aIfEY6
-        Iz7eeP2tEqTvylpFESPlcvmgeSeE8Co4IDwyuP0=
-X-Google-Smtp-Source: AGRyM1s8hDDaH7dfyxNNOifT1cMC5ZM9xF/T4Akfw+tR6ClJV6eJrCKdXk22vnmrNvky8i7gMjk83Xs/LUkB7k1A3gM=
-X-Received: by 2002:a17:90b:1c11:b0:1e7:8bd2:697d with SMTP id
- oc17-20020a17090b1c1100b001e78bd2697dmr46489380pjb.90.1655858229485; Tue, 21
- Jun 2022 17:37:09 -0700 (PDT)
+        bh=R51V46L5H474iQWOx55vyXgPirIa+jsNedihdZg+XOY=;
+        b=C0WU/x5Y+hzzmnmf9wkDsYj93U+SC0lt1QyaVTtIRxjqJJhBm0dwgnLy7eKy6D7L8r
+         tU+T3sWY6r5IbZzxuJV5xH4vhEOolpi0fl9QwQCYDxhIZ2fO0l5kmhzEPQMUN4dxzlb3
+         1Wi4iJORyOeicCSolASqGthFdzpuZ84LHRYBN4OlMzXP/VbUFULbTU7AJUS0AXRxY3WL
+         PYX1nwFef2OFj3RX3mhqFTFt9wneb4zUk6yDnR7fi9J4lsD0j2OhsFJdzydAOXkAF/ik
+         nJYgcVZwZ0H6W086EtE+5f3TjpWuNQOWHwkeKcA6L2nqD3r1S6qlxcE2YMqFbK3o8mXO
+         QcHQ==
+X-Gm-Message-State: AJIora+yMW/UJIbWtDh3nrwUQcvdpuxbJcTbn4vc5eXP2CEKu89j4gjd
+        71P4U13yeOugWi4+HcDy8mWIz6x69CYB4/aDAIM=
+X-Google-Smtp-Source: AGRyM1uOKezLX8HGvp/NWDvOuCJk/zWag7uuR+HptNSwxoC+asFKPhBbfBJYfiyhjJPcUMSITSGW3G5PQDo5ARrsdAI=
+X-Received: by 2002:a62:388d:0:b0:525:138d:74ea with SMTP id
+ f135-20020a62388d000000b00525138d74eamr19118362pfa.19.1655859161552; Tue, 21
+ Jun 2022 17:52:41 -0700 (PDT)
 MIME-Version: 1.0
-References: <CAOMZO5D7z=Eg=WYgzrpqn9VoU8HxMeBbEZiv9KLjMVD1_kRo+w@mail.gmail.com>
- <20200701224145.GA3616172@bjorn-Precision-5520> <YrHPA+TBKZU/RuSz@smile.fi.intel.com>
- <87o7ym2fcv.wl-maz@kernel.org> <CAOMZO5B6606rwWoG-ydEz2UQpnj9QhUK2b5dCHRtp9u=Pe4new@mail.gmail.com>
- <128b8f7dffe45dc241ad571e8a273a2e@kernel.org>
-In-Reply-To: <128b8f7dffe45dc241ad571e8a273a2e@kernel.org>
-From:   Fabio Estevam <festevam@gmail.com>
-Date:   Tue, 21 Jun 2022 21:36:57 -0300
-Message-ID: <CAOMZO5DmKJia+6O_H3oUP64HQsaac3kDTOKx_UwG0tWJd1bsxw@mail.gmail.com>
-Subject: Re: mxs_lradc_ts: Warning due to "0 is an invalid IRQ number"
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        Marek Vasut <marex@denx.de>,
-        Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        linux-input@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
+References: <20220620124729.509745706@linuxfoundation.org>
+In-Reply-To: <20220620124729.509745706@linuxfoundation.org>
+From:   Zan Aziz <zanaziz313@gmail.com>
+Date:   Tue, 21 Jun 2022 18:52:30 -0600
+Message-ID: <CAFU3qoYJspD4xUVPU5Q2qNebXfQpw1=7uTc0fVg3SNEvMB_ewQ@mail.gmail.com>
+Subject: Re: [PATCH 5.18 000/141] 5.18.6-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Marc,
+On Tue, Jun 21, 2022 at 8:47 AM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 5.18.6 release.
+> There are 141 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Wed, 22 Jun 2022 12:47:02 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.6-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.18.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-On Tue, Jun 21, 2022 at 1:39 PM Marc Zyngier <maz@kernel.org> wrote:
+Hi Greg,
 
-> I'm not sure I can help you further on that. '10' seems to be
-> the correct interrupt for the interrupt number (irq index 0 in
-> the lradc device).
+Compiled and booted on my test system Lenovo P50s: Intel Core i7
+No emergency and critical messages in the dmesg
 
-As your proposed changes improve things (no more irq 0 warning is seen and the
-touchscreen irq is registered), please submit it formally, if you have a chance.
+./perf bench sched all
+# Running sched/messaging benchmark...
+# 20 sender and receiver processes per group
+# 10 groups == 400 processes run
 
-You can add:
+     Total time: 0.449 [sec]
 
-Tested-by: Fabio Estevam <festevam@gmail.com>
+# Running sched/pipe benchmark...
+# Executed 1000000 pipe operations between two processes
+
+     Total time: 10.870 [sec]
+
+      10.870600 usecs/op
+          91991 ops/sec
+
+Tested-by: Zan Aziz <zanaziz313@gmail.com>
+
+Thanks
+-Zan
