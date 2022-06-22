@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25989C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CB5BCCA47A
 	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 06:23:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350527AbiFVGXR (ORCPT
+        id S1350793AbiFVGXV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 02:23:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40616 "EHLO
+        Wed, 22 Jun 2022 02:23:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349856AbiFVGXA (ORCPT
+        with ESMTP id S1349863AbiFVGXA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 22 Jun 2022 02:23:00 -0400
 Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D88E55B0;
-        Tue, 21 Jun 2022 23:22:55 -0700 (PDT)
-X-UUID: 76fa46e451e5465b809a2311a8e95adc-20220622
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD7FC6571;
+        Tue, 21 Jun 2022 23:22:56 -0700 (PDT)
+X-UUID: eefc4b32c481428faedab42ad1740020-20220622
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.6,REQID:915b2812-44d5-49d4-b3b5-763d45cae09f,OB:0,LO
+X-CID-O-INFO: VERSION:1.1.6,REQID:b0d6894d-98fa-4e5c-87c2-de5516db2549,OB:0,LO
         B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
         ION:release,TS:-5
-X-CID-META: VersionHash:b14ad71,CLOUDID:f9c82fea-f7af-4e69-92ee-0fd74a0c286c,C
+X-CID-META: VersionHash:b14ad71,CLOUDID:ad4bb82d-1756-4fa3-be7f-474a6e4be921,C
         OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
         ,QS:nil,BEC:nil,COL:0
-X-UUID: 76fa46e451e5465b809a2311a8e95adc-20220622
+X-UUID: eefc4b32c481428faedab42ad1740020-20220622
 Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by mailgw01.mediatek.com
         (envelope-from <tinghan.shen@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 2090030197; Wed, 22 Jun 2022 14:22:48 +0800
+        with ESMTP id 1372695179; Wed, 22 Jun 2022 14:22:48 +0800
 Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
  mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Wed, 22 Jun 2022 14:22:48 +0800
+ 15.2.792.15; Wed, 22 Jun 2022 14:22:47 +0800
 Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
  mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 22 Jun 2022 14:22:47 +0800
+ 15.0.1497.2; Wed, 22 Jun 2022 14:22:46 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
  mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Wed, 22 Jun 2022 14:22:47 +0800
+ 15.2.792.3 via Frontend Transport; Wed, 22 Jun 2022 14:22:46 +0800
 From:   Tinghan Shen <tinghan.shen@mediatek.com>
 To:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
@@ -64,12 +64,10 @@ CC:     <devicetree@vger.kernel.org>,
         <sound-open-firmware@alsa-project.org>,
         <alsa-devel@alsa-project.org>,
         <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Subject: [PATCH v4 4/4] ASoC: SOF: mediatek: Align mt8186 clock names with dt-bindings
-Date:   Wed, 22 Jun 2022 14:22:45 +0800
-Message-ID: <20220622062245.21021-5-tinghan.shen@mediatek.com>
+Subject: [PATCH v4 0/4] Add MT8186 ADSP dt-binding
+Date:   Wed, 22 Jun 2022 14:22:41 +0800
+Message-ID: <20220622062245.21021-1-tinghan.shen@mediatek.com>
 X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220622062245.21021-1-tinghan.shen@mediatek.com>
-References: <20220622062245.21021-1-tinghan.shen@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-MTK:  N
@@ -77,28 +75,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Align clock names in mt8186 dsp driver with dt-bindings.
+v3 -> v4:
+1. Update commit message of patch 1/4
+2. Add review tag to path 3/4
 
-Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
----
- sound/soc/sof/mediatek/mt8186/mt8186-clk.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+v2 -> v3:
+1. Change mbox-names to rx/tx for both mt8186 and mt8195.
+2. Update description of mbox-names
+3. Use static string array instead of kasprintf
+4. Align clock names in dsp driver with dt-bindings
 
-diff --git a/sound/soc/sof/mediatek/mt8186/mt8186-clk.c b/sound/soc/sof/mediatek/mt8186/mt8186-clk.c
-index 22220fd50b62..2df3b7ae1c6f 100644
---- a/sound/soc/sof/mediatek/mt8186/mt8186-clk.c
-+++ b/sound/soc/sof/mediatek/mt8186/mt8186-clk.c
-@@ -18,8 +18,8 @@
- #include "mt8186-clk.h"
- 
- static const char *adsp_clks[ADSP_CLK_MAX] = {
--	[CLK_TOP_AUDIODSP] = "audiodsp_sel",
--	[CLK_TOP_ADSP_BUS] = "adsp_bus_sel",
-+	[CLK_TOP_AUDIODSP] = "audiodsp",
-+	[CLK_TOP_ADSP_BUS] = "adsp_bus",
- };
- 
- int mt8186_adsp_init_clock(struct snd_sof_dev *sdev)
+v1 -> v2:
+1. Change mbox-names from mbox0/mbox1 to rep/req for both mt8186 and mt8195.
+2. rename clock-names and remove unused headers
+
+Tinghan Shen (4):
+  dt-bindings: dsp: mediatek: Use meaningful names for mbox
+  firmware: mediatek: Use meaningful names for mbox
+  dt-bindings: dsp: mediatek: Add mt8186 dsp document
+  ASoC: SOF: mediatek: Align mt8186 clock names with dt-bindings
+
+ .../bindings/dsp/mediatek,mt8186-dsp.yaml     | 91 +++++++++++++++++++
+ .../bindings/dsp/mediatek,mt8195-dsp.yaml     | 10 +-
+ drivers/firmware/mtk-adsp-ipc.c               | 36 +++-----
+ sound/soc/sof/mediatek/mt8186/mt8186-clk.c    |  4 +-
+ 4 files changed, 110 insertions(+), 31 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/dsp/mediatek,mt8186-dsp.yaml
+
 -- 
 2.18.0
 
