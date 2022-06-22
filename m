@@ -2,124 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 683BAC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 16:51:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0704EC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 16:51:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376679AbiFVQvR (ORCPT
+        id S1377044AbiFVQv4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 12:51:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52358 "EHLO
+        Wed, 22 Jun 2022 12:51:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376969AbiFVQu6 (ORCPT
+        with ESMTP id S1376887AbiFVQvo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 12:50:58 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A39E240E6C
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 09:48:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655916534;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=TsYvcK94CLyN19FcLWL9j2fJcEng9VRlusxpm2EaQ78=;
-        b=WAe5WC8Ss0uGQ529/aXFS/VwS1vkNREv/X6kwDsbFKlRKsROwKTSMZHtkndbvwbE89d3YY
-        DXxdKylfX601q9RId79wkPkLS51ITwd/o4VIgCPIjPfaX5FcipfMHlWQunPBavzb/O31y2
-        c8dMS7kuPTbEcgmWc6RLWyzVrPseE9Q=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-395-JHkSljF_Ow-FMzSp83KpYA-1; Wed, 22 Jun 2022 12:48:53 -0400
-X-MC-Unique: JHkSljF_Ow-FMzSp83KpYA-1
-Received: by mail-wm1-f69.google.com with SMTP id 2-20020a1c0202000000b0039c94528746so88079wmc.6
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 09:48:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=TsYvcK94CLyN19FcLWL9j2fJcEng9VRlusxpm2EaQ78=;
-        b=O1MJrGlkcvA+3lX8qQRZq/9jYZ3Y82vJcXzrqlL885V04GxokQcxvD9vpceMod0x6m
-         ZJbnW2xaNHIaVwtoy5GownhQTyBndD0Fq+wOd56mW//qlPiyqNTWrJpoht8K45prUfIM
-         VWsY6JDIGyvMsc0t0wFCzbM7+GjbxIrm7UUyOKnycOKdqwa8STp9C2P/I+2rir9f+UPX
-         AIU8FwRpUMVucj2PRoqI50UQZQkWYCRAz/Up/O1wsInW4P82NWWEriidimBAzaaLowr4
-         7Nzb+CR5sI9nfTvyQqbdbpVZWw90AZH56bpmAmPO4QYIfSFIxPHekiF+27XHdFhWF8d+
-         caWQ==
-X-Gm-Message-State: AJIora+io14v2UQCfDObKSofk3ctXUMYk+avR3SAql4lJ7AKyMi/We0M
-        s2zba+2VpRlVzHJYqB4ANdgFgqtyezDXwZMmJ3oKV74P7rFAt+opcMEP6/4AIf/nW3lojz4WoMG
-        nToOJUwd1MSY+cJcX6YUhzK6pTLL6qwQMyB1KkEcqRorY2QJmEwheh6RUxLT1suAm2X+nvMTb9u
-        BP
-X-Received: by 2002:a5d:5c07:0:b0:218:544d:4347 with SMTP id cc7-20020a5d5c07000000b00218544d4347mr4097204wrb.107.1655916532400;
-        Wed, 22 Jun 2022 09:48:52 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tD1Omp9j7WboyJvnAdKjQwHzBIA8+iFDuEPk56mpyiXFlUxOwd48frZ+hMc7f+XKqs0+sxRQ==
-X-Received: by 2002:a5d:5c07:0:b0:218:544d:4347 with SMTP id cc7-20020a5d5c07000000b00218544d4347mr4097165wrb.107.1655916532057;
-        Wed, 22 Jun 2022 09:48:52 -0700 (PDT)
-Received: from fedora (nat-2.ign.cz. [91.219.240.2])
-        by smtp.gmail.com with ESMTPSA id f14-20020a5d50ce000000b0021b9a4a75e2sm5100297wrt.30.2022.06.22.09.48.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jun 2022 09:48:51 -0700 (PDT)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Ilias Stamatis <ilstam@amazon.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>, mail@anirudhrb.com,
-        kumarpraveen@linux.microsoft.com, wei.liu@kernel.org,
-        robert.bradford@intel.com, liuwe@microsoft.com,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] KVM: nVMX: Don't expose TSC scaling to L1 when on Hyper-V
-In-Reply-To: <YrNBHFLzAgcsw19O@anrayabh-desk>
-References: <20220613161611.3567556-1-anrayabh@linux.microsoft.com>
- <592ab920-51f3-4794-331f-8737e1f5b20a@redhat.com>
- <YqdsjW4/zsYaJahf@google.com> <YqipLpHI24NdhgJO@anrayabh-desk>
- <YqiwoOP4HX2LniI4@google.com> <87zgi5xh42.fsf@redhat.com>
- <YrMenI1mTbqA9MaR@anrayabh-desk> <87r13gyde8.fsf@redhat.com>
- <YrNBHFLzAgcsw19O@anrayabh-desk>
-Date:   Wed, 22 Jun 2022 18:48:50 +0200
-Message-ID: <87k098y77x.fsf@redhat.com>
+        Wed, 22 Jun 2022 12:51:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBD7141F82;
+        Wed, 22 Jun 2022 09:49:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 464E3B82054;
+        Wed, 22 Jun 2022 16:49:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0240EC34114;
+        Wed, 22 Jun 2022 16:49:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655916569;
+        bh=mI4MDyHEMxaSG34Hj/fZrqohmQwQNM49s78s/LON24U=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=M3J1USxUtGI/7fujk6bsFc6vvzcgJ4Z9zigigTXeZZnMKi4mFcVXFlczuWFcF88M0
+         O2ypyx3yfoPAPxXHFvJg+LXU9muZXYtkkCwfmNhvpvEmaRW2WbdYlUjhVRj9IPSNqu
+         iBnNRmI7IHcWWR5L3kYzyJ8sQ2efKPTVIX8uN8aBIoOhuBZJnao0kMZ52Gx5FeEfkQ
+         0QXmkk0vdQ7Yms9QT22CFikwHd6AYYdwfMqrcWqiBEGeMwkOz8mKTfZoVbxOG8vMNA
+         T5cgKGab/XisfZBcfQKT9tGlZ3LrspUMcDUZfGnI/X4UcTSPl1IeAeGKX4DTPBLf3e
+         cyRwFss2D8ecQ==
+Date:   Wed, 22 Jun 2022 09:49:28 -0700
+From:   "Darrick J. Wong" <djwong@kernel.org>
+To:     Shiyang Ruan <ruansy.fnst@fujitsu.com>
+Cc:     linux-kernel@vger.kernel.org, linux-xfs@vger.kernel.org,
+        nvdimm@lists.linux.dev, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, dan.j.williams@intel.com,
+        david@fromorbit.com, hch@infradead.org, jane.chu@oracle.com
+Subject: Re: [RFC PATCH v3] mm, pmem, xfs: Introduce MF_MEM_REMOVE for unbind
+Message-ID: <YrNIGGBK7/cztV8c@magnolia>
+References: <20220410171623.3788004-1-ruansy.fnst@fujitsu.com>
+ <20220615125400.880067-1-ruansy.fnst@fujitsu.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220615125400.880067-1-ruansy.fnst@fujitsu.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Anirudh Rayabharam <anrayabh@linux.microsoft.com> writes:
+On Wed, Jun 15, 2022 at 08:54:00PM +0800, Shiyang Ruan wrote:
+> This patch is inspired by Dan's "mm, dax, pmem: Introduce
+> dev_pagemap_failure()"[1].  With the help of dax_holder and
+> ->notify_failure() mechanism, the pmem driver is able to ask filesystem
+> (or mapped device) on it to unmap all files in use and notify processes
+> who are using those files.
+> 
+> Call trace:
+> trigger unbind
+>  -> unbind_store()
+>   -> ... (skip)
+>    -> devres_release_all()   # was pmem driver ->remove() in v1
+>     -> kill_dax()
+>      -> dax_holder_notify_failure(dax_dev, 0, U64_MAX, MF_MEM_REMOVE)
+>       -> xfs_dax_notify_failure()
+> 
+> Introduce MF_MEM_REMOVE to let filesystem know this is a remove event.
+> So do not shutdown filesystem directly if something not supported, or if
+> failure range includes metadata area.  Make sure all files and processes
+> are handled correctly.
+> 
+> [1]: https://lore.kernel.org/linux-mm/161604050314.1463742.14151665140035795571.stgit@dwillia2-desk3.amr.corp.intel.com/
+> 
+> Signed-off-by: Shiyang Ruan <ruansy.fnst@fujitsu.com>
+> 
+> ==
+> Changes since v2:
+>   1. Rebased on next-20220615
+> 
+> Changes since v1:
+>   1. Drop the needless change of moving {kill,put}_dax()
+>   2. Rebased on '[PATCHSETS] v14 fsdax-rmap + v11 fsdax-reflink'[2]
+> 
+> ---
+>  drivers/dax/super.c         | 2 +-
+>  fs/xfs/xfs_notify_failure.c | 6 +++++-
+>  include/linux/mm.h          | 1 +
+>  3 files changed, 7 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/dax/super.c b/drivers/dax/super.c
+> index 9b5e2a5eb0ae..d4bc83159d46 100644
+> --- a/drivers/dax/super.c
+> +++ b/drivers/dax/super.c
+> @@ -323,7 +323,7 @@ void kill_dax(struct dax_device *dax_dev)
+>  		return;
+>  
+>  	if (dax_dev->holder_data != NULL)
+> -		dax_holder_notify_failure(dax_dev, 0, U64_MAX, 0);
+> +		dax_holder_notify_failure(dax_dev, 0, U64_MAX, MF_MEM_REMOVE);
 
-> On Wed, Jun 22, 2022 at 04:35:27PM +0200, Vitaly Kuznetsov wrote:
+At the point we're initiating a MEM_REMOVE call, is the pmem already
+gone, or is it about to be gone?
 
-...
+>  
+>  	clear_bit(DAXDEV_ALIVE, &dax_dev->flags);
+>  	synchronize_srcu(&dax_srcu);
+> diff --git a/fs/xfs/xfs_notify_failure.c b/fs/xfs/xfs_notify_failure.c
+> index aa8dc27c599c..91d3f05d4241 100644
+> --- a/fs/xfs/xfs_notify_failure.c
+> +++ b/fs/xfs/xfs_notify_failure.c
+> @@ -73,7 +73,9 @@ xfs_dax_failure_fn(
+>  	struct failure_info		*notify = data;
+>  	int				error = 0;
+>  
+> -	if (XFS_RMAP_NON_INODE_OWNER(rec->rm_owner) ||
+> +	/* Do not shutdown so early when device is to be removed */
+> +	if (!(notify->mf_flags & MF_MEM_REMOVE) ||
+> +	    XFS_RMAP_NON_INODE_OWNER(rec->rm_owner) ||
+>  	    (rec->rm_flags & (XFS_RMAP_ATTR_FORK | XFS_RMAP_BMBT_BLOCK))) {
+>  		xfs_force_shutdown(mp, SHUTDOWN_CORRUPT_ONDISK);
+>  		return -EFSCORRUPTED;
+> @@ -182,6 +184,8 @@ xfs_dax_notify_failure(
+>  
+>  	if (mp->m_logdev_targp && mp->m_logdev_targp->bt_daxdev == dax_dev &&
+>  	    mp->m_logdev_targp != mp->m_ddev_targp) {
+> +		if (mf_flags & MF_MEM_REMOVE)
+> +			return -EOPNOTSUPP;
 
->> 
->> I've tried to pick it up but it's actually much harder than I think. The
->> patch has some minor issues ('&vmcs_config.nested' needs to be switched
->> to '&vmcs_conf->nested' in nested_vmx_setup_ctls_msrs()), but the main
->> problem is that the set of controls nested_vmx_setup_ctls_msrs() needs
->> is NOT a subset of vmcs_config (setup_vmcs_config()). I was able to
->> identify at least:
+The reason I ask is that if the pmem is *about to be* but not yet
+removed from the system, shouldn't we at least try to flush all dirty
+files and the log to reduce data loss and minimize recovery time?
 
-...
+If it's already gone, then you might as well shut down immediately,
+unless there's a chance the pmem will come back(?)
 
-I've jsut sent "[PATCH RFC v1 00/10] KVM: nVMX: Use vmcs_config for
-setting up nested VMX MSRs" which implements Sean's suggestion. Hope
-this is the way to go for mainline.
+--D
 
->
-> How about we do something simple like the patch below to start with?
-> This will easily apply to stable and we can continue improving upon
-> it with follow up patches on mainline.
->
-
-Personally, I'm not against this for @stable. Alternatively, in case the
-only observed issue is with TSC scaling, we can add support for it for
-KVM-on-Hyper-V but not for Hyper-V-on-KVM (a small subset of "[PATCH
-00/11] KVM: VMX: Support TscScaling and EnclsExitingBitmap whith
-eVMCS"). I can prepare patches if needed.
-
--- 
-Vitaly
-
+>  		xfs_err(mp, "ondisk log corrupt, shutting down fs!");
+>  		xfs_force_shutdown(mp, SHUTDOWN_CORRUPT_ONDISK);
+>  		return -EFSCORRUPTED;
+> diff --git a/include/linux/mm.h b/include/linux/mm.h
+> index 623c2ee8330a..bbeb31883362 100644
+> --- a/include/linux/mm.h
+> +++ b/include/linux/mm.h
+> @@ -3249,6 +3249,7 @@ enum mf_flags {
+>  	MF_SOFT_OFFLINE = 1 << 3,
+>  	MF_UNPOISON = 1 << 4,
+>  	MF_NO_RETRY = 1 << 5,
+> +	MF_MEM_REMOVE = 1 << 6,
+>  };
+>  int mf_dax_kill_procs(struct address_space *mapping, pgoff_t index,
+>  		      unsigned long count, int mf_flags);
+> -- 
+> 2.36.1
+> 
+> 
+> 
