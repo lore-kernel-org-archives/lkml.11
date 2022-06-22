@@ -2,214 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCCFEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 14:49:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFA68C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 14:49:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358135AbiFVOtY (ORCPT
+        id S1358747AbiFVOtb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 10:49:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47118 "EHLO
+        Wed, 22 Jun 2022 10:49:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357667AbiFVOtF (ORCPT
+        with ESMTP id S1357824AbiFVOtF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 22 Jun 2022 10:49:05 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7E6383DDFA
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 07:49:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655909342;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=EfBoGV8G1t/ZFoRqhI564VYHfItzSstPW0YccRoMmqE=;
-        b=gGkmRwc7S5JeWPG6b9t0oHgT+5KhKeybsUAKD54WPNBOW12En1UamM5cMNgQ/t56V08XyV
-        5Ozn8UX77Ii3Q6AjFzvCH9OSRUiktF9SWRBjvS34RKWeNqiP8VPL1xt2UcZCIvD3YfJEMr
-        uZ3xGmznM1ZzqeE3TV1h79j79eUoAsQ=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-323-q1hoiWDCP5afXOn50jXiQA-1; Wed, 22 Jun 2022 10:48:58 -0400
-X-MC-Unique: q1hoiWDCP5afXOn50jXiQA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3FB1482406B;
-        Wed, 22 Jun 2022 14:48:45 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.40.194.180])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2199240D2962;
-        Wed, 22 Jun 2022 14:48:39 +0000 (UTC)
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     "Chang S. Bae" <chang.seok.bae@intel.com>,
-        Jiri Olsa <jolsa@kernel.org>, linux-perf-users@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Borislav Petkov <bp@alien8.de>,
-        Kees Cook <keescook@chromium.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Tim Chen <tim.c.chen@linux.intel.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        x86@kernel.org (maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)),
-        Jane Malalane <jane.malalane@citrix.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        linux-crypto@vger.kernel.org (open list:CRYPTO API),
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 3/4] x86/cpuid: move filter_cpuid_features to cpuid-deps.c
-Date:   Wed, 22 Jun 2022 17:48:19 +0300
-Message-Id: <20220622144820.751402-4-mlevitsk@redhat.com>
-In-Reply-To: <20220622144820.751402-1-mlevitsk@redhat.com>
-References: <20220622144820.751402-1-mlevitsk@redhat.com>
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A59E53A721;
+        Wed, 22 Jun 2022 07:49:04 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id eq6so16913301edb.6;
+        Wed, 22 Jun 2022 07:49:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RD2cwjPA5P2jV8EBzP33SAlDW2zeqBVaGNd3Sjigp2Y=;
+        b=ee5vFxzvKjc5YEyWXafj95MWK8o1oWYdAX8MXuFXxdzbtzcBhae53uyR7q8EtVI30T
+         GDfltGkWi7qf0tKg76c6Q7mXhmHkW1Xi6DwcbQ9LvHd9RVH7CJGhI+CmvLygVUU3bV2C
+         +SlJJhsegUMn9KpncxIbO3yFJgzlO8u8dSPqRGOUn347ldUrNYwlxBysOAl8Z3bmwb3B
+         +UvusYMqbrW9DH+P/CUSKx5xgEkGaQkd3IKcarf6pS8PIeh+sYKaZ+VSTZvHxPuGGXOx
+         qXiMIKIjsfHm2zpSCTVW0l7E9CTsarbCidmGQCHOmYKN8+dnBmgzATxxACHnl4l0VeIA
+         cf2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RD2cwjPA5P2jV8EBzP33SAlDW2zeqBVaGNd3Sjigp2Y=;
+        b=vLMO/AFBVG84Oi9saFuL/tzbNtlxOkqudJE/kc48hFV8z1hnCiydnfSFCZrmE8Zok7
+         IEPUtMyMQiXuyTXgUAlwQfcoqcODSGzXQNHui1O4QpOc3/6r83lJdoON20wdeLLoC7J5
+         3H+D4LCVlGKcfmja+JwTS0Qo3pucz7lu8btw2yuWP+D1mX+fOGdr76Qw7uDYCMKTHeFE
+         5+t94SJz1+/GPsZxwK7dhBbQU6+fIg3vblEXa4Dm7349TeJADtZhNYtRbqQKZOE6hcGA
+         rSDVRNTpncxpm7kFhkjU4IhCuOdrZVfBKa9tLhwDvjYoGFHW1WUe353s+SThL8hy+g5w
+         Fcsw==
+X-Gm-Message-State: AJIora9Xffz9sIToT6l+TFfiEkWNLSfFdAy5NOzZ0dYrej311aRZuj8D
+        EYUptAjA0nXTAHQDJzNGoqYugsEGuJt3s+t5Cig=
+X-Google-Smtp-Source: AGRyM1uqmSsaIA95pJYmjAXkOfrm5ik10/xwWeSmX+s73UTm8EvbEqaAgigYRv3jJjGRaLteSH2hfFdbVl+nvtUfnpE=
+X-Received: by 2002:a05:6402:158e:b0:435:7d0f:ac85 with SMTP id
+ c14-20020a056402158e00b004357d0fac85mr4436400edv.93.1655909342730; Wed, 22
+ Jun 2022 07:49:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+References: <20220603144315.5adcddbf@canb.auug.org.au> <20220615150013.30c9d7ad@canb.auug.org.au>
+ <20220621181551.5eb294f5@canb.auug.org.au> <CADnq5_OxNm9EwLDXishu+pMfT2mgOSTvkmgSm+cm98JiCsiJog@mail.gmail.com>
+ <20220622080726.39cbeb14@canb.auug.org.au>
+In-Reply-To: <20220622080726.39cbeb14@canb.auug.org.au>
+From:   Alex Deucher <alexdeucher@gmail.com>
+Date:   Wed, 22 Jun 2022 10:48:50 -0400
+Message-ID: <CADnq5_MZ1HqM3C49MNn=4+nufbWOQbQhDtVpAeqtKzKOC+e1ew@mail.gmail.com>
+Subject: Re: linux-next: build failure after merge of the amdgpu tree
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Aurabindo Pillai <aurabindo.pillai@amd.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Dave Airlie <airlied@linux.ie>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-No functional change intended.
+On Tue, Jun 21, 2022 at 6:07 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+>
+> Hi Alex,
+>
+> On Tue, 21 Jun 2022 11:02:30 -0400 Alex Deucher <alexdeucher@gmail.com> wrote:
+> >
+> > On Tue, Jun 21, 2022 at 4:15 AM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+> > >
+> > > On Wed, 15 Jun 2022 15:00:13 +1000 Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+> > > >
+> > > > On Fri, 3 Jun 2022 14:43:15 +1000 Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+> > > > >
+> > > > > After merging the amdgpu tree, today's linux-next build (powerpc
+> > > > > allyesconfig) failed like this:
+> > > > >
+> > > > > drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn32/display_mode_vba_32.c: In function 'dml32_ModeSupportAndSystemConfigurationFull':
+> > > > > drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn32/display_mode_vba_32.c:3835:1: error: the frame size of 2752 bytes is larger than 2048 bytes [-Werror=frame-larger-than=]
+> > > > >  3835 | } // ModeSupportAndSystemConfigurationFull
+> > > > >       | ^
+> > > > > cc1: all warnings being treated as errors
+> > > >
+> > > > I am still getting the above failure.
+> > >
+> > > I am still getting the above failure ... it has now been 19 days :-(
+> >
+> > Is it still the same error or something else?  I thought this was
+> > fixed in this patch:
+> > https://gitlab.freedesktop.org/agd5f/linux/-/commit/d6aa8424bcac64b2608452589c9a09984251c01c
+>
+> Here is the message I got yesterday:
+>
+> drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn32/display_mode_vba_32.c: In function 'dml32_ModeSupportAndSystemConfigurationFull':
+> drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn32/display_mode_vba_32.c:3833:1: error: the frame size of 2720 bytes is larger than 2048 bytes [-Werror=frame-larger-than=]
+>  3833 | } // ModeSupportAndSystemConfigurationFull
+>       | ^
+>
 
-Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
----
- arch/x86/include/asm/cpufeature.h |  1 +
- arch/x86/kernel/cpu/common.c      | 46 -----------------------------
- arch/x86/kernel/cpu/cpuid-deps.c  | 48 +++++++++++++++++++++++++++++++
- 3 files changed, 49 insertions(+), 46 deletions(-)
+Thanks.  I think I fixed it.  Patch sent out.
 
-diff --git a/arch/x86/include/asm/cpufeature.h b/arch/x86/include/asm/cpufeature.h
-index ea34cc31b0474f..3eb5fe0d654e63 100644
---- a/arch/x86/include/asm/cpufeature.h
-+++ b/arch/x86/include/asm/cpufeature.h
-@@ -147,6 +147,7 @@ extern const char * const x86_bug_flags[NBUGINTS*32];
- 
- extern void setup_clear_cpu_cap(unsigned int bit);
- extern void clear_cpu_cap(struct cpuinfo_x86 *c, unsigned int bit);
-+extern void filter_cpuid_features(struct cpuinfo_x86 *c, bool warn);
- 
- #define setup_force_cpu_cap(bit) do { \
- 	set_cpu_cap(&boot_cpu_data, bit);	\
-diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 4730b0a58f24a5..4cc79971d2d847 100644
---- a/arch/x86/kernel/cpu/common.c
-+++ b/arch/x86/kernel/cpu/common.c
-@@ -620,52 +620,6 @@ __noendbr void cet_disable(void)
- 		wrmsrl(MSR_IA32_S_CET, 0);
- }
- 
--/*
-- * Some CPU features depend on higher CPUID levels, which may not always
-- * be available due to CPUID level capping or broken virtualization
-- * software.  Add those features to this table to auto-disable them.
-- */
--struct cpuid_dependent_feature {
--	u32 feature;
--	u32 level;
--};
--
--static const struct cpuid_dependent_feature
--cpuid_dependent_features[] = {
--	{ X86_FEATURE_MWAIT,		0x00000005 },
--	{ X86_FEATURE_DCA,		0x00000009 },
--	{ X86_FEATURE_XSAVE,		0x0000000d },
--	{ 0, 0 }
--};
--
--static void filter_cpuid_features(struct cpuinfo_x86 *c, bool warn)
--{
--	const struct cpuid_dependent_feature *df;
--
--	for (df = cpuid_dependent_features; df->feature; df++) {
--
--		if (!cpu_has(c, df->feature))
--			continue;
--		/*
--		 * Note: cpuid_level is set to -1 if unavailable, but
--		 * extended_extended_level is set to 0 if unavailable
--		 * and the legitimate extended levels are all negative
--		 * when signed; hence the weird messing around with
--		 * signs here...
--		 */
--		if (!((s32)df->level < 0 ?
--		     (u32)df->level > (u32)c->extended_cpuid_level :
--		     (s32)df->level > (s32)c->cpuid_level))
--			continue;
--
--		clear_cpu_cap(c, df->feature);
--		if (!warn)
--			continue;
--
--		pr_warn("CPU: CPU feature " X86_CAP_FMT " disabled, no CPUID level 0x%x\n",
--			x86_cap_flag(df->feature), df->level);
--	}
--}
- 
- /*
-  * Naming convention should be: <Name> [(<Codename>)]
-diff --git a/arch/x86/kernel/cpu/cpuid-deps.c b/arch/x86/kernel/cpu/cpuid-deps.c
-index d6777d07ba3302..bcb091d02a754b 100644
---- a/arch/x86/kernel/cpu/cpuid-deps.c
-+++ b/arch/x86/kernel/cpu/cpuid-deps.c
-@@ -131,3 +131,51 @@ void setup_clear_cpu_cap(unsigned int feature)
- {
- 	clear_cpu_cap(&boot_cpu_data, feature);
- }
-+
-+
-+/*
-+ * Some CPU features depend on higher CPUID levels, which may not always
-+ * be available due to CPUID level capping or broken virtualization
-+ * software.  Add those features to this table to auto-disable them.
-+ */
-+struct cpuid_dependent_feature {
-+	u32 feature;
-+	u32 level;
-+};
-+
-+static const struct cpuid_dependent_feature
-+cpuid_dependent_features[] = {
-+	{ X86_FEATURE_MWAIT,		0x00000005 },
-+	{ X86_FEATURE_DCA,		0x00000009 },
-+	{ X86_FEATURE_XSAVE,		0x0000000d },
-+	{ 0, 0 }
-+};
-+
-+void filter_cpuid_features(struct cpuinfo_x86 *c, bool warn)
-+{
-+	const struct cpuid_dependent_feature *df;
-+
-+	for (df = cpuid_dependent_features; df->feature; df++) {
-+
-+		if (!cpu_has(c, df->feature))
-+			continue;
-+		/*
-+		 * Note: cpuid_level is set to -1 if unavailable, but
-+		 * extended_extended_level is set to 0 if unavailable
-+		 * and the legitimate extended levels are all negative
-+		 * when signed; hence the weird messing around with
-+		 * signs here...
-+		 */
-+		if (!((s32)df->level < 0 ?
-+		     (u32)df->level > (u32)c->extended_cpuid_level :
-+		     (s32)df->level > (s32)c->cpuid_level))
-+			continue;
-+
-+		clear_cpu_cap(c, df->feature);
-+		if (!warn)
-+			continue;
-+
-+		pr_warn("CPU: CPU feature " X86_CAP_FMT " disabled, no CPUID level 0x%x\n",
-+			x86_cap_flag(df->feature), df->level);
-+	}
-+}
--- 
-2.26.3
+Alex
 
+> --
+> Cheers,
+> Stephen Rothwell
