@@ -2,83 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85C73C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 16:14:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8D26C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 16:14:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376542AbiFVQOB (ORCPT
+        id S1357891AbiFVQOE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 12:14:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49962 "EHLO
+        Wed, 22 Jun 2022 12:14:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376484AbiFVQNi (ORCPT
+        with ESMTP id S232464AbiFVQN4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 12:13:38 -0400
-Received: from mail-pf1-f179.google.com (mail-pf1-f179.google.com [209.85.210.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9D98558A;
-        Wed, 22 Jun 2022 09:13:37 -0700 (PDT)
-Received: by mail-pf1-f179.google.com with SMTP id bo5so16532172pfb.4;
-        Wed, 22 Jun 2022 09:13:37 -0700 (PDT)
+        Wed, 22 Jun 2022 12:13:56 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C029BC2B;
+        Wed, 22 Jun 2022 09:13:55 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id c13so20139110eds.10;
+        Wed, 22 Jun 2022 09:13:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=zAlPejfAQCxvtnqb2e7esLuuwfx9+dbQueVecsqGTnM=;
+        b=AdqVL1fn2Nch6BaslzUJtV1cx1jD3oDKzhYBdgH8XXPW7Xs/yUzclctxexMRz0ye4m
+         T4+zMvA3dqhGFEjOGUt9HGdpRfluYH924o4KUB1E2cWq+dT54Ne3JHFOTX6SO6w+CZON
+         AFuUf90TWAAUW8S5ikQSQGJOLKHpqK33JV3nGHGYQ6L99vxL1sm1tvNwI5C4SZH8hDoK
+         Db+DsfftmTHV892LT4/7ELlpP81nPbF8nswVSGRlA+CYsHX2gLoNierd43ChQUymGQjU
+         8TTSXbYUMUmsfdb9oPormsYfVOavoi+HSqm6J2YvwZhjY/dCf44ObHmrTFNQXSpNTp4u
+         /Gjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=S2jhIeXdGyhsiNAkiJgx9x78yRr8VBpBDdHMTG3XHaA=;
-        b=Ys+5ZvfmzYQfVrtCi2DdbsgyII+nSiyjrrJX8tjLOJ5bjC3fSz74EiRtw21GDhRQ3y
-         AZ8jiqFg4sArOxJ8SipLwUSlw3u1D17LTd3Qk00RJ0TBvwOYbC6cTOtISY+bhOXCC1bf
-         sDoBMHO6bKNWiJMiN3gHeJ+9RJ6NZnA95oS+67tAHBHLQFhlAW2cNkUNDPQ7XAujVwzt
-         r0rwlbhuxtg8NnkmK5Bn1v2PTx+iwaMytVsUJTV4R5zHsLFyPBgQXt77BR3TJ91exIXF
-         lCDVzFcNPxdG/YayFiJwCq7v1404zzJ6sCa+a06DTR2lrJBIZmxz15WlsHA0EcfaIpv0
-         th7A==
-X-Gm-Message-State: AJIora+6fy7633vmSuxTmQ7Zk9wPADyZDPtQxEOpr9qJStbDkGnftBKF
-        Cijvh3ohMVIKGUAqe4+/xv8=
-X-Google-Smtp-Source: AGRyM1vULlnlPydLSyouvDySqwWWsXOixTjXSVSgWJA/c/WhK9kFLli2e0KsR/ZaAeJYJW3xcJ3jnw==
-X-Received: by 2002:a63:7a51:0:b0:40c:f874:1b46 with SMTP id j17-20020a637a51000000b0040cf8741b46mr3618730pgn.90.1655914417156;
-        Wed, 22 Jun 2022 09:13:37 -0700 (PDT)
-Received: from ?IPV6:2620:15c:211:201:9497:eb13:222f:4e4d? ([2620:15c:211:201:9497:eb13:222f:4e4d])
-        by smtp.gmail.com with ESMTPSA id d4-20020a170902e14400b001637997d0d4sm12844691pla.206.2022.06.22.09.13.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Jun 2022 09:13:36 -0700 (PDT)
-Message-ID: <08544601-3364-0352-415f-2e3576b84976@acm.org>
-Date:   Wed, 22 Jun 2022 09:13:35 -0700
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=zAlPejfAQCxvtnqb2e7esLuuwfx9+dbQueVecsqGTnM=;
+        b=h5FeQ9dyR8lopkLbEDyoXUVw96u6d3hTTbZW5O5SjX9XrxgNoGuLG/jK599pypY1gM
+         d3IUXimy5XgFtIonXoF9ZwrqruGwWbYBEiqfMr2ACnHwGqZE9cz2MuWd8uGVtEaHHfQ4
+         sk8+rv2AGd7ZvJ1+6pFRqIOTlWDunCwpi6cbgcium2A4GETs9YP49UWGDuZdi4y36PHp
+         ky6IRzIhUZ4Pt3rYTCvyfle8zXl0KaUCLu2aQk+UCXYrlJli64Kqk3jL7XBtj50Z2grM
+         4AgHMmQJqqzHbQY9B9BjZbSkqj8Ykx/xw8zhrzWZl9aGqKs2w6GaFw6xTzDjl4sTHjZr
+         SCTA==
+X-Gm-Message-State: AJIora+siqiFyVrIxBN4Lztx8kc0mZy2OEFAUFVb3WbC3Wgq24zjdEBp
+        MxOaUbrYkYXylcpRt7OXRlw=
+X-Google-Smtp-Source: AGRyM1tUeZKhkR6l8vLpmW0F9+thSOWMhMCzrTst6cJhHntejTBuoEAhk0TNhif3zETWLXT4QGdt1A==
+X-Received: by 2002:a05:6402:2750:b0:435:ab9f:1235 with SMTP id z16-20020a056402275000b00435ab9f1235mr4972683edd.188.1655914435429;
+        Wed, 22 Jun 2022 09:13:55 -0700 (PDT)
+Received: from localhost.localdomain ([185.107.95.225])
+        by smtp.gmail.com with ESMTPSA id sd14-20020a1709076e0e00b007072dc80e06sm9576036ejc.190.2022.06.22.09.13.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jun 2022 09:13:55 -0700 (PDT)
+From:   Yassine Oudjana <yassine.oudjana@gmail.com>
+X-Google-Original-From: Yassine Oudjana <y.oudjana@protonmail.com>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Banajit Goswami <bgoswami@quicinc.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
+Cc:     Yassine Oudjana <y.oudjana@protonmail.com>,
+        Yassine Oudjana <yassine.oudjana@gmail.com>,
+        devicetree@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-arm-msm@vger.kernel.org, phone-devel@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v2 1/3] ASoC: dt-bindings: Add bindings for WCD9335 DAIs
+Date:   Wed, 22 Jun 2022 20:13:20 +0400
+Message-Id: <20220622161322.168017-2-y.oudjana@protonmail.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220622161322.168017-1-y.oudjana@protonmail.com>
+References: <20220622161322.168017-1-y.oudjana@protonmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v3 3/3] scsi: ufs: ufshcd: constify pointed data
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Avri Altman <avri.altman@wdc.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Doug Gilbert <dgilbert@interlog.com>,
-        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-ide@vger.kernel.org
-References: <20220613100655.105301-1-krzysztof.kozlowski@linaro.org>
- <20220613100655.105301-4-krzysztof.kozlowski@linaro.org>
-From:   Bart Van Assche <bvanassche@acm.org>
-In-Reply-To: <20220613100655.105301-4-krzysztof.kozlowski@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/13/22 03:06, Krzysztof Kozlowski wrote:
-> Constify arrays and pointers to data which is not modified for code
-                                              ^^
-> safety.
+From: Yassine Oudjana <y.oudjana@protonmail.com>
 
-is -> are?
+Add bindings for the DAIs available in WCD9335 to avoid
+having to use unclear number indices in device trees.
 
-> @@ -7848,7 +7850,7 @@ static int ufshcd_quirk_tune_host_pa_tactivate(struct ufs_hba *hba)
->   	u32 granularity, peer_granularity;
->   	u32 pa_tactivate, peer_pa_tactivate;
->   	u32 pa_tactivate_us, peer_pa_tactivate_us;
-> -	u8 gran_to_us_table[] = {1, 4, 8, 16, 32, 100};
-> +	const u8 gran_to_us_table[] = {1, 4, 8, 16, 32, 100};
+Signed-off-by: Yassine Oudjana <y.oudjana@protonmail.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+Changes since v1:
+ - Make header guard match path
 
-Can this array be declared static? Anyway:
+ MAINTAINERS                              |  1 +
+ include/dt-bindings/sound/qcom,wcd9335.h | 15 +++++++++++++++
+ 2 files changed, 16 insertions(+)
+ create mode 100644 include/dt-bindings/sound/qcom,wcd9335.h
 
-Reviewed-by: Bart Van Assche <bvanassche@acm.org>
+diff --git a/MAINTAINERS b/MAINTAINERS
+index b774f21828f7..2bcc3cc129c5 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -16366,6 +16366,7 @@ M:	Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+ M:	Banajit Goswami <bgoswami@quicinc.com>
+ L:	alsa-devel@alsa-project.org (moderated for non-subscribers)
+ S:	Supported
++F:	include/dt-bindings/sound/qcom,wcd9335.h
+ F:	sound/soc/codecs/lpass-va-macro.c
+ F:	sound/soc/codecs/lpass-wsa-macro.*
+ F:	sound/soc/codecs/msm8916-wcd-analog.c
+diff --git a/include/dt-bindings/sound/qcom,wcd9335.h b/include/dt-bindings/sound/qcom,wcd9335.h
+new file mode 100644
+index 000000000000..f5e9f1db091e
+--- /dev/null
++++ b/include/dt-bindings/sound/qcom,wcd9335.h
+@@ -0,0 +1,15 @@
++/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
++
++#ifndef __DT_SOUND_QCOM_WCD9335_H
++#define __DT_SOUND_QCOM_WCD9335_H
++
++#define AIF1_PB                 0
++#define AIF1_CAP                1
++#define AIF2_PB                 2
++#define AIF2_CAP                3
++#define AIF3_PB                 4
++#define AIF3_CAP                5
++#define AIF4_PB                 6
++#define NUM_CODEC_DAIS          7
++
++#endif
+-- 
+2.36.1
+
