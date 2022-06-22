@@ -2,63 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D747BC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 08:27:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D479DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 08:29:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352755AbiFVI1j (ORCPT
+        id S1355929AbiFVI3K (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 04:27:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49976 "EHLO
+        Wed, 22 Jun 2022 04:29:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352297AbiFVI1M (ORCPT
+        with ESMTP id S1351875AbiFVI2R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 04:27:12 -0400
+        Wed, 22 Jun 2022 04:28:17 -0400
 Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5A2138BCF
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 01:26:45 -0700 (PDT)
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25M7Vc2N004423;
-        Wed, 22 Jun 2022 08:26:37 GMT
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18100387AF
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 01:27:14 -0700 (PDT)
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25M87LEK005188;
+        Wed, 22 Jun 2022 08:26:54 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=pp1;
- bh=eG05JCLiolZtdBqK9JEVqCDLmzV0NLM/SBILo4e+8PI=;
- b=Rsyh0y5k8lmcqf/M+0FSG64Iab6xWp+ie8lFcKTrbLHTtjMht51cZPCRCxrZVySAx/Oi
- u7HH5MSBST199+ft9gfhE7QseGEkMSx92RiV4ZgJvKM7RzHf7HJysc02Qi56+72PxEyn
- MP8arOlH+Oc+D6F4n6PLpqN2NrVTAxtHjihA09Si2ZSxk5gf07qNhuclpORBdOmcdZKn
- xNELpfOfiRErw8j1wKFg6QNEr2MGHyFD+ZW7EeEfPglDgrN4d0lrGuVpsvxnyelwh9s8
- gEIQfVYcAp7Ds+NJ67O8ekfkB6l3MkFD2LzjUgsxQ9EKBBohHBcjx36wT4AhueTgMXhN tQ== 
+ bh=wnJ02dPkWpDDGkvE7OaMnTSRCUZ/AidjIhYP6T2x91c=;
+ b=T5SKmz6Ovz83oz+34wATVGpp8IqyAosoHxTWXIlawcsYiIePU6tL7E7h3Sq7mXw44pHb
+ fISU8S1tFcTqpOlquAFCs6cYfN43FtbktspIeUfhi4vl5TCFlW3Fi8MQAx3mIQNgq5VY
+ lWNNQmuilcmJqlLPB4HAtzWsePIbzDtyFUkS0u9OrZ2nQrm3eqB49is9cWMOAgjq+vFf
+ KEfyTofPPYi7wjWiHu7bgs7kACFkzxQhfeUZF6Zto/cgn5kVJZ2Gj86bKbt1j0toNobQ
+ SZV5m6dSbrKPe5ya4IAtHPzDGAj269ky/rvbt5laJEAE6GnRkD2VdohvVLSNKQAbrc3f xw== 
 Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3guxs5he3k-1
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3guxfs1pqf-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 22 Jun 2022 08:26:36 +0000
-Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25M7tmbA010830;
-        Wed, 22 Jun 2022 08:26:36 GMT
-Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3guxs5he36-1
+        Wed, 22 Jun 2022 08:26:54 +0000
+Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25M87SOJ006310;
+        Wed, 22 Jun 2022 08:26:53 GMT
+Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3guxfs1ppd-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 22 Jun 2022 08:26:36 +0000
-Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
-        by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25M8JxVV003300;
-        Wed, 22 Jun 2022 08:26:35 GMT
-Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
-        by ppma02dal.us.ibm.com with ESMTP id 3gt0098rbp-1
+        Wed, 22 Jun 2022 08:26:53 +0000
+Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
+        by ppma02wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25M8LVvD009042;
+        Wed, 22 Jun 2022 08:26:47 GMT
+Received: from b03cxnp08028.gho.boulder.ibm.com (b03cxnp08028.gho.boulder.ibm.com [9.17.130.20])
+        by ppma02wdc.us.ibm.com with ESMTP id 3gs6ba9ba9-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 22 Jun 2022 08:26:35 +0000
+        Wed, 22 Jun 2022 08:26:47 +0000
 Received: from b03ledav001.gho.boulder.ibm.com (b03ledav001.gho.boulder.ibm.com [9.17.130.232])
-        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25M8QYrH36503906
+        by b03cxnp08028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25M8QkEW36045160
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 22 Jun 2022 08:26:34 GMT
+        Wed, 22 Jun 2022 08:26:46 GMT
 Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 00AC06E050;
-        Wed, 22 Jun 2022 08:26:34 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id AB7956E054;
+        Wed, 22 Jun 2022 08:26:46 +0000 (GMT)
 Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 8A8BB6E04E;
-        Wed, 22 Jun 2022 08:26:28 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 274356E052;
+        Wed, 22 Jun 2022 08:26:41 +0000 (GMT)
 Received: from skywalker.ibmuc.com (unknown [9.43.69.226])
         by b03ledav001.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Wed, 22 Jun 2022 08:26:28 +0000 (GMT)
+        Wed, 22 Jun 2022 08:26:40 +0000 (GMT)
 From:   "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
 To:     linux-mm@kvack.org, akpm@linux-foundation.org
 Cc:     Wei Xu <weixugc@google.com>, Huang Ying <ying.huang@intel.com>,
@@ -73,185 +73,105 @@ Cc:     Wei Xu <weixugc@google.com>, Huang Ying <ying.huang@intel.com>,
         Alistair Popple <apopple@nvidia.com>,
         Dan Williams <dan.j.williams@intel.com>,
         "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
-Subject: [PATCH v7 10/12] mm/demotion: Update node_is_toptier to work with memory tiers
-Date:   Wed, 22 Jun 2022 13:55:11 +0530
-Message-Id: <20220622082513.467538-11-aneesh.kumar@linux.ibm.com>
+Subject: [PATCH v7 12/12] mm/demotion: Add sysfs ABI documentation
+Date:   Wed, 22 Jun 2022 13:55:13 +0530
+Message-Id: <20220622082513.467538-13-aneesh.kumar@linux.ibm.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220622082513.467538-1-aneesh.kumar@linux.ibm.com>
 References: <20220622082513.467538-1-aneesh.kumar@linux.ibm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: zkQjAXAatpbBVjQaWRmhi_DSH-rW1i0B
-X-Proofpoint-ORIG-GUID: JfQk3jbXycLFIj3GuRJ4NFX8VzknRIwt
+X-Proofpoint-ORIG-GUID: f2cb0cHgD9adoodXVf5M2wNXeBzkLP3V
+X-Proofpoint-GUID: sad9r9NDW9OCoPdB6pdre8tsTs2SB-mL
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-06-21_11,2022-06-21_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 suspectscore=0
- phishscore=0 mlxscore=0 adultscore=0 clxscore=1015 impostorscore=0
- priorityscore=1501 spamscore=0 bulkscore=0 mlxlogscore=999
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ definitions=2022-06-21_11,2022-06-22_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxlogscore=999
+ impostorscore=0 phishscore=0 bulkscore=0 mlxscore=0 spamscore=0
+ priorityscore=1501 adultscore=0 malwarescore=0 lowpriorityscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2204290000 definitions=main-2206220039
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With memory tiers support we can have memory only NUMA nodes
-in the top tier from which we want to avoid promotion tracking NUMA
-faults. Update node_is_toptier to work with memory tiers.
-All NUMA nodes are by default top tier nodes. With lower memory
-tiers added we consider all memory tiers above a memory tier having
-CPU NUMA nodes as a top memory tier
+Add sysfs ABI documentation.
 
+Signed-off-by: Wei Xu <weixugc@google.com>
 Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
 ---
- include/linux/memory-tiers.h |  6 ++++++
- include/linux/node.h         |  5 -----
- mm/huge_memory.c             |  1 +
- mm/memory-tiers.c            | 41 ++++++++++++++++++++++++++++++++++++
- mm/migrate.c                 |  1 +
- mm/mprotect.c                |  1 +
- 6 files changed, 50 insertions(+), 5 deletions(-)
+ .../ABI/testing/sysfs-kernel-mm-memory-tiers  | 61 +++++++++++++++++++
+ 1 file changed, 61 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-kernel-mm-memory-tiers
 
-diff --git a/include/linux/memory-tiers.h b/include/linux/memory-tiers.h
-index 335d21a30b2c..ff1a08933575 100644
---- a/include/linux/memory-tiers.h
-+++ b/include/linux/memory-tiers.h
-@@ -44,6 +44,7 @@ int node_get_memory_tier_id(int node);
- int node_update_memory_tier(int node, int tier);
- struct memory_tier *node_get_memory_tier(int node);
- void node_put_memory_tier(struct memory_tier *memtier);
-+bool node_is_toptier(int node);
- 
- #else
- 
-@@ -62,5 +63,10 @@ static inline void node_get_allowed_targets(pg_data_t *pgdat, nodemask_t *target
- {
- 	*targets = NODE_MASK_NONE;
- }
+diff --git a/Documentation/ABI/testing/sysfs-kernel-mm-memory-tiers b/Documentation/ABI/testing/sysfs-kernel-mm-memory-tiers
+new file mode 100644
+index 000000000000..843fb59d2f3d
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-kernel-mm-memory-tiers
+@@ -0,0 +1,61 @@
++What:		/sys/devices/system/memtier/
++Date:		June 2022
++Contact:	Linux memory management mailing list <linux-mm@kvack.org>
++Description:	Interface for tiered memory
 +
-+static inline bool node_is_toptier(int node)
-+{
-+	return true;
-+}
- #endif	/* CONFIG_NUMA */
- #endif  /* _LINUX_MEMORY_TIERS_H */
-diff --git a/include/linux/node.h b/include/linux/node.h
-index 40d641a8bfb0..9ec680dd607f 100644
---- a/include/linux/node.h
-+++ b/include/linux/node.h
-@@ -185,9 +185,4 @@ static inline void register_hugetlbfs_with_node(node_registration_func_t reg,
- 
- #define to_node(device) container_of(device, struct node, dev)
- 
--static inline bool node_is_toptier(int node)
--{
--	return node_state(node, N_CPU);
--}
--
- #endif /* _LINUX_NODE_H_ */
-diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-index f7248002dad9..88f3288c8be0 100644
---- a/mm/huge_memory.c
-+++ b/mm/huge_memory.c
-@@ -35,6 +35,7 @@
- #include <linux/numa.h>
- #include <linux/page_owner.h>
- #include <linux/sched/sysctl.h>
-+#include <linux/memory-tiers.h>
- 
- #include <asm/tlb.h>
- #include <asm/pgalloc.h>
-diff --git a/mm/memory-tiers.c b/mm/memory-tiers.c
-index aecce987df7c..7204f7381a15 100644
---- a/mm/memory-tiers.c
-+++ b/mm/memory-tiers.c
-@@ -18,6 +18,7 @@ struct demotion_nodes {
- static void establish_migration_targets(void);
- static DEFINE_MUTEX(memory_tier_lock);
- static LIST_HEAD(memory_tiers);
-+static int top_tier_id;
- /*
-  * node_demotion[] examples:
-  *
-@@ -373,6 +374,31 @@ void node_put_memory_tier(struct memory_tier *memtier)
- 	put_device(&memtier->dev);
- }
- 
-+bool node_is_toptier(int node)
-+{
-+	bool toptier;
-+	pg_data_t *pgdat;
-+	struct memory_tier *memtier;
++		This is the directory containing the information about memory tiers.
 +
-+	pgdat = NODE_DATA(node);
-+	if (!pgdat)
-+		return false;
++		Each memory tier has its own subdirectory.
 +
-+	rcu_read_lock();
-+	memtier = rcu_dereference(pgdat->memtier);
-+	if (!memtier) {
-+		toptier = true;
-+		goto out;
-+	}
-+	if (memtier->dev.id >= top_tier_id)
-+		toptier = true;
-+	else
-+		toptier = false;
-+out:
-+	rcu_read_unlock();
-+	return toptier;
-+}
++		The order of memory tiers is determined by their tier ID value.
++		A higher tier ID value means a higher tier. memtier300 is higher
++		memory tier compared to memtier 100.
 +
- #ifdef CONFIG_MIGRATION
- void node_get_allowed_targets(pg_data_t *pgdat, nodemask_t *targets)
- {
-@@ -545,6 +571,21 @@ static void establish_migration_targets(void)
- 		} while (1);
- 	}
- build_lower_tier_mask:
-+	/*
-+	 * Promotion is allowed from a memory tier to higher
-+	 * memory tier only if the memory tier doesn't include
-+	 * compute. We want to  skip promotion from a memory tier,
-+	 * if any node that is  part of the memory tier have CPUs.
-+	 * Once we detect such a memory tier, we consider that tier
-+	 * as top tiper from which promotion is not allowed.
-+	 */
-+	list_for_each_entry_reverse(memtier, &memory_tiers, list) {
-+		nodes_and(used, node_states[N_CPU], memtier->nodelist);
-+		if (!nodes_empty(used)) {
-+			top_tier_id = memtier->dev.id;
-+			break;
-+		}
-+	}
- 	/*
- 	 * Now build the lower_tier mask for each node collecting node mask from
- 	 * all memory tier below it. This allows us to fallback demotion page
-diff --git a/mm/migrate.c b/mm/migrate.c
-index 0b554625a219..78615c48fc0f 100644
---- a/mm/migrate.c
-+++ b/mm/migrate.c
-@@ -50,6 +50,7 @@
- #include <linux/memory.h>
- #include <linux/random.h>
- #include <linux/sched/sysctl.h>
-+#include <linux/memory-tiers.h>
- 
- #include <asm/tlbflush.h>
- 
-diff --git a/mm/mprotect.c b/mm/mprotect.c
-index ba5592655ee3..92a2fc0fa88b 100644
---- a/mm/mprotect.c
-+++ b/mm/mprotect.c
-@@ -31,6 +31,7 @@
- #include <linux/pgtable.h>
- #include <linux/sched/sysctl.h>
- #include <linux/userfaultfd_k.h>
-+#include <linux/memory-tiers.h>
- #include <asm/cacheflush.h>
- #include <asm/mmu_context.h>
- #include <asm/tlbflush.h>
++What:		/sys/devices/system/memtier/default_tier
++Date:		June 2022
++Contact:	Linux memory management mailing list <linux-mm@kvack.org>
++Description:	Default memory tier
++
++		The default memory tier to which memory would get added via hotplug
++		if the NUMA node is not part of any memory tier
++
++What:		/sys/devices/system/memtier/max_tier
++Date:		June 2022
++Contact:	Linux memory management mailing list <linux-mm@kvack.org>
++Description:	Maximum memory tier ID supported
++
++		The max memory tier device ID we can create. Users can create memory
++		tiers in range [0 - max_tier]
++
++What:		/sys/devices/system/memtier/memtierN/
++Date:		June 2022
++Contact:	Linux memory management mailing list <linux-mm@kvack.org>
++Description:	Directory with details of a specific memory tier
++
++		This is the directory containing the information about a particular
++		memory tier, memtierN, where N is the memtier device ID (e.g. 0, 1).
++
++		The memtier device ID number itself is just an identifier and has no
++		special meaning. Its value relative to other memtiers decides the level
++		of this memtier in the tier hierarchy.
++
++
++What:		/sys/devices/system/memtier/memtierN/nodelist
++Date:		June 2022
++Contact:	Linux memory management mailing list <linux-mm@kvack.org>
++Description:	Memory tier nodelist
++
++
++		When read, list the memory nodes in the specified tier.
++
++What:		/sys/devices/system/node/nodeN/memtier
++Date:		June 2022
++Contact:	Linux memory management mailing list <linux-mm@kvack.org>
++Description:	Memory tier details for node N
++
++		When read, list the device ID of the memory tier that the node belongs
++		to.  Its value is empty for a CPU-only NUMA node.
++
++		When written, the kernel moves the node into the specified memory
++		tier if the move is allowed. The tier assignments of all other
++		nodes are not affected.
 -- 
 2.36.1
 
