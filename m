@@ -2,100 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAF57C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 08:47:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58114CCA47D
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 08:48:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350092AbiFVIrQ (ORCPT
+        id S1351709AbiFVIsD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 04:47:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44778 "EHLO
+        Wed, 22 Jun 2022 04:48:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236729AbiFVIrP (ORCPT
+        with ESMTP id S234486AbiFVIsC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 04:47:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48F1E396A2;
-        Wed, 22 Jun 2022 01:47:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0DCA5B81CEE;
-        Wed, 22 Jun 2022 08:47:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD63CC34114;
-        Wed, 22 Jun 2022 08:47:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655887631;
-        bh=9Cic3CRnN/+87wCqzwhlvsAQjVOpaTeW1l6o5THs8CI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cVkLQHWzW3Yw9TVz2dzzKzeR+QnUq7x4+bB64283XnsAVsrEODYwYX6FfUrgY6xrH
-         nutrHVc3eirGnmejV5vkOXo90XofpO/yl0Uj3Kaqn1ip/DQJU76WjxQtCj+4DrQQ0n
-         G81OuSPJX0C9G6bABNgG6GrkH3f+4cAjBS3l7tGWXHxKzKlo9MwjsDe2SM5YFp7Cqt
-         iBHl/ezc/P6nuNMx312+xM2QzF9gSNAnj4aw8Lu4XIqg0PWcLad7EskZK8x4obrTXc
-         Rm2ocVRqmeukupGMAZEPk2zTFv1VGor1JiiXNfHTEQtCc+kURThcfDNSdxo/xn56p5
-         F79Cz7Y6CW/4g==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1o3w0x-0002Su-Ct; Wed, 22 Jun 2022 10:47:07 +0200
-Date:   Wed, 22 Jun 2022 10:47:07 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/6] dt-bindings: arm: qcom: Document additional
- sc8280xp devices
-Message-ID: <YrLXCx90bn7Id4Bn@hovoldconsulting.com>
-References: <20220622041224.627803-1-bjorn.andersson@linaro.org>
- <20220622041224.627803-2-bjorn.andersson@linaro.org>
+        Wed, 22 Jun 2022 04:48:02 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5677125E1;
+        Wed, 22 Jun 2022 01:48:00 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id h34-20020a17090a29a500b001eb01527d9eso15263123pjd.3;
+        Wed, 22 Jun 2022 01:48:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Hs9pVTpUBi42eMdaATCBVLHpAcP7Nw426zvueY8ZwZI=;
+        b=Lw0reKp119fQgW191FyyK0jxb52gIGmRolrrEJan5fK67WbHe6KIeUNsg7pgDoqjtT
+         RzO3qPtfgxrYlG/fRm0u8QBkiO/igrt4hSQwVNHETFmkLoMkwJwaTT7mpeooVbsiN9fL
+         8I2KrBsqduyUa+VSUxarzQxWslOLClxg5whYaXKY5ZXnOuK8gMQsLEa1DKU8/SxqlH8n
+         JDIBbuDtZGUR1qz4pUDcY0uXn6Pnfk+jzwUo8vRF+Ni0gZrppyu5+G7IElQJbAJFbwn0
+         NqXSmHspY8OWIBFYtfgkweYjzXgs0aK/59uJPuDKoM/hHkfGSay0c1bnYIx4JIInMCOP
+         4hDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Hs9pVTpUBi42eMdaATCBVLHpAcP7Nw426zvueY8ZwZI=;
+        b=LpslrHezcQCyHm+VEVOTMSRLxERozF5drOOxNliCDm+PvFI48R5ewUZFZDvUfOlHXB
+         CiS42FKzNGekZu4/SFcMTCZ8t6nV6h8VsPZIN1MmiyDZrS62RhnuhLnzfVftanH/w7Xb
+         fD1/ELS69tDMN38UysZJc2BcHHv/TJLbdRvrN57nXuPka5xn6WTrgy0yD3yNvzea5bRH
+         OYk+IQU5rn9TYIblw1yzOTq/mRXy9dlxW1kAASrx0egwfY3/IM14eIKIdq42sMUZcMce
+         w0pw3vxeIHNbJ3DwglR1aticwaxd3dmd+OBEKZMQySuUm0/fLKuVounTlz1N4/esGpEy
+         ALoA==
+X-Gm-Message-State: AJIora8D/KuQauig3+F3RJvHYeFYHw6u13wM0xxeVyn/WxwdhrC5/1Dx
+        vLjTykhbpAh4TUfxsWKhek9+7vNE31s=
+X-Google-Smtp-Source: AGRyM1shJvjitaGBPWgz/pdx6BV2OQUPOBwCHk3mBN4tYOSIhFIxvffRnNlgoVtOp/xm7tZgDMdKLQ==
+X-Received: by 2002:a17:902:d509:b0:167:6ed8:afb5 with SMTP id b9-20020a170902d50900b001676ed8afb5mr33549819plg.137.1655887679517;
+        Wed, 22 Jun 2022 01:47:59 -0700 (PDT)
+Received: from debian.me (subs02-180-214-232-91.three.co.id. [180.214.232.91])
+        by smtp.gmail.com with ESMTPSA id a9-20020a170902ecc900b001677fa34a4fsm8199930plh.72.2022.06.22.01.47.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jun 2022 01:47:58 -0700 (PDT)
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     linux-doc@vger.kernel.org
+Cc:     Bagas Sanjaya <bagasdotme@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Ira Weiny <ira.weiny@intel.com>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v4] Documentation: highmem: Use literal block for code example in highmem.h comment
+Date:   Wed, 22 Jun 2022 15:45:46 +0700
+Message-Id: <20220622084546.17745-1-bagasdotme@gmail.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220622041224.627803-2-bjorn.andersson@linaro.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 21, 2022 at 09:12:19PM -0700, Bjorn Andersson wrote:
-> Add the CRD (Customer Reference Design?) and the Lenovo Thinkpad X13s to
+When building htmldocs on Linus' tree, there are inline emphasis warnings
+on include/linux/highmem.h:
 
-Qualcomm refers to "Compute Reference Design", for example, in commit
-427b249504ea ("arm64: dts: qcom: sc7280-crd: Add device tree files for
-CRD").
+Documentation/vm/highmem:166: ./include/linux/highmem.h:154: WARNING: Inline emphasis start-string without end-string.
+Documentation/vm/highmem:166: ./include/linux/highmem.h:157: WARNING: Inline emphasis start-string without end-string.
 
-> the valid device compatibles found on the sc8280xp platform.
-> 
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> ---
-> 
-> Changes since v1:
-> - Added the two missing board compatibles
-> 
->  Documentation/devicetree/bindings/arm/qcom.yaml | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
-> index 5c06d1bfc046..6ec7521be19d 100644
-> --- a/Documentation/devicetree/bindings/arm/qcom.yaml
-> +++ b/Documentation/devicetree/bindings/arm/qcom.yaml
-> @@ -238,6 +238,8 @@ properties:
->  
->        - items:
->            - enum:
-> +              - lenovo,thinkpad-x13s
-> +              - qcom,sc8280xp-crd
->                - qcom,sc8280xp-qrd
+These warnings above are due to comments in code example at the
+mentioned lines above are enclosed by double dash (--), which confuses
+Sphinx as inline markup delimiters instead.
 
-I believe the "qcom,sc8280xp-qrd" entry was a mistake and should have
-been "-crd" all along? Perhaps you should remove that entry in this
-patch.
+Fix these warnings by indenting the code example with literal block
+indentation and making the comments C comments.
 
->            - const: qcom,sc8280xp
+Fixes: 85a85e7601263f ("Documentation/vm: move "Using kmap-atomic" to highmem.h")
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Ira Weiny <ira.weiny@intel.com>
+Cc: "Matthew Wilcox (Oracle)" <willy@infradead.org>
+Cc: "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: linux-mm@kvack.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
+---
+ Changes since v3 [1]:
+   - Say "C comments" rephrase (suggested by Ira)
 
-Looks good otherwise:
+ [1]: https://lore.kernel.org/linux-doc/20220620083649.18172-1-bagasdotme@gmail.com/
 
-Reviewed-by: Johan Hovold <johan+linaro@kernel.org>
+ include/linux/highmem.h | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-Johan
+diff --git a/include/linux/highmem.h b/include/linux/highmem.h
+index 3af34de54330cb..56d6a019653489 100644
+--- a/include/linux/highmem.h
++++ b/include/linux/highmem.h
+@@ -149,19 +149,19 @@ static inline void *kmap_local_folio(struct folio *folio, size_t offset);
+  * It is used in atomic context when code wants to access the contents of a
+  * page that might be allocated from high memory (see __GFP_HIGHMEM), for
+  * example a page in the pagecache.  The API has two functions, and they
+- * can be used in a manner similar to the following:
++ * can be used in a manner similar to the following::
+  *
+- * -- Find the page of interest. --
+- * struct page *page = find_get_page(mapping, offset);
++ *   // Find the page of interest.
++ *   struct page *page = find_get_page(mapping, offset);
+  *
+- * -- Gain access to the contents of that page. --
+- * void *vaddr = kmap_atomic(page);
++ *   // Gain access to the contents of that page.
++ *   void *vaddr = kmap_atomic(page);
+  *
+- * -- Do something to the contents of that page. --
+- * memset(vaddr, 0, PAGE_SIZE);
++ *   // Do something to the contents of that page.
++ *   memset(vaddr, 0, PAGE_SIZE);
+  *
+- * -- Unmap that page. --
+- * kunmap_atomic(vaddr);
++ *   // Unmap that page.
++ *   kunmap_atomic(vaddr);
+  *
+  * Note that the kunmap_atomic() call takes the result of the kmap_atomic()
+  * call, not the argument.
+
+base-commit: a111daf0c53ae91e71fd2bfe7497862d14132e3e
+-- 
+An old man doll... just what I always wanted! - Clara
+
