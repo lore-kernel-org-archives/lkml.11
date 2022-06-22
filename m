@@ -2,19 +2,19 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFA91C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 19:29:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 454FEC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 19:29:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359392AbiFVT3s (ORCPT
+        id S1358141AbiFVT3x (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 15:29:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33674 "EHLO
+        Wed, 22 Jun 2022 15:29:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357983AbiFVT13 (ORCPT
+        with ESMTP id S1358007AbiFVT13 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 22 Jun 2022 15:27:29 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 575B53B3D4
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2AFDA3B3D2
         for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 12:27:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
         s=mimecast20190719; t=1655926044;
@@ -22,23 +22,23 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Icd2bHm9cV8SV5qyT0h7qP6LKpzoOygbXj7B8SllL4s=;
-        b=YHPnWC8DB58XWkExXgeN2GW6OdIc6rzdfQYThrGRlt6s7PKv3ZEe/9y/J6YU0pYH7DwTvs
-        YFHq1NQRzgb8kqxMkFnRGwrCA6hG74gkd98Ukpf0TPgzDDbVDHr5BHMxbwAlEH5Y1Opn/c
-        UsECyulzm25aNsDH9niYuJWLjnaVCXU=
+        bh=9PIUEwUEpzAl+pL7SUnd+YieSn2pMrMmo5Pll6iV6Fc=;
+        b=OY5bAkGiDZrtMIhZxO/Fl3iIEcK6dJeXQaZIN0HIK3ZitsReaeA3b2YjqEQ/UDoT9ib5tZ
+        qKU6mQTIxTqkl2Dtu24dxyvVeG2L7c705n6gXHgygTNPlnp8XL1vsz7OjDcSxkIRILF10i
+        4RYNWy8w+XtTZMS6m1BHu3wEI4xokzo=
 Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
  [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-201-vlLOGiXmNVenQCgvNxbWJA-1; Wed, 22 Jun 2022 15:27:19 -0400
-X-MC-Unique: vlLOGiXmNVenQCgvNxbWJA-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+ us-mta-39-_-ViNH7_OHGRzf-onOCbWA-1; Wed, 22 Jun 2022 15:27:20 -0400
+X-MC-Unique: _-ViNH7_OHGRzf-onOCbWA-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 533E33810784;
-        Wed, 22 Jun 2022 19:27:18 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id EE0AA3C11723;
+        Wed, 22 Jun 2022 19:27:19 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id F1B18141510C;
-        Wed, 22 Jun 2022 19:27:17 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 97DF71121314;
+        Wed, 22 Jun 2022 19:27:19 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     maz@kernel.org, anup@brainfault.org, seanjc@google.com,
@@ -46,117 +46,430 @@ Cc:     maz@kernel.org, anup@brainfault.org, seanjc@google.com,
         kvmarm@lists.cs.columbia.edu, linux-mips@vger.kernel.org,
         kvm-riscv@lists.infradead.org, pfeiner@google.com,
         jiangshanlai@gmail.com, dmatlack@google.com
-Subject: [PATCH v7 18/23] KVM: x86/mmu: Extend make_huge_page_split_spte() for the shadow MMU
-Date:   Wed, 22 Jun 2022 15:27:05 -0400
-Message-Id: <20220622192710.2547152-19-pbonzini@redhat.com>
+Subject: [PATCH v7 22/23] KVM: x86/mmu: Extend Eager Page Splitting to nested MMUs
+Date:   Wed, 22 Jun 2022 15:27:09 -0400
+Message-Id: <20220622192710.2547152-23-pbonzini@redhat.com>
 In-Reply-To: <20220622192710.2547152-1-pbonzini@redhat.com>
 References: <20220622192710.2547152-1-pbonzini@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: David Matlack <dmatlack@google.com>
 
-Currently make_huge_page_split_spte() assumes execute permissions can be
-granted to any 4K SPTE when splitting huge pages. This is true for the
-TDP MMU but is not necessarily true for the shadow MMU, since KVM may be
-shadowing a non-executable huge page.
+Add support for Eager Page Splitting pages that are mapped by nested
+MMUs. Walk through the rmap first splitting all 1GiB pages to 2MiB
+pages, and then splitting all 2MiB pages to 4KiB pages.
 
-To fix this, pass in the role of the child shadow page where the huge
-page will be split and derive the execution permission from that.  This
-is correct because huge pages are always split with direct shadow page
-and thus the shadow page role contains the correct access permissions.
+Note, Eager Page Splitting is limited to nested MMUs as a policy rather
+than due to any technical reason (the sp->role.guest_mode check could
+just be deleted and Eager Page Splitting would work correctly for all
+shadow MMU pages). There is really no reason to support Eager Page
+Splitting for tdp_mmu=N, since such support will eventually be phased
+out, and there is no current use case supporting Eager Page Splitting on
+hosts where TDP is either disabled or unavailable in hardware.
+Furthermore, future improvements to nested MMU scalability may diverge
+the code from the legacy shadow paging implementation. These
+improvements will be simpler to make if Eager Page Splitting does not
+have to worry about legacy shadow paging.
 
-No functional change intended.
+Splitting huge pages mapped by nested MMUs requires dealing with some
+extra complexity beyond that of the TDP MMU:
 
+(1) The shadow MMU has a limit on the number of shadow pages that are
+    allowed to be allocated. So, as a policy, Eager Page Splitting
+    refuses to split if there are KVM_MIN_FREE_MMU_PAGES or fewer
+    pages available.
+
+(2) Splitting a huge page may end up re-using an existing lower level
+    shadow page tables. This is unlike the TDP MMU which always allocates
+    new shadow page tables when splitting.
+
+(3) When installing the lower level SPTEs, they must be added to the
+    rmap which may require allocating additional pte_list_desc structs.
+
+Case (2) is especially interesting since it may require a TLB flush,
+unlike the TDP MMU which can fully split huge pages without any TLB
+flushes. Specifically, an existing lower level page table may point to
+even lower level page tables that are not fully populated, effectively
+unmapping a portion of the huge page, which requires a flush.  As of
+this commit, a flush is always done always after dropping the huge page
+and before installing the lower level page table.
+
+This TLB flush could instead be delayed until the MMU lock is about to be
+dropped, which would batch flushes for multiple splits.  However these
+flushes should be rare in practice (a huge page must be aliased in
+multiple SPTEs and have been split for NX Huge Pages in only some of
+them). Flushing immediately is simpler to plumb and also reduces the
+chances of tripping over a CPU bug (e.g. see iTLB multihit).
+
+Suggested-by: Peter Feiner <pfeiner@google.com>
+[ This commit is based off of the original implementation of Eager Page
+  Splitting from Peter in Google's kernel from 2016. ]
 Signed-off-by: David Matlack <dmatlack@google.com>
-Message-Id: <20220516232138.1783324-19-dmatlack@google.com>
+Message-Id: <20220516232138.1783324-23-dmatlack@google.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/mmu/spte.c    | 15 +++++++--------
- arch/x86/kvm/mmu/spte.h    |  4 ++--
- arch/x86/kvm/mmu/tdp_mmu.c |  2 +-
- 3 files changed, 10 insertions(+), 11 deletions(-)
+ .../admin-guide/kernel-parameters.txt         |   3 +-
+ arch/x86/include/asm/kvm_host.h               |  22 ++
+ arch/x86/kvm/mmu/mmu.c                        | 261 +++++++++++++++++-
+ 3 files changed, 277 insertions(+), 9 deletions(-)
 
-diff --git a/arch/x86/kvm/mmu/spte.c b/arch/x86/kvm/mmu/spte.c
-index db294c1beea2..fb1f17504138 100644
---- a/arch/x86/kvm/mmu/spte.c
-+++ b/arch/x86/kvm/mmu/spte.c
-@@ -246,11 +246,10 @@ static u64 make_spte_executable(u64 spte)
-  * This is used during huge page splitting to build the SPTEs that make up the
-  * new page table.
-  */
--u64 make_huge_page_split_spte(struct kvm *kvm, u64 huge_spte, int huge_level,
-+u64 make_huge_page_split_spte(struct kvm *kvm, u64 huge_spte, union kvm_mmu_page_role role,
- 			      int index)
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 97c16aa2f53f..329f0f274e2b 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -2418,8 +2418,7 @@
+ 			the KVM_CLEAR_DIRTY ioctl, and only for the pages being
+ 			cleared.
+ 
+-			Eager page splitting currently only supports splitting
+-			huge pages mapped by the TDP MMU.
++			Eager page splitting is only supported when kvm.tdp_mmu=Y.
+ 
+ 			Default is Y (on).
+ 
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 64efe8c90c31..665667d61caf 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -1338,6 +1338,28 @@ struct kvm_arch {
+ 	u32 max_vcpu_ids;
+ 
+ 	bool disable_nx_huge_pages;
++
++	/*
++	 * Memory caches used to allocate shadow pages when performing eager
++	 * page splitting. No need for a shadowed_info_cache since eager page
++	 * splitting only allocates direct shadow pages.
++	 *
++	 * Protected by kvm->slots_lock.
++	 */
++	struct kvm_mmu_memory_cache split_shadow_page_cache;
++	struct kvm_mmu_memory_cache split_page_header_cache;
++
++	/*
++	 * Memory cache used to allocate pte_list_desc structs while splitting
++	 * huge pages. In the worst case, to split one huge page, 512
++	 * pte_list_desc structs are needed to add each lower level leaf sptep
++	 * to the rmap plus 1 to extend the parent_ptes rmap of the lower level
++	 * page table.
++	 *
++	 * Protected by kvm->slots_lock.
++	 */
++#define SPLIT_DESC_CACHE_MIN_NR_OBJECTS (SPTE_ENT_PER_PAGE + 1)
++	struct kvm_mmu_memory_cache split_desc_cache;
+ };
+ 
+ struct kvm_vm_stat {
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index bf1ae5ebf41b..22681931921f 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -5942,9 +5942,25 @@ int kvm_mmu_init_vm(struct kvm *kvm)
+ 	node->track_write = kvm_mmu_pte_write;
+ 	node->track_flush_slot = kvm_mmu_invalidate_zap_pages_in_memslot;
+ 	kvm_page_track_register_notifier(kvm, node);
++
++	kvm->arch.split_page_header_cache.kmem_cache = mmu_page_header_cache;
++	kvm->arch.split_page_header_cache.gfp_zero = __GFP_ZERO;
++
++	kvm->arch.split_shadow_page_cache.gfp_zero = __GFP_ZERO;
++
++	kvm->arch.split_desc_cache.kmem_cache = pte_list_desc_cache;
++	kvm->arch.split_desc_cache.gfp_zero = __GFP_ZERO;
++
+ 	return 0;
+ }
+ 
++static void mmu_free_vm_memory_caches(struct kvm *kvm)
++{
++	kvm_mmu_free_memory_cache(&kvm->arch.split_desc_cache);
++	kvm_mmu_free_memory_cache(&kvm->arch.split_page_header_cache);
++	kvm_mmu_free_memory_cache(&kvm->arch.split_shadow_page_cache);
++}
++
+ void kvm_mmu_uninit_vm(struct kvm *kvm)
  {
- 	u64 child_spte;
--	int child_level;
+ 	struct kvm_page_track_notifier_node *node = &kvm->arch.mmu_sp_tracker;
+@@ -5952,6 +5968,8 @@ void kvm_mmu_uninit_vm(struct kvm *kvm)
+ 	kvm_page_track_unregister_notifier(kvm, node);
  
- 	if (WARN_ON_ONCE(!is_shadow_present_pte(huge_spte)))
- 		return 0;
-@@ -259,23 +258,23 @@ u64 make_huge_page_split_spte(struct kvm *kvm, u64 huge_spte, int huge_level,
- 		return 0;
+ 	kvm_mmu_uninit_tdp_mmu(kvm);
++
++	mmu_free_vm_memory_caches(kvm);
+ }
  
- 	child_spte = huge_spte;
--	child_level = huge_level - 1;
+ static bool __kvm_zap_rmaps(struct kvm *kvm, gfn_t gfn_start, gfn_t gfn_end)
+@@ -6073,15 +6091,237 @@ void kvm_mmu_slot_remove_write_access(struct kvm *kvm,
+ 		kvm_arch_flush_remote_tlbs_memslot(kvm, memslot);
+ }
+ 
++static inline bool need_topup(struct kvm_mmu_memory_cache *cache, int min)
++{
++	return kvm_mmu_memory_cache_nr_free_objects(cache) < min;
++}
++
++static bool need_topup_split_caches_or_resched(struct kvm *kvm)
++{
++	if (need_resched() || rwlock_needbreak(&kvm->mmu_lock))
++		return true;
++
++	/*
++	 * In the worst case, SPLIT_DESC_CACHE_MIN_NR_OBJECTS descriptors are needed
++	 * to split a single huge page. Calculating how many are actually needed
++	 * is possible but not worth the complexity.
++	 */
++	return need_topup(&kvm->arch.split_desc_cache, SPLIT_DESC_CACHE_MIN_NR_OBJECTS) ||
++	       need_topup(&kvm->arch.split_page_header_cache, 1) ||
++	       need_topup(&kvm->arch.split_shadow_page_cache, 1);
++}
++
++static int topup_split_caches(struct kvm *kvm)
++{
++	int r;
++
++	lockdep_assert_held(&kvm->slots_lock);
++
++	/*
++	 * It's common to need all SPLIT_DESC_CACHE_MIN_NR_OBJECTS (513) objects
++	 * when splitting a page, but setting capacity == min would cause
++	 * KVM to drop mmu_lock even if just one object was consumed from the
++	 * cache.  So make capacity larger than min and handle two huge pages
++	 * without having to drop the lock.
++	 */
++	r = __kvm_mmu_topup_memory_cache(&kvm->arch.split_desc_cache,
++					 2 * SPLIT_DESC_CACHE_MIN_NR_OBJECTS,
++					 SPLIT_DESC_CACHE_MIN_NR_OBJECTS);
++	if (r)
++		return r;
++
++	r = kvm_mmu_topup_memory_cache(&kvm->arch.split_page_header_cache, 1);
++	if (r)
++		return r;
++
++	return kvm_mmu_topup_memory_cache(&kvm->arch.split_shadow_page_cache, 1);
++}
++
++static struct kvm_mmu_page *shadow_mmu_get_sp_for_split(struct kvm *kvm, u64 *huge_sptep)
++{
++	struct kvm_mmu_page *huge_sp = sptep_to_sp(huge_sptep);
++	struct shadow_page_caches caches = {};
++	union kvm_mmu_page_role role;
++	unsigned int access;
++	gfn_t gfn;
++
++	gfn = kvm_mmu_page_get_gfn(huge_sp, huge_sptep - huge_sp->spt);
++	access = kvm_mmu_page_get_access(huge_sp, huge_sptep - huge_sp->spt);
++
++	/*
++	 * Note, huge page splitting always uses direct shadow pages, regardless
++	 * of whether the huge page itself is mapped by a direct or indirect
++	 * shadow page, since the huge page region itself is being directly
++	 * mapped with smaller pages.
++	 */
++	role = kvm_mmu_child_role(huge_sptep, /*direct=*/true, access);
++
++	/* Direct SPs do not require a shadowed_info_cache. */
++	caches.page_header_cache = &kvm->arch.split_page_header_cache;
++	caches.shadow_page_cache = &kvm->arch.split_shadow_page_cache;
++
++	/* Safe to pass NULL for vCPU since requesting a direct SP. */
++	return __kvm_mmu_get_shadow_page(kvm, NULL, &caches, gfn, role);
++}
++
++static void shadow_mmu_split_huge_page(struct kvm *kvm,
++				       const struct kvm_memory_slot *slot,
++				       u64 *huge_sptep)
++
++{
++	struct kvm_mmu_memory_cache *cache = &kvm->arch.split_desc_cache;
++	u64 huge_spte = READ_ONCE(*huge_sptep);
++	struct kvm_mmu_page *sp;
++	u64 *sptep, spte;
++	gfn_t gfn;
++	int index;
++
++	sp = shadow_mmu_get_sp_for_split(kvm, huge_sptep);
++
++	for (index = 0; index < SPTE_ENT_PER_PAGE; index++) {
++		sptep = &sp->spt[index];
++		gfn = kvm_mmu_page_get_gfn(sp, index);
++
++		/*
++		 * The SP may already have populated SPTEs, e.g. if this huge
++		 * page is aliased by multiple sptes with the same access
++		 * permissions. These entries are guaranteed to map the same
++		 * gfn-to-pfn translation since the SP is direct, so no need to
++		 * modify them.
++		 *
++		 * If a given SPTE points to a lower level page table, installing
++		 * such SPTEs would effectively unmap a potion of the huge page.
++		 * This is not an issue because __link_shadow_page() flushes the TLB
++		 * when the passed sp replaces a large SPTE.
++		 */
++		if (is_shadow_present_pte(*sptep))
++			continue;
++
++		spte = make_huge_page_split_spte(kvm, huge_spte, sp->role, index);
++		mmu_spte_set(sptep, spte);
++		__rmap_add(kvm, cache, slot, sptep, gfn, sp->role.access);
++	}
++
++	__link_shadow_page(kvm, cache, huge_sptep, sp);
++}
++
++static int shadow_mmu_try_split_huge_page(struct kvm *kvm,
++					  const struct kvm_memory_slot *slot,
++					  u64 *huge_sptep)
++{
++	struct kvm_mmu_page *huge_sp = sptep_to_sp(huge_sptep);
++	int level, r = 0;
++	gfn_t gfn;
++	u64 spte;
++
++	/* Grab information for the tracepoint before dropping the MMU lock. */
++	gfn = kvm_mmu_page_get_gfn(huge_sp, huge_sptep - huge_sp->spt);
++	level = huge_sp->role.level;
++	spte = *huge_sptep;
++
++	if (kvm_mmu_available_pages(kvm) <= KVM_MIN_FREE_MMU_PAGES) {
++		r = -ENOSPC;
++		goto out;
++	}
++
++	if (need_topup_split_caches_or_resched(kvm)) {
++		write_unlock(&kvm->mmu_lock);
++		cond_resched();
++		/*
++		 * If the topup succeeds, return -EAGAIN to indicate that the
++		 * rmap iterator should be restarted because the MMU lock was
++		 * dropped.
++		 */
++		r = topup_split_caches(kvm) ?: -EAGAIN;
++		write_lock(&kvm->mmu_lock);
++		goto out;
++	}
++
++	shadow_mmu_split_huge_page(kvm, slot, huge_sptep);
++
++out:
++	trace_kvm_mmu_split_huge_page(gfn, spte, level, r);
++	return r;
++}
++
++static bool shadow_mmu_try_split_huge_pages(struct kvm *kvm,
++					    struct kvm_rmap_head *rmap_head,
++					    const struct kvm_memory_slot *slot)
++{
++	struct rmap_iterator iter;
++	struct kvm_mmu_page *sp;
++	u64 *huge_sptep;
++	int r;
++
++restart:
++	for_each_rmap_spte(rmap_head, &iter, huge_sptep) {
++		sp = sptep_to_sp(huge_sptep);
++
++		/* TDP MMU is enabled, so rmap only contains nested MMU SPs. */
++		if (WARN_ON_ONCE(!sp->role.guest_mode))
++			continue;
++
++		/* The rmaps should never contain non-leaf SPTEs. */
++		if (WARN_ON_ONCE(!is_large_pte(*huge_sptep)))
++			continue;
++
++		/* SPs with level >PG_LEVEL_4K should never by unsync. */
++		if (WARN_ON_ONCE(sp->unsync))
++			continue;
++
++		/* Don't bother splitting huge pages on invalid SPs. */
++		if (sp->role.invalid)
++			continue;
++
++		r = shadow_mmu_try_split_huge_page(kvm, slot, huge_sptep);
++
++		/*
++		 * The split succeeded or needs to be retried because the MMU
++		 * lock was dropped. Either way, restart the iterator to get it
++		 * back into a consistent state.
++		 */
++		if (!r || r == -EAGAIN)
++			goto restart;
++
++		/* The split failed and shouldn't be retried (e.g. -ENOMEM). */
++		break;
++	}
++
++	return false;
++}
++
++static void kvm_shadow_mmu_try_split_huge_pages(struct kvm *kvm,
++						const struct kvm_memory_slot *slot,
++						gfn_t start, gfn_t end,
++						int target_level)
++{
++	int level;
++
++	/*
++	 * Split huge pages starting with KVM_MAX_HUGEPAGE_LEVEL and working
++	 * down to the target level. This ensures pages are recursively split
++	 * all the way to the target level. There's no need to split pages
++	 * already at the target level.
++	 */
++	for (level = KVM_MAX_HUGEPAGE_LEVEL; level > target_level; level--) {
++		slot_handle_level_range(kvm, slot, shadow_mmu_try_split_huge_pages,
++					level, level, start, end - 1, true, false);
++	}
++}
++
+ /* Must be called with the mmu_lock held in write-mode. */
+ void kvm_mmu_try_split_huge_pages(struct kvm *kvm,
+ 				   const struct kvm_memory_slot *memslot,
+ 				   u64 start, u64 end,
+ 				   int target_level)
+ {
+-	if (is_tdp_mmu_enabled(kvm))
+-		kvm_tdp_mmu_try_split_huge_pages(kvm, memslot, start, end,
+-						 target_level, false);
++	if (!is_tdp_mmu_enabled(kvm))
++		return;
++
++	if (kvm_memslots_have_rmaps(kvm))
++		kvm_shadow_mmu_try_split_huge_pages(kvm, memslot, start, end, target_level);
++
++	kvm_tdp_mmu_try_split_huge_pages(kvm, memslot, start, end, target_level, false);
  
  	/*
- 	 * The child_spte already has the base address of the huge page being
- 	 * split. So we just have to OR in the offset to the page at the next
- 	 * lower level for the given index.
- 	 */
--	child_spte |= (index * KVM_PAGES_PER_HPAGE(child_level)) << PAGE_SHIFT;
-+	child_spte |= (index * KVM_PAGES_PER_HPAGE(role.level)) << PAGE_SHIFT;
+ 	 * A TLB flush is unnecessary at this point for the same resons as in
+@@ -6096,12 +6336,19 @@ void kvm_mmu_slot_try_split_huge_pages(struct kvm *kvm,
+ 	u64 start = memslot->base_gfn;
+ 	u64 end = start + memslot->npages;
  
--	if (child_level == PG_LEVEL_4K) {
-+	if (role.level == PG_LEVEL_4K) {
- 		child_spte &= ~PT_PAGE_SIZE_MASK;
- 
- 		/*
--		 * When splitting to a 4K page, mark the page executable as the
--		 * NX hugepage mitigation no longer applies.
-+		 * When splitting to a 4K page where execution is allowed, mark
-+		 * the page executable as the NX hugepage mitigation no longer
-+		 * applies.
- 		 */
--		if (is_nx_huge_page_enabled(kvm))
-+		if ((role.access & ACC_EXEC_MASK) && is_nx_huge_page_enabled(kvm))
- 			child_spte = make_spte_executable(child_spte);
+-	if (is_tdp_mmu_enabled(kvm)) {
+-		read_lock(&kvm->mmu_lock);
+-		kvm_tdp_mmu_try_split_huge_pages(kvm, memslot, start, end, target_level, true);
+-		read_unlock(&kvm->mmu_lock);
++	if (!is_tdp_mmu_enabled(kvm))
++		return;
++
++	if (kvm_memslots_have_rmaps(kvm)) {
++		write_lock(&kvm->mmu_lock);
++		kvm_shadow_mmu_try_split_huge_pages(kvm, memslot, start, end, target_level);
++		write_unlock(&kvm->mmu_lock);
  	}
  
-diff --git a/arch/x86/kvm/mmu/spte.h b/arch/x86/kvm/mmu/spte.h
-index 256f90587e8d..b5c855f5514f 100644
---- a/arch/x86/kvm/mmu/spte.h
-+++ b/arch/x86/kvm/mmu/spte.h
-@@ -421,8 +421,8 @@ bool make_spte(struct kvm_vcpu *vcpu, struct kvm_mmu_page *sp,
- 	       unsigned int pte_access, gfn_t gfn, kvm_pfn_t pfn,
- 	       u64 old_spte, bool prefetch, bool can_unsync,
- 	       bool host_writable, u64 *new_spte);
--u64 make_huge_page_split_spte(struct kvm *kvm, u64 huge_spte, int huge_level,
--			      int index);
-+u64 make_huge_page_split_spte(struct kvm *kvm, u64 huge_spte,
-+		      	      union kvm_mmu_page_role role, int index);
- u64 make_nonleaf_spte(u64 *child_pt, bool ad_disabled);
- u64 make_mmio_spte(struct kvm_vcpu *vcpu, u64 gfn, unsigned int access);
- u64 mark_spte_for_access_track(u64 spte);
-diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
-index 522e2532343b..f3a430d64975 100644
---- a/arch/x86/kvm/mmu/tdp_mmu.c
-+++ b/arch/x86/kvm/mmu/tdp_mmu.c
-@@ -1478,7 +1478,7 @@ static int tdp_mmu_split_huge_page(struct kvm *kvm, struct tdp_iter *iter,
- 	 * not been linked in yet and thus is not reachable from any other CPU.
- 	 */
- 	for (i = 0; i < SPTE_ENT_PER_PAGE; i++)
--		sp->spt[i] = make_huge_page_split_spte(kvm, huge_spte, level, i);
-+		sp->spt[i] = make_huge_page_split_spte(kvm, huge_spte, sp->role, i);
- 
++	read_lock(&kvm->mmu_lock);
++	kvm_tdp_mmu_try_split_huge_pages(kvm, memslot, start, end, target_level, true);
++	read_unlock(&kvm->mmu_lock);
++
  	/*
- 	 * Replace the huge spte with a pointer to the populated lower level
+ 	 * No TLB flush is necessary here. KVM will flush TLBs after
+ 	 * write-protecting and/or clearing dirty on the newly split SPTEs to
 -- 
 2.31.1
 
