@@ -2,172 +2,268 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 673C7CCA480
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 04:01:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44C9BC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 04:01:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356201AbiFVEBq (ORCPT
+        id S1356652AbiFVEBv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 00:01:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36362 "EHLO
+        Wed, 22 Jun 2022 00:01:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233018AbiFVEBi (ORCPT
+        with ESMTP id S1356174AbiFVEBp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 00:01:38 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7626F33EAE
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 21:01:37 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id bo5so14936834pfb.4
-        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 21:01:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=yYa4yiJ07M3lgAUara1ddh2Fl/2EMqAxZqq+KQ/z45A=;
-        b=2yBsnXHi0sJ5gksnfpXBlu6OIcXsiyZ8E3CKsc1rFx/zdoQHwR0GIDkgQoEpHQn5xc
-         3oahsnfTh5X7fL0qelOXgwPDDCtIjqL3rZl48ID7UDkxXCCHl5Hqma12n/8ce+JSHqwO
-         UiHhuACbNgvHA1pVAfqqMdjeLUE79q9EkUb/8y3GweUvZVQamPv5UaLY0aYMxcZWcM4U
-         6ZxmCtIQxUpILv6F4BoFY3c6o4jERnG/u2I75R01yyYpwjFJvIIlJ/2F52EQy8+gYe6O
-         XRe3q4aAitZCZ9JSOFc2/Hp7m3E27pGzU8xYvbkQ6pO4xuUyZ8K0Jy1+M96AF2+Nb6NA
-         URFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=yYa4yiJ07M3lgAUara1ddh2Fl/2EMqAxZqq+KQ/z45A=;
-        b=AubepHPmdCETIksDZg8CR1P6l5AablfbB70rwGb4NgS9ryWvtsTKUB1XEaSg+Rppml
-         BvdAaRoFKmyrM4nAjwOPJmnG8d7I7oXOaeKUbOUNsmut/qCKj8tIO9D600YvkQaJs/jd
-         hykPLaacHe2LfAlTMJWlRc4CgjjWWIhIy5M+FtbDJzD6bv7mugBABIt578yBTOltmGwU
-         QBD0qZOsQlTmWIvt/ScqhtkqwiY4HJtwqwBukt1NeJfsp/kAerFkCQJ6IzHgX7F1tYqc
-         RF5SFIsEjvwbu8R+DlMOxSi4HJAEQMijIebxh41j4Dzi4zQQCn3Mde3JbDGbwWr3ps1F
-         doQQ==
-X-Gm-Message-State: AJIora/neW9Eu3un/wDpaRf2k2LAIiAJfX6SDfatEHQexX/DEZ6783hs
-        DRjfTuWvfnSme6PLYRpkdA/8MA==
-X-Google-Smtp-Source: AGRyM1vd6fmMfsIYhhjorbNqQH/xakz3eNiYI12x3eZPYGIlasO/NTSUnQBFu+lH5JNe2Bd3nX3K2A==
-X-Received: by 2002:a63:7a49:0:b0:40c:ca38:aed7 with SMTP id j9-20020a637a49000000b0040cca38aed7mr1192901pgn.11.1655870496958;
-        Tue, 21 Jun 2022 21:01:36 -0700 (PDT)
-Received: from C02FT5A6MD6R.bytedance.net ([61.120.150.78])
-        by smtp.gmail.com with ESMTPSA id t66-20020a637845000000b004088f213f68sm12091082pgc.56.2022.06.21.21.01.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jun 2022 21:01:36 -0700 (PDT)
-From:   Gang Li <ligang.bdlg@bytedance.com>
-To:     Mike Kravetz <mike.kravetz@oracle.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Gang Li <ligang.bdlg@bytedance.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v1] mm, hugetlb: skip irrelevant nodes in hugetlb_show_meminfo()
-Date:   Wed, 22 Jun 2022 12:00:42 +0800
-Message-Id: <20220622040043.25462-1-ligang.bdlg@bytedance.com>
-X-Mailer: git-send-email 2.32.0
+        Wed, 22 Jun 2022 00:01:45 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2086.outbound.protection.outlook.com [40.107.236.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6B6E33EB7;
+        Tue, 21 Jun 2022 21:01:43 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=P1TTTB/51fBH6zuGkp+p53V0bcNaqstHn3xmhhhuQPOKn5aeD0okrc75JO19Pa4/NywG2GKLPmyzZNZQ1wYUxwY1cSYpe5jaqeSU/9vpM34zD+t6Urqkv9orEatEXuFn5CjWXWTILloJE2vepqQn0cBqBPdNwQD8lcJYedkY5ZD+yEOqY77zWOZjEudGdNxzWGtaEtGqI7ZWUkdmmnj2nVFS1Obh87gZLToI3bVO6Hs+JyBsTiMAR3dQzN9gK3kijLy3QJsUDr8IQqMBajNl1jz8iltFL2Ma77FZ9fErlBDvZIpTaT93AIL/Quo9+j2Vtp41UbAyfnCeqwc3mJKGzw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ZLXxJHdnZ5UKv5LpKGNOGKZBq9l1QBQ+oguMRw3JgwM=;
+ b=Ym9MSPgwplDHFxNvVvfdYEb68TQCsPn5J/9+FvVsv3t32tN3nMb5eMXNZamiadDfK/6ZeFjnG3TtBGXD+YlGTifnWgRXDmMt2LvKQi2DKd1cRjJ2qRJL4TXBpqwVWsM5JImr0PRXF6Ja74Ojx1cOgL2Mx8HwI6tR1RaBom2TWvO/y046o+iY1YzYFGXXdWyEeqYvD6Aj9zlFLdXSdxTYPKTdao+n/5RKEMdmlvESrW0E+V+2ZcpAaB2pQyD3AlUkk9b6hEJhmWGKe1izU9qKFf28+9K1240GH7iK7CRXY2lrgpMIvAFAreKvoyDpSMjWxdID3VcnvSmwRwgdFtoACg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.236) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ZLXxJHdnZ5UKv5LpKGNOGKZBq9l1QBQ+oguMRw3JgwM=;
+ b=YPyKKKgCekD6BjBvmexmHHYdTM2qVrbh3a22ATxPt3uCKD9uFJr6nzLwMbYve3quJyNmFl9xkq+FodSPZ7b1mLoNE5nQ4viPekvOz7YMJDunJgIcL7l8X1h31vlTq0i4sPWlYw7mZ++ZZDumzjcdIDF/wS+BlvD9F9+uDgJS19LwI35ga9TcuXIwbRPe9rY9jwrnW3OExDJunfsaGBovniwH3p0fJv0syxkC8yafzxRh7x1633rWqgXgqvQRL+T+N+LaIWyhAZSnKrcqFxMRx/hM4MJs1Mn5EniyMaAedKsNa/eJTUI/bfYn83Q43bx4wsW9C+mfy/fAYVYjrRaYIA==
+Received: from BN8PR15CA0002.namprd15.prod.outlook.com (2603:10b6:408:c0::15)
+ by CY5PR12MB6526.namprd12.prod.outlook.com (2603:10b6:930:31::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.15; Wed, 22 Jun
+ 2022 04:01:42 +0000
+Received: from BN8NAM11FT065.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:c0:cafe::a2) by BN8PR15CA0002.outlook.office365.com
+ (2603:10b6:408:c0::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.22 via Frontend
+ Transport; Wed, 22 Jun 2022 04:01:42 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.236; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.236) by
+ BN8NAM11FT065.mail.protection.outlook.com (10.13.177.63) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5373.15 via Frontend Transport; Wed, 22 Jun 2022 04:01:41 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by DRHQMAIL109.nvidia.com
+ (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Wed, 22 Jun
+ 2022 04:01:41 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail204.nvidia.com
+ (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 21 Jun
+ 2022 21:01:40 -0700
+Received: from vidyas-desktop.nvidia.com (10.127.8.9) by mail.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server id 15.2.986.22 via Frontend
+ Transport; Tue, 21 Jun 2022 21:01:37 -0700
+From:   Vidya Sagar <vidyas@nvidia.com>
+To:     <jingoohan1@gmail.com>, <gustavo.pimentel@synopsys.com>,
+        <lpieralisi@kernel.org>, <robh@kernel.org>, <kw@linux.com>,
+        <bhelgaas@google.com>
+CC:     <linux-pci@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <kthota@nvidia.com>, <mmaddireddy@nvidia.com>, <vidyas@nvidia.com>,
+        <sagar.tv@gmail.com>
+Subject: [PATCH V1] PCI: designware-ep: Fix DBI access before core init
+Date:   Wed, 22 Jun 2022 09:31:33 +0530
+Message-ID: <20220622040133.31058-1-vidyas@nvidia.com>
+X-Mailer: git-send-email 2.17.1
+X-NVConfidentiality: public
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: aa864e8d-7be9-4714-4bf5-08da5403ea76
+X-MS-TrafficTypeDiagnostic: CY5PR12MB6526:EE_
+X-Microsoft-Antispam-PRVS: <CY5PR12MB6526814608D1015CEA5290B0B8B29@CY5PR12MB6526.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: gYHVDsv4vKog1BB+5kouoOj+0Cz2E9ZdrK67IFHAZNyNJetCs25B/4n2a+pgEKeCSXw8oAz9bXlTIikzxMmIbimqNsI8V12dwravGtwGZf6HW7OEFk8UGcwSImS6CSjAn1g529GjKRLpBXGyPhMznHiv9fuyFHiLEFW2mrKjkR5kyZ63S4+z2p9qlZ6D//7iU2VMmbw5xVp8RlN7+n2myOHx48kCDlnvAm6gXKD7Ldwgi2vxNbqiwUC1jO+Z4dSEFpwnpOhVEsM5ZQYfjSFO9ZAvQ5JUlA+xkfiQ+m/Vq227xhQ1dcjQVUF8BO+Mpw/G8gsVRH2QalSmnHyK13Sai59tt1M+LSUqtQK0oNYHstL8zWGzFyR3CIOM7NEUYnurUV4NKZgfvJWH1tcEK9m2rSXs6eNOfI8DqY093m+/s9P2yjt04pKfeZ8k/lbqf4YeTl+FF7LZNPfo18S6uxNF3nDnqyh9xhMSBRcp9NJjkGmdrPQOX81Fi8u3Ua62LfDdccXYru0D/NbBa9w8Z9RKQuzhF4me38f64Nma9bf9ZkLXjJu+G6umFyJTmYlXxHE2J2EL79flEw0WXDjnTdsLfh7Q/3anOhyWCqPIqnrRgaS12zvEHq5pygHKO+OAA/HYHux4WoP7bDekLSZUdUfzzFYWyR+Pw8zvgTbmold99azRjsSj7TuD+a/wn3F/N7a/6DEyuEGPrOXSqP8spBx85MqAfKKI5ze1uTc8pf0BvJT9qfBq4L81xQ+2yN5yEcoV
+X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(346002)(396003)(376002)(136003)(39860400002)(46966006)(40470700004)(36840700001)(82310400005)(40480700001)(4326008)(36756003)(8676002)(70586007)(40460700003)(316002)(5660300002)(7696005)(8936002)(70206006)(6666004)(2906002)(86362001)(83380400001)(186003)(478600001)(41300700001)(110136005)(2616005)(54906003)(47076005)(36860700001)(356005)(336012)(1076003)(426003)(26005)(82740400003)(81166007)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jun 2022 04:01:41.9884
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: aa864e8d-7be9-4714-4bf5-08da5403ea76
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT065.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6526
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-show_free_areas() allows to filter out node specific data which is
-irrelevant to the allocation request. But hugetlb_show_meminfo() still
-show hugetlb on all nodes, which is redundant and unnecessary.
+Platforms that cannot support their core initialization without the
+reference clock from the host, implement the feature 'core_init_notifier'
+to indicate the DesignWare sub-system about when their core is getting
+initialized. Any accesses to the core (Ex:- DBI) would result in system
+hang in such systems (Ex:- tegra194). This patch moves any access to the
+core to dw_pcie_ep_init_complete() API which is effectively called only
+after the core initialization.
 
-Use show_mem_node_skip() to skip irrelevant nodes in
-hugetlb_show_meminfo().
-
-Signed-off-by: Gang Li <ligang.bdlg@bytedance.com>
+Signed-off-by: Vidya Sagar <vidyas@nvidia.com>
 ---
- include/linux/hugetlb.h | 4 ++--
- include/linux/mm.h      | 1 +
- mm/hugetlb.c            | 7 +++++--
- mm/page_alloc.c         | 4 ++--
- 4 files changed, 10 insertions(+), 6 deletions(-)
+ .../pci/controller/dwc/pcie-designware-ep.c   | 88 +++++++++++--------
+ 1 file changed, 49 insertions(+), 39 deletions(-)
 
-diff --git a/include/linux/hugetlb.h b/include/linux/hugetlb.h
-index 642a39016f9a..1913ac6bf10a 100644
---- a/include/linux/hugetlb.h
-+++ b/include/linux/hugetlb.h
-@@ -155,7 +155,7 @@ void __unmap_hugepage_range_final(struct mmu_gather *tlb,
- 			  struct page *ref_page, zap_flags_t zap_flags);
- void hugetlb_report_meminfo(struct seq_file *);
- int hugetlb_report_node_meminfo(char *buf, int len, int nid);
--void hugetlb_show_meminfo(void);
-+void hugetlb_show_meminfo(unsigned int filter, nodemask_t *nodemask);
- unsigned long hugetlb_total_pages(void);
- vm_fault_t hugetlb_fault(struct mm_struct *mm, struct vm_area_struct *vma,
- 			unsigned long address, unsigned int flags);
-@@ -300,7 +300,7 @@ static inline int hugetlb_report_node_meminfo(char *buf, int len, int nid)
- 	return 0;
- }
- 
--static inline void hugetlb_show_meminfo(void)
-+static inline void hugetlb_show_meminfo(unsigned int filter, nodemask_t *nodemask)
+diff --git a/drivers/pci/controller/dwc/pcie-designware-ep.c b/drivers/pci/controller/dwc/pcie-designware-ep.c
+index 0eda8236c125..9feec720175f 100644
+--- a/drivers/pci/controller/dwc/pcie-designware-ep.c
++++ b/drivers/pci/controller/dwc/pcie-designware-ep.c
+@@ -639,9 +639,14 @@ static unsigned int dw_pcie_ep_find_ext_capability(struct dw_pcie *pci, int cap)
+ int dw_pcie_ep_init_complete(struct dw_pcie_ep *ep)
  {
- }
+ 	struct dw_pcie *pci = to_dw_pcie_from_ep(ep);
++	struct dw_pcie_ep_func *ep_func;
++	struct device *dev = pci->dev;
++	struct pci_epc *epc = ep->epc;
+ 	unsigned int offset;
+ 	unsigned int nbars;
+ 	u8 hdr_type;
++	u8 func_no;
++	void *addr;
+ 	u32 reg;
+ 	int i;
  
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 764dc0fdae5e..f72c1b21cde3 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -1873,6 +1873,7 @@ extern void pagefault_out_of_memory(void);
-  */
- #define SHOW_MEM_FILTER_NODES		(0x0001u)	/* disallowed nodes */
- 
-+extern bool show_mem_node_skip(unsigned int flags, int nid, nodemask_t *nodemask);
- extern void show_free_areas(unsigned int flags, nodemask_t *nodemask);
- 
- #ifdef CONFIG_MMU
-diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-index 98492733cc64..632826e6fea5 100644
---- a/mm/hugetlb.c
-+++ b/mm/hugetlb.c
-@@ -4486,7 +4486,7 @@ int hugetlb_report_node_meminfo(char *buf, int len, int nid)
- 			     nid, h->surplus_huge_pages_node[nid]);
- }
- 
--void hugetlb_show_meminfo(void)
-+void hugetlb_show_meminfo(unsigned int filter, nodemask_t *nodemask)
- {
- 	struct hstate *h;
- 	int nid;
-@@ -4494,7 +4494,9 @@ void hugetlb_show_meminfo(void)
- 	if (!hugepages_supported())
- 		return;
- 
--	for_each_node_state(nid, N_MEMORY)
-+	for_each_node_state(nid, N_MEMORY) {
-+		if (show_mem_node_skip(filter, nid, nodemask))
-+			continue;
- 		for_each_hstate(h)
- 			pr_info("Node %d hugepages_total=%u hugepages_free=%u hugepages_surp=%u hugepages_size=%lukB\n",
- 				nid,
-@@ -4502,6 +4504,7 @@ void hugetlb_show_meminfo(void)
- 				h->free_huge_pages_node[nid],
- 				h->surplus_huge_pages_node[nid],
- 				huge_page_size(h) / SZ_1K);
-+	}
- }
- 
- void hugetlb_report_usage(struct seq_file *m, struct mm_struct *mm)
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 84781094b478..5896b5a9101f 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -5951,7 +5951,7 @@ void si_meminfo_node(struct sysinfo *val, int nid)
-  * Determine whether the node should be displayed or not, depending on whether
-  * SHOW_MEM_FILTER_NODES was passed to show_free_areas().
-  */
--static bool show_mem_node_skip(unsigned int flags, int nid, nodemask_t *nodemask)
-+bool show_mem_node_skip(unsigned int flags, int nid, nodemask_t *nodemask)
- {
- 	if (!(flags & SHOW_MEM_FILTER_NODES))
- 		return false;
-@@ -6196,7 +6196,7 @@ void show_free_areas(unsigned int filter, nodemask_t *nodemask)
- 		printk(KERN_CONT "= %lukB\n", K(total));
+@@ -654,6 +659,42 @@ int dw_pcie_ep_init_complete(struct dw_pcie_ep *ep)
+ 		return -EIO;
  	}
  
--	hugetlb_show_meminfo();
-+	hugetlb_show_meminfo(filter, nodemask);
++	dw_pcie_iatu_detect(pci);
++
++	ep->ib_window_map = devm_kcalloc(dev,
++					 BITS_TO_LONGS(pci->num_ib_windows),
++					 sizeof(long),
++					 GFP_KERNEL);
++	if (!ep->ib_window_map)
++		return -ENOMEM;
++
++	ep->ob_window_map = devm_kcalloc(dev,
++					 BITS_TO_LONGS(pci->num_ob_windows),
++					 sizeof(long),
++					 GFP_KERNEL);
++	if (!ep->ob_window_map)
++		return -ENOMEM;
++
++	addr = devm_kcalloc(dev, pci->num_ob_windows, sizeof(phys_addr_t),
++			    GFP_KERNEL);
++	if (!addr)
++		return -ENOMEM;
++	ep->outbound_addr = addr;
++
++	for (func_no = 0; func_no < epc->max_functions; func_no++) {
++		ep_func = devm_kzalloc(dev, sizeof(*ep_func), GFP_KERNEL);
++		if (!ep_func)
++			return -ENOMEM;
++
++		ep_func->func_no = func_no;
++		ep_func->msi_cap = dw_pcie_ep_find_capability(ep, func_no,
++							      PCI_CAP_ID_MSI);
++		ep_func->msix_cap = dw_pcie_ep_find_capability(ep, func_no,
++							       PCI_CAP_ID_MSIX);
++
++		list_add_tail(&ep_func->list, &ep->func_list);
++	}
++
+ 	offset = dw_pcie_ep_find_ext_capability(pci, PCI_EXT_CAP_ID_REBAR);
  
- 	printk("%ld total pagecache pages\n", global_node_page_state(NR_FILE_PAGES));
+ 	dw_pcie_dbi_ro_wr_en(pci);
+@@ -677,8 +718,6 @@ EXPORT_SYMBOL_GPL(dw_pcie_ep_init_complete);
+ int dw_pcie_ep_init(struct dw_pcie_ep *ep)
+ {
+ 	int ret;
+-	void *addr;
+-	u8 func_no;
+ 	struct resource *res;
+ 	struct pci_epc *epc;
+ 	struct dw_pcie *pci = to_dw_pcie_from_ep(ep);
+@@ -686,7 +725,6 @@ int dw_pcie_ep_init(struct dw_pcie_ep *ep)
+ 	struct platform_device *pdev = to_platform_device(dev);
+ 	struct device_node *np = dev->of_node;
+ 	const struct pci_epc_features *epc_features;
+-	struct dw_pcie_ep_func *ep_func;
  
+ 	INIT_LIST_HEAD(&ep->func_list);
+ 
+@@ -708,8 +746,6 @@ int dw_pcie_ep_init(struct dw_pcie_ep *ep)
+ 		}
+ 	}
+ 
+-	dw_pcie_iatu_detect(pci);
+-
+ 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "addr_space");
+ 	if (!res)
+ 		return -EINVAL;
+@@ -717,26 +753,6 @@ int dw_pcie_ep_init(struct dw_pcie_ep *ep)
+ 	ep->phys_base = res->start;
+ 	ep->addr_size = resource_size(res);
+ 
+-	ep->ib_window_map = devm_kcalloc(dev,
+-					 BITS_TO_LONGS(pci->num_ib_windows),
+-					 sizeof(long),
+-					 GFP_KERNEL);
+-	if (!ep->ib_window_map)
+-		return -ENOMEM;
+-
+-	ep->ob_window_map = devm_kcalloc(dev,
+-					 BITS_TO_LONGS(pci->num_ob_windows),
+-					 sizeof(long),
+-					 GFP_KERNEL);
+-	if (!ep->ob_window_map)
+-		return -ENOMEM;
+-
+-	addr = devm_kcalloc(dev, pci->num_ob_windows, sizeof(phys_addr_t),
+-			    GFP_KERNEL);
+-	if (!addr)
+-		return -ENOMEM;
+-	ep->outbound_addr = addr;
+-
+ 	if (pci->link_gen < 1)
+ 		pci->link_gen = of_pci_get_max_link_speed(np);
+ 
+@@ -753,20 +769,6 @@ int dw_pcie_ep_init(struct dw_pcie_ep *ep)
+ 	if (ret < 0)
+ 		epc->max_functions = 1;
+ 
+-	for (func_no = 0; func_no < epc->max_functions; func_no++) {
+-		ep_func = devm_kzalloc(dev, sizeof(*ep_func), GFP_KERNEL);
+-		if (!ep_func)
+-			return -ENOMEM;
+-
+-		ep_func->func_no = func_no;
+-		ep_func->msi_cap = dw_pcie_ep_find_capability(ep, func_no,
+-							      PCI_CAP_ID_MSI);
+-		ep_func->msix_cap = dw_pcie_ep_find_capability(ep, func_no,
+-							       PCI_CAP_ID_MSIX);
+-
+-		list_add_tail(&ep_func->list, &ep->func_list);
+-	}
+-
+ 	if (ep->ops->ep_init)
+ 		ep->ops->ep_init(ep);
+ 
+@@ -790,6 +792,14 @@ int dw_pcie_ep_init(struct dw_pcie_ep *ep)
+ 			return 0;
+ 	}
+ 
++	/*
++	 * NOTE:- Avoid accessing the hardware (Ex:- DBI space) before this
++	 * step as platforms that implement 'core_init_notifier' feature may
++	 * not have the hardware ready (i.e. core initialized) for access
++	 * (Ex: tegra194). Any hardware access on such platforms result
++	 * in system hard hang.
++	 */
++
+ 	return dw_pcie_ep_init_complete(ep);
+ }
+ EXPORT_SYMBOL_GPL(dw_pcie_ep_init);
 -- 
-2.20.1
+2.17.1
 
