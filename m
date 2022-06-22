@@ -2,170 +2,251 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AEC3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 06:09:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 301A3CCA47A
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 06:11:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357049AbiFVGJb (ORCPT
+        id S1357084AbiFVGLF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 02:09:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55682 "EHLO
+        Wed, 22 Jun 2022 02:11:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230006AbiFVGJ3 (ORCPT
+        with ESMTP id S230006AbiFVGLD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 02:09:29 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC1EB1CB21;
-        Tue, 21 Jun 2022 23:09:22 -0700 (PDT)
-X-UUID: c1ce7ed61733451c84386834803eea27-20220622
+        Wed, 22 Jun 2022 02:11:03 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EACC41F61C;
+        Tue, 21 Jun 2022 23:11:00 -0700 (PDT)
+X-UUID: 5a727973065c4e8683ff43bae6390ba9-20220622
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.6,REQID:c7d4467c-1ff9-4c03-bb4d-d48211e0bc06,OB:0,LO
-        B:0,IP:0,URL:5,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:0
-X-CID-META: VersionHash:b14ad71,CLOUDID:9b602fea-f7af-4e69-92ee-0fd74a0c286c,C
+X-CID-O-INFO: VERSION:1.1.6,REQID:b323eea3-5f11-4f5b-83c7-965cd29cae5c,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:b14ad71,CLOUDID:8cf0b72d-1756-4fa3-be7f-474a6e4be921,C
         OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
         ,QS:nil,BEC:nil,COL:0
-X-UUID: c1ce7ed61733451c84386834803eea27-20220622
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
-        (envelope-from <peter.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 2137778895; Wed, 22 Jun 2022 14:09:18 +0800
+X-UUID: 5a727973065c4e8683ff43bae6390ba9-20220622
+Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw01.mediatek.com
+        (envelope-from <wenbin.mei@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 514534466; Wed, 22 Jun 2022 14:10:56 +0800
 Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Wed, 22 Jun 2022 14:09:17 +0800
-Received: from [172.21.84.99] (172.21.84.99) by mtkmbs11n2.mediatek.inc
+ Wed, 22 Jun 2022 14:10:56 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkmbs11n2.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Wed, 22 Jun 2022 14:09:16 +0800
-Subject: Re: [PATCH v1] PM-runtime: Check supplier_preactivated before release
- supplier
-To:     <matthias.bgg@gmail.com>, <len.brown@intel.com>, <pavel@ucw.cz>,
-        <rafael@kernel.org>, <gregkh@linuxfoundation.org>,
-        <stanley.chu@mediatek.com>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-pm@vger.kernel.org>,
-        <martin.petersen@oracle.com>, <avri.altman@wdc.com>,
-        <alim.akhtar@samsung.com>, <jejb@linux.ibm.com>
-CC:     <wsd_upstream@mediatek.com>, <linux-mediatek@lists.infradead.org>,
-        <chun-hung.wu@mediatek.com>, <alice.chao@mediatek.com>,
-        <cc.chou@mediatek.com>, <chaotian.jing@mediatek.com>,
-        <jiajie.hao@mediatek.com>, <powen.kao@mediatek.com>,
-        <qilin.tan@mediatek.com>, <lin.gui@mediatek.com>,
-        <tun-yu.yu@mediatek.com>
-References: <20220613120755.14306-1-peter.wang@mediatek.com>
-From:   Peter Wang <peter.wang@mediatek.com>
-Message-ID: <a6ed562c-5ec0-231d-0eee-a35f2ba7a344@mediatek.com>
-Date:   Wed, 22 Jun 2022 14:09:16 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+ Transport; Wed, 22 Jun 2022 14:10:55 +0800
+Message-ID: <2705069844be7b3152a810e21b9f737a88d0302d.camel@mediatek.com>
+Subject: Re: [PATCH 2/3] dt-bindings: usb: mtk-xhci: Allow middle optional
+ clocks to be missing
+From:   Wenbin Mei <wenbin.mei@mediatek.com>
+To:     Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "=?ISO-8859-1?Q?N=EDcolas?= F. R. A. Prado" <nfraprado@collabora.com>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>, <kernel@collabora.com>,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>, <linux-usb@vger.kernel.org>
+Date:   Wed, 22 Jun 2022 14:10:55 +0800
+In-Reply-To: <ba6cccfa05aed087d14f5adc6db06496547a5094.camel@mediatek.com>
+References: <20220617222916.2435618-1-nfraprado@collabora.com>
+         <20220617222916.2435618-3-nfraprado@collabora.com>
+         <8639e64d-c659-7090-2d0a-078fd96cfbd4@linaro.org>
+         <bb460aa483cc888ffa36709d9e9c1f2e3be0e000.camel@mediatek.com>
+         <bc5458fe-083c-d679-9fcb-95810a290da8@linaro.org>
+         <af50210b95d0cd8b2e3103b3d4a9702aeeba9452.camel@mediatek.com>
+         <a24c24e6-fdee-df79-fd2f-6a71540bd9b3@linaro.org>
+         <20220620155057.a6qilnhm7snzhapa@notapiano>
+         <afae6179-3681-f5c6-4615-3228f16f1271@linaro.org>
+         <ba6cccfa05aed087d14f5adc6db06496547a5094.camel@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-In-Reply-To: <20220613120755.14306-1-peter.wang@mediatek.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi all,
+On Wed, 2022-06-22 at 09:57 +0800, Chunfeng Yun wrote:
+> On Tue, 2022-06-21 at 09:14 +0200, Krzysztof Kozlowski wrote:
+> > On 20/06/2022 17:50, Nícolas F. R. A. Prado wrote:
+> > > On Mon, Jun 20, 2022 at 10:50:57AM +0200, Krzysztof Kozlowski
+> > > wrote:
+> > > > On 20/06/2022 08:59, Chunfeng Yun wrote:
+> > > > > On Sun, 2022-06-19 at 14:05 +0200, Krzysztof Kozlowski wrote:
+> > > > > > On 19/06/2022 09:46, Chunfeng Yun wrote:
+> > > > > > > On Fri, 2022-06-17 at 18:25 -0700, Krzysztof Kozlowski
+> > > > > > > wrote:
+> > > > > > > > On 17/06/2022 15:29, Nícolas F. R. A. Prado wrote:
+> > > > > > > > > The current clock list in the binding doesn't allow
+> > > > > > > > > for
+> > > > > > > > > one of
+> > > > > > > > > the
+> > > > > > > > > optional clocks to be missing and a subsequent clock
+> > > > > > > > > to
+> > > > > > > > > be
+> > > > > > > > > present.
+> > > > > > > > > An
+> > > > > > > > > example where this is an issue is in mt8192.dtsi,
+> > > > > > > > > which
+> > > > > > > > > has
+> > > > > > > > > "sys_ck",
+> > > > > > > > > "ref_ck", "xhci_ck" and would cause dtbs_check
+> > > > > > > > > warnings.
+> > > > > > > > > 
+> > > > > > > > > Change the clock list in a way that allows the middle
+> > > > > > > > > optional
+> > > > > > > > > clocks to
+> > > > > > > > > be missing, while still guaranteeing a fixed order.
+> > > > > > > > > The
+> > > > > > > > > "ref_ck" is
+> > > > > > > > > kept
+> > > > > > > > > as a const even though it is optional for simplicity,
+> > > > > > > > > since it
+> > > > > > > > > is
+> > > > > > > > > present in all current dts files.
+> > > > > > > > > 
+> > > > > > > > > Signed-off-by: Nícolas F. R. A. Prado <
+> > > > > > > > > nfraprado@collabora.com>
+> > > > > > > > > ---
+> > > > > > > > > 
+> > > > > > > > >  .../devicetree/bindings/usb/mediatek,mtk-
+> > > > > > > > > xhci.yaml       | 9
+> > > > > > > > > +++++++--
+> > > > > > > > >  1 file changed, 7 insertions(+), 2 deletions(-)
+> > > > > > > > > 
+> > > > > > > > > diff --git
+> > > > > > > > > a/Documentation/devicetree/bindings/usb/mediatek,mtk-
+> > > > > > > > > xhci.yaml
+> > > > > > > > > b/Documentation/devicetree/bindings/usb/mediatek,mtk-
+> > > > > > > > > xhci.yaml
+> > > > > > > > > index 63cbc2b62d18..99a1b233ec90 100644
+> > > > > > > > > ---
+> > > > > > > > > a/Documentation/devicetree/bindings/usb/mediatek,mtk-
+> > > > > > > > > xhci.yaml
+> > > > > > > > > +++
+> > > > > > > > > b/Documentation/devicetree/bindings/usb/mediatek,mtk-
+> > > > > > > > > xhci.yaml
+> > > > > > > > > @@ -80,8 +80,13 @@ properties:
+> > > > > > > > >      items:
+> > > > > > > > >        - const: sys_ck  # required, the following
+> > > > > > > > > ones
+> > > > > > > > > are
+> > > > > > > > > optional
+> > > > > > > > >        - const: ref_ck
+> > > > > > > > > -      - const: mcu_ck
+> > > > > > > > > -      - const: dma_ck
+> > > > > > > > > +      - enum:
+> > > > > > > > > +          - mcu_ck
+> > > > > > > > > +          - dma_ck
+> > > > > > > > > +          - xhci_ck
+> > > > > > > > > +      - enum:
+> > > > > > > > > +          - dma_ck
+> > > > > > > > > +          - xhci_ck
+> > > > > > > > >        - const: xhci_ck
+> > > > > > > > 
+> > > > > > > > You allow now almost any order here, including
+> > > > > > > > incorrect
+> > > > > > > > like
+> > > > > > > > sys,ref,xhci,xhci,xhci.
+> > > > > > > > 
+> > > > > > > > The order of clocks has to be fixed and we cannot allow
+> > > > > > > > flexibility.
+> > > > > > > > Are
+> > > > > > > > you sure that these clocks are actually optional (not
+> > > > > > > > wired to
+> > > > > > > > the
+> > > > > > > > device)?
+> > > > > > > 
+> > > > > > > In fact, these optional clocks are fixed, due to no gates
+> > > > > > > are
+> > > > > > > provided,
+> > > > > > > SW can't control them by CCF;
+> > > > > > > In this case, I usually use a fixed clock, or ignore it.
+> > > > > > 
+> > > > > > But in some versions these clocks are controllable or not?
+> > > > > 
+> > > > > Some SoCs are controllable, some ones are not (fixed clock).
+> > > > 
+> > > > Thanks for confirming. Then I would prefer to make these clocks
+> > > > required
+> > > > (not optional) and always provide them - via common clock
+> > > > framework or
+> > > > fixed-clock.
+> > > 
+> > > Hi Krzysztof and Chunfeng,
+> > > 
+> > > thank you both for the feedback.
+> > > 
+> > > Since the solution I proposed in this patch is not acceptable I
+> > > see
+> > > two options:
+> > > 1. Split the clocks in several if blocks matched by compatibles
+> > > 2. Make the clocks required and use fixed-clock nodes for the
+> > > missing clocks in
+> > >    the DT
+> > > 
+> > > My understanding is that 1 is the desirable solution if the clock
+> > > is really
+> > > missing in some hardware variants, while 2 is desirable if all
+> > > hardware variants
+> > > really receive all the clocks, only that on some variants they're
+> > > fixed and not
+> > > controlable by SW.
+> > > 
+> > > From what I'm reading of this discussion it seems that the latter
+> > > is the case
+> > > here and thus we should go for 2. Is this correct?
+> > 
+> > This is how I understood it as well, so correct from my side.
+> 
+> Also right for me.
+> 
+> > 
+> > > 
+> > > Also Chunfeng, do you have information on whether the same is
+> > > true
+> > > for the MMC
+> > > HW block? I recently submitted some changes to that binding [1]
+> > > but
+> > > I followed
+> > > approach 1 there instead. However if all the clocks are present
+> > > in
+> > > the HW level
+> > > there as well it would make more sense for me to change it to
+> > > follow approach 2.
+> 
+> I discussed it with Wenbin, MMC seems a little different with USB,
+> 
+> Hi Wenbin,
+> 
+>    Please give some comments about MMC, thanks
+> 
+Hi Chunfeng,
 
+As we discussed, the following change is the desirable solution for the
+Mediatek MMC HW.
 
-gentle ping for this bug fix review.
-
+https://lists.infradead.org/pipermail/linux-mediatek/2022-June/043691.html
 
 Thanks.
+> > > 
+> > > Thanks,
+> > > Nícolas
+> > > 
+> > > [1] 
+> > > 
+https://lore.kernel.org/all/20220617230114.2438875-1-nfraprado@collabora.com
+> > 
+> > 
+> > Best regards,
+> > Krzysztof
+> 
+> 
 
-
-On 6/13/22 8:07 PM, peter.wang@mediatek.com wrote:
-> From: Peter Wang <peter.wang@mediatek.com>
->
-> With divice link of DL_FLAG_PM_RUNTIME, if consumer call pm_runtime_get_suppliers
-> to prevent supplier enter suspend, pm_runtime_release_supplier should
-> check supplier_preactivated before let supplier enter suspend.
->
-> If the link is drop or release, bypass check supplier_preactivated.
->
-> Signed-off-by: Peter Wang <peter.wang@mediatek.com>
-> ---
->   drivers/base/core.c          |  2 +-
->   drivers/base/power/runtime.c | 15 ++++++++++++---
->   include/linux/pm_runtime.h   |  5 +++--
->   3 files changed, 16 insertions(+), 6 deletions(-)
->
-> diff --git a/drivers/base/core.c b/drivers/base/core.c
-> index 7cd789c4985d..3b9cc559928f 100644
-> --- a/drivers/base/core.c
-> +++ b/drivers/base/core.c
-> @@ -486,7 +486,7 @@ static void device_link_release_fn(struct work_struct *work)
->   	/* Ensure that all references to the link object have been dropped. */
->   	device_link_synchronize_removal();
->   
-> -	pm_runtime_release_supplier(link, true);
-> +	pm_runtime_release_supplier(link, true, true);
->   
->   	put_device(link->consumer);
->   	put_device(link->supplier);
-> diff --git a/drivers/base/power/runtime.c b/drivers/base/power/runtime.c
-> index 676dc72d912d..3c4f425937a1 100644
-> --- a/drivers/base/power/runtime.c
-> +++ b/drivers/base/power/runtime.c
-> @@ -314,10 +314,19 @@ static int rpm_get_suppliers(struct device *dev)
->    * and if @check_idle is set, check if that device is idle (and so it can be
->    * suspended).
->    */
-> -void pm_runtime_release_supplier(struct device_link *link, bool check_idle)
-> +void pm_runtime_release_supplier(struct device_link *link, bool check_idle,
-> +	bool drop)
->   {
->   	struct device *supplier = link->supplier;
->   
-> +	/*
-> +	 * When consumer hold supplier, supplier cannot enter suspend.
-> +	 * Driect release supplier and let supplier enter suspend is not allow.
-> +	 * Unless the link is drop, direct relsease supplier should be okay.
-> +	 */
-> +	if (link->supplier_preactivated && !drop)
-> +		return;
-> +
->   	/*
->   	 * The additional power.usage_count check is a safety net in case
->   	 * the rpm_active refcount becomes saturated, in which case
-> @@ -338,7 +347,7 @@ static void __rpm_put_suppliers(struct device *dev, bool try_to_suspend)
->   
->   	list_for_each_entry_rcu(link, &dev->links.suppliers, c_node,
->   				device_links_read_lock_held())
-> -		pm_runtime_release_supplier(link, try_to_suspend);
-> +		pm_runtime_release_supplier(link, try_to_suspend, false);
->   }
->   
->   static void rpm_put_suppliers(struct device *dev)
-> @@ -1838,7 +1847,7 @@ void pm_runtime_drop_link(struct device_link *link)
->   		return;
->   
->   	pm_runtime_drop_link_count(link->consumer);
-> -	pm_runtime_release_supplier(link, true);
-> +	pm_runtime_release_supplier(link, true, true);
->   }
->   
->   static bool pm_runtime_need_not_resume(struct device *dev)
-> diff --git a/include/linux/pm_runtime.h b/include/linux/pm_runtime.h
-> index 9e4d056967c6..354ffb1eaec0 100644
-> --- a/include/linux/pm_runtime.h
-> +++ b/include/linux/pm_runtime.h
-> @@ -88,7 +88,8 @@ extern void pm_runtime_get_suppliers(struct device *dev);
->   extern void pm_runtime_put_suppliers(struct device *dev);
->   extern void pm_runtime_new_link(struct device *dev);
->   extern void pm_runtime_drop_link(struct device_link *link);
-> -extern void pm_runtime_release_supplier(struct device_link *link, bool check_idle);
-> +extern void pm_runtime_release_supplier(struct device_link *link,
-> +	bool check_idle, bool drop);
->   
->   extern int devm_pm_runtime_enable(struct device *dev);
->   
-> @@ -315,7 +316,7 @@ static inline void pm_runtime_put_suppliers(struct device *dev) {}
->   static inline void pm_runtime_new_link(struct device *dev) {}
->   static inline void pm_runtime_drop_link(struct device_link *link) {}
->   static inline void pm_runtime_release_supplier(struct device_link *link,
-> -					       bool check_idle) {}
-> +					       bool check_idle, bool drop) {}
->   
->   #endif /* !CONFIG_PM */
->   
