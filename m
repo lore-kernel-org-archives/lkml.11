@@ -2,93 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCECAC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 12:33:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDC46CCA47D
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 12:36:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239159AbiFVMds (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 08:33:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36054 "EHLO
+        id S236250AbiFVMgB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 08:36:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241717AbiFVMd1 (ORCPT
+        with ESMTP id S232067AbiFVMfx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 08:33:27 -0400
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C42D1055E;
-        Wed, 22 Jun 2022 05:33:26 -0700 (PDT)
-Received: from pendragon.ideasonboard.com (cpc89244-aztw30-2-0-cust3082.18-1.cable.virginm.net [86.31.172.11])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 1DD7BDD;
-        Wed, 22 Jun 2022 14:33:24 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1655901204;
-        bh=pwLY49vqQCivbqlA7ZAkrkwfDtnJLPJn+P8i52ypG4I=;
-        h=In-Reply-To:References:Subject:From:To:Date:From;
-        b=hh7D5akfSUnKrOvq6kxCeHj9vLCoOBVj9Ie15gSLyDOd6ta7qIFKhV3Rxh5qLzfpE
-         QxUIqh9sXNMTcYAclIhOKEjpjAIPoC246MAsYCxRm71j8DlsbVystF/nVP8alpf8YQ
-         gyDc8YAS3kcD8AaGqjBwQCun5Nyl19idibuDYX28=
-Content-Type: text/plain; charset="utf-8"
+        Wed, 22 Jun 2022 08:35:53 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 248D728E23;
+        Wed, 22 Jun 2022 05:35:52 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id DCB7522238;
+        Wed, 22 Jun 2022 14:35:49 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1655901350;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Bh6Jq1ub4SzChkhbySxsHr+OtTcBRwkh5DtwncsKeks=;
+        b=V9SxZd/BW4PgvfUF3uSc7yg9bHJEVhAH82I1OgkMY0+NUrcbO03vPaeFPgdH37rBwKyGzM
+        4REoaZB4KW5EiccqerSlsKzJPn35uYyeGVNCngI+zSaAuOtLjtXmIG+rgqyJOI8hPIrHoF
+        sDgc6n4bkHRID7I9ec44CzQ3GBWDCDU=
+From:   Michael Walle <michael@walle.cc>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Guenter Roeck <linux@roeck-us.net>,
+        Michael Walle <michael@walle.cc>,
+        Russell King <rmk+kernel@armlinux.org.uk>
+Subject: [PATCH net-next 1/2] net: sfp: use hwmon_sanitize_name()
+Date:   Wed, 22 Jun 2022 14:35:42 +0200
+Message-Id: <20220622123543.3463209-2-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220622123543.3463209-1-michael@walle.cc>
+References: <20220622123543.3463209-1-michael@walle.cc>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <CANXPkT5k9Pw4ka6CihyCg0oTd-32Te-ox=f3=9rtCphVgrdctA@mail.gmail.com>
-References: <CANXPkT6mYusYe8O0dbq3vW+24SsUZ19PqhOL+wLFRnbFXwu0Zg@mail.gmail.com> <CANXPkT7nOhH+5bD0ycyRBT9FKQBBszCVuWkqp4tFtVRf2+8DFg@mail.gmail.com> <CANXPkT5k9Pw4ka6CihyCg0oTd-32Te-ox=f3=9rtCphVgrdctA@mail.gmail.com>
-Subject: Re: [PATCH] media: dvb_ringbuffer : Fix a bug in dvb_ringbuffer.c
-From:   Kieran Bingham <kieran.bingham@ideasonboard.com>
-To:     linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        mchehab@kernel.org,
-        =?utf-8?b?7Jyg7Jqp7IiY?= <yongsuyoo0215@gmail.com>
-Date:   Wed, 22 Jun 2022 13:33:21 +0100
-Message-ID: <165590120140.1149771.2257818527859865760@Monstersaurus>
-User-Agent: alot/0.10
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi YongSu Yoo,
+Instead of open-coding the bad characters replacement in the hwmon name,
+use the new hwmon_sanitize_name().
 
-Quoting =EC=9C=A0=EC=9A=A9=EC=88=98 (2022-06-22 12:39:20)
-> Dear Alls
->=20
-> How is my kernel modification going ?
-> Can you check my kernel modification ?
-> and give me the feedback ?
+Signed-off-by: Michael Walle <michael@walle.cc>
+Acked-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+---
+ drivers/net/phy/sfp.c | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
 
-Your patch needs to be sent inline, not as an attachement. It has a
-wrong mime type or such so I haven't even been able to open it yet.
+diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
+index 9a5d5a10560f..81a529c3dbe4 100644
+--- a/drivers/net/phy/sfp.c
++++ b/drivers/net/phy/sfp.c
+@@ -1290,7 +1290,7 @@ static const struct hwmon_chip_info sfp_hwmon_chip_info = {
+ static void sfp_hwmon_probe(struct work_struct *work)
+ {
+ 	struct sfp *sfp = container_of(work, struct sfp, hwmon_probe.work);
+-	int err, i;
++	int err;
+ 
+ 	/* hwmon interface needs to access 16bit registers in atomic way to
+ 	 * guarantee coherency of the diagnostic monitoring data. If it is not
+@@ -1318,16 +1318,12 @@ static void sfp_hwmon_probe(struct work_struct *work)
+ 		return;
+ 	}
+ 
+-	sfp->hwmon_name = kstrdup(dev_name(sfp->dev), GFP_KERNEL);
+-	if (!sfp->hwmon_name) {
++	sfp->hwmon_name = hwmon_sanitize_name(dev_name(sfp->dev));
++	if (IS_ERR(sfp->hwmon_name)) {
+ 		dev_err(sfp->dev, "out of memory for hwmon name\n");
+ 		return;
+ 	}
+ 
+-	for (i = 0; sfp->hwmon_name[i]; i++)
+-		if (hwmon_is_bad_char(sfp->hwmon_name[i]))
+-			sfp->hwmon_name[i] = '_';
+-
+ 	sfp->hwmon_dev = hwmon_device_register_with_info(sfp->dev,
+ 							 sfp->hwmon_name, sfp,
+ 							 &sfp_hwmon_chip_info,
+-- 
+2.30.2
 
-
-There should be helpful information in:
- https://www.kernel.org/doc/html/latest/process/submitting-patches.html
-
---
-Kieran
-
->=20
-> 2022=EB=85=84 6=EC=9B=94 1=EC=9D=BC (=EC=88=98) =EC=98=A4=ED=9B=84 9:54, =
-=EC=9C=A0=EC=9A=A9=EC=88=98 <yongsuyoo0215@gmail.com>=EB=8B=98=EC=9D=B4 =EC=
-=9E=91=EC=84=B1:
-> >
-> > Dear Alls
-> >
-> > Can you check the Below E-mail ?
-> > Can you share how is the below patch going ?
-> >
-> > ---------- Forwarded message ---------
-> > =EB=B3=B4=EB=82=B8=EC=82=AC=EB=9E=8C: =EC=9C=A0=EC=9A=A9=EC=88=98 <yong=
-suyoo0215@gmail.com>
-> > Date: 2022=EB=85=84 5=EC=9B=94 22=EC=9D=BC (=EC=9D=BC) =EC=98=A4=ED=9B=
-=84 3:36
-> > Subject: [PATCH] media: dvb_ringbuffer : Fix a bug in dvb_ringbuffer.c
-> > To: <mchehab@kernel.org>
-> > Cc: <0215yys@hanmail.net>, <yongsu.yoo@lge.com>, =EC=9C=A0=EC=9A=A9=EC=
-=88=98 <yongsuyoo0215@gmail.com>
-> >
-> >
-> > Dear Mauro Carvalho Chehab
-> > My name is YongSu Yoo
-> >
-> > I found an incorrect logic at the function of dvb_ringbuffer_pkt_next in
-> > /linux-next/drviers/media/dvb-core/dvb_ringbuffer.c.
-> > I correct the bug like the attached file (
-> > 0001-media-dvb_ringbuffer-Fix-a-bug-in-dvb_ringbuffer.c.patch ).
-> > Please check the attached file.
-> >
-> > Thank you
