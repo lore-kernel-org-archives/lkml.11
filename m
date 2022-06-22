@@ -2,77 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C51E2C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 04:32:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA3AFCCA47A
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 04:37:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356902AbiFVEcr (ORCPT
+        id S1356907AbiFVEhM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 00:32:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58680 "EHLO
+        Wed, 22 Jun 2022 00:37:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356131AbiFVEcp (ORCPT
+        with ESMTP id S1356131AbiFVEhJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 00:32:45 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B5E435276;
-        Tue, 21 Jun 2022 21:32:44 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LSVlK6RjVzSgyD;
-        Wed, 22 Jun 2022 12:29:17 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 22 Jun 2022 12:32:41 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 22 Jun
- 2022 12:32:41 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-media@vger.kernel.org>
-CC:     <mchehab@kernel.org>, <djrscally@gmail.com>,
-        <andriy.shevchenko@linux.intel.com>, <sakari.ailus@linux.intel.com>
-Subject: [PATCH -next v2] media: ov7251: add missing disable functions on error in ov7251_set_power_on()
-Date:   Wed, 22 Jun 2022 12:42:43 +0800
-Message-ID: <20220622044243.2900783-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 22 Jun 2022 00:37:09 -0400
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA6263527D
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 21:37:08 -0700 (PDT)
+Received: by mail-il1-f198.google.com with SMTP id l3-20020a056e021aa300b002d9094fb397so5408149ilv.11
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 21:37:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=WGUUiAN9wgqgmgaLmxz5/QjWUxqb/iZbav0ddG9/qxM=;
+        b=Yqx2MHhY8wKAGqTTiOpMfytsmCF6SxlMIUFQ9mN1qutjuOto4ooUxL5d9OEFZKx4LV
+         UBEdpukjIQ4pJv7V6RtE7FULH41lhXCW3KoIic1I9kDDP+NTafBO3GYMl0EMIyzUAQQu
+         +b/5bhhKdQcy7N/tNnIFSdY7PRPYgLQP+oBymVbcQnPn/m4TCa2x7JHWtUHBz6bjVh7n
+         QZJuk4XlOCOC8XXKhFaOdhqbbJLh1t/y2MesGq4MnPoq5pcdsM83921rjsZ071Fh8P1i
+         INlKSGppTrn3PoPm91Ot3a3ikta42+vuWyILQ19Q2QgumpWpDghonl3Ra4SMegzSFIn2
+         A3bA==
+X-Gm-Message-State: AJIora+55eyNsEtLtINM0mCEAs4KYKGOcBr9X+yPo9ttXxzjhQO77wDz
+        +j3hKyoNgDaXTP54ZqtW/m3HPzIMeQFHtgwlJ8iok4BtJfie
+X-Google-Smtp-Source: AGRyM1vc7sXZh7aauZkM8JZvEZJZDVt5NW8TEBYvuQNC9WLxqRQPwVvkC8owL79Qzjil/e5YVyFYVXe55idtE2rXbP9w6urOkpEW
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+X-Received: by 2002:a05:6638:3488:b0:332:2973:be80 with SMTP id
+ t8-20020a056638348800b003322973be80mr1048880jal.6.1655872628113; Tue, 21 Jun
+ 2022 21:37:08 -0700 (PDT)
+Date:   Tue, 21 Jun 2022 21:37:08 -0700
+In-Reply-To: <000000000000cf2ece05def394c8@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000cacae905e201e3be@google.com>
+Subject: Re: [syzbot] INFO: task hung in hci_dev_do_open (2)
+From:   syzbot <syzbot+e68a3899a8927b14f863@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, edumazet@google.com, hdanton@sina.com,
+        johan.hedberg@gmail.com, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        luiz.dentz@gmail.com, luiz.von.dentz@intel.com,
+        marcel@holtmann.org, netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the missing gpiod_set_value_cansleep() and clk_disable_unprepare()
-before return from ov7251_set_power_on() in the error handling case.
+syzbot has bisected this issue to:
 
-Fixes: 9e1d3012cc10 ("media: i2c: Remove .s_power() from ov7251")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
-v2:
-  - add gpiod_set_value_cansleep()
-  - also change the patch title and commit message
----
- drivers/media/i2c/ov7251.c | 2 ++
- 1 file changed, 2 insertions(+)
+commit d0b137062b2de75b264b84143d21c98abc5f5ad2
+Author: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Date:   Wed Oct 27 23:58:59 2021 +0000
 
-diff --git a/drivers/media/i2c/ov7251.c b/drivers/media/i2c/ov7251.c
-index 0e7be15bc20a..ad9689820ecc 100644
---- a/drivers/media/i2c/ov7251.c
-+++ b/drivers/media/i2c/ov7251.c
-@@ -934,6 +934,8 @@ static int ov7251_set_power_on(struct device *dev)
- 					ARRAY_SIZE(ov7251_global_init_setting));
- 	if (ret < 0) {
- 		dev_err(ov7251->dev, "error during global init\n");
-+		gpiod_set_value_cansleep(ov7251->enable_gpio, 0);
-+		clk_disable_unprepare(ov7251->xclk);
- 		ov7251_regulators_disable(ov7251);
- 		return ret;
- 	}
--- 
-2.25.1
+    Bluetooth: hci_sync: Rework init stages
 
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1376c63ff00000
+start commit:   38a288f5941e Add linux-next specific files for 20220506
+git tree:       linux-next
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=10f6c63ff00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=1776c63ff00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=6f4fbf50aa82985b
+dashboard link: https://syzkaller.appspot.com/bug?extid=e68a3899a8927b14f863
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=111555fef00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1629b3eaf00000
+
+Reported-by: syzbot+e68a3899a8927b14f863@syzkaller.appspotmail.com
+Fixes: d0b137062b2d ("Bluetooth: hci_sync: Rework init stages")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
