@@ -2,83 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CB23C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 06:19:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54F8BC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 06:19:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350340AbiFVGTQ (ORCPT
+        id S1351033AbiFVGTv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 02:19:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36636 "EHLO
+        Wed, 22 Jun 2022 02:19:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349945AbiFVGSv (ORCPT
+        with ESMTP id S1349890AbiFVGTu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 02:18:51 -0400
-Received: from unicom145.biz-email.net (unicom145.biz-email.net [210.51.26.145])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9691DE1;
-        Tue, 21 Jun 2022 23:18:46 -0700 (PDT)
-Received: from ([60.208.111.195])
-        by unicom145.biz-email.net ((D)) with ASMTP (SSL) id QCO00140;
-        Wed, 22 Jun 2022 14:18:40 +0800
-Received: from localhost.localdomain (10.200.104.97) by
- jtjnmail201611.home.langchao.com (10.100.2.11) with Microsoft SMTP Server id
- 15.1.2507.9; Wed, 22 Jun 2022 14:18:39 +0800
-From:   Bo Liu <liubo03@inspur.com>
-To:     <alex.williamson@redhat.com>, <cohuck@redhat.com>
-CC:     <kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Bo Liu <liubo03@inspur.com>
-Subject: [PATCH v2 1/1] vfio: check vfio_register_iommu_driver() return value
-Date:   Wed, 22 Jun 2022 00:56:51 -0400
-Message-ID: <20220622045651.5416-1-liubo03@inspur.com>
-X-Mailer: git-send-email 2.18.2
+        Wed, 22 Jun 2022 02:19:50 -0400
+Received: from mail-oa1-x44.google.com (mail-oa1-x44.google.com [IPv6:2001:4860:4864:20::44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06C94DE1
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 23:19:50 -0700 (PDT)
+Received: by mail-oa1-x44.google.com with SMTP id 586e51a60fabf-101bb9275bcso16350769fac.8
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 23:19:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vhaxOBA3UlWBtIgcnLHVU1ZrfA4tEjpSjLASHfh2pRI=;
+        b=Ex7gJArFhtsyQU1G4KpCVymBx+OkYN6w9WsvuXplatoxOLgy9qa4D6bvCGntMcSC+P
+         ltH13cuk1fVp37A26Jv7C5vnxZLEsIhBWAYaa+LUoEYY+H7cN9jqn+PSv6QH7NQIhS2Z
+         zkkO1aJHSLOi6ZeJttsCkCxRbFimcoiA/7hcVixlby0tuS5dUeXSFAEEx4ym0ewyFR1I
+         +/iTu6S/zXnFLZsqZK1aqS5DZmF9F6WjbTOc9ki1zGQ1bX/Ye7qWh4NLoeygEFeQHQTX
+         paJ6kPFm9eSjIeUtyPhA9VyQJfosPeS9Z4iMn87WqcjVIxKeBU4sh+gona5vE6M2P6hv
+         v2WQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vhaxOBA3UlWBtIgcnLHVU1ZrfA4tEjpSjLASHfh2pRI=;
+        b=DchWZxSIN962JEQ9qUj5Po5omwMkmUj4vJ63nXoFXJZUCZYHu6kSiwy12DFEz53ZvF
+         UCKG6LlIFk6kVUV2dgV+dzwytFWYucopJwBp4wITLB+yVue/+dv3g4NwEsDtDS4BZXFu
+         //0cNeATYL3QgMPZ/t6ZxOnQ47B3M9y50x/az57LNpcgXApDoFv2HRVzogqW5T1mJ1Gz
+         o5OgsGanbTu7mozEWves1jZwERYcIyHWhPuoSEGZ3STAXoPoulSD6MGRSoSeyUeO60vf
+         lPzk2b327IUK/P1AZ3CLMwyvSsMYd9EiU2q1bYFWgDltIVE6YvDUWKu262xEhXIl4eUg
+         7/pg==
+X-Gm-Message-State: AJIora9xhU3KSO/atfF3PTB0DtQtR5wXBDYXCu89+i5wTuiajzu1U+tc
+        Zb7CUUIW15nUsQyBQoNQG90=
+X-Google-Smtp-Source: AGRyM1v0rMMZ5bMWvwcHZBxS85WJNUuxhIAx33BMSoPIXJKG7Ji1YBiFUJL+/+2P7NaJVKVOuJD9Vg==
+X-Received: by 2002:a05:6871:1d0:b0:101:59af:c6b7 with SMTP id q16-20020a05687101d000b0010159afc6b7mr22444435oad.89.1655878789236;
+        Tue, 21 Jun 2022 23:19:49 -0700 (PDT)
+Received: from bertie (072-190-140-117.res.spectrum.com. [72.190.140.117])
+        by smtp.gmail.com with ESMTPSA id p10-20020a0568301d4a00b0060be7487954sm10665397oth.26.2022.06.21.23.19.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Jun 2022 23:19:48 -0700 (PDT)
+From:   Rebecca Mckeever <remckee0@gmail.com>
+To:     Mike Rapoport <rppt@kernel.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Cc:     David Hildenbrand <david@redhat.com>,
+        Rebecca Mckeever <remckee0@gmail.com>
+Subject: [PATCH 0/4] memblock tests: add VERBOSE and MEMBLOCK_DEBUG Makefile options
+Date:   Wed, 22 Jun 2022 01:19:28 -0500
+Message-Id: <cover.1655878337.git.remckee0@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.200.104.97]
-tUid:   2022622141840142854ce3aeabb36f49408916db67baf
-X-Abuse-Reports-To: service@corp-email.com
-Abuse-Reports-To: service@corp-email.com
-X-Complaints-To: service@corp-email.com
-X-Report-Abuse-To: service@corp-email.com
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As vfio_register_iommu_driver() can fail, we should check the return value.
+These patches add options VERBOSE and MEMBLOCK_DEBUG to Memblock
+simulator, which can be specified when running make. These patches also
+implement the functionality for these options.
 
-Signed-off-by: Bo Liu <liubo03@inspur.com>
----
- Changes from v1:
- -move the pr_info()
- -move  #endif above the ret test
- -remove #ifdefs above the err_driver_register
+VERBOSE
+Usage:
 
- drivers/vfio/vfio.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+$ make VERBOSE=1
 
-diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
-index 61e71c1154be..8f435c0d7748 100644
---- a/drivers/vfio/vfio.c
-+++ b/drivers/vfio/vfio.c
-@@ -2156,13 +2156,17 @@ static int __init vfio_init(void)
- 	if (ret)
- 		goto err_alloc_chrdev;
- 
--	pr_info(DRIVER_DESC " version: " DRIVER_VERSION "\n");
--
- #ifdef CONFIG_VFIO_NOIOMMU
--	vfio_register_iommu_driver(&vfio_noiommu_ops);
-+	ret = vfio_register_iommu_driver(&vfio_noiommu_ops);
- #endif
-+	if (ret)
-+		goto err_driver_register;
-+
-+	pr_info(DRIVER_DESC " version: " DRIVER_VERSION "\n");
- 	return 0;
- 
-+err_driver_register:
-+	unregister_chrdev_region(vfio.group_devt, MINORMASK + 1);
- err_alloc_chrdev:
- 	class_destroy(vfio.class);
- 	vfio.class = NULL;
+Passing VERBOSE=1 will enable verbose output from Memblock simulator. For
+each test, the verbose output includes the name of the memblock function
+being tested, the name of the test, and whether the test passed or failed.
+Since all the tests in Memblock simulator run as one monolithic test, this
+output is a quick way to get a summary of test results.
+
+MEMBLOCK_DEBUG
+Usage:
+
+$ make MEMBLOCK_DEBUG=1
+
+Passing MEMBLOCK_DEBUG=1 will enable memblock_dbg() messages. These
+are debug messages built into several functions in memblock that include
+information such as the name of the function and the size and start and
+end addresses of the memblock region.
+
+Rebecca Mckeever (4):
+  memblock tests: add user-provided arguments to Makefile
+  memblock tests: add verbose output to memblock tests
+  memblock tests: set memblock_debug to enable memblock_dbg() messages
+  memblock tests: remove completed TODO items
+
+ tools/testing/memblock/Makefile               |   4 +
+ tools/testing/memblock/README                 |  10 +-
+ tools/testing/memblock/TODO                   |  14 +-
+ tools/testing/memblock/internal.h             |   7 +
+ .../testing/memblock/scripts/Makefile.include |  10 +
+ tools/testing/memblock/tests/alloc_api.c      | 241 ++++++++----
+ .../memblock/tests/alloc_helpers_api.c        | 135 +++++--
+ tools/testing/memblock/tests/alloc_nid_api.c  | 371 ++++++++++++------
+ tools/testing/memblock/tests/basic_api.c      | 365 ++++++++++++-----
+ tools/testing/memblock/tests/common.c         |  60 +++
+ tools/testing/memblock/tests/common.h         |  54 +++
+ 11 files changed, 915 insertions(+), 356 deletions(-)
+
 -- 
-2.27.0
+2.34.1
 
