@@ -2,93 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86B00C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 06:51:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F355AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 06:52:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351644AbiFVGvf (ORCPT
+        id S1351533AbiFVGwH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 02:51:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33278 "EHLO
+        Wed, 22 Jun 2022 02:52:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351334AbiFVGvc (ORCPT
+        with ESMTP id S1349964AbiFVGwG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 02:51:32 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2045B35DC0;
-        Tue, 21 Jun 2022 23:51:31 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id s185so9530306pgs.3;
-        Tue, 21 Jun 2022 23:51:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=niUUVRIRw4J6TsPTvzTZNTwxYV2pE3XjscebFTdFk/s=;
-        b=aDzOpZs430kj0B3FbQJdRU99FdbqzgXH5ogGDVHmt2zc88EkmYFIvkfjTrb36sVHNQ
-         +Fq/Sa7ZdiCLazdgbhnfpHsfZixsJrNSmBJq4cgbUS4Y/FDQOCn92kk7snSjhdyG6Mdi
-         VqKYElPoFWKZG8hYa5QFUwbLsiUJMPFdhuFJBMAc9XDj9bOFm8/ceoqG71WJVdScQE1s
-         H9aSK7RiP8SXerWZWl1pvtqEn+CNDRkWycE5pYUkbCLr/KxECC82/GEBl6ucNzEiqwPV
-         yOwPMNm7uUVuBATNan3CGxFnaBIKsE1UX1gGi2kyNRq7mQqTEtoV9aZrmqzstB4delFg
-         s6og==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=niUUVRIRw4J6TsPTvzTZNTwxYV2pE3XjscebFTdFk/s=;
-        b=DRnod1t8SN7FadpfyK+cJC9f3wjd1j+SCdX6bwNSQhA7DC9+561KSLFMBv29WnRjWB
-         n2QSgXvSHzlVO7GBEd0/B/SFsvV2pdRhFJ43nBVBqh5KAsLXL0T8Nat/l5stcxxTLip2
-         4Ayu2TjsATOdj4MakvtXT8Mmdg0lj2vVXmVTupsjYs6l66D4hKxadqQqAmhNp7t2nmHM
-         7wTxsBrXpczHYgb7KY/IiD5qocBKdFlb9EKa6sh++jo5TUR/aiQ4JEJTK6+gntpaT2CS
-         KbITeXb9AL76ODPiqHOT0d32JcApSfjMgyfC7M2ykmDIWF3a6MM27cv1OQWhupxR6zkF
-         2mHA==
-X-Gm-Message-State: AJIora9Y/ZSt1a0ZtxPBiirY5jchPWYI1IxEt81VixWKmrUbCLrsmLoE
-        2HaDKV0nuf/Fn36cskXGi2k=
-X-Google-Smtp-Source: AGRyM1ucRbo0zkixEc3lxNBaFFOCSRntJD+QdEDuVi0zQvwm8xxuW+tLf4pkaPcZSNa1NKFz8Rz9GQ==
-X-Received: by 2002:a63:35c4:0:b0:40c:99f6:8889 with SMTP id c187-20020a6335c4000000b0040c99f68889mr1684738pga.387.1655880690601;
-        Tue, 21 Jun 2022 23:51:30 -0700 (PDT)
-Received: from localhost.localdomain ([103.84.139.165])
-        by smtp.gmail.com with ESMTPSA id bx5-20020a17090af48500b001e0899052f1sm13585858pjb.3.2022.06.21.23.51.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jun 2022 23:51:30 -0700 (PDT)
-From:   Hangyu Hua <hbh25y@gmail.com>
-To:     krzysztof.kozlowski@linaro.org, sameo@linux.intel.com,
-        christophe.ricard@gmail.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Hangyu Hua <hbh25y@gmail.com>
-Subject: [PATCH] nfc: st21nfca: fix possible double free in st21nfca_im_recv_dep_res_cb()
-Date:   Wed, 22 Jun 2022 14:51:17 +0800
-Message-Id: <20220622065117.23210-1-hbh25y@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 22 Jun 2022 02:52:06 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84F7E36311
+        for <linux-kernel@vger.kernel.org>; Tue, 21 Jun 2022 23:52:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655880725; x=1687416725;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=PUxZggHUb5jqg71YxkHmht0hN2RJ1lJ8tmffI9xIefw=;
+  b=Ldy/VG4H1fdKWJXZCx3kJriKxcSPH87oFnlDTCfbMVmKhoegPbYwlXda
+   Y+vi3LaFUH61AD4JJ+ybMvx/XDKMErt4dHufCupfw1H0oCcO9Lg9UurTW
+   naj53SoCrHE1cnptbCANhOSW2JADr8hc1GL+3MaabKSz17BVzQx3e6bU9
+   m+5SsRaObU6xbZ9lr3vka76iXwtazSFSDh/12DtIvaIpmSOxiixESoa0R
+   A1ORDot3dEWjJDtBNnGANRUYBGa7wnexeO10Z22Q7gOXyrxArjptvDNkp
+   KWpf3CU+1z54fVc9+pJameG620GD30v3BwE2eEwcpjyMDEtT6JhBrt5XK
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="269052056"
+X-IronPort-AV: E=Sophos;i="5.92,211,1650956400"; 
+   d="scan'208";a="269052056"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 23:52:05 -0700
+X-IronPort-AV: E=Sophos;i="5.92,211,1650956400"; 
+   d="scan'208";a="615039403"
+Received: from ebrazil-mobl1.amr.corp.intel.com (HELO [10.213.200.60]) ([10.213.200.60])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 23:52:02 -0700
+Message-ID: <136dd37c-128a-714e-993f-65a119b7003b@linux.intel.com>
+Date:   Wed, 22 Jun 2022 07:52:00 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] drm/i915/gem: remove unused assignments
+Content-Language: en-US
+To:     Katrin Jo <zys.zljxml@gmail.com>
+Cc:     dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        jani.nikula@linux.intel.com, joonas.lahtinen@linux.intel.com,
+        rodrigo.vivi@intel.com, airlied@linux.ie,
+        Daniel Vetter <daniel@ffwll.ch>, bob.beckett@collabora.com,
+        matthew.auld@intel.com, thomas.hellstrom@linux.intel.com,
+        kernel@collabora.com, linux-kernel@vger.kernel.org,
+        katrinzhou <katrinzhou@tencent.com>
+References: <20220620100216.1791284-1-zys.zljxml@gmail.com>
+ <7a2028c6-8ed6-1fc4-3abf-b13f7254cdee@linux.intel.com>
+ <CAOaDN_T_ZVCfhmbqd1AJnt3vhTuxnGhKsxG2fjjF8-u4wXOBcg@mail.gmail.com>
+From:   Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
+Organization: Intel Corporation UK Plc
+In-Reply-To: <CAOaDN_T_ZVCfhmbqd1AJnt3vhTuxnGhKsxG2fjjF8-u4wXOBcg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-nfc_tm_data_received will free skb internally when it fails. There is no
-need to free skb in st21nfca_im_recv_dep_res_cb again.
 
-Fix this by setting skb to NULL when nfc_tm_data_received fails.
+On 21/06/2022 03:26, Katrin Jo wrote:
+> On Mon, Jun 20, 2022 at 6:19 PM Tvrtko Ursulin
+> <tvrtko.ursulin@linux.intel.com> wrote:
+>>
+>>
+>> On 20/06/2022 11:02, zys.zljxml@gmail.com wrote:
+>>> From: katrinzhou <katrinzhou@tencent.com>
+>>>
+>>> The variable ret is reassigned and the value EINVAL is never used.
+>>> Thus, remove the unused assignments.
+>>>
+>>> Addresses-Coverity: ("Unused value")
+>>> Fixes: d4433c7600f7 ("drm/i915/gem: Use the proto-context to handle create parameters (v5)")
+>>> Signed-off-by: katrinzhou <katrinzhou@tencent.com>
+>>> ---
+>>>    drivers/gpu/drm/i915/gem/i915_gem_context.c | 2 --
+>>>    1 file changed, 2 deletions(-)
+>>>
+>>> diff --git a/drivers/gpu/drm/i915/gem/i915_gem_context.c b/drivers/gpu/drm/i915/gem/i915_gem_context.c
+>>> index ab4c5ab28e4d..d5ef5243673a 100644
+>>> --- a/drivers/gpu/drm/i915/gem/i915_gem_context.c
+>>> +++ b/drivers/gpu/drm/i915/gem/i915_gem_context.c
+>>> @@ -931,8 +931,6 @@ static int set_proto_ctx_param(struct drm_i915_file_private *fpriv,
+>>>                break;
+>>>
+>>>        case I915_CONTEXT_PARAM_PERSISTENCE:
+>>> -             if (args->size)
+>>> -                     ret = -EINVAL;
+>>>                ret = proto_context_set_persistence(fpriv->dev_priv, pc,
+>>>                                                    args->value);
+>>
+>> AFAICT fix should end up with code like this:
+>>
+>> if (args->size)
+>>          ret = -EINVAL;
+>> else
+>>          ret = proto_context_set_persistence(...)
+>> break;
+>>
+>>
+>> Alternatively move args->size checking into
+>> proto_context_set_persistence to align with set_persistence().
+>>
+>> Regards,
+>>
+>> Tvrtko
+>>
+>>>                break;
+> 
+> Thanks for reviewing! I sent the V2 patch, modified according to your
+> suggestion.
 
-Fixes: 1892bf844ea0 ("NFC: st21nfca: Adding P2P support to st21nfca in Initiator & Target mode")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
----
- drivers/nfc/st21nfca/dep.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+I have merged the v2 to drm-intel-gt-next - thanks for the fix!
 
-diff --git a/drivers/nfc/st21nfca/dep.c b/drivers/nfc/st21nfca/dep.c
-index 1ec651e31064..07ac5688011c 100644
---- a/drivers/nfc/st21nfca/dep.c
-+++ b/drivers/nfc/st21nfca/dep.c
-@@ -594,7 +594,8 @@ static void st21nfca_im_recv_dep_res_cb(void *context, struct sk_buff *skb,
- 			    ST21NFCA_NFC_DEP_PFB_PNI(dep_res->pfb + 1);
- 			size++;
- 			skb_pull(skb, size);
--			nfc_tm_data_received(info->hdev->ndev, skb);
-+			if (nfc_tm_data_received(info->hdev->ndev, skb))
-+				skb = NULL;
- 			break;
- 		case ST21NFCA_NFC_DEP_PFB_SUPERVISOR_PDU:
- 			pr_err("Received a SUPERVISOR PDU\n");
--- 
-2.25.1
+Regards,
 
+Tvrtko
