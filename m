@@ -2,119 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDB02C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:56:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A24E7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:56:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232252AbiFWQ4F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:56:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50420 "EHLO
+        id S232712AbiFWQte (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:49:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233878AbiFWQvs (ORCPT
+        with ESMTP id S232758AbiFWQsZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:51:48 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B767EE09
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 09:50:26 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id j5-20020a05600c1c0500b0039c5dbbfa48so1880939wms.5
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 09:50:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=IyotFVIHbhwpabNYCGpU2td0gSap/Y9S4vgKOOyoLJk=;
-        b=FrYaPn5yCP6c7XLE34Oe4aHh28I2+edN+azHdmB/Hm41HqxPPG50LlZclCjAXo/6sd
-         sUji2HaPVj4NqIerdZV1Dq99mON5/WCMELiHVpfXmAwKM1hHBHG1C+ovvS4LPKdT0BHz
-         MU+httuoGZN0A02Bd7UJMb4bVlLuJlrEMqr3r+eOFmOPuMHAP7R4lyJrGwSWuI5FSwxF
-         4HcDKCVCynBgWQuRcyr/73vXpiRCxe2AXuunChxGXu68Bey0VzUozDru4wS/+GO88u9X
-         k8yG4gwL6fQWebAgqaipPE1moMjXv2dwUZBeCIlPcJ25UdJEqfrVImTleyGcA+DbBcjA
-         teOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=IyotFVIHbhwpabNYCGpU2td0gSap/Y9S4vgKOOyoLJk=;
-        b=yGdCOfb8T04byO+wON7ZoJtnt5icClXq8aQZ2FUj11+a0uxko0F+jMOaNPFr7PN013
-         BO0HAhpQsTjLs20WeOVUGtz/ZJarJsmqUMWhKFX4G/51iQ4aW6PS5htJGIFsPauYXFp7
-         6EmTO1INmpPJAujyP09hIs8cyU0vINcO8WuARfxqEb465Luak1CRbvv4mo6HZdryk0s2
-         FEMARzBtXzvzWFetbwtyswe5hg8w3PPSQ5Tyt8IVVtMlbDjeAN8F5EknCv0wjgLE539O
-         1JQ/iXms6m87EcClbw65pfH3VV1kC1/yLhtuxlJS01+bJkN17XtHfIE+6ZhSPfydzAbt
-         ptog==
-X-Gm-Message-State: AJIora9LorvoPMDu23jFcj/1mjvikjSBZcE5gzdtw0x1hvef+uHj62ub
-        jsfXZTsNPKjN9sdPMp/rRteav/Wi0Kv4GKD9AElglg==
-X-Google-Smtp-Source: AGRyM1veKrdS63pvIE+ZqkDsx+2WUvC3Q147rHm2GTilmFfL/Eh0tVd/vlOO+xQfiDVYfU3UuSB9FmFFZe27Zk+zBa8=
-X-Received: by 2002:a05:600c:1906:b0:39c:7f82:3090 with SMTP id
- j6-20020a05600c190600b0039c7f823090mr5159188wmq.152.1656003025075; Thu, 23
- Jun 2022 09:50:25 -0700 (PDT)
+        Thu, 23 Jun 2022 12:48:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFD5C4BFE4;
+        Thu, 23 Jun 2022 09:47:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C8D9961FA4;
+        Thu, 23 Jun 2022 16:47:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD2BAC3411B;
+        Thu, 23 Jun 2022 16:47:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656002852;
+        bh=GgW9rHCAKlZa1bYGLTKcS4p/eIUuL+qSoAlKD2rXBzw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=gDSQe5xh11HX0SwQa9xW2kce7T+BMdb6QzTc2C2UfS4DzGke8OJpe0moLB5DDVmMt
+         35j/4Qd0B3M3YBjCVAaQoLfTlTwNe2sVFdYThyrl5Qj1KOPvGhP5zZZcP/ev1rxYYv
+         dKiMKxDk+Dhyuwc4FQbL52+xAkbARdLgrZGsE5DI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Herbert Xu <herbert@gondor.apana.org.au>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.9 048/264] Revert "hwrng: core - Freeze khwrng thread during suspend"
+Date:   Thu, 23 Jun 2022 18:40:41 +0200
+Message-Id: <20220623164345.430102071@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
+References: <20220623164344.053938039@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220623000530.1194226-1-yosryahmed@google.com>
- <YrQe5A+FXnbgOR1f@dhcp22.suse.cz> <CAJD7tkanavKpKrQr8-jA8pukgD7OY4eOwJRZufJ2NoThD12G+Q@mail.gmail.com>
- <YrQ1o3CeaZWhm+h4@dhcp22.suse.cz> <CAJD7tkadsLOV7GMFAm+naX4Y1WpZ-4=NkAhAMxNw60iaRPWx=w@mail.gmail.com>
- <YrSWruhPlJV1X9kp@dhcp22.suse.cz> <CALvZod6eLa1X1FJ2Qi6FXhFA-qBCP4mN2SB31MSgjj+g8hKo6Q@mail.gmail.com>
-In-Reply-To: <CALvZod6eLa1X1FJ2Qi6FXhFA-qBCP4mN2SB31MSgjj+g8hKo6Q@mail.gmail.com>
-From:   Yosry Ahmed <yosryahmed@google.com>
-Date:   Thu, 23 Jun 2022 09:49:48 -0700
-Message-ID: <CAJD7tkY4a7AsUxa_k+_6q56+MmTJmsiy7uk176Z=6o-eC-950w@mail.gmail.com>
-Subject: Re: [PATCH] mm: vmpressure: don't count userspace-induced reclaim as
- memory pressure
-To:     Shakeel Butt <shakeelb@google.com>, Michal Hocko <mhocko@suse.com>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        David Hildenbrand <david@redhat.com>,
-        Miaohe Lin <linmiaohe@huawei.com>, NeilBrown <neilb@suse.de>,
-        Alistair Popple <apopple@nvidia.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Peter Xu <peterx@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 9:42 AM Shakeel Butt <shakeelb@google.com> wrote:
->
-> On Thu, Jun 23, 2022 at 9:37 AM Michal Hocko <mhocko@suse.com> wrote:
-> >
-> > On Thu 23-06-22 09:22:35, Yosry Ahmed wrote:
-> > > On Thu, Jun 23, 2022 at 2:43 AM Michal Hocko <mhocko@suse.com> wrote:
-> > > >
-> > > > On Thu 23-06-22 01:35:59, Yosry Ahmed wrote:
-> > [...]
-> > > > > In our internal version of memory.reclaim that we recently upstreamed,
-> > > > > we do not account vmpressure during proactive reclaim (similar to how
-> > > > > psi is handled upstream). We want to make sure this behavior also
-> > > > > exists in the upstream version so that consolidating them does not
-> > > > > break our users who rely on vmpressure and will start seeing increased
-> > > > > pressure due to proactive reclaim.
-> > > >
-> > > > These are good reasons to have this patch in your tree. But why is this
-> > > > patch benefitial for the upstream kernel? It clearly adds some code and
-> > > > some special casing which will add a maintenance overhead.
-> > >
-> > > It is not just Google, any existing vmpressure users will start seeing
-> > > false pressure notifications with memory.reclaim. The main goal of the
-> > > patch is to make sure memory.reclaim does not break pre-existing users
-> > > of vmpressure, and doing it in a way that is consistent with psi makes
-> > > sense.
-> >
-> > memory.reclaim is v2 only feature which doesn't have vmpressure
-> > interface. So I do not see how pre-existing users of the upstream kernel
-> > can see any breakage.
-> >
->
-> Please note that vmpressure is still being used in v2 by the
-> networking layer (see mem_cgroup_under_socket_pressure()) for
-> detecting memory pressure.
->
-> Though IMO we should deprecate vmpressure altogether.
+From: Herbert Xu <herbert@gondor.apana.org.au>
 
-Thanks Shakeel for mentioning that, I was just about to. Although I
-agree vmpressure should be deprecated at some point, the current state
-is that memory.reclaim will give incorrect vmpressure signals.
+commit 08e97aec700aeff54c4847f170e566cbd7e14e81 upstream.
 
-IMO psi and vmpressure (though legacy) both signify memory pressure
-and should both be consistent as to what is being accounted for.
+This reverts commit 03a3bb7ae631 ("hwrng: core - Freeze khwrng
+thread during suspend"), ff296293b353 ("random: Support freezable
+kthreads in add_hwgenerator_randomness()") and 59b569480dc8 ("random:
+Use wait_event_freezable() in add_hwgenerator_randomness()").
+
+These patches introduced regressions and we need more time to
+get them ready for mainline.
+
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/char/random.c |    4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -327,7 +327,6 @@
+ #include <linux/percpu.h>
+ #include <linux/cryptohash.h>
+ #include <linux/fips.h>
+-#include <linux/freezer.h>
+ #include <linux/ptrace.h>
+ #include <linux/kmemcheck.h>
+ #include <linux/workqueue.h>
+@@ -2484,8 +2483,7 @@ void add_hwgenerator_randomness(const ch
+ 	 * We'll be woken up again once below random_write_wakeup_thresh,
+ 	 * or when the calling thread is about to terminate.
+ 	 */
+-	wait_event_freezable(random_write_wait,
+-			kthread_should_stop() ||
++	wait_event_interruptible(random_write_wait, kthread_should_stop() ||
+ 			ENTROPY_BITS(&input_pool) <= random_write_wakeup_bits);
+ 	mix_pool_bytes(poolp, buffer, count);
+ 	credit_entropy_bits(poolp, entropy);
+
+
