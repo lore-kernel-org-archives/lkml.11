@@ -2,93 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66B14C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55555C43334
 	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:44:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235130AbiFWRnC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:43:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38670 "EHLO
+        id S234903AbiFWRmo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:42:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234836AbiFWRiV (ORCPT
+        with ESMTP id S234814AbiFWRiT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:38:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45CCF4993F;
-        Thu, 23 Jun 2022 10:08:45 -0700 (PDT)
+        Thu, 23 Jun 2022 13:38:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35A4E27B3A;
+        Thu, 23 Jun 2022 10:08:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F16C6B824B4;
-        Thu, 23 Jun 2022 17:08:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 430F4C3411B;
-        Thu, 23 Jun 2022 17:08:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004122;
-        bh=qIYgr84JW2wfwskmNEvNzTtO/Z+QttXhLdhRIbSR53E=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hv74h+8vNCqUUC87zA+zmbC3F+xbZr4+nUa6hxe9Nm+E+c9TO+xwEW0gCz8i6A28z
-         U/MkR9DId18LB8v98oxMEbOtZFTfuN+Zx5IY5f5r3VI/SwaU+8vXES1LtpGqxbjjeg
-         bif0Xn3d70MPhNMURoNQAlLdmGVgQ6pqaXDUoEZY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 196/237] ASoC: cs42l52: Correct TLV for Bypass Volume
-Date:   Thu, 23 Jun 2022 18:43:50 +0200
-Message-Id: <20220623164348.785802223@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
-References: <20220623164343.132308638@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ams.source.kernel.org (Postfix) with ESMTPS id E0012B82498;
+        Thu, 23 Jun 2022 17:08:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26E6AC3411B;
+        Thu, 23 Jun 2022 17:08:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656004098;
+        bh=de72aEPmiWhk8gVfT3liqSSGHCaeRekm8u+9NQohaUw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=fC2Hq0DsqYZk/Y/la3E9ChzRyhRvqK+C14cG9rRPKOo9XW3VxNyRyY+XJxtAI2J6V
+         zjV4944fzCDsPaH9u7MapC0CIl0k8ALlcDcCZwUWPPH6yy/rXPiS/Faknap7CnvLdw
+         /nwfIAaUZwX/KMRb4ITCw6xaHcHmliPDGYH4+85FZON/Uq5VpzpOWMfo31/lqA6dy4
+         WYZ6nUJkWmHIvwqwYI5CkwPi7p1tW5oYyQoNrKfGSkZL0QE7CPl1Iu1RRVkg/iSVpZ
+         QI5mm3aq6RqcpPogcGc9neDOQyjHy81EM6Z52gdIzvtBtZvjPmt4is2FwXCbotvwcl
+         8nlpcKIw2sJfQ==
+Date:   Thu, 23 Jun 2022 10:08:16 -0700
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     cgel.zte@gmail.com
+Cc:     anton@tuxera.com, linux-ntfs-dev@lists.sourceforge.net,
+        stable@vger.kernel.org, linux-kernel@vger.kernel.org,
+        xu.xin16@zte.com.cn, linux-fsdevel@vger.kernel.org,
+        Zeal Robot <zealci@zte.com.cn>,
+        syzbot+6a5a7672f663cce8b156@syzkaller.appspotmail.com,
+        Songyi Zhang <zhang.songyi@zte.com.cn>,
+        Yang Yang <yang.yang29@zte.com.cn>,
+        Jiang Xuexin <jiang.xuexin@zte.com.cn>,
+        Zhang wenya <zhang.wenya1@zte.com.cn>
+Subject: Re: [PATCH v2] fs/ntfs: fix BUG_ON of ntfs_read_block()
+Message-ID: <YrSeAGmk4GZndtdn@sol.localdomain>
+References: <20220623033635.973929-1-xu.xin16@zte.com.cn>
+ <20220623094956.977053-1-xu.xin16@zte.com.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220623094956.977053-1-xu.xin16@zte.com.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+On Thu, Jun 23, 2022 at 09:49:56AM +0000, cgel.zte@gmail.com wrote:
+> From: xu xin <xu.xin16@zte.com.cn>
+> 
+> As the bug description at
+> https://lore.kernel.org/lkml/20220623033635.973929-1-xu.xin16@zte.com.cn/
+> attckers can use this bug to crash the system.
+> 
+> So to avoid panic, remove the BUG_ON, and use ntfs_warning to output a
+> warning to the syslog and return instead until someone really solve
+> the problem.
+> 
+> Cc: stable@vger.kernel.org
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Reported-by: syzbot+6a5a7672f663cce8b156@syzkaller.appspotmail.com
+> Reviewed-by: Songyi Zhang <zhang.songyi@zte.com.cn>
+> Reviewed-by: Yang Yang <yang.yang29@zte.com.cn>
+> Reviewed-by: Jiang Xuexin<jiang.xuexin@zte.com.cn>
+> Reviewed-by: Zhang wenya<zhang.wenya1@zte.com.cn>
+> Signed-off-by: xu xin <xu.xin16@zte.com.cn>
+> ---
+> 
+> Change for v2:
+>  - Use ntfs_warning instead of WARN().
+>  - Add the tag Cc: stable@vger.kernel.org.
+> ---
+>  fs/ntfs/aops.c | 7 ++++++-
+>  1 file changed, 6 insertions(+), 1 deletion(-)
+> 
+> diff --git a/fs/ntfs/aops.c b/fs/ntfs/aops.c
+> index 5f4fb6ca6f2e..84d68efb4ace 100644
+> --- a/fs/ntfs/aops.c
+> +++ b/fs/ntfs/aops.c
+> @@ -183,7 +183,12 @@ static int ntfs_read_block(struct page *page)
+>  	vol = ni->vol;
+>  
+>  	/* $MFT/$DATA must have its complete runlist in memory at all times. */
+> -	BUG_ON(!ni->runlist.rl && !ni->mft_no && !NInoAttr(ni));
+> +	if (unlikely(!ni->runlist.rl && !ni->mft_no && !NInoAttr(ni))) {
+> +		ntfs_warning(vi->i_sb, "Error because ni->runlist.rl, ni->mft_no, "
+> +				"and NInoAttr(ni) is null.");
+> +		unlock_page(page);
+> +		return -EINVAL;
+> +	}
 
-[ Upstream commit 91e90c712fade0b69cdff7cc6512f6099bd18ae5 ]
+A better warning message that doesn't rely on implementation details (struct
+field and macro names) would be "Runlist of $MFT/$DATA is not cached".  Also,
+why does this situation happen in the first place?  Is there a way to prevent
+this situation in the first place?
 
-The Bypass Volume is accidentally using a -6dB minimum TLV rather than
-the correct -60dB minimum. Add a new TLV to correct this.
-
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220602162119.3393857-5-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- sound/soc/codecs/cs42l52.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/sound/soc/codecs/cs42l52.c b/sound/soc/codecs/cs42l52.c
-index f733f6b42b53..47f2439fd7b0 100644
---- a/sound/soc/codecs/cs42l52.c
-+++ b/sound/soc/codecs/cs42l52.c
-@@ -141,6 +141,8 @@ static DECLARE_TLV_DB_SCALE(mic_tlv, 1600, 100, 0);
- 
- static DECLARE_TLV_DB_SCALE(pga_tlv, -600, 50, 0);
- 
-+static DECLARE_TLV_DB_SCALE(pass_tlv, -6000, 50, 0);
-+
- static DECLARE_TLV_DB_SCALE(mix_tlv, -5150, 50, 0);
- 
- static DECLARE_TLV_DB_SCALE(beep_tlv, -56, 200, 0);
-@@ -355,7 +357,7 @@ static const struct snd_kcontrol_new cs42l52_snd_controls[] = {
- 			      CS42L52_SPKB_VOL, 0, 0x40, 0xC0, hl_tlv),
- 
- 	SOC_DOUBLE_R_SX_TLV("Bypass Volume", CS42L52_PASSTHRUA_VOL,
--			      CS42L52_PASSTHRUB_VOL, 0, 0x88, 0x90, pga_tlv),
-+			      CS42L52_PASSTHRUB_VOL, 0, 0x88, 0x90, pass_tlv),
- 
- 	SOC_DOUBLE("Bypass Mute", CS42L52_MISC_CTL, 4, 5, 1, 0),
- 
--- 
-2.35.1
-
-
-
+- Eric
