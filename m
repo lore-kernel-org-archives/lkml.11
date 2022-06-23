@@ -2,177 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91BE5C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:32:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E71B0C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:34:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232287AbiFWQct (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:32:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34470 "EHLO
+        id S232055AbiFWQeB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:34:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232124AbiFWQcp (ORCPT
+        with ESMTP id S231680AbiFWQdz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:32:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E22A8473AC;
-        Thu, 23 Jun 2022 09:32:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7EEC661F60;
-        Thu, 23 Jun 2022 16:32:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B805C3411B;
-        Thu, 23 Jun 2022 16:32:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656001963;
-        bh=vfQRHTDGbqp1KdGOyG0N2q6ikrIxli+SZqqCGn8BSPs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=bJfQskaUUqMGpd8otP8HxO3bKNnLR9tRMCGheFL4G0agjf0sz4hmrPskrrkqx6W5v
-         DXbfNApRTKlpM1pYbSDqmZg/QzTzMJk8GGfP21FrcVg6r1bYJRdB3cwkgjsnTsBS6x
-         OTNlkGKa/lTgeC2b+3Eu7OC9ODwFHUagZOlkNS5WHamJo3ca/X0v8NsNhVCyHdfQMk
-         D4gJde7LKtiZ6HjcoHW6S/gk88S3wSBv+2H7WTMM/Fw9xheGvn9qPx3VG5rz1bWefg
-         EUdRy6umj70Otxo7VM5iREWpHoaxhhUsOr0GPGYTrJQFRJgJxtlLWlOblCcmMPYaua
-         ImkuQQFKxVzTg==
-Received: by pali.im (Postfix)
-        id 6482A79F; Thu, 23 Jun 2022 18:32:40 +0200 (CEST)
-Date:   Thu, 23 Jun 2022 18:32:40 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] PCI: mvebu: Use devm_request_irq() for registering
- interrupt handler
-Message-ID: <20220623163240.cu7cq3m7a2pjw62a@pali>
-References: <20220524122817.7199-1-pali@kernel.org>
- <20220623162747.GA1455992@bhelgaas>
+        Thu, 23 Jun 2022 12:33:55 -0400
+Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CA093E0E6;
+        Thu, 23 Jun 2022 09:33:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+        d=metrotek.ru; s=mail;
+        h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding:
+         in-reply-to:references;
+        bh=C6iGACYMGdg5PwBrEyFY/txqSMQtF3ydAeEYqPVMjx4=;
+        b=Sk6QpZfeqnfEx25cw+2DACG8s7VbK/pqd0a/byCjFwcZQJimhXSGM3gJkDATm+6I1AYFumsFSlOLz
+         xahHATPfMW/FLobDiFC+au34n78pEbqJKEgVmmAEzG4DZwHZQvTH696eqzpfHr12QH1uPWdBYtMVbP
+         xOwNq0dZaqf/yHw63DlR+5e9X3WHtUwSaKoZdg8XslWEXil3UfhEXqp5gpHWh23GJUgow/rp1J2y0R
+         7XW/MYbK+m3LV88omPPqQrlRsejJfUhzFS2PeCwqEZwkoetTiKa3FzZ4SGF+DtjmhnCRo1jtK0lNkm
+         6I3nEld+rowoDq+lQeZ91TUOz5lZ6uA==
+X-Kerio-Anti-Spam:  Build: [Engines: 2.16.3.1424, Stamp: 3], Multi: [Enabled, t: (0.000010,0.010870)], BW: [Enabled, t: (0.000018,0.000001)], RTDA: [Enabled, t: (0.074954), Hit: No, Details: v2.40.0; Id: 15.52k5f3.1g68miund.1050g; mclb], total: 0(700)
+X-Footer: bWV0cm90ZWsucnU=
+Received: from h-e2.ddg ([85.143.252.66])
+        (authenticated user i.bornyakov@metrotek.ru)
+        by mail.pr-group.ru with ESMTPSA
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
+        Thu, 23 Jun 2022 19:33:35 +0300
+From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
+To:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
+        trix@redhat.com, corbet@lwn.net
+Cc:     Ivan Bornyakov <i.bornyakov@metrotek.ru>,
+        conor.dooley@microchip.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-fpga@vger.kernel.org,
+        linux-doc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, system@metrotek.ru
+Subject: [PATCH v22 2/5] docs: fpga: mgr: document parse_header() callback
+Date:   Thu, 23 Jun 2022 19:32:45 +0300
+Message-Id: <20220623163248.3672-3-i.bornyakov@metrotek.ru>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220623163248.3672-1-i.bornyakov@metrotek.ru>
+References: <20220623163248.3672-1-i.bornyakov@metrotek.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220623162747.GA1455992@bhelgaas>
-User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thursday 23 June 2022 11:27:47 Bjorn Helgaas wrote:
-> On Tue, May 24, 2022 at 02:28:17PM +0200, Pali Rohár wrote:
-> > Same as in commit a3b69dd0ad62 ("Revert "PCI: aardvark: Rewrite IRQ code to
-> > chained IRQ handler"") for pci-aardvark driver, use devm_request_irq()
-> > instead of chained IRQ handler in pci-mvebu.c driver.
-> >
-> > This change fixes affinity support and allows to pin interrupts from
-> > different PCIe controllers to different CPU cores.
-> 
-> Several other drivers use irq_set_chained_handler_and_data().  Do any
-> of them need similar changes?
+Document newly introduced fpga_manager_ops callback parse_header() and
+flag skip_header along with header_size and data_size fields of struct
+fpga_image_info.
 
-I do not know. This needs testing on HW which use those other drivers.
+Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
+Acked-by: Xu Yilun <yilun.xu@intel.com>
+---
+ Documentation/driver-api/fpga/fpga-mgr.rst | 27 +++++++++++++++++-----
+ 1 file changed, 21 insertions(+), 6 deletions(-)
 
-> The commit log suggests that using
-> chained IRQ handlers breaks affinity support.  But perhaps that's not
-> the case and the real culprit is some other difference between mvebu
-> and the other drivers.
+diff --git a/Documentation/driver-api/fpga/fpga-mgr.rst b/Documentation/driver-api/fpga/fpga-mgr.rst
+index 42c01f396dce..49c0a9512653 100644
+--- a/Documentation/driver-api/fpga/fpga-mgr.rst
++++ b/Documentation/driver-api/fpga/fpga-mgr.rst
+@@ -79,12 +79,27 @@ do the programming sequence for this particular FPGA.  These ops return 0 for
+ success or negative error codes otherwise.
+ 
+ The programming sequence is::
+- 1. .write_init
+- 2. .write or .write_sg (may be called once or multiple times)
+- 3. .write_complete
+-
+-The .write_init function will prepare the FPGA to receive the image data.  The
+-buffer passed into .write_init will be at most .initial_header_size bytes long;
++ 1. .parse_header (optional, may be called once or multiple times)
++ 2. .write_init
++ 3. .write or .write_sg (may be called once or multiple times)
++ 4. .write_complete
++
++The .parse_header function will set header_size and data_size to
++struct fpga_image_info. Before parse_header call, header_size is initialized
++with initial_header_size. If flag skip_header of fpga_manager_ops is true,
++.write function will get image buffer starting at header_size offset from the
++beginning. If data_size is set, .write function will get data_size bytes of
++the image buffer, otherwise .write will get data up to the end of image buffer.
++This will not affect .write_sg, .write_sg will still get whole image in
++sg_table form. If FPGA image is already mapped as a single contiguous buffer,
++whole buffer will be passed into .parse_header. If image is in scatter-gather
++form, core code will buffer up at least .initial_header_size before the first
++call of .parse_header, if it is not enough, .parse_header should set desired
++size into info->header_size and return -EAGAIN, then it will be called again
++with greater part of image buffer on the input.
++
++The .write_init function will prepare the FPGA to receive the image data. The
++buffer passed into .write_init will be at least info->header_size bytes long;
+ if the whole bitstream is not immediately available then the core code will
+ buffer up at least this much before starting.
+ 
+-- 
+2.36.1
 
-It is possible. But similar patch (revert; linked below) was required
-for aardvark. I tested same approach on mvebu and it fixed affinity
-support.
 
-> > Fixes: ec075262648f ("PCI: mvebu: Implement support for legacy INTx interrupts")
-> > Signed-off-by: Pali Rohár <pali@kernel.org>
-> > ---
-> > Hello Bjorn! This is basically same issue as for pci-aardvark.c:
-> > https://lore.kernel.org/linux-pci/20220515125815.30157-1-pali@kernel.org/#t
-> > 
-> > I tested this patch with pci=nomsi in cmdline (to force kernel to use
-> > legacy intx instead of MSI) on A385 and checked that I can set affinity
-> > via /proc/irq/XX/smp_affinity file for every mvebu pcie controller to
-> > different CPU and legacy interrupts from different cards/controllers
-> > were handled by different CPUs.
-> > 
-> > I think that this is important on Armada XP platforms which have many
-> > independent PCIe controllers (IIRC up to 10) and many cores (up to 4).
-> > ---
-> >  drivers/pci/controller/pci-mvebu.c | 30 +++++++++++++++++-------------
-> >  1 file changed, 17 insertions(+), 13 deletions(-)
-> > 
-> > diff --git a/drivers/pci/controller/pci-mvebu.c b/drivers/pci/controller/pci-mvebu.c
-> > index 8f76d4bda356..de67ea39fea5 100644
-> > --- a/drivers/pci/controller/pci-mvebu.c
-> > +++ b/drivers/pci/controller/pci-mvebu.c
-> > @@ -1017,16 +1017,13 @@ static int mvebu_pcie_init_irq_domain(struct mvebu_pcie_port *port)
-> >  	return 0;
-> >  }
-> >  
-> > -static void mvebu_pcie_irq_handler(struct irq_desc *desc)
-> > +static irqreturn_t mvebu_pcie_irq_handler(int irq, void *arg)
-> >  {
-> > -	struct mvebu_pcie_port *port = irq_desc_get_handler_data(desc);
-> > -	struct irq_chip *chip = irq_desc_get_chip(desc);
-> > +	struct mvebu_pcie_port *port = arg;
-> >  	struct device *dev = &port->pcie->pdev->dev;
-> >  	u32 cause, unmask, status;
-> >  	int i;
-> >  
-> > -	chained_irq_enter(chip, desc);
-> > -
-> >  	cause = mvebu_readl(port, PCIE_INT_CAUSE_OFF);
-> >  	unmask = mvebu_readl(port, PCIE_INT_UNMASK_OFF);
-> >  	status = cause & unmask;
-> > @@ -1040,7 +1037,7 @@ static void mvebu_pcie_irq_handler(struct irq_desc *desc)
-> >  			dev_err_ratelimited(dev, "unexpected INT%c IRQ\n", (char)i+'A');
-> >  	}
-> >  
-> > -	chained_irq_exit(chip, desc);
-> > +	return status ? IRQ_HANDLED : IRQ_NONE;
-> >  }
-> >  
-> >  static int mvebu_pcie_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
-> > @@ -1490,9 +1487,20 @@ static int mvebu_pcie_probe(struct platform_device *pdev)
-> >  				mvebu_pcie_powerdown(port);
-> >  				continue;
-> >  			}
-> > -			irq_set_chained_handler_and_data(irq,
-> > -							 mvebu_pcie_irq_handler,
-> > -							 port);
-> > +
-> > +			ret = devm_request_irq(dev, irq, mvebu_pcie_irq_handler,
-> > +					       IRQF_SHARED | IRQF_NO_THREAD,
-> > +					       port->name, port);
-> > +			if (ret) {
-> > +				dev_err(dev, "%s: cannot register interrupt handler: %d\n",
-> > +					port->name, ret);
-> > +				irq_domain_remove(port->intx_irq_domain);
-> > +				pci_bridge_emul_cleanup(&port->bridge);
-> > +				devm_iounmap(dev, port->base);
-> > +				port->base = NULL;
-> > +				mvebu_pcie_powerdown(port);
-> > +				continue;
-> > +			}
-> >  		}
-> >  
-> >  		/*
-> > @@ -1599,7 +1607,6 @@ static int mvebu_pcie_remove(struct platform_device *pdev)
-> >  
-> >  	for (i = 0; i < pcie->nports; i++) {
-> >  		struct mvebu_pcie_port *port = &pcie->ports[i];
-> > -		int irq = port->intx_irq;
-> >  
-> >  		if (!port->base)
-> >  			continue;
-> > @@ -1615,9 +1622,6 @@ static int mvebu_pcie_remove(struct platform_device *pdev)
-> >  		/* Clear all interrupt causes. */
-> >  		mvebu_writel(port, ~PCIE_INT_ALL_MASK, PCIE_INT_CAUSE_OFF);
-> >  
-> > -		if (irq > 0)
-> > -			irq_set_chained_handler_and_data(irq, NULL, NULL);
-> > -
-> >  		/* Remove IRQ domains. */
-> >  		if (port->intx_irq_domain)
-> >  			irq_domain_remove(port->intx_irq_domain);
-> > -- 
-> > 2.20.1
-> > 
