@@ -2,92 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D4E3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 19:33:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1746C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 19:34:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231448AbiFWTdw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 15:33:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54358 "EHLO
+        id S229505AbiFWTeT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 15:34:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232332AbiFWTc4 (ORCPT
+        with ESMTP id S230207AbiFWTde (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 15:32:56 -0400
-Received: from conuserg-07.nifty.com (conuserg-07.nifty.com [210.131.2.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01A0744751;
-        Thu, 23 Jun 2022 12:13:23 -0700 (PDT)
-Received: from localhost.localdomain (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-07.nifty.com with ESMTP id 25NJC0li007138;
-        Fri, 24 Jun 2022 04:12:00 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-07.nifty.com 25NJC0li007138
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1656011521;
-        bh=mZGio26TLh9bx4bTM660/GNv2IG4KQEPMVRi+axAaKM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=yopBilnRtVCQ+3lyWesXAY13fIMfB5vxjtTZB5AeiGdOqJx/BCzcTozE4udtXQiJs
-         LuUvLsLIrSasfup4/sHXWup7RfQEj6IRO0dJxexI3U1HEPYn0WNWUS3a6fgOBbtNod
-         AZZrhVWw9BI6y5ED+Ns2+fQwTGI3I25+CNEV+zWZ/dn8fZpcx4SZ24cAklrgCq4cAL
-         iwSC/3zHxgxYeIg+WfZXRVRyi+vs/hxR/3u845B4qnAgNaSTK8z3uEVzIBwZss78f1
-         hSYzxrwVxf8I29EsoWas9FJ94vIc21p6wQrpa4/nGx7bFlKqMbQd6vhrXgDDvzNI/H
-         eyJ5Hz7xCRycQ==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     Sami Tolvanen <samitolvanen@google.com>,
-        linux-kernel@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nicolas Pitre <nico@fluxnic.net>
-Subject: [PATCH] kbuild: link vmlinux only once for CONFIG_TRIM_UNUSED_KSYMS (2nd attempt)
-Date:   Fri, 24 Jun 2022 04:11:47 +0900
-Message-Id: <20220623191147.1916067-1-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        Thu, 23 Jun 2022 15:33:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F8E34EDFA;
+        Thu, 23 Jun 2022 12:14:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EA2E4B824BD;
+        Thu, 23 Jun 2022 19:14:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BD72C341C0;
+        Thu, 23 Jun 2022 19:14:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656011670;
+        bh=wC/mFFOXrER8itkfHbAsJlzoussVbkCh7WfuQkWX524=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Uuir36EaxLJoFbQNhTM3TJD0TQfF9zlezPxAKPYt05pIDsPDlyU9JhpvtPJceomx+
+         EBCHpxQgx59JsnVOVGJAnjEM5tAdsD+fzelCIqHSbMd7vyjGkMYJG7Qocuw9cJaZRb
+         JvalXj+2PXrN2eSOqaJMSyPrfDmtFB7JlvWesQPR4saJpgDirsRxf1j67tCsz2fsk8
+         0/V3GUER1ZlLysdquV50C0YuYlOUwzRTKBxtTjkp7jg94n4RXRwn9XrvCSmy7VoQQZ
+         b/4YjlLKtmx23DzBdNYYN5gN8udxWdt5B7wAW6S3z/KTjLa37cFV8PfNKRVA6V31OJ
+         8X3w4AOIj5f3g==
+Date:   Thu, 23 Jun 2022 12:14:21 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jianglei Nie <niejianglei2021@163.com>
+Cc:     linux@armlinux.org.uk, andrew@lunn.ch, hkallweit1@gmail.com,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: sfp: fix memory leak in sfp_probe()
+Message-ID: <20220623121421.3bc054d2@kernel.org>
+In-Reply-To: <20220623070914.1781700-1-niejianglei2021@163.com>
+References: <20220623070914.1781700-1-niejianglei2021@163.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If CONFIG_TRIM_UNUSED_KSYMS is enabled and the kernel is built from
-a pristine state, the vmlinux is linked twice.
+On Thu, 23 Jun 2022 15:09:14 +0800 Jianglei Nie wrote:
+> sfp_probe() allocates a memory chunk from sfp with sfp_alloc(), when
+> devm_add_action() fails, sfp is not freed, which leads to a memory leak.
+> 
+> We should free the sfp with sfp_cleanup() when devm_add_action() fails.
 
-Commit 3fdc7d3fe4c0 ("kbuild: link vmlinux only once for
-CONFIG_TRIM_UNUSED_KSYMS") explains why this happens, but it did not fix
-the issue at all.
-
-Now I realized I had applied a wrong patch.
-
-In v1 patch [1], the autoksyms_recursive target correctly recurses to
-"$(MAKE) -f $(srctree)/Makefile autoksyms_recursive".
-
-In v2 patch [2], I accidentally dropped the diff line, and it recurses to
-"$(MAKE) -f $(srctree)/Makefile vmlinux".
-
-Restore the code I intended in v1.
-
-[1]: https://lore.kernel.org/linux-kbuild/1521045861-22418-8-git-send-email-yamada.masahiro@socionext.com/
-[2]: https://lore.kernel.org/linux-kbuild/1521166725-24157-8-git-send-email-yamada.masahiro@socionext.com/
-
-Fixes: 3fdc7d3fe4c0 ("kbuild: link vmlinux only once for CONFIG_TRIM_UNUSED_KSYMS")
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
----
-
- Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/Makefile b/Makefile
-index 513c1fbf7888..a3ff166c5035 100644
---- a/Makefile
-+++ b/Makefile
-@@ -1141,7 +1141,7 @@ KBUILD_MODULES := 1
- 
- autoksyms_recursive: descend modules.order
- 	$(Q)$(CONFIG_SHELL) $(srctree)/scripts/adjust_autoksyms.sh \
--	  "$(MAKE) -f $(srctree)/Makefile vmlinux"
-+	  "$(MAKE) -f $(srctree)/Makefile autoksyms_recursive"
- endif
- 
- autoksyms_h := $(if $(CONFIG_TRIM_UNUSED_KSYMS), include/generated/autoksyms.h)
--- 
-2.34.1
-
+.. and please add a Fixes tag
