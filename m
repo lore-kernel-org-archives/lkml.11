@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F32A2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:21:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6D37C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:22:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233595AbiFWRVx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:21:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39516 "EHLO
+        id S233113AbiFWRWE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:22:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230296AbiFWRVW (ORCPT
+        with ESMTP id S232561AbiFWRV1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:21:22 -0400
+        Thu, 23 Jun 2022 13:21:27 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEAA182899;
-        Thu, 23 Jun 2022 10:00:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C7AF828BA;
+        Thu, 23 Jun 2022 10:00:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6BB29B82495;
-        Thu, 23 Jun 2022 17:00:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7ECAC341C7;
-        Thu, 23 Jun 2022 17:00:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6CBB2B82499;
+        Thu, 23 Jun 2022 17:00:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C679AC3411B;
+        Thu, 23 Jun 2022 17:00:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003642;
-        bh=N440oNHoyTzc3htiMaveD7/JzYvDwHZV2hlKM/2fHYw=;
+        s=korg; t=1656003645;
+        bh=nllvO+yZ0dQJXenefkz8hrTlTQLlDjKExQKa1DTSWlQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S2FVsAeggwXsKHegzuBSaKLct+DcjetVguMBcCCqIEbg73f8faEvAArXAiiCbzEIE
-         thaP4w5i7f1x2MOGTAfh5jYJ6UNUX3u1qiqILaM/xY+Q00cAwuKcpelsiyocBXSs46
-         7W6DTYI1ff/b9D6+dX2NOmZWRmZ9t3JtaNOWBtak=
+        b=MhsHYBywXd4oP5yg1I1dnWEqVGs7dGarPXWjkML2uFd1utW8IcaTrHC8ItPhYAfWB
+         hJExtaQauNygToAkYEzlhqtzU2kxd7GVLZ3Jo9wMRfE8vMfF6cZuiv8N9BG/oNd5o6
+         Af6H0PtmDqdhfAxpxeaQ8TEzbHkV44UQ05r+2pT8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Yangtao Li <tiny.windzz@gmail.com>,
         Theodore Tso <tytso@mit.edu>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 039/237] random: remove unnecessary unlikely()
-Date:   Thu, 23 Jun 2022 18:41:13 +0200
-Message-Id: <20220623164344.280462672@linuxfoundation.org>
+Subject: [PATCH 4.14 040/237] random: convert to ENTROPY_BITS for better code readability
+Date:   Thu, 23 Jun 2022 18:41:14 +0200
+Message-Id: <20220623164344.308675397@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -51,45 +51,37 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Yangtao Li <tiny.windzz@gmail.com>
 
-commit 870e05b1b18814911cb2703a977f447cb974f0f9 upstream.
-
-WARN_ON() already contains an unlikely(), so it's not necessary to use
-unlikely.
+commit 12faac30d157970fdbfa171bbeb1fb88350303b1 upstream.
 
 Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
-Link: https://lore.kernel.org/r/20190607182517.28266-1-tiny.windzz@gmail.com
+Link: https://lore.kernel.org/r/20190607182517.28266-2-tiny.windzz@gmail.com
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/char/random.c |    5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -738,10 +738,9 @@ retry:
- 		} while (unlikely(entropy_count < pool_size-2 && pnfrac));
+@@ -762,7 +762,7 @@ retry:
+ 			if (entropy_bits < 128)
+ 				return;
+ 			crng_reseed(&primary_crng, r);
+-			entropy_bits = r->entropy_count >> ENTROPY_SHIFT;
++			entropy_bits = ENTROPY_BITS(r);
+ 		}
  	}
+ }
+@@ -1394,8 +1394,7 @@ retry:
+ 		goto retry;
  
--	if (unlikely(entropy_count < 0)) {
-+	if (WARN_ON(entropy_count < 0)) {
- 		pr_warn("random: negative entropy/overflow: pool %s count %d\n",
- 			r->name, entropy_count);
--		WARN_ON(1);
- 		entropy_count = 0;
- 	} else if (entropy_count > pool_size)
- 		entropy_count = pool_size;
-@@ -1380,10 +1379,9 @@ retry:
- 	if (ibytes < min)
- 		ibytes = 0;
- 
--	if (unlikely(entropy_count < 0)) {
-+	if (WARN_ON(entropy_count < 0)) {
- 		pr_warn("random: negative entropy count: pool %s count %d\n",
- 			r->name, entropy_count);
--		WARN_ON(1);
- 		entropy_count = 0;
+ 	trace_debit_entropy(r->name, 8 * ibytes);
+-	if (ibytes &&
+-	    (r->entropy_count >> ENTROPY_SHIFT) < random_write_wakeup_bits) {
++	if (ibytes && ENTROPY_BITS(r) < random_write_wakeup_bits) {
+ 		wake_up_interruptible(&random_write_wait);
+ 		kill_fasync(&fasync, SIGIO, POLL_OUT);
  	}
- 	nfrac = ibytes << (ENTROPY_SHIFT + 3);
 
 
