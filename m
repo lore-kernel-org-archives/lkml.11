@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DCBDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:04:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC505C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:04:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235847AbiFWSEY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:04:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36594 "EHLO
+        id S235856AbiFWSE3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:04:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236011AbiFWSC5 (ORCPT
+        with ESMTP id S236050AbiFWSDC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:02:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D770DA1F1F;
-        Thu, 23 Jun 2022 10:17:05 -0700 (PDT)
+        Thu, 23 Jun 2022 14:03:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CF06B4ABF;
+        Thu, 23 Jun 2022 10:17:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 70422B824B9;
-        Thu, 23 Jun 2022 17:17:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD145C3411B;
-        Thu, 23 Jun 2022 17:17:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6C765B82490;
+        Thu, 23 Jun 2022 17:17:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B58F3C3411B;
+        Thu, 23 Jun 2022 17:17:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004623;
-        bh=Wf5YjyGS/Miwbxm5fWl0FgB1C4SqltlK0Q2dh7YVefI=;
+        s=korg; t=1656004626;
+        bh=u+uas4E9Hk1TWmgMcgHjuWFBdQixdCGfz+NC0mvmir4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KyuPSRrRzomldTgxabHq1cwz2dXjyf9WOUwy3g3HPJKTyYpIlRPW8p2i660Fo5RU2
-         asil3gxaEHlZ0ldLYz2dX/7nX/BH2ltUlpdod8I+Nj0X9BgtCuAWHC1VXc42bHTGkh
-         8sS/CyMWo4HzXpHTnFnXjgRMA6JUamCkLYd3lE3c=
+        b=aaGLFAGpXOCXq4GunM35NUvcCWnZlnWhk/7bJF+yVIR+k8NeU27g7fY+kMEbr6DhF
+         Lr5d27wBEYjQ3RO+kmN0XzPDOMU6ftHNx7/zf7pwQY5/l+VNo112sTE4mCDpaL1UQg
+         CSuydeOJicBQ8W+kCObD0hPN5+yjj/1pTwEnjoLY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Eric Biggers <ebiggers@google.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.19 080/234] random: remove use_input_pool parameter from crng_reseed()
-Date:   Thu, 23 Jun 2022 18:42:27 +0200
-Message-Id: <20220623164345.322676690@linuxfoundation.org>
+Subject: [PATCH 4.19 098/234] random: remove whitespace and reorder includes
+Date:   Thu, 23 Jun 2022 18:42:45 +0200
+Message-Id: <20220623164345.831275552@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
 References: <20220623164343.042598055@linuxfoundation.org>
@@ -48,77 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 5d58ea3a31cc98b9fa563f6921d3d043bf0103d1 upstream.
+commit 87e7d5abad0cbc9312dea7f889a57d294c1a5fcc upstream.
 
-The primary_crng is always reseeded from the input_pool, while the NUMA
-crngs are always reseeded from the primary_crng.  Remove the redundant
-'use_input_pool' parameter from crng_reseed() and just directly check
-whether the crng is the primary_crng.
+This is purely cosmetic. Future work involves figuring out which of
+these headers we need and which we don't.
 
-Signed-off-by: Eric Biggers <ebiggers@google.com>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/char/random.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -365,7 +365,7 @@ static struct {
- 
- static void extract_entropy(void *buf, size_t nbytes);
- 
--static void crng_reseed(struct crng_state *crng, bool use_input_pool);
-+static void crng_reseed(struct crng_state *crng);
- 
- /*
-  * This function adds bytes into the entropy "pool".  It does not
-@@ -464,7 +464,7 @@ static void credit_entropy_bits(int nbit
- 	trace_credit_entropy_bits(nbits, entropy_count, _RET_IP_);
- 
- 	if (crng_init < 2 && entropy_count >= POOL_MIN_BITS)
--		crng_reseed(&primary_crng, true);
-+		crng_reseed(&primary_crng);
- }
- 
- /*********************************************************************
-@@ -701,7 +701,7 @@ static int crng_slow_load(const u8 *cp,
- 	return 1;
- }
- 
--static void crng_reseed(struct crng_state *crng, bool use_input_pool)
-+static void crng_reseed(struct crng_state *crng)
- {
- 	unsigned long flags;
- 	int i;
-@@ -710,7 +710,7 @@ static void crng_reseed(struct crng_stat
- 		u32 key[8];
- 	} buf;
- 
--	if (use_input_pool) {
-+	if (crng == &primary_crng) {
- 		int entropy_count;
- 		do {
- 			entropy_count = READ_ONCE(input_pool.entropy_count);
-@@ -748,7 +748,7 @@ static void _extract_crng(struct crng_st
- 		init_time = READ_ONCE(crng->init_time);
- 		if (time_after(READ_ONCE(crng_global_init_time), init_time) ||
- 		    time_after(jiffies, init_time + CRNG_RESEED_INTERVAL))
--			crng_reseed(crng, crng == &primary_crng);
-+			crng_reseed(crng);
- 	}
- 	spin_lock_irqsave(&crng->lock, flags);
- 	chacha20_block(&crng->state[0], out);
-@@ -1547,7 +1547,7 @@ static long random_ioctl(struct file *f,
- 			return -EPERM;
- 		if (crng_init < 2)
- 			return -ENODATA;
--		crng_reseed(&primary_crng, true);
-+		crng_reseed(&primary_crng);
- 		WRITE_ONCE(crng_global_init_time, jiffies - 1);
- 		return 0;
- 	default:
+@@ -193,11 +193,10 @@
+ #include <linux/syscalls.h>
+ #include <linux/completion.h>
+ #include <linux/uuid.h>
++#include <linux/uaccess.h>
+ #include <crypto/chacha20.h>
+ #include <crypto/blake2s.h>
+-
+ #include <asm/processor.h>
+-#include <linux/uaccess.h>
+ #include <asm/irq.h>
+ #include <asm/irq_regs.h>
+ #include <asm/io.h>
 
 
