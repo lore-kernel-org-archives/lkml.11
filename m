@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3928C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:24:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19F0AC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:24:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236973AbiFWSYH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:24:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59826 "EHLO
+        id S237068AbiFWSYL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:24:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237535AbiFWSWu (ORCPT
+        with ESMTP id S237585AbiFWSW4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:22:50 -0400
+        Thu, 23 Jun 2022 14:22:56 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE736C22AB;
-        Thu, 23 Jun 2022 10:25:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85FE269F9D;
+        Thu, 23 Jun 2022 10:25:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B4578B824BC;
-        Thu, 23 Jun 2022 17:25:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E749C3411B;
-        Thu, 23 Jun 2022 17:25:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C3AF1B824B8;
+        Thu, 23 Jun 2022 17:25:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27316C3411B;
+        Thu, 23 Jun 2022 17:25:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656005129;
-        bh=3x+JCMeCi8QARQ9Mf6ADOAWXzW1kT+BjrjIMMS63i3k=;
+        s=korg; t=1656005135;
+        bh=Myr/K1diHuAlbtpy15kf7/p4zZiJit0fn5QkUHtEsmw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cUYJKiypfYzweWnaQM3uDx429kmWCynJp9I8xI5ibGGsFkFipL6NG1ImvkJSistrw
-         OOSxhZEDe/xLJ5DF0G0kT5X+qGCVu92yzXNirW5yMiKaPF/Z4HIiMkdRa0RChQ6aws
-         qzVayTrUaAioUUo38QhPjIaO73vboB7wOa6CbXkY=
+        b=W/7e7CiIDq1Qvn8idHGAoUlwj3RvHHHYKqNFjL8OYgoSGUN4Pn6c1CzEiOfy0SrMm
+         6OrvxO7SVzzeVw5Swev7JuOGeyt5+qaUoRms4GBeKS8eW9/o6CcUETnLPOuks8wfD7
+         QqbvL2FgojCfw3fqZ4cbPhF6NVL3Jtcp5u3iWZog=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kalle Valo <kvalo@kernel.org>,
+        stable@vger.kernel.org, M Chetan Kumar <m.chetan.kumar@intel.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH 5.18 03/11] wifi: rtlwifi: remove always-true condition pointed out by GCC 12
-Date:   Thu, 23 Jun 2022 18:45:15 +0200
-Message-Id: <20220623164322.416091456@linuxfoundation.org>
+Subject: [PATCH 5.18 05/11] net: wwan: iosm: remove pointless null check
+Date:   Thu, 23 Jun 2022 18:45:17 +0200
+Message-Id: <20220623164322.472090999@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164322.315085512@linuxfoundation.org>
 References: <20220623164322.315085512@linuxfoundation.org>
@@ -51,36 +51,53 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jakub Kicinski <kuba@kernel.org>
 
-commit ee3db469dd317e82f57b13aa3bc61be5cb60c2b4 upstream.
+commit dbbc7d04c549a43ad343c69e17b27a57e2102041 upstream.
 
-The .value is a two-dim array, not a pointer.
+GCC 12 warns:
 
-struct iqk_matrix_regs {
-	bool iqk_done;
-        long value[1][IQK_MATRIX_REG_NUM];
-};
+drivers/net/wwan/iosm/iosm_ipc_protocol_ops.c: In function ‘ipc_protocol_dl_td_process’:
+drivers/net/wwan/iosm/iosm_ipc_protocol_ops.c:406:13: warning: the comparison will always evaluate as ‘true’ for the address of ‘cb’ will never be NULL [-Waddress]
+  406 |         if (!IPC_CB(skb)) {
+      |             ^
 
-Acked-by: Kalle Valo <kvalo@kernel.org>
+Indeed the check seems entirely pointless. Hopefully the other
+validation checks will catch if the cb is bad, but it can't be
+NULL.
+
+Reviewed-by: M Chetan Kumar <m.chetan.kumar@intel.com>
+Link: https://lore.kernel.org/r/20220519004342.2109832-1-kuba@kernel.org
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/realtek/rtlwifi/rtl8192de/phy.c |    5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ drivers/net/wwan/iosm/iosm_ipc_protocol_ops.c |   10 ----------
+ 1 file changed, 10 deletions(-)
 
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8192de/phy.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192de/phy.c
-@@ -2386,10 +2386,7 @@ void rtl92d_phy_reload_iqk_setting(struc
- 			rtl_dbg(rtlpriv, COMP_SCAN, DBG_LOUD,
- 				"Just Read IQK Matrix reg for channel:%d....\n",
- 				channel);
--			if ((rtlphy->iqk_matrix[indexforchannel].
--			     value[0] != NULL)
--				/*&&(regea4 != 0) */)
--				_rtl92d_phy_patha_fill_iqk_matrix(hw, true,
-+			_rtl92d_phy_patha_fill_iqk_matrix(hw, true,
- 					rtlphy->iqk_matrix[
- 					indexforchannel].value,	0,
- 					(rtlphy->iqk_matrix[
+--- a/drivers/net/wwan/iosm/iosm_ipc_protocol_ops.c
++++ b/drivers/net/wwan/iosm/iosm_ipc_protocol_ops.c
+@@ -372,8 +372,6 @@ bool ipc_protocol_dl_td_prepare(struct i
+ struct sk_buff *ipc_protocol_dl_td_process(struct iosm_protocol *ipc_protocol,
+ 					   struct ipc_pipe *pipe)
+ {
+-	u32 tail =
+-		le32_to_cpu(ipc_protocol->p_ap_shm->tail_array[pipe->pipe_nr]);
+ 	struct ipc_protocol_td *p_td;
+ 	struct sk_buff *skb;
+ 
+@@ -401,14 +399,6 @@ struct sk_buff *ipc_protocol_dl_td_proce
+ 		ipc_pcie_kfree_skb(ipc_protocol->pcie, skb);
+ 		skb = NULL;
+ 		goto ret;
+-	}
+-
+-	if (!IPC_CB(skb)) {
+-		dev_err(ipc_protocol->dev, "pipe# %d, tail: %d skb_cb is NULL",
+-			pipe->pipe_nr, tail);
+-		ipc_pcie_kfree_skb(ipc_protocol->pcie, skb);
+-		skb = NULL;
+-		goto ret;
+ 	}
+ 
+ 	if (p_td->buffer.address != IPC_CB(skb)->mapping) {
 
 
