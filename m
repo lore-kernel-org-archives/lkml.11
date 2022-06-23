@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E98FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:45:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2856AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:45:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234815AbiFWRp1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:45:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46166 "EHLO
+        id S232185AbiFWRpb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:45:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234514AbiFWRmS (ORCPT
+        with ESMTP id S234852AbiFWRmi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:42:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E32298C57;
-        Thu, 23 Jun 2022 10:10:08 -0700 (PDT)
+        Thu, 23 Jun 2022 13:42:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0895B55371;
+        Thu, 23 Jun 2022 10:10:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7C901B824B8;
-        Thu, 23 Jun 2022 17:09:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB216C3411B;
-        Thu, 23 Jun 2022 17:09:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7E3B6B82499;
+        Thu, 23 Jun 2022 17:10:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDD25C341C5;
+        Thu, 23 Jun 2022 17:10:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004196;
-        bh=NGgX2yhDU7zsLdshLqW0cGUunsOEI9fnothbHvT8P34=;
+        s=korg; t=1656004202;
+        bh=b5PJ7ihy/690AHpeEsqwO2CNN3oz8tPqPwW16jbeZds=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gjEPIDReVOdIm6fKiEE+pkMUuNSqCuAz39wNapct0aHZMRgaBYYTRuPfDbMiyy11M
-         sPzKG30MlnYnIkNzYPnD85fat0z9zh9Ibi5R1+wopfELYdCvOXY8VGh+gLlYwC4HY9
-         gyQ/wn76T5wY7vE4GHCMAs9EMMSBRoUAn7gEPT1M=
+        b=bbCmtaLYSk9ZODMFTlMQPtSrcnlwLWCt5xGX5STM0T7ZwWjkwqPyTtyRZMXRRQx5e
+         mzUSCqrbH3+OS6T+BUxSZbFmh0fXCyqJpt0ciE+s+18Rtv6jUAmPrfzLHKqWZYMxfh
+         Ex7vegaoEObDAbAssBWU+rAFQhggS4yiQGINZkUs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 182/237] random: check for signals after page of pool writes
-Date:   Thu, 23 Jun 2022 18:43:36 +0200
-Message-Id: <20220623164348.384788241@linuxfoundation.org>
+        stable@vger.kernel.org, Robert Eckelmann <longnoserob@gmail.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 4.14 219/237] USB: serial: io_ti: add Agilent E5805A support
+Date:   Thu, 23 Jun 2022 18:44:13 +0200
+Message-Id: <20220623164349.451077666@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -49,101 +48,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Robert Eckelmann <longnoserob@gmail.com>
 
-commit 1ce6c8d68f8ac587f54d0a271ac594d3d51f3efb upstream.
+commit 908e698f2149c3d6a67d9ae15c75545a3f392559 upstream.
 
-get_random_bytes_user() checks for signals after producing a PAGE_SIZE
-worth of output, just like /dev/zero does. write_pool() is doing
-basically the same work (actually, slightly more expensive), and so
-should stop to check for signals in the same way. Let's also name it
-write_pool_user() to match get_random_bytes_user(), so this won't be
-misused in the future.
+Add support for Agilent E5805A (rebranded ION Edgeport/4) to io_ti.
 
-Before this patch, massive writes to /dev/urandom would tie up the
-process for an extremely long time and make it unterminatable. After, it
-can be successfully interrupted. The following test program can be used
-to see this works as intended:
-
-  #include <unistd.h>
-  #include <fcntl.h>
-  #include <signal.h>
-  #include <stdio.h>
-
-  static unsigned char x[~0U];
-
-  static void handle(int) { }
-
-  int main(int argc, char *argv[])
-  {
-    pid_t pid = getpid(), child;
-    int fd;
-    signal(SIGUSR1, handle);
-    if (!(child = fork())) {
-      for (;;)
-        kill(pid, SIGUSR1);
-    }
-    fd = open("/dev/urandom", O_WRONLY);
-    pause();
-    printf("interrupted after writing %zd bytes\n", write(fd, x, sizeof(x)));
-    close(fd);
-    kill(child, SIGTERM);
-    return 0;
-  }
-
-Result before: "interrupted after writing 2147479552 bytes"
-Result after: "interrupted after writing 4096 bytes"
-
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Robert Eckelmann <longnoserob@gmail.com>
+Link: https://lore.kernel.org/r/20220521230808.30931eca@octoberrain
+Cc: stable@vger.kernel.org
+Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ drivers/usb/serial/io_ti.c      |    2 ++
+ drivers/usb/serial/io_usbvend.h |    1 +
+ 2 files changed, 3 insertions(+)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -1251,7 +1251,7 @@ static unsigned int random_poll(struct f
- 	return crng_ready() ? POLLIN | POLLRDNORM : POLLOUT | POLLWRNORM;
- }
+--- a/drivers/usb/serial/io_ti.c
++++ b/drivers/usb/serial/io_ti.c
+@@ -172,6 +172,7 @@ static const struct usb_device_id edgepo
+ 	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_8S) },
+ 	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_416) },
+ 	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_416B) },
++	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_E5805A) },
+ 	{ }
+ };
  
--static ssize_t write_pool(struct iov_iter *iter)
-+static ssize_t write_pool_user(struct iov_iter *iter)
- {
- 	u8 block[BLAKE2S_BLOCK_SIZE];
- 	ssize_t ret = 0;
-@@ -1266,7 +1266,13 @@ static ssize_t write_pool(struct iov_ite
- 		mix_pool_bytes(block, copied);
- 		if (!iov_iter_count(iter) || copied != sizeof(block))
- 			break;
--		cond_resched();
-+
-+		BUILD_BUG_ON(PAGE_SIZE % sizeof(block) != 0);
-+		if (ret % PAGE_SIZE == 0) {
-+			if (signal_pending(current))
-+				break;
-+			cond_resched();
-+		}
- 	}
+@@ -210,6 +211,7 @@ static const struct usb_device_id id_tab
+ 	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_8S) },
+ 	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_416) },
+ 	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_TI_EDGEPORT_416B) },
++	{ USB_DEVICE(USB_VENDOR_ID_ION, ION_DEVICE_ID_E5805A) },
+ 	{ }
+ };
  
- 	memzero_explicit(block, sizeof(block));
-@@ -1275,7 +1281,7 @@ static ssize_t write_pool(struct iov_ite
+--- a/drivers/usb/serial/io_usbvend.h
++++ b/drivers/usb/serial/io_usbvend.h
+@@ -215,6 +215,7 @@
+ //
+ // Definitions for other product IDs
+ #define ION_DEVICE_ID_MT4X56USB			0x1403	// OEM device
++#define ION_DEVICE_ID_E5805A			0x1A01  // OEM device (rebranded Edgeport/4)
  
- static ssize_t random_write_iter(struct kiocb *kiocb, struct iov_iter *iter)
- {
--	return write_pool(iter);
-+	return write_pool_user(iter);
- }
  
- static ssize_t urandom_read_iter(struct kiocb *kiocb, struct iov_iter *iter)
-@@ -1342,7 +1348,7 @@ static long random_ioctl(struct file *f,
- 		ret = import_single_range(WRITE, p, len, &iov, &iter);
- 		if (unlikely(ret))
- 			return ret;
--		ret = write_pool(&iter);
-+		ret = write_pool_user(&iter);
- 		if (unlikely(ret < 0))
- 			return ret;
- 		/* Since we're crediting, enforce that it was all written into the pool. */
+ #define	GENERATION_ID_FROM_USB_PRODUCT_ID(ProductId)				\
 
 
