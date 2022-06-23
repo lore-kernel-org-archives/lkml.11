@@ -2,225 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60C0FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:21:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56917C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:21:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232424AbiFWRVj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:21:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57954 "EHLO
+        id S233283AbiFWRVo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:21:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233484AbiFWRVI (ORCPT
+        with ESMTP id S233115AbiFWRVI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 23 Jun 2022 13:21:08 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40D63CD931;
-        Thu, 23 Jun 2022 10:00:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1656003644; x=1687539644;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=sxe/FHbgTxmtRkdi6mtiWVttB6WJVeL/b+JDfTfUZwA=;
-  b=DOBcG5NC4tVXA18ubKWoqGWoFPcuX8wKFBxMLFvrlueaegRBfWQIQYWv
-   dCK0RHUxBKH3LV9eZ+h0244Pm90B9goEV+ApscRqhDy/6vV0kxsK8leCk
-   RlRsQX1qXmqEjm8jYCPGEZSqsTpp/TDabbqZzd0f83bqn4eqQYOwf9qqu
-   I=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 23 Jun 2022 10:00:37 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2022 10:00:37 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 23 Jun 2022 10:00:36 -0700
-Received: from [10.226.59.182] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 23 Jun
- 2022 10:00:35 -0700
-Message-ID: <236a5ed2-566c-9ee8-4189-8c647044a82f@quicinc.com>
-Date:   Thu, 23 Jun 2022 11:00:35 -0600
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3914482886;
+        Thu, 23 Jun 2022 10:00:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EA80E6159A;
+        Thu, 23 Jun 2022 17:00:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1511C3411B;
+        Thu, 23 Jun 2022 17:00:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656003639;
+        bh=y1xaNaLdb+skoiE1Gt9hFZoRF9x6bVFGrS2X8ZpqWYg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=R0UIZUdKOfnUf845kFYy4zxMAuBLrrYtnh0mf2VpmHINq0Ii3qdDf+OUX1BbQKakr
+         uy3V0HnJLOK/73sVpNWfWVK3cYHPgsiJe5RMJNbA4niCrSc3y9fMrXWpLkyK5I9UcJ
+         g/4tfjLU1qa+XVwX6ae3H1+5voxAh+0gg1rrzol0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Andy Lutomirski <luto@kernel.org>,
+        Theodore Tso <tytso@mit.edu>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.14 038/237] random: remove kernel.random.read_wakeup_threshold
+Date:   Thu, 23 Jun 2022 18:41:12 +0200
+Message-Id: <20220623164344.251557357@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
+References: <20220623164343.132308638@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH v4 1/1] bus: mhi: host: Move IRQ allocation to controller
- registration phase
-Content-Language: en-US
-To:     Manivannan Sadhasivam <mani@kernel.org>,
-        Qiang Yu <quic_qianyu@quicinc.com>
-CC:     <quic_hemantk@quicinc.com>, <loic.poulain@linaro.org>,
-        <mhi@lists.linux.dev>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <quic_cang@quicinc.com>
-References: <1655952183-66792-1-git-send-email-quic_qianyu@quicinc.com>
- <20220623115436.GA15542@thinkpad>
-From:   Jeffrey Hugo <quic_jhugo@quicinc.com>
-In-Reply-To: <20220623115436.GA15542@thinkpad>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/23/2022 5:54 AM, Manivannan Sadhasivam wrote:
-> On Thu, Jun 23, 2022 at 10:43:03AM +0800, Qiang Yu wrote:
->> During runtime, the MHI endpoint may be powered up/down several times.
->> So instead of allocating and destroying the IRQs all the time, let's just
->> enable/disable IRQs during power up/down.
->>
->> The IRQs will be allocated during mhi_register_controller() and freed
->> during mhi_unregister_controller(). This works well for things like PCI
->> hotplug also as once the PCI device gets removed, the controller will
->> get unregistered. And once it comes back, it will get registered back
->> and even if the IRQ configuration changes (MSI), that will get accounted.
->>
->> Signed-off-by: Qiang Yu <quic_qianyu@quicinc.com>
-> 
-> I thought I already gave my r-o-b. But anyway,
-> 
-> Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
-> 
-> I'll wait for a review from Jeff before applying.
+From: Andy Lutomirski <luto@kernel.org>
 
-Looks good to me.
+commit c95ea0c69ffda19381c116db2be23c7e654dac98 upstream.
 
-Reviewed-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
+It has no effect any more, so remove it.  We can revert this if
+there is some user code that expects to be able to set this sysctl.
 
-> 
-> Thanks,
-> Mani
-> 
->> ---
->> v3->v4: move mhi_init_irq_setup() above mhi_alloc_device()
->> v2->v3: change commit text and comments.
->> v1->v2: Rewrite commit text. Remove a random change. Use
->>          inline enables.
->>
->>   drivers/bus/mhi/host/init.c | 17 ++++++++++++++++-
->>   drivers/bus/mhi/host/pm.c   | 19 +++++++++++++------
->>   2 files changed, 29 insertions(+), 7 deletions(-)
->>
->> diff --git a/drivers/bus/mhi/host/init.c b/drivers/bus/mhi/host/init.c
->> index cbb86b2..a1d37da 100644
->> --- a/drivers/bus/mhi/host/init.c
->> +++ b/drivers/bus/mhi/host/init.c
->> @@ -179,6 +179,12 @@ int mhi_init_irq_setup(struct mhi_controller *mhi_cntrl)
->>   				   "bhi", mhi_cntrl);
->>   	if (ret)
->>   		return ret;
->> +	/*
->> +	 * IRQs should be enabled during mhi_async_power_up(), so disable them explicitly here.
->> +	 * Due to the use of IRQF_SHARED flag as default while requesting IRQs, we assume that
->> +	 * IRQ_NOAUTOEN is not applicable.
->> +	 */
->> +	disable_irq(mhi_cntrl->irq[0]);
->>   
->>   	for (i = 0; i < mhi_cntrl->total_ev_rings; i++, mhi_event++) {
->>   		if (mhi_event->offload_ev)
->> @@ -200,6 +206,8 @@ int mhi_init_irq_setup(struct mhi_controller *mhi_cntrl)
->>   				mhi_cntrl->irq[mhi_event->irq], i);
->>   			goto error_request;
->>   		}
->> +
->> +		disable_irq(mhi_cntrl->irq[mhi_event->irq]);
->>   	}
->>   
->>   	return 0;
->> @@ -979,12 +987,16 @@ int mhi_register_controller(struct mhi_controller *mhi_cntrl,
->>   		goto err_destroy_wq;
->>   	}
->>   
->> +	ret = mhi_init_irq_setup(mhi_cntrl);
->> +	if (ret)
->> +		goto err_ida_free;
->> +
->>   	/* Register controller with MHI bus */
->>   	mhi_dev = mhi_alloc_device(mhi_cntrl);
->>   	if (IS_ERR(mhi_dev)) {
->>   		dev_err(mhi_cntrl->cntrl_dev, "Failed to allocate MHI device\n");
->>   		ret = PTR_ERR(mhi_dev);
->> -		goto err_ida_free;
->> +		goto error_setup_irq;
->>   	}
->>   
->>   	mhi_dev->dev_type = MHI_DEVICE_CONTROLLER;
->> @@ -1007,6 +1019,8 @@ int mhi_register_controller(struct mhi_controller *mhi_cntrl,
->>   
->>   err_release_dev:
->>   	put_device(&mhi_dev->dev);
->> +error_setup_irq:
->> +	mhi_deinit_free_irq(mhi_cntrl);
->>   err_ida_free:
->>   	ida_free(&mhi_controller_ida, mhi_cntrl->index);
->>   err_destroy_wq:
->> @@ -1027,6 +1041,7 @@ void mhi_unregister_controller(struct mhi_controller *mhi_cntrl)
->>   	struct mhi_chan *mhi_chan = mhi_cntrl->mhi_chan;
->>   	unsigned int i;
->>   
->> +	mhi_deinit_free_irq(mhi_cntrl);
->>   	mhi_destroy_debugfs(mhi_cntrl);
->>   
->>   	destroy_workqueue(mhi_cntrl->hiprio_wq);
->> diff --git a/drivers/bus/mhi/host/pm.c b/drivers/bus/mhi/host/pm.c
->> index dc2e8ff..4a42186 100644
->> --- a/drivers/bus/mhi/host/pm.c
->> +++ b/drivers/bus/mhi/host/pm.c
->> @@ -500,7 +500,7 @@ static void mhi_pm_disable_transition(struct mhi_controller *mhi_cntrl)
->>   	for (i = 0; i < mhi_cntrl->total_ev_rings; i++, mhi_event++) {
->>   		if (mhi_event->offload_ev)
->>   			continue;
->> -		free_irq(mhi_cntrl->irq[mhi_event->irq], mhi_event);
->> +		disable_irq(mhi_cntrl->irq[mhi_event->irq]);
->>   		tasklet_kill(&mhi_event->task);
->>   	}
->>   
->> @@ -1060,12 +1060,13 @@ static void mhi_deassert_dev_wake(struct mhi_controller *mhi_cntrl,
->>   
->>   int mhi_async_power_up(struct mhi_controller *mhi_cntrl)
->>   {
->> +	struct mhi_event *mhi_event = mhi_cntrl->mhi_event;
->>   	enum mhi_state state;
->>   	enum mhi_ee_type current_ee;
->>   	enum dev_st_transition next_state;
->>   	struct device *dev = &mhi_cntrl->mhi_dev->dev;
->>   	u32 interval_us = 25000; /* poll register field every 25 milliseconds */
->> -	int ret;
->> +	int ret, i;
->>   
->>   	dev_info(dev, "Requested to power ON\n");
->>   
->> @@ -1117,9 +1118,15 @@ int mhi_async_power_up(struct mhi_controller *mhi_cntrl)
->>   		mhi_write_reg(mhi_cntrl, mhi_cntrl->bhi, BHI_INTVEC, 0);
->>   	}
->>   
->> -	ret = mhi_init_irq_setup(mhi_cntrl);
->> -	if (ret)
->> -		goto error_exit;
->> +	/* IRQs have been requested during probe, so we just need to enable them. */
->> +	enable_irq(mhi_cntrl->irq[0]);
->> +
->> +	for (i = 0; i < mhi_cntrl->total_ev_rings; i++, mhi_event++) {
->> +		if (mhi_event->offload_ev)
->> +			continue;
->> +
->> +		enable_irq(mhi_cntrl->irq[mhi_event->irq]);
->> +	}
->>   
->>   	/* Transition to next state */
->>   	next_state = MHI_IN_PBL(current_ee) ?
->> @@ -1182,7 +1189,7 @@ void mhi_power_down(struct mhi_controller *mhi_cntrl, bool graceful)
->>   	/* Wait for shutdown to complete */
->>   	flush_work(&mhi_cntrl->st_worker);
->>   
->> -	free_irq(mhi_cntrl->irq[0], mhi_cntrl);
->> +	disable_irq(mhi_cntrl->irq[0]);
->>   }
->>   EXPORT_SYMBOL_GPL(mhi_power_down);
->>   
->> -- 
->> Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, a Linux Foundation Collaborative Project.
->>
-> 
+Signed-off-by: Andy Lutomirski <luto@kernel.org>
+Link: https://lore.kernel.org/r/a74ed2cf0b5a5451428a246a9239f5bc4e29358f.1577088521.git.luto@kernel.org
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/char/random.c |   18 +-----------------
+ 1 file changed, 1 insertion(+), 17 deletions(-)
+
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -370,12 +370,6 @@
+ #define ENTROPY_BITS(r) ((r)->entropy_count >> ENTROPY_SHIFT)
+ 
+ /*
+- * The minimum number of bits of entropy before we wake up a read on
+- * /dev/random.  Should be enough to do a significant reseed.
+- */
+-static int random_read_wakeup_bits = 64;
+-
+-/*
+  * If the entropy count falls under this number of bits, then we
+  * should wake up processes which are selecting or polling on write
+  * access to /dev/random.
+@@ -2010,8 +2004,7 @@ SYSCALL_DEFINE3(getrandom, char __user *
+ 
+ #include <linux/sysctl.h>
+ 
+-static int min_read_thresh = 8, min_write_thresh;
+-static int max_read_thresh = OUTPUT_POOL_WORDS * 32;
++static int min_write_thresh;
+ static int max_write_thresh = INPUT_POOL_WORDS * 32;
+ static int random_min_urandom_seed = 60;
+ static char sysctl_bootid[16];
+@@ -2087,15 +2080,6 @@ struct ctl_table random_table[] = {
+ 		.data		= &input_pool.entropy_count,
+ 	},
+ 	{
+-		.procname	= "read_wakeup_threshold",
+-		.data		= &random_read_wakeup_bits,
+-		.maxlen		= sizeof(int),
+-		.mode		= 0644,
+-		.proc_handler	= proc_dointvec_minmax,
+-		.extra1		= &min_read_thresh,
+-		.extra2		= &max_read_thresh,
+-	},
+-	{
+ 		.procname	= "write_wakeup_threshold",
+ 		.data		= &random_write_wakeup_bits,
+ 		.maxlen		= sizeof(int),
+
 
