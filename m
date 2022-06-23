@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 338D8CCA490
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:59:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D470CCA48F
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:59:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232117AbiFWR70 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:59:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51250 "EHLO
+        id S236346AbiFWR7L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:59:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235386AbiFWRz0 (ORCPT
+        with ESMTP id S235420AbiFWRyL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:55:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FF3EAE316;
-        Thu, 23 Jun 2022 10:15:22 -0700 (PDT)
+        Thu, 23 Jun 2022 13:54:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA28EAD9C5;
+        Thu, 23 Jun 2022 10:15:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 710E661DE1;
-        Thu, 23 Jun 2022 17:15:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31D4DC3411B;
-        Thu, 23 Jun 2022 17:15:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 52FABB82498;
+        Thu, 23 Jun 2022 17:15:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 309B3C3411B;
+        Thu, 23 Jun 2022 17:15:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004520;
-        bh=zGMzx0V/+Sn1NwVSNDMX88/j5POtGrZTAP3uXM3+C4I=;
+        s=korg; t=1656004508;
+        bh=vPRTMm+R+ACCNBJFw2ofXGsoF9uzS5IfdoIy6DONyu0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f1+rushPQvp6xwwD4haZUN82uw2pkhDHmHuOEDECu7I44140rTk6/ND31XIDETRfI
-         xVhoDRSTRWsaczGJKebH+q+B1oxQedTY36fmfmYfholr4+nY0nvLaEX4L2snhSPjAV
-         YWshghdz2+4DZeILBZOU+shu9NlQFP9K2bXSIkdI=
+        b=N7t1PnZFsqfdN+tGqVh5gBPgQEpNkPeelG7w0W5m3XcRTrDxh1b4eVyLyDzbAh1G+
+         b7S4+BD1UhibOzKhEIiWEiUZV7B8GAHcrNpeGSqRM+/NdwNb2ZCtzEYxGzyP5qDwPE
+         OylZ6Le9a3SQY+bJ9QJPBsgFsFWWoYrM40PJOIQM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
+        stable@vger.kernel.org, Schspa Shi <schspa@gmail.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.19 063/234] random: remove incomplete last_data logic
-Date:   Thu, 23 Jun 2022 18:42:10 +0200
-Message-Id: <20220623164344.845930432@linuxfoundation.org>
+Subject: [PATCH 4.19 060/234] random: fix typo in comments
+Date:   Thu, 23 Jun 2022 18:42:07 +0200
+Message-Id: <20220623164344.762097921@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
 References: <20220623164343.042598055@linuxfoundation.org>
@@ -49,112 +48,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Schspa Shi <schspa@gmail.com>
 
-commit a4bfa9b31802c14ff5847123c12b98d5e36b3985 upstream.
+commit c0a8a61e7abbf66729687ee63659ee25983fbb1e upstream.
 
-There were a few things added under the "if (fips_enabled)" banner,
-which never really got completed, and the FIPS people anyway are
-choosing a different direction. Rather than keep around this halfbaked
-code, get rid of it so that we can focus on a single design of the RNG
-rather than two designs.
+s/or/for
 
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Schspa Shi <schspa@gmail.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   40 ++++------------------------------------
- 1 file changed, 4 insertions(+), 36 deletions(-)
+ drivers/char/random.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -337,8 +337,6 @@
- #include <linux/spinlock.h>
- #include <linux/kthread.h>
- #include <linux/percpu.h>
--#include <linux/cryptohash.h>
--#include <linux/fips.h>
- #include <linux/ptrace.h>
- #include <linux/workqueue.h>
- #include <linux/irq.h>
-@@ -518,14 +516,12 @@ struct entropy_store {
- 	u16 add_ptr;
- 	u16 input_rotate;
- 	int entropy_count;
--	unsigned int last_data_init:1;
--	u8 last_data[EXTRACT_SIZE];
- };
- 
- static ssize_t extract_entropy(struct entropy_store *r, void *buf,
- 			       size_t nbytes, int min, int rsvd);
- static ssize_t _extract_entropy(struct entropy_store *r, void *buf,
--				size_t nbytes, int fips);
-+				size_t nbytes);
- 
- static void crng_reseed(struct crng_state *crng, struct entropy_store *r);
- static u32 input_pool_data[INPUT_POOL_WORDS] __latent_entropy;
-@@ -822,7 +818,7 @@ static void crng_initialize_secondary(st
- 
- static void __init crng_initialize_primary(struct crng_state *crng)
- {
--	_extract_entropy(&input_pool, &crng->state[4], sizeof(u32) * 12, 0);
-+	_extract_entropy(&input_pool, &crng->state[4], sizeof(u32) * 12);
- 	if (crng_init_try_arch_early(crng) && trust_cpu && crng_init < 2) {
- 		invalidate_batched_entropy();
- 		numa_crng_init();
-@@ -1427,22 +1423,13 @@ static void extract_buf(struct entropy_s
- }
- 
- static ssize_t _extract_entropy(struct entropy_store *r, void *buf,
--				size_t nbytes, int fips)
-+				size_t nbytes)
- {
- 	ssize_t ret = 0, i;
- 	u8 tmp[EXTRACT_SIZE];
--	unsigned long flags;
- 
- 	while (nbytes) {
- 		extract_buf(r, tmp);
--
--		if (fips) {
--			spin_lock_irqsave(&r->lock, flags);
--			if (!memcmp(tmp, r->last_data, EXTRACT_SIZE))
--				panic("Hardware RNG duplicated output!\n");
--			memcpy(r->last_data, tmp, EXTRACT_SIZE);
--			spin_unlock_irqrestore(&r->lock, flags);
--		}
- 		i = min_t(int, nbytes, EXTRACT_SIZE);
- 		memcpy(buf, tmp, i);
- 		nbytes -= i;
-@@ -1468,28 +1455,9 @@ static ssize_t _extract_entropy(struct e
- static ssize_t extract_entropy(struct entropy_store *r, void *buf,
- 				 size_t nbytes, int min, int reserved)
- {
--	u8 tmp[EXTRACT_SIZE];
--	unsigned long flags;
--
--	/* if last_data isn't primed, we need EXTRACT_SIZE extra bytes */
--	if (fips_enabled) {
--		spin_lock_irqsave(&r->lock, flags);
--		if (!r->last_data_init) {
--			r->last_data_init = 1;
--			spin_unlock_irqrestore(&r->lock, flags);
--			trace_extract_entropy(r->name, EXTRACT_SIZE,
--					      ENTROPY_BITS(r), _RET_IP_);
--			extract_buf(r, tmp);
--			spin_lock_irqsave(&r->lock, flags);
--			memcpy(r->last_data, tmp, EXTRACT_SIZE);
--		}
--		spin_unlock_irqrestore(&r->lock, flags);
--	}
--
- 	trace_extract_entropy(r->name, nbytes, ENTROPY_BITS(r), _RET_IP_);
- 	nbytes = account(r, nbytes, min, reserved);
--
--	return _extract_entropy(r, buf, nbytes, fips_enabled);
-+	return _extract_entropy(r, buf, nbytes);
- }
- 
- #define warn_unseeded_randomness(previous) \
+@@ -101,7 +101,7 @@
+  * ===============================
+  *
+  * There are four exported interfaces; two for use within the kernel,
+- * and two or use from userspace.
++ * and two for use from userspace.
+  *
+  * Exported interfaces ---- userspace output
+  * -----------------------------------------
 
 
