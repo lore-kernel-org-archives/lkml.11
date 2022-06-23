@@ -2,86 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00EEECCA481
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E31F2CCA47F
 	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:08:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236258AbiFWSHe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:07:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45378 "EHLO
+        id S236215AbiFWSH3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:07:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235901AbiFWSGS (ORCPT
+        with ESMTP id S236021AbiFWSGR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:06:18 -0400
-Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEF4EDA5;
-        Thu, 23 Jun 2022 10:18:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=deltatee.com; s=20200525; h=Subject:In-Reply-To:From:References:Cc:To:
-        MIME-Version:Date:Message-ID:content-disposition;
-        bh=TGE5JNxKMzOY+twQ6t/ggEoZZmn0rKO8MkEsEl3K3GA=; b=XqLEFa8uXRGl7xk0sbFLSCsx5B
-        eRC2cYkqiK7rxv6P+gT78b7WFTJgs9CDKOy7EmP/mjfq2HvYNK1jQeHkMLxUNCUuVAE8QnWMzGMN2
-        Ua3BTzZkr/X4y7lOWzdy+Oa8nR2fFoEuXK3pL/xU/HKV1km6RdHIzz+gnpRVwnBsQO55Y8GD4huuq
-        7my+4fZOYjPjAuXWzmtCtDA9qta2IEGYnwf+Sp/AGOfBCAB5aR8fbRjUkiyLaVq1PuRaUKYKt1rQG
-        9wIrdK7hR9/QxaYvzbqjRHpvtt7x2NbGA7beFIM0JOPaeW/sbRaKkST4Sk4232EJXiMLCZDWU7UAq
-        uzbbwbuw==;
-Received: from s0106a84e3fe8c3f3.cg.shawcable.net ([24.64.144.200] helo=[192.168.0.10])
-        by ale.deltatee.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <logang@deltatee.com>)
-        id 1o4QTd-00F5TU-9V; Thu, 23 Jun 2022 11:18:46 -0600
-Message-ID: <09153aee-f05e-22ae-dcf5-0fbfb3b9823c@deltatee.com>
-Date:   Thu, 23 Jun 2022 11:18:42 -0600
+        Thu, 23 Jun 2022 14:06:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16EBE885B2;
+        Thu, 23 Jun 2022 10:18:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8AF47B824C1;
+        Thu, 23 Jun 2022 17:18:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E574EC3411B;
+        Thu, 23 Jun 2022 17:18:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656004729;
+        bh=9JiLLKEFF08OHQyTD9XgRz6e6ElIK4pPXkGN/Qn6wj4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=KfFnKs53CNa6fQJm19tWsMxNYXlACjV5QACMdnsKBmzJvot7eHb8Jqof1eSksPm0+
+         QcJ9r9ZQ9ttUBgRClA6nBe17mHrLctXvGee74Abu4dC3V7xFwuH4NRv+MfZRZGXNO7
+         gQm/Zy3T5ya/RL5KFoVpSmGx0vfcQ8i41lzLc/70=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Eric Biggers <ebiggers@kernel.org>,
+        Eric Biggers <ebiggers@google.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.19 132/234] random: document crng_fast_key_erasure() destination possibility
+Date:   Thu, 23 Jun 2022 18:43:19 +0200
+Message-Id: <20220623164346.794416464@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
+References: <20220623164343.042598055@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Content-Language: en-CA
-To:     Song Liu <song@kernel.org>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        linux-raid <linux-raid@vger.kernel.org>,
-        kernel test robot <lkp@intel.com>
-References: <20220623165552.38645-1-logang@deltatee.com>
- <CAPhsuW50vG=M6JhBEe3qwef10GQt84cg9p_ji5tqyRnMA1-xRQ@mail.gmail.com>
-From:   Logan Gunthorpe <logang@deltatee.com>
-In-Reply-To: <CAPhsuW50vG=M6JhBEe3qwef10GQt84cg9p_ji5tqyRnMA1-xRQ@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 24.64.144.200
-X-SA-Exim-Rcpt-To: song@kernel.org, linux-kernel@vger.kernel.org, linux-raid@vger.kernel.org, lkp@intel.com
-X-SA-Exim-Mail-From: logang@deltatee.com
-Subject: Re: [PATCH] md/raid5: Fix divide type in raid5_make_request()
-X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+
+commit 8717627d6ac53251ee012c3c7aca392f29f38a42 upstream.
+
+This reverts 35a33ff3807d ("random: use memmove instead of memcpy for
+remaining 32 bytes"), which was made on a totally bogus basis. The thing
+it was worried about overlapping came from the stack, not from one of
+its arguments, as Eric pointed out.
+
+But the fact that this confusion even happened draws attention to the
+fact that it's a bit non-obvious that the random_data parameter can
+alias chacha_state, and in fact should do so when the caller can't rely
+on the stack being cleared in a timely manner. So this commit documents
+that.
+
+Reported-by: Eric Biggers <ebiggers@kernel.org>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/char/random.c |    7 +++++++
+ 1 file changed, 7 insertions(+)
+
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -318,6 +318,13 @@ static void crng_reseed(void)
+  * the resultant ChaCha state to the user, along with the second
+  * half of the block containing 32 bytes of random data that may
+  * be used; random_data_len may not be greater than 32.
++ *
++ * The returned ChaCha state contains within it a copy of the old
++ * key value, at index 4, so the state should always be zeroed out
++ * immediately after using in order to maintain forward secrecy.
++ * If the state cannot be erased in a timely manner, then it is
++ * safer to set the random_data parameter to &chacha_state[4] so
++ * that this function overwrites it before returning.
+  */
+ static void crng_fast_key_erasure(u8 key[CHACHA20_KEY_SIZE],
+ 				  u32 chacha_state[CHACHA20_BLOCK_SIZE / sizeof(u32)],
 
 
-On 2022-06-23 11:15, Song Liu wrote:
-> On Thu, Jun 23, 2022 at 9:56 AM Logan Gunthorpe <logang@deltatee.com> wrote:
->>
->> 0day reports a build failure on the hexagon architecture:
->>
->>   ld.lld: error: undefined symbol: __hexagon_udivdi3
->>      referenced by raid5.c
->>         md/raid5.o:(raid5_make_request) in archive drivers/built-in.a
->>      referenced by raid5.c
->>         md/raid5.o:(raid5_make_request) in archive drivers/built-in.a
->>      did you mean: __hexagon_udivsi3
->>         defined in: arch/hexagon/built-in.a(lib/udivsi3.o)
->>
->> This is caused by using DIV_ROUND_UP on a sector_t type.
->>
->> The actual value is known to be less than 256 so a wide 64bit divide
->> here is not desirable. Thus cast the argument to an int to ensure it
->> uses a 32bit divide.
-> 
-> I force pushed an update that uses DIV_ROUND_UP_SECTOR_T instead.
-> I guess that should also work?
-
-Ah, yes, that'll also fix the bug. I chose to cast to minimize the
-performance impact of an unnecessarily wide divide. But I don't have any
-strong basis to suggest the performance will be worse with the wider
-division. So fix it whichever way you think is best.
-
-Logan
