@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89375CCA48B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79525CCA489
 	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:58:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233431AbiFWQ5t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:57:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48744 "EHLO
+        id S233268AbiFWQ5l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:57:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233603AbiFWQvP (ORCPT
+        with ESMTP id S232082AbiFWQwh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:51:15 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E07B850010;
-        Thu, 23 Jun 2022 09:49:20 -0700 (PDT)
+        Thu, 23 Jun 2022 12:52:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B92110B6;
+        Thu, 23 Jun 2022 09:52:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 554D5CE24F9;
-        Thu, 23 Jun 2022 16:49:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B6F2C3411B;
-        Thu, 23 Jun 2022 16:49:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B574461FC2;
+        Thu, 23 Jun 2022 16:52:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90A19C341C5;
+        Thu, 23 Jun 2022 16:52:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656002957;
-        bh=IXRIJ1GHDIZo2SuBShIm4o6PtlLtHIr1VFnSfZwBj5Q=;
+        s=korg; t=1656003156;
+        bh=YpkhMeXBrmX0JFVy3p78yrqaOUSWZX8GthRE//wHpMs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=onmFfDkUyZLE6/PIHiP/m449MNjqghk25NERrSuNDU0APMtkQTQDXFjmbsDAE9BsH
-         SYwUDhGf9BhgPyHKlRWjMB4ZoOVSaLhSx5F85bXeL9NVxqSSHegH8Qe9hnFMXePwD1
-         9kk6YOMNL17d4lwYgaMXKYrZGJDOLNrl9Pii6xJM=
+        b=nz2foMzqH5YA/P1PqV7Yh+t8SSGXygZ/O7dmJ3dK2HJUFbBEZJLyBJwEZAB5oprV4
+         orxx0S2FQV59j8+8f4SJhGP2TPVdcaByE3y9DQUW2mXUH+gf178vvVr+PxLoLWi7SV
+         4qoJQL1PZt/enjysA87iLPFVDIoxFEvyqxDDW6QM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
+        stable@vger.kernel.org, Corentin Labbe <clabbe.montjoie@gmail.com>,
         Herbert Xu <herbert@gondor.apana.org.au>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 080/264] crypto: blake2s - adjust include guard naming
-Date:   Thu, 23 Jun 2022 18:41:13 +0200
-Message-Id: <20220623164346.333650677@linuxfoundation.org>
+Subject: [PATCH 4.9 148/264] hwrng: core - Move hwrng miscdev minor number to include/linux/miscdevice.h
+Date:   Thu, 23 Jun 2022 18:42:21 +0200
+Message-Id: <20220623164348.252752481@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -50,59 +49,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+From: Corentin LABBE <clabbe.montjoie@gmail.com>
 
-commit 8786841bc2020f7f2513a6c74e64912f07b9c0dc upstream.
+commit fd50d71f94fb1c8614098949db068cd4c8dbb91d upstream.
 
-Use the full path in the include guards for the BLAKE2s headers to avoid
-ambiguity and to match the convention for most files in include/crypto/.
+This patch move the define for hwrng's miscdev minor number to
+include/linux/miscdevice.h.
+It's better that all minor number are in the same place.
+Rename it to HWRNG_MINOR (from RNG_MISCDEV_MINOR) in he process since
+no other miscdev define have MISCDEV in their name.
 
-Signed-off-by: Eric Biggers <ebiggers@google.com>
-Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Corentin Labbe <clabbe.montjoie@gmail.com>
 Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/crypto/blake2s.h          |    6 +++---
- include/crypto/internal/blake2s.h |    6 +++---
- 2 files changed, 6 insertions(+), 6 deletions(-)
+ drivers/char/hw_random/core.c |    3 +--
+ include/linux/miscdevice.h    |    1 +
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
---- a/include/crypto/blake2s.h
-+++ b/include/crypto/blake2s.h
-@@ -3,8 +3,8 @@
-  * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
-  */
+--- a/drivers/char/hw_random/core.c
++++ b/drivers/char/hw_random/core.c
+@@ -26,7 +26,6 @@
  
--#ifndef BLAKE2S_H
--#define BLAKE2S_H
-+#ifndef _CRYPTO_BLAKE2S_H
-+#define _CRYPTO_BLAKE2S_H
+ #define RNG_MODULE_NAME		"hw_random"
+ #define PFX			RNG_MODULE_NAME ": "
+-#define RNG_MISCDEV_MINOR	183 /* official */
  
- #include <linux/bug.h>
- #include <linux/types.h>
-@@ -99,4 +99,4 @@ static inline void blake2s(u8 *out, cons
- 	blake2s_final(&state, out);
- }
+ static struct hwrng *current_rng;
+ static struct task_struct *hwrng_fill;
+@@ -283,7 +282,7 @@ static const struct file_operations rng_
+ static const struct attribute_group *rng_dev_groups[];
  
--#endif /* BLAKE2S_H */
-+#endif /* _CRYPTO_BLAKE2S_H */
---- a/include/crypto/internal/blake2s.h
-+++ b/include/crypto/internal/blake2s.h
-@@ -1,7 +1,7 @@
- /* SPDX-License-Identifier: GPL-2.0 OR MIT */
- 
--#ifndef BLAKE2S_INTERNAL_H
--#define BLAKE2S_INTERNAL_H
-+#ifndef _CRYPTO_INTERNAL_BLAKE2S_H
-+#define _CRYPTO_INTERNAL_BLAKE2S_H
- 
- #include <crypto/blake2s.h>
- 
-@@ -16,4 +16,4 @@ static inline void blake2s_set_lastblock
- 	state->f[0] = -1;
- }
- 
--#endif /* BLAKE2S_INTERNAL_H */
-+#endif /* _CRYPTO_INTERNAL_BLAKE2S_H */
+ static struct miscdevice rng_miscdev = {
+-	.minor		= RNG_MISCDEV_MINOR,
++	.minor		= HWRNG_MINOR,
+ 	.name		= RNG_MODULE_NAME,
+ 	.nodename	= "hwrng",
+ 	.fops		= &rng_chrdev_ops,
+--- a/include/linux/miscdevice.h
++++ b/include/linux/miscdevice.h
+@@ -31,6 +31,7 @@
+ #define SGI_MMTIMER		153
+ #define STORE_QUEUE_MINOR	155	/* unused */
+ #define I2O_MINOR		166
++#define HWRNG_MINOR		183
+ #define MICROCODE_MINOR		184
+ #define VFIO_MINOR		196
+ #define TUN_MINOR		200
 
 
