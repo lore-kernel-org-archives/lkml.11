@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CB8BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:33:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A2CBC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:33:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234273AbiFWRdx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:33:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55226 "EHLO
+        id S234282AbiFWRd4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:33:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234466AbiFWRcq (ORCPT
+        with ESMTP id S234495AbiFWRcs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:32:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0226451595;
-        Thu, 23 Jun 2022 10:05:25 -0700 (PDT)
+        Thu, 23 Jun 2022 13:32:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0253186AD4;
+        Thu, 23 Jun 2022 10:05:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 31A6C60B2C;
-        Thu, 23 Jun 2022 17:05:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC4E9C3411B;
-        Thu, 23 Jun 2022 17:05:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 58A80B82498;
+        Thu, 23 Jun 2022 17:05:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3D7CC3411B;
+        Thu, 23 Jun 2022 17:05:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003924;
-        bh=NjS4cXYm5ZPjAC+sx6TnBBq+/RcyOHkqH8GIKgd/T8Y=;
+        s=korg; t=1656003930;
+        bh=UKQiL0fMPt7CKZ4+190DrLSrCHNK0gvHoGypPrC4PaY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OMjkKZL0UdElwJ2spzXuu8id3jjuecn0wfTy658490NJ4uAYAfRRVH9OaoaXkTJkG
-         KDBw0HMFx+y1HHhrWWUMSt4nZkmWhayXasrL8UfkkCG0fZGCdhn13UqAwKCPXiiKU2
-         BrFIzDHSToD4TQ0iAr5iEPWWP5DBgm4UwPrtRGnw=
+        b=1PfZjBfMU+iilkARUTWf/wmpOYNfdzG3SOyluumBf7kpQXqIgB4mfItCeD7w37EKA
+         jxuXxsocpL5onHtqAm8Klm1ZhMapZTjX1wDXyLJrpV5HZiIN03DugiIWI+9Tjgeb0J
+         3FUfKdsv6Xv7HKq58tw4S5/ILwtC4f6swKLBOI/E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
         Dominik Brodowski <linux@dominikbrodowski.net>,
-        Eric Biggers <ebiggers@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 094/237] random: remove batched entropy locking
-Date:   Thu, 23 Jun 2022 18:42:08 +0200
-Message-Id: <20220623164345.853943730@linuxfoundation.org>
+Subject: [PATCH 4.14 131/237] random: replace custom notifier chain with standard one
+Date:   Thu, 23 Jun 2022 18:42:45 +0200
+Message-Id: <20220623164346.923200419@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -55,152 +51,265 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 77760fd7f7ae3dfd03668204e708d1568d75447d upstream.
+commit 5acd35487dc911541672b3ffc322851769c32a56 upstream.
 
-Rather than use spinlocks to protect batched entropy, we can instead
-disable interrupts locally, since we're dealing with per-cpu data, and
-manage resets with a basic generation counter. At the same time, we
-can't quite do this on PREEMPT_RT, where we still want spinlocks-as-
-mutexes semantics. So we use a local_lock_t, which provides the right
-behavior for each. Because this is a per-cpu lock, that generation
-counter is still doing the necessary CPU-to-CPU communication.
+We previously rolled our own randomness readiness notifier, which only
+has two users in the whole kernel. Replace this with a more standard
+atomic notifier block that serves the same purpose with less code. Also
+unexport the symbols, because no modules use it, only unconditional
+builtins. The only drawback is that it's possible for a notification
+handler returning the "stop" code to prevent further processing, but
+given that there are only two users, and that we're unexporting this
+anyway, that doesn't seem like a significant drawback for the
+simplification we receive here.
 
-This should improve performance a bit. It will also fix the linked splat
-that Jonathan received with a PROVE_RAW_LOCK_NESTING=y.
-
-Reviewed-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Theodore Ts'o <tytso@mit.edu>
 Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
-Suggested-by: Andy Lutomirski <luto@kernel.org>
-Reported-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
-Tested-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
-Link: https://lore.kernel.org/lkml/YfMa0QgsjCVdRAvJ@latitude/
+[Jason: for stable, also backported to crypto/drbg.c, not unexporting.]
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   58 +++++++++++++++++++++++---------------------------
- 1 file changed, 27 insertions(+), 31 deletions(-)
+ crypto/drbg.c          |   17 +++++-------
+ drivers/char/random.c  |   69 ++++++++++++++-----------------------------------
+ include/crypto/drbg.h  |    2 -
+ include/linux/random.h |   10 ++-----
+ lib/random32.c         |   13 +++++----
+ 5 files changed, 41 insertions(+), 70 deletions(-)
 
+--- a/crypto/drbg.c
++++ b/crypto/drbg.c
+@@ -1390,12 +1390,13 @@ static int drbg_generate_long(struct drb
+ 	return 0;
+ }
+ 
+-static void drbg_schedule_async_seed(struct random_ready_callback *rdy)
++static int drbg_schedule_async_seed(struct notifier_block *nb, unsigned long action, void *data)
+ {
+-	struct drbg_state *drbg = container_of(rdy, struct drbg_state,
++	struct drbg_state *drbg = container_of(nb, struct drbg_state,
+ 					       random_ready);
+ 
+ 	schedule_work(&drbg->seed_work);
++	return 0;
+ }
+ 
+ static int drbg_prepare_hrng(struct drbg_state *drbg)
+@@ -1408,10 +1409,8 @@ static int drbg_prepare_hrng(struct drbg
+ 
+ 	INIT_WORK(&drbg->seed_work, drbg_async_seed);
+ 
+-	drbg->random_ready.owner = THIS_MODULE;
+-	drbg->random_ready.func = drbg_schedule_async_seed;
+-
+-	err = add_random_ready_callback(&drbg->random_ready);
++	drbg->random_ready.notifier_call = drbg_schedule_async_seed;
++	err = register_random_ready_notifier(&drbg->random_ready);
+ 
+ 	switch (err) {
+ 	case 0:
+@@ -1422,7 +1421,7 @@ static int drbg_prepare_hrng(struct drbg
+ 		/* fall through */
+ 
+ 	default:
+-		drbg->random_ready.func = NULL;
++		drbg->random_ready.notifier_call = NULL;
+ 		return err;
+ 	}
+ 
+@@ -1528,8 +1527,8 @@ free_everything:
+  */
+ static int drbg_uninstantiate(struct drbg_state *drbg)
+ {
+-	if (drbg->random_ready.func) {
+-		del_random_ready_callback(&drbg->random_ready);
++	if (drbg->random_ready.notifier_call) {
++		unregister_random_ready_notifier(&drbg->random_ready);
+ 		cancel_work_sync(&drbg->seed_work);
+ 		crypto_free_rng(drbg->jent);
+ 		drbg->jent = NULL;
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -1718,13 +1718,15 @@ struct ctl_table random_table[] = {
- };
- #endif	/* CONFIG_SYSCTL */
+@@ -83,8 +83,8 @@ static int crng_init = 0;
+ /* Various types of waiters for crng_init->2 transition. */
+ static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
+ static struct fasync_struct *fasync;
+-static DEFINE_SPINLOCK(random_ready_list_lock);
+-static LIST_HEAD(random_ready_list);
++static DEFINE_SPINLOCK(random_ready_chain_lock);
++static RAW_NOTIFIER_HEAD(random_ready_chain);
  
-+static atomic_t batch_generation = ATOMIC_INIT(0);
-+
- struct batched_entropy {
- 	union {
- 		u64 entropy_u64[CHACHA20_BLOCK_SIZE / sizeof(u64)];
- 		u32 entropy_u32[CHACHA20_BLOCK_SIZE / sizeof(u32)];
- 	};
- 	unsigned int position;
--	spinlock_t batch_lock;
-+	int generation;
- };
+ /* Control how we warn userspace. */
+ static struct ratelimit_state unseeded_warning =
+@@ -147,72 +147,45 @@ EXPORT_SYMBOL(wait_for_random_bytes);
+  *
+  * returns: 0 if callback is successfully added
+  *	    -EALREADY if pool is already initialised (callback not called)
+- *	    -ENOENT if module for callback is not alive
+  */
+-int add_random_ready_callback(struct random_ready_callback *rdy)
++int register_random_ready_notifier(struct notifier_block *nb)
+ {
+-	struct module *owner;
+ 	unsigned long flags;
+-	int err = -EALREADY;
++	int ret = -EALREADY;
+ 
+ 	if (crng_ready())
+-		return err;
++		return ret;
+ 
+-	owner = rdy->owner;
+-	if (!try_module_get(owner))
+-		return -ENOENT;
+-
+-	spin_lock_irqsave(&random_ready_list_lock, flags);
+-	if (crng_ready())
+-		goto out;
+-
+-	owner = NULL;
+-
+-	list_add(&rdy->list, &random_ready_list);
+-	err = 0;
+-
+-out:
+-	spin_unlock_irqrestore(&random_ready_list_lock, flags);
+-
+-	module_put(owner);
+-
+-	return err;
++	spin_lock_irqsave(&random_ready_chain_lock, flags);
++	if (!crng_ready())
++		ret = raw_notifier_chain_register(&random_ready_chain, nb);
++	spin_unlock_irqrestore(&random_ready_chain_lock, flags);
++	return ret;
+ }
+-EXPORT_SYMBOL(add_random_ready_callback);
++EXPORT_SYMBOL(register_random_ready_notifier);
  
  /*
-@@ -1735,9 +1737,7 @@ struct batched_entropy {
-  * wait_for_random_bytes() should be called and return 0 at least once at any
-  * point prior.
+  * Delete a previously registered readiness callback function.
   */
--static DEFINE_PER_CPU(struct batched_entropy, batched_entropy_u64) = {
--	.batch_lock = __SPIN_LOCK_UNLOCKED(batched_entropy_u64.lock),
--};
-+static DEFINE_PER_CPU(struct batched_entropy, batched_entropy_u64);
- 
- u64 get_random_u64(void)
+-void del_random_ready_callback(struct random_ready_callback *rdy)
++int unregister_random_ready_notifier(struct notifier_block *nb)
  {
-@@ -1745,67 +1745,63 @@ u64 get_random_u64(void)
  	unsigned long flags;
- 	struct batched_entropy *batch;
- 	static void *previous;
-+	int next_gen;
- 
- 	warn_unseeded_randomness(&previous);
- 
-+	local_irq_save(flags);
- 	batch = raw_cpu_ptr(&batched_entropy_u64);
--	spin_lock_irqsave(&batch->batch_lock, flags);
--	if (batch->position % ARRAY_SIZE(batch->entropy_u64) == 0) {
-+
-+	next_gen = atomic_read(&batch_generation);
-+	if (batch->position % ARRAY_SIZE(batch->entropy_u64) == 0 ||
-+	    next_gen != batch->generation) {
- 		extract_crng((u8 *)batch->entropy_u64);
- 		batch->position = 0;
-+		batch->generation = next_gen;
- 	}
-+
- 	ret = batch->entropy_u64[batch->position++];
--	spin_unlock_irqrestore(&batch->batch_lock, flags);
-+	local_irq_restore(flags);
- 	return ret;
- }
- EXPORT_SYMBOL(get_random_u64);
- 
--static DEFINE_PER_CPU(struct batched_entropy, batched_entropy_u32) = {
--	.batch_lock = __SPIN_LOCK_UNLOCKED(batched_entropy_u32.lock),
--};
-+static DEFINE_PER_CPU(struct batched_entropy, batched_entropy_u32);
-+
- u32 get_random_u32(void)
- {
- 	u32 ret;
- 	unsigned long flags;
- 	struct batched_entropy *batch;
- 	static void *previous;
-+	int next_gen;
- 
- 	warn_unseeded_randomness(&previous);
- 
-+	local_irq_save(flags);
- 	batch = raw_cpu_ptr(&batched_entropy_u32);
--	spin_lock_irqsave(&batch->batch_lock, flags);
--	if (batch->position % ARRAY_SIZE(batch->entropy_u32) == 0) {
-+
-+	next_gen = atomic_read(&batch_generation);
-+	if (batch->position % ARRAY_SIZE(batch->entropy_u32) == 0 ||
-+	    next_gen != batch->generation) {
- 		extract_crng((u8 *)batch->entropy_u32);
- 		batch->position = 0;
-+		batch->generation = next_gen;
- 	}
-+
- 	ret = batch->entropy_u32[batch->position++];
--	spin_unlock_irqrestore(&batch->batch_lock, flags);
-+	local_irq_restore(flags);
- 	return ret;
- }
- EXPORT_SYMBOL(get_random_u32);
- 
- /* It's important to invalidate all potential batched entropy that might
-  * be stored before the crng is initialized, which we can do lazily by
-- * simply resetting the counter to zero so that it's re-extracted on the
-- * next usage. */
-+ * bumping the generation counter.
-+ */
- static void invalidate_batched_entropy(void)
- {
--	int cpu;
--	unsigned long flags;
+-	struct module *owner = NULL;
 -
--	for_each_possible_cpu(cpu) {
--		struct batched_entropy *batched_entropy;
--
--		batched_entropy = per_cpu_ptr(&batched_entropy_u32, cpu);
--		spin_lock_irqsave(&batched_entropy->batch_lock, flags);
--		batched_entropy->position = 0;
--		spin_unlock(&batched_entropy->batch_lock);
--
--		batched_entropy = per_cpu_ptr(&batched_entropy_u64, cpu);
--		spin_lock(&batched_entropy->batch_lock);
--		batched_entropy->position = 0;
--		spin_unlock_irqrestore(&batched_entropy->batch_lock, flags);
+-	spin_lock_irqsave(&random_ready_list_lock, flags);
+-	if (!list_empty(&rdy->list)) {
+-		list_del_init(&rdy->list);
+-		owner = rdy->owner;
 -	}
-+	atomic_inc(&batch_generation);
+-	spin_unlock_irqrestore(&random_ready_list_lock, flags);
++	int ret;
+ 
+-	module_put(owner);
++	spin_lock_irqsave(&random_ready_chain_lock, flags);
++	ret = raw_notifier_chain_unregister(&random_ready_chain, nb);
++	spin_unlock_irqrestore(&random_ready_chain_lock, flags);
++	return ret;
  }
+-EXPORT_SYMBOL(del_random_ready_callback);
++EXPORT_SYMBOL(unregister_random_ready_notifier);
+ 
+ static void process_random_ready_list(void)
+ {
+ 	unsigned long flags;
+-	struct random_ready_callback *rdy, *tmp;
+ 
+-	spin_lock_irqsave(&random_ready_list_lock, flags);
+-	list_for_each_entry_safe(rdy, tmp, &random_ready_list, list) {
+-		struct module *owner = rdy->owner;
+-
+-		list_del_init(&rdy->list);
+-		rdy->func(rdy);
+-		module_put(owner);
+-	}
+-	spin_unlock_irqrestore(&random_ready_list_lock, flags);
++	spin_lock_irqsave(&random_ready_chain_lock, flags);
++	raw_notifier_call_chain(&random_ready_chain, 0, NULL);
++	spin_unlock_irqrestore(&random_ready_chain_lock, flags);
+ }
+ 
+ #define warn_unseeded_randomness(previous) \
+--- a/include/crypto/drbg.h
++++ b/include/crypto/drbg.h
+@@ -136,7 +136,7 @@ struct drbg_state {
+ 	const struct drbg_state_ops *d_ops;
+ 	const struct drbg_core *core;
+ 	struct drbg_string test_data;
+-	struct random_ready_callback random_ready;
++	struct notifier_block random_ready;
+ };
+ 
+ static inline __u8 drbg_statelen(struct drbg_state *drbg)
+--- a/include/linux/random.h
++++ b/include/linux/random.h
+@@ -10,11 +10,7 @@
+ 
+ #include <uapi/linux/random.h>
+ 
+-struct random_ready_callback {
+-	struct list_head list;
+-	void (*func)(struct random_ready_callback *rdy);
+-	struct module *owner;
+-};
++struct notifier_block;
+ 
+ extern void add_device_randomness(const void *, size_t);
+ extern void add_bootloader_randomness(const void *, size_t);
+@@ -39,8 +35,8 @@ extern void get_random_bytes(void *buf,
+ extern int wait_for_random_bytes(void);
+ extern int __init rand_initialize(void);
+ extern bool rng_is_initialized(void);
+-extern int add_random_ready_callback(struct random_ready_callback *rdy);
+-extern void del_random_ready_callback(struct random_ready_callback *rdy);
++extern int register_random_ready_notifier(struct notifier_block *nb);
++extern int unregister_random_ready_notifier(struct notifier_block *nb);
+ extern size_t __must_check get_random_bytes_arch(void *buf, size_t nbytes);
+ 
+ #ifndef MODULE
+--- a/lib/random32.c
++++ b/lib/random32.c
+@@ -40,6 +40,7 @@
+ #include <linux/sched.h>
+ #include <linux/bitops.h>
+ #include <linux/slab.h>
++#include <linux/notifier.h>
+ #include <asm/unaligned.h>
  
  /**
+@@ -546,9 +547,11 @@ static void prandom_reseed(unsigned long
+  * To avoid worrying about whether it's safe to delay that interrupt
+  * long enough to seed all CPUs, just schedule an immediate timer event.
+  */
+-static void prandom_timer_start(struct random_ready_callback *unused)
++static int prandom_timer_start(struct notifier_block *nb,
++			       unsigned long action, void *data)
+ {
+ 	mod_timer(&seed_timer, jiffies);
++	return 0;
+ }
+ 
+ /*
+@@ -557,13 +560,13 @@ static void prandom_timer_start(struct r
+  */
+ static int __init prandom_init_late(void)
+ {
+-	static struct random_ready_callback random_ready = {
+-		.func = prandom_timer_start
++	static struct notifier_block random_ready = {
++		.notifier_call = prandom_timer_start
+ 	};
+-	int ret = add_random_ready_callback(&random_ready);
++	int ret = register_random_ready_notifier(&random_ready);
+ 
+ 	if (ret == -EALREADY) {
+-		prandom_timer_start(&random_ready);
++		prandom_timer_start(&random_ready, 0, NULL);
+ 		ret = 0;
+ 	}
+ 	return ret;
 
 
