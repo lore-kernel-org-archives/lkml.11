@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0C40C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:05:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9C4FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:05:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232965AbiFWSFn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:05:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48384 "EHLO
+        id S230415AbiFWSFq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:05:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235883AbiFWSEp (ORCPT
+        with ESMTP id S235905AbiFWSEx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:04:45 -0400
+        Thu, 23 Jun 2022 14:04:53 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 245ADB858A;
-        Thu, 23 Jun 2022 10:17:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 468B0B8F84;
+        Thu, 23 Jun 2022 10:17:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3DCAC61DC6;
-        Thu, 23 Jun 2022 17:17:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9AFDC341C4;
-        Thu, 23 Jun 2022 17:17:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A76E61DEE;
+        Thu, 23 Jun 2022 17:17:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CC58C3411B;
+        Thu, 23 Jun 2022 17:17:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004638;
-        bh=36Q/W27xQGEZn4hXkJZRt5rTGhj85iZlReBUI+Jwc+s=;
+        s=korg; t=1656004644;
+        bh=rM3kl0vv2bjgSwp+qxFhlAqocre7jchX693t5VQTPnQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eoVigdDLj2xeZy5HkPCOSAwIhVySj2ptd0NNfvKHmTCSFC/jDVzaWDZNf7jrYQ94O
-         H2C/e1IR6o9JbvRdadAlxWYbOlN3pVE2CGWM+bEgjHeb+UVH7BksHlFuFtBHMUIpmu
-         eIKnkHkZ8RKXcmelYcJuqydV5YLn6H+cz37nMhjE=
+        b=skKHpAZpinAdyfRbeDGPOMZAtsI5w/kGlhJyY85hcCnOPIAyUO/pRHySN/tLtLA7+
+         ppTJtfoW6DACU/nJnxoF3DIqakXY+uEWCkgFwqTZ8xdHKtHfV9sLxJFBQDaLZ0vOo3
+         6IFmL1iROU8dn0Mc1SUEOjxjbl1/Jw1Y10TkfLtQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -36,9 +36,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Eric Biggers <ebiggers@google.com>,
         Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.19 102/234] random: group userspace read/write functions
-Date:   Thu, 23 Jun 2022 18:42:49 +0200
-Message-Id: <20220623164345.945459364@linuxfoundation.org>
+Subject: [PATCH 4.19 104/234] random: rewrite header introductory comment
+Date:   Thu, 23 Jun 2022 18:42:51 +0200
+Message-Id: <20220623164346.001926392@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
 References: <20220623164343.042598055@linuxfoundation.org>
@@ -52,12 +52,10 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit a6adf8e7a605250b911e94793fd077933709ff9e upstream.
+commit 5f75d9f3babea8ae0a2d06724656874f41d317f5 upstream.
 
-This pulls all of the userspace read/write-focused functions into the
-fifth labeled section.
-
-No functional changes.
+Now that we've re-documented the various sections, we can remove the
+outdated text here and replace it with a high-level overview.
 
 Cc: Theodore Ts'o <tytso@mit.edu>
 Reviewed-by: Eric Biggers <ebiggers@google.com>
@@ -65,168 +63,198 @@ Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |  125 ++++++++++++++++++++++++++++++--------------------
- 1 file changed, 77 insertions(+), 48 deletions(-)
+ drivers/char/random.c |  179 +++++---------------------------------------------
+ 1 file changed, 19 insertions(+), 160 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -1472,30 +1472,61 @@ static void try_to_generate_entropy(void
- 	mix_pool_bytes(&stack.now, sizeof(stack.now));
- }
- 
--static ssize_t urandom_read(struct file *file, char __user *buf, size_t nbytes,
--			    loff_t *ppos)
-+
-+/**********************************************************************
-+ *
-+ * Userspace reader/writer interfaces.
-+ *
-+ * getrandom(2) is the primary modern interface into the RNG and should
-+ * be used in preference to anything else.
-+ *
-+ * Reading from /dev/random has the same functionality as calling
-+ * getrandom(2) with flags=0. In earlier versions, however, it had
-+ * vastly different semantics and should therefore be avoided, to
-+ * prevent backwards compatibility issues.
-+ *
-+ * Reading from /dev/urandom has the same functionality as calling
-+ * getrandom(2) with flags=GRND_INSECURE. Because it does not block
-+ * waiting for the RNG to be ready, it should not be used.
-+ *
-+ * Writing to either /dev/random or /dev/urandom adds entropy to
-+ * the input pool but does not credit it.
-+ *
-+ * Polling on /dev/random indicates when the RNG is initialized, on
-+ * the read side, and when it wants new entropy, on the write side.
-+ *
-+ * Both /dev/random and /dev/urandom have the same set of ioctls for
-+ * adding entropy, getting the entropy count, zeroing the count, and
-+ * reseeding the crng.
-+ *
-+ **********************************************************************/
-+
-+SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count, unsigned int,
-+		flags)
- {
--	static int maxwarn = 10;
-+	if (flags & ~(GRND_NONBLOCK | GRND_RANDOM | GRND_INSECURE))
-+		return -EINVAL;
- 
--	if (!crng_ready() && maxwarn > 0) {
--		maxwarn--;
--		if (__ratelimit(&urandom_warning))
--			pr_notice("%s: uninitialized urandom read (%zd bytes read)\n",
--				  current->comm, nbytes);
--	}
-+	/*
-+	 * Requesting insecure and blocking randomness at the same time makes
-+	 * no sense.
-+	 */
-+	if ((flags & (GRND_INSECURE | GRND_RANDOM)) == (GRND_INSECURE | GRND_RANDOM))
-+		return -EINVAL;
- 
--	return get_random_bytes_user(buf, nbytes);
--}
-+	if (count > INT_MAX)
-+		count = INT_MAX;
- 
--static ssize_t random_read(struct file *file, char __user *buf, size_t nbytes,
--			   loff_t *ppos)
--{
--	int ret;
-+	if (!(flags & GRND_INSECURE) && !crng_ready()) {
-+		int ret;
- 
--	ret = wait_for_random_bytes();
--	if (ret != 0)
--		return ret;
--	return get_random_bytes_user(buf, nbytes);
-+		if (flags & GRND_NONBLOCK)
-+			return -EAGAIN;
-+		ret = wait_for_random_bytes();
-+		if (unlikely(ret))
-+			return ret;
-+	}
-+	return get_random_bytes_user(buf, count);
- }
- 
- static __poll_t random_poll(struct file *file, poll_table *wait)
-@@ -1547,6 +1578,32 @@ static ssize_t random_write(struct file
- 	return (ssize_t)count;
- }
- 
-+static ssize_t urandom_read(struct file *file, char __user *buf, size_t nbytes,
-+			    loff_t *ppos)
-+{
-+	static int maxwarn = 10;
-+
-+	if (!crng_ready() && maxwarn > 0) {
-+		maxwarn--;
-+		if (__ratelimit(&urandom_warning))
-+			pr_notice("%s: uninitialized urandom read (%zd bytes read)\n",
-+				  current->comm, nbytes);
-+	}
-+
-+	return get_random_bytes_user(buf, nbytes);
-+}
-+
-+static ssize_t random_read(struct file *file, char __user *buf, size_t nbytes,
-+			   loff_t *ppos)
-+{
-+	int ret;
-+
-+	ret = wait_for_random_bytes();
-+	if (ret != 0)
-+		return ret;
-+	return get_random_bytes_user(buf, nbytes);
-+}
-+
- static long random_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
- {
- 	int size, ent_count;
-@@ -1555,7 +1612,7 @@ static long random_ioctl(struct file *f,
- 
- 	switch (cmd) {
- 	case RNDGETENTCNT:
--		/* inherently racy, no point locking */
-+		/* Inherently racy, no point locking. */
- 		if (put_user(input_pool.entropy_count, p))
- 			return -EFAULT;
- 		return 0;
-@@ -1629,34 +1686,6 @@ const struct file_operations urandom_fop
- 	.llseek = noop_llseek,
- };
- 
--SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count, unsigned int,
--		flags)
--{
--	if (flags & ~(GRND_NONBLOCK | GRND_RANDOM | GRND_INSECURE))
--		return -EINVAL;
+@@ -2,168 +2,27 @@
+ /*
+  * Copyright (C) 2017-2022 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
+  * Copyright Matt Mackall <mpm@selenic.com>, 2003, 2004, 2005
+- * Copyright Theodore Ts'o, 1994, 1995, 1996, 1997, 1998, 1999.  All
+- * rights reserved.
+- */
 -
--	/*
--	 * Requesting insecure and blocking randomness at the same time makes
--	 * no sense.
--	 */
--	if ((flags & (GRND_INSECURE | GRND_RANDOM)) == (GRND_INSECURE | GRND_RANDOM))
--		return -EINVAL;
--
--	if (count > INT_MAX)
--		count = INT_MAX;
--
--	if (!(flags & GRND_INSECURE) && !crng_ready()) {
--		int ret;
--
--		if (flags & GRND_NONBLOCK)
--			return -EAGAIN;
--		ret = wait_for_random_bytes();
--		if (unlikely(ret))
--			return ret;
--	}
--	return get_random_bytes_user(buf, count);
--}
--
- /********************************************************************
+-/*
+- * Exported interfaces ---- output
+- * ===============================
+- *
+- * There are four exported interfaces; two for use within the kernel,
+- * and two for use from userspace.
+- *
+- * Exported interfaces ---- userspace output
+- * -----------------------------------------
+- *
+- * The userspace interfaces are two character devices /dev/random and
+- * /dev/urandom.  /dev/random is suitable for use when very high
+- * quality randomness is desired (for example, for key generation or
+- * one-time pads), as it will only return a maximum of the number of
+- * bits of randomness (as estimated by the random number generator)
+- * contained in the entropy pool.
+- *
+- * The /dev/urandom device does not have this limit, and will return
+- * as many bytes as are requested.  As more and more random bytes are
+- * requested without giving time for the entropy pool to recharge,
+- * this will result in random numbers that are merely cryptographically
+- * strong.  For many applications, however, this is acceptable.
+- *
+- * Exported interfaces ---- kernel output
+- * --------------------------------------
+- *
+- * The primary kernel interfaces are:
+- *
+- *	void get_random_bytes(void *buf, size_t nbytes);
+- *	u32 get_random_u32()
+- *	u64 get_random_u64()
+- *	unsigned int get_random_int()
+- *	unsigned long get_random_long()
+- *
+- * These interfaces will return the requested number of random bytes
+- * into the given buffer or as a return value. This is equivalent to a
+- * read from /dev/urandom. The get_random_{u32,u64,int,long}() family
+- * of functions may be higher performance for one-off random integers,
+- * because they do a bit of buffering.
+- *
+- * prandom_u32()
+- * -------------
+- *
+- * For even weaker applications, see the pseudorandom generator
+- * prandom_u32(), prandom_max(), and prandom_bytes().  If the random
+- * numbers aren't security-critical at all, these are *far* cheaper.
+- * Useful for self-tests, random error simulation, randomized backoffs,
+- * and any other application where you trust that nobody is trying to
+- * maliciously mess with you by guessing the "random" numbers.
+- *
+- * Exported interfaces ---- input
+- * ==============================
+- *
+- * The current exported interfaces for gathering environmental noise
+- * from the devices are:
+- *
+- *	void add_device_randomness(const void *buf, size_t size);
+- *	void add_input_randomness(unsigned int type, unsigned int code,
+- *                                unsigned int value);
+- *	void add_interrupt_randomness(int irq);
+- *	void add_disk_randomness(struct gendisk *disk);
+- *	void add_hwgenerator_randomness(const void *buffer, size_t count,
+- *					size_t entropy);
+- *	void add_bootloader_randomness(const void *buf, size_t size);
+- *
+- * add_device_randomness() is for adding data to the random pool that
+- * is likely to differ between two devices (or possibly even per boot).
+- * This would be things like MAC addresses or serial numbers, or the
+- * read-out of the RTC. This does *not* add any actual entropy to the
+- * pool, but it initializes the pool to different values for devices
+- * that might otherwise be identical and have very little entropy
+- * available to them (particularly common in the embedded world).
+- *
+- * add_input_randomness() uses the input layer interrupt timing, as well as
+- * the event type information from the hardware.
+- *
+- * add_interrupt_randomness() uses the interrupt timing as random
+- * inputs to the entropy pool. Using the cycle counters and the irq source
+- * as inputs, it feeds the randomness roughly once a second.
+- *
+- * add_disk_randomness() uses what amounts to the seek time of block
+- * layer request events, on a per-disk_devt basis, as input to the
+- * entropy pool. Note that high-speed solid state drives with very low
+- * seek times do not make for good sources of entropy, as their seek
+- * times are usually fairly consistent.
+- *
+- * All of these routines try to estimate how many bits of randomness a
+- * particular randomness source.  They do this by keeping track of the
+- * first and second order deltas of the event timings.
+- *
+- * add_hwgenerator_randomness() is for true hardware RNGs, and will credit
+- * entropy as specified by the caller. If the entropy pool is full it will
+- * block until more entropy is needed.
+- *
+- * add_bootloader_randomness() is the same as add_hwgenerator_randomness() or
+- * add_device_randomness(), depending on whether or not the configuration
+- * option CONFIG_RANDOM_TRUST_BOOTLOADER is set.
+- *
+- * Ensuring unpredictability at system startup
+- * ============================================
+- *
+- * When any operating system starts up, it will go through a sequence
+- * of actions that are fairly predictable by an adversary, especially
+- * if the start-up does not involve interaction with a human operator.
+- * This reduces the actual number of bits of unpredictability in the
+- * entropy pool below the value in entropy_count.  In order to
+- * counteract this effect, it helps to carry information in the
+- * entropy pool across shut-downs and start-ups.  To do this, put the
+- * following lines an appropriate script which is run during the boot
+- * sequence:
+- *
+- *	echo "Initializing random number generator..."
+- *	random_seed=/var/run/random-seed
+- *	# Carry a random seed from start-up to start-up
+- *	# Load and then save the whole entropy pool
+- *	if [ -f $random_seed ]; then
+- *		cat $random_seed >/dev/urandom
+- *	else
+- *		touch $random_seed
+- *	fi
+- *	chmod 600 $random_seed
+- *	dd if=/dev/urandom of=$random_seed count=1 bs=512
+- *
+- * and the following lines in an appropriate script which is run as
+- * the system is shutdown:
+- *
+- *	# Carry a random seed from shut-down to start-up
+- *	# Save the whole entropy pool
+- *	echo "Saving random seed..."
+- *	random_seed=/var/run/random-seed
+- *	touch $random_seed
+- *	chmod 600 $random_seed
+- *	dd if=/dev/urandom of=$random_seed count=1 bs=512
+- *
+- * For example, on most modern systems using the System V init
+- * scripts, such code fragments would be found in
+- * /etc/rc.d/init.d/random.  On older Linux systems, the correct script
+- * location might be in /etc/rcb.d/rc.local or /etc/rc.d/rc.0.
+- *
+- * Effectively, these commands cause the contents of the entropy pool
+- * to be saved at shut-down time and reloaded into the entropy pool at
+- * start-up.  (The 'dd' in the addition to the bootup script is to
+- * make sure that /etc/random-seed is different for every start-up,
+- * even if the system crashes without executing rc.0.)  Even with
+- * complete knowledge of the start-up activities, predicting the state
+- * of the entropy pool requires knowledge of the previous history of
+- * the system.
+- *
+- * Configuring the /dev/random driver under Linux
+- * ==============================================
++ * Copyright Theodore Ts'o, 1994, 1995, 1996, 1997, 1998, 1999. All rights reserved.
   *
-  * Sysctl interface
+- * The /dev/random driver under Linux uses minor numbers 8 and 9 of
+- * the /dev/mem major number (#1).  So if your system does not have
+- * /dev/random and /dev/urandom created already, they can be created
+- * by using the commands:
++ * This driver produces cryptographically secure pseudorandom data. It is divided
++ * into roughly six sections, each with a section header:
+  *
+- *	mknod /dev/random c 1 8
+- *	mknod /dev/urandom c 1 9
++ *   - Initialization and readiness waiting.
++ *   - Fast key erasure RNG, the "crng".
++ *   - Entropy accumulation and extraction routines.
++ *   - Entropy collection routines.
++ *   - Userspace reader/writer interfaces.
++ *   - Sysctl interface.
++ *
++ * The high level overview is that there is one input pool, into which
++ * various pieces of data are hashed. Some of that data is then "credited" as
++ * having a certain number of bits of entropy. When enough bits of entropy are
++ * available, the hash is finalized and handed as a key to a stream cipher that
++ * expands it indefinitely for various consumers. This key is periodically
++ * refreshed as the various entropy collectors, described below, add data to the
++ * input pool and credit it. There is currently no Fortuna-like scheduler
++ * involved, which can lead to malicious entropy sources causing a premature
++ * reseed, and the entropy estimates are, at best, conservative guesses.
+  */
+ 
+ #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 
