@@ -2,102 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3B89C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:09:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8EC5CCA47C
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:09:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236061AbiFWSI7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:08:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46926 "EHLO
+        id S233903AbiFWSJH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:09:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236050AbiFWSGn (ORCPT
+        with ESMTP id S236069AbiFWSGo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:06:43 -0400
-Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C828989D11
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 10:19:01 -0700 (PDT)
-Received: by mail-pf1-x44a.google.com with SMTP id n21-20020a056a000d5500b005251893308cso83792pfv.6
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 10:19:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:message-id:mime-version:subject:from:to:cc;
-        bh=OfpJNowxBUFq6HGX9ecpdnodRX9bSyGbGZdG0Pw0Nvw=;
-        b=X11UvkoUIym4fWAIiiVnNg8IPEcEu9qC1v5KMXIAXNHYPHSvSaMme4WPiW3+8qXhSx
-         uFwVvujHGLlEZ0Of9DQDDXjK7NVaCLrdU3MKbsUNyZDwayxStPR6OjY7e1ISduKG9VJK
-         ziKFElcuFjh4QgSogzI59VNvuY+ebiGUQXKQQrgdw+DklLFzL4Oz1/qYJ1pwALsh+g4P
-         RH+DnnmaZVn4LJJ4viF5MLGED9TmyJfThVsxIdc+MadWby1PLvp7b5lvbgWSHRwOYupt
-         kR/hPBMa2u6DHJ9+sTaK+bA9QhBeYCY/aYPrgyg9jnjudNVEAEeq1ugDBukNEb2OSNpw
-         6qnw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:message-id:mime-version:subject
-         :from:to:cc;
-        bh=OfpJNowxBUFq6HGX9ecpdnodRX9bSyGbGZdG0Pw0Nvw=;
-        b=m6egkxnhjeCzcXBvY+qQGcuqhNR8wKafhSZikA/SNgssOImF6/b3U1FID8QZMDVLv9
-         GioYkL2gFRsoJca1P8xP67INMrDDRIKii/KEhCswLwMLWPBTOAFMBtmJTH6F1Hac12X4
-         ZQnAGt6zK1NnvWTtxr31vWUM+vae6s9USomZaFp/HET1IUnzRYWn1Y1LOCYYsXhRc6zQ
-         a2/0kFMrXgfMJto+0gRgZhYDLRiFIUIFbWvqAFnk2IgDF+11an/oEm1Yx59iU9d9G1NG
-         IVakR4OkXZ6+aujiw76b2SbnWkQWUqRUMGocRCYauQ1bcsgtgie6fK66Z6ivgekXrG8M
-         8H5g==
-X-Gm-Message-State: AJIora+2UJyaZzER4IX5mfbeq711A62GRQwd7Axs7qAcTaHgsMYoKeuw
-        YZ9dwYp3QPGoxGGQrpVznqyimCRlsIIH
-X-Google-Smtp-Source: AGRyM1sLykLfKCEgWphambxF6Mwz8XVU0CArLfRvGqh+uy1ZVV07fOUZHMnoNU22xtlsgyK8bzcNT8lU0RtA
-X-Received: from mizhang-super.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:1071])
- (user=mizhang job=sendgmr) by 2002:a17:90b:1e42:b0:1ec:f362:8488 with SMTP id
- pi2-20020a17090b1e4200b001ecf3628488mr5097264pjb.32.1656004741042; Thu, 23
- Jun 2022 10:19:01 -0700 (PDT)
-Reply-To: Mingwei Zhang <mizhang@google.com>
-Date:   Thu, 23 Jun 2022 17:18:58 +0000
-Message-Id: <20220623171858.2083637-1-mizhang@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.37.0.rc0.104.g0611611a94-goog
-Subject: [PATCH] KVM: x86/svm: add __GFP_ACCOUNT to __sev_dbg_{en,de}crypt_user()
-From:   Mingwei Zhang <mizhang@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Mingwei Zhang <mizhang@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Thu, 23 Jun 2022 14:06:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6CC989D33;
+        Thu, 23 Jun 2022 10:19:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 18212B824C2;
+        Thu, 23 Jun 2022 17:19:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68583C385A2;
+        Thu, 23 Jun 2022 17:19:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656004741;
+        bh=NEJRdzIBCon7lIGhM4SzG1yXI0kNFTJSk5arjusZ2Bc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Cv8ySDuuZpRyTUgalgeg0SB+qKeR0HzK756WN3wP5086Lgxqk99e/KV+RSshOwAw+
+         ZwOJ1HhrRIhLJ5ED4Jai7snrpPy2Nzeq80OOQtWpVBmDeAR4C6TpWzTLblZf+IR5lj
+         bXdkzFC6WdG2C4HK3z3rD+d70udM077JXjeE0h7s=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.19 136/234] s390: define get_cycles macro for arch-override
+Date:   Thu, 23 Jun 2022 18:43:23 +0200
+Message-Id: <20220623164346.905616392@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
+References: <20220623164343.042598055@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adding the accounting flag when allocating pages within the SEV function,
-since these memory pages should belong to individual VM.
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-No functional change intended.
+commit 2e3df523256cb9836de8441e9c791a796759bb3c upstream.
 
-Signed-off-by: Mingwei Zhang <mizhang@google.com>
+S390x defines a get_cycles() function, but it does not do the usual
+`#define get_cycles get_cycles` dance, making it impossible for generic
+code to see if an arch-specific function was defined. While the
+get_cycles() ifdef is not currently used, the following timekeeping
+patch in this series will depend on the macro existing (or not existing)
+when defining random_get_entropy().
+
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Vasily Gorbik <gor@linux.ibm.com>
+Cc: Alexander Gordeev <agordeev@linux.ibm.com>
+Cc: Christian Borntraeger <borntraeger@linux.ibm.com>
+Cc: Sven Schnelle <svens@linux.ibm.com>
+Acked-by: Heiko Carstens <hca@linux.ibm.com>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/svm/sev.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/s390/include/asm/timex.h |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
-index 51fd985cf21d..e2c7fada0b3d 100644
---- a/arch/x86/kvm/svm/sev.c
-+++ b/arch/x86/kvm/svm/sev.c
-@@ -844,7 +844,7 @@ static int __sev_dbg_encrypt_user(struct kvm *kvm, unsigned long paddr,
+--- a/arch/s390/include/asm/timex.h
++++ b/arch/s390/include/asm/timex.h
+@@ -177,6 +177,7 @@ static inline cycles_t get_cycles(void)
+ {
+ 	return (cycles_t) get_tod_clock() >> 2;
+ }
++#define get_cycles get_cycles
  
- 	/* If source buffer is not aligned then use an intermediate buffer */
- 	if (!IS_ALIGNED((unsigned long)vaddr, 16)) {
--		src_tpage = alloc_page(GFP_KERNEL);
-+		src_tpage = alloc_page(GFP_KERNEL_ACCOUNT);
- 		if (!src_tpage)
- 			return -ENOMEM;
- 
-@@ -865,7 +865,7 @@ static int __sev_dbg_encrypt_user(struct kvm *kvm, unsigned long paddr,
- 	if (!IS_ALIGNED((unsigned long)dst_vaddr, 16) || !IS_ALIGNED(size, 16)) {
- 		int dst_offset;
- 
--		dst_tpage = alloc_page(GFP_KERNEL);
-+		dst_tpage = alloc_page(GFP_KERNEL_ACCOUNT);
- 		if (!dst_tpage) {
- 			ret = -ENOMEM;
- 			goto e_free;
+ int get_phys_clock(unsigned long *clock);
+ void init_cpu_timer(void);
 
-base-commit: 922d4578cfd017da67f545bfd07331bda86f795d
--- 
-2.37.0.rc0.104.g0611611a94-goog
 
