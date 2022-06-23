@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C566C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:50:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54FAEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:50:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234986AbiFWRuE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:50:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39676 "EHLO
+        id S234911AbiFWRuM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:50:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235534AbiFWRsS (ORCPT
+        with ESMTP id S235530AbiFWRsS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 23 Jun 2022 13:48:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 690B7A4E03;
-        Thu, 23 Jun 2022 10:11:32 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4CDAA377F;
+        Thu, 23 Jun 2022 10:11:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4453C61D0D;
-        Thu, 23 Jun 2022 17:11:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CFE9C341C7;
-        Thu, 23 Jun 2022 17:11:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D6574B824BA;
+        Thu, 23 Jun 2022 17:11:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29492C3411B;
+        Thu, 23 Jun 2022 17:11:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004291;
-        bh=oNvve5UitB3hCsom2t+adDl2MiHsO2QEeql4NkKBE9o=;
+        s=korg; t=1656004288;
+        bh=BiKY0cWKwAsCGIT5tUZUQGIoQsLFPbq9+UZnNUOmaPA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G2FutdFMma6mbsOXaMEm/c24N3nE1yiGDTE9U5v/UJeYGTIHhCNqeFk02dfdW2k31
-         /lQRgZActOXeBgsgDiVe37CERvc/PZDf5ytj3F1grFkcuS6QhwmVfm7rTnlbHoHfEq
-         HJe6Fk+SZFugahm4cp73HLByGEH5zI/hE4eiYYIQ=
+        b=MAn2V3ZlVwFDf00Jq8eWl1PLdHXwSMAB2DPY/dLRs6omDMNU5JokenG6wCFgt58+g
+         lJMRllGZLTOqVX9N+TnATMbqf4rFnlyKYR2U9aTmlwN3+tnmwAKKG7u31ai/PK+NiF
+         au7gJh8xa+Neu33axuUNocwK2v115IRtRCRdhQOU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Moshe Kol <moshe.kol@mail.huji.ac.il>,
-        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
-        Amit Klein <aksecurity@gmail.com>,
-        Eric Dumazet <edumazet@google.com>, Willy Tarreau <w@1wt.eu>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        David Dworken <ddworken@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 05/11] tcp: use different parts of the port_offset for index and offset
-Date:   Thu, 23 Jun 2022 18:44:38 +0200
-Message-Id: <20220623164322.455590853@linuxfoundation.org>
+Subject: [PATCH 5.10 04/11] tcp: add some entropy in __inet_hash_connect()
+Date:   Thu, 23 Jun 2022 18:44:37 +0200
+Message-Id: <20220623164322.426528204@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164322.296526800@linuxfoundation.org>
 References: <20220623164322.296526800@linuxfoundation.org>
@@ -53,37 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Willy Tarreau <w@1wt.eu>
+From: Eric Dumazet <edumazet@google.com>
 
-commit 9e9b70ae923baf2b5e8a0ea4fd0c8451801ac526 upstream.
+commit c579bd1b4021c42ae247108f1e6f73dd3f08600c upstream.
 
-Amit Klein suggests that we use different parts of port_offset for the
-table's index and the port offset so that there is no direct relation
-between them.
+Even when implementing RFC 6056 3.3.4 (Algorithm 4: Double-Hash
+Port Selection Algorithm), a patient attacker could still be able
+to collect enough state from an otherwise idle host.
 
-Cc: Jason A. Donenfeld <Jason@zx2c4.com>
-Cc: Moshe Kol <moshe.kol@mail.huji.ac.il>
-Cc: Yossi Gilad <yossi.gilad@mail.huji.ac.il>
-Cc: Amit Klein <aksecurity@gmail.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Willy Tarreau <w@1wt.eu>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Idea of this patch is to inject some noise, in the
+cases __inet_hash_connect() found a candidate in the first
+attempt.
+
+This noise should not significantly reduce the collision
+avoidance, and should be zero if connection table
+is already well used.
+
+Note that this is not implementing RFC 6056 3.3.5
+because we think Algorithm 5 could hurt typical
+workloads.
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: David Dworken <ddworken@google.com>
+Cc: Willem de Bruijn <willemb@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Cc: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/inet_hashtables.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv4/inet_hashtables.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
 --- a/net/ipv4/inet_hashtables.c
 +++ b/net/ipv4/inet_hashtables.c
-@@ -777,7 +777,7 @@ int __inet_hash_connect(struct inet_time
- 	net_get_random_once(table_perturb, sizeof(table_perturb));
- 	index = hash_32(port_offset, INET_TABLE_PERTURB_SHIFT);
+@@ -833,6 +833,11 @@ next_port:
+ 	return -EADDRNOTAVAIL;
  
--	offset = READ_ONCE(table_perturb[index]) + port_offset;
-+	offset = READ_ONCE(table_perturb[index]) + (port_offset >> 32);
- 	offset %= remaining;
+ ok:
++	/* If our first attempt found a candidate, skip next candidate
++	 * in 1/16 of cases to add some noise.
++	 */
++	if (!i && !(prandom_u32() % 16))
++		i = 2;
+ 	WRITE_ONCE(table_perturb[index], READ_ONCE(table_perturb[index]) + i + 2);
  
- 	/* In first pass we try ports of @low parity.
+ 	/* Head lock still held and bh's disabled */
 
 
