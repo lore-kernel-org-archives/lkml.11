@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E2A7C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:01:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B505C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:01:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235708AbiFWSBj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:01:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33516 "EHLO
+        id S235817AbiFWSBo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:01:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236377AbiFWR7O (ORCPT
+        with ESMTP id S233173AbiFWR7g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:59:14 -0400
+        Thu, 23 Jun 2022 13:59:36 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52846B2133;
-        Thu, 23 Jun 2022 10:16:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15383B2CEA;
+        Thu, 23 Jun 2022 10:16:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 02731B824BD;
-        Thu, 23 Jun 2022 17:16:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EAC1C3411B;
-        Thu, 23 Jun 2022 17:16:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 24E7EB824C1;
+        Thu, 23 Jun 2022 17:16:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FD83C341C4;
+        Thu, 23 Jun 2022 17:16:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004580;
-        bh=ItNpXmB9KremrNBDFMKBa3jxjg/gsnDbp4nq9HlkHlE=;
+        s=korg; t=1656004586;
+        bh=veDQwILYuYD77O/PWU+fYo0AeKKkbMgMDyW8CYhs+zQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wuxGNLzQ6kAvGfF+ceul87Y1tgY+hCWfK0Q0laLn1EQr3yKug5AoOfcTlxP5j/SbN
-         MuMOZr9Z434ZYYuKPTUSdNksOrbdjOhB48D+3H+wfdu/5fn+YwlfB/9Q6Ri5TT/lCV
-         PTrDTSbbXBmu9cWbRuDb21frbUQ1Ysombc3KqQQg=
+        b=y/rTsevznXg3iMO4qKJcSYuWfHviIQsskti/t8y5WwNSQya9VAYYR8nAaz7eLZI12
+         gWBsZvdXWrbgqXj1958xwctdCecpXNWISkPT+Ko2Z8SE38gl0Xcz7da4SmrDVt/o46
+         z4zD3NerhJpvJ7wW3at3rqzYf1gqusdwt43kl24o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
-        Mark Brown <broonie@kernel.org>, Theodore Tso <tytso@mit.edu>,
+        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Theodore Tso <tytso@mit.edu>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.19 042/234] random: add arch_get_random_*long_early()
-Date:   Thu, 23 Jun 2022 18:41:49 +0200
-Message-Id: <20220623164344.256101334@linuxfoundation.org>
+Subject: [PATCH 4.19 034/234] random: avoid warnings for !CONFIG_NUMA builds
+Date:   Thu, 23 Jun 2022 18:41:41 +0200
+Message-Id: <20220623164344.030670516@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
 References: <20220623164343.042598055@linuxfoundation.org>
@@ -51,109 +52,46 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Mark Rutland <mark.rutland@arm.com>
 
-commit 253d3194c2b58152fe830fd27c2fd83ebc6fe5ee upstream.
+commit ab9a7e27044b87ff2be47b8f8e095400e7fccc44 upstream.
 
-Some architectures (e.g. arm64) can have heterogeneous CPUs, and the
-boot CPU may be able to provide entropy while secondary CPUs cannot. On
-such systems, arch_get_random_long() and arch_get_random_seed_long()
-will fail unless support for RNG instructions has been detected on all
-CPUs. This prevents the boot CPU from being able to provide
-(potentially) trusted entropy when seeding the primary CRNG.
+As crng_initialize_secondary() is only called by do_numa_crng_init(),
+and the latter is under ifdeffery for CONFIG_NUMA, when CONFIG_NUMA is
+not selected the compiler will warn that the former is unused:
 
-To make it possible to seed the primary CRNG from the boot CPU without
-adversely affecting the runtime versions of arch_get_random_long() and
-arch_get_random_seed_long(), this patch adds new early versions of the
-functions used when initializing the primary CRNG.
+| drivers/char/random.c:820:13: warning: 'crng_initialize_secondary' defined but not used [-Wunused-function]
+|   820 | static void crng_initialize_secondary(struct crng_state *crng)
+|       |             ^~~~~~~~~~~~~~~~~~~~~~~~~
 
-Default implementations are provided atop of the existing
-arch_get_random_long() and arch_get_random_seed_long() so that only
-architectures with such constraints need to provide the new helpers.
+Stephen reports that this happens for x86_64 noallconfig builds.
 
-There should be no functional change as a result of this patch.
+We could move crng_initialize_secondary() and crng_init_try_arch() under
+the CONFIG_NUMA ifdeffery, but this has the unfortunate property of
+separating them from crng_initialize_primary() and
+crng_init_try_arch_early() respectively. Instead, let's mark
+crng_initialize_secondary() as __maybe_unused.
 
+Link: https://lore.kernel.org/r/20200310121747.GA49602@lakrids.cambridge.arm.com
+Fixes: 5cbe0f13b51a ("random: split primary/secondary crng init paths")
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
 Signed-off-by: Mark Rutland <mark.rutland@arm.com>
-Cc: Mark Brown <broonie@kernel.org>
 Cc: Theodore Ts'o <tytso@mit.edu>
-Link: https://lore.kernel.org/r/20200210130015.17664-3-mark.rutland@arm.com
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c  |   20 +++++++++++++++++++-
- include/linux/random.h |   22 ++++++++++++++++++++++
- 2 files changed, 41 insertions(+), 1 deletion(-)
+ drivers/char/random.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -801,6 +801,24 @@ static bool crng_init_try_arch(struct cr
+@@ -801,7 +801,7 @@ static bool crng_init_try_arch(struct cr
  	return arch_init;
  }
  
-+static bool __init crng_init_try_arch_early(struct crng_state *crng)
-+{
-+	int		i;
-+	bool		arch_init = true;
-+	unsigned long	rv;
-+
-+	for (i = 4; i < 16; i++) {
-+		if (!arch_get_random_seed_long_early(&rv) &&
-+		    !arch_get_random_long_early(&rv)) {
-+			rv = random_get_entropy();
-+			arch_init = false;
-+		}
-+		crng->state[i] ^= rv;
-+	}
-+
-+	return arch_init;
-+}
-+
- static void __maybe_unused crng_initialize_secondary(struct crng_state *crng)
+-static void crng_initialize_secondary(struct crng_state *crng)
++static void __maybe_unused crng_initialize_secondary(struct crng_state *crng)
  {
  	memcpy(&crng->state[0], "expand 32-byte k", 16);
-@@ -813,7 +831,7 @@ static void __init crng_initialize_prima
- {
- 	memcpy(&crng->state[0], "expand 32-byte k", 16);
- 	_extract_entropy(&input_pool, &crng->state[4], sizeof(__u32) * 12, 0);
--	if (crng_init_try_arch(crng) && trust_cpu) {
-+	if (crng_init_try_arch_early(crng) && trust_cpu) {
- 		invalidate_batched_entropy();
- 		numa_crng_init();
- 		crng_init = 2;
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -7,6 +7,8 @@
- #ifndef _LINUX_RANDOM_H
- #define _LINUX_RANDOM_H
- 
-+#include <linux/bug.h>
-+#include <linux/kernel.h>
- #include <linux/list.h>
- #include <linux/once.h>
- 
-@@ -136,4 +138,24 @@ static inline bool __must_check arch_get
- }
- #endif
- 
-+/*
-+ * Called from the boot CPU during startup; not valid to call once
-+ * secondary CPUs are up and preemption is possible.
-+ */
-+#ifndef arch_get_random_seed_long_early
-+static inline bool __init arch_get_random_seed_long_early(unsigned long *v)
-+{
-+	WARN_ON(system_state != SYSTEM_BOOTING);
-+	return arch_get_random_seed_long(v);
-+}
-+#endif
-+
-+#ifndef arch_get_random_long_early
-+static inline bool __init arch_get_random_long_early(unsigned long *v)
-+{
-+	WARN_ON(system_state != SYSTEM_BOOTING);
-+	return arch_get_random_long(v);
-+}
-+#endif
-+
- #endif /* _LINUX_RANDOM_H */
+ 	_get_random_bytes(&crng->state[4], sizeof(__u32) * 12);
 
 
