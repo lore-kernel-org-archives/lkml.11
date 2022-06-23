@@ -2,86 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A81B9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 08:59:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19567C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 09:01:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231150AbiFWI7k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 04:59:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40376 "EHLO
+        id S231138AbiFWJBn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 05:01:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230511AbiFWI7h (ORCPT
+        with ESMTP id S229952AbiFWJBm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 04:59:37 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEC6B46B08
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 01:59:35 -0700 (PDT)
-Received: from obbardc-laptop.home (unknown [IPv6:2a00:23c7:6883:e501:cf51:f3a2:10b5:accf])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: obbardc)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 9B2916601792;
-        Thu, 23 Jun 2022 09:59:34 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1655974774;
-        bh=tNnhHE/pxNIYHGG07KwvxWQNy+bn16D63BRweA5Ufe4=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Jr2GXnsxgl2QnfHLSRKrh6dD7Ton6WvbHxOp/Zk57RTmXqo+lUcXCrnZHhbF0yQUT
-         W1Ty//O9pAJZEP2C1vJPpX0149nvHHRVfaH2a+nAMiv5+s9v+3n2iwi5yltjlzKdhK
-         DMGbRwGMiaZF/VF4tx9WuWunaUi7XERouMFzUv16vgFzfL0A2buI5OhR2X93X0dynn
-         bcGPTgOATjdr+aEMLqJcaOTpWiJpaMj2+cJY1LRIykAmkWxszJ+7bcdDebwlDvCUCF
-         1ta3ys7O9s7E0M3+95JHf1xyQn8kEJ1vV8nnyTF1fYN4cK0ySVpVMhN6JJz/tNv3NW
-         vVN9OOraG0vrw==
-From:   Christopher Obbard <chris.obbard@collabora.com>
-To:     linux-um@lists.infradead.org
-Cc:     linux-kernel@vger.kernel.org, Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        kernel@collabora.com,
-        Christopher Obbard <chris.obbard@collabora.com>,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH] um: random: Don't initialise hwrng struct with zero
-Date:   Thu, 23 Jun 2022 09:58:42 +0100
-Message-Id: <20220623085842.238829-1-chris.obbard@collabora.com>
-X-Mailer: git-send-email 2.36.1
+        Thu, 23 Jun 2022 05:01:42 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4298246B10;
+        Thu, 23 Jun 2022 02:01:40 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BB85912FC;
+        Thu, 23 Jun 2022 02:01:40 -0700 (PDT)
+Received: from [10.57.85.4] (unknown [10.57.85.4])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 383EF3F792;
+        Thu, 23 Jun 2022 02:01:39 -0700 (PDT)
+Message-ID: <59c365d8-4b76-4e57-794b-e1d4b3f0e2a5@arm.com>
+Date:   Thu, 23 Jun 2022 10:01:34 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] dma-direct: use the correct size for dma_set_encrypted()
+Content-Language: en-GB
+To:     Dexuan Cui <decui@microsoft.com>, Christoph Hellwig <hch@lst.de>
+Cc:     "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
+        Andrea Parri <Andrea.Parri@microsoft.com>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>
+References: <20220622191424.15777-1-decui@microsoft.com>
+ <20220623054352.GA12543@lst.de>
+ <SN6PR2101MB132705E084BCC12BCDDF4E7FBFB59@SN6PR2101MB1327.namprd21.prod.outlook.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <SN6PR2101MB132705E084BCC12BCDDF4E7FBFB59@SN6PR2101MB1327.namprd21.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Initialising the hwrng struct with zeros causes a
-compile-time sparse warning:
+On 2022-06-23 08:00, Dexuan Cui wrote:
+>> From: Christoph Hellwig <hch@lst.de>
+>> Sent: Wednesday, June 22, 2022 10:44 PM
+>> To: Dexuan Cui <decui@microsoft.com>
+>>   ...
+>> On Wed, Jun 22, 2022 at 12:14:24PM -0700, Dexuan Cui wrote:
+>>> The third parameter of dma_set_encrypted() is a size in bytes rather than
+>>> the number of pages.
+>>>
+>>> Fixes: 4d0564785bb0 ("dma-direct: factor out dma_set_{de,en}crypted
+>> helpers")
+>>> Signed-off-by: Dexuan Cui <decui@microsoft.com>
+>>
+>> see:
+>>
+>> commit 4a37f3dd9a83186cb88d44808ab35b78375082c9 (tag:
+>> dma-mapping-5.19-2022-05-25)
+>> Author: Robin Murphy <robin.murphy@arm.com>
+>> Date:   Fri May 20 18:10:13 2022 +0100
+>>
+>>      dma-direct: don't over-decrypt memory
+> 
+> It looks like commit 4a37f3dd9a831 fixed a different issue?
+> 
+> Here my patch is for the latest mainline:
+> 
+> In dma_direct_alloc()'s error handling path, we pass 'size' to dma_set_encrypted():
+>    out_encrypt_pages:
+> 	  if (dma_set_encrypted(dev, page_address(page), size))
+> 
+> However, in dma_direct_free(), we pass ' 1 << page_order ' to dma_set_encrypted().
+> I think the ' 1 << page_order' is incorrect and it should be 'size' as well?
 
- $ ARCH=um make -j10 W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
- ...
- CHECK   arch/um/drivers/random.c
- arch/um/drivers/random.c:31:31: sparse: warning: Using plain integer as NULL pointer
+I think technically you're both right - these instances clearly have a 
+history tracing back to the original bug that my patch addressed, but 
+the refactoring then made them into their own distinct bug in terms of 
+the internal dma_set_encrypted() interface, per the commit message here. 
+Apparently I failed to spot this when forward-porting 4a37f3dd9a831 from 
+5.10 (as the commit message says, don't ask... ;) ) - I guess I was only 
+looking at where the set_memory_*() callsites had moved to. For this patch,
 
-Fix the warning by not initialising the hwrng struct
-with zeros as it is initialised anyway during module
-init.
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 
-Fixes: 72d3e093afae ("um: random: Register random as hwrng-core device")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Christopher Obbard <chris.obbard@collabora.com>
----
- arch/um/drivers/random.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/um/drivers/random.c b/arch/um/drivers/random.c
-index 433a3f8f2ef3..32b3341fe970 100644
---- a/arch/um/drivers/random.c
-+++ b/arch/um/drivers/random.c
-@@ -28,7 +28,7 @@
-  * protects against a module being loaded twice at the same time.
-  */
- static int random_fd = -1;
--static struct hwrng hwrng = { 0, };
-+static struct hwrng hwrng;
- static DECLARE_COMPLETION(have_data);
- 
- static int rng_dev_read(struct hwrng *rng, void *buf, size_t max, bool block)
--- 
-2.36.1
-
+Thanks
+Robin.
