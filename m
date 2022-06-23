@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56917C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:21:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F32A2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:21:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233283AbiFWRVo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:21:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33152 "EHLO
+        id S233595AbiFWRVx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:21:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233115AbiFWRVI (ORCPT
+        with ESMTP id S230296AbiFWRVW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:21:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3914482886;
-        Thu, 23 Jun 2022 10:00:45 -0700 (PDT)
+        Thu, 23 Jun 2022 13:21:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEAA182899;
+        Thu, 23 Jun 2022 10:00:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EA80E6159A;
-        Thu, 23 Jun 2022 17:00:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1511C3411B;
-        Thu, 23 Jun 2022 17:00:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6BB29B82495;
+        Thu, 23 Jun 2022 17:00:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7ECAC341C7;
+        Thu, 23 Jun 2022 17:00:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003639;
-        bh=y1xaNaLdb+skoiE1Gt9hFZoRF9x6bVFGrS2X8ZpqWYg=;
+        s=korg; t=1656003642;
+        bh=N440oNHoyTzc3htiMaveD7/JzYvDwHZV2hlKM/2fHYw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R0UIZUdKOfnUf845kFYy4zxMAuBLrrYtnh0mf2VpmHINq0Ii3qdDf+OUX1BbQKakr
-         uy3V0HnJLOK/73sVpNWfWVK3cYHPgsiJe5RMJNbA4niCrSc3y9fMrXWpLkyK5I9UcJ
-         g/4tfjLU1qa+XVwX6ae3H1+5voxAh+0gg1rrzol0=
+        b=S2FVsAeggwXsKHegzuBSaKLct+DcjetVguMBcCCqIEbg73f8faEvAArXAiiCbzEIE
+         thaP4w5i7f1x2MOGTAfh5jYJ6UNUX3u1qiqILaM/xY+Q00cAwuKcpelsiyocBXSs46
+         7W6DTYI1ff/b9D6+dX2NOmZWRmZ9t3JtaNOWBtak=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andy Lutomirski <luto@kernel.org>,
+        stable@vger.kernel.org, Yangtao Li <tiny.windzz@gmail.com>,
         Theodore Tso <tytso@mit.edu>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 038/237] random: remove kernel.random.read_wakeup_threshold
-Date:   Thu, 23 Jun 2022 18:41:12 +0200
-Message-Id: <20220623164344.251557357@linuxfoundation.org>
+Subject: [PATCH 4.14 039/237] random: remove unnecessary unlikely()
+Date:   Thu, 23 Jun 2022 18:41:13 +0200
+Message-Id: <20220623164344.280462672@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -49,62 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Lutomirski <luto@kernel.org>
+From: Yangtao Li <tiny.windzz@gmail.com>
 
-commit c95ea0c69ffda19381c116db2be23c7e654dac98 upstream.
+commit 870e05b1b18814911cb2703a977f447cb974f0f9 upstream.
 
-It has no effect any more, so remove it.  We can revert this if
-there is some user code that expects to be able to set this sysctl.
+WARN_ON() already contains an unlikely(), so it's not necessary to use
+unlikely.
 
-Signed-off-by: Andy Lutomirski <luto@kernel.org>
-Link: https://lore.kernel.org/r/a74ed2cf0b5a5451428a246a9239f5bc4e29358f.1577088521.git.luto@kernel.org
+Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
+Link: https://lore.kernel.org/r/20190607182517.28266-1-tiny.windzz@gmail.com
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   18 +-----------------
- 1 file changed, 1 insertion(+), 17 deletions(-)
+ drivers/char/random.c |    6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -370,12 +370,6 @@
- #define ENTROPY_BITS(r) ((r)->entropy_count >> ENTROPY_SHIFT)
+@@ -738,10 +738,9 @@ retry:
+ 		} while (unlikely(entropy_count < pool_size-2 && pnfrac));
+ 	}
  
- /*
-- * The minimum number of bits of entropy before we wake up a read on
-- * /dev/random.  Should be enough to do a significant reseed.
-- */
--static int random_read_wakeup_bits = 64;
--
--/*
-  * If the entropy count falls under this number of bits, then we
-  * should wake up processes which are selecting or polling on write
-  * access to /dev/random.
-@@ -2010,8 +2004,7 @@ SYSCALL_DEFINE3(getrandom, char __user *
+-	if (unlikely(entropy_count < 0)) {
++	if (WARN_ON(entropy_count < 0)) {
+ 		pr_warn("random: negative entropy/overflow: pool %s count %d\n",
+ 			r->name, entropy_count);
+-		WARN_ON(1);
+ 		entropy_count = 0;
+ 	} else if (entropy_count > pool_size)
+ 		entropy_count = pool_size;
+@@ -1380,10 +1379,9 @@ retry:
+ 	if (ibytes < min)
+ 		ibytes = 0;
  
- #include <linux/sysctl.h>
- 
--static int min_read_thresh = 8, min_write_thresh;
--static int max_read_thresh = OUTPUT_POOL_WORDS * 32;
-+static int min_write_thresh;
- static int max_write_thresh = INPUT_POOL_WORDS * 32;
- static int random_min_urandom_seed = 60;
- static char sysctl_bootid[16];
-@@ -2087,15 +2080,6 @@ struct ctl_table random_table[] = {
- 		.data		= &input_pool.entropy_count,
- 	},
- 	{
--		.procname	= "read_wakeup_threshold",
--		.data		= &random_read_wakeup_bits,
--		.maxlen		= sizeof(int),
--		.mode		= 0644,
--		.proc_handler	= proc_dointvec_minmax,
--		.extra1		= &min_read_thresh,
--		.extra2		= &max_read_thresh,
--	},
--	{
- 		.procname	= "write_wakeup_threshold",
- 		.data		= &random_write_wakeup_bits,
- 		.maxlen		= sizeof(int),
+-	if (unlikely(entropy_count < 0)) {
++	if (WARN_ON(entropy_count < 0)) {
+ 		pr_warn("random: negative entropy count: pool %s count %d\n",
+ 			r->name, entropy_count);
+-		WARN_ON(1);
+ 		entropy_count = 0;
+ 	}
+ 	nfrac = ibytes << (ENTROPY_SHIFT + 3);
 
 
