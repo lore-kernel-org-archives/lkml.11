@@ -2,82 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B90E7C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF138CCA47C
 	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 04:50:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231641AbiFWEs3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 00:48:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37650 "EHLO
+        id S231748AbiFWEsn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 00:48:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238289AbiFWD0z (ORCPT
+        with ESMTP id S229843AbiFWEjQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 23:26:55 -0400
-Received: from mail-yw1-x1144.google.com (mail-yw1-x1144.google.com [IPv6:2607:f8b0:4864:20::1144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02C7C32EF9;
-        Wed, 22 Jun 2022 20:26:54 -0700 (PDT)
-Received: by mail-yw1-x1144.google.com with SMTP id 00721157ae682-317741c86fdso179918427b3.2;
-        Wed, 22 Jun 2022 20:26:53 -0700 (PDT)
+        Thu, 23 Jun 2022 00:39:16 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F3C534B99
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 21:39:15 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id a11-20020a17090acb8b00b001eca0041455so2654773pju.1
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 21:39:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=JNybckUxm5otNEbFw60yQ2dMtFPY6hEGSuWHqLz60QM=;
-        b=oJvhpXy33TJnMmAM9XmiHDngCvJn1nhnVe7FD+U8sWRhMtNkAkqEEv+s6eM3sjC9nQ
-         SP4/oKyZzFIcSvzVcZcJRkpqNU2l+p4u/EsCSTuDAENNJvUk2Rm/IwCJcU/xA5kJVkR5
-         0WnCrZf0DYztoO4VnAkTeJMZexhQu998QlhHncdmOP6wK1nAs8foWL5ohlo6buCBOGMf
-         CV+EmroH/AE3KWZJghzatzlV0/6fAbP73/BurcAl5NN9OI104wbc/N4kX8/PDwQEWhOI
-         Uu2nIqO3fW4KrnXf3F8Hylzi3Rn/t/t6xCeuACuevBIZPJu9eEesMdS2mNoDsROenGq1
-         FDrw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XtCc+UQQpUTja7HKmiItYlG8yACqKBWw8JAx2Em2Ros=;
+        b=gh/igH2UBmB6266V7qY6S0bv21sMThSqiv6qST2OQV19Ker6WZI12/ZPsn5LmqqWMh
+         t6B8o2aZQ4nJA7ak3aUREkh7KGQ2hNRtyoR81bZ+A8Fi4z4McsyrgQekTQcMCI70UI2n
+         3RQWqjbp2T4yiGZpV+UYo3SmGTABIUT9W/o/7PhDpLAGwt+LqOCdHqUxWN8rIWno2h1A
+         yaR7HwLh5gimH4pkP8R4TyB0BRQgj5Vk/qAzYMVTFTvdrtlzi9MU2P0Ov9lbzA5ajnZ9
+         JG6THSs9MWkC6Ho5PsIOCjSN6xRoh9MdEFq94l8qNCd/kXfvxnaFM83nULrqV7QslcN2
+         EuNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=JNybckUxm5otNEbFw60yQ2dMtFPY6hEGSuWHqLz60QM=;
-        b=Imax4TBeBP3K+buGcXLL8156GcnAHBt/1jOkEfTMN5Amim0LMkHsCf1T2Q830m5OJt
-         sOC2AKIbLuHvOAapo7lNDRc/UejaPOdyanz1yDCoTuGCSFznLhTySOtfoeB9TzJTtwYt
-         vixJnr9fnfYODcCO+DnbKsznWZhhoEjHAH8ZM1ymAPY59bsjMrUOVLX4yxvZzrZB7dSv
-         3EfGpo+92ABys7eYuOSaC/4lR1vrak8eXNuk0gzuXiyzyKexaVRqKFgMX0nFDssLjqL0
-         qxddCo0P61Zywn6X2tqEXXoBVxNMKeioXoWI1a6Q6dprJPZr3aaeL2u6d2aw+4LG7GGF
-         bidA==
-X-Gm-Message-State: AJIora8WTeQt5v1eXW52ePf2X1//UYjkmJXKdtfaZmDTj/Q2giKY8yqb
-        DDrlhipvInBMasGEpy4KJWMiepENFztCyng7Rib3/5Y=
-X-Google-Smtp-Source: AGRyM1viAbCUWVPQ/NGv98H+Ta6yzR+JD0FHQ26J99CPudTae7UzU1vo507V0OpaWVB3wSaUkDUfo9G0LwP/MyfnqgQ=
-X-Received: by 2002:a81:106:0:b0:2d0:e682:8a7a with SMTP id
- 6-20020a810106000000b002d0e6828a7amr8156975ywb.257.1655954813053; Wed, 22 Jun
- 2022 20:26:53 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XtCc+UQQpUTja7HKmiItYlG8yACqKBWw8JAx2Em2Ros=;
+        b=VJK2Nrx2rxQygESeN5HxpesKD7gq6K8BSY7N+IQqwjOi7XXQzWn1HSHUWFOo1dsA1I
+         EZg5/lWIYyKgmvthyweYhKOrQ+BIR83fb0Mb4WHHYtjWN2qgbHxoU83f+ZZcjwYuch6B
+         WAUkNpH/J/X/WFUmOKL6NWZMYv8laC4ofm24GKW8Ary4cBxeetqQQQfYu29Ol9jqJulB
+         +9tET6louEkmb9Ci2M7Dt/sJAA9uEq/ouytnVpDGmhC3fd1DjZdYMsW2k1h7XCP5GJmS
+         ZLh34BkRb9yOAGZiDCsutfJXlWrEkhn9Mu7zsHrX0mzNiFhwVEDaw/81rcuaZzE1Ewst
+         Ku0Q==
+X-Gm-Message-State: AJIora+oRLHSixOlhVmdo2sRRPeJRnAnoGpdiSKpHbUPXqk8Nv4EEFHJ
+        i4P7z2wtEtdmcPl6u5tbSaVrtxwAWoHTSg==
+X-Google-Smtp-Source: AGRyM1tjtG0nx/M7CuMI6QIDU2GQemBYxqdzHLv+78X41ahZcFZtCvvQIaaUbp3aAN3pC5NPVKezhw==
+X-Received: by 2002:a17:90a:c984:b0:1ec:747b:da32 with SMTP id w4-20020a17090ac98400b001ec747bda32mr1975850pjt.216.1655959154953;
+        Wed, 22 Jun 2022 21:39:14 -0700 (PDT)
+Received: from localhost (c-67-180-87-133.hsd1.ca.comcast.net. [67.180.87.133])
+        by smtp.gmail.com with ESMTPSA id a66-20020a621a45000000b005251759afbasm9041385pfa.65.2022.06.22.21.39.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jun 2022 21:39:14 -0700 (PDT)
+From:   Chang Yu <marcus.yu.56@gmail.com>
+To:     Larry.Finger@lwfinger.net, philipp.g.hortmann@gmail.com
+Cc:     linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
+        Chang Yu <marcus.yu.56@gmail.com>
+Subject: [PATCH v2] staging: r8188eu: Make rtw_signal_stat_timer_hdl a static function
+Date:   Wed, 22 Jun 2022 21:38:55 -0700
+Message-Id: <20220623043855.407208-1-marcus.yu.56@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-References: <20220622085146.444516-1-sunliming@kylinos.cn> <YrLwU27DNm0YWOvB@ZenIV>
-In-Reply-To: <YrLwU27DNm0YWOvB@ZenIV>
-From:   sunliming <kelulanainsley@gmail.com>
-Date:   Thu, 23 Jun 2022 11:26:38 +0800
-Message-ID: <CAJncD7S6inm90TEsUS6GpSiAdHHE95Q2qz08TmojN2uhhHA0Zw@mail.gmail.com>
-Subject: Re: [PATCH] walk_component(): get inode in lookup_slow branch
- statement block
-To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        sunliming@kylino.cn
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Al Viro <viro@zeniv.linux.org.uk> =E4=BA=8E2022=E5=B9=B46=E6=9C=8822=E6=97=
-=A5=E5=91=A8=E4=B8=89 18:35=E5=86=99=E9=81=93=EF=BC=9A
->
-> On Wed, Jun 22, 2022 at 04:51:46PM +0800, sunliming wrote:
-> > The inode variable is used as a parameter by the step_into function,
-> > but is not assigned a value in the sub-lookup_slow branch path. So
-> > get the inode in the sub-lookup_slow branch path.
->
-> Take a good look at handle_mounts() and the things it does when
-> *not* in RCU mode (i.e. LOOKUP_RCU is not set).  Specifically,
->                 *inode =3D d_backing_inode(path->dentry);
->                 *seqp =3D 0; /* out of RCU mode, so the value doesn't mat=
-ter */
-> this part.
->
-> IOW, the values passed to step_into() in inode/seq are overridden unless
-> we stay in RCU mode.  And if we'd been through lookup_slow(), we'd been
-> out of RCU mode since before we called step_into().
-OK=EF=BC=8CI got it.
+Make rtw_signal_stat_timer_hdl a static function instead of a global
+function.
+
+Signed-off-by: Chang Yu <marcus.yu.56@gmail.com>
+---
+Changes in v2:
+Added static for the definition as well
+
+ drivers/staging/r8188eu/core/rtw_recv.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/staging/r8188eu/core/rtw_recv.c b/drivers/staging/r8188eu/core/rtw_recv.c
+index cc91638a085d..6564e82ddd66 100644
+--- a/drivers/staging/r8188eu/core/rtw_recv.c
++++ b/drivers/staging/r8188eu/core/rtw_recv.c
+@@ -24,7 +24,7 @@ static u8 rtw_rfc1042_header[] = {
+ 	0xaa, 0xaa, 0x03, 0x00, 0x00, 0x00
+ };
+ 
+-void rtw_signal_stat_timer_hdl(struct timer_list *t);
++static void rtw_signal_stat_timer_hdl(struct timer_list *t);
+ 
+ void _rtw_init_sta_recv_priv(struct sta_recv_priv *psta_recvpriv)
+ {
+@@ -1794,7 +1794,7 @@ s32 rtw_recv_entry(struct recv_frame *precvframe)
+ 	return ret;
+ }
+ 
+-void rtw_signal_stat_timer_hdl(struct timer_list *t)
++static void rtw_signal_stat_timer_hdl(struct timer_list *t)
+ {
+ 	struct adapter *adapter = from_timer(adapter, t, recvpriv.signal_stat_timer);
+ 	struct recv_priv *recvpriv = &adapter->recvpriv;
+-- 
+2.36.1
+
