@@ -2,171 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4895C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 12:27:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0994C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 12:27:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230429AbiFWM1T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 08:27:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42116 "EHLO
+        id S231506AbiFWM1t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 08:27:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229741AbiFWM1R (ORCPT
+        with ESMTP id S229505AbiFWM1r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 08:27:17 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99B7D3CA40;
-        Thu, 23 Jun 2022 05:27:15 -0700 (PDT)
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LTKHg0JJqzDsPx;
-        Thu, 23 Jun 2022 20:26:39 +0800 (CST)
-Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 23 Jun 2022 20:27:13 +0800
-Received: from [10.174.176.73] (10.174.176.73) by
- kwepemm600009.china.huawei.com (7.193.23.164) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 23 Jun 2022 20:27:12 +0800
-Subject: Re: [PATCH -next v5 4/8] blk-throttle: fix io hung due to config
- updates
-To:     =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>
-CC:     <tj@kernel.org>, <axboe@kernel.dk>, <ming.lei@redhat.com>,
-        <cgroups@vger.kernel.org>, <linux-block@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <yi.zhang@huawei.com>
-References: <20220528064330.3471000-1-yukuai3@huawei.com>
- <20220528064330.3471000-5-yukuai3@huawei.com>
- <20220622172621.GA28246@blackbody.suse.cz>
-From:   Yu Kuai <yukuai3@huawei.com>
-Message-ID: <f5165488-2461-8946-593f-14154e404850@huawei.com>
-Date:   Thu, 23 Jun 2022 20:27:11 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <20220622172621.GA28246@blackbody.suse.cz>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.176.73]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemm600009.china.huawei.com (7.193.23.164)
-X-CFilter-Loop: Reflected
+        Thu, 23 Jun 2022 08:27:47 -0400
+Received: from smtpbg.qq.com (smtpbg136.qq.com [106.55.201.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE31E3B570;
+        Thu, 23 Jun 2022 05:27:42 -0700 (PDT)
+X-QQ-mid: bizesmtp90t1655987177tvudpioa
+Received: from ubuntu.localdomain ( [106.117.99.68])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Thu, 23 Jun 2022 20:26:12 +0800 (CST)
+X-QQ-SSF: 01000000008000C0C000D00A0000000
+X-QQ-FEAT: PdU/eI8FBMBa+osO4ttSIsYgTzat1MkFtXq+8udwQRW8JaFSvPU6VWlSIfETT
+        tP++IhAfi9RyKK6wzPazIj/bEJwT/Kag3/4xlJeT7FWz38+CaRCJrhEMbKzHPyyDcHEOrVG
+        4AkcQ27XTF1IOkUQNuUx9nm5ixXWqtUaoTiIweHJMNtB2qyn7wcXG84X6AC7Jhe+AG6IBUq
+        UILW/h8lrgP4SDk15KlrrZflZhDSH9kBxC0qYIP3ilRzg78WLNn6GHPvscqDEXeDM3kwlll
+        /w4MQHrRAxUEw7LzyIWa44KgompnvfMSD6i0TvrMqNGT1hu0zK/efafZ1Az/xE1SWtzuElg
+        pYXFyIxp3j0kNxiWDrOK/kcYmqoSA==
+X-QQ-GoodBg: 0
+From:   Jiang Jian <jiangjian@cdjrlc.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     gregory.greenman@intel.com, kvalo@kernel.org,
+        luciano.coelho@intel.com, johannes.berg@intel.com,
+        jiangjian@cdjrlc.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iwlwifi: fw: paging.c - drop unexpected word 'for' in comments
+Date:   Thu, 23 Jun 2022 20:26:10 +0800
+Message-Id: <20220623122610.52292-1-jiangjian@cdjrlc.com>
+X-Mailer: git-send-email 2.17.1
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+there is an unexpected word 'for' in the comments that need to be dropped
 
-在 2022/06/23 1:26, Michal Koutný 写道:
-> (Apologies for taking so long before answering.)
-> 
-> On Sat, May 28, 2022 at 02:43:26PM +0800, Yu Kuai <yukuai3@huawei.com> wrote:
->> Some simple test:
->> 1)
->> cd /sys/fs/cgroup/blkio/
->> echo $$ > cgroup.procs
->> echo "8:0 2048" > blkio.throttle.write_bps_device
->> {
->>          sleep 2
->>          echo "8:0 1024" > blkio.throttle.write_bps_device
->> } &
->> dd if=/dev/zero of=/dev/sda bs=8k count=1 oflag=direct
->>
->> 2)
->> cd /sys/fs/cgroup/blkio/
->> echo $$ > cgroup.procs
->> echo "8:0 1024" > blkio.throttle.write_bps_device
->> {
->>          sleep 4
->>          echo "8:0 2048" > blkio.throttle.write_bps_device
->> } &
->> dd if=/dev/zero of=/dev/sda bs=8k count=1 oflag=direct
->>
->> test results: io finish time
->> 	before this patch	with this patch
->> 1)	10s			6s
->> 2)	8s			6s
-> 
-> I agree these are consistent and correct times.
-> 
-> And the new implementation won't make it worse (in terms of delaying a
-> bio) than configuring minimal limits from the beginning, AFACT.
-> 
->> @@ -801,7 +836,8 @@ static bool tg_with_in_iops_limit(struct throtl_grp *tg, struct bio *bio,
->>   
->>   	/* Round up to the next throttle slice, wait time must be nonzero */
->>   	jiffy_elapsed_rnd = roundup(jiffy_elapsed + 1, tg->td->throtl_slice);
->> -	io_allowed = calculate_io_allowed(iops_limit, jiffy_elapsed_rnd);
->> +	io_allowed = calculate_io_allowed(iops_limit, jiffy_elapsed_rnd) +
->> +		     tg->io_skipped[rw];
->>   	if (tg->io_disp[rw] + 1 <= io_allowed) {
->>   		if (wait)
->>   			*wait = 0;
->> @@ -838,7 +874,8 @@ static bool tg_with_in_bps_limit(struct throtl_grp *tg, struct bio *bio,
->>   		jiffy_elapsed_rnd = tg->td->throtl_slice;
->>   
->>   	jiffy_elapsed_rnd = roundup(jiffy_elapsed_rnd, tg->td->throtl_slice);
->> -	bytes_allowed = calculate_bytes_allowed(bps_limit, jiffy_elapsed_rnd);
->> +	bytes_allowed = calculate_bytes_allowed(bps_limit, jiffy_elapsed_rnd) +
->> +			tg->bytes_skipped[rw];
->>   	if (tg->bytes_disp[rw] + bio_size <= bytes_allowed) {
->>   		if (wait)
->>   			*wait = 0;
->>
-> 
-> Here we may allow to dispatch a bio above current slice's
-> calculate_bytes_allowed() if bytes_skipped is already >0.
+file - drivers/net/wireless/intel/iwlwifi/fw/paging.c
+line - 252
 
-Hi, I don't expect that to happen. For example, if a bio is still
-throttled, then old slice is keeped with proper 'bytes_skipped',
-then new wait time is caculated based on (bio_size - bytes_skipped).
+/* loop for for all paging blocks + CSS block */
 
-After the bio is dispatched(I assum that other bios can't preempt),
-if new slice is started, then 'bytes_skipped' is cleared, there should
-be no problem; If old slice is extended, note that we only wait
-for 'bio_size - bytes_skipped' bytes, while 'bio_size' bytes is added
-to 'tg->bytes_disp'. I think this will make sure new bio won't be
-dispatched above slice.
+changed to:
 
-What do you think?
-> 
-> bytes_disp + bio_size <= calculate_bytes_allowed() + bytes_skipped
-> 
-> Then on the next update
-> 
->> [shuffle]
->> +static void __tg_update_skipped(struct throtl_grp *tg, bool rw)
->> +{
->> +	unsigned long jiffy_elapsed = jiffies - tg->slice_start[rw];
->> +	u64 bps_limit = tg_bps_limit(tg, rw);
->> +	u32 iops_limit = tg_iops_limit(tg, rw);
->> +
->> +	if (bps_limit != U64_MAX)
->> +		tg->bytes_skipped[rw] +=
->> +			calculate_bytes_allowed(bps_limit, jiffy_elapsed) -
->> +			tg->bytes_disp[rw];
->> +	if (iops_limit != UINT_MAX)
->> +		tg->io_skipped[rw] +=
->> +			calculate_io_allowed(iops_limit, jiffy_elapsed) -
->> +			tg->io_disp[rw];
->> +}
-> 
-> the difference(s) here could be negative. bytes_skipped should be
-> reduced to account for the additionally dispatched bio.
-> This is all unsigned so negative numbers underflow, however, we add them
-> again to the unsigned, so thanks to modular arithmetics the result is
-> correctly updated bytes_skipped.
-> 
-> Maybe add a comment about this (unsigned) intention?
+/* loop for all paging blocks + CSS block */
 
-Of course I can do that.
-> 
-> (But can this happen? The discussed bio would have to outrun another bio
-> (the one which defined the current slice_end) but since blk-throttle
-> uses queues (FIFO) everywhere this shouldn't really happen. But it's
-> good to know this works as intended.)
-I can also mention that in comment.
-> 
-> This patch can have
-> Reviewed-by: Michal Koutný <mkoutny@suse.com>
-> 
+Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
+---
+ drivers/net/wireless/intel/iwlwifi/fw/paging.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks for the review!
-Kuai
+diff --git a/drivers/net/wireless/intel/iwlwifi/fw/paging.c b/drivers/net/wireless/intel/iwlwifi/fw/paging.c
+index 945bc4160cc9..a7b7cae874a2 100644
+--- a/drivers/net/wireless/intel/iwlwifi/fw/paging.c
++++ b/drivers/net/wireless/intel/iwlwifi/fw/paging.c
+@@ -249,7 +249,7 @@ static int iwl_send_paging_cmd(struct iwl_fw_runtime *fwrt,
+ 	};
+ 	int blk_idx;
+ 
+-	/* loop for for all paging blocks + CSS block */
++	/* loop for all paging blocks + CSS block */
+ 	for (blk_idx = 0; blk_idx < fwrt->num_of_paging_blk + 1; blk_idx++) {
+ 		dma_addr_t addr = fwrt->fw_paging_db[blk_idx].fw_paging_phys;
+ 		__le32 phy_addr;
+-- 
+2.17.1
+
