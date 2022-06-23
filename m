@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D55EC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:24:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4696FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:25:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237218AbiFWSY4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:24:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55880 "EHLO
+        id S237244AbiFWSY6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:24:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237598AbiFWSXA (ORCPT
+        with ESMTP id S237695AbiFWSXT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:23:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17F4569FA4;
-        Thu, 23 Jun 2022 10:25:39 -0700 (PDT)
+        Thu, 23 Jun 2022 14:23:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 429A9C2C52;
+        Thu, 23 Jun 2022 10:25:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E40561BFA;
-        Thu, 23 Jun 2022 17:25:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4C55C3411B;
-        Thu, 23 Jun 2022 17:25:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CBD80B824BC;
+        Thu, 23 Jun 2022 17:25:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20BF6C341C7;
+        Thu, 23 Jun 2022 17:25:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656005138;
-        bh=/1LJG4oZTcqnV2VpWU4XssJhTWNruaNMjNv7eQ7ewtk=;
+        s=korg; t=1656005144;
+        bh=fktVbGTudoPPT+gPcMTm5EPC1UpCzHAWbOUnYQ07HBo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dqyPnI6jiquPq31wdOIaZzjY3cjge2djvxCc2FI48wwBmykoMyFhGuIJJIaHPQDf1
-         ZtgVIPe3TtXGSmpBo0oTN3uQJxSvulno3EdyoYEAXUro4kJvXp5uIDVgw9VyAp1w4l
-         EwxCACtdKdmPYA6RFh6pWOWsTOqEJO+bMROZ0EG0=
+        b=B/VnkOzYYUwnuXVTKHD7CZJlUhPJdMsU24+1drSP+qo/WwqGH+9SrznXLP8wUf33L
+         VHhiW9a+apynP2hQLFLRhdLca884TT7msThNMfzktxW7B30gS2Gn5cFqg9xWvC78q7
+         Wj8x3sjXr6W5piI1G+gNUvK1MxWOHzM4IGK7RFh8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kees Cook <keescook@chromium.org>,
-        Borislav Petkov <bp@suse.de>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jiri Slaby <jirislaby@kernel.org>
-Subject: [PATCH 5.18 06/11] x86/boot: Wrap literal addresses in absolute_pointer()
-Date:   Thu, 23 Jun 2022 18:45:18 +0200
-Message-Id: <20220623164322.500778833@linuxfoundation.org>
+        stable@vger.kernel.org, Jan Kara <jack@suse.com>,
+        Amir Goldstein <amir73il@gmail.com>, Jan Kara <jack@suse.cz>
+Subject: [PATCH 5.18 08/11] fsnotify: consistent behavior for parent not watching children
+Date:   Thu, 23 Jun 2022 18:45:20 +0200
+Message-Id: <20220623164322.557676906@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164322.315085512@linuxfoundation.org>
 References: <20220623164322.315085512@linuxfoundation.org>
@@ -50,142 +48,123 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Amir Goldstein <amir73il@gmail.com>
 
-commit aeb84412037b89e06f45e382f044da6f200e12f8 upstream.
+commit e730558adffb88a52e562db089e969ee9510184a upstream.
 
-GCC 11 (incorrectly[1]) assumes that literal values cast to (void *)
-should be treated like a NULL pointer with an offset, and raises
-diagnostics when doing bounds checking under -Warray-bounds. GCC 12
-got "smarter" about finding these:
+The logic for handling events on child in groups that have a mark on
+the parent inode, but without FS_EVENT_ON_CHILD flag in the mask is
+duplicated in several places and inconsistent.
 
-  In function 'rdfs8',
-      inlined from 'vga_recalc_vertical' at /srv/code/arch/x86/boot/video-mode.c:124:29,
-      inlined from 'set_mode' at /srv/code/arch/x86/boot/video-mode.c:163:3:
-  /srv/code/arch/x86/boot/boot.h:114:9: warning: array subscript 0 is outside array bounds of 'u8[0]' {aka 'unsigned char[]'} [-Warray-bounds]
-    114 |         asm volatile("movb %%fs:%1,%0" : "=q" (v) : "m" (*(u8 *)addr));
-        |         ^~~
+Move the logic into the preparation of mark type iterator, so that the
+parent mark type will be excluded from all mark type iterations in that
+case.
 
-This has been solved in other places[2] already by using the recently
-added absolute_pointer() macro. Do the same here.
+This results in several subtle changes of behavior, hopefully all
+desired changes of behavior, for example:
 
-  [1] https://gcc.gnu.org/bugzilla/show_bug.cgi?id=99578
-  [2] https://lore.kernel.org/all/20210912160149.2227137-1-linux@roeck-us.net/
+- Group A has a mount mark with FS_MODIFY in mask
+- Group A has a mark with ignore mask that does not survive FS_MODIFY
+  and does not watch children on directory D.
+- Group B has a mark with FS_MODIFY in mask that does watch children
+  on directory D.
+- FS_MODIFY event on file D/foo should not clear the ignore mask of
+  group A, but before this change it does
 
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-Link: https://lore.kernel.org/r/20220227195918.705219-1-keescook@chromium.org
-Cc: Jiri Slaby <jirislaby@kernel.org>
+And if group A ignore mask was set to survive FS_MODIFY:
+- FS_MODIFY event on file D/foo should be reported to group A on account
+  of the mount mark, but before this change it is wrongly ignored
+
+Fixes: 2f02fd3fa13e ("fanotify: fix ignore mask logic for events on child and on dir")
+Reported-by: Jan Kara <jack@suse.com>
+Link: https://lore.kernel.org/linux-fsdevel/20220314113337.j7slrb5srxukztje@quack3.lan/
+Signed-off-by: Amir Goldstein <amir73il@gmail.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220511190213.831646-3-amir73il@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/boot/boot.h |   36 ++++++++++++++++++++++++------------
- arch/x86/boot/main.c |    2 +-
- 2 files changed, 25 insertions(+), 13 deletions(-)
+ fs/notify/fanotify/fanotify.c |   10 +---------
+ fs/notify/fsnotify.c          |   34 +++++++++++++++++++---------------
+ 2 files changed, 20 insertions(+), 24 deletions(-)
 
---- a/arch/x86/boot/boot.h
-+++ b/arch/x86/boot/boot.h
-@@ -110,66 +110,78 @@ typedef unsigned int addr_t;
+--- a/fs/notify/fanotify/fanotify.c
++++ b/fs/notify/fanotify/fanotify.c
+@@ -320,7 +320,7 @@ static u32 fanotify_group_event_mask(str
+ 	}
  
- static inline u8 rdfs8(addr_t addr)
- {
-+	u8 *ptr = (u8 *)absolute_pointer(addr);
- 	u8 v;
--	asm volatile("movb %%fs:%1,%0" : "=q" (v) : "m" (*(u8 *)addr));
-+	asm volatile("movb %%fs:%1,%0" : "=q" (v) : "m" (*ptr));
- 	return v;
- }
- static inline u16 rdfs16(addr_t addr)
- {
-+	u16 *ptr = (u16 *)absolute_pointer(addr);
- 	u16 v;
--	asm volatile("movw %%fs:%1,%0" : "=r" (v) : "m" (*(u16 *)addr));
-+	asm volatile("movw %%fs:%1,%0" : "=r" (v) : "m" (*ptr));
- 	return v;
- }
- static inline u32 rdfs32(addr_t addr)
- {
-+	u32 *ptr = (u32 *)absolute_pointer(addr);
- 	u32 v;
--	asm volatile("movl %%fs:%1,%0" : "=r" (v) : "m" (*(u32 *)addr));
-+	asm volatile("movl %%fs:%1,%0" : "=r" (v) : "m" (*ptr));
- 	return v;
- }
+ 	fsnotify_foreach_iter_mark_type(iter_info, mark, type) {
+-		/* Apply ignore mask regardless of ISDIR and ON_CHILD flags */
++		/* Apply ignore mask regardless of mark's ISDIR flag */
+ 		marks_ignored_mask |= mark->ignored_mask;
  
- static inline void wrfs8(u8 v, addr_t addr)
- {
--	asm volatile("movb %1,%%fs:%0" : "+m" (*(u8 *)addr) : "qi" (v));
-+	u8 *ptr = (u8 *)absolute_pointer(addr);
-+	asm volatile("movb %1,%%fs:%0" : "+m" (*ptr) : "qi" (v));
- }
- static inline void wrfs16(u16 v, addr_t addr)
- {
--	asm volatile("movw %1,%%fs:%0" : "+m" (*(u16 *)addr) : "ri" (v));
-+	u16 *ptr = (u16 *)absolute_pointer(addr);
-+	asm volatile("movw %1,%%fs:%0" : "+m" (*ptr) : "ri" (v));
- }
- static inline void wrfs32(u32 v, addr_t addr)
- {
--	asm volatile("movl %1,%%fs:%0" : "+m" (*(u32 *)addr) : "ri" (v));
-+	u32 *ptr = (u32 *)absolute_pointer(addr);
-+	asm volatile("movl %1,%%fs:%0" : "+m" (*ptr) : "ri" (v));
- }
+ 		/*
+@@ -330,14 +330,6 @@ static u32 fanotify_group_event_mask(str
+ 		if (event_mask & FS_ISDIR && !(mark->mask & FS_ISDIR))
+ 			continue;
  
- static inline u8 rdgs8(addr_t addr)
- {
-+	u8 *ptr = (u8 *)absolute_pointer(addr);
- 	u8 v;
--	asm volatile("movb %%gs:%1,%0" : "=q" (v) : "m" (*(u8 *)addr));
-+	asm volatile("movb %%gs:%1,%0" : "=q" (v) : "m" (*ptr));
- 	return v;
- }
- static inline u16 rdgs16(addr_t addr)
- {
-+	u16 *ptr = (u16 *)absolute_pointer(addr);
- 	u16 v;
--	asm volatile("movw %%gs:%1,%0" : "=r" (v) : "m" (*(u16 *)addr));
-+	asm volatile("movw %%gs:%1,%0" : "=r" (v) : "m" (*ptr));
- 	return v;
- }
- static inline u32 rdgs32(addr_t addr)
- {
-+	u32 *ptr = (u32 *)absolute_pointer(addr);
- 	u32 v;
--	asm volatile("movl %%gs:%1,%0" : "=r" (v) : "m" (*(u32 *)addr));
-+	asm volatile("movl %%gs:%1,%0" : "=r" (v) : "m" (*ptr));
- 	return v;
- }
+-		/*
+-		 * If the event is on a child and this mark is on a parent not
+-		 * watching children, don't send it!
+-		 */
+-		if (type == FSNOTIFY_ITER_TYPE_PARENT &&
+-		    !(mark->mask & FS_EVENT_ON_CHILD))
+-			continue;
+-
+ 		marks_mask |= mark->mask;
  
- static inline void wrgs8(u8 v, addr_t addr)
- {
--	asm volatile("movb %1,%%gs:%0" : "+m" (*(u8 *)addr) : "qi" (v));
-+	u8 *ptr = (u8 *)absolute_pointer(addr);
-+	asm volatile("movb %1,%%gs:%0" : "+m" (*ptr) : "qi" (v));
- }
- static inline void wrgs16(u16 v, addr_t addr)
- {
--	asm volatile("movw %1,%%gs:%0" : "+m" (*(u16 *)addr) : "ri" (v));
-+	u16 *ptr = (u16 *)absolute_pointer(addr);
-+	asm volatile("movw %1,%%gs:%0" : "+m" (*ptr) : "ri" (v));
- }
- static inline void wrgs32(u32 v, addr_t addr)
- {
--	asm volatile("movl %1,%%gs:%0" : "+m" (*(u32 *)addr) : "ri" (v));
-+	u32 *ptr = (u32 *)absolute_pointer(addr);
-+	asm volatile("movl %1,%%gs:%0" : "+m" (*ptr) : "ri" (v));
- }
+ 		/* Record the mark types of this group that matched the event */
+--- a/fs/notify/fsnotify.c
++++ b/fs/notify/fsnotify.c
+@@ -290,22 +290,15 @@ static int fsnotify_handle_event(struct
+ 	}
  
- /* Note: these only return true/false, not a signed return value! */
---- a/arch/x86/boot/main.c
-+++ b/arch/x86/boot/main.c
-@@ -33,7 +33,7 @@ static void copy_boot_params(void)
- 		u16 cl_offset;
- 	};
- 	const struct old_cmdline * const oldcmd =
--		(const struct old_cmdline *)OLD_CL_ADDRESS;
-+		absolute_pointer(OLD_CL_ADDRESS);
+ 	if (parent_mark) {
+-		/*
+-		 * parent_mark indicates that the parent inode is watching
+-		 * children and interested in this event, which is an event
+-		 * possible on child. But is *this mark* watching children and
+-		 * interested in this event?
+-		 */
+-		if (parent_mark->mask & FS_EVENT_ON_CHILD) {
+-			ret = fsnotify_handle_inode_event(group, parent_mark, mask,
+-							  data, data_type, dir, name, 0);
+-			if (ret)
+-				return ret;
+-		}
+-		if (!inode_mark)
+-			return 0;
++		ret = fsnotify_handle_inode_event(group, parent_mark, mask,
++						  data, data_type, dir, name, 0);
++		if (ret)
++			return ret;
+ 	}
  
- 	BUILD_BUG_ON(sizeof(boot_params) != 4096);
- 	memcpy(&boot_params.hdr, &hdr, sizeof(hdr));
++	if (!inode_mark)
++		return 0;
++
+ 	if (mask & FS_EVENT_ON_CHILD) {
+ 		/*
+ 		 * Some events can be sent on both parent dir and child marks
+@@ -422,8 +415,19 @@ static bool fsnotify_iter_select_report_
+ 	iter_info->report_mask = 0;
+ 	fsnotify_foreach_iter_type(type) {
+ 		mark = iter_info->marks[type];
+-		if (mark && mark->group == iter_info->current_group)
++		if (mark && mark->group == iter_info->current_group) {
++			/*
++			 * FSNOTIFY_ITER_TYPE_PARENT indicates that this inode
++			 * is watching children and interested in this event,
++			 * which is an event possible on child.
++			 * But is *this mark* watching children?
++			 */
++			if (type == FSNOTIFY_ITER_TYPE_PARENT &&
++			    !(mark->mask & FS_EVENT_ON_CHILD))
++				continue;
++
+ 			fsnotify_iter_set_report_type(iter_info, type);
++		}
+ 	}
+ 
+ 	return true;
 
 
