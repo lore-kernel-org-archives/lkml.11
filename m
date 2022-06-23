@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D556CCA47F
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:16:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C75EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:16:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236801AbiFWSQm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:16:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44494 "EHLO
+        id S236874AbiFWSQ4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:16:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236648AbiFWSPr (ORCPT
+        with ESMTP id S230254AbiFWSQf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:15:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 334DE828B3;
-        Thu, 23 Jun 2022 10:22:12 -0700 (PDT)
+        Thu, 23 Jun 2022 14:16:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9A175DF33;
+        Thu, 23 Jun 2022 10:22:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9AB7061DC6;
-        Thu, 23 Jun 2022 17:22:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66FF5C3411B;
-        Thu, 23 Jun 2022 17:22:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 50E7661DE5;
+        Thu, 23 Jun 2022 17:22:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23629C3411B;
+        Thu, 23 Jun 2022 17:22:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004930;
-        bh=2aLdP/aNbtKqn9jTpTpT0xifj7OJXFEgTqbU/YlfGfc=;
+        s=korg; t=1656004961;
+        bh=OxBmzqVqX1mREF4WkljC/7yQplxzyWhFgFPRZ33k3wY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KywxOXBshS7LQMGr9lb9wf58ilDZf9MruMEvwpRxaCNEWeLm20e+9Afc64rfVzhIS
-         c/FsS8lCYLDLs8Q2z3GcO+EIFGC/ginPKEEyFwhN8+ZM/Yqj17jKxQ2VMjSVPvbflr
-         YDJK35rvaN2kgOENnABuIL4c8XzBUZvPb4riwufA=
+        b=hTAIqgUTGd/kFDCzL8TAyzx/0HhqRTj6KuIkAoIIAGLp+SD0p4gUxL6+HvEd2gnoC
+         iqRcXSgLaSa4XCDOigcvxPGZGQgoutYcGCA9K+Sdj/kq0285PVZEbXhJar8fqH+4Q1
+         Z31D8kk7g3wqkIEj3pmMgczXIpPMq6sX9wDOj8HA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 195/234] nfc: nfcmrvl: Fix memory leak in nfcmrvl_play_deferred
-Date:   Thu, 23 Jun 2022 18:44:22 +0200
-Message-Id: <20220623164348.566309060@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.19 169/234] random: check for signals after page of pool writes
+Date:   Thu, 23 Jun 2022 18:43:56 +0200
+Message-Id: <20220623164347.835067432@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
 References: <20220623164343.042598055@linuxfoundation.org>
@@ -50,66 +49,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-[ Upstream commit 8a4d480702b71184fabcf379b80bf7539716752e ]
+commit 1ce6c8d68f8ac587f54d0a271ac594d3d51f3efb upstream.
 
-Similar to the handling of play_deferred in commit 19cfe912c37b
-("Bluetooth: btusb: Fix memory leak in play_deferred"), we thought
-a patch might be needed here as well.
+get_random_bytes_user() checks for signals after producing a PAGE_SIZE
+worth of output, just like /dev/zero does. write_pool() is doing
+basically the same work (actually, slightly more expensive), and so
+should stop to check for signals in the same way. Let's also name it
+write_pool_user() to match get_random_bytes_user(), so this won't be
+misused in the future.
 
-Currently usb_submit_urb is called directly to submit deferred tx
-urbs after unanchor them.
+Before this patch, massive writes to /dev/urandom would tie up the
+process for an extremely long time and make it unterminatable. After, it
+can be successfully interrupted. The following test program can be used
+to see this works as intended:
 
-So the usb_giveback_urb_bh would failed to unref it in usb_unanchor_urb
-and cause memory leak.
+  #include <unistd.h>
+  #include <fcntl.h>
+  #include <signal.h>
+  #include <stdio.h>
 
-Put those urbs in tx_anchor to avoid the leak, and also fix the error
-handling.
+  static unsigned char x[~0U];
 
-Signed-off-by: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220607083230.6182-1-xiaohuizhang@ruc.edu.cn
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+  static void handle(int) { }
+
+  int main(int argc, char *argv[])
+  {
+    pid_t pid = getpid(), child;
+    int fd;
+    signal(SIGUSR1, handle);
+    if (!(child = fork())) {
+      for (;;)
+        kill(pid, SIGUSR1);
+    }
+    fd = open("/dev/urandom", O_WRONLY);
+    pause();
+    printf("interrupted after writing %zd bytes\n", write(fd, x, sizeof(x)));
+    close(fd);
+    kill(child, SIGTERM);
+    return 0;
+  }
+
+Result before: "interrupted after writing 2147479552 bytes"
+Result after: "interrupted after writing 4096 bytes"
+
+Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/nfc/nfcmrvl/usb.c | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+ drivers/char/random.c |   14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/nfc/nfcmrvl/usb.c b/drivers/nfc/nfcmrvl/usb.c
-index 888e298f610b..f26986eb53f1 100644
---- a/drivers/nfc/nfcmrvl/usb.c
-+++ b/drivers/nfc/nfcmrvl/usb.c
-@@ -401,13 +401,25 @@ static void nfcmrvl_play_deferred(struct nfcmrvl_usb_drv_data *drv_data)
- 	int err;
- 
- 	while ((urb = usb_get_from_anchor(&drv_data->deferred))) {
-+		usb_anchor_urb(urb, &drv_data->tx_anchor);
-+
- 		err = usb_submit_urb(urb, GFP_ATOMIC);
--		if (err)
-+		if (err) {
-+			kfree(urb->setup_packet);
-+			usb_unanchor_urb(urb);
-+			usb_free_urb(urb);
- 			break;
-+		}
- 
- 		drv_data->tx_in_flight++;
-+		usb_free_urb(urb);
-+	}
-+
-+	/* Cleanup the rest deferred urbs. */
-+	while ((urb = usb_get_from_anchor(&drv_data->deferred))) {
-+		kfree(urb->setup_packet);
-+		usb_free_urb(urb);
- 	}
--	usb_scuttle_anchored_urbs(&drv_data->deferred);
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -1251,7 +1251,7 @@ static __poll_t random_poll(struct file
+ 	return crng_ready() ? EPOLLIN | EPOLLRDNORM : EPOLLOUT | EPOLLWRNORM;
  }
  
- static int nfcmrvl_resume(struct usb_interface *intf)
--- 
-2.35.1
-
+-static ssize_t write_pool(struct iov_iter *iter)
++static ssize_t write_pool_user(struct iov_iter *iter)
+ {
+ 	u8 block[BLAKE2S_BLOCK_SIZE];
+ 	ssize_t ret = 0;
+@@ -1266,7 +1266,13 @@ static ssize_t write_pool(struct iov_ite
+ 		mix_pool_bytes(block, copied);
+ 		if (!iov_iter_count(iter) || copied != sizeof(block))
+ 			break;
+-		cond_resched();
++
++		BUILD_BUG_ON(PAGE_SIZE % sizeof(block) != 0);
++		if (ret % PAGE_SIZE == 0) {
++			if (signal_pending(current))
++				break;
++			cond_resched();
++		}
+ 	}
+ 
+ 	memzero_explicit(block, sizeof(block));
+@@ -1275,7 +1281,7 @@ static ssize_t write_pool(struct iov_ite
+ 
+ static ssize_t random_write_iter(struct kiocb *kiocb, struct iov_iter *iter)
+ {
+-	return write_pool(iter);
++	return write_pool_user(iter);
+ }
+ 
+ static ssize_t urandom_read_iter(struct kiocb *kiocb, struct iov_iter *iter)
+@@ -1342,7 +1348,7 @@ static long random_ioctl(struct file *f,
+ 		ret = import_single_range(WRITE, p, len, &iov, &iter);
+ 		if (unlikely(ret))
+ 			return ret;
+-		ret = write_pool(&iter);
++		ret = write_pool_user(&iter);
+ 		if (unlikely(ret < 0))
+ 			return ret;
+ 		/* Since we're crediting, enforce that it was all written into the pool. */
 
 
