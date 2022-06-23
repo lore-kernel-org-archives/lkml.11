@@ -2,107 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0E08C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:24:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CDCBCCA47F
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:24:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233293AbiFWRY1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:24:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34760 "EHLO
+        id S233690AbiFWRY3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:24:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234136AbiFWRXM (ORCPT
+        with ESMTP id S234152AbiFWRXO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:23:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B083F62BF4;
-        Thu, 23 Jun 2022 10:01:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C74D261573;
-        Thu, 23 Jun 2022 17:01:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F262C3411B;
-        Thu, 23 Jun 2022 17:01:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003695;
-        bh=IXRIJ1GHDIZo2SuBShIm4o6PtlLtHIr1VFnSfZwBj5Q=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EzN7Y18P++lC71x4222Qeg121G9VTf5KuD5wjUo/wjvn60L9vvT5hsQS4yNXW0Ap1
-         5M2mSjcE9YW8oiCmxerH7Dn8ibyf95AV+chN0qUhVbBXt6VS6QI6ArtJH+Xp42GVBg
-         KKRffKo03mIEVtpmGQayxi1evIH3cF/VObJ9xBVg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 058/237] crypto: blake2s - adjust include guard naming
-Date:   Thu, 23 Jun 2022 18:41:32 +0200
-Message-Id: <20220623164344.827875681@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
-References: <20220623164343.132308638@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Thu, 23 Jun 2022 13:23:14 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6759C62C02
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 10:01:45 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id d129so4065pgc.9
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 10:01:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=d13U05lgVcA9IwB4xU4eCP+aqLe0CVa+pwLL0+/k+WM=;
+        b=C5lpoezPBXRnQQ1Zp6sggOHddLA6Uc5ahxV2aIySaLqWVHpO4J8e3u/zLre61TN4+3
+         mCB/H31H6wEea3PB8RWDNXLLtSxvhqbniWy1r5iCX+/R4tQP5QZ7kZpA5FKi/prdmSDd
+         2kwkzD65EAqm29WpPxAo3Z/KAsLQKphrNebf0nzr1K0AQUfPYNH1KS5h+t4Mo//6UPvW
+         SG6k2Z9egOqbTSrVV88/EevmYNLe2xgViRf/PvqY/VB+YMEblSA5MeGZxY5JxVYUM18b
+         yTxEpyaQVXBwoMAjY6UgEtr3QhAZVuzfJB9yw3Ll1DIEyuE8ajwqDMwECrWLoLcy11j3
+         YhuA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=d13U05lgVcA9IwB4xU4eCP+aqLe0CVa+pwLL0+/k+WM=;
+        b=JU+wPs7hFlk7tuNoavSnczY2afIZKdvNtsHO95IfBVbwzZd8NOPpe9I02QjxOuA/2P
+         FFsCWENIrM1qnulPfQxg4BRzUKvBy1pIg3qJOWurTp0c3yDSUgAd9PiSPX6Ufq/9FmCO
+         rzDr7Td/lB53jKQAq7rk80X7zI/N5t+SZe7FUKXouoik7Qb+bp4yIqekh2KTB3xSDImH
+         zlwiNpRjad0NngCJAKyjXedEG2t8nZWRhiC0HFg3rAy1X4wMam4p2cKq55vNzcklF53J
+         n6RUk/i0X0yzfPw9s/6ckxA95PCu30GtY0A84bEQKTz277/0vr++lLQB2KLhLuSMnF43
+         2sog==
+X-Gm-Message-State: AJIora9momx2HhELDsQ367PJxbXjHYXJy1FVp0PxYxLGY6fnOCtgvncl
+        XJmfxf+cm+8kknIct1Ed0fGevQoIjek=
+X-Google-Smtp-Source: AGRyM1svkR371G3bIxDdDwlnaJ9ZGxsCwfqK3CHEoOzbRjbqO7zrYzN4lsgBuY2JF3pfMtGl9/U/rA==
+X-Received: by 2002:a05:6a00:140f:b0:4e0:6995:9c48 with SMTP id l15-20020a056a00140f00b004e069959c48mr41410349pfu.59.1656003701094;
+        Thu, 23 Jun 2022 10:01:41 -0700 (PDT)
+Received: from localhost ([2601:642:4c0a:3280:86c1:205f:2c98:d819])
+        by smtp.gmail.com with ESMTPSA id z3-20020a17090a66c300b001ec9a3e9d4fsm2173151pjl.0.2022.06.23.10.01.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Jun 2022 10:01:40 -0700 (PDT)
+Date:   Thu, 23 Jun 2022 10:01:39 -0700
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        kernel test robot <lkp@intel.com>
+Subject: Re: [norov:fns 7/19] include/linux/compiler_types.h:352:45: error:
+ call to '__compiletime_assert_600' declared with attribute error:
+ BUILD_BUG_ON failed: !__builtin_constant_p(res)
+Message-ID: <YrSccxLBlrJ3DyTx@yury-laptop>
+References: <202206230121.wlBiPZcR-lkp@intel.com>
+ <20220623110820.1017185-1-alexandr.lobakin@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220623110820.1017185-1-alexandr.lobakin@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+On Thu, Jun 23, 2022 at 01:08:20PM +0200, Alexander Lobakin wrote:
+> From: kernel test robot <lkp@intel.com>
+> Date: Thu, 23 Jun 2022 01:16:29 +0800
+> 
+> Hi Yury,
+> 
+> > tree:   https://github.com/norov/linux fns
+> > head:   dc85542660535a9072c3b98819f4b80ff182b92a
+> > commit: 2f52f0373b1a1bcf54a4aedc202518f6bed4c74f [7/19] lib: test_bitmap: add compile-time optimization/evaluations assertions
+> > config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220623/202206230121.wlBiPZcR-lkp@intel.com/config)
+> > compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+> > reproduce (this is a W=1 build):
+> >         # https://github.com/norov/linux/commit/2f52f0373b1a1bcf54a4aedc202518f6bed4c74f
+> >         git remote add norov https://github.com/norov/linux
+> >         git fetch --no-tags norov fns
+> >         git checkout 2f52f0373b1a1bcf54a4aedc202518f6bed4c74f
+> >         # save the config file
+> >         mkdir build_dir && cp config build_dir/.config
+> >         make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+> 
+> Can't reproduce it at all on x86_64 with the attached config, were
+> there any other changes maybe that could cause this?
 
-commit 8786841bc2020f7f2513a6c74e64912f07b9c0dc upstream.
+This is my working branch, and it shouldn't be that loud. But
+anyways...
 
-Use the full path in the include guards for the BLAKE2s headers to avoid
-ambiguity and to match the convention for most files in include/crypto/.
+There are some patches on top of your series. This is my
+work-in-progress. If you think it's not relevant, please ignore
+this.
 
-Signed-off-by: Eric Biggers <ebiggers@google.com>
-Acked-by: Ard Biesheuvel <ardb@kernel.org>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- include/crypto/blake2s.h          |    6 +++---
- include/crypto/internal/blake2s.h |    6 +++---
- 2 files changed, 6 insertions(+), 6 deletions(-)
-
---- a/include/crypto/blake2s.h
-+++ b/include/crypto/blake2s.h
-@@ -3,8 +3,8 @@
-  * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
-  */
- 
--#ifndef BLAKE2S_H
--#define BLAKE2S_H
-+#ifndef _CRYPTO_BLAKE2S_H
-+#define _CRYPTO_BLAKE2S_H
- 
- #include <linux/bug.h>
- #include <linux/types.h>
-@@ -99,4 +99,4 @@ static inline void blake2s(u8 *out, cons
- 	blake2s_final(&state, out);
- }
- 
--#endif /* BLAKE2S_H */
-+#endif /* _CRYPTO_BLAKE2S_H */
---- a/include/crypto/internal/blake2s.h
-+++ b/include/crypto/internal/blake2s.h
-@@ -1,7 +1,7 @@
- /* SPDX-License-Identifier: GPL-2.0 OR MIT */
- 
--#ifndef BLAKE2S_INTERNAL_H
--#define BLAKE2S_INTERNAL_H
-+#ifndef _CRYPTO_INTERNAL_BLAKE2S_H
-+#define _CRYPTO_INTERNAL_BLAKE2S_H
- 
- #include <crypto/blake2s.h>
- 
-@@ -16,4 +16,4 @@ static inline void blake2s_set_lastblock
- 	state->f[0] = -1;
- }
- 
--#endif /* BLAKE2S_INTERNAL_H */
-+#endif /* _CRYPTO_INTERNAL_BLAKE2S_H */
-
-
+Thanks,
+Yury
