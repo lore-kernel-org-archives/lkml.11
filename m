@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11D08C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:49:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97661C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:49:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232740AbiFWRtF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:49:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54940 "EHLO
+        id S234907AbiFWRtK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:49:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235152AbiFWRrb (ORCPT
+        with ESMTP id S235247AbiFWRro (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:47:31 -0400
+        Thu, 23 Jun 2022 13:47:44 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1C2EA0167;
-        Thu, 23 Jun 2022 10:10:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EBB6A17C3;
+        Thu, 23 Jun 2022 10:11:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B9FC061D89;
-        Thu, 23 Jun 2022 17:10:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85569C3411B;
-        Thu, 23 Jun 2022 17:10:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5EC9C61D17;
+        Thu, 23 Jun 2022 17:11:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34430C3411B;
+        Thu, 23 Jun 2022 17:11:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004249;
-        bh=8TgXe84d/jIwh5VmTLv4Vrhhpib97j7nJDPdD8dG91Q=;
+        s=korg; t=1656004260;
+        bh=XcqgUOtmG2YSo8K7ny1MWdm8vTQZ5dp/OwoIyXFvsOc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AX4+5VEgccAFN7M77f5eNgrc2waLutkd0ykUuSSRlx/JLZyWxdCd0U6d7lLgfG0XH
-         DNcbsuaA2wfwxqKQzz+gTGEF0E/c87j1KKdQ3ormu1xvwceaEcloyr7n5lt+Imnvu3
-         0VBasErkL0yA9BK2UPtDXzu/S+gzIdtPU7sWj9p4=
+        b=LA6lJzDlTnk9DKYApTukpCdt5WL7ie/DzUsjbC8tJD+XX3wCfJs+ATIeJn3/3VLCi
+         NPSzhtATqgyeoc8bMgjjtOIXo/heDKUJUjB1bIiRRDnLme8FsDRcpW6qQZA8i791f2
+         NdrTtV8gYbMKvqNKOhwICalABrG0RSPUmpAAH0fY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Amit Klein <aksecurity@gmail.com>,
-        Eric Dumazet <edumazet@google.com>, Willy Tarreau <w@1wt.eu>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 4.14 237/237] tcp: drop the hash_32() part from the index calculation
-Date:   Thu, 23 Jun 2022 18:44:31 +0200
-Message-Id: <20220623164349.974201668@linuxfoundation.org>
+        stable@vger.kernel.org, James Chapman <jchapman@katalix.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Lee Jones <lee.jones@linaro.org>
+Subject: [PATCH 4.14 227/237] l2tp: dont use inet_shutdown on ppp session destroy
+Date:   Thu, 23 Jun 2022 18:44:21 +0200
+Message-Id: <20220623164349.683723980@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -50,37 +49,118 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Willy Tarreau <w@1wt.eu>
+From: James Chapman <jchapman@katalix.com>
 
-commit e8161345ddbb66e449abde10d2fdce93f867eba9 upstream.
+commit 225eb26489d05c679a4c4197ffcb81c81e9dcaf4 upstream.
 
-In commit 190cc82489f4 ("tcp: change source port randomizarion at
-connect() time"), the table_perturb[] array was introduced and an
-index was taken from the port_offset via hash_32(). But it turns
-out that hash_32() performs a multiplication while the input here
-comes from the output of SipHash in secure_seq, that is well
-distributed enough to avoid the need for yet another hash.
+Previously, if a ppp session was closed, we called inet_shutdown to mark
+the socket as unconnected such that userspace would get errors and
+then close the socket. This could race with userspace closing the
+socket. Instead, leave userspace to close the socket in its own time
+(our session will be detached anyway).
 
-Suggested-by: Amit Klein <aksecurity@gmail.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Willy Tarreau <w@1wt.eu>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
+BUG: KASAN: use-after-free in inet_shutdown+0x5d/0x1c0
+Read of size 4 at addr ffff880010ea3ac0 by task syzbot_347bd5ac/8296
+
+CPU: 3 PID: 8296 Comm: syzbot_347bd5ac Not tainted 4.16.0-rc1+ #91
+Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+Call Trace:
+ dump_stack+0x101/0x157
+ ? inet_shutdown+0x5d/0x1c0
+ print_address_description+0x78/0x260
+ ? inet_shutdown+0x5d/0x1c0
+ kasan_report+0x240/0x360
+ __asan_load4+0x78/0x80
+ inet_shutdown+0x5d/0x1c0
+ ? pppol2tp_show+0x80/0x80
+ pppol2tp_session_close+0x68/0xb0
+ l2tp_tunnel_closeall+0x199/0x210
+ ? udp_v6_flush_pending_frames+0x90/0x90
+ l2tp_udp_encap_destroy+0x6b/0xc0
+ ? l2tp_tunnel_del_work+0x2e0/0x2e0
+ udpv6_destroy_sock+0x8c/0x90
+ sk_common_release+0x47/0x190
+ udp_lib_close+0x15/0x20
+ inet_release+0x85/0xd0
+ inet6_release+0x43/0x60
+ sock_release+0x53/0x100
+ ? sock_alloc_file+0x260/0x260
+ sock_close+0x1b/0x20
+ __fput+0x19f/0x380
+ ____fput+0x1a/0x20
+ task_work_run+0xd2/0x110
+ exit_to_usermode_loop+0x18d/0x190
+ do_syscall_64+0x389/0x3b0
+ entry_SYSCALL_64_after_hwframe+0x26/0x9b
+RIP: 0033:0x7fe240a45259
+RSP: 002b:00007fe241132df8 EFLAGS: 00000297 ORIG_RAX: 0000000000000003
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 00007fe240a45259
+RDX: 00007fe240a45259 RSI: 0000000000000000 RDI: 00000000000000a5
+RBP: 00007fe241132e20 R08: 00007fe241133700 R09: 0000000000000000
+R10: 00007fe241133700 R11: 0000000000000297 R12: 0000000000000000
+R13: 00007ffc49aff84f R14: 0000000000000000 R15: 00007fe241141040
+
+Allocated by task 8331:
+ save_stack+0x43/0xd0
+ kasan_kmalloc+0xad/0xe0
+ kasan_slab_alloc+0x12/0x20
+ kmem_cache_alloc+0x144/0x3e0
+ sock_alloc_inode+0x22/0x130
+ alloc_inode+0x3d/0xf0
+ new_inode_pseudo+0x1c/0x90
+ sock_alloc+0x30/0x110
+ __sock_create+0xaa/0x4c0
+ SyS_socket+0xbe/0x130
+ do_syscall_64+0x128/0x3b0
+ entry_SYSCALL_64_after_hwframe+0x26/0x9b
+
+Freed by task 8314:
+ save_stack+0x43/0xd0
+ __kasan_slab_free+0x11a/0x170
+ kasan_slab_free+0xe/0x10
+ kmem_cache_free+0x88/0x2b0
+ sock_destroy_inode+0x49/0x50
+ destroy_inode+0x77/0xb0
+ evict+0x285/0x340
+ iput+0x429/0x530
+ dentry_unlink_inode+0x28c/0x2c0
+ __dentry_kill+0x1e3/0x2f0
+ dput.part.21+0x500/0x560
+ dput+0x24/0x30
+ __fput+0x2aa/0x380
+ ____fput+0x1a/0x20
+ task_work_run+0xd2/0x110
+ exit_to_usermode_loop+0x18d/0x190
+ do_syscall_64+0x389/0x3b0
+ entry_SYSCALL_64_after_hwframe+0x26/0x9b
+
+Fixes: fd558d186df2c ("l2tp: Split pppol2tp patch into separate l2tp and ppp parts")
+Signed-off-by: James Chapman <jchapman@katalix.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Cc: Lee Jones <lee.jones@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/inet_hashtables.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/l2tp/l2tp_ppp.c |   10 ----------
+ 1 file changed, 10 deletions(-)
 
---- a/net/ipv4/inet_hashtables.c
-+++ b/net/ipv4/inet_hashtables.c
-@@ -640,7 +640,7 @@ int __inet_hash_connect(struct inet_time
+--- a/net/l2tp/l2tp_ppp.c
++++ b/net/l2tp/l2tp_ppp.c
+@@ -439,16 +439,6 @@ abort:
+  */
+ static void pppol2tp_session_close(struct l2tp_session *session)
+ {
+-	struct sock *sk;
+-
+-	BUG_ON(session->magic != L2TP_SESSION_MAGIC);
+-
+-	sk = pppol2tp_session_get_sock(session);
+-	if (sk) {
+-		if (sk->sk_socket)
+-			inet_shutdown(sk->sk_socket, SEND_SHUTDOWN);
+-		sock_put(sk);
+-	}
+ }
  
- 	net_get_random_once(table_perturb,
- 			    INET_TABLE_PERTURB_SIZE * sizeof(*table_perturb));
--	index = hash_32(port_offset, INET_TABLE_PERTURB_SHIFT);
-+	index = port_offset & (INET_TABLE_PERTURB_SIZE - 1);
- 
- 	offset = READ_ONCE(table_perturb[index]) + (port_offset >> 32);
- 	offset %= remaining;
+ /* Really kill the session socket. (Called from sock_put() if
 
 
