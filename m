@@ -2,84 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0A92C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:40:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03458C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:40:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232374AbiFWQkT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:40:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42162 "EHLO
+        id S232383AbiFWQkc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:40:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232098AbiFWQkR (ORCPT
+        with ESMTP id S232375AbiFWQk3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:40:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7085D4925F;
-        Thu, 23 Jun 2022 09:40:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 04B49B8248A;
-        Thu, 23 Jun 2022 16:40:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D90AC3411B;
-        Thu, 23 Jun 2022 16:40:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656002412;
-        bh=JfbqMd3ZFkhV2Jb0VUbEs8hnVb0OikMcCTXQnjWaEJE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=tnD+s1cMkq8CTU/zJrXjVry1+V7AyXUhWjp+hb4ABETeA59Awz56s4J1uNkgN2e79
-         5G0OTgd8omUH1DArMdqX+HMIfJyagj6Fpk6+nppc1ovp9NMeCSwo5vw3CwR2xGqQ/A
-         Yqw0kPoV2E0v1RWyCqHxnXccm9JKci4Zd/hhxPWs6PIMQCa8cYarq1ftVFWHf0kyP6
-         me+GoRnYBNfIoL6fNi8S5ykKw3R4lNBqro7+iHE2xhYze74E6iVVZrPNis02/jC6gD
-         hHGN7DZXk4cLX4A9FY1AT2n6d/FVXiZLx/K/UCuD8n4IQdT1+B30NO64Um1Ci2M3UN
-         ANb5nn4rJGZIA==
-Date:   Thu, 23 Jun 2022 11:40:10 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v4 0/2] dt-bindings: PCI: uniphier: Fix endpoint
- descriptions
-Message-ID: <20220623164010.GA1457016@bhelgaas>
+        Thu, 23 Jun 2022 12:40:29 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 106CF496A1
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 09:40:28 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id pk21so19137423ejb.2
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 09:40:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=I1UW1A5iTJMy9XUHQDhdeFuCCBbHM+64IpJhXilvfwQ=;
+        b=TbWRbkLkwMVYyzfyCVsrhUoZeTEmXG3Jwx8lZ8ny9vilG++0V0vPCbgJYQ0Gj3fRNH
+         SGDlItoF7hdJBiqiEbERG0pV0c1OCS8cKZ7q/wF8aeqrOF4V0ti1T6ND5kmWcPgzA73c
+         tQwH6N44WdoWO41l+yS2nQjo6/QO+FQ71EnmF5OV4L/ItIuxiEs3xOtCdiJXoujfmJRZ
+         avSat2MhTJJugCwM3GiXdfDLNfY5tAFkc1budJZrpKId1fZTf2ACBOwrvQoygtau+zid
+         lKu1dl92ry6qTkfiS3LGonHJEjrEsrU2iTnxWx8SL7WeYMVowprR5+PfBml1W4Pw4mqy
+         d5wQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=I1UW1A5iTJMy9XUHQDhdeFuCCBbHM+64IpJhXilvfwQ=;
+        b=lktnvxhd+l+2JGsN5lV142bx6WkeJP6A9/ftip4J0XWf9iushTHHRzNxULP2GbG5fP
+         38RW+khwno3DNY2kEbwkLobXPmmUkPEt7ilDXsIl6C/aTB9fq40mWNtOQf5xjzLCdC1r
+         X6Cpca0BCNBu5A78Q1iro/gKWcLvGDaY3KluAss+78GXA5DP0eS2FZPyP/rw9JnEa97r
+         FCC5zPPrsnhnGXR8+JGve+ia8nM8H17cVFdlQnYxMnRXV8VZv729UCmgXEAu2WwGAkzF
+         vGRBQAOhVvxnN0YLxBR/4JUn06tU9IH89OvTcU8Xar0aA5WoZXDJUM6i+8uJsvZp/jx2
+         jHyQ==
+X-Gm-Message-State: AJIora/Aeih0ZoN/a11txLZBMIl2Oth0ax8dRyEQJxHExajWg0Z5XL/u
+        /V0Ws0dNGwdMXGX7f6o4Q8FeOtX3JeSz/OZVGVBZXQ==
+X-Google-Smtp-Source: AGRyM1uZfCs+3tcv3oONPrGXLyHDbOIITA35SDt1mjZF4XZ5uphCKoXYKL/A5HjQUZz/Wtd7TrkGZJcg/Nt5jK+Vfps=
+X-Received: by 2002:a17:907:72c5:b0:722:e515:fcc6 with SMTP id
+ du5-20020a17090772c500b00722e515fcc6mr8761561ejc.533.1656002426525; Thu, 23
+ Jun 2022 09:40:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1655950142-2026-1-git-send-email-hayashi.kunihiko@socionext.com>
+References: <20220622041040.202737-1-tzungbi@kernel.org> <20220622041040.202737-8-tzungbi@kernel.org>
+In-Reply-To: <20220622041040.202737-8-tzungbi@kernel.org>
+From:   Guenter Roeck <groeck@google.com>
+Date:   Thu, 23 Jun 2022 09:40:15 -0700
+Message-ID: <CABXOdTcQTWMWHyT5=Va1gijyLNsMSM8LQiNU79RWLH-1O4GhCg@mail.gmail.com>
+Subject: Re: [PATCH 7/7] platform/chrome: cros_ec_proto: add Kunit test for cros_ec_cmd()
+To:     Tzung-Bi Shih <tzungbi@kernel.org>
+Cc:     Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        "open list:CHROME HARDWARE PLATFORM SUPPORT" 
+        <chrome-platform@lists.linux.dev>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 11:09:00AM +0900, Kunihiko Hayashi wrote:
-> Changes since v3:
-> - Add Reviewed-by: and Acked-by: tags
+On Tue, Jun 21, 2022 at 9:11 PM Tzung-Bi Shih <tzungbi@kernel.org> wrote:
+>
+> cros_ec_cmd() is a wrapper of cros_ec_cmd_xfer_status().
+>
+> Add Kunit test for cros_ec_cmd().
+>
+> Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
 
-Hi Rob, I notice your Reviewed-by and Acked-by tags.  Does that mean
-you want me to merge these?  It looks like you've merged most of the
-recent changes yourself.  Happy to do it either way, whatever you
-intend.
+Reviewed-by: Guenter Roeck <groeck@chromium.org>
 
-> Changes since v2:
-> - Move some items to minimize if/then schemas in Patch 2
-> - Remove Patch 3 because the warning comment is for an unmerged source
-> 
-> Changes since v1:
-> - Fix "config" in the Patch 1 commit message to "addr_space"
-> 
-> Kunihiko Hayashi (2):
->   dt-bindings: PCI: designware-ep: Increase maxItems of reg and
->     reg-names
->   dt-bindings: PCI: uniphier-ep: Clean up reg, clocks, resets, and their
->     names using compatible string
-> 
->  .../bindings/pci/snps,dw-pcie-ep.yaml         |  4 +-
->  .../pci/socionext,uniphier-pcie-ep.yaml       | 76 ++++++++++++-------
->  2 files changed, 51 insertions(+), 29 deletions(-)
-> 
-> -- 
-> 2.25.1
-> 
+> ---
+>  drivers/platform/chrome/cros_ec_proto_test.c | 48 ++++++++++++++++++++
+>  1 file changed, 48 insertions(+)
+>
+> diff --git a/drivers/platform/chrome/cros_ec_proto_test.c b/drivers/platform/chrome/cros_ec_proto_test.c
+> index 6b26ce3104f4..2ff2783fedfb 100644
+> --- a/drivers/platform/chrome/cros_ec_proto_test.c
+> +++ b/drivers/platform/chrome/cros_ec_proto_test.c
+> @@ -2592,6 +2592,53 @@ static void cros_ec_proto_test_get_sensor_count_legacy(struct kunit *test)
+>         }
+>  }
+>
+> +static void cros_ec_proto_test_ec_cmd(struct kunit *test)
+> +{
+> +       struct cros_ec_proto_test_priv *priv = test->priv;
+> +       struct cros_ec_device *ec_dev = &priv->ec_dev;
+> +       struct ec_xfer_mock *mock;
+> +       int ret;
+> +       u8 out[3], in[2];
+> +
+> +       ec_dev->max_request = 0xff;
+> +       ec_dev->max_response = 0xee;
+> +
+> +       out[0] = 0xdd;
+> +       out[1] = 0xcc;
+> +       out[2] = 0xbb;
+> +
+> +       {
+> +               u8 *data;
+> +
+> +               mock = cros_kunit_ec_xfer_mock_add(test, 2);
+> +               KUNIT_ASSERT_PTR_NE(test, mock, NULL);
+> +
+> +               data = (u8 *)mock->o_data;
+> +               data[0] = 0xaa;
+> +               data[1] = 0x99;
+> +       }
+> +
+> +       ret = cros_ec_cmd(ec_dev, 0x88, 0x77, out, ARRAY_SIZE(out), in, ARRAY_SIZE(in));
+> +       KUNIT_EXPECT_EQ(test, ret, 2);
+> +
+> +       {
+> +               u8 *data;
+> +
+> +               mock = cros_kunit_ec_xfer_mock_next();
+> +               KUNIT_EXPECT_PTR_NE(test, mock, NULL);
+> +
+> +               KUNIT_EXPECT_EQ(test, mock->msg.version, 0x88);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.command, 0x77);
+> +               KUNIT_EXPECT_EQ(test, mock->msg.insize, ARRAY_SIZE(in));
+> +               KUNIT_EXPECT_EQ(test, mock->msg.outsize, ARRAY_SIZE(out));
+> +
+> +               data = (u8 *)mock->i_data;
+> +               KUNIT_EXPECT_EQ(test, data[0], 0xdd);
+> +               KUNIT_EXPECT_EQ(test, data[1], 0xcc);
+> +               KUNIT_EXPECT_EQ(test, data[2], 0xbb);
+> +       }
+> +}
+> +
+>  static void cros_ec_proto_test_release(struct device *dev)
+>  {
+>  }
+> @@ -2690,6 +2737,7 @@ static struct kunit_case cros_ec_proto_test_cases[] = {
+>         KUNIT_CASE(cros_ec_proto_test_get_sensor_count_normal),
+>         KUNIT_CASE(cros_ec_proto_test_get_sensor_count_xfer_error),
+>         KUNIT_CASE(cros_ec_proto_test_get_sensor_count_legacy),
+> +       KUNIT_CASE(cros_ec_proto_test_ec_cmd),
+>         {}
+>  };
+>
+> --
+> 2.37.0.rc0.104.g0611611a94-goog
+>
