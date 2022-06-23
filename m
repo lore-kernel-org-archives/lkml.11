@@ -2,82 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E3D5CCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD343CCA48A
 	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 04:50:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233121AbiFWEtT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 00:49:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59978 "EHLO
+        id S233369AbiFWEuA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 00:50:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233736AbiFWDLy (ORCPT
+        with ESMTP id S242166AbiFWDnI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 23:11:54 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C995723177
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 20:11:51 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id bn8so4332521ljb.2
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 20:11:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=shutemov-name.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=5jDNpLxr7cGIqADzC3sdvFFhgsnexUiy02PrUDQv/Rc=;
-        b=n3/SAojrz0/DrGQPMh4WqNM2k2NjcEc6nMVjVXXxCdYX2AIyZ6sytS0oG0ItZ4mnUM
-         XzKImwOIP3Y25IOGjXWiew1cP8zrvTIyKI7z5SigqInuCta2YY3bnLyIvj17PD8QLtP+
-         IhoABN7knreFAv/nNhpWcSc0umlHnQc30OCBrOVLgmk6RmwxabUzCbnAnWWix/PDDc8f
-         dFrB9wKnFBqufwQ/HJSDBRP+LkRXVIeURSo1LtMoPhWac5z8oG95PZoLls0MKkvS/PCn
-         zH8p1qVzN4Jxeu9xnfHFvwYzXokVFx01f+j+RwZSe1u5A5xTBJ7UrQsqZaXfXYbWlvf4
-         JP7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=5jDNpLxr7cGIqADzC3sdvFFhgsnexUiy02PrUDQv/Rc=;
-        b=zfhHj7cpu2pj8LswL95UBk93H2jioTwzuuPZ3Bs4JkRO0d1qr246+jCOOds4fTuTm+
-         15j1XOeeHe4BI6TeDpsTmgBb55ADffxpsCgKSsulFlJAKA/b4c5obupKL6g/Olq82S94
-         epordO9pb+K6DNlVL0BNZCCZ8m9DjJndrQCVpJ+aYhDbWc9Rn+LzC2kK0qeb7Lkd/Nvd
-         4HTqa9w2J1NEIVk9iFjtgHzeqzW1TL87cFqfyFimhaxi3SC7E8mOeJLtFqwNhuhKhwKw
-         nLt8f0b/QDu0YdS9hVRQsViBSL8YsiBfp8oIMqViashLHZsAfRn5hH0qT0pkQIOklMOQ
-         pn/w==
-X-Gm-Message-State: AJIora8wZJ3NKZ4qu5Din7UewQtYa+idcR01JEfLjohToCc7cgoCaVyl
-        dlRHsntt4f7vpB52SvYSMnCjUw==
-X-Google-Smtp-Source: AGRyM1uv21oXvWhnlrC67bIpBGrktWhfdrCeenGfpqFQHyuq00SiRyba6eLq2NOvwzgLyWGhXEbY6g==
-X-Received: by 2002:a2e:9283:0:b0:253:e175:dd84 with SMTP id d3-20020a2e9283000000b00253e175dd84mr3557956ljh.221.1655953910136;
-        Wed, 22 Jun 2022 20:11:50 -0700 (PDT)
-Received: from box.localdomain ([86.57.175.117])
-        by smtp.gmail.com with ESMTPSA id a15-20020ac2504f000000b0047f665e2df8sm1754606lfm.257.2022.06.22.20.11.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jun 2022 20:11:48 -0700 (PDT)
-Received: by box.localdomain (Postfix, from userid 1000)
-        id BC825104A32; Thu, 23 Jun 2022 06:14:01 +0300 (+03)
-Date:   Thu, 23 Jun 2022 06:14:01 +0300
-From:   "Kirill A. Shutemov" <kirill@shutemov.name>
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     akpm@linux-foundation.org, shy828301@gmail.com,
-        willy@infradead.org, zokeefe@google.com, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 02/16] mm/huge_memory: access vm_page_prot with READ_ONCE
- in remove_migration_pmd
-Message-ID: <20220623031401.wdyt5ylin4aijzhh@box.shutemov.name>
-References: <20220622170627.19786-1-linmiaohe@huawei.com>
- <20220622170627.19786-3-linmiaohe@huawei.com>
+        Wed, 22 Jun 2022 23:43:08 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6496811A08;
+        Wed, 22 Jun 2022 20:43:06 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LT5gT2f72z4xYL;
+        Thu, 23 Jun 2022 13:43:01 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1655955781;
+        bh=0Iy4OEIOAU8zNkxPzQHF1oZRYaY+Gs5GZUVJpOQqm6U=;
+        h=Date:From:To:Cc:Subject:From;
+        b=ljmLcDfgNKT7tCXEBhGwtXtk9yyYQL74Hzrdh9wPpXDUQ416zvWnd3y8nNZhT89L4
+         Scm1DNEakRlhCeFuYMh9aLH0DGmgopyCOuDFkAw7Z9BEjFMd9gAeQSjNtbF2N7U1q6
+         5mQW0C8ExfJDLRVydjBNwF//EQzF//s+PTEZpUTGR87izG9T0HcrSDidpxGTEuexZa
+         u/CdCe2/OFDku+YaC5HVUqBRiLqTTqYERXMumxgYZc/W3K6SIpaaPfO5mV5noQ1Bdt
+         +feu50jjzFpOAaL/o1O57pxD9XA8R+5sbgxETbLi8BTsn6XIeZF3/YDDZ+GpHiKzDg
+         GGdRz4WVFlDow==
+Date:   Thu, 23 Jun 2022 13:42:59 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Greg KH <greg@kroah.com>, Mark Brown <broonie@kernel.org>
+Cc:     Conor Dooley <conor.dooley@microchip.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: manual merge of the usb tree with the spi tree
+Message-ID: <20220623134259.03af40f6@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220622170627.19786-3-linmiaohe@huawei.com>
+Content-Type: multipart/signed; boundary="Sig_/E/VbeL2eq.0rP8GbAN0KS4w";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 01:06:13AM +0800, Miaohe Lin wrote:
-> vma->vm_page_prot is read lockless from the rmap_walk, it may be updated
-> concurrently. Using READ_ONCE to prevent the risk of reading intermediate
-> values.
+--Sig_/E/VbeL2eq.0rP8GbAN0KS4w
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Have you checked all other vm_page_prot reads that they hold mmap_lock?
+Hi all,
 
-I think the right fix would be to provide a helper to read vm_page_prot
-which does READ_ONCE() and use it everywhere. This seems more sustainable.
+Today's linux-next merge of the usb tree got a conflict in:
 
--- 
- Kirill A. Shutemov
+  MAINTAINERS
+
+between commit:
+
+  f303c6b26ced ("MAINTAINERS: add spi to PolarFire SoC entry")
+
+from the spi tree and commit:
+
+  4a691b8c157a ("MAINTAINERS: add musb to PolarFire SoC entry")
+
+from the usb tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc MAINTAINERS
+index fcaa66ea848b,e73c77d479bb..000000000000
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@@ -17225,7 -17169,7 +17232,8 @@@ S:	Supporte
+  F:	arch/riscv/boot/dts/microchip/
+  F:	drivers/mailbox/mailbox-mpfs.c
+  F:	drivers/soc/microchip/
+ +F:	drivers/spi/spi-microchip-core.c
++ F:	drivers/usb/musb/mpfs.c
+  F:	include/soc/microchip/mpfs.h
+ =20
+  RNBD BLOCK DRIVERS
+
+--Sig_/E/VbeL2eq.0rP8GbAN0KS4w
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKz4UMACgkQAVBC80lX
+0GwcBQf+OuIXeWzcmZAswkWlIzS3ucWc5npCDzGPxbA7hTkS0tScBpXd0QvajdB7
+c0TlhkxBnrcUvlDNitJkx7jypSJYAxRxSItUPq33TOd3SX+KyQveCIYmum7G+MZ6
+RO6keSv3ymYOtSBtW8Ma0BgGQM56XwdA6cSc4K1275y2JC/uNco53js6txzN8eX9
+D+QBPDpCXAzmygOMGPwRwEC9WP0i3pL+2WjjawrAozr7lIZcKZW1aFeifRXAuTZN
+58ifu6UsCXP9PKCKZ5VzXYiuERlAbRBFOvpbIoxNkLZN532GQ5u0tJB31KGSBxfc
+yAPMIGAyXaTorNSZkm1piAnh6vK0gw==
+=2uj1
+-----END PGP SIGNATURE-----
+
+--Sig_/E/VbeL2eq.0rP8GbAN0KS4w--
