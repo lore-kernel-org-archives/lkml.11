@@ -2,122 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 450CEC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:28:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A517C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:28:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232830AbiFWS1Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:27:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39096 "EHLO
+        id S233790AbiFWS2w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:28:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237203AbiFWS0v (ORCPT
+        with ESMTP id S232490AbiFWS1B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:26:51 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFD9E12AAD;
-        Thu, 23 Jun 2022 10:27:49 -0700 (PDT)
-Received: from mail-yb1-f177.google.com ([209.85.219.177]) by
- mrelayeu.kundenserver.de (mreue010 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MIdS1-1nqOOc3dJN-00Ecgv; Thu, 23 Jun 2022 19:27:48 +0200
-Received: by mail-yb1-f177.google.com with SMTP id 15so247910ybc.2;
-        Thu, 23 Jun 2022 10:27:47 -0700 (PDT)
-X-Gm-Message-State: AJIora8RZpDd+59VbRnMN/KVRZXiNQaIKsAOheSqMW+wYkB1cUNpHNfZ
-        Vw7IRO0bU0HX5nRDiiE/iLW1IYnc/nHLNPRZw2E=
-X-Google-Smtp-Source: AGRyM1sXbb09Op2pKcfwN6L4Ch/Q1/ff1/rtYtQX7EpRNhlw5gpcBOXG6GSX/Y4gtaFZA0hA29oa5+K8UMCqojOyXHY=
-X-Received: by 2002:a25:86cf:0:b0:669:b4e7:7723 with SMTP id
- y15-20020a2586cf000000b00669b4e77723mr2373815ybm.106.1656005266613; Thu, 23
- Jun 2022 10:27:46 -0700 (PDT)
+        Thu, 23 Jun 2022 14:27:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED4C82BE9;
+        Thu, 23 Jun 2022 10:28:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 07F3861B9F;
+        Thu, 23 Jun 2022 17:28:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08C00C3411B;
+        Thu, 23 Jun 2022 17:28:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656005284;
+        bh=zKTHUEkMNbZcc0IfdYhL4S+A/UWDDSTSzsFXGIjten8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=LUF+Z1PfLas2pb5K370GJ2gIxWvky9TVIVHg3VrtLDDtbSoaDmcyPhhCt5oLn6rBC
+         C3XR0qizSeh7cEjS4xn+0xj2PhaMas/lnO3KWYz/qJIocmcWwkymycV4F+D3EzY3N7
+         vFh9r62bduK2gNXt6G+97KwDxYRnmJV9oz0GCz6RfGkkg9+kCHR5egw6XvChuMm3PO
+         zsc5QLQrMneyg7E8dDcDSRlvs07+0cVh2NwyTp8H5jZpxD2muts6V3AXUgPPscFZrX
+         mJ98SMqDVJwYP4EOZwtVIibcWUTBdW9kYlgdo0NgRY2FpIVOTZIVA45WI2Cg4ds7Ux
+         N/3UGODsqUpSA==
+Date:   Thu, 23 Jun 2022 12:28:02 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc:     Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        linuxppc-dev@lists.ozlabs.org, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org, koba.ko@canonical.com,
+        Oliver O'Halloran <oohall@gmail.com>, bhelgaas@google.com,
+        mika.westerberg@linux.intel.com, baolu.lu@linux.intel.com
+Subject: Re: [PATCH v4 2/2] PCI/DPC: Disable DPC service when link is in
+ L2/L3 ready, L2 and L3 state
+Message-ID: <20220623172802.GA1461319@bhelgaas>
 MIME-Version: 1.0
-References: <20220621133526.29662-1-mikoxyzzz@gmail.com> <CAKwvOd=Bmu40+_11GOBTeJBjToUf0LNG_RX0RiLcRLimUUkgcw@mail.gmail.com>
- <CAK7LNAT3FrpLnhSgfTo5bxk-9cHm6g1ti58wSY6W-fxMx+mUrA@mail.gmail.com>
-In-Reply-To: <CAK7LNAT3FrpLnhSgfTo5bxk-9cHm6g1ti58wSY6W-fxMx+mUrA@mail.gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 23 Jun 2022 19:27:29 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2SkawPCtBgm4J9rUawRYa1CT_-BqTbdE-SUUa=9VC2pg@mail.gmail.com>
-Message-ID: <CAK8P3a2SkawPCtBgm4J9rUawRYa1CT_-BqTbdE-SUUa=9VC2pg@mail.gmail.com>
-Subject: Re: [PATCH 0/2] Kconfig: -O3 enablement
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Miko Larsson <mikoxyzzz@gmail.com>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Sean Christopherson <seanjc@google.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Chris Down <chris@chrisdown.name>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Elliot Berman <quic_eberman@quicinc.com>,
-        Oleksandr Natalenko <oleksandr@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:Cyi0DH3Ra8ysKGtDX+mBsA7v5zjRM8tFt84HZmMpMjGHJWhDpcX
- pGMpm8I6Qnt0Ze+QaYri7NRakaZiRR+n51HZxxV/t1hDj9oVjM/5QsxFz5cDdvekJF9AlCk
- 9tHg1ZJM+XyGrpZduFckyIg5FMeNSWnnATQ+ehbMER06fLl2K2gvlGCXtnflXJWQ6SRvu1E
- CxO7ed1f6WeJCRNlb4eCA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:MROt+qzB0Jw=:AQDMG/uxv0QsQ50AHf4NWn
- Mlkhoi8K1LczfCGgEhI12c3p1RcrK4M2axDBr68sPCExEgW+prjyu+64+ECRABGMV5nhUNeyG
- WwvcPHQhkcIGK9Qr8/1S0q5XAamFaWSDfE82ODrgkcIlemuvwZ05hS0Mh+eXHV/40ZE8EWGSe
- YV7IDSkUjSXgHlgWPi2vKN8//yclP9I0Zg0dFY7gpi0w1cOOuA+1RNDj1qndxLUb/nHT3tv1R
- NMV/uRnQBDibBJfqsAH6ifnlJ86xtrSnGUWeNyPD8ghUF3lAm0n377ZpDFrfTfrz9zIeX/HE8
- S0Lt5UU70IzKpfExW6o8PX0V7sNonCwwMEawMblH/ounOR5qH3e7xHcz+k3PODrz2pBA+SAUY
- KniHnKtuDAJny3EQztwyA13D/2yhLigryaVTxi4qeQJns/4iv/xPtUmg1I7iQ1bJKpMf2zDgp
- jDOw8EG6P5ZPGo52Zb4JQyYg/J5SljDKV5iPsw/LFOsfWkAVo2Z3G/qhbTn1/yv9JeYT+2lZV
- 8MFnRjVR/71YHwUdqvelsOnYglNf0FgzRNvSpSouuKtwYAQRCckZmhbVnqMvZccRXR0j2CBiD
- 9zxxAvwwqb8RtrlEGkZ88/EcTgB1VhHJuO1XJOd9ah5Gd0IY20GQ8WvS8rhFbFUpAPfqgly18
- rg0sSXUXpT/RYErkW1ThMMI8Hjq7EB4pbqSa3gjGBNZH+4A2hMqQ7wG083nyrHLnSOLEjYPva
- 2A9jTSnFrZYTHrz3K6evQKo3NfpyXQGKyGHJAQ==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAAd53p61knfUS02Ny9JCn18F8EgiP0EmJjJcPZ6PoKsPC0y5Hg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 3:57 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
-> On Wed, Jun 22, 2022 at 1:17 AM Nick Desaulniers <ndesaulniers@google.com> wrote:
-> >
-> > On Tue, Jun 21, 2022 at 6:35 AM Miko Larsson <mikoxyzzz@gmail.com> wrote:
+On Tue, Jun 21, 2022 at 10:27:31AM +0800, Kai-Heng Feng wrote:
+> On Mon, Apr 18, 2022 at 10:41 AM Sathyanarayanan Kuppuswamy
+> <sathyanarayanan.kuppuswamy@linux.intel.com> wrote:
+> > On 4/8/22 8:31 AM, Kai-Heng Feng wrote:
+> > > On Intel Alder Lake platforms, Thunderbolt entering D3cold can cause
+> > > some errors reported by AER:
+> > > [   30.100211] pcieport 0000:00:1d.0: AER: Uncorrected (Non-Fatal) error received: 0000:00:1d.0
+> > > [   30.100251] pcieport 0000:00:1d.0: PCIe Bus Error: severity=Uncorrected (Non-Fatal), type=Transaction Layer, (Requester ID)
+> > > [   30.100256] pcieport 0000:00:1d.0:   device [8086:7ab0] error status/mask=00100000/00004000
+> > > [   30.100262] pcieport 0000:00:1d.0:    [20] UnsupReq               (First)
+> > > [   30.100267] pcieport 0000:00:1d.0: AER:   TLP Header: 34000000 08000052 00000000 00000000
+> > > [   30.100372] thunderbolt 0000:0a:00.0: AER: can't recover (no error_detected callback)
+> > > [   30.100401] xhci_hcd 0000:3e:00.0: AER: can't recover (no error_detected callback)
+> > > [   30.100427] pcieport 0000:00:1d.0: AER: device recovery failed
 > > >
-> > > Hi,
+> > > Since AER is disabled in previous patch for a Link in L2/L3 Ready, L2
+> > > and L3, also disable DPC here as DPC depends on AER to work.
 > > >
-> > > This very small series allows -O3 to be used for all architectures. The
-> > > first patch marks -O3 as experimental, with the reasoning being that it
-> > > might expose unwanted regressions to users, and the second patch
-> > > actually allows -O3 by removing the "depend on ARC" string.
+> > > Bugzilla:https://bugzilla.kernel.org/show_bug.cgi?id=215453
+> > > Reviewed-by: Mika Westerberg<mika.westerberg@linux.intel.com>
+> > > Signed-off-by: Kai-Heng Feng<kai.heng.feng@canonical.com>
 > >
-> > I think we should just remove -O3 support from KCONFIG.
+> > Reviewed-by: Kuppuswamy Sathyanarayanan
+> > <sathyanarayanan.kuppuswamy@linux.intel.com>
+> 
+> A gentle ping...
 
-I agree that would be best
-
-> > If someone wants to mess around with "experimental features," there's
-> > nothing stopping you from doing:
-> >
-> > $ make KCFLAGS=-O3
-> >
->
-> ARC uses -O3 since day1.
->
-> "Generic build system uses -O2, we want -O3"
-> in commit cfdbc2e16e65c1ec1c23057640607cee98d1a1bd
->
-> If they want -O3, it is up to the ARC maintainer.
-
-I suppose whatever the reason for using -O3 at the time has
-likely changed by now.
-
-> If you want to say "use this option carefully",
-> EXPERT might be another option.
->
->     depends on ARC || EXPERT
-
-This probably also needs a dependency on !COMPILE_TEST so we don't
-report compile-time problems that are specific to -O3. Maybe a good first
-step would be to turn this into
-
-      depends on ARCH && EXPERT && !COMPILE_TEST
-
-which should help both with compile-testing on ARC, and it would
-prevent it from being visible on other architectures.
-
-        Arnd
+See questions here:
+https://lore.kernel.org/r/20220422222433.GA1464120@bhelgaas
