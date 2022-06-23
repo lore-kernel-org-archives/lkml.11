@@ -2,118 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB21AC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 04:47:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67A5AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 04:47:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232918AbiFWErD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 00:47:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48762 "EHLO
+        id S232955AbiFWErO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 00:47:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244487AbiFWDzJ (ORCPT
+        with ESMTP id S234476AbiFWDOI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 23:55:09 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7FF086439
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 20:55:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655956507;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=7r6qmkZmyFSR/QZW2a5u/i7ubHA3ZPKofanFmUp6yzI=;
-        b=FjShoX/tj3b18ti2xlYx0mIeX6tMHjrR+os1geN/jFhySG8Hi2io+01Pntr8n+33CEZCoL
-        R17+lyc3eZGPCiBJp/mTPo9q/jQ+i63Wz5Hnr5G1cCLVzEtCtrdE5moqh2YuJ23UnYEv/N
-        zHGKkO7uvSQDCvado9zsZ01c/lwqbeE=
-Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
- [209.85.167.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-99-7LInVIQkNU2LEcdW46pMCQ-1; Wed, 22 Jun 2022 23:55:04 -0400
-X-MC-Unique: 7LInVIQkNU2LEcdW46pMCQ-1
-Received: by mail-lf1-f72.google.com with SMTP id bi38-20020a0565120ea600b0047f640eaee0so6082405lfb.4
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 20:55:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7r6qmkZmyFSR/QZW2a5u/i7ubHA3ZPKofanFmUp6yzI=;
-        b=oogNRlGrBGZ72Dd8yLnierGDg/lnxoRBMngXE0aBPCCtn+XRoI07iIXVcz8nrDQIBv
-         r9dlqoiyxnvpN+bFA5oAEtLjCQh88BtGeolKbGu0HK3iYHD4dnOnUXfGSQgJi+I8zGAT
-         moPPoKwmW1JHf0r0IJILh4ZEo40aLQrexX4MIoH6FL00z6PhRJfhAMysn3Ak0kN6cgX1
-         y76/n/VtI6T4yYmCKwux0NVn0Vm78HBop5/ZBPuKUDkz3nmsith0UYz2bT0dG1jLhaaZ
-         b39U/Sgvmbe7ObEy2zYY+vwCO7/jCtWpZDgS67a8hIyYigyqBVQXvlTJNNCHo2VNZCER
-         Kr6Q==
-X-Gm-Message-State: AJIora94c7A0D5WgmTTlbN/SOorHr9E3o9LqA48c/x8q6mc/7HzR6Pmt
-        SUM4rzQTQapPv3JYhUQljLgmRdjf0N/AAbHX02JYhsmsxYtDm+HzQlyWtU5OE/SfNPUW3dpvxMB
-        VfDwiy+dBDllS/HkMUOKEltdYvcpL1Ia0T/fXFYxh
-X-Received: by 2002:a2e:8958:0:b0:25a:852a:c302 with SMTP id b24-20020a2e8958000000b0025a852ac302mr3663581ljk.130.1655956501264;
-        Wed, 22 Jun 2022 20:55:01 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vrF3BW4ecp7uMp7ixhwZNP6zrC/7mtr9RBqWZSr7h7Xd5f5VroJYLw4ej6faDfjvvTZLb0DpnhA3R+kdmS/XI=
-X-Received: by 2002:a2e:8958:0:b0:25a:852a:c302 with SMTP id
- b24-20020a2e8958000000b0025a852ac302mr3663568ljk.130.1655956501094; Wed, 22
- Jun 2022 20:55:01 -0700 (PDT)
+        Wed, 22 Jun 2022 23:14:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA51C33342;
+        Wed, 22 Jun 2022 20:14:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 66A54B821B5;
+        Thu, 23 Jun 2022 03:14:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D331C34114;
+        Thu, 23 Jun 2022 03:14:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655954045;
+        bh=tMql+TIkSnjW4WRius3c1TEz0HI4bgsYlsrLKY6L5Ew=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=OYuO+XZ4QA2Pp6VymwOHQa23cJQzMt2r0Aye7vCwaxWQkda5nzUlGkVYPgzXTaYzp
+         czB3TEoX1tUToqBe/qSL5ShKrYU3aJYco/A+orATckTKJ/KbibCGZnKjAYhE8URQja
+         lKuCVNEk3EXNQGVbKJo/f5Z93eXObbpldHAL5oy3kNPPstUnKasHrlhJxiPQRApPWz
+         zpzy13i9+iKvg1TV5V820wgqtsBn6KA+gioogb7KEE+MtSQOI3KhDANBSx6lA+qmOa
+         8O+wiSlnNo2I0m44v3OgWtdTg+cbLmCkE78WpOdqBLI9Fudvv5EQIiwG4/QDqQ8P62
+         y380chNZho/fA==
+Date:   Thu, 23 Jun 2022 05:14:01 +0200
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Kashyap Desai <kashyap.desai@broadcom.com>,
+        Sumit Saxena <sumit.saxena@broadcom.com>,
+        Shivasharan S <shivasharan.srikanteshwara@broadcom.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        megaraidlinux.pdl@broadcom.com, linux-scsi@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH v2 3/4][next] scsi: megaraid_sas: Replace one-element
+ array with flexible-array member in MR_DRV_RAID_MAP
+Message-ID: <20220623031401.GA8896@embeddedor>
+References: <cover.1628136510.git.gustavoars@kernel.org>
+ <b43d4083d9788bb746dc0b2205d6a67ebb609b0d.1628136510.git.gustavoars@kernel.org>
+ <202206221457.1A12D768EF@keescook>
+ <20220623014533.GA7132@embeddedor>
 MIME-Version: 1.0
-References: <20220622151407.51232-1-sgarzare@redhat.com>
-In-Reply-To: <20220622151407.51232-1-sgarzare@redhat.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Thu, 23 Jun 2022 11:54:50 +0800
-Message-ID: <CACGkMEsW7OAWHZvD6rjGtCE6t3BmEvpz=PmQvbHh1hMq-6RwhA@mail.gmail.com>
-Subject: Re: [PATCH] vhost-vdpa: call vhost_vdpa_cleanup during the release
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     virtualization <virtualization@lists.linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        =?UTF-8?Q?Eugenio_P=C3=A9rez?= <eperezma@redhat.com>,
-        Gautam Dawar <gautam.dawar@xilinx.com>,
-        kvm <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220623014533.GA7132@embeddedor>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 11:14 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
->
-> Before commit 3d5698793897 ("vhost-vdpa: introduce asid based IOTLB")
-> we call vhost_vdpa_iotlb_free() during the release to clean all regions
-> mapped in the iotlb.
->
-> That commit removed vhost_vdpa_iotlb_free() and added vhost_vdpa_cleanup()
-> to do some cleanup, including deleting all mappings, but we forgot to call
-> it in vhost_vdpa_release().
->
-> This causes that if an application does not remove all mappings explicitly
-> (or it crashes), the mappings remain in the iotlb and subsequent
-> applications may fail if they map the same addresses.
->
-> Calling vhost_vdpa_cleanup() also fixes a memory leak since we are not
-> freeing `v->vdev.vqs` during the release from the same commit.
->
-> Since vhost_vdpa_cleanup() calls vhost_dev_cleanup() we can remove its
-> call from vhost_vdpa_release().
->
-> Fixes: 3d5698793897 ("vhost-vdpa: introduce asid based IOTLB")
-> Cc: gautam.dawar@xilinx.com
-> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+On Thu, Jun 23, 2022 at 03:45:33AM +0200, Gustavo A. R. Silva wrote:
+> On Wed, Jun 22, 2022 at 03:26:38PM -0700, Kees Cook wrote:
+> > On Wed, Aug 04, 2021 at 11:20:04PM -0500, Gustavo A. R. Silva wrote:
+> > > Replace one-element array with a flexible-array member in struct
+> > > MR_DRV_RAID_MAP and use the flex_array_size() helper.
+> > > 
+> > > This helps with the ongoing efforts to globally enable -Warray-bounds
+> > > and get us closer to being able to tighten the FORTIFY_SOURCE routines
+> > > on memcpy().
+> > > 
+> > > Link: https://en.wikipedia.org/wiki/Flexible_array_member
+> > > Link: https://www.kernel.org/doc/html/v5.10/process/deprecated.html#zero-length-and-one-element-arrays
+> > > Link: https://github.com/KSPP/linux/issues/79
+> > > Link: https://github.com/KSPP/linux/issues/109
+> > > Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+> > 
+> > I'd really like to see this fixed. :) I'm running into this 1-element
+> > array problem now with UBSAN_BOUNDS:
+> 
+> Wow; another forgoten patch from the times we didn't have Patchwork. :) 
+> 
+> > 
+> > [   10.011173] UBSAN: array-index-out-of-bounds in /build/linux-WLUive/linux-5.15.0/drivers/scsi/megaraid/megaraid_sas_fp.c:103:32
+> > [   10.087824] index 1 is out of range for type 'MR_LD_SPAN_MAP [1]'
+> > 
+> > and I'm not the only one:
+> > 
+> > https://bugzilla.kernel.org/show_bug.cgi?id=215943
+> 
+> It's actually great that other people are running into these issues now.
+> That could only means that we should fixed ASAP. :)
+> 
+> We also have this other series that hasn't been applied yet:
+> 
+> https://lore.kernel.org/linux-hardening/cover.1645513670.git.gustavoars@kernel.org/
+> 
+> > 
+> > > ---
+> > > Changes in v2:
+> > >  - None.
+> > > 
+> > >  drivers/scsi/megaraid/megaraid_sas_fp.c     | 6 +++---
+> > >  drivers/scsi/megaraid/megaraid_sas_fusion.h | 2 +-
+> > >  2 files changed, 4 insertions(+), 4 deletions(-)
+> > > 
+> > > diff --git a/drivers/scsi/megaraid/megaraid_sas_fp.c b/drivers/scsi/megaraid/megaraid_sas_fp.c
+> > > index da1cad1ee123..9cb36ef96c2c 100644
+> > > --- a/drivers/scsi/megaraid/megaraid_sas_fp.c
+> > > +++ b/drivers/scsi/megaraid/megaraid_sas_fp.c
+> > > @@ -229,8 +229,8 @@ static int MR_PopulateDrvRaidMap(struct megasas_instance *instance, u64 map_id)
+> > >  					le32_to_cpu(desc_table->raid_map_desc_offset));
+> > >  				memcpy(pDrvRaidMap->ldSpanMap,
+> > >  				       fw_map_dyn->ld_span_map,
+> > > -				       sizeof(struct MR_LD_SPAN_MAP) *
+> > > -				       le32_to_cpu(desc_table->raid_map_desc_elements));
+> > > +				       flex_array_size(pDrvRaidMap, ldSpanMap,
+> > > +				       le32_to_cpu(desc_table->raid_map_desc_elements)));
+> > >  			break;
+> > >  			default:
+> > >  				dev_dbg(&instance->pdev->dev, "wrong number of desctableElements %d\n",
+> > > @@ -254,7 +254,7 @@ static int MR_PopulateDrvRaidMap(struct megasas_instance *instance, u64 map_id)
+> > >  			pDrvRaidMap->ldTgtIdToLd[i] =
+> > >  				(u16)fw_map_ext->ldTgtIdToLd[i];
+> > >  		memcpy(pDrvRaidMap->ldSpanMap, fw_map_ext->ldSpanMap,
+> > > -		       sizeof(struct MR_LD_SPAN_MAP) * ld_count);
+> > > +		       flex_array_size(pDrvRaidMap, ldSpanMap, ld_count));
+> > >  		memcpy(pDrvRaidMap->arMapInfo, fw_map_ext->arMapInfo,
+> > >  		       sizeof(struct MR_ARRAY_INFO) * MAX_API_ARRAYS_EXT);
+> > >  		memcpy(pDrvRaidMap->devHndlInfo, fw_map_ext->devHndlInfo,
+> > > diff --git a/drivers/scsi/megaraid/megaraid_sas_fusion.h b/drivers/scsi/megaraid/megaraid_sas_fusion.h
+> > > index 9adb8b30f422..5fe2f7a6eebe 100644
+> > > --- a/drivers/scsi/megaraid/megaraid_sas_fusion.h
+> > > +++ b/drivers/scsi/megaraid/megaraid_sas_fusion.h
+> > > @@ -1182,7 +1182,7 @@ struct MR_DRV_RAID_MAP {
+> > >  		devHndlInfo[MAX_RAIDMAP_PHYSICAL_DEVICES_DYN];
+> > >  	u16 ldTgtIdToLd[MAX_LOGICAL_DRIVES_DYN];
+> > >  	struct MR_ARRAY_INFO arMapInfo[MAX_API_ARRAYS_DYN];
+> > > -	struct MR_LD_SPAN_MAP      ldSpanMap[1];
+> > > +	struct MR_LD_SPAN_MAP      ldSpanMap[];
+> > >  
+> > >  };
+> > >  
+> > 
+> > I think this patch is incomplete, and the wrapping struct needs to be
+> > adjusted too:
+> > 
+> > @@ -1193,7 +1193,7 @@ struct MR_DRV_RAID_MAP {
+> >  struct MR_DRV_RAID_MAP_ALL {
+> >  
+> >         struct MR_DRV_RAID_MAP raidMap;
+> > -       struct MR_LD_SPAN_MAP ldSpanMap[MAX_LOGICAL_DRIVES_DYN - 1];
+> > +       struct MR_LD_SPAN_MAP ldSpanMap[MAX_LOGICAL_DRIVES_DYN];
+> >  } __packed;
 
-Acked-by: Jason Wang <jasowang@redhat.com>
+BTW, I'd really like to get some input from the maintainers of this
+code. :)
 
-> ---
->  drivers/vhost/vdpa.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> index 5ad2596c6e8a..23dcbfdfa13b 100644
-> --- a/drivers/vhost/vdpa.c
-> +++ b/drivers/vhost/vdpa.c
-> @@ -1209,7 +1209,7 @@ static int vhost_vdpa_release(struct inode *inode, struct file *filep)
->         vhost_dev_stop(&v->vdev);
->         vhost_vdpa_free_domain(v);
->         vhost_vdpa_config_put(v);
-> -       vhost_dev_cleanup(&v->vdev);
-> +       vhost_vdpa_cleanup(v);
->         mutex_unlock(&d->mutex);
->
->         atomic_dec(&v->opened);
+Thanks
+--
+Gustavo
+
+> >  
+> > With that added, I get zero changes to the executable code.
+> > 
+> > I assume the others need adjustment too.
+> 
+> Interesting... OK, let me refresh my memory about the whole thing
+> and be back in a minute.
+> 
 > --
-> 2.36.1
->
-
+> Gustavo
