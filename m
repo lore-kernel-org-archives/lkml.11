@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7885DC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:59:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9DA5CCA47F
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:59:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229861AbiFWQ7K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:59:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55366 "EHLO
+        id S229915AbiFWQ7X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:59:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233284AbiFWQul (ORCPT
+        with ESMTP id S233683AbiFWQx1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:50:41 -0400
+        Thu, 23 Jun 2022 12:53:27 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 482BA4F1CF;
-        Thu, 23 Jun 2022 09:48:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85C7631348;
+        Thu, 23 Jun 2022 09:52:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 830B461F90;
-        Thu, 23 Jun 2022 16:48:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 531DFC3411B;
-        Thu, 23 Jun 2022 16:48:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DF33961F90;
+        Thu, 23 Jun 2022 16:52:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99190C3411B;
+        Thu, 23 Jun 2022 16:52:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656002909;
-        bh=6yvFRQG5ebow2dYPSU+snmWBHrNG4pwXJucZeHnDI6c=;
+        s=korg; t=1656003165;
+        bh=7a3X5S4EWiiyoZ0hOPsEVtuYVA4mAKzC4VUCZXEauq4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x0NptpUiae0sT/oAd4ziKEK7PCulMtI2Vu79G1q+b3jt9FUVKtClaDUmkf7PbePWn
-         fyqfurAYXaGH2/4PU5jukKrRGlbTSYWCmaunk1m8aYaHxdSufo7QVs1q+7AC1kiDNK
-         gLyL6lm2tQEShFlMGUMXSEC4/YYye+rvmWduIhsY=
+        b=w5gsUQ5QpaO5QouJDP0KC/GZN14GIl6A7N53IKwbsQxF2nDOh5+/9eGUFfBM8MBPf
+         CLYngooGRReg+fs7N9gpzC9KeXq4q/ugJkv5dFbKcJx2+86QVGymfZpNpADclQNPZK
+         yo4aTce+LdyyTgdcgDRtLrzSf/HaBovAfcg/ZBek=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yangtao Li <tiny.windzz@gmail.com>,
-        Theodore Tso <tytso@mit.edu>,
+        stable@vger.kernel.org,
+        Harald Freudenberger <freude@linux.vnet.ibm.com>,
+        PrasannaKumar Muralidharan <prasannatsmkumar@gmail.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 066/264] random: remove some dead code of poolinfo
-Date:   Thu, 23 Jun 2022 18:40:59 +0200
-Message-Id: <20220623164345.939620241@linuxfoundation.org>
+Subject: [PATCH 4.9 151/264] hwrng: remember rng chosen by user
+Date:   Thu, 23 Jun 2022 18:42:24 +0200
+Message-Id: <20220623164348.337124189@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -49,59 +51,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yangtao Li <tiny.windzz@gmail.com>
+From: Harald Freudenberger <freude@linux.vnet.ibm.com>
 
-commit 09a6d00a42ce0e63e2a15be3d070974bcc656ec7 upstream.
+commit 10a515ddb5f19a1ff0b9882c430b4427843169f3 upstream.
 
-Since it is not being used, so delete it.
+When a user chooses a rng source via sysfs attribute
+this rng should be sticky, even when other sources
+with better quality to register. This patch introduces
+a simple way to remember the user's choice. This is
+reflected by a new sysfs attribute file 'rng_selected'
+which shows if the current rng has been chosen by
+userspace. The new attribute file shows '1' for user
+selected rng and '0' otherwise.
 
-Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
-Link: https://lore.kernel.org/r/20190607182517.28266-5-tiny.windzz@gmail.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Harald Freudenberger <freude@linux.vnet.ibm.com>
+Reviewed-by: PrasannaKumar Muralidharan <prasannatsmkumar@gmail.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   30 ------------------------------
- 1 file changed, 30 deletions(-)
+ drivers/char/hw_random/core.c |   21 +++++++++++++++++++--
+ 1 file changed, 19 insertions(+), 2 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -432,36 +432,6 @@ static const struct poolinfo {
- 	/* was: x^128 + x^103 + x^76 + x^51 +x^25 + x + 1 */
- 	/* x^128 + x^104 + x^76 + x^51 +x^25 + x + 1 */
- 	{ S(128),	104,	76,	51,	25,	1 },
--	/* was: x^32 + x^26 + x^20 + x^14 + x^7 + x + 1 */
--	/* x^32 + x^26 + x^19 + x^14 + x^7 + x + 1 */
--	{ S(32),	26,	19,	14,	7,	1 },
--#if 0
--	/* x^2048 + x^1638 + x^1231 + x^819 + x^411 + x + 1  -- 115 */
--	{ S(2048),	1638,	1231,	819,	411,	1 },
--
--	/* x^1024 + x^817 + x^615 + x^412 + x^204 + x + 1 -- 290 */
--	{ S(1024),	817,	615,	412,	204,	1 },
--
--	/* x^1024 + x^819 + x^616 + x^410 + x^207 + x^2 + 1 -- 115 */
--	{ S(1024),	819,	616,	410,	207,	2 },
--
--	/* x^512 + x^411 + x^308 + x^208 + x^104 + x + 1 -- 225 */
--	{ S(512),	411,	308,	208,	104,	1 },
--
--	/* x^512 + x^409 + x^307 + x^206 + x^102 + x^2 + 1 -- 95 */
--	{ S(512),	409,	307,	206,	102,	2 },
--	/* x^512 + x^409 + x^309 + x^205 + x^103 + x^2 + 1 -- 95 */
--	{ S(512),	409,	309,	205,	103,	2 },
--
--	/* x^256 + x^205 + x^155 + x^101 + x^52 + x + 1 -- 125 */
--	{ S(256),	205,	155,	101,	52,	1 },
--
--	/* x^128 + x^103 + x^78 + x^51 + x^27 + x^2 + 1 -- 70 */
--	{ S(128),	103,	78,	51,	27,	2 },
--
--	/* x^64 + x^52 + x^39 + x^26 + x^14 + x + 1 -- 15 */
--	{ S(64),	52,	39,	26,	14,	1 },
--#endif
+--- a/drivers/char/hw_random/core.c
++++ b/drivers/char/hw_random/core.c
+@@ -27,6 +27,8 @@
+ #define RNG_MODULE_NAME		"hw_random"
+ 
+ static struct hwrng *current_rng;
++/* the current rng has been explicitly chosen by user via sysfs */
++static int cur_rng_set_by_user;
+ static struct task_struct *hwrng_fill;
+ /* list of registered rngs, sorted decending by quality */
+ static LIST_HEAD(rng_list);
+@@ -303,6 +305,7 @@ static ssize_t hwrng_attr_current_store(
+ 	list_for_each_entry(rng, &rng_list, list) {
+ 		if (sysfs_streq(rng->name, buf)) {
+ 			err = 0;
++			cur_rng_set_by_user = 1;
+ 			if (rng != current_rng)
+ 				err = set_current_rng(rng);
+ 			break;
+@@ -351,16 +354,27 @@ static ssize_t hwrng_attr_available_show
+ 	return strlen(buf);
+ }
+ 
++static ssize_t hwrng_attr_selected_show(struct device *dev,
++					struct device_attribute *attr,
++					char *buf)
++{
++	return snprintf(buf, PAGE_SIZE, "%d\n", cur_rng_set_by_user);
++}
++
+ static DEVICE_ATTR(rng_current, S_IRUGO | S_IWUSR,
+ 		   hwrng_attr_current_show,
+ 		   hwrng_attr_current_store);
+ static DEVICE_ATTR(rng_available, S_IRUGO,
+ 		   hwrng_attr_available_show,
+ 		   NULL);
++static DEVICE_ATTR(rng_selected, S_IRUGO,
++		   hwrng_attr_selected_show,
++		   NULL);
+ 
+ static struct attribute *rng_dev_attrs[] = {
+ 	&dev_attr_rng_current.attr,
+ 	&dev_attr_rng_available.attr,
++	&dev_attr_rng_selected.attr,
+ 	NULL
  };
  
- /*
+@@ -443,10 +457,12 @@ int hwrng_register(struct hwrng *rng)
+ 
+ 	old_rng = current_rng;
+ 	err = 0;
+-	if (!old_rng || (rng->quality > old_rng->quality)) {
++	if (!old_rng ||
++	    (!cur_rng_set_by_user && rng->quality > old_rng->quality)) {
+ 		/*
+ 		 * Set new rng as current as the new rng source
+-		 * provides better entropy quality.
++		 * provides better entropy quality and was not
++		 * chosen by userspace.
+ 		 */
+ 		err = set_current_rng(rng);
+ 		if (err)
+@@ -478,6 +494,7 @@ void hwrng_unregister(struct hwrng *rng)
+ 	list_del(&rng->list);
+ 	if (current_rng == rng) {
+ 		drop_current_rng();
++		cur_rng_set_by_user = 0;
+ 		/* rng_list is sorted by quality, use the best (=first) one */
+ 		if (!list_empty(&rng_list)) {
+ 			struct hwrng *new_rng;
 
 
