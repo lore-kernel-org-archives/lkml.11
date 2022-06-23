@@ -2,96 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C7D2C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 04:43:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEB59C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 04:44:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229825AbiFWEnv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 00:43:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34342 "EHLO
+        id S232105AbiFWEoC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 00:44:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347068AbiFWEcT (ORCPT
+        with ESMTP id S1346223AbiFWEYM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 00:32:19 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B67C193DC;
-        Wed, 22 Jun 2022 21:32:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655958737; x=1687494737;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Xf1ZndHIWN0yF2ATkspzO18eIZTG7iZNontCpxDrQsk=;
-  b=GRdlZ1t6W9NP/n28RwgSsYrj8bRhV8bh78bMxICF0QMXiPMosck8tZjT
-   FccZZ+Lq0BuxPFUR77793oh9Lbg94/HDALXDM9B2SHFeEz+rbernlVjTy
-   BsDFci92/hF0KE7WHrqtPGxPZ4oQcwiERRgEiaYUMm8BWjz/r01jtTiTd
-   H9DmC1nsPMTtnQBo+m9TVtooAXbLb8zp1lBwQ4XNW6K5OaxlVyDsKtCSw
-   AVbd6A533/BdY4RBnkiIr+tlkdFm9ebcHc5YFtrNBmp+iJ0EfbkHkZnId
-   PNG0PdTHxJ601SoA+V7/l/hsGg9pSjOFtyzMojh1bdix1VcB+YniChqJb
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="263654671"
-X-IronPort-AV: E=Sophos;i="5.92,215,1650956400"; 
-   d="scan'208";a="263654671"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 21:32:16 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,215,1650956400"; 
-   d="scan'208";a="538746728"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 22 Jun 2022 21:32:14 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o4EVp-0000hJ-Pi;
-        Thu, 23 Jun 2022 04:32:13 +0000
-Date:   Thu, 23 Jun 2022 12:32:05 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Robin Murphy <robin.murphy@arm.com>, alex.williamson@redhat.com,
-        cohuck@redhat.com
-Cc:     kbuild-all@lists.01.org, kvm@vger.kernel.org,
-        iommu@lists.linux.dev, iommu@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, jgg@nvidia.com
-Subject: Re: [PATCH v2 1/2] vfio/type1: Simplify bus_type determination
-Message-ID: <202206231208.PGASmlUW-lkp@intel.com>
-References: <b1d13cade281a7d8acbfd0f6a33dcd086207952c.1655898523.git.robin.murphy@arm.com>
+        Thu, 23 Jun 2022 00:24:12 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43AF72DAB6
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 21:24:10 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id r1so17097041plo.10
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 21:24:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=bekEvBrAwf7ehOt0TA5QrhCy5PmAltJgEblnufPH3EM=;
+        b=KdK//VDD6kx3P/ZIaXk4K6S5ZpICov0tsGYyxei43BtZQKnuyDJxSU0cnYIifkHFzx
+         BKXti9irzZRt0NTnpWEneOktfgc8vg/c3JJzUGg7NpkTgfzaJ6bRsm+hcjjCpGvZM217
+         WcZtWX5NY2NHXn57moxaN6df9Vhca/gICgKM6qIuBIsV2Yyb9xLKBo6xywFHxXJD9JsI
+         k3FFGu6LdvBM73ckEccNe8IZazkeuCpi24N5NTCpR88xbY5xGQkcU1D2VQTqYi6jjeMg
+         7cZHzaShitlKiM/kpo1E0QJeknFfXoBBZd/knDBKCknfmaogY8RCJms/gwAAbKuaVB8r
+         bbeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=bekEvBrAwf7ehOt0TA5QrhCy5PmAltJgEblnufPH3EM=;
+        b=37YksUetLt0ju45lKaNSrbThpP17Eh8PRfLyv0N4Wajo385UfRN6lUaZhTOBL/RD0q
+         z7/qQvOn/v7Z4+LVUnyZIPCHUBxxnMQ+2Byk+R/cGOJnEkK+z8B2qN4RMZKoWyZFyDYN
+         t8cowVbXqTDoVRHhb2Xq/nL/ZjPSG/r5YXfmJUXGsByOkyCFEDx/8SgfX9Bq8d907M85
+         rbJ4kQkI97BcBUdQcCcgGx2QA2QIkt6+VsH7CJC4Ip8lgJP/6DZ08wr4+dERa1Yw7FQ1
+         ysafaKvxTqlknquEFNFp/aQgvPBmm+PcG79fzDwwi21qb4UkAF4jibwFAD7kao4su3Bd
+         FCHQ==
+X-Gm-Message-State: AJIora+rHIjXNLxHEEkUkdMCgwk31U7BnzXEzym2eoCqAclNIy58GCi4
+        xQ7SgXfMNtb1b1HaEL4GSxs=
+X-Google-Smtp-Source: AGRyM1vsLWvBZGegv7wcX1GkV0vLTjBiqD54awG+CV1o5P+AD5DBf2qnKRGasNxwEIhUWq2/zkNtgA==
+X-Received: by 2002:a17:903:2585:b0:16a:3c86:c76b with SMTP id jb5-20020a170903258500b0016a3c86c76bmr10134891plb.88.1655958249566;
+        Wed, 22 Jun 2022 21:24:09 -0700 (PDT)
+Received: from liuchao-VM ([156.236.96.165])
+        by smtp.gmail.com with ESMTPSA id jb11-20020a170903258b00b0016a18ee30b5sm8208734plb.293.2022.06.22.21.24.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jun 2022 21:24:08 -0700 (PDT)
+Date:   Thu, 23 Jun 2022 12:24:04 +0800
+From:   Chao Liu <chaoliu719@gmail.com>
+To:     Chao Yu <chao@kernel.org>
+Cc:     Jaegeuk Kim <jaegeuk@kernel.org>,
+        linux-f2fs-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, Yue Hu <huyue2@coolpad.com>,
+        Wayne Zhang <zhangwen@coolpad.com>,
+        Chao Liu <liuchao@coolpad.com>
+Subject: Re: [PATCH] f2fs: allow compression of files without blocks
+Message-ID: <YrPq5N61W9vFGTub@liuchao-VM>
+References: <20220621064202.1078536-1-chaoliu719@gmail.com>
+ <7fb689d9-11ba-a173-8ad4-a328a03298a8@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <b1d13cade281a7d8acbfd0f6a33dcd086207952c.1655898523.git.robin.murphy@arm.com>
+In-Reply-To: <7fb689d9-11ba-a173-8ad4-a328a03298a8@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Robin,
+On Wed, Jun 22, 2022 at 08:50:33PM +0800, Chao Yu wrote:
+> On 2022/6/21 14:42, Chao Liu wrote:
+> > From: Chao Liu <liuchao@coolpad.com>
+> >
+> > Files created by truncate have a size but no blocks, so
+>
+> I didn't get it, how can we create file by truncation...
 
-I love your patch! Yet something to improve:
+I'm sorry I didn't make it clear. We can create a file
+by passing a FILE parameter that does not exist
+to the user command truncate(1) [1].
 
-[auto build test ERROR on v5.19-rc3]
-[also build test ERROR on linus/master next-20220622]
-[cannot apply to awilliam-vfio/next]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+How about using truncate(1) instead of truncate
+in the description of the change?
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Robin-Murphy/vfio-type1-Simplify-bus_type-determination/20220622-200503
-base:    a111daf0c53ae91e71fd2bfe7497862d14132e3e
-config: x86_64-rhel-8.3-kselftests (https://download.01.org/0day-ci/archive/20220623/202206231208.PGASmlUW-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/7a6e1ddc765bde40f879995137a2ff20cb0eda47
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Robin-Murphy/vfio-type1-Simplify-bus_type-determination/20220622-200503
-        git checkout 7a6e1ddc765bde40f879995137a2ff20cb0eda47
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+Thanks,
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>, old ones prefixed by <<):
-
->> ERROR: modpost: "vfio_device_get_from_iommu" [drivers/vfio/vfio_iommu_type1.ko] undefined!
->> ERROR: modpost: "vfio_device_put" [drivers/vfio/vfio_iommu_type1.ko] undefined!
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+[1] truncate(1): https://man7.org/linux/man-pages/man1/truncate.1.html
