@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24EF8CCA47F
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:54:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0235ACCA47F
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:55:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235479AbiFWRyt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:54:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41322 "EHLO
+        id S235335AbiFWRzA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:55:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235393AbiFWRw3 (ORCPT
+        with ESMTP id S235387AbiFWRw2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:52:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8DB443EE0;
-        Thu, 23 Jun 2022 10:13:02 -0700 (PDT)
+        Thu, 23 Jun 2022 13:52:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D79FE31904;
+        Thu, 23 Jun 2022 10:12:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 91E4EB82480;
-        Thu, 23 Jun 2022 17:13:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C84FEC3411B;
-        Thu, 23 Jun 2022 17:12:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8F9FAB82490;
+        Thu, 23 Jun 2022 17:12:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1BC9C3411B;
+        Thu, 23 Jun 2022 17:12:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004380;
-        bh=NQhNWJ1NHThvUxIKw4Ef2+2rvwT+8Bk+F6NZyTtL0Jk=;
+        s=korg; t=1656004377;
+        bh=LiwC49+x7F1HNzQPralqy684JqA/sOexS0k4kd4ZTjE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=odo/SLQ/+D4PHP+PgIjBsX8jIq9e9ceBOerYNkNMCv+sDvF1i1dVZqeaNe4p/d5rw
-         6SPM6P4wdT5oKQlw+9B8SoWq7D+vGM6I3afQURjADapO33fKumT4l4R9BaPESVTBP1
-         lxEJzHOgdKxfu2AVjOKZztEFTWQRZGkGv5Rh4rGQ=
+        b=Hk1XiS/Pki/1hS8UfPvqdosj6JIRQHBTCyvy1AgZYTYYi8o9hya7lIgttu5H0w7gP
+         ug/lLlYiORd1+zTkhUfOq3NU5nnS4NxG3BUbwEuhqs23QazS7JPbkgxwskggzyo1Cd
+         o1m6C3s+lIL+vjeQSva1PMirgcmk+g4k7N+uo0/M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        stable@vger.kernel.org, Andy Lutomirski <luto@kernel.org>,
         Theodore Tso <tytso@mit.edu>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.19 002/234] drivers/char/random.c: constify poolinfo_table
-Date:   Thu, 23 Jun 2022 18:41:09 +0200
-Message-Id: <20220623164343.118062372@linuxfoundation.org>
+Subject: [PATCH 4.19 019/234] random: Add a urandom_read_nowait() for random APIs that dont warn
+Date:   Thu, 23 Jun 2022 18:41:26 +0200
+Message-Id: <20220623164343.605934035@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
 References: <20220623164343.042598055@linuxfoundation.org>
@@ -50,30 +49,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+From: Andy Lutomirski <luto@kernel.org>
 
-commit 26e0854ab3310bbeef1ed404a2c87132fc91f8e1 upstream.
+commit c6f1deb158789abba02a7eba600747843eeb3a57 upstream.
 
-Never modified, might as well be put in .rodata.
+/dev/random and getrandom() never warn.  Split the meat of
+urandom_read() into urandom_read_nowarn() and leave the warning code
+in urandom_read().
 
-Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+This has no effect on kernel behavior, but it makes subsequent
+patches more straightforward.  It also makes the fact that
+getrandom() never warns more obvious.
+
+Signed-off-by: Andy Lutomirski <luto@kernel.org>
+Link: https://lore.kernel.org/r/c87ab200588de746431d9f916501ef11e5242b13.1577088521.git.luto@kernel.org
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/char/random.c |   21 +++++++++++++++------
+ 1 file changed, 15 insertions(+), 6 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -359,7 +359,7 @@ static int random_write_wakeup_bits = 28
-  * polynomial which improves the resulting TGFSR polynomial to be
-  * irreducible, which we have made here.
-  */
--static struct poolinfo {
-+static const struct poolinfo {
- 	int poolbitshift, poolwords, poolbytes, poolbits, poolfracbits;
- #define S(x) ilog2(x)+5, (x), (x)*4, (x)*32, (x) << (ENTROPY_SHIFT+5)
- 	int tap1, tap2, tap3, tap4, tap5;
+@@ -2025,11 +2025,22 @@ random_read(struct file *file, char __us
+ }
+ 
+ static ssize_t
++urandom_read_nowarn(struct file *file, char __user *buf, size_t nbytes,
++		    loff_t *ppos)
++{
++	int ret;
++
++	nbytes = min_t(size_t, nbytes, INT_MAX >> (ENTROPY_SHIFT + 3));
++	ret = extract_crng_user(buf, nbytes);
++	trace_urandom_read(8 * nbytes, 0, ENTROPY_BITS(&input_pool));
++	return ret;
++}
++
++static ssize_t
+ urandom_read(struct file *file, char __user *buf, size_t nbytes, loff_t *ppos)
+ {
+ 	unsigned long flags;
+ 	static int maxwarn = 10;
+-	int ret;
+ 
+ 	if (!crng_ready() && maxwarn > 0) {
+ 		maxwarn--;
+@@ -2041,10 +2052,8 @@ urandom_read(struct file *file, char __u
+ 		crng_init_cnt = 0;
+ 		spin_unlock_irqrestore(&primary_crng.lock, flags);
+ 	}
+-	nbytes = min_t(size_t, nbytes, INT_MAX >> (ENTROPY_SHIFT + 3));
+-	ret = extract_crng_user(buf, nbytes);
+-	trace_urandom_read(8 * nbytes, 0, ENTROPY_BITS(&input_pool));
+-	return ret;
++
++	return urandom_read_nowarn(file, buf, nbytes, ppos);
+ }
+ 
+ static __poll_t
+@@ -2204,7 +2213,7 @@ SYSCALL_DEFINE3(getrandom, char __user *
+ 		if (unlikely(ret))
+ 			return ret;
+ 	}
+-	return urandom_read(NULL, buf, count, NULL);
++	return urandom_read_nowarn(NULL, buf, count, NULL);
+ }
+ 
+ /********************************************************************
 
 
