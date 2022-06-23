@@ -2,150 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A062C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:26:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B44AEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:27:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232618AbiFWS0j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:26:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37704 "EHLO
+        id S230448AbiFWS1L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:27:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237203AbiFWS0I (ORCPT
+        with ESMTP id S233595AbiFWS0e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:26:08 -0400
-Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73DD86F7BE
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 10:27:23 -0700 (PDT)
-Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-31772f8495fso1258077b3.4
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 10:27:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EL/06AiO/r0aaZHGPm8olM4Z1g8u3q+FzLtpTcwW9+E=;
-        b=JnCT42yA4RwkalddkzPrJcFW4xS8/AuSbzy9tJ3tePu5bM24Ibqr3x++pzaPDrLfSq
-         kaGJTArX9fUCrT0wKKOCtTLYJfjz7rj9imdcL7Pqfb4slmHg8IMENvZlqFm4OXbLEZny
-         J9YpduFdJ0C9SGIfK3lAhmOLKKSD54emhGXwyTKd4zLc6mUsVCr0UEcbk+IU96MD0I9r
-         JA/jzjJFQ+fQd7mJ8EkAmfjizWANCRRDX1m02PA1R+yQuTc3BWGj/hPC7P5U7eOqhdOe
-         TNE+ns8QKBZrDwGhF91i4cSeiE94OXjudpzhMpSeD6m7B9EcjFqLK1KazAZTYMoHsxV2
-         /pXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EL/06AiO/r0aaZHGPm8olM4Z1g8u3q+FzLtpTcwW9+E=;
-        b=2qY9OS7f0bSwluzMsWQ1zfD4rr6o07DXrJnIJKUHnnNGZvZF6r794e3b+77/uGS3IB
-         j4PNFnRZVHsT9VErPPROQ4WWmpdjGR/ZOpzMYd9SBAGYXsZd9+F29AAeXbV9rOD7p5bo
-         iduft982VRNeAUYgOjbLl9e0R8/Zfw/7XSJomhDj4XvswJrCwjZqhSd61po1b/bW4D7q
-         3epRdRE/W2IoCXoPGY3l0xkacDwWX+l8ANrw25gCHti+peaEQA+sGvo61MhNrQMEF9Oq
-         yN7Bci9OMY0QvA4pe7J5DqDbl7tjE+0juRDhukaQtxXBO74mrxN0+t6JilX5Dp4YxCuH
-         2OBA==
-X-Gm-Message-State: AJIora+ORBBVQurXGbn+gSn7SrJqJGvrJiVDt5pFPQbyKm6KIfSLF8cc
-        H2DZDD2MTq5cQgLX5StbH5OBp5m9KhvOzCkH6zLEVA==
-X-Google-Smtp-Source: AGRyM1th3RmV9czY2nAQEMvAwHPPL7mFnNzI7DxsJuq4R6Wbusl3da+wwbtdHDw4EMO4U/ky+UtTRttD4UQUKoucelI=
-X-Received: by 2002:a81:a095:0:b0:317:d4ce:38b6 with SMTP id
- x143-20020a81a095000000b00317d4ce38b6mr11755149ywg.83.1656005242403; Thu, 23
- Jun 2022 10:27:22 -0700 (PDT)
+        Thu, 23 Jun 2022 14:26:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B295C95BE
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 10:27:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 69920B824BD
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 17:27:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DE5AC3411B;
+        Thu, 23 Jun 2022 17:27:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656005256;
+        bh=cjA2+/VfwtnJLx2FsxboduQ0YIyLP7BYCHUqenv0DAM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=cdzYhdL6gkVCqD2yTCLB5gNKvSf7GtCZ/uQjF5mj1ZrsfjX7fOMgLidoj2c9Nymer
+         bbQZWVclh7RawXhdisVV2rAs+Jk45BRtIfDi7hacQnk8c9mvXHhJRKv4x/ZCgR6VV+
+         oXA1oyCBchGS5UBYeexD6pD00cY0XxPFhwbBusj0VggOhiH66WD2or0sYbKrgvQwSp
+         CPKHdODSIGrY6vfLyOpQhyhKYjEQ8iw/K7Dmc7GnuEtmSGIenxAPy0PJCQ+CkAB2pI
+         ayVd7Ew+8D/PN1FDeHGN2zrPoUk/5XVBwGnO3OPqd1uXGftuqZlfwSUpOQZ50EEJWz
+         6rMkUX0po+zig==
+Date:   Thu, 23 Jun 2022 18:27:31 +0100
+From:   Will Deacon <will@kernel.org>
+To:     Liu Song <liusong@linux.alibaba.com>
+Cc:     catalin.marinas@arm.com, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] arm64: cpufeature: make sure cpu_mitigations_off then
+ kpti off
+Message-ID: <20220623172730.GA16966@willie-the-truck>
+References: <1655382938-126283-1-git-send-email-liusong@linux.alibaba.com>
 MIME-Version: 1.0
-References: <20220623080344.783549-1-saravanak@google.com> <20220623080344.783549-3-saravanak@google.com>
- <20220623100421.GY1615@pengutronix.de>
-In-Reply-To: <20220623100421.GY1615@pengutronix.de>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Thu, 23 Jun 2022 10:26:46 -0700
-Message-ID: <CAGETcx_eVkYtVX9=TOKnhpP2_ZpJwRDoBye3i7ND2u5Q-eQfPg@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] of: base: Avoid console probe delay when fw_devlink.strict=1
-To:     sascha hauer <sha@pengutronix.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Len Brown <lenb@kernel.org>, peng fan <peng.fan@nxp.com>,
-        kevin hilman <khilman@kernel.org>,
-        ulf hansson <ulf.hansson@linaro.org>,
-        len brown <len.brown@intel.com>, pavel machek <pavel@ucw.cz>,
-        joerg roedel <joro@8bytes.org>, will deacon <will@kernel.org>,
-        andrew lunn <andrew@lunn.ch>,
-        heiner kallweit <hkallweit1@gmail.com>,
-        russell king <linux@armlinux.org.uk>,
-        "david s. miller" <davem@davemloft.net>,
-        eric dumazet <edumazet@google.com>,
-        jakub kicinski <kuba@kernel.org>,
-        paolo abeni <pabeni@redhat.com>,
-        linus walleij <linus.walleij@linaro.org>,
-        hideaki yoshifuji <yoshfuji@linux-ipv6.org>,
-        david ahern <dsahern@kernel.org>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-gpio@vger.kernel.org, kernel@pengutronix.de,
-        devicetree@vger.kernel.org, linux-acpi@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1655382938-126283-1-git-send-email-liusong@linux.alibaba.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 3:05 AM sascha hauer <sha@pengutronix.de> wrote:
->
-> On Thu, Jun 23, 2022 at 01:03:43AM -0700, Saravana Kannan wrote:
-> > Commit 71066545b48e ("driver core: Set fw_devlink.strict=1 by default")
-> > enabled iommus and dmas dependency enforcement by default. On some
-> > systems, this caused the console device's probe to get delayed until the
-> > deferred_probe_timeout expires.
-> >
-> > We need consoles to work as soon as possible, so mark the console device
-> > node with FWNODE_FLAG_BEST_EFFORT so that fw_delink knows not to delay
-> > the probe of the console device for suppliers without drivers. The
-> > driver can then make the decision on where it can probe without those
-> > suppliers or defer its probe.
-> >
-> > Fixes: 71066545b48e ("driver core: Set fw_devlink.strict=1 by default")
-> > Reported-by: Sascha Hauer <sha@pengutronix.de>
-> > Reported-by: Peng Fan <peng.fan@nxp.com>
-> > Signed-off-by: Saravana Kannan <saravanak@google.com>
-> > Tested-by: Peng Fan <peng.fan@nxp.com>
-> > ---
-> >  drivers/of/base.c | 2 ++
-> >  1 file changed, 2 insertions(+)
-> >
-> > diff --git a/drivers/of/base.c b/drivers/of/base.c
-> > index d4f98c8469ed..a19cd0c73644 100644
-> > --- a/drivers/of/base.c
-> > +++ b/drivers/of/base.c
-> > @@ -1919,6 +1919,8 @@ void of_alias_scan(void * (*dt_alloc)(u64 size, u64 align))
-> >                       of_property_read_string(of_aliases, "stdout", &name);
-> >               if (name)
-> >                       of_stdout = of_find_node_opts_by_path(name, &of_stdout_options);
-> > +             if (of_stdout)
-> > +                     of_stdout->fwnode.flags |= FWNODE_FLAG_BEST_EFFORT;
->
-> The device given in the stdout-path property doesn't necessarily have to
-> be consistent with the console= parameter. The former is usually
-> statically set in the device trees contained in the kernel while the
-> latter is dynamically set by the bootloader. So if you change the
-> console uart in the bootloader then you'll still run into this trap.
->
-> It's problematic to consult only the device tree for dependencies. I
-> found several examples of drivers in the tree for which dma support
-> is optional. They use it if they can, but continue without it when
-> not available. "hwlock" is another property which consider several
-> drivers as optional. Also consider SoCs in early upstreaming phases
-> when the device tree is merged with "dmas" or "hwlock" properties,
-> but the corresponding drivers are not yet upstreamed. It's not nice
-> to defer probing of all these devices for a long time.
->
-> I wonder if it wouldn't be a better approach to just probe all devices
-> and record the device(node) they are waiting on. Then you know that you
-> don't need to probe them again until the device they are waiting for
-> is available.
+On Thu, Jun 16, 2022 at 08:35:38PM +0800, Liu Song wrote:
+> From: Liu Song <liusong@linux.alibaba.com>
+> 
+> If kaslr is enabled, kpti cannot be turned off even if "mitigations=off",
+> adjust the code order to ensure that kpti is off when "mitigations=off".
+> 
+> Signed-off-by: Liu Song <liusong@linux.alibaba.com>
+> ---
+>  arch/arm64/kernel/cpufeature.c | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
+> 
+> diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
+> index 42ea2bd..27d4850 100644
+> --- a/arch/arm64/kernel/cpufeature.c
+> +++ b/arch/arm64/kernel/cpufeature.c
+> @@ -1616,6 +1616,11 @@ static bool unmap_kernel_at_el0(const struct arm64_cpu_capabilities *entry,
+>  		__kpti_forced = -1;
+>  	}
+>  
+> +	if (cpu_mitigations_off() && !__kpti_forced) {
+> +		str = "mitigations=off";
+> +		__kpti_forced = -1;
+> +	}
+> +
+>  	/* Useful for KASLR robustness */
+>  	if (kaslr_requires_kpti()) {
+>  		if (!__kpti_forced) {
+> @@ -1624,11 +1629,6 @@ static bool unmap_kernel_at_el0(const struct arm64_cpu_capabilities *entry,
+>  		}
+>  	}
+>  
+> -	if (cpu_mitigations_off() && !__kpti_forced) {
+> -		str = "mitigations=off";
+> -		__kpti_forced = -1;
+> -	}
 
-That actually breaks things in a worse sense. There are cases where
-the consumer driver is built in and the optional supplier driver is
-loaded at boot. Without fw_devlink and the deferred probe timeout, we
-end up probing the consumer with limited functionality. With the
-current setup, sure we delay some probes a bit but at least everything
-works with the right functionality. And you can reduce or remove the
-delay if you want to optimize it.
+The current behaviour is intentional: KASLR is trivial to bypass when kpti
+is disabled.
 
--Saravana
+Will
