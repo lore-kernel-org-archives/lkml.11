@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56686C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:49:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E812DC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:49:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235184AbiFWRtl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:49:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34586 "EHLO
+        id S235209AbiFWRto (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:49:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235343AbiFWRry (ORCPT
+        with ESMTP id S235391AbiFWRr6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:47:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C6A4A17F3;
-        Thu, 23 Jun 2022 10:11:17 -0700 (PDT)
+        Thu, 23 Jun 2022 13:47:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC10785D18;
+        Thu, 23 Jun 2022 10:11:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B7AB61D02;
-        Thu, 23 Jun 2022 17:11:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4430C341C5;
-        Thu, 23 Jun 2022 17:11:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CF5D961D22;
+        Thu, 23 Jun 2022 17:11:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A403DC3411B;
+        Thu, 23 Jun 2022 17:11:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004276;
-        bh=QD0OPxsFQe0FpkE6nhAGjjP0t6YGreVfe/kZz0lqsXE=;
+        s=korg; t=1656004273;
+        bh=hDfjWhHtuGyLbGL4GyNlayAxo+x6nUpSn29A7RDC+b4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xX2tz1lVF37KBUYYYEHza2buJPArdXGj4VKjfERlTgljhxqoZtqpSJjZf5jTcbOiy
-         gTibivJ32cLTLnQz6eQYAsjvTuQtLx0yF3pEoCW8Zo1MX0SAND98WVE1GfDDnhRIiL
-         uqbzW3CeprApI5awwzfNYv9a+3B5Ewg0dLWVXYFk=
+        b=yFZb5+M+e2XMqTG/PcD8WJu2vM0lV4FEfB/Dfz+ip/w8MXSFqDE5JUjD/jggvGrnn
+         CU9XlugNnuydil7DhDpdIA6+ttbHPFULU0oA52vJzchR0kSfTXm+c4Q5O/7HqUSsgJ
+         81x3xEBTcqesSsF7X13/TLBvicnepk0GSv0Jxqhc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@penugtronix.de>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 4.14 222/237] serial: 8250: Store to lsr_save_flags after lsr read
-Date:   Thu, 23 Jun 2022 18:44:16 +0200
-Message-Id: <20220623164349.536818770@linuxfoundation.org>
+        stable@vger.kernel.org, Colin Ian King <colin.king@canonical.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Ben Hutchings <ben@decadent.org.uk>
+Subject: [PATCH 4.14 231/237] xprtrdma: fix incorrect header size calculations
+Date:   Thu, 23 Jun 2022 18:44:25 +0200
+Message-Id: <20220623164349.798579389@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -52,43 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+From: Colin Ian King <colin.king@canonical.com>
 
-commit be03b0651ffd8bab69dfd574c6818b446c0753ce upstream.
+commit 912288442cb2f431bf3c8cb097a5de83bc6dbac1 upstream.
 
-Not all LSR register flags are preserved across reads. Therefore, LSR
-readers must store the non-preserved bits into lsr_save_flags.
+Currently the header size calculations are using an assignment
+operator instead of a += operator when accumulating the header
+size leading to incorrect sizes.  Fix this by using the correct
+operator.
 
-This fix was initially mixed into feature commit f6f586102add ("serial:
-8250: Handle UART without interrupt on TEMT using em485"). However,
-that feature change had a flaw and it was reverted to make room for
-simpler approach providing the same feature. The embedded fix got
-reverted with the feature change.
-
-Re-add the lsr_save_flags fix and properly mark it's a fix.
-
-Link: https://lore.kernel.org/all/1d6c31d-d194-9e6a-ddf9-5f29af829f3@linux.intel.com/T/#m1737eef986bd20cf19593e344cebd7b0244945fc
-Fixes: e490c9144cfa ("tty: Add software emulated RS485 support for 8250")
-Cc: stable <stable@kernel.org>
-Acked-by: Uwe Kleine-König <u.kleine-koenig@penugtronix.de>
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Link: https://lore.kernel.org/r/f4d774be-1437-a550-8334-19d8722ab98c@linux.intel.com
+Addresses-Coverity: ("Unused value")
+Fixes: 302d3deb2068 ("xprtrdma: Prevent inline overflow")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+Reviewed-by: Chuck Lever <chuck.lever@oracle.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+[bwh: Backported to 4.14: adjust context]
+Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/8250/8250_port.c |    2 ++
- 1 file changed, 2 insertions(+)
+ net/sunrpc/xprtrdma/rpc_rdma.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1524,6 +1524,8 @@ static inline void __stop_tx(struct uart
+--- a/net/sunrpc/xprtrdma/rpc_rdma.c
++++ b/net/sunrpc/xprtrdma/rpc_rdma.c
+@@ -75,7 +75,7 @@ static unsigned int rpcrdma_max_call_hea
  
- 	if (em485) {
- 		unsigned char lsr = serial_in(p, UART_LSR);
-+		p->lsr_saved_flags |= lsr & LSR_SAVE_FLAGS;
-+
- 		/*
- 		 * To provide required timeing and allow FIFO transfer,
- 		 * __stop_tx_rs485() must be called only when both FIFO and
+ 	/* Maximum Read list size */
+ 	maxsegs += 2;	/* segment for head and tail buffers */
+-	size = maxsegs * sizeof(struct rpcrdma_read_chunk);
++	size += maxsegs * sizeof(struct rpcrdma_read_chunk);
+ 
+ 	/* Minimal Read chunk size */
+ 	size += sizeof(__be32);	/* segment count */
+@@ -101,7 +101,7 @@ static unsigned int rpcrdma_max_reply_he
+ 
+ 	/* Maximum Write list size */
+ 	maxsegs += 2;	/* segment for head and tail buffers */
+-	size = sizeof(__be32);		/* segment count */
++	size += sizeof(__be32);		/* segment count */
+ 	size += maxsegs * sizeof(struct rpcrdma_segment);
+ 	size += sizeof(__be32);	/* list discriminator */
+ 
 
 
