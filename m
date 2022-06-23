@@ -2,121 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAB3EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 04:42:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A162C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 04:42:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231668AbiFWEl6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 00:41:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39554 "EHLO
+        id S231715AbiFWEmH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 00:42:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239635AbiFWDcg (ORCPT
+        with ESMTP id S243199AbiFWDsF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 23:32:36 -0400
-Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 365D83584F
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 20:32:34 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0VH9dVlt_1655955150;
-Received: from 30.97.48.163(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VH9dVlt_1655955150)
-          by smtp.aliyun-inc.com;
-          Thu, 23 Jun 2022 11:32:31 +0800
-Message-ID: <d5dea8e0-2121-0bde-4510-73ae3b4b8767@linux.alibaba.com>
-Date:   Thu, 23 Jun 2022 11:32:37 +0800
+        Wed, 22 Jun 2022 23:48:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58213D11F
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 20:48:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1593FB8204D
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 03:48:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5122DC3411B;
+        Thu, 23 Jun 2022 03:48:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655956081;
+        bh=Wp4Jyu7Evu+xPN4gK+sTGNzC8Vqe46xBT6i45WSKSaU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Uv7/hRpz7LO+UHEy7KiMB1C3GNb3nXMx4+TY+EGpuKptgxA+XN2NtjJRfsdHoJni6
+         Fi2wriVnTP2XOnUW+cumELFPRzJh6l+pwxH/W0zAm1tFTaW4GojzNoxKP4veQrwbBZ
+         QSnPadCr6kYObITPuVp42vgkVHcvEP2ssCw/JBDdOrUzdizoSmi/IhinEueqYTEb7k
+         rTEaakIfjT9+yMMuI9lo9x4dUY/Ju6GOozjRve08CHSHH0gTtKTl3FmViGmbgVLnrB
+         cUHmAPzZAr0KxPQp2U4tmbBPQBApcQRhqJj+4LK5hXPSNSP+i+zjZdeeHlGPVNUS2n
+         2pic+YiLEwieA==
+Date:   Wed, 22 Jun 2022 22:47:55 -0500
+From:   Mike Rapoport <rppt@kernel.org>
+To:     Rebecca Mckeever <remckee0@gmail.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        David Hildenbrand <david@redhat.com>
+Subject: Re: [PATCH v3 1/4] memblock tests: add user-provided arguments to
+ Makefile
+Message-ID: <YrPia6frNDEyN41S@kernel.org>
+References: <cover.1655889641.git.remckee0@gmail.com>
+ <b7e8e89dbbd7acdf41d62f1528f02d1dc2283e4b.1655889641.git.remckee0@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [RFC PATCH v2 2/3] mm: Add PUD level pagetable account
-To:     Mike Rapoport <rppt@linux.ibm.com>
-Cc:     akpm@linux-foundation.org, willy@infradead.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-References: <cover.1655887440.git.baolin.wang@linux.alibaba.com>
- <f7b2a6f6f5dfecbcac07fa3e187f10860c3a39ee.1655887440.git.baolin.wang@linux.alibaba.com>
- <YrMpZlQHMuCy06/m@linux.ibm.com>
-From:   Baolin Wang <baolin.wang@linux.alibaba.com>
-In-Reply-To: <YrMpZlQHMuCy06/m@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b7e8e89dbbd7acdf41d62f1528f02d1dc2283e4b.1655889641.git.remckee0@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Rebecca,
 
+On Wed, Jun 22, 2022 at 04:29:06AM -0500, Rebecca Mckeever wrote:
+>
+> Subject: memblock tests: add user-provided arguments to Makefile
 
-On 6/22/2022 10:38 PM, Mike Rapoport wrote:
-> On Wed, Jun 22, 2022 at 04:58:53PM +0800, Baolin Wang wrote:
->> Now the PUD level ptes are always protected by mm->page_table_lock,
->> which means no split pagetable lock needed. So the generic PUD level
->> pagetable pages allocation will not call pgtable_pte_page_ctor/dtor(),
->> that means we will miss to account PUD level pagetable pages.
->>
->> Adding pagetable account by calling pgtable_set_and_inc() or
->> pgtable_clear_and_dec() when allocating or freeing PUD level pagetable
->> pages to help to get an accurate pagetable accounting.
->>
->> Moreover this patch will also mark the PUD level pagetable with PG_table
->> flag, which will help to do sanity validation in unpoison_memory() and
->> get more accurate pagetable accounting by /proc/kpageflags interface.
->>
->> Meanwhile converting the architectures with using generic PUD pagatable
->> allocation to add corresponding pgtable_set_and_inc() or pgtable_clear_and_dec()
->> to account PUD level pagetable.
->>
->> Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
->> ---
->>   arch/arm64/include/asm/tlb.h         |  5 ++++-
->>   arch/loongarch/include/asm/pgalloc.h | 11 ++++++++---
->>   arch/mips/include/asm/pgalloc.h      | 11 ++++++++---
->>   arch/s390/include/asm/tlb.h          |  1 +
->>   arch/x86/mm/pgtable.c                |  5 ++++-
->>   include/asm-generic/pgalloc.h        | 12 ++++++++++--
->>   6 files changed, 35 insertions(+), 10 deletions(-)
->>
->> diff --git a/arch/arm64/include/asm/tlb.h b/arch/arm64/include/asm/tlb.h
->> index c995d1f..47e0623 100644
->> --- a/arch/arm64/include/asm/tlb.h
->> +++ b/arch/arm64/include/asm/tlb.h
->> @@ -94,7 +94,10 @@ static inline void __pmd_free_tlb(struct mmu_gather *tlb, pmd_t *pmdp,
->>   static inline void __pud_free_tlb(struct mmu_gather *tlb, pud_t *pudp,
->>   				  unsigned long addr)
->>   {
->> -	tlb_remove_table(tlb, virt_to_page(pudp));
->> +	struct page *page = virt_to_page(pudp);
->> +
->> +	pgtable_clear_and_dec(page);
->> +	tlb_remove_table(tlb, page);
->>   }
->>   #endif
->>   
->> diff --git a/arch/loongarch/include/asm/pgalloc.h b/arch/loongarch/include/asm/pgalloc.h
->> index b0a57b2..50a896f 100644
->> --- a/arch/loongarch/include/asm/pgalloc.h
->> +++ b/arch/loongarch/include/asm/pgalloc.h
->> @@ -89,10 +89,15 @@ static inline pmd_t *pmd_alloc_one(struct mm_struct *mm, unsigned long address)
->>   static inline pud_t *pud_alloc_one(struct mm_struct *mm, unsigned long address)
->>   {
->>   	pud_t *pud;
->> +	struct page *pg;
-> 
-> 	struct page *page;
-> 
-> looks better IMO.
+Please be more specific here, e.g. 
 
-Sure.
+memblock tests: Makefile: add arguments to control verbosity
 
+> Add VERBOSE and MEMBLOCK_DEBUG user-provided arguments. VERBOSE will
+> enable verbose output from Memblock simulator. MEMBLOCK_DEBUG will enable
+> memblock_dbg() messages.
 > 
->> +
->> +	pg = alloc_pages(GFP_KERNEL & ~__GFP_HIGHMEM, PUD_ORDER);
->> +	if (!pg)
->> +		return NULL;
->>   
->> -	pud = (pud_t *) __get_free_pages(GFP_KERNEL, PUD_ORDER);
->> -	if (pud)
->> -		pud_init((unsigned long)pud, (unsigned long)invalid_pmd_table);
->> +	pgtable_set_and_inc(pg);
->> +	pud = (pud_t *)page_address(pg);
+> Update the help message to include VERBOSE and MEMBLOCK_DEBUG. Update
+> the README to include VERBOSE. The README does not include all available
+> options and refers to the help message for the remaining options.
+> Therefore, omit MEMBLOCK_DEBUG from README.
 > 
-> I don't think __get_free_pages() should be replaced with alloc_pages()
-> here, just call pgtable_set_and_inc() with virt_to_page(pud).
+> Reviewed-by: David Hildenbrand <david@redhat.com>
+> Signed-off-by: Rebecca Mckeever <remckee0@gmail.com>
+> ---
+>  tools/testing/memblock/Makefile                 |  4 ++++
+>  tools/testing/memblock/README                   | 10 +++++++++-
+>  tools/testing/memblock/scripts/Makefile.include | 10 ++++++++++
+>  3 files changed, 23 insertions(+), 1 deletion(-)
 > 
-> The same applies for the cases below.
+> diff --git a/tools/testing/memblock/Makefile b/tools/testing/memblock/Makefile
+> index a698e24b35e7..9fde49ad73bd 100644
+> --- a/tools/testing/memblock/Makefile
+> +++ b/tools/testing/memblock/Makefile
+> @@ -45,6 +45,10 @@ help:
+>  	@echo  '  clean		  - Remove generated files and symlinks in the directory'
+>  	@echo  ''
+>  	@echo  'Configuration:'
+> +	@echo  '  make VERBOSE=1            - enable verbose output, which includes the'
+> +	@echo  '                              names of functions being tested and the'
+> +	@echo  '                              number of test cases passing'
+> +	@echo  '  make MEMBLOCK_DEBUG=1     - enable memblock_dbg() messages'
+>  	@echo  '  make NUMA=1               - simulate enabled NUMA'
+>  	@echo  '  make MOVABLE_NODE=1       - override `movable_node_is_enabled`'
+>  	@echo  '                              definition to simulate movable NUMA nodes'
+> diff --git a/tools/testing/memblock/README b/tools/testing/memblock/README
+> index ca6afcff013a..058146b528a5 100644
+> --- a/tools/testing/memblock/README
+> +++ b/tools/testing/memblock/README
+> @@ -34,7 +34,15 @@ To run the tests, build the main target and run it:
+>  $ make && ./main
+>  
+>  A successful run produces no output. It is also possible to override different
+> -configuration parameters. For example, to simulate enabled NUMA, use:
+> +configuration parameters. For example, to include verbose output, specify the
+> +VERBOSE flag when building the main target:
+> +
+> +$ make VERBOSE=1
+> +
+> +This will print information about which functions are being tested and the
+> +number of test cases that passed.
+> +
+> +To simulate enabled NUMA, use:
+>  
+>  $ make NUMA=1
+>  
+> diff --git a/tools/testing/memblock/scripts/Makefile.include b/tools/testing/memblock/scripts/Makefile.include
+> index 641569ccb7b0..4401f79bed4c 100644
+> --- a/tools/testing/memblock/scripts/Makefile.include
+> +++ b/tools/testing/memblock/scripts/Makefile.include
+> @@ -17,3 +17,13 @@ ifeq ($(32BIT_PHYS_ADDR_T), 1)
+>  	CFLAGS += -m32 -U CONFIG_PHYS_ADDR_T_64BIT
+>  	LDFLAGS += -m32
+>  endif
+> +
+> +# Enable verbose testing output
+> +ifeq ($(VERBOSE), 1)
+> +	CFLAGS += -D VERBOSE
+> +endif
+> +
+> +# Enable memblock_dbg() messages
+> +ifeq ($(MEMBLOCK_DEBUG), 1)
+> +	CFLAGS += -D MEMBLOCK_DEBUG
+> +endif
+> -- 
+> 2.34.1
+> 
 
-Sure. Will do in next version. Thanks.
+-- 
+Sincerely yours,
+Mike.
