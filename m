@@ -2,99 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5BB5C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 14:48:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4799DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 14:49:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232004AbiFWOsw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 10:48:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42350 "EHLO
+        id S231989AbiFWOts (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 10:49:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231989AbiFWOsr (ORCPT
+        with ESMTP id S229970AbiFWOtq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 10:48:47 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE50A4616E
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 07:48:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655995726; x=1687531726;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=a+M6xTI8fcv0XoP4gDaiPmN5PUSrKQKhNoe1i4lIUXU=;
-  b=QSmsZTzUl87J27USrTk+IK6UvcE8ODyAwG55vznXdyqkV1DDXnLgn0F9
-   L3i2QzdIKmoqe7vugsBNSla+pYYJQ/ghPOxCFGDkOgNMkRjIce+Sb1qNP
-   xTu69oYlkdXunfD6D9k8AJdHnRwof/0Aqjtki5aRFUlN0sR3rS0OkrOHB
-   FZpygEqrviLoTvyfrZ7JBukoKfUtnb9ORaQuBcWSPMlOd6LVN5Wv72+Jp
-   DC+fliKBXGF+23j4mUiyNXSjT2oWJLVZ0Tn7ovlYHpOSIKNBg6GmWgdRr
-   4xv+UiNGonzPGqK14fz6bUlRSNhV2s9HAMJ1TfaL2neeLc2J/JVK54Dyt
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="306198388"
-X-IronPort-AV: E=Sophos;i="5.92,216,1650956400"; 
-   d="scan'208";a="306198388"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2022 07:48:46 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,216,1650956400"; 
-   d="scan'208";a="588645360"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 23 Jun 2022 07:48:45 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o4O8S-0001QH-Lz;
-        Thu, 23 Jun 2022 14:48:44 +0000
-Date:   Thu, 23 Jun 2022 22:48:19 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [jolsa-perf:bpf/tramp_11 19/21] kernel/bpf/trampoline.c:81:17:
- warning: address of stack memory associated with parameter 'id' returned
-Message-ID: <202206232231.u4YhpRYy-lkp@intel.com>
+        Thu, 23 Jun 2022 10:49:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4037025E9B;
+        Thu, 23 Jun 2022 07:49:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D549061E6C;
+        Thu, 23 Jun 2022 14:49:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CB45C341C4;
+        Thu, 23 Jun 2022 14:49:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655995785;
+        bh=OvG65GhwKQTbl8Ynp1orQ26fx51gHndrm9PpnBDSVnM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=VsOySaRM4OQGeLKpQVr/xu1CdGLfbjeApZv7IKFcPdFdxoW3+gWpkYNbkqAOwm/z2
+         uDh6VOuy0QBDhZ4sE+XHF+PRlgJlJ0E8QAkgd8aHK96sziYNXVsa1xfsbrcZnekxIL
+         N0U6jGZSYe2w/fViO38okjEz7X6ooOVxMa8rQX59iUxWh8xXmF5y+mqpzU+5kvi+MQ
+         F0V8rS9GnPpfYRnVxM9awxjmZRGkxoPgA7QEPYPti3H6gcnPk6c1sVLK/7GLdyPOcK
+         nGFslz9w2ZuWKjtmfu5/POKMZoW8etUigrWOrZnbCXShRw1xV8vFYYp2qZ2oo3+8Bt
+         Livuio6EUTCPw==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id CAE174096F; Thu, 23 Jun 2022 11:49:42 -0300 (-03)
+Date:   Thu, 23 Jun 2022 11:49:42 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Gang Li <ligang.bdlg@bytedance.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RESEND PATCH v1] perf stat: Enable ignore_missing_thread for
+ stat
+Message-ID: <YrR9hljHVltIe0aW@kernel.org>
+References: <20220622030037.15005-1-ligang.bdlg@bytedance.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220622030037.15005-1-ligang.bdlg@bytedance.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git bpf/tramp_11
-head:   c807110aa605281263da02a78af57847f5c4275e
-commit: a2660a85cc98b2db2577fd844985884cff0e5cae [19/21] bpf: Add support to store multiple ids in bpf_tramp_id object
-config: i386-randconfig-a015 (https://download.01.org/0day-ci/archive/20220623/202206232231.u4YhpRYy-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 46be5faaf03466c3751f8a2882bef5a217e15926)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git/commit/?id=a2660a85cc98b2db2577fd844985884cff0e5cae
-        git remote add jolsa-perf https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git
-        git fetch --no-tags jolsa-perf bpf/tramp_11
-        git checkout a2660a85cc98b2db2577fd844985884cff0e5cae
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash kernel/bpf/
+Em Wed, Jun 22, 2022 at 11:00:37AM +0800, Gang Li escreveu:
+> perf already support ignore_missing_thread for -p, but not yet
+> applied to `perf stat -p <pid>`. This patch enables ignore_missing_thread
+> for `perf stat -p <pid>`.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Thanks, will add it and stick the original explanation about
+ignore_missing_thread so that reviewers of this patch can get a
+refresher:
 
-All warnings (new ones prefixed by >>):
+From  ca8000684ec4e66f965e1f9547a3c6cb834154ca
+----------
+    While monitoring a multithread process with pid option, perf sometimes
+    may return sys_perf_event_open failure with 3(No such process) if any of
+    the process's threads die before we open the event. However, we want
+    perf continue monitoring the remaining threads and do not exit with
+    error.
+----------
 
->> kernel/bpf/trampoline.c:81:17: warning: address of stack memory associated with parameter 'id' returned [-Wreturn-stack-address]
-                   return (u64) &id;
-                                 ^~
-   1 warning generated.
+Thanks,
 
-
-vim +/id +81 kernel/bpf/trampoline.c
-
-    77	
-    78	static u64 bpf_tramp_id_key(struct bpf_tramp_id *id)
-    79	{
-    80		if (bpf_tramp_id_is_multi(id))
-  > 81			return (u64) &id;
-    82		else
-    83			return ((u64) id->obj_id << 32) | id->id[0];
-    84	}
-    85	
+- Arnaldo
+ 
+> Signed-off-by: Gang Li <ligang.bdlg@bytedance.com>
+> ---
+>  tools/perf/builtin-stat.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/tools/perf/builtin-stat.c b/tools/perf/builtin-stat.c
+> index 4ce87a8eb7d7..d2ecd4d29624 100644
+> --- a/tools/perf/builtin-stat.c
+> +++ b/tools/perf/builtin-stat.c
+> @@ -2586,6 +2586,8 @@ int cmd_stat(int argc, const char **argv)
+>  	if (evlist__initialize_ctlfd(evsel_list, stat_config.ctl_fd, stat_config.ctl_fd_ack))
+>  		goto out;
+>  
+> +	/* Enable ignoring missing threads when -p option is defined. */
+> +	evlist__first(evsel_list)->ignore_missing_thread = target.pid;
+>  	status = 0;
+>  	for (run_idx = 0; forever || run_idx < stat_config.run_count; run_idx++) {
+>  		if (stat_config.run_count != 1 && verbose > 0)
+> -- 
+> 2.20.1
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+
+- Arnaldo
