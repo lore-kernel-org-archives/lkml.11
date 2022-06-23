@@ -2,126 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBF53C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 10:09:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52E68CCA480
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 10:09:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230525AbiFWKJG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 06:09:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40040 "EHLO
+        id S231335AbiFWKJf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 06:09:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230313AbiFWKJE (ORCPT
+        with ESMTP id S229723AbiFWKJd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 06:09:04 -0400
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3961D47066
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 03:09:02 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4LTGDr5885z9t7p;
-        Thu, 23 Jun 2022 12:09:00 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id vntViZZ-_Zqc; Thu, 23 Jun 2022 12:09:00 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4LTGDq4HsQz9t7Z;
-        Thu, 23 Jun 2022 12:08:59 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 8446B8B786;
-        Thu, 23 Jun 2022 12:08:59 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id K2dNwoA-VKlO; Thu, 23 Jun 2022 12:08:59 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.232.34])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 4A9D68B763;
-        Thu, 23 Jun 2022 12:08:59 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 25NA8ivA1209344
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Thu, 23 Jun 2022 12:08:44 +0200
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 25NA8ggc1209341;
-        Thu, 23 Jun 2022 12:08:42 +0200
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH] powerpc/powermac: Remove empty function note_scsi_host()
-Date:   Thu, 23 Jun 2022 12:08:36 +0200
-Message-Id: <26f8b72a4276c0bd8ed63860c7316f6361c351b4.1655978907.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.36.1
+        Thu, 23 Jun 2022 06:09:33 -0400
+Received: from conssluserg-02.nifty.com (conssluserg-02.nifty.com [210.131.2.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B940449C8E;
+        Thu, 23 Jun 2022 03:09:31 -0700 (PDT)
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44]) (authenticated)
+        by conssluserg-02.nifty.com with ESMTP id 25NA94Bt030361;
+        Thu, 23 Jun 2022 19:09:05 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com 25NA94Bt030361
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1655978945;
+        bh=VrNJeZOOoxsp333/0m3wcHIZFYPss3hVZ7DqYZoPrEM=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=zQA+le9IcciER0KVbr4wwcg45cS/xUXk6UDnJ05NNPEGXAy6mZvYU29OYi6lOmJEZ
+         dgJmSlfrN/J3ioaPTbHcRP3MoR+bi3wKC1A39Uo2werJvmHuTh+/N/DBHshfLa8h5x
+         1KA0M+tYRkk+3Q/ZxW+NLhk85uUAOY73kSuCeYWHH7L5ysp8UFD+4GXrw5K3NkSPR+
+         W6hjnCN2C9Ge++kHVdNZ/U3gkZpnVYBOKl210mKwOkTz2HnSRPi4mXnacffBqQEj02
+         pjI2FX0cR8u0o4ODTO59clnyBCn/+T/9FmhWxTBCNy0Au3mLtcyF3iKsTMZj/rgNEJ
+         g60XnIXZ1PYkQ==
+X-Nifty-SrcIP: [209.85.221.44]
+Received: by mail-wr1-f44.google.com with SMTP id i10so23445662wrc.0;
+        Thu, 23 Jun 2022 03:09:05 -0700 (PDT)
+X-Gm-Message-State: AJIora+W09s21WkSli2lBE5mN+rHZP5FXSCm3zhba9uSrCUR71XykZL8
+        mR85CoELnkw2HxYWY8t9FC3eoYEAM7fRuNkVpHQ=
+X-Google-Smtp-Source: AGRyM1u7Aj3TAT/slcXrcHpTGlaaLYJnoGxhHEYAeEWyxd0XvUfEyAr2bl7pqK36JG8IT4+F4pFKmCDdxplz3OpMf4c=
+X-Received: by 2002:adf:e104:0:b0:21b:9938:b07a with SMTP id
+ t4-20020adfe104000000b0021b9938b07amr7634574wrz.682.1655978943781; Thu, 23
+ Jun 2022 03:09:03 -0700 (PDT)
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1655978915; l=2083; s=20211009; h=from:subject:message-id; bh=PdnNcP7zieVTyswgbCfJHTxp8O+UOgulPpTHBsScjg0=; b=vUQkW6U5O2rm42ZnOAxvu0c7tzgjshQbKHb0OWQFayobFQkndBCQhqYuFHiE+mY7rP+PGfGmxrNn 8OGjcF0GBuOstmuGAYhjG2Zl8ggAEPw12EshB0V168Tk03o+BK89
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
+References: <20220613170902.1775211-1-masahiroy@kernel.org>
+ <20220613170902.1775211-2-masahiroy@kernel.org> <YrMdnEB686tSGARZ@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
+In-Reply-To: <YrMdnEB686tSGARZ@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Thu, 23 Jun 2022 19:08:27 +0900
+X-Gmail-Original-Message-ID: <CAK7LNATHTwxfNC9QJDGBiw+z4LN-wFmXsAKXOsVa_JU0K-nuUw@mail.gmail.com>
+Message-ID: <CAK7LNATHTwxfNC9QJDGBiw+z4LN-wFmXsAKXOsVa_JU0K-nuUw@mail.gmail.com>
+Subject: Re: [PATCH 2/3] s390/purgatory: hard-code obj-y in Makefile
+To:     Alexander Gordeev <agordeev@linux.ibm.com>
+Cc:     Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-note_scsi_host() has been an empty function since
-commit 6ee0d9f744d4 ("[POWERPC] Remove unused old code
-from powermac setup code").
+On Wed, Jun 22, 2022 at 10:48 PM Alexander Gordeev
+<agordeev@linux.ibm.com> wrote:
+>
+> On Tue, Jun 14, 2022 at 02:09:01AM +0900, Masahiro Yamada wrote:
+> > The purgatory/ directory is entirely guarded in arch/s390/Kbuild.
+> > CONFIG_ARCH_HAS_KEXEC_PURGATORY is bool type.
+> >
+> > $(CONFIG_ARCH_HAS_KEXEC_PURGATORY) is always 'y' when Kbuild visits
+> > this Makefile for building.
+> >
+> > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> > ---
+> >
+> >  arch/s390/purgatory/Makefile | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/arch/s390/purgatory/Makefile b/arch/s390/purgatory/Makefile
+> > index 360ada80d20c..3e2c17ba04de 100644
+> > --- a/arch/s390/purgatory/Makefile
+> > +++ b/arch/s390/purgatory/Makefile
+> > @@ -51,4 +51,4 @@ $(obj)/purgatory.ro: $(obj)/purgatory $(obj)/purgatory.chk FORCE
+> >  $(obj)/kexec-purgatory.o: $(obj)/kexec-purgatory.S $(obj)/purgatory.ro FORCE
+> >       $(call if_changed_rule,as_o_S)
+> >
+> > -obj-$(CONFIG_ARCH_HAS_KEXEC_PURGATORY) += kexec-purgatory.o
+> > +obj-y += kexec-purgatory.o
+>
+> Applied, thanks!
+>
+> BTW, it looks like x86 and riscv also need similar change.
 
-Remove it.
+A patch for x86 exists:
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
----
- arch/powerpc/include/asm/setup.h        | 1 -
- arch/powerpc/platforms/powermac/setup.c | 7 -------
- drivers/scsi/mesh.c                     | 5 -----
- 3 files changed, 13 deletions(-)
+https://lore.kernel.org/all/20220616072407.2317131-1-masahiroy@kernel.org/
 
-diff --git a/arch/powerpc/include/asm/setup.h b/arch/powerpc/include/asm/setup.h
-index 8fa37ef5da4d..07b487896c27 100644
---- a/arch/powerpc/include/asm/setup.h
-+++ b/arch/powerpc/include/asm/setup.h
-@@ -12,7 +12,6 @@ extern unsigned long long memory_limit;
- extern void *zalloc_maybe_bootmem(size_t size, gfp_t mask);
- 
- struct device_node;
--extern void note_scsi_host(struct device_node *, void *);
- 
- /* Used in very early kernel initialization. */
- extern unsigned long reloc_offset(void);
-diff --git a/arch/powerpc/platforms/powermac/setup.c b/arch/powerpc/platforms/powermac/setup.c
-index f71735ec449f..04daa7f0a03c 100644
---- a/arch/powerpc/platforms/powermac/setup.c
-+++ b/arch/powerpc/platforms/powermac/setup.c
-@@ -320,13 +320,6 @@ static void __init pmac_setup_arch(void)
- #endif /* CONFIG_ADB */
- }
- 
--#ifdef CONFIG_SCSI
--void note_scsi_host(struct device_node *node, void *host)
--{
--}
--EXPORT_SYMBOL(note_scsi_host);
--#endif
--
- static int initializing = 1;
- 
- static int pmac_late_init(void)
-diff --git a/drivers/scsi/mesh.c b/drivers/scsi/mesh.c
-index 322d3ad38159..1f8e240592a9 100644
---- a/drivers/scsi/mesh.c
-+++ b/drivers/scsi/mesh.c
-@@ -1882,11 +1882,6 @@ static int mesh_probe(struct macio_dev *mdev, const struct of_device_id *match)
- 		goto out_release;
- 	}
- 	
--	/* Old junk for root discovery, that will die ultimately */
--#if !defined(MODULE)
--       	note_scsi_host(mesh, mesh_host);
--#endif
--
- 	mesh_host->base = macio_resource_start(mdev, 0);
- 	mesh_host->irq = macio_irq(mdev, 0);
-        	ms = (struct mesh_state *) mesh_host->hostdata;
+
+I will send riscv patches later.
+
+
+> In addition, x86 use of CONFIG_ARCH_HAS_KEXEC_PURGATORY vs CONFIG_KEXEC_FILE
+> is not consistent with other architectures (may be even incorrect?).
+
+I thought of this when I reworked Makefiles,
+but did not touch this part.
+
+
+>
+> > --
+> > 2.32.0
+> >
+
+
+
 -- 
-2.36.1
-
+Best Regards
+Masahiro Yamada
