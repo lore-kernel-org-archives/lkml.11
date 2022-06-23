@@ -2,132 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37B99CCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18247CCA47F
 	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:23:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237382AbiFWSWi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:22:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50948 "EHLO
+        id S237335AbiFWSWa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:22:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234111AbiFWSSe (ORCPT
+        with ESMTP id S237414AbiFWSS1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:18:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D88C68014;
-        Thu, 23 Jun 2022 10:24:56 -0700 (PDT)
+        Thu, 23 Jun 2022 14:18:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA7BECD937;
+        Thu, 23 Jun 2022 10:24:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C4F55B824C2;
-        Thu, 23 Jun 2022 17:24:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A45DC341C4;
-        Thu, 23 Jun 2022 17:24:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 511C061F04;
+        Thu, 23 Jun 2022 17:24:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F8FFC341C4;
+        Thu, 23 Jun 2022 17:24:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656005093;
-        bh=q0ieiWvZZzyqC5tb88xHI5LpV46pRBqESt3kdwFvz28=;
-        h=From:To:Cc:Subject:Date:From;
-        b=C6MDfOIY205YIm20VLu4FSJoMT5S9tDhb6HbpWw0xfJ/KAc+A+Ueq64aSjgp+BQ1p
-         y7MfiQxiM/kN/mYjUS9nEc0Z+Ah4tlf80RFH9QShmox8INE97ahwd0MgEcF7P+Vtbr
-         CJu0DgsliRtba6JY7Qjj2wKjHEKDsKHyt/qOSMis=
+        s=korg; t=1656005090;
+        bh=SVHnFOSEA0CLpzXjVBGfSS0XlrSkacPH10kMRhOVNY4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=wH/BOc229aQQh4S7/6E7eprOrYpmQEWCN8ccyFUfAejeGiq5pT8WhfUQ8fJGO+k3a
+         OEv26zdznd8/NLzqHybUXC4xMt/BD3mWZQ6v9Pg5m9dfaq/XmGfmIMCtSCIQBRIrMt
+         +JwiCAhZ7cIvQIi32T29jYhJDCmlvwgRCVsPmE1U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 5.4 00/11] 5.4.201-rc1 review
-Date:   Thu, 23 Jun 2022 18:45:04 +0200
-Message-Id: <20220623164321.195163701@linuxfoundation.org>
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Moshe Kol <moshe.kol@mail.huji.ac.il>,
+        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
+        Amit Klein <aksecurity@gmail.com>,
+        Eric Dumazet <edumazet@google.com>, Willy Tarreau <w@1wt.eu>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ben Hutchings <ben@decadent.org.uk>
+Subject: [PATCH 5.4 05/11] tcp: use different parts of the port_offset for index and offset
+Date:   Thu, 23 Jun 2022 18:45:09 +0200
+Message-Id: <20220623164321.355832044@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-MIME-Version: 1.0
+In-Reply-To: <20220623164321.195163701@linuxfoundation.org>
+References: <20220623164321.195163701@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.201-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-5.4.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 5.4.201-rc1
-X-KernelTest-Deadline: 2022-06-25T16:43+00:00
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 5.4.201 release.
-There are 11 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+From: Willy Tarreau <w@1wt.eu>
 
-Responses should be made by Sat, 25 Jun 2022 16:43:11 +0000.
-Anything received after that time might be too late.
+commit 9e9b70ae923baf2b5e8a0ea4fd0c8451801ac526 upstream.
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.201-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.4.y
-and the diffstat can be found below.
+Amit Klein suggests that we use different parts of port_offset for the
+table's index and the port offset so that there is no direct relation
+between them.
 
-thanks,
+Cc: Jason A. Donenfeld <Jason@zx2c4.com>
+Cc: Moshe Kol <moshe.kol@mail.huji.ac.il>
+Cc: Yossi Gilad <yossi.gilad@mail.huji.ac.il>
+Cc: Amit Klein <aksecurity@gmail.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Willy Tarreau <w@1wt.eu>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Cc: Ben Hutchings <ben@decadent.org.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ net/ipv4/inet_hashtables.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-greg k-h
-
--------------
-Pseudo-Shortlog of commits:
-
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 5.4.201-rc1
-
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Revert "hwmon: Make chip parameter for with_info API mandatory"
-
-Will Deacon <will@kernel.org>
-    arm64: mm: Don't invalidate FROM_DEVICE buffers at start of DMA transfer
-
-Willy Tarreau <w@1wt.eu>
-    tcp: drop the hash_32() part from the index calculation
-
-Willy Tarreau <w@1wt.eu>
-    tcp: increase source port perturb table to 2^16
-
-Willy Tarreau <w@1wt.eu>
-    tcp: dynamically allocate the perturb table used by source ports
-
-Willy Tarreau <w@1wt.eu>
-    tcp: add small random increments to the source port
-
-Willy Tarreau <w@1wt.eu>
-    tcp: use different parts of the port_offset for index and offset
-
-Eric Dumazet <edumazet@google.com>
-    tcp: add some entropy in __inet_hash_connect()
-
-Marian Postevca <posteuca@mutex.one>
-    usb: gadget: u_ether: fix regression in setting fixed MAC address
-
-Mike Snitzer <snitzer@kernel.org>
-    dm: remove special-casing of bio-based immutable singleton target on NVMe
-
-Christian Borntraeger <borntraeger@linux.ibm.com>
-    s390/mm: use non-quiescing sske for KVM switch to keyed guest
-
-
--------------
-
-Diffstat:
-
- Documentation/hwmon/hwmon-kernel-api.rst |  2 +-
- Makefile                                 |  4 +-
- arch/arm64/mm/cache.S                    |  2 -
- arch/s390/mm/pgtable.c                   |  2 +-
- drivers/hwmon/hwmon.c                    | 16 ++++---
- drivers/md/dm-table.c                    | 32 +-------------
- drivers/md/dm.c                          | 73 +++-----------------------------
- drivers/usb/gadget/function/u_ether.c    | 11 ++++-
- include/linux/device-mapper.h            |  1 -
- net/ipv4/inet_hashtables.c               | 31 ++++++++++----
- 10 files changed, 54 insertions(+), 120 deletions(-)
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -726,7 +726,7 @@ int __inet_hash_connect(struct inet_time
+ 	net_get_random_once(table_perturb, sizeof(table_perturb));
+ 	index = hash_32(port_offset, INET_TABLE_PERTURB_SHIFT);
+ 
+-	offset = READ_ONCE(table_perturb[index]) + port_offset;
++	offset = READ_ONCE(table_perturb[index]) + (port_offset >> 32);
+ 	offset %= remaining;
+ 
+ 	/* In first pass we try ports of @low parity.
 
 
