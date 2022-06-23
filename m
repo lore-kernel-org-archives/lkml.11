@@ -2,77 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 642CBC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 07:10:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CBA0CCA47C
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 07:10:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230090AbiFWHKd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 03:10:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60226 "EHLO
+        id S230129AbiFWHKl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 03:10:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229904AbiFWHKb (ORCPT
+        with ESMTP id S229943AbiFWHKi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 03:10:31 -0400
-Received: from mail-m971.mail.163.com (mail-m971.mail.163.com [123.126.97.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7AADF45534;
-        Thu, 23 Jun 2022 00:10:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=+Yi5W
-        E6QmU8Q2WHGxfAqHLKBZQtcrArdRuT7E7T90aQ=; b=go/u1KEngFhEzPyU6THYD
-        STPBJhaaqAdtJDEhE2z+nJyYlaesrI889/09ixersTKuSJe2/6o0dDwY0BndtTOo
-        LxLsrdeyFj2JWCz4vH+nzfko302fbIUr5aDW7TSnLl3UxShREJYQXweQTl1FfWul
-        9c9HvAng2bw7x8dSmmjTps=
-Received: from localhost.localdomain (unknown [123.112.69.106])
-        by smtp1 (Coremail) with SMTP id GdxpCgAHRb2dEbRi2eS2Kg--.6843S4;
-        Thu, 23 Jun 2022 15:09:26 +0800 (CST)
-From:   Jianglei Nie <niejianglei2021@163.com>
-To:     linux@armlinux.org.uk, andrew@lunn.ch, hkallweit1@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jianglei Nie <niejianglei2021@163.com>
-Subject: [PATCH] net: sfp: fix memory leak in sfp_probe()
-Date:   Thu, 23 Jun 2022 15:09:14 +0800
-Message-Id: <20220623070914.1781700-1-niejianglei2021@163.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 23 Jun 2022 03:10:38 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFDCE45534
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 00:10:36 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id h23so39022680ejj.12
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 00:10:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=tuAsDh6ucKESxsdiSZcdIthCGQnzlk9mmfrcHG2iA/A=;
+        b=k4AdahiduJwbRRrlLYnDkTBxnXPULU8EsSsKDgjM192KdUz1q79NbQlx67tncTv9WR
+         dJyAIlhWCepdwRz4igjrMh35uNeXgRCAWwiyWmth/8hLfwb3ZTBSsqfgy5r04qDRK9CH
+         Gh6g0JM+Fyv59eDifA6RFPsoMfkoI+f/4Sx7HgiPQDZVafOtyu0uzVXTw5XDaVrgY8A/
+         H0YdGhDxorkrMyTmpVTOquKodh24xUvWNKggOKObQK1UyZd/Idl/6S51Oz8TIni/SYdm
+         iimCazHC2XGt0gxuQ7IHrDKEayFCNL7oqSaQe5TllniqP/31FG6V0/8ijYtS06KH3JzT
+         gj8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=tuAsDh6ucKESxsdiSZcdIthCGQnzlk9mmfrcHG2iA/A=;
+        b=P+5tCMZufDHqtVYg9ofn1QSdxsqO17jTeZmjIcCLfLrDkPO+Wigp54dipudPEKXPV8
+         u+sSg0JyRZ8Hc/BkQ450Mx7C9GLz/3zORXjFTzDx5cqsWxMKvZrGLD02cwReL8YOKESb
+         3ltC8T90RDDdFhvKzzUiGbeEDxMRGQHktBePICUAtPGSB9tcx59pa2Rw1HzRZP44mmhj
+         NafhWXcqKVOSCIrnRjfllEAGjOdk+1RbFJCVogZFHus12fk89OJT+/XyPWK0o0e5sW8/
+         USCEv3V5LPVWU4mPIO2iqTPAjiDXe9wkwT5f274946ypKUGIYS08D3dXyTChhabzwsyO
+         x7Gg==
+X-Gm-Message-State: AJIora+Er4Juba2HUgbp/QsWu0nQQsoEDbjDq99rsbUJJ0O6v+oF5g5b
+        Eoj0worzUhFsGPs3BN7z9hqTjg==
+X-Google-Smtp-Source: AGRyM1u7ecil3twaUG0Avny7RVyJxwjRhiEYGdWWNHrbEmPYuywGZuvfO1PXd4QE2NXFsLZ9uc0qrQ==
+X-Received: by 2002:a17:907:c26:b0:711:ca03:ab3c with SMTP id ga38-20020a1709070c2600b00711ca03ab3cmr6967550ejc.654.1655968235516;
+        Thu, 23 Jun 2022 00:10:35 -0700 (PDT)
+Received: from [192.168.0.226] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id g18-20020a17090604d200b006fec8e8eff6sm2286606eja.176.2022.06.23.00.10.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 23 Jun 2022 00:10:35 -0700 (PDT)
+Message-ID: <bd070c5d-4765-092d-8f10-fefd0361f65e@linaro.org>
+Date:   Thu, 23 Jun 2022 09:10:34 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: GdxpCgAHRb2dEbRi2eS2Kg--.6843S4
-X-Coremail-Antispam: 1Uf129KBjvdXoWrKr1kZrWfAF17WFy7CF13CFg_yoW3urc_WF
-        W2vF43JrWjkrs0qw15Kw1SvrWF9Fy8XFs5ZF4fK3yftry3GanxW3ykXF47Jr9rWrW2vr4D
-        u3sruFsI9w4fGjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xREsqXtUUUUU==
-X-Originating-IP: [123.112.69.106]
-X-CM-SenderInfo: xqlhyxxdqjzvrlsqjii6rwjhhfrp/1tbiQwYpjFc7aNoYJgAAsA
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 2/7] dt-bindings: arm: aspeed: document board compatibles
+Content-Language: en-US
+To:     Joel Stanley <joel@jms.id.au>
+Cc:     Andrew Jeffery <andrew@aj.id.au>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
+        David Wang <David_Wang6097@jabil.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Steven Lee <steven_lee@aspeedtech.com>,
+        Ken Chen <chen.kenyy@inventec.com>
+References: <20220529104928.79636-1-krzysztof.kozlowski@linaro.org>
+ <20220529104928.79636-2-krzysztof.kozlowski@linaro.org>
+ <0207c2fe-7c01-7852-3cd1-74297cd4857d@linaro.org>
+ <CACPK8Xc=dmaJtLXGsQa8bBdWDnSbwyW3f_yaQr4HqT0WvyScRg@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CACPK8Xc=dmaJtLXGsQa8bBdWDnSbwyW3f_yaQr4HqT0WvyScRg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-sfp_probe() allocates a memory chunk from sfp with sfp_alloc(), when
-devm_add_action() fails, sfp is not freed, which leads to a memory leak.
+On 23/06/2022 07:36, Joel Stanley wrote:
+> On Mon, 20 Jun 2022 at 11:06, Krzysztof Kozlowski
+> <krzysztof.kozlowski@linaro.org> wrote:
+>>
+>> On 29/05/2022 12:49, Krzysztof Kozlowski wrote:
+>>> Document all compatibles used in existing upstreamed Aspeed AST2400,
+>>> AST2500 and AST2600 based boards.
+>>>
+>>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>>> ---
+>>>  .../bindings/arm/aspeed/aspeed.yaml           | 83 +++++++++++++++++++
+>>>  MAINTAINERS                                   |  1 +
+>>>  2 files changed, 84 insertions(+)
+>>>  create mode 100644 Documentation/devicetree/bindings/arm/aspeed/aspeed.yaml
+>>
+>> Joel, Andrew,
+>>
+>> Any comments on the series? Rob applied only patch 1, so the rest is
+>> supposed through Aspeed tree. Shall I pick them up and send to arm-soc?
+> 
+> I will take a look at them when it's time to send patches for the next
+> kernel release.
 
-We should free the sfp with sfp_cleanup() when devm_add_action() fails.
+But that's not how the next development works. Patches, if proper/good,
+should be applied in some reasonable amount of time and then sit in
+maintainers tree. This way the patches will be in linux-next, assuming
+that maintainer correctly added it to linux-next. All other people can
+then easily base their work on linux-next or maintainer's tree and
+continue their development.
 
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
----
- drivers/net/phy/sfp.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Waiting with the patches till time to intreract with arm-soc (usually
+some late in the cycle, like rc5-rc6), not providing review, does not
+allow other people to see accepted contributions and base the work on them.
 
-diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index 9a5d5a10560f..366a89adabf5 100644
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -2517,8 +2517,10 @@ static int sfp_probe(struct platform_device *pdev)
- 	platform_set_drvdata(pdev, sfp);
- 
- 	err = devm_add_action(sfp->dev, sfp_cleanup, sfp);
--	if (err < 0)
-+	if (err < 0) {
-+		sfp_cleanup(sfp);
- 		return err;
-+	}
- 
- 	sff = sfp->type = &sfp_data;
- 
--- 
-2.25.1
+Really, there is no single reason to hold on patches till there is time
+to send them to arm-soc. It's the first time I hear something like this
+about SoC or any other tree.
 
+> 
+> They should go through the aspeed tree like the rest of the aspeed
+> device tree patches.
+
+Of course, but somehow they were not going...
+
+Best regards,
+Krzysztof
