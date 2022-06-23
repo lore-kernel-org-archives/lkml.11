@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A056CCA487
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:40:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B72C5C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:40:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234483AbiFWRkE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:40:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34844 "EHLO
+        id S234495AbiFWRkJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:40:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234465AbiFWRhM (ORCPT
+        with ESMTP id S234473AbiFWRhO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:37:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D6FF84883;
-        Thu, 23 Jun 2022 10:06:56 -0700 (PDT)
+        Thu, 23 Jun 2022 13:37:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2627D84895;
+        Thu, 23 Jun 2022 10:07:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8DBEFB8249B;
-        Thu, 23 Jun 2022 17:06:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01508C3411B;
-        Thu, 23 Jun 2022 17:06:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4390C6159A;
+        Thu, 23 Jun 2022 17:07:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10EFBC3411B;
+        Thu, 23 Jun 2022 17:06:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004013;
-        bh=sbrL44tMkKlNhB/ubeCGu9MeR5vV2zIzvhWF5VTfUMs=;
+        s=korg; t=1656004019;
+        bh=na9blj76/COS7M39ZGtGbadFRBupCaLSkxeDOhaLB0c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Coq7jGH3lqVeNVQ/wIOX856EdWvXN4ofxU7WgbRNDywZGGr7tKnKmZav+b2CN8Ymu
-         A+8+qmU7mlcjBPPVitmcoELLcjMBxhFlA40L6Zqul+iQURPoC9rBlFrT03pRK+g+K7
-         n5C9Kszti/5DT+N+rJvl8kgJBrr9G5b8OWOld7nU=
+        b=IxRRAAm/NlWcVzod/dxZZOXop4/Sl1WlByUcVs7Lvfsovnn2bX98x65hE77qgEj2l
+         Dt/3nMOpav61bWbRhVRCGTbwg3xLPpWRzHzAsjZauzobeByml4rio4heoZp+12Q0cu
+         SKq76Wh3cZcRAFpG/MmX5M/3HCa1x+7X+RzYc1J8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 160/237] sparc: use fallback for random_get_entropy() instead of zero
-Date:   Thu, 23 Jun 2022 18:43:14 +0200
-Message-Id: <20220623164347.757834572@linuxfoundation.org>
+Subject: [PATCH 4.14 162/237] random: insist on random_get_entropy() existing in order to simplify
+Date:   Thu, 23 Jun 2022 18:43:16 +0200
+Message-Id: <20220623164347.815392859@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -52,41 +50,220 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit ac9756c79797bb98972736b13cfb239fd2cffb79 upstream.
+commit 4b758eda851eb9336ca86a0041a4d3da55f66511 upstream.
 
-In the event that random_get_entropy() can't access a cycle counter or
-similar, falling back to returning 0 is really not the best we can do.
-Instead, at least calling random_get_entropy_fallback() would be
-preferable, because that always needs to return _something_, even
-falling back to jiffies eventually. It's not as though
-random_get_entropy_fallback() is super high precision or guaranteed to
-be entropic, but basically anything that's not zero all the time is
-better than returning zero all the time.
+All platforms are now guaranteed to provide some value for
+random_get_entropy(). In case some bug leads to this not being so, we
+print a warning, because that indicates that something is really very
+wrong (and likely other things are impacted too). This should never be
+hit, but it's a good and cheap way of finding out if something ever is
+problematic.
 
-This is accomplished by just including the asm-generic code like on
-other architectures, which means we can get rid of the empty stub
-function here.
+Since we now have viable fallback code for random_get_entropy() on all
+platforms, which is, in the worst case, not worse than jiffies, we can
+count on getting the best possible value out of it. That means there's
+no longer a use for using jiffies as entropy input. It also means we no
+longer have a reason for doing the round-robin register flow in the IRQ
+handler, which was always of fairly dubious value.
 
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: David S. Miller <davem@davemloft.net>
+Instead we can greatly simplify the IRQ handler inputs and also unify
+the construction between 64-bits and 32-bits. We now collect the cycle
+counter and the return address, since those are the two things that
+matter. Because the return address and the irq number are likely
+related, to the extent we mix in the irq number, we can just xor it into
+the top unchanging bytes of the return address, rather than the bottom
+changing bytes of the cycle counter as before. Then, we can do a fixed 2
+rounds of SipHash/HSipHash. Finally, we use the same construction of
+hashing only half of the [H]SipHash state on 32-bit and 64-bit. We're
+not actually discarding any entropy, since that entropy is carried
+through until the next time. And more importantly, it lets us do the
+same sponge-like construction everywhere.
+
+Cc: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/sparc/include/asm/timex_32.h |    4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/char/random.c |   86 +++++++++++++++-----------------------------------
+ 1 file changed, 26 insertions(+), 60 deletions(-)
 
---- a/arch/sparc/include/asm/timex_32.h
-+++ b/arch/sparc/include/asm/timex_32.h
-@@ -9,8 +9,6 @@
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -1017,15 +1017,14 @@ int __init rand_initialize(void)
+  */
+ void add_device_randomness(const void *buf, size_t size)
+ {
+-	unsigned long cycles = random_get_entropy();
+-	unsigned long flags, now = jiffies;
++	unsigned long entropy = random_get_entropy();
++	unsigned long flags;
  
- #define CLOCK_TICK_RATE	1193180 /* Underlying HZ */
+ 	if (crng_init == 0 && size)
+ 		crng_pre_init_inject(buf, size, false);
  
--/* XXX Maybe do something better at some point... -DaveM */
--typedef unsigned long cycles_t;
--#define get_cycles()	(0)
-+#include <asm-generic/timex.h>
+ 	spin_lock_irqsave(&input_pool.lock, flags);
+-	_mix_pool_bytes(&cycles, sizeof(cycles));
+-	_mix_pool_bytes(&now, sizeof(now));
++	_mix_pool_bytes(&entropy, sizeof(entropy));
+ 	_mix_pool_bytes(buf, size);
+ 	spin_unlock_irqrestore(&input_pool.lock, flags);
+ }
+@@ -1048,12 +1047,11 @@ struct timer_rand_state {
+  */
+ static void add_timer_randomness(struct timer_rand_state *state, unsigned int num)
+ {
+-	unsigned long cycles = random_get_entropy(), now = jiffies, flags;
++	unsigned long entropy = random_get_entropy(), now = jiffies, flags;
+ 	long delta, delta2, delta3;
  
+ 	spin_lock_irqsave(&input_pool.lock, flags);
+-	_mix_pool_bytes(&cycles, sizeof(cycles));
+-	_mix_pool_bytes(&now, sizeof(now));
++	_mix_pool_bytes(&entropy, sizeof(entropy));
+ 	_mix_pool_bytes(&num, sizeof(num));
+ 	spin_unlock_irqrestore(&input_pool.lock, flags);
+ 
+@@ -1181,7 +1179,6 @@ struct fast_pool {
+ 	unsigned long pool[4];
+ 	unsigned long last;
+ 	unsigned int count;
+-	u16 reg_idx;
+ };
+ 
+ static DEFINE_PER_CPU(struct fast_pool, irq_randomness) = {
+@@ -1199,13 +1196,13 @@ static DEFINE_PER_CPU(struct fast_pool,
+  * This is [Half]SipHash-1-x, starting from an empty key. Because
+  * the key is fixed, it assumes that its inputs are non-malicious,
+  * and therefore this has no security on its own. s represents the
+- * 128 or 256-bit SipHash state, while v represents a 128-bit input.
++ * four-word SipHash state, while v represents a two-word input.
+  */
+-static void fast_mix(unsigned long s[4], const unsigned long *v)
++static void fast_mix(unsigned long s[4], const unsigned long v[2])
+ {
+ 	size_t i;
+ 
+-	for (i = 0; i < 16 / sizeof(long); ++i) {
++	for (i = 0; i < 2; ++i) {
+ 		s[3] ^= v[i];
+ #ifdef CONFIG_64BIT
+ 		s[0] += s[1]; s[1] = rol64(s[1], 13); s[1] ^= s[0]; s[0] = rol64(s[0], 32);
+@@ -1245,33 +1242,17 @@ int random_online_cpu(unsigned int cpu)
+ }
  #endif
+ 
+-static unsigned long get_reg(struct fast_pool *f, struct pt_regs *regs)
+-{
+-	unsigned long *ptr = (unsigned long *)regs;
+-	unsigned int idx;
+-
+-	if (regs == NULL)
+-		return 0;
+-	idx = READ_ONCE(f->reg_idx);
+-	if (idx >= sizeof(struct pt_regs) / sizeof(unsigned long))
+-		idx = 0;
+-	ptr += idx++;
+-	WRITE_ONCE(f->reg_idx, idx);
+-	return *ptr;
+-}
+-
+ static void mix_interrupt_randomness(struct work_struct *work)
+ {
+ 	struct fast_pool *fast_pool = container_of(work, struct fast_pool, mix);
+ 	/*
+-	 * The size of the copied stack pool is explicitly 16 bytes so that we
+-	 * tax mix_pool_byte()'s compression function the same amount on all
+-	 * platforms. This means on 64-bit we copy half the pool into this,
+-	 * while on 32-bit we copy all of it. The entropy is supposed to be
+-	 * sufficiently dispersed between bits that in the sponge-like
+-	 * half case, on average we don't wind up "losing" some.
++	 * The size of the copied stack pool is explicitly 2 longs so that we
++	 * only ever ingest half of the siphash output each time, retaining
++	 * the other half as the next "key" that carries over. The entropy is
++	 * supposed to be sufficiently dispersed between bits so on average
++	 * we don't wind up "losing" some.
+ 	 */
+-	u8 pool[16];
++	unsigned long pool[2];
+ 
+ 	/* Check to see if we're running on the wrong CPU due to hotplug. */
+ 	local_irq_disable();
+@@ -1303,36 +1284,21 @@ static void mix_interrupt_randomness(str
+ void add_interrupt_randomness(int irq)
+ {
+ 	enum { MIX_INFLIGHT = 1U << 31 };
+-	unsigned long cycles = random_get_entropy(), now = jiffies;
++	unsigned long entropy = random_get_entropy();
+ 	struct fast_pool *fast_pool = this_cpu_ptr(&irq_randomness);
+ 	struct pt_regs *regs = get_irq_regs();
+ 	unsigned int new_count;
+-	union {
+-		u32 u32[4];
+-		u64 u64[2];
+-		unsigned long longs[16 / sizeof(long)];
+-	} irq_data;
+-
+-	if (cycles == 0)
+-		cycles = get_reg(fast_pool, regs);
+-
+-	if (sizeof(unsigned long) == 8) {
+-		irq_data.u64[0] = cycles ^ rol64(now, 32) ^ irq;
+-		irq_data.u64[1] = regs ? instruction_pointer(regs) : _RET_IP_;
+-	} else {
+-		irq_data.u32[0] = cycles ^ irq;
+-		irq_data.u32[1] = now;
+-		irq_data.u32[2] = regs ? instruction_pointer(regs) : _RET_IP_;
+-		irq_data.u32[3] = get_reg(fast_pool, regs);
+-	}
+ 
+-	fast_mix(fast_pool->pool, irq_data.longs);
++	fast_mix(fast_pool->pool, (unsigned long[2]){
++		entropy,
++		(regs ? instruction_pointer(regs) : _RET_IP_) ^ swab(irq)
++	});
+ 	new_count = ++fast_pool->count;
+ 
+ 	if (new_count & MIX_INFLIGHT)
+ 		return;
+ 
+-	if (new_count < 64 && (!time_after(now, fast_pool->last + HZ) ||
++	if (new_count < 64 && (!time_is_before_jiffies(fast_pool->last + HZ) ||
+ 			       unlikely(crng_init == 0)))
+ 		return;
+ 
+@@ -1368,28 +1334,28 @@ static void entropy_timer(unsigned long
+ static void try_to_generate_entropy(void)
+ {
+ 	struct {
+-		unsigned long cycles;
++		unsigned long entropy;
+ 		struct timer_list timer;
+ 	} stack;
+ 
+-	stack.cycles = random_get_entropy();
++	stack.entropy = random_get_entropy();
+ 
+ 	/* Slow counter - or none. Don't even bother */
+-	if (stack.cycles == random_get_entropy())
++	if (stack.entropy == random_get_entropy())
+ 		return;
+ 
+ 	__setup_timer_on_stack(&stack.timer, entropy_timer, 0, 0);
+ 	while (!crng_ready() && !signal_pending(current)) {
+ 		if (!timer_pending(&stack.timer))
+ 			mod_timer(&stack.timer, jiffies + 1);
+-		mix_pool_bytes(&stack.cycles, sizeof(stack.cycles));
++		mix_pool_bytes(&stack.entropy, sizeof(stack.entropy));
+ 		schedule();
+-		stack.cycles = random_get_entropy();
++		stack.entropy = random_get_entropy();
+ 	}
+ 
+ 	del_timer_sync(&stack.timer);
+ 	destroy_timer_on_stack(&stack.timer);
+-	mix_pool_bytes(&stack.cycles, sizeof(stack.cycles));
++	mix_pool_bytes(&stack.entropy, sizeof(stack.entropy));
+ }
+ 
+ 
 
 
