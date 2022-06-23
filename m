@@ -2,108 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51C16C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:59:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A55F6CCA483
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:59:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235395AbiFWR7u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:59:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60060 "EHLO
+        id S235434AbiFWR7z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:59:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235891AbiFWR5s (ORCPT
+        with ESMTP id S235931AbiFWR5y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:57:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5E836F4B5;
-        Thu, 23 Jun 2022 10:15:51 -0700 (PDT)
+        Thu, 23 Jun 2022 13:57:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DEF1B01C9;
+        Thu, 23 Jun 2022 10:15:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B63861E1D;
-        Thu, 23 Jun 2022 17:15:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 672EEC341C6;
-        Thu, 23 Jun 2022 17:15:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656004550;
-        bh=8R+RW0DB9EQ2uVvtR45zq4/JAUy2m7hPxnil1cTbtlk=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=mtxeAVFNaaUOJEFUJk7ElG9DH1UpHpB/WNY7S4GrmCBJ31fzAmELxc5zbtlTNydIx
-         FYkxzZ/oqMyAIiOJB9C42FooAnuW7HA2I2atqBgZ59duf9XuPRV+Zwny2acXTiTueu
-         HG/G5bsTK5vZPQmSthSNalyuORED+RwbABSp254wcTd2GoZtGtYlBQHlnPOmCWzLtt
-         vZIRaRd4RzSZaL7plFY0pX3htWj8+YcJJpTQvDKkDCYF7D5I6VdCUs8SES1J27w1cW
-         IRESsHWyRF/hVr21wXjpueLL8Q05Xy9iHqA5UcGqf400nTnWxSqsXbmlmxsgulGt/+
-         vYpp/sE/CXecw==
-Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-3178acf2a92so870667b3.6;
-        Thu, 23 Jun 2022 10:15:50 -0700 (PDT)
-X-Gm-Message-State: AJIora/hmev4rmtUmLQWZ7oc9DYvh68wHJvaN5cYi6PwC80TqEUfKR7W
-        SvZCDPGwdvky0zSxG6UT4mx4iPyIZWn6sO2ibZo=
-X-Google-Smtp-Source: AGRyM1t1olztSDrteGXYMB7kj+MmjwKdDzfi/VVXgAWzrN71mL+qoji3GFIBqR9bTs5XYPv9Msej5AWqsmKYH2U9il8=
-X-Received: by 2002:a81:2f45:0:b0:317:71c7:fcdc with SMTP id
- v66-20020a812f45000000b0031771c7fcdcmr11702449ywv.73.1656004549455; Thu, 23
- Jun 2022 10:15:49 -0700 (PDT)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F97F61DEE;
+        Thu, 23 Jun 2022 17:15:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6CC7C3411B;
+        Thu, 23 Jun 2022 17:15:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656004553;
+        bh=05oCL9/vwRD2ONushJmIq7RlXP0+bm7pgIUFoypvMaI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=RcCM5nFuiv+uWbp0Tm5kkx67/0G3CgXmFroOPanosdqjIjVVXf2gD85ED3tavyDu6
+         3IwzdvlT78R1XsUUlGrYexloIWd9MIlVUeyA6wCG9f1LmvUZCWBZ3qUHnSPNNqpUKm
+         R02VX7QAQzH1urkwgYaMHce5GtaKy+dGDhruZAyM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.19 073/234] random: access primary_pool directly rather than through pointer
+Date:   Thu, 23 Jun 2022 18:42:20 +0200
+Message-Id: <20220623164345.126646052@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
+References: <20220623164343.042598055@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220623165552.38645-1-logang@deltatee.com>
-In-Reply-To: <20220623165552.38645-1-logang@deltatee.com>
-From:   Song Liu <song@kernel.org>
-Date:   Thu, 23 Jun 2022 10:15:38 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW50vG=M6JhBEe3qwef10GQt84cg9p_ji5tqyRnMA1-xRQ@mail.gmail.com>
-Message-ID: <CAPhsuW50vG=M6JhBEe3qwef10GQt84cg9p_ji5tqyRnMA1-xRQ@mail.gmail.com>
-Subject: Re: [PATCH] md/raid5: Fix divide type in raid5_make_request()
-To:     Logan Gunthorpe <logang@deltatee.com>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        linux-raid <linux-raid@vger.kernel.org>,
-        kernel test robot <lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 9:56 AM Logan Gunthorpe <logang@deltatee.com> wrote:
->
-> 0day reports a build failure on the hexagon architecture:
->
->   ld.lld: error: undefined symbol: __hexagon_udivdi3
->      referenced by raid5.c
->         md/raid5.o:(raid5_make_request) in archive drivers/built-in.a
->      referenced by raid5.c
->         md/raid5.o:(raid5_make_request) in archive drivers/built-in.a
->      did you mean: __hexagon_udivsi3
->         defined in: arch/hexagon/built-in.a(lib/udivsi3.o)
->
-> This is caused by using DIV_ROUND_UP on a sector_t type.
->
-> The actual value is known to be less than 256 so a wide 64bit divide
-> here is not desirable. Thus cast the argument to an int to ensure it
-> uses a 32bit divide.
+From: Dominik Brodowski <linux@dominikbrodowski.net>
 
-I force pushed an update that uses DIV_ROUND_UP_SECTOR_T instead.
-I guess that should also work?
+commit ebf7606388732ecf2821ca21087e9446cb4a5b57 upstream.
 
-Thanks,
-Song
+Both crng_initialize_primary() and crng_init_try_arch_early() are
+only called for the primary_pool. Accessing it directly instead of
+through a function parameter simplifies the code.
 
->
-> Fixes: 681fb14a7100 ("md/raid5: Pivot raid5_make_request()")
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
-> ---
->  drivers/md/raid5.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/md/raid5.c b/drivers/md/raid5.c
-> index 5723a497108a..9d25696b793d 100644
-> --- a/drivers/md/raid5.c
-> +++ b/drivers/md/raid5.c
-> @@ -6091,7 +6091,7 @@ static bool raid5_make_request(struct mddev *mddev, struct bio * bi)
->         bi->bi_next = NULL;
->
->         bitmap_set(ctx.sectors_to_do, 0,
-> -                  DIV_ROUND_UP(ctx.last_sector - logical_sector,
-> +                  DIV_ROUND_UP((int)(ctx.last_sector - logical_sector),
->                                 RAID5_STRIPE_SECTORS(conf)));
->
->         pr_debug("raid456: %s, logical %llu to %llu\n", __func__,
->
-> base-commit: 57c19f921f8081c1a9444dc7f3f6b3ea43fe612e
-> --
-> 2.30.2
->
+Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/char/random.c |   14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -762,7 +762,7 @@ static bool crng_init_try_arch(struct cr
+ 	return arch_init;
+ }
+ 
+-static bool __init crng_init_try_arch_early(struct crng_state *crng)
++static bool __init crng_init_try_arch_early(void)
+ {
+ 	int i;
+ 	bool arch_init = true;
+@@ -774,7 +774,7 @@ static bool __init crng_init_try_arch_ea
+ 			rv = random_get_entropy();
+ 			arch_init = false;
+ 		}
+-		crng->state[i] ^= rv;
++		primary_crng.state[i] ^= rv;
+ 	}
+ 
+ 	return arch_init;
+@@ -788,16 +788,16 @@ static void crng_initialize_secondary(st
+ 	crng->init_time = jiffies - CRNG_RESEED_INTERVAL - 1;
+ }
+ 
+-static void __init crng_initialize_primary(struct crng_state *crng)
++static void __init crng_initialize_primary(void)
+ {
+-	_extract_entropy(&crng->state[4], sizeof(u32) * 12);
+-	if (crng_init_try_arch_early(crng) && trust_cpu && crng_init < 2) {
++	_extract_entropy(&primary_crng.state[4], sizeof(u32) * 12);
++	if (crng_init_try_arch_early() && trust_cpu && crng_init < 2) {
+ 		invalidate_batched_entropy();
+ 		numa_crng_init();
+ 		crng_init = 2;
+ 		pr_notice("crng init done (trusting CPU's manufacturer)\n");
+ 	}
+-	crng->init_time = jiffies - CRNG_RESEED_INTERVAL - 1;
++	primary_crng.init_time = jiffies - CRNG_RESEED_INTERVAL - 1;
+ }
+ 
+ static void crng_finalize_init(struct crng_state *crng)
+@@ -1698,7 +1698,7 @@ int __init rand_initialize(void)
+ 	init_std_data();
+ 	if (crng_need_final_init)
+ 		crng_finalize_init(&primary_crng);
+-	crng_initialize_primary(&primary_crng);
++	crng_initialize_primary();
+ 	crng_global_init_time = jiffies;
+ 	if (ratelimit_disable) {
+ 		urandom_warning.interval = 0;
+
+
