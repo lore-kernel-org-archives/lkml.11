@@ -2,76 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A034C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 04:48:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2FADC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 04:50:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231292AbiFWEsI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 00:48:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59386 "EHLO
+        id S231394AbiFWEsU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 00:48:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232800AbiFWDJa (ORCPT
+        with ESMTP id S236292AbiFWDUC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 23:09:30 -0400
-Received: from twspam01.aspeedtech.com (twspam01.aspeedtech.com [211.20.114.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 116C823177;
-        Wed, 22 Jun 2022 20:09:28 -0700 (PDT)
-Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 25N2mScA001829;
-        Thu, 23 Jun 2022 10:48:28 +0800 (GMT-8)
-        (envelope-from neal_liu@aspeedtech.com)
-Received: from localhost.localdomain (192.168.10.10) by TWMBX02.aspeed.com
- (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 23 Jun
- 2022 11:04:08 +0800
-From:   Neal Liu <neal_liu@aspeedtech.com>
-To:     Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alan Stern <stern@rowland.harvard.edu>
-CC:     Roger Quadros <roger.quadros@nokia.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Wesley Cheng <quic_wcheng@quicinc.com>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Nikita Yushchenko <nikita.yoush@cogentembedded.com>,
-        Cai Huoqing <cai.huoqing@linux.dev>,
-        <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <BMC-SW@aspeedtech.com>
-Subject: [PATCH RESEND] usb: gadget: f_mass_storage: Make CD-ROM emulation works with Windows OS
-Date:   Thu, 23 Jun 2022 11:04:05 +0800
-Message-ID: <20220623030405.1922980-1-neal_liu@aspeedtech.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 22 Jun 2022 23:20:02 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D9DE1CFFB
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 20:20:01 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id c2so31105816lfk.0
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 20:20:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=shutemov-name.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=79v4g22d06dNQZx4XHZ3GsOIEc9zd0ggEjlq0srZKG4=;
+        b=yrsZPHDCD9chqAOlK2aqkVDJbj4YlJK6Y1EmWC+AJelEirjFWQUhgxYZMRsapycCqT
+         d9/sLvLnS2eOJcmjMAuTeVD27TGKvpamgOwFcYRj+mGYSFBLSmmSZXaBDE3SUZrHdL4+
+         FNKvpXkRR1rlHo31238gF7oFTd6tugL+1j7VQ+5hZp3rK1Cgd3ZlEW1LGNL2qd2hO57J
+         f/U0Jm7N2a2hUqpnKo8G4S1bfKfvBcNMD5a0B4I3FxQhigqDWQC/ibhSOKDneB2pXxZy
+         tsvE9GxQXcHN3mCLB7R+5Pyv0PcHex0LGIVYsDNyVT5tKveqtjo8SRBsf4cRYjPoTNFQ
+         Gh6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=79v4g22d06dNQZx4XHZ3GsOIEc9zd0ggEjlq0srZKG4=;
+        b=yvu7wiZl3++uGB60hdlEHmQ/LqaYO4M7URpn6bqiXxQU7srQ3f3n8lNzQvjPCxKsHR
+         1eGtkANW+TwUsl9/52sB/LIgj6FSsStMqx6zFIllyO7hAohjKYQpuF6cExuE4nZVB5Q/
+         FATSgZG0R9EczOhbWCaAiGbhcerp+2/XUVNYCeQPzOrKpKpOtuRCnXOGqvoplfUBoiiV
+         I5lqF5pjVnEPp5zYY0IxPcIHQf6rhM04iEQ9+k4xudgCYAizwbm0tGeeSoQ6rVnkKLsV
+         MID33bCk3o61jJgT65llXpCMRdC348oMgPRi1RcUXD/3vGrJdw+mIis5buLM2sFnk+UK
+         WJrg==
+X-Gm-Message-State: AJIora9y0E3Qe7RfNDxVFLnPosnVEdc4J+IvUSy2Hsd/+lquzPJ8hpmi
+        tqPekB5DQPnNYgEbSWI0vbsKmA==
+X-Google-Smtp-Source: AGRyM1sjcA+kIxAhm99wkWCmSIHuz3qmOx9TGh1uQ8/3JNaPFYlfZzhiTm1Jt9n2Mty+3YUw6m9sLw==
+X-Received: by 2002:ac2:598b:0:b0:47f:9bf4:975a with SMTP id w11-20020ac2598b000000b0047f9bf4975amr3371926lfn.216.1655954399548;
+        Wed, 22 Jun 2022 20:19:59 -0700 (PDT)
+Received: from box.localdomain ([86.57.175.117])
+        by smtp.gmail.com with ESMTPSA id s9-20020a056512214900b004790b5a0b22sm2799796lfr.239.2022.06.22.20.19.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jun 2022 20:19:58 -0700 (PDT)
+Received: by box.localdomain (Postfix, from userid 1000)
+        id 8F928104A32; Thu, 23 Jun 2022 06:22:11 +0300 (+03)
+Date:   Thu, 23 Jun 2022 06:22:11 +0300
+From:   "Kirill A. Shutemov" <kirill@shutemov.name>
+To:     Miaohe Lin <linmiaohe@huawei.com>
+Cc:     akpm@linux-foundation.org, shy828301@gmail.com,
+        willy@infradead.org, zokeefe@google.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 07/16] mm/huge_memory: minor cleanup for
+ split_huge_pages_pid
+Message-ID: <20220623032211.rvrtlas25u7nddpt@box.shutemov.name>
+References: <20220622170627.19786-1-linmiaohe@huawei.com>
+ <20220622170627.19786-8-linmiaohe@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [192.168.10.10]
-X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
- (192.168.0.24)
-X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 25N2mScA001829
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220622170627.19786-8-linmiaohe@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add read TOC with format 2 to support CD-ROM emulation with
-Windows OS.
-This patch is tested on Windows OS Server 2019.
+On Thu, Jun 23, 2022 at 01:06:18AM +0800, Miaohe Lin wrote:
+> Use helper function vma_lookup to lookup the needed vma and use help macro
+> IS_ERR_OR_NULL to check the validity of page to simplify the code. Minor
+> readability improvement.
 
-Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
----
- drivers/usb/gadget/function/f_mass_storage.c | 1 +
- 1 file changed, 1 insertion(+)
+Grouping of changing seems random, but okay.
 
-diff --git a/drivers/usb/gadget/function/f_mass_storage.c b/drivers/usb/gadget/function/f_mass_storage.c
-index 3a77bca0ebe1..3c2a5f1e8b66 100644
---- a/drivers/usb/gadget/function/f_mass_storage.c
-+++ b/drivers/usb/gadget/function/f_mass_storage.c
-@@ -1209,6 +1209,7 @@ static int do_read_toc(struct fsg_common *common, struct fsg_buffhd *bh)
- 
- 	switch (format) {
- 	case 0:
-+	case 1:
- 		/* Formatted TOC */
- 		len = 4 + 2*8;		/* 4 byte header + 2 descriptors */
- 		memset(buf, 0, len);
 -- 
-2.25.1
-
+ Kirill A. Shutemov
