@@ -2,76 +2,211 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA3E2C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 09:55:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36221C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 09:55:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231261AbiFWJzZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 05:55:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56932 "EHLO
+        id S231316AbiFWJzx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 05:55:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229592AbiFWJzX (ORCPT
+        with ESMTP id S231289AbiFWJzu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 05:55:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 301142BB33
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 02:55:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655978121;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=LcK/ElvToq/GKGaUTeOWlSYLGB2z7CGdZ3c0oLrfcZU=;
-        b=VGiiahHrsCsCTVkzbYOqEOsQvzukkbIb2MRBov05pAM/24Jdu7bu77/bXk4B+nqpfH+q+6
-        eYpUGJfv771SqcyB40aCVAZgA8cNpDf0AzOjjcRK9Iv97EsGc5LLfqxkxZuTnKTVYVOqua
-        XE50EGZh2eXTXCDWIrjxnLVA6N8DFy8=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-474-ffpYzy0IMTS5oVwWBGW_aA-1; Thu, 23 Jun 2022 05:55:18 -0400
-X-MC-Unique: ffpYzy0IMTS5oVwWBGW_aA-1
-Received: by mail-wm1-f70.google.com with SMTP id o23-20020a05600c511700b0039743cd8093so1178293wms.6
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 02:55:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LcK/ElvToq/GKGaUTeOWlSYLGB2z7CGdZ3c0oLrfcZU=;
-        b=KzdZSDdANKJYMAvX1T18ohtyxrSWDFm8Y3cdHUciIyCQleRJ1MWx6d2K3RgeXa/BYt
-         Mm7nThNz0NJh14E0/IZJfRPGVPe1uvA38cA5s3MkHbKzMd2Tl6jV8Qw58Efz62ggpgcm
-         4u99fCe70KtHDOfyisGGUPSvdujhKgenv8Tn4Gs9d69zhiyvTCjKw85daj0iUxh+ov9W
-         OH77/tvZqTdli2Ni9AXcsP+ziN0QksQ5bxPkEvrl93ICtZGk468afO9mRJeukdQBVbVT
-         z/7DLdJ7Iia5In8xV5PNsGhBSmMqjylid4T9qElygg+42WMASGmvgeAiR8+aCxKgSdO7
-         ftnA==
-X-Gm-Message-State: AJIora8jl0nh9/JPh4E0WpTfI4N5C8Y3HyRWhh72dBFrHWb1DEZJ0F2c
-        0FqfaQYqK1x24C5NjvNZoy8cBS6A889+5GgrNfbhKGLKRk58IKZ1Z9v5xFbNekvmY9EXYKGIAHu
-        rj0AspE4vvJgDQ6C8fTvGhJ3sVXJQiIQ5Bz0zQlRJ
-X-Received: by 2002:a7b:c4ce:0:b0:3a0:2ac4:3233 with SMTP id g14-20020a7bc4ce000000b003a02ac43233mr3167191wmk.92.1655978117407;
-        Thu, 23 Jun 2022 02:55:17 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tWWfknRvDP524lHe6dlXZBJVCYmj0zoYe2ybjVKioiQLsF7GQ7KgpdkDjinkKIxuFs8fmriuxQO2+bQbrXoaE=
-X-Received: by 2002:a7b:c4ce:0:b0:3a0:2ac4:3233 with SMTP id
- g14-20020a7bc4ce000000b003a02ac43233mr3167181wmk.92.1655978117238; Thu, 23
- Jun 2022 02:55:17 -0700 (PDT)
+        Thu, 23 Jun 2022 05:55:50 -0400
+Received: from esa2.hgst.iphmx.com (esa2.hgst.iphmx.com [68.232.143.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A68A12F3A9
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 02:55:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1655978149; x=1687514149;
+  h=message-id:date:mime-version:subject:to:references:from:
+   in-reply-to:content-transfer-encoding;
+  bh=XXpmfGITyPHZs6FZ5fvy9HEUGUmVlfFW8Va4Xmp7y8k=;
+  b=ha2URw/ZcGC06Lw/9IgUxCgFJdpoaPRVD84ge33xIPHqEXH73/DyxB+k
+   NZZ8RtgdpyRJHP0+I7aCrL82yiglzLZMji3jEElDkJ7D00nWfulLiVmU2
+   2M/njGoJam6o9ozuAROhMzp3wv1CCGH9lMF3d8WmUO+IksR0/xugKWBeS
+   3FEtV+RSttTKRwV1Y5dda2Wq3YbDkYlkxSibg7/hlp7tVRY1i1F9NtyPa
+   QcO5ZFkn6hvub4yWVZp7MRGQyO4abpH6cXGr+Ln01iaJ042hRhODldAim
+   DcWDROZT2qeZDcJyOQxJBH5HU7A4q8rLfXaTbYjqC9mSWd/EQxHHoootv
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.92,215,1650902400"; 
+   d="scan'208";a="308235323"
+Received: from h199-255-45-15.hgst.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
+  by ob1.hgst.iphmx.com with ESMTP; 23 Jun 2022 17:55:45 +0800
+IronPort-SDR: cXErdpdBjE/u4mAhYhHQkwgPeJJHfkr+8HczKsoNr7u3Nzjyh3abA9lXv+bZIjHGcPZ9i930RC
+ Ptxhp97V7aKhYdIQI/5Wfsm+NXM1qkrHEp28uVBa5ZT3u0XXSeYaLf5lQbefVjmfYrcAgpVgpt
+ HI0dcGwSfSc5lLz9v4UMYiJiayOeb6qr3POvsFaj8cLCqwD3o3OqxaOBwtuMy1JvCGg4TZCaC1
+ jZ9qtsvzEGb5LILeUWbKA2gbMIcff2ycReqXOyLOFeqeDXF/WKKudiotfC4nOcUxctNTWYxkyX
+ kdVH26PQKz7F9SCuR7epQV+d
+Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
+  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 23 Jun 2022 02:13:32 -0700
+IronPort-SDR: qfVH/bvYrlex066ZOzDbvXZ0SePVyTqacb+ZAKVTojgSIK7uGgCLac4IPAN4+8jdNJHpK5sE9F
+ mZIiMLLBOdSZRjqa7j/ACscSFYSKD1hXZTda2pLNeAW38Q59YMvn3ZXHpD1RtohHmIVE2JNgdN
+ yUmME+GeDqpXBjz3LuRI4VSX82pNvYsLNuq71Bh3u2098WvgAIC781bOvhP74XbZVxv/ekm1SF
+ qj+yvqinc/7kAEqRKVdXCeu1w079SxME2OslfgXmiSioOXlLlD4JirZ6xV7Bae5gGgi3CMNx1G
+ wAU=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 23 Jun 2022 02:55:46 -0700
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4LTFxY3xMhz1Rwnl
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 02:55:45 -0700 (PDT)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1655978144; x=1658570145; bh=XXpmfGITyPHZs6FZ5fvy9HEUGUmVlfFW8Va
+        4Xmp7y8k=; b=e+LTVpJ8vC7V7YcBAQSmvUX383ihhrA0xxjfohzckdc8UIozi8m
+        EJ6U4DKqhPIFJyLFnDnhQNNmjW3fGoO7vW4NXnVKsg4wE6xn9Egof1eqXSv/DASU
+        J4HcCBI6ESujHK7pRwosb/MiK58Y2Ol4RLvGVNNBjcxm/IuMkhgkVNpPJlenoiB1
+        f9qd59xDISIYuZjq1MVmah+3EL6yV+9DwZty+5uBxVxt5+4dXY8BAV0R1lWNkiJO
+        T+1xHSnSogbZbHB7NkUNRUEdPAC29dpx5noKZB++fdeOqOR8DwyT5J2+LEk7Kjsu
+        kK/8v2XN6oGAqhTHqSg6VkhkbNcbb8Xzkfg==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id TyuCcm-r_YHm for <linux-kernel@vger.kernel.org>;
+        Thu, 23 Jun 2022 02:55:44 -0700 (PDT)
+Received: from [10.225.163.90] (unknown [10.225.163.90])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4LTFxW6vFvz1RtVk;
+        Thu, 23 Jun 2022 02:55:43 -0700 (PDT)
+Message-ID: <5dad0eb6-10e3-8319-ca86-f5059a7bd185@opensource.wdc.com>
+Date:   Thu, 23 Jun 2022 18:55:42 +0900
 MIME-Version: 1.0
-References: <20220623093716.13338-1-jiaming@nfschina.com>
-In-Reply-To: <20220623093716.13338-1-jiaming@nfschina.com>
-From:   Andreas Gruenbacher <agruenba@redhat.com>
-Date:   Thu, 23 Jun 2022 11:55:06 +0200
-Message-ID: <CAHc6FU5h+QDHgvNupAmjsnhKDCAXCpdy-3x8Qk-x3qwLMWvwZQ@mail.gmail.com>
-Subject: Re: [PATCH] gfs2: Fix spelling mistake
-To:     Zhang Jiaming <jiaming@nfschina.com>
-Cc:     Bob Peterson <rpeterso@redhat.com>,
-        cluster-devel <cluster-devel@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>, liqiong@nfschina.com,
-        renyu@nfschina.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] libata: add horkage for M88V29
+Content-Language: en-US
+To:     =?UTF-8?B?QsO2c3rDtnJtw6lueWkgWm9sdMOhbg==?= <zboszor@gmail.com>,
+        zboszor@pr.hu, linux-kernel@vger.kernel.org,
+        linux-ide@vger.kernel.org
+References: <20220204125750.1771303-1-zboszor@pr.hu>
+ <f726e9e1-bdad-ac8a-368b-aae423a00676@opensource.wdc.com>
+ <78c29f43-3b67-8e70-0711-14e997f3efb1@gmail.com>
+ <09091cc4-f652-0978-bb6a-b63f24fdcf49@opensource.wdc.com>
+ <bbfeb862-9e1f-79c2-89dd-7db9515471e4@gmail.com>
+ <7f086930-ff6c-da99-212b-46c4479247cb@opensource.wdc.com>
+ <c678589c-cb30-35a3-cc7f-ad4065863640@gmail.com>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <c678589c-cb30-35a3-cc7f-ad4065863640@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 11:41 AM Zhang Jiaming <jiaming@nfschina.com> wrote:
-> Change 'accomodate' to 'accommodate'.
+On 6/23/22 18:32, B=C3=B6sz=C3=B6rm=C3=A9nyi Zolt=C3=A1n wrote:
+> 2022. 06. 23. 10:46 keltez=C3=A9ssel, Damien Le Moal =C3=ADrta:
+>> On 6/23/22 17:38, B=C3=B6sz=C3=B6rm=C3=A9nyi Zolt=C3=A1n wrote:
+>>> 2022. 06. 23. 10:22 keltez=C3=A9ssel, Damien Le Moal =C3=ADrta:
+>>>> On 6/23/22 16:47, B=C3=B6sz=C3=B6rm=C3=A9nyi Zolt=C3=A1n wrote:
+>>>>> 2022. 02. 08. 9:07 keltez=C3=A9ssel, Damien Le Moal =C3=ADrta:
+>>>>>> On 2/4/22 21:57, zboszor@pr.hu wrote:
+>>>>>>> From: Zolt=C3=A1n B=C3=B6sz=C3=B6rm=C3=A9nyi <zboszor@gmail.com>
+>>>>>>>
+>>>>>>> This device is a CF card, or possibly an SSD in CF form factor.
+>>>>>>> It supports NCQ and high speed DMA.
+>>>>>>>
+>>>>>>> While it also advertises TRIM support, I/O errors are reported
+>>>>>>> when the discard mount option fstrim is used. TRIM also fails
+>>>>>>> when disabling NCQ and not just as an NCQ command.
+>>>>>>>
+>>>>>>> TRIM must be disabled for this device.
+>>>>>>>
+>>>>>>> Signed-off-by: Zolt=C3=A1n B=C3=B6sz=C3=B6rm=C3=A9nyi <zboszor@gm=
+ail.com>
+>>>>>>> ---
+>>>>>>>     drivers/ata/libata-core.c | 1 +
+>>>>>>>     1 file changed, 1 insertion(+)
+>>>>>>>
+>>>>>>> diff --git a/drivers/ata/libata-core.c b/drivers/ata/libata-core.=
+c
+>>>>>>> index 67f88027680a..4a7f58fcc411 100644
+>>>>>>> --- a/drivers/ata/libata-core.c
+>>>>>>> +++ b/drivers/ata/libata-core.c
+>>>>>>> @@ -4028,6 +4028,7 @@ static const struct ata_blacklist_entry ata=
+_device_blacklist [] =3D {
+>>>>>>>    =20
+>>>>>>>     	/* devices that don't properly handle TRIM commands */
+>>>>>>>     	{ "SuperSSpeed S238*",		NULL,	ATA_HORKAGE_NOTRIM, },
+>>>>>>> +	{ "M88V29*",			NULL,	ATA_HORKAGE_NOTRIM, },
+>>>>>>>    =20
+>>>>>>>     	/*
+>>>>>>>     	 * As defined, the DRAT (Deterministic Read After Trim) and =
+RZAT
+>>>>>> Applied to for-5.17-fixes. Thanks !
+>>>>> Thank you. However, I have second thoughts about this patch.
+>>>>> The device advertises this:
+>>>>>
+>>>>> # hdparm -iI /dev/sda
+>>>>> ...
+>>>>>    =C2=A0Enabled Supported
+>>>>>    =C2=A0=C2=A0=C2=A0 *=C2=A0=C2=A0=C2=A0 Data Set Management TRIM =
+supported (limit 1 block)
+>>>>> ...
+>>>>>
+>>>>> but the I/O failures always reported higher number of blocks,
+>>>>> IIRC the attempted number of block was 8 or so.
+>>>>>
+>>>>> Can the kernel limit or split TRIM commands according to the
+>>>>> advertised limit? If not (or not yet) then the quirk is good for no=
+w.
+>>>> Yes, the kernel does that. See the sysfs queue attributes
+>>>> discard_max_bytes and discard_max_hw_bytes. What are the values for =
+your
+>>>> device ? I think that the "limit 1 block" indicated by hdparm is sim=
+ply to
+>>>> say that the DSM command (to trim the device) accept only at most a =
+1
+>>>> block (512 B) list of sectors to trim. That is not the actual trim l=
+imit
+>>>> for each sector range in that list.
+>>> With the quirk in effect (TRIM disabled) I have these:
+>>>
+>>> [root@chef queue]# pwd
+>>> /sys/block/sda/queue
+>>> [root@chef queue]# cat discard_granularity
+>>> 0
+>>> [root@chef queue]# cat discard_max_bytes
+>>> 0
+>>> [root@chef queue]# cat discard_max_hw_bytes
+>>> 0
+>> Yes, expected. What are the values without the quirk applied ?
+>=20
+> I built 5.18.6 with removing the quirk.
+>=20
+> [root@chef queue]# pwd
+> /sys/block/sda/queue/
+> [root@chef queue]# cat discard_granularity
+> 512
+> [root@chef queue]# cat discard_max_bytes
+> 2147450880
+> [root@chef queue]# cat discard_max_hw_bytes
+> 2147450880
+> [root@chef queue]# cat max_discard_segments
+> 1
 
-Applied, thanks.
+All normal. This is 65535 sectors at most per trim range times 64 ranges
+at most (64 range in at most 1 512B range list).
+65535*512*64=3D2147450880
 
-Andreas
+So if that is not working, then it means that DSM TRIM are not working
+correctly on that device. Have you tried disabling NCQ trim ?
+Use libata.force noncqtrim option.
 
+>=20
+>> With 5.19, you can use libata.force to disable/enable it. See
+>> Documentation/admin-guide/kernel-parameters.txt for details.
+>> You could try disabling DSM TRIM (queued trim) and see if the non-ncq =
+trim
+>> work.
+>>
+>=20
+
+
+--=20
+Damien Le Moal
+Western Digital Research
