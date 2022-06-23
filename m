@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EC91C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:46:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 820DBC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:46:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234912AbiFWRqP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:46:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48122 "EHLO
+        id S234931AbiFWRqV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:46:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234464AbiFWRnZ (ORCPT
+        with ESMTP id S234734AbiFWRnj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:43:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 597F19DB4C;
-        Thu, 23 Jun 2022 10:10:32 -0700 (PDT)
+        Thu, 23 Jun 2022 13:43:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CC2F9DB62;
+        Thu, 23 Jun 2022 10:10:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 605B86159A;
-        Thu, 23 Jun 2022 17:10:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A0E2C341C5;
-        Thu, 23 Jun 2022 17:10:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C680BB824B5;
+        Thu, 23 Jun 2022 17:10:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 150D0C3411B;
+        Thu, 23 Jun 2022 17:10:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004230;
-        bh=g6RPFNnXsdV85kFmcYKtt5mXLQp2jNb1ecT/eusiiIw=;
+        s=korg; t=1656004233;
+        bh=TcZAYTaloJ+SuNBzKaqj/ezb8TUKypw15e4Q6XXhsYI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N5H3+qF+Z0qKbw1c+ryPbINm9dcDf0LBuEowien2AUfxyeP0PcCM3wc4oSPrOoE4O
-         Uxw8e7+9rBNHok1n3OYpEHqnlYI81zZI56rfSSMMrwz3cuumsSLEfJRAFdeRo7EmX1
-         81ctNz2iLW/1cn/e2owf08o0PXfR51IhpMmDR8d0=
+        b=QZpBxABzFncl3nlh/ljrymWjTs6lJkVasXx2jzouruGg0M/mv5aMg5f6jfFuxwSYv
+         g4nbYe/GYW0umpBhUto88us/AzOEF/JatjtiHu4+wKeVGGxa6mWURnBb/w7wShFdvz
+         BulgeNFGpXO1xP5nXFjrYjIuXW5zpmulDtfM84Hg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Hulk Robot <hulkci@huawei.com>,
-        Baokun Li <libaokun1@huawei.com>,
-        Ritesh Harjani <ritesh.list@gmail.com>,
-        Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 4.14 223/237] ext4: fix bug_on ext4_mb_use_inode_pa
-Date:   Thu, 23 Jun 2022 18:44:17 +0200
-Message-Id: <20220623164349.565425261@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        David Dworken <ddworken@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Ben Hutchings <ben@decadent.org.uk>
+Subject: [PATCH 4.14 232/237] tcp: add some entropy in __inet_hash_connect()
+Date:   Thu, 23 Jun 2022 18:44:26 +0200
+Message-Id: <20220623164349.827904651@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -51,97 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baokun Li <libaokun1@huawei.com>
+From: Eric Dumazet <edumazet@google.com>
 
-commit a08f789d2ab5242c07e716baf9a835725046be89 upstream.
+commit c579bd1b4021c42ae247108f1e6f73dd3f08600c upstream.
 
-Hulk Robot reported a BUG_ON:
-==================================================================
-kernel BUG at fs/ext4/mballoc.c:3211!
-[...]
-RIP: 0010:ext4_mb_mark_diskspace_used.cold+0x85/0x136f
-[...]
-Call Trace:
- ext4_mb_new_blocks+0x9df/0x5d30
- ext4_ext_map_blocks+0x1803/0x4d80
- ext4_map_blocks+0x3a4/0x1a10
- ext4_writepages+0x126d/0x2c30
- do_writepages+0x7f/0x1b0
- __filemap_fdatawrite_range+0x285/0x3b0
- file_write_and_wait_range+0xb1/0x140
- ext4_sync_file+0x1aa/0xca0
- vfs_fsync_range+0xfb/0x260
- do_fsync+0x48/0xa0
-[...]
-==================================================================
+Even when implementing RFC 6056 3.3.4 (Algorithm 4: Double-Hash
+Port Selection Algorithm), a patient attacker could still be able
+to collect enough state from an otherwise idle host.
 
-Above issue may happen as follows:
--------------------------------------
-do_fsync
- vfs_fsync_range
-  ext4_sync_file
-   file_write_and_wait_range
-    __filemap_fdatawrite_range
-     do_writepages
-      ext4_writepages
-       mpage_map_and_submit_extent
-        mpage_map_one_extent
-         ext4_map_blocks
-          ext4_mb_new_blocks
-           ext4_mb_normalize_request
-            >>> start + size <= ac->ac_o_ex.fe_logical
-           ext4_mb_regular_allocator
-            ext4_mb_simple_scan_group
-             ext4_mb_use_best_found
-              ext4_mb_new_preallocation
-               ext4_mb_new_inode_pa
-                ext4_mb_use_inode_pa
-                 >>> set ac->ac_b_ex.fe_len <= 0
-           ext4_mb_mark_diskspace_used
-            >>> BUG_ON(ac->ac_b_ex.fe_len <= 0);
+Idea of this patch is to inject some noise, in the
+cases __inet_hash_connect() found a candidate in the first
+attempt.
 
-we can easily reproduce this problem with the following commands:
-	`fallocate -l100M disk`
-	`mkfs.ext4 -b 1024 -g 256 disk`
-	`mount disk /mnt`
-	`fsstress -d /mnt -l 0 -n 1000 -p 1`
+This noise should not significantly reduce the collision
+avoidance, and should be zero if connection table
+is already well used.
 
-The size must be smaller than or equal to EXT4_BLOCKS_PER_GROUP.
-Therefore, "start + size <= ac->ac_o_ex.fe_logical" may occur
-when the size is truncated. So start should be the start position of
-the group where ac_o_ex.fe_logical is located after alignment.
-In addition, when the value of fe_logical or EXT4_BLOCKS_PER_GROUP
-is very large, the value calculated by start_off is more accurate.
+Note that this is not implementing RFC 6056 3.3.5
+because we think Algorithm 5 could hurt typical
+workloads.
 
-Cc: stable@kernel.org
-Fixes: cd648b8a8fd5 ("ext4: trim allocation requests to group size")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Baokun Li <libaokun1@huawei.com>
-Reviewed-by: Ritesh Harjani <ritesh.list@gmail.com>
-Link: https://lore.kernel.org/r/20220528110017.354175-2-libaokun1@huawei.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: David Dworken <ddworken@google.com>
+Cc: Willem de Bruijn <willemb@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/mballoc.c |    9 +++++++++
- 1 file changed, 9 insertions(+)
+ net/ipv4/inet_hashtables.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/fs/ext4/mballoc.c
-+++ b/fs/ext4/mballoc.c
-@@ -3197,6 +3197,15 @@ ext4_mb_normalize_request(struct ext4_al
- 	size = size >> bsbits;
- 	start = start_off >> bsbits;
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -694,6 +694,11 @@ next_port:
+ 	return -EADDRNOTAVAIL;
  
-+	/*
-+	 * For tiny groups (smaller than 8MB) the chosen allocation
-+	 * alignment may be larger than group size. Make sure the
-+	 * alignment does not move allocation to a different group which
-+	 * makes mballoc fail assertions later.
+ ok:
++	/* If our first attempt found a candidate, skip next candidate
++	 * in 1/16 of cases to add some noise.
 +	 */
-+	start = max(start, rounddown(ac->ac_o_ex.fe_logical,
-+			(ext4_lblk_t)EXT4_BLOCKS_PER_GROUP(ac->ac_sb)));
-+
- 	/* don't cover already allocated blocks in selected range */
- 	if (ar->pleft && start <= ar->lleft) {
- 		size -= ar->lleft + 1 - start;
++	if (!i && !(prandom_u32() % 16))
++		i = 2;
+ 	WRITE_ONCE(table_perturb[index], READ_ONCE(table_perturb[index]) + i + 2);
+ 
+ 	/* Head lock still held and bh's disabled */
 
 
