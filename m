@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D3DDC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:59:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40080CCA486
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:59:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235772AbiFWR5k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:57:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41324 "EHLO
+        id S236176AbiFWR6z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:58:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235625AbiFWRw5 (ORCPT
+        with ESMTP id S235187AbiFWRyA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:52:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5857C9214F;
-        Thu, 23 Jun 2022 10:13:45 -0700 (PDT)
+        Thu, 23 Jun 2022 13:54:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48AD5AD18D;
+        Thu, 23 Jun 2022 10:14:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7219B61DB3;
-        Thu, 23 Jun 2022 17:13:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38F24C3411B;
-        Thu, 23 Jun 2022 17:13:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D60C261DED;
+        Thu, 23 Jun 2022 17:14:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD219C3411B;
+        Thu, 23 Jun 2022 17:14:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004423;
-        bh=oD21TKpBLNIfhdnGC4USn4S/vNQfcl7mQO9P0WEySEc=;
+        s=korg; t=1656004492;
+        bh=4gkcvBNjgb8WCPBbXXpE9N01Bc7DZRyaqORkwV2NZXc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hAA+Fl0SshOqUJmzMHppfTObN6tBKpqmsw76IIqO1giL2NQspUncQZI/scjt77B/r
-         O9mIDLqLlcyRvUeavOpYGUmM7vOq5UhoYSaxUy+gkzbO5HyVkyrYD7U8VA0B5tbwrc
-         nzKgLSRjy8CXfuD2G2kd1ATbP0oY3h/8RWSzL9Z8=
+        b=gqf1LY0+mYMIZOh+q+7bp3dN4f4Z9ntZXYIm3lN7qX1iQv40Ev+cW7Ybf2b53Zzt4
+         KqFmi6oweYwi/sT7CsKjHUDrB5b2wLMSsH5YaPW19aiHmjLsAR+DfwpNt97M0HOAaC
+         z/N1fMXi57EjUML+vHbRM3HIZacALZe6PSfeUxww=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yangtao Li <tiny.windzz@gmail.com>,
-        Theodore Tso <tytso@mit.edu>,
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.19 032/234] random: remove some dead code of poolinfo
-Date:   Thu, 23 Jun 2022 18:41:39 +0200
-Message-Id: <20220623164343.974428687@linuxfoundation.org>
+Subject: [PATCH 4.19 055/234] random: use IS_ENABLED(CONFIG_NUMA) instead of ifdefs
+Date:   Thu, 23 Jun 2022 18:42:02 +0200
+Message-Id: <20220623164344.622134227@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
 References: <20220623164343.042598055@linuxfoundation.org>
@@ -49,59 +49,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yangtao Li <tiny.windzz@gmail.com>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 09a6d00a42ce0e63e2a15be3d070974bcc656ec7 upstream.
+commit 7b87324112df2e1f9b395217361626362dcfb9fb upstream.
 
-Since it is not being used, so delete it.
+Rather than an awkward combination of ifdefs and __maybe_unused, we can
+ensure more source gets parsed, regardless of the configuration, by
+using IS_ENABLED for the CONFIG_NUMA conditional code. This makes things
+cleaner and easier to follow.
 
-Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
-Link: https://lore.kernel.org/r/20190607182517.28266-5-tiny.windzz@gmail.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+I've confirmed that on !CONFIG_NUMA, we don't wind up with excess code
+by accident; the generated object file is the same.
+
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   30 ------------------------------
- 1 file changed, 30 deletions(-)
+ drivers/char/random.c |   32 ++++++++++++--------------------
+ 1 file changed, 12 insertions(+), 20 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -431,36 +431,6 @@ static const struct poolinfo {
- 	/* was: x^128 + x^103 + x^76 + x^51 +x^25 + x + 1 */
- 	/* x^128 + x^104 + x^76 + x^51 +x^25 + x + 1 */
- 	{ S(128),	104,	76,	51,	25,	1 },
--	/* was: x^32 + x^26 + x^20 + x^14 + x^7 + x + 1 */
--	/* x^32 + x^26 + x^19 + x^14 + x^7 + x + 1 */
--	{ S(32),	26,	19,	14,	7,	1 },
--#if 0
--	/* x^2048 + x^1638 + x^1231 + x^819 + x^411 + x + 1  -- 115 */
--	{ S(2048),	1638,	1231,	819,	411,	1 },
--
--	/* x^1024 + x^817 + x^615 + x^412 + x^204 + x + 1 -- 290 */
--	{ S(1024),	817,	615,	412,	204,	1 },
--
--	/* x^1024 + x^819 + x^616 + x^410 + x^207 + x^2 + 1 -- 115 */
--	{ S(1024),	819,	616,	410,	207,	2 },
--
--	/* x^512 + x^411 + x^308 + x^208 + x^104 + x + 1 -- 225 */
--	{ S(512),	411,	308,	208,	104,	1 },
--
--	/* x^512 + x^409 + x^307 + x^206 + x^102 + x^2 + 1 -- 95 */
--	{ S(512),	409,	307,	206,	102,	2 },
--	/* x^512 + x^409 + x^309 + x^205 + x^103 + x^2 + 1 -- 95 */
--	{ S(512),	409,	309,	205,	103,	2 },
--
--	/* x^256 + x^205 + x^155 + x^101 + x^52 + x + 1 -- 125 */
--	{ S(256),	205,	155,	101,	52,	1 },
--
--	/* x^128 + x^103 + x^78 + x^51 + x^27 + x^2 + 1 -- 70 */
--	{ S(128),	103,	78,	51,	27,	2 },
--
--	/* x^64 + x^52 + x^39 + x^26 + x^14 + x + 1 -- 15 */
--	{ S(64),	52,	39,	26,	14,	1 },
+@@ -761,7 +761,6 @@ static int credit_entropy_bits_safe(stru
+ 
+ static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
+ 
+-#ifdef CONFIG_NUMA
+ /*
+  * Hack to deal with crazy userspace progams when they are all trying
+  * to access /dev/urandom in parallel.  The programs are almost
+@@ -769,7 +768,6 @@ static DECLARE_WAIT_QUEUE_HEAD(crng_init
+  * their brain damage.
+  */
+ static struct crng_state **crng_node_pool __read_mostly;
 -#endif
- };
+ 
+ static void invalidate_batched_entropy(void);
+ static void numa_crng_init(void);
+@@ -817,7 +815,7 @@ static bool __init crng_init_try_arch_ea
+ 	return arch_init;
+ }
+ 
+-static void __maybe_unused crng_initialize_secondary(struct crng_state *crng)
++static void crng_initialize_secondary(struct crng_state *crng)
+ {
+ 	memcpy(&crng->state[0], "expand 32-byte k", 16);
+ 	_get_random_bytes(&crng->state[4], sizeof(__u32) * 12);
+@@ -868,7 +866,6 @@ static void crng_finalize_init(struct cr
+ 	}
+ }
+ 
+-#ifdef CONFIG_NUMA
+ static void do_numa_crng_init(struct work_struct *work)
+ {
+ 	int i;
+@@ -895,29 +892,24 @@ static DECLARE_WORK(numa_crng_init_work,
+ 
+ static void numa_crng_init(void)
+ {
+-	schedule_work(&numa_crng_init_work);
++	if (IS_ENABLED(CONFIG_NUMA))
++		schedule_work(&numa_crng_init_work);
+ }
+ 
+ static struct crng_state *select_crng(void)
+ {
+-	struct crng_state **pool;
+-	int nid = numa_node_id();
+-
+-	/* pairs with cmpxchg_release() in do_numa_crng_init() */
+-	pool = READ_ONCE(crng_node_pool);
+-	if (pool && pool[nid])
+-		return pool[nid];
+-
+-	return &primary_crng;
+-}
+-#else
+-static void numa_crng_init(void) {}
++	if (IS_ENABLED(CONFIG_NUMA)) {
++		struct crng_state **pool;
++		int nid = numa_node_id();
++
++		/* pairs with cmpxchg_release() in do_numa_crng_init() */
++		pool = READ_ONCE(crng_node_pool);
++		if (pool && pool[nid])
++			return pool[nid];
++	}
+ 
+-static struct crng_state *select_crng(void)
+-{
+ 	return &primary_crng;
+ }
+-#endif
  
  /*
+  * crng_fast_load() can be called by code in the interrupt service
 
 
