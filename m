@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11186C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:15:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 225B5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:15:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231865AbiFWRPb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:15:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42874 "EHLO
+        id S232058AbiFWRPm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:15:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233183AbiFWRMi (ORCPT
+        with ESMTP id S233219AbiFWRMj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:12:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28AC226139;
-        Thu, 23 Jun 2022 09:58:11 -0700 (PDT)
+        Thu, 23 Jun 2022 13:12:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73C2737BC1;
+        Thu, 23 Jun 2022 09:58:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AD3C9B8248A;
-        Thu, 23 Jun 2022 16:58:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E578DC3411B;
-        Thu, 23 Jun 2022 16:58:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 160BC60AD7;
+        Thu, 23 Jun 2022 16:58:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0ABEC3411B;
+        Thu, 23 Jun 2022 16:58:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003488;
-        bh=+XWr3PnDyJZMzZIi8Bb+yDWvvAjGFGsoYV1mRzJaXVs=;
+        s=korg; t=1656003491;
+        bh=Sq415Jz1ULzZ2ku6tCDAnAlfb7NjQqyn9Mije8vBrx8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b0VyvENjKK+gxXEQXphSXzftD/jEK8Xm4o6/cWST/Ok4lQhp1Cc/KQnuGhw3MLgWA
-         lXLBcnd/IPg846kVnuyZjdal8w4J5k6mF1w+pKNaw7tCcXpLgGotMtqRsAF6LsaIyC
-         HoOt+XMjCYi1+MQTwmBwXbbislRY0uxPG0g+ZQ88=
+        b=RUHPexIkRDq5pK2HH3S+tm7j0UqqgVOGKUB4kqSSHIW9hhEiucK4nbsVzWglmQqLS
+         i0ifnGWbpdxd/jQh7xh9SmeSEJYyX8aokkmyVCx4m8BrwtbqjS5ah05TVYDOcym5HZ
+         p21vnGfqlOsyylO9Zp+rtZJ/21zJOGdLaY3LRnOo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Colin Ian King <colin.king@canonical.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        stable@vger.kernel.org, Halil Pasic <pasic@linux.ibm.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Ovidiu Panait <ovidiu.panait@windriver.com>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 4.9 253/264] xprtrdma: fix incorrect header size calculations
-Date:   Thu, 23 Jun 2022 18:44:06 +0200
-Message-Id: <20220623164351.224935058@linuxfoundation.org>
+Subject: [PATCH 4.9 254/264] swiotlb: fix info leak with DMA_FROM_DEVICE
+Date:   Thu, 23 Jun 2022 18:44:07 +0200
+Message-Id: <20220623164351.253372932@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -50,46 +50,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+From: Halil Pasic <pasic@linux.ibm.com>
 
-commit 912288442cb2f431bf3c8cb097a5de83bc6dbac1 upstream.
+commit ddbd89deb7d32b1fbb879f48d68fda1a8ac58e8e upstream.
 
-Currently the header size calculations are using an assignment
-operator instead of a += operator when accumulating the header
-size leading to incorrect sizes.  Fix this by using the correct
-operator.
+The problem I'm addressing was discovered by the LTP test covering
+cve-2018-1000204.
 
-Addresses-Coverity: ("Unused value")
-Fixes: 302d3deb2068 ("xprtrdma: Prevent inline overflow")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
-Reviewed-by: Chuck Lever <chuck.lever@oracle.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+A short description of what happens follows:
+1) The test case issues a command code 00 (TEST UNIT READY) via the SG_IO
+   interface with: dxfer_len == 524288, dxdfer_dir == SG_DXFER_FROM_DEV
+   and a corresponding dxferp. The peculiar thing about this is that TUR
+   is not reading from the device.
+2) In sg_start_req() the invocation of blk_rq_map_user() effectively
+   bounces the user-space buffer. As if the device was to transfer into
+   it. Since commit a45b599ad808 ("scsi: sg: allocate with __GFP_ZERO in
+   sg_build_indirect()") we make sure this first bounce buffer is
+   allocated with GFP_ZERO.
+3) For the rest of the story we keep ignoring that we have a TUR, so the
+   device won't touch the buffer we prepare as if the we had a
+   DMA_FROM_DEVICE type of situation. My setup uses a virtio-scsi device
+   and the  buffer allocated by SG is mapped by the function
+   virtqueue_add_split() which uses DMA_FROM_DEVICE for the "in" sgs (here
+   scatter-gather and not scsi generics). This mapping involves bouncing
+   via the swiotlb (we need swiotlb to do virtio in protected guest like
+   s390 Secure Execution, or AMD SEV).
+4) When the SCSI TUR is done, we first copy back the content of the second
+   (that is swiotlb) bounce buffer (which most likely contains some
+   previous IO data), to the first bounce buffer, which contains all
+   zeros.  Then we copy back the content of the first bounce buffer to
+   the user-space buffer.
+5) The test case detects that the buffer, which it zero-initialized,
+  ain't all zeros and fails.
+
+One can argue that this is an swiotlb problem, because without swiotlb
+we leak all zeros, and the swiotlb should be transparent in a sense that
+it does not affect the outcome (if all other participants are well
+behaved).
+
+Copying the content of the original buffer into the swiotlb buffer is
+the only way I can think of to make swiotlb transparent in such
+scenarios. So let's do just that if in doubt, but allow the driver
+to tell us that the whole mapped buffer is going to be overwritten,
+in which case we can preserve the old behavior and avoid the performance
+impact of the extra bounce.
+
+Signed-off-by: Halil Pasic <pasic@linux.ibm.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+[OP: backport to 4.14: apply swiotlb_tbl_map_single() changes in lib/swiotlb.c]
+Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 [bwh: Backported to 4.9: adjust context]
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sunrpc/xprtrdma/rpc_rdma.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ Documentation/DMA-attributes.txt |   10 ++++++++++
+ include/linux/dma-mapping.h      |    7 +++++++
+ lib/swiotlb.c                    |    3 ++-
+ 3 files changed, 19 insertions(+), 1 deletion(-)
 
---- a/net/sunrpc/xprtrdma/rpc_rdma.c
-+++ b/net/sunrpc/xprtrdma/rpc_rdma.c
-@@ -75,7 +75,7 @@ static unsigned int rpcrdma_max_call_hea
+--- a/Documentation/DMA-attributes.txt
++++ b/Documentation/DMA-attributes.txt
+@@ -143,3 +143,13 @@ So, this provides a way for drivers to a
+ where allocation failures are not a problem, and shouldn't bother the logs.
  
- 	/* Maximum Read list size */
- 	maxsegs += 2;	/* segment for head and tail buffers */
--	size = maxsegs * sizeof(struct rpcrdma_read_chunk);
-+	size += maxsegs * sizeof(struct rpcrdma_read_chunk);
+ NOTE: At the moment DMA_ATTR_NO_WARN is only implemented on PowerPC.
++
++DMA_ATTR_PRIVILEGED
++-------------------
++
++Some advanced peripherals such as remote processors and GPUs perform
++accesses to DMA buffers in both privileged "supervisor" and unprivileged
++"user" modes.  This attribute is used to indicate to the DMA-mapping
++subsystem that the buffer is fully accessible at the elevated privilege
++level (and ideally inaccessible or at least read-only at the
++lesser-privileged levels).
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -61,6 +61,13 @@
+  * allocation failure reports (similarly to __GFP_NOWARN).
+  */
+ #define DMA_ATTR_NO_WARN	(1UL << 8)
++/*
++ * This is a hint to the DMA-mapping subsystem that the device is expected
++ * to overwrite the entire mapped size, thus the caller does not require any
++ * of the previous buffer contents to be preserved. This allows
++ * bounce-buffering implementations to optimise DMA_FROM_DEVICE transfers.
++ */
++#define DMA_ATTR_OVERWRITE		(1UL << 10)
  
- 	/* Minimal Read chunk size */
- 	size += sizeof(__be32);	/* segment count */
-@@ -101,7 +101,7 @@ static unsigned int rpcrdma_max_reply_he
+ /*
+  * A dma_addr_t can hold any valid DMA or bus address for the platform.
+--- a/lib/swiotlb.c
++++ b/lib/swiotlb.c
+@@ -532,7 +532,8 @@ found:
+ 	 */
+ 	for (i = 0; i < nslots; i++)
+ 		io_tlb_orig_addr[index+i] = orig_addr + (i << IO_TLB_SHIFT);
+-	if (dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL)
++	if (!(attrs & DMA_ATTR_OVERWRITE) || dir == DMA_TO_DEVICE ||
++	    dir == DMA_BIDIRECTIONAL)
+ 		swiotlb_bounce(orig_addr, tlb_addr, size, DMA_TO_DEVICE);
  
- 	/* Maximum Write list size */
- 	maxsegs += 2;	/* segment for head and tail buffers */
--	size = sizeof(__be32);		/* segment count */
-+	size += sizeof(__be32);		/* segment count */
- 	size += maxsegs * sizeof(struct rpcrdma_segment);
- 	size += sizeof(__be32);	/* list discriminator */
- 
+ 	return tlb_addr;
 
 
