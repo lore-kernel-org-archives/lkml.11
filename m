@@ -2,106 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94529C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 04:45:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE542C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 04:45:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232425AbiFWEpW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 00:45:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35466 "EHLO
+        id S232462AbiFWEp2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 00:45:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347255AbiFWEeN (ORCPT
+        with ESMTP id S243646AbiFWDuj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 00:34:13 -0400
-Received: from smtpbg.qq.com (smtpbg139.qq.com [175.27.65.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8AC830F71;
-        Wed, 22 Jun 2022 21:34:03 -0700 (PDT)
-X-QQ-mid: bizesmtp66t1655958698t6sehq37
-Received: from localhost.localdomain ( [125.70.163.206])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 23 Jun 2022 12:31:23 +0800 (CST)
-X-QQ-SSF: 0100000000000060B000000A0000000
-X-QQ-FEAT: aP2oNmVYkM//QKQAzcxQRsExRLQz4wt+1vyw5soFQm/ynKh+HqhGyYlMSR5X/
-        Mikgp8+JmaTE7BmZVAkcotH6Ab4Xnt5vBRIYy5/x65FM238u9XvnNd/TyNrS7GjuCs/TM6m
-        vOAOc271BXXVNcqu9hYt4U5gT9lgkrF7C0Z0TC4T7CX/AIMxCGdfA0oSgCwe1EWzFNfmSrL
-        yeQUZlLiGr1vyKdLdqjJ0NQ0qkhKC8Tzdiy84qgyGX1EhDOsZYQcpaM/ZzehhkjMrJU81/t
-        sC25CmwsVHEDCXxbVzZtU2/3x4JHCixwH0lniP9XBNJSodAoYKXATQ0SkaBWfaPqnlWvYr5
-        mkh/+ie
-X-QQ-GoodBg: 0
-From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     ecree.xilinx@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] sfc:siena:Fix syntax errors in comments
-Date:   Thu, 23 Jun 2022 12:31:15 +0800
-Message-Id: <20220623043115.60482-1-yuanjilin@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Wed, 22 Jun 2022 23:50:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EDD3C3DA6B
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 20:50:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655956237;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=SS9ZQeVISzK//7xTKb4KEM9pFFxxfL9dDdxuN/WOdIc=;
+        b=dWwAYe7M2e7JRizPRXfIWVuAsy073Z/JKCKJbxXePMgtYBoz0d3F9e9O/psJ1PqLORQq7h
+        jEGi0+o8bvJQcyFTIcyFPgJ2cLT1HXi20hvx8a02pyTjEX4j6OkyWXDr+rfzoqQ7gzEsd3
+        OGDs0T99AbDk2kNot62GxCyEYiM8/kw=
+Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
+ [209.85.167.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-605-XHHtdB3KNVWG2Be1nrPO6g-1; Wed, 22 Jun 2022 23:50:35 -0400
+X-MC-Unique: XHHtdB3KNVWG2Be1nrPO6g-1
+Received: by mail-lf1-f72.google.com with SMTP id bi38-20020a0565120ea600b0047f640eaee0so6077872lfb.4
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 20:50:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=SS9ZQeVISzK//7xTKb4KEM9pFFxxfL9dDdxuN/WOdIc=;
+        b=1ts+KhzNNg94bDMiw5ZyKhmweAtF3rc64WBAf2X98lUbPpOhTFS8t8c8MAqKVvwGdu
+         QCsUbzqJ7aU7zvG1+0gPZ8nZnCKyC7FSum31layq1ywEQ2UOUVGaV0VrykEyQPmqw6WE
+         kzGZWxGl3r2UHSfeNVI1OG7flagwX1Z1zSTy6cj3sZRAnMPbgrpeu0fqLJI+UROPZZTf
+         Xw6cBLk1MQ3gmZ/DmGrCwQz+uSmA6DPcbk97uZjeg4+DeICUzfyguRbrYyCn+pxTRNP2
+         b+Rr2hAkA+NBlGEOU8Z21gnHaXtJQ9d8L1hkPL6fbuqj/biZrmH4qpMaFk4qjDaD1cJa
+         MUOg==
+X-Gm-Message-State: AJIora84CJvhpG0xYM8HT+jtSUBkNKsJ7d5qbUTBjzftER/6aNf2cY91
+        M4ZBOlcTEU6BWRySvp0/ulSW1b8XHpy07imqaGzPkspQqKHeHiQxjOUBu5tb8iO6wck9A2A2DEw
+        p6OrhNtJyVyKkWkRvkZ7OBxKesDLJ4Nho1CfDQ2Er
+X-Received: by 2002:a05:6512:13a5:b0:47d:c1d9:dea8 with SMTP id p37-20020a05651213a500b0047dc1d9dea8mr4191412lfa.442.1655956233909;
+        Wed, 22 Jun 2022 20:50:33 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1uJxrXj31U9449urMcIxVr7ouushJMsv4RghnzNimWrXWCJynHAMroZ8HhfAW1QET/wi7Px5SnUH4BMCrzV/Pg=
+X-Received: by 2002:a05:6512:13a5:b0:47d:c1d9:dea8 with SMTP id
+ p37-20020a05651213a500b0047dc1d9dea8mr4191404lfa.442.1655956233710; Wed, 22
+ Jun 2022 20:50:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam6
+References: <20220621160859.196646-1-sgarzare@redhat.com> <20220621160859.196646-3-sgarzare@redhat.com>
+In-Reply-To: <20220621160859.196646-3-sgarzare@redhat.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Thu, 23 Jun 2022 11:50:22 +0800
+Message-ID: <CACGkMEsk-O=dVwKoEHRY-nL3XEQktPWiBot2NfOUYNdkoL-s=Q@mail.gmail.com>
+Subject: Re: [PATCH 2/3] vdpa_sim_blk: limit the number of request handled per batch
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     virtualization <virtualization@lists.linux-foundation.org>,
+        =?UTF-8?Q?Eugenio_P=C3=A9rez?= <eperezma@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Delete the redundant word 'set'.
-Delete the redundant word 'a'.
-Delete the redundant word 'in'.
+On Wed, Jun 22, 2022 at 12:09 AM Stefano Garzarella <sgarzare@redhat.com> w=
+rote:
+>
+> Limit the number of requests (4 per queue as for vdpa_sim_net) handled
+> in a batch to prevent the worker from using the CPU for too long.
+>
+> Suggested-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
+> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> ---
+>  drivers/vdpa/vdpa_sim/vdpa_sim_blk.c | 15 ++++++++++++++-
+>  1 file changed, 14 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c b/drivers/vdpa/vdpa_sim=
+/vdpa_sim_blk.c
+> index a83a5c76f620..ac86478845b6 100644
+> --- a/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c
+> +++ b/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c
+> @@ -197,6 +197,7 @@ static bool vdpasim_blk_handle_req(struct vdpasim *vd=
+pasim,
+>  static void vdpasim_blk_work(struct work_struct *work)
+>  {
+>         struct vdpasim *vdpasim =3D container_of(work, struct vdpasim, wo=
+rk);
+> +       bool reschedule =3D false;
+>         int i;
+>
+>         spin_lock(&vdpasim->lock);
+> @@ -206,11 +207,15 @@ static void vdpasim_blk_work(struct work_struct *wo=
+rk)
+>
+>         for (i =3D 0; i < VDPASIM_BLK_VQ_NUM; i++) {
+>                 struct vdpasim_virtqueue *vq =3D &vdpasim->vqs[i];
+> +               bool vq_work =3D true;
+> +               int reqs =3D 0;
+>
+>                 if (!vq->ready)
+>                         continue;
+>
+> -               while (vdpasim_blk_handle_req(vdpasim, vq)) {
+> +               while (vq_work) {
+> +                       vq_work =3D vdpasim_blk_handle_req(vdpasim, vq);
+> +
 
-Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
----
- drivers/net/ethernet/sfc/siena/mcdi_pcol.h | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+Is it better to check and exit the loop early here?
 
-diff --git a/drivers/net/ethernet/sfc/siena/mcdi_pcol.h b/drivers/net/ethernet/sfc/siena/mcdi_pcol.h
-index 89a7fd47b057..a3cc8b7ec732 100644
---- a/drivers/net/ethernet/sfc/siena/mcdi_pcol.h
-+++ b/drivers/net/ethernet/sfc/siena/mcdi_pcol.h
-@@ -274,7 +274,7 @@
-  * MC_CMD_WORKAROUND_BUG26807.
-  * May also returned for other operations such as sub-variant switching. */
- #define MC_CMD_ERR_FILTERS_PRESENT 0x1014
--/* The clock whose frequency you've attempted to set set
-+/* The clock whose frequency you've attempted to set
-  * doesn't exist on this NIC */
- #define MC_CMD_ERR_NO_CLOCK 0x1015
- /* Returned by MC_CMD_TESTASSERT if the action that should
-@@ -7782,7 +7782,7 @@
-  * large number (253) it is not anticipated that this will be needed in the
-  * near future, so can currently be ignored.
-  *
-- * On Riverhead this command is implemented as a a wrapper for `list` in the
-+ * On Riverhead this command is implemented as a wrapper for `list` in the
-  * sensor_query SPHINX service.
-  */
- #define MC_CMD_DYNAMIC_SENSORS_LIST 0x66
-@@ -7827,7 +7827,7 @@
-  * update is in progress, and effectively means the set of usable sensors is
-  * the intersection between the sets of sensors known to the driver and the MC.
-  *
-- * On Riverhead this command is implemented as a a wrapper for
-+ * On Riverhead this command is implemented as a wrapper for
-  * `get_descriptions` in the sensor_query SPHINX service.
-  */
- #define MC_CMD_DYNAMIC_SENSORS_GET_DESCRIPTIONS 0x67
-@@ -7876,7 +7876,7 @@
-  * update is in progress, and effectively means the set of usable sensors is
-  * the intersection between the sets of sensors known to the driver and the MC.
-  *
-- * On Riverhead this command is implemented as a a wrapper for `get_readings`
-+ * On Riverhead this command is implemented as a wrapper for `get_readings`
-  * in the sensor_query SPHINX service.
-  */
- #define MC_CMD_DYNAMIC_SENSORS_GET_READINGS 0x68
-@@ -16682,7 +16682,7 @@
-  * TLV_PORT_MODE_*). A superset of MC_CMD_GET_PORT_MODES_OUT/MODES that
-  * contains all modes implemented in firmware for a particular board. Modes
-  * listed in MODES are considered production modes and should be exposed in
-- * userland tools. Modes listed in in ENGINEERING_MODES, but not in MODES
-+ * userland tools. Modes listed in ENGINEERING_MODES, but not in MODES
-  * should be considered hidden (not to be exposed in userland tools) and for
-  * engineering use only. There are no other semantic differences and any mode
-  * listed in either MODES or ENGINEERING_MODES can be set on the board.
--- 
-2.36.1
+Thanks
+
+>                         /* Make sure used is visible before rasing the in=
+terrupt. */
+>                         smp_wmb();
+>
+> @@ -218,10 +223,18 @@ static void vdpasim_blk_work(struct work_struct *wo=
+rk)
+>                         if (vringh_need_notify_iotlb(&vq->vring) > 0)
+>                                 vringh_notify(&vq->vring);
+>                         local_bh_enable();
+> +
+> +                       if (++reqs > 4) {
+> +                               vq_work =3D false;
+> +                               reschedule =3D true;
+> +                       }
+>                 }
+>         }
+>  out:
+>         spin_unlock(&vdpasim->lock);
+> +
+> +       if (reschedule)
+> +               schedule_work(&vdpasim->work);
+>  }
+>
+>  static void vdpasim_blk_get_config(struct vdpasim *vdpasim, void *config=
+)
+> --
+> 2.36.1
+>
 
