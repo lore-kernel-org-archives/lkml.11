@@ -2,96 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF19FCCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B718BCCA481
 	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:03:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233132AbiFWRCW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:02:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59516 "EHLO
+        id S232706AbiFWRCJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:02:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232867AbiFWQ44 (ORCPT
+        with ESMTP id S233520AbiFWQ5w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:56:56 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0D4A4B403;
-        Thu, 23 Jun 2022 09:52:58 -0700 (PDT)
+        Thu, 23 Jun 2022 12:57:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35E394EDD1;
+        Thu, 23 Jun 2022 09:53:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 68FC0CE25E4;
-        Thu, 23 Jun 2022 16:52:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3026DC341C5;
-        Thu, 23 Jun 2022 16:52:54 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="i9UlvD98"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1656003172;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=lc4+yA8sbbcfkz4YSh6TP9qWPcsqLq7aPfv9CPguNkY=;
-        b=i9UlvD989T4ixKP4ugaWpbhIrTIFH6MqY2PD1AMkoUXtE0WItjhezIw8yr85xPoWjE47RP
-        19lNtmVxEQAkFs9s/hz/Ed6aX3ynCl0nROaVUb2qXlL6TUvHnAjgHB381407R+zeOBozH2
-        E9l1ocNoTBZR/eSQ3yXCo8pib+SoZ78=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 75d9cfc3 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Thu, 23 Jun 2022 16:52:51 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     LKML <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-crypto@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>, stable@vger.kernel.org
-Subject: [PATCH] timekeeping: contribute wall clock to rng on time change
-Date:   Thu, 23 Jun 2022 18:52:26 +0200
-Message-Id: <20220623165226.1335679-1-Jason@zx2c4.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D82EC61FBF;
+        Thu, 23 Jun 2022 16:53:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A2FCC341CF;
+        Thu, 23 Jun 2022 16:53:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656003208;
+        bh=Bg9ECFE1CKePOK7lsrlIrQAb49dhB0JOAbwxVSGLmxg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=JwFYcGz7Z0u+OJPS8IptX8REzN8++m10CH52zw730N0dot/7caektlaPrRVMaQa4b
+         49JKlFuep99Zq8WjFedHZ4P7ZAmijXXUU/PM1lIK84O9wXgMlSvc5z5jiMZtJXiz4b
+         atMeNnAP2yEKJVfACb4DNM3vsC392NULWyJy2O9I=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        Eric Biggers <ebiggers@google.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.9 164/264] random: reseed more often immediately after booting
+Date:   Thu, 23 Jun 2022 18:42:37 +0200
+Message-Id: <20220623164348.704828555@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
+References: <20220623164344.053938039@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The rng's random_init() function contributes the real time to the rng at
-boot time, so that events can at least start in relation to something
-particular in the real world. But this clock might not yet be set that
-point in boot, so nothing is contributed. In addition, the relation
-between minor clock changes from, say, NTP, and the cycle counter is
-potentially useful entropic data.
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-This commit addresses this by mixing in a time stamp on calls to
-settimeofday and adjtimex. No entropy is credited in doing so, so it
-doesn't make initialization faster, but it is still useful input to
-have.
+commit 7a7ff644aeaf071d433caffb3b8ea57354b55bd3 upstream.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Cc: stable@vger.kernel.org
+In order to chip away at the "premature first" problem, we augment our
+existing entropy accounting with more frequent reseedings at boot.
+
+The idea is that at boot, we're getting entropy from various places, and
+we're not very sure which of early boot entropy is good and which isn't.
+Even when we're crediting the entropy, we're still not totally certain
+that it's any good. Since boot is the one time (aside from a compromise)
+that we have zero entropy, it's important that we shepherd entropy into
+the crng fairly often.
+
+At the same time, we don't want a "premature next" problem, whereby an
+attacker can brute force individual bits of added entropy. In lieu of
+going full-on Fortuna (for now), we can pick a simpler strategy of just
+reseeding more often during the first 5 minutes after boot. This is
+still bounded by the 256-bit entropy credit requirement, so we'll skip a
+reseeding if we haven't reached that, but in case entropy /is/ coming
+in, this ensures that it makes its way into the crng rather rapidly
+during these early stages.
+
+Ordinarily we reseed if the previous reseeding is 300 seconds old. This
+commit changes things so that for the first 600 seconds of boot time, we
+reseed if the previous reseeding is uptime / 2 seconds old. That means
+that we'll reseed at the very least double the uptime of the previous
+reseeding.
+
+Cc: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/time/timekeeping.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/char/random.c |   28 +++++++++++++++++++++++++---
+ 1 file changed, 25 insertions(+), 3 deletions(-)
 
-diff --git a/kernel/time/timekeeping.c b/kernel/time/timekeeping.c
-index 8e4b3c32fcf9..ad55da792f13 100644
---- a/kernel/time/timekeeping.c
-+++ b/kernel/time/timekeeping.c
-@@ -1346,6 +1346,9 @@ int do_settimeofday64(const struct timespec64 *ts)
- 	if (!ret)
- 		audit_tk_injoffset(ts_delta);
- 
-+	ktime_get_real_ts64(&xt);
-+	add_device_randomness(&xt, sizeof(xt));
-+
- 	return ret;
- }
- EXPORT_SYMBOL(do_settimeofday64);
-@@ -2475,6 +2478,9 @@ int do_adjtimex(struct __kernel_timex *txc)
- 
- 	ntp_notify_cmos_timer();
- 
-+	ktime_get_real_ts64(&ts);
-+	add_device_randomness(&ts, sizeof(ts));
-+
- 	return ret;
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -337,6 +337,28 @@ static void crng_fast_key_erasure(u8 key
  }
  
--- 
-2.35.1
+ /*
++ * Return whether the crng seed is considered to be sufficiently
++ * old that a reseeding might be attempted. This happens if the last
++ * reseeding was CRNG_RESEED_INTERVAL ago, or during early boot, at
++ * an interval proportional to the uptime.
++ */
++static bool crng_has_old_seed(void)
++{
++	static bool early_boot = true;
++	unsigned long interval = CRNG_RESEED_INTERVAL;
++
++	if (unlikely(READ_ONCE(early_boot))) {
++		time64_t uptime = ktime_get_seconds();
++		if (uptime >= CRNG_RESEED_INTERVAL / HZ * 2)
++			WRITE_ONCE(early_boot, false);
++		else
++			interval = max_t(unsigned int, 5 * HZ,
++					 (unsigned int)uptime / 2 * HZ);
++	}
++	return time_after(jiffies, READ_ONCE(base_crng.birth) + interval);
++}
++
++/*
+  * This function returns a ChaCha state that you may use for generating
+  * random data. It also returns up to 32 bytes on its own of random data
+  * that may be used; random_data_len may not be greater than 32.
+@@ -369,10 +391,10 @@ static void crng_make_state(u32 chacha_s
+ 	}
+ 
+ 	/*
+-	 * If the base_crng is more than 5 minutes old, we reseed, which
+-	 * in turn bumps the generation counter that we check below.
++	 * If the base_crng is old enough, we try to reseed, which in turn
++	 * bumps the generation counter that we check below.
+ 	 */
+-	if (unlikely(time_after(jiffies, READ_ONCE(base_crng.birth) + CRNG_RESEED_INTERVAL)))
++	if (unlikely(crng_has_old_seed()))
+ 		crng_reseed();
+ 
+ 	local_irq_save(flags);
+
 
