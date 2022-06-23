@@ -2,136 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0993CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 01:59:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A781FCCA47E
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 02:00:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378121AbiFWB7R (ORCPT
+        id S1376548AbiFWCAG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 21:59:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45946 "EHLO
+        Wed, 22 Jun 2022 22:00:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378070AbiFWB6d (ORCPT
+        with ESMTP id S232529AbiFWCAE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 21:58:33 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F18448334
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 18:55:10 -0700 (PDT)
-X-UUID: 5997c256dc0d48849e0a4781ec098522-20220623
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.6,REQID:88c7e930-efc3-41f6-98bf-236f94738288,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:b14ad71,CLOUDID:5332cc2d-1756-4fa3-be7f-474a6e4be921,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-        ,QS:nil,BEC:nil,COL:0
-X-UUID: 5997c256dc0d48849e0a4781ec098522-20220623
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
-        (envelope-from <yong.wu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1236942881; Thu, 23 Jun 2022 09:54:46 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Thu, 23 Jun 2022 09:54:45 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkmbs11n2.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Thu, 23 Jun 2022 09:54:44 +0800
-Message-ID: <a53c4a4d9922c9a3fc774976494dea6da1bd8daa.camel@mediatek.com>
-Subject: Re: [PATCH v2 2/5] iommu/mediatek: Add error path for loop of
- mm_dts_parse
-From:   Yong Wu <yong.wu@mediatek.com>
-To:     Robin Murphy <robin.murphy@arm.com>
-CC:     Joerg Roedel <joro@8bytes.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Will Deacon <will@kernel.org>,
-        <iommu@lists.linux-foundation.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        <mingyuan.ma@mediatek.com>, <yf.wang@mediatek.com>,
-        <libo.kang@mediatek.com>, <chengci.xu@mediatek.com>,
-        <youlin.pei@mediatek.com>, <anan.sun@mediatek.com>,
-        <xueqi.zhang@mediatek.com>, Guenter Roeck <groeck@chromium.org>,
-        "Dan Carpenter" <dan.carpenter@oracle.com>
-Date:   Thu, 23 Jun 2022 09:54:44 +0800
-In-Reply-To: <521ed82e-f213-f635-6f5e-3e35ff8cc020@arm.com>
-References: <20220616054203.11365-1-yong.wu@mediatek.com>
-         <20220616054203.11365-3-yong.wu@mediatek.com>
-         <e2091397-b6e2-7296-1378-dc10b24c6ef4@arm.com>
-         <b2ea919315d0084adb465378e6970dbfa4f0829e.camel@mediatek.com>
-         <521ed82e-f213-f635-6f5e-3e35ff8cc020@arm.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Wed, 22 Jun 2022 22:00:04 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C4841A8;
+        Wed, 22 Jun 2022 19:00:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1655949568;
+        bh=eHLrXoaVIZ1xfowGuPkrjSutjDijEW9mNY1mSSTy7Hs=;
+        h=X-UI-Sender-Class:From:Subject:To:Cc:References:Date:In-Reply-To;
+        b=dVxayAJtkrKhwCe8TAok0nyRmqcUoR/obTtkgJ73SdCpCAfxI1YvayXkd8jAABJLB
+         RhPekNgr0zWGV2msj/svCbaK12vILTcFW3eIrOuT9JcmBLN40QZ/R2E2RJehlrvftT
+         3/v/3A4rQoe0JRZjUBhqsdiilf1CuQF7cma0tkIM=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.0.33] ([46.223.2.181]) by mail.gmx.net (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1N6bk4-1nbzTy32Cc-0180Px; Thu, 23
+ Jun 2022 03:59:28 +0200
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Subject: Re: [PATCH 1/8] serial: core: only get RS485 termination gpio if
+ supported
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        ilpo.jarvinen@linux.intel.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, vz@mleia.com,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lukas@wunner.de, p.rosenberger@kunbus.com,
+        Lino Sanfilippo <l.sanfilippo@kunbus.com>
+References: <20220622154659.8710-1-LinoSanfilippo@gmx.de>
+ <20220622154659.8710-2-LinoSanfilippo@gmx.de>
+ <YrNLtg+BZlwKsBbF@smile.fi.intel.com>
+Message-ID: <2dda5707-6f13-6d33-863d-a88b89e88a88@gmx.de>
+Date:   Thu, 23 Jun 2022 03:59:25 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+In-Reply-To: <YrNLtg+BZlwKsBbF@smile.fi.intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:1h6TWrYpfJlbjpVfY8XbPGnncDZ0s81dGshYVaZQhCahGxzh20d
+ 2PQcSUMKU/60rn4UawD2s2L9Eovlnw35HjykR4G7onljbtwQ5t8NoZpI22IBCPWvcA/ucDP
+ /fDNCkCCt77EOIWr/2DQVypWMx2/R0HhEpktSIgvK96AFXuPZMAxtGGdqtvHpHiXvTg/679
+ hNatqpKiYPA+mYDPULOmQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:J6FyruJLVLI=:AUQtvNTc+wsJKhm6A2Ij/2
+ BVwnrDgOse//leMfUapxhuBGd/5ButtZsKBy1oOEXJ0NSbaku34B+ylYPHJ1UJVWy5KO/RMfg
+ x82ZksE29wEETS3T+6x2R8QKRn32qfehAF6lPQHmWur5BjWjIkgT5MQnZipUWpfh+JtjM7pFb
+ FMyKOFg0L6HQTJlOvDLG9rxonntBHwezWN2guUurgVxJTQJsCVHeCG41aolkev7eTvpEFyjqY
+ iNZWxMVsWZlyEooViSeOIx5W8ncMrtkHtx3maorkgEjPEO02JBvMvcJv3PhfvIpRaEDfSzk8a
+ 94MRYWFsvNT0sgYc4GZbJ2hHhxi9iCpmJyLcREIANu1ZTBKebVPNFKq7RP6YKOnjH10e74msL
+ 7THz65ICyn9qQiRXPFugVnOk7peXcg6+qluvSU5baP0lJQtoIpp9zLV+Wtz+KtGDjcNEUWeQG
+ ejXeARIiFkoib2lwGm8MgWuR52uOauUXdZ9ZPF2LlbP/kKzOQjP9w5WSfKpjrYvkqrATs2pYg
+ ndFDDuGlm75vRWMNY0Tgq8NEYCoUNs5rItjrnUQUr0ZOf+ioZ5h4VXnytk5BmaG/6oAF4M0Yi
+ Irl/dw2Q0xlkPlfPxxMNGYc777S7bGf/gZ2po5xlDlP55hDXD/TSb1P/8M3FZvKwAiFIads3Q
+ Cd7O+8qYHfAG8BOeBnQhQkmxMJgPYuYxqvk1SqyBywQRnAAaGhXzWCLLznStF+vvNfzlF0eP0
+ QSFe7nIB77BBen3nBGTLo+5dOy4kxG7Yt0B2puZ5nFVcT9Csszy3j+IStONqlglbrJYAYnS2e
+ 1IqSMIWGe5HEr/+yIJyTbKbGLHQwF1/PhkEMZ4juY7iCKXZpFeShHJp8hk5p/UWGNWz6JrIQ7
+ N7tyqW/Wh6jMhyuU8Tkl2TZ25YPoSladO0gVFKYGqxCn9GNaJuLYIq3DN6Ou07qPnopYk8OQa
+ 1Kzp61yY4YaHuuNVhUry6EhuQo4KB214QN71jWiOOFgjumIzAunN/dMTm6K5bJOa9P8kmtaHE
+ +JKwvacZuosOjMpFdulHzXmb7WaBrQMNMUl4Uce1aja2UEgKp3FnVh4XlZS8yfYLHjnvv+tpt
+ NVqloygSF75oUPV+ByluyzRoCsyrUfkrschW4m65bmNqTYEHShku62SkA==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-06-16 at 11:31 +0100, Robin Murphy wrote:
-> On 2022-06-16 11:08, Yong Wu wrote:
-> > On Thu, 2022-06-16 at 09:59 +0100, Robin Murphy wrote:
-> > > On 2022-06-16 06:42, Yong Wu wrote:
-> > > > The mtk_iommu_mm_dts_parse will parse the smi larbs nodes. if
-> > > > the
-> > > > i+1
-> > > > larb is parsed fail(return -EINVAL), we should of_node_put for
-> > > > the
-> > > > 0..i
-> > > > larbs. In the fail path, one of_node_put matches with
-> > > > of_parse_phandle in
-> > > > it.
-> > > > 
-> > > > Fixes: d2e9a1102cfc ("iommu/mediatek: Contain MM IOMMU flow
-> > > > with
-> > > > the MM TYPE")
-> > > > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> > > > ---
-> > > >    drivers/iommu/mtk_iommu.c | 21 ++++++++++++++++-----
-> > > >    1 file changed, 16 insertions(+), 5 deletions(-)
 
-[snip..]
+Hi,
 
-> > > > +err_larbnode_put:
-> > > > +	while (i--) {
-> > > > +		larbnode = of_parse_phandle(dev->of_node,
-> > > > "mediatek,larbs", i);
-> > > > +		if (larbnode &&
-> > > > of_device_is_available(larbnode)) {
-> > > > +			of_node_put(larbnode);
-> > > > +			of_node_put(larbnode);
-> > > > +		}
-> > > 
-> > > This looks a bit awkward - could we not just iterate through
-> > > data->larb_imu and put dev->of_node for each valid dev?
-> > 
-> > It should work. Thanks very much.
-> > 
-> > > 
-> > > Also, of_find_device_by_node() takes a reference on the struct
-> > > device
-> > > itself, so strictly we should be doing put_device() on those as
-> > > well
-> > > if we're bailing out.
-> > 
-> > Thanks for this hint. A new reference for me. I will add it.
-> 
-> In fact, thinking about it some more we may as well do the
-> of_node_put() 
-> unconditionally immediately after the of_find_device_by_node() call, 
+On 22.06.22 at 19:04, Andy Shevchenko wrote:
+> On Wed, Jun 22, 2022 at 05:46:52PM +0200, Lino Sanfilippo wrote:
+>> From: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+>>
+>> In uart_get_rs485_mode() only try to get a termination GPIO if RS485 bu=
+s
+>> termination is supported by the driver.
+>
+> I'm not sure I got the usefulness of this change.
+> We request GPIO line as optional, so if one is defined it in the DT/ACPI=
+, then
+> they probably want to (opportunistically) have it>
+>
+> With your change it's possible to have a DTS where GPIO line defined in =
+a
+> broken way and user won't ever know about it, if they are using platform=
+s
+> without termination support.
+>
 
-of_node_put is called in component_release_of in the normal case, thus
-we shouldn't call of_node_put unconditionally. Right?
+This behavior is not introduced with this patch, also in the current code =
+the driver
+wont inform the user if it does not make use erroneous defined termination=
+ GPIO.
 
-(Sorry for reply late)
+This patch at least prevents the driver from allocating and holding a GPIO=
+ descriptor across
+the drivers lifetime that will never be used.
 
-> so 
-> then it's *only* the device references we'd need to worry about
-> cleaning 
-> up in the failure path.
-> 
-> Robin.
+Furthermore it simplifies the code in patch 2 when we want to set the GPIO=
+, since we can
+skip the check whether or not the termination GPIO is supported by the dri=
+ver.
+
+
+
+Regards,
+Lino
 
