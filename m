@@ -2,129 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1A6CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 12:49:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93F68C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 12:51:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231355AbiFWMtz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 08:49:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33534 "EHLO
+        id S231716AbiFWMvK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 08:51:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229716AbiFWMty (ORCPT
+        with ESMTP id S231564AbiFWMvJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 08:49:54 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A197AF7;
-        Thu, 23 Jun 2022 05:49:53 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 5775321CF0;
-        Thu, 23 Jun 2022 12:49:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1655988592; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=BpiM3WaUUrILmHdp2lQvwMWVmqbs3l954A33quMGSGc=;
-        b=tGaK1rJF5yQLBwU3wsJb/DC1CovTKZR2kv5oNn202GvQV1fxqwnUFJ0eR8tYrObFN1JUdO
-        uCFcgVAWjs44/9iBd/5Mbp/9p+7CGwocTSCrYzm9a+iXnGQsZ1wdwoGbo+crUxA+hVZ1wy
-        3YI6OfhQFBSg/Ex3HSzeIT2cfHNU8Fg=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 22B7C13461;
-        Thu, 23 Jun 2022 12:49:52 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id mW+vBnBhtGKMFQAAMHmgww
-        (envelope-from <mkoutny@suse.com>); Thu, 23 Jun 2022 12:49:52 +0000
-From:   =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>
-To:     cgroups@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Waiman Long <longman@redhat.com>
-Subject: [RFC PATCH] cpuset: Allow setscheduler regardless of manipulated task
-Date:   Thu, 23 Jun 2022 14:49:44 +0200
-Message-Id: <20220623124944.2753-1-mkoutny@suse.com>
-X-Mailer: git-send-email 2.35.3
+        Thu, 23 Jun 2022 08:51:09 -0400
+X-Greylist: delayed 248 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 23 Jun 2022 05:51:03 PDT
+Received: from out203-205-221-202.mail.qq.com (out203-205-221-202.mail.qq.com [203.205.221.202])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C8C645AF7;
+        Thu, 23 Jun 2022 05:51:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1655988661;
+        bh=WkPDR7AEUWbovUynFMyUZJb/WXXDveepQJRcNB/88sY=;
+        h=Date:From:To:Cc:Subject;
+        b=eThYzUm9Qka+IrJHeUkUmW1NCcRfGySimih5DaiBE6qcjMX4/P6POR84Ur8Met9Ao
+         zU7IWvVj5Bsp3t+a+zBO5oyy+brRI+06ixl5zKsgf1OxDWqG8KsIGR3gsUfoSPXRXU
+         /V5gpispz8eQWo6gLRdnCIHAzRmmp0CSwGf2jOcw=
+Received: from wh-VirtualBox ([117.175.169.40])
+        by newxmesmtplogicsvrsza5.qq.com (NewEsmtp) with SMTP
+        id ADB3EAE6; Thu, 23 Jun 2022 20:43:27 +0800
+X-QQ-mid: xmsmtpt1655988207t5r5adzos
+Message-ID: <tencent_DDE91CB7412D427A442DB4362364DC04F20A@qq.com>
+X-QQ-XMAILINFO: MyIXMys/8kCtHWBqatw/wyopKz5hTtXjGRfWMXKeAhHky4aLsr5FnFxJYfiVJ2
+         vmh+GYDNRyVjufcT9KR9j6lnRTiskEtKQaB2ikpUNwauGhDyExgknndJG05BIU7GBebRSoRte9N3
+         5GJnUfUkfc8NZkMDsa/6Nd8WihoYjDnalEPRaX4rNog/40w8GP++3OKCjF3IQ72ZhwVrHByJhEIH
+         w5eYHN2PzNK77nARXeIZqc+aokil7yjSIBZTYxuBJ9aKyjAAMjEaWJedjDCabWV6T9GUaoMqSJqs
+         rgkAUEptV1AP0h4ALDyQlnAcWosKMFAaqfLhNc4kzyTGEafvI01KETTn64tY6yDZbUlvFLUC63Lc
+         UFoJOsEIPwhkLWuoipKF1W7cukiGW0II2NjQCouja0sFmBux7GhH3kC/CUmD/BnS0Fti9deyw/wY
+         DBLVUCyDbNRdEFVZqcwh5eKsbp9lrLJhRicnOUllA55m2qYVW0DY9aJlHcDSruOYP9RMHLhfmMb/
+         dCp17iv5TQvvEVnRN1Tl//HQqd1THamtgQ4QGAZ7NEy4Ydc+SXdmS8q7smuRj/xqmP7GOJXCDEea
+         Vqd9urW6/Y+7Alp3hksq02HMTipPx14CodJgQ8jWECRsqm1IHAERbD7Pf27IhhYQXu6cFd1mYZut
+         x3PfHN6S1XjI6x+GENZ4ZH6dMprzF5pdKAUZsVz8Jd985z6XJOY6Y2iWNaWIRVHNXLYrh9IK23ik
+         EVG1Of+9Oc78CaopaW+IDfp+PCyUHdYNiHWi7Vw6TEqWjvUYyMxr50oWfTbFLb66/RBdvYXXgfgl
+         /9+onMOLnGbGo/9JMTTGOQ9OCtocKCUphbdOJNznGEifvgKbruQaPIijS5nJldq8/MvgbNAHiJXn
+         fm1Vt8FpGxgR+TpubTkULtZYxhaw10cXSLtnRuYTCkyUp6z3OlAAUh5Ueo5Qlq8slP8kiNxTwXXj
+         nmnIedB/spF8mABF7g82q5kDBr6G8mAhvHuJoXe5NZRe/1lyt+6wSIvxUzyGq7
+Date:   Thu, 23 Jun 2022 20:42:48 +0800
+From:   Wei Han <lailitty@foxmail.com>
+To:     pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lailitty@foxmail.com, linux-staging@lists.linux.dev
+Subject: [PATCH] netfilter: xt_esp: add support for ESP match in NAT Traversal
+X-OQ-MSGID: <20220623124248.GA10755@wh-VirtualBox>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When we migrate a task between two cgroups, one of the checks is a
-verification that we can modify task's scheduler settings
-(cap_task_setscheduler()).
+when the ESP packets traversing Network Address Translators,
+which are encapsulated and decapsulated inside UDP packets,
+so we need to get ESP data in UDP.
 
-An implicit migration occurs also when enabling a controller on the
-unified hierarchy (think of parent to child migration). The
-aforementioned check may be problematic if the caller of the migration
-(enabling a controller) has no permissions over migrated tasks.
-For instance, user's cgroup that ends up running a process of a
-different user. Although cgroup permissions are configured favorably,
-the enablement fails due to the foreign process [1].
-
-Change the behavior by relaxing the permissions check on the unified
-hierarchy (or in v2 mode). This is in accordance with unified hierarchy
-attachment behavior when permissions of the source to target cgroups are
-decisive whereas the migrated task is opaque (for contrast, see more
-restrictive check in __cgroup1_procs_write()).
-
-[1] https://github.com/systemd/systemd/issues/18293#issuecomment-831205649
-
-Reasons for RFC:
-
-1) The unified hierarchy attachment behavior -- is that the
-   right/consented model that migrated objects don't matter?
-
-2) If 1) is true, have I missed any danger in allowing cpuset'ing a
-   possibly privileged processes?
-
-2.2) cpuset may be in v2 mode even on v1 hierarchy with different
-   migration control rules (but checking migratee's creds in v1
-   eliminates effect of this patch).
-
-3) Alternative approach would be to allow cpuset migrations only when
-   nothing effectively changes (which is the case for parent->child
-   migration upon controller enablement).
-
-4) This is just idea draft, not tested in the real case.
-
-Thanks.
-
-Signed-off-by: Michal Koutný <mkoutny@suse.com>
+Signed-off-by: Wei Han <lailitty@foxmail.com>
 ---
- kernel/cgroup/cpuset.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ net/netfilter/xt_esp.c | 54 +++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 45 insertions(+), 9 deletions(-)
 
-diff --git a/kernel/cgroup/cpuset.c b/kernel/cgroup/cpuset.c
-index 71a418858a5e..dbe78577de5b 100644
---- a/kernel/cgroup/cpuset.c
-+++ b/kernel/cgroup/cpuset.c
-@@ -2232,7 +2232,9 @@ static int cpuset_can_attach(struct cgroup_taskset *tset)
+diff --git a/net/netfilter/xt_esp.c b/net/netfilter/xt_esp.c
+index 2a1c0ad0ff07..c3feb79a830a 100644
+--- a/net/netfilter/xt_esp.c
++++ b/net/netfilter/xt_esp.c
+@@ -8,12 +8,14 @@
+ #include <linux/skbuff.h>
+ #include <linux/in.h>
+ #include <linux/ip.h>
++#include <linux/ipv6.h>
  
- 	percpu_down_write(&cpuset_rwsem);
+ #include <linux/netfilter/xt_esp.h>
+ #include <linux/netfilter/x_tables.h>
  
--	/* allow moving tasks into an empty cpuset if on default hierarchy */
-+	/* allow moving tasks into an empty cpuset if on default hierarchy,
-+	 * also bypass permission check (access is controlled via cgroup(s)
-+	 * owner in cgroup_procs_write_permission()) */
- 	ret = -ENOSPC;
- 	if (!is_in_v2_mode() &&
- 	    (cpumask_empty(cs->cpus_allowed) || nodes_empty(cs->mems_allowed)))
-@@ -2242,6 +2244,9 @@ static int cpuset_can_attach(struct cgroup_taskset *tset)
- 		ret = task_can_attach(task, cs->cpus_allowed);
- 		if (ret)
- 			goto out_unlock;
+ #include <linux/netfilter_ipv4/ip_tables.h>
+ #include <linux/netfilter_ipv6/ip6_tables.h>
++#include <net/ip.h>
+ 
+ MODULE_LICENSE("GPL");
+ MODULE_AUTHOR("Yon Uriarte <yon@astaro.de>");
+@@ -39,17 +41,53 @@ static bool esp_mt(const struct sk_buff *skb, struct xt_action_param *par)
+ 	struct ip_esp_hdr _esp;
+ 	const struct xt_esp *espinfo = par->matchinfo;
+ 
++	const struct iphdr *iph = NULL;
++	const struct ipv6hdr *ip6h = NULL;
++	const struct udphdr *udph = NULL;
++	struct udphdr _udph;
++	int proto = -1;
 +
-+		if (is_in_v2_mode())
-+			continue;
- 		ret = security_task_setscheduler(task);
- 		if (ret)
- 			goto out_unlock;
+ 	/* Must not be a fragment. */
+ 	if (par->fragoff != 0)
+ 		return false;
+ 
+-	eh = skb_header_pointer(skb, par->thoff, sizeof(_esp), &_esp);
+-	if (eh == NULL) {
+-		/* We've been asked to examine this packet, and we
+-		 * can't.  Hence, no choice but to drop.
+-		 */
+-		pr_debug("Dropping evil ESP tinygram.\n");
+-		par->hotdrop = true;
++	if (xt_family(par) == NFPROTO_IPV6) {
++		ip6h = ipv6_hdr(skb);
++		if (!ip6h)
++			return false;
++		proto = ip6h->nexthdr;
++	} else {
++		iph = ip_hdr(skb);
++		if (!iph)
++			return false;
++		proto = iph->protocol;
++	}
++
++	if (proto == IPPROTO_UDP) {
++		//for NAT-T
++		udph = skb_header_pointer(skb, par->thoff, sizeof(_udph), &_udph);
++		if (udph && (udph->source == htons(4500) || udph->dest == htons(4500))) {
++			/* Not deal with above data it don't conflict with SPI
++			 * 1.IKE Header Format for Port 4500(Non-ESP Marker 0x00000000)
++			 * 2.NAT-Keepalive Packet Format(0xFF)
++			 */
++			eh = (struct ip_esp_hdr *)((char *)udph + sizeof(struct udphdr));
++		} else {
++			return false;
++		}
++	} else if (proto == IPPROTO_ESP) {
++		//not NAT-T
++		eh = skb_header_pointer(skb, par->thoff, sizeof(_esp), &_esp);
++		if (!eh) {
++			/* We've been asked to examine this packet, and we
++			 * can't.  Hence, no choice but to drop.
++			 */
++			pr_debug("Dropping evil ESP tinygram.\n");
++			par->hotdrop = true;
++			return false;
++		}
++	} else {
++		//not esp data
+ 		return false;
+ 	}
+ 
+@@ -76,7 +114,6 @@ static struct xt_match esp_mt_reg[] __read_mostly = {
+ 		.checkentry	= esp_mt_check,
+ 		.match		= esp_mt,
+ 		.matchsize	= sizeof(struct xt_esp),
+-		.proto		= IPPROTO_ESP,
+ 		.me		= THIS_MODULE,
+ 	},
+ 	{
+@@ -85,7 +122,6 @@ static struct xt_match esp_mt_reg[] __read_mostly = {
+ 		.checkentry	= esp_mt_check,
+ 		.match		= esp_mt,
+ 		.matchsize	= sizeof(struct xt_esp),
+-		.proto		= IPPROTO_ESP,
+ 		.me		= THIS_MODULE,
+ 	},
+ };
 -- 
-2.35.3
+2.17.1
 
