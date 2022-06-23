@@ -2,94 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B263AC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 02:52:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AE62C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 02:54:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377899AbiFWCws (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 22:52:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49894 "EHLO
+        id S236270AbiFWCx7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 22:53:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377757AbiFWCwI (ORCPT
+        with ESMTP id S1377707AbiFWCwo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 22:52:08 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DA7443488
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 19:52:06 -0700 (PDT)
-Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LT4VD4hzZz1KC7y;
-        Thu, 23 Jun 2022 10:49:56 +0800 (CST)
-Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
- dggpeml500022.china.huawei.com (7.185.36.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 23 Jun 2022 10:52:04 +0800
-Received: from zelda.huawei.com (10.175.103.14) by
- dggpeml100012.china.huawei.com (7.185.36.121) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 23 Jun 2022 10:52:03 +0800
-From:   Jin Xiaoyun <jinxiaoyun2@huawei.com>
-To:     <matthias.bgg@gmail.com>,
-        <angelogioacchino.delregno@collabora.com>, <khilman@baylibre.com>,
-        <zhengbin13@huawei.com>, <gaochao49@huawei.com>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        "Jin Xiaoyun" <jinxiaoyun2@huawei.com>
-Subject: [PATCH v2 -next] soc: mediatek: SVS: Use the new PM macros
-Date:   Thu, 23 Jun 2022 11:09:31 +0800
-Message-ID: <20220623030931.2816013-1-jinxiaoyun2@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220622013410.2786760-1-jinxiaoyun2@huawei.com>
-References: <20220622013410.2786760-1-jinxiaoyun2@huawei.com>
+        Wed, 22 Jun 2022 22:52:44 -0400
+Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2BCE43EC0;
+        Wed, 22 Jun 2022 19:52:33 -0700 (PDT)
+Date:   Wed, 22 Jun 2022 19:52:21 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1655952751;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ef3A1jFIk2ghqaCFE7HOz1021sh7n1eb4f8YSnsvNOY=;
+        b=ViJppFGoJrwP5h680sfYXw1Y9s8cIL0aKAFEl4ZiYQmr6iSkfPVYxsUcUNGXKZIiTskxQU
+        vmVaYfTWetOSQCr9u8cv9FiHmJy6qauUqIRPKcmypu9C/UxZtdgNyFLNfUl6Mh2NEklMIR
+        +cRZGMjxvfj5QKmWeBjqr3rN77zYeqI=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Roman Gushchin <roman.gushchin@linux.dev>
+To:     Muchun Song <songmuchun@bytedance.com>
+Cc:     syzbot <syzbot+ec972d37869318fc3ffb@syzkaller.appspotmail.com>,
+        akpm@linux-foundation.org, cgroups@vger.kernel.org,
+        hannes@cmpxchg.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, mhocko@kernel.org, shakeelb@google.com,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot] WARNING in folio_lruvec_lock_irqsave
+Message-ID: <YrPVZUXPD7L85mYp@castle>
+References: <0000000000004b03c805e2099bf0@google.com>
+ <YrM2XCwzu65cb81r@FVFYT0MHHV2J.googleapis.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.175.103.14]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpeml100012.china.huawei.com (7.185.36.121)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YrM2XCwzu65cb81r@FVFYT0MHHV2J.googleapis.com>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use DEFINE_SIMPLE_DEV_PM_OPS() instead of the SIMPLE_DEV_PM_OPS()
-macro, along with using pm_sleep_ptr() as this driver doesn't handle
-runtime PM.
+On Wed, Jun 22, 2022 at 11:33:48PM +0800, Muchun Song wrote:
+> On Wed, Jun 22, 2022 at 06:49:31AM -0700, syzbot wrote:
+> > Hello,
+> > 
+> > syzbot found the following issue on:
+> > 
+> > HEAD commit:    ac0ba5454ca8 Add linux-next specific files for 20220622
+> > git tree:       linux-next
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=14354c18080000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=12809dacb9e7c5e0
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=ec972d37869318fc3ffb
+> > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> > 
+> > Unfortunately, I don't have any reproducer for this issue yet.
+> > 
+> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > Reported-by: syzbot+ec972d37869318fc3ffb@syzkaller.appspotmail.com
+> > 
+> >  folio_put include/linux/mm.h:1227 [inline]
+> >  put_page+0x217/0x280 include/linux/mm.h:1279
+> >  unmap_and_move_huge_page mm/migrate.c:1343 [inline]
+> >  migrate_pages+0x3dc3/0x5a10 mm/migrate.c:1440
+> >  do_mbind mm/mempolicy.c:1332 [inline]
+> >  kernel_mbind+0x4d7/0x7d0 mm/mempolicy.c:1479
+> >  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> >  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+> >  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+> > page has been migrated, last migrate reason: mempolicy_mbind
+> > ------------[ cut here ]------------
+> > WARNING: CPU: 1 PID: 18925 at include/linux/memcontrol.h:800 folio_lruvec include/linux/memcontrol.h:800 [inline]
+> 
+> The warning here is "VM_WARN_ON_ONCE_FOLIO(!memcg && !mem_cgroup_disabled(), folio)",
+> the memcg returned by folio_memcg() seems to be NULL which has 2 possibility, one is
+> that objcg returned by folio_objcg() is NULL, another is that obj_cgroup_memcg(objcg)
+> returns NULL. However, obj_cgroup_memcg() always returns a valid memcg. So Most likely
+> objcg is NULL meaning this page is not charged to memcg. Is this possible for LRU pages?
+> 
+> I am not sure if this issue is caused by my commit cca700a8e695 ("mm: lru: use lruvec
+> lock to serialize memcg changes") since I have removed folio_test_clear_lru() check
+> from folio_batch_move_lru(). We know that a non-lru page may be not charged to memcg.
+> But is it possible for a non-lru page to be passed to folio_batch_move_lru()? Seems
+> impossible. Right? I am not very confident about this commit, hopefully, someone can
+> review it.
 
-Fix build error:
-drivers/soc/mediatek/mtk-svs.c:1515:12: error: ‘svs_resume’ defined but not used [-Werror=unused-function]
-drivers/soc/mediatek/mtk-svs.c:1481:12: error: ‘svs_suspend’ defined but not used [-Werror=unused-function]
+How about to temporarily drop it?
 
-Signed-off-by: Jin Xiaoyun <jinxiaoyun2@huawei.com>
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
----
-v1->v2:
-- Remove the #ifdef CONFIG_PM guard around the suspend/resume functions
-- Use DEFINE_SIMPLE_DEV_PM_OPS along with using pm_sleep_ptr()
----
- drivers/soc/mediatek/mtk-svs.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+I was about to suggest it anyway during the review: it's a standalone
+optimization and the main patchset is already quite big and complex,
+so probably easier to validate it separately.
 
-diff --git a/drivers/soc/mediatek/mtk-svs.c b/drivers/soc/mediatek/mtk-svs.c
-index 606a00a2e57d..fae7376bd083 100644
---- a/drivers/soc/mediatek/mtk-svs.c
-+++ b/drivers/soc/mediatek/mtk-svs.c
-@@ -2381,13 +2381,13 @@ static int svs_probe(struct platform_device *pdev)
- 	return ret;
- }
-
--static SIMPLE_DEV_PM_OPS(svs_pm_ops, svs_suspend, svs_resume);
-+static DEFINE_SIMPLE_DEV_PM_OPS(svs_pm_ops, svs_suspend, svs_resume);
-
- static struct platform_driver svs_driver = {
- 	.probe	= svs_probe,
- 	.driver	= {
- 		.name		= "mtk-svs",
--		.pm		= &svs_pm_ops,
-+		.pm		= pm_sleep_ptr(&svs_pm_ops),
- 		.of_match_table	= of_match_ptr(svs_of_match),
- 	},
- };
---
-2.25.1
-
+Thanks!
