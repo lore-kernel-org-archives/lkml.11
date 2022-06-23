@@ -2,101 +2,262 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 143C3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 21:29:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0446CCA47C
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 21:30:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229980AbiFWV3h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 17:29:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48114 "EHLO
+        id S229936AbiFWVae (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 17:30:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229936AbiFWV3f (ORCPT
+        with ESMTP id S229451AbiFWVab (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 17:29:35 -0400
-Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57EE6527FC
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 14:29:33 -0700 (PDT)
-Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-31780ad7535so6892527b3.8
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 14:29:33 -0700 (PDT)
+        Thu, 23 Jun 2022 17:30:31 -0400
+Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5CF35251E
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 14:30:29 -0700 (PDT)
+Received: by mail-ot1-x332.google.com with SMTP id y10-20020a9d634a000000b006167f7ce0c5so505277otk.0
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 14:30:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=RlRmZ+LNINHQ0A4AK2ESdVrqQY5sFyzwJMR41lo+PS0=;
-        b=D46X38KI4V4bLqQrvhwC0HZidzVCUrkJgWhfTTDo1V77zEnLjnevErQGc+xq7+WCN5
-         i14fZrnQu7NWwiaPNsaakoiZKW8FZZ6tv3tY7gQ2KBQvbOzCox68WdIC24LuhE8949n0
-         5Hbu5qqqFij/aAyKngVquo2EZp+l9Q47Szw2P1ogPhiCuQf+SjbG1C/He99wX/gqXC8j
-         m0+NXYF32++mQ/+0uai9Xggk7srpmvninUIdtQP6QAzVVDxOhpWhQAZmTaVwQsSgLpfM
-         TQZn2z0YRpD9PW0alZNqA+yHryTqziO2Hh4PvxFnt8ji1dFvdj7imFd45X9spaMu6uqg
-         2lIQ==
+        bh=kqoxMpiX3Gf231GDDR9G1b2VInfGIDsRQZcWz3Knh/w=;
+        b=duKobLilhDL22sXP3vyLSU2BHZyOr2DEfkeMxf1DgR3Y/mj/UVxd0/FjJUWSHAAhF4
+         XTmHTTtJ09Tc1kjquB/l2p06WXyLcldCI7l+B1aOGxHYCGylgl5hK/cz8djVlrS99/Nr
+         peXeW1qWKBk2LQb9EaWYmlaQtVSHHNeozxFZ7bisTPZYO06jVn/y8jw5yMvtmv9QQGvW
+         29rCl/n6tRgPnRQHVL6RARL+BabO2B3TUqdT8CbdsbKSLtDlnLif4+yL93OesaPwN8ct
+         z14R8ml2C+fezKONoCirxhP//Xcsvd2aU3wfL+yQgZyNsA7xlKXGztw4TdQ2Fwe/OGE6
+         fseA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=RlRmZ+LNINHQ0A4AK2ESdVrqQY5sFyzwJMR41lo+PS0=;
-        b=cGW6j7qll0tph/oV3spZc32cSNpR61yGCswEgeiOQzS3zw5xW0IelJCmYCD+bKQk+7
-         u97LfgTqDUSnopAmfOiLmL48bCVOZw34XdUVZe+7CFJjlyqsII/+VApvh7Ua6gHjePT1
-         jXtQVa8awnQe4D4PUcBUhAf3qJlE6/62bw9FVPPulcK5sSaomXxuJu4rI/9MhdZZc6FT
-         bkuls2y4Pvhn0k2aGJAJ7XEoEfNXbO448eYy9JuOn0nGX/usRB2YKS0QWEkFOSgcwawk
-         trw4+lgnZkII5PR9TLCMfB4ZnjSQV7jXdUKI1tl4E3fh1EzRss1E5q7eT2gH03CiCLtA
-         PLVQ==
-X-Gm-Message-State: AJIora+q47v2BcjVlrG6vbAvxdjK34f3CVb4clhNwc+FWN5pwA+Jn9bX
-        6NBTFy+XyO3WT442OrCXW4gvXQFdgKOfs892ttOdnQ==
-X-Google-Smtp-Source: AGRyM1tKXIf7skJkbZ0Jt4ZId9hoRWdp5Q8Pt4jHVkRbzdTwfvr/3OUmPekxJ+PYT/zD3ZsbOrI0kk7lMccgy//k9bw=
-X-Received: by 2002:a81:7557:0:b0:317:6536:d404 with SMTP id
- q84-20020a817557000000b003176536d404mr12390732ywc.459.1656019772443; Thu, 23
- Jun 2022 14:29:32 -0700 (PDT)
+        bh=kqoxMpiX3Gf231GDDR9G1b2VInfGIDsRQZcWz3Knh/w=;
+        b=QyhNwLteIlROnJEWlFE00Y0FMETIyoVsJPS2hpqwz8BaaAiZayBP8k+Q99fxxNZmI9
+         JqYjcTfeDL6xvkF8fR74u+So7bRg24IeENkI9OG4eCDYeN0oWF8Sb1fUUNgY+fElLPCu
+         2J9sbaKhQie9NK/qJPNhqsV4y/uOBwO6tlunWUWjYbXS5JpY6FUqh3lTfTPFsfPZgUSU
+         02Lbfl9HKxKhrJc+lUsZVls3GSBSuAc25Kru8mwSBo/wRQtdGDtFx+jGaMD62sg5367f
+         NnkvoBon2vXHkkG/ZaAgskdOFKpFKX6rryJk+2lEsHjRda3LVRgkfoWD9G3aY2/7Xy+E
+         6PFQ==
+X-Gm-Message-State: AJIora+gFm26uB3iuzym833D+aTCcx71wbEspyDpAEqc3dHr7NAQEKLW
+        fjG1aZed9vr0RHLlQC24XhMl4P+pd6ZfT3Q6LSdHmQ==
+X-Google-Smtp-Source: AGRyM1veXOvim13DoOcVFPocfJu+YK8saHoB9/PkjheoBqMOiwNRF5W/rzCDzSmOj5ZWh6liga9mLs9vDiTICXpTFwY=
+X-Received: by 2002:a9d:5888:0:b0:606:10d2:2fc1 with SMTP id
+ x8-20020a9d5888000000b0060610d22fc1mr4691492otg.29.1656019828771; Thu, 23 Jun
+ 2022 14:30:28 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220622062027.994614-1-peng.fan@oss.nxp.com> <20220622072435.GT1615@pengutronix.de>
- <CAGETcx9JpTbYtGFoKttWLeiBB73QzzBM1o-OL0o-XuFouLcEog@mail.gmail.com>
- <CAOMZO5DFX72xuxWwAPsuk4Q667Ap7Dk+pR89cWDQJkzT0D2osA@mail.gmail.com>
- <CAOMZO5Ccu_v_G9DEwrEfVHq83-hfrXCP_h20Rv0=oFTLux5AkQ@mail.gmail.com>
- <CAGETcx85z_hkhKFHUwnihqcD0UQG3xtSZjw=BZxqwQB0D1CMgw@mail.gmail.com>
- <CAOMZO5A6Zn=6tXU2VQ+-cj=50mpxCmoZ8c437=w1Spd34k7T6A@mail.gmail.com>
- <CAGETcx-_nwrzJzaY3yc80g4AfydV5J9-JYE5h1m+5TT05jyKOw@mail.gmail.com> <CAOMZO5BvnBCza5HQVNUQqDBZR9WsXiK4RuVPh654GJGb2jw+1g@mail.gmail.com>
-In-Reply-To: <CAOMZO5BvnBCza5HQVNUQqDBZR9WsXiK4RuVPh654GJGb2jw+1g@mail.gmail.com>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Thu, 23 Jun 2022 14:28:56 -0700
-Message-ID: <CAGETcx8EsTWVQCFrw8vSs91i1LXj7Z1qW962ShxBDXwORwbHwA@mail.gmail.com>
-Subject: Re: [PATCH] arm64: dts: imx8mp: drop dmas property for uart console
-To:     Fabio Estevam <festevam@gmail.com>
-Cc:     Sascha Hauer <s.hauer@pengutronix.de>,
-        "Peng Fan (OSS)" <peng.fan@oss.nxp.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        NXP Linux Team <linux-imx@nxp.com>, hvilleneuve@dimonoff.com,
-        Lucas Stach <l.stach@pengutronix.de>,
-        abbaraju.manojsai@amarulasolutions.com,
-        Jagan Teki <jagan@amarulasolutions.com>,
-        Matteo Lisi <matteo.lisi@engicam.com>,
-        Tim Harvey <tharvey@gateworks.com>,
-        Teresa Remmet <t.remmet@phytec.de>,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, t.remmet@phytec.deh,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Peng Fan <peng.fan@nxp.com>
+References: <cover.1655761627.git.ashish.kalra@amd.com> <8f63961f00fd170ba0e561f499292175f3155d26.1655761627.git.ashish.kalra@amd.com>
+In-Reply-To: <8f63961f00fd170ba0e561f499292175f3155d26.1655761627.git.ashish.kalra@amd.com>
+From:   Marc Orr <marcorr@google.com>
+Date:   Thu, 23 Jun 2022 14:30:17 -0700
+Message-ID: <CAA03e5E==P_Ua6UBz+ZBBMkmhSpacZR-z+5OvObpErk09xCfuA@mail.gmail.com>
+Subject: Re: [PATCH Part2 v6 05/49] x86/sev: Add RMP entry lookup helpers
+To:     Ashish Kalra <Ashish.Kalra@amd.com>
+Cc:     x86 <x86@kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        kvm list <kvm@vger.kernel.org>, linux-coco@lists.linux.dev,
+        linux-mm@kvack.org,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+        "Lendacky, Thomas" <thomas.lendacky@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Dov Murik <dovmurik@linux.ibm.com>,
+        Tobin Feldman-Fitzthum <tobin@ibm.com>,
+        Borislav Petkov <bp@alien8.de>,
+        "Roth, Michael" <michael.roth@amd.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Andi Kleen <ak@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        Alper Gun <alpergun@google.com>,
+        "Dr . David Alan Gilbert" <dgilbert@redhat.com>, jarkko@kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 1:51 PM Fabio Estevam <festevam@gmail.com> wrote:
+On Mon, Jun 20, 2022 at 4:02 PM Ashish Kalra <Ashish.Kalra@amd.com> wrote:
 >
-> On Thu, Jun 23, 2022 at 3:58 PM Saravana Kannan <saravanak@google.com> wrote:
+> From: Brijesh Singh <brijesh.singh@amd.com>
 >
-> > Will do. I'm looking at the serial console code and I don't see a
-> > difference between earlycon= vs console= handling. And I know that
-> > earlycon= doesn't go through the driver core and isn't affected by any
-> > of this. If you have additional pointers on where console= is parsed,
-> > feel free to pass it on. I'll continue poking at this.
+> The snp_lookup_page_in_rmptable() can be used by the host to read the RMP
+> entry for a given page. The RMP entry format is documented in AMD PPR, see
+> https://bugzilla.kernel.org/attachment.cgi?id=296015.
 >
-> It seems to be parsed at uart_parse_earlycon() inside
-> drivers/tty/serial/serial_core.c.
+> Signed-off-by: Brijesh Singh <brijesh.singh@amd.com>
+> ---
+>  arch/x86/include/asm/sev.h | 27 ++++++++++++++++++++++++
+>  arch/x86/kernel/sev.c      | 43 ++++++++++++++++++++++++++++++++++++++
+>  include/linux/sev.h        | 30 ++++++++++++++++++++++++++
+>  3 files changed, 100 insertions(+)
+>  create mode 100644 include/linux/sev.h
+>
+> diff --git a/arch/x86/include/asm/sev.h b/arch/x86/include/asm/sev.h
+> index 9c2d33f1cfee..cb16f0e5b585 100644
+> --- a/arch/x86/include/asm/sev.h
+> +++ b/arch/x86/include/asm/sev.h
+> @@ -9,6 +9,7 @@
+>  #define __ASM_ENCRYPTED_STATE_H
+>
+>  #include <linux/types.h>
+> +#include <linux/sev.h>
+>  #include <asm/insn.h>
+>  #include <asm/sev-common.h>
+>  #include <asm/bootparam.h>
+> @@ -84,6 +85,32 @@ extern bool handle_vc_boot_ghcb(struct pt_regs *regs);
+>
+>  /* RMP page size */
+>  #define RMP_PG_SIZE_4K                 0
+> +#define RMP_TO_X86_PG_LEVEL(level)     (((level) == RMP_PG_SIZE_4K) ? PG_LEVEL_4K : PG_LEVEL_2M)
+> +
+> +/*
+> + * The RMP entry format is not architectural. The format is defined in PPR
+> + * Family 19h Model 01h, Rev B1 processor.
+> + */
+> +struct __packed rmpentry {
+> +       union {
+> +               struct {
+> +                       u64     assigned        : 1,
+> +                               pagesize        : 1,
+> +                               immutable       : 1,
+> +                               rsvd1           : 9,
+> +                               gpa             : 39,
+> +                               asid            : 10,
+> +                               vmsa            : 1,
+> +                               validated       : 1,
+> +                               rsvd2           : 1;
+> +               } info;
+> +               u64 low;
+> +       };
+> +       u64 high;
+> +};
+> +
+> +#define rmpentry_assigned(x)   ((x)->info.assigned)
+> +#define rmpentry_pagesize(x)   ((x)->info.pagesize)
+>
+>  #define RMPADJUST_VMSA_PAGE_BIT                BIT(16)
+>
+> diff --git a/arch/x86/kernel/sev.c b/arch/x86/kernel/sev.c
+> index 25c7feb367f6..59e7ec6b0326 100644
+> --- a/arch/x86/kernel/sev.c
+> +++ b/arch/x86/kernel/sev.c
+> @@ -65,6 +65,8 @@
+>   * bookkeeping, the range need to be added during the RMP entry lookup.
+>   */
+>  #define RMPTABLE_CPU_BOOKKEEPING_SZ    0x4000
+> +#define RMPENTRY_SHIFT                 8
+> +#define rmptable_page_offset(x)        (RMPTABLE_CPU_BOOKKEEPING_SZ + (((unsigned long)x) >> RMPENTRY_SHIFT))
+>
+>  /* For early boot hypervisor communication in SEV-ES enabled guests */
+>  static struct ghcb boot_ghcb_page __bss_decrypted __aligned(PAGE_SIZE);
+> @@ -2386,3 +2388,44 @@ static int __init snp_rmptable_init(void)
+>   * available after subsys_initcall().
+>   */
+>  fs_initcall(snp_rmptable_init);
+> +
+> +static struct rmpentry *__snp_lookup_rmpentry(u64 pfn, int *level)
+> +{
+> +       unsigned long vaddr, paddr = pfn << PAGE_SHIFT;
+> +       struct rmpentry *entry, *large_entry;
+> +
+> +       if (!pfn_valid(pfn))
+> +               return ERR_PTR(-EINVAL);
+> +
+> +       if (!cpu_feature_enabled(X86_FEATURE_SEV_SNP))
+> +               return ERR_PTR(-ENXIO);
 
-Turns out it's kernel/printk/printk.c
+nit: I think we should check if SNP is enabled first, before doing
+anything else. In other words, I think we should move this check above
+the `!pfn_valid()` check.
 
--Saravana
+> +
+> +       vaddr = rmptable_start + rmptable_page_offset(paddr);
+> +       if (unlikely(vaddr > rmptable_end))
+> +               return ERR_PTR(-ENXIO);
+
+nit: It would be nice to use a different error code here, from the SNP
+feature check. That way, if this function fails, it's easier to
+diagnose where the function failed from the error code.
+
+> +
+> +       entry = (struct rmpentry *)vaddr;
+> +
+> +       /* Read a large RMP entry to get the correct page level used in RMP entry. */
+> +       vaddr = rmptable_start + rmptable_page_offset(paddr & PMD_MASK);
+> +       large_entry = (struct rmpentry *)vaddr;
+> +       *level = RMP_TO_X86_PG_LEVEL(rmpentry_pagesize(large_entry));
+> +
+> +       return entry;
+> +}
+> +
+> +/*
+> + * Return 1 if the RMP entry is assigned, 0 if it exists but is not assigned,
+> + * and -errno if there is no corresponding RMP entry.
+> + */
+> +int snp_lookup_rmpentry(u64 pfn, int *level)
+> +{
+> +       struct rmpentry *e;
+> +
+> +       e = __snp_lookup_rmpentry(pfn, level);
+> +       if (IS_ERR(e))
+> +               return PTR_ERR(e);
+> +
+> +       return !!rmpentry_assigned(e);
+> +}
+> +EXPORT_SYMBOL_GPL(snp_lookup_rmpentry);
+> diff --git a/include/linux/sev.h b/include/linux/sev.h
+> new file mode 100644
+> index 000000000000..1a68842789e1
+> --- /dev/null
+> +++ b/include/linux/sev.h
+> @@ -0,0 +1,30 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/*
+> + * AMD Secure Encrypted Virtualization
+> + *
+> + * Author: Brijesh Singh <brijesh.singh@amd.com>
+> + */
+> +
+> +#ifndef __LINUX_SEV_H
+> +#define __LINUX_SEV_H
+> +
+> +/* RMUPDATE detected 4K page and 2MB page overlap. */
+> +#define RMPUPDATE_FAIL_OVERLAP         7
+> +
+> +#ifdef CONFIG_AMD_MEM_ENCRYPT
+> +int snp_lookup_rmpentry(u64 pfn, int *level);
+> +int psmash(u64 pfn);
+> +int rmp_make_private(u64 pfn, u64 gpa, enum pg_level level, int asid, bool immutable);
+> +int rmp_make_shared(u64 pfn, enum pg_level level);
+
+nit: I think the declarations for `psmash()`, `rmp_make_private()`,
+and `rmp_make_shared()` should be introduced in the patches that have
+their definitions.
+
+> +#else
+> +static inline int snp_lookup_rmpentry(u64 pfn, int *level) { return 0; }
+> +static inline int psmash(u64 pfn) { return -ENXIO; }
+> +static inline int rmp_make_private(u64 pfn, u64 gpa, enum pg_level level, int asid,
+> +                                  bool immutable)
+> +{
+> +       return -ENODEV;
+> +}
+> +static inline int rmp_make_shared(u64 pfn, enum pg_level level) { return -ENODEV; }
+> +
+> +#endif /* CONFIG_AMD_MEM_ENCRYPT */
+> +#endif /* __LINUX_SEV_H */
+> --
+> 2.25.1
+>
