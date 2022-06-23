@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA7B3C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:19:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBB64CCA47C
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:19:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235425AbiFWSTA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:19:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42226 "EHLO
+        id S236932AbiFWSTJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:19:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236561AbiFWSQH (ORCPT
+        with ESMTP id S236675AbiFWSQG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:16:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6851A4F457;
-        Thu, 23 Jun 2022 10:22:27 -0700 (PDT)
+        Thu, 23 Jun 2022 14:16:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4532F5DF24;
+        Thu, 23 Jun 2022 10:22:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F1D5A61DE5;
-        Thu, 23 Jun 2022 17:22:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1EF3C3411B;
-        Thu, 23 Jun 2022 17:22:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CFAB861E0D;
+        Thu, 23 Jun 2022 17:22:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 948FEC3411B;
+        Thu, 23 Jun 2022 17:22:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004946;
-        bh=3jdA5NQNZsu0UfLV97BpKlnu8aEvNu+8Lh5WqSw9/bg=;
+        s=korg; t=1656004943;
+        bh=rEsri6VIIz614gy0CUStunlPHlklMphIbEm3f/7WU4w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PzXo6FJC3/TKIZ7i1txjMB4j+L7AvFclq5rUHazYTuiPy5oZHLWUrLVTLRhzsHlrA
-         KPSohJgo55NWzmfiPAcHKzIc7dyFif9EVu5XRdd29422UT1VY5NapKiounLsPZtUTd
-         eNs6y+sS24rshlrqQ/sVA4GwTL6HApE4DVGp/4tk=
+        b=p/33jGSgaqC5+rLgEiBcsDWIRIYpbn7RhJIqp2KcvM/fpiKXnqrp35HaMBGVRTamh
+         8IMo1joCq9nYRkao4FgFJoyaFrvPvu67H7kdrRFqTvvzbXNrvflIqTW0UI+22SM/yu
+         724iEEwIjlVRlDzB3sAzxGNX59/IotqmWTDqSLFk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Grzegorz Szczurek <grzegorzx.szczurek@intel.com>,
-        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
-        Bharathi Sreenivas <bharathi.sreenivas@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 200/234] i40e: Fix adding ADQ filter to TC0
-Date:   Thu, 23 Jun 2022 18:44:27 +0200
-Message-Id: <20220623164348.709705030@linuxfoundation.org>
+Subject: [PATCH 4.19 199/234] pNFS: Dont keep retrying if the server replied NFS4ERR_LAYOUTUNAVAILABLE
+Date:   Thu, 23 Jun 2022 18:44:26 +0200
+Message-Id: <20220623164348.681792501@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
 References: <20220623164343.042598055@linuxfoundation.org>
@@ -52,43 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Grzegorz Szczurek <grzegorzx.szczurek@intel.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit c3238d36c3a2be0a29a9d848d6c51e1b14be6692 ]
+[ Upstream commit fe44fb23d6ccde4c914c44ef74ab8d9d9ba02bea ]
 
-Procedure of configure tc flower filters erroneously allows to create
-filters on TC0 where unfiltered packets are also directed by default.
-Issue was caused by insufficient checks of hw_tc parameter specifying
-the hardware traffic class to pass matching packets to.
+If the server tells us that a pNFS layout is not available for a
+specific file, then we should not keep pounding it with further
+layoutget requests.
 
-Fix checking hw_tc parameter which blocks creation of filters on TC0.
-
-Fixes: 2f4b411a3d67 ("i40e: Enable cloud filters via tc-flower")
-Signed-off-by: Grzegorz Szczurek <grzegorzx.szczurek@intel.com>
-Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
-Tested-by: Bharathi Sreenivas <bharathi.sreenivas@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Fixes: 183d9e7b112a ("pnfs: rework LAYOUTGET retry handling")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/i40e/i40e_main.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ fs/nfs/pnfs.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index 21ea0cdea666..3615c6533cf4 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -7508,6 +7508,11 @@ static int i40e_configure_clsflower(struct i40e_vsi *vsi,
- 		return -EOPNOTSUPP;
- 	}
- 
-+	if (!tc) {
-+		dev_err(&pf->pdev->dev, "Unable to add filter because of invalid destination");
-+		return -EINVAL;
-+	}
-+
- 	if (test_bit(__I40E_RESET_RECOVERY_PENDING, pf->state) ||
- 	    test_bit(__I40E_RESET_INTR_RECEIVED, pf->state))
- 		return -EBUSY;
+diff --git a/fs/nfs/pnfs.c b/fs/nfs/pnfs.c
+index a7d638bfb46b..cfb1fe5dfb1e 100644
+--- a/fs/nfs/pnfs.c
++++ b/fs/nfs/pnfs.c
+@@ -2045,6 +2045,12 @@ pnfs_update_layout(struct inode *ino,
+ 		case -ERECALLCONFLICT:
+ 		case -EAGAIN:
+ 			break;
++		case -ENODATA:
++			/* The server returned NFS4ERR_LAYOUTUNAVAILABLE */
++			pnfs_layout_set_fail_bit(
++				lo, pnfs_iomode_to_fail_bit(iomode));
++			lseg = NULL;
++			goto out_put_layout_hdr;
+ 		default:
+ 			if (!nfs_error_is_fatal(PTR_ERR(lseg))) {
+ 				pnfs_layout_clear_fail_bit(lo, pnfs_iomode_to_fail_bit(iomode));
 -- 
 2.35.1
 
