@@ -2,133 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0913C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 08:58:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFA88CCA47C
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 08:59:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229987AbiFWI6o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 04:58:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39172 "EHLO
+        id S230340AbiFWI7X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 04:59:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231159AbiFWI6k (ORCPT
+        with ESMTP id S229555AbiFWI7V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 04:58:40 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0345D140CD
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 01:58:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655974716;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=QA4QBFkDM19s/kmNbbq6WAZHuSSj0hjTnufoIU8Ro9o=;
-        b=PFj8nsoygWTg1I9lkxPLpzZMRczDLd5VAgMHyPm2XaonF2hOft7ui29OaVieedGV1eaPSk
-        nNgVAfYYtlRiPqsxzexezqZZns1zWYr8u0jO4Z4b4NlQzbbCL+FPx3Ut26NXUJvi2LVarc
-        k3d4vIBKnekE2UHZQT4BFnssmAtw3mc=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-475-ATR2DeofOJSWOa-pVo2WLQ-1; Thu, 23 Jun 2022 04:58:35 -0400
-X-MC-Unique: ATR2DeofOJSWOa-pVo2WLQ-1
-Received: by mail-wr1-f71.google.com with SMTP id b10-20020adf9b0a000000b0021a0c74738aso4537248wrc.7
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 01:58:35 -0700 (PDT)
+        Thu, 23 Jun 2022 04:59:21 -0400
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44F13F65;
+        Thu, 23 Jun 2022 01:59:21 -0700 (PDT)
+Received: by mail-pg1-x52e.google.com with SMTP id h192so18556053pgc.4;
+        Thu, 23 Jun 2022 01:59:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=PZqL3nImpxdufaOwqet7SR9Z+NkTikarvBkFeRnT+2I=;
+        b=Y5KS4zXn7ur6b4E8fuA3TbU8g8dxuW/AgKiB7Wj8gs9cEyR+arGeu9skqOEq16L9OS
+         Bitan0gbgM1UuggXMCi2yTlk1ljFQOqucEoOj8Jty4kInZF8cW39DeCjsZ6RNhdK2iqV
+         1vy8tH9bTqKQorqbo26I7sTxYl56mPICRNWVkZHmoLUF8SwybYUWScE0npABVn/wc+vH
+         ugvpoCTHZWlcEXNucd4OHk3VEHeUpfFUp/H1mz5AAyhLJbbnRdvqstD8EmtbeS0cbySx
+         GCDM3okbT3ATnTIoVI5GF9Ahm3eNecFY6UG5OMGXBJ+seVIZy5WVQsxkBRjCdK75m9EK
+         Czsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=QA4QBFkDM19s/kmNbbq6WAZHuSSj0hjTnufoIU8Ro9o=;
-        b=Rr13FZKKnYqrdTzdHYp51GmHJp9T5IfUkUHFdbZ45G42qtz8AqdCO3MTFGzR7D7xP5
-         zIz+zuVINmdLKmtAK17fqVvpWQ49aSnsnvjjSeJKwnRvYyTDGmwAZs5VnzQ+97A2se+A
-         iwQWqSzSjvhCqx8wEDMoM7zZvt13fy/CC2cprOTGXuyF2m52rn04wOQ4SXctnQwqK+US
-         IzCrS1v+PvdxTNgrLGnL4zEodTG2Rwd7XQ9Asn5Qk5ftFLYtTCxGszx3So3vW5mguenD
-         QmAzW/TJWR+BWX+/idnxkacKSv9Q9aG2Hb3MYA6vKAIMMOdjSDOfKXDsVuCvrMEq5NKZ
-         ID9w==
-X-Gm-Message-State: AJIora8Uu0VlE6m++1ZuKNuxaYgThfHenE5umxu0YXIwrlpNE2zwv4q2
-        iz+cvOb1uCv8knBdi16fxsFEM7xgE7Sy9PRFOZQZHB5CcHMfw/sJliLcoIQFTWvWB0w3UXVRbnt
-        wIU1E7kaa8m1dg6VTDopjjvxs
-X-Received: by 2002:a05:600c:1553:b0:39c:87fc:5784 with SMTP id f19-20020a05600c155300b0039c87fc5784mr2834938wmg.90.1655974713531;
-        Thu, 23 Jun 2022 01:58:33 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uKzKYT9XjrtQPHP5sn9zFHwuvBaPFsVvMSjtZr6AU7TKAY9p+ZWuznb3fG50371xljWLlAVQ==
-X-Received: by 2002:a05:600c:1553:b0:39c:87fc:5784 with SMTP id f19-20020a05600c155300b0039c87fc5784mr2834921wmg.90.1655974713318;
-        Thu, 23 Jun 2022 01:58:33 -0700 (PDT)
-Received: from sgarzare-redhat (host-79-46-200-40.retail.telecomitalia.it. [79.46.200.40])
-        by smtp.gmail.com with ESMTPSA id b1-20020adfe301000000b00219b391c2d2sm26623088wrj.36.2022.06.23.01.58.32
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=PZqL3nImpxdufaOwqet7SR9Z+NkTikarvBkFeRnT+2I=;
+        b=ZT5lLyaGba0Pmeer3mLU1ccl1arqCwvTLwvPIOt22406p5LO+YB3Lwazwa0WJVY8cE
+         5z4pAdXKdgeAoc8/+CXblHg8TnXTuOnZfZ4AT846pEP9DvdAAVd0TqlmoyZfUjzxz7Zb
+         kLknyv4kU4O+VjSZUzbO8o01B/c7uJ2bEWN3sYJ/VTNf2ni8DUkrUlFLY6yffaFlUx/0
+         mzxZrZXt5+C27M2Wrr3B64Pq5zkWvQnfcNrGwyyRNY+Uhd+J8sl4uBWPGYt0joL8upW+
+         l66QEzpX0ikt2CN57BWqSXevVz6xWOauA1Nejud4IiFu8ckcZJoewY2ig+7/bQaTTM8i
+         +8xA==
+X-Gm-Message-State: AJIora9z2WZMcO0J4za53FbjyYwVtBs4d3lEZAvsUg558w66F4WX3pID
+        jExc/tdPvbEVXYsTdzVcero=
+X-Google-Smtp-Source: AGRyM1vKmXk/uLI5dSeZfcXv16Z9wUccj2R6DJyUdHx7ZMvSxDwPoZabxYlZN0NUpy61Zt7pnNEW8Q==
+X-Received: by 2002:a63:4c:0:b0:408:c003:a45c with SMTP id 73-20020a63004c000000b00408c003a45cmr6692392pga.252.1655974760833;
+        Thu, 23 Jun 2022 01:59:20 -0700 (PDT)
+Received: from localhost ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id d6-20020a170902654600b0016357fd0fd1sm14182078pln.69.2022.06.23.01.59.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Jun 2022 01:58:32 -0700 (PDT)
-Date:   Thu, 23 Jun 2022 10:58:30 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     virtualization <virtualization@lists.linux-foundation.org>,
-        Eugenio =?utf-8?B?UMOpcmV6?= <eperezma@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 2/3] vdpa_sim_blk: limit the number of request handled
- per batch
-Message-ID: <20220623085830.voi6gixpikz64nm2@sgarzare-redhat>
-References: <20220621160859.196646-1-sgarzare@redhat.com>
- <20220621160859.196646-3-sgarzare@redhat.com>
- <CACGkMEsk-O=dVwKoEHRY-nL3XEQktPWiBot2NfOUYNdkoL-s=Q@mail.gmail.com>
+        Thu, 23 Jun 2022 01:59:20 -0700 (PDT)
+Message-ID: <62b42b68.1c69fb81.9dc0f.49bb@mx.google.com>
+X-Google-Original-Message-ID: <20220623085918.GB976022@cgel.zte@gmail.com>
+Date:   Thu, 23 Jun 2022 08:59:18 +0000
+From:   CGEL <cgel.zte@gmail.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     anton@tuxera.com, linux-ntfs-dev@lists.sourceforge.net,
+        stable@vger.kernel.org, linux-kernel@vger.kernel.org,
+        xu.xin16@zte.com.cn, linux-fsdevel@vger.kernel.org,
+        Zeal Robot <zealci@zte.com.cn>,
+        syzbot+6a5a7672f663cce8b156@syzkaller.appspotmail.com,
+        Songyi Zhang <zhang.songyi@zte.com.cn>,
+        Yang Yang <yang.yang29@zte.com.cn>,
+        Jiang Xuexin <jiang.xuexin@zte.com.cn>,
+        Zhang wenya <zhang.wenya1@zte.com.cn>
+Subject: Re: [PATCH] fs/ntfs: fix BUG_ON of ntfs_read_block()
+References: <20220623033635.973929-1-xu.xin16@zte.com.cn>
+ <20220623035131.974098-1-xu.xin16@zte.com.cn>
+ <YrQc8xq+QezRcLi7@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CACGkMEsk-O=dVwKoEHRY-nL3XEQktPWiBot2NfOUYNdkoL-s=Q@mail.gmail.com>
+In-Reply-To: <YrQc8xq+QezRcLi7@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 11:50:22AM +0800, Jason Wang wrote:
->On Wed, Jun 22, 2022 at 12:09 AM Stefano Garzarella <sgarzare@redhat.com> wrote:
->>
->> Limit the number of requests (4 per queue as for vdpa_sim_net) handled
->> in a batch to prevent the worker from using the CPU for too long.
->>
->> Suggested-by: Eugenio Pérez <eperezma@redhat.com>
->> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
->> ---
->>  drivers/vdpa/vdpa_sim/vdpa_sim_blk.c | 15 ++++++++++++++-
->>  1 file changed, 14 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c b/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c
->> index a83a5c76f620..ac86478845b6 100644
->> --- a/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c
->> +++ b/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c
->> @@ -197,6 +197,7 @@ static bool vdpasim_blk_handle_req(struct vdpasim *vdpasim,
->>  static void vdpasim_blk_work(struct work_struct *work)
->>  {
->>         struct vdpasim *vdpasim = container_of(work, struct vdpasim, work);
->> +       bool reschedule = false;
->>         int i;
->>
->>         spin_lock(&vdpasim->lock);
->> @@ -206,11 +207,15 @@ static void vdpasim_blk_work(struct work_struct *work)
->>
->>         for (i = 0; i < VDPASIM_BLK_VQ_NUM; i++) {
->>                 struct vdpasim_virtqueue *vq = &vdpasim->vqs[i];
->> +               bool vq_work = true;
->> +               int reqs = 0;
->>
->>                 if (!vq->ready)
->>                         continue;
->>
->> -               while (vdpasim_blk_handle_req(vdpasim, vq)) {
->> +               while (vq_work) {
->> +                       vq_work = vdpasim_blk_handle_req(vdpasim, vq);
->> +
+On Thu, Jun 23, 2022 at 09:57:39AM +0200, Greg KH wrote:
+> On Thu, Jun 23, 2022 at 03:51:31AM +0000, cgel.zte@gmail.com wrote:
+> > From: xu xin <xu.xin16@zte.com.cn>
+> > 
+> > As the bug description, attckers can use this bug to crash the system
+> > When CONFIG_NTFS_FS is set.
+> > 
+> > So remove the BUG_ON, and use WARN and return instead until someone
+> > really solve the bug.
+> > 
+> > Reported-by: Zeal Robot <zealci@zte.com.cn>
+> > Reported-by: syzbot+6a5a7672f663cce8b156@syzkaller.appspotmail.com
+> > Reviewed-by: Songyi Zhang <zhang.songyi@zte.com.cn>
+> > Reviewed-by: Yang Yang <yang.yang29@zte.com.cn>
+> > Reviewed-by: Jiang Xuexin<jiang.xuexin@zte.com.cn>
+> > Reviewed-by: Zhang wenya<zhang.wenya1@zte.com.cn>
+> > Signed-off-by: xu xin <xu.xin16@zte.com.cn>
+> > ---
+> >  fs/ntfs/aops.c | 6 +++++-
+> >  1 file changed, 5 insertions(+), 1 deletion(-)
+> > 
+> > --- a/fs/ntfs/aops.c
+> > +++ b/fs/ntfs/aops.c
+> > @@ -183,7 +183,11 @@ static int ntfs_read_block(struct page *page)
+> >  	vol = ni->vol;
+> >  
+> >  	/* $MFT/$DATA must have its complete runlist in memory at all times. */
+> > -	BUG_ON(!ni->runlist.rl && !ni->mft_no && !NInoAttr(ni));
+> > +	if (unlikely(!ni->runlist.rl && !ni->mft_no && !NInoAttr(ni))) {
+> > +		WARN(1, "NTFS: ni->runlist.rl, ni->mft_no, and NInoAttr(ni) is null!\n");
+> > +		unlock_page(page);
+> > +		return -EINVAL;
+> > +	}
+> >  
+> >  	blocksize = vol->sb->s_blocksize;
+> >  	blocksize_bits = vol->sb->s_blocksize_bits;
+> > -- 
+> > 2.25.1
+> > 
+> 
+> <formletter>
+> 
+> This is not the correct way to submit patches for inclusion in the
+> stable kernel tree.  Please read:
+>     https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
+> for how to do this properly.
 >
->Is it better to check and exit the loop early here?
 
-Maybe, but I'm not sure.
+Sorry. I'll rewrite a patch to fix it. 
 
-In vdpa_sim_net we call vringh_complete_iotlb() and send notification 
-also in the error path, so I thought was better to send notification 
-also when vdpasim_blk_handle_req() return false, since we will update 
-the used.idx.
+Thanks.
 
-However, I don't think it's a common path, so if you think it's better 
-to exit the loop early, I can do it.
-
-Thanks,
-Stefano
-
+> </formletter>
