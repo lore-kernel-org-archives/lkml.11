@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40828C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:16:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DA28C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:16:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230134AbiFWRQW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:16:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49020 "EHLO
+        id S232973AbiFWRQ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:16:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233312AbiFWRMp (ORCPT
+        with ESMTP id S233302AbiFWRMo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:12:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0FD24EF45;
-        Thu, 23 Jun 2022 09:58:41 -0700 (PDT)
+        Thu, 23 Jun 2022 13:12:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88CA74D25A;
+        Thu, 23 Jun 2022 09:58:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 52BA1B8248A;
-        Thu, 23 Jun 2022 16:58:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9803CC3411B;
-        Thu, 23 Jun 2022 16:58:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 96F3260AD7;
+        Thu, 23 Jun 2022 16:58:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70D09C3411B;
+        Thu, 23 Jun 2022 16:58:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003519;
-        bh=KWIHTYBkB1oKZiqQ7+4sfDcn1nQyj2gDERCoeoco9X4=;
+        s=korg; t=1656003515;
+        bh=sbi8FXcon8b7rzkaZG1YD95/6rVLNILntmB9ekCc9/g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XGMPVyb9nLvMndy39Su2YX95nqXBMG+Ai2KYjxKl2IJUo0cvfCD9iyo2+kssGjUPs
-         dtN/iPf+fdcO8f0lAyvCkdNvtcWDZm2jY/uO/KeiHSbP/0++kOPnAeFmLPG/1KXL9x
-         IGzZRFtwTtMYE1LHcwQka+VfeQuFpTTG4OBsSEvA=
+        b=Nwpeo5nS+0tDKXBLXYwL6WWOIA5q7yu4nDIT6nj1GauzF+7a0QzBUCTfcdftGyxwW
+         175+7JBD0NvonegLikoP23R16lyEZq0s3UtKCtt2nW+X1JpuH5cGkB7tBFe+eN3c0S
+         Q1flHyzHuWRbWCN/TlKqO2l0DyjHJUybQ/Gd5pVE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        David Dworken <ddworken@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 4.9 258/264] tcp: add some entropy in __inet_hash_connect()
-Date:   Thu, 23 Jun 2022 18:44:11 +0200
-Message-Id: <20220623164351.365986967@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.9 213/264] random: check for signals after page of pool writes
+Date:   Thu, 23 Jun 2022 18:43:26 +0200
+Message-Id: <20220623164350.100089050@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -51,49 +49,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit c579bd1b4021c42ae247108f1e6f73dd3f08600c upstream.
+commit 1ce6c8d68f8ac587f54d0a271ac594d3d51f3efb upstream.
 
-Even when implementing RFC 6056 3.3.4 (Algorithm 4: Double-Hash
-Port Selection Algorithm), a patient attacker could still be able
-to collect enough state from an otherwise idle host.
+get_random_bytes_user() checks for signals after producing a PAGE_SIZE
+worth of output, just like /dev/zero does. write_pool() is doing
+basically the same work (actually, slightly more expensive), and so
+should stop to check for signals in the same way. Let's also name it
+write_pool_user() to match get_random_bytes_user(), so this won't be
+misused in the future.
 
-Idea of this patch is to inject some noise, in the
-cases __inet_hash_connect() found a candidate in the first
-attempt.
+Before this patch, massive writes to /dev/urandom would tie up the
+process for an extremely long time and make it unterminatable. After, it
+can be successfully interrupted. The following test program can be used
+to see this works as intended:
 
-This noise should not significantly reduce the collision
-avoidance, and should be zero if connection table
-is already well used.
+  #include <unistd.h>
+  #include <fcntl.h>
+  #include <signal.h>
+  #include <stdio.h>
 
-Note that this is not implementing RFC 6056 3.3.5
-because we think Algorithm 5 could hurt typical
-workloads.
+  static unsigned char x[~0U];
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: David Dworken <ddworken@google.com>
-Cc: Willem de Bruijn <willemb@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
+  static void handle(int) { }
+
+  int main(int argc, char *argv[])
+  {
+    pid_t pid = getpid(), child;
+    int fd;
+    signal(SIGUSR1, handle);
+    if (!(child = fork())) {
+      for (;;)
+        kill(pid, SIGUSR1);
+    }
+    fd = open("/dev/urandom", O_WRONLY);
+    pause();
+    printf("interrupted after writing %zd bytes\n", write(fd, x, sizeof(x)));
+    close(fd);
+    kill(child, SIGTERM);
+    return 0;
+  }
+
+Result before: "interrupted after writing 2147479552 bytes"
+Result after: "interrupted after writing 4096 bytes"
+
+Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/inet_hashtables.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/char/random.c |   14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
---- a/net/ipv4/inet_hashtables.c
-+++ b/net/ipv4/inet_hashtables.c
-@@ -642,6 +642,11 @@ next_port:
- 	return -EADDRNOTAVAIL;
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -1252,7 +1252,7 @@ static unsigned int random_poll(struct f
+ 	return crng_ready() ? POLLIN | POLLRDNORM : POLLOUT | POLLWRNORM;
+ }
  
- ok:
-+	/* If our first attempt found a candidate, skip next candidate
-+	 * in 1/16 of cases to add some noise.
-+	 */
-+	if (!i && !(prandom_u32() % 16))
-+		i = 2;
- 	WRITE_ONCE(table_perturb[index], READ_ONCE(table_perturb[index]) + i + 2);
+-static ssize_t write_pool(struct iov_iter *iter)
++static ssize_t write_pool_user(struct iov_iter *iter)
+ {
+ 	u8 block[BLAKE2S_BLOCK_SIZE];
+ 	ssize_t ret = 0;
+@@ -1267,7 +1267,13 @@ static ssize_t write_pool(struct iov_ite
+ 		mix_pool_bytes(block, copied);
+ 		if (!iov_iter_count(iter) || copied != sizeof(block))
+ 			break;
+-		cond_resched();
++
++		BUILD_BUG_ON(PAGE_SIZE % sizeof(block) != 0);
++		if (ret % PAGE_SIZE == 0) {
++			if (signal_pending(current))
++				break;
++			cond_resched();
++		}
+ 	}
  
- 	/* Head lock still held and bh's disabled */
+ 	memzero_explicit(block, sizeof(block));
+@@ -1276,7 +1282,7 @@ static ssize_t write_pool(struct iov_ite
+ 
+ static ssize_t random_write_iter(struct kiocb *kiocb, struct iov_iter *iter)
+ {
+-	return write_pool(iter);
++	return write_pool_user(iter);
+ }
+ 
+ static ssize_t urandom_read_iter(struct kiocb *kiocb, struct iov_iter *iter)
+@@ -1343,7 +1349,7 @@ static long random_ioctl(struct file *f,
+ 		ret = import_single_range(WRITE, p, len, &iov, &iter);
+ 		if (unlikely(ret))
+ 			return ret;
+-		ret = write_pool(&iter);
++		ret = write_pool_user(&iter);
+ 		if (unlikely(ret < 0))
+ 			return ret;
+ 		/* Since we're crediting, enforce that it was all written into the pool. */
 
 
