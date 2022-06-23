@@ -2,103 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62534C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 07:57:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73B49C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 07:59:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231132AbiFWH5s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 03:57:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42648 "EHLO
+        id S231138AbiFWH7U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 03:59:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230520AbiFWH5p (ORCPT
+        with ESMTP id S230460AbiFWH7R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 03:57:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1B5247389;
-        Thu, 23 Jun 2022 00:57:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A6544B82200;
-        Thu, 23 Jun 2022 07:57:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBF56C3411B;
-        Thu, 23 Jun 2022 07:57:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655971062;
-        bh=ANhwfxxjIa4IJy2tXFg8crRrfMzdxUvybqtIlxYXVwM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=r5AREGxzJQcgEIjMRRPm7K6wf+HwUCOn5ip1jxvDeXOZcamO9qg02tG+BjFZ7A2SL
-         pMcZ0S0GdZXhtXiKtUSqhKHhy1jKlQtHLjA2bjqfWfKPL+ZMcGYeakJm2SBqhG8UDf
-         xnLvtFw7b0GXVSB/MJuwgcIhDsVdb+m7PzpDVfq0=
-Date:   Thu, 23 Jun 2022 09:57:39 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     cgel.zte@gmail.com
-Cc:     anton@tuxera.com, linux-ntfs-dev@lists.sourceforge.net,
-        stable@vger.kernel.org, linux-kernel@vger.kernel.org,
-        xu.xin16@zte.com.cn, linux-fsdevel@vger.kernel.org,
-        Zeal Robot <zealci@zte.com.cn>,
-        syzbot+6a5a7672f663cce8b156@syzkaller.appspotmail.com,
-        Songyi Zhang <zhang.songyi@zte.com.cn>,
-        Yang Yang <yang.yang29@zte.com.cn>,
-        Jiang Xuexin <jiang.xuexin@zte.com.cn>,
-        Zhang wenya <zhang.wenya1@zte.com.cn>
-Subject: Re: [PATCH] fs/ntfs: fix BUG_ON of ntfs_read_block()
-Message-ID: <YrQc8xq+QezRcLi7@kroah.com>
-References: <20220623033635.973929-1-xu.xin16@zte.com.cn>
- <20220623035131.974098-1-xu.xin16@zte.com.cn>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220623035131.974098-1-xu.xin16@zte.com.cn>
+        Thu, 23 Jun 2022 03:59:17 -0400
+Received: from smtpbg.qq.com (smtpbg123.qq.com [175.27.65.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24FF43A5DA;
+        Thu, 23 Jun 2022 00:59:12 -0700 (PDT)
+X-QQ-mid: bizesmtp86t1655970183tb51krff
+Received: from ubuntu.localdomain ( [106.117.99.68])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Thu, 23 Jun 2022 15:42:58 +0800 (CST)
+X-QQ-SSF: 01000000008000B0C000B00A0000000
+X-QQ-FEAT: Y/4E1fKPEOomo7nHBf9a08WqvhwxDc/uzHCns7utu7bdKjxFBLSv3xcG4N7Q4
+        ZFPzy3/GvSFkMAtoblpdcigbfYRrPpEwf5+L+bEMspnzRWxEH8O1eGHVaG4o01qzjgXa5/m
+        H4MSIbmyvEp5FdevLGHDsTXzYTXatCv1WTIWW7Xjxoz+9ILaJuTVU8Y5jYt9RNvfQ1Z+0Ov
+        dPgXKYe27+IvJbsb7nE4bCrr7HZgmKwnN+WiM3yRwLq+2xJCy8co++rLQI7kSAG/w3/M5U5
+        1rh1CGwOILN/8S6lFb6SZTfXd4EfAcOD0gCZb416N/0K9P2i098hkKHoiFdQoOWj53dSf2C
+        9IyWsOVjV20AOCy0s9oRbbzVjv3HGWkljMWPvVD
+X-QQ-GoodBg: 0
+From:   Jiang Jian <jiangjian@cdjrlc.com>
+To:     isely@pobox.com, mchehab@kernel.org
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiang Jian <jiangjian@cdjrlc.com>
+Subject: [PATCH] media: pvrusb2: drop unexpected word 'a' in comments
+Date:   Thu, 23 Jun 2022 15:42:57 +0800
+Message-Id: <20220623074257.18951-1-jiangjian@cdjrlc.com>
+X-Mailer: git-send-email 2.17.1
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 03:51:31AM +0000, cgel.zte@gmail.com wrote:
-> From: xu xin <xu.xin16@zte.com.cn>
-> 
-> As the bug description, attckers can use this bug to crash the system
-> When CONFIG_NTFS_FS is set.
-> 
-> So remove the BUG_ON, and use WARN and return instead until someone
-> really solve the bug.
-> 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Reported-by: syzbot+6a5a7672f663cce8b156@syzkaller.appspotmail.com
-> Reviewed-by: Songyi Zhang <zhang.songyi@zte.com.cn>
-> Reviewed-by: Yang Yang <yang.yang29@zte.com.cn>
-> Reviewed-by: Jiang Xuexin<jiang.xuexin@zte.com.cn>
-> Reviewed-by: Zhang wenya<zhang.wenya1@zte.com.cn>
-> Signed-off-by: xu xin <xu.xin16@zte.com.cn>
-> ---
->  fs/ntfs/aops.c | 6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
-> 
-> diff --git a/fs/ntfs/aops.c b/fs/ntfs/aops.c
-> index 5f4fb6ca6f2e..b6fd7e711420 100644
-> --- a/fs/ntfs/aops.c
-> +++ b/fs/ntfs/aops.c
-> @@ -183,7 +183,11 @@ static int ntfs_read_block(struct page *page)
->  	vol = ni->vol;
->  
->  	/* $MFT/$DATA must have its complete runlist in memory at all times. */
-> -	BUG_ON(!ni->runlist.rl && !ni->mft_no && !NInoAttr(ni));
-> +	if (unlikely(!ni->runlist.rl && !ni->mft_no && !NInoAttr(ni))) {
-> +		WARN(1, "NTFS: ni->runlist.rl, ni->mft_no, and NInoAttr(ni) is null!\n");
-> +		unlock_page(page);
-> +		return -EINVAL;
-> +	}
->  
->  	blocksize = vol->sb->s_blocksize;
->  	blocksize_bits = vol->sb->s_blocksize_bits;
-> -- 
-> 2.25.1
-> 
+there is an unexpected word 'a' in the comments that need to be dropped
 
-<formletter>
+file - drivers/media/usb/pvrusb2/pvrusb2-hdw.c
+line - 5044
 
-This is not the correct way to submit patches for inclusion in the
-stable kernel tree.  Please read:
-    https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
-for how to do this properly.
+But now it's a a chicken and egg problem...) */
 
-</formletter>
+changed to:
+
+But now it's a chicken and egg problem...) */
+
+Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
+---
+ drivers/media/usb/pvrusb2/pvrusb2-hdw.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/media/usb/pvrusb2/pvrusb2-hdw.c b/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
+index 92d6db1ad00f..62ff1fa1c753 100644
+--- a/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
++++ b/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
+@@ -5041,7 +5041,7 @@ void pvr2_hdw_status_poll(struct pvr2_hdw *hdw)
+ 	/* Note: There apparently is no replacement for VIDIOC_CROPCAP
+ 	   using v4l2-subdev - therefore we can't support that AT ALL right
+ 	   now.  (Of course, no sub-drivers seem to implement it either.
+-	   But now it's a a chicken and egg problem...) */
++	   But now it's a chicken and egg problem...) */
+ 	v4l2_device_call_all(&hdw->v4l2_dev, 0, tuner, g_tuner, vtp);
+ 	pvr2_trace(PVR2_TRACE_CHIPS, "subdev status poll type=%u strength=%u audio=0x%x cap=0x%x low=%u hi=%u",
+ 		   vtp->type,
+-- 
+2.17.1
+
