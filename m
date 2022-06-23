@@ -2,76 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63855C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 07:04:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F086C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 07:05:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229946AbiFWHE1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 03:04:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55108 "EHLO
+        id S230006AbiFWHFm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 03:05:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229571AbiFWHEZ (ORCPT
+        with ESMTP id S229571AbiFWHFl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 03:04:25 -0400
-Received: from smtpbg.qq.com (smtpbg139.qq.com [175.27.65.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E97044A38;
-        Thu, 23 Jun 2022 00:04:16 -0700 (PDT)
-X-QQ-mid: bizesmtp88t1655967776tzr1mrq4
-Received: from ubuntu.localdomain ( [106.117.99.68])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 23 Jun 2022 15:02:51 +0800 (CST)
-X-QQ-SSF: 01000000008000B0C000B00A0000000
-X-QQ-FEAT: F3yR32iATbg+ZZLfMDZrCgBHXrXDQgig7yVhup0661i+Yv0IN9rThYTKTNS0Z
-        5UaiDUCgvzGu0RAEiysLVEATxfp7Z6gZw1oHIesbxMKp0WWft+law+Pid9as6Pq3Ksz+paj
-        0BQlyGTl3Dl7BDYy3tzccq/Msm5h/k3cgznvB1HjU95HCuU6wT6TeuEdm1trAxV7VrNAFVt
-        EAh48GxXs6C5vwDpkW8aAPqcBGG3khh/DnskBYRE+vKUcLK5VABOFgsH7htwxP+TPgMZXBh
-        Q5UcMOaC9OJCBrp6PGXZnx+iDwCdC9ktLEfrchoEK6LKx9W9o8XAr/BVvwIY50SqBCxNdy/
-        CcLmR8ulbanDy5c50/wNSpxGO9qTw==
-X-QQ-GoodBg: 0
-From:   Jiang Jian <jiangjian@cdjrlc.com>
-To:     jejb@linux.ibm.com, martin.petersen@oracle.com
-Cc:     sathya.prakash@broadcom.com, sreekanth.reddy@broadcom.com,
-        suganath-prabu.subramani@broadcom.com,
-        MPT-FusionLinux.pdl@broadcom.com, linux-scsi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jiang Jian <jiangjian@cdjrlc.com>
-Subject: [PATCH] scsi: mpt3sas: drop unexpected word 'a' in comments
-Date:   Thu, 23 Jun 2022 15:02:49 +0800
-Message-Id: <20220623070249.9977-1-jiangjian@cdjrlc.com>
-X-Mailer: git-send-email 2.17.1
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam6
+        Thu, 23 Jun 2022 03:05:41 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E51845513
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 00:05:40 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id ay16so19686286ejb.6
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 00:05:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=FUqOVP3OH7BWYjo6vdlKJOAexlQHETbAKu5icdi+qLI=;
+        b=Z3kQtFflp9ce1ZM08KTXQjN3/rys8fUPdg6bFciqs7HRkuvSLYCXT30XIGG74Whnbo
+         2w2TMEoeFr/jQ7RQNYBZX3WPP5GrFk6oOSuyDI9iPU2/AHQZ6C3F6D69i7TAYI3AQQtz
+         03JTE7KKCSegXy9fyXaKRjsfYlgjaEyvipR/xWN811r3xokYYx+HFE3F5ZdyalC7aENR
+         vA1meuxYwHmUkmw/DxdH3xTNO2C67JIpX/1FtHHpbjEWfLwrWMaDNk579g3X2kiFsKrt
+         e7ADgDiACVsdABiMnm2fv7466/IE4PddktbRMemlBGqZsK+KKh5QmuNkv2XKCq9hHXvk
+         aKGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=FUqOVP3OH7BWYjo6vdlKJOAexlQHETbAKu5icdi+qLI=;
+        b=Hoct8YQJwILrdy6goAJqWzRTQTFhuEtEIpGmUsPfHhtBw2gY1k7qXtLKG55fI1ts2x
+         Vxj+UCbRWxg5UX907vmXaofbwtMOqqkjvKYT4pCYfvfIvMWLYJ+MYaM0HTzDcXn/Kq/p
+         O0NVvu8Yhi02kmPciCHlIjOF5P1PvPhedAfLXyneVa2TkMZpVY0cOIzbAbUMmEJBKYN1
+         GeqyUC+thK0k+2SMS+GsvELIjop2R6vul3SXPQer8YiwCNba/eBlR8wp8tDcFvcnvZpS
+         iVC3MoEu557rOPhB+Y1436DdllVdS3qLonzRwSmKBQ9uU//zOk1+M/P38URx+I+p+2S6
+         J74Q==
+X-Gm-Message-State: AJIora+a7mV7a6L4qbojAR6jtz/kQH0FJZmPEW8aIbDgz6Cq/BheBHXV
+        ZUxSIC0zFJ90gdcmC/Z9dM4QCQ==
+X-Google-Smtp-Source: AGRyM1sSWLw+uz9Wo/Vqcc2Qzmpm0rtmfs9IKZ6vHicf79GE/X5RwZggFtUqWDuVFpql/v0tm0c+Uw==
+X-Received: by 2002:a17:906:9c82:b0:6df:c5f0:d456 with SMTP id fj2-20020a1709069c8200b006dfc5f0d456mr6845907ejc.287.1655967938872;
+        Thu, 23 Jun 2022 00:05:38 -0700 (PDT)
+Received: from [192.168.0.226] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id a24-20020aa7cf18000000b004356c18b2b9sm12227191edy.44.2022.06.23.00.05.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 23 Jun 2022 00:05:38 -0700 (PDT)
+Message-ID: <84cba0c8-fb31-3314-5e2c-7a0c13030b9a@linaro.org>
+Date:   Thu, 23 Jun 2022 09:05:37 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: (subset) [PATCH 7/7] ARM: dts: aspeed: centriq2400: use qcom
+ compatible
+Content-Language: en-US
+To:     Joel Stanley <joel@jms.id.au>
+Cc:     Steven Lee <steven_lee@aspeedtech.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Ken Chen <chen.kenyy@inventec.com>,
+        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        David Wang <David_Wang6097@jabil.com>
+References: <20220529104928.79636-1-krzysztof.kozlowski@linaro.org>
+ <20220529104928.79636-7-krzysztof.kozlowski@linaro.org>
+ <165589305701.29629.10216921074802952879.b4-ty@linaro.org>
+ <CACPK8XfxXi8kQr+vxta8rD6SBgxLf_oBjAH0UkPBacQta552YQ@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CACPK8XfxXi8kQr+vxta8rD6SBgxLf_oBjAH0UkPBacQta552YQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-there is an unexpected word 'a' in the comments that need to be dropped
+On 23/06/2022 07:34, Joel Stanley wrote:
+> On Wed, 22 Jun 2022 at 10:17, Krzysztof Kozlowski
+> <krzysztof.kozlowski@linaro.org> wrote:
+>>
+>> On Sun, 29 May 2022 12:49:28 +0200, Krzysztof Kozlowski wrote:
+>>> "qualcomm" is not a documented compatible and instead "qcom" should be
+>>> used.
+>>>
+>>>
+>>
+>> Applied, thanks!
+> 
+> What tree did you apply this to? Did you get review from the maintainer?
 
-file - drivers/scsi/mpt3sas/mpt3sas_base.c
-line - 535
+Tree was mentioned below.
 
-* FIXME: this relies on a a zero
+> 
+> This board is unmaintained and unused. I would prefer it removed
+> rather than meaningless fixes be applied.
 
-changed to:
+I can drop the patch. I'll send the patch to remove the board.
 
-* FIXME: this relies on a a zero
+> 
+>>
+>> [7/7] ARM: dts: aspeed: centriq2400: use qcom compatible
+>>       https://git.kernel.org/krzk/linux/c/6202c6063145cf9ec22b40aac219122dd702a10f
+>>
+>> Best regards,
+>> --
+>> Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
----
- drivers/scsi/mpt3sas/mpt3sas_base.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/mpt3sas/mpt3sas_base.c b/drivers/scsi/mpt3sas/mpt3sas_base.c
-index 9a1ae52bb621..af41ea53aa7d 100644
---- a/drivers/scsi/mpt3sas/mpt3sas_base.c
-+++ b/drivers/scsi/mpt3sas/mpt3sas_base.c
-@@ -532,7 +532,7 @@ static void _clone_sg_entries(struct MPT3SAS_ADAPTER *ioc,
- 					    (le32_to_cpu(sgel->FlagsLength) &
- 					    0x00ffffff));
- 					/*
--					 * FIXME: this relies on a a zero
-+					 * FIXME: this relies on a zero
- 					 * PCI mem_offset.
- 					 */
- 					sgel->Address =
--- 
-2.17.1
-
+Best regards,
+Krzysztof
