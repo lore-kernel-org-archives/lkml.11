@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E9FCC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:01:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA467C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:01:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230493AbiFWRBS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:01:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59524 "EHLO
+        id S231298AbiFWRBZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:01:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232110AbiFWQzl (ORCPT
+        with ESMTP id S232425AbiFWQ4E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:55:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF4D949C96;
-        Thu, 23 Jun 2022 09:53:01 -0700 (PDT)
+        Thu, 23 Jun 2022 12:56:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDF0449B48;
+        Thu, 23 Jun 2022 09:53:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 58E1A61FBF;
-        Thu, 23 Jun 2022 16:53:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3076DC3411B;
-        Thu, 23 Jun 2022 16:53:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C9CC7B8248C;
+        Thu, 23 Jun 2022 16:52:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CE7BC3411B;
+        Thu, 23 Jun 2022 16:52:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003180;
-        bh=m1t48f8J1t5GlS2HZ+kgwhOatWjtlZrYDKKdcmlt4Co=;
+        s=korg; t=1656003177;
+        bh=0EZw4lAzKGTm4VAg0yuLIJ//bKI0op+kfkcDODdZSZM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rjFgrAhPuJkM7/Daai4/WAx0DEAt97gwG3K05wMcefy+t6TuiLXlRoH9mKVJ7RZQl
-         1kEy37gTVpuokiGb6o6EbFWB3D17e9p+jxdH2JT7YoxXl+jkz8ABWOaWAo6z7psLW+
-         8XJtombx3jx6ovKCHTA7gABAsGGELUGKTWqh5szU=
+        b=Js8fA8kbigzINi3bEv7TQWEV5Aka3OAC0psHJuZKvNuxt8+y8a4yKeOaJsUJSwrv/
+         Aaia3rF2c4czJzjHV7SQf0cIh8LQSI1wZpRg1LBOKhezFbSV5RpWCZKCDnSfyY2hot
+         xtToekQqvLCCZp8px5tyKGqNZMnxUxHE7gdm++E8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Theodore Tso <tytso@mit.edu>,
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
         Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 129/264] random: add proper SPDX header
-Date:   Thu, 23 Jun 2022 18:42:02 +0200
-Message-Id: <20220623164347.716505368@linuxfoundation.org>
+Subject: [PATCH 4.9 155/264] random: only wake up writers after zap if threshold was passed
+Date:   Thu, 23 Jun 2022 18:42:28 +0200
+Message-Id: <20220623164348.449470376@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -52,72 +51,32 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit a07fdae346c35c6ba286af1c88e0effcfa330bf9 upstream.
+commit a3f9e8910e1584d7725ef7d5ac870920d42d0bb4 upstream.
 
-Convert the current license into the SPDX notation of "(GPL-2.0 OR
-BSD-3-Clause)". This infers GPL-2.0 from the text "ALTERNATIVELY, this
-product may be distributed under the terms of the GNU General Public
-License, in which case the provisions of the GPL are required INSTEAD OF
-the above restrictions" and it infers BSD-3-Clause from the verbatim
-BSD 3 clause license in the file.
+The only time that we need to wake up /dev/random writers on
+RNDCLEARPOOL/RNDZAPPOOL is when we're changing from a value that is
+greater than or equal to POOL_MIN_BITS to zero, because if we're
+changing from below POOL_MIN_BITS to zero, the writers are already
+unblocked.
 
-Cc: Thomas Gleixner <tglx@linutronix.de>
 Cc: Theodore Ts'o <tytso@mit.edu>
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   37 +------------------------------------
- 1 file changed, 1 insertion(+), 36 deletions(-)
+ drivers/char/random.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -1,44 +1,9 @@
-+// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
- /*
-- * random.c -- A strong random number generator
-- *
-  * Copyright (C) 2017-2022 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
-- *
-  * Copyright Matt Mackall <mpm@selenic.com>, 2003, 2004, 2005
-- *
-  * Copyright Theodore Ts'o, 1994, 1995, 1996, 1997, 1998, 1999.  All
-  * rights reserved.
-- *
-- * Redistribution and use in source and binary forms, with or without
-- * modification, are permitted provided that the following conditions
-- * are met:
-- * 1. Redistributions of source code must retain the above copyright
-- *    notice, and the entire permission notice in its entirety,
-- *    including the disclaimer of warranties.
-- * 2. Redistributions in binary form must reproduce the above copyright
-- *    notice, this list of conditions and the following disclaimer in the
-- *    documentation and/or other materials provided with the distribution.
-- * 3. The name of the author may not be used to endorse or promote
-- *    products derived from this software without specific prior
-- *    written permission.
-- *
-- * ALTERNATIVELY, this product may be distributed under the terms of
-- * the GNU General Public License, in which case the provisions of the GPL are
-- * required INSTEAD OF the above restrictions.  (This clause is
-- * necessary due to a potential bad interaction between the GPL and
-- * the restrictions contained in a BSD-style copyright.)
-- *
-- * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESS OR IMPLIED
-- * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
-- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE, ALL OF
-- * WHICH ARE HEREBY DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR BE
-- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
-- * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
-- * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
-- * USE OF THIS SOFTWARE, EVEN IF NOT ADVISED OF THE POSSIBILITY OF SUCH
-- * DAMAGE.
-  */
- 
- /*
+@@ -1578,7 +1578,7 @@ static long random_ioctl(struct file *f,
+ 		 */
+ 		if (!capable(CAP_SYS_ADMIN))
+ 			return -EPERM;
+-		if (xchg(&input_pool.entropy_count, 0)) {
++		if (xchg(&input_pool.entropy_count, 0) >= POOL_MIN_BITS) {
+ 			wake_up_interruptible(&random_write_wait);
+ 			kill_fasync(&fasync, SIGIO, POLL_OUT);
+ 		}
 
 
