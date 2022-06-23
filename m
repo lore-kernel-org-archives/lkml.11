@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6A38C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:59:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95887CCA47F
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:59:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235672AbiFWR5U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:57:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46962 "EHLO
+        id S235723AbiFWR5h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:57:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235407AbiFWRwb (ORCPT
+        with ESMTP id S235445AbiFWRwg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:52:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 429525001F;
-        Thu, 23 Jun 2022 10:13:10 -0700 (PDT)
+        Thu, 23 Jun 2022 13:52:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2112563A7;
+        Thu, 23 Jun 2022 10:13:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D21A61D18;
-        Thu, 23 Jun 2022 17:13:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50B95C3411B;
-        Thu, 23 Jun 2022 17:13:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9D334B82498;
+        Thu, 23 Jun 2022 17:13:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00F7EC341CA;
+        Thu, 23 Jun 2022 17:13:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004389;
-        bh=7LoDRDsOjAOBXC925WysFwrZ1mHlsKEmoJU7RPNDbEU=;
+        s=korg; t=1656004405;
+        bh=b3tAOqFWHhp7uK8IscYVSpe8+FpMUzq1THBxCN2AgNA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OclBGaaHtYpIq/bL2PV/qY591NGubxNvYaDTvYmcw0eS53xsvs6IWwiPPLH+fqbU7
-         ZQ4ngpCIk6NcmrUoaKb7UX2uezke7Lwu3K7Hx+ojZmPff+k+WyFmBuzdAeJrN8gfLT
-         SJHf99wdznS1nRHEyX0a3jGPTCy0ovGQGxsoEnKc=
+        b=Vl2k/0rDfkVBFgPGxvKKcWUbg4Hqq12znSnW4IX3Ngqje4IQWT2GQux7lAq+rTf10
+         GfCscAAKUfi4np6ku4c2VAh7VHomdaKPEr00zQM/hTjWhYSOEtG23Zv1Pp1yBw/2pS
+         iQIZHwSl64DeV80Gyjw2e2aOpaNVVE0ZjVSD09Uc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Andy Lutomirski <luto@kernel.org>,
         Theodore Tso <tytso@mit.edu>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.19 022/234] random: make /dev/random be almost like /dev/urandom
-Date:   Thu, 23 Jun 2022 18:41:29 +0200
-Message-Id: <20220623164343.691152260@linuxfoundation.org>
+Subject: [PATCH 4.19 027/234] random: remove kernel.random.read_wakeup_threshold
+Date:   Thu, 23 Jun 2022 18:41:34 +0200
+Message-Id: <20220623164343.833023360@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
 References: <20220623164343.042598055@linuxfoundation.org>
@@ -51,114 +51,60 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Andy Lutomirski <luto@kernel.org>
 
-commit 30c08efec8884fb106b8e57094baa51bb4c44e32 upstream.
+commit c95ea0c69ffda19381c116db2be23c7e654dac98 upstream.
 
-This patch changes the read semantics of /dev/random to be the same
-as /dev/urandom except that reads will block until the CRNG is
-ready.
-
-None of the cleanups that this enables have been done yet.  As a
-result, this gives a warning about an unused function.
+It has no effect any more, so remove it.  We can revert this if
+there is some user code that expects to be able to set this sysctl.
 
 Signed-off-by: Andy Lutomirski <luto@kernel.org>
-Link: https://lore.kernel.org/r/5e6ac8831c6cf2e56a7a4b39616d1732b2bdd06c.1577088521.git.luto@kernel.org
+Link: https://lore.kernel.org/r/a74ed2cf0b5a5451428a246a9239f5bc4e29358f.1577088521.git.luto@kernel.org
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   54 ++++++++++++--------------------------------------
- 1 file changed, 13 insertions(+), 41 deletions(-)
+ drivers/char/random.c |   18 +-----------------
+ 1 file changed, 1 insertion(+), 17 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -354,7 +354,6 @@
- #define INPUT_POOL_WORDS	(1 << (INPUT_POOL_SHIFT-5))
- #define OUTPUT_POOL_SHIFT	10
- #define OUTPUT_POOL_WORDS	(1 << (OUTPUT_POOL_SHIFT-5))
--#define SEC_XFER_SIZE		512
- #define EXTRACT_SIZE		10
+@@ -370,12 +370,6 @@
+ #define ENTROPY_BITS(r) ((r)->entropy_count >> ENTROPY_SHIFT)
  
+ /*
+- * The minimum number of bits of entropy before we wake up a read on
+- * /dev/random.  Should be enough to do a significant reseed.
+- */
+-static int random_read_wakeup_bits = 64;
+-
+-/*
+  * If the entropy count falls under this number of bits, then we
+  * should wake up processes which are selecting or polling on write
+  * access to /dev/random.
+@@ -2073,8 +2067,7 @@ SYSCALL_DEFINE3(getrandom, char __user *
  
-@@ -804,7 +803,6 @@ retry:
- 		if (entropy_bits >= random_read_wakeup_bits &&
- 		    wq_has_sleeper(&random_read_wait)) {
- 			wake_up_interruptible(&random_read_wait);
--			kill_fasync(&fasync, SIGIO, POLL_IN);
- 		}
- 		/* If the input pool is getting full, and the blocking
- 		 * pool has room, send some entropy to the blocking
-@@ -1988,43 +1986,6 @@ void rand_initialize_disk(struct gendisk
- #endif
+ #include <linux/sysctl.h>
  
- static ssize_t
--_random_read(int nonblock, char __user *buf, size_t nbytes)
--{
--	ssize_t n;
--
--	if (nbytes == 0)
--		return 0;
--
--	nbytes = min_t(size_t, nbytes, SEC_XFER_SIZE);
--	while (1) {
--		n = extract_entropy_user(&blocking_pool, buf, nbytes);
--		if (n < 0)
--			return n;
--		trace_random_read(n*8, (nbytes-n)*8,
--				  ENTROPY_BITS(&blocking_pool),
--				  ENTROPY_BITS(&input_pool));
--		if (n > 0)
--			return n;
--
--		/* Pool is (near) empty.  Maybe wait and retry. */
--		if (nonblock)
--			return -EAGAIN;
--
--		wait_event_interruptible(random_read_wait,
--		    blocking_pool.initialized &&
--		    (ENTROPY_BITS(&input_pool) >= random_read_wakeup_bits));
--		if (signal_pending(current))
--			return -ERESTARTSYS;
--	}
--}
--
--static ssize_t
--random_read(struct file *file, char __user *buf, size_t nbytes, loff_t *ppos)
--{
--	return _random_read(file->f_flags & O_NONBLOCK, buf, nbytes);
--}
--
--static ssize_t
- urandom_read_nowarn(struct file *file, char __user *buf, size_t nbytes,
- 		    loff_t *ppos)
- {
-@@ -2056,15 +2017,26 @@ urandom_read(struct file *file, char __u
- 	return urandom_read_nowarn(file, buf, nbytes, ppos);
- }
- 
-+static ssize_t
-+random_read(struct file *file, char __user *buf, size_t nbytes, loff_t *ppos)
-+{
-+	int ret;
-+
-+	ret = wait_for_random_bytes();
-+	if (ret != 0)
-+		return ret;
-+	return urandom_read_nowarn(file, buf, nbytes, ppos);
-+}
-+
- static __poll_t
- random_poll(struct file *file, poll_table * wait)
- {
- 	__poll_t mask;
- 
--	poll_wait(file, &random_read_wait, wait);
-+	poll_wait(file, &crng_init_wait, wait);
- 	poll_wait(file, &random_write_wait, wait);
- 	mask = 0;
--	if (ENTROPY_BITS(&input_pool) >= random_read_wakeup_bits)
-+	if (crng_ready())
- 		mask |= EPOLLIN | EPOLLRDNORM;
- 	if (ENTROPY_BITS(&input_pool) < random_write_wakeup_bits)
- 		mask |= EPOLLOUT | EPOLLWRNORM;
+-static int min_read_thresh = 8, min_write_thresh;
+-static int max_read_thresh = OUTPUT_POOL_WORDS * 32;
++static int min_write_thresh;
+ static int max_write_thresh = INPUT_POOL_WORDS * 32;
+ static int random_min_urandom_seed = 60;
+ static char sysctl_bootid[16];
+@@ -2150,15 +2143,6 @@ struct ctl_table random_table[] = {
+ 		.data		= &input_pool.entropy_count,
+ 	},
+ 	{
+-		.procname	= "read_wakeup_threshold",
+-		.data		= &random_read_wakeup_bits,
+-		.maxlen		= sizeof(int),
+-		.mode		= 0644,
+-		.proc_handler	= proc_dointvec_minmax,
+-		.extra1		= &min_read_thresh,
+-		.extra2		= &max_read_thresh,
+-	},
+-	{
+ 		.procname	= "write_wakeup_threshold",
+ 		.data		= &random_write_wakeup_bits,
+ 		.maxlen		= sizeof(int),
 
 
