@@ -2,146 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81D9BC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 10:52:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EC61C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 10:53:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231499AbiFWKwQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 06:52:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48548 "EHLO
+        id S231243AbiFWKxr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 06:53:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231419AbiFWKwC (ORCPT
+        with ESMTP id S229575AbiFWKxp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 06:52:02 -0400
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::224])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44F5C4B416;
-        Thu, 23 Jun 2022 03:51:58 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id C1364E0002;
-        Thu, 23 Jun 2022 10:51:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1655981517;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=eOnREmjkRmZWXjlITmYHHvZiPZ/RIqrCWToz3hX41C4=;
-        b=ovrxSQHKKOiTeOdkLHzgi8zf619MWczw6rdGJGYRofvl3rA9eA5jtFNNW1lkPZR5qWdzbV
-        9NREpiK+7v/OIFuzXHGorxHvusafWTMB39pXIuoTs1k9YT8Vs8SMz0ubV1PsscQGsCOr1J
-        /SLwMKiFklW2254dDLEinhFdTKjkKXEJo802nw4ZpHP1UgnQPO6GnMcU22VkGXQ+gpbLK1
-        cOsbhDw0qPF7jG9k+fsFkbRNodTh1ghbMSXpfoZSDXFd4QKChZ6SiTquvB5Iow+P4U7Nrg
-        UHWBAlz0JMtZ+CHdLZlcc1MzHGW2Q6j1F3+9fzxrZS9Mj8owqD4+QlFeDPLmsA==
-From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>
-Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Lizhi Hou <lizhi.hou@xilinx.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Steen Hegelund <steen.hegelund@microchip.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v1 1/2] of: base: populate of_root node if not set
-Date:   Thu, 23 Jun 2022 12:50:43 +0200
-Message-Id: <20220623105044.152832-2-clement.leger@bootlin.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220623105044.152832-1-clement.leger@bootlin.com>
-References: <20220623105044.152832-1-clement.leger@bootlin.com>
+        Thu, 23 Jun 2022 06:53:45 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06C244B43F;
+        Thu, 23 Jun 2022 03:53:45 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id f16so17093230pjj.1;
+        Thu, 23 Jun 2022 03:53:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=PnvkAsQSRr+CilVl3+koCkcLflQp+hqVHTyDSK0aCmI=;
+        b=XeRXRtt52JhGfxzXNOQkfajp4Bqb9QvJHdXfuDXGEz6gCuABtUhlCryjsmwvQA36I7
+         2nghrcPOaveNCALAQ6wihdy62clsG87QE3kFHdkaw7vtKOZ4okuxJD/AUTvYcERYTrea
+         zgDElUTHD6Uihta7CIOMNYJA20e4ErZHL0tre0SsqeKSnDMTFJos3YNAz7Mvvwy2Id3U
+         +vKwUaFFC8f7IuxiUnFilpYJjGJWDSWenqRA2FVnX2uwnaxksmDQ+OWmpvfQ1L5PH2d8
+         E0AzBRlYjlOZlyErextlMFBGQQD5mYdFJ6f1OmSLCgBx9sMzOCJg8jwHCvslfdcDM92e
+         TYyA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=PnvkAsQSRr+CilVl3+koCkcLflQp+hqVHTyDSK0aCmI=;
+        b=0NP7JkCRHcRN2sd+gar9PmU6i8WaTmkYjLhdBBQAafdM5NqvvJaUPE6h8eSHSfi2Z2
+         09tr2CYpelv1+s+/FyLfkAonN5HajZyujDkgeOO0cZ1eAA5HnTi7KPAWheb9LXBtsNo1
+         K8bzTzJ8BEXbDa2gnLbYoyXbqTvLHXGBvnq3B9a+Gf7j7FBoRpIk9qIe056Bg+skUDzw
+         AZVEWjLxgzlXTn6uWlDRHoNKnU/lpCswDAlAHWGQaeI5pYgOHeCEr0Xx3SK1+HpcA2rA
+         vFPMWvbcgnrKauLZfV65TjsJypVy2KWXWKVnIPx53CDFYkW13Om4/UI0NYmVF0vE7uzK
+         C6Wg==
+X-Gm-Message-State: AJIora9M1CNMTFdCVmmnTdLJYR8iL0Q8tJgZzW6oEgS1NWM9DSYhhT+8
+        PhpAx08jlC7KdcPVx7X3L8Q=
+X-Google-Smtp-Source: AGRyM1sFMUDJSbkUJDlmBP09tydMqhQdXkeSUGyBSzcnguUS4pkHUTBca7eqjsPVa+59ATgrKKiWGw==
+X-Received: by 2002:a17:90a:cb84:b0:1ea:ffd2:3075 with SMTP id a4-20020a17090acb8400b001eaffd23075mr3472599pju.106.1655981624500;
+        Thu, 23 Jun 2022 03:53:44 -0700 (PDT)
+Received: from [192.168.50.247] ([103.84.139.165])
+        by smtp.gmail.com with ESMTPSA id w9-20020aa79a09000000b00525204224afsm9314834pfj.94.2022.06.23.03.53.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 23 Jun 2022 03:53:44 -0700 (PDT)
+Message-ID: <2d7eaa45-2193-7fcb-5c9b-6394bab2ae95@gmail.com>
+Date:   Thu, 23 Jun 2022 18:53:41 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] rpmsg: fix possible refcount leak in
+ rpmsg_register_device_override()
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        bjorn.andersson@linaro.org, mathieu.poirier@linaro.org,
+        gregkh@linuxfoundation.org
+Cc:     linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220623073605.27386-1-hbh25y@gmail.com>
+ <050a390d-1ede-04ee-3870-9434ffd671b8@linaro.org>
+From:   Hangyu Hua <hbh25y@gmail.com>
+In-Reply-To: <050a390d-1ede-04ee-3870-9434ffd671b8@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When enabling CONFIG_OF on a platform where of_root is not populated by
-firmware, we end up without a root node. In order to apply overlays and
-create subnodes of the root node, we need one. Create this root node
-by unflattening an empty builtin dtb with of_fdt_unflatten().
+On 2022/6/23 16:15, Krzysztof Kozlowski wrote:
+> On 23/06/2022 09:36, Hangyu Hua wrote:
+>> [1] commit 1680939e9ecf ("rpmsg: virtio: Fix possible double free in
+>> rpmsg_virtio_add_ctrl_dev()")
+>> [2] commit c2eecefec5df ("rpmsg: virtio: Fix possible double free in
+>> rpmsg_probe()")
+>> [3] commit bb17d110cbf2 ("rpmsg: Fix calling device_lock() on
+>> non-initialized device")
+> 
+> I think only the last [3] introduced it, because it's the commit missing
+> put_device in first error path.
+> 
 
-Co-developed-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Clément Léger <clement.leger@bootlin.com>
----
- drivers/of/Makefile       |  2 +-
- drivers/of/base.c         | 18 ++++++++++++++++--
- drivers/of/empty_root.dts |  6 ++++++
- 3 files changed, 23 insertions(+), 3 deletions(-)
- create mode 100644 drivers/of/empty_root.dts
+I see. Do i need to change the commit log and then send a v2?
 
-diff --git a/drivers/of/Makefile b/drivers/of/Makefile
-index e0360a44306e..ce56c8b95c83 100644
---- a/drivers/of/Makefile
-+++ b/drivers/of/Makefile
-@@ -1,5 +1,5 @@
- # SPDX-License-Identifier: GPL-2.0
--obj-y = base.o device.o platform.o property.o
-+obj-y = base.o empty_root.dtb.o device.o platform.o property.o
- obj-$(CONFIG_OF_KOBJ) += kobj.o
- obj-$(CONFIG_OF_DYNAMIC) += dynamic.o
- obj-$(CONFIG_OF_FLATTREE) += fdt.o
-diff --git a/drivers/of/base.c b/drivers/of/base.c
-index d4f98c8469ed..43e0f027a49c 100644
---- a/drivers/of/base.c
-+++ b/drivers/of/base.c
-@@ -22,6 +22,7 @@
- #include <linux/module.h>
- #include <linux/of.h>
- #include <linux/of_device.h>
-+#include <linux/of_fdt.h>
- #include <linux/of_graph.h>
- #include <linux/spinlock.h>
- #include <linux/slab.h>
-@@ -163,6 +164,8 @@ void __of_phandle_cache_inv_entry(phandle handle)
- 		phandle_cache[handle_hash] = NULL;
- }
- 
-+extern const char __dtb_empty_root_begin[];
-+
- void __init of_core_init(void)
- {
- 	struct device_node *np;
-@@ -176,6 +179,18 @@ void __init of_core_init(void)
- 		pr_err("failed to register existing nodes\n");
- 		return;
- 	}
-+
-+	if (!of_root) {
-+		void *dt;
-+		const unsigned long *fdt = (const unsigned long *)
-+							__dtb_empty_root_begin;
-+		dt = of_fdt_unflatten_tree(fdt, NULL, &of_root);
-+		if (!dt) {
-+			pr_err("Failed to setup empty root dt\n");
-+			return;
-+		}
-+	}
-+
- 	for_each_of_allnodes(np) {
- 		__of_attach_node_sysfs(np);
- 		if (np->phandle && !phandle_cache[of_phandle_cache_hash(np->phandle)])
-@@ -184,8 +199,7 @@ void __init of_core_init(void)
- 	mutex_unlock(&of_mutex);
- 
- 	/* Symlink in /proc as required by userspace ABI */
--	if (of_root)
--		proc_symlink("device-tree", NULL, "/sys/firmware/devicetree/base");
-+	proc_symlink("device-tree", NULL, "/sys/firmware/devicetree/base");
- }
- 
- static struct property *__of_find_property(const struct device_node *np,
-diff --git a/drivers/of/empty_root.dts b/drivers/of/empty_root.dts
-new file mode 100644
-index 000000000000..cf9e97a60f48
---- /dev/null
-+++ b/drivers/of/empty_root.dts
-@@ -0,0 +1,6 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/dts-v1/;
-+
-+/ {
-+
-+};
--- 
-2.36.1
-
+>>
+>> The above three patches merged at the same time introduced a new bug.
+>> [1] and [2] make rpmsg_ns_register_device and rpmsg_ctrldev_register_device
+>> need to call the callback function internally to free vch when it fails.
+>> [3] has an error return path not handled vch.
+>>
+>> Fix this by adding a put_device() to the error path.
+>>
+>> Fixes: bb17d110cbf2 ("rpmsg: Fix calling device_lock() on non-initialized device")
+>> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+> 
+> 
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> 
+> Best regards,
+> Krzysztof
