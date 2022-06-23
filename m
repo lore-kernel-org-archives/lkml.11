@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9D8EC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:31:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ACF5CCA481
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:31:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234130AbiFWRbR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:31:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51196 "EHLO
+        id S233294AbiFWRbY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:31:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234432AbiFWR2l (ORCPT
+        with ESMTP id S234463AbiFWR2n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:28:41 -0400
+        Thu, 23 Jun 2022 13:28:43 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D335C7946C;
-        Thu, 23 Jun 2022 10:04:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7800B7A6C2;
+        Thu, 23 Jun 2022 10:04:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1D230B8249A;
-        Thu, 23 Jun 2022 17:04:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63BDFC341CD;
-        Thu, 23 Jun 2022 17:04:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EE4B4B82495;
+        Thu, 23 Jun 2022 17:04:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EB06C3411B;
+        Thu, 23 Jun 2022 17:04:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003856;
-        bh=/GLLhCzHljy652gAHK54sxBhnpC8r0V+X/RUS6vip5w=;
+        s=korg; t=1656003859;
+        bh=gRkETQJvr2FxHDr9oXch+XuY+cPLZ3ZZHS7YjlX3Skc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hLxBDWzVryqq4IQGKToDCo11AdG+IxbUbCY7ZrNzzxZe08TAnwvtV6YdeZqmv7S/I
-         cM8xrSk9BcQjx2D0B9Oqc8AmX2qbz2Juz1UYBL8yoWLnACl35+NPZGWLtue8qAe+QO
-         yzDf5oLfLtTyP8CHYfBy61FhXTidjJV9jevkkzCE=
+        b=iHG0b1f3WYtOmzBgq8FWB8T7e76qxKk7MdxR6mATvjVdg8bmCAookuirluTU3nE8U
+         R47NYuKWDvCwR6YDAYZIdL9fr9LQqTlZtgAFrHKUWlfPJX8NYQjm2s7c3ssQzNpbXo
+         4UqlBkbCA8HqG9kigcxAfvmSh4eK75cce0QmoWJk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sultan Alsawaf <sultan@kerneltoast.com>,
-        Eric Biggers <ebiggers@google.com>,
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
         Dominik Brodowski <linux@dominikbrodowski.net>,
+        Eric Biggers <ebiggers@google.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 092/237] random: make credit_entropy_bits() always safe
-Date:   Thu, 23 Jun 2022 18:42:06 +0200
-Message-Id: <20220623164345.797104546@linuxfoundation.org>
+Subject: [PATCH 4.14 110/237] random: remove useless header comment
+Date:   Thu, 23 Jun 2022 18:42:24 +0200
+Message-Id: <20220623164346.315230230@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -52,86 +52,31 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit a49c010e61e1938be851f5e49ac219d49b704103 upstream.
+commit 6071a6c0fba2d747742cadcbb3ba26ed756ed73b upstream.
 
-This is called from various hwgenerator drivers, so rather than having
-one "safe" version for userspace and one "unsafe" version for the
-kernel, just make everything safe; the checks are cheap and sensible to
-have anyway.
+This really adds nothing at all useful.
 
-Reported-by: Sultan Alsawaf <sultan@kerneltoast.com>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
+Cc: Theodore Ts'o <tytso@mit.edu>
 Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   29 +++++++++--------------------
- 1 file changed, 9 insertions(+), 20 deletions(-)
+ include/linux/random.h |    6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -447,18 +447,15 @@ static void process_random_ready_list(vo
- 	spin_unlock_irqrestore(&random_ready_list_lock, flags);
- }
- 
+--- a/include/linux/random.h
++++ b/include/linux/random.h
+@@ -1,9 +1,5 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
 -/*
-- * Credit (or debit) the entropy store with n bits of entropy.
-- * Use credit_entropy_bits_safe() if the value comes from userspace
-- * or otherwise should be checked for extreme values.
+- * include/linux/random.h
+- *
+- * Include file for the random number generator.
 - */
- static void credit_entropy_bits(int nbits)
- {
- 	int entropy_count, orig;
- 
--	if (!nbits)
-+	if (nbits <= 0)
- 		return;
- 
-+	nbits = min(nbits, POOL_BITS);
 +
- 	do {
- 		orig = READ_ONCE(input_pool.entropy_count);
- 		entropy_count = min(POOL_BITS, orig + nbits);
-@@ -470,18 +467,6 @@ static void credit_entropy_bits(int nbit
- 		crng_reseed(&primary_crng, true);
- }
+ #ifndef _LINUX_RANDOM_H
+ #define _LINUX_RANDOM_H
  
--static int credit_entropy_bits_safe(int nbits)
--{
--	if (nbits < 0)
--		return -EINVAL;
--
--	/* Cap the value to avoid overflows */
--	nbits = min(nbits, POOL_BITS);
--
--	credit_entropy_bits(nbits);
--	return 0;
--}
--
- /*********************************************************************
-  *
-  * CRNG using CHACHA20
-@@ -1525,7 +1510,10 @@ static long random_ioctl(struct file *f,
- 			return -EPERM;
- 		if (get_user(ent_count, p))
- 			return -EFAULT;
--		return credit_entropy_bits_safe(ent_count);
-+		if (ent_count < 0)
-+			return -EINVAL;
-+		credit_entropy_bits(ent_count);
-+		return 0;
- 	case RNDADDENTROPY:
- 		if (!capable(CAP_SYS_ADMIN))
- 			return -EPERM;
-@@ -1538,7 +1526,8 @@ static long random_ioctl(struct file *f,
- 		retval = write_pool((const char __user *)p, size);
- 		if (retval < 0)
- 			return retval;
--		return credit_entropy_bits_safe(ent_count);
-+		credit_entropy_bits(ent_count);
-+		return 0;
- 	case RNDZAPENTCNT:
- 	case RNDCLEARPOOL:
- 		/*
 
 
