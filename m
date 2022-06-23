@@ -2,89 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 842C2C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 12:48:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EAACC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 12:48:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231731AbiFWMsQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 08:48:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58992 "EHLO
+        id S231888AbiFWMsU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 08:48:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231575AbiFWMsH (ORCPT
+        with ESMTP id S230308AbiFWMsH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 23 Jun 2022 08:48:07 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9603444752;
-        Thu, 23 Jun 2022 05:48:05 -0700 (PDT)
-Received: from fraeml715-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LTKlp4fpKz6GD3M;
-        Thu, 23 Jun 2022 20:47:34 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml715-chm.china.huawei.com (10.206.15.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 23 Jun 2022 14:48:03 +0200
-Received: from localhost.localdomain (10.69.192.58) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 23 Jun 2022 13:48:00 +0100
-From:   John Garry <john.garry@huawei.com>
-To:     <jejb@linux.ibm.com>, <martin.petersen@oracle.com>
-CC:     <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linuxarm@huawei.com>, <hch@lst.de>,
-        John Garry <john.garry@huawei.com>
-Subject: [PATCH] scsi: hisi_sas: Limit max hw sectors for v3 HW
-Date:   Thu, 23 Jun 2022 20:41:59 +0800
-Message-ID: <1655988119-223714-1-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A84424477D
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 05:48:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655988484;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=RrgA3QRhrviuqlVZS1DqYvEOCwDo7gxdsScFtfx3ONI=;
+        b=Kf5v4zdeGzkZiG3AxDBJa6gohxrfQBqBNakxAsz3DTi0F3j4ULCS5gyNosXdaYiqz6z980
+        sMfenL4DkQ4V9Lll/3oOSRdUwpZpKMf9zLSf1RoTQB+ihPzCELeSF6gmgAslFMiMKfFw6u
+        3SyaoejVZLTGT2e6p+kFH2ZYGYUTuoU=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-445-pmhPhQ4JNM-M5mO90PjKCQ-1; Thu, 23 Jun 2022 08:48:02 -0400
+X-MC-Unique: pmhPhQ4JNM-M5mO90PjKCQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6D7E5811E76;
+        Thu, 23 Jun 2022 12:48:02 +0000 (UTC)
+Received: from horse.redhat.com (unknown [10.18.25.210])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E0D19C28115;
+        Thu, 23 Jun 2022 12:48:01 +0000 (UTC)
+Received: by horse.redhat.com (Postfix, from userid 10451)
+        id 5DF042209F9; Thu, 23 Jun 2022 08:48:01 -0400 (EDT)
+Date:   Thu, 23 Jun 2022 08:48:01 -0400
+From:   Vivek Goyal <vgoyal@redhat.com>
+To:     Deming Wang <wangdeming@inspur.com>
+Cc:     stefanha@redhat.com, miklos@szeredi.hu,
+        virtualization@lists.linux-foundation.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] virtio_fs: Modify format for virtio_fs_direct_access
+Message-ID: <YrRhAZA1Enez0WRA@redhat.com>
+References: <20220622211758.4728-1-wangdeming@inspur.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220622211758.4728-1-wangdeming@inspur.com>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If the controller is behind an IOMMU then the IOMMU IOVA caching range can
-affect performance, as discussed in [0].
+On Wed, Jun 22, 2022 at 05:17:58PM -0400, Deming Wang wrote:
+> We should isolate operators with spaces.
+> 
+> Signed-off-by: Deming Wang <wangdeming@inspur.com>
 
-Limit the max HW sectors to not exceed this limit. We need to hardcode
-the value until a proper DMA mapping API is available.
+Looks good to me.
 
-[0] https://lore.kernel.org/linux-iommu/20210129092120.1482-1-thunder.leizhen@huawei.com/
+Reviewed-by: Vivek Goyal <vgoyal@redhat.com>
 
-Signed-off-by: John Garry <john.garry@huawei.com>
----
-This patch is intended as something which I can backport to stable.
-Series [1] is a proper fix but stuck, but I would not plan to backport
-it anyway.
-[1] https://lore.kernel.org/linux-scsi/1654507822-168026-1-git-send-email-john.garry@huawei.com/T/#m069f33edd547533301e2af156ebd6badee199dea
+Vivek
 
-diff --git a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-index 7d819fc0395e..eb86afb21aab 100644
---- a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-+++ b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-@@ -2782,6 +2782,7 @@ static int slave_configure_v3_hw(struct scsi_device *sdev)
- 	struct hisi_hba *hisi_hba = shost_priv(shost);
- 	struct device *dev = hisi_hba->dev;
- 	int ret = sas_slave_configure(sdev);
-+	unsigned int max_sectors;
- 
- 	if (ret)
- 		return ret;
-@@ -2799,6 +2800,12 @@ static int slave_configure_v3_hw(struct scsi_device *sdev)
- 		}
- 	}
- 
-+	/* Set according to IOMMU IOVA caching limit */
-+	max_sectors = min_t(size_t, queue_max_hw_sectors(sdev->request_queue),
-+			    (PAGE_SIZE * 32) >> SECTOR_SHIFT);
-+
-+	blk_queue_max_hw_sectors(sdev->request_queue, max_sectors);
-+
- 	return 0;
- }
- 
--- 
-2.35.3
+> ---
+>  fs/fuse/virtio_fs.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/fs/fuse/virtio_fs.c b/fs/fuse/virtio_fs.c
+> index 8db53fa67359..e962c29967eb 100644
+> --- a/fs/fuse/virtio_fs.c
+> +++ b/fs/fuse/virtio_fs.c
+> @@ -757,7 +757,7 @@ static long virtio_fs_direct_access(struct dax_device *dax_dev, pgoff_t pgoff,
+>  {
+>  	struct virtio_fs *fs = dax_get_private(dax_dev);
+>  	phys_addr_t offset = PFN_PHYS(pgoff);
+> -	size_t max_nr_pages = fs->window_len/PAGE_SIZE - pgoff;
+> +	size_t max_nr_pages = fs->window_len / PAGE_SIZE - pgoff;
+>  
+>  	if (kaddr)
+>  		*kaddr = fs->window_kaddr + offset;
+> -- 
+> 2.27.0
+> 
 
