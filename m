@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB7B6C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:57:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5670EC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:57:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235639AbiFWR5I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:57:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51244 "EHLO
+        id S235646AbiFWR5L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:57:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236014AbiFWRxo (ORCPT
+        with ESMTP id S236031AbiFWRxr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:53:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B3F9AC8C6;
-        Thu, 23 Jun 2022 10:14:38 -0700 (PDT)
+        Thu, 23 Jun 2022 13:53:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71589AC8D6;
+        Thu, 23 Jun 2022 10:14:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7ED4061D17;
-        Thu, 23 Jun 2022 17:14:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43271C341C4;
-        Thu, 23 Jun 2022 17:14:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2FDC8B82489;
+        Thu, 23 Jun 2022 17:14:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DDE9C3411B;
+        Thu, 23 Jun 2022 17:14:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004476;
-        bh=2e6ozog50rVhgaO01r/Nkzs/rPS+Giyrtcuxu+y0u9s=;
+        s=korg; t=1656004479;
+        bh=NngK8zJ9xOgR7UIyAU/43ZE+nhhVWSxmb/OOH9fQejc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M9aTa5Tm93vQoQPzgyp0zzsiQ3vqHFr0MuWVwt9p4MvlDHv6c1xRObPPJQ2A0KJ4O
-         0g7lJaI3rdNCdOASxHqpJRswfPG2ZHO0XeJTeGh4F9Fgj3C4aRi5mL4wZpox31C4xu
-         Yozi27SVeEdja7dr7CqfODAn/15kLVuad4iZD3Vg=
+        b=N/8axGywhq8hzLk1Tl/lfMePdNH8+/a2FKkuTlO48JPyOXLmA5J533TcvpY+46szX
+         Dr6ZQ7ZU80npFX+SRR+1k2iDMxRaFcWqrF3QaZ+cJi6ykolyyXfTL+OczyhlIU66Ol
+         6xBKGtMZg1/CLyerrw//r6fPRw/HSVFm2N2fM8FE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.19 051/234] random: do not sign extend bytes for rotation when mixing
-Date:   Thu, 23 Jun 2022 18:41:58 +0200
-Message-Id: <20220623164344.511214378@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.19 052/234] random: do not re-init if crng_reseed completes before primary init
+Date:   Thu, 23 Jun 2022 18:41:59 +0200
+Message-Id: <20220623164344.538866268@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
 References: <20220623164343.042598055@linuxfoundation.org>
@@ -49,15 +51,21 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 0d9488ffbf2faddebc6bac055bfa6c93b94056a3 upstream.
+commit 9c3ddde3f811aabbb83778a2a615bf141b4909ef upstream.
 
-By using `char` instead of `unsigned char`, certain platforms will sign
-extend the byte when `w = rol32(*bytes++, input_rotate)` is called,
-meaning that bit 7 is overrepresented when mixing. This isn't a real
-problem (unless the mixer itself is already broken) since it's still
-invertible, but it's not quite correct either. Fix this by using an
-explicit unsigned type.
+If the bootloader supplies sufficient material and crng_reseed() is called
+very early on, but not too early that wqs aren't available yet, then we
+might transition to crng_init==2 before rand_initialize()'s call to
+crng_initialize_primary() made. Then, when crng_initialize_primary() is
+called, if we're trusting the CPU's RDRAND instructions, we'll
+needlessly reinitialize the RNG and emit a message about it. This is
+mostly harmless, as numa_crng_init() will allocate and then free what it
+just allocated, and excessive calls to invalidate_batched_entropy()
+aren't so harmful. But it is funky and the extra message is confusing,
+so avoid the re-initialization all together by checking for crng_init <
+2 in crng_initialize_primary(), just as we already do in crng_reseed().
 
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
@@ -66,14 +74,14 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -549,7 +549,7 @@ static void _mix_pool_bytes(struct entro
- 	unsigned long i, tap1, tap2, tap3, tap4, tap5;
- 	int input_rotate;
- 	int wordmask = r->poolinfo->poolwords - 1;
--	const char *bytes = in;
-+	const unsigned char *bytes = in;
- 	__u32 w;
- 
- 	tap1 = r->poolinfo->tap1;
+@@ -829,7 +829,7 @@ static void __init crng_initialize_prima
+ {
+ 	memcpy(&crng->state[0], "expand 32-byte k", 16);
+ 	_extract_entropy(&input_pool, &crng->state[4], sizeof(__u32) * 12, 0);
+-	if (crng_init_try_arch_early(crng) && trust_cpu) {
++	if (crng_init_try_arch_early(crng) && trust_cpu && crng_init < 2) {
+ 		invalidate_batched_entropy();
+ 		numa_crng_init();
+ 		crng_init = 2;
 
 
