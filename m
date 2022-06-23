@@ -2,82 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63745C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:22:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 662B3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:23:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231892AbiFWQWX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:22:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54068 "EHLO
+        id S232075AbiFWQXQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:23:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230338AbiFWQWV (ORCPT
+        with ESMTP id S230338AbiFWQXO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:22:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68BD03A180;
-        Thu, 23 Jun 2022 09:22:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1D2D8B8247D;
-        Thu, 23 Jun 2022 16:22:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CAF6C3411B;
-        Thu, 23 Jun 2022 16:22:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656001337;
-        bh=YsoOAuqQs9dQOMHE2o4hFP7F/IQj/Aa/1OiV4zxOfJ8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=rx4h6HYI0upiTLUuiAH06O5d9LWGE4od0bd8WR+5RsXZUqdZxy49KzUSjzcbgH8Mj
-         MjElvwJO2Y+QwwnM947MOOVkfdyac5rpOROJAAaT9Gt3g1lZcQhiylgfiOeEakUn07
-         yUhUOeJNuSttz2BZC8NHc5W4TAVVI+nTTMYHFLcv4E2iOwHDbCIJX3kxpx7qlJABm8
-         +OUqgSAdE59V8zHW/HO1360g25aiRJk+f/fUho4v+fER1VrAQNTyl5mUWLyxkxCXLa
-         s0gwXu8nq+hqNuwCIekgWs3SX/HBVuntfdy/cqo25InD2DgJ7tZdEPePgzkVyibJQf
-         IQxXp1zdJ3MfQ==
-Date:   Thu, 23 Jun 2022 09:22:08 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiang Jian <jiangjian@cdjrlc.com>
-Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        idosch@nvidia.com, petrm@nvidia.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mlxsw: drop unexpected word 'for' in comments
-Message-ID: <20220623092208.1abbd9dc@kernel.org>
-In-Reply-To: <20220623104601.48149-1-jiangjian@cdjrlc.com>
-References: <20220623104601.48149-1-jiangjian@cdjrlc.com>
+        Thu, 23 Jun 2022 12:23:14 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1F962CDD2
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 09:23:12 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id i10so24923689wrc.0
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 09:23:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Prnv934r/fiLrvMDb9R4Q9UAwnFSkafyVnLRJO0ekrY=;
+        b=LcoScsX3IhV4fd9f8iupQ0Dlh9F4jxJt+pgI6sQwesfY1uulJbPFxxz3e47Y2gN5vK
+         YwtUZOQhD+OdIkZq5h5316VrCYA3zkWya3oWSYp4ktmB127kUkw7jZv3YcpAhKXNZzWo
+         1CP4PSfO9KCvKOxJTo+viKnOKsiH2EnZ9nV1sMg+EMAMtWPKjMLsiI6Uoq3ZeBAMuudO
+         eTY+3/kHyPgm68smgmjFRHiyd9g+n46HURNhMJpQIzk1BuWIibHuWzfBoKlJCRreeDvr
+         8DcMZuSyY9c//NpF//WcukCphUzRbNnFTdq7wpzcjzX96KvWRWrKZXgHpYsIq/UCMrL5
+         mNMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Prnv934r/fiLrvMDb9R4Q9UAwnFSkafyVnLRJO0ekrY=;
+        b=Wq9XmIo613Rg3NT6tKkdWvcwy7jolUip8Gv3SBm7BcBLHMEL1sK1R0P5/gOn/fqG6S
+         lgcnurq+JSpSi1AETkNQKo7DgqdwOqhQVF94roD2RomSeca5SMql2cfF8vsAg1lbLneY
+         /bBIqqMcbVZjwVLKd827nDN6ypKOh3OWVLS0pF7TuqGAdnXx5UBRhi6fcKx3nh87+V/O
+         tggVHYD5lN1t/16NkfD45n4XtuzO60lbPXTyMv9PvwAUbuUaCuB8Mpgn+9M09URIcewK
+         ZNNT6UcBkjxIyN7cZ1NVdgqRUwJUY1DepINKX68Saqd4hvkTDOQTEbc8UobSESqKSDMY
+         k+kQ==
+X-Gm-Message-State: AJIora8EY9Mi344+qqZDkfaZUjhcY+MuHe0i2w93be1VdyGZ273FVG+E
+        /5TnHPa9blS7aeg5HuZ8NT5bnS/m/lhXdvp9wmZHpA==
+X-Google-Smtp-Source: AGRyM1vTy6IWQuv86qCMMmSYWNfQztKY8n3VeFmwOS7QomTeUz0+bWJzjNiyKFatZ6wC44IktxYiKmcznPAqBBvH7jU=
+X-Received: by 2002:adf:f146:0:b0:21b:8c7d:7294 with SMTP id
+ y6-20020adff146000000b0021b8c7d7294mr9243960wro.582.1656001391355; Thu, 23
+ Jun 2022 09:23:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220623000530.1194226-1-yosryahmed@google.com>
+ <YrQe5A+FXnbgOR1f@dhcp22.suse.cz> <CAJD7tkanavKpKrQr8-jA8pukgD7OY4eOwJRZufJ2NoThD12G+Q@mail.gmail.com>
+ <YrQ1o3CeaZWhm+h4@dhcp22.suse.cz>
+In-Reply-To: <YrQ1o3CeaZWhm+h4@dhcp22.suse.cz>
+From:   Yosry Ahmed <yosryahmed@google.com>
+Date:   Thu, 23 Jun 2022 09:22:35 -0700
+Message-ID: <CAJD7tkadsLOV7GMFAm+naX4Y1WpZ-4=NkAhAMxNw60iaRPWx=w@mail.gmail.com>
+Subject: Re: [PATCH] mm: vmpressure: don't count userspace-induced reclaim as
+ memory pressure
+To:     Michal Hocko <mhocko@suse.com>
+Cc:     Johannes Weiner <hannes@cmpxchg.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Shakeel Butt <shakeelb@google.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        David Hildenbrand <david@redhat.com>,
+        Miaohe Lin <linmiaohe@huawei.com>, NeilBrown <neilb@suse.de>,
+        Alistair Popple <apopple@nvidia.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Peter Xu <peterx@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Cgroups <cgroups@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 23 Jun 2022 18:46:01 +0800 Jiang Jian wrote:
-> file - drivers/net/ethernet/mellanox/mlxsw/spectrum2_kvdl.c
-> line - 18
-> 
-> 	 * ids for for this purpose in partition definition.
-> changed to:
-> 
-> 	 * ids for this purpose in partition definition.
+On Thu, Jun 23, 2022 at 2:43 AM Michal Hocko <mhocko@suse.com> wrote:
+>
+> On Thu 23-06-22 01:35:59, Yosry Ahmed wrote:
+> > On Thu, Jun 23, 2022 at 1:05 AM Michal Hocko <mhocko@suse.com> wrote:
+> > >
+> > > On Thu 23-06-22 00:05:30, Yosry Ahmed wrote:
+> > > > Commit e22c6ed90aa9 ("mm: memcontrol: don't count limit-setting reclaim
+> > > > as memory pressure") made sure that memory reclaim that is induced by
+> > > > userspace (limit-setting, proactive reclaim, ..) is not counted as
+> > > > memory pressure for the purposes of psi.
+> > > >
+> > > > Instead of counting psi inside try_to_free_mem_cgroup_pages(), callers
+> > > > from try_charge() and reclaim_high() wrap the call to
+> > > > try_to_free_mem_cgroup_pages() with psi handlers.
+> > > >
+> > > > However, vmpressure is still counted in these cases where reclaim is
+> > > > directly induced by userspace. This patch makes sure vmpressure is not
+> > > > counted in those operations, in the same way as psi. Since vmpressure
+> > > > calls need to happen deeper within the reclaim path, the same approach
+> > > > could not be followed. Hence, a new "controlled" flag is added to struct
+> > > > scan_control to flag a reclaim operation that is controlled by
+> > > > userspace. This flag is set by limit-setting and proactive reclaim
+> > > > operations, and is used to count vmpressure correctly.
+> > > >
+> > > > To prevent future divergence of psi and vmpressure, commit e22c6ed90aa9
+> > > > ("mm: memcontrol: don't count limit-setting reclaim as memory pressure")
+> > > > is effectively reverted and the same flag is used to control psi as
+> > > > well.
+> > >
+> > > Why do we need to add this is a legacy interface now? Are there any
+> > > pre-existing users who realized this is bugging them? Please be more
+> > > specific about the usecase.
+> >
+> > Sorry if I wasn't clear enough. Unfortunately we still have userspace
+> > workloads at Google that use vmpressure notifications.
+> >
+> > In our internal version of memory.reclaim that we recently upstreamed,
+> > we do not account vmpressure during proactive reclaim (similar to how
+> > psi is handled upstream). We want to make sure this behavior also
+> > exists in the upstream version so that consolidating them does not
+> > break our users who rely on vmpressure and will start seeing increased
+> > pressure due to proactive reclaim.
+>
+> These are good reasons to have this patch in your tree. But why is this
+> patch benefitial for the upstream kernel? It clearly adds some code and
+> some special casing which will add a maintenance overhead.
 
-Please stop putting the change into the description.
-I think I already complained about this.
-This is exactly the same information as is in the patch itself.
+It is not just Google, any existing vmpressure users will start seeing
+false pressure notifications with memory.reclaim. The main goal of the
+patch is to make sure memory.reclaim does not break pre-existing users
+of vmpressure, and doing it in a way that is consistent with psi makes
+sense.
 
-And as other people have pointed out - please say that the word
-is repeated not "unexpected".
-
-IDK why you made those changes because your patches on Wednesday 
-where better:
-
-  [PATCH] bnxt: Fix typo in comments
-
-  Remove the repeated word 'and' from comments
-
-  Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
-
-https://lore.kernel.org/r/20220622144526.20659-1-jiangjian@cdjrlc.com/
-
-I'm dropping these patches from you, please redo them:
-
-  https://patchwork.kernel.org/project/netdevbpf/patch/20220623104919.49600-1-jiangjian@cdjrlc.com/
-  https://patchwork.kernel.org/project/netdevbpf/patch/20220622171711.6969-1-jiangjian@cdjrlc.com/
-  https://patchwork.kernel.org/project/netdevbpf/patch/20220623104601.48149-1-jiangjian@cdjrlc.com/
+> --
+> Michal Hocko
+> SUSE Labs
