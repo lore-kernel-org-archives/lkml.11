@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB14BC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:53:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68CDCC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:53:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232319AbiFWQxH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:53:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55370 "EHLO
+        id S231703AbiFWQxP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:53:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233907AbiFWQvv (ORCPT
+        with ESMTP id S233905AbiFWQvv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 23 Jun 2022 12:51:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEC4821800;
-        Thu, 23 Jun 2022 09:51:38 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8BD41CFD7;
+        Thu, 23 Jun 2022 09:51:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 574F161F90;
-        Thu, 23 Jun 2022 16:51:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 237EBC3411B;
-        Thu, 23 Jun 2022 16:51:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4DE0961F99;
+        Thu, 23 Jun 2022 16:51:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BC00C3411B;
+        Thu, 23 Jun 2022 16:51:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003097;
-        bh=qDiaCc4FHNBqJDJ8zGZcdPoTAJhHp92c2LQwYafhUYw=;
+        s=korg; t=1656003094;
+        bh=k/0LJkN2/FgEcWubVtK4K0/TeNEztiXv555kEZbY2+Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xvycc3zleX3xevBguV3YFVd7xgBiVKoxvF448S6HKVYqtacPjn7ay9NwJ9W1rR/Hw
-         Q285plwJBeRFGqFReVXh58WYc0SN7H613DH/EXqdNjj/pKzIkYF4TGMo1oCiSGGO3P
-         xmpTIX4xx56r8+aG3STmXlNhc7B7x7f96roZafag=
+        b=GVL75FwfLduXIHvg34PUzjso0jsnzdENOxQyu34joON+qgciXwb7tJ75rqF1EDl4R
+         Dug/uVLXPehDPIW7HZNTtY1vlg/KjaAqnVJq1cM5E4at3QfotPRA6jjl7p4qWB8exC
+         hch53NPIBDDJrr8OXQYcFgfmzM4eouPfu50NFUFc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 088/264] random: use IS_ENABLED(CONFIG_NUMA) instead of ifdefs
-Date:   Thu, 23 Jun 2022 18:41:21 +0200
-Message-Id: <20220623164346.561810956@linuxfoundation.org>
+Subject: [PATCH 4.9 087/264] random: harmonize "crng init done" messages
+Date:   Thu, 23 Jun 2022 18:41:20 +0200
+Message-Id: <20220623164346.530644296@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -49,100 +49,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Dominik Brodowski <linux@dominikbrodowski.net>
 
-commit 7b87324112df2e1f9b395217361626362dcfb9fb upstream.
+commit 161212c7fd1d9069b232785c75492e50941e2ea8 upstream.
 
-Rather than an awkward combination of ifdefs and __maybe_unused, we can
-ensure more source gets parsed, regardless of the configuration, by
-using IS_ENABLED for the CONFIG_NUMA conditional code. This makes things
-cleaner and easier to follow.
+We print out "crng init done" for !TRUST_CPU, so we should also print
+out the same for TRUST_CPU.
 
-I've confirmed that on !CONFIG_NUMA, we don't wind up with excess code
-by accident; the generated object file is the same.
-
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   32 ++++++++++++--------------------
- 1 file changed, 12 insertions(+), 20 deletions(-)
+ drivers/char/random.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -762,7 +762,6 @@ static int credit_entropy_bits_safe(stru
- 
- static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
- 
--#ifdef CONFIG_NUMA
- /*
-  * Hack to deal with crazy userspace progams when they are all trying
-  * to access /dev/urandom in parallel.  The programs are almost
-@@ -770,7 +769,6 @@ static DECLARE_WAIT_QUEUE_HEAD(crng_init
-  * their brain damage.
-  */
- static struct crng_state **crng_node_pool __read_mostly;
--#endif
- 
- static void invalidate_batched_entropy(void);
- 
-@@ -817,7 +815,7 @@ static bool __init crng_init_try_arch_ea
- 	return arch_init;
- }
- 
--static void __maybe_unused crng_initialize_secondary(struct crng_state *crng)
-+static void crng_initialize_secondary(struct crng_state *crng)
- {
- 	memcpy(&crng->state[0], "expand 32-byte k", 16);
- 	_get_random_bytes(&crng->state[4], sizeof(__u32) * 12);
-@@ -868,7 +866,6 @@ static void crng_finalize_init(struct cr
+@@ -833,7 +833,7 @@ static void __init crng_initialize_prima
+ 		invalidate_batched_entropy();
+ 		numa_crng_init();
+ 		crng_init = 2;
+-		pr_notice("crng done (trusting CPU's manufacturer)\n");
++		pr_notice("crng init done (trusting CPU's manufacturer)\n");
  	}
+ 	crng->init_time = jiffies - CRNG_RESEED_INTERVAL - 1;
  }
- 
--#ifdef CONFIG_NUMA
- static void do_numa_crng_init(struct work_struct *work)
- {
- 	int i;
-@@ -895,29 +892,24 @@ static DECLARE_WORK(numa_crng_init_work,
- 
- static void numa_crng_init(void)
- {
--	schedule_work(&numa_crng_init_work);
-+	if (IS_ENABLED(CONFIG_NUMA))
-+		schedule_work(&numa_crng_init_work);
- }
- 
- static struct crng_state *select_crng(void)
- {
--	struct crng_state **pool;
--	int nid = numa_node_id();
--
--	/* pairs with cmpxchg_release() in do_numa_crng_init() */
--	pool = READ_ONCE(crng_node_pool);
--	if (pool && pool[nid])
--		return pool[nid];
--
--	return &primary_crng;
--}
--#else
--static void numa_crng_init(void) {}
-+	if (IS_ENABLED(CONFIG_NUMA)) {
-+		struct crng_state **pool;
-+		int nid = numa_node_id();
-+
-+		/* pairs with cmpxchg_release() in do_numa_crng_init() */
-+		pool = READ_ONCE(crng_node_pool);
-+		if (pool && pool[nid])
-+			return pool[nid];
-+	}
- 
--static struct crng_state *select_crng(void)
--{
- 	return &primary_crng;
- }
--#endif
- 
- /*
-  * crng_fast_load() can be called by code in the interrupt service
 
 
