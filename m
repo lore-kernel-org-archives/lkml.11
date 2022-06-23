@@ -2,98 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BC9EC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:20:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9F0CC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:20:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237017AbiFWST5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:19:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41172 "EHLO
+        id S237023AbiFWSUC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:20:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236847AbiFWSQt (ORCPT
+        with ESMTP id S236852AbiFWSQt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 23 Jun 2022 14:16:49 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CA5C3336B;
-        Thu, 23 Jun 2022 10:23:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 186994D9C9;
+        Thu, 23 Jun 2022 10:23:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3B885B82497;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 22CD5B824BC;
+        Thu, 23 Jun 2022 17:23:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 812B1C3411B;
         Thu, 23 Jun 2022 17:23:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8631DC3411B;
-        Thu, 23 Jun 2022 17:23:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656005001;
-        bh=0kjdka5G0H4l0mJy+OBKbQFNtN0SuDcvFw/a47atAoQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1bJf3tBJtifrpuXOEo8TTMV7CeyP4TQQ/6cu/NWSxeNqZ9e3ddNqgTOWs5uyavmDg
-         xK1LW3OdDBqYoCSbjoz4TyTFZQ6L4UVTT8tO0WzPApPni8dwuZotfLLWO223JtM1sY
-         /xxNIk6ut03wOwmSTBPX9VNJvxCObcrN+5z9T6hM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Murilo Opsfelder Araujo <muriloo@linux.ibm.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Christophe de Dinechin <dinechin@redhat.com>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH 4.19 220/234] virtio-pci: Remove wrong address verification in vp_del_vqs()
-Date:   Thu, 23 Jun 2022 18:44:47 +0200
-Message-Id: <20220623164349.276023241@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
-References: <20220623164343.042598055@linuxfoundation.org>
-User-Agent: quilt/0.66
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656005002;
+        bh=wHCbmf5IRU39rWTli2nZUaGZkhlxJIj37MxQFogSdEY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=PyKKn5AmJY5LA84KqOczZyyRySup5L6Azsjk02/PDhbsW5QDnbgiunWdXq6+5Hdly
+         so5Jt85YlQB9yKrlKNekvT01BKoj61uSsEu/gk7IN2BYRRSZpJ27dJHNI3qqcUG7Au
+         zhBqRL1Qly6dDmbG/gEgCOJOudXz40JLfL6p+bxfc6GS+W4PIbHRpxLNi83ee1O/GS
+         uP5kPq9auC78LW6pOr1jPPca7r7KzTXLrrbzcVjhNuSFmJf/idfZ+iKYrqA82FALa/
+         yKF7FO0a8934AaK2M+hpSsOnQSPqHVFK1nrJQcNXnJEua4rVcuQoWL5ptjezOKzdVE
+         vp2zp8L/1LTLQ==
+Date:   Thu, 23 Jun 2022 10:23:20 -0700
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     "Darrick J. Wong" <djwong@kernel.org>
+Cc:     linux-fsdevel@vger.kernel.org, linux-ext4@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net, linux-xfs@vger.kernel.org,
+        linux-api@vger.kernel.org, linux-fscrypt@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Keith Busch <kbusch@kernel.org>
+Subject: Re: [PATCH v3 1/8] statx: add direct I/O alignment information
+Message-ID: <YrShiIjNCIANjSwL@sol.localdomain>
+References: <20220616201506.124209-1-ebiggers@kernel.org>
+ <20220616201506.124209-2-ebiggers@kernel.org>
+ <YrSNlFgW6X4pUelg@magnolia>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YrSNlFgW6X4pUelg@magnolia>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Murilo Opsfelder Araujo <muriloo@linux.ibm.com>
+On Thu, Jun 23, 2022 at 08:58:12AM -0700, Darrick J. Wong wrote:
+> > diff --git a/include/linux/stat.h b/include/linux/stat.h
+> > index 7df06931f25d8..ff277ced50e9f 100644
+> > --- a/include/linux/stat.h
+> > +++ b/include/linux/stat.h
+> > @@ -50,6 +50,8 @@ struct kstat {
+> >  	struct timespec64 btime;			/* File creation time */
+> >  	u64		blocks;
+> >  	u64		mnt_id;
+> > +	u32		dio_mem_align;
+> > +	u32		dio_offset_align;
+> 
+> Hmm.  Does the XFS port of XFS_IOC_DIOINFO to STATX_DIOALIGN look like
+> this?
+> 
+> 	struct xfs_buftarg	*target = xfs_inode_buftarg(ip);
+> 
+> 	kstat.dio_mem_align = target->bt_logical_sectorsize;
+> 	kstat.dio_offset_align = target->bt_logical_sectorsize;
+> 	kstat.result_mask |= STATX_DIOALIGN;
 
-commit 7e415282b41bf0d15c6e0fe268f822d9b083f2f7 upstream.
+Yes, I think so.
 
-GCC 12 enhanced -Waddress when comparing array address to null [0],
-which warns:
+However, if we need more fields as Avi Kivity requested at
+https://lore.kernel.org/r/6c06b2d4-2d96-c4a6-7aca-5147a91e7cf2@scylladb.com
+that is going to complicate things.  I haven't had a chance to look
+into whether those extra fields are really needed.  Your opinion on whether XFS
+(and any other filesystem) needs them would be appreciated.
 
-    drivers/virtio/virtio_pci_common.c: In function ‘vp_del_vqs’:
-    drivers/virtio/virtio_pci_common.c:257:29: warning: the comparison will always evaluate as ‘true’ for the pointer operand in ‘vp_dev->msix_affinity_masks + (sizetype)((long unsigned int)i * 256)’ must not be NULL [-Waddress]
-      257 |                         if (vp_dev->msix_affinity_masks[i])
-          |                             ^~~~~~
+> 
+> And I guess you're tabling the "optimal" IO discussions for now, because
+> there are too many variants of what that means?
+> 
 
-In fact, the verification is comparing the result of a pointer
-arithmetic, the address "msix_affinity_masks + i", which will always
-evaluate to true.
+Yes, that's omitted for now due to the apparent redundancy with stx_blksize.
 
-Under the hood, free_cpumask_var() calls kfree(), which is safe to pass
-NULL, not requiring non-null verification.  So remove the verification
-to make compiler happy (happy compiler, happy life).
-
-[0] https://gcc.gnu.org/bugzilla/show_bug.cgi?id=102103
-
-Signed-off-by: Murilo Opsfelder Araujo <muriloo@linux.ibm.com>
-Message-Id: <20220415023002.49805-1-muriloo@linux.ibm.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Acked-by: Christophe de Dinechin <dinechin@redhat.com>
-Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/virtio/virtio_pci_common.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
---- a/drivers/virtio/virtio_pci_common.c
-+++ b/drivers/virtio/virtio_pci_common.c
-@@ -257,8 +257,7 @@ void vp_del_vqs(struct virtio_device *vd
- 
- 	if (vp_dev->msix_affinity_masks) {
- 		for (i = 0; i < vp_dev->msix_vectors; i++)
--			if (vp_dev->msix_affinity_masks[i])
--				free_cpumask_var(vp_dev->msix_affinity_masks[i]);
-+			free_cpumask_var(vp_dev->msix_affinity_masks[i]);
- 	}
- 
- 	if (vp_dev->msix_enabled) {
-
-
+- Eric
