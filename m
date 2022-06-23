@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3C69C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:43:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC7ECC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:43:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234598AbiFWRnd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:43:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46166 "EHLO
+        id S234635AbiFWRnj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:43:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234919AbiFWRi1 (ORCPT
+        with ESMTP id S234946AbiFWRia (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:38:27 -0400
+        Thu, 23 Jun 2022 13:38:30 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8703842A2C;
-        Thu, 23 Jun 2022 10:09:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3155532D7;
+        Thu, 23 Jun 2022 10:09:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1672061573;
-        Thu, 23 Jun 2022 17:09:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7603C3411B;
-        Thu, 23 Jun 2022 17:09:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 13FF761D02;
+        Thu, 23 Jun 2022 17:09:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E277EC3411B;
+        Thu, 23 Jun 2022 17:09:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004147;
-        bh=WXzatfo1Gdzn71E2kMuzfXun5GozS4HNJ2f2i7o2MU8=;
+        s=korg; t=1656004150;
+        bh=9ua7Tv8ngKzIg90avnelbsiLM5arPoUfgpVVXD8P87k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V5jGO0KLhS400vk9NpS+t4vnk1j5HvE4UHHXP6zIUcmzqmK6+NtzNJDwTLV1t6naY
-         5LR6lhnLJsgXjc/sJXzEl991WDFWJARNB5jqIWe616hm4GJU/ASUIOcaN0/q6Ogm9j
-         R4WKrABDHjflIMNOGHJ7AUIc/oIQAjWUsp076zvg=
+        b=d1md44VFPMdeFrtVxwOzkNrbmoYwqctXa2Q6vq2/3bJxKzNDMFHEMgOE/DW0JIY72
+         k0lFsz3uOIogc5PoKmBMppCAvGm6+k1lTTxdsOa4kytc0tIS1tC8wS4A0TI5uxmm8A
+         mnN7EMKIDLgDCsNOXcvzjsNASKX7OsJ7J6g03/GM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Chengguang Xu <cgxu519@mykernel.net>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, chengkaitao <pilgrimtao@gmail.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 203/237] scsi: pmcraid: Fix missing resource cleanup in error case
-Date:   Thu, 23 Jun 2022 18:43:57 +0200
-Message-Id: <20220623164348.988536638@linuxfoundation.org>
+Subject: [PATCH 4.14 204/237] virtio-mmio: fix missing put_device() when vm_cmdline_parent registration failed
+Date:   Thu, 23 Jun 2022 18:43:58 +0200
+Message-Id: <20220623164349.017723673@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -50,35 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chengguang Xu <cgxu519@mykernel.net>
+From: chengkaitao <pilgrimtao@gmail.com>
 
-[ Upstream commit ec1e8adcbdf661c57c395bca342945f4f815add7 ]
+[ Upstream commit a58a7f97ba11391d2d0d408e0b24f38d86ae748e ]
 
-Fix missing resource cleanup (when '(--i) == 0') for error case in
-pmcraid_register_interrupt_handler().
+The reference must be released when device_register(&vm_cmdline_parent)
+failed. Add the corresponding 'put_device()' in the error handling path.
 
-Link: https://lore.kernel.org/r/20220529153456.4183738-6-cgxu519@mykernel.net
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Chengguang Xu <cgxu519@mykernel.net>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: chengkaitao <pilgrimtao@gmail.com>
+Message-Id: <20220602005542.16489-1-chengkaitao@didiglobal.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pmcraid.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/virtio/virtio_mmio.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/scsi/pmcraid.c b/drivers/scsi/pmcraid.c
-index b4d6cd8cd1ad..d27ae937ff68 100644
---- a/drivers/scsi/pmcraid.c
-+++ b/drivers/scsi/pmcraid.c
-@@ -4601,7 +4601,7 @@ pmcraid_register_interrupt_handler(struct pmcraid_instance *pinstance)
- 	return 0;
- 
- out_unwind:
--	while (--i > 0)
-+	while (--i >= 0)
- 		free_irq(pci_irq_vector(pdev, i), &pinstance->hrrq_vector[i]);
- 	pci_free_irq_vectors(pdev);
- 	return rc;
+diff --git a/drivers/virtio/virtio_mmio.c b/drivers/virtio/virtio_mmio.c
+index 74dc7170fd35..181386e06cb7 100644
+--- a/drivers/virtio/virtio_mmio.c
++++ b/drivers/virtio/virtio_mmio.c
+@@ -635,6 +635,7 @@ static int vm_cmdline_set(const char *device,
+ 	if (!vm_cmdline_parent_registered) {
+ 		err = device_register(&vm_cmdline_parent);
+ 		if (err) {
++			put_device(&vm_cmdline_parent);
+ 			pr_err("Failed to register parent device!\n");
+ 			return err;
+ 		}
 -- 
 2.35.1
 
