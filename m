@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00F16C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:10:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E25DCC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:10:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229674AbiFWRKD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:10:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55856 "EHLO
+        id S230486AbiFWRKH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:10:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233418AbiFWRHp (ORCPT
+        with ESMTP id S233426AbiFWRHq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:07:45 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C318252E55;
-        Thu, 23 Jun 2022 09:56:30 -0700 (PDT)
+        Thu, 23 Jun 2022 13:07:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 607EA41FBB;
+        Thu, 23 Jun 2022 09:56:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id DBA94CE24F9;
-        Thu, 23 Jun 2022 16:56:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF616C3411B;
-        Thu, 23 Jun 2022 16:56:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8486BB8248A;
+        Thu, 23 Jun 2022 16:56:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB5EDC3411B;
+        Thu, 23 Jun 2022 16:56:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003369;
-        bh=jKwOCD3iF9wYPqRmpvf4Yrtz6v13f7791ZEt2uNgWrU=;
+        s=korg; t=1656003372;
+        bh=8ZXgE9bnZkfVFxQmZk8wWnfouHc1dni/ai7RcwfkNDM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pY6i4KSe4TXM0PoXuCYZxi0mo2oWGwmE1FkNS06OF7Vc5HnUO2w3FS+9MhEG50kxE
-         T+tlWbvryiwg9hzvrhcoebQ9yb3+Qg4S5DnIBb6c5ATUzzGSufL9hLoSImYbCUB+b+
-         z7MEVxRl4cmF6QpphDaFfo6/o4rYHHitFt3zY2JM=
+        b=Hvrusg7gnCkfLH2clW4vZsZ08iWzmlT5UGw9mYjrIJzss+YBKuoRuOiFPA7sAqxvI
+         ZUSZlC/Xlh7JvrHhNpGLrAKPlVv2g1riLUg2Oc0ToIjMPofid06wTLer7CFksPK/JT
+         CLsemQMHsjHX+8PuCGBlFIGhspxRbpet0pBt/5+k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Biggers <ebiggers@kernel.org>,
-        Eric Biggers <ebiggers@google.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 175/264] random: document crng_fast_key_erasure() destination possibility
-Date:   Thu, 23 Jun 2022 18:42:48 +0200
-Message-Id: <20220623164349.017728063@linuxfoundation.org>
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.9 176/264] random: fix sysctl documentation nits
+Date:   Thu, 23 Jun 2022 18:42:49 +0200
+Message-Id: <20220623164349.046157906@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -51,42 +49,40 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 8717627d6ac53251ee012c3c7aca392f29f38a42 upstream.
+commit 069c4ea6871c18bd368f27756e0f91ffb524a788 upstream.
 
-This reverts 35a33ff3807d ("random: use memmove instead of memcpy for
-remaining 32 bytes"), which was made on a totally bogus basis. The thing
-it was worried about overlapping came from the stack, not from one of
-its arguments, as Eric pointed out.
+A semicolon was missing, and the almost-alphabetical-but-not ordering
+was confusing, so regroup these by category instead.
 
-But the fact that this confusion even happened draws attention to the
-fact that it's a bit non-obvious that the random_data parameter can
-alias chacha_state, and in fact should do so when the caller can't rely
-on the stack being cleared in a timely manner. So this commit documents
-that.
-
-Reported-by: Eric Biggers <ebiggers@kernel.org>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    7 +++++++
- 1 file changed, 7 insertions(+)
+ Documentation/sysctl/kernel.txt |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -319,6 +319,13 @@ static void crng_reseed(void)
-  * the resultant ChaCha state to the user, along with the second
-  * half of the block containing 32 bytes of random data that may
-  * be used; random_data_len may not be greater than 32.
-+ *
-+ * The returned ChaCha state contains within it a copy of the old
-+ * key value, at index 4, so the state should always be zeroed out
-+ * immediately after using in order to maintain forward secrecy.
-+ * If the state cannot be erased in a timely manner, then it is
-+ * safer to set the random_data parameter to &chacha_state[4] so
-+ * that this function overwrites it before returning.
-  */
- static void crng_fast_key_erasure(u8 key[CHACHA20_KEY_SIZE],
- 				  u32 chacha_state[CHACHA20_BLOCK_SIZE / sizeof(u32)],
+--- a/Documentation/sysctl/kernel.txt
++++ b/Documentation/sysctl/kernel.txt
+@@ -791,6 +791,9 @@ This is a directory, with the following
+ * ``boot_id``: a UUID generated the first time this is retrieved, and
+   unvarying after that;
+ 
++* ``uuid``: a UUID generated every time this is retrieved (this can
++  thus be used to generate UUIDs at will);
++
+ * ``entropy_avail``: the pool's entropy count, in bits;
+ 
+ * ``poolsize``: the entropy pool size, in bits;
+@@ -798,10 +801,7 @@ This is a directory, with the following
+ * ``urandom_min_reseed_secs``: obsolete (used to determine the minimum
+   number of seconds between urandom pool reseeding). This file is
+   writable for compatibility purposes, but writing to it has no effect
+-  on any RNG behavior.
+-
+-* ``uuid``: a UUID generated every time this is retrieved (this can
+-  thus be used to generate UUIDs at will);
++  on any RNG behavior;
+ 
+ * ``write_wakeup_threshold``: when the entropy count drops below this
+   (as a number of bits), processes waiting to write to ``/dev/random``
 
 
