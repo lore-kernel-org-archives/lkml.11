@@ -2,33 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB957CCA480
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 10:52:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82B33C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 10:52:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231451AbiFWKwK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 06:52:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48936 "EHLO
+        id S231430AbiFWKwM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 06:52:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231469AbiFWKwC (ORCPT
+        with ESMTP id S231381AbiFWKwC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 23 Jun 2022 06:52:02 -0400
 Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 165474B428;
-        Thu, 23 Jun 2022 03:51:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D8EE4B42F;
+        Thu, 23 Jun 2022 03:51:59 -0700 (PDT)
 Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id A0F02E0017;
-        Thu, 23 Jun 2022 10:51:55 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id E13C4E001A;
+        Thu, 23 Jun 2022 10:51:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1655981516;
+        t=1655981518;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=U7RfSrcQuRamOWWjJI1BD1X5IJAeB9zPMHMT1huumAE=;
-        b=daIUvP2fgkDg44Q7KttVzCGnVY2CC5+apqLBGn+WAZtC2QHkWgqJwJB7oP0289V0HCA88R
-        FaUHdxpzCoZRUIlqI64KAvvP0uKfZoBLEqOPnYSnYPIR/sHoJN8EWXd0liboXaDV2d4551
-        Uc+/zyVedUxNk4ojob4Bv4mbw/OhTXDoQKB8RXumMUDXpsRh+qO0m5gh8JLONluvsNNEkD
-        LhagOIc0fZiAWOuKYGQZe7PJioJ6R6hwJmHOHr97hF/DshqSQAirFpNht4Hof8eKK/SQWN
-        esItSdNHPVo1YGvTenMJAHdZbqOGW4xAT2DVisuJBdmozNmHN9odNF95borl1A==
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=24+arAKJhTGIKfgrnJIiZ/9RG62zhef/20t26Jbq8Qs=;
+        b=TDYzkiRWBxX0NL8q0DTTu/8bOwxD73E83l+t8uMK1NtOHcvg5aNHsdlt+ChwGFVe5ekQ70
+        ewAkv+/eQPBqzptFi3nBa2+D1HR9EwElYSKzt9+PacPGvk50if3hGKeT49jE4EFBi/SGSV
+        jqmkMocV4MAXRxVYGx4Br1tF9Vm7xiGQZHmuRHfsil107eESMUSoXJS//rC/XlyQUny/gQ
+        190kxwQSdbc20rjGOEMu5I9KGTCmLPkKW3joN8Y6BcpIm5rZd4yrbvGlxIiBmMqpWDtOXM
+        R83MKOs8IkohWqBtNfnIdDE40DUPtbVf6DmtB3P1uuJ6CtPXg0tKWJqpkjBqGA==
 From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
 To:     Rob Herring <robh+dt@kernel.org>,
         Frank Rowand <frowand.list@gmail.com>
@@ -39,10 +40,12 @@ Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
         Horatiu Vultur <horatiu.vultur@microchip.com>,
         Steen Hegelund <steen.hegelund@microchip.com>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: [PATCH v1 0/2] of: populate of_root node if not set
-Date:   Thu, 23 Jun 2022 12:50:42 +0200
-Message-Id: <20220623105044.152832-1-clement.leger@bootlin.com>
+Subject: [PATCH v1 2/2] of: unittest: remove check for of_root
+Date:   Thu, 23 Jun 2022 12:50:44 +0200
+Message-Id: <20220623105044.152832-3-clement.leger@bootlin.com>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220623105044.152832-1-clement.leger@bootlin.com>
+References: <20220623105044.152832-1-clement.leger@bootlin.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -50,24 +53,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order to apply overlays or create new nodes under the root node, the
-kernel expects of_root to be set. On some system were a device-tree us
-not provided by firmware (x86 for instance) if CONFIG_OF is enabled,
-then we will end up with a null of_root. This series add support to
-create this root node using a builtin dtb and remove the manual
-creation of the root node done in unittests.c.
+Now that of_root node is always populated in of_core_init(), remove
+this manual tree creation and assume that the root node always exists.
 
-Clément Léger (2):
-  of: base: populate of_root node if not set
-  of: unittest: remove check for of_root
+Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+---
+ drivers/of/unittest.c | 10 ----------
+ 1 file changed, 10 deletions(-)
 
- drivers/of/Makefile       |  2 +-
- drivers/of/base.c         | 18 ++++++++++++++++--
- drivers/of/empty_root.dts |  6 ++++++
- drivers/of/unittest.c     | 10 ----------
- 4 files changed, 23 insertions(+), 13 deletions(-)
- create mode 100644 drivers/of/empty_root.dts
-
+diff --git a/drivers/of/unittest.c b/drivers/of/unittest.c
+index 7f6bba18c515..a787d212c0f6 100644
+--- a/drivers/of/unittest.c
++++ b/drivers/of/unittest.c
+@@ -1469,16 +1469,6 @@ static int __init unittest_data_add(void)
+ 		return -EINVAL;
+ 	}
+ 
+-	if (!of_root) {
+-		of_root = unittest_data_node;
+-		for_each_of_allnodes(np)
+-			__of_attach_node_sysfs(np);
+-		of_aliases = of_find_node_by_path("/aliases");
+-		of_chosen = of_find_node_by_path("/chosen");
+-		of_overlay_mutex_unlock();
+-		return 0;
+-	}
+-
+ 	EXPECT_BEGIN(KERN_INFO,
+ 		     "Duplicate name in testcase-data, renamed to \"duplicate-name#1\"");
+ 
 -- 
 2.36.1
 
