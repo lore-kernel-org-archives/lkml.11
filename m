@@ -2,73 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B713CCA47C
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 19:51:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD2E6C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 19:51:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230002AbiFWTvS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 15:51:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52292 "EHLO
+        id S230316AbiFWTv2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 15:51:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229547AbiFWTvQ (ORCPT
+        with ESMTP id S230473AbiFWTv1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 15:51:16 -0400
-X-Greylist: delayed 3597 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 23 Jun 2022 12:51:15 PDT
-Received: from mail.zytor.com (terminus.zytor.com [198.137.202.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 533CB1E7;
-        Thu, 23 Jun 2022 12:51:15 -0700 (PDT)
-Received: from [127.0.0.1] ([73.223.250.219])
-        (authenticated bits=0)
-        by mail.zytor.com (8.17.1/8.15.2) with ESMTPSA id 25NIMqIa1294203
-        (version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
-        Thu, 23 Jun 2022 11:22:52 -0700
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.zytor.com 25NIMqIa1294203
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zytor.com;
-        s=2022060401; t=1656008574;
-        bh=yPR8n8gQ6dVLtX830iKeJU5ojINLZInrepZE/uEszNU=;
-        h=Date:From:To:CC:Subject:In-Reply-To:References:From;
-        b=er7qtRymZfIxZTCmBzdiQOaT9sgecnfHHau1qec/d4ZsNGp1S4IbzlkDm4wm2DzyD
-         RcffhT2oLnHYmNbDQJKdr+8JDECqsW7mBl6QPIfENIGnsD4Cip/YkKWVWfgsXN59BN
-         BZ2VQuXZnu2MwPrxSMpYXRfKaLRQDNuF6iVfLyq/tB8SSt4bdIezjsoh+oO8rhmieU
-         dDvX+Gup28nAvZFrgFOsOzlsKUB6nbTnltY1xlPbI2f6FK73oHFFAzph6QJWYDFLYk
-         Adg4LCSNbEuBI4uEGEBQGmjStLROs6fCVh7A3LiyZVhbpHfanTbzG7ANa2iSENnC6d
-         FJX9mkpSn6gig==
-Date:   Thu, 23 Jun 2022 11:22:52 -0700
-From:   "H. Peter Anvin" <hpa@zytor.com>
-To:     Dave Hansen <dave.hansen@intel.com>, lizhe.67@bytedance.com,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org
-CC:     lizefan.x@bytedance.com, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: =?US-ASCII?Q?Re=3A_=5BRFC=5D_memmap=3A_introduce_cmdline_param?= =?US-ASCII?Q?eter_=22memmap=3Dnn=5BKMG=5D=24=22_without_start_addr?=
-User-Agent: K-9 Mail for Android
-In-Reply-To: <de2500c4-fce4-31dc-29bc-aa3007027eb9@intel.com>
-References: <20220623062402.12392-1-lizhe.67@bytedance.com> <de2500c4-fce4-31dc-29bc-aa3007027eb9@intel.com>
-Message-ID: <0EA9CBD4-D083-4546-BFAC-9C3A97420E5B@zytor.com>
+        Thu, 23 Jun 2022 15:51:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88E1CE6A;
+        Thu, 23 Jun 2022 12:51:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 33E4EB824D6;
+        Thu, 23 Jun 2022 19:51:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BA66C341C0;
+        Thu, 23 Jun 2022 19:51:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656013883;
+        bh=VLyBp5Co68HkeVuGaxmyXwHAeDZdj1CEZJbovhRG/j4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=HavezG7o7tE5X6T1K09XV+bgeG1QWXJo90zYp6Z4Kid+4cpRMIKHw1exq32Btxp5m
+         qC5GO7Bwd2Z0v5l2dEAQ4o/wHxmv6AkjV5xyWEzDg3JSwSAJXNMagqv7yR1IjZZCEy
+         +QKblGmtyDfXhW2SwTr1bX0QHdF6lhHXItOphKqQ0GgxLLSKaVA/KL9ivjMuql4CxO
+         2vnU1yg/WvhfScR+Z9M07GPzR3ZtrcR+aHkS8R8LcmRIxOpqNmArPDft0fFLNaXkt/
+         0rO4mlTNWmKWDkE/GwuAuVqbXl6Hw+l3spk6Vq/p2oBkiJijyYhlwoCILDEZ5hmry8
+         ry34p7MwgGZEw==
+Date:   Thu, 23 Jun 2022 12:51:13 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Francesco Dolcini <francesco.dolcini@toradex.com>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Vasyl Vavrychuk <vasyl.vavrychuk@opensynergy.com>,
+        Max Krummenacher <max.oss.09@gmail.com>,
+        max.krummenacher@toradex.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v1] Revert "Bluetooth: core: Fix missing power_on work
+ cancel on HCI close"
+Message-ID: <20220623125113.214fac0b@kernel.org>
+In-Reply-To: <20220621115514.GA75773@francesco-nb.int.toradex.com>
+References: <20220614181706.26513-1-max.oss.09@gmail.com>
+        <20220621115514.GA75773@francesco-nb.int.toradex.com>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On June 23, 2022 7:06:36 AM PDT, Dave Hansen <dave=2Ehansen@intel=2Ecom> wr=
-ote:
->On 6/22/22 23:24, lizhe=2E67@bytedance=2Ecom wrote:
->> In our scenario, we need reserve or alloc large continous memory like
->> 256M in machine which have different memory specification at just
->> boot phase for a user land process=2E
->
->Just marking the memory reserved doesn't do any good by itself=2E  There
->must be some *other* kernel code to find this reserved area and make it
->available to userspace=2E
->
->It seems kinda silly to add this to the kernel without also adding the
->other half of the solution=2E  Plus, we don't really even know what this
->is for=2E  Are there other, better solutions?  I certainly can't offer an=
-y
->because this changelog did not provide a full picture of the problem
->this solves=2E
+On Tue, 21 Jun 2022 13:55:14 +0200 Francesco Dolcini wrote:
+> Marcel, Vasyl,
+> any comment on this?
 
-Don't we already have a large contiguous physical memory allocator for thi=
-s reason (misdesigned hardware?)
++1 is there an ETA on the fix getting into net?
+
+> On Tue, Jun 14, 2022 at 08:17:06PM +0200, Max Krummenacher wrote:
+> > From: Max Krummenacher <max.krummenacher@toradex.com>
+> > 
+> > This reverts commit ff7f2926114d3a50f5ffe461a9bce8d761748da5.
+> > 
+> > The commit ff7f2926114d ("Bluetooth: core: Fix missing power_on work
+> > cancel on HCI close") introduced between v5.18 and v5.19-rc1 makes
+> > going to suspend freeze. v5.19-rc2 is equally affected.
+> > 
+> > This has been seen on a Colibri iMX6ULL WB which has a Marvell 8997
+> > based WiFi / Bluetooth module connected over SDIO.
+> > 
+> > With 'v5.18' or 'v5.19-rc1 with said commit reverted' a suspend/resume
+> > cycle looks as follows and the device is functional after the resume:
