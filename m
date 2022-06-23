@@ -2,132 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 662B3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:23:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3476C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:25:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232075AbiFWQXQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:23:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55272 "EHLO
+        id S231867AbiFWQZB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:25:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230338AbiFWQXO (ORCPT
+        with ESMTP id S231744AbiFWQY7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:23:14 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1F962CDD2
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 09:23:12 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id i10so24923689wrc.0
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 09:23:12 -0700 (PDT)
+        Thu, 23 Jun 2022 12:24:59 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A85333A732
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 09:24:57 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id f16so80023pjj.1
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 09:24:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Prnv934r/fiLrvMDb9R4Q9UAwnFSkafyVnLRJO0ekrY=;
-        b=LcoScsX3IhV4fd9f8iupQ0Dlh9F4jxJt+pgI6sQwesfY1uulJbPFxxz3e47Y2gN5vK
-         YwtUZOQhD+OdIkZq5h5316VrCYA3zkWya3oWSYp4ktmB127kUkw7jZv3YcpAhKXNZzWo
-         1CP4PSfO9KCvKOxJTo+viKnOKsiH2EnZ9nV1sMg+EMAMtWPKjMLsiI6Uoq3ZeBAMuudO
-         eTY+3/kHyPgm68smgmjFRHiyd9g+n46HURNhMJpQIzk1BuWIibHuWzfBoKlJCRreeDvr
-         8DcMZuSyY9c//NpF//WcukCphUzRbNnFTdq7wpzcjzX96KvWRWrKZXgHpYsIq/UCMrL5
-         mNMQ==
+        d=dilger-ca.20210112.gappssmtp.com; s=20210112;
+        h=from:message-id:mime-version:subject:date:in-reply-to:cc:to
+         :references;
+        bh=bcyfxdYDvwFKE4FcRkASoG03KisaDjvMQmq4ODLZY6Y=;
+        b=Q6EkS8J9o1kRFWTS1Sz7yUZQrVb9iZj6pO/U9kzzfvvlgRxFnL50FsOu6QYctzx4Zj
+         4AFwrrYShyaBMbMo/S//DCItdhB6Xhidd85LbLLCxhVPWdWfApQ8g/jLGL/zYxjMnhmB
+         xugmETGHUFP/NTpUaNxC3LJ8uNd1GAVXJfdx/0rp85cdY7Ghk6qITrxSFopDdfiLvenO
+         RRWQfBglfzjZeMXnkcJFN4vOV1vf6TcRPzixwqDrnxZlAnKBAJNAfji+cLcxuPTwVecy
+         yQOMeWEt/s2lxyaOoO1+OBzNWKgwuofTfgyeF7a8/TNbKiIEVB21YyJebVkm9tDvvBw2
+         jkgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Prnv934r/fiLrvMDb9R4Q9UAwnFSkafyVnLRJO0ekrY=;
-        b=Wq9XmIo613Rg3NT6tKkdWvcwy7jolUip8Gv3SBm7BcBLHMEL1sK1R0P5/gOn/fqG6S
-         lgcnurq+JSpSi1AETkNQKo7DgqdwOqhQVF94roD2RomSeca5SMql2cfF8vsAg1lbLneY
-         /bBIqqMcbVZjwVLKd827nDN6ypKOh3OWVLS0pF7TuqGAdnXx5UBRhi6fcKx3nh87+V/O
-         tggVHYD5lN1t/16NkfD45n4XtuzO60lbPXTyMv9PvwAUbuUaCuB8Mpgn+9M09URIcewK
-         ZNNT6UcBkjxIyN7cZ1NVdgqRUwJUY1DepINKX68Saqd4hvkTDOQTEbc8UobSESqKSDMY
-         k+kQ==
-X-Gm-Message-State: AJIora8EY9Mi344+qqZDkfaZUjhcY+MuHe0i2w93be1VdyGZ273FVG+E
-        /5TnHPa9blS7aeg5HuZ8NT5bnS/m/lhXdvp9wmZHpA==
-X-Google-Smtp-Source: AGRyM1vTy6IWQuv86qCMMmSYWNfQztKY8n3VeFmwOS7QomTeUz0+bWJzjNiyKFatZ6wC44IktxYiKmcznPAqBBvH7jU=
-X-Received: by 2002:adf:f146:0:b0:21b:8c7d:7294 with SMTP id
- y6-20020adff146000000b0021b8c7d7294mr9243960wro.582.1656001391355; Thu, 23
- Jun 2022 09:23:11 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220623000530.1194226-1-yosryahmed@google.com>
- <YrQe5A+FXnbgOR1f@dhcp22.suse.cz> <CAJD7tkanavKpKrQr8-jA8pukgD7OY4eOwJRZufJ2NoThD12G+Q@mail.gmail.com>
- <YrQ1o3CeaZWhm+h4@dhcp22.suse.cz>
-In-Reply-To: <YrQ1o3CeaZWhm+h4@dhcp22.suse.cz>
-From:   Yosry Ahmed <yosryahmed@google.com>
-Date:   Thu, 23 Jun 2022 09:22:35 -0700
-Message-ID: <CAJD7tkadsLOV7GMFAm+naX4Y1WpZ-4=NkAhAMxNw60iaRPWx=w@mail.gmail.com>
-Subject: Re: [PATCH] mm: vmpressure: don't count userspace-induced reclaim as
- memory pressure
-To:     Michal Hocko <mhocko@suse.com>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Shakeel Butt <shakeelb@google.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        David Hildenbrand <david@redhat.com>,
-        Miaohe Lin <linmiaohe@huawei.com>, NeilBrown <neilb@suse.de>,
-        Alistair Popple <apopple@nvidia.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Peter Xu <peterx@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:message-id:mime-version:subject:date
+         :in-reply-to:cc:to:references;
+        bh=bcyfxdYDvwFKE4FcRkASoG03KisaDjvMQmq4ODLZY6Y=;
+        b=R9zytiTH6OTIUrvGap61jU22EaSFW6y0ltczFaWwYFdpGaB38BENc5jxDOuhFEpUiZ
+         0jb0Plr/2AKFSB02nB1seGRJwzMtvx7Nw75S6z1NJpcl80AchkFmTDbBlw0x0gNIEXhT
+         pUjRTSJytPa9LWBQxgUuSyCDz+Jx6BAbEJLR9vsYOdZETV+xBE/Tlqhs4kZn67fTYKvw
+         aV0mPb/VUkYlL2kQKo9CFJ1Fa+bI3UhQCEoYrvAa1ZCbj9OXA/CR48/02w2z9+EDkMNY
+         EYjmnRYZMWJr5/zli10yhuNOK1+mbarNou5by+u44kW5V6HD/YuM6oP0+NE3/6u29BCX
+         CdZQ==
+X-Gm-Message-State: AJIora+KvyUGJgv3l2kOyAZAV1zSq9PBKEZDuP7E7D26tr+WLyy1CPNM
+        7yzymZ3EhKn3ennyqEquj3v58w==
+X-Google-Smtp-Source: AGRyM1ukROTsV74eiDORs7U9DuEV5/TMYhdqOiMfNTcV5f2UeXO0T5u5WYzf57Iazk83XTH31glX2g==
+X-Received: by 2002:a17:90b:3b81:b0:1ec:e852:22db with SMTP id pc1-20020a17090b3b8100b001ece85222dbmr4865881pjb.77.1656001497135;
+        Thu, 23 Jun 2022 09:24:57 -0700 (PDT)
+Received: from cabot.adilger.int (S01061cabc081bf83.cg.shawcable.net. [70.77.221.9])
+        by smtp.gmail.com with ESMTPSA id jh21-20020a170903329500b0016a109c7606sm11075493plb.259.2022.06.23.09.24.55
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 23 Jun 2022 09:24:56 -0700 (PDT)
+From:   Andreas Dilger <adilger@dilger.ca>
+Message-Id: <622BA3BB-03EA-4271-8A2E-2ADAFB574155@dilger.ca>
+Content-Type: multipart/signed;
+ boundary="Apple-Mail=_1B6FC5B2-556F-4A2D-9F1C-A60D36468C15";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
+Mime-Version: 1.0 (Mac OS X Mail 10.3 \(3273\))
+Subject: Re: [man-pages RFC PATCH] statx.2, open.2: document STATX_DIOALIGN
+Date:   Thu, 23 Jun 2022 10:27:19 -0600
+In-Reply-To: <YrSOm2murB4Bc1RQ@magnolia>
+Cc:     Eric Biggers <ebiggers@kernel.org>, linux-fsdevel@vger.kernel.org,
+        linux-man@vger.kernel.org, linux-ext4@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net, linux-xfs@vger.kernel.org,
+        linux-api@vger.kernel.org, linux-fscrypt@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Keith Busch <kbusch@kernel.org>
+To:     "Darrick J. Wong" <djwong@kernel.org>
+References: <20220616202141.125079-1-ebiggers@kernel.org>
+ <YrSOm2murB4Bc1RQ@magnolia>
+X-Mailer: Apple Mail (2.3273)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 2:43 AM Michal Hocko <mhocko@suse.com> wrote:
->
-> On Thu 23-06-22 01:35:59, Yosry Ahmed wrote:
-> > On Thu, Jun 23, 2022 at 1:05 AM Michal Hocko <mhocko@suse.com> wrote:
-> > >
-> > > On Thu 23-06-22 00:05:30, Yosry Ahmed wrote:
-> > > > Commit e22c6ed90aa9 ("mm: memcontrol: don't count limit-setting reclaim
-> > > > as memory pressure") made sure that memory reclaim that is induced by
-> > > > userspace (limit-setting, proactive reclaim, ..) is not counted as
-> > > > memory pressure for the purposes of psi.
-> > > >
-> > > > Instead of counting psi inside try_to_free_mem_cgroup_pages(), callers
-> > > > from try_charge() and reclaim_high() wrap the call to
-> > > > try_to_free_mem_cgroup_pages() with psi handlers.
-> > > >
-> > > > However, vmpressure is still counted in these cases where reclaim is
-> > > > directly induced by userspace. This patch makes sure vmpressure is not
-> > > > counted in those operations, in the same way as psi. Since vmpressure
-> > > > calls need to happen deeper within the reclaim path, the same approach
-> > > > could not be followed. Hence, a new "controlled" flag is added to struct
-> > > > scan_control to flag a reclaim operation that is controlled by
-> > > > userspace. This flag is set by limit-setting and proactive reclaim
-> > > > operations, and is used to count vmpressure correctly.
-> > > >
-> > > > To prevent future divergence of psi and vmpressure, commit e22c6ed90aa9
-> > > > ("mm: memcontrol: don't count limit-setting reclaim as memory pressure")
-> > > > is effectively reverted and the same flag is used to control psi as
-> > > > well.
-> > >
-> > > Why do we need to add this is a legacy interface now? Are there any
-> > > pre-existing users who realized this is bugging them? Please be more
-> > > specific about the usecase.
-> >
-> > Sorry if I wasn't clear enough. Unfortunately we still have userspace
-> > workloads at Google that use vmpressure notifications.
-> >
-> > In our internal version of memory.reclaim that we recently upstreamed,
-> > we do not account vmpressure during proactive reclaim (similar to how
-> > psi is handled upstream). We want to make sure this behavior also
-> > exists in the upstream version so that consolidating them does not
-> > break our users who rely on vmpressure and will start seeing increased
-> > pressure due to proactive reclaim.
->
-> These are good reasons to have this patch in your tree. But why is this
-> patch benefitial for the upstream kernel? It clearly adds some code and
-> some special casing which will add a maintenance overhead.
 
-It is not just Google, any existing vmpressure users will start seeing
-false pressure notifications with memory.reclaim. The main goal of the
-patch is to make sure memory.reclaim does not break pre-existing users
-of vmpressure, and doing it in a way that is consistent with psi makes
-sense.
+--Apple-Mail=_1B6FC5B2-556F-4A2D-9F1C-A60D36468C15
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	charset=us-ascii
 
-> --
-> Michal Hocko
-> SUSE Labs
+On Jun 23, 2022, at 10:02 AM, Darrick J. Wong <djwong@kernel.org> wrote:
+> 
+> On Thu, Jun 16, 2022 at 01:21:41PM -0700, Eric Biggers wrote:
+>> From: Eric Biggers <ebiggers@google.com>
+>> 
+>> @@ -244,8 +249,11 @@ STATX_SIZE	Want stx_size
+>> STATX_BLOCKS	Want stx_blocks
+>> STATX_BASIC_STATS	[All of the above]
+>> STATX_BTIME	Want stx_btime
+>> +STATX_ALL	The same as STATX_BASIC_STATS | STATX_BTIME.
+>> +         	This is deprecated and should not be used.
+> 
+> STATX_ALL is deprecated??  I was under the impression that _ALL meant
+> all the known bits for that kernel release, but...
+
+For userspace STATX_ALL doesn't make sense, and it isn't used by the kernel.
+
+Firstly, that would be a compile-time value for an application, so it
+may be incorrect for the kernel the code is actually run on (either too
+many or too few bits could be set).
+
+Secondly, it isn't really useful for an app to request "all attributes"
+if it doesn't know what they all mean, as that potentially adds useless
+overhead.  Better for it to explicitly request the attributes that it
+needs.  If that is fewer than the kernel could return it is irrelevant,
+since the app would ignore them anyway.
+
+The kernel will already ignore and mask attributes that *it* doesn't
+understand, so requesting more is fine and STATX_ALL doesn't help this.
+
+Cheers, Andreas
+
+
+
+
+
+
+--Apple-Mail=_1B6FC5B2-556F-4A2D-9F1C-A60D36468C15
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename=signature.asc
+Content-Type: application/pgp-signature;
+	name=signature.asc
+Content-Description: Message signed with OpenPGP
+
+-----BEGIN PGP SIGNATURE-----
+Comment: GPGTools - http://gpgtools.org
+
+iQIzBAEBCAAdFiEEDb73u6ZejP5ZMprvcqXauRfMH+AFAmK0lGcACgkQcqXauRfM
+H+CkuA//avp4Tuh55VpE8yHOQ8z64y5vrwNesx7bZ8atQCuwyhbJlvdTGn27SVv1
+4j1+/hWy3q+Jsot1ja0njROgu9KlOetTJ7qK4tlq4buIjBuB1izLfyGtSUtRezui
+Z93g7NQEpOSFyNwknXMz2vTB4gOxgMd0V9jCkElXXC+EClReBJq/Jts+/qNH8cnU
+j2kdedwlaAg3zMbSWbygM0DxumX1YB0dCYuK/SyyAyjWr4I5mHFqHeyZf3ej2fVB
+g/wUfgv7Ku50XluSp4/deoA8R/TJbCkQikvKS4S9pI/LqMeOEZ6moyIJ8KRyWKSs
+wbSn8e2E49hUrxKO15kQx2vIs1BS1WLN1PWmv4TVnkTmfkuf7iUVVMxlU3Jfifcx
+qZXhYvTv7UvL/oV12MJHzQiYR/YUytHzdeliMC+sDa/tCyWE0UZMAZaKFgO9vV9h
+gdHfsvdNabGbFBE8ul5auWUT6QaqmytVQOk6239FD/gHD3Vw4ZVptZKDziYfwULV
+JgVDmWSi8RzmV3F+g3Lr9oGWqFbErsl+QWm80wXaC7yxHm3C2wKKqwPx6bfFbucT
+PuSiilxCV7qDXmDRISKNt/JMaLsxh8w+15v92wWhacEtgMzIyVsjudfePb2wiUtw
+bLbXOh9Pj4DCci4an5lxVhj8jEYThvOPq1FlB6e7qhrXwoGwugE=
+=83Nf
+-----END PGP SIGNATURE-----
+
+--Apple-Mail=_1B6FC5B2-556F-4A2D-9F1C-A60D36468C15--
