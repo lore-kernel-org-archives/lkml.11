@@ -2,148 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C75EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:16:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DB97C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:17:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236874AbiFWSQ4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:16:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41794 "EHLO
+        id S236888AbiFWSQ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:16:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230254AbiFWSQf (ORCPT
+        with ESMTP id S236778AbiFWSQg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:16:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9A175DF33;
-        Thu, 23 Jun 2022 10:22:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 50E7661DE5;
-        Thu, 23 Jun 2022 17:22:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23629C3411B;
-        Thu, 23 Jun 2022 17:22:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004961;
-        bh=OxBmzqVqX1mREF4WkljC/7yQplxzyWhFgFPRZ33k3wY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hTAIqgUTGd/kFDCzL8TAyzx/0HhqRTj6KuIkAoIIAGLp+SD0p4gUxL6+HvEd2gnoC
-         iqRcXSgLaSa4XCDOigcvxPGZGQgoutYcGCA9K+Sdj/kq0285PVZEbXhJar8fqH+4Q1
-         Z31D8kk7g3wqkIEj3pmMgczXIpPMq6sX9wDOj8HA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.19 169/234] random: check for signals after page of pool writes
-Date:   Thu, 23 Jun 2022 18:43:56 +0200
-Message-Id: <20220623164347.835067432@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
-References: <20220623164343.042598055@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Thu, 23 Jun 2022 14:16:36 -0400
+Received: from mail-yb1-f173.google.com (mail-yb1-f173.google.com [209.85.219.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A06B25DF35;
+        Thu, 23 Jun 2022 10:22:44 -0700 (PDT)
+Received: by mail-yb1-f173.google.com with SMTP id u9so219638ybq.3;
+        Thu, 23 Jun 2022 10:22:44 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QzySQcL24GEYxXoJc82RsC0c2BhGDpj4k4DOkY9xrS0=;
+        b=EA9QO/BQU35unKlx6FbkmO5/gPZgmhdZgoPbgFC6ffBaA9VooOcc0BRLOU39xQVF5u
+         oCQBgnLZoYCyzVFx7UIoZDv9EQX6dTDh4Rgq+u/q19CS8XJPMXCMbOzr/wvoN8a+JJEX
+         n+dfZAHFvr9Z2RZB/XL9H/844Gm0m5QrkH2LAFi2Edlk952DPNVmyNwpHEo0zDEgttH/
+         rh/cvmHqXZv3hq9jo2fuvJWXhzak+RaB6VSTOM7wwmz9+vUeiVyRW9eHndW02UhCqfSG
+         zciotoAlnfZ/mSNthxa1kW0Dqxa+aopjSNJbaqDfEBibkC99qnrZLbTwsBuiL8Fdv7Fv
+         iS+g==
+X-Gm-Message-State: AJIora8hjXpF/oHWli0PfCcSNJcgeSauYfwdswID16swkOdq45TP3wEt
+        BttImfYagxBaZOWbKf9rxILcTsZ7uMFC93gcX1A=
+X-Google-Smtp-Source: AGRyM1vlR+G3ynXaQ+rOy9k5hMBPieUkqHmh9QChAgpgAs7VODTNv3swHyAeiQ4sYXpc/+o+j6AcUnENYWlbLbMDoS8=
+X-Received: by 2002:a05:6902:1141:b0:669:3f2a:c6bb with SMTP id
+ p1-20020a056902114100b006693f2ac6bbmr10551083ybu.365.1656004963776; Thu, 23
+ Jun 2022 10:22:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220623080344.783549-1-saravanak@google.com> <20220623080344.783549-3-saravanak@google.com>
+ <20220623100421.GY1615@pengutronix.de> <YrSXKkYfr+Hinsuu@smile.fi.intel.com>
+In-Reply-To: <YrSXKkYfr+Hinsuu@smile.fi.intel.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Thu, 23 Jun 2022 19:22:32 +0200
+Message-ID: <CAJZ5v0girHMO5v=KMXmTuXNjrfx+1gi8ma25mNc+gt=3U8pppA@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] of: base: Avoid console probe delay when fw_devlink.strict=1
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     sascha hauer <sha@pengutronix.de>,
+        Saravana Kannan <saravanak@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Len Brown <lenb@kernel.org>, peng fan <peng.fan@nxp.com>,
+        kevin hilman <khilman@kernel.org>,
+        ulf hansson <ulf.hansson@linaro.org>,
+        len brown <len.brown@intel.com>, pavel machek <pavel@ucw.cz>,
+        joerg roedel <joro@8bytes.org>, will deacon <will@kernel.org>,
+        andrew lunn <andrew@lunn.ch>,
+        heiner kallweit <hkallweit1@gmail.com>,
+        russell king <linux@armlinux.org.uk>,
+        "david s. miller" <davem@davemloft.net>,
+        eric dumazet <edumazet@google.com>,
+        jakub kicinski <kuba@kernel.org>,
+        paolo abeni <pabeni@redhat.com>,
+        linus walleij <linus.walleij@linaro.org>,
+        hideaki yoshifuji <yoshfuji@linux-ipv6.org>,
+        david ahern <dsahern@kernel.org>,
+        "Cc: Android Kernel" <kernel-team@android.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        "open list:AMD IOMMU (AMD-VI)" <iommu@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Sascha Hauer <kernel@pengutronix.de>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+On Thu, Jun 23, 2022 at 6:39 PM Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
+>
+> On Thu, Jun 23, 2022 at 12:04:21PM +0200, sascha hauer wrote:
+> > On Thu, Jun 23, 2022 at 01:03:43AM -0700, Saravana Kannan wrote:
+>
+> ...
+>
+> > I wonder if it wouldn't be a better approach to just probe all devices
+> > and record the device(node) they are waiting on. Then you know that you
+> > don't need to probe them again until the device they are waiting for
+> > is available.
+>
+> There may be no device, but resource. And we become again to the something like
+> deferred probe ugly hack.
+>
+> The real solution is to rework device driver model in the kernel that it will
+> create a graph of dependencies and then simply follow it. But actually it should
+> be more than 1 graph, because there are resources and there are power, clock and
+> resets that may be orthogonal to the higher dependencies (like driver X provides
+> a resource to driver Y).
 
-commit 1ce6c8d68f8ac587f54d0a271ac594d3d51f3efb upstream.
+There is one graph, or it wouldn't be possible to shut down the system orderly.
 
-get_random_bytes_user() checks for signals after producing a PAGE_SIZE
-worth of output, just like /dev/zero does. write_pool() is doing
-basically the same work (actually, slightly more expensive), and so
-should stop to check for signals in the same way. Let's also name it
-write_pool_user() to match get_random_bytes_user(), so this won't be
-misused in the future.
+The problem is that this graph is generally dynamic, especially during
+system init, and following dependencies in transient states is
+generally hard.
 
-Before this patch, massive writes to /dev/urandom would tie up the
-process for an extremely long time and make it unterminatable. After, it
-can be successfully interrupted. The following test program can be used
-to see this works as intended:
+Device links allow the already known dependencies to be recorded and
+taken into account later, so we already have a graph for those.
 
-  #include <unistd.h>
-  #include <fcntl.h>
-  #include <signal.h>
-  #include <stdio.h>
-
-  static unsigned char x[~0U];
-
-  static void handle(int) { }
-
-  int main(int argc, char *argv[])
-  {
-    pid_t pid = getpid(), child;
-    int fd;
-    signal(SIGUSR1, handle);
-    if (!(child = fork())) {
-      for (;;)
-        kill(pid, SIGUSR1);
-    }
-    fd = open("/dev/urandom", O_WRONLY);
-    pause();
-    printf("interrupted after writing %zd bytes\n", write(fd, x, sizeof(x)));
-    close(fd);
-    kill(child, SIGTERM);
-    return 0;
-  }
-
-Result before: "interrupted after writing 2147479552 bytes"
-Result after: "interrupted after writing 4096 bytes"
-
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/char/random.c |   14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
-
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -1251,7 +1251,7 @@ static __poll_t random_poll(struct file
- 	return crng_ready() ? EPOLLIN | EPOLLRDNORM : EPOLLOUT | EPOLLWRNORM;
- }
- 
--static ssize_t write_pool(struct iov_iter *iter)
-+static ssize_t write_pool_user(struct iov_iter *iter)
- {
- 	u8 block[BLAKE2S_BLOCK_SIZE];
- 	ssize_t ret = 0;
-@@ -1266,7 +1266,13 @@ static ssize_t write_pool(struct iov_ite
- 		mix_pool_bytes(block, copied);
- 		if (!iov_iter_count(iter) || copied != sizeof(block))
- 			break;
--		cond_resched();
-+
-+		BUILD_BUG_ON(PAGE_SIZE % sizeof(block) != 0);
-+		if (ret % PAGE_SIZE == 0) {
-+			if (signal_pending(current))
-+				break;
-+			cond_resched();
-+		}
- 	}
- 
- 	memzero_explicit(block, sizeof(block));
-@@ -1275,7 +1281,7 @@ static ssize_t write_pool(struct iov_ite
- 
- static ssize_t random_write_iter(struct kiocb *kiocb, struct iov_iter *iter)
- {
--	return write_pool(iter);
-+	return write_pool_user(iter);
- }
- 
- static ssize_t urandom_read_iter(struct kiocb *kiocb, struct iov_iter *iter)
-@@ -1342,7 +1348,7 @@ static long random_ioctl(struct file *f,
- 		ret = import_single_range(WRITE, p, len, &iov, &iter);
- 		if (unlikely(ret))
- 			return ret;
--		ret = write_pool(&iter);
-+		ret = write_pool_user(&iter);
- 		if (unlikely(ret < 0))
- 			return ret;
- 		/* Since we're crediting, enforce that it was all written into the pool. */
-
-
+The unknown dependencies obviously cannot be used for creating a graph
+of any sort, though, and here we are in the business of guessing what
+the unknown dependencies may be IIUC.
