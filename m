@@ -2,571 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C55FC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 15:54:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 770A7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 15:55:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231656AbiFWPyc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 11:54:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58894 "EHLO
+        id S231246AbiFWPzn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 11:55:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231713AbiFWPyE (ORCPT
+        with ESMTP id S232128AbiFWPze (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 11:54:04 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4927B2FE74
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 08:54:02 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id n1so28316858wrg.12
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 08:54:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=R3iky3R0TfeNLhq/ST31CTzA0av4P2EXZs0IQhMJLGI=;
-        b=B5TwhdDkh8hzdOSeQHHjTAlHwP9F4IC4Em3X3HpZZDIu3UOAKRj7GQ27DZTal9eXwe
-         DHheUZdo7ZrN1nx23pO27XeyDuYU+vFrU7MmMmjSK+bQ9tMG2crRt4j34YeXiVpTdS6m
-         plbg+pgg+PJ3Ss0IoMxmBLH9sYPlrT24jZuQ/qWFub16CePa5LaqHpc+QMVIYJXOspH0
-         X7+izvqNy+p/OpHNOtSH3RIrQSXpYglpFvxPAcGUfdfQS7e4bfPIrdN7zdZFP2rEDywx
-         PxpzwtV4XtkLQnvIksE/f7heDp+dYmHqXh11k1WgTiH94R/2bMV213xtD/oYL9+S6OMg
-         4PTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=R3iky3R0TfeNLhq/ST31CTzA0av4P2EXZs0IQhMJLGI=;
-        b=Y+ClD+oWECaMKkVcPxOlCidi878l6Cfzn+tZwVyFuTpmdNgTzIvdx2RKityhn8Yb4A
-         W1zBw0PuRWe9BL/KlQtasU214CFEXmQpI+wtgWhMEQ7VcyedpPxGdnTbxnJk0TwdM4fO
-         o+Ba0muafoDft6KWpuC1gx/cJZTcTgJlaU0tBCfaWHVJuQor4rL7nIG0oBVA686yy72P
-         OYVpxq3ARK8b78roBwUSDge0u9yly+rnzvb3ARL4p/SOdvOs6EBcj4iKgnU8uLi78YH4
-         KQT4fcZGknjVU5mlfj+ZtDrfarMf8QwV0mmnBxLu+Mx6dbVJsyT7omnJVHszbZ7Gbjy/
-         A2WQ==
-X-Gm-Message-State: AJIora9jv87yCEKeyoYABj7jqy1rJ2DBbkmsoEBFNrn8EVRaVpWEzJJe
-        tqTMEcGjhfbJ+OljuzJRo8Jg/IEXw5q8qQ==
-X-Google-Smtp-Source: AGRyM1vneCcFlWG0k3+qhOEndrMKpvA/zBz2oQI1Cn5CvnP8f0fZHq52LZdpiJ5pCMzTAKXbzlxdXQ==
-X-Received: by 2002:adf:ed87:0:b0:21b:ae66:3633 with SMTP id c7-20020adfed87000000b0021bae663633mr1370528wro.102.1655999641578;
-        Thu, 23 Jun 2022 08:54:01 -0700 (PDT)
-Received: from OPPO-A74.station (net-37-182-48-184.cust.vodafonedsl.it. [37.182.48.184])
-        by smtp.gmail.com with ESMTPSA id n10-20020adffe0a000000b0021b5861eaf7sm20650830wrr.3.2022.06.23.08.54.00
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 23 Jun 2022 08:54:01 -0700 (PDT)
-From:   Paolo Valente <paolo.valente@linaro.org>
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jack@suse.cz, andrea.righi@canonical.com, glen.valante@linaro.org,
-        arie.vanderhoeven@seagate.com, Davide Zini <davidezini2@gmail.com>,
-        Paolo Valente <paolo.valente@linaro.org>
-Subject: [PATCH 7/8] block, bfq: inject I/O to underutilized actuators
-Date:   Thu, 23 Jun 2022 17:53:34 +0200
-Message-Id: <20220623155335.6147-8-paolo.valente@linaro.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220623155335.6147-1-paolo.valente@linaro.org>
-References: <20220623155335.6147-1-paolo.valente@linaro.org>
+        Thu, 23 Jun 2022 11:55:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBCEC2E0A3;
+        Thu, 23 Jun 2022 08:55:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6112161EA8;
+        Thu, 23 Jun 2022 15:55:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50E19C3411B;
+        Thu, 23 Jun 2022 15:55:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655999726;
+        bh=nQzJZplHc0/Ec1lWYneNbQij/MgioWH/DG89ypcJyRc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=XbAbve4X2I83UPs5Fri+9rI5uoH1A0sZYskUqDqYqp7Cq1G9ZF6g61zZTyBdR1chw
+         eQoCjC7k4SlaC8O0gF2/Nr9W6p7DvuWriIPp0/411iSTrg/5bTGlLu+RN40Ti3p2w8
+         ng+GObXTMOKoZAbErK7KYxhUt8C6PC2E4aGS+qT278rU+Z1O9o4cDjM396rvRb7f6m
+         T+Q3Mx/YfQFDl84N8F7zoEQwt4GEfI7ZiyJUXz2HE+hqVw/TWpWWTm6hArUAMfwcEG
+         aNGr8wdLGfexldfwLf17d2OjERrOEroA2vckKx/DLthRyp3hp7v5aIlbSgNlQG/3xg
+         FtlgQX4cC61QQ==
+Date:   Thu, 23 Jun 2022 10:55:24 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Frank Li <frank.li@nxp.com>
+Cc:     Ren Zhijie <renzhijie2@huawei.com>,
+        "kishon@ti.com" <kishon@ti.com>,
+        "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
+        "kw@linux.com" <kw@linux.com>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "jdmason@kudzu.us" <jdmason@kudzu.us>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH -next] NTB: EPF: Fix Kconfig dependency
+Message-ID: <20220623155524.GA1452766@bhelgaas>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <PAXPR04MB91861EE0E20E9EC71F4C494288B59@PAXPR04MB9186.eurprd04.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Davide Zini <davidezini2@gmail.com>
+On Thu, Jun 23, 2022 at 03:36:38PM +0000, Frank Li wrote:
+> > -----Original Message-----
+> > From: Ren Zhijie <renzhijie2@huawei.com>
+> > Sent: Thursday, June 23, 2022 3:46 AM
+> > To: kishon@ti.com; lpieralisi@kernel.org; kw@linux.com;
+> > bhelgaas@google.com; jdmason@kudzu.us; Frank Li <frank.li@nxp.com>
+> > Cc: linux-pci@vger.kernel.org; linux-kernel@vger.kernel.org; Ren Zhijie
+> > <renzhijie2@huawei.com>
+> > Subject: [PATCH -next] NTB: EPF: Fix Kconfig dependency
 
-The main service scheme of BFQ for sync I/O is serving one sync
-bfq_queue at a time, for a while. In particular, BFQ enforces this
-scheme when it deems the latter necessary to boost throughput or
-to preserve service guarantees. Unfortunately, when BFQ enforces
-this policy, only one actuator at a time gets served for a while,
-because each bfq_queue contains I/O only for one actuator. The
-other actuators may remain underutilized.
+@Ren, please use a typical subject line for the file, e.g.,
 
-Actually, BFQ may serve (inject) extra I/O, taken from other
-bfq_queues, in parallel with that of the in-service queue. This
-injection mechanism may provide the ground for dealing also with
-the above actuator-underutilization problem. Yet BFQ does not take
-the actuator load into account when choosing which queue to pick
-extra I/O from. In addition, BFQ may happen to inject extra I/O
-only when the in-service queue is temporarily empty.
+  PCI: endpoint: ...
 
-In view of these facts, this commit extends the
-injection mechanism in such a way that the latter:
-(1) takes into account also the actuator load;
-(2) checks such a load on each dispatch, and injects I/O for an
-    underutilized actuator, if there is one and there is I/O for it.
+> > If CONFIG_NTB is not set and CONFIG_PCI_EPF_VNTB is y.
+> > 
+> > make ARCH=x86_64 CROSS_COMPILE=x86_64-linux-gnu-, will be failed, like
+> > this:
+> > 
+> > drivers/pci/endpoint/functions/pci-epf-vntb.o: In function
+> > `epf_ntb_cmd_handler':
+> > pci-epf-vntb.c:(.text+0x95e): undefined reference to `ntb_db_event'
+> > pci-epf-vntb.c:(.text+0xa1f): undefined reference to `ntb_link_event'
+> > pci-epf-vntb.c:(.text+0xa42): undefined reference to `ntb_link_event'
+> > drivers/pci/endpoint/functions/pci-epf-vntb.o: In function `pci_vntb_probe':
+> > pci-epf-vntb.c:(.text+0x1250): undefined reference to `ntb_register_device'
+> > 
+> > The functions ntb_*() are defined in drivers/ntb/core.c, which need
+> > CONFIG_NTB setting y to be build-in.
+> > To fix this build error, add depends on NTB.
+> > 
+> > Reported-by: Hulk Robot <hulkci@huawei.com>
+> > Fixes: ff32fac00d97("NTB: EPF: support NTB transfer between PCI RC and EP
+> > connection")
+> > Signed-off-by: Ren Zhijie <renzhijie2@huawei.com>
+> > ---
+> [Frank Li] Acked
 
-To perform the check in (2), this commit introduces a load
-threshold, currently set to 4.  A linear scan of each actuator is
-performed, until an actuator is found for which the following two
-conditions hold: the load of the actuator is below the threshold,
-and there is at least one non-in-service queue that contains I/O
-for that actuator. If such a pair (actuator, queue) is found, then
-the head request of that queue is returned for dispatch, instead
-of the head request of the in-service queue.
-
-We have set the threshold, empirically, to the minimum possible
-value for which an actuator is fully utilized, or close to be
-fully utilized. By doing so, injected I/O 'steals' as few
-drive-queue slots as possibile to the in-service queue. This
-reduces as much as possible the probability that the service of
-I/O from the in-service bfq_queue gets delayed because of slot
-exhaustion, i.e., because all the slots of the drive queue are
-filled with I/O injected from other queues (NCQ provides for 32
-slots).
-
-This new mechanism also counters actuator underutilization in the
-case of asymmetric configurations of bfq_queues. Namely if there
-are few bfq_queues containing I/O for some actuators and many
-bfq_queues containing I/O for other actuators. Or if the
-bfq_queues containing I/O for some actuators have lower weights
-than the other bfq_queues.
-
-Signed-off-by: Paolo Valente <paolo.valente@linaro.org>
-Signed-off-by: Davide Zini <davidezini2@gmail.com>
----
- block/bfq-cgroup.c  |   2 +-
- block/bfq-iosched.c | 137 +++++++++++++++++++++++++++++++++-----------
- block/bfq-iosched.h |  39 ++++++++++++-
- block/bfq-wf2q.c    |   2 +-
- 4 files changed, 141 insertions(+), 39 deletions(-)
-
-diff --git a/block/bfq-cgroup.c b/block/bfq-cgroup.c
-index 872036d059d7..4b379f0cf8ed 100644
---- a/block/bfq-cgroup.c
-+++ b/block/bfq-cgroup.c
-@@ -699,7 +699,7 @@ void bfq_bfqq_move(struct bfq_data *bfqd, struct bfq_queue *bfqq,
- 		bfq_activate_bfqq(bfqd, bfqq);
- 	}
- 
--	if (!bfqd->in_service_queue && !bfqd->rq_in_driver)
-+	if (!bfqd->in_service_queue && !bfqd->tot_rq_in_driver)
- 		bfq_schedule_dispatch(bfqd);
- 	/* release extra ref taken above, bfqq may happen to be freed now */
- 	bfq_put_queue(bfqq);
-diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
-index 24821334f685..80eb7d542b70 100644
---- a/block/bfq-iosched.c
-+++ b/block/bfq-iosched.c
-@@ -2248,6 +2248,7 @@ static void bfq_add_request(struct request *rq)
- 
- 	bfq_log_bfqq(bfqd, bfqq, "add_request %d", rq_is_sync(rq));
- 	bfqq->queued[rq_is_sync(rq)]++;
-+
- 	/*
- 	 * Updating of 'bfqd->queued' is protected by 'bfqd->lock', however, it
- 	 * may be read without holding the lock in bfq_has_work().
-@@ -2293,9 +2294,9 @@ static void bfq_add_request(struct request *rq)
- 		 *   elapsed.
- 		 */
- 		if (bfqq == bfqd->in_service_queue &&
--		    (bfqd->rq_in_driver == 0 ||
-+		    (bfqd->tot_rq_in_driver == 0 ||
- 		     (bfqq->last_serv_time_ns > 0 &&
--		      bfqd->rqs_injected && bfqd->rq_in_driver > 0)) &&
-+		      bfqd->rqs_injected && bfqd->tot_rq_in_driver > 0)) &&
- 		    time_is_before_eq_jiffies(bfqq->decrease_time_jif +
- 					      msecs_to_jiffies(10))) {
- 			bfqd->last_empty_occupied_ns = ktime_get_ns();
-@@ -2319,7 +2320,7 @@ static void bfq_add_request(struct request *rq)
- 			 * will be set in case injection is performed
- 			 * on bfqq before rq is completed).
- 			 */
--			if (bfqd->rq_in_driver == 0)
-+			if (bfqd->tot_rq_in_driver == 0)
- 				bfqd->rqs_injected = false;
- 		}
- 	}
-@@ -2417,15 +2418,18 @@ static sector_t get_sdist(sector_t last_pos, struct request *rq)
- static void bfq_activate_request(struct request_queue *q, struct request *rq)
- {
- 	struct bfq_data *bfqd = q->elevator->elevator_data;
-+	unsigned int act_idx = bfq_actuator_index(bfqd, rq->bio);
- 
--	bfqd->rq_in_driver++;
-+	bfqd->tot_rq_in_driver++;
-+	bfqd->rq_in_driver[act_idx]++;
- }
- 
- static void bfq_deactivate_request(struct request_queue *q, struct request *rq)
- {
- 	struct bfq_data *bfqd = q->elevator->elevator_data;
- 
--	bfqd->rq_in_driver--;
-+	bfqd->tot_rq_in_driver--;
-+	bfqd->rq_in_driver[bfq_actuator_index(bfqd, rq->bio)]--;
- }
- #endif
- 
-@@ -2699,11 +2703,14 @@ void bfq_end_wr_async_queues(struct bfq_data *bfqd,
- static void bfq_end_wr(struct bfq_data *bfqd)
- {
- 	struct bfq_queue *bfqq;
-+	int i;
- 
- 	spin_lock_irq(&bfqd->lock);
- 
--	list_for_each_entry(bfqq, &bfqd->active_list, bfqq_list)
--		bfq_bfqq_end_wr(bfqq);
-+	for (i = 0; i < bfqd->num_ia_ranges; i++) {
-+		list_for_each_entry(bfqq, &bfqd->active_list[i], bfqq_list)
-+			bfq_bfqq_end_wr(bfqq);
-+	}
- 	list_for_each_entry(bfqq, &bfqd->idle_list, bfqq_list)
- 		bfq_bfqq_end_wr(bfqq);
- 	bfq_end_wr_async(bfqd);
-@@ -3638,13 +3645,13 @@ static void bfq_update_peak_rate(struct bfq_data *bfqd, struct request *rq)
- 	 * - start a new observation interval with this dispatch
- 	 */
- 	if (now_ns - bfqd->last_dispatch > 100*NSEC_PER_MSEC &&
--	    bfqd->rq_in_driver == 0)
-+	    bfqd->tot_rq_in_driver == 0)
- 		goto update_rate_and_reset;
- 
- 	/* Update sampling information */
- 	bfqd->peak_rate_samples++;
- 
--	if ((bfqd->rq_in_driver > 0 ||
-+	if ((bfqd->tot_rq_in_driver > 0 ||
- 		now_ns - bfqd->last_completion < BFQ_MIN_TT)
- 	    && !BFQ_RQ_SEEKY(bfqd, bfqd->last_position, rq))
- 		bfqd->sequential_samples++;
-@@ -3911,7 +3918,7 @@ static bool idling_needed_for_service_guarantees(struct bfq_data *bfqd,
- 	return (bfqq->wr_coeff > 1 &&
- 		(bfqd->wr_busy_queues <
- 		 tot_busy_queues ||
--		 bfqd->rq_in_driver >=
-+		 bfqd->tot_rq_in_driver >=
- 		 bfqq->dispatched + 4)) ||
- 		bfq_asymmetric_scenario(bfqd, bfqq) ||
- 		tot_busy_queues == 1;
-@@ -4683,6 +4690,7 @@ bfq_choose_bfqq_for_injection(struct bfq_data *bfqd)
- {
- 	struct bfq_queue *bfqq, *in_serv_bfqq = bfqd->in_service_queue;
- 	unsigned int limit = in_serv_bfqq->inject_limit;
-+	int i;
- 	/*
- 	 * If
- 	 * - bfqq is not weight-raised and therefore does not carry
-@@ -4714,7 +4722,7 @@ bfq_choose_bfqq_for_injection(struct bfq_data *bfqd)
- 		)
- 		limit = 1;
- 
--	if (bfqd->rq_in_driver >= limit)
-+	if (bfqd->tot_rq_in_driver >= limit)
- 		return NULL;
- 
- 	/*
-@@ -4729,11 +4737,12 @@ bfq_choose_bfqq_for_injection(struct bfq_data *bfqd)
- 	 *   (and re-added only if it gets new requests, but then it
- 	 *   is assigned again enough budget for its new backlog).
- 	 */
--	list_for_each_entry(bfqq, &bfqd->active_list, bfqq_list)
--		if (!RB_EMPTY_ROOT(&bfqq->sort_list) &&
--		    (in_serv_always_inject || bfqq->wr_coeff > 1) &&
--		    bfq_serv_to_charge(bfqq->next_rq, bfqq) <=
--		    bfq_bfqq_budget_left(bfqq)) {
-+	for (i = 0; i < bfqd->num_ia_ranges; i++) {
-+		list_for_each_entry(bfqq, &bfqd->active_list[i], bfqq_list)
-+			if (!RB_EMPTY_ROOT(&bfqq->sort_list) &&
-+				(in_serv_always_inject || bfqq->wr_coeff > 1) &&
-+				bfq_serv_to_charge(bfqq->next_rq, bfqq) <=
-+				bfq_bfqq_budget_left(bfqq)) {
- 			/*
- 			 * Allow for only one large in-flight request
- 			 * on non-rotational devices, for the
-@@ -4758,22 +4767,67 @@ bfq_choose_bfqq_for_injection(struct bfq_data *bfqd)
- 			else
- 				limit = in_serv_bfqq->inject_limit;
- 
--			if (bfqd->rq_in_driver < limit) {
-+			if (bfqd->tot_rq_in_driver < limit) {
- 				bfqd->rqs_injected = true;
- 				return bfqq;
- 			}
- 		}
-+	}
-+
-+	return NULL;
-+}
-+
-+struct bfq_queue *bfq_find_active_bfqq_for_actuator(struct bfq_data *bfqd,
-+						    int idx)
-+{
-+	struct bfq_queue *bfqq = NULL;
-+
-+	if (bfqd->in_service_queue &&
-+	    bfqd->in_service_queue->actuator_idx == idx)
-+		return bfqd->in_service_queue;
-+
-+	list_for_each_entry(bfqq, &bfqd->active_list[idx], bfqq_list) {
-+		if (!RB_EMPTY_ROOT(&bfqq->sort_list) &&
-+			bfq_serv_to_charge(bfqq->next_rq, bfqq) <=
-+				bfq_bfqq_budget_left(bfqq)) {
-+			return bfqq;
-+		}
-+	}
-+
-+	return NULL;
-+}
-+
-+/*
-+ * Perform a linear scan of each actuator, until an actuator is found
-+ * for which the following two conditions hold: the load of the
-+ * actuator is below the threshold (see comments on actuator_load_threshold
-+ * for details), and there is a queue that contains I/O for that
-+ * actuator. On success, return that queue.
-+ */
-+struct bfq_queue *bfq_find_bfqq_for_underused_actuator(struct bfq_data *bfqd)
-+{
-+	int i;
-+
-+	for (i = 0 ; i < bfqd->num_ia_ranges; i++)
-+		if (bfqd->rq_in_driver[i] < bfqd->actuator_load_threshold) {
-+			struct bfq_queue *bfqq =
-+				bfq_find_active_bfqq_for_actuator(bfqd, i);
-+
-+			if (bfqq)
-+				return bfqq;
-+		}
- 
- 	return NULL;
- }
- 
-+
- /*
-  * Select a queue for service.  If we have a current queue in service,
-  * check whether to continue servicing it, or retrieve and set a new one.
-  */
- static struct bfq_queue *bfq_select_queue(struct bfq_data *bfqd)
- {
--	struct bfq_queue *bfqq;
-+	struct bfq_queue *bfqq, *inject_bfqq;
- 	struct request *next_rq;
- 	enum bfqq_expiration reason = BFQQE_BUDGET_TIMEOUT;
- 
-@@ -4795,6 +4849,15 @@ static struct bfq_queue *bfq_select_queue(struct bfq_data *bfqd)
- 		goto expire;
- 
- check_queue:
-+	/*
-+	 *  If some actuator is underutilized, but the in-service
-+	 *  queue does not contain I/O for that actuator, then try to
-+	 *  inject I/O for that actuator.
-+	 */
-+	inject_bfqq = bfq_find_bfqq_for_underused_actuator(bfqd);
-+	if (inject_bfqq && inject_bfqq != bfqq)
-+		return inject_bfqq;
-+
- 	/*
- 	 * This loop is rarely executed more than once. Even when it
- 	 * happens, it is much more convenient to re-execute this loop
-@@ -5150,11 +5213,11 @@ static struct request *__bfq_dispatch_request(struct blk_mq_hw_ctx *hctx)
- 
- 		/*
- 		 * We exploit the bfq_finish_requeue_request hook to
--		 * decrement rq_in_driver, but
-+		 * decrement tot_rq_in_driver, but
- 		 * bfq_finish_requeue_request will not be invoked on
- 		 * this request. So, to avoid unbalance, just start
--		 * this request, without incrementing rq_in_driver. As
--		 * a negative consequence, rq_in_driver is deceptively
-+		 * this request, without incrementing tot_rq_in_driver. As
-+		 * a negative consequence, tot_rq_in_driver is deceptively
- 		 * lower than it should be while this request is in
- 		 * service. This may cause bfq_schedule_dispatch to be
- 		 * invoked uselessly.
-@@ -5163,7 +5226,7 @@ static struct request *__bfq_dispatch_request(struct blk_mq_hw_ctx *hctx)
- 		 * bfq_finish_requeue_request hook, if defined, is
- 		 * probably invoked also on this request. So, by
- 		 * exploiting this hook, we could 1) increment
--		 * rq_in_driver here, and 2) decrement it in
-+		 * tot_rq_in_driver here, and 2) decrement it in
- 		 * bfq_finish_requeue_request. Such a solution would
- 		 * let the value of the counter be always accurate,
- 		 * but it would entail using an extra interface
-@@ -5192,7 +5255,7 @@ static struct request *__bfq_dispatch_request(struct blk_mq_hw_ctx *hctx)
- 	 * Of course, serving one request at a time may cause loss of
- 	 * throughput.
- 	 */
--	if (bfqd->strict_guarantees && bfqd->rq_in_driver > 0)
-+	if (bfqd->strict_guarantees && bfqd->tot_rq_in_driver > 0)
- 		goto exit;
- 
- 	bfqq = bfq_select_queue(bfqd);
-@@ -5203,7 +5266,8 @@ static struct request *__bfq_dispatch_request(struct blk_mq_hw_ctx *hctx)
- 
- 	if (rq) {
- inc_in_driver_start_rq:
--		bfqd->rq_in_driver++;
-+		bfqd->rq_in_driver[bfqq->actuator_idx]++;
-+		bfqd->tot_rq_in_driver++;
- start_rq:
- 		rq->rq_flags |= RQF_STARTED;
- 	}
-@@ -6265,7 +6329,7 @@ static void bfq_update_hw_tag(struct bfq_data *bfqd)
- 	struct bfq_queue *bfqq = bfqd->in_service_queue;
- 
- 	bfqd->max_rq_in_driver = max_t(int, bfqd->max_rq_in_driver,
--				       bfqd->rq_in_driver);
-+				       bfqd->tot_rq_in_driver);
- 
- 	if (bfqd->hw_tag == 1)
- 		return;
-@@ -6276,7 +6340,7 @@ static void bfq_update_hw_tag(struct bfq_data *bfqd)
- 	 * sum is not exact, as it's not taking into account deactivated
- 	 * requests.
- 	 */
--	if (bfqd->rq_in_driver + bfqd->queued <= BFQ_HW_QUEUE_THRESHOLD)
-+	if (bfqd->tot_rq_in_driver + bfqd->queued <= BFQ_HW_QUEUE_THRESHOLD)
- 		return;
- 
- 	/*
-@@ -6287,7 +6351,7 @@ static void bfq_update_hw_tag(struct bfq_data *bfqd)
- 	if (bfqq && bfq_bfqq_has_short_ttime(bfqq) &&
- 	    bfqq->dispatched + bfqq->queued[0] + bfqq->queued[1] <
- 	    BFQ_HW_QUEUE_THRESHOLD &&
--	    bfqd->rq_in_driver < BFQ_HW_QUEUE_THRESHOLD)
-+	    bfqd->tot_rq_in_driver < BFQ_HW_QUEUE_THRESHOLD)
- 		return;
- 
- 	if (bfqd->hw_tag_samples++ < BFQ_HW_QUEUE_SAMPLES)
-@@ -6308,7 +6372,8 @@ static void bfq_completed_request(struct bfq_queue *bfqq, struct bfq_data *bfqd)
- 
- 	bfq_update_hw_tag(bfqd);
- 
--	bfqd->rq_in_driver--;
-+	bfqd->rq_in_driver[bfqq->actuator_idx]--;
-+	bfqd->tot_rq_in_driver--;
- 	bfqq->dispatched--;
- 
- 	if (!bfqq->dispatched && !bfq_bfqq_busy(bfqq)) {
-@@ -6427,7 +6492,7 @@ static void bfq_completed_request(struct bfq_queue *bfqq, struct bfq_data *bfqd)
- 					BFQQE_NO_MORE_REQUESTS);
- 	}
- 
--	if (!bfqd->rq_in_driver)
-+	if (!bfqd->tot_rq_in_driver)
- 		bfq_schedule_dispatch(bfqd);
- }
- 
-@@ -6558,13 +6623,13 @@ static void bfq_update_inject_limit(struct bfq_data *bfqd,
- 	 * conditions to do it, or we can lower the last base value
- 	 * computed.
- 	 *
--	 * NOTE: (bfqd->rq_in_driver == 1) means that there is no I/O
-+	 * NOTE: (bfqd->tot_rq_in_driver == 1) means that there is no I/O
- 	 * request in flight, because this function is in the code
- 	 * path that handles the completion of a request of bfqq, and,
- 	 * in particular, this function is executed before
--	 * bfqd->rq_in_driver is decremented in such a code path.
-+	 * bfqd->tot_rq_in_driver is decremented in such a code path.
- 	 */
--	if ((bfqq->last_serv_time_ns == 0 && bfqd->rq_in_driver == 1) ||
-+	if ((bfqq->last_serv_time_ns == 0 && bfqd->tot_rq_in_driver == 1) ||
- 	    tot_time_ns < bfqq->last_serv_time_ns) {
- 		if (bfqq->last_serv_time_ns == 0) {
- 			/*
-@@ -6574,7 +6639,7 @@ static void bfq_update_inject_limit(struct bfq_data *bfqd,
- 			bfqq->inject_limit = max_t(unsigned int, 1, old_limit);
- 		}
- 		bfqq->last_serv_time_ns = tot_time_ns;
--	} else if (!bfqd->rqs_injected && bfqd->rq_in_driver == 1)
-+	} else if (!bfqd->rqs_injected && bfqd->tot_rq_in_driver == 1)
- 		/*
- 		 * No I/O injected and no request still in service in
- 		 * the drive: these are the exact conditions for
-@@ -7210,7 +7275,8 @@ static int bfq_init_queue(struct request_queue *q, struct elevator_type *e)
- 	bfqd->queue_weights_tree = RB_ROOT_CACHED;
- 	bfqd->num_groups_with_pending_reqs = 0;
- 
--	INIT_LIST_HEAD(&bfqd->active_list);
-+	INIT_LIST_HEAD(&bfqd->active_list[0]);
-+	INIT_LIST_HEAD(&bfqd->active_list[1]);
- 	INIT_LIST_HEAD(&bfqd->idle_list);
- 	INIT_HLIST_HEAD(&bfqd->burst_list);
- 
-@@ -7255,6 +7321,9 @@ static int bfq_init_queue(struct request_queue *q, struct elevator_type *e)
- 		ref_wr_duration[blk_queue_nonrot(bfqd->queue)];
- 	bfqd->peak_rate = ref_rate[blk_queue_nonrot(bfqd->queue)] * 2 / 3;
- 
-+	/* see comments on the definition of next field inside bfq_data */
-+	bfqd->actuator_load_threshold = 4;
-+
- 	spin_lock_init(&bfqd->lock);
- 
- 	/*
-diff --git a/block/bfq-iosched.h b/block/bfq-iosched.h
-index 0c78feea15d7..10c2d83bcb34 100644
---- a/block/bfq-iosched.h
-+++ b/block/bfq-iosched.h
-@@ -578,7 +578,12 @@ struct bfq_data {
- 	/* number of queued requests */
- 	int queued;
- 	/* number of requests dispatched and waiting for completion */
--	int rq_in_driver;
-+	int tot_rq_in_driver;
-+	/*
-+	 * number of requests dispatched and waiting for completion
-+	 * for each actuator
-+	 */
-+	int rq_in_driver[BFQ_MAX_ACTUATORS];
- 
- 	/* true if the device is non rotational and performs queueing */
- 	bool nonrot_with_queueing;
-@@ -672,8 +677,13 @@ struct bfq_data {
- 	/* maximum budget allotted to a bfq_queue before rescheduling */
- 	int bfq_max_budget;
- 
--	/* list of all the bfq_queues active on the device */
--	struct list_head active_list;
-+	/*
-+	 * List of all the bfq_queues active for a specific actuator
-+	 * on the device. Keeping active queues separate on a
-+	 * per-actuator basis helps implementing per-actuator
-+	 * injection more efficiently.
-+	 */
-+	struct list_head active_list[BFQ_MAX_ACTUATORS];
- 	/* list of all the bfq_queues idle on the device */
- 	struct list_head idle_list;
- 
-@@ -808,6 +818,29 @@ struct bfq_data {
- 	 * in this device.
- 	 */
- 	struct blk_independent_access_range ia_ranges[BFQ_MAX_ACTUATORS];
-+
-+	/*
-+	 * If the number of I/O requests queued in the device for a
-+	 * given actuator is below next threshold, then the actuator
-+	 * is deemed as underutilized. If this condition is found to
-+	 * hold for some actuator upon a dispatch, but (i) the
-+	 * in-service queue does not contain I/O for that actuator,
-+	 * while (ii) some other queue does contain I/O for that
-+	 * actuator, then the head I/O request of the latter queue is
-+	 * returned (injected), instead of the head request of the
-+	 * currently in-service queue.
-+	 *
-+	 * We set the threshold, empirically, to the minimum possible
-+	 * value for which an actuator is fully utilized, or close to
-+	 * be fully utilized. By doing so, injected I/O 'steals' as
-+	 * few drive-queue slots as possibile to the in-service
-+	 * queue. This reduces as much as possible the probability
-+	 * that the service of I/O from the in-service bfq_queue gets
-+	 * delayed because of slot exhaustion, i.e., because all the
-+	 * slots of the drive queue are filled with I/O injected from
-+	 * other queues (NCQ provides for 32 slots).
-+	 */
-+	unsigned int actuator_load_threshold;
- };
- 
- enum bfqq_state_flags {
-diff --git a/block/bfq-wf2q.c b/block/bfq-wf2q.c
-index f8eb340381cf..f142f28e2f4d 100644
---- a/block/bfq-wf2q.c
-+++ b/block/bfq-wf2q.c
-@@ -477,7 +477,7 @@ static void bfq_active_insert(struct bfq_service_tree *st,
- 	bfqd = (struct bfq_data *)bfqg->bfqd;
- #endif
- 	if (bfqq)
--		list_add(&bfqq->bfqq_list, &bfqq->bfqd->active_list);
-+		list_add(&bfqq->bfqq_list, &bfqq->bfqd->active_list[bfqq->actuator_idx]);
- #ifdef CONFIG_BFQ_GROUP_IOSCHED
- 	if (bfqg != bfqd->root_group)
- 		bfqg->active_entities++;
--- 
-2.20.1
-
+@Frank: if you use the conventional style, e.g.,
+"Acked-by: Frank Li <frank.li@nxp.com>", tooling like b4 will
+automatically pick it up.  Just saying "Acked" is likely to get missed
+or ignored.
+> 
+> >  drivers/pci/endpoint/functions/Kconfig | 1 +
+> >  1 file changed, 1 insertion(+)
+> > 
+> > diff --git a/drivers/pci/endpoint/functions/Kconfig
+> > b/drivers/pci/endpoint/functions/Kconfig
+> > index 362555b024e8..9beee4f0f4ee 100644
+> > --- a/drivers/pci/endpoint/functions/Kconfig
+> > +++ b/drivers/pci/endpoint/functions/Kconfig
+> > @@ -29,6 +29,7 @@ config PCI_EPF_NTB
+> >  config PCI_EPF_VNTB
+> >          tristate "PCI Endpoint NTB driver"
+> >          depends on PCI_ENDPOINT
+> > +        depends on NTB
+> >          select CONFIGFS_FS
+> >          help
+> >            Select this configuration option to enable the Non-Transparent
+> > --
+> > 2.17.1
+> 
