@@ -2,113 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6DB3CCA47C
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:23:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37B99CCA485
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:23:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237240AbiFWSWY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:22:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41808 "EHLO
+        id S237382AbiFWSWi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:22:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237351AbiFWSSP (ORCPT
+        with ESMTP id S234111AbiFWSSe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:18:15 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D487B62A1;
-        Thu, 23 Jun 2022 10:24:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656005081; x=1687541081;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=HyD7sZmGzSIHx03CaYUHtjWHrLaftO9PYHM6NFaUHG0=;
-  b=cInEJ/OfBt/UerM5ZmBpBAYpdjXlp8Pl5hgIau9o+rmZD0trj3DNdFTj
-   Elc0NoqWhXqRDs8S9JYSwRWmYTFUJnnRZ0M1HX7qh8K/YAqRSA99TbFNF
-   pbaCPW6yEXh8SKluG0EC4ERGk0aLroTh8zzfGNIWAsKrF4mh7k4plSk5z
-   Pv27dABxFNTthbzw5uo/Ueg8kTPFwjlkFBL/TpkvjlpboQvl3GvwZJ6Ql
-   k0Kv33RDJayG2+wz38jG+aD7/OrWuRonHo899k1bBukNZ2c5N5bGpykhA
-   MqMo+0Z7cEz4JPINsuoJJb8P11GqMA/gm2JHBtHO6rM7+R7/47QXvsN0H
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10387"; a="269511427"
-X-IronPort-AV: E=Sophos;i="5.92,216,1650956400"; 
-   d="scan'208";a="269511427"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2022 10:24:26 -0700
-X-IronPort-AV: E=Sophos;i="5.92,216,1650956400"; 
-   d="scan'208";a="563531696"
-Received: from ckeane-mobl1.amr.corp.intel.com (HELO [10.209.81.98]) ([10.209.81.98])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2022 10:24:25 -0700
-Message-ID: <6be29d38-5c93-7cc9-0de7-235d3f83773c@intel.com>
-Date:   Thu, 23 Jun 2022 10:23:59 -0700
+        Thu, 23 Jun 2022 14:18:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D88C68014;
+        Thu, 23 Jun 2022 10:24:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C4F55B824C2;
+        Thu, 23 Jun 2022 17:24:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A45DC341C4;
+        Thu, 23 Jun 2022 17:24:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656005093;
+        bh=q0ieiWvZZzyqC5tb88xHI5LpV46pRBqESt3kdwFvz28=;
+        h=From:To:Cc:Subject:Date:From;
+        b=C6MDfOIY205YIm20VLu4FSJoMT5S9tDhb6HbpWw0xfJ/KAc+A+Ueq64aSjgp+BQ1p
+         y7MfiQxiM/kN/mYjUS9nEc0Z+Ah4tlf80RFH9QShmox8INE97ahwd0MgEcF7P+Vtbr
+         CJu0DgsliRtba6JY7Qjj2wKjHEKDsKHyt/qOSMis=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 5.4 00/11] 5.4.201-rc1 review
+Date:   Thu, 23 Jun 2022 18:45:04 +0200
+Message-Id: <20220623164321.195163701@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCHv7 11/14] x86: Disable kexec if system has unaccepted
- memory
-Content-Language: en-US
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <jroedel@suse.de>,
-        Ard Biesheuvel <ardb@kernel.org>
-Cc:     Andi Kleen <ak@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Dario Faggioli <dfaggioli@suse.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
-        khalid.elmously@canonical.com, philip.cox@canonical.com,
-        x86@kernel.org, linux-mm@kvack.org, linux-coco@lists.linux.dev,
-        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Eric Biederman <ebiederm@xmission.com>,
-        kexec@lists.infradead.org
-References: <20220614120231.48165-1-kirill.shutemov@linux.intel.com>
- <20220614120231.48165-12-kirill.shutemov@linux.intel.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <20220614120231.48165-12-kirill.shutemov@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.201-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-5.4.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 5.4.201-rc1
+X-KernelTest-Deadline: 2022-06-25T16:43+00:00
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-... adding kexec folks
+This is the start of the stable review cycle for the 5.4.201 release.
+There are 11 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-On 6/14/22 05:02, Kirill A. Shutemov wrote:
-> On kexec, the target kernel has to know what memory has been accepted.
-> Information in EFI map is out of date and cannot be used.
-> 
-> boot_params.unaccepted_memory can be used to pass the bitmap between two
-> kernels on kexec, but the use-case is not yet implemented.
-> 
-> Disable kexec on machines with unaccepted memory for now.
-...
-> +static int __init unaccepted_init(void)
-> +{
-> +	if (!boot_params.unaccepted_memory)
-> +		return 0;
-> +
-> +#ifdef CONFIG_KEXEC_CORE
-> +	/*
-> +	 * TODO: Information on memory acceptance status has to be communicated
-> +	 * between kernel.
-> +	 */
-> +	pr_warn("Disable kexec: not yet supported on systems with unaccepted memory\n");
-> +	kexec_load_disabled = 1;
-> +#endif
+Responses should be made by Sat, 25 Jun 2022 16:43:11 +0000.
+Anything received after that time might be too late.
 
-This looks to be the *only* in-kernel user tweaking kexec_load_disabled.
- It doesn't feel great to just be disabling kexec like this.  Why not
-just fix it properly?
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.201-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.4.y
+and the diffstat can be found below.
 
-What do the kexec folks think?
+thanks,
+
+greg k-h
+
+-------------
+Pseudo-Shortlog of commits:
+
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 5.4.201-rc1
+
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Revert "hwmon: Make chip parameter for with_info API mandatory"
+
+Will Deacon <will@kernel.org>
+    arm64: mm: Don't invalidate FROM_DEVICE buffers at start of DMA transfer
+
+Willy Tarreau <w@1wt.eu>
+    tcp: drop the hash_32() part from the index calculation
+
+Willy Tarreau <w@1wt.eu>
+    tcp: increase source port perturb table to 2^16
+
+Willy Tarreau <w@1wt.eu>
+    tcp: dynamically allocate the perturb table used by source ports
+
+Willy Tarreau <w@1wt.eu>
+    tcp: add small random increments to the source port
+
+Willy Tarreau <w@1wt.eu>
+    tcp: use different parts of the port_offset for index and offset
+
+Eric Dumazet <edumazet@google.com>
+    tcp: add some entropy in __inet_hash_connect()
+
+Marian Postevca <posteuca@mutex.one>
+    usb: gadget: u_ether: fix regression in setting fixed MAC address
+
+Mike Snitzer <snitzer@kernel.org>
+    dm: remove special-casing of bio-based immutable singleton target on NVMe
+
+Christian Borntraeger <borntraeger@linux.ibm.com>
+    s390/mm: use non-quiescing sske for KVM switch to keyed guest
+
+
+-------------
+
+Diffstat:
+
+ Documentation/hwmon/hwmon-kernel-api.rst |  2 +-
+ Makefile                                 |  4 +-
+ arch/arm64/mm/cache.S                    |  2 -
+ arch/s390/mm/pgtable.c                   |  2 +-
+ drivers/hwmon/hwmon.c                    | 16 ++++---
+ drivers/md/dm-table.c                    | 32 +-------------
+ drivers/md/dm.c                          | 73 +++-----------------------------
+ drivers/usb/gadget/function/u_ether.c    | 11 ++++-
+ include/linux/device-mapper.h            |  1 -
+ net/ipv4/inet_hashtables.c               | 31 ++++++++++----
+ 10 files changed, 54 insertions(+), 120 deletions(-)
+
+
