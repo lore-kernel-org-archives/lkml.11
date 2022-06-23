@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FD37C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:23:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65A81CCA47C
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:23:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233685AbiFWRXu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:23:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32772 "EHLO
+        id S233582AbiFWRXs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:23:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233758AbiFWRWa (ORCPT
+        with ESMTP id S231846AbiFWRWT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:22:30 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D866E8269B;
-        Thu, 23 Jun 2022 10:01:13 -0700 (PDT)
+        Thu, 23 Jun 2022 13:22:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEFBA31224;
+        Thu, 23 Jun 2022 10:01:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E83B2CE24F9;
-        Thu, 23 Jun 2022 17:01:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC50BC3411B;
-        Thu, 23 Jun 2022 17:01:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F017615A5;
+        Thu, 23 Jun 2022 17:01:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2F25C3411B;
+        Thu, 23 Jun 2022 17:01:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003670;
-        bh=+wn0+WymRz5z3OrP40/3HTfW+xJR2nBWXJBq+/z4laQ=;
+        s=korg; t=1656003667;
+        bh=sXL19wqCbyr+cbKWaI19FppbVCfkIQcc2wyE5ao7Vyg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lRxq6sop6TI3olD1A0vSH0VhPUachOjH847i1skU88ru5qPtQ9kujxBBV95PJiNR4
-         xfGWv+V2C25QBkxL8/MPVsJkQ/2jZgPmPG5covWtV75Zs31Hf7WnBiFoPsuHZFzv4C
-         uTuiU4CxkV3PjRgWSJy8YImPGx08rHNyexRrz/SM=
+        b=HVldFtD2z/e6Ei7M+LbLZdxfHWf812djSXvY148eAlASbuTM6ImC1SNjsZv0unk+s
+         3zu16TSgxOAQ0Xb6TRGyG1gP1pXuUSGsdVtB4+vLS7JdMZYaXWIj9sgOd80aqbLtd3
+         bh9hcVE/z9OeVw5BDAmNnkjdvUB5yXwCIufo/9/E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        stable@vger.kernel.org, Richard Henderson <rth@twiddle.net>,
+        Mark Brown <broonie@kernel.org>, Theodore Tso <tytso@mit.edu>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 008/237] random: add a config option to trust the CPUs hwrng
-Date:   Thu, 23 Jun 2022 18:40:42 +0200
-Message-Id: <20220623164343.387273612@linuxfoundation.org>
+Subject: [PATCH 4.14 046/237] x86: Remove arch_has_random, arch_has_random_seed
+Date:   Thu, 23 Jun 2022 18:41:20 +0200
+Message-Id: <20220623164344.479372265@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -48,77 +49,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Theodore Ts'o <tytso@mit.edu>
+From: Richard Henderson <richard.henderson@linaro.org>
 
-commit 39a8883a2b989d1d21bd8dd99f5557f0c5e89694 upstream.
+commit 5f2ed7f5b99b54389b74e53309677831ac9cb9d7 upstream.
 
-This gives the user building their own kernel (or a Linux
-distribution) the option of deciding whether or not to trust the CPU's
-hardware random number generator (e.g., RDRAND for x86 CPU's) as being
-correctly implemented and not having a back door introduced (perhaps
-courtesy of a Nation State's law enforcement or intelligence
-agencies).
+Use the expansion of these macros directly in arch_get_random_*.
 
-This will prevent getrandom(2) from blocking, if there is a
-willingness to trust the CPU manufacturer.
+These symbols are currently part of the generic archrandom.h
+interface, but are currently unused and can be removed.
 
+Signed-off-by: Richard Henderson <rth@twiddle.net>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20200110145422.49141-2-broonie@kernel.org
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/Kconfig  |   14 ++++++++++++++
- drivers/char/random.c |   11 ++++++++++-
- 2 files changed, 24 insertions(+), 1 deletion(-)
+ arch/x86/include/asm/archrandom.h |   12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
 
---- a/drivers/char/Kconfig
-+++ b/drivers/char/Kconfig
-@@ -590,3 +590,17 @@ source "drivers/char/xillybus/Kconfig"
- 
- endmenu
- 
-+config RANDOM_TRUST_CPU
-+	bool "Trust the CPU manufacturer to initialize Linux's CRNG"
-+	depends on X86 || S390 || PPC
-+	default n
-+	help
-+	Assume that CPU manufacturer (e.g., Intel or AMD for RDSEED or
-+	RDRAND, IBM for the S390 and Power PC architectures) is trustworthy
-+	for the purposes of initializing Linux's CRNG.  Since this is not
-+	something that can be independently audited, this amounts to trusting
-+	that CPU manufacturer (perhaps with the insistence or mandate
-+	of a Nation State's intelligence or law enforcement agencies)
-+	has not installed a hidden back door to compromise the CPU's
-+	random number generation facilities.
-+
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -782,6 +782,7 @@ static void invalidate_batched_entropy(v
- static void crng_initialize(struct crng_state *crng)
- {
- 	int		i;
-+	int		arch_init = 1;
- 	unsigned long	rv;
- 
- 	memcpy(&crng->state[0], "expand 32-byte k", 16);
-@@ -792,10 +793,18 @@ static void crng_initialize(struct crng_
- 		_get_random_bytes(&crng->state[4], sizeof(__u32) * 12);
- 	for (i = 4; i < 16; i++) {
- 		if (!arch_get_random_seed_long(&rv) &&
--		    !arch_get_random_long(&rv))
-+		    !arch_get_random_long(&rv)) {
- 			rv = random_get_entropy();
-+			arch_init = 0;
-+		}
- 		crng->state[i] ^= rv;
- 	}
-+#ifdef CONFIG_RANDOM_TRUST_CPU
-+	if (arch_init) {
-+		crng_init = 2;
-+		pr_notice("random: crng done (trusting CPU's manufacturer)\n");
-+	}
-+#endif
- 	crng->init_time = jiffies - CRNG_RESEED_INTERVAL - 1;
+--- a/arch/x86/include/asm/archrandom.h
++++ b/arch/x86/include/asm/archrandom.h
+@@ -86,10 +86,6 @@ static inline bool rdseed_int(unsigned i
+ 	return ok;
  }
  
+-/* Conditional execution based on CPU type */
+-#define arch_has_random()	static_cpu_has(X86_FEATURE_RDRAND)
+-#define arch_has_random_seed()	static_cpu_has(X86_FEATURE_RDSEED)
+-
+ /*
+  * These are the generic interfaces; they must not be declared if the
+  * stubs in <linux/random.h> are to be invoked,
+@@ -99,22 +95,22 @@ static inline bool rdseed_int(unsigned i
+ 
+ static inline bool arch_get_random_long(unsigned long *v)
+ {
+-	return arch_has_random() ? rdrand_long(v) : false;
++	return static_cpu_has(X86_FEATURE_RDRAND) ? rdrand_long(v) : false;
+ }
+ 
+ static inline bool arch_get_random_int(unsigned int *v)
+ {
+-	return arch_has_random() ? rdrand_int(v) : false;
++	return static_cpu_has(X86_FEATURE_RDRAND) ? rdrand_int(v) : false;
+ }
+ 
+ static inline bool arch_get_random_seed_long(unsigned long *v)
+ {
+-	return arch_has_random_seed() ? rdseed_long(v) : false;
++	return static_cpu_has(X86_FEATURE_RDSEED) ? rdseed_long(v) : false;
+ }
+ 
+ static inline bool arch_get_random_seed_int(unsigned int *v)
+ {
+-	return arch_has_random_seed() ? rdseed_int(v) : false;
++	return static_cpu_has(X86_FEATURE_RDSEED) ? rdseed_int(v) : false;
+ }
+ 
+ extern void x86_init_rdrand(struct cpuinfo_x86 *c);
 
 
