@@ -2,80 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9021C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 21:26:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3062AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 21:29:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229614AbiFWV0z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 17:26:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45658 "EHLO
+        id S229808AbiFWV3V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 17:29:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229451AbiFWV0y (ORCPT
+        with ESMTP id S229464AbiFWV3U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 17:26:54 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F06551E5C
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 14:26:52 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id ge10so813153ejb.7
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 14:26:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=W457I2l5RFm8vi3OAKFMpeADxn0Oxv8muZtylILpgpc=;
-        b=jQKPPJer8kzjeU3krkA9h8NYl+8ae/4sd8vnJKce7dDLs+Ibie/h051V4l+6KOrk93
-         RNKVA9Zw0EUIv90J6u14b6tzHmoF9Wcq7nPVt0eyyAZ7At1jr3/dSstH4rvaCybn3yhB
-         Ajw6ojKrKp4U2I8iUKfDWYFgM0B5R580Uq+iIzmdpblK+hBq/KglKuCLjvWc5yPnhB2g
-         2LmAcTs7QqElkSJI52QHshf/esTVTIdQLFg2BTIMKNi7WLLlb3LV7Uo5hTR6UdqZ5aqX
-         Ifq3+w0AV1kvm/4qGa8vPWcsXdk7Rb2F4o6T01ik9Oz9t/Uarxf27nQzCfY1Z80Etqxz
-         MADw==
+        Thu, 23 Jun 2022 17:29:20 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2A4775251F
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 14:29:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656019758;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=6PfW9sxpQj/mvhni+b0KRiNmHNGj39/jQBs8n3G3n/E=;
+        b=i2rZEXo49QwUmz7rTW1PNtwpd4ROnXA+jCSsz1p39sdzBjX/XxsNkdCcXUy0Y/FX65Qssh
+        gAcDQMllb+ZUoZ+lc83TeQfuMn5G2+KZPvVbfOOHSuV9QRvM53VJk00Uk6XtNebUvj4exW
+        YVuLVuY2r/rbvJOLeDK8qr+Tlf8+vS4=
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com
+ [209.85.166.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-578-vc2GWJ_YOGWIurpiz4FtMw-1; Thu, 23 Jun 2022 17:29:17 -0400
+X-MC-Unique: vc2GWJ_YOGWIurpiz4FtMw-1
+Received: by mail-il1-f198.google.com with SMTP id x5-20020a923005000000b002d1a91c4d13so185803ile.4
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 14:29:16 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=W457I2l5RFm8vi3OAKFMpeADxn0Oxv8muZtylILpgpc=;
-        b=vZerxEdo4JXScJFJrHWBLGqDCInTZ34Ed7UI4am6Mhbbozgy+qOOlApamQQiJAssPl
-         fD3IdISPfkI+luKSV31mHEznqw2xyGxM7NgJI03AM0kCDp8HrLEcTXOgcZLIGL3t/Lob
-         7K/y1KvrexupS4k93gsV9Ssu4rKYkFfCpcxk8DcMucr+90UDDzztM432OkaJRNtdCkkt
-         yPznATdp94SIaKtezvzmlZJepsu7685vpRiUYw0iHHV/bZIJjblOof8eqKP1bWiPS4ne
-         sFlqlp31ahUhUm1sHWts+S8jTIC3W+NLt012a5C2YIx4PtqmsPjbhOy3ZrXUJdkfYGVY
-         AT2w==
-X-Gm-Message-State: AJIora/NPcyu08S1Z6hb61dZD1uIYSTLLmEa/OLbCShiC3cvu/Ft4B3C
-        mRBwgOeHLABmWjE5h6+MHSUB7Hf8Sw06DQtAlQwIKK5WGtA=
-X-Google-Smtp-Source: AGRyM1vN3xIaU3awlRQiIyYOfxsa1F7eiMWFr8WVZGtZLsEMmhVqIEcczJoZ9yLJ0+XcgISf8ZpDM/bRCw0PzwFgYLk=
-X-Received: by 2002:a17:906:149:b0:711:fca6:bc2f with SMTP id
- 9-20020a170906014900b00711fca6bc2fmr10265579ejh.497.1656019610745; Thu, 23
- Jun 2022 14:26:50 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=6PfW9sxpQj/mvhni+b0KRiNmHNGj39/jQBs8n3G3n/E=;
+        b=YHhMAQehGlX6EiX6BtZ0nRr95lmFAhGQozdm/kBrhy06yZyITcmvpoB4aL88Tjw/wN
+         Y9O3vc1Wxo16tLCUC7W0qohn95FkAGEAcxStK65zrtVaL1E2DxzyHNyqamPBU3v4tSzA
+         9yDuJ7MlCHe/WNAh15CU37zoK3QCV/kc4IWOgF1KU2mL5ap0yxe+0K7fUmM8PCnnKAhW
+         Q4TokkKZEezUcDR94fchhYGbxzZ2RcSyHrPRJi8DtOxCfnwqD5XgEoZrRS1R06jY7E91
+         JHBaUvEMlp3Uw7db44RKZ9u3w8VWdQRaYOjeh8plKkodWTALNJiAhEJssLMflhii8g3D
+         e6rA==
+X-Gm-Message-State: AJIora/jqnWrUUXnpdWB+f+HwAXsaZVbFrKPJXOmL73Vf07dLcfhOa5E
+        aWe5xZXIOpeDndi0tMBhn0svanf2teJ7Bh7Yx1taA5y3p5wPH+Yba2hqNGVNeKtl+bGKTYup4qL
+        DZxhdqNKbju48xqj8TqcTLl5W
+X-Received: by 2002:a05:6602:13c3:b0:672:6e5b:f91d with SMTP id o3-20020a05660213c300b006726e5bf91dmr5280345iov.68.1656019755998;
+        Thu, 23 Jun 2022 14:29:15 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vtJvEhlzlRfOF8b92vaohNpblje8osM0+m8TcPa0obERTPPu0deqheKeigL7E2U8Aqg0jxfg==
+X-Received: by 2002:a05:6602:13c3:b0:672:6e5b:f91d with SMTP id o3-20020a05660213c300b006726e5bf91dmr5280339iov.68.1656019755753;
+        Thu, 23 Jun 2022 14:29:15 -0700 (PDT)
+Received: from xz-m1.local (cpec09435e3e0ee-cmc09435e3e0ec.cpe.net.cable.rogers.com. [99.241.198.116])
+        by smtp.gmail.com with ESMTPSA id h7-20020a0566380f0700b00339cfcf4a49sm202645jas.141.2022.06.23.14.29.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Jun 2022 14:29:15 -0700 (PDT)
+Date:   Thu, 23 Jun 2022 17:29:13 -0400
+From:   Peter Xu <peterx@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Hildenbrand <david@redhat.com>,
+        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Linux MM Mailing List <linux-mm@kvack.org>
+Subject: Re: [PATCH 2/4] kvm: Merge "atomic" and "write" in
+ __gfn_to_pfn_memslot()
+Message-ID: <YrTbKaRe497n8M0o@xz-m1.local>
+References: <20220622213656.81546-1-peterx@redhat.com>
+ <20220622213656.81546-3-peterx@redhat.com>
+ <YrR9i3yHzh5ftOxB@google.com>
+ <YrTDBwoddwoY1uSV@xz-m1.local>
+ <YrTNGVpT8Cw2yrnr@google.com>
 MIME-Version: 1.0
-References: <20220623211420.918875-1-aidanmacdonald.0x0@gmail.com> <20220623211420.918875-2-aidanmacdonald.0x0@gmail.com>
-In-Reply-To: <20220623211420.918875-2-aidanmacdonald.0x0@gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 23 Jun 2022 23:26:10 +0200
-Message-ID: <CAHp75VfTqTfMsrdqyqRj61JAAJ4a_h3rrFriY2d+rrqpVviy=w@mail.gmail.com>
-Subject: Re: [PATCH v2 01/12] regmap-irq: Convert bool bitfields to unsigned int
-To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-Cc:     Mark Brown <broonie@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Matti Vaittinen <mazziesaccount@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YrTNGVpT8Cw2yrnr@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 11:13 PM Aidan MacDonald
-<aidanmacdonald.0x0@gmail.com> wrote:
->
-> Use 'unsigned int' for bitfields for consistency with most other
-> kernel code.
+On Thu, Jun 23, 2022 at 08:29:13PM +0000, Sean Christopherson wrote:
+> This is what I came up with for splitting @async into a pure input (no_wait) and
+> a return value (KVM_PFN_ERR_NEEDS_IO).
 
-...
+The attached patch looks good to me.  It's just that..
 
-There is no point to convert the fields you are about to remove.
+[...]
 
-So, either don't touch them or make this patch closer to the end of the series.
+>  kvm_pfn_t __gfn_to_pfn_memslot(const struct kvm_memory_slot *slot, gfn_t gfn,
+> -			       bool atomic, bool *async, bool write_fault,
+> +			       bool atomic, bool no_wait, bool write_fault,
+>  			       bool *writable, hva_t *hva)
 
+.. with this patch on top we'll have 3 booleans already.  With the new one
+to add separated as suggested then it'll hit 4.
+
+Let's say one day we'll have that struct, but.. are you sure you think
+keeping four booleans around is nicer than having a flag, no matter whether
+we'd like to have a struct or not?
+
+  kvm_pfn_t __gfn_to_pfn_memslot(const struct kvm_memory_slot *slot, gfn_t gfn,
+			       bool atomic, bool no_wait, bool write_fault,
+                               bool interruptible, bool *writable, hva_t *hva);
+
+What if the booleans goes to 5, 6, or more?
+
+/me starts to wonder what'll be the magic number that we'll start to think
+a bitmask flag will be more lovely here. :)
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Peter Xu
+
