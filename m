@@ -2,80 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ECA0C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:43:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA0E0C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:43:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232209AbiFWQnE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:43:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43930 "EHLO
+        id S232397AbiFWQnK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:43:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232401AbiFWQmp (ORCPT
+        with ESMTP id S232404AbiFWQm5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:42:45 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ECB749911;
-        Thu, 23 Jun 2022 09:42:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:In-Reply-To:References;
-        bh=ZNJjmbuEFB+xE7zO2XCavODcPuKBf6BJxSUuwq7uUcI=; b=sPcn8pTVVFWGlDT37HvjMHED6M
-        J0MkK513JyB5BQr6/RBi6LVOviCaMYgBt2SwSAiJJ//gGJLN4nOMsTWVGScIcXQ9Fo6wi1272ndPM
-        7jVVj5GXuVWSF00NA+UEV100f6KRkfP6RelLOYAyShOy3U6tkp+Mn6kFEtd8ix1K26wM/NnXrLAtg
-        8zNxnVsULjG9+PwQ2pUGT14H/I16nfF7D8H5nXzOZuzNgvDK4kkPvAUQyS7PQO6fuNEizXR9ogmUi
-        O6U/9EKkTs29EmBcru+A54BMavVs0z7dCZSOS7QmGTOB7HVqd4CshkVS+XSLRCS0cu1cS4pcOn+i6
-        16u96kWQ==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o4Pui-0080gy-Vn; Thu, 23 Jun 2022 16:42:41 +0000
-Date:   Thu, 23 Jun 2022 17:42:40 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [GIT PULL] Pagecache fixes for 5.19-rc4
-Message-ID: <YrSYAKtoRrrgayrZ@casper.infradead.org>
+        Thu, 23 Jun 2022 12:42:57 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE56BB96
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 09:42:55 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id r1so18618750plo.10
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 09:42:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=S6hz8M8YZFqPg+rrGciN8Bxo8th0Vg1fhfElGS1vnuI=;
+        b=d0K9ZioXVT08tRoikYi6GqBEGr4BS/wf+DoeVBqJLLTdCIAWr2FXnOm1S10GPbwYnM
+         jrKEFElgWZVEh9MFxB04cMQUnbFUjkYQF6r3Et+6GwNx4sd5TBWgPLocKlQVjWZCRrB2
+         ARU20yfQHyYNbhYUYT2fRgUV0lQ7hAEbQm5Ecu28CgITIPYzepsNEyC3MQT7q4lzyOMG
+         BEb4FpUhSQqobA9Pob8eUcmRKpHq4Ba+ObD0fZeq4cfioNCAyrTlL4Kk4vln7x4X3x3m
+         v9Qe2nr8fIcROwb84JZkX3RO0rTyNxbolLnY4WvgiXdA9lJ95b7oDT7ySZKqmCCazPDA
+         3LVg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=S6hz8M8YZFqPg+rrGciN8Bxo8th0Vg1fhfElGS1vnuI=;
+        b=iNPN17QIDGxSPMm0l60DEsJBeumSU+YAJzM77NzRJdM4YRxLqC+qG7hPquKnrXh5tS
+         f2cm0KKXIwNxyJoCoo/iRm0ew5S30lZS/KNIL8O/XXMbH5NLPC9unyfzg5DamGlWqAO4
+         nrMbrwam7FPEHfFktsuyQlpQVX/Rii7fX5QVfCeWpFhSL7YmzYLARBBhPP5AZs+84xvK
+         Xkm/SxgKrEhx3xK5wJTmD+YaS3djxkmcSW5TuD1TlPd+0rBZRfSwS7yzfPOrIWM+hIHD
+         TKgFbIH6SVmrRNMFGFS1Xjx0iCSNl0rOPMeDOUOlcvPJ8ivdqYigWOs8q4x8hyl6L3/s
+         Emyg==
+X-Gm-Message-State: AJIora80pNVMhLtpSU25hTSbq5FVap2RhvYndh9uoUeUpSNHTHDSobQp
+        T9g+ap+WWEO0Plqef1w/sPWmdzpRuxRa1KvDodpQ1Q==
+X-Google-Smtp-Source: AGRyM1tIkL+FeUm4IWfsd5tVJ0yduL2FFqQQW4NwI9yBKuUe8peXkhFsv/YnlRQe9BGM49zGFj3XXDX46gMWXqEYh4o=
+X-Received: by 2002:a17:903:2cb:b0:14f:4fb6:2fb0 with SMTP id
+ s11-20020a17090302cb00b0014f4fb62fb0mr39330727plk.172.1656002575066; Thu, 23
+ Jun 2022 09:42:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220623000530.1194226-1-yosryahmed@google.com>
+ <YrQe5A+FXnbgOR1f@dhcp22.suse.cz> <CAJD7tkanavKpKrQr8-jA8pukgD7OY4eOwJRZufJ2NoThD12G+Q@mail.gmail.com>
+ <YrQ1o3CeaZWhm+h4@dhcp22.suse.cz> <CAJD7tkadsLOV7GMFAm+naX4Y1WpZ-4=NkAhAMxNw60iaRPWx=w@mail.gmail.com>
+ <YrSWruhPlJV1X9kp@dhcp22.suse.cz>
+In-Reply-To: <YrSWruhPlJV1X9kp@dhcp22.suse.cz>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Thu, 23 Jun 2022 09:42:43 -0700
+Message-ID: <CALvZod6eLa1X1FJ2Qi6FXhFA-qBCP4mN2SB31MSgjj+g8hKo6Q@mail.gmail.com>
+Subject: Re: [PATCH] mm: vmpressure: don't count userspace-induced reclaim as
+ memory pressure
+To:     Michal Hocko <mhocko@suse.com>
+Cc:     Yosry Ahmed <yosryahmed@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        David Hildenbrand <david@redhat.com>,
+        Miaohe Lin <linmiaohe@huawei.com>, NeilBrown <neilb@suse.de>,
+        Alistair Popple <apopple@nvidia.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Peter Xu <peterx@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Cgroups <cgroups@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following changes since commit 78ca55889a549a9a194c6ec666836329b774ab6d:
+On Thu, Jun 23, 2022 at 9:37 AM Michal Hocko <mhocko@suse.com> wrote:
+>
+> On Thu 23-06-22 09:22:35, Yosry Ahmed wrote:
+> > On Thu, Jun 23, 2022 at 2:43 AM Michal Hocko <mhocko@suse.com> wrote:
+> > >
+> > > On Thu 23-06-22 01:35:59, Yosry Ahmed wrote:
+> [...]
+> > > > In our internal version of memory.reclaim that we recently upstreamed,
+> > > > we do not account vmpressure during proactive reclaim (similar to how
+> > > > psi is handled upstream). We want to make sure this behavior also
+> > > > exists in the upstream version so that consolidating them does not
+> > > > break our users who rely on vmpressure and will start seeing increased
+> > > > pressure due to proactive reclaim.
+> > >
+> > > These are good reasons to have this patch in your tree. But why is this
+> > > patch benefitial for the upstream kernel? It clearly adds some code and
+> > > some special casing which will add a maintenance overhead.
+> >
+> > It is not just Google, any existing vmpressure users will start seeing
+> > false pressure notifications with memory.reclaim. The main goal of the
+> > patch is to make sure memory.reclaim does not break pre-existing users
+> > of vmpressure, and doing it in a way that is consistent with psi makes
+> > sense.
+>
+> memory.reclaim is v2 only feature which doesn't have vmpressure
+> interface. So I do not see how pre-existing users of the upstream kernel
+> can see any breakage.
+>
 
-  Merge tag 'scsi-fixes' of git://git.kernel.org/pub/scm/linux/kernel/git/jejb/scsi (2022-06-20 09:35:04 -0500)
+Please note that vmpressure is still being used in v2 by the
+networking layer (see mem_cgroup_under_socket_pressure()) for
+detecting memory pressure.
 
-are available in the Git repository at:
-
-  git://git.infradead.org/users/willy/pagecache.git tags/folio-5.19b
-
-for you to fetch changes up to 00fa15e0d56482e32d8ca1f51d76b0ee00afb16b:
-
-  filemap: Fix serialization adding transparent huge pages to page cache (2022-06-23 12:22:00 -0400)
-
-----------------------------------------------------------------
-Four folio-related fixes for 5.19:
-
- - Mark a folio accessed at the right time (Yu Kuai)
-
- - Fix a race for folios being replaced in the middle of a read (Brian Foster)
-
- - Clear folio->private in more places (Xiubo Li)
-
- - Take the invalidate_lock in page_cache_ra_order() (Alistair Popple)
-
-----------------------------------------------------------------
-Alistair Popple (1):
-      filemap: Fix serialization adding transparent huge pages to page cache
-
-Matthew Wilcox (Oracle) (3):
-      filemap: Correct the conditions for marking a folio as accessed
-      filemap: Handle sibling entries in filemap_get_read_batch()
-      mm: Clear page->private when splitting or migrating a page
-
- mm/filemap.c     | 15 ++++++++++++---
- mm/huge_memory.c |  1 +
- mm/migrate.c     |  1 +
- mm/readahead.c   |  2 ++
- 4 files changed, 16 insertions(+), 3 deletions(-)
-
+Though IMO we should deprecate vmpressure altogether.
