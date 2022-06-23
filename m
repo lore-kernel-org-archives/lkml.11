@@ -2,95 +2,292 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 472CBC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 09:40:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A157CCA480
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 09:42:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229692AbiFWJkx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 05:40:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43848 "EHLO
+        id S230160AbiFWJmm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 05:42:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229482AbiFWJku (ORCPT
+        with ESMTP id S229682AbiFWJmk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 05:40:50 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D62CB49909;
-        Thu, 23 Jun 2022 02:40:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655977249; x=1687513249;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=aXck3R6A19uHBgiDNe8YoiehvkSU+RaF1az/CheoTnE=;
-  b=ZMDhH1U7VgRc46poQhkaX+XPu/kGm2gNEoIpScUXqEVGozZ6WWd9jG1o
-   oF8Ujrb0hj3WiBSCCRS5njs3GwXQYlT61r6Su5lkK5GxR7TzKtF4C/8AV
-   F/rHzMg0qQ3vGmTg45YeFrcqdVTX7viqGff58zVgV9g+RZVfkBxfnKhK5
-   KubK9YvQr7DUWOr72d6MIcOFdSkKf0IuGMKwSKj4Cdo7O0Fad2+RZKeFC
-   kB8NHLEG+dEL57TY67oOpCealf25D96uygIebao5DroYtvXQqvRbd9I+y
-   lazcTIvI5awFooEroUBqtnH6kno324aympiKDj/9ktZYJel3KDQL/3ni7
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="344664561"
-X-IronPort-AV: E=Sophos;i="5.92,215,1650956400"; 
-   d="scan'208";a="344664561"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2022 02:40:49 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,215,1650956400"; 
-   d="scan'208";a="690943635"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by fmsmga002.fm.intel.com with ESMTP; 23 Jun 2022 02:40:46 -0700
-Date:   Thu, 23 Jun 2022 17:32:37 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     Ivan Bornyakov <i.bornyakov@metrotek.ru>
-Cc:     mdf@kernel.org, hao.wu@intel.com, trix@redhat.com, corbet@lwn.net,
-        conor.dooley@microchip.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-fpga@vger.kernel.org,
-        linux-doc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, system@metrotek.ru
-Subject: Re: [PATCH v21 5/5] MAINTAINERS: add Microchip PolarFire FPGA
- drivers entry
-Message-ID: <20220623093237.GC1752270@yilunxu-OptiPlex-7050>
-References: <20220621153847.103052-1-i.bornyakov@metrotek.ru>
- <20220621153847.103052-6-i.bornyakov@metrotek.ru>
+        Thu, 23 Jun 2022 05:42:40 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0707A49917
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 02:42:39 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id g25so39791203ejh.9
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 02:42:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=xyKsHf35jPc8YVsck6ueew5VoRnlUL9zoS2z12Liz/8=;
+        b=NBNe5LDexk9OpBZQ/NTq5PWJ+ojiyO3zUmYQi1uwO0yLdnXaNXpvGf9V1YEREj8SoQ
+         NMCq6dBpaFfGA9LlsMgUwyCdE1ReEuDwyEwwX9jluWnPiK/NcD3ISxaF1ZPJ8mauRLYg
+         Uulf2DwiUxlhPiwMySxnyydZ+9kTCih/7sglmXPs5IM6wg7fj+HUKIn4ZeQfA7R9YGst
+         Q6ofqUqy7eG+XQ/UZisrMl4Zj96x1qhuHCE2rb4pU5LCzn4fNQf1OTR5a+UpZrKhqvyO
+         raEO0wEl4LhFpuzHCkrPLmwV5Tn7XOO+HxAuvsbq+aOEYa1Y0NpuYif8Ie68F4HnJ/Va
+         i3DA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=xyKsHf35jPc8YVsck6ueew5VoRnlUL9zoS2z12Liz/8=;
+        b=nwq5hIxVAcSdfo/wwJ1/X+qa1c2csUSSxuts6KCArHP7/w+BBjBYWXpia7UwPg2llD
+         8e8zdiR4PJWiPVEMM5UMbXA6R2V1E6Icte91OKI/CSPTYivomD9l9C4sbZGCptbzE5Sn
+         Tu73J6JswuPJnyfcI+5OgmIJkQSlbgL9Kfqawzm60B1mu00b/dPiaP1w/As208EcEnVn
+         cwZa69aUFZJvaXQQZeBBuvbsrkGXd92tBXhECYudMhtewv9W4DwsU3bb7IaydNI2dCPW
+         ywD6OA6kmT9z/CEThYvXVbY8Q7+EApTrM3vdRtPoIgHPj5cVMi6+gJCnUQod4Mlad69i
+         4cww==
+X-Gm-Message-State: AJIora8PGBm7zZcE3V96Uh+IxZAmaGjsgW/HuF5kSgoX1yQihFaoEVvJ
+        dk42sgWPjUJ8SsD0VfXmi1gLEA==
+X-Google-Smtp-Source: AGRyM1tzA92PdAeMyMzX0kya8FT14/pyP2fWwXS1iCh5k1iMXETkpTLPfwxtpkwzjfOgSa6fM4r7Vw==
+X-Received: by 2002:a17:907:6d0d:b0:711:c940:7f1c with SMTP id sa13-20020a1709076d0d00b00711c9407f1cmr7338092ejc.399.1655977357508;
+        Thu, 23 Jun 2022 02:42:37 -0700 (PDT)
+Received: from [192.168.0.227] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id l2-20020a056402124200b004357738e04esm10848659edw.21.2022.06.23.02.42.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 23 Jun 2022 02:42:37 -0700 (PDT)
+Message-ID: <2875e9e7-8fb3-e5f6-6221-6aaffb7813c4@linaro.org>
+Date:   Thu, 23 Jun 2022 11:42:36 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220621153847.103052-6-i.bornyakov@metrotek.ru>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v3 1/2] dt-bindings: arm: qcom: document qcom,msm-id and
+ qcom,board-id
+Content-Language: en-US
+To:     Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Amit Pundir <amit.pundir@linaro.org>,
+        Trilok Soni <quic_tsoni@quicinc.com>,
+        Rob Clark <robdclark@gmail.com>,
+        Stephan Gerhold <stephan@gerhold.net>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Kumar Gala <galak@codeaurora.org>
+References: <20220622114856.6243-1-krzysztof.kozlowski@linaro.org>
+ <20220622114856.6243-2-krzysztof.kozlowski@linaro.org>
+ <93fd2970-5d07-f86d-b3a5-a4ebd8a2fa61@somainline.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <93fd2970-5d07-f86d-b3a5-a4ebd8a2fa61@somainline.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 21, 2022 at 06:38:47PM +0300, Ivan Bornyakov wrote:
-> Add MAINTAINERS entry for the newly added Microchip PolarFire (MPF) FPGA
-> manager. Add myself as a reviewer and Conor Dooley as a maintainer.
+On 22/06/2022 13:56, Konrad Dybcio wrote:
 > 
-> Suggested-by: Conor Dooley <conor.dooley@microchip.com>
-> Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
+> 
+> On 22.06.2022 13:48, Krzysztof Kozlowski wrote:
+>> The top level qcom,msm-id and qcom,board-id properties are utilized by
+>> bootloaders on Qualcomm MSM platforms to determine which device tree
+>> should be used and passed to the kernel.
+>>
+>> The commit b32e592d3c28 ("devicetree: bindings: Document qcom board
+>> compatible format") from 2015 was a consensus during discussion about
+>> upstreaming qcom,msm-id and qcom,board-id fields.  There are however still
+>> problems with that consensus:
+>> 1. It was reached 7 years ago but it turned out its implementation did
+>>    not reach all possible products.
+>>
+>> 2. Initially additional tool (dtbTool) was needed for parsing these
+>>    fields to create a QCDT image consisting of multiple DTBs, later the
+>>    bootloaders were improved and they use these qcom,msm-id and
+>>    qcom,board-id properties directly.
+>>
+>> 3. Extracting relevant information from the board compatible requires
+>>    this additional tool (dtbTool), which makes the build process more
+>>    complicated and not easily reproducible (DTBs are modified after the
+>>    kernel build).
+>>
+>> 4. Some versions of Qualcomm bootloaders expect these properties even
+>>    when booting with a single DTB.  The community is stuck with these
+>>    bootloaders thus they require properties in the DTBs.
+>>
+>> Since several upstreamed Qualcomm SoC-based boards require these
+>> properties to properly boot and the properties are reportedly used by
+>> bootloaders, document them.
+>>
+>> Link: https://lore.kernel.org/r/a3c932d1-a102-ce18-deea-18cbbd05ecab@linaro.org/
+>> Co-developed-by: Kumar Gala <galak@codeaurora.org>
+>> Signed-off-by: Kumar Gala <galak@codeaurora.org>
+>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>> Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+>> ---
+>>  .../devicetree/bindings/arm/qcom.yaml         | 121 ++++++++++++++++++
+>>  include/dt-bindings/arm/qcom,ids.h            |  30 +++++
+>>  2 files changed, 151 insertions(+)
+>>  create mode 100644 include/dt-bindings/arm/qcom,ids.h
+>>
+>> diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
+>> index 6c38c1387afd..431e3ff31d75 100644
+>> --- a/Documentation/devicetree/bindings/arm/qcom.yaml
+>> +++ b/Documentation/devicetree/bindings/arm/qcom.yaml
+>> @@ -403,6 +403,127 @@ properties:
+>>                - qcom,sm8450-qrd
+>>            - const: qcom,sm8450
+>>  
+>> +  # Board compatibles go above
+>> +
+>> +  qcom,msm-id:
+>> +    $ref: /schemas/types.yaml#/definitions/uint32-matrix
+>> +    minItems: 1
+>> +    maxItems: 8
+>> +    items:
+>> +      items:
+>> +        - description: |
+>> +            MSM chipset ID - an exact match value consisting of two bitfields::
+>> +             - bits 0-15  - The unique MSM chipset ID
+>> +             - bits 16-31 - Reserved; should be 0
+>> +        - description: |
+>> +            Hardware revision ID - a chipset specific 32-bit ID representing
+>> +            the version of the chipset.  It is best a match value - the
+>> +            bootloader will look for the closest possible match.
+>> +    deprecated: true
+>> +    description:
+>> +      The MSM chipset and hardware revision use by Qualcomm bootloaders.  It
+>> +      can optionally be an array of these to indicate multiple hardware that
+>> +      use the same device tree.  It is expected that the bootloader will use
+>> +      this information at boot-up to decide which device tree to use when given
+>> +      multiple device trees, some of which may not be compatible with the
+>> +      actual hardware.  It is the bootloader's responsibility to pass the
+>> +      correct device tree to the kernel.
+>> +      The property is deprecated.
+>> +
+>> +  qcom,board-id:
+>> +    $ref: /schemas/types.yaml#/definitions/uint32-matrix
+>> +    minItems: 1
+>> +    maxItems: 8
+>> +    items:
+>> +      oneOf:
+>> +        - maxItems: 2
+>> +          items:
+>> +            - description: |
+>> +                Board ID consisting of three bitfields::
+>> +                  - bits 31-24 - Unused
+>> +                  - bits 23-16 - Platform Version Major
+>> +                  - bits 15-8  - Platform Version Minor
+>> +                  - bits 7-0   - Platform Type
+>> +                Platform Type field is an exact match value.  The
+>> +                Platform Major/Minor field is a best match.  The bootloader will
+>> +                look for the closest possible match.
+>> +            - description: |
+>> +                Subtype ID unique to a Platform Type/Chipset ID.  For a given
+>> +                Platform Type, there will typically only be a single board and the
+>> +                subtype_id will be 0.  However in some cases board variants may
+>> +                need to be distinguished by different subtype_id values.
+>> +        # OnePlus uses a variant of board-id with four elements:
+>> +        - minItems: 4
+>> +          items:
+>> +            - const: 8
+>> +            - const: 0
+>> +            - description: OnePlus board ID
+>> +            - description: OnePlus subtype ID
+>> +    deprecated: true
+>> +    description:
+>> +      The board type and revision information.  It can optionally be an array
+>> +      of these to indicate multiple boards that use the same device tree.  It
+>> +      is expected that the bootloader will use this information at boot-up to
+>> +      decide which device tree to use when given multiple device trees, some of
+>> +      which may not be compatible with the actual hardware.  It is the
+>> +      bootloader's responsibility to pass the correct device tree to the
+>> +      kernel
+>> +      The property is deprecated.
+>> +
+>> +allOf:
+>> +  # Explicit allow-list for older SoCs. The legacy properties are not allowed
+>> +  # on newer SoCs.
+>> +  - if:
+>> +      properties:
+>> +        compatible:
+>> +          contains:
+>> +            enum:
+>> +              - qcom,apq8026
+>> +              - qcom,apq8094
+>> +              - qcom,apq8096
+>> +              - qcom,msm8992
+>> +              - qcom,msm8994
+>> +              - qcom,msm8996
+>> +              - qcom,msm8998
+>> +              - qcom,sdm630
+>> +              - qcom,sdm632
+>> +              - qcom,sdm845
+>> +              - qcom,sdx55
+>> +              - qcom,sdx65
+>> +              - qcom,sm6125
+>> +              - qcom,sm6350
+>> +              - qcom,sm7225
+>> +              - qcom,sm8150
+>> +              - qcom,sm8250
+>> +    then:
+>> +      properties:
+>> +        qcom,board-id: true
+>> +        qcom,msm-id: true
+>> +    else:
+>> +      properties:
+>> +        qcom,board-id: false
+>> +        qcom,msm-id: false
+>> +
+>> +  - if:
+>> +      properties:
+>> +        compatible:
+>> +          contains:
+>> +            enum:
+>> +              - oneplus,cheeseburger
+>> +              - oneplus,dumpling
+>> +              - oneplus,enchilada
+>> +              - oneplus,fajita
+>> +    then:
+>> +      properties:
+>> +        qcom,board-id:
+>> +          items:
+>> +            minItems: 4
+>> +    else:
+>> +      properties:
+>> +        qcom,board-id:
+>> +          items:
+>> +            maxItems: 2
+>> +
+>>  additionalProperties: true
+>>  
+>>  ...
+>> diff --git a/include/dt-bindings/arm/qcom,ids.h b/include/dt-bindings/arm/qcom,ids.h
+>> new file mode 100644
+>> index 000000000000..df4a07b898cc
+>> --- /dev/null
+>> +++ b/include/dt-bindings/arm/qcom,ids.h
+>> @@ -0,0 +1,30 @@
+>> +/* SPDX-License-Identifier: GPL-2.0-only */
+>> +/*
+>> + * Copyright (c) 2015, The Linux Foundation. All rights reserved.
+>> + * Copyright (c) 2022 Linaro Ltd
+>> + * Author: Krzysztof Kozlowski <krzk@kernel.org> based on previous work of Kumar Gala.
+>> + */
+>> +#ifndef _DT_BINDINGS_ARM_QCOM_IDS_H
+>> +#define _DT_BINDINGS_ARM_QCOM_IDS_H
+>> +
+>> +/* qcom,msm-id */
+>> +#define QCOM_ID_APQ8026				199
+>> +#define QCOM_ID_MSM8916				206
+>> +#define QCOM_ID_MSM8994				207
+>> +#define QCOM_ID_MSM8996				246
+>> +#define QCOM_ID_APQ8016				247
+>> +#define QCOM_ID_MSM8216				248
+>> +#define QCOM_ID_MSM8116				249
+>> +#define QCOM_ID_MSM8616				250
+>> +#define QCOM_ID_MSM8998				292
+>> +#define QCOM_ID_SDM845				321
+> These are the same ones used in the qcom socid driver. Perhaps they can be exported from there?
+> 
 
-Acked-by: Xu Yilun <yilun.xu@intel.com>
+I can actually use the bindings in the socid driver. Less code.
 
-> ---
->  MAINTAINERS | 8 ++++++++
->  1 file changed, 8 insertions(+)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index b774f21828f7..ed2517574804 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -7884,6 +7884,14 @@ S:	Maintained
->  F:	Documentation/ABI/testing/sysfs-driver-intel-m10-bmc-sec-update
->  F:	drivers/fpga/intel-m10-bmc-sec-update.c
->  
-> +MICROCHIP POLARFIRE FPGA DRIVERS
-> +M:	Conor Dooley <conor.dooley@microchip.com>
-> +R:	Ivan Bornyakov <i.bornyakov@metrotek.ru>
-> +L:	linux-fpga@vger.kernel.org
-> +S:	Supported
-> +F:	Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
-> +F:	drivers/fpga/microchip-spi.c
-> +
->  FPU EMULATOR
->  M:	Bill Metzenthen <billm@melbpc.org.au>
->  S:	Maintained
-> -- 
-> 2.25.1
-> 
+Best regards,
+Krzysztof
