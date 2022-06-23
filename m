@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88358C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:26:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14EF8CCA47C
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:26:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231665AbiFWR0d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:26:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41738 "EHLO
+        id S233216AbiFWR0l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:26:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231434AbiFWRZn (ORCPT
+        with ESMTP id S231700AbiFWRZu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:25:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 129074FC4B;
-        Thu, 23 Jun 2022 10:02:35 -0700 (PDT)
+        Thu, 23 Jun 2022 13:25:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7265160E16;
+        Thu, 23 Jun 2022 10:02:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DFB25B8248E;
-        Thu, 23 Jun 2022 17:02:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26F79C3411B;
-        Thu, 23 Jun 2022 17:02:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B26160AD7;
+        Thu, 23 Jun 2022 17:02:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AB81C3411B;
+        Thu, 23 Jun 2022 17:02:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003729;
-        bh=MvmChtpZekwc1pro2CqpRXnB9s5InHzLliiTzjEDIzA=;
+        s=korg; t=1656003735;
+        bh=fyk1c3FroVDVmsJqooBiVsy0716rDl9nxmrUILbei6I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rUkDFVXYctOzBtOnOfwSw87q2v4s7E12MOpXh0VX6gsVSE4PQLcQOpCX//q9i0YN2
-         1mb3F/M70dKC+x0Dny8ReX1G3yaergFQjczKVO/TCxegpnGXuoaTFovDe50Sb94Wwy
-         aV9/pUTEeVW7oGmDou6xtyB//C+lnvYw1Ky5wrEQ=
+        b=buFCKzL7njXvaAF9yTIm5jeSAUZumGIdPAZ8yvCJhyHcP4cfp0tzV9SzAT993UnBP
+         oXQ9kjHAlPoAexFocRGuwcrKqzirxn51W4j9rWJplV6z8uReRcL8VUXHWXSMdQFxAf
+         LlmuZMeoFNTxr18rOZXmCICZk0ctxUq4/hXnNhr0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-crypto@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 068/237] random: early initialization of ChaCha constants
-Date:   Thu, 23 Jun 2022 18:41:42 +0200
-Message-Id: <20220623164345.111471358@linuxfoundation.org>
+Subject: [PATCH 4.14 070/237] random: dont reset crng_init_cnt on urandom_read()
+Date:   Thu, 23 Jun 2022 18:41:44 +0200
+Message-Id: <20220623164345.168119294@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -51,73 +48,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dominik Brodowski <linux@dominikbrodowski.net>
+From: Jann Horn <jannh@google.com>
 
-commit 96562f286884e2db89c74215b199a1084b5fb7f7 upstream.
+commit 6c8e11e08a5b74bb8a5cdd5cbc1e5143df0fba72 upstream.
 
-Previously, the ChaCha constants for the primary pool were only
-initialized in crng_initialize_primary(), called by rand_initialize().
-However, some randomness is actually extracted from the primary pool
-beforehand, e.g. by kmem_cache_create(). Therefore, statically
-initialize the ChaCha constants for the primary pool.
+At the moment, urandom_read() (used for /dev/urandom) resets crng_init_cnt
+to zero when it is called at crng_init<2. This is inconsistent: We do it
+for /dev/urandom reads, but not for the equivalent
+getrandom(GRND_INSECURE).
 
-Cc: Herbert Xu <herbert@gondor.apana.org.au>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: <linux-crypto@vger.kernel.org>
-Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
+(And worse, as Jason pointed out, we're only doing this as long as
+maxwarn>0.)
+
+crng_init_cnt is only read in crng_fast_load(); it is relevant at
+crng_init==0 for determining when to switch to crng_init==1 (and where in
+the RNG state array to write).
+
+As far as I understand:
+
+ - crng_init==0 means "we have nothing, we might just be returning the same
+   exact numbers on every boot on every machine, we don't even have
+   non-cryptographic randomness; we should shove every bit of entropy we
+   can get into the RNG immediately"
+ - crng_init==1 means "well we have something, it might not be
+   cryptographic, but at least we're not gonna return the same data every
+   time or whatever, it's probably good enough for TCP and ASLR and stuff;
+   we now have time to build up actual cryptographic entropy in the input
+   pool"
+ - crng_init==2 means "this is supposed to be cryptographically secure now,
+   but we'll keep adding more entropy just to be sure".
+
+The current code means that if someone is pulling data from /dev/urandom
+fast enough at crng_init==0, we'll keep resetting crng_init_cnt, and we'll
+never make forward progress to crng_init==1. It seems to be intended to
+prevent an attacker from bruteforcing the contents of small individual RNG
+inputs on the way from crng_init==0 to crng_init==1, but that's misguided;
+crng_init==1 isn't supposed to provide proper cryptographic security
+anyway, RNG users who care about getting secure RNG output have to wait
+until crng_init==2.
+
+This code was inconsistent, and it probably made things worse - just get
+rid of it.
+
+Signed-off-by: Jann Horn <jannh@google.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c     |    5 ++++-
- include/crypto/chacha20.h |   15 +++++++++++----
- 2 files changed, 15 insertions(+), 5 deletions(-)
+ drivers/char/random.c |    4 ----
+ 1 file changed, 4 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -458,6 +458,10 @@ struct crng_state {
- 
- static struct crng_state primary_crng = {
- 	.lock = __SPIN_LOCK_UNLOCKED(primary_crng.lock),
-+	.state[0] = CHACHA_CONSTANT_EXPA,
-+	.state[1] = CHACHA_CONSTANT_ND_3,
-+	.state[2] = CHACHA_CONSTANT_2_BY,
-+	.state[3] = CHACHA_CONSTANT_TE_K,
- };
- 
- /*
-@@ -824,7 +828,6 @@ static void crng_initialize_secondary(st
- 
- static void __init crng_initialize_primary(struct crng_state *crng)
+@@ -1770,7 +1770,6 @@ urandom_read_nowarn(struct file *file, c
+ static ssize_t
+ urandom_read(struct file *file, char __user *buf, size_t nbytes, loff_t *ppos)
  {
--	chacha_init_consts(crng->state);
- 	_extract_entropy(&input_pool, &crng->state[4], sizeof(__u32) * 12, 0);
- 	if (crng_init_try_arch_early(crng) && trust_cpu && crng_init < 2) {
- 		invalidate_batched_entropy();
---- a/include/crypto/chacha20.h
-+++ b/include/crypto/chacha20.h
-@@ -25,12 +25,19 @@ int crypto_chacha20_setkey(struct crypto
- 			   unsigned int keysize);
- int crypto_chacha20_crypt(struct skcipher_request *req);
+-	unsigned long flags;
+ 	static int maxwarn = 10;
  
-+enum chacha_constants { /* expand 32-byte k */
-+	CHACHA_CONSTANT_EXPA = 0x61707865U,
-+	CHACHA_CONSTANT_ND_3 = 0x3320646eU,
-+	CHACHA_CONSTANT_2_BY = 0x79622d32U,
-+	CHACHA_CONSTANT_TE_K = 0x6b206574U
-+};
-+
- static inline void chacha_init_consts(u32 *state)
- {
--	state[0]  = 0x61707865; /* "expa" */
--	state[1]  = 0x3320646e; /* "nd 3" */
--	state[2]  = 0x79622d32; /* "2-by" */
--	state[3]  = 0x6b206574; /* "te k" */
-+	state[0]  = CHACHA_CONSTANT_EXPA;
-+	state[1]  = CHACHA_CONSTANT_ND_3;
-+	state[2]  = CHACHA_CONSTANT_2_BY;
-+	state[3]  = CHACHA_CONSTANT_TE_K;
- }
+ 	if (!crng_ready() && maxwarn > 0) {
+@@ -1778,9 +1777,6 @@ urandom_read(struct file *file, char __u
+ 		if (__ratelimit(&urandom_warning))
+ 			pr_notice("%s: uninitialized urandom read (%zd bytes read)\n",
+ 				  current->comm, nbytes);
+-		spin_lock_irqsave(&primary_crng.lock, flags);
+-		crng_init_cnt = 0;
+-		spin_unlock_irqrestore(&primary_crng.lock, flags);
+ 	}
  
- #endif
+ 	return urandom_read_nowarn(file, buf, nbytes, ppos);
 
 
