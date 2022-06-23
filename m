@@ -2,95 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0D87C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:44:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A26FCC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:44:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234612AbiFWRoS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:44:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47934 "EHLO
+        id S234723AbiFWRoU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:44:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235269AbiFWRjY (ORCPT
+        with ESMTP id S234517AbiFWRhm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:39:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B350647BB;
-        Thu, 23 Jun 2022 10:09:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AD0BA61D02;
-        Thu, 23 Jun 2022 17:09:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82F7CC3411B;
-        Thu, 23 Jun 2022 17:09:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004177;
-        bh=VG9aNFZYJ478pGSL1Jxp0aHvd6Ym/bnNuXeQmfupP00=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p+/w598Ue0qXik2azjhsvq/htIRYkYlf5McjJWSh1gwtNu3enKLdvJPnkWrmDNeIx
-         oBlQDcBx6qCWlvS1m41bJzHltEWwSYLvn85NyKDYKWiPOHL4GRnNVCExBA9k4YUPMM
-         XuDN/tOtQ4r3gpX1XVUwqzqQCCNyc7hxc2ZK34aU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Miaoqian Lin <linmq006@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 212/237] misc: atmel-ssc: Fix IRQ check in ssc_probe
-Date:   Thu, 23 Jun 2022 18:44:06 +0200
-Message-Id: <20220623164349.249875112@linuxfoundation.org>
+        Thu, 23 Jun 2022 13:37:42 -0400
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81EBB848B5;
+        Thu, 23 Jun 2022 10:07:05 -0700 (PDT)
+Received: by mail-lj1-x232.google.com with SMTP id bn8so6719077ljb.2;
+        Thu, 23 Jun 2022 10:07:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=prMZe0pej9PoxwbNkQMGNemqFNqwjkROTTXt4DxreRU=;
+        b=K5O5IQezMguE8NJFjGVU9xeaJvkVQaswm76vVr7PLmDajGglB50+z7e1wwApf1GiHN
+         fXuOBDtSm2RL9FdWgDDGLQ6JbI2iON+xAzYgNM/t2JvndfAoUxRIivl41R674AEhxwGL
+         oXZ4lSuYJF//2xqbdyraVak9KK9NBkYJCJDxZFtRuovXINRKS5eYhn/yhd8uocQRNGSf
+         dKIM7/aVfDZ9kpmsHDlUQupDtiPLtvLot5GBClvhUz+egfLvsJgvZK6QTfHhcOnfCz7O
+         w2MIv+RGMwmTY4GMrHUciw4yZuqTUUfPFEDcNm9geZbElIIOGGE2TZlIT7UvhlhY0VB0
+         dHqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=prMZe0pej9PoxwbNkQMGNemqFNqwjkROTTXt4DxreRU=;
+        b=qs58SoHuGRVjSg8Y49hCJ/utWNFObHf0IY7k2fCE6oNLb/ftIj0SdDr+782bInKNo0
+         1pkJ4nbYZ9PgAb1k6/GINh8Y7GwykGS+aYrXOuIDsw/k/acAVdvbBedS7Plzno36gRLm
+         nzIb3NnDbpj0z9XC6XpZicAfSB8AsNyRDYwj80JFRBe01YO4N5llkBsntKqd1cRHzFq1
+         YPxeBKP5eEvsadM4kRZVGChGLIpZp/09Sq+GZ+i8+skuUL13JcALW2qOoC4tjInV84LZ
+         eDNO3udA74sUvxCw1s8w6ymgRpuRXstKks2GSVrpyoFy/4w/5l3S/StC8unz45AJbLwl
+         EH/A==
+X-Gm-Message-State: AJIora8UDz1yChUDIhaZ4RJ1eEi6Z/rX9PSKSlmXCyIYQvW1M/yHX8kY
+        pnMyS6haAtK6JowRvlEv2Wo=
+X-Google-Smtp-Source: AGRyM1v2WkGrqBVIfjrP/9HqHkETaVQ9w8qZ0MMdQDVuC8NHd/2ka1BBq8Qc7NlkJlkV9BZY4cE0OQ==
+X-Received: by 2002:a05:651c:1310:b0:255:81f3:e627 with SMTP id u16-20020a05651c131000b0025581f3e627mr5323395lja.397.1656004023694;
+        Thu, 23 Jun 2022 10:07:03 -0700 (PDT)
+Received: from localhost.localdomain (82-209-154-112.cust.bredband2.com. [82.209.154.112])
+        by smtp.gmail.com with ESMTPSA id w27-20020a19491b000000b0047a0bf9540asm3060405lfa.213.2022.06.23.10.07.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Jun 2022 10:07:02 -0700 (PDT)
+From:   Marcus Folkesson <marcus.folkesson@gmail.com>
+To:     Marcus Folkesson <marcus.folkesson@gmail.com>,
+        Kent Gustavsson <kent@minoris.se>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 01/10] iio: adc: mcp3911: correct "microchip,device-addr" property
+Date:   Thu, 23 Jun 2022 19:08:35 +0200
+Message-Id: <20220623170844.2189814-1-marcus.folkesson@gmail.com>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
-References: <20220623164343.132308638@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+Go for the right property name that is documented in the bindings.
 
-[ Upstream commit 1c245358ce0b13669f6d1625f7a4e05c41f28980 ]
-
-platform_get_irq() returns negative error number instead 0 on failure.
-And the doc of platform_get_irq() provides a usage example:
-
-    int irq = platform_get_irq(pdev, 0);
-    if (irq < 0)
-        return irq;
-
-Fix the check of return value to catch errors correctly.
-
-Fixes: eb1f2930609b ("Driver for the Atmel on-chip SSC on AT32AP and AT91")
-Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220601123026.7119-1-linmq006@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
 ---
- drivers/misc/atmel-ssc.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/adc/mcp3911.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/misc/atmel-ssc.c b/drivers/misc/atmel-ssc.c
-index f9caf233e2cc..48521861beb5 100644
---- a/drivers/misc/atmel-ssc.c
-+++ b/drivers/misc/atmel-ssc.c
-@@ -235,9 +235,9 @@ static int ssc_probe(struct platform_device *pdev)
- 	clk_disable_unprepare(ssc->clk);
+diff --git a/drivers/iio/adc/mcp3911.c b/drivers/iio/adc/mcp3911.c
+index 1cb4590fe412..4338552cd0ca 100644
+--- a/drivers/iio/adc/mcp3911.c
++++ b/drivers/iio/adc/mcp3911.c
+@@ -208,7 +208,7 @@ static int mcp3911_config(struct mcp3911 *adc)
+ 	u32 configreg;
+ 	int ret;
  
- 	ssc->irq = platform_get_irq(pdev, 0);
--	if (!ssc->irq) {
-+	if (ssc->irq < 0) {
- 		dev_dbg(&pdev->dev, "could not get irq\n");
--		return -ENXIO;
-+		return ssc->irq;
- 	}
- 
- 	mutex_lock(&user_lock);
+-	device_property_read_u32(dev, "device-addr", &adc->dev_addr);
++	device_property_read_u32(dev, "microchip,device-addr", &adc->dev_addr);
+ 	if (adc->dev_addr > 3) {
+ 		dev_err(&adc->spi->dev,
+ 			"invalid device address (%i). Must be in range 0-3.\n",
 -- 
-2.35.1
-
-
+2.36.1
 
