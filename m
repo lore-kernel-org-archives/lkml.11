@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D4B9CCA485
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:59:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 932EFCCA47F
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:59:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236102AbiFWR6e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:58:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51978 "EHLO
+        id S232658AbiFWR7e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:59:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236064AbiFWRxv (ORCPT
+        with ESMTP id S235485AbiFWR4H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:53:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7A4FAC8FF;
-        Thu, 23 Jun 2022 10:14:48 -0700 (PDT)
+        Thu, 23 Jun 2022 13:56:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2611AAE98D;
+        Thu, 23 Jun 2022 10:15:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5077EB82489;
-        Thu, 23 Jun 2022 17:14:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAACBC3411B;
-        Thu, 23 Jun 2022 17:14:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ABCDEB8249B;
+        Thu, 23 Jun 2022 17:15:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BBA5C3411B;
+        Thu, 23 Jun 2022 17:15:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004486;
-        bh=gV8i2S2TH5NHd/qef6FmH+zYC+RBXviRsoFVmgj3lTU=;
+        s=korg; t=1656004526;
+        bh=aOprigIcG/hpSAFQqHtR2NrqFIOQ6+qE+2D3VkQdaoU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pmt/4OeU/29lmRhzeFzt+s0HjbU7vgHqj/Fd0cW4uFOJBxVrLlRz7d6uoG+qnHxp/
-         mJdVINhU9co8aloAFo/BIFxj5W3I1LUM8o37jIQvjTNlKMsJSlAQF9T8C8RbulVNB0
-         8J1M/sNUFS2NG7jjFHF5ntV8+gYGy+984MyFkYVE=
+        b=DfwJ0Uxz1RbPhhyJ5tpRjrsrjNRdXxEB2TeVNtwEbaimTT7Bc7PveA2Tbet1aNaLg
+         AJXQR+2T3QLYZUDIcAn4tz9T2iNy+ZFCg0bbEJNkUVmzBfn7qe/DUk2ogLb0FGYF9W
+         BBV8d+LvfNA/oQ1K0b5NfRNpJDLPVn2gwCtUaxpY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Richard Henderson <rth@twiddle.net>,
-        Mark Brown <broonie@kernel.org>, Theodore Tso <tytso@mit.edu>,
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.19 036/234] powerpc: Remove arch_has_random, arch_has_random_seed
-Date:   Thu, 23 Jun 2022 18:41:43 +0200
-Message-Id: <20220623164344.087152814@linuxfoundation.org>
+Subject: [PATCH 4.19 064/234] random: remove unused extract_entropy() reserved argument
+Date:   Thu, 23 Jun 2022 18:42:11 +0200
+Message-Id: <20220623164344.873552454@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
 References: <20220623164343.042598055@linuxfoundation.org>
@@ -49,41 +49,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Richard Henderson <richard.henderson@linaro.org>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit cbac004995a0ce8453bdc555fab579e2bdb842a6 upstream.
+commit 8b2d953b91e7f60200c24067ab17b77cc7bfd0d4 upstream.
 
-These symbols are currently part of the generic archrandom.h
-interface, but are currently unused and can be removed.
+This argument is always set to zero, as a result of us not caring about
+keeping a certain amount reserved in the pool these days. So just remove
+it and cleanup the function signatures.
 
-Signed-off-by: Richard Henderson <rth@twiddle.net>
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/r/20200110145422.49141-3-broonie@kernel.org
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/include/asm/archrandom.h |   10 ----------
- 1 file changed, 10 deletions(-)
+ drivers/char/random.c |   17 +++++++----------
+ 1 file changed, 7 insertions(+), 10 deletions(-)
 
---- a/arch/powerpc/include/asm/archrandom.h
-+++ b/arch/powerpc/include/asm/archrandom.h
-@@ -34,16 +34,6 @@ static inline int arch_get_random_seed_i
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -519,7 +519,7 @@ struct entropy_store {
+ };
  
- 	return rc;
+ static ssize_t extract_entropy(struct entropy_store *r, void *buf,
+-			       size_t nbytes, int min, int rsvd);
++			       size_t nbytes, int min);
+ static ssize_t _extract_entropy(struct entropy_store *r, void *buf,
+ 				size_t nbytes);
+ 
+@@ -989,7 +989,7 @@ static void crng_reseed(struct crng_stat
+ 	} buf;
+ 
+ 	if (r) {
+-		num = extract_entropy(r, &buf, 32, 16, 0);
++		num = extract_entropy(r, &buf, 32, 16);
+ 		if (num == 0)
+ 			return;
+ 	} else {
+@@ -1327,8 +1327,7 @@ EXPORT_SYMBOL_GPL(add_disk_randomness);
+  * This function decides how many bytes to actually take from the
+  * given pool, and also debits the entropy count accordingly.
+  */
+-static size_t account(struct entropy_store *r, size_t nbytes, int min,
+-		      int reserved)
++static size_t account(struct entropy_store *r, size_t nbytes, int min)
+ {
+ 	int entropy_count, orig, have_bytes;
+ 	size_t ibytes, nfrac;
+@@ -1342,7 +1341,7 @@ retry:
+ 	/* never pull more than available */
+ 	have_bytes = entropy_count >> (ENTROPY_SHIFT + 3);
+ 
+-	if ((have_bytes -= reserved) < 0)
++	if (have_bytes < 0)
+ 		have_bytes = 0;
+ 	ibytes = min_t(size_t, ibytes, have_bytes);
+ 	if (ibytes < min)
+@@ -1448,15 +1447,13 @@ static ssize_t _extract_entropy(struct e
+  * returns it in a buffer.
+  *
+  * The min parameter specifies the minimum amount we can pull before
+- * failing to avoid races that defeat catastrophic reseeding while the
+- * reserved parameter indicates how much entropy we must leave in the
+- * pool after each pull to avoid starving other readers.
++ * failing to avoid races that defeat catastrophic reseeding.
+  */
+ static ssize_t extract_entropy(struct entropy_store *r, void *buf,
+-				 size_t nbytes, int min, int reserved)
++				 size_t nbytes, int min)
+ {
+ 	trace_extract_entropy(r->name, nbytes, ENTROPY_BITS(r), _RET_IP_);
+-	nbytes = account(r, nbytes, min, reserved);
++	nbytes = account(r, nbytes, min);
+ 	return _extract_entropy(r, buf, nbytes);
  }
--
--static inline int arch_has_random(void)
--{
--	return 0;
--}
--
--static inline int arch_has_random_seed(void)
--{
--	return !!ppc_md.get_random_seed;
--}
- #endif /* CONFIG_ARCH_RANDOM */
  
- #ifdef CONFIG_PPC_POWERNV
 
 
