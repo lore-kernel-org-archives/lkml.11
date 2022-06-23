@@ -2,142 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24FF7CCA47E
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 04:50:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0050BCCA480
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 04:50:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232164AbiFWEs6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 00:48:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40746 "EHLO
+        id S232036AbiFWEsz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 00:48:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238158AbiFWDeX (ORCPT
+        with ESMTP id S239533AbiFWDcQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 23:34:23 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 728D036155;
-        Wed, 22 Jun 2022 20:34:17 -0700 (PDT)
-X-UUID: a79ae7d571454f528d2d996e8fb2a215-20220623
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.6,REQID:c7583246-f3e0-477c-a035-85da7ab95b6b,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:45
-X-CID-INFO: VERSION:1.1.6,REQID:c7583246-f3e0-477c-a035-85da7ab95b6b,OB:0,LOB:
-        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
-        N:release,TS:45
-X-CID-META: VersionHash:b14ad71,CLOUDID:67213c38-5e4b-44d7-80b2-bb618cb09d29,C
-        OID:7494f817c6eb,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:0,File:nil,QS:nil,BEC:nil,COL:0
-X-UUID: a79ae7d571454f528d2d996e8fb2a215-20220623
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 106634298; Thu, 23 Jun 2022 11:34:11 +0800
-Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 23 Jun 2022 11:34:10 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Thu, 23 Jun 2022 11:34:09 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n2.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Thu, 23 Jun 2022 11:34:09 +0800
-Message-ID: <0c269c54042d556bd5c7f4a7a13d4e33074888d1.camel@mediatek.com>
-Subject: Re: [PATCH v13 12/14] drm/mediatek: dpi: add config to control
- setting of direct connection to pins
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>,
-        <daniel@ffwll.ch>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <matthias.bgg@gmail.com>,
-        <airlied@linux.ie>
-CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
-        <jitao.shi@mediatek.com>, <wenst@chromium.org>,
-        <ck.hu@mediatek.com>, <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Thu, 23 Jun 2022 11:34:09 +0800
-In-Reply-To: <3246fb94ec05a43b7017849198d949ce8c8636a7.camel@mediatek.com>
-References: <20220621113732.11595-1-rex-bc.chen@mediatek.com>
-         <20220621113732.11595-13-rex-bc.chen@mediatek.com>
-         <55c98626-9b95-7721-94cf-8c471580a53b@collabora.com>
-         <3246fb94ec05a43b7017849198d949ce8c8636a7.camel@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Wed, 22 Jun 2022 23:32:16 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BD6835A85
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 20:32:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655955134; x=1687491134;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=C0UxTz3SU09BlRqhh033JLtXJpxFWAq4zdFdL9m7teY=;
+  b=Jf6A7gUDWcpihE93qpkSKAwNXRbpMV5xUYJoKk3KSc6IekfWVRMQ3q6k
+   RWriyNNkZl0XSwxZZiR3vtptblDm8dyV6avCEoMx1CquFFZOy75lPmrZF
+   Yzjc163s1kcRsrA+IctC6FK1zfg8kVCm4XjKI6STvwfYslKyj3xrajlvH
+   QVTNHa3ERdZV/B2Zi7B+GmqX7XZzQFaNoQ0uHXfCL3GZ78KpOMVddINEz
+   vg4e/GYOmWEQMs32gN7m0hHexTN5yycc5/kqHaAnnKl7l8IIQC9eWQPSf
+   lg1qMoA7zb+CcnsdsuZE76dpnfvPvQF1yJzbcg8lUvJWRNIJGA5+HNoON
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="260431524"
+X-IronPort-AV: E=Sophos;i="5.92,215,1650956400"; 
+   d="scan'208";a="260431524"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 20:32:14 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,215,1650956400"; 
+   d="scan'208";a="765141102"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 22 Jun 2022 20:32:12 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o4DZj-0000e7-Ki;
+        Thu, 23 Jun 2022 03:32:11 +0000
+Date:   Thu, 23 Jun 2022 11:31:13 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Greg Ungerer <gerg@linux-m68k.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [stable:linux-5.4.y 384/4398]
+ drivers/staging/comedi/drivers/comedi_isadma.c:25:17: error: implicit
+ declaration of function 'claim_dma_lock'
+Message-ID: <202206231116.2lc9b5qT-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-06-22 at 17:08 +0800, Rex-BC Chen wrote:
-> On Tue, 2022-06-21 at 14:11 +0200, AngeloGioacchino Del Regno wrote:
-> > Il 21/06/22 13:37, Bo-Chen Chen ha scritto:
-> > > MediaTek dpi supports direct connection to pins while dp_intf
-> > > does
-> > > not
-> > > support. Therefore, add a config "support_direct_pin" to control
-> > > this.
-> > > 
-> > > Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
-> > > ---
-> > >   drivers/gpu/drm/mediatek/mtk_dpi.c | 17 +++++++++++++----
-> > >   1 file changed, 13 insertions(+), 4 deletions(-)
-> > > 
-> > > diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c
-> > > b/drivers/gpu/drm/mediatek/mtk_dpi.c
-> > > index 438bf3bc5e4a..ef7f828a4b1e 100644
-> > > --- a/drivers/gpu/drm/mediatek/mtk_dpi.c
-> > > +++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
-> > > @@ -129,6 +129,8 @@ struct mtk_dpi_yc_limit {
-> > >    * @is_ck_de_pol: Support CK/DE polarity.
-> > >    * @swap_input_support: Support input swap function.
-> > >    * @color_fmt_trans_support: Enable color format transfer.
-> > > + * @support_direct_pin: Dpi can directly connect pins, and
-> > > enable
-> > > this config
-> > > + *			to do this.
-> > 
-> > @support_direct_pin: IP supports direct connection to pins
-> > 
-> > or
-> > 
-> > @support_direct_pin: IP has direct connection to DP pins
-> > 
-> > or
-> > 
-> > @support_direct_pin: IP connects directly to DP pins
-> > 
-> > pick one, after which:
-> > 
-> > Reviewed-by: AngeloGioacchino Del Regno <
-> > angelogioacchino.delregno@collabora.com>
-> > 
-> > 
-> 
-> Hello Angelo,
-> 
-> this is not connect to "DP" pin. This setting is for dpi to connect
-> to
-> panel directly and there is no such usecase for dp_intf.
-> 
-> Therefore, I will use "@support_direct_pin: IP supports direct
-> connection to pins".
-> 
-> Thanks
-> 
-> BRs,
-> Bo-Chen
-> 
+Hi Arnd,
 
-Hello Angelo,
+First bad commit (maybe != root cause):
 
-I think "@support_direct_pin: IP supports direct connection to dpi
-panels" is more precise for this config. I will use this description.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-5.4.y
+head:   f0c280af0ec7c79cf043594974206d87c3c46524
+commit: 53a72858bcae7eaa7df8d167dbf60682d70f82a6 [384/4398] m68knommu: only set CONFIG_ISA_DMA_API for ColdFire sub-arch
+config: m68k-randconfig-r001-20220622 (https://download.01.org/0day-ci/archive/20220623/202206231116.2lc9b5qT-lkp@intel.com/config)
+compiler: m68k-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git/commit/?id=53a72858bcae7eaa7df8d167dbf60682d70f82a6
+        git remote add stable https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
+        git fetch --no-tags stable linux-5.4.y
+        git checkout 53a72858bcae7eaa7df8d167dbf60682d70f82a6
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash drivers/staging/comedi/drivers/
 
-BRs,
-Bo-Chen
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
+All errors (new ones prefixed by >>):
+
+   In file included from arch/m68k/include/asm/bug.h:32,
+                    from include/linux/bug.h:5,
+                    from include/linux/thread_info.h:12,
+                    from include/asm-generic/preempt.h:5,
+                    from ./arch/m68k/include/generated/asm/preempt.h:1,
+                    from include/linux/preempt.h:78,
+                    from include/linux/spinlock.h:51,
+                    from include/linux/seqlock.h:36,
+                    from include/linux/time.h:6,
+                    from include/linux/stat.h:19,
+                    from include/linux/module.h:10,
+                    from drivers/staging/comedi/drivers/comedi_isadma.c:7:
+   include/linux/dma-mapping.h: In function 'dma_map_resource':
+   arch/m68k/include/asm/page_mm.h:169:50: warning: ordered comparison of pointer with null pointer [-Wextra]
+     169 | #define virt_addr_valid(kaddr)  ((void *)(kaddr) >= (void *)PAGE_OFFSET && (void *)(kaddr) < high_memory)
+         |                                                  ^~
+   include/asm-generic/bug.h:139:34: note: in definition of macro 'WARN_ON_ONCE'
+     139 |         int __ret_warn_once = !!(condition);                    \
+         |                                  ^~~~~~~~~
+   arch/m68k/include/asm/page_mm.h:170:33: note: in expansion of macro 'virt_addr_valid'
+     170 | #define pfn_valid(pfn)          virt_addr_valid(pfn_to_virt(pfn))
+         |                                 ^~~~~~~~~~~~~~~
+   include/linux/dma-mapping.h:355:26: note: in expansion of macro 'pfn_valid'
+     355 |         if (WARN_ON_ONCE(pfn_valid(PHYS_PFN(phys_addr))))
+         |                          ^~~~~~~~~
+   drivers/staging/comedi/drivers/comedi_isadma.c: In function 'comedi_isadma_program':
+>> drivers/staging/comedi/drivers/comedi_isadma.c:25:17: error: implicit declaration of function 'claim_dma_lock' [-Werror=implicit-function-declaration]
+      25 |         flags = claim_dma_lock();
+         |                 ^~~~~~~~~~~~~~
+>> drivers/staging/comedi/drivers/comedi_isadma.c:31:9: error: implicit declaration of function 'release_dma_lock' [-Werror=implicit-function-declaration]
+      31 |         release_dma_lock(flags);
+         |         ^~~~~~~~~~~~~~~~
+   cc1: some warnings being treated as errors
+
+
+vim +/claim_dma_lock +25 drivers/staging/comedi/drivers/comedi_isadma.c
+
+20a1ea7d6ba184 H Hartley Sweeten 2015-01-14  16  
+20a1ea7d6ba184 H Hartley Sweeten 2015-01-14  17  /**
+20a1ea7d6ba184 H Hartley Sweeten 2015-01-14  18   * comedi_isadma_program - program and enable an ISA DMA transfer
+20a1ea7d6ba184 H Hartley Sweeten 2015-01-14  19   * @desc:	the ISA DMA cookie to program and enable
+20a1ea7d6ba184 H Hartley Sweeten 2015-01-14  20   */
+20a1ea7d6ba184 H Hartley Sweeten 2015-01-14  21  void comedi_isadma_program(struct comedi_isadma_desc *desc)
+20a1ea7d6ba184 H Hartley Sweeten 2015-01-14  22  {
+20a1ea7d6ba184 H Hartley Sweeten 2015-01-14  23  	unsigned long flags;
+20a1ea7d6ba184 H Hartley Sweeten 2015-01-14  24  
+20a1ea7d6ba184 H Hartley Sweeten 2015-01-14 @25  	flags = claim_dma_lock();
+20a1ea7d6ba184 H Hartley Sweeten 2015-01-14  26  	clear_dma_ff(desc->chan);
+20a1ea7d6ba184 H Hartley Sweeten 2015-01-14  27  	set_dma_mode(desc->chan, desc->mode);
+20a1ea7d6ba184 H Hartley Sweeten 2015-01-14  28  	set_dma_addr(desc->chan, desc->hw_addr);
+20a1ea7d6ba184 H Hartley Sweeten 2015-01-14  29  	set_dma_count(desc->chan, desc->size);
+20a1ea7d6ba184 H Hartley Sweeten 2015-01-14  30  	enable_dma(desc->chan);
+20a1ea7d6ba184 H Hartley Sweeten 2015-01-14 @31  	release_dma_lock(flags);
+20a1ea7d6ba184 H Hartley Sweeten 2015-01-14  32  }
+20a1ea7d6ba184 H Hartley Sweeten 2015-01-14  33  EXPORT_SYMBOL_GPL(comedi_isadma_program);
+20a1ea7d6ba184 H Hartley Sweeten 2015-01-14  34  
+
+:::::: The code at line 25 was first introduced by commit
+:::::: 20a1ea7d6ba184a1f6e25e85786738003387cada staging: comedi: comedi_isadma: introduce helper module for ISA DMA
+
+:::::: TO: H Hartley Sweeten <hsweeten@visionengravers.com>
+:::::: CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
