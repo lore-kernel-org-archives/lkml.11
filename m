@@ -2,100 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC231CCA48D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0C97CCA48C
 	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 04:50:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233424AbiFWEuE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 00:50:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58422 "EHLO
+        id S233455AbiFWEuH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 00:50:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344351AbiFWEVZ (ORCPT
+        with ESMTP id S240043AbiFWDeU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 00:21:25 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F3C72D1E9
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 21:21:24 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id q6so1460810eji.13
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 21:21:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=UvEF84n19lSXOqhpJPPSQblDfpd6XZf1X0P1snbWIog=;
-        b=Vl9rLwUwaeKipQIahhDvfesL7mLKD5q5lG+qEJ+AyqMb/Xw5nUurD3i3YIkSpsfHF9
-         Ypp7wduhLoSWdVOuDBEF3w86EKbL650iusZN0MRzJoARloBjmDf7l63cuUCYDebI/DgM
-         6bQ+eSHEKrXqoiO59CBd0G8idqfUVJvpjOdomBL3X2rKwXFDhVxd7NH42QsOFXAjt3eQ
-         B9mKPH0NufWSXD7/QLoqk2z8vHtLn5g3GTwuADCAqpKTeYg1XJRZWdC71MwrGKJ14JQE
-         EhWzEQS3SzdDkmR4d2Lncqw6Q9t3D9MnWfYAuqq9rakTfgbv0HKvjHANVFAEO7H9Sh5k
-         79ZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=UvEF84n19lSXOqhpJPPSQblDfpd6XZf1X0P1snbWIog=;
-        b=ICUW2uqpayw/c4jMr4Y3pMgDWFO3YrQnajfniw8orbhHaD/1qYCu56Cc5oGOKddZcI
-         pU8peAOTeqdrZYTdOd43UB+fHDfdPXhZRkCxr57FFvytyj/5UoFXbdQrWMN7fj0mMCnv
-         AHVu0N3hbNYCSdecMCpUJmN8IO9yGaAjqKOhfPwprhz+JF+nhaLlSmgZ+EwYWfUDrDRM
-         gk0XLrBVyOn1Wwbhzr6lMa9fB+dC/ze96KpIcBcUmjPnWtghMS/u7Lu4l4OZ5v+Fll+c
-         6JSa+0xZyPu0FKmfZ4mxPk3xhflgucy7xhJe44gQvHGSCQ43s9ermdsv94erTappMO15
-         sVOA==
-X-Gm-Message-State: AJIora+VIQfCPRzHOlKP4pm4Fs5l1DxaUV8FyxHQqipspNRg4Fsq8EEl
-        bty48ak35gCwT254lL810Fnz9tMrS4Y=
-X-Google-Smtp-Source: AGRyM1tcKwNKAopT/HBbeTPOpaKjfT3ou8JklgW1MgoCthPWnzDd8ytOhYyfoiOuT1VAZsPHz51DLw==
-X-Received: by 2002:a17:906:7292:b0:712:3880:3e7b with SMTP id b18-20020a170906729200b0071238803e7bmr6143374ejl.118.1655958083170;
-        Wed, 22 Jun 2022 21:21:23 -0700 (PDT)
-Received: from ?IPV6:2003:c7:8f2e:6923:8d97:93cc:4023:b7a9? (p200300c78f2e69238d9793cc4023b7a9.dip0.t-ipconnect.de. [2003:c7:8f2e:6923:8d97:93cc:4023:b7a9])
-        by smtp.gmail.com with ESMTPSA id w26-20020a50fa9a000000b0043575ae2051sm10806022edr.62.2022.06.22.21.21.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Jun 2022 21:21:22 -0700 (PDT)
-Message-ID: <be6cc1a5-3eab-d0d0-fd93-68afeed7d7a1@gmail.com>
-Date:   Thu, 23 Jun 2022 06:21:21 +0200
+        Wed, 22 Jun 2022 23:34:20 -0400
+Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 393543616B
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 20:34:19 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0VH9ZUOQ_1655955255;
+Received: from 30.97.48.163(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0VH9ZUOQ_1655955255)
+          by smtp.aliyun-inc.com;
+          Thu, 23 Jun 2022 11:34:15 +0800
+Message-ID: <9e2719c0-5704-57ea-3e1c-ef9413acfe1a@linux.alibaba.com>
+Date:   Thu, 23 Jun 2022 11:34:21 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] staging: r8188eu: Make rtw_signal_stat_timer_hdl a static
- function
-Content-Language: en-US
-To:     Chang Yu <marcus.yu.56@gmail.com>, Larry.Finger@lwfinger.net
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20220623022425.395000-1-marcus.yu.56@gmail.com>
-From:   Philipp Hortmann <philipp.g.hortmann@gmail.com>
-In-Reply-To: <20220623022425.395000-1-marcus.yu.56@gmail.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [RFC PATCH v2 3/3] mm: Add kernel PTE level pagetable pages
+ account
+To:     Mike Rapoport <rppt@linux.ibm.com>
+Cc:     akpm@linux-foundation.org, willy@infradead.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+References: <cover.1655887440.git.baolin.wang@linux.alibaba.com>
+ <7882bbf467440f9a3ebe41d96ba5b6f384081bb7.1655887440.git.baolin.wang@linux.alibaba.com>
+ <YrMqzWvc9x5HWm5v@linux.ibm.com>
+From:   Baolin Wang <baolin.wang@linux.alibaba.com>
+In-Reply-To: <YrMqzWvc9x5HWm5v@linux.ibm.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/23/22 04:24, Chang Yu wrote:
-> Make rtw_signal_stat_timer_hdl a static function instead of a global
-> function.
+
+
+On 6/22/2022 10:44 PM, Mike Rapoport wrote:
+> On Wed, Jun 22, 2022 at 04:58:54PM +0800, Baolin Wang wrote:
+>> Now the kernel PTE level ptes are always protected by mm->page_table_lock
+>> instead of split pagetable lock, so the kernel PTE level pagetable pages
+>> are not accounted. Especially the vmalloc()/vmap() can consume lots of
+>> kernel pagetable, so to get an accurate pagetable accounting, calling new
+>> helpers pgtable_set_and_inc()/pgtable_clear_and_dec() when allocating or
+>> freeing a kernel PTE level pagetable page.
 > 
-> Signed-off-by: Chang Yu <marcus.yu.56@gmail.com>
-> ---
->   drivers/staging/r8188eu/core/rtw_recv.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+> This patch only adds accounting to the page tables allocated after boot,
+> please mention this in the changelog.
+
+OK. Will add in next version.
+
+>   
+>> Meanwhile converting architectures to use corresponding generic PTE pagetable
+>> allocation and freeing functions.
+>>
+>> Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+>> Reported-by: kernel test robot <oliver.sang@intel.com>
+>> ---
+>>   arch/csky/include/asm/pgalloc.h |  2 +-
+>>   arch/microblaze/mm/pgtable.c    |  2 +-
+>>   arch/openrisc/mm/ioremap.c      |  2 +-
+>>   arch/x86/mm/pgtable.c           |  5 ++++-
+>>   include/asm-generic/pgalloc.h   | 14 ++++++++++++--
+>>   5 files changed, 19 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/arch/csky/include/asm/pgalloc.h b/arch/csky/include/asm/pgalloc.h
+>> index bbbd069..2443226 100644
+>> --- a/arch/csky/include/asm/pgalloc.h
+>> +++ b/arch/csky/include/asm/pgalloc.h
+>> @@ -29,7 +29,7 @@ static inline pte_t *pte_alloc_one_kernel(struct mm_struct *mm)
+>>   	pte_t *pte;
+>>   	unsigned long i;
+>>   
+>> -	pte = (pte_t *) __get_free_page(GFP_KERNEL);
+>> +	pte = __pte_alloc_one_kernel(mm);
+>>   	if (!pte)
+>>   		return NULL;
+>>   
+>> diff --git a/arch/microblaze/mm/pgtable.c b/arch/microblaze/mm/pgtable.c
+>> index 9f73265..e96dd1b 100644
+>> --- a/arch/microblaze/mm/pgtable.c
+>> +++ b/arch/microblaze/mm/pgtable.c
+>> @@ -245,7 +245,7 @@ unsigned long iopa(unsigned long addr)
+>>   __ref pte_t *pte_alloc_one_kernel(struct mm_struct *mm)
+>>   {
+>>   	if (mem_init_done)
+>> -		return (pte_t *)__get_free_page(GFP_KERNEL | __GFP_ZERO);
+>> +		return __pte_alloc_one_kernel(mm);
+>>   	else
+>>   		return memblock_alloc_try_nid(PAGE_SIZE, PAGE_SIZE,
+>>   					      MEMBLOCK_LOW_LIMIT,
+>> diff --git a/arch/openrisc/mm/ioremap.c b/arch/openrisc/mm/ioremap.c
+>> index daae13a..3453acc 100644
+>> --- a/arch/openrisc/mm/ioremap.c
+>> +++ b/arch/openrisc/mm/ioremap.c
+>> @@ -118,7 +118,7 @@ pte_t __ref *pte_alloc_one_kernel(struct mm_struct *mm)
+>>   	pte_t *pte;
+>>   
+>>   	if (likely(mem_init_done)) {
+>> -		pte = (pte_t *)get_zeroed_page(GFP_KERNEL);
+>> +		pte = __pte_alloc_one_kernel(mm);
+>>   	} else {
+>>   		pte = memblock_alloc(PAGE_SIZE, PAGE_SIZE);
+>>   		if (!pte)
+>> diff --git a/arch/x86/mm/pgtable.c b/arch/x86/mm/pgtable.c
+>> index a8ab3f9..fc2b9ef 100644
+>> --- a/arch/x86/mm/pgtable.c
+>> +++ b/arch/x86/mm/pgtable.c
+>> @@ -851,6 +851,7 @@ int pud_free_pmd_page(pud_t *pud, unsigned long addr)
+>>   int pmd_free_pte_page(pmd_t *pmd, unsigned long addr)
+>>   {
+>>   	pte_t *pte;
+>> +	struct page *page;
+>>   
+>>   	pte = (pte_t *)pmd_page_vaddr(*pmd);
+>>   	pmd_clear(pmd);
+>> @@ -858,7 +859,9 @@ int pmd_free_pte_page(pmd_t *pmd, unsigned long addr)
+>>   	/* INVLPG to clear all paging-structure caches */
+>>   	flush_tlb_kernel_range(addr, addr + PAGE_SIZE-1);
+>>   
+>> -	free_page((unsigned long)pte);
+>> +	page = virt_to_page(pte);
+>> +	pgtable_clear_and_dec(page);
+>> +	__free_page(page);
+>>   
+>>   	return 1;
+>>   }
+>> diff --git a/include/asm-generic/pgalloc.h b/include/asm-generic/pgalloc.h
+>> index 328a714..2e20e9e 100644
+>> --- a/include/asm-generic/pgalloc.h
+>> +++ b/include/asm-generic/pgalloc.h
+>> @@ -18,7 +18,14 @@
+>>    */
+>>   static inline pte_t *__pte_alloc_one_kernel(struct mm_struct *mm)
+>>   {
+>> -	return (pte_t *)__get_free_page(GFP_PGTABLE_KERNEL);
+>> +	struct page *page;
+>> +	gfp_t gfp = GFP_PGTABLE_KERNEL;
+>> +
+>> +	page = alloc_pages(gfp & ~__GFP_HIGHMEM, 0);
+>> +	if (!page)
+>> +		return NULL;
+>> +	pgtable_set_and_inc(page);
+>> +	return (pte_t *)page_address(page);
 > 
-> diff --git a/drivers/staging/r8188eu/core/rtw_recv.c b/drivers/staging/r8188eu/core/rtw_recv.c
-> index cc91638a085d..599d3e55be76 100644
-> --- a/drivers/staging/r8188eu/core/rtw_recv.c
-> +++ b/drivers/staging/r8188eu/core/rtw_recv.c
-> @@ -24,7 +24,7 @@ static u8 rtw_rfc1042_header[] = {
->   	0xaa, 0xaa, 0x03, 0x00, 0x00, 0x00
->   };
->   
-> -void rtw_signal_stat_timer_hdl(struct timer_list *t);
-> +static void rtw_signal_stat_timer_hdl(struct timer_list *t);
->   
->   void _rtw_init_sta_recv_priv(struct sta_recv_priv *psta_recvpriv)
->   {
+> {
+> 	pte_t *pte = (pte_t *)__get_free_page(GFP_PGTABLE_KERNEL);
+> 
+> 	if (pte)
+> 		pgtable_set_and_inc(virt_to_page(pte));
+> 
+> 	return pte;
+> }
+> 
+> looks simpler, doesn't it?
 
-Hi,
-
-thanks for your patch. I think you need the "static" for the declaration 
-and the definition of the function. So it is missing in line 1789.
-
-Thanks for your support.
-
-Bye Philipp
+Yes, will do in next version. Thanks for reviewing.
