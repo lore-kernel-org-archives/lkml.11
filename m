@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E961CCA48E
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:59:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 338D8CCA490
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:59:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236281AbiFWR7G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:59:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52896 "EHLO
+        id S232117AbiFWR70 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:59:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235324AbiFWRyC (ORCPT
+        with ESMTP id S235386AbiFWRz0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:54:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0D17AD19F;
-        Thu, 23 Jun 2022 10:15:02 -0700 (PDT)
+        Thu, 23 Jun 2022 13:55:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FF3EAE316;
+        Thu, 23 Jun 2022 10:15:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 68D8A61DEF;
-        Thu, 23 Jun 2022 17:15:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DD6CC3411B;
-        Thu, 23 Jun 2022 17:15:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 710E661DE1;
+        Thu, 23 Jun 2022 17:15:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31D4DC3411B;
+        Thu, 23 Jun 2022 17:15:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004501;
-        bh=nfQG9vZxTehggJVNcEgcwmRBt5LvwAP7cGduuYxmCCk=;
+        s=korg; t=1656004520;
+        bh=zGMzx0V/+Sn1NwVSNDMX88/j5POtGrZTAP3uXM3+C4I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SFLuci17pcBy0AZbSehxdh0IdaEHCfQyZr/oQ/oFdnE4d7Pq9XBFaAsdU0DPLDxeQ
-         ud5xBr4w/QJyx/Ol8YJDNtV1cN7prvKLnCoiyYbMEhZ8McFfAw81HYjQHSr4qBCjyX
-         lfkgSuWrbOqWkkShyDZt/+l7PyfefQ0EPa/KPvSc=
+        b=f1+rushPQvp6xwwD4haZUN82uw2pkhDHmHuOEDECu7I44140rTk6/ND31XIDETRfI
+         xVhoDRSTRWsaczGJKebH+q+B1oxQedTY36fmfmYfholr4+nY0nvLaEX4L2snhSPjAV
+         YWshghdz2+4DZeILBZOU+shu9NlQFP9K2bXSIkdI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Ard Biesheuvel <ardb@kernel.org>,
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.19 058/234] random: avoid superfluous call to RDRAND in CRNG extraction
-Date:   Thu, 23 Jun 2022 18:42:05 +0200
-Message-Id: <20220623164344.706327415@linuxfoundation.org>
+Subject: [PATCH 4.19 063/234] random: remove incomplete last_data logic
+Date:   Thu, 23 Jun 2022 18:42:10 +0200
+Message-Id: <20220623164344.845930432@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
 References: <20220623164343.042598055@linuxfoundation.org>
@@ -51,59 +51,110 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 2ee25b6968b1b3c66ffa408de23d023c1bce81cf upstream.
+commit a4bfa9b31802c14ff5847123c12b98d5e36b3985 upstream.
 
-RDRAND is not fast. RDRAND is actually quite slow. We've known this for
-a while, which is why functions like get_random_u{32,64} were converted
-to use batching of our ChaCha-based CRNG instead.
+There were a few things added under the "if (fips_enabled)" banner,
+which never really got completed, and the FIPS people anyway are
+choosing a different direction. Rather than keep around this halfbaked
+code, get rid of it so that we can focus on a single design of the RNG
+rather than two designs.
 
-Yet CRNG extraction still includes a call to RDRAND, in the hot path of
-every call to get_random_bytes(), /dev/urandom, and getrandom(2).
-
-This call to RDRAND here seems quite superfluous. CRNG is already
-extracting things based on a 256-bit key, based on good entropy, which
-is then reseeded periodically, updated, backtrack-mutated, and so
-forth. The CRNG extraction construction is something that we're already
-relying on to be secure and solid. If it's not, that's a serious
-problem, and it's unlikely that mixing in a measly 32 bits from RDRAND
-is going to alleviate things.
-
-And in the case where the CRNG doesn't have enough entropy yet, we're
-already initializing the ChaCha key row with RDRAND in
-crng_init_try_arch_early().
-
-Removing the call to RDRAND improves performance on an i7-11850H by
-370%. In other words, the vast majority of the work done by
-extract_crng() prior to this commit was devoted to fetching 32 bits of
-RDRAND.
-
-Reviewed-by: Theodore Ts'o <tytso@mit.edu>
-Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/char/random.c |   40 ++++------------------------------------
+ 1 file changed, 4 insertions(+), 36 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -1023,7 +1023,7 @@ static void crng_reseed(struct crng_stat
- static void _extract_crng(struct crng_state *crng,
- 			  __u8 out[CHACHA20_BLOCK_SIZE])
- {
--	unsigned long v, flags, init_time;
-+	unsigned long flags, init_time;
+@@ -337,8 +337,6 @@
+ #include <linux/spinlock.h>
+ #include <linux/kthread.h>
+ #include <linux/percpu.h>
+-#include <linux/cryptohash.h>
+-#include <linux/fips.h>
+ #include <linux/ptrace.h>
+ #include <linux/workqueue.h>
+ #include <linux/irq.h>
+@@ -518,14 +516,12 @@ struct entropy_store {
+ 	u16 add_ptr;
+ 	u16 input_rotate;
+ 	int entropy_count;
+-	unsigned int last_data_init:1;
+-	u8 last_data[EXTRACT_SIZE];
+ };
  
- 	if (crng_ready()) {
- 		init_time = READ_ONCE(crng->init_time);
-@@ -1033,8 +1033,6 @@ static void _extract_crng(struct crng_st
- 				    &input_pool : NULL);
- 	}
- 	spin_lock_irqsave(&crng->lock, flags);
--	if (arch_get_random_long(&v))
--		crng->state[14] ^= v;
- 	chacha20_block(&crng->state[0], out);
- 	if (crng->state[12] == 0)
- 		crng->state[13]++;
+ static ssize_t extract_entropy(struct entropy_store *r, void *buf,
+ 			       size_t nbytes, int min, int rsvd);
+ static ssize_t _extract_entropy(struct entropy_store *r, void *buf,
+-				size_t nbytes, int fips);
++				size_t nbytes);
+ 
+ static void crng_reseed(struct crng_state *crng, struct entropy_store *r);
+ static u32 input_pool_data[INPUT_POOL_WORDS] __latent_entropy;
+@@ -822,7 +818,7 @@ static void crng_initialize_secondary(st
+ 
+ static void __init crng_initialize_primary(struct crng_state *crng)
+ {
+-	_extract_entropy(&input_pool, &crng->state[4], sizeof(u32) * 12, 0);
++	_extract_entropy(&input_pool, &crng->state[4], sizeof(u32) * 12);
+ 	if (crng_init_try_arch_early(crng) && trust_cpu && crng_init < 2) {
+ 		invalidate_batched_entropy();
+ 		numa_crng_init();
+@@ -1427,22 +1423,13 @@ static void extract_buf(struct entropy_s
+ }
+ 
+ static ssize_t _extract_entropy(struct entropy_store *r, void *buf,
+-				size_t nbytes, int fips)
++				size_t nbytes)
+ {
+ 	ssize_t ret = 0, i;
+ 	u8 tmp[EXTRACT_SIZE];
+-	unsigned long flags;
+ 
+ 	while (nbytes) {
+ 		extract_buf(r, tmp);
+-
+-		if (fips) {
+-			spin_lock_irqsave(&r->lock, flags);
+-			if (!memcmp(tmp, r->last_data, EXTRACT_SIZE))
+-				panic("Hardware RNG duplicated output!\n");
+-			memcpy(r->last_data, tmp, EXTRACT_SIZE);
+-			spin_unlock_irqrestore(&r->lock, flags);
+-		}
+ 		i = min_t(int, nbytes, EXTRACT_SIZE);
+ 		memcpy(buf, tmp, i);
+ 		nbytes -= i;
+@@ -1468,28 +1455,9 @@ static ssize_t _extract_entropy(struct e
+ static ssize_t extract_entropy(struct entropy_store *r, void *buf,
+ 				 size_t nbytes, int min, int reserved)
+ {
+-	u8 tmp[EXTRACT_SIZE];
+-	unsigned long flags;
+-
+-	/* if last_data isn't primed, we need EXTRACT_SIZE extra bytes */
+-	if (fips_enabled) {
+-		spin_lock_irqsave(&r->lock, flags);
+-		if (!r->last_data_init) {
+-			r->last_data_init = 1;
+-			spin_unlock_irqrestore(&r->lock, flags);
+-			trace_extract_entropy(r->name, EXTRACT_SIZE,
+-					      ENTROPY_BITS(r), _RET_IP_);
+-			extract_buf(r, tmp);
+-			spin_lock_irqsave(&r->lock, flags);
+-			memcpy(r->last_data, tmp, EXTRACT_SIZE);
+-		}
+-		spin_unlock_irqrestore(&r->lock, flags);
+-	}
+-
+ 	trace_extract_entropy(r->name, nbytes, ENTROPY_BITS(r), _RET_IP_);
+ 	nbytes = account(r, nbytes, min, reserved);
+-
+-	return _extract_entropy(r, buf, nbytes, fips_enabled);
++	return _extract_entropy(r, buf, nbytes);
+ }
+ 
+ #define warn_unseeded_randomness(previous) \
 
 
