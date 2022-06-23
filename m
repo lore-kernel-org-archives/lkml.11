@@ -2,193 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A5CCCCA47C
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 10:24:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAF12C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 10:24:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229970AbiFWKYQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 06:24:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54078 "EHLO
+        id S230306AbiFWKYh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 06:24:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229987AbiFWKYP (ORCPT
+        with ESMTP id S230173AbiFWKYf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 06:24:15 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E57FE31391;
-        Thu, 23 Jun 2022 03:24:13 -0700 (PDT)
-Received: from fraeml743-chm.china.huawei.com (unknown [172.18.147.201])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LTGTs4XkFz686kD;
-        Thu, 23 Jun 2022 18:20:17 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml743-chm.china.huawei.com (10.206.15.224) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 23 Jun 2022 12:24:11 +0200
-Received: from localhost (10.202.226.42) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 23 Jun
- 2022 11:24:10 +0100
-Date:   Thu, 23 Jun 2022 11:24:08 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Ira Weiny <ira.weiny@intel.com>
-CC:     Dan Williams <dan.j.williams@intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Alison Schofield <alison.schofield@intel.com>,
-        "Vishal Verma" <vishal.l.verma@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        "Ben Widawsky" <bwidawsk@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-cxl@vger.kernel.org>,
-        <linux-pci@vger.kernel.org>
-Subject: Re: [PATCH V11 3/8] PCI: Create PCI library functions in support of
- DOE mailboxes.
-Message-ID: <20220623112408.00006cd2@Huawei.com>
-In-Reply-To: <YrOy3vodu3FcRjUY@iweiny-desk3>
-References: <20220610202259.3544623-1-ira.weiny@intel.com>
-        <20220610202259.3544623-4-ira.weiny@intel.com>
-        <62ad06a643ddf_844b1294f@dwillia2-xfh.notmuch>
-        <YrObe+AdfziEPlYB@iweiny-desk3>
-        <62b39e5eead1_32f38a294b6@dwillia2-xfh.notmuch>
-        <YrOy3vodu3FcRjUY@iweiny-desk3>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
+        Thu, 23 Jun 2022 06:24:35 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A9BD3B578
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 03:24:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655979874; x=1687515874;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:content-transfer-encoding:mime-version;
+  bh=PXRJDRdRgy2fwuZsMUdDm1uxBBKgX7JBwjMasOxK/Hk=;
+  b=A0HhYrZ/Vuj5CDM63FN9G8pj82KpkbxT9Df9h59T+8tnz7o0u8a4ExG6
+   bvEf6kGenF6pmkvMScl0JqZi0IHTf1UUG3bBFS2cvDybUJpoh0l+P4s+5
+   hZ95gKZ5DBhowZrW6iqd1UAZobn+deMTKbs9hBaktsz5zxBybCbQuYQ55
+   M7COXwcXJHZpb3RqDJGSF1/GxGP3S+NOgnl+mLYKmRDmy+Po18r8N4Ahb
+   JzEcgU4pL/rNMGeKPjmW6dOv/2FIxlLwoMdjldm8bHNLSPPJBVKtTTNhR
+   0R7CtQT4RloxL9mmJbJXXT4d6hlV8mkX5NEZU3nijZCUFo7t/ewcahZPr
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="306141484"
+X-IronPort-AV: E=Sophos;i="5.92,215,1650956400"; 
+   d="scan'208";a="306141484"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2022 03:24:34 -0700
+X-IronPort-AV: E=Sophos;i="5.92,215,1650956400"; 
+   d="scan'208";a="656111133"
+Received: from mjalmada-desk.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.209.144.88])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2022 03:24:31 -0700
+Message-ID: <97ace776b756312de05d3a9c8b1ca251e714db17.camel@intel.com>
+Subject: Re: [PATCH v8 2/5] x86/tdx: Add TDX Guest event notify interrupt
+ support
+From:   Kai Huang <kai.huang@intel.com>
+To:     Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org
+Cc:     "H . Peter Anvin" <hpa@zytor.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Wander Lairson Costa <wander@redhat.com>,
+        Isaku Yamahata <isaku.yamahata@gmail.com>,
+        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
+        khalid.elmously@canonical.com, philip.cox@canonical.com,
+        linux-kernel@vger.kernel.org,
+        "Nakajima, Jun" <jun.nakajima@intel.com>
+Date:   Thu, 23 Jun 2022 22:24:29 +1200
+In-Reply-To: <efb2cdab-289b-8757-fe5e-5348519b0474@linux.intel.com>
+References: <20220609025220.2615197-1-sathyanarayanan.kuppuswamy@linux.intel.com>
+         <20220609025220.2615197-3-sathyanarayanan.kuppuswamy@linux.intel.com>
+         <78873cc1db47ba00a4c01f38290521c1a6072820.camel@intel.com>
+         <efb2cdab-289b-8757-fe5e-5348519b0474@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.2 (3.44.2-1.fc36) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.226.42]
-X-ClientProxiedBy: lhreml712-chm.china.huawei.com (10.201.108.63) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 22 Jun 2022 17:25:02 -0700
-Ira Weiny <ira.weiny@intel.com> wrote:
+On Mon, 2022-06-20 at 08:44 -0700, Sathyanarayanan Kuppuswamy wrote:
+> I agree that event notification is currently only used for attestation. B=
+ut I
+> think in future there could be other use cases for it.=C2=A0
+>=20
 
-> On Wed, Jun 22, 2022 at 03:57:34PM -0700, Dan Williams wrote:
-> > Ira Weiny wrote:  
-> > > On Fri, Jun 17, 2022 at 03:56:38PM -0700, Dan Williams wrote:  
-> > [..]  
-> > > > > +static int pci_doe_discovery(struct pci_doe_mb *doe_mb, u8 *index, u16 *vid,
-> > > > > +			     u8 *protocol)
-> > > > > +{
-> > > > > +	u32 request_pl = FIELD_PREP(PCI_DOE_DATA_OBJECT_DISC_REQ_3_INDEX,
-> > > > > +				    *index);
-> > > > > +	u32 response_pl;
-> > > > > +	DECLARE_COMPLETION_ONSTACK(c);
-> > > > > +	struct pci_doe_task task = {
-> > > > > +		.prot.vid = PCI_VENDOR_ID_PCI_SIG,
-> > > > > +		.prot.type = PCI_DOE_PROTOCOL_DISCOVERY,
-> > > > > +		.request_pl = &request_pl,
-> > > > > +		.request_pl_sz = sizeof(request_pl),
-> > > > > +		.response_pl = &response_pl,
-> > > > > +		.response_pl_sz = sizeof(response_pl),
-> > > > > +		.complete = pci_doe_task_complete,
-> > > > > +		.private = &c,
-> > > > > +	};
-> > > > > +	int ret;
-> > > > > +
-> > > > > +	ret = pci_doe_submit_task(doe_mb, &task);
-> > > > > +	if (ret < 0)
-> > > > > +		return ret;
-> > > > > +
-> > > > > +	wait_for_completion(&c);  
-> > > > 
-> > > > Another place where the need for a completion can be replaced with
-> > > > flush_work().  
-> > > 
-> > > No not here.  While this call is internal it is actually acting like an
-> > > external caller.  This specific wait is for that response to get back.
-> > > 
-> > > This pattern was specifically asked for by you.  Previously Jonathan had a
-> > > synchronous call which took care of this but you said let all callers just
-> > > handle it themselves.  So all callers submit a task and if they want to wait
-> > > for the response they have to do so themselves.  
-> > 
-> > Ah, true I remember that. The nice thing about a doing your own
-> > wait_for_completion() like this is that you can make it
-> > wait_for_completion_interruptible() to give up on the DOE if it gets
-> > stalled. However, if you have a work item per-task and you're willing to
-> > do an uninterruptible sleep, then flush_work(&task->work) is identical.  
-> 
-> So when you mentioned a work item per task I really jumped on that idea.  But I
-> realize now that it is a bit more complicated than that.
-> 
-> Currently a work item is actually one step of the state machine.  The state
-> machine queues the next step of work as a new work item.
-> 
-> I'm going to have to change the state machine quite a bit.  I still agree with
-> the one work item per task but it is going to take a bit of work to get the
-> state machine to operate within that single task.
-> 
-> I don't like what might result if I layer a work queue on top of using the
-> system work queue for the individual steps of the state machine.  So stay
-> tuned.
+We have TDVMCALL<Service> in GHCI 1.5.  It allows specifying the vector.  I
+don't know whether there's any future case that still needs
+SetupEventNotifyInterrupt.
 
-Yup.  I went through that (between RFC v1 and RFC v2) and it wasn't pretty
-- maybe it's worth a revisit though.
+> If the intention is just
+> to use it for attestation, then we can just modify the GetQuote TDVMCALL =
+to pass
+> the vector address, and there is no need for new TDVMCALL.=20
 
-To throw another view point in the mix. Note that I want a solution and
-in my view DOE is slow and never on a fast path + I don't see it being
-high churn code so needs to be fairly maintainable but not super simple
-or architecturally clean (at the level of state machines / work queues etc
-- interfaces need to be clean!)
+The TDVMCALL<Service> in GHCI 1.5 actually supports specifying the vector. =
+ It
+currently neither clearly says "the VMM should inject event to the vCPU on =
+which
+the TDVMCALL<Service> is called", nor it allows specifying which vCPU to in=
+ject.
+Assuming we can lobby (I am already lobbying, actually) to make either way,=
+ in
+fact I think it can be used as IRQ way (like I described in my first reply)=
+.
 
-If we go back to RFC v1, which IIRC was basically queue on a mutex, and
-consider it in the light of where we've ended up.  I wussed out on arguing much
-about this at the time because consensus + moving forward was more
-important to me than the chosen architecture.
-
-Taking a slightly black and white view of requirements. I don't think
-we loose anything by using this list...
-
-1. Synchronous (if anyone needs async at level of caller, they can spin
-   a thread up).  Async is the corner case, not the common one.
-2. Small number (< 3 I'm guessing) of protocols per instance.
-3. Very rare there is significant contention.  Fairness doesn't matter.
-   Normally the only reason we'd get contention is userspace triggering
-   access to multiple protocols at a time - probably via sysfs or other slow
-   method.
-4. Per protocol ordering can be maintained by the protocol, not the DOE layer.
-5. DOE is basically a bus over which we are talking to different devices
-  - think of it like I2C but rather than address we have protocol IDs.
-
-That last analogy brings us back to how I think almost all slow buses are
-handled.
-
-At level of a bus, a lock is used for mutual exclusion (often also protecting
-bus controller register state etc). No workqueues or similar complexity
-- Underlying hardware typically doing DMA of result into a provided buffer
-with only one transaction in flight at that layer at anyone time.
-Note there is more complex handling for high perf cases, but in many cases
-its not really used.
-
-We have a bus lock that can ensure exclusion over sequences if necessary
-(there's one in SPI).
-
-If a given driver needs to ensure exclusion for RMW or similar sequences
-of operations it takes a driver specific mutex and holds it across these
-sequences of slow operations, which usually sleep, include interrupts and all
-sorts of fun.  Normally there is a completion in there somewhere to
-get from the 'done' interrupt on the bus controller back to the
-i2c_smbus_bus_read() etc that is waiting on the result.
-
-This model works, is super simple and layered.
-
-In case of no contention (perhaps 99% of time), it immediately runs the
-DOE/bus access in the thread that made the read/write request.
-So no overhead of going to a workqueue.  
-
-Implementation is one linear function, no state machine needed.
-
-Anyhow, to refer back to my initial comment.  I'm not that fussed on how
-we do this but it's a blocker on other work so quick solution is more
-important to me than perfect one.
-
-Jonathan
+I once lobbied to completely remove GetQuote (and SetupEventNotifyInterrupt=
+)
+from GHCI 1.0 and move TDVMCALL<Service> from GHCI 1.5 to 1.0, and define a=
+ new
+sub-service for attestation -- GetQuote will be one command then, and we ca=
+n
+define more attestation related commands (which is likely) when needed.  I
+believe using TDVMCALL<Service> for GetQuote can actually allow kernel to u=
+se
+IRQ way, but doesn't need a system vector.  But this wasn't successful.
 
 
+--=20
+Thanks,
+-Kai
 
-
-
-> 
-> Ira
 
