@@ -2,154 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CA8DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 09:35:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB6A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 09:35:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231146AbiFWJf3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 05:35:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39098 "EHLO
+        id S230026AbiFWJf6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 05:35:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230386AbiFWJfZ (ORCPT
+        with ESMTP id S229761AbiFWJf5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 05:35:25 -0400
-X-Greylist: delayed 186 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 23 Jun 2022 02:35:23 PDT
-Received: from ironport.ite.com.tw (60-251-196-230.hinet-ip.hinet.net [60.251.196.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12EA149264
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 02:35:22 -0700 (PDT)
-Received: from unknown (HELO mse.ite.com.tw) ([192.168.35.30])
-  by ironport.ite.com.tw with ESMTP; 23 Jun 2022 17:32:12 +0800
-Received: from CSBMAIL1.internal.ite.com.tw (CSBMAIL1.internal.ite.com.tw [192.168.65.58])
-        by mse.ite.com.tw with ESMTP id 25N9W7mn009951;
-        Thu, 23 Jun 2022 17:32:07 +0800 (GMT-8)
-        (envelope-from allen.chen@ite.com.tw)
-Received: from VirtualBox.internal.ite.com.tw (192.168.70.46) by
- CSBMAIL1.internal.ite.com.tw (192.168.65.58) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.14; Thu, 23 Jun 2022 17:32:07 +0800
-From:   allen <allen.chen@ite.com.tw>
-CC:     Allen Chen <allen.chen@ite.com.tw>,
-        Pin-yen Lin <treapking@google.com>,
-        Jau-Chih Tseng <Jau-Chih.Tseng@ite.com.tw>,
-        Hermes Wu <Hermes.Wu@ite.com.tw>,
-        Kenneth Hung <Kenneth.Hung@ite.com.tw>,
-        Allen-kh Cheng <allen-kh.cheng@mediatek.corp-partner.google.com>,
-        Pin-yen Lin <treapking@chromium.org>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>
-Subject: [PATCH] drm/bridge: add it6505 driver read config from dt property
-Date:   Thu, 23 Jun 2022 17:31:54 +0800
-Message-ID: <20220623093154.52701-1-allen.chen@ite.com.tw>
-X-Mailer: git-send-email 2.25.1
+        Thu, 23 Jun 2022 05:35:57 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F09904969B
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 02:35:55 -0700 (PDT)
+Received: from [10.130.0.135] (unknown [113.200.148.30])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9BxaeT6M7RiVkRWAA--.36340S3;
+        Thu, 23 Jun 2022 17:35:54 +0800 (CST)
+Subject: Re: [PATCH] LoongArch: Make compute_return_era() return void
+To:     Huacai Chen <chenhuacai@kernel.org>
+References: <1655541551-3997-1-git-send-email-yangtiezhu@loongson.cn>
+ <CAAhV-H5oaCnRyi0xpzzoUs-VemuQtSEStHHzerZFoAQmEabCdw@mail.gmail.com>
+Cc:     WANG Xuerui <kernel@xen0n.name>,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        LKML <linux-kernel@vger.kernel.org>
+From:   Tiezhu Yang <yangtiezhu@loongson.cn>
+Message-ID: <c9123763-a72e-ce2a-83e3-b3e46cec15b3@loongson.cn>
+Date:   Thu, 23 Jun 2022 17:35:54 +0800
+User-Agent: Mozilla/5.0 (X11; Linux mips64; rv:45.0) Gecko/20100101
+ Thunderbird/45.4.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [192.168.70.46]
-X-ClientProxiedBy: CSBMAIL1.internal.ite.com.tw (192.168.65.58) To
- CSBMAIL1.internal.ite.com.tw (192.168.65.58)
-X-TM-SNTS-SMTP: 532277101033EC0C5799347BF5418EF1C05372C83BD9777B75A722A680D091252002:8
-X-MAIL: mse.ite.com.tw 25N9W7mn009951
-To:     unlisted-recipients:; (no To-header on input)
+In-Reply-To: <CAAhV-H5oaCnRyi0xpzzoUs-VemuQtSEStHHzerZFoAQmEabCdw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-CM-TRANSID: AQAAf9BxaeT6M7RiVkRWAA--.36340S3
+X-Coremail-Antispam: 1UD129KBjvJXoW7ur4ktF1kKw17WF18WFyUZFb_yoW8Cw13pF
+        17AFyDCFWrWr95CFyDtwn8Zry7Jrs3Cr4293Z29asYkF42vr1DXr10grsrZF10yayrKr40
+        qF4rKF1a9F43X3JanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvl14x267AKxVWUJVW8JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
+        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
+        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r4j6F4UMcvjeVCFs4IE7xkEbVWUJV
+        W8JwACjcxG0xvEwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc7I2V7IY0VAS07AlzVAY
+        IcxG8wCY02Avz4vE14v_GFWl42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr
+        1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE
+        14v26r126r1DMIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7
+        IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvE
+        x4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvj
+        DU0xZFpf9x0JUOo7ZUUUUU=
+X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: allen chen <allen.chen@ite.com.tw>
 
-add read max-lane and max-pixel-clock from dt property
 
-Signed-off-by: Allen-kh Cheng <allen-kh.cheng@mediatek.corp-partner.google.com>
-Signed-off-by: Pin-yen Lin <treapking@chromium.org>
----
- drivers/gpu/drm/bridge/ite-it6505.c | 35 ++++++++++++++++++++++++++---
- 1 file changed, 32 insertions(+), 3 deletions(-)
+On 06/23/2022 05:26 PM, Huacai Chen wrote:
+> Hi, Tiezhu,
+>
+> On Sat, Jun 18, 2022 at 4:39 PM Tiezhu Yang <yangtiezhu@loongson.cn> wrote:
+>>
+>> compute_return_era() always returns 0, make it return void,
+>> and then no need to check its return value for its callers.
+>>
+>> Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+>> ---
+>>  arch/loongarch/include/asm/branch.h | 3 +--
+>>  arch/loongarch/kernel/traps.c       | 3 +--
+>>  2 files changed, 2 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/arch/loongarch/include/asm/branch.h b/arch/loongarch/include/asm/branch.h
+>> index 3f33c89..9a133e4 100644
+>> --- a/arch/loongarch/include/asm/branch.h
+>> +++ b/arch/loongarch/include/asm/branch.h
+>> @@ -12,10 +12,9 @@ static inline unsigned long exception_era(struct pt_regs *regs)
+>>         return regs->csr_era;
+>>  }
+>>
+>> -static inline int compute_return_era(struct pt_regs *regs)
+>> +static inline void compute_return_era(struct pt_regs *regs)
+>>  {
+>>         regs->csr_era += 4;
+>> -       return 0;
+>>  }
+>>
+>>  #endif /* _ASM_BRANCH_H */
+>> diff --git a/arch/loongarch/kernel/traps.c b/arch/loongarch/kernel/traps.c
+>> index e4060f8..1bf58c6 100644
+>> --- a/arch/loongarch/kernel/traps.c
+>> +++ b/arch/loongarch/kernel/traps.c
+>> @@ -475,8 +475,7 @@ asmlinkage void noinstr do_ri(struct pt_regs *regs)
+>>
+>>         die_if_kernel("Reserved instruction in kernel code", regs);
+>>
+>> -       if (unlikely(compute_return_era(regs) < 0))
+>> -               goto out;
+>> +       compute_return_era(regs);
+> Maybe it is better to simply remove the compute_return_era() function?
 
-diff --git a/drivers/gpu/drm/bridge/ite-it6505.c b/drivers/gpu/drm/bridge/ite-it6505.c
-index 4b673c4792d77..c9121d4635a52 100644
---- a/drivers/gpu/drm/bridge/ite-it6505.c
-+++ b/drivers/gpu/drm/bridge/ite-it6505.c
-@@ -436,6 +436,8 @@ struct it6505 {
- 	bool powered;
- 	bool hpd_state;
- 	u32 afe_setting;
-+	u32 max_dpi_pixel_clock;
-+	u32 max_lane_count;
- 	enum hdcp_state hdcp_status;
- 	struct delayed_work hdcp_work;
- 	struct work_struct hdcp_wait_ksv_list;
-@@ -1466,7 +1468,8 @@ static void it6505_parse_link_capabilities(struct it6505 *it6505)
- 	it6505->lane_count = link->num_lanes;
- 	DRM_DEV_DEBUG_DRIVER(dev, "Sink support %d lanes training",
- 			     it6505->lane_count);
--	it6505->lane_count = min_t(int, it6505->lane_count, MAX_LANE_COUNT);
-+	it6505->lane_count = min_t(int, it6505->lane_count,
-+				   it6505->max_lane_count);
- 
- 	it6505->branch_device = drm_dp_is_branch(it6505->dpcd);
- 	DRM_DEV_DEBUG_DRIVER(dev, "Sink %sbranch device",
-@@ -2895,7 +2898,7 @@ it6505_bridge_mode_valid(struct drm_bridge *bridge,
- 	if (mode->flags & DRM_MODE_FLAG_INTERLACE)
- 		return MODE_NO_INTERLACE;
- 
--	if (mode->clock > DPI_PIXEL_CLK_MAX)
-+	if (mode->clock > it6505->max_dpi_pixel_clock)
- 		return MODE_CLOCK_HIGH;
- 
- 	it6505->video_info.clock = mode->clock;
-@@ -3057,6 +3060,8 @@ static void it6505_parse_dt(struct it6505 *it6505)
- {
- 	struct device *dev = &it6505->client->dev;
- 	u32 *afe_setting = &it6505->afe_setting;
-+	u32 *max_lane_count = &it6505->max_lane_count;
-+	u32 *max_dpi_pixel_clock = &it6505->max_dpi_pixel_clock;
- 
- 	it6505->lane_swap_disabled =
- 		device_property_read_bool(dev, "no-laneswap");
-@@ -3072,7 +3077,31 @@ static void it6505_parse_dt(struct it6505 *it6505)
- 	} else {
- 		*afe_setting = 0;
- 	}
--	DRM_DEV_DEBUG_DRIVER(dev, "using afe_setting: %d", *afe_setting);
-+
-+	if (device_property_read_u32(dev, "max-lane-count",
-+				     max_lane_count) == 0) {
-+		if (*max_lane_count > 4 || *max_lane_count == 3) {
-+			dev_err(dev, "max lane count error, use default");
-+			*max_lane_count = MAX_LANE_COUNT;
-+		}
-+	} else {
-+		*max_lane_count = MAX_LANE_COUNT;
-+	}
-+
-+	if (device_property_read_u32(dev, "max-dpi-pixel-clock",
-+				     max_dpi_pixel_clock) == 0) {
-+		if (*max_dpi_pixel_clock > 297000) {
-+			dev_err(dev, "max pixel clock error, use default");
-+			*max_dpi_pixel_clock = DPI_PIXEL_CLK_MAX;
-+		}
-+	} else {
-+		*max_dpi_pixel_clock = DPI_PIXEL_CLK_MAX;
-+	}
-+
-+	DRM_DEV_DEBUG_DRIVER(dev, "using afe_setting: %u, max_lane_count: %u",
-+			     it6505->afe_setting, it6505->max_lane_count);
-+	DRM_DEV_DEBUG_DRIVER(dev, "using max_dpi_pixel_clock: %u kHz",
-+			     it6505->max_dpi_pixel_clock);
- }
- 
- static ssize_t receive_timing_debugfs_show(struct file *file, char __user *buf,
--- 
-2.25.1
+Good idea, if so, I think we can also remove exception_era(), and then
+arch/loongarch/include/asm/branch.h can be removed.
+
+If you are OK, I will send a v2 patch to remove
+arch/loongarch/include/asm/branch.h
+
+Thanks,
+Tiezhu
+
+>
+> Huacai
+>>
+>>         if (unlikely(get_user(opcode, era) < 0)) {
+>>                 status = SIGSEGV;
+>> --
+>> 2.1.0
+>>
 
