@@ -2,97 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC90BC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 10:07:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64CB2C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 10:08:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231478AbiFWKHA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 06:07:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37374 "EHLO
+        id S230127AbiFWKIq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 06:08:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231470AbiFWKGg (ORCPT
+        with ESMTP id S229853AbiFWKIo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 06:06:36 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A3C549F0E
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 03:06:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655978793; x=1687514793;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=mvybYqi40HYCHJ9h/gjlh84Ayyf1m4aeyK+wIvr2iXM=;
-  b=d18TETY28g07KgCpis1xc+ZxZhi2nmJ+DGSVni2cMYIHL91gLp1PjU/Z
-   Eayb4ZDCjKMRNdEdnTYbnzFq6YrTpDflwBXFgC6CSAe/4kSelAt+8WpjQ
-   Bamqen90z1GO19a2+5g2jh8f/JO9gRnmSFLhiRP38aCec7qQs4FQB9RYZ
-   S186Qfzf3HOq4tgg6iHpxGKUXWk5nTJj60QcgzbWi5nLG0bu7G9jzFI5A
-   ABZQF8wxGXyVVQDbMNp48mgvYzlI9wk1+KgOT2RV6mshWd3djTmmcDWVV
-   9/ABU28dPzQXY3Gs0jONg0J4JIfCwhXaFCx/QiET+QIgMx763FebuLcKA
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="344669135"
-X-IronPort-AV: E=Sophos;i="5.92,215,1650956400"; 
-   d="scan'208";a="344669135"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2022 03:06:32 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,215,1650956400"; 
-   d="scan'208";a="644665661"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 23 Jun 2022 03:06:30 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o4JjK-00015e-6L;
-        Thu, 23 Jun 2022 10:06:30 +0000
-Date:   Thu, 23 Jun 2022 18:06:17 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Dan Williams <dan.j.williams@intel.com>
-Cc:     kbuild-all@lists.01.org,
-        Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Ben Widawsky <ben.widawsky@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        linux-kernel@vger.kernel.org, Ben Widawsky <bwidawsk@kernel.org>
-Subject: [cxl:preview 41/49] port.c:undefined reference to
- `dev_attr_create_pmem_region'
-Message-ID: <202206231726.IXI7Lpd5-lkp@intel.com>
+        Thu, 23 Jun 2022 06:08:44 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 05B7B44756
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 03:08:43 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CF97712FC;
+        Thu, 23 Jun 2022 03:08:42 -0700 (PDT)
+Received: from [10.57.85.4] (unknown [10.57.85.4])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 291B53F534;
+        Thu, 23 Jun 2022 03:08:40 -0700 (PDT)
+Message-ID: <2f66f488-687c-033c-a5a2-9d54633838cd@arm.com>
+Date:   Thu, 23 Jun 2022 11:08:36 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 2/5] iommu/mediatek: Add error path for loop of
+ mm_dts_parse
+Content-Language: en-GB
+To:     Yong Wu <yong.wu@mediatek.com>
+Cc:     Joerg Roedel <joro@8bytes.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Will Deacon <will@kernel.org>,
+        iommu@lists.linux-foundation.org,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        mingyuan.ma@mediatek.com, yf.wang@mediatek.com,
+        libo.kang@mediatek.com, chengci.xu@mediatek.com,
+        youlin.pei@mediatek.com, anan.sun@mediatek.com,
+        xueqi.zhang@mediatek.com, Guenter Roeck <groeck@chromium.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+References: <20220616054203.11365-1-yong.wu@mediatek.com>
+ <20220616054203.11365-3-yong.wu@mediatek.com>
+ <e2091397-b6e2-7296-1378-dc10b24c6ef4@arm.com>
+ <b2ea919315d0084adb465378e6970dbfa4f0829e.camel@mediatek.com>
+ <521ed82e-f213-f635-6f5e-3e35ff8cc020@arm.com>
+ <a53c4a4d9922c9a3fc774976494dea6da1bd8daa.camel@mediatek.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <a53c4a4d9922c9a3fc774976494dea6da1bd8daa.camel@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/cxl/cxl.git preview
-head:   b2d4fd5c97b59f622e6c45ac51020cdcd66bb022
-commit: 96ec07f789bf8a52f5c00d3310d9b7ec4c701738 [41/49] cxl/region: Allocate host physical address (HPA) capacity to new regions
-config: arc-randconfig-r032-20220622 (https://download.01.org/0day-ci/archive/20220623/202206231726.IXI7Lpd5-lkp@intel.com/config)
-compiler: arc-elf-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/cxl/cxl.git/commit/?id=96ec07f789bf8a52f5c00d3310d9b7ec4c701738
-        git remote add cxl https://git.kernel.org/pub/scm/linux/kernel/git/cxl/cxl.git
-        git fetch --no-tags cxl preview
-        git checkout 96ec07f789bf8a52f5c00d3310d9b7ec4c701738
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash
+On 2022-06-23 02:54, Yong Wu wrote:
+> On Thu, 2022-06-16 at 11:31 +0100, Robin Murphy wrote:
+>> On 2022-06-16 11:08, Yong Wu wrote:
+>>> On Thu, 2022-06-16 at 09:59 +0100, Robin Murphy wrote:
+>>>> On 2022-06-16 06:42, Yong Wu wrote:
+>>>>> The mtk_iommu_mm_dts_parse will parse the smi larbs nodes. if
+>>>>> the
+>>>>> i+1
+>>>>> larb is parsed fail(return -EINVAL), we should of_node_put for
+>>>>> the
+>>>>> 0..i
+>>>>> larbs. In the fail path, one of_node_put matches with
+>>>>> of_parse_phandle in
+>>>>> it.
+>>>>>
+>>>>> Fixes: d2e9a1102cfc ("iommu/mediatek: Contain MM IOMMU flow
+>>>>> with
+>>>>> the MM TYPE")
+>>>>> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+>>>>> ---
+>>>>>     drivers/iommu/mtk_iommu.c | 21 ++++++++++++++++-----
+>>>>>     1 file changed, 16 insertions(+), 5 deletions(-)
+> 
+> [snip..]
+> 
+>>>>> +err_larbnode_put:
+>>>>> +	while (i--) {
+>>>>> +		larbnode = of_parse_phandle(dev->of_node,
+>>>>> "mediatek,larbs", i);
+>>>>> +		if (larbnode &&
+>>>>> of_device_is_available(larbnode)) {
+>>>>> +			of_node_put(larbnode);
+>>>>> +			of_node_put(larbnode);
+>>>>> +		}
+>>>>
+>>>> This looks a bit awkward - could we not just iterate through
+>>>> data->larb_imu and put dev->of_node for each valid dev?
+>>>
+>>> It should work. Thanks very much.
+>>>
+>>>>
+>>>> Also, of_find_device_by_node() takes a reference on the struct
+>>>> device
+>>>> itself, so strictly we should be doing put_device() on those as
+>>>> well
+>>>> if we're bailing out.
+>>>
+>>> Thanks for this hint. A new reference for me. I will add it.
+>>
+>> In fact, thinking about it some more we may as well do the
+>> of_node_put()
+>> unconditionally immediately after the of_find_device_by_node() call,
+> 
+> of_node_put is called in component_release_of in the normal case, thus
+> we shouldn't call of_node_put unconditionally. Right?
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+As it stands, yes. However I'm also figuring that we could just use 
+component_match_add() there, and probably also switch to 
+component_compare_dev as the the comparison, since we've already 
+resolved the larb device, and it is the device itself that we're 
+interested in here, rather than just its of_node.
 
-All errors (new ones prefixed by >>):
+I *think* this idea could end up with simpler code overall, but as 
+always, feel free to ignore the suggestion if you think it wouldn't make 
+enough difference to be worth the bother.
 
-   arc-elf-ld: drivers/cxl/core/port.o: in function `cxl_root_decoder_visible':
->> port.c:(.text+0xd1a): undefined reference to `dev_attr_create_pmem_region'
->> arc-elf-ld: port.c:(.text+0xd1a): undefined reference to `dev_attr_create_pmem_region'
->> arc-elf-ld: port.c:(.text+0xd38): undefined reference to `dev_attr_delete_region'
->> arc-elf-ld: port.c:(.text+0xd38): undefined reference to `dev_attr_delete_region'
->> arc-elf-ld: drivers/cxl/core/port.o:(.data+0x1a0): undefined reference to `dev_attr_create_pmem_region'
->> arc-elf-ld: drivers/cxl/core/port.o:(.data+0x1a0): undefined reference to `dev_attr_create_pmem_region'
->> arc-elf-ld: drivers/cxl/core/port.o:(.data+0x1a4): undefined reference to `dev_attr_delete_region'
->> arc-elf-ld: drivers/cxl/core/port.o:(.data+0x1a4): undefined reference to `dev_attr_delete_region'
-   `.exit.text' referenced in section `.data' of sound/soc/codecs/tlv320adc3xxx.o: defined in discarded section `.exit.text' of sound/soc/codecs/tlv320adc3xxx.o
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks,
+Robin.
