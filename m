@@ -2,150 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8834ACCA47E
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 14:48:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5BB5C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 14:48:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231991AbiFWOsu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 10:48:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42380 "EHLO
+        id S232004AbiFWOsw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 10:48:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231993AbiFWOss (ORCPT
+        with ESMTP id S231989AbiFWOsr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 10:48:48 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B7EC46B2C;
-        Thu, 23 Jun 2022 07:48:46 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id p14so13637466pfh.6;
-        Thu, 23 Jun 2022 07:48:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=NsGuoNrKOwZi4+BNGtJiyK4WoJSitQyKFNOmJMq17xI=;
-        b=V2o5Ehf6KJjGJXdWPnxArGMA5u68nQNPZm7nxJHmFuS/1tpE8JNXxg6GBlNJgaPPFx
-         aHia/s+4wZmGBIBYLMsxrA+XRCg6ZpCdlq6zLzoLvli88rxxGavMue/9OT7OT3l1BM55
-         +csszujMGX+HWqrj4ur/ALcKQDaY4XtH5XJq8fu39qbhOw92BJxEfFc/zpJfoeTNOTC6
-         h//c8jmvej323nlLvc3FLJ99uDvgbHaaIdsIuQ7rUf1rCytujpZNamgA7f/awCe3P5eN
-         AmkU52yJCHoMG8iHVNNcHGDzcQF7lHfYKcZoIB60QvPyYQ4tVM30wxbPngmCd0owLbfs
-         /Ejg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=NsGuoNrKOwZi4+BNGtJiyK4WoJSitQyKFNOmJMq17xI=;
-        b=3FJdMerhZ8rQm337MFWCC3lMZJln7EyUBht1zNZZi94FnZw166JSoD1Q7p3jU8pziq
-         3IbqShoSrapt/wHB5fy/kYdd/4tYsb4uxkfN57xmOXdD2X18KMbgq0BSdZ8rKPRO1bHJ
-         0/PfqzDQghWNaVNf4d7pIJlGtqOsakNQHgIlHrKEWUMWhjwj63jOmXTvoF6A9KGnhukP
-         J54Y7zNqZnumIh9xc7wqtdpg58PfBLFA+PVXPFYPnFYsN9t69B9vplL1b0XWI03g97Qn
-         bXkvx1YhCRESSIvhF9fcPYLdRJEFD9j+KByNefTB5gitrNNK8DJ/uLnWT1CTZGiPwDF3
-         iSZg==
-X-Gm-Message-State: AJIora/T/WsGJG+CDZ2gYDsLomJ0rpTOGj4XI0aK6mE7a2B9erpOO5Tx
-        6YHu8MyYqrv7MI+FRugsYBk=
-X-Google-Smtp-Source: AGRyM1uvG03JMk59g0aypaxhEUWEhGYWbNHLb64IATh4yVcG+Esi2oTV7YSoyn9H7gBse6gMRy873A==
-X-Received: by 2002:a63:f415:0:b0:408:808b:238f with SMTP id g21-20020a63f415000000b00408808b238fmr7684450pgi.469.1655995725433;
-        Thu, 23 Jun 2022 07:48:45 -0700 (PDT)
-Received: from ?IPV6:2404:f801:0:5:8000::75b? ([2404:f801:9000:18:efec::75b])
-        by smtp.gmail.com with ESMTPSA id 25-20020aa79159000000b00522c0a75c39sm15815422pfi.196.2022.06.23.07.48.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 23 Jun 2022 07:48:44 -0700 (PDT)
-Message-ID: <d80ad697-ed71-6671-c4ea-a7ca5883f65e@gmail.com>
-Date:   Thu, 23 Jun 2022 22:48:36 +0800
+        Thu, 23 Jun 2022 10:48:47 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE50A4616E
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 07:48:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655995726; x=1687531726;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=a+M6xTI8fcv0XoP4gDaiPmN5PUSrKQKhNoe1i4lIUXU=;
+  b=QSmsZTzUl87J27USrTk+IK6UvcE8ODyAwG55vznXdyqkV1DDXnLgn0F9
+   L3i2QzdIKmoqe7vugsBNSla+pYYJQ/ghPOxCFGDkOgNMkRjIce+Sb1qNP
+   xTu69oYlkdXunfD6D9k8AJdHnRwof/0Aqjtki5aRFUlN0sR3rS0OkrOHB
+   FZpygEqrviLoTvyfrZ7JBukoKfUtnb9ORaQuBcWSPMlOd6LVN5Wv72+Jp
+   DC+fliKBXGF+23j4mUiyNXSjT2oWJLVZ0Tn7ovlYHpOSIKNBg6GmWgdRr
+   4xv+UiNGonzPGqK14fz6bUlRSNhV2s9HAMJ1TfaL2neeLc2J/JVK54Dyt
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="306198388"
+X-IronPort-AV: E=Sophos;i="5.92,216,1650956400"; 
+   d="scan'208";a="306198388"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2022 07:48:46 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,216,1650956400"; 
+   d="scan'208";a="588645360"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 23 Jun 2022 07:48:45 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o4O8S-0001QH-Lz;
+        Thu, 23 Jun 2022 14:48:44 +0000
+Date:   Thu, 23 Jun 2022 22:48:19 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [jolsa-perf:bpf/tramp_11 19/21] kernel/bpf/trampoline.c:81:17:
+ warning: address of stack memory associated with parameter 'id' returned
+Message-ID: <202206232231.u4YhpRYy-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [RFC PATCH V4 1/1] swiotlb: Split up single swiotlb lock
-Content-Language: en-US
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     corbet@lwn.net, m.szyprowski@samsung.com, robin.murphy@arm.com,
-        paulmck@kernel.org, akpm@linux-foundation.org, bp@suse.de,
-        tglx@linutronix.de, songmuchun@bytedance.com,
-        rdunlap@infradead.org, damien.lemoal@opensource.wdc.com,
-        michael.h.kelley@microsoft.com, kys@microsoft.com,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        iommu@lists.linux-foundation.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, vkuznets@redhat.com,
-        wei.liu@kernel.org, parri.andrea@gmail.com,
-        thomas.lendacky@amd.com, linux-hyperv@vger.kernel.org,
-        kirill.shutemov@intel.com, andi.kleen@intel.com,
-        Andi Kleen <ak@linux.intel.com>
-References: <20220617144741.921308-1-ltykernel@gmail.com>
- <YrL02y/fYxDkDRlA@infradead.org>
-From:   Tianyu Lan <ltykernel@gmail.com>
-In-Reply-To: <YrL02y/fYxDkDRlA@infradead.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/22/2022 6:54 PM, Christoph Hellwig wrote:
-> Thanks,
-> 
-> this looks pretty good to me.  A few comments below:
-> 
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git bpf/tramp_11
+head:   c807110aa605281263da02a78af57847f5c4275e
+commit: a2660a85cc98b2db2577fd844985884cff0e5cae [19/21] bpf: Add support to store multiple ids in bpf_tramp_id object
+config: i386-randconfig-a015 (https://download.01.org/0day-ci/archive/20220623/202206232231.u4YhpRYy-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 46be5faaf03466c3751f8a2882bef5a217e15926)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git/commit/?id=a2660a85cc98b2db2577fd844985884cff0e5cae
+        git remote add jolsa-perf https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git
+        git fetch --no-tags jolsa-perf bpf/tramp_11
+        git checkout a2660a85cc98b2db2577fd844985884cff0e5cae
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash kernel/bpf/
 
-Thanks for your review.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-> On Fri, Jun 17, 2022 at 10:47:41AM -0400, Tianyu Lan wrote:
->> +/**
->> + * struct io_tlb_area - IO TLB memory area descriptor
->> + *
->> + * This is a single area with a single lock.
->> + *
->> + * @used:	The number of used IO TLB block.
->> + * @index:	The slot index to start searching in this area for next round.
->> + * @lock:	The lock to protect the above data structures in the map and
->> + *		unmap calls.
->> + */
->> +struct io_tlb_area {
->> +	unsigned long used;
->> +	unsigned int index;
->> +	spinlock_t lock;
->> +};
-> 
-> This can go into swiotlb.c.
+All warnings (new ones prefixed by >>):
 
-struct io_tlb_area is used in the struct io_tlb_mem.
+>> kernel/bpf/trampoline.c:81:17: warning: address of stack memory associated with parameter 'id' returned [-Wreturn-stack-address]
+                   return (u64) &id;
+                                 ^~
+   1 warning generated.
 
-> 
->> +void __init swiotlb_adjust_nareas(unsigned int nareas);
-> 
-> And this should be marked static.
-> 
->> +#define DEFAULT_NUM_AREAS 1
-> 
-> I'd drop this define, the magic 1 and a > 1 comparism seems to
-> convey how it is used much better as the checks aren't about default
-> or not, but about larger than one.
-> 
-> I also think that we want some good way to size the default, e.g.
-> by number of CPUs or memory size.
 
-swiotlb_adjust_nareas() is exposed to platforms to set area number.
-When swiotlb_init() is called, smp_init() isn't called at that point and
-so standard API of checking cpu number (e.g, num_online_cpus()) doesn't
-work. Platforms may have other ways to get cpu number(e.g x86 may ACPI
-MADT table entries to get cpu nubmer) and set area number. I will post 
-following patch to set cpu number via swiotlb_adjust_nareas(),
+vim +/id +81 kernel/bpf/trampoline.c
 
-> 
->> +void __init swiotlb_adjust_nareas(unsigned int nareas)
->> +{
->> +	if (!is_power_of_2(nareas)) {
->> +		pr_err("swiotlb: Invalid areas parameter %d.\n", nareas);
->> +		return;
->> +	}
->> +
->> +	default_nareas = nareas;
->> +
->> +	pr_info("area num %d.\n", nareas);
->> +	/* Round up number of slabs to the next power of 2.
->> +	 * The last area is going be smaller than the rest if
->> +	 * default_nslabs is not power of two.
->> +	 */
-> 
-> Please follow the normal kernel comment style with a /* on its own line.
-> 
+    77	
+    78	static u64 bpf_tramp_id_key(struct bpf_tramp_id *id)
+    79	{
+    80		if (bpf_tramp_id_is_multi(id))
+  > 81			return (u64) &id;
+    82		else
+    83			return ((u64) id->obj_id << 32) | id->id[0];
+    84	}
+    85	
 
-OK. Will update.
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
