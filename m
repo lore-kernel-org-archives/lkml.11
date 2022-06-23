@@ -2,70 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A53DACCA481
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 13:15:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F7FFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 13:15:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231463AbiFWNP1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 09:15:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57036 "EHLO
+        id S231614AbiFWNPb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 09:15:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230052AbiFWNPH (ORCPT
+        with ESMTP id S231418AbiFWNPN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 09:15:07 -0400
-Received: from mail.savoirfairelinux.com (mail.savoirfairelinux.com [208.88.110.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A7813B577;
-        Thu, 23 Jun 2022 06:15:05 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.savoirfairelinux.com (Postfix) with ESMTP id 647DA9C022D;
-        Thu, 23 Jun 2022 09:15:04 -0400 (EDT)
-Received: from mail.savoirfairelinux.com ([127.0.0.1])
-        by localhost (mail.savoirfairelinux.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id nlpuuJNTcEw4; Thu, 23 Jun 2022 09:15:04 -0400 (EDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.savoirfairelinux.com (Postfix) with ESMTP id EB04C9C024D;
-        Thu, 23 Jun 2022 09:15:03 -0400 (EDT)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.savoirfairelinux.com EB04C9C024D
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=savoirfairelinux.com; s=DFC430D2-D198-11EC-948E-34200CB392D2;
-        t=1655990104; bh=gpgbbHnx61/VSrtvu1HJxF7I/adoakDNkdIUpMMgnVY=;
-        h=From:To:Date:Message-Id:MIME-Version;
-        b=tKW11FkvEMyfh1ANpcjzkN5caT1S9aDWbZARwLYYxJaXM1uqlVdAJx0tHRViYMGyV
-         0XVly0ODQC3A8IhVb+cehLkfD8QQoeiVHU4vddovBav231eKzsmqxushry4eYv4C/n
-         HMxSzl3yAydGCAMc317RVEyYBINXdXNzKZF5Sjn26KggvuTAKImTZNokXgz2+PUnSn
-         /7sqG4g9n3tlmN74PM4Wl4nAj79JApv1Fcfnq132+IOIigYxtgZtXUJRefPyhK1+nw
-         4/j3wWrojL8KD55s8XqERx2pFVjSFQoqISIA63mW3F1gbsQ6rtDsLTCfNm66M4cNQk
-         gGxd/NapyTzhA==
-X-Virus-Scanned: amavisd-new at mail.savoirfairelinux.com
-Received: from mail.savoirfairelinux.com ([127.0.0.1])
-        by localhost (mail.savoirfairelinux.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id X5gmuRiM5Lq1; Thu, 23 Jun 2022 09:15:03 -0400 (EDT)
-Received: from sfl-deribaucourt.rennes.sfl (lfbn-ren-1-676-174.w81-53.abo.wanadoo.fr [81.53.245.174])
-        by mail.savoirfairelinux.com (Postfix) with ESMTPSA id 003689C022D;
-        Thu, 23 Jun 2022 09:15:02 -0400 (EDT)
-From:   Enguerrand de Ribaucourt 
-        <enguerrand.de-ribaucourt@savoirfairelinux.com>
-To:     andrew@lunn.ch
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
-        hkallweit1@gmail.com
-Subject: [PATCH v2 0/2] net: dp83822: fix interrupt floods
-Date:   Thu, 23 Jun 2022 15:14:51 +0200
-Message-Id: <20220623131453.1853406-1-enguerrand.de-ribaucourt@savoirfairelinux.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <YqzAKguRaxr74oXh@lunn.ch>
-References: <YqzAKguRaxr74oXh@lunn.ch>
+        Thu, 23 Jun 2022 09:15:13 -0400
+Received: from mail-pl1-f182.google.com (mail-pl1-f182.google.com [209.85.214.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 624513BBED;
+        Thu, 23 Jun 2022 06:15:12 -0700 (PDT)
+Received: by mail-pl1-f182.google.com with SMTP id k14so6645997plh.4;
+        Thu, 23 Jun 2022 06:15:12 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=FnlFrTjZa6sSKCZYE+9FTM9rVSZJN4L1TESRVFSoBPM=;
+        b=3vfU4ZMycmgJmHYK7oZhGJfouGgSxxeQUWOQBOMK8yLofjoiUT5ox0VVS0SleSKl1y
+         7G0vm5eLnomyvIzR19XjqUXqYc+ID268erzmxMtrXUeqUtz7G1AU+9UNTAumwogAL3ap
+         1ejnNpQKZqLc9zEbdfdAOAe3Jrr+7HtYmqgPN2zsa/4qi+ScSgii1aiLkk0g1ZWUlzL2
+         pMnkRF+shDExmPghSZe1lbsYQCddaLk9oP2Ns4vfpTSjxopdWlW8n7e8MJyeDqhZqlQf
+         zsBAKVjv6mNjrivaKn81Leib0KKGG7MGvbh8e3r0oavgQl5Ef5wYudwQ8M8p3rCMe2t1
+         VLiQ==
+X-Gm-Message-State: AJIora888mx9pNTpDGnbOydoJJrfoIQDfnfgUcNvOpkwQGs0h6sRsAtw
+        +N1nQLyPZo3AbhplndDzuHc=
+X-Google-Smtp-Source: AGRyM1v66il5XeRjY2a520cnS5/1pE4oykmyRvOGPYtPOIvzHjnjmYDigbcvpWOt0Ug7aq7XtWB3fg==
+X-Received: by 2002:a17:902:ba90:b0:16a:2863:fb85 with SMTP id k16-20020a170902ba9000b0016a2863fb85mr19355563pls.15.1655990111757;
+        Thu, 23 Jun 2022 06:15:11 -0700 (PDT)
+Received: from ?IPV6:2601:647:4000:d7:feaa:14ff:fe9d:6dbd? ([2601:647:4000:d7:feaa:14ff:fe9d:6dbd])
+        by smtp.gmail.com with ESMTPSA id w91-20020a17090a6be400b001e667f932cdsm1819069pjj.53.2022.06.23.06.15.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 23 Jun 2022 06:15:10 -0700 (PDT)
+Message-ID: <03329565-a405-eefd-88b3-992c1663d703@acm.org>
+Date:   Thu, 23 Jun 2022 06:15:09 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 0/8] Provide features and fixes in MediaTek UFS
+ platform
+Content-Language: en-US
+To:     Stanley Chu <stanley.chu@mediatek.com>, linux-scsi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, martin.petersen@oracle.com,
+        avri.altman@wdc.com, alim.akhtar@samsung.com, jejb@linux.ibm.com
+Cc:     peter.wang@mediatek.com, chun-hung.wu@mediatek.com,
+        alice.chao@mediatek.com, powen.kao@mediatek.com,
+        mason.zhang@mediatek.com, qilin.tan@mediatek.com,
+        lin.gui@mediatek.com, eddie.huang@mediatek.com,
+        tun-yu.yu@mediatek.com, cc.chou@mediatek.com,
+        chaotian.jing@mediatek.com, jiajie.hao@mediatek.com
+References: <20220623035052.18802-1-stanley.chu@mediatek.com>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <20220623035052.18802-1-stanley.chu@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The false carrier and RX error counters, once half full, produce interrup=
-t
-floods. Since we do not use these counters, these interrupts should be di=
-sabled.
+On 6/22/22 20:50, Stanley Chu wrote:
+> This series provides some fixes and features in MediaTek UFS platform.
+> Please consider this patch series for kernel v5.20.
 
-In-Reply-To: YqzAKguRaxr74oXh@lunn.ch
-Fixes: 87461f7a58ab694e638ac52afa543b427751a9d0
+For the entire series, please add:
 
+Reviewed-by: Bart Van Assche <bvanassche@acm.org>
 
