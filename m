@@ -2,105 +2,211 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E10DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 22 Jun 2022 23:44:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF674C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 00:02:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233495AbiFVXos (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 19:44:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53074 "EHLO
+        id S236230AbiFWAB6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 22 Jun 2022 20:01:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233155AbiFVXor (ORCPT
+        with ESMTP id S232190AbiFWAB4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 19:44:47 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3427A42A1F
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 16:44:46 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id a17so14729730pls.6
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 16:44:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=xiuf6zzvbLG03UYs0C2KLwj/eVIRqceMt7/BlzFnYGs=;
-        b=xg+bSaA4gWWCgUv2DixZs6U6w9neQ3CWRdkRAs7h7X8ylApaGxfOBVIYZHibDzA0BO
-         qwwctctan+VZXqN+VpninBE7FM0Mwa2fmYOmg+GDLRWiVGXjWktKj6Nk5DMvSg3R3FBJ
-         uueM3ZRs+Y6MptlF/jEk4fOA/lpGOYb+HNjx3210xZu0FDVkMYI8iNyUAbPapoSas5WO
-         5JiQd0jeov/ucQRwrOIToeDPpZQQ0kqZt2pqelfTChiW0Pnwg8sAL2AissCoyUljQwfF
-         cEdS+6rx95FbvJwSetOHDT3zgMtj3djbS5bDsL9R2MPXQy8DVnr64Wf1ZsqccpxpGb2P
-         62tg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=xiuf6zzvbLG03UYs0C2KLwj/eVIRqceMt7/BlzFnYGs=;
-        b=zFMLsxbfLYvhq6o3ZxA1egDavNO38SiPb9P6fdNKokNI620TaPiJl9z7mi3BNbJr8D
-         A2XWIOJcmpmDmW3YUXiLdN0w32xl5XaccivGSzcCHrZezC9GkyxPEDNYapUr9I82JN0T
-         dFpq96XsjhHEV2Ii0m9KYNXxN7+lH2/I7+on57kQnGXSu5/wmyc+3Ztuet8COqeqZUoQ
-         yGyJq338L/ZN+djIgZYkb87Fv7vEXxouwGfpn48MbudUPxOxBmyf91d3MQYDANr5syIh
-         oFCUhIIXHrZuBj+Mwc2+uOk56OwoEWIyC8GSaV+EKlwEsMQMDNAQA3VeOkvahoc7nufr
-         JRsg==
-X-Gm-Message-State: AJIora/wHMkaHc6e4H2323kUfbgyI58+gMH5npU8KPXZ+PSF4HW+eRwz
-        RmM9mTbt2L/2Pje2/VaQQIXd4SYsHa8a8A==
-X-Google-Smtp-Source: AGRyM1uilk/Jr0x+syRpFZ/nF+4NI/OGSgvao9e50J8tXM/WSqNrc24QNGuHDvCaqAtgKFS0vAZM3w==
-X-Received: by 2002:a17:90b:354c:b0:1ec:9ef2:8a0e with SMTP id lt12-20020a17090b354c00b001ec9ef28a0emr936394pjb.72.1655941485638;
-        Wed, 22 Jun 2022 16:44:45 -0700 (PDT)
-Received: from [192.168.1.100] ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id md17-20020a17090b23d100b001e2f383110bsm357045pjb.11.2022.06.22.16.44.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Jun 2022 16:44:45 -0700 (PDT)
-Message-ID: <fb6f3d33-2d56-cf3b-25e8-85c24dcbb3d8@kernel.dk>
-Date:   Wed, 22 Jun 2022 17:44:43 -0600
+        Wed, 22 Jun 2022 20:01:56 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5802403F8;
+        Wed, 22 Jun 2022 17:01:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655942515; x=1687478515;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:content-transfer-encoding:mime-version;
+  bh=T15ZJso/B5LUFRkGGDDvgKQQDe8xUIdacYkRiD8qF2I=;
+  b=ZMC2niVbGOm+g78fKfNpWC//GvWPt7ogL/QM6Fn7QJXYLZz2rAQQaO7U
+   PlORxsI0kiW9vPcSzdQL4r/QbUGMNFrXZnLuNzLOf+Nhi0JvxS6I0lVW9
+   A0FNpwA+Pfq4VwMLgtRRDekTh0DHG4/tNoMEAa0o1u9+xiFVEhX7UjTYm
+   bJ6hdllqnv6EZ7e6a9GLXPvYmBNCQJdw4zJTP21nwHZMuKoH82CM+ZCE1
+   1i5MhJMgyafYK+qQlFPTx5eInKg7bn0r8bkuvDOHcB6eFKVNO2pafr48/
+   tcjl24dtmJSX+GP5MaMpWkPFHVxcdQu+exO+2s45ENj6h/p4F6uB5JGqX
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="280627383"
+X-IronPort-AV: E=Sophos;i="5.92,215,1650956400"; 
+   d="scan'208";a="280627383"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 17:01:55 -0700
+X-IronPort-AV: E=Sophos;i="5.92,215,1650956400"; 
+   d="scan'208";a="644454589"
+Received: from jmatsis-mobl.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.209.178.197])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 17:01:50 -0700
+Message-ID: <d3ba563f3f4e7aaf90fb99d20c651b5751972f7b.camel@intel.com>
+Subject: Re: [PATCH v5 02/22] cc_platform: Add new attribute to prevent ACPI
+ CPU hotplug
+From:   Kai Huang <kai.huang@intel.com>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        kvm-devel <kvm@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Len Brown <len.brown@intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Rafael Wysocki <rafael.j.wysocki@intel.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        isaku.yamahata@intel.com, Tom Lendacky <thomas.lendacky@amd.com>,
+        Tianyu.Lan@microsoft.com, Randy Dunlap <rdunlap@infradead.org>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Yue Haibing <yuehaibing@huawei.com>, dongli.zhang@oracle.com
+Date:   Thu, 23 Jun 2022 12:01:48 +1200
+In-Reply-To: <CAJZ5v0jV8ODcxuLL+iSpYbW7w=GFtUSakN-n8CO5Zmun3K-Erg@mail.gmail.com>
+References: <cover.1655894131.git.kai.huang@intel.com>
+         <f4bff93d83814ea1f54494f51ce3e5d954cf0f5b.1655894131.git.kai.huang@intel.com>
+         <CAJZ5v0jV8ODcxuLL+iSpYbW7w=GFtUSakN-n8CO5Zmun3K-Erg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.2 (3.44.2-1.fc36) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: linux-next: Fixes tag needs some work in the block tree
-Content-Language: en-US
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Dylan Yudaken <dylany@fb.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-References: <20220623092143.2b9d2e7e@canb.auug.org.au>
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <20220623092143.2b9d2e7e@canb.auug.org.au>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/22/22 5:21 PM, Stephen Rothwell wrote:
-> Hi all,
-> 
-> In commit
-> 
->   1da6baa4e4c2 ("io_uring: move io_uring_get_opcode out of TP_printk")
-> 
-> Fixes tag
-> 
->   Fixes: 033b87d2 ("io_uring: use the text representation of ops in trace")
-> 
-> has these problem(s):
-> 
->   - SHA1 should be at least 12 digits long
->     This can be fixed for the future by setting core.abbrev to 12 (or
->     more) or (for git v2.11 or later) just making sure it is not set
->     (or set to "auto").
+On Wed, 2022-06-22 at 13:42 +0200, Rafael J. Wysocki wrote:
+> On Wed, Jun 22, 2022 at 1:16 PM Kai Huang <kai.huang@intel.com> wrote:
+> >=20
+> > Platforms with confidential computing technology may not support ACPI
+> > CPU hotplug when such technology is enabled by the BIOS.  Examples
+> > include Intel platforms which support Intel Trust Domain Extensions
+> > (TDX).
+> >=20
+> > If the kernel ever receives ACPI CPU hotplug event, it is likely a BIOS
+> > bug.  For ACPI CPU hot-add, the kernel should speak out this is a BIOS
+> > bug and reject the new CPU.  For hot-removal, for simplicity just assum=
+e
+> > the kernel cannot continue to work normally, and BUG().
+> >=20
+> > Add a new attribute CC_ATTR_ACPI_CPU_HOTPLUG_DISABLED to indicate the
+> > platform doesn't support ACPI CPU hotplug, so that kernel can handle
+> > ACPI CPU hotplug events for such platform.  The existing attribute
+> > CC_ATTR_HOTPLUG_DISABLED is for software CPU hotplug thus doesn't fit.
+> >=20
+> > In acpi_processor_{add|remove}(), add early check against this attribut=
+e
+> > and handle accordingly if it is set.
+> >=20
+> > Also take this chance to rename existing CC_ATTR_HOTPLUG_DISABLED to
+> > CC_ATTR_CPU_HOTPLUG_DISABLED as it is for software CPU hotplug.
+> >=20
+> > Signed-off-by: Kai Huang <kai.huang@intel.com>
+> > ---
+> >  arch/x86/coco/core.c          |  2 +-
+> >  drivers/acpi/acpi_processor.c | 23 +++++++++++++++++++++++
+> >  include/linux/cc_platform.h   | 15 +++++++++++++--
+> >  kernel/cpu.c                  |  2 +-
+> >  4 files changed, 38 insertions(+), 4 deletions(-)
+> >=20
+> > diff --git a/arch/x86/coco/core.c b/arch/x86/coco/core.c
+> > index 4320fadae716..1bde1af75296 100644
+> > --- a/arch/x86/coco/core.c
+> > +++ b/arch/x86/coco/core.c
+> > @@ -20,7 +20,7 @@ static bool intel_cc_platform_has(enum cc_attr attr)
+> >  {
+> >         switch (attr) {
+> >         case CC_ATTR_GUEST_UNROLL_STRING_IO:
+> > -       case CC_ATTR_HOTPLUG_DISABLED:
+> > +       case CC_ATTR_CPU_HOTPLUG_DISABLED:
+> >         case CC_ATTR_GUEST_MEM_ENCRYPT:
+> >         case CC_ATTR_MEM_ENCRYPT:
+> >                 return true;
+> > diff --git a/drivers/acpi/acpi_processor.c b/drivers/acpi/acpi_processo=
+r.c
+> > index 6737b1cbf6d6..b960db864cd4 100644
+> > --- a/drivers/acpi/acpi_processor.c
+> > +++ b/drivers/acpi/acpi_processor.c
+> > @@ -15,6 +15,7 @@
+> >  #include <linux/kernel.h>
+> >  #include <linux/module.h>
+> >  #include <linux/pci.h>
+> > +#include <linux/cc_platform.h>
+> >=20
+> >  #include <acpi/processor.h>
+> >=20
+> > @@ -357,6 +358,17 @@ static int acpi_processor_add(struct acpi_device *=
+device,
+> >         struct device *dev;
+> >         int result =3D 0;
+> >=20
+> > +       /*
+> > +        * If the confidential computing platform doesn't support ACPI
+> > +        * memory hotplug, the BIOS should never deliver such event to
+> > +        * the kernel.  Report ACPI CPU hot-add as a BIOS bug and ignor=
+e
+> > +        * the new CPU.
+> > +        */
+> > +       if (cc_platform_has(CC_ATTR_ACPI_CPU_HOTPLUG_DISABLED)) {
+>=20
+> This will affect initialization, not just hotplug AFAICS.
+>=20
+> You should reset the .hotplug.enabled flag in processor_handler to
+> false instead.
 
-I'll rebase on -rc4 anyway, I'll fix thie one up.
+Hi Rafael,
 
-Dylan, here's what I use for adding Fixes tags:
+Thanks for the review.  By "affect initialization" did you mean this
+acpi_processor_add() is also called during kernel boot when any logical cpu=
+ is
+brought up?  Or do you mean ACPI CPU hotplug can also happen during kernel =
+boot
+(after acpi_processor_init())?
 
-[pretty]
-        fixes = Fixes: %h (\"%s\")
+I see acpi_processor_init() calls acpi_processor_check_duplicates() which c=
+alls
+acpi_evaluate_object() but I don't know details of ACPI so I don't know whe=
+ther
+this would trigger acpi_processor_add().
 
-and then I just do:
+One thing is TDX doesn't support ACPI CPU hotplug is an architectural thing=
+, so
+it is illegal even if it happens during kernel boot.  Dave's idea is the ke=
+rnel
+should  speak out loudly if physical CPU hotplug indeed happened on (BIOS) =
+TDX-
+enabled platforms.  Otherwise perhaps we can just give up initializing the =
+ACPI
+CPU hotplug in acpi_processor_init(), something like below?
 
-git fixes 033b87d2
-Fixes: 033b87d24f72 ("io_uring: use the text representation of ops in trace")
+--- a/drivers/acpi/acpi_processor.c
++++ b/drivers/acpi/acpi_processor.c
+@@ -707,6 +707,10 @@ bool acpi_duplicate_processor_id(int proc_id)
+ void __init acpi_processor_init(void)
+ {
+        acpi_processor_check_duplicates();
++
++       if (cc_platform_has(CC_ATTR_ACPI_CPU_HOTPLUG_DISABLED))
++               return;
++
+        acpi_scan_add_handler_with_hotplug(&processor_handler, "processor")=
+;
+        acpi_scan_add_handler(&processor_container_handler);
+ }
 
-to generate it.
 
--- 
-Jens Axboe
+>=20
+> > +               dev_err(&device->dev, "[BIOS bug]: Platform doesn't sup=
+port ACPI CPU hotplug.  New CPU ignored.\n");
+> > +               return -EINVAL;
+> > +       }
+> > +
+
+--=20
+Thanks,
+-Kai
+
 
