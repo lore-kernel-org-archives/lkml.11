@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEBD1C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:57:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7887C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:57:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232873AbiFWQ5H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:57:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57200 "EHLO
+        id S232300AbiFWQ5L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:57:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231960AbiFWQwg (ORCPT
+        with ESMTP id S233776AbiFWQvh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:52:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B4C9388B;
-        Thu, 23 Jun 2022 09:52:31 -0700 (PDT)
+        Thu, 23 Jun 2022 12:51:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FA9150B03;
+        Thu, 23 Jun 2022 09:49:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8797561FC2;
-        Thu, 23 Jun 2022 16:52:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 629A7C3411B;
-        Thu, 23 Jun 2022 16:52:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D10DAB82490;
+        Thu, 23 Jun 2022 16:49:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25D83C3411B;
+        Thu, 23 Jun 2022 16:49:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003149;
-        bh=hwza0RWJSq4Ba0aX/fWeFoGPUNuhh4zwFJUguPigW9o=;
+        s=korg; t=1656002978;
+        bh=oybuJme2cmBln+oj51ula7SjNcFLHu41dB7ZU0zJptQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mqcPXVvQFjgr8sBNpa4VOjxJn0zEp0w1K1nBqNTo30uUkW/6kv8AMCciAxeSzHMOo
-         n+dCxrox1ivBsuAgBj1wLzYehOWfMjek2LbG0OEMNlNP+I6MAlfRp/uMTGacSoCdZG
-         Zs/yWax4JgU3QYmmle/BkEAe8O/qu1ai8y6hORbc=
+        b=QGlblKj0CokZrI1/v5izy6KMe3x8Gw4rs3oCgOZZtKt/l/9JfuekPGOrNYDLhITHl
+         hg6BBvEBrdGoatpIkyqXb5dCr5NBH5GgQHFgqZqCIp2Q/I2b8/5S++8MbqlKbUred1
+         EQsluSSM5KIKVLF5GQqpHZO1deEYuZnPnuOoiUOw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Corentin Labbe <clabbe.montjoie@gmail.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Theodore Tso <tytso@mit.edu>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 146/264] hwrng: core - rewrite better comparison to NULL
-Date:   Thu, 23 Jun 2022 18:42:19 +0200
-Message-Id: <20220623164348.196072004@linuxfoundation.org>
+Subject: [PATCH 4.9 038/264] drivers/char/random.c: make primary_crng static
+Date:   Thu, 23 Jun 2022 18:40:31 +0200
+Message-Id: <20220623164345.147190185@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -49,31 +50,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Corentin LABBE <clabbe.montjoie@gmail.com>
+From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
 
-commit 2a971e3b248775f808950bdc0ac75f12a2853eff upstream.
+commit 764ed189c82090c1d85f0e30636156736d8f09a8 upstream.
 
-This patch fix the checkpatch warning "Comparison to NULL could be written "!ptr"
+Since the definition of struct crng_state is private to random.c, and
+primary_crng is neither declared or used elsewhere, there's no reason
+for that symbol to have external linkage.
 
-Signed-off-by: Corentin Labbe <clabbe.montjoie@gmail.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/hw_random/core.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/char/random.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/char/hw_random/core.c
-+++ b/drivers/char/hw_random/core.c
-@@ -439,8 +439,7 @@ int hwrng_register(struct hwrng *rng)
- 	int err = -EINVAL;
- 	struct hwrng *old_rng, *tmp;
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -416,7 +416,7 @@ struct crng_state {
+ 	spinlock_t	lock;
+ };
  
--	if (rng->name == NULL ||
--	    (rng->data_read == NULL && rng->read == NULL))
-+	if (!rng->name || (!rng->data_read && !rng->read))
- 		goto out;
+-struct crng_state primary_crng = {
++static struct crng_state primary_crng = {
+ 	.lock = __SPIN_LOCK_UNLOCKED(primary_crng.lock),
+ };
  
- 	mutex_lock(&rng_mutex);
 
 
