@@ -2,343 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEA30C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 06:07:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC866C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 06:08:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229669AbiFWGHz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 02:07:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43874 "EHLO
+        id S229779AbiFWGIG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 02:08:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229700AbiFWGHp (ORCPT
+        with ESMTP id S229732AbiFWGHt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 02:07:45 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80A374477F;
-        Wed, 22 Jun 2022 23:07:43 -0700 (PDT)
-Received: from dggpeml500025.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LT8s012wNzkWbC;
-        Thu, 23 Jun 2022 14:06:28 +0800 (CST)
-Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
- dggpeml500025.china.huawei.com (7.185.36.35) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 23 Jun 2022 14:07:41 +0800
-Received: from huawei.com (10.67.165.24) by dggpeml100012.china.huawei.com
- (7.185.36.121) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 23 Jun
- 2022 14:07:41 +0800
-From:   Kai Ye <yekai13@huawei.com>
-To:     <gregkh@linuxfoundation.org>, <herbert@gondor.apana.org.au>
-CC:     <linux-crypto@vger.kernel.org>,
-        <linux-accelerators@lists.ozlabs.org>,
-        <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>,
-        <zhangfei.gao@linaro.org>, <wangzhou1@hisilicon.com>,
-        <yekai13@huawei.com>
-Subject: [PATCH v3 3/3] crypto: hisilicon/qm - defining the device isolation strategy
-Date:   Thu, 23 Jun 2022 14:01:14 +0800
-Message-ID: <20220623060114.37505-4-yekai13@huawei.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220623060114.37505-1-yekai13@huawei.com>
-References: <20220623060114.37505-1-yekai13@huawei.com>
+        Thu, 23 Jun 2022 02:07:49 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB0264477F;
+        Wed, 22 Jun 2022 23:07:46 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LT8tN2J1hz4xZj;
+        Thu, 23 Jun 2022 16:07:40 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1655964462;
+        bh=DIECM9rabt+6+wTd58y+akkzG6KhfGCuRfy6xDMDTaE=;
+        h=Date:From:To:Cc:Subject:From;
+        b=Vjb8nXaI3FUenZyvhRKP/nNNKBkQWcF1uwuloyaQUJa6x0qf77R9yzI6CfRpRKdlx
+         B2gfJyh1isX7i2t+MFMv/1i1j91k1Z6VFcevzHOx94MOzS7mOc0qEoQd6kf7a8CrJO
+         dtSMhn26GsNM4By9LqDVhYFwgvdfi0yU4qKB19IGSfiyhPxDx5KUuWpT8nXolAk6hI
+         YooH+duggbpBGbu+bPGZvLjOJXNTJG/l2oHExJyzkFUmXJoxoPwCWS2f1fuT5NMEIQ
+         Xz1tUUCSNJquSaaVmn+GCSHFzMaZcjSmpoI+6ubp6YNxu/3jMmGFjioQdeYhm8Y2Ke
+         Ss9Gkms52m9Vw==
+Date:   Thu, 23 Jun 2022 16:07:23 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Alex Deucher <alexdeucher@gmail.com>, Greg KH <greg@kroah.com>
+Cc:     Somalapuram Amaranath <Amaranath.Somalapuram@amd.com>,
+        Duoming Zhou <duoming@zju.edu.cn>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Dave Airlie <airlied@linux.ie>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build failure after merge of the amdgpu tree
+Message-ID: <20220623160723.7a44b573@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpeml100012.china.huawei.com (7.185.36.121)
-X-CFilter-Loop: Reflected
+Content-Type: multipart/signed; boundary="Sig_/WGFqr7wXQvk8d+QUrjBo9mH";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Define the device isolation strategy by the device driver. The
-user configures a frequency value by uacce interface. If the
-slot reset frequency exceeds the value of setting for a certain
-period of time, the device will not be available in user space.
-This frequency is an abstract number of times that can be
-considered to occur in a time window. The time window can be set
-to one hour or one day. The VF device use the PF device isolation
-strategy. All the hardware errors are processed by PF driver.
+--Sig_/WGFqr7wXQvk8d+QUrjBo9mH
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Kai Ye <yekai13@huawei.com>
+Hi all,
+
+After merging the amdgpu tree, today's linux-next build (x86_64
+allmodconfig) failed like this:
+
+In file included from include/linux/radix-tree.h:12,
+                 from include/linux/idr.h:15,
+                 from include/linux/kernfs.h:12,
+                 from include/linux/sysfs.h:16,
+                 from include/linux/kobject.h:20,
+                 from include/linux/energy_model.h:7,
+                 from include/linux/device.h:16,
+                 from include/linux/power_supply.h:15,
+                 from drivers/gpu/drm/amd/amdgpu/amdgpu_device.c:28:
+drivers/gpu/drm/amd/amdgpu/amdgpu_device.c: In function 'amdgpu_reset_captu=
+re_coredumpm':
+include/linux/gfp.h:337:25: error: passing argument 5 of 'dev_coredumpm' ma=
+kes pointer from integer without a cast [-Werror=3Dint-conversion]
+  337 | #define GFP_KERNEL      (__GFP_RECLAIM | __GFP_IO | __GFP_FS)
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                         |
+      |                         unsigned int
+drivers/gpu/drm/amd/amdgpu/amdgpu_device.c:4726:55: note: in expansion of m=
+acro 'GFP_KERNEL'
+ 4726 |         dev_coredumpm(dev->dev, THIS_MODULE, adev, 0, GFP_KERNEL,
+      |                                                       ^~~~~~~~~~
+In file included from drivers/gpu/drm/amd/amdgpu/amdgpu_device.c:35:
+include/linux/devcoredump.h:59:30: note: expected 'ssize_t (*)(char *, loff=
+_t,  size_t,  void *, size_t)' {aka 'long int (*)(char *, long long int,  l=
+ong unsigned int,  void *, long unsigned int)'} but argument is of type 'un=
+signed int'
+   59 |                    ssize_t (*read)(char *buffer, loff_t offset, siz=
+e_t count,
+      |                    ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=
+~~~~~~~~~~
+   60 |                                    void *data, size_t datalen),
+      |                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/gpu/drm/amd/amdgpu/amdgpu_device.c:4727:23: error: passing argument=
+ 6 of 'dev_coredumpm' from incompatible pointer type [-Werror=3Dincompatibl=
+e-pointer-types]
+ 4727 |                       amdgpu_devcoredump_read, amdgpu_devcoredump_f=
+ree);
+      |                       ^~~~~~~~~~~~~~~~~~~~~~~
+      |                       |
+      |                       ssize_t (*)(char *, loff_t,  size_t,  void *,=
+ size_t) {aka long int (*)(char *, long long int,  long unsigned int,  void=
+ *, long unsigned int)}
+In file included from drivers/gpu/drm/amd/amdgpu/amdgpu_device.c:35:
+include/linux/devcoredump.h:61:27: note: expected 'void (*)(void *)' but ar=
+gument is of type 'ssize_t (*)(char *, loff_t,  size_t,  void *, size_t)' {=
+aka 'long int (*)(char *, long long int,  long unsigned int,  void *, long =
+unsigned int)'}
+   61 |                    void (*free)(void *data));
+      |                    ~~~~~~~^~~~~~~~~~~~~~~~~
+drivers/gpu/drm/amd/amdgpu/amdgpu_device.c:4726:9: error: too many argument=
+s to function 'dev_coredumpm'
+ 4726 |         dev_coredumpm(dev->dev, THIS_MODULE, adev, 0, GFP_KERNEL,
+      |         ^~~~~~~~~~~~~
+In file included from drivers/gpu/drm/amd/amdgpu/amdgpu_device.c:35:
+include/linux/devcoredump.h:57:6: note: declared here
+   57 | void dev_coredumpm(struct device *dev, struct module *owner,
+      |      ^~~~~~~~~~~~~
+cc1: all warnings being treated as errors
+
+Caused by commit
+
+  3d8785f6c04a ("drm/amdgpu: adding device coredump support")
+
+interacting with commit
+
+  77515ebaf019 ("devcoredump: remove the useless gfp_t parameter in dev_cor=
+edumpv and dev_coredumpm")
+
+from the driver-core tree.
+
+I have applied the following merge resolution patch for today.
+
+From: Stephen Rothwell <sfr@canb.auug.org.au>
+Date: Thu, 23 Jun 2022 15:56:22 +1000
+Subject: [PATCH] fix up for "devcoredump: remove the useless gfp_t paramete=
+r in dev_coredumpv and dev_coredumpm"
+
+interacting with
+
+  3d8785f6c04a ("drm/amdgpu: adding device coredump support")
+
+Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
 ---
- drivers/crypto/hisilicon/qm.c | 178 +++++++++++++++++++++++++++++++---
- include/linux/hisi_acc_qm.h   |   9 ++
- 2 files changed, 175 insertions(+), 12 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_device.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/crypto/hisilicon/qm.c b/drivers/crypto/hisilicon/qm.c
-index ad83c194d664..f0a09ca19873 100644
---- a/drivers/crypto/hisilicon/qm.c
-+++ b/drivers/crypto/hisilicon/qm.c
-@@ -417,6 +417,16 @@ struct hisi_qm_resource {
- 	struct list_head list;
- };
- 
-+/**
-+ * struct qm_hw_err - structure of describes the device err
-+ * @list: hardware error list
-+ * @timestamp: timestamp when the error occurred
-+ */
-+struct qm_hw_err {
-+	struct list_head list;
-+	unsigned long long timestamp;
-+};
-+
- struct hisi_qm_hw_ops {
- 	int (*get_vft)(struct hisi_qm *qm, u32 *base, u32 *number);
- 	void (*qm_db)(struct hisi_qm *qm, u16 qn,
-@@ -3410,6 +3420,126 @@ static long hisi_qm_uacce_ioctl(struct uacce_queue *q, unsigned int cmd,
- 	return 0;
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c b/drivers/gpu/drm/a=
+md/amdgpu/amdgpu_device.c
+index f2a4c268ac72..9d6418bb963e 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+@@ -4723,7 +4723,7 @@ static void amdgpu_reset_capture_coredumpm(struct amd=
+gpu_device *adev)
+ 	struct drm_device *dev =3D adev_to_drm(adev);
+=20
+ 	ktime_get_ts64(&adev->reset_time);
+-	dev_coredumpm(dev->dev, THIS_MODULE, adev, 0, GFP_KERNEL,
++	dev_coredumpm(dev->dev, THIS_MODULE, adev, 0,
+ 		      amdgpu_devcoredump_read, amdgpu_devcoredump_free);
  }
- 
-+/**
-+ * qm_hw_err_isolate() - Try to isolate the uacce device with its sysfs
-+ * @qm: The qm which we want to configure.
-+ *
-+ * according to user's configuration of isolation strategy. Warning: this
-+ * API should be called while there the users on this device are suspended
-+ * by slot resetting preparation of PCI AER.
-+ */
-+static int qm_hw_err_isolate(struct hisi_qm *qm)
-+{
-+	struct qm_hw_err *err, *tmp, *hw_err;
-+	struct qm_err_isolate *isolate;
-+	u32 count = 0;
-+
-+	isolate = &qm->isolate_data;
-+
-+#define SECONDS_PER_HOUR	3600
-+
-+	/* All the hw errs are processed by PF driver */
-+	if (qm->uacce->is_vf || atomic_read(&isolate->is_isolate) ||
-+	    !isolate->hw_err_isolate_hz)
-+		return 0;
-+
-+	hw_err = kzalloc(sizeof(*hw_err), GFP_ATOMIC);
-+	if (!hw_err)
-+		return -ENOMEM;
-+
-+	mutex_lock(&isolate->isolate_lock);
-+	hw_err->timestamp = jiffies;
-+	list_for_each_entry_safe(err, tmp, &qm->uacce_hw_errs, list) {
-+		if ((hw_err->timestamp - err->timestamp) / HZ >
-+		    SECONDS_PER_HOUR) {
-+			list_del(&err->list);
-+			kfree(err);
-+		} else {
-+			count++;
-+		}
-+	}
-+	list_add(&hw_err->list, &qm->uacce_hw_errs);
-+	mutex_unlock(&isolate->isolate_lock);
-+
-+	if (count >= isolate->hw_err_isolate_hz)
-+		atomic_set(&isolate->is_isolate, 1);
-+
-+	return 0;
-+}
-+
-+static void qm_hw_err_destroy(struct hisi_qm *qm)
-+{
-+	struct qm_hw_err *err, *tmp;
-+
-+	mutex_lock(&qm->isolate_data.isolate_lock);
-+	list_for_each_entry_safe(err, tmp, &qm->uacce_hw_errs, list) {
-+		list_del(&err->list);
-+		kfree(err);
-+	}
-+	mutex_unlock(&qm->isolate_data.isolate_lock);
-+}
-+
-+static enum uacce_dev_state hisi_qm_get_isolate_state(struct uacce_device *uacce)
-+{
-+	struct hisi_qm *qm = uacce->priv;
-+	struct hisi_qm *pf_qm;
-+
-+	if (uacce->is_vf)
-+		pf_qm = pci_get_drvdata(pci_physfn(qm->pdev));
-+	else
-+		pf_qm = qm;
-+
-+	return atomic_read(&pf_qm->isolate_data.is_isolate) ?
-+			UACCE_DEV_ISOLATE : UACCE_DEV_NORMAL;
-+}
-+
-+static int hisi_qm_isolate_strategy_write(struct uacce_device *uacce,
-+					  const char *buf, size_t len)
-+{
-+	struct hisi_qm *qm = uacce->priv;
-+	unsigned long val;
-+
-+#define MAX_ISOLATE_STRATEGY	65535
-+
-+	/* Must be set by PF */
-+	if (uacce->is_vf) {
-+		dev_info(&qm->pdev->dev, "the isolation strategy must be set by PF.\n");
-+		return -EINVAL;
-+	}
-+
-+	if (atomic_read(&qm->isolate_data.is_isolate))
-+		return -EINVAL;
-+
-+	if (kstrtoul(buf, 0, &val) < 0)
-+		return -EINVAL;
-+
-+	if (val > MAX_ISOLATE_STRATEGY)
-+		return -EINVAL;
-+
-+	qm->isolate_data.hw_err_isolate_hz = val;
-+
-+	/* After the policy is updated, need to reset the hardware err list */
-+	qm_hw_err_destroy(qm);
-+
-+	return 0;
-+}
-+
-+static int hisi_qm_isolate_strategy_read(struct uacce_device *uacce, char *buf)
-+{
-+	struct hisi_qm *qm = uacce->priv;
-+	struct hisi_qm *pf_qm;
-+	unsigned long val;
-+
-+	if (uacce->is_vf) {
-+		pf_qm = pci_get_drvdata(pci_physfn(qm->pdev));
-+		val = pf_qm->isolate_data.hw_err_isolate_hz;
-+	} else {
-+		val = qm->isolate_data.hw_err_isolate_hz;
-+	}
-+
-+	return sysfs_emit(buf, "%lu\n", val);
-+}
-+
- static const struct uacce_ops uacce_qm_ops = {
- 	.get_available_instances = hisi_qm_get_available_instances,
- 	.get_queue = hisi_qm_uacce_get_queue,
-@@ -3419,8 +3549,22 @@ static const struct uacce_ops uacce_qm_ops = {
- 	.mmap = hisi_qm_uacce_mmap,
- 	.ioctl = hisi_qm_uacce_ioctl,
- 	.is_q_updated = hisi_qm_is_q_updated,
-+	.get_isolate_state = hisi_qm_get_isolate_state,
-+	.isolate_strategy_write = hisi_qm_isolate_strategy_write,
-+	.isolate_strategy_read = hisi_qm_isolate_strategy_read,
- };
- 
-+static void qm_remove_uacce(struct hisi_qm *qm)
-+{
-+	struct uacce_device *uacce = qm->uacce;
-+
-+	if (qm->use_sva) {
-+		qm_hw_err_destroy(qm);
-+		uacce_remove(uacce);
-+		qm->uacce = NULL;
-+	}
-+}
-+
- static int qm_alloc_uacce(struct hisi_qm *qm)
- {
- 	struct pci_dev *pdev = qm->pdev;
-@@ -3433,6 +3577,8 @@ static int qm_alloc_uacce(struct hisi_qm *qm)
- 	};
- 	int ret;
- 
-+	INIT_LIST_HEAD(&qm->uacce_hw_errs);
-+	mutex_init(&qm->isolate_data.isolate_lock);
- 	ret = strscpy(interface.name, dev_driver_string(&pdev->dev),
- 		      sizeof(interface.name));
- 	if (ret < 0)
-@@ -3446,8 +3592,7 @@ static int qm_alloc_uacce(struct hisi_qm *qm)
- 		qm->use_sva = true;
- 	} else {
- 		/* only consider sva case */
--		uacce_remove(uacce);
--		qm->uacce = NULL;
-+		qm_remove_uacce(qm);
- 		return -EINVAL;
- 	}
- 
-@@ -5109,6 +5254,12 @@ static int qm_controller_reset_prepare(struct hisi_qm *qm)
- 		return ret;
- 	}
- 
-+	if (qm->use_sva) {
-+		ret = qm_hw_err_isolate(qm);
-+		if (ret)
-+			pci_err(pdev, "failed to isolate hw err!\n");
-+	}
-+
- 	ret = qm_wait_vf_prepare_finish(qm);
- 	if (ret)
- 		pci_err(pdev, "failed to stop by vfs in soft reset!\n");
-@@ -5436,19 +5587,25 @@ static int qm_controller_reset(struct hisi_qm *qm)
- 	ret = qm_soft_reset(qm);
- 	if (ret) {
- 		pci_err(pdev, "Controller reset failed (%d)\n", ret);
--		qm_reset_bit_clear(qm);
--		return ret;
-+		goto err_reset;
- 	}
- 
- 	ret = qm_controller_reset_done(qm);
--	if (ret) {
--		qm_reset_bit_clear(qm);
--		return ret;
--	}
-+	if (ret)
-+		goto err_reset;
- 
- 	pci_info(pdev, "Controller reset complete\n");
- 
- 	return 0;
-+
-+err_reset:
-+	pci_err(pdev, "Controller reset failed (%d)\n", ret);
-+	qm_reset_bit_clear(qm);
-+
-+	/* if resetting fails, isolate the device */
-+	if (qm->use_sva && !qm->uacce->is_vf)
-+		atomic_set(&qm->isolate_data.is_isolate, 1);
-+	return ret;
- }
- 
- /**
-@@ -6246,10 +6403,7 @@ int hisi_qm_init(struct hisi_qm *qm)
- err_free_qm_memory:
- 	hisi_qm_memory_uninit(qm);
- err_alloc_uacce:
--	if (qm->use_sva) {
--		uacce_remove(qm->uacce);
--		qm->uacce = NULL;
--	}
-+	qm_remove_uacce(qm);
- err_irq_register:
- 	qm_irq_unregister(qm);
- err_pci_init:
-diff --git a/include/linux/hisi_acc_qm.h b/include/linux/hisi_acc_qm.h
-index 116e8bd68c99..44454150c205 100644
---- a/include/linux/hisi_acc_qm.h
-+++ b/include/linux/hisi_acc_qm.h
-@@ -271,6 +271,13 @@ struct hisi_qm_poll_data {
- 	u16 *qp_finish_id;
- };
- 
-+struct qm_err_isolate {
-+	struct mutex isolate_lock;
-+	/* user cfg freq which triggers isolation */
-+	u32 hw_err_isolate_hz;
-+	atomic_t is_isolate;
-+};
-+
- struct hisi_qm {
- 	enum qm_hw_ver ver;
- 	enum qm_fun_type fun_type;
-@@ -335,6 +342,8 @@ struct hisi_qm {
- 	struct qm_shaper_factor *factor;
- 	u32 mb_qos;
- 	u32 type_rate;
-+	struct list_head uacce_hw_errs;
-+	struct qm_err_isolate isolate_data;
- };
- 
- struct hisi_qp_status {
--- 
-2.33.0
+ #endif
+--=20
+2.35.1
 
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/WGFqr7wXQvk8d+QUrjBo9mH
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmK0AxsACgkQAVBC80lX
+0GxKKggAph9gBasqfVPiZkSSFWEaS536wSbZ05kPaC3YBGfIU5aJqtrQblXFovlX
+zLP+xlYTTghd5gnFIOdcfUuj8dyJoKOdCpO2Qikn6j0ycrhWsPDQ4i3FbwHEbQe5
+baN2ld4WbV9WjDJA6aa5qySIBy1aaPRUcCXKdiDJmKHE2w6Zz3HIiqFvkD+i/jDJ
+yFPqUJ2hZPk9Fwyi2HkE2xi5N81cq8xuzFWo9isWlLfiOnMna4Uvm2h2vnB9oWxT
+92/fYO/x4LPfMGZB4HaDrdlLxoJ07TE1UscVYIZ85e5vNMisTu9wNNm/mXZSRNCY
+X0xdpcRbzQpMUbDHtA5SuMmp1u389Q==
+=hbFV
+-----END PGP SIGNATURE-----
+
+--Sig_/WGFqr7wXQvk8d+QUrjBo9mH--
