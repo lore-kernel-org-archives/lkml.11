@@ -2,99 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7E32C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 10:51:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB957CCA480
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 10:52:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231401AbiFWKvy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 06:51:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48420 "EHLO
+        id S231451AbiFWKwK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 06:52:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231352AbiFWKvk (ORCPT
+        with ESMTP id S231469AbiFWKwC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 06:51:40 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 301EE4B428
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 03:51:39 -0700 (PDT)
-Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25NAKUqF006859;
-        Thu, 23 Jun 2022 05:51:23 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=PODMain02222019;
- bh=spwI6sAhpzo+8xV2qTuPti6l56+juOG2iCl+GRXgx6Y=;
- b=YWTCg5gwM6HNsL65S8x+ByDROJzBjEfDXslKcVsKpC68nrFMzeAHWHMwaXfQKtH+awqK
- Uv3IRazjoT8cu0EcFOdMh6h9IEvtK+o9pLpggDOHIbAYdzyZvnBusfPcrBH6Vc5MXrTC
- Bc1ANrSAIMvpbcvRpSXGq9zNHg4ITTNlW5wl3tS38LU/Pj1BC6dFfF7OECLEykd/lpnA
- /uME74/99UrDGT2/NGn/2FM4e4htX154qZMbSIq56mb3UAuylf0/SmROFdvd0bnpkWoJ
- DogLwUE5fb9/Ia4CxHm+tPtHQnWSk3uSuGq56O3rakggs30Z7WfpejcQu4JudaG/MOL5 jw== 
-Received: from ediex02.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3gsc41f17q-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 23 Jun 2022 05:51:23 -0500
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
- (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 23 Jun
- 2022 11:51:20 +0100
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.28 via Frontend
- Transport; Thu, 23 Jun 2022 11:51:20 +0100
-Received: from algalon.ad.cirrus.com (algalon.ad.cirrus.com [198.90.251.122])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 60B1A475;
-        Thu, 23 Jun 2022 10:51:20 +0000 (UTC)
-From:   Charles Keepax <ckeepax@opensource.cirrus.com>
-To:     <broonie@kernel.org>
-CC:     <james.schulman@cirrus.com>, <david.rhodes@cirrus.com>,
-        <lgirdwood@gmail.com>, <alsa-devel@alsa-project.org>,
-        <patches@opensource.cirrus.com>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH 6/6] ASoC: dapm: Move stereo autodisable check
-Date:   Thu, 23 Jun 2022 11:51:20 +0100
-Message-ID: <20220623105120.1981154-6-ckeepax@opensource.cirrus.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220623105120.1981154-1-ckeepax@opensource.cirrus.com>
-References: <20220623105120.1981154-1-ckeepax@opensource.cirrus.com>
+        Thu, 23 Jun 2022 06:52:02 -0400
+Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 165474B428;
+        Thu, 23 Jun 2022 03:51:58 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id A0F02E0017;
+        Thu, 23 Jun 2022 10:51:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1655981516;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=U7RfSrcQuRamOWWjJI1BD1X5IJAeB9zPMHMT1huumAE=;
+        b=daIUvP2fgkDg44Q7KttVzCGnVY2CC5+apqLBGn+WAZtC2QHkWgqJwJB7oP0289V0HCA88R
+        FaUHdxpzCoZRUIlqI64KAvvP0uKfZoBLEqOPnYSnYPIR/sHoJN8EWXd0liboXaDV2d4551
+        Uc+/zyVedUxNk4ojob4Bv4mbw/OhTXDoQKB8RXumMUDXpsRh+qO0m5gh8JLONluvsNNEkD
+        LhagOIc0fZiAWOuKYGQZe7PJioJ6R6hwJmHOHr97hF/DshqSQAirFpNht4Hof8eKK/SQWN
+        esItSdNHPVo1YGvTenMJAHdZbqOGW4xAT2DVisuJBdmozNmHN9odNF95borl1A==
+From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>
+Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        Lizhi Hou <lizhi.hou@xilinx.com>,
+        Allan Nielsen <allan.nielsen@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Steen Hegelund <steen.hegelund@microchip.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: [PATCH v1 0/2] of: populate of_root node if not set
+Date:   Thu, 23 Jun 2022 12:50:42 +0200
+Message-Id: <20220623105044.152832-1-clement.leger@bootlin.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-GUID: JgCLQNmst0Kq0Pq3_XSo28iJj41Qufod
-X-Proofpoint-ORIG-GUID: JgCLQNmst0Kq0Pq3_XSo28iJj41Qufod
-X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Tidy up the code a little, rather than repeating the check of
-mc->autodisable move the stereo error check to be under the
-existing if for mc->autodisable.
+In order to apply overlays or create new nodes under the root node, the
+kernel expects of_root to be set. On some system were a device-tree us
+not provided by firmware (x86 for instance) if CONFIG_OF is enabled,
+then we will end up with a null of_root. This series add support to
+create this root node using a builtin dtb and remove the manual
+creation of the root node done in unittests.c.
 
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
----
- sound/soc/soc-dapm.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+Clément Léger (2):
+  of: base: populate of_root node if not set
+  of: unittest: remove check for of_root
 
-diff --git a/sound/soc/soc-dapm.c b/sound/soc/soc-dapm.c
-index a8e842e02cdc2..b05231414c1d0 100644
---- a/sound/soc/soc-dapm.c
-+++ b/sound/soc/soc-dapm.c
-@@ -370,14 +370,14 @@ static int dapm_kcontrol_data_alloc(struct snd_soc_dapm_widget *widget,
- 	case snd_soc_dapm_mixer_named_ctl:
- 		mc = (struct soc_mixer_control *)kcontrol->private_value;
- 
--		if (mc->autodisable && snd_soc_volsw_is_stereo(mc))
--			dev_warn(widget->dapm->dev,
--				 "ASoC: Unsupported stereo autodisable control '%s'\n",
--				 ctrl_name);
--
- 		if (mc->autodisable) {
- 			struct snd_soc_dapm_widget template;
- 
-+			if (snd_soc_volsw_is_stereo(mc))
-+				dev_warn(widget->dapm->dev,
-+					 "ASoC: Unsupported stereo autodisable control '%s'\n",
-+					 ctrl_name);
-+
- 			name = kasprintf(GFP_KERNEL, "%s %s", ctrl_name,
- 					 "Autodisable");
- 			if (!name) {
+ drivers/of/Makefile       |  2 +-
+ drivers/of/base.c         | 18 ++++++++++++++++--
+ drivers/of/empty_root.dts |  6 ++++++
+ drivers/of/unittest.c     | 10 ----------
+ 4 files changed, 23 insertions(+), 13 deletions(-)
+ create mode 100644 drivers/of/empty_root.dts
+
 -- 
-2.30.2
+2.36.1
 
