@@ -2,40 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE3CAC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:05:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77347C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:05:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232623AbiFWRFG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:05:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43052 "EHLO
+        id S233039AbiFWRFP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:05:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233906AbiFWRDZ (ORCPT
+        with ESMTP id S233918AbiFWRD1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:03:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0084050E25;
-        Thu, 23 Jun 2022 09:55:08 -0700 (PDT)
+        Thu, 23 Jun 2022 13:03:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53E2B51332;
+        Thu, 23 Jun 2022 09:55:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BC91060AD7;
-        Thu, 23 Jun 2022 16:55:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CDF6C36AE2;
-        Thu, 23 Jun 2022 16:55:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9CD98B8249D;
+        Thu, 23 Jun 2022 16:54:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D4D1C3411B;
+        Thu, 23 Jun 2022 16:54:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003308;
-        bh=zMDdV31soEVJ645YNnkkBALWlu3qnJS/3dfXWuEcvkc=;
+        s=korg; t=1656003285;
+        bh=UsU2/f9tNduGPzdf8mqaOjn4woxltzh/t+6svdIsniU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BqtaTLIFXSapWMvcZ9PaSfdtNc2W9mQujvSobxT9p90o4vDmg0pKIH11ZnENeOEP9
-         oQ1/E/I8GZ/HsRtFJeO83GW610u7U7ChA4hBivrceq9PrtbepXbUqN+3s9+3SBzKIJ
-         uzvzu3WhYbvmScvwxzhF2xkWFdjsBI7lAB2+/+Yo=
+        b=gl4Ixmp5mrNf5jpL7N0hxSXo3/oWTjRBYtAIG825BCNxFWgXYattZBApyJ49qIcbL
+         76ouRIEqIkcU7mx7nOGDfBcpW/JGq+o5PmfOVbh+bJcLqCukLqAaUGShMzV/k3nBqN
+         dd6Zv3KzLIe5ppxPuD47XIzWWmUvZlJOkPM70OSU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 196/264] random: order timer entropy functions below interrupt functions
-Date:   Thu, 23 Jun 2022 18:43:09 +0200
-Message-Id: <20220623164349.615953389@linuxfoundation.org>
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.9 189/264] um: use fallback for random_get_entropy() instead of zero
+Date:   Thu, 23 Jun 2022 18:43:02 +0200
+Message-Id: <20220623164349.416044839@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -49,296 +54,49 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit a4b5c26b79ffdfcfb816c198f2fc2b1e7b5b580f upstream.
+commit 9f13fb0cd11ed2327abff69f6501a2c124c88b5a upstream.
 
-There are no code changes here; this is just a reordering of functions,
-so that in subsequent commits, the timer entropy functions can call into
-the interrupt ones.
+In the event that random_get_entropy() can't access a cycle counter or
+similar, falling back to returning 0 is really not the best we can do.
+Instead, at least calling random_get_entropy_fallback() would be
+preferable, because that always needs to return _something_, even
+falling back to jiffies eventually. It's not as though
+random_get_entropy_fallback() is super high precision or guaranteed to
+be entropic, but basically anything that's not zero all the time is
+better than returning zero all the time.
 
+This is accomplished by just including the asm-generic code like on
+other architectures, which means we can get rid of the empty stub
+function here.
+
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Richard Weinberger <richard@nod.at>
+Cc: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+Acked-by: Johannes Berg <johannes@sipsolutions.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |  238 +++++++++++++++++++++++++-------------------------
- 1 file changed, 119 insertions(+), 119 deletions(-)
+ arch/um/include/asm/timex.h |    9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -852,13 +852,13 @@ static void credit_init_bits(size_t nbit
-  * the above entropy accumulation routines:
-  *
-  *	void add_device_randomness(const void *buf, size_t size);
-- *	void add_input_randomness(unsigned int type, unsigned int code,
-- *	                          unsigned int value);
-- *	void add_disk_randomness(struct gendisk *disk);
-  *	void add_hwgenerator_randomness(const void *buffer, size_t count,
-  *					size_t entropy);
-  *	void add_bootloader_randomness(const void *buf, size_t size);
-  *	void add_interrupt_randomness(int irq);
-+ *	void add_input_randomness(unsigned int type, unsigned int code,
-+ *	                          unsigned int value);
-+ *	void add_disk_randomness(struct gendisk *disk);
-  *
-  * add_device_randomness() adds data to the input pool that
-  * is likely to differ between two devices (or possibly even per boot).
-@@ -868,19 +868,6 @@ static void credit_init_bits(size_t nbit
-  * that might otherwise be identical and have very little entropy
-  * available to them (particularly common in the embedded world).
-  *
-- * add_input_randomness() uses the input layer interrupt timing, as well
-- * as the event type information from the hardware.
-- *
-- * add_disk_randomness() uses what amounts to the seek time of block
-- * layer request events, on a per-disk_devt basis, as input to the
-- * entropy pool. Note that high-speed solid state drives with very low
-- * seek times do not make for good sources of entropy, as their seek
-- * times are usually fairly consistent.
-- *
-- * The above two routines try to estimate how many bits of entropy
-- * to credit. They do this by keeping track of the first and second
-- * order deltas of the event timings.
-- *
-  * add_hwgenerator_randomness() is for true hardware RNGs, and will credit
-  * entropy as specified by the caller. If the entropy pool is full it will
-  * block until more entropy is needed.
-@@ -894,6 +881,19 @@ static void credit_init_bits(size_t nbit
-  * as inputs, it feeds the input pool roughly once a second or after 64
-  * interrupts, crediting 1 bit of entropy for whichever comes first.
-  *
-+ * add_input_randomness() uses the input layer interrupt timing, as well
-+ * as the event type information from the hardware.
-+ *
-+ * add_disk_randomness() uses what amounts to the seek time of block
-+ * layer request events, on a per-disk_devt basis, as input to the
-+ * entropy pool. Note that high-speed solid state drives with very low
-+ * seek times do not make for good sources of entropy, as their seek
-+ * times are usually fairly consistent.
-+ *
-+ * The last two routines try to estimate how many bits of entropy
-+ * to credit. They do this by keeping track of the first and second
-+ * order deltas of the event timings.
-+ *
-  **********************************************************************/
+--- a/arch/um/include/asm/timex.h
++++ b/arch/um/include/asm/timex.h
+@@ -1,13 +1,8 @@
+ #ifndef __UM_TIMEX_H
+ #define __UM_TIMEX_H
  
- static bool trust_cpu __ro_after_init = IS_ENABLED(CONFIG_RANDOM_TRUST_CPU);
-@@ -971,109 +971,6 @@ void add_device_randomness(const void *b
- }
- EXPORT_SYMBOL(add_device_randomness);
+-typedef unsigned long cycles_t;
+-
+-static inline cycles_t get_cycles (void)
+-{
+-	return 0;
+-}
+-
+ #define CLOCK_TICK_RATE (HZ)
  
--/* There is one of these per entropy source */
--struct timer_rand_state {
--	unsigned long last_time;
--	long last_delta, last_delta2;
--};
--
--/*
-- * This function adds entropy to the entropy "pool" by using timing
-- * delays.  It uses the timer_rand_state structure to make an estimate
-- * of how many bits of entropy this call has added to the pool.
-- *
-- * The number "num" is also added to the pool - it should somehow describe
-- * the type of event which just happened.  This is currently 0-255 for
-- * keyboard scan codes, and 256 upwards for interrupts.
-- */
--static void add_timer_randomness(struct timer_rand_state *state, unsigned int num)
--{
--	unsigned long entropy = random_get_entropy(), now = jiffies, flags;
--	long delta, delta2, delta3;
--
--	spin_lock_irqsave(&input_pool.lock, flags);
--	_mix_pool_bytes(&entropy, sizeof(entropy));
--	_mix_pool_bytes(&num, sizeof(num));
--	spin_unlock_irqrestore(&input_pool.lock, flags);
--
--	if (crng_ready())
--		return;
--
--	/*
--	 * Calculate number of bits of randomness we probably added.
--	 * We take into account the first, second and third-order deltas
--	 * in order to make our estimate.
--	 */
--	delta = now - READ_ONCE(state->last_time);
--	WRITE_ONCE(state->last_time, now);
--
--	delta2 = delta - state->last_delta;
--	state->last_delta = delta;
--
--	delta3 = delta2 - state->last_delta2;
--	state->last_delta2 = delta2;
--
--	if (delta < 0)
--		delta = -delta;
--	if (delta2 < 0)
--		delta2 = -delta2;
--	if (delta3 < 0)
--		delta3 = -delta3;
--	if (delta > delta2)
--		delta = delta2;
--	if (delta > delta3)
--		delta = delta3;
--
--	/*
--	 * delta is now minimum absolute delta.
--	 * Round down by 1 bit on general principles,
--	 * and limit entropy estimate to 12 bits.
--	 */
--	credit_init_bits(min_t(unsigned int, fls(delta >> 1), 11));
--}
--
--void add_input_randomness(unsigned int type, unsigned int code,
--			  unsigned int value)
--{
--	static unsigned char last_value;
--	static struct timer_rand_state input_timer_state = { INITIAL_JIFFIES };
--
--	/* Ignore autorepeat and the like. */
--	if (value == last_value)
--		return;
--
--	last_value = value;
--	add_timer_randomness(&input_timer_state,
--			     (type << 4) ^ code ^ (code >> 4) ^ value);
--}
--EXPORT_SYMBOL_GPL(add_input_randomness);
--
--#ifdef CONFIG_BLOCK
--void add_disk_randomness(struct gendisk *disk)
--{
--	if (!disk || !disk->random)
--		return;
--	/* First major is 1, so we get >= 0x200 here. */
--	add_timer_randomness(disk->random, 0x100 + disk_devt(disk));
--}
--EXPORT_SYMBOL_GPL(add_disk_randomness);
--
--void rand_initialize_disk(struct gendisk *disk)
--{
--	struct timer_rand_state *state;
--
--	/*
--	 * If kzalloc returns null, we just won't use that entropy
--	 * source.
--	 */
--	state = kzalloc(sizeof(struct timer_rand_state), GFP_KERNEL);
--	if (state) {
--		state->last_time = INITIAL_JIFFIES;
--		disk->random = state;
--	}
--}
--#endif
--
- /*
-  * Interface for in-kernel drivers of true hardware RNGs.
-  * Those devices may produce endless random bits and will be throttled
-@@ -1235,6 +1132,109 @@ void add_interrupt_randomness(int irq)
- }
- EXPORT_SYMBOL_GPL(add_interrupt_randomness);
- 
-+/* There is one of these per entropy source */
-+struct timer_rand_state {
-+	unsigned long last_time;
-+	long last_delta, last_delta2;
-+};
++#include <asm-generic/timex.h>
 +
-+/*
-+ * This function adds entropy to the entropy "pool" by using timing
-+ * delays.  It uses the timer_rand_state structure to make an estimate
-+ * of how many bits of entropy this call has added to the pool.
-+ *
-+ * The number "num" is also added to the pool - it should somehow describe
-+ * the type of event which just happened.  This is currently 0-255 for
-+ * keyboard scan codes, and 256 upwards for interrupts.
-+ */
-+static void add_timer_randomness(struct timer_rand_state *state, unsigned int num)
-+{
-+	unsigned long entropy = random_get_entropy(), now = jiffies, flags;
-+	long delta, delta2, delta3;
-+
-+	spin_lock_irqsave(&input_pool.lock, flags);
-+	_mix_pool_bytes(&entropy, sizeof(entropy));
-+	_mix_pool_bytes(&num, sizeof(num));
-+	spin_unlock_irqrestore(&input_pool.lock, flags);
-+
-+	if (crng_ready())
-+		return;
-+
-+	/*
-+	 * Calculate number of bits of randomness we probably added.
-+	 * We take into account the first, second and third-order deltas
-+	 * in order to make our estimate.
-+	 */
-+	delta = now - READ_ONCE(state->last_time);
-+	WRITE_ONCE(state->last_time, now);
-+
-+	delta2 = delta - READ_ONCE(state->last_delta);
-+	WRITE_ONCE(state->last_delta, delta);
-+
-+	delta3 = delta2 - READ_ONCE(state->last_delta2);
-+	WRITE_ONCE(state->last_delta2, delta2);
-+
-+	if (delta < 0)
-+		delta = -delta;
-+	if (delta2 < 0)
-+		delta2 = -delta2;
-+	if (delta3 < 0)
-+		delta3 = -delta3;
-+	if (delta > delta2)
-+		delta = delta2;
-+	if (delta > delta3)
-+		delta = delta3;
-+
-+	/*
-+	 * delta is now minimum absolute delta.
-+	 * Round down by 1 bit on general principles,
-+	 * and limit entropy estimate to 12 bits.
-+	 */
-+	credit_init_bits(min_t(unsigned int, fls(delta >> 1), 11));
-+}
-+
-+void add_input_randomness(unsigned int type, unsigned int code,
-+			  unsigned int value)
-+{
-+	static unsigned char last_value;
-+	static struct timer_rand_state input_timer_state = { INITIAL_JIFFIES };
-+
-+	/* Ignore autorepeat and the like. */
-+	if (value == last_value)
-+		return;
-+
-+	last_value = value;
-+	add_timer_randomness(&input_timer_state,
-+			     (type << 4) ^ code ^ (code >> 4) ^ value);
-+}
-+EXPORT_SYMBOL_GPL(add_input_randomness);
-+
-+#ifdef CONFIG_BLOCK
-+void add_disk_randomness(struct gendisk *disk)
-+{
-+	if (!disk || !disk->random)
-+		return;
-+	/* First major is 1, so we get >= 0x200 here. */
-+	add_timer_randomness(disk->random, 0x100 + disk_devt(disk));
-+}
-+EXPORT_SYMBOL_GPL(add_disk_randomness);
-+
-+void rand_initialize_disk(struct gendisk *disk)
-+{
-+	struct timer_rand_state *state;
-+
-+	/*
-+	 * If kzalloc returns null, we just won't use that entropy
-+	 * source.
-+	 */
-+	state = kzalloc(sizeof(struct timer_rand_state), GFP_KERNEL);
-+	if (state) {
-+		state->last_time = INITIAL_JIFFIES;
-+		disk->random = state;
-+	}
-+}
-+#endif
-+
- /*
-  * Each time the timer fires, we expect that we got an unpredictable
-  * jump in the cycle counter. Even if the timer is running on another
+ #endif
 
 
