@@ -2,129 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B90F5C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:53:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74AFACCA481
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:54:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235356AbiFWRwW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:52:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46414 "EHLO
+        id S233095AbiFWRx6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:53:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235304AbiFWRvv (ORCPT
+        with ESMTP id S235311AbiFWRv4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:51:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C5CB99150;
-        Thu, 23 Jun 2022 10:12:28 -0700 (PDT)
+        Thu, 23 Jun 2022 13:51:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81D64FEE;
+        Thu, 23 Jun 2022 10:12:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 05D19B82490;
-        Thu, 23 Jun 2022 17:12:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 423CDC3411B;
-        Thu, 23 Jun 2022 17:12:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EDCF61CD9;
+        Thu, 23 Jun 2022 17:12:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C4BFC341C4;
+        Thu, 23 Jun 2022 17:12:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004343;
-        bh=DaYViUv7sKos6j+bBO3Sx5fQpf8p8DwpSG+lKpxJBdY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=t+26JMdlnQ3JzbSn25mNX9izWfw6HJqJPJytpU/0xN2A6AQSfejMOjNcUklW/Mp3x
-         j4nsjmVe/dtiTRlqV8o5oBd9L3IY+UZbJtmNU701vlZBYE9mY3C9+wKU31pUUZqulA
-         k6IPrvx3kPCOU+hCBZxHwsTTJetktVUXy3p5v1KM=
+        s=korg; t=1656004352;
+        bh=1kT8JIRzGtfVBD9TMMpDPDdHiT5R5w41p3SuW8XdLFA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=x4ju/SapFSLkJttSOmaHdO6AsGPGaA+qPfIStHYQpLULIgHtPIvZ+zpDkmcNEzePK
+         T4CIdeUKaIEJgoz3Q0SzUoFG0DoCZwNJt0zbsYgjJlj3sCoo5TuKHo6p0T1sOaIVQx
+         P1WHNJC8OZgK+D4bEzZYpXtOfcOv6nay6739jZ1U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 5.15 0/9] 5.15.50-rc1 review
-Date:   Thu, 23 Jun 2022 18:44:43 +0200
-Message-Id: <20220623164322.288837280@linuxfoundation.org>
+        stable@vger.kernel.org, Hsin-Yi Wang <hsinyi@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Rob Herring <robh@kernel.org>, Will Deacon <will@kernel.org>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Theodore Ts'o <tytso@mit.edu>
+Subject: [PATCH 4.19 011/234] fdt: add support for rng-seed
+Date:   Thu, 23 Jun 2022 18:41:18 +0200
+Message-Id: <20220623164343.377050969@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-MIME-Version: 1.0
+In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
+References: <20220623164343.042598055@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.50-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-5.15.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 5.15.50-rc1
-X-KernelTest-Deadline: 2022-06-25T16:43+00:00
+MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 5.15.50 release.
-There are 9 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+From: Hsin-Yi Wang <hsinyi@chromium.org>
 
-Responses should be made by Sat, 25 Jun 2022 16:43:11 +0000.
-Anything received after that time might be too late.
+commit 428826f5358c922dc378830a1717b682c0823160 upstream.
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.50-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
-and the diffstat can be found below.
+Introducing a chosen node, rng-seed, which is an entropy that can be
+passed to kernel called very early to increase initial device
+randomness. Bootloader should provide this entropy and the value is
+read from /chosen/rng-seed in DT.
 
-thanks,
+Obtain of_fdt_crc32 for CRC check after early_init_dt_scan_nodes(),
+since early_init_dt_scan_chosen() would modify fdt to erase rng-seed.
 
-greg k-h
+Add a new interface add_bootloader_randomness() for rng-seed use case.
+Depends on whether the seed is trustworthy, rng seed would be passed to
+add_hwgenerator_randomness(). Otherwise it would be passed to
+add_device_randomness(). Decision is controlled by kernel config
+RANDOM_TRUST_BOOTLOADER.
 
--------------
-Pseudo-Shortlog of commits:
+Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Theodore Ts'o <tytso@mit.edu> # drivers/char/random.c
+Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/char/Kconfig   |    9 +++++++++
+ drivers/char/random.c  |   14 ++++++++++++++
+ drivers/of/fdt.c       |   14 ++++++++++++--
+ include/linux/random.h |    1 +
+ 4 files changed, 36 insertions(+), 2 deletions(-)
 
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 5.15.50-rc1
-
-Will Deacon <will@kernel.org>
-    arm64: mm: Don't invalidate FROM_DEVICE buffers at start of DMA transfer
-
-Lukas Wunner <lukas@wunner.de>
-    serial: core: Initialize rs485 RTS polarity already on probe
-
-Toke Høiland-Jørgensen <toke@redhat.com>
-    selftests/bpf: Add selftest for calling global functions from freplace
-
-Toke Høiland-Jørgensen <toke@redhat.com>
-    bpf: Fix calling global functions from BPF_PROG_TYPE_EXT programs
-
-Marian Postevca <posteuca@mutex.one>
-    usb: gadget: u_ether: fix regression in setting fixed MAC address
-
-Damien Le Moal <damien.lemoal@opensource.wdc.com>
-    zonefs: fix zonefs_iomap_begin() for reads
-
-Haiyang Zhang <haiyangz@microsoft.com>
-    net: mana: Add handling of CQE_RX_TRUNCATED
-
-Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
-    drm/amd/display: Don't reinitialize DMCUB on s0ix resume
-
-Christian Borntraeger <borntraeger@linux.ibm.com>
-    s390/mm: use non-quiescing sske for KVM switch to keyed guest
-
-
--------------
-
-Diffstat:
-
- Makefile                                           |  4 +-
- arch/arm64/mm/cache.S                              |  2 -
- arch/s390/mm/pgtable.c                             |  2 +-
- drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c  | 30 ++++++-
- drivers/net/ethernet/microsoft/mana/mana_en.c      |  7 +-
- drivers/tty/serial/amba-pl011.c                    | 15 +---
- drivers/tty/serial/serial_core.c                   | 34 +++-----
- drivers/usb/gadget/function/u_ether.c              | 11 ++-
- fs/zonefs/super.c                                  | 94 +++++++++++++++-------
- kernel/bpf/btf.c                                   |  5 +-
- .../selftests/bpf/prog_tests/fexit_bpf2bpf.c       | 14 ++++
- .../selftests/bpf/progs/freplace_global_func.c     | 18 +++++
- 12 files changed, 156 insertions(+), 80 deletions(-)
+--- a/drivers/char/Kconfig
++++ b/drivers/char/Kconfig
+@@ -568,3 +568,12 @@ config RANDOM_TRUST_CPU
+ 	has not installed a hidden back door to compromise the CPU's
+ 	random number generation facilities. This can also be configured
+ 	at boot with "random.trust_cpu=on/off".
++
++config RANDOM_TRUST_BOOTLOADER
++	bool "Trust the bootloader to initialize Linux's CRNG"
++	help
++	Some bootloaders can provide entropy to increase the kernel's initial
++	device randomness. Say Y here to assume the entropy provided by the
++	booloader is trustworthy so it will be added to the kernel's entropy
++	pool. Otherwise, say N here so it will be regarded as device input that
++	only mixes the entropy pool.
+\ No newline at end of file
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -2503,3 +2503,17 @@ void add_hwgenerator_randomness(const ch
+ 	}
+ }
+ EXPORT_SYMBOL_GPL(add_hwgenerator_randomness);
++
++/* Handle random seed passed by bootloader.
++ * If the seed is trustworthy, it would be regarded as hardware RNGs. Otherwise
++ * it would be regarded as device data.
++ * The decision is controlled by CONFIG_RANDOM_TRUST_BOOTLOADER.
++ */
++void add_bootloader_randomness(const void *buf, unsigned int size)
++{
++	if (IS_ENABLED(CONFIG_RANDOM_TRUST_BOOTLOADER))
++		add_hwgenerator_randomness(buf, size, size * 8);
++	else
++		add_device_randomness(buf, size);
++}
++EXPORT_SYMBOL_GPL(add_bootloader_randomness);
+\ No newline at end of file
+--- a/drivers/of/fdt.c
++++ b/drivers/of/fdt.c
+@@ -25,6 +25,7 @@
+ #include <linux/debugfs.h>
+ #include <linux/serial_core.h>
+ #include <linux/sysfs.h>
++#include <linux/random.h>
+ 
+ #include <asm/setup.h>  /* for COMMAND_LINE_SIZE */
+ #include <asm/page.h>
+@@ -1077,6 +1078,7 @@ int __init early_init_dt_scan_chosen(uns
+ {
+ 	int l;
+ 	const char *p;
++	const void *rng_seed;
+ 
+ 	pr_debug("search \"chosen\", depth: %d, uname: %s\n", depth, uname);
+ 
+@@ -1111,6 +1113,14 @@ int __init early_init_dt_scan_chosen(uns
+ 
+ 	pr_debug("Command line is: %s\n", (char*)data);
+ 
++	rng_seed = of_get_flat_dt_prop(node, "rng-seed", &l);
++	if (rng_seed && l > 0) {
++		add_bootloader_randomness(rng_seed, l);
++
++		/* try to clear seed so it won't be found. */
++		fdt_nop_property(initial_boot_params, node, "rng-seed");
++	}
++
+ 	/* break now */
+ 	return 1;
+ }
+@@ -1213,8 +1223,6 @@ bool __init early_init_dt_verify(void *p
+ 
+ 	/* Setup flat device-tree pointer */
+ 	initial_boot_params = params;
+-	of_fdt_crc32 = crc32_be(~0, initial_boot_params,
+-				fdt_totalsize(initial_boot_params));
+ 	return true;
+ }
+ 
+@@ -1240,6 +1248,8 @@ bool __init early_init_dt_scan(void *par
+ 		return false;
+ 
+ 	early_init_dt_scan_nodes();
++	of_fdt_crc32 = crc32_be(~0, initial_boot_params,
++				fdt_totalsize(initial_boot_params));
+ 	return true;
+ }
+ 
+--- a/include/linux/random.h
++++ b/include/linux/random.h
+@@ -19,6 +19,7 @@ struct random_ready_callback {
+ };
+ 
+ extern void add_device_randomness(const void *, unsigned int);
++extern void add_bootloader_randomness(const void *, unsigned int);
+ 
+ #if defined(LATENT_ENTROPY_PLUGIN) && !defined(__CHECKER__)
+ static inline void add_latent_entropy(void)
 
 
