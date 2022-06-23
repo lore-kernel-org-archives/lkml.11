@@ -2,116 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E30A4C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 10:17:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C728CCA480
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 10:18:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230215AbiFWKRv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 06:17:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48148 "EHLO
+        id S230125AbiFWKSt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 06:18:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231315AbiFWKRq (ORCPT
+        with ESMTP id S230340AbiFWKSn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 06:17:46 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D32B24A3C1;
-        Thu, 23 Jun 2022 03:17:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655979458; x=1687515458;
-  h=from:to:cc:subject:date:message-id;
-  bh=NeJur9sIZ5lmTLg5cdWYNoS4OW5zTNJwPnCWv1GQGJQ=;
-  b=RKbywVx9PMGvPw04y8SV1yu8BppdGdSsdSPqWH2pmMt2bOt+zOwpHRSz
-   j27UOlgsLMdPwsDBfZM/fWHHcy/KB04hylR3pT6b8XzSbn6oRE7r3OdnX
-   ofvUoVbk3tCPPUdhSsCx7xo7eUwH8ogYXZ8rXZpbzqnF4TCNxvZFaE0Z5
-   Quih5e7b4xY3EHJl06xvQxR/0aU+5rHwRxVrMHvceYkX63jBV/aP6p0jw
-   y3CkAob2tUldRyB8xzI9zZ6NQHYnd1hZal0eHKntVusS/qtUwAM0dkQa9
-   6rGMiADDQguAfQTVhOQVLPuWYdG0c22mbQVruqOFQ1QQzwKTr4oGsTVWs
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="269405571"
-X-IronPort-AV: E=Sophos;i="5.92,215,1650956400"; 
-   d="scan'208";a="269405571"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2022 03:17:35 -0700
-X-IronPort-AV: E=Sophos;i="5.92,215,1650956400"; 
-   d="scan'208";a="644669573"
-Received: from arthur-vostro-3668.sh.intel.com ([10.239.13.120])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2022 03:17:33 -0700
-From:   Zeng Guang <guang.zeng@intel.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Shuah Khan <shuah@kernel.org>, Gao Chao <chao.gao@intel.com>,
-        linux-kselftest@vger.kernel.org, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Zeng Guang <guang.zeng@intel.com>
-Subject: [PATCH v2] KVM: selftest: Enhance handling WRMSR ICR register in x2APIC mode
-Date:   Thu, 23 Jun 2022 17:45:11 +0800
-Message-Id: <20220623094511.26066-1-guang.zeng@intel.com>
-X-Mailer: git-send-email 2.17.1
+        Thu, 23 Jun 2022 06:18:43 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E08F6425;
+        Thu, 23 Jun 2022 03:18:38 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id z11so21650618edp.9;
+        Thu, 23 Jun 2022 03:18:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=t9ea/dcrsF9M+CJZqSv3b2zBRCLTq5sbj7L8gKts0jQ=;
+        b=TFTkb1ZVGMYu/zxZXjN6uNtzgfXwdi5FhXkpJzXoeNdndwLMun/iKmle1hFkXuCQeG
+         LpoODm0Lna7VSP+5PxRcrJDWzKHaBM9E/ncY2ewlWX9jNjHDhxl+5OHrhLpfjEp0Zf97
+         gBAB2R2knxHO910erbKRa7ejBc32apiS1PAqj0IiNgkOddWvcy9HQA2K40aLJKWpBU90
+         qtSgIufbyfRRNTGI6vCGwKkR0plB7q9wySpHOxAe0JylCtquBq66ADfxiiNdjCoIVruI
+         teSome/MdQO8c5Dvb+cWUyFDE3XY86OYC1bQ/hfLOMelogpYs7KAhdDZ3coGEh7nyrqw
+         a83g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=t9ea/dcrsF9M+CJZqSv3b2zBRCLTq5sbj7L8gKts0jQ=;
+        b=3mlthcogdvnIukMiBnH8sGPhSw8Jmt1g5CX4modGW5gO4n5SYLlWj6mxFt6z1/ZQYC
+         fSDSuY/Ed0L9Ykkk1WcVVU7hiuN6WTWnC2fg/7wa1gMde2kk/n95qSMm8I3KUynfIpxa
+         /lmDBJEMB115tAG0lxSWRhlZPAE0i0j23JI1LLeVSAsKhaPfAt7lb2r/ivIAzRkZYQKT
+         JdLenwqeUWcpis0hrbE3oJ6tfGKU3gVzPD25hkyJVei83kZJEc5QDosKVS3DG9ooByAd
+         EywNImuED4pXPkVroqs0fBN38wOCYJ2TEGWPtAIUwAU45//siCgxFFz3cvKgX9keQMr1
+         xwew==
+X-Gm-Message-State: AJIora+BrGYCN+Hpg13UOYKJFwjlKqJHWGRbf+SaceXKNCKfuZfweAt2
+        femAhSluS3Y1pQBvFcTrLEgTEQzEW7bdR7p5bbE=
+X-Google-Smtp-Source: AGRyM1tj9InnAI9P8P0ZW+y2x54HIErM5Ii+utwX0T1UDOfArPynP5xeyj+97Kd2EGKyVPBYIxmDT0Wht2Omb3rWlLQ=
+X-Received: by 2002:aa7:d29a:0:b0:435:705f:1319 with SMTP id
+ w26-20020aa7d29a000000b00435705f1319mr9609494edq.54.1655979516662; Thu, 23
+ Jun 2022 03:18:36 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220621124958.3342-1-ilpo.jarvinen@linux.intel.com>
+ <20220621124958.3342-7-ilpo.jarvinen@linux.intel.com> <03467516-3962-4ff2-23d2-2b3a1d647c5a@kernel.org>
+ <CAHp75VeKhY6dN7j_yXQXUMhOqRwqQ2yN_qF95U9wU6K4uKPdaQ@mail.gmail.com>
+ <c7115ff1-2a97-f5a0-a0c2-c7c1064af291@kernel.org> <CAHp75Vfsy5yY3saSCvCu87E-arifwEZXUNtFMrMn38gJY2LU0g@mail.gmail.com>
+In-Reply-To: <CAHp75Vfsy5yY3saSCvCu87E-arifwEZXUNtFMrMn38gJY2LU0g@mail.gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 23 Jun 2022 12:17:58 +0200
+Message-ID: <CAHp75VdSadbtkH1JeiPuJ_CSBDq82GaRWLvJFd8Egg7poY8Lxw@mail.gmail.com>
+Subject: Re: [PATCH v2 6/6] serial: Consolidate BOTH_EMPTY use
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        William Hubbs <w.d.hubbs@gmail.com>,
+        Chris Brannon <chris@the-brannons.com>,
+        Kirk Reiser <kirk@reisers.ca>,
+        Samuel Thibault <samuel.thibault@ens-lyon.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "speakup@linux-speakup.org" <speakup@linux-speakup.org>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hardware would directly write x2APIC ICR register instead of software
-emulation in some circumstances, e.g when Intel IPI virtualization is
-enabled. This behavior requires normal reserved bits checking to ensure
-them input as zero, otherwise it will cause #GP. So we need mask out
-those reserved bits from the data written to vICR register.
+On Thu, Jun 23, 2022 at 12:15 PM Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
+> On Thu, Jun 23, 2022 at 10:24 AM Jiri Slaby <jirislaby@kernel.org> wrote:
+> > On 23. 06. 22, 10:11, Andy Shevchenko wrote:
+> > >     * prom_putchar_wait() should be implemented using
+> > >        read_poll_timeout_atomic(), incl. failure/timeout handling.
+> > >
+> > > Not sure since it is an early stage and scheduler might not work as
+> > > expected. Conversions to iopoll.h macros bitten us a few times already.
+> >
+> > Except _atomic does not use scheduler :).
+>
+> Sorry for a bit misleading comment, but I chased it down, so this what
+> I had in mind when commenting:
+> be24c6a71ecf ("soc: qcom: rpmh-rsc: Don't use ktime for timeout in
+> write_tcs_reg_sync()")
 
-Remove Delivery Status bit emulation in test case as this flag
-is invalid and not needed in x2APIC mode. KVM may ignore clearing
-it during interrupt dispatch which will lead to fake test failure.
+...and this one (specifically for early stages)
 
-Opportunstically correct vector number for test sending IPI to
-non-existent vCPUs.
+c4d936efa46d ("Revert "usb: early: convert to readl_poll_timeout_atomic()"")
 
-Signed-off-by: Zeng Guang <guang.zeng@intel.com>
----
- .../selftests/kvm/x86_64/xapic_state_test.c   | 20 ++++++++++++++++---
- 1 file changed, 17 insertions(+), 3 deletions(-)
+> (Yes, it's about _atomic variant)
+>
+> Means we need to use those macros with care.
 
-diff --git a/tools/testing/selftests/kvm/x86_64/xapic_state_test.c b/tools/testing/selftests/kvm/x86_64/xapic_state_test.c
-index 0792334ba243..df916c6f53f9 100644
---- a/tools/testing/selftests/kvm/x86_64/xapic_state_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/xapic_state_test.c
-@@ -70,13 +70,27 @@ static void ____test_icr(struct kvm_vm *vm, struct kvm_vcpu *vcpu, uint64_t val)
- 	vcpu_ioctl(vm, vcpu->id, KVM_GET_LAPIC, &xapic);
- 	icr = (u64)(*((u32 *)&xapic.regs[APIC_ICR])) |
- 	      (u64)(*((u32 *)&xapic.regs[APIC_ICR2])) << 32;
--	if (!vcpu->is_x2apic)
-+	if (!vcpu->is_x2apic) {
- 		val &= (-1u | (0xffull << (32 + 24)));
--	ASSERT_EQ(icr, val & ~APIC_ICR_BUSY);
-+		ASSERT_EQ(icr, val & ~APIC_ICR_BUSY);
-+	} else {
-+		ASSERT_EQ(icr & ~APIC_ICR_BUSY, val & ~APIC_ICR_BUSY);
-+	}
- }
- 
-+#define X2APIC_RSVED_BITS_MASK  (GENMASK_ULL(31,20) | \
-+				 GENMASK_ULL(17,16) | \
-+				 GENMASK_ULL(13,13))
-+
- static void __test_icr(struct kvm_vm *vm, struct kvm_vcpu *vcpu, uint64_t val)
- {
-+	if (vcpu->is_x2apic) {
-+		/* Hardware writing vICR register requires reserved bits 31:20,
-+		 * 17:16 and 13 kept as zero to avoid #GP exception. Data value
-+		 * written to vICR should mask out those bits above.
-+		 */
-+		val &= ~X2APIC_RSVED_BITS_MASK;
-+	}
- 	____test_icr(vm, vcpu, val | APIC_ICR_BUSY);
- 	____test_icr(vm, vcpu, val & ~(u64)APIC_ICR_BUSY);
- }
-@@ -100,7 +114,7 @@ static void test_icr(struct kvm_vm *vm, struct kvm_vcpu *vcpu)
- 	icr = APIC_INT_ASSERT | 0xff;
- 	for (i = vcpu->id + 1; i < 0xff; i++) {
- 		for (j = 0; j < 8; j++)
--			__test_icr(vm, vcpu, i << (32 + 24) | APIC_INT_ASSERT | (j << 8));
-+			__test_icr(vm, vcpu, i << (32 + 24) | icr | (j << 8));
- 	}
- 
- 	/* And again with a shorthand destination for all types of IPIs. */
 -- 
-2.27.0
-
+With Best Regards,
+Andy Shevchenko
