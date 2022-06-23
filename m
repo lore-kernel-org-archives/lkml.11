@@ -2,111 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21FABC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:50:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE757C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:50:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234455AbiFWRuj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:50:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39786 "EHLO
+        id S234472AbiFWRum (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:50:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235729AbiFWRs6 (ORCPT
+        with ESMTP id S235752AbiFWRtA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:48:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E37CA585C;
-        Thu, 23 Jun 2022 10:11:49 -0700 (PDT)
+        Thu, 23 Jun 2022 13:49:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E61DEA5879;
+        Thu, 23 Jun 2022 10:11:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1EB8BB824B6;
-        Thu, 23 Jun 2022 17:11:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 769C8C3411B;
-        Thu, 23 Jun 2022 17:11:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C74D361D4D;
+        Thu, 23 Jun 2022 17:11:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D40AC3411B;
+        Thu, 23 Jun 2022 17:11:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004297;
-        bh=tI0TTob636YqiIJt7td9NMbXr7Jszg1Y0mrTQboRHHA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MrCZCcvcQ6SgZGEKczNbXICKx5kL2YJG32GwmSf2Pmw3/9gmEDGMCKYobbi7kx/Ko
-         cTSrsVpMRbxzhHD1gpYadfsFemHWVShpZciPDj7bZ9wx2W5ueJi5df2sZofj/b74my
-         TU7gztMTZJgD8aNgWN6mwViB2s5CyviVbiw1vm74=
+        s=korg; t=1656004307;
+        bh=pklxb88Ek2QpKWGJh6saUza8lO+0JgT/jD9tQ2YNxPA=;
+        h=From:To:Cc:Subject:Date:From;
+        b=jYBFmS9onfskJc86lahvXyZ5SGf9r5HAnEikLJ4nOmU2Oc4woUoRsmxZWaE6y8RWl
+         /Frm8C9vLGPzsEBf7wb6zos+cJw4Y3hZ4PPY3+NBzHuCWdZYqMYCGFBbyK7A74VUOl
+         HuDEbAwzbQsYY4eBY7IhRKsMc6hA5XozxqVSeRd0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Moshe Kol <moshe.kol@mail.huji.ac.il>,
-        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
-        Amit Klein <aksecurity@gmail.com>,
-        Eric Dumazet <edumazet@google.com>, Willy Tarreau <w@1wt.eu>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 07/11] tcp: dynamically allocate the perturb table used by source ports
-Date:   Thu, 23 Jun 2022 18:44:40 +0200
-Message-Id: <20220623164322.513379105@linuxfoundation.org>
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 5.10 00/11] 5.10.125-rc1 review
+Date:   Thu, 23 Jun 2022 18:44:33 +0200
+Message-Id: <20220623164322.296526800@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220623164322.296526800@linuxfoundation.org>
-References: <20220623164322.296526800@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.125-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-5.10.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 5.10.125-rc1
+X-KernelTest-Deadline: 2022-06-25T16:43+00:00
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Willy Tarreau <w@1wt.eu>
+This is the start of the stable review cycle for the 5.10.125 release.
+There are 11 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-commit e9261476184be1abd486c9434164b2acbe0ed6c2 upstream.
+Responses should be made by Sat, 25 Jun 2022 16:43:11 +0000.
+Anything received after that time might be too late.
 
-We'll need to further increase the size of this table and it's likely
-that at some point its size will not be suitable anymore for a static
-table. Let's allocate it on boot from inet_hashinfo2_init(), which is
-called from tcp_init().
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.125-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
+and the diffstat can be found below.
 
-Cc: Moshe Kol <moshe.kol@mail.huji.ac.il>
-Cc: Yossi Gilad <yossi.gilad@mail.huji.ac.il>
-Cc: Amit Klein <aksecurity@gmail.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Willy Tarreau <w@1wt.eu>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Cc: Ben Hutchings <ben@decadent.org.uk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- net/ipv4/inet_hashtables.c |   12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+thanks,
 
---- a/net/ipv4/inet_hashtables.c
-+++ b/net/ipv4/inet_hashtables.c
-@@ -731,7 +731,8 @@ EXPORT_SYMBOL_GPL(inet_unhash);
-  * privacy, this only consumes 1 KB of kernel memory.
-  */
- #define INET_TABLE_PERTURB_SHIFT 8
--static u32 table_perturb[1 << INET_TABLE_PERTURB_SHIFT];
-+#define INET_TABLE_PERTURB_SIZE (1 << INET_TABLE_PERTURB_SHIFT)
-+static u32 *table_perturb;
- 
- int __inet_hash_connect(struct inet_timewait_death_row *death_row,
- 		struct sock *sk, u64 port_offset,
-@@ -774,7 +775,8 @@ int __inet_hash_connect(struct inet_time
- 	if (likely(remaining > 1))
- 		remaining &= ~1U;
- 
--	net_get_random_once(table_perturb, sizeof(table_perturb));
-+	net_get_random_once(table_perturb,
-+			    INET_TABLE_PERTURB_SIZE * sizeof(*table_perturb));
- 	index = hash_32(port_offset, INET_TABLE_PERTURB_SHIFT);
- 
- 	offset = READ_ONCE(table_perturb[index]) + (port_offset >> 32);
-@@ -912,6 +914,12 @@ void __init inet_hashinfo2_init(struct i
- 					    low_limit,
- 					    high_limit);
- 	init_hashinfo_lhash2(h);
-+
-+	/* this one is used for source ports of outgoing connections */
-+	table_perturb = kmalloc_array(INET_TABLE_PERTURB_SIZE,
-+				      sizeof(*table_perturb), GFP_KERNEL);
-+	if (!table_perturb)
-+		panic("TCP: failed to alloc table_perturb");
- }
- 
- int inet_hashinfo2_init_mod(struct inet_hashinfo *h)
+greg k-h
+
+-------------
+Pseudo-Shortlog of commits:
+
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 5.10.125-rc1
+
+Will Deacon <will@kernel.org>
+    arm64: mm: Don't invalidate FROM_DEVICE buffers at start of DMA transfer
+
+Lukas Wunner <lukas@wunner.de>
+    serial: core: Initialize rs485 RTS polarity already on probe
+
+Willy Tarreau <w@1wt.eu>
+    tcp: drop the hash_32() part from the index calculation
+
+Willy Tarreau <w@1wt.eu>
+    tcp: increase source port perturb table to 2^16
+
+Willy Tarreau <w@1wt.eu>
+    tcp: dynamically allocate the perturb table used by source ports
+
+Willy Tarreau <w@1wt.eu>
+    tcp: add small random increments to the source port
+
+Willy Tarreau <w@1wt.eu>
+    tcp: use different parts of the port_offset for index and offset
+
+Eric Dumazet <edumazet@google.com>
+    tcp: add some entropy in __inet_hash_connect()
+
+Marian Postevca <posteuca@mutex.one>
+    usb: gadget: u_ether: fix regression in setting fixed MAC address
+
+Damien Le Moal <damien.lemoal@opensource.wdc.com>
+    zonefs: fix zonefs_iomap_begin() for reads
+
+Christian Borntraeger <borntraeger@linux.ibm.com>
+    s390/mm: use non-quiescing sske for KVM switch to keyed guest
+
+
+-------------
+
+Diffstat:
+
+ Makefile                              |  4 +-
+ arch/arm64/mm/cache.S                 |  2 -
+ arch/s390/mm/pgtable.c                |  2 +-
+ drivers/tty/serial/serial_core.c      | 34 +++++--------
+ drivers/usb/gadget/function/u_ether.c | 11 ++++-
+ fs/zonefs/super.c                     | 92 +++++++++++++++++++++++------------
+ net/ipv4/inet_hashtables.c            | 31 +++++++++---
+ 7 files changed, 109 insertions(+), 67 deletions(-)
 
 
