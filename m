@@ -2,148 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3231CC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:55:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 735E2C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:55:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232917AbiFWQzy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:55:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50164 "EHLO
+        id S232861AbiFWQz5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:55:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233911AbiFWQvy (ORCPT
+        with ESMTP id S233899AbiFWQvv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:51:54 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B3B8AA;
-        Thu, 23 Jun 2022 09:51:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D4E27CE25D9;
-        Thu, 23 Jun 2022 16:51:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E212C3411B;
-        Thu, 23 Jun 2022 16:51:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003110;
-        bh=8TOfhpl50F0yWhLMPAOE/9uebwUQU6puY1X5AmEb9kA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ursa1TToGPUCzOfXc080coIDEU4P9i9LpVB+5Dp6+A5ndy6nG1ymK3j85ddPEjlIR
-         5gu/yWnIu0df8p22pCMZ9eVgBc7stdPCG6NttsOkN2+JCFyh7PH4iJp7VvkXqXtDUZ
-         QBtN9NJS/geZQ7+fWf6ZFg4r5JUbZ9Pr6pwtmRTY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wei Liu <wei.liu@kernel.org>, linux-hyperv@vger.kernel.org,
-        x86@kernel.org, Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 082/264] random: remove unused irq_flags argument from add_interrupt_randomness()
-Date:   Thu, 23 Jun 2022 18:41:15 +0200
-Message-Id: <20220623164346.390524772@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
-References: <20220623164344.053938039@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Thu, 23 Jun 2022 12:51:51 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03B2619F83
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 09:51:18 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id c65so6365393edf.4
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 09:51:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZOox6HqgRBUv7icqURUJML9abJah70/U25bI8X8Eyc0=;
+        b=kfqCOp4uGyXjRICRfEG2lcRUgea96b9kksgdi1ldi2t1fN0InFIsPiqt4nqCLdfD/p
+         5BV+fuCzoVB2zfwoFAGFjymKkjfwyhmh+MmXr42ycq8dvVwWI2VXrr0EOxscM6UOmfUt
+         uI/j4WGJ5wfuNByUoQrhC++RY6pXGjOgLYLNpkXoMwfbWnWuirJq0TdYdVd8FCV35/VG
+         TwNAf8QZLaY3zIsBXsuJhAhs63Z/R3uwUYTtxAxLcYTV50pGABiUgGnf0cjW8ynvhaWG
+         tWY+f99eYGIoXq+TBANdoWe0YoEKdd9IaE870Jpwbx4CmYDD0jzZloR8qNw2Ki+A0ef5
+         HPig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZOox6HqgRBUv7icqURUJML9abJah70/U25bI8X8Eyc0=;
+        b=SyWMNdPAjQuXd4dvcemqVjPqt6vWZYok75P2mgI65W5vL4FJB6AIHSe1LtxQDNpO0p
+         ClC1yDsXbiG+iZIhW2rls8CzBB3hLGNvOA9CgujqiWletyo39nt41dRi2Ro/ixxSIu3w
+         8nCvWGTbapUiSE1tvm3oAjKXWa0Jqi1ahQIGDygr8CwOeAAHiv8LKYm5laah/CCDT1Ia
+         3Y/4c4JrC5U3yxUWcndyIXHgnbS+SnQOLCFRnjxN7MIObLDUp5FlHPExkTvBKMazkhqL
+         gawnH4kVU7j8nLocrZV0SETwcybuGYjVFekcl2MNSTfz8GqepU7paOv6gMGA0aac6DBm
+         4/0w==
+X-Gm-Message-State: AJIora9kd+JTbkO862HEtSv5M/XGmKojZdqfyshKBN4PaaUBag+rhzUI
+        BNzjGGYJ7RnvA5ttCd8ZneQa6RN5jn+S+pX7m3A=
+X-Google-Smtp-Source: AGRyM1seSiLtqCIe8T9UCrc/sPscS+2NaSYNj41ONsIdzNTTytILIW4ECo/OCFVlLa6XL8bIlCV+qiVNMuLc7ZT3Ttw=
+X-Received: by 2002:a05:6402:50ce:b0:435:9249:dfe9 with SMTP id
+ h14-20020a05640250ce00b004359249dfe9mr12079163edb.310.1656003076595; Thu, 23
+ Jun 2022 09:51:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220623101448.30188-1-jiangjian@cdjrlc.com>
+In-Reply-To: <20220623101448.30188-1-jiangjian@cdjrlc.com>
+From:   Alex Deucher <alexdeucher@gmail.com>
+Date:   Thu, 23 Jun 2022 12:51:04 -0400
+Message-ID: <CADnq5_P1VQo71hENT-RZUXY1T_+46bwPzRQ+OED-mTwRG52gnA@mail.gmail.com>
+Subject: Re: [PATCH] drm/amdgpu: drop unexpected word 'for' in comments
+To:     Jiang Jian <jiangjian@cdjrlc.com>
+Cc:     Dave Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+        "Yang, Philip" <Philip.Yang@amd.com>,
+        "Kuehling, Felix" <Felix.Kuehling@amd.com>,
+        xinhui pan <Xinhui.Pan@amd.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        Maling list - DRI developers 
+        <dri-devel@lists.freedesktop.org>,
+        "Deucher, Alexander" <alexander.deucher@amd.com>,
+        Christian Koenig <christian.koenig@amd.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Applied.  Thanks!
 
-commit 703f7066f40599c290babdb79dd61319264987e9 upstream.
+Alex
 
-Since commit
-   ee3e00e9e7101 ("random: use registers from interrupted code for CPU's w/o a cycle counter")
-
-the irq_flags argument is no longer used.
-
-Remove unused irq_flags.
-
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: Dexuan Cui <decui@microsoft.com>
-Cc: H. Peter Anvin <hpa@zytor.com>
-Cc: Haiyang Zhang <haiyangz@microsoft.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: K. Y. Srinivasan <kys@microsoft.com>
-Cc: Stephen Hemminger <sthemmin@microsoft.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Wei Liu <wei.liu@kernel.org>
-Cc: linux-hyperv@vger.kernel.org
-Cc: x86@kernel.org
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Acked-by: Wei Liu <wei.liu@kernel.org>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/char/random.c  |    4 ++--
- drivers/hv/vmbus_drv.c |    2 +-
- include/linux/random.h |    2 +-
- kernel/irq/handle.c    |    2 +-
- 4 files changed, 5 insertions(+), 5 deletions(-)
-
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -200,7 +200,7 @@
-  *	void add_device_randomness(const void *buf, unsigned int size);
-  * 	void add_input_randomness(unsigned int type, unsigned int code,
-  *                                unsigned int value);
-- *	void add_interrupt_randomness(int irq, int irq_flags);
-+ *	void add_interrupt_randomness(int irq);
-  * 	void add_disk_randomness(struct gendisk *disk);
-  *	void add_hwgenerator_randomness(const char *buffer, size_t count,
-  *					size_t entropy);
-@@ -1323,7 +1323,7 @@ static __u32 get_reg(struct fast_pool *f
- 	return *ptr;
- }
- 
--void add_interrupt_randomness(int irq, int irq_flags)
-+void add_interrupt_randomness(int irq)
- {
- 	struct entropy_store	*r;
- 	struct fast_pool	*fast_pool = this_cpu_ptr(&irq_randomness);
---- a/drivers/hv/vmbus_drv.c
-+++ b/drivers/hv/vmbus_drv.c
-@@ -828,7 +828,7 @@ static void vmbus_isr(void)
- 			tasklet_schedule(hv_context.msg_dpc[cpu]);
- 	}
- 
--	add_interrupt_randomness(HYPERVISOR_CALLBACK_VECTOR, 0);
-+	add_interrupt_randomness(HYPERVISOR_CALLBACK_VECTOR);
- }
- 
- 
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -34,7 +34,7 @@ static inline void add_latent_entropy(vo
- 
- extern void add_input_randomness(unsigned int type, unsigned int code,
- 				 unsigned int value) __latent_entropy;
--extern void add_interrupt_randomness(int irq, int irq_flags) __latent_entropy;
-+extern void add_interrupt_randomness(int irq) __latent_entropy;
- 
- extern void get_random_bytes(void *buf, int nbytes);
- extern int wait_for_random_bytes(void);
---- a/kernel/irq/handle.c
-+++ b/kernel/irq/handle.c
-@@ -184,7 +184,7 @@ irqreturn_t handle_irq_event_percpu(stru
- 
- 	retval = __handle_irq_event_percpu(desc, &flags);
- 
--	add_interrupt_randomness(desc->irq_data.irq, flags);
-+	add_interrupt_randomness(desc->irq_data.irq);
- 
- 	if (!noirqdebug)
- 		note_interrupt(desc, retval);
-
-
+On Thu, Jun 23, 2022 at 6:15 AM Jiang Jian <jiangjian@cdjrlc.com> wrote:
+>
+> there is an unexpected word 'for' in the comments that need to be dropped
+>
+> file - drivers/gpu/drm/amd/amdgpu/amdgpu_ih.c
+> line - 245
+>
+>  * position and also advance the position for for Vega10
+>
+> changed to:
+>
+>  * position and also advance the position for Vega10
+>
+> Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
+> ---
+>  drivers/gpu/drm/amd/amdgpu/amdgpu_ih.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_ih.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_ih.c
+> index 3df146579ad9..1d5af50331e4 100644
+> --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_ih.c
+> +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_ih.c
+> @@ -242,7 +242,7 @@ int amdgpu_ih_process(struct amdgpu_device *adev, struct amdgpu_ih_ring *ih)
+>   * @entry: IV entry
+>   *
+>   * Decodes the interrupt vector at the current rptr
+> - * position and also advance the position for for Vega10
+> + * position and also advance the position for Vega10
+>   * and later GPUs.
+>   */
+>  void amdgpu_ih_decode_iv_helper(struct amdgpu_device *adev,
+> --
+> 2.17.1
+>
