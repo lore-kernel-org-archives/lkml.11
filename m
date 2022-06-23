@@ -2,106 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE3C7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 04:50:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24FF7CCA47E
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 04:50:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231933AbiFWEst (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 00:48:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52674 "EHLO
+        id S232164AbiFWEs6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 00:48:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343761AbiFWEFc (ORCPT
+        with ESMTP id S238158AbiFWDeX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 00:05:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 455E53EF03
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 21:05:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D984D60F92
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 04:05:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0821C3411B;
-        Thu, 23 Jun 2022 04:05:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655957130;
-        bh=2UyGTSqVR/Y2YvttRxXwD6RrqgslHhqELmKAKfDMlSs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZgX2RmY9WHipioZJhoQAQbDPSCYa+2lXYl1fAkh1Pc89RoWxPDo3rMsB3lq17mOfW
-         hQ6THnUgteTa1Bpe+zkx2RhqOj5EO2E329dtLyFpyHGy574HlzALKELPd78Ka+rtHa
-         Q95fIbeQwzEA/Se3sBN3B2LZVLmtwkRVlkIFdPbTl+6MUlH02XBoJfZ5/CdOfovy2Z
-         MpMjWhpK+He0NIEaWlKIRSFGm+/dwTdd2FAEXbl07OLkznvhofl8K1Kru8MZXthVT9
-         2/4KptYo7NFPW86Thf5PHzPbaXpaZ4II+ul/KuBPtgWMQZCjhoIvkc1GUZZVYbd3Rz
-         5bhFgUuR3IrEA==
-Date:   Wed, 22 Jun 2022 23:05:27 -0500
-From:   Mike Rapoport <rppt@kernel.org>
-To:     "Huang, Shaoqin" <shaoqin.huang@intel.com>
-Cc:     Rebecca Mckeever <remckee0@gmail.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, David Hildenbrand <david@redhat.com>
-Subject: Re: [PATCH v3 2/4] memblock tests: add verbose output to memblock
- tests
-Message-ID: <YrPmhzZDd9YFyEUa@kernel.org>
-References: <cover.1655889641.git.remckee0@gmail.com>
- <004e021cc3cb7be8749361b3b1cb324459b9cb9f.1655889641.git.remckee0@gmail.com>
- <b7e6565b-d9f7-a5cc-8e66-087ea7b270d1@intel.com>
- <YrO3uyXee9DcMTzz@bertie>
- <d53b547a-1450-82de-a3c5-4bb09f2a728d@intel.com>
+        Wed, 22 Jun 2022 23:34:23 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 728D036155;
+        Wed, 22 Jun 2022 20:34:17 -0700 (PDT)
+X-UUID: a79ae7d571454f528d2d996e8fb2a215-20220623
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.6,REQID:c7583246-f3e0-477c-a035-85da7ab95b6b,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:45
+X-CID-INFO: VERSION:1.1.6,REQID:c7583246-f3e0-477c-a035-85da7ab95b6b,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
+        N:release,TS:45
+X-CID-META: VersionHash:b14ad71,CLOUDID:67213c38-5e4b-44d7-80b2-bb618cb09d29,C
+        OID:7494f817c6eb,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:0,File:nil,QS:nil,BEC:nil,COL:0
+X-UUID: a79ae7d571454f528d2d996e8fb2a215-20220623
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 106634298; Thu, 23 Jun 2022 11:34:11 +0800
+Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Thu, 23 Jun 2022 11:34:10 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Thu, 23 Jun 2022 11:34:09 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Thu, 23 Jun 2022 11:34:09 +0800
+Message-ID: <0c269c54042d556bd5c7f4a7a13d4e33074888d1.camel@mediatek.com>
+Subject: Re: [PATCH v13 12/14] drm/mediatek: dpi: add config to control
+ setting of direct connection to pins
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>,
+        <daniel@ffwll.ch>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <matthias.bgg@gmail.com>,
+        <airlied@linux.ie>
+CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
+        <jitao.shi@mediatek.com>, <wenst@chromium.org>,
+        <ck.hu@mediatek.com>, <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Thu, 23 Jun 2022 11:34:09 +0800
+In-Reply-To: <3246fb94ec05a43b7017849198d949ce8c8636a7.camel@mediatek.com>
+References: <20220621113732.11595-1-rex-bc.chen@mediatek.com>
+         <20220621113732.11595-13-rex-bc.chen@mediatek.com>
+         <55c98626-9b95-7721-94cf-8c471580a53b@collabora.com>
+         <3246fb94ec05a43b7017849198d949ce8c8636a7.camel@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d53b547a-1450-82de-a3c5-4bb09f2a728d@intel.com>
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 09:29:05AM +0800, Huang, Shaoqin wrote:
-> 
-> 
-> On 6/23/2022 8:45 AM, Rebecca Mckeever wrote:
-> > On Wed, Jun 22, 2022 at 06:32:04PM +0800, Huang, Shaoqin wrote:
-> > > Just test it and everything works fine. And I think there are some thing can
-> > > improve:
+On Wed, 2022-06-22 at 17:08 +0800, Rex-BC Chen wrote:
+> On Tue, 2022-06-21 at 14:11 +0200, AngeloGioacchino Del Regno wrote:
+> > Il 21/06/22 13:37, Bo-Chen Chen ha scritto:
+> > > MediaTek dpi supports direct connection to pins while dp_intf
+> > > does
+> > > not
+> > > support. Therefore, add a config "support_direct_pin" to control
+> > > this.
 > > > 
-> > >      The prefix_push() and prefix_pop() are used in so many functions and
-> > > almost of them just put the prefix_push(__func__) begin in the head and the
-> > > prefix_pop() in the end.
-> > >      May be you can define some macro that when you output something and
-> > > automatically push the __func__ as prefix. And when leave the function,
-> > > automatically pop it. And only in some special place, you call it manually.
+> > > Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+> > > ---
+> > >   drivers/gpu/drm/mediatek/mtk_dpi.c | 17 +++++++++++++----
+> > >   1 file changed, 13 insertions(+), 4 deletions(-)
 > > > 
-> > Thank you for your review. I'm not sure how you would automatically push
-> > __func__ since you have to be inside the function to access that
-> > variable. Let me know if you have any suggestions. I am thinking about
-> > adding another function in common.c that just calls test_pass() followed
-> > by prefix_pop() since those are called together so often.
+> > > diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c
+> > > b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> > > index 438bf3bc5e4a..ef7f828a4b1e 100644
+> > > --- a/drivers/gpu/drm/mediatek/mtk_dpi.c
+> > > +++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> > > @@ -129,6 +129,8 @@ struct mtk_dpi_yc_limit {
+> > >    * @is_ck_de_pol: Support CK/DE polarity.
+> > >    * @swap_input_support: Support input swap function.
+> > >    * @color_fmt_trans_support: Enable color format transfer.
+> > > + * @support_direct_pin: Dpi can directly connect pins, and
+> > > enable
+> > > this config
+> > > + *			to do this.
+> > 
+> > @support_direct_pin: IP supports direct connection to pins
+> > 
+> > or
+> > 
+> > @support_direct_pin: IP has direct connection to DP pins
+> > 
+> > or
+> > 
+> > @support_direct_pin: IP connects directly to DP pins
+> > 
+> > pick one, after which:
+> > 
+> > Reviewed-by: AngeloGioacchino Del Regno <
+> > angelogioacchino.delregno@collabora.com>
+> > 
+> > 
 > 
-> Just like:
-> #define test_pass_macro()               \
->          do {                            \
->                  prefix_push(__func__);  \
->                  test_pass();            \
->                  prefix_pop();           \
->          } while (0)
-
-This will not print the name of the failing test, e.g. instead of 
-
-not ok 28 : memblock_alloc: alloc_bottom_up_disjoint_check: failed
-
-with Rebecca's implementation it'll print
-
-not ok 28 : memblock_alloc: failed
-
-How about
-
-#define PREFIX_PUSH() 	prefix_push(__func__)?
- 
-> This macro will automatically push the __fun__ as prefix when you call
-> test_pass_macro(). And then pop it after test_pass() output.
+> Hello Angelo,
 > 
-> And use this macro() to hidden most of the paired prefix_* functions.
+> this is not connect to "DP" pin. This setting is for dpi to connect
+> to
+> panel directly and there is no such usecase for dp_intf.
 > 
-> And I think that's the simplist way. May be someone has a better solution.
+> Therefore, I will use "@support_direct_pin: IP supports direct
+> connection to pins".
+> 
+> Thanks
+> 
+> BRs,
+> Bo-Chen
 > 
 
--- 
-Sincerely yours,
-Mike.
+Hello Angelo,
+
+I think "@support_direct_pin: IP supports direct connection to dpi
+panels" is more precise for this config. I will use this description.
+
+BRs,
+Bo-Chen
+
