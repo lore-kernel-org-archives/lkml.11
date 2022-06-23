@@ -2,120 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF793C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:11:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 247B3C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:11:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231998AbiFWRLK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:11:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39164 "EHLO
+        id S231547AbiFWRLQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:11:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234092AbiFWRIp (ORCPT
+        with ESMTP id S234105AbiFWRIq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:08:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D56045534E;
-        Thu, 23 Jun 2022 09:57:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D1010603E0;
-        Thu, 23 Jun 2022 16:57:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8964EC3411B;
-        Thu, 23 Jun 2022 16:57:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003431;
-        bh=F+z1XVXySyBFOhWD8x3uI2k0UYHqf3zXerHeZTJgwNU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IlrlGV86LqOYa5awo+MLQRGGuQCMOXVmYBJuP0Q0oeo5e10LcOTLVramgkfyHOPp/
-         cZ30XVA0qRSnf4EulU3eA4zoIfNg46z8EY2XNuMHcgM5cKKyLP07acBJjfpee9AAHk
-         RF5SSxM+MWKYBAByXQYlCn1yDc5m/BLYwUjqkwwI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen Lin <chen45464546@163.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 236/264] net: ethernet: mtk_eth_soc: fix misuse of mem alloc interface netdev[napi]_alloc_frag
-Date:   Thu, 23 Jun 2022 18:43:49 +0200
-Message-Id: <20220623164350.753761494@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
-References: <20220623164344.053938039@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Thu, 23 Jun 2022 13:08:46 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33B5C55353;
+        Thu, 23 Jun 2022 09:57:24 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id o16-20020a05600c379000b003a02eaea815so1367183wmr.0;
+        Thu, 23 Jun 2022 09:57:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=e3U0JvexK71NTNZkmX0NIsRWRyI4BPMxyMDkrutu/XI=;
+        b=PlGKEfs2QZJui/v+gDPXf87JqHxXFHLJ1YzIZsM5GVST3Fym+W4HJLW7lSGfKRzNh5
+         s5LxljZzyQCDtTVTk5WQ5SMXJbkPzJ+408oUftaJ2zskfP0ilQIezQ/hEnRF0LYvTHD8
+         prQo+p6LaPhWsJcAW8r1jj1NqF/s2A3J2gprJJTPFTF/jqmWeRbeGOqKWrSQYebwEXnH
+         FLTz5x5QgqmEX/1UREMMBGR/f6EceUGn8C4Lo2A8l7npCYnQdWoXkrA+dXChs+OexcpF
+         BdYqJn7CQMtZT+/pBJuPIUUz6Gttfu/EmBU96WixCQVByRUTdUPGDnaVNBFXaUjZrnVx
+         br+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=e3U0JvexK71NTNZkmX0NIsRWRyI4BPMxyMDkrutu/XI=;
+        b=Bnlf1B/lnUngkZjN0TKzLOPOsysTOrHnoXEOWyuHpwpUruY6wV0DTqn7cSIGDUpj64
+         kxgzN7UswXEkSZaiLotj4Y6z+Bh0oZOvWtlDt+Zltwbjxa/OhLQf+4kLsaiVZmcV6x5w
+         9PFBPTiZ2QYju98kbrOLPtyMdsqd5oIoKhijuJ8dOnXoOMkEU4oVGgEtwz5PAUAmNDLj
+         rBTp4qGo6zKhQHXp/tlCtXxcbQ3kJUAgXp82Bm9eF78Ki5AYKbKPEfZbdFheTjaprrrF
+         3lyjh3WQweD6130AnHq4mXKr3h5osF1Rr3W0zyvKOFBnyY224bZ97zy253VdlPsk85ok
+         9ppA==
+X-Gm-Message-State: AJIora/XMJulfNMCPkxMmtcKMP1wxFNojOzfTaKKAyTQVxdkIul9K4Dg
+        GYSciN78FHACVHBEl2kbjyQ=
+X-Google-Smtp-Source: AGRyM1vOnY+XPrdkmfg3FiuwdduapQjCO/zQGdKRk02eOow6Z1ktaEfsJfb1f/ZWqebxM5JEn8htBw==
+X-Received: by 2002:a1c:f213:0:b0:39b:ad32:5e51 with SMTP id s19-20020a1cf213000000b0039bad325e51mr5107372wmc.72.1656003430485;
+        Thu, 23 Jun 2022 09:57:10 -0700 (PDT)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id m25-20020a7bca59000000b0039746638d6esm3602006wml.33.2022.06.23.09.57.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Jun 2022 09:57:09 -0700 (PDT)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Jon Mason <jdmason@kudzu.us>, Frank Li <Frank.Li@nxp.com>,
+        linux-pci@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] NTB: EPF: set pointer addr to null using NULL rather than 0
+Date:   Thu, 23 Jun 2022 17:57:09 +0100
+Message-Id: <20220623165709.77229-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen Lin <chen45464546@163.com>
+The pointer addr is being set to null using 0. Use NULL instead.
 
-[ Upstream commit 2f2c0d2919a14002760f89f4e02960c735a316d2 ]
+Cleans up sparse warning:
+warning: Using plain integer as NULL pointer
 
-When rx_flag == MTK_RX_FLAGS_HWLRO,
-rx_data_len = MTK_MAX_LRO_RX_LENGTH(4096 * 3) > PAGE_SIZE.
-netdev_alloc_frag is for alloction of page fragment only.
-Reference to other drivers and Documentation/vm/page_frags.rst
-
-Branch to use __get_free_pages when ring->frag_size > PAGE_SIZE.
-
-Signed-off-by: Chen Lin <chen45464546@163.com>
-Link: https://lore.kernel.org/r/1654692413-2598-1-git-send-email-chen45464546@163.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 ---
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 21 +++++++++++++++++++--
- 1 file changed, 19 insertions(+), 2 deletions(-)
+ drivers/pci/endpoint/functions/pci-epf-vntb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index 84d667957221..61a9b60ab022 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -527,6 +527,17 @@ static inline void mtk_rx_get_desc(struct mtk_rx_dma *rxd,
- 	rxd->rxd4 = READ_ONCE(dma_rxd->rxd4);
- }
+diff --git a/drivers/pci/endpoint/functions/pci-epf-vntb.c b/drivers/pci/endpoint/functions/pci-epf-vntb.c
+index ebf7e243eefa..fb31c868af6a 100644
+--- a/drivers/pci/endpoint/functions/pci-epf-vntb.c
++++ b/drivers/pci/endpoint/functions/pci-epf-vntb.c
+@@ -605,7 +605,7 @@ static int epf_ntb_mw_bar_init(struct epf_ntb *ntb)
  
-+static void *mtk_max_lro_buf_alloc(gfp_t gfp_mask)
-+{
-+	unsigned int size = mtk_max_frag_size(MTK_MAX_LRO_RX_LENGTH);
-+	unsigned long data;
-+
-+	data = __get_free_pages(gfp_mask | __GFP_COMP | __GFP_NOWARN,
-+				get_order(size));
-+
-+	return (void *)data;
-+}
-+
- /* the qdma core needs scratch memory to be setup */
- static int mtk_init_fq_dma(struct mtk_eth *eth)
- {
-@@ -928,7 +939,10 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
- 			goto release_desc;
- 
- 		/* alloc new buffer */
--		new_data = napi_alloc_frag(ring->frag_size);
-+		if (ring->frag_size <= PAGE_SIZE)
-+			new_data = napi_alloc_frag(ring->frag_size);
-+		else
-+			new_data = mtk_max_lro_buf_alloc(GFP_ATOMIC);
- 		if (unlikely(!new_data)) {
- 			netdev->stats.rx_dropped++;
- 			goto release_desc;
-@@ -1231,7 +1245,10 @@ static int mtk_rx_alloc(struct mtk_eth *eth, int ring_no, int rx_flag)
- 		return -ENOMEM;
- 
- 	for (i = 0; i < rx_dma_size; i++) {
--		ring->data[i] = netdev_alloc_frag(ring->frag_size);
-+		if (ring->frag_size <= PAGE_SIZE)
-+			ring->data[i] = netdev_alloc_frag(ring->frag_size);
-+		else
-+			ring->data[i] = mtk_max_lro_buf_alloc(GFP_KERNEL);
- 		if (!ring->data[i])
- 			return -ENOMEM;
- 	}
+ 		ntb->epf->bar[barno].barno = barno;
+ 		ntb->epf->bar[barno].size = size;
+-		ntb->epf->bar[barno].addr = 0;
++		ntb->epf->bar[barno].addr = NULL;
+ 		ntb->epf->bar[barno].phys_addr = 0;
+ 		ntb->epf->bar[barno].flags |= upper_32_bits(size) ?
+ 				PCI_BASE_ADDRESS_MEM_TYPE_64 :
 -- 
-2.35.1
-
-
+2.35.3
 
