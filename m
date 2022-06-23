@@ -2,94 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AF59C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 09:32:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4ED4C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 09:33:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230441AbiFWJc5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 05:32:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36280 "EHLO
+        id S231142AbiFWJdE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 05:33:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230324AbiFWJcy (ORCPT
+        with ESMTP id S230522AbiFWJdA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 05:32:54 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E4050A184
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 02:32:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655976771;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=06kaMflGnUnS/V8ph3wEzp7LZpvIbOHFK6oUZfaSoWM=;
-        b=iywpdV4TjB/ybFLLt4WxE7Gu56LTLJ6VFOoWvvsoYfyqZtuCWh8d03Sm5aXRBBV4ObYIip
-        yBZ+NpfJe5HefXYz1ulfiVjHrm6hKGKixZ3tSHrMLmXdKIICCcclT1D5JlVXuCCFAiJ426
-        0DYFbQe7PldJZW5Qu2JJqITdFle9v+E=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-368-m4fLhkaZNHyJ5oeQhajJPQ-1; Thu, 23 Jun 2022 05:32:46 -0400
-X-MC-Unique: m4fLhkaZNHyJ5oeQhajJPQ-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0815F185A7B2;
-        Thu, 23 Jun 2022 09:32:46 +0000 (UTC)
-Received: from [10.40.194.231] (unknown [10.40.194.231])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4B509C2811A;
-        Thu, 23 Jun 2022 09:32:45 +0000 (UTC)
-Message-ID: <cc5f4465-49cf-3a87-e502-4bb21f2e3163@redhat.com>
-Date:   Thu, 23 Jun 2022 11:32:44 +0200
+        Thu, 23 Jun 2022 05:33:00 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CDC8655A
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 02:32:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655976779; x=1687512779;
+  h=message-id:date:mime-version:subject:from:to:cc:
+   references:in-reply-to:content-transfer-encoding;
+  bh=/10fnuDxKEJMd2TxLq1MP7a4UvhbAzgZkhcCFlHcNzM=;
+  b=dLS6LXNLiQoZvacI3WxtSnrGB0kOVaChPq2+YB7la4iY4PfYwbsfWrHm
+   fILcAAFZbS3fDjxhYKARWnwohn+e3onGEmQtQJuVMw6ZVMGxCp87Uc02C
+   GoWVbB0D2l3WGnwZgl9vo3PbHnjKByEcR4zUoDtu6kYZZOjjOYpKA6utA
+   iZY05dNnUnwN5JrhUXpl+AqN59MTbs9GbskUr9W0oy1fCx1gWuW2cf6qF
+   vruS85xt2p1VUSP3/C5UA+Th6hUxvYa3dsd2v1istz+fZHuIycNKi8sy3
+   eNLQjFv39RUf5gJKp30hYYy8N6LKaGRe3l2jMMYRAsyNouMDqHUWL5Fbg
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="279441083"
+X-IronPort-AV: E=Sophos;i="5.92,215,1650956400"; 
+   d="scan'208";a="279441083"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2022 02:32:59 -0700
+X-IronPort-AV: E=Sophos;i="5.92,215,1650956400"; 
+   d="scan'208";a="644653251"
+Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.61.96])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2022 02:32:57 -0700
+Message-ID: <bc7bf65b-046c-788f-b817-6b8694c0d110@intel.com>
+Date:   Thu, 23 Jun 2022 12:32:52 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.10.0
-Subject: Re: [Intel-gfx] i915: crash with 5.19-rc2
+ Firefox/91.0 Thunderbird/91.9.1
+Subject: Re: [PATCH 0/5] perf record: Preparation for sideband injection
 Content-Language: en-US
-To:     Rodrigo Vivi <rodrigo.vivi@intel.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        intel-gfx@lists.freedesktop.org, chris@chris-wilson.co.uk
-References: <584ae788-05e3-5824-8c85-cbb833677850@redhat.com>
- <YrN/mI4Qlo66qBmg@intel.com>
-From:   Zdenek Kabelac <zkabelac@redhat.com>
-In-Reply-To: <YrN/mI4Qlo66qBmg@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+From:   Adrian Hunter <adrian.hunter@intel.com>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     Jiri Olsa <jolsa@redhat.com>, Ian Rogers <irogers@google.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-kernel@vger.kernel.org
+References: <20220610113316.6682-1-adrian.hunter@intel.com>
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
+ Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+In-Reply-To: <20220610113316.6682-1-adrian.hunter@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dne 22. 06. 22 v 22:46 Rodrigo Vivi napsal(a):
-> Hi Zdenek,
->
-> On Wed, Jun 22, 2022 at 01:18:42PM +0200, Zdenek Kabelac wrote:
->> Hello
->>
->> While somewhat oldish hw (T61, 4G, C2D) - I've now witnessed new crash with Xorg:
->>
->> (happened while reopening iconified Firefox window  - running 'standard'
->> rawhide -nodebug kernel 5.19.0-0.rc2.21.fc37.x86_64)
-> any bisect possible?
->
-> if possible, could you please file a bug?
-> https://gitlab.freedesktop.org/drm/intel/-/wikis/How-to-file-i915-bugs
->
-> I know I know, the account requirement :/
-> also on main kernel bugzilla is probably better than the email here.
+On 10/06/22 14:33, Adrian Hunter wrote:
+> Hi
+> 
+> Here are some small patches in preparation for "sideband injection".
+> 
+> I hope to run perf record in a virtual machine to capture sideband events
+> while simulataneously running perf record with Intel PT on the host, and
+> then subsequently inject the sideband events from the guest perf.data file
+> into the host perf.data file, so that decoding can decode the Intel PT
+> trace for the periods when the guest is running user space (kernel space
+> is already decodable).
+> 
+> The patches are changes I have found so far that will be needed.
 
+Are there OK?
 
-Hi
-
-
-So far this bisect does not seem doable, since this crash happened after 
-several days of  uptime and so far happened just once (and I'm now already on 
--rc3).
-
-If I'll spot any more regular approach to hit this crash, I may try bisecting. 
-Meanwhile I just hope, someone will get an idea what has changed recently (I'd 
-not seen such crash with 5.18). Although I need to say that I'm witnessing 
-some GPU restarts lately causing just some 'temporary hanging' of Xorg 
-desktop, but that's not such a big deal.
-
-Zdenek
+> 
+> 
+> Adrian Hunter (5):
+>       perf record: Always get text_poke events with --kcore option
+>       perf record: Always record id index
+>       perf record: Add new option to sample identifier
+>       perf record: Add finished init event
+>       perf script: Add some missing event dumps
+> 
+>  tools/lib/perf/include/perf/event.h      |  1 +
+>  tools/perf/Documentation/perf-record.txt |  3 +++
+>  tools/perf/builtin-inject.c              |  1 +
+>  tools/perf/builtin-record.c              | 44 +++++++++++++++++++++++++++-----
+>  tools/perf/builtin-script.c              |  6 +++++
+>  tools/perf/util/event.c                  |  1 +
+>  tools/perf/util/header.c                 |  3 +++
+>  tools/perf/util/record.c                 |  2 +-
+>  tools/perf/util/record.h                 |  1 +
+>  tools/perf/util/session.c                |  4 +++
+>  tools/perf/util/synthetic-events.c       |  7 +++--
+>  tools/perf/util/tool.h                   |  3 ++-
+>  12 files changed, 65 insertions(+), 11 deletions(-)
+> 
+> 
+> Regards
+> Adrian
 
