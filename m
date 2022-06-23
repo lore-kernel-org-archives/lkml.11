@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68F88C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:42:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A744AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:42:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233379AbiFWRmN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:42:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37552 "EHLO
+        id S234761AbiFWRmR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:42:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234794AbiFWRiR (ORCPT
+        with ESMTP id S234790AbiFWRiR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 23 Jun 2022 13:38:17 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B09A23BE1;
-        Thu, 23 Jun 2022 10:08:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D962B21E3C;
+        Thu, 23 Jun 2022 10:08:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A627861408;
-        Thu, 23 Jun 2022 17:08:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6ED31C3411B;
-        Thu, 23 Jun 2022 17:08:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6AEC160AE6;
+        Thu, 23 Jun 2022 17:08:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B192C3411B;
+        Thu, 23 Jun 2022 17:08:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004091;
-        bh=598Hl7kIDIGJ5LdbwkPEKiM7nzzTHD9/w2CWnbQ9xv0=;
+        s=korg; t=1656004088;
+        bh=V4/dyybGn3xUa1f3oO8fcXk2IMhWQqFvgIBWsKDBplk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DchenOgrm56xFnIDCYt9e0SorCD4tVi261Lh/3sWP0YlHsXLcD+Luc1KxRfA4gdhB
-         mLKvQ62h73eyeNiWDNYFRD1Vk+EyF7be6XpbhpZICVH6rvN6HeaViVLCDJGG/OfIhl
-         PZwenfLXw8UmQoUGLyNT0vHTBHrseIJsUYeK6gFU=
+        b=WxATAUlUlSyGWPE0HFWy1cv4JbZuHL3NUJh4kHSmmMv50uCOkIqxaUUy/r38bT3ew
+         +d5BT7erCqX7X7/AKRyD3RtNMtFITYfBQaptCoMyCiPnk2ZGBsGYg8KtpBmormUpiH
+         9qdLp5N7IBq5mYaX0GO9dLAcaYGte1E8bqUn7qME=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Eric Biggers <ebiggers@google.com>,
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
+        Theodore Tso <tytso@mit.edu>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 134/237] random: reseed more often immediately after booting
-Date:   Thu, 23 Jun 2022 18:42:48 +0200
-Message-Id: <20220623164347.009917719@linuxfoundation.org>
+Subject: [PATCH 4.14 143/237] random: check for signals every PAGE_SIZE chunk of /dev/[u]random
+Date:   Thu, 23 Jun 2022 18:42:57 +0200
+Message-Id: <20220623164347.269437048@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -51,85 +51,146 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 7a7ff644aeaf071d433caffb3b8ea57354b55bd3 upstream.
+commit e3c1c4fd9e6d14059ed93ebfe15e1c57793b1a05 upstream.
 
-In order to chip away at the "premature first" problem, we augment our
-existing entropy accounting with more frequent reseedings at boot.
+In 1448769c9cdb ("random: check for signal_pending() outside of
+need_resched() check"), Jann pointed out that we previously were only
+checking the TIF_NOTIFY_SIGNAL and TIF_SIGPENDING flags if the process
+had TIF_NEED_RESCHED set, which meant in practice, super long reads to
+/dev/[u]random would delay signal handling by a long time. I tried this
+using the below program, and indeed I wasn't able to interrupt a
+/dev/urandom read until after several megabytes had been read. The bug
+he fixed has always been there, and so code that reads from /dev/urandom
+without checking the return value of read() has mostly worked for a long
+time, for most sizes, not just for <= 256.
 
-The idea is that at boot, we're getting entropy from various places, and
-we're not very sure which of early boot entropy is good and which isn't.
-Even when we're crediting the entropy, we're still not totally certain
-that it's any good. Since boot is the one time (aside from a compromise)
-that we have zero entropy, it's important that we shepherd entropy into
-the crng fairly often.
+Maybe it makes sense to keep that code working. The reason it was so
+small prior, ignoring the fact that it didn't work anyway, was likely
+because /dev/random used to block, and that could happen for pretty
+large lengths of time while entropy was gathered. But now, it's just a
+chacha20 call, which is extremely fast and is just operating on pure
+data, without having to wait for some external event. In that sense,
+/dev/[u]random is a lot more like /dev/zero.
 
-At the same time, we don't want a "premature next" problem, whereby an
-attacker can brute force individual bits of added entropy. In lieu of
-going full-on Fortuna (for now), we can pick a simpler strategy of just
-reseeding more often during the first 5 minutes after boot. This is
-still bounded by the 256-bit entropy credit requirement, so we'll skip a
-reseeding if we haven't reached that, but in case entropy /is/ coming
-in, this ensures that it makes its way into the crng rather rapidly
-during these early stages.
+Taking a page out of /dev/zero's read_zero() function, it always returns
+at least one chunk, and then checks for signals after each chunk. Chunk
+sizes there are of length PAGE_SIZE. Let's just copy the same thing for
+/dev/[u]random, and check for signals and cond_resched() for every
+PAGE_SIZE amount of data. This makes the behavior more consistent with
+expectations, and should mitigate the impact of Jann's fix for the
+age-old signal check bug.
 
-Ordinarily we reseed if the previous reseeding is 300 seconds old. This
-commit changes things so that for the first 600 seconds of boot time, we
-reseed if the previous reseeding is uptime / 2 seconds old. That means
-that we'll reseed at the very least double the uptime of the previous
-reseeding.
+---- test program ----
 
+  #include <unistd.h>
+  #include <signal.h>
+  #include <stdio.h>
+  #include <sys/random.h>
+
+  static unsigned char x[~0U];
+
+  static void handle(int) { }
+
+  int main(int argc, char *argv[])
+  {
+    pid_t pid = getpid(), child;
+    signal(SIGUSR1, handle);
+    if (!(child = fork())) {
+      for (;;)
+        kill(pid, SIGUSR1);
+    }
+    pause();
+    printf("interrupted after reading %zd bytes\n", getrandom(x, sizeof(x), 0));
+    kill(child, SIGTERM);
+    return 0;
+  }
+
+Cc: Jann Horn <jannh@google.com>
 Cc: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   28 +++++++++++++++++++++++++---
- 1 file changed, 25 insertions(+), 3 deletions(-)
+ drivers/char/random.c |   41 ++++++++++++++++++++---------------------
+ 1 file changed, 20 insertions(+), 21 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -336,6 +336,28 @@ static void crng_fast_key_erasure(u8 key
+@@ -523,9 +523,7 @@ EXPORT_SYMBOL(get_random_bytes);
+ 
+ static ssize_t get_random_bytes_user(void __user *buf, size_t nbytes)
+ {
+-	bool large_request = nbytes > 256;
+-	ssize_t ret = 0;
+-	size_t len;
++	size_t len, left, ret = 0;
+ 	u32 chacha_state[CHACHA20_BLOCK_SIZE / sizeof(u32)];
+ 	u8 output[CHACHA20_BLOCK_SIZE];
+ 
+@@ -537,46 +535,47 @@ static ssize_t get_random_bytes_user(voi
+ 	 * bytes, in case userspace causes copy_to_user() below to sleep
+ 	 * forever, so that we still retain forward secrecy in that case.
+ 	 */
+-	crng_make_state(chacha_state, (u8 *)&chacha_state[4], CHACHA_KEY_SIZE);
++	crng_make_state(chacha_state, (u8 *)&chacha_state[4], CHACHA20_KEY_SIZE);
+ 	/*
+ 	 * However, if we're doing a read of len <= 32, we don't need to
+ 	 * use chacha_state after, so we can simply return those bytes to
+ 	 * the user directly.
+ 	 */
+-	if (nbytes <= CHACHA_KEY_SIZE) {
+-		ret = copy_to_user(buf, &chacha_state[4], nbytes) ? -EFAULT : nbytes;
++	if (nbytes <= CHACHA20_KEY_SIZE) {
++		ret = nbytes - copy_to_user(buf, &chacha_state[4], nbytes);
+ 		goto out_zero_chacha;
+ 	}
+ 
+-	do {
+-		if (large_request) {
+-			if (signal_pending(current)) {
+-				if (!ret)
+-					ret = -ERESTARTSYS;
+-				break;
+-			}
+-			cond_resched();
+-		}
+-
++	for (;;) {
+ 		chacha20_block(chacha_state, output);
+ 		if (unlikely(chacha_state[12] == 0))
+ 			++chacha_state[13];
+ 
+ 		len = min_t(size_t, nbytes, CHACHA20_BLOCK_SIZE);
+-		if (copy_to_user(buf, output, len)) {
+-			ret = -EFAULT;
++		left = copy_to_user(buf, output, len);
++		if (left) {
++			ret += len - left;
+ 			break;
+ 		}
+ 
+-		nbytes -= len;
+ 		buf += len;
+ 		ret += len;
+-	} while (nbytes);
++		nbytes -= len;
++		if (!nbytes)
++			break;
++
++		BUILD_BUG_ON(PAGE_SIZE % CHACHA20_BLOCK_SIZE != 0);
++		if (ret % PAGE_SIZE == 0) {
++			if (signal_pending(current))
++				break;
++			cond_resched();
++		}
++	}
+ 
+ 	memzero_explicit(output, sizeof(output));
+ out_zero_chacha:
+ 	memzero_explicit(chacha_state, sizeof(chacha_state));
+-	return ret;
++	return ret ? ret : -EFAULT;
  }
  
  /*
-+ * Return whether the crng seed is considered to be sufficiently
-+ * old that a reseeding might be attempted. This happens if the last
-+ * reseeding was CRNG_RESEED_INTERVAL ago, or during early boot, at
-+ * an interval proportional to the uptime.
-+ */
-+static bool crng_has_old_seed(void)
-+{
-+	static bool early_boot = true;
-+	unsigned long interval = CRNG_RESEED_INTERVAL;
-+
-+	if (unlikely(READ_ONCE(early_boot))) {
-+		time64_t uptime = ktime_get_seconds();
-+		if (uptime >= CRNG_RESEED_INTERVAL / HZ * 2)
-+			WRITE_ONCE(early_boot, false);
-+		else
-+			interval = max_t(unsigned int, 5 * HZ,
-+					 (unsigned int)uptime / 2 * HZ);
-+	}
-+	return time_after(jiffies, READ_ONCE(base_crng.birth) + interval);
-+}
-+
-+/*
-  * This function returns a ChaCha state that you may use for generating
-  * random data. It also returns up to 32 bytes on its own of random data
-  * that may be used; random_data_len may not be greater than 32.
-@@ -368,10 +390,10 @@ static void crng_make_state(u32 chacha_s
- 	}
- 
- 	/*
--	 * If the base_crng is more than 5 minutes old, we reseed, which
--	 * in turn bumps the generation counter that we check below.
-+	 * If the base_crng is old enough, we try to reseed, which in turn
-+	 * bumps the generation counter that we check below.
- 	 */
--	if (unlikely(time_after(jiffies, READ_ONCE(base_crng.birth) + CRNG_RESEED_INTERVAL)))
-+	if (unlikely(crng_has_old_seed()))
- 		crng_reseed();
- 
- 	local_irq_save(flags);
 
 
