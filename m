@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 806A9C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:48:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E40CC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:48:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232548AbiFWQsw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:48:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51626 "EHLO
+        id S232571AbiFWQs4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:48:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232712AbiFWQsI (ORCPT
+        with ESMTP id S232574AbiFWQr1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:48:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8922E4B85D;
-        Thu, 23 Jun 2022 09:47:30 -0700 (PDT)
+        Thu, 23 Jun 2022 12:47:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83E514A3E6;
+        Thu, 23 Jun 2022 09:47:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B77661F9A;
-        Thu, 23 Jun 2022 16:47:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C85B4C3411B;
-        Thu, 23 Jun 2022 16:47:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0B921B8248E;
+        Thu, 23 Jun 2022 16:47:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76E58C3411B;
+        Thu, 23 Jun 2022 16:47:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656002849;
-        bh=+gSdt6qStV9f5Q4wzPUqJ8wiE2Mg6UXQGSXyBr3/S8Y=;
+        s=korg; t=1656002842;
+        bh=7TBRMasfWnekyJfM7+liwVZ+Uk19yIeiAXsr8VsIe9E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h7UHdQ81H3PU5gR+U3EOF/lafdw5ITAYvCqwpK01uCPMW0WqqR0gl2wOPsEjvy/Qi
-         q9pt0kPzq2vrboPBaYJmCCHp9ogJjrozS/JMC90XCRieeTMUxVL/byFOBWohxGVn9k
-         xMYKCFdU1dL0vHUczRm9bvDwfPR7UtrfvR2cOMEM=
+        b=UNal6WLVJjocTUwefNNFC2R70zMNr084z7UsexgqnaQvkuQSByJPk0NR+Dn573Klw
+         1t8AZP47JaSYw2aSl0AaksPNFa8pVhO7i9onD8UPDXv2cSAjFcOdbhD7UGfZt7nO2z
+         gKUnVxwaRTZgAJjSV057MHQSbB4HJuix0WdJzF0c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 039/264] random: only read from /dev/random after its pool has received 128 bits
-Date:   Thu, 23 Jun 2022 18:40:32 +0200
-Message-Id: <20220623164345.175924263@linuxfoundation.org>
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 4.9 009/264] random: silence compiler warnings and fix race
+Date:   Thu, 23 Jun 2022 18:40:02 +0200
+Message-Id: <20220623164344.324630862@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -48,161 +48,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Theodore Ts'o <tytso@mit.edu>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit eb9d1bf079bb438d1a066d72337092935fc770f6 upstream.
+commit 4a072c71f49b0a0e495ea13423bdb850da73c58c upstream.
 
-Immediately after boot, we allow reads from /dev/random before its
-entropy pool has been fully initialized.  Fix this so that we don't
-allow this until the blocking pool has received 128 bits.
+Odd versions of gcc for the sh4 architecture will actually warn about
+flags being used while uninitialized, so we set them to zero. Non crazy
+gccs will optimize that out again, so it doesn't make a difference.
 
-We do this by repurposing the initialized flag in the entropy pool
-struct, and use the initialized flag in the blocking pool to indicate
-whether it is safe to pull from the blocking pool.
+Next, over aggressive gccs could inline the expression that defines
+use_lock, which could then introduce a race resulting in a lock
+imbalance. By using READ_ONCE, we prevent that fate. Finally, we make
+that assignment const, so that gcc can still optimize a nice amount.
 
-To do this, we needed to rework when we decide to push entropy from the
-input pool to the blocking pool, since the initialized flag for the
-input pool was used for this purpose.  To simplify things, we no
-longer use the initialized flag for that purpose, nor do we use the
-entropy_total field any more.
+Finally, we fix a potential deadlock between primary_crng.lock and
+batched_entropy_reset_lock, where they could be called in opposite
+order. Moving the call to invalidate_batched_entropy to outside the lock
+rectifies this issue.
 
+Fixes: b169c13de473a85b3c859bb36216a4cb5f00a54a
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@vger.kernel.org
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c         |   44 +++++++++++++++++++++---------------------
- include/trace/events/random.h |   13 ++++--------
- 2 files changed, 27 insertions(+), 30 deletions(-)
+ drivers/char/random.c |   12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -472,7 +472,6 @@ struct entropy_store {
- 	unsigned short add_ptr;
- 	unsigned short input_rotate;
- 	int entropy_count;
--	int entropy_total;
- 	unsigned int initialized:1;
- 	unsigned int last_data_init:1;
- 	__u8 last_data[EXTRACT_SIZE];
-@@ -645,7 +644,7 @@ static void process_random_ready_list(vo
-  */
- static void credit_entropy_bits(struct entropy_store *r, int nbits)
- {
--	int entropy_count, orig;
-+	int entropy_count, orig, has_initialized = 0;
- 	const int pool_size = r->poolinfo->poolfracbits;
- 	int nfrac = nbits << ENTROPY_SHIFT;
- 
-@@ -700,23 +699,25 @@ retry:
- 		entropy_count = 0;
- 	} else if (entropy_count > pool_size)
- 		entropy_count = pool_size;
-+	if ((r == &blocking_pool) && !r->initialized &&
-+	    (entropy_count >> ENTROPY_SHIFT) > 128)
-+		has_initialized = 1;
- 	if (cmpxchg(&r->entropy_count, orig, entropy_count) != orig)
- 		goto retry;
- 
--	r->entropy_total += nbits;
--	if (!r->initialized && r->entropy_total > 128) {
-+	if (has_initialized)
- 		r->initialized = 1;
--		r->entropy_total = 0;
--	}
- 
- 	trace_credit_entropy_bits(r->name, nbits,
--				  entropy_count >> ENTROPY_SHIFT,
--				  r->entropy_total, _RET_IP_);
-+				  entropy_count >> ENTROPY_SHIFT, _RET_IP_);
- 
- 	if (r == &input_pool) {
- 		int entropy_bits = entropy_count >> ENTROPY_SHIFT;
-+		struct entropy_store *other = &blocking_pool;
- 
--		if (crng_init < 2 && entropy_bits >= 128) {
-+		if (crng_init < 2) {
-+			if (entropy_bits < 128)
-+				return;
- 			crng_reseed(&primary_crng, r);
- 			entropy_bits = r->entropy_count >> ENTROPY_SHIFT;
- 		}
-@@ -727,20 +728,14 @@ retry:
- 			wake_up_interruptible(&random_read_wait);
- 			kill_fasync(&fasync, SIGIO, POLL_IN);
- 		}
--		/* If the input pool is getting full, send some
--		 * entropy to the blocking pool until it is 75% full.
-+		/* If the input pool is getting full, and the blocking
-+		 * pool has room, send some entropy to the blocking
-+		 * pool.
- 		 */
--		if (entropy_bits > random_write_wakeup_bits &&
--		    r->initialized &&
--		    r->entropy_total >= 2*random_read_wakeup_bits) {
--			struct entropy_store *other = &blocking_pool;
--
--			if (other->entropy_count <=
--			    3 * other->poolinfo->poolfracbits / 4) {
--				schedule_work(&other->push_work);
--				r->entropy_total = 0;
--			}
--		}
-+		if (!work_pending(&other->push_work) &&
-+		    (ENTROPY_BITS(r) > 6 * r->poolinfo->poolbytes) &&
-+		    (ENTROPY_BITS(other) <= 6 * other->poolinfo->poolbytes))
-+			schedule_work(&other->push_work);
+@@ -815,13 +815,13 @@ static int crng_fast_load(const char *cp
+ 		p[crng_init_cnt % CHACHA20_KEY_SIZE] ^= *cp;
+ 		cp++; crng_init_cnt++; len--;
  	}
++	spin_unlock_irqrestore(&primary_crng.lock, flags);
+ 	if (crng_init_cnt >= CRNG_INIT_CNT_THRESH) {
+ 		invalidate_batched_entropy();
+ 		crng_init = 1;
+ 		wake_up_interruptible(&crng_init_wait);
+ 		pr_notice("random: fast init done\n");
+ 	}
+-	spin_unlock_irqrestore(&primary_crng.lock, flags);
+ 	return 1;
  }
  
-@@ -1612,6 +1607,11 @@ static ssize_t extract_entropy_user(stru
- 	int large_request = (nbytes > 256);
+@@ -904,6 +904,7 @@ static void crng_reseed(struct crng_stat
+ 	}
+ 	memzero_explicit(&buf, sizeof(buf));
+ 	WRITE_ONCE(crng->init_time, jiffies);
++	spin_unlock_irqrestore(&crng->lock, flags);
+ 	if (crng == &primary_crng && crng_init < 2) {
+ 		numa_crng_init();
+ 		invalidate_batched_entropy();
+@@ -924,7 +925,6 @@ static void crng_reseed(struct crng_stat
+ 			urandom_warning.missed = 0;
+ 		}
+ 	}
+-	spin_unlock_irqrestore(&crng->lock, flags);
+ }
  
- 	trace_extract_entropy_user(r->name, nbytes, ENTROPY_BITS(r), _RET_IP_);
-+	if (!r->initialized && r->pull) {
-+		xfer_secondary_pool(r, ENTROPY_BITS(r->pull)/8);
-+		if (!r->initialized)
-+			return 0;
-+	}
- 	xfer_secondary_pool(r, nbytes);
- 	nbytes = account(r, nbytes, 0, 0);
+ static inline void crng_wait_ready(void)
+@@ -2108,8 +2108,8 @@ static DEFINE_PER_CPU(struct batched_ent
+ u64 get_random_u64(void)
+ {
+ 	u64 ret;
+-	bool use_lock = crng_init < 2;
+-	unsigned long flags;
++	bool use_lock = READ_ONCE(crng_init) < 2;
++	unsigned long flags = 0;
+ 	struct batched_entropy *batch;
  
---- a/include/trace/events/random.h
-+++ b/include/trace/events/random.h
-@@ -61,15 +61,14 @@ DEFINE_EVENT(random__mix_pool_bytes, mix
+ #if BITS_PER_LONG == 64
+@@ -2140,8 +2140,8 @@ static DEFINE_PER_CPU(struct batched_ent
+ u32 get_random_u32(void)
+ {
+ 	u32 ret;
+-	bool use_lock = crng_init < 2;
+-	unsigned long flags;
++	bool use_lock = READ_ONCE(crng_init) < 2;
++	unsigned long flags = 0;
+ 	struct batched_entropy *batch;
  
- TRACE_EVENT(credit_entropy_bits,
- 	TP_PROTO(const char *pool_name, int bits, int entropy_count,
--		 int entropy_total, unsigned long IP),
-+		 unsigned long IP),
- 
--	TP_ARGS(pool_name, bits, entropy_count, entropy_total, IP),
-+	TP_ARGS(pool_name, bits, entropy_count, IP),
- 
- 	TP_STRUCT__entry(
- 		__field( const char *,	pool_name		)
- 		__field(	  int,	bits			)
- 		__field(	  int,	entropy_count		)
--		__field(	  int,	entropy_total		)
- 		__field(unsigned long,	IP			)
- 	),
- 
-@@ -77,14 +76,12 @@ TRACE_EVENT(credit_entropy_bits,
- 		__entry->pool_name	= pool_name;
- 		__entry->bits		= bits;
- 		__entry->entropy_count	= entropy_count;
--		__entry->entropy_total	= entropy_total;
- 		__entry->IP		= IP;
- 	),
- 
--	TP_printk("%s pool: bits %d entropy_count %d entropy_total %d "
--		  "caller %pS", __entry->pool_name, __entry->bits,
--		  __entry->entropy_count, __entry->entropy_total,
--		  (void *)__entry->IP)
-+	TP_printk("%s pool: bits %d entropy_count %d caller %pS",
-+		  __entry->pool_name, __entry->bits,
-+		  __entry->entropy_count, (void *)__entry->IP)
- );
- 
- TRACE_EVENT(push_to_pool,
+ 	if (arch_get_random_int(&ret))
 
 
