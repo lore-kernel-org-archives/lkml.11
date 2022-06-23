@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA4AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:20:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75B26C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:20:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237028AbiFWSUH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:20:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41808 "EHLO
+        id S231977AbiFWSUL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:20:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236863AbiFWSQv (ORCPT
+        with ESMTP id S236885AbiFWSQ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:16:51 -0400
+        Thu, 23 Jun 2022 14:16:57 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20DFA4EA11;
-        Thu, 23 Jun 2022 10:23:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1EEC62C1C;
+        Thu, 23 Jun 2022 10:23:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 78F17B82497;
-        Thu, 23 Jun 2022 17:23:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4489C341C6;
-        Thu, 23 Jun 2022 17:23:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A2EFFB824B9;
+        Thu, 23 Jun 2022 17:23:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E977BC3411B;
+        Thu, 23 Jun 2022 17:23:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656005004;
-        bh=ZLCEwXffTqRU3tK4EId6tTYhofvM1aJAsm/kPMIBKcc=;
+        s=korg; t=1656005013;
+        bh=Pplf4yDHXUbuRV90A27MZmzIBQ4huT/4sBw/QKEODoA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jHNIHuVkpbeeeYLSdyFkjLrCWhDXwMZ1xaEkGWpIHh/qpMz2/vTRq7agid5j1BaNb
-         oRdjVgwM9fBysocA+P8CblC+nGMnCigZ2UgvHPaUbWP/oEpUYlwwVlDTrEEPYu+m+R
-         3f2LO0VcBoq0qj2psMcuaWbSOsZW0yfEUes1wLTU=
+        b=HHbaHaGWra/dfs9catmtQwBQj8oUUVnGOSjdp0lqgTBJFAxPn86H+ITqfVQr80sih
+         g7h2DH/JzCMNFmejUHvqNc/qw6n6/SSBrILePxm+vLL5kG9Dpn3fdf98VTf8kQTj9w
+         PZy9egRavgu/8Qz48wPoeeslgLieoyXZmh9+n2a8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Frode Nordahl <frode.nordahl@canonical.com>,
-        Ilya Maximets <i.maximets@ovn.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.19 221/234] net: openvswitch: fix misuse of the cached connection on tuple changes
-Date:   Thu, 23 Jun 2022 18:44:48 +0200
-Message-Id: <20220623164349.303968769@linuxfoundation.org>
+        stable@vger.kernel.org, Alexey Kardashevskiy <aik@ozlabs.ru>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: [PATCH 4.19 224/234] powerpc/mm: Switch obsolete dssall to .long
+Date:   Thu, 23 Jun 2022 18:44:51 +0200
+Message-Id: <20220623164349.388634935@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
 References: <20220623164343.042598055@linuxfoundation.org>
@@ -50,107 +49,142 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilya Maximets <i.maximets@ovn.org>
+From: Alexey Kardashevskiy <aik@ozlabs.ru>
 
-commit 2061ecfdf2350994e5b61c43e50e98a7a70e95ee upstream.
+commit d51f86cfd8e378d4907958db77da3074f6dce3ba upstream.
 
-If packet headers changed, the cached nfct is no longer relevant
-for the packet and attempt to re-use it leads to the incorrect packet
-classification.
+The dssall ("Data Stream Stop All") instruction is obsolete altogether
+with other Data Cache Instructions since ISA 2.03 (year 2006).
 
-This issue is causing broken connectivity in OpenStack deployments
-with OVS/OVN due to hairpin traffic being unexpectedly dropped.
+LLVM IAS does not support it but PPC970 seems to be using it.
+This switches dssall to .long as there is no much point in fixing LLVM.
 
-The setup has datapath flows with several conntrack actions and tuple
-changes between them:
-
-  actions:ct(commit,zone=8,mark=0/0x1,nat(src)),
-          set(eth(src=00:00:00:00:00:01,dst=00:00:00:00:00:06)),
-          set(ipv4(src=172.18.2.10,dst=192.168.100.6,ttl=62)),
-          ct(zone=8),recirc(0x4)
-
-After the first ct() action the packet headers are almost fully
-re-written.  The next ct() tries to re-use the existing nfct entry
-and marks the packet as invalid, so it gets dropped later in the
-pipeline.
-
-Clearing the cached conntrack entry whenever packet tuple is changed
-to avoid the issue.
-
-The flow key should not be cleared though, because we should still
-be able to match on the ct_state if the recirculation happens after
-the tuple change but before the next ct() action.
-
-Cc: stable@vger.kernel.org
-Fixes: 7f8a436eaa2c ("openvswitch: Add conntrack action")
-Reported-by: Frode Nordahl <frode.nordahl@canonical.com>
-Link: https://mail.openvswitch.org/pipermail/ovs-discuss/2022-May/051829.html
-Link: https://bugs.launchpad.net/ubuntu/+source/ovn/+bug/1967856
-Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
-Link: https://lore.kernel.org/r/20220606221140.488984-1-i.maximets@ovn.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-[Backport to 5.10: minor rebase in ovs_ct_clear function.
- This version also applicable to and tested on 5.4 and 4.19.]
+Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20211221055904.555763-6-aik@ozlabs.ru
+[sudip: adjust context]
+Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/openvswitch/actions.c   |    6 ++++++
- net/openvswitch/conntrack.c |    3 ++-
- 2 files changed, 8 insertions(+), 1 deletion(-)
+ arch/powerpc/include/asm/ppc-opcode.h   |    2 ++
+ arch/powerpc/kernel/idle_6xx.S          |    2 +-
+ arch/powerpc/kernel/l2cr_6xx.S          |    6 +++---
+ arch/powerpc/kernel/swsusp_32.S         |    2 +-
+ arch/powerpc/kernel/swsusp_asm64.S      |    2 +-
+ arch/powerpc/mm/mmu_context.c           |    2 +-
+ arch/powerpc/platforms/powermac/cache.S |    4 ++--
+ 7 files changed, 11 insertions(+), 9 deletions(-)
 
---- a/net/openvswitch/actions.c
-+++ b/net/openvswitch/actions.c
-@@ -443,6 +443,7 @@ static void set_ip_addr(struct sk_buff *
- 	update_ip_l4_checksum(skb, nh, *addr, new_addr);
- 	csum_replace4(&nh->check, *addr, new_addr);
- 	skb_clear_hash(skb);
-+	ovs_ct_clear(skb, NULL);
- 	*addr = new_addr;
- }
+--- a/arch/powerpc/include/asm/ppc-opcode.h
++++ b/arch/powerpc/include/asm/ppc-opcode.h
+@@ -207,6 +207,7 @@
+ #define PPC_INST_ICBT			0x7c00002c
+ #define PPC_INST_ICSWX			0x7c00032d
+ #define PPC_INST_ICSWEPX		0x7c00076d
++#define PPC_INST_DSSALL			0x7e00066c
+ #define PPC_INST_ISEL			0x7c00001e
+ #define PPC_INST_ISEL_MASK		0xfc00003e
+ #define PPC_INST_LDARX			0x7c0000a8
+@@ -424,6 +425,7 @@
+ 					__PPC_RA(a) | __PPC_RB(b))
+ #define	PPC_DCBZL(a, b)		stringify_in_c(.long PPC_INST_DCBZL | \
+ 					__PPC_RA(a) | __PPC_RB(b))
++#define PPC_DSSALL		stringify_in_c(.long PPC_INST_DSSALL)
+ #define PPC_LQARX(t, a, b, eh)	stringify_in_c(.long PPC_INST_LQARX | \
+ 					___PPC_RT(t) | ___PPC_RA(a) | \
+ 					___PPC_RB(b) | __PPC_EH(eh))
+--- a/arch/powerpc/kernel/idle_6xx.S
++++ b/arch/powerpc/kernel/idle_6xx.S
+@@ -133,7 +133,7 @@ BEGIN_FTR_SECTION
+ END_FTR_SECTION_IFCLR(CPU_FTR_NO_DPM)
+ 	mtspr	SPRN_HID0,r4
+ BEGIN_FTR_SECTION
+-	DSSALL
++	PPC_DSSALL
+ 	sync
+ END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
+ 	CURRENT_THREAD_INFO(r9, r1)
+--- a/arch/powerpc/kernel/l2cr_6xx.S
++++ b/arch/powerpc/kernel/l2cr_6xx.S
+@@ -108,7 +108,7 @@ END_FTR_SECTION_IFCLR(CPU_FTR_L2CR)
  
-@@ -490,6 +491,7 @@ static void set_ipv6_addr(struct sk_buff
- 		update_ipv6_checksum(skb, l4_proto, addr, new_addr);
+ 	/* Stop DST streams */
+ BEGIN_FTR_SECTION
+-	DSSALL
++	PPC_DSSALL
+ 	sync
+ END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
  
- 	skb_clear_hash(skb);
-+	ovs_ct_clear(skb, NULL);
- 	memcpy(addr, new_addr, sizeof(__be32[4]));
- }
+@@ -305,7 +305,7 @@ END_FTR_SECTION_IFCLR(CPU_FTR_L3CR)
+ 	isync
  
-@@ -730,6 +732,7 @@ static int set_nsh(struct sk_buff *skb,
- static void set_tp_port(struct sk_buff *skb, __be16 *port,
- 			__be16 new_port, __sum16 *check)
- {
-+	ovs_ct_clear(skb, NULL);
- 	inet_proto_csum_replace2(check, skb, *port, new_port, false);
- 	*port = new_port;
- }
-@@ -769,6 +772,7 @@ static int set_udp(struct sk_buff *skb,
- 		uh->dest = dst;
- 		flow_key->tp.src = src;
- 		flow_key->tp.dst = dst;
-+		ovs_ct_clear(skb, NULL);
- 	}
+ 	/* Stop DST streams */
+-	DSSALL
++	PPC_DSSALL
+ 	sync
  
- 	skb_clear_hash(skb);
-@@ -831,6 +835,8 @@ static int set_sctp(struct sk_buff *skb,
- 	sh->checksum = old_csum ^ old_correct_csum ^ new_csum;
+ 	/* Get the current enable bit of the L3CR into r4 */
+@@ -414,7 +414,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_L3CR)
+ _GLOBAL(__flush_disable_L1)
+ 	/* Stop pending alitvec streams and memory accesses */
+ BEGIN_FTR_SECTION
+-	DSSALL
++	PPC_DSSALL
+ END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
+  	sync
  
- 	skb_clear_hash(skb);
-+	ovs_ct_clear(skb, NULL);
-+
- 	flow_key->tp.src = sh->source;
- 	flow_key->tp.dst = sh->dest;
+--- a/arch/powerpc/kernel/swsusp_32.S
++++ b/arch/powerpc/kernel/swsusp_32.S
+@@ -181,7 +181,7 @@ _GLOBAL(swsusp_arch_resume)
+ #ifdef CONFIG_ALTIVEC
+ 	/* Stop pending alitvec streams and memory accesses */
+ BEGIN_FTR_SECTION
+-	DSSALL
++	PPC_DSSALL
+ END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
+ #endif
+  	sync
+--- a/arch/powerpc/kernel/swsusp_asm64.S
++++ b/arch/powerpc/kernel/swsusp_asm64.S
+@@ -143,7 +143,7 @@ END_FW_FTR_SECTION_IFCLR(FW_FEATURE_LPAR
+ _GLOBAL(swsusp_arch_resume)
+ 	/* Stop pending alitvec streams and memory accesses */
+ BEGIN_FTR_SECTION
+-	DSSALL
++	PPC_DSSALL
+ END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
+ 	sync
  
---- a/net/openvswitch/conntrack.c
-+++ b/net/openvswitch/conntrack.c
-@@ -1303,7 +1303,8 @@ int ovs_ct_clear(struct sk_buff *skb, st
- 	if (skb_nfct(skb)) {
- 		nf_conntrack_put(skb_nfct(skb));
- 		nf_ct_set(skb, NULL, IP_CT_UNTRACKED);
--		ovs_ct_fill_key(skb, key);
-+		if (key)
-+			ovs_ct_fill_key(skb, key);
- 	}
+--- a/arch/powerpc/mm/mmu_context.c
++++ b/arch/powerpc/mm/mmu_context.c
+@@ -83,7 +83,7 @@ void switch_mm_irqs_off(struct mm_struct
+ 	 * context
+ 	 */
+ 	if (cpu_has_feature(CPU_FTR_ALTIVEC))
+-		asm volatile ("dssall");
++		asm volatile (PPC_DSSALL);
  
- 	return 0;
+ 	if (new_on_cpu)
+ 		radix_kvm_prefetch_workaround(next);
+--- a/arch/powerpc/platforms/powermac/cache.S
++++ b/arch/powerpc/platforms/powermac/cache.S
+@@ -53,7 +53,7 @@ flush_disable_75x:
+ 
+ 	/* Stop DST streams */
+ BEGIN_FTR_SECTION
+-	DSSALL
++	PPC_DSSALL
+ 	sync
+ END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
+ 
+@@ -201,7 +201,7 @@ flush_disable_745x:
+ 	isync
+ 
+ 	/* Stop prefetch streams */
+-	DSSALL
++	PPC_DSSALL
+ 	sync
+ 
+ 	/* Disable L2 prefetching */
 
 
