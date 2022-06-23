@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DE93C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:26:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2C62CCA47F
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:26:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233808AbiFWR0n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:26:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48822 "EHLO
+        id S233827AbiFWR0q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:26:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233688AbiFWR0E (ORCPT
+        with ESMTP id S233721AbiFWR0E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 23 Jun 2022 13:26:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A398C60E1A;
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 015CA60E1D;
         Thu, 23 Jun 2022 10:02:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 67812B8248C;
-        Thu, 23 Jun 2022 17:02:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6885EC3411B;
-        Thu, 23 Jun 2022 17:02:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D8BACB82499;
+        Thu, 23 Jun 2022 17:02:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29291C3411B;
+        Thu, 23 Jun 2022 17:02:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003754;
-        bh=c/3QVajyXUvgYbs+hFND6RmbU8EoSZIdAlbVw6MmTwI=;
+        s=korg; t=1656003732;
+        bh=qXsYGoR1t0CL5JL5sr9cGk3RObDh3UTS4Upx2JnJ39M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BfNjGtiwS70bW0++htHK1xvnAr296ISJ9ooqgMsbNCAZux3ZtByITaZCVy7DpP7SK
-         ru/yb0mQmsScf6S4juCgjlm5aD/1qreh/gjzL3+JD1avHZ0K9A4Ubln6kiBusk+fQ1
-         mcaXGzIcgLLtR545DfVCn93G6I4fwg1okT5tRt6Q=
+        b=dCgvIjVR2dWcXOxSN/8nAQ1dm5PwD/7DO3srW1CggIuBAXj3fmz2SgY68Ezi56Jpu
+         G59cbCgzI8niEfG+SIHj9oBS1F7rCluQPc5sq9SO+FWB3CVekfbp3A09jxNjJ+f6he
+         h5tPU9ozGCJbsQ1vBw3pqdN6s72E3wGs1WGVJk+w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        Ard Biesheuvel <ardb@kernel.org>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 076/237] random: remove unused extract_entropy() reserved argument
-Date:   Thu, 23 Jun 2022 18:41:50 +0200
-Message-Id: <20220623164345.338858513@linuxfoundation.org>
+Subject: [PATCH 4.14 069/237] random: avoid superfluous call to RDRAND in CRNG extraction
+Date:   Thu, 23 Jun 2022 18:41:43 +0200
+Message-Id: <20220623164345.140271275@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -51,76 +51,59 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 8b2d953b91e7f60200c24067ab17b77cc7bfd0d4 upstream.
+commit 2ee25b6968b1b3c66ffa408de23d023c1bce81cf upstream.
 
-This argument is always set to zero, as a result of us not caring about
-keeping a certain amount reserved in the pool these days. So just remove
-it and cleanup the function signatures.
+RDRAND is not fast. RDRAND is actually quite slow. We've known this for
+a while, which is why functions like get_random_u{32,64} were converted
+to use batching of our ChaCha-based CRNG instead.
 
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Yet CRNG extraction still includes a call to RDRAND, in the hot path of
+every call to get_random_bytes(), /dev/urandom, and getrandom(2).
+
+This call to RDRAND here seems quite superfluous. CRNG is already
+extracting things based on a 256-bit key, based on good entropy, which
+is then reseeded periodically, updated, backtrack-mutated, and so
+forth. The CRNG extraction construction is something that we're already
+relying on to be secure and solid. If it's not, that's a serious
+problem, and it's unlikely that mixing in a measly 32 bits from RDRAND
+is going to alleviate things.
+
+And in the case where the CRNG doesn't have enough entropy yet, we're
+already initializing the ChaCha key row with RDRAND in
+crng_init_try_arch_early().
+
+Removing the call to RDRAND improves performance on an i7-11850H by
+370%. In other words, the vast majority of the work done by
+extract_crng() prior to this commit was devoted to fetching 32 bits of
+RDRAND.
+
+Reviewed-by: Theodore Ts'o <tytso@mit.edu>
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   17 +++++++----------
- 1 file changed, 7 insertions(+), 10 deletions(-)
+ drivers/char/random.c |    4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -519,7 +519,7 @@ struct entropy_store {
- };
- 
- static ssize_t extract_entropy(struct entropy_store *r, void *buf,
--			       size_t nbytes, int min, int rsvd);
-+			       size_t nbytes, int min);
- static ssize_t _extract_entropy(struct entropy_store *r, void *buf,
- 				size_t nbytes);
- 
-@@ -988,7 +988,7 @@ static void crng_reseed(struct crng_stat
- 	} buf;
- 
- 	if (r) {
--		num = extract_entropy(r, &buf, 32, 16, 0);
-+		num = extract_entropy(r, &buf, 32, 16);
- 		if (num == 0)
- 			return;
- 	} else {
-@@ -1326,8 +1326,7 @@ EXPORT_SYMBOL_GPL(add_disk_randomness);
-  * This function decides how many bytes to actually take from the
-  * given pool, and also debits the entropy count accordingly.
-  */
--static size_t account(struct entropy_store *r, size_t nbytes, int min,
--		      int reserved)
-+static size_t account(struct entropy_store *r, size_t nbytes, int min)
+@@ -1022,7 +1022,7 @@ static void crng_reseed(struct crng_stat
+ static void _extract_crng(struct crng_state *crng,
+ 			  __u32 out[CHACHA20_BLOCK_WORDS])
  {
- 	int entropy_count, orig, have_bytes;
- 	size_t ibytes, nfrac;
-@@ -1341,7 +1340,7 @@ retry:
- 	/* never pull more than available */
- 	have_bytes = entropy_count >> (ENTROPY_SHIFT + 3);
+-	unsigned long v, flags, init_time;
++	unsigned long flags, init_time;
  
--	if ((have_bytes -= reserved) < 0)
-+	if (have_bytes < 0)
- 		have_bytes = 0;
- 	ibytes = min_t(size_t, ibytes, have_bytes);
- 	if (ibytes < min)
-@@ -1447,15 +1446,13 @@ static ssize_t _extract_entropy(struct e
-  * returns it in a buffer.
-  *
-  * The min parameter specifies the minimum amount we can pull before
-- * failing to avoid races that defeat catastrophic reseeding while the
-- * reserved parameter indicates how much entropy we must leave in the
-- * pool after each pull to avoid starving other readers.
-+ * failing to avoid races that defeat catastrophic reseeding.
-  */
- static ssize_t extract_entropy(struct entropy_store *r, void *buf,
--				 size_t nbytes, int min, int reserved)
-+				 size_t nbytes, int min)
- {
- 	trace_extract_entropy(r->name, nbytes, ENTROPY_BITS(r), _RET_IP_);
--	nbytes = account(r, nbytes, min, reserved);
-+	nbytes = account(r, nbytes, min);
- 	return _extract_entropy(r, buf, nbytes);
- }
- 
+ 	if (crng_ready()) {
+ 		init_time = READ_ONCE(crng->init_time);
+@@ -1032,8 +1032,6 @@ static void _extract_crng(struct crng_st
+ 				    &input_pool : NULL);
+ 	}
+ 	spin_lock_irqsave(&crng->lock, flags);
+-	if (arch_get_random_long(&v))
+-		crng->state[14] ^= v;
+ 	chacha20_block(&crng->state[0], out);
+ 	if (crng->state[12] == 0)
+ 		crng->state[13]++;
 
 
