@@ -2,57 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DED03C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 14:26:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88B5EC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 14:27:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231651AbiFWO0g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 10:26:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54686 "EHLO
+        id S232029AbiFWO12 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 10:27:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230525AbiFWO0d (ORCPT
+        with ESMTP id S231929AbiFWO1M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 10:26:33 -0400
+        Thu, 23 Jun 2022 10:27:12 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A4FE39BB6;
-        Thu, 23 Jun 2022 07:26:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 135CE3DDC4
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 07:27:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 12D0D61E0D;
-        Thu, 23 Jun 2022 14:26:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D03DC3411B;
-        Thu, 23 Jun 2022 14:26:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655994391;
-        bh=YlvGuM0u+44HGYQttvnCCzYarrZl9YXb3kjIUQY0yFQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=eKiJsrjUDs0XSJw/0XW5dE4X2Hff6VHnfWANhsIJvfyVnBjcvizlvxs1oB/1lcIZR
-         0VAursb9UNQO6YITitjcylZVdNO7ogNIc6DqnYx8bZENicqJztpGcYJMOSgBY9MJIm
-         u1D+4iQU3yq0jHwP8MmYq24ZgPeS+YeWYkeeaea8=
-Date:   Thu, 23 Jun 2022 16:26:19 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Johan Hovold <johan@kernel.org>
-Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [GIT PULL] USB-serial fixes for 5.19-rc4
-Message-ID: <YrR4C2pESBHcv1gT@kroah.com>
-References: <YrRYNhpf9GiyxmAQ@hovoldconsulting.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YrRYNhpf9GiyxmAQ@hovoldconsulting.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A404461E0E
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 14:27:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 18D14C3411D;
+        Thu, 23 Jun 2022 14:27:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655994431;
+        bh=xfRCvAE+e/PW1dBExT/88qXEsZv0NNJVoFgTymZw394=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=W37Bw7F1A6/EarlChY3FitCxl/fQuse5TI/TPt5IpTvyb1Dh+706k4eC18GpRtxwa
+         rrPGI949IDc4ouZWqdo3kVsmNlBPew5mh6BCquisyPH1vykncUkAdm2Fyn6CSpaIUB
+         VbCmyI1e+R9z4sx0V6o18j3YhGYSziaDGfAqfC3EuPzf3icu2nhdgNrhMVLFpStqMB
+         rrJtfgnSBs/oaBe1SwBSshxS3fVm/sPev/BaY4FCT/kz+QWrJO4xvhEA6BmbhTpE6I
+         N6UvIWq06fA0+JxQOolTH/nFZ4X9ugvKIEqSlmfSRWOZimdxXyR4Mjjw6yUuMykOQW
+         d0JZzrUgTlJ3g==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 04855E73856;
+        Thu, 23 Jun 2022 14:27:11 +0000 (UTC)
+Subject: Re: [GIT PULL] sound fixes for 5.19-rc4
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <874k0bn8jm.wl-tiwai@suse.de>
+References: <874k0bn8jm.wl-tiwai@suse.de>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <874k0bn8jm.wl-tiwai@suse.de>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tiwai/sound.git tags/sound-5.19-rc4
+X-PR-Tracked-Commit-Id: 627ce0d68eb4b53e995b08089fa9da1e513ec5ba
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: ddfe80311b81a83d3fde7e59fddc6aa822a5188d
+Message-Id: <165599443101.515.1463818827761593002.pr-tracker-bot@kernel.org>
+Date:   Thu, 23 Jun 2022 14:27:11 +0000
+To:     Takashi Iwai <tiwai@suse.de>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 02:10:30PM +0200, Johan Hovold wrote:
-> The following changes since commit a111daf0c53ae91e71fd2bfe7497862d14132e3e:
-> 
->   Linux 5.19-rc3 (2022-06-19 15:06:47 -0500)
-> 
-> are available in the Git repository at:
-> 
->   https://git.kernel.org/pub/scm/linux/kernel/git/johan/usb-serial.git tags/usb-serial-5.19-rc4
+The pull request you sent on Thu, 23 Jun 2022 09:27:57 +0200:
 
-Pulled and pushed out, thanks.
+> git://git.kernel.org/pub/scm/linux/kernel/git/tiwai/sound.git tags/sound-5.19-rc4
 
-greg k-h
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/ddfe80311b81a83d3fde7e59fddc6aa822a5188d
+
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
