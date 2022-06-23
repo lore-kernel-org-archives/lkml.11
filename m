@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7761C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:55:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82E62C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:55:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231852AbiFWQzB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:55:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49184 "EHLO
+        id S233150AbiFWQzF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:55:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233896AbiFWQvu (ORCPT
+        with ESMTP id S233827AbiFWQvm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:51:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E86A18347;
-        Thu, 23 Jun 2022 09:51:05 -0700 (PDT)
+        Thu, 23 Jun 2022 12:51:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7898726E;
+        Thu, 23 Jun 2022 09:50:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D82D961F99;
-        Thu, 23 Jun 2022 16:51:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1584C3411B;
-        Thu, 23 Jun 2022 16:51:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 116AF61FBF;
+        Thu, 23 Jun 2022 16:50:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9ED5C3411B;
+        Thu, 23 Jun 2022 16:50:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003064;
-        bh=ubl00wQY+xv98jqQqIiGIqc9PiUm+TumNEpqlkQaCZ8=;
+        s=korg; t=1656003003;
+        bh=h1bjvM96JzGywRTAxnqE/UXeEAEJfaDbTKnjk3kRPJ0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sXKDuCqRZ9FRuy0zQ0lOnWt4coKOUV8rLlN22rdQhVXW5CF+VNLZBUxFjX9fya57A
-         ElOGj0HvMswINy1efD33F1JxGcuZyYW8aIq+0H6iKz4fp+H0D87Gim0mN8GuTQTAts
-         38VK5JLU6J9eUb/MOEaz2AfCIcwlBPvgAzcyOfWI=
+        b=yja2CzhTi1Ug9+TDKE9xu2d/hsQjSW/eeShNIvpQVFW6Nil6qROxh4aCNh3cxFsEP
+         zqGhIX6WJ+qx4R43HrB3yz6RBUdyqOvEgKT367z4NZKKCy3EPaR5Nwgjglv/c9V/fi
+         ZFJWqA2DSN87UUzMMYPgRHfiswLktRzaiaHCu4nk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Dominik Brodowski <linux@dominikbrodowski.net>,
-        Eric Biggers <ebiggers@google.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 117/264] random: fix locking in crng_fast_load()
-Date:   Thu, 23 Jun 2022 18:41:50 +0200
-Message-Id: <20220623164347.378827219@linuxfoundation.org>
+Subject: [PATCH 4.9 098/264] random: remove unused extract_entropy() reserved argument
+Date:   Thu, 23 Jun 2022 18:41:31 +0200
+Message-Id: <20220623164346.844388258@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -50,39 +49,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dominik Brodowski <linux@dominikbrodowski.net>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 7c2fe2b32bf76441ff5b7a425b384e5f75aa530a upstream.
+commit 8b2d953b91e7f60200c24067ab17b77cc7bfd0d4 upstream.
 
-crng_init is protected by primary_crng->lock, so keep holding that lock
-when incrementing crng_init from 0 to 1 in crng_fast_load(). The call to
-pr_notice() can wait until the lock is released; this code path cannot
-be reached twice, as crng_fast_load() aborts early if crng_init > 0.
+This argument is always set to zero, as a result of us not caring about
+keeping a certain amount reserved in the pool these days. So just remove
+it and cleanup the function signatures.
 
-Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/char/random.c |   17 +++++++----------
+ 1 file changed, 7 insertions(+), 10 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -647,12 +647,13 @@ static size_t crng_fast_load(const u8 *c
- 		p[crng_init_cnt % CHACHA20_KEY_SIZE] ^= *cp;
- 		cp++; crng_init_cnt++; len--; ret++;
- 	}
--	spin_unlock_irqrestore(&primary_crng.lock, flags);
- 	if (crng_init_cnt >= CRNG_INIT_CNT_THRESH) {
- 		invalidate_batched_entropy();
- 		crng_init = 1;
--		pr_notice("fast init done\n");
- 	}
-+	spin_unlock_irqrestore(&primary_crng.lock, flags);
-+	if (crng_init == 1)
-+		pr_notice("fast init done\n");
- 	return ret;
+@@ -520,7 +520,7 @@ struct entropy_store {
+ };
+ 
+ static ssize_t extract_entropy(struct entropy_store *r, void *buf,
+-			       size_t nbytes, int min, int rsvd);
++			       size_t nbytes, int min);
+ static ssize_t _extract_entropy(struct entropy_store *r, void *buf,
+ 				size_t nbytes);
+ 
+@@ -1040,7 +1040,7 @@ static void crng_reseed(struct crng_stat
+ 	} buf;
+ 
+ 	if (r) {
+-		num = extract_entropy(r, &buf, 32, 16, 0);
++		num = extract_entropy(r, &buf, 32, 16);
+ 		if (num == 0)
+ 			return;
+ 	} else {
+@@ -1378,8 +1378,7 @@ EXPORT_SYMBOL_GPL(add_disk_randomness);
+  * This function decides how many bytes to actually take from the
+  * given pool, and also debits the entropy count accordingly.
+  */
+-static size_t account(struct entropy_store *r, size_t nbytes, int min,
+-		      int reserved)
++static size_t account(struct entropy_store *r, size_t nbytes, int min)
+ {
+ 	int entropy_count, orig, have_bytes;
+ 	size_t ibytes, nfrac;
+@@ -1393,7 +1392,7 @@ retry:
+ 	/* never pull more than available */
+ 	have_bytes = entropy_count >> (ENTROPY_SHIFT + 3);
+ 
+-	if ((have_bytes -= reserved) < 0)
++	if (have_bytes < 0)
+ 		have_bytes = 0;
+ 	ibytes = min_t(size_t, ibytes, have_bytes);
+ 	if (ibytes < min)
+@@ -1499,15 +1498,13 @@ static ssize_t _extract_entropy(struct e
+  * returns it in a buffer.
+  *
+  * The min parameter specifies the minimum amount we can pull before
+- * failing to avoid races that defeat catastrophic reseeding while the
+- * reserved parameter indicates how much entropy we must leave in the
+- * pool after each pull to avoid starving other readers.
++ * failing to avoid races that defeat catastrophic reseeding.
+  */
+ static ssize_t extract_entropy(struct entropy_store *r, void *buf,
+-				 size_t nbytes, int min, int reserved)
++				 size_t nbytes, int min)
+ {
+ 	trace_extract_entropy(r->name, nbytes, ENTROPY_BITS(r), _RET_IP_);
+-	nbytes = account(r, nbytes, min, reserved);
++	nbytes = account(r, nbytes, min);
+ 	return _extract_entropy(r, buf, nbytes);
  }
  
 
