@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C60EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:45:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 999CDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:45:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233997AbiFWRpq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:45:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45996 "EHLO
+        id S234937AbiFWRpv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:45:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234937AbiFWRmp (ORCPT
+        with ESMTP id S234936AbiFWRmp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 23 Jun 2022 13:42:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8452F98C7C;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8448F98C7B;
         Thu, 23 Jun 2022 10:10:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7CB31B824B7;
-        Thu, 23 Jun 2022 17:10:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D20BCC341C5;
-        Thu, 23 Jun 2022 17:10:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A5F85B82498;
+        Thu, 23 Jun 2022 17:10:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03A54C385A5;
+        Thu, 23 Jun 2022 17:10:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004209;
-        bh=YFSLUmsgfLwiMcvlShyqk9K23fj8lUXfyVTV4G0bNOM=;
+        s=korg; t=1656004205;
+        bh=eAjiNjbTVNFCkZm5HApJu/tf3LltGIlEE+yAJ54OSU4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LBgpgb6vR9+iGXyoGDj9cKg7wPZO1Aynw+ZbKYW6XjRefee1AQ4IjQdO01zSXzTBD
-         7hpUvWbefMqsyPA2B3p0eKdSrCKCJOazFSk9MC/kzsGZYR0xSZXWAoU1EX9R91Mm7u
-         kw2GBep0O/DLJwwWYrse7ZsszLjvF7d5bexpI1vs=
+        b=BP12Jvxnou8l4YYDEiaagZqTaWOAd2s1q0Kus6mayB9EVNCCM+y2sv5HtQsMr1DiT
+         mxDS7yVPJHdq4loH2KE/QIx4OfSWrFca3ztrAKBAQZNhWwhwh1JXUOFVlb2F0JWH3O
+         0rRyAJyfpI9OWlHNJU96t5fO3H4mQmQ35EW+z1DY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, stable <stable@kernel.org>,
+        Minas Harutyunyan <hminas@synopsys.com>,
         Miaoqian Lin <linmq006@gmail.com>
-Subject: [PATCH 4.14 221/237] usb: gadget: lpc32xx_udc: Fix refcount leak in lpc32xx_udc_probe
-Date:   Thu, 23 Jun 2022 18:44:15 +0200
-Message-Id: <20220623164349.508374768@linuxfoundation.org>
+Subject: [PATCH 4.14 220/237] usb: dwc2: Fix memory leak in dwc2_hcd_init
+Date:   Thu, 23 Jun 2022 18:44:14 +0200
+Message-Id: <20220623164349.479761486@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -50,31 +51,33 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 4757c9ade34178b351580133771f510b5ffcf9c8 upstream.
+commit 3755278f078460b021cd0384562977bf2039a57a upstream.
 
-of_parse_phandle() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
-of_node_put() will check NULL pointer.
+usb_create_hcd will alloc memory for hcd, and we should
+call usb_put_hcd to free it when platform_get_resource()
+fails to prevent memory leak.
+goto error2 label instead error1 to fix this.
 
-Fixes: 24a28e428351 ("USB: gadget driver for LPC32xx")
+Fixes: 856e6e8e0f93 ("usb: dwc2: check return value after calling platform_get_resource()")
 Cc: stable <stable@kernel.org>
+Acked-by: Minas Harutyunyan <hminas@synopsys.com>
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220603140246.64529-1-linmq006@gmail.com
+Link: https://lore.kernel.org/r/20220530085413.44068-1-linmq006@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/gadget/udc/lpc32xx_udc.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/usb/dwc2/hcd.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/usb/gadget/udc/lpc32xx_udc.c
-+++ b/drivers/usb/gadget/udc/lpc32xx_udc.c
-@@ -3034,6 +3034,7 @@ static int lpc32xx_udc_probe(struct plat
+--- a/drivers/usb/dwc2/hcd.c
++++ b/drivers/usb/dwc2/hcd.c
+@@ -5231,7 +5231,7 @@ int dwc2_hcd_init(struct dwc2_hsotg *hso
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	if (!res) {
+ 		retval = -EINVAL;
+-		goto error1;
++		goto error2;
  	}
- 
- 	udc->isp1301_i2c_client = isp1301_get_client(isp1301_node);
-+	of_node_put(isp1301_node);
- 	if (!udc->isp1301_i2c_client) {
- 		retval = -EPROBE_DEFER;
- 		goto phy_fail;
+ 	hcd->rsrc_start = res->start;
+ 	hcd->rsrc_len = resource_size(res);
 
 
