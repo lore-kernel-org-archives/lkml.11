@@ -2,104 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52F6DCCA47C
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 19:21:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72DA5CCA480
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 19:22:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230002AbiFWTVu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 15:21:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40684 "EHLO
+        id S229446AbiFWTWC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 15:22:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbiFWTVh (ORCPT
+        with ESMTP id S229948AbiFWTVr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 15:21:37 -0400
-Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94C1213AE86
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 11:26:15 -0700 (PDT)
-Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-3137316bb69so2500547b3.10
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 11:26:15 -0700 (PDT)
+        Thu, 23 Jun 2022 15:21:47 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B258B6F7AA;
+        Thu, 23 Jun 2022 11:26:26 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id y32so411183lfa.6;
+        Thu, 23 Jun 2022 11:26:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=t2pPTveqS8s0fQwgl1QSUsYJHYeVq24X4ly2h9r9nhQ=;
-        b=JI7eGjD6gcvb1OtYyNkvDVvmzIcgzS2gXraBsPiY8g19hZY7naRTOsxp8yJbg8WMo3
-         8cdScN4v03cm1r2YSPVydtD2Wy9l30VkjHPC9tELAm3ZggABJyFKJUs8Rvq8lJakpJYn
-         fI1X2h0xMa3dfiFVlq/+qyhZWLjEZ9CB04NTDxCfXHW73dRWcqmYIdTWCg13NnABJB5N
-         IWqNzHdIBkPMqsImCzZnAFh0PntU+9or1MMvQQ1+T47lwU8ThoWQ0FotRy/f36K2ILRU
-         xNvMIx7hWLNFa3xXbDcS+3AVcRLpXxwhiQxaYPjaEgw4m/zqbAlF3c0RTErvRCU5tbOe
-         ZT4A==
+        bh=WFXpnCRvpVBhsuNFE1ahfBGJsqNDQt8dQxVvfN6MrL0=;
+        b=DalKGI6li9osCh4k7iO37g3v5OUCWoMlA9lcg8wxp3/qi5HIMenhTTdp7lkfmkxaFO
+         5i56DaW7feuRINiq2kOC05AY8brpkmge87NEOdDGkcHQCABHBrM/lR06xLa/uYNXD2JN
+         HByhcVabc+qx2jAze76QRQrmHqJQ43fznNb6YOxVQdupQu3sbTr5FFXwdhK74fJl0jvb
+         eciLddbEjTkpfnvpSmNtkeUy899xl8kuFlza0mCjMLlY6mqMYFafWfL0HXdzY9mmrBbl
+         tiYMDiQrKJpSB3DVDSB21zZOwwu+OGmacE6r0lbpRpEmfZUo1aV2LD7kFZYuIORe47QB
+         7iCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=t2pPTveqS8s0fQwgl1QSUsYJHYeVq24X4ly2h9r9nhQ=;
-        b=CJbjvF8DzclNf7DqEY08wEkFUArKZ8iGBg68aCk0rjDkG790XXucLFsVF4Fll+3br1
-         Y2mg4jpL169g9gZvF0+myja44dtHWw9rcaiiKCG3RlNEFEEPanYQYTR+GgOxIrxm5XlH
-         8SEF6G75EwbeiFXIYamk3gEgXEm8oQOUiYludF/Cvx2AvwjGXzhS1bafK2LgjYQdJ/tX
-         9rMpmW/0K5kSzjuIdshAujRKiNo8LqyszK4pb/Gicnn9s+dS8+96G/cVpfknYxoz3gUo
-         7uE03/L8WWVvME3gGeBOh9auYFRE5qY0iClc6HFGm03pFpeIhJQFLSwveejyzs2+NtYh
-         BeWg==
-X-Gm-Message-State: AJIora+Fl4R7r5IRXjxXOcSUxU8gC4uNwpzqP80CYCbbJpeF9fkpGLmK
-        P26qsbtL717zCU5fqfGWqsP0bzdR//xo7yXs1asY7A==
-X-Google-Smtp-Source: AGRyM1sQy/JXhU8eD3Pb6xhcXuB3hionujBBnRmgD/UkAV9fEcd0LgNheLlFkUMKyWzkTa03FeMKTS978V9kvxspb3I=
-X-Received: by 2002:a81:7557:0:b0:317:6536:d404 with SMTP id
- q84-20020a817557000000b003176536d404mr11532503ywc.459.1656008774402; Thu, 23
- Jun 2022 11:26:14 -0700 (PDT)
+        bh=WFXpnCRvpVBhsuNFE1ahfBGJsqNDQt8dQxVvfN6MrL0=;
+        b=Pk4aFqbqHFxJM4s7fjWgDh/2A56Pbgd7uqPafsCkYc+YREYX+rofmacP899CZnHNpw
+         tCavvCU03cURBjJ7shDSXIzbfVsY0L15A2kLBR8okQd141s8/Xyja+x3KgT2YAhOXC38
+         q+6gjpJxRPL0DLxrBvwYufDhbGHapX/zcZ2lX9SCtFK1LvGxizGNaIGQ7N/Rvn52wCha
+         417ZlrOfUKgDzsr7ZDOdh1eILtCGAevLaOyIK5t20z7k4lh0w4d44TcCJRbR8yXIno8R
+         KUsfJCpd5ldiB13AGH1e/krhZcsmAIdjg9KDlr3DDTzke+djVtLIlXQSdDDs1ZxlZ39M
+         a2Lg==
+X-Gm-Message-State: AJIora+diopr+Nkvc+HhJFbovcYlqqVGen9hytmQZGqtbGeRdC8IqGpF
+        yTIORdhemwgh7T2aCDG83IoaonO45W0rjyx5I4I=
+X-Google-Smtp-Source: AGRyM1v7QBH+pV6lYrEVLjv5TY6/p8FX2jSroN/uPAnqjFf8QnXVnznfAY6JW5aADd3D+pMmLcYkM8NpE0OLf3DC0nc=
+X-Received: by 2002:a05:6512:348f:b0:47f:8b25:e9f9 with SMTP id
+ v15-20020a056512348f00b0047f8b25e9f9mr6543451lfr.512.1656008785046; Thu, 23
+ Jun 2022 11:26:25 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220622062027.994614-1-peng.fan@oss.nxp.com> <20220622072435.GT1615@pengutronix.de>
- <CAGETcx9JpTbYtGFoKttWLeiBB73QzzBM1o-OL0o-XuFouLcEog@mail.gmail.com>
- <CAOMZO5DFX72xuxWwAPsuk4Q667Ap7Dk+pR89cWDQJkzT0D2osA@mail.gmail.com> <CAOMZO5Ccu_v_G9DEwrEfVHq83-hfrXCP_h20Rv0=oFTLux5AkQ@mail.gmail.com>
-In-Reply-To: <CAOMZO5Ccu_v_G9DEwrEfVHq83-hfrXCP_h20Rv0=oFTLux5AkQ@mail.gmail.com>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Thu, 23 Jun 2022 11:25:38 -0700
-Message-ID: <CAGETcx85z_hkhKFHUwnihqcD0UQG3xtSZjw=BZxqwQB0D1CMgw@mail.gmail.com>
-Subject: Re: [PATCH] arm64: dts: imx8mp: drop dmas property for uart console
-To:     Fabio Estevam <festevam@gmail.com>
-Cc:     Sascha Hauer <s.hauer@pengutronix.de>,
-        "Peng Fan (OSS)" <peng.fan@oss.nxp.com>,
+References: <20220623115631.22209-1-peterwu.pub@gmail.com> <20220623115631.22209-11-peterwu.pub@gmail.com>
+In-Reply-To: <20220623115631.22209-11-peterwu.pub@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 23 Jun 2022 20:25:48 +0200
+Message-ID: <CAHp75VexwvAVeY4MtwKfpNY96eJ1C9eqadd-L+20O2sg2+gYNg@mail.gmail.com>
+Subject: Re: [PATCH v3 10/14] iio: adc: mt6370: Add Mediatek MT6370 support
+To:     ChiaEn Wu <peterwu.pub@gmail.com>
+Cc:     Lee Jones <lee.jones@linaro.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@ucw.cz>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        NXP Linux Team <linux-imx@nxp.com>, hvilleneuve@dimonoff.com,
-        Lucas Stach <l.stach@pengutronix.de>,
-        abbaraju.manojsai@amarulasolutions.com,
-        Jagan Teki <jagan@amarulasolutions.com>,
-        Matteo Lisi <matteo.lisi@engicam.com>,
-        Tim Harvey <tharvey@gateworks.com>,
-        Teresa Remmet <t.remmet@phytec.de>,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, t.remmet@phytec.deh,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Peng Fan <peng.fan@nxp.com>
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        "Krogerus, Heikki" <heikki.krogerus@linux.intel.com>,
+        Helge Deller <deller@gmx.de>, chiaen_wu@richtek.com,
+        alice_chen@richtek.com, cy_huang <cy_huang@richtek.com>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Linux LED Subsystem <linux-leds@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        USB <linux-usb@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        "open list:FRAMEBUFFER LAYER" <linux-fbdev@vger.kernel.org>,
+        szuni chen <szunichen@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 11:20 AM Fabio Estevam <festevam@gmail.com> wrote:
+On Thu, Jun 23, 2022 at 2:00 PM ChiaEn Wu <peterwu.pub@gmail.com> wrote:
 >
-> On Thu, Jun 23, 2022 at 8:35 AM Fabio Estevam <festevam@gmail.com> wrote:
+> From: ChiaEn Wu <chiaen_wu@richtek.com>
 >
-> > It didn't work for me on an imx6q-sabresd board. I could not find a v2.
->
-> Ok, found your v2 and tested it.
->
-> It solves the console problem on an imx6q-sabresd.
->
-> > Also, would this solution work when stdout-path is not passed in the devicetree?
->
-> I have confirmed that v2 does not fix the case when stdout-path is not
-> passed in the devicetree.
->
-> While it is a good practice to describe stdout-path in dt, not all
-> devicetree files do this,
+> Add Mediatek MT6370 ADC support.
 
-I don't think it'll be hard to fix the console= case either. In the
-case where you are not using stdout-path, how are you setting the
-console? Just want to make sure I'm handling that case too.
+...
 
--Saravana
+> +config MEDIATEK_MT6370_ADC
+> +       tristate "Mediatek MT6370 ADC driver"
+> +       depends on MFD_MT6370
+> +       help
+> +         Say yes here to enable Mediatek MT6370 ADC support.
+> +
+> +         This ADC driver provides 9 channels for system monitoring (charger
+> +         current, voltage, and temperature).
+
+What will be the module name?
+
+...
+
+> +#include <dt-bindings/iio/adc/mediatek,mt6370_adc.h>
+
+Usually this goes after linux/* asm/* as it's not so generic.
+
+> +#include <linux/bits.h>
+> +#include <linux/bitfield.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+
+> +#include <linux/mod_devicetable.h>
+
+I believe the order should be otherwise, this is first followed by module.h.
+
+> +#include <linux/mutex.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/regmap.h>
+
+...
+
+> +#define ADC_CONV_POLLING_TIME          1000
+
+If it's time, add a unit suffix, if it's a counter, make it clear.
+
+...
+
+> +       msleep(ADC_CONV_TIME_US / 1000);
+
+Why define microseconds if milliseconds are in use?
+
+...
+
+> +       ret = regmap_read_poll_timeout(priv->regmap,
+> +                                      MT6370_REG_CHG_ADC, reg_val,
+> +                                      !(reg_val & MT6370_ADC_START_MASK),
+> +                                      ADC_CONV_POLLING_TIME,
+> +                                      ADC_CONV_TIME_US * 3);
+> +       if (ret) {
+> +               if (ret == -ETIMEDOUT)
+> +                       dev_err(priv->dev, "Failed to wait ADC conversion\n");
+
+wait for
+
+> +               else
+> +                       dev_err(priv->dev,
+> +                               "Failed to read ADC register (%d)\n", ret);
+
+Do you really need to differentiate the errors here? I believe the
+latter one covers all cases.
+
+> +               goto adc_unlock;
+> +       }
+
+...
+
+> +#define MT6370_ADC_CHAN(_idx, _type, _addr, _extra_info) {     \
+> +       .type = _type,                                          \
+> +       .channel = MT6370_CHAN_##_idx,                          \
+> +       .address = _addr,                                       \
+> +       .scan_index = MT6370_CHAN_##_idx,                       \
+> +       .indexed = 1,                                           \
+> +       .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |          \
+> +                             BIT(IIO_CHAN_INFO_SCALE) |        \
+> +                             _extra_info                       \
+
+Leave a comma after the last member as well.
+
+> +}
+
+...
+
+> +       regmap = dev_get_regmap(pdev->dev.parent, NULL);
+> +       if (!regmap) {
+
+> +               dev_err(&pdev->dev, "Failed to get regmap\n");
+> +               return -ENODEV;
+
+return dev_err_probe(...);
+
+> +       }
+
+...
+
+> +       ret = regmap_write(priv->regmap, MT6370_REG_CHG_ADC, 0);
+> +       if (ret) {
+> +               dev_err(&pdev->dev, "Failed to reset ADC\n");
+> +               return ret;
+> +       }
+
+Ditto.
+
+-- 
+With Best Regards,
+Andy Shevchenko
