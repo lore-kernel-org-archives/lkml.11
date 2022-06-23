@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E27CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:21:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F6F4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:21:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236836AbiFWSVA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:21:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41352 "EHLO
+        id S236896AbiFWSVE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:21:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236958AbiFWSRf (ORCPT
+        with ESMTP id S236977AbiFWSRh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:17:35 -0400
+        Thu, 23 Jun 2022 14:17:37 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDB37826A5;
-        Thu, 23 Jun 2022 10:23:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F169647A0;
+        Thu, 23 Jun 2022 10:23:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5531861EA7;
-        Thu, 23 Jun 2022 17:23:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A832C3411B;
-        Thu, 23 Jun 2022 17:23:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 671A861EA7;
+        Thu, 23 Jun 2022 17:23:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C4A8C3411B;
+        Thu, 23 Jun 2022 17:23:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656005032;
-        bh=suxF+OV9SOJgom/P/dRCfVxDLXXQLItXBadyBvTXuKQ=;
+        s=korg; t=1656005035;
+        bh=09TOc/w8XVMGbpODCbGQRcCKDfQdYVC21us5zruwUnE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KinSGEELe/1cYQ3+okXE7M8Qonp9BKG2GP1wPkqYU7QwTYi09g9FY/5MQ9TmUjGL8
-         OohNO22NZLOEtzrHu3vPTV2JPmbSLL/Bq4N5Azof8IxRBc6RywJFjwret75pMLKY7n
-         I3MgMfqgl++bR8bTbYd8uzzvLaT3fOeumwogHydI=
+        b=dLAi3wdpI6o/wk76CzNFfwcawJthqxmH6FqIS0zAUMQSd9T5u7wmaSFHXpKYkilof
+         U1O7Ski0UxB6urf4MV/EnuPSnfYv2uuvxb7gVViGuR7xC0MqVca224J03a0EJ/cz8T
+         qbdSWvWT0qRpAxd9vi9lpUFtdOrJBfVEovS5Qtkc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Slark Xiao <slark_xiao@163.com>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 4.19 212/234] USB: serial: option: add support for Cinterion MV31 with new baseline
-Date:   Thu, 23 Jun 2022 18:44:39 +0200
-Message-Id: <20220623164349.050483976@linuxfoundation.org>
+        stable@vger.kernel.org, Moshe Kol <moshe.kol@mail.huji.ac.il>,
+        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
+        Amit Klein <aksecurity@gmail.com>,
+        Eric Dumazet <edumazet@google.com>, Willy Tarreau <w@1wt.eu>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ben Hutchings <ben@decadent.org.uk>
+Subject: [PATCH 4.19 230/234] tcp: add small random increments to the source port
+Date:   Thu, 23 Jun 2022 18:44:57 +0200
+Message-Id: <20220623164349.558540381@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
 References: <20220623164343.042598055@linuxfoundation.org>
@@ -48,75 +52,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Slark Xiao <slark_xiao@163.com>
+From: Willy Tarreau <w@1wt.eu>
 
-commit 158f7585bfcea4aae0ad4128d032a80fec550df1 upstream.
+commit ca7af0402550f9a0b3316d5f1c30904e42ed257d upstream.
 
-Adding support for Cinterion device MV31 with Qualcomm
-new baseline. Use different PIDs to separate it from
-previous base line products.
-All interfaces settings keep same as previous.
+Here we're randomly adding between 0 and 7 random increments to the
+selected source port in order to add some noise in the source port
+selection that will make the next port less predictable.
 
-Below is test evidence:
-T:  Bus=03 Lev=01 Prnt=01 Port=00 Cnt=01 Dev#=  6 Spd=480 MxCh= 0
-D:  Ver= 2.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
-P:  Vendor=1e2d ProdID=00b8 Rev=04.14
-S:  Manufacturer=Cinterion
-S:  Product=Cinterion PID 0x00B8 USB Mobile Broadband
-S:  SerialNumber=90418e79
-C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=500mA
-I:  If#=0x0 Alt= 0 #EPs= 1 Cls=02(commc) Sub=0e Prot=00 Driver=cdc_mbim
-I:  If#=0x1 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=02 Driver=cdc_mbim
-I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=40 Driver=option
-I:  If#=0x3 Alt= 0 #EPs= 1 Cls=ff(vend.) Sub=ff Prot=ff Driver=(none)
-I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=60 Driver=option
-I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=30 Driver=option
+With the default port range of 32768-60999 this means a worst case
+reuse scenario of 14116/8=1764 connections between two consecutive
+uses of the same port, with an average of 14116/4.5=3137. This code
+was stressed at more than 800000 connections per second to a fixed
+target with all connections closed by the client using RSTs (worst
+condition) and only 2 connections failed among 13 billion, despite
+the hash being reseeded every 10 seconds, indicating a perfectly
+safe situation.
 
-T:  Bus=03 Lev=01 Prnt=01 Port=00 Cnt=01 Dev#=  7 Spd=480 MxCh= 0
-D:  Ver= 2.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
-P:  Vendor=1e2d ProdID=00b9 Rev=04.14
-S:  Manufacturer=Cinterion
-S:  Product=Cinterion PID 0x00B9 USB Mobile Broadband
-S:  SerialNumber=90418e79
-C:  #Ifs= 4 Cfg#= 1 Atr=a0 MxPwr=500mA
-I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=50 Driver=qmi_wwan
-I:  If#=0x1 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=40 Driver=option
-I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=60 Driver=option
-I:  If#=0x3 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=30 Driver=option
-
-For PID 00b8, interface 3 is GNSS port which don't use serial driver.
-
-Signed-off-by: Slark Xiao <slark_xiao@163.com>
-Link: https://lore.kernel.org/r/20220601034740.5438-1-slark_xiao@163.com
-[ johan: rename defines using a "2" infix ]
-Cc: stable@vger.kernel.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
+Cc: Moshe Kol <moshe.kol@mail.huji.ac.il>
+Cc: Yossi Gilad <yossi.gilad@mail.huji.ac.il>
+Cc: Amit Klein <aksecurity@gmail.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Willy Tarreau <w@1wt.eu>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/serial/option.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ net/ipv4/inet_hashtables.c |    9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
---- a/drivers/usb/serial/option.c
-+++ b/drivers/usb/serial/option.c
-@@ -432,6 +432,8 @@ static void option_instat_callback(struc
- #define CINTERION_PRODUCT_CLS8			0x00b0
- #define CINTERION_PRODUCT_MV31_MBIM		0x00b3
- #define CINTERION_PRODUCT_MV31_RMNET		0x00b7
-+#define CINTERION_PRODUCT_MV31_2_MBIM		0x00b8
-+#define CINTERION_PRODUCT_MV31_2_RMNET		0x00b9
- #define CINTERION_PRODUCT_MV32_WA		0x00f1
- #define CINTERION_PRODUCT_MV32_WB		0x00f2
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -821,11 +821,12 @@ next_port:
+ 	return -EADDRNOTAVAIL;
  
-@@ -1979,6 +1981,10 @@ static const struct usb_device_id option
- 	  .driver_info = RSVD(3)},
- 	{ USB_DEVICE_INTERFACE_CLASS(CINTERION_VENDOR_ID, CINTERION_PRODUCT_MV31_RMNET, 0xff),
- 	  .driver_info = RSVD(0)},
-+	{ USB_DEVICE_INTERFACE_CLASS(CINTERION_VENDOR_ID, CINTERION_PRODUCT_MV31_2_MBIM, 0xff),
-+	  .driver_info = RSVD(3)},
-+	{ USB_DEVICE_INTERFACE_CLASS(CINTERION_VENDOR_ID, CINTERION_PRODUCT_MV31_2_RMNET, 0xff),
-+	  .driver_info = RSVD(0)},
- 	{ USB_DEVICE_INTERFACE_CLASS(CINTERION_VENDOR_ID, CINTERION_PRODUCT_MV32_WA, 0xff),
- 	  .driver_info = RSVD(3)},
- 	{ USB_DEVICE_INTERFACE_CLASS(CINTERION_VENDOR_ID, CINTERION_PRODUCT_MV32_WB, 0xff),
+ ok:
+-	/* If our first attempt found a candidate, skip next candidate
+-	 * in 1/16 of cases to add some noise.
++	/* Here we want to add a little bit of randomness to the next source
++	 * port that will be chosen. We use a max() with a random here so that
++	 * on low contention the randomness is maximal and on high contention
++	 * it may be inexistent.
+ 	 */
+-	if (!i && !(prandom_u32() % 16))
+-		i = 2;
++	i = max_t(int, i, (prandom_u32() & 7) * 2);
+ 	WRITE_ONCE(table_perturb[index], READ_ONCE(table_perturb[index]) + i + 2);
+ 
+ 	/* Head lock still held and bh's disabled */
 
 
