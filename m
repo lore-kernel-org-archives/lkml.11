@@ -2,95 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45248C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 10:10:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58D3CCCA480
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 10:10:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231508AbiFWKKZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 06:10:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40982 "EHLO
+        id S231523AbiFWKK2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 06:10:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231420AbiFWKKI (ORCPT
+        with ESMTP id S231440AbiFWKKK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 06:10:08 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C266549CBA;
-        Thu, 23 Jun 2022 03:10:07 -0700 (PDT)
-Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 36FD566017D0;
-        Thu, 23 Jun 2022 11:10:06 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1655979006;
-        bh=ZgzmMPSygjLJDHZK16WVrb6boCW48PbwILdNxmzVx4o=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b5OyyYCZT9D/A+T06gMVb/yfzIImNPIFoiDSaLXV7pCtC7jU0XBbKh2GzOSlIQmME
-         Qs0f4Xqi+zl93TDWEQzkMHrunxW/5YaAMorotCo3mbNBI2WUFdWbp6kQaS9ndcxiYF
-         ITIVZOlPzV8KKrwTxgDLu7jibHCZFYvQcP2+mqCEyhSbzcL/UZrISOlsW5MwR08jz1
-         QMp4o72jSPLlmWk1fbdjJC8YZicdctiqDkQxj/5uVmvOEFuMUpdgcT0R4pfXsc/1KK
-         TfNLq/StExqA7YQo+jXRDe1fzmP0S4GC8BJJMEtvypmOi58ZmMqBIvd7nzu4Oaa9ma
-         OPv4QeDWmruqQ==
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-To:     robh+dt@kernel.org
-Cc:     krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        wenst@chromium.org,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH 5/5] arm64: dts: mediatek: mt8183-kukui: Assign sram supply to mfg_async pd
-Date:   Thu, 23 Jun 2022 12:09:51 +0200
-Message-Id: <20220623100951.21153-6-angelogioacchino.delregno@collabora.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220623100951.21153-1-angelogioacchino.delregno@collabora.com>
-References: <20220623100951.21153-1-angelogioacchino.delregno@collabora.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Thu, 23 Jun 2022 06:10:10 -0400
+Received: from smtpbg.qq.com (smtpbg138.qq.com [106.55.201.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4587C49F16
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 03:10:06 -0700 (PDT)
+X-QQ-mid: bizesmtp87t1655978798t8sle0bp
+Received: from ubuntu.localdomain ( [106.117.99.68])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Thu, 23 Jun 2022 18:06:34 +0800 (CST)
+X-QQ-SSF: 01000000008000B0C000B00A0000000
+X-QQ-FEAT: ZHWZeLXy+8eUD0dPq5rRcARw3pLgA6H09Lxnt1o2JBg/eohDc8FS3FblIESZR
+        qS8NiowP/Lmo8sxgVOHBKFAiKqahVpcbmQb12cB+A6xMB3DhP55L+uGwcKo25/sbKK907Bc
+        zQYsYSIrdrffT6uX3Bw5EipEEfkSkbUfjn4Q7scKlf214gGAerW053TITGK7nhIGhZdaCzk
+        kfe1XsJ518N5tjtis4k3dq/l4bxzo4SSjMsuRk2df6e6kK9ctEBtbNsqyno9K3aQT4PvKSv
+        Rlkb3+mCyx8zB1ZXcAmtUfB7U5xeoiu6ol8n5Xq/y9dmE0HPqt7mDiE9ujVta3KrbfXeYWw
+        IeywhgjrwmTO30twNhTcWAiztvlRg==
+X-QQ-GoodBg: 0
+From:   Jiang Jian <jiangjian@cdjrlc.com>
+To:     airlied@linux.ie, daniel@ffwll.ch
+Cc:     lyude@redhat.com, javierm@redhat.com, alexander.deucher@amd.com,
+        jose.exposito89@gmail.com, jiangjian@cdjrlc.com,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] gpu: drm: selftests: drop unexpected word 'for' in comments
+Date:   Thu, 23 Jun 2022 18:06:32 +0800
+Message-Id: <20220623100632.27056-1-jiangjian@cdjrlc.com>
+X-Mailer: git-send-email 2.17.1
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a phandle to the MT8183_POWER_DOMAIN_MFG_ASYNC power domain and
-assign the GPU VSRAM supply to this in mt8183-kukui: this allows to
-keep the sram powered up while the GPU is used.
+there is an unexpected word 'for' in the comments that need to be dropped
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+file - ./drivers/gpu/drm/selftests/test-drm_dp_mst_helper.c
+line - 3
+
+* Test cases for for the DRM DP MST helpers
+
+changed to:
+
+* Test cases for the DRM DP MST helpers
+
+Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
 ---
- arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi | 4 ++++
- arch/arm64/boot/dts/mediatek/mt8183.dtsi       | 2 +-
- 2 files changed, 5 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/selftests/test-drm_dp_mst_helper.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi b/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi
-index 89e4358f140a..33f3bf277ce9 100644
---- a/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi
-@@ -821,6 +821,10 @@ cros_ec {
- 	};
- };
+diff --git a/drivers/gpu/drm/selftests/test-drm_dp_mst_helper.c b/drivers/gpu/drm/selftests/test-drm_dp_mst_helper.c
+index 967c52150b67..4caa9be900ac 100644
+--- a/drivers/gpu/drm/selftests/test-drm_dp_mst_helper.c
++++ b/drivers/gpu/drm/selftests/test-drm_dp_mst_helper.c
+@@ -1,6 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0-only
+ /*
+- * Test cases for for the DRM DP MST helpers
++ * Test cases for the DRM DP MST helpers
+  */
  
-+&mfg_async {
-+	domain-supply = <&mt6358_vsram_gpu_reg>;
-+};
-+
- &mfg {
- 	domain-supply = <&mt6358_vgpu_reg>;
- };
-diff --git a/arch/arm64/boot/dts/mediatek/mt8183.dtsi b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-index 9485c1efc87c..9d32871973a2 100644
---- a/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-@@ -788,7 +788,7 @@ power-domain@MT8183_POWER_DOMAIN_CONN {
- 					#power-domain-cells = <0>;
- 				};
- 
--				power-domain@MT8183_POWER_DOMAIN_MFG_ASYNC {
-+				mfg_async: power-domain@MT8183_POWER_DOMAIN_MFG_ASYNC {
- 					reg = <MT8183_POWER_DOMAIN_MFG_ASYNC>;
- 					clocks = <&topckgen CLK_TOP_MUX_MFG>;
- 					clock-names = "mfg";
+ #define PREFIX_STR "[drm_dp_mst_helper]"
 -- 
-2.35.1
+2.17.1
 
