@@ -2,89 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C233FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:55:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 245CAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:56:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235470AbiFWRzx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:55:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41324 "EHLO
+        id S232523AbiFWRz6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:55:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235503AbiFWRws (ORCPT
+        with ESMTP id S235499AbiFWRwr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:52:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAA4E5674F;
-        Thu, 23 Jun 2022 10:13:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6E5F961DD7;
-        Thu, 23 Jun 2022 17:13:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3630BC3411B;
-        Thu, 23 Jun 2022 17:13:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004414;
-        bh=/Unki+FpIaDGECWe1V9jGlUeejcMaSxiAptWRvMMIjw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d6kdr27/541QbSE4W808XD8rooiMMlYQTiAq7GHui552HysBo5f3jChwoFnoRuuQS
-         tpkQ1U0hulhg5BUiXK12vwhw7oX5a4TCH0Hudq6eV6DP9vSeqpXh/ApIjm1tr6BXZP
-         NT4la8HSVKrLj7z4/7kPDFjhUwy4nx76OW8rwtdE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Theodore Tso <tytso@mit.edu>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.19 003/234] drivers/char/random.c: remove unused stuct poolinfo::poolbits
-Date:   Thu, 23 Jun 2022 18:41:10 +0200
-Message-Id: <20220623164343.146297397@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
-References: <20220623164343.042598055@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Thu, 23 Jun 2022 13:52:47 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AA7A1563BC
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 10:13:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656004408;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=XN7oDkYMlVq4zYDVCkrX4IsfCj98UeViNtsSEBKFwUI=;
+        b=Fz66aH+yQ5cmcUli/KrRgUgLd88KmcZmzKnfYO1e2ehnP6+3W+TpZ2Y0g/pP5ppX7VSlYk
+        pam4pO5XsIccamsFbTRYkMEqvwWDh1hCqPKcasrLwPSbDsb47vrsGt52sx8hiOgh4lEo8d
+        XTSpAmdVuz36CjKe743KdjRsPikTxhw=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-475-oYjMw6WSM-m6wOhlnYV1yQ-1; Thu, 23 Jun 2022 13:13:26 -0400
+X-MC-Unique: oYjMw6WSM-m6wOhlnYV1yQ-1
+Received: by mail-qk1-f197.google.com with SMTP id o10-20020a05620a2a0a00b006a77a64cd23so24118156qkp.21
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 10:13:26 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=XN7oDkYMlVq4zYDVCkrX4IsfCj98UeViNtsSEBKFwUI=;
+        b=FJK7toPKEtLLKSN7cVDhPxbAqiKNi7qoVq/HFsls6S2F6gggo1QUYPJqKgpCXIisaI
+         zK54693aHMdpiR8ob3I+cZsCSfh5MOY3K2lULDGmgxM0IRxE6br6H6DfkBHSQt/Nm9LS
+         g9SjEcoSxDo+vwTIOBi0/bOZjfCPyK3raMQ32jpjsJPAJxmn4ByhtV3kFKadn5fJ+Nvw
+         eBI/g/ybyjmmPqOBzEbUNfBgb/tTwCr40NA1VTr1jZhiF6Yh69HZnqTFozK0qYyXIQCs
+         jh4OlppDqZ12Mh9qQl+qO4Xz8PKqUhFuHSqEpWipQ1z28+kvH6M0XeBuIZ1XeXpOAztr
+         cOHg==
+X-Gm-Message-State: AJIora8/wm1K7bHBNMre4CdcLFIN4WapOVHGvNZbDcKnK8Iprq7eX+as
+        ofhHurphCWfJD4cSzWk3g9jzpdgTt9rsmPtLiMku+ST6dUWC4rPQ1P1uppSCOysLEu3KNP86axb
+        I3ZwUTAJ6ez3pA+xrj4FckVVG
+X-Received: by 2002:a05:620a:2781:b0:6a6:db99:ea07 with SMTP id g1-20020a05620a278100b006a6db99ea07mr6962560qkp.452.1656004405727;
+        Thu, 23 Jun 2022 10:13:25 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1te0myCUpLObJzyG3prW0evhfkUvySWYmtXu5OCZvGyWtCRXW5eKybjfnd4TWe3HrXncH8TRw==
+X-Received: by 2002:a05:620a:2781:b0:6a6:db99:ea07 with SMTP id g1-20020a05620a278100b006a6db99ea07mr6962537qkp.452.1656004405426;
+        Thu, 23 Jun 2022 10:13:25 -0700 (PDT)
+Received: from xps13 (c-98-239-145-235.hsd1.wv.comcast.net. [98.239.145.235])
+        by smtp.gmail.com with ESMTPSA id t12-20020a05620a450c00b006a746826feesm40495qkp.120.2022.06.23.10.13.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Jun 2022 10:13:25 -0700 (PDT)
+Date:   Thu, 23 Jun 2022 13:13:24 -0400
+From:   Brian Masney <bmasney@redhat.com>
+To:     Andrew Halaney <ahalaney@redhat.com>
+Cc:     bjorn.andersson@linaro.org, linux-arm-msm@vger.kernel.org,
+        agross@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
+        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
+        echanude@redhat.com
+Subject: Re: [PATCH] clk: qcom: sc8280xp: add parent to gcc_ufs_phy_axi_clk
+ for sa8540p
+Message-ID: <YrSfNDToEZ0RhSAD@xps13>
+References: <20220623142837.3140680-1-bmasney@redhat.com>
+ <20220623153226.drrbx2jolrxxe7as@halaneylaptop>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220623153226.drrbx2jolrxxe7as@halaneylaptop>
+User-Agent: Mutt/2.2.1 (2022-02-19)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+On Thu, Jun 23, 2022 at 10:32:26AM -0500, Andrew Halaney wrote:
+> I'm not knowledgable enough on the clock subsystem or have access to
+> documentation to comment on correctness outside of the 5.4 MSM kernel
+> you mentioned, but I think this probably deserves a Fixes: tag?
 
-commit 3bd0b5bf7dc3ea02070fcbcd682ecf628269e8ef upstream.
+Good call!
 
-This field is never used, might as well remove it.
-
-Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/char/random.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -295,7 +295,7 @@
-  * To allow fractional bits to be tracked, the entropy_count field is
-  * denominated in units of 1/8th bits.
-  *
-- * 2*(ENTROPY_SHIFT + log2(poolbits)) must <= 31, or the multiply in
-+ * 2*(ENTROPY_SHIFT + poolbitshift) must <= 31, or the multiply in
-  * credit_entropy_bits() needs to be 64 bits wide.
-  */
- #define ENTROPY_SHIFT 3
-@@ -360,8 +360,8 @@ static int random_write_wakeup_bits = 28
-  * irreducible, which we have made here.
-  */
- static const struct poolinfo {
--	int poolbitshift, poolwords, poolbytes, poolbits, poolfracbits;
--#define S(x) ilog2(x)+5, (x), (x)*4, (x)*32, (x) << (ENTROPY_SHIFT+5)
-+	int poolbitshift, poolwords, poolbytes, poolfracbits;
-+#define S(x) ilog2(x)+5, (x), (x)*4, (x) << (ENTROPY_SHIFT+5)
- 	int tap1, tap2, tap3, tap4, tap5;
- } poolinfo_table[] = {
- 	/* was: x^128 + x^103 + x^76 + x^51 +x^25 + x + 1 */
-
+Fixes: d65d005f9a6c ("clk: qcom: add sc8280xp GCC driver")
 
