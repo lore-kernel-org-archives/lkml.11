@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B013C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:56:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49815C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:56:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232807AbiFWQ4j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:56:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56998 "EHLO
+        id S232767AbiFWQ4p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:56:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229992AbiFWQwV (ORCPT
+        with ESMTP id S233793AbiFWQvj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:52:21 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C91A2C70;
-        Thu, 23 Jun 2022 09:52:20 -0700 (PDT)
+        Thu, 23 Jun 2022 12:51:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA6884CD57;
+        Thu, 23 Jun 2022 09:49:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 2BEF1CE25DF;
-        Thu, 23 Jun 2022 16:52:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3077DC3411B;
-        Thu, 23 Jun 2022 16:52:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E3AE61F99;
+        Thu, 23 Jun 2022 16:49:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 383E8C3411B;
+        Thu, 23 Jun 2022 16:49:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003137;
-        bh=W5a4qdO3sxhr8X7o0w7ZiEpA44gPr7ERdDCwxwf7rF4=;
+        s=korg; t=1656002981;
+        bh=xF1zfET0DsadiAe917KXbazTNtsjP7wJjr9d42aga+g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=giQBSu/8Jho0SAEkmBMnXwjWti/qSCxIusMB2F2BCIybzbzldhbXeeYIlH1hoSE9c
-         CZSrs168YkUacfwJkqJgJgBmsijM5jtzbJLMYiWMJFur3WWy6WuBUWd2Fd/99Q/jhL
-         vxaSC5ITXQFMZfhtmRkJozuMAjSjwQoRD4mh2oEA=
+        b=DKTWoVzGXwtHv+3mCIIN0HIH+3d6fH85ijT2uDMtUhQxCxTA6sV73tuT/HfM8ipuG
+         mu39Jah8WS63QJ8IdVLYegzcVsoqJ4N6javDtr1nEcKIXnBdqWnQrODLTY0AneGuQP
+         kMIABEcH5vbz1wybNpBN3s4USQ03Cw7/hjJx4hZY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
         Eric Biggers <ebiggers@google.com>,
+        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 143/264] random: unify early init crng load accounting
-Date:   Thu, 23 Jun 2022 18:42:16 +0200
-Message-Id: <20220623164348.111894062@linuxfoundation.org>
+Subject: [PATCH 4.9 083/264] random: use BLAKE2s instead of SHA1 in extraction
+Date:   Thu, 23 Jun 2022 18:41:16 +0200
+Message-Id: <20220623164346.418938663@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -52,194 +52,207 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit da792c6d5f59a76c10a310c5d4c93428fd18f996 upstream.
+commit 9f9eff85a008b095eafc5f4ecbaf5aca689271c1 upstream.
 
-crng_fast_load() and crng_slow_load() have different semantics:
+This commit addresses one of the lower hanging fruits of the RNG: its
+usage of SHA1.
 
-- crng_fast_load() xors and accounts with crng_init_cnt.
-- crng_slow_load() hashes and doesn't account.
+BLAKE2s is generally faster, and certainly more secure, than SHA1, which
+has [1] been [2] really [3] very [4] broken [5]. Additionally, the
+current construction in the RNG doesn't use the full SHA1 function, as
+specified, and allows overwriting the IV with RDRAND output in an
+undocumented way, even in the case when RDRAND isn't set to "trusted",
+which means potential malicious IV choices. And its short length means
+that keeping only half of it secret when feeding back into the mixer
+gives us only 2^80 bits of forward secrecy. In other words, not only is
+the choice of hash function dated, but the use of it isn't really great
+either.
 
-However add_hwgenerator_randomness() can afford to hash (it's called
-from a kthread), and it should account. Additionally, ones that can
-afford to hash don't need to take a trylock but can take a normal lock.
-So, we combine these into one function, crng_pre_init_inject(), which
-allows us to control these in a uniform way. This will make it simpler
-later to simplify this all down when the time comes for that.
+This commit aims to fix both of these issues while also keeping the
+general structure and semantics as close to the original as possible.
+Specifically:
 
-Cc: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+   a) Rather than overwriting the hash IV with RDRAND, we put it into
+      BLAKE2's documented "salt" and "personal" fields, which were
+      specifically created for this type of usage.
+   b) Since this function feeds the full hash result back into the
+      entropy collector, we only return from it half the length of the
+      hash, just as it was done before. This increases the
+      construction's forward secrecy from 2^80 to a much more
+      comfortable 2^128.
+   c) Rather than using the raw "sha1_transform" function alone, we
+      instead use the full proper BLAKE2s function, with finalization.
+
+This also has the advantage of supplying 16 bytes at a time rather than
+SHA1's 10 bytes, which, in addition to having a faster compression
+function to begin with, means faster extraction in general. On an Intel
+i7-11850H, this commit makes initial seeding around 131% faster.
+
+BLAKE2s itself has the nice property of internally being based on the
+ChaCha permutation, which the RNG is already using for expansion, so
+there shouldn't be any issue with newness, funkiness, or surprising CPU
+behavior, since it's based on something already in use.
+
+[1] https://eprint.iacr.org/2005/010.pdf
+[2] https://www.iacr.org/archive/crypto2005/36210017/36210017.pdf
+[3] https://eprint.iacr.org/2015/967.pdf
+[4] https://shattered.io/static/shattered.pdf
+[5] https://www.usenix.org/system/files/sec20-leurent.pdf
+
+Reviewed-by: Theodore Ts'o <tytso@mit.edu>
 Reviewed-by: Eric Biggers <ebiggers@google.com>
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |  114 +++++++++++++++++++++++++-------------------------
- 1 file changed, 59 insertions(+), 55 deletions(-)
+ drivers/char/random.c |   70 +++++++++++++++++++++-----------------------------
+ 1 file changed, 30 insertions(+), 40 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -385,7 +385,7 @@ static void crng_make_state(u32 chacha_s
- 	 * For the fast path, we check whether we're ready, unlocked first, and
- 	 * then re-check once locked later. In the case where we're really not
- 	 * ready, we do fast key erasure with the base_crng directly, because
--	 * this is what crng_{fast,slow}_load mutate during early init.
-+	 * this is what crng_pre_init_inject() mutates during early init.
- 	 */
- 	if (unlikely(!crng_ready())) {
- 		bool ready;
-@@ -436,72 +436,75 @@ static void crng_make_state(u32 chacha_s
- }
+@@ -1,8 +1,7 @@
+ /*
+  * random.c -- A strong random number generator
+  *
+- * Copyright (C) 2017 Jason A. Donenfeld <Jason@zx2c4.com>. All
+- * Rights Reserved.
++ * Copyright (C) 2017-2022 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
+  *
+  * Copyright Matt Mackall <mpm@selenic.com>, 2003, 2004, 2005
+  *
+@@ -78,12 +77,12 @@
+  * an *estimate* of how many bits of randomness have been stored into
+  * the random number generator's internal state.
+  *
+- * When random bytes are desired, they are obtained by taking the SHA
+- * hash of the contents of the "entropy pool".  The SHA hash avoids
++ * When random bytes are desired, they are obtained by taking the BLAKE2s
++ * hash of the contents of the "entropy pool".  The BLAKE2s hash avoids
+  * exposing the internal state of the entropy pool.  It is believed to
+  * be computationally infeasible to derive any useful information
+- * about the input of SHA from its output.  Even if it is possible to
+- * analyze SHA in some clever way, as long as the amount of data
++ * about the input of BLAKE2s from its output.  Even if it is possible to
++ * analyze BLAKE2s in some clever way, as long as the amount of data
+  * returned from the generator is less than the inherent entropy in
+  * the pool, the output data is totally unpredictable.  For this
+  * reason, the routine decreases its internal estimate of how many
+@@ -93,7 +92,7 @@
+  * If this estimate goes to zero, the routine can still generate
+  * random numbers; however, an attacker may (at least in theory) be
+  * able to infer the future output of the generator from prior
+- * outputs.  This requires successful cryptanalysis of SHA, which is
++ * outputs.  This requires successful cryptanalysis of BLAKE2s, which is
+  * not believed to be feasible, but there is a remote possibility.
+  * Nonetheless, these numbers should be useful for the vast majority
+  * of purposes.
+@@ -349,6 +348,7 @@
+ #include <linux/completion.h>
+ #include <linux/uuid.h>
+ #include <crypto/chacha20.h>
++#include <crypto/blake2s.h>
+ 
+ #include <asm/processor.h>
+ #include <asm/uaccess.h>
+@@ -368,10 +368,7 @@
+ #define INPUT_POOL_WORDS	(1 << (INPUT_POOL_SHIFT-5))
+ #define OUTPUT_POOL_SHIFT	10
+ #define OUTPUT_POOL_WORDS	(1 << (OUTPUT_POOL_SHIFT-5))
+-#define EXTRACT_SIZE		10
+-
+-
+-#define LONGS(x) (((x) + sizeof(unsigned long) - 1)/sizeof(unsigned long))
++#define EXTRACT_SIZE		(BLAKE2S_HASH_SIZE / 2)
  
  /*
-- * This function is for crng_init == 0 only.
-+ * This function is for crng_init == 0 only. It loads entropy directly
-+ * into the crng's key, without going through the input pool. It is,
-+ * generally speaking, not very safe, but we use this only at early
-+ * boot time when it's better to have something there rather than
-+ * nothing.
-+ *
-+ * There are two paths, a slow one and a fast one. The slow one
-+ * hashes the input along with the current key. The fast one simply
-+ * xors it in, and should only be used from interrupt context.
-+ *
-+ * If account is set, then the crng_init_cnt counter is incremented.
-+ * This shouldn't be set by functions like add_device_randomness(),
-+ * where we can't trust the buffer passed to it is guaranteed to be
-+ * unpredictable (so it might not have any entropy at all).
+  * To allow fractional bits to be tracked, the entropy_count field is
+@@ -407,7 +404,7 @@ static int random_write_wakeup_bits = 28
+  * Thanks to Colin Plumb for suggesting this.
   *
-- * crng_fast_load() can be called by code in the interrupt service
-- * path.  So we can't afford to dilly-dally. Returns the number of
-- * bytes processed from cp.
-+ * Returns the number of bytes processed from input, which is bounded
-+ * by CRNG_INIT_CNT_THRESH if account is true.
+  * The mixing operation is much less sensitive than the output hash,
+- * where we use SHA-1.  All that we want of mixing operation is that
++ * where we use BLAKE2s.  All that we want of mixing operation is that
+  * it be a good non-cryptographic hash; i.e. it not produce collisions
+  * when fed "random" data of the sort we expect to see.  As long as
+  * the pool state differs for different inputs, we have preserved the
+@@ -1449,56 +1446,49 @@ retry:
   */
--static size_t crng_fast_load(const void *cp, size_t len)
-+static size_t crng_pre_init_inject(const void *input, size_t len,
-+				   bool fast, bool account)
+ static void extract_buf(struct entropy_store *r, __u8 *out)
  {
- 	static int crng_init_cnt = 0;
+-	int i;
+-	union {
+-		__u32 w[5];
+-		unsigned long l[LONGS(20)];
+-	} hash;
+-	__u32 workspace[SHA_WORKSPACE_WORDS];
++	struct blake2s_state state __aligned(__alignof__(unsigned long));
++	u8 hash[BLAKE2S_HASH_SIZE];
++	unsigned long *salt;
  	unsigned long flags;
--	const u8 *src = (const u8 *)cp;
--	size_t ret = 0;
  
--	if (!spin_trylock_irqsave(&base_crng.lock, flags))
--		return 0;
-+	if (fast) {
-+		if (!spin_trylock_irqsave(&base_crng.lock, flags))
-+			return 0;
-+	} else {
-+		spin_lock_irqsave(&base_crng.lock, flags);
-+	}
++	blake2s_init(&state, sizeof(hash));
 +
- 	if (crng_init != 0) {
- 		spin_unlock_irqrestore(&base_crng.lock, flags);
- 		return 0;
- 	}
--	while (len > 0 && crng_init_cnt < CRNG_INIT_CNT_THRESH) {
--		base_crng.key[crng_init_cnt % sizeof(base_crng.key)] ^= *src;
--		src++; crng_init_cnt++; len--; ret++;
--	}
--	if (crng_init_cnt >= CRNG_INIT_CNT_THRESH) {
--		++base_crng.generation;
--		crng_init = 1;
--	}
--	spin_unlock_irqrestore(&base_crng.lock, flags);
--	if (crng_init == 1)
--		pr_notice("fast init done\n");
--	return ret;
--}
- 
--/*
-- * This function is for crng_init == 0 only.
-- *
-- * crng_slow_load() is called by add_device_randomness, which has two
-- * attributes.  (1) We can't trust the buffer passed to it is
-- * guaranteed to be unpredictable (so it might not have any entropy at
-- * all), and (2) it doesn't have the performance constraints of
-- * crng_fast_load().
-- *
-- * So, we simply hash the contents in with the current key. Finally,
-- * we do *not* advance crng_init_cnt since buffer we may get may be
-- * something like a fixed DMI table (for example), which might very
-- * well be unique to the machine, but is otherwise unvarying.
-- */
--static void crng_slow_load(const void *cp, size_t len)
--{
--	unsigned long flags;
--	struct blake2s_state hash;
-+	if (account)
-+		len = min_t(size_t, len, CRNG_INIT_CNT_THRESH - crng_init_cnt);
- 
--	blake2s_init(&hash, sizeof(base_crng.key));
--
--	if (!spin_trylock_irqsave(&base_crng.lock, flags))
--		return;
--	if (crng_init != 0) {
--		spin_unlock_irqrestore(&base_crng.lock, flags);
--		return;
-+	if (fast) {
-+		const u8 *src = input;
-+		size_t i;
-+
-+		for (i = 0; i < len; ++i)
-+			base_crng.key[(crng_init_cnt + i) %
-+				      sizeof(base_crng.key)] ^= src[i];
-+	} else {
-+		struct blake2s_state hash;
-+
-+		blake2s_init(&hash, sizeof(base_crng.key));
-+		blake2s_update(&hash, base_crng.key, sizeof(base_crng.key));
-+		blake2s_update(&hash, input, len);
-+		blake2s_final(&hash, base_crng.key);
-+	}
-+
-+	if (account) {
-+		crng_init_cnt += len;
-+		if (crng_init_cnt >= CRNG_INIT_CNT_THRESH) {
-+			++base_crng.generation;
-+			crng_init = 1;
-+		}
+ 	/*
+ 	 * If we have an architectural hardware random number
+-	 * generator, use it for SHA's initial vector
++	 * generator, use it for BLAKE2's salt & personal fields.
+ 	 */
+-	sha_init(hash.w);
+-	for (i = 0; i < LONGS(20); i++) {
++	for (salt = (unsigned long *)&state.h[4];
++	     salt < (unsigned long *)&state.h[8]; ++salt) {
+ 		unsigned long v;
+ 		if (!arch_get_random_long(&v))
+ 			break;
+-		hash.l[i] = v;
++		*salt ^= v;
  	}
  
--	blake2s_update(&hash, base_crng.key, sizeof(base_crng.key));
--	blake2s_update(&hash, cp, len);
--	blake2s_final(&hash, base_crng.key);
+-	/* Generate a hash across the pool, 16 words (512 bits) at a time */
++	/* Generate a hash across the pool */
+ 	spin_lock_irqsave(&r->lock, flags);
+-	for (i = 0; i < r->poolinfo->poolwords; i += 16)
+-		sha_transform(hash.w, (__u8 *)(r->pool + i), workspace);
++	blake2s_update(&state, (const u8 *)r->pool,
++		       r->poolinfo->poolwords * sizeof(*r->pool));
++	blake2s_final(&state, hash); /* final zeros out state */
+ 
+ 	/*
+ 	 * We mix the hash back into the pool to prevent backtracking
+ 	 * attacks (where the attacker knows the state of the pool
+ 	 * plus the current outputs, and attempts to find previous
+-	 * ouputs), unless the hash function can be inverted. By
+-	 * mixing at least a SHA1 worth of hash data back, we make
++	 * outputs), unless the hash function can be inverted. By
++	 * mixing at least a hash worth of hash data back, we make
+ 	 * brute-forcing the feedback as hard as brute-forcing the
+ 	 * hash.
+ 	 */
+-	__mix_pool_bytes(r, hash.w, sizeof(hash.w));
++	__mix_pool_bytes(r, hash, sizeof(hash));
+ 	spin_unlock_irqrestore(&r->lock, flags);
+ 
+-	memzero_explicit(workspace, sizeof(workspace));
 -
- 	spin_unlock_irqrestore(&base_crng.lock, flags);
-+
-+	if (crng_init == 1)
-+		pr_notice("fast init done\n");
-+
-+	return len;
+-	/*
+-	 * In case the hash function has some recognizable output
+-	 * pattern, we fold it in half. Thus, we always feed back
+-	 * twice as much data as we output.
++	/* Note that EXTRACT_SIZE is half of hash size here, because above
++	 * we've dumped the full length back into mixer. By reducing the
++	 * amount that we emit, we retain a level of forward secrecy.
+ 	 */
+-	hash.w[0] ^= hash.w[3];
+-	hash.w[1] ^= hash.w[4];
+-	hash.w[2] ^= rol32(hash.w[2], 16);
+-
+-	memcpy(out, &hash, EXTRACT_SIZE);
+-	memzero_explicit(&hash, sizeof(hash));
++	memcpy(out, hash, EXTRACT_SIZE);
++	memzero_explicit(hash, sizeof(hash));
  }
  
- static void _get_random_bytes(void *buf, size_t nbytes)
-@@ -1014,7 +1017,7 @@ void add_device_randomness(const void *b
- 	unsigned long flags;
- 
- 	if (!crng_ready() && size)
--		crng_slow_load(buf, size);
-+		crng_pre_init_inject(buf, size, false, false);
- 
- 	spin_lock_irqsave(&input_pool.lock, flags);
- 	_mix_pool_bytes(buf, size);
-@@ -1131,7 +1134,7 @@ void add_hwgenerator_randomness(const vo
- 				size_t entropy)
- {
- 	if (unlikely(crng_init == 0)) {
--		size_t ret = crng_fast_load(buffer, count);
-+		size_t ret = crng_pre_init_inject(buffer, count, false, true);
- 		mix_pool_bytes(buffer, ret);
- 		count -= ret;
- 		buffer += ret;
-@@ -1294,7 +1297,8 @@ void add_interrupt_randomness(int irq)
- 
- 	if (unlikely(crng_init == 0)) {
- 		if (new_count >= 64 &&
--		    crng_fast_load(fast_pool->pool32, sizeof(fast_pool->pool32)) > 0) {
-+		    crng_pre_init_inject(fast_pool->pool32, sizeof(fast_pool->pool32),
-+					 true, true) > 0) {
- 			atomic_set(&fast_pool->count, 0);
- 			fast_pool->last = now;
- 			if (spin_trylock(&input_pool.lock)) {
+ static ssize_t _extract_entropy(struct entropy_store *r, void *buf,
 
 
