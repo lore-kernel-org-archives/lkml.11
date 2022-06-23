@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB7EAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:03:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF2F2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:03:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230255AbiFWRDt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:03:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40936 "EHLO
+        id S230379AbiFWRDy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:03:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232971AbiFWRAh (ORCPT
+        with ESMTP id S233126AbiFWRBJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:00:37 -0400
+        Thu, 23 Jun 2022 13:01:09 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E70FF4F1C3;
-        Thu, 23 Jun 2022 09:54:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F12C4FC4E;
+        Thu, 23 Jun 2022 09:54:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D4CE361F8D;
-        Thu, 23 Jun 2022 16:54:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD217C341CC;
-        Thu, 23 Jun 2022 16:54:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CED961FFB;
+        Thu, 23 Jun 2022 16:54:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0503C3411B;
+        Thu, 23 Jun 2022 16:54:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003248;
-        bh=zKzsyeV+YUgO1OfzDfPItn2viW+5rIZVKooAhYmAh70=;
+        s=korg; t=1656003254;
+        bh=U71YCgBwZPMBM6krXE/wQf4g0JZCHmQ3AB3XjJA9Zk0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KNn8ic4rR/0EC0IrRAUx1DKDsToLJnIVcVJqhfclvnmpg8TmjXij3h0b3AlBE3P4R
-         Q8tfpUNtijbCJWrVlcVcbFQxRGKpS3XqGz6D7ckh1Kj013jxzYzSuUQlsCYHyECxHI
-         KSM68q9wMI+ADxkHFk93aRFGt6ZQA6QBKalnCLPU=
+        b=ulr3SRdJJNZoera0rAkY06ZGPqcPHtIyQmkd1XCC++ynDEwd6yK0y3exfViC70WDR
+         mPgP3FhUFOJSiFQFUvuQPAu3F7uj0gxjJ2JX2w9+cEbRpgNMWS5sPdBGMS+4EBxk4j
+         OXgG05Cu66cfbi3e+neZSGB7kWKELyzOLtrog0Rk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jan Varho <jan.varho@gmail.com>,
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>, Helge Deller <deller@gmx.de>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 170/264] random: do not split fast init input in add_hwgenerator_randomness()
-Date:   Thu, 23 Jun 2022 18:42:43 +0200
-Message-Id: <20220623164348.874095017@linuxfoundation.org>
+Subject: [PATCH 4.9 180/264] parisc: define get_cycles macro for arch-override
+Date:   Thu, 23 Jun 2022 18:42:53 +0200
+Message-Id: <20220623164349.159583501@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -48,87 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Varho <jan.varho@gmail.com>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 527a9867af29ff89f278d037db704e0ed50fb666 upstream.
+commit 8865bbe6ba1120e67f72201b7003a16202cd42be upstream.
 
-add_hwgenerator_randomness() tries to only use the required amount of input
-for fast init, but credits all the entropy, rather than a fraction of
-it. Since it's hard to determine how much entropy is left over out of a
-non-unformly random sample, either give it all to fast init or credit
-it, but don't attempt to do both. In the process, we can clean up the
-injection code to no longer need to return a value.
+PA-RISC defines a get_cycles() function, but it does not do the usual
+`#define get_cycles get_cycles` dance, making it impossible for generic
+code to see if an arch-specific function was defined. While the
+get_cycles() ifdef is not currently used, the following timekeeping
+patch in this series will depend on the macro existing (or not existing)
+when defining random_get_entropy().
 
-Signed-off-by: Jan Varho <jan.varho@gmail.com>
-[Jason: expanded commit message]
-Fixes: 73c7733f122e ("random: do not throw away excess input to crng_fast_load")
-Cc: stable@vger.kernel.org # 5.17+, requires af704c856e88
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Acked-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   23 ++++++-----------------
- 1 file changed, 6 insertions(+), 17 deletions(-)
+ arch/parisc/include/asm/timex.h |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -438,11 +438,8 @@ static void crng_make_state(u32 chacha_s
-  * This shouldn't be set by functions like add_device_randomness(),
-  * where we can't trust the buffer passed to it is guaranteed to be
-  * unpredictable (so it might not have any entropy at all).
-- *
-- * Returns the number of bytes processed from input, which is bounded
-- * by CRNG_INIT_CNT_THRESH if account is true.
-  */
--static size_t crng_pre_init_inject(const void *input, size_t len, bool account)
-+static void crng_pre_init_inject(const void *input, size_t len, bool account)
+--- a/arch/parisc/include/asm/timex.h
++++ b/arch/parisc/include/asm/timex.h
+@@ -11,9 +11,10 @@
+ 
+ typedef unsigned long cycles_t;
+ 
+-static inline cycles_t get_cycles (void)
++static inline cycles_t get_cycles(void)
  {
- 	static int crng_init_cnt = 0;
- 	struct blake2s_state hash;
-@@ -453,18 +450,15 @@ static size_t crng_pre_init_inject(const
- 	spin_lock_irqsave(&base_crng.lock, flags);
- 	if (crng_init != 0) {
- 		spin_unlock_irqrestore(&base_crng.lock, flags);
--		return 0;
-+		return;
- 	}
- 
--	if (account)
--		len = min_t(size_t, len, CRNG_INIT_CNT_THRESH - crng_init_cnt);
--
- 	blake2s_update(&hash, base_crng.key, sizeof(base_crng.key));
- 	blake2s_update(&hash, input, len);
- 	blake2s_final(&hash, base_crng.key);
- 
- 	if (account) {
--		crng_init_cnt += len;
-+		crng_init_cnt += min_t(size_t, len, CRNG_INIT_CNT_THRESH - crng_init_cnt);
- 		if (crng_init_cnt >= CRNG_INIT_CNT_THRESH) {
- 			++base_crng.generation;
- 			crng_init = 1;
-@@ -475,8 +469,6 @@ static size_t crng_pre_init_inject(const
- 
- 	if (crng_init == 1)
- 		pr_notice("fast init done\n");
--
--	return len;
+ 	return mfctl(16);
  }
++#define get_cycles get_cycles
  
- static void _get_random_bytes(void *buf, size_t nbytes)
-@@ -1134,12 +1126,9 @@ void add_hwgenerator_randomness(const vo
- 				size_t entropy)
- {
- 	if (unlikely(crng_init == 0 && entropy < POOL_MIN_BITS)) {
--		size_t ret = crng_pre_init_inject(buffer, count, true);
--		mix_pool_bytes(buffer, ret);
--		count -= ret;
--		buffer += ret;
--		if (!count || crng_init == 0)
--			return;
-+		crng_pre_init_inject(buffer, count, true);
-+		mix_pool_bytes(buffer, count);
-+		return;
- 	}
- 
- 	/*
+ #endif
 
 
