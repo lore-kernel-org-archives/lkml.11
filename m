@@ -2,104 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AB8AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 14:55:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E32FC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 14:56:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232073AbiFWOzy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 10:55:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50692 "EHLO
+        id S232086AbiFWO4S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 10:56:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231521AbiFWOzt (ORCPT
+        with ESMTP id S232048AbiFWO4Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 10:55:49 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 672BEB3B
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 07:55:48 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4C5161474;
-        Thu, 23 Jun 2022 07:55:48 -0700 (PDT)
-Received: from e120937-lin.home (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 01ABE3F66F;
-        Thu, 23 Jun 2022 07:55:46 -0700 (PDT)
-From:   Cristian Marussi <cristian.marussi@arm.com>
-To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc:     sudeep.holla@arm.com, f.fainelli@gmail.com,
-        vincent.guittot@linaro.org, lukasz.luba@arm.com,
-        james.quinlan@broadcom.com,
-        Cristian Marussi <cristian.marussi@arm.com>
-Subject: [PATCH 2/2] firmware: arm_scmi: Use new SCMI full message tracing
-Date:   Thu, 23 Jun 2022 15:55:33 +0100
-Message-Id: <20220623145533.2882688-3-cristian.marussi@arm.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220623145533.2882688-1-cristian.marussi@arm.com>
-References: <20220623145533.2882688-1-cristian.marussi@arm.com>
+        Thu, 23 Jun 2022 10:56:16 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34229B5E
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 07:56:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655996175; x=1687532175;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=AT8JAPkS8YJRYuTDNqpAngPAp17BB/bvcfqew+27oho=;
+  b=hCU8lBo6Ey0rGXwn8k1+doy3x/VvmX0AnQ8J3iceaOJV+4vYGuoNIhBE
+   h910P+mCd5RHzq/taTBJNhnVD3RAtRZdiVjH64CN8YjgkcEJIOSZsL2Hm
+   nqdbIbb7fsbCuloDxjiZ4yFf7iyIo5G0xfarHqWP1i2YnxmHfD9drBRCI
+   yUNiU8hGBnyc4ehqbzxJkPzhI/F7qWjYop1L9RF4OryH5NJQuG/zFMplV
+   WkkiTOnxYVgTnEsnz9tWcxzryJzs0sTIDEfiYsve2aQSAuigmoO+yjZHH
+   NGkK8l4K1WPf0xHHEpi8/hZ7PSRQSFF2u8SmP3nGjiwCnuyL1q8kncGlw
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="281817793"
+X-IronPort-AV: E=Sophos;i="5.92,216,1650956400"; 
+   d="scan'208";a="281817793"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2022 07:55:54 -0700
+X-IronPort-AV: E=Sophos;i="5.92,216,1650956400"; 
+   d="scan'208";a="691055713"
+Received: from rames2-mobl.amr.corp.intel.com (HELO [10.213.181.118]) ([10.213.181.118])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2022 07:55:53 -0700
+Message-ID: <a861f3b2-dec4-982d-0939-1dfc18dd2f53@linux.intel.com>
+Date:   Thu, 23 Jun 2022 09:54:36 -0500
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.9.1
+Subject: Re: [PATCH] soundwire: bus_type: fix remove and shutdown support
+Content-Language: en-US
+To:     Vinod Koul <vkoul@kernel.org>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>
+Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        gregkh@linuxfoundation.org, srinivas.kandagatla@linaro.org,
+        sanyog.r.kale@intel.com, bard.liao@intel.com
+References: <20220610015105.25987-1-yung-chuan.liao@linux.intel.com>
+ <YrQca7YH8v6XCl02@matsya>
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+In-Reply-To: <YrQca7YH8v6XCl02@matsya>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add full message tracing for all transmitted and successfully received SCMI
-commands, replies and notifications.
 
-Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
----
- drivers/firmware/arm_scmi/driver.c | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
 
-diff --git a/drivers/firmware/arm_scmi/driver.c b/drivers/firmware/arm_scmi/driver.c
-index 8b7ac6663d57..276d3a4fd6b8 100644
---- a/drivers/firmware/arm_scmi/driver.c
-+++ b/drivers/firmware/arm_scmi/driver.c
-@@ -660,6 +660,11 @@ static void scmi_handle_notification(struct scmi_chan_info *cinfo,
- 		smp_store_mb(xfer->priv, priv);
- 	info->desc->ops->fetch_notification(cinfo, info->desc->max_msg_size,
- 					    xfer);
-+
-+	trace_scmi_msg_dump(xfer->hdr.protocol_id, xfer->hdr.id, "NOTI",
-+			    xfer->hdr.seq, xfer->hdr.status,
-+			    xfer->rx.buf, xfer->rx.len);
-+
- 	scmi_notify(cinfo->handle, xfer->hdr.protocol_id,
- 		    xfer->hdr.id, xfer->rx.buf, xfer->rx.len, ts);
- 
-@@ -694,6 +699,12 @@ static void scmi_handle_response(struct scmi_chan_info *cinfo,
- 		smp_store_mb(xfer->priv, priv);
- 	info->desc->ops->fetch_response(cinfo, xfer);
- 
-+	trace_scmi_msg_dump(xfer->hdr.protocol_id, xfer->hdr.id,
-+			    xfer->hdr.type == MSG_TYPE_DELAYED_RESP ?
-+			    "DLYD" : "RESP",
-+			    xfer->hdr.seq, xfer->hdr.status,
-+			    xfer->rx.buf, xfer->rx.len);
-+
- 	trace_scmi_rx_done(xfer->transfer_id, xfer->hdr.id,
- 			   xfer->hdr.protocol_id, xfer->hdr.seq,
- 			   xfer->hdr.type);
-@@ -827,6 +838,12 @@ static int scmi_wait_for_message_response(struct scmi_chan_info *cinfo,
- 				xfer->state = SCMI_XFER_RESP_OK;
- 			}
- 			spin_unlock_irqrestore(&xfer->lock, flags);
-+
-+			/* Trace polled replies. */
-+			trace_scmi_msg_dump(xfer->hdr.protocol_id, xfer->hdr.id,
-+					    "RESP",
-+					    xfer->hdr.seq, xfer->hdr.status,
-+					    xfer->rx.buf, xfer->rx.len);
- 		}
- 	} else {
- 		/* And we wait for the response. */
-@@ -903,6 +920,10 @@ static int do_xfer(const struct scmi_protocol_handle *ph,
- 		return ret;
- 	}
- 
-+	trace_scmi_msg_dump(xfer->hdr.protocol_id, xfer->hdr.id, "CMND",
-+			    xfer->hdr.seq, xfer->hdr.status,
-+			    xfer->tx.buf, xfer->tx.len);
-+
- 	ret = scmi_wait_for_message_response(cinfo, xfer);
- 	if (!ret && xfer->hdr.status)
- 		ret = scmi_to_linux_errno(xfer->hdr.status);
--- 
-2.32.0
+On 6/23/22 02:55, Vinod Koul wrote:
+> On 10-06-22, 09:51, Bard Liao wrote:
+>> From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+>>
+>> The bus sdw_drv_remove() and sdw_drv_shutdown() helpers are used
+>> conditionally, if the driver provides these routines.
+>>
+>> These helpers already test if the driver provides a .remove or
+>> .shutdown callback, so there's no harm in invoking the
+>> sdw_drv_remove() and sdw_drv_shutdown() unconditionally.
+> 
+> Okay sounds good
+> 
+>> In addition, the current code is imbalanced with
+>> dev_pm_domain_attach() called from sdw_drv_probe(), but
+>> dev_pm_domain_detach() called from sdw_drv_remove() only if the driver
+>> provides a .remove callback.
+> 
+> Am not sure I follow what is imbalance, pm_domain_attach/detach?
 
+Yes, the dev_pm_domain_detach() is done conditionally, depending on the
+presence of a driver .remove callback, that's not so good.
+
+>> Fixes: 9251345dca24b ("soundwire: Add SoundWire bus type")
+> 
+> How is this a fix is still unclear to me. At best I think this is code
+> optimization and removing checks which maybe redundant.
+
+I think the Fixes tag is appropriate for the dev_pm_domain_detach()
+problem, but if you want to drop it that's fine with me.
+
+
+>> Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+>> Reviewed-by: Rander Wang <rander.wang@intel.com>
+>> Signed-off-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+>> ---
+>>  drivers/soundwire/bus_type.c | 8 ++------
+>>  1 file changed, 2 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/drivers/soundwire/bus_type.c b/drivers/soundwire/bus_type.c
+>> index 893296f3fe39..b81e04dd3a9f 100644
+>> --- a/drivers/soundwire/bus_type.c
+>> +++ b/drivers/soundwire/bus_type.c
+>> @@ -193,12 +193,8 @@ int __sdw_register_driver(struct sdw_driver *drv, struct module *owner)
+>>  
+>>  	drv->driver.owner = owner;
+>>  	drv->driver.probe = sdw_drv_probe;
+>> -
+>> -	if (drv->remove)
+>> -		drv->driver.remove = sdw_drv_remove;
+>> -
+>> -	if (drv->shutdown)
+>> -		drv->driver.shutdown = sdw_drv_shutdown;
+>> +	drv->driver.remove = sdw_drv_remove;
+>> +	drv->driver.shutdown = sdw_drv_shutdown;
+>>  
+>>  	return driver_register(&drv->driver);
+>>  }
+>> -- 
+>> 2.17.1
+> 
