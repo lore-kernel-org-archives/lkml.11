@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24D23C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:54:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24EF8CCA47F
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:54:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235303AbiFWRyn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:54:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39624 "EHLO
+        id S235479AbiFWRyt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:54:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235399AbiFWRwa (ORCPT
+        with ESMTP id S235393AbiFWRw3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:52:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EDAF443DB;
-        Thu, 23 Jun 2022 10:13:04 -0700 (PDT)
+        Thu, 23 Jun 2022 13:52:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8DB443EE0;
+        Thu, 23 Jun 2022 10:13:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 07B0661CD9;
-        Thu, 23 Jun 2022 17:13:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE5EDC3411B;
-        Thu, 23 Jun 2022 17:13:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 91E4EB82480;
+        Thu, 23 Jun 2022 17:13:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C84FEC3411B;
+        Thu, 23 Jun 2022 17:12:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004383;
-        bh=X0jxhBZCxLRFvTy4ajXUWCmCOWKNyZfQNhAR4NMapk8=;
+        s=korg; t=1656004380;
+        bh=NQhNWJ1NHThvUxIKw4Ef2+2rvwT+8Bk+F6NZyTtL0Jk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G+C2aDe7MgjkJGPy+zDb35UeDHjenYmuQV9XzDqMKt4KOaPhwC3OU4HRdwqjKDig1
-         CiEG2PAnegDI6pk8RJNvhBnodxjCwWjdHgoV1+lrIkXYaZLucQ+8qhvwFVwRuz49VT
-         MRxP20sQqUePkxyIGVIQfl2zo8XjkurHBVorjrQQ=
+        b=odo/SLQ/+D4PHP+PgIjBsX8jIq9e9ceBOerYNkNMCv+sDvF1i1dVZqeaNe4p/d5rw
+         6SPM6P4wdT5oKQlw+9B8SoWq7D+vGM6I3afQURjADapO33fKumT4l4R9BaPESVTBP1
+         lxEJzHOgdKxfu2AVjOKZztEFTWQRZGkGv5Rh4rGQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andy Lutomirski <luto@kernel.org>,
+        stable@vger.kernel.org,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
         Theodore Tso <tytso@mit.edu>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.19 020/234] random: add GRND_INSECURE to return best-effort non-cryptographic bytes
-Date:   Thu, 23 Jun 2022 18:41:27 +0200
-Message-Id: <20220623164343.634372566@linuxfoundation.org>
+Subject: [PATCH 4.19 002/234] drivers/char/random.c: constify poolinfo_table
+Date:   Thu, 23 Jun 2022 18:41:09 +0200
+Message-Id: <20220623164343.118062372@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
 References: <20220623164343.042598055@linuxfoundation.org>
@@ -49,59 +50,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Lutomirski <luto@kernel.org>
+From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
 
-commit 75551dbf112c992bc6c99a972990b3f272247e23 upstream.
+commit 26e0854ab3310bbeef1ed404a2c87132fc91f8e1 upstream.
 
-Signed-off-by: Andy Lutomirski <luto@kernel.org>
-Link: https://lore.kernel.org/r/d5473b56cf1fa900ca4bd2b3fc1e5b8874399919.1577088521.git.luto@kernel.org
+Never modified, might as well be put in .rodata.
+
+Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c       |   11 +++++++++--
- include/uapi/linux/random.h |    2 ++
- 2 files changed, 11 insertions(+), 2 deletions(-)
+ drivers/char/random.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -2197,7 +2197,14 @@ SYSCALL_DEFINE3(getrandom, char __user *
- {
- 	int ret;
- 
--	if (flags & ~(GRND_NONBLOCK|GRND_RANDOM))
-+	if (flags & ~(GRND_NONBLOCK|GRND_RANDOM|GRND_INSECURE))
-+		return -EINVAL;
-+
-+	/*
-+	 * Requesting insecure and blocking randomness at the same time makes
-+	 * no sense.
-+	 */
-+	if ((flags & (GRND_INSECURE|GRND_RANDOM)) == (GRND_INSECURE|GRND_RANDOM))
- 		return -EINVAL;
- 
- 	if (count > INT_MAX)
-@@ -2206,7 +2213,7 @@ SYSCALL_DEFINE3(getrandom, char __user *
- 	if (flags & GRND_RANDOM)
- 		return _random_read(flags & GRND_NONBLOCK, buf, count);
- 
--	if (!crng_ready()) {
-+	if (!(flags & GRND_INSECURE) && !crng_ready()) {
- 		if (flags & GRND_NONBLOCK)
- 			return -EAGAIN;
- 		ret = wait_for_random_bytes();
---- a/include/uapi/linux/random.h
-+++ b/include/uapi/linux/random.h
-@@ -49,8 +49,10 @@ struct rand_pool_info {
-  *
-  * GRND_NONBLOCK	Don't block and return EAGAIN instead
-  * GRND_RANDOM		Use the /dev/random pool instead of /dev/urandom
-+ * GRND_INSECURE	Return non-cryptographic random bytes
+@@ -359,7 +359,7 @@ static int random_write_wakeup_bits = 28
+  * polynomial which improves the resulting TGFSR polynomial to be
+  * irreducible, which we have made here.
   */
- #define GRND_NONBLOCK	0x0001
- #define GRND_RANDOM	0x0002
-+#define GRND_INSECURE	0x0004
- 
- #endif /* _UAPI_LINUX_RANDOM_H */
+-static struct poolinfo {
++static const struct poolinfo {
+ 	int poolbitshift, poolwords, poolbytes, poolbits, poolfracbits;
+ #define S(x) ilog2(x)+5, (x), (x)*4, (x)*32, (x) << (ENTROPY_SHIFT+5)
+ 	int tap1, tap2, tap3, tap4, tap5;
 
 
