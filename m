@@ -2,170 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B875CCA47C
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 10:43:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B34E6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 10:45:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230034AbiFWKnJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 06:43:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40576 "EHLO
+        id S230362AbiFWKpi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 06:45:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229595AbiFWKnF (ORCPT
+        with ESMTP id S229970AbiFWKpf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 06:43:05 -0400
-Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1D08BCB5;
-        Thu, 23 Jun 2022 03:43:03 -0700 (PDT)
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 5460B202D8C;
-        Thu, 23 Jun 2022 12:43:02 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id DD410200904;
-        Thu, 23 Jun 2022 12:43:01 +0200 (CEST)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 9A2A11802201;
-        Thu, 23 Jun 2022 18:43:00 +0800 (+08)
-From:   Shengjiu Wang <shengjiu.wang@nxp.com>
-To:     lgirdwood@gmail.com, broonie@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, alsa-devel@alsa-project.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     shengjiu.wang@gmail.com
-Subject: [PATCH] ASoC: dt-bindings: fsl,micfil: Convert format to json-schema
-Date:   Thu, 23 Jun 2022 18:28:45 +0800
-Message-Id: <1655980125-24141-1-git-send-email-shengjiu.wang@nxp.com>
-X-Mailer: git-send-email 2.7.4
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Thu, 23 Jun 2022 06:45:35 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E45034B1C9;
+        Thu, 23 Jun 2022 03:45:33 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id e10so440706wra.11;
+        Thu, 23 Jun 2022 03:45:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=yo+6S0bVZFj15xUOaX5n49aCMwaG4HuXlgCxrBpq27U=;
+        b=ndcxBl5Qp9eJ5nzkxN5EDiysnSYxHsPzzxVtTBrzCAXf7gHChskFXfTA/lgd3652Ec
+         J5tvhQv0JKa3eBxOhvHArneOqOo2Xl5azPCn7cMXMIjtyy9+KtOGbLJ3f++OcvZgDAio
+         U7OYIVJ8iRlAdQ7jY9WXKCysFb+/Ds2rc1L0bSjiSHTJELOZWL2ZmhKH4rPvRKOB70pG
+         AfdjDE/xYQpcbWSSp3R1F8LWoLi+PACi70QEat6livKlUbkTzEdaurjK1vptIxiPERrK
+         OeFidGna+Y1fiRxq3h0wdOjrYI+UvijOW7QIGEkA34SoKvYc9GIZ54bVWWKIwXq2igWv
+         TsSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=yo+6S0bVZFj15xUOaX5n49aCMwaG4HuXlgCxrBpq27U=;
+        b=wwNeEZP2wBErSjaofm+QKgoLBiPZBncBi/0k2+NsAh3v6DPGGeO0xmSm0qciG/NDEw
+         25tbkLRw5Ui4rwp+9UIeuun+a+8isMI/2Y2+eJH9mFpudsrJyAgvWgPb0luglm/4kByD
+         A8zIZPV6FqE3DxxHc6rDtN8gomFkvqmCY3PNu9rrK7vwy6FF8G3tjGfLC2xoXKo5H8lq
+         fAvRtnWW863NhozZBcByvMpPnItIA+Bv1KDy3mipYYWOLNgi7cPPiIeYvqqyReI5G6RG
+         Qqa4r2k65RYHLWo+G+tb0gI3kXKtnnhRJTa/CAsBC7ZqpFrJCo4wgqn1hBAr/B0Unba7
+         90ZQ==
+X-Gm-Message-State: AJIora/c1hQW8y6Dg5tGgJgacCSG/LkkBCbTSxtXkjtWkv9AgkgmXZK0
+        009D2lowGAPmb/3lA/5VIMM=
+X-Google-Smtp-Source: AGRyM1vEQj2z1+nh+K5QWnNPP8grCm8e9ggnCkbXxCVsOjntLeecur3FWso/i01QzH0STWsbvgykCg==
+X-Received: by 2002:adf:e104:0:b0:21b:9938:b07a with SMTP id t4-20020adfe104000000b0021b9938b07amr7798958wrz.682.1655981132441;
+        Thu, 23 Jun 2022 03:45:32 -0700 (PDT)
+Received: from felia.fritz.box (200116b826a89a00b5a52346a320d486.dip.versatel-1u1.de. [2001:16b8:26a8:9a00:b5a5:2346:a320:d486])
+        by smtp.gmail.com with ESMTPSA id l35-20020a05600c1d2300b0039c95b31e66sm2760949wms.31.2022.06.23.03.45.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Jun 2022 03:45:31 -0700 (PDT)
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+To:     Conor Dooley <conor.dooley@microchip.com>,
+        Lee Jones <lee.jones@linaro.org>
+Cc:     Support Opensource <support.opensource@diasemi.com>,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH] MAINTAINERS: repair pattern in DIALOG SEMICONDUCTOR DRIVERS
+Date:   Thu, 23 Jun 2022 12:44:56 +0200
+Message-Id: <20220623104456.27144-1-lukas.bulwahn@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the NXP MICFIL binding to DT schema format using json-schema.
+Commit 441613662db7 ("dt-bindings: mfd: Convert da9063 to yaml") converts
+da9063.txt to dlg,da9063.yaml and adds a new file pattern in MAINTAINERS.
+Unfortunately, the file pattern matches da90*.yaml, but the yaml file is
+prefixed with dlg,da90.
 
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+Hence, ./scripts/get_maintainer.pl --self-test=patterns complains about a
+broken file pattern.
+
+Repair this file pattern in DIALOG SEMICONDUCTOR DRIVERS.
+
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 ---
- .../devicetree/bindings/sound/fsl,micfil.txt  | 33 ---------
- .../devicetree/bindings/sound/fsl,micfil.yaml | 73 +++++++++++++++++++
- 2 files changed, 73 insertions(+), 33 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/sound/fsl,micfil.txt
- create mode 100644 Documentation/devicetree/bindings/sound/fsl,micfil.yaml
+Conor, please ack.
+Lee, pleae pick this minor non-urgent clean-up patch.
 
-diff --git a/Documentation/devicetree/bindings/sound/fsl,micfil.txt b/Documentation/devicetree/bindings/sound/fsl,micfil.txt
-deleted file mode 100644
-index 1ea05d4996c7..000000000000
---- a/Documentation/devicetree/bindings/sound/fsl,micfil.txt
-+++ /dev/null
-@@ -1,33 +0,0 @@
--NXP MICFIL Digital Audio Interface (MICFIL).
--
--The MICFIL digital interface provides a 16-bit audio signal from a PDM
--microphone bitstream in a configurable output sampling rate.
--
--Required properties:
--
--  - compatible		: Compatible list, contains "fsl,imx8mm-micfil"
--			  or "fsl,imx8mp-micfil"
--
--  - reg			: Offset and length of the register set for the device.
--
--  - interrupts		: Contains the micfil interrupts.
--
--  - clocks		: Must contain an entry for each entry in clock-names.
--
--  - clock-names		: Must include the "ipg_clk" for register access and
--			  "ipg_clk_app" for internal micfil clock.
--
--  - dmas		: Generic dma devicetree binding as described in
--			  Documentation/devicetree/bindings/dma/dma.txt.
--
--Example:
--micfil: micfil@30080000 {
--	compatible = "fsl,imx8mm-micfil";
--	reg = <0x0 0x30080000 0x0 0x10000>;
--	interrupts = <GIC_SPI 109 IRQ_TYPE_LEVEL_HIGH>,
--		     <GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH>;
--	clocks = <&clk IMX8MM_CLK_PDM_IPG>,
--		 <&clk IMX8MM_CLK_PDM_ROOT>;
--	clock-names = "ipg_clk", "ipg_clk_app";
--	dmas = <&sdma2 24 26 0x80000000>;
--};
-diff --git a/Documentation/devicetree/bindings/sound/fsl,micfil.yaml b/Documentation/devicetree/bindings/sound/fsl,micfil.yaml
-new file mode 100644
-index 000000000000..74c77f4cf7a4
---- /dev/null
-+++ b/Documentation/devicetree/bindings/sound/fsl,micfil.yaml
-@@ -0,0 +1,73 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/sound/fsl,micfil.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: NXP MICFIL Digital Audio Interface (MICFIL)
-+
-+maintainers:
-+  - Shengjiu Wang <shengjiu.wang@nxp.com>
-+
-+description: |
-+  The MICFIL digital interface provides a 16-bit or 24-bit audio signal
-+  from a PDM microphone bitstream in a configurable output sampling rate.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - fsl,imx8mm-micfil
-+      - fsl,imx8mp-micfil
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 4
-+
-+  dmas:
-+    items:
-+      - description: DMA controller phandle and request line for RX
-+
-+  dma-names:
-+    items:
-+      - const: rx
-+
-+  clocks:
-+    items:
-+      - description: The ipg clock for register access
-+      - description: internal micfil clock
-+
-+  clock-names:
-+    items:
-+      - const: ipg_clk
-+      - const: ipg_clk_app
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - dmas
-+  - dma-names
-+  - clocks
-+  - clock-names
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/clock/imx8mm-clock.h>
-+    micfil: audio-controller@30080000 {
-+        compatible = "fsl,imx8mm-micfil";
-+        reg = <0x30080000 0x10000>;
-+        interrupts = <GIC_SPI 109 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 44 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 45 IRQ_TYPE_LEVEL_HIGH>;
-+        clocks = <&clk IMX8MM_CLK_PDM_IPG>,
-+                 <&clk IMX8MM_CLK_PDM_ROOT>;
-+        clock-names = "ipg_clk", "ipg_clk_app";
-+        dmas = <&sdma2 24 25 0>;
-+        dma-names = "rx";
-+    };
+ MAINTAINERS | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index f84dba7ee301..4b08464abb1b 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -5876,7 +5876,7 @@ W:	http://www.dialog-semiconductor.com/products
+ F:	Documentation/devicetree/bindings/input/da90??-onkey.txt
+ F:	Documentation/devicetree/bindings/input/dlg,da72??.txt
+ F:	Documentation/devicetree/bindings/mfd/da90*.txt
+-F:	Documentation/devicetree/bindings/mfd/da90*.yaml
++F:	Documentation/devicetree/bindings/mfd/dlg,da90*.yaml
+ F:	Documentation/devicetree/bindings/regulator/dlg,da9*.yaml
+ F:	Documentation/devicetree/bindings/regulator/da92*.txt
+ F:	Documentation/devicetree/bindings/regulator/slg51000.txt
 -- 
 2.17.1
 
