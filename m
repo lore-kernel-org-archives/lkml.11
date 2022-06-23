@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEB95C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:00:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F6D5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:00:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233016AbiFWRAR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:00:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50702 "EHLO
+        id S232680AbiFWRAW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:00:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232773AbiFWQt6 (ORCPT
+        with ESMTP id S232925AbiFWQt6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 23 Jun 2022 12:49:58 -0400
 Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E17CA2BE3;
-        Thu, 23 Jun 2022 09:47:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB0FE13F3D;
+        Thu, 23 Jun 2022 09:47:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 2F0E6CE25D9;
-        Thu, 23 Jun 2022 16:47:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35B1FC341C4;
-        Thu, 23 Jun 2022 16:47:50 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id DDCBCCE25D9;
+        Thu, 23 Jun 2022 16:47:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC414C385A5;
+        Thu, 23 Jun 2022 16:47:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656002870;
-        bh=lyf7a//WFOH0mnpMYj+NUszJabjWPn0lwSpZWcIxuH4=;
+        s=korg; t=1656002876;
+        bh=DVqS7H5Sm67SdV6zpWpQ1W1Mj+FjSJsjD7F6bT+BDPs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kBgGnlckW07wcySnzhzMAN6AQ7tFEUkCSKzw3tLexKze1FgfZn3JS7QxGbTByZJDG
-         aCLl3zlt2M2mxAnCLVzII96mCKyjfSNtKFLLKtVz5pXA57N2Xk55FknDC3fze4MxAZ
-         q3YLJmfm231Y4M93qXgAOiYsMjL0BpTlmzQElgVo=
+        b=ODTbryXKvY8poKwLBT11rdWYCt/KEndZgVPeLneG155xBxViqPpEK8tzcnEFhcYd6
+         5RmlRS0hhK2kwjwsxZYCUb8ImwslRU8QOjFVpPrCnWvSx6Z7sK+3C83B1ZFw/TolN1
+         cjn7InwsX513toinLyvHV3d5jt84gyvPOUitJKgI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Andy Lutomirski <luto@kernel.org>,
         Theodore Tso <tytso@mit.edu>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 054/264] random: Add a urandom_read_nowait() for random APIs that dont warn
-Date:   Thu, 23 Jun 2022 18:40:47 +0200
-Message-Id: <20220623164345.601401823@linuxfoundation.org>
+Subject: [PATCH 4.9 056/264] random: ignore GRND_RANDOM in getentropy(2)
+Date:   Thu, 23 Jun 2022 18:40:49 +0200
+Message-Id: <20220623164345.658306748@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -51,72 +51,46 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Andy Lutomirski <luto@kernel.org>
 
-commit c6f1deb158789abba02a7eba600747843eeb3a57 upstream.
+commit 48446f198f9adcb499b30332488dfd5bc3f176f6 upstream.
 
-/dev/random and getrandom() never warn.  Split the meat of
-urandom_read() into urandom_read_nowarn() and leave the warning code
-in urandom_read().
+The separate blocking pool is going away.  Start by ignoring
+GRND_RANDOM in getentropy(2).
 
-This has no effect on kernel behavior, but it makes subsequent
-patches more straightforward.  It also makes the fact that
-getrandom() never warns more obvious.
+This should not materially break any API.  Any code that worked
+without this change should work at least as well with this change.
 
 Signed-off-by: Andy Lutomirski <luto@kernel.org>
-Link: https://lore.kernel.org/r/c87ab200588de746431d9f916501ef11e5242b13.1577088521.git.luto@kernel.org
+Link: https://lore.kernel.org/r/705c5a091b63cc5da70c99304bb97e0109be0a26.1577088521.git.luto@kernel.org
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   21 +++++++++++++++------
- 1 file changed, 15 insertions(+), 6 deletions(-)
+ drivers/char/random.c       |    3 ---
+ include/uapi/linux/random.h |    2 +-
+ 2 files changed, 1 insertion(+), 4 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -2015,11 +2015,22 @@ random_read(struct file *file, char __us
- }
+@@ -2200,9 +2200,6 @@ SYSCALL_DEFINE3(getrandom, char __user *
+ 	if (count > INT_MAX)
+ 		count = INT_MAX;
  
- static ssize_t
-+urandom_read_nowarn(struct file *file, char __user *buf, size_t nbytes,
-+		    loff_t *ppos)
-+{
-+	int ret;
-+
-+	nbytes = min_t(size_t, nbytes, INT_MAX >> (ENTROPY_SHIFT + 3));
-+	ret = extract_crng_user(buf, nbytes);
-+	trace_urandom_read(8 * nbytes, 0, ENTROPY_BITS(&input_pool));
-+	return ret;
-+}
-+
-+static ssize_t
- urandom_read(struct file *file, char __user *buf, size_t nbytes, loff_t *ppos)
- {
- 	unsigned long flags;
- 	static int maxwarn = 10;
--	int ret;
- 
- 	if (!crng_ready() && maxwarn > 0) {
- 		maxwarn--;
-@@ -2031,10 +2042,8 @@ urandom_read(struct file *file, char __u
- 		crng_init_cnt = 0;
- 		spin_unlock_irqrestore(&primary_crng.lock, flags);
- 	}
--	nbytes = min_t(size_t, nbytes, INT_MAX >> (ENTROPY_SHIFT + 3));
--	ret = extract_crng_user(buf, nbytes);
--	trace_urandom_read(8 * nbytes, 0, ENTROPY_BITS(&input_pool));
--	return ret;
-+
-+	return urandom_read_nowarn(file, buf, nbytes, ppos);
- }
- 
- static unsigned int
-@@ -2194,7 +2203,7 @@ SYSCALL_DEFINE3(getrandom, char __user *
- 		if (unlikely(ret))
- 			return ret;
- 	}
--	return urandom_read(NULL, buf, count, NULL);
-+	return urandom_read_nowarn(NULL, buf, count, NULL);
- }
- 
- /********************************************************************
+-	if (flags & GRND_RANDOM)
+-		return _random_read(flags & GRND_NONBLOCK, buf, count);
+-
+ 	if (!(flags & GRND_INSECURE) && !crng_ready()) {
+ 		if (flags & GRND_NONBLOCK)
+ 			return -EAGAIN;
+--- a/include/uapi/linux/random.h
++++ b/include/uapi/linux/random.h
+@@ -47,7 +47,7 @@ struct rand_pool_info {
+  * Flags for getrandom(2)
+  *
+  * GRND_NONBLOCK	Don't block and return EAGAIN instead
+- * GRND_RANDOM		Use the /dev/random pool instead of /dev/urandom
++ * GRND_RANDOM		No effect
+  * GRND_INSECURE	Return non-cryptographic random bytes
+  */
+ #define GRND_NONBLOCK	0x0001
 
 
