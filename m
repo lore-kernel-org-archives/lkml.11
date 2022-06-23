@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B718BCCA481
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7C60CCA47C
 	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:03:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232706AbiFWRCJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:02:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33212 "EHLO
+        id S232902AbiFWRCO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:02:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233520AbiFWQ5w (ORCPT
+        with ESMTP id S233674AbiFWQ6H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:57:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35E394EDD1;
-        Thu, 23 Jun 2022 09:53:39 -0700 (PDT)
+        Thu, 23 Jun 2022 12:58:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64DA74EF49;
+        Thu, 23 Jun 2022 09:53:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D82EC61FBF;
-        Thu, 23 Jun 2022 16:53:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A2FCC341CF;
-        Thu, 23 Jun 2022 16:53:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 53367B82491;
+        Thu, 23 Jun 2022 16:53:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AADECC3411B;
+        Thu, 23 Jun 2022 16:53:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003208;
-        bh=Bg9ECFE1CKePOK7lsrlIrQAb49dhB0JOAbwxVSGLmxg=;
+        s=korg; t=1656003214;
+        bh=QoQwnZ21bn4rrh2FiWs98Uf5G6r93cAll2yBjM7S5iE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JwFYcGz7Z0u+OJPS8IptX8REzN8++m10CH52zw730N0dot/7caektlaPrRVMaQa4b
-         49JKlFuep99Zq8WjFedHZ4P7ZAmijXXUU/PM1lIK84O9wXgMlSvc5z5jiMZtJXiz4b
-         atMeNnAP2yEKJVfACb4DNM3vsC392NULWyJy2O9I=
+        b=W57cYPpD//1eNI9GjNyiwJtTR1b71J3U5zir5oG6fbq5TnzJ393QI3HkzrI/xOII0
+         CR1ELI4LCSBQKHKVYOKPNAuDDTWkJjSBoRn7udn4SJlco5jVCvlKq3UBHlDlUgdALf
+         i7b/0B+Vo/e62rJ4jehmdZ/OhtkP6JEGSoLh/q2Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Eric Biggers <ebiggers@google.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 164/264] random: reseed more often immediately after booting
-Date:   Thu, 23 Jun 2022 18:42:37 +0200
-Message-Id: <20220623164348.704828555@linuxfoundation.org>
+Subject: [PATCH 4.9 130/264] random: deobfuscate irq u32/u64 contributions
+Date:   Thu, 23 Jun 2022 18:42:03 +0200
+Message-Id: <20220623164347.744437426@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -51,85 +51,121 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 7a7ff644aeaf071d433caffb3b8ea57354b55bd3 upstream.
+commit b2f408fe403800c91a49f6589d95b6759ce1b30b upstream.
 
-In order to chip away at the "premature first" problem, we augment our
-existing entropy accounting with more frequent reseedings at boot.
-
-The idea is that at boot, we're getting entropy from various places, and
-we're not very sure which of early boot entropy is good and which isn't.
-Even when we're crediting the entropy, we're still not totally certain
-that it's any good. Since boot is the one time (aside from a compromise)
-that we have zero entropy, it's important that we shepherd entropy into
-the crng fairly often.
-
-At the same time, we don't want a "premature next" problem, whereby an
-attacker can brute force individual bits of added entropy. In lieu of
-going full-on Fortuna (for now), we can pick a simpler strategy of just
-reseeding more often during the first 5 minutes after boot. This is
-still bounded by the 256-bit entropy credit requirement, so we'll skip a
-reseeding if we haven't reached that, but in case entropy /is/ coming
-in, this ensures that it makes its way into the crng rather rapidly
-during these early stages.
-
-Ordinarily we reseed if the previous reseeding is 300 seconds old. This
-commit changes things so that for the first 600 seconds of boot time, we
-reseed if the previous reseeding is uptime / 2 seconds old. That means
-that we'll reseed at the very least double the uptime of the previous
-reseeding.
+In the irq handler, we fill out 16 bytes differently on 32-bit and
+64-bit platforms, and for 32-bit vs 64-bit cycle counters, which doesn't
+always correspond with the bitness of the platform. Whether or not you
+like this strangeness, it is a matter of fact.  But it might not be a
+fact you well realized until now, because the code that loaded the irq
+info into 4 32-bit words was quite confusing.  Instead, this commit
+makes everything explicit by having separate (compile-time) branches for
+32-bit and 64-bit types.
 
 Cc: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   28 +++++++++++++++++++++++++---
- 1 file changed, 25 insertions(+), 3 deletions(-)
+ drivers/char/random.c |   49 ++++++++++++++++++++++++++++---------------------
+ 1 file changed, 28 insertions(+), 21 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -337,6 +337,28 @@ static void crng_fast_key_erasure(u8 key
+@@ -284,7 +284,10 @@ static void mix_pool_bytes(const void *i
  }
  
- /*
-+ * Return whether the crng seed is considered to be sufficiently
-+ * old that a reseeding might be attempted. This happens if the last
-+ * reseeding was CRNG_RESEED_INTERVAL ago, or during early boot, at
-+ * an interval proportional to the uptime.
-+ */
-+static bool crng_has_old_seed(void)
-+{
-+	static bool early_boot = true;
-+	unsigned long interval = CRNG_RESEED_INTERVAL;
-+
-+	if (unlikely(READ_ONCE(early_boot))) {
-+		time64_t uptime = ktime_get_seconds();
-+		if (uptime >= CRNG_RESEED_INTERVAL / HZ * 2)
-+			WRITE_ONCE(early_boot, false);
-+		else
-+			interval = max_t(unsigned int, 5 * HZ,
-+					 (unsigned int)uptime / 2 * HZ);
+ struct fast_pool {
+-	u32 pool[4];
++	union {
++		u32 pool32[4];
++		u64 pool64[2];
++	};
+ 	unsigned long last;
+ 	u16 reg_idx;
+ 	u8 count;
+@@ -295,10 +298,10 @@ struct fast_pool {
+  * collector.  It's hardcoded for an 128 bit pool and assumes that any
+  * locks that might be needed are taken by the caller.
+  */
+-static void fast_mix(struct fast_pool *f)
++static void fast_mix(u32 pool[4])
+ {
+-	u32 a = f->pool[0],	b = f->pool[1];
+-	u32 c = f->pool[2],	d = f->pool[3];
++	u32 a = pool[0],	b = pool[1];
++	u32 c = pool[2],	d = pool[3];
+ 
+ 	a += b;			c += d;
+ 	b = rol32(b, 6);	d = rol32(d, 27);
+@@ -316,9 +319,8 @@ static void fast_mix(struct fast_pool *f
+ 	b = rol32(b, 16);	d = rol32(d, 14);
+ 	d ^= a;			b ^= c;
+ 
+-	f->pool[0] = a;  f->pool[1] = b;
+-	f->pool[2] = c;  f->pool[3] = d;
+-	f->count++;
++	pool[0] = a;  pool[1] = b;
++	pool[2] = c;  pool[3] = d;
+ }
+ 
+ static void process_random_ready_list(void)
+@@ -834,29 +836,34 @@ void add_interrupt_randomness(int irq)
+ 	struct pt_regs *regs = get_irq_regs();
+ 	unsigned long now = jiffies;
+ 	cycles_t cycles = random_get_entropy();
+-	u32 c_high, j_high;
+-	u64 ip;
+ 
+ 	if (cycles == 0)
+ 		cycles = get_reg(fast_pool, regs);
+-	c_high = (sizeof(cycles) > 4) ? cycles >> 32 : 0;
+-	j_high = (sizeof(now) > 4) ? now >> 32 : 0;
+-	fast_pool->pool[0] ^= cycles ^ j_high ^ irq;
+-	fast_pool->pool[1] ^= now ^ c_high;
+-	ip = regs ? instruction_pointer(regs) : _RET_IP_;
+-	fast_pool->pool[2] ^= ip;
+-	fast_pool->pool[3] ^=
+-		(sizeof(ip) > 4) ? ip >> 32 : get_reg(fast_pool, regs);
+ 
+-	fast_mix(fast_pool);
++	if (sizeof(cycles) == 8)
++		fast_pool->pool64[0] ^= cycles ^ rol64(now, 32) ^ irq;
++	else {
++		fast_pool->pool32[0] ^= cycles ^ irq;
++		fast_pool->pool32[1] ^= now;
 +	}
-+	return time_after(jiffies, READ_ONCE(base_crng.birth) + interval);
-+}
 +
-+/*
-  * This function returns a ChaCha state that you may use for generating
-  * random data. It also returns up to 32 bytes on its own of random data
-  * that may be used; random_data_len may not be greater than 32.
-@@ -369,10 +391,10 @@ static void crng_make_state(u32 chacha_s
- 	}
++	if (sizeof(unsigned long) == 8)
++		fast_pool->pool64[1] ^= regs ? instruction_pointer(regs) : _RET_IP_;
++	else {
++		fast_pool->pool32[2] ^= regs ? instruction_pointer(regs) : _RET_IP_;
++		fast_pool->pool32[3] ^= get_reg(fast_pool, regs);
++	}
++
++	fast_mix(fast_pool->pool32);
++	++fast_pool->count;
  
- 	/*
--	 * If the base_crng is more than 5 minutes old, we reseed, which
--	 * in turn bumps the generation counter that we check below.
-+	 * If the base_crng is old enough, we try to reseed, which in turn
-+	 * bumps the generation counter that we check below.
- 	 */
--	if (unlikely(time_after(jiffies, READ_ONCE(base_crng.birth) + CRNG_RESEED_INTERVAL)))
-+	if (unlikely(crng_has_old_seed()))
- 		crng_reseed();
+ 	if (unlikely(crng_init == 0)) {
+ 		if (fast_pool->count >= 64 &&
+-		    crng_fast_load(fast_pool->pool, sizeof(fast_pool->pool)) > 0) {
++		    crng_fast_load(fast_pool->pool32, sizeof(fast_pool->pool32)) > 0) {
+ 			fast_pool->count = 0;
+ 			fast_pool->last = now;
+ 			if (spin_trylock(&input_pool.lock)) {
+-				_mix_pool_bytes(&fast_pool->pool, sizeof(fast_pool->pool));
++				_mix_pool_bytes(&fast_pool->pool32, sizeof(fast_pool->pool32));
+ 				spin_unlock(&input_pool.lock);
+ 			}
+ 		}
+@@ -870,7 +877,7 @@ void add_interrupt_randomness(int irq)
+ 		return;
  
- 	local_irq_save(flags);
+ 	fast_pool->last = now;
+-	_mix_pool_bytes(&fast_pool->pool, sizeof(fast_pool->pool));
++	_mix_pool_bytes(&fast_pool->pool32, sizeof(fast_pool->pool32));
+ 	spin_unlock(&input_pool.lock);
+ 
+ 	fast_pool->count = 0;
 
 
