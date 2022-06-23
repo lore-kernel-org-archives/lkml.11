@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD728C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:49:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11D08C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:49:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229929AbiFWRtB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:49:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39624 "EHLO
+        id S232740AbiFWRtF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:49:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235163AbiFWRrg (ORCPT
+        with ESMTP id S235152AbiFWRrb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:47:36 -0400
+        Thu, 23 Jun 2022 13:47:31 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C6FEA1483;
-        Thu, 23 Jun 2022 10:11:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1C2EA0167;
+        Thu, 23 Jun 2022 10:10:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A20136159A;
-        Thu, 23 Jun 2022 17:10:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DE6AC3411B;
-        Thu, 23 Jun 2022 17:10:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B9FC061D89;
+        Thu, 23 Jun 2022 17:10:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85569C3411B;
+        Thu, 23 Jun 2022 17:10:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004251;
-        bh=bNnXXGIBtGG6oA1E2wBDwNptzVA6M58zY9cPK0/4WUQ=;
+        s=korg; t=1656004249;
+        bh=8TgXe84d/jIwh5VmTLv4Vrhhpib97j7nJDPdD8dG91Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vLHRsHWAlEqqGIQ9Abh/UccDb5TN2ZknqWi5z/bjN1XJCxDD5nzf2pRcwQMCN5F5b
-         UvGuHgbBvfi1vnZOMI0reIUz4gIkeZBxNYcsW7HKTb/SaaD77DBa+8EGmPubGl6Mhj
-         vJZrvQzbCaZQOxfWHl9GG51Ks1uZJNsO+rWJZN98=
+        b=AX4+5VEgccAFN7M77f5eNgrc2waLutkd0ykUuSSRlx/JLZyWxdCd0U6d7lLgfG0XH
+         DNcbsuaA2wfwxqKQzz+gTGEF0E/c87j1KKdQ3ormu1xvwceaEcloyr7n5lt+Imnvu3
+         0VBasErkL0yA9BK2UPtDXzu/S+gzIdtPU7sWj9p4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Ding Xiang <dingxiang@cmss.chinamobile.com>,
-        Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 4.14 224/237] ext4: make variable "count" signed
-Date:   Thu, 23 Jun 2022 18:44:18 +0200
-Message-Id: <20220623164349.593653446@linuxfoundation.org>
+        stable@vger.kernel.org, Amit Klein <aksecurity@gmail.com>,
+        Eric Dumazet <edumazet@google.com>, Willy Tarreau <w@1wt.eu>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ben Hutchings <ben@decadent.org.uk>
+Subject: [PATCH 4.14 237/237] tcp: drop the hash_32() part from the index calculation
+Date:   Thu, 23 Jun 2022 18:44:31 +0200
+Message-Id: <20220623164349.974201668@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -49,35 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ding Xiang <dingxiang@cmss.chinamobile.com>
+From: Willy Tarreau <w@1wt.eu>
 
-commit bc75a6eb856cb1507fa907bf6c1eda91b3fef52f upstream.
+commit e8161345ddbb66e449abde10d2fdce93f867eba9 upstream.
 
-Since dx_make_map() may return -EFSCORRUPTED now, so change "count" to
-be a signed integer so we can correctly check for an error code returned
-by dx_make_map().
+In commit 190cc82489f4 ("tcp: change source port randomizarion at
+connect() time"), the table_perturb[] array was introduced and an
+index was taken from the port_offset via hash_32(). But it turns
+out that hash_32() performs a multiplication while the input here
+comes from the output of SipHash in secure_seq, that is well
+distributed enough to avoid the need for yet another hash.
 
-Fixes: 46c116b920eb ("ext4: verify dir block before splitting it")
-Cc: stable@kernel.org
-Signed-off-by: Ding Xiang <dingxiang@cmss.chinamobile.com>
-Link: https://lore.kernel.org/r/20220530100047.537598-1-dingxiang@cmss.chinamobile.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Suggested-by: Amit Klein <aksecurity@gmail.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Willy Tarreau <w@1wt.eu>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/namei.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ net/ipv4/inet_hashtables.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/ext4/namei.c
-+++ b/fs/ext4/namei.c
-@@ -1724,7 +1724,8 @@ static struct ext4_dir_entry_2 *do_split
- 			struct dx_hash_info *hinfo)
- {
- 	unsigned blocksize = dir->i_sb->s_blocksize;
--	unsigned count, continued;
-+	unsigned continued;
-+	int count;
- 	struct buffer_head *bh2;
- 	ext4_lblk_t newblock;
- 	u32 hash2;
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -640,7 +640,7 @@ int __inet_hash_connect(struct inet_time
+ 
+ 	net_get_random_once(table_perturb,
+ 			    INET_TABLE_PERTURB_SIZE * sizeof(*table_perturb));
+-	index = hash_32(port_offset, INET_TABLE_PERTURB_SHIFT);
++	index = port_offset & (INET_TABLE_PERTURB_SIZE - 1);
+ 
+ 	offset = READ_ONCE(table_perturb[index]) + (port_offset >> 32);
+ 	offset %= remaining;
 
 
