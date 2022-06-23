@@ -2,209 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11808C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 08:34:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85604C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 08:36:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230257AbiFWIev (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 04:34:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46828 "EHLO
+        id S230005AbiFWIgU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 04:36:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229948AbiFWIes (ORCPT
+        with ESMTP id S229470AbiFWIgR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 04:34:48 -0400
-Received: from out199-1.us.a.mail.aliyun.com (out199-1.us.a.mail.aliyun.com [47.90.199.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4562243AD9
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 01:34:47 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=xueshuai@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0VHAqBee_1655973281;
-Received: from 30.240.120.144(mailfrom:xueshuai@linux.alibaba.com fp:SMTPD_---0VHAqBee_1655973281)
-          by smtp.aliyun-inc.com;
-          Thu, 23 Jun 2022 16:34:42 +0800
-Message-ID: <4de128c7-4dec-6bb2-737e-656f5ab4ea8d@linux.alibaba.com>
-Date:   Thu, 23 Jun 2022 16:34:40 +0800
+        Thu, 23 Jun 2022 04:36:17 -0400
+Received: from ni.piap.pl (ni.piap.pl [195.187.100.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DAFC48E4B
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 01:36:12 -0700 (PDT)
+Received: from t19.piap.pl (OSB1819.piap.pl [10.0.9.19])
+        by ni.piap.pl (Postfix) with ESMTPSA id 6B662C360E02;
+        Thu, 23 Jun 2022 10:36:07 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ni.piap.pl 6B662C360E02
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=piap.pl; s=mail;
+        t=1655973368; bh=JA/Ldwik/kT6VkBu6uJTHdocpQKhnWGZxvKjF/u0rqk=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=KZc93t4wj73mj3AOC53ApRpIGT3/1+iXzU2y1aSkkG6gabPrEPllBIc1X8NRNVtA1
+         DS4TxzG0Gy1Cw+BpNPF4MtnmqHcBUxHoRJrLqgB+QBBEXsw4sskmedKnweqM9s8Qx2
+         +9c3tQVedqHRUDwY/0HpbanEKLhRhemv3fR/8MaQ=
+From:   =?utf-8?Q?Krzysztof_Ha=C5=82asa?= <khalasa@piap.pl>
+To:     Miaoqian Lin <linmq006@gmail.com>
+Cc:     Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ARM: cns3xxx: Fix refcount leak in cns3xxx_init
+References: <20220605075841.19929-1-linmq006@gmail.com>
+Sender: khalasa@piap.pl
+Date:   Thu, 23 Jun 2022 10:36:07 +0200
+In-Reply-To: <20220605075841.19929-1-linmq006@gmail.com> (Miaoqian Lin's
+        message of "Sun, 5 Jun 2022 11:58:41 +0400")
+Message-ID: <m3wnd76ako.fsf@t19.piap.pl>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.10.0
-From:   Shuai Xue <xueshuai@linux.alibaba.com>
-Subject: Re: [PATCH v1 1/3] docs: perf: Add description for Alibaba's T-Head
- PMU driver
-To:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        will@kernel.org, mark.rutland@arm.com,
-        baolin.wang@linux.alibaba.com, yaohongbo@linux.alibaba.com,
-        nengchen@linux.alibaba.com, zhuo.song@linux.alibaba.com
-References: <20220617111825.92911-1-xueshuai@linux.alibaba.com>
- <20220617111825.92911-2-xueshuai@linux.alibaba.com>
- <20220620124957.00006131@Huawei.com>
-Content-Language: en-US
-In-Reply-To: <20220620124957.00006131@Huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Miaoqian Lin <linmq006@gmail.com> writes:
 
-在 2022/6/20 PM7:49, Jonathan Cameron 写道:
-> On Fri, 17 Jun 2022 19:18:23 +0800
-> Shuai Xue <xueshuai@linux.alibaba.com> wrote:
-> 
->> Alibaba's T-Head SoC implements uncore PMU for performance and functional
->> debugging to facilitate system maintenance. Document it to provide guidance
->> on how to use it.
->>
->> Signed-off-by: Shuai Xue <xueshuai@linux.alibaba.com>
-> 
-> Hi Shuia Xue,
-> 
-> A few quick comments inline,
-> 
-> Thanks,
-> 
-> Jonathan
+> of_find_compatible_node() returns a node pointer with refcount
+> incremented, we should use of_node_put() on it when done.
+> Add missing of_node_put() to avoid refcount leak.
+>
+> Fixes: 415f59142d9d ("ARM: cns3xxx: initial DT support")
+> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 
-Hi, Jonathan,
+Acked-by: Krzysztof Halasa <khalasa@piap.pl>
 
-Thank you very much for your quick comments.
+Arnd, I guess you are in the best position to pick this patch up?
+Thanks to both of you.
 
-> 
->> ---
->>  .../admin-guide/perf/alibaba_pmu.rst          | 94 +++++++++++++++++++
->>  Documentation/admin-guide/perf/index.rst      |  1 +
->>  2 files changed, 95 insertions(+)
->>  create mode 100644 Documentation/admin-guide/perf/alibaba_pmu.rst
->>
->> diff --git a/Documentation/admin-guide/perf/alibaba_pmu.rst b/Documentation/admin-guide/perf/alibaba_pmu.rst
->> new file mode 100644
->> index 000000000000..337f4f1d4c54
->> --- /dev/null
->> +++ b/Documentation/admin-guide/perf/alibaba_pmu.rst
->> @@ -0,0 +1,94 @@
->> +=============================================================
->> +Alibaba's T-Head SoC Uncore Performance Monitoring Unit (PMU)
->> +=============================================================
->> +
->> +The Yitian 710, custom-built by Alibaba Group's chip development business,
->> +T-Head, implements uncore PMU for performance and functional debugging to
->> +facilitate system maintenance.
->> +
->> +DDR Sub-System Driveway (DRW) PMU Driver
->> +=========================================
->> +
->> +The Yitian 710 SoC supports the most advanced DDR5/4 DRAM to provide
->> +tremendous memory bandwidth for cloud computing and HPC. The Driveway is a
->> +module which is a bridge between a router of mesh network and memory
->> +controller. It provides various functions like secure control, address map
->> +and so on.
-> 
-> I'd focus on the PMU aspect. No point in describing other features in this
-> document.
+> ---
+>  arch/arm/mach-cns3xxx/core.c | 2 ++
+>  1 file changed, 2 insertions(+)
+>
+> diff --git a/arch/arm/mach-cns3xxx/core.c b/arch/arm/mach-cns3xxx/core.c
+> index e4f4b20b83a2..3fc4ec830e3a 100644
+> --- a/arch/arm/mach-cns3xxx/core.c
+> +++ b/arch/arm/mach-cns3xxx/core.c
+> @@ -372,6 +372,7 @@ static void __init cns3xxx_init(void)
+>  		/* De-Asscer SATA Reset */
+>  		cns3xxx_pwr_soft_rst(CNS3XXX_PWR_SOFTWARE_RST(SATA));
+>  	}
+> +	of_node_put(dn);
+>=20=20
+>  	dn =3D of_find_compatible_node(NULL, NULL, "cavium,cns3420-sdhci");
+>  	if (of_device_is_available(dn)) {
+> @@ -385,6 +386,7 @@ static void __init cns3xxx_init(void)
+>  		cns3xxx_pwr_clk_en(CNS3XXX_PWR_CLK_EN(SDIO));
+>  		cns3xxx_pwr_soft_rst(CNS3XXX_PWR_SOFTWARE_RST(SDIO));
+>  	}
+> +	of_node_put(dn);
+>=20=20
+>  	pm_power_off =3D cns3xxx_power_off;
 
-Got it. I will delete this in next version.
+--=20
+Krzysztof "Chris" Ha=C5=82asa
 
->> +
->> +Yitian 710 employs eight DDR5/4 channels, four on each die. Each channel is
->> +independent of others to service system memory requests. And one DDR5
-> 
-> Each DDR5 channel... 
-
-Good catch, I will declare as DDR5 channel.
-
-> 
->> +channel is split into two independent sub-channels. The DDR Sub-System
->> +Driveway implements separate PMUs for each sub-channel to monitor various
->> +performance metrics.
->> +
->> +The Driveway PMU devices are named as ali_drw_<sys_base_addr> with perf.
->> +For example, ali_drw_21000 and ali_drw_21080 are two PMU devices for two
->> +sub-channels of the same channel in die 0. And the PMU device of die 1 is
->> +prefixed with ali_drw_400XXXXX, e.g. ali_drw_40021000.
->> +
->> +Each sub-channel has 36 PMU counters in total, which is classified into
->> +four groups:
->> +
->> +- Group 0: PMU Cycle Counter. This group has one pair of counters
->> +  pmu_cycle_cnt_low and pmu_cycle_cnt_high, that is used as the cycle count
->> +  based on DDRC core clock.
->> +
->> +- Group 1: PMU Bandwidth Counters. This group has 8 counters that are used
->> +  to count the total access number of either the eight bank groups in a
->> +  selected rank, or four ranks separately in the first 4 counters. The base
->> +  transfer unit is 64B.
->> +
->> +- Group 2: PMU Retry Counters. This group has 10 counters, that intend to
->> +  count the total retry number of each type of uncorrectable error.
->> +
->> +- Group 3: PMU Common Counters. This group has 16 counters, that are used
->> +  to count the common events.
->> +
->> +For now, the Driveway PMU driver only uses counters in group 0 and group 3.
->> +
->> +Example usage of counting memory data bandwidth::
->> +
->> +  perf stat \
->> +    -e ali_drw_21000/perf_hif_wr/ \
-> 
-> What does hif stand for? Also, perf seems redundant for
-> a perf event.
-
-HIF stands for Host Interface which is a Synopsys’ custom-defined interface.
-On the host side, there is a choice of an AMBA 4 AXI interface or a
-custom Host Interface (HIF). The AMBA interface supports single or multi-port
-configurations, while the HIF supports a single port only. Read, write, and
-RMW requests as well as write data are received through the HIF. I will doc
-this in next version.
-
-The `perf` prefix means Performance Logging Signals in DDRC, I will remove it
-in next version.
-
->> +    -e ali_drw_21000/perf_hif_rd/ \
->> +    -e ali_drw_21000/perf_hif_rmw/ \
->> +    -e ali_drw_21000/perf_cycle/ \
->> +    -e ali_drw_21080/perf_hif_wr/ \
->> +    -e ali_drw_21080/perf_hif_rd/ \
->> +    -e ali_drw_21080/perf_hif_rmw/ \
->> +    -e ali_drw_21080/perf_cycle/ \
->> +    -e ali_drw_23000/perf_hif_wr/ \
->> +    -e ali_drw_23000/perf_hif_rd/ \
->> +    -e ali_drw_23000/perf_hif_rmw/ \
->> +    -e ali_drw_23000/perf_cycle/ \
->> +    -e ali_drw_23080/perf_hif_wr/ \
->> +    -e ali_drw_23080/perf_hif_rd/ \
->> +    -e ali_drw_23080/perf_hif_rmw/ \
->> +    -e ali_drw_23080/perf_cycle/ \
->> +    -e ali_drw_25000/perf_hif_wr/ \
->> +    -e ali_drw_25000/perf_hif_rd/ \
->> +    -e ali_drw_25000/perf_hif_rmw/ \
->> +    -e ali_drw_25000/perf_cycle/ \
->> +    -e ali_drw_25080/perf_hif_wr/ \
->> +    -e ali_drw_25080/perf_hif_rd/ \
->> +    -e ali_drw_25080/perf_hif_rmw/ \
->> +    -e ali_drw_25080/perf_cycle/ \
->> +    -e ali_drw_27000/perf_hif_wr/ \
->> +    -e ali_drw_27000/perf_hif_rd/ \
->> +    -e ali_drw_27000/perf_hif_rmw/ \
->> +    -e ali_drw_27000/perf_cycle/ \
->> +    -e ali_drw_27080/perf_hif_wr/ \
->> +    -e ali_drw_27080/perf_hif_rd/ \
->> +    -e ali_drw_27080/perf_hif_rmw/ \
->> +    -e ali_drw_27080/perf_cycle/ -- sleep 10
->> +
->> +The average DRAM bandwidth can be calculated as follows:
->> +
->> +- Read Bandwidth =  perf_hif_rd * DDRC_WIDTH * DDRC_Freq / DDRC_Cycle
->> +- Write Bandwidth = (perf_hif_wr + perf_hif_rmw) * DDRC_WIDTH * DDRC_Freq / DDRC_Cycle
->> +
->> +Here, DDRC_WIDTH = 64 bytes.
->> +
->> +The current driver does not support sampling. So "perf record" is
->> +unsupported.  Also attach to a task is unsupported as the events are all
->> +uncore.
->> diff --git a/Documentation/admin-guide/perf/index.rst b/Documentation/admin-guide/perf/index.rst
->> index 69b23f087c05..bf466ae91c6c 100644
->> --- a/Documentation/admin-guide/perf/index.rst
->> +++ b/Documentation/admin-guide/perf/index.rst
->> @@ -17,3 +17,4 @@ Performance monitor support
->>     xgene-pmu
->>     arm_dsu_pmu
->>     thunderx2-pmu
->> +   thead_pmu
+Sie=C4=87 Badawcza =C5=81ukasiewicz
+Przemys=C5=82owy Instytut Automatyki i Pomiar=C3=B3w PIAP
+Al. Jerozolimskie 202, 02-486 Warszawa
