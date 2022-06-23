@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB0BDC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:58:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8783DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:58:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233316AbiFWQ5n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:57:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48860 "EHLO
+        id S233384AbiFWQ5q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:57:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233648AbiFWQvT (ORCPT
+        with ESMTP id S233614AbiFWQvR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:51:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B93B50029;
-        Thu, 23 Jun 2022 09:49:24 -0700 (PDT)
+        Thu, 23 Jun 2022 12:51:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AD454F446;
+        Thu, 23 Jun 2022 09:49:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4CF4561F99;
-        Thu, 23 Jun 2022 16:49:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E9B2C3411B;
-        Thu, 23 Jun 2022 16:49:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F87361F90;
+        Thu, 23 Jun 2022 16:49:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47524C3411B;
+        Thu, 23 Jun 2022 16:49:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656002963;
-        bh=5mbXSzNjpSRj9Uu7DEFHfMoAvquSppTKosRivKzhN5g=;
+        s=korg; t=1656002960;
+        bh=N5fiw4PejwCrYvciUGPEH44DfCxU/YsYTR0gRKooOCQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2ZEK6z8mAoWSSIr+bLIM09xmP7bDEMBulwXLf5RIXpo+IgtkCnER5ks9BvaGqDkc+
-         zxJ3wFlNZGPuXFEeGVCbRZ/e3omSqfVO54c4Ry9uBfprqbFOqJl4bu1wHy2F1k1Kf0
-         xSXpq4t2qSVvep81PVR2QgoV2bU1+/R0vDc9Mr0Q=
+        b=tU3/mCT6AAc88zBhX6CSnX3cNwFP3O+w8Ml7UoVbwKHoEkfu74BcgkrhqEVowt9mg
+         4mm4kKcO17UW2KRAtWHPeZd6bm0db21+GlfvlcwImMgRNtSOc9KsGo3jEiXHPI9MK4
+         rPlUlFHQHxHy2D+1FBM3NPRERnMUM8LpzEFWRZ6o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Theodore Tso <tytso@mit.edu>,
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 043/264] random: fix soft lockup when trying to read from an uninitialized blocking pool
-Date:   Thu, 23 Jun 2022 18:40:36 +0200
-Message-Id: <20220623164345.287939032@linuxfoundation.org>
+Subject: [PATCH 4.9 081/264] random: document add_hwgenerator_randomness() with other input functions
+Date:   Thu, 23 Jun 2022 18:41:14 +0200
+Message-Id: <20220623164346.362104869@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -49,58 +48,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Theodore Ts'o <tytso@mit.edu>
+From: Mark Brown <broonie@kernel.org>
 
-commit 58be0106c5306b939b07b4b8bf00669a20593f4b upstream.
+commit 2b6c6e3d9ce3aa0e547ac25d60e06fe035cd9f79 upstream.
 
-Fixes: eb9d1bf079bb: "random: only read from /dev/random after its pool has received 128 bits"
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+The section at the top of random.c which documents the input functions
+available does not document add_hwgenerator_randomness() which might lead
+a reader to overlook it. Add a brief note about it.
+
+Signed-off-by: Mark Brown <broonie@kernel.org>
+[Jason: reorganize position of function in doc comment and also document
+ add_bootloader_randomness() while we're at it.]
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   16 +++++++++++++---
- 1 file changed, 13 insertions(+), 3 deletions(-)
+ drivers/char/random.c |   11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -774,8 +774,11 @@ retry:
- 	if (cmpxchg(&r->entropy_count, orig, entropy_count) != orig)
- 		goto retry;
- 
--	if (has_initialized)
-+	if (has_initialized) {
- 		r->initialized = 1;
-+		wake_up_interruptible(&random_read_wait);
-+		kill_fasync(&fasync, SIGIO, POLL_IN);
-+	}
- 
- 	trace_credit_entropy_bits(r->name, nbits,
- 				  entropy_count >> ENTROPY_SHIFT, _RET_IP_);
-@@ -791,6 +794,13 @@ retry:
- 			entropy_bits = r->entropy_count >> ENTROPY_SHIFT;
- 		}
- 
-+		/* initialize the blocking pool if necessary */
-+		if (entropy_bits >= random_read_wakeup_bits &&
-+		    !other->initialized) {
-+			schedule_work(&other->push_work);
-+			return;
-+		}
-+
- 		/* should we wake readers? */
- 		if (entropy_bits >= random_read_wakeup_bits &&
- 		    wq_has_sleeper(&random_read_wait)) {
-@@ -1992,8 +2002,8 @@ _random_read(int nonblock, char __user *
- 			return -EAGAIN;
- 
- 		wait_event_interruptible(random_read_wait,
--			ENTROPY_BITS(&input_pool) >=
--			random_read_wakeup_bits);
-+		    blocking_pool.initialized &&
-+		    (ENTROPY_BITS(&input_pool) >= random_read_wakeup_bits));
- 		if (signal_pending(current))
- 			return -ERESTARTSYS;
- 	}
+@@ -202,6 +202,9 @@
+  *                                unsigned int value);
+  *	void add_interrupt_randomness(int irq, int irq_flags);
+  * 	void add_disk_randomness(struct gendisk *disk);
++ *	void add_hwgenerator_randomness(const char *buffer, size_t count,
++ *					size_t entropy);
++ *	void add_bootloader_randomness(const void *buf, unsigned int size);
+  *
+  * add_device_randomness() is for adding data to the random pool that
+  * is likely to differ between two devices (or possibly even per boot).
+@@ -228,6 +231,14 @@
+  * particular randomness source.  They do this by keeping track of the
+  * first and second order deltas of the event timings.
+  *
++ * add_hwgenerator_randomness() is for true hardware RNGs, and will credit
++ * entropy as specified by the caller. If the entropy pool is full it will
++ * block until more entropy is needed.
++ *
++ * add_bootloader_randomness() is the same as add_hwgenerator_randomness() or
++ * add_device_randomness(), depending on whether or not the configuration
++ * option CONFIG_RANDOM_TRUST_BOOTLOADER is set.
++ *
+  * Ensuring unpredictability at system startup
+  * ============================================
+  *
 
 
