@@ -2,97 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E61ECC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 15:46:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 056B1C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 15:47:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231641AbiFWPqU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 11:46:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52228 "EHLO
+        id S231536AbiFWPrF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 11:47:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231621AbiFWPqQ (ORCPT
+        with ESMTP id S229970AbiFWPrD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 11:46:16 -0400
-Received: from conssluserg-01.nifty.com (conssluserg-01.nifty.com [210.131.2.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CB5B393FE;
-        Thu, 23 Jun 2022 08:46:12 -0700 (PDT)
-Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44]) (authenticated)
-        by conssluserg-01.nifty.com with ESMTP id 25NFjdPb021143;
-        Fri, 24 Jun 2022 00:45:39 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-01.nifty.com 25NFjdPb021143
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1655999140;
-        bh=j/xESgTYpvfBYOpf/MQrncNNB876CiujNKiv36ApBsU=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=kG9zvmHK+8+0XQmcXc01OEe4w90ZSPiHDOk+1zF8zvewXbuvkPkMjBvGOks9b8rp9
-         Qfn9sNBYUHgUkVKSsu+bHOl8lxzZ+Vsqe/KA5QPWY/q8yEjovEx5BiubuatjPjFfPr
-         dVIU2VKDEPSllH3K1RtB+FGMbaWrZMRX6SpDFZwEIQfbi22/PC+cp/ZS7O+2fLVvi9
-         8354B+KnQtvtV2ExeuogWgOEtR54XTIUuxgmHWMp8bPDbyqdgrRwoXBScfMdlCvd+t
-         T8i+9eNUpL8oxI9gLW0FaaESPvqRwpiM/JwCqBbye6tVqWzWhZ+AXfO+hDCEMfi4vB
-         ZFLPfZ4P3Gavw==
-X-Nifty-SrcIP: [209.85.221.44]
-Received: by mail-wr1-f44.google.com with SMTP id v14so28548940wra.5;
-        Thu, 23 Jun 2022 08:45:39 -0700 (PDT)
-X-Gm-Message-State: AJIora9RSoHW3j8kTWV6zU+hW852qRTAGupOu7PCEUsOufOD/+txTV9b
-        JQPysbT6KYoqu2l3zAM4d/tbkuXLgyDgWV6Ahs4=
-X-Google-Smtp-Source: AGRyM1vLtYcBsNb2y8tCxGLb/KkzQNtIx/yx2J45Hrac4bCV7fR3CpMfMyMVDrpAcCoBSFscDVRbsO6fqf/3iFZ/WlU=
-X-Received: by 2002:adf:f5ce:0:b0:21b:832c:80dd with SMTP id
- k14-20020adff5ce000000b0021b832c80ddmr8828918wrp.235.1655999137985; Thu, 23
- Jun 2022 08:45:37 -0700 (PDT)
+        Thu, 23 Jun 2022 11:47:03 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08718393FE
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 08:47:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655999220; x=1687535220;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=rxITMK7izGB0alXb8idrXiJ48i1N6ntO4mnnFucTTUE=;
+  b=M4IaGu4I9bREv4VvIIOl75KNncJYYfmDWYiXEiaa96RElFWRjq1Cs89K
+   KKIhbwJ6O/Ip2RmYTiimO2qY0dtf3VG37z2saBRO2Gini5Df6ByhMTCZo
+   u02T6JWJv/PjbeMlDMrfDT2ONoyhaz27o0iBOGvbNrzz8IKJKtuFVMvav
+   RLEh8qFqzJQ3O9hTz7hDQI9j6Xjr1iarPTg3hHevivS5JYAtmTWeff3Pb
+   4s/XukM1bfczB8WUc0H9nan1vQ/xzh3N5Vf7R+BS+F1f4B2BRQuucccm5
+   5zt7uJcr9YaHigIWSyuttZwjdjLY5T3Vb7UWCMvlApvCiknlvSyBpgfei
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="367075782"
+X-IronPort-AV: E=Sophos;i="5.92,216,1650956400"; 
+   d="scan'208";a="367075782"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2022 08:46:52 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,216,1650956400"; 
+   d="scan'208";a="678111752"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 23 Jun 2022 08:46:49 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o4P2e-0001Vt-OA;
+        Thu, 23 Jun 2022 15:46:48 +0000
+Date:   Thu, 23 Jun 2022 23:46:34 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [jolsa-perf:bpf/tramp_11 19/21] kernel/bpf/trampoline.c:81:31:
+ sparse: sparse: non size-preserving pointer to integer cast
+Message-ID: <202206232359.8QKWZqGN-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220621133526.29662-1-mikoxyzzz@gmail.com> <CAKwvOd=Bmu40+_11GOBTeJBjToUf0LNG_RX0RiLcRLimUUkgcw@mail.gmail.com>
- <CAK7LNAT3FrpLnhSgfTo5bxk-9cHm6g1ti58wSY6W-fxMx+mUrA@mail.gmail.com> <2817735.mvXUDI8C0e@sakura.myxoz.lan>
-In-Reply-To: <2817735.mvXUDI8C0e@sakura.myxoz.lan>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Fri, 24 Jun 2022 00:44:57 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAQqJc74MGFyU6fvhM9VkDKYUXyCt0NF1qAr1RmfUqC0=w@mail.gmail.com>
-Message-ID: <CAK7LNAQqJc74MGFyU6fvhM9VkDKYUXyCt0NF1qAr1RmfUqC0=w@mail.gmail.com>
-Subject: Re: [PATCH 0/2] Kconfig: -O3 enablement
-To:     Miko Larsson <mikoxyzzz@gmail.com>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Sean Christopherson <seanjc@google.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Chris Down <chris@chrisdown.name>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Elliot Berman <quic_eberman@quicinc.com>,
-        Oleksandr Natalenko <oleksandr@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 24, 2022 at 12:42 AM Miko Larsson <mikoxyzzz@gmail.com> wrote:
->
-> On Wednesday, 22 June 2022 03:57:34 CEST Masahiro Yamada wrote:
-> > If you want to say "use this option carefully",
-> > EXPERT might be another option.
-> >
-> >     depends on ARC || EXPERT
-> >
->
-> Yeah, this would be a fair compromise, though I think it would be
-> better to use "visible if" instead of "depends on". I can get a v2 of
-> the series together if this is desired.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git bpf/tramp_11
+head:   c807110aa605281263da02a78af57847f5c4275e
+commit: a2660a85cc98b2db2577fd844985884cff0e5cae [19/21] bpf: Add support to store multiple ids in bpf_tramp_id object
+config: i386-randconfig-s002 (https://download.01.org/0day-ci/archive/20220623/202206232359.8QKWZqGN-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-31-g4880bd19-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git/commit/?id=a2660a85cc98b2db2577fd844985884cff0e5cae
+        git remote add jolsa-perf https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git
+        git fetch --no-tags jolsa-perf bpf/tramp_11
+        git checkout a2660a85cc98b2db2577fd844985884cff0e5cae
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash kernel/bpf/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
 
-Why is "visible if" better than "depends on"?
+sparse warnings: (new ones prefixed by >>)
+   kernel/bpf/trampoline.c:16:31: sparse: sparse: symbol 'bpf_extension_verifier_ops' was not declared. Should it be static?
+   kernel/bpf/trampoline.c:18:27: sparse: sparse: symbol 'bpf_extension_prog_ops' was not declared. Should it be static?
+>> kernel/bpf/trampoline.c:81:31: sparse: sparse: non size-preserving pointer to integer cast
 
+vim +81 kernel/bpf/trampoline.c
 
+    77	
+    78	static u64 bpf_tramp_id_key(struct bpf_tramp_id *id)
+    79	{
+    80		if (bpf_tramp_id_is_multi(id))
+  > 81			return (u64) &id;
+    82		else
+    83			return ((u64) id->obj_id << 32) | id->id[0];
+    84	}
+    85	
 
-> --
-> ~miko
->
->
-
-
---
-Best Regards
-Masahiro Yamada
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
