@@ -2,158 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C075FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 14:52:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3758FC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 14:55:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232277AbiFWOwn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 10:52:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46936 "EHLO
+        id S231726AbiFWOzs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 10:55:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232142AbiFWOwI (ORCPT
+        with ESMTP id S230525AbiFWOzq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 10:52:08 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4869146B32;
-        Thu, 23 Jun 2022 07:52:05 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id D677621AE1;
-        Thu, 23 Jun 2022 14:52:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1655995923; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=RXW26y9F/2k8qOFy2KwGAmlvmLMXqdLDBAX5Dm10fvI=;
-        b=fcBjB79M1/qA5j6jUveHP2HDT3wne+KX7T3Xzm9/++Wb54mhvkQPOJEmZCCi2dgIiSa8+S
-        QhJfpa7J/wbaY7/abH5j15AbcIdwLM4T7I+qVnQXClx3bEry6jHQpeyfVq0UjNZknKc+9S
-        voL2uMKkd36jd9FxyMrAN0++utkl2kg=
-Received: from alley.suse.cz (unknown [10.100.208.146])
-        by relay2.suse.de (Postfix) with ESMTP id B2E6F2C142;
-        Thu, 23 Jun 2022 14:52:02 +0000 (UTC)
-From:   Petr Mladek <pmladek@suse.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        John Ogness <john.ogness@linutronix.de>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Jason A . Donenfeld" <Jason@zx2c4.com>,
-        Marco Elver <elver@google.com>,
-        David Laight <David.Laight@ACULAB.COM>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Zhouyi Zhou <zhouzhouyi@gmail.com>, dave@stgolabs.net,
-        Josh Triplett <josh@joshtriplett.org>, rcu@vger.kernel.org,
-        frederic@kernel.org,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 3/6] Revert "printk: remove @console_locked"
-Date:   Thu, 23 Jun 2022 16:51:54 +0200
-Message-Id: <20220623145157.21938-4-pmladek@suse.com>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220623145157.21938-1-pmladek@suse.com>
-References: <20220623145157.21938-1-pmladek@suse.com>
+        Thu, 23 Jun 2022 10:55:46 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B1762B3B
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 07:55:45 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9A84E12FC;
+        Thu, 23 Jun 2022 07:55:45 -0700 (PDT)
+Received: from e120937-lin.home (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5047E3F66F;
+        Thu, 23 Jun 2022 07:55:44 -0700 (PDT)
+From:   Cristian Marussi <cristian.marussi@arm.com>
+To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc:     sudeep.holla@arm.com, f.fainelli@gmail.com,
+        vincent.guittot@linaro.org, lukasz.luba@arm.com,
+        james.quinlan@broadcom.com,
+        Cristian Marussi <cristian.marussi@arm.com>
+Subject: [PATCH 0/2] Add SCMI full message tracing
+Date:   Thu, 23 Jun 2022 15:55:31 +0100
+Message-Id: <20220623145533.2882688-1-cristian.marussi@arm.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts commit ab406816fca009349b89cbde885daf68a8c77e33.
+Hi,
 
-The testing of 5.19 release candidates revealed missing synchronization
-between early and regular console functionality.
+after a few recent troubles handling too strictly out-of-spec replies from
+SCMI servers deployed in the wild, I though it could have been useful to
+have a basic way to dump at will the effective full payloads of successfuly
+transmitted/received SCMI messages.
 
-It would be possible to start the console kthreads later as a workaround.
-But it is clear that console lock serialized console drivers between
-each other. It opens a big area of possible problems that were not
-considered by people involved in the development and review.
+The existing SCMI traces already collect a bunch of information about SCMI
+message exchanges but they do NOT keep any payload information: this is
+certainly preferable most of the time since dumping full SCMI messages to
+the trace buffer involves a full copy of the payload.
 
-printk() is crucial for debugging kernel issues and console output is
-very important part of it. The number of consoles is huge and a proper
-review would take some time. As a result it need to be reverted for 5.19.
+For this reason I added a new distinct trace_scmi_msg_dump with this series
+in order to be able to selectively enable at will message dumping only when
+required.
 
-Link: https://lore.kernel.org/r/YrBdjVwBOVgLfHyb@alley
-Signed-off-by: Petr Mladek <pmladek@suse.com>
----
- kernel/printk/printk.c | 29 +++++++++++++++--------------
- 1 file changed, 15 insertions(+), 14 deletions(-)
+Only successfully transmitted and received (valid) xfers are dumped.
 
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index ea3dd55709e7..dfd1a19b95d6 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -340,7 +340,15 @@ static void console_kthreads_unblock(void)
- 	console_kthreads_blocked = false;
- }
- 
--static int console_suspended;
-+/*
-+ * This is used for debugging the mess that is the VT code by
-+ * keeping track if we have the console semaphore held. It's
-+ * definitely not the perfect debug tool (we don't know if _WE_
-+ * hold it and are racing, but it helps tracking those weird code
-+ * paths in the console code where we end up in places I want
-+ * locked without the console semaphore held).
-+ */
-+static int console_locked, console_suspended;
- 
- /*
-  *	Array of consoles built from command line options (console=)
-@@ -2711,6 +2719,7 @@ void console_lock(void)
- 	if (console_suspended)
- 		return;
- 	console_kthreads_block();
-+	console_locked = 1;
- 	console_may_schedule = 1;
- }
- EXPORT_SYMBOL(console_lock);
-@@ -2735,26 +2744,15 @@ int console_trylock(void)
- 		up_console_sem();
- 		return 0;
- 	}
-+	console_locked = 1;
- 	console_may_schedule = 0;
- 	return 1;
- }
- EXPORT_SYMBOL(console_trylock);
- 
--/*
-- * This is used to help to make sure that certain paths within the VT code are
-- * running with the console lock held. It is definitely not the perfect debug
-- * tool (it is not known if the VT code is the task holding the console lock),
-- * but it helps tracking those weird code paths in the console code such as
-- * when the console is suspended: where the console is not locked but no
-- * console printing may occur.
-- *
-- * Note: This returns true when the console is suspended but is not locked.
-- *       This is intentional because the VT code must consider that situation
-- *       the same as if the console was locked.
-- */
- int is_console_locked(void)
- {
--	return (console_kthreads_blocked || atomic_read(&console_kthreads_active));
-+	return (console_locked || atomic_read(&console_kthreads_active));
- }
- EXPORT_SYMBOL(is_console_locked);
- 
-@@ -2810,6 +2808,8 @@ static inline bool console_is_usable(struct console *con)
- 
- static void __console_unlock(void)
- {
-+	console_locked = 0;
-+
- 	/*
- 	 * Depending on whether console_lock() or console_trylock() was used,
- 	 * appropriately allow the kthread printers to continue.
-@@ -3127,6 +3127,7 @@ void console_unblank(void)
- 	} else
- 		console_lock();
- 
-+	console_locked = 1;
- 	console_may_schedule = 0;
- 	for_each_console(c)
- 		if ((c->flags & CON_ENABLED) && c->unblank)
+At first I was thinking about just dumping raw header and payload, but in
+order to make the log a bit more human readable (without the need of
+tooling to parse the log), I added some parsing/interpretation of the
+header, so that the final result is something like:
+
+root@deb-guest:~# echo 1 > /sys/kernel/debug/tracing/events/scmi/scmi_msg_dump/enable 
+root@deb-guest:~# cat /sys/kernel/debug/tracing/trace_pipe 
+
+(my annotations non on traces =>>)			 proto  type  cmd   seq  status    payload
+							  |      |    |      |     |        |
+ ++ cmd/reply						  |      |    |      |     |        |
+   cat-224     [002] .....   147.755847: scmi_msg_dump: [0x15]:CMND:[0x06]:[0021]:[0]: 0000000000000000
+<idle>-0       [000] d.h2.   147.758311: scmi_msg_dump: [0x15]:RESP:[0x06]:[0021]:[0]: 25000000000000000000000000000000
+
+
+ ++ cmd/reply/delayed
+   cat-223     [001] .....   122.384192: scmi_msg_dump: [0x15]:CMND:[0x06]:[0020]:[0]: 0100000001000000
+<idle>-0       [000] d.h2.   122.405548: scmi_msg_dump: [0x15]:RESP:[0x06]:[0020]:[0]: 
+<idle>-0       [000] d.h2.   122.425839: scmi_msg_dump: [0x15]:DLYD:[0x06]:[0020]:[0]: 01000000a05a320000000000efbeaddefecafeca
+
+
+ ++ enable notif/notif
+iio_generic_buf-233     [003] .....   522.399690: scmi_msg_dump: [0x15]:CMND:[0x0A]:[0024]:[0]: 0800000003000000
+         <idle>-0       [000] dNh2.   522.417778: scmi_msg_dump: [0x15]:RESP:[0x0A]:[0024]:[0]: 00000000
+         <idle>-0       [000] d.h2.   522.500945: scmi_msg_dump: [0x15]:NOTI:[0x01]:[0000]:[0]: 000000000800000008daffffffffffff0040d3a45d46fb1610daffffffffffff0040d3a45d46fb1618daffffffffffff0040d3a45d46fb16
+
+Payload is dumped as it comes through byte-by-byte without any endianity
+conversion to avoid further load on the system.
+
+Any thoughs ?
+
+Thanks,
+Cristian
+
+Cristian Marussi (2):
+  include: trace: Add SCMI full message tracing
+  firmware: arm_scmi: Use new SCMI full message tracing
+
+ drivers/firmware/arm_scmi/driver.c | 21 ++++++++++++++++++++
+ include/trace/events/scmi.h        | 31 ++++++++++++++++++++++++++++++
+ 2 files changed, 52 insertions(+)
+
 -- 
-2.35.3
+2.32.0
 
