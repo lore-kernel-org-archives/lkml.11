@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68120CCA47C
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:17:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94AA7CCA47F
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:18:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236635AbiFWSRP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:17:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35754 "EHLO
+        id S233487AbiFWSRT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:17:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236811AbiFWSQm (ORCPT
+        with ESMTP id S236805AbiFWSQm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 23 Jun 2022 14:16:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48CE9B4BA;
-        Thu, 23 Jun 2022 10:23:02 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4C9D7664;
+        Thu, 23 Jun 2022 10:22:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C6C14B824BC;
-        Thu, 23 Jun 2022 17:23:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2833DC3411B;
-        Thu, 23 Jun 2022 17:22:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A4B8EB824B9;
+        Thu, 23 Jun 2022 17:22:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7113C3411B;
+        Thu, 23 Jun 2022 17:22:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004979;
-        bh=K5PXdgP1phRc7i/QqxIpNqkZRJfk01xQXAilZKpUPHI=;
+        s=korg; t=1656004976;
+        bh=OR3RQNyE27ZIpiYht6F5EFvIBUfv9fN4ckMXp3vcjGk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QqZILOCJ9tb+Le/j3pTDTxK2PSq1ENCn2x3VOThU59zB+I54ddEUO2hxf6WSQWhNV
-         50UK1u/ruWBpE7HjTR8rdzlMEGYFCcfxPfDWx0Bb+ndQAInoeSxnDBm8IlGxAk982/
-         3emCYPiZaPDr1RmGWqbnECuz1Jb2oZrR05wgftcM=
+        b=Uu2Zxo+fRWo39NyQuxFIsvpeP7ex9gnsQlSPdZnaL/n4Kt/q9VLf95K2aOg1qT5Fu
+         c1vwR+jSOV73nXob2hYfsGYpdu4RugIwdiEmN3S5x6QXqVqB52jxDtKm2r9JWU5a0a
+         2EQ1VIiXADQDxgUgXRMjhKxOg4CCgvtyHqfTkj38=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.19 170/234] Revert "random: use static branch for crng_ready()"
-Date:   Thu, 23 Jun 2022 18:43:57 +0200
-Message-Id: <20220623164347.862758003@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 209/234] irqchip/gic/realview: Fix refcount leak in realview_gic_of_init
+Date:   Thu, 23 Jun 2022 18:44:36 +0200
+Message-Id: <20220623164348.964864622@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
 References: <20220623164343.042598055@linuxfoundation.org>
@@ -47,66 +48,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-This reverts upstream commit f5bda35fba615ace70a656d4700423fa6c9bebee
-from stable. It's not essential and will take some time during 5.19 to
-work out properly.
+[ Upstream commit f4b98e314888cc51486421bcf6d52852452ea48b ]
 
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+of_find_matching_node_and_match() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
+
+Fixes: 82b0a434b436 ("irqchip/gic/realview: Support more RealView DCC variants")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220601080930.31005-2-linmq006@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/random.c |   12 ++----------
- 1 file changed, 2 insertions(+), 10 deletions(-)
+ drivers/irqchip/irq-gic-realview.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -79,8 +79,7 @@ static enum {
- 	CRNG_EARLY = 1, /* At least POOL_EARLY_BITS collected */
- 	CRNG_READY = 2  /* Fully initialized with POOL_READY_BITS collected */
- } crng_init __read_mostly = CRNG_EMPTY;
--static DEFINE_STATIC_KEY_FALSE(crng_is_ready);
--#define crng_ready() (static_branch_likely(&crng_is_ready) || crng_init >= CRNG_READY)
-+#define crng_ready() (likely(crng_init >= CRNG_READY))
- /* Various types of waiters for crng_init->CRNG_READY transition. */
- static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
- static struct fasync_struct *fasync;
-@@ -110,11 +109,6 @@ bool rng_is_initialized(void)
- }
- EXPORT_SYMBOL(rng_is_initialized);
+diff --git a/drivers/irqchip/irq-gic-realview.c b/drivers/irqchip/irq-gic-realview.c
+index b4c1924f0255..38fab02ffe9d 100644
+--- a/drivers/irqchip/irq-gic-realview.c
++++ b/drivers/irqchip/irq-gic-realview.c
+@@ -57,6 +57,7 @@ realview_gic_of_init(struct device_node *node, struct device_node *parent)
  
--static void __cold crng_set_ready(struct work_struct *work)
--{
--	static_branch_enable(&crng_is_ready);
--}
--
- /* Used by wait_for_random_bytes(), and considered an entropy collector, below. */
- static void try_to_generate_entropy(void);
- 
-@@ -268,7 +262,7 @@ static void crng_reseed(void)
- 		++next_gen;
- 	WRITE_ONCE(base_crng.generation, next_gen);
- 	WRITE_ONCE(base_crng.birth, jiffies);
--	if (!static_branch_likely(&crng_is_ready))
-+	if (!crng_ready())
- 		crng_init = CRNG_READY;
- 	spin_unlock_irqrestore(&base_crng.lock, flags);
- 	memzero_explicit(key, sizeof(key));
-@@ -709,7 +703,6 @@ static void extract_entropy(void *buf, s
- 
- static void __cold _credit_init_bits(size_t bits)
- {
--	static struct execute_work set_ready;
- 	unsigned int new, orig, add;
- 	unsigned long flags;
- 
-@@ -725,7 +718,6 @@ static void __cold _credit_init_bits(siz
- 
- 	if (orig < POOL_READY_BITS && new >= POOL_READY_BITS) {
- 		crng_reseed(); /* Sets crng_init to CRNG_READY under base_crng.lock. */
--		execute_in_process_context(crng_set_ready, &set_ready);
- 		process_random_ready_list();
- 		wake_up_interruptible(&crng_init_wait);
- 		kill_fasync(&fasync, SIGIO, POLL_IN);
+ 	/* The PB11MPCore GIC needs to be configured in the syscon */
+ 	map = syscon_node_to_regmap(np);
++	of_node_put(np);
+ 	if (!IS_ERR(map)) {
+ 		/* new irq mode with no DCC */
+ 		regmap_write(map, REALVIEW_SYS_LOCK_OFFSET,
+-- 
+2.35.1
+
 
 
