@@ -2,102 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 592F4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:43:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 181C3C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:52:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232586AbiFWSne (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:43:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56018 "EHLO
+        id S231611AbiFWSwg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:52:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233796AbiFWSnF (ORCPT
+        with ESMTP id S231348AbiFWSwb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:43:05 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E2719F3CE
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 10:45:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656006343; x=1687542343;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=kruoeecJbcbp4F95d35APFVprxdw2Nf0/sR6Tvn7Ivc=;
-  b=fPG7w+bkq8bwmKG0RZ0UOXIpUmGjzNTVvmdfufrpUUI9+gXWVZQimouu
-   gnm9LRjCnk1EInTEAx+PXcOYC0zbWfRfRClCVfFXFdbFvtj5LR6nDMJr+
-   nn769Zussdl+PWWEZ3RkT5Mjbdatw+vtocLjWAmvoHqpeXFNxyvs5vEDj
-   wRKl/V9Inp0oyJBfokyOhUvY0BAr2Y5MHy6tyVa7cwL2TS3bxhLEA/oOY
-   FjBOydDqU8YhMFDEjbfwVJG7jF78K569dknG4h0WnCnQXTmy/9NDy17rh
-   NyQzVRzCJoCu2cux1oCUxkVl0D8V64/5oY/FRZfRbx7QQ4Cc33n1VP7Xz
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10387"; a="342476594"
-X-IronPort-AV: E=Sophos;i="5.92,216,1650956400"; 
-   d="scan'208";a="342476594"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2022 10:45:20 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,216,1650956400"; 
-   d="scan'208";a="678165491"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 23 Jun 2022 10:45:18 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o4QtK-0002Uq-AH;
-        Thu, 23 Jun 2022 17:45:18 +0000
-Date:   Fri, 24 Jun 2022 01:44:26 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     marxin <mliska@suse.cz>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andi Kleen <andi@firstfloor.org>
-Subject: [jirislaby:lto 4/45] kernel/static_call_inline.c:504:15: warning: no
- previous prototype for 'func_a'
-Message-ID: <202206240131.GMBBDfhI-lkp@intel.com>
+        Thu, 23 Jun 2022 14:52:31 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 75833DD2
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 10:58:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1656007094;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=hO3C7xO3ja36osrf6zGLlB+eVxsywrftX4QKaeVYSqQ=;
+        b=ELWxKeaw0PYoyrl3dLIsO9T7dniViaKgGJyEwfy6CUvn3VwnKzllGPsGCWSqWfLyciH0lv
+        8Xv7vC38sdgTWrXha4pO1yQzLFUmlN82l0IkOs+gjXk0TxPTGGQUFSCEf3drh9l4GSeABb
+        PohLpbefnJG3vYqxss2ArtVG97QS79g=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-593-5H7gYDjlOC2S0_J0DHRiUg-1; Thu, 23 Jun 2022 13:58:13 -0400
+X-MC-Unique: 5H7gYDjlOC2S0_J0DHRiUg-1
+Received: by mail-ed1-f70.google.com with SMTP id y4-20020aa7ccc4000000b0042df06d83bcso3234edt.22
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 10:58:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=hO3C7xO3ja36osrf6zGLlB+eVxsywrftX4QKaeVYSqQ=;
+        b=FK7CKU37P4bmVBff3JzzFt0jiIGia546oGu9HgEjFMAmBhUiolgaQjNWzZkxOBkB7t
+         PcyaPHP/DWFzyzATqGc0QS+oME3q53g2AYM9zR1DhWcHzkIVvTmyFi6r9bbrS3QQdtme
+         Rfysg2+XBqnOH+79KwAROPjxr7HG7ErATeDoSiQkKbGbN6ZaFk368FITLnIFt/LpSp+W
+         PEw2avugRud1WC/+Isg5TZpXrAYnT/1OytAxgiwGyVNnA8CDbx0q3rKX17vD2vkujr67
+         BO/1lVvm/1RUCsc4eLdL1fRwsMhyyVbXgvg47bpIfuYknmiFp89Kd+EyDDRbKywqhAcQ
+         0TWw==
+X-Gm-Message-State: AJIora/lDF9AI/lBmTB1eAU5u8s+/5iUxSrlT3MVWChmu6xhZ8TjHJS5
+        TB0lHeJg4u/P+ljbMYDc4j3m3KobHL6InPFdtJKiq6BQs1FhoRg0ebEMunDLWomCsLizK+POVm4
+        9ZQNddu0lCpOoNmqYviXygWBG
+X-Received: by 2002:aa7:c952:0:b0:434:edcc:f247 with SMTP id h18-20020aa7c952000000b00434edccf247mr12040733edt.412.1656007092246;
+        Thu, 23 Jun 2022 10:58:12 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vY722wduq0ncSL6sZXrBQYki6fKrhE9WhJwCUn2NqaPkVZNv02PSySZU23VNdhAvPIG00oWQ==
+X-Received: by 2002:aa7:c952:0:b0:434:edcc:f247 with SMTP id h18-20020aa7c952000000b00434edccf247mr12040713edt.412.1656007092013;
+        Thu, 23 Jun 2022 10:58:12 -0700 (PDT)
+Received: from ?IPV6:2001:b07:6468:f312:9af8:e5f5:7516:fa89? ([2001:b07:6468:f312:9af8:e5f5:7516:fa89])
+        by smtp.googlemail.com with ESMTPSA id l1-20020a1709063d2100b006fe8bf56f53sm11199042ejf.43.2022.06.23.10.58.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 23 Jun 2022 10:58:11 -0700 (PDT)
+Message-ID: <21ac5af2-6cb7-29a9-dcc5-467336951982@redhat.com>
+Date:   Thu, 23 Jun 2022 19:58:03 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] MAINTAINERS: Reorganize KVM/x86 maintainership
+Content-Language: en-US
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>
+References: <20220623114615.2600316-1-pbonzini@redhat.com>
+ <878rpny47v.fsf@redhat.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <878rpny47v.fsf@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git lto
-head:   8047611082d70c5263114fabce8c80a4c3d251fa
-commit: e99286245556c2e8709aaa23124b9a7a10fa975b [4/45] static_call: Make static call functions visible
-config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220624/202206240131.GMBBDfhI-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git/commit/?id=e99286245556c2e8709aaa23124b9a7a10fa975b
-        git remote add jirislaby https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git
-        git fetch --no-tags jirislaby lto
-        git checkout e99286245556c2e8709aaa23124b9a7a10fa975b
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+On 6/23/22 14:05, Vitaly Kuznetsov wrote:
+>> +KVM PARAVIRT (KVM/paravirt)
+>> +M:	Paolo Bonzini <pbonzini@redhat.com>
+>> +R:	Wanpeng Li <wanpengli@tencent.com>
+>> +L:	kvm@vger.kernel.org
+>> +S:	Supported
+>> +T:	git git://git.kernel.org/pub/scm/virt/kvm/kvm.git
+>> +F:	arch/x86/kernel/kvm.c
+>> +F:	arch/x86/kernel/kvmclock.c
+>> +F:	arch/x86/include/asm/pvclock-abi.h
+>> +F:	include/linux/kvm_para.h
+>> +F:	include/uapi/linux/kvm_para.h
+>> +F:	include/uapi/asm-generic/kvm_para.h
+>> +F:	include/asm-generic/kvm_para.h
+>> +F:	arch/um/include/asm/kvm_para.h
+>> +F:	arch/x86/include/asm/kvm_para.h
+>> +F:	arch/x86/include/uapi/asm/kvm_para.h
+> 
+> If we add Async PF to the 'KVM/paravirt' scope:
+> 
+> +F:   virt/kvm/async_pf.c
+> and maybe even
+> +F:   arch/x86/kvm/x86.c
+> 
+> then I can probably volunteer as a reviewer.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+There is of course a host component to all paravirt infrastructure, the 
+idea was to have a separate part specifically for the guest side.  It 
+tends to have its own set of issues (e.g. suspend/resume, 32-bit, etc.). 
+  I will add you anyway as reviewer, it makes sense.
 
-All warnings (new ones prefixed by >>):
+>> +KVM X86 HYPER-V (KVM/hyper-v)
+>> +M:	Vitaly Kuznetsov <vkuznets@redhat.com>
+>> +M:	Sean Christopherson <seanjc@google.com>
+>> +M:	Paolo Bonzini <pbonzini@redhat.com>
+> 
+> Don't we also need:
+> 
+> S:   Supported
+> L:   kvm@vger.kernel.org
+> 
+> here?
 
->> kernel/static_call_inline.c:504:15: warning: no previous prototype for 'func_a' [-Wmissing-prototypes]
-     504 | int __visible func_a(int x)
-         |               ^~~~~~
->> kernel/static_call_inline.c:509:15: warning: no previous prototype for 'func_b' [-Wmissing-prototypes]
-     509 | int __visible func_b(int x)
-         |               ^~~~~~
+Yeah, especially the "S" (the list is caught by the generic KVM part).
 
+Paolo
 
-vim +/func_a +504 kernel/static_call_inline.c
+>> +T:	git git://git.kernel.org/pub/scm/virt/kvm/kvm.git
+>> +F:	arch/x86/kvm/hyperv.*
+>> +F:	arch/x86/kvm/kvm_onhyperv.*
+>> +F:	arch/x86/kvm/svm/svm_onhyperv.*
+> 
+> +F:   arch/x86/kvm/svm/hyperv.*
+> 
+>> +F:	arch/x86/kvm/vmx/evmcs.*
+>> +
+>>   KERNFS
+>>   M:	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>>   M:	Tejun Heo <tj@kernel.org>
+> 
 
-   503	
- > 504	int __visible func_a(int x)
-   505	{
-   506		return x+1;
-   507	}
-   508	
- > 509	int __visible func_b(int x)
-   510	{
-   511		return x+2;
-   512	}
-   513	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
