@@ -2,102 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77A0EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 11:33:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC0CDC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 11:35:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231491AbiFWLdw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 07:33:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51184 "EHLO
+        id S230418AbiFWLf3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 07:35:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230169AbiFWLdo (ORCPT
+        with ESMTP id S230169AbiFWLf1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 07:33:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0F503336F;
-        Thu, 23 Jun 2022 04:33:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B6C12B8224D;
-        Thu, 23 Jun 2022 11:33:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 595B3C341C7;
-        Thu, 23 Jun 2022 11:33:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655984019;
-        bh=rF+KnkI8TrvuBOWUOKxZrJzbKbUt+JURZ8zGL45kkxs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f31BjyG3rUQD5UMRNzPEvh6jmBF8vkqf3MgFOKD1wvcbTfM0XrSwXr85kmFd6aMif
-         sLG7i4v0Df/TpIGNn50+q4w9Y386n5yEcjP4PoTjsx/SWCDpmxC2yvbaneNdnt3aeP
-         PcOqQMdDNW4SPC2wiE+8wXH+emXMJvzhVozCrjc8qu+DbzLdqu95Wm896fvCZEPvbm
-         z6ezr2lYK/epWpI446emHB6gwJz+iDT65N78UmQcdptQ43ullzZzUYsm6b1jw9rlzk
-         vGwXg8EYWINeprBEKy14Sc0EHOJDIPYUG6Du10lcvOniI+LD/nayokD6/e4tmiSqRB
-         WRtX1CfVruapw==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan+linaro@kernel.org>)
-        id 1o4L5c-0007kL-Kr; Thu, 23 Jun 2022 13:33:36 +0200
-From:   Johan Hovold <johan+linaro@kernel.org>
-To:     Vinod Koul <vkoul@kernel.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH 1/3] phy: qcom-qmp-pcie: drop obsolete pipe clock type check
-Date:   Thu, 23 Jun 2022 13:33:12 +0200
-Message-Id: <20220623113314.29761-2-johan+linaro@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220623113314.29761-1-johan+linaro@kernel.org>
-References: <20220623113314.29761-1-johan+linaro@kernel.org>
+        Thu, 23 Jun 2022 07:35:27 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D88918B2F;
+        Thu, 23 Jun 2022 04:35:27 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id t3-20020a17090a510300b001ea87ef9a3dso2286549pjh.4;
+        Thu, 23 Jun 2022 04:35:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vsyfHMyH/TR0E0PmGWrQW/kJNy9jLdkWqv7HwqClBfA=;
+        b=OR6ycU+ajc0fFNhcfMnbJPRnd0/ofiHqUr3ab7LGj8MF+ym7drraZwkJKtwftYHb5b
+         lPTMJACxTgNdg5g6KIsiHULN3xWME8R8lVuZiSLA+9JbeFOWFYTkgQmGxHXpGJpwcSzM
+         ozCu99e7LTkXHuBxpUFvcY374w/RWay6M8Pzh5ljP57rlWuarGZ+vbW33Kabua24FYqh
+         +slR7Wx5Dk9LU9IaIKKnU6NWbO/hbS5NRzSfJtNUC9D1OyE9pdUqun7h3x8so0r9qmxn
+         g67L/M9l1wpHLX023iL2gDMvwJD1UqLq4iEZqrQLyAJeueRHeB8H8ZFsacF8vAb01poW
+         brNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vsyfHMyH/TR0E0PmGWrQW/kJNy9jLdkWqv7HwqClBfA=;
+        b=YGF9TO1yWoiYnYl7ilun5kcZTd6r+fYYQTn0I3RlgJUHhKaKm24ccMI7OtcAROp3Ym
+         YuLktN1nbKq0jcH0BqrIGtHV7/m9GS4dL6+LdXofm/xEL0HlfjUw12MREaOEWDzwUgO1
+         Z/yluUlkxEOrLr+WE7oY3EQz7/68U85d4sVVICy3iHdQYns/oden/lUi9E+AuogC96U/
+         3kZ5fwBJZLLSh4IlqlRG/Io6tUD0KHpYoopStZR3M+2SsSBOv2dCwWI4rDJwrRZECsXg
+         mm8eu8sJrUnGoW2CJ4qIGHQ/FwBiUQih1OD1Uw/syxwZyWzP/b+x8NDdZcGknIGgfH06
+         QisA==
+X-Gm-Message-State: AJIora8RnU1zlQpzd5oY1VsilCzf8QqYPZjXTZWnVNgAJJaaNA3RqyMy
+        7wBmQkv/dVs00fLcLyIxkSIhNBZVtNa5OfRVUHw=
+X-Google-Smtp-Source: AGRyM1vw+t0OrQ8WbLbDKkZP/uTThp4PbUVk/mze6U4Ga2khFe22L5OBe1mJXbLj7D0R1uqO+xylnsdjHoaOq414Ldo=
+X-Received: by 2002:a17:903:32cb:b0:16a:3f2e:ca70 with SMTP id
+ i11-20020a17090332cb00b0016a3f2eca70mr11260495plr.153.1655984126848; Thu, 23
+ Jun 2022 04:35:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220622062027.994614-1-peng.fan@oss.nxp.com> <20220622072435.GT1615@pengutronix.de>
+ <CAGETcx9JpTbYtGFoKttWLeiBB73QzzBM1o-OL0o-XuFouLcEog@mail.gmail.com>
+In-Reply-To: <CAGETcx9JpTbYtGFoKttWLeiBB73QzzBM1o-OL0o-XuFouLcEog@mail.gmail.com>
+From:   Fabio Estevam <festevam@gmail.com>
+Date:   Thu, 23 Jun 2022 08:35:15 -0300
+Message-ID: <CAOMZO5DFX72xuxWwAPsuk4Q667Ap7Dk+pR89cWDQJkzT0D2osA@mail.gmail.com>
+Subject: Re: [PATCH] arm64: dts: imx8mp: drop dmas property for uart console
+To:     Saravana Kannan <saravanak@google.com>
+Cc:     Sascha Hauer <s.hauer@pengutronix.de>,
+        "Peng Fan (OSS)" <peng.fan@oss.nxp.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        NXP Linux Team <linux-imx@nxp.com>, hvilleneuve@dimonoff.com,
+        Lucas Stach <l.stach@pengutronix.de>,
+        abbaraju.manojsai@amarulasolutions.com,
+        Jagan Teki <jagan@amarulasolutions.com>,
+        Matteo Lisi <matteo.lisi@engicam.com>,
+        Tim Harvey <tharvey@gateworks.com>,
+        Teresa Remmet <t.remmet@phytec.de>,
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, t.remmet@phytec.deh,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Peng Fan <peng.fan@nxp.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drop the obsolete pipe clock handling which was used to treat the pipe
-clock as optional for types other than PCIe and USB and which is no
-longer needed since splitting the PHY driver.
+Hi Saravana,
 
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
----
- drivers/phy/qualcomm/phy-qcom-qmp-pcie.c | 19 ++-----------------
- 1 file changed, 2 insertions(+), 17 deletions(-)
+On Wed, Jun 22, 2022 at 7:31 PM Saravana Kannan <saravanak@google.com> wrote:
 
-diff --git a/drivers/phy/qualcomm/phy-qcom-qmp-pcie.c b/drivers/phy/qualcomm/phy-qcom-qmp-pcie.c
-index b2cd0cf965d8..385ea3d8de08 100644
---- a/drivers/phy/qualcomm/phy-qcom-qmp-pcie.c
-+++ b/drivers/phy/qualcomm/phy-qcom-qmp-pcie.c
-@@ -2210,26 +2210,11 @@ int qcom_qmp_phy_pcie_create(struct device *dev, struct device_node *np, int id,
- 	if (!qphy->pcs_misc)
- 		dev_vdbg(dev, "PHY pcs_misc-reg not used\n");
- 
--	/*
--	 * Get PHY's Pipe clock, if any. USB3 and PCIe are PIPE3
--	 * based phys, so they essentially have pipe clock. So,
--	 * we return error in case phy is USB3 or PIPE type.
--	 * Otherwise, we initialize pipe clock to NULL for
--	 * all phys that don't need this.
--	 */
- 	snprintf(prop_name, sizeof(prop_name), "pipe%d", id);
- 	qphy->pipe_clk = devm_get_clk_from_child(dev, np, prop_name);
- 	if (IS_ERR(qphy->pipe_clk)) {
--		if (cfg->type == PHY_TYPE_PCIE ||
--		    cfg->type == PHY_TYPE_USB3) {
--			ret = PTR_ERR(qphy->pipe_clk);
--			if (ret != -EPROBE_DEFER)
--				dev_err(dev,
--					"failed to get lane%d pipe_clk, %d\n",
--					id, ret);
--			return ret;
--		}
--		qphy->pipe_clk = NULL;
-+		return dev_err_probe(dev, PTR_ERR(qphy->pipe_clk),
-+				     "failed to get lane%d pipe clock\n", id);
- 	}
- 
- 	generic_phy = devm_phy_create(dev, np, &qcom_qmp_phy_pcie_ops);
--- 
-2.35.1
+> Peng, I sent a fix. Can you give it a shot please?
+>
+> https://lore.kernel.org/lkml/20220622215912.550419-1-saravanak@google.com/
 
+It didn't work for me on an imx6q-sabresd board. I could not find a v2.
+
+Also, would this solution work when stdout-path is not passed in the devicetree?
+
+Thanks
