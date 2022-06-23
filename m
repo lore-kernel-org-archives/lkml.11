@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2A01C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:08:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3302FCCA47C
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 18:08:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236183AbiFWSHZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 14:07:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45370 "EHLO
+        id S236053AbiFWSGo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:06:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235983AbiFWSGR (ORCPT
+        with ESMTP id S235931AbiFWSF4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 14:06:17 -0400
+        Thu, 23 Jun 2022 14:05:56 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDCD94F1F8;
-        Thu, 23 Jun 2022 10:18:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B41FA6159;
+        Thu, 23 Jun 2022 10:17:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 88CA6B82490;
-        Thu, 23 Jun 2022 17:18:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA35BC3411B;
-        Thu, 23 Jun 2022 17:18:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 39348B824B8;
+        Thu, 23 Jun 2022 17:17:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D189C341C4;
+        Thu, 23 Jun 2022 17:17:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004726;
-        bh=kLu6oEFnz7kWzqySjKoPppP6306WDVKu2D0M9xJxpzc=;
+        s=korg; t=1656004672;
+        bh=Fks3+OFrDCp2LBtgm5CxPt8bbalF/wsU+t94FuobBRA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PvO65BHhOVoVcgD1J8KAvNoDz/gkeLkRULzLhZugRWXlNRkgbqfnTOn8qVSBLK5Mm
-         3ds5dJVx98bOGMjHHCzmU0Q0akzX2/2taJHYqB3xAodTwwdjLQbOYZ9tZbyvvmbeqS
-         bpXWxDNhCmlZ+QzJPGslOsFESJNt2eEX5iv8uxnM=
+        b=HO5Gj6g4ImEtIPQTgvHZSZzAzQ8JYGJFMdLRFDiFSYkEQf0ZQpkUSdZ2CDbi6xIAV
+         F4ZkpOICda9A2XsEWnyL3MJ+6W1nX5uUa2CSGmofZ9SlUuIianIO8eeYISfY/uLNmu
+         NM/rf01peDYUGnqkagf3n6gsSn5J3zOWGKSKHSQU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
         Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.19 123/234] random: skip fast_init if hwrng provides large chunk of entropy
-Date:   Thu, 23 Jun 2022 18:43:10 +0200
-Message-Id: <20220623164346.537703214@linuxfoundation.org>
+Subject: [PATCH 4.19 112/234] random: only wake up writers after zap if threshold was passed
+Date:   Thu, 23 Jun 2022 18:42:59 +0200
+Message-Id: <20220623164346.227877336@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.042598055@linuxfoundation.org>
 References: <20220623164343.042598055@linuxfoundation.org>
@@ -51,22 +51,16 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit af704c856e888fb044b058d731d61b46eeec499d upstream.
+commit a3f9e8910e1584d7725ef7d5ac870920d42d0bb4 upstream.
 
-At boot time, EFI calls add_bootloader_randomness(), which in turn calls
-add_hwgenerator_randomness(). Currently add_hwgenerator_randomness()
-feeds the first 64 bytes of randomness to the "fast init"
-non-crypto-grade phase. But if add_hwgenerator_randomness() gets called
-with more than POOL_MIN_BITS of entropy, there's no point in passing it
-off to the "fast init" stage, since that's enough entropy to bootstrap
-the real RNG. The "fast init" stage is just there to provide _something_
-in the case where we don't have enough entropy to properly bootstrap the
-RNG. But if we do have enough entropy to bootstrap the RNG, the current
-logic doesn't serve a purpose. So, in the case where we're passed
-greater than or equal to POOL_MIN_BITS of entropy, this commit makes us
-skip the "fast init" phase.
+The only time that we need to wake up /dev/random writers on
+RNDCLEARPOOL/RNDZAPPOOL is when we're changing from a value that is
+greater than or equal to POOL_MIN_BITS to zero, because if we're
+changing from below POOL_MIN_BITS to zero, the writers are already
+unblocked.
 
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+Cc: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
@@ -75,14 +69,14 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -1120,7 +1120,7 @@ void rand_initialize_disk(struct gendisk
- void add_hwgenerator_randomness(const void *buffer, size_t count,
- 				size_t entropy)
- {
--	if (unlikely(crng_init == 0)) {
-+	if (unlikely(crng_init == 0 && entropy < POOL_MIN_BITS)) {
- 		size_t ret = crng_pre_init_inject(buffer, count, true);
- 		mix_pool_bytes(buffer, ret);
- 		count -= ret;
+@@ -1577,7 +1577,7 @@ static long random_ioctl(struct file *f,
+ 		 */
+ 		if (!capable(CAP_SYS_ADMIN))
+ 			return -EPERM;
+-		if (xchg(&input_pool.entropy_count, 0)) {
++		if (xchg(&input_pool.entropy_count, 0) >= POOL_MIN_BITS) {
+ 			wake_up_interruptible(&random_write_wait);
+ 			kill_fasync(&fasync, SIGIO, POLL_OUT);
+ 		}
 
 
