@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77347C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:05:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19F88CCA47C
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:05:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233039AbiFWRFP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:05:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43176 "EHLO
+        id S233069AbiFWRFR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:05:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233918AbiFWRD1 (ORCPT
+        with ESMTP id S233961AbiFWRDb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:03:27 -0400
+        Thu, 23 Jun 2022 13:03:31 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53E2B51332;
-        Thu, 23 Jun 2022 09:55:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 908C950E02;
+        Thu, 23 Jun 2022 09:55:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9CD98B8249D;
-        Thu, 23 Jun 2022 16:54:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D4D1C3411B;
-        Thu, 23 Jun 2022 16:54:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D56D2B82499;
+        Thu, 23 Jun 2022 16:54:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8D31C3411B;
+        Thu, 23 Jun 2022 16:54:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003285;
-        bh=UsU2/f9tNduGPzdf8mqaOjn4woxltzh/t+6svdIsniU=;
+        s=korg; t=1656003295;
+        bh=IrixH32uPNA8SrzjrToJPFG5vozAbai3k8bBrKhcugE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gl4Ixmp5mrNf5jpL7N0hxSXo3/oWTjRBYtAIG825BCNxFWgXYattZBApyJ49qIcbL
-         76ouRIEqIkcU7mx7nOGDfBcpW/JGq+o5PmfOVbh+bJcLqCukLqAaUGShMzV/k3nBqN
-         dd6Zv3KzLIe5ppxPuD47XIzWWmUvZlJOkPM70OSU=
+        b=Z7yt755rH96s4WMfiYQCfdf8q0jHKyoU+qrKW2fqvfDGZqgZ5wHKXXtRCagDoCqRI
+         V429PBEzY9hwxxf/TxsUg7nFwdr6UbRK+8cU82cWWfpMkOEhAE68eBz9qEDGP1/bBU
+         okMeQTBe0mIBKFPwu9HeX02o9JGdTnGPBJUNc1OE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 189/264] um: use fallback for random_get_entropy() instead of zero
-Date:   Thu, 23 Jun 2022 18:43:02 +0200
-Message-Id: <20220623164349.416044839@linuxfoundation.org>
+        stable@vger.kernel.org, Yury Norov <yury.norov@gmail.com>,
+        Allison Randal <allison@lohutok.net>,
+        Joe Perches <joe@perches.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 192/264] uapi: rename ext2_swab() to swab() and share globally in swab.h
+Date:   Thu, 23 Jun 2022 18:43:05 +0200
+Message-Id: <20220623164349.502210468@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -52,51 +54,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Yury Norov <yury.norov@gmail.com>
 
-commit 9f13fb0cd11ed2327abff69f6501a2c124c88b5a upstream.
+[ Upstream commit d5767057c9a76a29f073dad66b7fa12a90e8c748 ]
 
-In the event that random_get_entropy() can't access a cycle counter or
-similar, falling back to returning 0 is really not the best we can do.
-Instead, at least calling random_get_entropy_fallback() would be
-preferable, because that always needs to return _something_, even
-falling back to jiffies eventually. It's not as though
-random_get_entropy_fallback() is super high precision or guaranteed to
-be entropic, but basically anything that's not zero all the time is
-better than returning zero all the time.
+ext2_swab() is defined locally in lib/find_bit.c However it is not
+specific to ext2, neither to bitmaps.
 
-This is accomplished by just including the asm-generic code like on
-other architectures, which means we can get rid of the empty stub
-function here.
+There are many potential users of it, so rename it to just swab() and
+move to include/uapi/linux/swab.h
 
+ABI guarantees that size of unsigned long corresponds to BITS_PER_LONG,
+therefore drop unneeded cast.
+
+Link: http://lkml.kernel.org/r/20200103202846.21616-1-yury.norov@gmail.com
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
+Cc: Allison Randal <allison@lohutok.net>
+Cc: Joe Perches <joe@perches.com>
 Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Richard Weinberger <richard@nod.at>
-Cc: Anton Ivanov <anton.ivanov@cambridgegreys.com>
-Acked-by: Johannes Berg <johannes@sipsolutions.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Cc: William Breathitt Gray <vilhelm.gray@gmail.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/um/include/asm/timex.h |    9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
+ include/linux/swab.h      |    1 +
+ include/uapi/linux/swab.h |   10 ++++++++++
+ lib/find_bit.c            |   16 ++--------------
+ 3 files changed, 13 insertions(+), 14 deletions(-)
 
---- a/arch/um/include/asm/timex.h
-+++ b/arch/um/include/asm/timex.h
-@@ -1,13 +1,8 @@
- #ifndef __UM_TIMEX_H
- #define __UM_TIMEX_H
+--- a/include/linux/swab.h
++++ b/include/linux/swab.h
+@@ -6,6 +6,7 @@
+ # define swab16 __swab16
+ # define swab32 __swab32
+ # define swab64 __swab64
++# define swab __swab
+ # define swahw32 __swahw32
+ # define swahb32 __swahb32
+ # define swab16p __swab16p
+--- a/include/uapi/linux/swab.h
++++ b/include/uapi/linux/swab.h
+@@ -3,6 +3,7 @@
  
--typedef unsigned long cycles_t;
--
--static inline cycles_t get_cycles (void)
+ #include <linux/types.h>
+ #include <linux/compiler.h>
++#include <asm/bitsperlong.h>
+ #include <asm/swab.h>
+ 
+ /*
+@@ -131,6 +132,15 @@ static inline __attribute_const__ __u32
+ 	__fswab64(x))
+ #endif
+ 
++static __always_inline unsigned long __swab(const unsigned long y)
++{
++#if BITS_PER_LONG == 64
++	return __swab64(y);
++#else /* BITS_PER_LONG == 32 */
++	return __swab32(y);
++#endif
++}
++
+ /**
+  * __swahw32 - return a word-swapped 32-bit value
+  * @x: value to wordswap
+--- a/lib/find_bit.c
++++ b/lib/find_bit.c
+@@ -133,18 +133,6 @@ EXPORT_SYMBOL(find_last_bit);
+ 
+ #ifdef __BIG_ENDIAN
+ 
+-/* include/linux/byteorder does not support "unsigned long" type */
+-static inline unsigned long ext2_swab(const unsigned long y)
 -{
--	return 0;
+-#if BITS_PER_LONG == 64
+-	return (unsigned long) __swab64((u64) y);
+-#elif BITS_PER_LONG == 32
+-	return (unsigned long) __swab32((u32) y);
+-#else
+-#error BITS_PER_LONG not defined
+-#endif
 -}
 -
- #define CLOCK_TICK_RATE (HZ)
+ #if !defined(find_next_bit_le) || !defined(find_next_zero_bit_le)
+ static unsigned long _find_next_bit_le(const unsigned long *addr,
+ 		unsigned long nbits, unsigned long start, unsigned long invert)
+@@ -157,7 +145,7 @@ static unsigned long _find_next_bit_le(c
+ 	tmp = addr[start / BITS_PER_LONG] ^ invert;
  
-+#include <asm-generic/timex.h>
-+
+ 	/* Handle 1st word. */
+-	tmp &= ext2_swab(BITMAP_FIRST_WORD_MASK(start));
++	tmp &= swab(BITMAP_FIRST_WORD_MASK(start));
+ 	start = round_down(start, BITS_PER_LONG);
+ 
+ 	while (!tmp) {
+@@ -168,7 +156,7 @@ static unsigned long _find_next_bit_le(c
+ 		tmp = addr[start / BITS_PER_LONG] ^ invert;
+ 	}
+ 
+-	return min(start + __ffs(ext2_swab(tmp)), nbits);
++	return min(start + __ffs(swab(tmp)), nbits);
+ }
  #endif
+ 
 
 
