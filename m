@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 999CDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:45:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C7B5C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:45:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234937AbiFWRpv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:45:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46624 "EHLO
+        id S234885AbiFWRpz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:45:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234936AbiFWRmp (ORCPT
+        with ESMTP id S234979AbiFWRms (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:42:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8448F98C7B;
-        Thu, 23 Jun 2022 10:10:17 -0700 (PDT)
+        Thu, 23 Jun 2022 13:42:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72F849B591;
+        Thu, 23 Jun 2022 10:10:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A5F85B82498;
-        Thu, 23 Jun 2022 17:10:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03A54C385A5;
-        Thu, 23 Jun 2022 17:10:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CB055B824B4;
+        Thu, 23 Jun 2022 17:10:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D1D5C3411B;
+        Thu, 23 Jun 2022 17:10:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656004205;
-        bh=eAjiNjbTVNFCkZm5HApJu/tf3LltGIlEE+yAJ54OSU4=;
+        s=korg; t=1656004212;
+        bh=K5PXdgP1phRc7i/QqxIpNqkZRJfk01xQXAilZKpUPHI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BP12Jvxnou8l4YYDEiaagZqTaWOAd2s1q0Kus6mayB9EVNCCM+y2sv5HtQsMr1DiT
-         mxDS7yVPJHdq4loH2KE/QIx4OfSWrFca3ztrAKBAQZNhWwhwh1JXUOFVlb2F0JWH3O
-         0rRyAJyfpI9OWlHNJU96t5fO3H4mQmQ35EW+z1DY=
+        b=dsRvI4pBG2H7K04lpHm7WjxihFLxpRzZGTEAP/kEmprdKUy11RS2NinSbRmYlmNJm
+         z9dggSjixHRPRfyK6/EIbElTkuOD+wfw1l9gmCGfsuss4c07qJhvKlmXejFnjfXVP3
+         o3rUF+psO+k5k0Zs1YwnYNYmhirX/fHIo501MtcI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        Minas Harutyunyan <hminas@synopsys.com>,
-        Miaoqian Lin <linmq006@gmail.com>
-Subject: [PATCH 4.14 220/237] usb: dwc2: Fix memory leak in dwc2_hcd_init
-Date:   Thu, 23 Jun 2022 18:44:14 +0200
-Message-Id: <20220623164349.479761486@linuxfoundation.org>
+        stable@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.14 183/237] Revert "random: use static branch for crng_ready()"
+Date:   Thu, 23 Jun 2022 18:43:37 +0200
+Message-Id: <20220623164348.413236303@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -49,35 +47,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit 3755278f078460b021cd0384562977bf2039a57a upstream.
+This reverts upstream commit f5bda35fba615ace70a656d4700423fa6c9bebee
+from stable. It's not essential and will take some time during 5.19 to
+work out properly.
 
-usb_create_hcd will alloc memory for hcd, and we should
-call usb_put_hcd to free it when platform_get_resource()
-fails to prevent memory leak.
-goto error2 label instead error1 to fix this.
-
-Fixes: 856e6e8e0f93 ("usb: dwc2: check return value after calling platform_get_resource()")
-Cc: stable <stable@kernel.org>
-Acked-by: Minas Harutyunyan <hminas@synopsys.com>
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220530085413.44068-1-linmq006@gmail.com
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/dwc2/hcd.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/char/random.c |   12 ++----------
+ 1 file changed, 2 insertions(+), 10 deletions(-)
 
---- a/drivers/usb/dwc2/hcd.c
-+++ b/drivers/usb/dwc2/hcd.c
-@@ -5231,7 +5231,7 @@ int dwc2_hcd_init(struct dwc2_hsotg *hso
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	if (!res) {
- 		retval = -EINVAL;
--		goto error1;
-+		goto error2;
- 	}
- 	hcd->rsrc_start = res->start;
- 	hcd->rsrc_len = resource_size(res);
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -79,8 +79,7 @@ static enum {
+ 	CRNG_EARLY = 1, /* At least POOL_EARLY_BITS collected */
+ 	CRNG_READY = 2  /* Fully initialized with POOL_READY_BITS collected */
+ } crng_init __read_mostly = CRNG_EMPTY;
+-static DEFINE_STATIC_KEY_FALSE(crng_is_ready);
+-#define crng_ready() (static_branch_likely(&crng_is_ready) || crng_init >= CRNG_READY)
++#define crng_ready() (likely(crng_init >= CRNG_READY))
+ /* Various types of waiters for crng_init->CRNG_READY transition. */
+ static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
+ static struct fasync_struct *fasync;
+@@ -110,11 +109,6 @@ bool rng_is_initialized(void)
+ }
+ EXPORT_SYMBOL(rng_is_initialized);
+ 
+-static void __cold crng_set_ready(struct work_struct *work)
+-{
+-	static_branch_enable(&crng_is_ready);
+-}
+-
+ /* Used by wait_for_random_bytes(), and considered an entropy collector, below. */
+ static void try_to_generate_entropy(void);
+ 
+@@ -268,7 +262,7 @@ static void crng_reseed(void)
+ 		++next_gen;
+ 	WRITE_ONCE(base_crng.generation, next_gen);
+ 	WRITE_ONCE(base_crng.birth, jiffies);
+-	if (!static_branch_likely(&crng_is_ready))
++	if (!crng_ready())
+ 		crng_init = CRNG_READY;
+ 	spin_unlock_irqrestore(&base_crng.lock, flags);
+ 	memzero_explicit(key, sizeof(key));
+@@ -709,7 +703,6 @@ static void extract_entropy(void *buf, s
+ 
+ static void __cold _credit_init_bits(size_t bits)
+ {
+-	static struct execute_work set_ready;
+ 	unsigned int new, orig, add;
+ 	unsigned long flags;
+ 
+@@ -725,7 +718,6 @@ static void __cold _credit_init_bits(siz
+ 
+ 	if (orig < POOL_READY_BITS && new >= POOL_READY_BITS) {
+ 		crng_reseed(); /* Sets crng_init to CRNG_READY under base_crng.lock. */
+-		execute_in_process_context(crng_set_ready, &set_ready);
+ 		process_random_ready_list();
+ 		wake_up_interruptible(&crng_init_wait);
+ 		kill_fasync(&fasync, SIGIO, POLL_IN);
 
 
