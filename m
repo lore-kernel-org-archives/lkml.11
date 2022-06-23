@@ -2,346 +2,756 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E8BBCCA47C
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:54:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1460C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 16:54:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232049AbiFWQx7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 12:53:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48948 "EHLO
+        id S233564AbiFWQyC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 12:54:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233872AbiFWQvr (ORCPT
+        with ESMTP id S233903AbiFWQvv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 12:51:47 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08B85DEEC
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 09:50:25 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id q140so19666127pgq.6
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 09:50:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=iHGQo8n7YvLNBvLE4NVsSO6cnf5/UHppvYlhS4a8gzU=;
-        b=KniG4lYmb6irhrKZuLDwj7Hu+t3xX06RePanu66W0WBdEVBcM2JbUb0LMJMmK23Saz
-         UPanC1tOErDQAIpkS4g5DI4jfsuDGZ2YOuaIROvp8AAK/6T/YF5fDGZkWxANVD2JmVNT
-         JB1dSmqvmIBBklkpaE62fncviybGsxxJxxxm+PYNdGwxcC6Bex6168HCNt2XagiVCVsJ
-         ONlz2TqgEhZOk5IOxEdmQ1K02PYdkb1NwN95r6ZHd4mBOcPQCVb6jrAGQsDBmRJR95Dh
-         VS58+aQ1OzNTbzR2KVG7RJfuuTCVEGXYBnOREby9s3+eDicD5waFjMFpDa5D5NBAYe6i
-         8Q4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=iHGQo8n7YvLNBvLE4NVsSO6cnf5/UHppvYlhS4a8gzU=;
-        b=wTEt15HGLvevGkIsMYIu+ARBc7NXg5qHw9wfVvEIhPuG+ouQe5Qjy4W4/RnTpLjT+U
-         c8Jw3opI+gqRILUdC8Kyzhgauc55hihn1AJKht7H54YWVFmf0e4Wha5mqvnWCLDeKJ9S
-         cmldVUENy1w4/xuBjh9ycvDQtWNlpejxUO07ChcBee4j7/X6/x9B3b2YspK7UkQa7C0Y
-         W1Ob6ZTyoFhcTWaelxip9zSvh6Q9Vbg9IymBQv9wPoITx95Q653nViDa74pg9JAnJcKq
-         WWl/uLgl8gzwS7pskx8nW2DNEecB7scWT9KXfvTdEnXpHepDTtBnoQAQUqpKebTBuGdP
-         sHgA==
-X-Gm-Message-State: AJIora94kJjFOaC6+Z+6eSYH2j7zZfWFMjWxi8Xk/sXMXxRs9D3WG9gK
-        w2PSQWACVbEbd20/6rUZImORsXOeT4AxNvuXy4Cr+g==
-X-Google-Smtp-Source: AGRyM1sFfaOqL2HdnxucLgEOkBEM7aGY23Z175naYW75TFj3yECd0KJc/SUgnBMnYGUQWDWrYWdH0EU5GMQkKPqVsdw=
-X-Received: by 2002:a63:8341:0:b0:40d:2430:8fa1 with SMTP id
- h62-20020a638341000000b0040d24308fa1mr8449233pge.85.1656003024428; Thu, 23
- Jun 2022 09:50:24 -0700 (PDT)
+        Thu, 23 Jun 2022 12:51:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17F681B78D;
+        Thu, 23 Jun 2022 09:51:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9E6B9B8248F;
+        Thu, 23 Jun 2022 16:51:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EBA3C3411B;
+        Thu, 23 Jun 2022 16:51:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656003085;
+        bh=sqp3dA/AsC4GCtkTCiInY1DrTaok+qedyNjsh23aKG4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=oCOKCT77y9YgXhVtDbbW6/9G0NUyhn9EeKmphKJYRVN0bPUcwTKs462HQzzKkGCaf
+         jMMq8mMIsHGePTRfAqAhWBFdCDyTXkLfT7f8kRFUkopuiWSpt/66LSjMHCBqScC3Nu
+         UBjguhli5H0H4YbLNJP01cDckaOPaQoTfeysDmOc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Eric Biggers <ebiggers@google.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.9 123/264] random: use hash function for crng_slow_load()
+Date:   Thu, 23 Jun 2022 18:41:56 +0200
+Message-Id: <20220623164347.547026770@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
+References: <20220623164344.053938039@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220609110337.1238762-1-jaz@semihalf.com> <20220609110337.1238762-2-jaz@semihalf.com>
- <YqIJ8HtdqnoVzfQD@google.com> <CAH76GKNRDXAyGYvs2ji5Phu=5YPW8+SV8-6TLjizBRzTCnEROg@mail.gmail.com>
- <YqNVYz4+yVbWnmNv@google.com> <CAH76GKNSfaHwpy46r1WWTVgnsuijqcHe=H5nvUTUUs1UbdZvkQ@mail.gmail.com>
- <Yqtez/J540yD7VdD@google.com> <2201fe5f-5bd8-baaf-aad5-eaaea2f1e20e@amd.com>
- <CAH76GKP=2wu4+eqLCFu1F5a4rHhReUT_7N89K8xbO-gSqEQ-3w@mail.gmail.com>
- <88344644-44e1-0089-657a-2e34316ea4b4@amd.com> <CAH76GKMKjogX9kE5jch+LqkGswGAmyOdu5sOdY_G23Dqpf0puA@mail.gmail.com>
- <7c428b03-261f-78cb-4ce3-5949ac93f028@amd.com>
-In-Reply-To: <7c428b03-261f-78cb-4ce3-5949ac93f028@amd.com>
-From:   Grzegorz Jaszczyk <jaz@semihalf.com>
-Date:   Thu, 23 Jun 2022 18:50:13 +0200
-Message-ID: <CAH76GKNB0V+-Ky6bfhX6Kzudyn6zJW42iSWfRkfbo9C-eKdo-w@mail.gmail.com>
-Subject: Re: [PATCH 1/2] x86: notify hypervisor about guest entering s2idle state
-To:     "Limonciello, Mario" <mario.limonciello@amd.com>,
-        Sean Christopherson <seanjc@google.com>
-Cc:     linux-kernel@vger.kernel.org, Dmytro Maluka <dmy@semihalf.com>,
-        Zide Chen <zide.chen@intel.corp-partner.google.com>,
-        Peter Fang <peter.fang@intel.corp-partner.google.com>,
-        Tomasz Nowicki <tn@semihalf.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, Pavel Machek <pavel@ucw.cz>,
-        Ashish Kalra <ashish.kalra@amd.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sachi King <nakato@nakato.io>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        David Dunn <daviddunn@google.com>,
-        Wei Wang <wei.w.wang@intel.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        "open list:KERNEL VIRTUAL MACHINE (KVM)" <kvm@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        "open list:ACPI" <linux-acpi@vger.kernel.org>,
-        "open list:HIBERNATION (aka Software Suspend, aka swsusp)" 
-        <linux-pm@vger.kernel.org>, Dominik Behr <dbehr@google.com>,
-        Dmitry Torokhov <dtor@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-=C5=9Br., 22 cze 2022 o 23:50 Limonciello, Mario
-<mario.limonciello@amd.com> napisa=C5=82(a):
->
-> On 6/22/2022 04:53, Grzegorz Jaszczyk wrote:
-> > pon., 20 cze 2022 o 18:32 Limonciello, Mario
-> > <mario.limonciello@amd.com> napisa=C5=82(a):
-> >>
-> >> On 6/20/2022 10:43, Grzegorz Jaszczyk wrote:
-> >>> czw., 16 cze 2022 o 18:58 Limonciello, Mario
-> >>> <mario.limonciello@amd.com> napisa=C5=82(a):
-> >>>>
-> >>>> On 6/16/2022 11:48, Sean Christopherson wrote:
-> >>>>> On Wed, Jun 15, 2022, Grzegorz Jaszczyk wrote:
-> >>>>>> pt., 10 cze 2022 o 16:30 Sean Christopherson <seanjc@google.com> n=
-apisa=C5=82(a):
-> >>>>>>> MMIO or PIO for the actual exit, there's nothing special about hy=
-percalls.  As for
-> >>>>>>> enumerating to the guest that it should do something, why not add=
- a new ACPI_LPS0_*
-> >>>>>>> function?  E.g. something like
-> >>>>>>>
-> >>>>>>> static void s2idle_hypervisor_notify(void)
-> >>>>>>> {
-> >>>>>>>            if (lps0_dsm_func_mask > 0)
-> >>>>>>>                    acpi_sleep_run_lps0_dsm(ACPI_LPS0_EXIT_HYPERVI=
-SOR_NOTIFY
-> >>>>>>>                                            lps0_dsm_func_mask, lp=
-s0_dsm_guid);
-> >>>>>>> }
-> >>>>>>
-> >>>>>> Great, thank you for your suggestion! I will try this approach and
-> >>>>>> come back. Since this will be the main change in the next version,
-> >>>>>> will it be ok for you to add Suggested-by: Sean Christopherson
-> >>>>>> <seanjc@google.com> tag?
-> >>>>>
-> >>>>> If you want, but there's certainly no need to do so.  But I assume =
-you or someone
-> >>>>> at Intel will need to get formal approval for adding another ACPI L=
-PS0 function?
-> >>>>> I.e. isn't there work to be done outside of the kernel before any p=
-atches can be
-> >>>>> merged?
-> >>>>
-> >>>> There are 3 different LPS0 GUIDs in use.  An Intel one, an AMD (lega=
-cy)
-> >>>> one, and a Microsoft one.  They all have their own specs, and so if =
-this
-> >>>> was to be added I think all 3 need to be updated.
-> >>>
-> >>> Yes this will not be easy to achieve I think.
-> >>>
-> >>>>
-> >>>> As this is Linux specific hypervisor behavior, I don't know you woul=
-d be
-> >>>> able to convince Microsoft to update theirs' either.
-> >>>>
-> >>>> How about using s2idle_devops?  There is a prepare() call and a
-> >>>> restore() call that is set for each handler.  The only consumer of t=
-his
-> >>>> ATM I'm aware of is the amd-pmc driver, but it's done like a
-> >>>> notification chain so that a bunch of drivers can hook in if they ne=
-ed to.
-> >>>>
-> >>>> Then you can have this notification path and the associated ACPI dev=
-ice
-> >>>> it calls out to be it's own driver.
-> >>>
-> >>> Thank you for your suggestion, just to be sure that I've understand
-> >>> your idea correctly:
-> >>> 1) it will require to extend acpi_s2idle_dev_ops about something like
-> >>> hypervisor_notify() call, since existing prepare() is called from end
-> >>> of acpi_s2idle_prepare_late so it is too early as it was described in
-> >>> one of previous message (between acpi_s2idle_prepare_late and place
-> >>> where we use hypercall there are several places where the suspend
-> >>> could be canceled, otherwise we could probably try to trap on other
-> >>> acpi_sleep_run_lps0_dsm occurrence from acpi_s2idle_prepare_late).
-> >>>
-> >>
-> >> The idea for prepare() was it would be the absolute last thing before
-> >> the s2idle loop was run.  You're sure that's too early?  It's basicall=
-y
-> >> the same thing as having a last stage new _DSM call.
-> >>
-> >> What about adding a new abort() extension to acpi_s2idle_dev_ops?  The=
-n
-> >> you could catch the cancelled suspend case still and take corrective
-> >> action (if that action is different than what restore() would do).
-> >
-> > It will be problematic since the abort/restore notification could
-> > arrive too late and therefore the whole system will go to suspend
-> > thinking that the guest is in desired s2ilde state. Also in this case
-> > it would be impossible to prevent races and actually making sure that
-> > the guest is suspended or not. We already had similar discussion with
-> > Sean earlier in this thread why the notification have to be send just
-> > before swait_event_exclusive(s2idle_wait_head, s2idle_state =3D=3D
-> > S2IDLE_STATE_WAKE) and that the VMM have to have control over guest
-> > resumption.
-> >
-> > Nevertheless if extending acpi_s2idle_dev_ops is possible, why not
-> > extend it about the hypervisor_notify() and use it in the same place
-> > where the hypercall is used in this patch? Do you see any issue with
-> > that?
->
-> If this needs to be a hypercall and the hypercall needs to go at that
-> specific time, I wouldn't bother with extending acpi_s2idle_dev_ops.
-> The whole idea there was that this would be less custom and could follow
-> a spec.
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-Just to clarify - it probably doesn't need to be a hypercall. I've
-probably misled you with copy-pasting a handler name from the current
-patch but aiming your and Sean ACPI like approach. What I meant is
-something like:
-- extend acpi_s2idle_dev_ops with notify()
-- implement notify() handler for acpi_s2idle_dev_ops in HYPE0001
-driver (without hypercall):
-static void s2idle_notify(void)
-{
-        acpi_evaluate_dsm(acpi_handle, guid_of_HYPE0001, 0,
-ACPI_HYPE_NOTIFY, NULL);
-}
+commit 66e4c2b9541503d721e936cc3898c9f25f4591ff upstream.
 
-- register it via acpi_register_lps0_dev() from HYPE0001 driver
-- use it just before swait_event_exclusive(s2idle_wait_head..) as it
-is with original patch (the name of the function will be different):
-static void s2idle_hypervisor_notify(void)
-{
-         struct acpi_s2idle_dev_ops *handler;
-...
-         list_for_each_entry(handler, &lps0_s2idle_devops_head, list_node) =
-{
-                  if (handler->notify)
-                          handler->notify();
-          }
-}
+Since we have a hash function that's really fast, and the goal of
+crng_slow_load() is reportedly to "touch all of the crng's state", we
+can just hash the old state together with the new state and call it a
+day. This way we dont need to reason about another LFSR or worry about
+various attacks there. This code is only ever used at early boot and
+then never again.
 
-so it will be like:
--> s2idle_enter (just before swait_event_exclusive(s2idle_wait_head,.. )
---> s2idle_hypervisor_notify (as platform_s2idle_ops)
----> notify (as acpi_s2idle_dev_ops)
-----> HYPE0001 device driver's notify () routine
+Cc: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/char/random.c         |  163 +++++++++++++++++-------------------------
+ include/linux/hw_random.h     |    2 
+ include/linux/random.h        |   10 +-
+ include/trace/events/random.h |   79 +++++++++-----------
+ 4 files changed, 113 insertions(+), 141 deletions(-)
 
-It will probably be easier to understand it if I actually implement
-it. Nevertheless this way we ensure that:
-- notification will be triggered at very last command before actually
-entering s2idle
-- we can trap on MMIO/PIO by implementing HYPE0001 specific  _DSM
-method and therefore this implementation will not become hypervisor
-specific and also not use KVM as "dumb pipe out to userspace" as Sean
-suggested
-- we will not have to change existing Intel/AMD/Window spec (3
-different LPS0 GUIDs) but thanks to HYPE0001's acpi_s2idle_dev_ops
-involvment, only care about new HYPE0001 spec
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -69,7 +69,7 @@
+  *
+  * The primary kernel interfaces are:
+  *
+- *	void get_random_bytes(void *buf, int nbytes);
++ *	void get_random_bytes(void *buf, size_t nbytes);
+  *	u32 get_random_u32()
+  *	u64 get_random_u64()
+  *	unsigned int get_random_int()
+@@ -97,14 +97,14 @@
+  * The current exported interfaces for gathering environmental noise
+  * from the devices are:
+  *
+- *	void add_device_randomness(const void *buf, unsigned int size);
++ *	void add_device_randomness(const void *buf, size_t size);
+  *	void add_input_randomness(unsigned int type, unsigned int code,
+  *                                unsigned int value);
+  *	void add_interrupt_randomness(int irq);
+  *	void add_disk_randomness(struct gendisk *disk);
+- *	void add_hwgenerator_randomness(const char *buffer, size_t count,
++ *	void add_hwgenerator_randomness(const void *buffer, size_t count,
+  *					size_t entropy);
+- *	void add_bootloader_randomness(const void *buf, unsigned int size);
++ *	void add_bootloader_randomness(const void *buf, size_t size);
+  *
+  * add_device_randomness() is for adding data to the random pool that
+  * is likely to differ between two devices (or possibly even per boot).
+@@ -269,7 +269,7 @@ static int crng_init = 0;
+ #define crng_ready() (likely(crng_init > 1))
+ static int crng_init_cnt = 0;
+ static void process_random_ready_list(void);
+-static void _get_random_bytes(void *buf, int nbytes);
++static void _get_random_bytes(void *buf, size_t nbytes);
+ 
+ static struct ratelimit_state unseeded_warning =
+ 	RATELIMIT_STATE_INIT("warn_unseeded_randomness", HZ, 3);
+@@ -291,7 +291,7 @@ MODULE_PARM_DESC(ratelimit_disable, "Dis
+ static struct {
+ 	struct blake2s_state hash;
+ 	spinlock_t lock;
+-	int entropy_count;
++	unsigned int entropy_count;
+ } input_pool = {
+ 	.hash.h = { BLAKE2S_IV0 ^ (0x01010000 | BLAKE2S_HASH_SIZE),
+ 		    BLAKE2S_IV1, BLAKE2S_IV2, BLAKE2S_IV3, BLAKE2S_IV4,
+@@ -309,18 +309,12 @@ static void crng_reseed(void);
+  * update the entropy estimate.  The caller should call
+  * credit_entropy_bits if this is appropriate.
+  */
+-static void _mix_pool_bytes(const void *in, int nbytes)
++static void _mix_pool_bytes(const void *in, size_t nbytes)
+ {
+ 	blake2s_update(&input_pool.hash, in, nbytes);
+ }
+ 
+-static void __mix_pool_bytes(const void *in, int nbytes)
+-{
+-	trace_mix_pool_bytes_nolock(nbytes, _RET_IP_);
+-	_mix_pool_bytes(in, nbytes);
+-}
+-
+-static void mix_pool_bytes(const void *in, int nbytes)
++static void mix_pool_bytes(const void *in, size_t nbytes)
+ {
+ 	unsigned long flags;
+ 
+@@ -384,18 +378,18 @@ static void process_random_ready_list(vo
+ 	spin_unlock_irqrestore(&random_ready_list_lock, flags);
+ }
+ 
+-static void credit_entropy_bits(int nbits)
++static void credit_entropy_bits(size_t nbits)
+ {
+-	int entropy_count, orig;
++	unsigned int entropy_count, orig, add;
+ 
+-	if (nbits <= 0)
++	if (!nbits)
+ 		return;
+ 
+-	nbits = min(nbits, POOL_BITS);
++	add = min_t(size_t, nbits, POOL_BITS);
+ 
+ 	do {
+ 		orig = READ_ONCE(input_pool.entropy_count);
+-		entropy_count = min(POOL_BITS, orig + nbits);
++		entropy_count = min_t(unsigned int, POOL_BITS, orig + add);
+ 	} while (cmpxchg(&input_pool.entropy_count, orig, entropy_count) != orig);
+ 
+ 	trace_credit_entropy_bits(nbits, entropy_count, _RET_IP_);
+@@ -442,10 +436,10 @@ static void invalidate_batched_entropy(v
+  * path.  So we can't afford to dilly-dally. Returns the number of
+  * bytes processed from cp.
+  */
+-static size_t crng_fast_load(const u8 *cp, size_t len)
++static size_t crng_fast_load(const void *cp, size_t len)
+ {
+ 	unsigned long flags;
+-	u8 *p;
++	const u8 *src = (const u8 *)cp;
+ 	size_t ret = 0;
+ 
+ 	if (!spin_trylock_irqsave(&base_crng.lock, flags))
+@@ -454,10 +448,9 @@ static size_t crng_fast_load(const u8 *c
+ 		spin_unlock_irqrestore(&base_crng.lock, flags);
+ 		return 0;
+ 	}
+-	p = base_crng.key;
+ 	while (len > 0 && crng_init_cnt < CRNG_INIT_CNT_THRESH) {
+-		p[crng_init_cnt % sizeof(base_crng.key)] ^= *cp;
+-		cp++; crng_init_cnt++; len--; ret++;
++		base_crng.key[crng_init_cnt % sizeof(base_crng.key)] ^= *src;
++		src++; crng_init_cnt++; len--; ret++;
+ 	}
+ 	if (crng_init_cnt >= CRNG_INIT_CNT_THRESH) {
+ 		invalidate_batched_entropy();
+@@ -527,42 +520,30 @@ static struct crng_state *select_crng(vo
+  * all), and (2) it doesn't have the performance constraints of
+  * crng_fast_load().
+  *
+- * So we do something more comprehensive which is guaranteed to touch
+- * all of the primary_crng's state, and which uses a LFSR with a
+- * period of 255 as part of the mixing algorithm.  Finally, we do
+- * *not* advance crng_init_cnt since buffer we may get may be something
+- * like a fixed DMI table (for example), which might very well be
+- * unique to the machine, but is otherwise unvarying.
++ * So, we simply hash the contents in with the current key. Finally,
++ * we do *not* advance crng_init_cnt since buffer we may get may be
++ * something like a fixed DMI table (for example), which might very
++ * well be unique to the machine, but is otherwise unvarying.
+  */
+-static int crng_slow_load(const u8 *cp, size_t len)
++static void crng_slow_load(const void *cp, size_t len)
+ {
+ 	unsigned long flags;
+-	static u8 lfsr = 1;
+-	u8 tmp;
+-	unsigned int i, max = sizeof(base_crng.key);
+-	const u8 *src_buf = cp;
+-	u8 *dest_buf = base_crng.key;
++	struct blake2s_state hash;
++
++	blake2s_init(&hash, sizeof(base_crng.key));
+ 
+ 	if (!spin_trylock_irqsave(&base_crng.lock, flags))
+-		return 0;
++		return;
+ 	if (crng_init != 0) {
+ 		spin_unlock_irqrestore(&base_crng.lock, flags);
+-		return 0;
++		return;
+ 	}
+-	if (len > max)
+-		max = len;
+ 
+-	for (i = 0; i < max; i++) {
+-		tmp = lfsr;
+-		lfsr >>= 1;
+-		if (tmp & 1)
+-			lfsr ^= 0xE1;
+-		tmp = dest_buf[i % sizeof(base_crng.key)];
+-		dest_buf[i % sizeof(base_crng.key)] ^= src_buf[i % len] ^ lfsr;
+-		lfsr += (tmp << 3) | (tmp >> 5);
+-	}
++	blake2s_update(&hash, base_crng.key, sizeof(base_crng.key));
++	blake2s_update(&hash, cp, len);
++	blake2s_final(&hash, base_crng.key);
++
+ 	spin_unlock_irqrestore(&base_crng.lock, flags);
+-	return 1;
+ }
+ 
+ static void crng_reseed(void)
+@@ -718,14 +699,15 @@ static void crng_make_state(u32 chacha_s
+ static ssize_t get_random_bytes_user(void __user *buf, size_t nbytes)
+ {
+ 	bool large_request = nbytes > 256;
+-	ssize_t ret = 0, len;
++	ssize_t ret = 0;
++	size_t len;
+ 	u32 chacha_state[CHACHA20_BLOCK_SIZE / sizeof(u32)];
+ 	u8 output[CHACHA20_BLOCK_SIZE];
+ 
+ 	if (!nbytes)
+ 		return 0;
+ 
+-	len = min_t(ssize_t, 32, nbytes);
++	len = min_t(size_t, 32, nbytes);
+ 	crng_make_state(chacha_state, output, len);
+ 
+ 	if (copy_to_user(buf, output, len))
+@@ -745,7 +727,7 @@ static ssize_t get_random_bytes_user(voi
+ 		if (unlikely(chacha_state[12] == 0))
+ 			++chacha_state[13];
+ 
+-		len = min_t(ssize_t, nbytes, CHACHA20_BLOCK_SIZE);
++		len = min_t(size_t, nbytes, CHACHA20_BLOCK_SIZE);
+ 		if (copy_to_user(buf, output, len)) {
+ 			ret = -EFAULT;
+ 			break;
+@@ -783,7 +765,7 @@ struct timer_rand_state {
+  * the entropy pool having similar initial state across largely
+  * identical devices.
+  */
+-void add_device_randomness(const void *buf, unsigned int size)
++void add_device_randomness(const void *buf, size_t size)
+ {
+ 	unsigned long time = random_get_entropy() ^ jiffies;
+ 	unsigned long flags;
+@@ -811,7 +793,7 @@ static struct timer_rand_state input_tim
+  * keyboard scan codes, and 256 upwards for interrupts.
+  *
+  */
+-static void add_timer_randomness(struct timer_rand_state *state, unsigned num)
++static void add_timer_randomness(struct timer_rand_state *state, unsigned int num)
+ {
+ 	struct {
+ 		long jiffies;
+@@ -855,7 +837,7 @@ static void add_timer_randomness(struct
+ 	 * Round down by 1 bit on general principles,
+ 	 * and limit entropy estimate to 12 bits.
+ 	 */
+-	credit_entropy_bits(min_t(int, fls(delta >> 1), 11));
++	credit_entropy_bits(min_t(unsigned int, fls(delta >> 1), 11));
+ }
+ 
+ void add_input_randomness(unsigned int type, unsigned int code,
+@@ -936,8 +918,8 @@ void add_interrupt_randomness(int irq)
+ 	add_interrupt_bench(cycles);
+ 
+ 	if (unlikely(crng_init == 0)) {
+-		if ((fast_pool->count >= 64) &&
+-		    crng_fast_load((u8 *)fast_pool->pool, sizeof(fast_pool->pool)) > 0) {
++		if (fast_pool->count >= 64 &&
++		    crng_fast_load(fast_pool->pool, sizeof(fast_pool->pool)) > 0) {
+ 			fast_pool->count = 0;
+ 			fast_pool->last = now;
+ 			if (spin_trylock(&input_pool.lock)) {
+@@ -955,7 +937,7 @@ void add_interrupt_randomness(int irq)
+ 		return;
+ 
+ 	fast_pool->last = now;
+-	__mix_pool_bytes(&fast_pool->pool, sizeof(fast_pool->pool));
++	_mix_pool_bytes(&fast_pool->pool, sizeof(fast_pool->pool));
+ 	spin_unlock(&input_pool.lock);
+ 
+ 	fast_pool->count = 0;
+@@ -1064,18 +1046,18 @@ static void _warn_unseeded_randomness(co
+  * wait_for_random_bytes() should be called and return 0 at least once
+  * at any point prior.
+  */
+-static void _get_random_bytes(void *buf, int nbytes)
++static void _get_random_bytes(void *buf, size_t nbytes)
+ {
+ 	u32 chacha_state[CHACHA20_BLOCK_SIZE / sizeof(u32)];
+ 	u8 tmp[CHACHA20_BLOCK_SIZE];
+-	ssize_t len;
++	size_t len;
+ 
+ 	trace_get_random_bytes(nbytes, _RET_IP_);
+ 
+ 	if (!nbytes)
+ 		return;
+ 
+-	len = min_t(ssize_t, 32, nbytes);
++	len = min_t(size_t, 32, nbytes);
+ 	crng_make_state(chacha_state, buf, len);
+ 	nbytes -= len;
+ 	buf += len;
+@@ -1098,7 +1080,7 @@ static void _get_random_bytes(void *buf,
+ 	memzero_explicit(chacha_state, sizeof(chacha_state));
+ }
+ 
+-void get_random_bytes(void *buf, int nbytes)
++void get_random_bytes(void *buf, size_t nbytes)
+ {
+ 	static void *previous;
+ 
+@@ -1259,25 +1241,19 @@ EXPORT_SYMBOL(del_random_ready_callback)
+ 
+ /*
+  * This function will use the architecture-specific hardware random
+- * number generator if it is available.  The arch-specific hw RNG will
+- * almost certainly be faster than what we can do in software, but it
+- * is impossible to verify that it is implemented securely (as
+- * opposed, to, say, the AES encryption of a sequence number using a
+- * key known by the NSA).  So it's useful if we need the speed, but
+- * only if we're willing to trust the hardware manufacturer not to
+- * have put in a back door.
+- *
+- * Return number of bytes filled in.
++ * number generator if it is available. It is not recommended for
++ * use. Use get_random_bytes() instead. It returns the number of
++ * bytes filled in.
+  */
+-int __must_check get_random_bytes_arch(void *buf, int nbytes)
++size_t __must_check get_random_bytes_arch(void *buf, size_t nbytes)
+ {
+-	int left = nbytes;
++	size_t left = nbytes;
+ 	u8 *p = buf;
+ 
+ 	trace_get_random_bytes_arch(left, _RET_IP_);
+ 	while (left) {
+ 		unsigned long v;
+-		int chunk = min_t(int, left, sizeof(unsigned long));
++		size_t chunk = min_t(size_t, left, sizeof(unsigned long));
+ 
+ 		if (!arch_get_random_long(&v))
+ 			break;
+@@ -1310,12 +1286,12 @@ early_param("random.trust_cpu", parse_tr
+  */
+ int __init rand_initialize(void)
+ {
+-	int i;
++	size_t i;
+ 	ktime_t now = ktime_get_real();
+ 	bool arch_init = true;
+ 	unsigned long rv;
+ 
+-	for (i = BLAKE2S_BLOCK_SIZE; i > 0; i -= sizeof(rv)) {
++	for (i = 0; i < BLAKE2S_BLOCK_SIZE; i += sizeof(rv)) {
+ 		if (!arch_get_random_seed_long_early(&rv) &&
+ 		    !arch_get_random_long_early(&rv)) {
+ 			rv = random_get_entropy();
+@@ -1364,7 +1340,7 @@ static ssize_t urandom_read_nowarn(struc
+ 
+ 	nbytes = min_t(size_t, nbytes, INT_MAX >> 6);
+ 	ret = get_random_bytes_user(buf, nbytes);
+-	trace_urandom_read(8 * nbytes, 0, input_pool.entropy_count);
++	trace_urandom_read(nbytes, input_pool.entropy_count);
+ 	return ret;
+ }
+ 
+@@ -1408,19 +1384,18 @@ static unsigned int random_poll(struct f
+ 	return mask;
+ }
+ 
+-static int write_pool(const char __user *buffer, size_t count)
++static int write_pool(const char __user *ubuf, size_t count)
+ {
+-	size_t bytes;
+-	u8 buf[BLAKE2S_BLOCK_SIZE];
+-	const char __user *p = buffer;
+-
+-	while (count > 0) {
+-		bytes = min(count, sizeof(buf));
+-		if (copy_from_user(buf, p, bytes))
++	size_t len;
++	u8 block[BLAKE2S_BLOCK_SIZE];
++
++	while (count) {
++		len = min(count, sizeof(block));
++		if (copy_from_user(block, ubuf, len))
+ 			return -EFAULT;
+-		count -= bytes;
+-		p += bytes;
+-		mix_pool_bytes(buf, bytes);
++		count -= len;
++		ubuf += len;
++		mix_pool_bytes(block, len);
+ 		cond_resched();
+ 	}
+ 
+@@ -1430,7 +1405,7 @@ static int write_pool(const char __user
+ static ssize_t random_write(struct file *file, const char __user *buffer,
+ 			    size_t count, loff_t *ppos)
+ {
+-	size_t ret;
++	int ret;
+ 
+ 	ret = write_pool(buffer, count);
+ 	if (ret)
+@@ -1524,8 +1499,6 @@ const struct file_operations urandom_fop
+ SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count, unsigned int,
+ 		flags)
+ {
+-	int ret;
+-
+ 	if (flags & ~(GRND_NONBLOCK | GRND_RANDOM | GRND_INSECURE))
+ 		return -EINVAL;
+ 
+@@ -1540,6 +1513,8 @@ SYSCALL_DEFINE3(getrandom, char __user *
+ 		count = INT_MAX;
+ 
+ 	if (!(flags & GRND_INSECURE) && !crng_ready()) {
++		int ret;
++
+ 		if (flags & GRND_NONBLOCK)
+ 			return -EAGAIN;
+ 		ret = wait_for_random_bytes();
+@@ -1798,7 +1773,7 @@ unsigned long randomize_page(unsigned lo
+  * Those devices may produce endless random bits and will be throttled
+  * when our pool is full.
+  */
+-void add_hwgenerator_randomness(const char *buffer, size_t count,
++void add_hwgenerator_randomness(const void *buffer, size_t count,
+ 				size_t entropy)
+ {
+ 	if (unlikely(crng_init == 0)) {
+@@ -1829,7 +1804,7 @@ EXPORT_SYMBOL_GPL(add_hwgenerator_random
+  * it would be regarded as device data.
+  * The decision is controlled by CONFIG_RANDOM_TRUST_BOOTLOADER.
+  */
+-void add_bootloader_randomness(const void *buf, unsigned int size)
++void add_bootloader_randomness(const void *buf, size_t size)
+ {
+ 	if (IS_ENABLED(CONFIG_RANDOM_TRUST_BOOTLOADER))
+ 		add_hwgenerator_randomness(buf, size, size * 8);
+--- a/include/linux/hw_random.h
++++ b/include/linux/hw_random.h
+@@ -61,6 +61,6 @@ extern int devm_hwrng_register(struct de
+ extern void hwrng_unregister(struct hwrng *rng);
+ extern void devm_hwrng_unregister(struct device *dve, struct hwrng *rng);
+ /** Feed random bits into the pool. */
+-extern void add_hwgenerator_randomness(const char *buffer, size_t count, size_t entropy);
++extern void add_hwgenerator_randomness(const void *buffer, size_t count, size_t entropy);
+ 
+ #endif /* LINUX_HWRANDOM_H_ */
+--- a/include/linux/random.h
++++ b/include/linux/random.h
+@@ -19,8 +19,8 @@ struct random_ready_callback {
+ 	struct module *owner;
+ };
+ 
+-extern void add_device_randomness(const void *, unsigned int);
+-extern void add_bootloader_randomness(const void *, unsigned int);
++extern void add_device_randomness(const void *, size_t);
++extern void add_bootloader_randomness(const void *, size_t);
+ 
+ #if defined(LATENT_ENTROPY_PLUGIN) && !defined(__CHECKER__)
+ static inline void add_latent_entropy(void)
+@@ -36,13 +36,13 @@ extern void add_input_randomness(unsigne
+ 				 unsigned int value) __latent_entropy;
+ extern void add_interrupt_randomness(int irq) __latent_entropy;
+ 
+-extern void get_random_bytes(void *buf, int nbytes);
++extern void get_random_bytes(void *buf, size_t nbytes);
+ extern int wait_for_random_bytes(void);
+ extern int __init rand_initialize(void);
+ extern bool rng_is_initialized(void);
+ extern int add_random_ready_callback(struct random_ready_callback *rdy);
+ extern void del_random_ready_callback(struct random_ready_callback *rdy);
+-extern int __must_check get_random_bytes_arch(void *buf, int nbytes);
++extern size_t __must_check get_random_bytes_arch(void *buf, size_t nbytes);
+ 
+ #ifndef MODULE
+ extern const struct file_operations random_fops, urandom_fops;
+@@ -65,7 +65,7 @@ static inline unsigned long get_random_l
+ 
+ /* Calls wait_for_random_bytes() and then calls get_random_bytes(buf, nbytes).
+  * Returns the result of the call to wait_for_random_bytes. */
+-static inline int get_random_bytes_wait(void *buf, int nbytes)
++static inline int get_random_bytes_wait(void *buf, size_t nbytes)
+ {
+ 	int ret = wait_for_random_bytes();
+ 	get_random_bytes(buf, nbytes);
+--- a/include/trace/events/random.h
++++ b/include/trace/events/random.h
+@@ -8,13 +8,13 @@
+ #include <linux/tracepoint.h>
+ 
+ TRACE_EVENT(add_device_randomness,
+-	TP_PROTO(int bytes, unsigned long IP),
++	TP_PROTO(size_t bytes, unsigned long IP),
+ 
+ 	TP_ARGS(bytes, IP),
+ 
+ 	TP_STRUCT__entry(
+-		__field(	  int,	bytes			)
+-		__field(unsigned long,	IP			)
++		__field(size_t,		bytes	)
++		__field(unsigned long,	IP	)
+ 	),
+ 
+ 	TP_fast_assign(
+@@ -22,18 +22,18 @@ TRACE_EVENT(add_device_randomness,
+ 		__entry->IP		= IP;
+ 	),
+ 
+-	TP_printk("bytes %d caller %pS",
++	TP_printk("bytes %zu caller %pS",
+ 		__entry->bytes, (void *)__entry->IP)
+ );
+ 
+ DECLARE_EVENT_CLASS(random__mix_pool_bytes,
+-	TP_PROTO(int bytes, unsigned long IP),
++	TP_PROTO(size_t bytes, unsigned long IP),
+ 
+ 	TP_ARGS(bytes, IP),
+ 
+ 	TP_STRUCT__entry(
+-		__field(	  int,	bytes			)
+-		__field(unsigned long,	IP			)
++		__field(size_t,		bytes	)
++		__field(unsigned long,	IP	)
+ 	),
+ 
+ 	TP_fast_assign(
+@@ -41,12 +41,12 @@ DECLARE_EVENT_CLASS(random__mix_pool_byt
+ 		__entry->IP		= IP;
+ 	),
+ 
+-	TP_printk("input pool: bytes %d caller %pS",
++	TP_printk("input pool: bytes %zu caller %pS",
+ 		  __entry->bytes, (void *)__entry->IP)
+ );
+ 
+ DEFINE_EVENT(random__mix_pool_bytes, mix_pool_bytes,
+-	TP_PROTO(int bytes, unsigned long IP),
++	TP_PROTO(size_t bytes, unsigned long IP),
+ 
+ 	TP_ARGS(bytes, IP)
+ );
+@@ -58,13 +58,13 @@ DEFINE_EVENT(random__mix_pool_bytes, mix
+ );
+ 
+ TRACE_EVENT(credit_entropy_bits,
+-	TP_PROTO(int bits, int entropy_count, unsigned long IP),
++	TP_PROTO(size_t bits, size_t entropy_count, unsigned long IP),
+ 
+ 	TP_ARGS(bits, entropy_count, IP),
+ 
+ 	TP_STRUCT__entry(
+-		__field(	  int,	bits			)
+-		__field(	  int,	entropy_count		)
++		__field(size_t,		bits			)
++		__field(size_t,		entropy_count		)
+ 		__field(unsigned long,	IP			)
+ 	),
+ 
+@@ -74,34 +74,34 @@ TRACE_EVENT(credit_entropy_bits,
+ 		__entry->IP		= IP;
+ 	),
+ 
+-	TP_printk("input pool: bits %d entropy_count %d caller %pS",
++	TP_printk("input pool: bits %zu entropy_count %zu caller %pS",
+ 		  __entry->bits, __entry->entropy_count, (void *)__entry->IP)
+ );
+ 
+ TRACE_EVENT(add_input_randomness,
+-	TP_PROTO(int input_bits),
++	TP_PROTO(size_t input_bits),
+ 
+ 	TP_ARGS(input_bits),
+ 
+ 	TP_STRUCT__entry(
+-		__field(	  int,	input_bits		)
++		__field(size_t,	input_bits		)
+ 	),
+ 
+ 	TP_fast_assign(
+ 		__entry->input_bits	= input_bits;
+ 	),
+ 
+-	TP_printk("input_pool_bits %d", __entry->input_bits)
++	TP_printk("input_pool_bits %zu", __entry->input_bits)
+ );
+ 
+ TRACE_EVENT(add_disk_randomness,
+-	TP_PROTO(dev_t dev, int input_bits),
++	TP_PROTO(dev_t dev, size_t input_bits),
+ 
+ 	TP_ARGS(dev, input_bits),
+ 
+ 	TP_STRUCT__entry(
+-		__field(	dev_t,	dev			)
+-		__field(	  int,	input_bits		)
++		__field(dev_t,		dev			)
++		__field(size_t,		input_bits		)
+ 	),
+ 
+ 	TP_fast_assign(
+@@ -109,17 +109,17 @@ TRACE_EVENT(add_disk_randomness,
+ 		__entry->input_bits	= input_bits;
+ 	),
+ 
+-	TP_printk("dev %d,%d input_pool_bits %d", MAJOR(__entry->dev),
++	TP_printk("dev %d,%d input_pool_bits %zu", MAJOR(__entry->dev),
+ 		  MINOR(__entry->dev), __entry->input_bits)
+ );
+ 
+ DECLARE_EVENT_CLASS(random__get_random_bytes,
+-	TP_PROTO(int nbytes, unsigned long IP),
++	TP_PROTO(size_t nbytes, unsigned long IP),
+ 
+ 	TP_ARGS(nbytes, IP),
+ 
+ 	TP_STRUCT__entry(
+-		__field(	  int,	nbytes			)
++		__field(size_t,		nbytes			)
+ 		__field(unsigned long,	IP			)
+ 	),
+ 
+@@ -128,29 +128,29 @@ DECLARE_EVENT_CLASS(random__get_random_b
+ 		__entry->IP		= IP;
+ 	),
+ 
+-	TP_printk("nbytes %d caller %pS", __entry->nbytes, (void *)__entry->IP)
++	TP_printk("nbytes %zu caller %pS", __entry->nbytes, (void *)__entry->IP)
+ );
+ 
+ DEFINE_EVENT(random__get_random_bytes, get_random_bytes,
+-	TP_PROTO(int nbytes, unsigned long IP),
++	TP_PROTO(size_t nbytes, unsigned long IP),
+ 
+ 	TP_ARGS(nbytes, IP)
+ );
+ 
+ DEFINE_EVENT(random__get_random_bytes, get_random_bytes_arch,
+-	TP_PROTO(int nbytes, unsigned long IP),
++	TP_PROTO(size_t nbytes, unsigned long IP),
+ 
+ 	TP_ARGS(nbytes, IP)
+ );
+ 
+ DECLARE_EVENT_CLASS(random__extract_entropy,
+-	TP_PROTO(int nbytes, int entropy_count),
++	TP_PROTO(size_t nbytes, size_t entropy_count),
+ 
+ 	TP_ARGS(nbytes, entropy_count),
+ 
+ 	TP_STRUCT__entry(
+-		__field(	  int,	nbytes			)
+-		__field(	  int,	entropy_count		)
++		__field(  size_t,	nbytes			)
++		__field(  size_t,	entropy_count		)
+ 	),
+ 
+ 	TP_fast_assign(
+@@ -158,37 +158,34 @@ DECLARE_EVENT_CLASS(random__extract_entr
+ 		__entry->entropy_count	= entropy_count;
+ 	),
+ 
+-	TP_printk("input pool: nbytes %d entropy_count %d",
++	TP_printk("input pool: nbytes %zu entropy_count %zu",
+ 		  __entry->nbytes, __entry->entropy_count)
+ );
+ 
+ 
+ DEFINE_EVENT(random__extract_entropy, extract_entropy,
+-	TP_PROTO(int nbytes, int entropy_count),
++	TP_PROTO(size_t nbytes, size_t entropy_count),
+ 
+ 	TP_ARGS(nbytes, entropy_count)
+ );
+ 
+ TRACE_EVENT(urandom_read,
+-	TP_PROTO(int got_bits, int pool_left, int input_left),
++	TP_PROTO(size_t nbytes, size_t entropy_count),
+ 
+-	TP_ARGS(got_bits, pool_left, input_left),
++	TP_ARGS(nbytes, entropy_count),
+ 
+ 	TP_STRUCT__entry(
+-		__field(	  int,	got_bits		)
+-		__field(	  int,	pool_left		)
+-		__field(	  int,	input_left		)
++		__field( size_t,	nbytes		)
++		__field( size_t,	entropy_count	)
+ 	),
+ 
+ 	TP_fast_assign(
+-		__entry->got_bits	= got_bits;
+-		__entry->pool_left	= pool_left;
+-		__entry->input_left	= input_left;
++		__entry->nbytes		= nbytes;
++		__entry->entropy_count	= entropy_count;
+ 	),
+ 
+-	TP_printk("got_bits %d nonblocking_pool_entropy_left %d "
+-		  "input_entropy_left %d", __entry->got_bits,
+-		  __entry->pool_left, __entry->input_left)
++	TP_printk("reading: nbytes %zu entropy_count %zu",
++		  __entry->nbytes, __entry->entropy_count)
+ );
+ 
+ #endif /* _TRACE_RANDOM_H */
 
->
-> TBH - given the strong dependency on being the very last command and
-> this being all Linux specific (you won't need to do something similar
-> with Windows) - I think the way you already did it makes the most sense.
-> It seems to me the ACPI device model doesn't really work well for this
-> scenario.
->
-> >
-> >>
-> >>> 2) using newly introduced acpi_s2idle_dev_ops hypervisor_notify() cal=
-l
-> >>> will allow to register handler from Intel x86/intel/pmc/core.c driver
-> >>> and/or AMD x86/amd-pmc.c driver. Therefore we will need to get only
-> >>> Intel and/or AMD approval about extending the ACPI LPS0 _DSM method,
-> >>> correct?
-> >>>
-> >>
-> >> Right now the only thing that hooks prepare()/restore() is the amd-pmc
-> >> driver (unless Intel's PMC had a change I didn't catch yet).
-> >>
-> >> I don't think you should be changing any existing drivers but rather
-> >> introduce another platform driver for this specific case.
-> >>
-> >> So it would be something like this:
-> >>
-> >> acpi_s2idle_prepare_late
-> >> -> prepare()
-> >> --> AMD: amd_pmc handler for prepare()
-> >> --> Intel: intel_pmc handler for prepare() (conceptual)
-> >> --> HYPE0001 device: new driver's prepare() routine
-> >>
-> >> So the platform driver would match the HYPE0001 device to load, and it
-> >> wouldn't do anything other than provide a prepare()/restore() handler
-> >> for your case.
-> >>
-> >> You don't need to change any existing specs.  If anything a new spec t=
-o
-> >> go with this new ACPI device would be made.  Someone would need to
-> >> reserve the ID and such for it, but I think you can mock it up in adva=
-nce.
-> >
-> > Thank you for your explanation. This means that I should register
-> > "HYPE" through https://nam11.safelinks.protection.outlook.com/?url=3Dht=
-tps%3A%2F%2Fuefi.org%2FPNP_ACPI_Registry&amp;data=3D05%7C01%7Cmario.limonci=
-ello%40amd.com%7C49512293908e4ee17e8c08da54351ed5%7C3dd8961fe4884e608e11a82=
-d994e183d%7C0%7C0%7C637914884458918039%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4w=
-LjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;=
-sdata=3Dv5VsnxAINiJhOMLpwORLHd13WcYBHf%2FGSNv8Bjhyino%3D&amp;reserved=3D0 b=
-efore introducing
-> > this new driver to Linux.
-> > I have no experience with the above, so I wonder who should be
-> > responsible for maintaining such ACPI ID since it will not belong to
-> > any specific vendor? There is an example of e.g. COREBOOT PROJECT
-> > using "BOOT" ACPI ID [1], which seems similar in terms of not
-> > specifying any vendor but rather the project as a responsible entity.
-> > Maybe you have some recommendations?
->
-> Maybe LF could own a namespace and ID?  But I would suggest you make a
-> mockup that everything works this way before you go explore too much.
 
-Yeah, sure.
-
->
-> Also make sure Rafael is aligned with your mockup.
-
-Agree.
-
->
-> >
-> > I am also not sure if and where a specification describing such a
-> > device has to be maintained. Since "HYPE0001" will have its own _DSM
-> > so will it be required to document it somewhere rather than just using
-> > it in the driver and preparing proper ACPI tables for guest?
-> >
-> >>
-> >>> I wonder if this will be affordable so just re-thinking loudly if
-> >>> there is no other mechanism that could be suggested and used upstream
-> >>> so we could notify hypervisor/vmm about guest entering s2idle state?
-> >>> Especially that such _DSM function will be introduced only to trap on
-> >>> some fake MMIO/PIO access and will be useful only for guest ACPI
-> >>> tables?
-> >>>
-> >>
-> >> Do you need to worry about Microsoft guests using Modern Standby too o=
-r
-> >> is that out of the scope of your problem set?  I think you'll be a lot
-> >> more limited in how this can behave and where you can modify things if=
- so.
-> >>
-> >
-> > I do not need to worry about Microsoft guests.
->
-> Makes life a lot easier :)
-
-Agree :) and thank you for all your feedback,
-Grzegorz
