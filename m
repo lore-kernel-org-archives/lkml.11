@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A57C5CCA47C
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:33:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5B04C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:33:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234164AbiFWRdl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:33:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59382 "EHLO
+        id S234195AbiFWRdq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:33:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234266AbiFWRcW (ORCPT
+        with ESMTP id S234298AbiFWRcY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:32:22 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D29E1794C4;
-        Thu, 23 Jun 2022 10:05:12 -0700 (PDT)
+        Thu, 23 Jun 2022 13:32:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53737794D9;
+        Thu, 23 Jun 2022 10:05:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 1E0D9CE258A;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9ED72B82490;
+        Thu, 23 Jun 2022 17:05:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 053F0C3411B;
         Thu, 23 Jun 2022 17:05:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09BD0C3411B;
-        Thu, 23 Jun 2022 17:05:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003909;
-        bh=Fks3+OFrDCp2LBtgm5CxPt8bbalF/wsU+t94FuobBRA=;
+        s=korg; t=1656003912;
+        bh=DJOfc8IEF1VN/EqCHdagr52Mi4FS6cladU3yklwt0is=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oOolqtw+SkRElrtLJbm+MtDY+Izla+GdtzcwmrWxSLHrA3eVAsZ3OEtDlp6YBB5LH
-         NI4T0IE95n0t0OpUcaTnpw7gHy7mSAvM3nLeQGBog2JMGh/Bt2bsWTWfin7N/8YW4M
-         Sfa3XVFt4FWnD1ZRKLHQdF68Pu+hM1Qzs3GccrBs=
+        b=dr7HuVYc/GWAUVbC+d0+pH4OSzGU/QyLPZxPpd/hBtuvpO5cIAIgLVpJVWtQPULCs
+         RcS1huTyb1rFechbmuvHq2kiYSlov/xWi7ycNxlal8iKzbk9Tj4fDJvAEgv7kbcose
+         xW/r0YrL1Sl5rRfc3b61jYAovK3c33EmPpCMf3t8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        stable@vger.kernel.org,
         Dominik Brodowski <linux@dominikbrodowski.net>,
         "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 125/237] random: only wake up writers after zap if threshold was passed
-Date:   Thu, 23 Jun 2022 18:42:39 +0200
-Message-Id: <20220623164346.751723926@linuxfoundation.org>
+Subject: [PATCH 4.14 126/237] random: cleanup UUID handling
+Date:   Thu, 23 Jun 2022 18:42:40 +0200
+Message-Id: <20220623164346.779975900@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164343.132308638@linuxfoundation.org>
 References: <20220623164343.132308638@linuxfoundation.org>
@@ -51,32 +51,91 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-commit a3f9e8910e1584d7725ef7d5ac870920d42d0bb4 upstream.
+commit 64276a9939ff414f2f0db38036cf4e1a0a703394 upstream.
 
-The only time that we need to wake up /dev/random writers on
-RNDCLEARPOOL/RNDZAPPOOL is when we're changing from a value that is
-greater than or equal to POOL_MIN_BITS to zero, because if we're
-changing from below POOL_MIN_BITS to zero, the writers are already
-unblocked.
+Rather than hard coding various lengths, we can use the right constants.
+Strings should be `char *` while buffers should be `u8 *`. Rather than
+have a nonsensical and unused maxlength, just remove it. Finally, use
+snprintf instead of sprintf, just out of good hygiene.
 
-Cc: Theodore Ts'o <tytso@mit.edu>
+As well, remove the old comment about returning a binary UUID via the
+binary sysctl syscall. That syscall was removed from the kernel in 5.5,
+and actually, the "uuid_strategy" function and related infrastructure
+for even serving it via the binary sysctl syscall was removed with
+894d2491153a ("sysctl drivers: Remove dead binary sysctl support") back
+in 2.6.33.
+
 Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/char/random.c |   29 +++++++++++++----------------
+ 1 file changed, 13 insertions(+), 16 deletions(-)
 
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -1577,7 +1577,7 @@ static long random_ioctl(struct file *f,
- 		 */
- 		if (!capable(CAP_SYS_ADMIN))
- 			return -EPERM;
--		if (xchg(&input_pool.entropy_count, 0)) {
-+		if (xchg(&input_pool.entropy_count, 0) >= POOL_MIN_BITS) {
- 			wake_up_interruptible(&random_write_wait);
- 			kill_fasync(&fasync, SIGIO, POLL_OUT);
- 		}
+@@ -1654,22 +1654,25 @@ const struct file_operations urandom_fop
+ static int sysctl_random_min_urandom_seed = 60;
+ static int sysctl_random_write_wakeup_bits = POOL_MIN_BITS;
+ static int sysctl_poolsize = POOL_BITS;
+-static char sysctl_bootid[16];
++static u8 sysctl_bootid[UUID_SIZE];
+ 
+ /*
+  * This function is used to return both the bootid UUID, and random
+- * UUID.  The difference is in whether table->data is NULL; if it is,
++ * UUID. The difference is in whether table->data is NULL; if it is,
+  * then a new UUID is generated and returned to the user.
+- *
+- * If the user accesses this via the proc interface, the UUID will be
+- * returned as an ASCII string in the standard UUID format; if via the
+- * sysctl system call, as 16 bytes of binary data.
+  */
+ static int proc_do_uuid(struct ctl_table *table, int write,
+ 			void __user *buffer, size_t *lenp, loff_t *ppos)
+ {
+-	struct ctl_table fake_table;
+-	unsigned char buf[64], tmp_uuid[16], *uuid;
++	u8 tmp_uuid[UUID_SIZE], *uuid;
++	char uuid_string[UUID_STRING_LEN + 1];
++	struct ctl_table fake_table = {
++		.data = uuid_string,
++		.maxlen = UUID_STRING_LEN
++	};
++
++	if (write)
++		return -EPERM;
+ 
+ 	uuid = table->data;
+ 	if (!uuid) {
+@@ -1684,12 +1687,8 @@ static int proc_do_uuid(struct ctl_table
+ 		spin_unlock(&bootid_spinlock);
+ 	}
+ 
+-	sprintf(buf, "%pU", uuid);
+-
+-	fake_table.data = buf;
+-	fake_table.maxlen = sizeof(buf);
+-
+-	return proc_dostring(&fake_table, write, buffer, lenp, ppos);
++	snprintf(uuid_string, sizeof(uuid_string), "%pU", uuid);
++	return proc_dostring(&fake_table, 0, buffer, lenp, ppos);
+ }
+ 
+ extern struct ctl_table random_table[];
+@@ -1725,13 +1724,11 @@ struct ctl_table random_table[] = {
+ 	{
+ 		.procname	= "boot_id",
+ 		.data		= &sysctl_bootid,
+-		.maxlen		= 16,
+ 		.mode		= 0444,
+ 		.proc_handler	= proc_do_uuid,
+ 	},
+ 	{
+ 		.procname	= "uuid",
+-		.maxlen		= 16,
+ 		.mode		= 0444,
+ 		.proc_handler	= proc_do_uuid,
+ 	},
 
 
