@@ -2,116 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DABB1C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 21:38:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E65DCCA47C
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 21:46:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229649AbiFWViH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 17:38:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53842 "EHLO
+        id S229553AbiFWVp6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 17:45:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230251AbiFWViD (ORCPT
+        with ESMTP id S229469AbiFWVp5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 17:38:03 -0400
-Received: from mout02.posteo.de (mout02.posteo.de [185.67.36.66])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB56B1B78D
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 14:38:00 -0700 (PDT)
-Received: from submission (posteo.de [185.67.36.169]) 
-        by mout02.posteo.de (Postfix) with ESMTPS id E9AA8240108
-        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 23:37:58 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=posteo.de; s=2017;
-        t=1656020278; bh=o+zEnjZneqzTskv0wxGKR7oSFYyBticMFCftbUGH1Ig=;
-        h=Date:From:To:Cc:Subject:From;
-        b=fDhojbkUqGTnsp5YKlJUpWEjbmepgeiSxyaVB9ZcMowt5cbfP8JsahOhMee9x6Ou2
-         Rba2VMlwScFo+pE9IxammdExCoh3jT2OrGo5nufTnLxCY2fkkRB8jJgRCMFC9JQQbB
-         Wcqly3lwK8A9zGZAZNub0uqYhKpYRjzmc9qbVpsAew1mgtuybrQnBAADm4KKdSUGpw
-         ZWWE+UTC3jfIwQJdUgAJ62tXxy2TzPOCpVHh0oOVSfWwWZeXlE37rHD5ElwNQu7txQ
-         cfyzF54z8pjhhBhFwL1fNSzWhua8e0iYhb6Qj80vLkbNXDxs0qVuIcGznwLeXLsddA
-         BxnT7G5w7s+3A==
-Received: from customer (localhost [127.0.0.1])
-        by submission (posteo.de) with ESMTPSA id 4LTYWp2XHgz6tmR;
-        Thu, 23 Jun 2022 23:37:58 +0200 (CEST)
-Date:   Thu, 23 Jun 2022 21:37:06 +0000
-From:   Tom Schwindl <schwindl@posteo.de>
-To:     corbet@lwn.net
-Cc:     linus.walleij@linaro.org, brgl@bgdev.pl,
-        linux-gpio@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] docs: driver-api: gpio: Fix some typos
-Message-ID: <YrTdAv3YPlCiDr2u@posteo.de>
+        Thu, 23 Jun 2022 17:45:57 -0400
+Received: from mail-qv1-f46.google.com (mail-qv1-f46.google.com [209.85.219.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E55E25DF10
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 14:45:56 -0700 (PDT)
+Received: by mail-qv1-f46.google.com with SMTP id y14so1953986qvs.10
+        for <linux-kernel@vger.kernel.org>; Thu, 23 Jun 2022 14:45:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:content-transfer-encoding;
+        bh=0CKIvS9aMMD66vxtqOCpuSRDl9nO4eJxY8IunK0l4JM=;
+        b=kiXTECQuqsVsoAs6FW8RtPr1gnI5f+58WVXHXXPoKqUaxVWZz9GwfoZQevO566/mSE
+         7rHxJ2QYgzSlhzU/3+ZpZSXb1Yvi/I1+4kp15iCNFLuG0C3DT1mzwz8Oss5Wuwed3uhF
+         d+t16nmkRA/RJf/jXj0NhFhDJ5ni5ehsdYBikC5/wL8Ztc8tq+qD3KwRMNVni7NaG8Qs
+         7FVpnXKL9BbG52h+JhKp+qBVdZAC60t9hV5omZOSSfD4SaNT4uTRCbC/HgTJYomjI4ya
+         clcc2vFCLsK4utYC4jT+BRNtCKb9AvNyVCvnesPtQ1OpHdxPodGQj6KI5sdoKwh010YI
+         4xgw==
+X-Gm-Message-State: AJIora9hKm0dPTwh60DHuxv3CLm+XGnz7z31RYbwoCai/+gUWUW0DwY8
+        pjUkR8tU3/i2FxdzCQDo5mF70iyrpdZ4af/XDFM=
+X-Google-Smtp-Source: AGRyM1v2usadGTyZlqb6Ml0femKSWEGiKQVOdlevtUzZRfFJcHhEqUEnKteRGPis2XQ5p5NCS+A1cw==
+X-Received: by 2002:a05:6214:e83:b0:470:54c3:e18e with SMTP id hf3-20020a0562140e8300b0047054c3e18emr13015049qvb.3.1656020755830;
+        Thu, 23 Jun 2022 14:45:55 -0700 (PDT)
+Received: from castiana ([2602:fc62:a:35::50])
+        by smtp.gmail.com with ESMTPSA id n8-20020a05620a222800b006ab935c1563sm483237qkh.8.2022.06.23.14.45.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Jun 2022 14:45:55 -0700 (PDT)
+Date:   Thu, 23 Jun 2022 16:45:52 -0500
+From:   =?iso-8859-1?Q?St=E9phane?= Graber <stgraber@ubuntu.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Faiyaz Mohammed <faiyazm@codeaurora.org>,
+        =?iso-8859-1?Q?St=E9phane?= Graber <stgraber@ubuntu.com>,
+        stable@vger.kernel.org
+Subject: [PATCH RESEND] tools/vm/slabinfo: Handle files in debugfs
+Message-ID: <YrTfEHvpysJAVWWr@castiana>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Correct some simple spelling mistakes in consumer.rst, driver.rst
-and using-gpio.rst.
+Commit 64dd68497be76 relocated and renamed the alloc_calls and
+free_calls files from /sys/kernel/slab/NAME/*_calls over to
+/sys/kernel/debug/slab/NAME/*_calls but didn't update the slabinfo tool
+with the new location.
 
-Signed-off-by: Tom Schwindl <schwindl@posteo.de>
+This change will now have slabinfo look at the new location (and filenames)
+with a fallback to the prior files.
+
+Fixes: 64dd68497be76 ("mm: slub: move sysfs slab alloc/free interfaces to debugfs")
+Cc: stable@vger.kernel.org
+Signed-off-by: Stéphane Graber <stgraber@ubuntu.com>
+Tested-by: Stéphane Graber <stgraber@ubuntu.com>
 ---
- Documentation/driver-api/gpio/consumer.rst   | 2 +-
- Documentation/driver-api/gpio/driver.rst     | 6 +++---
- Documentation/driver-api/gpio/using-gpio.rst | 2 +-
- 3 files changed, 5 insertions(+), 5 deletions(-)
+ tools/vm/slabinfo.c | 26 ++++++++++++++++++++++++--
+ 1 file changed, 24 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/driver-api/gpio/consumer.rst b/Documentation/driver-api/gpio/consumer.rst
-index 72bcf5f5e3a2..de6fc79ad6f0 100644
---- a/Documentation/driver-api/gpio/consumer.rst
-+++ b/Documentation/driver-api/gpio/consumer.rst
-@@ -114,7 +114,7 @@ For a function using multiple GPIOs all of those can be obtained with one call::
+diff --git a/tools/vm/slabinfo.c b/tools/vm/slabinfo.c
+index 9b68658b6bb8..5b98f3ee58a5 100644
+--- a/tools/vm/slabinfo.c
++++ b/tools/vm/slabinfo.c
+@@ -233,6 +233,24 @@ static unsigned long read_slab_obj(struct slabinfo *s, const char *name)
+ 	return l;
+ }
  
- This function returns a struct gpio_descs which contains an array of
- descriptors.  It also contains a pointer to a gpiolib private structure which,
--if passed back to get/set array functions, may speed up I/O proocessing::
-+if passed back to get/set array functions, may speed up I/O processing::
++static unsigned long read_debug_slab_obj(struct slabinfo *s, const char *name)
++{
++	char x[128];
++	FILE *f;
++	size_t l;
++
++	snprintf(x, 128, "/sys/kernel/debug/slab/%s/%s", s->name, name);
++	f = fopen(x, "r");
++	if (!f) {
++		buffer[0] = 0;
++		l = 0;
++	} else {
++		l = fread(buffer, 1, sizeof(buffer), f);
++		buffer[l] = 0;
++		fclose(f);
++	}
++	return l;
++}
  
- 	struct gpio_descs {
- 		struct gpio_array *info;
-diff --git a/Documentation/driver-api/gpio/driver.rst b/Documentation/driver-api/gpio/driver.rst
-index 70ff43ac4fcc..6baaeab79534 100644
---- a/Documentation/driver-api/gpio/driver.rst
-+++ b/Documentation/driver-api/gpio/driver.rst
-@@ -119,7 +119,7 @@ GPIO lines with debounce support
- Debouncing is a configuration set to a pin indicating that it is connected to
- a mechanical switch or button, or similar that may bounce. Bouncing means the
- line is pulled high/low quickly at very short intervals for mechanical
--reasons. This can result in the value being unstable or irqs fireing repeatedly
-+reasons. This can result in the value being unstable or irqs firing repeatedly
- unless the line is debounced.
+ /*
+  * Put a size string together
+@@ -409,14 +427,18 @@ static void show_tracking(struct slabinfo *s)
+ {
+ 	printf("\n%s: Kernel object allocation\n", s->name);
+ 	printf("-----------------------------------------------------------------------\n");
+-	if (read_slab_obj(s, "alloc_calls"))
++	if (read_debug_slab_obj(s, "alloc_traces"))
++		printf("%s", buffer);
++	else if (read_slab_obj(s, "alloc_calls"))
+ 		printf("%s", buffer);
+ 	else
+ 		printf("No Data\n");
  
- Debouncing in practice involves setting up a timer when something happens on
-@@ -219,7 +219,7 @@ use a trick: when a line is set as output, if the line is flagged as open
- drain, and the IN output value is low, it will be driven low as usual. But
- if the IN output value is set to high, it will instead *NOT* be driven high,
- instead it will be switched to input, as input mode is high impedance, thus
--achieveing an "open drain emulation" of sorts: electrically the behaviour will
-+achieving an "open drain emulation" of sorts: electrically the behaviour will
- be identical, with the exception of possible hardware glitches when switching
- the mode of the line.
- 
-@@ -642,7 +642,7 @@ In this case the typical set-up will look like this:
- 
- As you can see pretty similar, but you do not supply a parent handler for
- the IRQ, instead a parent irqdomain, an fwnode for the hardware and
--a funcion .child_to_parent_hwirq() that has the purpose of looking up
-+a function .child_to_parent_hwirq() that has the purpose of looking up
- the parent hardware irq from a child (i.e. this gpio chip) hardware irq.
- As always it is good to look at examples in the kernel tree for advice
- on how to find the required pieces.
-diff --git a/Documentation/driver-api/gpio/using-gpio.rst b/Documentation/driver-api/gpio/using-gpio.rst
-index 64c8d3f76c3a..894d88855d73 100644
---- a/Documentation/driver-api/gpio/using-gpio.rst
-+++ b/Documentation/driver-api/gpio/using-gpio.rst
-@@ -44,7 +44,7 @@ These devices will appear on the system as ``/dev/gpiochip0`` thru
- found in the kernel tree ``tools/gpio`` subdirectory.
- 
- For structured and managed applications, we recommend that you make use of the
--libgpiod_ library. This provides helper abstractions, command line utlities
-+libgpiod_ library. This provides helper abstractions, command line utilities
- and arbitration for multiple simultaneous consumers on the same GPIO chip.
- 
- .. _libgpiod: https://git.kernel.org/pub/scm/libs/libgpiod/libgpiod.git/
+ 	printf("\n%s: Kernel object freeing\n", s->name);
+ 	printf("------------------------------------------------------------------------\n");
+-	if (read_slab_obj(s, "free_calls"))
++	if (read_debug_slab_obj(s, "free_traces"))
++		printf("%s", buffer);
++	else if (read_slab_obj(s, "free_calls"))
+ 		printf("%s", buffer);
+ 	else
+ 		printf("No Data\n");
 -- 
-2.36.1
+2.34.1
 
