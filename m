@@ -2,137 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0D70C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 08:14:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B409C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 08:14:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230001AbiFWIOC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 04:14:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58816 "EHLO
+        id S230418AbiFWIOG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 04:14:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229659AbiFWIN6 (ORCPT
+        with ESMTP id S229725AbiFWIN7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 04:13:58 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEC4B46CBB;
-        Thu, 23 Jun 2022 01:13:57 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 8E3F31FB42;
-        Thu, 23 Jun 2022 08:13:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1655972036; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=aVJweXdz9Jf/NVEgCyaFEqirlfoYOjh6Fl7CRM17eqg=;
-        b=z/2fHE9Vhjo5lsBQhdQxp70kwGuZMxrAx7ktHeJzRtsjQo5A4AT8s4DuIcHqV18TGNjvz0
-        hjQziUU4dDLTSNjBW5fOjC4ccC9yH85cQPwouSx9D1N3nyBMTRg23sDZmvB9GpWZHrD+oW
-        S/OxO1vj1ZMAdiyBLHkrvdqf1s4NoEI=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1655972036;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=aVJweXdz9Jf/NVEgCyaFEqirlfoYOjh6Fl7CRM17eqg=;
-        b=7bTonw3Op5mC3r47udV9QcuK6VoYhDhv5oOs19KKiY4dgdRxg8Q/P99SdPAZ/9d0zdxQFe
-        gVGP+aDkG+o4H5Bw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 6C1DE133A6;
-        Thu, 23 Jun 2022 08:13:56 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 08lzGcQgtGLCfAAAMHmgww
-        (envelope-from <tzimmermann@suse.de>); Thu, 23 Jun 2022 08:13:56 +0000
-Message-ID: <58e11013-01ab-8a2c-732e-860ae83a3df6@suse.de>
-Date:   Thu, 23 Jun 2022 10:13:56 +0200
+        Thu, 23 Jun 2022 04:13:59 -0400
+X-Greylist: delayed 902 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 23 Jun 2022 01:13:53 PDT
+Received: from frontdoor.pr.hu (frontdoor.pr.hu [IPv6:2a02:808:3:101:250:56ff:fe8e:1370])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFD2343AF3;
+        Thu, 23 Jun 2022 01:13:53 -0700 (PDT)
+Received: from [2a02:808:3:101::5] (helo=mail.pr.hu)
+        by frontdoor.pr.hu with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <zboszor@pr.hu>)
+        id 1o4Hjj-0008L3-G3; Thu, 23 Jun 2022 09:58:47 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=pr.hu;
+        s=pr20170203; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:Cc:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=ijw29va7e9GjYEvDhYSV4GaaJPfxvijzkTXyC52jbc0=; b=f4o8FWaet1jmFLzeHwcEZMG7Nv
+        c04/9OtyQitceucrg++QARmZeAuoMIKMc5bowZFGZrTec13G4RSXW+FR2bCnkL1ZTPK0f6zwEoZpO
+        dx4+UuTBm9y2glifRLrXhqOVOfgqBtlcPQlcpB4/U9l8UuwEdsrABxJcQT1Ow2xZndWO9f9+XXLki
+        82QhCLgokcfwrTWG+udIDFntmy4mv4IPHbWMRLaP6zJrPQ1+kq1issASroU0gY1PjrL2qsxFRBbwr
+        U8dn1QW4BXa0lo80j5JKAMFKP9l+xLT4YeVY/8no+DdZqMeZqxoh/UkMjMIc/fmaIVjzHc/NG12+9
+        pMir7Gbw==;
+Received: from host-87-242-32-154.prtelecom.hu ([87.242.32.154] helo=[192.168.1.143])
+        by mail.pr.hu with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <zboszor@pr.hu>)
+        id 1o4Hjb-0006xF-0d; Thu, 23 Jun 2022 09:58:45 +0200
+Message-ID: <6fedf197-2a85-2ee8-5ae2-12b955ad5fae@pr.hu>
+Date:   Thu, 23 Jun 2022 09:58:36 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.10.0
-Subject: Re: DMA-buf and uncached system memory
+Subject: Re: [PATCH] libata: add horkage for M88V29
 Content-Language: en-US
-To:     =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
-        linux-media <linux-media@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        linaro-mm-sig@lists.linaro.org, lkml <linux-kernel@vger.kernel.org>
-Cc:     "Sharma, Shashank" <Shashank.Sharma@amd.com>
-References: <91ff0bbb-ea3a-2663-3453-dea96ccd6dd8@amd.com>
-From:   Thomas Zimmermann <tzimmermann@suse.de>
-In-Reply-To: <91ff0bbb-ea3a-2663-3453-dea96ccd6dd8@amd.com>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------ferUzV1300awBJHgsRuRCOIj"
+To:     =?UTF-8?B?QsO2c3rDtnJtw6lueWkgWm9sdMOhbg==?= <zboszor@gmail.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        linux-kernel@vger.kernel.org, linux-ide@vger.kernel.org
+References: <20220204125750.1771303-1-zboszor@pr.hu>
+ <f726e9e1-bdad-ac8a-368b-aae423a00676@opensource.wdc.com>
+ <78c29f43-3b67-8e70-0711-14e997f3efb1@gmail.com>
+From:   =?UTF-8?B?QsO2c3rDtnJtw6lueWkgWm9sdMOhbg==?= <zboszor@pr.hu>
+In-Reply-To: <78c29f43-3b67-8e70-0711-14e997f3efb1@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Scan-Signature: 6a8c5092fa5a4f65eed44a44a14f0c19
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------ferUzV1300awBJHgsRuRCOIj
-Content-Type: multipart/mixed; boundary="------------O8pK0OQ9gFlyUhIn2IOyy4Z1";
- protected-headers="v1"
-From: Thomas Zimmermann <tzimmermann@suse.de>
-To: =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
- linux-media <linux-media@vger.kernel.org>,
- dri-devel <dri-devel@lists.freedesktop.org>, linaro-mm-sig@lists.linaro.org,
- lkml <linux-kernel@vger.kernel.org>
-Cc: "Sharma, Shashank" <Shashank.Sharma@amd.com>
-Message-ID: <58e11013-01ab-8a2c-732e-860ae83a3df6@suse.de>
-Subject: Re: DMA-buf and uncached system memory
-References: <91ff0bbb-ea3a-2663-3453-dea96ccd6dd8@amd.com>
-In-Reply-To: <91ff0bbb-ea3a-2663-3453-dea96ccd6dd8@amd.com>
+2022. 06. 23. 9:47 keltezéssel, Böszörményi Zoltán írta:
+> 2022. 02. 08. 9:07 keltezéssel, Damien Le Moal írta:
+>> On 2/4/22 21:57, zboszor@pr.hu wrote:
+>>> From: Zoltán Böszörményi <zboszor@gmail.com>
+>>>
+>>> This device is a CF card, or possibly an SSD in CF form factor.
+>>> It supports NCQ and high speed DMA.
+>>>
+>>> While it also advertises TRIM support, I/O errors are reported
+>>> when the discard mount option fstrim is used. TRIM also fails
+>>> when disabling NCQ and not just as an NCQ command.
+>>>
+>>> TRIM must be disabled for this device.
+>>>
+>>> Signed-off-by: Zoltán Böszörményi <zboszor@gmail.com>
+>>> ---
+>>>   drivers/ata/libata-core.c | 1 +
+>>>   1 file changed, 1 insertion(+)
+>>>
+>>> diff --git a/drivers/ata/libata-core.c b/drivers/ata/libata-core.c
+>>> index 67f88027680a..4a7f58fcc411 100644
+>>> --- a/drivers/ata/libata-core.c
+>>> +++ b/drivers/ata/libata-core.c
+>>> @@ -4028,6 +4028,7 @@ static const struct ata_blacklist_entry ata_device_blacklist [] = {
+>>>       /* devices that don't properly handle TRIM commands */
+>>>       { "SuperSSpeed S238*",        NULL,    ATA_HORKAGE_NOTRIM, },
+>>> +    { "M88V29*",            NULL,    ATA_HORKAGE_NOTRIM, },
+>>>       /*
+>>>        * As defined, the DRAT (Deterministic Read After Trim) and RZAT
+>> Applied to for-5.17-fixes. Thanks !
+> 
+> Thank you. However, I have second thoughts about this patch.
+> The device advertises this:
+> 
+> # hdparm -iI /dev/sda
+> ...
+>   Enabled Supported
+>      *    Data Set Management TRIM supported (limit 1 block)
+> ...
 
---------------O8pK0OQ9gFlyUhIn2IOyy4Z1
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: base64
+Here's the complete hdparm output:
 
-SGkgQ2hyaXN0aWFuDQoNCkFtIDE1LjAyLjIxIHVtIDA5OjU4IHNjaHJpZWIgQ2hyaXN0aWFu
-IEvDtm5pZzoNCj4gSGkgZ3V5cywNCj4gDQo+IHdlIGFyZSBjdXJyZW50bHkgd29ya2luZyBh
-biBGcmVlc3luYyBhbmQgZGlyZWN0IHNjYW4gb3V0IGZyb20gc3lzdGVtIA0KPiBtZW1vcnkg
-b24gQU1EIEFQVXMgaW4gQStBIGxhcHRvcHMuDQo+IA0KPiBPbiBwcm9ibGVtIHdlIHN0dW1i
-bGVkIG92ZXIgaXMgdGhhdCBvdXIgZGlzcGxheSBoYXJkd2FyZSBuZWVkcyB0byBzY2FuIA0K
-PiBvdXQgZnJvbSB1bmNhY2hlZCBzeXN0ZW0gbWVtb3J5IGFuZCB3ZSBjdXJyZW50bHkgZG9u
-J3QgaGF2ZSBhIHdheSB0byANCj4gY29tbXVuaWNhdGUgdGhhdCB0aHJvdWdoIERNQS1idWYu
-DQo+IA0KPiBGb3Igb3VyIHNwZWNpZmljIHVzZSBjYXNlIGF0IGhhbmQgd2UgYXJlIGdvaW5n
-IHRvIGltcGxlbWVudCBzb21ldGhpbmcgDQo+IGRyaXZlciBzcGVjaWZpYywgYnV0IHRoZSBx
-dWVzdGlvbiBpcyBzaG91bGQgd2UgaGF2ZSBzb21ldGhpbmcgbW9yZSANCj4gZ2VuZXJpYyBm
-b3IgdGhpcz8NCg0KSSBoYWQgYSBwYXRjaHNldCBoZXJlIHRoYXQgZXh0ZW5kcyBpb3N5cy1t
-YXAgKGZvcm1lciBkbWEtYnVmLW1hcCkgd2l0aCANCmNhY2hpbmcgaW5mb3JtYXRpb24uIEkn
-bGwgcG9zdCBhIGNvcHkuDQoNClNvcnJ5IGZvciBiZWluZyBsYXRlIHRvIHJlcGx5Lg0KDQpC
-ZXN0IHJlZ2FyZHMNClRob21hcw0KDQo+IA0KPiBBZnRlciBhbGwgdGhlIHN5c3RlbSBtZW1v
-cnkgYWNjZXNzIHBhdHRlcm4gaXMgYSBQQ0llIGV4dGVuc2lvbiBhbmQgYXMgDQo+IHN1Y2gg
-c29tZXRoaW5nIGdlbmVyaWMuDQo+IA0KPiBSZWdhcmRzLA0KPiBDaHJpc3RpYW4uDQo+IF9f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQo+IGRyaS1k
-ZXZlbCBtYWlsaW5nIGxpc3QNCj4gZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZw0K
-PiBodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1k
-ZXZlbA0KDQotLSANClRob21hcyBaaW1tZXJtYW5uDQpHcmFwaGljcyBEcml2ZXIgRGV2ZWxv
-cGVyDQpTVVNFIFNvZnR3YXJlIFNvbHV0aW9ucyBHZXJtYW55IEdtYkgNCk1heGZlbGRzdHIu
-IDUsIDkwNDA5IE7DvHJuYmVyZywgR2VybWFueQ0KKEhSQiAzNjgwOSwgQUcgTsO8cm5iZXJn
-KQ0KR2VzY2jDpGZ0c2bDvGhyZXI6IEl2byBUb3Rldg0K
+/dev/sda:
 
---------------O8pK0OQ9gFlyUhIn2IOyy4Z1--
+  Model=M88V29 32GB, FwRev=181019i, SerialNo=20211023AA20A0656011
+  Config={ HardSect NotMFM HdSw>15uSec Fixed DTR>10Mbs }
+  RawCHS=16383/15/63, TrkSize=0, SectSize=0, ECCbytes=4
+  BuffType=unknown, BuffSize=unknown, MaxMultSect=1, MultSect=off
+  CurCHS=16383/15/63, CurSects=15481935, LBA=yes, LBAsects=62533296
+  IORDY=on/off, tPIO={min:120,w/IORDY:120}, tDMA={min:120,rec:120}
+  PIO modes:  pio0 pio1 pio2 pio3 pio4
+  DMA modes:  mdma0 mdma1 mdma2
+  UDMA modes: udma0 udma1 udma2 udma3 udma4 *udma5
+  AdvancedPM=yes: unknown setting
+  Drive conforms to: Unspecified:  ATA/ATAPI-5,6,7
 
---------------ferUzV1300awBJHgsRuRCOIj
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
+  * signifies the current active mode
 
------BEGIN PGP SIGNATURE-----
 
-wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmK0IMQFAwAAAAAACgkQlh/E3EQov+Bc
-fw//WLTSrJpOVDrFBR41LD8rDtxfVvpqOjzLHsqJW7bfTLi4cu/fyp82KRogBgbw7DQ09R0IL7jo
-gx6cYGc7sAxD69K+AJg6XdorFlkbfGAU5yS5pc3LqcuFlMKWti+LRuPaR7j0H+vKNkWYWRn9xBTJ
-UBXiIfCFTRvnUZUJskn1ZhTt7gMf0ef9YQK+uG17qsMn7l50HI7HYc5tqOfzShFx1/daDfhtPfp/
-zJt0adybMIeyzMGqUMFCxkVvsfB7Hr3Lt8wf9jwqeI1snM7RIXY7YBhObys4yieFhQY7ABTb34Iz
-r8L6Sz4I/idplvoORvDlA3749ljNxwITnc1tVes1CDyAIQ5MMzE4qt3iryhbQAyHm25yqTvcDqCX
-4eR8ozx0h39b+6j6RL8xJtPrhQc5IiU+HeuJooU6AVbZAuYIznWRpSp+t0/9yLgB7pNHMDfLAhZZ
-+e1Fs4yUlgz6aQaw3d9edwIZLi/aRtXxejOrhULAbJyJLnQjhrx/Nvh6UYlgkHuHh5YtAGcAjZ8S
-GIXVa3z5bTZkA/AWhseL+hMyXs9wNA4ut9bVfwWYCDpwGkVUQM+C/fUEsoVcBqguSKKAj3Gad+6m
-dwuydLfeqCp5S6980FXloN+69T+tc2Gl+vT3KiICWfcox+B8efv3wZI9VPDELoDBc6p1IR3atvaW
-7Js=
-=fkQx
------END PGP SIGNATURE-----
+CompactFlash ATA device
+	Model Number:       M88V29 32GB
+	Serial Number:      20211023AA20A0656011
+	Firmware Revision:  181019i
+Standards:
+	Supported: 8 7 6 5
+	Likely used: 8
+Configuration:
+	Logical		max	current
+	cylinders	16383	16383
+	heads		15	15
+	sectors/track	63	63
+	--
+	CHS current addressable sectors:    15481935
+	LBA    user addressable sectors:    62533296
+	LBA48  user addressable sectors:    62533296
+	Logical/Physical Sector size:           512 bytes
+	device size with M = 1024*1024:       30533 MBytes
+	device size with M = 1000*1000:       32017 MBytes (32 GB)
+	cache/buffer size  = unknown
+	Nominal Media Rotation Rate: Solid State Device
+Capabilities:
+	LBA, IORDY(can be disabled)
+	Standby timer values: spec'd by Vendor, with device specific minimum
+	R/W multiple sector transfer: Max = 1	Current = 0
+	Advanced power management level: 0
+	DMA: mdma0 mdma1 mdma2 udma0 udma1 udma2 udma3 udma4 *udma5
+	     Cycle time: min=120ns recommended=120ns
+	PIO: pio0 pio1 pio2 pio3 pio4
+	     Cycle time: no flow control=120ns  IORDY flow control=120ns
+Commands/features:
+	Enabled	Supported:
+	   *	SMART feature set
+	    	Security Mode feature set
+	   *	Power Management feature set
+	   *	Look-ahead
+	   *	WRITE_BUFFER command
+	   *	READ_BUFFER command
+	   *	NOP cmd
+	   *	DOWNLOAD_MICROCODE
+	   *	CFA feature set
+	   *	Advanced Power Management feature set
+	   *	48-bit Address feature set
+	   *	Mandatory FLUSH_CACHE
+	   *	FLUSH_CACHE_EXT
+	   *	SMART error logging
+	   *	SMART self-test
+	   *	General Purpose Logging feature set
+	   *	WRITE_{DMA|MULTIPLE}_FUA_EXT
+	   *	{READ,WRITE}_DMA_EXT_GPL commands
+	   *	DOWNLOAD MICROCODE DMA command
+	   *	Data Set Management TRIM supported (limit 1 block)
+	   *	Deterministic read data after TRIM
+		CFA max advanced io_udma cycle time: 80ns
+		CFA max advanced mem_udma cycle time: 80ns
+	   *	CFA advanced modes: pio5 pio6 mdma3 mdma4 io_udma4 io_udma5 io_udma6 io_udma7 
+io_udma8 *io_udma9 mem_udma4 mem_udma5 mem_udma6 mem_udma7 mem_udma8 *mem_udma9
+		CFA Power Level 1  not supported (max 100mA)
+Security:
+		supported
+	not	enabled
+	not	locked
+		frozen
+	not	expired: security count
+		supported: enhanced erase
+	4min for SECURITY ERASE UNIT. 4min for ENHANCED SECURITY ERASE UNIT.
+HW reset results:
+	CBLID- above Vih
+	Device num = 0
+Checksum: correct
 
---------------ferUzV1300awBJHgsRuRCOIj--
+> 
+> but the I/O failures always reported higher number of blocks,
+> IIRC the attempted number of block was 8 or so.
+> 
+> Can the kernel limit or split TRIM commands according to the
+> advertised limit? If not (or not yet) then the quirk is good for now.
+> 
+> Best regards,
+> Zoltán Böszörményi
+> 
+
