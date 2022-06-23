@@ -2,140 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2F8DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 06:46:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39069C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 06:46:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229939AbiFWGqQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 02:46:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42508 "EHLO
+        id S229947AbiFWGqf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 02:46:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229613AbiFWGqP (ORCPT
+        with ESMTP id S229941AbiFWGqd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 02:46:15 -0400
-Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6C6B342A13
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 23:46:14 -0700 (PDT)
-Received: from localhost (unknown [127.0.0.1])
-        by mail.nfschina.com (Postfix) with ESMTP id 5E12C1E80C85;
-        Thu, 23 Jun 2022 14:45:56 +0800 (CST)
-X-Virus-Scanned: amavisd-new at test.com
-Received: from mail.nfschina.com ([127.0.0.1])
-        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id B06JfwXUQAjO; Thu, 23 Jun 2022 14:45:53 +0800 (CST)
-Received: from localhost.localdomain.localdomain (unknown [219.141.250.2])
-        (Authenticated sender: lvqian@nfschina.com)
-        by mail.nfschina.com (Postfix) with ESMTPA id 9A95E1E80C7D;
-        Thu, 23 Jun 2022 14:45:53 +0800 (CST)
-From:   Lv qian <lvqian@nfschina.com>
-To:     akpm@linux-foundation.org
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        kernel@nfschina.com, Lv qian <lvqian@nfschina.com>
-Subject: [PATCH] vmalloc:Merge multiple if conditional sentences
-Date:   Thu, 23 Jun 2022 14:45:27 +0800
-Message-Id: <20220623064527.4238-1-lvqian@nfschina.com>
-X-Mailer: git-send-email 2.18.2
+        Thu, 23 Jun 2022 02:46:33 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5C9943AE1
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 23:46:32 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id b12-20020a17090a6acc00b001ec2b181c98so1616680pjm.4
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 23:46:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=x32DqBuUceR8iFLYxI8kSYRj/UC1qePRIp+pYEx+MqI=;
+        b=EFvtJkZ/s4HpynzIewEfGe96kqJfJM6rQt8ODyjrXOisdHE5f6Hk6tXlwRNzWPM3ei
+         RlBSYgqWIvRPkKpRne3XKfFKsZG25MbstwCvVWH0GOOj4QdYVXd7qJpR0f4jRMGXNdeH
+         VtZkm/mgcb6EITsedWykN4KOZ8Ck2MLDdIpsUk9hDyKyd3SD7uBijNYB7w+MICqy42Gh
+         3Sc5GWNg3NRy/OR3Fvnduea968hwmNiqOitOojSjlAlnFkdLU4RNDd4ctQqsCuRm1Lh1
+         a294dHAoS3yWLrOfH8JS3VJYpivbOcjBWtxPINCsJqys/QnLCyf1enXkgX2+hO2xQmeG
+         3FPQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=x32DqBuUceR8iFLYxI8kSYRj/UC1qePRIp+pYEx+MqI=;
+        b=7KgrPCpF3HXzchqnLVwoT6IheWIiYfteKEUf2s8ckZQQvnZDDhOxSRfkurTvZK6u0J
+         qjKEfxWHS0x/dDk/Y9NYOgXtmXF30Gu7YiJVQNV0/VaLhJWympASKrK74NUfibi/Wcqh
+         rI8IHfjz3fbAt9GrjCEGEzcP+Kv4RVKPS6qcJuxvgRmhcLvav+oIRqckmWni6lpkv/4d
+         6d36xg2Y4FK0cKBie7mVJh0ATT6tCgZSibA8JFUgtrTHZdYQoYpTO1lW/464k8kTQC9s
+         ieZqnigGjjSn2HfNNdHJW+xsQJ76Rvig8RJmTrJIPIewzu0djqXC153CwNTYdzuBEXzR
+         QTvg==
+X-Gm-Message-State: AJIora8M7i8gzyZSuIk5bxYOE4Eoidh2vzY+k1GdXNigtRwe3+DCek/Y
+        sYaQ9x/gLbdCuyIaQT/52H2yig==
+X-Google-Smtp-Source: AGRyM1t69oBgD2t12Wc9w/KrrhJUuVoP29N3cBu+zMN6kludrJXg5XyShxODkhRS7PzeUJu4aDEdnA==
+X-Received: by 2002:a17:90b:3b4c:b0:1e8:5e53:2796 with SMTP id ot12-20020a17090b3b4c00b001e85e532796mr2396743pjb.184.1655966792405;
+        Wed, 22 Jun 2022 23:46:32 -0700 (PDT)
+Received: from localhost ([139.177.225.231])
+        by smtp.gmail.com with ESMTPSA id v1-20020a62c301000000b0052090076426sm15301519pfg.19.2022.06.22.23.46.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jun 2022 23:46:32 -0700 (PDT)
+Date:   Thu, 23 Jun 2022 14:46:28 +0800
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     Miaohe Lin <linmiaohe@huawei.com>
+Cc:     akpm@linux-foundation.org, shy828301@gmail.com,
+        willy@infradead.org, zokeefe@google.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 06/16] mm/huge_memory: rename mmun_start to haddr in
+ remove_migration_pmd
+Message-ID: <YrQMRJ6PaIR8KkT6@FVFYT0MHHV2J.usts.net>
+References: <20220622170627.19786-1-linmiaohe@huawei.com>
+ <20220622170627.19786-7-linmiaohe@huawei.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220622170627.19786-7-linmiaohe@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Merge multiple if statements to improve code readability
+On Thu, Jun 23, 2022 at 01:06:17AM +0800, Miaohe Lin wrote:
+> mmun_start indicates mmu_notifier start address but there's no mmu_notifier
 
-Signed-off-by: Lv qian <lvqian@nfschina.com>
----
- mm/vmalloc.c | 66 ++++++++++++++--------------------------------------
- 1 file changed, 18 insertions(+), 48 deletions(-)
+Actually I don't know what "mmun" prefix means. But this change looks good to
+me.
 
-diff --git a/mm/vmalloc.c b/mm/vmalloc.c
-index effd1ff6a4b4..6902a180f8f7 100644
---- a/mm/vmalloc.c
-+++ b/mm/vmalloc.c
-@@ -135,22 +135,12 @@ static int vmap_try_huge_pmd(pmd_t *pmd, unsigned long addr, unsigned long end,
- 			phys_addr_t phys_addr, pgprot_t prot,
- 			unsigned int max_page_shift)
- {
--	if (max_page_shift < PMD_SHIFT)
--		return 0;
--
--	if (!arch_vmap_pmd_supported(prot))
--		return 0;
--
--	if ((end - addr) != PMD_SIZE)
--		return 0;
--
--	if (!IS_ALIGNED(addr, PMD_SIZE))
--		return 0;
--
--	if (!IS_ALIGNED(phys_addr, PMD_SIZE))
--		return 0;
--
--	if (pmd_present(*pmd) && !pmd_free_pte_page(pmd, addr))
-+	if (max_page_shift < PMD_SHIFT ||
-+			!arch_vmap_pmd_supported(prot) ||
-+			(end - addr) != PMD_SIZE ||
-+			!IS_ALIGNED(addr, PMD_SIZE) ||
-+			!IS_ALIGNED(phys_addr, PMD_SIZE) ||
-+			(pmd_present(*pmd) && !pmd_free_pte_page(pmd, addr)))
- 		return 0;
- 
- 	return pmd_set_huge(pmd, phys_addr, prot);
-@@ -185,22 +175,12 @@ static int vmap_try_huge_pud(pud_t *pud, unsigned long addr, unsigned long end,
- 			phys_addr_t phys_addr, pgprot_t prot,
- 			unsigned int max_page_shift)
- {
--	if (max_page_shift < PUD_SHIFT)
--		return 0;
--
--	if (!arch_vmap_pud_supported(prot))
--		return 0;
--
--	if ((end - addr) != PUD_SIZE)
--		return 0;
--
--	if (!IS_ALIGNED(addr, PUD_SIZE))
--		return 0;
--
--	if (!IS_ALIGNED(phys_addr, PUD_SIZE))
--		return 0;
--
--	if (pud_present(*pud) && !pud_free_pmd_page(pud, addr))
-+	if (max_page_shift < PUD_SHIFT ||
-+			!arch_vmap_pud_supported(prot) ||
-+			(end - addr) != PUD_SIZE ||
-+			!IS_ALIGNED(addr, PUD_SIZE) ||
-+			!IS_ALIGNED(phys_addr, PUD_SIZE) ||
-+			(pud_present(*pud) && !pud_free_pmd_page(pud, addr)))
- 		return 0;
- 
- 	return pud_set_huge(pud, phys_addr, prot);
-@@ -236,22 +216,12 @@ static int vmap_try_huge_p4d(p4d_t *p4d, unsigned long addr, unsigned long end,
- 			phys_addr_t phys_addr, pgprot_t prot,
- 			unsigned int max_page_shift)
- {
--	if (max_page_shift < P4D_SHIFT)
--		return 0;
--
--	if (!arch_vmap_p4d_supported(prot))
--		return 0;
--
--	if ((end - addr) != P4D_SIZE)
--		return 0;
--
--	if (!IS_ALIGNED(addr, P4D_SIZE))
--		return 0;
--
--	if (!IS_ALIGNED(phys_addr, P4D_SIZE))
--		return 0;
--
--	if (p4d_present(*p4d) && !p4d_free_pud_page(p4d, addr))
-+	if (max_page_shift < P4D_SHIFT ||
-+			!arch_vmap_p4d_supported(prot) ||
-+			(end - addr) != P4D_SIZE ||
-+			!IS_ALIGNED(addr, P4D_SIZE) ||
-+			!IS_ALIGNED(phys_addr, P4D_SIZE) ||
-+			(p4d_present(*p4d) && !p4d_free_pud_page(p4d, addr)))
- 		return 0;
- 
- 	return p4d_set_huge(p4d, phys_addr, prot);
--- 
-2.18.2
+Reviewed-by: Muchun Song <songmuchun@bytedance.com>
 
+> stuff in remove_migration_pmd. This will make it hard to get the meaning of
+> mmun_start. Rename it to haddr to avoid confusing readers and also imporve
+> readability.
+> 
+> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+> ---
+>  mm/huge_memory.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+> index c6302fe6704b..fb5c484dfa39 100644
+> --- a/mm/huge_memory.c
+> +++ b/mm/huge_memory.c
+> @@ -3181,7 +3181,7 @@ void remove_migration_pmd(struct page_vma_mapped_walk *pvmw, struct page *new)
+>  	struct vm_area_struct *vma = pvmw->vma;
+>  	struct mm_struct *mm = vma->vm_mm;
+>  	unsigned long address = pvmw->address;
+> -	unsigned long mmun_start = address & HPAGE_PMD_MASK;
+> +	unsigned long haddr = address & HPAGE_PMD_MASK;
+>  	pmd_t pmde;
+>  	swp_entry_t entry;
+>  
+> @@ -3204,12 +3204,12 @@ void remove_migration_pmd(struct page_vma_mapped_walk *pvmw, struct page *new)
+>  		if (!is_readable_migration_entry(entry))
+>  			rmap_flags |= RMAP_EXCLUSIVE;
+>  
+> -		page_add_anon_rmap(new, vma, mmun_start, rmap_flags);
+> +		page_add_anon_rmap(new, vma, haddr, rmap_flags);
+>  	} else {
+>  		page_add_file_rmap(new, vma, true);
+>  	}
+>  	VM_BUG_ON(pmd_write(pmde) && PageAnon(new) && !PageAnonExclusive(new));
+> -	set_pmd_at(mm, mmun_start, pvmw->pmd, pmde);
+> +	set_pmd_at(mm, haddr, pvmw->pmd, pmde);
+>  
+>  	/* No need to invalidate - it was non-present before */
+>  	update_mmu_cache_pmd(vma, address, pvmw->pmd);
+> -- 
+> 2.23.0
+> 
+> 
