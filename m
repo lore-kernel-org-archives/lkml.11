@@ -2,158 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01C3AC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 00:25:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6752C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 00:25:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355421AbiFWAZg (ORCPT
+        id S1357738AbiFWAZt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 22 Jun 2022 20:25:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43850 "EHLO
+        Wed, 22 Jun 2022 20:25:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351013AbiFWAZe (ORCPT
+        with ESMTP id S1357371AbiFWAZo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 22 Jun 2022 20:25:34 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BC996580
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 17:25:33 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id n185so10103213wmn.4
-        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 17:25:33 -0700 (PDT)
+        Wed, 22 Jun 2022 20:25:44 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C1927676
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 17:25:43 -0700 (PDT)
+Received: by mail-pg1-x52c.google.com with SMTP id q140so17567435pgq.6
+        for <linux-kernel@vger.kernel.org>; Wed, 22 Jun 2022 17:25:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=aGc760CUzqfAXiBkGN4MiPEho4dLgNkLq+hTF2lwnHA=;
-        b=gQuswyeZ2unJsJtQNdmDZ13sMjSqQo1RWSPOiC/NK2N6itjLR5J+1pYFpBUaOk6nGg
-         z+eBGxEETPfbh6+Q/63zwgCuErxr1n5GlLO2m24RI9cwyao/BcBdP5QxFZb4hbKT5u9S
-         5ZWz9nJuRU6vErz7/qraQ8ex4nAKDzu/I6waUlkUe/Dymw127vM04k6MDKa8JQQVJNRp
-         MEM20FVHD7SEBwGul5ytxZpGM2ExN8pkl9+MfLjZOGxUCQK6nCy5A5DDHQGfFFkEUd7s
-         twcRMDz8TGTNcaoADcabM6Q7zjLE+6dLSgcXdTT+XOe04JLMDh6byVctoHADa4HYUVNS
-         GfKg==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zzh8+fZjM5hPtSMBwoYZp8q7cJJBA1KjGLsk1UEGJzY=;
+        b=JeZKCxa6bNzpsmRCpGpgy7EB/22moTTKpfrVHcl/9qlhp/I1SufTP5QykncHgNW9hR
+         avenedCjqEyWeq8lKo6Zowji08L4Ek+9niZjCH0F9P3OflsKYnqFT/WrWjb5FjZOb25C
+         pH9FQlDVUs5EHyxnSEgE/sKUz80Sk+7gtVR90=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=aGc760CUzqfAXiBkGN4MiPEho4dLgNkLq+hTF2lwnHA=;
-        b=AsCHLsR0X509w4nFi6V2GhZ3Y2RfxrtwjRubttCsexiwjAmcsvNXpgEEP4O/KXAbuz
-         miOUu1dLcARYFC7mRaStyFBxGyjjuZwQBvXhWKVG9RylBrqLoAt7ePVbOgmnJJpdF4km
-         fBWolWwj9MQ5QLU1QJcUmpdJhVE094/84c1ZVrqRHxNM5yx4SOE68sVvcnegOyp5NwB2
-         FRMd1QuBs+JSsfRvE7Aq6dzambqq+Gt1D4SCfBAkYTbH2BluysPXawPfFbtxZf2V4FrS
-         Ihma153fNhtcyVCk6Brzij5iQmGnt0UkTGM4dn5M0Zt1ZRocwgkNASriEpukqzSrQOGA
-         2GMA==
-X-Gm-Message-State: AJIora9pPSeU7+Z9QfbC/evNYwNP2lBt5t6xWMiDUMO0/GjwkFn/GXqy
-        H9ClN14E2mJNBtG0U1/LfObQJEhtkaenwm7DOD0Bkw==
-X-Google-Smtp-Source: AGRyM1uhhmG98sWEyp+Tt/TaRm3zA+KfVhcjnxuRunOrr071IyYR489kEobIjYMc0JTmKOgMrzlUlKJIg0kh6lv6qh0=
-X-Received: by 2002:a05:600c:34cc:b0:39c:832c:bd92 with SMTP id
- d12-20020a05600c34cc00b0039c832cbd92mr991182wmq.24.1655943931730; Wed, 22 Jun
- 2022 17:25:31 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zzh8+fZjM5hPtSMBwoYZp8q7cJJBA1KjGLsk1UEGJzY=;
+        b=LSSXLVDSbXjkMYkG2fsRl3XdUoPecNpsIkpJ1+G2e8JiuFOPa7e6aQCX8kg8jwkPZH
+         1DLBsqAXlAa4WIBEv7D11tljZg/ycaXsKmD1Zrm/K3UqV3+JDtIDWv0ryVPNmFQHOCtU
+         O8Q1SdiM0njAJTOAC/BEaNUMpo66bQW5CBu7nW+2eDcwTP6fvywdSDt6iQGNhL18hyhE
+         ZESz6Y8PBnKK9PEFPT6Fcolmdp0WUWMmZ07x7m0hJrSVouKwrb3XIrahpI5IzkMPi5A9
+         Bt98zokk8s2aTLt/qyi8Ae0m+MT/MzCDLClfQgHBMLwbv+qJbTSQthGzTFNcx2GQP/Lc
+         esgA==
+X-Gm-Message-State: AJIora/320Jb6xMQvWoDZ5LFjJz0uEQ5XZ6Oa1Tdo0Cc13jSyzpmgKRC
+        MqPuLUeuQDQmAead5gYoXnJ5rw==
+X-Google-Smtp-Source: AGRyM1suCxCy+8DW200CWSyuFAXsy4QJ9tVOXFHRTeywutvEswLKZ/hAgeOYR/sNhbqvBoj6zAIU0A==
+X-Received: by 2002:a63:9dc1:0:b0:40b:7771:c2ac with SMTP id i184-20020a639dc1000000b0040b7771c2acmr5135253pgd.39.1655943942707;
+        Wed, 22 Jun 2022 17:25:42 -0700 (PDT)
+Received: from smtp.gmail.com ([2620:15c:202:201:f28c:6f86:743c:1c04])
+        by smtp.gmail.com with ESMTPSA id j1-20020a170903024100b00163fbb1eec5sm13332705plh.229.2022.06.22.17.25.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jun 2022 17:25:41 -0700 (PDT)
+From:   Stephen Boyd <swboyd@chromium.org>
+To:     Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, patches@lists.linux.dev,
+        Sean Paul <sean@poorly.run>, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org
+Subject: [PATCH v2 0/3] drm/msm/dp: More cleanups for force link train
+Date:   Wed, 22 Jun 2022 17:25:37 -0700
+Message-Id: <20220623002540.871994-1-swboyd@chromium.org>
+X-Mailer: git-send-email 2.37.0.rc0.104.g0611611a94-goog
 MIME-Version: 1.0
-References: <20220623000530.1194226-1-yosryahmed@google.com> <20220622171624.fc7de8d0ab18a5cf663f8ab8@linux-foundation.org>
-In-Reply-To: <20220622171624.fc7de8d0ab18a5cf663f8ab8@linux-foundation.org>
-From:   Yosry Ahmed <yosryahmed@google.com>
-Date:   Wed, 22 Jun 2022 17:24:55 -0700
-Message-ID: <CAJD7tkag2sj86FXnMb+v4GhDJWOZ_tNpMMCde8faEgqdQ9=uEg@mail.gmail.com>
-Subject: Re: [PATCH] mm: vmpressure: don't count userspace-induced reclaim as
- memory pressure
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Shakeel Butt <shakeelb@google.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        David Hildenbrand <david@redhat.com>,
-        Miaohe Lin <linmiaohe@huawei.com>, NeilBrown <neilb@suse.de>,
-        Alistair Popple <apopple@nvidia.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Peter Xu <peterx@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 5:16 PM Andrew Morton <akpm@linux-foundation.org> wrote:
->
-> On Thu, 23 Jun 2022 00:05:30 +0000 Yosry Ahmed <yosryahmed@google.com> wrote:
->
-> > Commit e22c6ed90aa9 ("mm: memcontrol: don't count limit-setting reclaim
-> > as memory pressure") made sure that memory reclaim that is induced by
-> > userspace (limit-setting, proactive reclaim, ..) is not counted as
-> > memory pressure for the purposes of psi.
-> >
-> > Instead of counting psi inside try_to_free_mem_cgroup_pages(), callers
-> > from try_charge() and reclaim_high() wrap the call to
-> > try_to_free_mem_cgroup_pages() with psi handlers.
-> >
-> > However, vmpressure is still counted in these cases where reclaim is
-> > directly induced by userspace. This patch makes sure vmpressure is not
-> > counted in those operations, in the same way as psi. Since vmpressure
-> > calls need to happen deeper within the reclaim path, the same approach
-> > could not be followed. Hence, a new "controlled" flag is added to struct
-> > scan_control to flag a reclaim operation that is controlled by
-> > userspace. This flag is set by limit-setting and proactive reclaim
-> > operations, and is used to count vmpressure correctly.
-> >
-> > To prevent future divergence of psi and vmpressure, commit e22c6ed90aa9
-> > ("mm: memcontrol: don't count limit-setting reclaim as memory pressure")
-> > is effectively reverted and the same flag is used to control psi as
-> > well.
->
-> I'll await reviewer input on this, but I can always do trivia!
+These patches do a little cleanup on the v9 patch[1] from Kuogee.
 
-Thanks for taking a look so quickly, will address and send v2 soon!
+Changes from v1:
+ * Reduce code even more in second patch
+ * Pick up tags on first patch
 
->
-> > @@ -3502,6 +3497,8 @@ unsigned long mem_cgroup_soft_limit_reclaim(pg_data_t *pgdat, int order,
-> >  static int mem_cgroup_force_empty(struct mem_cgroup *memcg)
-> >  {
-> >       int nr_retries = MAX_RECLAIM_RETRIES;
-> > +     unsigned int reclaim_options = MEMCG_RECLAIM_CONTROLLED |
-> > +             MEMCG_RECLAIM_MAY_SWAP;
->
-> If it doesn't fit, it's nicer to do
->
->         unsigned int reclaim_options;
->         ...
->
->         reclaim_options = MEMCG_RECLAIM_CONTROLLED | MEMCG_RECLAIM_MAY_SWAP;
->
-> (several places)
->
-> > @@ -3751,6 +3757,7 @@ unsigned long try_to_free_pages(struct zonelist *zonelist, int order,
-> >               .may_writepage = !laptop_mode,
-> >               .may_unmap = 1,
-> >               .may_swap = 1,
-> > +             .controlled = 0,
-> >       };
->
-> Let's just skip all these initializations to zero, let the compiler take
-> care of it.
->
-> > @@ -4095,6 +4112,7 @@ static int balance_pgdat(pg_data_t *pgdat, int order, int highest_zoneidx)
-> >               .gfp_mask = GFP_KERNEL,
-> >               .order = order,
-> >               .may_unmap = 1,
-> > +             .controlled = 0,
-> >       };
-> >
-> >       set_task_reclaim_state(current, &sc.reclaim_state);
-> > @@ -4555,6 +4573,7 @@ unsigned long shrink_all_memory(unsigned long nr_to_reclaim)
-> >               .may_unmap = 1,
-> >               .may_swap = 1,
-> >               .hibernation_mode = 1,
-> > +             .controlled = 0,
-> >       };
-> >       struct zonelist *zonelist = node_zonelist(numa_node_id(), sc.gfp_mask);
-> >       unsigned long nr_reclaimed;
-> > @@ -4707,6 +4726,7 @@ static int __node_reclaim(struct pglist_data *pgdat, gfp_t gfp_mask, unsigned in
-> >               .may_unmap = !!(node_reclaim_mode & RECLAIM_UNMAP),
-> >               .may_swap = 1,
-> >               .reclaim_idx = gfp_zone(gfp_mask),
-> > +             .controlled = 0,
-> >       };
-> >       unsigned long pflags;
->
->
+Stephen Boyd (3):
+  drm/msm/dp: Reorganize code to avoid forward declaration
+  drm/msm/dp: Remove pixel_rate from struct dp_ctrl
+  drm/msm/dp: Get rid of dp_ctrl_on_stream_phy_test_report()
+
+ drivers/gpu/drm/msm/dp/dp_ctrl.c | 148 ++++++++++++-------------------
+ drivers/gpu/drm/msm/dp/dp_ctrl.h |   1 -
+ 2 files changed, 59 insertions(+), 90 deletions(-)
+
+[1] https://lore.kernel.org/r/1655411200-7255-1-git-send-email-quic_khsieh@quicinc.com
+
+base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
+prerequisite-patch-id: 2fc33a2830ec84d922023fddb585728c48a59525
+-- 
+https://chromeos.dev
+
