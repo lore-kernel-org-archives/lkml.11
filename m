@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 075F3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:11:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33116CCA47F
+	for <linux-kernel@archiver.kernel.org>; Thu, 23 Jun 2022 17:11:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231544AbiFWRLh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:11:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33246 "EHLO
+        id S232409AbiFWRLp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:11:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230378AbiFWRJ4 (ORCPT
+        with ESMTP id S229696AbiFWRKM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 23 Jun 2022 13:09:56 -0400
+        Thu, 23 Jun 2022 13:10:12 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF76B4B85F;
-        Thu, 23 Jun 2022 09:57:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD2E6562E3;
+        Thu, 23 Jun 2022 09:57:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 11200B82493;
-        Thu, 23 Jun 2022 16:57:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64144C3411B;
-        Thu, 23 Jun 2022 16:57:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1C8FFB8248F;
+        Thu, 23 Jun 2022 16:57:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D9E2C3411B;
+        Thu, 23 Jun 2022 16:57:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656003445;
-        bh=S2mte76aH7kqcqbNPMSUvjm5m4VlBrxixRxn7+AsZ5Q=;
+        s=korg; t=1656003451;
+        bh=ipRS0EUJ98S9tQS9u0oR40qjSmp9Ac1uORIC/7P/V1o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MQPV+x1wVm8pLNphU5Rx61vBQp4jy47qHMQolkRMRdkU17Vtt3yB+AogXQdp1257r
-         OoKx6eFdVDUiM/b7pIcO24BmUNgzndJm9N+QgaWpoALBsEmG5K2B3UEjgzLDN6aN2W
-         X8vJLHNHmUG7nkYVK5C86saCmBbceuX9fdJnjk1A=
+        b=0EFUHUnogBPaSk5CBHcmKtWPJMAPftGnI0xq/IF2BsUw899Be9JhQ/0+dX2b0BRd7
+         Vt2QZ0c8EyXAwmMO8mV2aGZQSMwJBXLq4169zZFcE+jqleiB1JsKmLcXtPyqVeBDYP
+         +1KPCSTmp5B4jaJxuPaFgD5+En4tTJ+JpTRbUeoI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, zijun_hu <zijun_hu@htc.com>,
-        Marc Zyngier <marc.zyngier@arm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 241/264] irqchip/gic-v3: Iterate over possible CPUs by for_each_possible_cpu()
-Date:   Thu, 23 Jun 2022 18:43:54 +0200
-Message-Id: <20220623164350.893321580@linuxfoundation.org>
+        stable@vger.kernel.org, Stephan Mueller <smueller@chronox.de>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.9 216/264] crypto: drbg - always seeded with SP800-90B compliant noise source
+Date:   Thu, 23 Jun 2022 18:43:29 +0200
+Message-Id: <20220623164350.187964250@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623164344.053938039@linuxfoundation.org>
 References: <20220623164344.053938039@linuxfoundation.org>
@@ -49,52 +49,116 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: zijun_hu <zijun_hu@htc.com>
+From: "Stephan Müller" <smueller@chronox.de>
 
-[ Upstream commit 3fad4cdac235c5b13227d0c09854c689ae62c70b ]
+commit 97f2650e504033376e8813691cb6eccf73151676 upstream.
 
-get_cpu_number() doesn't use existing helper to iterate over possible
-CPUs, It will cause an error in case of discontinuous @cpu_possible_mask
-such as 0b11110001, which can result from a core having failed to come
-up on a SMP machine.
+As the Jitter RNG provides an SP800-90B compliant noise source, use this
+noise source always for the (re)seeding of the DRBG.
 
-Fixed by using existing helper for_each_possible_cpu().
+To make sure the DRBG is always properly seeded, the reseed threshold
+is reduced to 1<<20 generate operations.
 
-Signed-off-by: zijun_hu <zijun_hu@htc.com>
-Signed-off-by: Marc Zyngier <marc.zyngier@arm.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+The Jitter RNG may report health test failures. Such health test
+failures are treated as transient as follows. The DRBG will not reseed
+from the Jitter RNG (but from get_random_bytes) in case of a health
+test failure. Though, it produces the requested random number.
+
+The Jitter RNG has a failure counter where at most 1024 consecutive
+resets due to a health test failure are considered as a transient error.
+If more consecutive resets are required, the Jitter RNG will return
+a permanent error which is returned to the caller by the DRBG. With this
+approach, the worst case reseed threshold is significantly lower than
+mandated by SP800-90A in order to seed with an SP800-90B noise source:
+the DRBG has a reseed threshold of 2^20 * 1024 = 2^30 generate requests.
+
+Yet, in case of a transient Jitter RNG health test failure, the DRBG is
+seeded with the data obtained from get_random_bytes.
+
+However, if the Jitter RNG fails during the initial seeding operation
+even due to a health test error, the DRBG will send an error to the
+caller because at that time, the DRBG has received no seed that is
+SP800-90B compliant.
+
+Signed-off-by: Stephan Mueller <smueller@chronox.de>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/irqchip/irq-gic-v3.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ crypto/drbg.c         |   26 +++++++++++++++++++-------
+ include/crypto/drbg.h |    6 +-----
+ 2 files changed, 20 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
-index 2ab6060031a4..9ae24ffb9b09 100644
---- a/drivers/irqchip/irq-gic-v3.c
-+++ b/drivers/irqchip/irq-gic-v3.c
-@@ -982,7 +982,7 @@ static int get_cpu_number(struct device_node *dn)
+--- a/crypto/drbg.c
++++ b/crypto/drbg.c
+@@ -1089,10 +1089,6 @@ static void drbg_async_seed(struct work_
+ 	if (ret)
+ 		goto unlock;
+ 
+-	/* If nonblocking pool is initialized, deactivate Jitter RNG */
+-	crypto_free_rng(drbg->jent);
+-	drbg->jent = NULL;
+-
+ 	/* Set seeded to false so that if __drbg_seed fails the
+ 	 * next generate call will trigger a reseed.
+ 	 */
+@@ -1170,7 +1166,23 @@ static int drbg_seed(struct drbg_state *
+ 						   entropylen);
+ 			if (ret) {
+ 				pr_devel("DRBG: jent failed with %d\n", ret);
+-				goto out;
++
++				/*
++				 * Do not treat the transient failure of the
++				 * Jitter RNG as an error that needs to be
++				 * reported. The combined number of the
++				 * maximum reseed threshold times the maximum
++				 * number of Jitter RNG transient errors is
++				 * less than the reseed threshold required by
++				 * SP800-90A allowing us to treat the
++				 * transient errors as such.
++				 *
++				 * However, we mandate that at least the first
++				 * seeding operation must succeed with the
++				 * Jitter RNG.
++				 */
++				if (!reseed || ret != -EAGAIN)
++					goto out;
+ 			}
+ 
+ 			drbg_string_fill(&data1, entropy, entropylen * 2);
+@@ -1495,6 +1507,8 @@ static int drbg_prepare_hrng(struct drbg
+ 	if (list_empty(&drbg->test_data.list))
+ 		return 0;
+ 
++	drbg->jent = crypto_alloc_rng("jitterentropy_rng", 0, 0);
++
+ 	INIT_WORK(&drbg->seed_work, drbg_async_seed);
+ 
+ 	drbg->random_ready.notifier_call = drbg_schedule_async_seed;
+@@ -1513,8 +1527,6 @@ static int drbg_prepare_hrng(struct drbg
+ 		return err;
+ 	}
+ 
+-	drbg->jent = crypto_alloc_rng("jitterentropy_rng", 0, 0);
+-
+ 	/*
+ 	 * Require frequent reseeds until the seed source is fully
+ 	 * initialized.
+--- a/include/crypto/drbg.h
++++ b/include/crypto/drbg.h
+@@ -186,11 +186,7 @@ static inline size_t drbg_max_addtl(stru
+ static inline size_t drbg_max_requests(struct drbg_state *drbg)
  {
- 	const __be32 *cell;
- 	u64 hwid;
--	int i;
-+	int cpu;
- 
- 	cell = of_get_property(dn, "reg", NULL);
- 	if (!cell)
-@@ -996,9 +996,9 @@ static int get_cpu_number(struct device_node *dn)
- 	if (hwid & ~MPIDR_HWID_BITMASK)
- 		return -1;
- 
--	for (i = 0; i < num_possible_cpus(); i++)
--		if (cpu_logical_map(i) == hwid)
--			return i;
-+	for_each_possible_cpu(cpu)
-+		if (cpu_logical_map(cpu) == hwid)
-+			return cpu;
- 
- 	return -1;
+ 	/* SP800-90A requires 2**48 maximum requests before reseeding */
+-#if (__BITS_PER_LONG == 32)
+-	return SIZE_MAX;
+-#else
+-	return (1UL<<48);
+-#endif
++	return (1<<20);
  }
--- 
-2.35.1
-
+ 
+ /*
 
 
